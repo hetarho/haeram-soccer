@@ -12,11 +12,29 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps
       - run: npm run verify
+      - run: npm run benchmark
+      - name: Verify browser performance against the production build
+        run: |
+          PORT=4180 npm run preview > .tmp/benchmark-preview.log 2>&1 &
+          benchmark_preview_pid=$!
+          trap 'kill "$benchmark_preview_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..40}; do
+            if curl --fail --silent http://127.0.0.1:4180/ > /dev/null; then
+              break
+            fi
+            sleep 0.25
+          done
+          BENCHMARK_ORIGIN=http://127.0.0.1:4180 npm run benchmark:browser
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: web-verification
+          include-hidden-files: true
           path: |
             apps/web/dist
             playwright-report
             test-results
+            docs/benchmarks/T010-storage.json
+            docs/benchmarks/T010-first-play.json
+            .tmp/benchmark-preview.log
+            .tmp/release-storage-failure-metrics.json

@@ -306,6 +306,12 @@
   .negotiation {
     gap: 8px;
   }
+  .negotiation select,
+  .lineup select {
+    height: 48px;
+    appearance: none;
+    padding-right: 30px;
+  }
   .outlook b {
     font-size: 12px;
   }
@@ -313,4 +319,9 @@
     font-size: 11px;
     padding: 7px;
   }
+}
+.panel p,
+.panel small,
+.section .hint {
+  color: #485f3f;
 }

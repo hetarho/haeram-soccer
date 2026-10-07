@@ -9,6 +9,7 @@ for (const viewport of [
   }) => {
     await page.setViewportSize(viewport);
     await page.goto('/');
+    await page.getByText('고급 설정', { exact: true }).click();
     await page.getByLabel('세계 생성 시드').fill(`growth-core-${viewport.width}`);
     await page.getByRole('button', { name: '클럽 창단' }).click();
     const hub = page.getByTestId('club-hub');
@@ -78,6 +79,8 @@ for (const viewport of [
     await expect(page.getByLabel('22명의 선수와 공으로 표현하는 경기')).toBeVisible();
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90′ ·.*경기 종료/)).toBeVisible();
+    await expect(page.getByTestId('match-result-summary')).toBeVisible();
+    await page.getByRole('button', { name: '경기 상세', exact: true }).click();
     await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toBeVisible();
   });
 }

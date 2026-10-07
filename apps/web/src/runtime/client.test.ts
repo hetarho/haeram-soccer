@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { advanceRound, createWorld, simulateSeason } from '../../../../packages/engine/src/index';
+import { canonical } from '../../../../packages/contracts/src/index';
+import { CURRENT_ENGINE_VERSION } from '../../../../packages/contracts/src/versions';
 import { decode, encode, type StoragePort } from '../adapters/persistence';
 import { GameClient, type ClientState } from './client';
 import { Host } from './host';
@@ -202,5 +204,219 @@ describe('background worker publication', () => {
       data: { requestId: 'expired-session', ok: true, view: { ...before!, totalMatches: 123 } },
     } as MessageEvent<Reply>);
     expect(client.state.view).toBe(before);
+  });
+});
+
+async function legacyCheckpoint(withHistory = false) {
+  const legacy = createWorld(founding);
+  if (withHistory) simulateSeason(legacy);
+  else {
+    advanceRound(legacy, undefined, false);
+    advanceRound(legacy, undefined, false);
+  }
+  legacy.engine = '1.0.0';
+  legacy.revision = 17;
+  legacy.cash = '98765432101234567890';
+  delete legacy.training;
+  delete legacy.players[0].developed;
+  const raw = await encode(legacy, 7, 6);
+  storage.setItem('haeram-soccor:slot:a', raw);
+  storage.setItem(
+    'haeram-soccor:manifest',
+    JSON.stringify({ slot: 0, worldId: legacy.id, generation: 7, parentGeneration: 6 }),
+  );
+  return { legacy, raw };
+}
+
+describe('legacy activation and compatibility recovery', () => {
+  it('commits a writer upgrade through the inactive slot and preserves the full old career', async () => {
+    const { legacy, raw } = await legacyCheckpoint(true);
+    expect(legacy.ownMatches.length).toBeGreaterThan(30);
+    expect(legacy.history.length).toBeGreaterThan(0);
+    const writes = vi.spyOn(storage, 'setItem');
+    const client = new GameClient(() => {});
+    clients.push(client);
+    await client.start();
+    expect(client.state.error).toBeUndefined();
+    expect(client.state.view?.world.engine).toBe(CURRENT_ENGINE_VERSION);
+    expect(client.state.savedRevision).toBe(18);
+    expect(writes.mock.calls.map(([key]) => key)).toEqual([
+      'haeram-soccor:slot:b',
+      'haeram-soccor:manifest',
+    ]);
+    const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
+    expect(manifest).toEqual({ slot: 1, worldId: legacy.id, generation: 8, parentGeneration: 7 });
+    expect(storage.getItem('haeram-soccor:slot:a')).toBe(raw);
+    const upgraded = (await decode(storage.getItem('haeram-soccor:slot:b')!)).world;
+    expect(canonical(upgraded)).toBe(
+      canonical({ ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 18 }),
+    );
+    expect(canonical((await decode((await client.exportFile())!)).world)).toBe(canonical(upgraded));
+  });
+
+  it('opens an old career read-only without upgrading memory or committing either slot', async () => {
+    const { legacy } = await legacyCheckpoint();
+    const before = new Map(storage.data);
+    vi.stubGlobal('navigator', {
+      locks: {
+        request: (_name: string, _options: unknown, callback: (lock: null) => Promise<void>) =>
+          callback(null),
+      },
+    });
+    const client = new GameClient(() => {});
+    clients.push(client);
+    await client.start();
+    expect(client.state.readonly).toBe(true);
+    expect(client.state.error).toBeUndefined();
+    expect(client.state.view?.world.engine).toBe('1.0.0');
+    expect(client.state.savedRevision).toBe(17);
+    expect(storage.data).toEqual(before);
+    expect(canonical((await decode((await client.exportFile())!)).world)).toBe(canonical(legacy));
+    expect(storage.data).toEqual(before);
+    expect(
+      WorkerPort.instances[0].requests
+        .filter((request) => request.body.type === 'inspect')
+        .some((request) => request.body.type === 'inspect' && request.body.upgrade),
+    ).toBe(false);
+  });
+
+  it.each(['haeram-soccor:slot:b', 'haeram-soccor:manifest'])(
+    'keeps old disk and exports upgraded memory when %s rejects the upgrade write',
+    async (failedKey) => {
+      const { legacy, raw } = await legacyCheckpoint();
+      const manifest = storage.getItem('haeram-soccor:manifest');
+      storage.fail = failedKey;
+      const client = new GameClient(() => {});
+      clients.push(client);
+      await client.start();
+      expect(client.state.error).toContain('규칙 업그레이드 저장 실패');
+      expect(client.state.error).toContain('파일로 내보내세요');
+      expect(client.state.view?.world.engine).toBe(CURRENT_ENGINE_VERSION);
+      expect(client.state.view?.world.revision).toBe(18);
+      expect(client.state.savedRevision).toBe(17);
+      expect(storage.getItem('haeram-soccor:slot:a')).toBe(raw);
+      expect(storage.getItem('haeram-soccor:manifest')).toBe(manifest);
+      const exported = (await decode((await client.exportFile())!)).world;
+      expect(canonical(exported)).toBe(
+        canonical({ ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 18 }),
+      );
+      storage.fail = '';
+      await client.retrySave();
+      expect(client.state.savedRevision).toBe(18);
+      const current = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
+      expect(current.slot).toBe(1);
+      expect(current.generation).toBe(8);
+      expect(storage.getItem('haeram-soccor:slot:a')).toBe(raw);
+    },
+  );
+
+  it.each([true, false])(
+    'returns a typed error and exports the selected future checkpoint with manifest=%s',
+    async (hasManifest) => {
+      await legacyCheckpoint();
+      const old = storage.getItem('haeram-soccor:slot:a')!;
+      const future = JSON.stringify({ ...JSON.parse(old), engine: '2.0.0', generation: 8 });
+      storage.setItem('haeram-soccor:slot:b', future);
+      if (hasManifest)
+        storage.setItem(
+          'haeram-soccor:manifest',
+          JSON.stringify({
+            slot: 1,
+            worldId: JSON.parse(old).worldId,
+            generation: 8,
+            parentGeneration: 7,
+          }),
+        );
+      else storage.removeItem('haeram-soccor:manifest');
+      const before = new Map(storage.data);
+      const client = new GameClient(() => {});
+      clients.push(client);
+      await client.start();
+      expect(client.state.errorCode).toBe('save-compatibility');
+      expect(client.state.error).toContain('지원하지 않는');
+      expect(client.state.view).toBeUndefined();
+      expect(storage.data).toEqual(before);
+      expect(await client.exportFile()).toBe(future);
+      expect(storage.data).toEqual(before);
+      expect(
+        WorkerPort.instances[0].requests.some(
+          (request) => request.body.type === 'inspect' && request.body.activate,
+        ),
+      ).toBe(false);
+      await client.importFile(future);
+      expect(client.state.errorCode).toBe('save-compatibility');
+      expect(client.state.view).toBeUndefined();
+      expect(await client.exportFile()).toBe(future);
+      await client.found(founding);
+      expect(client.state.errorCode).toBe('save-compatibility');
+      expect(client.state.view).toBeUndefined();
+      expect(storage.data).toEqual(before);
+      const replacement = createWorld({ ...founding, seed: 'explicit-recovery' });
+      await client.importFile(await encode(replacement));
+      expect(client.state.error).toBeUndefined();
+      expect(client.state.view?.world.id).toBe(replacement.id);
+      expect(JSON.parse(storage.getItem('haeram-soccor:manifest')!)).toEqual({
+        slot: 0,
+        worldId: replacement.id,
+        generation: 9,
+        parentGeneration: 8,
+      });
+      expect(storage.getItem('haeram-soccor:slot:b')).toBe(future);
+    },
+  );
+
+  it('still recovers a compatible predecessor when the selected checkpoint is actually corrupt', async () => {
+    const client = await start();
+    await client.command({ type: 'advance-days', days: 1 });
+    const selected = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
+    storage.setItem(`haeram-soccor:slot:${selected.slot ? 'b' : 'a'}`, 'corrupt');
+    client.dispose();
+    clients.splice(clients.indexOf(client), 1);
+    const restored = new GameClient(() => {});
+    clients.push(restored);
+    await restored.start();
+    expect(restored.state.error).toBeUndefined();
+    expect(restored.state.notice).toContain('체크포인트로 복구');
+    expect(restored.state.view?.world.calendar?.day).toBe(0);
+    expect(restored.state.savedRevision).toBe(0);
+    await restored.command({ type: 'advance-days', days: 1 });
+    expect(restored.state.error).toBeUndefined();
+    expect(restored.state.savedRevision).toBe(1);
+  });
+
+  it('keeps an explicitly imported replacement exportable and retryable after future-save write failure', async () => {
+    const { raw } = await legacyCheckpoint();
+    const future = JSON.stringify({ ...JSON.parse(raw), engine: '2.0.0' });
+    storage.setItem('haeram-soccor:slot:a', future);
+    const manifest = storage.getItem('haeram-soccor:manifest');
+    const client = new GameClient(() => {});
+    clients.push(client);
+    await client.start();
+    expect(client.state.errorCode).toBe('save-compatibility');
+    await client.found(founding);
+    expect(client.state.errorCode).toBe('save-compatibility');
+    expect(client.state.view).toBeUndefined();
+    storage.fail = 'haeram-soccor:manifest';
+    const replacement = createWorld({ ...founding, seed: 'explicit-recovery-quota' });
+    await client.importFile(await encode(replacement));
+    expect(client.state.error).toContain('Quota');
+    expect(client.state.view?.world.id).toBe(replacement.id);
+    expect(client.state.savedRevision).toBe(-1);
+    expect(storage.getItem('haeram-soccor:slot:a')).toBe(future);
+    expect(storage.getItem('haeram-soccor:manifest')).toBe(manifest);
+    expect(canonical((await decode((await client.exportFile())!)).world)).toBe(
+      canonical(replacement),
+    );
+    storage.fail = '';
+    await client.retrySave();
+    expect(client.state.error).toBeUndefined();
+    expect(client.state.savedRevision).toBe(0);
+    expect(JSON.parse(storage.getItem('haeram-soccor:manifest')!)).toEqual({
+      slot: 1,
+      worldId: replacement.id,
+      generation: 8,
+      parentGeneration: 7,
+    });
+    expect(storage.getItem('haeram-soccor:slot:a')).toBe(future);
   });
 });

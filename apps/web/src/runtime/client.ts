@@ -1,6 +1,11 @@
 import type { Command, Founding } from '../../../../packages/contracts/src/types';
-import { Saves } from '../adapters/persistence';
-import { requestSchema, type Body, type Reply, type View } from './protocol';
+import { SaveRepository } from '../adapters/repository';
+import {
+  SaveCompatibilityError,
+  isSaveCompatibilityError,
+  type SAVE_COMPATIBILITY_CODE,
+} from '../../../../packages/contracts/src/versions';
+import type { Body, Reply, View } from './protocol';
 import { shareView } from './store';
 export interface ClientState {
   view?: View;
@@ -11,6 +16,7 @@ export interface ClientState {
   readonly: boolean;
   savedRevision: number;
   error?: string;
+  errorCode?: typeof SAVE_COMPATIBILITY_CODE;
   notice?: string;
   progress: number;
   playback?: Reply['playback'];
@@ -41,7 +47,8 @@ export class GameClient {
   private release?: () => void;
   private cancelled = false;
   private channel = new BroadcastChannel('haeram-soccor:updates');
-  private saves: Saves;
+  private saves: SaveRepository;
+  private replacingIncompatible = false;
   private refreshPending = false;
   private refreshGeneration = 0;
   private storageListener = (event: StorageEvent) => {
@@ -54,7 +61,7 @@ export class GameClient {
     }
   };
   constructor(private notify: (state: ClientState) => void) {
-    this.saves = new Saves(localStorage, async (raw) => {
+    this.saves = new SaveRepository(localStorage, async (raw) => {
       const reply = await this.rpc({ type: 'inspect', raw });
       if (!reply.candidate || !reply.envelope) throw new Error('저장 검증 응답 누락');
       return { world: reply.candidate, envelope: reply.envelope };
@@ -76,7 +83,12 @@ export class GameClient {
       this.waiters.delete(r.requestId);
       if (r.view && pending.publishView) this.state.view = shareView(this.state.view, r.view);
       if (r.ok) pending.resolve(r);
-      else pending.reject(new Error(r.error || 'Worker 오류'));
+      else
+        pending.reject(
+          r.errorCode === 'save-compatibility'
+            ? new SaveCompatibilityError(r.error)
+            : new Error(r.error || 'Worker 오류'),
+        );
     };
     this.worker.onerror = () => this.failWorker();
     this.channel.onmessage = (event) => this.refresh(event.data?.generation || 0);
@@ -150,10 +162,30 @@ export class GameClient {
   private async load() {
     const result = await this.saves.load();
     if (result) {
-      await this.rpc({ type: 'inspect', raw: result.raw, activate: true });
+      const reply = await this.rpc({
+        type: 'inspect',
+        raw: result.raw,
+        activate: true,
+        upgrade: !this.state.readonly,
+      });
       this.state.playback = undefined;
       this.state.savedRevision = result.world.revision;
       if (result.recovered) this.state.notice = '이전의 정상 체크포인트로 복구했습니다.';
+      if (reply.upgraded && reply.raw) {
+        try {
+          await this.saves.commit(reply.raw);
+          this.state.savedRevision = this.state.view!.world.revision;
+          this.state.notice = '기존 기록을 보존하고 새 게임 규칙으로 저장했습니다.';
+          this.channel.postMessage({
+            revision: this.state.savedRevision,
+            generation: this.saves.generationInfo.parentGeneration,
+          });
+        } catch (error) {
+          throw new Error(
+            `현재 진행은 메모리에 있습니다. 규칙 업그레이드 저장 실패: ${String(error)} · 파일로 내보내세요.`,
+          );
+        }
+      }
     }
     this.emit();
   }
@@ -193,12 +225,14 @@ export class GameClient {
       this.state.busy = !options.background;
       this.state.activity = options.background ? 'background' : 'foreground';
       delete this.state.error;
+      delete this.state.errorCode;
       this.state.progress = 0;
       this.emit();
       try {
         return await fn();
       } catch (error) {
         this.state.error = String(error);
+        this.state.errorCode = isSaveCompatibilityError(error) ? error.code : undefined;
         return undefined;
       } finally {
         this.state.busy = false;
@@ -212,16 +246,25 @@ export class GameClient {
   }
   private async mutate(body: Body) {
     if (this.state.readonly) throw new Error('이 탭은 읽기 전용입니다.');
+    if (body.type === 'found' && this.saves.incompatibleCheckpoint && !body.replace)
+      throw new SaveCompatibilityError(
+        '호환되지 않는 기록을 내보낸 뒤 명시적으로 새 세계로 교체하세요.',
+      );
     if (body.type === 'found') {
       this.state.savedRevision = -1;
       this.state.playback = undefined;
     }
     const reply = await this.rpc(body);
+    if (body.type === 'found' && body.replace && this.saves.incompatibleCheckpoint)
+      this.replacingIncompatible = true;
     if (reply.playback) this.state.playback = reply.playback;
     this.emit();
     if (reply.raw) {
       try {
-        await this.saves.commit(reply.raw);
+        await this.saves.commit(reply.raw, {
+          replaceIncompatible: this.replacingIncompatible,
+        });
+        this.replacingIncompatible = false;
         this.state.savedRevision = this.state.view!.world.revision;
         this.channel.postMessage({
           revision: this.state.savedRevision,
@@ -236,9 +279,7 @@ export class GameClient {
     return reply;
   }
   found(input: Founding, replace = false) {
-    return this.enqueue(() =>
-      this.mutate(requestSchema.shape.body.parse({ type: 'found', input, replace })),
-    );
+    return this.enqueue(() => this.mutate({ type: 'found', input, replace } as Body));
   }
   command(command: Command, options: { background?: boolean } = {}) {
     this.cancelled = false;
@@ -247,12 +288,10 @@ export class GameClient {
       const count = command.type === 'season' ? Math.min(100, Math.max(1, command.count)) : 1;
       for (let i = 0; i < count; i++) {
         if (this.cancelled) break;
-        reply = await this.mutate(
-          requestSchema.shape.body.parse({
-            type: 'command',
-            command: command.type === 'season' ? { type: 'season', count: 1 } : command,
-          }),
-        );
+        reply = await this.mutate({
+          type: 'command',
+          command: command.type === 'season' ? { type: 'season', count: 1 } : command,
+        } as Body);
         if (reply.cancelled || this.state.view?.world.critical) break;
       }
       return reply;
@@ -269,6 +308,7 @@ export class GameClient {
     return this.enqueue(async () => (await this.rpc({ type: 'archive', year })).archive);
   }
   private rawBackup() {
+    if (this.saves.incompatibleBackup) return this.saves.incompatibleBackup;
     try {
       const m = JSON.parse(localStorage.getItem('haeram-soccor:manifest') || 'null');
       if (m && (m.slot === 0 || m.slot === 1))
@@ -283,18 +323,28 @@ export class GameClient {
     );
   }
   exportFile() {
-    return this.enqueue(async () =>
-      this.state.view && !this.failed ? (await this.rpc({ type: 'export' })).raw : this.rawBackup(),
-    );
+    return this.enqueue(async () => {
+      const incompatible = this.saves.incompatibleCheckpoint;
+      if (incompatible && !this.replacingIncompatible) {
+        this.state.error =
+          '지원하지 않는 저장 버전의 원본을 보존하고 있습니다. 호환되는 앱으로 열거나 기록 파일을 가져오세요.';
+        return this.rawBackup();
+      }
+      return this.state.view && !this.failed
+        ? (await this.rpc({ type: 'export' })).raw
+        : this.rawBackup();
+    });
   }
   importFile(raw: string) {
     return this.enqueue(async () => {
       if (this.state.readonly) throw new Error('읽기 전용 탭입니다.');
-      await this.rpc({ type: 'inspect', raw, activate: true });
+      await this.rpc({ type: 'inspect', raw, activate: true, upgrade: true });
+      this.replacingIncompatible = this.saves.incompatibleCheckpoint;
       this.state.savedRevision = -1;
       this.state.playback = undefined;
       const reply = await this.rpc({ type: 'export' });
-      await this.saves.commit(reply.raw!);
+      await this.saves.commit(reply.raw!, { replaceIncompatible: true });
+      this.replacingIncompatible = false;
       this.state.savedRevision = this.state.view!.world.revision;
       this.channel.postMessage({
         revision: this.state.savedRevision,

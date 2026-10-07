@@ -1,0 +1,135 @@
+.liveSeason[hidden],
+.pane[hidden] {
+  display: none;
+}
+.navigation {
+  margin-bottom: 14px;
+}
+.tabs {
+  margin-bottom: 0;
+}
+.heading {
+  margin-bottom: 12px;
+}
+.heading p {
+  color: #53674d;
+  font-size: 13px;
+}
+.matchPane {
+  max-width: 900px;
+}
+.feedback {
+  margin: 12px 0;
+  padding: 10px 12px;
+  background: #eaf0df;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #34523a;
+}
+.result {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.result strong {
+  flex-shrink: 0;
+  color: #254632;
+}
+.feedback p {
+  color: #4d6445;
+}
+.coreActions {
+  padding: 0 10px 10px;
+}
+.coreActions .feedback {
+  margin-top: 0;
+}
+.nextActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.nextActions button {
+  min-width: 44px;
+  min-height: 44px;
+}
+.watch {
+  background: #28593b;
+  color: #fff9e6;
+  border-color: #28593b;
+}
+.watch:hover:not(:disabled) {
+  background: #326949;
+}
+@media (max-width: 760px) {
+  .navigation {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 5px;
+  }
+  .tabs {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    gap: 5px;
+    overflow: visible;
+  }
+  .tabs button {
+    flex: 1;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 5px 6px;
+    font-size: 12px;
+  }
+  .statistics {
+    flex: 0 0 76px;
+    width: 76px;
+    min-width: 44px;
+    min-height: 44px;
+    height: 44px;
+    appearance: none;
+    padding: 5px 18px 5px 5px;
+    font-size: 12px;
+    background-image:
+      linear-gradient(45deg, transparent 50%, #34523a 50%),
+      linear-gradient(135deg, #34523a 50%, transparent 50%);
+    background-position:
+      calc(100% - 10px) 19px,
+      calc(100% - 6px) 19px;
+    background-size: 4px 4px;
+    background-repeat: no-repeat;
+  }
+  .heading {
+    margin-bottom: 5px;
+  }
+  .heading h2 {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  .heading p {
+    display: none;
+  }
+  .feedback {
+    margin: 5px 0;
+    padding: 6px 9px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .result {
+    gap: 8px;
+  }
+  .result span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .nextActions {
+    gap: 5px;
+  }
+  .coreActions {
+    padding: 0 5px 5px;
+  }
+  .nextActions button {
+    font-size: 13px;
+    padding: 7px;
+  }
+}

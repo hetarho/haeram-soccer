@@ -1,12 +1,14 @@
-import { lazy, memo, Suspense, useEffect, useState, type FormEvent, type ReactNode } from 'react';
-import type { CountryCode, World } from '../../../../packages/contracts/src/types';
-import { COUNTRIES, country, priceIndex } from '../../../../packages/catalogs/src/index';
+import { lazy, memo, Suspense, useEffect, useState, type ReactNode } from 'react';
+import type { World } from '../../../../packages/contracts/src/types';
+import { country, priceIndex } from '../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../runtime/client';
 import { useNavigation, type Page } from './state';
 import { money, number, percent, seasonName, kindLabel } from './format';
 import { ProgressControls } from './ProgressControls';
 import { LiveSeason } from './LiveSeason';
 import { ClubHub } from './ClubHub';
+import { ClubFounding } from './ClubFounding';
+import { PlayGuide } from './PlayGuide';
 import { gameStore, useGameState } from '../runtime/store';
 import { ProgressionController } from '../runtime/progression';
 import { worldSelector } from './liveState';
@@ -77,166 +79,6 @@ export function Panel({
 }
 export function Table({ w, ids, limit }: { w: World; ids: string[]; limit?: number }) {
   return <Standings w={w} ids={ids} limit={limit} />;
-}
-function Founding({
-  client,
-  state,
-  replace = false,
-  onDone,
-}: {
-  client: GameClient;
-  state: ClientState;
-  replace?: boolean;
-  onDone?: () => void;
-}) {
-  const [code, setCode] = useState<CountryCode>('ENG'),
-    [name, setName] = useState('Haeram Athletic'),
-    [color, setColor] = useState('#bf7956'),
-    [seed, setSeed] = useState(() => crypto.randomUUID().slice(0, 18)),
-    [difficulty, setDifficulty] = useState(1);
-  const submit = (e: FormEvent) => {
-    e.preventDefault();
-    void client.found({ country: code, name, color, seed, difficulty }, replace).then((reply) => {
-      if (reply?.ok) onDone?.();
-    });
-  };
-  return (
-    <div className={s.founding}>
-      <div className={s.intro}>
-        <div>
-          <p className={s.eyebrow}>YOUR CLUB. YOUR CENTURY.</p>
-          <h2>
-            작은 운동장에서,
-            <br />한 세기의 역사로.
-          </h2>
-          <p>
-            1901년, 이름 없는 클럽의 시작.
-            <br />
-            경기를 지켜보고, 숫자에서 가능성을 찾고,
-            <br />
-            사람과 동네와 함께 성장하세요.
-          </p>
-          <span className={s.pill}>캐주얼 클럽 경영 · 로컬 무료 플레이</span>
-        </div>
-        <div className={s.firstSeason}>
-          <span className={s.eyebrow}>첫 시즌, 세 가지 즐거움</span>
-          <ol>
-            <li>
-              <b>01</b>
-              <div>
-                <h3>순위 한 칸의 무게</h3>
-                <p>승점 차와 순위 추이로 승격 경쟁을 따라가세요.</p>
-              </div>
-            </li>
-            <li>
-              <b>02</b>
-              <div>
-                <h3>같은 전술, 다른 선수</h3>
-                <p>선수의 성향과 감독의 판단이 경기장에서 만납니다.</p>
-              </div>
-            </li>
-            <li>
-              <b>03</b>
-              <div>
-                <h3>하루씩 쌓이는 역사</h3>
-                <p>자동 진행으로 시즌을 보내고, 결정적인 경기는 직접 관전하세요.</p>
-              </div>
-            </li>
-          </ol>
-        </div>
-      </div>
-      <form className={s.form} onSubmit={submit}>
-        <Panel title="01. 우리 이야기가 시작될 나라" note="8 EUROPEAN ASSOCIATIONS">
-          <div className={s.panelBody}>
-            <p className={s.muted}>
-              1900년대의 분위기, 현대 프로 리그 구조. 클럽과 선수는 새롭게 생성됩니다.
-            </p>
-            <div className={s.countryGrid}>
-              {COUNTRIES.map((c) => (
-                <button
-                  key={c.code}
-                  type="button"
-                  className={`${s.countryCard} ${code === c.code ? s.selected : ''}`}
-                  aria-pressed={code === c.code}
-                  onClick={() => setCode(c.code)}
-                >
-                  <span className={s.countryCode}>{c.code}</span>
-                  <b>{c.name}</b>
-                  <small>
-                    {c.groups.length}개 디비전 · {c.groups.flat().reduce((a, b) => a + b, 0)}개 클럽
-                  </small>
-                </button>
-              ))}
-            </div>
-          </div>
-        </Panel>
-        <Panel title="02. 이름과 색, 그리고 첫 자금">
-          <div className={s.panelBody}>
-            <div className={s.formGrid}>
-              <label>
-                클럽 이름
-                <input
-                  required
-                  maxLength={60}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </label>
-              <label>
-                클럽 색상
-                <input type="color" value={color} onChange={(e) => setColor(e.target.value)} />
-              </label>
-              <label>
-                세계 생성 시드
-                <input maxLength={80} value={seed} onChange={(e) => setSeed(e.target.value)} />
-              </label>
-              <div className={s.muted}>
-                같은 시드는 같은 클럽·선수·경기를 만듭니다.
-                <br />
-                선택한 나라의 최하위 프로 리그에서 출발합니다.
-              </div>
-            </div>
-            <div className={s.difficulty}>
-              {[
-                [2, '넉넉한 출발', '연간 기본 운영비의 2배'],
-                [1, '표준 출발', '연간 기본 운영비의 1배'],
-                [0.5, '작은 출발', '연간 기본 운영비의 0.5배'],
-              ].map(([v, t, d]) => (
-                <button
-                  key={v}
-                  type="button"
-                  aria-pressed={difficulty === v}
-                  className={difficulty === v ? s.selected : undefined}
-                  onClick={() => setDifficulty(Number(v))}
-                >
-                  <b>{t}</b>
-                  <small>{d}</small>
-                </button>
-              ))}
-            </div>
-            <p className={s.muted} style={{ marginTop: 14 }}>
-              난이도는 초기 자본금만 바꿉니다. 선수·상대·행운은 그대로입니다.
-            </p>
-          </div>
-        </Panel>
-        <div className={s.formFooter}>
-          <div>
-            <b>
-              {country(code).name} · {country(code).groups.length}부에서 창단
-            </b>
-            <p>계정 없이 이 브라우저에 저장됩니다. 나중에 파일로 내보낼 수 있습니다.</p>
-          </div>
-          <button
-            className={s.primary}
-            disabled={state.busy || state.readonly || (!!state.error && !replace)}
-            type="submit"
-          >
-            {state.busy ? '세계관을 만드는 중…' : '클럽 창단 →'}
-          </button>
-        </div>
-      </form>
-    </div>
-  );
 }
 function ClubJournal({ state, client }: { state: ClientState; client: GameClient }) {
   const { setPage } = useNavigation();
@@ -512,6 +354,7 @@ const selectContentWorld = worldSelector([
   'rankHistory',
   'scorerSeason',
   'players',
+  'training',
   'manager',
   'lineup',
   'tactic',
@@ -538,6 +381,7 @@ function useContentState(): ClientState {
   const readonly = useGameState((state) => state.readonly);
   const totalMatches = useGameState((state) => state.view?.totalMatches);
   const annualCost = useGameState((state) => state.view?.annualCost);
+  const milestones = useGameState((state) => state.view?.milestones);
   const managers = useGameState((state) => state.view?.managers);
   const transfers = useGameState((state) => state.view?.transfers);
   const sponsors = useGameState((state) => state.view?.sponsors);
@@ -554,6 +398,7 @@ function useContentState(): ClientState {
             world,
             totalMatches: totalMatches!,
             annualCost: annualCost!,
+            milestones: milestones!,
             managers: managers!,
             transfers: transfers!,
             sponsors: sponsors!,
@@ -572,7 +417,13 @@ const ConnectedFounding = memo(function ConnectedFounding({
   onDone: () => void;
 }) {
   const state = useGameState((state) => state);
-  return <Founding client={client} state={state} replace={replace} onDone={onDone} />;
+  if (state.busy && !state.view)
+    return (
+      <div className={s.loading} role="status">
+        클럽을 준비하고 있어요…
+      </div>
+    );
+  return <ClubFounding client={client} state={state} replace={replace} onDone={onDone} />;
 });
 const ConnectedDashboard = memo(function ConnectedDashboard({
   client,
@@ -585,6 +436,7 @@ const ConnectedDashboard = memo(function ConnectedDashboard({
   return (
     <ClubHub
       w={state.view!.world}
+      milestoneFacts={state.view!.milestones}
       client={client}
       controller={controller}
       journal={<ClubJournal client={client} state={state} />}
@@ -735,6 +587,37 @@ function SaveActions({
     </div>
   );
 }
+function StartTools({
+  onDownload,
+  onImport,
+}: {
+  onDownload: () => Promise<void>;
+  onImport: (file?: File) => Promise<void>;
+}) {
+  const state = useGameState((state) => state);
+  return (
+    <div className={s.startTools}>
+      <label className={s.fileButton}>
+        기록 파일 가져오기
+        <input
+          className={s.fileInput}
+          type="file"
+          accept="application/json,.json"
+          disabled={state.busy || state.readonly}
+          onChange={(event) => {
+            void onImport(event.target.files?.[0]);
+            event.target.value = '';
+          }}
+        />
+      </label>
+      {state.error && (
+        <button disabled={state.busy} onClick={() => void onDownload()}>
+          복구 기록 내보내기
+        </button>
+      )}
+    </div>
+  );
+}
 export function App() {
   const worldId = useGameState((state) => state.view?.world.id);
   const state = gameStore.getSnapshot();
@@ -744,7 +627,8 @@ export function App() {
     [replacing, setReplacing] = useState(false),
     [newWorldConfirm, setNewWorldConfirm] = useState(false),
     [pendingImport, setPendingImport] = useState<string>(),
-    [moreOpen, setMoreOpen] = useState(false);
+    [moreOpen, setMoreOpen] = useState(false),
+    [guideOpen, setGuideOpen] = useState(false);
   const { page, setPage } = useNavigation();
   useEffect(() => {
     try {
@@ -754,10 +638,20 @@ export function App() {
         );
       const c = new GameClient((state) => gameStore.publish(state));
       const progression = new ProgressionController(c);
+      const dialogListener = (event: Event) => {
+        const detail = (event as CustomEvent<{ id: string; open: boolean }>).detail;
+        if (detail?.id) progression.setSuspended(detail.open, `dialog:${detail.id}`);
+      };
+      window.addEventListener('haeram:dialog', dialogListener);
+      const visibility = () => progression.setSuspended(document.hidden, 'visibility');
+      document.addEventListener('visibilitychange', visibility);
+      visibility();
       setClient(c);
       setController(progression);
       void c.start();
       return () => {
+        window.removeEventListener('haeram:dialog', dialogListener);
+        document.removeEventListener('visibilitychange', visibility);
         progression.dispose();
         c.dispose();
       };
@@ -789,14 +683,24 @@ export function App() {
     }
     setLocalError('');
     const raw = await file.text();
-    if (w) {
+    let stored = false;
+    try {
+      stored = !!(
+        localStorage.getItem('haeram-soccor:manifest') ||
+        localStorage.getItem('haeram-soccor:slot:a') ||
+        localStorage.getItem('haeram-soccor:slot:b')
+      );
+    } catch {
+      /* unsupported storage is reported by the client */
+    }
+    if (w || stored) {
       setMoreOpen(false);
       setPendingImport(raw);
     } else await client?.importFile(raw);
   };
   return (
     <div
-      className={`${s.layout} ${w && !replacing ? s.playLayout : ''} ${w && !replacing && page === 'dashboard' ? s.coreLayout : ''}`}
+      className={`${s.layout} ${w && !replacing ? s.playLayout : ''} ${w && !replacing && (page === 'dashboard' || page === 'match') ? s.coreLayout : ''} ${!w || replacing ? s.startLayout : ''}`}
     >
       <aside className={s.sidebar}>
         <div className={s.brand}>
@@ -839,7 +743,7 @@ export function App() {
         <div className={s.topbar}>
           <span>
             <span className={s.desktopOnly}>FOOTBALL ARCHIVES / </span>
-            {NAV.find((n) => n[0] === page)?.[2] || 'THE FIRST PAGE'}
+            {w ? NAV.find((n) => n[0] === page)?.[2] : 'Haeram Football'}
           </span>
           <div className={s.topRight}>
             <span className={s.tag}>WEB DEMO · LOCAL</span>
@@ -848,6 +752,11 @@ export function App() {
             </span>
           </div>
         </div>
+        {!client && localError && (
+          <div className={s.error} role="alert">
+            {localError}
+          </div>
+        )}
         {client && <RuntimeFeedback client={client} localError={localError} />}
         {client && controller && w && !replacing && (
           <ProgressControls
@@ -884,6 +793,18 @@ export function App() {
           )
         ) : (
           <div className={s.loading}>기록 보관함을 여는 중…</div>
+        )}
+        {client && (!w || replacing) && <StartTools onDownload={download} onImport={importFile} />}
+        {replacing && w && (
+          <button
+            className={s.returnClub}
+            onClick={() => {
+              setReplacing(false);
+              setPage('dashboard');
+            }}
+          >
+            현재 클럽 보기
+          </button>
         )}
         <LiveFooter />
         {client && (
@@ -929,6 +850,15 @@ export function App() {
       </nav>
       {moreOpen && (
         <Dialog label="전체 메뉴" onClose={() => setMoreOpen(false)}>
+          <button
+            className={s.guideOpen}
+            onClick={() => {
+              setMoreOpen(false);
+              setGuideOpen(true);
+            }}
+          >
+            클럽 키우기 가이드
+          </button>
           <div className={s.moreMenu}>
             {NAV.map(([id, , label]) => (
               <button
@@ -955,6 +885,9 @@ export function App() {
             />
           )}
         </Dialog>
+      )}
+      {guideOpen && w && (
+        <PlayGuide goals={state.view!.milestones.goals} onClose={() => setGuideOpen(false)} />
       )}
       {newWorldConfirm && (
         <Dialog label="새로운 세계 창단 확인" onClose={() => setNewWorldConfirm(false)}>

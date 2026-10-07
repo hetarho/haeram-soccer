@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
-import type { MatchRecord, Player, Command } from '../../../../packages/contracts/src/types';
+import type { MatchRecord, Player } from '../../../../packages/contracts/src/types';
 import { priceIndex, country, currency } from '../../../../packages/catalogs/src/index';
-import { quote, tacticLabel } from '../../../../packages/engine/src/world';
+import { quote, tacticLabel, overall } from '../../../../packages/engine/src/world';
 import { ratio } from '../../../../packages/engine/src/primitives';
+import { useGameState } from '../runtime/store';
 import type { ClientState, GameClient } from '../runtime/client';
 import type { Reply } from '../runtime/protocol';
 import { Panel } from './App';
+import { RecruitmentDesk } from './RecruitmentDesk';
+import { BusinessWorkbench } from './BusinessWorkbench';
 import { Dialog } from './Dialog';
 import type { Page } from './state';
 import { Chart } from './Chart';
-import { FinancialBreakdown } from './FinancialBreakdown';
 import { Pitch } from './Pitch';
 import { archivePlayback } from './replay';
 import { money, number, percent, seasonName, kindLabel } from './format';
@@ -20,12 +22,6 @@ const toneLabel = {
   evidence: '지표를 근거로',
   support: '지원을 약속하며',
   demand: '강하게 요구',
-};
-const sponsors = {
-  stable: '안정적인 후원',
-  performance: '성과에 따른 후원',
-  exclusive: '독점 후원',
-  indexed: '물가 연동 후원',
 };
 function Header({
   eyebrow,
@@ -65,7 +61,8 @@ function ManagerView({ state, client }: Props) {
     c = w.clubs.find((c) => c.id === w.playerClub)!,
     [tactic, setTactic] = useState(w.tactic),
     [tone, setTone] = useState('respect');
-  const disabled = state.busy || state.readonly;
+  const processing = useGameState((state) => state.processing);
+  const disabled = state.busy || state.readonly || processing;
   const response = w.events.filter((e) => e.kind === 'manager-response').at(-1);
   return (
     <>
@@ -214,69 +211,28 @@ function Squad({ state, client }: Props) {
     w = v.world,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
     [tab, setTab] = useState('roster'),
-    [selected, setSelected] = useState<Player>(),
-    [compare, setCompare] = useState<number[]>([]),
+    [selectedId, setSelectedId] = useState<string>(),
     [scope, setScope] = useState('season'),
+    [playerQuery, setPlayerQuery] = useState(''),
+    [playerPage, setPlayerPage] = useState(0),
     [confirm, setConfirm] = useState<Player>();
-  const disabled = state.busy || state.readonly;
+  const processing = useGameState((state) => state.processing);
+  const disabled = state.busy || state.readonly || processing;
   const active = w.players.filter((p) => p.status === 'active');
-  const transfer = (n: number, loan = false) =>
-    void client.command({ type: 'recruit', candidate: n, loan });
-  const cards = (indices: number[]) =>
-    indices.map((i) => {
-      const o = v.transfers[i],
-        p = o.player;
-      return (
-        <article className={s.card} key={p.id}>
-          <h3>{p.name}</h3>
-          <span className={s.pill}>
-            {p.role} · {w.year - p.born}세
-          </span>
-          <Attributes
-            rows={[
-              ['공격', p.attack],
-              ['패스', p.passing],
-              ['수비', p.defense],
-              ['골키핑', p.keeper],
-              ['체력', p.stamina],
-              ['잠재력', p.potential],
-            ]}
-          />
-          <p>
-            이적료 {money(o.fee, c.country, w.year)} · 연봉 {money(p.wage, c.country, w.year)} ·
-            계약 {p.until}년
-          </p>
-          <p>임대료 {money(o.loanFee, c.country, w.year)} · 다음 시즌 반환</p>
-          <div className={s.actions}>
-            <button
-              className={s.primary}
-              disabled={disabled || !o.available || active.length >= 26}
-              onClick={() => transfer(i)}
-            >
-              {o.available ? '선수 영입' : '계약 완료'}
-            </button>
-            <button
-              disabled={disabled || !o.available || active.length >= 26}
-              onClick={() => transfer(i, true)}
-            >
-              1시즌 임대
-            </button>
-            <label className={s.fileButton}>
-              <input
-                type="checkbox"
-                checked={compare.includes(i)}
-                onChange={(e) =>
-                  setCompare(
-                    e.target.checked ? [...compare.slice(-1), i] : compare.filter((n) => n !== i),
-                  )
-                }
-              />{' '}
-              비교
-            </label>
-          </div>
-        </article>
-      );
-    });
+  const selected = w.players.find((p) => p.id === selectedId);
+  const listed = w.players
+    .filter(
+      (p) =>
+        (p.status === 'active' || scope === 'career') &&
+        p.name.toLowerCase().includes(playerQuery.trim().toLowerCase()),
+    )
+    .sort(
+      (a, b) =>
+        Number(b.status === 'active') - Number(a.status === 'active') || a.id.localeCompare(b.id),
+    );
+  const lastPage = Math.max(0, Math.ceil(listed.length / 25) - 1),
+    shownPage = Math.min(playerPage, lastPage),
+    visiblePlayers = listed.slice(shownPage * 25, (shownPage + 1) * 25);
   return (
     <>
       <Header
@@ -311,35 +267,90 @@ function Squad({ state, client }: Props) {
       </div>
       {tab === 'roster' ? (
         <Panel title="우리 클럽의 선수들" note="GK · DEF · MID · FWD">
-          <div className={s.tableWrap}>
-            <table>
-              <thead>
-                <tr>
-                  <th>역할</th>
-                  <th>선수</th>
-                  <th>나이</th>
-                  <th>공격</th>
-                  <th>패스</th>
-                  <th>수비</th>
-                  <th>잠재력</th>
-                  <th>득점</th>
-                  <th>도움</th>
-                  <th>피로</th>
-                  <th>연봉</th>
-                  <th>계약</th>
-                  <th>선택</th>
-                </tr>
-              </thead>
-              <tbody>
-                {w.players
-                  .filter((p) => p.status === 'active' || scope === 'career')
-                  .map((p) => {
+          <label className={s.rosterSearch}>
+            선수 찾기{' '}
+            <input
+              aria-label="선수 찾기"
+              value={playerQuery}
+              onChange={(event) => {
+                setPlayerQuery(event.target.value);
+                setPlayerPage(0);
+              }}
+              placeholder="이름으로 찾기"
+            />
+          </label>
+          <div className={s.rosterCards}>
+            {visiblePlayers.map((p) => (
+              <article key={p.id}>
+                <button onClick={() => setSelectedId(p.id)}>
+                  <span>{p.role}</span>
+                  <b>{p.name}</b>
+                  <small>
+                    {p.status === 'active'
+                      ? `${w.year - p.born}세 · 능력 ${overall(p)} / 잠재력 ${Math.round(p.potential)}`
+                      : p.status === 'retired'
+                        ? '은퇴 · 클럽 기록 보존'
+                        : '매각 · 클럽 기록 보존'}
+                  </small>
+                </button>
+                <div>
+                  <b>피로 {Math.round(p.fatigue)}</b>
+                  <small>성장 +{(p.developed || 0).toFixed(2)}</small>
+                </div>
+                {p.status === 'active' && !p.loanUntil && (
+                  <button disabled={disabled} onClick={() => setConfirm(p)}>
+                    매각
+                  </button>
+                )}
+              </article>
+            ))}
+          </div>
+          {listed.length === 0 && <p className={s.panelBody}>이 조건에 맞는 선수가 없어요.</p>}
+          {lastPage > 0 && (
+            <div className={s.rosterPages}>
+              <button disabled={shownPage === 0} onClick={() => setPlayerPage(shownPage - 1)}>
+                이전 선수
+              </button>
+              <span>
+                {shownPage + 1}/{lastPage + 1} · {listed.length}명
+              </span>
+              <button
+                disabled={shownPage === lastPage}
+                onClick={() => setPlayerPage(shownPage + 1)}
+              >
+                다음 선수
+              </button>
+            </div>
+          )}
+          <details className={s.rosterDetails}>
+            <summary>전체 선수 지표 표 보기</summary>
+            <div className={s.tableWrap}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>역할</th>
+                    <th>선수</th>
+                    <th>나이</th>
+                    <th>공격</th>
+                    <th>패스</th>
+                    <th>수비</th>
+                    <th>잠재력</th>
+                    <th>득점</th>
+                    <th>도움</th>
+                    <th>피로</th>
+                    <th>연봉</th>
+                    <th>계약</th>
+                    <th>선택</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visiblePlayers.map((p) => {
                     const stats = scope === 'career' ? p.career : p.season;
                     return (
                       <tr key={p.id}>
                         <td>{p.role}</td>
                         <td>
-                          <button onClick={() => setSelected(p)}>{p.name}</button>
+                          <button onClick={() => setSelectedId(p.id)}>{p.name}</button>
                           <small>
                             {' '}
                             {p.status === 'retired'
@@ -371,32 +382,20 @@ function Squad({ state, client }: Props) {
                       </tr>
                     );
                   })}
-              </tbody>
-            </table>
-          </div>
+                </tbody>
+              </table>
+            </div>
+          </details>
           <div className={s.panelFoot}>
             감독이 역할과 능력·피로에 따라 선발을 고릅니다. 시설과 육성 능력이 성장에 영향을 줍니다.
             매각은 최소 14명·골키퍼 1명 유지 조건입니다.
           </div>
         </Panel>
       ) : (
-        <>
-          <p className={s.muted} style={{ marginBottom: 16 }}>
-            선수 구매 시 이적료를 즉시 지출하고, 연봉은 라운드마다 나누어 지급합니다. 비교는 최대
-            2명입니다.
-          </p>
-          {compare.length > 0 && (
-            <Panel title="후보 비교">
-              <div className={s.panelBody}>
-                <div className={s.cards}>{cards(compare)}</div>
-              </div>
-            </Panel>
-          )}
-          <div className={s.cards}>{cards(v.transfers.map((_, i) => i))}</div>
-        </>
+        <RecruitmentDesk state={state} client={client} />
       )}
       {selected && (
-        <Dialog label="선수 상세 기록" onClose={() => setSelected(undefined)}>
+        <Dialog label="선수 상세 기록" onClose={() => setSelectedId(undefined)}>
           <h2>{selected.name}</h2>
           <p>
             {selected.role} · {w.year - selected.born}세 · {selected.status}
@@ -416,7 +415,7 @@ function Squad({ state, client }: Props) {
             ]}
           />
           <p>분모: 패스 시도 {number(selected.career[2])}회 · 우리 클럽에서 기록된 경력</p>
-          <button onClick={() => setSelected(undefined)}>닫기</button>
+          <button onClick={() => setSelectedId(undefined)}>닫기</button>
         </Dialog>
       )}
       {confirm && (
@@ -462,213 +461,30 @@ function Squad({ state, client }: Props) {
     </>
   );
 }
-function Business({ state, client }: Props) {
-  const v = state.view!,
-    w = v.world,
-    c = w.clubs.find((c) => c.id === w.playerClub)!,
-    [ticket, setTicket] = useState(w.ticket);
-  const disabled = state.busy || state.readonly,
+function EconomicContext({ state }: { state: ClientState }) {
+  const w = state.view!.world,
+    c = w.clubs.find((club) => club.id === w.playerClub)!,
     cp = priceIndex(c.country, w.year);
-  const act = (command: Command) => void client.command(command);
   return (
-    <>
-      <Header
-        eyebrow="MORE THAN MATCH DAYS"
-        title="동네와 함께, 더 멀리."
-        description="마케팅과 후원, 티켓과 시설. 수익과 팬의 변화를 관찰하며 운영을 실험하세요."
-      />
-      <div className={s.stats}>
-        {[
-          ['현금 잔고', money(w.cash, c.country, w.year)],
-          ['현재 시즌 수입', money(w.income, c.country, w.year)],
-          ['현재 시즌 지출', money(w.expense, c.country, w.year)],
-          [
-            '자금 / 연간 운영비',
-            `${((Number(w.cash) / Number(v.annualCost)) * 12).toFixed(1)}개월`,
-          ],
-        ].map(([label, value]) => (
-          <div className={s.stat} key={label}>
-            <div className={s.label}>{label}</div>
-            <strong>{value}</strong>
-          </div>
-        ))}
+    <Panel title="돈의 시대, 기록의 기준" note={cp.status.toUpperCase()}>
+      <div className={s.panelBody}>
+        <p>
+          현재 화폐 {w.currency} · 물가지수 {cp.value.toFixed(2)}
+        </p>
+        <p className={s.muted}>
+          {cp.source} ·{' '}
+          {cp.status === 'observed'
+            ? '실제 관측 자료'
+            : cp.status === 'estimated'
+              ? '영국 역사 지수에 연결한 추정치'
+              : '최근 관측 이후 연 2% 가정'}
+        </p>
+        <p className={s.muted}>
+          현금과 고정 계약은 물가에 맞춰 자동으로 불어나지 않습니다. 과거 장부에는 거래 당시의
+          화폐와 금액을 보존합니다.
+        </p>
       </div>
-      <FinancialBreakdown w={w} breakdown={v.finance} />
-      <Panel title="작은 실험, 눈에 보이는 결과" note="MARKETING CAMPAIGNS">
-        <div className={s.panelBody}>
-          <div className={s.cards}>
-            {v.campaigns.map((o) => {
-              const pending = w.campaigns.find((c) => c.kind === o.kind);
-              return (
-                <article className={s.card} key={o.kind}>
-                  <h3>{o.label}</h3>
-                  <p>
-                    비용 {money(o.cost, c.country, w.year)} · {o.rounds}라운드
-                  </p>
-                  <p>
-                    기대 수입 범위 {money(o.min, c.country, w.year)}–
-                    {money(o.max, c.country, w.year)}
-                    <br />팬 증가와 수입은 수요에 따라 달라집니다.
-                  </p>
-                  <button
-                    style={{ marginTop: 14 }}
-                    disabled={
-                      disabled ||
-                      !!pending ||
-                      (w.sponsor?.kind === 'exclusive' && o.kind === 'merchandise')
-                    }
-                    onClick={() => act({ type: 'campaign', kind: o.kind })}
-                  >
-                    {pending ? `${pending.remaining}라운드 남음` : '캠페인 시작'}
-                  </button>
-                </article>
-              );
-            })}
-          </div>
-          <ul className={s.timeline} style={{ marginTop: 20 }}>
-            {w.events
-              .filter((e) => e.kind === 'campaign-result')
-              .slice(-4)
-              .reverse()
-              .map((e, i) => (
-                <li key={i}>
-                  <b>{e.title}</b>
-                  <p>{e.detail}</p>
-                </li>
-              ))}
-          </ul>
-        </div>
-      </Panel>
-      <Panel title="우리 클럽의 파트너" note="MAIN SPONSOR">
-        <div className={s.panelBody}>
-          {w.sponsor ? (
-            <>
-              <h3>{w.sponsor.name}</h3>
-              <p className={s.muted}>
-                {sponsors[w.sponsor.kind]} · 연간 {money(w.sponsor.annual, c.country, w.year)} ·{' '}
-                {w.sponsor.until}년까지 · 실제 리그 경기마다 분할 지급
-              </p>
-              {w.sponsor.kind === 'exclusive' && (
-                <p>독점 후원 기간에는 자체 상품 캠페인이 제한됩니다.</p>
-              )}
-            </>
-          ) : (
-            <div className={s.cards}>
-              {v.sponsors.map((o) => (
-                <article className={s.card} key={o.kind}>
-                  <h3>{sponsors[o.kind]}</h3>
-                  <p>{o.name}</p>
-                  <p>
-                    연간 {money(o.annual, c.country, w.year)} · {o.until}년까지
-                    <br />
-                    {o.kind === 'performance'
-                      ? `홈 경기 승리마다 성과 보너스의 1/20 (${money(o.bonus, c.country, w.year)} 기준)`
-                      : o.kind === 'indexed'
-                        ? '국가 CPI에 따른 연간 후원금 조정'
-                        : o.kind === 'exclusive'
-                          ? '자체 상품 캠페인 제한'
-                          : '고정 명목 금액 보장'}
-                  </p>
-                  <button
-                    disabled={disabled}
-                    style={{ marginTop: 14 }}
-                    onClick={() => act({ type: 'sponsor', kind: o.kind })}
-                  >
-                    후원 계약
-                  </button>
-                </article>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className={s.panelFoot}>
-          후원은 한 자리입니다. 연간 기본 후원금은 실제 리그 경기마다 나누어 받습니다. 성과 수당은
-          경기 결과에 따라 지급됩니다.
-        </div>
-      </Panel>
-      <div className={s.twoCols}>
-        <Panel title="우리의 운동장">
-          <div className={s.panelBody}>
-            <p>
-              시설 {w.facilities}단계 · 수용 {number(2500 + w.facilities * 5000)}명
-            </p>
-            <p className={s.muted}>
-              시설은 선수 성장과 수용 인원을 높이고, 연간 운영비도 증가시킵니다.
-            </p>
-            <div className={s.actions}>
-              <button
-                disabled={disabled || w.facilities >= 30}
-                onClick={() => act({ type: 'facility' })}
-              >
-                시설 확장 ·{' '}
-                {money(
-                  quote(c.country, w.year, 200 * (w.facilities + 1) ** 1.5),
-                  c.country,
-                  w.year,
-                )}
-              </button>
-            </div>
-            <label style={{ display: 'block', marginTop: 20 }}>
-              1901년 기준 티켓 가격{' '}
-              <input
-                aria-label="티켓 기본가격"
-                type="number"
-                min={0.01}
-                max={0.5}
-                step={0.01}
-                value={ticket}
-                onChange={(e) => setTicket(Number(e.target.value))}
-              />
-            </label>
-            <p className={s.muted}>
-              현재 물가 적용 1장 {money(quote(c.country, w.year, ticket), c.country, w.year)} · 높은
-              가격은 수요를 줄입니다.
-            </p>
-            <button disabled={disabled} onClick={() => act({ type: 'ticket', price: ticket })}>
-              티켓 가격 적용
-            </button>
-          </div>
-        </Panel>
-        <Panel title="계속할 수 있는 선택">
-          <div className={s.panelBody}>
-            <p className={s.muted}>
-              필수 급여와 운영비는 자금이 부족해도 발생합니다. 선수를 매각하거나 비용과 티켓 가격을
-              조정해 운영 수지를 개선하세요.
-            </p>
-            <button
-              disabled={disabled}
-              style={{ marginTop: 16 }}
-              onClick={() => act({ type: 'support' })}
-            >
-              구단주 추가 출자 · {money(quote(c.country, w.year, 150), c.country, w.year)}
-            </button>
-            <p className={s.muted} style={{ marginTop: 10 }}>
-              시즌당 최대 3회 · 평판 -2 · 사용{' '}
-              {w.events.filter((e) => e.year === w.year && e.kind === 'support').length}/3
-            </p>
-          </div>
-        </Panel>
-      </div>
-      <Panel title="돈의 시대, 기록의 기준" note={cp.status.toUpperCase()}>
-        <div className={s.panelBody}>
-          <p>
-            현재 화폐 {w.currency} · 물가지수 {cp.value.toFixed(2)}
-          </p>
-          <p className={s.muted}>
-            {cp.source} ·{' '}
-            {cp.status === 'observed'
-              ? '실제 관측 자료'
-              : cp.status === 'estimated'
-                ? '영국 역사 지수에 연결한 추정치'
-                : '최근 관측 이후 연 2% 가정'}
-          </p>
-          <p className={s.muted}>
-            기존 고정 계약과 현금은 물가 때문에 자동 증액되지 않습니다. 통화 전환은 현재 잔고·계약만
-            환산하고 과거 장부는 원래 단위로 남깁니다.
-          </p>
-        </div>
-      </Panel>
-    </>
+    </Panel>
   );
 }
 function History({ state, client }: Props) {
@@ -1065,6 +881,9 @@ function History({ state, client }: Props) {
 export default function Rich({ state, client, page }: Props & { page: Page }) {
   if (page === 'manager') return <ManagerView state={state} client={client} />;
   if (page === 'squad') return <Squad state={state} client={client} />;
-  if (page === 'business') return <Business state={state} client={client} />;
+  if (page === 'business')
+    return (
+      <BusinessWorkbench state={state} client={client} legacy={<EconomicContext state={state} />} />
+    );
   return <History state={state} client={client} />;
 }

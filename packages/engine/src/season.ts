@@ -7,6 +7,7 @@ import { addMetrics, clamp, random, zeroMetrics, compareIds } from './primitives
 import { activePlayers, addEvent, clubOf, makePlayer, quote, rating } from './world';
 import { simulateMatch } from './match';
 import { fatigueCost } from './strategy';
+import { developAnnually, settleTraining } from './training';
 import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS, seasonLength } from './calendar';
 import {
   ensureScorers,
@@ -445,7 +446,6 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   w.expense = '0';
   for (const p of activePlayers(w)) {
     const age = w.year - p.born;
-    const r = random(`${w.seed}:growth:${p.id}:${w.year}`);
     if (age >= 36 || (p.loanUntil && p.loanUntil <= w.year)) {
       p.status = 'retired';
       addEvent(
@@ -456,17 +456,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
       );
       continue;
     }
-    const growth =
-      age < 27
-        ? Math.min(
-            3,
-            (p.potential - rating(w, own)) / 20 + w.manager.youth / 100 + w.facilities / 4,
-          )
-        : age > 30
-          ? -1.5
-          : 0.3;
-    for (const key of ['attack', 'passing', 'defense', 'keeper', 'stamina'] as const)
-      p[key] = clamp(p[key] + growth + (r() - 0.5), 5, p.potential);
+    developAnnually(w, p);
     p.fatigue = 0;
     p.season = zeroMetrics();
     if (p.until <= w.year) {
@@ -527,7 +517,7 @@ export function advanceRound(
       settlement?.(w, p);
     }
   }
-  for (const p of activePlayers(w)) p.fatigue = Math.max(0, p.fatigue - 8);
+  settleTraining(w);
   advanceEurope(
     w,
     (world, p) => {

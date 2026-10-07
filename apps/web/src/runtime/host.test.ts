@@ -2,6 +2,13 @@ import { describe, it, expect } from 'vitest';
 import { Host } from './host';
 import type { Body } from './protocol';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
+import {
+  lineupPreset,
+  operate,
+  simulateMatch,
+  recordMatch,
+  addEvent,
+} from '../../../../packages/engine/src/index';
 import { prepareSeason } from '../../../../packages/engine/src/season';
 const input = {
   country: 'ENG' as const,
@@ -154,5 +161,74 @@ describe('worker command protocol', () => {
     expect(result.view?.world.year).toBe(1902);
     expect(result.view?.world.history).toHaveLength(1);
     expect(h.world!.ownMatches.some((m) => m.year === 1901 && m.players.length > 0)).toBe(true);
+  });
+});
+
+describe('durable milestone projection', () => {
+  it('keeps earlier preparation and a cup win when recent UI records no longer contain either', async () => {
+    const host = new Host();
+    await host.handle(req('milestone-found', -1, { type: 'found', input }));
+    const world = host.world!;
+    operate(world, { type: 'lineup', ids: lineupPreset(world, 'strongest') });
+    operate(world, { type: 'lineup', ids: null });
+    const fixture = nextOwnFixture(world)!;
+    let won = false,
+      losses = 0;
+    for (let i = 0; i < 400 && losses < 30; i++) {
+      const playback = simulateMatch(
+        world,
+        { ...fixture, id: `milestone-cup-${i}`, kind: 'cup' },
+        false,
+        true,
+      );
+      const own =
+        playback.record.home === world.playerClub
+          ? playback.record.score.home
+          : playback.record.score.away;
+      const other =
+        playback.record.home === world.playerClub
+          ? playback.record.score.away
+          : playback.record.score.home;
+      if (!won && own > other) {
+        recordMatch(world, playback);
+        won = true;
+      } else if (won && own <= other) {
+        recordMatch(world, playback);
+        losses++;
+      }
+    }
+    expect(won).toBe(true);
+    expect(losses).toBe(30);
+    for (let i = 0; i < 160; i++) addEvent(world, 'fixture-note', '기록 보관', '후속 기록');
+    const reply = await host.handle(req('milestone-export', world.revision, { type: 'export' }));
+    expect(reply.ok).toBe(true);
+    expect(reply.view!.world.ownMatches).toHaveLength(30);
+    expect(reply.view!.world.events.some((event) => event.kind === 'lineup')).toBe(false);
+    expect(
+      reply.view!.world.ownMatches.some(
+        (match) =>
+          (match.home === world.playerClub
+            ? match.score.home - match.score.away
+            : match.score.away - match.score.home) > 0,
+      ),
+    ).toBe(false);
+    for (const id of ['preparation', 'first-win'])
+      expect(reply.view!.milestones.goals.find((goal) => goal.id === id)?.done).toBe(true);
+    expect(world.ownMatches).toHaveLength(31);
+  });
+});
+
+describe('budget recovery projection', () => {
+  it('retains the true seasonal contribution quota after old receipts leave the noticeboard', async () => {
+    const host = new Host();
+    await host.handle(req('support-found', -1, { type: 'found', input }));
+    const world = host.world!;
+    for (let i = 0; i < 3; i++) operate(world, { type: 'support' });
+    for (let i = 0; i < 160; i++) addEvent(world, 'fixture-note', '추가 기록', '최근 기록');
+    const result = await host.handle(req('support-export', world.revision, { type: 'export' }));
+    expect(result.ok).toBe(true);
+    expect(result.view!.world.events.filter((event) => event.kind === 'support')).toHaveLength(0);
+    expect(result.view!.supportUsed).toBe(3);
+    expect(() => operate(world, { type: 'support' })).toThrow('3회');
   });
 });

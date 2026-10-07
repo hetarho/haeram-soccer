@@ -1,19 +1,22 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { clubMilestones, createWorld } from '../../../../packages/engine/src/index';
 import type { ClientState } from './client';
 import type { View } from './protocol';
 import { createGameStore, shareView } from './store';
 
 function view(): View {
+  const world = createWorld({
+    country: 'ENG',
+    name: 'Stable Athletic',
+    color: '#223344',
+    seed: 'stable-store',
+    difficulty: 1,
+  });
   return {
-    world: createWorld({
-      country: 'ENG',
-      name: 'Stable Athletic',
-      color: '#223344',
-      seed: 'stable-store',
-      difficulty: 1,
-    }),
+    world,
+    milestones: clubMilestones(world),
     totalMatches: 0,
+    supportUsed: 0,
     managers: [],
     transfers: [],
     sponsors: [],
@@ -22,6 +25,7 @@ function view(): View {
     coefficient: 0,
   };
 }
+
 const state = (v: View): ClientState => ({
   view: v,
   busy: false,

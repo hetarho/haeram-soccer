@@ -45,6 +45,7 @@ export function Dialog({
   const inferredActions = actionsIndex >= 0 ? content.splice(actionsIndex, 1)[0] : undefined;
   const actions = footerActions === undefined ? inferredActions : footerActions;
   useEffect(() => {
+    window.dispatchEvent(new CustomEvent('haeram:dialog', { detail: { id: labelId, open: true } }));
     const active = document.activeElement;
     const previous =
       active instanceof HTMLElement && active !== document.body ? active : pointerTrigger?.deref();
@@ -112,6 +113,9 @@ export function Dialog({
     document.addEventListener('keydown', key);
     document.addEventListener('focusin', focus);
     return () => {
+      window.dispatchEvent(
+        new CustomEvent('haeram:dialog', { detail: { id: labelId, open: false } }),
+      );
       document.removeEventListener('keydown', key);
       document.removeEventListener('focusin', focus);
       for (const { node, inert } of background) node.inert = inert;

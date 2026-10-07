@@ -9,6 +9,10 @@ export * from './calendar';
 export * from './scoring';
 export * from './finance';
 export * from './strategy';
+export * from './training';
+export * from './goals';
+export * from './recruitment';
+export * from './investment';
 export function createWorld(input: Founding) {
   const w = createBase(input);
   prepareSeason(w);

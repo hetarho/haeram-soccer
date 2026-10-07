@@ -1,0 +1,251 @@
+
+> haeram-soccor@0.1.0 verify
+> npm run typecheck && npm run lint && npm run format:check && npm run test:unit && npm run test:contract && npm run validate:catalogs && npm run build && npm run test:e2e
+
+
+> haeram-soccor@0.1.0 typecheck
+> tsc --noEmit
+
+
+> haeram-soccor@0.1.0 lint
+> eslint apps packages scripts tests --no-warn-ignored
+
+
+> haeram-soccor@0.1.0 format:check
+> prettier --check apps packages scripts tests *.json *.ts *.mjs .github
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> haeram-soccor@0.1.0 test:unit
+> vitest run --exclude '**/*.contract.test.ts'
+
+
+ RUN  v5.0.3 /Users/ihaelam/project/haeram-soccer
+
+
+ Test Files  26 passed (26)
+      Tests  193 passed (193)
+   Start at  02:25:13
+   Duration  13.43s (tests 91%, transform 5%, import 4%)
+
+
+> haeram-soccor@0.1.0 test:contract
+> vitest run .contract.test.ts
+
+
+ RUN  v5.0.3 /Users/ihaelam/project/haeram-soccer
+
+
+ Test Files  2 passed (2)
+      Tests  5 passed (5)
+   Start at  02:25:27
+   Duration  1.81s (tests 69%, transform 22%, import 8%)
+
+
+> haeram-soccor@0.1.0 validate:catalogs
+> tsx scripts/validate-catalogs.ts
+
+2026-demo-1: 8 sourced profiles and 1901–2030 positive price coverage; normalization and estimates explicitly recorded.
+
+> haeram-soccor@0.1.0 build
+> vite build --config apps/web/vite.config.ts
+
+vite v8.3.3 building client environment for production...
+transforming...
+✓ 81 modules transformed.
+rendering chunks...
+computing gzip size...
+apps/web/dist/index.html                   0.66 kB │ gzip:   0.46 kB
+apps/web/dist/assets/worker-Dow3hptm.js  212.36 kB
+apps/web/dist/assets/Rich-ed4jtAVn.css    11.28 kB │ gzip:   2.45 kB
+apps/web/dist/assets/index-COzb6iy-.css   60.16 kB │ gzip:  12.38 kB
+apps/web/dist/assets/Rich-D5-q2Dw6.js     54.32 kB │ gzip:  15.40 kB
+apps/web/dist/assets/index-C5bUpA4O.js   374.74 kB │ gzip: 122.51 kB
+
+✓ built in 624ms
+
+> haeram-soccor@0.1.0 test:e2e
+> PREVIEW_BUILD=1 playwright test
+
+[WebServer] (node:63718) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 156 tests using 3 workers
+
+(node:63719) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:63721) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:63720) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓    2 [chromium] › tests/e2e/entry.spec.ts:2:1 › serves a real static application entry (365ms)
+  ✓    4 [chromium] › tests/e2e/entry.spec.ts:8:1 › creates, computes and reloads through the bundled worker (1.0s)
+  ✓    1 [chromium] › tests/e2e/builds.spec.ts:13:1 › discloses roster and opponent tactical fit before an actual seeded match (1.8s)
+  ✓    3 [chromium] › tests/e2e/business.spec.ts:65:3 › reviews and settles exact facility investment at 360x740 (2.4s)
+  ✓    5 [chromium] › tests/e2e/entry.spec.ts:23:1 › observes event-backed metrics, historical locks and responsive navigation (1.4s)
+  ✓    6 [chromium] › tests/e2e/builds.spec.ts:111:3 › keeps quick lineup and sticky confirmation reachable at 360x740 (1.1s)
+  ✓    8 [chromium] › tests/e2e/builds.spec.ts:111:3 › keeps quick lineup and sticky confirmation reachable at 390x844 (1.3s)
+  ✓    9 [chromium] › tests/e2e/founding.spec.ts:25:3 › fits basic founding and saves advanced choices at 360x740 (1.3s)
+  ✓    7 [chromium] › tests/e2e/business.spec.ts:65:3 › reviews and settles exact facility investment at 390x844 (2.1s)
+  ✓   11 [chromium] › tests/e2e/founding.spec.ts:25:3 › fits basic founding and saves advanced choices at 390x844 (1.3s)
+  ✓   10 [chromium] › tests/e2e/growth-core.spec.ts:7:3 › growing club fits 360x740 and opens real play and details (1.6s)
+  ✓   12 [chromium] › tests/e2e/business.spec.ts:117:1 › pays sponsor installments only for league games after the actual contract (2.4s)
+  ✓   14 [chromium] › tests/e2e/growth-core.spec.ts:7:3 › growing club fits 390x844 and opens real play and details (1.2s)
+  ✓   13 [chromium] › tests/e2e/founding.spec.ts:120:1 › starts with generous capital and shows a fact-aware guide without changing the save (2.0s)
+  ✓   16 [chromium] › tests/e2e/intervention.spec.ts:3:1 › changes a real starting XI through the mobile preparation sheet, saves it and shows earned finances (3.2s)
+  ✓   15 [chromium] › tests/e2e/business.spec.ts:159:1 › separates campaign recovery and net ranges and settles after four real rounds (3.5s)
+  ✓   17 [chromium] › tests/e2e/live-state.spec.ts:12:1 › runs silently across statistics tabs, keeps nodes and selected views, and updates real scorers (3.9s)
+  ✓   19 [chromium] › tests/e2e/business.spec.ts:196:1 › keeps ticket drafts out of the save and applies their price to an actual home gate (2.9s)
+  ✓   18 [chromium] › tests/e2e/management.spec.ts:3:1 › operates a club, reads a season and exports/imports the actual save (3.9s)
+  ✓   21 [chromium] › tests/e2e/business.spec.ts:239:1 › recovers a genuine negative operating balance and enforces the three-contribution limit (1.8s)
+  ✓   20 [chromium] › tests/e2e/live-state.spec.ts:57:1 › observes a whole match before immediately chaining the next, and retains playback across tabs (5.0s)
+  ✓   22 [chromium] › tests/e2e/match-core.spec.ts:92:3 › keeps the full match loop in 360x740 and preserves actual seeded facts (2.8s)
+  ✓   23 [chromium] › tests/e2e/milestones.spec.ts:38:3 › recognizes earned club milestones without changing the save at 360x740 (2.0s)
+  ✓   24 [chromium] › tests/e2e/mobile.spec.ts:5:1 › uses reachable mobile navigation and traps modal focus without scrolling the background (1.2s)
+  ✓   27 [chromium] › tests/e2e/mobile.spec.ts:62:1 › keeps confirmation actions and its close control inside a small mobile viewport (444ms)
+  ✓   26 [chromium] › tests/e2e/milestones.spec.ts:38:3 › recognizes earned club milestones without changing the save at 390x844 (2.0s)
+  ✓   25 [chromium] › tests/e2e/match-core.spec.ts:92:3 › keeps the full match loop in 390x844 and preserves actual seeded facts (2.9s)
+  ✓   28 [chromium] › tests/e2e/native-touch.spec.ts:53:3 › keeps founding and match preparation selectors touchable at 360x740 (2.3s)
+  ✓   29 [chromium] › tests/e2e/preview.spec.ts:2:1 › built deep links, module worker, cache/CSP and missing assets (2.1s)
+  ✓   31 [chromium] › tests/e2e/native-touch.spec.ts:146:3 › keeps scouting and league exploration selectors touchable at 360x740 (1.7s)
+  ✓   30 [chromium] › tests/e2e/progression-settings.spec.ts:3:1 › mobile settings expose all paces and manual days without advancing while choosing (2.4s)
+  ✓   32 [chromium] › tests/e2e/recovery.spec.ts:17:1 › one writer, live read-only updates and ownership after reload (1.1s)
+  ✓   35 [chromium] › tests/e2e/recovery.spec.ts:35:1 › recovers prior checkpoint after active corruption without clearing another application key (1.4s)
+  ✓   33 [chromium] › tests/e2e/native-touch.spec.ts:53:3 › keeps founding and match preparation selectors touchable at 390x844 (2.2s)
+  ✓   36 [chromium] › tests/e2e/recovery.spec.ts:57:1 › quota failure preserves disk save, exports actual memory progress and retries (1.1s)
+  ✓   38 [chromium] › tests/e2e/recovery.spec.ts:93:1 › unsupported import leaves the current world and manifest intact (460ms)
+  ✓   39 [chromium] › tests/e2e/recovery.spec.ts:116:1 › a terminated real worker exposes recovery and retains the last committed checkpoint (466ms)
+  ✓   37 [chromium] › tests/e2e/native-touch.spec.ts:146:3 › keeps scouting and league exploration selectors touchable at 390x844 (1.8s)
+  ✓   40 [chromium] › tests/e2e/recovery.spec.ts:147:1 › safe explicit new-world replacement and browser back navigation (700ms)
+  ✓   34 [chromium] › tests/e2e/progression-settings.spec.ts:36:1 › visibility events suspend the shared clock and return requires explicit restart (4.5s)
+  ✓   42 [chromium] › tests/e2e/save-upgrade.spec.ts:54:1 › writer upgrades a legacy career through the other slot without changing past facts (475ms)
+  ✓   44 [chromium] › tests/e2e/save-upgrade.spec.ts:74:1 › read-only legacy view does not perform a disk or metadata upgrade (442ms)
+  ✓   45 [chromium] › tests/e2e/save-upgrade.spec.ts:99:1 › future selected save stays protected and exports exactly instead of downgrading its predecessor (313ms)
+  ✓   46 [chromium] › tests/e2e/save-upgrade.spec.ts:120:1 › upgrade quota failure keeps old disk and exports new memory before an explicit retry (654ms)
+  ✓   41 [chromium] › tests/e2e/recruitment.spec.ts:48:1 › filters and compares stable candidates, discloses free wages, and saves real recruit and loan costs (3.8s)
+  ✓   43 [chromium] › tests/e2e/season-flow.spec.ts:3:1 › advances real days at three paces, stops and restores the saved calendar (4.5s)
+  ✓   48 [chromium] › tests/e2e/recruitment.spec.ts:164:1 › reaches the real squad capacity with eight loans and prevents any further contract (2.7s)
+  ✓   49 [chromium] › tests/e2e/season-flow.spec.ts:55:1 › shows independent player decisions and post-match league context (1.6s)
+  ✓   47 [chromium] › tests/e2e/training.spec.ts:39:3 › saves actual training without free growth and keeps home compact at 360x740 (5.2s)
+(node:64388) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   50 [chromium] › tests/e2e/recruitment.spec.ts:194:1 › disables an unaffordable fee while keeping a cheaper loan available with honest ongoing costs (1.5s)
+  ✓   51 [chromium] › tests/e2e/training.spec.ts:39:3 › saves actual training without free growth and keeps home compact at 390x844 (5.5s)
+(node:64497) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   53 [chromium] › tests/e2e/recruitment.spec.ts:215:1 › pauses daily progress while comparing candidates and resumes only on explicit restart (6.9s)
+(node:64521) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   52 [firefox] › tests/e2e/builds.spec.ts:13:1 › discloses roster and opponent tactical fit before an actual seeded match (7.7s)
+  ✓   55 [firefox] › tests/e2e/entry.spec.ts:2:1 › serves a real static application entry (2.7s)
+  ✓   56 [firefox] › tests/e2e/builds.spec.ts:111:3 › keeps quick lineup and sticky confirmation reachable at 360x740 (4.8s)
+  ✓   57 [firefox] › tests/e2e/entry.spec.ts:8:1 › creates, computes and reloads through the bundled worker (2.6s)
+  ✓   54 [firefox] › tests/e2e/business.spec.ts:65:3 › reviews and settles exact facility investment at 360x740 (8.9s)
+  ✓   58 [firefox] › tests/e2e/builds.spec.ts:111:3 › keeps quick lineup and sticky confirmation reachable at 390x844 (2.7s)
+  ✓   59 [firefox] › tests/e2e/entry.spec.ts:23:1 › observes event-backed metrics, historical locks and responsive navigation (3.1s)
+  ✓   60 [firefox] › tests/e2e/business.spec.ts:65:3 › reviews and settles exact facility investment at 390x844 (3.3s)
+  ✓   61 [firefox] › tests/e2e/founding.spec.ts:25:3 › fits basic founding and saves advanced choices at 360x740 (1.7s)
+  ✓   62 [firefox] › tests/e2e/growth-core.spec.ts:7:3 › growing club fits 360x740 and opens real play and details (2.0s)
+  ✓   64 [firefox] › tests/e2e/founding.spec.ts:25:3 › fits basic founding and saves advanced choices at 390x844 (1.7s)
+  ✓   63 [firefox] › tests/e2e/business.spec.ts:117:1 › pays sponsor installments only for league games after the actual contract (3.1s)
+  ✓   65 [firefox] › tests/e2e/growth-core.spec.ts:7:3 › growing club fits 390x844 and opens real play and details (2.0s)
+  ✓   66 [firefox] › tests/e2e/founding.spec.ts:120:1 › starts with generous capital and shows a fact-aware guide without changing the save (2.9s)
+  ✓   68 [firefox] › tests/e2e/intervention.spec.ts:3:1 › changes a real starting XI through the mobile preparation sheet, saves it and shows earned finances (4.1s)
+  ✓   67 [firefox] › tests/e2e/business.spec.ts:159:1 › separates campaign recovery and net ranges and settles after four real rounds (5.0s)
+  ✓   69 [firefox] › tests/e2e/live-state.spec.ts:12:1 › runs silently across statistics tabs, keeps nodes and selected views, and updates real scorers (4.0s)
+  ✓   71 [firefox] › tests/e2e/business.spec.ts:196:1 › keeps ticket drafts out of the save and applies their price to an actual home gate (3.9s)
+  ✓   70 [firefox] › tests/e2e/management.spec.ts:3:1 › operates a club, reads a season and exports/imports the actual save (4.8s)
+  ✓   73 [firefox] › tests/e2e/business.spec.ts:239:1 › recovers a genuine negative operating balance and enforces the three-contribution limit (2.3s)
+  ✓   72 [firefox] › tests/e2e/live-state.spec.ts:57:1 › observes a whole match before immediately chaining the next, and retains playback across tabs (5.9s)
+  ✓   74 [firefox] › tests/e2e/match-core.spec.ts:92:3 › keeps the full match loop in 360x740 and preserves actual seeded facts (4.0s)
+  ✓   76 [firefox] › tests/e2e/mobile.spec.ts:5:1 › uses reachable mobile navigation and traps modal focus without scrolling the background (1.9s)
+  ✓   75 [firefox] › tests/e2e/milestones.spec.ts:38:3 › recognizes earned club milestones without changing the save at 360x740 (3.5s)
+  ✓   78 [firefox] › tests/e2e/mobile.spec.ts:62:1 › keeps confirmation actions and its close control inside a small mobile viewport (1.3s)
+  ✓   77 [firefox] › tests/e2e/match-core.spec.ts:92:3 › keeps the full match loop in 390x844 and preserves actual seeded facts (4.1s)
+  ✓   79 [firefox] › tests/e2e/milestones.spec.ts:38:3 › recognizes earned club milestones without changing the save at 390x844 (3.1s)
+  ✓   80 [firefox] › tests/e2e/native-touch.spec.ts:53:3 › keeps founding and match preparation selectors touchable at 360x740 (3.3s)
+  ✓   81 [firefox] › tests/e2e/preview.spec.ts:2:1 › built deep links, module worker, cache/CSP and missing assets (3.0s)
+  ✓   83 [firefox] › tests/e2e/native-touch.spec.ts:146:3 › keeps scouting and league exploration selectors touchable at 360x740 (1.8s)
+  ✓   82 [firefox] › tests/e2e/progression-settings.spec.ts:3:1 › mobile settings expose all paces and manual days without advancing while choosing (3.0s)
+  ✓   84 [firefox] › tests/e2e/recovery.spec.ts:17:1 › one writer, live read-only updates and ownership after reload (1.8s)
+  ✓   85 [firefox] › tests/e2e/native-touch.spec.ts:53:3 › keeps founding and match preparation selectors touchable at 390x844 (3.1s)
+  ✓   87 [firefox] › tests/e2e/recovery.spec.ts:35:1 › recovers prior checkpoint after active corruption without clearing another application key (2.0s)
+  ✓   88 [firefox] › tests/e2e/native-touch.spec.ts:146:3 › keeps scouting and league exploration selectors touchable at 390x844 (1.7s)
+  ✓   89 [firefox] › tests/e2e/recovery.spec.ts:57:1 › quota failure preserves disk save, exports actual memory progress and retries (1.4s)
+  ✓   86 [firefox] › tests/e2e/progression-settings.spec.ts:36:1 › visibility events suspend the shared clock and return requires explicit restart (5.0s)
+  ✓   91 [firefox] › tests/e2e/recovery.spec.ts:93:1 › unsupported import leaves the current world and manifest intact (578ms)
+  ✓   92 [firefox] › tests/e2e/save-upgrade.spec.ts:54:1 › writer upgrades a legacy career through the other slot without changing past facts (691ms)
+  ✓   93 [firefox] › tests/e2e/recovery.spec.ts:116:1 › a terminated real worker exposes recovery and retains the last committed checkpoint (743ms)
+  ✓   94 [firefox] › tests/e2e/save-upgrade.spec.ts:74:1 › read-only legacy view does not perform a disk or metadata upgrade (967ms)
+  ✓   96 [firefox] › tests/e2e/save-upgrade.spec.ts:99:1 › future selected save stays protected and exports exactly instead of downgrading its predecessor (591ms)
+  ✓   95 [firefox] › tests/e2e/recovery.spec.ts:147:1 › safe explicit new-world replacement and browser back navigation (1.4s)
+  ✓   97 [firefox] › tests/e2e/save-upgrade.spec.ts:120:1 › upgrade quota failure keeps old disk and exports new memory before an explicit retry (905ms)
+  ✓   90 [firefox] › tests/e2e/recruitment.spec.ts:48:1 › filters and compares stable candidates, discloses free wages, and saves real recruit and loan costs (4.7s)
+  ✓  100 [firefox] › tests/e2e/recruitment.spec.ts:164:1 › reaches the real squad capacity with eight loans and prevents any further contract (2.6s)
+  ✓   98 [firefox] › tests/e2e/season-flow.spec.ts:3:1 › advances real days at three paces, stops and restores the saved calendar (4.8s)
+  ✓  101 [firefox] › tests/e2e/recruitment.spec.ts:194:1 › disables an unaffordable fee while keeping a cheaper loan available with honest ongoing costs (1.8s)
+  ✓  102 [firefox] › tests/e2e/season-flow.spec.ts:55:1 › shows independent player decisions and post-match league context (2.1s)
+  ✓   99 [firefox] › tests/e2e/training.spec.ts:39:3 › saves actual training without free growth and keeps home compact at 360x740 (6.4s)
+(node:65505) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  105 [webkit] › tests/e2e/builds.spec.ts:13:1 › discloses roster and opponent tactical fit before an actual seeded match (2.2s)
+  ✓  103 [firefox] › tests/e2e/recruitment.spec.ts:215:1 › pauses daily progress while comparing candidates and resumes only on explicit restart (7.3s)
+  ✓  106 [webkit] › tests/e2e/builds.spec.ts:111:3 › keeps quick lineup and sticky confirmation reachable at 360x740 (1.3s)
+(node:65659) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  104 [firefox] › tests/e2e/training.spec.ts:39:3 › saves actual training without free growth and keeps home compact at 390x844 (6.8s)
+(node:65676) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  107 [webkit] › tests/e2e/builds.spec.ts:111:3 › keeps quick lineup and sticky confirmation reachable at 390x844 (1.5s)
+  ✓  109 [webkit] › tests/e2e/entry.spec.ts:2:1 › serves a real static application entry (477ms)
+  ✓  110 [webkit] › tests/e2e/founding.spec.ts:25:3 › fits basic founding and saves advanced choices at 360x740 (1.5s)
+  ✓  111 [webkit] › tests/e2e/entry.spec.ts:8:1 › creates, computes and reloads through the bundled worker (1.2s)
+  ✓  108 [webkit] › tests/e2e/business.spec.ts:65:3 › reviews and settles exact facility investment at 360x740 (2.7s)
+  ✓  112 [webkit] › tests/e2e/founding.spec.ts:25:3 › fits basic founding and saves advanced choices at 390x844 (1.3s)
+  ✓  113 [webkit] › tests/e2e/entry.spec.ts:23:1 › observes event-backed metrics, historical locks and responsive navigation (1.8s)
+  ✓  114 [webkit] › tests/e2e/business.spec.ts:65:3 › reviews and settles exact facility investment at 390x844 (2.0s)
+  ✓  115 [webkit] › tests/e2e/founding.spec.ts:120:1 › starts with generous capital and shows a fact-aware guide without changing the save (2.2s)
+  ✓  116 [webkit] › tests/e2e/growth-core.spec.ts:7:3 › growing club fits 360x740 and opens real play and details (1.7s)
+  ✓  117 [webkit] › tests/e2e/business.spec.ts:117:1 › pays sponsor installments only for league games after the actual contract (2.6s)
+  ✓  119 [webkit] › tests/e2e/growth-core.spec.ts:7:3 › growing club fits 390x844 and opens real play and details (1.6s)
+  ✓  118 [webkit] › tests/e2e/intervention.spec.ts:3:1 › changes a real starting XI through the mobile preparation sheet, saves it and shows earned finances (3.7s)
+  ✓  120 [webkit] › tests/e2e/business.spec.ts:159:1 › separates campaign recovery and net ranges and settles after four real rounds (3.6s)
+  ✓  121 [webkit] › tests/e2e/live-state.spec.ts:12:1 › runs silently across statistics tabs, keeps nodes and selected views, and updates real scorers (4.1s)
+  ✓  122 [webkit] › tests/e2e/management.spec.ts:3:1 › operates a club, reads a season and exports/imports the actual save (3.2s)
+  ✓  123 [webkit] › tests/e2e/business.spec.ts:196:1 › keeps ticket drafts out of the save and applies their price to an actual home gate (3.4s)
+  ✓  125 [webkit] › tests/e2e/match-core.spec.ts:92:3 › keeps the full match loop in 360x740 and preserves actual seeded facts (2.9s)
+  ✓  126 [webkit] › tests/e2e/business.spec.ts:239:1 › recovers a genuine negative operating balance and enforces the three-contribution limit (1.9s)
+  ✓  124 [webkit] › tests/e2e/live-state.spec.ts:57:1 › observes a whole match before immediately chaining the next, and retains playback across tabs (5.4s)
+  ✓  129 [webkit] › tests/e2e/mobile.spec.ts:5:1 › uses reachable mobile navigation and traps modal focus without scrolling the background (1.3s)
+  ✓  128 [webkit] › tests/e2e/milestones.spec.ts:38:3 › recognizes earned club milestones without changing the save at 360x740 (2.3s)
+  ✓  127 [webkit] › tests/e2e/match-core.spec.ts:92:3 › keeps the full match loop in 390x844 and preserves actual seeded facts (2.9s)
+  ✓  130 [webkit] › tests/e2e/mobile.spec.ts:62:1 › keeps confirmation actions and its close control inside a small mobile viewport (646ms)
+  ✓  131 [webkit] › tests/e2e/milestones.spec.ts:38:3 › recognizes earned club milestones without changing the save at 390x844 (2.2s)
+  ✓  132 [webkit] › tests/e2e/native-touch.spec.ts:53:3 › keeps founding and match preparation selectors touchable at 360x740 (2.5s)
+  ✓  133 [webkit] › tests/e2e/preview.spec.ts:2:1 › built deep links, module worker, cache/CSP and missing assets (2.4s)
+  ✓  135 [webkit] › tests/e2e/native-touch.spec.ts:146:3 › keeps scouting and league exploration selectors touchable at 360x740 (1.5s)
+  ✓  136 [webkit] › tests/e2e/recovery.spec.ts:17:1 › one writer, live read-only updates and ownership after reload (1.7s)
+  ✓  134 [webkit] › tests/e2e/progression-settings.spec.ts:3:1 › mobile settings expose all paces and manual days without advancing while choosing (2.7s)
+  ✓  138 [webkit] › tests/e2e/recovery.spec.ts:35:1 › recovers prior checkpoint after active corruption without clearing another application key (1.9s)
+  ✓  137 [webkit] › tests/e2e/native-touch.spec.ts:53:3 › keeps founding and match preparation selectors touchable at 390x844 (2.7s)
+  ✓  140 [webkit] › tests/e2e/recovery.spec.ts:57:1 › quota failure preserves disk save, exports actual memory progress and retries (1.4s)
+  ✓  141 [webkit] › tests/e2e/native-touch.spec.ts:146:3 › keeps scouting and league exploration selectors touchable at 390x844 (1.6s)
+  ✓  142 [webkit] › tests/e2e/recovery.spec.ts:93:1 › unsupported import leaves the current world and manifest intact (594ms)
+  ✓  144 [webkit] › tests/e2e/recovery.spec.ts:116:1 › a terminated real worker exposes recovery and retains the last committed checkpoint (693ms)
+  ✓  145 [webkit] › tests/e2e/recovery.spec.ts:147:1 › safe explicit new-world replacement and browser back navigation (1.0s)
+  ✓  139 [webkit] › tests/e2e/progression-settings.spec.ts:36:1 › visibility events suspend the shared clock and return requires explicit restart (5.7s)
+  ✓  146 [webkit] › tests/e2e/save-upgrade.spec.ts:54:1 › writer upgrades a legacy career through the other slot without changing past facts (662ms)
+  ✓  148 [webkit] › tests/e2e/save-upgrade.spec.ts:74:1 › read-only legacy view does not perform a disk or metadata upgrade (783ms)
+  ✓  143 [webkit] › tests/e2e/recruitment.spec.ts:48:1 › filters and compares stable candidates, discloses free wages, and saves real recruit and loan costs (3.7s)
+  ✓  149 [webkit] › tests/e2e/save-upgrade.spec.ts:99:1 › future selected save stays protected and exports exactly instead of downgrading its predecessor (439ms)
+  ✓  151 [webkit] › tests/e2e/save-upgrade.spec.ts:120:1 › upgrade quota failure keeps old disk and exports new memory before an explicit retry (824ms)
+  ✓  150 [webkit] › tests/e2e/recruitment.spec.ts:164:1 › reaches the real squad capacity with eight loans and prevents any further contract (2.1s)
+  ✓  147 [webkit] › tests/e2e/season-flow.spec.ts:3:1 › advances real days at three paces, stops and restores the saved calendar (4.9s)
+  ✓  153 [webkit] › tests/e2e/recruitment.spec.ts:194:1 › disables an unaffordable fee while keeping a cheaper loan available with honest ongoing costs (1.4s)
+  ✓  154 [webkit] › tests/e2e/season-flow.spec.ts:55:1 › shows independent player decisions and post-match league context (1.8s)
+  ✓  152 [webkit] › tests/e2e/training.spec.ts:39:3 › saves actual training without free growth and keeps home compact at 360x740 (5.1s)
+  ✓  155 [webkit] › tests/e2e/recruitment.spec.ts:215:1 › pauses daily progress while comparing candidates and resumes only on explicit restart (5.6s)
+  ✓  156 [webkit] › tests/e2e/training.spec.ts:39:3 › saves actual training without free growth and keeps home compact at 390x844 (4.8s)
+
+  156 passed (2.4m)

@@ -28,7 +28,10 @@ export class ProgressionController {
   private timer: ReturnType<typeof setInterval>;
   private unsubscribe: () => void;
   private inFlight = false;
-  private suspended = false;
+  private suspensionSources = new Set<string>();
+  private get suspended() {
+    return this.suspensionSources.size > 0;
+  }
   private worldId?: string;
   private finishedId?: string;
 
@@ -70,8 +73,9 @@ export class ProgressionController {
     this.store.setState({ watching });
     if (watching && this.store.getState().running) void this.tick();
   }
-  setSuspended(suspended: boolean) {
-    this.suspended = suspended;
+  setSuspended(suspended: boolean, source = 'feature') {
+    if (suspended) this.suspensionSources.add(source);
+    else this.suspensionSources.delete(source);
     if (suspended) this.stop('자동 진행을 멈췄습니다.');
   }
   start() {
@@ -127,6 +131,7 @@ export class ProgressionController {
     this.stop('');
     clearInterval(this.timer);
     this.unsubscribe();
+    this.suspensionSources.clear();
   }
 }
 export function useProgression<T>(

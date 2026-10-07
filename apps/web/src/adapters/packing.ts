@@ -107,11 +107,19 @@ interface Packed {
   matches: Tuple[];
   matchFields?: string;
   matchActors?: string;
+  matchActorColumns?: {
+    dimensions: string;
+    players: string;
+    playerWidth: 1 | 11;
+    highlights: string;
+    tactics: string;
+  };
   matchCount?: number;
   stats: string;
   statWidth?: number;
   statBits?: ReturnType<typeof packBitColumns>;
   statResiduals?: true;
+  statInterceptionDeltas?: true;
   standings: string;
   standingsDeltas?: true;
   counts: number[];
@@ -160,18 +168,20 @@ export function pack(w: World): Packed {
       [id(m.tactics[0]), id(m.tactics[1])],
     ];
   });
+  if (stats.some((value) => !Number.isSafeInteger(value) || value < 0))
+    throw new Error('압축할 통계가 0 이상의 안전한 정수가 아닙니다.');
   const counts = w.history.map((h) => h.standings.length);
-  const matchActors: number[] = [];
+  const actorDimensions: number[] = [];
+  const matchPlayers: number[] = [];
+  const matchHighlights: number[] = [];
+  const matchTactics: number[] = [];
   const matchFields = matches.flatMap((tuple) => {
     const players = tuple[9] as number[];
     const highlights = tuple[10] as number[][];
-    matchActors.push(
-      players.length,
-      ...players,
-      highlights.length,
-      ...highlights.flat(),
-      ...(tuple[11] as number[]),
-    );
+    actorDimensions.push(players.length, highlights.length);
+    matchPlayers.push(...players);
+    matchHighlights.push(...highlights.flat());
+    matchTactics.push(...(tuple[11] as number[]));
     return [...(tuple.slice(0, 8) as number[]), ...(tuple[8] as number[])];
   });
   const residuals = stats.map((value, index) =>
@@ -182,6 +192,14 @@ export function pack(w: World): Packed {
         : value,
   );
   const useResiduals = residuals.every((value) => Number.isSafeInteger(value) && value >= 0);
+  const interceptionDeltas = (useResiduals ? residuals : stats).map((value, index) => {
+    if (index % 12 !== 7) return value;
+    const delta = value - stats[index - 1];
+    return delta >= 0 ? delta * 2 : -delta * 2 - 1;
+  });
+  const useInterceptionDeltas = interceptionDeltas.every(
+    (value) => Number.isSafeInteger(value) && value >= 0,
+  );
   const compactEvents = w.events.every(
     (event) =>
       Number.isSafeInteger(event.year) &&
@@ -265,7 +283,14 @@ export function pack(w: World): Packed {
     fixtures: w.fixtures.flatMap((f, i) => (f.score ? [[i, f.score.home, f.score.away]] : [])),
     matches: [],
     matchFields: integers(matchFields, 10),
-    matchActors: integers(matchActors, 1),
+    matchActors: '',
+    matchActorColumns: {
+      dimensions: integers(actorDimensions, 2),
+      players: integers(matchPlayers, statWidth === 156 ? 11 : 1),
+      playerWidth: statWidth === 156 ? 11 : 1,
+      highlights: integers(matchHighlights, 4),
+      tactics: integers(matchTactics, 2),
+    },
     matchCount: matches.length,
     ...(compactEvents
       ? {
@@ -276,8 +301,13 @@ export function pack(w: World): Packed {
         }
       : { events: eventRows }),
     stats: '',
-    statBits: packBitColumns(useResiduals ? residuals : stats, statWidth),
+    statBits: packBitColumns(
+      useInterceptionDeltas ? interceptionDeltas : useResiduals ? residuals : stats,
+      statWidth,
+      'planes',
+    ),
     ...(useResiduals ? { statResiduals: true as const } : {}),
+    ...(useInterceptionDeltas ? { statInterceptionDeltas: true as const } : {}),
     statWidth,
     standings: integers(
       deltaColumns(
@@ -350,6 +380,8 @@ export function unpack(p: Packed): World {
     };
   };
   let packedMatches = p.matches;
+  if (p.matchActorColumns !== undefined && p.matchFields === undefined)
+    throw new Error('경기 참여자 압축 데이터 손상');
   if (p.matchFields !== undefined) {
     if (
       typeof p.matchFields !== 'string' ||
@@ -360,24 +392,53 @@ export function unpack(p: Packed): World {
     )
       throw new Error('경기 기록 압축 데이터 손상');
     const fields = reader(p.matchFields, 10);
-    const actors = reader(p.matchActors, 1);
+    const columns = p.matchActorColumns;
+    if (
+      columns !== undefined &&
+      (!columns ||
+        typeof columns.dimensions !== 'string' ||
+        typeof columns.players !== 'string' ||
+        ![1, 11].includes(columns.playerWidth) ||
+        typeof columns.highlights !== 'string' ||
+        typeof columns.tactics !== 'string')
+    )
+      throw new Error('경기 참여자 압축 데이터 손상');
+    const actors = columns ? undefined : reader(p.matchActors, 1);
+    const dimensions = columns && reader(columns.dimensions, 2);
+    const playerStream = columns && reader(columns.players, columns.playerWidth);
+    const highlightStream = columns && reader(columns.highlights, 4);
+    const tacticStream = columns && reader(columns.tactics, 2);
     packedMatches = Array.from({ length: p.matchCount! }, () => {
       const row = fields.take(10);
-      const playerCount = actors.take(1)[0];
+      const sizes = dimensions?.take(2);
+      const playerCount = sizes ? sizes[0] : actors!.take(1)[0];
       if (playerCount > 60) throw new Error('경기 선수 압축 차원 손상');
-      const players = actors.take(playerCount);
-      const highlightCount = actors.take(1)[0];
+      if (columns?.playerWidth === 11 && playerCount !== 11)
+        throw new Error('경기 선수 압축 차원 손상');
+      const players = (playerStream || actors)!.take(playerCount);
+      const highlightCount = sizes ? sizes[1] : actors!.take(1)[0];
       if (highlightCount > 100) throw new Error('경기 하이라이트 압축 차원 손상');
-      const highlights = Array.from({ length: highlightCount }, () => actors.take(4));
-      return [...row.slice(0, 8), row.slice(8, 10), players, highlights, actors.take(2)];
+      const highlights = Array.from({ length: highlightCount }, () =>
+        (highlightStream || actors)!.take(4),
+      );
+      return [
+        ...row.slice(0, 8),
+        row.slice(8, 10),
+        players,
+        highlights,
+        (tacticStream || actors)!.take(2),
+      ];
     });
     fields.done();
-    actors.done();
+    for (const stream of [actors, dimensions, playerStream, highlightStream, tacticStream])
+      stream?.done();
   }
   if (p.statWidth !== undefined && ![12, 156].includes(p.statWidth))
     throw new Error('통계 차원 손상');
   if (p.statResiduals !== undefined && p.statResiduals !== true)
     throw new Error('경기 통계 차분 형식 손상');
+  if (p.statInterceptionDeltas !== undefined && p.statInterceptionDeltas !== true)
+    throw new Error('인터셉트 통계 차분 형식 손상');
   const expectedValues = packedMatches.reduce((count, tuple) => {
     const players = tuple[9];
     if (!Array.isArray(players) || players.length > 60) throw new Error('경기 선수 통계 차원 손상');
@@ -399,6 +460,12 @@ export function unpack(p: Packed): World {
       if (p.statResiduals) {
         row[3] = row[2] - row[3];
         row[5] = row[4] - row[5];
+      }
+      if (p.statInterceptionDeltas) {
+        const delta = row[7] % 2 === 0 ? row[7] / 2 : -(row[7] + 1) / 2;
+        row[7] = row[6] + delta;
+        if (!Number.isSafeInteger(row[7]) || row[7] < 0)
+          throw new Error('인터셉트 통계 차분 범위 손상');
       }
       return row;
     };

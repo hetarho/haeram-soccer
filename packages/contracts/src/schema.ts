@@ -37,6 +37,7 @@ const player = z.object({
   until: z.number().int(),
   status: z.enum(['active', 'sold', 'retired']),
   fatigue: rating,
+  developed: z.number().finite().min(0).max(500).optional(),
   career: metrics,
   season: metrics,
   loanUntil: z.number().int().optional(),
@@ -241,6 +242,11 @@ export const worldSchema: z.ZodType<World> = z.object({
   clubs: z.array(club).min(10).max(1000),
   players: z.array(player).max(20000),
   lineup: z.array(id).length(11).optional(),
+  training: z.enum(['balanced', 'youth', 'recovery']).optional(),
+  trainingAt: z
+    .string()
+    .regex(/^\d{4}:\d{1,3}$/)
+    .optional(),
   manager,
   tactic,
   requested: tactic.optional(),

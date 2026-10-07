@@ -16,47 +16,42 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 3 | 3 | - | 2 |
-| WEB | 3 | 3 | - | 0 |
+| WEB | 10 | 10 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
-| CLUB | 3 | 3 | - | 0 |
-| MATCH | 2 | 2 | - | 0 |
+| CLUB | 5 | 5 | - | 0 |
+| MATCH | 3 | 3 | - | 0 |
 | LEAGUE | 1 | 1 | - | 0 |
 | STAFF | 2 | 2 | - | 0 |
-| ECON | 1 | 1 | - | 0 |
+| ECON | 3 | 3 | - | 0 |
 | EURO | 1 | 1 | - | 0 |
-| HIST | 1 | 1 | - | 0 |
-| SAVE | 1 | 1 | - | 0 |
+| HIST | 3 | 3 | - | 0 |
+| SAVE | 3 | 3 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T010 | release-verification | ARCH WEB SAVE HIST MATCH | T009 | todo |
-
-
-
-| T014 | easy-match-preparation | CLUB STAFF | - | doing@261008.cx |
 
 ## next
-- implement-task T014
+- Local improvement cycles and release verification complete; next product work is user playtesting, external deployment and later Flutter release.
 
 ## log
-- 261008 cycle 4 create-task T014; implement-task start (cx)
-- 261008 cycle 4 update-ssot CLUB STAFF start
-- 261008 T013 done; cycle 3 verified
-- 261008 cycle 3 create-task T013; implement-task start (cx)
-- 261008 cycle 3 update-ssot MATCH CLUB start
-- 261008 T012 done; cycle 2 verified
-- 261008 cycle 2 create-task T012; implement-task start (cx)
-- 261008 cycle 2 update-ssot WEB start
-- 261008 T011 done; cycle 1 verified
-- 261007 cycle 1 create-task T011; implement-task start (cx)
-- 261007 cycle 1 update-ssot WEB start
-- 261007 snapshot c4d6104 committed; origin/local identity configured, push blocked by missing HTTPS credentials and rejected SSH authentication
-- 261007 user-requested stop: T010 returned to todo; remaining work and actual verification status preserved in docs/REMAINING.md before commit/push
-- 261007 ARCH@3: Netlify replaces Cloudflare Pages; T010 deployment criteria/base updated, completed task history preserved
-- 261007 T010 doing (cx)
-- 261007 T009 done; verified at 50d7ed6
-- 261007 T009 doing (cx)
-- 261007 T008 done; verified at eb6beef
-- 261007 T008 doing (cx)
-- 261007 T007 done; verified at 6f8def5
+- 261008 twelve cycles complete; all guideline gates verified; external ranking/native release remain unclaimed
+- 261008 T010 done; current-source local release verification and CI benchmark configuration complete
+- 261008 T026 done; cycle 12 verified
+- 261008 T024 done; cycle 11 verified
+- 261008 T025 done; cycle 12 verified
+- 261008 T023 done; cycle 10 verified
+- 261008 T022 done; cycle 10 verified
+- 261008 implement-task T010 start (cx); close existing local release verification alongside improvement gates; no publishing
+- 261008 WEB r9/r10 freshness reviewed: T025 covers additional native controls; core match contract unchanged; T010/T022/T025 bases current
+- 261008 cycle 12 create-task T026; implement-task start (cx)
+- 261008 cycle 12 update-ssot WEB start
+- 261008 cycle 12 create-task T025; implement-task start (cx)
+- 261008 cycle 12 update-ssot WEB start
+- 261008 T010/T023 SAVE base refreshed to r3; codec-only retention rule preserves existing task scope; current codec checks required
+- 261008 cycle 11 create-task T024; implement-task start (cx)
+- 261008 cycle 11 update-ssot SAVE start
+- 261008 cycle 10 create-task T023; implement-task start (cx)
+- 261008 cycle 10 update-ssot SAVE start
+- 261008 cycle 10 create-task T022; implement-task start (cx)
+- 261008 cycle 10 update-ssot MATCH WEB start

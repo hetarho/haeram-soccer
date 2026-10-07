@@ -1,4 +1,5 @@
 import { writeFileSync } from 'node:fs';
+import { ENGINE_VERSION } from '../packages/engine/src/world';
 import { runFixture, type FixtureDefinition } from '../tests/fixtures/run';
 if (!process.argv.includes('--write'))
   throw new Error('Use --write only after reviewing intentional engine/catalog changes');
@@ -48,7 +49,7 @@ for (const definition of definitions) definition.expected = runFixture(definitio
 writeFileSync(
   'tests/fixtures/portable-v1.json',
   JSON.stringify(
-    { synthetic: true, engine: '1.0.0', catalog: '2026-demo-1', definitions },
+    { synthetic: true, engine: ENGINE_VERSION, catalog: '2026-demo-1', definitions },
     null,
     2,
   ) + '\n',

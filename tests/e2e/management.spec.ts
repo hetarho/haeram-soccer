@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 test('operates a club, reads a season and exports/imports the actual save', async ({ page }) => {
   await page.goto('/');
+  await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('ui-management');
   await page.getByRole('button', { name: '넉넉한 출발' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
@@ -11,8 +12,10 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('button', { name: '감독에게 제안하기' }).click();
   await expect(page.locator('blockquote').getByText(/역습 요청 ·/)).toBeVisible();
   await page.getByRole('button', { name: '클럽 경영', exact: true }).click();
+  await page.getByRole('tab', { name: '후원', exact: true }).click();
   await page.getByRole('button', { name: '후원 계약', exact: true }).first().click();
   await expect(page.getByRole('button', { name: '후원 계약', exact: true })).toHaveCount(0);
+  await page.getByRole('tab', { name: '마케팅', exact: true }).click();
   await page.getByRole('button', { name: '캠페인 시작', exact: true }).first().click();
   await expect(page.getByRole('button', { name: '4라운드 남음' })).toBeVisible();
   await page.getByRole('button', { name: '선수와 영입', exact: true }).click();
@@ -33,6 +36,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('button', { name: '경기 기록 보기', exact: true }).first().click();
   await expect(page.getByRole('dialog', { name: '지난 경기 상세' })).toBeVisible();
   await page.getByRole('button', { name: '결과 보기' }).click();
+  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await expect(page.getByText('유효 슈팅', { exact: true })).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toHaveCount(0);

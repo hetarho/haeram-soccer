@@ -29,6 +29,7 @@ test('discloses roster and opponent tactical fit before an actual seeded match',
   const starters = startingSquad(reference, clubOf(reference));
 
   await page.goto('/');
+  await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill(founding.seed);
   await page.getByRole('button', { name: '넉넉한 출발' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
@@ -96,6 +97,7 @@ test('discloses roster and opponent tactical fit before an actual seeded match',
   await expect(match.getByText(matchup, { exact: true })).toBeVisible();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await expect(match.getByText(/90′ ·.*경기 종료/)).toBeVisible();
+  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await expect(match.getByText('점유율', { exact: true })).toBeVisible();
   await expect(match.getByText('유효 슈팅', { exact: true })).toBeVisible();
   await expect(match.getByText('패스 성공', { exact: true })).toBeVisible();
@@ -111,6 +113,7 @@ for (const viewport of [
   }) => {
     await page.setViewportSize(viewport);
     await page.goto('/');
+    await page.getByText('고급 설정', { exact: true }).click();
     await page.getByLabel('세계 생성 시드').fill(`preparation-${viewport.width}`);
     await page.getByRole('button', { name: '넉넉한 출발' }).click();
     await page.getByRole('button', { name: '클럽 창단' }).click();

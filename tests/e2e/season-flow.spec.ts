@@ -4,6 +4,7 @@ test('advances real days at three paces, stops and restores the saved calendar',
   page,
 }) => {
   await page.goto('/');
+  await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('season-flow');
   await page.getByRole('button', { name: '넉넉한 출발' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
@@ -53,12 +54,14 @@ test('advances real days at three paces, stops and restores the saved calendar',
 
 test('shows independent player decisions and post-match league context', async ({ page }) => {
   await page.goto('/');
+  await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('motion-observation');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page.getByRole('button', { name: '다음 경기 관전' }).click();
   await expect(page.getByRole('heading', { name: '90분의 작은 드라마.' })).toBeVisible();
   await page.getByRole('button', { name: '일시정지', exact: true }).click();
   await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toHaveCount(0);
+  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await page.getByRole('button', { name: '선수 판단 보기' }).click();
   await expect(page.getByLabel('살펴볼 선수')).toBeVisible();
   await expect(
@@ -71,9 +74,13 @@ test('shows independent player decisions and post-match league context', async (
   await expect(page.getByRole('table', { name: '리그 순위표' })).toContainText('우리 팀');
   await page.getByRole('button', { name: '다시 보기', exact: true }).click();
   await expect(page.getByText(/90′ ·.*경기 종료/)).toHaveCount(0);
+  const beforeNext = await page.getByTestId('game-date').innerText();
   await page.getByRole('button', { name: '다음 경기 관전', exact: true }).click();
+  await expect(page.getByTestId('game-date')).not.toHaveText(beforeNext);
+  await expect(page.getByTestId('match-next-action')).toBeEnabled();
   await page.getByRole('button', { name: '일시정지', exact: true }).click();
   await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toHaveCount(0);
+  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });

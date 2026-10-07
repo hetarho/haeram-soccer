@@ -253,3 +253,61 @@
     padding: 8px;
   }
 }
+
+.goal {
+  width: 100%;
+  text-align: left;
+  color: inherit;
+  min-height: 44px;
+}
+.goal > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.goal > span strong {
+  font-size: 10px;
+  font-weight: normal;
+}
+.goal > b {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.goal progress {
+  width: 100%;
+  height: 4px;
+  accent-color: #5a8346;
+}
+.sceneCaption span,
+.title small,
+.resources span,
+.goal span,
+.goal small,
+.fixture small,
+.fixture p {
+  color: #425d3a;
+}
+@media (max-width: 760px) {
+  .hub .goal small,
+  .hub .resources span,
+  .hub .fixture p,
+  .hub .sceneCaption span,
+  .hub > section > div > p {
+    font-size: 12px;
+  }
+  .scene svg {
+    max-height: 135px;
+  }
+}
+@media (max-width: 380px) and (max-height: 760px) {
+  .scene svg {
+    max-height: 88px;
+  }
+  .hub > section h3 {
+    font-size: 12px;
+  }
+  .hub > section > div > p {
+    font-size: 11px;
+  }
+}

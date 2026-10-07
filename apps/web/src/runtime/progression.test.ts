@@ -46,6 +46,39 @@ afterEach(() => {
 });
 
 describe('the global progression clock', () => {
+  it('keeps every dialog suspension source independent and requires an explicit restart', async () => {
+    const s = setup();
+    controller = s.controller;
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(s.command).toHaveBeenCalledTimes(1);
+    controller.setSuspended(true, 'dialog:first');
+    controller.setSuspended(true, 'dialog:second');
+    controller.setSuspended(false, 'feature');
+    controller.setSuspended(false, 'dialog:first');
+    controller.start();
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(s.command).toHaveBeenCalledTimes(1);
+    controller.setSuspended(false, 'dialog:second');
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(s.command).toHaveBeenCalledTimes(1);
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(s.command).toHaveBeenCalledTimes(2);
+  });
+  it('cancels an in-flight auto request and never leaves a running timer after disposal', async () => {
+    const s = setup();
+    controller = s.controller;
+    s.command.mockImplementation(() => new Promise(() => {}));
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    controller.setSuspended(true, 'dialog:decision');
+    expect(s.client.cancel).toHaveBeenCalled();
+    controller.dispose();
+    await vi.advanceTimersByTimeAsync(3000);
+    expect(s.command).toHaveBeenCalledTimes(1);
+  });
+
   it('advances background days without depending on mounted tabs', async () => {
     const s = setup();
     controller = s.controller;

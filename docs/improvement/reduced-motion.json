@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-07T17:38:39.586Z",
+  "checks": [
+    {
+      "family": "chromium",
+      "viewport": [
+        360,
+        740
+      ],
+      "reducedMotion": true,
+      "startsPaused": true,
+      "keyboardActions": true,
+      "unchangedSave": true,
+      "passed": true
+    },
+    {
+      "family": "firefox",
+      "viewport": [
+        360,
+        740
+      ],
+      "reducedMotion": true,
+      "startsPaused": true,
+      "keyboardActions": true,
+      "unchangedSave": true,
+      "passed": true
+    },
+    {
+      "family": "webkit",
+      "viewport": [
+        360,
+        740
+      ],
+      "reducedMotion": true,
+      "startsPaused": true,
+      "keyboardActions": true,
+      "unchangedSave": true,
+      "passed": true
+    }
+  ],
+  "passed": true
+}

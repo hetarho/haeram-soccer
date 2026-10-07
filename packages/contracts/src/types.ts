@@ -1,5 +1,6 @@
 export type CountryCode = 'ENG' | 'ESP' | 'GER' | 'ITA' | 'FRA' | 'POR' | 'NED' | 'BEL';
 export type Tactic = 'balanced' | 'possession' | 'counter' | 'press';
+export type TrainingFocus = 'balanced' | 'youth' | 'recovery';
 export type Role = 'GK' | 'DEF' | 'MID' | 'FWD';
 export type Metrics = number[];
 export interface Club {
@@ -31,6 +32,8 @@ export interface Player {
   until: number;
   status: 'active' | 'sold' | 'retired';
   fatigue: number;
+  /** Cumulative actual positive mean development of role skills, in hundredths. */
+  developed?: number;
   career: Metrics;
   season: Metrics;
   loanUntil?: number;
@@ -250,6 +253,10 @@ export interface World {
   players: Player[];
   /** Preferred starting XI in goalkeeper, four defenders, three midfielders, three forwards order. */
   lineup?: string[];
+  /** Older saves use balanced training until a focus is chosen. */
+  training?: TrainingFocus;
+  /** Last settled training boundary, preventing repeated development/recovery. */
+  trainingAt?: string;
   manager: Manager;
   tactic: Tactic;
   requested?: Tactic;
@@ -289,6 +296,7 @@ export type Command =
   | { type: 'season'; count: number }
   | { type: 'tactics'; tactic: Tactic; tone: string }
   | { type: 'lineup'; ids: string[] | null }
+  | { type: 'training'; focus: TrainingFocus }
   | { type: 'hire'; candidate: number }
   | { type: 'recruit'; candidate: number; loan?: boolean }
   | { type: 'sell'; id: string }

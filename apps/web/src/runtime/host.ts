@@ -14,7 +14,12 @@ import {
   europeanCoefficient,
 } from '../../../../packages/engine/src/index';
 import type { World, MatchPlayback } from '../../../../packages/contracts/src/types';
+import {
+  isSaveCompatibilityError,
+  upgradeWorldRules,
+} from '../../../../packages/contracts/src/versions';
 import { decode, encode } from '../adapters/persistence';
+import { clubMilestones } from '../../../../packages/engine/src/goals';
 import { financialBreakdown } from '../../../../packages/engine/src/finance';
 import { requestSchema, type Request, type Reply, type View } from './protocol';
 export class Host {
@@ -54,6 +59,9 @@ export class Host {
         events: w.events.slice(-150),
       },
       totalMatches: w.ownMatches.length,
+      supportUsed: w.events.filter((event) => event.year === w.year && event.kind === 'support')
+        .length,
+      milestones: clubMilestones(w),
       managers: managerOffers(w),
       transfers: transferOffers(w),
       sponsors: sponsorOffers(w),
@@ -79,13 +87,19 @@ export class Host {
         raw: string | undefined,
         envelope: Reply['envelope'],
         archive: Reply['archive'],
-        candidate: World | undefined;
+        candidate: World | undefined,
+        upgraded = false;
       let changed = false;
       this.cancelled = false;
       if (r.body.type === 'inspect') {
+        if (r.body.upgrade && !r.body.activate)
+          throw new Error('규칙 업그레이드는 활성화할 때만 가능합니다.');
         const result = await decode(r.body.raw);
-        candidate = this.view(result.world)!.world;
-        if (r.body.activate) this.world = result.world;
+        const activated = r.body.upgrade ? upgradeWorldRules(result.world) : result.world;
+        upgraded = activated !== result.world;
+        candidate = this.view(activated)!.world;
+        if (r.body.activate) this.world = activated;
+        if (upgraded) raw = await encode(activated, r.generation, r.parentGeneration);
         envelope = result.envelope;
       } else if (r.body.type === 'found') {
         if (this.world && !r.body.replace)
@@ -170,6 +184,7 @@ export class Host {
         candidate,
         archive,
         cancelled: this.cancelled,
+        upgraded: upgraded || undefined,
       };
       this.acknowledgments.set(r.requestId, reply);
       if (this.acknowledgments.size > 32)
@@ -181,6 +196,7 @@ export class Host {
           request?.requestId ?? ((input as { requestId?: string })?.requestId || 'invalid'),
         ok: false,
         error: String(error).slice(0, 1600),
+        errorCode: isSaveCompatibilityError(error) ? error.code : undefined,
         view: this.view(),
       };
     }

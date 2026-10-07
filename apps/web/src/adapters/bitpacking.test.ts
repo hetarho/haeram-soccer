@@ -69,4 +69,43 @@ describe('lossless bit column packing', () => {
     );
     expect(() => overflow.take(1)).toThrow();
   });
+
+  it('roundtrips bit planes, including 53-bit values, without changing legacy column layout', () => {
+    const values = [0, 90, 0, 7, 90, Number.MAX_SAFE_INTEGER, 1, 90, 2 ** 40 + 17];
+    const legacy = packBitColumns(values, 3);
+    const planes = packBitColumns(values, 3, 'planes');
+    expect(legacy.layout).toBeUndefined();
+    expect(planes.layout).toBe('planes');
+    expect(planes.headers).toEqual(legacy.headers);
+    expect(planes.data.length).toBe(legacy.data.length);
+    for (const packed of [legacy, planes]) {
+      const reader = readBitColumns(packed, 3);
+      expect([...reader.take(2), ...reader.take(7)]).toEqual(values);
+      reader.done();
+    }
+    const empty = packBitColumns([], 3, 'planes');
+    expect(readBitColumns(empty, 3).take(0)).toEqual([]);
+    expect(() =>
+      readBitColumns({ ...planes, layout: 'unknown' } as unknown as BitColumns, 3),
+    ).toThrow();
+  });
+});
+
+describe('bit layout equivalence', () => {
+  it('preserves varied integer columns and partial reads in both representations', () => {
+    const values = Array.from({ length: 37 * 7 }, (_, i) =>
+      i % 7 === 0 ? 12 : (i * 7919) % 104729,
+    );
+    for (const layout of [undefined, 'planes'] as const) {
+      const reader = readBitColumns(packBitColumns(values, 7, layout), 7);
+      const restored = [];
+      for (let remaining = values.length; remaining > 0;) {
+        const take = Math.min(13, remaining);
+        restored.push(...reader.take(take));
+        remaining -= take;
+      }
+      expect(restored).toEqual(values);
+      reader.done();
+    }
+  });
 });

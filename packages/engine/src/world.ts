@@ -8,7 +8,8 @@ import {
 } from '../../catalogs/src/index';
 import type { Club, Founding, Manager, Player, World, Tactic } from '../../contracts/src/types';
 import { clamp, hash, integer, random, ratio, zeroMetrics, compareIds } from './primitives';
-export const ENGINE_VERSION = '1.0.0';
+import { CURRENT_ENGINE_VERSION } from '../../contracts/src/versions';
+export const ENGINE_VERSION = CURRENT_ENGINE_VERSION;
 export const TACTICS: Tactic[] = ['balanced', 'possession', 'counter', 'press'];
 export const tacticLabel: Record<Tactic, string> = {
   balanced: '균형',

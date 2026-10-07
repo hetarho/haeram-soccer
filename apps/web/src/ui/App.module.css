@@ -1351,7 +1351,19 @@
   }
   .layout .main :global(select),
   .modal :global(select) {
+    appearance: none;
+    height: 48px;
+    min-width: 44px;
     font-size: 16px;
+    padding: 10px 30px 10px 10px;
+    background-image:
+      linear-gradient(45deg, transparent 50%, currentColor 50%),
+      linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position:
+      calc(100% - 15px) 21px,
+      calc(100% - 10px) 21px;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
   }
   .layout .main :global(input[type='range']),
   .modal :global(input[type='range']) {
@@ -1686,5 +1698,219 @@
   .coreLayout .mobileNav {
     padding-top: 4px;
     padding-bottom: calc(4px + env(safe-area-inset-bottom));
+  }
+}
+
+.rosterCards {
+  padding: 8px 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+}
+.rosterCards article {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  border-bottom: 1px solid #dae3cd;
+  padding: 9px 0;
+  min-width: 0;
+}
+.rosterCards article > button:first-child {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 4px 8px;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  flex: 1;
+  min-width: 0;
+  padding: 4px;
+}
+.rosterCards article > button:first-child span {
+  grid-row: span 2;
+  font-size: 10px;
+  border-radius: 5px;
+  background: #e5edd8;
+  padding: 7px;
+  color: #3f693e;
+}
+.rosterCards b {
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rosterCards small {
+  font-size: 10px;
+  display: block;
+  color: #576d4c;
+  white-space: normal;
+}
+.rosterCards article > div {
+  flex-shrink: 0;
+  text-align: right;
+}
+.rosterCards article > button:last-child:not(:first-child) {
+  padding: 5px 8px;
+  font-size: 11px;
+  min-height: 44px;
+}
+.rosterDetails {
+  padding: 12px 16px;
+  font-size: 12px;
+}
+.rosterDetails summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+@media (max-width: 760px) {
+  .rosterCards {
+    grid-template-columns: 1fr;
+    padding: 6px 12px;
+  }
+  .rosterCards b {
+    font-size: 13px;
+  }
+  .rosterCards small {
+    font-size: 11px;
+  }
+}
+
+.rosterSearch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  padding: 10px 16px;
+}
+.rosterSearch input {
+  width: 100%;
+  min-width: 0;
+}
+.rosterPages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 12px;
+  padding: 10px;
+}
+.rosterPages button {
+  min-height: 44px;
+}
+.guideOpen {
+  width: 100%;
+  min-height: 48px;
+  margin-bottom: 12px;
+  background: #e7efdb;
+  border-color: #bacdab;
+  color: #345b38;
+}
+@media (max-width: 760px) {
+  .startLayout .sidebar,
+  .startLayout .mobileNav,
+  .startLayout .footer > span:first-child,
+  .startLayout .main > .actions {
+    display: none;
+  }
+  .startLayout .main {
+    padding: 0 16px 16px;
+  }
+  .startLayout .topbar {
+    min-height: 42px;
+    margin-bottom: 10px;
+    font-size: 11px;
+    padding: 10px 16px;
+  }
+  .startLayout .footer {
+    font-size: 10px;
+    margin: 0;
+    padding: 8px 0;
+  }
+}
+
+.startTools {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  font-size: 12px;
+  margin-top: 6px;
+}
+.startTools .fileButton {
+  margin: 0;
+  padding: 8px;
+  min-height: 44px;
+}
+.startTools button {
+  min-height: 44px;
+}
+
+.returnClub {
+  min-height: 44px;
+  display: block;
+  margin: 8px auto;
+}
+.mobilePace {
+  display: none;
+}
+.paceModal {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0;
+}
+.paceModal button {
+  min-height: 48px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+}
+.paceModal button[aria-pressed='true'] {
+  background: #e3ecd8;
+  color: #254e32;
+  border-color: #567e49;
+}
+.closeProgressSettings {
+  width: 100%;
+  min-height: 48px;
+  background: #28583c;
+  color: #fff8e5;
+  border-color: #28583c;
+}
+@media (max-width: 760px) {
+  .mobilePace {
+    display: block;
+    min-width: 44px;
+  }
+  .dayControl {
+    display: none;
+  }
+  .watchProgressMode {
+    display: none;
+  }
+  .seasonControls .autoButtons button {
+    flex: 0 0 auto;
+    font-size: 12px;
+  }
+  .seasonControls .autoButtons button:not(.mobilePace) {
+    min-width: 74px;
+  }
+  .coreLayout .footer > span:last-child {
+    color: #465d3e;
+  }
+  .coreLayout .main > div[data-testid='live-season'] {
+    flex: 1;
+    min-height: 0;
+  }
+}
+@media (max-width: 760px) and (max-height: 620px) {
+  .coreLayout .main {
+    height: auto;
+    min-height: calc(100dvh - 74px);
+    padding-bottom: 88px;
   }
 }

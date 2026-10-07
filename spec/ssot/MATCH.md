@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r2 | Define the implemented browser-demo behavior for observable match simulation.
+> r3 | Define the implemented browser-demo behavior for observable match simulation.
 
 ## decisions
 - MATCH-1 [o] A match is 90 discrete simulated minutes; events and team/player counts share one seeded engine. Pitch playback does not change outcomes.
@@ -14,6 +14,8 @@
 
 - MATCH-9 [o] Midfield passing affects possession and pass completion; defender quality suppresses opposing shot creation; stamina and fatigue limit press effectiveness. The same profile and opponent tactic calculation serves simulation and pre-match UI.
 
+- MATCH-10 [o] Mobile observation keeps score, pitch, latest event, play/pause/speed/result and next action visible together, including empty, live, finished, replay and new-match states. Stats, timeline, player inspection and full post-match league context open explicitly; presentation choices never reroll settled facts.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -21,5 +23,6 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r3 261008 MATCH-10+ stacked pitch panels and hidden mobile paces→compact match theatre, explicit detail/settings and lifecycle pause
 - r2 261008 MATCH-8+ MATCH-9+ generic tactic bonuses→roster/opponent/fatigue-dependent four-way tradeoffs
 - r1 261007 initial

@@ -1,0 +1,63 @@
+.intro > span {
+  color: #597a45;
+  font-size: 12px;
+}
+.intro h2 {
+  font-size: 25px;
+  margin: 8px 0;
+}
+.intro p,
+.note {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #4b6443;
+}
+.steps {
+  list-style: none;
+  padding: 0;
+  margin: 22px 0;
+  display: grid;
+  gap: 18px;
+}
+.steps li {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.steps li > b {
+  display: grid;
+  place-items: center;
+  flex: 0 0 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #e7eddc;
+  color: #507345;
+  font-size: 13px;
+}
+.steps h3 {
+  font-size: 15px;
+  margin: 0 0 6px;
+}
+.steps h3 span {
+  font-size: 11px;
+  margin-left: 5px;
+  color: #4a7b38;
+}
+.steps p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #4c6544;
+  margin: 0;
+}
+.note {
+  padding: 12px;
+  background: #eff2e6;
+  border-radius: 8px;
+}
+.close {
+  min-height: 48px;
+  background: #28583b;
+  color: #fff8e6;
+  width: 100%;
+  border-color: #28583b;
+}

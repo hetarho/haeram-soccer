@@ -1,7 +1,9 @@
 import { expect, test } from '@playwright/test';
 test('serves a real static application entry', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: /Haeram/ })).toBeVisible();
+  await expect(page.getByTestId('club-founding')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '작은 클럽의, 큰 내일.' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
 });
 test('creates, computes and reloads through the bundled worker', async ({ page }) => {
   await page.goto('/');
@@ -27,6 +29,7 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await expect(page.getByRole('heading', { name: '90분의 작은 드라마.' })).toBeVisible();
   await page.getByRole('button', { name: '결과 보기' }).click();
   await expect(page.getByText(/90′ ·/)).toBeVisible();
+  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await expect(page.getByText('유효 슈팅', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: '유럽 무대' }).click();
   await expect(page.getByText('54년 후 창설 예정')).toBeVisible();

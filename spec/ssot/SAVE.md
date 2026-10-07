@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r1 | Define the implemented browser-demo behavior for browser persistence and protocol.
+> r3 | Define the implemented browser-demo behavior for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -12,6 +12,14 @@
 - SAVE-8 [o] Autosave settled fixture/round and committed management decisions; UI distinguishes active and last persisted revisions.
 - SAVE-9 [o] Export/import uses the same envelope; checksum provides corruption detection only. All successful changes remain local.
 
+- SAVE-10 [o] Current engine rules are1.1.0. Version1.0.0 checkpoints remain accepted; writer activation upgrades only rules metadata/revision through a pure transformation, preserves all retained facts and missing optional defaults, and commits through the existing two-slot protocol. Failure preserves old disk data and exportable new memory state; read-only views do not perform disk upgrades.
+
+- SAVE-11 [o] Unsupported selected save versions/catalogs are compatibility failures, not corruption-recovery permission. Do not automatically fall back to an older checkpoint and overwrite a newer incompatible career; preserve raw slots/manifest and expose export/import recovery. Actual corrupted compatible checkpoints may recover the validated predecessor.
+
+- SAVE-12 [o] Browser checkpoint storage uses an injected worker validator; compression and world-schema validation remain in the worker codec path. Existing codec/repository imports preserve their public save API, and compatibility errors remain typed across the bridge.
+
+- SAVE-13 [o] Lossless compact encoding must retain the complete canonical career and support existing compact checkpoints. The baseline and active-management 100-season profiles, including a settled active round after the century, must remain within →SAVE-4 without pruning records or raising budgets. Invalid compact metadata fails before activation.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -19,4 +27,6 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r3 261008 SAVE-13+ century boundary-only compaction→lossless full-career compaction verified during active play after100 seasons
+- r2 261008 SAVE-10+ SAVE-11+ SAVE-12+ single1.0.0 decoder and genericfallback→compatible1.1.0 metadata upgrade with no silent future-save downgrade and lean browser repository
 - r1 261007 initial

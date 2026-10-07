@@ -3,6 +3,11 @@ import { canonical } from '../../../../packages/contracts/src/index';
 import { createWorld, advanceRound } from '../../../../packages/engine/src/index';
 import { encode, decode, Saves, type StoragePort } from './persistence';
 import { pack, unpack } from './packing';
+import {
+  CURRENT_ENGINE_VERSION,
+  SaveCompatibilityError,
+  upgradeWorldRules,
+} from '../../../../packages/contracts/src/versions';
 class Memory implements StoragePort {
   data = new Map<string, string>();
   fail = '';
@@ -121,6 +126,7 @@ describe('recoverable persistence', () => {
     packed.stats = legacyIntegers(values, packed.statWidth!);
     delete packed.statBits;
     delete packed.statResiduals;
+    delete packed.statInterceptionDeltas;
     const id = (value: string) => packed.dict.indexOf(value);
     packed.matches = w.ownMatches.map((match) => [
       id(match.id),
@@ -143,6 +149,7 @@ describe('recoverable persistence', () => {
     ]);
     delete packed.matchFields;
     delete packed.matchActors;
+    delete packed.matchActorColumns;
     delete packed.matchCount;
     expect(canonical(unpack(packed))).toBe(canonical(w));
   });
@@ -229,4 +236,153 @@ it('rejects broken counters and historical club references before activation', a
   simulateSeason(w);
   w.history[0].champions[0].club = 'missing-club';
   await expect(decode(await encode(w))).rejects.toThrow('우승 기록 참조');
+});
+
+describe('compatible rule upgrades', () => {
+  it('upgrades only metadata/revision and retains exact career facts and absent optional fields', async () => {
+    const { simulateSeason, advanceDays } = await import('../../../../packages/engine/src/index');
+    const legacy = world();
+    simulateSeason(legacy);
+    advanceDays(legacy, 10);
+    legacy.engine = '1.0.0';
+    legacy.revision = 23;
+    legacy.cash = '98765432101234567890';
+    delete legacy.training;
+    delete legacy.players[0].developed;
+    const before = canonical(legacy);
+    expect(legacy.history.length).toBeGreaterThan(0);
+    expect(legacy.ownMatches.length).toBeGreaterThan(30);
+    expect(legacy.players.some((player) => (player.developed || 0) > 0)).toBe(true);
+    const decoded = (await decode(await encode(legacy))).world;
+    expect(canonical(decoded)).toBe(before);
+    const upgraded = upgradeWorldRules(decoded);
+    expect(canonical(upgraded)).toBe(
+      canonical({ ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 24 }),
+    );
+    expect(canonical(legacy)).toBe(before);
+    expect(upgraded.training).toBeUndefined();
+    expect(Object.hasOwn(upgraded.players[0], 'developed')).toBe(false);
+    expect(upgradeWorldRules(upgraded)).toBe(upgraded);
+    expect(canonical((await decode(await encode(upgraded))).world)).toBe(canonical(upgraded));
+    const old = world();
+    old.engine = '1.0.0';
+    delete old.calendar;
+    delete old.rankHistory;
+    delete old.scorerSeason;
+    const migratedOld = upgradeWorldRules((await decode(await encode(old))).world);
+    for (const field of ['calendar', 'rankHistory', 'scorerSeason', 'training', 'trainingAt'])
+      expect(Object.hasOwn(migratedOld, field)).toBe(false);
+  });
+
+  it('does not reinterpret future worlds or overflow a revision during a pure upgrade', () => {
+    const future = { ...world(), engine: '2.0.0' };
+    const before = canonical(future);
+    expect(() => upgradeWorldRules(future)).toThrow(SaveCompatibilityError);
+    expect(canonical(future)).toBe(before);
+    const legacy = { ...world(), engine: '1.0.0', revision: Number.MAX_SAFE_INTEGER };
+    expect(() => upgradeWorldRules(legacy)).toThrow('revision');
+    expect(legacy.revision).toBe(Number.MAX_SAFE_INTEGER);
+    expect(legacy.engine).toBe('1.0.0');
+  });
+});
+
+describe('incompatible checkpoint protection', () => {
+  it.each([
+    ['schema', 2],
+    ['engine', '2.0.0'],
+    ['catalog', 'future-catalog'],
+    ['catalogHash', 'f'.repeat(64)],
+    ['codec', 'future-codec'],
+  ])('blocks fallback and writes for an unsupported selected %s', async (field, value) => {
+    const port = new Memory();
+    const saves = new Saves(port);
+    const w = world();
+    await saves.save(w);
+    advanceRound(w);
+    await saves.save(w);
+    const selected = 'haeram-soccor:slot:b';
+    const future = JSON.stringify({ ...JSON.parse(port.getItem(selected)!), [field]: value });
+    port.data.set(selected, future);
+    const before = new Map(port.data);
+    const recovery = new Saves(port);
+    await expect(recovery.load()).rejects.toMatchObject({ code: 'save-compatibility' });
+    expect(recovery.incompatibleBackup).toBe(future);
+    expect(recovery.generationInfo).toEqual({ generation: 3, parentGeneration: 2 });
+    await expect(recovery.save(w)).rejects.toThrow(SaveCompatibilityError);
+    expect(port.data).toEqual(before);
+  });
+
+  it.each([null, '{"slot":0}', '{broken'])(
+    'protects the newest future slot when the manifest is %s',
+    async (manifest) => {
+      const port = new Memory();
+      const saves = new Saves(port);
+      const w = world();
+      await saves.save(w);
+      advanceRound(w);
+      await saves.save(w);
+      const future = JSON.stringify({
+        ...JSON.parse(port.getItem('haeram-soccor:slot:b')!),
+        engine: '2.0.0',
+      });
+      port.data.set('haeram-soccor:slot:b', future);
+      if (manifest === null) port.removeItem('haeram-soccor:manifest');
+      else port.data.set('haeram-soccor:manifest', manifest);
+      const before = new Map(port.data);
+      const recovery = new Saves(port);
+      await expect(recovery.load()).rejects.toThrow(SaveCompatibilityError);
+      expect(recovery.incompatibleBackup).toBe(future);
+      expect(port.data).toEqual(before);
+    },
+  );
+
+  it.each([0, 1])(
+    'preserves incompatible slot %i if an explicit replacement cannot commit',
+    async (slot) => {
+      const port = new Memory();
+      const w = world();
+      const future = JSON.stringify({ ...JSON.parse(await encode(w, 9, 8)), engine: '2.0.0' });
+      const selected = `haeram-soccor:slot:${slot ? 'b' : 'a'}`;
+      port.data.set(selected, future);
+      port.data.set(`haeram-soccor:slot:${slot ? 'a' : 'b'}`, await encode(w, 8, 7));
+      const manifest = JSON.stringify({ slot, worldId: w.id, generation: 9, parentGeneration: 8 });
+      port.data.set('haeram-soccor:manifest', manifest);
+      const recovery = new Saves(port);
+      await expect(recovery.load()).rejects.toThrow(SaveCompatibilityError);
+      expect(recovery.generationInfo).toEqual({ generation: 10, parentGeneration: 9 });
+      const replacement = await encode(world(), 10, 9);
+      port.fail = 'haeram-soccor:manifest';
+      await expect(recovery.commit(replacement, { replaceIncompatible: true })).rejects.toThrow(
+        'Quota',
+      );
+      expect(port.getItem(selected)).toBe(future);
+      expect(port.getItem('haeram-soccor:manifest')).toBe(manifest);
+      expect(recovery.incompatibleBackup).toBe(future);
+      await expect(new Saves(port).load()).rejects.toThrow(SaveCompatibilityError);
+      port.fail = '';
+      await recovery.commit(replacement, { replaceIncompatible: true });
+      expect((await new Saves(port).load())?.world.engine).toBe(CURRENT_ENGINE_VERSION);
+      expect(JSON.parse(port.getItem('haeram-soccor:manifest')!).slot).toBe(1 - slot);
+      expect(port.getItem(selected)).toBe(future);
+      expect(recovery.incompatibleCheckpoint).toBe(false);
+    },
+  );
+
+  it.each([
+    { slot: 0 },
+    { slot: 0, generation: 99, parentGeneration: 98 },
+    { slot: 1, generation: 2, parentGeneration: 99 },
+  ])('recovers the newest valid checkpoint after a damaged manifest %j', async (metadata) => {
+    const port = new Memory();
+    const saves = new Saves(port);
+    const w = world();
+    await saves.save(w);
+    advanceRound(w);
+    await saves.save(w);
+    port.data.set('haeram-soccor:manifest', JSON.stringify({ ...metadata, worldId: w.id }));
+    const recovery = await new Saves(port).load();
+    expect(recovery?.world.round).toBe(1);
+    expect(recovery?.envelope.generation).toBe(2);
+    expect(recovery?.recovered).toBe(true);
+  });
 });

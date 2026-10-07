@@ -1,0 +1,129 @@
+.heading > span {
+  font-size: 10px;
+  color: #6c7d5a;
+  letter-spacing: 1.4px;
+}
+.heading h2 {
+  font-size: 22px;
+  margin: 6px 0 8px;
+  color: #28513a;
+}
+.heading p {
+  font-size: 12px;
+  margin: 0 0 14px;
+}
+.focus {
+  display: grid;
+  gap: 8px;
+}
+.focus button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  padding: 12px;
+  background: #fffdf7;
+  border-radius: 12px;
+  min-height: 76px;
+}
+.focus button[aria-pressed='true'] {
+  border: 2px solid #477c49;
+  background: #eaf0df;
+  opacity: 1;
+  color: #244d34;
+}
+.focus button > div {
+  display: grid;
+  gap: 4px;
+}
+.focus b {
+  font-size: 14px;
+}
+.focus span:not(.symbol),
+.focus small {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.focus small {
+  color: #7a5a35;
+}
+.symbol {
+  width: 36px;
+  flex-shrink: 0;
+  text-align: center;
+  font-size: 25px;
+  color: #4f7545;
+}
+.note {
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 12px 0;
+  color: #526a4e;
+}
+.message {
+  background: #eaf0de;
+  border: 1px solid #bfceab;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+}
+.prospects h3 {
+  font-size: 15px;
+  margin: 20px 0 10px;
+}
+.prospects article {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid #d8e2ca;
+}
+.prospects b {
+  font-size: 13px;
+}
+.prospects small {
+  display: block;
+  font-size: 11px;
+  color: #647956;
+  margin-top: 4px;
+}
+.prospects span {
+  font-size: 11px;
+}
+.prospects progress {
+  display: block;
+  width: 100%;
+  height: 7px;
+  accent-color: #528347;
+  margin-top: 5px;
+}
+.prospects strong {
+  font-size: 13px;
+  color: #3f7337;
+}
+.actions {
+  display: flex;
+  gap: 8px;
+}
+.actions button {
+  flex: 1;
+  min-height: 44px;
+  font-size: 13px;
+}
+.actions button:last-child {
+  background: #28553b;
+  border-color: #28553b;
+  color: #fff9e9;
+}
+@media (max-width: 760px) {
+  .prospects article {
+    grid-template-columns: 1.1fr 1fr;
+  }
+  .prospects strong {
+    grid-column: 2;
+  }
+  .heading h2 {
+    font-size: 20px;
+  }
+}

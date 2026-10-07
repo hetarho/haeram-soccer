@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 
 async function found(page: import('@playwright/test').Page) {
   await page.goto('/');
+  await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('live-tabs-regression');
   await page.getByRole('button', { name: '넉넉한 출발' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
@@ -72,6 +73,7 @@ test('observes a whole match before immediately chaining the next, and retains p
   await expect(date).toHaveText(second!);
   await expect(page.getByRole('button', { name: '자동 진행 정지' })).toBeVisible();
   await page.getByRole('button', { name: '자동 진행 정지' }).click();
+  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   const timeline = page.getByRole('slider', { name: '경기 시간', exact: true });
   const before = Number(await timeline.inputValue());
   await page.evaluate(() => {

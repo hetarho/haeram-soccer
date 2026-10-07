@@ -20,6 +20,7 @@ import {
   roundShare,
 } from './finance';
 import { setLineup } from './strategy';
+import { setTrainingFocus } from './training';
 export function operatingCost(w: World) {
   return operatingCosts(w).annual;
 }
@@ -375,6 +376,9 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
   switch (cmd.type) {
     case 'lineup':
       setLineup(w, cmd.ids);
+      break;
+    case 'training':
+      setTrainingFocus(w, cmd.focus);
       break;
     case 'tactics': {
       validateTacticRequest(cmd.tactic, cmd.tone);

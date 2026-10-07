@@ -5,6 +5,7 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
+  await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('lineup-ui-regression');
   await page.getByRole('button', { name: '넉넉한 출발' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
@@ -53,6 +54,7 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   await page.getByRole('tab', { name: '경기', exact: true }).click();
   await page.getByRole('button', { name: '다음 경기 관전', exact: true }).click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
+  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();
   const inspector = page.getByLabel('살펴볼 선수');
   await inspector.selectOption({ label: `1. ${keeperName} · GK` });
@@ -74,6 +76,7 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
     .getByRole('button', { name: '클럽 경영' })
     .click();
+  await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
   await expect(page.getByRole('region', { name: '수입과 지출 장부' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '돈이 들어오고 나간 이유' })).toBeVisible();
   await expect(page.getByText('다음 라운드 고정 지출')).toBeVisible();

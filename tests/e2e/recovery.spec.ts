@@ -18,7 +18,9 @@ test('one writer, live read-only updates and ownership after reload', async ({ p
   await found(page);
   const second = await context.newPage();
   await second.goto('/');
-  await expect(second.getByRole('status')).toContainText('읽기 전용');
+  await expect(second.getByRole('status').filter({ hasText: '읽기 전용' })).toContainText(
+    '읽기 전용',
+  );
   await expect(second.getByTestId('hub-play')).toBeDisabled();
   await page.bringToFront();
   await advanceRound(page);
@@ -42,7 +44,9 @@ test('recovers prior checkpoint after active corruption without clearing another
     localStorage.setItem(`haeram-soccor:slot:${m.slot ? 'b' : 'a'}`, 'corrupt');
   });
   await page.reload();
-  await expect(page.getByRole('status')).toContainText('체크포인트로 복구');
+  await expect(page.getByRole('status').filter({ hasText: '체크포인트로 복구' })).toContainText(
+    '체크포인트로 복구',
+  );
   await expect(page.getByTestId('calendar')).toContainText('라운드 0');
   expect(await page.evaluate(() => localStorage.getItem('another-app:keep'))).toBe('present');
   await advanceRound(page);

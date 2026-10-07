@@ -6,6 +6,7 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   page,
 }) => {
   await page.goto('/');
+  await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('mobile-navigation');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });

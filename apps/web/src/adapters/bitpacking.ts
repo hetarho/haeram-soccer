@@ -2,6 +2,7 @@ export interface BitColumns {
   count: number;
   headers: [number, number][];
   data: string;
+  layout?: 'planes';
 }
 
 const MAX_COUNT = 1_000_000;
@@ -29,8 +30,10 @@ function unbase64(encoded: string) {
 }
 
 /** Store each column using its exact minimum and the bits needed for its remaining range. */
-export function packBitColumns(values: number[], width: number): BitColumns {
+export function packBitColumns(values: number[], width: number, layout?: 'planes'): BitColumns {
   validateWidth(width);
+  if (layout !== undefined && layout !== 'planes')
+    throw new Error('비트 통계 배치가 올바르지 않습니다.');
   const count = values.length / width;
   if (!Number.isInteger(count) || count > MAX_COUNT || values.length > MAX_CELLS)
     throw new Error('비트 통계 행 개수가 올바르지 않습니다.');
@@ -56,6 +59,17 @@ export function packBitColumns(values: number[], width: number): BitColumns {
   let offset = 0;
   for (let column = 0; column < width; column++) {
     const [min, widthBits] = headers[column];
+    if (layout === 'planes') {
+      for (let bit = 0; bit < widthBits; bit++) {
+        const weight = 2 ** bit;
+        for (let row = 0; row < count; row++) {
+          const value = values[row * width + column] - min;
+          bytes[Math.floor(offset / 8)] += (Math.floor(value / weight) % 2) * 2 ** (offset % 8);
+          offset++;
+        }
+      }
+      continue;
+    }
     for (let row = 0; row < count; row++) {
       let value = values[row * width + column] - min;
       let remaining = widthBits;
@@ -69,7 +83,7 @@ export function packBitColumns(values: number[], width: number): BitColumns {
       }
     }
   }
-  return { count, headers, data: base64(bytes) };
+  return { count, headers, data: base64(bytes), ...(layout ? { layout } : {}) };
 }
 
 /** Decode by column offsets as rows are requested; opening a stream allocates no cell array. */
@@ -82,7 +96,8 @@ export function readBitColumns(packed: BitColumns, width: number) {
     packed.count > MAX_COUNT ||
     packed.count * width > MAX_CELLS ||
     !Array.isArray(packed.headers) ||
-    packed.headers.length !== width
+    packed.headers.length !== width ||
+    (packed.layout !== undefined && packed.layout !== 'planes')
   )
     throw new Error('비트 통계 헤더가 올바르지 않습니다.');
   const offsets: number[] = [];
@@ -122,6 +137,14 @@ export function readBitColumns(packed: BitColumns, width: number) {
         let remaining = widthBits,
           written = 0,
           value = 0;
+        if (packed.layout === 'planes') {
+          for (let bit = 0; bit < widthBits; bit++) {
+            const position = offsets[column] + bit * packed.count + row;
+            value +=
+              (Math.floor(bytes[Math.floor(position / 8)] / 2 ** (position % 8)) % 2) * 2 ** bit;
+          }
+          remaining = 0;
+        }
         while (remaining) {
           const withinByte = offset % 8;
           const chunk = Math.min(8 - withinByte, remaining);

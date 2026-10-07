@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r3 | Define the implemented browser-demo behavior for browser game delivery.
+> r10 | Define the implemented browser-demo behavior for browser game delivery.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -17,6 +17,21 @@
 
 - WEB-11 [o] The core home shows a facility/supporter-driven club scene, current rank, cash, squad readiness, next opponent, and one next-match action together. Full journal statistics and bulk season actions open explicitly; save tools remain accessible in the menu.
 
+- WEB-12 [o] Home presents the next achievable club milestone and its real progress, with an explicit collection of completed and upcoming milestones. Milestones cover debut, preparation, first win, earned player growth, facility investment, supporter reach, completed seasons and promotion.
+
+- WEB-13 [o] Any open game dialog suspends automatic progression until all dialogs are closed. Each dialog owns a separate suspension source; closing one or changing another control cannot release another open dialog. Closing a dialog leaves progression stopped until the owner resumes.
+
+- WEB-14 [o] The business view groups facilities, sponsors, marketing and tickets into compact selectable panels with current cash/fixed-cost context. The complete actual ledger remains an explicit detail sheet; budget alerts and bounded local-support recovery stay actionable.
+
+- WEB-15 [o] Founding is a compact mobile screen with club name, country and capital choice, a recommended generous start, and one create action. Colors and reproducible seed are explicit advanced settings. Existing save hydration shows loading instead of a new-club form; invalid existing saves retain recovery/export paths.
+
+- WEB-16 [o] First-session help explains optional match preparation, one-action observation, earned player growth and cost-bearing club investment. It derives completion from actual milestones, does not require a tutorial gate, and can be reopened from the menu.
+
+- WEB-17 [o] Core home and match pass 360x740 and390x844 viewport bounds without masking essential overflow. Supporter count and small text remain readable; all primary buttons and selection controls, including match preparation, recruitment and league exploration, have touch targets of at least44 CSS pixels across Chromium, Firefox and Safari. Expanded records/settings may scroll; short screens or accessibility magnification can use necessary vertical scrolling.
+- WEB-18 [o] Mobile progression exposes daily, three-day and next-match paces through explicit settings. Hiding the browser document suspends automatic progression and returning requires an explicit restart; switching in-app statistics does not stop the shared clock.
+
+- WEB-19 [o] Browser responsiveness and storage verification claims under →ARCH-14 and →ARCH-28 identify the actual checked source and build. Include application entry/public inputs; the measured preview must serve the same entry and assets as the recorded build. A changed source, changed asset inventory or mismatched served build invalidates the run.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -24,6 +39,13 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r10 261008 WEB-19+ local-build-only provenance→current source and served-build identity with changed-input rejection
+- r9 261008 WEB-17✎ 44px core controls→44px primary buttons and native selection controls across preparation, recruitment and league exploration
+- r8 261008 WEB-17+ WEB-18+ stacked pitch panels and hidden mobile paces→compact match theatre, explicit detail/settings and lifecycle pause
+- r7 261008 WEB-15+ WEB-16+ long founding questionnaire and warm-load form flash→compact start, optional advanced setup and fact-aware play guide
+- r6 261008 WEB-14+ stacked businesscards with opaque recurring costs→compact investment planner and engine-backed budget effects
+- r5 261008 WEB-13+ per-feature dialog pause→shared source-counted dialog progression guard
+- r4 261008 WEB-12+ generic next-score prompt→fact-backed growth roadmap and milestone collection
 - r3 261008 WEB-11+ information-first journal→one-screen growing club home and explicit journal detail
 - r2 261007 WEB-9+ WEB-10+ desktop-first play→compact mobile shell with explicit growth and strategy gates
 - r1 261007 initial

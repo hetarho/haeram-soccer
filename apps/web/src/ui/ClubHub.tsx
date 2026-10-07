@@ -8,9 +8,12 @@ import { money, number } from './format';
 import type { GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
 import { useNavigation } from './state';
+import { useGameState } from '../runtime/store';
 import { StrategyPanel } from './StrategyPanel';
 import { Dialog } from './Dialog';
-import { useGameState } from '../runtime/store';
+import { TrainingStudio } from './TrainingStudio';
+import { MilestoneCollection } from './MilestoneCollection';
+import { clubMilestones } from '../../../../packages/engine/src/goals';
 import s from './ClubHub.module.css';
 
 function MatchCountdown() {
@@ -56,7 +59,7 @@ function ClubScene({ w }: { w: World }) {
       aria-label={`우리 구장 · 시설 ${w.facilities}단계 · 팬 ${club.fans}명`}
     >
       <div className={s.sceneCaption}>
-        <span>EST. 1901</span>
+        <span>{number(club.fans)}명의 서포터</span>
         <b>
           {w.facilities < 3
             ? '동네의 작은 구장'
@@ -129,20 +132,27 @@ export function ClubHub({
   client,
   controller,
   journal,
+  milestoneFacts,
 }: {
   w: World;
   client: GameClient;
   controller: ProgressionController;
   journal: ReactNode;
+  milestoneFacts: ReturnType<typeof clubMilestones>;
 }) {
   const { page, setPage } = useNavigation();
   const [journalOpen, setJournalOpen] = useState(false);
+  const [trainingOpen, setTrainingOpen] = useState(false);
+  const [goalsOpen, setGoalsOpen] = useState(false);
+  const milestones = milestoneFacts;
   useEffect(() => {
-    if (page !== 'dashboard' && journalOpen) {
+    if (page !== 'dashboard' && (journalOpen || trainingOpen || goalsOpen)) {
       setJournalOpen(false);
+      setTrainingOpen(false);
+      setGoalsOpen(false);
       controller.setSuspended(false);
     }
-  }, [page, journalOpen, controller]);
+  }, [page, journalOpen, trainingOpen, goalsOpen, controller]);
   const club = clubOf(w),
     squad = lineupSummary(startingSquad(w, club));
   const next = nextOwnFixture(w);
@@ -188,19 +198,37 @@ export function ClubHub({
           </b>
         </div>
       </div>
-      <div className={s.goal}>
-        <span>이번 도전</span>
+      <button
+        className={s.goal}
+        aria-label="성장 목표 보기"
+        aria-describedby="club-goal-progress"
+        onClick={(event) => {
+          event.currentTarget.focus();
+          controller.setSuspended(true);
+          setGoalsOpen(true);
+        }}
+      >
+        <span>
+          이번 도전{' '}
+          <strong>
+            {milestones.completed}/{milestones.total} 달성
+          </strong>
+        </span>
         <b>
-          {w.ownMatches.length === 0
-            ? '첫 경기를 치르고 우리 팀을 알아보기'
-            : `${w.tables[w.playerClub].points}점 · 다음 승점을 향해`}
+          {milestones.next?.title || '우리 클럽의 첫 목표들을 모두 이뤘어요'}{' '}
+          <span aria-hidden="true">↗</span>
         </b>
-        <small>
-          {w.ownMatches.length === 0
-            ? '전술을 준비하거나 바로 경기를 시작하세요'
-            : `현재 전술 ${tacticLabel[w.tactic]} · 같은 빌드도 상대와 피로에 따라 달라져요`}
+        <small id="club-goal-progress">
+          {milestones.next
+            ? `${milestones.next.current}/${milestones.next.target} · ${milestones.next.action}`
+            : '기록은 계속됩니다. 더 높은 무대를 향해!'}
         </small>
-      </div>
+        <progress
+          aria-label="현재 성장 목표 달성도"
+          value={milestones.next?.progress ?? 100}
+          max={100}
+        />
+      </button>
       <div className={s.fixture}>
         <div>
           <MatchCountdown />
@@ -220,7 +248,15 @@ export function ClubHub({
         onSuspendChange={(value) => controller.setSuspended(value)}
       />
       <div className={s.shortcuts}>
-        <button onClick={() => setPage('squad')}>선수 키우기·영입</button>
+        <button
+          onClick={(event) => {
+            event.currentTarget.focus();
+            controller.setSuspended(true);
+            setTrainingOpen(true);
+          }}
+        >
+          선수 키우기·영입
+        </button>
         <button onClick={() => setPage('business')}>클럽 투자</button>
         <button
           onClick={(e) => {
@@ -232,6 +268,31 @@ export function ClubHub({
           자세한 클럽 일지
         </button>
       </div>
+      {goalsOpen && (
+        <MilestoneCollection
+          w={w}
+          milestones={milestones}
+          onClose={() => {
+            setGoalsOpen(false);
+            controller.setSuspended(false);
+          }}
+        />
+      )}
+      {trainingOpen && (
+        <TrainingStudio
+          w={w}
+          client={client}
+          onClose={() => {
+            setTrainingOpen(false);
+            controller.setSuspended(false);
+          }}
+          onMarket={() => {
+            setTrainingOpen(false);
+            controller.setSuspended(false);
+            setPage('squad');
+          }}
+        />
+      )}
       {journalOpen && (
         <Dialog
           label="클럽 일지 상세"

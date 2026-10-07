@@ -1,21 +1,179 @@
 {
-  "date": "2026-10-07T08:36:34.762Z",
+  "date": "2026-10-07T17:31:55.961Z",
   "browser": "153.0.8010.12",
+  "playwright": "1.63.0",
+  "node": "v24.12.0",
+  "gitHead": "d878bf54065b2d3d9dc680aa03711915d0c0434a",
+  "gitDirty": true,
+  "currentHeadVerified": false,
+  "verifiedSource": "uncommitted working tree",
+  "sourceFingerprint": {
+    "algorithm": "sha256",
+    "sha256": "9027f015c20e10b302e17cacb1ab235d9e943ec0e02c404aeab38ad362b8e839",
+    "files": 119
+  },
+  "buildFingerprint": {
+    "algorithm": "sha256",
+    "sha256": "3789dd3721467712a854b48273290e504e08c596fd5a31c4cfc115b65a430cf7",
+    "files": 9
+  },
+  "servedBuildVerification": {
+    "origin": "http://127.0.0.1:4180",
+    "requestTimeoutMs": 5000,
+    "requestConcurrency": 4,
+    "files": [
+      {
+        "file": "index.html",
+        "url": "http://127.0.0.1:4180/",
+        "bytes": 665,
+        "sha256": "9bad6ba44e786fa35a65dc48263045215a1eb5c3284f3614844604e0d62e5f04"
+      },
+      {
+        "file": "assets/Rich-D5-q2Dw6.js",
+        "url": "http://127.0.0.1:4180/assets/Rich-D5-q2Dw6.js",
+        "bytes": 54328,
+        "sha256": "f6efcf8c604484f021f9de1d6f8bb0a14762a3beda4f5d9830c369fb985837f7"
+      },
+      {
+        "file": "assets/Rich-ed4jtAVn.css",
+        "url": "http://127.0.0.1:4180/assets/Rich-ed4jtAVn.css",
+        "bytes": 11288,
+        "sha256": "f67efe5920a3c1842c2c38f7a9bf4393d0185032adfcc7fd394ede12a6500d3c"
+      },
+      {
+        "file": "assets/index-C5bUpA4O.js",
+        "url": "http://127.0.0.1:4180/assets/index-C5bUpA4O.js",
+        "bytes": 374743,
+        "sha256": "2dd78363eccda0f3761083f0576766d122b8d36f5d064d458304705dc4ae9af9"
+      },
+      {
+        "file": "assets/index-COzb6iy-.css",
+        "url": "http://127.0.0.1:4180/assets/index-COzb6iy-.css",
+        "bytes": 60162,
+        "sha256": "895ddf839db5f191c3e6d98bded1b69c8398753fc5d429bd84ca1f98465d40f5"
+      },
+      {
+        "file": "assets/worker-Dow3hptm.js",
+        "url": "http://127.0.0.1:4180/assets/worker-Dow3hptm.js",
+        "bytes": 212363,
+        "sha256": "e33b2e736a7a76382040d405e97fdfda572611336a290c390b4a011ed8cfc8bb"
+      }
+    ],
+    "passed": true
+  },
   "synthetic": true,
-  "buildGzipBytes": 193561,
+  "reference": {
+    "pageCpuSlowdown": 4,
+    "network": "Fast 4G",
+    "downloadMbps": 9,
+    "uploadMbps": 1.5,
+    "latencyMs": 60,
+    "seed": "first-play-reference"
+  },
+  "desktop": {
+    "viewport": [
+      1440,
+      1000
+    ],
+    "coldLoadAndFoundMs": 1199,
+    "foundingCommandMs": 215,
+    "animationFps": 60
+  },
+  "mobile": {
+    "viewport": [
+      390,
+      844
+    ],
+    "deviceScaleFactor": 2,
+    "coldLoadAndFoundMs": 769,
+    "foundingCommandMs": 181,
+    "animationFps": 60,
+    "inputSamples": 12,
+    "pointerToSecondFrameP95Ms": 29
+  },
+  "entryGzipBytes": 133746,
+  "entryGzipLimit": 256000,
+  "entryFiles": [
+    {
+      "file": "assets/index-C5bUpA4O.js",
+      "gzipBytes": 121494
+    },
+    {
+      "file": "assets/index-COzb6iy-.css",
+      "gzipBytes": 12252
+    }
+  ],
+  "buildGzipBytes": 220835,
   "buildGzipLimit": 256000,
-  "firstPlayMs": 496,
-  "centuryLoadMs": 1934,
+  "buildFiles": [
+    {
+      "file": "Rich-D5-q2Dw6.js",
+      "gzipBytes": 15395
+    },
+    {
+      "file": "Rich-ed4jtAVn.css",
+      "gzipBytes": 2451
+    },
+    {
+      "file": "index-C5bUpA4O.js",
+      "gzipBytes": 121494
+    },
+    {
+      "file": "index-COzb6iy-.css",
+      "gzipBytes": 12252
+    },
+    {
+      "file": "worker-Dow3hptm.js",
+      "gzipBytes": 69243
+    }
+  ],
+  "firstPlayPageTargetTransfers": [
+    {
+      "url": "http://127.0.0.1:4180/",
+      "type": "Document",
+      "bytes": 1028
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/index-COzb6iy-.css",
+      "type": "Stylesheet",
+      "bytes": 12844
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/index-C5bUpA4O.js",
+      "type": "Script",
+      "bytes": 122094
+    }
+  ],
+  "mobileFirstPlayPageTargetTransfers": [
+    {
+      "url": "http://127.0.0.1:4180/",
+      "type": "Document",
+      "bytes": 1028
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/index-COzb6iy-.css",
+      "type": "Stylesheet",
+      "bytes": 12844
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/index-C5bUpA4O.js",
+      "type": "Script",
+      "bytes": 122094
+    }
+  ],
+  "firstPlayPageTargetTransferBytes": 135966,
+  "mobileFirstPlayPageTargetTransferBytes": 135966,
+  "transferNote": "Page-target CDP transfers may omit dedicated-worker target requests; build inventory additionally counts every worker/lazy JavaScript and CSS file as a conservative upper bound.",
+  "centuryLoadMs": 1358,
+  "centuryCheckpointSha256": "c23c2c120391ddb9a949d304c675a687bf5b02ee42039ea0a3d3b40d45f3d031",
+  "centuryRestoreReference": "Separate unthrottled 100-season initialization measurement",
   "initializationLimitMs": 5000,
-  "inputSamples": 19,
-  "pointerToSecondFrameP95Ms": 30,
+  "inputSamples": 18,
+  "pointerToSecondFrameP95Ms": 64,
   "inputLimitMs": 100,
-  "canvasAnimationFps": 61,
   "minimumFps": 30,
   "mobileHorizontalOverflow": false,
   "pageErrors": [],
   "passed": true,
-  "scope": "Local Chromium, 1440px and 390px layouts, built CSP preview, 100-season restore. Pointer-to-second-frame is a presentation latency measurement; no universal device-speed claim.",
-  "currentHeadVerified": false,
-  "handoffNote": "Earlier measured source only; final client/validation/assist/era changes require rerun. First-play artifact is unthrottled and does not satisfy the required reference profile."
+  "scope": "Built Netlify-policy local CSP preview. Reference pages use CDP 4x page CPU slowdown and cold Fast 4G (9/1.5 Mbps,60ms); mobile uses DPR2. FPS counts actual pitch background paints during playback. Pointer-to-second-frame measures presentation latency for post-founding navigation/replay controls. Entry JavaScript/CSS and conservative all-asset compressed budgets are separate; page-target transfers may omit worker targets. No universal device-speed or live-provider validation claim."
 }

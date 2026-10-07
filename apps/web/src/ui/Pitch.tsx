@@ -1,4 +1,12 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import type {
   MatchPlayback,
   MatchFrame,
@@ -11,6 +19,7 @@ import { playerTraits } from '../../../../packages/engine/src/match';
 import { tacticLabel } from '../../../../packages/engine/src/world';
 import { percent } from './format';
 import s from './App.module.css';
+import t from './Pitch.module.css';
 
 const stateLabels: Record<PlayerMotionState, string> = {
   shape: '포메이션 유지',
@@ -57,22 +66,28 @@ export function Pitch({
   summary = false,
   onFinish,
   onPlaybackStart,
+  onPresentationChange,
+  afterControls,
 }: {
   playback?: MatchPlayback;
   world: World;
   summary?: boolean;
   onFinish?: (id: string) => void;
   onPlaybackStart?: (id: string) => void;
+  onPresentationChange?: (state: { matchId?: string; finished: boolean; details: boolean }) => void;
+  afterControls?: ReactNode;
 }) {
+  const detailsId = useId();
   const canvas = useRef<HTMLCanvasElement>(null);
   const clock = useRef(0);
   const last = useRef(0);
   const lastUi = useRef(0);
   const [sampleIndex, setSampleIndex] = useState(0);
   const [sampleMatchId, setSampleMatchId] = useState(p?.record.id);
-  const [speed, setSpeed] = useState(1);
+  const [speed, setSpeed] = useState(4);
   const [paused, setPaused] = useState(false);
   const [inspect, setInspect] = useState(false);
+  const [details, setDetails] = useState(false);
   const [selection, setSelection] = useState('0:8');
   const samples = useMemo<Sample[]>(
     () =>
@@ -99,6 +114,13 @@ export function Pitch({
   const selectedPlayer = p?.squads[selectedSide]?.[selectedIndex];
   const selectedMotion = sample?.players?.[selectedSide]?.[selectedIndex];
   const traits = selectedPlayer ? playerTraits(selectedPlayer) : undefined;
+  const latest = p?.record.highlights
+    .filter((event) => event.minute <= (frame?.minute ?? 0))
+    .at(-1);
+
+  useLayoutEffect(() => {
+    onPresentationChange?.({ matchId: p?.record.id, finished, details });
+  }, [p?.record.id, finished, details, onPresentationChange]);
 
   useEffect(() => {
     if (finished && p && samples.length) onFinish?.(p.record.id);
@@ -110,9 +132,19 @@ export function Pitch({
     setSampleIndex(0);
     setSampleMatchId(p?.record.id);
     setSelection('0:8');
-    setPaused(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    setDetails(false);
+    setInspect(false);
+    setPaused(document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     if (p) onPlaybackStart?.(p.record.id);
   }, [p?.record.id, onPlaybackStart]);
+
+  useEffect(() => {
+    const hide = () => {
+      if (document.hidden) setPaused(true);
+    };
+    document.addEventListener('visibilitychange', hide);
+    return () => document.removeEventListener('visibilitychange', hide);
+  }, []);
 
   useEffect(() => {
     let raf = 0;
@@ -135,7 +167,7 @@ export function Pitch({
       const ctx = element?.getContext('2d');
       if (element && ctx) {
         const width = element.clientWidth;
-        const height = width / 1.65;
+        const height = element.clientHeight;
         const dpr = Math.min(2, window.devicePixelRatio || 1);
         if (
           element.width !== Math.round(width * dpr) ||
@@ -240,19 +272,19 @@ export function Pitch({
     if (p && index < samples.length - 1) onPlaybackStart?.(p.record.id);
   };
   return (
-    <div className={s.pitch}>
-      <div className={s.scoreboard}>
+    <div className={`${s.pitch} ${t.pitch}`} data-testid="pitch-theatre">
+      <div className={`${s.scoreboard} ${t.scoreboard}`} data-testid="match-score">
         <span>{home?.name || 'HOME'}</span>
         <strong>{frame ? `${frame.score.home} : ${frame.score.away}` : '— : —'}</strong>
         <span>{away?.name || 'AWAY'}</span>
       </div>
-      <div className={s.pitchMeta}>
+      <div className={`${s.pitchMeta} ${t.pitchMeta}`}>
         <span className={s.live}>
           {frame
             ? `${frame.minute}′ · ${frame.action}${finished ? ' · 경기 종료' : ''}`
             : 'MATCH DAY'}
         </span>
-        <span>
+        <span className={t.tactics}>
           {summary
             ? '지난 경기 · 기록된 골과 최종 통계'
             : p
@@ -260,7 +292,7 @@ export function Pitch({
               : '다음 경기를 선택하면 관전이 시작됩니다'}
         </span>
       </div>
-      {inspect && sample?.phase && (
+      {details && inspect && sample?.phase && (
         <div className={s.pitchMeta}>
           <span>{phaseLabels[sample.phase]}</span>
           <span>
@@ -270,8 +302,22 @@ export function Pitch({
           </span>
         </div>
       )}
-      <canvas ref={canvas} aria-label="22명의 선수와 공으로 표현하는 경기" className={s.canvas} />
-      <div className={s.playControls}>
+      <canvas
+        ref={canvas}
+        aria-label="22명의 선수와 공으로 표현하는 경기"
+        className={`${s.canvas} ${t.canvas}`}
+      />
+      <div className={t.latestEvent} data-testid="match-latest-event">
+        <span>최근 장면</span>
+        <p>
+          {latest
+            ? `${latest.minute}′ ${latest.player} · ${latest.action}`
+            : frame
+              ? `${frame.minute}′ ${frame.action}`
+              : '다음 경기를 시작하고 우리 선발의 활약을 지켜보세요.'}
+        </p>
+      </div>
+      <div className={`${s.playControls} ${t.playControls}`}>
         <button
           onClick={() => {
             if (finished) seek(0);
@@ -281,9 +327,13 @@ export function Pitch({
         >
           {finished ? '다시 보기' : paused ? '재생' : '일시정지'}
         </button>
-        <label>
-          관전 속도{' '}
-          <select value={speed} onChange={(e) => setSpeed(Number(e.target.value))}>
+        <label className={t.speed}>
+          <span>관전 속도</span>
+          <select
+            aria-label="관전 속도"
+            value={speed}
+            onChange={(e) => setSpeed(Number(e.target.value))}
+          >
             <option value={1}>1×</option>
             <option value={4}>4×</option>
             <option value={12}>12×</option>
@@ -298,106 +348,122 @@ export function Pitch({
         >
           결과 보기
         </button>
-      </div>
-      {p && (
-        <label className={s.replayScrubber}>
-          경기 시간
-          <input
-            type="range"
-            aria-label="경기 시간"
-            min={0}
-            max={samples.length - 1}
-            value={sampleIndex}
-            onChange={(e) => {
-              seek(Number(e.target.value));
-              setPaused(true);
-            }}
-          />
-          <span>{frame?.minute || 0}′ / 90′</span>
-        </label>
-      )}
-      {!!sample?.players && (
         <button
-          className={s.inspectorToggle}
-          aria-expanded={inspect}
-          onClick={() => setInspect(!inspect)}
+          aria-expanded={details}
+          aria-controls={detailsId}
+          disabled={!p}
+          onClick={() => {
+            setDetails(!details);
+            if (details) setInspect(false);
+          }}
         >
-          {inspect ? '선수 판단 접기' : '선수 판단 보기'}
+          경기 상세
         </button>
-      )}
-      {inspect && selectedPlayer && selectedMotion && traits && (
-        <div className={s.playerInspector}>
-          <label>
-            살펴볼 선수
-            <select value={selection} onChange={(e) => setSelection(e.target.value)}>
-              {p?.squads.map((squad, side) => (
-                <optgroup key={side} label={side === 0 ? home?.name : away?.name}>
-                  {squad.map((player, i) => (
-                    <option key={player.id} value={`${side}:${i}`}>
-                      {i + 1}. {player.name} · {player.role}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
+      </div>
+      {afterControls}
+      <div id={detailsId} hidden={!details} className={t.details}>
+        {p && (
+          <label className={s.replayScrubber}>
+            경기 시간
+            <input
+              type="range"
+              aria-label="경기 시간"
+              min={0}
+              max={samples.length - 1}
+              value={sampleIndex}
+              onChange={(e) => {
+                seek(Number(e.target.value));
+                setPaused(true);
+              }}
+            />
+            <span>{frame?.minute || 0}′ / 90′</span>
           </label>
-          <p>
-            <b>{stateLabels[selectedMotion.state]}</b> · 점선은 이 선수가 선택한 이동 목표입니다.
-          </p>
-          <div className={s.playerTraits}>
-            {(
-              [
-                ['자유도', traits.freedom],
-                ['규율', traits.discipline],
-                ['압박 성향', traits.aggression],
-                ['예측력', traits.anticipation],
-              ] as const
-            ).map(([label, value]) => (
-              <span key={label}>
-                {label} {Math.round(value * 100)}
-                <progress aria-label={label} max={1} value={value} />
-              </span>
-            ))}
-          </div>
-          <p className={s.muted}>능력과 개인 성향에 전술·체력·주변 선수 위치가 함께 작용합니다.</p>
-        </div>
-      )}
-      {frame && (!summary || finished) && (
-        <>
-          <div className={s.matchStats}>
-            {[
-              [
-                '점유율',
-                percent(frame.metrics[0][11], frame.minute),
-                percent(frame.metrics[1][11], frame.minute),
-              ],
-              ['슈팅', frame.metrics[0][4], frame.metrics[1][4]],
-              ['유효 슈팅', frame.metrics[0][5], frame.metrics[1][5]],
-              [
-                '패스 성공',
-                percent(frame.metrics[0][3], frame.metrics[0][2]),
-                percent(frame.metrics[1][3], frame.metrics[1][2]),
-              ],
-              ['태클', frame.metrics[0][6], frame.metrics[1][6]],
-            ].map(([label, a, b]) => (
-              <div key={label}>
-                <strong>{a}</strong>
-                <span>{label}</span>
-                <strong>{b}</strong>
-              </div>
-            ))}
-          </div>
-          <ol className={s.highlights}>
-            {p?.record.highlights
-              .filter((h) => h.minute <= frame.minute)
-              .map((h, i) => (
-                <li key={i}>
-                  <b>{h.minute}′</b> {h.player} · {h.action}
-                </li>
+        )}
+        {!!sample?.players && (
+          <button
+            className={s.inspectorToggle}
+            aria-expanded={inspect}
+            onClick={() => setInspect(!inspect)}
+          >
+            {inspect ? '선수 판단 접기' : '선수 판단 보기'}
+          </button>
+        )}
+        {inspect && selectedPlayer && selectedMotion && traits && (
+          <div className={s.playerInspector}>
+            <label>
+              살펴볼 선수
+              <select value={selection} onChange={(e) => setSelection(e.target.value)}>
+                {p?.squads.map((squad, side) => (
+                  <optgroup key={side} label={side === 0 ? home?.name : away?.name}>
+                    {squad.map((player, i) => (
+                      <option key={player.id} value={`${side}:${i}`}>
+                        {i + 1}. {player.name} · {player.role}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </label>
+            <p>
+              <b>{stateLabels[selectedMotion.state]}</b> · 점선은 이 선수가 선택한 이동 목표입니다.
+            </p>
+            <div className={s.playerTraits}>
+              {(
+                [
+                  ['자유도', traits.freedom],
+                  ['규율', traits.discipline],
+                  ['압박 성향', traits.aggression],
+                  ['예측력', traits.anticipation],
+                ] as const
+              ).map(([label, value]) => (
+                <span key={label}>
+                  {label} {Math.round(value * 100)}
+                  <progress aria-label={label} max={1} value={value} />
+                </span>
               ))}
-          </ol>
-        </>
-      )}
+            </div>
+            <p className={s.muted}>
+              능력과 개인 성향에 전술·체력·주변 선수 위치가 함께 작용합니다.
+            </p>
+          </div>
+        )}
+        {frame && (!summary || finished) && (
+          <>
+            <div className={s.matchStats}>
+              {[
+                [
+                  '점유율',
+                  percent(frame.metrics[0][11], frame.minute),
+                  percent(frame.metrics[1][11], frame.minute),
+                ],
+                ['슈팅', frame.metrics[0][4], frame.metrics[1][4]],
+                ['유효 슈팅', frame.metrics[0][5], frame.metrics[1][5]],
+                [
+                  '패스 성공',
+                  percent(frame.metrics[0][3], frame.metrics[0][2]),
+                  percent(frame.metrics[1][3], frame.metrics[1][2]),
+                ],
+                ['태클', frame.metrics[0][6], frame.metrics[1][6]],
+              ].map(([label, a, b]) => (
+                <div key={label}>
+                  <strong>{a}</strong>
+                  <span>{label}</span>
+                  <strong>{b}</strong>
+                </div>
+              ))}
+            </div>
+            <ol className={s.highlights}>
+              {p?.record.highlights
+                .filter((h) => h.minute <= frame.minute)
+                .map((h, i) => (
+                  <li key={i}>
+                    <b>{h.minute}′</b> {h.player} · {h.action}
+                  </li>
+                ))}
+            </ol>
+          </>
+        )}
+      </div>
     </div>
   );
 }
