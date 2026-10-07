@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r10 | Define the implemented browser-demo behavior for browser game delivery.
+> r11 | Define the implemented browser-demo behavior for browser game delivery.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -23,7 +23,7 @@
 
 - WEB-14 [o] The business view groups facilities, sponsors, marketing and tickets into compact selectable panels with current cash/fixed-cost context. The complete actual ledger remains an explicit detail sheet; budget alerts and bounded local-support recovery stay actionable.
 
-- WEB-15 [o] Founding is a compact mobile screen with club name, country and capital choice, a recommended generous start, and one create action. Colors and reproducible seed are explicit advanced settings. Existing save hydration shows loading instead of a new-club form; invalid existing saves retain recovery/export paths.
+- WEB-15 [o] Founding is a compact mobile screen with club name, country and capital choice, a recommended generous start, and one create action. The basic screen, including recovery/import tools and footer, fits 360x740 and390x844 without document scrolling across supported browser/platform font metrics. Text remains readable and primary touch targets stay at least44CSSpx; no overflow masking is allowed. Colors and reproducible seed are explicit advanced settings and may use necessary scrolling. Existing save hydration shows loading instead of a new-club form; invalid existing saves retain recovery/export paths.
 
 - WEB-16 [o] First-session help explains optional match preparation, one-action observation, earned player growth and cost-bearing club investment. It derives completion from actual milestones, does not require a tutorial gate, and can be reopened from the menu.
 
@@ -39,6 +39,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r11 261008 WEB-15✎ compact mobile founding→complete basic screen bounds across supported browser/platform font metrics
 - r10 261008 WEB-19+ local-build-only provenance→current source and served-build identity with changed-input rejection
 - r9 261008 WEB-17✎ 44px core controls→44px primary buttons and native selection controls across preparation, recruitment and league exploration
 - r8 261008 WEB-17+ WEB-18+ stacked pitch panels and hidden mobile paces→compact match theatre, explicit detail/settings and lifecycle pause

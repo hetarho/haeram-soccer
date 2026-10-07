@@ -1817,7 +1817,13 @@
     display: none;
   }
   .startLayout .main {
-    padding: 0 16px 16px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    padding: 0 16px 8px;
+  }
+  .startLayout .main > * {
+    flex-shrink: 0;
   }
   .startLayout .topbar {
     min-height: 42px;
@@ -1828,6 +1834,7 @@
   .startLayout .footer {
     font-size: 10px;
     margin: 0;
+    margin-top: auto;
     padding: 8px 0;
   }
 }

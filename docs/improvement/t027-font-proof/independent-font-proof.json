@@ -1,0 +1,639 @@
+{
+  "date": "2026-10-07T23:13:33.944Z",
+  "scope": "Current production preview on Mac browser engines, using the real Debian WenQuanYi Zen Hei face through binary FontFace IPC; reproduces old CI doc794 but does not replace Linux CI validation",
+  "oldBuildDocHeight360": 794,
+  "currentEntrySha256": "317f06a9d4725193516940735c85971c3258c1481db062e81c6e5561ea926892",
+  "measurements": [
+    {
+      "browser": "chromium",
+      "viewport": {
+        "width": 360,
+        "height": 740
+      },
+      "document": {
+        "height": 740,
+        "width": 360,
+        "viewportWidth": 360,
+        "viewportHeight": 740,
+        "scrollY": 0
+      },
+      "rows": {
+        "main": {
+          "x": 0,
+          "y": 0,
+          "width": 360,
+          "height": 740,
+          "bottom": 740,
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "display": "flex",
+          "text": "Haeram Football\n1901 · A NEW BEGINNING\nHAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, "
+        },
+        "founding": {
+          "x": 16,
+          "y": 52,
+          "width": 328,
+          "height": 560.859375,
+          "bottom": 612.859375,
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "display": "block",
+          "text": "HAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요.\n\n01\n준비\n→\n02\n경기\n→"
+        },
+        "cta": {
+          "x": 16,
+          "y": 558.859375,
+          "width": 328,
+          "height": 48,
+          "bottom": 606.859375,
+          "fontSize": "16px",
+          "lineHeight": "25.6px",
+          "display": "block",
+          "text": "클럽 창단 →"
+        },
+        "import": {
+          "x": 16,
+          "y": 618.859375,
+          "width": 328,
+          "height": 44,
+          "bottom": 662.859375,
+          "fontSize": "12px",
+          "lineHeight": "19.2px",
+          "display": "flex",
+          "text": "기록 파일 가져오기"
+        },
+        "footer": {
+          "x": 16,
+          "y": 699,
+          "width": 328,
+          "height": 33,
+          "bottom": 732,
+          "fontSize": "10px",
+          "lineHeight": "16px",
+          "display": "grid",
+          "text": "로그인 없이 시작하세요"
+        },
+        "intro": {
+          "x": 16,
+          "y": 125.75,
+          "width": 328,
+          "height": 34.78125,
+          "bottom": 160.53125,
+          "fontSize": "12px",
+          "lineHeight": "17.4px",
+          "display": "block",
+          "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+        },
+        "capitalNote": {
+          "x": 22,
+          "y": 414.28125,
+          "width": 93.328125,
+          "height": 16.796875,
+          "bottom": 431.078125,
+          "fontSize": "12px",
+          "lineHeight": "16.8px",
+          "display": "block",
+          "text": "추천 · 운영비 2배"
+        },
+        "originNote": {
+          "x": 16,
+          "y": 519.265625,
+          "width": 328,
+          "height": 33.59375,
+          "bottom": 552.859375,
+          "fontSize": "12px",
+          "lineHeight": "16.8px",
+          "display": "block",
+          "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+        }
+      },
+      "passed": true
+    },
+    {
+      "browser": "chromium",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "document": {
+        "height": 844,
+        "width": 390,
+        "viewportWidth": 390,
+        "viewportHeight": 844,
+        "scrollY": 0
+      },
+      "rows": {
+        "main": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "bottom": 844,
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "display": "flex",
+          "text": "Haeram Football\n1901 · A NEW BEGINNING\nHAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, "
+        },
+        "founding": {
+          "x": 16,
+          "y": 52,
+          "width": 358,
+          "height": 678.015625,
+          "bottom": 730.015625,
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "display": "block",
+          "text": "HAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요.\n\n01\n준비\n→\n02\n경기\n→"
+        },
+        "cta": {
+          "x": 16,
+          "y": 670.015625,
+          "width": 358,
+          "height": 48,
+          "bottom": 718.015625,
+          "fontSize": "16px",
+          "lineHeight": "25.6px",
+          "display": "block",
+          "text": "클럽 창단 →"
+        },
+        "import": {
+          "x": 16,
+          "y": 736.015625,
+          "width": 358,
+          "height": 44,
+          "bottom": 780.015625,
+          "fontSize": "12px",
+          "lineHeight": "19.2px",
+          "display": "flex",
+          "text": "기록 파일 가져오기"
+        },
+        "footer": {
+          "x": 16,
+          "y": 803,
+          "width": 358,
+          "height": 33,
+          "bottom": 836,
+          "fontSize": "10px",
+          "lineHeight": "16px",
+          "display": "grid",
+          "text": "로그인 없이 시작하세요"
+        },
+        "intro": {
+          "x": 16,
+          "y": 134.25,
+          "width": 358,
+          "height": 41.59375,
+          "bottom": 175.84375,
+          "fontSize": "13px",
+          "lineHeight": "20.8px",
+          "display": "block",
+          "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+        },
+        "capitalNote": {
+          "x": 24,
+          "y": 494.03125,
+          "width": 99.328125,
+          "height": 19.1875,
+          "bottom": 513.21875,
+          "fontSize": "12px",
+          "lineHeight": "19.2px",
+          "display": "block",
+          "text": "추천 · 운영비 2배"
+        },
+        "originNote": {
+          "x": 16,
+          "y": 622.015625,
+          "width": 358,
+          "height": 36,
+          "bottom": 658.015625,
+          "fontSize": "12px",
+          "lineHeight": "18px",
+          "display": "block",
+          "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+        }
+      },
+      "passed": true
+    },
+    {
+      "browser": "firefox",
+      "viewport": {
+        "width": 360,
+        "height": 740
+      },
+      "document": {
+        "height": 740,
+        "width": 360,
+        "viewportWidth": 360,
+        "viewportHeight": 740,
+        "scrollY": 0
+      },
+      "rows": {
+        "main": {
+          "x": 0,
+          "y": 0,
+          "width": 360,
+          "height": 740,
+          "bottom": 740,
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "display": "flex",
+          "text": "Haeram Football\n1901 · A NEW BEGINNING\nHAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, "
+        },
+        "founding": {
+          "x": 16,
+          "y": 52,
+          "width": 328,
+          "height": 560.9500122070312,
+          "bottom": 612.9500122070312,
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "display": "block",
+          "text": "HAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요.\n\n01\n준비\n→\n02\n경기\n→"
+        },
+        "cta": {
+          "x": 16,
+          "y": 558.9500122070312,
+          "width": 328,
+          "height": 48,
+          "bottom": 606.9500122070312,
+          "fontSize": "16px",
+          "lineHeight": "25.6px",
+          "display": "block",
+          "text": "클럽 창단 →"
+        },
+        "import": {
+          "x": 16,
+          "y": 618.9500122070312,
+          "width": 328,
+          "height": 44,
+          "bottom": 662.9500122070312,
+          "fontSize": "12px",
+          "lineHeight": "19.2px",
+          "display": "flex",
+          "text": "기록 파일 가져오기"
+        },
+        "footer": {
+          "x": 16,
+          "y": 699,
+          "width": 328,
+          "height": 33,
+          "bottom": 732,
+          "fontSize": "10px",
+          "lineHeight": "16px",
+          "display": "grid",
+          "text": "로그인 없이 시작하세요"
+        },
+        "intro": {
+          "x": 16,
+          "y": 125.75,
+          "width": 328,
+          "height": 34.80000305175781,
+          "bottom": 160.5500030517578,
+          "fontSize": "12px",
+          "lineHeight": "17.4px",
+          "display": "block",
+          "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+        },
+        "capitalNote": {
+          "x": 22,
+          "y": 414.3500061035156,
+          "width": 93.33332824707031,
+          "height": 16.79998779296875,
+          "bottom": 431.1499938964844,
+          "fontSize": "12px",
+          "lineHeight": "16.8px",
+          "display": "block",
+          "text": "추천 · 운영비 2배"
+        },
+        "originNote": {
+          "x": 16,
+          "y": 519.3499755859375,
+          "width": 328,
+          "height": 33.59999084472656,
+          "bottom": 552.9499664306641,
+          "fontSize": "12px",
+          "lineHeight": "16.8px",
+          "display": "block",
+          "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+        }
+      },
+      "passed": true
+    },
+    {
+      "browser": "firefox",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "document": {
+        "height": 844,
+        "width": 390,
+        "viewportWidth": 390,
+        "viewportHeight": 844,
+        "scrollY": 0
+      },
+      "rows": {
+        "main": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "bottom": 844,
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "display": "flex",
+          "text": "Haeram Football\n1901 · A NEW BEGINNING\nHAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, "
+        },
+        "founding": {
+          "x": 16,
+          "y": 52,
+          "width": 358,
+          "height": 678.0499877929688,
+          "bottom": 730.0499877929688,
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "display": "block",
+          "text": "HAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요.\n\n01\n준비\n→\n02\n경기\n→"
+        },
+        "cta": {
+          "x": 16,
+          "y": 670.0499877929688,
+          "width": 358,
+          "height": 48,
+          "bottom": 718.0499877929688,
+          "fontSize": "16px",
+          "lineHeight": "25.6px",
+          "display": "block",
+          "text": "클럽 창단 →"
+        },
+        "import": {
+          "x": 16,
+          "y": 736.0499877929688,
+          "width": 358,
+          "height": 44,
+          "bottom": 780.0499877929688,
+          "fontSize": "12px",
+          "lineHeight": "19.2px",
+          "display": "flex",
+          "text": "기록 파일 가져오기"
+        },
+        "footer": {
+          "x": 16,
+          "y": 803,
+          "width": 358,
+          "height": 33,
+          "bottom": 836,
+          "fontSize": "10px",
+          "lineHeight": "16px",
+          "display": "grid",
+          "text": "로그인 없이 시작하세요"
+        },
+        "intro": {
+          "x": 16,
+          "y": 134.25,
+          "width": 358,
+          "height": 41.600006103515625,
+          "bottom": 175.85000610351562,
+          "fontSize": "13px",
+          "lineHeight": "20.8px",
+          "display": "block",
+          "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+        },
+        "capitalNote": {
+          "x": 24,
+          "y": 494.04998779296875,
+          "width": 99.33332824707031,
+          "height": 19.199996948242188,
+          "bottom": 513.2499847412109,
+          "fontSize": "12px",
+          "lineHeight": "19.2px",
+          "display": "block",
+          "text": "추천 · 운영비 2배"
+        },
+        "originNote": {
+          "x": 16,
+          "y": 622.0499877929688,
+          "width": 358,
+          "height": 36,
+          "bottom": 658.0499877929688,
+          "fontSize": "12px",
+          "lineHeight": "18px",
+          "display": "block",
+          "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+        }
+      },
+      "passed": true
+    },
+    {
+      "browser": "webkit",
+      "viewport": {
+        "width": 360,
+        "height": 740
+      },
+      "document": {
+        "height": 740,
+        "width": 360,
+        "viewportWidth": 360,
+        "viewportHeight": 740,
+        "scrollY": 0
+      },
+      "rows": {
+        "main": {
+          "x": 0,
+          "y": 0,
+          "width": 360,
+          "height": 740,
+          "bottom": 740,
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "display": "flex",
+          "text": "Haeram Football\n1901 · A NEW BEGINNING\nHAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, "
+        },
+        "founding": {
+          "x": 16,
+          "y": 52,
+          "width": 328,
+          "height": 560.859375,
+          "bottom": 612.859375,
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "display": "block",
+          "text": "HAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요.\n\n01\n준비\n→\n02\n경기\n→"
+        },
+        "cta": {
+          "x": 16,
+          "y": 558.859375,
+          "width": 328,
+          "height": 48,
+          "bottom": 606.859375,
+          "fontSize": "16px",
+          "lineHeight": "25.6px",
+          "display": "block",
+          "text": "클럽 창단 →"
+        },
+        "import": {
+          "x": 16,
+          "y": 618.859375,
+          "width": 328,
+          "height": 44,
+          "bottom": 662.859375,
+          "fontSize": "12px",
+          "lineHeight": "19.200001px",
+          "display": "flex",
+          "text": "기록 파일 가져오기"
+        },
+        "footer": {
+          "x": 16,
+          "y": 699,
+          "width": 328,
+          "height": 33,
+          "bottom": 732,
+          "fontSize": "10px",
+          "lineHeight": "16px",
+          "display": "grid",
+          "text": "로그인 없이 시작하세요"
+        },
+        "intro": {
+          "x": 16,
+          "y": 125.75,
+          "width": 328,
+          "height": 34.78125,
+          "bottom": 160.53125,
+          "fontSize": "12px",
+          "lineHeight": "17.400002px",
+          "display": "block",
+          "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+        },
+        "capitalNote": {
+          "x": 22,
+          "y": 414.28125,
+          "width": 93.328125,
+          "height": 16.796875,
+          "bottom": 431.078125,
+          "fontSize": "12px",
+          "lineHeight": "16.799999px",
+          "display": "block",
+          "text": "추천 · 운영비 2배"
+        },
+        "originNote": {
+          "x": 16,
+          "y": 519.265625,
+          "width": 328,
+          "height": 33.59375,
+          "bottom": 552.859375,
+          "fontSize": "12px",
+          "lineHeight": "16.799999px",
+          "display": "block",
+          "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+        }
+      },
+      "passed": true
+    },
+    {
+      "browser": "webkit",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "document": {
+        "height": 844,
+        "width": 390,
+        "viewportWidth": 390,
+        "viewportHeight": 844,
+        "scrollY": 0
+      },
+      "rows": {
+        "main": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "bottom": 844,
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "display": "flex",
+          "text": "Haeram Football\n1901 · A NEW BEGINNING\nHAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, "
+        },
+        "founding": {
+          "x": 16,
+          "y": 52,
+          "width": 358,
+          "height": 678.015625,
+          "bottom": 730.015625,
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "display": "block",
+          "text": "HAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요.\n\n01\n준비\n→\n02\n경기\n→"
+        },
+        "cta": {
+          "x": 16,
+          "y": 670.015625,
+          "width": 358,
+          "height": 48,
+          "bottom": 718.015625,
+          "fontSize": "16px",
+          "lineHeight": "25.6px",
+          "display": "block",
+          "text": "클럽 창단 →"
+        },
+        "import": {
+          "x": 16,
+          "y": 736.015625,
+          "width": 358,
+          "height": 44,
+          "bottom": 780.015625,
+          "fontSize": "12px",
+          "lineHeight": "19.200001px",
+          "display": "flex",
+          "text": "기록 파일 가져오기"
+        },
+        "footer": {
+          "x": 16,
+          "y": 803,
+          "width": 358,
+          "height": 33,
+          "bottom": 836,
+          "fontSize": "10px",
+          "lineHeight": "16px",
+          "display": "grid",
+          "text": "로그인 없이 시작하세요"
+        },
+        "intro": {
+          "x": 16,
+          "y": 134.25,
+          "width": 358,
+          "height": 41.59375,
+          "bottom": 175.84375,
+          "fontSize": "13px",
+          "lineHeight": "20.800001px",
+          "display": "block",
+          "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+        },
+        "capitalNote": {
+          "x": 24,
+          "y": 494.03125,
+          "width": 99.328125,
+          "height": 19.1875,
+          "bottom": 513.21875,
+          "fontSize": "12px",
+          "lineHeight": "19.200001px",
+          "display": "block",
+          "text": "추천 · 운영비 2배"
+        },
+        "originNote": {
+          "x": 16,
+          "y": 622.015625,
+          "width": 358,
+          "height": 36,
+          "bottom": 658.015625,
+          "fontSize": "12px",
+          "lineHeight": "18px",
+          "display": "block",
+          "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+        }
+      },
+      "passed": true
+    }
+  ],
+  "passed": true
+}

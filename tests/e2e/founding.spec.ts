@@ -4,6 +4,68 @@ import { decode } from '../../apps/web/src/adapters/persistence';
 import { createWorld, operatingCost } from '../../packages/engine/src/index';
 import type { World } from '../../packages/contracts/src/types';
 
+async function completeFoundingGeometry(page: Page) {
+  return page.evaluate(() => {
+    const founding = document.querySelector('[data-testid="club-founding"]')!;
+    const tools = document.querySelector('main [class*="startTools"]')!;
+    const footer = document.querySelector('main [class*="footer"]')!;
+    const required = [
+      ...founding.querySelectorAll('form > label input,form > label select,button,summary'),
+      tools.querySelector('label')!,
+    ].filter((element) => element.getClientRects().length);
+    const measure = (element: Element) => {
+      const bounds = element.getBoundingClientRect();
+      return {
+        label:
+          element.getAttribute('aria-label') ||
+          element.closest('label')?.textContent ||
+          element.textContent,
+        x: bounds.x,
+        y: bounds.y,
+        width: bounds.width,
+        height: bounds.height,
+      };
+    };
+    return {
+      width: document.documentElement.scrollWidth,
+      height: document.documentElement.scrollHeight,
+      viewportWidth: innerWidth,
+      viewportHeight: innerHeight,
+      scroll: scrollY,
+      controls: required.map(measure),
+      footer: measure(footer),
+      notes: [
+        founding.querySelector('header p')!,
+        founding.querySelector('button[aria-pressed="true"] small')!,
+        founding.querySelector('[class*="origin"] small')!,
+      ].map((element) => ({
+        height: element.getBoundingClientRect().height,
+        lineHeight: Number.parseFloat(getComputedStyle(element).lineHeight),
+        fontSize: Number.parseFloat(getComputedStyle(element).fontSize),
+      })),
+    };
+  });
+}
+
+function expectCompleteFoundingFits(
+  geometry: Awaited<ReturnType<typeof completeFoundingGeometry>>,
+) {
+  const measured = JSON.stringify(geometry);
+  expect(geometry.width, measured).toBeLessThanOrEqual(geometry.viewportWidth);
+  expect(geometry.height, measured).toBeLessThanOrEqual(geometry.viewportHeight + 2);
+  expect(geometry.scroll, measured).toBe(0);
+  for (const bounds of [...geometry.controls, geometry.footer]) {
+    expect(bounds.x, measured).toBeGreaterThanOrEqual(0);
+    expect(bounds.y, measured).toBeGreaterThanOrEqual(0);
+    expect(bounds.x + bounds.width, measured).toBeLessThanOrEqual(geometry.viewportWidth);
+    expect(bounds.y + bounds.height, measured).toBeLessThanOrEqual(geometry.viewportHeight);
+  }
+  for (const control of geometry.controls) {
+    expect(control.width, measured).toBeGreaterThanOrEqual(44);
+    expect(control.height, measured).toBeGreaterThanOrEqual(44);
+  }
+}
+
 async function exportWorld(page: Page): Promise<World> {
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
@@ -31,6 +93,7 @@ for (const viewport of [
     await expect(founding).toBeVisible();
     const create = founding.getByRole('button', { name: '클럽 창단' });
     const bounds = await create.boundingBox();
+    expectCompleteFoundingFits(await completeFoundingGeometry(page));
     const geometry = await page.evaluate(() => ({
       width: document.documentElement.scrollWidth,
       height: document.documentElement.scrollHeight,
@@ -114,6 +177,40 @@ for (const viewport of [
     expect(audit.seenFounding).toBe(false);
     await expect(page.getByTestId('club-founding')).toHaveCount(0);
     expect(await exportWorld(page)).toEqual(actual);
+  });
+
+  test(`fits all founding controls and recovery tools with wrapped fallback text at ${viewport.width}x${viewport.height}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    await expect(page.getByTestId('club-founding')).toBeVisible();
+    await expect(page.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
+    await page.addStyleTag({
+      content:
+        'body { font-family: monospace !important; letter-spacing: 0.75px; word-spacing: 0.15em; }',
+    });
+    const geometry = await completeFoundingGeometry(page);
+    expect(
+      geometry.notes.some((note) => note.height >= note.lineHeight * 1.5),
+      JSON.stringify(geometry.notes),
+    ).toBe(true);
+    expect(
+      geometry.notes.every((note) => note.fontSize >= 12),
+      JSON.stringify(geometry.notes),
+    ).toBe(true);
+    expectCompleteFoundingFits(geometry);
+    const founding = page.getByTestId('club-founding');
+    await founding.getByRole('button', { name: '작은 출발' }).click();
+    await expect(founding.getByRole('button', { name: '작은 출발' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await founding.getByText('고급 설정', { exact: true }).click();
+    await founding.getByLabel('세계 생성 시드').fill(`wrapped-font-${viewport.width}`);
+    await founding.getByRole('button', { name: '클럽 창단' }).click();
+    await expect(page.getByTestId('club-hub')).toBeVisible();
+    await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   });
 }
 

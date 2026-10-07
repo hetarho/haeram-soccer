@@ -1,0 +1,794 @@
+[
+  {
+    "engine": "chromium",
+    "path": "/Users/ihaelam/project/haeram-soccer/.tmp/improvement/t027-font-proof/chromium-360x740.png",
+    "width": 360,
+    "height": 740,
+    "viewport": [
+      360,
+      740
+    ],
+    "scroll": [
+      0,
+      0
+    ],
+    "notes": [
+      {
+        "height": 34.78125,
+        "lineHeight": "17.4px",
+        "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+      },
+      {
+        "height": 16.796875,
+        "lineHeight": "16.8px",
+        "text": "추천 · 운영비 2배"
+      },
+      {
+        "height": 33.59375,
+        "lineHeight": "16.8px",
+        "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+      }
+    ],
+    "targets": [
+      {
+        "tag": "INPUT",
+        "label": "클럽 이름",
+        "x": 16,
+        "y": 228.71875,
+        "width": 328,
+        "height": 48,
+        "bottom": 276.71875
+      },
+      {
+        "tag": "SELECT",
+        "label": "창단 국가",
+        "x": 16,
+        "y": 304.90625,
+        "width": 328,
+        "height": 48,
+        "bottom": 352.90625
+      },
+      {
+        "tag": "BUTTON",
+        "label": "넉넉한 출발추천 · 운영비 2배",
+        "x": 16,
+        "y": 382.09375,
+        "width": 105.328125,
+        "height": 58.984375,
+        "bottom": 441.078125
+      },
+      {
+        "tag": "BUTTON",
+        "label": "표준 출발운영비 1배",
+        "x": 127.328125,
+        "y": 382.09375,
+        "width": 105.328125,
+        "height": 58.984375,
+        "bottom": 441.078125
+      },
+      {
+        "tag": "BUTTON",
+        "label": "작은 출발운영비 0.5배",
+        "x": 238.65625,
+        "y": 382.09375,
+        "width": 105.34375,
+        "height": 58.984375,
+        "bottom": 441.078125
+      },
+      {
+        "tag": "SUMMARY",
+        "label": "고급 설정",
+        "x": 16,
+        "y": 447.078125,
+        "width": 328,
+        "height": 44,
+        "bottom": 491.078125
+      },
+      {
+        "tag": "INPUT",
+        "label": "클럽 색상",
+        "x": 29,
+        "y": 526.265625,
+        "width": 302,
+        "height": 48,
+        "bottom": 574.265625
+      },
+      {
+        "tag": "INPUT",
+        "label": "세계 생성 시드",
+        "x": 29,
+        "y": 608.453125,
+        "width": 302,
+        "height": 48,
+        "bottom": 656.453125
+      },
+      {
+        "tag": "BUTTON",
+        "label": "클럽 창단 →",
+        "x": 16,
+        "y": 558.859375,
+        "width": 328,
+        "height": 48,
+        "bottom": 606.859375
+      },
+      {
+        "tag": "LABEL",
+        "label": "기록 파일 가져오기",
+        "x": 116.375,
+        "y": 618.859375,
+        "width": 127.234375,
+        "height": 44,
+        "bottom": 662.859375
+      },
+      {
+        "tag": "FOOTER",
+        "label": "HAERAM FOOTBALL ARCHIVES · 가상의 클럽, 당신의 역사.로그인 없이 시작하세요",
+        "x": 16,
+        "y": 699,
+        "width": 328,
+        "height": 33,
+        "bottom": 732
+      }
+    ]
+  },
+  {
+    "engine": "chromium",
+    "path": "/Users/ihaelam/project/haeram-soccer/.tmp/improvement/t027-font-proof/chromium-390x844.png",
+    "width": 390,
+    "height": 844,
+    "viewport": [
+      390,
+      844
+    ],
+    "scroll": [
+      0,
+      0
+    ],
+    "notes": [
+      {
+        "height": 41.59375,
+        "lineHeight": "20.8px",
+        "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+      },
+      {
+        "height": 19.1875,
+        "lineHeight": "19.2px",
+        "text": "추천 · 운영비 2배"
+      },
+      {
+        "height": 36,
+        "lineHeight": "18px",
+        "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+      }
+    ],
+    "targets": [
+      {
+        "tag": "INPUT",
+        "label": "클럽 이름",
+        "x": 16,
+        "y": 278.640625,
+        "width": 358,
+        "height": 48,
+        "bottom": 326.640625
+      },
+      {
+        "tag": "SELECT",
+        "label": "창단 국가",
+        "x": 16,
+        "y": 365.4375,
+        "width": 358,
+        "height": 48,
+        "bottom": 413.4375
+      },
+      {
+        "tag": "BUTTON",
+        "label": "넉넉한 출발추천 · 운영비 2배",
+        "x": 16,
+        "y": 453.234375,
+        "width": 115.328125,
+        "height": 73.984375,
+        "bottom": 527.21875
+      },
+      {
+        "tag": "BUTTON",
+        "label": "표준 출발운영비 1배",
+        "x": 137.328125,
+        "y": 453.234375,
+        "width": 115.328125,
+        "height": 73.984375,
+        "bottom": 527.21875
+      },
+      {
+        "tag": "BUTTON",
+        "label": "작은 출발운영비 0.5배",
+        "x": 258.65625,
+        "y": 453.234375,
+        "width": 115.34375,
+        "height": 73.984375,
+        "bottom": 527.21875
+      },
+      {
+        "tag": "SUMMARY",
+        "label": "고급 설정",
+        "x": 16,
+        "y": 539.21875,
+        "width": 358,
+        "height": 44,
+        "bottom": 583.21875
+      },
+      {
+        "tag": "INPUT",
+        "label": "클럽 색상",
+        "x": 29,
+        "y": 623.015625,
+        "width": 332,
+        "height": 48,
+        "bottom": 671.015625
+      },
+      {
+        "tag": "INPUT",
+        "label": "세계 생성 시드",
+        "x": 29,
+        "y": 709.8125,
+        "width": 332,
+        "height": 48,
+        "bottom": 757.8125
+      },
+      {
+        "tag": "BUTTON",
+        "label": "클럽 창단 →",
+        "x": 16,
+        "y": 670.015625,
+        "width": 358,
+        "height": 48,
+        "bottom": 718.015625
+      },
+      {
+        "tag": "LABEL",
+        "label": "기록 파일 가져오기",
+        "x": 131.375,
+        "y": 736.015625,
+        "width": 127.234375,
+        "height": 44,
+        "bottom": 780.015625
+      },
+      {
+        "tag": "FOOTER",
+        "label": "HAERAM FOOTBALL ARCHIVES · 가상의 클럽, 당신의 역사.로그인 없이 시작하세요",
+        "x": 16,
+        "y": 803,
+        "width": 358,
+        "height": 33,
+        "bottom": 836
+      }
+    ]
+  },
+  {
+    "engine": "firefox",
+    "path": "/Users/ihaelam/project/haeram-soccer/.tmp/improvement/t027-font-proof/firefox-360x740.png",
+    "width": 360,
+    "height": 740,
+    "viewport": [
+      360,
+      740
+    ],
+    "scroll": [
+      0,
+      0
+    ],
+    "notes": [
+      {
+        "height": 34.80000305175781,
+        "lineHeight": "17.4px",
+        "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+      },
+      {
+        "height": 16.79998779296875,
+        "lineHeight": "16.8px",
+        "text": "추천 · 운영비 2배"
+      },
+      {
+        "height": 33.59999084472656,
+        "lineHeight": "16.8px",
+        "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+      }
+    ],
+    "targets": [
+      {
+        "tag": "INPUT",
+        "label": "클럽 이름",
+        "x": 16,
+        "y": 228.75,
+        "width": 328,
+        "height": 48,
+        "bottom": 276.75
+      },
+      {
+        "tag": "SELECT",
+        "label": "창단 국가",
+        "x": 16,
+        "y": 304.95001220703125,
+        "width": 328,
+        "height": 48,
+        "bottom": 352.95001220703125
+      },
+      {
+        "tag": "BUTTON",
+        "label": "넉넉한 출발추천 · 운영비 2배",
+        "x": 16,
+        "y": 382.1499938964844,
+        "width": 105.33332824707031,
+        "height": 59,
+        "bottom": 441.1499938964844
+      },
+      {
+        "tag": "BUTTON",
+        "label": "표준 출발운영비 1배",
+        "x": 127.33332824707031,
+        "y": 382.1499938964844,
+        "width": 105.33334350585938,
+        "height": 59,
+        "bottom": 441.1499938964844
+      },
+      {
+        "tag": "BUTTON",
+        "label": "작은 출발운영비 0.5배",
+        "x": 238.6666717529297,
+        "y": 382.1499938964844,
+        "width": 105.33332824707031,
+        "height": 59,
+        "bottom": 441.1499938964844
+      },
+      {
+        "tag": "SUMMARY",
+        "label": "고급 설정",
+        "x": 16,
+        "y": 447.1499938964844,
+        "width": 328,
+        "height": 44,
+        "bottom": 491.1499938964844
+      },
+      {
+        "tag": "INPUT",
+        "label": "클럽 색상",
+        "x": 29,
+        "y": 526.3499755859375,
+        "width": 302,
+        "height": 48,
+        "bottom": 574.3499755859375
+      },
+      {
+        "tag": "INPUT",
+        "label": "세계 생성 시드",
+        "x": 29,
+        "y": 608.5499877929688,
+        "width": 302,
+        "height": 48,
+        "bottom": 656.5499877929688
+      },
+      {
+        "tag": "BUTTON",
+        "label": "클럽 창단 →",
+        "x": 16,
+        "y": 558.9500122070312,
+        "width": 328,
+        "height": 48,
+        "bottom": 606.9500122070312
+      },
+      {
+        "tag": "LABEL",
+        "label": "기록 파일 가져오기",
+        "x": 116.38333129882812,
+        "y": 618.9500122070312,
+        "width": 127.23333740234375,
+        "height": 44,
+        "bottom": 662.9500122070312
+      },
+      {
+        "tag": "FOOTER",
+        "label": "HAERAM FOOTBALL ARCHIVES · 가상의 클럽, 당신의 역사.로그인 없이 시작하세요",
+        "x": 16,
+        "y": 699,
+        "width": 328,
+        "height": 33,
+        "bottom": 732
+      }
+    ]
+  },
+  {
+    "engine": "firefox",
+    "path": "/Users/ihaelam/project/haeram-soccer/.tmp/improvement/t027-font-proof/firefox-390x844.png",
+    "width": 390,
+    "height": 844,
+    "viewport": [
+      390,
+      844
+    ],
+    "scroll": [
+      0,
+      0
+    ],
+    "notes": [
+      {
+        "height": 41.600006103515625,
+        "lineHeight": "20.8px",
+        "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+      },
+      {
+        "height": 19.199996948242188,
+        "lineHeight": "19.2px",
+        "text": "추천 · 운영비 2배"
+      },
+      {
+        "height": 36,
+        "lineHeight": "18px",
+        "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+      }
+    ],
+    "targets": [
+      {
+        "tag": "INPUT",
+        "label": "클럽 이름",
+        "x": 16,
+        "y": 278.6499938964844,
+        "width": 358,
+        "height": 48,
+        "bottom": 326.6499938964844
+      },
+      {
+        "tag": "SELECT",
+        "label": "창단 국가",
+        "x": 16,
+        "y": 365.45001220703125,
+        "width": 358,
+        "height": 48,
+        "bottom": 413.45001220703125
+      },
+      {
+        "tag": "BUTTON",
+        "label": "넉넉한 출발추천 · 운영비 2배",
+        "x": 16,
+        "y": 453.25,
+        "width": 115.33332824707031,
+        "height": 74,
+        "bottom": 527.25
+      },
+      {
+        "tag": "BUTTON",
+        "label": "표준 출발운영비 1배",
+        "x": 137.3333282470703,
+        "y": 453.25,
+        "width": 115.33334350585938,
+        "height": 74,
+        "bottom": 527.25
+      },
+      {
+        "tag": "BUTTON",
+        "label": "작은 출발운영비 0.5배",
+        "x": 258.66668701171875,
+        "y": 453.25,
+        "width": 115.33332824707031,
+        "height": 74,
+        "bottom": 527.25
+      },
+      {
+        "tag": "SUMMARY",
+        "label": "고급 설정",
+        "x": 16,
+        "y": 539.25,
+        "width": 358,
+        "height": 44,
+        "bottom": 583.25
+      },
+      {
+        "tag": "INPUT",
+        "label": "클럽 색상",
+        "x": 29,
+        "y": 623.0499877929688,
+        "width": 332,
+        "height": 48,
+        "bottom": 671.0499877929688
+      },
+      {
+        "tag": "INPUT",
+        "label": "세계 생성 시드",
+        "x": 29,
+        "y": 709.8499755859375,
+        "width": 332,
+        "height": 48,
+        "bottom": 757.8499755859375
+      },
+      {
+        "tag": "BUTTON",
+        "label": "클럽 창단 →",
+        "x": 16,
+        "y": 670.0499877929688,
+        "width": 358,
+        "height": 48,
+        "bottom": 718.0499877929688
+      },
+      {
+        "tag": "LABEL",
+        "label": "기록 파일 가져오기",
+        "x": 131.38333129882812,
+        "y": 736.0499877929688,
+        "width": 127.23333740234375,
+        "height": 44,
+        "bottom": 780.0499877929688
+      },
+      {
+        "tag": "FOOTER",
+        "label": "HAERAM FOOTBALL ARCHIVES · 가상의 클럽, 당신의 역사.로그인 없이 시작하세요",
+        "x": 16,
+        "y": 803,
+        "width": 358,
+        "height": 33,
+        "bottom": 836
+      }
+    ]
+  },
+  {
+    "engine": "webkit",
+    "path": "/Users/ihaelam/project/haeram-soccer/.tmp/improvement/t027-font-proof/webkit-360x740.png",
+    "width": 360,
+    "height": 740,
+    "viewport": [
+      360,
+      740
+    ],
+    "scroll": [
+      0,
+      0
+    ],
+    "notes": [
+      {
+        "height": 34.78125,
+        "lineHeight": "17.400002px",
+        "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+      },
+      {
+        "height": 16.796875,
+        "lineHeight": "16.799999px",
+        "text": "추천 · 운영비 2배"
+      },
+      {
+        "height": 33.59375,
+        "lineHeight": "16.799999px",
+        "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+      }
+    ],
+    "targets": [
+      {
+        "tag": "INPUT",
+        "label": "클럽 이름",
+        "x": 16,
+        "y": 228.71875,
+        "width": 328,
+        "height": 48,
+        "bottom": 276.71875
+      },
+      {
+        "tag": "SELECT",
+        "label": "창단 국가",
+        "x": 16,
+        "y": 304.90625,
+        "width": 328,
+        "height": 48,
+        "bottom": 352.90625
+      },
+      {
+        "tag": "BUTTON",
+        "label": "넉넉한 출발추천 · 운영비 2배",
+        "x": 16,
+        "y": 382.09375,
+        "width": 105.328125,
+        "height": 58.984375,
+        "bottom": 441.078125
+      },
+      {
+        "tag": "BUTTON",
+        "label": "표준 출발운영비 1배",
+        "x": 127.328125,
+        "y": 382.09375,
+        "width": 105.328125,
+        "height": 58.984375,
+        "bottom": 441.078125
+      },
+      {
+        "tag": "BUTTON",
+        "label": "작은 출발운영비 0.5배",
+        "x": 238.65625,
+        "y": 382.09375,
+        "width": 105.328125,
+        "height": 58.984375,
+        "bottom": 441.078125
+      },
+      {
+        "tag": "SUMMARY",
+        "label": "고급 설정",
+        "x": 16,
+        "y": 447.078125,
+        "width": 328,
+        "height": 44,
+        "bottom": 491.078125
+      },
+      {
+        "tag": "INPUT",
+        "label": "클럽 색상",
+        "x": 29,
+        "y": 526.265625,
+        "width": 302,
+        "height": 48,
+        "bottom": 574.265625
+      },
+      {
+        "tag": "INPUT",
+        "label": "세계 생성 시드",
+        "x": 29,
+        "y": 608.453125,
+        "width": 302,
+        "height": 48,
+        "bottom": 656.453125
+      },
+      {
+        "tag": "BUTTON",
+        "label": "클럽 창단 →",
+        "x": 16,
+        "y": 558.859375,
+        "width": 328,
+        "height": 48,
+        "bottom": 606.859375
+      },
+      {
+        "tag": "LABEL",
+        "label": "기록 파일 가져오기",
+        "x": 116.375,
+        "y": 618.859375,
+        "width": 127.234375,
+        "height": 44,
+        "bottom": 662.859375
+      },
+      {
+        "tag": "FOOTER",
+        "label": "HAERAM FOOTBALL ARCHIVES · 가상의 클럽, 당신의 역사.로그인 없이 시작하세요",
+        "x": 16,
+        "y": 699,
+        "width": 328,
+        "height": 33,
+        "bottom": 732
+      }
+    ]
+  },
+  {
+    "engine": "webkit",
+    "path": "/Users/ihaelam/project/haeram-soccer/.tmp/improvement/t027-font-proof/webkit-390x844.png",
+    "width": 390,
+    "height": 844,
+    "viewport": [
+      390,
+      844
+    ],
+    "scroll": [
+      0,
+      0
+    ],
+    "notes": [
+      {
+        "height": 41.59375,
+        "lineHeight": "20.800001px",
+        "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+      },
+      {
+        "height": 19.1875,
+        "lineHeight": "19.200001px",
+        "text": "추천 · 운영비 2배"
+      },
+      {
+        "height": 36,
+        "lineHeight": "18px",
+        "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+      }
+    ],
+    "targets": [
+      {
+        "tag": "INPUT",
+        "label": "클럽 이름",
+        "x": 16,
+        "y": 278.640625,
+        "width": 358,
+        "height": 48,
+        "bottom": 326.640625
+      },
+      {
+        "tag": "SELECT",
+        "label": "창단 국가",
+        "x": 16,
+        "y": 365.4375,
+        "width": 358,
+        "height": 48,
+        "bottom": 413.4375
+      },
+      {
+        "tag": "BUTTON",
+        "label": "넉넉한 출발추천 · 운영비 2배",
+        "x": 16,
+        "y": 453.234375,
+        "width": 115.328125,
+        "height": 73.984375,
+        "bottom": 527.21875
+      },
+      {
+        "tag": "BUTTON",
+        "label": "표준 출발운영비 1배",
+        "x": 137.328125,
+        "y": 453.234375,
+        "width": 115.328125,
+        "height": 73.984375,
+        "bottom": 527.21875
+      },
+      {
+        "tag": "BUTTON",
+        "label": "작은 출발운영비 0.5배",
+        "x": 258.65625,
+        "y": 453.234375,
+        "width": 115.328125,
+        "height": 73.984375,
+        "bottom": 527.21875
+      },
+      {
+        "tag": "SUMMARY",
+        "label": "고급 설정",
+        "x": 16,
+        "y": 539.21875,
+        "width": 358,
+        "height": 44,
+        "bottom": 583.21875
+      },
+      {
+        "tag": "INPUT",
+        "label": "클럽 색상",
+        "x": 29,
+        "y": 623.015625,
+        "width": 332,
+        "height": 48,
+        "bottom": 671.015625
+      },
+      {
+        "tag": "INPUT",
+        "label": "세계 생성 시드",
+        "x": 29,
+        "y": 709.8125,
+        "width": 332,
+        "height": 48,
+        "bottom": 757.8125
+      },
+      {
+        "tag": "BUTTON",
+        "label": "클럽 창단 →",
+        "x": 16,
+        "y": 670.015625,
+        "width": 358,
+        "height": 48,
+        "bottom": 718.015625
+      },
+      {
+        "tag": "LABEL",
+        "label": "기록 파일 가져오기",
+        "x": 131.375,
+        "y": 736.015625,
+        "width": 127.234375,
+        "height": 44,
+        "bottom": 780.015625
+      },
+      {
+        "tag": "FOOTER",
+        "label": "HAERAM FOOTBALL ARCHIVES · 가상의 클럽, 당신의 역사.로그인 없이 시작하세요",
+        "x": 16,
+        "y": 803,
+        "width": 358,
+        "height": 33,
+        "bottom": 836
+      }
+    ]
+  }
+]

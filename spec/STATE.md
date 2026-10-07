@@ -16,7 +16,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 3 | 3 | - | 2 |
-| WEB | 10 | 10 | - | 0 |
+| WEB | 11 | 11 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
 | CLUB | 5 | 5 | - | 0 |
 | MATCH | 3 | 3 | - | 0 |
@@ -31,10 +31,15 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 
+| T027 | cross-platform-founding-layout | WEB ARCH | - | doing@261008.cx |
+
 ## next
-- Local improvement cycles and release verification complete; next product work is user playtesting, external deployment and later Flutter release.
+- implement-task T027; verify the corrected pushed CI run.
 
 ## log
+- 261008 T027 local verify and current-source benchmarks passed; pending pushed CI confirmation
+- 261008 create-task T027; implement-task start (cx)
+- 261008 update-ssot WEB start; CI founding overflow contract clarification
 - 261008 twelve cycles complete; all guideline gates verified; external ranking/native release remain unclaimed
 - 261008 T010 done; current-source local release verification and CI benchmark configuration complete
 - 261008 T026 done; cycle 12 verified
@@ -52,6 +57,3 @@
 - 261008 cycle 11 create-task T024; implement-task start (cx)
 - 261008 cycle 11 update-ssot SAVE start
 - 261008 cycle 10 create-task T023; implement-task start (cx)
-- 261008 cycle 10 update-ssot SAVE start
-- 261008 cycle 10 create-task T022; implement-task start (cx)
-- 261008 cycle 10 update-ssot MATCH WEB start

@@ -1,20 +1,20 @@
 {
-  "date": "2026-10-07T17:31:55.961Z",
+  "date": "2026-10-07T23:17:43.368Z",
   "browser": "153.0.8010.12",
   "playwright": "1.63.0",
   "node": "v24.12.0",
-  "gitHead": "d878bf54065b2d3d9dc680aa03711915d0c0434a",
+  "gitHead": "58d5b2b91074acda4cdb7b31ed201c799f90af4d",
   "gitDirty": true,
   "currentHeadVerified": false,
   "verifiedSource": "uncommitted working tree",
   "sourceFingerprint": {
     "algorithm": "sha256",
-    "sha256": "9027f015c20e10b302e17cacb1ab235d9e943ec0e02c404aeab38ad362b8e839",
+    "sha256": "b3db7c49af2ce3ccadaf73f436682561bdca8dca98b0f8d146b46222ef38b684",
     "files": 119
   },
   "buildFingerprint": {
     "algorithm": "sha256",
-    "sha256": "3789dd3721467712a854b48273290e504e08c596fd5a31c4cfc115b65a430cf7",
+    "sha256": "dbc12b031885da51feea327be13625afff9ac10bf21ecfb64688256beeaf70c8",
     "files": 9
   },
   "servedBuildVerification": {
@@ -26,13 +26,13 @@
         "file": "index.html",
         "url": "http://127.0.0.1:4180/",
         "bytes": 665,
-        "sha256": "9bad6ba44e786fa35a65dc48263045215a1eb5c3284f3614844604e0d62e5f04"
+        "sha256": "317f06a9d4725193516940735c85971c3258c1481db062e81c6e5561ea926892"
       },
       {
-        "file": "assets/Rich-D5-q2Dw6.js",
-        "url": "http://127.0.0.1:4180/assets/Rich-D5-q2Dw6.js",
+        "file": "assets/Rich-Dj2hiuIT.js",
+        "url": "http://127.0.0.1:4180/assets/Rich-Dj2hiuIT.js",
         "bytes": 54328,
-        "sha256": "f6efcf8c604484f021f9de1d6f8bb0a14762a3beda4f5d9830c369fb985837f7"
+        "sha256": "0855d36e9fa7a6dcc933700ba43042ce997abd486f12d5549cd75ff11a1468b9"
       },
       {
         "file": "assets/Rich-ed4jtAVn.css",
@@ -41,16 +41,16 @@
         "sha256": "f67efe5920a3c1842c2c38f7a9bf4393d0185032adfcc7fd394ede12a6500d3c"
       },
       {
-        "file": "assets/index-C5bUpA4O.js",
-        "url": "http://127.0.0.1:4180/assets/index-C5bUpA4O.js",
+        "file": "assets/index-C7gqis8Y.js",
+        "url": "http://127.0.0.1:4180/assets/index-C7gqis8Y.js",
         "bytes": 374743,
-        "sha256": "2dd78363eccda0f3761083f0576766d122b8d36f5d064d458304705dc4ae9af9"
+        "sha256": "55314c32fe17159f20bfcffc45f8343a20ddf8ca1b88f88cf64bf3189066b26f"
       },
       {
-        "file": "assets/index-COzb6iy-.css",
-        "url": "http://127.0.0.1:4180/assets/index-COzb6iy-.css",
-        "bytes": 60162,
-        "sha256": "895ddf839db5f191c3e6d98bded1b69c8398753fc5d429bd84ca1f98465d40f5"
+        "file": "assets/index-TFO47HJw.css",
+        "url": "http://127.0.0.1:4180/assets/index-TFO47HJw.css",
+        "bytes": 60658,
+        "sha256": "b773edce4e688787069d7c0c69267d564939e774484d6944d01c011cfe788a25"
       },
       {
         "file": "assets/worker-Dow3hptm.js",
@@ -75,9 +75,9 @@
       1440,
       1000
     ],
-    "coldLoadAndFoundMs": 1199,
-    "foundingCommandMs": 215,
-    "animationFps": 60
+    "coldLoadAndFoundMs": 898,
+    "foundingCommandMs": 228,
+    "animationFps": 61
   },
   "mobile": {
     "viewport": [
@@ -85,42 +85,42 @@
       844
     ],
     "deviceScaleFactor": 2,
-    "coldLoadAndFoundMs": 769,
-    "foundingCommandMs": 181,
+    "coldLoadAndFoundMs": 801,
+    "foundingCommandMs": 209,
     "animationFps": 60,
     "inputSamples": 12,
-    "pointerToSecondFrameP95Ms": 29
+    "pointerToSecondFrameP95Ms": 30
   },
-  "entryGzipBytes": 133746,
+  "entryGzipBytes": 133809,
   "entryGzipLimit": 256000,
   "entryFiles": [
     {
-      "file": "assets/index-C5bUpA4O.js",
-      "gzipBytes": 121494
+      "file": "assets/index-C7gqis8Y.js",
+      "gzipBytes": 121495
     },
     {
-      "file": "assets/index-COzb6iy-.css",
-      "gzipBytes": 12252
+      "file": "assets/index-TFO47HJw.css",
+      "gzipBytes": 12314
     }
   ],
-  "buildGzipBytes": 220835,
+  "buildGzipBytes": 220899,
   "buildGzipLimit": 256000,
   "buildFiles": [
     {
-      "file": "Rich-D5-q2Dw6.js",
-      "gzipBytes": 15395
+      "file": "Rich-Dj2hiuIT.js",
+      "gzipBytes": 15396
     },
     {
       "file": "Rich-ed4jtAVn.css",
       "gzipBytes": 2451
     },
     {
-      "file": "index-C5bUpA4O.js",
-      "gzipBytes": 121494
+      "file": "index-C7gqis8Y.js",
+      "gzipBytes": 121495
     },
     {
-      "file": "index-COzb6iy-.css",
-      "gzipBytes": 12252
+      "file": "index-TFO47HJw.css",
+      "gzipBytes": 12314
     },
     {
       "file": "worker-Dow3hptm.js",
@@ -131,45 +131,45 @@
     {
       "url": "http://127.0.0.1:4180/",
       "type": "Document",
-      "bytes": 1028
+      "bytes": 1031
     },
     {
-      "url": "http://127.0.0.1:4180/assets/index-COzb6iy-.css",
+      "url": "http://127.0.0.1:4180/assets/index-TFO47HJw.css",
       "type": "Stylesheet",
-      "bytes": 12844
+      "bytes": 12906
     },
     {
-      "url": "http://127.0.0.1:4180/assets/index-C5bUpA4O.js",
+      "url": "http://127.0.0.1:4180/assets/index-C7gqis8Y.js",
       "type": "Script",
-      "bytes": 122094
+      "bytes": 122095
     }
   ],
   "mobileFirstPlayPageTargetTransfers": [
     {
       "url": "http://127.0.0.1:4180/",
       "type": "Document",
-      "bytes": 1028
+      "bytes": 1031
     },
     {
-      "url": "http://127.0.0.1:4180/assets/index-COzb6iy-.css",
+      "url": "http://127.0.0.1:4180/assets/index-TFO47HJw.css",
       "type": "Stylesheet",
-      "bytes": 12844
+      "bytes": 12906
     },
     {
-      "url": "http://127.0.0.1:4180/assets/index-C5bUpA4O.js",
+      "url": "http://127.0.0.1:4180/assets/index-C7gqis8Y.js",
       "type": "Script",
-      "bytes": 122094
+      "bytes": 122095
     }
   ],
-  "firstPlayPageTargetTransferBytes": 135966,
-  "mobileFirstPlayPageTargetTransferBytes": 135966,
+  "firstPlayPageTargetTransferBytes": 136032,
+  "mobileFirstPlayPageTargetTransferBytes": 136032,
   "transferNote": "Page-target CDP transfers may omit dedicated-worker target requests; build inventory additionally counts every worker/lazy JavaScript and CSS file as a conservative upper bound.",
-  "centuryLoadMs": 1358,
+  "centuryLoadMs": 1356,
   "centuryCheckpointSha256": "c23c2c120391ddb9a949d304c675a687bf5b02ee42039ea0a3d3b40d45f3d031",
   "centuryRestoreReference": "Separate unthrottled 100-season initialization measurement",
   "initializationLimitMs": 5000,
   "inputSamples": 18,
-  "pointerToSecondFrameP95Ms": 64,
+  "pointerToSecondFrameP95Ms": 63,
   "inputLimitMs": 100,
   "minimumFps": 30,
   "mobileHorizontalOverflow": false,

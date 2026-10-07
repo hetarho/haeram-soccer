@@ -151,6 +151,8 @@
 }
 @media (max-width: 760px) {
   .start {
+    width: 100%;
+    margin: 0 auto;
     padding: 6px 0 12px;
   }
   .start h2 {
@@ -175,31 +177,52 @@
   }
 }
 @media (max-width: 380px) and (max-height: 760px) {
+  .start {
+    padding: 4px 0 6px;
+  }
+  .start header > span {
+    line-height: 1.4;
+  }
   .start h2 {
     font-size: 27px;
+    margin: 6px 0;
   }
   .loop {
-    margin: 10px 0;
+    margin: 4px 0;
+    padding: 6px 11px;
+  }
+  .loop span {
+    line-height: 1.4;
   }
   .start form {
-    gap: 10px;
+    gap: 6px;
+  }
+  .start label {
+    gap: 4px;
+    line-height: 1.4;
+  }
+  .start legend {
+    margin-bottom: 5px;
+    line-height: 1.4;
   }
   .capital button {
     min-height: 62px;
+    padding: 8px 4px;
+    gap: 4px;
+  }
+  .capital b,
+  .capital small {
+    line-height: 1.4;
   }
   .start header p {
     font-size: 12px;
+    line-height: 1.45;
   }
-}
-@media (max-width: 380px) and (max-height: 760px) {
-  .start {
-    padding: 4px 0 8px;
+  .origin {
+    gap: 4px;
+    line-height: 1.4;
   }
-  .loop {
-    margin: 6px 0;
-    padding: 8px 11px;
-  }
-  .start form {
-    gap: 8px;
+  .origin small {
+    line-height: 1.4;
   }
 }
