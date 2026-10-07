@@ -4,7 +4,7 @@ const money = z.string().regex(/^-?\d{1,80}$/);
 const rating = z.number().finite().min(0).max(100);
 const text = z.string().max(160);
 const id = z.string().min(1).max(100);
-const number = z.number().finite();
+const number = z.number().finite().min(-Number.MAX_SAFE_INTEGER).max(Number.MAX_SAFE_INTEGER);
 const metrics = z.array(z.number().int().nonnegative()).length(12);
 const tactic = z.enum(['balanced', 'possession', 'counter', 'press']);
 const club = z.object({
@@ -216,5 +216,34 @@ export function validateWorld(input: unknown): World {
       throw new Error('경기 참가 클럽을 찾을 수 없습니다.');
   if (w.players.filter((p) => p.status === 'active').length > 26)
     throw new Error('선수단 정원 초과');
+  for (const [clubId, row] of Object.entries(w.tables)) {
+    if (
+      !ids.has(clubId) ||
+      Object.values(row).some((n) => !Number.isInteger(n) || n < 0) ||
+      row.played !== row.won + row.drawn + row.lost
+    )
+      throw new Error('리그 표 손상');
+  }
+  const matchIds = new Set(w.ownMatches.map((m) => m.id));
+  if (matchIds.size !== w.ownMatches.length) throw new Error('중복 경기 기록');
+  for (const m of w.ownMatches)
+    if (
+      (m.home !== w.playerClub && m.away !== w.playerClub) ||
+      m.players.some((p) => !playerIds.has(p.id))
+    )
+      throw new Error('소유 클럽 기록 참조 손상');
+  for (const h of w.history)
+    for (const row of h.standings)
+      if (
+        row.length !== 6 ||
+        row.some((n) => !Number.isInteger(n) || n < 0) ||
+        row[0] >= w.clubs.length
+      )
+        throw new Error('시즌 순위 참조 손상');
+  for (const t of w.europe)
+    if (t.clubs.some((c) => !ids.has(c)) || (t.winner && !ids.has(t.winner)))
+      throw new Error('유럽대회 참조 손상');
+  if (w.players.some((p) => BigInt(p.wage) < 0) || BigInt(w.manager.wage) < 0)
+    throw new Error('급여 범위 손상');
   return w;
 }

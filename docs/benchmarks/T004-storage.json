@@ -1,0 +1,21 @@
+{
+  "phase": "T004 domestic kernel; complete economy and continental benchmark is repeated in T010",
+  "date": "2026-10-07T07:52:04.825Z",
+  "node": "v24.12.0",
+  "engine": "1.0.0",
+  "catalog": "2026-demo-1",
+  "seed": "long-career-core",
+  "seasons": 100,
+  "year": 2001,
+  "ownedMatches": 4314,
+  "players": 117,
+  "checkpointBytes": 1323918,
+  "checkpointLimit": 1572864,
+  "totalBytes": 2648348,
+  "totalLimit": 3670016,
+  "simulationMs": 509,
+  "encodingMs": 550,
+  "heapBytes": 159397696,
+  "losslessRoundtrip": true,
+  "passed": true
+}
