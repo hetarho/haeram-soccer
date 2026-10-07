@@ -1,3 +1,4 @@
+import { gate, settleRound, yearlyStaff } from './operations';
 import type { Club, Fixture, MatchPlayback, TableRow, World } from '../../contracts/src/types';
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import { addMetrics, clamp, random, zeroMetrics, compareIds } from './primitives';
@@ -109,6 +110,7 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     const ownIds = new Set(w.players.map((p) => p.id));
     const saved = { ...m, players: m.players.filter((p) => ownIds.has(p.id)) };
     w.ownMatches.push(saved);
+    gate(w, m);
     for (const line of saved.players) {
       const p = w.players.find((p) => p.id === line.id);
       if (p) {
@@ -385,6 +387,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     `${w.year}/${String(w.year + 1).slice(2)} · ${table.points}점`,
   );
   w.year++;
+  yearlyStaff(w);
   w.income = '0';
   w.expense = '0';
   for (const p of activePlayers(w)) {
@@ -465,6 +468,7 @@ export function advanceRound(w: World, settlement?: (w: World, p: MatchPlayback)
     }
   }
   for (const p of activePlayers(w)) p.fatigue = Math.max(0, p.fatigue - 8);
+  settleRound(w);
   w.revision++;
   return ownPlayback;
 }

@@ -16,3 +16,5 @@ export function simulateSeason(w: World) {
   w.revision++;
   return w;
 }
+
+export * from './operations';

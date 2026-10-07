@@ -30,7 +30,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T005 | club-operations | ARCH CLUB STAFF ECON HIST | T004 | todo |
+| T005 | club-operations | ARCH CLUB STAFF ECON HIST | T004 | doing@261007.cx |
 | T006 | historical-europe | ARCH ECON EURO LEAGUE HIST | T005 | todo |
 | T007 | worker-runtime | ARCH SAVE WEB | T006 | todo |
 | T008 | playable-web | ARCH WEB MATCH HIST EURO | T007 | todo |
@@ -41,6 +41,7 @@
 - implement-task T005
 
 ## log
+- 261007 T005 doing (cx)
 - 261007 T004 done; verified at 6c006e9
 - 261007 T004 doing (cx)
 - 261007 T003 done; verified at 372a99e
