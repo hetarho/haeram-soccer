@@ -32,3 +32,7 @@ export const zeroMetrics = () => Array<number>(12).fill(0);
 export function addMetrics(a: number[], b: number[]) {
   return a.map((v, i) => v + (b[i] || 0));
 }
+
+export function compareIds(a: string, b: string) {
+  return a === b ? 0 : a < b ? -1 : 1;
+}

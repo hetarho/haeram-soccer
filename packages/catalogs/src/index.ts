@@ -156,7 +156,7 @@ export const country = (code: string) => {
   if (!c) throw new Error('지원하지 않는 국가입니다.');
   return c;
 };
-export function priceIndex(
+function rawPriceIndex(
   code: string,
   year: number,
 ): { value: number; status: 'observed' | 'estimated' | 'projected'; source: string } {
@@ -189,6 +189,15 @@ export function priceIndex(
     status: 'projected',
     source: '최근 관측 이후 연 2% 가정',
   };
+}
+const priceCache = new Map<string, ReturnType<typeof rawPriceIndex>>();
+export function priceIndex(code: string, year: number) {
+  const key = `${code}:${year}`;
+  const cached = priceCache.get(key);
+  if (cached) return cached;
+  const value = rawPriceIndex(code, year);
+  priceCache.set(key, value);
+  return value;
 }
 export interface CurrencyPeriod {
   code: string;
