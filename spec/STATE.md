@@ -30,16 +30,16 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T006 | historical-europe | ARCH ECON EURO LEAGUE HIST | T005 | doing@261007.cx |
 | T007 | worker-runtime | ARCH SAVE WEB | T006 | todo |
 | T008 | playable-web | ARCH WEB MATCH HIST EURO | T007 | todo |
 | T009 | management-history-ui | ARCH CLUB STAFF ECON HIST WEB | T008 | todo |
 | T010 | release-verification | ARCH WEB SAVE HIST MATCH | T009 | todo |
 
 ## next
-- implement-task T006
+- implement-task T007
 
 ## log
+- 261007 T006 done; verified at 0979055
 - 261007 T006 doing (cx)
 - 261007 T005 done; verified at 38c855a
 - 261007 T005 doing (cx)
@@ -59,4 +59,3 @@
 - 261007 create-narrative start: Korean web delivery plan derived from ARCH@1
 - 261007 create-architecture ARCH@1 recorded: static React/TypeScript web, worker engine, localStorage recovery/budget gates, reproducible deployment, later Supabase and Flutter
 - 261007 create-architecture start: plan only; web demo first with localStorage, later Flutter release and optional Supabase hall of fame
-- 261007 ideation club-history-reboot PRD v0.4 recorded: eight playable European countries, representative external clubs, historical UEFA competition timeline and domestic-cup qualification; document checks and skill sync passed
