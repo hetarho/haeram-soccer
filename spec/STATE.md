@@ -30,7 +30,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T002 | contracts-catalogs | ARCH WORLD ECON SAVE | T001 | todo |
+| T002 | contracts-catalogs | ARCH WORLD ECON SAVE | T001 | doing@261007.cx |
 | T003 | world-domestic-match | ARCH WEB WORLD CLUB MATCH LEAGUE HIST | T002 | todo |
 | T004 | persistent-save | ARCH SAVE HIST | T003 | todo |
 | T005 | club-operations | ARCH CLUB STAFF ECON HIST | T004 | todo |
@@ -44,6 +44,7 @@
 - implement-task T002
 
 ## log
+- 261007 T002 doing (cx)
 - 261007 T001 done; verified at c7233a7
 - 261007 standalone ownership fallback: work CLI requires unsupported git worktree -z on Git 2.34.1; current main checkout and session tag are the ownership record
 - 261007 T001 doing (cx)
