@@ -182,7 +182,7 @@ export function unpack(p: Packed): World {
   stats.done();
   standings.done();
   const copy = { ...p.world };
-  prepareSeason(copy);
+  prepareSeason(copy, false);
   for (const row of p.fixtures) {
     const fixture = copy.fixtures[row[0] as number];
     if (!fixture || fixture.score) throw new Error('일정 참조 손상');

@@ -18,3 +18,6 @@ export function simulateSeason(w: World) {
 }
 
 export * from './operations';
+
+export * from './economy';
+export * from './europe';

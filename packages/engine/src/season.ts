@@ -1,3 +1,5 @@
+import { advanceEconomy } from './economy';
+import { prepareEurope, advanceEurope, finishEurope as finishContinental } from './europe';
 import { gate, settleRound, yearlyStaff } from './operations';
 import type { Club, Fixture, MatchPlayback, TableRow, World } from '../../contracts/src/types';
 import { COUNTRIES, country } from '../../catalogs/src/index';
@@ -42,7 +44,7 @@ export function fixturesFor(clubs: Club[], year: number, globalRounds = 46): Fix
   }
   return matches;
 }
-export function prepareSeason(w: World) {
+export function prepareSeason(w: World, continental = true) {
   w.fixtures = [];
   w.tables = {};
   for (const c of w.clubs) w.tables[c.id] = emptyTable();
@@ -76,6 +78,7 @@ export function prepareSeason(w: World) {
   }
   w.round = 0;
   w.cupWinners = {};
+  if (continental) prepareEurope(w);
 }
 export function ranked(w: World, clubs: Club[]) {
   return [...clubs].sort((a, b) => {
@@ -294,7 +297,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   if (w.round < 46 || w.fixtures.some((f) => !f.score))
     throw new Error('아직 정규 시즌이 끝나지 않았습니다.');
   finishDomesticCups(w);
-  finishEurope?.(w);
+  (finishEurope || finishContinental)(w);
   const wasLower = w.lower;
   const own = clubOf(w),
     oldTier = own.tier,
@@ -387,6 +390,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     `${w.year}/${String(w.year + 1).slice(2)} · ${table.points}점`,
   );
   w.year++;
+  advanceEconomy(w, w.year - 1);
   yearlyStaff(w);
   w.income = '0';
   w.expense = '0';
@@ -468,6 +472,7 @@ export function advanceRound(w: World, settlement?: (w: World, p: MatchPlayback)
     }
   }
   for (const p of activePlayers(w)) p.fatigue = Math.max(0, p.fatigue - 8);
+  advanceEurope(w);
   settleRound(w);
   w.revision++;
   return ownPlayback;
