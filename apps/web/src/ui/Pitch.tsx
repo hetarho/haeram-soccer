@@ -1,62 +1,159 @@
-import { useEffect, useRef, useState } from 'react';
-import type { MatchPlayback, MatchFrame, World } from '../../../../packages/contracts/src/types';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import type {
+  MatchPlayback,
+  MatchFrame,
+  MatchMotionSample,
+  PlayerMotion,
+  PlayerMotionState,
+  World,
+} from '../../../../packages/contracts/src/types';
+import { playerTraits } from '../../../../packages/engine/src/match';
+import { tacticLabel } from '../../../../packages/engine/src/world';
 import { percent } from './format';
 import s from './App.module.css';
+
+const stateLabels: Record<PlayerMotionState, string> = {
+  shape: '포메이션 유지',
+  support: '패스 지원',
+  run: '빈 공간 침투',
+  press: '볼 압박',
+  mark: '상대 마크',
+  recover: '수비 복귀',
+  carry: '볼 운반',
+  keeper: '골문 보호',
+};
+const initialShape: [number, number][] = [
+  [5, 50],
+  [22, 15],
+  [20, 38],
+  [20, 62],
+  [22, 85],
+  [46, 25],
+  [43, 50],
+  [46, 75],
+  [72, 20],
+  [76, 50],
+  [72, 80],
+];
+interface Sample {
+  frame: number;
+  ball: [number, number];
+  players?: [PlayerMotion[], PlayerMotion[]];
+  phase?: MatchMotionSample['phase'];
+  ownerId?: string;
+}
+
+const phaseLabels = {
+  possession: '볼 운반',
+  transition: '공수 전환',
+  pass: '패스 진행',
+  shot: '슈팅',
+  restart: '경기 재개',
+};
+
 export function Pitch({
-  playback,
+  playback: p,
   world,
   summary = false,
+  onFinish,
+  onPlaybackStart,
 }: {
   playback?: MatchPlayback;
   world: World;
   summary?: boolean;
+  onFinish?: (id: string) => void;
+  onPlaybackStart?: (id: string) => void;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
-  const clock = useRef(0),
-    last = useRef(0);
-  const [minute, setMinute] = useState(0),
-    [speed, setSpeed] = useState(1),
-    [paused, setPaused] = useState(false);
-  const p = playback;
+  const clock = useRef(0);
+  const last = useRef(0);
+  const lastUi = useRef(0);
+  const [sampleIndex, setSampleIndex] = useState(0);
+  const [sampleMatchId, setSampleMatchId] = useState(p?.record.id);
+  const [speed, setSpeed] = useState(1);
+  const [paused, setPaused] = useState(false);
+  const [inspect, setInspect] = useState(false);
+  const [selection, setSelection] = useState('0:8');
+  const samples = useMemo<Sample[]>(
+    () =>
+      p?.frames.flatMap((frame, i) =>
+        frame.motion?.length
+          ? frame.motion.map((motion) => ({
+              frame: i,
+              ball: motion.ball,
+              players: motion.players,
+              phase: motion.phase,
+              ownerId: motion.ownerId,
+            }))
+          : [{ frame: i, ball: frame.ball, players: frame.players }],
+      ) || [],
+    [p],
+  );
+  const [selectedSide, selectedIndex] = selection.split(':').map(Number);
+  const visibleIndex = sampleMatchId === p?.record.id ? sampleIndex : 0;
+  const sample = samples[Math.min(visibleIndex, samples.length - 1)];
+  const frame: MatchFrame | undefined = p?.frames[sample?.frame ?? 0];
+  const finished = !!p && sampleMatchId === p.record.id && sampleIndex >= samples.length - 1;
+  const home = world.clubs.find((c) => c.id === p?.record.home);
+  const away = world.clubs.find((c) => c.id === p?.record.away);
+  const selectedPlayer = p?.squads[selectedSide]?.[selectedIndex];
+  const selectedMotion = sample?.players?.[selectedSide]?.[selectedIndex];
+  const traits = selectedPlayer ? playerTraits(selectedPlayer) : undefined;
+
   useEffect(() => {
+    if (finished && p && samples.length) onFinish?.(p.record.id);
+  }, [finished, p?.record.id, samples.length, onFinish]);
+
+  useLayoutEffect(() => {
     clock.current = 0;
-    setMinute(0);
+    lastUi.current = 0;
+    setSampleIndex(0);
+    setSampleMatchId(p?.record.id);
+    setSelection('0:8');
     setPaused(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-  }, [p?.record.id]);
+    if (p) onPlaybackStart?.(p.record.id);
+  }, [p?.record.id, onPlaybackStart]);
+
   useEffect(() => {
     let raf = 0;
     last.current = 0;
     const draw = (time: number) => {
       const elapsed = last.current ? Math.min(60, time - last.current) : 0;
       last.current = time;
+      const end = Math.max(0, samples.length - 1);
       if (p && !paused)
-        clock.current = Math.min(p.frames.length - 1, clock.current + (elapsed * speed) / 200);
-      const index = Math.floor(clock.current),
-        frame = p?.frames[index],
-        previous = p?.frames[Math.max(0, index - 1)];
-      setMinute(index);
-      const element = canvas.current,
-        ctx = element?.getContext('2d');
+        clock.current = Math.min(end, clock.current + (elapsed * speed * samples.length) / 45000);
+      const index = Math.min(end, Math.floor(clock.current));
+      if (time - lastUi.current > 120 || clock.current === end) {
+        setSampleIndex(index);
+        lastUi.current = time;
+      }
+      const current = samples[index];
+      const next = samples[Math.min(end, index + 1)] || current;
+      const mix = clock.current - index;
+      const element = canvas.current;
+      const ctx = element?.getContext('2d');
       if (element && ctx) {
-        const width = element.clientWidth,
-          height = width / 1.65,
-          dpr = Math.min(2, window.devicePixelRatio || 1);
-        if (element.width !== Math.round(width * dpr)) {
+        const width = element.clientWidth;
+        const height = width / 1.65;
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        if (
+          element.width !== Math.round(width * dpr) ||
+          element.height !== Math.round(height * dpr)
+        ) {
           element.width = Math.round(width * dpr);
           element.height = Math.round(height * dpr);
         }
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.fillStyle = '#174d38';
         ctx.fillRect(0, 0, width, height);
-        const pad = width * 0.065,
-          fw = width - pad * 2,
-          fh = height - pad * 2;
-        const x = (v: number) => pad + (fw * v) / 100,
-          y = (v: number) => pad + (fh * v) / 100;
-        for (let i = 0; i < 10; i++) {
-          ctx.fillStyle = i % 2 ? '#1c543e' : '#205a42';
-          ctx.fillRect(x(i * 10), pad, fw / 10, fh);
-        }
+        const pad = width * 0.065;
+        const fw = width - pad * 2;
+        const fh = height - pad * 2;
+        const x = (v: number) => pad + (fw * v) / 100;
+        const y = (v: number) => pad + (fh * v) / 100;
+        ctx.fillStyle = '#1c543e';
+        ctx.fillRect(pad, pad, fw, fh);
         ctx.strokeStyle = '#a9c6b08c';
         ctx.lineWidth = 1.4;
         ctx.strokeRect(pad, pad, fw, fh);
@@ -68,54 +165,59 @@ export function Pitch({
         ctx.ellipse(x(50), y(50), fw * 0.09, fh * 0.15, 0, 0, Math.PI * 2);
         ctx.stroke();
         for (const side of [0, 1]) {
-          const left = side === 0 ? 0 : 82;
-          ctx.strokeRect(x(left), y(22), fw * 0.18, fh * 0.56);
+          ctx.strokeRect(x(side === 0 ? 0 : 82), y(22), fw * 0.18, fh * 0.56);
           ctx.strokeRect(x(side === 0 ? 0 : 94), y(38), fw * 0.06, fh * 0.24);
         }
-        if (p && frame) {
-          const rows = [
-            [5, 50],
-            [22, 15],
-            [20, 38],
-            [20, 62],
-            [22, 85],
-            [46, 25],
-            [43, 50],
-            [46, 75],
-            [72, 20],
-            [76, 50],
-            [72, 80],
-          ];
-          const mix = clock.current - index;
-          const ball = [0, 1].map(
-            (i) => (previous?.ball[i] ?? frame.ball[i]) * (1 - mix) + frame.ball[i] * mix,
-          );
-          for (const side of [0, 1])
+        if (p && current) {
+          for (const side of [0, 1]) {
             for (let i = 0; i < 11; i++) {
-              const pos = rows[i],
-                px =
-                  (side === 0 ? pos[0] : 100 - pos[0]) +
-                  Math.sin(clock.current * 0.8 + i * 2) * 2 +
-                  (ball[0] - 50) * 0.09,
-                py = pos[1] + Math.cos(clock.current * 0.7 + i) * 2;
+              const motion = current.players?.[side]?.[i];
+              const target = next.players?.[side]?.[i];
+              const base = initialShape[i];
+              const position = motion?.position || [side === 0 ? base[0] : 100 - base[0], base[1]];
+              const px = position[0] * (1 - mix) + (target?.position[0] ?? position[0]) * mix;
+              const py = position[1] * (1 - mix) + (target?.position[1] ?? position[1]) * mix;
+              const selected = inspect && selectedSide === side && selectedIndex === i;
+              if (selected && motion) {
+                ctx.strokeStyle = '#f2d39b';
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.moveTo(x(px), y(py));
+                ctx.lineTo(x(motion.intent[0]), y(motion.intent[1]));
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.beginPath();
+                ctx.arc(x(motion.intent[0]), y(motion.intent[1]), 4, 0, Math.PI * 2);
+                ctx.stroke();
+              }
+              const radius = Math.max(6, width * 0.011);
+              if (selected) {
+                ctx.beginPath();
+                ctx.arc(x(px), y(py), radius + 4, 0, Math.PI * 2);
+                ctx.strokeStyle = '#f2d39b';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+              }
               ctx.beginPath();
-              ctx.arc(x(px), y(py), Math.max(7, width * 0.011), 0, Math.PI * 2);
-              ctx.fillStyle =
-                side === 0
-                  ? world.clubs.find((c) => c.id === p.record.home)?.color || '#e4935d'
-                  : '#eadcc3';
+              ctx.arc(x(px), y(py), radius, 0, Math.PI * 2);
+              ctx.fillStyle = side === 0 ? home?.color || '#c77e5b' : '#eadcc3';
               ctx.fill();
               ctx.strokeStyle = '#ffffffbb';
+              ctx.lineWidth = 1;
               ctx.stroke();
-              ctx.fillStyle = side === 0 ? '#fff' : '#173d2d';
+              ctx.fillStyle = '#132a20';
               ctx.font = `bold ${Math.max(8, width * 0.012)}px sans-serif`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
               ctx.fillText(String(i + 1), x(px), y(py));
             }
+          }
+          const bx = current.ball[0] * (1 - mix) + next.ball[0] * mix;
+          const by = current.ball[1] * (1 - mix) + next.ball[1] * mix;
           ctx.fillStyle = '#fff';
           ctx.beginPath();
-          ctx.arc(x(ball[0]), y(ball[1]), width * 0.006, 0, Math.PI * 2);
+          ctx.arc(x(bx), y(by), Math.max(3, width * 0.006), 0, Math.PI * 2);
           ctx.fill();
           ctx.strokeStyle = '#21392a';
           ctx.stroke();
@@ -130,10 +232,13 @@ export function Pitch({
     };
     raf = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(raf);
-  }, [p, paused, speed, world.clubs]);
-  const frame: MatchFrame | undefined = p?.frames[minute];
-  const home = world.clubs.find((c) => c.id === p?.record.home),
-    away = world.clubs.find((c) => c.id === p?.record.away);
+  }, [p, samples, paused, speed, home?.color, inspect, selectedSide, selectedIndex]);
+
+  const seek = (index: number) => {
+    clock.current = Math.max(0, Math.min(samples.length - 1, index));
+    setSampleIndex(Math.floor(clock.current));
+    if (p && index < samples.length - 1) onPlaybackStart?.(p.record.id);
+  };
   return (
     <div className={s.pitch}>
       <div className={s.scoreboard}>
@@ -142,22 +247,42 @@ export function Pitch({
         <span>{away?.name || 'AWAY'}</span>
       </div>
       <div className={s.pitchMeta}>
-        <span className={s.live}>{frame ? `${frame.minute}′ · ${frame.action}` : 'MATCH DAY'}</span>
+        <span className={s.live}>
+          {frame
+            ? `${frame.minute}′ · ${frame.action}${finished ? ' · 경기 종료' : ''}`
+            : 'MATCH DAY'}
+        </span>
         <span>
-          {summary ? '골 이벤트 재생 · 마지막에 최종 지표 표시' : '간소화된 관전 · 확정 결과 재생'}
+          {summary
+            ? '지난 경기 · 기록된 골과 최종 통계'
+            : p
+              ? `${tacticLabel[p.record.tactics[0]]} vs ${tacticLabel[p.record.tactics[1]]}`
+              : '다음 경기를 선택하면 관전이 시작됩니다'}
         </span>
       </div>
-      <canvas
-        ref={canvas}
-        aria-label="22명의 선수와 공으로 표현하는 간소화된 경기"
-        className={s.canvas}
-      />
+      {inspect && sample?.phase && (
+        <div className={s.pitchMeta}>
+          <span>{phaseLabels[sample.phase]}</span>
+          <span>
+            {sample.ownerId
+              ? `볼 소유 · ${p?.squads.flat().find((player) => player.id === sample.ownerId)?.name || '선수'}`
+              : '공 이동 중'}
+          </span>
+        </div>
+      )}
+      <canvas ref={canvas} aria-label="22명의 선수와 공으로 표현하는 경기" className={s.canvas} />
       <div className={s.playControls}>
-        <button onClick={() => setPaused(!paused)} disabled={!p}>
-          {paused ? '재생' : '일시정지'}
+        <button
+          onClick={() => {
+            if (finished) seek(0);
+            setPaused(finished ? false : !paused);
+          }}
+          disabled={!p}
+        >
+          {finished ? '다시 보기' : paused ? '재생' : '일시정지'}
         </button>
         <label>
-          재생 속도{' '}
+          관전 속도{' '}
           <select value={speed} onChange={(e) => setSpeed(Number(e.target.value))}>
             <option value={1}>1×</option>
             <option value={4}>4×</option>
@@ -166,8 +291,7 @@ export function Pitch({
         </label>
         <button
           onClick={() => {
-            clock.current = 89;
-            setMinute(89);
+            seek(samples.length - 1);
             setPaused(true);
           }}
           disabled={!p}
@@ -175,7 +299,70 @@ export function Pitch({
           결과 보기
         </button>
       </div>
-      {frame && (!summary || minute === 89) && (
+      {p && (
+        <label className={s.replayScrubber}>
+          경기 시간
+          <input
+            type="range"
+            aria-label="경기 시간"
+            min={0}
+            max={samples.length - 1}
+            value={sampleIndex}
+            onChange={(e) => {
+              seek(Number(e.target.value));
+              setPaused(true);
+            }}
+          />
+          <span>{frame?.minute || 0}′ / 90′</span>
+        </label>
+      )}
+      {!!sample?.players && (
+        <button
+          className={s.inspectorToggle}
+          aria-expanded={inspect}
+          onClick={() => setInspect(!inspect)}
+        >
+          {inspect ? '선수 판단 접기' : '선수 판단 보기'}
+        </button>
+      )}
+      {inspect && selectedPlayer && selectedMotion && traits && (
+        <div className={s.playerInspector}>
+          <label>
+            살펴볼 선수
+            <select value={selection} onChange={(e) => setSelection(e.target.value)}>
+              {p?.squads.map((squad, side) => (
+                <optgroup key={side} label={side === 0 ? home?.name : away?.name}>
+                  {squad.map((player, i) => (
+                    <option key={player.id} value={`${side}:${i}`}>
+                      {i + 1}. {player.name} · {player.role}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </label>
+          <p>
+            <b>{stateLabels[selectedMotion.state]}</b> · 점선은 이 선수가 선택한 이동 목표입니다.
+          </p>
+          <div className={s.playerTraits}>
+            {(
+              [
+                ['자유도', traits.freedom],
+                ['규율', traits.discipline],
+                ['압박 성향', traits.aggression],
+                ['예측력', traits.anticipation],
+              ] as const
+            ).map(([label, value]) => (
+              <span key={label}>
+                {label} {Math.round(value * 100)}
+                <progress aria-label={label} max={1} value={value} />
+              </span>
+            ))}
+          </div>
+          <p className={s.muted}>능력과 개인 성향에 전술·체력·주변 선수 위치가 함께 작용합니다.</p>
+        </div>
+      )}
+      {frame && (!summary || finished) && (
         <>
           <div className={s.matchStats}>
             {[

@@ -89,7 +89,18 @@ describe('world progression', () => {
     expect(new Set(w.ownMatches.map((m) => m.id)).size).toBe(w.ownMatches.length);
     expect(w.ownMatches.length).toBeLessThan(300);
     expect(w.history).toHaveLength(4);
-    expect(w.ownMatches.length).toBeGreaterThan(100);
+    for (const season of w.history) {
+      const leagueMatches = w.ownMatches.filter(
+        (match) => match.year === season.year && ['league', 'lower'].includes(match.kind),
+      );
+      expect(leagueMatches).toHaveLength(season.played);
+      expect(
+        leagueMatches.reduce(
+          (sum, match) => sum + (match.home === w.playerClub ? match.score.home : match.score.away),
+          0,
+        ),
+      ).toBe(season.gf);
+    }
     expect(w.year).toBe(1905);
     expect(w.history[0].year).toBe(1901);
   });

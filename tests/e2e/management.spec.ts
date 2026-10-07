@@ -9,7 +9,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByLabel('요청 전술').selectOption('counter');
   await page.getByLabel('요청 말투').selectOption('evidence');
   await page.getByRole('button', { name: '감독에게 제안하기' }).click();
-  await expect(page.getByText(/역습 요청 ·/).first()).toBeVisible();
+  await expect(page.locator('blockquote').getByText(/역습 요청 ·/)).toBeVisible();
   await page.getByRole('button', { name: '클럽 경영', exact: true }).click();
   await page.getByRole('button', { name: '후원 계약', exact: true }).first().click();
   await expect(page.getByRole('button', { name: '후원 계약', exact: true })).toHaveCount(0);
@@ -20,9 +20,14 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('button', { name: '선수 영입', exact: true }).first().click();
   await expect(page.getByRole('button', { name: '우리 선수단 · 19/26' })).toBeVisible();
   await page.getByRole('button', { name: '클럽 일지', exact: true }).click();
+  await page.getByRole('button', { name: '자세한 클럽 일지', exact: true }).click();
   await page.getByRole('button', { name: '시즌 마무리' }).click();
   await expect(page.getByTestId('calendar')).toHaveText('시즌 1902 · 라운드 0');
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  await page
+    .getByRole('dialog', { name: '클럽 일지 상세' })
+    .getByRole('button', { name: '창 닫기' })
+    .click();
   await page.getByRole('button', { name: '역사 보관함', exact: true }).click();
   await page.getByLabel('기록 시즌').selectOption('1901');
   await page.getByRole('button', { name: '경기 기록 보기', exact: true }).first().click();
@@ -37,8 +42,13 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   const raw = readFileSync((await file.path())!);
   expect(JSON.parse(raw.toString()).codec).toBe('gzip-base64');
   await page.getByRole('button', { name: '클럽 일지', exact: true }).click();
+  await page.getByRole('button', { name: '자세한 클럽 일지', exact: true }).click();
   await page.getByRole('button', { name: '다음 라운드', exact: true }).click();
   await expect(page.getByTestId('calendar')).toContainText('라운드 1');
+  await page
+    .getByRole('dialog', { name: '클럽 일지 상세' })
+    .getByRole('button', { name: '창 닫기' })
+    .click();
   await page
     .locator('input[type=file]')
     .last()

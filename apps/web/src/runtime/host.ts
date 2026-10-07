@@ -1,6 +1,9 @@
 import {
   createWorld,
   advanceRound,
+  advanceDays,
+  seasonLength,
+  groupKey,
   closeSeason,
   operate,
   managerOffers,
@@ -12,6 +15,7 @@ import {
 } from '../../../../packages/engine/src/index';
 import type { World, MatchPlayback } from '../../../../packages/contracts/src/types';
 import { decode, encode } from '../adapters/persistence';
+import { financialBreakdown } from '../../../../packages/engine/src/finance';
 import { requestSchema, type Request, type Reply, type View } from './protocol';
 export class Host {
   world?: World;
@@ -30,11 +34,18 @@ export class Host {
   }
   private view(w = this.world): View | undefined {
     if (!w) return;
+    const own = w.clubs.find((c) => c.id === w.playerClub)!;
+    const ownGroup = groupKey(own);
     return {
       world: {
         ...w,
         ownMatches: w.ownMatches.slice(-30),
-        fixtures: w.fixtures.filter((f) => f.home === w.playerClub || f.away === w.playerClub),
+        fixtures: w.fixtures.filter(
+          (f) =>
+            f.home === w.playerClub ||
+            f.away === w.playerClub ||
+            (w.lower ? f.kind === 'lower' : f.groupKey === ownGroup),
+        ),
         history: w.history.map((h) => ({
           ...h,
           standings: [],
@@ -49,6 +60,7 @@ export class Host {
       campaigns: campaignOffers(w),
       annualCost: operatingCost(w),
       coefficient: europeanCoefficient(w),
+      finance: financialBreakdown(w),
     };
   }
   private async execute(input: unknown): Promise<Reply> {
@@ -85,7 +97,22 @@ export class Host {
         if (!w) throw new Error('먼저 클럽을 창단하세요.');
         if (r.body.type === 'command') {
           const cmd = r.body.command;
-          if (cmd.type === 'advance' || cmd.type === 'season') {
+          if (cmd.type === 'advance-days' || cmd.type === 'next-match') {
+            if (w.critical) throw new Error('중요한 알림을 확인한 후 계속하세요.');
+            const matchCount = w.ownMatches.length;
+            const limit = cmd.type === 'advance-days' ? cmd.days : 2 * seasonLength(w);
+            for (let n = 0; n < limit; n++) {
+              if (this.cancelled) break;
+              const p = advanceDays(w, 1);
+              if (p) playback = p;
+              if (w.critical || (cmd.type === 'next-match' && w.ownMatches.length > matchCount))
+                break;
+              if (n % 14 === 0) {
+                this.progress({ requestId: r.requestId, ok: true, progress: (n + 1) / limit });
+                await new Promise((resolve) => setTimeout(resolve, 0));
+              }
+            }
+          } else if (cmd.type === 'advance' || cmd.type === 'season') {
             const limit = cmd.type === 'season' ? 46 - w.round : cmd.rounds;
             if (cmd.type === 'season' && w.critical)
               throw new Error('중요한 알림을 확인한 후 계속하세요.');
@@ -95,8 +122,8 @@ export class Host {
                 closeSeason(w);
                 w.revision++;
               }
-              const p = advanceRound(w);
-              if (p) playback = p;
+              const p = advanceRound(w, undefined, cmd.type !== 'season');
+              if (p?.frames.length) playback = p;
               if (n % 5 === 0) {
                 this.progress({
                   requestId: r.requestId,

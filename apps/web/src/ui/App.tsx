@@ -1,16 +1,22 @@
-import { lazy, Suspense, useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { lazy, memo, Suspense, useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import type { CountryCode, World } from '../../../../packages/contracts/src/types';
-import {
-  COUNTRIES,
-  country,
-  priceIndex,
-  NORMALIZATION,
-} from '../../../../packages/catalogs/src/index';
+import { COUNTRIES, country, priceIndex } from '../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../runtime/client';
 import { useNavigation, type Page } from './state';
 import { money, number, percent, seasonName, kindLabel } from './format';
-import { Chart } from './Chart';
-import { Pitch } from './Pitch';
+import { ProgressControls } from './ProgressControls';
+import { LiveSeason } from './LiveSeason';
+import { ClubHub } from './ClubHub';
+import { gameStore, useGameState } from '../runtime/store';
+import { ProgressionController } from '../runtime/progression';
+import { worldSelector } from './liveState';
+import { LeagueOverview, RankHistoryGraph, Standings } from './LeagueInsights';
+import { ownLeagueIds } from './league';
+import {
+  daysUntilNextMatch,
+  fixtureDate,
+  nextOwnFixture,
+} from '../../../../packages/engine/src/calendar';
 import s from './App.module.css';
 import { Dialog } from './Dialog';
 const Rich = lazy(() => import('./Rich'));
@@ -45,23 +51,7 @@ function NavIcon({ page }: { page: Page }) {
   );
 }
 export function Crest({ color = '#b4c399' }: { color?: string }) {
-  return (
-    <svg className={s.crest} viewBox="0 0 60 72" aria-hidden="true">
-      <path
-        d="M4 4H56V40C56 54 40 64 30 69C20 64 4 54 4 40Z"
-        fill={color}
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <path d="M12 12H48V39C48 49 38 56 30 61C22 56 12 49 12 39Z" fill="none" stroke="#ffffdf88" />
-      <circle cx="30" cy="34" r="11" fill="none" stroke="#ffffdf" />
-      <path
-        d="m30 24 6 5-2 8h-8l-2-8Zm-6 5-5 1m15 7 5 5m-13-5-5 5m9-18v-5"
-        fill="none"
-        stroke="#ffffdf"
-      />
-    </svg>
-  );
+  return <span className={s.crest} style={{ backgroundColor: color }} aria-hidden="true" />;
 }
 export function Panel({
   title,
@@ -70,7 +60,7 @@ export function Panel({
   footer,
 }: {
   title: string;
-  note?: string;
+  note?: ReactNode;
   children: ReactNode;
   footer?: ReactNode;
 }) {
@@ -86,54 +76,7 @@ export function Panel({
   );
 }
 export function Table({ w, ids, limit }: { w: World; ids: string[]; limit?: number }) {
-  const sorted = [...ids].sort((a, b) => {
-    const x = w.tables[a],
-      y = w.tables[b];
-    return y.points - x.points || y.gf - y.ga - (x.gf - x.ga) || y.gf - x.gf || (a < b ? -1 : 1);
-  });
-  return (
-    <div className={s.tableWrap}>
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>클럽</th>
-            <th>경기</th>
-            <th>승</th>
-            <th>무</th>
-            <th>패</th>
-            <th>득실</th>
-            <th>승점</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sorted.map((id, i) => {
-            if (limit && i >= limit && id !== w.playerClub) return null;
-            const c = w.clubs.find((c) => c.id === id)!,
-              t = w.tables[id];
-            return (
-              <tr key={id} className={id === w.playerClub ? s.own : undefined}>
-                <td>{i + 1}</td>
-                <td>
-                  {c.name}
-                  {id === w.playerClub ? ' ◈' : ''}
-                </td>
-                <td>{t.played}</td>
-                <td>{t.won}</td>
-                <td>{t.drawn}</td>
-                <td>{t.lost}</td>
-                <td>
-                  {t.gf - t.ga > 0 ? '+' : ''}
-                  {t.gf - t.ga}
-                </td>
-                <td>{t.points}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  );
+  return <Standings w={w} ids={ids} limit={limit} />;
 }
 function Founding({
   client,
@@ -175,41 +118,31 @@ function Founding({
           </p>
           <span className={s.pill}>캐주얼 클럽 경영 · 로컬 무료 플레이</span>
         </div>
-        <div className={s.introArt}>
-          <svg viewBox="0 0 400 300" aria-hidden="true">
-            <path d="M20 230 200 120 380 230 200 295Z" fill="#346345" />
-            <path d="M40 230 200 134 360 230 200 280Z" fill="none" stroke="#d9e0c3" />
-            <path
-              d="M120 182 280 277 M160 158 320 254 M80 206 240 277"
-              stroke="#497553"
-              strokeWidth="22"
-              opacity=".35"
-            />
-            <path d="m120 182 160 95" fill="none" stroke="#e4e5c7" />
-            <ellipse cx="200" cy="230" rx="32" ry="17" stroke="#e0e5c5" fill="none" />
-            <path
-              d="m50 224 34 20 36-22-34-20zm230 0 34 20 36-22-34-20z"
-              fill="none"
-              stroke="#e0e5c5"
-            />
-            <path
-              d="M72 187v-35l36 20v35m-36-55v-18l36 20v18M293 217v-35l36-20v35m-36-15v-18l36-20v18"
-              fill="none"
-              stroke="#375d43"
-              strokeWidth="3"
-            />
-            <circle cx="163" cy="219" r="5" fill="#f3dfb2" />
-            <circle cx="249" cy="236" r="5" fill="#bd7857" />
-            <circle cx="218" cy="211" r="5" fill="#bd7857" />
-            <circle cx="210" cy="226" r="3" fill="#fff" />
-            <path
-              d="M45 145V55h4v90m-4-90 45 14-45 14M349 164V45h4v119m-4-119 38 14-38 14"
-              stroke="#657957"
-              fill="#ba8460"
-              strokeWidth="2"
-            />
-          </svg>
-          <span className={s.artLabel}>EST. 1901 — THE FIRST PAGE</span>
+        <div className={s.firstSeason}>
+          <span className={s.eyebrow}>첫 시즌, 세 가지 즐거움</span>
+          <ol>
+            <li>
+              <b>01</b>
+              <div>
+                <h3>순위 한 칸의 무게</h3>
+                <p>승점 차와 순위 추이로 승격 경쟁을 따라가세요.</p>
+              </div>
+            </li>
+            <li>
+              <b>02</b>
+              <div>
+                <h3>같은 전술, 다른 선수</h3>
+                <p>선수의 성향과 감독의 판단이 경기장에서 만납니다.</p>
+              </div>
+            </li>
+            <li>
+              <b>03</b>
+              <div>
+                <h3>하루씩 쌓이는 역사</h3>
+                <p>자동 진행으로 시즌을 보내고, 결정적인 경기는 직접 관전하세요.</p>
+              </div>
+            </li>
+          </ol>
         </div>
       </div>
       <form className={s.form} onSubmit={submit}>
@@ -305,31 +238,20 @@ function Founding({
     </div>
   );
 }
-function Dashboard({ state, client }: { state: ClientState; client: GameClient }) {
+function ClubJournal({ state, client }: { state: ClientState; client: GameClient }) {
   const { setPage } = useNavigation();
   const v = state.view!,
     w = v.world,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
     t = w.tables[c.id],
-    next = w.fixtures.find((f) => !f.score && f.round > w.round),
+    next = nextOwnFixture(w),
     home = w.clubs.find((c) => c.id === next?.home),
     away = w.clubs.find((c) => c.id === next?.away);
-  const members = w.lower
-    ? w.clubs.filter((cl) => w.fixtures.some((f) => f.home === cl.id || f.away === cl.id))
-    : w.clubs.filter(
-        (cl) =>
-          cl.country === c.country &&
-          cl.tier === c.tier &&
-          cl.group === c.group &&
-          !cl.representative,
-      );
+  const members = w.clubs.filter((club) => ownLeagueIds(w).includes(club.id));
   const last = w.ownMatches.slice(-5);
   const winRate = percent(t.won, t.played);
   const watch = async () => {
-    const result = await client.command({
-      type: 'advance',
-      rounds: Math.max(1, (next?.round || w.round + 1) - w.round),
-    });
+    const result = await client.command({ type: 'next-match' });
     if (result?.playback) setPage('match');
   };
   return (
@@ -339,11 +261,7 @@ function Dashboard({ state, client }: { state: ClientState; client: GameClient }
           <div className={s.eyebrow}>
             THE CLUB JOURNAL · VOL. {String(w.year - 1900).padStart(3, '0')}
           </div>
-          <h2>
-            오늘의 경기,
-            <br />
-            내일의 역사.
-          </h2>
+          <h2>우리의 시즌은 지금.</h2>
           <p>
             {c.name} ·{' '}
             {w.lower ? '프로 복귀를 준비하는 계절' : `${c.tier + 1}부에서 쓰는 우리 이야기`}
@@ -365,6 +283,7 @@ function Dashboard({ state, client }: { state: ClientState; client: GameClient }
           </button>
         </div>
       </div>
+      <LeagueOverview w={w} onOpenLeague={() => setPage('league')} />
       <div className={s.stats}>
         {[
           [
@@ -389,10 +308,7 @@ function Dashboard({ state, client }: { state: ClientState; client: GameClient }
       </div>
       <div className={s.grid}>
         <div className={s.stack}>
-          <Panel
-            title="다음 경기"
-            note={next ? `ROUND ${next.round} · ${kindLabel[next.kind]}` : 'END OF SEASON'}
-          >
+          <Panel title="다음 경기" note={<NextMatchNote />}>
             <div className={s.fixture}>
               <small>
                 {seasonName(w.year)} · {country(c.country).name} · {c.tier + 1}부
@@ -431,15 +347,7 @@ function Dashboard({ state, client }: { state: ClientState; client: GameClient }
                 : '아직 첫 휘슬이 울리지 않았습니다.'}
             </div>
           </Panel>
-          <Panel title="우리의 성장 곡선" note="SUPPORTERS OVER TIME">
-            <div className={s.panelBody}>
-              <Chart
-                label="시즌별 서포터"
-                values={w.history.map((h) => h.fans)}
-                labels={w.history.map((h) => String(h.year))}
-              />
-            </div>
-          </Panel>
+          <RankHistoryGraph w={w} />
           <Panel
             title="리그의 지금"
             note={`${c.tier + 1}부 · ${members.length} CLUBS`}
@@ -492,95 +400,6 @@ function Dashboard({ state, client }: { state: ClientState; client: GameClient }
           </Panel>
         </div>
       </div>
-    </>
-  );
-}
-function League({ w }: { w: World }) {
-  const own = w.clubs.find((c) => c.id === w.playerClub)!;
-  const [code, setCode] = useState(own.country),
-    [tier, setTier] = useState(Math.min(own.tier, country(own.country).groups.length - 1)),
-    [group, setGroup] = useState(own.group);
-  const cp = country(code),
-    ids = w.clubs
-      .filter(
-        (c) => c.country === code && c.tier === tier && c.group === group && !c.representative,
-      )
-      .map((c) => c.id);
-  return (
-    <>
-      <div className={s.hero}>
-        <div>
-          <p className={s.eyebrow}>THE DOMESTIC PYRAMID</p>
-          <h2>
-            한 계단씩,
-            <br />더 큰 무대로.
-          </h2>
-          <p>승점과 골득실, 그리고 승격의 기회.</p>
-        </div>
-      </div>
-      <div className={s.filters}>
-        <label>
-          국가{' '}
-          <select
-            aria-label="국가"
-            value={code}
-            onChange={(e) => {
-              setCode(e.target.value);
-              setTier(0);
-              setGroup(0);
-            }}
-          >
-            {COUNTRIES.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          디비전{' '}
-          <select
-            value={tier}
-            onChange={(e) => {
-              setTier(Number(e.target.value));
-              setGroup(0);
-            }}
-          >
-            {cp.groups.map((_, i) => (
-              <option key={i} value={i}>
-                {i + 1}부
-              </option>
-            ))}
-          </select>
-        </label>
-        {cp.groups[tier].length > 1 && (
-          <label>
-            지역 그룹{' '}
-            <select value={group} onChange={(e) => setGroup(Number(e.target.value))}>
-              {cp.groups[tier].map((_, i) => (
-                <option key={i} value={i}>
-                  {String.fromCharCode(65 + i)}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-      </div>
-      <Panel
-        title={`${cp.name} · ${tier + 1}부`}
-        note={seasonName(w.year)}
-        footer={`${cp.moves[tier - 1] || 0}개 승격 자리 · 자동 승격과 플레이오프를 실제 경기로 결정합니다. 참고 구조: ${cp.reference}`}
-      >
-        <Table w={w} ids={ids} />
-      </Panel>
-      <p className={s.muted} style={{ marginTop: 18 }}>
-        {NORMALIZATION}
-      </p>
-      {w.lower && code === own.country && (
-        <Panel title="우리의 복귀 도전">
-          <Table w={w} ids={[...new Set(w.fixtures.flatMap((f) => [f.home, f.away]))]} />
-        </Panel>
-      )}
     </>
   );
 }
@@ -683,13 +502,249 @@ const NAV: [Page, string, string][] = [
   ['business', '↗', '클럽 경영'],
   ['history', '◷', '역사 보관함'],
 ];
+const selectContentWorld = worldSelector([
+  'year',
+  'round',
+  'playerClub',
+  'clubs',
+  'tables',
+  'fixtures',
+  'rankHistory',
+  'scorerSeason',
+  'players',
+  'manager',
+  'lineup',
+  'tactic',
+  'requested',
+  'ownMatches',
+  'history',
+  'events',
+  'cash',
+  'income',
+  'expense',
+  'currency',
+  'support',
+  'facilities',
+  'ticket',
+  'campaigns',
+  'sponsor',
+  'lower',
+  'europe',
+  'critical',
+]);
+function useContentState(): ClientState {
+  const world = useGameState(selectContentWorld);
+  const busy = useGameState((state) => state.busy);
+  const readonly = useGameState((state) => state.readonly);
+  const totalMatches = useGameState((state) => state.view?.totalMatches);
+  const annualCost = useGameState((state) => state.view?.annualCost);
+  const managers = useGameState((state) => state.view?.managers);
+  const transfers = useGameState((state) => state.view?.transfers);
+  const sponsors = useGameState((state) => state.view?.sponsors);
+  const campaigns = useGameState((state) => state.view?.campaigns);
+  const state = gameStore.getSnapshot();
+  return {
+    ...state,
+    busy,
+    readonly,
+    view:
+      world && state.view
+        ? {
+            ...state.view,
+            world,
+            totalMatches: totalMatches!,
+            annualCost: annualCost!,
+            managers: managers!,
+            transfers: transfers!,
+            sponsors: sponsors!,
+            campaigns: campaigns!,
+          }
+        : undefined,
+  };
+}
+const ConnectedFounding = memo(function ConnectedFounding({
+  client,
+  replace,
+  onDone,
+}: {
+  client: GameClient;
+  replace: boolean;
+  onDone: () => void;
+}) {
+  const state = useGameState((state) => state);
+  return <Founding client={client} state={state} replace={replace} onDone={onDone} />;
+});
+const ConnectedDashboard = memo(function ConnectedDashboard({
+  client,
+  controller,
+}: {
+  client: GameClient;
+  controller: ProgressionController;
+}) {
+  const state = useContentState();
+  return (
+    <ClubHub
+      w={state.view!.world}
+      client={client}
+      controller={controller}
+      journal={<ClubJournal client={client} state={state} />}
+    />
+  );
+});
+const ConnectedEurope = memo(function ConnectedEurope() {
+  const state = useContentState();
+  return <Europe w={state.view!.world} />;
+});
+function ConnectedRich({ client, page }: { client: GameClient; page: Page }) {
+  const state = useContentState();
+  return <Rich client={client} state={state} page={page} />;
+}
+function CalendarText() {
+  const year = useGameState((state) => state.view?.world.year);
+  const round = useGameState((state) => state.view?.world.round);
+  return <>{year ? `시즌 ${year} · 라운드 ${round}` : '1901 · A NEW BEGINNING'}</>;
+}
+function NextMatchNote() {
+  const w = useGameState((state) => state.view?.world)!;
+  const next = nextOwnFixture(w);
+  return (
+    <>
+      {next
+        ? `${fixtureDate(w, next)} · ${daysUntilNextMatch(w)}일 후 · ${kindLabel[next.kind]}`
+        : '시즌 마무리'}
+    </>
+  );
+}
+function RuntimeFeedback({ client, localError }: { client: GameClient; localError: string }) {
+  const state = useGameState((state) => state);
+  const critical = state.view?.world.critical;
+  return (
+    <>
+      {(state.error || localError) && (
+        <div className={s.error} role="alert">
+          {state.error || localError}{' '}
+          <button onClick={() => location.reload()}>저장 다시 불러오기</button>
+        </div>
+      )}
+      {state.notice && (
+        <div className={s.notice} role="status">
+          {state.notice}
+        </div>
+      )}
+      {critical && (
+        <div className={s.critical} role="status">
+          {critical}
+          <button disabled={state.busy || state.readonly} onClick={() => void client.acknowledge()}>
+            알림 확인 후 계속
+          </button>
+        </div>
+      )}
+      {state.busy && (
+        <div className={s.foregroundProgress}>
+          <div
+            className={s.progress}
+            role="progressbar"
+            aria-label="세계 처리 진행"
+            aria-valuenow={Math.round(state.progress * 100)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
+            <i style={{ width: `${Math.max(5, state.progress * 100)}%` }} />
+          </div>
+          {state.view && <button onClick={() => client.cancel()}>진행 중단</button>}
+        </div>
+      )}
+    </>
+  );
+}
+function LiveFooter() {
+  const w = useGameState((state) => state.view?.world);
+  const savedRevision = useGameState((state) => state.savedRevision);
+  const own = w?.clubs.find((club) => club.id === w.playerClub);
+  return (
+    <footer className={s.footer}>
+      <span>HAERAM FOOTBALL ARCHIVES · 가상의 클럽, 당신의 역사.</span>
+      <span data-testid="save-status">
+        {w
+          ? `${savedRevision === w.revision ? '저장 완료' : '저장 대기'} · r${w.revision}`
+          : '로그인 없이 시작하세요'}
+        {w &&
+          ` · 물가 ${priceIndex(own!.country, w.year).status === 'observed' ? '관측' : priceIndex(own!.country, w.year).status === 'estimated' ? '추정' : '전망'}`}
+      </span>
+    </footer>
+  );
+}
+function SaveActions({
+  client,
+  compact = false,
+  onDownload,
+  onImport,
+  onNewWorld,
+}: {
+  client: GameClient;
+  compact?: boolean;
+  onDownload: () => Promise<void>;
+  onImport: (file?: File) => Promise<void>;
+  onNewWorld?: () => void;
+}) {
+  const state = useGameState((state) => state);
+  const w = state.view?.world;
+  return (
+    <div className={compact ? s.sideFoot : s.actions}>
+      {compact && (
+        <>
+          기록은 이 브라우저에 저장됩니다.
+          <br />
+          파일로 당신의 역사를 보관하세요.
+        </>
+      )}
+      {!compact && w && (
+        <button
+          disabled={state.busy || state.readonly}
+          onClick={() => void client.command({ type: 'season', count: 5 })}
+        >
+          5시즌 진행
+        </button>
+      )}
+      <button disabled={(!w && !state.error) || state.busy} onClick={() => void onDownload()}>
+        {compact ? '기록 내보내기 ↓' : '기록 내보내기'}
+      </button>
+      {!compact && w && (
+        <button disabled={state.busy || state.readonly} onClick={onNewWorld}>
+          새로운 세계
+        </button>
+      )}
+      {!compact && w && !state.processing && state.savedRevision !== w.revision && (
+        <button disabled={state.busy || state.readonly} onClick={() => void client.retrySave()}>
+          저장 재시도
+        </button>
+      )}
+      <label className={s.fileButton}>
+        기록 가져오기
+        <input
+          className={s.fileInput}
+          type="file"
+          accept="application/json,.json"
+          disabled={state.busy || state.readonly}
+          onChange={(event) => {
+            void onImport(event.target.files?.[0]);
+            event.target.value = '';
+          }}
+        />
+      </label>
+    </div>
+  );
+}
 export function App() {
-  const [state, setState] = useState<ClientState>(),
-    [client, setClient] = useState<GameClient>(),
+  const worldId = useGameState((state) => state.view?.world.id);
+  const state = gameStore.getSnapshot();
+  const [client, setClient] = useState<GameClient>(),
+    [controller, setController] = useState<ProgressionController>(),
     [localError, setLocalError] = useState(''),
     [replacing, setReplacing] = useState(false),
     [newWorldConfirm, setNewWorldConfirm] = useState(false),
-    [pendingImport, setPendingImport] = useState<string>();
+    [pendingImport, setPendingImport] = useState<string>(),
+    [moreOpen, setMoreOpen] = useState(false);
   const { page, setPage } = useNavigation();
   useEffect(() => {
     try {
@@ -697,10 +752,15 @@ export function App() {
         throw new Error(
           '게임 저장은 HTTPS 또는 localhost에서 이용할 수 있습니다. localhost로 접속하거나 HTTPS 배포를 사용하세요.',
         );
-      const c = new GameClient(setState);
+      const c = new GameClient((state) => gameStore.publish(state));
+      const progression = new ProgressionController(c);
       setClient(c);
+      setController(progression);
       void c.start();
-      return () => c.dispose();
+      return () => {
+        progression.dispose();
+        c.dispose();
+      };
     } catch (error) {
       setLocalError(String(error));
     }
@@ -710,14 +770,14 @@ export function App() {
     own = w?.clubs.find((c) => c.id === w.playerClub);
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [page, w?.id]);
+  }, [page, worldId]);
   const download = async () => {
     const raw = await client?.exportFile();
     if (!raw) return;
     const url = URL.createObjectURL(new Blob([raw], { type: 'application/json' })),
       a = document.createElement('a');
     a.href = url;
-    a.download = `haeram-${w?.year || 'backup'}.haeram-save.json`;
+    a.download = `haeram-${gameStore.getSnapshot().view?.world.year || 'backup'}.haeram-save.json`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
@@ -729,11 +789,15 @@ export function App() {
     }
     setLocalError('');
     const raw = await file.text();
-    if (w) setPendingImport(raw);
-    else await client?.importFile(raw);
+    if (w) {
+      setMoreOpen(false);
+      setPendingImport(raw);
+    } else await client?.importFile(raw);
   };
   return (
-    <div className={s.layout}>
+    <div
+      className={`${s.layout} ${w && !replacing ? s.playLayout : ''} ${w && !replacing && page === 'dashboard' ? s.coreLayout : ''}`}
+    >
       <aside className={s.sidebar}>
         <div className={s.brand}>
           <Crest />
@@ -767,182 +831,131 @@ export function App() {
             </button>
           ))}
         </nav>
-        <div className={s.sideFoot}>
-          기록은 이 브라우저에 저장됩니다.
-          <br />
-          파일로 당신의 역사를 보관하세요.
-          <button disabled={(!w && !state?.error) || state?.busy} onClick={() => void download()}>
-            기록 내보내기 ↓
-          </button>
-          <label className={s.fileButton}>
-            기록 가져오기
-            <input
-              className={s.fileInput}
-              type="file"
-              accept="application/json,.json"
-              disabled={state?.busy || state?.readonly}
-              onChange={(e) => {
-                void importFile(e.target.files?.[0]);
-                e.target.value = '';
-              }}
-            />
-          </label>
-        </div>
+        {client && (
+          <SaveActions client={client} compact onDownload={download} onImport={importFile} />
+        )}
       </aside>
       <main className={s.main}>
         <div className={s.topbar}>
-          <span>FOOTBALL ARCHIVES / {NAV.find((n) => n[0] === page)?.[2] || 'THE FIRST PAGE'}</span>
+          <span>
+            <span className={s.desktopOnly}>FOOTBALL ARCHIVES / </span>
+            {NAV.find((n) => n[0] === page)?.[2] || 'THE FIRST PAGE'}
+          </span>
           <div className={s.topRight}>
             <span className={s.tag}>WEB DEMO · LOCAL</span>
             <span data-testid="calendar">
-              {w ? `시즌 ${w.year} · 라운드 ${w.round}` : '1901 · A NEW BEGINNING'}
+              <CalendarText />
             </span>
           </div>
         </div>
-        {(state?.error || localError) && (
-          <div className={s.error} role="alert">
-            {state?.error || localError}{' '}
-            <button onClick={() => location.reload()}>저장 다시 불러오기</button>
-          </div>
+        {client && <RuntimeFeedback client={client} localError={localError} />}
+        {client && controller && w && !replacing && (
+          <ProgressControls
+            client={client}
+            controller={controller}
+            suspended={newWorldConfirm || !!pendingImport || moreOpen}
+          />
         )}
-        {state?.notice && (
-          <div className={s.notice} role="status">
-            {state.notice}
-          </div>
-        )}
-        {w?.critical && (
-          <div className={s.critical} role="status">
-            {w.critical}
-            <button
-              disabled={state?.busy || state?.readonly}
-              onClick={() => void client?.acknowledge()}
-            >
-              알림 확인 후 계속
-            </button>
-          </div>
-        )}
-        {state?.busy && (
-          <>
-            <div
-              className={s.progress}
-              role="progressbar"
-              aria-label="세계 처리 진행"
-              aria-valuenow={Math.round(state.progress * 100)}
-              aria-valuemin={0}
-              aria-valuemax={100}
-            >
-              <i style={{ width: `${Math.max(5, state.progress * 100)}%` }} />
-            </div>
-            {w && <button onClick={() => client?.cancel()}>진행 중단</button>}
-          </>
-        )}
-        {client && state ? (
+        {client && controller ? (
           !w || replacing ? (
-            <Founding
+            <ConnectedFounding
               client={client}
-              state={state}
               replace={replacing}
               onDone={() => {
                 setReplacing(false);
                 if (replacing) setPage('dashboard');
               }}
             />
-          ) : page === 'dashboard' ? (
-            <Dashboard client={client} state={state} />
-          ) : page === 'match' ? (
-            <>
-              <div className={s.hero}>
-                <div>
-                  <div className={s.eyebrow}>WATCH THE NUMBERS MOVE</div>
-                  <h2>90분의 작은 드라마.</h2>
-                  <p>점유율과 패스, 슈팅에서 우리 팀의 변화를 찾아보세요.</p>
-                </div>
-                <button
-                  disabled={state.busy || state.readonly}
-                  className={s.primary}
-                  onClick={() => void client.command({ type: 'advance', rounds: 1 })}
-                >
-                  다음 라운드
-                </button>
-              </div>
-              <Panel
-                title="경기 관전"
-                note={
-                  state.playback ? seasonName(state.playback.record.year) : '첫 경기를 기다립니다'
-                }
-              >
-                <Pitch playback={state.playback} world={w} />
-              </Panel>
-            </>
-          ) : page === 'league' ? (
-            <League w={w} />
-          ) : page === 'europe' ? (
-            <Europe w={w} />
           ) : (
-            <Suspense fallback={<div className={s.loading}>클럽 기록을 펼치는 중…</div>}>
-              <Rich page={page} state={state} client={client} />
-            </Suspense>
+            <>
+              <div className={s.coreContent} hidden={page !== 'dashboard'}>
+                <ConnectedDashboard client={client} controller={controller} />
+              </div>
+              <LiveSeason key={worldId} page={page} client={client} controller={controller} />
+              <div hidden={page !== 'europe'}>
+                <ConnectedEurope />
+              </div>
+              {(['squad', 'manager', 'business', 'history'] as Page[]).includes(page) && (
+                <Suspense fallback={<div className={s.loading}>클럽 기록을 펼치는 중…</div>}>
+                  <ConnectedRich page={page} client={client} />
+                </Suspense>
+              )}
+            </>
           )
         ) : (
           <div className={s.loading}>기록 보관함을 여는 중…</div>
         )}
-        <footer className={s.footer}>
-          <span>HAERAM FOOTBALL ARCHIVES © · 가상의 클럽, 당신의 역사.</span>
-          <span data-testid="save-status">
-            {w
-              ? state!.savedRevision === w.revision
-                ? `저장 완료 · r${w.revision}`
-                : `저장 대기 · r${w.revision}`
-              : '로그인 없이 시작하세요'}
-            {w &&
-              ` · 물가 ${priceIndex(own!.country, w.year).status === 'observed' ? '관측' : priceIndex(own!.country, w.year).status === 'estimated' ? '추정' : '전망'}`}
-          </span>
-        </footer>
-        {client && state && (
-          <div className={s.actions}>
-            {w && (
-              <button
-                disabled={state?.busy || state?.readonly}
-                onClick={() => void client?.command({ type: 'season', count: 5 })}
-              >
-                5시즌 진행
-              </button>
-            )}
-            <button disabled={state?.busy} onClick={() => void download()}>
-              기록 내보내기
-            </button>
-            {w && (
-              <button
-                disabled={state.busy || state.readonly}
-                onClick={() => setNewWorldConfirm(true)}
-              >
-                새로운 세계
-              </button>
-            )}
-            {w && state.savedRevision !== w.revision && (
-              <button
-                disabled={state.busy || state.readonly}
-                onClick={() => void client.retrySave()}
-              >
-                저장 재시도
-              </button>
-            )}
-            <label className={s.fileButton}>
-              기록 가져오기
-              <input
-                className={s.fileInput}
-                type="file"
-                accept="application/json,.json"
-                disabled={state?.busy || state?.readonly}
-                onChange={(e) => {
-                  void importFile(e.target.files?.[0]);
-                  e.target.value = '';
-                }}
-              />
-            </label>
-          </div>
+        <LiveFooter />
+        {client && (
+          <SaveActions
+            client={client}
+            onDownload={download}
+            onImport={importFile}
+            onNewWorld={() => setNewWorldConfirm(true)}
+          />
         )}
       </main>
+      <nav className={s.mobileNav} aria-label="모바일 게임 메뉴">
+        {(
+          [
+            ['dashboard', '일지', '클럽 일지'],
+            ['match', '관전', '경기 관전'],
+            ['league', '리그', '리그'],
+            ['business', '경영', '클럽 경영'],
+          ] as const
+        ).map(([id, label, full]) => (
+          <button
+            key={id}
+            aria-label={full}
+            aria-current={page === id ? 'page' : undefined}
+            disabled={!w || replacing}
+            onClick={() => setPage(id)}
+          >
+            <NavIcon page={id} />
+            <span>{label}</span>
+          </button>
+        ))}
+        <button
+          aria-label="더보기"
+          disabled={!w || replacing}
+          onClick={(event) => {
+            event.currentTarget.focus();
+            setMoreOpen(true);
+          }}
+        >
+          <span aria-hidden="true">•••</span>
+          <span>더보기</span>
+        </button>
+      </nav>
+      {moreOpen && (
+        <Dialog label="전체 메뉴" onClose={() => setMoreOpen(false)}>
+          <div className={s.moreMenu}>
+            {NAV.map(([id, , label]) => (
+              <button
+                key={id}
+                onClick={() => {
+                  setPage(id);
+                  setMoreOpen(false);
+                }}
+              >
+                <NavIcon page={id} />
+                {label}
+              </button>
+            ))}
+          </div>
+          {client && (
+            <SaveActions
+              client={client}
+              onDownload={download}
+              onImport={importFile}
+              onNewWorld={() => {
+                setMoreOpen(false);
+                setNewWorldConfirm(true);
+              }}
+            />
+          )}
+        </Dialog>
+      )}
       {newWorldConfirm && (
         <Dialog label="새로운 세계 창단 확인" onClose={() => setNewWorldConfirm(false)}>
           <h2>새로운 세계를 펼치기 전에.</h2>

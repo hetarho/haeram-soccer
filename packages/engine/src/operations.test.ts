@@ -58,7 +58,10 @@ describe('club decisions', () => {
     advanceRound(w);
     const sponsorIncome = w.events.filter((e) => e.kind === 'sponsor-payment');
     advanceRound(w);
-    expect(w.events.filter((e) => e.kind === 'sponsor-payment')).toHaveLength(sponsorIncome.length);
+    expect(w.events.filter((e) => e.kind === 'sponsor-payment')).toHaveLength(
+      sponsorIncome.length + 1,
+    );
+    expect(BigInt(sponsorIncome[0].amount!)).toBeLessThan(BigInt(w.sponsor!.annual));
     simulateSeason(w);
     expect(w.players.find((p) => p.id === offer.player.id)?.status).toBe('retired');
   });

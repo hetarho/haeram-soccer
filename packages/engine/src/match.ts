@@ -8,7 +8,10 @@ import type {
   World,
 } from '../../contracts/src/types';
 import { clamp, integer, random, zeroMetrics } from './primitives';
-import { rating, startingSquad, findClub, TACTICS } from './world';
+import { rating, startingSquad, findClub } from './world';
+import { npcTactic, tacticalProfile } from './strategy';
+import { MatchMotion } from './motion';
+export { MATCH_MOTION_CONFIG, playerTraits, teamMotionProfile } from './motion';
 export const METRICS = [
   '득점',
   '도움',
@@ -41,20 +44,35 @@ export function simulateMatch(
     rating(w, away) + (away.id === w.playerClub ? (w.manager.ability - 50) / 4 : 4),
   ];
   const tactics: [Tactic, Tactic] = teams.map((c) =>
-    c.id === w.playerClub
-      ? w.tactic
-      : TACTICS[Math.abs(c.id.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % 4],
+    c.id === w.playerClub ? w.tactic : npcTactic(c),
   ) as [Tactic, Tactic];
+  const profiles = [
+    tacticalProfile(squads[0], tactics[0], tactics[1]),
+    tacticalProfile(squads[1], tactics[1], tactics[0]),
+  ];
+  const motion = observe
+    ? new MatchMotion(
+        `${w.seed}:${f.id}`,
+        squads,
+        tactics,
+        teams.map((club, side) =>
+          club.id === w.playerClub
+            ? w.manager
+            : {
+                philosophy: tactics[side],
+                ability: clamp(club.strength + 10),
+                flexibility: 35 + (club.id.charCodeAt(club.id.length - 1) % 40),
+              },
+        ) as ConstructorParameters<typeof MatchMotion>[3],
+      )
+    : undefined;
   const metrics: [number[], number[]] = [zeroMetrics(), zeroMetrics()];
   const contributions = squads.map((ps) => ps.map(() => zeroMetrics()));
   const frames: MatchPlayback['frames'] = [];
   const highlights: MatchRecord['highlights'] = [];
   const possessionChance =
     clamp(
-      50 +
-        (strength[0] - strength[1]) / 2 +
-        (tactics[0] === 'possession' ? 8 : 0) -
-        (tactics[1] === 'possession' ? 8 : 0),
+      50 + (strength[0] - strength[1]) / 2 + profiles[0].possession - profiles[1].possession,
       20,
       80,
     ) / 100;
@@ -64,11 +82,7 @@ export function simulateMatch(
     const actor = integer(r, 8, 10),
       passCount = integer(r, 5, 12);
     const accuracy = clamp(
-      68 +
-        strength[side] / 6 +
-        (tactics[side] === 'possession' ? 9 : 0) -
-        (tactics[other] === 'press' ? 5 : 0) +
-        integer(r, -8, 8),
+      68 + strength[side] / 6 + profiles[side].pass - profiles[other].pressure + integer(r, -8, 8),
       35,
       96,
     );
@@ -77,8 +91,7 @@ export function simulateMatch(
     metrics[side][2] += passCount;
     metrics[side][3] += passes;
     const dribble = r() < 0.24;
-    const shot =
-      r() < (tactics[side] === 'press' ? 0.21 : tactics[side] === 'counter' ? 0.19 : 0.16);
+    const shot = r() < clamp(18 + profiles[side].shot - profiles[other].defense, 7, 30) / 100;
     const onTarget =
       r() <
       clamp(42 + (squads[side][actor].attack - squads[side][actor].fatigue / 8) / 4, 35, 78) / 100;
@@ -143,8 +156,8 @@ export function simulateMatch(
         contributions[other][defender][7]++;
       }
     }
-    if (observe)
-      frames.push({
+    if (observe) {
+      const frame: MatchPlayback['frames'][number] = {
         minute,
         score: { home: metrics[0][0], away: metrics[1][0] },
         metrics: [metrics[0].slice(), metrics[1].slice()],
@@ -155,7 +168,10 @@ export function simulateMatch(
         side,
         player: actor,
         action,
-      });
+      };
+      Object.assign(frame, motion!.minute(frame));
+      frames.push(frame);
+    }
   }
   metrics[0][10] = 90;
   metrics[1][10] = 90;

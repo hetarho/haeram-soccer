@@ -9,6 +9,7 @@ import { Panel } from './App';
 import { Dialog } from './Dialog';
 import type { Page } from './state';
 import { Chart } from './Chart';
+import { FinancialBreakdown } from './FinancialBreakdown';
 import { Pitch } from './Pitch';
 import { archivePlayback } from './replay';
 import { money, number, percent, seasonName, kindLabel } from './format';
@@ -492,6 +493,7 @@ function Business({ state, client }: Props) {
           </div>
         ))}
       </div>
+      <FinancialBreakdown w={w} breakdown={v.finance} />
       <Panel title="작은 실험, 눈에 보이는 결과" note="MARKETING CAMPAIGNS">
         <div className={s.panelBody}>
           <div className={s.cards}>
@@ -544,7 +546,7 @@ function Business({ state, client }: Props) {
               <h3>{w.sponsor.name}</h3>
               <p className={s.muted}>
                 {sponsors[w.sponsor.kind]} · 연간 {money(w.sponsor.annual, c.country, w.year)} ·{' '}
-                {w.sponsor.until}년까지 · 지급 연도 {w.sponsor.lastPaid}
+                {w.sponsor.until}년까지 · 실제 리그 경기마다 분할 지급
               </p>
               {w.sponsor.kind === 'exclusive' && (
                 <p>독점 후원 기간에는 자체 상품 캠페인이 제한됩니다.</p>
@@ -580,7 +582,8 @@ function Business({ state, client }: Props) {
           )}
         </div>
         <div className={s.panelFoot}>
-          후원은 한 자리입니다. 계약금 대신 시즌 첫 라운드에 연간 후원금을 한 번 지급합니다.
+          후원은 한 자리입니다. 연간 기본 후원금은 실제 리그 경기마다 나누어 받습니다. 성과 수당은
+          경기 결과에 따라 지급됩니다.
         </div>
       </Panel>
       <div className={s.twoCols}>
@@ -629,15 +632,15 @@ function Business({ state, client }: Props) {
         <Panel title="계속할 수 있는 선택">
           <div className={s.panelBody}>
             <p className={s.muted}>
-              필수 급여와 운영비는 자금이 부족해도 지급합니다. 매각과 비용 조정, 지역사회 지원으로
-              회복할 수 있습니다.
+              필수 급여와 운영비는 자금이 부족해도 발생합니다. 선수를 매각하거나 비용과 티켓 가격을
+              조정해 운영 수지를 개선하세요.
             </p>
             <button
               disabled={disabled}
               style={{ marginTop: 16 }}
               onClick={() => act({ type: 'support' })}
             >
-              지역사회 지원 · {money(quote(c.country, w.year, 150), c.country, w.year)}
+              구단주 추가 출자 · {money(quote(c.country, w.year, 150), c.country, w.year)}
             </button>
             <p className={s.muted} style={{ marginTop: 10 }}>
               시즌당 최대 3회 · 평판 -2 · 사용{' '}

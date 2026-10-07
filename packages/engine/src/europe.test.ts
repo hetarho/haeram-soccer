@@ -10,6 +10,7 @@ import {
   finishEurope,
   advanceEurope,
   advanceEconomy,
+  snapshotScorers,
   quote,
   clubOf,
 } from './index';
@@ -55,6 +56,9 @@ describe('historical evolution', () => {
     const ids = w.europe.flatMap((t) => t.clubs);
     expect(new Set(ids).size).toBe(ids.length);
     w.round = 46;
+    w.calendar = { day: 322 };
+    // This fixture skips domestic play; keep its empty scorer snapshot on the same round.
+    snapshotScorers(w);
     advanceEurope(w);
     for (const t of w.europe)
       expect(Object.values(t.standings).every((row) => row.played === t.games)).toBe(true);

@@ -6,27 +6,35 @@ const found = async (page: import('@playwright/test').Page) => {
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r0');
 };
+const advanceRound = async (page: import('@playwright/test').Page) => {
+  await page.getByRole('button', { name: '자세한 클럽 일지', exact: true }).click();
+  const journal = page.getByRole('dialog', { name: '클럽 일지 상세' });
+  const before = await page.getByTestId('save-status').textContent();
+  await journal.getByRole('button', { name: '다음 라운드', exact: true }).click();
+  await expect(page.getByTestId('save-status')).not.toHaveText(before!);
+  await journal.getByRole('button', { name: '창 닫기', exact: true }).click();
+};
 test('one writer, live read-only updates and ownership after reload', async ({ page, context }) => {
   await found(page);
   const second = await context.newPage();
   await second.goto('/');
   await expect(second.getByRole('status')).toContainText('읽기 전용');
-  await expect(second.getByRole('button', { name: '다음 라운드', exact: true })).toBeDisabled();
+  await expect(second.getByTestId('hub-play')).toBeDisabled();
   await page.bringToFront();
-  await page.getByRole('button', { name: '다음 라운드', exact: true }).click();
+  await advanceRound(page);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r1');
   await second.bringToFront();
   await expect(second.getByTestId('calendar')).toContainText('라운드 1', { timeout: 10000 });
   await page.close();
   await second.reload();
-  await expect(second.getByRole('button', { name: '다음 라운드', exact: true })).toBeEnabled();
+  await expect(second.getByTestId('hub-play')).toBeEnabled();
   await second.close();
 });
 test('recovers prior checkpoint after active corruption without clearing another application key', async ({
   page,
 }) => {
   await found(page);
-  await page.getByRole('button', { name: '다음 라운드', exact: true }).click();
+  await advanceRound(page);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r1');
   await page.evaluate(() => {
     localStorage.setItem('another-app:keep', 'present');
@@ -37,7 +45,7 @@ test('recovers prior checkpoint after active corruption without clearing another
   await expect(page.getByRole('status')).toContainText('체크포인트로 복구');
   await expect(page.getByTestId('calendar')).toContainText('라운드 0');
   expect(await page.evaluate(() => localStorage.getItem('another-app:keep'))).toBe('present');
-  await page.getByRole('button', { name: '다음 라운드', exact: true }).click();
+  await advanceRound(page);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r1');
   await page.reload();
   await expect(page.getByTestId('calendar')).toContainText('라운드 1');
@@ -61,7 +69,7 @@ test('quota failure preserves disk save, exports actual memory progress and retr
   await page.evaluate(() => {
     (globalThis as typeof globalThis & { failWrites?: boolean }).failWrites = true;
   });
-  await page.getByRole('button', { name: '다음 라운드', exact: true }).click();
+  await advanceRound(page);
   await expect(page.getByRole('alert')).toContainText('저장 실패');
   await expect(page.getByTestId('save-status')).toContainText('저장 대기 · r1');
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBe(before);
@@ -130,7 +138,7 @@ test('a terminated real worker exposes recovery and retains the last committed c
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBe(manifest);
   await page.reload();
   await expect(page.getByTestId('calendar')).toContainText('라운드 0');
-  await expect(page.getByRole('button', { name: '다음 라운드', exact: true })).toBeEnabled();
+  await expect(page.getByTestId('hub-play')).toBeEnabled();
 });
 test('safe explicit new-world replacement and browser back navigation', async ({ page }) => {
   await found(page);

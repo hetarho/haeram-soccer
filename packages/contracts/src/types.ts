@@ -50,6 +50,8 @@ export interface Manager {
   until: number;
   interim: boolean;
   lastRequest?: string;
+  /** Bounded per-round replies and positive-trust guard; absent in older saves. */
+  requestHistory?: { at: string; keys: string[]; trustAwarded: boolean };
   pending?: Tactic;
 }
 export interface Score {
@@ -76,6 +78,37 @@ export interface TableRow {
   ga: number;
   points: number;
 }
+export interface StandingSnapshot {
+  year: number;
+  round: number;
+  day: number;
+  tier: number;
+  group: number;
+  /** Sorted by rank. Each row is [club index, points, goals for, goals against]. */
+  rows: [number, number, number, number][];
+}
+export interface GoalScorer {
+  id: string;
+  name: string;
+  club: string;
+  role: Role;
+  goals: number;
+  appearances: number;
+}
+export interface GoalScorerSnapshot {
+  round: number;
+  day: number;
+  /** Sorted scorers. Each row is [player index, cumulative goals, appearances]. */
+  rows: [number, number, number][];
+}
+export interface GoalScorerSeason {
+  year: number;
+  groupKey: string;
+  /** Older saves begin tracking from the next round rather than inventing past scorers. */
+  trackedSinceRound: number;
+  players: GoalScorer[];
+  history: GoalScorerSnapshot[];
+}
 export interface Highlight {
   minute: number;
   side: 0 | 1;
@@ -89,6 +122,22 @@ export interface MatchRecord extends Fixture {
   highlights: Highlight[];
   tactics: [Tactic, Tactic];
 }
+export type PlayerMotionState =
+  'shape' | 'support' | 'run' | 'press' | 'mark' | 'recover' | 'carry' | 'keeper';
+export interface PlayerMotion {
+  id: string;
+  position: [number, number];
+  velocity: [number, number];
+  state: PlayerMotionState;
+  intent: [number, number];
+}
+export interface MatchMotionSample {
+  elapsedSeconds: number;
+  ball: [number, number];
+  players: [PlayerMotion[], PlayerMotion[]];
+  phase?: 'possession' | 'transition' | 'pass' | 'shot' | 'restart';
+  ownerId?: string;
+}
 export interface MatchFrame {
   minute: number;
   score: Score;
@@ -97,6 +146,9 @@ export interface MatchFrame {
   side: 0 | 1;
   player: number;
   action: string;
+  elapsedSeconds?: number;
+  players?: [PlayerMotion[], PlayerMotion[]];
+  motion?: MatchMotionSample[];
 }
 export interface MatchPlayback {
   record: MatchRecord;
@@ -186,10 +238,18 @@ export interface World {
   year: number;
   round: number;
   revision: number;
+  /** Days since August 1 of the current season. Absent in older saves. */
+  calendar?: { day: number };
+  /** All clubs in the player's league, retained for the latest ten seasons. */
+  rankHistory?: StandingSnapshot[];
+  /** Actual league goals and appearances with round snapshots, for the current season. */
+  scorerSeason?: GoalScorerSeason;
   playerClub: string;
   difficulty: number;
   clubs: Club[];
   players: Player[];
+  /** Preferred starting XI in goalkeeper, four defenders, three midfielders, three forwards order. */
+  lineup?: string[];
   manager: Manager;
   tactic: Tactic;
   requested?: Tactic;
@@ -224,8 +284,11 @@ export interface Founding {
 }
 export type Command =
   | { type: 'advance'; rounds: number }
+  | { type: 'advance-days'; days: number }
+  | { type: 'next-match' }
   | { type: 'season'; count: number }
   | { type: 'tactics'; tactic: Tactic; tone: string }
+  | { type: 'lineup'; ids: string[] | null }
   | { type: 'hire'; candidate: number }
   | { type: 'recruit'; candidate: number; loan?: boolean }
   | { type: 'sell'; id: string }

@@ -1,4 +1,4 @@
-import type { World, EuropeTournament, Fixture } from '../../contracts/src/types';
+import type { World, EuropeTournament, Fixture, MatchPlayback } from '../../contracts/src/types';
 import { COUNTRIES } from '../../catalogs/src/index';
 import { random, integer, compareIds, clamp } from './primitives';
 import { addEvent, clubOf, findClub } from './world';
@@ -6,6 +6,7 @@ import { emptyTable, recordMatch, resolveTie } from './season';
 import { simulateMatch } from './match';
 import { credit } from './operations';
 import { quote } from './world';
+import { fixtureDay } from './calendar';
 export interface Era {
   key: string;
   name: string;
@@ -169,10 +170,16 @@ function groupPairs(ids: string[], size: number, double: boolean) {
   }
   return result;
 }
-function play(w: World, t: EuropeTournament, f: Fixture) {
+function play(
+  w: World,
+  t: EuropeTournament,
+  f: Fixture,
+  settlement?: (w: World, p: MatchPlayback) => void,
+  observe = true,
+) {
   if (f.score) return;
   const own = f.home === w.playerClub || f.away === w.playerClub;
-  const p = simulateMatch(w, f, false, own);
+  const p = simulateMatch(w, f, observe && !!settlement && own, own);
   f.score = p.record.score;
   recordMatch(w, p);
   for (const [id, gf, ga] of [
@@ -206,6 +213,7 @@ function play(w: World, t: EuropeTournament, f: Fixture) {
       ),
     );
     clubOf(w).reputation = clamp(clubOf(w).reputation + 0.2);
+    settlement?.(w, p);
   }
 }
 function knockout(w: World, t: EuropeTournament, ids: string[], label: string, until = 1) {
@@ -305,9 +313,16 @@ export function prepareEurope(w: World) {
       );
   }
 }
-export function advanceEurope(w: World) {
+export function advanceEurope(
+  w: World,
+  settlement?: (w: World, p: MatchPlayback) => void,
+  day?: number,
+  observe = true,
+) {
   for (const t of w.europe)
-    for (const f of t.fixtures) if (!f.score && f.round <= w.round) play(w, t, f);
+    for (const f of t.fixtures)
+      if (!f.score && (day === undefined ? f.round <= w.round : fixtureDay(f) <= day))
+        play(w, t, f, settlement, observe);
 }
 function sorted(t: EuropeTournament, ids: string[]) {
   return [...ids].sort((a, b) => {

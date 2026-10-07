@@ -5,13 +5,17 @@ export * from './world';
 export * from './season';
 export * from './match';
 export * from './primitives';
+export * from './calendar';
+export * from './scoring';
+export * from './finance';
+export * from './strategy';
 export function createWorld(input: Founding) {
   const w = createBase(input);
   prepareSeason(w);
   return w;
 }
 export function simulateSeason(w: World) {
-  while (w.round < 46) advanceRound(w);
+  while (w.round < 46) advanceRound(w, undefined, false);
   closeSeason(w);
   w.revision++;
   return w;

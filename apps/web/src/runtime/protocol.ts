@@ -8,6 +8,7 @@ import type {
   Event,
 } from '../../../../packages/contracts/src/types';
 import type { Envelope } from '../adapters/persistence';
+import type { financialBreakdown } from '../../../../packages/engine/src/finance';
 import {
   managerOffers,
   transferOffers,
@@ -17,11 +18,17 @@ import {
 const index = z.number().int().min(0).max(7);
 const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('advance'), rounds: z.number().int().min(1).max(46) }),
+  z.object({ type: z.literal('advance-days'), days: z.number().int().min(1).max(31) }),
+  z.object({ type: z.literal('next-match') }),
   z.object({ type: z.literal('season'), count: z.literal(1) }),
   z.object({
     type: z.literal('tactics'),
     tactic: z.enum(['balanced', 'possession', 'counter', 'press']),
     tone: z.enum(['respect', 'evidence', 'support', 'demand']),
+  }),
+  z.object({
+    type: z.literal('lineup'),
+    ids: z.array(z.string().min(1).max(100)).length(11).nullable(),
   }),
   z.object({ type: z.literal('hire'), candidate: index }),
   z.object({ type: z.literal('recruit'), candidate: index, loan: z.boolean().optional() }),
@@ -80,6 +87,7 @@ export interface View {
   campaigns: ReturnType<typeof campaignOffers>;
   annualCost: string;
   coefficient: number;
+  finance?: ReturnType<typeof financialBreakdown>;
 }
 export interface Reply {
   requestId: string;

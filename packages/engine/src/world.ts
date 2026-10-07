@@ -268,9 +268,53 @@ export function lineup(players: Player[]): Player[] {
   const result = selected.slice(0, 11);
   return result;
 }
+export const LINEUP_ROLES: Player['role'][] = [
+  'GK',
+  'DEF',
+  'DEF',
+  'DEF',
+  'DEF',
+  'MID',
+  'MID',
+  'MID',
+  'FWD',
+  'FWD',
+  'FWD',
+];
+
+/** Preferred starters remain slot-safe; a sold or retired player is replaced automatically. */
+export function selectedLineup(players: Player[], preferred?: string[]): Player[] {
+  if (!preferred) return lineup(players);
+  const active = players.filter((player) => player.status === 'active');
+  const byId = new Map(active.map((player) => [player.id, player]));
+  const used = new Set<string>();
+  const selected = LINEUP_ROLES.map((role, i) => {
+    const player = byId.get(preferred[i]);
+    if (!player || player.role !== role || used.has(player.id)) return undefined;
+    used.add(player.id);
+    return player;
+  });
+  const fit = [...active].sort(
+    (a, b) => overall(b) - b.fatigue / 5 - (overall(a) - a.fatigue / 5) || compareIds(a.id, b.id),
+  );
+  return selected.flatMap((player, i) => {
+    const replacement =
+      player ||
+      fit.find((candidate) => candidate.role === LINEUP_ROLES[i] && !used.has(candidate.id)) ||
+      fit.find((candidate) => !used.has(candidate.id));
+    if (!replacement) return [];
+    used.add(replacement.id);
+    return [replacement];
+  });
+}
 export function rating(w: World, c: Club) {
   return c.id === w.playerClub
-    ? Math.round(lineup(activePlayers(w)).reduce((s, p) => s + overall(p) - p.fatigue / 6, 0) / 11)
+    ? Math.round(
+        selectedLineup(activePlayers(w), w.lineup).reduce(
+          (s, p) => s + overall(p) - p.fatigue / 6,
+          0,
+        ) / 11,
+      )
     : c.strength;
 }
 export function addEvent(w: World, kind: string, title: string, detail: string, amount?: string) {
@@ -287,7 +331,7 @@ export function addEvent(w: World, kind: string, title: string, detail: string, 
 const npcLineups = new WeakMap<Player[], Player[]>();
 export function startingSquad(w: World, c: Club) {
   const ps = squad(w, c);
-  if (c.id === w.playerClub) return lineup(ps);
+  if (c.id === w.playerClub) return selectedLineup(ps, w.lineup);
   let cached = npcLineups.get(ps);
   if (!cached) {
     cached = lineup(ps);

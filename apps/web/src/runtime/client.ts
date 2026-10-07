@@ -1,9 +1,13 @@
 import type { Command, Founding } from '../../../../packages/contracts/src/types';
 import { Saves } from '../adapters/persistence';
 import { requestSchema, type Body, type Reply, type View } from './protocol';
+import { shareView } from './store';
 export interface ClientState {
   view?: View;
   busy: boolean;
+  /** Commands remain serialized even when background simulation leaves the UI available. */
+  processing: boolean;
+  activity: 'idle' | 'foreground' | 'background';
   readonly: boolean;
   savedRevision: number;
   error?: string;
@@ -12,14 +16,26 @@ export interface ClientState {
   playback?: Reply['playback'];
 }
 export class GameClient {
-  state: ClientState = { busy: true, readonly: true, savedRevision: -1, progress: 0 };
+  state: ClientState = {
+    busy: true,
+    processing: true,
+    activity: 'foreground',
+    readonly: true,
+    savedRevision: -1,
+    progress: 0,
+  };
   private worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
   private session = crypto.randomUUID();
   private serial = 0;
   private failed = false;
   private waiters = new Map<
     string,
-    { resolve: (r: Reply) => void; reject: (e: Error) => void; timer: number }
+    {
+      resolve: (r: Reply) => void;
+      reject: (e: Error) => void;
+      timer: number;
+      publishView: boolean;
+    }
   >();
   private queue = Promise.resolve();
   private release?: () => void;
@@ -46,21 +62,21 @@ export class GameClient {
     this.worker.onmessage = (event: MessageEvent<Reply>) => {
       const r = event.data;
       const pending = this.waiters.get(r.requestId);
-      if (pending) {
-        clearTimeout(pending.timer);
-        pending.timer = window.setTimeout(() => this.failWorker(), 15000);
-      }
+      if (!pending) return;
+      clearTimeout(pending.timer);
+      pending.timer = window.setTimeout(() => this.failWorker(), 15000);
       if (r.progress !== undefined) {
-        this.state.progress = r.progress;
-        this.emit();
+        if (this.state.activity === 'foreground') {
+          this.state.progress = r.progress;
+          this.emit();
+        }
         return;
       }
-      const waiter = this.waiters.get(r.requestId);
-      if (waiter) clearTimeout(waiter.timer);
+      clearTimeout(pending.timer);
       this.waiters.delete(r.requestId);
-      if (r.view) this.state.view = r.view;
-      if (r.ok) waiter?.resolve(r);
-      else waiter?.reject(new Error(r.error || 'Worker 오류'));
+      if (r.view && pending.publishView) this.state.view = shareView(this.state.view, r.view);
+      if (r.ok) pending.resolve(r);
+      else pending.reject(new Error(r.error || 'Worker 오류'));
     };
     this.worker.onerror = () => this.failWorker();
     this.channel.onmessage = (event) => this.refresh(event.data?.generation || 0);
@@ -71,12 +87,15 @@ export class GameClient {
     this.refreshGeneration = Math.max(this.refreshGeneration, generation);
     if (this.refreshPending) return;
     this.refreshPending = true;
-    void this.enqueue(async () => {
-      for (let n = 0; n < 2; n++) {
-        await this.load();
-        if (this.saves.generationInfo.parentGeneration >= this.refreshGeneration) break;
-      }
-    }).finally(() => {
+    void this.enqueue(
+      async () => {
+        for (let n = 0; n < 2; n++) {
+          await this.load();
+          if (this.saves.generationInfo.parentGeneration >= this.refreshGeneration) break;
+        }
+      },
+      { background: !!this.state.view },
+    ).finally(() => {
       this.refreshPending = false;
     });
   }
@@ -87,6 +106,8 @@ export class GameClient {
     this.state.error =
       '계산 Worker가 종료되었거나 응답하지 않습니다. 마지막 저장을 다시 불러오세요.';
     this.state.busy = false;
+    this.state.processing = false;
+    this.state.activity = 'idle';
     for (const waiter of this.waiters.values()) {
       clearTimeout(waiter.timer);
       waiter.reject(new Error(this.state.error));
@@ -100,6 +121,8 @@ export class GameClient {
   async start() {
     if (!globalThis.CompressionStream || !globalThis.DecompressionStream || !crypto.subtle) {
       this.state.busy = false;
+      this.state.processing = false;
+      this.state.activity = 'idle';
       this.state.error =
         '이 브라우저는 저장 압축을 지원하지 않습니다. 최신 Chrome, Firefox 또는 Safari에서 기록을 가져오세요.';
       this.emit();
@@ -145,6 +168,11 @@ export class GameClient {
         resolve,
         reject,
         timer: window.setTimeout(() => this.failWorker(), 15000),
+        publishView:
+          body.type === 'found' ||
+          body.type === 'command' ||
+          body.type === 'ack-critical' ||
+          (body.type === 'inspect' && !!body.activate),
       });
       this.worker.postMessage({
         protocol: 1,
@@ -156,9 +184,14 @@ export class GameClient {
       });
     });
   }
-  private enqueue<T>(fn: () => Promise<T>): Promise<T | undefined> {
+  private enqueue<T>(
+    fn: () => Promise<T>,
+    options: { background?: boolean } = {},
+  ): Promise<T | undefined> {
     const task = this.queue.then(async () => {
-      this.state.busy = true;
+      this.state.processing = true;
+      this.state.busy = !options.background;
+      this.state.activity = options.background ? 'background' : 'foreground';
       delete this.state.error;
       this.state.progress = 0;
       this.emit();
@@ -169,6 +202,8 @@ export class GameClient {
         return undefined;
       } finally {
         this.state.busy = false;
+        this.state.processing = false;
+        this.state.activity = 'idle';
         this.emit();
       }
     });
@@ -205,7 +240,7 @@ export class GameClient {
       this.mutate(requestSchema.shape.body.parse({ type: 'found', input, replace })),
     );
   }
-  command(command: Command) {
+  command(command: Command, options: { background?: boolean } = {}) {
     this.cancelled = false;
     return this.enqueue(async () => {
       let reply: Reply | undefined;
@@ -221,7 +256,7 @@ export class GameClient {
         if (reply.cancelled || this.state.view?.world.critical) break;
       }
       return reply;
-    });
+    }, options);
   }
   cancel() {
     this.cancelled = true;

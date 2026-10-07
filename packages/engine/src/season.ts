@@ -1,11 +1,20 @@
 import { advanceEconomy } from './economy';
 import { prepareEurope, advanceEurope, finishEurope as finishContinental } from './europe';
-import { gate, settleRound, yearlyStaff } from './operations';
+import { gate, settleRound, settleSeasonPrize, yearlyStaff } from './operations';
 import type { Club, Fixture, MatchPlayback, TableRow, World } from '../../contracts/src/types';
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import { addMetrics, clamp, random, zeroMetrics, compareIds } from './primitives';
 import { activePlayers, addEvent, clubOf, makePlayer, quote, rating } from './world';
 import { simulateMatch } from './match';
+import { fatigueCost } from './strategy';
+import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS, seasonLength } from './calendar';
+import {
+  ensureScorers,
+  isScoringFixture,
+  prepareScorers,
+  recordScorers,
+  snapshotScorers,
+} from './scoring';
 export const emptyTable = (): TableRow => ({
   played: 0,
   won: 0,
@@ -77,8 +86,12 @@ export function prepareSeason(w: World, continental = true) {
     );
   }
   w.round = 0;
+  w.calendar = { day: 0 };
+  prepareScorers(w);
+  w.rankHistory = (w.rankHistory || []).filter((s) => s.year >= w.year - 9 && s.year < w.year);
   w.cupWinners = {};
   if (continental) prepareEurope(w);
+  snapshotStandings(w);
 }
 export function ranked(w: World, clubs: Club[]) {
   return [...clubs].sort((a, b) => {
@@ -88,6 +101,33 @@ export function ranked(w: World, clubs: Club[]) {
       y.points - x.points || y.gf - y.ga - (x.gf - x.ga) || y.gf - x.gf || compareIds(a.id, b.id)
     );
   });
+}
+/** Preserve the league membership at this point, even after promotion or relegation. */
+export function snapshotStandings(w: World) {
+  const own = clubOf(w);
+  const members = w.lower
+    ? w.clubs.filter((c) =>
+        w.fixtures.some((f) => f.kind === 'lower' && (f.home === c.id || f.away === c.id)),
+      )
+    : w.clubs.filter((c) => groupKey(c) === groupKey(own) && !c.representative);
+  const snapshots = (w.rankHistory || []).filter(
+    (s) =>
+      !(s.year === w.year && s.round === w.round && s.tier === own.tier && s.group === own.group),
+  );
+  w.rankHistory = [
+    ...snapshots,
+    {
+      year: w.year,
+      round: w.round,
+      day: currentDay(w),
+      tier: own.tier,
+      group: own.group,
+      rows: ranked(w, members).map((c) => {
+        const row = w.tables[c.id] || emptyTable();
+        return [w.clubs.indexOf(c), row.points, row.gf, row.ga];
+      }),
+    },
+  ];
 }
 function settleTable(row: TableRow, gf: number, ga: number) {
   row.played++;
@@ -108,6 +148,7 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
   if (league) {
     settleTable(w.tables[m.home], m.score.home, m.score.away);
     settleTable(w.tables[m.away], m.score.away, m.score.home);
+    recordScorers(w, playback);
   }
   if (own) {
     const ownIds = new Set(w.players.map((p) => p.id));
@@ -119,7 +160,7 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
       if (p) {
         p.season = addMetrics(p.season, line.metrics);
         p.career = addMetrics(p.career, line.metrics);
-        p.fatigue = clamp(p.fatigue + (w.tactic === 'press' ? 16 : 10));
+        p.fatigue = clamp(p.fatigue + fatigueCost(p, m.tactics[m.home === w.playerClub ? 0 : 1]));
       }
     }
     const side = m.home === w.playerClub ? 0 : 1;
@@ -311,6 +352,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
           )
         : w.clubs.filter((c) => groupKey(c) === groupKey(own) && !c.representative),
     );
+  settleSeasonPrize(w, order.findIndex((c) => c.id === own.id) + 1, order.length);
   const champions = COUNTRIES.map((c) => ({
     country: c.code,
     club: ranked(
@@ -464,13 +506,20 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   w.europe = [];
   prepareSeason(w);
 }
-export function advanceRound(w: World, settlement?: (w: World, p: MatchPlayback) => void) {
+export function advanceRound(
+  w: World,
+  settlement?: (w: World, p: MatchPlayback) => void,
+  observe = true,
+) {
   if (w.round >= 46) return undefined;
+  if (!w.rankHistory) snapshotStandings(w);
+  ensureScorers(w);
   w.round++;
+  w.calendar = { day: Math.max(currentDay(w), w.round * ROUND_INTERVAL_DAYS) };
   let ownPlayback: MatchPlayback | undefined;
   for (const f of w.fixtures.filter((f) => f.round === w.round && !f.score)) {
     const own = f.home === w.playerClub || f.away === w.playerClub;
-    const p = simulateMatch(w, f, own, own);
+    const p = simulateMatch(w, f, own && observe, own || isScoringFixture(w, f));
     f.score = p.record.score;
     recordMatch(w, p, true);
     if (own) {
@@ -479,8 +528,68 @@ export function advanceRound(w: World, settlement?: (w: World, p: MatchPlayback)
     }
   }
   for (const p of activePlayers(w)) p.fatigue = Math.max(0, p.fatigue - 8);
-  advanceEurope(w);
+  advanceEurope(
+    w,
+    (world, p) => {
+      ownPlayback = p;
+      settlement?.(world, p);
+    },
+    undefined,
+    observe,
+  );
   settleRound(w);
+  snapshotStandings(w);
+  snapshotScorers(w);
   w.revision++;
   return ownPlayback;
+}
+
+/** Off days only move the clock. Matches and existing weekly costs settle on their due day. */
+export function advanceDays(
+  w: World,
+  days: number,
+  settlement?: (w: World, p: MatchPlayback) => void,
+  observe = true,
+) {
+  if (!Number.isInteger(days) || days < 1 || days > 366)
+    throw new Error('진행할 날짜 범위가 올바르지 않습니다.');
+  if (w.critical) return undefined;
+  w.calendar ||= { day: currentDay(w) };
+  if (!w.rankHistory) snapshotStandings(w);
+  ensureScorers(w);
+  let ownPlayback: MatchPlayback | undefined;
+  const capture = (world: World, p: MatchPlayback) => {
+    ownPlayback = p;
+    settlement?.(world, p);
+  };
+  for (let n = 0; n < days; n++) {
+    w.calendar.day++;
+    if (w.calendar.day >= seasonLength(w)) {
+      closeSeason(w);
+      w.revision++;
+    } else if (w.round < SEASON_ROUNDS && w.calendar.day >= (w.round + 1) * ROUND_INTERVAL_DAYS) {
+      advanceRound(w, capture, observe);
+    } else {
+      advanceEurope(w, capture, w.calendar.day, observe);
+      w.revision++;
+    }
+    if (w.critical) break;
+  }
+  return ownPlayback;
+}
+
+/** Bypass empty weeks and the off-season, while still settling every intervening day. */
+export function advanceToNextMatch(
+  w: World,
+  settlement?: (w: World, p: MatchPlayback) => void,
+  observe = true,
+) {
+  const matchCount = w.ownMatches.length;
+  let playback: MatchPlayback | undefined;
+  for (let n = 0; n < 2 * seasonLength(w) && !w.critical; n++) {
+    const p = advanceDays(w, 1, settlement, observe);
+    if (p) playback = p;
+    if (w.ownMatches.length > matchCount) break;
+  }
+  return playback;
 }

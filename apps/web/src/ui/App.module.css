@@ -131,10 +131,12 @@
   color: #b8c3a3;
 }
 .crest {
-  width: 42px;
-  height: 50px;
-  margin-bottom: 12px;
-  color: #e9dfac;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-right: 8px;
 }
 .clubBadge {
   display: flex;
@@ -142,9 +144,6 @@
   align-items: center;
 }
 .clubBadge .crest {
-  flex: 0 0 37px;
-  width: 37px;
-  height: 44px;
   margin: 0;
 }
 .clubBadge small {
@@ -348,10 +347,7 @@
   overflow-wrap: anywhere;
 }
 .fixtureTeams .crest {
-  display: block;
-  margin: auto auto 10px;
-  width: 42px;
-  height: 50px;
+  vertical-align: middle;
 }
 .fixtureTeams b {
   font-family: Georgia, serif;
@@ -485,31 +481,6 @@
   color: #7c8975;
   max-width: 400px;
   line-height: 1.9;
-}
-.introArt {
-  position: relative;
-  min-height: 290px;
-  background: #dfe6d4;
-  border-radius: 120px 120px 5px 5px;
-  border: 1px solid #cdd8c2;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.introArt svg {
-  width: 75%;
-  height: 240px;
-  color: #28583e;
-}
-.artLabel {
-  position: absolute;
-  bottom: 18px;
-  left: 25px;
-  font-family: Georgia, serif;
-  font-size: 12px;
-  letter-spacing: 2px;
-  color: #819574;
 }
 .form {
   display: grid;
@@ -887,8 +858,6 @@
     padding: 0;
   }
   .brand .crest {
-    width: 28px;
-    height: 35px;
     margin: 0;
   }
   .brand h1 {
@@ -961,9 +930,6 @@
   .intro h2 {
     font-size: 37px;
   }
-  .introArt {
-    display: none;
-  }
   .countryGrid {
     grid-template-columns: 1fr 1fr;
   }
@@ -1024,6 +990,228 @@
   flex-shrink: 0;
 }
 
+.foregroundProgress {
+  position: fixed;
+  right: 18px;
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  z-index: 8;
+  width: min(260px, calc(100vw - 36px));
+  padding: 12px;
+  background: #fffdf7;
+  border: 1px solid #d5dfce;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px #163b2b18;
+}
+.foregroundProgress .progress {
+  margin-bottom: 8px;
+}
+.seasonPaneTitle {
+  margin-bottom: 18px;
+}
+.watchProgressMode {
+  display: grid;
+  gap: 4px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #eff3e8;
+  font-size: 13px;
+}
+.watchProgressMode small {
+  font-size: 12px;
+}
+@media (max-width: 760px) {
+  .foregroundProgress {
+    bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+}
+
+.firstSeason {
+  align-self: center;
+  padding: 26px;
+  border: 1px solid #d7dece;
+  border-radius: 8px;
+  background: #fffdf7;
+}
+.firstSeason ol {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 22px;
+}
+.firstSeason li {
+  display: flex;
+  gap: 18px;
+}
+.firstSeason li > b {
+  color: #9a7657;
+  font:
+    24px Georgia,
+    serif;
+}
+.firstSeason h3 {
+  font-size: 15px;
+}
+.intro .firstSeason p {
+  margin: 5px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.seasonControls {
+  background: #fffdf7;
+  border: 1px solid #d5dfce;
+  border-radius: 8px;
+  padding: 18px 22px;
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 26px;
+}
+.calendarSummary {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.calendarSummary strong {
+  font-size: 21px;
+  font-variant-numeric: tabular-nums;
+}
+.calendarSummary small {
+  font-size: 11px;
+}
+.calendarSummary progress {
+  width: 100%;
+  height: 5px;
+  margin-top: 6px;
+  accent-color: #376a48;
+}
+.progressActions {
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+}
+.paceSwitch {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: #f0f3e9;
+  border-radius: 7px;
+}
+.paceSwitch button {
+  border-color: transparent;
+  background: transparent;
+  font-size: 11px;
+  padding: 7px 12px;
+}
+.paceSwitch small {
+  display: block;
+  font-size: 10px;
+}
+.paceSwitch .selectedPace {
+  background: #fffdf7;
+  border-color: #a6b79a;
+  color: #21563b;
+}
+.autoButtons {
+  display: flex;
+  gap: 8px;
+}
+.autoStatus {
+  font-size: 10px;
+  color: #6f8065;
+}
+.afterMatch {
+  margin-top: 24px;
+}
+.playerInspector {
+  margin: 0 18px 18px;
+  padding: 16px;
+  border: 1px solid #d9e1d0;
+  border-radius: 6px;
+  background: #f5f6ee;
+}
+.playerInspector label {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.playerInspector p {
+  margin-top: 10px;
+  font-size: 12px;
+}
+.playerTraits {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+  font-size: 11px;
+}
+.playerTraits > span {
+  display: grid;
+  gap: 4px;
+}
+.playerTraits progress {
+  width: 100%;
+  height: 6px;
+  accent-color: #376a48;
+}
+.inspectorToggle {
+  margin: 0 18px 14px;
+}
+.replayScrubber {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 18px 16px;
+  font-size: 11px;
+}
+.replayScrubber input {
+  flex: 1;
+  min-width: 0;
+  accent-color: #376a48;
+}
+@media (max-width: 1100px) {
+  .seasonControls {
+    flex-wrap: wrap;
+  }
+  .progressActions {
+    justify-items: start;
+  }
+}
+@media (max-width: 760px) {
+  .firstSeason {
+    margin-top: 22px;
+    padding: 20px;
+  }
+  .seasonControls {
+    padding: 16px;
+    gap: 14px;
+  }
+  .calendarSummary,
+  .progressActions,
+  .paceSwitch,
+  .autoButtons {
+    width: 100%;
+  }
+  .paceSwitch button,
+  .autoButtons button {
+    flex: 1;
+  }
+  .paceSwitch button {
+    padding: 7px 5px;
+  }
+  .playerTraits {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .pitchMeta {
+    flex-wrap: wrap;
+    font-size: 10px;
+  }
+}
+
 .fileButton {
   min-height: 44px;
   padding: 8px 0;
@@ -1040,5 +1228,463 @@
   }
   .fileInput {
     min-height: 0;
+  }
+}
+
+/* Shared app navigation and modal chrome keep touch layouts consistent across screens. */
+.mobileNav {
+  display: none;
+}
+.moreMenu {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.moreMenu button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 14px;
+}
+.moreMenu .navIcon {
+  color: #456b4c;
+}
+.seasonTabs {
+  display: flex;
+  gap: 6px;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: 4px 0 12px;
+  margin-bottom: 16px;
+  scrollbar-width: none;
+}
+.seasonTabs::-webkit-scrollbar {
+  display: none;
+}
+.seasonTabs button {
+  flex: 0 0 auto;
+  min-height: 46px;
+  white-space: nowrap;
+}
+.seasonTabs button[aria-selected='true'] {
+  background: #24543b;
+  border-color: #24543b;
+  color: #fff9e7;
+}
+.seasonPane[hidden] {
+  display: none;
+}
+.modalBackdrop {
+  z-index: 1000;
+  padding: 24px;
+  overscroll-behavior: none;
+}
+.modal {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 48px);
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid #dce1d2;
+  border-radius: 16px;
+  box-shadow: 0 24px 80px #10271c40;
+}
+.modalHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #dce1d2;
+  background: #fffdf7;
+}
+.modalHead h2 {
+  margin: 0;
+  font-size: 17px;
+  letter-spacing: -0.3px;
+}
+.modalClose {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  background: #f0f3e8;
+  font-size: 27px;
+  line-height: 1;
+}
+.modalBody {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 24px;
+}
+.modalActions {
+  flex: 0 0 auto;
+  padding: 16px 24px;
+  border-top: 1px solid #dce1d2;
+  background: #fffdf7;
+}
+.modalActions .actions {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  :global(body) {
+    font-size: 15px;
+  }
+  .layout .main :global(button),
+  .modal :global(button),
+  .layout .main :global(select),
+  .modal :global(select) {
+    min-height: 48px;
+  }
+  .layout .main :global(input:not([type='file'])),
+  .modal :global(input:not([type='file'])) {
+    min-height: 48px;
+    font-size: 16px;
+  }
+  .layout .main :global(select),
+  .modal :global(select) {
+    font-size: 16px;
+  }
+  .layout .main :global(input[type='range']),
+  .modal :global(input[type='range']) {
+    min-height: 44px;
+    padding: 0;
+  }
+  .layout .main :global(small),
+  .modal :global(small) {
+    font-size: 12px;
+  }
+  .sidebar {
+    padding: calc(12px + env(safe-area-inset-top)) 16px 12px;
+  }
+  .brand {
+    gap: 10px;
+    min-height: 34px;
+  }
+  .brand h1 {
+    font-size: 17px;
+    line-height: 1.1;
+  }
+  .brand span {
+    display: none;
+  }
+  .nav {
+    display: none;
+  }
+  .moreMenu {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .mobileNav {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 80;
+    display: flex;
+    justify-content: space-around;
+    gap: 4px;
+    padding: 6px max(8px, env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom))
+      max(8px, env(safe-area-inset-left));
+    border-top: 1px solid #d5dfce;
+    background: #fffdf7;
+    box-shadow: 0 -4px 18px #1d362a0a;
+  }
+  .mobileNav button {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-width: 0;
+    min-height: 56px;
+    padding: 6px 2px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: #718267;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+  .mobileNav button .navIcon {
+    min-width: 20px;
+    font-size: 21px;
+    color: inherit;
+  }
+  .mobileNav button[aria-current='page'] {
+    background: #e9efdf;
+    color: #24543b;
+    font-weight: bold;
+  }
+  .main {
+    padding: 0 16px calc(104px + env(safe-area-inset-bottom));
+  }
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-height: 60px;
+    margin: 0 -16px 20px;
+    padding: 14px 16px;
+    background: #f5f3ec;
+    font-size: 12px;
+    letter-spacing: 0;
+  }
+  .topbar > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .topRight {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .tag,
+  .desktopOnly {
+    display: none;
+  }
+  .hero {
+    margin-bottom: 20px;
+  }
+  .hero h2 {
+    font-size: 28px;
+  }
+  .hero > button {
+    width: 100%;
+    margin-top: 16px;
+  }
+  .eyebrow,
+  .stat .label,
+  .panelHead span,
+  .panelFoot,
+  .timeline p,
+  .form label,
+  .muted,
+  .autoStatus,
+  .paceSwitch button,
+  .playControls button,
+  .playControls label,
+  .card p,
+  .attributes,
+  .fileButton {
+    font-size: 13px;
+  }
+  .eyebrow {
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .panelHead {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .filters > label {
+    display: grid;
+    flex: 1 1 130px;
+    gap: 6px;
+  }
+  .filters select {
+    width: 100%;
+    min-width: 0;
+  }
+  .tableWrap {
+    overscroll-behavior-x: contain;
+  }
+  :global(table[aria-label='리그 순위표']) {
+    min-width: 650px;
+  }
+  :global(table[aria-label='리그 순위표'] td),
+  :global(table[aria-label='리그 순위표'] th) {
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+  :global(table[aria-label='리그 순위표'] tr) {
+    --sticky-row-color: #fffdf7;
+  }
+  :global(table[aria-label='리그 순위표'] tr[class*='own']) {
+    --sticky-row-color: #e9efdf;
+  }
+  :global(table[aria-label='리그 순위표'] tr > :first-child) {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    min-width: 44px;
+    width: 44px;
+    background: var(--sticky-row-color);
+  }
+  :global(table[aria-label='리그 순위표'] tr > :nth-child(2)) {
+    position: sticky;
+    left: 44px;
+    z-index: 2;
+    min-width: 140px;
+    max-width: 155px;
+    white-space: normal;
+    background: var(--sticky-row-color);
+    box-shadow: 8px 0 10px -10px #1d362a60;
+  }
+  .footer {
+    display: grid;
+    gap: 8px;
+    font-size: 12px;
+  }
+  .loading {
+    padding: 48px 16px;
+  }
+  .critical button {
+    display: block;
+    width: 100%;
+    margin: 10px 0 0;
+  }
+  .modalBackdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .modal {
+    max-width: none !important;
+    max-height: calc(100dvh - env(safe-area-inset-top) - 12px);
+    border-radius: 20px 20px 0 0;
+  }
+  .modalHead {
+    padding: 14px 16px;
+  }
+  .modalClose {
+    flex-basis: 48px;
+    width: 48px;
+    height: 48px;
+  }
+  .modalBody {
+    padding: 20px 16px;
+  }
+  .modalActions {
+    padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+  }
+  .modalActions .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .modalBody:only-child,
+  .modalBody:last-child {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Casual play shell. Detailed views retain their natural content height. */
+.menuGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.menuGrid button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+}
+@media (max-width: 760px) {
+  .playLayout .sidebar {
+    display: none;
+  }
+  .playLayout .topbar {
+    min-height: 48px;
+    margin-bottom: 10px;
+    padding: 10px 14px;
+  }
+  .playLayout .main {
+    padding: 0 12px calc(82px + env(safe-area-inset-bottom));
+  }
+  .playLayout .topbar {
+    margin-left: -12px;
+    margin-right: -12px;
+  }
+  .calendarSummary .eyebrow,
+  .calendarSummary small,
+  .calendarSummary progress,
+  .autoStatus {
+    display: none;
+  }
+  .seasonControls {
+    margin-bottom: 12px;
+    padding: 8px 10px;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+  .calendarSummary {
+    width: auto;
+    flex: 1;
+  }
+  .calendarSummary strong {
+    font-size: 13px;
+  }
+  .progressActions {
+    width: auto;
+    gap: 4px;
+  }
+  .paceSwitch {
+    display: none;
+  }
+  .autoButtons {
+    width: auto;
+  }
+  .autoButtons button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  .mobileNav button {
+    font-size: 11px;
+  }
+}
+@media (max-width: 760px) {
+  .coreLayout .main {
+    height: calc(100dvh - 74px - env(safe-area-inset-bottom));
+    padding-bottom: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .coreLayout .topbar {
+    flex-shrink: 0;
+    min-height: 42px;
+    margin-bottom: 7px;
+    font-size: 10px;
+  }
+  .coreLayout .seasonControls {
+    flex-shrink: 0;
+  }
+  .coreContent {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+  }
+  .coreContent[hidden] {
+    display: none;
+  }
+  .coreLayout .main > .actions {
+    display: none;
+  }
+  .coreLayout .footer {
+    padding: 5px 0;
+    margin: 0;
+    border: 0;
+    font-size: 10px;
+    flex-shrink: 0;
+    display: block;
+  }
+  .coreLayout .footer > span:first-child {
+    display: none;
+  }
+  .coreLayout .footer > span:last-child {
+    font-size: 10px;
+  }
+  .coreLayout .mobileNav {
+    padding-top: 4px;
+    padding-bottom: calc(4px + env(safe-area-inset-bottom));
   }
 }

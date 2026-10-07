@@ -1,12 +1,15 @@
 import { defineConfig, devices } from '@playwright/test';
+const port = Number(process.env.BROWSER_TEST_PORT || 4173);
+const baseURL = `http://127.0.0.1:${port}`;
 export default defineConfig({
   testDir: 'tests/e2e',
   timeout: 30000,
   workers: 3,
-  use: { baseURL: 'http://127.0.0.1:4173', trace: 'retain-on-failure' },
+  use: { baseURL, trace: 'retain-on-failure' },
   webServer: {
-    command: process.env.PREVIEW_BUILD ? 'npm run preview' : 'npm run dev -- --port 4173',
-    url: 'http://127.0.0.1:4173',
+    command: process.env.PREVIEW_BUILD ? 'npm run preview' : `npm run dev -- --port ${port}`,
+    env: { PORT: String(port) },
+    url: baseURL,
     reuseExistingServer: !process.env.CI && !process.env.PREVIEW_BUILD,
   },
   projects: [

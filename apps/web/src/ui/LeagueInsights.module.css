@@ -1,0 +1,398 @@
+.insights {
+  display: grid;
+  gap: 22px;
+}
+.panel,
+.overview {
+  border: 1px solid #dce1d2;
+  background: #fffdf7;
+  border-radius: 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+.overview {
+  margin: 0 0 24px;
+}
+.overviewTitle,
+.panelHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 22px;
+  border-bottom: 1px solid #e1e5d8;
+}
+.overviewTitle button {
+  padding: 5px 10px;
+  min-height: 36px;
+  font-size: 11px;
+}
+.lastResult {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  padding: 12px 22px;
+  font-size: 11px;
+  color: #67785d;
+  background: #f7f8f0;
+  border-bottom: 1px solid #e1e5d8;
+}
+.lastResult b {
+  color: #315c40;
+}
+.panelHead span {
+  display: block;
+  color: #778472;
+  font-size: 11px;
+  margin-top: 3px;
+}
+.panelHead .roundTag {
+  border: 1px solid #d5deca;
+  border-radius: 20px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.stats > div {
+  padding: 18px 22px;
+  border-right: 1px solid #e6e9df;
+  min-width: 0;
+}
+.stats > div:last-child {
+  border: 0;
+}
+.stats > div > span,
+.stats small {
+  display: block;
+  color: #778472;
+  font-size: 11px;
+}
+.stats strong {
+  display: block;
+  font-size: 27px;
+  letter-spacing: -0.7px;
+  line-height: 1.5;
+  margin: 4px 0 5px;
+}
+.stats strong > span:not(.form) {
+  font-size: 13px;
+  vertical-align: middle;
+}
+.stats .formStrong {
+  margin-top: 10px;
+  margin-bottom: 13px;
+  line-height: 1.1;
+}
+.form {
+  display: inline-flex;
+  gap: 4px;
+  letter-spacing: 0;
+}
+.form > span:not(.neutral) {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 23px;
+  height: 24px;
+  font-size: 10px;
+  border-radius: 4px;
+}
+.win {
+  color: #23583d;
+  background: #dfead9;
+}
+.loss {
+  color: #994e37;
+  background: #f2e1d5;
+}
+.draw {
+  color: #676e5f;
+  background: #eceee5;
+}
+.rising {
+  color: #28664a;
+}
+.falling {
+  color: #ae6146;
+}
+.neutral {
+  color: #87907e;
+}
+.rival {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+  padding: 18px 22px;
+  background: #f0f3e8;
+  border-top: 1px solid #e1e5d8;
+}
+.rival > div > span,
+.rival p,
+.seasonEnd {
+  font-size: 11px;
+  color: #71816b;
+}
+.rival h4 {
+  margin: 5px 0;
+  font-size: 15px;
+}
+.rival h4 span {
+  color: #93a18b;
+  font-weight: normal;
+  margin: 0 7px;
+}
+.projection {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px 16px;
+  white-space: nowrap;
+}
+.projection b {
+  display: block;
+  font-size: 19px;
+  color: #325e42;
+}
+.projection small {
+  grid-column: 1 / -1;
+  font-size: 10px;
+  white-space: normal;
+}
+.seasonEnd {
+  padding: 15px 22px;
+}
+.tableWrap {
+  overflow-x: auto;
+  max-width: 100%;
+}
+.standings {
+  min-width: 760px;
+  font-size: 12px;
+}
+.standings .club {
+  text-align: left;
+  font-size: 12px;
+  color: inherit;
+  font-weight: normal;
+  min-width: 155px;
+}
+.standings td,
+.standings th {
+  padding: 11px 12px;
+}
+.standings .own {
+  background: #e9efdf;
+  color: #235b3f;
+}
+.standings .own .club {
+  font-weight: bold;
+}
+.myClub {
+  display: inline-block;
+  margin-left: 9px;
+  font-size: 9px;
+  color: #5f7e4e;
+}
+.points {
+  font-weight: bold;
+  color: #244f37;
+}
+.automatic > td:first-child {
+  box-shadow: inset 3px 0 #4e8160;
+}
+.playoff > td:first-child {
+  box-shadow: inset 3px 0 #c5a568;
+}
+.relegation > td:first-child {
+  box-shadow: inset 3px 0 #c08469;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  padding: 14px 22px;
+  font-size: 10px;
+  color: #798572;
+  border-top: 1px solid #e1e5d8;
+}
+.legend span,
+.chart figcaption span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.legend i,
+.chart i {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+.autoDot,
+.primaryDot {
+  background: #4e8160;
+}
+.playoffDot {
+  background: #c5a568;
+}
+.dropDot {
+  background: #c08469;
+}
+.compareDot {
+  background: #b57f54;
+}
+.compare {
+  font-size: 11px;
+  color: #74826c;
+  white-space: nowrap;
+}
+.graphFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.compare select {
+  padding: 6px 8px;
+  font-size: 11px;
+  max-width: 180px;
+  margin-left: 5px;
+}
+.chart {
+  padding: 20px 20px 12px;
+  margin: 0;
+}
+.chart svg {
+  display: block;
+  width: 100%;
+  max-height: 260px;
+}
+.chart text {
+  font-size: 10px;
+  fill: #7a8772;
+}
+.chart figcaption {
+  display: flex;
+  gap: 16px;
+  padding: 10px 5px 0;
+  font-size: 11px;
+  color: #66785b;
+}
+.details {
+  border-top: 1px solid #e4e8db;
+  font-size: 11px;
+}
+.details summary {
+  padding: 13px 22px;
+  color: #6b7d60;
+  cursor: pointer;
+}
+.details summary:focus-visible {
+  outline: 3px solid #cf7854;
+  outline-offset: -3px;
+}
+.details th,
+.details td {
+  font-size: 11px;
+  padding: 8px 12px;
+}
+.details th:first-child {
+  min-width: 65px;
+}
+.empty {
+  padding: 40px 22px;
+  color: #7c8b70;
+  text-align: center;
+  font-size: 12px;
+}
+.results {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+  list-style: none;
+  margin: 0;
+  padding: 10px 22px 18px;
+}
+.results li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 54px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  border-bottom: 1px solid #e7eadd;
+  padding: 12px 8px;
+  font-size: 11px;
+  border-radius: 4px;
+}
+.results li > span {
+  overflow-wrap: anywhere;
+}
+.results li > span:first-child {
+  text-align: right;
+}
+.results b {
+  text-align: center;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.ownResult {
+  background: #eaf0e1;
+}
+.ourName {
+  font-weight: bold;
+  color: #245a3f;
+}
+@media (max-width: 1100px) {
+  .stats > div {
+    padding: 16px;
+  }
+  .stats strong {
+    font-size: 23px;
+  }
+  .rival {
+    gap: 15px;
+  }
+}
+@media (max-width: 760px) {
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .stats > div:nth-child(2) {
+    border-right: 0;
+  }
+  .stats > div:nth-child(-n + 2) {
+    border-bottom: 1px solid #e6e9df;
+  }
+  .overviewTitle,
+  .panelHead {
+    align-items: start;
+    padding: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .overviewTitle h3 {
+    font-size: 14px;
+  }
+  .rival {
+    display: block;
+    padding: 16px;
+  }
+  .projection {
+    margin-top: 15px;
+  }
+  .results {
+    grid-template-columns: 1fr;
+    padding: 8px 12px 14px;
+  }
+  .chart {
+    padding: 16px 10px 10px;
+  }
+  .chart figcaption {
+    flex-wrap: wrap;
+    gap: 6px 12px;
+  }
+  .legend {
+    padding: 12px 16px;
+  }
+}

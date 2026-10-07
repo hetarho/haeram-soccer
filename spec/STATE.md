@@ -16,12 +16,12 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 3 | 3 | - | 2 |
-| WEB | 1 | 1 | - | 0 |
+| WEB | 3 | 3 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
-| CLUB | 1 | 1 | - | 0 |
-| MATCH | 1 | 1 | - | 0 |
+| CLUB | 3 | 3 | - | 0 |
+| MATCH | 2 | 2 | - | 0 |
 | LEAGUE | 1 | 1 | - | 0 |
-| STAFF | 1 | 1 | - | 0 |
+| STAFF | 2 | 2 | - | 0 |
 | ECON | 1 | 1 | - | 0 |
 | EURO | 1 | 1 | - | 0 |
 | HIST | 1 | 1 | - | 0 |
@@ -32,10 +32,25 @@
 |---|---|---|---|---|
 | T010 | release-verification | ARCH WEB SAVE HIST MATCH | T009 | todo |
 
+
+
+| T014 | easy-match-preparation | CLUB STAFF | - | doing@261008.cx |
+
 ## next
-- implement-task T010
+- implement-task T014
 
 ## log
+- 261008 cycle 4 create-task T014; implement-task start (cx)
+- 261008 cycle 4 update-ssot CLUB STAFF start
+- 261008 T013 done; cycle 3 verified
+- 261008 cycle 3 create-task T013; implement-task start (cx)
+- 261008 cycle 3 update-ssot MATCH CLUB start
+- 261008 T012 done; cycle 2 verified
+- 261008 cycle 2 create-task T012; implement-task start (cx)
+- 261008 cycle 2 update-ssot WEB start
+- 261008 T011 done; cycle 1 verified
+- 261007 cycle 1 create-task T011; implement-task start (cx)
+- 261007 cycle 1 update-ssot WEB start
 - 261007 snapshot c4d6104 committed; origin/local identity configured, push blocked by missing HTTPS credentials and rejected SSH authentication
 - 261007 user-requested stop: T010 returned to todo; remaining work and actual verification status preserved in docs/REMAINING.md before commit/push
 - 261007 ARCH@3: Netlify replaces Cloudflare Pages; T010 deployment criteria/base updated, completed task history preserved
@@ -45,14 +60,3 @@
 - 261007 T008 done; verified at eb6beef
 - 261007 T008 doing (cx)
 - 261007 T007 done; verified at 6f8def5
-- 261007 T007 doing (cx)
-- 261007 T006 done; verified at 0979055
-- 261007 T006 doing (cx)
-- 261007 T005 done; verified at 38c855a
-- 261007 T005 doing (cx)
-- 261007 T004 done; verified at 6c006e9
-- 261007 T004 doing (cx)
-- 261007 T003 done; verified at 372a99e
-- 261007 T003 doing (cx)
-- 261007 T002 done; verified at 0caf863
-- 261007 T002 doing (cx)

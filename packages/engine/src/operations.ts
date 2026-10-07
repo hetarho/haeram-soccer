@@ -1,4 +1,4 @@
-import type { World, Command, MatchRecord, Sponsor } from '../../contracts/src/types';
+import type { World, Command, MatchRecord, Sponsor, Tactic } from '../../contracts/src/types';
 import {
   activePlayers,
   addEvent,
@@ -11,12 +11,17 @@ import {
   TACTICS,
 } from './world';
 import { clamp, integer, random, ratio } from './primitives';
+import {
+  campaignEffectiveness,
+  FINANCE_CONFIG,
+  gateProjection,
+  matchBonus,
+  operatingCosts,
+  roundShare,
+} from './finance';
+import { setLineup } from './strategy';
 export function operatingCost(w: World) {
-  return (
-    activePlayers(w).reduce((s, p) => s + BigInt(p.wage), 0n) +
-    BigInt(w.manager.wage) +
-    BigInt(quote(clubOf(w).country, w.year, 180 + w.facilities * 40))
-  ).toString();
+  return operatingCosts(w).annual;
 }
 export function credit(w: World, amount: string) {
   if (BigInt(amount) < 0) throw new Error('음수 수입');
@@ -30,13 +35,58 @@ export function debit(w: World, amount: string, mandatory = false) {
   w.expense = (BigInt(w.expense) + BigInt(amount)).toString();
 }
 export function gate(w: World, m: MatchRecord) {
+  if (m.home !== w.playerClub && m.away !== w.playerClub) return;
+  const bonus = matchBonus(w, m);
+  if (BigInt(bonus.amount) > 0n) {
+    credit(w, bonus.amount);
+    addEvent(
+      w,
+      'match-bonus',
+      `${bonus.result} 성과 수입`,
+      `${m.id} · 홈·원정 동일 기준`,
+      bonus.amount,
+    );
+  }
+  if (BigInt(bonus.sponsored) > 0n) {
+    credit(w, bonus.sponsored);
+    addEvent(
+      w,
+      'sponsor-bonus',
+      `${bonus.result} 후원 성과 보너스`,
+      `${w.sponsor!.name} · ${m.id}`,
+      bonus.sponsored,
+    );
+  }
+  if (
+    w.sponsor &&
+    w.sponsor.lastPaid < w.year &&
+    w.sponsor.until > w.year &&
+    ['league', 'lower'].includes(m.kind)
+  ) {
+    const games = w.fixtures.filter(
+      (f) =>
+        ['league', 'lower'].includes(f.kind) &&
+        (f.home === w.playerClub || f.away === w.playerClub),
+    ).length;
+    const amount = roundShare(sponsorAnnual(w), w.tables[w.playerClub].played, games);
+    credit(w, amount);
+    addEvent(
+      w,
+      'sponsor-payment',
+      '후원 노출 대금',
+      `${w.sponsor.name} · 리그 경기 ${w.tables[w.playerClub].played}/${games} · ${m.id}`,
+      amount,
+    );
+    if (w.tables[w.playerClub].played === games) w.sponsor.lastPaid = w.year;
+  }
   if (m.home !== w.playerClub) return;
   const c = clubOf(w),
     r = random(`${w.seed}:gate:${m.id}`);
-  const capacity = 2500 + w.facilities * 5000;
-  const demand = Math.max(0.15, 1.2 - w.ticket * 4);
-  const attendance = Math.round(Math.min(capacity, c.fans * demand * (0.75 + r() * 0.25)));
-  const income = quote(c.country, w.year, attendance * w.ticket + attendance * 0.008);
+  const projection = gateProjection(w, m.id);
+  const attendance = Math.round(
+    projection.attendanceLow + r() * (projection.attendanceHigh - projection.attendanceLow),
+  );
+  const income = quote(c.country, w.year, attendance * projection.perFan);
   credit(w, income);
   addEvent(
     w,
@@ -45,8 +95,50 @@ export function gate(w: World, m: MatchRecord) {
     `관중 ${attendance}명 · 티켓과 구단 상품 · ${m.id}`,
     income,
   );
-  if (w.sponsor?.kind === 'performance' && m.score.home > m.score.away)
-    credit(w, ratio(w.sponsor.bonus, 1n, 20n));
+  const cost = quote(
+    c.country,
+    w.year,
+    FINANCE_CONFIG.homeMatchBaseCost + attendance * FINANCE_CONFIG.homeMatchCostPerFan,
+  );
+  debit(w, cost, true);
+  addEvent(w, 'match-cost', '홈 경기 개최비', `관중 ${attendance}명 · ${m.id}`, cost);
+}
+export function sponsorAnnual(w: World) {
+  if (!w.sponsor) return '0';
+  return w.sponsor.kind === 'indexed'
+    ? ratio(
+        w.sponsor.annual,
+        BigInt(Math.round(w.priceIndex * 1000000)),
+        BigInt(Math.round(w.sponsor.index * 1000000)),
+      )
+    : w.sponsor.annual;
+}
+export function settleSeasonPrize(w: World, rank: number, clubs: number) {
+  if (w.events.some((event) => event.year === w.year && event.kind === 'season-prize')) return;
+  const band =
+    rank === 1
+      ? 0
+      : rank === 2
+        ? 1
+        : rank <= Math.ceil(clubs / 4)
+          ? 2
+          : rank <= Math.floor(clubs / 2)
+            ? 3
+            : -1;
+  if (band < 0) return;
+  const amount = quote(
+    clubOf(w).country,
+    w.year,
+    FINANCE_CONFIG.rankAwards[band as 0 | 1 | 2 | 3] * (1 + Math.max(0, 3 - clubOf(w).tier) * 0.35),
+  );
+  credit(w, amount);
+  addEvent(
+    w,
+    'season-prize',
+    '리그 최종 순위 상금',
+    `${rank}/${clubs}위 · 하위권 상금 없음`,
+    amount,
+  );
 }
 export function sponsorOffers(w: World) {
   const c = clubOf(w);
@@ -77,46 +169,45 @@ export function campaignOffers(w: World) {
     min: quote(
       clubOf(w).country,
       w.year,
-      c.units * 0.5 * Math.max(0.2, 1 - clubOf(w).fans / 1000000),
+      c.units *
+        0.25 *
+        campaignEffectiveness(w, c.kind) *
+        Math.max(0.2, 1 - clubOf(w).fans / 1000000),
     ),
     max: quote(
       clubOf(w).country,
       w.year,
-      c.units * 2.5 * Math.max(0.2, 1 - clubOf(w).fans / 1000000),
+      c.units *
+        1.8 *
+        campaignEffectiveness(w, c.kind) *
+        Math.max(0.2, 1 - clubOf(w).fans / 1000000),
     ),
     rounds: 4,
   }));
 }
 export function settleRound(w: World) {
-  const cost = operatingCost(w);
-  debit(
+  const cost = operatingCosts(w, w.round);
+  debit(w, cost.nextRound, true);
+  addEvent(
     w,
-    (
-      BigInt(ratio(cost, BigInt(w.round), 46n)) - BigInt(ratio(cost, BigInt(w.round - 1), 46n))
-    ).toString(),
-    true,
+    'operating-cost',
+    '급여와 시설 유지비',
+    `선수 ${cost.payments.playerWages} · 감독 ${cost.payments.managerWage} · 시설 ${cost.payments.maintenance} ${w.currency}`,
+    cost.nextRound,
   );
-  if (w.sponsor && w.sponsor.lastPaid < w.year && w.sponsor.until > w.year) {
-    const amount =
-      w.sponsor.kind === 'indexed'
-        ? ratio(
-            w.sponsor.annual,
-            BigInt(Math.round(w.priceIndex * 1000000)),
-            BigInt(Math.round(w.sponsor.index * 1000000)),
-          )
-        : w.sponsor.annual;
-    credit(w, amount);
-    w.sponsor.lastPaid = w.year;
-    addEvent(w, 'sponsor-payment', '후원금 도착', w.sponsor.name, amount);
-  }
   for (const c of w.campaigns) {
     c.remaining--;
     if (c.remaining > 0) continue;
     const offer = CAMPAIGNS.find((o) => o.kind === c.kind)!;
     const r = random(`${w.seed}:campaign:${c.id}`);
     const saturation = Math.max(0.2, 1 - clubOf(w).fans / 1000000);
-    const income = ratio(c.cost, BigInt(Math.round((0.5 + r() * 2) * saturation * 1000)), 1000n);
-    const fans = Math.round(clubOf(w).fans * offer.fans * (0.5 + r()) * saturation);
+    const fit = campaignEffectiveness(w, c.kind);
+    const income = ratio(
+      c.cost,
+      BigInt(Math.round((0.25 + r() * 1.55) * fit * saturation * 1000)),
+      1000n,
+    );
+    const fans = Math.round(clubOf(w).fans * offer.fans * (0.5 + r()) * fit * saturation);
     credit(w, income);
     clubOf(w).fans = Math.round(clamp(clubOf(w).fans + fans, 200, 5000000));
     c.income = income;
@@ -138,10 +229,10 @@ export function settleRound(w: World) {
       w,
       'budget-warning',
       '운영자금 경고',
-      '필수 비용으로 잔고가 음수가 되었습니다. 지출 조정, 매각, 지역사회 지원으로 회복할 수 있습니다.',
+      '필수 비용으로 잔고가 음수가 되었습니다. 지출 조정, 매각, 명시적인 구단주 출자로 회복할 수 있습니다. 자동 지원금은 없습니다.',
     );
-    w.critical = '운영자금이 부족합니다.';
   }
+  if (BigInt(w.cash) < 0) w.critical ||= '운영자금이 부족합니다.';
 }
 export function managerOffers(w: World) {
   return Array.from({ length: 4 }, (_, i) => {
@@ -194,6 +285,74 @@ function resign(w: World, reason: string) {
   w.manager = interim;
   w.critical = '감독이 떠났습니다. 새 감독을 선임하세요.';
 }
+
+const requestTones = { respect: 12, evidence: 16, support: 8, demand: -25 } as const;
+
+function validateTacticRequest(tactic: Tactic, tone: string) {
+  if (!TACTICS.includes(tactic) || !Object.hasOwn(requestTones, tone))
+    throw new Error('전술 요청을 확인하세요.');
+}
+
+/** Shared response calculation excludes only the unchanged seeded ±6 noise. */
+function requestScoreBase(w: World, tactic: Tactic, tone: string) {
+  const m = w.manager;
+  return (
+    m.flexibility * 0.45 +
+    m.trust * 0.55 +
+    requestTones[tone as keyof typeof requestTones] -
+    (tactic === m.philosophy ? 0 : 24) -
+    m.pride * (tone === 'demand' ? 0.3 : 0.05) -
+    m.conflicts * 5
+  );
+}
+
+function responseLabel(score: number) {
+  return score >= 65
+    ? '수락'
+    : score >= 50
+      ? '마지못해 수락'
+      : score >= 30
+        ? '조건부 수락'
+        : '거절';
+}
+
+export function tacticRequestOutlook(w: World, tactic: Tactic, tone: string) {
+  validateTacticRequest(tactic, tone);
+  const base = requestScoreBase(w, tactic, tone),
+    min = base - 6,
+    max = base + 6,
+    low = responseLabel(min),
+    high = responseLabel(max),
+    history = w.manager.requestHistory;
+  const trustAfterDemand = clamp(w.manager.trust - (tone === 'demand' ? 18 : 0));
+  const resignationRisk =
+    w.manager.pride >= 75 &&
+    trustAfterDemand <= 25 &&
+    (w.manager.conflicts >= 2 || tone === 'demand');
+  return {
+    label: resignationRisk ? '사직 위험' : low === high ? low : `${low} ~ ${high}`,
+    min,
+    max,
+    trustRisk: tone === 'demand' ? 18 : min < 30 ? 4 : min < 65 && max >= 50 ? 3 : 0,
+    alreadyAnswered:
+      history?.at === `${w.year}:${w.round}` && history.keys.includes(`${tactic}:${tone}`),
+  };
+}
+
+function currentRequestHistory(w: World) {
+  const at = `${w.year}:${w.round}`;
+  if (w.manager.requestHistory?.at !== at)
+    w.manager.requestHistory = { at, keys: [], trustAwarded: false };
+  return w.manager.requestHistory;
+}
+
+function awardRequestTrust(w: World, amount: number) {
+  const history = currentRequestHistory(w);
+  if (history.trustAwarded) return;
+  w.manager.trust = clamp(w.manager.trust + amount);
+  history.trustAwarded = true;
+}
+
 export function yearlyStaff(w: World) {
   if (w.sponsor && w.sponsor.until <= w.year) {
     addEvent(w, 'sponsor-end', '후원 계약 만료', w.sponsor.name);
@@ -207,35 +366,28 @@ export function yearlyStaff(w: World) {
     addEvent(w, 'manager-renew', '감독 계약 갱신', `${w.manager.name} · 3년`);
   }
   delete w.manager.lastRequest;
+  delete w.manager.requestHistory;
   delete w.manager.pending;
   delete w.requested;
 }
 export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'season' }>) {
   const code = clubOf(w).country;
   switch (cmd.type) {
+    case 'lineup':
+      setLineup(w, cmd.ids);
+      break;
     case 'tactics': {
-      if (
-        !TACTICS.includes(cmd.tactic) ||
-        !['respect', 'evidence', 'support', 'demand'].includes(cmd.tone)
-      )
-        throw new Error('전술 요청을 확인하세요.');
+      validateTacticRequest(cmd.tactic, cmd.tone);
       const m = w.manager,
-        key = `${cmd.tactic}:${cmd.tone}`;
-      if (m.lastRequest === key) throw new Error('동일한 요청에 이미 답했습니다.');
+        key = `${cmd.tactic}:${cmd.tone}`,
+        history = currentRequestHistory(w);
+      if (history.keys.includes(key)) throw new Error('동일한 요청에 이번 라운드 이미 답했습니다.');
+      history.keys.push(key);
       m.lastRequest = key;
       w.requested = cmd.tactic;
       delete m.pending;
-      const mismatch = cmd.tactic === m.philosophy ? 0 : 24;
-      const tone = { respect: 12, evidence: 16, support: 8, demand: -25 }[cmd.tone]!;
       const noise = random(`${w.seed}:request:${w.year}:${w.round}:${m.id}:${key}`)() * 12 - 6;
-      const score =
-        m.flexibility * 0.45 +
-        m.trust * 0.55 +
-        tone -
-        mismatch -
-        m.pride * (cmd.tone === 'demand' ? 0.3 : 0.05) -
-        m.conflicts * 5 +
-        noise;
+      const score = requestScoreBase(w, cmd.tactic, cmd.tone) + noise;
       if (cmd.tone === 'demand') {
         m.trust = clamp(m.trust - 18);
         m.conflicts++;
@@ -253,7 +405,7 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       let response: string;
       if (score >= 65) {
         w.tactic = cmd.tactic;
-        m.trust = clamp(m.trust + 2);
+        awardRequestTrust(w, 2);
         response = '수락했습니다. 선수들과 새로운 방향을 준비하겠습니다.';
       } else if (score >= 50) {
         w.tactic = cmd.tactic;
@@ -281,7 +433,7 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       debit(w, cost);
       w.tactic = w.manager.pending;
       delete w.manager.pending;
-      w.manager.trust = clamp(w.manager.trust + 3);
+      awardRequestTrust(w, 3);
       addEvent(w, 'training', '훈련 지원과 전술 전환', tacticLabel[w.tactic], cost);
       break;
     }
@@ -411,13 +563,19 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
     }
     case 'support': {
       if (w.events.filter((e) => e.kind === 'support' && e.year === w.year).length >= 3)
-        throw new Error('지역사회 지원은 시즌당 3회입니다.');
+        throw new Error('구단주 추가 출자는 시즌당 3회입니다.');
       const amount = quote(code, w.year, 150);
       credit(w, amount);
       w.support++;
       clubOf(w).reputation = clamp(clubOf(w).reputation - 2);
-      delete w.critical;
-      addEvent(w, 'support', '지역사회의 손길', '시즌당 최대 3회 · 평판 -2 · 현금 지원', amount);
+      if (BigInt(w.cash) >= 0 && w.critical === '운영자금이 부족합니다.') delete w.critical;
+      addEvent(
+        w,
+        'support',
+        '구단주 추가 출자',
+        '운영 매출과 별도 · 시즌당 최대 3회 · 자금 조달 의존으로 평판 -2',
+        amount,
+      );
       break;
     }
   }

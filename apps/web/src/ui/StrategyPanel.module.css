@@ -1,0 +1,316 @@
+.panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px 20px;
+  border: 1px solid #d8e1ce;
+  border-radius: 8px;
+  background: #f3f6eb;
+  margin-bottom: 20px;
+}
+.panel p,
+.panel small {
+  font-size: 11px;
+  color: #6c7f60;
+  margin-top: 5px;
+}
+.panel button {
+  flex-shrink: 0;
+  font-size: 12px;
+}
+.opponent {
+  padding: 10px 14px;
+  border: 1px solid #dce3d1;
+  border-radius: 9px;
+  background: #edf1e2;
+}
+.opponent span {
+  color: #596d50;
+  font-size: 10px;
+  margin-right: 10px;
+}
+.opponent strong {
+  font-size: 14px;
+}
+.opponent p {
+  font-size: 11px;
+  margin: 3px 0 0;
+}
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 12px 0 0;
+}
+.tabs button {
+  min-height: 44px;
+  font-size: 13px;
+}
+.tabs button[aria-selected='true'] {
+  background: #24543b;
+  border-color: #24543b;
+  color: #fff9e7;
+}
+.section {
+  padding-top: 12px;
+}
+.sectionHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.sectionHead h3 {
+  font-size: 14px;
+}
+.sectionHead span {
+  font-size: 11px;
+  color: #53684c;
+}
+.tactics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.tactics button {
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  text-align: left;
+  padding: 12px;
+  min-width: 0;
+}
+.tactics button[aria-pressed='true'],
+.presets button[aria-pressed='true'] {
+  border-color: #588558;
+  background: #eaf0df;
+  box-shadow: inset 0 0 0 1px #588558;
+}
+.tactics b {
+  font-size: 13px;
+}
+.tactics span,
+.tactics small {
+  font-size: 11px;
+  line-height: 1.45;
+}
+.tactics small {
+  color: #6d5946;
+}
+.fit {
+  display: block;
+  font-weight: normal;
+  color: #45693b;
+  margin-top: 3px;
+}
+.negotiation {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: 10px;
+  margin-top: 12px;
+}
+.negotiation label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  font-size: 11px;
+  color: #53684c;
+}
+.negotiation select {
+  font-size: 12px;
+  min-height: 44px;
+  width: 100%;
+  padding: 7px;
+}
+.outlook {
+  display: grid;
+  gap: 4px;
+  font-size: 11px;
+}
+.outlook b {
+  font-size: 13px;
+}
+.outlook span,
+.outlook small {
+  color: #53684c;
+}
+.section .hint {
+  margin: 8px 0 0;
+  color: #54684c;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.pending {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #f3ebd7;
+  border-radius: 7px;
+}
+.pending p {
+  font-size: 12px;
+  margin: 0;
+}
+.presets {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 10px 0;
+}
+.presets button {
+  min-height: 48px;
+  font-size: 12px;
+  padding: 8px;
+}
+.preview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 10px 0;
+}
+.preview > div {
+  padding: 10px 12px;
+  background: #f0f3e7;
+  border: 1px solid #dce4d1;
+  border-radius: 8px;
+}
+.preview span,
+.preview small {
+  display: block;
+  color: #53684c;
+  font-size: 10px;
+}
+.preview strong {
+  display: block;
+  margin: 2px 0;
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+.slots {
+  margin-top: 10px;
+  border: 1px solid #d4ddc8;
+  border-radius: 8px;
+}
+.slots summary {
+  min-height: 44px;
+  padding: 11px 12px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.slots summary:focus-visible {
+  outline: 3px solid #cf7854;
+  outline-offset: 2px;
+}
+.lineup {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 14px;
+  padding: 4px 12px 12px;
+}
+.lineup label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  font-size: 11px;
+  color: #53684c;
+}
+.lineup select {
+  width: 100%;
+  font-size: 12px;
+  min-height: 44px;
+  padding: 8px;
+}
+.primary {
+  background: #24543b;
+  color: #fff9e7;
+  border-color: #24543b;
+}
+.section .warning {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: #995b3e;
+}
+.footer {
+  margin: 0;
+  padding: 0;
+}
+.footer .message {
+  padding: 8px 10px;
+  margin: 0 0 8px;
+  max-height: 76px;
+  overflow-y: auto;
+  color: #244733;
+  background: #e9f0df;
+  border: 1px solid #d0dec5;
+  border-radius: 7px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.actions button {
+  min-height: 48px;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+.lineupAction,
+.supportAction {
+  grid-column: 1 / -1;
+}
+@media (max-width: 760px) {
+  .panel {
+    padding: 14px 16px;
+    gap: 10px;
+  }
+  .panel button {
+    width: 100%;
+    min-height: 44px;
+  }
+  .opponent {
+    padding: 8px 10px;
+  }
+  .tabs {
+    margin-top: 9px;
+  }
+  .section {
+    padding-top: 10px;
+  }
+  .tactics {
+    gap: 6px;
+  }
+  .tactics button {
+    padding: 9px;
+    gap: 4px;
+  }
+  .tactics span,
+  .tactics small {
+    font-size: 10px;
+  }
+  .lineup {
+    grid-template-columns: 1fr;
+  }
+  .preview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .preview > div {
+    padding: 8px 10px;
+  }
+  .negotiation {
+    gap: 8px;
+  }
+  .outlook b {
+    font-size: 12px;
+  }
+  .actions button {
+    font-size: 11px;
+    padding: 7px;
+  }
+}

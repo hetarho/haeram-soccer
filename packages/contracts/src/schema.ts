@@ -56,6 +56,20 @@ const manager = z.object({
   until: z.number().int(),
   interim: z.boolean(),
   lastRequest: text.optional(),
+  requestHistory: z
+    .object({
+      at: z.string().regex(/^\d{4}:\d{1,3}$/),
+      keys: z
+        .array(
+          z
+            .string()
+            .regex(/^(balanced|possession|counter|press):(respect|evidence|support|demand)$/),
+        )
+        .max(16)
+        .refine((keys) => new Set(keys).size === keys.length),
+      trustAwarded: z.boolean(),
+    })
+    .optional(),
   pending: tactic.optional(),
 });
 const score = z.object({
@@ -81,6 +95,57 @@ const table = z.object({
   gf: number,
   ga: number,
   points: number,
+});
+const snapshot = z.object({
+  year: z.number().int().min(1901).max(4000),
+  round: z.number().int().min(0).max(46),
+  day: z.number().int().min(0).max(365),
+  tier: z.number().int().min(0).max(10),
+  group: z.number().int().min(0).max(10),
+  rows: z
+    .array(
+      z.tuple([
+        z.number().int().nonnegative(),
+        z.number().int().nonnegative(),
+        z.number().int().nonnegative(),
+        z.number().int().nonnegative(),
+      ]),
+    )
+    .max(100),
+});
+const scorerSeason = z.object({
+  year: z.number().int().min(1901).max(4000),
+  groupKey: text,
+  trackedSinceRound: z.number().int().min(1).max(47),
+  players: z
+    .array(
+      z.object({
+        id,
+        name: text,
+        club: id,
+        role: z.enum(['GK', 'DEF', 'MID', 'FWD']),
+        goals: z.number().int().nonnegative(),
+        appearances: z.number().int().min(1).max(46),
+      }),
+    )
+    .max(1000),
+  history: z
+    .array(
+      z.object({
+        round: z.number().int().min(0).max(46),
+        day: z.number().int().min(0).max(365),
+        rows: z
+          .array(
+            z.tuple([
+              z.number().int().nonnegative(),
+              z.number().int().positive(),
+              z.number().int().min(1).max(46),
+            ]),
+          )
+          .max(1000),
+      }),
+    )
+    .max(47),
 });
 const match = fixture.extend({
   score,
@@ -168,10 +233,14 @@ export const worldSchema: z.ZodType<World> = z.object({
   year: z.number().int().min(1901).max(4000),
   round: z.number().int().min(0).max(100),
   revision: z.number().int().nonnegative(),
+  calendar: z.object({ day: z.number().int().min(0).max(365) }).optional(),
+  rankHistory: z.array(snapshot).max(470).optional(),
+  scorerSeason: scorerSeason.optional(),
   playerClub: id,
   difficulty: z.number().min(0.1).max(10),
   clubs: z.array(club).min(10).max(1000),
   players: z.array(player).max(20000),
+  lineup: z.array(id).length(11).optional(),
   manager,
   tactic,
   requested: tactic.optional(),
@@ -224,12 +293,114 @@ export function validateWorld(input: unknown): World {
   const ids = new Set(w.clubs.map((c) => c.id));
   if (ids.size !== w.clubs.length || !ids.has(w.playerClub))
     throw new Error('저장된 클럽 식별자가 올바르지 않습니다.');
+  const seasonDays = (Date.UTC(w.year + 1, 7, 1) - Date.UTC(w.year, 7, 1)) / 86400000;
+  if (
+    w.calendar &&
+    (w.calendar.day >= seasonDays || w.round !== Math.min(46, Math.floor(w.calendar.day / 7)))
+  )
+    throw new Error('시즌 날짜와 진행 회차가 일치하지 않습니다.');
+  const snapshotKeys = new Set<string>();
+  for (const s of w.rankHistory || []) {
+    const key = `${s.year}:${s.round}:${s.tier}:${s.group}`;
+    if (
+      snapshotKeys.has(key) ||
+      s.year > w.year ||
+      s.day < s.round * 7 ||
+      new Set(s.rows.map((row) => row[0])).size !== s.rows.length ||
+      s.rows.some((row) => row[0] >= w.clubs.length)
+    )
+      throw new Error('순위 추이 기록 참조 손상');
+    snapshotKeys.add(key);
+  }
   const playerIds = new Set(w.players.map((p) => p.id));
   if (playerIds.size !== w.players.length) throw new Error('중복 선수 식별자');
+  if (w.lineup) {
+    const roles = ['GK', 'DEF', 'DEF', 'DEF', 'DEF', 'MID', 'MID', 'MID', 'FWD', 'FWD', 'FWD'];
+    if (
+      new Set(w.lineup).size !== 11 ||
+      w.lineup.some((id, i) => w.players.find((player) => player.id === id)?.role !== roles[i])
+    )
+      throw new Error('선발 명단의 선수나 포지션이 올바르지 않습니다.');
+  }
   for (const f of [...w.fixtures, ...w.ownMatches, ...w.europe.flatMap((t) => t.fixtures)])
     if (!ids.has(f.home) || !ids.has(f.away) || f.home === f.away)
       throw new Error('경기 참가 클럽을 찾을 수 없습니다.');
   const owner = w.clubs.find((c) => c.id === w.playerClub)!;
+  if (w.scorerSeason) {
+    const season = w.scorerSeason;
+    const group = w.lower ? 'lower' : `${owner.country}:${owner.tier}:${owner.group}`;
+    if (
+      season.year !== w.year ||
+      season.groupKey !== group ||
+      season.trackedSinceRound > w.round + 1 ||
+      new Set(season.players.map((p) => p.id)).size !== season.players.length ||
+      season.players.some((p) => !ids.has(p.club))
+    )
+      throw new Error('득점 순위 선수 참조 손상');
+    const goals = new Map<string, number>();
+    const appearances = new Map<string, number>();
+    for (const fixture of w.fixtures) {
+      if (
+        !fixture.score ||
+        fixture.year !== w.year ||
+        fixture.groupKey !== group ||
+        fixture.round < season.trackedSinceRound ||
+        !['league', 'lower'].includes(fixture.kind)
+      )
+        continue;
+      for (const [club, count] of [
+        [fixture.home, fixture.score.home],
+        [fixture.away, fixture.score.away],
+      ] as const) {
+        goals.set(club, (goals.get(club) || 0) + count);
+        appearances.set(club, (appearances.get(club) || 0) + 11);
+      }
+    }
+    for (const scorer of season.players) {
+      goals.set(scorer.club, (goals.get(scorer.club) || 0) - scorer.goals);
+      appearances.set(scorer.club, (appearances.get(scorer.club) || 0) - scorer.appearances);
+    }
+    if ([...goals.values(), ...appearances.values()].some((value) => value !== 0))
+      throw new Error('득점 순위와 실제 경기 지표가 일치하지 않습니다.');
+    let previousRound = season.trackedSinceRound - 2;
+    const previous = new Map<number, number[]>();
+    for (const snapshot of season.history) {
+      if (
+        snapshot.round <= previousRound ||
+        snapshot.round > w.round ||
+        snapshot.day < snapshot.round * 7 ||
+        new Set(snapshot.rows.map((row) => row[0])).size !== snapshot.rows.length
+      )
+        throw new Error('득점 순위 추이 기록 참조 손상');
+      previousRound = snapshot.round;
+      for (let i = 0; i < snapshot.rows.length; i++) {
+        const [index, count, played] = snapshot.rows[i];
+        const scorer = season.players[index];
+        const last = previous.get(index);
+        const above = snapshot.rows[i - 1];
+        if (
+          !scorer ||
+          count > scorer.goals ||
+          played > scorer.appearances ||
+          (last && (count < last[0] || played < last[1])) ||
+          (above && (above[1] < count || (above[1] === count && above[2] > played)))
+        )
+          throw new Error('득점 순위 추이 선수 지표 손상');
+        previous.set(index, [count, played]);
+      }
+    }
+    const last = season.history.at(-1);
+    if (
+      !last ||
+      last.round !== w.round ||
+      last.rows.length !== season.players.filter((p) => p.goals > 0).length ||
+      last.rows.some(
+        ([index, count, played]) =>
+          count !== season.players[index].goals || played !== season.players[index].appearances,
+      )
+    )
+      throw new Error('최근 득점 순위 추이 지표 손상');
+  }
   if (!['ENG', 'ESP', 'GER', 'ITA', 'FRA', 'POR', 'NED', 'BEL'].includes(owner.country))
     throw new Error('지원하지 않는 창단 국가');
   if (w.players.filter((p) => p.status === 'active').length < 14)

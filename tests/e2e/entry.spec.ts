@@ -7,9 +7,14 @@ test('creates, computes and reloads through the bundled worker', async ({ page }
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByText('Haeram Athletic', { exact: true }).first()).toBeVisible();
+  await page.getByRole('button', { name: '자세한 클럽 일지', exact: true }).click();
   await page.getByRole('button', { name: '다음 라운드', exact: true }).click();
   await expect(page.getByText('시즌 1901 · 라운드 1')).toBeVisible();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r1');
+  await page
+    .getByRole('dialog', { name: '클럽 일지 상세' })
+    .getByRole('button', { name: '창 닫기' })
+    .click();
   await page.reload();
   await expect(page.getByText('시즌 1901 · 라운드 1')).toBeVisible();
 });
@@ -26,7 +31,25 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await page.getByRole('button', { name: '유럽 무대' }).click();
   await expect(page.getByText('54년 후 창설 예정')).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.getByRole('button', { name: '리그', exact: true }).click();
+  const mobileMenu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
+  await expect(mobileMenu).toBeVisible();
+  for (const label of ['클럽 일지', '경기 관전', '리그', '클럽 경영', '더보기']) {
+    const bounds = await mobileMenu.getByRole('button', { name: label, exact: true }).boundingBox();
+    expect(bounds).not.toBeNull();
+    expect(bounds!.height).toBeGreaterThanOrEqual(44);
+    expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(844);
+  }
+  await mobileMenu.getByRole('button', { name: '더보기', exact: true }).click();
+  const allMenu = page.getByRole('dialog', { name: '전체 메뉴' });
+  await expect(allMenu).toBeVisible();
+  await allMenu.getByRole('button', { name: '선수와 영입', exact: true }).click();
+  await expect(allMenu).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '우리 선수단 · 18/26' })).toBeVisible();
+  await mobileMenu.getByRole('button', { name: '리그', exact: true }).click();
+  await expect(page.getByRole('tab', { name: '순위표', exact: true })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
   await expect(page.getByLabel('국가', { exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
