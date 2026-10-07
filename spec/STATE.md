@@ -30,7 +30,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T008 | playable-web | ARCH WEB MATCH HIST EURO | T007 | todo |
+| T008 | playable-web | ARCH WEB MATCH HIST EURO | T007 | doing@261007.cx |
 | T009 | management-history-ui | ARCH CLUB STAFF ECON HIST WEB | T008 | todo |
 | T010 | release-verification | ARCH WEB SAVE HIST MATCH | T009 | todo |
 
@@ -38,6 +38,7 @@
 - implement-task T008
 
 ## log
+- 261007 T008 doing (cx)
 - 261007 T007 done; verified at 6f8def5
 - 261007 T007 doing (cx)
 - 261007 T006 done; verified at 0979055
