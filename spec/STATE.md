@@ -30,13 +30,13 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T009 | management-history-ui | ARCH CLUB STAFF ECON HIST WEB | T008 | doing@261007.cx |
 | T010 | release-verification | ARCH WEB SAVE HIST MATCH | T009 | todo |
 
 ## next
-- implement-task T009
+- implement-task T010
 
 ## log
+- 261007 T009 done; verified at 50d7ed6
 - 261007 T009 doing (cx)
 - 261007 T008 done; verified at eb6beef
 - 261007 T008 doing (cx)
@@ -56,4 +56,3 @@
 - 261007 standalone ownership fallback: work CLI requires unsupported git worktree -z on Git 2.34.1; current main checkout and session tag are the ownership record
 - 261007 T001 doing (cx)
 - 261007 create-task complete: T001-T010 planned from eleven SSOTs; plan commit precedes implementation
-- 261007 create-ssot complete: gameplay domains fixed for the web implementation
