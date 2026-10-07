@@ -30,7 +30,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T001 | foundation | ARCH | - | todo |
+| T001 | foundation | ARCH | - | doing@261007.cx |
 | T002 | contracts-catalogs | ARCH WORLD ECON SAVE | T001 | todo |
 | T003 | world-domestic-match | ARCH WEB WORLD CLUB MATCH LEAGUE HIST | T002 | todo |
 | T004 | persistent-save | ARCH SAVE HIST | T003 | todo |
@@ -47,6 +47,8 @@
 - live hosting and optional hall-of-fame policy remain later work
 
 ## log
+- 261007 standalone ownership fallback: work CLI requires unsupported git worktree -z on Git 2.34.1; current main checkout and session tag are the ownership record
+- 261007 T001 doing (cx)
 - 261007 create-task complete: T001-T010 planned from eleven SSOTs; plan commit precedes implementation
 - 261007 create-ssot complete: gameplay domains fixed for the web implementation
 - 261007 create-ssot start: formalize gameplay domains, create all implementation tasks, commit plan, and commit each verified standalone implementation task

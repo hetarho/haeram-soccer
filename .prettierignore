@@ -1,0 +1,9 @@
+spec
+docs
+package-lock.json
+node_modules
+dist
+**/dist
+playwright-report
+test-results
+packages/catalogs/data
