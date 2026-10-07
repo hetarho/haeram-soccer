@@ -36,6 +36,7 @@
 - implement-task T010
 
 ## log
+- 261007 snapshot c4d6104 committed; origin/local identity configured, push blocked by missing HTTPS credentials and rejected SSH authentication
 - 261007 user-requested stop: T010 returned to todo; remaining work and actual verification status preserved in docs/REMAINING.md before commit/push
 - 261007 ARCH@3: Netlify replaces Cloudflare Pages; T010 deployment criteria/base updated, completed task history preserved
 - 261007 T010 doing (cx)
@@ -55,4 +56,3 @@
 - 261007 T003 doing (cx)
 - 261007 T002 done; verified at 0caf863
 - 261007 T002 doing (cx)
-- 261007 T001 done; verified at c7233a7

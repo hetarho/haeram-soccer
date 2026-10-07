@@ -56,3 +56,9 @@ PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 npm run verify
 The flag bypasses the global-library preflight; it does not skip real browser tests. CI uses `npx playwright install --with-deps`. Ports 4173 (browser test server) and 4180 (performance preview) must be available. Temporary screenshots/corpora are under `.tmp/` and are not pushed.
 
 Flutter and Supabase ranking remain later planned work; their SDKs/apps/backend resources are intentionally absent. See `docs/FUTURE.md`.
+
+## Push status
+
+The implementation/handoff snapshot was committed locally as `c4d6104`. Push could not authenticate: HTTPS had no available credential and the existing SSH identity was rejected (`Permission denied (publickey)`). Authenticate an authorized GitHub identity and run `git push --set-upstream origin main` to upload the local commits.
+
+`origin` is `https://github.com/hetarho/haeram-soccer.git`. Repository-local Git identity is `hetarho <sunlikeperson@gmail.com>`. Global Git configuration file hashes were verified unchanged. SSH host keys were obtained from GitHub's HTTPS metadata API and kept only in `.git/github-known-hosts`; no global SSH trust configuration was added.
