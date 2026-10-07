@@ -30,7 +30,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T007 | worker-runtime | ARCH SAVE WEB | T006 | todo |
+| T007 | worker-runtime | ARCH SAVE WEB | T006 | doing@261007.cx |
 | T008 | playable-web | ARCH WEB MATCH HIST EURO | T007 | todo |
 | T009 | management-history-ui | ARCH CLUB STAFF ECON HIST WEB | T008 | todo |
 | T010 | release-verification | ARCH WEB SAVE HIST MATCH | T009 | todo |
@@ -39,6 +39,7 @@
 - implement-task T007
 
 ## log
+- 261007 T007 doing (cx)
 - 261007 T006 done; verified at 0979055
 - 261007 T006 doing (cx)
 - 261007 T005 done; verified at 38c855a
@@ -58,4 +59,3 @@
 - 261007 create-narrative complete: ARCH@1 Korean delivery plan and PRD v0.5 aligned; 28 architecture decisions/3 open, document references and skill sync verified; no application scaffold or deployment performed
 - 261007 create-narrative start: Korean web delivery plan derived from ARCH@1
 - 261007 create-architecture ARCH@1 recorded: static React/TypeScript web, worker engine, localStorage recovery/budget gates, reproducible deployment, later Supabase and Flutter
-- 261007 create-architecture start: plan only; web demo first with localStorage, later Flutter release and optional Supabase hall of fame

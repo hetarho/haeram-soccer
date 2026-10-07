@@ -94,7 +94,13 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
 export class Saves {
   private active: number | undefined;
   private generation = 0;
-  constructor(private storage: StoragePort) {}
+  constructor(
+    private storage: StoragePort,
+    private inspect: typeof decode = decode,
+  ) {}
+  get generationInfo() {
+    return { generation: this.generation + 1, parentGeneration: this.generation };
+  }
   async load() {
     const manifest = this.storage.getItem(MANIFEST);
     let order = [0, 1];
@@ -115,10 +121,10 @@ export class Saves {
       const raw = this.storage.getItem(SLOT[slot]);
       if (!raw) continue;
       try {
-        const result = await decode(raw);
+        const result = await this.inspect(raw);
         if (
           header &&
-          (result.envelope.worldId !== header.worldId ||
+          ((slot === declared && result.envelope.worldId !== header.worldId) ||
             result.envelope.generation !==
               (slot === declared ? header.generation : header.parentGeneration))
         )
@@ -142,7 +148,7 @@ export class Saves {
     return raw;
   }
   async commit(raw: string) {
-    const { envelope } = await decode(raw);
+    const { envelope } = await this.inspect(raw);
     const next = this.active === undefined ? 0 : 1 - this.active;
     const manifest = JSON.stringify({
       slot: next,
@@ -162,6 +168,7 @@ export class Saves {
     this.storage.setItem(SLOT[next], raw);
     if (this.storage.getItem(SLOT[next]) !== raw) throw new Error('저장 읽기 검증에 실패했습니다.');
     this.storage.setItem(MANIFEST, manifest);
+    if (this.storage.getItem(MANIFEST) !== manifest) throw new Error('매니페스트 읽기 검증 실패');
     this.active = next;
     this.generation = envelope.generation;
   }
