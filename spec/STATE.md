@@ -30,7 +30,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T003 | world-domestic-match | ARCH WEB WORLD CLUB MATCH LEAGUE HIST | T002 | doing@261007.cx |
 | T004 | persistent-save | ARCH SAVE HIST | T003 | todo |
 | T005 | club-operations | ARCH CLUB STAFF ECON HIST | T004 | todo |
 | T006 | historical-europe | ARCH ECON EURO LEAGUE HIST | T005 | todo |
@@ -40,9 +39,10 @@
 | T010 | release-verification | ARCH WEB SAVE HIST MATCH | T009 | todo |
 
 ## next
-- implement-task T003
+- implement-task T004
 
 ## log
+- 261007 T003 done; verified at 372a99e
 - 261007 T003 doing (cx)
 - 261007 T002 done; verified at 0caf863
 - 261007 T002 doing (cx)
@@ -62,4 +62,3 @@
 - 261007 ideation club-history-reboot extend: initial-capital difficulty and historically grounded inflation/currency evolution
 - 261007 ideation club-history-reboot start: strengthen observable match simulation, statistics, commercial strategy, manager hiring, and player recruitment
 - 261007 ideation club-history-reboot draft recorded in docs/PRD.md; confirmed alternate-history setting and lowest-professional-tier start; country scope and boundary policy open
-- 261007 ideation club-history-reboot start (spec bootstrap; standalone workspace)
