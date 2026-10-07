@@ -180,6 +180,7 @@ export interface World {
   schema: 1;
   engine: string;
   catalog: string;
+  catalogHash: string;
   id: string;
   seed: string;
   year: number;

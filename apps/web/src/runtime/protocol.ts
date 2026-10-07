@@ -1,4 +1,5 @@
 import { z } from 'zod';
+z.config({ jitless: true });
 import type {
   World,
   MatchPlayback,

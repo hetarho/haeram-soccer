@@ -72,6 +72,7 @@ interface Packed {
   fixtures: Tuple[];
   matches: Tuple[];
   stats: string;
+  statWidth?: number;
   standings: string;
   counts: number[];
   euroCounts?: number[][][];
@@ -100,6 +101,7 @@ export function pack(w: World): Packed {
     f.score ? [f.score.home, f.score.away] : [],
   ];
   const stats: number[] = [];
+  const statWidth = w.ownMatches.every((m) => m.players.length === 11) ? 156 : 12;
   const matches = w.ownMatches.map((m) => {
     stats.push(...m.metrics[0], ...m.metrics[1], ...m.players.flatMap((p) => p.metrics));
     return [
@@ -129,7 +131,8 @@ export function pack(w: World): Packed {
     dict,
     fixtures: w.fixtures.flatMap((f, i) => (f.score ? [[i, f.score.home, f.score.away]] : [])),
     matches,
-    stats: integers(stats, 12),
+    stats: integers(stats, statWidth),
+    statWidth,
     standings: integers(
       w.history
         .flatMap((h) => [
@@ -177,7 +180,9 @@ export function unpack(p: Packed): World {
       ...(score.length ? { score: { home: score[0], away: score[1] } } : {}),
     };
   };
-  const stats = reader(p.stats, 12),
+  if (p.statWidth !== undefined && ![12, 156].includes(p.statWidth))
+    throw new Error('통계 차원 손상');
+  const stats = reader(p.stats, p.statWidth || 12),
     standings = reader(p.standings, 6);
   const matches = p.matches.map((t) => {
     const metrics = [stats.take(12), stats.take(12)] as MatchRecord['metrics'];

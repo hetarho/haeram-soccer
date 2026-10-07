@@ -16,12 +16,27 @@ export class GameClient {
   private worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
   private session = crypto.randomUUID();
   private serial = 0;
-  private waiters = new Map<string, { resolve: (r: Reply) => void; reject: (e: Error) => void }>();
+  private failed = false;
+  private waiters = new Map<
+    string,
+    { resolve: (r: Reply) => void; reject: (e: Error) => void; timer: number }
+  >();
   private queue = Promise.resolve();
   private release?: () => void;
   private cancelled = false;
   private channel = new BroadcastChannel('haeram-soccor:updates');
   private saves: Saves;
+  private refreshPending = false;
+  private refreshGeneration = 0;
+  private storageListener = (event: StorageEvent) => {
+    if (event.key === 'haeram-soccor:manifest' && event.newValue) {
+      try {
+        this.refresh(JSON.parse(event.newValue).generation);
+      } catch {
+        /* validated reload reports corruption */
+      }
+    }
+  };
   constructor(private notify: (state: ClientState) => void) {
     this.saves = new Saves(localStorage, async (raw) => {
       const reply = await this.rpc({ type: 'inspect', raw });
@@ -30,35 +45,66 @@ export class GameClient {
     });
     this.worker.onmessage = (event: MessageEvent<Reply>) => {
       const r = event.data;
+      const pending = this.waiters.get(r.requestId);
+      if (pending) {
+        clearTimeout(pending.timer);
+        pending.timer = window.setTimeout(() => this.failWorker(), 15000);
+      }
       if (r.progress !== undefined) {
         this.state.progress = r.progress;
         this.emit();
         return;
       }
       const waiter = this.waiters.get(r.requestId);
+      if (waiter) clearTimeout(waiter.timer);
       this.waiters.delete(r.requestId);
       if (r.view) this.state.view = r.view;
       if (r.ok) waiter?.resolve(r);
       else waiter?.reject(new Error(r.error || 'Worker 오류'));
     };
-    this.worker.onerror = () => {
-      this.state.error = '계산 Worker가 종료되었습니다. 마지막 저장을 다시 불러오세요.';
-      this.state.busy = false;
-      for (const w of this.waiters.values()) w.reject(new Error(this.state.error));
-      this.waiters.clear();
-      this.emit();
-    };
-    this.channel.onmessage = () => {
-      if (this.state.readonly)
-        void this.enqueue(async () => {
-          await this.load();
-        });
-    };
+    this.worker.onerror = () => this.failWorker();
+    this.channel.onmessage = (event) => this.refresh(event.data?.generation || 0);
+    window.addEventListener('storage', this.storageListener);
+  }
+  private refresh(generation: number) {
+    if (!this.state.readonly || !Number.isSafeInteger(generation) || generation < 0) return;
+    this.refreshGeneration = Math.max(this.refreshGeneration, generation);
+    if (this.refreshPending) return;
+    this.refreshPending = true;
+    void this.enqueue(async () => {
+      for (let n = 0; n < 2; n++) {
+        await this.load();
+        if (this.saves.generationInfo.parentGeneration >= this.refreshGeneration) break;
+      }
+    }).finally(() => {
+      this.refreshPending = false;
+    });
+  }
+
+  private failWorker() {
+    this.failed = true;
+    this.worker.terminate();
+    this.state.error =
+      '계산 Worker가 종료되었거나 응답하지 않습니다. 마지막 저장을 다시 불러오세요.';
+    this.state.busy = false;
+    for (const waiter of this.waiters.values()) {
+      clearTimeout(waiter.timer);
+      waiter.reject(new Error(this.state.error));
+    }
+    this.waiters.clear();
+    this.emit();
   }
   private emit() {
     this.notify({ ...this.state });
   }
   async start() {
+    if (!globalThis.CompressionStream || !globalThis.DecompressionStream || !crypto.subtle) {
+      this.state.busy = false;
+      this.state.error =
+        '이 브라우저는 저장 압축을 지원하지 않습니다. 최신 Chrome, Firefox 또는 Safari에서 기록을 가져오세요.';
+      this.emit();
+      return;
+    }
     if (!navigator.locks) {
       this.state.notice =
         '안전한 저장을 위해 Web Locks가 지원되는 HTTPS 또는 localhost 환경이 필요합니다.';
@@ -82,15 +128,24 @@ export class GameClient {
     const result = await this.saves.load();
     if (result) {
       await this.rpc({ type: 'inspect', raw: result.raw, activate: true });
+      this.state.playback = undefined;
       this.state.savedRevision = result.world.revision;
       if (result.recovered) this.state.notice = '이전의 정상 체크포인트로 복구했습니다.';
     }
     this.emit();
   }
   private rpc(body: Body): Promise<Reply> {
+    if (this.failed)
+      return Promise.reject(
+        new Error('Worker를 다시 불러오세요. 마지막 저장은 파일로 보관할 수 있습니다.'),
+      );
     const requestId = `${this.session.slice(0, 8)}:${++this.serial}`;
     return new Promise((resolve, reject) => {
-      this.waiters.set(requestId, { resolve, reject });
+      this.waiters.set(requestId, {
+        resolve,
+        reject,
+        timer: window.setTimeout(() => this.failWorker(), 15000),
+      });
       this.worker.postMessage({
         protocol: 1,
         session: this.session,
@@ -122,6 +177,10 @@ export class GameClient {
   }
   private async mutate(body: Body) {
     if (this.state.readonly) throw new Error('이 탭은 읽기 전용입니다.');
+    if (body.type === 'found') {
+      this.state.savedRevision = -1;
+      this.state.playback = undefined;
+    }
     const reply = await this.rpc(body);
     if (reply.playback) this.state.playback = reply.playback;
     this.emit();
@@ -129,7 +188,10 @@ export class GameClient {
       try {
         await this.saves.commit(reply.raw);
         this.state.savedRevision = this.state.view!.world.revision;
-        this.channel.postMessage({ revision: this.state.savedRevision });
+        this.channel.postMessage({
+          revision: this.state.savedRevision,
+          generation: this.saves.generationInfo.parentGeneration,
+        });
       } catch (error) {
         throw new Error(
           `현재 진행은 메모리에 있습니다. 저장 실패: ${String(error)} · 파일로 내보내세요.`,
@@ -171,29 +233,51 @@ export class GameClient {
   archive(year: number) {
     return this.enqueue(async () => (await this.rpc({ type: 'archive', year })).archive);
   }
+  private rawBackup() {
+    try {
+      const m = JSON.parse(localStorage.getItem('haeram-soccor:manifest') || 'null');
+      if (m && (m.slot === 0 || m.slot === 1))
+        return localStorage.getItem(`haeram-soccor:slot:${m.slot ? 'b' : 'a'}`) || undefined;
+    } catch {
+      /* preserve raw slots for recovery */
+    }
+    return (
+      localStorage.getItem('haeram-soccor:slot:a') ||
+      localStorage.getItem('haeram-soccor:slot:b') ||
+      undefined
+    );
+  }
   exportFile() {
     return this.enqueue(async () =>
-      this.state.view
-        ? (await this.rpc({ type: 'export' })).raw
-        : localStorage.getItem('haeram-soccor:slot:a') ||
-          localStorage.getItem('haeram-soccor:slot:b') ||
-          undefined,
+      this.state.view && !this.failed ? (await this.rpc({ type: 'export' })).raw : this.rawBackup(),
     );
   }
   importFile(raw: string) {
     return this.enqueue(async () => {
       if (this.state.readonly) throw new Error('읽기 전용 탭입니다.');
       await this.rpc({ type: 'inspect', raw, activate: true });
+      this.state.savedRevision = -1;
+      this.state.playback = undefined;
       const reply = await this.rpc({ type: 'export' });
       await this.saves.commit(reply.raw!);
       this.state.savedRevision = this.state.view!.world.revision;
-      this.channel.postMessage({ revision: this.state.savedRevision });
+      this.channel.postMessage({
+        revision: this.state.savedRevision,
+        generation: this.saves.generationInfo.parentGeneration,
+      });
     });
   }
   retrySave() {
     return this.enqueue(() => this.mutate({ type: 'export' }));
   }
   dispose() {
+    window.removeEventListener('storage', this.storageListener);
+    this.failed = true;
+    for (const waiter of this.waiters.values()) {
+      clearTimeout(waiter.timer);
+      waiter.reject(new Error('세션이 닫혔습니다.'));
+    }
+    this.waiters.clear();
     this.release?.();
     this.channel.close();
     this.worker.terminate();

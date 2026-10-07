@@ -1,4 +1,5 @@
 import { z } from 'zod';
+z.config({ jitless: true });
 import type { World } from './types';
 const money = z.string().regex(/^-?\d{1,80}$/);
 const rating = z.number().finite().min(0).max(100);
@@ -161,6 +162,7 @@ export const worldSchema: z.ZodType<World> = z.object({
   schema: z.literal(1),
   engine: text,
   catalog: text,
+  catalogHash: z.string().regex(/^[a-f0-9]{64}$/),
   id,
   seed: text,
   year: z.number().int().min(1901).max(4000),
@@ -227,6 +229,12 @@ export function validateWorld(input: unknown): World {
   for (const f of [...w.fixtures, ...w.ownMatches, ...w.europe.flatMap((t) => t.fixtures)])
     if (!ids.has(f.home) || !ids.has(f.away) || f.home === f.away)
       throw new Error('경기 참가 클럽을 찾을 수 없습니다.');
+  const owner = w.clubs.find((c) => c.id === w.playerClub)!;
+  if (!['ENG', 'ESP', 'GER', 'ITA', 'FRA', 'POR', 'NED', 'BEL'].includes(owner.country))
+    throw new Error('지원하지 않는 창단 국가');
+  if (w.players.filter((p) => p.status === 'active').length < 14)
+    throw new Error('최소 선수단 부족');
+  if (w.players.some((p) => p.born > w.year)) throw new Error('선수 생년 손상');
   if (w.players.filter((p) => p.status === 'active').length > 26)
     throw new Error('선수단 정원 초과');
   for (const [clubId, row] of Object.entries(w.tables)) {
@@ -258,5 +266,59 @@ export function validateWorld(input: unknown): World {
       throw new Error('유럽대회 참조 손상');
   if (w.players.some((p) => BigInt(p.wage) < 0) || BigInt(w.manager.wage) < 0)
     throw new Error('급여 범위 손상');
+  if (!w.players.some((p) => p.status === 'active' && p.role === 'GK'))
+    throw new Error('골키퍼 부족');
+  if (w.priceIndex <= 0 || BigInt(w.income) < 0 || BigInt(w.expense) < 0)
+    throw new Error('재무 지표 손상');
+  if (
+    w.sponsor &&
+    (w.sponsor.index <= 0 || BigInt(w.sponsor.annual) < 0 || BigInt(w.sponsor.bonus) < 0)
+  )
+    throw new Error('후원 계약 손상');
+  if (
+    w.campaigns.some(
+      (c) =>
+        BigInt(c.cost) < 0 || !Number.isInteger(c.remaining) || c.remaining < 1 || c.remaining > 4,
+    )
+  )
+    throw new Error('캠페인 손상');
+  for (const h of w.history) {
+    for (const ch of h.champions)
+      if (!ids.has(ch.club) || !ids.has(ch.cup)) throw new Error('우승 기록 참조 손상');
+    for (const e of h.europe) {
+      if (!ids.has(e.winner)) throw new Error('유럽 우승 참조 손상');
+      for (const row of [...(e.standings || []), ...(e.secondStandings || [])])
+        if (
+          row.length !== 6 ||
+          row.some((n) => !Number.isInteger(n) || n < 0) ||
+          row[0] >= w.clubs.length
+        )
+          throw new Error('유럽 순위 참조 손상');
+    }
+  }
+  for (const m of w.ownMatches) {
+    const side = m.home === w.playerClub ? 0 : 1;
+    if (
+      m.metrics[0][0] !== m.score.home ||
+      m.metrics[1][0] !== m.score.away ||
+      m.players.reduce((n, p) => n + p.metrics[0], 0) !== m.metrics[side][0] ||
+      m.metrics.some((row) => row[3] > row[2] || row[5] > row[4])
+    )
+      throw new Error('경기 지표 손상');
+  }
+  for (const t of w.europe) {
+    if (new Set(t.clubs).size !== t.clubs.length || t.clubs.length !== t.field)
+      throw new Error('유럽 참가팀 손상');
+    for (const [id, row] of Object.entries(t.standings))
+      if (
+        !t.clubs.includes(id) ||
+        Object.values(row).some((n) => !Number.isInteger(n) || n < 0) ||
+        row.played !== row.won + row.drawn + row.lost
+      )
+        throw new Error('유럽 리그 표 손상');
+    for (const row of [...(t.firstStandings || []), ...(t.secondStandings || [])])
+      if (row.some((n) => !Number.isInteger(n) || n < 0) || row[0] >= w.clubs.length)
+        throw new Error('유럽 단계 참조 손상');
+  }
   return w;
 }

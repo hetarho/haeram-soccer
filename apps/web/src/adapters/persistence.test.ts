@@ -80,3 +80,14 @@ it('preserves first and second European phases and global standings in a histori
   expect(w.history[0].europe.find((e) => e.kind === 'ucl')?.secondStandings).toHaveLength(16);
   expect(canonical((await decode(await encode(w))).world)).toBe(canonical(w));
 });
+it('rejects broken counters and historical club references before activation', async () => {
+  const { simulateSeason } = await import('../../../../packages/engine/src/index');
+  const w = world();
+  advanceRound(w);
+  const tampered = structuredClone(w);
+  tampered.ownMatches[0].metrics[0][0]++;
+  await expect(decode(await encode(tampered))).rejects.toThrow('경기 지표');
+  simulateSeason(w);
+  w.history[0].champions[0].club = 'missing-club';
+  await expect(decode(await encode(w))).rejects.toThrow('우승 기록 참조');
+});

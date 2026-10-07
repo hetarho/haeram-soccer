@@ -15,7 +15,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 2 | 2 | - | 2 |
+| ARCH | 3 | 3 | - | 2 |
 | WEB | 1 | 1 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
 | CLUB | 1 | 1 | - | 0 |
@@ -36,6 +36,9 @@
 - implement-task T010
 
 ## log
+- 261007 user-requested stop: T010 returned to todo; remaining work and actual verification status preserved in docs/REMAINING.md before commit/push
+- 261007 ARCH@3: Netlify replaces Cloudflare Pages; T010 deployment criteria/base updated, completed task history preserved
+- 261007 T010 doing (cx)
 - 261007 T009 done; verified at 50d7ed6
 - 261007 T009 doing (cx)
 - 261007 T008 done; verified at eb6beef
@@ -53,6 +56,3 @@
 - 261007 T002 done; verified at 0caf863
 - 261007 T002 doing (cx)
 - 261007 T001 done; verified at c7233a7
-- 261007 standalone ownership fallback: work CLI requires unsupported git worktree -z on Git 2.34.1; current main checkout and session tag are the ownership record
-- 261007 T001 doing (cx)
-- 261007 create-task complete: T001-T010 planned from eleven SSOTs; plan commit precedes implementation

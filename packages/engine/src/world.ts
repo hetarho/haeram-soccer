@@ -1,6 +1,7 @@
 import {
   COUNTRIES,
   CATALOG_VERSION,
+  CATALOG_HASH,
   country,
   currency,
   priceIndex,
@@ -180,6 +181,7 @@ export function createBase(input: Founding): World {
     schema: 1,
     engine: ENGINE_VERSION,
     catalog: CATALOG_VERSION,
+    catalogHash: CATALOG_HASH,
     id: `world:${hash(input.seed + input.name)}`,
     seed: input.seed,
     year: 1901,

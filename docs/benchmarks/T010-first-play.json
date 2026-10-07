@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-07T08:36:34.762Z",
+  "browser": "153.0.8010.12",
+  "synthetic": true,
+  "buildGzipBytes": 193561,
+  "buildGzipLimit": 256000,
+  "firstPlayMs": 496,
+  "centuryLoadMs": 1934,
+  "initializationLimitMs": 5000,
+  "inputSamples": 19,
+  "pointerToSecondFrameP95Ms": 30,
+  "inputLimitMs": 100,
+  "canvasAnimationFps": 61,
+  "minimumFps": 30,
+  "mobileHorizontalOverflow": false,
+  "pageErrors": [],
+  "passed": true,
+  "scope": "Local Chromium, 1440px and 390px layouts, built CSP preview, 100-season restore. Pointer-to-second-frame is a presentation latency measurement; no universal device-speed claim.",
+  "currentHeadVerified": false,
+  "handoffNote": "Earlier measured source only; final client/validation/assist/era changes require rerun. First-play artifact is unthrottled and does not satisfy the required reference profile."
+}

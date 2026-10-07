@@ -1,5 +1,5 @@
 export const CATALOG_VERSION = '2026-demo-1';
-import priceData from '../data/prices.json';
+import priceData from '../data/prices.json' with { type: 'json' };
 import type { CountryCode } from '../../contracts/src/types';
 export interface CountryProfile {
   code: CountryCode;
@@ -258,3 +258,5 @@ export function currency(code: string, year: number): CurrencyPeriod {
   };
 }
 export { priceData };
+
+export { CATALOG_HASH } from './fingerprint';

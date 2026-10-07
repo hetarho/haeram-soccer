@@ -113,3 +113,24 @@ describe('world progression', () => {
     expect(clubOf(a).name).toBe(input.name);
   });
 });
+it('never assigns the single goal scorer an assist for the same goal', () => {
+  let checked = 0;
+  for (let n = 0; n < 24; n++) {
+    const w = createWorld({ ...input, seed: `assist-rule-${n}` });
+    const f = w.fixtures.find((f) => f.home === w.playerClub)!;
+    const p = simulateMatch(w, f, false, true);
+    for (const [side, score] of [
+      [0, p.record.score.home],
+      [1, p.record.score.away],
+    ])
+      if (score === 1) {
+        const ids = new Set(p.squads[side].map((player) => player.id));
+        const scorer = p.record.players.find(
+          (player) => ids.has(player.id) && player.metrics[0] === 1,
+        )!;
+        expect(scorer.metrics[1]).toBe(0);
+        checked++;
+      }
+  }
+  expect(checked).toBeGreaterThan(0);
+});

@@ -1,3 +1,4 @@
+import { CATALOG_HASH, currency } from '../../../../packages/catalogs/src/index';
 import { canonical, validateWorld, type World } from '../../../../packages/contracts/src/index';
 import { base64, unbase64, pack, unpack } from './packing';
 export const CHECKPOINT_LIMIT = 1.5 * 1024 * 1024;
@@ -13,6 +14,7 @@ export interface Envelope {
   schema: 1;
   engine: string;
   catalog: string;
+  catalogHash: string;
   worldId: string;
   generation: number;
   parentGeneration: number;
@@ -57,6 +59,7 @@ export async function encode(w: World, generation = 1, parentGeneration = 0): Pr
     schema: 1,
     engine: w.engine,
     catalog: w.catalog,
+    catalogHash: w.catalogHash,
     worldId: w.id,
     generation,
     parentGeneration,
@@ -73,6 +76,7 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
     e.schema !== 1 ||
     e.engine !== '1.0.0' ||
     e.catalog !== '2026-demo-1' ||
+    e.catalogHash !== CATALOG_HASH ||
     e.codec !== 'gzip-base64' ||
     !Number.isSafeInteger(e.generation) ||
     e.generation < 1 ||
@@ -87,7 +91,14 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
   const world = validateWorld(
     unpack(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes))),
   );
-  if (world.id !== e.worldId || world.engine !== e.engine || world.catalog !== e.catalog)
+  if (
+    world.id !== e.worldId ||
+    world.engine !== e.engine ||
+    world.catalog !== e.catalog ||
+    world.catalogHash !== e.catalogHash ||
+    world.currency !==
+      currency(world.clubs.find((c) => c.id === world.playerClub)!.country, world.year).code
+  )
     throw new Error('저장 헤더와 세계가 일치하지 않습니다.');
   return { world, envelope: e };
 }

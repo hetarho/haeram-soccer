@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r2 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r3 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -147,13 +147,13 @@
   - Scaffolding implements the scripts; verification reports must identify actual executed commands and must not count planned scripts as passed checks.
 - ARCH-23 [o] CI and release use a reproducible static build.
   - GitHub Actions: pinned toolchain → `npm ci` → install pinned Playwright browsers → `npm run verify` → retain test/build reports and `apps/web/dist`.
-  - Require verification checks on the protected production branch; Cloudflare production deploys only that branch and uses the pinned install/build commands.
-  - Deploy to Cloudflare Pages using the same pinned build command and output directory; preview branches do not replace production.
+  - Require verification checks on the protected production branch; Netlify production deploys only that branch and uses the pinned install/build commands.
+  - Deploy to Netlify using the same pinned build command and output directory; preview branches do not replace production.
   - Configure a stable production origin before public saves are created; changing origin requires export/import, not an assumed browser-storage transfer.
   - SPA deep-link reloads, module workers, missing assets, and HTTPS capability checks must pass on the built preview.
   - Versioned assets/catalogs use immutable caching; entry HTML uses revalidation. Do not add a service-worker cache in the initial release.
   - Rollback the code deployment without clearing local saves; incompatible new saves remain recoverable/exportable rather than being silently downgraded.
-  - Provider references: [Git integration](https://developers.cloudflare.com/pages/configuration/git-integration/), [previews](https://developers.cloudflare.com/pages/configuration/preview-deployments/), [rollbacks](https://developers.cloudflare.com/pages/configuration/rollbacks/).
+  - Provider references: [Git integration](https://docs.netlify.com/build/git-workflows/overview/), [previews](https://docs.netlify.com/deploy/deploy-types/deploy-previews/), [rollbacks](https://docs.netlify.com/deploy/manage-deploys/manage-deploys/).
 - ARCH-24 [o] Web implementation proceeds through evidence-producing milestones.
   | Milestone | Deliverable | Exit evidence |
   |---|---|---|
@@ -169,7 +169,8 @@
 - ARCH-25 [o] Durable archive tiers are owned by →HIST-1 and →HIST-2; preserve own-club detail and global season/honor summaries.
   - No automatic expiry, pruning, or private upload; capacity still requires the measured gate.
 - ARCH-26 [?] Hall-of-fame score formula, difficulty/year categories, ownership/visibility, and self-reported versus server-verified records need a later product SSOT.
-- ARCH-27 [?] Production repository, Cloudflare account, and stable hostname are deployment configuration inputs to supply before publishing.
+- ARCH-27 [?] Netlify project/account and stable production hostname are deployment configuration inputs to supply before publishing.
+  - Production repository: https://github.com/hetarho/haeram-soccer.git.
 - ARCH-28 [o] Browser interest and responsiveness have measured release budgets.
   - Initial entry JavaScript + CSS: at most 250 KiB compressed, excluding lazy engine/catalog chunks; report all first-play transfer sizes separately.
   - Reference trace: pinned Chromium, 4x CPU slowdown, Fast 4G for cold loading, desktop and 390x844 mobile viewports.
@@ -194,5 +195,6 @@
 - Current product material: `spec/ideation/club-history-reboot.md`; human PRD: `docs/PRD.md` (repository-relative paths).
 
 ## chg
+- r3 261007 ARCH-23✎ static provider Cloudflare Pages→Netlify; ARCH-27✎ account Cloudflare→Netlify and repository unspecified→hetarho/haeram-soccer
 - r2 261007 ARCH-25✎ unresolved NPC retention→HIST archive tiers; ARCH-9✎ numeric policy owner MONEY→ECON
 - r1 261007 initial

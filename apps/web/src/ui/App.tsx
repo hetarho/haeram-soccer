@@ -14,6 +14,36 @@ import { Pitch } from './Pitch';
 import s from './App.module.css';
 import { Dialog } from './Dialog';
 const Rich = lazy(() => import('./Rich'));
+function NavIcon({ page }: { page: Page }) {
+  const paths: Record<Page, string> = {
+    dashboard: 'M4 3h6a3 3 0 0 1 2 2 3 3 0 0 1 2-2h6v16h-6a3 3 0 0 0-2 2 3 3 0 0 0-2-2H4z M12 5v16',
+    match: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z M12 8l4 3-2 5h-4l-2-5z',
+    league: 'M4 5h16 M4 12h16 M4 19h16',
+    europe:
+      'M7 3h10v7a5 5 0 0 1-10 0z M7 5H3v4a4 4 0 0 0 4 4 M17 5h4v4a4 4 0 0 1-4 4 M12 15v5 M8 21h8',
+    squad:
+      'M12 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6z M5 21v-5a7 7 0 0 1 14 0v5 M4 5a2 2 0 0 0 0 4 M20 5a2 2 0 0 1 0 4',
+    manager: 'M12 2l10 10-10 10L2 12z M8 12h8 M12 8v8',
+    business: 'M3 18l6-6 4 3 8-11 M15 4h6v6',
+    history: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z M12 7v5l4 3',
+  };
+  return (
+    <svg
+      className={s.navIcon}
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinejoin="round"
+      strokeLinecap="round"
+    >
+      <path d={paths[page]} />
+    </svg>
+  );
+}
 export function Crest({ color = '#b4c399' }: { color?: string }) {
   return (
     <svg className={s.crest} viewBox="0 0 60 72" aria-hidden="true">
@@ -265,7 +295,7 @@ function Founding({
           </div>
           <button
             className={s.primary}
-            disabled={state.busy || state.readonly || !!state.error}
+            disabled={state.busy || state.readonly || (!!state.error && !replace)}
             type="submit"
           >
             {state.busy ? '세계관을 만드는 중…' : '클럽 창단 →'}
@@ -663,6 +693,10 @@ export function App() {
   const { page, setPage } = useNavigation();
   useEffect(() => {
     try {
+      if (!isSecureContext || !crypto.subtle || !crypto.randomUUID)
+        throw new Error(
+          '게임 저장은 HTTPS 또는 localhost에서 이용할 수 있습니다. localhost로 접속하거나 HTTPS 배포를 사용하세요.',
+        );
       const c = new GameClient(setState);
       setClient(c);
       void c.start();
@@ -683,7 +717,7 @@ export function App() {
     const url = URL.createObjectURL(new Blob([raw], { type: 'application/json' })),
       a = document.createElement('a');
     a.href = url;
-    a.download = `haeram-${w?.year || 'backup'}.json`;
+    a.download = `haeram-${w?.year || 'backup'}.haeram-save.json`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
@@ -720,7 +754,7 @@ export function App() {
           </div>
         )}
         <nav className={s.nav} aria-label="게임 메뉴">
-          {NAV.map(([id, icon, label]) => (
+          {NAV.map(([id, , label]) => (
             <button
               key={id}
               disabled={!w || replacing}
@@ -728,9 +762,7 @@ export function App() {
               className={page === id ? s.active : undefined}
               onClick={() => setPage(id)}
             >
-              <span className={s.navIcon} aria-hidden="true">
-                {icon}
-              </span>
+              <NavIcon page={id} />
               {label}
             </button>
           ))}

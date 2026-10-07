@@ -13,7 +13,7 @@
   "scripts": {
     "dev": "vite --config apps/web/vite.config.ts",
     "build": "vite build --config apps/web/vite.config.ts",
-    "preview": "vite preview --config apps/web/vite.config.ts --host 0.0.0.0",
+    "preview": "node scripts/preview.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint apps packages scripts tests --no-warn-ignored",
     "format": "prettier --write apps packages scripts tests *.json *.ts *.mjs .github",
@@ -21,9 +21,10 @@
     "test:unit": "vitest run --exclude '**/*.contract.test.ts'",
     "test:contract": "vitest run .contract.test.ts",
     "validate:catalogs": "tsx scripts/validate-catalogs.ts",
-    "test:e2e": "playwright test",
+    "test:e2e": "PREVIEW_BUILD=1 playwright test",
     "benchmark": "tsx scripts/benchmark.ts",
-    "verify": "npm run typecheck && npm run lint && npm run format:check && npm run test:unit && npm run test:contract && npm run validate:catalogs && npm run build && npm run test:e2e"
+    "verify": "npm run typecheck && npm run lint && npm run format:check && npm run test:unit && npm run test:contract && npm run validate:catalogs && npm run build && npm run test:e2e",
+    "benchmark:browser": "node scripts/first-play.mjs"
   },
   "dependencies": {
     "react": "19.3.0",

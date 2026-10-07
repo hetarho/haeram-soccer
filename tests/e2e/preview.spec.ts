@@ -1,0 +1,22 @@
+import { test, expect } from '@playwright/test';
+test('built deep links, module worker, cache/CSP and missing assets', async ({ page, request }) => {
+  test.skip(!process.env.PREVIEW_BUILD, 'Production preview gate');
+  await page.goto('/');
+  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  await page.goto('/history');
+  await expect(page.getByRole('heading', { name: '작은 선택들이 만든, 긴 역사.' })).toBeVisible();
+  await page.reload();
+  await expect(page.getByLabel('기록 시즌')).toBeVisible();
+  const html = await request.get('/history');
+  expect(html.status()).toBe(200);
+  expect(html.headers()['cache-control']).toBe('no-cache');
+  expect(html.headers()['content-security-policy']).toContain("worker-src 'self'");
+  const entry = await request.get('/');
+  const asset = (await entry.text()).match(/src="([^"]+\.js)"/)![1];
+  const js = await request.get(asset);
+  expect(js.status()).toBe(200);
+  expect(js.headers()['content-type']).toContain('javascript');
+  expect(js.headers()['cache-control']).toContain('immutable');
+  expect((await request.get('/assets/never-existed.js')).status()).toBe(404);
+});

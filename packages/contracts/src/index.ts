@@ -18,3 +18,5 @@ export function canonical(value: unknown): string {
 }
 export * from './types';
 export * from './schema';
+
+export * from './hall-of-fame';

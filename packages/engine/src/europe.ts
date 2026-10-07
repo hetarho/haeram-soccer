@@ -291,7 +291,7 @@ export function prepareEurope(w: World) {
             a,
             b,
             `phase:${i}`,
-            5 + Math.floor(((r - 1) * 36) / Math.max(1, era.games - 1)),
+            5 + Math.floor(((r - 1) * 36) / Math.max(1, Math.max(...pairs.map((p) => p[2])) - 1)),
           ),
         );
       }
@@ -342,17 +342,22 @@ export function finishEurope(w: World) {
         qualified.push(
           ...sorted(t, members.slice(i, i + size)).slice(
             0,
-            t.field === 40 ? 3 : t.field === 16 || t.field >= 32 ? 2 : 1,
+            t.field === 40
+              ? 3
+              : t.key === 'ucl' && w.year <= 1992 && phaseIds.length === 8
+                ? 1
+                : t.field === 16 || t.field >= 32
+                  ? 2
+                  : 1,
           ),
         );
       }
-      if (t.clubs.length === 24)
-        qualified.push(
-          ...sorted(
-            t,
-            t.clubs.filter((id) => !qualified.includes(id)),
-          ).slice(0, 2),
-        );
+      if (t.clubs.length === 24) {
+        const runners: string[] = [];
+        for (let i = 0; i < t.clubs.length; i += 4)
+          runners.push(sorted(t, t.clubs.slice(i, i + 4))[1]);
+        qualified.push(...sorted(t, runners).slice(0, 2));
+      }
       if (t.clubs.includes(w.playerClub) && !qualified.includes(w.playerClub))
         t.ownExit = '조별 단계 탈락';
       if (t.format === 'double-groups') {

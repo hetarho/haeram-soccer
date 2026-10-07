@@ -122,7 +122,8 @@ export function simulateMatch(
       }
     }
     if (keepPlayers || observe) {
-      const passer = integer(contribution, 5, 7);
+      const sampledPasser = integer(contribution, 5, 7);
+      const passer = sampledPasser === actor ? 5 + ((sampledPasser - 5 + 1) % 3) : sampledPasser;
       contributions[side][passer][2] += passCount;
       contributions[side][passer][3] += passes;
       contributions[side][actor][8] += dribble ? 1 : 0;
