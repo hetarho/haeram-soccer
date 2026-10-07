@@ -30,7 +30,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T005 | club-operations | ARCH CLUB STAFF ECON HIST | T004 | doing@261007.cx |
 | T006 | historical-europe | ARCH ECON EURO LEAGUE HIST | T005 | todo |
 | T007 | worker-runtime | ARCH SAVE WEB | T006 | todo |
 | T008 | playable-web | ARCH WEB MATCH HIST EURO | T007 | todo |
@@ -38,9 +37,10 @@
 | T010 | release-verification | ARCH WEB SAVE HIST MATCH | T009 | todo |
 
 ## next
-- implement-task T005
+- implement-task T006
 
 ## log
+- 261007 T005 done; verified at 38c855a
 - 261007 T005 doing (cx)
 - 261007 T004 done; verified at 6c006e9
 - 261007 T004 doing (cx)
@@ -60,5 +60,3 @@
 - 261007 create-architecture start: plan only; web demo first with localStorage, later Flutter release and optional Supabase hall of fame
 - 261007 ideation club-history-reboot PRD v0.4 recorded: eight playable European countries, representative external clubs, historical UEFA competition timeline and domestic-cup qualification; document checks and skill sync passed
 - 261007 ideation club-history-reboot start: Europe-only first release and historically introduced European club competitions
-- 261007 ideation club-history-reboot PRD v0.3 recorded: observable statistics, commercial strategy, recruitment, personality-driven manager conflict, initial-capital difficulty, and historical prices/currencies; document checks and skill sync passed
-- 261007 ideation club-history-reboot extend: initial-capital difficulty and historically grounded inflation/currency evolution
