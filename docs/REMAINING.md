@@ -4,7 +4,7 @@ The local gameplay improvement cycles and their verification are recorded in [th
 
 ## GitHub and Netlify
 
-- Run the updated GitHub Actions workflow on an authorized pushed commit. It includes unit/contract/catalog/build/browser checks, century storage verification and throttled browser performance verification. Local execution does not establish a remote CI result.
+- The T027 correction passed the full [Linux GitHub Actions workflow](https://github.com/hetarho/haeram-soccer/actions/runs/37701628149) on commit `eb1c759`, including unit/contract/catalog/build/browser checks, century storage and throttled browser performance. Require these checks on future code changes too.
 - Configure the intended Netlify project, stable production hostname and protected production branch. No project, public deployment, domain or branch protection was created by the improvement work.
 - Smoke-test the actual HTTPS deployment: deep links, missing assets, module workers, caching, founding, management, reload, import/export and single-writer tabs.
 - Rehearse compatible rollback on that origin. Unsupported newer saves must remain protected/exportable; changing origin requires explicit export/import.

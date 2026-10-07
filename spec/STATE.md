@@ -31,12 +31,12 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 
-| T027 | cross-platform-founding-layout | WEB ARCH | - | doing@261008.cx |
 
 ## next
-- implement-task T027; verify the corrected pushed CI run.
+- CI correction complete; local and pushed Linux verification passed. Future work remains external product/device testing and deployment.
 
 ## log
+- 261008 T027 done; pushed eb1c759 CI run37701628149 passed verify/storage/performance
 - 261008 T027 local verify and current-source benchmarks passed; pending pushed CI confirmation
 - 261008 create-task T027; implement-task start (cx)
 - 261008 update-ssot WEB start; CI founding overflow contract clarification
@@ -56,4 +56,3 @@
 - 261008 T010/T023 SAVE base refreshed to r3; codec-only retention rule preserves existing task scope; current codec checks required
 - 261008 cycle 11 create-task T024; implement-task start (cx)
 - 261008 cycle 11 update-ssot SAVE start
-- 261008 cycle 10 create-task T023; implement-task start (cx)

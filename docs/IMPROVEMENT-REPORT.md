@@ -59,6 +59,6 @@
 
 T027에서 [실패한 Linux CI](https://github.com/hetarho/haeram-soccer/actions/runs/37699063758)의 창단 화면을 보정했다. 한글 대체 글꼴로 안내 문구 세 곳이 추가로 줄바꿈되면서 문서가 794~795px로 늘어난 문제였다. 좁은 화면의 여백·줄 간격과 자연스러운 푸터 배치를 수정했고, 글자 크기·48px 조작·불러오기 도구를 유지했다.
 
-실제 WenQuanYi Zen Hei 글꼴로 동일한 실패를 재현한 뒤, 세 브라우저·두 크기에서 문서 높이 740/844px와 모든 조작의 접근성을 확인했다. [측정 기록](improvement/t027-font-proof/independent-font-proof.json)과 [360px 화면](improvement/t027-font-proof/chromium-360x740.png)을 보존했다. 넓은 문자 간격과 줄바꿈을 강제하는 회귀 검사를 포함한 최신 브라우저 검사 162개가 통과했다. 실제 글꼴 확인은 Mac 브라우저 엔진의 검사이며, 수정 커밋의 Linux CI 결과는 푸시 후 확인한다.
+실제 WenQuanYi Zen Hei 글꼴로 동일한 실패를 재현한 뒤, 세 브라우저·두 크기에서 문서 높이 740/844px와 모든 조작의 접근성을 확인했다. [측정 기록](improvement/t027-font-proof/independent-font-proof.json)과 [360px 화면](improvement/t027-font-proof/chromium-360x740.png)을 보존했다. 넓은 문자 간격과 줄바꿈을 강제하는 회귀 검사를 포함한 최신 브라우저 검사 162개가 통과했다. 실제 글꼴 확인은 Mac 브라우저 엔진의 검사이며, 이후 수정 커밋 `eb1c759`의 [Linux CI](https://github.com/hetarho/haeram-soccer/actions/runs/37701628149)에서도 전체 검증·100시즌 저장·성능 검사가 모두 통과했다. [실행 기록](improvement/t027-ci-result.json)에 검증한 커밋과 각 단계 결과를 보존했다.
 
 현재 산출물은 기존 아키텍처의 웹 서비스다. 앱스토어 배포용 Flutter 포팅·서명·심사·실기기 테스트는 후속 범위이며, 앱스토어 순위나 사용자 반응을 검증했다고 주장하지 않는다. 재미와 장기 난이도의 실제 평가는 사용자 플레이테스트가 필요하다.

@@ -1,6 +1,6 @@
 # Local web verification
 
-The 12 gameplay improvement cycles and existing local release-verification task are complete. Verification ran before committing. Source/build fingerprints identify the checked content; Git metadata preserves the state at measurement time. This is local evidence, not a remote CI run or public deployment. See [the improvement report](IMPROVEMENT-REPORT.md) and [remaining external work](REMAINING.md).
+The 12 gameplay improvement cycles and existing local release-verification task are complete. Verification ran before committing. Source/build fingerprints identify the checked content; Git metadata preserves the state at measurement time. The local evidence is supplemented by successful Linux CI for T027; no public deployment is claimed. See [the improvement report](IMPROVEMENT-REPORT.md) and [remaining external work](REMAINING.md).
 
 Verified on 2026-10-08 KST using Node **24.12.0**, macOS arm64, Apple M1 Max, Playwright 1.63.0 and Chromium 153.0.8010.12 for the performance trace.
 
@@ -20,4 +20,6 @@ Source SHA-256: `b3db7c49af2ce3ccadaf73f436682561bdca8dca98b0f8d146b46222ef38b68
 
 Reference fixtures are synthetic. Browser layout checks are not physical-device testing, human fun/retention validation, native Flutter release, remote GitHub CI or a live Netlify smoke test. Page-target transfer totals may omit dedicated-worker requests; the conservative asset inventory includes them. No unlimited storage or App Store ranking claim is made.
 
-T027 corrects the six Linux CI founding-overflow failures from run37699063758. The real WenQuanYi font probe reproduces the old794px height and verifies all browser/viewport pairs at740/844px after correction. A permanent wrapped-text regression retains strict viewport/control/import/footer checks. Local162-browser verification and refreshed matching source/build benchmark artifacts passed; pushed Linux CI remains pending.
+T027 corrects the six Linux CI founding-overflow failures from run37699063758. The real WenQuanYi font probe reproduces the old794px height and verifies all browser/viewport pairs at740/844px after correction. A permanent wrapped-text regression retains strict viewport/control/import/footer checks. Local162-browser verification and refreshed matching source/build benchmark artifacts passed; pushed Linux CI passed on eb1c759 (run37701628149).
+
+[Linux CI run37701628149](https://github.com/hetarho/haeram-soccer/actions/runs/37701628149) completed successfully for commit `eb1c759aa513d5fa6ec31807bab5fd44f923fc11`: full verify, century storage, throttled browser performance and artifact upload all passed. [Run metadata](improvement/t027-ci-result.json) preserves the exact tested commit and step results.

@@ -1,0 +1,116 @@
+{
+  "conclusion": "success",
+  "databaseId": 37701628149,
+  "headSha": "eb1c759aa513d5fa6ec31807bab5fd44f923fc11",
+  "jobs": [
+    {
+      "completedAt": "2026-10-07T23:28:51Z",
+      "conclusion": "success",
+      "databaseId": 113066183810,
+      "name": "verify",
+      "startedAt": "2026-10-07T23:19:44Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-07T23:19:46Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-07T23:19:45Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T23:19:47Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 2,
+          "startedAt": "2026-10-07T23:19:46Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T23:19:53Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@v4",
+          "number": 3,
+          "startedAt": "2026-10-07T23:19:47Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T23:19:56Z",
+          "conclusion": "success",
+          "name": "Run npm ci",
+          "number": 4,
+          "startedAt": "2026-10-07T23:19:53Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T23:20:42Z",
+          "conclusion": "success",
+          "name": "Run npx playwright install --with-deps",
+          "number": 5,
+          "startedAt": "2026-10-07T23:19:56Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T23:26:46Z",
+          "conclusion": "success",
+          "name": "Run npm run verify",
+          "number": 6,
+          "startedAt": "2026-10-07T23:20:42Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T23:28:34Z",
+          "conclusion": "success",
+          "name": "Run npm run benchmark",
+          "number": 7,
+          "startedAt": "2026-10-07T23:26:46Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T23:28:47Z",
+          "conclusion": "success",
+          "name": "Verify browser performance against the production build",
+          "number": 8,
+          "startedAt": "2026-10-07T23:28:34Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T23:28:48Z",
+          "conclusion": "success",
+          "name": "Run actions/upload-artifact@v4",
+          "number": 9,
+          "startedAt": "2026-10-07T23:28:47Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T23:28:49Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@v4",
+          "number": 17,
+          "startedAt": "2026-10-07T23:28:48Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T23:28:49Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 18,
+          "startedAt": "2026-10-07T23:28:49Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-07T23:28:49Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 19,
+          "startedAt": "2026-10-07T23:28:49Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/hetarho/haeram-soccer/actions/runs/37701628149/job/113066183810"
+    }
+  ],
+  "status": "completed",
+  "url": "https://github.com/hetarho/haeram-soccer/actions/runs/37701628149"
+}
