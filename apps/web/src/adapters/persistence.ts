@@ -131,7 +131,7 @@ export class Saves {
           throw new Error('체크포인트 계보가 일치하지 않습니다.');
         this.active = slot;
         this.generation = result.envelope.generation;
-        return { ...result, recovered: slot !== declared, errors };
+        return { ...result, raw, recovered: slot !== declared, errors };
       } catch (error) {
         errors.push(String(error));
       }

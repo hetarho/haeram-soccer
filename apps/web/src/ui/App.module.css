@@ -110,6 +110,7 @@
   position: sticky;
   top: 0;
   height: 100vh;
+  overflow-y: auto;
 }
 .brand {
   border-bottom: 1px solid #ffffff25;
@@ -1008,4 +1009,8 @@
     scroll-behavior: auto !important;
     transition: none !important;
   }
+}
+
+.sidebar > * {
+  flex-shrink: 0;
 }

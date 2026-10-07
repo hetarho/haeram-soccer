@@ -129,7 +129,18 @@ const archive = z.object({
   metrics,
   standings: z.array(z.array(number).max(10)).max(1000),
   champions,
-  europe: z.array(z.object({ kind: text, name: text, winner: id, field: number })).max(10),
+  europe: z
+    .array(
+      z.object({
+        kind: text,
+        name: text,
+        winner: id,
+        field: number,
+        standings: z.array(z.array(number).length(6)).max(100).optional(),
+        secondStandings: z.array(z.array(number).length(6)).max(100).optional(),
+      }),
+    )
+    .max(10),
 });
 const tournament = z.object({
   key: text,
@@ -143,6 +154,8 @@ const tournament = z.object({
   standings: z.record(id, table),
   winner: id.optional(),
   ownExit: text.optional(),
+  firstStandings: z.array(z.array(number).length(6)).max(100).optional(),
+  secondStandings: z.array(z.array(number).length(6)).max(100).optional(),
 });
 export const worldSchema: z.ZodType<World> = z.object({
   schema: z.literal(1),

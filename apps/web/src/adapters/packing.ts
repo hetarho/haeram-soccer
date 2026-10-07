@@ -74,6 +74,7 @@ interface Packed {
   stats: string;
   standings: string;
   counts: number[];
+  euroCounts?: number[][][];
 }
 export function pack(w: World): Packed {
   const dict: string[] = [],
@@ -115,17 +116,36 @@ export function pack(w: World): Packed {
       ...w,
       fixtures: [],
       ownMatches: [],
-      history: w.history.map((h) => ({ ...h, standings: [] })),
+      history: w.history.map((h) => ({
+        ...h,
+        standings: [],
+        europe: h.europe.map((e) => ({
+          ...e,
+          ...(e.standings ? { standings: [] } : {}),
+          ...(e.secondStandings ? { secondStandings: [] } : {}),
+        })),
+      })),
     },
     dict,
     fixtures: w.fixtures.flatMap((f, i) => (f.score ? [[i, f.score.home, f.score.away]] : [])),
     matches,
     stats: integers(stats, 12),
     standings: integers(
-      w.history.flatMap((h) => h.standings.flat()),
+      w.history
+        .flatMap((h) => [
+          h.standings.flat(),
+          ...h.europe.flatMap((e) => [
+            (e.standings || []).flat(),
+            (e.secondStandings || []).flat(),
+          ]),
+        ])
+        .flat(),
       6,
     ),
     counts,
+    euroCounts: w.history.map((h) =>
+      h.europe.map((e) => [e.standings?.length || 0, e.secondStandings?.length || 0]),
+    ),
   };
 }
 export function unpack(p: Packed): World {
@@ -177,7 +197,24 @@ export function unpack(p: Packed): World {
   const history = p.world.history.map((h, i) => {
     const count = p.counts[i];
     if (!Number.isInteger(count) || count < 0 || count > 1000) throw new Error('시즌 통계 손상');
-    return { ...h, standings: Array.from({ length: count }, () => standings.take(6)) };
+    return {
+      ...h,
+      standings: Array.from({ length: count }, () => standings.take(6)),
+      europe: h.europe.map((e, j) => {
+        const sizes = p.euroCounts?.[i]?.[j] || [0, 0];
+        if (sizes.some((n) => !Number.isInteger(n) || n < 0 || n > 100))
+          throw new Error('유럽 통계 손상');
+        return {
+          ...e,
+          ...(e.standings
+            ? { standings: Array.from({ length: sizes[0] }, () => standings.take(6)) }
+            : {}),
+          ...(e.secondStandings
+            ? { secondStandings: Array.from({ length: sizes[1] }, () => standings.take(6)) }
+            : {}),
+        };
+      }),
+    };
   });
   stats.done();
   standings.done();

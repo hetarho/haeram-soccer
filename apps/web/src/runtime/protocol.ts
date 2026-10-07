@@ -4,6 +4,7 @@ import type {
   MatchPlayback,
   MatchRecord,
   SeasonArchive,
+  Event,
 } from '../../../../packages/contracts/src/types';
 import type { Envelope } from '../adapters/persistence';
 import {
@@ -45,9 +46,14 @@ export const requestSchema = z.object({
   generation: z.number().int().positive(),
   parentGeneration: z.number().int().nonnegative(),
   body: z.discriminatedUnion('type', [
-    z.object({ type: z.literal('inspect'), raw: z.string().max(4 * 1024 * 1024) }),
+    z.object({
+      type: z.literal('inspect'),
+      activate: z.boolean().optional(),
+      raw: z.string().max(4 * 1024 * 1024),
+    }),
     z.object({
       type: z.literal('found'),
+      replace: z.boolean().optional(),
       input: z.object({
         country: z.enum(['ENG', 'ESP', 'GER', 'ITA', 'FRA', 'POR', 'NED', 'BEL']),
         name: z.string().min(1).max(60),
@@ -82,7 +88,8 @@ export interface Reply {
   playback?: MatchPlayback;
   raw?: string;
   envelope?: Envelope;
-  archive?: { season?: SeasonArchive; matches: MatchRecord[] };
+  candidate?: World;
+  archive?: { season?: SeasonArchive; matches: MatchRecord[]; events: Event[]; managers: Event[] };
   progress?: number;
   cancelled?: boolean;
 }

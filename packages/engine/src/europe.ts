@@ -319,6 +319,7 @@ function sorted(t: EuropeTournament, ids: string[]) {
 export function finishEurope(w: World) {
   for (const t of w.europe) {
     for (const f of t.fixtures) if (!f.score) play(w, t, f);
+    if (t.format !== 'knockout') t.firstStandings = phaseRows(w, t, t.clubs);
     let qualified = t.clubs;
     if (t.format === 'league') {
       const table = sorted(t, t.clubs);
@@ -363,6 +364,7 @@ export function finishEurope(w: World) {
           t.fixtures.push(f);
           play(w, t, f);
         });
+        t.secondStandings = phaseRows(w, t, second);
         qualified = [];
         for (let i = 0; i < second.length; i += 4)
           qualified.push(...sorted(t, second.slice(i, i + 4)).slice(0, 2));
@@ -370,6 +372,28 @@ export function finishEurope(w: World) {
     }
     t.winner = knockout(w, t, qualified, '본선')[0];
     t.stage = '우승 확정';
+    if (t.format === 'knockout') {
+      for (const id of t.clubs) t.standings[id] = emptyTable();
+      for (const f of t.fixtures)
+        if (f.score)
+          for (const [id, gf, ga] of [
+            [f.home, f.score.home, f.score.away],
+            [f.away, f.score.away, f.score.home],
+          ] as [string, number, number][]) {
+            const row = t.standings[id];
+            row.played++;
+            row.gf += gf;
+            row.ga += ga;
+            if (gf > ga) {
+              row.won++;
+              row.points += 3;
+            } else if (gf === ga) {
+              row.drawn++;
+              row.points++;
+            } else row.lost++;
+          }
+      t.firstStandings = phaseRows(w, t, t.clubs);
+    }
     if (t.winner === w.playerClub) {
       credit(w, quote(clubOf(w).country, w.year, 500));
       clubOf(w).reputation = clamp(clubOf(w).reputation + 8);
@@ -411,4 +435,11 @@ export function europeanCoefficient(w: World) {
         opponent = m.home === w.playerClub ? m.score.away : m.score.home;
       return sum + (own > opponent ? 2 : own === opponent ? 1 : 0);
     }, 0);
+}
+
+function phaseRows(w: World, t: EuropeTournament, ids: string[]) {
+  return sorted(t, ids).map((id, i) => {
+    const row = t.standings[id];
+    return [w.clubs.findIndex((c) => c.id === id), i + 1, row.played, row.points, row.gf, row.ga];
+  });
 }

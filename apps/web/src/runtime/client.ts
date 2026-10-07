@@ -25,9 +25,8 @@ export class GameClient {
   constructor(private notify: (state: ClientState) => void) {
     this.saves = new Saves(localStorage, async (raw) => {
       const reply = await this.rpc({ type: 'inspect', raw });
-      if (!reply.view || !reply.envelope) throw new Error('저장 검증 응답 누락');
-      this.state.view = reply.view;
-      return { world: reply.view.world, envelope: reply.envelope };
+      if (!reply.candidate || !reply.envelope) throw new Error('저장 검증 응답 누락');
+      return { world: reply.candidate, envelope: reply.envelope };
     });
     this.worker.onmessage = (event: MessageEvent<Reply>) => {
       const r = event.data;
@@ -82,6 +81,7 @@ export class GameClient {
   private async load() {
     const result = await this.saves.load();
     if (result) {
+      await this.rpc({ type: 'inspect', raw: result.raw, activate: true });
       this.state.savedRevision = result.world.revision;
       if (result.recovered) this.state.notice = '이전의 정상 체크포인트로 복구했습니다.';
     }
@@ -138,9 +138,9 @@ export class GameClient {
     }
     return reply;
   }
-  found(input: Founding) {
+  found(input: Founding, replace = false) {
     return this.enqueue(() =>
-      this.mutate(requestSchema.shape.body.parse({ type: 'found', input })),
+      this.mutate(requestSchema.shape.body.parse({ type: 'found', input, replace })),
     );
   }
   command(command: Command) {
@@ -172,17 +172,26 @@ export class GameClient {
     return this.enqueue(async () => (await this.rpc({ type: 'archive', year })).archive);
   }
   exportFile() {
-    return this.enqueue(async () => (await this.rpc({ type: 'export' })).raw);
+    return this.enqueue(async () =>
+      this.state.view
+        ? (await this.rpc({ type: 'export' })).raw
+        : localStorage.getItem('haeram-soccor:slot:a') ||
+          localStorage.getItem('haeram-soccor:slot:b') ||
+          undefined,
+    );
   }
   importFile(raw: string) {
     return this.enqueue(async () => {
       if (this.state.readonly) throw new Error('읽기 전용 탭입니다.');
-      await this.rpc({ type: 'inspect', raw });
+      await this.rpc({ type: 'inspect', raw, activate: true });
       const reply = await this.rpc({ type: 'export' });
       await this.saves.commit(reply.raw!);
       this.state.savedRevision = this.state.view!.world.revision;
       this.channel.postMessage({ revision: this.state.savedRevision });
     });
+  }
+  retrySave() {
+    return this.enqueue(() => this.mutate({ type: 'export' }));
   }
   dispose() {
     this.release?.();

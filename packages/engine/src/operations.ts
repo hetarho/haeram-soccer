@@ -74,8 +74,16 @@ export function campaignOffers(w: World) {
   return CAMPAIGNS.map((c) => ({
     ...c,
     cost: quote(clubOf(w).country, w.year, c.units),
-    min: quote(clubOf(w).country, w.year, c.units * 0.5),
-    max: quote(clubOf(w).country, w.year, c.units * 2.5),
+    min: quote(
+      clubOf(w).country,
+      w.year,
+      c.units * 0.5 * Math.max(0.2, 1 - clubOf(w).fans / 1000000),
+    ),
+    max: quote(
+      clubOf(w).country,
+      w.year,
+      c.units * 2.5 * Math.max(0.2, 1 - clubOf(w).fans / 1000000),
+    ),
     rounds: 4,
   }));
 }

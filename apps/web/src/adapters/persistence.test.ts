@@ -67,3 +67,16 @@ describe('recoverable persistence', () => {
     expect((await decode(port.getItem('haeram-soccor:slot:a')!)).world.round).toBe(0);
   });
 });
+it('preserves first and second European phases and global standings in a historical checkpoint', async () => {
+  const { prepareSeason, simulateSeason } = await import('../../../../packages/engine/src/index');
+  const w = world();
+  w.year = 2000;
+  w.currency = 'GBP';
+  w.manager.since = 1997;
+  w.manager.until = 2003;
+  for (const p of w.players) p.born = 1978;
+  prepareSeason(w);
+  simulateSeason(w);
+  expect(w.history[0].europe.find((e) => e.kind === 'ucl')?.secondStandings).toHaveLength(16);
+  expect(canonical((await decode(await encode(w))).world)).toBe(canonical(w));
+});

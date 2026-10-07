@@ -2,7 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import type { MatchPlayback, MatchFrame, World } from '../../../../packages/contracts/src/types';
 import { percent } from './format';
 import s from './App.module.css';
-export function Pitch({ playback, world }: { playback?: MatchPlayback; world: World }) {
+export function Pitch({
+  playback,
+  world,
+  summary = false,
+}: {
+  playback?: MatchPlayback;
+  world: World;
+  summary?: boolean;
+}) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const clock = useRef(0),
     last = useRef(0);
@@ -135,7 +143,9 @@ export function Pitch({ playback, world }: { playback?: MatchPlayback; world: Wo
       </div>
       <div className={s.pitchMeta}>
         <span className={s.live}>{frame ? `${frame.minute}′ · ${frame.action}` : 'MATCH DAY'}</span>
-        <span>간소화된 관전 · 확정 결과 재생</span>
+        <span>
+          {summary ? '골 이벤트 재생 · 마지막에 최종 지표 표시' : '간소화된 관전 · 확정 결과 재생'}
+        </span>
       </div>
       <canvas
         ref={canvas}
@@ -165,7 +175,7 @@ export function Pitch({ playback, world }: { playback?: MatchPlayback; world: Wo
           결과 보기
         </button>
       </div>
-      {frame && (
+      {frame && (!summary || minute === 89) && (
         <>
           <div className={s.matchStats}>
             {[

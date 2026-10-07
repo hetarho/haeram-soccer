@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import type { CountryCode, World } from '../../../../packages/contracts/src/types';
 import {
   COUNTRIES,
@@ -12,6 +12,8 @@ import { money, number, percent, seasonName, kindLabel } from './format';
 import { Chart } from './Chart';
 import { Pitch } from './Pitch';
 import s from './App.module.css';
+import { Dialog } from './Dialog';
+const Rich = lazy(() => import('./Rich'));
 export function Crest({ color = '#b4c399' }: { color?: string }) {
   return (
     <svg className={s.crest} viewBox="0 0 60 72" aria-hidden="true">
@@ -103,7 +105,17 @@ export function Table({ w, ids, limit }: { w: World; ids: string[]; limit?: numb
     </div>
   );
 }
-function Founding({ client, state }: { client: GameClient; state: ClientState }) {
+function Founding({
+  client,
+  state,
+  replace = false,
+  onDone,
+}: {
+  client: GameClient;
+  state: ClientState;
+  replace?: boolean;
+  onDone?: () => void;
+}) {
   const [code, setCode] = useState<CountryCode>('ENG'),
     [name, setName] = useState('Haeram Athletic'),
     [color, setColor] = useState('#bf7956'),
@@ -111,7 +123,9 @@ function Founding({ client, state }: { client: GameClient; state: ClientState })
     [difficulty, setDifficulty] = useState(1);
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    void client.found({ country: code, name, color, seed, difficulty });
+    void client.found({ country: code, name, color, seed, difficulty }, replace).then((reply) => {
+      if (reply?.ok) onDone?.();
+    });
   };
   return (
     <div className={s.founding}>
@@ -634,11 +648,18 @@ const NAV: [Page, string, string][] = [
   ['match', '◉', '경기 관전'],
   ['league', '≡', '리그'],
   ['europe', '☆', '유럽 무대'],
+  ['squad', '♙', '선수와 영입'],
+  ['manager', '◇', '감독실'],
+  ['business', '↗', '클럽 경영'],
+  ['history', '◷', '역사 보관함'],
 ];
 export function App() {
   const [state, setState] = useState<ClientState>(),
     [client, setClient] = useState<GameClient>(),
-    [localError, setLocalError] = useState('');
+    [localError, setLocalError] = useState(''),
+    [replacing, setReplacing] = useState(false),
+    [newWorldConfirm, setNewWorldConfirm] = useState(false),
+    [pendingImport, setPendingImport] = useState<string>();
   const { page, setPage } = useNavigation();
   useEffect(() => {
     try {
@@ -673,7 +694,9 @@ export function App() {
       return;
     }
     setLocalError('');
-    await client?.importFile(await file.text());
+    const raw = await file.text();
+    if (w) setPendingImport(raw);
+    else await client?.importFile(raw);
   };
   return (
     <div className={s.layout}>
@@ -700,7 +723,7 @@ export function App() {
           {NAV.map(([id, icon, label]) => (
             <button
               key={id}
-              disabled={!w}
+              disabled={!w || replacing}
               aria-current={page === id ? 'page' : undefined}
               className={page === id ? s.active : undefined}
               onClick={() => setPage(id)}
@@ -716,7 +739,7 @@ export function App() {
           기록은 이 브라우저에 저장됩니다.
           <br />
           파일로 당신의 역사를 보관하세요.
-          <button disabled={!w || state?.busy} onClick={() => void download()}>
+          <button disabled={(!w && !state?.error) || state?.busy} onClick={() => void download()}>
             기록 내보내기 ↓
           </button>
           <label className={s.fileButton}>
@@ -782,8 +805,16 @@ export function App() {
           </>
         )}
         {client && state ? (
-          !w ? (
-            <Founding client={client} state={state} />
+          !w || replacing ? (
+            <Founding
+              client={client}
+              state={state}
+              replace={replacing}
+              onDone={() => {
+                setReplacing(false);
+                if (replacing) setPage('dashboard');
+              }}
+            />
           ) : page === 'dashboard' ? (
             <Dashboard client={client} state={state} />
           ) : page === 'match' ? (
@@ -815,7 +846,11 @@ export function App() {
             <League w={w} />
           ) : page === 'europe' ? (
             <Europe w={w} />
-          ) : null
+          ) : (
+            <Suspense fallback={<div className={s.loading}>클럽 기록을 펼치는 중…</div>}>
+              <Rich page={page} state={state} client={client} />
+            </Suspense>
+          )
         ) : (
           <div className={s.loading}>기록 보관함을 여는 중…</div>
         )}
@@ -831,17 +866,35 @@ export function App() {
               ` · 물가 ${priceIndex(own!.country, w.year).status === 'observed' ? '관측' : priceIndex(own!.country, w.year).status === 'estimated' ? '추정' : '전망'}`}
           </span>
         </footer>
-        {w && (
+        {client && state && (
           <div className={s.actions}>
-            <button
-              disabled={state?.busy || state?.readonly}
-              onClick={() => void client?.command({ type: 'season', count: 5 })}
-            >
-              5시즌 진행
-            </button>
+            {w && (
+              <button
+                disabled={state?.busy || state?.readonly}
+                onClick={() => void client?.command({ type: 'season', count: 5 })}
+              >
+                5시즌 진행
+              </button>
+            )}
             <button disabled={state?.busy} onClick={() => void download()}>
               기록 내보내기
             </button>
+            {w && (
+              <button
+                disabled={state.busy || state.readonly}
+                onClick={() => setNewWorldConfirm(true)}
+              >
+                새로운 세계
+              </button>
+            )}
+            {w && state.savedRevision !== w.revision && (
+              <button
+                disabled={state.busy || state.readonly}
+                onClick={() => void client.retrySave()}
+              >
+                저장 재시도
+              </button>
+            )}
             <label className={s.fileButton}>
               기록 가져오기
               <input
@@ -858,6 +911,48 @@ export function App() {
           </div>
         )}
       </main>
+      {newWorldConfirm && (
+        <Dialog label="새로운 세계 창단 확인" onClose={() => setNewWorldConfirm(false)}>
+          <h2>새로운 세계를 펼치기 전에.</h2>
+          <p>
+            현재 기록을 파일로 보관하세요. 새 세계를 창단하면 이 브라우저의 활성 기록을 교체합니다.
+          </p>
+          <div className={s.actions}>
+            <button onClick={() => void download()}>현재 기록 내보내기</button>
+            <button onClick={() => setNewWorldConfirm(false)}>취소</button>
+            <button
+              className={s.primary}
+              onClick={() => {
+                setNewWorldConfirm(false);
+                setReplacing(true);
+                window.scrollTo(0, 0);
+              }}
+            >
+              새 세계 설정
+            </button>
+          </div>
+        </Dialog>
+      )}
+      {pendingImport && (
+        <Dialog label="기록 가져오기 확인" onClose={() => setPendingImport(undefined)}>
+          <h2>기록을 가져올까요?</h2>
+          <p>현재 기록을 먼저 내보낼 수 있습니다. 검증된 파일만 활성 기록으로 교체합니다.</p>
+          <div className={s.actions}>
+            <button onClick={() => void download()}>현재 기록 내보내기</button>
+            <button onClick={() => setPendingImport(undefined)}>취소</button>
+            <button
+              className={s.primary}
+              onClick={() => {
+                const raw = pendingImport;
+                setPendingImport(undefined);
+                void client?.importFile(raw);
+              }}
+            >
+              기록 교체하고 가져오기
+            </button>
+          </div>
+        </Dialog>
+      )}
     </div>
   );
 }

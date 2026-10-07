@@ -28,15 +28,18 @@ export class Host {
     );
     return task;
   }
-  private view(): View | undefined {
-    const w = this.world;
+  private view(w = this.world): View | undefined {
     if (!w) return;
     return {
       world: {
         ...w,
         ownMatches: w.ownMatches.slice(-30),
         fixtures: w.fixtures.filter((f) => f.home === w.playerClub || f.away === w.playerClub),
-        history: w.history.map((h) => ({ ...h, standings: [] })),
+        history: w.history.map((h) => ({
+          ...h,
+          standings: [],
+          europe: h.europe.map((e) => ({ ...e, standings: [], secondStandings: undefined })),
+        })),
         events: w.events.slice(-150),
       },
       totalMatches: w.ownMatches.length,
@@ -63,15 +66,17 @@ export class Host {
       let playback: MatchPlayback | undefined,
         raw: string | undefined,
         envelope: Reply['envelope'],
-        archive: Reply['archive'];
+        archive: Reply['archive'],
+        candidate: World | undefined;
       let changed = false;
       this.cancelled = false;
       if (r.body.type === 'inspect') {
         const result = await decode(r.body.raw);
-        this.world = result.world;
+        candidate = this.view(result.world)!.world;
+        if (r.body.activate) this.world = result.world;
         envelope = result.envelope;
       } else if (r.body.type === 'found') {
-        if (this.world)
+        if (this.world && !r.body.replace)
           throw new Error('현재 세계가 있습니다. 파일 내보내기 후 새 게임을 시작하세요.');
         this.world = createWorld(r.body.input);
         changed = true;
@@ -119,6 +124,8 @@ export class Host {
           archive = {
             season: w.history.find((h) => h.year === year),
             matches: w.ownMatches.filter((m) => m.year === year),
+            events: w.events.filter((e) => e.year === year),
+            managers: w.events.filter((e) => e.kind.startsWith('manager-')),
           };
         }
       }
@@ -133,6 +140,7 @@ export class Host {
         playback,
         raw,
         envelope,
+        candidate,
         archive,
         cancelled: this.cancelled,
       };

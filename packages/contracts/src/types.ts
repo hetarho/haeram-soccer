@@ -152,7 +152,14 @@ export interface SeasonArchive {
   metrics: Metrics;
   standings: number[][];
   champions: { country: string; club: string; cup: string }[];
-  europe: { kind: string; name: string; winner: string; field: number }[];
+  europe: {
+    kind: string;
+    name: string;
+    winner: string;
+    field: number;
+    standings?: number[][];
+    secondStandings?: number[][];
+  }[];
 }
 export interface EuropeTournament {
   key: string;
@@ -166,6 +173,8 @@ export interface EuropeTournament {
   standings: Record<string, TableRow>;
   winner?: string;
   ownExit?: string;
+  firstStandings?: number[][];
+  secondStandings?: number[][];
 }
 export interface World {
   schema: 1;

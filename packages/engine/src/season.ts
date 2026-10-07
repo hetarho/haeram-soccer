@@ -350,7 +350,14 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     champions,
     europe: w.europe
       .filter((t) => t.winner)
-      .map((t) => ({ kind: t.key, name: t.name, winner: t.winner!, field: t.field })),
+      .map((t) => ({
+        kind: t.key,
+        name: t.name,
+        winner: t.winner!,
+        field: t.field,
+        standings: t.firstStandings,
+        secondStandings: t.secondStandings,
+      })),
   });
   w.lastChampions = champions;
   promote(w);
