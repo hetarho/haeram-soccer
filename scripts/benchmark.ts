@@ -175,13 +175,21 @@ for (const variant of ['baseline', 'active-management']) {
   }
   const { raw } = await measure(w, variant + ' century');
   if (variant === 'baseline') writeFileSync('.tmp/release-century.haeram-save.json', raw);
+  const leagueTiers = (index: number) =>
+    COUNTRIES.find((country) => country.code === w.clubs[index].country)!.groups.length;
+  const leagueClubs = w.clubs.filter(
+    (club, index) => !club.representative && club.tier < leagueTiers(index),
+  ).length;
+  const ownIndex = w.clubs.findIndex((club) => club.id === w.playerClub);
   if (
     w.history.length !== 100 ||
     w.history.some(
       (season, index) =>
         season.year !== 1901 + index ||
         season.champions.length !== COUNTRIES.length ||
-        season.standings.length !== w.clubs.filter((club) => !club.representative).length,
+        // Every league club once, plus the own club in a season it spent in the lower tier.
+        season.standings.filter((row) => row[1] < leagueTiers(row[0])).length !== leagueClubs ||
+        season.standings.some((row) => row[1] >= leagueTiers(row[0]) && row[0] !== ownIndex),
     ) ||
     !w.ownMatches.some((match) => match.year === 1901) ||
     !w.events.some((event) => event.kind === 'founding')
