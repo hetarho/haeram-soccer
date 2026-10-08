@@ -16,7 +16,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 3 | 3 | - | 2 |
-| WEB | 15 | 15 | - | 0 |
+| WEB | 16 | 16 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
 | CLUB | 5 | 5 | - | 0 |
 | MATCH | 3 | 3 | - | 0 |
@@ -32,9 +32,13 @@
 |---|---|---|---|---|
 
 ## next
-- Continue mobile football analysis cycle 5 after committing T031.
+- Continue mobile football analysis cycle 6 after committing T032.
 
 ## log
+- 261008 T032 done; cycle 5 verified
+- 261008 implement-task T032 start (nf); cycle 5
+- 261008 cycle 5 create-task T032; WEB r16
+- 261008 cycle 5 update-ssot WEB start; player-performance-rates
 - 261008 T031 done; cycle 4 verified
 - 261008 implement-task T031 start (nf); cycle 4
 - 261008 cycle 4 create-task T031; WEB r15
@@ -51,7 +55,3 @@
 - 261008 implement-task T028 start (nf); cycle 1
 - 261008 cycle 1 create-task T028; WEB r12
 - 261008 cycle 1 update-ssot WEB start; opponent-scouting
-- 261008 T027 done; pushed eb1c759 CI run37701628149 passed verify/storage/performance
-- 261008 T027 local verify and current-source benchmarks passed; pending pushed CI confirmation
-- 261008 create-task T027; implement-task start (cx)
-- 261008 update-ssot WEB start; CI founding overflow contract clarification

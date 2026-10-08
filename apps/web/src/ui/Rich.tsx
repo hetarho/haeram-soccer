@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { MatchRecord, Player } from '../../../../packages/contracts/src/types';
+import type { MatchRecord, Player, Role } from '../../../../packages/contracts/src/types';
 import { priceIndex, country, currency } from '../../../../packages/catalogs/src/index';
 import { quote, tacticLabel, overall } from '../../../../packages/engine/src/world';
 import { ratio } from '../../../../packages/engine/src/primitives';
@@ -14,6 +14,8 @@ import type { Page } from './state';
 import { Chart } from './Chart';
 import { Pitch } from './Pitch';
 import { archivePlayback } from './replay';
+import { explorePlayers, type PlayerOrder, type PlayerScope } from './playerAnalysis';
+import { PlayerPerformance } from './PlayerPerformance';
 import { money, number, percent, seasonName, kindLabel } from './format';
 import s from './App.module.css';
 type Props = { state: ClientState; client: GameClient };
@@ -212,7 +214,10 @@ function Squad({ state, client }: Props) {
     c = w.clubs.find((c) => c.id === w.playerClub)!,
     [tab, setTab] = useState('roster'),
     [selectedId, setSelectedId] = useState<string>(),
-    [scope, setScope] = useState('season'),
+    [scope, setScope] = useState<PlayerScope>('season'),
+    [role, setRole] = useState<Role | 'all'>('all'),
+    [order, setOrder] = useState<PlayerOrder>('roster'),
+    [minutes, setMinutes] = useState(0),
     [playerQuery, setPlayerQuery] = useState(''),
     [playerPage, setPlayerPage] = useState(0),
     [confirm, setConfirm] = useState<Player>();
@@ -220,16 +225,7 @@ function Squad({ state, client }: Props) {
   const disabled = state.busy || state.readonly || processing;
   const active = w.players.filter((p) => p.status === 'active');
   const selected = w.players.find((p) => p.id === selectedId);
-  const listed = w.players
-    .filter(
-      (p) =>
-        (p.status === 'active' || scope === 'career') &&
-        p.name.toLowerCase().includes(playerQuery.trim().toLowerCase()),
-    )
-    .sort(
-      (a, b) =>
-        Number(b.status === 'active') - Number(a.status === 'active') || a.id.localeCompare(b.id),
-    );
+  const listed = explorePlayers(w.players, { scope, role, order, query: playerQuery, minutes });
   const lastPage = Math.max(0, Math.ceil(listed.length / 25) - 1),
     shownPage = Math.min(playerPage, lastPage),
     visiblePlayers = listed.slice(shownPage * 25, (shownPage + 1) * 25);
@@ -258,7 +254,10 @@ function Squad({ state, client }: Props) {
           <select
             aria-label="선수 지표 범위"
             value={scope}
-            onChange={(e) => setScope(e.target.value)}
+            onChange={(e) => {
+              setScope(e.target.value as PlayerScope);
+              setPlayerPage(0);
+            }}
           >
             <option value="season">현재 시즌 · 모든 대회</option>
             <option value="career">우리 클럽 통산</option>
@@ -267,6 +266,60 @@ function Squad({ state, client }: Props) {
       </div>
       {tab === 'roster' ? (
         <Panel title="우리 클럽의 선수들" note="GK · DEF · MID · FWD">
+          <div className={s.filters} style={{ padding: '12px 16px' }}>
+            <label>
+              포지션{' '}
+              <select
+                aria-label="선수 포지션 필터"
+                value={role}
+                onChange={(e) => {
+                  setRole(e.target.value as Role | 'all');
+                  setPlayerPage(0);
+                }}
+              >
+                <option value="all">전체</option>
+                {(['GK', 'DEF', 'MID', 'FWD'] as const).map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              정렬{' '}
+              <select
+                aria-label="우리 선수 정렬"
+                value={order}
+                onChange={(e) => {
+                  setOrder(e.target.value as PlayerOrder);
+                  setPlayerPage(0);
+                }}
+              >
+                <option value="roster">선수단 순서</option>
+                <option value="ability">능력 높은 순</option>
+                <option value="minutes">출전 분 많은 순</option>
+                <option value="fatigue">피로 낮은 순</option>
+                <option value="goals90">90분당 득점 높은 순</option>
+              </select>
+            </label>
+            <label>
+              최소 표본{' '}
+              <select
+                aria-label="최소 출전 분"
+                value={minutes}
+                onChange={(e) => {
+                  setMinutes(Number(e.target.value));
+                  setPlayerPage(0);
+                }}
+              >
+                {[0, 90, 180, 450, 900].map((value) => (
+                  <option value={value} key={value}>
+                    {value ? `${value}분 이상` : '제한 없음'}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
           <label className={s.rosterSearch}>
             선수 찾기{' '}
             <input
@@ -398,23 +451,30 @@ function Squad({ state, client }: Props) {
         <Dialog label="선수 상세 기록" onClose={() => setSelectedId(undefined)}>
           <h2>{selected.name}</h2>
           <p>
-            {selected.role} · {w.year - selected.born}세 · {selected.status}
+            {selected.role} ·{' '}
+            {selected.status === 'active'
+              ? `${w.year - selected.born}세`
+              : `${selected.born}년생 · ${selected.status === 'retired' ? '은퇴' : '매각'}`}
           </p>
+          <PlayerPerformance player={selected} scope={scope} />
           <Attributes
             rows={[
-              ['경력 득점', selected.career[0]],
-              ['경력 도움', selected.career[1]],
-              ['누적 출전 분', selected.career[10]],
-              ['패스 성공률', percent(selected.career[3], selected.career[2])],
-              ['슈팅', selected.career[4]],
-              ['유효 슈팅', selected.career[5]],
-              ['태클', selected.career[6]],
-              ['인터셉트', selected.career[7]],
-              ['돌파', selected.career[8]],
-              ['선방', selected.career[9]],
+              ['득점', selected[scope][0]],
+              ['도움', selected[scope][1]],
+              ['누적 출전 분', selected[scope][10]],
+              ['패스 성공률', percent(selected[scope][3], selected[scope][2])],
+              ['슈팅', selected[scope][4]],
+              ['유효 슈팅', selected[scope][5]],
+              ['태클', selected[scope][6]],
+              ['인터셉트', selected[scope][7]],
+              ['돌파', selected[scope][8]],
+              ['선방', selected[scope][9]],
             ]}
           />
-          <p>분모: 패스 시도 {number(selected.career[2])}회 · 우리 클럽에서 기록된 경력</p>
+          <p>
+            분모: 패스 시도 {number(selected[scope][2])}회 ·{' '}
+            {scope === 'career' ? '우리 클럽 통산' : '이번 시즌 모든 대회'}
+          </p>
           <button onClick={() => setSelectedId(undefined)}>닫기</button>
         </Dialog>
       )}

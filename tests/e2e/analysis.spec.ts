@@ -2,6 +2,37 @@ import { expect, test } from '@playwright/test';
 
 test.use({ viewport: { width: 360, height: 740 } });
 
+test('filters player samples and shows scoped per-90 evidence on a mobile profile', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await page.getByTestId('hub-play').click();
+  await page.getByRole('button', { name: '결과 보기', exact: true }).click();
+  await page
+    .getByRole('navigation', { name: '모바일 게임 메뉴' })
+    .getByRole('button', { name: '더보기', exact: true })
+    .click();
+  await page
+    .getByRole('dialog', { name: '전체 메뉴' })
+    .getByRole('button', { name: '선수와 영입', exact: true })
+    .click();
+  await page.getByLabel('선수 포지션 필터').selectOption('FWD');
+  await page.getByLabel('우리 선수 정렬').selectOption('goals90');
+  await page.getByLabel('최소 출전 분').selectOption('90');
+  const roster = page.locator('[class*="rosterCards"]');
+  await roster.locator('article > button').first().click();
+  const profile = page.getByRole('dialog', { name: '선수 상세 기록' });
+  await expect(profile).toContainText('출전 90분');
+  await expect(profile).toContainText('180분 미만');
+  await expect(profile).toContainText('이번 시즌 · 모든 대회');
+  await expect(profile).toContainText('90분당');
+  await profile.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await page.getByLabel('최소 출전 분').selectOption('180');
+  await expect(page.getByText('이 조건에 맞는 선수가 없어요.', { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+});
+
 test('jumps between recorded periods without changing the final result or calendar', async ({
   page,
 }) => {

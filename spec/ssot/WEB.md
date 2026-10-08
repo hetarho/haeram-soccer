@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r15 | Define the implemented browser-demo behavior for browser game delivery.
+> r16 | Define the implemented browser-demo behavior for browser game delivery.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -40,6 +40,8 @@
 
 - WEB-23 [o] After a live result has been revealed, or while viewing an archived match, explicit detail offers touchable kickoff, halftime, final-whistle and recorded-goal navigation. Seeking pauses presentation and preserves settled results and the game date. Goal buttons show recorded running scores in chronological order; historical playback never fabricates minute-level action statistics.
 
+- WEB-24 [o] Own-roster analysis supports role, name and minimum-minute filters and sorting by ability, minutes, fatigue and goals per 90. Player details follow the selected current-season or own-club career scope, expose totals and 90-minute rates with real minute denominators, and mark samples below 180 minutes. Zero minutes yield no defined rate and never rank above observed rates; sold and retired players remain available in career scope.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -47,6 +49,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r16 261008 WEB-24+ name-only roster and fixed career details→scoped role/sample filters and 90-minute player rates
 - r15 261008 WEB-23+ slider-only replay→touchable recorded goal and period navigation
 - r14 261008 WEB-22+ aggregate counters only→completed-match rates and own-player contribution report
 - r13 261008 WEB-21+ fit-only tactic cards→explicit engine modifier and fatigue comparison laboratory

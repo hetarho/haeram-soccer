@@ -58,6 +58,14 @@
   margin: 5px 0 0;
   overflow-wrap: anywhere;
 }
+.facts dd small {
+  display: block;
+  font-size: 11px;
+  line-height: 1.6;
+  font-weight: 400;
+  margin-top: 4px;
+  color: #526249;
+}
 .chips {
   display: flex;
   flex-wrap: wrap;
