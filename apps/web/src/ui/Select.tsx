@@ -102,12 +102,22 @@ export function Select({
       const anchor = trigger.current!.getBoundingClientRect();
       const viewport = window.visualViewport;
       const left = viewport?.offsetLeft || 0,
-        top = viewport?.offsetTop || 0;
-      const width = viewport?.width || innerWidth,
-        height = viewport?.height || innerHeight;
+        width = viewport?.width || innerWidth;
+      // Stay inside the page's large scroll areas around the trigger as well as the viewport, so the
+      // list never sits under fixed bars and browsers never scroll those areas to reveal it.
+      let top = viewport?.offsetTop || 0,
+        bottom = top + (viewport?.height || innerHeight);
+      const page = bottom - top;
+      for (let node = trigger.current!.parentElement; node; node = node.parentElement) {
+        if (!/(auto|scroll)/.test(getComputedStyle(node).overflowY)) continue;
+        const area = node.getBoundingClientRect();
+        if (area.height < page / 2) continue;
+        top = Math.max(top, area.top);
+        bottom = Math.min(bottom, area.bottom);
+      }
       const popupWidth = Math.min(Math.max(anchor.width, 220), width - 24);
-      const below = Math.max(0, top + height - anchor.bottom - 18);
-      const above = Math.max(0, anchor.top - top - 18);
+      const below = Math.max(0, bottom - anchor.bottom - 12);
+      const above = Math.max(0, anchor.top - top - 12);
       const upwards = below < Math.min(180, popup.scrollHeight) && above > below;
       const maxHeight = Math.min(360, upwards ? above : below);
       popup.style.width = `${popupWidth}px`;
@@ -156,8 +166,15 @@ export function Select({
         { duration: 160 },
       );
   }, [open]);
+  // Scroll only the list itself: scrollIntoView would also scroll the page areas around it.
   useEffect(() => {
-    if (open) document.getElementById(`${id}-${highlight}`)?.scrollIntoView({ block: 'nearest' });
+    const option = open ? document.getElementById(`${id}-${highlight}`) : null;
+    const box = list.current;
+    if (!option || !box) return;
+    const start = option.offsetTop,
+      end = start + option.offsetHeight;
+    if (start < box.scrollTop) box.scrollTop = start;
+    else if (end > box.scrollTop + box.clientHeight) box.scrollTop = end - box.clientHeight;
   }, [open, highlight, id]);
   const key = (event: KeyboardEvent<HTMLButtonElement>) => {
     if (blocked) return;
