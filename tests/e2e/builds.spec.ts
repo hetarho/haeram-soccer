@@ -15,6 +15,8 @@ import { settle } from './layout';
 test('discloses roster and opponent tactical fit before an actual seeded match', async ({
   page,
 }) => {
+  // Prepares, saves, watches and analyses a whole match; slow CI browsers need longer.
+  test.slow();
   const founding = {
     country: 'ENG' as const,
     name: 'Haeram Athletic',

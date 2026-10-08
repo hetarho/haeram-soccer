@@ -24,7 +24,8 @@
   --danger: #ff6d60;
   --focus: #ffcb47;
   --paper: var(--surface);
-  --hud: rgba(7, 17, 14, 0.92);
+  /* Near-opaque instead of a backdrop blur, which repaints every frame on slow GPUs. */
+  --hud: rgba(7, 17, 14, 0.97);
   --radius: 14px;
   --shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
   --display:
@@ -1532,7 +1533,6 @@
   margin: 0 calc(var(--gutter) * -1) 16px;
   padding: calc(8px + env(safe-area-inset-top)) var(--gutter) 8px;
   background: var(--hud);
-  backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
@@ -1846,7 +1846,6 @@
     padding: 6px max(8px, env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom))
       max(8px, env(safe-area-inset-left));
     background: var(--hud);
-    backdrop-filter: blur(10px);
     border-top: 1px solid var(--line);
     box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.4);
   }
