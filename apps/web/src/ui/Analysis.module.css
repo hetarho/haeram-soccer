@@ -1,0 +1,87 @@
+.disclosure {
+  margin: 12px 0;
+  border: 1px solid #d2ddc9;
+  border-radius: 10px;
+  background: #fafbf5;
+  min-width: 0;
+}
+.disclosure summary {
+  padding: 13px 14px;
+  min-height: 48px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2e5038;
+}
+.disclosure summary:focus-visible {
+  outline: 3px solid #bd724e;
+  outline-offset: 2px;
+}
+.content {
+  padding: 4px 14px 14px;
+  min-width: 0;
+}
+.content h3 {
+  font-size: 17px;
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+.content h4 {
+  font-size: 13px;
+  margin: 14px 0 8px;
+}
+.note {
+  font-size: 12px;
+  color: #526249;
+  line-height: 1.6;
+  margin: 8px 0;
+}
+.facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+.facts > div {
+  padding: 10px;
+  background: #edf2e4;
+  border-radius: 8px;
+  min-width: 0;
+}
+.facts dt {
+  font-size: 11px;
+  color: #526249;
+}
+.facts dd {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 5px 0 0;
+  overflow-wrap: anywhere;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chips span {
+  padding: 6px 9px;
+  border: 1px solid #d2ddc9;
+  border-radius: 6px;
+  font-size: 12px;
+}
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+}
+.list li {
+  padding: 9px 0;
+  border-bottom: 1px solid #e1e7d9;
+  font-size: 12px;
+  line-height: 1.6;
+}
+@media (max-width: 480px) {
+  .facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r11 | Define the implemented browser-demo behavior for browser game delivery.
+> r12 | Define the implemented browser-demo behavior for browser game delivery.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -32,6 +32,8 @@
 
 - WEB-19 [o] Browser responsiveness and storage verification claims under →ARCH-14 and →ARCH-28 identify the actual checked source and build. Include application entry/public inputs; the measured preview must serve the same entry and assets as the recorded build. A changed source, changed asset inventory or mismatched served build invalidates the run.
 
+- WEB-20 [o] Pre-match preparation offers an explicit opponent dossier with the next fixture, current opponent tactic from engine rules, own-league season form and head-to-head outcomes within the latest 30 own matches. Show competition and sample scope, leave unknown form empty, and never invent predictions. Football enthusiasts can inspect evidence without changing world facts; the home remains compact.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -39,6 +41,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r12 261008 WEB-20+ opponent label only→scoped opponent form and recent head-to-head dossier
 - r11 261008 WEB-15✎ compact mobile founding→complete basic screen bounds across supported browser/platform font metrics
 - r10 261008 WEB-19+ local-build-only provenance→current source and served-build identity with changed-input rejection
 - r9 261008 WEB-17✎ 44px core controls→44px primary buttons and native selection controls across preparation, recruitment and league exploration

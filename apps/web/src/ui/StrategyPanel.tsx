@@ -19,6 +19,7 @@ import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
 import { money } from './format';
+import { OpponentDossier } from './OpponentDossier';
 import s from './StrategyPanel.module.css';
 
 type Props = { w: World; client: GameClient; onSuspendChange?: (suspended: boolean) => void };
@@ -239,6 +240,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onSuspendC
               </p>
             )}
           </div>
+          <OpponentDossier w={w} />
           <div className={s.tabs} role="tablist" aria-label="경기 준비 선택">
             {(
               [

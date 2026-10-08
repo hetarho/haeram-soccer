@@ -16,7 +16,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 3 | 3 | - | 2 |
-| WEB | 11 | 11 | - | 0 |
+| WEB | 12 | 12 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
 | CLUB | 5 | 5 | - | 0 |
 | MATCH | 3 | 3 | - | 0 |
@@ -31,11 +31,14 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 
-
 ## next
-- CI correction complete; local and pushed Linux verification passed. Future work remains external product/device testing and deployment.
+- Continue mobile football analysis cycle 2 after committing T028.
 
 ## log
+- 261008 T028 done; cycle 1 verified
+- 261008 implement-task T028 start (nf); cycle 1
+- 261008 cycle 1 create-task T028; WEB r12
+- 261008 cycle 1 update-ssot WEB start; opponent-scouting
 - 261008 T027 done; pushed eb1c759 CI run37701628149 passed verify/storage/performance
 - 261008 T027 local verify and current-source benchmarks passed; pending pushed CI confirmation
 - 261008 create-task T027; implement-task start (cx)
@@ -52,7 +55,3 @@
 - 261008 cycle 12 create-task T026; implement-task start (cx)
 - 261008 cycle 12 update-ssot WEB start
 - 261008 cycle 12 create-task T025; implement-task start (cx)
-- 261008 cycle 12 update-ssot WEB start
-- 261008 T010/T023 SAVE base refreshed to r3; codec-only retention rule preserves existing task scope; current codec checks required
-- 261008 cycle 11 create-task T024; implement-task start (cx)
-- 261008 cycle 11 update-ssot SAVE start
