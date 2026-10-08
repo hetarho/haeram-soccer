@@ -20,6 +20,7 @@ import { useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
 import { money } from './format';
 import { OpponentDossier } from './OpponentDossier';
+import { TacticalLab } from './TacticalLab';
 import s from './StrategyPanel.module.css';
 
 type Props = { w: World; client: GameClient; onSuspendChange?: (suspended: boolean) => void };
@@ -313,6 +314,13 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onSuspendC
                 적합도는 현재 선발 능력과 피로의 요약입니다. 승리 확률이 아니며 상대와 홈·원정도
                 결과에 영향을 줍니다.
               </p>
+              <TacticalLab
+                players={valid ? selected : baseline}
+                applied={w.tactic}
+                selected={tactic}
+                opponent={opponentTactic}
+                onSelect={setTactic}
+              />
               <div className={s.negotiation}>
                 <label>
                   감독에게 전달할 방식

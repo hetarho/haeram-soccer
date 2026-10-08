@@ -80,7 +80,34 @@
   font-size: 12px;
   line-height: 1.6;
 }
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.cards article {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #d2ddc9;
+  border-radius: 10px;
+  background: #fffdf6;
+}
+.cards button {
+  width: 100%;
+  min-height: 48px;
+}
+.cards button[aria-pressed='true'] {
+  background: #24543b;
+  color: #fff9e7;
+  border-color: #24543b;
+}
+.cards .facts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 @media (max-width: 480px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
   .facts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

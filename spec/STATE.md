@@ -16,7 +16,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 3 | 3 | - | 2 |
-| WEB | 12 | 12 | - | 0 |
+| WEB | 13 | 13 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
 | CLUB | 5 | 5 | - | 0 |
 | MATCH | 3 | 3 | - | 0 |
@@ -32,9 +32,13 @@
 |---|---|---|---|---|
 
 ## next
-- Continue mobile football analysis cycle 2 after committing T028.
+- Continue mobile football analysis cycle 3 after committing T029.
 
 ## log
+- 261008 T029 done; cycle 2 verified
+- 261008 implement-task T029 start (nf); cycle 2
+- 261008 cycle 2 create-task T029; WEB r13
+- 261008 cycle 2 update-ssot WEB start; tactical-laboratory
 - 261008 T028 done; cycle 1 verified
 - 261008 implement-task T028 start (nf); cycle 1
 - 261008 cycle 1 create-task T028; WEB r12
@@ -51,7 +55,3 @@
 - 261008 T023 done; cycle 10 verified
 - 261008 T022 done; cycle 10 verified
 - 261008 implement-task T010 start (cx); close existing local release verification alongside improvement gates; no publishing
-- 261008 WEB r9/r10 freshness reviewed: T025 covers additional native controls; core match contract unchanged; T010/T022/T025 bases current
-- 261008 cycle 12 create-task T026; implement-task start (cx)
-- 261008 cycle 12 update-ssot WEB start
-- 261008 cycle 12 create-task T025; implement-task start (cx)
