@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r13 | Define the implemented browser-demo behavior for browser game delivery.
+> r14 | Define the implemented browser-demo behavior for browser game delivery.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -36,6 +36,8 @@
 
 - WEB-21 [o] Preparation offers a four-tactic laboratory over the currently previewed valid lineup and the real next-opponent tactic. Compare engine fit, average match fatigue cost, and possession/pass/shot/defense modifiers relative to the applied tactic using percentage-point units. Selecting a preview never applies tactics or settles a fixture; existing manager negotiation remains the only application path.
 
+- WEB-22 [o] Completed live matches and archived matches expose an explicit final analysis report with both teams' pass accuracy, shot accuracy and goal conversion, showing each numerator and denominator. Display own-player recorded contributions without synthetic ratings. Final analysis stays hidden until live playback reaches the end or the user explicitly selects the result; absent samples display an unavailable value.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -43,6 +45,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r14 261008 WEB-22+ aggregate counters only→completed-match rates and own-player contribution report
 - r13 261008 WEB-21+ fit-only tactic cards→explicit engine modifier and fatigue comparison laboratory
 - r12 261008 WEB-20+ opponent label only→scoped opponent form and recent head-to-head dossier
 - r11 261008 WEB-15✎ compact mobile founding→complete basic screen bounds across supported browser/platform font metrics

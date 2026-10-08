@@ -16,7 +16,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 3 | 3 | - | 2 |
-| WEB | 13 | 13 | - | 0 |
+| WEB | 14 | 14 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
 | CLUB | 5 | 5 | - | 0 |
 | MATCH | 3 | 3 | - | 0 |
@@ -32,9 +32,13 @@
 |---|---|---|---|---|
 
 ## next
-- Continue mobile football analysis cycle 3 after committing T029.
+- Continue mobile football analysis cycle 4 after committing T030.
 
 ## log
+- 261008 T030 done; cycle 3 verified
+- 261008 implement-task T030 start (nf); cycle 3
+- 261008 cycle 3 create-task T030; WEB r14
+- 261008 cycle 3 update-ssot WEB start; match-analysis-report
 - 261008 T029 done; cycle 2 verified
 - 261008 implement-task T029 start (nf); cycle 2
 - 261008 cycle 2 create-task T029; WEB r13
@@ -51,7 +55,3 @@
 - 261008 T010 done; current-source local release verification and CI benchmark configuration complete
 - 261008 T026 done; cycle 12 verified
 - 261008 T024 done; cycle 11 verified
-- 261008 T025 done; cycle 12 verified
-- 261008 T023 done; cycle 10 verified
-- 261008 T022 done; cycle 10 verified
-- 261008 implement-task T010 start (cx); close existing local release verification alongside improvement gates; no publishing

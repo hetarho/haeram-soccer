@@ -12,7 +12,7 @@ export function worldSelector(keys: (keyof World)[]) {
     return selected;
   };
 }
-export const selectMatchWorld = worldSelector(['clubs', 'playerClub']);
+export const selectMatchWorld = worldSelector(['clubs', 'playerClub', 'players']);
 export const selectLeagueWorld = worldSelector([
   'clubs',
   'tables',

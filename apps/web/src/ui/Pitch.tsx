@@ -18,6 +18,7 @@ import type {
 import { playerTraits } from '../../../../packages/engine/src/match';
 import { tacticLabel } from '../../../../packages/engine/src/world';
 import { percent } from './format';
+import { MatchReport } from './MatchReport';
 import s from './App.module.css';
 import t from './Pitch.module.css';
 
@@ -362,6 +363,7 @@ export function Pitch({
       </div>
       {afterControls}
       <div id={detailsId} hidden={!details} className={t.details}>
+        {p && (summary || finished) && <MatchReport record={p.record} w={world} />}
         {p && (
           <label className={s.replayScrubber}>
             경기 시간

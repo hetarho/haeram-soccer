@@ -2,6 +2,22 @@ import { expect, test } from '@playwright/test';
 
 test.use({ viewport: { width: 360, height: 740 } });
 
+test('reveals the recorded match report only after choosing the final result', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await page.getByTestId('hub-play').click();
+  await page.getByRole('button', { name: '일시정지', exact: true }).click();
+  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
+  const report = page.getByRole('region', { name: '경기 분석 리포트', exact: true });
+  await expect(report).toHaveCount(0);
+  await page.getByRole('button', { name: '결과 보기', exact: true }).click();
+  await expect(report).toBeVisible();
+  await expect(report).toContainText('정규 90분 최종 집계');
+  await expect(report.getByRole('article')).toHaveCount(11);
+  await expect(report).toContainText('패스 정확도');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+});
+
 test('compares tactical rules as previews while the applied tactic and date stay unchanged', async ({
   page,
 }) => {
