@@ -1,3 +1,4 @@
+import { Select } from './Select';
 import { useState, type FormEvent } from 'react';
 import type { CountryCode } from '../../../../packages/contracts/src/types';
 import { COUNTRIES, country } from '../../../../packages/catalogs/src/index';
@@ -62,17 +63,17 @@ export function ClubFounding({
         </label>
         <label>
           창단 국가
-          <select
+          <Select
             aria-label="창단 국가"
             value={code}
-            onChange={(event) => setCode(event.target.value as CountryCode)}
+            onValueChange={(value) => setCode(value as CountryCode)}
           >
             {COUNTRIES.map((c) => (
               <option key={c.code} value={c.code}>
                 {c.name} · {c.groups.length}부 출발
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <fieldset>
           <legend>첫 자금</legend>

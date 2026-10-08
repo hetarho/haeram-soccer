@@ -1,3 +1,4 @@
+import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 test('operates a club, reads a season and exports/imports the actual save', async ({ page }) => {
@@ -7,8 +8,8 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('button', { name: '넉넉한 출발' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page.getByRole('button', { name: '감독실', exact: true }).click();
-  await page.getByLabel('요청 전술').selectOption('counter');
-  await page.getByLabel('요청 말투').selectOption('evidence');
+  await chooseOption(page.getByRole('combobox', { name: '요청 전술', exact: true }), 'counter');
+  await chooseOption(page.getByRole('combobox', { name: '요청 말투', exact: true }), 'evidence');
   await page.getByRole('button', { name: '감독에게 제안하기' }).click();
   await expect(page.locator('blockquote').getByText(/역습 요청 ·/)).toBeVisible();
   await page.getByRole('button', { name: '클럽 경영', exact: true }).click();
@@ -32,7 +33,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
     .getByRole('button', { name: '창 닫기' })
     .click();
   await page.getByRole('button', { name: '역사 보관함', exact: true }).click();
-  await page.getByLabel('기록 시즌').selectOption('1901');
+  await chooseOption(page.getByRole('combobox', { name: '기록 시즌', exact: true }), '1901');
   await page.getByRole('button', { name: '경기 기록 보기', exact: true }).first().click();
   await expect(page.getByRole('dialog', { name: '지난 경기 상세' })).toBeVisible();
   await page.getByRole('button', { name: '결과 보기' }).click();
@@ -65,7 +66,7 @@ test('browses every historical regional group and resets filters on country chan
   page,
 }) => {
   await page.goto('/');
-  await page.getByLabel('창단 국가').selectOption('ITA');
+  await chooseOption(page.getByRole('combobox', { name: '창단 국가', exact: true }), 'ITA');
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('historical-regional-groups');
   await page.getByRole('button', { name: '클럽 창단' }).click();
@@ -78,8 +79,8 @@ test('browses every historical regional group and resets filters on country chan
     .click();
   await page.getByRole('button', { name: '역사 보관함', exact: true }).click();
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.getByLabel('기록 시즌').selectOption('1901');
-  await page.getByLabel('과거 디비전').selectOption('2');
+  await chooseOption(page.getByRole('combobox', { name: '기록 시즌', exact: true }), '1901');
+  await chooseOption(page.getByRole('combobox', { name: '과거 디비전', exact: true }), '2');
   const standings = page
     .locator('section')
     .filter({ has: page.getByRole('heading', { name: '그해의 각국 리그' }) });
@@ -90,14 +91,14 @@ test('browses every historical regional group and resets filters on country chan
     ['1', 'B'],
     ['2', 'C'],
   ]) {
-    await page.getByLabel('과거 지역 그룹').selectOption(value);
+    await chooseOption(page.getByRole('combobox', { name: '과거 지역 그룹', exact: true }), value);
     await expect(rows).toHaveCount(20);
     await expect(rows.locator('td:nth-child(3)')).toHaveText(Array(20).fill(group));
     firstClubs.push(await rows.first().locator('td:nth-child(2)').innerText());
   }
   expect(new Set(firstClubs).size).toBe(3);
-  await page.getByLabel('과거 국가').selectOption('ENG');
-  await expect(page.getByLabel('과거 지역 그룹')).toHaveCount(0);
+  await chooseOption(page.getByRole('combobox', { name: '과거 국가', exact: true }), 'ENG');
+  await expect(page.getByRole('combobox', { name: '과거 지역 그룹', exact: true })).toHaveCount(0);
   await expect(rows).toHaveCount(20);
   await expect(rows.locator('td:nth-child(3)')).toHaveText(Array(20).fill('A'));
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

@@ -1,3 +1,4 @@
+import { chooseOption, selectOptions } from './select';
 import { expect, test } from '@playwright/test';
 test.use({ viewport: { width: 390, height: 844 } });
 
@@ -56,21 +57,17 @@ test('defaults to one minute per four seconds and provides four replay speeds', 
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page.getByTestId('hub-play').click();
-  const speed = page.getByLabel('관전 속도');
-  await expect(speed).toHaveValue('1');
-  expect(
-    await speed
-      .locator('option')
-      .evaluateAll((options) => options.map((o) => (o as HTMLOptionElement).value)),
-  ).toEqual(['1', '2', '4', '8']);
+  const speed = page.getByRole('combobox', { name: '관전 속도', exact: true });
+  await expect(speed).toHaveAttribute('data-value', '1');
+  expect((await selectOptions(speed)).map((option) => option.value)).toEqual(['1', '2', '4', '8']);
   await expect(page.getByTestId('pitch-theatre')).toContainText('1′');
   await page.waitForTimeout(1700);
   await expect(page.getByTestId('pitch-theatre')).toContainText('1′');
   await expect(page.getByTestId('pitch-theatre')).toContainText('2′', { timeout: 5000 });
   await page.getByRole('button', { name: '일시정지', exact: true }).click();
   for (const value of ['2', '4', '8']) {
-    await speed.selectOption(value);
-    await expect(speed).toHaveValue(value);
+    await chooseOption(speed, value);
+    await expect(speed).toHaveAttribute('data-value', value);
   }
   await expect(page.getByRole('button', { name: '재생', exact: true })).toBeVisible();
 });

@@ -1,3 +1,4 @@
+import { Select } from './Select';
 import { useState } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import { encodeCsv, downloadCsv } from '../adapters/csv';
@@ -39,33 +40,33 @@ export function AnalysisExport({
         <div className={s.controls}>
           <label>
             다운로드할 표{' '}
-            <select
+            <Select
               aria-label="분석 데이터 종류"
               value={type}
-              onChange={(e) => {
-                setType(e.target.value as AnalysisDataset);
+              onValueChange={(value) => {
+                setType(value as AnalysisDataset);
                 setMessage('');
               }}
             >
               <option value="matches">선택한 시즌 경기</option>
               <option value="players">우리 선수 지표</option>
               <option value="seasons">완료 시즌 결산</option>
-            </select>
+            </Select>
           </label>
           {type === 'players' && (
             <label>
               선수 표의 범위{' '}
-              <select
+              <Select
                 aria-label="내보낼 선수 지표 범위"
                 value={playerScope}
-                onChange={(e) => {
-                  setPlayerScope(e.target.value as PlayerScope);
+                onValueChange={(value) => {
+                  setPlayerScope(value as PlayerScope);
                   setMessage('');
                 }}
               >
                 <option value="season">현재 시즌 · 모든 대회</option>
                 <option value="career">우리 클럽 통산</option>
-              </select>
+              </Select>
             </label>
           )}
         </div>

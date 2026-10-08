@@ -1,3 +1,4 @@
+import { chooseOption } from './select';
 import { expect, test, type Page } from '@playwright/test';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import {
@@ -41,7 +42,7 @@ async function expectCompactMatch(page: Page, viewport: { width: number; height:
     );
     const navigation = [
       ...document.querySelectorAll('[role="tablist"][aria-label="시즌 보기"] [role="tab"]'),
-      document.querySelector('select[aria-label="시즌 통계 보기"]')!,
+      document.querySelector('[role="combobox"][aria-label="시즌 통계 보기"]')!,
     ];
     const measure = (element: Element) => {
       const bounds = element.getBoundingClientRect();
@@ -118,7 +119,10 @@ for (const viewport of [
       }),
     ).toBe(true);
     await expect(page.getByRole('button', { name: '결과 보기', exact: true })).toBeDisabled();
-    await expect(page.getByLabel('관전 속도')).toHaveValue('1');
+    await expect(page.getByRole('combobox', { name: '관전 속도', exact: true })).toHaveAttribute(
+      'data-value',
+      '1',
+    );
     await expectCompactMatch(page, viewport);
     await page.evaluate(() => {
       (window as typeof window & { matchCanvas?: Element | null }).matchCanvas =
@@ -129,7 +133,7 @@ for (const viewport of [
     await expectCompactMatch(page, viewport);
     await expect(page.getByTestId('match-result-summary')).toHaveCount(0);
     await expect(page.getByRole('slider', { name: '경기 시간', exact: true })).toBeHidden();
-    await page.getByLabel('관전 속도').selectOption('8');
+    await chooseOption(page.getByRole('combobox', { name: '관전 속도', exact: true }), '8');
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90′ ·.*경기 종료/)).toBeVisible();
     await expectCompactMatch(page, viewport);
@@ -164,7 +168,7 @@ for (const viewport of [
     await expect(page.getByText('패스 성공', { exact: true })).toBeVisible();
     await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toBeVisible();
     await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();
-    await expect(page.getByLabel('살펴볼 선수')).toBeVisible();
+    await expect(page.getByRole('combobox', { name: '살펴볼 선수', exact: true })).toBeVisible();
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
     await expectCompactMatch(page, viewport);
     const matchTab = page.getByRole('tab', { name: '경기', exact: true });
@@ -173,7 +177,7 @@ for (const viewport of [
     await expect(page.getByRole('tab', { name: '전술·선발', exact: true })).toBeFocused();
     await page.keyboard.press('ArrowRight');
     await expect(matchTab).toBeFocused();
-    await page.getByLabel('시즌 통계 보기').selectOption('rank');
+    await chooseOption(page.getByRole('combobox', { name: '시즌 통계 보기', exact: true }), 'rank');
     await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
     await matchTab.click();
     await expectCompactMatch(page, viewport);

@@ -144,7 +144,7 @@
   min-width: 0;
   flex: 1 1 200px;
 }
-.controls select,
+.controls :global([data-select-trigger]),
 .controls input {
   width: 100%;
   min-width: 0;

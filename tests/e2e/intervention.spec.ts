@@ -1,3 +1,4 @@
+import { chooseOption, selectOptions } from './select';
 import { test, expect } from '@playwright/test';
 
 test('changes a real starting XI through the mobile preparation sheet, saves it and shows earned finances', async ({
@@ -18,20 +19,14 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   const dialog = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
   await dialog.getByRole('tab', { name: '선발 선택', exact: true }).click();
   await dialog.getByText('선수별 교체', { exact: true }).click();
-  const keeper = dialog.getByLabel('선발 1 골키퍼', { exact: true });
-  const selected = await keeper.inputValue();
-  const other = await keeper
-    .locator('option')
-    .evaluateAll(
-      (options, current) =>
-        options
-          .map((option) => (option as HTMLOptionElement).value)
-          .find((value) => value && value !== current),
-      selected,
-    );
+  const keeper = dialog.getByRole('combobox', { name: '선발 1 골키퍼', exact: true });
+  const selected = await keeper.getAttribute('data-value');
+  const other = (await selectOptions(keeper)).find(
+    (option) => option.value && option.value !== selected,
+  )?.value;
   expect(other).toBeTruthy();
-  await keeper.selectOption(other!);
-  const keeperName = (await keeper.locator('option:checked').innerText()).split(' · ')[0];
+  await chooseOption(keeper, other!);
+  const keeperName = (await keeper.innerText()).split(' · ')[0];
   const save = dialog.getByRole('button', { name: '이 선발로 다음 경기 준비' });
   const rect = await save.boundingBox();
   expect(rect!.height).toBeGreaterThanOrEqual(48);
@@ -49,16 +44,16 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   await page.getByRole('button', { name: '전술·선발 준비', exact: true }).click();
   await dialog.getByRole('tab', { name: '선발 선택', exact: true }).click();
   await dialog.getByText('선수별 교체', { exact: true }).click();
-  await expect(keeper).toHaveValue(other!);
+  await expect(keeper).toHaveAttribute('data-value', other!);
   await dialog.getByRole('button', { name: '준비 마치고 돌아가기' }).click();
   await page.getByRole('tab', { name: '경기', exact: true }).click();
   await page.getByRole('button', { name: '다음 경기 관전', exact: true }).click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();
-  const inspector = page.getByLabel('살펴볼 선수');
-  await inspector.selectOption({ label: `1. ${keeperName} · GK` });
-  await expect(inspector.locator('option:checked')).toContainText(keeperName);
+  const inspector = page.getByRole('combobox', { name: '살펴볼 선수', exact: true });
+  await chooseOption(inspector, { label: `1. ${keeperName} · GK` });
+  await expect(inspector).toContainText(keeperName);
   await page.getByRole('tab', { name: '전술·선발', exact: true }).click();
   await page.getByRole('button', { name: '전술·선발 준비', exact: true }).click();
   await dialog.getByRole('tab', { name: '선발 선택', exact: true }).click();

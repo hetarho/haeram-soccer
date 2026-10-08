@@ -1,3 +1,4 @@
+import { chooseOption } from './select';
 import { expect, test } from '@playwright/test';
 import {
   clubOf,
@@ -77,9 +78,15 @@ test('discloses roster and opponent tactical fit before an actual seeded match',
   await counter.click();
   await expect(counter).toHaveAttribute('aria-pressed', 'true');
   await expect(possession).toHaveAttribute('aria-pressed', 'false');
-  await dialog.getByLabel('전술 요청 방식').selectOption('demand');
+  await chooseOption(
+    dialog.getByRole('combobox', { name: '전술 요청 방식', exact: true }),
+    'demand',
+  );
   await expect(dialog.getByLabel('감독 예상 반응')).toContainText('강한 요구: 신뢰 18 감소');
-  await dialog.getByLabel('전술 요청 방식').selectOption('respect');
+  await chooseOption(
+    dialog.getByRole('combobox', { name: '전술 요청 방식', exact: true }),
+    'respect',
+  );
   await dialog.getByRole('button', { name: '감독에게 전술 요청', exact: true }).click();
   await expect(dialog.getByRole('status')).toContainText('역습 요청 ·');
   const applied = await tactics.locator('[class*="sectionHead"] b').innerText();

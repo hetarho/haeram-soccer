@@ -1,3 +1,4 @@
+import { Select } from './Select';
 import { memo, useState } from 'react';
 import type { GoalScorer, World } from '../../../../packages/contracts/src/types';
 import { seasonName } from './format';
@@ -192,10 +193,10 @@ export const ScorerHistory = memo(function ScorerHistory({ w }: Props) {
           <div className={s.filters}>
             <label>
               주목 선수
-              <select
+              <Select
                 aria-label="득점 추이 선수 선택"
                 value={choice}
-                onChange={(event) => setSelectedPlayer(event.target.value)}
+                onValueChange={(value) => setSelectedPlayer(value)}
               >
                 <option value="own">우리 팀 최고 득점자</option>
                 <option value="leader">현재 득점 선두</option>
@@ -217,14 +218,14 @@ export const ScorerHistory = memo(function ScorerHistory({ w }: Props) {
                       </option>
                     ))}
                 </optgroup>
-              </select>
+              </Select>
             </label>
             <label>
               비교 선수
-              <select
+              <Select
                 aria-label="득점 추이 비교 선수 선택"
                 value={comparisonChoice}
-                onChange={(event) => setSelectedComparison(event.target.value)}
+                onValueChange={(value) => setSelectedComparison(value)}
               >
                 <option value="rival">가까운 득점 경쟁자</option>
                 <option value="leader">현재 득점 선두</option>
@@ -236,7 +237,7 @@ export const ScorerHistory = memo(function ScorerHistory({ w }: Props) {
                       {playerLabel(w, player)} · {player.goals}골
                     </option>
                   ))}
-              </select>
+              </Select>
             </label>
           </div>
           <figure className={s.chart}>

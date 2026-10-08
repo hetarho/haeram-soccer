@@ -1,3 +1,4 @@
+import { Select } from './Select';
 import { useState } from 'react';
 import type { Role, World } from '../../../../packages/contracts/src/types';
 import { clubOf, overall } from '../../../../packages/engine/src/world';
@@ -282,15 +283,15 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
         </button>
         <label>
           후보 정렬{' '}
-          <select
+          <Select
             aria-label="영입 후보 정렬"
             value={order}
-            onChange={(event) => setOrder(event.target.value as Order)}
+            onValueChange={(value) => setOrder(value as Order)}
           >
             <option value="impact">즉시 전력</option>
             <option value="potential">잠재력</option>
             <option value="fee">낮은 이적료</option>
-          </select>
+          </Select>
         </label>
         <button aria-pressed={boostOnly} onClick={() => setBoostOnly(!boostOnly)}>
           {w.lineup ? '수동 교체 보강 후보' : '선발 보강 후보'}

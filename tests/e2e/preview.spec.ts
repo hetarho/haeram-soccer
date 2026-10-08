@@ -7,7 +7,7 @@ test('built deep links, module worker, cache/CSP and missing assets', async ({ p
   await page.goto('/history');
   await expect(page.getByRole('heading', { name: '작은 선택들이 만든, 긴 역사.' })).toBeVisible();
   await page.reload();
-  await expect(page.getByLabel('기록 시즌')).toBeVisible();
+  await expect(page.getByRole('combobox', { name: '기록 시즌', exact: true })).toBeVisible();
   const html = await request.get('/history');
   expect(html.status()).toBe(200);
   expect(html.headers()['cache-control']).toBe('no-cache');

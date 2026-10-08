@@ -1,3 +1,4 @@
+import { Select } from './Select';
 import { useState } from 'react';
 import type { Fixture, World } from '../../../../packages/contracts/src/types';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
@@ -435,10 +436,10 @@ export function RankHistoryGraph({ w, ids = ownLeagueIds(w) }: { w: World; ids?:
           {years.length > 1 && (
             <label className={s.compare}>
               시즌{' '}
-              <select
+              <Select
                 aria-label="순위 추이 시즌 선택"
                 value={year}
-                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                onValueChange={(value) => setSelectedYear(Number(value))}
               >
                 {years.map((y) => (
                   <option key={y} value={y}>
@@ -446,15 +447,15 @@ export function RankHistoryGraph({ w, ids = ownLeagueIds(w) }: { w: World; ids?:
                     {y === w.year ? ' · 진행 중' : ''}
                   </option>
                 ))}
-              </select>
+              </Select>
             </label>
           )}
           <label className={s.compare}>
             비교{' '}
-            <select
+            <Select
               aria-label="순위 추이 비교 클럽"
               value={choice}
-              onChange={(e) => setChoice(e.target.value)}
+              onValueChange={(value) => setChoice(value)}
             >
               <option value="nearby">가까운 경쟁 팀</option>
               <option value="none">한 팀만 보기</option>
@@ -466,7 +467,7 @@ export function RankHistoryGraph({ w, ids = ownLeagueIds(w) }: { w: World; ids?:
                     {name(id)}
                   </option>
                 ))}
-            </select>
+            </Select>
           </label>
         </div>
       </div>
@@ -618,17 +619,17 @@ export function RoundResults({ w, ids }: { w: World; ids: string[] }) {
         </div>
         <label className={s.compare}>
           일정{' '}
-          <select
+          <Select
             aria-label="리그 라운드 선택"
             value={round}
-            onChange={(e) => setSelected(Number(e.target.value))}
+            onValueChange={(value) => setSelected(Number(value))}
           >
             {rounds.map((r) => (
               <option key={r} value={r}>
                 {r}라운드{fixtures.some((f) => f.round === r && f.score) ? ' · 종료' : ' · 예정'}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
       </div>
       <ul className={s.results}>

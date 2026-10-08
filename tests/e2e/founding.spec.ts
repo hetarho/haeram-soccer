@@ -1,3 +1,4 @@
+import { chooseOption, selectOptions } from './select';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode } from '../../apps/web/src/adapters/persistence';
@@ -112,16 +113,20 @@ for (const viewport of [
       'aria-pressed',
       'true',
     );
-    const countries = founding.getByLabel('창단 국가');
-    await expect(countries).toHaveValue('ENG');
-    await expect(countries.locator('option')).toHaveCount(8);
-    expect(
-      (
-        await countries
-          .locator('option')
-          .evaluateAll((options) => options.map((option) => (option as HTMLOptionElement).value))
-      ).sort(),
-    ).toEqual(['BEL', 'ENG', 'ESP', 'FRA', 'GER', 'ITA', 'NED', 'POR']);
+    const countries = founding.getByRole('combobox', { name: '창단 국가', exact: true });
+    await expect(countries).toHaveAttribute('data-value', 'ENG');
+    const countryChoices = await selectOptions(countries);
+    expect(countryChoices).toHaveLength(8);
+    expect(countryChoices.map((option) => option.value).sort()).toEqual([
+      'BEL',
+      'ENG',
+      'ESP',
+      'FRA',
+      'GER',
+      'ITA',
+      'NED',
+      'POR',
+    ]);
     const input = {
       country: viewport.country,
       name: `우리 동네 FC ${viewport.width}`,
@@ -130,7 +135,7 @@ for (const viewport of [
       difficulty: 0.5,
     };
     await founding.getByLabel('클럽 이름').fill(input.name);
-    await countries.selectOption(input.country);
+    await chooseOption(countries, input.country);
     await founding.getByRole('button', { name: '작은 출발' }).click();
     await founding.getByText('고급 설정', { exact: true }).click();
     await founding.getByLabel('세계 생성 시드').fill(input.seed);

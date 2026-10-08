@@ -1,3 +1,4 @@
+import { Select } from './Select';
 import { useEffect, useState } from 'react';
 import type { MatchRecord, Player, Role } from '../../../../packages/contracts/src/types';
 import { priceIndex, country, currency } from '../../../../packages/catalogs/src/index';
@@ -113,31 +114,31 @@ function ManagerView({ state, client }: Props) {
             <div className={s.filters} style={{ marginTop: 20 }}>
               <label>
                 전술{' '}
-                <select
+                <Select
                   aria-label="요청 전술"
                   value={tactic}
-                  onChange={(e) => setTactic(e.target.value as typeof tactic)}
+                  onValueChange={(value) => setTactic(value as typeof tactic)}
                 >
                   {Object.entries(tacticLabel).map(([id, label]) => (
                     <option key={id} value={id}>
                       {label}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
               <label>
                 말투{' '}
-                <select
+                <Select
                   aria-label="요청 말투"
                   value={tone}
-                  onChange={(e) => setTone(e.target.value)}
+                  onValueChange={(value) => setTone(value)}
                 >
                   {Object.entries(toneLabel).map(([id, label]) => (
                     <option key={id} value={id}>
                       {label}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
             </div>
             <button
@@ -258,17 +259,17 @@ function Squad({ state, client }: Props) {
         <button onClick={() => setComparing(true)}>우리 선수 비교</button>
         <label>
           지표 범위{' '}
-          <select
+          <Select
             aria-label="선수 지표 범위"
             value={scope}
-            onChange={(e) => {
-              setScope(e.target.value as PlayerScope);
+            onValueChange={(value) => {
+              setScope(value as PlayerScope);
               setPlayerPage(0);
             }}
           >
             <option value="season">현재 시즌 · 모든 대회</option>
             <option value="career">우리 클럽 통산</option>
-          </select>
+          </Select>
         </label>
       </div>
       {tab === 'roster' ? (
@@ -276,11 +277,11 @@ function Squad({ state, client }: Props) {
           <div className={s.filters} style={{ padding: '12px 16px' }}>
             <label>
               포지션{' '}
-              <select
+              <Select
                 aria-label="선수 포지션 필터"
                 value={role}
-                onChange={(e) => {
-                  setRole(e.target.value as Role | 'all');
+                onValueChange={(value) => {
+                  setRole(value as Role | 'all');
                   setPlayerPage(0);
                 }}
               >
@@ -290,15 +291,15 @@ function Squad({ state, client }: Props) {
                     {value}
                   </option>
                 ))}
-              </select>
+              </Select>
             </label>
             <label>
               정렬{' '}
-              <select
+              <Select
                 aria-label="우리 선수 정렬"
                 value={order}
-                onChange={(e) => {
-                  setOrder(e.target.value as PlayerOrder);
+                onValueChange={(value) => {
+                  setOrder(value as PlayerOrder);
                   setPlayerPage(0);
                 }}
               >
@@ -307,15 +308,15 @@ function Squad({ state, client }: Props) {
                 <option value="minutes">출전 분 많은 순</option>
                 <option value="fatigue">피로 낮은 순</option>
                 <option value="goals90">90분당 득점 높은 순</option>
-              </select>
+              </Select>
             </label>
             <label>
               최소 표본{' '}
-              <select
+              <Select
                 aria-label="최소 출전 분"
                 value={minutes}
-                onChange={(e) => {
-                  setMinutes(Number(e.target.value));
+                onValueChange={(value) => {
+                  setMinutes(Number(value));
                   setPlayerPage(0);
                 }}
               >
@@ -324,7 +325,7 @@ function Squad({ state, client }: Props) {
                     {value ? `${value}분 이상` : '제한 없음'}
                   </option>
                 ))}
-              </select>
+              </Select>
             </label>
           </div>
           <label className={s.rosterSearch}>
@@ -697,10 +698,10 @@ function History({ state, client }: Props) {
       <div className={s.filters}>
         <label>
           시즌{' '}
-          <select
+          <Select
             aria-label="기록 시즌"
             value={year}
-            onChange={(e) => setYear(Number(e.target.value))}
+            onValueChange={(value) => setYear(Number(value))}
           >
             {[...w.history.map((h) => h.year), w.year].reverse().map((y) => (
               <option key={y} value={y}>
@@ -708,14 +709,14 @@ function History({ state, client }: Props) {
                 {y === w.year ? ' 진행 중' : ''}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <label>
           대회 범위{' '}
-          <select
+          <Select
             aria-label="기록 대회 범위"
             value={filter}
-            onChange={(e) => setFilter(e.target.value)}
+            onValueChange={(value) => setFilter(value)}
           >
             <option value="all">모든 대회</option>
             {Object.entries(kindLabel).map(([id, t]) => (
@@ -723,7 +724,7 @@ function History({ state, client }: Props) {
                 {t}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <span className={s.pill}>
           {matches.length}경기 · 전체 {state.view!.totalMatches}경기 보존
@@ -854,11 +855,11 @@ function History({ state, client }: Props) {
               <div className={s.filters}>
                 <label>
                   국가{' '}
-                  <select
+                  <Select
                     aria-label="과거 국가"
                     value={historicalCode}
-                    onChange={(e) => {
-                      setHistoricalCode(e.target.value);
+                    onValueChange={(value) => {
+                      setHistoricalCode(value);
                       setTier(0);
                       setHistoricalGroup(0);
                     }}
@@ -868,15 +869,15 @@ function History({ state, client }: Props) {
                         {country(ch.country).name}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </label>
                 <label>
                   디비전{' '}
-                  <select
+                  <Select
                     aria-label="과거 디비전"
                     value={tier}
-                    onChange={(e) => {
-                      setTier(Number(e.target.value));
+                    onValueChange={(value) => {
+                      setTier(Number(value));
                       setHistoricalGroup(0);
                     }}
                   >
@@ -885,22 +886,22 @@ function History({ state, client }: Props) {
                         {i + 1}부
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </label>
                 {country(historicalCode).groups[tier].length > 1 && (
                   <label>
                     지역 그룹{' '}
-                    <select
+                    <Select
                       aria-label="과거 지역 그룹"
                       value={historicalGroup}
-                      onChange={(e) => setHistoricalGroup(Number(e.target.value))}
+                      onValueChange={(value) => setHistoricalGroup(Number(value))}
                     >
                       {country(historicalCode).groups[tier].map((_, i) => (
                         <option key={i} value={i}>
                           {String.fromCharCode(65 + i)}
                         </option>
                       ))}
-                    </select>
+                    </Select>
                   </label>
                 )}
               </div>

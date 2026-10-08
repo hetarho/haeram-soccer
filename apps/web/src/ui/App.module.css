@@ -11,7 +11,7 @@
 }
 :global(button),
 :global(input),
-:global(select) {
+:global([data-select-trigger]) {
   font: inherit;
 }
 :global(button) {
@@ -33,13 +33,13 @@
 }
 :global(button:focus-visible),
 :global(input:focus-visible),
-:global(select:focus-visible),
+:global([data-select-trigger]:focus-visible),
 :global(a:focus-visible) {
   outline: 3px solid #cf7854;
   outline-offset: 3px;
 }
 :global(input),
-:global(select) {
+:global([data-select-trigger]) {
   padding: 10px;
   border: 1px solid #c9d2c3;
   border-radius: 5px;
@@ -639,7 +639,7 @@
 .playControls label {
   font-size: 11px;
 }
-.playControls select {
+.playControls :global([data-select-trigger]) {
   padding: 7px;
 }
 .matchStats {
@@ -1238,7 +1238,7 @@
 @media (max-width: 760px) {
   button,
   input,
-  select {
+  :global([data-select-trigger]) {
     min-height: 44px;
   }
   .fileInput {
@@ -1355,8 +1355,8 @@
   }
   .layout .main :global(button),
   .modal :global(button),
-  .layout .main :global(select),
-  .modal :global(select) {
+  .layout .main :global([data-select-trigger]),
+  .modal :global([data-select-trigger]) {
     min-height: 48px;
   }
   .layout .main :global(input:not([type='file'])),
@@ -1364,21 +1364,13 @@
     min-height: 48px;
     font-size: 16px;
   }
-  .layout .main :global(select),
-  .modal :global(select) {
+  .layout .main :global([data-select-trigger]),
+  .modal :global([data-select-trigger]) {
     appearance: none;
     height: 48px;
     min-width: 44px;
     font-size: 16px;
-    padding: 10px 30px 10px 10px;
-    background-image:
-      linear-gradient(45deg, transparent 50%, currentColor 50%),
-      linear-gradient(135deg, currentColor 50%, transparent 50%);
-    background-position:
-      calc(100% - 15px) 21px,
-      calc(100% - 10px) 21px;
-    background-size: 5px 5px;
-    background-repeat: no-repeat;
+    padding: 10px 12px;
   }
   .layout .main :global(input[type='range']),
   .modal :global(input[type='range']) {
@@ -1518,7 +1510,7 @@
     flex: 1 1 130px;
     gap: 6px;
   }
-  .filters select {
+  .filters :global([data-select-trigger]) {
     width: 100%;
     min-width: 0;
   }

@@ -1,0 +1,114 @@
+.trigger.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-width: 44px;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 9px 12px;
+  border: 1px solid #cdd7c7;
+  border-radius: 10px;
+  background: #fffef9;
+  background-image: none;
+  color: #294333;
+  box-shadow: 0 1px 2px #29433306;
+  text-align: left;
+  font-weight: 500;
+  transition:
+    border-color 140ms,
+    background 140ms,
+    box-shadow 140ms;
+}
+.trigger.trigger:hover:not(:disabled),
+.trigger[data-state='open'] {
+  background: #f2f6ec;
+  border-color: #8da184;
+}
+.trigger:focus-visible {
+  outline: 2px solid #628266;
+  outline-offset: 3px;
+}
+.value {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.chevron {
+  flex: 0 0 16px;
+  opacity: 0.65;
+  transition: transform 160ms;
+}
+.trigger[data-state='open'] .chevron {
+  transform: rotate(180deg);
+}
+.content {
+  z-index: 100;
+  margin: 0;
+  padding: 5px;
+  inset: auto;
+  max-width: min(420px, calc(100vw - 24px));
+  max-height: 360px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: #fffef9;
+  color: #294333;
+  border: 1px solid #d7dfd0;
+  border-radius: 12px;
+  box-shadow:
+    0 12px 32px #253a3024,
+    0 2px 6px #253a3010;
+}
+.item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 34px 10px 12px;
+  border-radius: 7px;
+  font-size: 14px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  user-select: none;
+  cursor: pointer;
+  outline: none;
+}
+.item[data-state='checked'] {
+  color: #28593b;
+  font-weight: 600;
+  background: #edf3e7;
+}
+.item[data-highlighted] {
+  background: #e3eddc;
+  box-shadow: inset 0 0 0 1px #c5d5bb;
+}
+.item[data-disabled] {
+  opacity: 0.45;
+  cursor: default;
+}
+.check {
+  position: absolute;
+  right: 10px;
+  display: flex;
+}
+.group {
+  padding: 8px 12px 4px;
+  color: #74816c;
+  font-size: 12px;
+}
+@media (max-width: 760px) {
+  .trigger.trigger {
+    font-size: 16px;
+  }
+  .item {
+    font-size: 15px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .trigger.trigger,
+  .chevron {
+    transition: none;
+  }
+}

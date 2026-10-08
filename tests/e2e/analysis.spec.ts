@@ -1,3 +1,4 @@
+import { chooseOption, selectOptions } from './select';
 import { expect, test } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 
@@ -30,10 +31,16 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
   expect(csv.startsWith('\ufeff')).toBe(true);
   expect(csv).toContain('"fixture_id"');
   expect(csv.trim().split('\r\n')).toHaveLength(2);
-  await page.getByLabel('기록 대회 범위').selectOption('europe');
+  await chooseOption(page.getByRole('combobox', { name: '기록 대회 범위', exact: true }), 'europe');
   await expect(button).toBeDisabled();
-  await panel.getByLabel('분석 데이터 종류').selectOption('players');
-  await panel.getByLabel('내보낼 선수 지표 범위').selectOption('career');
+  await chooseOption(
+    panel.getByRole('combobox', { name: '분석 데이터 종류', exact: true }),
+    'players',
+  );
+  await chooseOption(
+    panel.getByRole('combobox', { name: '내보낼 선수 지표 범위', exact: true }),
+    'career',
+  );
   const playerDownload = page.waitForEvent('download');
   await button.click();
   const players = await playerDownload;
@@ -91,10 +98,10 @@ test('uses matching archive samples for season splits and competition filters', 
   await toggle.click();
   const analysis = page.getByRole('region', { name: '선택 시즌 분석', exact: true });
   await expect(analysis.getByRole('article', { name: '전체 성적' })).toContainText('전체 · 1경기');
-  await page.getByLabel('기록 대회 범위').selectOption('europe');
+  await chooseOption(page.getByRole('combobox', { name: '기록 대회 범위', exact: true }), 'europe');
   await expect(analysis).toContainText('유럽대회');
   await expect(analysis.getByRole('article', { name: '전체 성적' })).toContainText('전체 · 0경기');
-  await page.getByLabel('기록 대회 범위').selectOption('all');
+  await chooseOption(page.getByRole('combobox', { name: '기록 대회 범위', exact: true }), 'all');
   await expect(analysis.getByRole('img', { name: /경기 득실차/ })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
 });
@@ -117,12 +124,15 @@ test('filters the own-club fixture notebook and reads a settled full-season reco
   await expect(expand).toHaveCount(0);
   await page.getByText('우리 팀 일정 노트', { exact: true }).click();
   const notebook = page.getByRole('region', { name: '우리 팀 일정 노트', exact: true });
-  await notebook.getByLabel('일정 홈 원정').selectOption('away');
+  await chooseOption(notebook.getByRole('combobox', { name: '일정 홈 원정', exact: true }), 'away');
   const cards = notebook.getByTestId('fixture-card');
   expect(await cards.count()).toBeGreaterThan(0);
   for (const card of await cards.all()) await expect(card).toContainText('원정');
-  await notebook.getByLabel('일정 홈 원정').selectOption('all');
-  await notebook.getByLabel('일정 진행 상태').selectOption('completed');
+  await chooseOption(notebook.getByRole('combobox', { name: '일정 홈 원정', exact: true }), 'all');
+  await chooseOption(
+    notebook.getByRole('combobox', { name: '일정 진행 상태', exact: true }),
+    'completed',
+  );
   await expect(cards).toHaveCount(1);
   const date = await page.getByTestId('game-date').innerText();
   await notebook.getByRole('button', { name: '이 경기 분석 보기' }).click();
@@ -149,19 +159,18 @@ test('compares distinct own players with a shared scope and returns focus withou
   const opener = page.getByRole('button', { name: '우리 선수 비교', exact: true });
   await opener.click();
   const sheet = page.getByRole('dialog', { name: '우리 선수 비교', exact: true });
-  const a = sheet.getByLabel('비교 선수 A'),
-    b = sheet.getByLabel('비교 선수 B');
-  expect(await a.inputValue()).not.toBe(await b.inputValue());
-  expect(
-    await b
-      .locator('option')
-      .evaluateAll(
-        (options, id) => options.some((o) => (o as HTMLOptionElement).value === id),
-        await a.inputValue(),
-      ),
-  ).toBe(false);
-  await sheet.getByLabel('비교 지표 범위').selectOption('career');
-  await expect(sheet.getByLabel('비교 지표 범위')).toHaveValue('career');
+  const a = sheet.getByRole('combobox', { name: '비교 선수 A', exact: true }),
+    b = sheet.getByRole('combobox', { name: '비교 선수 B', exact: true });
+  expect(await a.getAttribute('data-value')).not.toBe(await b.getAttribute('data-value'));
+  const leftId = await a.getAttribute('data-value');
+  expect((await selectOptions(b)).some((option) => option.value === leftId)).toBe(false);
+  await chooseOption(
+    sheet.getByRole('combobox', { name: '비교 지표 범위', exact: true }),
+    'career',
+  );
+  await expect(
+    sheet.getByRole('combobox', { name: '비교 지표 범위', exact: true }),
+  ).toHaveAttribute('data-value', 'career');
   await expect(sheet.getByRole('region', { name: '두 선수 비교 결과' })).toContainText('실제 출전');
   for (const select of [a, b]) {
     await select.scrollIntoViewIfNeeded();
@@ -188,9 +197,12 @@ test('filters player samples and shows scoped per-90 evidence on a mobile profil
     .getByRole('dialog', { name: '전체 메뉴' })
     .getByRole('button', { name: '선수와 영입', exact: true })
     .click();
-  await page.getByLabel('선수 포지션 필터').selectOption('FWD');
-  await page.getByLabel('우리 선수 정렬').selectOption('goals90');
-  await page.getByLabel('최소 출전 분').selectOption('90');
+  await chooseOption(page.getByRole('combobox', { name: '선수 포지션 필터', exact: true }), 'FWD');
+  await chooseOption(
+    page.getByRole('combobox', { name: '우리 선수 정렬', exact: true }),
+    'goals90',
+  );
+  await chooseOption(page.getByRole('combobox', { name: '최소 출전 분', exact: true }), '90');
   const detailTable = page.locator('details[class*="rosterDetails"]');
   await expect(detailTable.locator('table')).toHaveCount(0);
   await detailTable.getByText('전체 선수 지표 표 보기', { exact: true }).click();
@@ -205,7 +217,7 @@ test('filters player samples and shows scoped per-90 evidence on a mobile profil
   await expect(profile).toContainText('이번 시즌 · 모든 대회');
   await expect(profile).toContainText('90분당');
   await profile.getByRole('button', { name: '창 닫기', exact: true }).click();
-  await page.getByLabel('최소 출전 분').selectOption('180');
+  await chooseOption(page.getByRole('combobox', { name: '최소 출전 분', exact: true }), '180');
   await expect(page.getByText('이 조건에 맞는 선수가 없어요.', { exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
 });

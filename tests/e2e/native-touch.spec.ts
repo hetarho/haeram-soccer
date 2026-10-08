@@ -1,3 +1,4 @@
+import { chooseOption, selectOptions } from './select';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { COUNTRIES } from '../../packages/catalogs/src/index';
 
@@ -55,10 +56,10 @@ for (const viewport of [
   }) => {
     await page.setViewportSize(viewport);
     await page.goto('/');
-    const country = page.getByLabel('창단 국가');
+    const country = page.getByRole('combobox', { name: '창단 국가', exact: true });
     await expectTouchControl(country, viewport);
-    await country.selectOption('FRA');
-    await expect(country).toHaveValue('FRA');
+    await chooseOption(country, 'FRA');
+    await expect(country).toHaveAttribute('data-value', 'FRA');
     await expectCompactDocument(page, viewport);
     await page.getByText('고급 설정', { exact: true }).click();
     await page.getByLabel('세계 생성 시드').fill(`native-preparation-${viewport.width}`);
@@ -81,11 +82,11 @@ for (const viewport of [
       .getByRole('button', { name: '전술·선발 준비', exact: true })
       .click();
     const preparation = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
-    const tone = preparation.getByLabel('전술 요청 방식');
+    const tone = preparation.getByRole('combobox', { name: '전술 요청 방식', exact: true });
     await expectTouchControl(tone, viewport);
     await tone.focus();
     await expect(tone).toBeFocused();
-    await tone.selectOption('demand');
+    await chooseOption(tone, 'demand');
     await expect(preparation.getByLabel('감독 예상 반응')).toContainText('신뢰 18 감소');
     await preparation.getByRole('tab', { name: '선발 선택', exact: true }).click();
     await preparation.getByText('선수별 교체', { exact: true }).click();
@@ -104,19 +105,13 @@ for (const viewport of [
       expect(geometry.width, JSON.stringify(geometry)).toBeGreaterThanOrEqual(44);
       expect(geometry.height, JSON.stringify(geometry)).toBeGreaterThanOrEqual(44);
     }
-    const keeper = preparation.getByLabel('선발 1 골키퍼', { exact: true });
+    const keeper = preparation.getByRole('combobox', { name: '선발 1 골키퍼', exact: true });
     await expectTouchControl(keeper, viewport);
-    const original = await keeper.inputValue();
-    const replacement = await keeper
-      .locator('option')
-      .evaluateAll(
-        (options, current) =>
-          options
-            .map((option) => (option as HTMLOptionElement).value)
-            .find((value) => value && value !== current),
-        original,
-      );
-    await keeper.selectOption(replacement!);
+    const original = await keeper.getAttribute('data-value');
+    const replacement = (await selectOptions(keeper)).find(
+      (option) => option.value && option.value !== original,
+    )?.value;
+    await chooseOption(keeper, replacement!);
     const save = preparation.getByRole('button', { name: '이 선발로 다음 경기 준비', exact: true });
     await expectTouchControl(save, viewport);
     await save.click();
@@ -130,17 +125,17 @@ for (const viewport of [
       .click();
     await preparation.getByRole('tab', { name: '선발 선택', exact: true }).click();
     await preparation.getByText('선수별 교체', { exact: true }).click();
-    await expect(keeper).toHaveValue(replacement!);
+    await expect(keeper).toHaveAttribute('data-value', replacement!);
     await preparation.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
     await page.getByTestId('hub-play').click();
     await page.getByRole('button', { name: '일시정지', exact: true }).click();
     await expectCompactDocument(page, viewport);
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
     await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();
-    const player = page.getByLabel('살펴볼 선수');
+    const player = page.getByRole('combobox', { name: '살펴볼 선수', exact: true });
     await expectTouchControl(player, viewport);
-    await player.selectOption('1:4');
-    await expect(player).toHaveValue('1:4');
+    await chooseOption(player, '1:4');
+    await expect(player).toHaveAttribute('data-value', '1:4');
   });
 
   test(`keeps scouting and league exploration selectors touchable at ${viewport.width}x${viewport.height}`, async ({
@@ -156,15 +151,15 @@ for (const viewport of [
       .getByRole('dialog', { name: '선수 성장과 훈련' })
       .getByRole('button', { name: '선수단·이적 시장', exact: true })
       .click();
-    const scope = page.getByLabel('선수 지표 범위');
+    const scope = page.getByRole('combobox', { name: '선수 지표 범위', exact: true });
     await expectTouchControl(scope, viewport);
-    await scope.selectOption('career');
-    await expect(scope).toHaveValue('career');
+    await chooseOption(scope, 'career');
+    await expect(scope).toHaveAttribute('data-value', 'career');
     await page.getByRole('button', { name: '이적 시장', exact: true }).click();
-    const order = page.getByLabel('영입 후보 정렬');
+    const order = page.getByRole('combobox', { name: '영입 후보 정렬', exact: true });
     await expectTouchControl(order, viewport);
-    await order.selectOption('potential');
-    await expect(order).toHaveValue('potential');
+    await chooseOption(order, 'potential');
+    await expect(order).toHaveAttribute('data-value', 'potential');
     await expect(
       page.getByRole('region', { name: '선수 영입 데스크' }).getByRole('article'),
     ).toHaveCount(8);
@@ -172,18 +167,18 @@ for (const viewport of [
       .getByRole('navigation', { name: '모바일 게임 메뉴' })
       .getByRole('button', { name: '리그', exact: true })
       .click();
-    const country = page.getByLabel('국가', { exact: true });
+    const country = page.getByRole('combobox', { name: '국가', exact: true });
     const tier = page.getByRole('combobox', { name: '디비전', exact: true });
     await expectTouchControl(country, viewport);
     await expectTouchControl(tier, viewport);
     const regional = COUNTRIES.find((item) => item.groups.some((group) => group.length > 1))!;
     const regionalTier = regional.groups.findIndex((group) => group.length > 1);
-    await country.selectOption(regional.code);
-    await tier.selectOption(String(regionalTier));
+    await chooseOption(country, regional.code);
+    await chooseOption(tier, String(regionalTier));
     const group = page.getByRole('combobox', { name: '지역 그룹', exact: true });
     await expectTouchControl(group, viewport);
-    await group.selectOption('1');
-    await expect(group).toHaveValue('1');
+    await chooseOption(group, '1');
+    await expect(group).toHaveAttribute('data-value', '1');
     await expect(page.getByRole('table', { name: '리그 순위표' }).getByRole('row')).not.toHaveCount(
       1,
     );

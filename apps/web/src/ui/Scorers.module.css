@@ -115,7 +115,7 @@
   color: #74826c;
   font-size: 11px;
 }
-.filters select {
+.filters :global([data-select-trigger]) {
   max-width: 245px;
   min-height: 36px;
   padding: 6px 8px;
@@ -191,7 +191,7 @@
   .filters label {
     width: 100%;
   }
-  .filters select {
+  .filters :global([data-select-trigger]) {
     flex: 1;
     min-width: 0;
     max-width: none;

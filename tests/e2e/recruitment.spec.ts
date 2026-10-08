@@ -1,3 +1,4 @@
+import { chooseOption } from './select';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode } from '../../apps/web/src/adapters/persistence';
@@ -66,7 +67,10 @@ test('filters and compares stable candidates, discloses free wages, and saves re
       .map((offer) => offer.player.id)
       .sort(),
   );
-  await desk.getByLabel('영입 후보 정렬').selectOption('potential');
+  await chooseOption(
+    desk.getByRole('combobox', { name: '영입 후보 정렬', exact: true }),
+    'potential',
+  );
   const sorted = await ids();
   const ratings = sorted.map(
     (id) => offers.find((offer) => offer.player.id === id)!.player.potential,
@@ -92,7 +96,7 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   ).toBeVisible();
   await comparison.getByRole('button', { name: '후보 비교 마치기', exact: true }).click();
   await roles.getByRole('button', { name: '전체', exact: true }).click();
-  await desk.getByLabel('영입 후보 정렬').selectOption('fee');
+  await chooseOption(desk.getByRole('combobox', { name: '영입 후보 정렬', exact: true }), 'fee');
   expect(await ids()).toEqual(
     [...offers]
       .sort((a, b) =>

@@ -1,3 +1,4 @@
+import { Select } from './Select';
 import {
   useEffect,
   useId,
@@ -343,17 +344,17 @@ export function Pitch({
         </button>
         <label className={t.speed}>
           <span>관전 속도</span>
-          <select
+          <Select
             aria-label="관전 속도"
             value={speed}
-            onChange={(e) => setSpeed(Number(e.target.value))}
+            onValueChange={(value) => setSpeed(Number(value))}
           >
             {WATCH_SPEEDS.map((value) => (
               <option key={value} value={value}>
                 {value}×
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <button
           onClick={() => {
@@ -418,7 +419,11 @@ export function Pitch({
           <div className={s.playerInspector}>
             <label>
               살펴볼 선수
-              <select value={selection} onChange={(e) => setSelection(e.target.value)}>
+              <Select
+                aria-label="살펴볼 선수"
+                value={selection}
+                onValueChange={(value) => setSelection(value)}
+              >
                 {p?.squads.map((squad, side) => (
                   <optgroup key={side} label={side === 0 ? home?.name : away?.name}>
                     {squad.map((player, i) => (
@@ -428,7 +433,7 @@ export function Pitch({
                     ))}
                   </optgroup>
                 ))}
-              </select>
+              </Select>
             </label>
             <p>
               <b>{stateLabels[selectedMotion.state]}</b> · 점선은 이 선수가 선택한 이동 목표입니다.

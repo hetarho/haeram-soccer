@@ -1,3 +1,4 @@
+import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
 
 test('advances real days at three paces, stops and restores the saved calendar', async ({
@@ -37,7 +38,9 @@ test('advances real days at three paces, stops and restores the saved calendar',
   );
   await page.getByRole('tab', { name: '일정·결과' }).click();
   await expect(page.getByRole('heading', { name: '같은 라운드, 다른 경기' })).toBeVisible();
-  await page.getByLabel('리그 라운드 선택').selectOption({ index: 0 });
+  await chooseOption(page.getByRole('combobox', { name: '리그 라운드 선택', exact: true }), {
+    index: 0,
+  });
   await expect(
     page.getByRole('region', { name: '리그 라운드 결과' }).getByRole('listitem'),
   ).toHaveCount(12);
@@ -49,7 +52,9 @@ test('advances real days at three paces, stops and restores the saved calendar',
   await expect(page.getByRole('table', { name: '리그 득점 순위표' })).toBeVisible();
   await page.getByRole('tab', { name: '득점왕 추이', exact: true }).click();
   await expect(page.getByRole('heading', { name: '득점왕 추이' })).toBeVisible();
-  await expect(page.getByLabel('득점 추이 선수 선택')).toBeVisible();
+  await expect(
+    page.getByRole('combobox', { name: '득점 추이 선수 선택', exact: true }),
+  ).toBeVisible();
 });
 
 test('shows independent player decisions and post-match league context', async ({ page }) => {
@@ -63,11 +68,11 @@ test('shows independent player decisions and post-match league context', async (
   await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toHaveCount(0);
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await page.getByRole('button', { name: '선수 판단 보기' }).click();
-  await expect(page.getByLabel('살펴볼 선수')).toBeVisible();
+  await expect(page.getByRole('combobox', { name: '살펴볼 선수', exact: true })).toBeVisible();
   await expect(
     page.getByText('점선은 이 선수가 선택한 이동 목표입니다.', { exact: false }),
   ).toBeVisible();
-  await page.getByLabel('살펴볼 선수').selectOption('1:4');
+  await chooseOption(page.getByRole('combobox', { name: '살펴볼 선수', exact: true }), '1:4');
   await page.getByRole('button', { name: '결과 보기' }).click();
   await expect(page.getByText(/90′ ·.*경기 종료/)).toBeVisible();
   await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toBeVisible();

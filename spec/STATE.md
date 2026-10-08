@@ -16,7 +16,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 3 | 3 | - | 2 |
-| WEB | 24 | 24 | - | 0 |
+| WEB | 26 | 26 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
 | CLUB | 5 | 5 | - | 0 |
 | MATCH | 3 | 3 | - | 0 |
@@ -30,12 +30,22 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-
+| T040 | Contextual quick interventions | WEB ARCH | - | todo |
+| T041 | Motion throughout app interactions | WEB ARCH | T039 T040 | todo |
 
 ## next
-- Eleven improvement cycles complete (T028–T038); all local verification gates passed. Check the pushed final CI, then continue external product/device playtests for the paid mobile concept.
+- implement-task T040; contextual quick interventions, then T041 interface motion and final accumulated release verification.
 
 ## log
+- 261008 T039 done; styled selectors verified in Chromium, Firefox and WebKit
+- 261008 create-task T039 refresh; accumulated reference latency/storage gates owned by T041
+- 261008 implement-task T039 resumed (ui)
+- 261008 T039 todo; create-task refresh: measured asset budget requires native top-layer combobox
+- 261008 implement-task T039 start (ui); WEB r26 freshness unrelated
+- 261008 create-task T040 T041; WEB r26
+- 261008 update-ssot WEB r26; ordinary progression, contextual quick actions and Motion
+- 261008 create-task T039; WEB r25 styled dropdowns
+- 261008 update-ssot WEB start; shared styled selection controls
 - 261008 T037 done; cycle 10 verified
 - 261008 T038 done; controls and pacing verified in all three browsers
 - 261008 update-ssot WEB r24; create-task T038; implement-task start (nf); T037 r24 freshness unrelated
@@ -47,12 +57,3 @@
 - 261008 cycle 10 update-ssot WEB start; local-analysis-export
 - 261008 T036 done; cycle 9 verified
 - 261008 implement-task T036 start (nf); cycle 9
-- 261008 cycle 9 create-task T036; WEB r20
-- 261008 cycle 9 update-ssot WEB start; career-record-book
-- 261008 T035 done; cycle 8 verified
-- 261008 implement-task T035 start (nf); cycle 8
-- 261008 cycle 8 create-task T035; WEB r19
-- 261008 cycle 8 update-ssot WEB start; season-context-analysis
-- 261008 T034 done; cycle 7 verified
-- 261008 implement-task T034 start (nf); cycle 7
-- 261008 cycle 7 create-task T034; WEB r18

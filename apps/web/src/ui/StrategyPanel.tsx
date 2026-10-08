@@ -1,3 +1,4 @@
+import { Select } from './Select';
 import { memo, useCallback, useEffect, useId, useRef, useState } from 'react';
 import type { Player, Tactic, World } from '../../../../packages/contracts/src/types';
 import {
@@ -350,17 +351,17 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onSuspendC
               <div className={s.negotiation}>
                 <label>
                   감독에게 전달할 방식
-                  <select
+                  <Select
                     aria-label="전술 요청 방식"
                     disabled={blocked}
                     value={tone}
-                    onChange={(event) => setTone(event.target.value as Tone)}
+                    onValueChange={(value) => setTone(value as Tone)}
                   >
                     <option value="evidence">선수단 근거로 설득</option>
                     <option value="respect">감독 판단 존중</option>
                     <option value="support">지원 약속</option>
                     <option value="demand">강하게 요구 · 신뢰 하락</option>
-                  </select>
+                  </Select>
                 </label>
                 <div className={s.outlook} aria-label="감독 예상 반응">
                   <span>예상 반응</span>
@@ -437,18 +438,18 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onSuspendC
                         {roleNames[role]}{' '}
                         {role === 'GK' ? '' : slot - (role === 'DEF' ? 0 : role === 'MID' ? 4 : 7)}
                       </span>
-                      <select
+                      <Select
                         disabled={blocked}
                         aria-label={`선발 ${slot + 1} ${roleNames[role]}`}
                         value={draft[slot] || ''}
-                        onChange={(event) => {
+                        onValueChange={(value) => {
                           setPreset('manual');
                           setDraft((current) => {
                             const updated = [...current],
-                              displaced = updated.indexOf(event.target.value);
+                              displaced = updated.indexOf(value);
                             if (displaced >= 0 && displaced !== slot)
                               updated[displaced] = updated[slot];
-                            updated[slot] = event.target.value;
+                            updated[slot] = value;
                             return updated;
                           });
                         }}
@@ -465,7 +466,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onSuspendC
                               {Math.round(player.fatigue)}
                             </option>
                           ))}
-                      </select>
+                      </Select>
                     </label>
                   ))}
                 </div>

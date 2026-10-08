@@ -1,3 +1,4 @@
+import { Select } from './Select';
 import { useState } from 'react';
 import type { Player, World } from '../../../../packages/contracts/src/types';
 import { Dialog } from './Dialog';
@@ -48,21 +49,21 @@ export function PlayerComparison({
       <div className={s.controls}>
         <label>
           함께 비교할 기록{' '}
-          <select
+          <Select
             aria-label="비교 지표 범위"
             value={scope}
-            onChange={(e) => setScope(e.target.value as PlayerScope)}
+            onValueChange={(value) => setScope(value as PlayerScope)}
           >
             <option value="season">현재 시즌 · 모든 대회</option>
             <option value="career">우리 클럽 통산</option>
-          </select>
+          </Select>
         </label>
         <label>
           선수 A{' '}
-          <select
+          <Select
             aria-label="비교 선수 A"
             value={left?.id || ''}
-            onChange={(e) => setA(e.target.value)}
+            onValueChange={(value) => setA(value)}
           >
             {pool
               .filter((p) => p.id !== right?.id)
@@ -71,14 +72,14 @@ export function PlayerComparison({
                   {p.name} · {p.role} · {status(p)}
                 </option>
               ))}
-          </select>
+          </Select>
         </label>
         <label>
           선수 B{' '}
-          <select
+          <Select
             aria-label="비교 선수 B"
             value={right?.id || ''}
-            onChange={(e) => setB(e.target.value)}
+            onValueChange={(value) => setB(value)}
           >
             {pool
               .filter((p) => p.id !== left?.id)
@@ -87,7 +88,7 @@ export function PlayerComparison({
                   {p.name} · {p.role} · {status(p)}
                 </option>
               ))}
-          </select>
+          </Select>
         </label>
       </div>
       {left && right ? (

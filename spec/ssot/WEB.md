@@ -1,12 +1,12 @@
 # WEB Browser game delivery
-> r24 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r26 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
 - WEB-2 [o] Play a fictional club founded in 1901 in the lowest supported professional division; choose country, name, colors, seed, and capital difficulty.
 - WEB-3 [o] Capital presets are 2, 1, and 0.5 times the founding annual operating budget; all other initial conditions remain identical for a shared seed.
 - WEB-4 [o] Dashboard, match observation, league/Europe, squad/market, manager, business, and history are playable views, with progress and actionable errors.
-- WEB-5 [o] Advance one round, finish the season, or advance a chosen number of seasons; manager resignation and saving failure interrupt unattended progress.
+- WEB-5 [o] Advance one round, finish the current season, or follow automatic day/next-match pacing; the public interface has no multi-season jump. Manager resignation and saving failure interrupt unattended progress.
 - WEB-6 [o] Free local play has no real-money purchases, identity collection, analytics upload, sign-in, or automatic cloud submission.
 - WEB-7 [o] New world creation with an existing save requires an explicit in-app replacement choice and offers export first.
 - WEB-8 [o] A runtime error preserves a recoverable save and offers retry/export; do not replace failed loading with a new world.
@@ -57,6 +57,18 @@
 - WEB-31 [o] Background automatic progression does not alternate the enabled state or appearance of manual match and preparation buttons. Foreground work, real save/worker errors, read-only ownership and critical club alerts remain explicit blockers. Manual observation stops automatic progress, waits for the current serialized operation to settle, and queues exactly one match; preparation pauses automatic progress and initializes from the settled current roster.
 - WEB-32 [o] Match presentation defaults to 1x with approximately 4 real seconds per simulated minute. Offer exactly 1x, 2x, 4x and 8x; the pace changes presentation only, preserves pause/seek behavior, and never changes settled outcomes or the game calendar.
 
+- WEB-33 [o] All single-choice dropdowns use one app-styled trigger and option list matching the club journal palette. Preserve selected values, labels, disabled choices and current filter/command semantics.
+  - Triggers and options have touch targets of at least44 CSS pixels; lists fit the viewport, scroll long samples, and remain usable inside dialogs.
+  - Expose named combobox/listbox/option semantics, the selected state and visible keyboard focus. Support arrows, Home/End, text lookup, Enter/Space selection, Escape dismissal and return focus to the trigger; outside interactions dismiss the list.
+  - Opening or browsing choices submits no game command and changes no world facts. Only committing a choice invokes the existing selection handler.
+
+- WEB-34 [o] A persistent quick-action launcher lets users open tactics/lineup preparation, training, player management and club investment while retaining the current match or league view and its selections.
+  - On mobile, place a floating launcher at the lower right above the safe-area menu; on desktop, expose a labeled launcher near the lower right. Neither covers essential match, navigation or primary controls.
+  - Opening the menu or an intervention sheet suspends automatic progression through independent suspension ownership; closing does not restart it. Read-only ownership, foreground work, errors and critical alerts remain command blockers.
+  - Preparation, training and investment sheets act through the existing engine commands. During recorded match observation, disclose that lineup/tactic/training changes affect subsequent fixtures and never rewrite the displayed settled match.
+- WEB-35 [o] Motion animates major interface transitions: screen and tab changes, dialogs, dropdowns, quick actions, disclosures and committed feedback. Use short opacity/transform motion without delaying controls, altering simulation clocks or replaying entrance motion on every automatic tick.
+  - Honor prefers-reduced-motion, keep focus/accessible state authoritative during transitions, cancel detached animations and preserve existing entry-size, input-latency and rendering budgets.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -64,6 +76,8 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r26 261008 WEB-5✎ chosen multi-season jumps→current-season and ordinary pacing; WEB-34+ contextual quick intervention; WEB-35+ interface motion
+- r25 261008 WEB-33+ platform option menus→shared styled accessible dropdowns
 - r24 261008 WEB-31+ automatic-tick button flashes→stable foreground admission; WEB-32+ 45-second replay and three rates→4 seconds/minute at 1x and four rates
 - r23 261008 WEB-30✎ preview 12→8 leading ranks to retain first-view responsiveness under the reference throttle
 - r22 261008 WEB-30+ full initial standings layout→12-rank preview with own-club context and explicit full expansion

@@ -1,3 +1,4 @@
+import { Select } from './Select';
 import { memo, useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { COUNTRIES, country } from '../../../../packages/catalogs/src/index';
@@ -227,11 +228,11 @@ const TablePane = memo(function TablePane({ client }: { client: GameClient }) {
       <div className={s.filters}>
         <label>
           국가{' '}
-          <select
+          <Select
             aria-label="국가"
             value={code}
-            onChange={(event) => {
-              setCode(event.target.value);
+            onValueChange={(value) => {
+              setCode(value);
               setTier(0);
               setGroup(0);
             }}
@@ -241,14 +242,15 @@ const TablePane = memo(function TablePane({ client }: { client: GameClient }) {
                 {cp.name}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <label>
           디비전{' '}
-          <select
+          <Select
+            aria-label="디비전"
             value={tier}
-            onChange={(event) => {
-              setTier(Number(event.target.value));
+            onValueChange={(value) => {
+              setTier(Number(value));
               setGroup(0);
             }}
           >
@@ -260,18 +262,22 @@ const TablePane = memo(function TablePane({ client }: { client: GameClient }) {
             {w.lower && code === own.country && (
               <option value={own.tier}>하부 리그 · 프로 복귀 도전</option>
             )}
-          </select>
+          </Select>
         </label>
         {cp.groups[tier]?.length > 1 && (
           <label>
             지역 그룹{' '}
-            <select value={group} onChange={(event) => setGroup(Number(event.target.value))}>
+            <Select
+              aria-label="지역 그룹"
+              value={group}
+              onValueChange={(value) => setGroup(Number(value))}
+            >
               {cp.groups[tier].map((_, i) => (
                 <option key={i} value={i}>
                   {String.fromCharCode(65 + i)}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
         )}
       </div>
@@ -394,12 +400,12 @@ export function LiveSeason({
           ))}
         </div>
         {mobile && (
-          <select
+          <Select
             className={t.statistics}
             aria-label="시즌 통계 보기"
             value={MOBILE_TABS.some(([id]) => id === tab) ? '' : tab}
-            onChange={(event) => {
-              if (event.target.value) setTab(event.target.value as Tab);
+            onValueChange={(value) => {
+              if (value) setTab(value as Tab);
             }}
           >
             <option value="" disabled>
@@ -412,7 +418,7 @@ export function LiveSeason({
                 </option>
               ),
             )}
-          </select>
+          </Select>
         )}
       </div>
       {TABS.map(([id, label]) => (

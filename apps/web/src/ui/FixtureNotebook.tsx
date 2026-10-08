@@ -1,3 +1,4 @@
+import { Select } from './Select';
 import { useEffect, useState } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
@@ -61,26 +62,26 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
             <div className={s.controls}>
               <label>
                 진행 상태{' '}
-                <select
+                <Select
                   aria-label="일정 진행 상태"
                   value={scope}
-                  onChange={(e) => {
-                    setScope(e.target.value);
+                  onValueChange={(value) => {
+                    setScope(value);
                     setPage(0);
                   }}
                 >
                   <option value="upcoming">예정 경기</option>
                   <option value="completed">완료 경기</option>
                   <option value="all">전체 일정</option>
-                </select>
+                </Select>
               </label>
               <label>
                 대회{' '}
-                <select
+                <Select
                   aria-label="일정 대회"
                   value={kind}
-                  onChange={(e) => {
-                    setKind(e.target.value);
+                  onValueChange={(value) => {
+                    setKind(value);
                     setPage(0);
                   }}
                 >
@@ -90,22 +91,22 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
                       {label}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
               <label>
                 장소{' '}
-                <select
+                <Select
                   aria-label="일정 홈 원정"
                   value={venue}
-                  onChange={(e) => {
-                    setVenue(e.target.value);
+                  onValueChange={(value) => {
+                    setVenue(value);
                     setPage(0);
                   }}
                 >
                   <option value="all">홈·원정</option>
                   <option value="home">홈</option>
                   <option value="away">원정</option>
-                </select>
+                </Select>
               </label>
             </div>
             <p className={s.note}>

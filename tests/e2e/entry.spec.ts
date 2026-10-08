@@ -53,6 +53,6 @@ test('observes event-backed metrics, historical locks and responsive navigation'
     'aria-selected',
     'true',
   );
-  await expect(page.getByLabel('국가', { exact: true })).toBeVisible();
+  await expect(page.getByRole('combobox', { name: '국가', exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
