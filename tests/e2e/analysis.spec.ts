@@ -1,6 +1,7 @@
 import { chooseOption, selectOptions } from './select';
 import { expect, test } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
+import { expectViewFits, horizontalOverflow } from './layout';
 
 test.use({ viewport: { width: 360, height: 740 } });
 
@@ -11,10 +12,7 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '더보기', exact: true })
-    .click();
+  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   await page
     .getByRole('dialog', { name: '전체 메뉴' })
     .getByRole('button', { name: '역사 보관함', exact: true })
@@ -47,7 +45,7 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
   expect(players.suggestedFilename()).toBe('haeram-players-career-1901.csv');
   expect((await readFile((await players.path())!, 'utf8')).trim().split('\r\n')).toHaveLength(19);
   expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 
 test('reproduces earned season records after reload on mobile', async ({ page }) => {
@@ -55,15 +53,15 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('record-book-cycle');
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  await page.getByRole('button', { name: '자세한 클럽 일지', exact: true }).click();
-  const journal = page.getByRole('dialog', { name: '클럽 일지 상세' });
-  await journal.getByRole('button', { name: '시즌 마무리' }).click();
-  await expect(page.getByTestId('calendar')).toHaveText('시즌 1902 · 라운드 0');
-  await journal.getByRole('button', { name: '창 닫기', exact: true }).click();
   await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '더보기', exact: true })
+    .getByTestId('club-hub')
+    .getByRole('button', { name: '시즌 상세', exact: true })
     .click();
+  const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
+  await journal.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
+  await expect(page.getByTestId('calendar')).toHaveText(/1902\/03 · 라운드 0$/);
+  await journal.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   await page
     .getByRole('dialog', { name: '전체 메뉴' })
     .getByRole('button', { name: '역사 보관함', exact: true })
@@ -76,7 +74,7 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   await page.reload();
   await page.getByText('우리 클럽 기록집', { exact: true }).click();
   await expect(book).toHaveText(facts, { useInnerText: true });
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 
 test('uses matching archive samples for season splits and competition filters', async ({
@@ -86,10 +84,7 @@ test('uses matching archive samples for season splits and competition filters', 
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '더보기', exact: true })
-    .click();
+  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   await page
     .getByRole('dialog', { name: '전체 메뉴' })
     .getByRole('button', { name: '역사 보관함', exact: true })
@@ -103,7 +98,7 @@ test('uses matching archive samples for season splits and competition filters', 
   await expect(analysis.getByRole('article', { name: '전체 성적' })).toContainText('전체 · 0경기');
   await chooseOption(page.getByRole('combobox', { name: '기록 대회 범위', exact: true }), 'all');
   await expect(analysis.getByRole('img', { name: /경기 득실차/ })).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 
 test('filters the own-club fixture notebook and reads a settled full-season record', async ({
@@ -140,7 +135,7 @@ test('filters the own-club fixture notebook and reads a settled full-season reco
   await expect(sheet.getByRole('region', { name: '경기 분석 리포트' })).toBeVisible();
   await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(page.getByTestId('game-date')).toHaveText(date);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 
 test('compares distinct own players with a shared scope and returns focus without progression', async ({
@@ -148,13 +143,10 @@ test('compares distinct own players with a shared scope and returns focus withou
 }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '더보기', exact: true })
-    .click();
+  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   await page
     .getByRole('dialog', { name: '전체 메뉴' })
-    .getByRole('button', { name: '선수와 영입', exact: true })
+    .getByRole('button', { name: '선수단', exact: true })
     .click();
   const opener = page.getByRole('button', { name: '우리 선수 비교', exact: true });
   await opener.click();
@@ -176,7 +168,7 @@ test('compares distinct own players with a shared scope and returns focus withou
     await select.scrollIntoViewIfNeeded();
     expect((await select.boundingBox())!.height).toBeGreaterThanOrEqual(44);
   }
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   await sheet.getByRole('button', { name: '비교 마치기', exact: true }).click();
   await expect(opener).toBeFocused();
   await expect(page.getByTestId('game-date')).toHaveText('1901년 8월 1일');
@@ -189,13 +181,10 @@ test('filters player samples and shows scoped per-90 evidence on a mobile profil
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '더보기', exact: true })
-    .click();
+  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   await page
     .getByRole('dialog', { name: '전체 메뉴' })
-    .getByRole('button', { name: '선수와 영입', exact: true })
+    .getByRole('button', { name: '선수단', exact: true })
     .click();
   await chooseOption(page.getByRole('combobox', { name: '선수 포지션 필터', exact: true }), 'FWD');
   await chooseOption(
@@ -219,7 +208,7 @@ test('filters player samples and shows scoped per-90 evidence on a mobile profil
   await profile.getByRole('button', { name: '창 닫기', exact: true }).click();
   await chooseOption(page.getByRole('combobox', { name: '최소 출전 분', exact: true }), '180');
   await expect(page.getByText('이 조건에 맞는 선수가 없어요.', { exact: true })).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 
 test('jumps between recorded periods without changing the final result or calendar', async ({
@@ -257,7 +246,7 @@ test('reveals the recorded match report only after choosing the final result', a
   await expect(report).toContainText('정규 90분 최종 집계');
   await expect(report.getByRole('article')).toHaveCount(11);
   await expect(report).toContainText('패스 정확도');
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 
 test('compares tactical rules as previews while the applied tactic and date stay unchanged', async ({
@@ -266,10 +255,7 @@ test('compares tactical rules as previews while the applied tactic and date stay
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
-  const appliedText = await page
-    .getByTestId('club-hub')
-    .locator('[aria-label="다음 경기 준비"] p')
-    .innerText();
+  const appliedText = await page.getByTestId('hub-preparation').innerText();
   await page.getByRole('button', { name: '전술·선발 준비', exact: true }).click();
   const sheet = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
   await sheet.getByText('전술 실험실 · 네 가지 비교', { exact: true }).click();
@@ -281,9 +267,7 @@ test('compares tactical rules as previews while the applied tactic and date stay
   await expect(press).toHaveAttribute('aria-pressed', 'true');
   expect((await press.boundingBox())!.height).toBeGreaterThanOrEqual(44);
   await sheet.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
-  await expect(page.getByTestId('club-hub').locator('[aria-label="다음 경기 준비"] p')).toHaveText(
-    appliedText,
-  );
+  await expect(page.getByTestId('hub-preparation')).toHaveText(appliedText);
   await expect(page.getByTestId('game-date')).toHaveText('1901년 8월 1일');
 });
 
@@ -299,8 +283,8 @@ test('opens evidence-based opponent scouting without progressing the world', asy
   await expect(dossier).toContainText('최근 30경기 안의 맞대결 · 0경기');
   await expect(dossier).toContainText('아직 완료한 리그 경기가 없어요.');
   expect((await toggle.boundingBox())!.height).toBeGreaterThanOrEqual(44);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   await sheet.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
   await expect(page.getByTestId('game-date')).toHaveText('1901년 8월 1일');
-  expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(742);
+  await expectViewFits(page);
 });

@@ -49,7 +49,7 @@ export function runFixture(definition: FixtureDefinition) {
   for (const command of definition.commands) {
     if (command.type === 'advance') for (let i = 0; i < command.rounds; i++) advanceRound(w);
     else if (command.type === 'season') for (let i = 0; i < command.count; i++) simulateSeason(w);
-    else operate(w, command);
+    else if (command.type !== 'advance-to-event') operate(w, command);
   }
   return facts(w);
 }

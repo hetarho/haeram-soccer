@@ -39,3 +39,13 @@ export function daysUntilNextMatch(w: World) {
   const next = nextOwnFixture(w);
   return next ? Math.max(0, fixtureDay(next) - currentDay(w)) : undefined;
 }
+
+/** Day index of a calendar date inside the season that starts on August 1 of `seasonYear`. */
+export function seasonDayOf(seasonYear: number, month: number, date: number) {
+  const year = month >= 8 ? seasonYear : seasonYear + 1;
+  return (Date.UTC(year, month - 1, date) - Date.UTC(seasonYear, 7, 1)) / DAY_MS;
+}
+/** Human date for any season day, used by schedules that are not fixtures. */
+export function seasonDayLabel(seasonYear: number, day: number) {
+  return dateLabel(seasonYear, day);
+}

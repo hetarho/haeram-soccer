@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { chooseOption, optionList } from './select';
+import { horizontalOverflow, settle } from './layout';
 
 test('selects by keyboard, exposes selection and dismisses without committing previews', async ({
   page,
@@ -62,6 +63,7 @@ for (const viewport of [
     const inspector = page.getByRole('combobox', { name: '살펴볼 선수', exact: true });
     const players = await optionList(inspector);
     await expect(players.getByRole('option')).toHaveCount(22);
+    await settle(page);
     const bounds = await players.boundingBox();
     expect(bounds!.x).toBeGreaterThanOrEqual(0);
     expect(bounds!.y).toBeGreaterThanOrEqual(0);
@@ -77,8 +79,6 @@ for (const viewport of [
     await expect(inspector).toHaveAttribute('data-value', '1:10');
     await expect(inspector).toBeFocused();
     await expect(list).toHaveCount(0);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
-      viewport.width,
-    );
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   });
 }

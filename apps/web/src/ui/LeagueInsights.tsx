@@ -78,14 +78,18 @@ export function Standings({ w, ids, limit }: { w: World; ids: string[]; limit?: 
           <tr>
             <th scope="col">순위</th>
             <th scope="col">클럽</th>
-            <th scope="col">변동</th>
+            <th scope="col" className={s.optional}>
+              변동
+            </th>
             <th scope="col">경기</th>
             <th scope="col">승</th>
             <th scope="col">무</th>
             <th scope="col">패</th>
             <th scope="col">득실</th>
             <th scope="col">승점</th>
-            <th scope="col">최근 5경기</th>
+            <th scope="col" className={s.optional}>
+              최근 5경기
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -117,7 +121,7 @@ export function Standings({ w, ids, limit }: { w: World; ids: string[]; limit?: 
                   {club.name}
                   {id === w.playerClub && <span className={s.myClub}>우리 팀</span>}
                 </th>
-                <td>
+                <td className={s.optional}>
                   <Movement change={rankChange(timeline, id)} />
                 </td>
                 <td>{t.played}</td>
@@ -129,7 +133,7 @@ export function Standings({ w, ids, limit }: { w: World; ids: string[]; limit?: 
                   {t.gf - t.ga}
                 </td>
                 <td className={s.points}>{t.points}</td>
-                <td>
+                <td className={s.optional}>
                   <Form results={formFor(fixtures, id)} />
                 </td>
               </tr>
@@ -340,16 +344,17 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
           </div>
           {leagueGame && (
             <div className={s.projection} aria-label="다음 경기 결과별 승점">
+              <h5>다음 경기 후 우리 승점 · 지금 {t.points}점</h5>
               <span>
-                승리 <b>{t.points + 3}점</b>
+                이기면 <b>{t.points + 3}점</b> <small>+3</small>
               </span>
               <span>
-                무승부 <b>{t.points + 1}점</b>
+                비기면 <b>{t.points + 1}점</b> <small>+1</small>
               </span>
               <span>
-                패배 <b>{t.points}점</b>
+                지면 <b>{t.points}점</b> <small>+0</small>
               </span>
-              <small>순위는 같은 라운드의 다른 결과에 따라 결정됩니다.</small>
+              <small>순위는 같은 라운드 다른 팀의 결과에 따라 달라져요.</small>
             </div>
           )}
         </div>

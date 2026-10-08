@@ -16,26 +16,30 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 3 | 3 | - | 2 |
-| WEB | 26 | 26 | - | 0 |
+| WEB | 30 | 30 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
-| CLUB | 5 | 5 | - | 0 |
+| CLUB | 7 | 7 | - | 0 |
 | MATCH | 3 | 3 | - | 0 |
 | LEAGUE | 1 | 1 | - | 0 |
-| STAFF | 2 | 2 | - | 0 |
-| ECON | 3 | 3 | - | 0 |
+| STAFF | 4 | 4 | - | 0 |
+| ECON | 5 | 5 | - | 0 |
 | EURO | 1 | 1 | - | 0 |
 | HIST | 3 | 3 | - | 0 |
-| SAVE | 3 | 3 | - | 0 |
+| SAVE | 4 | 4 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T041 | Motion throughout app interactions | WEB ARCH | T039 T040 | todo |
+| T041 | Motion throughout app interactions | WEB ARCH | T039 T040 | done@261009 |
 
 ## next
-- implement-task T041; interface motion and final accumulated release verification.
+- Release verification on the accumulated source: all three browsers and the production preview gates.
 
 ## log
+- 261009 WEB r30 CLUB r7 STAFF r4 implemented directly: seven tabs, home-only clock, team state, intervention levels, morale, motion; T041 done
+- 261008 WEB r29 CLUB r6 STAFF r3 ECON r5 implemented directly: events and inbox, coaching staff, academy, transfer windows and bids, cash projection
+- 261008 WEB r28 implemented directly: clock stops only for watching/blockers, fixed shell scroller, league tabs
+- 261008 WEB r27 ECON r4 implemented directly: game HUD/theme, grouped routing, outcome cards, consequence previews, club policy board
 - 261008 T040 done; quick interventions verified in Chromium, Firefox and WebKit
 - 261008 implement-task T040 start (ui)
 - 261008 T039 done; styled selectors verified in Chromium, Firefox and WebKit

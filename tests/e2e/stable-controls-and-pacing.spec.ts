@@ -1,10 +1,13 @@
 import { chooseOption, selectOptions } from './select';
 import { expect, test } from '@playwright/test';
+import { stopOnlyFor } from './events';
 test.use({ viewport: { width: 390, height: 844 } });
 
-test('keeps both home controls stable over real automatic ticks and pauses before preparation', async ({
+test('keeps both home controls stable over real automatic ticks and keeps running through preparation', async ({
   page,
 }) => {
+  // Keep daily progress uninterrupted: no match eve or offer may stop this run.
+  await stopOnlyFor(page, []);
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
@@ -41,13 +44,19 @@ test('keeps both home controls stable over real automatic ticks and pauses befor
   await expect(
     sheet.getByRole('button', { name: '감독에게 전술 요청', exact: true }),
   ).toBeEnabled();
+  // Preparing never pauses the shared clock; only watching a match stops it.
   const date = await page.getByTestId('game-date').innerText();
-  await page.waitForTimeout(1200);
-  await expect(page.getByTestId('game-date')).toHaveText(date);
+  await expect(page.getByTestId('game-date')).not.toHaveText(date);
   await sheet.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
-  await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
+  await expect(sheet).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
   await watch.click();
   await expect(page.getByTestId('match-theatre')).toBeVisible();
+  // Watching stops the run (not just the away pause), so home does not resume it.
+  const mini = page.getByTestId('mini-clock');
+  await expect(mini).toContainText('관전을 위해 자동 진행을 멈췄습니다');
+  await mini.click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
   await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
 });
 

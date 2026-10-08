@@ -5,7 +5,7 @@ test('built deep links, module worker, cache/CSP and missing assets', async ({ p
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.goto('/history');
-  await expect(page.getByRole('heading', { name: '작은 선택들이 만든, 긴 역사.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '역사 보관함', exact: true })).toBeVisible();
   await page.reload();
   await expect(page.getByRole('combobox', { name: '기록 시즌', exact: true })).toBeVisible();
   const html = await request.get('/history');

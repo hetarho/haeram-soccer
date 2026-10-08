@@ -1,0 +1,240 @@
+.card {
+  position: fixed;
+  z-index: 85;
+  right: 24px;
+  bottom: 24px;
+  width: min(420px, calc(100vw - 24px));
+  max-height: min(60dvh, 420px);
+  overflow-y: auto;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid var(--gold-edge);
+  background:
+    radial-gradient(360px 120px at 100% 0%, rgba(255, 203, 71, 0.18), transparent 70%),
+    linear-gradient(180deg, #2a2512 0%, var(--surface) 100%);
+  box-shadow:
+    0 16px 44px rgba(0, 0, 0, 0.55),
+    0 0 0 3px rgba(255, 203, 71, 0.15);
+  animation: event-in 240ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+.card header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.kind {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  color: var(--gold);
+}
+.card header small {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.card h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 17px;
+  line-height: 1.3;
+}
+.card h3 i {
+  flex: 0 0 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+}
+.card p {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+.bid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 6px;
+  margin: 10px 0 0;
+}
+.bid div {
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.25);
+}
+.bid dt {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+.bid dd {
+  margin: 0;
+  font-weight: 800;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.actions {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+.actions button {
+  min-height: 48px;
+  font-size: 14px;
+}
+.actions .primary {
+  color: var(--on-accent);
+  background: var(--gold-fill);
+  border-color: var(--gold-edge);
+  box-shadow: 0 3px 0 var(--gold-edge);
+}
+.bell {
+  position: relative;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+}
+.bell b {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  font-size: 11px;
+  line-height: 20px;
+  color: #2a0f02;
+  background: var(--warm);
+  box-shadow: 0 0 0 2px var(--bg);
+}
+.inbox {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.inbox li {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+.inbox li.unread {
+  border-color: var(--gold-edge);
+}
+.inbox small {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+.inbox span {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.inboxActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.inboxActions button {
+  min-height: 48px;
+}
+.empty {
+  color: var(--text-muted);
+}
+@keyframes event-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+}
+@media (max-width: 760px) {
+  .card {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    animation: none;
+  }
+}
+
+.skip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin-top: 8px;
+  padding: 0 10px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.25);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.skip input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes pop {
+  0% {
+    transform: scale(0.92);
+  }
+  60% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+.inbox li {
+  animation: rise 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.inbox li:nth-child(2) {
+  animation-delay: 30ms;
+}
+.inbox li:nth-child(3) {
+  animation-delay: 60ms;
+}
+.inbox li:nth-child(4) {
+  animation-delay: 90ms;
+}
+.inbox li:nth-child(5) {
+  animation-delay: 120ms;
+}
+.inbox li:nth-child(6) {
+  animation-delay: 150ms;
+}
+.inbox li:nth-child(7) {
+  animation-delay: 180ms;
+}
+.inbox li:nth-child(8) {
+  animation-delay: 210ms;
+}
+.bell b {
+  animation: pop 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}

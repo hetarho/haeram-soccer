@@ -9,6 +9,7 @@ import type {
 } from '../../contracts/src/types';
 import { clamp, integer, random, zeroMetrics } from './primitives';
 import { rating, startingSquad, findClub } from './world';
+import { moraleStrength } from './morale';
 import { npcTactic, tacticalProfile } from './strategy';
 import { MatchMotion } from './motion';
 export { MATCH_MOTION_CONFIG, playerTraits, teamMotionProfile } from './motion';
@@ -40,8 +41,11 @@ export function simulateMatch(
     contribution = random(`${w.seed}:contribution:${f.id}`);
   const squads: [Player[], Player[]] = [startingSquad(w, home), startingSquad(w, away)];
   const strength = [
-    rating(w, home) + 3 + (home.id === w.playerClub ? (w.manager.ability - 50) / 4 : 4),
-    rating(w, away) + (away.id === w.playerClub ? (w.manager.ability - 50) / 4 : 4),
+    rating(w, home) +
+      3 +
+      (home.id === w.playerClub ? (w.manager.ability - 50) / 4 + moraleStrength(w) : 4),
+    rating(w, away) +
+      (away.id === w.playerClub ? (w.manager.ability - 50) / 4 + moraleStrength(w) : 4),
   ];
   const tactics: [Tactic, Tactic] = teams.map((c) =>
     c.id === w.playerClub ? w.tactic : npcTactic(c),

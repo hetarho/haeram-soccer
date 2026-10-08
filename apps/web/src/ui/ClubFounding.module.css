@@ -2,11 +2,11 @@
   max-width: 560px;
   margin: auto;
   padding: 20px 0;
-  color: #294c35;
+  color: var(--text);
 }
 .start header > span {
   font-size: 11px;
-  color: #526d49;
+  color: var(--text-muted);
   letter-spacing: 1.6px;
 }
 .start h2 {
@@ -18,7 +18,7 @@
 .start header p {
   font-size: 14px;
   line-height: 1.6;
-  color: #52664c;
+  color: var(--text-muted);
   max-width: 400px;
   margin: 0;
 }
@@ -27,9 +27,9 @@
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  border: 1px solid #cddabc;
+  border: 1px solid var(--line-strong);
   border-radius: 12px;
-  background: #eaf0df;
+  background: var(--surface-2);
   padding: 15px;
   margin: 20px 0;
 }
@@ -40,11 +40,11 @@
   font-size: 13px;
 }
 .loop b {
-  color: #61764b;
+  color: var(--text-muted);
   font-size: 11px;
 }
 .loop i {
-  color: #829774;
+  color: var(--text-faint);
 }
 .start form {
   display: grid;
@@ -54,15 +54,15 @@
   display: grid;
   gap: 6px;
   font-size: 13px;
-  color: #435c3c;
+  color: var(--text);
 }
 .start input,
 .start :global([data-select-trigger]) {
   width: 100%;
   font-size: 16px;
   min-height: 48px;
-  background: #fffdf7;
-  border: 1px solid #bdcdb1;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
 }
 .start fieldset {
   border: 0;
@@ -88,16 +88,16 @@
   min-height: 72px;
 }
 .capital button[aria-pressed='true'] {
-  background: #e3ecd4;
-  border: 2px solid #527b43;
-  color: #254a33;
+  background: var(--surface-2);
+  border: 2px solid var(--accent);
+  color: var(--text);
 }
 .capital b {
   font-size: 13px;
 }
 .capital small {
   font-size: 11px;
-  color: #526847;
+  color: var(--text-muted);
 }
 .advanced {
   font-size: 13px;
@@ -107,7 +107,7 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  color: #45683b;
+  color: var(--text);
 }
 .advanced summary::before {
   content: '＋';
@@ -120,13 +120,13 @@
   display: grid;
   gap: 12px;
   padding: 12px;
-  border: 1px solid #d4dfc8;
+  border: 1px solid var(--line);
   border-radius: 10px;
 }
 .advanced p {
   font-size: 12px;
   line-height: 1.5;
-  color: #516b46;
+  color: var(--text-muted);
   margin: 0;
 }
 .origin {
@@ -137,12 +137,12 @@
 .origin small {
   font-size: 12px;
   line-height: 1.5;
-  color: #52634a;
+  color: var(--text-muted);
 }
 .play {
-  background: #285e3e;
-  color: #fff8e6;
-  border-color: #285e3e;
+  background: var(--accent-fill);
+  color: var(--on-accent);
+  border-color: var(--accent);
   min-height: 52px;
   width: 100%;
   font-size: 16px;

@@ -17,7 +17,17 @@ import {
   sponsorOffers,
   campaignOffers,
 } from '../../../../packages/engine/src/operations';
-const index = z.number().int().min(0).max(7);
+const index = z.number().int().min(0).max(15);
+const staffRole = z.enum([
+  'assistant',
+  'attack',
+  'defense',
+  'goalkeeping',
+  'fitness',
+  'youth',
+  'scout',
+]);
+const ref = z.string().min(1).max(100);
 const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('advance'), rounds: z.number().int().min(1).max(46) }),
   z.object({ type: z.literal('advance-days'), days: z.number().int().min(1).max(31) }),
@@ -33,6 +43,29 @@ const command = z.discriminatedUnion('type', [
     ids: z.array(z.string().min(1).max(100)).length(11).nullable(),
   }),
   z.object({ type: z.literal('training'), focus: z.enum(['balanced', 'youth', 'recovery']) }),
+  z.object({
+    type: z.literal('policy'),
+    key: z.enum(['support', 'recruitment', 'marketing']),
+    level: z.literal([1, 2, 3, 4, 5]),
+  }),
+  z.object({ type: z.literal('hire-staff'), role: staffRole, candidate: index }),
+  z.object({ type: z.literal('release-staff'), role: staffRole }),
+  z.object({ type: z.literal('promote-youth'), id: ref }),
+  z.object({ type: z.literal('release-youth'), id: ref }),
+  z.object({
+    type: z.literal('delegate'),
+    key: z.enum(['training', 'academy', 'transfers']),
+    value: z.boolean(),
+  }),
+  z.object({
+    type: z.literal('bid'),
+    candidate: index,
+    fee: z.string().regex(/^\d{1,40}$/),
+    loan: z.boolean().optional(),
+  }),
+  z.object({ type: z.literal('respond-bid'), id: ref, accept: z.boolean() }),
+  z.object({ type: z.literal('read-inbox'), id: ref.optional() }),
+  z.object({ type: z.literal('advance-to-event'), matches: z.boolean().optional() }),
   z.object({ type: z.literal('hire'), candidate: index }),
   z.object({ type: z.literal('recruit'), candidate: index, loan: z.boolean().optional() }),
   z.object({ type: z.literal('sell'), id: z.string().max(100) }),

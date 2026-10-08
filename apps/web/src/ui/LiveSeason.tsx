@@ -2,7 +2,7 @@ import { Select } from './Select';
 import { memo, useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { COUNTRIES, country } from '../../../../packages/catalogs/src/index';
-import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
+import { daysUntilNextMatch, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { clubOf, startingSquad, tacticLabel } from '../../../../packages/engine/src/world';
 import { lineupSummary } from '../../../../packages/engine/src/strategy';
 import type { GameClient } from '../runtime/client';
@@ -27,14 +27,14 @@ import t from './LiveSeason.module.css';
 const TABS = [
   ['match', '경기'],
   ['table', '순위표'],
+  ['results', '라운드 결과'],
   ['rank', '순위 추이'],
   ['scorers', '득점 순위'],
   ['scorer-trend', '득점왕 추이'],
-  ['strategy', '전술·선발'],
-  ['results', '일정·결과'],
 ] as const;
 type Tab = (typeof TABS)[number][0];
-const MOBILE_TABS = TABS.filter(([id]) => ['match', 'table', 'strategy'].includes(id));
+/** The match theatre has no tabs; every league view is a tab of one bar. */
+const LEAGUE_TABS = TABS.filter(([id]) => id !== 'match');
 
 function NextMatchAction({
   client,
@@ -48,9 +48,12 @@ function NextMatchAction({
   const readonly = useGameState((state) => state.readonly);
   const error = useGameState((state) => state.error);
   const critical = useGameState((state) => state.view?.world.critical);
+  const days = useGameState((state) => state.view && daysUntilNextMatch(state.view.world));
   return (
     <button
       className={t.watch}
+      aria-label="다음 경기 관전"
+      aria-describedby="match-next-hint"
       data-testid="match-next-action"
       disabled={pending || busy || readonly || !!error || !!critical}
       onClick={() => {
@@ -67,7 +70,12 @@ function NextMatchAction({
           .finally(() => setPending(false));
       }}
     >
-      다음 경기 관전
+      <b>
+        다음 경기 관전 <span aria-hidden="true">▶</span>
+      </b>
+      <small id="match-next-hint">
+        {days ? `${days}일 진행 후 킥오프` : days === 0 ? '지금 바로 킥오프' : '새 시즌 일정 시작'}
+      </small>
     </button>
   );
 }
@@ -153,8 +161,8 @@ const MatchPane = memo(function MatchPane({
   return (
     <div className={t.matchPane} data-testid="match-theatre">
       <header className={t.heading}>
-        <h2>90분의 작은 드라마.</h2>
-        <p>우리 선발의 선택을 지켜보고 다음 경기를 준비해요.</p>
+        <h2>매치데이</h2>
+        <p>경기 결과는 킥오프 전에 이미 정해져 있어요. 속도를 바꿔도 결과는 같아요.</p>
       </header>
       <section>
         <Pitch
@@ -167,7 +175,7 @@ const MatchPane = memo(function MatchPane({
             <div className={t.coreActions}>
               <MatchFeedback finished={finished} />
               <div className={t.nextActions}>
-                <button onClick={onPrepare}>다음 경기 준비</button>
+                <button onClick={onPrepare}>전술·선발 준비</button>
                 <NextMatchAction client={client} controller={controller} />
               </div>
             </div>
@@ -305,21 +313,6 @@ const ResultsPane = memo(function ResultsPane() {
   const w = useGameState(selectLeagueWorld)!;
   return <RoundResults w={w} ids={ownLeagueIds(w)} />;
 });
-const StrategyPane = memo(function StrategyPane({
-  client,
-  controller,
-}: {
-  client: GameClient;
-  controller: ProgressionController;
-}) {
-  const w = useGameState(selectStrategyWorld)!;
-  const onSuspend = useCallback(
-    (suspended: boolean) => controller.setSuspended(suspended),
-    [controller],
-  );
-  return <StrategyPanel w={w} client={client} onSuspendChange={onSuspend} />;
-});
-
 /** Panels stay mounted. The simulation and canvas keep their identity when tabs change. */
 export function LiveSeason({
   page,
@@ -332,37 +325,26 @@ export function LiveSeason({
 }) {
   const active = page === 'match' || page === 'league';
   const requestedPage = useNavigation((state) => state.page);
-  const [mobile, setMobile] = useState(() => window.matchMedia('(max-width: 760px)').matches);
-  useEffect(() => {
-    const media = window.matchMedia('(max-width: 760px)');
-    const change = () => setMobile(media.matches);
-    media.addEventListener('change', change);
-    return () => media.removeEventListener('change', change);
-  }, []);
-  const visibleTabs = mobile ? MOBILE_TABS : TABS;
-  const [tab, setTab] = useState<Tab>(() => {
+  const [preparing, setPreparing] = useState(false);
+  const visibleTabs = LEAGUE_TABS;
+  const [leagueTab, setLeagueTab] = useState<Tab>(() => {
     const saved = new URLSearchParams(location.search).get('view');
-    return TABS.find(([id]) => id === saved)?.[0] || (page === 'league' ? 'table' : 'match');
+    return LEAGUE_TABS.find(([id]) => id === saved)?.[0] || 'table';
   });
-  const [previousPage, setPreviousPage] = useState(page);
-  // Align the route before committing children; avoid painting the pitch before the table.
-  if (previousPage !== page) {
-    setPreviousPage(page);
-    if (active) setTab(page === 'league' ? 'table' : 'match');
-  }
+  const tab: Tab = page === 'match' ? 'match' : leagueTab;
   useEffect(() => {
-    if (!active) return;
+    if (page !== 'league') return;
     const url = new URL(location.href);
-    url.searchParams.set('view', tab);
+    url.searchParams.set('view', leagueTab);
     history.replaceState(history.state, '', `${url.pathname}${url.search}${url.hash}`);
-  }, [active, tab]);
+  }, [page, leagueTab]);
   useEffect(() => {
     controller.setWatching(active && requestedPage === page && tab === 'match');
   }, [active, requestedPage, page, tab, controller]);
-  const onPrepare = useCallback(() => {
-    setTab('strategy');
-    document.getElementById('season-tab-strategy')?.focus();
-  }, []);
+  useEffect(() => {
+    if (page !== 'match') setPreparing(false);
+  }, [page]);
+  const onPrepare = useCallback(() => setPreparing(true), []);
   const keyboard = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
     event.preventDefault();
@@ -373,68 +355,40 @@ export function LiveSeason({
           ? visibleTabs.length - 1
           : (index + (event.key === 'ArrowRight' ? 1 : -1) + visibleTabs.length) %
             visibleTabs.length;
-    setTab(visibleTabs[next][0]);
+    setLeagueTab(visibleTabs[next][0]);
     document.getElementById(`season-tab-${visibleTabs[next][0]}`)?.focus();
   };
+  const inTabs = (id: Tab) => visibleTabs.some(([visible]) => visible === id);
   return (
     <div hidden={!active} data-testid="live-season" className={t.liveSeason}>
-      <div className={t.navigation}>
-        <div className={`${s.seasonTabs} ${t.tabs}`} role="tablist" aria-label="시즌 보기">
-          {visibleTabs.map(([id, label], i) => (
-            <button
-              key={id}
-              id={`season-tab-${id}`}
-              role="tab"
-              aria-selected={tab === id}
-              aria-controls={`season-panel-${id}`}
-              tabIndex={
-                tab === id || (i === 0 && !visibleTabs.some(([visible]) => visible === tab))
-                  ? 0
-                  : -1
-              }
-              onKeyDown={(event) => keyboard(event, i)}
-              onClick={() => setTab(id)}
-            >
-              {label}
-            </button>
-          ))}
+      {page === 'league' && (
+        <div className={t.navigation}>
+          <div className={`${s.seasonTabs} ${t.tabs}`} role="tablist" aria-label="리그 보기">
+            {visibleTabs.map(([id, label], i) => (
+              <button
+                key={id}
+                id={`season-tab-${id}`}
+                role="tab"
+                aria-selected={tab === id}
+                aria-controls={`season-panel-${id}`}
+                tabIndex={tab === id || (i === 0 && !inTabs(tab)) ? 0 : -1}
+                onKeyDown={(event) => keyboard(event, i)}
+                onClick={() => setLeagueTab(id)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
-        {mobile && (
-          <Select
-            className={t.statistics}
-            aria-label="시즌 통계 보기"
-            value={MOBILE_TABS.some(([id]) => id === tab) ? '' : tab}
-            onValueChange={(value) => {
-              if (value) setTab(value as Tab);
-            }}
-          >
-            <option value="" disabled>
-              통계
-            </option>
-            {TABS.filter(([id]) => !MOBILE_TABS.some(([visible]) => visible === id)).map(
-              ([id, label]) => (
-                <option key={id} value={id}>
-                  {label}
-                </option>
-              ),
-            )}
-          </Select>
-        )}
-      </div>
+      )}
       {TABS.map(([id, label]) => (
         <section
           key={id}
           id={`season-panel-${id}`}
           className={`${s.seasonPane} ${t.pane}`}
-          role="tabpanel"
-          aria-labelledby={
-            !mobile || MOBILE_TABS.some(([visible]) => visible === id)
-              ? `season-tab-${id}`
-              : undefined
-          }
-          aria-label={
-            mobile && !MOBILE_TABS.some(([visible]) => visible === id) ? label : undefined
-          }
+          role={id === 'match' ? undefined : 'tabpanel'}
+          aria-labelledby={id !== 'match' && inTabs(id) ? `season-tab-${id}` : undefined}
+          aria-label={id === 'match' ? '경기 관전' : inTabs(id) ? undefined : label}
           hidden={tab !== id}
         >
           {id === 'match' ? (
@@ -447,13 +401,18 @@ export function LiveSeason({
             <ScorersPane />
           ) : id === 'scorer-trend' ? (
             <ScorerTrendPane />
-          ) : id === 'strategy' ? (
-            <StrategyPane client={client} controller={controller} />
           ) : (
             <ResultsPane />
           )}
         </section>
       ))}
+      {preparing && page === 'match' && (
+        <StrategyPanelSheet client={client} onClose={() => setPreparing(false)} />
+      )}
     </div>
   );
+}
+function StrategyPanelSheet({ client, onClose }: { client: GameClient; onClose: () => void }) {
+  const w = useGameState(selectStrategyWorld)!;
+  return <StrategyPanel w={w} client={client} onClose={onClose} />;
 }

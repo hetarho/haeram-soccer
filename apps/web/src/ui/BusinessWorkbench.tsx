@@ -7,7 +7,6 @@ import { ratio } from '../../../../packages/engine/src/primitives';
 import {
   facilityInvestmentPreview,
   fixedCostRunway,
-  ticketInvestmentPreview,
 } from '../../../../packages/engine/src/investment';
 import type { ClientState, GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
@@ -19,8 +18,7 @@ import s from './BusinessWorkbench.module.css';
 const tabs = [
   ['facility', '시설'],
   ['sponsor', '후원'],
-  ['marketing', '마케팅'],
-  ['ticket', '티켓'],
+  ['marketing', '캠페인'],
 ] as const;
 type Tab = (typeof tabs)[number][0];
 const sponsorNames = {
@@ -44,19 +42,15 @@ export function BusinessWorkbench({
     club = clubOf(w),
     finance = state.view!.finance || financialBreakdown(w);
   const format = (value: string) => money(value, club.country, w.year);
-  const processing = useGameState((current) => current.processing);
+  const acting = useGameState((current) => !!current.pendingActions);
   const readonly = useGameState((current) => current.readonly);
   const error = useGameState((current) => current.error);
-  const blocked = processing || readonly || !!error;
+  const blocked = acting || readonly || !!error;
   const [tab, setTab] = useState<Tab>('facility');
   const [sheet, setSheet] = useState<'facility' | 'ledger' | 'legacy'>();
-  const [draft, setDraft] = useState(String(w.ticket));
   const [message, setMessage] = useState('');
   const tabId = useId();
   const facility = facilityInvestmentPreview(w);
-  const price = Number(draft),
-    validPrice = draft.trim() !== '' && Number.isFinite(price) && price >= 0.01 && price <= 0.5;
-  const ticket = validPrice ? ticketInvestmentPreview(w, price) : undefined;
   const games = Math.max(
     1,
     w.fixtures.filter(
@@ -95,13 +89,13 @@ export function BusinessWorkbench({
   return (
     <section className={s.workbench} aria-label="클럽 투자 계획">
       <header className={s.heading}>
-        <h2>클럽에 투자하기</h2>
-        <span>내일의 성장, 오늘의 여유.</span>
+        <h2>투자와 계약</h2>
+        <span>한 번 지출하고 오래 남는 결정</span>
       </header>
       <div className={s.summary}>
         <div>
-          <span>운영 자금</span>
-          <b>{format(w.cash)}</b>
+          <span>연간 고정 지출</span>
+          <b>{format(finance.costs.annual)}</b>
         </div>
         <div>
           <span>다음 고정 지출</span>
@@ -113,7 +107,7 @@ export function BusinessWorkbench({
         </div>
       </div>
       <p className={s.note}>
-        자금 여유는 급여와 시설 유지비 기준이에요. 미래 수입과 경기 개최비는 별도로 봐요.
+        자금 여유는 급여·시설 유지비·마케팅비 기준이에요. 미래 수입과 경기 개최비는 별도로 봐요.
       </p>
       {BigInt(w.cash) < 0n && contribution}
       <div className={s.tabs} role="tablist" aria-label="클럽 투자 선택">
@@ -390,88 +384,7 @@ export function BusinessWorkbench({
                 </p>
               ))}
           </>
-        ) : (
-          <>
-            <div className={s.panelHeading}>
-              <h3>가격과 관중 사이</h3>
-              <span>현재 기준가격 {w.ticket.toFixed(2)}</span>
-            </div>
-            <label className={s.ticketInput}>
-              1901년 기준 티켓 가격
-              <input
-                aria-label="티켓 기본가격"
-                type="number"
-                min="0.01"
-                max="0.5"
-                step="0.01"
-                value={draft}
-                onChange={(event) => setDraft(event.target.value)}
-                disabled={blocked}
-              />
-            </label>
-            {ticket ? (
-              <>
-                <div className={s.gates} aria-label="티켓 가격 예상 비교">
-                  {(
-                    [
-                      ['현재 가격', ticket.before],
-                      ['새 가격 초안', ticket.after],
-                    ] as const
-                  ).map(([label, gate]) => (
-                    <div key={label}>
-                      <h4>{label}</h4>
-                      <dl>
-                        <div>
-                          <dt>예상 관중</dt>
-                          <dd>
-                            {number(gate.attendanceLow)}–{number(gate.attendanceHigh)}명
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>입장·상품 수입</dt>
-                          <dd>
-                            {format(gate.incomeLow)}–{format(gate.incomeHigh)}
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>경기 개최비</dt>
-                          <dd>
-                            {format(gate.costLow)}–{format(gate.costHigh)}
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>개최비를 뺀 수지</dt>
-                          <dd>
-                            {format((BigInt(gate.incomeLow) - BigInt(gate.costLow)).toString())}–
-                            {format((BigInt(gate.incomeHigh) - BigInt(gate.costHigh)).toString())}
-                          </dd>
-                        </div>
-                      </dl>
-                    </div>
-                  ))}
-                </div>
-                <p className={s.note}>
-                  새 가격 1장 {format(quote(club.country, w.year, price))} · 높은 가격은 수요를
-                  줄여요. 적용하기 전까지 실제 가격은 유지됩니다.
-                </p>
-              </>
-            ) : (
-              <p className={s.warning}>기준가격은 0.01–0.50 사이로 입력하세요.</p>
-            )}
-            <button
-              className={s.primary}
-              disabled={blocked || !validPrice || price === w.ticket}
-              onClick={() =>
-                void act(
-                  { type: 'ticket', price },
-                  '티켓 가격을 적용했어요. 다음 홈 경기부터 반영됩니다.',
-                )
-              }
-            >
-              티켓 가격 적용
-            </button>
-          </>
-        )}
+        ) : null}
       </div>
       {message && (
         <p className={s.message} role="status">

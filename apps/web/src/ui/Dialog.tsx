@@ -1,6 +1,15 @@
 import { Children, isValidElement, useEffect, useId, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import s from './App.module.css';
+import { exit, play, reducedMotion } from './motion';
+
+const sheet = () => {
+  try {
+    return matchMedia('(max-width: 760px)').matches;
+  } catch {
+    return false;
+  }
+};
 
 // Safari blurs clicked buttons before React opens their dialog. Keep the pointer opener too.
 let pointerTrigger: WeakRef<HTMLElement> | undefined;
@@ -80,20 +89,19 @@ export function Dialog({
   children,
   onClose,
   wide = false,
-  quick = false,
   actions: footerActions,
 }: {
   label: string;
   children: ReactNode;
   onClose: () => void;
   wide?: boolean;
-  quick?: boolean;
   actions?: ReactNode;
 }) {
   const element = useRef<HTMLElement>(null);
   const backdrop = useRef<HTMLDivElement>(null);
   const close = useRef(onClose);
   close.current = onClose;
+  const requestClose = () => close.current();
   const labelId = useId();
   const content = Children.toArray(children);
   const actionsIndex = content.findLastIndex(
@@ -110,6 +118,16 @@ export function Dialog({
       active instanceof HTMLElement && active !== document.body ? active : pointerTrigger?.deref();
     const layer = backdrop.current!;
     const unlock = lockLayer(layer);
+    const mobile = sheet();
+    play(layer, [{ opacity: 0 }, { opacity: 1 }], { duration: 200 });
+    play(
+      element.current,
+      [
+        { opacity: 0, transform: mobile ? 'translateY(56px)' : 'translateY(12px) scale(0.97)' },
+        { opacity: 1, transform: 'none' },
+      ],
+      { duration: mobile ? 300 : 240 },
+    );
     const focusable = () =>
       Array.from(
         element.current?.querySelectorAll<HTMLElement>(
@@ -123,7 +141,7 @@ export function Dialog({
       if (e.key === 'Escape') {
         e.preventDefault();
         e.stopPropagation();
-        close.current();
+        requestClose();
       }
       if (e.key === 'Tab') {
         const targets = focusable(),
@@ -160,6 +178,24 @@ export function Dialog({
       document.removeEventListener('keydown', key);
       document.removeEventListener('focusin', focus);
       unlock();
+      // Every close path unmounts; a detached copy fades out so no dialog vanishes abruptly.
+      if (!reducedMotion()) {
+        const ghost = layer.cloneNode(true) as HTMLElement;
+        ghost.setAttribute('aria-hidden', 'true');
+        ghost.inert = true;
+        ghost.style.pointerEvents = 'none';
+        document.body.appendChild(ghost);
+        const panel = ghost.querySelector('[role="dialog"]');
+        panel?.removeAttribute('role');
+        void Promise.all([
+          exit(ghost, [{ opacity: 1 }, { opacity: 0 }], 180),
+          exit(
+            panel,
+            [{ transform: 'none' }, { transform: mobile ? 'translateY(40px)' : 'scale(0.96)' }],
+            180,
+          ),
+        ]).then(() => ghost.remove());
+      }
       requestAnimationFrame(() => {
         if (
           previous?.isConnected &&
@@ -174,14 +210,14 @@ export function Dialog({
   return createPortal(
     <div
       ref={backdrop}
-      className={`${s.modalBackdrop} ${quick ? s.quickBackdrop : ''}`}
+      className={s.modalBackdrop}
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget) requestClose();
       }}
     >
       <section
         ref={element}
-        className={`${s.modal} ${quick ? s.quickDialog : ''}`}
+        className={s.modal}
         style={wide ? { maxWidth: 900 } : undefined}
         role="dialog"
         aria-modal="true"
@@ -190,7 +226,7 @@ export function Dialog({
       >
         <header className={s.modalHead}>
           <h2 id={labelId}>{label}</h2>
-          <button className={s.modalClose} aria-label="창 닫기" onClick={onClose}>
+          <button className={s.modalClose} aria-label="창 닫기" onClick={requestClose}>
             <span aria-hidden="true">×</span>
           </button>
         </header>

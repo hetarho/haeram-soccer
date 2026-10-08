@@ -4,9 +4,11 @@ import { readFile } from 'node:fs/promises';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import { createWorld, operatingCost } from '../../packages/engine/src/index';
 import type { World } from '../../packages/contracts/src/types';
+import { settle, viewGeometry } from './layout';
 
 async function completeFoundingGeometry(page: Page) {
-  return page.evaluate(() => {
+  const view = await viewGeometry(page);
+  const controls = await page.evaluate(() => {
     const founding = document.querySelector('[data-testid="club-founding"]')!;
     const tools = document.querySelector('main [class*="startTools"]')!;
     const footer = document.querySelector('main [class*="footer"]')!;
@@ -28,11 +30,8 @@ async function completeFoundingGeometry(page: Page) {
       };
     };
     return {
-      width: document.documentElement.scrollWidth,
-      height: document.documentElement.scrollHeight,
       viewportWidth: innerWidth,
       viewportHeight: innerHeight,
-      scroll: scrollY,
       controls: required.map(measure),
       footer: measure(footer),
       notes: [
@@ -46,15 +45,19 @@ async function completeFoundingGeometry(page: Page) {
       })),
     };
   });
+  return { ...controls, view };
 }
 
 function expectCompleteFoundingFits(
   geometry: Awaited<ReturnType<typeof completeFoundingGeometry>>,
 ) {
   const measured = JSON.stringify(geometry);
-  expect(geometry.width, measured).toBeLessThanOrEqual(geometry.viewportWidth);
-  expect(geometry.height, measured).toBeLessThanOrEqual(geometry.viewportHeight + 2);
-  expect(geometry.scroll, measured).toBe(0);
+  expect(geometry.view.documentWidth, measured).toBeLessThanOrEqual(geometry.viewportWidth);
+  expect(geometry.view.width, measured).toBeLessThanOrEqual(geometry.view.clientWidth);
+  expect(geometry.view.documentHeight, measured).toBeLessThanOrEqual(geometry.viewportHeight + 2);
+  expect(geometry.view.overflow, measured).toBeLessThanOrEqual(2);
+  expect(geometry.view.scroll, measured).toBe(0);
+  expect(geometry.view.documentScroll, measured).toBe(0);
   for (const bounds of [...geometry.controls, geometry.footer]) {
     expect(bounds.x, measured).toBeGreaterThanOrEqual(0);
     expect(bounds.y, measured).toBeGreaterThanOrEqual(0);
@@ -68,10 +71,7 @@ function expectCompleteFoundingFits(
 }
 
 async function exportWorld(page: Page): Promise<World> {
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '더보기', exact: true })
-    .click();
+  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   const menu = page.getByRole('dialog', { name: '전체 메뉴' });
   const downloading = page.waitForEvent('download');
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
@@ -95,15 +95,10 @@ for (const viewport of [
     const create = founding.getByRole('button', { name: '클럽 창단' });
     const bounds = await create.boundingBox();
     expectCompleteFoundingFits(await completeFoundingGeometry(page));
-    const geometry = await page.evaluate(() => ({
-      width: document.documentElement.scrollWidth,
-      height: document.documentElement.scrollHeight,
-      viewportWidth: innerWidth,
-      viewportHeight: innerHeight,
-    }));
+    const geometry = await viewGeometry(page);
     const measured = JSON.stringify({ ...geometry, create: bounds });
-    expect(geometry.width, measured).toBeLessThanOrEqual(geometry.viewportWidth);
-    expect(geometry.height, measured).toBeLessThanOrEqual(geometry.viewportHeight + 2);
+    expect(geometry.width, measured).toBeLessThanOrEqual(geometry.clientWidth);
+    expect(geometry.overflow, measured).toBeLessThanOrEqual(2);
     expect(bounds!.height).toBeGreaterThanOrEqual(44);
     expect(bounds!.x).toBeGreaterThanOrEqual(0);
     expect(bounds!.y).toBeGreaterThanOrEqual(0);
@@ -233,10 +228,7 @@ test('starts with generous capital and shows a fact-aware guide without changing
   expect(before.difficulty).toBe(2);
   expect(BigInt(before.cash)).toBe(BigInt(operatingCost(before)) * 2n);
   const openGuide = async () => {
-    await page
-      .getByRole('navigation', { name: '모바일 게임 메뉴' })
-      .getByRole('button', { name: '더보기', exact: true })
-      .click();
+    await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
     await page
       .getByRole('dialog', { name: '전체 메뉴' })
       .getByRole('button', { name: '클럽 키우기 가이드', exact: true })
@@ -249,9 +241,10 @@ test('starts with generous capital and shows a fact-aware guide without changing
   await expect(
     guide.getByRole('heading', { name: '한 번 눌러 경기로', exact: true }),
   ).toBeVisible();
-  await expect(guide).toContainText('반복 비용');
+  await expect(guide).toContainText('비용과 효과를 먼저 보여주고');
   await expect(guide.getByText('완료 ✓', { exact: true })).toHaveCount(0);
   const close = guide.getByRole('button', { name: '가이드 확인 마치기', exact: true });
+  await settle(page);
   const bounds = await close.boundingBox();
   expect(bounds!.height).toBeGreaterThanOrEqual(44);
   expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(844);
@@ -262,7 +255,7 @@ test('starts with generous capital and shows a fact-aware guide without changing
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '클럽 일지', exact: true })
+    .getByRole('button', { name: '클럽 홈', exact: true })
     .click();
   const played = await exportWorld(page);
   expect(played.ownMatches).toHaveLength(1);

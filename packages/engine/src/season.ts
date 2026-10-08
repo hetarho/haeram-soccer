@@ -8,6 +8,10 @@ import { activePlayers, addEvent, clubOf, makePlayer, quote, rating } from './wo
 import { simulateMatch } from './match';
 import { fatigueCost } from './strategy';
 import { developAnnually, settleTraining } from './training';
+import { runAcademyIntake, seasonAcademy } from './academy';
+import { dailyMarket } from './transfers';
+import { moraleAfterMatch } from './morale';
+import { seasonStaff } from './staff';
 import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS, seasonLength } from './calendar';
 import {
   ensureScorers,
@@ -168,6 +172,7 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     const win = side === 0 ? m.score.home > m.score.away : m.score.away > m.score.home;
     const club = clubOf(w);
     club.fans = Math.round(clamp(club.fans * (win ? 1.012 : 0.998), 200, 5000000));
+    moraleAfterMatch(w, saved);
   }
 }
 export function resolveTie(w: World, f: Fixture) {
@@ -442,6 +447,8 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   w.year++;
   advanceEconomy(w, w.year - 1);
   yearlyStaff(w);
+  seasonStaff(w);
+  seasonAcademy(w);
   w.income = '0';
   w.expense = '0';
   for (const p of activePlayers(w)) {
@@ -505,7 +512,14 @@ export function advanceRound(
   if (!w.rankHistory) snapshotStandings(w);
   ensureScorers(w);
   w.round++;
-  w.calendar = { day: Math.max(currentDay(w), w.round * ROUND_INTERVAL_DAYS) };
+  const from = currentDay(w),
+    to = Math.max(from, w.round * ROUND_INTERVAL_DAYS);
+  // Whole-round jumps still live through each skipped day of club business.
+  for (let day = from + 1; day <= to; day++) {
+    w.calendar = { day };
+    clubDay(w);
+  }
+  w.calendar = { day: to };
   let ownPlayback: MatchPlayback | undefined;
   for (const f of w.fixtures.filter((f) => f.round === w.round && !f.score)) {
     const own = f.home === w.playerClub || f.away === w.playerClub;
@@ -534,6 +548,11 @@ export function advanceRound(
   return ownPlayback;
 }
 
+/** Daily club business outside matches: academy intake and the transfer market. */
+export function clubDay(w: World) {
+  runAcademyIntake(w);
+  dailyMarket(w);
+}
 /** Off days only move the clock. Matches and existing weekly costs settle on their due day. */
 export function advanceDays(
   w: World,
@@ -558,9 +577,12 @@ export function advanceDays(
       closeSeason(w);
       w.revision++;
     } else if (w.round < SEASON_ROUNDS && w.calendar.day >= (w.round + 1) * ROUND_INTERVAL_DAYS) {
+      // The round has no skipped days here, so the match day's business runs once after it.
       advanceRound(w, capture, observe);
+      clubDay(w);
     } else {
       advanceEurope(w, capture, w.calendar.day, observe);
+      clubDay(w);
       w.revision++;
     }
     if (w.critical) break;

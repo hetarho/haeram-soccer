@@ -5,15 +5,15 @@ import { decode } from '../../apps/web/src/adapters/persistence';
 import { recruitmentPreview } from '../../packages/engine/src/recruitment';
 import { transferOffers, operatingCost } from '../../packages/engine/src/operations';
 import { clubOf, startingSquad } from '../../packages/engine/src/world';
+import { daysUntilNextMatch } from '../../packages/engine/src/calendar';
 import { lineupSummary } from '../../packages/engine/src/strategy';
 import { money } from '../../apps/web/src/ui/format';
 import type { World } from '../../packages/contracts/src/types';
+import { horizontalOverflow } from './layout';
+import { stopOnlyFor } from './events';
 
 async function exportWorld(page: Page): Promise<World> {
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '더보기', exact: true })
-    .click();
+  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   const menu = page.getByRole('dialog', { name: '전체 메뉴' });
   const downloading = page.waitForEvent('download');
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
@@ -34,15 +34,15 @@ async function foundMarket(
   await page.getByLabel('세계 생성 시드').fill(seed);
   await page.getByRole('button', { name: difficulty }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  await openMarket(page);
+}
+
+async function openMarket(page: Page) {
   await page
-    .getByTestId('club-hub')
-    .getByRole('button', { name: '선수 키우기·영입', exact: true })
+    .getByRole('navigation', { name: '모바일 게임 메뉴' })
+    .getByRole('button', { name: '이적 시장', exact: true })
     .click();
-  await page
-    .getByRole('dialog', { name: '선수 성장과 훈련' })
-    .getByRole('button', { name: '선수단·이적 시장', exact: true })
-    .click();
-  await page.getByRole('button', { name: '이적 시장', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '이적 시장', level: 2 })).toBeVisible();
   await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
 }
 
@@ -120,11 +120,11 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   await expect(freeCard.getByLabel('영입 빌드 변화')).toContainText(
     `${preview.beforeStrength} → ${preview.afterStrength}`,
   );
-  await freeCard.getByRole('button', { name: '선수 영입', exact: true }).click();
+  await freeCard.getByRole('button', { name: '자유계약 영입', exact: true }).click();
   await expect(freeCard.getByRole('button', { name: '계약 완료', exact: true })).toBeDisabled();
-  await expect(
-    page.getByRole('button', { name: '우리 선수단 · 19/26', exact: true }),
-  ).toBeVisible();
+  await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toContainText(
+    '선수단 정원 19/26',
+  );
   const recruited = await exportWorld(page);
   expect(recruited.cash).toBe(before.cash);
   expect(recruited.players.find((player) => player.id === free.player.id)?.wage).toBe(
@@ -142,9 +142,9 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   const loanPreview = recruitmentPreview(recruited, loan, true);
   await loanCard.getByRole('button', { name: '1시즌 임대', exact: true }).click();
   await expect(loanCard.getByRole('button', { name: '계약 완료', exact: true })).toBeDisabled();
-  await expect(
-    page.getByRole('button', { name: '우리 선수단 · 20/26', exact: true }),
-  ).toBeVisible();
+  await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toContainText(
+    '선수단 정원 20/26',
+  );
   const borrowed = await exportWorld(page);
   expect(BigInt(borrowed.cash)).toBe(BigInt(recruited.cash) - BigInt(loan.loanFee));
   expect(borrowed.cash).toBe(loanPreview.cashAfter);
@@ -155,14 +155,14 @@ test('filters and compares stable candidates, discloses free wages, and saves re
     BigInt(loan.player.wage),
   );
   await page.reload();
-  await page.getByRole('button', { name: '이적 시장', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '이적 시장', level: 2 })).toBeVisible();
   await expect(freeCard.getByRole('button', { name: '계약 완료', exact: true })).toBeDisabled();
   await expect(loanCard.getByRole('button', { name: '1시즌 임대', exact: true })).toBeDisabled();
   const restored = await exportWorld(page);
   expect(restored.cash).toBe(borrowed.cash);
   expect(restored.revision).toBe(borrowed.revision);
   expect(restored.players).toEqual(borrowed.players);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 
 test('reaches the real squad capacity with eight loans and prevents any further contract', async ({
@@ -179,9 +179,9 @@ test('reaches the real squad capacity with eight loans and prevents any further 
     await card.getByRole('button', { name: '1시즌 임대', exact: true }).click();
     await expect(card.getByRole('button', { name: '계약 완료', exact: true })).toBeDisabled();
   }
-  await expect(
-    page.getByRole('button', { name: '우리 선수단 · 26/26', exact: true }),
-  ).toBeVisible();
+  await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toContainText(
+    '선수단 정원 26/26',
+  );
   await expect(desk).toContainText('선수단 정원 26/26 · 자리가 가득 찼어요.');
   await expect(desk.getByRole('button', { name: '계약 완료', exact: true })).toHaveCount(8);
   for (const button of await desk.getByRole('button', { name: '1시즌 임대', exact: true }).all())
@@ -209,17 +209,49 @@ test('disables an unaffordable fee while keeping a cheaper loan available with h
   const card = page
     .getByRole('region', { name: '선수 영입 데스크' })
     .getByTestId(`candidate-${offer.player.id}`);
-  await expect(card.getByRole('button', { name: '선수 영입', exact: true })).toBeDisabled();
   await expect(card).toContainText('보유 자금이 부족합니다.');
   await expect(card.getByRole('button', { name: '1시즌 임대', exact: true })).toBeEnabled();
   await expect(card).toContainText('새 연봉 포함, 미래 수입 제외');
+  // Fee moves are offers now: the owner can open one, but cannot send a fee the club cannot pay.
+  await card.getByRole('button', { name: '이적 제안', exact: true }).click();
+  const bid = page.getByRole('dialog', { name: '이적 제안' });
+  const fees = bid.getByRole('radiogroup', { name: '제안 이적료' });
+  const send = bid.getByRole('button', { name: /제안 보내기$/ });
+  await expect(fees.getByRole('radio', { name: /^100%/ })).toHaveAttribute('aria-checked', 'true');
+  expect(BigInt(offer.fee)).toBeGreaterThan(BigInt(before.cash));
+  await expect(send).toBeDisabled();
+  await expect(bid).toContainText('자금이 부족해요.');
+  await fees.getByRole('radio', { name: /^130%/ }).click();
+  await expect(send).toBeDisabled();
+  await bid.getByRole('button', { name: '취소', exact: true }).click();
+  await expect(bid).toHaveCount(0);
   expect(await exportWorld(page)).toEqual(before);
 });
 
-test('pauses daily progress while comparing candidates and resumes only on explicit restart', async ({
+test('pauses the running clock while comparing candidates away from home and resumes on return', async ({
   page,
 }) => {
-  await foundMarket(page, 'recruitment-dialog-clock');
+  // Only the match eve may stop the clock here, so an incoming offer cannot interrupt it.
+  await stopOnlyFor(page, ['match']);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.getByText('고급 설정', { exact: true }).click();
+  await page.getByLabel('세계 생성 시드').fill('recruitment-dialog-clock');
+  await page.getByRole('button', { name: '넉넉한 출발' }).click();
+  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  const before = await exportWorld(page);
+  // The clock runs for a few days below; it must not reach the first match day.
+  expect(daysUntilNextMatch(before)).toBeGreaterThan(4);
+  const date = page.getByTestId('game-date');
+  await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
+  await expect(date).toHaveText('1901년 8월 2일');
+  // The full clock lives on home; elsewhere a one-line clock shows the paused run.
+  await openMarket(page);
+  const mini = page.getByTestId('mini-clock');
+  await expect(mini).toContainText('일시정지 · 홈에서 계속');
+  await expect(page.getByRole('region', { name: '시즌 진행' })).toHaveCount(0);
+  const paused = await date.innerText();
   const desk = page.getByRole('region', { name: '선수 영입 데스크' });
   await desk
     .getByRole('group', { name: '영입 포지션 선택' })
@@ -227,22 +259,24 @@ test('pauses daily progress while comparing candidates and resumes only on expli
     .click();
   for (const card of await desk.getByRole('article').all())
     await card.getByRole('button', { name: '비교', exact: true }).click();
-  await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-  const date = page.getByTestId('game-date');
-  await expect(date).toHaveText('1901년 8월 2일');
   await desk.getByRole('button', { name: '선택한 2명 비교', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: '영입 후보 비교' });
   await expect(dialog).toBeVisible();
+  await page.waitForTimeout(1200);
+  await expect(date).toHaveText(paused);
+  await dialog.getByRole('button', { name: '후보 비교 마치기', exact: true }).click();
+  await expect(dialog).toHaveCount(0);
+  await page.waitForTimeout(1200);
+  await expect(date).toHaveText(paused);
+  // Returning home resumes the same run without pressing start again.
+  await mini.click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
+  await expect(date).not.toHaveText(paused);
+  await page.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
   const stopped = await date.innerText();
   await page.waitForTimeout(1200);
   await expect(date).toHaveText(stopped);
-  await dialog.getByRole('button', { name: '후보 비교 마치기', exact: true }).click();
-  await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
-  await page.waitForTimeout(1200);
-  await expect(date).toHaveText(stopped);
-  await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-  await expect(date).not.toHaveText(stopped);
-  await page.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
   const after = await exportWorld(page);
   expect(after.round).toBe(0);
   expect(after.ownMatches).toHaveLength(0);

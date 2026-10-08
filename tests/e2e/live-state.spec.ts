@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { stopOnlyFor } from './events';
 
 async function found(page: import('@playwright/test').Page) {
   await page.goto('/');
@@ -9,18 +10,24 @@ async function found(page: import('@playwright/test').Page) {
   await expect(page.getByTestId('game-date')).toHaveText('1901년 8월 1일');
 }
 
-test('runs silently across statistics tabs, keeps nodes and selected views, and updates real scorers', async ({
+test('keeps league views and nodes across silent progression from home and updates real scorers', async ({
   page,
 }) => {
+  // Only the match eve may stop the clock here, so an incoming offer cannot interrupt it.
+  await stopOnlyFor(page, ['match']);
   await found(page);
-  await page.getByRole('button', { name: '리그', exact: true }).click();
-  await page.getByRole('tab', { name: '순위 추이', exact: true }).click();
+  const menu = page.getByRole('navigation', { name: '게임 메뉴', exact: true });
+  const date = page.getByTestId('game-date');
+  await menu.getByRole('button', { name: '리그', exact: true }).click();
+  const rankTab = page.getByRole('tab', { name: '순위 추이', exact: true });
+  await rankTab.click();
   await page.evaluate(() => {
     const state = window as typeof window & {
-      liveProbe?: { tab: Element | null; canvas: Element | null; flashes: number };
+      liveProbe?: { panel: Element | null; canvas: Element | null; flashes: number };
     };
     state.liveProbe = {
-      tab: document.getElementById('season-tab-rank'),
+      // The tab bar belongs to the league page; the statistics panels stay mounted across pages.
+      panel: document.getElementById('season-panel-rank'),
       canvas: document.querySelector('canvas'),
       flashes: 0,
     };
@@ -28,12 +35,35 @@ test('runs silently across statistics tabs, keeps nodes and selected views, and 
       if (document.querySelector('[aria-label="세계 처리 진행"]')) state.liveProbe!.flashes++;
     }).observe(document.getElementById('root')!, { childList: true, subtree: true });
   });
-  await page.getByRole('button', { name: '2단계' }).click();
-  await page.getByRole('button', { name: '자동 진행 시작' }).click();
-  await expect(page.getByTestId('game-date')).toHaveText('1901년 8월 4일');
+  // The full clock lives on home.
+  await expect(page.getByRole('region', { name: '시즌 진행' })).toHaveCount(0);
+  await menu.getByRole('button', { name: '클럽 홈', exact: true }).click();
+  const threeDays = page.getByRole('button', { name: '1초에 3일 속도로 자동 진행', exact: true });
+  await threeDays.click();
+  await expect(threeDays).toHaveAttribute('aria-pressed', 'true');
+  await expect(date).toHaveText('1901년 8월 4일');
+  // Looking at the league pauses the run; the selected statistics view is kept.
+  await menu.getByRole('button', { name: '리그', exact: true }).click();
+  const mini = page.getByTestId('mini-clock');
+  await expect(mini).toContainText('일시정지 · 홈에서 계속');
+  await expect(rankTab).toHaveAttribute('aria-selected', 'true');
+  const paused = await date.innerText();
   await page.getByRole('tab', { name: '득점왕 추이', exact: true }).click();
+  await page.waitForTimeout(1200);
+  await expect(date).toHaveText(paused);
+  // Back home the run resumes by itself and stops on the eve of our match.
+  await mini.click();
+  const eve = page.getByTestId('event-card');
+  await expect(eve).toContainText('내일 경기');
+  await expect(date).toHaveText('1901년 8월 7일');
+  await eve.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
   await expect(page.getByTestId('calendar')).toContainText('라운드 1');
   await page.getByRole('button', { name: '자동 진행 정지' }).click();
+  await menu.getByRole('button', { name: '리그', exact: true }).click();
+  await expect(page.getByRole('tab', { name: '득점왕 추이', exact: true })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
   await page.getByRole('tab', { name: '득점 순위', exact: true }).click();
   await expect(page.getByRole('table', { name: '리그 득점 순위표' })).toBeVisible();
   await expect(
@@ -41,38 +71,36 @@ test('runs silently across statistics tabs, keeps nodes and selected views, and 
   ).not.toHaveCount(1);
   const probe = await page.evaluate(() => {
     const { liveProbe } = window as typeof window & {
-      liveProbe: { tab: Element | null; canvas: Element | null; flashes: number };
+      liveProbe: { panel: Element | null; canvas: Element | null; flashes: number };
     };
     return {
-      sameTab: liveProbe.tab === document.getElementById('season-tab-rank'),
+      samePanel: liveProbe.panel === document.getElementById('season-panel-rank'),
       sameCanvas: liveProbe.canvas === document.querySelector('canvas'),
       flashes: liveProbe.flashes,
     };
   });
-  expect(probe).toEqual({ sameTab: true, sameCanvas: true, flashes: 0 });
-  await page.getByRole('tab', { name: '순위 추이', exact: true }).click();
+  expect(probe).toEqual({ samePanel: true, sameCanvas: true, flashes: 0 });
+  await rankTab.click();
   await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
 });
 
-test('observes a whole match before immediately chaining the next, and retains playback across tabs', async ({
+test('watching a match pauses the calendar and retains playback across page switches', async ({
   page,
 }) => {
   await found(page);
   await page.getByRole('button', { name: '다음 경기 관전' }).click();
-  await expect(page.getByRole('heading', { name: '90분의 작은 드라마.' })).toBeVisible();
+  await expect(
+    page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
+  ).toBeVisible();
   await page.getByRole('button', { name: '일시정지', exact: true }).click();
   const date = page.getByTestId('game-date');
-  const first = await date.textContent();
-  await page.getByRole('button', { name: '자동 진행 시작' }).click();
-  await page.waitForTimeout(2200);
-  await expect(date).toHaveText(first!);
+  const matchDay = await date.textContent();
+  // The theatre shows the one-line clock; the calendar waits while we watch.
+  await expect(page.getByRole('region', { name: '시즌 진행' })).toHaveCount(0);
+  await expect(page.getByTestId('mini-clock')).toBeVisible();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-  await expect(date).not.toHaveText(first!);
-  const second = await date.textContent();
   await page.waitForTimeout(1500);
-  await expect(date).toHaveText(second!);
-  await expect(page.getByRole('button', { name: '자동 진행 정지' })).toBeVisible();
-  await page.getByRole('button', { name: '자동 진행 정지' }).click();
+  await expect(date).toHaveText(matchDay!);
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   const timeline = page.getByRole('slider', { name: '경기 시간', exact: true });
   const before = Number(await timeline.inputValue());
@@ -80,8 +108,13 @@ test('observes a whole match before immediately chaining the next, and retains p
     (window as typeof window & { liveCanvas?: Element | null }).liveCanvas =
       document.querySelector('canvas');
   });
-  await page.getByRole('tab', { name: '순위표', exact: true }).click();
-  await page.getByRole('tab', { name: '경기', exact: true }).click();
+  const menu = page.getByRole('navigation', { name: '게임 메뉴', exact: true });
+  await menu.getByRole('button', { name: '리그', exact: true }).click();
+  await expect(page.getByRole('tab', { name: '순위표', exact: true })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await menu.getByRole('button', { name: '경기', exact: true }).click();
   await expect(timeline).toBeVisible();
   expect(Number(await timeline.inputValue())).toBeGreaterThanOrEqual(before);
   expect(
@@ -91,7 +124,9 @@ test('observes a whole match before immediately chaining the next, and retains p
         document.querySelector('canvas'),
     ),
   ).toBe(true);
-  await expect(
-    page.getByText('관전 모드 · 현재 경기 종료 후 다음 경기를 바로 시작합니다'),
-  ).toBeVisible();
+  await expect(date).toHaveText(matchDay!);
+  // The one-line clock leads back home, where the full clock is.
+  await page.getByTestId('mini-clock').click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await expect(page.getByRole('region', { name: '시즌 진행' })).toBeVisible();
 });

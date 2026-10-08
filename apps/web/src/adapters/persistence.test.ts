@@ -307,7 +307,14 @@ describe('compatible rule upgrades', () => {
     delete old.rankHistory;
     delete old.scorerSeason;
     const migratedOld = upgradeWorldRules((await decode(await encode(old))).world);
-    for (const field of ['calendar', 'rankHistory', 'scorerSeason', 'training', 'trainingAt'])
+    for (const field of [
+      'calendar',
+      'rankHistory',
+      'scorerSeason',
+      'training',
+      'trainingAt',
+      'policy',
+    ])
       expect(Object.hasOwn(migratedOld, field)).toBe(false);
   });
 

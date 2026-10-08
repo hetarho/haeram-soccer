@@ -1,21 +1,71 @@
 import { createStore } from 'zustand/vanilla';
 import { useStore } from 'zustand';
-import type { Command } from '../../../../packages/contracts/src/types';
+import type { Command, InboxKind, World } from '../../../../packages/contracts/src/types';
+import { daysUntilNextMatch, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import type { GameClient } from './client';
 import { gameStore } from './store';
 
-export type Pace = 'daily' | 'three-days' | 'match';
+export type Pace = 'daily' | 'three-days' | 'event';
+export type StopOn = Record<InboxKind, boolean>;
 export interface ProgressionState {
   running: boolean;
   pace: Pace;
   watching: boolean;
   reason: string;
+  /** Event kinds that stop automatic progression. */
+  stopOn: StopOn;
+  /** Tomorrow's own fixture the clock stopped for, until the owner watches or plays through. */
+  matchEve?: string;
 }
-const commands: Record<Pace, Command> = {
-  daily: { type: 'advance-days', days: 1 },
-  'three-days': { type: 'advance-days', days: 3 },
-  match: { type: 'next-match' },
+export const STOP_LABELS: Record<InboxKind, string> = {
+  match: '경기 전날',
+  'window-open': '이적시장 개장',
+  'window-close': '이적시장 마감',
+  'bid-response': '이적 협상 응답',
+  'incoming-bid': '우리 선수 영입 제안',
+  'youth-intake': '유소년 입단',
+  'staff-report': '스태프 보고',
 };
+/** First-run stops match the "important decisions" intervention level. */
+const DEFAULT_STOP_ON: StopOn = {
+  match: true,
+  'window-open': true,
+  'window-close': false,
+  'bid-response': true,
+  'incoming-bid': true,
+  'youth-intake': true,
+  'staff-report': false,
+};
+const STOP_KEY = 'haeram-soccor:stop-on';
+function storedStopOn(): StopOn {
+  try {
+    const raw = JSON.parse(localStorage.getItem(STOP_KEY) || '{}');
+    return Object.fromEntries(
+      Object.entries(DEFAULT_STOP_ON).map(([kind, value]) => [
+        kind,
+        typeof raw[kind] === 'boolean' ? raw[kind] : value,
+      ]),
+    ) as StopOn;
+  } catch {
+    return { ...DEFAULT_STOP_ON };
+  }
+}
+/** Unread attention items the owner asked to stop for. */
+export function stoppingEvents(w: World, stopOn: StopOn) {
+  return (w.inbox || []).filter((item) => item.attention && !item.read && stopOn[item.kind]);
+}
+function command(pace: Pace, stopOn: StopOn, w: World): Command {
+  if (pace === 'event') return { type: 'advance-to-event', matches: stopOn.match };
+  const until = daysUntilNextMatch(w);
+  // A multi-day step lands on a match eve instead of running through the match day.
+  const days =
+    pace === 'three-days' && stopOn.match && until !== undefined && until > 1 && until <= 3
+      ? until - 1
+      : pace === 'daily'
+        ? 1
+        : 3;
+  return { type: 'advance-days', days };
+}
 
 /** Owns the clock outside React, so changing or hiding a view cannot restart it. */
 export class ProgressionController {
@@ -24,7 +74,10 @@ export class ProgressionController {
     pace: 'daily',
     watching: false,
     reason: '',
+    stopOn: storedStopOn(),
   }));
+  /** A fixture the owner chose to play through without watching. */
+  private passedMatch?: string;
   private timer: ReturnType<typeof setInterval>;
   private unsubscribe: () => void;
   private inFlight = false;
@@ -67,16 +120,49 @@ export class ProgressionController {
   setPace(pace: Pace) {
     this.store.setState({ pace });
   }
+  setStopOn(kind: InboxKind, value: boolean) {
+    const stopOn = { ...this.store.getState().stopOn, [kind]: value };
+    this.store.setState({ stopOn });
+    try {
+      localStorage.setItem(STOP_KEY, JSON.stringify(stopOn));
+    } catch {
+      /* the setting still applies for this session */
+    }
+  }
+  /** Replaces every stop at once, as an intervention level does. */
+  setStopOnAll(stopOn: StopOn) {
+    this.store.setState({ stopOn: { ...stopOn } });
+    try {
+      localStorage.setItem(STOP_KEY, JSON.stringify(stopOn));
+    } catch {
+      /* the setting still applies for this session */
+    }
+  }
+  /** Resolve a match eve by settling the fixture as a result, then keep the clock running. */
+  playThrough() {
+    const id = this.store.getState().matchEve;
+    if (id) this.passedMatch = id;
+    this.store.setState({ matchEve: undefined });
+    this.start();
+  }
+  clearMatchEve() {
+    this.store.setState({ matchEve: undefined });
+  }
   setWatching(watching: boolean) {
     const previous = this.store.getState().watching;
     if (previous === watching) return;
     this.store.setState({ watching });
     if (watching && this.store.getState().running) void this.tick();
   }
+  /**
+   * Pauses ticks while a source holds it and resumes when released. Only watching a match
+   * (an explicit stop) or a blocker ends the run; menus and sheets never pause the clock.
+   */
   setSuspended(suspended: boolean, source = 'feature') {
     if (suspended) this.suspensionSources.add(source);
     else this.suspensionSources.delete(source);
-    if (suspended) this.stop('자동 진행을 멈췄습니다.');
+    if (!this.suspended && this.store.getState().running && this.store.getState().watching)
+      void this.tick();
   }
   start() {
     const state = gameStore.getSnapshot();
@@ -88,7 +174,10 @@ export class ProgressionController {
       !state.view
     )
       return;
-    this.store.setState({ running: true, reason: '' });
+    // Resuming at a match eve means playing that fixture through as a result.
+    const eve = this.store.getState().matchEve;
+    if (eve) this.passedMatch = eve;
+    this.store.setState({ running: true, reason: '', matchEve: undefined });
     // Date progression starts on the next one-second tick. Watching starts without an empty wait.
     if (this.store.getState().watching) void this.tick();
   }
@@ -116,13 +205,37 @@ export class ProgressionController {
       this.finishedId !== state.playback.record.id
     )
       return;
+    const w = state.view.world;
+    if (!progress.watching && progress.stopOn.match && daysUntilNextMatch(w) === 1) {
+      const next = nextOwnFixture(w);
+      if (next && next.id !== this.passedMatch) {
+        this.stop('내일 경기가 있어요');
+        this.store.setState({ matchEve: next.id });
+        return;
+      }
+    }
+    const seen = new Set(stoppingEvents(w, progress.stopOn).map((item) => item.id));
     this.inFlight = true;
     try {
       const reply = await this.client.command(
-        progress.watching ? { type: 'next-match' } : commands[progress.pace],
-        { background: true },
+        progress.watching ? { type: 'next-match' } : command(progress.pace, progress.stopOn, w),
+        { background: true, automatic: true },
       );
       if (!reply?.ok || reply.cancelled || reply.view?.world.critical) this.stop();
+      else if (reply.view) {
+        const fresh = stoppingEvents(reply.view.world, this.store.getState().stopOn).find(
+          (item) => !seen.has(item.id),
+        );
+        if (fresh) this.stop(fresh.title);
+        // An 'event' step that ended without a stopping event (e.g. at a match eve) continues once
+        // the world actually moved, so the eve is announced on the next tick.
+        else if (
+          progress.pace === 'event' &&
+          !progress.watching &&
+          reply.view.world.revision !== w.revision
+        )
+          setTimeout(() => void this.tick(), 0);
+      }
     } finally {
       this.inFlight = false;
     }

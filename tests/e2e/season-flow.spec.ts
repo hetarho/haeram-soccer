@@ -1,9 +1,13 @@
 import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
+import { horizontalOverflow } from './layout';
+import { stopOnlyFor } from './events';
 
 test('advances real days at three paces, stops and restores the saved calendar', async ({
   page,
 }) => {
+  // The paces are measured against match eves; offers from other clubs must not stop them.
+  await stopOnlyFor(page, ['match']);
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('season-flow');
@@ -11,11 +15,16 @@ test('advances real days at three paces, stops and restores the saved calendar',
   await page.getByRole('button', { name: '클럽 창단' }).click();
   const date = page.getByTestId('game-date');
   await expect(date).toHaveText('1901년 8월 1일');
-  await page.getByRole('button', { name: '하루 진행', exact: true }).click();
+  const pace = (label: string) =>
+    page.getByRole('button', { name: `${label} 속도로 자동 진행`, exact: true });
+  // The daily pace starts the clock; stopping after the first tick advances exactly one real day.
+  await pace('1초에 하루').click();
+  await expect(date).toHaveText('1901년 8월 2일');
+  await page.getByRole('button', { name: '자동 진행 정지' }).click();
   await expect(date).toHaveText('1901년 8월 2일');
   await expect(page.getByTestId('calendar')).toContainText('라운드 0');
-  await page.getByRole('button', { name: '2단계' }).click();
-  await page.getByRole('button', { name: '자동 진행 시작' }).click();
+  await pace('1초에 3일').click();
+  await expect(pace('1초에 3일')).toHaveAttribute('aria-pressed', 'true');
   await expect(date).toHaveText('1901년 8월 5일');
   await page.getByRole('button', { name: '자동 진행 정지' }).click();
   const stopped = await date.textContent();
@@ -24,10 +33,19 @@ test('advances real days at three paces, stops and restores the saved calendar',
   await page.reload();
   await expect(date).toHaveText(stopped!);
   await expect(page.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
-  await page.getByRole('button', { name: '3단계' }).click();
-  await page.getByRole('button', { name: '자동 진행 시작' }).click();
+  // The event pace runs in one go to the next event: here the eve of our first match.
+  await pace('다음 이벤트까지 한 번에').click();
+  const eve = page.getByTestId('event-card');
+  await expect(eve).toContainText('내일 경기');
+  await expect(date).toHaveText('1901년 8월 7일');
+  await expect(page.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
+  await expect(page.getByTestId('calendar')).toContainText('라운드 0');
+  // Playing the match through as a result keeps going until the following match eve.
+  await eve.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
   await expect(page.getByTestId('calendar')).toContainText('라운드 1');
-  await page.getByRole('button', { name: '자동 진행 정지' }).click();
+  await expect(eve).toContainText('내일 경기');
+  await expect(date).not.toHaveText('1901년 8월 7일');
+  await expect(page.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
   await page.getByRole('button', { name: '리그', exact: true }).click();
   await expect(page.getByRole('table', { name: '리그 순위표' })).toBeVisible();
   await expect(page.getByRole('table', { name: '리그 순위표' })).toContainText('우리 팀');
@@ -36,7 +54,7 @@ test('advances real days at three paces, stops and restores the saved calendar',
   await expect(page.getByRole('tabpanel', { name: '순위 추이', exact: true })).toContainText(
     'Haeram Athletic',
   );
-  await page.getByRole('tab', { name: '일정·결과' }).click();
+  await page.getByRole('tab', { name: '라운드 결과', exact: true }).click();
   await expect(page.getByRole('heading', { name: '같은 라운드, 다른 경기' })).toBeVisible();
   await chooseOption(page.getByRole('combobox', { name: '리그 라운드 선택', exact: true }), {
     index: 0,
@@ -63,7 +81,9 @@ test('shows independent player decisions and post-match league context', async (
   await page.getByLabel('세계 생성 시드').fill('motion-observation');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page.getByRole('button', { name: '다음 경기 관전' }).click();
-  await expect(page.getByRole('heading', { name: '90분의 작은 드라마.' })).toBeVisible();
+  await expect(
+    page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
+  ).toBeVisible();
   await page.getByRole('button', { name: '일시정지', exact: true }).click();
   await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toHaveCount(0);
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
@@ -89,5 +109,5 @@ test('shows independent player decisions and post-match league context', async (
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });

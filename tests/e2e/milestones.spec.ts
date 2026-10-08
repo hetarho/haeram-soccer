@@ -3,12 +3,10 @@ import { readFile } from 'node:fs/promises';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import { clubMilestones } from '../../packages/engine/src/goals';
 import type { World } from '../../packages/contracts/src/types';
+import { expectViewFits, settle } from './layout';
 
 async function exportWorld(page: Page): Promise<World> {
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '더보기', exact: true })
-    .click();
+  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   const menu = page.getByRole('dialog', { name: '전체 메뉴' });
   const downloading = page.waitForEvent('download');
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
@@ -19,16 +17,7 @@ async function exportWorld(page: Page): Promise<World> {
 }
 
 async function expectCompactHome(page: Page) {
-  const geometry = await page.evaluate(() => ({
-    height: document.documentElement.scrollHeight,
-    width: document.documentElement.scrollWidth,
-    viewportHeight: innerHeight,
-    viewportWidth: innerWidth,
-  }));
-  expect(geometry.height, JSON.stringify(geometry)).toBeLessThanOrEqual(
-    geometry.viewportHeight + 2,
-  );
-  expect(geometry.width, JSON.stringify(geometry)).toBeLessThanOrEqual(geometry.viewportWidth);
+  await expectViewFits(page);
 }
 
 for (const viewport of [
@@ -81,6 +70,7 @@ for (const viewport of [
       expect(bar.max).toBe(100);
     }
     const close = collection.getByRole('button', { name: '목표 확인 마치기', exact: true });
+    await settle(page);
     const beforeScroll = await close.boundingBox();
     expect(beforeScroll!.height).toBeGreaterThanOrEqual(44);
     expect(beforeScroll!.y + beforeScroll!.height).toBeLessThanOrEqual(viewport.height);
@@ -101,7 +91,7 @@ for (const viewport of [
     await expect(page.getByText(/90′ ·.*경기 종료/)).toBeVisible();
     await page
       .getByRole('navigation', { name: '모바일 게임 메뉴' })
-      .getByRole('button', { name: '클럽 일지', exact: true })
+      .getByRole('button', { name: '클럽 홈', exact: true })
       .click();
     await page.reload();
     await expect(hub).toBeVisible();

@@ -32,6 +32,8 @@ describe('shared club investment forecasts', () => {
       costs = operatingCosts(w),
       preview = facilityInvestmentPreview(w);
     expect(canonical(w)).toBe(before);
+    // The staff may sell a player to another club during the round; keep the wage bill fixed.
+    w.delegation = { ...w.delegation, transfers: false };
     expect(preview.eligible).toBe(true);
     expect(preview.affordable).toBe(true);
     expect(preview.facilitiesBefore).toBe(0);

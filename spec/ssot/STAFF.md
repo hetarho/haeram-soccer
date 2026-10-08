@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r2 | Define the implemented browser-demo behavior for manager demands and personality.
+> r4 | Define the implemented browser-demo behavior for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development, philosophy, flexibility, pride, ambition, salary and term; hiring charges disclosed costs.
@@ -15,6 +15,13 @@
 
 - STAFF-10 [o] Before requesting tactics, show the manager philosophy, trust, likely response range and strong-demand trust cost. A forecast is not a guarantee; display the actual response and applied tactic separately.
 
+- STAFF-11 [o] Seven coaching departments sit below the manager: assistant (passing growth, training choice), attack, defense, goalkeeping, fitness (stamina, recovery), youth director (academy intake and growth) and chief scout (market size, potential, negotiation). ← real club structure; each department owns a visible effect
+  - effect multiplier 1 + (ability − 50)/200 within 0.85–1.25; traits: developer (age ≤ 21 growth), specialist (department skill ×1.15), recovery (+2 fatigue recovery), spotter (higher potential found), negotiator (lower fees, better acceptance)
+  - absent staff (older saves) and ability-50 trait-less members are exactly neutral; a vacant department is worse than neutral
+  - new clubs start with unpaid ability-50 volunteers; hired coaches cost wages plus a signing fee; replacing or releasing a paid coach pays 25% of the annual wage
+- STAFF-12 [o] Hired managers may carry a selection trait: youth (+4 selection value for age ≤ 21), rotation (fatigue weighs double) or stable (fatigue weighs half). The founding manager has none.
+- STAFF-13 [o] Training choice, academy promotion/release and answers to other clubs' offers can be delegated to the staff; new clubs delegate training and the academy and answer offers themselves (→WEB-45 level 2); any explicit owner choice takes that decision back, and delegation can be restored. Delegated decisions are reported in the inbox.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -22,5 +29,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r4 261009 STAFF-13✎ all three delegated by default→training and academy delegated, transfer answers by the owner
+- r3 261008 STAFF-11+ STAFF-12+ STAFF-13+ manager-only staff→seven coaching departments with traits, manager selection traits and owner delegation
 - r2 261008 STAFF-9+ STAFF-10+ automatic-only selection→automatic or manual two-action preparation; last-request-only trust protection→bounded per-round negotiation history
 - r1 261007 initial

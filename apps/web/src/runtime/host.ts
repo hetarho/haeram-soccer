@@ -12,6 +12,8 @@ import {
   campaignOffers,
   operatingCost,
   europeanCoefficient,
+  daysUntilNextMatch,
+  unreadAttention,
 } from '../../../../packages/engine/src/index';
 import type { World, MatchPlayback } from '../../../../packages/contracts/src/types';
 import {
@@ -120,6 +122,26 @@ export class Host {
               const p = advanceDays(w, 1);
               if (p) playback = p;
               if (w.critical || (cmd.type === 'next-match' && w.ownMatches.length > matchCount))
+                break;
+              if (n % 14 === 0) {
+                this.progress({ requestId: r.requestId, ok: true, progress: (n + 1) / limit });
+                await new Promise((resolve) => setTimeout(resolve, 0));
+              }
+            }
+          } else if (cmd.type === 'advance-to-event') {
+            if (w.critical) throw new Error('중요한 알림을 확인한 후 계속하세요.');
+            // Always moves at least one day, so a match eve continues into the match itself.
+            const attention = unreadAttention(w).length,
+              limit = 2 * seasonLength(w);
+            for (let n = 0; n < limit; n++) {
+              if (this.cancelled) break;
+              const p = advanceDays(w, 1);
+              if (p) playback = p;
+              if (
+                w.critical ||
+                unreadAttention(w).length > attention ||
+                (cmd.matches !== false && daysUntilNextMatch(w) === 1)
+              )
                 break;
               if (n % 14 === 0) {
                 this.progress({ requestId: r.requestId, ok: true, progress: (n + 1) / limit });

@@ -7,10 +7,13 @@ const found = async (page: import('@playwright/test').Page) => {
   await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r0');
 };
 const advanceRound = async (page: import('@playwright/test').Page) => {
-  await page.getByRole('button', { name: '자세한 클럽 일지', exact: true }).click();
-  const journal = page.getByRole('dialog', { name: '클럽 일지 상세' });
+  await page
+    .getByTestId('club-hub')
+    .getByRole('button', { name: '시즌 상세', exact: true })
+    .click();
+  const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
   const before = await page.getByTestId('save-status').textContent();
-  await journal.getByRole('button', { name: '다음 라운드', exact: true }).click();
+  await journal.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
   await expect(page.getByTestId('save-status')).not.toHaveText(before!);
   await journal.getByRole('button', { name: '창 닫기', exact: true }).click();
 };
@@ -146,7 +149,7 @@ test('a terminated real worker exposes recovery and retains the last committed c
 });
 test('safe explicit new-world replacement and browser back navigation', async ({ page }) => {
   await found(page);
-  await page.getByRole('button', { name: '감독실', exact: true }).click();
+  await page.getByRole('button', { name: '스태프', exact: true }).click();
   await expect(page).toHaveURL(/\/manager$/);
   await page.goBack();
   await expect(page.getByRole('button', { name: '다음 경기 관전' })).toBeVisible();

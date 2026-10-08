@@ -1,7 +1,24 @@
 export type CountryCode = 'ENG' | 'ESP' | 'GER' | 'ITA' | 'FRA' | 'POR' | 'NED' | 'BEL';
 export type Tactic = 'balanced' | 'possession' | 'counter' | 'press';
 export type TrainingFocus = 'balanced' | 'youth' | 'recovery';
+export type PolicyKey = 'support' | 'recruitment' | 'marketing';
+export type PolicyLevel = 1 | 2 | 3 | 4 | 5;
+export type ClubPolicy = Record<PolicyKey, PolicyLevel>;
 export type Role = 'GK' | 'DEF' | 'MID' | 'FWD';
+/** Backroom roles below the manager, following a professional club's coaching staff. */
+export type StaffRole =
+  'assistant' | 'attack' | 'defense' | 'goalkeeping' | 'fitness' | 'youth' | 'scout';
+export type StaffTrait = 'developer' | 'specialist' | 'recovery' | 'spotter' | 'negotiator';
+export type ManagerTrait = 'youth' | 'rotation' | 'stable';
+export type DelegationKey = 'training' | 'academy' | 'transfers';
+export type InboxKind =
+  | 'match'
+  | 'window-open'
+  | 'window-close'
+  | 'bid-response'
+  | 'incoming-bid'
+  | 'youth-intake'
+  | 'staff-report';
 export type Metrics = number[];
 export interface Club {
   id: string;
@@ -56,6 +73,53 @@ export interface Manager {
   /** Bounded per-round replies and positive-trust guard; absent in older saves. */
   requestHistory?: { at: string; keys: string[]; trustAwarded: boolean };
   pending?: Tactic;
+  /** Selection habit; absent means the neutral pre-trait selection. */
+  trait?: ManagerTrait;
+}
+export interface Staff {
+  id: string;
+  role: StaffRole;
+  name: string;
+  ability: number;
+  trait?: StaffTrait;
+  wage: string;
+  since: number;
+  until: number;
+}
+export interface Academy {
+  /** Academy prospects are not first-team players until promoted. */
+  players: Player[];
+  /** Last season year whose intake was settled. */
+  intakeYear?: number;
+}
+export interface TransferBid {
+  id: string;
+  /** `out`: our offer for a market player. `in`: another club's offer for our player. */
+  direction: 'out' | 'in';
+  playerId: string;
+  /** The bidding club for `in` bids. */
+  club?: string;
+  fee: string;
+  loan?: boolean;
+  year: number;
+  day: number;
+  /** Season day on which the other side answers (`out`) or the offer lapses (`in`). */
+  due: number;
+  status: 'pending' | 'accepted' | 'rejected' | 'countered' | 'expired' | 'completed';
+  counterFee?: string;
+}
+export interface InboxItem {
+  id: string;
+  year: number;
+  day: number;
+  kind: InboxKind;
+  title: string;
+  detail: string;
+  /** Attention items stop automatic progression until read. */
+  attention: boolean;
+  read?: boolean;
+  /** Related bid or player ID. */
+  ref?: string;
 }
 export interface Score {
   home: number;
@@ -257,6 +321,17 @@ export interface World {
   training?: TrainingFocus;
   /** Last settled training boundary, preventing repeated development/recovery. */
   trainingAt?: string;
+  /** Club operating policy; absent means POLICY_DEFAULTS. */
+  policy?: ClubPolicy;
+  /** Coaching staff below the manager. Absent in older saves, whose effects stay neutral. */
+  staff?: Staff[];
+  academy?: Academy;
+  /** Decisions the staff makes on the owner's behalf; absent keys mean the owner decides. */
+  delegation?: Partial<Record<DelegationKey, boolean>>;
+  bids?: TransferBid[];
+  inbox?: InboxItem[];
+  /** Squad morale 0–100; absent in older saves, which keep pre-morale strength. */
+  morale?: number;
   manager: Manager;
   tactic: Tactic;
   requested?: Tactic;
@@ -297,6 +372,17 @@ export type Command =
   | { type: 'tactics'; tactic: Tactic; tone: string }
   | { type: 'lineup'; ids: string[] | null }
   | { type: 'training'; focus: TrainingFocus }
+  | { type: 'policy'; key: PolicyKey; level: PolicyLevel }
+  | { type: 'hire-staff'; role: StaffRole; candidate: number }
+  | { type: 'release-staff'; role: StaffRole }
+  | { type: 'promote-youth'; id: string }
+  | { type: 'release-youth'; id: string }
+  | { type: 'delegate'; key: DelegationKey; value: boolean }
+  | { type: 'bid'; candidate: number; fee: string; loan?: boolean }
+  | { type: 'respond-bid'; id: string; accept: boolean }
+  | { type: 'read-inbox'; id?: string }
+  /** Advances at least one day and stops at the next event; `matches: false` plays through match eves. */
+  | { type: 'advance-to-event'; matches?: boolean }
   | { type: 'hire'; candidate: number }
   | { type: 'recruit'; candidate: number; loan?: boolean }
   | { type: 'sell'; id: string }

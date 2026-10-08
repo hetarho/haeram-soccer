@@ -1,12 +1,12 @@
 .pitch {
-  border: 1px solid #d8e0d0;
+  border: 1px solid var(--line);
   border-radius: 10px;
 }
 .scoreboard {
   padding: 14px 20px;
 }
 .pitchMeta {
-  color: #dbe7d2;
+  color: var(--text-muted);
   font-size: 12px;
 }
 .latestEvent {
@@ -14,13 +14,13 @@
   align-items: center;
   gap: 10px;
   padding: 9px 14px;
-  color: #304c37;
+  color: var(--text);
   font-size: 13px;
-  background: #edf2e5;
+  background: var(--surface-2);
 }
 .latestEvent > span {
   flex-shrink: 0;
-  color: #546745;
+  color: var(--text-muted);
   font-size: 11px;
 }
 .latestEvent p {
@@ -64,7 +64,7 @@
   display: none;
 }
 .details {
-  border-top: 1px solid #d8e0d0;
+  border-top: 1px solid var(--line);
   padding-top: 12px;
 }
 @media (max-width: 760px) {

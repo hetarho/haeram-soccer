@@ -1,5 +1,5 @@
 import { Select } from './Select';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import type { MatchRecord, Player, Role } from '../../../../packages/contracts/src/types';
 import { priceIndex, country, currency } from '../../../../packages/catalogs/src/index';
 import { quote, tacticLabel, overall } from '../../../../packages/engine/src/world';
@@ -10,8 +10,12 @@ import type { Reply } from '../runtime/protocol';
 import { Panel } from './App';
 import { RecruitmentDesk } from './RecruitmentDesk';
 import { BusinessWorkbench } from './BusinessWorkbench';
+import { PolicyBoard } from './PolicyBoard';
+import { FinanceOutlook } from './FinanceOutlook';
+import { transferWindow } from '../../../../packages/engine/src/transfers';
 import { Dialog } from './Dialog';
-import type { Page } from './state';
+import { useNavigation, useSquadView, type Page, type SquadTab } from './state';
+import { AcademyView, CoachingStaff, Delegation } from './ClubStaff';
 import { Chart } from './Chart';
 import { Pitch } from './Pitch';
 import { archivePlayback } from './replay';
@@ -34,18 +38,53 @@ function Header({
   eyebrow,
   title,
   description,
+  children,
 }: {
   eyebrow: string;
   title: string;
   description: string;
+  children?: ReactNode;
 }) {
   return (
-    <div className={s.hero}>
+    <div className={s.pageHead}>
       <div>
         <div className={s.eyebrow}>{eyebrow}</div>
         <h2>{title}</h2>
         <p>{description}</p>
       </div>
+      {children}
+    </div>
+  );
+}
+/** Squad, market and manager are one group, so the segment control routes between them. */
+function SquadSegments({ current, players }: { current: SquadTab | 'manager'; players: number }) {
+  const { setPage } = useNavigation();
+  const setTab = useSquadView((state) => state.setTab);
+  const go = (target: SquadTab | 'manager') => {
+    if (target === 'manager') setPage('manager');
+    else {
+      setTab(target);
+      setPage('squad');
+    }
+  };
+  return (
+    <div className={s.segments} role="group" aria-label="선수단 메뉴">
+      {(
+        [
+          ['roster', `선수단 ${players}/26`],
+          ['academy', '유소년'],
+          ['manager', '스태프'],
+        ] as const
+      ).map(([id, label]) => (
+        <button
+          key={id}
+          aria-pressed={current === id}
+          className={current === id ? s.selected : undefined}
+          onClick={() => go(id)}
+        >
+          {label}
+        </button>
+      ))}
     </div>
   );
 }
@@ -67,17 +106,25 @@ function ManagerView({ state, client }: Props) {
     m = w.manager,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
     [tactic, setTactic] = useState(w.tactic),
-    [tone, setTone] = useState('respect');
-  const processing = useGameState((state) => state.processing);
-  const disabled = state.busy || state.readonly || processing;
+    [tone, setTone] = useState('respect'),
+    [hiring, setHiring] = useState<number>();
+  const acting = useGameState((state) => !!state.pendingActions);
+  const disabled = state.busy || state.readonly || acting;
   const response = w.events.filter((e) => e.kind === 'manager-response').at(-1);
   return (
     <>
       <Header
-        eyebrow="THE PERSON BEHIND THE TACTICS"
-        title="전술에도, 사람이 있습니다."
-        description="감독의 철학을 듣고 제안하세요. 수락한 전술만 그라운드에 적용됩니다."
-      />
+        eyebrow="SQUAD · STAFF"
+        title="스태프"
+        description="감독과 코치진이 선발·전술·훈련·유소년을 운영해요. 구단주는 사람을 고르고, 맡길 일을 정해요."
+      >
+        <SquadSegments
+          current="manager"
+          players={w.players.filter((p) => p.status === 'active').length}
+        />
+      </Header>
+      <CoachingStaff w={w} client={client} />
+      <Delegation w={w} client={client} />
       <div className={s.twoCols}>
         <Panel title={m.name} note={m.interim ? 'INTERIM MANAGER' : 'FIRST TEAM MANAGER'}>
           <div className={s.panelBody}>
@@ -198,10 +245,7 @@ function ManagerView({ state, client }: Props) {
                     계약 {candidate.until}년까지 · 즉시 지출 {money(fee, c.country, w.year)} (이전
                     감독 보상 포함)
                   </p>
-                  <button
-                    disabled={disabled || candidate.id === m.id}
-                    onClick={() => void client.command({ type: 'hire', candidate: i })}
-                  >
+                  <button disabled={disabled || candidate.id === m.id} onClick={() => setHiring(i)}>
                     {candidate.id === m.id ? '현재 감독' : '감독 선임'}
                   </button>
                 </article>
@@ -210,6 +254,49 @@ function ManagerView({ state, client }: Props) {
           </div>
         </div>
       </Panel>
+      {hiring !== undefined && v.managers[hiring] && (
+        <Dialog label="감독 선임 확인" onClose={() => setHiring(undefined)}>
+          <h2>{v.managers[hiring].name} 감독을 선임할까요?</h2>
+          <ul className={s.consequences}>
+            <li>
+              즉시 지출{' '}
+              <b>
+                {money(
+                  (
+                    BigInt(v.managers[hiring].fee) +
+                    (m.interim ? 0n : BigInt(ratio(m.wage, 1n, 4n)))
+                  ).toString(),
+                  c.country,
+                  w.year,
+                )}
+              </b>{' '}
+              (이전 감독 보상 포함)
+            </li>
+            <li>{m.name} 감독은 오늘 팀을 떠나요.</li>
+            <li>
+              적용 전술 {tacticLabel[w.tactic]} →{' '}
+              <b>{tacticLabel[v.managers[hiring].philosophy]}</b> (새 감독의 철학)
+            </li>
+            <li>
+              연봉 {money(v.managers[hiring].wage, c.country, w.year)} · 계약{' '}
+              {v.managers[hiring].until}년까지
+            </li>
+          </ul>
+          <div className={s.actions}>
+            <button onClick={() => setHiring(undefined)}>취소</button>
+            <button
+              className={s.primary}
+              disabled={disabled}
+              onClick={() => {
+                void client.command({ type: 'hire', candidate: hiring });
+                setHiring(undefined);
+              }}
+            >
+              선임 확정
+            </button>
+          </div>
+        </Dialog>
+      )}
     </>
   );
 }
@@ -217,7 +304,7 @@ function Squad({ state, client }: Props) {
   const v = state.view!,
     w = v.world,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
-    [tab, setTab] = useState('roster'),
+    tab = useSquadView((state) => state.tab),
     [selectedId, setSelectedId] = useState<string>(),
     [scope, setScope] = useState<PlayerScope>('season'),
     [role, setRole] = useState<Role | 'all'>('all'),
@@ -228,9 +315,10 @@ function Squad({ state, client }: Props) {
     [playerQuery, setPlayerQuery] = useState(''),
     [playerPage, setPlayerPage] = useState(0),
     [confirm, setConfirm] = useState<Player>();
-  const processing = useGameState((state) => state.processing);
-  const disabled = state.busy || state.readonly || processing;
+  const acting = useGameState((state) => !!state.pendingActions);
+  const disabled = state.busy || state.readonly || acting;
   const active = w.players.filter((p) => p.status === 'active');
+  const window = transferWindow(w);
   const selected = w.players.find((p) => p.id === selectedId);
   const listed = explorePlayers(w.players, { scope, role, order, query: playerQuery, minutes });
   const lastPage = Math.max(0, Math.ceil(listed.length / 25) - 1),
@@ -239,39 +327,36 @@ function Squad({ state, client }: Props) {
   return (
     <>
       <Header
-        eyebrow="PEOPLE MAKE A CLUB"
-        title="이름들이, 전설이 되도록."
-        description="능력과 잠재력, 연봉과 비용을 함께 비교하세요. 떠난 선수의 기록도 남습니다."
-      />
-      <div className={s.filters}>
-        <button
-          className={tab === 'roster' ? s.selected : undefined}
-          onClick={() => setTab('roster')}
-        >
-          우리 선수단 · {active.length}/26
-        </button>
-        <button
-          className={tab === 'market' ? s.selected : undefined}
-          onClick={() => setTab('market')}
-        >
-          이적 시장
-        </button>
-        <button onClick={() => setComparing(true)}>우리 선수 비교</button>
-        <label>
-          지표 범위{' '}
-          <Select
-            aria-label="선수 지표 범위"
-            value={scope}
-            onValueChange={(value) => {
-              setScope(value as PlayerScope);
-              setPlayerPage(0);
-            }}
-          >
-            <option value="season">현재 시즌 · 모든 대회</option>
-            <option value="career">우리 클럽 통산</option>
-          </Select>
-        </label>
-      </div>
+        eyebrow="SQUAD"
+        title={tab === 'academy' ? '유소년' : '선수단'}
+        description={
+          tab === 'academy'
+            ? '아카데미에서 키운 유망주를 1군으로 올려요. 유스 디렉터가 입단 수준과 성장을 좌우해요.'
+            : '능력·피로·잠재력을 보고 매각을 결정해요. 선발과 기용은 감독이 맡아요.'
+        }
+      >
+        <SquadSegments current={tab} players={active.length} />
+      </Header>
+      {tab === 'academy' && <AcademyView w={w} client={client} />}
+      {tab === 'roster' && (
+        <div className={s.filters}>
+          <button onClick={() => setComparing(true)}>우리 선수 비교</button>
+          <label>
+            지표 범위{' '}
+            <Select
+              aria-label="선수 지표 범위"
+              value={scope}
+              onValueChange={(value) => {
+                setScope(value as PlayerScope);
+                setPlayerPage(0);
+              }}
+            >
+              <option value="season">현재 시즌 · 모든 대회</option>
+              <option value="career">우리 클럽 통산</option>
+            </Select>
+          </label>
+        </div>
+      )}
       {tab === 'roster' ? (
         <Panel title="우리 클럽의 선수들" note="GK · DEF · MID · FWD">
           <div className={s.filters} style={{ padding: '12px 16px' }}>
@@ -359,7 +444,11 @@ function Squad({ state, client }: Props) {
                   <small>성장 +{(p.developed || 0).toFixed(2)}</small>
                 </div>
                 {p.status === 'active' && !p.loanUntil && (
-                  <button disabled={disabled} onClick={() => setConfirm(p)}>
+                  <button
+                    disabled={disabled || !window.open}
+                    title={window.open ? undefined : window.label}
+                    onClick={() => setConfirm(p)}
+                  >
                     매각
                   </button>
                 )}
@@ -439,7 +528,10 @@ function Squad({ state, client }: Props) {
                           <td>{p.until}</td>
                           <td>
                             {p.status === 'active' && !p.loanUntil && (
-                              <button disabled={disabled} onClick={() => setConfirm(p)}>
+                              <button
+                                disabled={disabled || !window.open}
+                                onClick={() => setConfirm(p)}
+                              >
                                 매각
                               </button>
                             )}
@@ -453,13 +545,12 @@ function Squad({ state, client }: Props) {
             )}
           </details>
           <div className={s.panelFoot}>
-            감독이 역할과 능력·피로에 따라 선발을 고릅니다. 시설과 육성 능력이 성장에 영향을 줍니다.
-            매각은 최소 14명·골키퍼 1명 유지 조건입니다.
+            감독이 역할과 능력·피로에 따라 선발을 고릅니다. 시설과 코치진이 성장에 영향을 줍니다.
+            매각은 이적시장 기간에만 가능하고 최소 14명·골키퍼 1명을 유지해야 해요. 지금:{' '}
+            {window.label}
           </div>
         </Panel>
-      ) : (
-        <RecruitmentDesk state={state} client={client} />
-      )}
+      ) : null}
       {comparing && (
         <PlayerComparison w={w} initialScope={scope} onClose={() => setComparing(false)} />
       )}
@@ -498,7 +589,7 @@ function Squad({ state, client }: Props) {
         <Dialog label="선수 매각 확인" onClose={() => setConfirm(undefined)}>
           <h2>{confirm.name}의 다음 무대</h2>
           <p>
-            경력 기록은 보존됩니다. 매각 대금은{' '}
+            선수단 {active.length}명 → {active.length - 1}명 · 경력 기록은 보존됩니다. 매각 대금은{' '}
             {money(
               quote(
                 c.country,
@@ -624,9 +715,9 @@ function History({ state, client }: Props) {
   return (
     <>
       <Header
-        eyebrow="NOTHING GOOD IS FORGOTTEN"
-        title="작은 선택들이 만든, 긴 역사."
-        description="시즌과 사람, 경기와 장부. 그때의 숫자를 그대로 펼쳐보세요."
+        eyebrow="ARCHIVE"
+        title="역사 보관함"
+        description="시즌과 선수, 경기와 장부. 그때의 숫자를 그대로 펼쳐봐요."
       />
       <CareerRecordBook w={w} />
       <div className={s.twoCols}>
@@ -1022,9 +1113,33 @@ function History({ state, client }: Props) {
 export default function Rich({ state, client, page }: Props & { page: Page }) {
   if (page === 'manager') return <ManagerView state={state} client={client} />;
   if (page === 'squad') return <Squad state={state} client={client} />;
+  if (page === 'transfers')
+    return (
+      <>
+        <Header
+          eyebrow="TRANSFERS"
+          title="이적 시장"
+          description="이적료가 있는 영입·임대·매각은 이적시장 기간에만 가능하고, 자유계약 선수는 언제든 영입해요."
+        />
+        <RecruitmentDesk state={state} client={client} />
+      </>
+    );
   if (page === 'business')
     return (
-      <BusinessWorkbench state={state} client={client} legacy={<EconomicContext state={state} />} />
+      <>
+        <Header
+          eyebrow="CLUB OPERATIONS"
+          title="구단 운영"
+          description="방침은 매 라운드 비용과 효과로 자동 정산되고, 투자와 계약은 한 번에 지출돼요."
+        />
+        <FinanceOutlook w={state.view!.world} />
+        <PolicyBoard w={state.view!.world} client={client} />
+        <BusinessWorkbench
+          state={state}
+          client={client}
+          legacy={<EconomicContext state={state} />}
+        />
+      </>
     );
   return <History state={state} client={client} />;
 }

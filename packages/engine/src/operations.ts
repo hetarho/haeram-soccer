@@ -14,6 +14,7 @@ import { clamp, integer, random, ratio } from './primitives';
 import {
   campaignEffectiveness,
   FINANCE_CONFIG,
+  seasonPrize,
   gateProjection,
   matchBonus,
   operatingCosts,
@@ -21,6 +22,11 @@ import {
 } from './finance';
 import { setLineup } from './strategy';
 import { setTrainingFocus } from './training';
+import { hireStaff, MANAGER_TRAIT_INFO, managerTrait, releaseStaff, staffEffects } from './staff';
+import { promoteYouth, releaseYouth } from './academy';
+import { assertTransferWindow, placeBid, respondBid } from './transfers';
+import { readInbox } from './inbox';
+import { marketingFanGain, policyEffects, policyOf, setPolicy } from './policy';
 export function operatingCost(w: World) {
   return operatingCosts(w).annual;
 }
@@ -116,22 +122,8 @@ export function sponsorAnnual(w: World) {
 }
 export function settleSeasonPrize(w: World, rank: number, clubs: number) {
   if (w.events.some((event) => event.year === w.year && event.kind === 'season-prize')) return;
-  const band =
-    rank === 1
-      ? 0
-      : rank === 2
-        ? 1
-        : rank <= Math.ceil(clubs / 4)
-          ? 2
-          : rank <= Math.floor(clubs / 2)
-            ? 3
-            : -1;
-  if (band < 0) return;
-  const amount = quote(
-    clubOf(w).country,
-    w.year,
-    FINANCE_CONFIG.rankAwards[band as 0 | 1 | 2 | 3] * (1 + Math.max(0, 3 - clubOf(w).tier) * 0.35),
-  );
+  const amount = seasonPrize(w, rank, clubs);
+  if (amount === '0') return;
   credit(w, amount);
   addEvent(
     w,
@@ -189,11 +181,14 @@ export function campaignOffers(w: World) {
 export function settleRound(w: World) {
   const cost = operatingCosts(w, w.round);
   debit(w, cost.nextRound, true);
+  const club = clubOf(w),
+    fansGained = marketingFanGain(club.fans, policyEffects(policyOf(w)).fanGrowth);
+  if (fansGained) club.fans = Math.round(clamp(club.fans + fansGained, 200, 5000000));
   addEvent(
     w,
     'operating-cost',
     '급여와 시설 유지비',
-    `선수 ${cost.payments.playerWages} · 감독 ${cost.payments.managerWage} · 시설 ${cost.payments.maintenance} ${w.currency}`,
+    `선수 ${cost.payments.playerWages} · 감독 ${cost.payments.managerWage} · 시설 ${cost.payments.maintenance}${cost.payments.marketing ? ` · 마케팅 ${cost.payments.marketing}` : ''} ${w.currency}${fansGained ? ` · 마케팅 팬 +${fansGained}명` : ''}`,
     cost.nextRound,
   );
   for (const c of w.campaigns) {
@@ -237,35 +232,54 @@ export function settleRound(w: World) {
 }
 export function managerOffers(w: World) {
   return Array.from({ length: 4 }, (_, i) => {
-    const manager = makeManager(clubOf(w).country, w.seed, w.year, i + 1);
+    const manager = makeManager(clubOf(w).country, w.seed, w.year, i + 1),
+      trait = managerTrait(w, i + 1);
     return {
       ...manager,
+      ...(trait ? { trait } : {}),
       fee: quote(clubOf(w).country, w.year, 60 + i * 40),
       ambition: Math.round((manager.ability + manager.pride) / 2),
     };
   });
 }
-export function transferOffers(w: World) {
+/** The season market; `year` reproduces an earlier season's list for negotiations in progress. */
+export function transferOffers(w: World, year = w.year) {
   const roles = ['GK', 'DEF', 'MID', 'FWD'] as const;
-  return Array.from({ length: 8 }, (_, i) => {
-    const r = random(`${w.seed}:market:${w.year}:${i}`);
+  const profile = policyEffects(policyOf(w)).offer,
+    scouting = staffEffects(w);
+  return Array.from({ length: scouting.scoutCandidates }, (_, i) => {
+    const r = random(`${w.seed}:market:${year}:${i}`);
     const p = makePlayer(
       clubOf(w).country,
       w.seed,
-      `market:${w.year}:${i}`,
-      w.year,
-      integer(r, 40, 85),
+      `market:${year}:${i}`,
+      year,
+      integer(r, profile.ability[0], profile.ability[1]),
       roles[i % 4],
-      integer(r, 18, 30),
+      integer(r, profile.age[0], profile.age[1]),
     );
+    const potentialBonus = profile.potentialBonus + scouting.scoutPotential;
+    if (potentialBonus)
+      p.potential = Math.max(overall(p), Math.min(99, p.potential + potentialBonus));
     return {
       player: p,
       fee: quote(
         clubOf(w).country,
-        w.year,
-        i === 0 ? 0 : Math.round((overall(p) - 25) * 9 + (p.potential - overall(p)) * 3),
+        year,
+        i === 0
+          ? 0
+          : Math.max(
+              0,
+              Math.round(
+                ((overall(p) - 25) * 9 + (p.potential - overall(p)) * 3) *
+                  profile.feeMultiplier *
+                  scouting.feeMultiplier,
+              ),
+            ),
       ),
-      loanFee: quote(clubOf(w).country, w.year, Math.max(15, overall(p) * 1.5)),
+      loanFee: quote(clubOf(w).country, year, Math.max(15, overall(p) * 1.5)),
+      /** A player without a club signs outside transfer windows. */
+      freeAgent: i === 0,
       available: !w.players.some((owned) => owned.id === p.id),
     };
   });
@@ -371,14 +385,44 @@ export function yearlyStaff(w: World) {
   delete w.manager.pending;
   delete w.requested;
 }
-export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'season' }>) {
+export function operate(
+  w: World,
+  cmd: Exclude<Command, { type: 'advance' | 'season' | 'advance-to-event' }>,
+) {
   const code = clubOf(w).country;
   switch (cmd.type) {
+    case 'hire-staff':
+      hireStaff(w, cmd.role, cmd.candidate);
+      break;
+    case 'release-staff':
+      releaseStaff(w, cmd.role);
+      break;
+    case 'promote-youth':
+      promoteYouth(w, cmd.id);
+      break;
+    case 'release-youth':
+      releaseYouth(w, cmd.id);
+      break;
+    case 'delegate':
+      w.delegation = { ...w.delegation, [cmd.key]: cmd.value };
+      break;
+    case 'bid':
+      placeBid(w, cmd.candidate, cmd.fee, cmd.loan);
+      break;
+    case 'respond-bid':
+      respondBid(w, cmd.id, cmd.accept);
+      break;
+    case 'read-inbox':
+      readInbox(w, cmd.id);
+      break;
     case 'lineup':
       setLineup(w, cmd.ids);
       break;
     case 'training':
       setTrainingFocus(w, cmd.focus);
+      break;
+    case 'policy':
+      setPolicy(w, cmd.key, cmd.level);
       break;
     case 'tactics': {
       validateTacticRequest(cmd.tactic, cmd.tone);
@@ -464,7 +508,7 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
         w,
         'manager-hire',
         `${manager.name} 감독 선임`,
-        `${tacticLabel[manager.philosophy]} · 계약 ${manager.until}년까지`,
+        `${tacticLabel[manager.philosophy]}${manager.trait ? ` · ${MANAGER_TRAIT_INFO[manager.trait].label}` : ''} · 계약 ${manager.until}년까지`,
         fee.toString(),
       );
       break;
@@ -473,6 +517,7 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       const o = transferOffers(w)[cmd.candidate];
       if (!o?.available) throw new Error('이미 계약했거나 없는 선수입니다.');
       if (activePlayers(w).length >= 26) throw new Error('선수단 정원은 26명입니다.');
+      assertTransferWindow(w, o.freeAgent && !cmd.loan);
       const cost = cmd.loan ? o.loanFee : o.fee;
       debit(w, cost);
       if (cmd.loan) o.player.loanUntil = w.year + 1;
@@ -489,6 +534,7 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
     case 'sell': {
       const p = w.players.find((p) => p.id === cmd.id && p.status === 'active');
       if (!p || p.loanUntil) throw new Error('매각 가능한 선수가 아닙니다.');
+      assertTransferWindow(w);
       if (
         activePlayers(w).length <= 14 ||
         (p.role === 'GK' && activePlayers(w).filter((p) => p.role === 'GK').length <= 1)

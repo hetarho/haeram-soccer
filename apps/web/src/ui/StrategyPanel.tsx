@@ -27,8 +27,6 @@ import s from './StrategyPanel.module.css';
 type Props = {
   w: World;
   client: GameClient;
-  onSuspendChange?: (suspended: boolean) => void;
-  sheet?: boolean;
   onClose?: () => void;
 };
 type Tone = 'evidence' | 'respect' | 'support' | 'demand';
@@ -85,15 +83,8 @@ function Preview({ players, baseline }: { players: Player[]; baseline: Player[] 
   );
 }
 
-export const StrategyPanel = memo(function StrategyPanel({
-  w,
-  client,
-  onSuspendChange,
-  sheet = false,
-  onClose,
-}: Props) {
-  const processing = useGameState((state) => state.processing);
-  const busy = useGameState((state) => state.busy);
+export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose }: Props) {
+  const acting = useGameState((state) => !!state.pendingActions);
   const readonly = useGameState((state) => state.readonly);
   const error = useGameState((state) => state.error);
   const tabId = useId();
@@ -101,31 +92,26 @@ export const StrategyPanel = memo(function StrategyPanel({
   const [preset, setPreset] = useState<'current' | 'strongest' | 'rest' | 'manual'>('current');
   const [open, setOpen] = useState(false);
   const [preparing, setPreparing] = useState(false);
-  const blocked = preparing || processing || readonly || !!error || !!w.critical;
+  const blocked = preparing || acting || readonly || !!error || !!w.critical;
   const [draft, setDraft] = useState<string[]>([]);
   const [tactic, setTactic] = useState<Tactic>(w.tactic);
   const [tone, setTone] = useState<Tone>('evidence');
   const [message, setMessage] = useState('');
-  const suspension = useRef(onSuspendChange);
   const opening = useRef(false);
   const onDismiss = useRef(onClose);
   onDismiss.current = onClose;
-  suspension.current = onSuspendChange;
   useEffect(
     () => () => {
       opening.current = false;
-      suspension.current?.(false);
     },
     [],
   );
   const close = useCallback(() => {
     opening.current = false;
     setOpen(false);
-    suspension.current?.(false);
     onDismiss.current?.();
   }, []);
   const openPreparation = useCallback(() => {
-    suspension.current?.(true);
     opening.current = true;
     setPreparing(true);
     setDraft([]);
@@ -145,8 +131,8 @@ export const StrategyPanel = memo(function StrategyPanel({
     });
   }, [client]);
   useEffect(() => {
-    if (sheet) openPreparation();
-  }, [sheet, openPreparation]);
+    openPreparation();
+  }, [openPreparation]);
   const baseline = startingSquad(w, clubOf(w));
   const players = activePlayers(w);
   const byId = new Map(players.map((player) => [player.id, player]));
@@ -203,28 +189,6 @@ export const StrategyPanel = memo(function StrategyPanel({
   const selectTab = (value: PreparationTab) => setTab(value);
   return (
     <>
-      {!sheet && (
-        <section className={s.panel} aria-label="다음 경기 준비">
-          <div>
-            <h3>내가 만드는 다음 경기</h3>
-            <p>
-              실제 적용 <b>{tacticLabel[w.tactic]}</b> ·{' '}
-              {w.lineup ? '직접 선택한 선발' : '감독의 자동 선발'} · 평균 피로{' '}
-              {lineupSummary(baseline).fatigue}
-            </p>
-            {replaced > 0 && <small>이탈한 선발 {replaced}명은 활동 중인 선수로 대체합니다.</small>}
-          </div>
-          <button
-            disabled={busy || readonly || !!error || !!w.critical}
-            onClick={(event) => {
-              event.currentTarget.focus();
-              openPreparation();
-            }}
-          >
-            전술·선발 준비
-          </button>
-        </section>
-      )}
       {open && (
         <Dialog
           label="다음 경기 전술과 선발 준비"
@@ -449,6 +413,9 @@ export const StrategyPanel = memo(function StrategyPanel({
                 </button>
               </div>
               <Preview players={selected} baseline={baseline} />
+              {replaced > 0 && (
+                <p className={s.hint}>이탈한 선발 {replaced}명은 활동 중인 선수로 대체합니다.</p>
+              )}
               <p className={s.hint}>
                 능력과 피로를 함께 비교해요. 직접 정한 선발은 변경할 때까지 유지합니다.
               </p>

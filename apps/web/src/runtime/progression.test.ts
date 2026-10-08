@@ -46,33 +46,31 @@ afterEach(() => {
 });
 
 describe('the global progression clock', () => {
-  it('keeps every dialog suspension source independent and requires an explicit restart', async () => {
+  it('pauses only while a suspension source holds and resumes without a restart', async () => {
     const s = setup();
     controller = s.controller;
     controller.start();
     await vi.advanceTimersByTimeAsync(1000);
     expect(s.command).toHaveBeenCalledTimes(1);
-    controller.setSuspended(true, 'dialog:first');
-    controller.setSuspended(true, 'dialog:second');
-    controller.setSuspended(false, 'feature');
-    controller.setSuspended(false, 'dialog:first');
-    controller.start();
+    controller.setSuspended(true, 'visibility');
+    controller.setSuspended(true, 'other');
     await vi.advanceTimersByTimeAsync(2000);
     expect(s.command).toHaveBeenCalledTimes(1);
-    controller.setSuspended(false, 'dialog:second');
+    expect(controller.store.getState().running).toBe(true);
+    controller.setSuspended(false, 'visibility');
     await vi.advanceTimersByTimeAsync(1000);
     expect(s.command).toHaveBeenCalledTimes(1);
-    controller.start();
+    controller.setSuspended(false, 'other');
     await vi.advanceTimersByTimeAsync(1000);
     expect(s.command).toHaveBeenCalledTimes(2);
   });
-  it('cancels an in-flight auto request and never leaves a running timer after disposal', async () => {
+  it('cancels an in-flight auto request on stop and never leaves a running timer after disposal', async () => {
     const s = setup();
     controller = s.controller;
     s.command.mockImplementation(() => new Promise(() => {}));
     controller.start();
     await vi.advanceTimersByTimeAsync(1000);
-    controller.setSuspended(true, 'dialog:decision');
+    controller.stop('관전을 위해 자동 진행을 멈췄습니다.');
     expect(s.client.cancel).toHaveBeenCalled();
     controller.dispose();
     await vi.advanceTimersByTimeAsync(3000);
@@ -87,13 +85,13 @@ describe('the global progression clock', () => {
     expect(s.command).toHaveBeenCalledTimes(3);
     expect(s.command).toHaveBeenLastCalledWith(
       { type: 'advance-days', days: 1 },
-      { background: true },
+      { background: true, automatic: true },
     );
     controller.setPace('three-days');
     await vi.advanceTimersByTimeAsync(1000);
     expect(s.command).toHaveBeenLastCalledWith(
       { type: 'advance-days', days: 3 },
-      { background: true },
+      { background: true, automatic: true },
     );
     controller.stop();
     await vi.advanceTimersByTimeAsync(2000);
@@ -112,7 +110,10 @@ describe('the global progression clock', () => {
     });
     controller.finishMatch('first');
     await vi.advanceTimersByTimeAsync(0);
-    expect(s.command).toHaveBeenCalledExactlyOnceWith({ type: 'next-match' }, { background: true });
+    expect(s.command).toHaveBeenCalledExactlyOnceWith(
+      { type: 'next-match' },
+      { background: true, automatic: true },
+    );
     await vi.advanceTimersByTimeAsync(5000);
     expect(s.command).toHaveBeenCalledTimes(1);
     controller.finishMatch('first');
@@ -148,6 +149,69 @@ describe('the global progression clock', () => {
     expect(s.command).not.toHaveBeenCalled();
     gameStore.publish({ ...gameStore.getSnapshot(), processing: false });
     await vi.advanceTimersByTimeAsync(0);
-    expect(s.command).toHaveBeenCalledExactlyOnceWith({ type: 'next-match' }, { background: true });
+    expect(s.command).toHaveBeenCalledExactlyOnceWith(
+      { type: 'next-match' },
+      { background: true, automatic: true },
+    );
+  });
+
+  it('stops for a fresh attention event and keeps running past events already seen', async () => {
+    const s = setup();
+    controller = s.controller;
+    const notified = structuredClone(w);
+    notified.inbox = [
+      {
+        id: 'window',
+        year: w.year,
+        day: 1,
+        kind: 'window-open',
+        title: '여름 이적시장이 열렸어요',
+        detail: '9월 1일 마감',
+        attention: true,
+      },
+    ];
+    s.command.mockImplementation(async () => ({
+      ok: true,
+      requestId: 'test',
+      view: { world: notified } as View,
+    }));
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(controller.store.getState().running).toBe(false);
+    expect(controller.store.getState().reason).toBe('여름 이적시장이 열렸어요');
+    gameStore.publish({ ...gameStore.getSnapshot(), view: { world: notified } as View });
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(controller.store.getState().running).toBe(true);
+    controller.setStopOn('window-open', false);
+    expect(controller.store.getState().stopOn['window-open']).toBe(false);
+  });
+  it('stops on the eve of an own match and plays it through on resume', async () => {
+    const eve = structuredClone(w);
+    eve.calendar = { day: 6 };
+    gameStore.publish({ ...gameStore.getSnapshot(), view: { world: eve } as View });
+    const s = setup();
+    gameStore.publish({ ...gameStore.getSnapshot(), view: { world: eve } as View });
+    controller = s.controller;
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(s.command).not.toHaveBeenCalled();
+    expect(controller.store.getState().matchEve).toBeDefined();
+    expect(controller.store.getState().running).toBe(false);
+    controller.playThrough();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(s.command).toHaveBeenCalledTimes(1);
+    expect(controller.store.getState().matchEve).toBeUndefined();
+  });
+  it('jumps to the next event in one request at event pace', async () => {
+    const s = setup();
+    controller = s.controller;
+    controller.setPace('event');
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(s.command).toHaveBeenCalledWith(
+      { type: 'advance-to-event', matches: true },
+      { background: true, automatic: true },
+    );
   });
 });

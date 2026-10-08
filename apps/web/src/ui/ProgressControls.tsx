@@ -1,159 +1,258 @@
-import { useEffect, useState } from 'react';
 import {
   currentDay,
   daysUntilNextMatch,
-  fixtureDate,
   nextOwnFixture,
   seasonDate,
   seasonLength,
 } from '../../../../packages/engine/src/calendar';
+import { useState } from 'react';
+import type { DelegationKey, InboxKind, World } from '../../../../packages/contracts/src/types';
+import { transferWindow } from '../../../../packages/engine/src/transfers';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
-import { useProgression, type ProgressionController } from '../runtime/progression';
-import s from './App.module.css';
+import {
+  STOP_LABELS,
+  useProgression,
+  type Pace,
+  type ProgressionController,
+  type StopOn,
+} from '../runtime/progression';
 import { Dialog } from './Dialog';
+import s from './App.module.css';
 
+const PACES: [Pace, string, string][] = [
+  ['daily', '1일', '1초에 하루'],
+  ['three-days', '3일', '1초에 3일'],
+  ['event', '이벤트', '다음 이벤트까지 한 번에'],
+];
+
+/** Game-speed controls: tapping a speed starts the shared clock at that pace. */
 export function ProgressControls({
   client,
   controller,
-  suspended,
+  compact = false,
+  onHome,
 }: {
   client: GameClient;
   controller: ProgressionController;
-  suspended: boolean;
+  /** Away from home the clock pauses and collapses to one line that leads back home. */
+  compact?: boolean;
+  onHome?: () => void;
 }) {
   const state = useGameState((state) => state);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const { running, pace, watching, reason } = useProgression(controller, (state) => state);
+  const { running, pace, watching, reason, stopOn } = useProgression(controller, (state) => state);
+  const [settings, setSettings] = useState(false);
+  const level = interventionLevel(stopOn, state.view!.world);
   const w = state.view!.world;
   const next = nextOwnFixture(w);
-  const blocked = !!(state.readonly || state.error || w.critical || suspended);
-  useEffect(() => {
-    controller.setSuspended(suspended);
-  }, [controller, suspended]);
+  const days = daysUntilNextMatch(w);
+  const blocked = !!(state.readonly || state.error || w.critical);
+  const detail = PACES.find(([value]) => value === pace)![2];
+  const status = running
+    ? watching
+      ? '자동 관전 중 · 경기 후 다음 경기'
+      : `진행 중 · ${detail}`
+    : reason ||
+      (next
+        ? `${days ? `다음 경기 D-${days}` : '오늘 경기'} · ${transferWindow(w).label}`
+        : '시즌 정산을 기다려요');
+  if (compact)
+    return (
+      <button
+        className={`${s.miniClock} ${running ? s.miniClockPaused : ''}`}
+        data-testid="mini-clock"
+        aria-label={`${seasonDate(w)} · ${running ? '자동 진행 일시정지 · 홈으로 돌아오면 계속' : '자동 진행은 홈에서'} · 홈으로 이동`}
+        onClick={onHome}
+      >
+        <i aria-hidden="true" />
+        <strong data-testid="game-date">{seasonDate(w)}</strong>
+        <span>{running ? '일시정지 · 홈에서 계속' : status}</span>
+        <b aria-hidden="true">홈 ›</b>
+      </button>
+    );
   return (
-    <>
-      <section className={s.seasonControls} aria-label="시즌 진행">
-        <div className={s.calendarSummary}>
-          <span className={s.eyebrow}>시즌 캘린더</span>
-          <strong data-testid="game-date">{seasonDate(w)}</strong>
-          <small>
-            {watching
-              ? '관전 모드 · 현재 경기 종료 후 다음 경기를 바로 시작합니다'
-              : next
-                ? `다음 경기 ${fixtureDate(w, next)} · ${daysUntilNextMatch(w)}일 후`
-                : '시즌 정산과 다음 시즌을 준비합니다'}
-          </small>
-          <progress aria-label="시즌 경과 일수" value={currentDay(w)} max={seasonLength(w)} />
-        </div>
-        <div className={s.progressActions}>
-          {watching ? (
-            <div className={s.watchProgressMode}>
-              <b>경기 종료 → 다음 경기</b>
-              <small>경기장에서 관전 속도를 조절하세요</small>
-            </div>
-          ) : (
-            <div className={s.paceSwitch} role="group" aria-label="자동 진행 속도">
-              {(
-                [
-                  ['daily', '1단계', '1초에 1일'],
-                  ['three-days', '2단계', '1초에 3일'],
-                  ['match', '3단계', '1초에 다음 경기'],
-                ] as const
-              ).map(([value, label, detail]) => (
-                <button
-                  key={value}
-                  aria-pressed={pace === value}
-                  className={pace === value ? s.selectedPace : undefined}
-                  onClick={() => controller.setPace(value)}
-                  disabled={blocked}
-                >
-                  <b>{label}</b>
-                  <small>{detail}</small>
-                </button>
-              ))}
-            </div>
-          )}
-          <div className={s.autoButtons}>
-            {!watching && (
-              <button
-                className={s.dayControl}
-                disabled={blocked || state.processing || running}
-                onClick={() =>
-                  void client.command({ type: 'advance-days', days: 1 }, { background: true })
-                }
-              >
-                하루 진행
-              </button>
-            )}
-            {!watching && (
-              <button
-                className={s.mobilePace}
-                onClick={(event) => {
-                  event.currentTarget.focus();
-                  setSettingsOpen(true);
-                }}
-              >
-                진행 설정
-              </button>
-            )}
-            <button
-              className={running ? s.coral : s.primary}
-              disabled={!running && (blocked || state.processing)}
-              onClick={() => (running ? controller.stop() : controller.start())}
-            >
-              {running ? '자동 진행 정지' : '자동 진행 시작'}
-            </button>
-          </div>
-          <span className={s.autoStatus} aria-live="polite" aria-atomic="true">
-            {running
-              ? watching
-                ? '자동 관전 중 · 경기 종료를 기다립니다'
-                : '자동 진행 중 · 경기 결과와 순위가 갱신됩니다'
-              : reason || '자동 진행을 시작하고 원하는 탭에서 시즌을 지켜보세요'}
-          </span>
-        </div>
-      </section>
-      {settingsOpen && (
-        <Dialog
-          label="시즌 진행 설정"
-          onClose={() => setSettingsOpen(false)}
-          actions={
-            <button className={s.closeProgressSettings} onClick={() => setSettingsOpen(false)}>
-              설정 확인 마치기
-            </button>
-          }
+    <section
+      className={`${s.seasonControls} ${running ? s.clockRunning : ''}`}
+      aria-label="시즌 진행"
+    >
+      <div className={s.calendarSummary}>
+        <strong data-testid="game-date">{seasonDate(w)}</strong>
+        <small className={s.autoStatus} aria-live="polite" aria-atomic="true">
+          {status}
+        </small>
+        <progress aria-label="시즌 경과 일수" value={currentDay(w)} max={seasonLength(w)} />
+      </div>
+      <div className={s.clockButtons} role="group" aria-label="자동 진행 속도">
+        <button
+          className={`${s.clockToggle} ${running ? s.clockPause : ''}`}
+          aria-label={running ? '자동 진행 정지' : '자동 진행 시작'}
+          disabled={!running && (blocked || state.processing)}
+          onClick={() => (running ? controller.stop() : controller.start())}
         >
-          <p>원하는 속도로 시즌을 보내세요. 설정을 닫고 자동 진행을 시작하면 적용돼요.</p>
-          <div className={s.paceModal} role="group" aria-label="진행 속도 선택">
-            {(
-              [
-                ['daily', '1단계', '1초에 1일'],
-                ['three-days', '2단계', '1초에 3일'],
-                ['match', '3단계', '1초에 다음 경기'],
-              ] as const
-            ).map(([value, label, detail]) => (
-              <button
-                key={value}
-                aria-pressed={pace === value}
-                disabled={blocked}
-                onClick={() => controller.setPace(value)}
-              >
-                <b>{label}</b>
-                <span>{detail}</span>
-              </button>
-            ))}
-          </div>
-          <button
-            disabled={blocked || state.processing}
-            onClick={() =>
-              void client.command({ type: 'advance-days', days: 1 }, { background: true })
-            }
-          >
-            하루 진행
-          </button>
-        </Dialog>
+          <span aria-hidden="true" />
+        </button>
+        {!watching &&
+          PACES.map(([value, label, description]) => (
+            <button
+              key={value}
+              aria-label={`${description} 속도로 자동 진행`}
+              aria-pressed={pace === value}
+              className={pace === value ? s.selectedPace : undefined}
+              disabled={blocked || (!running && state.processing)}
+              onClick={() => {
+                controller.setPace(value);
+                if (!running) controller.start();
+              }}
+            >
+              {label}
+            </button>
+          ))}
+      </div>
+      <button
+        className={s.interventionButton}
+        aria-label={`개입 수준 · ${level >= 0 ? INTERVENTION_LEVELS[level].name : '사용자 지정'}`}
+        onClick={(event) => {
+          event.currentTarget.focus();
+          setSettings(true);
+        }}
+      >
+        <span aria-hidden="true">⚙</span>
+        <i aria-hidden="true">{level >= 0 ? level + 1 : '·'}</i>
+      </button>
+      {settings && (
+        <InterventionSettings
+          client={client}
+          controller={controller}
+          onClose={() => setSettings(false)}
+        />
       )}
-    </>
+    </section>
+  );
+}
+
+const ALL_KINDS = Object.keys(STOP_LABELS) as InboxKind[];
+const stops = (on: InboxKind[]): StopOn =>
+  Object.fromEntries(ALL_KINDS.map((kind) => [kind, on.includes(kind)])) as StopOn;
+/** From watching every decision to leaving the whole club to the manager and staff. */
+export const INTERVENTION_LEVELS: {
+  name: string;
+  summary: string;
+  stopOn: StopOn;
+  delegation: Record<DelegationKey, boolean>;
+}[] = [
+  {
+    name: '모든 결정 확인',
+    summary:
+      '경기 전날, 이적시장, 협상, 영입 제안, 유소년, 스태프 보고까지 모두 멈춰서 직접 결정해요.',
+    stopOn: stops(ALL_KINDS),
+    delegation: { training: false, academy: false, transfers: false },
+  },
+  {
+    name: '중요한 결정만',
+    summary:
+      '경기 전날과 이적 협상·제안, 유소년 입단에서만 멈춰요. 훈련과 유소년 승격은 스태프가 맡아요.',
+    stopOn: stops(['match', 'window-open', 'bid-response', 'incoming-bid', 'youth-intake']),
+    delegation: { training: true, academy: true, transfers: false },
+  },
+  {
+    name: '이적만 직접',
+    summary:
+      '경기는 결과로 넘기고 이적시장 개장과 협상·제안에서만 멈춰요. 훈련과 유소년은 스태프가 맡아요.',
+    stopOn: stops(['window-open', 'bid-response', 'incoming-bid']),
+    delegation: { training: true, academy: true, transfers: false },
+  },
+  {
+    name: '운영진에 모두 맡기기',
+    summary:
+      '감독과 스태프가 경기·훈련·유소년·영입 제안 수락과 거절까지 알아서 처리해요. 결과는 소식함에 남아요.',
+    stopOn: stops([]),
+    delegation: { training: true, academy: true, transfers: true },
+  },
+];
+/** The level matching the current stops and delegation, or -1 for a custom mix. */
+export function interventionLevel(stopOn: StopOn, w: World) {
+  return INTERVENTION_LEVELS.findIndex(
+    (level) =>
+      ALL_KINDS.every((kind) => level.stopOn[kind] === stopOn[kind]) &&
+      (Object.keys(level.delegation) as DelegationKey[]).every(
+        (key) => level.delegation[key] === !!w.delegation?.[key],
+      ),
+  );
+}
+
+/** How much the owner steps in: one choice sets stops and staff delegation together. */
+export function InterventionSettings({
+  client,
+  controller,
+  onClose,
+}: {
+  client: GameClient;
+  controller: ProgressionController;
+  onClose: () => void;
+}) {
+  const stopOn = useProgression(controller, (state) => state.stopOn);
+  const w = useGameState((state) => state.view?.world);
+  const acting = useGameState((state) => !!state.pendingActions || state.readonly);
+  if (!w) return null;
+  const current = interventionLevel(stopOn, w);
+  const choose = (index: number) => {
+    const level = INTERVENTION_LEVELS[index];
+    controller.setStopOnAll(level.stopOn);
+    for (const key of Object.keys(level.delegation) as DelegationKey[])
+      if (!!w.delegation?.[key] !== level.delegation[key])
+        void client.command({ type: 'delegate', key, value: level.delegation[key] });
+  };
+  return (
+    <Dialog label="개입 수준" onClose={onClose}>
+      <p className={s.muted}>
+        구단주가 얼마나 직접 결정할지 골라요. 아래로 갈수록 감독과 스태프가 더 많이 맡아요.
+      </p>
+      <div className={s.levels} role="radiogroup" aria-label="개입 수준">
+        {INTERVENTION_LEVELS.map((level, index) => (
+          <button
+            key={level.name}
+            role="radio"
+            aria-checked={current === index}
+            className={current === index ? s.levelOn : undefined}
+            disabled={acting}
+            onClick={() => choose(index)}
+          >
+            <span className={s.levelMeter} aria-hidden="true">
+              {INTERVENTION_LEVELS.map((_, dot) => (
+                <i
+                  key={dot}
+                  className={dot <= INTERVENTION_LEVELS.length - 1 - index ? s.dotOn : ''}
+                />
+              ))}
+            </span>
+            <b>
+              {index + 1}. {level.name}
+            </b>
+            <small>{level.summary}</small>
+          </button>
+        ))}
+      </div>
+      {current < 0 && <p className={s.muted}>지금은 세부 설정으로 고른 사용자 지정 상태예요.</p>}
+      <details className={s.detailStops}>
+        <summary>이벤트별 세부 설정</summary>
+        <div className={s.toggles}>
+          {ALL_KINDS.map((kind) => (
+            <label key={kind}>
+              <input
+                type="checkbox"
+                checked={stopOn[kind]}
+                onChange={(event) => controller.setStopOn(kind, event.target.checked)}
+              />
+              {STOP_LABELS[kind]}에서 멈춤
+            </label>
+          ))}
+        </div>
+      </details>
+      <div className={s.actions}>
+        <button className={s.primary} onClick={onClose}>
+          설정 완료
+        </button>
+      </div>
+    </Dialog>
   );
 }

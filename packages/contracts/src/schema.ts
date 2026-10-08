@@ -8,6 +8,7 @@ const id = z.string().min(1).max(100);
 const number = z.number().finite().min(-Number.MAX_SAFE_INTEGER).max(Number.MAX_SAFE_INTEGER);
 const metrics = z.array(z.number().int().nonnegative()).length(12);
 const tactic = z.enum(['balanced', 'possession', 'counter', 'press']);
+const policyLevel = z.literal([1, 2, 3, 4, 5]);
 const club = z.object({
   id,
   name: text,
@@ -57,6 +58,7 @@ const manager = z.object({
   until: z.number().int(),
   interim: z.boolean(),
   lastRequest: text.optional(),
+  trait: z.enum(['youth', 'rotation', 'stable']).optional(),
   requestHistory: z
     .object({
       at: z.string().regex(/^\d{4}:\d{1,3}$/),
@@ -224,6 +226,57 @@ const tournament = z.object({
   firstStandings: z.array(z.array(number).length(6)).max(100).optional(),
   secondStandings: z.array(z.array(number).length(6)).max(100).optional(),
 });
+const staffRole = z.enum([
+  'assistant',
+  'attack',
+  'defense',
+  'goalkeeping',
+  'fitness',
+  'youth',
+  'scout',
+]);
+const staff = z.strictObject({
+  id,
+  role: staffRole,
+  name: text,
+  ability: rating,
+  trait: z.enum(['developer', 'specialist', 'recovery', 'spotter', 'negotiator']).optional(),
+  wage: money,
+  since: z.number().int(),
+  until: z.number().int(),
+});
+const bid = z.strictObject({
+  id,
+  direction: z.enum(['out', 'in']),
+  playerId: id,
+  club: id.optional(),
+  fee: money,
+  loan: z.boolean().optional(),
+  year: z.number().int(),
+  day: z.number().int().min(0).max(400),
+  due: z.number().int().min(0).max(800),
+  status: z.enum(['pending', 'accepted', 'rejected', 'countered', 'expired', 'completed']),
+  counterFee: money.optional(),
+});
+const inboxItem = z.strictObject({
+  id,
+  year: z.number().int(),
+  day: z.number().int().min(0).max(400),
+  kind: z.enum([
+    'match',
+    'window-open',
+    'window-close',
+    'bid-response',
+    'incoming-bid',
+    'youth-intake',
+    'staff-report',
+  ]),
+  title: text,
+  detail: z.string().max(400),
+  attention: z.boolean(),
+  read: z.boolean().optional(),
+  ref: id.optional(),
+});
 export const worldSchema: z.ZodType<World> = z.object({
   schema: z.literal(1),
   engine: text,
@@ -247,6 +300,23 @@ export const worldSchema: z.ZodType<World> = z.object({
     .string()
     .regex(/^\d{4}:\d{1,3}$/)
     .optional(),
+  policy: z
+    .strictObject({ support: policyLevel, recruitment: policyLevel, marketing: policyLevel })
+    .optional(),
+  staff: z.array(staff).max(20).optional(),
+  academy: z
+    .strictObject({ players: z.array(player).max(60), intakeYear: z.number().int().optional() })
+    .optional(),
+  delegation: z
+    .strictObject({
+      training: z.boolean().optional(),
+      academy: z.boolean().optional(),
+      transfers: z.boolean().optional(),
+    })
+    .optional(),
+  bids: z.array(bid).max(200).optional(),
+  morale: z.number().finite().min(0).max(100).optional(),
+  inbox: z.array(inboxItem).max(200).optional(),
   manager,
   tactic,
   requested: tactic.optional(),

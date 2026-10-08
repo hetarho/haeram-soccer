@@ -1,9 +1,12 @@
 import { chooseOption, selectOptions } from './select';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { COUNTRIES } from '../../packages/catalogs/src/index';
+import { expectViewFits, settle } from './layout';
+import { stopOnlyFor } from './events';
 
 async function expectTouchControl(control: Locator, viewport: { width: number; height: number }) {
   await control.scrollIntoViewIfNeeded();
+  await settle(control.page());
   await expect(control).toBeVisible();
   const geometry = await control.evaluate((element) => {
     const bounds = element.getBoundingClientRect();
@@ -29,14 +32,8 @@ async function expectTouchControl(control: Locator, viewport: { width: number; h
 }
 
 async function expectCompactDocument(page: Page, viewport: { width: number; height: number }) {
-  const geometry = await page.evaluate(() => ({
-    width: document.documentElement.scrollWidth,
-    height: document.documentElement.scrollHeight,
-    scroll: scrollY,
-  }));
-  expect(geometry.width, JSON.stringify(geometry)).toBeLessThanOrEqual(viewport.width);
-  expect(geometry.height, JSON.stringify(geometry)).toBeLessThanOrEqual(viewport.height + 2);
-  expect(geometry.scroll).toBe(0);
+  expect(page.viewportSize()).toEqual(viewport);
+  await expectViewFits(page);
 }
 
 async function found(page: Page, seed: string) {
@@ -54,6 +51,9 @@ for (const viewport of [
   test(`keeps founding and match preparation selectors touchable at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
+    // A pace tap below runs the clock briefly in the open window; an offer card must not cover
+    // the preparation controls this test measures.
+    await stopOnlyFor(page, ['match']);
     await page.setViewportSize(viewport);
     await page.goto('/');
     const country = page.getByRole('combobox', { name: '창단 국가', exact: true });
@@ -66,17 +66,21 @@ for (const viewport of [
     await page.getByRole('button', { name: '클럽 창단' }).click();
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await expectCompactDocument(page, viewport);
-    await page.getByRole('button', { name: '진행 설정', exact: true }).click();
-    const progress = page.getByRole('dialog', { name: '시즌 진행 설정' });
-    for (const pace of ['1단계', '2단계', '3단계']) {
-      await expectTouchControl(progress.getByRole('button', { name: pace }), viewport);
-    }
-    await progress.getByRole('button', { name: '2단계' }).click();
-    await expect(progress.getByRole('button', { name: '2단계' })).toHaveAttribute(
-      'aria-pressed',
-      'true',
+    const progress = page.getByRole('region', { name: '시즌 진행', exact: true });
+    const paces = ['1초에 하루', '1초에 3일', '다음 이벤트까지 한 번에'].map((pace) =>
+      progress.getByRole('button', { name: `${pace} 속도로 자동 진행`, exact: true }),
     );
-    await progress.getByRole('button', { name: '설정 확인 마치기', exact: true }).click();
+    for (const pace of paces) await expectTouchControl(pace, viewport);
+    await expectTouchControl(
+      progress.getByRole('button', { name: '자동 진행 시작', exact: true }),
+      viewport,
+    );
+    await paces[1].click();
+    await expect(paces[1]).toHaveAttribute('aria-pressed', 'true');
+    await expect(paces[0]).toHaveAttribute('aria-pressed', 'false');
+    // The toggle was measured above as '자동 진행 시작'; stop the run straight away.
+    await progress.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
+    await expect(paces[1]).toHaveAttribute('aria-pressed', 'true');
     await page
       .getByTestId('club-hub')
       .getByRole('button', { name: '전술·선발 준비', exact: true })
@@ -144,12 +148,8 @@ for (const viewport of [
     await page.setViewportSize(viewport);
     await found(page, `native-exploration-${viewport.width}`);
     await page
-      .getByTestId('club-hub')
-      .getByRole('button', { name: '선수 키우기·영입', exact: true })
-      .click();
-    await page
-      .getByRole('dialog', { name: '선수 성장과 훈련' })
-      .getByRole('button', { name: '선수단·이적 시장', exact: true })
+      .getByRole('navigation', { name: '모바일 게임 메뉴' })
+      .getByRole('button', { name: '선수단', exact: true })
       .click();
     const scope = page.getByRole('combobox', { name: '선수 지표 범위', exact: true });
     await expectTouchControl(scope, viewport);

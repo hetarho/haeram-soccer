@@ -1,4 +1,4 @@
-import type { Command, Founding } from '../../../../packages/contracts/src/types';
+import type { Command, Founding, World } from '../../../../packages/contracts/src/types';
 import { SaveRepository } from '../adapters/repository';
 import {
   SaveCompatibilityError,
@@ -20,6 +20,10 @@ export interface ClientState {
   notice?: string;
   progress: number;
   playback?: Reply['playback'];
+  /** The latest committed player command and the world it changed, for outcome feedback. */
+  lastAction?: { id: number; command: Command; before: World };
+  /** Player commands queued or running; automatic clock ticks never count, so controls stay steady. */
+  pendingActions?: number;
 }
 export class GameClient {
   state: ClientState = {
@@ -33,6 +37,7 @@ export class GameClient {
   private worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
   private session = crypto.randomUUID();
   private serial = 0;
+  private actionSerial = 0;
   private failed = false;
   private waiters = new Map<
     string,
@@ -281,9 +286,15 @@ export class GameClient {
   found(input: Founding, replace = false) {
     return this.enqueue(() => this.mutate({ type: 'found', input, replace } as Body));
   }
-  command(command: Command, options: { background?: boolean } = {}) {
+  /** `automatic` marks clock ticks; every other command reports its outcome. */
+  command(command: Command, options: { background?: boolean; automatic?: boolean } = {}) {
     this.cancelled = false;
-    return this.enqueue(async () => {
+    if (!options.automatic) {
+      this.state.pendingActions = (this.state.pendingActions || 0) + 1;
+      this.emit();
+    }
+    const task = this.enqueue(async () => {
+      const before = this.state.view?.world;
       let reply: Reply | undefined;
       const count = command.type === 'season' ? Math.min(100, Math.max(1, command.count)) : 1;
       for (let i = 0; i < count; i++) {
@@ -294,8 +305,15 @@ export class GameClient {
         } as Body);
         if (reply.cancelled || this.state.view?.world.critical) break;
       }
+      if (reply?.ok && before && !options.automatic)
+        this.state.lastAction = { id: ++this.actionSerial, command, before };
       return reply;
     }, options);
+    if (options.automatic) return task;
+    return task.finally(() => {
+      this.state.pendingActions = Math.max(0, (this.state.pendingActions || 1) - 1);
+      this.emit();
+    });
   }
   /** Settle already admitted work before opening a manual decision or match. */
   whenIdle() {

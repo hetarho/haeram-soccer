@@ -1,6 +1,7 @@
 import { Select } from './Select';
 import { useState } from 'react';
-import type { Role, World } from '../../../../packages/contracts/src/types';
+import type { Role, TransferBid, World } from '../../../../packages/contracts/src/types';
+import { bidBoard, bidOutlook, transferWindow } from '../../../../packages/engine/src/transfers';
 import { clubOf, overall } from '../../../../packages/engine/src/world';
 import {
   recruitmentPreview,
@@ -22,6 +23,14 @@ const roleNames: Record<Role, string> = {
   MID: '미드필더',
   FWD: '공격수',
 };
+const BID_STATUS: Record<TransferBid['status'], string> = {
+  pending: '응답 대기',
+  accepted: '수락',
+  rejected: '거절됨',
+  countered: '역제안 받음',
+  expired: '기한 만료',
+  completed: '이적 완료',
+};
 const delta = (value: number) => (value > 0 ? `+${value}` : String(value));
 const runway = (value: number) => (value >= 999 ? '999라운드 이상' : `${value}라운드`);
 
@@ -32,6 +41,8 @@ function CandidateCard({
   selected,
   onCompare,
   onRecruit,
+  onBid,
+  pending,
 }: {
   w: World;
   candidate: Candidate;
@@ -39,11 +50,14 @@ function CandidateCard({
   selected: boolean;
   onCompare: () => void;
   onRecruit: (loan: boolean) => void;
+  onBid: () => void;
+  pending?: TransferBid;
 }) {
   const { offer, buy, loan } = candidate,
     player = offer.player,
     club = clubOf(w);
   const cash = (value: string) => money(value, club.country, w.year);
+  const window = transferWindow(w);
   return (
     <article
       className={s.card}
@@ -136,27 +150,49 @@ function CandidateCard({
           </p>
         </>
       )}
-      <div className={s.transactions}>
-        <div>
-          <button
-            className={s.primary}
-            disabled={blocked || !buy.eligible || !buy.affordable}
-            onClick={() => onRecruit(false)}
-          >
-            {offer.available ? '선수 영입' : '계약 완료'}
-          </button>
-          {(!buy.eligible || !buy.affordable) && <small>{buy.reason}</small>}
+      {pending ? (
+        <p className={s.pending} data-testid="pending-bid">
+          {pending.status === 'countered'
+            ? `역제안 ${cash(pending.counterFee || pending.fee)} · 소식함에서 답해 주세요`
+            : `협상 중 · 제안 ${cash(pending.fee)} · ${Math.max(0, pending.due - (w.calendar?.day ?? 0))}일 안에 답이 와요`}
+        </p>
+      ) : (
+        <div className={s.transactions}>
+          <div>
+            {offer.freeAgent ? (
+              <button
+                className={s.primary}
+                disabled={blocked || !buy.eligible || !buy.affordable}
+                onClick={() => onRecruit(false)}
+              >
+                {offer.available ? '자유계약 영입' : '계약 완료'}
+              </button>
+            ) : (
+              <button
+                className={s.primary}
+                disabled={blocked || !offer.available || !window.open || !buy.eligible}
+                onClick={onBid}
+              >
+                {offer.available ? '이적 제안' : '계약 완료'}
+              </button>
+            )}
+            {offer.available && !offer.freeAgent && !window.open ? (
+              <small>{window.label}</small>
+            ) : (
+              (!buy.eligible || !buy.affordable) && <small>{buy.reason}</small>
+            )}
+          </div>
+          <div>
+            <button
+              disabled={blocked || !window.open || !loan.eligible || !loan.affordable}
+              onClick={() => onRecruit(true)}
+            >
+              1시즌 임대
+            </button>
+            {(!loan.eligible || !loan.affordable) && <small>{loan.reason}</small>}
+          </div>
         </div>
-        <div>
-          <button
-            disabled={blocked || !loan.eligible || !loan.affordable}
-            onClick={() => onRecruit(true)}
-          >
-            1시즌 임대
-          </button>
-          {(!loan.eligible || !loan.affordable) && <small>{loan.reason}</small>}
-        </div>
-      </div>
+      )}
       <details className={s.details}>
         <summary>능력 자세히</summary>
         <div className={s.attributes}>
@@ -188,11 +224,13 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   const [comparison, setComparison] = useState<string[]>([]);
   const [comparing, setComparing] = useState(false);
   const [message, setMessage] = useState('');
+  const [bidding, setBidding] = useState<Candidate>();
+  const [step, setStep] = useState(1);
   const active = w.players.filter((player) => player.status === 'active').length;
-  const processing = useGameState((current) => current.processing);
+  const acting = useGameState((current) => !!current.pendingActions);
   const readonly = useGameState((current) => current.readonly);
   const error = useGameState((current) => current.error);
-  const blocked = processing || readonly || !!error;
+  const blocked = acting || readonly || !!error;
   const recommended = recruitmentRoleNeed(w);
   const candidates: Candidate[] = state.view!.transfers.map((offer, index) => ({
     index,
@@ -244,6 +282,16 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
         : client.state.error || '계약을 적용하지 못했어요.',
     );
   };
+  const bids = w.bids || [];
+  const pendingFor = (id: string) =>
+    bids.find(
+      (bid) =>
+        bid.direction === 'out' &&
+        bid.playerId === id &&
+        (bid.status === 'pending' || bid.status === 'countered'),
+    );
+  const window = transferWindow(w);
+  const format = (value: string) => money(value, club.country, w.year);
   const render = (candidate: Candidate) => (
     <CandidateCard
       key={candidate.offer.player.id}
@@ -253,18 +301,85 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       selected={comparison.includes(candidate.offer.player.id)}
       onCompare={() => toggle(candidate.offer.player.id)}
       onRecruit={(loan) => void recruit(candidate, loan)}
+      onBid={() => {
+        setStep(1);
+        setBidding(candidate);
+      }}
+      pending={pendingFor(candidate.offer.player.id)}
     />
   );
+  const board = bidBoard(w);
+  const outgoing = bids.filter(
+    (bid) => bid.direction === 'out' && (bid.status === 'pending' || bid.status === 'countered'),
+  );
+  const asking = bidding ? BigInt(bidding.offer.fee) : 0n;
+  const steps = [80n, 100n, 115n, 130n];
+  const fee = bidding ? ((asking * steps[step]) / 100n).toString() : '0';
+  const outlook = bidding ? bidOutlook(w, bidding.index, fee) : undefined;
   return (
     <section className={s.desk} aria-label="선수 영입 데스크">
+      <div
+        className={`${s.window} ${window.open ? s.windowOpen : ''}`}
+        data-testid="transfer-window"
+      >
+        <b>{window.label}</b>
+        <small>
+          {window.open
+            ? '이적료 영입·임대·매각이 가능해요. 자유계약 선수는 언제든 영입할 수 있어요.'
+            : '지금은 자유계약 선수만 영입할 수 있어요. 이적 제안은 시장이 열리면 보내세요.'}
+        </small>
+      </div>
       <div className={s.summary}>
-        <span>
-          운영 자금 <b>{money(w.cash, club.country, w.year)}</b>
-        </span>
         <span>
           선수단 정원 <b>{active}/26</b>
         </span>
+        <span>
+          협상 중 <b>{outgoing.length}건</b>
+        </span>
       </div>
+      {board.length > 0 && (
+        <section className={s.negotiations} aria-label="진행 중인 협상">
+          <h3>이적 협상</h3>
+          {board.slice(0, 8).map(({ bid, player, club: other, actionable, dueLabel }) => (
+            <div key={bid.id} className={s.negotiation} data-status={bid.status}>
+              <span>
+                <b>
+                  {bid.direction === 'in' ? '받은 제안' : '보낸 제안'} · {player?.name || '선수'}
+                </b>
+                <small>
+                  {bid.direction === 'in' && other ? `${other.name} · ` : ''}
+                  {bid.status === 'countered'
+                    ? `역제안 ${format(bid.counterFee || bid.fee)}`
+                    : `${format(bid.fee)}`}{' '}
+                  · {BID_STATUS[bid.status]}
+                  {(bid.status === 'pending' || bid.status === 'countered') && ` · ${dueLabel}까지`}
+                </small>
+              </span>
+              {actionable && (
+                <span className={s.negotiationActions}>
+                  <button
+                    className={s.primary}
+                    disabled={blocked}
+                    onClick={() =>
+                      void client.command({ type: 'respond-bid', id: bid.id, accept: true })
+                    }
+                  >
+                    {bid.direction === 'in' ? '매각' : '수락'}
+                  </button>
+                  <button
+                    disabled={blocked}
+                    onClick={() =>
+                      void client.command({ type: 'respond-bid', id: bid.id, accept: false })
+                    }
+                  >
+                    거절
+                  </button>
+                </span>
+              )}
+            </div>
+          ))}
+        </section>
+      )}
       {active >= 26 && (
         <p className={s.warning}>
           선수단 정원 26/26 · 자리가 가득 찼어요. 선수를 정리한 뒤 영입하세요.
@@ -338,6 +453,68 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           <div className={s.cards}>
             {candidates.filter(({ offer }) => comparison.includes(offer.player.id)).map(render)}
           </div>
+        </Dialog>
+      )}
+      {bidding && outlook && (
+        <Dialog
+          label="이적 제안"
+          onClose={() => setBidding(undefined)}
+          actions={
+            <div className={s.bidActions}>
+              <button onClick={() => setBidding(undefined)}>취소</button>
+              <button
+                className={s.primary}
+                disabled={blocked || BigInt(fee) > BigInt(w.cash) || BigInt(fee) < 1n}
+                onClick={async () => {
+                  const reply = await client.command(
+                    { type: 'bid', candidate: bidding.index, fee },
+                    { background: true },
+                  );
+                  setMessage(
+                    reply?.ok
+                      ? `${bidding.offer.player.name}에게 ${format(fee)} 제안을 보냈어요. 며칠 안에 답이 와요.`
+                      : client.state.error || '제안을 보내지 못했어요.',
+                  );
+                  setBidding(undefined);
+                }}
+              >
+                {format(fee)} 제안 보내기
+              </button>
+            </div>
+          }
+        >
+          <h3>{bidding.offer.player.name}</h3>
+          <p className={s.note}>
+            요구 이적료 {format(outlook.asking || bidding.offer.fee)} · 상대 구단은 2–4일 뒤
+            수락·거절·역제안 중 하나로 답해요. 수락되면 그날 이적료가 나가요.
+          </p>
+          <div className={s.bidSteps} role="radiogroup" aria-label="제안 이적료">
+            {steps.map((percent, i) => (
+              <button
+                key={String(percent)}
+                role="radio"
+                aria-checked={step === i}
+                className={step === i ? s.bidPicked : undefined}
+                onClick={() => setStep(i)}
+              >
+                <b>{String(percent)}%</b>
+                <small>{format(((asking * percent) / 100n).toString())}</small>
+              </button>
+            ))}
+          </div>
+          <dl className={s.costs}>
+            <div>
+              <dt>수락 가능성</dt>
+              <dd>
+                {outlook.label} · 약 {Math.round(outlook.chance * 100)}%
+              </dd>
+            </div>
+            <div>
+              <dt>수락 시 자금</dt>
+              <dd>{format((BigInt(w.cash) - BigInt(fee)).toString())}</dd>
+            </div>
+          </dl>
+          {BigInt(fee) > BigInt(w.cash) && <p className={s.warning}>자금이 부족해요.</p>}
         </Dialog>
       )}
     </section>

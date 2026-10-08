@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { expectViewFits, viewGeometry } from './layout';
 
 for (const viewport of [
   { width: 360, height: 740 },
@@ -15,18 +16,7 @@ for (const viewport of [
     const hub = page.getByTestId('club-hub');
     await expect(hub).toBeVisible();
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-    const geometry = await page.evaluate(() => ({
-      height: document.documentElement.scrollHeight,
-      width: document.documentElement.scrollWidth,
-      viewportHeight: innerHeight,
-      viewportWidth: innerWidth,
-      scroll: scrollY,
-    }));
-    expect(geometry.height, JSON.stringify(geometry)).toBeLessThanOrEqual(
-      geometry.viewportHeight + 2,
-    );
-    expect(geometry.width, JSON.stringify(geometry)).toBeLessThanOrEqual(geometry.viewportWidth);
-    expect(geometry.scroll).toBe(0);
+    await expectViewFits(page);
     const menu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
     const menuBounds = await menu.boundingBox();
     expect(menuBounds).not.toBeNull();
@@ -49,13 +39,19 @@ for (const viewport of [
       expect(bounds!.height).toBeGreaterThanOrEqual(44);
       expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(viewport.height);
     }
-    await expect(hub.getByText('운영 자금', { exact: true })).toBeVisible();
+    await expect(page.getByTestId('hud-cash')).toContainText('운영 자금');
+    await expect(page.getByTestId('hud-cash')).toBeVisible();
+    await expect(hub.getByText('리그 순위', { exact: true })).toBeVisible();
     await expect(hub.getByText('팀 전력', { exact: true })).toBeVisible();
-    await expect(hub.getByText('선발 피로', { exact: true })).toBeVisible();
+    await expect(hub.getByText('시즌 전적', { exact: true })).toBeVisible();
+    await expect(page.getByTestId('hub-record')).toHaveText('0-0-0');
+    const state = page.getByRole('region', { name: '팀 상태' });
+    for (const chip of ['피로', '사기', '자금', '선수단'])
+      await expect(state.getByText(chip, { exact: true })).toBeVisible();
 
-    const journalButton = hub.getByRole('button', { name: '자세한 클럽 일지', exact: true });
+    const journalButton = hub.getByRole('button', { name: '시즌 상세', exact: true });
     await journalButton.click();
-    const dialog = page.getByRole('dialog', { name: '클럽 일지 상세' });
+    const dialog = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
     await expect(dialog).toBeVisible();
     expect(await dialog.evaluate((element) => element.contains(document.activeElement))).toBe(true);
     await page.keyboard.press('Tab');
@@ -71,10 +67,13 @@ for (const viewport of [
     await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();
     await expect(dialog).toHaveCount(0);
     await expect(journalButton).toBeFocused();
+    expect((await viewGeometry(page)).scroll).toBe(0);
     expect(await page.evaluate(() => scrollY)).toBe(0);
 
     await page.getByTestId('hub-play').click();
-    await expect(page.getByRole('heading', { name: '90분의 작은 드라마.' })).toBeVisible();
+    await expect(
+      page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
+    ).toBeVisible();
     await expect(page.getByTestId('calendar')).toContainText('라운드 1');
     await expect(page.getByLabel('22명의 선수와 공으로 표현하는 경기')).toBeVisible();
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();

@@ -246,7 +246,17 @@ export function squad(w: World, c: Club): Player[] {
   }
   return players;
 }
-export function lineup(players: Player[]): Player[] {
+/**
+ * Automatic selection value. A manager's trait shifts it: youth favours players aged 21 or
+ * younger, rotation rests tired players sooner, stable keeps the best XI despite fatigue.
+ */
+export function selectionValue(p: Player, manager?: Manager, year?: number) {
+  const fatigueWeight = manager?.trait === 'rotation' ? 2.5 : manager?.trait === 'stable' ? 10 : 5;
+  const youth = manager?.trait === 'youth' && year !== undefined && year - p.born <= 21 ? 4 : 0;
+  return overall(p) - p.fatigue / fatigueWeight + youth;
+}
+export function lineup(players: Player[], manager?: Manager, year?: number): Player[] {
+  const value = (p: Player) => selectionValue(p, manager, year);
   const selected: Player[] = [];
   for (const [role, count] of [
     ['GK', 1],
@@ -257,10 +267,7 @@ export function lineup(players: Player[]): Player[] {
     selected.push(
       ...players
         .filter((p) => p.role === role)
-        .sort(
-          (a, b) =>
-            overall(b) - b.fatigue / 5 - (overall(a) - a.fatigue / 5) || compareIds(a.id, b.id),
-        )
+        .sort((a, b) => value(b) - value(a) || compareIds(a.id, b.id))
         .slice(0, count),
     );
   }
@@ -284,8 +291,13 @@ export const LINEUP_ROLES: Player['role'][] = [
 ];
 
 /** Preferred starters remain slot-safe; a sold or retired player is replaced automatically. */
-export function selectedLineup(players: Player[], preferred?: string[]): Player[] {
-  if (!preferred) return lineup(players);
+export function selectedLineup(
+  players: Player[],
+  preferred?: string[],
+  manager?: Manager,
+  year?: number,
+): Player[] {
+  if (!preferred) return lineup(players, manager, year);
   const active = players.filter((player) => player.status === 'active');
   const byId = new Map(active.map((player) => [player.id, player]));
   const used = new Set<string>();
@@ -311,7 +323,7 @@ export function selectedLineup(players: Player[], preferred?: string[]): Player[
 export function rating(w: World, c: Club) {
   return c.id === w.playerClub
     ? Math.round(
-        selectedLineup(activePlayers(w), w.lineup).reduce(
+        selectedLineup(activePlayers(w), w.lineup, w.manager, w.year).reduce(
           (s, p) => s + overall(p) - p.fatigue / 6,
           0,
         ) / 11,
@@ -332,7 +344,7 @@ export function addEvent(w: World, kind: string, title: string, detail: string, 
 const npcLineups = new WeakMap<Player[], Player[]>();
 export function startingSquad(w: World, c: Club) {
   const ps = squad(w, c);
-  if (c.id === w.playerClub) return selectedLineup(ps, w.lineup);
+  if (c.id === w.playerClub) return selectedLineup(ps, w.lineup, w.manager, w.year);
   let cached = npcLineups.get(ps);
   if (!cached) {
     cached = lineup(ps);

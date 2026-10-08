@@ -10,6 +10,7 @@ import {
   tacticLabel,
 } from '../../packages/engine/src/index';
 import type { Tactic } from '../../packages/contracts/src/types';
+import { settle } from './layout';
 
 test('discloses roster and opponent tactical fit before an actual seeded match', async ({
   page,
@@ -90,12 +91,12 @@ test('discloses roster and opponent tactical fit before an actual seeded match',
   await dialog.getByRole('button', { name: '감독에게 전술 요청', exact: true }).click();
   await expect(dialog.getByRole('status')).toContainText('역습 요청 ·');
   const applied = await tactics.locator('[class*="sectionHead"] b').innerText();
-  await expect(page.getByTestId('calendar')).toHaveText('시즌 1901 · 라운드 0');
+  await expect(page.getByTestId('calendar')).toHaveText(/1901\/02 · 라운드 0$/);
   await dialog.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
   await expect(dialog).toHaveCount(0);
 
   await page.getByTestId('hub-play').click();
-  const match = page.getByRole('tabpanel', { name: '경기', exact: true });
+  const match = page.getByRole('region', { name: '경기 관전', exact: true });
   await expect(match.getByText(opponent.name, { exact: true })).toBeVisible();
   const matchup =
     next.home === reference.playerClub
@@ -131,6 +132,7 @@ for (const viewport of [
     const lineupTab = dialog.getByRole('tab', { name: '선발 선택', exact: true });
     await expect(tacticTab).toHaveAttribute('aria-selected', 'true');
     const cards = dialog.getByRole('region', { name: '경기 전술 준비' }).getByRole('button');
+    await settle(page);
     const bounds = await Promise.all((await cards.all()).map((card) => card.boundingBox()));
     expect(bounds).toHaveLength(4);
     expect(bounds[0]!.y).toBe(bounds[1]!.y);
@@ -157,6 +159,7 @@ for (const viewport of [
     await save.click();
     await expect(dialog.getByRole('status')).toContainText('선발 11명을 저장했습니다.');
     await dialog.getByText('선수별 교체', { exact: true }).click();
+    await settle(page);
     const footerRect = await save.boundingBox();
     const body = dialog.locator('[class*="modalBody"]');
     await body.evaluate((element) => {
@@ -168,6 +171,6 @@ for (const viewport of [
     await close.click();
     await expect(opener).toBeFocused();
     await page.reload();
-    await expect(page.getByTestId('club-hub')).toContainText('직접 선택한 선발');
+    await expect(page.getByTestId('hub-preparation')).toContainText('직접 고른 선발');
   });
 }

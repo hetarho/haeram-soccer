@@ -4,8 +4,8 @@
 }
 .panel,
 .overview {
-  border: 1px solid #dce1d2;
-  background: #fffdf7;
+  border: 1px solid var(--line);
+  background: var(--surface);
   border-radius: 8px;
   min-width: 0;
   overflow: hidden;
@@ -20,7 +20,7 @@
   align-items: center;
   gap: 16px;
   padding: 18px 22px;
-  border-bottom: 1px solid #e1e5d8;
+  border-bottom: 1px solid var(--line);
 }
 .overviewTitle button {
   padding: 5px 10px;
@@ -33,21 +33,21 @@
   gap: 6px 18px;
   padding: 12px 22px;
   font-size: 11px;
-  color: #67785d;
-  background: #f7f8f0;
-  border-bottom: 1px solid #e1e5d8;
+  color: var(--text-muted);
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
 }
 .lastResult b {
-  color: #315c40;
+  color: var(--text);
 }
 .panelHead span {
   display: block;
-  color: #778472;
+  color: var(--text-muted);
   font-size: 11px;
   margin-top: 3px;
 }
 .panelHead .roundTag {
-  border: 1px solid #d5deca;
+  border: 1px solid var(--line);
   border-radius: 20px;
   padding: 4px 10px;
   white-space: nowrap;
@@ -58,7 +58,7 @@
 }
 .stats > div {
   padding: 18px 22px;
-  border-right: 1px solid #e6e9df;
+  border-right: 1px solid var(--line);
   min-width: 0;
 }
 .stats > div:last-child {
@@ -67,7 +67,7 @@
 .stats > div > span,
 .stats small {
   display: block;
-  color: #778472;
+  color: var(--text-muted);
   font-size: 11px;
 }
 .stats strong {
@@ -101,25 +101,25 @@
   border-radius: 4px;
 }
 .win {
-  color: #23583d;
-  background: #dfead9;
+  color: var(--text);
+  background: var(--surface-2);
 }
 .loss {
-  color: #994e37;
-  background: #f2e1d5;
+  color: var(--danger);
+  background: var(--warm-soft);
 }
 .draw {
-  color: #676e5f;
-  background: #eceee5;
+  color: var(--text-muted);
+  background: var(--surface-2);
 }
 .rising {
-  color: #28664a;
+  color: var(--text);
 }
 .falling {
-  color: #ae6146;
+  color: var(--warm);
 }
 .neutral {
-  color: #87907e;
+  color: var(--text-faint);
 }
 .rival {
   display: flex;
@@ -127,21 +127,21 @@
   gap: 24px;
   align-items: center;
   padding: 18px 22px;
-  background: #f0f3e8;
-  border-top: 1px solid #e1e5d8;
+  background: var(--surface-2);
+  border-top: 1px solid var(--line);
 }
 .rival > div > span,
 .rival p,
 .seasonEnd {
   font-size: 11px;
-  color: #71816b;
+  color: var(--text-muted);
 }
 .rival h4 {
   margin: 5px 0;
   font-size: 15px;
 }
 .rival h4 span {
-  color: #93a18b;
+  color: var(--text-faint);
   font-weight: normal;
   margin: 0 7px;
 }
@@ -154,9 +154,24 @@
 .projection b {
   display: block;
   font-size: 19px;
-  color: #325e42;
+  color: var(--text);
 }
-.projection small {
+.projection h5 {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 12px;
+  color: var(--accent-text);
+}
+.projection span {
+  display: grid;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.projection span small {
+  font-size: 11px;
+  color: var(--accent-text);
+}
+.projection > small {
   grid-column: 1 / -1;
   font-size: 10px;
   white-space: normal;
@@ -179,7 +194,7 @@
   align-items: center;
   padding: 12px;
   font-size: 12px;
-  color: #526249;
+  color: var(--text-muted);
 }
 .coverage button {
   min-height: 48px;
@@ -196,8 +211,8 @@
   padding: 11px 12px;
 }
 .standings .own {
-  background: #e9efdf;
-  color: #235b3f;
+  background: var(--surface-2);
+  color: var(--text);
 }
 .standings .own .club {
   font-weight: bold;
@@ -206,20 +221,20 @@
   display: inline-block;
   margin-left: 9px;
   font-size: 9px;
-  color: #5f7e4e;
+  color: var(--text-muted);
 }
 .points {
   font-weight: bold;
-  color: #244f37;
+  color: var(--text);
 }
 .automatic > td:first-child {
-  box-shadow: inset 3px 0 #4e8160;
+  box-shadow: inset 3px 0 var(--accent);
 }
 .playoff > td:first-child {
-  box-shadow: inset 3px 0 #c5a568;
+  box-shadow: inset 3px 0 var(--gold);
 }
 .relegation > td:first-child {
-  box-shadow: inset 3px 0 #c08469;
+  box-shadow: inset 3px 0 var(--warm);
 }
 .legend {
   display: flex;
@@ -227,8 +242,8 @@
   gap: 8px 18px;
   padding: 14px 22px;
   font-size: 10px;
-  color: #798572;
-  border-top: 1px solid #e1e5d8;
+  color: var(--text-muted);
+  border-top: 1px solid var(--line);
 }
 .legend span,
 .chart figcaption span {
@@ -245,20 +260,20 @@
 }
 .autoDot,
 .primaryDot {
-  background: #4e8160;
+  background: var(--accent-fill);
 }
 .playoffDot {
-  background: #c5a568;
+  background: var(--gold);
 }
 .dropDot {
-  background: #c08469;
+  background: var(--warm);
 }
 .compareDot {
-  background: #b57f54;
+  background: var(--warm);
 }
 .compare {
   font-size: 11px;
-  color: #74826c;
+  color: var(--text-muted);
   white-space: nowrap;
 }
 .graphFilters {
@@ -283,26 +298,26 @@
 }
 .chart text {
   font-size: 10px;
-  fill: #7a8772;
+  fill: var(--text-muted);
 }
 .chart figcaption {
   display: flex;
   gap: 16px;
   padding: 10px 5px 0;
   font-size: 11px;
-  color: #66785b;
+  color: var(--text-muted);
 }
 .details {
-  border-top: 1px solid #e4e8db;
+  border-top: 1px solid var(--line);
   font-size: 11px;
 }
 .details summary {
   padding: 13px 22px;
-  color: #6b7d60;
+  color: var(--text-muted);
   cursor: pointer;
 }
 .details summary:focus-visible {
-  outline: 3px solid #cf7854;
+  outline: 3px solid var(--focus);
   outline-offset: -3px;
 }
 .details th,
@@ -315,7 +330,7 @@
 }
 .empty {
   padding: 40px 22px;
-  color: #7c8b70;
+  color: var(--text-muted);
   text-align: center;
   font-size: 12px;
 }
@@ -332,7 +347,7 @@
   grid-template-columns: minmax(0, 1fr) 54px minmax(0, 1fr);
   gap: 8px;
   align-items: center;
-  border-bottom: 1px solid #e7eadd;
+  border-bottom: 1px solid var(--line);
   padding: 12px 8px;
   font-size: 11px;
   border-radius: 4px;
@@ -349,11 +364,11 @@
   font-variant-numeric: tabular-nums;
 }
 .ownResult {
-  background: #eaf0e1;
+  background: var(--surface-2);
 }
 .ourName {
   font-weight: bold;
-  color: #245a3f;
+  color: var(--text);
 }
 @media (max-width: 1100px) {
   .stats > div {
@@ -374,7 +389,7 @@
     border-right: 0;
   }
   .stats > div:nth-child(-n + 2) {
-    border-bottom: 1px solid #e6e9df;
+    border-bottom: 1px solid var(--line);
   }
   .overviewTitle,
   .panelHead {
@@ -406,5 +421,60 @@
   }
   .legend {
     padding: 12px 16px;
+  }
+}
+
+@media (max-width: 760px) {
+  /* Points stay in view; movement and form remain in the rank and results views. */
+  .standings {
+    min-width: 0;
+  }
+  .standings .optional {
+    display: none;
+  }
+  .standings td,
+  .standings th {
+    padding: 9px 5px;
+  }
+  .standings .club {
+    min-width: 0;
+    max-width: 150px;
+    white-space: normal;
+    line-height: 1.3;
+  }
+  .myClub {
+    display: block;
+    margin: 2px 0 0;
+  }
+}
+
+/* Panel headers wrap instead of pushing their controls past the panel edge. */
+.panelHead {
+  flex-wrap: wrap;
+}
+.compare {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+}
+.compare :global([data-select-trigger]) {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 220px;
+  margin-left: 0;
+}
+@media (max-width: 760px) {
+  .panelHead {
+    padding: 14px 14px;
+  }
+  .compare {
+    flex: 1 1 100%;
+  }
+  .compare :global([data-select-trigger]) {
+    max-width: none;
+    min-height: 44px;
+    font-size: 13px;
   }
 }

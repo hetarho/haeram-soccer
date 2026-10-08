@@ -9,6 +9,7 @@ import {
   startingSquad,
   tacticLabel,
 } from '../../packages/engine/src/index';
+import { expectViewFits, settle } from './layout';
 
 async function savedRaw(page: Page) {
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
@@ -19,6 +20,7 @@ async function savedRaw(page: Page) {
 }
 
 async function expectCompactMatch(page: Page, viewport: { width: number; height: number }) {
+  await settle(page);
   await expect
     .poll(() =>
       page.getByLabel('22명의 선수와 공으로 표현하는 경기').evaluate((element) => {
@@ -40,10 +42,8 @@ async function expectCompactMatch(page: Page, viewport: { width: number; height:
     const controls = [...theatre.querySelectorAll('button,select')].filter(
       (element) => element.getClientRects().length,
     );
-    const navigation = [
-      ...document.querySelectorAll('[role="tablist"][aria-label="시즌 보기"] [role="tab"]'),
-      document.querySelector('[role="combobox"][aria-label="시즌 통계 보기"]')!,
-    ];
+    // The theatre has no tab bar; the bottom navigation is how the player leaves it.
+    const navigation = [...menu.querySelectorAll('button')];
     const measure = (element: Element) => {
       const bounds = element.getBoundingClientRect();
       return {
@@ -58,17 +58,12 @@ async function expectCompactMatch(page: Page, viewport: { width: number; height:
       };
     };
     return {
-      width: document.documentElement.scrollWidth,
-      height: document.documentElement.scrollHeight,
-      scroll: scrollY,
       menuTop: menu.getBoundingClientRect().top,
       targets: [...required, ...controls].map(measure),
       navigation: navigation.map(measure),
     };
   });
-  expect(geometry.height, JSON.stringify(geometry)).toBeLessThanOrEqual(viewport.height + 2);
-  expect(geometry.width, JSON.stringify(geometry)).toBeLessThanOrEqual(viewport.width);
-  expect(geometry.scroll).toBe(0);
+  await expectViewFits(page);
   for (const bounds of geometry.targets) {
     expect(bounds.visible, bounds.label).toBe(true);
     expect(bounds.x, bounds.label).toBeGreaterThanOrEqual(0);
@@ -109,9 +104,10 @@ for (const viewport of [
     await page.getByRole('button', { name: '클럽 창단' }).click();
     await page
       .getByRole('navigation', { name: '모바일 게임 메뉴' })
-      .getByRole('button', { name: '경기 관전', exact: true })
+      .getByRole('button', { name: '경기', exact: true })
       .click();
-    await expect(page.getByRole('tablist', { name: '시즌 보기' }).getByRole('tab')).toHaveCount(3);
+    await expect(page.getByTestId('match-theatre')).toBeVisible();
+    await expect(page.getByRole('tablist')).toHaveCount(0);
     expect(
       await page.evaluate(() => {
         const ids = [...document.querySelectorAll('[id]')].map((element) => element.id);
@@ -171,13 +167,29 @@ for (const viewport of [
     await expect(page.getByRole('combobox', { name: '살펴볼 선수', exact: true })).toBeVisible();
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
     await expectCompactMatch(page, viewport);
-    const matchTab = page.getByRole('tab', { name: '경기', exact: true });
-    await matchTab.focus();
+    const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
+    const matchTab = nav.getByRole('button', { name: '경기', exact: true });
+    await nav.getByRole('button', { name: '리그', exact: true }).click();
+    const leagueTabs = page.getByRole('tablist', { name: '리그 보기' }).getByRole('tab');
+    await expect(leagueTabs).toHaveText([
+      '순위표',
+      '라운드 결과',
+      '순위 추이',
+      '득점 순위',
+      '득점왕 추이',
+    ]);
+    for (const tab of await leagueTabs.all()) {
+      const bounds = await tab.boundingBox();
+      expect(bounds!.width, await tab.innerText()).toBeGreaterThanOrEqual(44);
+      expect(bounds!.height, await tab.innerText()).toBeGreaterThanOrEqual(44);
+    }
+    const tableTab = page.getByRole('tab', { name: '순위표', exact: true });
+    await tableTab.focus();
     await page.keyboard.press('End');
-    await expect(page.getByRole('tab', { name: '전술·선발', exact: true })).toBeFocused();
+    await expect(page.getByRole('tab', { name: '득점왕 추이', exact: true })).toBeFocused();
     await page.keyboard.press('ArrowRight');
-    await expect(matchTab).toBeFocused();
-    await chooseOption(page.getByRole('combobox', { name: '시즌 통계 보기', exact: true }), 'rank');
+    await expect(tableTab).toBeFocused();
+    await page.getByRole('tab', { name: '순위 추이', exact: true }).click();
     await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
     await matchTab.click();
     await expectCompactMatch(page, viewport);
@@ -195,14 +207,17 @@ for (const viewport of [
     ).toBe(true);
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(result).toContainText(`${ownGoals}–${otherGoals}`);
-    await page.getByRole('button', { name: '다음 경기 준비', exact: true }).click();
-    await expect(page.getByRole('tab', { name: '전술·선발', exact: true })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
-    await expect(page.getByRole('tab', { name: '전술·선발', exact: true })).toBeFocused();
-    await expect(page.getByRole('button', { name: '전술·선발 준비', exact: true })).toBeVisible();
-    await matchTab.click();
+    const prepare = page
+      .getByTestId('match-theatre')
+      .getByRole('button', { name: '전술·선발 준비', exact: true });
+    await prepare.click();
+    const preparation = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
+    await expect(preparation).toBeVisible();
+    await preparation.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
+    await expect(preparation).toHaveCount(0);
+    await expect(prepare).toBeFocused();
+    await expect(result).toContainText(`${ownGoals}–${otherGoals}`);
+    expect(await savedRaw(page)).toBe(settled);
     advanceToNextMatch(reference);
     const beforeNext = await page.getByTestId('game-date').innerText();
     await page.getByTestId('match-next-action').click();

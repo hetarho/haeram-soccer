@@ -1,32 +1,20 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
-import { clubOf, rating, startingSquad, tacticLabel } from '../../../../packages/engine/src/world';
-import { lineupSummary } from '../../../../packages/engine/src/strategy';
+import { clubOf, rating, tacticLabel } from '../../../../packages/engine/src/world';
 import { nextOwnFixture, daysUntilNextMatch } from '../../../../packages/engine/src/calendar';
 import { orderIds, ownLeagueIds } from './league';
-import { money, number } from './format';
+import { kindLabel, number } from './format';
+import { teamStates, urgentState, type StateAction } from './teamState';
 import type { GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
-import { useNavigation } from './state';
+import { useNavigation, useSquadView } from './state';
 import { gameStore, useGameState } from '../runtime/store';
 import { StrategyPanel } from './StrategyPanel';
 import { Dialog } from './Dialog';
-import { TrainingStudio } from './TrainingStudio';
 import { MilestoneCollection } from './MilestoneCollection';
 import { clubMilestones } from '../../../../packages/engine/src/goals';
 import s from './ClubHub.module.css';
 
-function MatchCountdown() {
-  const w = useGameState((state) => state.view?.world)!;
-  const next = nextOwnFixture(w);
-  return (
-    <small>
-      {next
-        ? `${next.home === w.playerClub ? '홈' : '원정'} · ${daysUntilNextMatch(w)}일 후`
-        : '시즌의 마지막 페이지'}
-    </small>
-  );
-}
 function MatchAction({
   critical,
   next,
@@ -40,9 +28,13 @@ function MatchAction({
   const [pending, setPending] = useState(false);
   const readonly = useGameState((state) => state.readonly);
   const error = useGameState((state) => state.error);
+  const days = useGameState((state) => state.view && daysUntilNextMatch(state.view.world));
   return (
     <button
       data-testid="hub-play"
+      className={s.play}
+      aria-label={next ? '다음 경기 관전' : '다음 시즌 시작'}
+      aria-describedby="hub-play-hint"
       disabled={pending || busy || readonly || !!error || critical}
       onClick={() => {
         if (pending) return;
@@ -50,8 +42,64 @@ function MatchAction({
         void onWatch().finally(() => setPending(false));
       }}
     >
-      {next ? '다음 경기 관전' : '다음 시즌 시작'} <span aria-hidden="true">▷</span>
+      <b>
+        {next ? '다음 경기 관전' : '다음 시즌 시작'} <span aria-hidden="true">▶</span>
+      </b>
+      <small id="hub-play-hint">
+        {next
+          ? days
+            ? `${days}일 진행 후 바로 킥오프`
+            : '지금 바로 킥오프'
+          : '시즌 정산 후 새 일정 시작'}
+      </small>
     </button>
+  );
+}
+
+/** Club condition right now, and one-tap remedies for the most urgent problem. */
+function TeamState({ w, client }: { w: World; client: GameClient }) {
+  const { setPage } = useNavigation();
+  const setSquadTab = useSquadView((state) => state.setTab);
+  const acting = useGameState((state) => !!state.pendingActions || state.readonly);
+  const states = teamStates(w),
+    urgent = urgentState(states);
+  const run = (action: StateAction) => {
+    if (action.command) void client.command(action.command);
+    else if (action.page) {
+      if (action.tab) setSquadTab(action.tab);
+      setPage(action.page);
+    }
+  };
+  return (
+    <section className={s.state} aria-label="팀 상태" data-testid="team-state">
+      <ul>
+        {states.map((state) => (
+          <li key={state.key} className={s[state.tone]}>
+            <span>{state.label}</span>
+            <b>
+              <i key={state.value} className={s.bump}>
+                {state.value}
+              </i>
+            </b>
+            <small>{state.status}</small>
+          </li>
+        ))}
+      </ul>
+      {urgent?.advice ? (
+        <div className={`${s.advice} ${s[urgent.tone]}`} role="status">
+          <p>{urgent.advice.text}</p>
+          <div>
+            {urgent.advice.actions.slice(0, 2).map((action) => (
+              <button key={action.label} disabled={acting} onClick={() => run(action)}>
+                {action.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <p className={s.calm}>팀이 안정적이에요. 감독과 스태프가 이대로 운영해요.</p>
+      )}
+    </section>
   );
 }
 
@@ -64,7 +112,10 @@ function ClubScene({ w }: { w: World }) {
       aria-label={`우리 구장 · 시설 ${w.facilities}단계 · 팬 ${club.fans}명`}
     >
       <div className={s.sceneCaption}>
-        <span>{number(club.fans)}명의 서포터</span>
+        <span className={s.badge}>
+          <i aria-hidden="true">♥</i>
+          {number(club.fans)}명의 서포터
+        </span>
         <b>
           {w.facilities < 3
             ? '동네의 작은 구장'
@@ -72,9 +123,16 @@ function ClubScene({ w }: { w: World }) {
               ? '우리만의 홈 그라운드'
               : '도시의 자부심'}
         </b>
-        <span>시설 Lv.{w.facilities}</span>
+        <span className={s.badge}>
+          <i aria-hidden="true">▲</i>시설 Lv.{w.facilities}
+        </span>
       </div>
-      <svg viewBox="0 0 360 150" role="img" aria-label="시설과 서포터에 따라 성장하는 클럽 구장">
+      <svg
+        viewBox="0 0 360 150"
+        preserveAspectRatio="xMidYMid slice"
+        role="img"
+        aria-label="시설과 서포터에 따라 성장하는 클럽 구장"
+      >
         <defs>
           <linearGradient id="club-sky" x2="0" y2="1">
             <stop stopColor="#dfeddd" />
@@ -127,7 +185,6 @@ function ClubScene({ w }: { w: World }) {
         ))}
         <circle cx="207" cy="105" r="2.4" fill="white" />
       </svg>
-      <figcaption>{number(club.fans)}명의 서포터와 함께 만드는 역사</figcaption>
     </figure>
   );
 }
@@ -147,24 +204,24 @@ export function ClubHub({
 }) {
   const { page, setPage } = useNavigation();
   const [journalOpen, setJournalOpen] = useState(false);
-  const [trainingOpen, setTrainingOpen] = useState(false);
   const [goalsOpen, setGoalsOpen] = useState(false);
+  const [preparing, setPreparing] = useState(false);
   const milestones = milestoneFacts;
   useEffect(() => {
-    if (page !== 'dashboard' && (journalOpen || trainingOpen || goalsOpen)) {
+    if (page !== 'dashboard' && (journalOpen || goalsOpen || preparing)) {
       setJournalOpen(false);
-      setTrainingOpen(false);
       setGoalsOpen(false);
-      controller.setSuspended(false);
+      setPreparing(false);
     }
-  }, [page, journalOpen, trainingOpen, goalsOpen, controller]);
-  const club = clubOf(w),
-    squad = lineupSummary(startingSquad(w, club));
+  }, [page, journalOpen, goalsOpen, preparing]);
+  const club = clubOf(w);
   const next = nextOwnFixture(w);
   const opponent = w.clubs.find(
     (c) => c.id === (next?.home === w.playerClub ? next.away : next?.home),
   );
+  const table = w.tables[w.playerClub];
   const ids = orderIds(ownLeagueIds(w), w.tables),
+    played = !!w.tables[w.playerClub]?.played,
     rank = ids.indexOf(w.playerClub) + 1;
   const watch = async () => {
     controller.stop('관전을 위해 자동 진행을 멈췄습니다.');
@@ -175,47 +232,69 @@ export function ClubHub({
     if (reply?.playback) setPage('match');
   };
   const last = w.ownMatches.at(-1);
+  const lastScore = last && [
+    last.home === w.playerClub ? last.score.home : last.score.away,
+    last.home === w.playerClub ? last.score.away : last.score.home,
+  ];
+  const open = (set: (value: boolean) => void) => (event: { currentTarget: HTMLElement }) => {
+    event.currentTarget.focus();
+    set(true);
+  };
   return (
     <section className={s.hub} data-testid="club-hub" aria-label="클럽 키우기">
-      <header className={s.title}>
-        <div>
-          <small>YOUR CLUB, YOUR STORY</small>
-          <h2>{club.name}</h2>
-        </div>
-        <span>
-          {w.lower ? '프로 복귀 도전' : `${club.tier + 1}부`} · {rank}/{ids.length}위
+      <h2 className={s.srOnly}>{club.name} 클럽 홈</h2>
+      <button
+        className={s.resources}
+        aria-label="시즌 상세"
+        aria-describedby="hub-stats-hint"
+        onClick={(event) => {
+          event.currentTarget.focus();
+          setJournalOpen(true);
+        }}
+      >
+        <span id="hub-stats-hint" className={s.srOnly}>
+          리그 순위·팀 전력·시즌 전적과 라운드 진행을 자세히 봐요
         </span>
-      </header>
-      <ClubScene w={w} />
-      <div className={s.resources} aria-label="핵심 자원">
         <div>
-          <span>운영 자금</span>
-          <b className={BigInt(w.cash) < 0n ? s.warning : ''}>
-            {money(w.cash, club.country, w.year)}
+          <span>리그 순위</span>
+          <b data-testid="hub-rank">
+            <span key={played ? rank : '-'} className={s.bump}>
+              {played ? rank : '—'}
+            </span>
+            <small>/{ids.length}위</small>
           </b>
+          <small>{w.lower ? '프로 복귀 도전' : `${club.tier + 1}부`}</small>
         </div>
         <div>
           <span>팀 전력</span>
           <b>
-            {rating(w, club)} <small>/ 100</small>
+            <span key={rating(w, club)} className={s.bump}>
+              {rating(w, club)}
+            </span>{' '}
+            <small>/ 100</small>
           </b>
+          <small>선발 평균</small>
         </div>
         <div>
-          <span>선발 피로</span>
-          <b>
-            {squad.fatigue} <small>/ 100</small>
+          <span>시즌 전적</span>
+          <b data-testid="hub-record">
+            <span key={table ? table.played : 0} className={s.bump}>
+              {table ? `${table.won}-${table.drawn}-${table.lost}` : '0-0-0'}
+            </span>
           </b>
+          <small>승점 {table?.points ?? 0}</small>
         </div>
-      </div>
+        <i className={s.more} aria-hidden="true">
+          ›
+        </i>
+      </button>
+      <ClubScene w={w} />
+      <TeamState w={w} client={client} />
       <button
         className={s.goal}
         aria-label="성장 목표 보기"
         aria-describedby="club-goal-progress"
-        onClick={(event) => {
-          event.currentTarget.focus();
-          controller.setSuspended(true);
-          setGoalsOpen(true);
-        }}
+        onClick={open(setGoalsOpen)}
       >
         <span>
           이번 도전{' '}
@@ -225,7 +304,7 @@ export function ClubHub({
         </span>
         <b>
           {milestones.next?.title || '우리 클럽의 첫 목표들을 모두 이뤘어요'}{' '}
-          <span aria-hidden="true">↗</span>
+          <span aria-hidden="true">›</span>
         </b>
         <small id="club-goal-progress">
           {milestones.next
@@ -238,79 +317,43 @@ export function ClubHub({
           max={100}
         />
       </button>
-      <div className={s.fixture}>
-        <div>
-          <MatchCountdown />
-          <h3>{opponent?.name || '다음 시즌을 준비해요'}</h3>
-          <p>
-            {last
-              ? `최근 경기 ${last.home === w.playerClub ? last.score.home : last.score.away}–${last.home === w.playerClub ? last.score.away : last.score.home}`
-              : '첫 휘슬을 기다리는 중'}{' '}
-            · {tacticLabel[w.tactic]}
+      <section className={s.fixture} aria-label="다음 경기">
+        <div className={s.fixtureInfo}>
+          <small>
+            NEXT MATCH
+            {next &&
+              ` · ${next.home === w.playerClub ? '홈' : '원정'} · ${kindLabel[next.kind] || next.kind}`}
+          </small>
+          <h3>
+            {opponent && <i style={{ background: opponent.color }} aria-hidden="true" />}
+            {opponent ? `vs ${opponent.name}` : '다음 시즌을 준비해요'}
+          </h3>
+          <p data-testid="hub-preparation">
+            {tacticLabel[w.tactic]} · {w.lineup ? '직접 고른 선발' : '감독 자동 선발'}
+            {lastScore && ` · 최근 ${lastScore[0]}–${lastScore[1]}`}
           </p>
         </div>
-        <MatchAction critical={!!w.critical} next={!!next} onWatch={watch} />
-      </div>
-      <StrategyPanel
-        w={w}
-        client={client}
-        onSuspendChange={(value) => controller.setSuspended(value)}
-      />
-      <div className={s.shortcuts}>
-        <button
-          onClick={(event) => {
-            event.currentTarget.focus();
-            controller.setSuspended(true);
-            setTrainingOpen(true);
-          }}
-        >
-          선수 키우기·영입
-        </button>
-        <button onClick={() => setPage('business')}>클럽 투자</button>
-        <button
-          onClick={(e) => {
-            e.currentTarget.focus();
-            controller.setSuspended(true);
-            setJournalOpen(true);
-          }}
-        >
-          자세한 클럽 일지
-        </button>
-      </div>
+        <div className={s.fixtureActions}>
+          <button
+            className={s.prepare}
+            disabled={!!w.critical}
+            onClick={(event) => {
+              event.currentTarget.focus();
+              setPreparing(true);
+            }}
+          >
+            전술·선발 준비
+          </button>
+          <MatchAction critical={!!w.critical} next={!!next} onWatch={watch} />
+        </div>
+      </section>
+
+      {preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />}
       {goalsOpen && (
-        <MilestoneCollection
-          w={w}
-          milestones={milestones}
-          onClose={() => {
-            setGoalsOpen(false);
-            controller.setSuspended(false);
-          }}
-        />
-      )}
-      {trainingOpen && (
-        <TrainingStudio
-          w={w}
-          client={client}
-          onClose={() => {
-            setTrainingOpen(false);
-            controller.setSuspended(false);
-          }}
-          onMarket={() => {
-            setTrainingOpen(false);
-            controller.setSuspended(false);
-            setPage('squad');
-          }}
-        />
+        <MilestoneCollection w={w} milestones={milestones} onClose={() => setGoalsOpen(false)} />
       )}
       {journalOpen && (
-        <Dialog
-          label="클럽 일지 상세"
-          onClose={() => {
-            setJournalOpen(false);
-            controller.setSuspended(false);
-          }}
-          wide
-        >
+        <Dialog label="시즌 상세와 클럽 소식" onClose={() => setJournalOpen(false)} wide>
           {journal}
         </Dialog>
       )}

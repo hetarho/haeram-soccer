@@ -9,6 +9,7 @@ import {
   createWorld,
   lineupPreset,
   operate,
+  seasonDayOf,
   simulateSeason,
 } from './index';
 
@@ -99,6 +100,8 @@ describe('milestones from retained club facts', () => {
     for (let round = 0; round < 6; round++) advanceRound(w, undefined, false);
     expect(prospect.developed).toBeGreaterThanOrEqual(1);
     expect(byId(w, 'player-growth').done).toBe(true);
+    // A fee-bearing sale needs an open transfer window: move the clock into the winter window.
+    w.calendar = { day: seasonDayOf(w.year, 1, 10) };
     operate(w, { type: 'sell', id: prospect.id });
     expect(prospect.status).toBe('sold');
     expect(byId(w, 'player-growth').done).toBe(true);

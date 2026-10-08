@@ -1,12 +1,21 @@
 import { create } from 'zustand';
 export type Page =
-  'dashboard' | 'match' | 'league' | 'europe' | 'squad' | 'manager' | 'business' | 'history';
+  | 'dashboard'
+  | 'match'
+  | 'league'
+  | 'europe'
+  | 'squad'
+  | 'transfers'
+  | 'manager'
+  | 'business'
+  | 'history';
 const paths: Record<Page, string> = {
   dashboard: '/journal',
   match: '/matches',
   league: '/leagues',
   europe: '/europe',
   squad: '/squad',
+  transfers: '/transfers',
   manager: '/manager',
   business: '/business',
   history: '/history',
@@ -24,3 +33,10 @@ export const useNavigation = create<{ page: Page; setPage: (page: Page) => void 
 }));
 if (typeof window !== 'undefined')
   window.addEventListener('popstate', () => useNavigation.setState({ page: current() }));
+
+/** The squad group keeps its sub-view while the manager office is open. */
+export type SquadTab = 'roster' | 'academy';
+export const useSquadView = create<{
+  tab: SquadTab;
+  setTab: (tab: SquadTab) => void;
+}>((set) => ({ tab: 'roster', setTab: (tab) => set({ tab }) }));

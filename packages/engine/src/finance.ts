@@ -1,6 +1,8 @@
 import type { Event, MatchRecord, World } from '../../contracts/src/types';
 import { activePlayers, clubOf, quote } from './world';
 import { clamp, ratio } from './primitives';
+import { policyEffects, policyOf } from './policy';
+import { staffWageTotal } from './staff';
 
 export const FINANCE_CONFIG = {
   ticketDemandScale: 0.12,
@@ -20,21 +22,54 @@ export function roundShare(annual: string, round: number, count = 46) {
 }
 
 export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1) {
-  const playerWages = activePlayers(w)
-    .reduce((sum, p) => sum + BigInt(p.wage), 0n)
-    .toString();
+  const effects = policyEffects(policyOf(w));
+  const playerWages = ratio(
+    activePlayers(w)
+      .reduce((sum, p) => sum + BigInt(p.wage), 0n)
+      .toString(),
+    BigInt(Math.round(effects.wageMultiplier * 1000)),
+    1000n,
+  );
   const managerWage = w.manager.wage;
   const maintenance = quote(clubOf(w).country, w.year, 180 + w.facilities * 40);
-  const annual = (BigInt(playerWages) + BigInt(managerWage) + BigInt(maintenance)).toString();
-  const payments = {
+  const marketing = effects.marketingUnits
+    ? quote(clubOf(w).country, w.year, effects.marketingUnits * 46)
+    : '0';
+  const staffWages = staffWageTotal(w).toString();
+  const annual = (
+    BigInt(playerWages) +
+    BigInt(managerWage) +
+    BigInt(maintenance) +
+    BigInt(marketing) +
+    BigInt(staffWages)
+  ).toString();
+  /** The marketing share appears only while the policy actually spends. */
+  const payments: {
+    playerWages: string;
+    managerWage: string;
+    maintenance: string;
+    marketing?: string;
+    staffWages?: string;
+  } = {
     playerWages: roundShare(playerWages, round),
     managerWage: roundShare(managerWage, round),
     maintenance: roundShare(maintenance, round),
+    ...(marketing !== '0' ? { marketing: roundShare(marketing, round) } : {}),
+    ...(staffWages !== '0' ? { staffWages: roundShare(staffWages, round) } : {}),
   };
   const nextRound = Object.values(payments)
     .reduce((sum, value) => sum + BigInt(value), 0n)
     .toString();
-  return { playerWages, managerWage, maintenance, annual, nextRound, payments };
+  return {
+    playerWages,
+    managerWage,
+    maintenance,
+    marketing,
+    staffWages,
+    annual,
+    nextRound,
+    payments,
+  };
 }
 
 function recentForm(w: World, excluding?: string) {
@@ -67,9 +102,11 @@ export function gateProjection(w: World, excluding?: string) {
   const capacity = 2500 + w.facilities * 5000;
   const demand = Math.exp(-w.ticket / FINANCE_CONFIG.ticketDemandScale);
   const form = recentForm(w, excluding);
+  const { gateBoost } = policyEffects(policyOf(w));
   const marketing = Math.min(
-    1.25,
+    gateBoost > 0 ? 1.35 : 1.25,
     1 +
+      gateBoost +
       w.campaigns.reduce(
         (boost, campaign) => boost + (campaign.kind === 'tickets' ? 0.12 : 0.05),
         0,
@@ -147,6 +184,8 @@ const expenseKinds: Record<string, string> = {
   campaign: '마케팅 집행',
   'transfer-in': '선수 영입·임대',
   'manager-hire': '감독 선임·보상',
+  'staff-hire': '스태프 선임·보상',
+  'staff-release': '스태프 계약 해지',
   training: '훈련 지원',
   facility: '시설 확장',
 };
@@ -198,3 +237,23 @@ export function financialBreakdown(w: World) {
 }
 
 export type FinancialReceipt = Event & { amount: string; direction: string };
+
+/** League prize for a final rank; the settlement and the projection share this rule. */
+export function seasonPrize(w: World, rank: number, clubs: number): string {
+  const band =
+    rank === 1
+      ? 0
+      : rank === 2
+        ? 1
+        : rank <= Math.ceil(clubs / 4)
+          ? 2
+          : rank <= Math.floor(clubs / 2)
+            ? 3
+            : -1;
+  if (band < 0) return '0';
+  return quote(
+    clubOf(w).country,
+    w.year,
+    FINANCE_CONFIG.rankAwards[band as 0 | 1 | 2 | 3] * (1 + Math.max(0, 3 - clubOf(w).tier) * 0.35),
+  );
+}

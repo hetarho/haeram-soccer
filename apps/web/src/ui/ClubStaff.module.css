@@ -1,0 +1,305 @@
+.staff,
+.academy,
+.delegation {
+  margin-bottom: 16px;
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  box-shadow: var(--shadow);
+}
+.staff header,
+.academy header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+.staff header span,
+.academy header span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.managerTrait {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--gold);
+}
+.staff ul,
+.academy ul {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.staff li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.2);
+}
+.role {
+  display: grid;
+  min-width: 0;
+}
+.role b {
+  font-size: 13px;
+}
+.role small,
+.member small {
+  font-size: 11px;
+  color: var(--text-faint);
+  line-height: 1.35;
+}
+.member {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.member span {
+  font-size: 12px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vacant {
+  color: var(--warm);
+}
+.staff li > button {
+  min-width: 56px;
+  min-height: 44px;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+.meter {
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surface-deep);
+  overflow: hidden;
+}
+.meter i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--accent-fill);
+}
+.note {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.candidates {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+.candidates button {
+  display: grid;
+  gap: 3px;
+  text-align: left;
+  padding: 10px 12px;
+  min-height: 48px;
+}
+.candidates button span {
+  font-size: 13px;
+}
+.candidates button small {
+  font-size: 12px;
+  font-weight: 500;
+}
+.candidates .picked {
+  border-color: var(--gold);
+  background: linear-gradient(180deg, #33300f 0%, #1f2810 100%);
+}
+.sheetActions {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 8px;
+}
+.sheetActions button {
+  min-height: 48px;
+}
+.primary {
+  color: var(--on-accent);
+  background: var(--accent-fill);
+  border-color: var(--accent-edge);
+  box-shadow: 0 3px 0 var(--accent-edge);
+}
+.academy li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.2);
+}
+.academy li > div:nth-child(2) {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.academy li b {
+  font-size: 13px;
+}
+.academy li small {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+.academy .ready {
+  color: var(--accent-text);
+  font-weight: 700;
+}
+.badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 6px;
+  border-radius: 6px;
+  background: var(--surface-3);
+}
+.youthActions {
+  display: grid;
+  gap: 4px;
+}
+.youthActions button {
+  min-height: 44px;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+.empty {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.delegation p {
+  margin: 4px 0 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.delegation label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 6px 12px;
+  margin-top: 6px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.2);
+}
+.delegation input {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  accent-color: var(--accent);
+}
+.delegation label span {
+  display: grid;
+}
+.delegation label b {
+  font-size: 13px;
+}
+.delegation label small {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+@media (max-width: 420px) {
+  .staff li {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .staff li .member {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+.impact {
+  color: var(--accent-text) !important;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes pop {
+  0% {
+    transform: scale(0.92);
+  }
+  60% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+.staff,
+.academy,
+.delegation,
+.staff li,
+.academy li,
+.candidates button {
+  animation: rise 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.staff li:nth-child(2) {
+  animation-delay: 35ms;
+}
+.staff li:nth-child(3) {
+  animation-delay: 70ms;
+}
+.staff li:nth-child(4) {
+  animation-delay: 105ms;
+}
+.staff li:nth-child(5) {
+  animation-delay: 140ms;
+}
+.staff li:nth-child(6) {
+  animation-delay: 175ms;
+}
+.staff li:nth-child(7) {
+  animation-delay: 210ms;
+}
+.staff li:nth-child(8) {
+  animation-delay: 245ms;
+}
+.academy li:nth-child(2) {
+  animation-delay: 35ms;
+}
+.academy li:nth-child(3) {
+  animation-delay: 70ms;
+}
+.academy li:nth-child(4) {
+  animation-delay: 105ms;
+}
+.academy li:nth-child(5) {
+  animation-delay: 140ms;
+}
+.academy li:nth-child(6) {
+  animation-delay: 175ms;
+}
+.academy li:nth-child(7) {
+  animation-delay: 210ms;
+}
+.academy li:nth-child(8) {
+  animation-delay: 245ms;
+}
+.candidates button:nth-child(2) {
+  animation-delay: 50ms;
+}
+.candidates button:nth-child(3) {
+  animation-delay: 100ms;
+}
+.candidates button:nth-child(4) {
+  animation-delay: 150ms;
+}
+.meter i {
+  transition: width 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}

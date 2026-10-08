@@ -1,10 +1,10 @@
-import { memo, useDeferredValue, useEffect, useState, type ReactNode } from 'react';
+import { memo, useDeferredValue, useEffect, useRef, useState, type ReactNode } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { country, priceIndex } from '../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../runtime/client';
 import { useNavigation, type Page } from './state';
 import { money, number, percent, seasonName, kindLabel } from './format';
-import { ProgressControls } from './ProgressControls';
+import { InterventionSettings, ProgressControls } from './ProgressControls';
 import { LiveSeason } from './LiveSeason';
 import { ClubHub } from './ClubHub';
 import { ClubFounding } from './ClubFounding';
@@ -21,17 +21,21 @@ import {
 } from '../../../../packages/engine/src/calendar';
 import s from './App.module.css';
 import { Dialog } from './Dialog';
-import { QuickActions } from './QuickActions';
+import { ActionOutcome } from './ActionOutcome';
+import { AnimatedMoney } from './AnimatedMoney';
+import { play } from './motion';
+import { EventCenter, InboxButton } from './EventCenter';
 import Rich from './Rich';
 function NavIcon({ page }: { page: Page }) {
   const paths: Record<Page, string> = {
-    dashboard: 'M4 3h6a3 3 0 0 1 2 2 3 3 0 0 1 2-2h6v16h-6a3 3 0 0 0-2 2 3 3 0 0 0-2-2H4z M12 5v16',
+    dashboard: 'M3 11l9-8 9 8 M5 9.5V20h14V9.5 M10 20v-6h4v6',
     match: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z M12 8l4 3-2 5h-4l-2-5z',
     league: 'M4 5h16 M4 12h16 M4 19h16',
     europe:
       'M7 3h10v7a5 5 0 0 1-10 0z M7 5H3v4a4 4 0 0 0 4 4 M17 5h4v4a4 4 0 0 1-4 4 M12 15v5 M8 21h8',
     squad:
       'M12 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6z M5 21v-5a7 7 0 0 1 14 0v5 M4 5a2 2 0 0 0 0 4 M20 5a2 2 0 0 1 0 4',
+    transfers: 'M4 8h14l-3-3 M18 8l-3 3 M20 16H6l3-3 M6 16l3 3',
     manager: 'M12 2l10 10-10 10L2 12z M8 12h8 M12 8v8',
     business: 'M3 18l6-6 4 3 8-11 M15 4h6v6',
     history: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z M12 7v5l4 3',
@@ -92,6 +96,12 @@ function ClubJournal({ state, client }: { state: ClientState; client: GameClient
     away = w.clubs.find((c) => c.id === next?.away);
   const members = w.clubs.filter((club) => ownLeagueIds(w).includes(club.id));
   const last = w.ownMatches.slice(-5);
+  const remaining = w.fixtures.filter(
+    (f) =>
+      !f.score &&
+      ['league', 'lower'].includes(f.kind) &&
+      (f.home === w.playerClub || f.away === w.playerClub),
+  ).length;
   const winRate = percent(t.won, t.played);
   const watch = async () => {
     const result = await client.command({ type: 'next-match' });
@@ -101,29 +111,35 @@ function ClubJournal({ state, client }: { state: ClientState; client: GameClient
     <>
       <div className={s.hero}>
         <div>
-          <div className={s.eyebrow}>
-            THE CLUB JOURNAL · VOL. {String(w.year - 1900).padStart(3, '0')}
-          </div>
-          <h2>우리의 시즌은 지금.</h2>
+          <div className={s.eyebrow}>SEASON {seasonName(w.year)}</div>
+          <h2>{c.name}</h2>
           <p>
-            {c.name} ·{' '}
-            {w.lower ? '프로 복귀를 준비하는 계절' : `${c.tier + 1}부에서 쓰는 우리 이야기`}
+            {w.lower ? '프로 복귀 도전' : `${c.tier + 1}부`} · 남은 우리 리그 경기{' '}
+            {Math.max(0, remaining)}개
           </p>
         </div>
         <div className={s.heroActions}>
           <button
             disabled={state.busy || state.readonly}
+            aria-describedby="journal-round-hint"
             onClick={() => void client.command({ type: 'advance', rounds: 1 })}
           >
-            다음 라운드
+            한 라운드 진행
           </button>
           <button
             className={s.primary}
             disabled={state.busy || state.readonly}
+            aria-describedby="journal-season-hint"
             onClick={() => void client.command({ type: 'season', count: 1 })}
           >
-            시즌 마무리 ↗
+            시즌 끝까지 진행
           </button>
+          <small id="journal-round-hint">
+            한 라운드 진행: 관전 없이 이번 라운드 경기와 급여·훈련을 정산해요.
+          </small>
+          <small id="journal-season-hint">
+            시즌 끝까지 진행: 남은 경기를 모두 결과로 처리하고 승강·상금을 정산해요.
+          </small>
         </div>
       </div>
       <LeagueOverview w={w} onOpenLeague={() => setPage('league')} />
@@ -331,15 +347,29 @@ function Europe({ w, coefficient }: { w: World; coefficient: number }) {
     </>
   );
 }
-const NAV: [Page, string, string][] = [
-  ['dashboard', '◈', '클럽 일지'],
-  ['match', '◉', '경기 관전'],
-  ['league', '≡', '리그'],
-  ['europe', '☆', '유럽 무대'],
-  ['squad', '♙', '선수와 영입'],
-  ['manager', '◇', '감독실'],
-  ['business', '↗', '클럽 경영'],
-  ['history', '◷', '역사 보관함'],
+const NAV: [Page, string][] = [
+  ['dashboard', '클럽 홈'],
+  ['match', '경기'],
+  ['league', '리그'],
+  ['europe', '유럽 무대'],
+  ['history', '역사 보관함'],
+  ['squad', '선수단'],
+  ['transfers', '이적 시장'],
+  ['manager', '스태프'],
+  ['business', '구단 운영'],
+];
+/**
+ * Home sits in the raised centre; competition destinations fan out to the left and club
+ * management to the right.
+ */
+const TABS: [Page, string, string, Page[]][] = [
+  ['match', '경기', '경기', ['match']],
+  ['league', '리그', '리그', ['league', 'europe']],
+  ['history', '기록', '역사 보관함', ['history']],
+  ['dashboard', '홈', '클럽 홈', ['dashboard']],
+  ['squad', '선수단', '선수단', ['squad', 'manager']],
+  ['transfers', '이적', '이적 시장', ['transfers']],
+  ['business', '운영', '구단 운영', ['business']],
 ];
 const selectContentWorld = worldSelector([
   'year',
@@ -371,6 +401,14 @@ const selectContentWorld = worldSelector([
   'lower',
   'europe',
   'critical',
+  // Staff, policy, delegation and bid decisions can change only these keys.
+  'policy',
+  'staff',
+  'academy',
+  'delegation',
+  'bids',
+  'morale',
+  'inbox',
 ]);
 function useContentState(): ClientState {
   const world = useGameState(selectContentWorld);
@@ -451,7 +489,76 @@ function ConnectedRich({ client, page }: { client: GameClient; page: Page }) {
 function CalendarText() {
   const year = useGameState((state) => state.view?.world.year);
   const round = useGameState((state) => state.view?.world.round);
-  return <>{year ? `시즌 ${year} · 라운드 ${round}` : '1901 · A NEW BEGINNING'}</>;
+  return <>{year ? `${seasonName(year)} · 라운드 ${round}` : '1901 · A NEW BEGINNING'}</>;
+}
+/** Cash is the one resource every decision spends, so it stays pinned to the top right. */
+function HudCash() {
+  const cash = useGameState((state) => state.view?.world.cash);
+  const year = useGameState((state) => state.view?.world.year);
+  const own = useGameState((state) =>
+    state.view?.world.clubs.find((club) => club.id === state.view?.world.playerClub),
+  );
+  if (!cash || !own || !year) return null;
+  return (
+    <div
+      className={`${s.hudCash} ${BigInt(cash) < 0n ? s.hudCashNegative : ''}`}
+      data-testid="hud-cash"
+      aria-label={`운영 자금 ${money(cash, own.country, year)}`}
+    >
+      <i aria-hidden="true" />
+      <span>
+        <small>운영 자금</small>
+        <AnimatedMoney
+          value={cash}
+          format={(value) => money(value, own.country, year)}
+          upClass={s.cashUp}
+          downClass={s.cashDown}
+        />
+      </span>
+    </div>
+  );
+}
+function GameHud({
+  onMenu,
+  menuDisabled,
+  client,
+}: {
+  onMenu: () => void;
+  menuDisabled: boolean;
+  client?: GameClient;
+}) {
+  const own = useGameState((state) =>
+    state.view?.world.clubs.find((club) => club.id === state.view?.world.playerClub),
+  );
+  const lower = useGameState((state) => state.view?.world.lower);
+  return (
+    <header className={s.hud}>
+      {!menuDisabled && (
+        <button
+          className={s.hudMenu}
+          aria-label="전체 메뉴"
+          onClick={(event) => {
+            event.currentTarget.focus();
+            onMenu();
+          }}
+        >
+          <span aria-hidden="true" />
+        </button>
+      )}
+      <div className={s.hudClub}>
+        <Crest color={own?.color} />
+        <div>
+          <b>{own?.name || 'Haeram Football'}</b>
+          <small data-testid="calendar">
+            {own && `${lower ? '프로 복귀 도전' : `${own.tier + 1}부`} · `}
+            <CalendarText />
+          </small>
+        </div>
+      </div>
+      {client && !menuDisabled && <InboxButton client={client} />}
+      <HudCash />
+    </header>
+  );
 }
 function NextMatchNote() {
   const w = useGameState((state) => state.view?.world)!;
@@ -506,22 +613,26 @@ function RuntimeFeedback({ client, localError }: { client: GameClient; localErro
     </>
   );
 }
+function saveText(w: World | undefined, savedRevision: number) {
+  if (!w) return '로그인 없이 시작하세요';
+  const own = w.clubs.find((club) => club.id === w.playerClub)!;
+  const status = priceIndex(own.country, w.year).status;
+  return `${savedRevision === w.revision ? '저장 완료' : '저장 대기'} · r${w.revision} · 물가 ${status === 'observed' ? '관측' : status === 'estimated' ? '추정' : '전망'}`;
+}
 function LiveFooter() {
   const w = useGameState((state) => state.view?.world);
   const savedRevision = useGameState((state) => state.savedRevision);
-  const own = w?.clubs.find((club) => club.id === w.playerClub);
   return (
     <footer className={s.footer}>
-      <span>HAERAM FOOTBALL ARCHIVES · 가상의 클럽, 당신의 역사.</span>
-      <span data-testid="save-status">
-        {w
-          ? `${savedRevision === w.revision ? '저장 완료' : '저장 대기'} · r${w.revision}`
-          : '로그인 없이 시작하세요'}
-        {w &&
-          ` · 물가 ${priceIndex(own!.country, w.year).status === 'observed' ? '관측' : priceIndex(own!.country, w.year).status === 'estimated' ? '추정' : '전망'}`}
-      </span>
+      <span>HAERAM FOOTBALL · 가상의 클럽, 당신의 역사.</span>
+      <span data-testid="save-status">{saveText(w, savedRevision)}</span>
     </footer>
   );
+}
+function SaveStatus() {
+  const w = useGameState((state) => state.view?.world);
+  const savedRevision = useGameState((state) => state.savedRevision);
+  return <p className={s.menuSave}>기록 · {saveText(w, savedRevision)}</p>;
 }
 function SaveActions({
   client,
@@ -617,6 +728,7 @@ export function App() {
     [newWorldConfirm, setNewWorldConfirm] = useState(false),
     [pendingImport, setPendingImport] = useState<string>(),
     [moreOpen, setMoreOpen] = useState(false),
+    [stopSettings, setStopSettings] = useState(false),
     [guideOpen, setGuideOpen] = useState(false);
   const { page, setPage } = useNavigation();
   const contentPage = useDeferredValue(page);
@@ -629,11 +741,7 @@ export function App() {
         );
       const c = new GameClient((state) => gameStore.publish(state));
       const progression = new ProgressionController(c);
-      const dialogListener = (event: Event) => {
-        const detail = (event as CustomEvent<{ id: string; open: boolean }>).detail;
-        if (detail?.id) progression.setSuspended(detail.open, `dialog:${detail.id}`);
-      };
-      window.addEventListener('haeram:dialog', dialogListener);
+      // A hidden tab only pauses the clock; it resumes when the player returns.
       const visibility = () => progression.setSuspended(document.hidden, 'visibility');
       document.addEventListener('visibilitychange', visibility);
       visibility();
@@ -641,7 +749,6 @@ export function App() {
       setController(progression);
       void c.start();
       return () => {
-        window.removeEventListener('haeram:dialog', dialogListener);
         document.removeEventListener('visibilitychange', visibility);
         progression.dispose();
         c.dispose();
@@ -650,12 +757,36 @@ export function App() {
       setLocalError(String(error));
     }
   }, []);
-  const v = state?.view,
-    w = v?.world,
-    own = w?.clubs.find((c) => c.id === w.playerClub);
+  const w = state?.view?.world;
+  // The clock runs only on home: other screens are for decisions, so leaving home pauses it.
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [page, worldId]);
+    controller?.setSuspended(page !== 'dashboard', 'away');
+  }, [controller, page]);
+  // The document never scrolls; each view scrolls inside the content region below the HUD.
+  const scroller = useRef<HTMLDivElement>(null);
+  // Screens slide in from the side of the tab that was chosen, so navigation reads spatially.
+  const previousPage = useRef(page);
+  useEffect(() => {
+    const order = TABS.map(([id]) => id),
+      before = order.indexOf(previousPage.current),
+      after = order.indexOf(contentPage);
+    previousPage.current = contentPage;
+    const direction = before < 0 || after < 0 || before === after ? 0 : after > before ? 1 : -1;
+    play(
+      scroller.current,
+      [
+        {
+          opacity: 0,
+          transform: `translateX(${direction * 28}px) translateY(${direction ? 0 : 10}px)`,
+        },
+        { opacity: 1, transform: 'none' },
+      ],
+      { duration: 280 },
+    );
+  }, [contentPage]);
+  useEffect(() => {
+    scroller.current?.scrollTo(0, 0);
+  }, [page, worldId, replacing]);
   const download = async () => {
     const raw = await client?.exportFile();
     if (!raw) return;
@@ -689,6 +820,7 @@ export function App() {
       setPendingImport(raw);
     } else await client?.importFile(raw);
   };
+  const menuDisabled = !w || replacing;
   return (
     <div
       className={`${s.layout} ${w && !replacing ? s.playLayout : ''} ${w && !replacing && (page === 'dashboard' || page === 'match') ? s.coreLayout : ''} ${!w || replacing ? s.startLayout : ''}`}
@@ -699,24 +831,15 @@ export function App() {
           <h1>
             Haeram
             <br />
-            Football Archives
+            Football Manager
           </h1>
           <span>A CLUB. A CENTURY.</span>
         </div>
-        {own && (
-          <div className={s.clubBadge}>
-            <Crest color={own.color} />
-            <div>
-              <b>{own.name}</b>
-              <small>EST. 1901 · {country(own.country).name}</small>
-            </div>
-          </div>
-        )}
         <nav className={s.nav} aria-label="게임 메뉴">
-          {NAV.map(([id, , label]) => (
+          {NAV.map(([id, label]) => (
             <button
               key={id}
-              disabled={!w || replacing}
+              disabled={menuDisabled}
               aria-current={page === id ? 'page' : undefined}
               className={page === id ? s.active : undefined}
               onClick={() => setPage(id)}
@@ -731,18 +854,7 @@ export function App() {
         )}
       </aside>
       <main className={s.main}>
-        <div className={s.topbar}>
-          <span>
-            <span className={s.desktopOnly}>FOOTBALL ARCHIVES / </span>
-            {w ? NAV.find((n) => n[0] === page)?.[2] : 'Haeram Football'}
-          </span>
-          <div className={s.topRight}>
-            <span className={s.tag}>WEB DEMO · LOCAL</span>
-            <span data-testid="calendar">
-              <CalendarText />
-            </span>
-          </div>
-        </div>
+        <GameHud onMenu={() => setMoreOpen(true)} menuDisabled={menuDisabled} client={client} />
         {!client && localError && (
           <div className={s.error} role="alert">
             {localError}
@@ -753,104 +865,93 @@ export function App() {
           <ProgressControls
             client={client}
             controller={controller}
-            suspended={newWorldConfirm || !!pendingImport || moreOpen}
+            compact={page !== 'dashboard'}
+            onHome={() => setPage('dashboard')}
           />
         )}
-        {client && controller ? (
-          !w || replacing ? (
-            <ConnectedFounding
-              client={client}
-              replace={replacing}
-              onDone={() => {
-                setReplacing(false);
-                if (replacing) setPage('dashboard');
-              }}
-            />
-          ) : (
-            <>
-              {changingView && (
-                <div className={s.viewPending} role="status">
-                  기록을 펼치는 중…
-                </div>
-              )}
-              <div className={s.views} inert={changingView} aria-busy={changingView}>
-                <div className={s.coreContent} hidden={contentPage !== 'dashboard'}>
-                  <ConnectedDashboard client={client} controller={controller} />
-                </div>
-                <LiveSeason
-                  key={worldId}
-                  page={contentPage}
-                  client={client}
-                  controller={controller}
-                />
-                <div hidden={contentPage !== 'europe'}>
-                  <ConnectedEurope />
-                </div>
-                {(['squad', 'manager', 'business', 'history'] as Page[]).includes(contentPage) && (
-                  <ConnectedRich page={contentPage} client={client} />
+        <div ref={scroller} className={s.scroller} data-testid="view-scroller">
+          {client && controller ? (
+            !w || replacing ? (
+              <ConnectedFounding
+                client={client}
+                replace={replacing}
+                onDone={() => {
+                  setReplacing(false);
+                  if (replacing) setPage('dashboard');
+                }}
+              />
+            ) : (
+              <>
+                {changingView && (
+                  <div className={s.viewPending} role="status">
+                    화면을 여는 중…
+                  </div>
                 )}
-              </div>
-            </>
-          )
-        ) : (
-          <div className={s.loading}>기록 보관함을 여는 중…</div>
-        )}
-        {client && (!w || replacing) && <StartTools onDownload={download} onImport={importFile} />}
-        {replacing && w && (
-          <button
-            className={s.returnClub}
-            onClick={() => {
-              setReplacing(false);
-              setPage('dashboard');
-            }}
-          >
-            현재 클럽 보기
-          </button>
-        )}
-        <LiveFooter />
-        {client && (
-          <SaveActions
-            client={client}
-            onDownload={download}
-            onImport={importFile}
-            onNewWorld={() => setNewWorldConfirm(true)}
-          />
-        )}
+                <div className={s.views} inert={changingView} aria-busy={changingView}>
+                  <div className={s.coreContent} hidden={contentPage !== 'dashboard'}>
+                    <ConnectedDashboard client={client} controller={controller} />
+                  </div>
+                  <LiveSeason
+                    key={worldId}
+                    page={contentPage}
+                    client={client}
+                    controller={controller}
+                  />
+                  <div hidden={contentPage !== 'europe'}>
+                    <ConnectedEurope />
+                  </div>
+                  {(['squad', 'transfers', 'manager', 'business', 'history'] as Page[]).includes(
+                    contentPage,
+                  ) && <ConnectedRich page={contentPage} client={client} />}
+                </div>
+              </>
+            )
+          ) : (
+            <div className={s.loading}>클럽 사무실을 여는 중…</div>
+          )}
+          {client && (!w || replacing) && (
+            <StartTools onDownload={download} onImport={importFile} />
+          )}
+          {replacing && w && (
+            <button
+              className={s.returnClub}
+              onClick={() => {
+                setReplacing(false);
+                setPage('dashboard');
+              }}
+            >
+              현재 클럽 보기
+            </button>
+          )}
+          <LiveFooter />
+          {client && (
+            <SaveActions
+              client={client}
+              onDownload={download}
+              onImport={importFile}
+              onNewWorld={() => setNewWorldConfirm(true)}
+            />
+          )}
+        </div>
       </main>
       <nav className={s.mobileNav} aria-label="모바일 게임 메뉴">
-        {(
-          [
-            ['dashboard', '일지', '클럽 일지'],
-            ['match', '관전', '경기 관전'],
-            ['league', '리그', '리그'],
-            ['business', '경영', '클럽 경영'],
-          ] as const
-        ).map(([id, label, full]) => (
+        {TABS.map(([id, label, full, owns]) => (
           <button
             key={id}
             aria-label={full}
-            aria-current={page === id ? 'page' : undefined}
-            disabled={!w || replacing}
+            aria-current={owns.includes(page) ? 'page' : undefined}
+            className={id === 'dashboard' ? s.homeTab : undefined}
+            disabled={menuDisabled}
             onClick={() => setPage(id)}
           >
             <NavIcon page={id} />
             <span>{label}</span>
           </button>
         ))}
-        <button
-          aria-label="더보기"
-          disabled={!w || replacing}
-          onClick={(event) => {
-            event.currentTarget.focus();
-            setMoreOpen(true);
-          }}
-        >
-          <span aria-hidden="true">•••</span>
-          <span>더보기</span>
-        </button>
       </nav>
-      {client && controller && w && !replacing && (
-        <QuickActions client={client} controller={controller} />
+      {client && w && !replacing && <ActionOutcome />}
+      {client && controller && w && !replacing && page === 'dashboard' && (
+        <EventCenter client={client} controller={controller} />
       )}
       {moreOpen && (
         <Dialog label="전체 메뉴" onClose={() => setMoreOpen(false)}>
@@ -863,10 +964,20 @@ export function App() {
           >
             클럽 키우기 가이드
           </button>
+          <button
+            className={s.guideOpen}
+            onClick={() => {
+              setMoreOpen(false);
+              setStopSettings(true);
+            }}
+          >
+            개입 수준 설정
+          </button>
           <div className={s.moreMenu}>
-            {NAV.map(([id, , label]) => (
+            {NAV.map(([id, label]) => (
               <button
                 key={id}
+                aria-current={page === id ? 'page' : undefined}
                 onClick={() => {
                   setPage(id);
                   setMoreOpen(false);
@@ -877,6 +988,7 @@ export function App() {
               </button>
             ))}
           </div>
+          <SaveStatus />
           {client && (
             <SaveActions
               client={client}
@@ -889,6 +1001,13 @@ export function App() {
             />
           )}
         </Dialog>
+      )}
+      {stopSettings && controller && client && (
+        <InterventionSettings
+          client={client}
+          controller={controller}
+          onClose={() => setStopSettings(false)}
+        />
       )}
       {guideOpen && w && (
         <PlayGuide goals={state.view!.milestones.goals} onClose={() => setGuideOpen(false)} />
@@ -907,7 +1026,6 @@ export function App() {
               onClick={() => {
                 setNewWorldConfirm(false);
                 setReplacing(true);
-                window.scrollTo(0, 0);
               }}
             >
               새 세계 설정

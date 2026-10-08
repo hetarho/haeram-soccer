@@ -1,6 +1,10 @@
 import type { Player, Role, TrainingFocus, World } from '../../contracts/src/types';
 import { activePlayers, addEvent, overall } from './world';
 import { clamp, compareIds, random } from './primitives';
+import { policyEffects, policyOf } from './policy';
+import { autoTrainingFocus, staffEffects } from './staff';
+import { developAcademy } from './academy';
+import { settleMorale } from './morale';
 
 export const trainingFocusInfo: Record<
   TrainingFocus,
@@ -27,7 +31,8 @@ export const trainingFocusInfo: Record<
 };
 
 type Skill = 'attack' | 'passing' | 'defense' | 'keeper' | 'stamina';
-const roleSkills: Record<Role, readonly Skill[]> = {
+/** Skills each role trains; the academy grows prospects the same way. */
+export const roleSkills: Record<Role, readonly Skill[]> = {
   GK: ['keeper'],
   DEF: ['defense', 'stamina'],
   MID: ['passing', 'stamina'],
@@ -35,7 +40,7 @@ const roleSkills: Record<Role, readonly Skill[]> = {
 };
 const hundredths = (value: number) => Math.round(value * 100) / 100;
 
-function skillAfter(player: Player, skill: Skill, change: number) {
+export function skillAfter(player: Player, skill: Skill, change: number) {
   const current = player[skill];
   if (change === 0) return current;
   const next = hundredths(current + hundredths(change));
@@ -44,12 +49,23 @@ function skillAfter(player: Player, skill: Skill, change: number) {
     : clamp(next, 5, 100);
 }
 
-function recordDevelopment(player: Player, gain: number) {
+export function recordDevelopment(player: Player, gain: number) {
   if (gain <= 0) return;
   player.developed = hundredths(Math.min(500, (player.developed || 0) + gain));
 }
 
-function roundGain(w: World, player: Player) {
+/** The focus in force: the assistant's choice while training is delegated, else the owner's. */
+export function activeTrainingFocus(w: World): TrainingFocus {
+  return w.delegation?.training ? autoTrainingFocus(w) : w.training || 'balanced';
+}
+
+function roundGain(
+  w: World,
+  player: Player,
+  policy = policyEffects(policyOf(w)),
+  staff = staffEffects(w),
+  focus = activeTrainingFocus(w),
+) {
   const age = w.year - player.born;
   if (age >= 27 || player.status !== 'active') return 0;
   const gap = Math.max(0, player.potential - overall(player));
@@ -58,20 +74,35 @@ function roundGain(w: World, player: Player) {
     0.12,
     (gap / 400) * (0.5 + w.manager.youth / 100 + w.facilities / 40) * ageWeight,
   );
-  return hundredths(base * trainingFocusInfo[w.training || 'balanced'].developmentMultiplier);
+  return hundredths(
+    base *
+      trainingFocusInfo[focus].developmentMultiplier *
+      policy.developmentMultiplier *
+      (age <= 21 ? staff.youthDevelopment : 1),
+  );
+}
+/** Each coach scales growth of the skills they own. */
+function skillGain(gain: number, skill: Skill, staff: ReturnType<typeof staffEffects>) {
+  return staff.development[skill] === 1 ? gain : hundredths(gain * staff.development[skill]);
 }
 
 function actualRoundGain(w: World, player: Player) {
-  const gain = roundGain(w, player),
+  const staff = staffEffects(w),
+    gain = roundGain(w, player, undefined, staff),
     skills = roleSkills[player.role];
   return hundredths(
-    skills.reduce((sum, skill) => sum + skillAfter(player, skill, gain) - player[skill], 0) /
-      skills.length,
+    skills.reduce(
+      (sum, skill) =>
+        sum + skillAfter(player, skill, skillGain(gain, skill, staff)) - player[skill],
+      0,
+    ) / skills.length,
   );
 }
 
 export function setTrainingFocus(w: World, focus: TrainingFocus) {
   if (!Object.hasOwn(trainingFocusInfo, focus)) throw new Error('훈련 계획을 확인하세요.');
+  // An explicit owner choice takes training back from the staff.
+  if (w.delegation?.training) w.delegation = { ...w.delegation, training: false };
   if (w.training === focus) return;
   w.training = focus;
   addEvent(
@@ -87,19 +118,26 @@ export function settleTraining(w: World) {
   if (w.round <= 0) return;
   const at = `${w.year}:${w.round}`;
   if (w.trainingAt === at) return;
-  const info = trainingFocusInfo[w.training || 'balanced'];
+  // Decided once per round: recovering earlier players must not flip later players' focus.
+  const focus = activeTrainingFocus(w),
+    info = trainingFocusInfo[focus],
+    policy = policyEffects(policyOf(w)),
+    staff = staffEffects(w),
+    recovery = Math.max(0, info.recovery + policy.recoveryBonus + staff.recoveryBonus);
   for (const player of activePlayers(w)) {
-    const gain = roundGain(w, player),
+    const gain = roundGain(w, player, policy, staff, focus),
       skills = roleSkills[player.role];
     let actual = 0;
     for (const skill of skills) {
-      const next = skillAfter(player, skill, gain);
+      const next = skillAfter(player, skill, skillGain(gain, skill, staff));
       actual += next - player[skill];
       player[skill] = next;
     }
     recordDevelopment(player, actual / skills.length);
-    player.fatigue = Math.max(0, player.fatigue - info.recovery);
+    player.fatigue = Math.max(0, player.fatigue - recovery);
   }
+  developAcademy(w);
+  settleMorale(w);
   w.trainingAt = at;
 }
 
@@ -127,7 +165,7 @@ export function developAnnually(w: World, player: Player) {
 /** Pure read model; projected gain is not awarded by viewing or selecting a plan. */
 export function trainingSummary(w: World) {
   const active = activePlayers(w),
-    focus = w.training || 'balanced';
+    focus = activeTrainingFocus(w);
   const promising = active.filter(
     (player) =>
       w.year - player.born < 27 &&

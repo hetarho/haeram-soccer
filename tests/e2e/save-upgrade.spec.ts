@@ -67,7 +67,7 @@ test('writer upgrades a legacy career through the other slot without changing pa
   expect(stored.old).toBe(raw);
   expect(stored.manifest).toMatchObject({ slot: 1, generation: 2, parentGeneration: 1 });
   const restored = (await decode(stored.next!)).world;
-  expect(restored.engine).toBe('1.1.0');
+  expect(restored.engine).toBe('1.2.0');
   expect(facts(restored)).toEqual(facts(world));
 });
 
@@ -100,7 +100,7 @@ test('future selected save stays protected and exports exactly instead of downgr
   page,
 }) => {
   const { world, raw } = await legacy();
-  const current = await encode({ ...world, engine: '1.1.0' }, 2, 1);
+  const current = await encode({ ...world, engine: '1.2.0' }, 2, 1);
   const future = JSON.stringify({ ...JSON.parse(current), engine: '9.0.0' });
   await seed(page, raw, future);
   await page.goto('/');
@@ -144,7 +144,7 @@ test('upgrade quota failure keeps old disk and exports new memory before an expl
     ),
   ).toBe(1);
   const upgraded = (await decode(await exportRaw(page))).world;
-  expect(upgraded.engine).toBe('1.1.0');
+  expect(upgraded.engine).toBe('1.2.0');
   expect(facts(upgraded)).toEqual(facts(world));
   await page.evaluate(() => Object.assign(window, { allowUpgrade: true }));
   await page.getByRole('button', { name: '저장 재시도', exact: true }).click();
