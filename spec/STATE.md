@@ -16,7 +16,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 3 | 3 | - | 2 |
-| WEB | 20 | 20 | - | 0 |
+| WEB | 24 | 24 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
 | CLUB | 5 | 5 | - | 0 |
 | MATCH | 3 | 3 | - | 0 |
@@ -30,11 +30,21 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T037 | Local football analysis CSV exports | WEB | - | doing@261008.nf |
+
 
 ## next
-- Continue mobile football analysis cycle 10 after committing T036.
+- implement-task T037
 
 ## log
+- 261008 T038 done; controls and pacing verified in all three browsers
+- 261008 update-ssot WEB r24; create-task T038; implement-task start (nf); T037 r24 freshness unrelated
+- 261008 update-ssot WEB r23; T037 todo contract refreshed; implement-task resumed (nf)
+- 261008 update-ssot WEB r22; create-task T037 refreshed while todo; implement-task resumed (nf)
+- 261008 T037 verification: Firefox facility CTA overlapped mobile navigation by 1px; enforce existing WEB-17 bounds
+- 261008 implement-task T037 start (nf); cycle 10
+- 261008 cycle 10 create-task T037; WEB r21
+- 261008 cycle 10 update-ssot WEB start; local-analysis-export
 - 261008 T036 done; cycle 9 verified
 - 261008 implement-task T036 start (nf); cycle 9
 - 261008 cycle 9 create-task T036; WEB r20
@@ -47,11 +57,3 @@
 - 261008 implement-task T034 start (nf); cycle 7
 - 261008 cycle 7 create-task T034; WEB r18
 - 261008 cycle 7 update-ssot WEB start; fixture-notebook
-- 261008 T033 done; cycle 6 verified
-- 261008 implement-task T033 start (nf); cycle 6
-- 261008 cycle 6 create-task T033; WEB r17
-- 261008 cycle 6 update-ssot WEB start; own-player-comparison
-- 261008 T032 done; cycle 5 verified
-- 261008 implement-task T032 start (nf); cycle 5
-- 261008 cycle 5 create-task T032; WEB r16
-- 261008 cycle 5 update-ssot WEB start; player-performance-rates

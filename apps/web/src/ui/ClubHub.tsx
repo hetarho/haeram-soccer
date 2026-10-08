@@ -8,7 +8,7 @@ import { money, number } from './format';
 import type { GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
 import { useNavigation } from './state';
-import { useGameState } from '../runtime/store';
+import { gameStore, useGameState } from '../runtime/store';
 import { StrategyPanel } from './StrategyPanel';
 import { Dialog } from './Dialog';
 import { TrainingStudio } from './TrainingStudio';
@@ -36,14 +36,19 @@ function MatchAction({
   next: boolean;
   onWatch: () => Promise<void>;
 }) {
-  const processing = useGameState((state) => state.processing);
+  const busy = useGameState((state) => state.busy);
+  const [pending, setPending] = useState(false);
   const readonly = useGameState((state) => state.readonly);
   const error = useGameState((state) => state.error);
   return (
     <button
       data-testid="hub-play"
-      disabled={processing || readonly || !!error || critical}
-      onClick={() => void onWatch()}
+      disabled={pending || busy || readonly || !!error || critical}
+      onClick={() => {
+        if (pending) return;
+        setPending(true);
+        void onWatch().finally(() => setPending(false));
+      }}
     >
       {next ? '다음 경기 관전' : '다음 시즌 시작'} <span aria-hidden="true">▷</span>
     </button>
@@ -162,6 +167,10 @@ export function ClubHub({
   const ids = orderIds(ownLeagueIds(w), w.tables),
     rank = ids.indexOf(w.playerClub) + 1;
   const watch = async () => {
+    controller.stop('관전을 위해 자동 진행을 멈췄습니다.');
+    await client.whenIdle();
+    const state = gameStore.getSnapshot();
+    if (state.readonly || state.error || state.view?.world.critical) return;
     const reply = await client.command({ type: 'next-match' });
     if (reply?.playback) setPage('match');
   };

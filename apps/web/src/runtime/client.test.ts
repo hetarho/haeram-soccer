@@ -101,6 +101,15 @@ afterEach(() => {
 });
 
 describe('background worker publication', () => {
+  it('waits for admitted background work and its save before a manual decision', async () => {
+    const client = await start();
+    const background = client.command({ type: 'advance-days', days: 1 }, { background: true });
+    await client.whenIdle();
+    await background;
+    expect(client.state.processing).toBe(false);
+    expect(client.state.savedRevision).toBe(client.state.view!.world.revision);
+    expect(client.state.view!.world.calendar?.day).toBe(1);
+  });
   it('advances without foreground loading flashes and does not activate save-validation views', async () => {
     const publications: ClientState[] = [],
       client = await start((state) => publications.push(state));

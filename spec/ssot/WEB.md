@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r20 | Define the implemented browser-demo behavior for browser game delivery.
+> r24 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -50,6 +50,13 @@
 
 - WEB-28 [o] History offers a read-only career record book derived from all retained own season summaries and player career totals. Season records cover best division/rank, points per league match, goals per league match and season-end supporters, each with year, division and sample size. Player leaders include retained active/sold/retired identities and disclose all-competition own-club totals. Ties choose the earliest retained season or stable player ID; empty records remain unclaimed and viewing grants no rewards.
 
+- WEB-29 [o] History offers explicit local CSV downloads for the loaded selected-season/competition match sample, current-season or own-career player facts, and all completed own season summaries. Each dataset labels its time and competition scope, uses versioned stable identifiers and exact recorded values, and exposes its row count. CSV uses UTF-8 with a BOM, quote/newline escaping and formula-like text neutralization. Empty or still-loading datasets cannot be exported; exports perform no uploads and are distinct from recoverable game saves.
+
+- WEB-30 [o] League standings initially show the leading 8 ranks plus the own-club row when outside that preview. Display the shown/full team counts and any rank gap, and offer one explicit expansion to all ranked clubs. Sorting and source facts remain complete; short previews reduce first-view layout cost on mobile and throttled devices.
+
+- WEB-31 [o] Background automatic progression does not alternate the enabled state or appearance of manual match and preparation buttons. Foreground work, real save/worker errors, read-only ownership and critical club alerts remain explicit blockers. Manual observation stops automatic progress, waits for the current serialized operation to settle, and queues exactly one match; preparation pauses automatic progress and initializes from the settled current roster.
+- WEB-32 [o] Match presentation defaults to 1x with approximately 4 real seconds per simulated minute. Offer exactly 1x, 2x, 4x and 8x; the pace changes presentation only, preserves pause/seek behavior, and never changes settled outcomes or the game calendar.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -57,6 +64,10 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r24 261008 WEB-31+ automatic-tick button flashes→stable foreground admission; WEB-32+ 45-second replay and three rates→4 seconds/minute at 1x and four rates
+- r23 261008 WEB-30✎ preview 12→8 leading ranks to retain first-view responsiveness under the reference throttle
+- r22 261008 WEB-30+ full initial standings layout→12-rank preview with own-club context and explicit full expansion
+- r21 261008 WEB-29+ save-envelope export only→scoped local match/player/season CSV analysis downloads
 - r20 261008 WEB-28+ separate history graphs→contextual season records and durable own-player leaders
 - r19 261008 WEB-27+ season overview and match table→sample-aware home/away splits and filtered form chart
 - r18 261008 WEB-26+ round tables only→filterable own-club fixture cards and archived result access

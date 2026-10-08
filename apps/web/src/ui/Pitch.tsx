@@ -21,6 +21,7 @@ import { percent } from './format';
 import { MatchReport } from './MatchReport';
 import { MatchMoments } from './MatchMoments';
 import { sampleAtMinute } from './moments';
+import { presentationAdvance, WATCH_SPEEDS } from './presentationClock';
 import s from './App.module.css';
 import t from './Pitch.module.css';
 
@@ -87,7 +88,7 @@ export function Pitch({
   const lastUi = useRef(0);
   const [sampleIndex, setSampleIndex] = useState(0);
   const [sampleMatchId, setSampleMatchId] = useState(p?.record.id);
-  const [speed, setSpeed] = useState(4);
+  const [speed, setSpeed] = useState(1);
   const [paused, setPaused] = useState(false);
   const [inspect, setInspect] = useState(false);
   const [details, setDetails] = useState(false);
@@ -159,7 +160,10 @@ export function Pitch({
       last.current = time;
       const end = Math.max(0, samples.length - 1);
       if (p && !paused)
-        clock.current = Math.min(end, clock.current + (elapsed * speed * samples.length) / 45000);
+        clock.current = Math.min(
+          end,
+          clock.current + presentationAdvance(elapsed, speed, samples.length, p.frames.length),
+        );
       const index = Math.min(end, Math.floor(clock.current));
       if (time - lastUi.current > 120 || clock.current === end) {
         setSampleIndex(index);
@@ -339,9 +343,11 @@ export function Pitch({
             value={speed}
             onChange={(e) => setSpeed(Number(e.target.value))}
           >
-            <option value={1}>1×</option>
-            <option value={4}>4×</option>
-            <option value={12}>12×</option>
+            {WATCH_SPEEDS.map((value) => (
+              <option key={value} value={value}>
+                {value}×
+              </option>
+            ))}
           </select>
         </label>
         <button

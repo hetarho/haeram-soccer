@@ -297,6 +297,10 @@ export class GameClient {
       return reply;
     }, options);
   }
+  /** Settle already admitted work before opening a manual decision or match. */
+  whenIdle() {
+    return this.queue;
+  }
   cancel() {
     this.cancelled = true;
     this.worker.postMessage({ type: 'cancel' });

@@ -16,7 +16,7 @@ import {
   tacticRequestOutlook,
 } from '../../../../packages/engine/src/index';
 import type { GameClient } from '../runtime/client';
-import { useGameState } from '../runtime/store';
+import { gameStore, useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
 import { money } from './format';
 import { OpponentDossier } from './OpponentDossier';
@@ -80,21 +80,31 @@ function Preview({ players, baseline }: { players: Player[]; baseline: Player[] 
 
 export const StrategyPanel = memo(function StrategyPanel({ w, client, onSuspendChange }: Props) {
   const processing = useGameState((state) => state.processing);
+  const busy = useGameState((state) => state.busy);
   const readonly = useGameState((state) => state.readonly);
   const error = useGameState((state) => state.error);
-  const blocked = processing || readonly || !!error || !!w.critical;
   const tabId = useId();
   const [tab, setTab] = useState<PreparationTab>('tactic');
   const [preset, setPreset] = useState<'current' | 'strongest' | 'rest' | 'manual'>('current');
   const [open, setOpen] = useState(false);
+  const [preparing, setPreparing] = useState(false);
+  const blocked = preparing || processing || readonly || !!error || !!w.critical;
   const [draft, setDraft] = useState<string[]>([]);
   const [tactic, setTactic] = useState<Tactic>(w.tactic);
   const [tone, setTone] = useState<Tone>('evidence');
   const [message, setMessage] = useState('');
   const suspension = useRef(onSuspendChange);
+  const opening = useRef(false);
   suspension.current = onSuspendChange;
-  useEffect(() => () => suspension.current?.(false), []);
+  useEffect(
+    () => () => {
+      opening.current = false;
+      suspension.current?.(false);
+    },
+    [],
+  );
   const close = useCallback(() => {
+    opening.current = false;
     setOpen(false);
     suspension.current?.(false);
   }, []);
@@ -165,16 +175,27 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onSuspendC
           {replaced > 0 && <small>이탈한 선발 {replaced}명은 활동 중인 선수로 대체합니다.</small>}
         </div>
         <button
-          disabled={blocked}
+          disabled={busy || readonly || !!error || !!w.critical}
           onClick={(event) => {
             event.currentTarget.focus();
             suspension.current?.(true);
-            setDraft(baseline.map((player) => player.id));
+            opening.current = true;
+            setPreparing(true);
+            setDraft([]);
             setTactic(w.tactic);
             setPreset('current');
             setTab('tactic');
             setMessage('');
             setOpen(true);
+            void client.whenIdle().then(() => {
+              if (!opening.current) return;
+              const current = gameStore.getSnapshot().view?.world;
+              if (current) {
+                setDraft(startingSquad(current, clubOf(current)).map((player) => player.id));
+                setTactic(current.tactic);
+              }
+              setPreparing(false);
+            });
           }}
         >
           전술·선발 준비
@@ -230,6 +251,11 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onSuspendC
             </div>
           }
         >
+          {preparing && (
+            <p className={s.hint} role="status">
+              진행 중인 처리를 마치고 현재 선발을 불러오는 중…
+            </p>
+          )}
           <div className={s.opponent}>
             <span>다음 상대</span>
             <strong>{opponent?.name || '다음 시즌 일정 준비 중'}</strong>

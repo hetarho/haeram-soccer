@@ -35,8 +35,15 @@ const TABS = [
 type Tab = (typeof TABS)[number][0];
 const MOBILE_TABS = TABS.filter(([id]) => ['match', 'table', 'strategy'].includes(id));
 
-function NextMatchAction({ client }: { client: GameClient }) {
-  const processing = useGameState((state) => state.processing);
+function NextMatchAction({
+  client,
+  controller,
+}: {
+  client: GameClient;
+  controller: ProgressionController;
+}) {
+  const busy = useGameState((state) => state.busy);
+  const [pending, setPending] = useState(false);
   const readonly = useGameState((state) => state.readonly);
   const error = useGameState((state) => state.error);
   const critical = useGameState((state) => state.view?.world.critical);
@@ -44,11 +51,19 @@ function NextMatchAction({ client }: { client: GameClient }) {
     <button
       className={t.watch}
       data-testid="match-next-action"
-      disabled={processing || readonly || !!error || !!critical}
+      disabled={pending || busy || readonly || !!error || !!critical}
       onClick={() => {
-        const state = gameStore.getSnapshot();
-        if (state.processing || state.readonly || state.error || state.view?.world.critical) return;
-        void client.command({ type: 'next-match' }, { background: true });
+        if (pending) return;
+        setPending(true);
+        controller.stop('관전을 위해 자동 진행을 멈췄습니다.');
+        void client
+          .whenIdle()
+          .then(async () => {
+            const state = gameStore.getSnapshot();
+            if (state.readonly || state.error || state.view?.world.critical) return;
+            await client.command({ type: 'next-match' }, { background: true });
+          })
+          .finally(() => setPending(false));
       }}
     >
       다음 경기 관전
@@ -152,7 +167,7 @@ const MatchPane = memo(function MatchPane({
               <MatchFeedback finished={finished} />
               <div className={t.nextActions}>
                 <button onClick={onPrepare}>다음 경기 준비</button>
-                <NextMatchAction client={client} />
+                <NextMatchAction client={client} controller={controller} />
               </div>
             </div>
           }

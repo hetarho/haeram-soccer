@@ -118,7 +118,7 @@ for (const viewport of [
       }),
     ).toBe(true);
     await expect(page.getByRole('button', { name: '결과 보기', exact: true })).toBeDisabled();
-    await expect(page.getByLabel('관전 속도')).toHaveValue('4');
+    await expect(page.getByLabel('관전 속도')).toHaveValue('1');
     await expectCompactMatch(page, viewport);
     await page.evaluate(() => {
       (window as typeof window & { matchCanvas?: Element | null }).matchCanvas =
@@ -129,7 +129,7 @@ for (const viewport of [
     await expectCompactMatch(page, viewport);
     await expect(page.getByTestId('match-result-summary')).toHaveCount(0);
     await expect(page.getByRole('slider', { name: '경기 시간', exact: true })).toBeHidden();
-    await page.getByLabel('관전 속도').selectOption('12');
+    await page.getByLabel('관전 속도').selectOption('8');
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90′ ·.*경기 종료/)).toBeVisible();
     await expectCompactMatch(page, viewport);
