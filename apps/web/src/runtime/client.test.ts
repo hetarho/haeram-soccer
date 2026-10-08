@@ -185,6 +185,28 @@ describe('background worker publication', () => {
     ).toBe(false);
   });
 
+  it('takes over writing once the playing tab releases the writer lock', async () => {
+    await start();
+    let release: (lock: object) => void = () => {};
+    const granted = new Promise<object>((resolve) => (release = resolve));
+    vi.stubGlobal('navigator', {
+      locks: {
+        request: (
+          _name: string,
+          options: { ifAvailable?: boolean },
+          callback: (lock: object | null) => Promise<void>,
+        ) => (options.ifAvailable ? callback(null) : granted.then((lock) => callback(lock))),
+      },
+    });
+    const reader = new GameClient(() => {});
+    clients.push(reader);
+    await reader.start();
+    expect(reader.state.readonly).toBe(true);
+    release({ name: 'haeram-soccor:writer' });
+    await vi.waitFor(() => expect(reader.state.readonly).toBe(false));
+    expect(reader.state.notice).toContain('이어서 플레이');
+    await vi.waitFor(() => expect(reader.state.view?.world.revision).toBe(0));
+  });
   it('retains memory progress and the last recoverable checkpoint when background saving fails', async () => {
     const client = await start(),
       manifest = storage.getItem('haeram-soccor:manifest')!;

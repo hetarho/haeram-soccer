@@ -135,9 +135,8 @@ for (const viewport of [
     await expect(date).toHaveText(paused);
     // Back home the same run resumes by itself.
     await mini.click();
-    await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
     await expect(date).not.toHaveText(paused);
-    await page.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
+    // Leaving home pauses the run again; the match-eve stop keeps it short of round 1 either way.
     await nav.getByRole('button', { name: '선수단', exact: true }).click();
     await expect(roster.first()).toBeVisible();
     for (const player of await roster.all()) await expect(player).toContainText('성장 +0.00');

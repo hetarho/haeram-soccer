@@ -25,7 +25,7 @@
 | ECON | 5 | 5 | - | 0 |
 | EURO | 1 | 1 | - | 0 |
 | HIST | 3 | 3 | - | 0 |
-| SAVE | 4 | 4 | - | 0 |
+| SAVE | 5 | 5 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -36,6 +36,7 @@
 - Release verification on the accumulated source: all three browsers and the production preview gates.
 
 ## log
+- 261009 CI fixes: /transfers route allowlisted, read-only tab ownership hand-over, clock toggle ignores clicks right after an automatic stop; SAVE r5
 - 261009 WEB r30 CLUB r7 STAFF r4 implemented directly: seven tabs, home-only clock, team state, intervention levels, morale, motion; T041 done
 - 261008 WEB r29 CLUB r6 STAFF r3 ECON r5 implemented directly: events and inbox, coaching staff, academy, transfer windows and bids, cash projection
 - 261008 WEB r28 implemented directly: clock stops only for watching/blockers, fixed shell scroller, league tabs

@@ -5,7 +5,7 @@ import {
   seasonDate,
   seasonLength,
 } from '../../../../packages/engine/src/calendar';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { DelegationKey, InboxKind, World } from '../../../../packages/contracts/src/types';
 import { transferWindow } from '../../../../packages/engine/src/transfers';
 import type { GameClient } from '../runtime/client';
@@ -43,6 +43,17 @@ export function ProgressControls({
   const { running, pace, watching, reason, stopOn } = useProgression(controller, (state) => state);
   const [settings, setSettings] = useState(false);
   const level = interventionLevel(stopOn, state.view!.world);
+  // When the clock stops itself (e.g. at a match eve) the toggle flips from stop to start; a
+  // click landing just after that was aimed at the old label, so it must not start the clock.
+  const userStop = useRef(false);
+  const wasRunning = useRef(running);
+  const autoStoppedAt = useRef(0);
+  useEffect(() => {
+    if (wasRunning.current && !running && !userStop.current)
+      autoStoppedAt.current = performance.now();
+    userStop.current = false;
+    wasRunning.current = running;
+  }, [running]);
   const w = state.view!.world;
   const next = nextOwnFixture(w);
   const days = daysUntilNextMatch(w);
@@ -87,7 +98,12 @@ export function ProgressControls({
           className={`${s.clockToggle} ${running ? s.clockPause : ''}`}
           aria-label={running ? '자동 진행 정지' : '자동 진행 시작'}
           disabled={!running && (blocked || state.processing)}
-          onClick={() => (running ? controller.stop() : controller.start())}
+          onClick={() => {
+            if (running) {
+              userStop.current = true;
+              controller.stop();
+            } else if (performance.now() - autoStoppedAt.current >= 500) controller.start();
+          }}
         >
           <span aria-hidden="true" />
         </button>

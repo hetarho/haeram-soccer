@@ -21,6 +21,8 @@
   Cache-Control: no-cache
 /squad
   Cache-Control: no-cache
+/transfers
+  Cache-Control: no-cache
 /manager
   Cache-Control: no-cache
 /business

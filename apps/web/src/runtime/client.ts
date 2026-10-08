@@ -50,6 +50,7 @@ export class GameClient {
   >();
   private queue = Promise.resolve();
   private release?: () => void;
+  private lockWait?: AbortController;
   private cancelled = false;
   private channel = new BroadcastChannel('haeram-soccor:updates');
   private saves: SaveRepository;
@@ -161,8 +162,30 @@ export class GameClient {
           await new Promise<void>((done) => {
             this.release = done;
           });
+        else this.awaitOwnership();
       });
     });
+  }
+  /**
+   * A read-only tab queues for the writer lock. When the playing tab closes (browsers may release
+   * the lock a moment later), this tab reloads the latest checkpoint and continues as the writer.
+   */
+  private awaitOwnership() {
+    if (this.failed || !navigator.locks) return;
+    this.lockWait = new AbortController();
+    void navigator.locks
+      .request('haeram-soccor:writer', { signal: this.lockWait.signal }, async (lock) => {
+        if (!lock || this.failed) return;
+        this.state.readonly = false;
+        this.state.notice = '다른 탭이 닫혀 이 탭에서 이어서 플레이합니다.';
+        await this.enqueue(() => this.load());
+        await new Promise<void>((done) => {
+          this.release = done;
+        });
+      })
+      .catch(() => {
+        /* aborted on dispose */
+      });
   }
   private async load() {
     const result = await this.saves.load();
@@ -385,6 +408,7 @@ export class GameClient {
       waiter.reject(new Error('세션이 닫혔습니다.'));
     }
     this.waiters.clear();
+    this.lockWait?.abort();
     this.release?.();
     this.channel.close();
     this.worker.terminate();
