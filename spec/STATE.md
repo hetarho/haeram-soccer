@@ -30,13 +30,13 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T037 | Local football analysis CSV exports | WEB | - | doing@261008.nf |
 
 
 ## next
-- implement-task T037
+- Eleven improvement cycles complete (T028–T038); all local verification gates passed. Check the pushed final CI, then continue external product/device playtests for the paid mobile concept.
 
 ## log
+- 261008 T037 done; cycle 10 verified
 - 261008 T038 done; controls and pacing verified in all three browsers
 - 261008 update-ssot WEB r24; create-task T038; implement-task start (nf); T037 r24 freshness unrelated
 - 261008 update-ssot WEB r23; T037 todo contract refreshed; implement-task resumed (nf)
@@ -56,4 +56,3 @@
 - 261008 T034 done; cycle 7 verified
 - 261008 implement-task T034 start (nf); cycle 7
 - 261008 cycle 7 create-task T034; WEB r18
-- 261008 cycle 7 update-ssot WEB start; fixture-notebook

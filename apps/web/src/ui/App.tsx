@@ -1,4 +1,4 @@
-import { lazy, memo, Suspense, useEffect, useState, type ReactNode } from 'react';
+import { memo, useDeferredValue, useEffect, useState, type ReactNode } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { country, priceIndex } from '../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../runtime/client';
@@ -21,7 +21,7 @@ import {
 } from '../../../../packages/engine/src/calendar';
 import s from './App.module.css';
 import { Dialog } from './Dialog';
-const Rich = lazy(() => import('./Rich'));
+import Rich from './Rich';
 function NavIcon({ page }: { page: Page }) {
   const paths: Record<Page, string> = {
     dashboard: 'M4 3h6a3 3 0 0 1 2 2 3 3 0 0 1 2-2h6v16h-6a3 3 0 0 0-2 2 3 3 0 0 0-2-2H4z M12 5v16',
@@ -626,6 +626,8 @@ export function App() {
     [moreOpen, setMoreOpen] = useState(false),
     [guideOpen, setGuideOpen] = useState(false);
   const { page, setPage } = useNavigation();
+  const contentPage = useDeferredValue(page);
+  const changingView = contentPage !== page;
   useEffect(() => {
     try {
       if (!isSecureContext || !crypto.subtle || !crypto.randomUUID)
@@ -773,18 +775,28 @@ export function App() {
             />
           ) : (
             <>
-              <div className={s.coreContent} hidden={page !== 'dashboard'}>
-                <ConnectedDashboard client={client} controller={controller} />
-              </div>
-              <LiveSeason key={worldId} page={page} client={client} controller={controller} />
-              <div hidden={page !== 'europe'}>
-                <ConnectedEurope />
-              </div>
-              {(['squad', 'manager', 'business', 'history'] as Page[]).includes(page) && (
-                <Suspense fallback={<div className={s.loading}>클럽 기록을 펼치는 중…</div>}>
-                  <ConnectedRich page={page} client={client} />
-                </Suspense>
+              {changingView && (
+                <div className={s.viewPending} role="status">
+                  기록을 펼치는 중…
+                </div>
               )}
+              <div className={s.views} inert={changingView} aria-busy={changingView}>
+                <div className={s.coreContent} hidden={contentPage !== 'dashboard'}>
+                  <ConnectedDashboard client={client} controller={controller} />
+                </div>
+                <LiveSeason
+                  key={worldId}
+                  page={contentPage}
+                  client={client}
+                  controller={controller}
+                />
+                <div hidden={contentPage !== 'europe'}>
+                  <ConnectedEurope />
+                </div>
+                {(['squad', 'manager', 'business', 'history'] as Page[]).includes(contentPage) && (
+                  <ConnectedRich page={contentPage} client={client} />
+                )}
+              </div>
             </>
           )
         ) : (

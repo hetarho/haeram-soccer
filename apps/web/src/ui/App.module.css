@@ -94,6 +94,21 @@
 :global(small) {
   color: #778275;
 }
+.views {
+  display: contents;
+}
+.viewPending {
+  position: fixed;
+  top: 50px;
+  right: 20px;
+  z-index: 25;
+  padding: 8px 12px;
+  border: 1px solid #d2ddc9;
+  border-radius: 8px;
+  background: #fffdf7;
+  color: #315a37;
+  font-size: 12px;
+}
 .layout {
   display: grid;
   grid-template-columns: 230px minmax(0, 1fr);

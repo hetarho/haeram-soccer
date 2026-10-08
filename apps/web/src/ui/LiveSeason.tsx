@@ -325,6 +325,7 @@ export function LiveSeason({
   controller: ProgressionController;
 }) {
   const active = page === 'match' || page === 'league';
+  const requestedPage = useNavigation((state) => state.page);
   const [mobile, setMobile] = useState(() => window.matchMedia('(max-width: 760px)').matches);
   useEffect(() => {
     const media = window.matchMedia('(max-width: 760px)');
@@ -337,11 +338,12 @@ export function LiveSeason({
     const saved = new URLSearchParams(location.search).get('view');
     return TABS.find(([id]) => id === saved)?.[0] || (page === 'league' ? 'table' : 'match');
   });
-  const previousPage = useRef(page);
-  useEffect(() => {
-    if (active && previousPage.current !== page) setTab(page === 'league' ? 'table' : 'match');
-    previousPage.current = page;
-  }, [page, active]);
+  const [previousPage, setPreviousPage] = useState(page);
+  // Align the route before committing children; avoid painting the pitch before the table.
+  if (previousPage !== page) {
+    setPreviousPage(page);
+    if (active) setTab(page === 'league' ? 'table' : 'match');
+  }
   useEffect(() => {
     if (!active) return;
     const url = new URL(location.href);
@@ -349,8 +351,8 @@ export function LiveSeason({
     history.replaceState(history.state, '', `${url.pathname}${url.search}${url.hash}`);
   }, [active, tab]);
   useEffect(() => {
-    controller.setWatching(active && tab === 'match');
-  }, [active, tab, controller]);
+    controller.setWatching(active && requestedPage === page && tab === 'match');
+  }, [active, requestedPage, page, tab, controller]);
   const onPrepare = useCallback(() => {
     setTab('strategy');
     document.getElementById('season-tab-strategy')?.focus();

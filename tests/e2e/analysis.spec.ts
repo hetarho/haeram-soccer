@@ -1,6 +1,47 @@
 import { expect, test } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
 
 test.use({ viewport: { width: 360, height: 740 } });
+
+test('downloads scoped analysis CSVs and disables empty competition samples on mobile', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await page.getByTestId('hub-play').click();
+  await page.getByRole('button', { name: '결과 보기', exact: true }).click();
+  await page
+    .getByRole('navigation', { name: '모바일 게임 메뉴' })
+    .getByRole('button', { name: '더보기', exact: true })
+    .click();
+  await page
+    .getByRole('dialog', { name: '전체 메뉴' })
+    .getByRole('button', { name: '역사 보관함', exact: true })
+    .click();
+  await page.getByText('분석 데이터 내보내기', { exact: true }).click();
+  const panel = page.getByRole('region', { name: '분석 데이터 내보내기', exact: true }),
+    button = panel.getByRole('button', { name: 'CSV 내려받기', exact: true });
+  await expect(button).toBeEnabled();
+  const downloaded = page.waitForEvent('download');
+  await button.click();
+  const file = await downloaded;
+  expect(file.suggestedFilename()).toBe('haeram-matches-1901.csv');
+  const csv = await readFile((await file.path())!, 'utf8');
+  expect(csv.startsWith('\ufeff')).toBe(true);
+  expect(csv).toContain('"fixture_id"');
+  expect(csv.trim().split('\r\n')).toHaveLength(2);
+  await page.getByLabel('기록 대회 범위').selectOption('europe');
+  await expect(button).toBeDisabled();
+  await panel.getByLabel('분석 데이터 종류').selectOption('players');
+  await panel.getByLabel('내보낼 선수 지표 범위').selectOption('career');
+  const playerDownload = page.waitForEvent('download');
+  await button.click();
+  const players = await playerDownload;
+  expect(players.suggestedFilename()).toBe('haeram-players-career-1901.csv');
+  expect((await readFile((await players.path())!, 'utf8')).trim().split('\r\n')).toHaveLength(19);
+  expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+});
 
 test('reproduces earned season records after reload on mobile', async ({ page }) => {
   await page.goto('/');
@@ -69,6 +110,11 @@ test('filters the own-club fixture notebook and reads a settled full-season reco
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
     .getByRole('button', { name: '리그', exact: true })
     .click();
+  await expect(page.getByRole('region', { name: '우리 팀 일정 노트', exact: true })).toHaveCount(0);
+  const expand = page.getByRole('button', { name: /전체 \d+팀 순위 보기/ }).first();
+  await expect(expand).toBeVisible();
+  await expand.click();
+  await expect(expand).toHaveCount(0);
   await page.getByText('우리 팀 일정 노트', { exact: true }).click();
   const notebook = page.getByRole('region', { name: '우리 팀 일정 노트', exact: true });
   await notebook.getByLabel('일정 홈 원정').selectOption('away');
@@ -145,6 +191,12 @@ test('filters player samples and shows scoped per-90 evidence on a mobile profil
   await page.getByLabel('선수 포지션 필터').selectOption('FWD');
   await page.getByLabel('우리 선수 정렬').selectOption('goals90');
   await page.getByLabel('최소 출전 분').selectOption('90');
+  const detailTable = page.locator('details[class*="rosterDetails"]');
+  await expect(detailTable.locator('table')).toHaveCount(0);
+  await detailTable.getByText('전체 선수 지표 표 보기', { exact: true }).click();
+  await expect(detailTable.locator('table')).toBeVisible();
+  await detailTable.getByText('전체 선수 지표 표 보기', { exact: true }).click();
+  await expect(detailTable.locator('table')).toHaveCount(0);
   const roster = page.locator('[class*="rosterCards"]');
   await roster.locator('article > button').first().click();
   const profile = page.getByRole('dialog', { name: '선수 상세 기록' });

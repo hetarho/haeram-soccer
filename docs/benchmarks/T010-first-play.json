@@ -1,21 +1,21 @@
 {
-  "date": "2026-10-08T01:41:38.488Z",
+  "date": "2026-10-08T05:22:09.057Z",
   "browser": "153.0.8010.12",
   "playwright": "1.63.0",
   "node": "v24.12.0",
-  "gitHead": "0e3d4f2e8b4918ccba45f0128619e9b026978037",
+  "gitHead": "86765ccbcf94cda67d48c5682433b4a43c9c645f",
   "gitDirty": true,
   "currentHeadVerified": false,
   "verifiedSource": "uncommitted working tree",
   "sourceFingerprint": {
     "algorithm": "sha256",
-    "sha256": "1a4095bb648ac1e6a47ff7e184a823a1f365e0b0f541e9e1e2d877b68784acf1",
-    "files": 119
+    "sha256": "c087bbfca8f95b7c908aa1aadcdb8587be2f8a84181b894d8c910b1c677fc566",
+    "files": 152
   },
   "buildFingerprint": {
     "algorithm": "sha256",
-    "sha256": "9c170427cb4d9b25c980836a70ec7255e2b16d6fd66e33835dbbe7ae0c9366b2",
-    "files": 9
+    "sha256": "4e86318caeaf421c2d358dba939470fb0d57404077c9769d7c987f488f14d92e",
+    "files": 7
   },
   "servedBuildVerification": {
     "origin": "http://127.0.0.1:4180",
@@ -26,31 +26,19 @@
         "file": "index.html",
         "url": "http://127.0.0.1:4180/",
         "bytes": 665,
-        "sha256": "9adffb4ff8a1562f0c51b6891f5ba8d3bf670b0a8a09395b6b6f601372b1e4e8"
+        "sha256": "0054363de2dc056e86835e5c5d63191f36bad188093cdea66d9a9e489968b6f3"
       },
       {
-        "file": "assets/Rich-A9AiSvgs.js",
-        "url": "http://127.0.0.1:4180/assets/Rich-A9AiSvgs.js",
-        "bytes": 54618,
-        "sha256": "5ec2d3c743c5f439545dc59099be4192d1cfa607ca93b9bc7a3495272cbe07aa"
+        "file": "assets/index-8a9usu_Q.css",
+        "url": "http://127.0.0.1:4180/assets/index-8a9usu_Q.css",
+        "bytes": 75496,
+        "sha256": "6fe9de467f65aca1b665ddd6405496eb59a6d8f0904d9ccf2db80aa77727c44a"
       },
       {
-        "file": "assets/Rich-ed4jtAVn.css",
-        "url": "http://127.0.0.1:4180/assets/Rich-ed4jtAVn.css",
-        "bytes": 11288,
-        "sha256": "f67efe5920a3c1842c2c38f7a9bf4393d0185032adfcc7fd394ede12a6500d3c"
-      },
-      {
-        "file": "assets/index-Btad9L6C.js",
-        "url": "http://127.0.0.1:4180/assets/index-Btad9L6C.js",
-        "bytes": 374784,
-        "sha256": "70c88c8eeb8dcac6d782697aca5f09eb07ba5cefa4b036bdd93c6b5d5da8347a"
-      },
-      {
-        "file": "assets/index-TFO47HJw.css",
-        "url": "http://127.0.0.1:4180/assets/index-TFO47HJw.css",
-        "bytes": 60658,
-        "sha256": "b773edce4e688787069d7c0c69267d564939e774484d6944d01c011cfe788a25"
+        "file": "assets/index-CjOCpJzg.js",
+        "url": "http://127.0.0.1:4180/assets/index-CjOCpJzg.js",
+        "bytes": 461218,
+        "sha256": "f7c699a6073c24b51d9add2e751d493770c8c81139b0ba8a071ce90968762af4"
       },
       {
         "file": "assets/worker-nB5dx4ZV.js",
@@ -75,9 +63,9 @@
       1440,
       1000
     ],
-    "coldLoadAndFoundMs": 1402,
-    "foundingCommandMs": 436,
-    "animationFps": 61
+    "coldLoadAndFoundMs": 1310,
+    "foundingCommandMs": 408,
+    "animationFps": 60
   },
   "mobile": {
     "viewport": [
@@ -85,42 +73,34 @@
       844
     ],
     "deviceScaleFactor": 2,
-    "coldLoadAndFoundMs": 1200,
-    "foundingCommandMs": 430,
+    "coldLoadAndFoundMs": 1249,
+    "foundingCommandMs": 435,
     "animationFps": 60,
     "inputSamples": 12,
-    "pointerToSecondFrameP95Ms": 41
+    "pointerToSecondFrameP95Ms": 38
   },
-  "entryGzipBytes": 133801,
+  "entryGzipBytes": 159070,
   "entryGzipLimit": 256000,
   "entryFiles": [
     {
-      "file": "assets/index-Btad9L6C.js",
-      "gzipBytes": 121487
+      "file": "assets/index-CjOCpJzg.js",
+      "gzipBytes": 144340
     },
     {
-      "file": "assets/index-TFO47HJw.css",
-      "gzipBytes": 12314
+      "file": "assets/index-8a9usu_Q.css",
+      "gzipBytes": 14730
     }
   ],
-  "buildGzipBytes": 220951,
+  "buildGzipBytes": 228322,
   "buildGzipLimit": 256000,
   "buildFiles": [
     {
-      "file": "Rich-A9AiSvgs.js",
-      "gzipBytes": 15447
+      "file": "index-8a9usu_Q.css",
+      "gzipBytes": 14730
     },
     {
-      "file": "Rich-ed4jtAVn.css",
-      "gzipBytes": 2451
-    },
-    {
-      "file": "index-Btad9L6C.js",
-      "gzipBytes": 121487
-    },
-    {
-      "file": "index-TFO47HJw.css",
-      "gzipBytes": 12314
+      "file": "index-CjOCpJzg.js",
+      "gzipBytes": 144340
     },
     {
       "file": "worker-nB5dx4ZV.js",
@@ -131,49 +111,49 @@
     {
       "url": "http://127.0.0.1:4180/",
       "type": "Document",
-      "bytes": 1030
+      "bytes": 1031
     },
     {
-      "url": "http://127.0.0.1:4180/assets/index-TFO47HJw.css",
+      "url": "http://127.0.0.1:4180/assets/index-8a9usu_Q.css",
       "type": "Stylesheet",
-      "bytes": 12906
+      "bytes": 15322
     },
     {
-      "url": "http://127.0.0.1:4180/assets/index-Btad9L6C.js",
+      "url": "http://127.0.0.1:4180/assets/index-CjOCpJzg.js",
       "type": "Script",
-      "bytes": 122087
+      "bytes": 144940
     }
   ],
   "mobileFirstPlayPageTargetTransfers": [
     {
       "url": "http://127.0.0.1:4180/",
       "type": "Document",
-      "bytes": 1030
+      "bytes": 1031
     },
     {
-      "url": "http://127.0.0.1:4180/assets/index-TFO47HJw.css",
+      "url": "http://127.0.0.1:4180/assets/index-8a9usu_Q.css",
       "type": "Stylesheet",
-      "bytes": 12906
+      "bytes": 15322
     },
     {
-      "url": "http://127.0.0.1:4180/assets/index-Btad9L6C.js",
+      "url": "http://127.0.0.1:4180/assets/index-CjOCpJzg.js",
       "type": "Script",
-      "bytes": 122087
+      "bytes": 144940
     }
   ],
-  "firstPlayPageTargetTransferBytes": 136023,
-  "mobileFirstPlayPageTargetTransferBytes": 136023,
+  "firstPlayPageTargetTransferBytes": 161293,
+  "mobileFirstPlayPageTargetTransferBytes": 161293,
   "transferNote": "Page-target CDP transfers may omit dedicated-worker target requests; build inventory additionally counts every worker/lazy JavaScript and CSS file as a conservative upper bound.",
-  "centuryLoadMs": 2457,
+  "centuryLoadMs": 2446,
   "centuryCheckpointSha256": "8a1f6d39a5fe498e1a73798100df6e084afb0c17441642e7f5431eca42ccfbf6",
   "centuryRestoreReference": "Separate unthrottled 100-season initialization measurement",
   "initializationLimitMs": 5000,
   "inputSamples": 18,
-  "pointerToSecondFrameP95Ms": 120,
+  "pointerToSecondFrameP95Ms": 86,
   "inputLimitMs": 100,
   "minimumFps": 30,
   "mobileHorizontalOverflow": false,
   "pageErrors": [],
-  "passed": false,
+  "passed": true,
   "scope": "Built Netlify-policy local CSP preview. Reference pages use CDP 4x page CPU slowdown and cold Fast 4G (9/1.5 Mbps,60ms); mobile uses DPR2. FPS counts actual pitch background paints during playback. Pointer-to-second-frame measures presentation latency for post-founding navigation/replay controls. Entry JavaScript/CSS and conservative all-asset compressed budgets are separate; page-target transfers may omit worker targets. No universal device-speed or live-provider validation claim."
 }

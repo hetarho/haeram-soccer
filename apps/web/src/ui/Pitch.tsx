@@ -165,6 +165,12 @@ export function Pitch({
           clock.current + presentationAdvance(elapsed, speed, samples.length, p.frames.length),
         );
       const index = Math.min(end, Math.floor(clock.current));
+      const element = canvas.current;
+      // Keep replay time, but leave hidden/inert views out of layout and painting work.
+      if (element?.closest('[hidden], [inert]')) {
+        raf = requestAnimationFrame(draw);
+        return;
+      }
       if (time - lastUi.current > 120 || clock.current === end) {
         setSampleIndex(index);
         lastUi.current = time;
@@ -172,7 +178,6 @@ export function Pitch({
       const current = samples[index];
       const next = samples[Math.min(end, index + 1)] || current;
       const mix = clock.current - index;
-      const element = canvas.current;
       const ctx = element?.getContext('2d');
       if (element && ctx) {
         const width = element.clientWidth;

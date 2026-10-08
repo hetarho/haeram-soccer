@@ -1,7 +1,7 @@
 {
   "phase": "T010 complete engine, including money/personnel/commercial operations and all continental summaries",
   "synthetic": true,
-  "date": "2026-10-08T01:33:32.690Z",
+  "date": "2026-10-08T05:17:36.555Z",
   "node": "v24.12.0",
   "host": {
     "platform": "linux",
@@ -9,14 +9,14 @@
     "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
     "logicalCpus": 12
   },
-  "gitHead": "0e3d4f2e8b4918ccba45f0128619e9b026978037",
-  "gitDirty": false,
-  "currentHeadVerified": true,
-  "verifiedSource": "committed HEAD",
+  "gitHead": "86765ccbcf94cda67d48c5682433b4a43c9c645f",
+  "gitDirty": true,
+  "currentHeadVerified": false,
+  "verifiedSource": "uncommitted working tree",
   "sourceFingerprint": {
     "algorithm": "sha256",
-    "sha256": "1a4095bb648ac1e6a47ff7e184a823a1f365e0b0f541e9e1e2d877b68784acf1",
-    "files": 119
+    "sha256": "c087bbfca8f95b7c908aa1aadcdb8587be2f8a84181b894d8c910b1c677fc566",
+    "files": 152
   },
   "engine": "1.1.0",
   "catalog": "2026-demo-1",
@@ -38,8 +38,8 @@
       "compressedPayloadBytes": 18467,
       "checkpointBytes": 49910,
       "totalBytes": 100332,
-      "heapBytes": 47408448,
-      "encodingMs": 36,
+      "heapBytes": 59910208,
+      "encodingMs": 43,
       "passed": true
     },
     {
@@ -57,8 +57,8 @@
       "compressedPayloadBytes": 280430,
       "checkpointBytes": 748478,
       "totalBytes": 1497468,
-      "heapBytes": 329675344,
-      "encodingMs": 499,
+      "heapBytes": 233798424,
+      "encodingMs": 388,
       "passed": true
     },
     {
@@ -76,8 +76,8 @@
       "compressedPayloadBytes": 480645,
       "checkpointBytes": 1282382,
       "totalBytes": 2565276,
-      "heapBytes": 526859400,
-      "encodingMs": 624,
+      "heapBytes": 502989656,
+      "encodingMs": 618,
       "passed": true
     },
     {
@@ -94,8 +94,8 @@
       "compressedPayloadBytes": 18483,
       "checkpointBytes": 49952,
       "totalBytes": 100416,
-      "heapBytes": 220897288,
-      "encodingMs": 18,
+      "heapBytes": 163818880,
+      "encodingMs": 16,
       "passed": true
     },
     {
@@ -113,8 +113,8 @@
       "compressedPayloadBytes": 303917,
       "checkpointBytes": 811112,
       "totalBytes": 1622736,
-      "heapBytes": 304417944,
-      "encodingMs": 368,
+      "heapBytes": 421067000,
+      "encodingMs": 375,
       "passed": true
     },
     {
@@ -132,8 +132,8 @@
       "compressedPayloadBytes": 521116,
       "checkpointBytes": 1390312,
       "totalBytes": 2781136,
-      "heapBytes": 417129880,
-      "encodingMs": 870,
+      "heapBytes": 542540768,
+      "encodingMs": 766,
       "passed": true
     },
     {
@@ -151,8 +151,8 @@
       "compressedPayloadBytes": 544953,
       "checkpointBytes": 1453872,
       "totalBytes": 2908256,
-      "heapBytes": 303764208,
-      "encodingMs": 665,
+      "heapBytes": 481747848,
+      "encodingMs": 820,
       "passed": true
     }
   ],
@@ -165,10 +165,10 @@
       "completeSeasonTrainingSelections": 0,
       "centuryActiveCheckpointTrainingSelections": 0,
       "trainingCycle": "balanced",
-      "elapsedMs": 47997,
-      "completedSeasonsPerSecond": 2.08,
+      "elapsedMs": 51265,
+      "completedSeasonsPerSecond": 1.95,
       "ownedMatches": 4548,
-      "ownedMatchesPerSecond": 94.75,
+      "ownedMatchesPerSecond": 88.72,
       "allRetainedFactsPreserved": true
     },
     {
@@ -179,10 +179,10 @@
       "completeSeasonTrainingSelections": 200,
       "centuryActiveCheckpointTrainingSelections": 2,
       "trainingCycle": "23 youth rounds then 23 recovery rounds each season; century checkpoint adds 12 youth and 11 recovery rounds",
-      "elapsedMs": 63889,
-      "completedSeasonsPerSecond": 1.57,
+      "elapsedMs": 67658,
+      "completedSeasonsPerSecond": 1.48,
       "ownedMatches": 4622,
-      "ownedMatchesPerSecond": 72.34,
+      "ownedMatchesPerSecond": 68.31,
       "allRetainedFactsPreserved": true
     }
   ],
@@ -192,9 +192,9 @@
     "year": 2025,
     "passed": true
   },
-  "elapsedMs": 191612,
-  "heapBytes": 341942808,
-  "peakObservedHeapBytes": 526859400,
+  "elapsedMs": 202256,
+  "heapBytes": 786047304,
+  "peakObservedHeapBytes": 542540768,
   "losslessRoundtrip": true,
   "resumedSeasonReplay": true,
   "passed": true,

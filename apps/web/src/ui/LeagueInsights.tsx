@@ -57,6 +57,7 @@ function Form({ results }: { results: ('승' | '무' | '패')[] }) {
 }
 
 export function Standings({ w, ids, limit }: { w: World; ids: string[]; limit?: number }) {
+  const [expanded, setExpanded] = useState(false);
   const continental = w.europe.find((t) => t.standings === w.tables);
   const sorted = orderIds(ids, w.tables),
     rules = continental ? undefined : leagueRules(w, ids),
@@ -67,6 +68,8 @@ export function Standings({ w, ids, limit }: { w: World; ids: string[]; limit?: 
     : domestic.length
       ? domestic
       : w.europe.find((t) => sameMembers(t.clubs, ids))?.fixtures || [];
+  const visibleLimit = limit || (expanded ? sorted.length : 8);
+  const shown = sorted.filter((id, i) => i < visibleLimit || id === w.playerClub).length;
   return (
     <div className={s.tableWrap}>
       <table className={s.standings} aria-label="리그 순위표">
@@ -86,7 +89,7 @@ export function Standings({ w, ids, limit }: { w: World; ids: string[]; limit?: 
         </thead>
         <tbody>
           {sorted.map((id, i) => {
-            if (limit && i >= limit && id !== w.playerClub) return null;
+            if (i >= visibleLimit && id !== w.playerClub) return null;
             const club = w.clubs.find((c) => c.id === id),
               t = w.tables[id];
             if (!club || !t) return null;
@@ -105,7 +108,10 @@ export function Standings({ w, ids, limit }: { w: World; ids: string[]; limit?: 
                 key={id}
                 className={`${id === w.playerClub ? s.own : ''} ${zone === 'automatic' ? s.automatic : zone === 'playoff' ? s.playoff : zone === 'relegation' ? s.relegation : ''}`}
               >
-                <td>{t.played ? i + 1 : '—'}</td>
+                <td>
+                  {t.played ? i + 1 : '—'}
+                  {i >= visibleLimit && <small aria-label="중간 순위 생략"> …</small>}
+                </td>
                 <th scope="row" className={s.club}>
                   {club.name}
                   {id === w.playerClub && <span className={s.myClub}>우리 팀</span>}
@@ -130,6 +136,16 @@ export function Standings({ w, ids, limit }: { w: World; ids: string[]; limit?: 
           })}
         </tbody>
       </table>
+      {!limit && (
+        <div className={s.coverage}>
+          <span>
+            {shown}/{sorted.length}팀 표시 · 순위는 전체 리그 기준
+          </span>
+          {shown < sorted.length && (
+            <button onClick={() => setExpanded(true)}>전체 {sorted.length}팀 순위 보기</button>
+          )}
+        </div>
+      )}
       {rules && (
         <p className={s.legend}>
           {rules.automatic > 0 && (

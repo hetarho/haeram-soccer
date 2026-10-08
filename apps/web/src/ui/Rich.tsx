@@ -19,6 +19,7 @@ import { PlayerPerformance } from './PlayerPerformance';
 import { PlayerComparison } from './PlayerComparison';
 import { SeasonAnalysis } from './SeasonAnalysis';
 import { CareerRecordBook } from './CareerRecordBook';
+import { AnalysisExport } from './AnalysisExport';
 import { money, number, percent, seasonName, kindLabel } from './format';
 import s from './App.module.css';
 type Props = { state: ClientState; client: GameClient };
@@ -222,6 +223,7 @@ function Squad({ state, client }: Props) {
     [order, setOrder] = useState<PlayerOrder>('roster'),
     [minutes, setMinutes] = useState(0),
     [comparing, setComparing] = useState(false),
+    [fullTable, setFullTable] = useState(false),
     [playerQuery, setPlayerQuery] = useState(''),
     [playerPage, setPlayerPage] = useState(0),
     [confirm, setConfirm] = useState<Player>();
@@ -380,69 +382,74 @@ function Squad({ state, client }: Props) {
               </button>
             </div>
           )}
-          <details className={s.rosterDetails}>
+          <details
+            className={s.rosterDetails}
+            onToggle={(event) => setFullTable(event.currentTarget.open)}
+          >
             <summary>전체 선수 지표 표 보기</summary>
-            <div className={s.tableWrap}>
-              <table>
-                <thead>
-                  <tr>
-                    <th>역할</th>
-                    <th>선수</th>
-                    <th>나이</th>
-                    <th>공격</th>
-                    <th>패스</th>
-                    <th>수비</th>
-                    <th>잠재력</th>
-                    <th>득점</th>
-                    <th>도움</th>
-                    <th>피로</th>
-                    <th>연봉</th>
-                    <th>계약</th>
-                    <th>선택</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {visiblePlayers.map((p) => {
-                    const stats = scope === 'career' ? p.career : p.season;
-                    return (
-                      <tr key={p.id}>
-                        <td>{p.role}</td>
-                        <td>
-                          <button onClick={() => setSelectedId(p.id)}>{p.name}</button>
-                          <small>
-                            {' '}
-                            {p.status === 'retired'
-                              ? '은퇴'
-                              : p.status === 'sold'
-                                ? '매각'
-                                : p.loanUntil
-                                  ? '임대'
-                                  : ''}
-                          </small>
-                        </td>
-                        <td>{p.status === 'active' ? w.year - p.born : `${p.born}년생`}</td>
-                        <td>{number(p.attack)}</td>
-                        <td>{number(p.passing)}</td>
-                        <td>{number(p.defense)}</td>
-                        <td>{number(p.potential)}</td>
-                        <td>{stats[0]}</td>
-                        <td>{stats[1]}</td>
-                        <td>{number(p.fatigue)}</td>
-                        <td>{p.status === 'active' ? money(p.wage, c.country, w.year) : '—'}</td>
-                        <td>{p.until}</td>
-                        <td>
-                          {p.status === 'active' && !p.loanUntil && (
-                            <button disabled={disabled} onClick={() => setConfirm(p)}>
-                              매각
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            {fullTable && (
+              <div className={s.tableWrap}>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>역할</th>
+                      <th>선수</th>
+                      <th>나이</th>
+                      <th>공격</th>
+                      <th>패스</th>
+                      <th>수비</th>
+                      <th>잠재력</th>
+                      <th>득점</th>
+                      <th>도움</th>
+                      <th>피로</th>
+                      <th>연봉</th>
+                      <th>계약</th>
+                      <th>선택</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {visiblePlayers.map((p) => {
+                      const stats = scope === 'career' ? p.career : p.season;
+                      return (
+                        <tr key={p.id}>
+                          <td>{p.role}</td>
+                          <td>
+                            <button onClick={() => setSelectedId(p.id)}>{p.name}</button>
+                            <small>
+                              {' '}
+                              {p.status === 'retired'
+                                ? '은퇴'
+                                : p.status === 'sold'
+                                  ? '매각'
+                                  : p.loanUntil
+                                    ? '임대'
+                                    : ''}
+                            </small>
+                          </td>
+                          <td>{p.status === 'active' ? w.year - p.born : `${p.born}년생`}</td>
+                          <td>{number(p.attack)}</td>
+                          <td>{number(p.passing)}</td>
+                          <td>{number(p.defense)}</td>
+                          <td>{number(p.potential)}</td>
+                          <td>{stats[0]}</td>
+                          <td>{stats[1]}</td>
+                          <td>{number(p.fatigue)}</td>
+                          <td>{p.status === 'active' ? money(p.wage, c.country, w.year) : '—'}</td>
+                          <td>{p.until}</td>
+                          <td>
+                            {p.status === 'active' && !p.loanUntil && (
+                              <button disabled={disabled} onClick={() => setConfirm(p)}>
+                                매각
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </details>
           <div className={s.panelFoot}>
             감독이 역할과 능력·피로에 따라 선발을 고릅니다. 시설과 육성 능력이 성장에 영향을 줍니다.
@@ -749,6 +756,13 @@ function History({ state, client }: Props) {
           {loaded?.error || '선택한 시즌 기록을 펼치는 중…'}
         </p>
       )}
+      <AnalysisExport
+        w={w}
+        records={matches}
+        year={year}
+        scope={filter === 'all' ? '모든 대회' : kindLabel[filter]}
+        ready={!!archive}
+      />
       <Panel title="경기의 페이지" note={seasonName(year)}>
         <div className={s.tableWrap}>
           <table>

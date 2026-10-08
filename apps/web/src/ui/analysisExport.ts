@@ -1,0 +1,177 @@
+import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
+import type { CsvCell } from '../adapters/csv';
+import type { PlayerScope } from './playerAnalysis';
+export type AnalysisDataset = 'matches' | 'players' | 'seasons';
+export function analysisDataset(
+  w: World,
+  type: AnalysisDataset,
+  records: MatchRecord[],
+  year: number,
+  playerScope: PlayerScope,
+) {
+  const identity: CsvCell[] = [1, w.id, w.engine, w.catalog];
+  const identityHeaders = ['csv_schema', 'world_id', 'engine_version', 'catalog_version'];
+  const clubName = (id: string) => w.clubs.find((c) => c.id === id)?.name || id;
+  if (type === 'matches')
+    return {
+      filename: `haeram-matches-${year}.csv`,
+      headers: [
+        ...identityHeaders,
+        'season',
+        'fixture_id',
+        'competition',
+        'round',
+        'home_id',
+        'home_name',
+        'away_id',
+        'away_name',
+        'home_goals',
+        'away_goals',
+        'home_tactic',
+        'away_tactic',
+        'own_side',
+        'own_shots',
+        'own_on_target',
+        'own_pass_attempts',
+        'own_pass_completed',
+        'own_possession_minutes',
+      ],
+      rows: records
+        .filter((m) => m.year === year && (m.home === w.playerClub || m.away === w.playerClub))
+        .map((m) => {
+          const side = m.home === w.playerClub ? 0 : 1,
+            stats = m.metrics[side];
+          return [
+            ...identity,
+            m.year,
+            m.id,
+            m.kind,
+            m.round,
+            m.home,
+            clubName(m.home),
+            m.away,
+            clubName(m.away),
+            m.score.home,
+            m.score.away,
+            m.tactics[0],
+            m.tactics[1],
+            side === 0 ? 'home' : 'away',
+            stats[4],
+            stats[5],
+            stats[2],
+            stats[3],
+            stats[11],
+          ];
+        }),
+    };
+  if (type === 'players')
+    return {
+      filename: `haeram-players-${playerScope}-${w.year}.csv`,
+      headers: [
+        ...identityHeaders,
+        'snapshot_year',
+        'scope',
+        'player_id',
+        'player_name',
+        'status',
+        'role',
+        'birth_year',
+        'minutes',
+        'goals',
+        'assists',
+        'pass_attempts',
+        'pass_completed',
+        'shots',
+        'on_target',
+        'tackles',
+        'interceptions',
+        'dribbles',
+        'saves',
+        'attack',
+        'passing',
+        'defense',
+        'keeper',
+        'stamina',
+        'potential',
+        'fatigue',
+      ],
+      rows: w.players
+        .filter((p) => p.status === 'active' || playerScope === 'career')
+        .map((p) => {
+          const m = p[playerScope];
+          return [
+            ...identity,
+            w.year,
+            playerScope,
+            p.id,
+            p.name,
+            p.status,
+            p.role,
+            p.born,
+            m[10],
+            m[0],
+            m[1],
+            m[2],
+            m[3],
+            m[4],
+            m[5],
+            m[6],
+            m[7],
+            m[8],
+            m[9],
+            p.attack,
+            p.passing,
+            p.defense,
+            p.keeper,
+            p.stamina,
+            p.potential,
+            p.fatigue,
+          ];
+        }),
+    };
+  return {
+    filename: 'haeram-seasons.csv',
+    headers: [
+      ...identityHeaders,
+      'season',
+      'division',
+      'group',
+      'rank',
+      'played',
+      'won',
+      'drawn',
+      'lost',
+      'points',
+      'goals_for',
+      'goals_against',
+      'supporters',
+      'rating',
+      'manager',
+      'currency',
+      'cash_minor',
+      'income_minor',
+      'expense_minor',
+    ],
+    rows: w.history.map((h) => [
+      ...identity,
+      h.year,
+      h.tier + 1,
+      h.group,
+      h.rank,
+      h.played,
+      h.won,
+      h.drawn,
+      h.lost,
+      h.points,
+      h.gf,
+      h.ga,
+      h.fans,
+      h.rating,
+      h.manager,
+      h.currency,
+      h.cash,
+      h.income,
+      h.expense,
+    ]),
+  };
+}
