@@ -19,6 +19,8 @@ import { playerTraits } from '../../../../packages/engine/src/match';
 import { tacticLabel } from '../../../../packages/engine/src/world';
 import { percent } from './format';
 import { MatchReport } from './MatchReport';
+import { MatchMoments } from './MatchMoments';
+import { sampleAtMinute } from './moments';
 import s from './App.module.css';
 import t from './Pitch.module.css';
 
@@ -89,6 +91,7 @@ export function Pitch({
   const [paused, setPaused] = useState(false);
   const [inspect, setInspect] = useState(false);
   const [details, setDetails] = useState(false);
+  const [reviewedId, setReviewedId] = useState<string>();
   const [selection, setSelection] = useState('0:8');
   const samples = useMemo<Sample[]>(
     () =>
@@ -124,6 +127,7 @@ export function Pitch({
   }, [p?.record.id, finished, details, onPresentationChange]);
 
   useEffect(() => {
+    if (finished && p) setReviewedId(p.record.id);
     if (finished && p && samples.length) onFinish?.(p.record.id);
   }, [finished, p?.record.id, samples.length, onFinish]);
 
@@ -363,6 +367,15 @@ export function Pitch({
       </div>
       {afterControls}
       <div id={detailsId} hidden={!details} className={t.details}>
+        {p && (summary || finished || reviewedId === p.record.id) && (
+          <MatchMoments
+            record={p.record}
+            onSeek={(minute) => {
+              seek(minute === 90 ? samples.length - 1 : sampleAtMinute(p.frames, samples, minute));
+              setPaused(true);
+            }}
+          />
+        )}
         {p && (summary || finished) && <MatchReport record={p.record} w={world} />}
         {p && (
           <label className={s.replayScrubber}>

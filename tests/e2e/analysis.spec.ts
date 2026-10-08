@@ -2,6 +2,28 @@ import { expect, test } from '@playwright/test';
 
 test.use({ viewport: { width: 360, height: 740 } });
 
+test('jumps between recorded periods without changing the final result or calendar', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await page.getByTestId('hub-play').click();
+  await page.getByRole('button', { name: '결과 보기', exact: true }).click();
+  const date = await page.getByTestId('game-date').innerText();
+  const score = await page.getByTestId('match-score').locator('strong').innerText();
+  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
+  await page.getByText('주요 장면 탐색', { exact: true }).click();
+  const moments = page.getByRole('region', { name: '주요 장면 탐색', exact: true });
+  const half = moments.getByRole('button', { name: '전반 종료 · 45분', exact: true });
+  await half.click();
+  await expect(page.getByTestId('pitch-theatre')).toContainText('45′');
+  expect((await half.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  await expect(page.getByRole('button', { name: '재생', exact: true })).toBeVisible();
+  await moments.getByRole('button', { name: '경기 종료 · 90분', exact: true }).click();
+  await expect(page.getByTestId('match-score').locator('strong')).toHaveText(score);
+  await expect(page.getByTestId('game-date')).toHaveText(date);
+});
+
 test('reveals the recorded match report only after choosing the final result', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();

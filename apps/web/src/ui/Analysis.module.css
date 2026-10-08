@@ -118,6 +118,37 @@
 .metricRows strong {
   font-size: 15px;
 }
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+.controls button {
+  min-width: 44px;
+  min-height: 48px;
+  font-size: 12px;
+}
+.momentList {
+  list-style: none;
+  margin: 10px 0;
+  padding: 0;
+  display: grid;
+  gap: 7px;
+}
+.momentList button {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  min-height: 48px;
+  text-align: left;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.momentList span {
+  font-size: 11px;
+  color: #526249;
+}
 .cards article {
   min-width: 0;
   padding: 12px;

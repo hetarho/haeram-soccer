@@ -16,7 +16,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 3 | 3 | - | 2 |
-| WEB | 14 | 14 | - | 0 |
+| WEB | 15 | 15 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
 | CLUB | 5 | 5 | - | 0 |
 | MATCH | 3 | 3 | - | 0 |
@@ -32,9 +32,13 @@
 |---|---|---|---|---|
 
 ## next
-- Continue mobile football analysis cycle 4 after committing T030.
+- Continue mobile football analysis cycle 5 after committing T031.
 
 ## log
+- 261008 T031 done; cycle 4 verified
+- 261008 implement-task T031 start (nf); cycle 4
+- 261008 cycle 4 create-task T031; WEB r15
+- 261008 cycle 4 update-ssot WEB start; match-moment-navigation
 - 261008 T030 done; cycle 3 verified
 - 261008 implement-task T030 start (nf); cycle 3
 - 261008 cycle 3 create-task T030; WEB r14
@@ -51,7 +55,3 @@
 - 261008 T027 local verify and current-source benchmarks passed; pending pushed CI confirmation
 - 261008 create-task T027; implement-task start (cx)
 - 261008 update-ssot WEB start; CI founding overflow contract clarification
-- 261008 twelve cycles complete; all guideline gates verified; external ranking/native release remain unclaimed
-- 261008 T010 done; current-source local release verification and CI benchmark configuration complete
-- 261008 T026 done; cycle 12 verified
-- 261008 T024 done; cycle 11 verified
