@@ -98,8 +98,10 @@ export function Select({
   useLayoutEffect(() => {
     if (!open || blocked || !list.current || !trigger.current) return;
     const popup = list.current;
+    let placed = { top: 0, left: 0 };
     const position = () => {
       const anchor = trigger.current!.getBoundingClientRect();
+      placed = { top: anchor.top, left: anchor.left };
       const viewport = window.visualViewport;
       const left = viewport?.offsetLeft || 0,
         width = viewport?.width || innerWidth;
@@ -132,7 +134,12 @@ export function Select({
       if (!popup.contains(target) && !trigger.current?.contains(target)) setOpen(false);
     };
     const scroll = (event: Event) => {
-      if (!popup.contains(event.target as Node)) position();
+      if (popup.contains(event.target as Node)) return;
+      // WebKit's scroll anchoring nudges the page by a rounded pixel whenever the list moves;
+      // following that nudge moves the list again and never settles, so ignore sub-2px shifts.
+      const anchor = trigger.current!.getBoundingClientRect();
+      if (Math.abs(anchor.top - placed.top) < 2 && Math.abs(anchor.left - placed.left) < 2) return;
+      position();
     };
     const blur = (event: FocusEvent) => {
       const target = event.target as Node;
