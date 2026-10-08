@@ -18,6 +18,7 @@ import { explorePlayers, type PlayerOrder, type PlayerScope } from './playerAnal
 import { PlayerPerformance } from './PlayerPerformance';
 import { PlayerComparison } from './PlayerComparison';
 import { SeasonAnalysis } from './SeasonAnalysis';
+import { CareerRecordBook } from './CareerRecordBook';
 import { money, number, percent, seasonName, kindLabel } from './format';
 import s from './App.module.css';
 type Props = { state: ClientState; client: GameClient };
@@ -619,6 +620,7 @@ function History({ state, client }: Props) {
         title="작은 선택들이 만든, 긴 역사."
         description="시즌과 사람, 경기와 장부. 그때의 숫자를 그대로 펼쳐보세요."
       />
+      <CareerRecordBook w={w} />
       <div className={s.twoCols}>
         <Panel title="서포터의 성장">
           <div className={s.panelBody}>

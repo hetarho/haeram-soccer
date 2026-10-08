@@ -16,7 +16,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 3 | 3 | - | 2 |
-| WEB | 19 | 19 | - | 0 |
+| WEB | 20 | 20 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
 | CLUB | 5 | 5 | - | 0 |
 | MATCH | 3 | 3 | - | 0 |
@@ -32,9 +32,13 @@
 |---|---|---|---|---|
 
 ## next
-- Continue mobile football analysis cycle 9 after committing T035.
+- Continue mobile football analysis cycle 10 after committing T036.
 
 ## log
+- 261008 T036 done; cycle 9 verified
+- 261008 implement-task T036 start (nf); cycle 9
+- 261008 cycle 9 create-task T036; WEB r20
+- 261008 cycle 9 update-ssot WEB start; career-record-book
 - 261008 T035 done; cycle 8 verified
 - 261008 implement-task T035 start (nf); cycle 8
 - 261008 cycle 8 create-task T035; WEB r19
@@ -51,7 +55,3 @@
 - 261008 implement-task T032 start (nf); cycle 5
 - 261008 cycle 5 create-task T032; WEB r16
 - 261008 cycle 5 update-ssot WEB start; player-performance-rates
-- 261008 T031 done; cycle 4 verified
-- 261008 implement-task T031 start (nf); cycle 4
-- 261008 cycle 4 create-task T031; WEB r15
-- 261008 cycle 4 update-ssot WEB start; match-moment-navigation

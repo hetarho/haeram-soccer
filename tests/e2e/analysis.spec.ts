@@ -2,6 +2,35 @@ import { expect, test } from '@playwright/test';
 
 test.use({ viewport: { width: 360, height: 740 } });
 
+test('reproduces earned season records after reload on mobile', async ({ page }) => {
+  await page.goto('/');
+  await page.getByText('고급 설정', { exact: true }).click();
+  await page.getByLabel('세계 생성 시드').fill('record-book-cycle');
+  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await page.getByRole('button', { name: '자세한 클럽 일지', exact: true }).click();
+  const journal = page.getByRole('dialog', { name: '클럽 일지 상세' });
+  await journal.getByRole('button', { name: '시즌 마무리' }).click();
+  await expect(page.getByTestId('calendar')).toHaveText('시즌 1902 · 라운드 0');
+  await journal.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await page
+    .getByRole('navigation', { name: '모바일 게임 메뉴' })
+    .getByRole('button', { name: '더보기', exact: true })
+    .click();
+  await page
+    .getByRole('dialog', { name: '전체 메뉴' })
+    .getByRole('button', { name: '역사 보관함', exact: true })
+    .click();
+  await page.getByText('우리 클럽 기록집', { exact: true }).click();
+  const book = page.getByRole('region', { name: '우리 클럽 기록집', exact: true });
+  await expect(book).toContainText('완료한 1개 시즌');
+  await expect(book).toContainText('최고 승점 페이스');
+  const facts = await book.innerText();
+  await page.reload();
+  await page.getByText('우리 클럽 기록집', { exact: true }).click();
+  await expect(book).toHaveText(facts, { useInnerText: true });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+});
+
 test('uses matching archive samples for season splits and competition filters', async ({
   page,
 }) => {
