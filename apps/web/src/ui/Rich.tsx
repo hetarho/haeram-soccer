@@ -17,6 +17,7 @@ import { archivePlayback } from './replay';
 import { explorePlayers, type PlayerOrder, type PlayerScope } from './playerAnalysis';
 import { PlayerPerformance } from './PlayerPerformance';
 import { PlayerComparison } from './PlayerComparison';
+import { SeasonAnalysis } from './SeasonAnalysis';
 import { money, number, percent, seasonName, kindLabel } from './format';
 import s from './App.module.css';
 type Props = { state: ClientState; client: GameClient };
@@ -557,7 +558,12 @@ function History({ state, client }: Props) {
   const w = state.view!.world,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
     [year, setYear] = useState(w.year),
-    [archive, setArchive] = useState<Reply['archive']>(),
+    [archiveResult, setArchiveResult] = useState<{
+      year: number;
+      revision: number;
+      data?: Reply['archive'];
+      error?: string;
+    }>(),
     [match, setMatch] = useState<MatchRecord>(),
     [filter, setFilter] = useState('all'),
     [historicalCode, setHistoricalCode] = useState(c.country),
@@ -565,13 +571,34 @@ function History({ state, client }: Props) {
     [historicalGroup, setHistoricalGroup] = useState(0);
   useEffect(() => {
     let valid = true;
-    void client.archive(year).then((result) => {
-      if (valid) setArchive(result);
-    });
+    void client
+      .archive(year)
+      .then((result) => {
+        if (valid)
+          setArchiveResult({
+            year,
+            revision: w.revision,
+            data: result,
+            error: result ? undefined : '시즌 기록을 읽지 못했어요. 시즌을 다시 선택해보세요.',
+          });
+      })
+      .catch(() => {
+        if (valid)
+          setArchiveResult({
+            year,
+            revision: w.revision,
+            error: '시즌 기록을 읽지 못했어요. 시즌을 다시 선택해보세요.',
+          });
+      });
     return () => {
       valid = false;
     };
   }, [client, year, w.revision]);
+  const loaded =
+    archiveResult?.year === year && archiveResult?.revision === w.revision
+      ? archiveResult
+      : undefined;
+  const archive = loaded?.data;
   const matches = archive?.matches.filter((m) => filter === 'all' || m.kind === filter) || [],
     h = archive?.season;
   const rows =
@@ -708,6 +735,18 @@ function History({ state, client }: Props) {
           ))}
         </div>
       )}
+      {archive ? (
+        <SeasonAnalysis
+          records={matches}
+          club={w.playerClub}
+          year={year}
+          scope={filter === 'all' ? '모든 대회' : kindLabel[filter]}
+        />
+      ) : (
+        <p className={s.muted} role={loaded?.error ? 'alert' : 'status'}>
+          {loaded?.error || '선택한 시즌 기록을 펼치는 중…'}
+        </p>
+      )}
       <Panel title="경기의 페이지" note={seasonName(year)}>
         <div className={s.tableWrap}>
           <table>
@@ -740,7 +779,9 @@ function History({ state, client }: Props) {
               ))}
             </tbody>
           </table>
-          {!matches.length && <div className={s.empty}>아직 기록된 경기가 없습니다.</div>}
+          {archive && !matches.length && (
+            <div className={s.empty}>아직 기록된 경기가 없습니다.</div>
+          )}
         </div>
       </Panel>
       {h && (

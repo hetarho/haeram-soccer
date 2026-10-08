@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r18 | Define the implemented browser-demo behavior for browser game delivery.
+> r19 | Define the implemented browser-demo behavior for browser game delivery.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -46,6 +46,8 @@
 
 - WEB-26 [o] League exploration includes an explicit own-club current-season fixture notebook with upcoming/completed/all, competition and home/away filters. Merge known fixture sources by stable ID, order by game-calendar dates, and paginate without dropping facts. Settled-score cards preserve home/away orientation, and completed records can be read from the full requested season archive. Explain that cup/playoff schedules become available when generated; never invent future fixtures.
 
+- WEB-27 [o] History offers explicit selected-season home/away analysis over the full season archive after the competition filter. Show regulation-time wins/draws/losses, goals, per-match output and recorded pass/shot ratios with denominators and sample size, plus the latest ten filtered goal differences in calendar order. Scope changes show loading or an actionable read error until matching archive data arrives; never display the previous season's data under a new label or imply causality.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -53,6 +55,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r19 261008 WEB-27+ season overview and match table→sample-aware home/away splits and filtered form chart
 - r18 261008 WEB-26+ round tables only→filterable own-club fixture cards and archived result access
 - r17 261008 WEB-25+ individual profiles only→two-player skill and scoped production comparison
 - r16 261008 WEB-24+ name-only roster and fixed career details→scoped role/sample filters and 90-minute player rates

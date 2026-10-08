@@ -2,6 +2,33 @@ import { expect, test } from '@playwright/test';
 
 test.use({ viewport: { width: 360, height: 740 } });
 
+test('uses matching archive samples for season splits and competition filters', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await page.getByTestId('hub-play').click();
+  await page.getByRole('button', { name: '결과 보기', exact: true }).click();
+  await page
+    .getByRole('navigation', { name: '모바일 게임 메뉴' })
+    .getByRole('button', { name: '더보기', exact: true })
+    .click();
+  await page
+    .getByRole('dialog', { name: '전체 메뉴' })
+    .getByRole('button', { name: '역사 보관함', exact: true })
+    .click();
+  const toggle = page.getByText('시즌 분석 · 홈과 원정', { exact: true });
+  await toggle.click();
+  const analysis = page.getByRole('region', { name: '선택 시즌 분석', exact: true });
+  await expect(analysis.getByRole('article', { name: '전체 성적' })).toContainText('전체 · 1경기');
+  await page.getByLabel('기록 대회 범위').selectOption('europe');
+  await expect(analysis).toContainText('유럽대회');
+  await expect(analysis.getByRole('article', { name: '전체 성적' })).toContainText('전체 · 0경기');
+  await page.getByLabel('기록 대회 범위').selectOption('all');
+  await expect(analysis.getByRole('img', { name: /경기 득실차/ })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+});
+
 test('filters the own-club fixture notebook and reads a settled full-season record', async ({
   page,
 }) => {
