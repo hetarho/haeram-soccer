@@ -221,8 +221,10 @@ export class ProgressionController {
         progress.watching ? { type: 'next-match' } : command(progress.pace, progress.stopOn, w),
         { background: true, automatic: true },
       );
-      if (!reply?.ok || reply.cancelled || reply.view?.world.critical) this.stop();
-      else if (reply.view) {
+      // A cancelled tick after an explicit stop (e.g. to watch) keeps that stop's reason.
+      if (!reply?.ok || reply.cancelled || reply.view?.world.critical) {
+        if (this.store.getState().running) this.stop();
+      } else if (reply.view) {
         const fresh = stoppingEvents(reply.view.world, this.store.getState().stopOn).find(
           (item) => !seen.has(item.id),
         );

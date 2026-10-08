@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from 'react';
 import s from './Select.module.css';
+import { play } from './motion';
 
 type Declaration = {
   value?: string | number;
@@ -143,6 +144,18 @@ export function Select({
       if (popup.matches(':popover-open')) popup.hidePopover();
     };
   }, [open, blocked]);
+  // Animate only a real opening; repositioning re-shows the popover and must not replay it.
+  useEffect(() => {
+    if (open)
+      play(
+        list.current,
+        [
+          { opacity: 0, transform: 'translateY(-6px) scale(0.98)' },
+          { opacity: 1, transform: 'none' },
+        ],
+        { duration: 160 },
+      );
+  }, [open]);
   useEffect(() => {
     if (open) document.getElementById(`${id}-${highlight}`)?.scrollIntoView({ block: 'nearest' });
   }, [open, highlight, id]);

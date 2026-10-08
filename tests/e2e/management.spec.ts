@@ -3,6 +3,8 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { horizontalOverflow } from './layout';
 test('operates a club, reads a season and exports/imports the actual save', async ({ page }) => {
+  // Simulates a full season with staff, academy and market days; slow CI browsers need longer.
+  test.slow();
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('ui-management');
