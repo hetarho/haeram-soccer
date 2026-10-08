@@ -16,7 +16,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 3 | 3 | - | 2 |
-| WEB | 17 | 17 | - | 0 |
+| WEB | 18 | 18 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
 | CLUB | 5 | 5 | - | 0 |
 | MATCH | 3 | 3 | - | 0 |
@@ -32,9 +32,13 @@
 |---|---|---|---|---|
 
 ## next
-- Continue mobile football analysis cycle 7 after committing T033.
+- Continue mobile football analysis cycle 8 after committing T034.
 
 ## log
+- 261008 T034 done; cycle 7 verified
+- 261008 implement-task T034 start (nf); cycle 7
+- 261008 cycle 7 create-task T034; WEB r18
+- 261008 cycle 7 update-ssot WEB start; fixture-notebook
 - 261008 T033 done; cycle 6 verified
 - 261008 implement-task T033 start (nf); cycle 6
 - 261008 cycle 6 create-task T033; WEB r17
@@ -51,7 +55,3 @@
 - 261008 implement-task T030 start (nf); cycle 3
 - 261008 cycle 3 create-task T030; WEB r14
 - 261008 cycle 3 update-ssot WEB start; match-analysis-report
-- 261008 T029 done; cycle 2 verified
-- 261008 implement-task T029 start (nf); cycle 2
-- 261008 cycle 2 create-task T029; WEB r13
-- 261008 cycle 2 update-ssot WEB start; tactical-laboratory

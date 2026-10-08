@@ -22,6 +22,9 @@ export const selectLeagueWorld = worldSelector([
   'round',
   'lower',
   'playerClub',
+  'europe',
+  'ownMatches',
+  'players',
 ]);
 export const selectScorerWorld = worldSelector(['clubs', 'scorerSeason', 'year', 'playerClub']);
 export const selectStrategyWorld = worldSelector([

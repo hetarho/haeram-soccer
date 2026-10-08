@@ -12,6 +12,7 @@ import { Pitch } from './Pitch';
 import { LeagueOverview, RankHistoryGraph, Standings, RoundResults } from './LeagueInsights';
 import { ScorerStandings, ScorerHistory } from './ScorerPanels';
 import { StrategyPanel } from './StrategyPanel';
+import { FixtureNotebook } from './FixtureNotebook';
 import { ownLeagueIds } from './league';
 import {
   selectLeagueWorld,
@@ -176,7 +177,7 @@ const MatchPane = memo(function MatchPane({
   );
 });
 
-const TablePane = memo(function TablePane() {
+const TablePane = memo(function TablePane({ client }: { client: GameClient }) {
   const w = useGameState(selectLeagueWorld)!;
   const own = w.clubs.find((club) => club.id === w.playerClub)!;
   const [code, setCode] = useState(own.country);
@@ -259,6 +260,7 @@ const TablePane = memo(function TablePane() {
           </label>
         )}
       </div>
+      <FixtureNotebook w={w} client={client} />
       {ownLeague && <LeagueOverview w={w} />}
       <section className={s.panel}>
         <Standings w={w} ids={ids} />
@@ -415,7 +417,7 @@ export function LiveSeason({
           {id === 'match' ? (
             <MatchPane client={client} controller={controller} onPrepare={onPrepare} />
           ) : id === 'table' ? (
-            <TablePane />
+            <TablePane client={client} />
           ) : id === 'rank' ? (
             <RankPane />
           ) : id === 'scorers' ? (

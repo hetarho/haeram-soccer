@@ -2,6 +2,35 @@ import { expect, test } from '@playwright/test';
 
 test.use({ viewport: { width: 360, height: 740 } });
 
+test('filters the own-club fixture notebook and reads a settled full-season record', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await page.getByTestId('hub-play').click();
+  await page.getByRole('button', { name: '결과 보기', exact: true }).click();
+  await page
+    .getByRole('navigation', { name: '모바일 게임 메뉴' })
+    .getByRole('button', { name: '리그', exact: true })
+    .click();
+  await page.getByText('우리 팀 일정 노트', { exact: true }).click();
+  const notebook = page.getByRole('region', { name: '우리 팀 일정 노트', exact: true });
+  await notebook.getByLabel('일정 홈 원정').selectOption('away');
+  const cards = notebook.getByTestId('fixture-card');
+  expect(await cards.count()).toBeGreaterThan(0);
+  for (const card of await cards.all()) await expect(card).toContainText('원정');
+  await notebook.getByLabel('일정 홈 원정').selectOption('all');
+  await notebook.getByLabel('일정 진행 상태').selectOption('completed');
+  await expect(cards).toHaveCount(1);
+  const date = await page.getByTestId('game-date').innerText();
+  await notebook.getByRole('button', { name: '이 경기 분석 보기' }).click();
+  const sheet = page.getByRole('dialog', { name: '일정 경기 분석' });
+  await expect(sheet.getByRole('region', { name: '경기 분석 리포트' })).toBeVisible();
+  await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await expect(page.getByTestId('game-date')).toHaveText(date);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+});
+
 test('compares distinct own players with a shared scope and returns focus without progression', async ({
   page,
 }) => {
