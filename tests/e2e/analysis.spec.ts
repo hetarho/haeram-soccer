@@ -2,6 +2,46 @@ import { expect, test } from '@playwright/test';
 
 test.use({ viewport: { width: 360, height: 740 } });
 
+test('compares distinct own players with a shared scope and returns focus without progression', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await page
+    .getByRole('navigation', { name: '모바일 게임 메뉴' })
+    .getByRole('button', { name: '더보기', exact: true })
+    .click();
+  await page
+    .getByRole('dialog', { name: '전체 메뉴' })
+    .getByRole('button', { name: '선수와 영입', exact: true })
+    .click();
+  const opener = page.getByRole('button', { name: '우리 선수 비교', exact: true });
+  await opener.click();
+  const sheet = page.getByRole('dialog', { name: '우리 선수 비교', exact: true });
+  const a = sheet.getByLabel('비교 선수 A'),
+    b = sheet.getByLabel('비교 선수 B');
+  expect(await a.inputValue()).not.toBe(await b.inputValue());
+  expect(
+    await b
+      .locator('option')
+      .evaluateAll(
+        (options, id) => options.some((o) => (o as HTMLOptionElement).value === id),
+        await a.inputValue(),
+      ),
+  ).toBe(false);
+  await sheet.getByLabel('비교 지표 범위').selectOption('career');
+  await expect(sheet.getByLabel('비교 지표 범위')).toHaveValue('career');
+  await expect(sheet.getByRole('region', { name: '두 선수 비교 결과' })).toContainText('실제 출전');
+  for (const select of [a, b]) {
+    await select.scrollIntoViewIfNeeded();
+    expect((await select.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+  await sheet.getByRole('button', { name: '비교 마치기', exact: true }).click();
+  await expect(opener).toBeFocused();
+  await expect(page.getByTestId('game-date')).toHaveText('1901년 8월 1일');
+});
+
 test('filters player samples and shows scoped per-90 evidence on a mobile profile', async ({
   page,
 }) => {

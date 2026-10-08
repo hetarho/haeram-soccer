@@ -16,6 +16,7 @@ import { Pitch } from './Pitch';
 import { archivePlayback } from './replay';
 import { explorePlayers, type PlayerOrder, type PlayerScope } from './playerAnalysis';
 import { PlayerPerformance } from './PlayerPerformance';
+import { PlayerComparison } from './PlayerComparison';
 import { money, number, percent, seasonName, kindLabel } from './format';
 import s from './App.module.css';
 type Props = { state: ClientState; client: GameClient };
@@ -218,6 +219,7 @@ function Squad({ state, client }: Props) {
     [role, setRole] = useState<Role | 'all'>('all'),
     [order, setOrder] = useState<PlayerOrder>('roster'),
     [minutes, setMinutes] = useState(0),
+    [comparing, setComparing] = useState(false),
     [playerQuery, setPlayerQuery] = useState(''),
     [playerPage, setPlayerPage] = useState(0),
     [confirm, setConfirm] = useState<Player>();
@@ -249,6 +251,7 @@ function Squad({ state, client }: Props) {
         >
           이적 시장
         </button>
+        <button onClick={() => setComparing(true)}>우리 선수 비교</button>
         <label>
           지표 범위{' '}
           <select
@@ -446,6 +449,9 @@ function Squad({ state, client }: Props) {
         </Panel>
       ) : (
         <RecruitmentDesk state={state} client={client} />
+      )}
+      {comparing && (
+        <PlayerComparison w={w} initialScope={scope} onClose={() => setComparing(false)} />
       )}
       {selected && (
         <Dialog label="선수 상세 기록" onClose={() => setSelectedId(undefined)}>

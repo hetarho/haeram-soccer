@@ -16,7 +16,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 3 | 3 | - | 2 |
-| WEB | 16 | 16 | - | 0 |
+| WEB | 17 | 17 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
 | CLUB | 5 | 5 | - | 0 |
 | MATCH | 3 | 3 | - | 0 |
@@ -32,9 +32,13 @@
 |---|---|---|---|---|
 
 ## next
-- Continue mobile football analysis cycle 6 after committing T032.
+- Continue mobile football analysis cycle 7 after committing T033.
 
 ## log
+- 261008 T033 done; cycle 6 verified
+- 261008 implement-task T033 start (nf); cycle 6
+- 261008 cycle 6 create-task T033; WEB r17
+- 261008 cycle 6 update-ssot WEB start; own-player-comparison
 - 261008 T032 done; cycle 5 verified
 - 261008 implement-task T032 start (nf); cycle 5
 - 261008 cycle 5 create-task T032; WEB r16
@@ -51,7 +55,3 @@
 - 261008 implement-task T029 start (nf); cycle 2
 - 261008 cycle 2 create-task T029; WEB r13
 - 261008 cycle 2 update-ssot WEB start; tactical-laboratory
-- 261008 T028 done; cycle 1 verified
-- 261008 implement-task T028 start (nf); cycle 1
-- 261008 cycle 1 create-task T028; WEB r12
-- 261008 cycle 1 update-ssot WEB start; opponent-scouting
