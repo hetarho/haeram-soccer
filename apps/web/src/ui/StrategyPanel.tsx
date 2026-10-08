@@ -24,7 +24,13 @@ import { OpponentDossier } from './OpponentDossier';
 import { TacticalLab } from './TacticalLab';
 import s from './StrategyPanel.module.css';
 
-type Props = { w: World; client: GameClient; onSuspendChange?: (suspended: boolean) => void };
+type Props = {
+  w: World;
+  client: GameClient;
+  onSuspendChange?: (suspended: boolean) => void;
+  sheet?: boolean;
+  onClose?: () => void;
+};
 type Tone = 'evidence' | 'respect' | 'support' | 'demand';
 type PreparationTab = 'tactic' | 'lineup';
 
@@ -79,7 +85,13 @@ function Preview({ players, baseline }: { players: Player[]; baseline: Player[] 
   );
 }
 
-export const StrategyPanel = memo(function StrategyPanel({ w, client, onSuspendChange }: Props) {
+export const StrategyPanel = memo(function StrategyPanel({
+  w,
+  client,
+  onSuspendChange,
+  sheet = false,
+  onClose,
+}: Props) {
   const processing = useGameState((state) => state.processing);
   const busy = useGameState((state) => state.busy);
   const readonly = useGameState((state) => state.readonly);
@@ -96,6 +108,8 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onSuspendC
   const [message, setMessage] = useState('');
   const suspension = useRef(onSuspendChange);
   const opening = useRef(false);
+  const onDismiss = useRef(onClose);
+  onDismiss.current = onClose;
   suspension.current = onSuspendChange;
   useEffect(
     () => () => {
@@ -108,7 +122,31 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onSuspendC
     opening.current = false;
     setOpen(false);
     suspension.current?.(false);
+    onDismiss.current?.();
   }, []);
+  const openPreparation = useCallback(() => {
+    suspension.current?.(true);
+    opening.current = true;
+    setPreparing(true);
+    setDraft([]);
+    setTactic(gameStore.getSnapshot().view?.world.tactic || 'balanced');
+    setPreset('current');
+    setTab('tactic');
+    setMessage('');
+    setOpen(true);
+    void client.whenIdle().then(() => {
+      if (!opening.current) return;
+      const current = gameStore.getSnapshot().view?.world;
+      if (current) {
+        setDraft(startingSquad(current, clubOf(current)).map((player) => player.id));
+        setTactic(current.tactic);
+      }
+      setPreparing(false);
+    });
+  }, [client]);
+  useEffect(() => {
+    if (sheet) openPreparation();
+  }, [sheet, openPreparation]);
   const baseline = startingSquad(w, clubOf(w));
   const players = activePlayers(w);
   const byId = new Map(players.map((player) => [player.id, player]));
@@ -165,43 +203,28 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onSuspendC
   const selectTab = (value: PreparationTab) => setTab(value);
   return (
     <>
-      <section className={s.panel} aria-label="다음 경기 준비">
-        <div>
-          <h3>내가 만드는 다음 경기</h3>
-          <p>
-            실제 적용 <b>{tacticLabel[w.tactic]}</b> ·{' '}
-            {w.lineup ? '직접 선택한 선발' : '감독의 자동 선발'} · 평균 피로{' '}
-            {lineupSummary(baseline).fatigue}
-          </p>
-          {replaced > 0 && <small>이탈한 선발 {replaced}명은 활동 중인 선수로 대체합니다.</small>}
-        </div>
-        <button
-          disabled={busy || readonly || !!error || !!w.critical}
-          onClick={(event) => {
-            event.currentTarget.focus();
-            suspension.current?.(true);
-            opening.current = true;
-            setPreparing(true);
-            setDraft([]);
-            setTactic(w.tactic);
-            setPreset('current');
-            setTab('tactic');
-            setMessage('');
-            setOpen(true);
-            void client.whenIdle().then(() => {
-              if (!opening.current) return;
-              const current = gameStore.getSnapshot().view?.world;
-              if (current) {
-                setDraft(startingSquad(current, clubOf(current)).map((player) => player.id));
-                setTactic(current.tactic);
-              }
-              setPreparing(false);
-            });
-          }}
-        >
-          전술·선발 준비
-        </button>
-      </section>
+      {!sheet && (
+        <section className={s.panel} aria-label="다음 경기 준비">
+          <div>
+            <h3>내가 만드는 다음 경기</h3>
+            <p>
+              실제 적용 <b>{tacticLabel[w.tactic]}</b> ·{' '}
+              {w.lineup ? '직접 선택한 선발' : '감독의 자동 선발'} · 평균 피로{' '}
+              {lineupSummary(baseline).fatigue}
+            </p>
+            {replaced > 0 && <small>이탈한 선발 {replaced}명은 활동 중인 선수로 대체합니다.</small>}
+          </div>
+          <button
+            disabled={busy || readonly || !!error || !!w.critical}
+            onClick={(event) => {
+              event.currentTarget.focus();
+              openPreparation();
+            }}
+          >
+            전술·선발 준비
+          </button>
+        </section>
+      )}
       {open && (
         <Dialog
           label="다음 경기 전술과 선발 준비"

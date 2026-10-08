@@ -1348,6 +1348,14 @@
 .modalActions .actions {
   margin: 0;
 }
+.quickBackdrop {
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 24px 24px 84px;
+}
+.quickDialog {
+  width: min(360px, calc(100vw - 24px));
+}
 
 @media (max-width: 760px) {
   :global(body) {
@@ -1695,6 +1703,8 @@
     font-size: 10px;
     flex-shrink: 0;
     display: block;
+    min-height: 56px;
+    padding-right: 60px;
   }
   .coreLayout .footer > span:first-child {
     display: none;
@@ -1705,6 +1715,15 @@
   .coreLayout .mobileNav {
     padding-top: 4px;
     padding-bottom: calc(4px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 760px) {
+  .quickBackdrop {
+    padding: 12px 12px calc(140px + env(safe-area-inset-bottom));
+  }
+  .quickDialog {
+    max-height: calc(100dvh - 165px - env(safe-area-inset-bottom));
   }
 }
 

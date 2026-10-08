@@ -21,6 +21,7 @@ import {
 } from '../../../../packages/engine/src/calendar';
 import s from './App.module.css';
 import { Dialog } from './Dialog';
+import { QuickActions } from './QuickActions';
 import Rich from './Rich';
 function NavIcon({ page }: { page: Page }) {
   const paths: Record<Page, string> = {
@@ -546,14 +547,6 @@ function SaveActions({
           파일로 당신의 역사를 보관하세요.
         </>
       )}
-      {!compact && w && (
-        <button
-          disabled={state.busy || state.readonly}
-          onClick={() => void client.command({ type: 'season', count: 5 })}
-        >
-          5시즌 진행
-        </button>
-      )}
       <button disabled={(!w && !state.error) || state.busy} onClick={() => void onDownload()}>
         {compact ? '기록 내보내기 ↓' : '기록 내보내기'}
       </button>
@@ -856,6 +849,9 @@ export function App() {
           <span>더보기</span>
         </button>
       </nav>
+      {client && controller && w && !replacing && (
+        <QuickActions client={client} controller={controller} />
+      )}
       {moreOpen && (
         <Dialog label="전체 메뉴" onClose={() => setMoreOpen(false)}>
           <button

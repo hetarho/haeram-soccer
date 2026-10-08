@@ -18,17 +18,76 @@ if (typeof document !== 'undefined') {
   );
 }
 
+// One background lock survives modal handoffs and nested sheets.
+const layers: HTMLElement[] = [];
+const inertBefore = new Map<HTMLElement, boolean>();
+let unlockBody: (() => void) | undefined;
+function syncBackground() {
+  const top = layers.findLast((layer) => layer.isConnected);
+  for (const node of Array.from(document.body.children)) {
+    if (!(node instanceof HTMLElement)) continue;
+    if (!inertBefore.has(node)) inertBefore.set(node, node.inert);
+    node.inert = node !== top || inertBefore.get(node)!;
+  }
+}
+function lockLayer(layer: HTMLElement) {
+  if (!layers.length) {
+    const scroll = { x: scrollX, y: scrollY };
+    const style = document.body.style;
+    const old = {
+      overflow: style.overflow,
+      position: style.position,
+      top: style.top,
+      left: style.left,
+      width: style.width,
+      html: document.documentElement.style.overflow,
+    };
+    style.overflow = 'hidden';
+    style.position = 'fixed';
+    style.top = `${-scroll.y}px`;
+    style.left = `${-scroll.x}px`;
+    style.width = '100%';
+    document.documentElement.style.overflow = 'hidden';
+    unlockBody = () => {
+      Object.assign(style, {
+        overflow: old.overflow,
+        position: old.position,
+        top: old.top,
+        left: old.left,
+        width: old.width,
+      });
+      document.documentElement.style.overflow = old.html;
+      window.scrollTo(scroll.x, scroll.y);
+    };
+  }
+  layers.push(layer);
+  syncBackground();
+  return () => {
+    const index = layers.indexOf(layer);
+    if (index >= 0) layers.splice(index, 1);
+    if (layers.length) syncBackground();
+    else {
+      for (const [node, inert] of inertBefore) node.inert = inert;
+      inertBefore.clear();
+      unlockBody?.();
+      unlockBody = undefined;
+    }
+  };
+}
+
 export function Dialog({
   label,
   children,
   onClose,
   wide = false,
+  quick = false,
   actions: footerActions,
 }: {
   label: string;
   children: ReactNode;
   onClose: () => void;
   wide?: boolean;
+  quick?: boolean;
   actions?: ReactNode;
 }) {
   const element = useRef<HTMLElement>(null);
@@ -49,28 +108,8 @@ export function Dialog({
     const active = document.activeElement;
     const previous =
       active instanceof HTMLElement && active !== document.body ? active : pointerTrigger?.deref();
-    const scroll = { x: window.scrollX, y: window.scrollY };
-    const bodyStyle = document.body.style;
-    const old = {
-      overflow: bodyStyle.overflow,
-      position: bodyStyle.position,
-      top: bodyStyle.top,
-      left: bodyStyle.left,
-      width: bodyStyle.width,
-      htmlOverflow: document.documentElement.style.overflow,
-    };
-    bodyStyle.overflow = 'hidden';
-    bodyStyle.position = 'fixed';
-    bodyStyle.top = `${-scroll.y}px`;
-    bodyStyle.left = `${-scroll.x}px`;
-    bodyStyle.width = '100%';
-    document.documentElement.style.overflow = 'hidden';
-    const background = Array.from(document.body.children)
-      .filter(
-        (node): node is HTMLElement => node instanceof HTMLElement && node !== backdrop.current,
-      )
-      .map((node) => ({ node, inert: node.inert }));
-    for (const { node } of background) node.inert = true;
+    const layer = backdrop.current!;
+    const unlock = lockLayer(layer);
     const focusable = () =>
       Array.from(
         element.current?.querySelectorAll<HTMLElement>(
@@ -80,6 +119,7 @@ export function Dialog({
     const focusFirst = () => (focusable()[0] || element.current)?.focus({ preventScroll: true });
     focusFirst();
     const key = (e: KeyboardEvent) => {
+      if (layers.at(-1) !== layer) return;
       if (e.key === 'Escape') {
         e.preventDefault();
         e.stopPropagation();
@@ -108,6 +148,7 @@ export function Dialog({
       }
     };
     const focus = (event: FocusEvent) => {
+      if (layers.at(-1) !== layer) return;
       if (!element.current?.contains(event.target as Node)) focusFirst();
     };
     document.addEventListener('keydown', key);
@@ -118,19 +159,13 @@ export function Dialog({
       );
       document.removeEventListener('keydown', key);
       document.removeEventListener('focusin', focus);
-      for (const { node, inert } of background) node.inert = inert;
-      bodyStyle.overflow = old.overflow;
-      bodyStyle.position = old.position;
-      bodyStyle.top = old.top;
-      bodyStyle.left = old.left;
-      bodyStyle.width = old.width;
-      document.documentElement.style.overflow = old.htmlOverflow;
-      window.scrollTo(scroll.x, scroll.y);
+      unlock();
       requestAnimationFrame(() => {
         if (
           previous?.isConnected &&
           !previous.closest('[inert]') &&
-          !document.querySelector('[role="dialog"][aria-modal="true"]')
+          (!document.querySelector('[role="dialog"][aria-modal="true"]') ||
+            previous.closest('[role="dialog"][aria-modal="true"]'))
         )
           previous.focus({ preventScroll: true });
       });
@@ -139,14 +174,14 @@ export function Dialog({
   return createPortal(
     <div
       ref={backdrop}
-      className={s.modalBackdrop}
+      className={`${s.modalBackdrop} ${quick ? s.quickBackdrop : ''}`}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <section
         ref={element}
-        className={s.modal}
+        className={`${s.modal} ${quick ? s.quickDialog : ''}`}
         style={wide ? { maxWidth: 900 } : undefined}
         role="dialog"
         aria-modal="true"

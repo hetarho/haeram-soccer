@@ -30,13 +30,14 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T040 | Contextual quick interventions | WEB ARCH | - | todo |
 | T041 | Motion throughout app interactions | WEB ARCH | T039 T040 | todo |
 
 ## next
-- implement-task T040; contextual quick interventions, then T041 interface motion and final accumulated release verification.
+- implement-task T041; interface motion and final accumulated release verification.
 
 ## log
+- 261008 T040 done; quick interventions verified in Chromium, Firefox and WebKit
+- 261008 implement-task T040 start (ui)
 - 261008 T039 done; styled selectors verified in Chromium, Firefox and WebKit
 - 261008 create-task T039 refresh; accumulated reference latency/storage gates owned by T041
 - 261008 implement-task T039 resumed (ui)
@@ -55,5 +56,3 @@
 - 261008 implement-task T037 start (nf); cycle 10
 - 261008 cycle 10 create-task T037; WEB r21
 - 261008 cycle 10 update-ssot WEB start; local-analysis-export
-- 261008 T036 done; cycle 9 verified
-- 261008 implement-task T036 start (nf); cycle 9
