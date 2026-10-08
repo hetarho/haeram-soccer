@@ -51,6 +51,8 @@ for (const viewport of [
   test(`keeps founding and match preparation selectors touchable at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
+    // Founding, preparation and match inspection in one journey; slow CI browsers need longer.
+    test.slow();
     // A pace tap below runs the clock briefly in the open window; an offer card must not cover
     // the preparation controls this test measures.
     await stopOnlyFor(page, ['match']);
