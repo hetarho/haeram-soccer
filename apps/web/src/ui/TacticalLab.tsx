@@ -1,6 +1,6 @@
 import type { Player, Tactic } from '../../../../packages/contracts/src/types';
 import { tacticLabel } from '../../../../packages/engine/src/world';
-import { compareTactics, signedPoint } from './tacticalLab';
+import { compareTactics, signedPoint } from './tacticComparison';
 import s from './Analysis.module.css';
 
 export function TacticalLab({

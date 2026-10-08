@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import { createWorld, nextOwnFixture, simulateMatch } from '../../../../packages/engine/src/index';
-import { analysisDataset } from './analysisExport';
+import { analysisDataset } from './analysisDataset';
 it('exports only explicit owned periods and keeps original source identity and inactive scopes', () => {
   const w = createWorld({
     country: 'ENG',

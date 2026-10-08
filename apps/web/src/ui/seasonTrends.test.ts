@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import { createWorld, nextOwnFixture, simulateMatch } from '../../../../packages/engine/src/index';
-import { matchSplit, recentGoalDifferences } from './seasonAnalysis';
+import { matchSplit, recentGoalDifferences } from './seasonTrends';
 it('uses the own perspective, weighted denominators and a bounded chronological form sample', () => {
   const w = createWorld({
     country: 'ENG',

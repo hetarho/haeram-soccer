@@ -2,7 +2,7 @@ import { Select } from './Select';
 import { useState } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import { encodeCsv, downloadCsv } from '../adapters/csv';
-import { analysisDataset, type AnalysisDataset } from './analysisExport';
+import { analysisDataset, type AnalysisDataset } from './analysisDataset';
 import type { PlayerScope } from './playerAnalysis';
 import { seasonName } from './format';
 import s from './Analysis.module.css';

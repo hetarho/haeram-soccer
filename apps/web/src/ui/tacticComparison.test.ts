@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import { clubOf, createWorld, startingSquad } from '../../../../packages/engine/src/index';
-import { compareTactics, signedPoint } from './tacticalLab';
+import { compareTactics, signedPoint } from './tacticComparison';
 
 it('keeps previews pure, uses the applied baseline and exposes pressing fatigue cost', () => {
   const w = createWorld({

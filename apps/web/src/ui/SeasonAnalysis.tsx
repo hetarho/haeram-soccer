@@ -1,7 +1,7 @@
 import type { MatchRecord } from '../../../../packages/contracts/src/types';
 import { Chart } from './Chart';
 import { seasonName } from './format';
-import { matchSplit, recentGoalDifferences } from './seasonAnalysis';
+import { matchSplit, recentGoalDifferences } from './seasonTrends';
 import s from './Analysis.module.css';
 
 export function SeasonAnalysis({
