@@ -737,6 +737,7 @@ function History({ state, client }: Props) {
                     onChange={(e) => {
                       setHistoricalCode(e.target.value);
                       setTier(0);
+                      setHistoricalGroup(0);
                     }}
                   >
                     {h.champions.map((ch) => (
@@ -763,6 +764,22 @@ function History({ state, client }: Props) {
                     ))}
                   </select>
                 </label>
+                {country(historicalCode).groups[tier].length > 1 && (
+                  <label>
+                    지역 그룹{' '}
+                    <select
+                      aria-label="과거 지역 그룹"
+                      value={historicalGroup}
+                      onChange={(e) => setHistoricalGroup(Number(e.target.value))}
+                    >
+                      {country(historicalCode).groups[tier].map((_, i) => (
+                        <option key={i} value={i}>
+                          {String.fromCharCode(65 + i)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
               </div>
               <p className={s.muted}>
                 리그 우승{' '}

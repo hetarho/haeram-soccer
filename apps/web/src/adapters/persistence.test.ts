@@ -197,6 +197,43 @@ describe('recoverable persistence', () => {
     expect((await new Saves(port).load())?.world.round).toBe(1);
     expect((await decode(port.getItem('haeram-soccor:slot:a')!)).world.round).toBe(0);
   });
+  it.each([null, '{', '{"slot":0}', '{"slot":1,"generation":-1}'])(
+    'recovers the newest validated checkpoint with an invalid manifest: %s',
+    async (manifest) => {
+      const port = new Memory();
+      const saves = new Saves(port);
+      const w = world();
+      await saves.save(w);
+      advanceRound(w);
+      await saves.save(w);
+      if (manifest === null) port.removeItem('haeram-soccor:manifest');
+      else port.setItem('haeram-soccor:manifest', manifest);
+
+      const recovery = new Saves(port);
+      const loaded = await recovery.load();
+      expect(loaded?.recovered).toBe(true);
+      expect(loaded?.world.round).toBe(1);
+      expect(recovery.generationInfo).toEqual({ generation: 3, parentGeneration: 2 });
+      advanceRound(loaded!.world);
+      await recovery.save(loaded!.world);
+      expect((await new Saves(port).load())?.world.round).toBe(2);
+      expect((await decode(port.getItem('haeram-soccor:slot:b')!)).world.round).toBe(1);
+    },
+  );
+  it('reports recovery when the selected manifest parent disagrees with the checkpoint', async () => {
+    const port = new Memory();
+    const saves = new Saves(port);
+    const w = world();
+    await saves.save(w);
+    advanceRound(w);
+    await saves.save(w);
+    const manifest = JSON.parse(port.getItem('haeram-soccor:manifest')!);
+    port.setItem('haeram-soccor:manifest', JSON.stringify({ ...manifest, parentGeneration: 0 }));
+    const loaded = await new Saves(port).load();
+    expect(loaded?.world.round).toBe(1);
+    expect(loaded?.recovered).toBe(true);
+    expect(loaded?.errors.join(' ')).toContain('계보');
+  });
 });
 it('preserves first and second European phases and global standings in a historical checkpoint', async () => {
   const { prepareSeason, simulateSeason } = await import('../../../../packages/engine/src/index');

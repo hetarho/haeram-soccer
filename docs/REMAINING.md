@@ -2,6 +2,12 @@
 
 The local gameplay improvement cycles and their verification are recorded in [the improvement report](IMPROVEMENT-REPORT.md) and [verification notes](VERIFICATION.md). Current policies are in `spec/ssot/`; task status is in `spec/STATE.md`.
 
+## Latest review follow-up
+
+- The review integrated on top of `f530702` passes the complete local `verify` suite: 199 unit, 5 contract and 165 built-preview browser cases. Century storage and resumed replay also pass.
+- Profile desktop navigation under the reference 4× CPU/Fast-4G workload on the Linux host. The current browser artifact records a failing input p95 of 120ms against `<100ms`; an additional diagnostic repeat reached 289ms. Mobile input, initialization, pitch FPS, compressed assets and served-build integrity pass. Keep this failed gate visible until a passing measurement is established.
+- Check the new review commit's GitHub Actions result separately; the T027 CI result below applies to its earlier tested commit.
+
 ## GitHub and Netlify
 
 - The T027 correction passed the full [Linux GitHub Actions workflow](https://github.com/hetarho/haeram-soccer/actions/runs/37701628149) on commit `eb1c759`, including unit/contract/catalog/build/browser checks, century storage and throttled browser performance. Require these checks on future code changes too.

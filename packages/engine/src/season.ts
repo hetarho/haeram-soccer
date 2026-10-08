@@ -469,7 +469,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     }
   }
   let i = 0;
-  while (activePlayers(w).length < 18) {
+  while (activePlayers(w).length < 18 || !activePlayers(w).some((p) => p.role === 'GK')) {
     const roles = activePlayers(w);
     const role =
       roles.filter((p) => p.role === 'GK').length < 2

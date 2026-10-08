@@ -11,6 +11,7 @@ import {
   advanceRound,
   clubOf,
   recordMatch,
+  operate,
 } from './index';
 const input = {
   country: 'ENG' as const,
@@ -103,6 +104,17 @@ describe('world progression', () => {
     }
     expect(w.year).toBe(1905);
     expect(w.history[0].year).toBe(1901);
+  });
+  it('replaces retiring goalkeepers even when the remaining squad exceeds 18 players', () => {
+    const w = createWorld(input);
+    w.cash = '999999999';
+    for (const p of w.players) p.born = w.year - (p.role === 'GK' ? 35 : 21);
+    for (const candidate of [1, 2, 3, 5, 6, 7]) operate(w, { type: 'recruit', candidate });
+    simulateSeason(w);
+    const active = w.players.filter((p) => p.status === 'active');
+    expect(active.length).toBeGreaterThan(18);
+    expect(active.some((p) => p.role === 'GK')).toBe(true);
+    expect(validateWorld(w).id).toBe(w.id);
   });
   it('settles an owned fixture once and bounds its audience', () => {
     const w = createWorld(input);

@@ -66,6 +66,7 @@ export class SaveRepository {
         (m.slot === 0 || m.slot === 1) &&
         typeof m.worldId === 'string' &&
         m.worldId.length > 0 &&
+        m.worldId.length <= 100 &&
         Number.isSafeInteger(m.generation) &&
         m.generation > 0 &&
         Number.isSafeInteger(m.parentGeneration) &&
@@ -95,7 +96,9 @@ export class SaveRepository {
         const result = await this.inspect(raw);
         if (
           header &&
-          ((slot === declared && result.envelope.worldId !== header.worldId) ||
+          ((slot === declared &&
+            (result.envelope.worldId !== header.worldId ||
+              result.envelope.parentGeneration !== header.parentGeneration)) ||
             result.envelope.generation !==
               (slot === declared ? header.generation : header.parentGeneration))
         ) {

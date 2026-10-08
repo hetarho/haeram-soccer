@@ -245,7 +245,7 @@ function ClubJournal({ state, client }: { state: ClientState; client: GameClient
     </>
   );
 }
-function Europe({ w }: { w: World }) {
+function Europe({ w, coefficient }: { w: World; coefficient: number }) {
   const [key, setKey] = useState('ucl');
   const t = w.europe.find((t) => t.key === key);
   const cards = [
@@ -261,11 +261,7 @@ function Europe({ w }: { w: World }) {
           <h2>유럽이 부르는 날.</h2>
           <p>대회는 실제 역사의 시기에 시작됩니다. 우승의 역사는 우리가 만듭니다.</p>
         </div>
-        <span className={s.pill}>
-          5년간 구단 경기 계수 ·{' '}
-          {w.ownMatches.filter((m) => m.kind === 'europe' && m.year >= w.year - 5).length}개 최근
-          기록
-        </span>
+        <span className={s.pill}>5년간 구단 경기 계수 · {number(coefficient)}점</span>
       </div>
       <div className={s.competitionGrid}>
         {cards.map(([id, year, title, note]) => (
@@ -445,7 +441,7 @@ const ConnectedDashboard = memo(function ConnectedDashboard({
 });
 const ConnectedEurope = memo(function ConnectedEurope() {
   const state = useContentState();
-  return <Europe w={state.view!.world} />;
+  return <Europe w={state.view!.world} coefficient={state.view!.coefficient} />;
 });
 function ConnectedRich({ client, page }: { client: GameClient; page: Page }) {
   const state = useContentState();
