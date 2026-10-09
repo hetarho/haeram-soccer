@@ -3,6 +3,7 @@ import { activePlayers, clubOf, quote } from './world';
 import { clamp, ratio } from './primitives';
 import { policyEffects, policyOf } from './policy';
 import { staffWageTotal } from './staff';
+import { SEASON_ROUNDS } from './calendar';
 
 export const FINANCE_CONFIG = {
   ticketDemandScale: 0.12,
@@ -96,7 +97,28 @@ export function campaignEffectiveness(w: World, kind: string) {
   return focus * (0.65 + recentForm(w) * 0.45 + club.reputation / 500);
 }
 
-/** A range for the next home gate at today's prices, form, fans and facilities. */
+const LEAGUE_KINDS = ['league', 'lower'];
+/** Own league games this season: 46 in the English pyramid, 14 in the lower section. */
+export function ownLeagueGames(w: World) {
+  return Math.max(
+    1,
+    w.fixtures.filter(
+      (f) => LEAGUE_KINDS.includes(f.kind) && (f.home === w.playerClub || f.away === w.playerClub),
+    ).length,
+  );
+}
+/**
+ * League match income is sized for a 46-game season, so a shorter league pays more per match
+ * and a club's season income does not depend on how many clubs share its division.
+ */
+export function leagueMatchFactor(w: World) {
+  return SEASON_ROUNDS / ownLeagueGames(w);
+}
+export function isLeagueMatch(kind: string) {
+  return LEAGUE_KINDS.includes(kind);
+}
+
+/** A range for the next league home gate at today's prices, form, fans and facilities. */
 export function gateProjection(w: World, excluding?: string) {
   const club = clubOf(w);
   const capacity = 2500 + w.facilities * 5000;
@@ -121,6 +143,7 @@ export function gateProjection(w: World, excluding?: string) {
   const low = Math.round(expected * 0.8);
   const high = Math.round(expected);
   const perFan = w.ticket + 0.006 + club.reputation * 0.00006;
+  const leagueFactor = leagueMatchFactor(w);
   const gateCost = (attendance: number) =>
     quote(
       club.country,
@@ -134,11 +157,13 @@ export function gateProjection(w: World, excluding?: string) {
     marketing,
     attendanceLow: low,
     attendanceHigh: high,
-    incomeLow: quote(club.country, w.year, low * perFan),
-    incomeHigh: quote(club.country, w.year, high * perFan),
+    incomeLow: quote(club.country, w.year, low * perFan * leagueFactor),
+    incomeHigh: quote(club.country, w.year, high * perFan * leagueFactor),
     costLow: gateCost(low),
     costHigh: gateCost(high),
     perFan,
+    /** Multiplier on league gate income; cup and European gates are not scaled. */
+    leagueFactor,
   };
 }
 
@@ -147,22 +172,16 @@ export function matchBonus(w: World, match: MatchRecord) {
   const other = match.home === w.playerClub ? match.score.away : match.score.home;
   const result = own > other ? '승리' : own === other ? '무승부' : '패배';
   const prestige = 1 + Math.max(0, 3 - clubOf(w).tier) * 0.35;
+  const games = ownLeagueGames(w);
   const amount = quote(
     clubOf(w).country,
     w.year,
     (own > other ? FINANCE_CONFIG.winBonus : own === other ? FINANCE_CONFIG.drawBonus : 0) *
-      prestige,
-  );
-  const games = Math.max(
-    1,
-    w.fixtures.filter(
-      (f) =>
-        ['league', 'lower'].includes(f.kind) &&
-        (f.home === w.playerClub || f.away === w.playerClub),
-    ).length,
+      prestige *
+      (isLeagueMatch(match.kind) ? SEASON_ROUNDS / games : 1),
   );
   const sponsored =
-    w.sponsor?.kind === 'performance' && ['league', 'lower'].includes(match.kind)
+    w.sponsor?.kind === 'performance' && isLeagueMatch(match.kind)
       ? ratio(w.sponsor.bonus, own > other ? 3n : own === other ? 1n : 0n, BigInt(games * 3))
       : '0';
   return { result, amount, sponsored };

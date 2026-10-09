@@ -1,6 +1,13 @@
 import { advanceEconomy } from './economy';
 import { prepareEurope, advanceEurope, finishEurope as finishContinental } from './europe';
-import { gate, settleRound, settleSeasonPrize, yearlyStaff } from './operations';
+import {
+  delegatedBusiness,
+  gate,
+  settleRound,
+  settleSeasonPrize,
+  sponsorReminder,
+  yearlyStaff,
+} from './operations';
 import type { Club, Fixture, MatchPlayback, TableRow, World } from '../../contracts/src/types';
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import { addMetrics, clamp, random, zeroMetrics, compareIds } from './primitives';
@@ -12,7 +19,13 @@ import { runAcademyIntake, seasonAcademy } from './academy';
 import { dailyMarket } from './transfers';
 import { moraleAfterMatch } from './morale';
 import { seasonStaff } from './staff';
-import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS, seasonLength } from './calendar';
+import {
+  currentDay,
+  ROUND_INTERVAL_DAYS,
+  SEASON_END_DAY,
+  SEASON_ROUNDS,
+  seasonLength,
+} from './calendar';
 import {
   ensureScorers,
   isScoringFixture,
@@ -502,6 +515,9 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   own.strength = rating(w, own);
   w.europe = [];
   prepareSeason(w);
+  // The new season's first day of club business opens the summer window.
+  clubDay(w);
+  sponsorReminder(w);
 }
 export function advanceRound(
   w: World,
@@ -548,10 +564,11 @@ export function advanceRound(
   return ownPlayback;
 }
 
-/** Daily club business outside matches: academy intake and the transfer market. */
+/** Daily club business outside matches: academy intake, the transfer market and sponsors. */
 export function clubDay(w: World) {
   runAcademyIntake(w);
   dailyMarket(w);
+  delegatedBusiness(w);
 }
 /** Off days only move the clock. Matches and existing weekly costs settle on their due day. */
 export function advanceDays(
@@ -573,7 +590,8 @@ export function advanceDays(
   };
   for (let n = 0; n < days; n++) {
     w.calendar.day++;
-    if (w.calendar.day >= seasonLength(w)) {
+    // The season closes the day after its final round; the empty summer is skipped.
+    if (w.calendar.day > SEASON_END_DAY || w.calendar.day >= seasonLength(w)) {
       closeSeason(w);
       w.revision++;
     } else if (w.round < SEASON_ROUNDS && w.calendar.day >= (w.round + 1) * ROUND_INTERVAL_DAYS) {

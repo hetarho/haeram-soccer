@@ -23,7 +23,7 @@ import s from './App.module.css';
 const PACES: [Pace, string, string][] = [
   ['daily', '1일', '1초에 하루'],
   ['three-days', '3일', '1초에 3일'],
-  ['event', '이벤트', '다음 이벤트까지 한 번에'],
+  ['five-days', '5일', '1초에 5일'],
 ];
 
 /** Game-speed controls: tapping a speed starts the shared clock at that pace. */
@@ -159,30 +159,37 @@ export const INTERVENTION_LEVELS: {
   {
     name: '모든 결정 확인',
     summary:
-      '경기 전날, 이적시장, 협상, 영입 제안, 유소년, 스태프 보고까지 모두 멈춰서 직접 결정해요.',
+      '경기 전날, 이적시장, 협상, 영입 제안, 유소년, 스태프 보고, 자금 경고까지 모두 멈춰서 직접 결정해요.',
     stopOn: stops(ALL_KINDS),
-    delegation: { training: false, academy: false, transfers: false },
+    delegation: { training: false, academy: false, transfers: false, business: false },
   },
   {
     name: '중요한 결정만',
     summary:
-      '경기 전날과 이적 협상·제안, 유소년 입단에서만 멈춰요. 훈련과 유소년 승격은 스태프가 맡아요.',
-    stopOn: stops(['match', 'window-open', 'bid-response', 'incoming-bid', 'youth-intake']),
-    delegation: { training: true, academy: true, transfers: false },
+      '경기 전날과 이적 협상·제안, 유소년 입단, 자금 경고에서만 멈춰요. 훈련과 유소년 승격은 스태프가 맡아요.',
+    stopOn: stops([
+      'match',
+      'window-open',
+      'bid-response',
+      'incoming-bid',
+      'youth-intake',
+      'finance',
+    ]),
+    delegation: { training: true, academy: true, transfers: false, business: false },
   },
   {
     name: '이적만 직접',
     summary:
-      '경기는 결과로 넘기고 이적시장 개장과 협상·제안에서만 멈춰요. 훈련과 유소년은 스태프가 맡아요.',
-    stopOn: stops(['window-open', 'bid-response', 'incoming-bid']),
-    delegation: { training: true, academy: true, transfers: false },
+      '경기는 결과로 넘기고 이적시장 개장과 협상·제안, 자금 경고에서만 멈춰요. 훈련과 유소년은 스태프가 맡아요.',
+    stopOn: stops(['window-open', 'bid-response', 'incoming-bid', 'finance']),
+    delegation: { training: true, academy: true, transfers: false, business: false },
   },
   {
     name: '운영진에 모두 맡기기',
     summary:
-      '감독과 스태프가 경기·훈련·유소년·영입 제안 수락과 거절까지 알아서 처리해요. 결과는 소식함에 남아요.',
-    stopOn: stops([]),
-    delegation: { training: true, academy: true, transfers: true },
+      '감독과 스태프가 경기·훈련·유소년·영입 제안·후원 계약까지 처리하고, 자금 경고에서만 멈춰요. 결과는 소식함에 남아요.',
+    stopOn: stops(['finance']),
+    delegation: { training: true, academy: true, transfers: true, business: true },
   },
 ];
 /** The level matching the current stops and delegation, or -1 for a custom mix. */

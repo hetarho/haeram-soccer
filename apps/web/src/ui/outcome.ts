@@ -1,7 +1,7 @@
 import type { Command, Event, World } from '../../../../packages/contracts/src/types';
 import { seasonDate } from '../../../../packages/engine/src/calendar';
 import { activePlayers, clubOf, tacticLabel } from '../../../../packages/engine/src/world';
-import { money, number, seasonName } from './format';
+import { money, number } from './format';
 import { orderIds, ownLeagueIds } from './league';
 
 export interface OutcomeChange {
@@ -46,7 +46,6 @@ const titles: Record<Command['type'], string> = {
   bid: '이적 제안을 보냈어요',
   'respond-bid': '이적 제안에 답했어요',
   'read-inbox': '소식을 확인했어요',
-  'advance-to-event': '다음 이벤트까지 진행했어요',
 };
 const notes: Partial<Record<Command['type'], string>> = {
   lineup: '다음 경기부터 바꿀 때까지 이 선발을 씁니다.',
@@ -70,12 +69,7 @@ export const ROUTINE_EVENTS = new Set([
   'match-bonus',
   'sponsor-bonus',
 ]);
-const progression = new Set<Command['type']>([
-  'advance',
-  'advance-days',
-  'season',
-  'advance-to-event',
-]);
+const progression = new Set<Command['type']>(['advance', 'advance-days', 'season']);
 
 function rankOf(w: World) {
   if (!w.tables[w.playerClub]?.played) return undefined;
@@ -131,30 +125,29 @@ export function describeOutcome(
   after: World,
   limit = 3,
 ): Outcome | undefined {
-  if (before.id !== after.id || command.type === 'next-match') return undefined;
+  // Reading news decides nothing, live playback reveals a watched result and the season review
+  // reports a closed season.
+  if (
+    before.id !== after.id ||
+    before.year !== after.year ||
+    command.type === 'next-match' ||
+    command.type === 'read-inbox'
+  )
+    return undefined;
   const club = clubOf(after),
     previous = clubOf(before);
   const cash = (value: string) => money(value, club.country, after.year);
   const changes: OutcomeChange[] = [];
-  const sameSeason = before.year === after.year;
-  if (progression.has(command.type)) {
-    compare(changes, '시즌', before.year, after.year, seasonName);
+  if (progression.has(command.type))
     compare(changes, '날짜', seasonDate(before), seasonDate(after));
-  }
-  const lastSeason = after.history.at(-1);
-  if (!sameSeason && lastSeason?.year === before.year)
-    changes.push({
-      label: `${seasonName(lastSeason.year)} 최종`,
-      value: `${lastSeason.tier + 1}부 ${lastSeason.rank}위 · ${lastSeason.won}승 ${lastSeason.drawn}무 ${lastSeason.lost}패`,
-    });
   const a = before.tables[before.playerClub],
     b = after.tables[after.playerClub];
-  if (sameSeason && a && b && b.played > a.played)
+  if (a && b && b.played > a.played)
     changes.push({
       label: `우리 경기 ${b.played - a.played}개`,
       value: `${b.won - a.won}승 ${b.drawn - a.drawn}무 ${b.lost - a.lost}패 · 승점 ${a.points} → ${b.points}`,
     });
-  if (sameSeason) compare(changes, '리그 순위', rankOf(before), rankOf(after), (n) => `${n}위`);
+  compare(changes, '리그 순위', rankOf(before), rankOf(after), (n) => `${n}위`);
   if (before.cash !== after.cash) {
     const diff = BigInt(after.cash) - BigInt(before.cash);
     changes.push({

@@ -5,7 +5,9 @@ import { daysUntilNextMatch, nextOwnFixture } from '../../../../packages/engine/
 import type { GameClient } from './client';
 import { gameStore } from './store';
 
-export type Pace = 'daily' | 'three-days' | 'event';
+export type Pace = 'daily' | 'three-days' | 'five-days';
+/** Game days per one-second tick. */
+export const PACE_DAYS: Record<Pace, number> = { daily: 1, 'three-days': 3, 'five-days': 5 };
 export type StopOn = Record<InboxKind, boolean>;
 export interface ProgressionState {
   running: boolean;
@@ -16,6 +18,8 @@ export interface ProgressionState {
   stopOn: StopOn;
   /** Tomorrow's own fixture the clock stopped for, until the owner watches or plays through. */
   matchEve?: string;
+  /** The season that just closed, until the owner has seen its review. */
+  seasonEnd?: number;
 }
 export const STOP_LABELS: Record<InboxKind, string> = {
   match: '경기 전날',
@@ -25,6 +29,7 @@ export const STOP_LABELS: Record<InboxKind, string> = {
   'incoming-bid': '우리 선수 영입 제안',
   'youth-intake': '유소년 입단',
   'staff-report': '스태프 보고',
+  finance: '자금·후원 경고',
 };
 /** First-run stops match the "important decisions" intervention level. */
 const DEFAULT_STOP_ON: StopOn = {
@@ -35,6 +40,7 @@ const DEFAULT_STOP_ON: StopOn = {
   'incoming-bid': true,
   'youth-intake': true,
   'staff-report': false,
+  finance: true,
 };
 const STOP_KEY = 'haeram-soccor:stop-on';
 function storedStopOn(): StopOn {
@@ -54,17 +60,18 @@ function storedStopOn(): StopOn {
 export function stoppingEvents(w: World, stopOn: StopOn) {
   return (w.inbox || []).filter((item) => item.attention && !item.read && stopOn[item.kind]);
 }
+/**
+ * One tick of the clock. A multi-day step lands on a match eve instead of running through the
+ * match day, and the host ends it early on the day an enabled event arrives.
+ */
 function command(pace: Pace, stopOn: StopOn, w: World): Command {
-  if (pace === 'event') return { type: 'advance-to-event', matches: stopOn.match };
-  const until = daysUntilNextMatch(w);
-  // A multi-day step lands on a match eve instead of running through the match day.
-  const days =
-    pace === 'three-days' && stopOn.match && until !== undefined && until > 1 && until <= 3
-      ? until - 1
-      : pace === 'daily'
-        ? 1
-        : 3;
-  return { type: 'advance-days', days };
+  const until = daysUntilNextMatch(w),
+    days = PACE_DAYS[pace];
+  return {
+    type: 'advance-days',
+    days: stopOn.match && until !== undefined && until > 1 && until <= days ? until - 1 : days,
+    stop: (Object.keys(stopOn) as InboxKind[]).filter((kind) => stopOn[kind]),
+  };
 }
 
 /** Owns the clock outside React, so changing or hiding a view cannot restart it. */
@@ -86,17 +93,28 @@ export class ProgressionController {
     return this.suspensionSources.size > 0;
   }
   private worldId?: string;
+  private year?: number;
   private finishedId?: string;
 
   constructor(private client: GameClient) {
     this.worldId = gameStore.getSnapshot().view?.world.id;
+    this.year = gameStore.getSnapshot().view?.world.year;
     this.unsubscribe = gameStore.subscribe((state) => {
-      const id = state.view?.world.id;
+      const id = state.view?.world.id,
+        year = state.view?.world.year;
       if (this.worldId !== id) {
         this.worldId = id;
+        this.year = year;
         this.finishedId = undefined;
         this.stop('');
-      }
+        this.store.setState({ seasonEnd: undefined });
+      } else if (year !== undefined && this.year !== undefined && year > this.year) {
+        // However the season closed (clock, watching or a bulk action), its review comes first.
+        const closed = year - 1;
+        this.year = year;
+        this.stop('시즌이 끝났어요');
+        this.store.setState({ seasonEnd: closed, matchEve: undefined });
+      } else if (year !== undefined) this.year = year;
       if (
         this.store.getState().running &&
         (state.error || state.readonly || state.view?.world.critical)
@@ -147,6 +165,10 @@ export class ProgressionController {
   }
   clearMatchEve() {
     this.store.setState({ matchEve: undefined });
+  }
+  /** The owner has seen the closed season's review. */
+  clearSeasonEnd() {
+    this.store.setState({ seasonEnd: undefined });
   }
   setWatching(watching: boolean) {
     const previous = this.store.getState().watching;
@@ -229,14 +251,6 @@ export class ProgressionController {
           (item) => !seen.has(item.id),
         );
         if (fresh) this.stop(fresh.title);
-        // An 'event' step that ended without a stopping event (e.g. at a match eve) continues once
-        // the world actually moved, so the eve is announced on the next tick.
-        else if (
-          progress.pace === 'event' &&
-          !progress.watching &&
-          reply.view.world.revision !== w.revision
-        )
-          setTimeout(() => void this.tick(), 0);
       }
     } finally {
       this.inFlight = false;

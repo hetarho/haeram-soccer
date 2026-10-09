@@ -18,10 +18,10 @@ test('mobile clock exposes every pace as a touch target and advances the chosen 
     controls.getByRole('button', { name: `${label} 속도로 자동 진행`, exact: true });
   const daily = pace('1초에 하루'),
     threeDays = pace('1초에 3일'),
-    toEvent = pace('다음 이벤트까지 한 번에'),
+    fiveDays = pace('1초에 5일'),
     toggle = controls.getByRole('button', { name: '자동 진행 시작', exact: true }),
     stop = controls.getByRole('button', { name: '자동 진행 정지', exact: true });
-  for (const control of [toggle, daily, threeDays, toEvent]) {
+  for (const control of [toggle, daily, threeDays, fiveDays]) {
     const rect = await control.boundingBox();
     expect(rect!.width).toBeGreaterThanOrEqual(44);
     expect(rect!.height).toBeGreaterThanOrEqual(44);
@@ -41,9 +41,9 @@ test('mobile clock exposes every pace as a touch target and advances the chosen 
   await expect(date).toHaveText('1901년 8월 5일');
   await stop.click();
   await expect(date).toHaveText('1901년 8월 5일');
-  // The event pace runs in one go and stops by itself on the eve of our first match.
-  await toEvent.click();
-  await expect(toEvent).toHaveAttribute('aria-pressed', 'true');
+  // A five-day step lands on the eve of our first match and the clock stops there.
+  await fiveDays.click();
+  await expect(fiveDays).toHaveAttribute('aria-pressed', 'true');
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
   await expect(date).toHaveText('1901년 8월 7일');
@@ -94,7 +94,7 @@ test('mobile intervention levels set clock stops and staff delegation, and persi
   await expect(level(2)).toHaveAccessibleName(/^2\. 중요한 결정만/);
   await expect(level(3)).toHaveAccessibleName(/^3\. 이적만 직접/);
   await expect(level(4)).toHaveAccessibleName(/^4\. 운영진에 모두 맡기기/);
-  // First run: level 2 stops for match eves, window openings, bids, offers and youth intake.
+  // First run: level 2 stops for match eves, window openings, bids, offers, youth intake and cash.
   await expect(level(2)).toHaveAttribute('aria-checked', 'true');
   await dialog.getByText('이벤트별 세부 설정', { exact: true }).click();
   const stop = (label: string) =>
@@ -107,14 +107,17 @@ test('mobile intervention levels set clock stops and staff delegation, and persi
     ['우리 선수 영입 제안', true],
     ['유소년 입단', true],
     ['스태프 보고', false],
+    ['자금·후원 경고', true],
   ];
   for (const [label, on] of expected)
     if (on) await expect(stop(label)).toBeChecked();
     else await expect(stop(label)).not.toBeChecked();
-  // Level 4 hands everything to the staff, including answers to offers for our players.
+  // Level 4 hands everything to the staff, including offers and sponsors; only cash warnings stop.
   await level(4).click();
   await expect(level(4)).toHaveAttribute('aria-checked', 'true');
-  for (const [label] of expected) await expect(stop(label)).not.toBeChecked();
+  for (const [label] of expected)
+    if (label === '자금·후원 경고') await expect(stop(label)).toBeChecked();
+    else await expect(stop(label)).not.toBeChecked();
   await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(gear).toHaveAccessibleName('개입 수준 · 운영진에 모두 맡기기');
   const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
@@ -124,7 +127,7 @@ test('mobile intervention levels set clock stops and staff delegation, and persi
     .getByRole('button', { name: '스태프', exact: true })
     .click();
   const delegation = page.getByRole('region', { name: '스태프 위임' });
-  for (const label of ['훈련 방향', '유소년 승격·방출', '영입 제안 응대'])
+  for (const label of ['훈련 방향', '유소년 승격·방출', '영입 제안 응대', '후원 계약'])
     await expect(delegation.getByRole('checkbox', { name: new RegExp(`^${label}`) })).toBeChecked();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
@@ -140,7 +143,7 @@ test('mobile intervention levels set clock stops and staff delegation, and persi
   await expect(dialog).toHaveCount(0);
   await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await expect(date).toHaveText('1901년 8월 1일');
-  // With nothing to stop for, the 3-day pace plays straight through the first match day.
+  // Without match stops, the 3-day pace plays straight through the first match day.
   await page.getByRole('button', { name: '1초에 3일 속도로 자동 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toContainText('라운드 1');
   await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();

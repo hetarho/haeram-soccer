@@ -13,6 +13,7 @@ import { clamp, compareIds, integer, random } from './primitives';
 import { staffEffects, staffMember } from './staff';
 import { pushInbox } from './inbox';
 import { recordDevelopment, roleSkills, skillAfter } from './training';
+import { operatingCosts } from './finance';
 
 /** First-team squad limit shared with signings. */
 const SQUAD_LIMIT = 26;
@@ -247,7 +248,15 @@ export function seasonAcademy(w: World): void {
     return;
   }
   const promoted = new Set<string>();
-  for (const player of ready) {
+  // Every promotion adds a first-team wage, so the director waits while cash is under a year of costs.
+  const affordable = BigInt(w.cash) >= BigInt(operatingCosts(w).annual);
+  if (!affordable && ready.length)
+    staffReport(
+      w,
+      `유스 디렉터가 승격 ${ready.length}명을 미뤘어요`,
+      `운영자금이 연간 운영비보다 적어 1군 급여를 늘리지 않았어요. 자금이 회복되면 다음 시즌에 다시 검토해요. 직접 올리려면 아카데미에서 승격하세요.`,
+    );
+  for (const player of affordable ? ready : []) {
     if (activePlayers(w).length >= SQUAD_LIMIT) break;
     if (!roleRoom(w, player.role)) continue;
     promoteYouth(w, player.id);
@@ -267,7 +276,9 @@ export function seasonAcademy(w: World): void {
         `유스 디렉터가 ${player.name}을(를) 내보냈어요`,
         `${prospectLine(w, player)} · ${
           ready.includes(player)
-            ? '1군 수준이지만 같은 포지션 자리가 없었어요.'
+            ? affordable
+              ? '1군 수준이지만 같은 포지션 자리가 없었어요.'
+              : '1군 수준이지만 자금이 부족해 올리지 못했어요.'
             : `${RELEASE_AGE}세까지 1군 수준에 이르지 못했어요.`
         }`,
         player.id,

@@ -7,4 +7,5 @@
 /manager /index.html 200
 /business /index.html 200
 /history /index.html 200
+/season /index.html 200
 /history/* /index.html 200

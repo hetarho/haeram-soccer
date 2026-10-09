@@ -287,6 +287,17 @@ describe('season boundary', () => {
     validateWorld(w);
   });
 
+  it('defers delegated promotions while cash covers under a year of operating costs', () => {
+    const { w, ready } = cohort();
+    w.cash = '1';
+    seasonAcademy(w);
+    expect(w.players.some((player) => player.id === ready.id)).toBe(false);
+    expect(academyPlayers(w).map((player) => player.id)).toContain(ready.id);
+    expect(w.events.filter((event) => event.kind === 'youth-promotion')).toHaveLength(0);
+    expect(w.inbox!.some((item) => item.title === '유스 디렉터가 승격 1명을 미뤘어요')).toBe(true);
+    validateWorld(w);
+  });
+
   it('only recommends when the owner runs the academy, apart from players past academy age', () => {
     const { w, ready, review, aged } = cohort();
     w.delegation = { ...w.delegation, academy: false };

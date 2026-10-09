@@ -10,7 +10,7 @@ export type StaffRole =
   'assistant' | 'attack' | 'defense' | 'goalkeeping' | 'fitness' | 'youth' | 'scout';
 export type StaffTrait = 'developer' | 'specialist' | 'recovery' | 'spotter' | 'negotiator';
 export type ManagerTrait = 'youth' | 'rotation' | 'stable';
-export type DelegationKey = 'training' | 'academy' | 'transfers';
+export type DelegationKey = 'training' | 'academy' | 'transfers' | 'business';
 export type InboxKind =
   | 'match'
   | 'window-open'
@@ -18,7 +18,8 @@ export type InboxKind =
   | 'bid-response'
   | 'incoming-bid'
   | 'youth-intake'
-  | 'staff-report';
+  | 'staff-report'
+  | 'finance';
 export type Metrics = number[];
 export interface Club {
   id: string;
@@ -366,7 +367,8 @@ export interface Founding {
 }
 export type Command =
   | { type: 'advance'; rounds: number }
-  | { type: 'advance-days'; days: number }
+  /** Stops early on the day a new unread attention item of a `stop` kind arrives. */
+  | { type: 'advance-days'; days: number; stop?: InboxKind[] }
   | { type: 'next-match' }
   | { type: 'season'; count: number }
   | { type: 'tactics'; tactic: Tactic; tone: string }
@@ -381,8 +383,6 @@ export type Command =
   | { type: 'bid'; candidate: number; fee: string; loan?: boolean }
   | { type: 'respond-bid'; id: string; accept: boolean }
   | { type: 'read-inbox'; id?: string }
-  /** Advances at least one day and stops at the next event; `matches: false` plays through match eves. */
-  | { type: 'advance-to-event'; matches?: boolean }
   | { type: 'hire'; candidate: number }
   | { type: 'recruit'; candidate: number; loan?: boolean }
   | { type: 'sell'; id: string }

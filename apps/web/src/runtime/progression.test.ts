@@ -84,13 +84,13 @@ describe('the global progression clock', () => {
     await vi.advanceTimersByTimeAsync(3000);
     expect(s.command).toHaveBeenCalledTimes(3);
     expect(s.command).toHaveBeenLastCalledWith(
-      { type: 'advance-days', days: 1 },
+      expect.objectContaining({ type: 'advance-days', days: 1 }),
       { background: true, automatic: true },
     );
     controller.setPace('three-days');
     await vi.advanceTimersByTimeAsync(1000);
     expect(s.command).toHaveBeenLastCalledWith(
-      { type: 'advance-days', days: 3 },
+      expect.objectContaining({ type: 'advance-days', days: 3 }),
       { background: true, automatic: true },
     );
     controller.stop();
@@ -203,15 +203,49 @@ describe('the global progression clock', () => {
     expect(s.command).toHaveBeenCalledTimes(1);
     expect(controller.store.getState().matchEve).toBeUndefined();
   });
-  it('jumps to the next event in one request at event pace', async () => {
+  it('moves five days a tick, lands on a match eve and asks the host to stop only for enabled events', async () => {
     const s = setup();
     controller = s.controller;
-    controller.setPace('event');
+    controller.setStopOnAll({
+      match: true,
+      'window-open': false,
+      'window-close': false,
+      'bid-response': true,
+      'incoming-bid': false,
+      'youth-intake': false,
+      'staff-report': false,
+      finance: true,
+    });
+    controller.setPace('five-days');
     controller.start();
     await vi.advanceTimersByTimeAsync(1000);
-    expect(s.command).toHaveBeenCalledWith(
-      { type: 'advance-to-event', matches: true },
+    expect(s.command).toHaveBeenLastCalledWith(
+      { type: 'advance-days', days: 5, stop: ['match', 'bid-response', 'finance'] },
       { background: true, automatic: true },
     );
+    // Four days before kickoff, a five-day step ends on the match eve instead.
+    const near = structuredClone(w);
+    near.calendar = { day: 3 };
+    gameStore.publish({ ...gameStore.getSnapshot(), view: { world: near } as View });
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(s.command).toHaveBeenLastCalledWith(
+      expect.objectContaining({ type: 'advance-days', days: 3 }),
+      { background: true, automatic: true },
+    );
+  });
+  it('stops when the season closes and holds its review until it is seen', async () => {
+    const s = setup();
+    controller = s.controller;
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(controller.store.getState().running).toBe(true);
+    gameStore.publish({
+      ...gameStore.getSnapshot(),
+      view: { world: { ...w, year: w.year + 1, revision: w.revision + 1 } } as View,
+    });
+    expect(controller.store.getState().running).toBe(false);
+    expect(controller.store.getState().seasonEnd).toBe(w.year);
+    controller.clearSeasonEnd();
+    expect(controller.store.getState().seasonEnd).toBeUndefined();
   });
 });

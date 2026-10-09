@@ -18,6 +18,7 @@ import {
   quote,
   respondBid,
   seasonDayOf,
+  SEASON_END_DAY,
   seasonLength,
   selectedLineup,
   transferOffers,
@@ -111,45 +112,28 @@ describe('transfer windows', () => {
     expect(transferWindow(w, 153)).toMatchObject({ open: true, kind: 'winter', until: 184 });
     expect(transferWindow(w, 153).label).toBe('겨울 이적시장 · 2월 1일 마감 · D-31');
     expect(transferWindow(w, 184).open).toBe(true);
-    expect(transferWindow(w, 185)).toMatchObject({ open: false, kind: 'summer', until: 317 });
-    expect(transferWindow(w, 185).label).toBe('이적시장 닫힘 · 6월 14일 개장 · D-132');
-    expect(transferWindow(w, 316).open).toBe(false);
-    expect(transferWindow(w, 317)).toMatchObject({ open: true, kind: 'summer' });
-  });
-
-  it('carries the summer window across the season rollover', () => {
-    const w = world();
-    const last = seasonLength(w) - 1;
-    expect(transferWindow(w, last)).toEqual({
-      open: true,
+    expect(transferWindow(w, 185)).toMatchObject({
+      open: false,
       kind: 'summer',
-      label: '여름 이적시장 · 9월 1일 마감 · D-32',
-      until: seasonLength(w) + 31,
-      daysLeft: 32,
+      until: SEASON_END_DAY + 1,
     });
-    // The next season resumes the same window on its first day.
-    w.year++;
-    expect(transferWindow(w, 0)).toMatchObject({ open: true, kind: 'summer', daysLeft: 31 });
+    expect(transferWindow(w, 185).label).toBe('이적시장 닫힘 · 시즌 종료 직후 개장 · D-138');
+    expect(transferWindow(w, SEASON_END_DAY)).toMatchObject({ open: false, daysLeft: 1 });
   });
 
-  it('counts February 29 in leap seasons, including the Gregorian century rule', () => {
+  it('keeps window boundaries in leap seasons, including the Gregorian century rule', () => {
     const w = world();
-    for (const [year, opening, length] of [
-      [1902, 317, 365],
-      [1903, 318, 366],
-      [1999, 318, 366],
-      [2099, 317, 365],
+    for (const [year, length] of [
+      [1902, 365],
+      [1903, 366],
+      [1999, 366],
+      [2099, 365],
     ] as const) {
       w.year = year;
       expect(seasonLength(w)).toBe(length);
-      expect(transferWindow(w, opening - 1)).toMatchObject({ open: false, daysLeft: 1 });
-      expect(transferWindow(w, opening)).toMatchObject({
-        open: true,
-        until: length + 31,
-        daysLeft: length + 31 - opening,
-      });
       expect(transferWindow(w, 184).open).toBe(true);
       expect(transferWindow(w, 185).open).toBe(false);
+      expect(transferWindow(w, SEASON_END_DAY)).toMatchObject({ open: false, daysLeft: 1 });
     }
   });
 
@@ -175,15 +159,22 @@ describe('transfer windows', () => {
     expect(w.players.some((p) => p.id === offers[2].player.id)).toBe(true);
   });
 
-  it('announces each opening once as attention and each deadline quietly, never on 1 August', () => {
+  it('opens the summer window at the season close and announces each opening once', () => {
     const w = world();
     w.delegation = { ...w.delegation, transfers: false };
-    for (let n = 0; n < seasonLength(w) - 1; n++) advanceDays(w, 1);
+    while (currentDay(w) < SEASON_END_DAY) advanceDays(w, 1);
+    expect(w).toMatchObject({ year: 1901, round: 46 });
+    expect(transferWindow(w)).toMatchObject({ open: false, kind: 'summer', daysLeft: 1 });
+    // The day after the final round closes the season and opens the next summer window.
+    advanceDays(w, 1);
+    expect(w.year).toBe(1902);
+    expect(currentDay(w)).toBe(0);
+    expect(transferWindow(w)).toMatchObject({ open: true, kind: 'summer', daysLeft: 31 });
     const opens = (w.inbox || []).filter((item) => item.kind === 'window-open');
     const closes = (w.inbox || []).filter((item) => item.kind === 'window-close');
-    expect(opens.map((item) => [item.day, item.attention])).toEqual([
-      [153, true],
-      [317, true],
+    expect(opens.map((item) => [item.year, item.day, item.attention])).toEqual([
+      [1901, 153, true],
+      [1902, 0, true],
     ]);
     expect(closes.map((item) => [item.day, item.attention])).toEqual([
       [31, false],
@@ -193,11 +184,11 @@ describe('transfer windows', () => {
     const jumped = world();
     jumped.delegation = { ...jumped.delegation, transfers: false };
     while (jumped.round < 46) advanceRound(jumped, undefined, false);
-    expect((jumped.inbox || []).filter((item) => item.kind.startsWith('window-'))).toHaveLength(4);
+    expect((jumped.inbox || []).filter((item) => item.kind.startsWith('window-'))).toHaveLength(3);
     jumped.calendar = { day: 153 };
     dailyMarket(jumped);
     dailyMarket(jumped);
-    expect((jumped.inbox || []).filter((item) => item.kind.startsWith('window-'))).toHaveLength(4);
+    expect((jumped.inbox || []).filter((item) => item.kind.startsWith('window-'))).toHaveLength(3);
   });
 });
 
@@ -358,20 +349,28 @@ describe('outgoing bids', () => {
     expect(() => respondBid(w, countered[0].id, true)).toThrow('응답할 수 있는');
   });
 
-  it('settles a bid whose answer falls in the next season against the market it was made in', () => {
+  it('ends a negotiation left open by older rules once the window is closed', () => {
     const w = world();
     w.delegation = { ...w.delegation, transfers: false };
-    while (w.round < 46) advanceRound(w, undefined, false);
-    w.calendar = { day: seasonLength(w) - 2 };
+    while (w.round < 45) advanceRound(w, undefined, false);
+    advanceDays(w, SEASON_END_DAY - 2 - currentDay(w));
     const offers = transferOffers(w);
-    placeBid(w, 5, share(offers[5].fee, 500));
-    const [bid] = outBids(w);
-    expect(bid.due).toBeGreaterThanOrEqual(seasonLength(w));
-    advanceDays(w, 6);
-    expect(w.year).toBe(1902);
-    expect(bid.status).toBe('completed');
-    const signed = w.players.find((p) => p.id === offers[5].player.id)!;
-    expect(signed).toMatchObject({ name: offers[5].player.name, status: 'active' });
+    // 1.2.0 opened the summer window on 14 June, during the final rounds.
+    const bid: TransferBid = {
+      id: 'out:legacy',
+      direction: 'out',
+      playerId: offers[5].player.id,
+      fee: share(offers[5].fee, 500),
+      year: w.year,
+      day: currentDay(w),
+      due: currentDay(w) + 4,
+      status: 'pending',
+    };
+    w.bids = [bid];
+    expect(() => placeBid(w, 6, share(offers[6].fee, 500))).toThrow('이적시장이 닫혀');
+    advanceDays(w, 1);
+    expect(w.year).toBe(1901);
+    expect(w.bids?.[0]).toMatchObject({ id: 'out:legacy', status: 'expired' });
     expect(validateWorld(w).id).toBe(w.id);
   });
 

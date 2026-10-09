@@ -60,7 +60,9 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
   await journal.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toHaveText(/1902\/03 · 라운드 0$/);
-  await journal.getByRole('button', { name: '창 닫기', exact: true }).click();
+  // The closed season opens its review in place of the sheet.
+  await expect(page.getByTestId('season-review')).toBeVisible();
+  await expect(journal).toHaveCount(0);
   await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   await page
     .getByRole('dialog', { name: '전체 메뉴' })

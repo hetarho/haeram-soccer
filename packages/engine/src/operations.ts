@@ -16,6 +16,7 @@ import {
   FINANCE_CONFIG,
   seasonPrize,
   gateProjection,
+  isLeagueMatch,
   matchBonus,
   operatingCosts,
   roundShare,
@@ -24,8 +25,8 @@ import { setLineup } from './strategy';
 import { setTrainingFocus } from './training';
 import { hireStaff, MANAGER_TRAIT_INFO, managerTrait, releaseStaff, staffEffects } from './staff';
 import { promoteYouth, releaseYouth } from './academy';
-import { assertTransferWindow, placeBid, respondBid } from './transfers';
-import { readInbox } from './inbox';
+import { assertTransferWindow, moneyLabel, placeBid, respondBid } from './transfers';
+import { pushInbox, readInbox } from './inbox';
 import { marketingFanGain, policyEffects, policyOf, setPolicy } from './policy';
 export function operatingCost(w: World) {
   return operatingCosts(w).annual;
@@ -93,13 +94,14 @@ export function gate(w: World, m: MatchRecord) {
   const attendance = Math.round(
     projection.attendanceLow + r() * (projection.attendanceHigh - projection.attendanceLow),
   );
-  const income = quote(c.country, w.year, attendance * projection.perFan);
+  const scale = isLeagueMatch(m.kind) ? projection.leagueFactor : 1;
+  const income = quote(c.country, w.year, attendance * projection.perFan * scale);
   credit(w, income);
   addEvent(
     w,
     'gate',
     '홈 경기의 수입',
-    `관중 ${attendance}명 · 티켓과 구단 상품 · ${m.id}`,
+    `관중 ${attendance}명 · 티켓과 구단 상품${scale !== 1 ? ` · 시즌 46경기 기준 ×${scale.toFixed(2)}` : ''} · ${m.id}`,
     income,
   );
   const cost = quote(
@@ -119,6 +121,54 @@ export function sponsorAnnual(w: World) {
         BigInt(Math.round(w.sponsor.index * 1000000)),
       )
     : w.sponsor.annual;
+}
+function signSponsor(w: World, offer: Sponsor) {
+  w.sponsor = offer;
+  addEvent(
+    w,
+    'sponsor-sign',
+    '우리의 첫 번째 파트너',
+    `${offer.name} · ${offer.kind} · 연간 ${offer.annual} · ${offer.until}년까지`,
+  );
+}
+/** With business delegated, the commercial staff fill an empty sponsor slot with the stable offer. */
+export function delegatedBusiness(w: World) {
+  if (!w.delegation?.business || w.sponsor) return;
+  const offer = sponsorOffers(w).find((o) => o.kind === 'stable')!;
+  signSponsor(w, offer);
+  pushInbox(w, {
+    kind: 'finance',
+    title: `운영팀이 ${offer.name}와 후원 계약을 맺었어요`,
+    detail: `안정형 · 연간 ${moneyLabel(w, offer.annual)} · ${offer.until}년까지 · 리그 경기마다 나눠 들어오고, 끝나면 운영팀이 다시 계약해요.`,
+    attention: false,
+  });
+}
+/** Season start without a sponsor: the owner is told once, unless the staff handle business. */
+export function sponsorReminder(w: World) {
+  if (w.sponsor || w.delegation?.business) return;
+  pushInbox(w, {
+    kind: 'finance',
+    title: '후원 계약이 비어 있어요',
+    detail:
+      '구단 운영에서 후원사를 고르면 리그 경기마다 후원금이 들어와요. 운영을 스태프에게 맡기면 안정형 후원을 대신 맺어요.',
+    attention: true,
+  });
+}
+/** Fixed-cost rounds left in cash below which the owner is warned, once per season. */
+export const CASH_WARNING_ROUNDS = 13;
+function cashWarning(w: World, perRound: string) {
+  const cash = BigInt(w.cash),
+    cost = BigInt(perRound);
+  if (cash < 0n || cost <= 0n || cash >= cost * BigInt(CASH_WARNING_ROUNDS)) return;
+  if (w.events.some((e) => e.year === w.year && e.kind === 'cash-warning')) return;
+  const weeks = Number(cash / cost);
+  addEvent(w, 'cash-warning', '운영자금 경고', `라운드 운영비 약 ${weeks}회분 남음`);
+  pushInbox(w, {
+    kind: 'finance',
+    title: `운영자금이 약 ${weeks}주분 남았어요`,
+    detail: `라운드마다 급여·운영비 ${moneyLabel(w, perRound)}가 나가요. 후원 계약, 선수 매각, 선수단 지원·마케팅 축소나 구단주 출자로 버틸 시간을 늘리세요. 자금이 바닥나면 진행이 멈춰요.`,
+    attention: true,
+  });
 }
 export function settleSeasonPrize(w: World, rank: number, clubs: number) {
   if (w.events.some((event) => event.year === w.year && event.kind === 'season-prize')) return;
@@ -217,6 +267,7 @@ export function settleRound(w: World) {
     );
   }
   w.campaigns = w.campaigns.filter((c) => c.remaining > 0);
+  cashWarning(w, cost.nextRound);
   if (
     BigInt(w.cash) < 0 &&
     !w.events.some((e) => e.year === w.year && e.kind === 'budget-warning')
@@ -385,10 +436,7 @@ export function yearlyStaff(w: World) {
   delete w.manager.pending;
   delete w.requested;
 }
-export function operate(
-  w: World,
-  cmd: Exclude<Command, { type: 'advance' | 'season' | 'advance-to-event' }>,
-) {
+export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'season' }>) {
   const code = clubOf(w).country;
   switch (cmd.type) {
     case 'hire-staff':
@@ -581,13 +629,7 @@ export function operate(
       if (w.sponsor) throw new Error('기존 주 후원 계약이 남아 있습니다.');
       const offer = sponsorOffers(w).find((o) => o.kind === cmd.kind);
       if (!offer) throw new Error('없는 후원 제안');
-      w.sponsor = offer;
-      addEvent(
-        w,
-        'sponsor-sign',
-        '우리의 첫 번째 파트너',
-        `${offer.name} · ${offer.kind} · 연간 ${offer.annual} · ${offer.until}년까지`,
-      );
+      signSponsor(w, offer);
       break;
     }
     case 'facility': {

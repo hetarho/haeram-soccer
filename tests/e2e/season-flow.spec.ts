@@ -33,8 +33,8 @@ test('advances real days at three paces, stops and restores the saved calendar',
   await page.reload();
   await expect(date).toHaveText(stopped!);
   await expect(page.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
-  // The event pace runs in one go to the next event: here the eve of our first match.
-  await pace('다음 이벤트까지 한 번에').click();
+  // A five-day step lands on the eve of our first match and the clock stops there.
+  await pace('1초에 5일').click();
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
   await expect(date).toHaveText('1901년 8월 7일');

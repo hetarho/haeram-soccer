@@ -39,7 +39,8 @@ function syncBackground() {
     node.inert = node !== top || inertBefore.get(node)!;
   }
 }
-function lockLayer(layer: HTMLElement) {
+/** Makes everything outside `layer` inert and locks body scroll until the returned release. */
+export function lockLayer(layer: HTMLElement) {
   if (!layers.length) {
     const scroll = { x: scrollX, y: scrollY };
     const style = document.body.style;

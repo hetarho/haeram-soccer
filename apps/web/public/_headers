@@ -31,5 +31,7 @@
   Cache-Control: no-cache
 /history/*
   Cache-Control: no-cache
+/season
+  Cache-Control: no-cache
 /404.html
   Cache-Control: no-cache

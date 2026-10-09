@@ -16,16 +16,16 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 3 | 3 | - | 2 |
-| WEB | 30 | 30 | - | 0 |
+| WEB | 31 | 31 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
-| CLUB | 7 | 7 | - | 0 |
+| CLUB | 8 | 8 | - | 0 |
 | MATCH | 3 | 3 | - | 0 |
-| LEAGUE | 1 | 1 | - | 0 |
-| STAFF | 4 | 4 | - | 0 |
-| ECON | 5 | 5 | - | 0 |
+| LEAGUE | 2 | 2 | - | 0 |
+| STAFF | 5 | 5 | - | 0 |
+| ECON | 6 | 6 | - | 0 |
 | EURO | 1 | 1 | - | 0 |
 | HIST | 3 | 3 | - | 0 |
-| SAVE | 5 | 5 | - | 0 |
+| SAVE | 6 | 6 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -36,6 +36,7 @@
 - Release verification on the accumulated source: all three browsers and the production preview gates.
 
 ## log
+- 261009 WEB r31 CLUB r8 LEAGUE r2 STAFF r5 ECON r6 SAVE r6 implemented directly: 1/3/5-day paces stopping only for enabled events, season close after the final round with a review page and window ceremony, 46-game league income, business delegation, cash warnings, deferred youth promotions; rules 1.3.0; delegated 10-season sims 40/40 solvent (was 2/40 past year 8)
 - 261009 CI fixes: /transfers route allowlisted, read-only tab ownership hand-over, clock toggle ignores clicks right after an automatic stop; SAVE r5
 - 261009 WEB r30 CLUB r7 STAFF r4 implemented directly: seven tabs, home-only clock, team state, intervention levels, morale, motion; T041 done
 - 261008 WEB r29 CLUB r6 STAFF r3 ECON r5 implemented directly: events and inbox, coaching staff, academy, transfer windows and bids, cash projection

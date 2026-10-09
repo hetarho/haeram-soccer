@@ -270,6 +270,7 @@ const inboxItem = z.strictObject({
     'incoming-bid',
     'youth-intake',
     'staff-report',
+    'finance',
   ]),
   title: text,
   detail: z.string().max(400),
@@ -312,6 +313,7 @@ export const worldSchema: z.ZodType<World> = z.object({
       training: z.boolean().optional(),
       academy: z.boolean().optional(),
       transfers: z.boolean().optional(),
+      business: z.boolean().optional(),
     })
     .optional(),
   bids: z.array(bid).max(200).optional(),

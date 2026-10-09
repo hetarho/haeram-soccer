@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r1 | Define the implemented browser-demo behavior for domestic seasons and relegation.
+> r2 | Define the implemented browser-demo behavior for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -11,6 +11,8 @@
 - LEAGUE-7 [o] Global rounds spread shorter schedules across the world season; domestic cup and European ties occupy separate slots. Completed fixtures settle once.
 - LEAGUE-8 [o] Close a season only after its fixtures/cups/Europe and financial settlement; archive standings, renew personnel and fixtures, then advance the season.
 
+- LEAGUE-9 [o] A season closes on the day after its final round (day 323 counted from 1 August); the empty summer is skipped and the next season starts on 1 August. ← nothing happens after the final round, so waiting through it only delays the season review and the summer window
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -18,4 +20,5 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r2 261009 LEAGUE-9+ season closed on 1 August→the day after the final round
 - r1 261007 initial

@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r7 | Define the implemented browser-demo behavior for squad and growth.
+> r8 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI.
@@ -26,7 +26,7 @@
 - CLUB-15 [o] Recruitment previews distinguish automatic starter selection from optional manual-lineup replacement, never promise a win or guaranteed selection, and show post-fee cash and wage-inclusive fixed-cost runway excluding future revenue. Disable unaffordable/full/already-signed offers; free transfers still disclose wages.
 
 - CLUB-16 [o] The youth academy keeps prospects outside the first team. Each season on 15 March 3–5 prospects aged 15–16 join (more with a strong youth director or facilities); they grow every settled round toward potential and can be promoted while the first team has room, or released.
-- CLUB-17 [o] Fee-bearing purchases, loans and sales happen only in transfer windows: summer 14 June–1 September and winter 1 January–1 February. Free agents sign at any time. The market shows the window state and deadline.
+- CLUB-17 [o] Fee-bearing purchases, loans and sales happen only in transfer windows: summer from the day the season closes (→LEAGUE-9) to 1 September and winter 1 January–1 February. ← the market opens as the season's review ends, not during its final rounds Free agents sign at any time. The market shows the window state and deadline.
 - CLUB-18 [o] Bids are answered 2–4 days later with accept, reject or a counter; acceptance chance rises with the offered fee against the asking value and the chief scout. The fee is paid on completion; unanswered bids lapse at the deadline. During windows other clubs bid for our players (answered by the owner, or by the staff when delegated) and lapse after 5 days; squad minimums still apply. Delegated staff accept only offers ≥130% of value for a non-starter, or for a starter aged 30+ with a bench player of the same role within 3 ability.
 
 - CLUB-19 [o] Squad morale (0–100, new clubs 60) moves +6/+1/−6 after own wins/draws/defeats (±2 more for a two-goal margin), drifts 15% per settled round toward a baseline of 55 + 4 per squad-support level above standard + (manager trust − 50)/10 within 30–80, and falls 2 more per round while starters average fatigue ≥ 40. Match strength adds (morale − 60)/10; older saves without morale stay exactly unchanged.
@@ -38,6 +38,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r8 261009 CLUB-17✎ summer window 14 June–1 September→season close–1 September
 - r7 261009 CLUB-19+ no morale→results- and support-driven squad morale affecting match strength
 - r6 261008 CLUB-4✎ instant fee transfers→free agents instant, fee transfers by bids; CLUB-16+ youth academy; CLUB-17+ transfer windows; CLUB-18+ negotiation and incoming bids
 - r5 261008 CLUB-14+ CLUB-15+ long unfiltered market attribute cards→role-focused candidates with tactical and budget previews

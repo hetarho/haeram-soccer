@@ -10,6 +10,7 @@ import { money, kindLabel } from './format';
 import { Dialog } from './Dialog';
 import s from './EventCenter.module.css';
 import { fadeOutOnRemove } from './motion';
+import { TransferCeremony } from './TransferCeremony';
 
 const cardExit = fadeOutOnRemove([
   { opacity: 1, transform: 'none' },
@@ -44,16 +45,33 @@ export function EventCenter({
 }) {
   const w = useGameState((state) => state.view?.world);
   const market = useGameState((state) => state.view?.transfers) || [];
+  const read = (item: InboxItem) => client.command({ type: 'read-inbox', id: item.id });
   const acting = useGameState((state) => !!state.pendingActions || state.readonly);
   const { stopOn, matchEve, running } = useProgression(controller, (state) => state);
   const { setPage } = useNavigation();
   const setSquadTab = useSquadView((state) => state.setTab);
+  const [ceremony, setCeremony] = useState<InboxItem>();
+  if (ceremony && w)
+    return (
+      <TransferCeremony
+        w={w}
+        candidates={market.filter((offer) => offer.available).length}
+        onEnter={() => {
+          setCeremony(undefined);
+          void read(ceremony);
+          setPage('transfers');
+        }}
+        onClose={() => {
+          setCeremony(undefined);
+          void read(ceremony);
+        }}
+      />
+    );
   if (!w || running) return null;
   const events = stoppingEvents(w, stopOn);
   const next = nextOwnFixture(w);
   const eve = matchEve && next?.id === matchEve ? next : undefined;
   if (!eve && !events.length) return null;
-  const read = (item: InboxItem) => client.command({ type: 'read-inbox', id: item.id });
   const total = events.length + (eve ? 1 : 0);
   const club = clubOf(w);
   const format = (value: string) => money(value, club.country, w.year);
@@ -115,10 +133,8 @@ export function EventCenter({
     await client.command({ type: 'respond-bid', id: bid.id, accept });
     await read(item);
   };
-  const openMarket = async () => {
-    await read(item);
-    setPage('transfers');
-  };
+  // An opening window gets its full-screen moment before the market.
+  const openMarket = () => setCeremony(item);
   return (
     <aside
       key={item.id}
@@ -172,8 +188,24 @@ export function EventCenter({
           </>
         ) : item.kind === 'window-open' ? (
           <>
-            <button className={s.primary} disabled={acting} onClick={() => void openMarket()}>
-              이적 시장 보기
+            <button className={s.primary} disabled={acting} onClick={openMarket}>
+              이적 시장 열기 ✦
+            </button>
+            <button disabled={acting} onClick={() => void read(item)}>
+              확인
+            </button>
+          </>
+        ) : item.kind === 'finance' ? (
+          <>
+            <button
+              className={s.primary}
+              disabled={acting}
+              onClick={() => {
+                void read(item);
+                setPage('business');
+              }}
+            >
+              구단 운영 보기
             </button>
             <button disabled={acting} onClick={() => void read(item)}>
               확인
@@ -214,6 +246,7 @@ export const KIND_LABEL: Record<InboxItem['kind'], string> = {
   'incoming-bid': '영입 제안 받음',
   'youth-intake': '유소년 입단',
   'staff-report': '스태프 보고',
+  finance: '자금·후원',
 };
 
 /** HUD bell: every club event, newest first, readable at any time. */

@@ -13,6 +13,7 @@ import {
   nextOwnFixture,
   prepareSeason,
   seasonDate,
+  SEASON_END_DAY,
   seasonLength,
   simulateSeason,
 } from './index';
@@ -143,18 +144,15 @@ describe('persistent season calendar', () => {
     expect(fast.rankHistory?.filter((s) => s.year === 1901)).toHaveLength(47);
   });
 
-  it('retains final standings across the off-season and keeps previous league memberships frozen', () => {
+  it('closes the season the day after its final round and keeps previous league memberships frozen', () => {
     const w = world();
     for (let n = 0; n < 46; n++) advanceRound(w);
+    expect(currentDay(w)).toBe(SEASON_END_DAY);
     const snapshots = structuredClone(w.rankHistory);
-    const lastTable = structuredClone(w.tables);
-    advanceDays(w, 31);
-    expect(w.year).toBe(1901);
-    expect(w.round).toBe(46);
-    expect(w.tables).toEqual(lastTable);
-    advanceDays(w, seasonLength(w) - currentDay(w));
+    advanceDays(w, 1);
     expect(w.year).toBe(1902);
     expect(currentDay(w)).toBe(0);
+    expect(w.history.at(-1)).toMatchObject({ year: 1901, played: 46 });
     expect(w.rankHistory?.filter((s) => s.year === 1901)).toEqual(snapshots);
     expect(w.rankHistory?.at(-1)?.round).toBe(0);
     validateWorld(w);

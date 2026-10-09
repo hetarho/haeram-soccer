@@ -28,9 +28,23 @@ const staffRole = z.enum([
   'scout',
 ]);
 const ref = z.string().min(1).max(100);
+const inboxKind = z.enum([
+  'match',
+  'window-open',
+  'window-close',
+  'bid-response',
+  'incoming-bid',
+  'youth-intake',
+  'staff-report',
+  'finance',
+]);
 const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('advance'), rounds: z.number().int().min(1).max(46) }),
-  z.object({ type: z.literal('advance-days'), days: z.number().int().min(1).max(31) }),
+  z.object({
+    type: z.literal('advance-days'),
+    days: z.number().int().min(1).max(31),
+    stop: z.array(inboxKind).max(8).optional(),
+  }),
   z.object({ type: z.literal('next-match') }),
   z.object({ type: z.literal('season'), count: z.literal(1) }),
   z.object({
@@ -54,7 +68,7 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('release-youth'), id: ref }),
   z.object({
     type: z.literal('delegate'),
-    key: z.enum(['training', 'academy', 'transfers']),
+    key: z.enum(['training', 'academy', 'transfers', 'business']),
     value: z.boolean(),
   }),
   z.object({
@@ -65,7 +79,6 @@ const command = z.discriminatedUnion('type', [
   }),
   z.object({ type: z.literal('respond-bid'), id: ref, accept: z.boolean() }),
   z.object({ type: z.literal('read-inbox'), id: ref.optional() }),
-  z.object({ type: z.literal('advance-to-event'), matches: z.boolean().optional() }),
   z.object({ type: z.literal('hire'), candidate: index }),
   z.object({ type: z.literal('recruit'), candidate: index, loan: z.boolean().optional() }),
   z.object({ type: z.literal('sell'), id: z.string().max(100) }),

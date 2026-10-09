@@ -8,7 +8,8 @@ export type Page =
   | 'transfers'
   | 'manager'
   | 'business'
-  | 'history';
+  | 'history'
+  | 'season';
 const paths: Record<Page, string> = {
   dashboard: '/journal',
   match: '/matches',
@@ -19,6 +20,7 @@ const paths: Record<Page, string> = {
   manager: '/manager',
   business: '/business',
   history: '/history',
+  season: '/season',
 };
 const current = (): Page =>
   (Object.entries(paths).find(

@@ -69,7 +69,7 @@ for (const viewport of [
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await expectCompactDocument(page, viewport);
     const progress = page.getByRole('region', { name: '시즌 진행', exact: true });
-    const paces = ['1초에 하루', '1초에 3일', '다음 이벤트까지 한 번에'].map((pace) =>
+    const paces = ['1초에 하루', '1초에 3일', '1초에 5일'].map((pace) =>
       progress.getByRole('button', { name: `${pace} 속도로 자동 진행`, exact: true }),
     );
     for (const pace of paces) await expectTouchControl(pace, viewport);

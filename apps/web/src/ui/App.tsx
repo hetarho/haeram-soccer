@@ -25,6 +25,7 @@ import { ActionOutcome } from './ActionOutcome';
 import { AnimatedMoney } from './AnimatedMoney';
 import { play } from './motion';
 import { EventCenter, InboxButton } from './EventCenter';
+import { SeasonReview } from './SeasonReview';
 import Rich from './Rich';
 function NavIcon({ page }: { page: Page }) {
   const paths: Record<Page, string> = {
@@ -39,6 +40,8 @@ function NavIcon({ page }: { page: Page }) {
     manager: 'M12 2l10 10-10 10L2 12z M8 12h8 M12 8v8',
     business: 'M3 18l6-6 4 3 8-11 M15 4h6v6',
     history: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z M12 7v5l4 3',
+    season:
+      'M7 4h10v5a5 5 0 0 1-10 0z M12 14v4 M8 20h8 M7 6H4v2a3 3 0 0 0 3 3 M17 6h3v2a3 3 0 0 1-3 3',
   };
   return (
     <svg
@@ -353,6 +356,7 @@ const NAV: [Page, string][] = [
   ['league', '리그'],
   ['europe', '유럽 무대'],
   ['history', '역사 보관함'],
+  ['season', '시즌 결산'],
   ['squad', '선수단'],
   ['transfers', '이적 시장'],
   ['manager', '스태프'],
@@ -365,7 +369,7 @@ const NAV: [Page, string][] = [
 const TABS: [Page, string, string, Page[]][] = [
   ['match', '경기', '경기', ['match']],
   ['league', '리그', '리그', ['league', 'europe']],
-  ['history', '기록', '역사 보관함', ['history']],
+  ['history', '기록', '역사 보관함', ['history', 'season']],
   ['dashboard', '홈', '클럽 홈', ['dashboard']],
   ['squad', '선수단', '선수단', ['squad', 'manager']],
   ['transfers', '이적', '이적 시장', ['transfers']],
@@ -481,6 +485,23 @@ const ConnectedDashboard = memo(function ConnectedDashboard({
 const ConnectedEurope = memo(function ConnectedEurope() {
   const state = useContentState();
   return <Europe w={state.view!.world} coefficient={state.view!.coefficient} />;
+});
+const ConnectedSeasonReview = memo(function ConnectedSeasonReview({
+  client,
+}: {
+  client: GameClient;
+}) {
+  const state = useContentState();
+  const { setPage } = useNavigation();
+  return (
+    <SeasonReview
+      w={state.view!.world}
+      candidates={state.view!.transfers.filter((offer) => offer.available).length}
+      client={client}
+      onMarket={() => setPage('transfers')}
+      onHome={() => setPage('dashboard')}
+    />
+  );
 });
 function ConnectedRich({ client, page }: { client: GameClient; page: Page }) {
   const state = useContentState();
@@ -762,6 +783,17 @@ export function App() {
   useEffect(() => {
     controller?.setSuspended(page !== 'dashboard', 'away');
   }, [controller, page]);
+  // However a season closes, its review opens before anything else.
+  useEffect(() => {
+    if (!controller) return;
+    const review = (state: { seasonEnd?: number }) => {
+      if (state.seasonEnd === undefined) return;
+      controller.clearSeasonEnd();
+      setPage('season');
+    };
+    review(controller.store.getState());
+    return controller.store.subscribe(review);
+  }, [controller, setPage]);
   // The document never scrolls; each view scrolls inside the content region below the HUD.
   const scroller = useRef<HTMLDivElement>(null);
   // Screens slide in from the side of the tab that was chosen, so navigation reads spatially.
@@ -900,6 +932,7 @@ export function App() {
                   <div hidden={contentPage !== 'europe'}>
                     <ConnectedEurope />
                   </div>
+                  {contentPage === 'season' && <ConnectedSeasonReview client={client} />}
                   {(['squad', 'transfers', 'manager', 'business', 'history'] as Page[]).includes(
                     contentPage,
                   ) && <ConnectedRich page={contentPage} client={client} />}

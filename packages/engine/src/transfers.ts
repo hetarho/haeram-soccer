@@ -1,6 +1,6 @@
 import type { Club, Player, TransferBid, World } from '../../contracts/src/types';
 import { currency } from '../../catalogs/src/index';
-import { currentDay, seasonDayLabel, seasonDayOf } from './calendar';
+import { currentDay, SEASON_END_DAY, seasonDayLabel, seasonDayOf } from './calendar';
 import { clamp, compareIds, hash, integer, random, ratio } from './primitives';
 import { activePlayers, addEvent, clubOf, overall, quote, selectedLineup } from './world';
 import { credit, debit, transferOffers } from './operations';
@@ -16,8 +16,8 @@ const SQUAD_LIMIT = 26;
 const SQUAD_MINIMUM = 14;
 /** Resolved bids kept for the record; open negotiations are never pruned. */
 const CLOSED_BID_HISTORY = 60;
-const WINDOW_INFO = {
-  summer: { name: '여름 이적시장', deadline: '9월 1일', opening: '6월 14일' },
+export const WINDOW_INFO = {
+  summer: { name: '여름 이적시장', deadline: '9월 1일', opening: '시즌 종료 직후' },
   winter: { name: '겨울 이적시장', deadline: '2월 1일', opening: '1월 1일' },
 } as const;
 
@@ -33,19 +33,20 @@ export interface TransferWindowState {
 function daysInSeason(year: number) {
   return (Date.UTC(year + 1, 7, 1) - Date.UTC(year, 7, 1)) / DAY_MS;
 }
-/** Season days of each window boundary; summer spans the season rollover. */
+/** Season days of each window boundary; no window spans the season rollover. */
 export function transferWindowDays(year: number) {
   return {
+    /** The summer window opens on the first day of the season that follows the final round. */
+    summerOpen: 0,
     summerClose: seasonDayOf(year, 9, 1),
     winterOpen: seasonDayOf(year, 1, 1),
     winterClose: seasonDayOf(year, 2, 1),
-    summerOpen: seasonDayOf(year, 6, 14),
-    /** The summer deadline of the next season, counted from this season's 1 August. */
-    nextSummerClose: daysInSeason(year) + seasonDayOf(year + 1, 9, 1),
+    /** The day this season closes, when the next summer window opens. */
+    seasonClose: SEASON_END_DAY + 1,
   };
 }
 const dLabel = (days: number) => (days === 0 ? 'D-day' : `D-${days}`);
-/** Summer 14 June–1 September and winter 1 January–1 February, as in European football. */
+/** Summer from the season close to 1 September and winter 1 January–1 February. */
 export function transferWindow(w: World, day = currentDay(w)): TransferWindowState {
   const d = transferWindowDays(w.year);
   const open = (kind: 'summer' | 'winter', until: number): TransferWindowState => ({
@@ -65,8 +66,7 @@ export function transferWindow(w: World, day = currentDay(w)): TransferWindowSta
   if (day <= d.summerClose) return open('summer', d.summerClose);
   if (day < d.winterOpen) return closed('winter', d.winterOpen);
   if (day <= d.winterClose) return open('winter', d.winterClose);
-  if (day < d.summerOpen) return closed('summer', d.summerOpen);
-  return open('summer', d.nextSummerClose);
+  return closed('summer', Math.max(day, d.seasonClose));
 }
 /** Fee-bearing moves need an open window; free agents sign at any time. */
 export function assertTransferWindow(w: World, freeAgent = false): void {

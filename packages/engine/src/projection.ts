@@ -111,7 +111,10 @@ export function financeProjection(w: World): FinanceProjection {
     winRate = table?.played ? table.won / table.played : 1 / 3,
     drawRate = table?.played ? table.drawn / table.played : 1 / 3,
     prestige = 1 + Math.max(0, 3 - club.tier) * 0.35,
-    perGame = (winRate * FINANCE_CONFIG.winBonus + drawRate * FINANCE_CONFIG.drawBonus) * prestige;
+    perGame =
+      (winRate * FINANCE_CONFIG.winBonus + drawRate * FINANCE_CONFIG.drawBonus) *
+      prestige *
+      (games ? SEASON_ROUNDS / games : 1);
   const sponsorBonus = (count: number) =>
     sponsor?.kind === 'performance' && games && count
       ? big(

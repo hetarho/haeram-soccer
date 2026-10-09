@@ -26,6 +26,7 @@ const DELEGATION: [DelegationKey, string, string][] = [
   ['training', '훈련 방향', '수석코치가 피로와 유망주를 보고 매 라운드 정해요'],
   ['academy', '유소년 승격·방출', '유스 디렉터가 준비된 유망주를 올리고 정리해요'],
   ['transfers', '영입 제안 응대', '좋은 제안만 받아들이고 주전은 지켜요'],
+  ['business', '후원 계약', '후원이 비면 운영팀이 안정형 후원을 바로 맺어요'],
 ];
 
 function useActing() {

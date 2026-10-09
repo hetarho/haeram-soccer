@@ -2,6 +2,8 @@ import type { Fixture, World } from '../../contracts/src/types';
 
 export const SEASON_ROUNDS = 46;
 export const ROUND_INTERVAL_DAYS = 7;
+/** Day of the final round; the season closes the next day and the empty summer is skipped. */
+export const SEASON_END_DAY = SEASON_ROUNDS * ROUND_INTERVAL_DAYS;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 /** The clock is part of the world; browser wall time never affects outcomes. */
