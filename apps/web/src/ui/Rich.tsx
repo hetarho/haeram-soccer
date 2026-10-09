@@ -21,6 +21,12 @@ import { Pitch } from './Pitch';
 import { archivePlayback } from './replay';
 import { explorePlayers, type PlayerOrder, type PlayerScope } from './playerAnalysis';
 import { PlayerPerformance } from './PlayerPerformance';
+import { PlayerAdvancedStats } from './PlayerAdvancedStats';
+import { StyleCard } from './StyleCard';
+import { BuildBoard } from './BuildBoard';
+import { RemedySheet } from './RemedySheet';
+import { STYLE_INFO } from '../../../../packages/engine/src/styles';
+import type { StateKey } from './teamState';
 import { PlayerComparison } from './PlayerComparison';
 import { SeasonAnalysis } from './SeasonAnalysis';
 import { CareerRecordBook } from './CareerRecordBook';
@@ -107,7 +113,8 @@ function ManagerView({ state, client }: Props) {
     c = w.clubs.find((c) => c.id === w.playerClub)!,
     [tactic, setTactic] = useState(w.tactic),
     [tone, setTone] = useState('respect'),
-    [hiring, setHiring] = useState<number>();
+    [hiring, setHiring] = useState<number>(),
+    [requests, setRequests] = useState<StateKey>();
   const acting = useGameState((state) => !!state.pendingActions);
   const disabled = state.busy || state.readonly || acting;
   const response = w.events.filter((e) => e.kind === 'manager-response').at(-1);
@@ -131,6 +138,11 @@ function ManagerView({ state, client }: Props) {
             <span className={s.pill}>
               {m.since}년 부임 · {m.until}년까지
             </span>
+            <StyleCard style={m.interim ? undefined : m.style} />
+            <div className={s.actions}>
+              <button onClick={() => setRequests('manager')}>감독에게 힘 실어주기</button>
+              <button onClick={() => setRequests('morale')}>선수단 분위기 요청</button>
+            </div>
             <Attributes
               rows={[
                 ['철학', tacticLabel[m.philosophy]],
@@ -220,7 +232,7 @@ function ManagerView({ state, client }: Props) {
           </div>
         </Panel>
       </div>
-      <Panel title="새로운 지도자의 제안" note="COMPARE FOUR CANDIDATES">
+      <Panel title="감독 후보 · 네 가지 성향" note="COMPARE FOUR SCHOOLS">
         <div className={s.panelBody}>
           <div className={s.cards}>
             {v.managers.map((candidate, i) => {
@@ -230,7 +242,10 @@ function ManagerView({ state, client }: Props) {
               return (
                 <article className={s.card} key={candidate.id}>
                   <h3>{candidate.name}</h3>
-                  <span className={s.pill}>{tacticLabel[candidate.philosophy]}</span>
+                  <span className={s.pill}>
+                    {STYLE_INFO[candidate.style].label} · {tacticLabel[candidate.philosophy]}
+                  </span>
+                  <StyleCard style={candidate.style} compact />
                   <Attributes
                     rows={[
                       ['지도력', candidate.ability],
@@ -254,6 +269,14 @@ function ManagerView({ state, client }: Props) {
           </div>
         </div>
       </Panel>
+      {requests && (
+        <RemedySheet
+          w={w}
+          client={client}
+          state={requests}
+          onClose={() => setRequests(undefined)}
+        />
+      )}
       {hiring !== undefined && v.managers[hiring] && (
         <Dialog label="감독 선임 확인" onClose={() => setHiring(undefined)}>
           <h2>{v.managers[hiring].name} 감독을 선임할까요?</h2>
@@ -273,6 +296,13 @@ function ManagerView({ state, client }: Props) {
               (이전 감독 보상 포함)
             </li>
             <li>{m.name} 감독은 오늘 팀을 떠나요.</li>
+            <li>
+              새 감독 성향 <b>{STYLE_INFO[v.managers[hiring].style].label}</b> ·{' '}
+              {[
+                ...STYLE_INFO[v.managers[hiring].style].pros,
+                ...STYLE_INFO[v.managers[hiring].style].cons,
+              ].join(' · ')}
+            </li>
             <li>
               적용 전술 {tacticLabel[w.tactic]} →{' '}
               <b>{tacticLabel[v.managers[hiring].philosophy]}</b> (새 감독의 철학)
@@ -582,6 +612,7 @@ function Squad({ state, client }: Props) {
             분모: 패스 시도 {number(selected[scope][2])}회 ·{' '}
             {scope === 'career' ? '우리 클럽 통산' : '이번 시즌 모든 대회'}
           </p>
+          <PlayerAdvancedStats w={w} player={selected} scope={scope} />
           <button onClick={() => setSelectedId(undefined)}>닫기</button>
         </Dialog>
       )}
@@ -716,7 +747,7 @@ function History({ state, client }: Props) {
     <>
       <Header
         eyebrow="ARCHIVE"
-        title="역사 보관함"
+        title="클럽 기록실"
         description="시즌과 선수, 경기와 장부. 그때의 숫자를 그대로 펼쳐봐요."
       />
       <CareerRecordBook w={w} />
@@ -894,7 +925,7 @@ function History({ state, client }: Props) {
       </Panel>
       {h && (
         <>
-          <Panel title="유럽의 우승과 순위" note="HISTORICAL HONORS">
+          <Panel title="클럽대항전 우승과 순위" note="HISTORICAL HONORS">
             <div className={s.panelBody}>
               {h.europe.length ? (
                 h.europe.map((e) => (
@@ -937,7 +968,7 @@ function History({ state, client }: Props) {
                   </details>
                 ))
               ) : (
-                <p className={s.muted}>아직 유럽대회 창설 이전의 시즌입니다.</p>
+                <p className={s.muted}>아직 클럽대항전 창설 이전의 시즌입니다.</p>
               )}
             </div>
           </Panel>
@@ -1132,6 +1163,7 @@ export default function Rich({ state, client, page }: Props & { page: Page }) {
           title="구단 운영"
           description="방침은 매 라운드 비용과 효과로 자동 정산되고, 투자와 계약은 한 번에 지출돼요."
         />
+        <BuildBoard w={state.view!.world} client={client} />
         <FinanceOutlook w={state.view!.world} />
         <PolicyBoard w={state.view!.world} client={client} />
         <BusinessWorkbench

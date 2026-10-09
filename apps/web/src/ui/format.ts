@@ -17,5 +17,5 @@ export const kindLabel: Record<string, string> = {
   lower: '하부 리그',
   cup: '국내 컵',
   playoff: '승격 플레이오프',
-  europe: '유럽대회',
+  europe: '클럽대항전',
 };

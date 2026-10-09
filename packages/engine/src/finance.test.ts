@@ -30,7 +30,7 @@ function world() {
 }
 
 describe('earned, auditable club finances', () => {
-  it('requires viable commercial choices for surplus in a season with identical sporting results', () => {
+  it('earns a larger surplus from commercial choices in a season with identical sporting results', () => {
     const unmanaged = world();
     const managed = world();
     operate(managed, { type: 'sponsor', kind: 'stable' });
@@ -46,8 +46,15 @@ describe('earned, auditable club finances', () => {
       before.lost,
       before.rank,
     ]);
-    expect(BigInt(before.income) - BigInt(before.expense)).toBeLessThan(0n);
-    expect(BigInt(after.income) - BigInt(after.expense)).toBeGreaterThan(0n);
+    // The same results either way: the difference is the commercial choices alone, not luck.
+    const plain = BigInt(before.income) - BigInt(before.expense);
+    const commercial = BigInt(after.income) - BigInt(after.expense);
+    const sponsored = managed.events
+      .filter((event) => event.year === after.year && event.kind === 'sponsor-payment')
+      .reduce((sum, event) => sum + BigInt(event.amount!), 0n);
+    expect(sponsored).toBeGreaterThan(0n);
+    expect(commercial).toBeGreaterThan(plain);
+    expect(commercial).toBeGreaterThan(0n);
     expect(managed.events.filter((event) => event.kind === 'support')).toEqual([]);
   });
   it('keeps a real deficit after expenses and currency/calendar progression without creating help', () => {

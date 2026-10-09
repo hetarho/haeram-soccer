@@ -1,0 +1,110 @@
+.card {
+  margin-top: 12px;
+  padding: 12px 14px 6px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  box-shadow: var(--shadow);
+}
+.card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.card h3 {
+  margin: 0;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+}
+.card header button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+.card header button i {
+  min-width: 20px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--warm);
+  color: #1d0f06;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 900;
+}
+.card ul,
+.feed {
+  display: grid;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.item {
+  display: grid;
+  gap: 3px;
+  padding: 9px 0 9px 10px;
+  border-top: 1px solid var(--line);
+  border-left: 3px solid var(--line-strong);
+  min-width: 0;
+}
+.item.good {
+  border-left-color: var(--accent);
+}
+.item.bad {
+  border-left-color: var(--danger);
+}
+.item.major strong {
+  font-size: 15px;
+}
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-faint);
+  font-size: 11px;
+}
+.meta b {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--surface-3);
+  color: var(--text-muted);
+  font-weight: 800;
+}
+.meta em {
+  color: var(--warm);
+  font-style: normal;
+  font-weight: 900;
+}
+.item strong {
+  font-size: 14px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.item small {
+  color: var(--text-muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.empty,
+.note {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.filters button {
+  min-height: 40px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+.filters .selected {
+  border-color: var(--accent);
+  color: var(--accent-text);
+}

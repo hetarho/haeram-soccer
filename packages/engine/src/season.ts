@@ -18,6 +18,10 @@ import { developAnnually, settleTraining } from './training';
 import { runAcademyIntake, seasonAcademy } from './academy';
 import { dailyMarket } from './transfers';
 import { moraleAfterMatch } from './morale';
+import { settleWinBonus } from './care';
+import { managerStyleEffects } from './styles';
+import { synergyEffects } from './synergy';
+import { visionEffects } from './vision';
 import { seasonStaff } from './staff';
 import {
   currentDay,
@@ -173,19 +177,26 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     const saved = { ...m, players: m.players.filter((p) => ownIds.has(p.id)) };
     w.ownMatches.push(saved);
     gate(w, m);
+    // A pressing manager adds load; a synergy built for pressing takes some of it off.
+    const extraLoad = managerStyleEffects(w).fatigueCost - synergyEffects(w).fatigueRelief;
     for (const line of saved.players) {
       const p = w.players.find((p) => p.id === line.id);
       if (p) {
         p.season = addMetrics(p.season, line.metrics);
         p.career = addMetrics(p.career, line.metrics);
-        p.fatigue = clamp(p.fatigue + fatigueCost(p, m.tactics[m.home === w.playerClub ? 0 : 1]));
+        p.fatigue = clamp(
+          p.fatigue + fatigueCost(p, m.tactics[m.home === w.playerClub ? 0 : 1]) + extraLoad,
+        );
       }
     }
     const side = m.home === w.playerClub ? 0 : 1;
     const win = side === 0 ? m.score.home > m.score.away : m.score.away > m.score.home;
     const club = clubOf(w);
-    club.fans = Math.round(clamp(club.fans * (win ? 1.012 : 0.998), 200, 5000000));
+    club.fans = Math.round(
+      clamp(club.fans * (win ? 1 + 0.012 * visionEffects(w).winFans : 0.998), 200, 5000000),
+    );
     moraleAfterMatch(w, saved);
+    settleWinBonus(w, saved);
   }
 }
 export function resolveTie(w: World, f: Fixture) {

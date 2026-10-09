@@ -1,4 +1,11 @@
-import type { World, Command, MatchRecord, Sponsor, Tactic } from '../../contracts/src/types';
+import type {
+  World,
+  Command,
+  MatchRecord,
+  Player,
+  Sponsor,
+  Tactic,
+} from '../../contracts/src/types';
 import {
   activePlayers,
   addEvent,
@@ -27,8 +34,17 @@ import { hireStaff, MANAGER_TRAIT_INFO, managerTrait, releaseStaff, staffEffects
 import { promoteYouth, releaseYouth } from './academy';
 import { assertTransferWindow, moneyLabel, placeBid, respondBid } from './transfers';
 import { pushInbox, readInbox } from './inbox';
-import { applyCareEffects, careEventDetail, careOffer } from './care';
+import { careOffer, outcomeText, resolveCare } from './care';
 import { marketingFanGain, policyEffects, policyOf, setPolicy } from './policy';
+import {
+  candidateStyles,
+  FIREFIGHTER_ARRIVAL_MORALE,
+  managerStyleEffects,
+  STYLE_INFO,
+} from './styles';
+import { synergyEffects } from './synergy';
+import { setVision, visionEffects } from './vision';
+import { MORALE_START } from './morale';
 export function operatingCost(w: World) {
   return operatingCosts(w).annual;
 }
@@ -113,6 +129,14 @@ export function gate(w: World, m: MatchRecord) {
   debit(w, cost, true);
   addEvent(w, 'match-cost', '홈 경기 개최비', `관중 ${attendance}명 · ${m.id}`, cost);
 }
+/** A direct sale earns the ability above replacement level, scaled by the club vision. */
+export function saleFee(w: World, p: Player) {
+  return quote(
+    clubOf(w).country,
+    w.year,
+    Math.max(10, (overall(p) - 25) * 5) * visionEffects(w).saleFee,
+  );
+}
 export function sponsorAnnual(w: World) {
   if (!w.sponsor) return '0';
   return w.sponsor.kind === 'indexed'
@@ -167,7 +191,7 @@ function cashWarning(w: World, perRound: string) {
   pushInbox(w, {
     kind: 'finance',
     title: `운영자금이 약 ${weeks}주분 남았어요`,
-    detail: `라운드마다 급여·운영비 ${moneyLabel(w, perRound)}가 나가요. 후원 계약, 선수 매각, 선수단 지원·마케팅 축소나 구단주 출자로 버틸 시간을 늘리세요. 자금이 바닥나면 진행이 멈춰요.`,
+    detail: `라운드마다 급여·운영비 ${moneyLabel(w, perRound)}가 나가요. 후원 계약, 선수 매각, 선수단 투자·마케팅 축소나 구단주 출자로 버틸 시간을 늘리세요. 자금이 바닥나면 진행이 멈춰요.`,
     attention: true,
   });
 }
@@ -186,13 +210,15 @@ export function settleSeasonPrize(w: World, rank: number, clubs: number) {
 }
 export function sponsorOffers(w: World) {
   const c = clubOf(w);
+  // A commercial club negotiates bigger deals; a community club smaller ones.
+  const scale = visionEffects(w).sponsor * synergyEffects(w).sponsor;
   return (['stable', 'performance', 'exclusive', 'indexed'] as const).map((kind, i) => ({
     name: `${c.name.split(' ')[0]} ${['Cooperative', 'Motors', 'Textiles', 'Foundry'][i]}`,
     kind,
     annual: quote(
       c.country,
       w.year,
-      (150 + c.reputation * 5 + c.fans / 50) * [1, 0.65, 1.6, 0.9][i],
+      (150 + c.reputation * 5 + c.fans / 50) * [1, 0.65, 1.6, 0.9][i] * scale,
     ),
     bonus: quote(c.country, w.year, kind === 'performance' ? 220 + c.reputation * 3 : 0),
     until: w.year + (kind === 'exclusive' ? 4 : 2),
@@ -207,6 +233,7 @@ export const CAMPAIGNS = [
   { kind: 'player', label: '선수의 이야기', units: 120, fans: 0.16 },
 ];
 export function campaignOffers(w: World) {
+  const income = visionEffects(w).campaignIncome;
   return CAMPAIGNS.map((c) => ({
     ...c,
     cost: quote(clubOf(w).country, w.year, c.units),
@@ -216,7 +243,8 @@ export function campaignOffers(w: World) {
       c.units *
         0.25 *
         campaignEffectiveness(w, c.kind) *
-        Math.max(0.2, 1 - clubOf(w).fans / 1000000),
+        Math.max(0.2, 1 - clubOf(w).fans / 1000000) *
+        income,
     ),
     max: quote(
       clubOf(w).country,
@@ -224,7 +252,8 @@ export function campaignOffers(w: World) {
       c.units *
         1.8 *
         campaignEffectiveness(w, c.kind) *
-        Math.max(0.2, 1 - clubOf(w).fans / 1000000),
+        Math.max(0.2, 1 - clubOf(w).fans / 1000000) *
+        income,
     ),
     rounds: 4,
   }));
@@ -233,13 +262,16 @@ export function settleRound(w: World) {
   const cost = operatingCosts(w, w.round);
   debit(w, cost.nextRound, true);
   const club = clubOf(w),
-    fansGained = marketingFanGain(club.fans, policyEffects(policyOf(w)).fanGrowth);
+    fansGained = marketingFanGain(
+      club.fans,
+      policyEffects(policyOf(w)).fanGrowth * visionEffects(w).marketingFans,
+    );
   if (fansGained) club.fans = Math.round(clamp(club.fans + fansGained, 200, 5000000));
   addEvent(
     w,
     'operating-cost',
     '급여와 시설 유지비',
-    `선수 ${cost.payments.playerWages} · 감독 ${cost.payments.managerWage} · 시설 ${cost.payments.maintenance}${cost.payments.marketing ? ` · 마케팅 ${cost.payments.marketing}` : ''} ${w.currency}${fansGained ? ` · 마케팅 팬 +${fansGained}명` : ''}`,
+    `선수 ${cost.payments.playerWages} · 감독 ${cost.payments.managerWage} · 시설 ${cost.payments.maintenance}${cost.payments.marketing ? ` · 마케팅 ${cost.payments.marketing}` : ''}${cost.payments.academy ? ` · 유소년 ${cost.payments.academy}` : ''} ${w.currency}${fansGained ? ` · 마케팅 팬 +${fansGained}명` : ''}`,
     cost.nextRound,
   );
   for (const c of w.campaigns) {
@@ -251,7 +283,9 @@ export function settleRound(w: World) {
     const fit = campaignEffectiveness(w, c.kind);
     const income = ratio(
       c.cost,
-      BigInt(Math.round((0.25 + r() * 1.55) * fit * saturation * 1000)),
+      BigInt(
+        Math.round((0.25 + r() * 1.55) * fit * saturation * visionEffects(w).campaignIncome * 1000),
+      ),
       1000n,
     );
     const fans = Math.round(clubOf(w).fans * offer.fans * (0.5 + r()) * fit * saturation);
@@ -283,12 +317,19 @@ export function settleRound(w: World) {
   if (BigInt(w.cash) < 0) w.critical ||= '운영자금이 부족합니다.';
 }
 export function managerOffers(w: World) {
+  const styles = candidateStyles(w.seed, w.year);
   return Array.from({ length: 4 }, (_, i) => {
     const manager = makeManager(clubOf(w).country, w.seed, w.year, i + 1),
-      trait = managerTrait(w, i + 1);
+      trait = managerTrait(w, i + 1),
+      style = styles[i],
+      info = STYLE_INFO[style];
     return {
       ...manager,
       ...(trait ? { trait } : {}),
+      style,
+      // A school that plays one way brings its tactic; a firefighter signs for one season.
+      philosophy: info.tactic ?? manager.philosophy,
+      until: w.year + info.term,
       fee: quote(clubOf(w).country, w.year, 60 + i * 40),
       ambition: Math.round((manager.ability + manager.pride) / 2),
     };
@@ -298,19 +339,26 @@ export function managerOffers(w: World) {
 export function transferOffers(w: World, year = w.year) {
   const roles = ['GK', 'DEF', 'MID', 'FWD'] as const;
   const profile = policyEffects(policyOf(w)).offer,
-    scouting = staffEffects(w);
-  return Array.from({ length: scouting.scoutCandidates }, (_, i) => {
+    scouting = staffEffects(w),
+    vision = visionEffects(w),
+    synergy = synergyEffects(w);
+  const count = Math.max(4, scouting.scoutCandidates + vision.marketCandidates);
+  return Array.from({ length: count }, (_, i) => {
     const r = random(`${w.seed}:market:${year}:${i}`);
     const p = makePlayer(
       clubOf(w).country,
       w.seed,
       `market:${year}:${i}`,
       year,
-      integer(r, profile.ability[0], profile.ability[1]),
+      Math.min(95, integer(r, profile.ability[0], profile.ability[1]) + vision.marketAbility),
       roles[i % 4],
       integer(r, profile.age[0], profile.age[1]),
     );
-    const potentialBonus = profile.potentialBonus + scouting.scoutPotential;
+    const potentialBonus =
+      profile.potentialBonus +
+      scouting.scoutPotential +
+      vision.marketPotential +
+      synergy.marketPotential;
     if (potentialBonus)
       p.potential = Math.max(overall(p), Math.min(99, p.potential + potentialBonus));
     return {
@@ -325,7 +373,8 @@ export function transferOffers(w: World, year = w.year) {
               Math.round(
                 ((overall(p) - 25) * 9 + (p.potential - overall(p)) * 3) *
                   profile.feeMultiplier *
-                  scouting.feeMultiplier,
+                  scouting.feeMultiplier *
+                  synergy.feeMultiplier,
               ),
             ),
       ),
@@ -369,7 +418,8 @@ function requestScoreBase(w: World, tactic: Tactic, tone: string) {
     requestTones[tone as keyof typeof requestTones] -
     (tactic === m.philosophy ? 0 : 24) -
     m.pride * (tone === 'demand' ? 0.3 : 0.05) -
-    m.conflicts * 5
+    m.conflicts * 5 +
+    managerStyleEffects(w).requestBonus
   );
 }
 
@@ -529,16 +579,19 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       if (!offer.available) throw new Error(`${offer.label} · ${offer.reason}`);
       if (BigInt(offer.cost) > 0n) debit(w, offer.cost);
       if (BigInt(offer.income) > 0n) credit(w, offer.income);
-      applyCareEffects(w, cmd.kind);
+      const outcome = resolveCare(w, cmd.kind);
       addEvent(
         w,
         `care:${cmd.kind}`,
         offer.label,
-        careEventDetail(cmd.kind),
+        `${offer.by} · ${outcomeText(outcome)}${offer.outcomes.length > 1 ? ` (${outcome.chance}% 결과)` : ''} · ${offer.cooldown}라운드 뒤 다시 가능`,
         BigInt(offer.cost) > 0n ? offer.cost : BigInt(offer.income) > 0n ? offer.income : undefined,
       );
       break;
     }
+    case 'vision':
+      setVision(w, cmd.vision);
+      break;
     case 'accept-condition': {
       if (!w.manager.pending) throw new Error('대기 중인 조건이 없습니다.');
       const cost = quote(code, w.year, 30);
@@ -568,11 +621,14 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       w.tactic = manager.philosophy;
       delete w.requested;
       delete w.critical;
+      // A firefighter's arrival lifts the dressing room at once.
+      if (manager.style === 'firefighter')
+        w.morale = Math.round(clamp((w.morale ?? MORALE_START) + FIREFIGHTER_ARRIVAL_MORALE));
       addEvent(
         w,
         'manager-hire',
         `${manager.name} 감독 선임`,
-        `${tacticLabel[manager.philosophy]}${manager.trait ? ` · ${MANAGER_TRAIT_INFO[manager.trait].label}` : ''} · 계약 ${manager.until}년까지`,
+        `${manager.style ? `${STYLE_INFO[manager.style].label} · ` : ''}${tacticLabel[manager.philosophy]}${manager.trait ? ` · ${MANAGER_TRAIT_INFO[manager.trait].label}` : ''} · 계약 ${manager.until}년까지`,
         fee.toString(),
       );
       break;
@@ -604,7 +660,7 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
         (p.role === 'GK' && activePlayers(w).filter((p) => p.role === 'GK').length <= 1)
       )
         throw new Error('최소 선수단과 골키퍼를 유지해야 합니다.');
-      const fee = quote(code, w.year, Math.max(10, (overall(p) - 25) * 5));
+      const fee = saleFee(w, p);
       p.status = 'sold';
       credit(w, fee);
       addEvent(
@@ -670,8 +726,9 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       break;
     }
     case 'support': {
-      if (w.events.filter((e) => e.kind === 'support' && e.year === w.year).length >= 3)
-        throw new Error('구단주 추가 출자는 시즌당 3회입니다.');
+      const limit = visionEffects(w).ownerCapital;
+      if (w.events.filter((e) => e.kind === 'support' && e.year === w.year).length >= limit)
+        throw new Error(`구단주 추가 출자는 시즌당 ${limit}회입니다.`);
       const amount = quote(code, w.year, 150);
       credit(w, amount);
       w.support++;
@@ -681,7 +738,7 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
         w,
         'support',
         '구단주 추가 출자',
-        '운영 매출과 별도 · 시즌당 최대 3회 · 자금 조달 의존으로 평판 -2',
+        `운영 매출과 별도 · 시즌당 최대 ${limit}회 · 자금 조달 의존으로 평판 -2`,
         amount,
       );
       break;

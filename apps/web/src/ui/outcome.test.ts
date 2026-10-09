@@ -40,14 +40,14 @@ describe('action outcome summaries', () => {
     for (const player of before.players) player.fatigue = 40;
     const next = after(before, (w) => operate(w, { type: 'care', kind: 'rest-day' }));
     const outcome = describeOutcome({ type: 'care', kind: 'rest-day' }, before, next)!;
-    expect(outcome.title).toBe('선수단을 챙겼어요');
+    expect(outcome.title).toBe('구단주 요청을 전했어요');
     expect(outcome.changes.find((c) => c.label === '선발 평균 피로')).toMatchObject({
       previous: '40',
       value: '34',
       trend: 'down',
     });
-    expect(outcome.changes.find((c) => c.label === '선수단 사기')).toMatchObject({ trend: 'up' });
-    expect(outcome.events[0].title).toBe('휴식일');
+    expect(outcome.changes.find((c) => c.label === '팀 분위기')).toMatchObject({ trend: 'up' });
+    expect(outcome.events[0].title).toBe('휴식일 부여 요청');
   });
 
   it('lists only facts that changed and the squad size after a sale', () => {

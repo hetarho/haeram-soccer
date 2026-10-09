@@ -68,7 +68,7 @@ describe('club operating policy', () => {
     const absent = world(),
       explicit = world({});
     expect(absent.policy).toBeUndefined();
-    expect(explicit.policy).toEqual({ support: 3, recruitment: 3, marketing: 1 });
+    expect(explicit.policy).toEqual({ support: 3, recruitment: 3, marketing: 1, academy: 1 });
     expect(policyOf(absent)).toEqual(POLICY_DEFAULTS);
     expect(canonical(operatingCosts(explicit))).toBe(canonical(operatingCosts(absent)));
     expect(operatingCosts(absent).marketing).toBe('0');
@@ -96,8 +96,8 @@ describe('club operating policy', () => {
     expect(absent.events.some((event) => event.detail.includes('마케팅'))).toBe(false);
   });
 
-  it('describes three ordered decisions with five levels each and their real effects', () => {
-    expect(POLICY_KEYS).toEqual(['support', 'recruitment', 'marketing']);
+  it('describes four ordered decisions with five levels each and their real effects', () => {
+    expect(POLICY_KEYS).toEqual(['support', 'recruitment', 'marketing', 'academy']);
     for (const key of POLICY_KEYS) {
       expect(POLICY_INFO[key].label).toBeTruthy();
       expect(POLICY_INFO[key].question).toBeTruthy();
@@ -112,6 +112,10 @@ describe('club operating policy', () => {
       marketingUnits: 0,
       fanGrowth: 0,
       gateBoost: 0,
+      academyUnits: 0,
+      academyIntake: 0,
+      academyPotential: 0,
+      academyGrowth: 1,
       offer: { ability: [40, 85], age: [18, 30], potentialBonus: 0, feeMultiplier: 1 },
     });
   });
@@ -239,7 +243,7 @@ describe('club operating policy', () => {
     expect(w.events).toHaveLength(events);
 
     operate(w, { type: 'policy', key: 'support', level: 5 });
-    expect(w.policy).toEqual({ support: 5, recruitment: 3, marketing: 1 });
+    expect(w.policy).toEqual({ support: 5, recruitment: 3, marketing: 1, academy: 1 });
     expect(w.revision).toBe(revision + 1);
     expect(w.events.at(-1)).toMatchObject({
       kind: 'policy',
@@ -250,7 +254,7 @@ describe('club operating policy', () => {
     setPolicy(w, 'support', 5);
     expect(w.events).toHaveLength(events + 1);
     setPolicy(w, 'marketing', 4);
-    expect(w.policy).toEqual({ support: 5, recruitment: 3, marketing: 4 });
+    expect(w.policy).toEqual({ support: 5, recruitment: 3, marketing: 4, academy: 1 });
     expect(w.events).toHaveLength(events + 2);
   });
 
@@ -288,7 +292,7 @@ describe('club operating policy', () => {
     const w = world({ support: 4, recruitment: 2, marketing: 3 });
     validateWorld(w);
     const restored = (await decode(await encode(w, 1, 0))).world;
-    expect(restored.policy).toEqual({ support: 4, recruitment: 2, marketing: 3 });
+    expect(restored.policy).toEqual({ support: 4, recruitment: 2, marketing: 3, academy: 1 });
     expect(canonical(restored)).toBe(canonical(w));
     const legacy = world();
     expect(Object.hasOwn((await decode(await encode(legacy, 1, 0))).world, 'policy')).toBe(false);
@@ -297,6 +301,7 @@ describe('club operating policy', () => {
       { support: 3, recruitment: 3 },
       { support: 3, recruitment: 3, marketing: 1, scouting: 2 },
       { support: 2.5, recruitment: 3, marketing: 1 },
+      { support: 3, recruitment: 3, marketing: 1, academy: 6 },
     ])
       expect(() => validateWorld({ ...w, policy })).toThrow();
     const request = (command: unknown) =>
@@ -312,5 +317,21 @@ describe('club operating policy', () => {
     expect(request({ type: 'policy', key: 'marketing', level: 5 })).toBe(true);
     expect(request({ type: 'policy', key: 'marketing', level: 6 })).toBe(false);
     expect(request({ type: 'policy', key: 'scouting', level: 2 })).toBe(false);
+    expect(request({ type: 'policy', key: 'academy', level: 4 })).toBe(true);
+  });
+
+  it('buys bigger, better academy intakes and growth with academy investment', () => {
+    const base = world(),
+      elite = world({ academy: 5 });
+    expect(BigInt(operatingCosts(elite).academy)).toBeGreaterThan(0n);
+    expect(BigInt(operatingCosts(elite).annual)).toBe(
+      BigInt(operatingCosts(base).annual) + BigInt(operatingCosts(elite).academy),
+    );
+    expect(policyEffects(policyOf(elite))).toMatchObject({
+      academyIntake: 2,
+      academyPotential: 11,
+      academyGrowth: 1.45,
+    });
+    expect(BigInt(policyPreview(base, 'academy', 3).annualCostChange)).toBeGreaterThan(0n);
   });
 });

@@ -1,0 +1,231 @@
+.board {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  box-shadow: var(--shadow);
+  min-width: 0;
+}
+.head h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.head p {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.vision,
+.manager {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-deep);
+  min-width: 0;
+}
+.visionHead,
+.manager {
+  display: grid;
+  gap: 2px;
+}
+.visionHead span,
+.manager span {
+  color: var(--text-faint);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+.visionHead b,
+.manager b {
+  font-size: 17px;
+}
+.visionHead small,
+.manager small {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.vision ul,
+.preview ul {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.pro {
+  color: var(--accent-text);
+}
+.con {
+  color: var(--warm);
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.cards button {
+  min-height: 44px;
+  padding: 6px 8px;
+  font-size: 13px;
+}
+.cards .current {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.cards .choosing {
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+.preview {
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px dashed var(--accent);
+}
+.preview p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.preview p b {
+  color: var(--text);
+}
+.confirm {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.apply {
+  border-color: var(--accent-edge) !important;
+  background: var(--accent-fill) !important;
+  color: var(--on-accent) !important;
+}
+.synergies h3,
+.odds h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+.synergies h3 small {
+  color: var(--text-faint);
+  font-size: 12px;
+}
+.synergies > ul,
+.more > ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.synergies > ul > li,
+.more > ul > li {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface-deep);
+  min-width: 0;
+}
+.synergies > ul > li.on,
+.more > ul > li.on {
+  border-color: var(--gold-edge);
+  box-shadow: 0 0 0 1px rgba(255, 203, 71, 0.25);
+}
+.synergyHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.synergyHead em {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--text-faint);
+}
+.on .synergyHead em {
+  color: var(--gold);
+}
+.synergies small {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.synergies li ul {
+  display: grid;
+  gap: 1px;
+  margin: 2px 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+}
+.met {
+  color: var(--accent-text);
+}
+.unmet {
+  color: var(--text-faint);
+}
+.synergies p {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.on p {
+  color: var(--gold);
+}
+.odds ul {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.odds li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+.odds li span {
+  color: var(--text-muted);
+}
+.odds li b {
+  font-variant-numeric: tabular-nums;
+  color: var(--gold);
+}
+@media (max-width: 420px) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.more {
+  margin-top: 8px;
+}
+.more summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+.more > ul {
+  margin-top: 4px;
+}

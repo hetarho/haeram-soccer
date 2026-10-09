@@ -2,6 +2,9 @@ import type { MatchRecord, World } from '../../contracts/src/types';
 import { activePlayers, selectedLineup } from './world';
 import { clamp } from './primitives';
 import { policyOf } from './policy';
+import { managerStyleEffects } from './styles';
+import { synergyEffects } from './synergy';
+import { visionEffects } from './vision';
 
 /** New clubs start here; strength is unaffected at this value. */
 export const MORALE_START = 60;
@@ -37,7 +40,16 @@ export function moraleState(value: number): MoraleState {
  * club with a trusted manager settles at the neutral 60, so ordinary results never drag it down.
  */
 export function moraleBaseline(w: World) {
-  return clamp(58 + (policyOf(w).support - 3) * 4 + (w.manager.trust - 50) / 10, 30, 80);
+  return clamp(
+    58 +
+      (policyOf(w).support - 3) * 4 +
+      (w.manager.trust - 50) / 10 +
+      managerStyleEffects(w).moraleBaseline +
+      visionEffects(w).moraleBaseline +
+      synergyEffects(w).moraleBaseline,
+    30,
+    80,
+  );
 }
 /** Results move morale; wide margins move it further. */
 export function moraleAfterMatch(w: World, m: MatchRecord) {
@@ -46,7 +58,12 @@ export function moraleAfterMatch(w: World, m: MatchRecord) {
     own = side === 0 ? m.score.home : m.score.away,
     other = side === 0 ? m.score.away : m.score.home,
     margin = Math.abs(own - other) >= 2 ? 2 : 0;
-  const change = own > other ? 6 + margin : own === other ? 1 : -6 - margin;
+  const change =
+    own > other
+      ? 6 + margin
+      : own === other
+        ? 1
+        : -6 - margin + managerStyleEffects(w).defeatCushion;
   w.morale = Math.round(clamp(w.morale + change, 0, 100));
 }
 /** Each settled round drifts toward the baseline; an exhausted XI loses heart. */

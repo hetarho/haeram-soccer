@@ -1,18 +1,42 @@
 export type CountryCode = 'ENG' | 'ESP' | 'GER' | 'ITA' | 'FRA' | 'POR' | 'NED' | 'BEL';
 export type Tactic = 'balanced' | 'possession' | 'counter' | 'press';
 export type TrainingFocus = 'balanced' | 'youth' | 'recovery';
-export type PolicyKey = 'support' | 'recruitment' | 'marketing';
+export type PolicyKey = 'support' | 'recruitment' | 'marketing' | 'academy';
 export type PolicyLevel = 1 | 2 | 3 | 4 | 5;
 export type ClubPolicy = Record<PolicyKey, PolicyLevel>;
+/** Saved policy: keys added later (academy) may be absent and resolve to their defaults. */
+export type SavedPolicy = Omit<ClubPolicy, 'academy'> & { academy?: PolicyLevel };
 export type Role = 'GK' | 'DEF' | 'MID' | 'FWD';
 /** Backroom roles below the manager, following a professional club's coaching staff. */
 export type StaffRole =
   'assistant' | 'attack' | 'defense' | 'goalkeeping' | 'fitness' | 'youth' | 'scout';
 export type StaffTrait = 'developer' | 'specialist' | 'recovery' | 'spotter' | 'negotiator';
 export type ManagerTrait = 'youth' | 'rotation' | 'stable';
+/** A manager's school of football (→STAFF-14); absent means the founding all-rounder. */
+export type ManagerStyle =
+  | 'positional'
+  | 'gegenpress'
+  | 'counter'
+  | 'organizer'
+  | 'motivator'
+  | 'developer'
+  | 'firefighter'
+  | 'headcoach';
+/** The club's long-term direction (→ECON-22); absent means balanced. */
+export type ClubVision =
+  'balanced' | 'academy' | 'trading' | 'commercial' | 'community' | 'ambition';
 export type DelegationKey = 'training' | 'academy' | 'transfers' | 'business';
+/** Owner requests to the manager and staff (→CLUB-20). */
 export type CareKind =
-  'rest-day' | 'medical' | 'team-dinner' | 'bonus' | 'owner-visit' | 'friendly';
+  | 'rest-day'
+  | 'recovery'
+  | 'meeting'
+  | 'bonding'
+  | 'camp'
+  | 'backing'
+  | 'win-bonus'
+  | 'owner-visit'
+  | 'friendly';
 export type InboxKind =
   | 'match'
   | 'window-open'
@@ -78,6 +102,8 @@ export interface Manager {
   pending?: Tactic;
   /** Selection habit; absent means the neutral pre-trait selection. */
   trait?: ManagerTrait;
+  /** School of football; absent means the neutral founding all-rounder. */
+  style?: ManagerStyle;
 }
 export interface Staff {
   id: string;
@@ -188,11 +214,14 @@ export interface Highlight {
 export interface MatchRecord extends Fixture {
   score: Score;
   metrics: [Metrics, Metrics];
-  players: { id: string; metrics: Metrics }[];
+  /** `detail` follows PD (contracts/detail.ts); present for every player or for none. */
+  players: { id: string; metrics: Metrics; detail?: Metrics }[];
   highlights: Highlight[];
   tactics: [Tactic, Tactic];
   /** Expected goals of the duel chain, home then away, in hundredths; absent before rules 1.5.0. */
   xg?: [number, number];
+  /** Advanced counters, home then away, following TD (contracts/detail.ts); from rules 1.6.0. */
+  detail?: [Metrics, Metrics];
 }
 export type PlayerMotionState =
   'shape' | 'support' | 'run' | 'press' | 'mark' | 'recover' | 'carry' | 'keeper';
@@ -357,7 +386,7 @@ export interface World {
   /** Last settled training boundary, preventing repeated development/recovery. */
   trainingAt?: string;
   /** Club operating policy; absent means POLICY_DEFAULTS. */
-  policy?: ClubPolicy;
+  policy?: SavedPolicy;
   /** Coaching staff below the manager. Absent in older saves, whose effects stay neutral. */
   staff?: Staff[];
   academy?: Academy;
@@ -367,6 +396,12 @@ export interface World {
   inbox?: InboxItem[];
   /** Squad morale 0–100; absent in older saves, which keep pre-morale strength. */
   morale?: number;
+  /** Club direction; absent means balanced. */
+  vision?: ClubVision;
+  /** Season year the vision was last changed; one change per season. */
+  visionYear?: number;
+  /** Win bonus promised for the next own matches: pays per win until `matches` run out. */
+  winBonus?: { matches: number };
   manager: Manager;
   tactic: Tactic;
   requested?: Tactic;
@@ -426,4 +461,5 @@ export type Command =
   | { type: 'ticket'; price: number }
   | { type: 'support' }
   | { type: 'accept-condition' }
-  | { type: 'care'; kind: CareKind };
+  | { type: 'care'; kind: CareKind }
+  | { type: 'vision'; vision: ClubVision };

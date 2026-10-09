@@ -14,6 +14,9 @@ import { staffEffects, staffMember } from './staff';
 import { pushInbox } from './inbox';
 import { recordDevelopment, roleSkills, skillAfter } from './training';
 import { operatingCosts } from './finance';
+import { policyEffects, policyOf } from './policy';
+import { visionEffects } from './vision';
+import { synergyEffects } from './synergy';
 
 /** First-team squad limit shared with signings. */
 const SQUAD_LIMIT = 26;
@@ -50,7 +53,43 @@ export function academyIntakeDay(w: World) {
 /** Prospects that arrive at the next intake: 3, +1 with a strong youth director, +1 with facilities. */
 export function academyIntakeSize(w: World) {
   const director = staffMember(w, 'youth');
-  return 3 + (director && director.ability >= 70 ? 1 : 0) + (w.facilities >= 4 ? 1 : 0);
+  return (
+    3 +
+    (director && director.ability >= 70 ? 1 : 0) +
+    (w.facilities >= 4 ? 1 : 0) +
+    policyEffects(policyOf(w)).academyIntake +
+    visionEffects(w).academyIntake
+  );
+}
+/** Potential added to every prospect by academy investment, the club vision and synergies. */
+export function academyPotentialBonus(w: World) {
+  return (
+    policyEffects(policyOf(w)).academyPotential +
+    visionEffects(w).academyPotential +
+    synergyEffects(w).academyPotential
+  );
+}
+/** Potential a prospect needs to be called a golden prospect. */
+export const GOLDEN_POTENTIAL = 80;
+/**
+ * The exact chance that the next intake brings at least one prospect of golden potential,
+ * from the same uniform draws the intake uses (→CLUB-16).
+ */
+export function academyIntakeOutlook(w: World) {
+  const size = academyIntakeSize(w),
+    quality = staffEffects(w).academyQuality,
+    bonus = academyPotentialBonus(w),
+    lift = Math.min(4, Math.floor(w.facilities / 2)) + Math.round(quality / 4);
+  let hits = 0,
+    cases = 0;
+  for (let first = 25; first <= 36; first++)
+    for (let second = 22; second <= 48; second++) {
+      const base = clamp(first + lift, 20, 45);
+      cases++;
+      if (clamp(base + second + quality + bonus, 40, 99) >= GOLDEN_POTENTIAL) hits++;
+    }
+  const each = hits / cases;
+  return { size, each, golden: 1 - (1 - each) ** size };
 }
 /** Runs once per season on the intake day. */
 export function runAcademyIntake(w: World): void {
@@ -65,6 +104,7 @@ export function runAcademyIntake(w: World): void {
   }
   const code = clubOf(w).country,
     quality = staffEffects(w).academyQuality,
+    bonus = academyPotentialBonus(w),
     prospects: Player[] = [];
   for (let i = 0; i < count; i++) {
     const r = random(`${w.seed}:academy-intake:${w.year}:${i}`);
@@ -86,7 +126,7 @@ export function runAcademyIntake(w: World): void {
     );
     player.potential = Math.max(
       overall(player),
-      clamp(base + integer(r, 22, 48) + quality, 40, 99),
+      clamp(base + integer(r, 22, 48) + quality + bonus, 40, 99),
     );
     // Academy prospects are unpaid until promoted.
     player.wage = '0';
@@ -110,7 +150,11 @@ export function runAcademyIntake(w: World): void {
 export function developAcademy(w: World): void {
   const players = w.academy?.players;
   if (!players?.length) return;
-  const growth = staffEffects(w).academyGrowth * (1 + w.facilities / 40);
+  const growth =
+    staffEffects(w).academyGrowth *
+    (1 + w.facilities / 40) *
+    policyEffects(policyOf(w)).academyGrowth *
+    synergyEffects(w).academyGrowth;
   for (const player of players) {
     const gap = Math.max(0, player.potential - overall(player)),
       gain = hundredths(Math.min(0.3, gap / 150) * growth),

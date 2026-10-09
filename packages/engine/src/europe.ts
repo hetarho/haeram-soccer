@@ -421,7 +421,7 @@ export function finishEurope(w: World) {
         w,
         'europe-honor',
         `${t.name} 우승`,
-        `${w.year}/${String(w.year + 1).slice(2)} · 유럽의 정상`,
+        `${w.year}/${String(w.year + 1).slice(2)} · 대륙의 정상`,
       );
     }
   }

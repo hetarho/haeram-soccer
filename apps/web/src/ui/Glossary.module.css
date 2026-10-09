@@ -1,0 +1,83 @@
+/* Tripled class: inline terms must beat container rules such as `.layout .main button`. */
+.term.term.term {
+  display: inline;
+  width: auto;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  text-decoration: underline dotted;
+  text-decoration-color: color-mix(in srgb, currentColor 55%, transparent);
+  text-underline-offset: 3px;
+  cursor: help;
+}
+.term.term.term:hover {
+  text-decoration-color: currentColor;
+  transform: none;
+}
+.term.term.term:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.entry {
+  display: grid;
+  gap: 8px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.entry:last-child {
+  border-bottom: 0;
+}
+.entry h3 {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  font-size: 17px;
+}
+.entry h3 small {
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+.entry dl {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+.entry dt {
+  color: var(--text-faint);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+.entry dd {
+  margin: 0 0 6px;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.all {
+  display: grid;
+}
+.intro {
+  margin: 0 0 4px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.term.term.term:active {
+  transform: none;
+  box-shadow: none;
+}

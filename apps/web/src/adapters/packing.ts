@@ -1,5 +1,6 @@
 import { prepareSeason } from '../../../../packages/engine/src/season';
-import { packBitColumns, readBitColumns } from './bitpacking';
+import { packBitColumns, readBitColumns, type BitColumns } from './bitpacking';
+import { PLAYER_DETAIL_SIZE, TEAM_DETAIL_SIZE } from '../../../../packages/contracts/src/detail';
 import type {
   World,
   MatchRecord,
@@ -117,6 +118,11 @@ interface Packed {
   matchCount?: number;
   /** Per match: [recorded 0|1, home xG, away xG] in hundredths. */
   matchXg?: string;
+  /**
+   * Advanced counters (MATCH-13): a 0|1 flag per match, then two team rows per flagged match and
+   * one row per saved player of a flagged match, each in its own bit-column stream.
+   */
+  matchDetail?: { flags: string; teams: BitColumns; players: BitColumns };
   stats: string;
   statWidth?: number;
   statBits?: ReturnType<typeof packBitColumns>;
@@ -172,6 +178,21 @@ export function pack(w: World): Packed {
   });
   if (stats.some((value) => !Number.isSafeInteger(value) || value < 0))
     throw new Error('압축할 통계가 0 이상의 안전한 정수가 아닙니다.');
+  const detailFlags: number[] = [],
+    teamDetails: number[] = [],
+    playerDetails: number[] = [];
+  for (const m of w.ownMatches) {
+    detailFlags.push(m.detail ? 1 : 0);
+    if (!m.detail) {
+      if (m.players.some((p) => p.detail)) throw new Error('경기 고급 지표 차원 손상');
+      continue;
+    }
+    teamDetails.push(...m.detail[0], ...m.detail[1]);
+    for (const p of m.players) {
+      if (!p.detail) throw new Error('경기 고급 지표 차원 손상');
+      playerDetails.push(...p.detail);
+    }
+  }
   const counts = w.history.map((h) => h.standings.length);
   const actorDimensions: number[] = [];
   const matchPlayers: number[] = [];
@@ -302,6 +323,15 @@ export function pack(w: World): Packed {
             ),
             3,
           ),
+        }
+      : {}),
+    ...(detailFlags.some(Boolean)
+      ? {
+          matchDetail: {
+            flags: integers(detailFlags, 1),
+            teams: packBitColumns(teamDetails, TEAM_DETAIL_SIZE, 'planes'),
+            players: packBitColumns(playerDetails, PLAYER_DETAIL_SIZE, 'planes'),
+          },
         }
       : {}),
     ...(compactEvents
@@ -469,8 +499,19 @@ export function unpack(p: Packed): World {
   if (p.matchXg !== undefined && typeof p.matchXg !== 'string')
     throw new Error('경기 기대 득점 압축 데이터 손상');
   const xgStream = p.matchXg === undefined ? undefined : reader(p.matchXg, 3);
+  const detail = p.matchDetail;
+  if (
+    detail !== undefined &&
+    (!detail || typeof detail !== 'object' || typeof detail.flags !== 'string')
+  )
+    throw new Error('경기 고급 지표 압축 데이터 손상');
+  const detailFlags = detail && reader(detail.flags, 1),
+    teamDetails = detail && readBitColumns(detail.teams, TEAM_DETAIL_SIZE),
+    playerDetails = detail && readBitColumns(detail.players, PLAYER_DETAIL_SIZE);
   const matches = packedMatches.map((t) => {
     const xgRow = xgStream?.take(3);
+    const detailed = detailFlags?.take(1)[0] ?? 0;
+    if (detailed !== 0 && detailed !== 1) throw new Error('경기 고급 지표 표시 손상');
     const takeMetrics = () => {
       const row = stats.take(12);
       if (p.statResiduals) {
@@ -489,7 +530,11 @@ export function unpack(p: Packed): World {
     return {
       ...f(t),
       metrics,
-      players: (t[9] as number[]).map((n) => ({ id: str(n), metrics: takeMetrics() })),
+      players: (t[9] as number[]).map((n) => ({
+        id: str(n),
+        metrics: takeMetrics(),
+        ...(detailed ? { detail: playerDetails!.take(PLAYER_DETAIL_SIZE) } : {}),
+      })),
       highlights: (t[10] as number[][]).map((h) => ({
         minute: h[0],
         side: h[1] as 0 | 1,
@@ -498,9 +543,17 @@ export function unpack(p: Packed): World {
       })),
       tactics: (t[11] as number[]).map(str) as MatchRecord['tactics'],
       ...(xgRow?.[0] ? { xg: [xgRow[1] / 100, xgRow[2] / 100] } : {}),
+      ...(detailed
+        ? {
+            detail: [teamDetails!.take(TEAM_DETAIL_SIZE), teamDetails!.take(TEAM_DETAIL_SIZE)],
+          }
+        : {}),
     } as MatchRecord;
   });
   xgStream?.done();
+  detailFlags?.done();
+  teamDetails?.done();
+  playerDetails?.done();
   let events: Event[] | undefined = p.events?.map((tuple) => {
     if (!Array.isArray(tuple) || tuple.length !== 7)
       throw new Error('정산 이벤트 압축 데이터 손상');

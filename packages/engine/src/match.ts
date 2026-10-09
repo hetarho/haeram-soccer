@@ -9,9 +9,13 @@ import type {
   World,
 } from '../../contracts/src/types';
 import { clamp, integer, random, zeroMetrics } from './primitives';
+import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../contracts/src/detail';
 import { fatigueLoad, rating, startingSquad, findClub } from './world';
 import { moraleStrength } from './morale';
-import { npcTactic, tacticalProfile, type TacticalProfile } from './strategy';
+import { npcTactic, ownTacticalProfile, tacticalProfile, type TacticalProfile } from './strategy';
+import { managerStyleEffects } from './styles';
+import { synergyEffects } from './synergy';
+import { visionEffects } from './vision';
 import { MatchMotion } from './motion';
 export { MATCH_MOTION_CONFIG, playerTraits, teamMotionProfile } from './motion';
 export const METRICS = [
@@ -89,6 +93,22 @@ export const MATCH_DUEL_CONFIG = {
   /** In-match fatigue: skill points lost by 90′ per missing stamina point. */
   drainPerStamina: 1 / 12,
   pressDrain: 1.3,
+  /**
+   * Where each tactic defends: pass success taken off the opponent while it builds up in its own
+   * two thirds (`high`) and while it attacks the final third (`low`). Pressing wins the ball high
+   * and leaves space behind; a counter side cedes the build-up and stays compact.
+   */
+  lines: {
+    balanced: { high: 0, low: 0 },
+    possession: { high: 0.02, low: 0 },
+    counter: { high: -0.03, low: 0.035 },
+    press: { high: 0.07, low: 0 },
+  } as Record<Tactic, { high: number; low: number }>,
+  /**
+   * A minute that starts with the ball just won in the opponent's third: the chance rate rises by
+   * this factor and the chance is a big one this much more often.
+   */
+  transition: { chance: 1.25, big: 0.15 },
 } as const;
 
 /** Who carries the ball in each zone, and who marks there. */
@@ -118,6 +138,9 @@ interface MatchSetup {
   tactics: [Tactic, Tactic];
   profiles: TacticalProfile[];
   possessionChance: number;
+  /** Where each side defends and how fast it tires: the tactic line plus the own build's cards. */
+  lines: { high: number; low: number }[];
+  drain: number[];
 }
 
 /**
@@ -134,20 +157,37 @@ export function simulateMatch(
     away = findClub(w, f.away);
   const teams: [Club, Club] = [home, away];
   const squads: [Player[], Player[]] = [startingSquad(w, home), startingSquad(w, away)];
-  const strength = [
-    rating(w, home) +
-      3 +
-      (home.id === w.playerClub ? (w.manager.ability - 50) / 4 + moraleStrength(w) : 4),
-    rating(w, away) +
-      (away.id === w.playerClub ? (w.manager.ability - 50) / 4 + moraleStrength(w) : 4),
-  ];
   const tactics: [Tactic, Tactic] = teams.map((c) =>
     c.id === w.playerClub ? w.tactic : npcTactic(c),
   ) as [Tactic, Tactic];
-  const profiles = [
-    tacticalProfile(squads[0], tactics[0], tactics[1]),
-    tacticalProfile(squads[1], tactics[1], tactics[0]),
+  // The own club's manager style, vision and synergies; clubs nobody owns play their tactic.
+  const ownSide = home.id === w.playerClub ? 0 : away.id === w.playerClub ? 1 : undefined;
+  const style = ownSide === undefined ? undefined : managerStyleEffects(w);
+  const synergy = ownSide === undefined ? undefined : synergyEffects(w);
+  const ownStrength = (side: 0 | 1) =>
+    (w.manager.ability - 50) / 4 +
+    moraleStrength(w) +
+    style!.strength +
+    (side === 0 ? visionEffects(w).homeStrength : 0);
+  const strength = [
+    rating(w, home) + 3 + (ownSide === 0 ? ownStrength(0) : 4),
+    rating(w, away) + (ownSide === 1 ? ownStrength(1) : 4),
   ];
+  const profiles = [0, 1].map((side) =>
+    side === ownSide
+      ? ownTacticalProfile(w, squads[side], tactics[side], tactics[1 - side])
+      : tacticalProfile(squads[side], tactics[side], tactics[1 - side]),
+  );
+  const lines = tactics.map((tactic, side) => {
+    const line = MATCH_DUEL_CONFIG.lines[tactic];
+    return side === ownSide
+      ? {
+          high: line.high + style!.lineHigh + synergy!.lineHigh,
+          low: line.low + style!.lineLow,
+        }
+      : line;
+  });
+  const drain = [0, 1].map((side) => (side === ownSide ? style!.drain : 1));
   const setup: MatchSetup = {
     w,
     f,
@@ -156,6 +196,8 @@ export function simulateMatch(
     strength,
     tactics,
     profiles,
+    lines,
+    drain,
     possessionChance:
       clamp(
         50 + (strength[0] - strength[1]) / 2 + profiles[0].possession - profiles[1].possession,
@@ -253,7 +295,7 @@ function summaryMatch({ f, r, squads, strength, tactics, profiles, possessionCha
 
 /** Every action of a possession minute is a duel between named players (MATCH-11). */
 function duelMatch(
-  { f, r, squads, strength, tactics, profiles, possessionChance }: MatchSetup,
+  { f, r, squads, strength, tactics, profiles, possessionChance, lines, drain: drains }: MatchSetup,
   motion: MatchMotion | undefined,
   recordPlayers: boolean,
 ): MatchPlayback {
@@ -261,6 +303,9 @@ function duelMatch(
   const observe = !!motion;
   const metrics: [number[], number[]] = [zeroMetrics(), zeroMetrics()];
   const contributions = squads.map((ps) => ps.map(() => zeroMetrics()));
+  // Advanced counters (MATCH-13): team rows follow TD, player rows follow PD.
+  const team: [number[], number[]] = [emptyTeamDetail(), emptyTeamDetail()];
+  const personal = squads.map((ps) => ps.map(() => emptyPlayerDetail()));
   const frames: MatchPlayback['frames'] = [];
   const highlights: MatchRecord['highlights'] = [];
   const xg: [number, number] = [0, 0];
@@ -285,7 +330,8 @@ function duelMatch(
       rate[slot] =
         ((100 - ps[Math.min(slot, ps.length - 1)].stamina) *
           c.drainPerStamina *
-          (tactics[side] === 'press' ? c.pressDrain : 1)) /
+          (tactics[side] === 'press' ? c.pressDrain : 1) *
+          drains[side]) /
         90;
     return rate;
   });
@@ -295,6 +341,19 @@ function duelMatch(
   const credit = (side: Side, slot: number, metric: number) => {
     const row = contributions[side][slot];
     if (row) row[metric]++;
+  };
+  const note = (side: Side, slot: number, key: number, amount = 1) => {
+    const row = personal[side][slot];
+    if (row) row[key] += amount;
+  };
+  /** The other side won the ball from `side` in `zone`, by `slot`. */
+  const regain = (side: Side, zone: Zone, slot: number) => {
+    const winner: Side = side === 0 ? 1 : 0;
+    if (zone <= 1) team[winner][TD.pressActions]++;
+    if (zone === 0) {
+      team[winner][TD.highTurnovers]++;
+      note(winner, slot, PD.highTurnovers);
+    }
   };
   // Forwards take most shots, midfielders some, defenders the occasional set piece.
   // xG is recorded for an average finisher and keeper of this match's level, so goals minus xG
@@ -324,7 +383,7 @@ function duelMatch(
     return 9;
   };
   /** Who holds the ball as the minute ends; absent after a goal, when play restarts at kickoff. */
-  let carrier: { side: Side; slot: number; zone: Zone } | undefined;
+  let carrier: { side: Side; slot: number; zone: Zone; won?: boolean } | undefined;
   for (minute = 1; minute <= 90; minute++) {
     const side: Side = r() < possessionChance ? 0 : 1;
     const other: Side = side === 0 ? 1 : 0;
@@ -340,7 +399,10 @@ function duelMatch(
         96,
       ) / 100;
     const chanceRate = clamp(18 + profiles[side].shot - profiles[other].defense, 7, 30) / 100;
-    const chance = r() < Math.min(0.6, chanceRate / c.keyRealized);
+    // Winning the ball in the opponent's third and keeping it is the best playmaker.
+    const transition = !!carrier?.won && carrier.side === side && carrier.zone === 2;
+    const chance =
+      r() < Math.min(0.6, (chanceRate / c.keyRealized) * (transition ? c.transition.chance : 1));
     metrics[side][11]++;
     let zone: Zone, slot: number;
     if (!carrier) {
@@ -381,6 +443,8 @@ function duelMatch(
           0.85,
         );
         const ok = r() < beat;
+        team[side][TD.takeOns]++;
+        note(side, slot, PD.takeOns);
         if (ok) {
           metrics[side][8]++;
           credit(side, slot, 8);
@@ -390,7 +454,8 @@ function duelMatch(
         } else {
           metrics[other][6]++;
           credit(other, defender, 6);
-          carrier = { side: other, slot: defender, zone: (2 - zone) as Zone };
+          regain(side, zone, defender);
+          carrier = { side: other, slot: defender, zone: (2 - zone) as Zone, won: true };
           action = '태클';
           actor = defender;
           ended = true;
@@ -425,15 +490,29 @@ function duelMatch(
         accuracy +
           (skill(side, slot, PASSING) - 55) * c.passerWeight -
           (skill(other, marker, DEFENSE) - 55) * c.markerWeight +
-          (forward ? -c.progressivePenalty : c.recyclingBonus),
+          (forward ? -c.progressivePenalty : c.recyclingBonus) -
+          (zone <= 1 ? lines[other].high : lines[other].low),
         0.3,
         0.97,
       );
       metrics[side][2]++;
       credit(side, slot, 2);
+      if (zone <= 1) team[side][TD.buildUpPasses]++;
+      else {
+        team[side][TD.finalThirdPasses]++;
+        note(side, slot, PD.finalThirdPasses);
+      }
       if (r() < success) {
         metrics[side][3]++;
         credit(side, slot, 3);
+        if (zone === 2) {
+          team[side][TD.finalThirdCompleted]++;
+          note(side, slot, PD.finalThirdCompleted);
+        }
+        if (forward) {
+          team[side][TD.progressivePasses]++;
+          note(side, slot, PD.progressivePasses);
+        }
         events?.push({
           t: 0,
           kind: 'pass',
@@ -454,6 +533,7 @@ function duelMatch(
         const tackled = lost < c.tackleShare;
         metrics[other][tackled ? 6 : 7]++;
         credit(other, marker, tackled ? 6 : 7);
+        regain(side, zone, marker);
         events?.push({
           t: 0,
           kind: 'pass',
@@ -465,7 +545,7 @@ function duelMatch(
           lost: true,
           zone,
         });
-        carrier = { side: other, slot: marker, zone: (2 - zone) as Zone };
+        carrier = { side: other, slot: marker, zone: (2 - zone) as Zone, won: true };
         action = tackled ? '태클' : '인터셉트';
         actor = marker;
         ended = true;
@@ -496,9 +576,15 @@ function duelMatch(
           : skill(side, creator, PASSING) * 0.5 + skill(side, shooter, ATTACK) * 0.5;
       const margin = attackValue - skill(other, defender, DEFENSE);
       const key = clamp(c.keySuccess + margin / c.keyScale, 0.25, 0.92);
+      // The final ball is an attacking-third pass; a solo run is a take-on.
       if (creator !== undefined) {
         metrics[side][2]++;
         credit(side, creator, 2);
+        team[side][TD.finalThirdPasses]++;
+        note(side, creator, PD.finalThirdPasses);
+      } else {
+        team[side][TD.takeOns]++;
+        note(side, shooter, PD.takeOns);
       }
       if (r() >= key) {
         // The marker reads the final ball or stops the run: the chance never becomes a shot.
@@ -528,6 +614,12 @@ function duelMatch(
         if (creator !== undefined) {
           metrics[side][3]++;
           credit(side, creator, 3);
+          team[side][TD.finalThirdCompleted]++;
+          note(side, creator, PD.finalThirdCompleted);
+          if (zone < 2) {
+            team[side][TD.progressivePasses]++;
+            note(side, creator, PD.progressivePasses);
+          }
           lastPasser = creator;
           events?.push({
             t: 0,
@@ -542,6 +634,8 @@ function duelMatch(
         } else {
           metrics[side][8]++;
           credit(side, shooter, 8);
+          // Beating the last man alone makes the chance his own: no key pass, no assist.
+          lastPasser = undefined;
           events?.push({
             t: 0,
             kind: 'dribble',
@@ -554,7 +648,9 @@ function duelMatch(
         }
         // One draw sets the chance type and its quality; a wider duel margin makes better chances.
         const u = r();
-        const big = clamp(c.bigShare + margin / 400, 0.05, 0.3),
+        const big = transition
+            ? clamp(c.bigShare + c.transition.big + margin / 400, 0.05, 0.5)
+            : clamp(c.bigShare + margin / 400, 0.05, 0.3),
           box = big + c.boxShare;
         const band = u < big ? c.chances.big : u < box ? c.chances.box : c.chances.long;
         const within = u < big ? u / big : u < box ? (u - big) / c.boxShare : (u - box) / (1 - box);
@@ -582,6 +678,18 @@ function duelMatch(
         xg[side] += shotXg;
         metrics[side][4]++;
         credit(side, shooter, 4);
+        const bigChance = u < big,
+          shotXg100 = Math.round(shotXg * 100);
+        if (bigChance) team[side][TD.bigChances]++;
+        if (u < box) team[side][TD.boxShots]++;
+        note(side, shooter, PD.xg, shotXg100);
+        // The last completed pass before the shot is the key pass; it earns the shot's xG as xA.
+        if (lastPasser !== undefined) {
+          team[side][TD.keyPasses]++;
+          note(side, lastPasser, PD.keyPasses);
+          note(side, lastPasser, PD.xa, shotXg100);
+          if (bigChance) note(side, lastPasser, PD.bigChancesCreated);
+        }
         const shot = r();
         let outcome: NonNullable<MatchEvent['outcome']>;
         if (shot < targetChance) {
@@ -591,6 +699,7 @@ function duelMatch(
             outcome = 'goal';
             metrics[side][0]++;
             credit(side, shooter, 0);
+            if (bigChance) team[side][TD.bigChancesScored]++;
             if (lastPasser !== undefined) {
               metrics[side][1]++;
               credit(side, lastPasser, 1);
@@ -660,9 +769,14 @@ function duelMatch(
     score: { home: metrics[0][0], away: metrics[1][0] },
     metrics,
     xg: [Math.round(xg[0] * 100) / 100, Math.round(xg[1] * 100) / 100],
+    detail: team,
     players: recordPlayers
       ? squads.flatMap((ps, side) =>
-          ps.map((p, i) => ({ id: p.id, metrics: contributions[side][i] })),
+          ps.map((p, i) => ({
+            id: p.id,
+            metrics: contributions[side][i],
+            detail: personal[side][i],
+          })),
         )
       : [],
     highlights,

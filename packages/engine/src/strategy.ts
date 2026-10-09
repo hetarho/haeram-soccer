@@ -1,6 +1,8 @@
 import type { Club, Player, Tactic, World } from '../../contracts/src/types';
 import { activePlayers, addEvent, clubStyle, fatigueLoad, LINEUP_ROLES, overall } from './world';
 import { clamp, compareIds } from './primitives';
+import { managerStyleEffects } from './styles';
+import { synergyEffects } from './synergy';
 
 export interface TacticalProfile {
   fit: number;
@@ -106,6 +108,26 @@ export function tacticalProfile(
       break;
   }
   profile.fit = Math.round(clamp(profile.fit));
+  return profile;
+}
+
+/**
+ * The own club's profile: the tactic's tradeoffs plus the manager's school and active synergies,
+ * shared by the simulation and the pre-match laboratory (→MATCH-9, →STAFF-14).
+ */
+export function ownTacticalProfile(
+  w: World,
+  players: readonly Player[],
+  tactic: Tactic,
+  opponentTactic: Tactic = 'balanced',
+): TacticalProfile {
+  const profile = tacticalProfile(players, tactic, opponentTactic),
+    style = managerStyleEffects(w),
+    synergy = synergyEffects(w);
+  profile.pass += style.pass + synergy.pass;
+  profile.possession += style.possession + synergy.possession;
+  profile.shot += style.shot;
+  profile.defense += style.defense + synergy.defense;
   return profile;
 }
 

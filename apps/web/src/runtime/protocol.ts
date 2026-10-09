@@ -59,7 +59,7 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('training'), focus: z.enum(['balanced', 'youth', 'recovery']) }),
   z.object({
     type: z.literal('policy'),
-    key: z.enum(['support', 'recruitment', 'marketing']),
+    key: z.enum(['support', 'recruitment', 'marketing', 'academy']),
     level: z.literal([1, 2, 3, 4, 5]),
   }),
   z.object({ type: z.literal('hire-staff'), role: staffRole, candidate: index }),
@@ -67,7 +67,21 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('promote-youth'), id: ref }),
   z.object({
     type: z.literal('care'),
-    kind: z.enum(['rest-day', 'medical', 'team-dinner', 'bonus', 'owner-visit', 'friendly']),
+    kind: z.enum([
+      'rest-day',
+      'recovery',
+      'meeting',
+      'bonding',
+      'camp',
+      'backing',
+      'win-bonus',
+      'owner-visit',
+      'friendly',
+    ]),
+  }),
+  z.object({
+    type: z.literal('vision'),
+    vision: z.enum(['balanced', 'academy', 'trading', 'commercial', 'community', 'ambition']),
   }),
   z.object({ type: z.literal('release-youth'), id: ref }),
   z.object({

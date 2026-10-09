@@ -10,7 +10,6 @@ import { money, kindLabel } from './format';
 import { Dialog } from './Dialog';
 import s from './EventCenter.module.css';
 import { fadeOutOnRemove } from './motion';
-import { TransferCeremony } from './TransferCeremony';
 import { ClubCrest } from './ClubCrest';
 import { watchNextMatch } from './watch';
 
@@ -55,24 +54,7 @@ export function EventCenter({
   const { stopOn, matchEve, running } = useProgression(controller, (state) => state);
   const { setPage } = useNavigation();
   const setSquadTab = useSquadView((state) => state.setTab);
-  const [ceremony, setCeremony] = useState<InboxItem>();
   const [opened, setOpened] = useState<string>();
-  if (ceremony && w)
-    return (
-      <TransferCeremony
-        w={w}
-        candidates={market.filter((offer) => offer.available).length}
-        onEnter={() => {
-          setCeremony(undefined);
-          void read(ceremony);
-          setPage('transfers');
-        }}
-        onClose={() => {
-          setCeremony(undefined);
-          void read(ceremony);
-        }}
-      />
-    );
   if (!w || running) return null;
   const events = stoppingEvents(w, stopOn);
   const next = nextOwnFixture(w);
@@ -148,8 +130,11 @@ export function EventCenter({
     await client.command({ type: 'respond-bid', id: bid.id, accept });
     await read(item);
   };
-  // An opening window gets its full-screen moment before the market.
-  const openMarket = () => setCeremony(item);
+  // A window opening is routine club business: read it and go to the market, no ceremony.
+  const openMarket = () => {
+    void read(item);
+    setPage('transfers');
+  };
   return (
     <aside
       key={item.id}
@@ -204,7 +189,7 @@ export function EventCenter({
         ) : item.kind === 'window-open' ? (
           <>
             <button className={s.primary} disabled={acting} onClick={openMarket}>
-              이적 시장 열기 ✦
+              이적시장 보기
             </button>
             <button disabled={acting} onClick={() => void read(item)}>
               확인

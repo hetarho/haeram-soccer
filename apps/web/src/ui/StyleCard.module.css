@@ -1,0 +1,72 @@
+.card {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line-strong);
+  border-left-width: 4px;
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  min-width: 0;
+}
+.card > b {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+}
+.card > b span {
+  padding: 1px 7px;
+  border-radius: 6px;
+  background: var(--surface-3);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+.card > small {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.card ul {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.pro {
+  color: var(--accent-text);
+}
+.con {
+  color: var(--warm);
+}
+.neutral {
+  border-left-color: var(--line-strong);
+}
+.positional {
+  border-left-color: #59a8ff;
+}
+.gegenpress {
+  border-left-color: #ff6d60;
+}
+.counter {
+  border-left-color: #ffcb47;
+}
+.organizer {
+  border-left-color: #8fa8b8;
+}
+.motivator {
+  border-left-color: #ff9257;
+}
+.developer {
+  border-left-color: #2fc274;
+}
+.firefighter {
+  border-left-color: #ff4d8d;
+}
+.headcoach {
+  border-left-color: #b38cff;
+}

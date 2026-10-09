@@ -36,13 +36,13 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await expect(page.getByText(/90′ ·/)).toBeVisible();
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await expect(page.getByText('유효 슈팅', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: '유럽 무대' }).click();
+  await page.getByRole('button', { name: '컵 대회' }).click();
   await expect(page.getByText('54년 후 창설 예정')).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
   const mobileMenu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(mobileMenu).toBeVisible();
   // The match view has no tab: it opens only from a watch action.
-  const tabs = ['리그', '유럽 무대', '역사 보관함', '클럽 홈', '선수단', '이적 시장', '구단 운영'];
+  const tabs = ['리그', '컵 대회', '클럽 기록실', '클럽 홈', '선수단', '이적 시장', '구단 운영'];
   await expect(mobileMenu.getByRole('button')).toHaveCount(tabs.length);
   expect(
     await mobileMenu

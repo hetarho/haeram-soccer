@@ -23,6 +23,10 @@ export * from './transfers';
 export * from './projection';
 export * from './morale';
 export * from './care';
+export * from './styles';
+export * from './vision';
+export * from './synergy';
+export * from './news';
 export function createWorld(input: Founding) {
   const w = createBase(input);
   prepareSeason(w);

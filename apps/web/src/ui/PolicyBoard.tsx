@@ -18,6 +18,7 @@ import { ticketInvestmentPreview } from '../../../../packages/engine/src/investm
 import { gateProjection, operatingCosts } from '../../../../packages/engine/src/finance';
 import { clubOf } from '../../../../packages/engine/src/world';
 import { financeProjection } from '../../../../packages/engine/src/projection';
+import { academyIntakeOutlook } from '../../../../packages/engine/src/academy';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { money, number } from './format';
@@ -141,6 +142,21 @@ function dials(w: World): Dial[] {
           policyEffects({ ...policy, marketing: level }).gateBoost * 100,
         )}%`,
         outlook({ ...w, policy: { ...policy, marketing: level } }),
+      ];
+    }),
+    policyDial('academy', '✿', (level) => {
+      const next = { ...w, policy: { ...policy, academy: level } },
+        annual = operatingCosts(next).academy,
+        intake = academyIntakeOutlook(next),
+        now = academyIntakeOutlook(w);
+      return [
+        level === (policy.academy ?? 1)
+          ? `유소년 투자 연 ${format(annual)}`
+          : `유소년 투자 연 ${format(annual)} (운영비 ${signed(policyPreview(w, 'academy', level).annualCostChange, format)})`,
+        `다음 유스 입단 ${intake.size}명 · 잠재력 80+ 유망주가 나올 확률 ${Math.round(intake.golden * 100)}%${
+          level === (policy.academy ?? 1) ? '' : ` (지금 ${Math.round(now.golden * 100)}%)`
+        }`,
+        outlook(next),
       ];
     }),
     {

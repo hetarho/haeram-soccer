@@ -28,6 +28,13 @@ import { AnimatedMoney } from './AnimatedMoney';
 import { play } from './motion';
 import { EventCenter, InboxButton } from './EventCenter';
 import { SeasonReview } from './SeasonReview';
+import { RemedySheet } from './RemedySheet';
+import { GlossaryHost } from './Glossary';
+import { useGlossary } from './metricGlossary';
+import { NewsSheet, useNewsSheet } from './NewsFeed';
+import { CelebrationHost } from './Celebration';
+import { CupsView } from './CupsView';
+import { cashState } from './teamState';
 import Rich from './Rich';
 function NavIcon({ page }: { page: Page }) {
   const paths: Record<Page, string> = {
@@ -272,97 +279,12 @@ function ClubJournal({
     </>
   );
 }
-function Europe({ w, coefficient }: { w: World; coefficient: number }) {
-  const [key, setKey] = useState('ucl');
-  const t = w.europe.find((t) => t.key === key);
-  const cards = [
-    ['ucl', 1955, 'European Cup / Champions League', '1955/56 시작 · 1992/93 챔피언스리그'],
-    ['uel', 1971, 'UEFA Cup / Europa League', '1971/72 시작 · 2009/10 유로파리그'],
-    ['uecl', 2021, 'Conference League', '2021/22 시작 · 2024/25 명칭 변경'],
-  ] as const;
-  return (
-    <>
-      <div className={s.hero}>
-        <div>
-          <div className={s.eyebrow}>BEYOND THE BORDER</div>
-          <h2>유럽이 부르는 날.</h2>
-          <p>대회는 실제 역사의 시기에 시작됩니다. 우승의 역사는 우리가 만듭니다.</p>
-        </div>
-        <span className={s.pill}>5년간 구단 경기 계수 · {number(coefficient)}점</span>
-      </div>
-      <div className={s.competitionGrid}>
-        {cards.map(([id, year, title, note]) => (
-          <section
-            key={id}
-            className={`${s.panel} ${s.competition} ${w.year < year ? s.locked : ''}`}
-          >
-            <div className={s.symbol}>{w.year < year ? '◷' : '♜'}</div>
-            <h3>{w.europe.find((t) => t.key === id)?.name || title}</h3>
-            <p>{note}</p>
-            <p>
-              {w.year < year
-                ? `${year - w.year}년 후 창설 예정`
-                : `${w.europe.find((t) => t.key === id)?.field}팀 · ${w.europe.find((t) => t.key === id)?.format} 단계`}
-            </p>
-            <button style={{ marginTop: 20 }} disabled={w.year < year} onClick={() => setKey(id)}>
-              {w.year < year ? '아직 창설되지 않은 대회' : '대회 보기 →'}
-            </button>
-          </section>
-        ))}
-      </div>
-      {t && (
-        <>
-          <div className={s.filters}>
-            {w.europe.map((t) => (
-              <button
-                key={t.key}
-                onClick={() => setKey(t.key)}
-                className={t.key === key ? s.selected : undefined}
-              >
-                {t.name}
-              </button>
-            ))}
-          </div>
-          <Panel
-            title={t.name}
-            note={`${t.field} CLUBS · ${t.stage}`}
-            footer={
-              t.clubs.includes(w.playerClub)
-                ? `우리 클럽 참가 · ${t.ownExit || '지난 시즌 리그/컵 성적에 따른 자격'}`
-                : '우리 클럽은 참가하지 않습니다. 리그 성적과 국내 컵 우승으로 도전하세요.'
-            }
-          >
-            <Table w={{ ...w, tables: t.standings }} ids={t.clubs} />
-            {t.fixtures.length > 0 && (
-              <div className={s.panelBody}>
-                {t.fixtures
-                  .filter((f) => f.home === w.playerClub || f.away === w.playerClub)
-                  .map((f) => (
-                    <p key={f.id} className={s.muted}>
-                      {w.clubs.find((c) => c.id === f.home)?.name}{' '}
-                      {f.score ? `${f.score.home}–${f.score.away}` : '예정'}{' '}
-                      {w.clubs.find((c) => c.id === f.away)?.name}
-                    </p>
-                  ))}
-              </div>
-            )}
-          </Panel>
-        </>
-      )}
-      <p className={s.muted}>
-        국가별 참가권, 시드와 추첨은 데모에 맞게 단순화했습니다. 2024/25부터 36팀 리그 페이즈와
-        8·8·6경기, 상위 8팀 직행과 9–24위 플레이오프를 적용합니다. 컵위너스컵은 1960–1998 시즌
-        운영됩니다.
-      </p>
-    </>
-  );
-}
 /** The match view has no menu entry: it opens only from a watch action (→WEB-40). */
 const NAV: [Page, string][] = [
   ['dashboard', '클럽 홈'],
   ['league', '리그'],
-  ['europe', '유럽 무대'],
-  ['history', '역사 보관함'],
+  ['europe', '컵 대회'],
+  ['history', '클럽 기록실'],
   ['season', '시즌 결산'],
   ['squad', '선수단'],
   ['transfers', '이적 시장'],
@@ -375,8 +297,8 @@ const NAV: [Page, string][] = [
  */
 const TABS: [Page, string, string, Page[]][] = [
   ['league', '리그', '리그', ['league']],
-  ['europe', '유럽', '유럽 무대', ['europe']],
-  ['history', '기록', '역사 보관함', ['history', 'season']],
+  ['europe', '컵', '컵 대회', ['europe']],
+  ['history', '기록', '클럽 기록실', ['history', 'season']],
   ['dashboard', '홈', '클럽 홈', ['dashboard']],
   ['squad', '선수단', '선수단', ['squad', 'manager']],
   ['transfers', '이적', '이적 시장', ['transfers']],
@@ -493,7 +415,7 @@ const ConnectedDashboard = memo(function ConnectedDashboard({
 });
 const ConnectedEurope = memo(function ConnectedEurope() {
   const state = useContentState();
-  return <Europe w={state.view!.world} coefficient={state.view!.coefficient} />;
+  return <CupsView w={state.view!.world} coefficient={state.view!.coefficient} />;
 });
 const ConnectedSeasonReview = memo(function ConnectedSeasonReview({
   client,
@@ -521,31 +443,44 @@ function CalendarText() {
   const round = useGameState((state) => state.view?.world.round);
   return <>{year ? `${seasonName(year)} · 라운드 ${round}` : '1901 · A NEW BEGINNING'}</>;
 }
-/** Cash is the one resource every decision spends, so it stays pinned to the top right. */
-function HudCash() {
-  const cash = useGameState((state) => state.view?.world.cash);
-  const year = useGameState((state) => state.view?.world.year);
-  const own = useGameState((state) =>
-    state.view?.world.clubs.find((club) => club.id === state.view?.world.playerClub),
-  );
-  if (!cash || !own || !year) return null;
+/**
+ * Cash is the one resource every decision spends, so it stays pinned to the top right; tapping it
+ * shows how long it lasts and the ways to raise or save money (→WEB-44).
+ */
+function HudCash({ client }: { client?: GameClient }) {
+  const w = useGameState((state) => state.view?.world);
+  const [open, setOpen] = useState(false);
+  if (!w) return null;
+  const own = w.clubs.find((club) => club.id === w.playerClub)!;
+  const state = cashState(w);
+  const text = money(w.cash, own.country, w.year);
   return (
-    <div
-      className={`${s.hudCash} ${BigInt(cash) < 0n ? s.hudCashNegative : ''}`}
-      data-testid="hud-cash"
-      aria-label={`운영 자금 ${money(cash, own.country, year)}`}
-    >
-      <i aria-hidden="true" />
-      <span>
-        <small>운영 자금</small>
-        <AnimatedMoney
-          value={cash}
-          format={(value) => money(value, own.country, year)}
-          upClass={s.cashUp}
-          downClass={s.cashDown}
-        />
-      </span>
-    </div>
+    <>
+      <button
+        className={`${s.hudCash} ${BigInt(w.cash) < 0n ? s.hudCashNegative : state.tone === 'warn' || state.tone === 'bad' ? s.hudCashWarn : ''}`}
+        data-testid="hud-cash"
+        aria-label={`운영 자금 ${text} · ${state.status} · 자금 상황 보기`}
+        disabled={!client}
+        onClick={(event) => {
+          event.currentTarget.focus();
+          setOpen(true);
+        }}
+      >
+        <i aria-hidden="true" />
+        <span>
+          <small>운영 자금</small>
+          <AnimatedMoney
+            value={w.cash}
+            format={(value) => money(value, own.country, w.year)}
+            upClass={s.cashUp}
+            downClass={s.cashDown}
+          />
+        </span>
+      </button>
+      {open && client && (
+        <RemedySheet w={w} client={client} state="cash" onClose={() => setOpen(false)} />
+      )}
+    </>
   );
 }
 function GameHud({
@@ -592,7 +527,7 @@ function GameHud({
       </div>
       <ReadonlyBadge />
       {client && !menuDisabled && <InboxButton client={client} />}
-      <HudCash />
+      <HudCash client={menuDisabled ? undefined : client} />
     </header>
   );
 }
@@ -791,6 +726,8 @@ export function App() {
     [stopSettings, setStopSettings] = useState(false),
     [guideOpen, setGuideOpen] = useState(false);
   const { page, setPage } = useNavigation();
+  const showNews = useNewsSheet((state) => state.show);
+  const showGlossary = useGlossary((state) => state.show);
   const contentPage = useDeferredValue(page);
   const changingView = contentPage !== page;
   useEffect(() => {
@@ -1047,6 +984,24 @@ export function App() {
           >
             개입 수준 설정
           </button>
+          <button
+            className={s.guideOpen}
+            onClick={() => {
+              setMoreOpen(false);
+              showNews();
+            }}
+          >
+            클럽 뉴스
+          </button>
+          <button
+            className={s.guideOpen}
+            onClick={() => {
+              setMoreOpen(false);
+              showGlossary();
+            }}
+          >
+            지표 사전
+          </button>
           <div className={s.moreMenu}>
             {MENU_PAGES.map(([id, label]) => (
               <button
@@ -1107,6 +1062,9 @@ export function App() {
           </div>
         </Dialog>
       )}
+      <GlossaryHost />
+      {w && !replacing && <NewsSheet />}
+      {w && !replacing && <CelebrationHost />}
       {pendingImport && (
         <Dialog label="기록 가져오기 확인" onClose={() => setPendingImport(undefined)}>
           <h2>기록을 가져올까요?</h2>

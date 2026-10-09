@@ -52,7 +52,8 @@ const titles: Record<Command['type'], string> = {
   bid: '이적 제안을 보냈어요',
   'respond-bid': '이적 제안에 답했어요',
   'read-inbox': '소식을 확인했어요',
-  care: '선수단을 챙겼어요',
+  care: '구단주 요청을 전했어요',
+  vision: '구단 비전을 정했어요',
 };
 const notes: Partial<Record<Command['type'], string>> = {
   lineup: '다음 경기부터 바꿀 때까지 이 선발을 씁니다.',
@@ -61,6 +62,7 @@ const notes: Partial<Record<Command['type'], string>> = {
   facility: '관중 수용과 선수 성장이 좋아지고, 연간 유지비가 늘어요.',
   ticket: '다음 홈 경기 관중과 입장 수입부터 반영돼요.',
   policy: '다음 라운드 정산부터 비용과 효과가 반영돼요.',
+  vision: '비전은 시즌마다 한 번만 바꿀 수 있어요.',
 };
 const trainingLabel: Record<NonNullable<World['training']>, string> = {
   balanced: '균형 훈련',
@@ -189,7 +191,7 @@ export function describeOutcome(
     );
   else compare(changes, '감독', before.manager.name, after.manager.name);
   compare(changes, '클럽 평판', Math.round(previous.reputation), Math.round(club.reputation));
-  compare(changes, '선수단 사기', before.morale, after.morale);
+  compare(changes, '팀 분위기', before.morale, after.morale);
   if (command.type === 'care')
     compare(
       changes,

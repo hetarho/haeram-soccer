@@ -3,13 +3,14 @@ import { operatingCosts } from './finance';
 import { addEvent, clubOf } from './world';
 
 /** Display and decision order. */
-export const POLICY_KEYS: readonly PolicyKey[] = ['support', 'recruitment', 'marketing'];
+export const POLICY_KEYS: readonly PolicyKey[] = ['support', 'recruitment', 'marketing', 'academy'];
 
 /** Absent or partial policies resolve to these values, which reproduce the pre-policy club. */
 export const POLICY_DEFAULTS: ClubPolicy = Object.freeze({
   support: 3,
   recruitment: 3,
   marketing: 1,
+  academy: 1,
 });
 
 export const POLICY_INFO: Record<
@@ -21,8 +22,8 @@ export const POLICY_INFO: Record<
   }
 > = {
   support: {
-    label: '선수단 지원',
-    question: '선수들에게 얼마나 투자할까요?',
+    label: '선수단 투자',
+    question: '급여 수준과 훈련·의료 환경에 얼마나 쓸까요?',
     levels: [
       { level: 1, name: '긴축', summary: '급여 지출 −15% · 라운드 성장 ×0.8 · 피로 회복 −2' },
       { level: 2, name: '절약', summary: '급여 지출 −8% · 라운드 성장 ×0.9 · 피로 회복 −1' },
@@ -77,6 +78,33 @@ export const POLICY_INFO: Record<
       },
     ],
   },
+  academy: {
+    label: '유소년 투자',
+    question: '아카데미 코치·스카우트·시설에 얼마나 쓸까요?',
+    levels: [
+      { level: 1, name: '기본 운영', summary: '추가 비용 없음 · 입단 인원과 잠재력 기본' },
+      {
+        level: 2,
+        name: '육성 강화',
+        summary: '라운드마다 소액 지출 · 입단 잠재력 +3 · 유스 성장 ×1.1',
+      },
+      {
+        level: 3,
+        name: '집중 투자',
+        summary: '라운드마다 지출 · 입단 +1명 · 잠재력 +5 · 유스 성장 ×1.2',
+      },
+      {
+        level: 4,
+        name: '엘리트 아카데미',
+        summary: '라운드마다 큰 지출 · 입단 +1명 · 잠재력 +8 · 유스 성장 ×1.3',
+      },
+      {
+        level: 5,
+        name: '최고 수준 아카데미',
+        summary: '라운드마다 최대 지출 · 입단 +2명 · 잠재력 +11 · 유스 성장 ×1.45',
+      },
+    ],
+  },
 };
 
 export interface PolicyEffects {
@@ -88,6 +116,11 @@ export interface PolicyEffects {
   marketingUnits: number;
   fanGrowth: number;
   gateBoost: number;
+  /** Per-round academy spend in 1901 price units, and what it buys at the next intake. */
+  academyUnits: number;
+  academyIntake: number;
+  academyPotential: number;
+  academyGrowth: number;
   offer: {
     ability: [number, number];
     age: [number, number];
@@ -103,6 +136,11 @@ const SUPPORT_RECOVERY = [-2, -1, 0, 1, 2];
 const MARKETING_UNITS = [0, 1, 2.5, 4.5, 7];
 const MARKETING_FANS = [0, 0.004, 0.008, 0.013, 0.02];
 const MARKETING_GATE = [0, 0.02, 0.04, 0.06, 0.08];
+/** Level 1 is exactly the pre-policy academy, at no cost. */
+const ACADEMY_UNITS = [0, 1, 2.5, 4.5, 7];
+const ACADEMY_INTAKE = [0, 0, 1, 1, 2];
+const ACADEMY_POTENTIAL = [0, 3, 5, 8, 11];
+const ACADEMY_GROWTH = [1, 1.1, 1.2, 1.3, 1.45];
 /** Level 3 is exactly the pre-policy transfer market. */
 const OFFERS: PolicyEffects['offer'][] = [
   { ability: [35, 65], age: [17, 21], potentialBonus: 12, feeMultiplier: 0.85 },
@@ -126,6 +164,7 @@ export function policyOf(w: World): ClubPolicy {
 export function policyEffects(policy: ClubPolicy): PolicyEffects {
   const support = policy.support - 1,
     marketing = policy.marketing - 1,
+    academy = (policy.academy ?? POLICY_DEFAULTS.academy) - 1,
     offer = OFFERS[policy.recruitment - 1];
   return {
     wageMultiplier: SUPPORT_WAGES[support],
@@ -134,6 +173,10 @@ export function policyEffects(policy: ClubPolicy): PolicyEffects {
     marketingUnits: MARKETING_UNITS[marketing],
     fanGrowth: MARKETING_FANS[marketing],
     gateBoost: MARKETING_GATE[marketing],
+    academyUnits: ACADEMY_UNITS[academy],
+    academyIntake: ACADEMY_INTAKE[academy],
+    academyPotential: ACADEMY_POTENTIAL[academy],
+    academyGrowth: ACADEMY_GROWTH[academy],
     offer: {
       ability: [offer.ability[0], offer.ability[1]],
       age: [offer.age[0], offer.age[1]],

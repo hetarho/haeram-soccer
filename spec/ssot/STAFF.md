@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r5 | Define the implemented browser-demo behavior for manager demands and personality.
+> r6 | Define the implemented browser-demo behavior for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development, philosophy, flexibility, pride, ambition, salary and term; hiring charges disclosed costs.
@@ -19,9 +19,23 @@
   - effect multiplier 1 + (ability − 50)/200 within 0.85–1.25; traits: developer (age ≤ 21 growth), specialist (department skill ×1.15), recovery (+2 fatigue recovery), spotter (higher potential found), negotiator (lower fees, better acceptance)
   - absent staff (older saves) and ability-50 trait-less members are exactly neutral; a vacant department is worse than neutral
   - new clubs start with unpaid ability-50 volunteers; hired coaches cost wages plus a signing fee; replacing or releasing a paid coach pays 25% of the annual wage
-- STAFF-12 [o] Hired managers may carry a selection trait: youth (+4 selection value for age ≤ 21), rotation (fatigue weighs double) or stable (fatigue weighs half). The founding manager has none.
+- STAFF-12 [o] Hired managers may carry a selection trait: youth (+4 selection value for age ≤ 21), rotation (fatigue weighs double) or stable (fatigue weighs half). The founding manager has none; a developer style (→STAFF-14) selects like the youth trait.
 - STAFF-13 [o] Training choice, academy promotion/release, answers to other clubs' offers and the main sponsor (→ECON-21) can be delegated to the staff; new clubs delegate training and the academy and decide offers and sponsors themselves (→WEB-45 level 2); any explicit owner choice takes that decision back, and delegation can be restored. Delegated decisions are reported in the inbox.
   - a delegated youth director promotes nobody while cash is below one year of operating costs and reports the deferral. ← every promotion adds a first-team wage
+
+- STAFF-14 [o] Every hire candidate belongs to a school of football; the four candidates of a season show four different schools from a seeded order of all eight, drawn from their own stream so the other attributes stay put. ← choosing a manager is choosing how the club plays and grows, with a clear price
+  | style | tactic | effects |
+  |---|---|---|
+  | 포지셔널 플레이 | possession | pass +2, possession +2, shots −0.5 points; opponent build-up −1 point; tactic requests −6 |
+  | 게겐프레싱 | press | shots +0.8; opponent build-up −3 points; in-match drain ×1.1; fatigue +1 per match |
+  | 실리 역습 | counter | opponent chances −1.2, possession −2, shots +0.3; opponent final-third passes −1.5 points |
+  | 수비 조직가 | balanced | opponent chances −1.8, shots −0.8; opponent final-third passes −1 point |
+  | 동기부여형 | own | morale baseline +6, defeats cost 2 less, squad meetings work 20 points more often |
+  | 육성형 | own | growth of players aged ≤ 21 ×1.3; selects them like the youth trait |
+  | 소방수 | own | strength +1.5, morale baseline +3, morale +10 on arrival; growth ×0.85; one-season contract |
+  | 데이터 헤드코치 | own | tactic requests +15, bid acceptance +5 points; morale baseline −2 |
+  - a style with a tactic sets the manager's philosophy; contract terms are 3 seasons except the firefighter's 1.
+  - the founding manager and an interim have no style and are exactly neutral; effects apply to the own club only, in the same profile the pre-match laboratory reads (→MATCH-9).
 
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
@@ -30,6 +44,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r6 261010 STAFF-12✎ +developer style selects youth; STAFF-14+ eight manager styles with tactic, effects and contract terms
 - r5 261009 STAFF-13✎ three delegable decisions→four with the main sponsor; delegated promotions wait while cash is under a year of costs
 - r4 261009 STAFF-13✎ all three delegated by default→training and academy delegated, transfer answers by the owner
 - r3 261008 STAFF-11+ STAFF-12+ STAFF-13+ manager-only staff→seven coaching departments with traits, manager selection traits and owner delegation

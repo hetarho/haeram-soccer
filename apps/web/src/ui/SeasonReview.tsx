@@ -8,8 +8,8 @@ import { clubOf } from '../../../../packages/engine/src/world';
 import type { GameClient } from '../runtime/client';
 import { money, number, seasonName } from './format';
 import { seasonStats, share, type Leader, type SeasonStats } from './seasonStats';
-import { TransferCeremony } from './TransferCeremony';
 import s from './SeasonReview.module.css';
+import { Term } from './Glossary';
 
 function divisionName(w: World, tier: number) {
   return tier >= country(clubOf(w).country).groups.length ? '하부 구간' : `${tier + 1}부`;
@@ -120,7 +120,17 @@ function PointsChart({ stats }: { stats: SeasonStats }) {
   );
 }
 
-function Leaders({ title, unit, leaders }: { title: string; unit: string; leaders: Leader[] }) {
+function Leaders({
+  title,
+  unit,
+  leaders,
+  digits,
+}: {
+  title: string;
+  unit: string;
+  leaders: Leader[];
+  digits?: number;
+}) {
   return (
     <div className={s.leader}>
       <span>{title}</span>
@@ -130,7 +140,7 @@ function Leaders({ title, unit, leaders }: { title: string; unit: string; leader
             <li key={leader.id}>
               <b>{leader.name}</b>
               <em>
-                {number(leader.value)}
+                {digits === undefined ? number(leader.value) : leader.value.toFixed(digits)}
                 {unit}
               </em>
             </li>
@@ -160,7 +170,6 @@ export function SeasonReview({
   onMarket: () => void;
   onHome: () => void;
 }) {
-  const [ceremony, setCeremony] = useState(false);
   const season = w.history.at(-1);
   const [loaded, setLoaded] = useState<{
     year: number;
@@ -318,6 +327,24 @@ export function SeasonReview({
                   <dt>슈팅 전환율</dt>
                   <dd>{share(stats.gf, stats.shots)}</dd>
                 </div>
+                {stats.detailMatches > 0 && (
+                  <>
+                    <div>
+                      <dt>
+                        <Term id="big-chance">빅찬스</Term> (결정률)
+                      </dt>
+                      <dd>
+                        {stats.bigChances} ({share(stats.bigChancesScored, stats.bigChances)})
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>
+                        경기당 <Term id="key-pass">키패스</Term>
+                      </dt>
+                      <dd>{one(stats.keyPasses / stats.detailMatches)}</dd>
+                    </div>
+                  </>
+                )}
               </dl>
             </section>
             <section aria-label="수비">
@@ -350,8 +377,11 @@ export function SeasonReview({
                   <dd>{share(stats.saves, stats.onTargetAgainst)}</dd>
                 </div>
                 <div>
-                  <dt>PPDA*</dt>
-                  <dd>{two(stats.ppda)}</dd>
+                  <dt>
+                    <Term id="ppda">PPDA</Term>
+                    {stats.pressPpda === undefined ? '*' : ''}
+                  </dt>
+                  <dd>{two(stats.pressPpda ?? stats.ppda)}</dd>
                 </div>
               </dl>
             </section>
@@ -376,6 +406,30 @@ export function SeasonReview({
                   <dt>경기당 태클+인터셉트</dt>
                   <dd>{one(stats.defensiveActions)}</dd>
                 </div>
+                {stats.detailMatches > 0 && (
+                  <>
+                    <div>
+                      <dt>
+                        <Term id="final-third">파이널 서드</Term> 성공률
+                      </dt>
+                      <dd>{share(stats.finalThirdCompleted, stats.finalThirdPasses)}</dd>
+                    </div>
+                    <div>
+                      <dt>
+                        <Term id="field-tilt">필드 틸트</Term>
+                      </dt>
+                      <dd>
+                        {stats.fieldTilt === undefined ? '—' : `${one(stats.fieldTilt * 100)}%`}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>
+                        경기당 <Term id="high-turnover">하이 턴오버</Term>
+                      </dt>
+                      <dd>{one(stats.highTurnovers / stats.detailMatches)}</dd>
+                    </div>
+                  </>
+                )}
                 <div>
                   <dt>홈</dt>
                   <dd>
@@ -420,6 +474,12 @@ export function SeasonReview({
           <section className={s.leaders} aria-label="시즌 리더">
             <Leaders title="득점" unit="골" leaders={stats.leaders.goals} />
             <Leaders title="도움" unit="개" leaders={stats.leaders.assists} />
+            {stats.leaders.xa.length > 0 && (
+              <Leaders title="기대 도움 (xA)" unit="" leaders={stats.leaders.xa} digits={2} />
+            )}
+            {stats.leaders.keyPasses.length > 0 && (
+              <Leaders title="키패스" unit="개" leaders={stats.leaders.keyPasses} />
+            )}
             <Leaders title="수비 (태클+인터셉트)" unit="회" leaders={stats.leaders.defending} />
             <Leaders title="출전" unit="분" leaders={stats.leaders.minutes} />
             <Leaders title="선방" unit="회" leaders={stats.leaders.saves} />
@@ -428,8 +488,11 @@ export function SeasonReview({
             리그 {stats.played}경기 기준.{' '}
             {stats.xgMatches < stats.played &&
               `xG·기대 승점은 기록이 있는 ${stats.xgMatches}경기만 셉니다. `}
-            * PPDA는 전 구역 기준 근사치(상대 패스 ÷ 우리 태클·인터셉트)로, 낮을수록 강하게
-            압박했다는 뜻이에요. 기대 승점은 경기마다 양 팀 xG를 포아송 분포로 계산했어요.
+            {stats.pressPpda === undefined
+              ? '* PPDA는 전 구역 기준 근사치(상대 패스 ÷ 우리 태클·인터셉트)예요. '
+              : 'PPDA는 상대가 자기 진영 2/3에서 한 패스 ÷ 그 구역에서의 우리 태클·인터셉트예요. '}
+            낮을수록 강하게 압박했다는 뜻이에요. 기대 승점은 경기마다 양 팀 xG를 포아송 분포로
+            계산했어요. 지표 이름을 누르면 정의를 볼 수 있어요.
           </p>
         </>
       )}
@@ -470,32 +533,17 @@ export function SeasonReview({
       </section>
 
       <div className={s.actions}>
-        {window.open ? (
-          <button className={s.market} onClick={() => setCeremony(true)}>
-            ✦ {windowInfo.name} 열기
-          </button>
-        ) : (
-          <button className={s.primary} onClick={onMarket}>
-            이적 시장 보기
-          </button>
-        )}
-        <button onClick={onHome}>홈으로</button>
-      </div>
-      {ceremony && (
-        <TransferCeremony
-          w={w}
-          candidates={candidates}
-          onEnter={() => {
-            setCeremony(false);
-            void openWindowItems();
+        <button
+          className={s.primary}
+          onClick={() => {
+            if (window.open) void openWindowItems();
             onMarket();
           }}
-          onClose={() => {
-            setCeremony(false);
-            void openWindowItems();
-          }}
-        />
-      )}
+        >
+          {window.open ? `${windowInfo.name} 보기 · 후보 ${candidates}명` : '이적시장 보기'}
+        </button>
+        <button onClick={onHome}>홈으로</button>
+      </div>
     </div>
   );
 }

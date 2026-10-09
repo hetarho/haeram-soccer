@@ -1,4 +1,5 @@
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
+import { PD, PLAYER_DETAIL_SIZE, TD } from '../../../../packages/contracts/src/detail';
 
 /** League fixtures decide the table, so the review measures the season on them. */
 const LEAGUE = new Set(['league', 'lower']);
@@ -63,6 +64,18 @@ export interface SeasonStats {
   defensiveActions: number;
   /** Opponent passes per own tackle or interception, over the whole pitch. */
   ppda?: number;
+  /** Matches that recorded advanced counters (rules 1.6.0); the figures below cover them only. */
+  detailMatches: number;
+  /** Opponent build-up passes per own press action (MATCH-13), when every match has detail. */
+  pressPpda?: number;
+  bigChances: number;
+  bigChancesScored: number;
+  keyPasses: number;
+  finalThirdPasses: number;
+  finalThirdCompleted: number;
+  /** Own share of both sides' final-third passes. */
+  fieldTilt?: number;
+  highTurnovers: number;
   home: Split;
   away: Split;
   longestUnbeaten: number;
@@ -77,6 +90,8 @@ export interface SeasonStats {
     minutes: Leader[];
     defending: Leader[];
     saves: Leader[];
+    xa: Leader[];
+    keyPasses: Leader[];
   };
 }
 
@@ -112,8 +127,27 @@ export function seasonStats(
     longestUnbeaten: 0,
     longestWinning: 0,
     progression: [],
-    leaders: { goals: [], assists: [], minutes: [], defending: [], saves: [] },
+    detailMatches: 0,
+    bigChances: 0,
+    bigChancesScored: 0,
+    keyPasses: 0,
+    finalThirdPasses: 0,
+    finalThirdCompleted: 0,
+    highTurnovers: 0,
+    leaders: {
+      goals: [],
+      assists: [],
+      minutes: [],
+      defending: [],
+      saves: [],
+      xa: [],
+      keyPasses: [],
+    },
   };
+  let opponentBuildUp = 0,
+    pressActions = 0,
+    opponentFinalThird = 0;
+  const detailTotals = new Map<string, number[]>();
   let xg = 0,
     xga = 0,
     xpts = 0,
@@ -169,6 +203,26 @@ export function seasonStats(
       worstMargin = margin;
       stats.heaviestDefeat = { score: `${goals}–${against}`, opponent };
     }
+    if (m.detail) {
+      const t = m.detail[side],
+        o = m.detail[other];
+      stats.detailMatches++;
+      stats.bigChances += t[TD.bigChances];
+      stats.bigChancesScored += t[TD.bigChancesScored];
+      stats.keyPasses += t[TD.keyPasses];
+      stats.finalThirdPasses += t[TD.finalThirdPasses];
+      stats.finalThirdCompleted += t[TD.finalThirdCompleted];
+      stats.highTurnovers += t[TD.highTurnovers];
+      opponentFinalThird += o[TD.finalThirdPasses];
+      opponentBuildUp += o[TD.buildUpPasses];
+      pressActions += t[TD.pressActions];
+      for (const player of m.players) {
+        if (!player.detail || !w.players.some((p) => p.id === player.id)) continue;
+        const row = detailTotals.get(player.id) || Array<number>(PLAYER_DETAIL_SIZE).fill(0);
+        player.detail.forEach((value, index) => (row[index] += value));
+        detailTotals.set(player.id, row);
+      }
+    }
     if (m.xg) {
       stats.xgMatches++;
       xg += m.xg[side];
@@ -194,6 +248,11 @@ export function seasonStats(
   stats.passesPerGame = played ? passes / played : 0;
   stats.defensiveActions = played ? defending / played : 0;
   stats.ppda = defending ? opponentPasses / defending : undefined;
+  if (stats.detailMatches) {
+    stats.fieldTilt = ratio(stats.finalThirdPasses, stats.finalThirdPasses + opponentFinalThird);
+    if (stats.detailMatches === played && pressActions)
+      stats.pressPpda = opponentBuildUp / pressActions;
+  }
   if (stats.xgMatches) {
     stats.xg = xg;
     stats.xga = xga;
@@ -209,12 +268,24 @@ export function seasonStats(
       .filter((leader) => leader.value >= minimum)
       .sort((a, b) => b.value - a.value || (a.id < b.id ? -1 : 1))
       .slice(0, 3);
+  const detailLeaders = (value: (row: number[]) => number): Leader[] =>
+    [...detailTotals.entries()]
+      .map(([id, row]) => ({
+        id,
+        name: w.players.find((p) => p.id === id)?.name || id,
+        value: value(row),
+      }))
+      .filter((leader) => leader.value > 0)
+      .sort((a, b) => b.value - a.value || (a.id < b.id ? -1 : 1))
+      .slice(0, 3);
   stats.leaders = {
     goals: leaders((row) => row[0]),
     assists: leaders((row) => row[1]),
     minutes: leaders((row) => row[10]),
     defending: leaders((row) => row[6] + row[7]),
     saves: leaders((row) => row[9]),
+    xa: detailLeaders((row) => row[PD.xa] / 100),
+    keyPasses: detailLeaders((row) => row[PD.keyPasses]),
   };
   return stats;
 }

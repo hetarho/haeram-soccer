@@ -1,3 +1,4 @@
+import { CURRENT_ENGINE_VERSION } from '../../packages/contracts/src/versions';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { createWorld, advanceRound, operate } from '../../packages/engine/src/index';
@@ -67,7 +68,7 @@ test('writer upgrades a legacy career through the other slot without changing pa
   expect(stored.old).toBe(raw);
   expect(stored.manifest).toMatchObject({ slot: 1, generation: 2, parentGeneration: 1 });
   const restored = (await decode(stored.next!)).world;
-  expect(restored.engine).toBe('1.5.0');
+  expect(restored.engine).toBe(CURRENT_ENGINE_VERSION);
   expect(facts(restored)).toEqual(facts(world));
 });
 
@@ -144,7 +145,7 @@ test('upgrade quota failure keeps old disk and exports new memory before an expl
     ),
   ).toBe(1);
   const upgraded = (await decode(await exportRaw(page))).world;
-  expect(upgraded.engine).toBe('1.5.0');
+  expect(upgraded.engine).toBe(CURRENT_ENGINE_VERSION);
   expect(facts(upgraded)).toEqual(facts(world));
   await page.evaluate(() => Object.assign(window, { allowUpgrade: true }));
   await page.getByRole('button', { name: '저장 재시도', exact: true }).click();

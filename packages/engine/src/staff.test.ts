@@ -30,6 +30,8 @@ import {
   staffEffects,
   staffImpact,
   staffWageTotal,
+  MANAGER_STYLES,
+  STYLE_INFO,
 } from './index';
 
 const NEUTRAL = {
@@ -365,19 +367,29 @@ describe('delegated training focus', () => {
 describe('manager traits', () => {
   it('gives hire candidates seeded traits without changing their other attributes', () => {
     const w = world(),
-      seen = new Set<string>();
+      seen = new Set<string>(),
+      styles = new Set<string>();
     for (let year = 1901; year < 1913; year++) {
       const offers = managerOffers({ ...w, year });
+      expect(new Set(offers.map((offer) => offer.style)).size).toBe(4);
       offers.forEach((offer, i) => {
         const plain = makeManager('ENG', w.seed, year, i + 1);
-        const { trait, fee, ambition, ...rest } = offer;
+        const { trait, fee, ambition, style, philosophy, until, ...rest } = offer;
         void fee;
         void ambition;
-        expect(rest).toEqual(plain);
+        const { philosophy: plainPhilosophy, until: _until, ...plainRest } = plain;
+        void _until;
+        expect(rest).toEqual(plainRest);
+        // A school that plays one way brings its tactic; the others keep the drawn philosophy.
+        expect(philosophy).toBe(STYLE_INFO[style].tactic ?? plainPhilosophy);
+        expect(until).toBe(year + STYLE_INFO[style].term);
         seen.add(trait || 'none');
+        styles.add(style);
       });
     }
     expect(seen).toEqual(new Set(['youth', 'rotation', 'stable', 'none']));
+    expect(styles.size).toBe(MANAGER_STYLES.length);
+    expect(world().manager.style).toBeUndefined();
     expect(world().manager.trait).toBeUndefined();
     expect(canonical(managerOffers(w))).toBe(canonical(managerOffers(structuredClone(w))));
   });

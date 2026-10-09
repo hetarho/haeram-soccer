@@ -15,7 +15,7 @@ export const tacticLabel: Record<Tactic, string> = {
   balanced: '균형',
   possession: '점유',
   counter: '역습',
-  press: '강한 압박',
+  press: '전방 압박',
 };
 export const clubOf = (w: World) => w.clubs.find((c) => c.id === w.playerClub)!;
 export const activePlayers = (w: World) => w.players.filter((p) => p.status === 'active');
@@ -300,7 +300,12 @@ export function xiRating(players: readonly Player[]) {
  */
 export function selectionValue(p: Player, manager?: Manager, year?: number) {
   const fatigueWeight = manager?.trait === 'rotation' ? 2.5 : manager?.trait === 'stable' ? 10 : 5;
-  const youth = manager?.trait === 'youth' && year !== undefined && year - p.born <= 21 ? 4 : 0;
+  const youth =
+    (manager?.trait === 'youth' || manager?.style === 'developer') &&
+    year !== undefined &&
+    year - p.born <= 21
+      ? 4
+      : 0;
   return overall(p) - p.fatigue / fatigueWeight + youth;
 }
 export function lineup(players: Player[], manager?: Manager, year?: number): Player[] {

@@ -2,6 +2,7 @@ import type { Event, MatchRecord, World } from '../../contracts/src/types';
 import { activePlayers, clubOf, quote } from './world';
 import { clamp, ratio } from './primitives';
 import { policyEffects, policyOf } from './policy';
+import { visionEffects } from './vision';
 import { staffWageTotal } from './staff';
 import { SEASON_ROUNDS } from './calendar';
 
@@ -28,7 +29,7 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     activePlayers(w)
       .reduce((sum, p) => sum + BigInt(p.wage), 0n)
       .toString(),
-    BigInt(Math.round(effects.wageMultiplier * 1000)),
+    BigInt(Math.round(effects.wageMultiplier * visionEffects(w).wage * 1000)),
     1000n,
   );
   const managerWage = w.manager.wage;
@@ -36,12 +37,16 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
   const marketing = effects.marketingUnits
     ? quote(clubOf(w).country, w.year, effects.marketingUnits * 46)
     : '0';
+  const academy = effects.academyUnits
+    ? quote(clubOf(w).country, w.year, effects.academyUnits * 46)
+    : '0';
   const staffWages = staffWageTotal(w).toString();
   const annual = (
     BigInt(playerWages) +
     BigInt(managerWage) +
     BigInt(maintenance) +
     BigInt(marketing) +
+    BigInt(academy) +
     BigInt(staffWages)
   ).toString();
   /** The marketing share appears only while the policy actually spends. */
@@ -50,12 +55,14 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     managerWage: string;
     maintenance: string;
     marketing?: string;
+    academy?: string;
     staffWages?: string;
   } = {
     playerWages: roundShare(playerWages, round),
     managerWage: roundShare(managerWage, round),
     maintenance: roundShare(maintenance, round),
     ...(marketing !== '0' ? { marketing: roundShare(marketing, round) } : {}),
+    ...(academy !== '0' ? { academy: roundShare(academy, round) } : {}),
     ...(staffWages !== '0' ? { staffWages: roundShare(staffWages, round) } : {}),
   };
   const nextRound = Object.values(payments)
@@ -66,6 +73,7 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     managerWage,
     maintenance,
     marketing,
+    academy,
     staffWages,
     annual,
     nextRound,
@@ -136,9 +144,11 @@ export function gateProjection(w: World, excluding?: string) {
   );
   const reputation = 0.8 + club.reputation / 250;
   const facilities = 1 + Math.min(0.12, w.facilities * 0.02);
+  // The club vision moves home demand on its own: community clubs fill seats, commercial ones lose some.
+  const vision = 1 + visionEffects(w).gateDemand;
   const expected = Math.min(
     capacity,
-    club.fans * demand * (0.6 + form * 0.55) * reputation * marketing * facilities,
+    club.fans * demand * (0.6 + form * 0.55) * reputation * marketing * facilities * vision,
   );
   const low = Math.round(expected * 0.8);
   const high = Math.round(expected);

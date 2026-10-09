@@ -16,16 +16,16 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 4 | 4 | - | 2 |
-| WEB | 33 | 33 | - | 0 |
+| WEB | 34 | 34 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
-| CLUB | 10 | 10 | - | 0 |
-| MATCH | 5 | 5 | - | 0 |
+| CLUB | 11 | 11 | - | 0 |
+| MATCH | 6 | 6 | - | 0 |
 | LEAGUE | 2 | 2 | - | 0 |
-| STAFF | 5 | 5 | - | 0 |
-| ECON | 6 | 6 | - | 0 |
+| STAFF | 6 | 6 | - | 0 |
+| ECON | 7 | 7 | - | 0 |
 | EURO | 1 | 1 | - | 0 |
-| HIST | 3 | 3 | - | 0 |
-| SAVE | 9 | 9 | - | 0 |
+| HIST | 4 | 4 | - | 0 |
+| SAVE | 10 | 10 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -33,10 +33,12 @@
 | T041 | Motion throughout app interactions | WEB ARCH | T039 T040 | done@261009 |
 
 ## next
-- Release verification on the accumulated source: all three browsers and the production preview gates.
+- Player match ratings (평점) lead Korean headlines, but WEB-22/25 rule out synthetic ratings; decide whether a transparent rating belongs in the game.
+- Research levers not yet modelled: injuries (pressing load), set-piece coaching, ticket-price fan mood, fixture-gap rule for training camps.
 - Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
 
 ## log
+- 261010 WEB r34 CLUB r11 MATCH r6 STAFF r6 ECON r7 HIST r4 SAVE r10 implemented directly after research (Opta/FBref metrics, owner–manager practice, OptaJoe-style news, Korean football media wording): advanced match counters with tactic defensive lines and high-regain transitions, broadcast-style reports, player advanced stats, metrics glossary, eight manager styles, owner requests with stated chances (special bonus removed), club visions, academy investment, build synergies and odds board, derived club news with celebrations (window ceremony removed), cups tab, manager-standing tile with cash in the HUD; rules 1.6.0, worst century checkpoint 1,099,966 bytes
 - 261010 CI fix: WebKit project timeout 30→90 s (four-round journeys crossed 30 s on software-rendered CI WebKit); SAVE r9 implemented directly: gzip-cjk14 checkpoints, worst century 1,645,134→781,878 bytes (the 1,572,864 budget had failed since rules 1.5.0, hidden behind the WebKit failures)
 - 261009 WEB r33 MATCH r5 CLUB r10 SAVE r8 implemented directly: league-average founding XI, XI ratings for all clubs, excess-only fatigue, recovery 11/7/16, morale baseline 58 (delegated first seasons now average mid-table), steps end on news/match days, one-row clock, packed home/match/league, non-tab HUD menu, analytics season review with recorded xG; rules 1.5.0
 - 261009 WEB r32 MATCH r4 CLUB r9 SAVE r7 implemented directly: player-duel engine for own/own-league matches (summary formula elsewhere, matched scoring scale), event-driven playback with a 32/55 u/s ball, live possession/xG/shot charts, 1–16x speeds, watch-only match view, clock on every view, club crests (432,000 combinations), remedy sheets and care actions; rules 1.4.0, golden fixtures regenerated
@@ -56,4 +58,3 @@
 - 261008 T039 todo; create-task refresh: measured asset budget requires native top-layer combobox
 - 261008 implement-task T039 start (ui); WEB r26 freshness unrelated
 - 261008 create-task T040 T041; WEB r26
-- 261008 update-ssot WEB r26; ordinary progression, contextual quick actions and Motion

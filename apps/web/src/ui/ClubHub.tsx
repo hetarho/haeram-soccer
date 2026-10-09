@@ -4,17 +4,12 @@ import { clubOf, rating, tacticLabel } from '../../../../packages/engine/src/wor
 import { nextOwnFixture, daysUntilNextMatch } from '../../../../packages/engine/src/calendar';
 import { orderIds, ownLeagueIds } from './league';
 import { kindLabel, number } from './format';
-import {
-  remedies,
-  STATE_TITLES,
-  teamStates,
-  urgentState,
-  type StateAction,
-  type StateKey,
-} from './teamState';
+import { cashState, teamStates, urgentState, type StateKey } from './teamState';
+import { RemedySheet, useRemedyRunner } from './RemedySheet';
+import { NewsHeadlines } from './NewsFeed';
 import type { GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
-import { useMatchView, useNavigation, useSquadView } from './state';
+import { useMatchView, useNavigation } from './state';
 import { useGameState } from '../runtime/store';
 import { ClubCrest } from './ClubCrest';
 import { crestOf } from './crests';
@@ -88,8 +83,8 @@ function MatchAction({
 }
 
 /**
- * Club condition right now. The most urgent problem gets two one-tap remedies; every state opens
- * a sheet with all of its choices, each stating cost and effect first (→WEB-44).
+ * Club condition right now. The most urgent problem, cash included, gets two one-tap remedies;
+ * every state opens a sheet with all of its choices, each stating cost and effect first (→WEB-44).
  */
 function TeamState({
   w,
@@ -100,23 +95,11 @@ function TeamState({
   client: GameClient;
   onPrepare: () => void;
 }) {
-  const { setPage } = useNavigation();
-  const setSquadTab = useSquadView((state) => state.setTab);
   const acting = useGameState((state) => !!state.pendingActions || state.readonly);
   const [sheet, setSheet] = useState<StateKey>();
+  const run = useRemedyRunner(client, onPrepare);
   const states = teamStates(w),
-    urgent = urgentState(states);
-  const run = (action: StateAction) => {
-    if (action.command) void client.command(action.command);
-    else if (action.prepare) {
-      setSheet(undefined);
-      onPrepare();
-    } else if (action.page) {
-      if (action.tab) setSquadTab(action.tab);
-      setPage(action.page);
-    }
-  };
-  const current = sheet && states.find((state) => state.key === sheet);
+    urgent = urgentState(states, cashState(w));
   return (
     <section className={s.state} aria-label="팀 상태" data-testid="team-state">
       <ul>
@@ -157,33 +140,14 @@ function TeamState({
       ) : (
         <p className={s.calm}>팀이 안정적이에요. 상태를 누르면 미리 챙길 방법을 볼 수 있어요.</p>
       )}
-      {current && (
-        <Dialog label={STATE_TITLES[current.key]} onClose={() => setSheet(undefined)}>
-          <header className={s.remedyHead}>
-            <span className={s[current.tone]}>
-              {current.label} {current.value} · {current.status}
-            </span>
-          </header>
-          <ul className={s.remedies}>
-            {remedies(w, current.key).map((remedy) => (
-              <li key={remedy.id} className={remedy.unavailable ? s.remedyOff : undefined}>
-                <div>
-                  <b>{remedy.label}</b>
-                  <small>{remedy.effect}</small>
-                  {(remedy.cost || remedy.unavailable) && (
-                    <em>{remedy.unavailable || `비용 ${remedy.cost}`}</em>
-                  )}
-                </div>
-                <button
-                  disabled={!!remedy.unavailable || (acting && !!remedy.command)}
-                  onClick={() => run(remedy)}
-                >
-                  {remedy.command ? '실행' : '열기'}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </Dialog>
+      {sheet && (
+        <RemedySheet
+          w={w}
+          client={client}
+          state={sheet}
+          onClose={() => setSheet(undefined)}
+          onPrepare={onPrepare}
+        />
       )}
     </section>
   );
@@ -436,6 +400,8 @@ export function ClubHub({
           />
         </div>
       </section>
+
+      <NewsHeadlines w={w} />
 
       {preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />}
       {goalsOpen && (

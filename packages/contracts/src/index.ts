@@ -17,6 +17,7 @@ export function canonical(value: unknown): string {
   throw new Error('Unsupported canonical value');
 }
 export * from './types';
+export * from './detail';
 export * from './schema';
 
 export * from './hall-of-fame';

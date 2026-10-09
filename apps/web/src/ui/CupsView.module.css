@@ -1,0 +1,63 @@
+.body {
+  display: grid;
+  gap: 12px;
+  padding: 0 16px 14px;
+}
+.body h4 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.run ol,
+.winners {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.run li,
+.winners li {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+.winners li {
+  grid-template-columns: 64px minmax(0, 1fr);
+}
+.run li span,
+.winners li span {
+  color: var(--text-faint);
+  font-size: 12px;
+  font-weight: 700;
+}
+.run li b,
+.winners li b {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.run li em {
+  font-style: normal;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.won em {
+  color: var(--accent-text);
+}
+.lost em {
+  color: var(--danger);
+}
+.champion {
+  color: var(--gold);
+}
+.section {
+  margin: 18px 0 10px;
+  font-size: 15px;
+}

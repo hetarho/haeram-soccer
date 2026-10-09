@@ -13,7 +13,7 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
-  await page.getByRole('button', { name: '역사 보관함', exact: true }).first().click();
+  await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
   await page.getByText('분석 데이터 내보내기', { exact: true }).click();
   const panel = page.getByRole('region', { name: '분석 데이터 내보내기', exact: true }),
     button = panel.getByRole('button', { name: 'CSV 내려받기', exact: true });
@@ -61,7 +61,7 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   await expect(page.getByTestId('season-review')).toBeVisible();
   await expect(journal).toHaveCount(0);
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
-  await page.getByRole('button', { name: '역사 보관함', exact: true }).first().click();
+  await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
   await page.getByText('우리 클럽 기록집', { exact: true }).click();
   const book = page.getByRole('region', { name: '우리 클럽 기록집', exact: true });
   await expect(book).toContainText('완료한 1개 시즌');
@@ -81,13 +81,13 @@ test('uses matching archive samples for season splits and competition filters', 
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
-  await page.getByRole('button', { name: '역사 보관함', exact: true }).first().click();
+  await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
   const toggle = page.getByText('시즌 분석 · 홈과 원정', { exact: true });
   await toggle.click();
   const analysis = page.getByRole('region', { name: '선택 시즌 분석', exact: true });
   await expect(analysis.getByRole('article', { name: '전체 성적' })).toContainText('전체 · 1경기');
   await chooseOption(page.getByRole('combobox', { name: '기록 대회 범위', exact: true }), 'europe');
-  await expect(analysis).toContainText('유럽대회');
+  await expect(analysis).toContainText('클럽대항전');
   await expect(analysis.getByRole('article', { name: '전체 성적' })).toContainText('전체 · 0경기');
   await chooseOption(page.getByRole('combobox', { name: '기록 대회 범위', exact: true }), 'all');
   await expect(analysis.getByRole('img', { name: /경기 득실차/ })).toBeVisible();
@@ -235,7 +235,7 @@ test('reveals the recorded match report only after choosing the final result', a
   await expect(report).toBeVisible();
   await expect(report).toContainText('정규 90분 최종 집계');
   await expect(report.getByRole('article')).toHaveCount(11);
-  await expect(report).toContainText('패스 정확도');
+  await expect(report).toContainText('패스 성공률');
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 

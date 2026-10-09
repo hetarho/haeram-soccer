@@ -1,12 +1,15 @@
 import { z } from 'zod';
 z.config({ jitless: true });
 import type { World } from './types';
+import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from './detail';
 const money = z.string().regex(/^-?\d{1,80}$/);
 const rating = z.number().finite().min(0).max(100);
 const text = z.string().max(160);
 const id = z.string().min(1).max(100);
 const number = z.number().finite().min(-Number.MAX_SAFE_INTEGER).max(Number.MAX_SAFE_INTEGER);
 const metrics = z.array(z.number().int().nonnegative()).length(12);
+const teamDetail = z.array(z.number().int().nonnegative()).length(TEAM_DETAIL_SIZE);
+const playerDetail = z.array(z.number().int().nonnegative()).length(PLAYER_DETAIL_SIZE);
 const tactic = z.enum(['balanced', 'possession', 'counter', 'press']);
 const policyLevel = z.literal([1, 2, 3, 4, 5]);
 const club = z.object({
@@ -59,6 +62,18 @@ const manager = z.object({
   interim: z.boolean(),
   lastRequest: text.optional(),
   trait: z.enum(['youth', 'rotation', 'stable']).optional(),
+  style: z
+    .enum([
+      'positional',
+      'gegenpress',
+      'counter',
+      'organizer',
+      'motivator',
+      'developer',
+      'firefighter',
+      'headcoach',
+    ])
+    .optional(),
   requestHistory: z
     .object({
       at: z.string().regex(/^\d{4}:\d{1,3}$/),
@@ -153,7 +168,7 @@ const scorerSeason = z.object({
 const match = fixture.extend({
   score,
   metrics: z.tuple([metrics, metrics]),
-  players: z.array(z.object({ id, metrics })).max(60),
+  players: z.array(z.object({ id, metrics, detail: playerDetail.optional() })).max(60),
   highlights: z
     .array(
       z.object({
@@ -166,6 +181,7 @@ const match = fixture.extend({
     .max(100),
   tactics: z.tuple([tactic, tactic]),
   xg: z.tuple([z.number().finite().min(0).max(50), z.number().finite().min(0).max(50)]).optional(),
+  detail: z.tuple([teamDetail, teamDetail]).optional(),
 });
 const event = z.object({
   year: number,
@@ -303,7 +319,12 @@ export const worldSchema: z.ZodType<World> = z.object({
     .regex(/^\d{4}:\d{1,3}$/)
     .optional(),
   policy: z
-    .strictObject({ support: policyLevel, recruitment: policyLevel, marketing: policyLevel })
+    .strictObject({
+      support: policyLevel,
+      recruitment: policyLevel,
+      marketing: policyLevel,
+      academy: policyLevel.optional(),
+    })
     .optional(),
   staff: z.array(staff).max(20).optional(),
   academy: z
@@ -319,6 +340,11 @@ export const worldSchema: z.ZodType<World> = z.object({
     .optional(),
   bids: z.array(bid).max(200).optional(),
   morale: z.number().finite().min(0).max(100).optional(),
+  vision: z
+    .enum(['balanced', 'academy', 'trading', 'commercial', 'community', 'ambition'])
+    .optional(),
+  visionYear: z.number().int().min(1901).max(4000).optional(),
+  winBonus: z.strictObject({ matches: z.number().int().min(1).max(10) }).optional(),
   inbox: z.array(inboxItem).max(200).optional(),
   manager,
   tactic,
@@ -367,6 +393,46 @@ export const worldSchema: z.ZodType<World> = z.object({
   critical: text.optional(),
   receiptIds: z.array(id).max(200),
 });
+/**
+ * Advanced counters exist for every saved player or for none, and never exceed the counters they
+ * refine: each shot has at most one key pass, completions never exceed attempts.
+ */
+function detailConsistent(m: World['ownMatches'][number], side: 0 | 1) {
+  const withDetail = m.players.filter((p) => p.detail).length;
+  if (!m.detail) return withDetail === 0;
+  if (withDetail !== m.players.length) return false;
+  for (const s of [0, 1] as const) {
+    const t = m.detail[s],
+      row = m.metrics[s];
+    if (
+      t[TD.keyPasses] > row[4] ||
+      t[TD.bigChancesScored] > t[TD.bigChances] ||
+      t[TD.bigChancesScored] > row[0] ||
+      t[TD.bigChances] > t[TD.boxShots] ||
+      t[TD.boxShots] > row[4] ||
+      t[TD.finalThirdCompleted] > t[TD.finalThirdPasses] ||
+      t[TD.finalThirdPasses] > row[2] ||
+      t[TD.progressivePasses] > row[3] ||
+      t[TD.takeOns] < row[8] ||
+      t[TD.buildUpPasses] > row[2]
+    )
+      return false;
+  }
+  let keyPasses = 0;
+  for (const p of m.players) {
+    const d = p.detail!;
+    keyPasses += d[PD.keyPasses];
+    if (
+      d[PD.finalThirdCompleted] > d[PD.finalThirdPasses] ||
+      d[PD.bigChancesCreated] > d[PD.keyPasses] ||
+      d[PD.takeOns] < p.metrics[8] ||
+      d[PD.xg] > 80 * p.metrics[4] ||
+      d[PD.xa] > 80 * d[PD.keyPasses]
+    )
+      return false;
+  }
+  return m.players.length !== 11 || keyPasses === m.detail[side][TD.keyPasses];
+}
 export function validateWorld(input: unknown): World {
   const w = worldSchema.parse(input);
   const ids = new Set(w.clubs.map((c) => c.id));
@@ -555,6 +621,7 @@ export function validateWorld(input: unknown): World {
       m.metrics.some((row) => row[3] > row[2] || row[5] > row[4])
     )
       throw new Error('경기 지표 손상');
+    if (!detailConsistent(m, side)) throw new Error('경기 고급 지표 손상');
   }
   for (const t of w.europe) {
     if (new Set(t.clubs).size !== t.clubs.length || t.clubs.length !== t.field)

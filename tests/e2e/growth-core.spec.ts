@@ -49,7 +49,7 @@ for (const viewport of [
     await expect(hub.getByText('시즌 전적', { exact: true })).toBeVisible();
     await expect(page.getByTestId('hub-record')).toHaveText('0-0-0');
     const state = page.getByRole('region', { name: '팀 상태' });
-    for (const chip of ['피로', '사기', '자금', '선수단'])
+    for (const chip of ['피로', '분위기', '감독 입지', '선수단'])
       await expect(state.getByText(chip, { exact: true })).toBeVisible();
 
     const journalButton = hub.getByRole('button', { name: '시즌 상세', exact: true });

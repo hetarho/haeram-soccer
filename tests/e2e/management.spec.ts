@@ -43,7 +43,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   // The closed season opens its review in place of the sheet.
   await expect(page.getByTestId('season-review')).toBeVisible();
   await expect(page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' })).toHaveCount(0);
-  await page.getByRole('button', { name: '역사 보관함', exact: true }).click();
+  await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
   await chooseOption(page.getByRole('combobox', { name: '기록 시즌', exact: true }), '1901');
   await page.getByRole('button', { name: '경기 기록 보기', exact: true }).first().click();
   await expect(page.getByRole('dialog', { name: '지난 경기 상세' })).toBeVisible();
@@ -91,7 +91,7 @@ test('browses every historical regional group and resets filters on country chan
   await page.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toHaveText(/1902\/03 · 라운드 0$/);
   await expect(page.getByTestId('season-review')).toBeVisible();
-  await page.getByRole('button', { name: '역사 보관함', exact: true }).click();
+  await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
   await page.setViewportSize({ width: 390, height: 844 });
   await chooseOption(page.getByRole('combobox', { name: '기록 시즌', exact: true }), '1901');
   await chooseOption(page.getByRole('combobox', { name: '과거 디비전', exact: true }), '2');

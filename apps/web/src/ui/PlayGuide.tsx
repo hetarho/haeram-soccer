@@ -47,7 +47,7 @@ export function PlayGuide({ goals, onClose }: { goals: ClubGoal[]; onClose: () =
           <div>
             <h3>내일의 전력을 키워요 {done('player-growth') && <span>완료 ✓</span>}</h3>
             <p>
-              구단 운영의 운영 방침에서 선수단 지원·훈련 방향·영입 기조·마케팅·티켓 가격을 단계로
+              구단 운영의 운영 방침에서 선수단 투자·훈련 방향·영입 기조·마케팅·티켓 가격을 단계로
               골라요. 단계를 누르면 비용과 효과를 먼저 보여주고, 적용해야 반영돼요.
             </p>
           </div>

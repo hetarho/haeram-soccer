@@ -6,13 +6,14 @@ import { MORALE_LABEL, moraleOf, moraleState } from '../../../../packages/engine
 import { POLICY_INFO, policyOf } from '../../../../packages/engine/src/policy';
 import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import { operatingCosts } from '../../../../packages/engine/src/finance';
-import { careOffer } from '../../../../packages/engine/src/care';
+import { careOffer, effectText, outcomeText } from '../../../../packages/engine/src/care';
 import { academySummary } from '../../../../packages/engine/src/academy';
+import { visionEffects } from '../../../../packages/engine/src/vision';
 import { money } from './format';
 import type { Page, SquadTab } from './state';
 
 export type Tone = 'good' | 'ok' | 'warn' | 'bad';
-export type StateKey = 'fatigue' | 'morale' | 'cash' | 'squad';
+export type StateKey = 'fatigue' | 'morale' | 'manager' | 'squad' | 'cash';
 export interface StateAction {
   label: string;
   command?: Command;
@@ -26,6 +27,10 @@ export interface Remedy extends StateAction {
   id: string;
   effect: string;
   cost?: string;
+  /** Who carries a request out, for owner requests. */
+  by?: string;
+  /** Each possible result with its chance, for requests that can go differently. */
+  chances?: { chance: number; text: string }[];
   /** Why it cannot be chosen now (cooldown, cash, already applied). */
   unavailable?: string;
 }
@@ -42,22 +47,51 @@ export interface TeamStateItem {
 const rank: Record<Tone, number> = { bad: 0, warn: 1, ok: 2, good: 3 };
 export const STATE_TITLES: Record<StateKey, string> = {
   fatigue: '피로 관리',
-  morale: '사기 끌어올리기',
-  cash: '자금 확보',
+  morale: '분위기 끌어올리기',
+  manager: '감독과의 관계',
   squad: '선수단 채우기',
+  cash: '자금 확보',
 };
 
-function care(w: World, kind: CareKind): Remedy {
+/** Weeks of fixed costs as football finance pages say it: weeks when short, months otherwise. */
+export function runwayText(rounds: number) {
+  if (rounds >= 999) return '1년 이상';
+  if (rounds < 13) return `약 ${Math.max(0, rounds)}주`;
+  return `약 ${Math.round(rounds / 4.35)}개월`;
+}
+
+function request(w: World, kind: CareKind): Remedy {
   const offer = careOffer(w, kind),
     club = clubOf(w);
+  const format = (value: string) => money(value, club.country, w.year);
+  const single = offer.outcomes.length === 1;
+  const effect =
+    kind === 'friendly'
+      ? `수입 +${format(offer.income)} · 전원 피로 +${offer.outcomes[0].fatigue}`
+      : kind === 'win-bonus'
+        ? `${offer.summary} · 이길 때마다 ${format(offer.perWin)} · 분위기 +2`
+        : single
+          ? `${offer.summary} · ${effectText(offer.outcomes[0])}`
+          : offer.summary;
   return {
     id: kind,
     label: offer.label,
-    effect:
-      kind === 'friendly'
-        ? `수입 +${money(offer.income, club.country, w.year)} · 전원 피로 +${offer.fatigue}`
-        : offer.effect,
-    cost: BigInt(offer.cost) > 0n ? money(offer.cost, club.country, w.year) : '무료',
+    by: offer.by,
+    effect,
+    ...(single
+      ? {}
+      : {
+          chances: offer.outcomes.map((outcome) => ({
+            chance: outcome.chance,
+            text: outcomeText(outcome),
+          })),
+        }),
+    cost:
+      kind === 'win-bonus'
+        ? `승리할 때마다 ${format(offer.perWin)}`
+        : BigInt(offer.cost) > 0n
+          ? format(offer.cost)
+          : '무료',
     unavailable: offer.reason,
     command: { type: 'care', kind },
   };
@@ -68,7 +102,6 @@ export function remedies(w: World, key: StateKey): Remedy[] {
   const club = clubOf(w),
     policy = policyOf(w),
     format = (value: string) => money(value, club.country, w.year);
-  const supportUp = POLICY_INFO.support.levels[policy.support];
   const supportDown = POLICY_INFO.support.levels[policy.support - 2];
   switch (key) {
     case 'fatigue': {
@@ -80,7 +113,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
       );
       return [
         {
-          id: 'recovery',
+          id: 'recovery-training',
           label: '회복 훈련으로 전환',
           effect: '라운드마다 회복이 커지고 성장 기회는 줄어요',
           cost: '무료',
@@ -95,31 +128,41 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           unavailable: restFatigue >= current ? '이미 가장 덜 지친 선발' : undefined,
           command: { type: 'lineup', ids: rest },
         },
-        care(w, 'rest-day'),
-        care(w, 'medical'),
+        request(w, 'rest-day'),
+        request(w, 'recovery'),
+        request(w, 'camp'),
         {
           id: 'prepare',
           label: '전술·선발 직접 고르기',
-          effect: '압박 전술은 피로가 더 쌓여요. 선발과 전술을 비교해 보세요',
+          effect: '전방 압박은 피로가 더 쌓여요. 선발과 전술을 비교해 보세요',
           prepare: true,
         },
       ];
     }
     case 'morale':
       return [
+        request(w, 'meeting'),
+        request(w, 'bonding'),
+        request(w, 'win-bonus'),
+        request(w, 'owner-visit'),
+        request(w, 'camp'),
+        request(w, 'rest-day'),
+      ];
+    case 'manager':
+      return [
+        request(w, 'backing'),
         {
-          id: 'support-up',
-          label: supportUp ? `선수단 지원 · ${supportUp.name}` : '선수단 지원 최고 단계',
-          effect: supportUp ? `${supportUp.summary} · 사기 기준점 +4` : '더 올릴 단계가 없어요',
-          unavailable: supportUp ? undefined : '이미 최고 대우',
-          command: supportUp
-            ? { type: 'policy', key: 'support', level: supportUp.level }
-            : undefined,
+          id: 'office',
+          label: '감독실에서 전술 이야기하기',
+          effect: '감독의 철학과 신뢰를 보고 전술을 제안하거나 조건을 받아들여요',
+          page: 'manager',
         },
-        care(w, 'team-dinner'),
-        care(w, 'bonus'),
-        care(w, 'owner-visit'),
-        care(w, 'rest-day'),
+        {
+          id: 'candidates',
+          label: '다른 감독 후보 살펴보기',
+          effect: '성향이 다른 감독 네 명의 장단점과 선임 비용을 비교해요',
+          page: 'manager',
+        },
       ];
     case 'cash': {
       const marketing = POLICY_INFO.marketing.levels[policy.marketing - 2];
@@ -127,6 +170,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
       const seasonSupport = w.events.filter(
         (event) => event.kind === 'support' && event.year === w.year,
       ).length;
+      const limit = visionEffects(w).ownerCapital;
       return [
         {
           id: 'marketing-down',
@@ -139,8 +183,12 @@ export function remedies(w: World, key: StateKey): Remedy[] {
         },
         {
           id: 'support-down',
-          label: supportDown ? `선수단 지원 · ${supportDown.name}` : '선수단 지원 최저 단계',
-          effect: supportDown ? `${supportDown.summary} · 사기 기준점 −4` : '더 줄일 단계가 없어요',
+          label: supportDown
+            ? `${POLICY_INFO.support.label} · ${supportDown.name}`
+            : `${POLICY_INFO.support.label} 최저 단계`,
+          effect: supportDown
+            ? `${supportDown.summary} · 분위기 기준점 −4`
+            : '더 줄일 단계가 없어요',
           unavailable: supportDown ? undefined : '이미 긴축',
           command: supportDown
             ? { type: 'policy', key: 'support', level: supportDown.level }
@@ -153,19 +201,19 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           unavailable: ticket <= w.ticket ? '티켓 가격 상한' : undefined,
           command: { type: 'ticket', price: ticket },
         },
-        care(w, 'friendly'),
+        request(w, 'friendly'),
         {
           id: 'owner-capital',
           label: '구단주 추가 출자',
-          effect: `+${format(quote(club.country, w.year, 150))} · 클럽 평판 −2 · 시즌 3회까지`,
+          effect: `+${format(quote(club.country, w.year, 150))} · 클럽 평판 −2 · 시즌 ${limit}회까지`,
           cost: '무료',
-          unavailable: seasonSupport >= 3 ? '이번 시즌 3회 모두 사용' : undefined,
+          unavailable: seasonSupport >= limit ? `이번 시즌 ${limit}회 모두 사용` : undefined,
           command: { type: 'support' },
         },
         {
           id: 'market',
           label: '선수 매각 살펴보기',
-          effect: '이적 시장에서 제안과 매각 가능 선수를 확인해요',
+          effect: '이적시장에서 제안과 매각 가능 선수를 확인해요',
           page: 'transfers',
         },
       ];
@@ -176,7 +224,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
       return [
         {
           id: 'market',
-          label: '이적 시장',
+          label: '이적시장',
           effect: '자유계약 선수는 언제든, 이적료 선수는 이적시장 기간에 영입해요',
           page: 'transfers',
         },
@@ -205,18 +253,51 @@ export function remedies(w: World, key: StateKey): Remedy[] {
   }
 }
 
+/** The first choices that can be used right now, for the urgent card's two quick buttons. */
+function quick(w: World, key: StateKey) {
+  return remedies(w, key)
+    .filter((remedy) => !remedy.unavailable && !remedy.prepare)
+    .slice(0, 2);
+}
+
+/** Cash is shown in the HUD; it joins the state card only when it needs the owner. */
+export function cashState(w: World): TeamStateItem {
+  const runway = fixedCostRunway(w.cash, operatingCosts(w).annual);
+  const deficit = BigInt(w.cash) < 0n;
+  return {
+    key: 'cash',
+    label: '자금 여력',
+    value: deficit ? '적자' : runwayText(runway),
+    status: deficit
+      ? '적자'
+      : runway >= 30
+        ? '안정'
+        : runway >= 12
+          ? '보통'
+          : runway >= 5
+            ? '주의'
+            : '위험',
+    tone: deficit || runway < 5 ? 'bad' : runway < 12 ? 'warn' : runway < 30 ? 'ok' : 'good',
+    advice:
+      deficit || runway < 12
+        ? {
+            text: deficit
+              ? '운영 자금이 바닥났어요. 지출을 줄이거나 자금을 마련해야 경기를 이어갈 수 있어요.'
+              : `급여·운영비 기준으로 ${runwayText(runway)}분 자금만 남았어요.`,
+            actions: quick(w, 'cash'),
+          }
+        : undefined,
+  };
+}
+
 /** Current club condition (not season statistics), each with actions when it needs care. */
 export function teamStates(w: World): TeamStateItem[] {
   const fatigue = lineupSummary(startingSquad(w, clubOf(w))).fatigue;
   const morale = moraleOf(w),
     mood = moraleState(morale);
-  const runway = fixedCostRunway(w.cash, operatingCosts(w).annual);
+  const trust = Math.round(w.manager.trust),
+    interim = w.manager.interim;
   const squad = activePlayers(w).length;
-  // The two quick buttons are the first choices that can be used right now.
-  const quick = (key: StateKey) =>
-    remedies(w, key)
-      .filter((remedy) => !remedy.unavailable && !remedy.prepare)
-      .slice(0, 2);
   return [
     {
       key: 'fatigue',
@@ -227,16 +308,16 @@ export function teamStates(w: World): TeamStateItem[] {
       advice:
         fatigue >= 40
           ? {
-              text: `선발 평균 피로 ${fatigue} · 경기력이 떨어지고 사기도 내려가요.${
+              text: `선발 평균 피로 ${fatigue} · 경기력이 떨어지고 분위기도 가라앉아요.${
                 activeTrainingFocus(w) === 'recovery' ? ' 지금 회복 훈련 중이에요.' : ''
               }`,
-              actions: quick('fatigue'),
+              actions: quick(w, 'fatigue'),
             }
           : undefined,
     },
     {
       key: 'morale',
-      label: '사기',
+      label: '분위기',
       value: String(morale),
       status: MORALE_LABEL[mood],
       tone:
@@ -250,38 +331,42 @@ export function teamStates(w: World): TeamStateItem[] {
       advice:
         mood === 'low' || mood === 'crisis'
           ? {
-              text: `사기 ${morale} · 경기 전력이 떨어져요. 승리하거나 선수단을 챙기면 회복돼요.`,
-              actions: quick('morale'),
+              text: `분위기 ${morale} · 경기 전력이 떨어져요. 감독에게 선수단 미팅을 요청하거나 분위기를 바꿀 계기를 만들어 주세요.`,
+              actions: quick(w, 'morale'),
             }
           : undefined,
     },
     {
-      key: 'cash',
-      label: '자금',
-      value: runway >= 999 ? '999R+' : `${runway}R`,
-      status:
-        BigInt(w.cash) < 0n
-          ? '적자'
-          : runway >= 30
+      key: 'manager',
+      label: '감독 입지',
+      value: interim ? '대행' : String(trust),
+      status: interim
+        ? '대행 체제'
+        : trust >= 75
+          ? '굳건'
+          : trust >= 55
             ? '안정'
-            : runway >= 12
-              ? '보통'
-              : runway >= 5
-                ? '주의'
-                : '위험',
-      tone:
-        BigInt(w.cash) < 0n || runway < 5
-          ? 'bad'
-          : runway < 12
-            ? 'warn'
-            : runway < 30
-              ? 'ok'
-              : 'good',
-      advice:
-        BigInt(w.cash) < 0n || runway < 12
+            : trust >= 35
+              ? '흔들림'
+              : '위기',
+      tone: interim
+        ? 'warn'
+        : trust >= 75
+          ? 'good'
+          : trust >= 55
+            ? 'ok'
+            : trust >= 35
+              ? 'warn'
+              : 'bad',
+      advice: interim
+        ? {
+            text: '감독대행이 팀을 이끌고 있어요. 새 감독을 선임해야 전술과 성장이 제자리를 찾아요.',
+            actions: [{ label: '감독 후보 보기', page: 'manager' }],
+          }
+        : trust < 55
           ? {
-              text: `고정 지출 기준 ${Math.max(0, runway)}라운드분 자금만 남았어요.`,
-              actions: quick('cash'),
+              text: `감독 신뢰 ${trust} · 신뢰가 낮으면 전술 요청을 거절하고 분위기 기준점도 내려가요. 자존심 강한 감독은 떠날 수 있어요.`,
+              actions: quick(w, 'manager'),
             }
           : undefined,
     },
@@ -295,13 +380,18 @@ export function teamStates(w: World): TeamStateItem[] {
         squad < 16
           ? {
               text: `선수 ${squad}명 · 부상이나 피로가 겹치면 선발을 채우기 어려워요.`,
-              actions: quick('squad'),
+              actions: quick(w, 'squad'),
             }
           : undefined,
     },
   ];
 }
-/** The most urgent state that has advice, if any. */
-export function urgentState(states: TeamStateItem[]) {
-  return [...states].filter((state) => state.advice).sort((a, b) => rank[a.tone] - rank[b.tone])[0];
+/**
+ * The most urgent state that has advice, if any. Cash competes even though it has no tile, and
+ * wins ties: a club out of money cannot play on.
+ */
+export function urgentState(states: TeamStateItem[], cash?: TeamStateItem) {
+  return [...(cash ? [cash] : []), ...states]
+    .filter((state) => state.advice)
+    .sort((a, b) => rank[a.tone] - rank[b.tone])[0];
 }

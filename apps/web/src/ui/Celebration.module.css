@@ -1,0 +1,83 @@
+/* The layer never takes taps: the game keeps running and clickable underneath. */
+.layer {
+  position: fixed;
+  inset: 0;
+  /* Above the HUD and tab bar, below dialogs: a sheet the owner opened stays readable. */
+  z-index: 900;
+  pointer-events: none;
+  overflow: hidden;
+}
+.confetti i {
+  position: absolute;
+  top: -24px;
+  width: 9px;
+  height: 16px;
+  border-radius: 2px;
+  animation: fall linear 2 both;
+}
+.tone0 {
+  background: var(--gold);
+}
+.tone1 {
+  background: var(--accent-text);
+}
+.tone2 {
+  background: #fff3cf;
+}
+.card {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 74px);
+  left: 50%;
+  display: grid;
+  gap: 4px;
+  width: min(420px, calc(100% - 32px));
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--gold-edge);
+  background:
+    radial-gradient(360px 120px at 50% 0%, rgba(255, 203, 71, 0.22), transparent 70%),
+    linear-gradient(180deg, var(--surface-2) 0%, var(--surface-deep) 100%);
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.55),
+    0 0 60px rgba(255, 203, 71, 0.18);
+  transform: translateX(-50%);
+  animation: drop 520ms cubic-bezier(0.2, 1.2, 0.3, 1) both;
+}
+.card small {
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+.card strong {
+  font-size: 17px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.card span {
+  color: var(--text-muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+@keyframes fall {
+  from {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  to {
+    transform: translate3d(var(--drift), 110vh, 0) rotate(540deg);
+  }
+}
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -24px) scale(0.92);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    animation: none;
+  }
+  .confetti {
+    display: none;
+  }
+}
