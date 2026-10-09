@@ -25,7 +25,7 @@
 | ECON | 6 | 6 | - | 0 |
 | EURO | 1 | 1 | - | 0 |
 | HIST | 3 | 3 | - | 0 |
-| SAVE | 8 | 8 | - | 0 |
+| SAVE | 9 | 9 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -37,6 +37,7 @@
 - Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
 
 ## log
+- 261010 CI fix: WebKit project timeout 30→90 s (four-round journeys crossed 30 s on software-rendered CI WebKit); SAVE r9 implemented directly: gzip-cjk14 checkpoints, worst century 1,645,134→781,878 bytes (the 1,572,864 budget had failed since rules 1.5.0, hidden behind the WebKit failures)
 - 261009 WEB r33 MATCH r5 CLUB r10 SAVE r8 implemented directly: league-average founding XI, XI ratings for all clubs, excess-only fatigue, recovery 11/7/16, morale baseline 58 (delegated first seasons now average mid-table), steps end on news/match days, one-row clock, packed home/match/league, non-tab HUD menu, analytics season review with recorded xG; rules 1.5.0
 - 261009 WEB r32 MATCH r4 CLUB r9 SAVE r7 implemented directly: player-duel engine for own/own-league matches (summary formula elsewhere, matched scoring scale), event-driven playback with a 32/55 u/s ball, live possession/xG/shot charts, 1–16x speeds, watch-only match view, clock on every view, club crests (432,000 combinations), remedy sheets and care actions; rules 1.4.0, golden fixtures regenerated
 - 261009 update-ssot WEB r32 MATCH r4 CLUB r9 SAVE r7 start: watch-only match view, clock on every view, crests, player-duel engine, care actions; implementing directly
@@ -56,4 +57,3 @@
 - 261008 implement-task T039 start (ui); WEB r26 freshness unrelated
 - 261008 create-task T040 T041; WEB r26
 - 261008 update-ssot WEB r26; ordinary progression, contextual quick actions and Motion
-- 261008 create-task T039; WEB r25 styled dropdowns

@@ -157,9 +157,10 @@ test('safe explicit new-world replacement and browser back navigation', async ({
   await page.getByRole('button', { name: '새 세계 설정' }).click();
   await page.getByLabel('클럽 이름').fill('New Fictional Club');
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  // Replacing the world builds and saves a whole new career before the HUD shows it.
+  // Replacing the world builds and saves a whole new career before the HUD shows it; a loaded
+  // WebKit worker can take longer than 15 s.
   await expect(page.getByText('New Fictional Club', { exact: true }).first()).toBeVisible({
-    timeout: 15000,
+    timeout: 30000,
   });
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();

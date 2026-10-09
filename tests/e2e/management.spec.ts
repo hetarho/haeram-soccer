@@ -56,7 +56,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const file = await download;
   const raw = readFileSync((await file.path())!);
-  expect(JSON.parse(raw.toString()).codec).toBe('gzip-base64');
+  expect(JSON.parse(raw.toString()).codec).toBe('gzip-cjk14');
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await page
     .getByTestId('club-hub')

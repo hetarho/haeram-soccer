@@ -1,6 +1,8 @@
 # Portable v1 save format
 
-The envelope carries schema `1`, engine/catalog IDs, catalog hash, world ID, generation, parent generation, codec `gzip-base64`, SHA-256 checksum and payload. Payload is gzip over UTF-8 canonical compact JSON, encoded as standard Base64. The checksum covers the uncompressed canonical compact JSON, not the envelope or gzip implementation.
+The envelope carries schema `1`, engine/catalog IDs, catalog hash, world ID, generation, parent generation, codec, SHA-256 checksum and payload. Payload is gzip over UTF-8 canonical compact JSON. The checksum covers the uncompressed canonical compact JSON, not the envelope or gzip implementation.
+
+Codec `gzip-cjk14` (written) encodes the gzip bytes as dense text: a header character U+4E00 + p, where p (0–13) is the number of zero padding bits, then one character U+4E00 + v per big-endian 14-bit group v (U+4E00–U+8DFF, CJK Unified Ideographs: assigned, no surrogates, stable under every normalization form). Browser storage is budgeted per UTF-16 code unit, where Base64 carries 6 bits and this text 14. Decoding rejects characters outside the range, a padding count above 13, a bit length that is not a whole number of bytes and non-zero padding. Codec `gzip-base64` (standard Base64 of the same gzip bytes) is still read; it is never written.
 
 Canonical JSON sorts object keys by raw UTF-16 order, retains array order, drops undefined object fields, uses finite JSON numbers and encodes exact money as decimal strings. It rejects unsupported values. The complete inflated representation must fit 16 MiB; imports cap 4 MiB. Header, version, checksum, world schema, references, currency and pinned catalog hash are checked before activation.
 

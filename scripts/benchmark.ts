@@ -19,6 +19,7 @@ import {
   CHECKPOINT_LIMIT,
   TOTAL_LIMIT,
 } from '../apps/web/src/adapters/persistence';
+import { denseBytes } from '../apps/web/src/adapters/dense';
 const measurements: Record<string, unknown>[] = [];
 const workloads: Record<string, unknown>[] = [];
 function sourceFingerprint() {
@@ -92,7 +93,7 @@ async function measure(w: World, label: string) {
     trainingFocus: w.training || 'balanced',
     trainingAt: w.trainingAt,
     trainingFocusEvents: w.events.filter((event) => event.kind === 'training-focus').length,
-    compressedPayloadBytes: Buffer.from(JSON.parse(raw).payload, 'base64').length,
+    compressedPayloadBytes: denseBytes(JSON.parse(raw).payload).length,
     checkpointBytes,
     totalBytes,
     heapBytes,

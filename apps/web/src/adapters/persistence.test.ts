@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { canonical } from '../../../../packages/contracts/src/index';
 import { createWorld, advanceRound } from '../../../../packages/engine/src/index';
 import { encode, decode, Saves, type StoragePort } from './persistence';
-import { pack, unpack } from './packing';
+import { base64, pack, unpack } from './packing';
+import { denseBytes } from './dense';
 import {
   CURRENT_ENGINE_VERSION,
   SaveCompatibilityError,
@@ -162,6 +163,22 @@ describe('recoverable persistence', () => {
     const history = structuredClone(w);
     history.scorerSeason!.history.at(-1)!.rows[0][0] = history.scorerSeason!.players.length;
     await expect(decode(await encode(history))).rejects.toThrow('득점 순위 추이');
+  });
+  it('writes dense checkpoints and still loads earlier Base64 checkpoints', async () => {
+    const w = world();
+    advanceRound(w);
+    const dense = JSON.parse(await encode(w));
+    expect(dense.codec).toBe('gzip-cjk14');
+    const legacy = JSON.stringify({
+      ...dense,
+      codec: 'gzip-base64',
+      payload: base64(denseBytes(dense.payload)),
+    });
+    expect(legacy.length).toBeGreaterThan(JSON.stringify(dense).length * 2);
+    expect(canonical((await decode(legacy)).world)).toBe(canonical(w));
+    await expect(
+      decode(JSON.stringify({ ...dense, payload: dense.payload + 'A' })),
+    ).rejects.toThrow('저장 인코딩');
   });
   it('rejects payload corruption and future versions', async () => {
     const e = JSON.parse(await encode(world()));

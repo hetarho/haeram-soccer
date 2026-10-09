@@ -15,6 +15,8 @@ export default defineConfig({
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
     { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
-    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+    // Software-rendered WebKit on CI runs the multi-round journeys two to three times slower;
+    // one project budget replaces chasing whichever journey crosses 30 s next.
+    { name: 'webkit', timeout: 90000, use: { ...devices['Desktop Safari'] } },
   ],
 });

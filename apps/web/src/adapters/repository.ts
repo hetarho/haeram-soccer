@@ -16,6 +16,9 @@ function checkpointGeneration(raw: string | null) {
     return 0;
   }
 }
+/** Written saves use the dense `gzip-cjk14` text; earlier `gzip-base64` checkpoints still load. */
+export const SAVE_CODECS: readonly string[] = ['gzip-cjk14', 'gzip-base64'];
+export type SaveCodec = 'gzip-cjk14' | 'gzip-base64';
 export interface StoragePort {
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;
@@ -29,7 +32,7 @@ export interface Envelope {
   worldId: string;
   generation: number;
   parentGeneration: number;
-  codec: 'gzip-base64';
+  codec: SaveCodec;
   checksum: string;
   payload: string;
 }

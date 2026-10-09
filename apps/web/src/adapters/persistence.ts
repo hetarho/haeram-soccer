@@ -1,11 +1,18 @@
 import { CATALOG_HASH, currency } from '../../../../packages/catalogs/src/index';
 import { canonical, validateWorld, type World } from '../../../../packages/contracts/src/index';
-import { base64, unbase64, pack, unpack } from './packing';
+import { unbase64, pack, unpack } from './packing';
+import { denseBytes, denseText } from './dense';
 import {
   SUPPORTED_ENGINE_VERSIONS,
   SaveCompatibilityError,
 } from '../../../../packages/contracts/src/versions';
-import { SaveRepository, type Envelope, type StoragePort, type SaveInspector } from './repository';
+import {
+  SAVE_CODECS,
+  SaveRepository,
+  type Envelope,
+  type StoragePort,
+  type SaveInspector,
+} from './repository';
 export { CHECKPOINT_LIMIT, TOTAL_LIMIT } from './repository';
 export type { Envelope, StoragePort, SaveInspector } from './repository';
 async function digest(bytes: Uint8Array) {
@@ -49,9 +56,9 @@ export async function encode(w: World, generation = 1, parentGeneration = 0): Pr
     worldId: w.id,
     generation,
     parentGeneration,
-    codec: 'gzip-base64',
+    codec: 'gzip-cjk14',
     checksum: await digest(bytes),
-    payload: base64(await transform(bytes, true)),
+    payload: denseText(await transform(bytes, true)),
   };
   return JSON.stringify(e);
 }
@@ -73,7 +80,7 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
       '지원하지 않는 저장 카탈로그 버전입니다. 원본 파일을 보관하세요.',
     );
   if (typeof e.codec !== 'string') throw new Error('저장 코덱 헤더가 올바르지 않습니다.');
-  if (e.codec !== 'gzip-base64')
+  if (!SAVE_CODECS.includes(e.codec))
     throw new SaveCompatibilityError('지원하지 않는 저장 코덱 버전입니다. 원본 파일을 보관하세요.');
   if (typeof e.catalogHash !== 'string') throw new Error('저장 카탈로그 해시가 올바르지 않습니다.');
   if (e.catalogHash !== CATALOG_HASH)
@@ -91,7 +98,10 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
     !/^[a-f0-9]{64}$/.test(e.checksum)
   )
     throw new Error('저장 헤더가 올바르지 않습니다.');
-  const bytes = await transform(unbase64(e.payload), false);
+  const bytes = await transform(
+    e.codec === 'gzip-base64' ? unbase64(e.payload) : denseBytes(e.payload),
+    false,
+  );
   if ((await digest(bytes)) !== e.checksum) throw new Error('체크섬이 일치하지 않습니다.');
   const world = validateWorld(
     unpack(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes))),
