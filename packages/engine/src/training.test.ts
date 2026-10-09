@@ -58,9 +58,9 @@ describe('earned player growth and training choices', () => {
     expect(development(recovery)).toBe(0);
     expect(fatigue(youth)).toBeGreaterThan(fatigue(balanced));
     expect(fatigue(balanced)).toBeGreaterThan(fatigue(recovery));
-    expect(trainingFocusInfo.balanced.recovery).toBe(8);
-    expect(trainingFocusInfo.youth.recovery).toBe(4);
-    expect(trainingFocusInfo.recovery.recovery).toBe(13);
+    expect(trainingFocusInfo.balanced.recovery).toBe(11);
+    expect(trainingFocusInfo.youth.recovery).toBe(7);
+    expect(trainingFocusInfo.recovery.recovery).toBe(16);
     for (const w of [balanced, youth, recovery]) validateWorld(w);
   });
 

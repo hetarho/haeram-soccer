@@ -16,16 +16,16 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 4 | 4 | - | 2 |
-| WEB | 32 | 32 | - | 0 |
+| WEB | 33 | 33 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
-| CLUB | 9 | 9 | - | 0 |
-| MATCH | 4 | 4 | - | 0 |
+| CLUB | 10 | 10 | - | 0 |
+| MATCH | 5 | 5 | - | 0 |
 | LEAGUE | 2 | 2 | - | 0 |
 | STAFF | 5 | 5 | - | 0 |
 | ECON | 6 | 6 | - | 0 |
 | EURO | 1 | 1 | - | 0 |
 | HIST | 3 | 3 | - | 0 |
-| SAVE | 7 | 7 | - | 0 |
+| SAVE | 8 | 8 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -37,6 +37,7 @@
 - Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
 
 ## log
+- 261009 WEB r33 MATCH r5 CLUB r10 SAVE r8 implemented directly: league-average founding XI, XI ratings for all clubs, excess-only fatigue, recovery 11/7/16, morale baseline 58 (delegated first seasons now average mid-table), steps end on news/match days, one-row clock, packed home/match/league, non-tab HUD menu, analytics season review with recorded xG; rules 1.5.0
 - 261009 WEB r32 MATCH r4 CLUB r9 SAVE r7 implemented directly: player-duel engine for own/own-league matches (summary formula elsewhere, matched scoring scale), event-driven playback with a 32/55 u/s ball, live possession/xG/shot charts, 1–16x speeds, watch-only match view, clock on every view, club crests (432,000 combinations), remedy sheets and care actions; rules 1.4.0, golden fixtures regenerated
 - 261009 update-ssot WEB r32 MATCH r4 CLUB r9 SAVE r7 start: watch-only match view, clock on every view, crests, player-duel engine, care actions; implementing directly
 - 261009 ARCH r4 implemented directly: npm→pnpm 10.34.6 workspaces, lockfile imported from package-lock, CI/Netlify/Playwright/benchmark fingerprints switched
@@ -56,4 +57,3 @@
 - 261008 create-task T040 T041; WEB r26
 - 261008 update-ssot WEB r26; ordinary progression, contextual quick actions and Motion
 - 261008 create-task T039; WEB r25 styled dropdowns
-- 261008 update-ssot WEB start; shared styled selection controls

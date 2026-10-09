@@ -12,11 +12,8 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  await page
-    .getByRole('dialog', { name: '전체 메뉴' })
-    .getByRole('button', { name: '역사 보관함', exact: true })
-    .click();
+  // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
+  await page.getByRole('button', { name: '역사 보관함', exact: true }).first().click();
   await page.getByText('분석 데이터 내보내기', { exact: true }).click();
   const panel = page.getByRole('region', { name: '분석 데이터 내보내기', exact: true }),
     button = panel.getByRole('button', { name: 'CSV 내려받기', exact: true });
@@ -63,11 +60,8 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   // The closed season opens its review in place of the sheet.
   await expect(page.getByTestId('season-review')).toBeVisible();
   await expect(journal).toHaveCount(0);
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  await page
-    .getByRole('dialog', { name: '전체 메뉴' })
-    .getByRole('button', { name: '역사 보관함', exact: true })
-    .click();
+  // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
+  await page.getByRole('button', { name: '역사 보관함', exact: true }).first().click();
   await page.getByText('우리 클럽 기록집', { exact: true }).click();
   const book = page.getByRole('region', { name: '우리 클럽 기록집', exact: true });
   await expect(book).toContainText('완료한 1개 시즌');
@@ -86,11 +80,8 @@ test('uses matching archive samples for season splits and competition filters', 
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  await page
-    .getByRole('dialog', { name: '전체 메뉴' })
-    .getByRole('button', { name: '역사 보관함', exact: true })
-    .click();
+  // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
+  await page.getByRole('button', { name: '역사 보관함', exact: true }).first().click();
   const toggle = page.getByText('시즌 분석 · 홈과 원정', { exact: true });
   await toggle.click();
   const analysis = page.getByRole('region', { name: '선택 시즌 분석', exact: true });
@@ -148,11 +139,8 @@ test('compares distinct own players with a shared scope and returns focus withou
 }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  await page
-    .getByRole('dialog', { name: '전체 메뉴' })
-    .getByRole('button', { name: '선수단', exact: true })
-    .click();
+  // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
+  await page.getByRole('button', { name: '선수단', exact: true }).first().click();
   const opener = page.getByRole('button', { name: '우리 선수 비교', exact: true });
   await opener.click();
   const sheet = page.getByRole('dialog', { name: '우리 선수 비교', exact: true });
@@ -186,11 +174,8 @@ test('filters player samples and shows scoped per-90 evidence on a mobile profil
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  await page
-    .getByRole('dialog', { name: '전체 메뉴' })
-    .getByRole('button', { name: '선수단', exact: true })
-    .click();
+  // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
+  await page.getByRole('button', { name: '선수단', exact: true }).first().click();
   await chooseOption(page.getByRole('combobox', { name: '선수 포지션 필터', exact: true }), 'FWD');
   await chooseOption(
     page.getByRole('combobox', { name: '우리 선수 정렬', exact: true }),

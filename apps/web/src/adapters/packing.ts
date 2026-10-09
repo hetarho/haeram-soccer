@@ -115,6 +115,8 @@ interface Packed {
     tactics: string;
   };
   matchCount?: number;
+  /** Per match: [recorded 0|1, home xG, away xG] in hundredths. */
+  matchXg?: string;
   stats: string;
   statWidth?: number;
   statBits?: ReturnType<typeof packBitColumns>;
@@ -292,6 +294,16 @@ export function pack(w: World): Packed {
       tactics: integers(matchTactics, 2),
     },
     matchCount: matches.length,
+    ...(w.ownMatches.some((m) => m.xg)
+      ? {
+          matchXg: integers(
+            w.ownMatches.flatMap((m) =>
+              m.xg ? [1, Math.round(m.xg[0] * 100), Math.round(m.xg[1] * 100)] : [0, 0, 0],
+            ),
+            3,
+          ),
+        }
+      : {}),
     ...(compactEvents
       ? {
           eventStats: integers(eventRows.flat(), 6),
@@ -454,7 +466,11 @@ export function unpack(p: Packed): World {
   if (p.standingsDeltas !== undefined && p.standingsDeltas !== true)
     throw new Error('시즌 통계 차분 형식 손상');
   const standings = p.standingsDeltas ? readDeltaColumns(rawStandings, 6) : rawStandings;
+  if (p.matchXg !== undefined && typeof p.matchXg !== 'string')
+    throw new Error('경기 기대 득점 압축 데이터 손상');
+  const xgStream = p.matchXg === undefined ? undefined : reader(p.matchXg, 3);
   const matches = packedMatches.map((t) => {
+    const xgRow = xgStream?.take(3);
     const takeMetrics = () => {
       const row = stats.take(12);
       if (p.statResiduals) {
@@ -481,8 +497,10 @@ export function unpack(p: Packed): World {
         action: str(h[3]),
       })),
       tactics: (t[11] as number[]).map(str) as MatchRecord['tactics'],
+      ...(xgRow?.[0] ? { xg: [xgRow[1] / 100, xgRow[2] / 100] } : {}),
     } as MatchRecord;
   });
+  xgStream?.done();
   let events: Event[] | undefined = p.events?.map((tuple) => {
     if (!Array.isArray(tuple) || tuple.length !== 7)
       throw new Error('정산 이벤트 압축 데이터 손상');

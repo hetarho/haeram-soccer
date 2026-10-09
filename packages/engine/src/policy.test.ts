@@ -142,9 +142,9 @@ describe('club operating policy', () => {
       w.round = 1;
       settleTraining(w);
     }
-    expect(high.players.every((player) => player.fatigue === 40)).toBe(true);
-    expect(standard.players.every((player) => player.fatigue === 42)).toBe(true);
-    expect(low.players.every((player) => player.fatigue === 44)).toBe(true);
+    expect(high.players.every((player) => player.fatigue === 37)).toBe(true);
+    expect(standard.players.every((player) => player.fatigue === 39)).toBe(true);
+    expect(low.players.every((player) => player.fatigue === 41)).toBe(true);
     expect(developed(high)).toBeGreaterThan(developed(standard));
     expect(developed(standard)).toBeGreaterThan(developed(low));
 

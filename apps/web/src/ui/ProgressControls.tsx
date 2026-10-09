@@ -31,12 +31,15 @@ export function ProgressControls({
   client,
   controller,
   compact = false,
+  bare = false,
   className = '',
 }: {
   client: GameClient;
   controller: ProgressionController;
-  /** Away from home the clock keeps running and collapses to its buttons only. */
+  /** Away from home the same one-row clock keeps running, without the intervention gear. */
   compact?: boolean;
+  /** Buttons only, for rows that already say where the season stands (the match header). */
+  bare?: boolean;
   className?: string;
 }) {
   const state = useGameState((state) => state);
@@ -100,7 +103,7 @@ export function ProgressControls({
         ))}
     </div>
   );
-  if (compact)
+  if (bare)
     return (
       <section
         className={`${s.miniClock} ${running ? s.clockRunning : ''} ${className}`}
@@ -113,30 +116,43 @@ export function ProgressControls({
         {buttons}
       </section>
     );
+  // One packed row on every view: where the season stands on the left, the speed buttons right.
+  const progress = Math.round((currentDay(w) / Math.max(1, seasonLength(w))) * 1000) / 10;
   return (
     <section
-      className={`${s.seasonControls} ${running ? s.clockRunning : ''}`}
-      aria-label="시즌 진행"
+      className={`${s.seasonControls} ${running ? s.clockRunning : ''} ${className}`}
+      aria-label={compact ? `시즌 진행 · ${seasonDate(w)} · ${status}` : '시즌 진행'}
+      data-testid={compact ? 'mini-clock' : undefined}
     >
       <div className={s.calendarSummary}>
         <strong data-testid="game-date">{seasonDate(w)}</strong>
         <small className={s.autoStatus} aria-live="polite" aria-atomic="true">
           {status}
         </small>
-        <progress aria-label="시즌 경과 일수" value={currentDay(w)} max={seasonLength(w)} />
       </div>
+      <i
+        className={s.seasonProgress}
+        role="progressbar"
+        aria-label="시즌 경과 일수"
+        aria-valuenow={currentDay(w)}
+        aria-valuemin={0}
+        aria-valuemax={seasonLength(w)}
+        style={{ width: `${progress}%` }}
+      />
       {buttons}
-      <button
-        className={s.interventionButton}
-        aria-label={`개입 수준 · ${level >= 0 ? INTERVENTION_LEVELS[level].name : '사용자 지정'}`}
-        onClick={(event) => {
-          event.currentTarget.focus();
-          setSettings(true);
-        }}
-      >
-        <span aria-hidden="true">⚙</span>
-        <i aria-hidden="true">{level >= 0 ? level + 1 : '·'}</i>
-      </button>
+      {compact ? null : (
+        <button
+          className={s.interventionButton}
+          aria-label={`개입 수준 · ${level >= 0 ? INTERVENTION_LEVELS[level].name : '사용자 지정'}`}
+          onClick={(event) => {
+            event.currentTarget.focus();
+            setSettings(true);
+          }}
+        >
+          <span aria-hidden="true">⚙</span>
+          <i aria-hidden="true">{level >= 0 ? level + 1 : '·'}</i>
+        </button>
+      )}
       {settings && (
         <InterventionSettings
           client={client}

@@ -667,3 +667,93 @@ button.resources:active:not(:disabled) {
 .play.returning small {
   color: #4a3405;
 }
+
+/* Stage: the club scene with the season numbers laid over its lower edge. */
+.stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.stage > .scene {
+  flex: 1 1 auto;
+}
+.stage > .resources {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  z-index: 1;
+  width: auto;
+}
+.stage > .resources > div {
+  padding: 5px 9px;
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(7, 17, 14, 0.74);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+.stage > .resources .more {
+  top: auto;
+  bottom: 4px;
+  right: 6px;
+}
+@media (max-width: 760px) {
+  .stage {
+    flex: 1 1 auto;
+    min-height: 210px;
+    max-height: 300px;
+  }
+  .stage > .scene {
+    min-height: 0;
+    max-height: none;
+  }
+  .stage > .resources > div > small {
+    display: none;
+  }
+  .stage > .resources b {
+    font-size: 18px;
+  }
+  /* Compact milestone strip: one title line over its progress. */
+  .goal {
+    gap: 2px;
+    padding: 7px 12px;
+  }
+  .goal small {
+    display: none;
+  }
+  .goal > b {
+    font-size: 14px;
+  }
+  .fixture {
+    gap: 8px;
+    padding: 10px;
+  }
+  .prepare,
+  .play {
+    min-height: 52px;
+  }
+}
+@media (max-width: 760px) and (max-height: 780px) {
+  .stage {
+    min-height: 180px;
+  }
+}
+@media (max-width: 760px) {
+  .state {
+    padding: 6px 8px;
+  }
+  .state ul {
+    margin-top: 0;
+    gap: 4px;
+  }
+  .state li button {
+    min-height: 44px;
+    padding: 3px 2px;
+  }
+  .state li b {
+    font-size: 15px;
+    line-height: 1.15;
+  }
+}

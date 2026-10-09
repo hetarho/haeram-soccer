@@ -117,7 +117,8 @@ export class Host {
             const matchCount = w.ownMatches.length,
               year = w.year,
               stop = new Set(cmd.type === 'advance-days' ? cmd.stop : []),
-              seen = new Set(unreadAttention(w).map((item) => item.id));
+              seen = new Set(unreadAttention(w).map((item) => item.id)),
+              known = new Set((w.inbox || []).map((item) => item.id));
             const limit = cmd.type === 'advance-days' ? cmd.days : 2 * seasonLength(w);
             for (let n = 0; n < limit; n++) {
               if (this.cancelled) break;
@@ -125,11 +126,16 @@ export class Host {
               if (p) playback = p;
               if (w.critical || (cmd.type === 'next-match' && w.ownMatches.length > matchCount))
                 break;
-              // Every step ends when the season closes, and a multi-day step on the day an
-              // enabled event arrives.
+              // Every step ends when the season closes. A multi-day step also ends on the day any
+              // club news arrives or our match is played, so the date lands on that day; the
+              // clock itself stops only for enabled kinds (WEB-18).
               if (
                 w.year !== year ||
-                unreadAttention(w).some((item) => stop.has(item.kind) && !seen.has(item.id))
+                unreadAttention(w).some((item) => stop.has(item.kind) && !seen.has(item.id)) ||
+                (cmd.type === 'advance-days' &&
+                  n < limit - 1 &&
+                  (w.ownMatches.length > matchCount ||
+                    (w.inbox || []).some((item) => !known.has(item.id))))
               )
                 break;
               if (n % 14 === 0) {

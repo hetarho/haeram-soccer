@@ -32,9 +32,12 @@ export function moraleState(value: number): MoraleState {
           ? 'low'
           : 'crisis';
 }
-/** Where morale settles between results: squad support and the manager's standing. */
+/**
+ * Where morale settles between results: squad support and the manager's standing. A standard
+ * club with a trusted manager settles at the neutral 60, so ordinary results never drag it down.
+ */
 export function moraleBaseline(w: World) {
-  return clamp(55 + (policyOf(w).support - 3) * 4 + (w.manager.trust - 50) / 10, 30, 80);
+  return clamp(58 + (policyOf(w).support - 3) * 4 + (w.manager.trust - 50) / 10, 30, 80);
 }
 /** Results move morale; wide margins move it further. */
 export function moraleAfterMatch(w: World, m: MatchRecord) {

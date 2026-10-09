@@ -382,6 +382,8 @@ const TABS: [Page, string, string, Page[]][] = [
   ['transfers', '이적', '이적 시장', ['transfers']],
   ['business', '운영', '구단 운영', ['business']],
 ];
+/** The HUD menu lists only destinations the tab bar does not already show. */
+const MENU_PAGES = NAV.filter(([id]) => !TABS.some(([tab]) => tab === id));
 const selectContentWorld = worldSelector([
   'year',
   'round',
@@ -1022,7 +1024,7 @@ export function App() {
         ))}
       </nav>
       {client && w && !replacing && <ActionOutcome />}
-      {client && controller && w && !replacing && page !== 'match' && (
+      {client && controller && w && !replacing && page !== 'match' && page !== 'season' && (
         <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />
       )}
       {moreOpen && (
@@ -1046,7 +1048,7 @@ export function App() {
             개입 수준 설정
           </button>
           <div className={s.moreMenu}>
-            {NAV.map(([id, label]) => (
+            {MENU_PAGES.map(([id, label]) => (
               <button
                 key={id}
                 aria-current={page === id ? 'page' : undefined}

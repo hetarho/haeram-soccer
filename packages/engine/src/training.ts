@@ -12,20 +12,20 @@ export const trainingFocusInfo: Record<
 > = {
   balanced: {
     label: '균형 훈련',
-    description: '성장과 회복을 함께 · 라운드마다 피로 8 회복',
-    recovery: 8,
+    description: '성장과 회복을 함께 · 라운드마다 피로 11 회복',
+    recovery: 11,
     developmentMultiplier: 1,
   },
   youth: {
     label: '유망주 집중',
-    description: '27세 미만 선수 성장 1.8배 · 피로 회복은 4',
-    recovery: 4,
+    description: '27세 미만 선수 성장 1.8배 · 피로 회복은 7',
+    recovery: 7,
     developmentMultiplier: 1.8,
   },
   recovery: {
     label: '회복 집중',
-    description: '피로 13 회복 · 라운드 훈련 성장은 쉬어갑니다',
-    recovery: 13,
+    description: '피로 16 회복 · 라운드 훈련 성장은 쉬어갑니다',
+    recovery: 16,
     developmentMultiplier: 0,
   },
 };

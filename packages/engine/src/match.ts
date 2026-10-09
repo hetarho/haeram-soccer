@@ -9,7 +9,7 @@ import type {
   World,
 } from '../../contracts/src/types';
 import { clamp, integer, random, zeroMetrics } from './primitives';
-import { rating, startingSquad, findClub } from './world';
+import { fatigueLoad, rating, startingSquad, findClub } from './world';
 import { moraleStrength } from './morale';
 import { npcTactic, tacticalProfile, type TacticalProfile } from './strategy';
 import { MatchMotion } from './motion';
@@ -206,11 +206,17 @@ function summaryMatch({ f, r, squads, strength, tactics, profiles, possessionCha
     const shot = r() < clamp(18 + profiles[side].shot - profiles[other].defense, 7, 30) / 100;
     const shooter = squads[side][actor],
       keeper = squads[other][0];
-    const onTarget = r() < clamp(42 + (shooter.attack - shooter.fatigue / 8) / 4, 35, 78) / 100;
+    const onTarget =
+      r() < clamp(42 + (shooter.attack - fatigueLoad(shooter.fatigue) / 8) / 4, 35, 78) / 100;
     const goal =
       r() <
       clamp(
-        25 + (shooter.attack - shooter.fatigue / 8 - keeper.keeper + keeper.fatigue / 10) / 3,
+        25 +
+          (shooter.attack -
+            fatigueLoad(shooter.fatigue) / 8 -
+            keeper.keeper +
+            fatigueLoad(keeper.fatigue) / 10) /
+            3,
         8,
         48,
       ) /
@@ -264,11 +270,12 @@ function duelMatch(
     const table = new Float64Array(11 * 5);
     for (let slot = 0; slot < 11; slot++) {
       const p = ps[Math.min(slot, ps.length - 1)];
-      table[slot * 5 + ATTACK] = p.attack - p.fatigue / 8;
-      table[slot * 5 + PASSING] = p.passing - p.fatigue / 8;
-      table[slot * 5 + DEFENSE] = p.defense - p.fatigue / 8;
-      table[slot * 5 + KEEPER] = p.keeper - p.fatigue / 10;
-      table[slot * 5 + STAMINA] = p.stamina - p.fatigue / 8;
+      const load = fatigueLoad(p.fatigue);
+      table[slot * 5 + ATTACK] = p.attack - load / 8;
+      table[slot * 5 + PASSING] = p.passing - load / 8;
+      table[slot * 5 + DEFENSE] = p.defense - load / 8;
+      table[slot * 5 + KEEPER] = p.keeper - load / 10;
+      table[slot * 5 + STAMINA] = p.stamina - load / 8;
     }
     return table;
   });
@@ -290,6 +297,14 @@ function duelMatch(
     if (row) row[metric]++;
   };
   // Forwards take most shots, midfielders some, defenders the occasional set piece.
+  // xG is recorded for an average finisher and keeper of this match's level, so goals minus xG
+  // shows real finishing and goalkeeping instead of a constant gap in weaker leagues.
+  const levelShooting =
+      base.reduce((sum, table) => sum + table[8 * 5] + table[9 * 5] + table[10 * 5], 0) / 6,
+    levelKeeping = (base[0][KEEPER] + base[1][KEEPER]) / 2;
+  const levelFactor =
+    Math.exp((levelShooting - levelKeeping) / c.finishing) *
+    (1 + (levelShooting - 55) / c.sharpness);
   const shooterWeights = base.map((table) =>
     Array.from(
       { length: 11 },
@@ -563,7 +578,8 @@ function duelMatch(
           0.05,
           0.5,
         );
-        xg[side] += chanceXg;
+        const shotXg = Math.min(0.8, chanceXg * levelFactor);
+        xg[side] += shotXg;
         metrics[side][4]++;
         credit(side, shooter, 4);
         const shot = r();
@@ -609,7 +625,7 @@ function duelMatch(
           actor: shooter,
           opponent: outcome === 'save' || outcome === 'goal' ? 0 : defender,
           outcome,
-          xg: Math.round(chanceXg * 100) / 100,
+          xg: Math.round(shotXg * 100) / 100,
           zone: 2,
         });
         actor = shooter;
@@ -643,6 +659,7 @@ function duelMatch(
     ...f,
     score: { home: metrics[0][0], away: metrics[1][0] },
     metrics,
+    xg: [Math.round(xg[0] * 100) / 100, Math.round(xg[1] * 100) / 100],
     players: recordPlayers
       ? squads.flatMap((ps, side) =>
           ps.map((p, i) => ({ id: p.id, metrics: contributions[side][i] })),

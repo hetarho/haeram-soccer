@@ -324,52 +324,55 @@ export function ClubHub({
   return (
     <section className={s.hub} data-testid="club-hub" aria-label="클럽 키우기">
       <h2 className={s.srOnly}>{club.name} 클럽 홈</h2>
-      <button
-        className={s.resources}
-        aria-label="시즌 상세"
-        aria-describedby="hub-stats-hint"
-        onClick={(event) => {
-          event.currentTarget.focus();
-          setJournalOpen(true);
-        }}
-      >
-        <span id="hub-stats-hint" className={s.srOnly}>
-          리그 순위·팀 전력·시즌 전적과 라운드 진행을 자세히 봐요
-        </span>
-        <div>
-          <span>리그 순위</span>
-          <b data-testid="hub-rank">
-            <span key={played ? rank : '-'} className={s.bump}>
-              {played ? rank : '—'}
-            </span>
-            <small>/{ids.length}위</small>
-          </b>
-          <small>{w.lower ? '프로 복귀 도전' : `${club.tier + 1}부`}</small>
-        </div>
-        <div>
-          <span>팀 전력</span>
-          <b>
-            <span key={rating(w, club)} className={s.bump}>
-              {rating(w, club)}
-            </span>{' '}
-            <small>/ 100</small>
-          </b>
-          <small>선발 평균</small>
-        </div>
-        <div>
-          <span>시즌 전적</span>
-          <b data-testid="hub-record">
-            <span key={table ? table.played : 0} className={s.bump}>
-              {table ? `${table.won}-${table.drawn}-${table.lost}` : '0-0-0'}
-            </span>
-          </b>
-          <small>승점 {table?.points ?? 0}</small>
-        </div>
-        <i className={s.more} aria-hidden="true">
-          ›
-        </i>
-      </button>
-      <ClubScene w={w} />
+      {/* The season numbers ride the bottom of the club's stage instead of taking a row. */}
+      <div className={s.stage}>
+        <ClubScene w={w} />
+        <button
+          className={s.resources}
+          aria-label="시즌 상세"
+          aria-describedby="hub-stats-hint"
+          onClick={(event) => {
+            event.currentTarget.focus();
+            setJournalOpen(true);
+          }}
+        >
+          <span id="hub-stats-hint" className={s.srOnly}>
+            리그 순위·팀 전력·시즌 전적과 라운드 진행을 자세히 봐요
+          </span>
+          <div>
+            <span>리그 순위</span>
+            <b data-testid="hub-rank">
+              <span key={played ? rank : '-'} className={s.bump}>
+                {played ? rank : '—'}
+              </span>
+              <small>/{ids.length}위</small>
+            </b>
+            <small>{w.lower ? '프로 복귀 도전' : `${club.tier + 1}부`}</small>
+          </div>
+          <div>
+            <span>팀 전력</span>
+            <b>
+              <span key={rating(w, club)} className={s.bump}>
+                {rating(w, club)}
+              </span>{' '}
+              <small>/ 100</small>
+            </b>
+            <small>선발 평균</small>
+          </div>
+          <div>
+            <span>시즌 전적</span>
+            <b data-testid="hub-record">
+              <span key={table ? table.played : 0} className={s.bump}>
+                {table ? `${table.won}-${table.drawn}-${table.lost}` : '0-0-0'}
+              </span>
+            </b>
+            <small>승점 {table?.points ?? 0}</small>
+          </div>
+          <i className={s.more} aria-hidden="true">
+            ›
+          </i>
+        </button>
+      </div>
       <TeamState w={w} client={client} onPrepare={() => setPreparing(true)} />
       <button
         className={s.goal}

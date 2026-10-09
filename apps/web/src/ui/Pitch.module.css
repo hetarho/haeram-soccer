@@ -20,6 +20,12 @@
 .awayTeam {
   justify-content: flex-end;
 }
+.shortName {
+  display: none;
+}
+.scoreboard > .team {
+  flex: 1 1 0;
+}
 .pitchMeta {
   align-items: center;
   color: var(--text-muted);
@@ -261,10 +267,26 @@
     padding: 6px 10px;
     min-height: 44px;
   }
+  .scoreboard {
+    gap: 6px;
+    padding: 4px 4px;
+  }
   .scoreboard span {
-    width: 38%;
-    font-size: 12px;
+    width: auto;
+    font-size: 13px;
     line-height: 1.2;
+  }
+  /* On a phone the row also carries the back control and the clock: short names fit. */
+  .fullName {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .shortName {
+    display: inline;
   }
   .scoreboard strong {
     font-size: 26px;
@@ -290,8 +312,10 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  /* The pitch takes whatever height the other rows leave on the phone screen. */
   .stage .canvas {
-    aspect-ratio: 2.1;
+    aspect-ratio: auto;
+    height: clamp(150px, calc(100dvh - 560px), 320px);
   }
   .stage .tactics {
     display: none;

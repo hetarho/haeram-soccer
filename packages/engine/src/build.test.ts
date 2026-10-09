@@ -47,7 +47,8 @@ function scenario(build: Build, opponentTactic: Tactic = 'balanced') {
   const opponent = w.clubs.find(
     (club) => club.id !== w.playerClub && npcTactic(club) === opponentTactic,
   )!;
-  opponent.strength = 55;
+  // Generated squads rate about five above their club strength; 50 fields an XI rated like ours.
+  opponent.strength = 50;
   const fixture: Fixture = {
     id: 'build-fixture',
     year: w.year,

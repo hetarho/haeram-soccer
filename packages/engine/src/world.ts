@@ -77,6 +77,14 @@ export function makePlayer(
     season: zeroMetrics(),
   };
 }
+/**
+ * Fatigue up to this level is ordinary match fitness and costs nothing: other clubs carry the same
+ * weekly load without it being modelled. Only the excess weakens a player.
+ */
+export const FRESH_FATIGUE = 20;
+export function fatigueLoad(fatigue: number) {
+  return Math.max(0, fatigue - FRESH_FATIGUE);
+}
 export function makeManager(code: string, seed: string, year: number, index = 0): Manager {
   const r = random(`${seed}:manager:${year}:${index}`);
   return {
@@ -161,7 +169,6 @@ export function createBase(input: Founding): World {
   club.color = input.color;
   club.fans = 800;
   club.reputation = 12;
-  club.strength = 48 - (selected.groups.length - 2) * 4;
   const roles: Player['role'][] = [
     'GK',
     'GK',
@@ -169,9 +176,28 @@ export function createBase(input: Founding): World {
     ...Array<Player['role']>(6).fill('MID'),
     ...Array<Player['role']>(4).fill('FWD'),
   ];
-  const players = roles.map((role, i) =>
-    makePlayer(input.country, input.seed, `${club.id}:founder:${i}`, 1901, club.strength, role),
+  // A new club starts as an ordinary member of its league: the founders' best XI rates like the
+  // league's average club, whatever the country's pyramid depth.
+  const peers = clubs.filter(
+    (c) =>
+      c.country === club.country && c.tier === club.tier && c.group === club.group && c !== club,
   );
+  const target = Math.round(
+    peers.reduce((sum, c) => sum + xiRating(lineup(npcSquad(input.seed, 1901, c))), 0) /
+      peers.length,
+  );
+  const found = (base: number) =>
+    roles.map((role, i) =>
+      makePlayer(input.country, input.seed, `${club.id}:founder:${i}`, 1901, base, role),
+    );
+  let base = target;
+  for (let step = 0; step < 4; step++) {
+    const gap = target - xiRating(lineup(found(base)));
+    if (!gap) break;
+    base += gap;
+  }
+  club.strength = base;
+  const players = found(base);
   const manager = makeManager(input.country, input.seed, 1901);
   const baseline =
     players.reduce((s, p) => s + BigInt(p.wage), 0n) +
@@ -235,16 +261,38 @@ export function squad(w: World, c: Club): Player[] {
   }
   let players = cache.clubs.get(c.id);
   if (!players) {
-    const code = COUNTRIES.some((p) => p.code === c.country) ? c.country : 'ENG';
-    players = Array.from({ length: 18 }, (_, i) => {
-      const age = 18 + ((w.year + i) % 18),
-        cohort = Math.floor((w.year + i) / 18);
-      const role: Player['role'] = i < 2 ? 'GK' : i < 8 ? 'DEF' : i < 14 ? 'MID' : 'FWD';
-      return makePlayer(code, w.seed, `${c.id}:p:${i}:${cohort}`, w.year, c.strength, role, age);
-    });
+    players = npcSquad(w.seed, w.year, c);
     cache.clubs.set(c.id, players);
   }
   return players;
+}
+/** Stable playing style of a club nobody owns, shared by simulation and scouting. */
+export function clubStyle(club: Pick<Club, 'id'>): Tactic {
+  return TACTICS[
+    Math.abs(club.id.split('').reduce((sum, letter) => sum + letter.charCodeAt(0), 0)) % 4
+  ];
+}
+/**
+ * Weekly load a pressing club carries. Unowned squads do not track fatigue match by match, so a
+ * pressing style pays its usual cost up front instead of pressing for free.
+ */
+export const PRESS_LOAD_FATIGUE = 32;
+/** The 18 generated players of a club nobody owns, renewed by cohort each year. */
+export function npcSquad(seed: string, year: number, c: Club): Player[] {
+  const code = COUNTRIES.some((p) => p.code === c.country) ? c.country : 'ENG';
+  const fatigue = clubStyle(c) === 'press' ? PRESS_LOAD_FATIGUE : 0;
+  return Array.from({ length: 18 }, (_, i) => {
+    const age = 18 + ((year + i) % 18),
+      cohort = Math.floor((year + i) / 18);
+    const role: Player['role'] = i < 2 ? 'GK' : i < 8 ? 'DEF' : i < 14 ? 'MID' : 'FWD';
+    const player = makePlayer(code, seed, `${c.id}:p:${i}:${cohort}`, year, c.strength, role, age);
+    player.fatigue = fatigue;
+    return player;
+  });
+}
+/** Average role rating of a starting XI. */
+export function xiRating(players: readonly Player[]) {
+  return Math.round(players.reduce((sum, p) => sum + overall(p), 0) / Math.max(1, players.length));
 }
 /**
  * Automatic selection value. A manager's trait shifts it: youth favours players aged 21 or
@@ -320,15 +368,16 @@ export function selectedLineup(
     return [replacement];
   });
 }
+/**
+ * Match strength of a club: its actual starting XI for every club, so the own club and the clubs
+ * it plays are measured on one scale, each paying for fatigue beyond ordinary match fitness.
+ */
 export function rating(w: World, c: Club) {
-  return c.id === w.playerClub
-    ? Math.round(
-        selectedLineup(activePlayers(w), w.lineup, w.manager, w.year).reduce(
-          (s, p) => s + overall(p) - p.fatigue / 6,
-          0,
-        ) / 11,
-      )
-    : c.strength;
+  const xi =
+    c.id === w.playerClub
+      ? selectedLineup(activePlayers(w), w.lineup, w.manager, w.year)
+      : startingSquad(w, c);
+  return Math.round(xi.reduce((s, p) => s + overall(p) - fatigueLoad(p.fatigue) / 6, 0) / 11);
 }
 export function addEvent(w: World, kind: string, title: string, detail: string, amount?: string) {
   w.events.push({

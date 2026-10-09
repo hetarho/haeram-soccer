@@ -1,7 +1,7 @@
 import type { Role, World } from '../../contracts/src/types';
 import { SEASON_ROUNDS, nextOwnFixture } from './calendar';
 import { operatingCost, transferOffers } from './operations';
-import { activePlayers, clubOf, overall, startingSquad } from './world';
+import { activePlayers, clubOf, fatigueLoad, overall, startingSquad } from './world';
 import { compareIds } from './primitives';
 import { lineupSummary, npcTactic, tacticalProfile } from './strategy';
 
@@ -15,8 +15,10 @@ export function recruitmentRoleNeed(w: World): Role {
     .map((role, index) => {
       const players = starters.filter((player) => player.role === role);
       const quality = players.length
-        ? players.reduce((sum, player) => sum + overall(player) - player.fatigue / 6, 0) /
-          players.length
+        ? players.reduce(
+            (sum, player) => sum + overall(player) - fatigueLoad(player.fatigue) / 6,
+            0,
+          ) / players.length
         : 0;
       return { role, index, quality };
     })

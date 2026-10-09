@@ -342,7 +342,7 @@ describe('delegated training focus', () => {
     for (const player of w.players) player.fatigue = 40;
     expect(activeTrainingFocus(w)).toBe('recovery');
     settled(w);
-    expect(activePlayers(w).every((player) => player.fatigue === 27)).toBe(true);
+    expect(activePlayers(w).every((player) => player.fatigue === 24)).toBe(true);
     expect(activePlayers(w).every((player) => player.developed === undefined)).toBe(true);
     operate(w, { type: 'training', focus: 'balanced' });
     expect(w.delegation?.training).toBe(false);
@@ -357,7 +357,7 @@ describe('delegated training focus', () => {
     for (const player of w.players) player.fatigue = 30;
     w.round = 1;
     settleTraining(w);
-    expect(new Set(activePlayers(w).map((player) => player.fatigue))).toEqual(new Set([17]));
+    expect(new Set(activePlayers(w).map((player) => player.fatigue))).toEqual(new Set([14]));
     expect(activePlayers(w).every((player) => player.developed === undefined)).toBe(true);
   });
 });

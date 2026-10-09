@@ -67,8 +67,14 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await menuButton.click();
   const allMenu = page.getByRole('dialog', { name: '전체 메뉴' });
   await expect(allMenu).toBeVisible();
-  await allMenu.getByRole('button', { name: '선수단', exact: true }).click();
+  // Tab destinations stay in the tab bar; the menu lists only staff and the season review.
+  await expect(allMenu.getByRole('button', { name: '선수단', exact: true })).toHaveCount(0);
+  await allMenu.getByRole('button', { name: '스태프', exact: true }).click();
   await expect(allMenu).toHaveCount(0);
+  await expect(
+    page.getByRole('group', { name: '선수단 메뉴' }).getByRole('button', { name: '스태프' }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await mobileMenu.getByRole('button', { name: '선수단', exact: true }).click();
   await expect(page.getByRole('button', { name: '선수단 18/26' })).toBeVisible();
   await mobileMenu.getByRole('button', { name: '리그', exact: true }).click();
   await expect(page.getByRole('tab', { name: '개요', exact: true })).toHaveAttribute(

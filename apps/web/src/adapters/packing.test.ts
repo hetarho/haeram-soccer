@@ -46,6 +46,21 @@ describe('lossless career stream compaction', () => {
     expect(canonical(w)).toBe(before);
   });
 
+  it('keeps recorded expected goals per match and leaves older matches without them', () => {
+    const w = career();
+    expect(w.ownMatches.every((match) => match.xg)).toBe(true);
+    delete w.ownMatches[0].xg;
+    const before = canonical(w);
+    const packed = pack(w);
+    expect(typeof packed.matchXg).toBe('string');
+    const restored = unpack(packed);
+    expect(canonical(restored)).toBe(before);
+    expect(restored.ownMatches[0]).not.toHaveProperty('xg');
+    expect(restored.ownMatches[1].xg).toEqual(w.ownMatches[1].xg);
+    for (const match of w.ownMatches) delete match.xg;
+    expect(pack(w)).not.toHaveProperty('matchXg');
+  });
+
   it('reads historical interleaved match actors alongside the existing match field stream', () => {
     const w = career();
     const old = pack(w);

@@ -186,16 +186,7 @@ const MatchPane = memo(function MatchPane({
   const onPlaybackStart = useCallback((id: string) => controller.beginMatch(id), [controller]);
   return (
     <div className={t.matchPane} data-testid="match-theatre">
-      <header className={t.heading}>
-        <button className={t.back} onClick={() => setPage('dashboard')}>
-          <span aria-hidden="true">‹</span> 홈
-        </button>
-        <h2>매치데이</h2>
-        <p>결과는 킥오프 전에 정해져 있어요. 속도를 바꿔도 결과는 같아요.</p>
-        {clock && (
-          <ProgressControls client={client} controller={controller} compact className={t.clock} />
-        )}
-      </header>
+      <h2 className={t.srOnly}>매치데이</h2>
       <section>
         <Pitch
           playback={playback}
@@ -203,6 +194,16 @@ const MatchPane = memo(function MatchPane({
           onFinish={onFinish}
           onPlaybackStart={onPlaybackStart}
           onPresentationChange={onPresentationChange}
+          lead={
+            <button className={t.back} aria-label="홈" onClick={() => setPage('dashboard')}>
+              <span aria-hidden="true">‹</span>
+            </button>
+          }
+          trail={
+            clock && (
+              <ProgressControls client={client} controller={controller} bare className={t.clock} />
+            )
+          }
           actions={(controls) => (
             <div className={t.coreActions}>
               <MatchFeedback finished={finished} />

@@ -191,6 +191,8 @@ export interface MatchRecord extends Fixture {
   players: { id: string; metrics: Metrics }[];
   highlights: Highlight[];
   tactics: [Tactic, Tactic];
+  /** Expected goals of the duel chain, home then away, in hundredths; absent before rules 1.5.0. */
+  xg?: [number, number];
 }
 export type PlayerMotionState =
   'shape' | 'support' | 'run' | 'press' | 'mark' | 'recover' | 'carry' | 'keeper';

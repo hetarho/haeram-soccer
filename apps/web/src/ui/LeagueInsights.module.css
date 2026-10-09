@@ -514,3 +514,43 @@
     font-size: 13px;
   }
 }
+
+/* Phones: the overview packs into dense tiles; the tab already names the view. */
+@media (max-width: 760px) {
+  .overview {
+    margin-bottom: 12px;
+  }
+  .overviewTitle,
+  .panelHead {
+    padding: 10px 12px;
+  }
+  .overviewTitle h3 {
+    font-size: 14px;
+  }
+  .lastResult {
+    padding: 8px 12px;
+  }
+  .stats > div {
+    padding: 8px 12px;
+  }
+  .stats strong {
+    font-size: 20px;
+    line-height: 1.25;
+    margin: 2px 0;
+  }
+  .stats small {
+    font-size: 10.5px;
+    line-height: 1.35;
+  }
+  .stats .formStrong {
+    margin: 4px 0;
+  }
+  .rival {
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  .rival h4 {
+    margin: 2px 0;
+    font-size: 14px;
+  }
+}

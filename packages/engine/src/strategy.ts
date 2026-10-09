@@ -1,5 +1,5 @@
 import type { Club, Player, Tactic, World } from '../../contracts/src/types';
-import { activePlayers, addEvent, LINEUP_ROLES, overall, TACTICS } from './world';
+import { activePlayers, addEvent, clubStyle, fatigueLoad, LINEUP_ROLES, overall } from './world';
 import { clamp, compareIds } from './primitives';
 
 export interface TacticalProfile {
@@ -19,9 +19,7 @@ export interface TacticalProfile {
 
 /** Stable opponent identity is shared by simulation and pre-match scouting. */
 export function npcTactic(club: Pick<Club, 'id'>): Tactic {
-  return TACTICS[
-    Math.abs(club.id.split('').reduce((sum, letter) => sum + letter.charCodeAt(0), 0)) % 4
-  ];
+  return clubStyle(club);
 }
 
 const tacticTradeoffs: Record<Tactic, string> = {
@@ -44,24 +42,26 @@ export function tacticalProfile(
   const passing = clamp(
     average(
       players.filter((player) => player.role === 'MID'),
-      (player) => player.passing - player.fatigue / 8,
+      (player) => player.passing - fatigueLoad(player.fatigue) / 8,
     ),
   );
   const defenseQuality = clamp(
     average(
       players.filter((player) => player.role === 'DEF'),
-      (player) => player.defense - player.fatigue / 8,
+      (player) => player.defense - fatigueLoad(player.fatigue) / 8,
     ),
   );
   const attack = clamp(
     average(
       players.filter((player) => player.role === 'FWD'),
-      (player) => player.attack - player.fatigue / 8,
+      (player) => player.attack - fatigueLoad(player.fatigue) / 8,
     ),
   );
   const stamina = average(players, (player) => player.stamina);
   const fatigue = average(players, (player) => player.fatigue);
-  const endurance = clamp(stamina - fatigue * 0.65);
+  const endurance = clamp(
+    stamina - average(players, (player) => fatigueLoad(player.fatigue)) * 0.65,
+  );
   const profile: TacticalProfile = {
     fit: 0,
     passing,
@@ -173,13 +173,14 @@ export function lineupSummary(players: readonly Player[]) {
   const keeper = players.find((player) => player.role === 'GK');
   return {
     strength: Math.round(
-      players.reduce((sum, player) => sum + overall(player) - player.fatigue / 6, 0) / count,
+      players.reduce((sum, player) => sum + overall(player) - fatigueLoad(player.fatigue) / 6, 0) /
+        count,
     ),
     fatigue: Math.round(players.reduce((sum, player) => sum + player.fatigue, 0) / count),
     attack: Math.round(
-      forwards.reduce((sum, player) => sum + player.attack - player.fatigue / 8, 0) /
+      forwards.reduce((sum, player) => sum + player.attack - fatigueLoad(player.fatigue) / 8, 0) /
         (forwards.length || 1),
     ),
-    keeper: keeper ? Math.round(keeper.keeper - keeper.fatigue / 10) : 0,
+    keeper: keeper ? Math.round(keeper.keeper - fatigueLoad(keeper.fatigue) / 10) : 0,
   };
 }

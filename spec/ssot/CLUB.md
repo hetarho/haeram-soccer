@@ -1,8 +1,8 @@
 # CLUB Squad and growth
-> r9 | Define the implemented browser-demo behavior for squad and growth.
+> r10 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
-- CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI.
+- CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating equals its league's average club XI (±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
 - CLUB-2 [o] Player attributes include attack, passing, defense, keeper, stamina, potential, birth year, wage, contract term, and reputation; overall derives from role.
 - CLUB-3 [o] Players age using the game calendar, develop through age/potential/manager ability, decline after 30, retire at 36, and are replaced by generated youth.
 - CLUB-4 [o] Recruitment offers immediate contributors, prospects, free agents, and short-term loans. Free agents sign instantly at any time; fee-bearing transfers are negotiated bids (→CLUB-18); selling produces money and removes the player from selection.
@@ -16,6 +16,7 @@
 - CLUB-10 [o] Match preparation separates tactic and lineup tabs, shows real current-versus-draft strength/fatigue, and keeps apply/close controls reachable while optional slot details scroll.
 
 - CLUB-11 [o] Training focus is balanced, youth or recovery, defaulting to balanced for older saves. It applies once at settled domestic round boundaries; selecting a focus, viewing it, or advancing idle days does not grant growth. Youth trades reduced recovery for faster young-player development; recovery trades development opportunity for fresher players.
+  - fatigue recovered per round: balanced 11, youth 7, recovery 16 (before staff and policy bonuses). ← a regular starter's 10–13 per match then levels off under balanced training; pressing or youth focus still accumulates
 
 - CLUB-12 [o] Player development uses each player own potential gap, age, manager youth ability and facilities; young role-relevant skills grow only up to their current/potential ceiling. Record bounded cumulative actual positive development on the player, preserve retirement/history, and show current ability, potential and earned growth.
 
@@ -29,7 +30,7 @@
 - CLUB-17 [o] Fee-bearing purchases, loans and sales happen only in transfer windows: summer from the day the season closes (→LEAGUE-9) to 1 September and winter 1 January–1 February. ← the market opens as the season's review ends, not during its final rounds Free agents sign at any time. The market shows the window state and deadline.
 - CLUB-18 [o] Bids are answered 2–4 days later with accept, reject or a counter; acceptance chance rises with the offered fee against the asking value and the chief scout. The fee is paid on completion; unanswered bids lapse at the deadline. During windows other clubs bid for our players (answered by the owner, or by the staff when delegated) and lapse after 5 days; squad minimums still apply. Delegated staff accept only offers ≥130% of value for a non-starter, or for a starter aged 30+ with a bench player of the same role within 3 ability.
 
-- CLUB-19 [o] Squad morale (0–100, new clubs 60) moves +6/+1/−6 after own wins/draws/defeats (±2 more for a two-goal margin), drifts 15% per settled round toward a baseline of 55 + 4 per squad-support level above standard + (manager trust − 50)/10 within 30–80, and falls 2 more per round while starters average fatigue ≥ 40. Match strength adds (morale − 60)/10; older saves without morale stay exactly unchanged.
+- CLUB-19 [o] Squad morale (0–100, new clubs 60) moves +6/+1/−6 after own wins/draws/defeats (±2 more for a two-goal margin), drifts 15% per settled round toward a baseline of 58 + 4 per squad-support level above standard + (manager trust − 50)/10 within 30–80, and falls 2 more per round while starters average fatigue ≥ 40. Match strength adds (morale − 60)/10; older saves without morale stay exactly unchanged.
 
 - CLUB-20 [o] Care actions are instant owner decisions with a cost, an effect and a cooldown counted in settled rounds since the last use; they never touch past matches.
   | action | cost (1901 units) | effect | cooldown |
@@ -49,6 +50,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r10 261009 CLUB-1✎ fixed founding strength→league-average XI; CLUB-11✎ recovery 8/4/13→11/7/16; CLUB-19✎ morale baseline 55→58
 - r9 261009 CLUB-20+ care actions with costs and cooldowns
 - r8 261009 CLUB-17✎ summer window 14 June–1 September→season close–1 September
 - r7 261009 CLUB-19+ no morale→results- and support-driven squad morale affecting match strength

@@ -165,6 +165,7 @@ const match = fixture.extend({
     )
     .max(100),
   tactics: z.tuple([tactic, tactic]),
+  xg: z.tuple([z.number().finite().min(0).max(50), z.number().finite().min(0).max(50)]).optional(),
 });
 const event = z.object({
   year: number,

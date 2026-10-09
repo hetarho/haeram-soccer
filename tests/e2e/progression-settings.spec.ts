@@ -38,9 +38,15 @@ test('mobile clock exposes every pace as a touch target and advances the chosen 
   await threeDays.click();
   await expect(threeDays).toHaveAttribute('aria-pressed', 'true');
   await expect(daily).toHaveAttribute('aria-pressed', 'false');
-  await expect(date).toHaveText('1901년 8월 5일');
+  await expect(date).not.toHaveText('1901년 8월 2일');
   await stop.click();
-  await expect(date).toHaveText('1901년 8월 5일');
+  // A three-day step moves up to three days and ends early on a day club news arrives.
+  const stepped = await date.innerText();
+  expect(['1901년 8월 3일', '1901년 8월 4일', '1901년 8월 5일', '1901년 8월 6일']).toContain(
+    stepped,
+  );
+  await page.waitForTimeout(1200);
+  await expect(date).toHaveText(stepped);
   // A five-day step lands on the eve of our first match and the clock stops there.
   await fiveDays.click();
   await expect(fiveDays).toHaveAttribute('aria-pressed', 'true');
@@ -76,16 +82,24 @@ test('mobile intervention levels set clock stops and staff delegation, and persi
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   const date = page.getByTestId('game-date');
-  const gear = page
-    .getByRole('region', { name: '시즌 진행', exact: true })
-    .getByRole('button', { name: /^개입 수준/ });
-  await expect(gear).toHaveAccessibleName('개입 수준 · 중요한 결정만');
+  // On a phone the clock row keeps its room for the date; the levels open from the HUD menu.
+  await expect(
+    page
+      .getByRole('region', { name: '시즌 진행', exact: true })
+      .getByRole('button', { name: /^개입 수준/ }),
+  ).toHaveCount(0);
   await settle(page);
-  const box = (await gear.boundingBox())!;
-  expect(box.width).toBeGreaterThanOrEqual(44);
-  expect(box.height).toBeGreaterThanOrEqual(44);
-  expect(box.x + box.width).toBeLessThanOrEqual(360);
-  await gear.click();
+  const entry = async () => {
+    await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+    const opener = page
+      .getByRole('dialog', { name: '전체 메뉴' })
+      .getByRole('button', { name: '개입 수준 설정', exact: true });
+    const box = (await opener.boundingBox())!;
+    expect(box.height).toBeGreaterThanOrEqual(44);
+    expect(box.x + box.width).toBeLessThanOrEqual(360);
+    await opener.click();
+  };
+  await entry();
   let dialog = page.getByRole('dialog', { name: '개입 수준' });
   const levels = dialog.getByRole('radiogroup', { name: '개입 수준' });
   const level = (n: number) => levels.getByRole('radio', { name: new RegExp(`^${n}\\. `) });
@@ -119,7 +133,7 @@ test('mobile intervention levels set clock stops and staff delegation, and persi
     if (label === '자금·후원 경고') await expect(stop(label)).toBeChecked();
     else await expect(stop(label)).not.toBeChecked();
   await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();
-  await expect(gear).toHaveAccessibleName('개입 수준 · 운영진에 모두 맡기기');
+  await expect(dialog).toHaveCount(0);
   const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await nav.getByRole('button', { name: '선수단', exact: true }).click();
   await page
@@ -131,12 +145,8 @@ test('mobile intervention levels set clock stops and staff delegation, and persi
     await expect(delegation.getByRole('checkbox', { name: new RegExp(`^${label}`) })).toBeChecked();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
-  // The same dialog opens from the full menu; the level survives a reload.
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  await page
-    .getByRole('dialog', { name: '전체 메뉴' })
-    .getByRole('button', { name: '개입 수준 설정', exact: true })
-    .click();
+  // The level survives a reload.
+  await entry();
   dialog = page.getByRole('dialog', { name: '개입 수준' });
   await expect(level(4)).toHaveAttribute('aria-checked', 'true');
   await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();

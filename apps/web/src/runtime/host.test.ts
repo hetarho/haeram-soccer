@@ -56,6 +56,20 @@ describe('worker command protocol', () => {
     expect(r.archive?.matches).toEqual([]);
     expect(r.view?.world.fixtures.length).toBeLessThan(h.world!.fixtures.length);
   });
+  it('ends a multi-day step on the day news arrives or our match is played', async () => {
+    const h = new Host();
+    await h.handle(req('create', -1, { type: 'found', input }));
+    const before = h.world!.inbox?.length || 0;
+    const step = await h.handle(
+      req('long', 0, { type: 'command', command: { type: 'advance-days', days: 12 } }),
+    );
+    const w = step.view!.world;
+    // The first own match is on day 7: the step never runs past it.
+    expect(w.calendar!.day).toBeLessThanOrEqual(7);
+    const news = (w.inbox?.length || 0) > before;
+    expect(news || w.ownMatches.length === 1).toBe(true);
+    if (!news) expect(w.calendar!.day).toBe(7);
+  });
   it('persists off days and reaches the next owned fixture exactly once', async () => {
     const h = new Host();
     await h.handle(req('create', -1, { type: 'found', input }));

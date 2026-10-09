@@ -116,6 +116,8 @@ export function Pitch({
   onPlaybackStart,
   onPresentationChange,
   actions,
+  lead,
+  trail,
 }: {
   playback?: MatchPlayback;
   world: World;
@@ -125,6 +127,9 @@ export function Pitch({
   onPresentationChange?: (state: { matchId?: string; finished: boolean; details: boolean }) => void;
   /** The primary actions under the charts; without them the pitch offers its own result button. */
   actions?: (controls: PitchControls) => ReactNode;
+  /** Controls at the two ends of the scoreboard row (back home, the clock). */
+  lead?: ReactNode;
+  trail?: ReactNode;
 }) {
   const detailsId = useId();
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -384,15 +389,23 @@ export function Pitch({
   return (
     <div className={`${s.pitch} ${t.pitch}`} data-testid="pitch-theatre">
       <div className={`${s.scoreboard} ${t.scoreboard}`} data-testid="match-score">
+        {lead}
         <span className={t.team}>
           {home && <CrestMark crest={homeCrest} size={24} />}
-          <b>{home?.name || 'HOME'}</b>
+          <b className={t.fullName}>{home?.name || 'HOME'}</b>
+          <b className={t.shortName} aria-hidden="true">
+            {home?.short || 'HOME'}
+          </b>
         </span>
         <strong>{frame ? `${frame.score.home} : ${frame.score.away}` : '— : —'}</strong>
         <span className={`${t.team} ${t.awayTeam}`}>
-          <b>{away?.name || 'AWAY'}</b>
+          <b className={t.fullName}>{away?.name || 'AWAY'}</b>
+          <b className={t.shortName} aria-hidden="true">
+            {away?.short || 'AWAY'}
+          </b>
           {away && <CrestMark crest={awayCrest} size={24} />}
         </span>
+        {trail}
       </div>
       <div className={`${s.pitchMeta} ${t.pitchMeta}`}>
         <span className={`${s.live} ${t.liveText}`}>
