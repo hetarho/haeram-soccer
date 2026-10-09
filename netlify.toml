@@ -1,19 +1,19 @@
 [build]
   base = "."
-  command = "npm ci && npm run build"
+  command = "pnpm install --frozen-lockfile && pnpm run build"
   publish = "apps/web/dist"
 
 [build.environment]
   NODE_VERSION = "24.12.0"
 
 [context.production]
-  command = "npm ci && npm run build"
+  command = "pnpm install --frozen-lockfile && pnpm run build"
 
 [context.deploy-preview]
-  command = "npm ci && npm run build"
+  command = "pnpm install --frozen-lockfile && pnpm run build"
 
 [dev]
-  command = "npm run dev"
+  command = "pnpm run dev"
   targetPort = 5173
   port = 8888
   autoLaunch = false

@@ -1,6 +1,6 @@
 # Data sources and demo rules
 
-The catalog ID is `2026-demo-1`. Its SHA-256 fingerprint covers canonical country profiles and price observations; new worlds and envelopes pin it. `npm run validate:catalogs` checks that fingerprint and eight-country/year coverage. Football rules and currency algorithms also belong to engine version `1.0.0`; changing semantics requires a reviewed version/migration decision.
+The catalog ID is `2026-demo-1`. Its SHA-256 fingerprint covers canonical country profiles and price observations; new worlds and envelopes pin it. `pnpm run validate:catalogs` checks that fingerprint and eight-country/year coverage. Football rules and currency algorithms also belong to engine version `1.0.0`; changing semantics requires a reviewed version/migration decision.
 
 ## Domestic structures
 

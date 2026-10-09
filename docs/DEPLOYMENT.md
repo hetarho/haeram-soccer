@@ -1,6 +1,6 @@
 # Netlify deployment
 
-The web game is a static Vite build. Repository-root `netlify.toml` pins Node 24.12.0, runs `npm ci && npm run build` and publishes `apps/web/dist`. No serverless functions, database or secrets are needed for local game play. Netlify accepts repository build configuration in this file. [Netlify configuration](https://docs.netlify.com/build/configure-builds/file-based-configuration/).
+The web game is a static Vite build. Repository-root `netlify.toml` pins Node 24.12.0, runs `pnpm install --frozen-lockfile && pnpm run build` with the pnpm version pinned by `packageManager` and publishes `apps/web/dist`. No serverless functions, database or secrets are needed for local game play. Netlify accepts repository build configuration in this file. [Netlify configuration](https://docs.netlify.com/build/configure-builds/file-based-configuration/).
 
 ## Connect the repository
 
@@ -24,11 +24,11 @@ Do not add another wildcard SPA rule, serverless routing or cache layer without 
 ## Local release rehearsal
 
 ```sh
-npm run build
-PREVIEW_BUILD=1 npm run test:e2e
+pnpm run build
+PREVIEW_BUILD=1 pnpm run test:e2e
 ```
 
-Port 4173 must be available for the production preview test server. `npm run preview` serves the same files and route/header policy locally; it does not emulate the Netlify CDN or account configuration. The actual Netlify origin still needs a deployment smoke check.
+Port 4173 must be available for the production preview test server. `pnpm run preview` serves the same files and route/header policy locally; it does not emulate the Netlify CDN or account configuration. The actual Netlify origin still needs a deployment smoke check.
 
 ## Rollback
 

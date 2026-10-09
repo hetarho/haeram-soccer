@@ -15,7 +15,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 3 | 3 | - | 2 |
+| ARCH | 4 | 4 | - | 2 |
 | WEB | 31 | 31 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
 | CLUB | 8 | 8 | - | 0 |
@@ -36,6 +36,7 @@
 - Release verification on the accumulated source: all three browsers and the production preview gates.
 
 ## log
+- 261009 ARCH r4 implemented directly: npm→pnpm 10.34.6 workspaces, lockfile imported from package-lock, CI/Netlify/Playwright/benchmark fingerprints switched
 - 261009 WEB r31 CLUB r8 LEAGUE r2 STAFF r5 ECON r6 SAVE r6 implemented directly: 1/3/5-day paces stopping only for enabled events, season close after the final round with a review page and window ceremony, 46-game league income, business delegation, cash warnings, deferred youth promotions; rules 1.3.0; delegated 10-season sims 40/40 solvent (was 2/40 past year 8)
 - 261009 CI fixes: /transfers route allowlisted, read-only tab ownership hand-over, clock toggle ignores clicks right after an automatic stop; SAVE r5
 - 261009 WEB r30 CLUB r7 STAFF r4 implemented directly: seven tabs, home-only clock, team state, intervention levels, morale, motion; T041 done
@@ -55,10 +56,3 @@
 - 261008 update-ssot WEB start; shared styled selection controls
 - 261008 T037 done; cycle 10 verified
 - 261008 T038 done; controls and pacing verified in all three browsers
-- 261008 update-ssot WEB r24; create-task T038; implement-task start (nf); T037 r24 freshness unrelated
-- 261008 update-ssot WEB r23; T037 todo contract refreshed; implement-task resumed (nf)
-- 261008 update-ssot WEB r22; create-task T037 refreshed while todo; implement-task resumed (nf)
-- 261008 T037 verification: Firefox facility CTA overlapped mobile navigation by 1px; enforce existing WEB-17 bounds
-- 261008 implement-task T037 start (nf); cycle 10
-- 261008 cycle 10 create-task T037; WEB r21
-- 261008 cycle 10 update-ssot WEB start; local-analysis-export

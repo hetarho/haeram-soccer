@@ -7,7 +7,7 @@ export default defineConfig({
   workers: 3,
   use: { baseURL, trace: 'retain-on-failure' },
   webServer: {
-    command: process.env.PREVIEW_BUILD ? 'npm run preview' : `npm run dev -- --port ${port}`,
+    command: process.env.PREVIEW_BUILD ? 'pnpm run preview' : `pnpm run dev --port ${port}`,
     env: { PORT: String(port) },
     url: baseURL,
     reuseExistingServer: !process.env.CI && !process.env.PREVIEW_BUILD,

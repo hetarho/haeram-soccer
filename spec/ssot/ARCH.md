@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r3 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r4 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -9,7 +9,7 @@
   - Carry founding, initial-capital difficulty, manager personality and tactical requests, recruitment, marketing, sponsors, historical prices/currencies, and historically introduced European competitions.
   - Product rule details and balance values belong in product SSOTs derived from `ideation/club-history-reboot.md`; architecture does not silently settle their open policies.
 - ARCH-2 [o] Web stack: React + TypeScript in strict mode + Vite, delivered as a static SPA. ← fast browser entry and a deployment artifact without an application server
-  - npm workspaces; stable dependency versions and the exact active-LTS Node release are pinned at scaffolding; commit the lockfile.
+  - pnpm workspaces; the pnpm release is pinned by `packageManager`; stable dependency versions and the exact active-LTS Node release are pinned at scaffolding; commit the lockfile.
   - CSS Modules and CSS design tokens; Canvas 2D for the simplified pitch; SVG for initial charts; semantic HTML for tables and controls.
   - Zustand holds UI selections and engine read models; Zod validates external/serialized boundaries.
   - The first web release requires neither sign-in nor a game backend. Supabase is not a runtime dependency of local play.
@@ -133,20 +133,20 @@
   - Playwright: founding → watch/advance → compare metrics → recruit/request tactics → save/reload → export/import; include quota, corruption, duplicate-tab, and worker-recovery cases.
   - Fixture data is synthetic and explicitly marked; tests do not claim the real catalogs are complete merely because a mock world runs.
 - ARCH-22 [o] Scaffolding must provide these executable verification scripts.
-  - `npm run typecheck`
-  - `npm run lint`
-  - `npm run format:check`
-  - `npm run test:unit`
-  - `npm run test:contract`
-  - `npm run validate:catalogs`
-  - `npm run build`
-  - `npm run test:e2e`
-  - `npm run benchmark`
-  - `npm run verify`
+  - `pnpm run typecheck`
+  - `pnpm run lint`
+  - `pnpm run format:check`
+  - `pnpm run test:unit`
+  - `pnpm run test:contract`
+  - `pnpm run validate:catalogs`
+  - `pnpm run build`
+  - `pnpm run test:e2e`
+  - `pnpm run benchmark`
+  - `pnpm run verify`
   - `verify` runs type/lint/format, unit/contract tests, catalog validation, production build, and browser tests; benchmark artifacts are required at the storage and release gates.
   - Scaffolding implements the scripts; verification reports must identify actual executed commands and must not count planned scripts as passed checks.
 - ARCH-23 [o] CI and release use a reproducible static build.
-  - GitHub Actions: pinned toolchain → `npm ci` → install pinned Playwright browsers → `npm run verify` → retain test/build reports and `apps/web/dist`.
+  - GitHub Actions: pinned toolchain → `pnpm install --frozen-lockfile` → install pinned Playwright browsers → `pnpm run verify` → retain test/build reports and `apps/web/dist`.
   - Require verification checks on the protected production branch; Netlify production deploys only that branch and uses the pinned install/build commands.
   - Deploy to Netlify using the same pinned build command and output directory; preview branches do not replace production.
   - Configure a stable production origin before public saves are created; changing origin requires export/import, not an assumed browser-storage transfer.
@@ -195,6 +195,7 @@
 - Current product material: `spec/ideation/club-history-reboot.md`; human PRD: `docs/PRD.md` (repository-relative paths).
 
 ## chg
+- r4 261009 ARCH-2✎ npm workspaces→pnpm workspaces with pnpm pinned by packageManager; ARCH-22✎ verify commands npm run→pnpm run; ARCH-23✎ CI install npm ci→pnpm install --frozen-lockfile
 - r3 261007 ARCH-23✎ static provider Cloudflare Pages→Netlify; ARCH-27✎ account Cloudflare→Netlify and repository unspecified→hetarho/haeram-soccer
 - r2 261007 ARCH-25✎ unresolved NPC retention→HIST archive tiers; ARCH-9✎ numeric policy owner MONEY→ECON
 - r1 261007 initial

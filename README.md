@@ -8,18 +8,18 @@ Playable associations: England, Spain, Germany, Italy, France, Portugal, Netherl
 
 ## Run
 
-Use Node **24.12.0**, matching `.node-version` and CI.
+Use Node **24.12.0**, matching `.node-version` and CI, and pnpm **10.34.6**, pinned by `packageManager` in `package.json` (`corepack enable` or any pnpm 10 install switches to it).
 
 ```sh
-npm ci
-npm run dev
+pnpm install --frozen-lockfile
+pnpm run dev
 ```
 
 Open the printed **localhost** URL. For the finished static build:
 
 ```sh
-npm run build
-npm run preview
+pnpm run build
+pnpm run preview
 ```
 
 The static preview serves `http://localhost:4173`, application routes, module workers, security headers and real 404s. Production uses **Netlify** with the committed [netlify.toml](netlify.toml). No database, API keys or login are required. HTTPS or localhost is required for browser saving and exclusive-tab ownership.
@@ -45,9 +45,9 @@ The encoded checkpoint limit is **1.5 MiB**, and the two-checkpoint budget is **
 ## Verify
 
 ```sh
-npx playwright install --with-deps
-npm run verify
-npm run benchmark
+pnpm exec playwright install --with-deps
+pnpm run verify
+pnpm run benchmark
 ```
 
 `verify` runs type/lint/format, unit/property/portable-contract tests, real catalog validation, build and Chromium/Firefox/WebKit flows. CI runs the built-preview tests and the storage/browser performance gates; a remote run remains to be verified on an authorized pushed commit. [Verification notes](docs/VERIFICATION.md) record the tested environment and limits. [Netlify deployment](docs/DEPLOYMENT.md) explains protected production deployment, previews, caching and rollback.

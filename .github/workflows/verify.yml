@@ -5,17 +5,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: .node-version
-          cache: npm
-      - run: npm ci
-      - run: npx playwright install --with-deps
-      - run: npm run verify
-      - run: npm run benchmark
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps
+      - run: pnpm run verify
+      - run: pnpm run benchmark
       - name: Verify browser performance against the production build
         run: |
-          PORT=4180 npm run preview > .tmp/benchmark-preview.log 2>&1 &
+          PORT=4180 pnpm run preview > .tmp/benchmark-preview.log 2>&1 &
           benchmark_preview_pid=$!
           trap 'kill "$benchmark_preview_pid" 2>/dev/null || true' EXIT
           for attempt in {1..40}; do
@@ -24,7 +25,7 @@ jobs:
             fi
             sleep 0.25
           done
-          BENCHMARK_ORIGIN=http://127.0.0.1:4180 npm run benchmark:browser
+          BENCHMARK_ORIGIN=http://127.0.0.1:4180 pnpm run benchmark:browser
       - uses: actions/upload-artifact@v4
         if: always()
         with:
