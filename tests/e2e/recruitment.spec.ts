@@ -228,7 +228,7 @@ test('disables an unaffordable fee while keeping a cheaper loan available with h
   expect(await exportWorld(page)).toEqual(before);
 });
 
-test('pauses the running clock while comparing candidates away from home and resumes on return', async ({
+test('keeps the clock running while comparing candidates away from home until the owner stops it', async ({
   page,
 }) => {
   // Only the match eve may stop the clock here, so an incoming offer cannot interrupt it.
@@ -246,12 +246,11 @@ test('pauses the running clock while comparing candidates away from home and res
   const date = page.getByTestId('game-date');
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
   await expect(date).toHaveText('1901년 8월 2일');
-  // The full clock lives on home; elsewhere a one-line clock shows the paused run.
+  // Away from home the clock collapses to its buttons and keeps running.
   await openMarket(page);
   const mini = page.getByTestId('mini-clock');
-  await expect(mini).toContainText('일시정지 · 홈에서 계속');
-  await expect(page.getByRole('region', { name: '시즌 진행' })).toHaveCount(0);
-  const paused = await date.innerText();
+  await expect(mini.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
+  await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(0);
   const desk = page.getByRole('region', { name: '선수 영입 데스크' });
   await desk
     .getByRole('group', { name: '영입 포지션 선택' })
@@ -262,18 +261,13 @@ test('pauses the running clock while comparing candidates away from home and res
   await desk.getByRole('button', { name: '선택한 2명 비교', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: '영입 후보 비교' });
   await expect(dialog).toBeVisible();
-  await page.waitForTimeout(1200);
-  await expect(date).toHaveText(paused);
+  const comparing = await date.innerText();
+  // Dialogs never pause it either.
+  await expect(date).not.toHaveText(comparing);
   await dialog.getByRole('button', { name: '후보 비교 마치기', exact: true }).click();
   await expect(dialog).toHaveCount(0);
-  await page.waitForTimeout(1200);
-  await expect(date).toHaveText(paused);
-  // Returning home resumes the same run without pressing start again.
-  await mini.click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
-  await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
-  await expect(date).not.toHaveText(paused);
-  await page.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
+  // Only the owner's stop holds the date.
+  await mini.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
   const stopped = await date.innerText();
   await page.waitForTimeout(1200);
   await expect(date).toHaveText(stopped);

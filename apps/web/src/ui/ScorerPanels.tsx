@@ -1,4 +1,5 @@
 import { Select } from './Select';
+import { ClubCrest } from './ClubCrest';
 import { memo, useState } from 'react';
 import type { GoalScorer, World } from '../../../../packages/contracts/src/types';
 import { seasonName } from './format';
@@ -73,7 +74,9 @@ export const ScorerStandings = memo(function ScorerStandings({ w }: Props) {
                       {player.name}
                       {player.club === w.playerClub && <span className={s.ownBadge}>우리 팀</span>}
                     </th>
-                    <td className={s.club}>{clubName(w, player.club)}</td>
+                    <td className={s.club}>
+                      <ClubCrest w={w} id={player.club} size={14} /> {clubName(w, player.club)}
+                    </td>
                     <td>{player.role}</td>
                     <td>{player.appearances}</td>
                     <td className={s.goals}>{player.goals}</td>

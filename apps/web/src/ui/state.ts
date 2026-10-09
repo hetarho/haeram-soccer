@@ -26,12 +26,34 @@ const current = (): Page =>
   (Object.entries(paths).find(
     ([, path]) => location.pathname === path || location.pathname.startsWith(path + '/'),
   )?.[0] as Page) || 'dashboard';
-export const useNavigation = create<{ page: Page; setPage: (page: Page) => void }>((set) => ({
+export const useNavigation = create<{
+  page: Page;
+  setPage: (page: Page) => void;
+  /** Redirects without a history entry (e.g. a match address without a live match). */
+  replacePage: (page: Page) => void;
+}>((set) => ({
   page: typeof location === 'undefined' ? 'dashboard' : current(),
   setPage: (page) => {
     if (location.pathname !== paths[page]) history.pushState(null, '', paths[page]);
     set({ page });
   },
+  replacePage: (page) => {
+    if (location.pathname !== paths[page]) history.replaceState(null, '', paths[page]);
+    set({ page });
+  },
+}));
+
+/**
+ * Where live match presentation stands, so home can offer a way back to an unfinished match
+ * instead of starting another one (the match view has no tab).
+ */
+export const useMatchView = create<{
+  matchId?: string;
+  finished: boolean;
+  set: (state: { matchId?: string; finished: boolean }) => void;
+}>((set) => ({
+  finished: false,
+  set: ({ matchId, finished }) => set({ matchId, finished }),
 }));
 if (typeof window !== 'undefined')
   window.addEventListener('popstate', () => useNavigation.setState({ page: current() }));

@@ -16,16 +16,16 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 4 | 4 | - | 2 |
-| WEB | 31 | 31 | - | 0 |
+| WEB | 32 | 32 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
-| CLUB | 8 | 8 | - | 0 |
-| MATCH | 3 | 3 | - | 0 |
+| CLUB | 9 | 9 | - | 0 |
+| MATCH | 4 | 4 | - | 0 |
 | LEAGUE | 2 | 2 | - | 0 |
 | STAFF | 5 | 5 | - | 0 |
 | ECON | 6 | 6 | - | 0 |
 | EURO | 1 | 1 | - | 0 |
 | HIST | 3 | 3 | - | 0 |
-| SAVE | 6 | 6 | - | 0 |
+| SAVE | 7 | 7 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -34,8 +34,11 @@
 
 ## next
 - Release verification on the accumulated source: all three browsers and the production preview gates.
+- Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
 
 ## log
+- 261009 WEB r32 MATCH r4 CLUB r9 SAVE r7 implemented directly: player-duel engine for own/own-league matches (summary formula elsewhere, matched scoring scale), event-driven playback with a 32/55 u/s ball, live possession/xG/shot charts, 1–16x speeds, watch-only match view, clock on every view, club crests (432,000 combinations), remedy sheets and care actions; rules 1.4.0, golden fixtures regenerated
+- 261009 update-ssot WEB r32 MATCH r4 CLUB r9 SAVE r7 start: watch-only match view, clock on every view, crests, player-duel engine, care actions; implementing directly
 - 261009 ARCH r4 implemented directly: npm→pnpm 10.34.6 workspaces, lockfile imported from package-lock, CI/Netlify/Playwright/benchmark fingerprints switched
 - 261009 WEB r31 CLUB r8 LEAGUE r2 STAFF r5 ECON r6 SAVE r6 implemented directly: 1/3/5-day paces stopping only for enabled events, season close after the final round with a review page and window ceremony, 46-game league income, business delegation, cash warnings, deferred youth promotions; rules 1.3.0; delegated 10-season sims 40/40 solvent (was 2/40 past year 8)
 - 261009 CI fixes: /transfers route allowlisted, read-only tab ownership hand-over, clock toggle ignores clicks right after an automatic stop; SAVE r5
@@ -54,5 +57,3 @@
 - 261008 update-ssot WEB r26; ordinary progression, contextual quick actions and Motion
 - 261008 create-task T039; WEB r25 styled dropdowns
 - 261008 update-ssot WEB start; shared styled selection controls
-- 261008 T037 done; cycle 10 verified
-- 261008 T038 done; controls and pacing verified in all three browsers

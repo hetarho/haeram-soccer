@@ -217,11 +217,24 @@
 .standings .own .club {
   font-weight: bold;
 }
+.clubName {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
 .myClub {
   display: inline-block;
-  margin-left: 9px;
-  font-size: 9px;
-  color: var(--text-muted);
+  margin-left: 7px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--on-accent);
+  background: var(--accent);
+}
+.standings .own {
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 .points {
   font-weight: bold;
@@ -352,10 +365,18 @@
   font-size: 11px;
   border-radius: 4px;
 }
-.results li > span {
+.results li {
+  position: relative;
+}
+.results .side {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
   overflow-wrap: anywhere;
 }
-.results li > span:first-child {
+.results .side:first-of-type {
+  justify-content: flex-end;
   text-align: right;
 }
 .results b {
@@ -364,11 +385,25 @@
   font-variant-numeric: tabular-nums;
 }
 .ownResult {
-  background: var(--surface-2);
+  padding-top: 20px !important;
+  background: rgba(47, 194, 116, 0.12);
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 .ourName {
-  font-weight: bold;
-  color: var(--text);
+  font-weight: 900;
+  color: var(--accent-text);
+}
+.ownBadge {
+  position: absolute;
+  top: 2px;
+  left: 8px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 15px;
+  color: var(--on-accent);
+  background: var(--accent);
 }
 @media (max-width: 1100px) {
   .stats > div {
@@ -434,7 +469,8 @@
   }
   .standings td,
   .standings th {
-    padding: 9px 5px;
+    padding: 9px 3px;
+    font-size: 11px;
   }
   .standings .club {
     min-width: 0;

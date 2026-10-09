@@ -60,6 +60,20 @@ export async function horizontalOverflow(page: Page) {
   );
 }
 
+/**
+ * Home keeps the document still and never overflows sideways, but its column may scroll
+ * vertically inside the view region when the club's stage needs the room (WEB-10).
+ */
+export async function expectHomeBounds(page: Page) {
+  const geometry = await viewGeometry(page);
+  const measured = JSON.stringify(geometry);
+  expect(geometry.documentHeight, measured).toBeLessThanOrEqual(geometry.viewportHeight + 2);
+  expect(geometry.documentScroll, measured).toBe(0);
+  expect(geometry.scroll, measured).toBe(0);
+  expect(geometry.documentWidth, measured).toBeLessThanOrEqual(geometry.viewportWidth);
+  expect(geometry.width, measured).toBeLessThanOrEqual(geometry.clientWidth);
+}
+
 /** The current view fits one screen: nothing scrolls vertically or horizontally. */
 export async function expectViewFits(page: Page) {
   const geometry = await viewGeometry(page);

@@ -11,6 +11,8 @@ export type StaffRole =
 export type StaffTrait = 'developer' | 'specialist' | 'recovery' | 'spotter' | 'negotiator';
 export type ManagerTrait = 'youth' | 'rotation' | 'stable';
 export type DelegationKey = 'training' | 'academy' | 'transfers' | 'business';
+export type CareKind =
+  'rest-day' | 'medical' | 'team-dinner' | 'bonus' | 'owner-visit' | 'friendly';
 export type InboxKind =
   | 'match'
   | 'window-open'
@@ -206,6 +208,30 @@ export interface MatchMotionSample {
   phase?: 'possession' | 'transition' | 'pass' | 'shot' | 'restart';
   ownerId?: string;
 }
+/**
+ * One duel of the minute's possession chain. Slots index the side's starting XI; `side` is the
+ * team in possession when the duel starts. Observation only: never archived.
+ */
+export interface MatchEvent {
+  /** Seconds into the minute, 0–60. */
+  t: number;
+  kind: 'pass' | 'dribble' | 'shot';
+  side: 0 | 1;
+  /** Passer, dribbler or shooter. */
+  actor: number;
+  /** Pass receiver (or the teammate who recovered a loose ball). */
+  receiver?: number;
+  /** Opposing marker, tackler, blocker or keeper slot. */
+  opponent?: number;
+  /** Pass completed or dribble beaten; shots use `outcome`. */
+  ok?: boolean;
+  /** A failed pass or dribble lost the ball to `opponent`. */
+  lost?: boolean;
+  outcome?: 'goal' | 'save' | 'block' | 'miss';
+  xg?: number;
+  /** Zone the ball reaches: 0 build-up, 1 midfield, 2 final third (attacking direction). */
+  zone: 0 | 1 | 2;
+}
 export interface MatchFrame {
   minute: number;
   score: Score;
@@ -217,6 +243,12 @@ export interface MatchFrame {
   elapsedSeconds?: number;
   players?: [PlayerMotion[], PlayerMotion[]];
   motion?: MatchMotionSample[];
+  /** The minute's duel chain (observed matches only). */
+  events?: MatchEvent[];
+  /** Cumulative expected goals after this minute, home then away (observed matches only). */
+  xg?: [number, number];
+  /** Ball position every motion integration step of this minute (observed matches only). */
+  ballTrack?: [number, number][];
 }
 export interface MatchPlayback {
   record: MatchRecord;
@@ -391,4 +423,5 @@ export type Command =
   | { type: 'facility' }
   | { type: 'ticket'; price: number }
   | { type: 'support' }
-  | { type: 'accept-condition' };
+  | { type: 'accept-condition' }
+  | { type: 'care'; kind: CareKind };

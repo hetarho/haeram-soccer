@@ -27,6 +27,7 @@ import { hireStaff, MANAGER_TRAIT_INFO, managerTrait, releaseStaff, staffEffects
 import { promoteYouth, releaseYouth } from './academy';
 import { assertTransferWindow, moneyLabel, placeBid, respondBid } from './transfers';
 import { pushInbox, readInbox } from './inbox';
+import { applyCareEffects, careEventDetail, careOffer } from './care';
 import { marketingFanGain, policyEffects, policyOf, setPolicy } from './policy';
 export function operatingCost(w: World) {
   return operatingCosts(w).annual;
@@ -520,6 +521,21 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
         'manager-response',
         `${m.name}의 답변`,
         `${tacticLabel[cmd.tactic]} 요청 · ${response}`,
+      );
+      break;
+    }
+    case 'care': {
+      const offer = careOffer(w, cmd.kind);
+      if (!offer.available) throw new Error(`${offer.label} · ${offer.reason}`);
+      if (BigInt(offer.cost) > 0n) debit(w, offer.cost);
+      if (BigInt(offer.income) > 0n) credit(w, offer.income);
+      applyCareEffects(w, cmd.kind);
+      addEvent(
+        w,
+        `care:${cmd.kind}`,
+        offer.label,
+        careEventDetail(cmd.kind),
+        BigInt(offer.cost) > 0n ? offer.cost : BigInt(offer.income) > 0n ? offer.income : undefined,
       );
       break;
     }

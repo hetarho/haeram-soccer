@@ -1,7 +1,7 @@
 import { chooseOption, selectOptions } from './select';
 import { expect, test } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
-import { expectViewFits, horizontalOverflow } from './layout';
+import { expectHomeBounds, horizontalOverflow } from './layout';
 
 test.use({ viewport: { width: 360, height: 740 } });
 
@@ -115,10 +115,13 @@ test('filters the own-club fixture notebook and reads a settled full-season reco
     .getByRole('button', { name: '리그', exact: true })
     .click();
   await expect(page.getByRole('region', { name: '우리 팀 일정 노트', exact: true })).toHaveCount(0);
+  await page.getByRole('tab', { name: '순위표', exact: true }).click();
   const expand = page.getByRole('button', { name: /전체 \d+팀 순위 보기/ }).first();
   await expect(expand).toBeVisible();
   await expand.click();
   await expect(expand).toHaveCount(0);
+  // The fixture notebook belongs to the league overview.
+  await page.getByRole('tab', { name: '개요', exact: true }).click();
   await page.getByText('우리 팀 일정 노트', { exact: true }).click();
   const notebook = page.getByRole('region', { name: '우리 팀 일정 노트', exact: true });
   await chooseOption(notebook.getByRole('combobox', { name: '일정 홈 원정', exact: true }), 'away');
@@ -288,5 +291,5 @@ test('opens evidence-based opponent scouting without progressing the world', asy
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   await sheet.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
   await expect(page.getByTestId('game-date')).toHaveText('1901년 8월 1일');
-  await expectViewFits(page);
+  await expectHomeBounds(page);
 });

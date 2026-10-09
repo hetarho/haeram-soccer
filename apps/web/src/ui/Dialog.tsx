@@ -144,26 +144,24 @@ export function Dialog({
         e.stopPropagation();
         requestClose();
       }
-      if (e.key === 'Tab') {
-        const targets = focusable(),
-          first = targets[0],
-          last = targets.at(-1);
+      // The trap moves focus itself: browsers that skip buttons on Tab (Safari's default) would
+      // otherwise leave the dialog when no other field follows.
+      if (e.key === 'Tab' && !e.defaultPrevented) {
+        const targets = focusable();
+        e.preventDefault();
         if (!targets.length) {
-          e.preventDefault();
           element.current?.focus();
-        } else if (
-          e.shiftKey &&
-          (document.activeElement === first || document.activeElement === element.current)
-        ) {
-          e.preventDefault();
-          last?.focus();
-        } else if (
-          !e.shiftKey &&
-          (document.activeElement === last || !element.current?.contains(document.activeElement))
-        ) {
-          e.preventDefault();
-          first?.focus();
+          return;
         }
+        const index = targets.indexOf(document.activeElement as HTMLElement);
+        const next = e.shiftKey
+          ? index <= 0
+            ? targets.length - 1
+            : index - 1
+          : index < 0 || index === targets.length - 1
+            ? 0
+            : index + 1;
+        targets[next].focus();
       }
     };
     const focus = (event: FocusEvent) => {

@@ -1,7 +1,7 @@
 import { chooseOption, selectOptions } from './select';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { COUNTRIES } from '../../packages/catalogs/src/index';
-import { expectViewFits, settle } from './layout';
+import { expectHomeBounds, expectViewFits, settle } from './layout';
 import { stopOnlyFor } from './events';
 
 async function expectTouchControl(control: Locator, viewport: { width: number; height: number }) {
@@ -67,7 +67,7 @@ for (const viewport of [
     await page.getByLabel('세계 생성 시드').fill(`native-preparation-${viewport.width}`);
     await page.getByRole('button', { name: '클럽 창단' }).click();
     await expect(page.getByTestId('club-hub')).toBeVisible();
-    await expectCompactDocument(page, viewport);
+    await expectHomeBounds(page);
     const progress = page.getByRole('region', { name: '시즌 진행', exact: true });
     const paces = ['1초에 하루', '1초에 3일', '1초에 5일'].map((pace) =>
       progress.getByRole('button', { name: `${pace} 속도로 자동 진행`, exact: true }),
@@ -169,6 +169,7 @@ for (const viewport of [
       .getByRole('navigation', { name: '모바일 게임 메뉴' })
       .getByRole('button', { name: '리그', exact: true })
       .click();
+    await page.getByRole('tab', { name: '순위표', exact: true }).click();
     const country = page.getByRole('combobox', { name: '국가', exact: true });
     const tier = page.getByRole('combobox', { name: '디비전', exact: true });
     await expectTouchControl(country, viewport);

@@ -35,6 +35,21 @@ describe('action outcome summaries', () => {
     expect(outcome.note).toContain('유지비');
   });
 
+  it('summarizes a care action with its fatigue and morale change', () => {
+    const before = world();
+    for (const player of before.players) player.fatigue = 40;
+    const next = after(before, (w) => operate(w, { type: 'care', kind: 'rest-day' }));
+    const outcome = describeOutcome({ type: 'care', kind: 'rest-day' }, before, next)!;
+    expect(outcome.title).toBe('선수단을 챙겼어요');
+    expect(outcome.changes.find((c) => c.label === '선발 평균 피로')).toMatchObject({
+      previous: '40',
+      value: '34',
+      trend: 'down',
+    });
+    expect(outcome.changes.find((c) => c.label === '선수단 사기')).toMatchObject({ trend: 'up' });
+    expect(outcome.events[0].title).toBe('휴식일');
+  });
+
   it('lists only facts that changed and the squad size after a sale', () => {
     const before = world();
     const id = before.players.find((p) => p.role === 'MID' && p.status === 'active')!.id;

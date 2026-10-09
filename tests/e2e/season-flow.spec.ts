@@ -47,6 +47,7 @@ test('advances real days at three paces, stops and restores the saved calendar',
   await expect(date).not.toHaveText('1901년 8월 7일');
   await expect(page.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
   await page.getByRole('button', { name: '리그', exact: true }).click();
+  await page.getByRole('tab', { name: '순위표', exact: true }).click();
   await expect(page.getByRole('table', { name: '리그 순위표' })).toBeVisible();
   await expect(page.getByRole('table', { name: '리그 순위표' })).toContainText('우리 팀');
   await page.getByRole('tab', { name: '순위 추이', exact: true }).click();
@@ -99,6 +100,9 @@ test('shows independent player decisions and post-match league context', async (
   await expect(page.getByRole('table', { name: '리그 순위표' })).toContainText('우리 팀');
   await page.getByRole('button', { name: '다시 보기', exact: true }).click();
   await expect(page.getByText(/90′ ·.*경기 종료/)).toHaveCount(0);
+  // While the replay plays the primary action reveals the result; then it watches the next match.
+  await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('결과 보기');
+  await page.getByTestId('match-next-action').click();
   const beforeNext = await page.getByTestId('game-date').innerText();
   await page.getByRole('button', { name: '다음 경기 관전', exact: true }).click();
   await expect(page.getByTestId('game-date')).not.toHaveText(beforeNext);

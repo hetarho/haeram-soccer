@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 import type {
+  MatchEvent,
   MatchPlayback,
   MatchFrame,
   MatchMotionSample,
@@ -21,6 +22,9 @@ import { tacticLabel } from '../../../../packages/engine/src/world';
 import { percent } from './format';
 import { MatchReport } from './MatchReport';
 import { MatchMoments } from './MatchMoments';
+import { MatchCharts } from './MatchCharts';
+import { CrestMark } from './ClubCrest';
+import { crestOf, inkOn, kits } from './crests';
 import { sampleAtMinute } from './moments';
 import { presentationAdvance, WATCH_SPEEDS } from './presentationClock';
 import s from './App.module.css';
@@ -49,12 +53,19 @@ const initialShape: [number, number][] = [
   [76, 50],
   [72, 80],
 ];
+/** Motion integration steps per simulated minute and between two player samples. */
+const STEPS_PER_MINUTE = 40;
+const STEPS_PER_SAMPLE = 5;
 interface Sample {
   frame: number;
   ball: [number, number];
   players?: [PlayerMotion[], PlayerMotion[]];
   phase?: MatchMotionSample['phase'];
   ownerId?: string;
+  /** Global ball-track step this sample was taken at, when the minute recorded a track. */
+  step?: number;
+  /** Sample position inside its minute, 0–1. */
+  within: number;
 }
 
 const phaseLabels = {
@@ -65,6 +76,38 @@ const phaseLabels = {
   restart: '경기 재개',
 };
 
+/** One duel of the chain in words, with the players who took part. */
+export function describeEvent(event: MatchEvent, squads: MatchPlayback['squads']) {
+  const name = (side: 0 | 1, slot?: number) =>
+    slot === undefined ? '' : squads[side]?.[slot]?.name || '선수';
+  const other: 0 | 1 = event.side === 0 ? 1 : 0;
+  const actor = name(event.side, event.actor),
+    receiver = name(event.side, event.receiver),
+    opponent = name(other, event.opponent);
+  if (event.kind === 'shot')
+    return event.outcome === 'goal'
+      ? `골! ${actor} · xG ${event.xg?.toFixed(2)}`
+      : event.outcome === 'save'
+        ? `${actor} 슈팅 · ${opponent} 선방`
+        : event.outcome === 'block'
+          ? `${actor} 슈팅 · ${opponent} 몸으로 막음`
+          : `${actor} 슈팅이 골문을 벗어남`;
+  if (event.kind === 'dribble')
+    return event.ok ? `${actor} 드리블로 ${opponent} 제침` : `${opponent} 태클 · ${actor} 저지`;
+  if (event.ok) return `${actor} → ${receiver} 패스`;
+  if (event.lost)
+    return event.receiver === undefined
+      ? `${opponent} 압박으로 ${actor}의 공을 빼앗음`
+      : `${opponent}가 ${actor}의 패스를 가로챔`;
+  return `${actor}의 패스가 빗나가 ${receiver}가 수습`;
+}
+
+export interface PitchControls {
+  finished: boolean;
+  /** Jump to the final whistle and pause. */
+  reveal: () => void;
+}
+
 export function Pitch({
   playback: p,
   world,
@@ -72,7 +115,7 @@ export function Pitch({
   onFinish,
   onPlaybackStart,
   onPresentationChange,
-  afterControls,
+  actions,
 }: {
   playback?: MatchPlayback;
   world: World;
@@ -80,7 +123,8 @@ export function Pitch({
   onFinish?: (id: string) => void;
   onPlaybackStart?: (id: string) => void;
   onPresentationChange?: (state: { matchId?: string; finished: boolean; details: boolean }) => void;
-  afterControls?: ReactNode;
+  /** The primary actions under the charts; without them the pitch offers its own result button. */
+  actions?: (controls: PitchControls) => ReactNode;
 }) {
   const detailsId = useId();
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -99,17 +143,21 @@ export function Pitch({
     () =>
       p?.frames.flatMap((frame, i) =>
         frame.motion?.length
-          ? frame.motion.map((motion) => ({
+          ? frame.motion.map((motion, j) => ({
               frame: i,
               ball: motion.ball,
               players: motion.players,
               phase: motion.phase,
               ownerId: motion.ownerId,
+              step: frame.ballTrack ? i * STEPS_PER_MINUTE + (j + 1) * STEPS_PER_SAMPLE : undefined,
+              within: (j + 1) / frame.motion!.length,
             }))
-          : [{ frame: i, ball: frame.ball, players: frame.players }],
+          : [{ frame: i, ball: frame.ball, players: frame.players, within: 1 }],
       ) || [],
     [p],
   );
+  // Every recorded ball position of the match, so a fast pass is drawn at its real speed.
+  const track = useMemo(() => p?.frames.flatMap((frame) => frame.ballTrack || []) || [], [p]);
   const [selectedSide, selectedIndex] = selection.split(':').map(Number);
   const visibleIndex = sampleMatchId === p?.record.id ? sampleIndex : 0;
   const sample = samples[Math.min(visibleIndex, samples.length - 1)];
@@ -117,12 +165,22 @@ export function Pitch({
   const finished = !!p && sampleMatchId === p.record.id && sampleIndex >= samples.length - 1;
   const home = world.clubs.find((c) => c.id === p?.record.home);
   const away = world.clubs.find((c) => c.id === p?.record.away);
+  const homeCrest = crestOf(world, home?.id),
+    awayCrest = crestOf(world, away?.id);
+  const [homeKit, awayKit] = kits(homeCrest, awayCrest);
   const selectedPlayer = p?.squads[selectedSide]?.[selectedIndex];
   const selectedMotion = sample?.players?.[selectedSide]?.[selectedIndex];
   const traits = selectedPlayer ? playerTraits(selectedPlayer) : undefined;
-  const latest = p?.record.highlights
+  const latestGoal = p?.record.highlights
     .filter((event) => event.minute <= (frame?.minute ?? 0))
     .at(-1);
+  // The duel the pitch is playing out now: the minute's last duels are spread across it.
+  const visibleEvents = frame?.events?.slice(-5) || [];
+  const currentEvent = visibleEvents.length
+    ? visibleEvents[
+        Math.min(visibleEvents.length - 1, Math.floor((sample?.within ?? 1) * visibleEvents.length))
+      ]
+    : undefined;
 
   useLayoutEffect(() => {
     onPresentationChange?.({ matchId: p?.record.id, finished, details });
@@ -167,8 +225,13 @@ export function Pitch({
         );
       const index = Math.min(end, Math.floor(clock.current));
       const element = canvas.current;
-      // Keep replay time, but leave hidden/inert views out of layout and painting work.
+      // Keep replay time, but leave hidden/inert views out of layout and painting work. The final
+      // whistle still lands, so home knows an unwatched match has ended.
       if (element?.closest('[hidden], [inert]')) {
+        if (index === end && lastUi.current !== -1) {
+          lastUi.current = -1;
+          setSampleIndex(end);
+        }
         raf = requestAnimationFrame(draw);
         return;
       }
@@ -199,8 +262,11 @@ export function Pitch({
         const fh = height - pad * 2;
         const x = (v: number) => pad + (fw * v) / 100;
         const y = (v: number) => pad + (fh * v) / 100;
-        ctx.fillStyle = '#1c543e';
-        ctx.fillRect(pad, pad, fw, fh);
+        // Mown stripes.
+        for (let stripe = 0; stripe < 10; stripe++) {
+          ctx.fillStyle = stripe % 2 ? '#1a523c' : '#1d5841';
+          ctx.fillRect(pad + (fw * stripe) / 10, pad, fw / 10 + 0.5, fh);
+        }
         ctx.strokeStyle = '#a9c6b08c';
         ctx.lineWidth = 1.4;
         ctx.strokeRect(pad, pad, fw, fh);
@@ -214,9 +280,14 @@ export function Pitch({
         for (const side of [0, 1]) {
           ctx.strokeRect(x(side === 0 ? 0 : 82), y(22), fw * 0.18, fh * 0.56);
           ctx.strokeRect(x(side === 0 ? 0 : 94), y(38), fw * 0.06, fh * 0.24);
+          // Goal mouths.
+          ctx.fillStyle = '#e8efe6aa';
+          ctx.fillRect(side === 0 ? pad - 4 : x(100), y(44), 4, fh * 0.12);
         }
         if (p && current) {
+          const radius = Math.max(6, width * 0.011);
           for (const side of [0, 1]) {
+            const kit = side === 0 ? homeKit : awayKit;
             for (let i = 0; i < 11; i++) {
               const motion = current.players?.[side]?.[i];
               const target = next.players?.[side]?.[i];
@@ -238,7 +309,6 @@ export function Pitch({
                 ctx.arc(x(motion.intent[0]), y(motion.intent[1]), 4, 0, Math.PI * 2);
                 ctx.stroke();
               }
-              const radius = Math.max(6, width * 0.011);
               if (selected) {
                 ctx.beginPath();
                 ctx.arc(x(px), y(py), radius + 4, 0, Math.PI * 2);
@@ -248,25 +318,40 @@ export function Pitch({
               }
               ctx.beginPath();
               ctx.arc(x(px), y(py), radius, 0, Math.PI * 2);
-              ctx.fillStyle = side === 0 ? home?.color || '#c77e5b' : '#eadcc3';
+              // Goalkeepers wear a contrasting shirt.
+              ctx.fillStyle = i === 0 ? (side === 0 ? '#f2c94c' : '#56ccf2') : kit;
               ctx.fill();
-              ctx.strokeStyle = '#ffffffbb';
-              ctx.lineWidth = 1;
+              ctx.strokeStyle = '#ffffffcc';
+              ctx.lineWidth = 1.2;
               ctx.stroke();
-              ctx.fillStyle = '#132a20';
+              ctx.fillStyle = inkOn(i === 0 ? (side === 0 ? '#f2c94c' : '#56ccf2') : kit);
               ctx.font = `bold ${Math.max(8, width * 0.012)}px sans-serif`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
               ctx.fillText(String(i + 1), x(px), y(py));
             }
           }
-          const bx = current.ball[0] * (1 - mix) + next.ball[0] * mix;
-          const by = current.ball[1] * (1 - mix) + next.ball[1] * mix;
+          let bx = current.ball[0] * (1 - mix) + next.ball[0] * mix;
+          let by = current.ball[1] * (1 - mix) + next.ball[1] * mix;
+          if (current.step !== undefined && next.step !== undefined && track.length) {
+            const g = current.step + mix * (next.step - current.step) - 1;
+            const a = track[Math.max(0, Math.min(track.length - 1, Math.floor(g)))],
+              b = track[Math.max(0, Math.min(track.length - 1, Math.ceil(g)))],
+              f = g - Math.floor(g);
+            bx = a[0] * (1 - f) + b[0] * f;
+            by = a[1] * (1 - f) + b[1] * f;
+          }
+          const ballRadius = Math.max(3.2, width * 0.0065);
+          ctx.fillStyle = '#0006';
+          ctx.beginPath();
+          ctx.ellipse(x(bx) + 1.5, y(by) + 2, ballRadius, ballRadius * 0.6, 0, 0, Math.PI * 2);
+          ctx.fill();
           ctx.fillStyle = '#fff';
           ctx.beginPath();
-          ctx.arc(x(bx), y(by), Math.max(3, width * 0.006), 0, Math.PI * 2);
+          ctx.arc(x(bx), y(by), ballRadius, 0, Math.PI * 2);
           ctx.fill();
           ctx.strokeStyle = '#21392a';
+          ctx.lineWidth = 1;
           ctx.stroke();
         } else {
           ctx.fillStyle = '#d8e4d6';
@@ -279,33 +364,63 @@ export function Pitch({
     };
     raf = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(raf);
-  }, [p, samples, paused, speed, home?.color, inspect, selectedSide, selectedIndex]);
+  }, [p, samples, track, paused, speed, homeKit, awayKit, inspect, selectedSide, selectedIndex]);
 
   const seek = (index: number) => {
     clock.current = Math.max(0, Math.min(samples.length - 1, index));
     setSampleIndex(Math.floor(clock.current));
     if (p && index < samples.length - 1) onPlaybackStart?.(p.record.id);
   };
+  const reveal = () => {
+    seek(samples.length - 1);
+    setPaused(true);
+  };
+  const toggle = () => {
+    if (!p) return;
+    if (finished) seek(0);
+    setPaused(finished ? false : !paused);
+  };
+  const playLabel = finished ? '다시 보기' : paused ? '재생' : '일시정지';
   return (
     <div className={`${s.pitch} ${t.pitch}`} data-testid="pitch-theatre">
       <div className={`${s.scoreboard} ${t.scoreboard}`} data-testid="match-score">
-        <span>{home?.name || 'HOME'}</span>
+        <span className={t.team}>
+          {home && <CrestMark crest={homeCrest} size={24} />}
+          <b>{home?.name || 'HOME'}</b>
+        </span>
         <strong>{frame ? `${frame.score.home} : ${frame.score.away}` : '— : —'}</strong>
-        <span>{away?.name || 'AWAY'}</span>
+        <span className={`${t.team} ${t.awayTeam}`}>
+          <b>{away?.name || 'AWAY'}</b>
+          {away && <CrestMark crest={awayCrest} size={24} />}
+        </span>
       </div>
       <div className={`${s.pitchMeta} ${t.pitchMeta}`}>
-        <span className={s.live}>
+        <span className={`${s.live} ${t.liveText}`}>
           {frame
             ? `${frame.minute}′ · ${frame.action}${finished ? ' · 경기 종료' : ''}`
             : 'MATCH DAY'}
         </span>
-        <span className={t.tactics}>
-          {summary
-            ? '지난 경기 · 기록된 골과 최종 통계'
-            : p
-              ? `${tacticLabel[p.record.tactics[0]]} vs ${tacticLabel[p.record.tactics[1]]}`
+        {p && !summary ? (
+          <div className={t.speeds} role="radiogroup" aria-label="관전 속도">
+            {WATCH_SPEEDS.map((value) => (
+              <button
+                key={value}
+                role="radio"
+                aria-checked={speed === value}
+                className={speed === value ? t.speedOn : undefined}
+                onClick={() => setSpeed(value)}
+              >
+                {value}×
+              </button>
+            ))}
+          </div>
+        ) : (
+          <span className={t.tactics}>
+            {summary
+              ? '지난 경기 · 기록된 골과 최종 통계'
               : '다음 경기를 선택하면 관전이 시작됩니다'}
-        </span>
+          </span>
+        )}
       </div>
       {details && inspect && sample?.phase && (
         <div className={s.pitchMeta}>
@@ -317,67 +432,77 @@ export function Pitch({
           </span>
         </div>
       )}
-      <canvas
-        ref={canvas}
-        aria-label="22명의 선수와 공으로 표현하는 경기"
-        className={`${s.canvas} ${t.canvas}`}
-      />
+      <div className={t.stage}>
+        <canvas
+          ref={canvas}
+          aria-label="22명의 선수와 공으로 표현하는 경기"
+          className={`${s.canvas} ${t.canvas}`}
+          onClick={toggle}
+        />
+        <button
+          className={`${t.playToggle} ${paused || finished ? t.playIdle : ''}`}
+          aria-label={playLabel}
+          disabled={!p}
+          onClick={toggle}
+        >
+          <span
+            aria-hidden="true"
+            className={finished ? t.iconReplay : paused ? t.iconPlay : t.iconPause}
+          />
+        </button>
+        {p && !summary && (
+          <span className={t.tactics}>
+            {tacticLabel[p.record.tactics[0]]} vs {tacticLabel[p.record.tactics[1]]}
+          </span>
+        )}
+      </div>
       <div className={t.latestEvent} data-testid="match-latest-event">
-        <span>최근 장면</span>
+        <span>{frame ? `${frame.minute}′` : '최근 장면'}</span>
         <p>
-          {latest
-            ? `${latest.minute}′ ${latest.player} · ${latest.action}`
-            : frame
-              ? `${frame.minute}′ ${frame.action}`
-              : '다음 경기를 시작하고 우리 선발의 활약을 지켜보세요.'}
+          {currentEvent && p
+            ? describeEvent(currentEvent, p.squads)
+            : latestGoal
+              ? `${latestGoal.minute}′ ${latestGoal.player} · ${latestGoal.action}`
+              : frame
+                ? frame.action
+                : '다음 경기를 시작하고 우리 선발의 활약을 지켜보세요.'}
         </p>
       </div>
-      <div className={`${s.playControls} ${t.playControls}`}>
-        <button
-          onClick={() => {
-            if (finished) seek(0);
-            setPaused(finished ? false : !paused);
-          }}
-          disabled={!p}
-        >
-          {finished ? '다시 보기' : paused ? '재생' : '일시정지'}
-        </button>
-        <label className={t.speed}>
-          <span>관전 속도</span>
-          <Select
-            aria-label="관전 속도"
-            value={speed}
-            onValueChange={(value) => setSpeed(Number(value))}
-          >
-            {WATCH_SPEEDS.map((value) => (
-              <option key={value} value={value}>
-                {value}×
-              </option>
-            ))}
-          </Select>
-        </label>
-        <button
-          onClick={() => {
-            seek(samples.length - 1);
-            setPaused(true);
-          }}
-          disabled={!p}
-        >
-          결과 보기
-        </button>
-        <button
-          aria-expanded={details}
-          aria-controls={detailsId}
-          disabled={!p}
-          onClick={() => {
+      {p && !summary && frame?.xg && (
+        <MatchCharts
+          playback={p}
+          minute={frame.minute}
+          kits={[homeKit, awayKit]}
+          crests={[homeCrest, awayCrest]}
+          names={[home?.short || 'HOME', away?.short || 'AWAY']}
+          details={details}
+          detailsId={detailsId}
+          onDetails={() => {
             setDetails(!details);
             if (details) setInspect(false);
           }}
-        >
-          경기 상세
-        </button>
-      </div>
-      {afterControls}
+        />
+      )}
+      {actions ? (
+        actions({ finished, reveal })
+      ) : (
+        <div className={t.ownActions}>
+          <button onClick={reveal} disabled={!p}>
+            결과 보기
+          </button>
+          <button
+            aria-expanded={details}
+            aria-controls={detailsId}
+            disabled={!p}
+            onClick={() => {
+              setDetails(!details);
+              if (details) setInspect(false);
+            }}
+          >
+            경기 상세
+          </button>
+        </div>
+      )}
       <div id={detailsId} hidden={!details} className={t.details}>
         {p && (summary || finished || reviewedId === p.record.id) && (
           <MatchMoments
@@ -467,6 +592,11 @@ export function Pitch({
                   percent(frame.metrics[0][11], frame.minute),
                   percent(frame.metrics[1][11], frame.minute),
                 ],
+                [
+                  '기대 득점 (xG)',
+                  frame.xg?.[0].toFixed(2) ?? '—',
+                  frame.xg?.[1].toFixed(2) ?? '—',
+                ],
                 ['슈팅', frame.metrics[0][4], frame.metrics[1][4]],
                 ['유효 슈팅', frame.metrics[0][5], frame.metrics[1][5]],
                 [
@@ -475,6 +605,7 @@ export function Pitch({
                   percent(frame.metrics[1][3], frame.metrics[1][2]),
                 ],
                 ['태클', frame.metrics[0][6], frame.metrics[1][6]],
+                ['인터셉트', frame.metrics[0][7], frame.metrics[1][7]],
               ].map(([label, a, b]) => (
                 <div key={label}>
                   <strong>{a}</strong>

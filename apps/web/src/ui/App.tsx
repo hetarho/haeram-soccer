@@ -3,6 +3,8 @@ import type { World } from '../../../../packages/contracts/src/types';
 import { country, priceIndex } from '../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../runtime/client';
 import { useNavigation, type Page } from './state';
+import { ClubCrest } from './ClubCrest';
+import { watchNextMatch } from './watch';
 import { money, number, percent, seasonName, kindLabel } from './format';
 import { InterventionSettings, ProgressControls } from './ProgressControls';
 import { LiveSeason } from './LiveSeason';
@@ -88,7 +90,15 @@ export function Panel({
 export function Table({ w, ids, limit }: { w: World; ids: string[]; limit?: number }) {
   return <Standings w={w} ids={ids} limit={limit} />;
 }
-function ClubJournal({ state, client }: { state: ClientState; client: GameClient }) {
+function ClubJournal({
+  state,
+  client,
+  controller,
+}: {
+  state: ClientState;
+  client: GameClient;
+  controller: ProgressionController;
+}) {
   const { setPage } = useNavigation();
   const v = state.view!,
     w = v.world,
@@ -106,10 +116,7 @@ function ClubJournal({ state, client }: { state: ClientState; client: GameClient
       (f.home === w.playerClub || f.away === w.playerClub),
   ).length;
   const winRate = percent(t.won, t.played);
-  const watch = async () => {
-    const result = await client.command({ type: 'next-match' });
-    if (result?.playback) setPage('match');
-  };
+  const watch = () => watchNextMatch(client, controller, () => setPage('match'));
   return (
     <>
       <div className={s.hero}>
@@ -177,12 +184,12 @@ function ClubJournal({ state, client }: { state: ClientState; client: GameClient
               </small>
               <div className={s.fixtureTeams}>
                 <div>
-                  <Crest color={home?.color} />
+                  {home && <ClubCrest w={w} id={home.id} size={20} />}
                   {home?.name || '시즌의 마지막 페이지'}
                 </div>
                 <b>vs</b>
                 <div>
-                  <Crest color={away?.color} />
+                  {away && <ClubCrest w={w} id={away.id} size={20} />}
                   {away?.name || '다음 시즌을 기다립니다'}
                 </div>
               </div>
@@ -350,9 +357,9 @@ function Europe({ w, coefficient }: { w: World; coefficient: number }) {
     </>
   );
 }
+/** The match view has no menu entry: it opens only from a watch action (→WEB-40). */
 const NAV: [Page, string][] = [
   ['dashboard', '클럽 홈'],
-  ['match', '경기'],
   ['league', '리그'],
   ['europe', '유럽 무대'],
   ['history', '역사 보관함'],
@@ -367,8 +374,8 @@ const NAV: [Page, string][] = [
  * management to the right.
  */
 const TABS: [Page, string, string, Page[]][] = [
-  ['match', '경기', '경기', ['match']],
-  ['league', '리그', '리그', ['league', 'europe']],
+  ['league', '리그', '리그', ['league']],
+  ['europe', '유럽', '유럽 무대', ['europe']],
   ['history', '기록', '역사 보관함', ['history', 'season']],
   ['dashboard', '홈', '클럽 홈', ['dashboard']],
   ['squad', '선수단', '선수단', ['squad', 'manager']],
@@ -478,7 +485,7 @@ const ConnectedDashboard = memo(function ConnectedDashboard({
       milestoneFacts={state.view!.milestones}
       client={client}
       controller={controller}
-      journal={<ClubJournal client={client} state={state} />}
+      journal={<ClubJournal client={client} state={state} controller={controller} />}
     />
   );
 });
@@ -552,6 +559,7 @@ function GameHud({
     state.view?.world.clubs.find((club) => club.id === state.view?.world.playerClub),
   );
   const lower = useGameState((state) => state.view?.world.lower);
+  const crestWorld = useGameState((state) => state.view?.world.clubs && state.view.world);
   return (
     <header className={s.hud}>
       {!menuDisabled && (
@@ -567,7 +575,11 @@ function GameHud({
         </button>
       )}
       <div className={s.hudClub}>
-        <Crest color={own?.color} />
+        {own && crestWorld ? (
+          <ClubCrest w={crestWorld} id={own.id} size={26} className={s.hudCrest} />
+        ) : (
+          <Crest color={own?.color} />
+        )}
         <div>
           <b>{own?.name || 'Haeram Football'}</b>
           <small data-testid="calendar">
@@ -576,9 +588,34 @@ function GameHud({
           </small>
         </div>
       </div>
+      <ReadonlyBadge />
       {client && !menuDisabled && <InboxButton client={client} />}
       <HudCash />
     </header>
+  );
+}
+/** Read-only ownership is a small HUD badge that explains itself on tap (→WEB-10). */
+function ReadonlyBadge() {
+  const readonly = useGameState((state) => state.readonly && !!state.view);
+  const notice = useGameState((state) => state.notice);
+  const [open, setOpen] = useState(false);
+  if (!readonly) return null;
+  const text = notice || '다른 탭이 플레이 중입니다. 이 탭은 읽기 전용입니다.';
+  return (
+    <span className={s.readonlyBadge} role="status">
+      <button aria-expanded={open} title={text} onClick={() => setOpen(!open)}>
+        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+        </svg>
+        읽기 전용
+      </button>
+      <span className={open ? s.readonlyDetail : s.srOnly}>{text}</span>
+    </span>
   );
 }
 function NextMatchNote() {
@@ -603,7 +640,7 @@ function RuntimeFeedback({ client, localError }: { client: GameClient; localErro
           <button onClick={() => location.reload()}>저장 다시 불러오기</button>
         </div>
       )}
-      {state.notice && (
+      {state.notice && !state.readonly && (
         <div className={s.notice} role="status">
           {state.notice}
         </div>
@@ -779,10 +816,12 @@ export function App() {
     }
   }, []);
   const w = state?.view?.world;
-  // The clock runs only on home: other screens are for decisions, so leaving home pauses it.
+  // The match view exists only for a live playback; its address alone leads home (→WEB-40).
+  const hasPlayback = useGameState((state) => !!state.playback);
+  const replacePage = useNavigation((state) => state.replacePage);
   useEffect(() => {
-    controller?.setSuspended(page !== 'dashboard', 'away');
-  }, [controller, page]);
+    if (page === 'match' && client && w && !hasPlayback) replacePage('dashboard');
+  }, [page, client, w, hasPlayback, replacePage]);
   // However a season closes, its review opens before anything else.
   useEffect(() => {
     if (!controller) return;
@@ -893,12 +932,12 @@ export function App() {
           </div>
         )}
         {client && <RuntimeFeedback client={client} localError={localError} />}
-        {client && controller && w && !replacing && (
+        {/* The match theatre carries its own compact clock in its header row. */}
+        {client && controller && w && !replacing && page !== 'match' && (
           <ProgressControls
             client={client}
             controller={controller}
             compact={page !== 'dashboard'}
-            onHome={() => setPage('dashboard')}
           />
         )}
         <div ref={scroller} className={s.scroller} data-testid="view-scroller">
@@ -983,8 +1022,8 @@ export function App() {
         ))}
       </nav>
       {client && w && !replacing && <ActionOutcome />}
-      {client && controller && w && !replacing && page === 'dashboard' && (
-        <EventCenter client={client} controller={controller} />
+      {client && controller && w && !replacing && page !== 'match' && (
+        <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />
       )}
       {moreOpen && (
         <Dialog label="전체 메뉴" onClose={() => setMoreOpen(false)}>

@@ -1,64 +1,252 @@
 .pitch {
   border: 1px solid var(--line);
   border-radius: 10px;
+  overflow: hidden;
 }
 .scoreboard {
-  padding: 14px 20px;
+  padding: 12px 16px;
+}
+.team {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.team b {
+  min-width: 0;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+.awayTeam {
+  justify-content: flex-end;
 }
 .pitchMeta {
+  align-items: center;
   color: var(--text-muted);
   font-size: 12px;
+}
+/* Speed chips replace the old controls row. */
+.speeds {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 3px;
+}
+.speeds button {
+  min-width: 44px;
+  height: 44px;
+  padding: 2px 6px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  box-shadow: none;
+}
+.speeds .speedOn {
+  color: var(--on-accent);
+  background: var(--gold-fill);
+  border-color: var(--gold-edge);
+}
+.stage {
+  position: relative;
+}
+.canvas {
+  cursor: pointer;
+}
+.stage .canvas {
+  aspect-ratio: 1.9;
+}
+.playToggle {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(7, 17, 14, 0.72);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  opacity: 0.72;
+  transition:
+    opacity 160ms,
+    transform 160ms;
+}
+.playToggle:hover:not(:disabled),
+.playIdle {
+  opacity: 1;
+}
+.playIdle {
+  background: var(--gold-fill);
+  border-color: var(--gold-edge);
+}
+.iconPlay {
+  width: 0;
+  height: 0;
+  margin-left: 4px;
+  border-left: 14px solid #fff;
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+}
+.playIdle .iconPlay,
+.playIdle .iconReplay {
+  border-left-color: #2a1c02;
+  color: #2a1c02;
+}
+.iconPause {
+  width: 13px;
+  height: 16px;
+  border-left: 4px solid #fff;
+  border-right: 4px solid #fff;
+}
+.iconReplay {
+  width: 18px;
+  height: 18px;
+  border: 3px solid #2a1c02;
+  border-right-color: transparent;
+  border-radius: 50%;
+}
+.stage .tactics {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  color: var(--text-muted);
+  background: rgba(7, 17, 14, 0.66);
+  pointer-events: none;
 }
 .latestEvent {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 14px;
+  min-height: 36px;
+  padding: 7px 14px;
   color: var(--text);
   font-size: 13px;
   background: var(--surface-2);
 }
 .latestEvent > span {
   flex-shrink: 0;
-  color: var(--text-muted);
-  font-size: 11px;
+  min-width: 26px;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
 }
 .latestEvent p {
   min-width: 0;
   line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.playControls {
+
+/* Live charts: possession share, cumulative xG and shots, revealed up to the presented minute. */
+.charts {
+  padding: 8px 10px 4px;
+  background: var(--surface-deep);
+  border-top: 1px solid var(--line);
+}
+.charts header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.charts [role='tablist'] {
+  display: flex;
+  gap: 4px;
+}
+.charts [role='tab'] {
+  min-width: 52px;
+  padding: 2px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: none;
+}
+.charts .chartOn {
+  color: var(--text);
+  border-color: var(--accent);
+  background: rgba(47, 194, 116, 0.16);
+}
+.detailToggle {
+  min-height: 32px;
+  padding: 2px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: none;
+}
+.legend {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  white-space: nowrap;
+  align-items: center;
+  gap: 4px 14px;
+  margin: 6px 2px 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.legend i {
+  width: 14px;
+  height: 2px;
+  border-radius: 2px;
+}
+.legend b {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.legend .legendMinute {
+  margin-left: auto;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+.plot svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 130px;
+  touch-action: pan-y;
+  outline-offset: 2px;
+}
+.grid {
+  stroke: #1d3329;
+  stroke-width: 1;
+}
+.gridMid {
+  stroke: #2f5243;
+  stroke-width: 1;
+}
+.tick {
+  fill: var(--text-faint);
+  font-size: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.crosshair {
+  stroke: var(--text-muted);
+  stroke-width: 1;
+}
+.ownActions {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
   padding: 10px;
 }
-.playControls button,
-.speed :global([data-select-trigger]) {
-  width: 100%;
-  min-width: 44px;
+.ownActions button {
   min-height: 44px;
-}
-.playControls button {
-  padding: 6px 8px;
-  font-size: 13px;
-}
-.speed {
-  display: block;
-}
-.speed > span {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  clip-path: inset(50%);
-  overflow: hidden;
-  white-space: nowrap;
-}
-.speed :global([data-select-trigger]) {
-  height: 44px;
-  appearance: none;
-  padding: 7px 8px;
-  font-size: 13px;
 }
 .details[hidden] {
   display: none;
@@ -77,36 +265,50 @@
     width: 38%;
     font-size: 12px;
     line-height: 1.2;
-    overflow-wrap: anywhere;
   }
   .scoreboard strong {
     font-size: 26px;
     line-height: 1.2;
   }
   .pitchMeta {
-    padding: 4px 10px;
+    flex-wrap: nowrap;
+    padding: 2px 6px 2px 10px;
     font-size: 12px;
     line-height: 1.4;
   }
-  .tactics {
+  .speeds {
+    gap: 2px;
+  }
+  .speeds button {
+    min-width: 44px;
+    padding: 2px;
+    font-size: 11px;
+  }
+  .liveText {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .stage .canvas {
+    aspect-ratio: 2.1;
+  }
+  .stage .tactics {
     display: none;
   }
-  .canvas {
-    aspect-ratio: 1.85;
-  }
   .latestEvent {
-    min-height: 34px;
+    min-height: 32px;
     gap: 7px;
     padding: 5px 10px;
     font-size: 12px;
   }
-  .playControls {
-    gap: 5px;
-    padding: 6px;
+  .charts {
+    padding: 6px 8px 2px;
   }
-  .playControls button {
-    padding: 5px 3px;
-    font-size: 12px;
-    white-space: nowrap;
+  .plot svg {
+    max-height: 56px;
+  }
+  .legend {
+    margin-top: 2px;
   }
 }

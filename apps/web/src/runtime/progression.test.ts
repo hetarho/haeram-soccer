@@ -64,6 +64,26 @@ describe('the global progression clock', () => {
     await vi.advanceTimersByTimeAsync(1000);
     expect(s.command).toHaveBeenCalledTimes(2);
   });
+  it('resumes a clock that watching stopped once the owner leaves the match', async () => {
+    const s = setup();
+    controller = s.controller;
+    controller.start();
+    controller.beginWatch();
+    expect(controller.store.getState().running).toBe(false);
+    controller.setWatching(true);
+    controller.setWatching(false);
+    expect(controller.store.getState().running).toBe(true);
+    // A match-eve watch resumes as playing through would; the owner's own stop never does.
+    controller.pause();
+    controller.beginWatch(true);
+    controller.endWatch();
+    expect(controller.store.getState().running).toBe(true);
+    controller.pause();
+    controller.beginWatch();
+    controller.endWatch();
+    expect(controller.store.getState().running).toBe(false);
+  });
+
   it('cancels an in-flight auto request on stop and never leaves a running timer after disposal', async () => {
     const s = setup();
     controller = s.controller;

@@ -3,7 +3,7 @@ import type { InboxItem, TransferBid, World } from '../../../../packages/contrac
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/world';
 import type { GameClient } from '../runtime/client';
-import { gameStore, useGameState } from '../runtime/store';
+import { useGameState } from '../runtime/store';
 import { stoppingEvents, useProgression, type ProgressionController } from '../runtime/progression';
 import { useNavigation, useSquadView } from './state';
 import { money, kindLabel } from './format';
@@ -11,6 +11,8 @@ import { Dialog } from './Dialog';
 import s from './EventCenter.module.css';
 import { fadeOutOnRemove } from './motion';
 import { TransferCeremony } from './TransferCeremony';
+import { ClubCrest } from './ClubCrest';
+import { watchNextMatch } from './watch';
 
 const cardExit = fadeOutOnRemove([
   { opacity: 1, transform: 'none' },
@@ -39,9 +41,12 @@ function playerName(
 export function EventCenter({
   client,
   controller,
+  compact = false,
 }: {
   client: GameClient;
   controller: ProgressionController;
+  /** Away from home the card folds into a small pill until the owner opens it. */
+  compact?: boolean;
 }) {
   const w = useGameState((state) => state.view?.world);
   const market = useGameState((state) => state.view?.transfers) || [];
@@ -51,6 +56,7 @@ export function EventCenter({
   const { setPage } = useNavigation();
   const setSquadTab = useSquadView((state) => state.setTab);
   const [ceremony, setCeremony] = useState<InboxItem>();
+  const [opened, setOpened] = useState<string>();
   if (ceremony && w)
     return (
       <TransferCeremony
@@ -73,19 +79,28 @@ export function EventCenter({
   const eve = matchEve && next?.id === matchEve ? next : undefined;
   if (!eve && !events.length) return null;
   const total = events.length + (eve ? 1 : 0);
+  const key = eve?.id || events[0].id;
+  if (compact && opened !== key)
+    return (
+      <button
+        key={key}
+        className={s.pill}
+        data-testid="event-pill"
+        aria-label={`이벤트 ${total}개 · ${eve ? '내일 경기' : events[0].title} · 열기`}
+        onClick={() => setOpened(key)}
+      >
+        <i aria-hidden="true">{total}</i>
+        <span>{eve ? '내일 경기' : KIND_LABEL[events[0].kind]}</span>
+      </button>
+    );
   const club = clubOf(w);
   const format = (value: string) => money(value, club.country, w.year);
   if (eve) {
     const home = eve.home === w.playerClub;
     const opponent = w.clubs.find((c) => c.id === (home ? eve.away : eve.home));
-    const watch = async () => {
+    const watch = () => {
       controller.clearMatchEve();
-      controller.stop('관전을 위해 자동 진행을 멈췄습니다.');
-      await client.whenIdle();
-      const state = gameStore.getSnapshot();
-      if (state.readonly || state.error || state.view?.world.critical) return;
-      const reply = await client.command({ type: 'next-match' });
-      if (reply?.playback) setPage('match');
+      return watchNextMatch(client, controller, () => setPage('match'), { fromEve: true });
     };
     return (
       <aside
@@ -100,7 +115,7 @@ export function EventCenter({
           {total > 1 && <small>이벤트 {total}개</small>}
         </header>
         <h3>
-          {opponent && <i style={{ background: opponent.color }} aria-hidden="true" />}
+          {opponent && <ClubCrest w={w} id={opponent.id} size={22} />}
           vs {opponent?.name}
         </h3>
         <p>
@@ -265,7 +280,23 @@ export function InboxButton({ client }: { client: GameClient }) {
           setOpen(true);
         }}
       >
-        <span aria-hidden="true">✉</span>
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M6 10a6 6 0 0 1 12 0c0 4.5 1.6 6.2 2.5 7H3.5c.9-.8 2.5-2.5 2.5-7z"
+            fill="currentColor"
+            fillOpacity="0.18"
+            stroke="currentColor"
+            strokeWidth="1.9"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M10 20a2.2 2.2 0 0 0 4 0"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.9"
+            strokeLinecap="round"
+          />
+        </svg>
         {unread > 0 && <b aria-hidden="true">{unread > 9 ? '9+' : unread}</b>}
       </button>
       {open && (

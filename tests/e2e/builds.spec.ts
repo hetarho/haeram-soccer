@@ -108,9 +108,11 @@ test('discloses roster and opponent tactical fit before an actual seeded match',
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await expect(match.getByText(/90′ ·.*경기 종료/)).toBeVisible();
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-  await expect(match.getByText('점유율', { exact: true })).toBeVisible();
-  await expect(match.getByText('유효 슈팅', { exact: true })).toBeVisible();
-  await expect(match.getByText('패스 성공', { exact: true })).toBeVisible();
+  const stats = match.locator('[class*="matchStats"]');
+  await expect(stats.getByText('점유율', { exact: true })).toBeVisible();
+  await expect(stats.getByText('기대 득점 (xG)', { exact: true })).toBeVisible();
+  await expect(stats.getByText('유효 슈팅', { exact: true })).toBeVisible();
+  await expect(stats.getByText('패스 성공', { exact: true })).toBeVisible();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
 });
 

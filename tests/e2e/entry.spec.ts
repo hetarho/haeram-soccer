@@ -41,7 +41,8 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await page.setViewportSize({ width: 390, height: 844 });
   const mobileMenu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(mobileMenu).toBeVisible();
-  const tabs = ['경기', '리그', '역사 보관함', '클럽 홈', '선수단', '이적 시장', '구단 운영'];
+  // The match view has no tab: it opens only from a watch action.
+  const tabs = ['리그', '유럽 무대', '역사 보관함', '클럽 홈', '선수단', '이적 시장', '구단 운영'];
   await expect(mobileMenu.getByRole('button')).toHaveCount(tabs.length);
   expect(
     await mobileMenu
@@ -70,10 +71,26 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await expect(allMenu).toHaveCount(0);
   await expect(page.getByRole('button', { name: '선수단 18/26' })).toBeVisible();
   await mobileMenu.getByRole('button', { name: '리그', exact: true }).click();
-  await expect(page.getByRole('tab', { name: '순위표', exact: true })).toHaveAttribute(
+  await expect(page.getByRole('tab', { name: '개요', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
   );
+  await page.getByRole('tab', { name: '순위표', exact: true }).click();
   await expect(page.getByRole('combobox', { name: '국가', exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('table', { name: '리그 순위표' }).getByRole('columnheader'),
+  ).toHaveText([
+    '순위',
+    '클럽',
+    '승점',
+    '경기',
+    '승',
+    '무',
+    '패',
+    '득',
+    '실',
+    // Movement and recent form are desktop columns; points stay visible at phone width.
+    '득실',
+  ]);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });

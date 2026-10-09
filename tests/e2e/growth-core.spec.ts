@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { expectViewFits, viewGeometry } from './layout';
+import { expectHomeBounds, viewGeometry } from './layout';
 
 for (const viewport of [
   { width: 360, height: 740 },
@@ -16,11 +16,13 @@ for (const viewport of [
     const hub = page.getByTestId('club-hub');
     await expect(hub).toBeVisible();
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-    await expectViewFits(page);
+    await expectHomeBounds(page);
     const menu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
     const menuBounds = await menu.boundingBox();
     expect(menuBounds).not.toBeNull();
+    // Home may scroll inside its column; every control is reachable above the tab bar.
     for (const target of await hub.getByRole('button').all()) {
+      await target.scrollIntoViewIfNeeded();
       const bounds = await target.boundingBox();
       expect(bounds, await target.innerText()).not.toBeNull();
       expect(bounds!.width).toBeGreaterThanOrEqual(44);
@@ -32,6 +34,7 @@ for (const viewport of [
         menuBounds!.y,
       );
     }
+    await hub.evaluate((element) => element.parentElement?.scrollTo(0, 0));
     for (const target of await menu.getByRole('button').all()) {
       const bounds = await target.boundingBox();
       expect(bounds).not.toBeNull();

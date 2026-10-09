@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ClubCrest } from './ClubCrest';
 import type { World } from '../../../../packages/contracts/src/types';
 import { country } from '../../../../packages/catalogs/src/index';
 import { operatingCosts } from '../../../../packages/engine/src/finance';
@@ -74,7 +75,7 @@ export function SeasonReview({
       <section className={s.hero}>
         <small className={s.kicker}>SEASON {seasonName(season.year)} · FINAL WHISTLE</small>
         <h2>
-          <i style={{ background: club.color }} aria-hidden="true" />
+          <ClubCrest w={w} id={club.id} size={30} />
           {club.name}
         </h2>
         <div className={s.rank} aria-label={`최종 순위 ${season.rank}위`}>

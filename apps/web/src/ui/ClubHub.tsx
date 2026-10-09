@@ -4,11 +4,21 @@ import { clubOf, rating, tacticLabel } from '../../../../packages/engine/src/wor
 import { nextOwnFixture, daysUntilNextMatch } from '../../../../packages/engine/src/calendar';
 import { orderIds, ownLeagueIds } from './league';
 import { kindLabel, number } from './format';
-import { teamStates, urgentState, type StateAction } from './teamState';
+import {
+  remedies,
+  STATE_TITLES,
+  teamStates,
+  urgentState,
+  type StateAction,
+  type StateKey,
+} from './teamState';
 import type { GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
-import { useNavigation, useSquadView } from './state';
-import { gameStore, useGameState } from '../runtime/store';
+import { useMatchView, useNavigation, useSquadView } from './state';
+import { useGameState } from '../runtime/store';
+import { ClubCrest } from './ClubCrest';
+import { crestOf } from './crests';
+import { watchNextMatch } from './watch';
 import { StrategyPanel } from './StrategyPanel';
 import { Dialog } from './Dialog';
 import { MilestoneCollection } from './MilestoneCollection';
@@ -19,16 +29,37 @@ function MatchAction({
   critical,
   next,
   onWatch,
+  onReturn,
 }: {
   critical: boolean;
   next: boolean;
   onWatch: () => Promise<void>;
+  onReturn: () => void;
 }) {
   const busy = useGameState((state) => state.busy);
   const [pending, setPending] = useState(false);
   const readonly = useGameState((state) => state.readonly);
   const error = useGameState((state) => state.error);
   const days = useGameState((state) => state.view && daysUntilNextMatch(state.view.world));
+  // An unfinished live match is still on: home leads back to it instead of starting another.
+  const live = useGameState((state) => state.playback?.record.id);
+  const view = useMatchView();
+  const returning = !!live && view.matchId === live && !view.finished;
+  if (returning)
+    return (
+      <button
+        data-testid="hub-play"
+        className={`${s.play} ${s.returning}`}
+        aria-label="경기로 돌아가기"
+        aria-describedby="hub-play-hint"
+        onClick={onReturn}
+      >
+        <b>
+          경기로 돌아가기 <span aria-hidden="true">▶</span>
+        </b>
+        <small id="hub-play-hint">관전 중인 경기가 이어지고 있어요</small>
+      </button>
+    );
   return (
     <button
       data-testid="hub-play"
@@ -56,32 +87,56 @@ function MatchAction({
   );
 }
 
-/** Club condition right now, and one-tap remedies for the most urgent problem. */
-function TeamState({ w, client }: { w: World; client: GameClient }) {
+/**
+ * Club condition right now. The most urgent problem gets two one-tap remedies; every state opens
+ * a sheet with all of its choices, each stating cost and effect first (→WEB-44).
+ */
+function TeamState({
+  w,
+  client,
+  onPrepare,
+}: {
+  w: World;
+  client: GameClient;
+  onPrepare: () => void;
+}) {
   const { setPage } = useNavigation();
   const setSquadTab = useSquadView((state) => state.setTab);
   const acting = useGameState((state) => !!state.pendingActions || state.readonly);
+  const [sheet, setSheet] = useState<StateKey>();
   const states = teamStates(w),
     urgent = urgentState(states);
   const run = (action: StateAction) => {
     if (action.command) void client.command(action.command);
-    else if (action.page) {
+    else if (action.prepare) {
+      setSheet(undefined);
+      onPrepare();
+    } else if (action.page) {
       if (action.tab) setSquadTab(action.tab);
       setPage(action.page);
     }
   };
+  const current = sheet && states.find((state) => state.key === sheet);
   return (
     <section className={s.state} aria-label="팀 상태" data-testid="team-state">
       <ul>
         {states.map((state) => (
           <li key={state.key} className={s[state.tone]}>
-            <span>{state.label}</span>
-            <b>
-              <i key={state.value} className={s.bump}>
-                {state.value}
-              </i>
-            </b>
-            <small>{state.status}</small>
+            <button
+              aria-label={`${state.label} ${state.value} · ${state.status} · 대처 방법 보기`}
+              onClick={(event) => {
+                event.currentTarget.focus();
+                setSheet(state.key);
+              }}
+            >
+              <span>{state.label}</span>
+              <b>
+                <i key={state.value} className={s.bump}>
+                  {state.value}
+                </i>
+              </b>
+              <small>{state.status}</small>
+            </button>
           </li>
         ))}
       </ul>
@@ -94,10 +149,41 @@ function TeamState({ w, client }: { w: World; client: GameClient }) {
                 {action.label}
               </button>
             ))}
+            <button className={s.moreRemedies} onClick={() => setSheet(urgent.key)}>
+              더 보기
+            </button>
           </div>
         </div>
       ) : (
-        <p className={s.calm}>팀이 안정적이에요. 감독과 스태프가 이대로 운영해요.</p>
+        <p className={s.calm}>팀이 안정적이에요. 상태를 누르면 미리 챙길 방법을 볼 수 있어요.</p>
+      )}
+      {current && (
+        <Dialog label={STATE_TITLES[current.key]} onClose={() => setSheet(undefined)}>
+          <header className={s.remedyHead}>
+            <span className={s[current.tone]}>
+              {current.label} {current.value} · {current.status}
+            </span>
+          </header>
+          <ul className={s.remedies}>
+            {remedies(w, current.key).map((remedy) => (
+              <li key={remedy.id} className={remedy.unavailable ? s.remedyOff : undefined}>
+                <div>
+                  <b>{remedy.label}</b>
+                  <small>{remedy.effect}</small>
+                  {(remedy.cost || remedy.unavailable) && (
+                    <em>{remedy.unavailable || `비용 ${remedy.cost}`}</em>
+                  )}
+                </div>
+                <button
+                  disabled={!!remedy.unavailable || (acting && !!remedy.command)}
+                  onClick={() => run(remedy)}
+                >
+                  {remedy.command ? '실행' : '열기'}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </Dialog>
       )}
     </section>
   );
@@ -105,6 +191,7 @@ function TeamState({ w, client }: { w: World; client: GameClient }) {
 
 function ClubScene({ w }: { w: World }) {
   const club = clubOf(w);
+  const crest = crestOf(w, club.id);
   const crowds = Math.min(36, Math.max(6, Math.round(club.fans / 200)));
   return (
     <figure
@@ -158,19 +245,20 @@ function ClubScene({ w }: { w: World }) {
         />
         <path d="M44 82L147 56L149 69L46 95Z" fill="#cdb88f" />
         {w.facilities >= 2 && <path d="M213 57L317 81L315 94L211 70Z" fill="#cdb88f" />}
-        {w.facilities >= 4 && <path d="M36 73L149 44L157 51L44 82Z" fill={club.color} />}
-        {w.facilities >= 8 && <path d="M207 44L325 73L317 81L201 51Z" fill={club.color} />}
+        {w.facilities >= 4 && <path d="M36 73L149 44L157 51L44 82Z" fill={crest.primary} />}
+        {w.facilities >= 8 && <path d="M207 44L325 73L317 81L201 51Z" fill={crest.primary} />}
         {Array.from({ length: crowds }, (_, i) => (
           <circle
             key={i}
             cx={51 + (i % 18) * 5.3}
             cy={84 - (i % 18) * 1.35 - Math.floor(i / 18) * 4}
             r="1.7"
-            fill={i % 3 === 0 ? club.color : '#334d3b'}
+            fill={i % 3 === 0 ? crest.primary : i % 3 === 1 ? crest.secondary : '#334d3b'}
           />
         ))}
         <path d="M25 110V62M335 110V62" stroke="#485b43" strokeWidth="2" />
-        <path d="M25 62L41 68L25 73M335 62L319 68L335 73" fill={club.color} />
+        <path d="M25 62L41 68L25 73M335 62L319 68L335 73" fill={crest.primary} />
+        <path d="M25 66L33 68L25 70M335 66L327 68L335 70" fill={crest.secondary} />
         {[
           [100, 104],
           [140, 99],
@@ -180,7 +268,7 @@ function ClubScene({ w }: { w: World }) {
         ].map(([x, y], i) => (
           <g key={i}>
             <ellipse cx={x} cy={y + 3} rx="5" ry="2" fill="#274c3240" />
-            <circle cx={x} cy={y} r="3.5" fill={club.color} />
+            <circle cx={x} cy={y} r="3.5" fill={crest.primary} stroke={crest.secondary} />
           </g>
         ))}
         <circle cx="207" cy="105" r="2.4" fill="white" />
@@ -223,14 +311,7 @@ export function ClubHub({
   const ids = orderIds(ownLeagueIds(w), w.tables),
     played = !!w.tables[w.playerClub]?.played,
     rank = ids.indexOf(w.playerClub) + 1;
-  const watch = async () => {
-    controller.stop('관전을 위해 자동 진행을 멈췄습니다.');
-    await client.whenIdle();
-    const state = gameStore.getSnapshot();
-    if (state.readonly || state.error || state.view?.world.critical) return;
-    const reply = await client.command({ type: 'next-match' });
-    if (reply?.playback) setPage('match');
-  };
+  const watch = () => watchNextMatch(client, controller, () => setPage('match'));
   const last = w.ownMatches.at(-1);
   const lastScore = last && [
     last.home === w.playerClub ? last.score.home : last.score.away,
@@ -289,7 +370,7 @@ export function ClubHub({
         </i>
       </button>
       <ClubScene w={w} />
-      <TeamState w={w} client={client} />
+      <TeamState w={w} client={client} onPrepare={() => setPreparing(true)} />
       <button
         className={s.goal}
         aria-label="성장 목표 보기"
@@ -325,7 +406,7 @@ export function ClubHub({
               ` · ${next.home === w.playerClub ? '홈' : '원정'} · ${kindLabel[next.kind] || next.kind}`}
           </small>
           <h3>
-            {opponent && <i style={{ background: opponent.color }} aria-hidden="true" />}
+            {opponent && <ClubCrest w={w} id={opponent.id} size={22} />}
             {opponent ? `vs ${opponent.name}` : '다음 시즌을 준비해요'}
           </h3>
           <p data-testid="hub-preparation">
@@ -344,7 +425,12 @@ export function ClubHub({
           >
             전술·선발 준비
           </button>
-          <MatchAction critical={!!w.critical} next={!!next} onWatch={watch} />
+          <MatchAction
+            critical={!!w.critical}
+            next={!!next}
+            onWatch={watch}
+            onReturn={() => setPage('match')}
+          />
         </div>
       </section>
 

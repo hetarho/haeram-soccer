@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r8 | Define the implemented browser-demo behavior for squad and growth.
+> r9 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI.
@@ -31,6 +31,17 @@
 
 - CLUB-19 [o] Squad morale (0–100, new clubs 60) moves +6/+1/−6 after own wins/draws/defeats (±2 more for a two-goal margin), drifts 15% per settled round toward a baseline of 55 + 4 per squad-support level above standard + (manager trust − 50)/10 within 30–80, and falls 2 more per round while starters average fatigue ≥ 40. Match strength adds (morale − 60)/10; older saves without morale stay exactly unchanged.
 
+- CLUB-20 [o] Care actions are instant owner decisions with a cost, an effect and a cooldown counted in settled rounds since the last use; they never touch past matches.
+  | action | cost (1901 units) | effect | cooldown |
+  |---|---|---|---|
+  | rest day | free | every active player fatigue −6, morale +2 | 4 |
+  | intensive care | 30 | every active player fatigue −10 | 2 |
+  | team dinner | 15 | morale +5 | 3 |
+  | special bonus | 45 | morale +10 | 8 |
+  | owner's visit | free | morale +3, manager trust −1 | 4 |
+  | friendly match | income 12 + supporters/600 (max 60) | every active player fatigue +8 | 4 |
+  - insufficient cash fails cleanly; older saves without morale start from 60 when a care action changes it.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -38,6 +49,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r9 261009 CLUB-20+ care actions with costs and cooldowns
 - r8 261009 CLUB-17✎ summer window 14 June–1 September→season close–1 September
 - r7 261009 CLUB-19+ no morale→results- and support-driven squad morale affecting match strength
 - r6 261008 CLUB-4✎ instant fee transfers→free agents instant, fee transfers by bids; CLUB-16+ youth academy; CLUB-17+ transfer windows; CLUB-18+ negotiation and incoming bids

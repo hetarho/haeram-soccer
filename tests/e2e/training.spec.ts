@@ -9,7 +9,7 @@ import {
   trainingFocusInfo,
 } from '../../packages/engine/src/index';
 import type { World } from '../../packages/contracts/src/types';
-import { expectViewFits } from './layout';
+import { expectHomeBounds } from './layout';
 import { stopOnlyFor } from './events';
 
 async function exportWorld(page: Page): Promise<World> {
@@ -64,7 +64,7 @@ for (const viewport of [
     await page.getByRole('button', { name: '클럽 창단' }).click();
     const hub = page.getByTestId('club-hub');
     await expect(hub).toBeVisible();
-    await expectViewFits(page);
+    await expectHomeBounds(page);
     const before = await exportWorld(page);
     expect(before.training || 'balanced').toBe('balanced');
     // New clubs hand training to the staff until the owner picks a focus.
@@ -82,7 +82,7 @@ for (const viewport of [
     await openSquad(before);
     for (const player of await roster.all()) await expect(player).toContainText('성장 +0.00');
 
-    // Start the shared clock on home; choosing training elsewhere pauses it until we return.
+    // Start the shared clock on home; it keeps running on other views until the owner stops it.
     const date = page.getByTestId('game-date');
     await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
     await expect(date).toHaveText('1901년 8월 1일');
@@ -90,7 +90,9 @@ for (const viewport of [
     await expect(date).toHaveText('1901년 8월 2일');
     await openBusiness();
     const mini = page.getByTestId('mini-clock');
-    await expect(mini).toContainText('일시정지 · 홈에서 계속');
+    const entered = await date.innerText();
+    await expect(date).not.toHaveText(entered);
+    await mini.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
     const paused = await date.innerText();
     const dial = page
       .getByRole('region', { name: '구단 운영 방침' })
@@ -133,10 +135,10 @@ for (const viewport of [
     await expect(outcome).toContainText('훈련 방향을 바꿨어요');
     await expect(outcome).toContainText('다음 라운드 정산부터 성장과 회복에 반영돼요.');
     await expect(date).toHaveText(paused);
-    // Back home the same run resumes by itself.
-    await mini.click();
+    // Starting it again from the buttons-only clock continues the same run.
+    await mini.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
     await expect(date).not.toHaveText(paused);
-    // Leaving home pauses the run again; the match-eve stop keeps it short of round 1 either way.
+    // The match-eve stop keeps it short of round 1.
     await nav.getByRole('button', { name: '선수단', exact: true }).click();
     await expect(roster.first()).toBeVisible();
     for (const player of await roster.all()) await expect(player).toContainText('성장 +0.00');

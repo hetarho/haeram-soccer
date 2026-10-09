@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r6 | Define the implemented browser-demo behavior for browser persistence and protocol.
+> r7 | Define the implemented browser-demo behavior for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -12,7 +12,7 @@
 - SAVE-8 [o] Autosave settled fixture/round and committed management decisions; UI distinguishes active and last persisted revisions.
 - SAVE-9 [o] Export/import uses the same envelope; checksum provides corruption detection only. All successful changes remain local.
 
-- SAVE-10 [o] Current engine rules are 1.3.0 (season close after the final round, summer window from the close, 46-game league income, business delegation, cash warnings). Versions 1.0.0, 1.1.0 and 1.2.0 checkpoints remain accepted; writer activation upgrades only rules metadata/revision through a pure transformation, preserves all retained facts and missing optional defaults, and commits through the existing two-slot protocol. Failure preserves old disk data and exportable new memory state; read-only views do not perform disk upgrades.
+- SAVE-10 [o] Current engine rules are 1.4.0 (player-duel matches and care actions; 1.3.0 added season close after the final round, summer window from the close, 46-game league income, business delegation, cash warnings). Versions 1.0.0, 1.1.0, 1.2.0 and 1.3.0 checkpoints remain accepted; writer activation upgrades only rules metadata/revision through a pure transformation, preserves all retained facts and missing optional defaults, and commits through the existing two-slot protocol. Failure preserves old disk data and exportable new memory state; read-only views do not perform disk upgrades.
 
 - SAVE-11 [o] Unsupported selected save versions/catalogs are compatibility failures, not corruption-recovery permission. Do not automatically fall back to an older checkpoint and overwrite a newer incompatible career; preserve raw slots/manifest and expose export/import recovery. Actual corrupted compatible checkpoints may recover the validated predecessor.
 
@@ -27,6 +27,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r7 261009 SAVE-10✎ current rules 1.3.0→1.4.0, accepting 1.0.0–1.3.0 checkpoints
 - r6 261009 SAVE-10✎ current rules 1.2.0→1.3.0, accepting 1.0.0, 1.1.0 and 1.2.0 checkpoints
 - r5 261009 SAVE-6✎ read-only until reload→read-only tabs take over writing when the writer closes
 - r4 261008 SAVE-10✎ current rules 1.1.0→1.2.0, accepting 1.0.0 and 1.1.0 checkpoints

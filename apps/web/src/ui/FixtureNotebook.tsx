@@ -1,4 +1,5 @@
 import { Select } from './Select';
+import { ClubCrest } from './ClubCrest';
 import { useEffect, useState } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
@@ -124,7 +125,10 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
                       {fixtureDate(w, f)} · {kindLabel[f.kind]} · {ownHome ? '홈' : '원정'}
                       {f.id === next?.id && ' · 다음 경기'}
                     </p>
-                    <h4>{opponent?.name || '상대 미정'}</h4>
+                    <h4>
+                      {opponent && <ClubCrest w={w} id={opponent.id} size={16} />}{' '}
+                      {opponent?.name || '상대 미정'}
+                    </h4>
                     {result ? (
                       <>
                         <b>

@@ -12,12 +12,9 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   await page.getByLabel('세계 생성 시드').fill('lineup-ui-regression');
   await page.getByRole('button', { name: '넉넉한 출발' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '경기', exact: true })
-    .click();
-  const theatre = page.getByTestId('match-theatre');
-  const prepare = theatre.getByRole('button', { name: '전술·선발 준비', exact: true });
+  // Before the first match the preparation sheet opens from home's next-match card.
+  const hub = page.getByTestId('club-hub');
+  const prepare = hub.getByRole('button', { name: '전술·선발 준비', exact: true });
   await prepare.click();
   const dialog = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
   await dialog.getByRole('tab', { name: '선발 선택', exact: true }).click();
@@ -41,24 +38,24 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   ).toBeVisible();
   await dialog.getByRole('button', { name: '준비 마치고 돌아가기' }).click();
   await page.reload();
-  await expect(theatre).toBeVisible();
   const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
-  await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await expect(page.getByTestId('hub-preparation')).toContainText('직접 고른 선발');
-  await nav.getByRole('button', { name: '경기', exact: true }).click();
   await prepare.click();
   await dialog.getByRole('tab', { name: '선발 선택', exact: true }).click();
   await dialog.getByText('선수별 교체', { exact: true }).click();
   await expect(keeper).toHaveAttribute('data-value', other!);
   await dialog.getByRole('button', { name: '준비 마치고 돌아가기' }).click();
-  await page.getByTestId('match-next-action').click();
+  await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();
   const inspector = page.getByRole('combobox', { name: '살펴볼 선수', exact: true });
   await chooseOption(inspector, { label: `1. ${keeperName} · GK` });
   await expect(inspector).toContainText(keeperName);
-  await prepare.click();
+  await page
+    .getByTestId('match-theatre')
+    .getByRole('button', { name: '전술·선발 준비', exact: true })
+    .click();
   await dialog.getByRole('tab', { name: '선발 선택', exact: true }).click();
   await dialog.getByRole('button', { name: '감독의 자동 선발로 전환', exact: true }).click();
   await expect(dialog.getByRole('status')).toContainText(
@@ -100,6 +97,7 @@ for (const viewport of [
       exact: true,
     });
     await nav.getByRole('button', { name: '리그', exact: true }).click();
+    await page.getByRole('tab', { name: '순위표', exact: true }).click();
     const country = page.getByRole('combobox', { name: '국가', exact: true });
     await chooseOption(country, 'FRA');
     const contextUrl = page.url();

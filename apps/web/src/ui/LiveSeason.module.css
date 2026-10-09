@@ -15,22 +15,58 @@
   margin-bottom: 0;
 }
 .heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 12px;
 }
 .heading p {
+  min-width: 0;
   color: var(--text-muted);
   font-size: 13px;
+}
+.heading .clock {
+  margin: 0 0 0 auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.back {
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 800;
+}
+.back span {
+  font-size: 18px;
+  line-height: 1;
 }
 .matchPane {
   max-width: 900px;
 }
 .feedback {
-  margin: 12px 0;
-  padding: 10px 12px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 10px 0;
+  padding: 8px 12px;
   background: var(--surface-2);
   border-radius: 8px;
   font-size: 13px;
   color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.feedback > * {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.feedback p {
+  margin-left: auto;
+  flex-shrink: 1;
 }
 .result {
   display: flex;
@@ -88,7 +124,11 @@
     font-size: 12px;
   }
   .heading {
+    gap: 8px;
     margin-bottom: 5px;
+  }
+  .back {
+    padding: 2px 10px;
   }
   .heading h2 {
     font-size: 16px;
@@ -98,8 +138,8 @@
     display: none;
   }
   .feedback {
-    margin: 5px 0;
-    padding: 6px 9px;
+    margin: 4px 0;
+    padding: 5px 9px;
     font-size: 12px;
     line-height: 1.5;
   }
@@ -150,18 +190,18 @@
 }
 
 @media (max-width: 760px) {
-  /* All five league views stay as tabs; labels wrap inside equal cells instead of overflowing. */
+  /* All six league views stay as tabs; labels wrap inside equal cells instead of overflowing. */
   .tabs.tabs {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 4px;
     overflow: visible;
   }
   .tabs.tabs button {
     min-width: 0;
     min-height: 48px;
-    padding: 4px 2px;
-    font-size: 12px;
+    padding: 4px 1px;
+    font-size: 11px;
     line-height: 1.2;
     white-space: normal;
     word-break: keep-all;

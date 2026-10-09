@@ -31,6 +31,7 @@ export const STOP_LABELS: Record<InboxKind, string> = {
   'staff-report': '스태프 보고',
   finance: '자금·후원 경고',
 };
+const WATCH_REASON = '관전 중에는 자동 진행을 잠시 멈춰요.';
 /** First-run stops match the "important decisions" intervention level. */
 const DEFAULT_STOP_ON: StopOn = {
   match: true,
@@ -85,6 +86,8 @@ export class ProgressionController {
   }));
   /** A fixture the owner chose to play through without watching. */
   private passedMatch?: string;
+  /** Watching stopped a running clock (or answered a match eve); leaving the match resumes it. */
+  private resumeAfterWatch = false;
   private timer: ReturnType<typeof setInterval>;
   private unsubscribe: () => void;
   private inFlight = false;
@@ -175,6 +178,27 @@ export class ProgressionController {
     if (previous === watching) return;
     this.store.setState({ watching });
     if (watching && this.store.getState().running) void this.tick();
+    if (!watching) this.endWatch();
+  }
+  /**
+   * The owner chose to watch the next match: stop the clock for it and remember whether to resume
+   * once the owner leaves the match view. A match-eve card always resumes, as playing through would.
+   */
+  beginWatch(fromEve = false) {
+    this.resumeAfterWatch = fromEve || this.store.getState().running;
+    this.stop(WATCH_REASON);
+  }
+  /** Leaving the match view (or a watch that produced no match) resumes a clock watching stopped. */
+  endWatch() {
+    if (this.store.getState().reason === WATCH_REASON) this.store.setState({ reason: '' });
+    if (!this.resumeAfterWatch) return;
+    this.resumeAfterWatch = false;
+    this.start();
+  }
+  /** The owner's own stop: nothing resumes it until the owner starts it again. */
+  pause() {
+    this.resumeAfterWatch = false;
+    this.stop();
   }
   /**
    * Pauses ticks while a source holds it and resumes when released. Only watching a match
@@ -199,6 +223,7 @@ export class ProgressionController {
     // Resuming at a match eve means playing that fixture through as a result.
     const eve = this.store.getState().matchEve;
     if (eve) this.passedMatch = eve;
+    this.resumeAfterWatch = false;
     this.store.setState({ running: true, reason: '', matchEve: undefined });
     // Date progression starts on the next one-second tick. Watching starts without an empty wait.
     if (this.store.getState().watching) void this.tick();

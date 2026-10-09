@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import { clubMilestones } from '../../packages/engine/src/goals';
 import type { World } from '../../packages/contracts/src/types';
-import { expectViewFits, settle } from './layout';
+import { expectHomeBounds, settle } from './layout';
 
 async function exportWorld(page: Page): Promise<World> {
   await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
@@ -17,7 +17,7 @@ async function exportWorld(page: Page): Promise<World> {
 }
 
 async function expectCompactHome(page: Page) {
-  await expectViewFits(page);
+  await expectHomeBounds(page);
 }
 
 for (const viewport of [

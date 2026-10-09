@@ -8,8 +8,10 @@ import { lineupSummary } from '../../../../packages/engine/src/strategy';
 import type { GameClient } from '../runtime/client';
 import { gameStore, useGameState } from '../runtime/store';
 import { useProgression, type ProgressionController } from '../runtime/progression';
-import { useNavigation, type Page } from './state';
-import { Pitch } from './Pitch';
+import { useMatchView, useNavigation, type Page } from './state';
+import { Pitch, type PitchControls } from './Pitch';
+import { ProgressControls } from './ProgressControls';
+import { watchNextMatch } from './watch';
 import { LeagueOverview, RankHistoryGraph, Standings, RoundResults } from './LeagueInsights';
 import { ScorerStandings, ScorerHistory } from './ScorerPanels';
 import { StrategyPanel } from './StrategyPanel';
@@ -26,6 +28,7 @@ import t from './LiveSeason.module.css';
 
 const TABS = [
   ['match', '경기'],
+  ['overview', '개요'],
   ['table', '순위표'],
   ['results', '라운드 결과'],
   ['rank', '순위 추이'],
@@ -36,19 +39,41 @@ type Tab = (typeof TABS)[number][0];
 /** The match theatre has no tabs; every league view is a tab of one bar. */
 const LEAGUE_TABS = TABS.filter(([id]) => id !== 'match');
 
+/**
+ * The primary match action: while the match plays it reveals the result; after the final whistle
+ * it watches the next match (→WEB-50).
+ */
 function NextMatchAction({
   client,
   controller,
+  controls,
 }: {
   client: GameClient;
   controller: ProgressionController;
+  controls: PitchControls;
 }) {
   const busy = useGameState((state) => state.busy);
   const [pending, setPending] = useState(false);
   const readonly = useGameState((state) => state.readonly);
   const error = useGameState((state) => state.error);
   const critical = useGameState((state) => state.view?.world.critical);
+  const live = useGameState((state) => !!state.playback);
   const days = useGameState((state) => state.view && daysUntilNextMatch(state.view.world));
+  if (live && !controls.finished)
+    return (
+      <button
+        className={t.watch}
+        aria-label="결과 보기"
+        aria-describedby="match-next-hint"
+        data-testid="match-next-action"
+        onClick={controls.reveal}
+      >
+        <b>
+          결과 보기 <span aria-hidden="true">⏭</span>
+        </b>
+        <small id="match-next-hint">종료 휘슬까지 바로 넘어가요</small>
+      </button>
+    );
   return (
     <button
       className={t.watch}
@@ -59,15 +84,9 @@ function NextMatchAction({
       onClick={() => {
         if (pending) return;
         setPending(true);
-        controller.stop('관전을 위해 자동 진행을 멈췄습니다.');
-        void client
-          .whenIdle()
-          .then(async () => {
-            const state = gameStore.getSnapshot();
-            if (state.readonly || state.error || state.view?.world.critical) return;
-            await client.command({ type: 'next-match' }, { background: true });
-          })
-          .finally(() => setPending(false));
+        void watchNextMatch(client, controller, () => undefined, { background: true }).finally(() =>
+          setPending(false),
+        );
       }}
     >
       <b>
@@ -122,10 +141,13 @@ const MatchPane = memo(function MatchPane({
   client,
   controller,
   onPrepare,
+  clock,
 }: {
   client: GameClient;
   controller: ProgressionController;
   onPrepare: () => void;
+  /** Only the open theatre owns a clock; the app shell draws it everywhere else. */
+  clock: boolean;
 }) {
   const w = useGameState(selectMatchWorld)!;
   const playback = useGameState((state) => state.playback);
@@ -147,6 +169,10 @@ const MatchPane = memo(function MatchPane({
   );
   const finished = presentation.finished && presentation.matchId === playback?.record.id;
   const { setPage } = useNavigation();
+  const publish = useMatchView((state) => state.set);
+  useEffect(() => {
+    publish({ matchId: presentation.matchId, finished: presentation.finished });
+  }, [presentation.matchId, presentation.finished, publish]);
   const onFinish = useCallback(
     (id: string) => {
       if (completed.current !== id) {
@@ -161,8 +187,14 @@ const MatchPane = memo(function MatchPane({
   return (
     <div className={t.matchPane} data-testid="match-theatre">
       <header className={t.heading}>
+        <button className={t.back} onClick={() => setPage('dashboard')}>
+          <span aria-hidden="true">‹</span> 홈
+        </button>
         <h2>매치데이</h2>
-        <p>경기 결과는 킥오프 전에 이미 정해져 있어요. 속도를 바꿔도 결과는 같아요.</p>
+        <p>결과는 킥오프 전에 정해져 있어요. 속도를 바꿔도 결과는 같아요.</p>
+        {clock && (
+          <ProgressControls client={client} controller={controller} compact className={t.clock} />
+        )}
       </header>
       <section>
         <Pitch
@@ -171,15 +203,15 @@ const MatchPane = memo(function MatchPane({
           onFinish={onFinish}
           onPlaybackStart={onPlaybackStart}
           onPresentationChange={onPresentationChange}
-          afterControls={
+          actions={(controls) => (
             <div className={t.coreActions}>
               <MatchFeedback finished={finished} />
               <div className={t.nextActions}>
                 <button onClick={onPrepare}>전술·선발 준비</button>
-                <NextMatchAction client={client} controller={controller} />
+                <NextMatchAction client={client} controller={controller} controls={controls} />
               </div>
             </div>
-          }
+          )}
         />
       </section>
       {presentation.details &&
@@ -201,7 +233,7 @@ const MatchPane = memo(function MatchPane({
   );
 });
 
-const TablePane = memo(function TablePane({ client }: { client: GameClient }) {
+const TablePane = memo(function TablePane() {
   const w = useGameState(selectLeagueWorld)!;
   const own = w.clubs.find((club) => club.id === w.playerClub)!;
   const [code, setCode] = useState(own.country);
@@ -289,11 +321,20 @@ const TablePane = memo(function TablePane({ client }: { client: GameClient }) {
           </label>
         )}
       </div>
-      <FixtureNotebook w={w} client={client} />
-      {ownLeague && <LeagueOverview w={w} />}
       <section className={s.panel}>
         <Standings w={w} ids={ids} />
       </section>
+    </>
+  );
+});
+/** The own league at a glance: race position, gaps, form, next rival and the fixture notebook. */
+const OverviewPane = memo(function OverviewPane({ client }: { client: GameClient }) {
+  const w = useGameState(selectLeagueWorld)!;
+  return (
+    <>
+      <h2 className={s.seasonPaneTitle}>우리 리그 개요</h2>
+      <LeagueOverview w={w} />
+      <FixtureNotebook w={w} client={client} />
     </>
   );
 });
@@ -329,7 +370,7 @@ export function LiveSeason({
   const visibleTabs = LEAGUE_TABS;
   const [leagueTab, setLeagueTab] = useState<Tab>(() => {
     const saved = new URLSearchParams(location.search).get('view');
-    return LEAGUE_TABS.find(([id]) => id === saved)?.[0] || 'table';
+    return LEAGUE_TABS.find(([id]) => id === saved)?.[0] || 'overview';
   });
   const tab: Tab = page === 'match' ? 'match' : leagueTab;
   useEffect(() => {
@@ -392,9 +433,16 @@ export function LiveSeason({
           hidden={tab !== id}
         >
           {id === 'match' ? (
-            <MatchPane client={client} controller={controller} onPrepare={onPrepare} />
+            <MatchPane
+              client={client}
+              controller={controller}
+              onPrepare={onPrepare}
+              clock={page === 'match'}
+            />
+          ) : id === 'overview' ? (
+            <OverviewPane client={client} />
           ) : id === 'table' ? (
-            <TablePane client={client} />
+            <TablePane />
           ) : id === 'rank' ? (
             <RankPane />
           ) : id === 'scorers' ? (

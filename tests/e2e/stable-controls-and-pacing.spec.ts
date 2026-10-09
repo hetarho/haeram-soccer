@@ -1,4 +1,3 @@
-import { chooseOption, selectOptions } from './select';
 import { expect, test } from '@playwright/test';
 import { stopOnlyFor } from './events';
 test.use({ viewport: { width: 390, height: 844 } });
@@ -51,32 +50,37 @@ test('keeps both home controls stable over real automatic ticks and keeps runnin
   await expect(sheet).toHaveCount(0);
   await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
   await watch.click();
-  await expect(page.getByTestId('match-theatre')).toBeVisible();
-  // Watching stops the run (not just the away pause), so home does not resume it.
+  const theatre = page.getByTestId('match-theatre');
+  await expect(theatre).toBeVisible();
+  // Watching stops the run while the match is on; leaving the match resumes it untouched.
   const mini = page.getByTestId('mini-clock');
-  await expect(mini).toContainText('관전을 위해 자동 진행을 멈췄습니다');
-  await mini.click();
+  await expect(mini.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
+  await theatre.getByRole('button', { name: '홈', exact: true }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
-  await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
 });
 
-test('defaults to one minute per four seconds and provides four replay speeds', async ({
+test('defaults to one minute per four seconds and provides five replay speeds', async ({
   page,
 }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page.getByTestId('hub-play').click();
-  const speed = page.getByRole('combobox', { name: '관전 속도', exact: true });
-  await expect(speed).toHaveAttribute('data-value', '1');
-  expect((await selectOptions(speed)).map((option) => option.value)).toEqual(['1', '2', '4', '8']);
+  const speeds = page.getByRole('radiogroup', { name: '관전 속도', exact: true });
+  await expect(speeds.getByRole('radio', { name: '1×', exact: true })).toHaveAttribute(
+    'aria-checked',
+    'true',
+  );
+  await expect(speeds.getByRole('radio')).toHaveText(['1×', '2×', '4×', '8×', '16×']);
   await expect(page.getByTestId('pitch-theatre')).toContainText('1′');
   await page.waitForTimeout(1700);
   await expect(page.getByTestId('pitch-theatre')).toContainText('1′');
   await expect(page.getByTestId('pitch-theatre')).toContainText('2′', { timeout: 5000 });
   await page.getByRole('button', { name: '일시정지', exact: true }).click();
-  for (const value of ['2', '4', '8']) {
-    await chooseOption(speed, value);
-    await expect(speed).toHaveAttribute('data-value', value);
+  for (const value of ['2×', '4×', '8×', '16×']) {
+    const speed = speeds.getByRole('radio', { name: value, exact: true });
+    await speed.click();
+    await expect(speed).toHaveAttribute('aria-checked', 'true');
   }
   await expect(page.getByRole('button', { name: '재생', exact: true })).toBeVisible();
 });

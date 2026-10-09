@@ -31,13 +31,13 @@ export function ProgressControls({
   client,
   controller,
   compact = false,
-  onHome,
+  className = '',
 }: {
   client: GameClient;
   controller: ProgressionController;
-  /** Away from home the clock pauses and collapses to one line that leads back home. */
+  /** Away from home the clock keeps running and collapses to its buttons only. */
   compact?: boolean;
-  onHome?: () => void;
+  className?: string;
 }) {
   const state = useGameState((state) => state);
   const { running, pace, watching, reason, stopOn } = useProgression(controller, (state) => state);
@@ -67,19 +67,51 @@ export function ProgressControls({
       (next
         ? `${days ? `다음 경기 D-${days}` : '오늘 경기'} · ${transferWindow(w).label}`
         : '시즌 정산을 기다려요');
+  const buttons = (
+    <div className={s.clockButtons} role="group" aria-label="자동 진행 속도">
+      <button
+        className={`${s.clockToggle} ${running ? s.clockPause : ''}`}
+        aria-label={running ? '자동 진행 정지' : '자동 진행 시작'}
+        disabled={!running && (blocked || state.processing)}
+        onClick={() => {
+          if (running) {
+            userStop.current = true;
+            controller.pause();
+          } else if (performance.now() - autoStoppedAt.current >= 500) controller.start();
+        }}
+      >
+        <span aria-hidden="true" />
+      </button>
+      {!watching &&
+        PACES.map(([value, label, description]) => (
+          <button
+            key={value}
+            aria-label={`${description} 속도로 자동 진행`}
+            aria-pressed={pace === value}
+            className={pace === value ? s.selectedPace : undefined}
+            disabled={blocked || (!running && state.processing)}
+            onClick={() => {
+              controller.setPace(value);
+              if (!running) controller.start();
+            }}
+          >
+            {label}
+          </button>
+        ))}
+    </div>
+  );
   if (compact)
     return (
-      <button
-        className={`${s.miniClock} ${running ? s.miniClockPaused : ''}`}
+      <section
+        className={`${s.miniClock} ${running ? s.clockRunning : ''} ${className}`}
         data-testid="mini-clock"
-        aria-label={`${seasonDate(w)} · ${running ? '자동 진행 일시정지 · 홈으로 돌아오면 계속' : '자동 진행은 홈에서'} · 홈으로 이동`}
-        onClick={onHome}
+        aria-label={`시즌 진행 · ${seasonDate(w)} · ${status}`}
       >
-        <i aria-hidden="true" />
-        <strong data-testid="game-date">{seasonDate(w)}</strong>
-        <span>{running ? '일시정지 · 홈에서 계속' : status}</span>
-        <b aria-hidden="true">홈 ›</b>
-      </button>
+        <span className={s.srOnly} data-testid="game-date">
+          {seasonDate(w)}
+        </span>
+        {buttons}
+      </section>
     );
   return (
     <section
@@ -93,37 +125,7 @@ export function ProgressControls({
         </small>
         <progress aria-label="시즌 경과 일수" value={currentDay(w)} max={seasonLength(w)} />
       </div>
-      <div className={s.clockButtons} role="group" aria-label="자동 진행 속도">
-        <button
-          className={`${s.clockToggle} ${running ? s.clockPause : ''}`}
-          aria-label={running ? '자동 진행 정지' : '자동 진행 시작'}
-          disabled={!running && (blocked || state.processing)}
-          onClick={() => {
-            if (running) {
-              userStop.current = true;
-              controller.stop();
-            } else if (performance.now() - autoStoppedAt.current >= 500) controller.start();
-          }}
-        >
-          <span aria-hidden="true" />
-        </button>
-        {!watching &&
-          PACES.map(([value, label, description]) => (
-            <button
-              key={value}
-              aria-label={`${description} 속도로 자동 진행`}
-              aria-pressed={pace === value}
-              className={pace === value ? s.selectedPace : undefined}
-              disabled={blocked || (!running && state.processing)}
-              onClick={() => {
-                controller.setPace(value);
-                if (!running) controller.start();
-              }}
-            >
-              {label}
-            </button>
-          ))}
-      </div>
+      {buttons}
       <button
         className={s.interventionButton}
         aria-label={`개입 수준 · ${level >= 0 ? INTERVENTION_LEVELS[level].name : '사용자 지정'}`}

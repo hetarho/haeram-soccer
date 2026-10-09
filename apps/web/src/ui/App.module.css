@@ -466,6 +466,11 @@
   font-size: 11px;
   fill: var(--text-faint);
 }
+.notice {
+  padding: 7px 12px !important;
+  margin-bottom: 8px !important;
+  font-size: 12px;
+}
 .notice,
 .error,
 .critical {
@@ -1586,6 +1591,45 @@
   min-width: 0;
   display: grid;
 }
+.hudCrest {
+  width: 26px;
+  height: 31px;
+}
+/* Read-only ownership: a small chip instead of a banner over the content. */
+.readonlyBadge {
+  position: relative;
+  flex-shrink: 0;
+}
+.readonlyBadge > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--gold);
+  border-color: var(--gold-edge);
+  background: rgba(255, 203, 71, 0.08);
+  box-shadow: none;
+  white-space: nowrap;
+}
+.readonlyDetail {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 40;
+  width: min(260px, 80vw);
+  padding: 9px 11px;
+  border-radius: 12px;
+  border: 1px solid var(--gold-edge);
+  background: var(--surface-2);
+  box-shadow: var(--shadow);
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text);
+}
 .hudClub b {
   font-size: 15px;
   font-weight: 900;
@@ -1996,7 +2040,7 @@
   .playLayout .scroller > .actions {
     display: none;
   }
-  /* Home and match fill exactly one screen; the stadium shrinks before anything scrolls. */
+  /* Match fills exactly one screen; home scrolls inside its column when the stage needs room. */
   .coreLayout .scroller {
     display: flex;
     flex-direction: column;
@@ -2113,54 +2157,25 @@
   }
 }
 
-/* Away from home: one line that shows the date and leads back to the clock. */
+/* Away from home the clock keeps running as a buttons-only pill on the right. */
 .miniClock {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  min-height: 40px;
-  margin-bottom: 10px;
-  padding: 6px 12px;
-  border-radius: 12px;
-  text-align: left;
-  font-size: 12px;
-  font-weight: 700;
-  box-shadow: none;
+  justify-content: flex-end;
+  width: fit-content;
+  margin: 0 0 8px auto;
+  padding: 4px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
   background: var(--surface-deep);
 }
-.miniClock i {
-  flex: 0 0 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--text-faint);
-}
-.miniClockPaused i {
-  background: var(--gold);
-  box-shadow: 0 0 8px rgba(255, 203, 71, 0.6);
-}
-.miniClock strong {
+.miniClock .clockButtons {
   flex: none;
-  font-size: 13px;
-  font-variant-numeric: tabular-nums;
 }
-.miniClock span {
-  flex: 1 1 0;
-  min-width: 0;
-  color: var(--text-faint);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.miniClock b {
+.miniClock .clockButtons button:not(.clockToggle) {
   flex: none;
-  color: var(--accent-text);
+  min-width: 44px;
 }
 @media (max-width: 760px) {
-  .miniClock {
-    min-height: 44px;
-    margin-bottom: 8px;
-  }
   .mobileNav {
     gap: 0;
     padding-left: max(4px, env(safe-area-inset-left));

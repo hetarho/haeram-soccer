@@ -22,6 +22,7 @@ export * from './inbox';
 export * from './transfers';
 export * from './projection';
 export * from './morale';
+export * from './care';
 export function createWorld(input: Founding) {
   const w = createBase(input);
   prepareSeason(w);

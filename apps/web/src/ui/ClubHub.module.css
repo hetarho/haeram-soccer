@@ -76,7 +76,7 @@
 .scene svg {
   display: block;
   width: 100%;
-  height: 170px;
+  height: 240px;
   flex: 1 1 auto;
   min-height: 0;
 }
@@ -281,11 +281,11 @@
   .hub {
     gap: 8px;
   }
-  /* The stadium absorbs spare height so the actions below always fit. */
+  /* The club's stage stays readable; spare height grows it, and home scrolls when needed. */
   .scene {
     flex: 1 1 auto;
-    min-height: 64px;
-    max-height: 200px;
+    min-height: 180px;
+    max-height: 280px;
   }
   .scene svg {
     height: auto;
@@ -309,7 +309,7 @@
     font-size: 18px;
   }
   .scene {
-    min-height: 56px;
+    min-height: 180px;
   }
   .goal {
     padding: 7px 12px;
@@ -432,15 +432,30 @@
 }
 .state li {
   display: grid;
-  justify-items: center;
-  gap: 0;
-  padding: 5px 2px;
+  padding: 0;
   border-radius: 10px;
   border: 1px solid var(--line);
   background: rgba(0, 0, 0, 0.22);
   transition:
     border-color 300ms,
     background 300ms;
+}
+.state li button {
+  display: grid;
+  justify-items: center;
+  gap: 0;
+  width: 100%;
+  min-height: 44px;
+  padding: 5px 2px;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+}
+.state li button:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: none;
 }
 .state li span {
   font-size: 11px;
@@ -498,10 +513,17 @@
   color: var(--text);
 }
 .advice div {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
+  display: flex;
   gap: 6px;
+}
+.advice div button {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.advice div .moreRemedies {
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  color: var(--accent-text);
 }
 .advice button {
   min-height: 44px;
@@ -517,7 +539,7 @@
   .state {
     padding: 8px 10px;
   }
-  .state li {
+  .state li button {
     padding: 3px 2px;
   }
   .calm {
@@ -552,4 +574,96 @@ button.resources:active:not(:disabled) {
   .calm {
     display: none;
   }
+}
+
+/* Remedy sheet: every choice states its effect and cost before commit. */
+.remedyHead {
+  display: grid;
+  gap: 2px;
+  margin-bottom: 10px;
+}
+.remedyHead h2 {
+  font-size: 18px;
+}
+.remedyHead span {
+  font-size: 12px;
+  font-weight: 800;
+}
+.remedyHead .good {
+  color: var(--accent-text);
+}
+.remedies {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.remedies li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  animation: rise 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.remedies li:nth-child(2) {
+  animation-delay: 40ms;
+}
+.remedies li:nth-child(3) {
+  animation-delay: 80ms;
+}
+.remedies li:nth-child(4) {
+  animation-delay: 120ms;
+}
+.remedies li:nth-child(5) {
+  animation-delay: 160ms;
+}
+.remedies li:nth-child(6) {
+  animation-delay: 200ms;
+}
+.remedies li > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.remedies b {
+  font-size: 14px;
+}
+.remedies small {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+.remedies em {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--gold);
+}
+.remedies button {
+  min-width: 64px;
+  min-height: 44px;
+  padding: 4px 12px;
+  font-size: 13px;
+}
+.remedyOff b,
+.remedyOff small {
+  opacity: 0.6;
+}
+.remedyOff em {
+  color: var(--text-faint);
+}
+.play.returning {
+  background: var(--gold-fill);
+  border-color: var(--gold-edge);
+  box-shadow:
+    0 4px 0 var(--gold-edge),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.play.returning small {
+  color: #4a3405;
 }

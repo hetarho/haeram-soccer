@@ -1,6 +1,12 @@
 import type { Command, Event, World } from '../../../../packages/contracts/src/types';
 import { seasonDate } from '../../../../packages/engine/src/calendar';
-import { activePlayers, clubOf, tacticLabel } from '../../../../packages/engine/src/world';
+import {
+  activePlayers,
+  clubOf,
+  startingSquad,
+  tacticLabel,
+} from '../../../../packages/engine/src/world';
+import { lineupSummary } from '../../../../packages/engine/src/strategy';
 import { money, number } from './format';
 import { orderIds, ownLeagueIds } from './league';
 
@@ -46,6 +52,7 @@ const titles: Record<Command['type'], string> = {
   bid: '이적 제안을 보냈어요',
   'respond-bid': '이적 제안에 답했어요',
   'read-inbox': '소식을 확인했어요',
+  care: '선수단을 챙겼어요',
 };
 const notes: Partial<Record<Command['type'], string>> = {
   lineup: '다음 경기부터 바꿀 때까지 이 선발을 씁니다.',
@@ -183,6 +190,13 @@ export function describeOutcome(
   else compare(changes, '감독', before.manager.name, after.manager.name);
   compare(changes, '클럽 평판', Math.round(previous.reputation), Math.round(club.reputation));
   compare(changes, '선수단 사기', before.morale, after.morale);
+  if (command.type === 'care')
+    compare(
+      changes,
+      '선발 평균 피로',
+      lineupSummary(startingSquad(before, clubOf(before))).fatigue,
+      lineupSummary(startingSquad(after, clubOf(after))).fatigue,
+    );
   compare(changes, '티켓 기본가', before.ticket, after.ticket, (n) => `${n} (1901년 기준)`);
   const records = newEvents(before, after).filter((event) => !ROUTINE_EVENTS.has(event.kind));
   const shown = records.slice(-limit).reverse();

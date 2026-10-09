@@ -1,4 +1,3 @@
-import { chooseOption } from './select';
 import { expect, test, type Page } from '@playwright/test';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import {
@@ -102,34 +101,45 @@ for (const viewport of [
     await page.getByText('고급 설정', { exact: true }).click();
     await page.getByLabel('세계 생성 시드').fill(founding.seed);
     await page.getByRole('button', { name: '클럽 창단' }).click();
-    await page
-      .getByRole('navigation', { name: '모바일 게임 메뉴' })
-      .getByRole('button', { name: '경기', exact: true })
-      .click();
+    const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
+    // The match has no tab and its address alone leads home: only a watch action opens it.
+    await expect(nav.getByRole('button', { name: '경기', exact: true })).toHaveCount(0);
+    await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+    await page.goto('/matches');
+    await expect(page.getByTestId('club-hub')).toBeVisible();
+    await expect(page).toHaveURL(/\/journal$/);
+    await page.getByTestId('hub-play').click();
     await expect(page.getByTestId('match-theatre')).toBeVisible();
-    await expect(page.getByRole('tablist')).toHaveCount(0);
+    await expect(page.getByRole('tablist', { name: '리그 보기' })).toHaveCount(0);
     expect(
       await page.evaluate(() => {
         const ids = [...document.querySelectorAll('[id]')].map((element) => element.id);
         return new Set(ids).size === ids.length;
       }),
     ).toBe(true);
-    await expect(page.getByRole('button', { name: '결과 보기', exact: true })).toBeDisabled();
-    await expect(page.getByRole('combobox', { name: '관전 속도', exact: true })).toHaveAttribute(
-      'data-value',
-      '1',
+    await expect(page.getByRole('radio', { name: '1×', exact: true })).toHaveAttribute(
+      'aria-checked',
+      'true',
     );
-    await expectCompactMatch(page, viewport);
+    await expect(page.getByRole('radiogroup', { name: '관전 속도' }).getByRole('radio')).toHaveText(
+      ['1×', '2×', '4×', '8×', '16×'],
+    );
     await page.evaluate(() => {
       (window as typeof window & { matchCanvas?: Element | null }).matchCanvas =
         document.querySelector('canvas');
     });
-    await page.getByTestId('match-next-action').click();
     await page.getByRole('button', { name: '일시정지', exact: true }).click();
     await expectCompactMatch(page, viewport);
     await expect(page.getByTestId('match-result-summary')).toHaveCount(0);
     await expect(page.getByRole('slider', { name: '경기 시간', exact: true })).toBeHidden();
-    await chooseOption(page.getByRole('combobox', { name: '관전 속도', exact: true }), '8');
+    // While the match plays the primary action reveals the result instead of starting another.
+    await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('결과 보기');
+    await expect(page.getByRole('tablist', { name: '그래프 종류' }).getByRole('tab')).toHaveText([
+      '점유율',
+      'xG',
+      '슈팅',
+    ]);
+    await page.getByRole('radio', { name: '16×', exact: true }).click();
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90′ ·.*경기 종료/)).toBeVisible();
     await expectCompactMatch(page, viewport);
@@ -147,6 +157,7 @@ for (const viewport of [
     await expect(page.getByTestId('match-readiness')).toContainText(
       `${tacticLabel[reference.tactic]} · 피로 ${lineupSummary(startingSquad(reference, clubOf(reference))).fatigue}/100`,
     );
+    await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('다음 경기 관전');
     const settled = await savedRaw(page);
     expect((await decode(settled)).world.ownMatches[0]).toEqual(reference.ownMatches[0]);
     await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toHaveCount(0);
@@ -167,11 +178,10 @@ for (const viewport of [
     await expect(page.getByRole('combobox', { name: '살펴볼 선수', exact: true })).toBeVisible();
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
     await expectCompactMatch(page, viewport);
-    const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
-    const matchTab = nav.getByRole('button', { name: '경기', exact: true });
     await nav.getByRole('button', { name: '리그', exact: true }).click();
     const leagueTabs = page.getByRole('tablist', { name: '리그 보기' }).getByRole('tab');
     await expect(leagueTabs).toHaveText([
+      '개요',
       '순위표',
       '라운드 결과',
       '순위 추이',
@@ -183,15 +193,16 @@ for (const viewport of [
       expect(bounds!.width, await tab.innerText()).toBeGreaterThanOrEqual(44);
       expect(bounds!.height, await tab.innerText()).toBeGreaterThanOrEqual(44);
     }
-    const tableTab = page.getByRole('tab', { name: '순위표', exact: true });
-    await tableTab.focus();
+    const overviewTab = page.getByRole('tab', { name: '개요', exact: true });
+    await overviewTab.focus();
     await page.keyboard.press('End');
     await expect(page.getByRole('tab', { name: '득점왕 추이', exact: true })).toBeFocused();
     await page.keyboard.press('ArrowRight');
-    await expect(tableTab).toBeFocused();
+    await expect(overviewTab).toBeFocused();
     await page.getByRole('tab', { name: '순위 추이', exact: true }).click();
     await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
-    await matchTab.click();
+    // Going back returns to the theatre while its playback lasts.
+    await page.goBack();
     await expectCompactMatch(page, viewport);
     await page.getByRole('button', { name: '다시 보기', exact: true }).click();
     await page.getByRole('button', { name: '일시정지', exact: true }).click();

@@ -65,6 +65,10 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('hire-staff'), role: staffRole, candidate: index }),
   z.object({ type: z.literal('release-staff'), role: staffRole }),
   z.object({ type: z.literal('promote-youth'), id: ref }),
+  z.object({
+    type: z.literal('care'),
+    kind: z.enum(['rest-day', 'medical', 'team-dinner', 'bonus', 'owner-visit', 'friendly']),
+  }),
   z.object({ type: z.literal('release-youth'), id: ref }),
   z.object({
     type: z.literal('delegate'),

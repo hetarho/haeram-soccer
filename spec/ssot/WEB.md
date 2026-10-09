@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r31 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r32 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -13,9 +13,10 @@
 
 - WEB-9 [o] Casual growth play follows docs/IMPROVEMENT-GUIDE.md: one-action matches, roster/tactic/fatigue tradeoffs, evidence-backed growth, and no guaranteed win claims.
 
-- WEB-10 [o] Play uses a game HUD (menu, club, division/date, inbox, cash pinned top right) and, on mobile, a seven-tab safe-area bar with home raised in the centre: match, league and records on the left; squad, transfers and operations on the right. Europe, staff, guide, intervention and save tools open from the HUD menu. The document never scrolls: HUD, clock and tab bar stay fixed and one content region scrolls between them; home and match fit that region at 360x740 and 390x844 CSS pixels. Content never overflows the viewport or clips inside a panel; controls sharing a row share height and edges.
+- WEB-10 [o] Play uses a game HUD (menu, club crest, division/date, inbox, cash pinned top right) and, on mobile, a seven-tab safe-area bar with home raised in the centre: league, Europe and records on the left; squad, transfers and operations on the right. The match view has no tab (→WEB-40). Staff, guide, intervention and save tools open from the HUD menu. The document never scrolls: HUD, clock and tab bar stay fixed and one content region scrolls between them; the match theatre fits that region at 360x740 and 390x844 CSS pixels and home may scroll vertically. Content never overflows the viewport or clips inside a panel; controls sharing a row share height and edges.
+  - read-only ownership shows as a compact HUD badge that explains itself on tap, never a content banner.
 
-- WEB-11 [o] The core home shows season statistics (rank, squad strength, record; tapping them opens season detail with bulk actions), the facility/supporter scene, a team-state card (→WEB-44), the next milestone and a next-match card with preparation and one watch action. Cash lives in the HUD; club news lives in the inbox.
+- WEB-11 [o] The core home shows season statistics (rank, squad strength, record; tapping them opens season detail with bulk actions), the facility/supporter scene (at least 180 CSS px tall so the club's stage stays readable), a team-state card (→WEB-44), the next milestone and a next-match card with preparation and one watch action. Cash lives in the HUD; club news lives in the inbox.
 
 - WEB-12 [o] Home presents the next achievable club milestone and its real progress, with an explicit collection of completed and upcoming milestones. Milestones cover debut, preparation, first win, earned player growth, facility investment, supporter reach, completed seasons and promotion.
 
@@ -27,11 +28,12 @@
 
 - WEB-16 [o] First-session help explains optional match preparation, one-action observation, earned player growth and cost-bearing club investment. It derives completion from actual milestones, does not require a tutorial gate, and can be reopened from the menu.
 
-- WEB-17 [o] Core home and match pass 360x740 and390x844 viewport bounds without masking essential overflow. Supporter count and small text remain readable; all primary buttons and selection controls, including match preparation, recruitment and league exploration, have touch targets of at least44 CSS pixels across Chromium, Firefox and Safari. Expanded records/settings may scroll; short screens or accessibility magnification can use necessary vertical scrolling.
-- WEB-18 [o] The full clock runs only on home: play/pause plus 1-, 3- and 5-day paces (one step per second) and an intervention gear (→WEB-45). Leaving home pauses the clock and shows a one-line mini clock that leads back; returning resumes it. ← a fixed pace keeps cash and dates moving visibly; no step jumps to an arbitrary next event
+- WEB-17 [o] The match theatre passes 360x740 and390x844 viewport bounds without masking essential overflow; home has no horizontal overflow and scrolls vertically when needed. Supporter count and small text remain readable; all primary buttons and selection controls, including match preparation, recruitment and league exploration, have touch targets of at least44 CSS pixels across Chromium, Firefox and Safari. Expanded records/settings may scroll; short screens or accessibility magnification can use necessary vertical scrolling.
+- WEB-18 [o] One clock runs on every view: play/pause plus 1-, 3- and 5-day paces (one step per second). Home shows the full control with date, status and an intervention gear (→WEB-45); every other view collapses it to the play/pause and pace buttons only, without text, and keeps it running. ← a fixed pace keeps cash and dates moving visibly; no step jumps to an arbitrary next event; changing views is not a reason to stop
   - stops only for event kinds enabled in the stop settings (→WEB-42), on the eve of an own match when match stops are enabled (resuming there plays the match through as a result), and when the season closes (→WEB-47).
   - a multi-day step ends on the day an enabled event arrives and never runs past a match eve.
-  - otherwise only watching, critical alerts, save/worker errors, read-only ownership and world replacement stop it; dialogs never pause it and a hidden tab pauses and resumes it.
+  - otherwise only the owner's stop, watching, critical alerts, save/worker errors, read-only ownership and world replacement stop it; views and dialogs never pause it and a hidden tab pauses and resumes it.
+  - watching a match stops it; leaving the match view resumes it when it was running before the watch or the watch came from a match-eve card.
 
 - WEB-19 [o] Browser responsiveness and storage verification claims under →ARCH-14 and →ARCH-28 identify the actual checked source and build. Include application entry/public inputs; the measured preview must serve the same entry and assets as the recorded build. A changed source, changed asset inventory or mismatched served build invalidates the run.
 
@@ -57,8 +59,8 @@
 
 - WEB-30 [o] League standings initially show the leading 8 ranks plus the own-club row when outside that preview. Display the shown/full team counts and any rank gap, and offer one explicit expansion to all ranked clubs. Sorting and source facts remain complete; short previews reduce first-view layout cost on mobile and throttled devices.
 
-- WEB-31 [o] Background automatic progression does not alternate the enabled state or appearance of manual match and preparation buttons. Foreground work, real save/worker errors, read-only ownership and critical club alerts remain explicit blockers. Manual observation stops automatic progress, waits for the current serialized operation to settle, and queues exactly one match; preparation initializes from the settled current roster without pausing the clock. Controls disable only while a player command is queued, never for automatic ticks.
-- WEB-32 [o] Match presentation defaults to 1x with approximately 4 real seconds per simulated minute. Offer exactly 1x, 2x, 4x and 8x; the pace changes presentation only, preserves pause/seek behavior, and never changes settled outcomes or the game calendar.
+- WEB-31 [o] Background automatic progression does not alternate the enabled state or appearance of manual match and preparation buttons. Foreground work, real save/worker errors, read-only ownership and critical club alerts remain explicit blockers. Manual observation stops automatic progress, waits for the current serialized operation to settle, and queues exactly one match (→WEB-18 for resuming); preparation initializes from the settled current roster without pausing the clock. Controls disable only while a player command is queued, never for automatic ticks.
+- WEB-32 [o] Match presentation defaults to 1x with approximately 4 real seconds per simulated minute. Offer exactly 1x, 2x, 4x, 8x and 16x; the pace changes presentation only, preserves pause/seek behavior, and never changes settled outcomes or the game calendar.
 
 - WEB-33 [o] All single-choice dropdowns use one app-styled trigger and option list matching the club journal palette. Preserve selected values, labels, disabled choices and current filter/command semantics.
   - Triggers and options have touch targets of at least44 CSS pixels; lists fit the viewport, scroll long samples, and remain usable inside dialogs.
@@ -79,13 +81,19 @@
 - WEB-37 [o] Actions state their consequence before commit. Watch actions show the days advanced before kickoff; bulk progression names what it settles; manager hiring and player sale confirm spend, departures, tactic and squad-size changes.
 - WEB-38 [o] Visual language is a dark night-stadium game theme from shared colour tokens: HUD, pressable 3D buttons, card frames and gold/green accents across every view.
 - WEB-39 [o] Operations open with a policy board (→ECON-16 →ECON-17) of support, training, recruitment, marketing and ticket dials with 3–5 named steps. Tapping a step previews its cost change, multipliers, offer profile or gate range; only an explicit apply sends the command.
-- WEB-40 [o] Squad, transfer market and manager office are one segment group; the match view has no league tabs and opens preparation as a sheet; league views own standings, round results, rank trend, scorers and scorer trend as tabs on every viewport, never a dropdown. Sheets never link to another destination.
-- WEB-41 [o] Mobile league standings hide movement and recent-form columns so points stay visible at 360 CSS pixels.
+- WEB-40 [o] Squad, transfer market and manager office are one segment group. The match view opens only from a watch action (home next-match card or match-eve card), has no league tabs and opens preparation as a sheet; opening its address without a live playback returns home. League views own overview, standings, round results, rank trend, scorers and scorer trend as tabs on every viewport, never a dropdown. Sheets never link to another destination.
+  - overview is the own-league dashboard (race position, gaps, form, next rival) with the fixture notebook (→WEB-26).
+  - standings shows the league selector and the table only.
+  - round results mark the own fixture with an accent and an "우리 팀" badge.
+- WEB-41 [o] Standings columns read rank, club, points, played, won, drawn, lost, goals for, goals against, goal difference, then movement and recent form. Mobile hides movement and recent form so points stay visible at 360 CSS pixels.
 
-- WEB-42 [o] Club events (match eve, window opening/closing, bid answers, offers for our players, youth intake, staff reports, cash and sponsor warnings) are inbox items. Enabled kinds stop the clock and show an event card with the decision it needs (watch or play through, accept or reject, open the market with its ceremony →WEB-48, the academy or operations); every item stays readable in the HUD inbox. Which kinds stop is a per-browser setting.
+- WEB-42 [o] Club events (match eve, window opening/closing, bid answers, offers for our players, youth intake, staff reports, cash and sponsor warnings) are inbox items. Enabled kinds stop the clock and show an event card with the decision it needs (watch or play through, accept or reject, open the market with its ceremony →WEB-48, the academy or operations); every item stays readable in the HUD inbox. Which kinds stop is a per-browser setting. Home shows the event card; other views fold it into a small pill that opens the card, so a pending event never covers the view.
 - WEB-43 [o] The squad group has roster, academy, transfer market and staff segments. The market shows the window, bids in progress with counters and incoming offers; the staff view shows each department, its trait and effect, replacements with cost, and delegation switches.
 
-- WEB-44 [o] Home separates statistics from state. The team-state card shows starters' fatigue, squad morale, cash runway and squad size with good/ok/warning/critical tones; the most urgent warning explains its effect and offers up to two one-tap remedies (recovery training or rest selection, more squad support, less marketing or the operations page, the market or academy).
+- WEB-44 [o] Home separates statistics from state. The team-state card shows starters' fatigue, squad morale, cash runway and squad size with good/ok/warning/critical tones; the most urgent warning explains its effect, offers two one-tap remedies and a "more" entry.
+  - tapping any state opens its remedy sheet with 3–6 choices, each stating cost, effect and cooldown before commit; unavailable choices say why (cooldown, cash, already applied).
+  - fatigue: recovery training, rest selection, rest day, intensive care, preparation sheet. morale: squad support up, team dinner, special bonus, owner's visit, rest day. cash: less marketing, less squad support, higher ticket price, friendly match, owner capital, the market. squad: market, academy, promote the best prospect.
+  - choices act through engine commands (→CLUB-20 for care actions); navigation choices open their view.
 - WEB-45 [o] One intervention level sets which events stop the clock and what the staff decides. Per-event stops remain as detail settings; mixed settings show as custom.
   | level | stops | delegated (→STAFF-13) |
   |---|---|---|
@@ -100,6 +108,22 @@
 - WEB-48 [o] A transfer window opening is a full-screen moment: floodlights and confetti, the window name, deadline and days left, cash to spend, available candidates and squad size, then "enter the market" or "later". Both mark the opening event read; reduced motion shows the scene still. It opens from the season review and from the window-opening event card.
 - WEB-46 [o] Motion: screens slide in from the side of the chosen tab; panels, cards and list items rise in with short staggers when inserted or shown; dialogs and event/outcome cards animate both in and out on every close path; selected tabs and changed state values pop; HUD cash counts toward its new value and flashes its direction. Automatic ticks never replay entrances, and reduced motion lands every state immediately.
 
+- WEB-49 [o] Every club has a crest: shield shape, field pattern, primary and secondary colour and an emblem, derived from the world seed and club ID.
+  | part | values |
+  |---|---|
+  | shape | 6 |
+  | pattern | 10 |
+  | colours | 24-colour palette, 360 ordered pairs whose contrast ratio is at least 1.8 |
+  | emblem | 20 |
+  - 432,000 combinations; clubs are assigned in stable ID order with probing so no two clubs share colour pair and pattern while the world holds fewer than 3,600 clubs. ← low-contrast pairs hide the pattern and make crests look alike
+  - the player club keeps its founding colour as primary.
+  - crests and colours appear wherever clubs are named: HUD, home fixture, event cards, standings, round results, fixture notebook, match scoreboard and pitch kits (the away kit switches to its secondary colour when the primaries clash).
+- WEB-50 [o] The match theatre stacks scoreboard with crests, minute/latest action with speed chips (1x–16x), the pitch (tap or the corner button pauses), the latest event, live charts and two actions.
+  - charts switch between rolling 10-minute possession share, cumulative xG with goal marks and cumulative shots; they reveal data only up to the presented minute.
+  - actions: preparation and the primary action, which reads "결과 보기" while the match plays and "다음 경기 관전" after it ends; a back-home control sits in the header.
+  - details (moments, report, scrubber, player inspector, stats) open from the chart header.
+  - while a live playback is unfinished, home's watch action reads "경기로 돌아가기" and returns to it instead of starting another match.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -107,6 +131,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r32 261009 WEB-10✎ match tab→Europe tab, home/match fit→match fits and home scrolls, read-only banner→HUD badge; WEB-11✎ shrinking scene→180px minimum; WEB-17✎ home+match bounds→match bounds; WEB-18✎ home-only clock paused elsewhere→clock on every view with buttons-only control, watch resumes; WEB-31✎ resume reference; WEB-32✎ 1–8x→1–16x; WEB-40✎ match tab and table+overview tab→watch-only match view, overview and standings tabs, own round result badge; WEB-41✎ played-first columns→points-first with goals for/against; WEB-42✎ home-only event cards→card on home, pill elsewhere; WEB-44✎ two remedies→remedy sheets of 3–6 choices; WEB-49+ club crests; WEB-50+ match theatre controls and live charts
 - r31 261009 WEB-5✎ day/next-match pacing→1/3/5-day pacing; WEB-18✎ next-event pace→1/3/5-day paces stopping only for enabled events and at season close; WEB-36✎ inbox reading produces no card; WEB-42✎ cash and sponsor warnings, market opens with its ceremony; WEB-45✎ level 4 no stops→cash/sponsor stops and delegated sponsors, levels 1–3 stop for cash/sponsor; WEB-47+ season review page; WEB-48+ transfer window ceremony
 - r30 261009 WEB-10✎ five tabs→seven with home centred and transfers separate; WEB-11✎ fatigue tile and news card→record tile, team-state card, news in inbox; WEB-18✎ clock everywhere→home-only clock with mini clock elsewhere, capped three-day steps; WEB-44+ team state and remedies; WEB-45+ intervention levels; WEB-46+ motion system
 - r29 261008 WEB-18✎ next-match pace→next-event pace with event and match-eve stops; WEB-42+ event cards and inbox; WEB-43+ academy, market negotiations and staff views
