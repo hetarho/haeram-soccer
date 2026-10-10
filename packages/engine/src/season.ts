@@ -21,7 +21,7 @@ import { moraleAfterMatch } from './morale';
 import { settleWinBonus } from './care';
 import { managerStyleEffects } from './styles';
 import { synergyEffects } from './synergy';
-import { visionEffects } from './vision';
+import { buildEffects } from './build';
 import { seasonStaff } from './staff';
 import {
   currentDay,
@@ -193,7 +193,7 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     const win = side === 0 ? m.score.home > m.score.away : m.score.away > m.score.home;
     const club = clubOf(w);
     club.fans = Math.round(
-      clamp(club.fans * (win ? 1 + 0.012 * visionEffects(w).winFans : 0.998), 200, 5000000),
+      clamp(club.fans * (win ? 1 + 0.012 * buildEffects(w).winFans : 0.998), 200, 5000000),
     );
     moraleAfterMatch(w, saved);
     settleWinBonus(w, saved);

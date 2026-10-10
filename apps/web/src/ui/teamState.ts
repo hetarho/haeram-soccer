@@ -8,7 +8,7 @@ import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import { operatingCosts } from '../../../../packages/engine/src/finance';
 import { careOffer, effectText, outcomeText } from '../../../../packages/engine/src/care';
 import { academySummary } from '../../../../packages/engine/src/academy';
-import { visionEffects } from '../../../../packages/engine/src/vision';
+import { buildEffects } from '../../../../packages/engine/src/build';
 import { money } from './format';
 import type { Page, SquadTab } from './state';
 
@@ -170,7 +170,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
       const seasonSupport = w.events.filter(
         (event) => event.kind === 'support' && event.year === w.year,
       ).length;
-      const limit = visionEffects(w).ownerCapital;
+      const limit = buildEffects(w).ownerCapital;
       return [
         {
           id: 'marketing-down',

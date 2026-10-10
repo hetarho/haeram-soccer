@@ -15,7 +15,7 @@ import { moraleStrength } from './morale';
 import { npcTactic, ownTacticalProfile, tacticalProfile, type TacticalProfile } from './strategy';
 import { managerStyleEffects } from './styles';
 import { synergyEffects } from './synergy';
-import { visionEffects } from './vision';
+import { buildEffects } from './build';
 import { MatchMotion } from './motion';
 export { MATCH_MOTION_CONFIG, playerTraits, teamMotionProfile } from './motion';
 export const METRICS = [
@@ -160,7 +160,7 @@ export function simulateMatch(
   const tactics: [Tactic, Tactic] = teams.map((c) =>
     c.id === w.playerClub ? w.tactic : npcTactic(c),
   ) as [Tactic, Tactic];
-  // The own club's manager style, vision and synergies; clubs nobody owns play their tactic.
+  // The own club's manager style, build and synergies; clubs nobody owns play their tactic.
   const ownSide = home.id === w.playerClub ? 0 : away.id === w.playerClub ? 1 : undefined;
   const style = ownSide === undefined ? undefined : managerStyleEffects(w);
   const synergy = ownSide === undefined ? undefined : synergyEffects(w);
@@ -168,7 +168,7 @@ export function simulateMatch(
     (w.manager.ability - 50) / 4 +
     moraleStrength(w) +
     style!.strength +
-    (side === 0 ? visionEffects(w).homeStrength : 0);
+    (side === 0 ? buildEffects(w).homeStrength : 0);
   const strength = [
     rating(w, home) + 3 + (ownSide === 0 ? ownStrength(0) : 4),
     rating(w, away) + (ownSide === 1 ? ownStrength(1) : 4),

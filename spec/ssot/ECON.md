@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r7 | Define the implemented browser-demo behavior for historical club economy.
+> r8 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -43,16 +43,35 @@
 - ECON-20 [o] When cash after a round's costs is non-negative but covers fewer than 13 rounds of fixed costs, a cash warning inbox item (→WEB-42) appears once per season with its weeks left and remedies.
 - ECON-21 [o] Sponsors with business delegated (→STAFF-13): whenever the main sponsor slot is empty the commercial staff sign the stable offer at once and report it. Without delegation a season that starts without a sponsor posts a sponsor reminder (→WEB-42).
 
-- ECON-22 [o] The club vision is one card for the season: balanced by default, changed at most once per season and recorded as an event. ← a direction is a commitment, not a weekly dial
-  | vision | effects |
-  |---|---|
-  | 균형 운영 | none |
-  | 유스 명가 | intake +1, intake potential +4, growth of players ≤ 21 ×1.15; market candidates −2 |
-  | 셀링 클럽 | other clubs' offers ×1.6, every sale fee ×1.25, candidate potential +4; morale baseline −2 |
-  | 상업 확장 | new sponsor offers ×1.2, campaign income ×1.25, marketing fan growth ×1.2; home gate demand −3% |
-  | 지역 밀착 | home gate demand +8%, supporters a win brings ×1.5, home strength +1; new sponsor offers ×0.9 |
-  | 승격 올인 | owner capital 5 times a season, candidate ability +5, morale baseline +2; player wages ×1.08 |
-  - signed sponsor contracts keep their amounts; a vision changes new offers only.
+- ECON-22 [o] The club build is six slots — 유스 정책, 스카우팅, 이적 기조, 수익 모델, 홈·팬, 라커룸 문화 — each holding one card: the standard card or one of four others, so 5^6 = 15,625 builds before policy, staff or manager. ← builds are the fun: owners combine levers into their own club instead of picking one of a few presets Every card has at least one gain and one cost; additions add and multipliers multiply across slots. The owner drafts freely, sees combined effects, synergies (→CLUB-21) and odds before committing, and commits at most once per season (recorded as a build event). Presets fill the slots in one tap: 균형 운영 (all standard), 유스 명가 (성골 유스, 지역 인재 우선, 철저한 경쟁), 셀링 클럽 (셀링 클럽, 데이터 스카우팅), 상업 확장 (상업 확장, 글로벌 브랜드), 지역 밀착 (지역 밀착, 회원제 운영, 지역 인재 우선), 승격 올인 (구단주 투자, 즉시 전력, 스타 대우).
+  | slot | card | effects |
+  |---|---|---|
+  | 유스 정책 | 성골 유스 | intake +1, intake potential +3; market candidates −1 |
+  | 유스 정책 | 1군 직행 경로 | growth of players ≤ 21 ×1.2; morale baseline −1 |
+  | 유스 정책 | 유소년 클럽 제휴 | intake +2; intake potential −2 |
+  | 유스 정책 | 해외 유스 스카우트 | intake potential +5; intake −1 |
+  | 스카우팅 | 데이터 스카우팅 | candidate potential +3, candidates +1; candidate ability −2 |
+  | 스카우팅 | 즉시 전력 | candidate ability +4; player wages ×1.05 |
+  | 스카우팅 | 광역 네트워크 | candidates +3; candidate potential −1 |
+  | 스카우팅 | 지역 인재 우선 | home gate demand +2%, player wages ×0.97; candidates −1 |
+  | 이적 기조 | 셀링 클럽 | other clubs' offers ×1.6, sale fees ×1.25; morale baseline −2 |
+  | 이적 기조 | 쇼케이스 | offers ×1.3, sale fees ×1.1; morale baseline −1 |
+  | 이적 기조 | 핵심 지키기 | morale baseline +2; offers ×0.5 |
+  | 이적 기조 | 강경 협상 | sale fees ×1.15; offers ×0.8 |
+  | 수익 모델 | 상업 확장 | new sponsor offers ×1.2, campaign income ×1.25, marketing fan growth ×1.2; home gate demand −3% |
+  | 수익 모델 | 구단주 투자 | owner capital +2 a season (5); player wages ×1.05 |
+  | 수익 모델 | 긴축 재정 | player wages ×0.94; morale baseline −2, candidate ability −2 |
+  | 수익 모델 | 회원제 운영 | home gate demand +5%, supporters a win brings ×1.2; new sponsor offers ×0.9, owner capital −1 (2) |
+  | 홈·팬 | 지역 밀착 | home gate demand +6%, supporters a win brings ×1.4; campaign income ×0.9 |
+  | 홈·팬 | 홈 요새 | home strength +1.5, supporters a win brings ×1.1; marketing fan growth ×0.85 |
+  | 홈·팬 | 글로벌 브랜드 | marketing fan growth ×1.3, new sponsor offers ×1.1; home gate demand −4%, home strength −0.5 |
+  | 홈·팬 | 가족 관중 | home gate demand +4%, marketing fan growth ×1.1; home strength −0.5 |
+  | 라커룸 문화 | 가족 같은 클럽 | morale baseline +3; player wages ×1.03 |
+  | 라커룸 문화 | 철저한 경쟁 | growth of players ≤ 21 ×1.1; morale baseline −1 |
+  | 라커룸 문화 | 스타 대우 | candidate ability +2, morale baseline +1; player wages ×1.1 |
+  | 라커룸 문화 | 베테랑 리더십 | morale baseline +2; growth of players ≤ 21 ×0.9 |
+  - signed sponsor contracts keep their amounts; a build changes new offers only.
+  - a club vision stored by rules 1.6–1.7 loads as the preset of the same name.
 
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
@@ -61,6 +80,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r8 261010 ECON-22✎ one of six vision cards→a six-slot build of 25 cards (15,625 builds) with presets, combined previews and one commit a season
 - r7 261010 ECON-16✎ three settings→four with academy investment, support shown as squad investment; ECON-22+ club visions
 - r6 261009 ECON-19+ per-match income fixed→league income sized for a 46-game season; ECON-20+ cash warning before insolvency; ECON-21+ delegated stable sponsor and sponsor reminder
 - r5 261008 ECON-18+ current-cash-only budgeting→season-end and one-year cash projection

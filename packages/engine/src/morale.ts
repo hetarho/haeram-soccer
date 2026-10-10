@@ -4,7 +4,7 @@ import { clamp } from './primitives';
 import { policyOf } from './policy';
 import { managerStyleEffects } from './styles';
 import { synergyEffects } from './synergy';
-import { visionEffects } from './vision';
+import { buildEffects } from './build';
 
 /** New clubs start here; strength is unaffected at this value. */
 export const MORALE_START = 60;
@@ -45,7 +45,7 @@ export function moraleBaseline(w: World) {
       (policyOf(w).support - 3) * 4 +
       (w.manager.trust - 50) / 10 +
       managerStyleEffects(w).moraleBaseline +
-      visionEffects(w).moraleBaseline +
+      buildEffects(w).moraleBaseline +
       synergyEffects(w).moraleBaseline,
     30,
     80,

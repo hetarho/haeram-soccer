@@ -24,7 +24,7 @@ export * from './projection';
 export * from './morale';
 export * from './care';
 export * from './styles';
-export * from './vision';
+export * from './build';
 export * from './synergy';
 export * from './news';
 export function createWorld(input: Founding) {

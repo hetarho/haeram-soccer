@@ -344,6 +344,8 @@ const selectContentWorld = worldSelector([
   'bids',
   'morale',
   'inbox',
+  'build',
+  'buildYear',
 ]);
 function useContentState(): ClientState {
   const world = useGameState(selectContentWorld);

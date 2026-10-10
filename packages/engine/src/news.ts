@@ -3,7 +3,6 @@ import { PD, TD } from '../../contracts/src/detail';
 import { country } from '../../catalogs/src/index';
 import { clubOf } from './world';
 import { STYLE_INFO } from './styles';
-import { VISION_INFO } from './vision';
 
 /**
  * Club news (→HIST-11): headlines derived from recorded facts only, the way football media write
@@ -1111,15 +1110,17 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
         title: `${name}, 새 메인 스폰서와 계약`,
         detail: first(event.detail),
       };
-    case 'vision': {
-      const info = Object.values(VISION_INFO).find((v) => event.title.endsWith(v.label));
+    // Older saves record a vision; both read as the club announcing its direction.
+    case 'vision':
+    case 'build': {
+      const label = event.title.split(' · ')[1] ?? event.title;
       return {
         ...base,
         tag: '구단',
         tone: 'neutral',
         weight: 'notable',
-        title: `${name}, 구단 비전 '${info?.label ?? event.title}' 선언`,
-        detail: info?.model,
+        title: `${name}, ${event.kind === 'build' ? '구단 빌드' : '구단 비전'} '${label}' 발표`,
+        ...(event.kind === 'build' ? { detail: event.detail } : {}),
       };
     }
     case 'care:backing':

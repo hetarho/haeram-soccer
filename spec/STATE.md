@@ -17,16 +17,16 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 4 | 4 | - | 2 |
-| WEB | 35 | 35 | - | 0 |
+| WEB | 36 | 36 | - | 0 |
 | WORLD | 1 | 1 | - | 0 |
-| CLUB | 12 | 12 | - | 0 |
+| CLUB | 13 | 13 | - | 0 |
 | MATCH | 6 | 6 | - | 0 |
 | LEAGUE | 2 | 2 | - | 0 |
 | STAFF | 6 | 6 | - | 0 |
-| ECON | 7 | 7 | - | 0 |
+| ECON | 8 | 8 | - | 0 |
 | EURO | 1 | 1 | - | 0 |
 | HIST | 4 | 4 | - | 0 |
-| SAVE | 10 | 10 | - | 0 |
+| SAVE | 11 | 11 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -38,6 +38,7 @@
 - Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
 
 ## log
+- 261010 ECON r8 CLUB r13 WEB r36 SAVE r11 implemented directly: six club visions→a six-slot club build of 25 cards (15,625 builds) with presets, combined draft preview, synergy forecast and one commit a season; 머니볼/상업 제국 read build cards, +우리 동네 아이들 +트레이딩 머신; stored visions load as presets; rules 1.8.0
 - 261010 WEB r35 CLUB r12 implemented directly: phone HUD compact cash (K/M/B) and two-line club name, floating news button with NEW count, celebration banner above it and filing into it, "뉴스 표시 안 함" in inbox and news sheet; delegated sale bar 130% (prospects 200%) lowered for age, contract and cash runway, floor 80%; rules 1.7.0
 - 261010 HIST-11 fix: club news is derived in the worker from the full career; the projected 150-event/30-match windows shifted event news IDs, so the promotion celebration replayed after every match; event lookups no longer resolve the club per event (century feed 16→3 ms)
 - 261010 WEB r34 CLUB r11 MATCH r6 STAFF r6 ECON r7 HIST r4 SAVE r10 implemented directly after research (Opta/FBref metrics, owner–manager practice, OptaJoe-style news, Korean football media wording): advanced match counters with tactic defensive lines and high-regain transitions, broadcast-style reports, player advanced stats, metrics glossary, eight manager styles, owner requests with stated chances (special bonus removed), club visions, academy investment, build synergies and odds board, derived club news with celebrations (window ceremony removed), cups tab, manager-standing tile with cash in the HUD; rules 1.6.0, worst century checkpoint 1,099,966 bytes
@@ -57,4 +58,3 @@
 - 261008 T039 done; styled selectors verified in Chromium, Firefox and WebKit
 - 261008 create-task T039 refresh; accumulated reference latency/storage gates owned by T041
 - 261008 implement-task T039 resumed (ui)
-- 261008 T039 todo; create-task refresh: measured asset budget requires native top-layer combobox

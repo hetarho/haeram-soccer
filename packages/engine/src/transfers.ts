@@ -8,7 +8,7 @@ import { operatingCosts } from './finance';
 import { fixedCostRunway } from './investment';
 import { staffEffects } from './staff';
 import { managerStyleEffects } from './styles';
-import { visionEffects } from './vision';
+import { buildEffects } from './build';
 import { pushInbox } from './inbox';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -491,8 +491,8 @@ function incomingBid(w: World, day: number, until: number) {
   const pending = (w.bids || []).filter((b) => b.direction === 'in' && b.status === 'pending');
   if (pending.length >= MAX_PENDING_INCOMING) return;
   const r = random(`${w.seed}:incoming:${w.year}:${day}`);
-  const vision = visionEffects(w);
-  if (r() >= INCOMING_BID_CHANCE * vision.incomingBids) return;
+  const build = buildEffects(w);
+  if (r() >= INCOMING_BID_CHANCE * build.incomingBids) return;
   const wanted = new Set(pending.map((b) => b.playerId));
   const pool = activePlayers(w)
     .filter((p) => !p.loanUntil && !wanted.has(p.id) && !saleBlocker(w, p))
@@ -519,7 +519,7 @@ function incomingBid(w: World, day: number, until: number) {
   }
   const club = bidders[integer(r, 0, bidders.length - 1)],
     value = playerValue(w, player),
-    fee = ratio(value, BigInt(Math.round(integer(r, 90, 160) * vision.saleFee)), 100n);
+    fee = ratio(value, BigInt(Math.round(integer(r, 90, 160) * build.saleFee)), 100n);
   const bid: TransferBid = {
     id: bidId('in', w, day, player.id),
     direction: 'in',

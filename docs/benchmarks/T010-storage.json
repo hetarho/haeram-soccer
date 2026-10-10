@@ -1,7 +1,7 @@
 {
   "phase": "T010 complete engine, including money/personnel/commercial operations and all continental summaries",
   "synthetic": true,
-  "date": "2026-10-10T00:36:38.966Z",
+  "date": "2026-10-10T01:01:09.433Z",
   "node": "v26.8.1",
   "host": {
     "platform": "darwin",
@@ -9,16 +9,16 @@
     "cpu": "Apple M1 Max",
     "logicalCpus": 10
   },
-  "gitHead": "747c60739bda2a05c5cad23b5cff4c6cf68c2584",
+  "gitHead": "75c0e16d93b41fe8b0f34d8d7461c47b5c7fd561",
   "gitDirty": true,
   "currentHeadVerified": false,
   "verifiedSource": "uncommitted working tree",
   "sourceFingerprint": {
     "algorithm": "sha256",
-    "sha256": "9b2b4f61aadec0d3120defed08401c7743a523267d8294c95995e4a2d1c4a398",
-    "files": 226
+    "sha256": "37adfbeb45f834acc17437b3523b5bc83888cb1cf31ebdab922009e6e1a9d8a6",
+    "files": 227
   },
-  "engine": "1.7.0",
+  "engine": "1.8.0",
   "catalog": "2026-demo-1",
   "catalogHash": "94375c9a798cba789f2d6b319171bf7b45d52090ab0b83ca56b14626d196f679",
   "checkpointLimit": 1572864,
@@ -38,8 +38,8 @@
       "compressedPayloadBytes": 18679,
       "checkpointBytes": 22010,
       "totalBytes": 44532,
-      "heapBytes": 58082752,
-      "encodingMs": 14,
+      "heapBytes": 62017952,
+      "encodingMs": 15,
       "passed": true
     },
     {
@@ -57,8 +57,8 @@
       "compressedPayloadBytes": 494756,
       "checkpointBytes": 566098,
       "totalBytes": 1132708,
-      "heapBytes": 185849752,
-      "encodingMs": 171,
+      "heapBytes": 183465240,
+      "encodingMs": 167,
       "passed": true
     },
     {
@@ -76,8 +76,8 @@
       "compressedPayloadBytes": 900103,
       "checkpointBytes": 1029352,
       "totalBytes": 2059216,
-      "heapBytes": 454092712,
-      "encodingMs": 345,
+      "heapBytes": 428545528,
+      "encodingMs": 335,
       "passed": true
     },
     {
@@ -94,7 +94,7 @@
       "compressedPayloadBytes": 18710,
       "checkpointBytes": 22048,
       "totalBytes": 44608,
-      "heapBytes": 463933408,
+      "heapBytes": 438444912,
       "encodingMs": 5,
       "passed": true
     },
@@ -113,8 +113,8 @@
       "compressedPayloadBytes": 517278,
       "checkpointBytes": 591840,
       "totalBytes": 1184192,
-      "heapBytes": 326370120,
-      "encodingMs": 169,
+      "heapBytes": 398918568,
+      "encodingMs": 172,
       "passed": true
     },
     {
@@ -129,11 +129,11 @@
       "trainingFocus": "recovery",
       "trainingAt": "2000:46",
       "trainingFocusEvents": 200,
-      "compressedPayloadBytes": 933837,
-      "checkpointBytes": 1067908,
-      "totalBytes": 2136328,
-      "heapBytes": 621340872,
-      "encodingMs": 327,
+      "compressedPayloadBytes": 933836,
+      "checkpointBytes": 1067906,
+      "totalBytes": 2136324,
+      "heapBytes": 352445584,
+      "encodingMs": 329,
       "passed": true
     },
     {
@@ -151,8 +151,8 @@
       "compressedPayloadBytes": 961888,
       "checkpointBytes": 1099966,
       "totalBytes": 2200444,
-      "heapBytes": 656158312,
-      "encodingMs": 324,
+      "heapBytes": 739643352,
+      "encodingMs": 323,
       "passed": true
     }
   ],
@@ -165,10 +165,10 @@
       "completeSeasonTrainingSelections": 0,
       "centuryActiveCheckpointTrainingSelections": 0,
       "trainingCycle": "balanced",
-      "elapsedMs": 26427,
-      "completedSeasonsPerSecond": 3.78,
+      "elapsedMs": 26328,
+      "completedSeasonsPerSecond": 3.8,
       "ownedMatches": 4795,
-      "ownedMatchesPerSecond": 181.45,
+      "ownedMatchesPerSecond": 182.13,
       "allRetainedFactsPreserved": true
     },
     {
@@ -179,22 +179,22 @@
       "completeSeasonTrainingSelections": 200,
       "centuryActiveCheckpointTrainingSelections": 2,
       "trainingCycle": "23 youth rounds then 23 recovery rounds each season; century checkpoint adds 12 youth and 11 recovery rounds",
-      "elapsedMs": 31692,
-      "completedSeasonsPerSecond": 3.16,
+      "elapsedMs": 31864,
+      "completedSeasonsPerSecond": 3.14,
       "ownedMatches": 4880,
-      "ownedMatchesPerSecond": 153.98,
+      "ownedMatchesPerSecond": 153.15,
       "allRetainedFactsPreserved": true
     }
   ],
-  "centuryCheckpointSha256": "b211bebccaba9356b1af977307ac263a05d7ce25a9756b56575d6aa6be6a0f0b",
+  "centuryCheckpointSha256": "faa1111fb6e663964bb6b8d6407a709c0899c3169604b6f65d7232cc957171d5",
   "eraProbe": {
     "seasons": 124,
     "year": 2025,
     "passed": true
   },
-  "elapsedMs": 91986,
-  "heapBytes": 658778880,
-  "peakObservedHeapBytes": 656158312,
+  "elapsedMs": 92645,
+  "heapBytes": 696314088,
+  "peakObservedHeapBytes": 739643352,
   "losslessRoundtrip": true,
   "resumedSeasonReplay": true,
   "passed": true,

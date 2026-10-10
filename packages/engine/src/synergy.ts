@@ -2,7 +2,7 @@ import type { Player, World } from '../../contracts/src/types';
 import { activePlayers, selectedLineup } from './world';
 import { policyOf } from './policy';
 import { staffMember } from './staff';
-import { visionOf } from './vision';
+import { buildOf } from './build';
 
 /**
  * Build synergies (→CLUB-21): when the manager, the staff, the club's choices and the squad point
@@ -154,11 +154,11 @@ const RULES: readonly SynergyRule[] = [
   {
     id: 'moneyball',
     label: '머니볼',
-    idea: '트레이딩 비전 · 발굴·협상에 강한 수석 스카우트 · 젊은 선수 위주 영입',
+    idea: '데이터 스카우팅 · 발굴·협상에 강한 수석 스카우트 · 젊은 선수 위주 영입',
     bonus: '영입 후보 잠재력 +3 · 이적료 ×0.92',
     effects: { marketPotential: 3, feeMultiplier: 0.92 },
     conditions: (w) => [
-      { label: '셀링 클럽 비전', met: visionOf(w) === 'trading' },
+      { label: '스카우팅 · 데이터 스카우팅', met: buildOf(w).scouting === 'data' },
       {
         label: '수석 스카우트 발굴가·협상가',
         met: coach(w, 'scout')?.trait === 'spotter' || coach(w, 'scout')?.trait === 'negotiator',
@@ -169,11 +169,11 @@ const RULES: readonly SynergyRule[] = [
   {
     id: 'commercial',
     label: '상업 제국',
-    idea: '상업 확장 비전 · 적극적인 마케팅 · 큰 경기장이 만드는 수익 구조',
+    idea: '상업 확장 수익 모델 · 적극적인 마케팅 · 큰 경기장이 만드는 수익 구조',
     bonus: '새 후원 계약 금액 ×1.1 추가',
     effects: { sponsor: 1.1 },
     conditions: (w) => [
-      { label: '상업 확장 비전', met: visionOf(w) === 'commercial' },
+      { label: '수익 모델 · 상업 확장', met: buildOf(w).revenue === 'commercial' },
       { label: '마케팅 4단계 이상', met: policyOf(w).marketing >= 4 },
       { label: '시설 6단계 이상', met: w.facilities >= 6 },
     ],
@@ -189,6 +189,42 @@ const RULES: readonly SynergyRule[] = [
       { label: '선수단 투자 4단계 이상', met: policyOf(w).support >= 4 },
       { label: '분위기 65 이상', met: (w.morale ?? 60) >= 65 },
     ],
+  },
+  {
+    id: 'local-heroes',
+    label: '우리 동네 아이들',
+    idea: '아카데미에서 키운 동네 아이들 · 지역이 채우는 경기장 · 서로 챙기는 라커룸',
+    bonus: '분위기 기준점 +2 · 유스 입단 잠재력 +2',
+    effects: { moraleBaseline: 2, academyPotential: 2 },
+    conditions: (w) => {
+      const build = buildOf(w);
+      return [
+        {
+          label: '유스 정책 · 성골 유스 또는 유소년 클럽 제휴',
+          met: build.youth === 'homegrown' || build.youth === 'partnership',
+        },
+        { label: '홈·팬 · 지역 밀착', met: build.fans === 'community' },
+        { label: '라커룸 문화 · 가족 같은 클럽', met: build.culture === 'family' },
+      ];
+    },
+  },
+  {
+    id: 'trading-machine',
+    label: '트레이딩 머신',
+    idea: '지표로 찾고 · 1군에서 뛰게 해 키우고 · 비싸게 파는 순환',
+    bonus: '영입 후보 잠재력 +2 · 아카데미 성장 ×1.1',
+    effects: { marketPotential: 2, academyGrowth: 1.1 },
+    conditions: (w) => {
+      const build = buildOf(w);
+      return [
+        { label: '스카우팅 · 데이터 스카우팅', met: build.scouting === 'data' },
+        { label: '유스 정책 · 1군 직행 경로', met: build.youth === 'pathway' },
+        {
+          label: '이적 기조 · 셀링 클럽 또는 쇼케이스',
+          met: build.market === 'selling' || build.market === 'showcase',
+        },
+      ];
+    },
   },
 ];
 

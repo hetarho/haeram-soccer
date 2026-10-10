@@ -4,7 +4,7 @@
 ## decisions
 - MATCH-1 [o] A match is 90 discrete simulated minutes; each minute's possession plays as a chain of duels between named players (→MATCH-11). Events and team/player counts share one seeded engine. Pitch playback does not change outcomes.
 - MATCH-2 [o] Outcome factors include role attributes, club/manager quality, fatigue, home advantage, and the actually applied tactical preset. ← the own club must play on the same terms as the clubs it meets
-  - every club's strength is its actual starting XI: average role rating minus (fatigue − 20)/6 for fatigue above 20; clubs nobody owns add 4 for their unmodelled manager, the own club (manager ability − 50)/4, morale, its manager style's strength (→STAFF-14) and at home its vision's home strength (→ECON-22).
+  - every club's strength is its actual starting XI: average role rating minus (fatigue − 20)/6 for fatigue above 20; clubs nobody owns add 4 for their unmodelled manager, the own club (manager ability − 50)/4, morale, its manager style's strength (→STAFF-14) and at home its build's home strength (→ECON-22).
   - fatigue up to 20 is ordinary match fitness and costs nothing in ratings, duels or tactic fit; only the excess weakens a player.
   - clubs nobody owns do not track fatigue match by match, so a pressing club's squad carries fatigue 32.
 - MATCH-3 [o] Provide possession, goals, assists, shots, shots on target, attempted/completed passes, tackles, interceptions, dribbles, saves, and player contributions.

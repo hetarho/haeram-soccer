@@ -1,3 +1,5 @@
+import type { ClubBuild } from './build';
+export type { ClubBuild, BuildSlot } from './build';
 export type CountryCode = 'ENG' | 'ESP' | 'GER' | 'ITA' | 'FRA' | 'POR' | 'NED' | 'BEL';
 export type Tactic = 'balanced' | 'possession' | 'counter' | 'press';
 export type TrainingFocus = 'balanced' | 'youth' | 'recovery';
@@ -22,9 +24,6 @@ export type ManagerStyle =
   | 'developer'
   | 'firefighter'
   | 'headcoach';
-/** The club's long-term direction (→ECON-22); absent means balanced. */
-export type ClubVision =
-  'balanced' | 'academy' | 'trading' | 'commercial' | 'community' | 'ambition';
 export type DelegationKey = 'training' | 'academy' | 'transfers' | 'business';
 /** Owner requests to the manager and staff (→CLUB-20). */
 export type CareKind =
@@ -396,10 +395,10 @@ export interface World {
   inbox?: InboxItem[];
   /** Squad morale 0–100; absent in older saves, which keep pre-morale strength. */
   morale?: number;
-  /** Club direction; absent means balanced. */
-  vision?: ClubVision;
-  /** Season year the vision was last changed; one change per season. */
-  visionYear?: number;
+  /** The club build, one card per slot (→ECON-22); absent slots are standard. */
+  build?: ClubBuild;
+  /** Season year the build was last changed; one change per season. */
+  buildYear?: number;
   /** Win bonus promised for the next own matches: pays per win until `matches` run out. */
   winBonus?: { matches: number };
   manager: Manager;
@@ -462,4 +461,4 @@ export type Command =
   | { type: 'support' }
   | { type: 'accept-condition' }
   | { type: 'care'; kind: CareKind }
-  | { type: 'vision'; vision: ClubVision };
+  | { type: 'build'; build: ClubBuild };

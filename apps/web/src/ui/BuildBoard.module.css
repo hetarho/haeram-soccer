@@ -19,47 +19,129 @@
   font-size: 13px;
   line-height: 1.5;
 }
-.vision,
-.manager {
+.head h2 small {
+  margin-left: 4px;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 800;
+}
+.manager,
+.summary,
+.slot {
   display: grid;
-  gap: 8px;
+  gap: 6px;
   padding: 12px;
   border-radius: 12px;
   border: 1px solid var(--line-strong);
   background: var(--surface-deep);
   min-width: 0;
 }
-.visionHead,
 .manager {
-  display: grid;
   gap: 2px;
 }
-.visionHead span,
-.manager span {
+.manager span,
+.summaryHead span {
   color: var(--text-faint);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.06em;
 }
-.visionHead b,
-.manager b {
+.manager b,
+.summaryHead b {
   font-size: 17px;
 }
-.visionHead small,
 .manager small {
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.5;
 }
-.vision ul,
-.preview ul {
+/* Presets: one tap fills every slot; the owner can change any card after. */
+.presets {
   display: grid;
-  gap: 2px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 6px;
+}
+.presets button {
+  display: grid;
+  gap: 1px;
+  min-height: 52px;
+  padding: 6px 10px;
+  text-align: left;
+}
+.presets b {
+  font-size: 13px;
+}
+.presets small {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+.presets .presetOn {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 8px;
+}
+.slotChanged {
+  border-color: var(--accent);
+}
+.slotHead {
+  display: grid;
+  gap: 1px;
+}
+.slotHead b {
+  font-size: 14px;
+}
+.slotHead small {
+  color: var(--text-faint);
+  font-size: 11px;
+}
+.options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 5px;
+}
+.options button {
+  min-height: 44px;
+  padding: 4px 6px;
+  font-size: 12px;
+  line-height: 1.25;
+  word-break: keep-all;
+}
+/* Gold marks the saved card, green the one being drafted. */
+.options .current {
+  border-color: var(--gold-edge);
+  color: var(--gold);
+}
+.options .picked {
+  color: var(--on-accent);
+  border-color: var(--accent-edge);
+  background: var(--accent-fill);
+  box-shadow: 0 2px 0 var(--accent-edge);
+}
+.model {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.lines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
   margin: 0;
   padding: 0;
   list-style: none;
   font-size: 12px;
   line-height: 1.45;
+}
+.neutral {
+  margin: 0;
+  color: var(--text-faint);
+  font-size: 12px;
 }
 .pro {
   color: var(--accent-text);
@@ -67,43 +149,21 @@
 .con {
   color: var(--warm);
 }
-.cards {
+.summary {
+  border-color: var(--gold-edge);
+}
+.summaryHead {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-}
-.cards button {
-  min-height: 44px;
-  padding: 6px 8px;
-  font-size: 13px;
-}
-.cards .current {
-  border-color: var(--gold);
-  color: var(--gold);
-}
-.cards .choosing {
-  border-color: var(--accent);
-  color: var(--accent-text);
-}
-.preview {
-  display: grid;
-  gap: 6px;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px dashed var(--accent);
-}
-.preview p {
-  margin: 0;
-  font-size: 13px;
-  color: var(--text-muted);
-}
-.preview p b {
-  color: var(--text);
+  gap: 1px;
 }
 .confirm {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+  margin-top: 4px;
+}
+.confirm button {
+  min-height: 46px;
 }
 .apply {
   border-color: var(--accent-edge) !important;
@@ -209,8 +269,11 @@
   color: var(--gold);
 }
 @media (max-width: 420px) {
-  .cards {
+  .presets {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

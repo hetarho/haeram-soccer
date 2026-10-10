@@ -6,7 +6,7 @@ import { autoTrainingFocus, staffEffects } from './staff';
 import { developAcademy } from './academy';
 import { settleMorale } from './morale';
 import { managerStyleEffects } from './styles';
-import { visionEffects } from './vision';
+import { buildEffects } from './build';
 
 export const trainingFocusInfo: Record<
   TrainingFocus,
@@ -82,7 +82,7 @@ function roundGain(
       trainingFocusInfo[focus].developmentMultiplier *
       policy.developmentMultiplier *
       style.growth *
-      (age <= 21 ? staff.youthDevelopment * style.youthGrowth * visionEffects(w).youthGrowth : 1),
+      (age <= 21 ? staff.youthDevelopment * style.youthGrowth * buildEffects(w).youthGrowth : 1),
   );
 }
 /** Each coach scales growth of the skills they own. */

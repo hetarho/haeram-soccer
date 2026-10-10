@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r10 | Define the implemented browser-demo behavior for browser persistence and protocol.
+> r11 | Define the implemented browser-demo behavior for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -13,7 +13,7 @@
 - SAVE-8 [o] Autosave settled fixture/round and committed management decisions; UI distinguishes active and last persisted revisions.
 - SAVE-9 [o] Export/import uses the same envelope; checksum provides corruption detection only. All successful changes remain local.
 
-- SAVE-10 [o] Current engine rules are 1.6.0 (advanced match counters, tactic defensive lines and transitions, manager styles, owner requests, club visions and academy investment; 1.5.0 added fair founding strength, XI ratings for every club, excess-only fatigue, faster recovery, recorded match xG; 1.4.0 added player-duel matches and care actions; 1.3.0 added season close after the final round, summer window from the close, 46-game league income, business delegation, cash warnings). Versions 1.0.0 through 1.5.0 checkpoints remain accepted; writer activation upgrades only rules metadata/revision through a pure transformation, preserves all retained facts and missing optional defaults, and commits through the existing two-slot protocol. Failure preserves old disk data and exportable new memory state; read-only views do not perform disk upgrades.
+- SAVE-10 [o] Current engine rules are 1.8.0 (the six-slot club build replacing club visions, a stored vision loading as its preset; 1.7.0 added the delegated staff sale bar; 1.6.0 added advanced match counters, tactic defensive lines and transitions, manager styles, owner requests, club visions and academy investment; 1.5.0 added fair founding strength, XI ratings for every club, excess-only fatigue, faster recovery, recorded match xG; 1.4.0 added player-duel matches and care actions; 1.3.0 added season close after the final round, summer window from the close, 46-game league income, business delegation, cash warnings). Versions 1.0.0 through 1.7.0 checkpoints remain accepted; writer activation upgrades only rules metadata/revision through a pure transformation, preserves all retained facts and missing optional defaults, and commits through the existing two-slot protocol. Failure preserves old disk data and exportable new memory state; read-only views do not perform disk upgrades.
 
 - SAVE-11 [o] Unsupported selected save versions/catalogs are compatibility failures, not corruption-recovery permission. Do not automatically fall back to an older checkpoint and overwrite a newer incompatible career; preserve raw slots/manifest and expose export/import recovery. Actual corrupted compatible checkpoints may recover the validated predecessor.
 
@@ -28,6 +28,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r11 261010 SAVE-10✎ current rules 1.6.0→1.8.0, accepting 1.0.0–1.7.0 checkpoints; a stored club vision loads as the matching build preset
 - r10 261010 SAVE-10✎ current rules 1.5.0→1.6.0, accepting 1.0.0–1.5.0 checkpoints; matches may carry advanced counters
 - r9 261010 SAVE-2✎ codec gzip-base64→gzip-cjk14 (Base64 still read); worst century checkpoint 1,645,134→781,878 bytes of the 1,572,864 limit
 - r8 261009 SAVE-10✎ current rules 1.4.0→1.5.0, accepting 1.0.0–1.4.0 checkpoints; match records may carry xG

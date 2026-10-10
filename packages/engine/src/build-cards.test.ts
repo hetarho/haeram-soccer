@@ -22,8 +22,17 @@ import {
   synergyStates,
   tacticalProfile,
   transferOffers,
-  visionEffects,
+  buildEffects,
+  BUILD_CARDS,
+  BUILD_COMBINATIONS,
+  BUILD_PRESETS,
+  cardLines,
+  composeBuild,
+  effectLines,
+  NEUTRAL_BUILD,
 } from './index';
+import { BUILD_OPTIONS, BUILD_SLOTS, LEGACY_VISION_BUILDS } from '../../contracts/src/build';
+import { clubBuildSchema } from '../../contracts/src/schema';
 
 const world = (seed = 'build-cards') =>
   createWorld({ country: 'ENG', name: 'Build FC', color: '#2a4d3c', seed, difficulty: 2 });
@@ -90,23 +99,62 @@ describe('manager styles', () => {
   });
 });
 
-describe('club visions', () => {
-  it('commits to one change a season and records it', () => {
+describe('club builds', () => {
+  it('commits to one build change a season and records it', () => {
     const w = world();
-    operate(w, { type: 'vision', vision: 'community' });
-    expect(w.vision).toBe('community');
-    expect(w.events.at(-1)).toMatchObject({ kind: 'vision' });
-    expect(() => operate(w, { type: 'vision', vision: 'commercial' })).toThrow('한 번');
+    operate(w, { type: 'build', build: { fans: 'community', culture: 'family' } });
+    expect(w.build).toEqual({ fans: 'community', culture: 'family' });
+    expect(w.buildYear).toBe(w.year);
+    expect(w.events.at(-1)).toMatchObject({
+      kind: 'build',
+      title: '구단 빌드 · 맞춤 빌드',
+      detail: '지역 밀착 · 가족 같은 클럽',
+    });
+    expect(() => operate(w, { type: 'build', build: { revenue: 'commercial' } })).toThrow('한 번');
+    // Re-sending the same build is not a change.
+    operate(w, { type: 'build', build: { culture: 'family', fans: 'community' } });
+    expect(() => operate(w, { type: 'build', build: { fans: 'nowhere' } as never })).toThrow(
+      '빌드 카드',
+    );
     for (let round = 0; round < 46; round++) advanceRound(w, undefined, false);
     validateWorld(w);
   });
 
-  it('changes the offers and demand it promises and leaves balanced clubs exact', () => {
+  it('offers thousands of builds where every card is a trade-off', () => {
+    expect(BUILD_COMBINATIONS).toBe(5 ** 6);
+    for (const slot of BUILD_SLOTS)
+      for (const option of BUILD_OPTIONS[slot]) {
+        const lines = cardLines((BUILD_CARDS[slot] as Record<string, never>)[option]);
+        expect(lines.pros.length, `${slot}:${option}`).toBeGreaterThan(0);
+        expect(lines.cons.length, `${slot}:${option}`).toBeGreaterThan(0);
+      }
+    for (const preset of BUILD_PRESETS)
+      expect(clubBuildSchema.parse(preset.build)).toEqual(preset.build);
+    expect(new Set(BUILD_PRESETS.map((preset) => JSON.stringify(preset.build))).size).toBe(6);
+  });
+
+  it('adds additions and multiplies multipliers across slots, neutral when empty', () => {
+    expect(composeBuild({})).toEqual(NEUTRAL_BUILD);
+    const stacked = composeBuild({ revenue: 'commercial', fans: 'global', scouting: 'local' });
+    expect(stacked.sponsor).toBeCloseTo(1.2 * 1.1);
+    expect(stacked.marketingFans).toBeCloseTo(1.2 * 1.3);
+    expect(stacked.gateDemand).toBeCloseTo(-0.03 - 0.04 + 0.02);
+    expect(stacked.wage).toBeCloseTo(0.97);
+    // Opposite cards that cancel out are not listed as a change.
+    const lines = effectLines(composeBuild({ scouting: 'local', culture: 'family' }));
+    expect([...lines.pros, ...lines.cons].some((line) => line.startsWith('선수 급여'))).toBe(false);
+    expect(composeBuild({ revenue: 'owner' }).ownerCapital).toBe(5);
+    expect(composeBuild({ revenue: 'members' }).ownerCapital).toBe(2);
+  });
+
+  it('changes the offers and demand it promises and leaves standard clubs exact', () => {
     const plain = world(),
       commercial = world(),
-      community = world();
-    commercial.vision = 'commercial';
-    community.vision = 'community';
+      community = world(),
+      network = world();
+    commercial.build = { revenue: 'commercial' };
+    community.build = { revenue: 'members', fans: 'community' };
+    network.build = { scouting: 'network' };
     expect(BigInt(sponsorOffers(commercial)[0].annual)).toBeGreaterThan(
       BigInt(sponsorOffers(plain)[0].annual),
     );
@@ -116,10 +164,20 @@ describe('club visions', () => {
     expect(gateProjection(community).attendanceHigh).toBeGreaterThanOrEqual(
       gateProjection(plain).attendanceHigh,
     );
-    const academy = world();
-    academy.vision = 'academy';
-    expect(transferOffers(academy).length).toBe(transferOffers(plain).length - 2);
-    expect(visionEffects(plain)).toMatchObject({ sponsor: 1, saleFee: 1, gateDemand: 0 });
+    expect(transferOffers(network).length).toBe(transferOffers(plain).length + 3);
+    expect(buildEffects(plain)).toMatchObject({ sponsor: 1, saleFee: 1, gateDemand: 0 });
+  });
+
+  it('loads a rules 1.6–1.7 vision as the preset of the same name', () => {
+    const w = world();
+    const legacy = { ...structuredClone(w), vision: 'trading', visionYear: w.year };
+    const loaded = validateWorld(legacy);
+    expect(loaded.build).toEqual(LEGACY_VISION_BUILDS.trading);
+    expect(loaded.buildYear).toBe(w.year);
+    expect('vision' in loaded).toBe(false);
+    expect(validateWorld({ ...structuredClone(w), vision: 'balanced' }).build).toBeUndefined();
+    // Like any unknown field, an unrecognised vision is dropped: the club stays standard.
+    expect(validateWorld({ ...structuredClone(w), vision: 'galacticos' }).build).toBeUndefined();
   });
 });
 
@@ -128,7 +186,7 @@ describe('build synergies and odds', () => {
     const w = world();
     expect(synergyStates(w).every((synergy) => !synergy.active)).toBe(true);
     expect(synergyEffects(w)).toMatchObject({ pass: 0, sponsor: 1, academyGrowth: 1 });
-    w.vision = 'commercial';
+    w.build = { revenue: 'commercial' };
     w.policy = { support: 3, recruitment: 3, marketing: 4, academy: 1 };
     w.facilities = 6;
     const commercial = synergyStates(w).find((synergy) => synergy.id === 'commercial')!;
@@ -136,6 +194,18 @@ describe('build synergies and odds', () => {
     expect(synergyEffects(w).sponsor).toBeCloseTo(1.1);
     w.facilities = 5;
     expect(synergyStates(w).find((synergy) => synergy.id === 'commercial')!.active).toBe(false);
+  });
+
+  it('lights cross-slot build combos from the cards alone', () => {
+    const w = world();
+    const local = () => synergyStates(w).find((synergy) => synergy.id === 'local-heroes')!;
+    w.build = { youth: 'homegrown', fans: 'community' };
+    expect(local().active).toBe(false);
+    w.build = { youth: 'partnership', fans: 'community', culture: 'family' };
+    expect(local().active).toBe(true);
+    expect(synergyEffects(w)).toMatchObject({ moraleBaseline: 2, academyPotential: 2 });
+    w.build = { scouting: 'data', youth: 'pathway', market: 'showcase' };
+    expect(synergyStates(w).find((synergy) => synergy.id === 'trading-machine')!.active).toBe(true);
   });
 
   it('states the exact odds of a golden prospect and raises them with academy investment', () => {

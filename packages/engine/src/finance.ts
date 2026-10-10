@@ -2,7 +2,7 @@ import type { Event, MatchRecord, World } from '../../contracts/src/types';
 import { activePlayers, clubOf, quote } from './world';
 import { clamp, ratio } from './primitives';
 import { policyEffects, policyOf } from './policy';
-import { visionEffects } from './vision';
+import { buildEffects } from './build';
 import { staffWageTotal } from './staff';
 import { SEASON_ROUNDS } from './calendar';
 
@@ -29,7 +29,7 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     activePlayers(w)
       .reduce((sum, p) => sum + BigInt(p.wage), 0n)
       .toString(),
-    BigInt(Math.round(effects.wageMultiplier * visionEffects(w).wage * 1000)),
+    BigInt(Math.round(effects.wageMultiplier * buildEffects(w).wage * 1000)),
     1000n,
   );
   const managerWage = w.manager.wage;
@@ -144,11 +144,11 @@ export function gateProjection(w: World, excluding?: string) {
   );
   const reputation = 0.8 + club.reputation / 250;
   const facilities = 1 + Math.min(0.12, w.facilities * 0.02);
-  // The club vision moves home demand on its own: community clubs fill seats, commercial ones lose some.
-  const vision = 1 + visionEffects(w).gateDemand;
+  // The club build moves home demand on its own: community clubs fill seats, commercial ones lose some.
+  const build = 1 + buildEffects(w).gateDemand;
   const expected = Math.min(
     capacity,
-    club.fans * demand * (0.6 + form * 0.55) * reputation * marketing * facilities * vision,
+    club.fans * demand * (0.6 + form * 0.55) * reputation * marketing * facilities * build,
   );
   const low = Math.round(expected * 0.8);
   const high = Math.round(expected);

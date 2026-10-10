@@ -43,7 +43,7 @@ import {
   STYLE_INFO,
 } from './styles';
 import { synergyEffects } from './synergy';
-import { setVision, visionEffects } from './vision';
+import { setBuild, buildEffects } from './build';
 import { MORALE_START } from './morale';
 export function operatingCost(w: World) {
   return operatingCosts(w).annual;
@@ -129,12 +129,12 @@ export function gate(w: World, m: MatchRecord) {
   debit(w, cost, true);
   addEvent(w, 'match-cost', '홈 경기 개최비', `관중 ${attendance}명 · ${m.id}`, cost);
 }
-/** A direct sale earns the ability above replacement level, scaled by the club vision. */
+/** A direct sale earns the ability above replacement level, scaled by the club build. */
 export function saleFee(w: World, p: Player) {
   return quote(
     clubOf(w).country,
     w.year,
-    Math.max(10, (overall(p) - 25) * 5) * visionEffects(w).saleFee,
+    Math.max(10, (overall(p) - 25) * 5) * buildEffects(w).saleFee,
   );
 }
 export function sponsorAnnual(w: World) {
@@ -211,7 +211,7 @@ export function settleSeasonPrize(w: World, rank: number, clubs: number) {
 export function sponsorOffers(w: World) {
   const c = clubOf(w);
   // A commercial club negotiates bigger deals; a community club smaller ones.
-  const scale = visionEffects(w).sponsor * synergyEffects(w).sponsor;
+  const scale = buildEffects(w).sponsor * synergyEffects(w).sponsor;
   return (['stable', 'performance', 'exclusive', 'indexed'] as const).map((kind, i) => ({
     name: `${c.name.split(' ')[0]} ${['Cooperative', 'Motors', 'Textiles', 'Foundry'][i]}`,
     kind,
@@ -233,7 +233,7 @@ export const CAMPAIGNS = [
   { kind: 'player', label: '선수의 이야기', units: 120, fans: 0.16 },
 ];
 export function campaignOffers(w: World) {
-  const income = visionEffects(w).campaignIncome;
+  const income = buildEffects(w).campaignIncome;
   return CAMPAIGNS.map((c) => ({
     ...c,
     cost: quote(clubOf(w).country, w.year, c.units),
@@ -264,7 +264,7 @@ export function settleRound(w: World) {
   const club = clubOf(w),
     fansGained = marketingFanGain(
       club.fans,
-      policyEffects(policyOf(w)).fanGrowth * visionEffects(w).marketingFans,
+      policyEffects(policyOf(w)).fanGrowth * buildEffects(w).marketingFans,
     );
   if (fansGained) club.fans = Math.round(clamp(club.fans + fansGained, 200, 5000000));
   addEvent(
@@ -284,7 +284,7 @@ export function settleRound(w: World) {
     const income = ratio(
       c.cost,
       BigInt(
-        Math.round((0.25 + r() * 1.55) * fit * saturation * visionEffects(w).campaignIncome * 1000),
+        Math.round((0.25 + r() * 1.55) * fit * saturation * buildEffects(w).campaignIncome * 1000),
       ),
       1000n,
     );
@@ -340,9 +340,9 @@ export function transferOffers(w: World, year = w.year) {
   const roles = ['GK', 'DEF', 'MID', 'FWD'] as const;
   const profile = policyEffects(policyOf(w)).offer,
     scouting = staffEffects(w),
-    vision = visionEffects(w),
+    build = buildEffects(w),
     synergy = synergyEffects(w);
-  const count = Math.max(4, scouting.scoutCandidates + vision.marketCandidates);
+  const count = Math.max(4, scouting.scoutCandidates + build.marketCandidates);
   return Array.from({ length: count }, (_, i) => {
     const r = random(`${w.seed}:market:${year}:${i}`);
     const p = makePlayer(
@@ -350,14 +350,14 @@ export function transferOffers(w: World, year = w.year) {
       w.seed,
       `market:${year}:${i}`,
       year,
-      Math.min(95, integer(r, profile.ability[0], profile.ability[1]) + vision.marketAbility),
+      Math.min(95, integer(r, profile.ability[0], profile.ability[1]) + build.marketAbility),
       roles[i % 4],
       integer(r, profile.age[0], profile.age[1]),
     );
     const potentialBonus =
       profile.potentialBonus +
       scouting.scoutPotential +
-      vision.marketPotential +
+      build.marketPotential +
       synergy.marketPotential;
     if (potentialBonus)
       p.potential = Math.max(overall(p), Math.min(99, p.potential + potentialBonus));
@@ -589,8 +589,8 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       );
       break;
     }
-    case 'vision':
-      setVision(w, cmd.vision);
+    case 'build':
+      setBuild(w, cmd.build);
       break;
     case 'accept-condition': {
       if (!w.manager.pending) throw new Error('대기 중인 조건이 없습니다.');
@@ -726,7 +726,7 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       break;
     }
     case 'support': {
-      const limit = visionEffects(w).ownerCapital;
+      const limit = buildEffects(w).ownerCapital;
       if (w.events.filter((e) => e.kind === 'support' && e.year === w.year).length >= limit)
         throw new Error(`구단주 추가 출자는 시즌당 ${limit}회입니다.`);
       const amount = quote(code, w.year, 150);

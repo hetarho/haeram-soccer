@@ -15,7 +15,7 @@ import { pushInbox } from './inbox';
 import { recordDevelopment, roleSkills, skillAfter } from './training';
 import { operatingCosts } from './finance';
 import { policyEffects, policyOf } from './policy';
-import { visionEffects } from './vision';
+import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
 
 /** First-team squad limit shared with signings. */
@@ -58,14 +58,14 @@ export function academyIntakeSize(w: World) {
     (director && director.ability >= 70 ? 1 : 0) +
     (w.facilities >= 4 ? 1 : 0) +
     policyEffects(policyOf(w)).academyIntake +
-    visionEffects(w).academyIntake
+    buildEffects(w).academyIntake
   );
 }
-/** Potential added to every prospect by academy investment, the club vision and synergies. */
+/** Potential added to every prospect by academy investment, the club build and synergies. */
 export function academyPotentialBonus(w: World) {
   return (
     policyEffects(policyOf(w)).academyPotential +
-    visionEffects(w).academyPotential +
+    buildEffects(w).academyPotential +
     synergyEffects(w).academyPotential
   );
 }

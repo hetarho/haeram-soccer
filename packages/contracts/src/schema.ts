@@ -2,6 +2,7 @@ import { z } from 'zod';
 z.config({ jitless: true });
 import type { World } from './types';
 import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from './detail';
+import { BUILD_OPTIONS, LEGACY_VISION_BUILDS } from './build';
 const money = z.string().regex(/^-?\d{1,80}$/);
 const rating = z.number().finite().min(0).max(100);
 const text = z.string().max(160);
@@ -11,6 +12,15 @@ const metrics = z.array(z.number().int().nonnegative()).length(12);
 const teamDetail = z.array(z.number().int().nonnegative()).length(TEAM_DETAIL_SIZE);
 const playerDetail = z.array(z.number().int().nonnegative()).length(PLAYER_DETAIL_SIZE);
 const tactic = z.enum(['balanced', 'possession', 'counter', 'press']);
+/** One card per build slot (→ECON-22); shared by saves and the build command. */
+export const clubBuildSchema = z.strictObject({
+  youth: z.enum(BUILD_OPTIONS.youth).optional(),
+  scouting: z.enum(BUILD_OPTIONS.scouting).optional(),
+  market: z.enum(BUILD_OPTIONS.market).optional(),
+  revenue: z.enum(BUILD_OPTIONS.revenue).optional(),
+  fans: z.enum(BUILD_OPTIONS.fans).optional(),
+  culture: z.enum(BUILD_OPTIONS.culture).optional(),
+});
 const policyLevel = z.literal([1, 2, 3, 4, 5]);
 const club = z.object({
   id,
@@ -340,10 +350,8 @@ export const worldSchema: z.ZodType<World> = z.object({
     .optional(),
   bids: z.array(bid).max(200).optional(),
   morale: z.number().finite().min(0).max(100).optional(),
-  vision: z
-    .enum(['balanced', 'academy', 'trading', 'commercial', 'community', 'ambition'])
-    .optional(),
-  visionYear: z.number().int().min(1901).max(4000).optional(),
+  build: clubBuildSchema.optional(),
+  buildYear: z.number().int().min(1901).max(4000).optional(),
   winBonus: z.strictObject({ matches: z.number().int().min(1).max(10) }).optional(),
   inbox: z.array(inboxItem).max(200).optional(),
   manager,
@@ -433,8 +441,24 @@ function detailConsistent(m: World['ownMatches'][number], side: 0 | 1) {
   }
   return m.players.length !== 11 || keyPasses === m.detail[side][TD.keyPasses];
 }
+/** Rules 1.6–1.7 kept one of six visions; it loads as the build preset of the same name. */
+function legacyVision(input: unknown): unknown {
+  if (!input || typeof input !== 'object' || !('vision' in input || 'visionYear' in input))
+    return input;
+  const { vision, visionYear, ...rest } = input as Record<string, unknown>;
+  const build =
+    typeof vision === 'string' && Object.hasOwn(LEGACY_VISION_BUILDS, vision)
+      ? LEGACY_VISION_BUILDS[vision]
+      : {};
+  return {
+    ...rest,
+    ...(Object.keys(build).length ? { build: { ...build } } : {}),
+    ...(visionYear !== undefined ? { buildYear: visionYear } : {}),
+  };
+}
+
 export function validateWorld(input: unknown): World {
-  const w = worldSchema.parse(input);
+  const w = worldSchema.parse(legacyVision(input));
   const ids = new Set(w.clubs.map((c) => c.id));
   if (ids.size !== w.clubs.length || !ids.has(w.playerClub))
     throw new Error('저장된 클럽 식별자가 올바르지 않습니다.');
