@@ -16,7 +16,14 @@ export default defineConfig({
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
     { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
     // Software-rendered WebKit on CI runs the multi-round journeys two to three times slower;
-    // one project budget replaces chasing whichever journey crosses 30 s next.
-    { name: 'webkit', timeout: 90000, use: { ...devices['Desktop Safari'] } },
+    // one project budget replaces chasing whichever journey crosses 30 s next. Its web process
+    // also stalls now and then (no paints, then the page is closed ~30 s later) in a different
+    // journey each run, never locally, so CI gives WebKit one retry and reports it as flaky.
+    {
+      name: 'webkit',
+      timeout: 90000,
+      retries: process.env.CI ? 1 : 0,
+      use: { ...devices['Desktop Safari'] },
+    },
   ],
 });
