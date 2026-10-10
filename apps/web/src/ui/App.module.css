@@ -2153,6 +2153,61 @@
     display: none;
   }
 }
+/* Room to scroll the last card clear of the floating news button. */
+.newsLayout .scroller {
+  padding-bottom: 92px;
+}
+@media (max-width: 760px) {
+  .newsLayout .scroller {
+    padding-bottom: 76px;
+  }
+  /* Home scrolls inside its own column, so the room goes there. */
+  .newsLayout.coreLayout .scroller {
+    padding-bottom: 26px;
+  }
+  .newsLayout .coreContent {
+    padding-bottom: 50px;
+  }
+  /* A stretched hub would overflow past that padding; at its own height the padding counts. */
+  .newsLayout .coreContent > * {
+    align-self: flex-start;
+  }
+}
+/* Phones: compact cash and tight gaps leave the club name room for up to two lines. */
+.cashCompact {
+  display: none;
+}
+@media (max-width: 760px) {
+  .hud {
+    gap: 6px;
+  }
+  .hudClub {
+    gap: 7px;
+  }
+  .hudClub b {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font-size: 13px;
+    line-height: 15px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .hudCash {
+    gap: 5px;
+    padding: 3px 10px 3px 4px;
+  }
+  .hudCash i {
+    width: 20px;
+    height: 20px;
+  }
+  .hudCash .cashFull {
+    display: none;
+  }
+  .hudCash .cashCompact {
+    display: block;
+  }
+}
 
 /* One packed row: the date and status take what the buttons leave, the season bar rides the edge. */
 .seasonControls {

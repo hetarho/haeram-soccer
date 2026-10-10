@@ -5,7 +5,7 @@ import { GameClient, type ClientState } from '../runtime/client';
 import { useNavigation, type Page } from './state';
 import { ClubCrest } from './ClubCrest';
 import { watchNextMatch } from './watch';
-import { money, number, percent, seasonName, kindLabel } from './format';
+import { compactMoney, money, number, percent, seasonName, kindLabel } from './format';
 import { InterventionSettings, ProgressControls } from './ProgressControls';
 import { LiveSeason } from './LiveSeason';
 import { ClubHub } from './ClubHub';
@@ -31,7 +31,7 @@ import { SeasonReview } from './SeasonReview';
 import { RemedySheet } from './RemedySheet';
 import { GlossaryHost } from './Glossary';
 import { useGlossary } from './metricGlossary';
-import { NewsSheet, useNewsSheet } from './NewsFeed';
+import { NewsButton, NewsSheet, useNewsSheet } from './NewsFeed';
 import { CelebrationHost } from './Celebration';
 import { CupsView } from './CupsView';
 import { cashState } from './teamState';
@@ -472,6 +472,15 @@ function HudCash({ client }: { client?: GameClient }) {
           <AnimatedMoney
             value={w.cash}
             format={(value) => money(value, own.country, w.year)}
+            className={s.cashFull}
+            upClass={s.cashUp}
+            downClass={s.cashDown}
+          />
+          {/* Phones show whole units or K/M/B so the club name keeps its room; the sheet is exact. */}
+          <AnimatedMoney
+            value={w.cash}
+            format={(value) => compactMoney(value, own.country, w.year)}
+            className={s.cashCompact}
             upClass={s.cashUp}
             downClass={s.cashDown}
           />
@@ -833,7 +842,7 @@ export function App() {
   const menuDisabled = !w || replacing;
   return (
     <div
-      className={`${s.layout} ${w && !replacing ? s.playLayout : ''} ${w && !replacing && (page === 'dashboard' || page === 'match') ? s.coreLayout : ''} ${!w || replacing ? s.startLayout : ''}`}
+      className={`${s.layout} ${w && !replacing ? s.playLayout : ''} ${w && !replacing && (page === 'dashboard' || page === 'match') ? s.coreLayout : ''} ${!w || replacing ? s.startLayout : ''} ${w && !replacing && page !== 'match' ? s.newsLayout : ''}`}
     >
       <aside className={s.sidebar}>
         <div className={s.brand}>
@@ -961,6 +970,8 @@ export function App() {
         ))}
       </nav>
       {client && w && !replacing && <ActionOutcome />}
+      {/* The match theatre keeps its own controls clear; news waits until the owner returns. */}
+      {w && !replacing && page !== 'match' && <NewsButton />}
       {client && controller && w && !replacing && page !== 'match' && page !== 'season' && (
         <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />
       )}

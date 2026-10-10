@@ -3,7 +3,9 @@ import { currency } from '../../catalogs/src/index';
 import { currentDay, SEASON_END_DAY, seasonDayLabel, seasonDayOf } from './calendar';
 import { clamp, compareIds, hash, integer, random, ratio } from './primitives';
 import { activePlayers, addEvent, clubOf, overall, quote, selectedLineup } from './world';
-import { credit, debit, transferOffers } from './operations';
+import { CASH_WARNING_ROUNDS, credit, debit, transferOffers } from './operations';
+import { operatingCosts } from './finance';
+import { fixedCostRunway } from './investment';
 import { staffEffects } from './staff';
 import { managerStyleEffects } from './styles';
 import { visionEffects } from './vision';
@@ -447,6 +449,44 @@ function settleBids(w: World, open: boolean) {
     }
   }
 }
+/** A young player with room to grow: the staff hold out for 200% of value (→CLUB-18). */
+export const PROSPECT_AGE = 22;
+export const PROSPECT_GROWTH = 8;
+export function isProspect(w: World, p: Player) {
+  return w.year - p.born <= PROSPECT_AGE && p.potential - overall(p) >= PROSPECT_GROWTH;
+}
+/**
+ * The lowest fee, as a percentage of value, delegated staff accept for a player (→CLUB-18):
+ * 130%, or 200% for a prospect, lowered for age, a contract near its end and a short cash runway,
+ * never below 80%. Each cut is listed so the report can say why.
+ */
+export function saleBar(w: World, p: Player) {
+  const age = w.year - p.born,
+    // Contracts renew when the year turns, so 1 is the final season.
+    seasons = p.until - w.year,
+    runway = fixedCostRunway(w.cash, operatingCosts(w).annual),
+    prospect = isProspect(w, p),
+    base = prospect ? 200 : 130,
+    cuts: string[] = [];
+  let percent = base;
+  const cut = (points: number, why: string) => {
+    percent -= points;
+    cuts.push(`${why} −${points}%p`);
+  };
+  if (age >= 33) cut(30, `${age}세`);
+  else if (age >= 30) cut(15, `${age}세`);
+  if (seasons <= 1) cut(20, '계약 마지막 시즌');
+  else if (seasons === 2) cut(10, '계약 1년 남음');
+  if (runway < CASH_WARNING_ROUNDS) cut(20, '운영자금 위기');
+  else if (runway < 30) cut(10, '운영자금 빠듯');
+  return { percent: Math.max(SALE_BAR_FLOOR, percent), base, prospect, cuts };
+}
+const SALE_BAR_FLOOR = 80;
+/** "유망주 기준 200%" or "기준 95%(130%에서 31세 −15%p · …)" for the staff report. */
+function saleBarLabel(bar: ReturnType<typeof saleBar>) {
+  const steps = [...bar.cuts, ...(bar.percent === SALE_BAR_FLOOR ? ['최저 80%'] : [])];
+  return `${bar.prospect ? '유망주 기준' : '기준'} ${bar.percent}%${steps.length ? `(${bar.base}%에서 ${steps.join(' · ')})` : ''}`;
+}
 function incomingBid(w: World, day: number, until: number) {
   const pending = (w.bids || []).filter((b) => b.direction === 'in' && b.status === 'pending');
   if (pending.length >= MAX_PENDING_INCOMING) return;
@@ -507,10 +547,14 @@ function incomingBid(w: World, day: number, until: number) {
         !other.loanUntil &&
         overall(other) >= overall(player) - 3,
     );
-    const premium = BigInt(fee) * 10n >= BigInt(value) * 13n,
-      expendable = !starters.has(player.id) || (age >= 30 && covered),
+    const bar = saleBar(w, player),
+      offered = Number((BigInt(fee) * 100n) / BigInt(value)),
+      premium = BigInt(fee) * 100n >= BigInt(value) * BigInt(bar.percent),
+      starter = starters.has(player.id),
+      expendable = !starter || (age >= 30 && covered),
       blocker = saleBlocker(w, player);
     const accept = premium && expendable && !blocker;
+    const against = `평가 가치의 ${offered}%로 ${saleBarLabel(bar)}`;
     if (accept) completeSale(w, bid, player);
     else bid.status = 'rejected';
     pushInbox(w, {
@@ -521,11 +565,11 @@ function incomingBid(w: World, day: number, until: number) {
       ),
       detail: `${summary} · ${
         accept
-          ? '평가 가치의 130% 이상이고 같은 포지션에 대신 뛸 선수가 있어 매각했어요.'
+          ? `제안이 ${against}를 넘어 매각했어요.${starter ? ' 같은 포지션에 대신 뛸 선수가 있어요.' : ''}`
           : blocker
             ? blocker
             : !premium
-              ? '평가 가치의 130%에 못 미쳐 거절했어요.'
+              ? `제안이 ${against}에 못 미쳐 거절했어요.`
               : '대체할 선수가 없는 주전이라 남기기로 했어요.'
       }`,
       attention: false,

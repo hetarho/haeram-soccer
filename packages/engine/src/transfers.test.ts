@@ -17,6 +17,7 @@ import {
   playerValue,
   quote,
   respondBid,
+  saleBar,
   seasonDayOf,
   SEASON_END_DAY,
   seasonLength,
@@ -24,6 +25,7 @@ import {
   transferOffers,
   transferWindow,
   unreadAttention,
+  operatingCosts,
 } from './index';
 
 const CLOSED = '이적시장이 닫혀 있어요. 자유계약 선수만 언제든 영입할 수 있어요.';
@@ -510,6 +512,45 @@ describe('incoming bids', () => {
     expect(() => respondBid(w, minimum.id, true)).toThrow(CLOSED);
   });
 
+  it('sets the staff sale bar from age, contract, cash and prospect status', () => {
+    const w = world('sale-bar');
+    const p = activePlayers(w).find((x) => w.year - x.born >= 24 && w.year - x.born <= 29)!;
+    const reset = () => {
+      p.born = w.year - 26;
+      p.until = w.year + 3;
+      w.cash = '999999999999';
+    };
+    reset();
+    expect(saleBar(w, p)).toEqual({ percent: 130, base: 130, prospect: false, cuts: [] });
+    p.born = w.year - 31;
+    expect(saleBar(w, p).percent).toBe(115);
+    p.born = w.year - 34;
+    p.until = w.year + 1;
+    // 130 − 30 − 20, and a crisis would take it below the 80% floor.
+    expect(saleBar(w, p).percent).toBe(80);
+    w.cash = '0';
+    expect(saleBar(w, p)).toMatchObject({ percent: 80 });
+    expect(saleBar(w, p).cuts).toEqual([
+      '34세 −30%p',
+      '계약 마지막 시즌 −20%p',
+      '운영자금 위기 −20%p',
+    ]);
+    reset();
+    p.until = w.year + 2;
+    expect(saleBar(w, p).percent).toBe(120);
+    reset();
+    // Twenty rounds of fixed costs: above the warning, short of comfortable.
+    const annual = BigInt(operatingCosts(w).annual);
+    w.cash = ((annual * 20n) / 46n).toString();
+    expect(saleBar(w, p)).toMatchObject({ percent: 120 });
+    reset();
+    p.born = w.year - 19;
+    p.potential = overall(p) + 20;
+    expect(saleBar(w, p)).toEqual({ percent: 200, base: 200, prospect: true, cuts: [] });
+    p.potential = overall(p) + 3;
+    expect(saleBar(w, p).percent).toBe(130);
+  });
+
   it('lets delegated staff answer quietly: only generous offers for non-essential players', () => {
     const w = world();
     // New clubs answer offers themselves; this scenario hands transfers to the staff.
@@ -542,11 +583,15 @@ describe('incoming bids', () => {
       expect(['completed', 'rejected']).toContain(bid.status);
       const item = w.inbox?.find((i) => i.ref === bid.id);
       if (item) expect(item).toMatchObject({ kind: 'staff-report', attention: false });
+      // The report states the bar the staff applied; the decision must agree with it.
+      const bar = Number(item?.detail.match(/기준 (\d+)%/)?.[1]);
       if (bid.status === 'completed') {
-        expect(BigInt(bid.fee) * 10n).toBeGreaterThanOrEqual(value * 13n);
+        expect(bar).toBeGreaterThanOrEqual(80);
+        expect(BigInt(bid.fee) * 100n).toBeGreaterThanOrEqual(value * BigInt(bar));
         expect(!starter || age >= 30).toBe(true);
         expect(w.players.find((p) => p.id === bid.playerId)?.status).toBe('sold');
-      }
+      } else if (item?.detail.includes('못 미쳐'))
+        expect(BigInt(bid.fee) * 100n).toBeLessThan(value * BigInt(bar));
     }
     expect(
       unreadAttention(w).filter((i) => i.kind === 'incoming-bid' || i.kind === 'staff-report'),

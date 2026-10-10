@@ -1,50 +1,50 @@
 {
-  "date": "2026-10-09T17:09:38.800Z",
+  "date": "2026-10-10T00:37:09.070Z",
   "browser": "153.0.8010.12",
   "playwright": "1.63.0",
   "node": "v26.8.1",
-  "gitHead": "acb1456cbe034791287516f7d26fc31f992e85fe",
+  "gitHead": "747c60739bda2a05c5cad23b5cff4c6cf68c2584",
   "gitDirty": true,
   "currentHeadVerified": false,
   "verifiedSource": "uncommitted working tree",
   "sourceFingerprint": {
     "algorithm": "sha256",
-    "sha256": "dbf0decad45e907f77d3efa8659d3e8f005179f1a075bba4185c61d59d6efe4c",
-    "files": 225
+    "sha256": "9b2b4f61aadec0d3120defed08401c7743a523267d8294c95995e4a2d1c4a398",
+    "files": 226
   },
   "buildFingerprint": {
     "algorithm": "sha256",
-    "sha256": "60639bead23ef50ae897116d795dfe60c5165ca80d48a55d5d4b2f63c4d26b94",
+    "sha256": "db915312163c33e9d667571cc5ac1e8c95157cf0cdc6345ee49f112772dbc60e",
     "files": 7
   },
   "servedBuildVerification": {
-    "origin": "http://127.0.0.1:4195",
+    "origin": "http://127.0.0.1:4180",
     "requestTimeoutMs": 5000,
     "requestConcurrency": 4,
     "files": [
       {
         "file": "index.html",
-        "url": "http://127.0.0.1:4195/",
+        "url": "http://127.0.0.1:4180/",
         "bytes": 665,
-        "sha256": "d1de968b0f05d4578a6c18bfe16e92139936cfbf7c71576d473eb380518449cd"
+        "sha256": "dcfb265f8157e1a366668aa6df66633b5d4499d3a7a8a50b5ca1d273dbbd2ad9"
       },
       {
-        "file": "assets/index-Bv3ntFoX.js",
-        "url": "http://127.0.0.1:4195/assets/index-Bv3ntFoX.js",
-        "bytes": 631360,
-        "sha256": "7af2c9931ae818e411e9f25e9345111b4a61f8b458e12e7fe2a9a4e6ab4e4b1d"
+        "file": "assets/index-DCr5DU6K.css",
+        "url": "http://127.0.0.1:4180/assets/index-DCr5DU6K.css",
+        "bytes": 145409,
+        "sha256": "1bb1c3eae22b3c2f90a671d741baff50ff5a81d77bdf1df39f3fa2a05ae7beec"
       },
       {
-        "file": "assets/index-C_OkA-zl.css",
-        "url": "http://127.0.0.1:4195/assets/index-C_OkA-zl.css",
-        "bytes": 143025,
-        "sha256": "901d0fd2ca909585a45f6a1064071de57791145c27fa1e99b19cff1c833b9b8e"
+        "file": "assets/index-DUk984SN.js",
+        "url": "http://127.0.0.1:4180/assets/index-DUk984SN.js",
+        "bytes": 616060,
+        "sha256": "7d099580bfa4fd270d2327ce1b90e3ba0130e00dd8c48d4364cbe76df1f5e41d"
       },
       {
-        "file": "assets/worker-CjsMOY0U.js",
-        "url": "http://127.0.0.1:4195/assets/worker-CjsMOY0U.js",
-        "bytes": 276079,
-        "sha256": "159bf98a5d9df67afd52cea33aef2dd5fe6894d8113f6c1eca812d480ca75e0a"
+        "file": "assets/worker-BxDP74lX.js",
+        "url": "http://127.0.0.1:4180/assets/worker-BxDP74lX.js",
+        "bytes": 295063,
+        "sha256": "f86ea39f0595e63fe7bfb274cdc2d2d0cc7861daaa23df6f87d39884dc97ed5c"
       }
     ],
     "passed": true
@@ -63,9 +63,9 @@
       1440,
       1000
     ],
-    "coldLoadAndFoundMs": 1399,
-    "foundingCommandMs": 344,
-    "animationFps": 61
+    "coldLoadAndFoundMs": 1416,
+    "foundingCommandMs": 351,
+    "animationFps": 60
   },
   "mobile": {
     "viewport": [
@@ -73,83 +73,83 @@
       844
     ],
     "deviceScaleFactor": 2,
-    "coldLoadAndFoundMs": 1271,
-    "foundingCommandMs": 267,
-    "animationFps": 60,
+    "coldLoadAndFoundMs": 1258,
+    "foundingCommandMs": 255,
+    "animationFps": 61,
     "inputSamples": 12,
-    "pointerToSecondFrameP95Ms": 27
+    "pointerToSecondFrameP95Ms": 29
   },
-  "entryGzipBytes": 229771,
+  "entryGzipBytes": 224258,
   "entryGzipLimit": 256000,
   "entryFiles": [
     {
-      "file": "assets/index-Bv3ntFoX.js",
-      "gzipBytes": 204340
+      "file": "assets/index-DUk984SN.js",
+      "gzipBytes": 198415
     },
     {
-      "file": "assets/index-C_OkA-zl.css",
-      "gzipBytes": 25431
+      "file": "assets/index-DCr5DU6K.css",
+      "gzipBytes": 25843
     }
   ],
-  "buildGzipBytes": 321693,
+  "buildGzipBytes": 322915,
   "buildGzipLimit": null,
   "buildFiles": [
     {
-      "file": "index-Bv3ntFoX.js",
-      "gzipBytes": 204340
+      "file": "index-DCr5DU6K.css",
+      "gzipBytes": 25843
     },
     {
-      "file": "index-C_OkA-zl.css",
-      "gzipBytes": 25431
+      "file": "index-DUk984SN.js",
+      "gzipBytes": 198415
     },
     {
-      "file": "worker-CjsMOY0U.js",
-      "gzipBytes": 91922
+      "file": "worker-BxDP74lX.js",
+      "gzipBytes": 98657
     }
   ],
   "firstPlayPageTargetTransfers": [
     {
-      "url": "http://127.0.0.1:4195/",
+      "url": "http://127.0.0.1:4180/",
       "type": "Document",
-      "bytes": 1029
+      "bytes": 1030
     },
     {
-      "url": "http://127.0.0.1:4195/assets/index-C_OkA-zl.css",
+      "url": "http://127.0.0.1:4180/assets/index-DCr5DU6K.css",
       "type": "Stylesheet",
-      "bytes": 26023
+      "bytes": 26435
     },
     {
-      "url": "http://127.0.0.1:4195/assets/index-Bv3ntFoX.js",
+      "url": "http://127.0.0.1:4180/assets/index-DUk984SN.js",
       "type": "Script",
-      "bytes": 204940
+      "bytes": 199015
     }
   ],
   "mobileFirstPlayPageTargetTransfers": [
     {
-      "url": "http://127.0.0.1:4195/",
+      "url": "http://127.0.0.1:4180/",
       "type": "Document",
-      "bytes": 1029
+      "bytes": 1030
     },
     {
-      "url": "http://127.0.0.1:4195/assets/index-C_OkA-zl.css",
+      "url": "http://127.0.0.1:4180/assets/index-DCr5DU6K.css",
       "type": "Stylesheet",
-      "bytes": 26023
+      "bytes": 26435
     },
     {
-      "url": "http://127.0.0.1:4195/assets/index-Bv3ntFoX.js",
+      "url": "http://127.0.0.1:4180/assets/index-DUk984SN.js",
       "type": "Script",
-      "bytes": 204940
+      "bytes": 199015
     }
   ],
-  "firstPlayPageTargetTransferBytes": 231992,
-  "mobileFirstPlayPageTargetTransferBytes": 231992,
+  "firstPlayPageTargetTransferBytes": 226480,
+  "mobileFirstPlayPageTargetTransferBytes": 226480,
   "transferNote": "Page-target CDP transfers may omit dedicated-worker target requests; build inventory additionally counts every worker/lazy JavaScript and CSS file as a conservative upper bound.",
-  "centuryLoadMs": 1431,
-  "centuryCheckpointSha256": "70c5dfbb42d95b97df28619dc488bf86daff34deb16d15fc896dc8e27861933f",
+  "centuryLoadMs": 1881,
+  "centuryCheckpointSha256": "b211bebccaba9356b1af977307ac263a05d7ce25a9756b56575d6aa6be6a0f0b",
   "centuryRestoreReference": "Separate unthrottled 100-season initialization measurement",
   "initializationLimitMs": 5000,
   "inputSamples": 30,
-  "pointerToSecondFrameP95Ms": 52,
+  "pointerToSecondFrameP95Ms": 46,
   "inputLimitMs": 100,
   "minimumFps": 30,
   "mobileHorizontalOverflow": false,

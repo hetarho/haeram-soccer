@@ -167,8 +167,9 @@
 .pill {
   position: fixed;
   z-index: 85;
-  right: 24px;
-  bottom: 24px;
+  /* Left of the news button. */
+  right: 86px;
+  bottom: 28px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -196,8 +197,8 @@
 }
 @media (max-width: 760px) {
   .pill {
-    right: 12px;
-    bottom: calc(84px + env(safe-area-inset-bottom));
+    right: 72px;
+    bottom: calc(88px + env(safe-area-inset-bottom));
   }
   .card {
     left: 12px;

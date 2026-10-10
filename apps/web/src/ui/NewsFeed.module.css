@@ -108,3 +108,85 @@
   border-color: var(--accent);
   color: var(--accent-text);
 }
+/* Bottom-right news button: headlines collect here, counted like the inbox bell (→WEB-51). */
+.fab {
+  position: fixed;
+  /* Below event cards and pills, which ask for a decision; above the tab bar. */
+  z-index: 80;
+  right: 24px;
+  bottom: 24px;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--text);
+  border-color: var(--line-strong);
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface-deep) 100%);
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.5),
+    0 3px 0 var(--line-strong);
+}
+.fab svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+.fab b {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  font-size: 11px;
+  line-height: 22px;
+  color: #1d0f06;
+  background: var(--warm);
+  box-shadow: 0 0 0 2px var(--bg);
+  animation: badge-pop 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (max-width: 760px) {
+  .fab {
+    right: 12px;
+    bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+}
+@keyframes badge-pop {
+  from {
+    transform: scale(0.4);
+  }
+  60% {
+    transform: scale(1.25);
+  }
+}
+.quiet {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  margin: 10px 0;
+  padding: 6px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.quiet input {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  accent-color: var(--accent);
+}
+.quiet span {
+  display: grid;
+  gap: 1px;
+}
+.quiet b {
+  font-size: 14px;
+}
+.quiet small {
+  color: var(--text-muted);
+  font-size: 12px;
+}

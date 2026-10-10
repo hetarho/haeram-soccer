@@ -1,6 +1,6 @@
 import type { World } from './types';
 
-export const CURRENT_ENGINE_VERSION = '1.6.0';
+export const CURRENT_ENGINE_VERSION = '1.7.0';
 /**
  * 1.1.0 added club policy; 1.2.0 staff, academy, transfer windows and the inbox; 1.3.0 closes
  * the season after its final round, opens the summer window there, normalizes league match
@@ -8,7 +8,8 @@ export const CURRENT_ENGINE_VERSION = '1.6.0';
  * own-league matches as player duels and adds care actions; 1.5.0 starts clubs level with their
  * league, rates every club by its XI, charges only fatigue beyond match fitness, raises weekly
  * recovery and records match xG; 1.6.0 records advanced match counters, defends tactic lines,
- * adds manager styles, owner requests to the manager, club visions and academy investment.
+ * adds manager styles, owner requests to the manager, club visions and academy investment; 1.7.0
+ * lets delegated staff weigh age, contract, cash runway and prospects when selling.
  */
 export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.0.0',
@@ -17,6 +18,7 @@ export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.3.0',
   '1.4.0',
   '1.5.0',
+  '1.6.0',
   CURRENT_ENGINE_VERSION,
 ];
 export const SAVE_COMPATIBILITY_CODE = 'save-compatibility' as const;

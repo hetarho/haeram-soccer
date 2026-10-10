@@ -12,6 +12,7 @@ import s from './EventCenter.module.css';
 import { fadeOutOnRemove } from './motion';
 import { ClubCrest } from './ClubCrest';
 import { watchNextMatch } from './watch';
+import { NewsQuietToggle } from './NewsFeed';
 
 const cardExit = fadeOutOnRemove([
   { opacity: 1, transform: 'none' },
@@ -300,6 +301,7 @@ export function InboxButton({ client }: { client: GameClient }) {
             </div>
           }
         >
+          <NewsQuietToggle />
           {items.length ? (
             <ul className={s.inbox}>
               {items.map((item) => (

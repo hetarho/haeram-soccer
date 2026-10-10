@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r11 | Define the implemented browser-demo behavior for squad and growth.
+> r12 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating equals its league's average club XI (±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -30,7 +30,10 @@
   - academy investment (→ECON-16), the club vision (→ECON-22) and the pipeline synergy (→CLUB-21) add prospects, potential and growth.
   - the academy dial and the build board show the exact chance that the next intake brings a prospect of potential 80+, from the same uniform draws the intake uses.
 - CLUB-17 [o] Fee-bearing purchases, loans and sales happen only in transfer windows: summer from the day the season closes (→LEAGUE-9) to 1 September and winter 1 January–1 February. ← the market opens as the season's review ends, not during its final rounds Free agents sign at any time. The market shows the window state and deadline.
-- CLUB-18 [o] Bids are answered 2–4 days later with accept, reject or a counter; acceptance chance rises with the offered fee against the asking value and the chief scout. The fee is paid on completion; unanswered bids lapse at the deadline. During windows other clubs bid for our players (answered by the owner, or by the staff when delegated) and lapse after 5 days; squad minimums still apply. Delegated staff accept only offers ≥130% of value for a non-starter, or for a starter aged 30+ with a bench player of the same role within 3 ability.
+- CLUB-18 [o] Bids are answered 2–4 days later with accept, reject or a counter; acceptance chance rises with the offered fee against the asking value and the chief scout. The fee is paid on completion; unanswered bids lapse at the deadline. During windows other clubs bid for our players (answered by the owner, or by the staff when delegated) and lapse after 5 days; squad minimums still apply. Delegated staff accept an offer at or above their sale bar for a non-starter, or for a starter aged 30+ with a bench player of the same role within 3 ability. The report names the bar and each step.
+  - bar: 130% of value, or 200% for a prospect (aged 22 or under with potential at least 8 above ability)
+  - age 30–32 −15 points, 33+ −30; contract in its final season −20, one season after this −10
+  - fixed-cost runway under 13 rounds (the cash warning) −20, under 30 rounds −10; never below 80%
 
 - CLUB-19 [o] Squad morale (0–100, new clubs 60) moves +6/+1/−6 after own wins/draws/defeats (±2 more for a two-goal margin; a motivator manager takes 2 off a defeat), drifts 15% per settled round toward a baseline of 58 + 4 per squad-investment level above standard + (manager trust − 50)/10 + the manager style, vision and synergy terms, within 30–80, and falls 2 more per round while starters average fatigue ≥ 40. Match strength adds (morale − 60)/10; older saves without morale stay exactly unchanged.
 
@@ -65,6 +68,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r12 261010 CLUB-18✎ delegated sales at a flat 130%→a sale bar of 130% (prospects 200%) lowered for age, contract and cash runway
 - r11 261010 CLUB-16✎ +academy investment, vision and synergy terms, golden-prospect odds; CLUB-19✎ +manager style/vision/synergy baseline terms and a motivator's defeat cushion; CLUB-20✎ care actions (rest day, intensive care, team dinner, special bonus, owner's visit, friendly)→owner requests to the manager and staff with stated chances (special bonus removed, win bonus per win); CLUB-21+ build synergies
 - r10 261009 CLUB-1✎ fixed founding strength→league-average XI; CLUB-11✎ recovery 8/4/13→11/7/16; CLUB-19✎ morale baseline 55→58
 - r9 261009 CLUB-20+ care actions with costs and cooldowns

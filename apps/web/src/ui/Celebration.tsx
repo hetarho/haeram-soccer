@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useGameState } from '../runtime/store';
 import type { NewsItem } from '../../../../packages/engine/src/news';
-import { useClubNews } from './NewsFeed';
+import { useClubNews, useNewsQuiet } from './NewsFeed';
 import s from './Celebration.module.css';
 
 /** Fixed paper strips so the scene never depends on chance or wall time. */
@@ -12,11 +12,14 @@ const CONFETTI = Array.from({ length: 26 }, (_, i) => ({
   drift: ((i * 53) % 80) - 40,
   tone: i % 3,
 }));
-/** How long a celebration stays before it clears itself. */
+/** How long a celebration stays before it clears itself; the last part files it away. */
 const SHOW_MS = 5200;
+const FILE_MS = 420;
 
 function Celebrating() {
   const news = useClubNews();
+  // With "뉴스 표시 안 함" achievements only collect behind the news button.
+  const quiet = useNewsQuiet((state) => state.quiet);
   // Achievements already in the career when this view started are history, not news.
   const seen = useRef<Set<string>>(undefined);
   const [queue, setQueue] = useState<NewsItem[]>([]);
@@ -29,8 +32,11 @@ function Celebrating() {
     const fresh = achieved.filter((item) => !seen.current!.has(item.id)).reverse();
     if (!fresh.length) return;
     for (const item of fresh) seen.current.add(item.id);
-    setQueue((current) => [...current, ...fresh]);
-  }, [news]);
+    if (!quiet) setQueue((current) => [...current, ...fresh]);
+  }, [news, quiet]);
+  useEffect(() => {
+    if (quiet) setQueue([]);
+  }, [quiet]);
   const current = queue[0];
   useEffect(() => {
     if (!current) return;
@@ -56,7 +62,13 @@ function Celebrating() {
           />
         ))}
       </div>
-      <section key={current.id} className={s.card} role="status" aria-live="polite">
+      <section
+        key={current.id}
+        className={s.card}
+        style={{ '--file-at': `${SHOW_MS - FILE_MS}ms` } as CSSProperties}
+        role="status"
+        aria-live="polite"
+      >
         <small>축하합니다</small>
         <strong>{current.title}</strong>
         {current.detail && <span>{current.detail}</span>}
@@ -67,7 +79,8 @@ function Celebrating() {
 
 /**
  * Achievements the club earned while playing get a short celebration that never blocks play
- * (→WEB-52): it takes no taps and clears itself.
+ * (→WEB-52): it takes no taps, stays clear of the HUD and clock, and files itself into the news
+ * button.
  */
 export function CelebrationHost() {
   const id = useGameState((state) => state.view?.world.id);
