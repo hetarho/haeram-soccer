@@ -11,6 +11,7 @@ import type { Envelope } from '../adapters/repository';
 import type { SAVE_COMPATIBILITY_CODE } from '../../../../packages/contracts/src/versions';
 import type { clubMilestones } from '../../../../packages/engine/src/goals';
 import type { financialBreakdown } from '../../../../packages/engine/src/finance';
+import type { NewsItem } from '../../../../packages/engine/src/news';
 import {
   managerOffers,
   transferOffers,
@@ -158,6 +159,8 @@ export interface View {
   annualCost: string;
   coefficient: number;
   finance?: ReturnType<typeof financialBreakdown>;
+  /** Club news derived from the full career; the projected world keeps only recent records. */
+  news: NewsItem[];
 }
 export interface Reply {
   requestId: string;

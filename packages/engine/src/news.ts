@@ -50,7 +50,7 @@ const percent = (value: number) => `${Math.round(value * 100)}%`;
 const one = (value: number) => value.toFixed(1);
 const two = (value: number) => value.toFixed(2);
 
-function played(w: World, m: MatchRecord): Played {
+function played(w: World, m: MatchRecord, clubNames: Map<string, string>): Played {
   const side = m.home === w.playerClub ? 0 : 1,
     other = side === 0 ? 1 : 0;
   const gf = side === 0 ? m.score.home : m.score.away,
@@ -63,7 +63,7 @@ function played(w: World, m: MatchRecord): Played {
     ga,
     result: gf > ga ? 'W' : gf === ga ? 'D' : 'L',
     home: side === 0,
-    opponent: w.clubs.find((c) => c.id === (side === 0 ? m.away : m.home))?.name ?? '상대',
+    opponent: clubNames.get(side === 0 ? m.away : m.home) ?? '상대',
     possession: minutes ? m.metrics[side][11] / minutes : 0.5,
     ...(m.xg ? { xg: m.xg[side], xga: m.xg[other] } : {}),
   };
@@ -113,9 +113,10 @@ export function clubNews(w: World): NewsItem[] {
   const name = own.name;
   const people = new Map(w.players.map((p) => [p.id, p.name]));
   const who = (id: string) => people.get(id) ?? '선수';
+  const clubNames = new Map(w.clubs.map((c) => [c.id, c.name]));
 
   // Club records and runs before this season; streaks continue across the summer.
-  const earlier = w.ownMatches.filter((m) => m.year < w.year).map((m) => played(w, m));
+  const earlier = w.ownMatches.filter((m) => m.year < w.year).map((m) => played(w, m, clubNames));
   const hasHistory = earlier.length > 0;
   let unbeaten = 0,
     winning = 0,
@@ -149,7 +150,7 @@ export function clubNews(w: World): NewsItem[] {
   const unbeatenRecord = bestUnbeaten,
     winsRecord = bestWins;
 
-  const season = w.ownMatches.filter((m) => m.year === w.year).map((m) => played(w, m));
+  const season = w.ownMatches.filter((m) => m.year === w.year).map((m) => played(w, m, clubNames));
   const scorerRun = new Map<string, number>(),
     drought = new Map<string, number>(),
     seasonGoals = new Map<string, number>(),
@@ -906,7 +907,7 @@ export function clubNews(w: World): NewsItem[] {
 
   tableNews(w, name).forEach((item) => news.push(item));
   w.events.forEach((event, index) => {
-    const item = eventNews(w, event, index);
+    const item = eventNews(w, name, event, index);
     if (item) news.push(item);
   });
   for (const honour of honours(w)) news.push(honour);
@@ -1023,8 +1024,7 @@ function honours(w: World): NewsItem[] {
 }
 
 /** Club decisions and outcomes worth a headline; the rest of the ledger stays in the archive. */
-function eventNews(w: World, event: Event, index: number): NewsItem | undefined {
-  const name = clubOf(w).name;
+function eventNews(w: World, name: string, event: Event, index: number): NewsItem | undefined {
   const recent =
     event.year === w.year ||
     (event.year === w.year - 1 && ['promotion', 'relegation'].includes(event.kind));

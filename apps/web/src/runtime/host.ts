@@ -13,6 +13,7 @@ import {
   operatingCost,
   europeanCoefficient,
   unreadAttention,
+  clubNews,
 } from '../../../../packages/engine/src/index';
 import type { World, MatchPlayback } from '../../../../packages/contracts/src/types';
 import {
@@ -28,6 +29,7 @@ export class Host {
   private session?: string;
   private acknowledgments = new Map<string, Reply>();
   private queue = Promise.resolve();
+  private newsCache?: { key: string; news: View['news'] };
   cancelled = false;
   constructor(private progress: (reply: Reply) => void = () => {}) {}
   handle(input: unknown): Promise<Reply> {
@@ -37,6 +39,23 @@ export class Host {
       () => {},
     );
     return task;
+  }
+  /**
+   * News reads the whole career (records, debuts, event order), so it is derived here rather than
+   * from the projected world, whose recent windows would shift IDs and replay celebrations.
+   */
+  private news(w: World): View['news'] {
+    const key = [
+      w.id,
+      w.year,
+      w.round,
+      w.ownMatches.length,
+      w.events.length,
+      w.rankHistory?.length,
+      w.history.length,
+    ].join(':');
+    if (this.newsCache?.key !== key) this.newsCache = { key, news: clubNews(w) };
+    return this.newsCache.news;
   }
   private view(w = this.world): View | undefined {
     if (!w) return;
@@ -70,6 +89,7 @@ export class Host {
       annualCost: operatingCost(w),
       coefficient: europeanCoefficient(w),
       finance: financialBreakdown(w),
+      news: this.news(w),
     };
   }
   private async execute(input: unknown): Promise<Reply> {

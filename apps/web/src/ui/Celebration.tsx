@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useGameState } from '../runtime/store';
 import type { NewsItem } from '../../../../packages/engine/src/news';
 import { useClubNews } from './NewsFeed';
-import type { World } from '../../../../packages/contracts/src/types';
 import s from './Celebration.module.css';
 
 /** Fixed paper strips so the scene never depends on chance or wall time. */
@@ -16,8 +15,8 @@ const CONFETTI = Array.from({ length: 26 }, (_, i) => ({
 /** How long a celebration stays before it clears itself. */
 const SHOW_MS = 5200;
 
-function Celebrating({ w }: { w: World }) {
-  const news = useClubNews(w);
+function Celebrating() {
+  const news = useClubNews();
   // Achievements already in the career when this view started are history, not news.
   const seen = useRef<Set<string>>(undefined);
   const [queue, setQueue] = useState<NewsItem[]>([]);
@@ -71,7 +70,7 @@ function Celebrating({ w }: { w: World }) {
  * (→WEB-52): it takes no taps and clears itself.
  */
 export function CelebrationHost() {
-  const w = useGameState((state) => state.view?.world);
-  if (!w) return null;
-  return <Celebrating key={w.id} w={w} />;
+  const id = useGameState((state) => state.view?.world.id);
+  if (!id) return null;
+  return <Celebrating key={id} />;
 }

@@ -1,19 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { create } from 'zustand';
 import type { World } from '../../../../packages/contracts/src/types';
-import { clubNews, type NewsItem, type NewsTag } from '../../../../packages/engine/src/news';
+import type { NewsItem, NewsTag } from '../../../../packages/engine/src/news';
 import { seasonName } from './format';
 import { Dialog } from './Dialog';
 import { useGameState } from '../runtime/store';
 import s from './NewsFeed.module.css';
 
-/** Derived news for the current world; recomputed only when the facts it reads change. */
-export function useClubNews(w: World): NewsItem[] {
-  return useMemo(
-    () => clubNews(w),
-    // News reads matches, events, standings and the season; their sizes change with every fact.
-    [w.id, w.year, w.round, w.ownMatches.length, w.events.length, w.rankHistory?.length],
-  );
+const NO_NEWS: NewsItem[] = [];
+/** News the worker derived from the full career; the projected world is too short for records. */
+export function useClubNews(): NewsItem[] {
+  return useGameState((state) => state.view?.news) ?? NO_NEWS;
 }
 
 const SEEN_KEY = 'haeram-soccor:news-seen';
@@ -71,7 +68,7 @@ function Headline({ item, fresh }: { item: NewsItem; fresh?: boolean }) {
 
 /** The home card: the three newest headlines and a way into the full feed (→WEB-51). */
 export function NewsHeadlines({ w }: { w: World }) {
-  const news = useClubNews(w);
+  const news = useClubNews();
   const show = useNewsSheet((state) => state.show);
   const seen = readSeen(w.id);
   const seenIndex = seen ? news.findIndex((item) => item.id === seen) : -1;
@@ -111,7 +108,7 @@ export function NewsSheet() {
 /** Every headline of the season with tag filters; closing it marks the feed as read. */
 function NewsList({ w }: { w: World }) {
   const hide = useNewsSheet((state) => state.hide);
-  const news = useClubNews(w);
+  const news = useClubNews();
   const [tag, setTag] = useState<(typeof TAGS)[number]>('전체');
   const [seenAtOpen] = useState(() => readSeen(w.id));
   const seenIndex = seenAtOpen ? news.findIndex((item) => item.id === seenAtOpen) : -1;

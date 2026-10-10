@@ -8,6 +8,7 @@ import {
   simulateMatch,
   recordMatch,
   addEvent,
+  clubNews,
 } from '../../../../packages/engine/src/index';
 import { prepareSeason } from '../../../../packages/engine/src/season';
 const input = {
@@ -69,6 +70,26 @@ describe('worker command protocol', () => {
     const news = (w.inbox?.length || 0) > before;
     expect(news || w.ownMatches.length === 1).toBe(true);
     if (!news) expect(w.calendar!.day).toBe(7);
+  });
+  it('keeps a celebrated headline under one ID while the projected event window slides', async () => {
+    const h = new Host();
+    await h.handle(req('create', -1, { type: 'found', input }));
+    const w = h.world!;
+    for (let i = 0; i < 160; i++) addEvent(w, 'note', `기록 ${i}`, '-');
+    addEvent(w, 'promotion', '승격', '5부 2위 · 자동 승격');
+    const promoted = (news: { id: string; celebrate?: boolean }[] = []) =>
+      news.filter((item) => item.celebrate && item.id.endsWith(':promotion')).map((n) => n.id);
+    const first = await h.handle(
+      req('r1', 0, { type: 'command', command: { type: 'advance', rounds: 1 } }),
+    );
+    expect(first.view!.world.events.length).toBeLessThan(w.events.length);
+    expect(promoted(first.view!.news)).toHaveLength(1);
+    for (let i = 0; i < 20; i++) addEvent(w, 'note', `추가 ${i}`, '-');
+    const second = await h.handle(
+      req('r2', w.revision, { type: 'command', command: { type: 'advance', rounds: 1 } }),
+    );
+    expect(promoted(second.view!.news)).toEqual(promoted(first.view!.news));
+    expect(second.view!.news).toEqual(clubNews(w));
   });
   it('persists off days and reaches the next owned fixture exactly once', async () => {
     const h = new Host();
