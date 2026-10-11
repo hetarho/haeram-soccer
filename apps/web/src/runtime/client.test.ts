@@ -224,6 +224,27 @@ describe('background worker publication', () => {
     expect(saved.world.calendar?.day).toBe(0);
   });
 
+  it('reads the all-time head-to-head without publishing a state or waiting for a tick', async () => {
+    const publications: ClientState[] = [],
+      client = await start((state) => publications.push(state));
+    expect(GameClient.active).toBe(client);
+    await client.command({ type: 'next-match' });
+    const w = client.state.view!.world,
+      met = w.ownMatches.at(-1)!,
+      club = met.home === w.playerClub ? met.away : met.home;
+    publications.length = 0;
+    const record = await client.headToHead(club);
+    expect(publications).toHaveLength(0);
+    expect(record.played).toBe(1);
+    expect(record.recent[0].id).toBe(met.id);
+    const tick = client.command({ type: 'advance-days', days: 2 }, { background: true });
+    await expect(client.headToHead(club)).resolves.toEqual(record);
+    await tick;
+    expect(client.state.error).toBeUndefined();
+    await expect(client.headToHead(w.playerClub)).rejects.toThrow('맞대결 상대');
+    expect(client.state.error).toBeUndefined();
+  });
+
   it('activates an explicit import while ignoring unsolicited stale worker responses', async () => {
     const client = await start(),
       replacement = createWorld({ ...founding, seed: 'replacement', name: 'New Athletic' });

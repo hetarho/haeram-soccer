@@ -641,3 +641,20 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+/* All-time head-to-head: the record line, then its facts and the recent meetings. */
+.teamTotal {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.teamTotal b {
+  font-size: 16px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.teamWhen {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+}

@@ -26,6 +26,8 @@ export interface ClientState {
   pendingActions?: number;
 }
 export class GameClient {
+  /** The running session's client, for views mounted without one, such as the team sheets. */
+  static active?: GameClient;
   state: ClientState = {
     busy: true,
     processing: true,
@@ -99,6 +101,7 @@ export class GameClient {
     this.worker.onerror = () => this.failWorker();
     this.channel.onmessage = (event) => this.refresh(event.data?.generation || 0);
     window.addEventListener('storage', this.storageListener);
+    GameClient.active = this;
   }
   private refresh(generation: number) {
     if (!this.state.readonly || !Number.isSafeInteger(generation) || generation < 0) return;
@@ -352,6 +355,15 @@ export class GameClient {
   archive(year: number) {
     return this.enqueue(async () => (await this.rpc({ type: 'archive', year })).archive);
   }
+  /**
+   * Our all-time record against a club from every own match the worker keeps; the view holds only
+   * the recent ones. A read skips the command queue, so it never sets busy or holds the clock.
+   */
+  async headToHead(club: string) {
+    const reply = await this.rpc({ type: 'head-to-head', club });
+    if (!reply.headToHead) throw new Error('맞대결 기록 응답이 없습니다.');
+    return reply.headToHead;
+  }
   private rawBackup() {
     if (this.saves.incompatibleBackup) return this.saves.incompatibleBackup;
     try {
@@ -401,6 +413,7 @@ export class GameClient {
     return this.enqueue(() => this.mutate({ type: 'export' }));
   }
   dispose() {
+    if (GameClient.active === this) GameClient.active = undefined;
     window.removeEventListener('storage', this.storageListener);
     this.failed = true;
     for (const waiter of this.waiters.values()) {

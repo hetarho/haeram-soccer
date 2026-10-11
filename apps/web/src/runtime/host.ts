@@ -25,6 +25,12 @@ import { decode, encode } from '../adapters/persistence';
 import { clubMilestones } from '../../../../packages/engine/src/goals';
 import { financialBreakdown } from '../../../../packages/engine/src/finance';
 import { requestSchema, type Request, type Reply, type View } from './protocol';
+import { headToHead } from './headToHead';
+const failure = (input: unknown, request: Request | undefined, error: unknown) => ({
+  requestId: request?.requestId ?? ((input as { requestId?: string })?.requestId || 'invalid'),
+  ok: false,
+  error: String(error).slice(0, 1600),
+});
 export class Host {
   world?: World;
   private session?: string;
@@ -34,6 +40,10 @@ export class Host {
   cancelled = false;
   constructor(private progress: (reply: Reply) => void = () => {}) {}
   handle(input: unknown): Promise<Reply> {
+    // A read is answered at once, between a command's simulation steps: queued behind a long
+    // command, its watchdog would run out while only the command reports progress.
+    if ((input as { body?: { type?: unknown } } | null)?.body?.type === 'head-to-head')
+      return Promise.resolve(this.read(input));
     const task = this.queue.then(() => this.execute(input));
     this.queue = task.then(
       () => {},
@@ -107,6 +117,31 @@ export class Host {
       finance: financialBreakdown(w),
       news: this.news(w),
     };
+  }
+  /**
+   * Read-only requests, validated like commands but answered from the live world without a
+   * revision check, a receipt or a view: they change nothing and publish nothing.
+   */
+  private read(input: unknown): Reply {
+    let request: Request | undefined;
+    try {
+      request = requestSchema.parse(input);
+      const body = request.body,
+        w = this.world;
+      if (this.session && this.session !== request.session)
+        throw new Error('이전 세션의 요청입니다.');
+      if (!w) throw new Error('먼저 클럽을 창단하세요.');
+      if (body.type !== 'head-to-head') throw new Error('읽기 요청이 아닙니다.');
+      if (body.club === w.playerClub || !w.clubs.some((club) => club.id === body.club))
+        throw new Error('맞대결 상대를 찾을 수 없습니다.');
+      return {
+        requestId: request.requestId,
+        ok: true,
+        headToHead: headToHead(w.ownMatches, w.playerClub, body.club),
+      };
+    } catch (error) {
+      return failure(input, request, error);
+    }
   }
   private async execute(input: unknown): Promise<Reply> {
     let request: Request | undefined;
@@ -254,10 +289,7 @@ export class Host {
       return reply;
     } catch (error) {
       return {
-        requestId:
-          request?.requestId ?? ((input as { requestId?: string })?.requestId || 'invalid'),
-        ok: false,
-        error: String(error).slice(0, 1600),
+        ...failure(input, request, error),
         errorCode: isSaveCompatibilityError(error) ? error.code : undefined,
         view: this.view(),
       };

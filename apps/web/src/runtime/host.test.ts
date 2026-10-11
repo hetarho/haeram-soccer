@@ -13,6 +13,7 @@ import {
 } from '../../../../packages/engine/src/index';
 import { FOUNDING_YEAR } from '../../../../packages/engine/src/world';
 import { professionalStart } from '../../../../packages/engine/src/testing';
+import { headToHead } from './headToHead';
 const input = {
   country: 'ENG' as const,
   name: 'Worker Athletic',
@@ -76,6 +77,41 @@ describe('worker command protocol', () => {
     expect(projected.eloRange).toEqual(season.eloRange);
     expect(r.archive?.season).toEqual(season);
     expect(h.world!.history[0].brackets).toBe(season.brackets);
+  });
+  it('reads the all-time head-to-head from every own match without queueing or projecting', async () => {
+    const h = new Host();
+    await h.handle(req('create', -1, { type: 'found', input }));
+    simulateSeason(h.world!);
+    const w = h.world!,
+      met = w.ownMatches.find((m) => m.kind === 'lower')!,
+      club = met.home === w.playerClub ? met.away : met.home,
+      expected = headToHead(w.ownMatches, w.playerClub, club);
+    expect(expected.played).toBe(
+      w.ownMatches.filter((m) => m.home === club || m.away === club).length,
+    );
+    // The read is answered before the command sent ahead of it, whatever revision it names.
+    let advanced = false;
+    const step = h
+      .handle(
+        req('step', w.revision, { type: 'command', command: { type: 'advance-days', days: 3 } }),
+      )
+      .then((reply) => {
+        advanced = true;
+        return reply;
+      });
+    const read = await h.handle(req('h2h', -1, { type: 'head-to-head', club }));
+    expect(advanced).toBe(false);
+    expect(read.ok).toBe(true);
+    expect(read.view).toBeUndefined();
+    expect(read.headToHead).toEqual(expected);
+    expect((await step).ok).toBe(true);
+    expect(w.receiptIds).not.toContain('h2h');
+    const stale = { ...req('old', -1, { type: 'head-to-head', club }), session: 'expired' };
+    expect((await h.handle(stale)).ok).toBe(false);
+    for (const other of [w.playerClub, 'XXX:none'])
+      expect((await h.handle(req(other, -1, { type: 'head-to-head', club: other }))).ok).toBe(
+        false,
+      );
   });
   it('ends a multi-day step on the day news arrives or our match is played', async () => {
     const h = new Host();

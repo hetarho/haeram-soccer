@@ -1,7 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import type { Fixture, World } from '../../../../packages/contracts/src/types';
 import { fixtureDate, fixtureDay } from '../../../../packages/engine/src/calendar';
 import { eloOf } from '../../../../packages/engine/src/ratings';
+import { GameClient } from '../runtime/client';
+import type { HeadToHead, Meeting } from '../runtime/headToHead';
 import { useGameState } from '../runtime/store';
 import { clubDivision, leagueOf, orderIds } from './league';
 import { worldSelector } from './liveState';
@@ -9,21 +11,139 @@ import { ClubCrest } from './ClubCrest';
 import { ClubLink } from './ClubLink';
 import { Dialog } from './Dialog';
 import { clubOvr, OvrBadge } from './OvrBadge';
-import { competitionLabel, number } from './format';
+import { competitionLabel, kindLabel, number, seasonName } from './format';
 import { useNavigation, useTeamSheet } from './state';
 import s from './LeagueInsights.module.css';
 
+const markOf = (own: number, other: number) => (own > other ? '승' : own < other ? '패' : '무');
 const resultOf = (f: Fixture, id: string) => {
   const own = f.home === id ? f.score!.home : f.score!.away,
     other = f.home === id ? f.score!.away : f.score!.home;
-  return { own, other, mark: own > other ? '승' : own < other ? '패' : '무' };
+  return { own, other, mark: markOf(own, other) };
 };
+/** Where and in what a meeting was played: "1952/53 · 리그 12R · 홈". */
+const meetingLine = (m: Meeting) =>
+  `${seasonName(m.year)} · ${kindLabel[m.kind] ?? m.kind}${m.kind === 'league' || m.kind === 'lower' ? ` ${m.round}R` : ''} · ${m.home ? '홈' : '원정'}`;
+
+/**
+ * Our all-time record against the club (→WEB-58). The view keeps only our recent matches, so the
+ * worker reads every meeting of the career; the answer stays for as long as the sheet is open and
+ * is read again only when a new meeting is played.
+ */
+function AllTimeMeetings({ w, id }: { w: World; id: string }) {
+  const latest = w.ownMatches.findLast((m) => m.home === id || m.away === id)?.id ?? '',
+    key = `${id}:${latest}`;
+  const [loaded, setLoaded] = useState<{ key: string; record?: HeadToHead; failed?: boolean }>();
+  useEffect(() => {
+    let valid = true;
+    (GameClient.active?.headToHead(id) ?? Promise.reject(new Error('세션이 없습니다.'))).then(
+      (record) => valid && setLoaded({ key, record }),
+      () => valid && setLoaded({ key, failed: true }),
+    );
+    return () => {
+      valid = false;
+    };
+  }, [id, key]);
+  // A newer meeting refreshes the record in place; the earlier one stays until it arrives.
+  const shown = loaded && (loaded.key === key || loaded.record) ? loaded : undefined,
+    record = shown?.record;
+  return (
+    <section aria-label="역대 상대 전적">
+      <h3 className={s.teamSub}>역대 상대 전적</h3>
+      {!shown ? (
+        <p className={s.teamNote} role="status">
+          역대 상대 전적을 불러오는 중…
+        </p>
+      ) : !record ? (
+        <p className={s.teamNote} role="alert">
+          역대 상대 전적을 읽지 못했어요. 창을 닫고 다시 열어 주세요.
+        </p>
+      ) : !record.played ? (
+        <p className={s.teamNote}>아직 맞대결이 없어요</p>
+      ) : (
+        <>
+          <p className={s.teamTotal}>
+            <b>
+              {record.played}전 {record.won}승 {record.drawn}무 {record.lost}패
+            </b>{' '}
+            · 득실 {record.gf}:{record.ga}
+          </p>
+          <dl className={s.teamFacts}>
+            <div>
+              <dt>리그</dt>
+              <dd>{record.league}경기</dd>
+            </div>
+            <div>
+              <dt>컵</dt>
+              <dd>{record.cup}경기</dd>
+            </div>
+            <div>
+              <dt>대륙 대회</dt>
+              <dd>{record.europe}경기</dd>
+            </div>
+            {record.playoff > 0 && (
+              <div>
+                <dt>승격 플레이오프</dt>
+                <dd>{record.playoff}경기</dd>
+              </div>
+            )}
+            {(
+              [
+                ['최다 점수차 승리', record.biggestWin],
+                ['최다 점수차 패배', record.biggestLoss],
+              ] as const
+            ).map(([label, m]) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>
+                  {m ? (
+                    <>
+                      {m.own}–{m.other}
+                      <small className={s.teamWhen}>{meetingLine(m)}</small>
+                    </>
+                  ) : (
+                    '—'
+                  )}
+                </dd>
+              </div>
+            ))}
+            <div>
+              <dt>첫 맞대결</dt>
+              <dd>{record.first ? seasonName(record.first) : '—'}</dd>
+            </div>
+          </dl>
+          <h4 className={s.teamSub}>최근 맞대결 {record.recent.length}경기</h4>
+          <ul className={s.teamList}>
+            {record.recent.map((m) => {
+              const mark = markOf(m.own, m.other);
+              return (
+                <li key={m.id}>
+                  <b className={mark === '승' ? s.win : mark === '패' ? s.loss : s.draw}>{mark}</b>
+                  <span>
+                    {meetingLine(m)}
+                    {m.shootout && ` · 승부차기 ${m.shootout === 'won' ? '승' : '패'}`}
+                  </span>
+                  <em>
+                    {m.own}–{m.other}
+                  </em>
+                </li>
+              );
+            })}
+          </ul>
+          <p className={s.teamNote}>
+            모든 대회의 90분 스코어 기준이에요. 승부차기로 끝난 동점 경기는 무승부로 집계해요.
+          </p>
+        </>
+      )}
+    </section>
+  );
+}
 
 /**
  * Any club at a glance (→WEB-58): its overall rating, Elo, standing, supporters, form and our
- * meetings, so a league is a field of rivals, not a list of names. The standing is in the club's
- * own league, wherever the sheet was opened. Only our league's games reach the view, so a club
- * from elsewhere lists its cup and continental games instead.
+ * all-time record against it, so a league is a field of rivals, not a list of names. The standing
+ * is in the club's own league, wherever the sheet was opened. Only our league's games reach the
+ * view, so a club from elsewhere lists its cup and continental games instead.
  */
 export function TeamSheet({ w, id, onClose }: { w: World; id: string; onClose: () => void }) {
   const club = w.clubs.find((c) => c.id === id);
@@ -43,11 +163,7 @@ export function TeamSheet({ w, id, onClose }: { w: World; id: string; onClose: (
           ].filter(involved)
     )
       .sort((a, b) => fixtureDay(a) - fixtureDay(b) || a.id.localeCompare(b.id))
-      .slice(-5),
-    meetings =
-      id === w.playerClub
-        ? []
-        : w.ownMatches.filter((m) => m.home === id || m.away === id).slice(-5);
+      .slice(-5);
   return (
     <Dialog label={club.name} onClose={onClose}>
       <div className={s.teamHead}>
@@ -118,42 +234,13 @@ export function TeamSheet({ w, id, onClose }: { w: World; id: string; onClose: (
             : '이번 시즌 치른 컵·대륙 대회 경기가 아직 없어요.'}
         </p>
       )}
-      {!ours && table && (
-        <p className={s.teamNote}>다른 리그 클럽의 경기별 리그 결과는 제공하지 않아요.</p>
-      )}
-      {id !== w.playerClub && (
-        <>
-          <h3 className={s.teamSub}>우리와의 최근 맞대결 {meetings.length}경기</h3>
-          {meetings.length ? (
-            <ul className={s.teamList}>
-              {meetings.map((m) => {
-                const ours = m.home === w.playerClub,
-                  own = ours ? m.score.home : m.score.away,
-                  other = ours ? m.score.away : m.score.home,
-                  mark = own > other ? '승' : own < other ? '패' : '무';
-                return (
-                  <li key={m.id}>
-                    <b className={mark === '승' ? s.win : mark === '패' ? s.loss : s.draw}>
-                      {mark}
-                    </b>
-                    <span>
-                      {m.year} · {ours ? '홈' : '원정'}
-                    </span>
-                    <em>
-                      {own}–{other}
-                    </em>
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <p className={s.teamNote}>최근 기록된 맞대결이 없어요.</p>
-          )}
-        </>
-      )}
       {recent.length > 0 && (
         <p className={s.teamNote}>마지막 경기 {fixtureDate(w, recent.at(-1)!)}</p>
       )}
+      {!ours && table && (
+        <p className={s.teamNote}>다른 리그 클럽의 경기별 리그 결과는 제공하지 않아요.</p>
+      )}
+      {id !== w.playerClub && <AllTimeMeetings w={w} id={id} />}
     </Dialog>
   );
 }
