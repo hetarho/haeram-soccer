@@ -1,0 +1,323 @@
+/* Cup history: the chosen competition's seasons, our road, honours and finals. */
+.historyPanel,
+.historySection,
+.journey,
+.honours {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.historyPanel {
+  gap: 18px;
+}
+.historySection > h4,
+.journey > h4,
+.honours > h4 {
+  margin: 0;
+  font-size: 14px;
+}
+/* Season stepper: previous and next arrows around the season list, oldest on the left. */
+.seasonPicker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  scroll-margin-top: 12px;
+}
+.seasonPicker .seasonSelect.seasonSelect {
+  flex: 0 1 200px;
+  min-width: 0;
+  font-weight: 800;
+}
+.seasonSelect > span:first-child {
+  flex: 1;
+  text-align: center;
+}
+.seasonStep {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 12px;
+}
+.seasonStep svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.seasonStep:disabled {
+  opacity: 0.35;
+}
+.seasonFinal {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.9;
+}
+.seasonFinal b {
+  font-size: 14px;
+}
+.journey {
+  gap: 8px;
+  scroll-margin-top: 12px;
+}
+.journey:focus {
+  outline: none;
+}
+/* Our stages, one stacked card each: no wide table on a phone. */
+.route {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.routeCard {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-deep);
+}
+.routeTitle {
+  border-color: var(--gold);
+}
+.routeCard header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.routeCard header b {
+  margin-right: auto;
+  font-size: 14px;
+}
+.routeCard p {
+  margin: 0;
+  min-width: 0;
+}
+.routeOpponent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.routeOpponent small {
+  flex: none;
+  color: var(--text-faint);
+  font-size: 11px;
+}
+.routeScore {
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.routeMeta {
+  font-size: 12px;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+.routeActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.routeActions button {
+  min-height: 44px;
+  padding: 4px 12px;
+  font-size: 12px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+.chipWin {
+  color: var(--accent-text);
+  border-color: var(--accent);
+}
+.chipTitle {
+  color: #1d1400;
+  border-color: var(--gold-edge);
+  background: var(--gold-fill);
+}
+.chipSilver {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+.chipOut {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 60%, transparent);
+}
+/* Our runs: each season opens its road above. */
+.runs li {
+  padding: 0;
+}
+.runButton {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+}
+.runButton > span {
+  color: var(--text-faint);
+  font-size: 12px;
+}
+.runButton[aria-current='true'] {
+  background: rgba(47, 194, 116, 0.12);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+/* Honours tables: the club column takes what the counts leave. */
+.honoursTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 12px;
+}
+.honoursTable th,
+.honoursTable td {
+  padding: 6px 4px;
+  border-top: 1px solid var(--line);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.honoursTable th {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-faint);
+}
+.honoursTable th:first-child,
+.honoursTable td:first-child {
+  width: auto;
+  overflow: hidden;
+  text-align: left;
+}
+.honoursTable th:nth-child(n + 2),
+.honoursTable td:nth-child(n + 2) {
+  width: 40px;
+}
+/* The last column holds a season name (최근 우승) or a two-word heading (우승 클럽). */
+.honoursTable th:last-child,
+.honoursTable td:last-child {
+  width: 58px;
+}
+.ownTag {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+  color: var(--on-accent);
+  background: var(--accent);
+  vertical-align: middle;
+}
+.feats {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.feats > li {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px 10px;
+  border-left: 3px solid var(--gold);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.18);
+  font-size: 13px;
+}
+.feats > li > span {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--gold);
+}
+.feats p {
+  margin: 0;
+}
+.feats ol {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.feats ol li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.feats ol small {
+  flex: none;
+  width: 56px;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+/* A final's season opens its bracket in the stepper above. */
+.finalSeason {
+  display: grid;
+  justify-items: start;
+  align-content: center;
+  min-width: 0;
+  min-height: 44px;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-faint);
+  text-align: left;
+  text-decoration: underline dotted color-mix(in srgb, currentColor 45%, transparent);
+  text-underline-offset: 3px;
+}
+.finalSeason small {
+  font-size: 10px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.finalSeason[aria-current='true'] {
+  color: var(--accent-text);
+}
+.streak {
+  position: absolute;
+  top: -6px;
+  right: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+  color: #1d1400;
+  background: var(--gold);
+}

@@ -209,6 +209,53 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(page).toHaveURL(/\/squad$/);
   });
 
+  test('replays a closed season of the cup: its bracket, our road, a report and the honours', async ({
+    page,
+  }) => {
+    // Plays a whole season; slow CI browsers need longer.
+    test.slow();
+    await found(page, 'cup-history-journey');
+    await page
+      .getByTestId('club-hub')
+      .getByRole('button', { name: '시즌 상세', exact: true })
+      .click();
+    await page.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
+    await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' })).toHaveCount(0);
+    await page
+      .getByRole('navigation', { name: '모바일 게임 메뉴' })
+      .getByRole('button', { name: '컵 대회', exact: true })
+      .click();
+    await page.getByRole('tab', { name: '역사', exact: true }).click();
+    const history = page.getByRole('region', { name: '컵 대회 역사' });
+    const picker = history.getByRole('group', { name: '컵 시즌 선택' });
+    await expect(picker.getByRole('combobox', { name: '대진표 시즌' })).toHaveText(/1950\/51/);
+    await expect(picker.getByRole('button', { name: '이전 컵 시즌' })).toBeDisabled();
+    // The closed season's bracket opens as a tree from the last 32 to the final.
+    await expect(history.getByRole('group', { name: '대진 보기' })).toBeVisible();
+    const tree = history.getByRole('group', { name: '대진표', exact: true });
+    await expect(tree.getByRole('heading', { name: '32강', exact: true })).toBeVisible();
+    await expect(tree.getByRole('heading', { name: '결승', exact: true })).toBeVisible();
+    // A new amateur club enters in the first round, before the bracket's last 32.
+    const journey = history.getByRole('region', { name: '우리 클럽의 컵 여정' });
+    await expect(journey).toContainText('1라운드');
+    await journey
+      .getByRole('button', { name: /경기 리포트$/ })
+      .first()
+      .click();
+    const report = page.getByRole('dialog', { name: '컵 경기 리포트' });
+    await expect(report.getByRole('region', { name: '경기 분석 리포트' })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(report).toHaveCount(0);
+    const honours = history.getByRole('table', { name: '클럽별 우승 기록' });
+    await expect(honours.locator('tbody tr').first().locator('td').nth(1)).toHaveText('1');
+    await expect(
+      history.getByRole('button', { name: '1950/51 대진 보기', exact: true }),
+    ).toBeVisible();
+    expect(await horizontalOverflow(page)).toBe(0);
+  });
+
   test('charts league position, Elo and values in the records room', async ({ page }) => {
     await found(page, 'trends-journey');
     await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();

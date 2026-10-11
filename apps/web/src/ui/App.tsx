@@ -420,9 +420,9 @@ const ConnectedDashboard = memo(function ConnectedDashboard({
     />
   );
 });
-const ConnectedEurope = memo(function ConnectedEurope() {
+const ConnectedEurope = memo(function ConnectedEurope({ client }: { client: GameClient }) {
   const state = useContentState();
-  return <CupsView w={state.view!.world} coefficient={state.view!.coefficient} />;
+  return <CupsView w={state.view!.world} coefficient={state.view!.coefficient} client={client} />;
 });
 function ConnectedRich({ client, page }: { client: GameClient; page: Page }) {
   const state = useContentState();
@@ -1010,7 +1010,7 @@ export function App() {
                     controller={controller}
                   />
                   <div hidden={contentPage !== 'europe'}>
-                    <ConnectedEurope />
+                    <ConnectedEurope client={client} />
                   </div>
                   {(['squad', 'manager', 'business', 'history'] as Page[]).includes(
                     contentPage,

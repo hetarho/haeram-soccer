@@ -48,7 +48,7 @@ export function leagueOf(w: World, club: Club): string[] {
 }
 
 /** Countries of the continental representatives, which play no league in the game. */
-const ABROAD: Record<string, string> = {
+export const ABROAD: Record<string, string> = {
   AUT: '오스트리아',
   SCO: '스코틀랜드',
   SUI: '스위스',

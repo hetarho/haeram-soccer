@@ -1,6 +1,5 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import type {
-  CupFinal,
   EuropeTournament,
   Fixture,
   KnockoutRound,
@@ -11,18 +10,30 @@ import { country } from '../../../../packages/catalogs/src/index';
 import { clubOf } from '../../../../packages/engine/src/world';
 import { fixtureDate } from '../../../../packages/engine/src/calendar';
 import { cupKey, domesticCupName } from '../../../../packages/engine/src/cups';
-import {
-  legsOf,
-  ownReached,
-  roundLabel,
-  tieAggregate,
-} from '../../../../packages/engine/src/knockout';
+import { ownReached } from '../../../../packages/engine/src/knockout';
 import { phaseGroups } from '../../../../packages/engine/src/europe';
 import { emptyTable } from '../../../../packages/engine/src/season';
-import { ClubLink } from './ClubLink';
+import type { GameClient } from '../runtime/client';
+import { Bracket, Club } from './Bracket';
 import { number, seasonName } from './format';
 import s from './App.module.css';
 import c from './CupsView.module.css';
+
+/**
+ * History is the heaviest and least visited tab, so its code loads on first opening instead of
+ * with the app (ARCH-28 entry budget). A failed load says so instead of breaking the page.
+ */
+const CupHistory = lazy(() =>
+  import('./CupHistory')
+    .then((module) => ({ default: module.CupHistory }))
+    .catch(() => ({
+      default: () => (
+        <p className={s.muted} role="alert">
+          컵 대회 역사를 불러오지 못했어요. 페이지를 새로 고친 뒤 다시 열어 주세요.
+        </p>
+      ),
+    })),
+);
 
 const nameOf = (w: World, id?: string) => w.clubs.find((club) => club.id === id)?.name ?? '—';
 
@@ -38,267 +49,6 @@ function rankIds(standings: Record<string, TableRow>, ids: string[]) {
       (a < b ? -1 : a > b ? 1 : 0)
     );
   });
-}
-
-/** A club in a tie, table or final: its crest and name open its team sheet. */
-function Club({ w, id, strong }: { w: World; id: string; strong?: boolean }) {
-  return (
-    <ClubLink
-      w={w}
-      id={id}
-      className={`${c.club} ${strong ? c.strong : ''} ${id === w.playerClub ? c.ownName : ''}`}
-    />
-  );
-}
-
-/** One tie: both legs' scores, the aggregate and how a level tie went through. */
-function Tie({ w, tie, legs }: { w: World; tie: KnockoutRound['ties'][number]; legs: Fixture[] }) {
-  const own = tie.home === w.playerClub || tie.away === w.playerClub;
-  const played = legs.filter((f) => f.score);
-  const [home, away] = tieAggregate(tie, legs);
-  const score = played.length
-    ? legs.length === 2
-      ? `${played.map((f) => `${f.score!.home}–${f.score!.away}`).join(', ')}${played.length === 2 ? ` · 합계 ${home}–${away}` : ''}`
-      : `${home}–${away}`
-    : fixtureDate(w, legs[0]).replace(/^\d+년 /, '');
-  return (
-    <li className={own ? c.ownTie : undefined}>
-      <Club w={w} id={tie.home} strong={tie.winner === tie.home} />
-      <em>
-        {score}
-        {tie.decided === 'pens' && <small> 승부차기</small>}
-        {tie.decided === 'away' && <small> 원정 다득점</small>}
-      </em>
-      <Club w={w} id={tie.away} strong={tie.winner === tie.away} />
-      {own && <i className={c.ownBadge}>우리 팀</i>}
-    </li>
-  );
-}
-
-/** A slot of the tree: a drawn tie, a club through on a bye, or a tie still to be drawn. */
-type Slot = { tie: number } | { bye: string } | undefined;
-/** Rounds of 32 or fewer go on the tree; earlier rounds stay in the list. */
-const TREE_TIES = 16;
-/**
- * The knockout as a tree (→WEB-40): from the first round of 32 or fewer to the final. Draws are
- * open each round, so the tree is traced back from the latest drawn round: each tie's two clubs
- * came out of one tie each in the round before (or a bye); rounds not drawn yet are empty slots.
- */
-function treeColumns(rounds: KnockoutRound[]) {
-  const base = rounds.findIndex((round) => round.ties.length <= TREE_TIES);
-  if (base < 0) return undefined;
-  const last = rounds.length - 1;
-  const columns: { label: string; index?: number; slots: Slot[] }[] = [
-    { label: rounds[last].label, index: last, slots: rounds[last].ties.map((_, tie) => ({ tie })) },
-  ];
-  for (let r = last - 1; r >= base; r--) {
-    const where = new Map<string, number>();
-    rounds[r].ties.forEach((tie, t) => {
-      where.set(tie.home, t);
-      where.set(tie.away, t);
-    });
-    const slots: Slot[] = [];
-    for (const slot of columns[0].slots) {
-      if (!slot || !('tie' in slot)) {
-        slots.push(undefined, undefined);
-        continue;
-      }
-      const tie = rounds[r + 1].ties[slot.tie];
-      for (const club of [tie.home, tie.away]) {
-        const from = where.get(club);
-        slots.push(from === undefined ? { bye: club } : { tie: from });
-      }
-    }
-    columns.unshift({ label: rounds[r].label, index: r, slots });
-  }
-  // Rounds still to come halve until the final.
-  for (let ties = Math.ceil(rounds[last].ties.length / 2); ; ties = Math.ceil(ties / 2)) {
-    if (rounds[last].ties.length === 1) break;
-    columns.push({
-      label: roundLabel(ties * 2, rounds.length + columns.length),
-      slots: Array.from({ length: ties }, () => undefined),
-    });
-    if (ties === 1) break;
-  }
-  return columns;
-}
-function TreeTie({
-  w,
-  round,
-  index,
-  slot,
-  fixtures,
-  competition,
-}: {
-  w: World;
-  round?: KnockoutRound;
-  index?: number;
-  slot: Slot;
-  fixtures: Fixture[];
-  competition: string;
-}) {
-  if (!slot || !round || index === undefined)
-    return (
-      <li className={c.treeEmpty}>
-        {slot && 'bye' in slot ? <Club w={w} id={slot.bye} /> : '추첨 전'}
-      </li>
-    );
-  if ('bye' in slot)
-    return (
-      <li className={c.treeTie}>
-        <Club w={w} id={slot.bye} strong />
-        <small>부전승</small>
-      </li>
-    );
-  const tie = round.ties[slot.tie],
-    legs = legsOf(w, fixtures, competition, index, slot.tie),
-    played = legs.some((f) => f.score),
-    [home, away] = tieAggregate(tie, legs),
-    own = tie.home === w.playerClub || tie.away === w.playerClub;
-  return (
-    <li className={`${c.treeTie} ${own ? c.ownTie : ''}`}>
-      <span>
-        <Club w={w} id={tie.home} strong={tie.winner === tie.home} />
-        <em>{played ? home : ''}</em>
-      </span>
-      <span>
-        <Club w={w} id={tie.away} strong={tie.winner === tie.away} />
-        <em>{played ? away : ''}</em>
-      </span>
-      {(tie.decided === 'pens' || tie.decided === 'away') && (
-        <small>{tie.decided === 'pens' ? '승부차기' : '원정 다득점'}</small>
-      )}
-    </li>
-  );
-}
-function BracketTree({
-  w,
-  rounds,
-  fixtures,
-  competition,
-}: {
-  w: World;
-  rounds: KnockoutRound[];
-  fixtures: Fixture[];
-  competition: string;
-}) {
-  const columns = treeColumns(rounds);
-  if (!columns)
-    return (
-      <p className={c.treeNote}>
-        아직 초반 라운드예요. 32강부터 대진표가 채워지고, 지금은 목록에서 볼 수 있어요.
-      </p>
-    );
-  return (
-    <div className={c.tree} role="group" aria-label="대진표">
-      {columns.map((column, col) => (
-        <section key={`${column.label}-${col}`} className={c.treeColumn}>
-          <h4>{column.label}</h4>
-          <ul style={{ minHeight: `${columns[0].slots.length * 64}px` }}>
-            {column.slots.map((slot, i) => (
-              <TreeTie
-                key={i}
-                w={w}
-                round={column.index === undefined ? undefined : rounds[column.index]}
-                index={column.index}
-                slot={slot}
-                fixtures={fixtures}
-                competition={competition}
-              />
-            ))}
-          </ul>
-        </section>
-      ))}
-    </div>
-  );
-}
-
-/** A knockout as a tree or as rounds, latest first; long early rounds fold behind our tie. */
-function Bracket(props: {
-  w: World;
-  rounds: KnockoutRound[];
-  fixtures: Fixture[];
-  competition: string;
-}) {
-  // The tree opens once it has drawn ties to show; early mass rounds read better as a list.
-  const [view, setView] = useState<'tree' | 'list'>(() =>
-    (props.rounds.at(-1)?.ties.length ?? 0) <= TREE_TIES ? 'tree' : 'list',
-  );
-  if (!props.rounds.length) return null;
-  return (
-    <>
-      <div className={c.viewSwitch} role="group" aria-label="대진 보기">
-        {(
-          [
-            ['tree', '대진표'],
-            ['list', '라운드별'],
-          ] as const
-        ).map(([id, label]) => (
-          <button key={id} aria-pressed={view === id} onClick={() => setView(id)}>
-            {label}
-          </button>
-        ))}
-      </div>
-      {view === 'tree' ? <BracketTree {...props} /> : <RoundList {...props} />}
-    </>
-  );
-}
-/** Knockout rounds, latest first; long early rounds fold behind our tie. */
-function RoundList({
-  w,
-  rounds,
-  fixtures,
-  competition,
-}: {
-  w: World;
-  rounds: KnockoutRound[];
-  fixtures: Fixture[];
-  competition: string;
-}) {
-  const [open, setOpen] = useState<Record<number, boolean>>({});
-  if (!rounds.length) return null;
-  return (
-    <div className={c.bracket} aria-label="토너먼트 대진">
-      {rounds
-        .map((round, index) => ({ round, index }))
-        .reverse()
-        .map(({ round, index }) => {
-          const decided = round.ties.filter((tie) => tie.winner).length;
-          const long = round.ties.length > 8;
-          const shown = long && !open[index];
-          const ties = round.ties
-            .map((tie, t) => ({ tie, t }))
-            .filter(({ tie }) => !shown || tie.home === w.playerClub || tie.away === w.playerClub);
-          const first = legsOf(w, fixtures, competition, index, 0)[0];
-          return (
-            <section key={index} className={c.round}>
-              <header>
-                <h4>{round.label}</h4>
-                <span>
-                  {first ? fixtureDate(w, first).replace(/^\d+년 /, '') : ''}
-                  {round.legs === 2 ? ' · 홈앤드어웨이' : ' · 단판'} · {decided}/{round.ties.length}{' '}
-                  경기 종료
-                  {round.byes?.length ? ` · 부전승 ${round.byes.length}팀` : ''}
-                </span>
-              </header>
-              <ul className={c.ties}>
-                {ties.map(({ tie, t }) => (
-                  <Tie key={t} w={w} tie={tie} legs={legsOf(w, fixtures, competition, index, t)} />
-                ))}
-              </ul>
-              {long && (
-                <button
-                  className={c.more}
-                  onClick={() => setOpen({ ...open, [index]: !open[index] })}
-                >
-                  {shown ? `${round.label} ${round.ties.length}경기 모두 보기` : '접기'}
-                </button>
-              )}
-            </section>
-          );
-        })}
-    </div>
-  );
 }
 
 /** A league-phase or group table with its qualification zones. */
@@ -512,115 +262,16 @@ function Continental({ w, t }: { w: World; t: EuropeTournament }) {
   );
 }
 
-function finalLine(w: World, winner: string, final?: CupFinal) {
-  if (!final) return <Club w={w} id={winner} strong />;
-  return (
-    <>
-      <Club w={w} id={winner} strong />
-      <em>
-        {final.score[0]}–{final.score[1]}
-        {final.decided === 'pens' ? ' (승부차기)' : ''}
-      </em>
-      <Club w={w} id={final.runnerUp} />
-    </>
-  );
-}
-
-/** Winners and finals season by season, the most successful clubs and our runs. */
-function CupHistory({ w }: { w: World }) {
-  const own = clubOf(w);
-  const competitions = [
-    { key: 'cup', name: domesticCupName(own.country) },
-    { key: 'ucl', name: 'European Cup / Champions League' },
-    { key: 'uel', name: 'UEFA Cup / Europa League' },
-    { key: 'uecl', name: 'Conference League' },
-    { key: 'cwc', name: 'Cup Winners Cup' },
-  ];
-  const [key, setKey] = useState('cup');
-  const seasons = [...w.history].reverse();
-  const rows = seasons.flatMap((h) => {
-    if (key === 'cup') {
-      const entry = h.champions.find((ch) => ch.country === own.country);
-      return entry?.cup
-        ? [{ year: h.year, winner: entry.cup, final: entry.cupFinal, name: '' }]
-        : [];
-    }
-    const e = h.europe.find((entry) => entry.kind === key);
-    return e ? [{ year: h.year, winner: e.winner, final: e.final, name: e.name }] : [];
-  });
-  const titles = new Map<string, number>();
-  for (const row of rows) titles.set(row.winner, (titles.get(row.winner) || 0) + 1);
-  const leaders = [...titles.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
-  const runs = seasons.flatMap((h) =>
-    (h.runs || []).filter((run) => run.key === key).map((run) => ({ year: h.year, ...run })),
-  );
-  return (
-    <section className={c.card} aria-label="컵 대회 역사">
-      <div className={s.filters} role="tablist" aria-label="역사를 볼 대회">
-        {competitions.map((entry) => (
-          <button
-            key={entry.key}
-            role="tab"
-            aria-selected={key === entry.key}
-            className={key === entry.key ? s.selected : undefined}
-            onClick={() => setKey(entry.key)}
-          >
-            {entry.key === 'cup' ? entry.name : entry.name.split(' / ').at(-1)}
-          </button>
-        ))}
-      </div>
-      {leaders.length > 0 && (
-        <section className={c.leaders}>
-          <h4>최다 우승</h4>
-          <ol>
-            {leaders.map(([club, count]) => (
-              <li key={club}>
-                <Club w={w} id={club} strong={club === w.playerClub} />
-                <b>{number(count)}회</b>
-              </li>
-            ))}
-          </ol>
-        </section>
-      )}
-      {runs.length > 0 && (
-        <section className={c.leaders}>
-          <h4>우리 클럽의 도전</h4>
-          <ol>
-            {runs.slice(0, 12).map((run) => (
-              <li key={run.year}>
-                <span>{seasonName(run.year)}</span>
-                <b className={run.champion ? c.champion : undefined}>
-                  {run.champion ? '우승' : run.reached}
-                </b>
-              </li>
-            ))}
-          </ol>
-        </section>
-      )}
-      {rows.length ? (
-        <ul className={c.finals}>
-          {rows.map((row) => (
-            <li key={row.year} className={row.winner === w.playerClub ? c.ownTie : undefined}>
-              <span>
-                {seasonName(row.year)}
-                {row.name && <small>{row.name}</small>}
-              </span>
-              <div>{finalLine(w, row.winner, row.final)}</div>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className={s.muted}>
-          아직 기록된 대회가 없어요.{' '}
-          {key === 'cup' ? '첫 시즌이 끝나면 우승팀이 남아요.' : '대회가 창설되면 기록이 쌓여요.'}
-        </p>
-      )}
-    </section>
-  );
-}
-
 /** Cups: the domestic cup and the continental club competitions, live and in history (→WEB-40). */
-export function CupsView({ w, coefficient }: { w: World; coefficient: number }) {
+export function CupsView({
+  w,
+  coefficient,
+  client,
+}: {
+  w: World;
+  coefficient: number;
+  client: GameClient;
+}) {
   const tabs = [
     { id: 'cup', label: domesticCupName(clubOf(w).country) },
     ...w.europe.filter((t) => t.key !== 'super').map((t) => ({ id: t.key, label: t.name })),
@@ -658,7 +309,17 @@ export function CupsView({ w, coefficient }: { w: World; coefficient: number }) 
       </div>
       {active === 'cup' && <DomesticCup w={w} />}
       {tournament && <Continental key={tournament.key} w={w} t={tournament} />}
-      {active === 'history' && <CupHistory w={w} />}
+      {active === 'history' && (
+        <Suspense
+          fallback={
+            <p className={s.muted} role="status">
+              컵 대회 역사를 펼치는 중…
+            </p>
+          }
+        >
+          <CupHistory w={w} client={client} />
+        </Suspense>
+      )}
       <p className={s.muted}>
         국가별 참가권, 시드와 추첨은 데모에 맞게 단순화했습니다. 클럽대항전은 9–1월 리그·조별 단계,
         2월부터 홈앤드어웨이 토너먼트, 5월 단판 결승으로 치르고 2021년 전까지는 원정 다득점 규칙을
