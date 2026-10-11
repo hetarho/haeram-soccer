@@ -4,6 +4,7 @@ import { country, priceIndex } from '../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../runtime/client';
 import { useNavigation, useStaffView, type Page } from './state';
 import { ClubCrest } from './ClubCrest';
+import { ClubLink } from './ClubLink';
 import { watchNextMatch } from './watch';
 import { compactMoney, competitionLabel, money, number, percent, seasonName } from './format';
 import { InterventionSettings, ProgressControls } from './ProgressControls';
@@ -33,6 +34,7 @@ import { useGlossary } from './metricGlossary';
 import { NewsButton, NewsSheet, useNewsSheet } from './NewsFeed';
 import { CelebrationHost } from './Celebration';
 import { CupsView } from './CupsView';
+import { TeamSheetHost } from './TeamSheet';
 import { cashState } from './teamState';
 import {
   BANKRUPTCY_ROUNDS,
@@ -51,7 +53,6 @@ function NavIcon({ page }: { page: Page }) {
       'M7 3h10v7a5 5 0 0 1-10 0z M7 5H3v4a4 4 0 0 0 4 4 M17 5h4v4a4 4 0 0 1-4 4 M12 15v5 M8 21h8',
     squad:
       'M12 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6z M5 21v-5a7 7 0 0 1 14 0v5 M4 5a2 2 0 0 0 0 4 M20 5a2 2 0 0 1 0 4',
-    transfers: 'M4 8h14l-3-3 M18 8l-3 3 M20 16H6l3-3 M6 16l3 3',
     manager: 'M12 2l10 10-10 10L2 12z M8 12h8 M12 8v8',
     business: 'M3 18l6-6 4 3 8-11 M15 4h6v6',
     history: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z M12 7v5l4 3',
@@ -199,13 +200,11 @@ function ClubJournal({
               </small>
               <div className={s.fixtureTeams}>
                 <div>
-                  {home && <ClubCrest w={w} id={home.id} size={20} />}
-                  {home?.name || '시즌의 마지막 페이지'}
+                  {home ? <ClubLink w={w} id={home.id} crest={20} /> : '시즌의 마지막 페이지'}
                 </div>
                 <b>vs</b>
                 <div>
-                  {away && <ClubCrest w={w} id={away.id} size={20} />}
-                  {away?.name || '다음 시즌을 기다립니다'}
+                  {away ? <ClubLink w={w} id={away.id} crest={20} /> : '다음 시즌을 기다립니다'}
                 </div>
               </div>
               <button
@@ -294,13 +293,12 @@ const NAV: [Page, string][] = [
   ['europe', '컵 대회'],
   ['history', '클럽 기록실'],
   ['squad', '선수단'],
-  ['transfers', '이적 시장'],
   ['manager', '스태프'],
   ['business', '구단 운영'],
 ];
 /**
  * Home sits in the raised centre; competition destinations fan out to the left and club
- * management to the right.
+ * management to the right. The transfer market is a segment of the squad page.
  */
 const TABS: [Page, string, string, Page[]][] = [
   ['league', '리그', '리그', ['league']],
@@ -309,7 +307,6 @@ const TABS: [Page, string, string, Page[]][] = [
   ['dashboard', '홈', '클럽 홈', ['dashboard']],
   ['squad', '선수단', '선수단', ['squad']],
   ['manager', '스태프', '스태프', ['manager']],
-  ['transfers', '이적', '이적 시장', ['transfers']],
   ['business', '운영', '구단 운영', ['business']],
 ];
 /** The HUD menu lists only destinations the tab bar does not already show. */
@@ -1015,7 +1012,7 @@ export function App() {
                   <div hidden={contentPage !== 'europe'}>
                     <ConnectedEurope />
                   </div>
-                  {(['squad', 'transfers', 'manager', 'business', 'history'] as Page[]).includes(
+                  {(['squad', 'manager', 'business', 'history'] as Page[]).includes(
                     contentPage,
                   ) && <ConnectedRich page={contentPage} client={client} />}
                 </div>
@@ -1170,6 +1167,7 @@ export function App() {
       )}
       <GlossaryHost />
       {w && !replacing && <NewsSheet />}
+      {w && !replacing && <TeamSheetHost />}
       {w && !replacing && <CelebrationHost />}
       {pendingImport && (
         <Dialog label="기록 가져오기 확인" onClose={() => setPendingImport(undefined)}>

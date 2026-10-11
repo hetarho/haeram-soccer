@@ -11,7 +11,7 @@ import type { GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
 import { useMatchView, useNavigation } from './state';
 import { useGameState } from '../runtime/store';
-import { ClubCrest } from './ClubCrest';
+import { ClubLink } from './ClubLink';
 import { crestOf } from './crests';
 import { watchNextMatch } from './watch';
 import { StrategyPanel } from './StrategyPanel';
@@ -373,8 +373,13 @@ export function ClubHub({
               ` · ${next.home === w.playerClub ? '홈' : '원정'} · ${competitionLabel(w, next)}`}
           </small>
           <h3>
-            {opponent && <ClubCrest w={w} id={opponent.id} size={22} />}
-            {opponent ? `vs ${opponent.name}` : '다음 시즌을 준비해요'}
+            {opponent ? (
+              <>
+                vs <ClubLink w={w} id={opponent.id} crest={22} large />
+              </>
+            ) : (
+              '다음 시즌을 준비해요'
+            )}
           </h3>
           <p data-testid="hub-preparation">
             {tacticLabel[w.tactic]} · {w.lineup ? '직접 고른 선발' : '감독 자동 선발'}

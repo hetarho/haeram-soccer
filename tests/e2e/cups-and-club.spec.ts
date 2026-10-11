@@ -131,6 +131,84 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     expect(await horizontalOverflow(page)).toBe(0);
   });
 
+  test('opens the team sheet of a club in our cup tie and stacks sheets over sheets', async ({
+    page,
+  }) => {
+    await found(page, 'club-links-journey');
+    const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
+    await nav.getByRole('button', { name: '컵 대회', exact: true }).click();
+    const tie = page
+      .getByRole('region', { name: '잉글랜드 컵' })
+      .getByRole('listitem')
+      .filter({ hasText: '우리 팀' })
+      .first();
+    // Both clubs of the tie open their sheets; ours is Haeram Athletic.
+    await expect(tie.getByRole('button', { name: /팀 정보$/ })).toHaveCount(2);
+    const rival = tie
+      .getByRole('button', { name: /팀 정보$/ })
+      .filter({ hasNotText: 'Haeram Athletic' });
+    const name = (await rival.textContent())!.trim();
+    await expect(rival).toHaveAccessibleName(`${name} 팀 정보`);
+    await rival.click();
+    const sheet = page.getByRole('dialog', { name, exact: true });
+    await expect(sheet).toContainText('클럽 Elo');
+    await expect(sheet).toContainText('리그 순위');
+    await expect(sheet).toContainText('OVR');
+    await page.keyboard.press('Escape');
+    await expect(sheet).toHaveCount(0);
+    expect(await horizontalOverflow(page)).toBe(0);
+
+    // A club named inside another sheet opens on top of it; Escape closes only the top one.
+    await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
+    await page
+      .getByTestId('club-hub')
+      .getByRole('button', { name: '시즌 상세', exact: true })
+      .click();
+    const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
+    const club = journal
+      .getByRole('table', { name: '리그 순위표' })
+      .getByRole('button', { name: /팀 정보$/ })
+      .nth(1);
+    const clubName = (await club.getAttribute('aria-label'))!.replace(/ 팀 정보$/, '');
+    await club.click();
+    const stacked = page.getByRole('dialog', { name: clubName, exact: true });
+    await expect(stacked).toContainText('클럽 Elo');
+    await expect(page.getByRole('dialog')).toHaveCount(2);
+    await page.keyboard.press('Escape');
+    await expect(stacked).toHaveCount(0);
+    await expect(journal).toBeVisible();
+    await expect(club).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+  });
+
+  test('keeps the transfer market as a squad segment with its own address', async ({ page }) => {
+    await found(page, 'market-segment-journey');
+    const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
+    await nav.getByRole('button', { name: '선수단', exact: true }).click();
+    const segments = page.getByRole('group', { name: '선수단 메뉴' });
+    await expect(segments.getByRole('button')).toHaveText(['선수단 18/26', '유소년', '이적 시장']);
+    await segments.getByRole('button', { name: '이적 시장', exact: true }).click();
+    await expect(page.getByRole('heading', { name: '이적 시장', level: 2 })).toBeVisible();
+    await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
+    await expect(segments.getByRole('button', { name: '이적 시장' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await expect(nav.getByRole('button', { name: '선수단', exact: true })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    await expect(page).toHaveURL(/\/transfers$/);
+    expect(await horizontalOverflow(page)).toBe(0);
+    // The market's address reopens the squad page on the market.
+    await page.reload();
+    await expect(page.getByRole('heading', { name: '이적 시장', level: 2 })).toBeVisible();
+    await segments.getByRole('button', { name: '선수단 18/26' }).click();
+    await expect(page.getByRole('heading', { name: '선수단', level: 2 })).toBeVisible();
+    await expect(page).toHaveURL(/\/squad$/);
+  });
+
   test('charts league position, Elo and values in the records room', async ({ page }) => {
     await found(page, 'trends-journey');
     await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();

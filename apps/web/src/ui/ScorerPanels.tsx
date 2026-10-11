@@ -1,5 +1,5 @@
 import { Select } from './Select';
-import { ClubCrest } from './ClubCrest';
+import { ClubLink } from './ClubLink';
 import { memo, useState } from 'react';
 import type { GoalScorer, World } from '../../../../packages/contracts/src/types';
 import { seasonName } from './format';
@@ -28,7 +28,6 @@ function TrackingNote({ w }: Props) {
   ) : null;
 }
 
-const clubName = (w: World, id: string) => w.clubs.find((club) => club.id === id)?.name || id;
 const playerLabel = (w: World, player: GoalScorer) =>
   `${player.name} · ${w.clubs.find((club) => club.id === player.club)?.short || player.club}`;
 const roundLabel = (round: number) => (round === 0 ? '개막 전' : `${round}라운드`);
@@ -75,7 +74,7 @@ export const ScorerStandings = memo(function ScorerStandings({ w }: Props) {
                       {player.club === w.playerClub && <span className={s.ownBadge}>우리 팀</span>}
                     </th>
                     <td className={s.club}>
-                      <ClubCrest w={w} id={player.club} size={14} /> {clubName(w, player.club)}
+                      <ClubLink w={w} id={player.club} crest={14} />
                     </td>
                     <td>{player.role}</td>
                     <td>{player.appearances}</td>

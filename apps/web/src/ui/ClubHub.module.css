@@ -185,9 +185,12 @@
   margin: 2px 0;
   font-size: 18px;
   font-weight: 900;
+  white-space: nowrap;
+}
+/* The opponent's name gives way before the card does. */
+.fixtureInfo h3 button > span {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 .fixtureInfo h3 i {
   flex: 0 0 14px;

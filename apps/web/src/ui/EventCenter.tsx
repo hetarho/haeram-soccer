@@ -8,7 +8,7 @@ import { managerTerm } from '../../../../packages/engine/src/styles';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { stoppingEvents, useProgression, type ProgressionController } from '../runtime/progression';
-import { useNavigation, useSquadView, useStaffView } from './state';
+import { openMarket, useNavigation, useSquadView, useStaffView } from './state';
 import { competitionLabel, money } from './format';
 import { Dialog } from './Dialog';
 import s from './EventCenter.module.css';
@@ -138,9 +138,9 @@ export function EventCenter({
     await read(item);
   };
   // A window opening is routine club business: read it and go to the market, no ceremony.
-  const openMarket = () => {
+  const showMarket = () => {
     void read(item);
-    setPage('transfers');
+    openMarket();
   };
   return (
     <aside
@@ -195,7 +195,7 @@ export function EventCenter({
           </>
         ) : item.kind === 'window-open' ? (
           <>
-            <button className={s.primary} disabled={acting} onClick={openMarket}>
+            <button className={s.primary} disabled={acting} onClick={showMarket}>
               이적시장 보기
             </button>
             <button disabled={acting} onClick={() => void read(item)}>

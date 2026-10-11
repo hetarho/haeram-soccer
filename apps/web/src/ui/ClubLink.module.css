@@ -1,0 +1,52 @@
+/* A club name that opens its team sheet: it reads as text, with a dotted underline, until pressed. */
+.link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  font-weight: inherit;
+  text-align: inherit;
+  vertical-align: middle;
+}
+/*
+ * Repeated to outrank the phone rule that sizes every button in the view and in sheets to 48 px:
+ * a name keeps its line, and ::after carries the hit area to 44 px.
+ */
+.link.link.link {
+  min-height: 32px;
+}
+.link::after {
+  content: '';
+  position: absolute;
+  inset: -6px 0;
+}
+.link:active:not(:disabled) {
+  transform: none;
+  box-shadow: none;
+  opacity: 0.72;
+}
+.link > svg {
+  flex: none;
+}
+.link > span {
+  min-width: 0;
+  text-decoration: underline dotted color-mix(in srgb, currentColor 45%, transparent);
+  text-underline-offset: 3px;
+}
+/* A headline name is a control in its own right: a 44 px box laid out in a name's 32 px. */
+.link.link.link.large {
+  min-height: 44px;
+  margin-block: -6px;
+}
+.large::after {
+  inset: 0;
+}

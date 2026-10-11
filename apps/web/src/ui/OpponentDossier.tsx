@@ -3,6 +3,7 @@ import { fixtureDate } from '../../../../packages/engine/src/calendar';
 import { tacticLabel } from '../../../../packages/engine/src/world';
 import { competitionLabel, kindLabel, seasonName } from './format';
 import { resultFor, scoutOpponent } from './scouting';
+import { ClubLink } from './ClubLink';
 import s from './Analysis.module.css';
 
 export function OpponentDossier({ w }: { w: World }) {
@@ -12,7 +13,9 @@ export function OpponentDossier({ w }: { w: World }) {
     <details className={s.disclosure}>
       <summary>상대 스카우팅 노트</summary>
       <section className={s.content} aria-label="상대 스카우팅">
-        <h3>스카우팅 · {scout.opponent.name}</h3>
+        <h3>
+          스카우팅 · <ClubLink w={w} id={scout.opponent.id} />
+        </h3>
         <p className={s.note}>
           {fixtureDate(w, scout.next)} · {competitionLabel(w, scout.next)} ·{' '}
           {scout.next.home === w.playerClub ? '홈' : '원정'}

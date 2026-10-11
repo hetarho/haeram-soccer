@@ -1,29 +1,26 @@
 import { create } from 'zustand';
 export type Page =
-  | 'dashboard'
-  | 'match'
-  | 'league'
-  | 'europe'
-  | 'squad'
-  | 'transfers'
-  | 'manager'
-  | 'business'
-  | 'history';
+  'dashboard' | 'match' | 'league' | 'europe' | 'squad' | 'manager' | 'business' | 'history';
 const paths: Record<Page, string> = {
   dashboard: '/journal',
   match: '/matches',
   league: '/leagues',
   europe: '/europe',
   squad: '/squad',
-  transfers: '/transfers',
   manager: '/manager',
   business: '/business',
   history: '/history',
 };
+/** The transfer market is the squad page's market segment; its own address opens it there. */
+const MARKET_PATH = '/transfers';
+const at = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
 const current = (): Page =>
-  (Object.entries(paths).find(
-    ([, path]) => location.pathname === path || location.pathname.startsWith(path + '/'),
-  )?.[0] as Page) || 'dashboard';
+  at(MARKET_PATH)
+    ? 'squad'
+    : (Object.entries(paths).find(([, path]) => at(path))?.[0] as Page) || 'dashboard';
+/** The squad page's address names the market while that segment is open, so a reload keeps it. */
+const address = (page: Page) =>
+  page === 'squad' && useSquadView.getState().tab === 'market' ? MARKET_PATH : paths[page];
 export const useNavigation = create<{
   page: Page;
   setPage: (page: Page) => void;
@@ -32,11 +29,11 @@ export const useNavigation = create<{
 }>((set) => ({
   page: typeof location === 'undefined' ? 'dashboard' : current(),
   setPage: (page) => {
-    if (location.pathname !== paths[page]) history.pushState(null, '', paths[page]);
+    if (location.pathname !== address(page)) history.pushState(null, '', address(page));
     set({ page });
   },
   replacePage: (page) => {
-    if (location.pathname !== paths[page]) history.replaceState(null, '', paths[page]);
+    if (location.pathname !== address(page)) history.replaceState(null, '', address(page));
     set({ page });
   },
 }));
@@ -53,15 +50,56 @@ export const useMatchView = create<{
   finished: false,
   set: ({ matchId, finished }) => set({ matchId, finished }),
 }));
-if (typeof window !== 'undefined')
-  window.addEventListener('popstate', () => useNavigation.setState({ page: current() }));
 
-/** The squad group keeps its sub-view while the manager office is open. */
-export type SquadTab = 'roster' | 'academy';
+/**
+ * The squad page's segments: roster, academy and the transfer market. The page keeps its segment
+ * while the owner is elsewhere; switching segments swaps the address without a history entry.
+ */
+export type SquadTab = 'roster' | 'academy' | 'market';
 export const useSquadView = create<{
   tab: SquadTab;
   setTab: (tab: SquadTab) => void;
-}>((set) => ({ tab: 'roster', setTab: (tab) => set({ tab }) }));
+}>((set) => ({
+  tab: typeof location !== 'undefined' && at(MARKET_PATH) ? 'market' : 'roster',
+  setTab: (tab) => {
+    set({ tab });
+    if (useNavigation.getState().page === 'squad' && location.pathname !== address('squad'))
+      history.replaceState(history.state, '', address('squad'));
+  },
+}));
+/** Opens the transfer market: the squad page on its market segment. */
+export function openMarket() {
+  useSquadView.getState().setTab('market');
+  useNavigation.getState().setPage('squad');
+}
+if (typeof window !== 'undefined')
+  window.addEventListener('popstate', () => {
+    const page = current();
+    // Back and forward follow the address: the market's own address opens that segment.
+    if (page === 'squad' && at(MARKET_PATH) !== (useSquadView.getState().tab === 'market'))
+      useSquadView.setState({ tab: at(MARKET_PATH) ? 'market' : 'roster' });
+    useNavigation.setState({ page });
+  });
+
+/**
+ * The clubs whose team sheets are open, oldest first: a club named inside a sheet opens on top
+ * of it and closing returns to the one below (→WEB-58). Opening a club already in the stack
+ * returns to its sheet instead of stacking it twice.
+ */
+export const useTeamSheet = create<{
+  ids: string[];
+  open: (id: string) => void;
+  close: () => void;
+  reset: () => void;
+}>((set) => ({
+  ids: [],
+  open: (id) =>
+    set(({ ids }) => ({
+      ids: ids.includes(id) ? ids.slice(0, ids.indexOf(id) + 1) : [...ids, id],
+    })),
+  close: () => set(({ ids }) => ({ ids: ids.slice(0, -1) })),
+  reset: () => set({ ids: [] }),
+}));
 
 /** The staff page's tabs, in tab-bar order. */
 export const STAFF_TABS = [

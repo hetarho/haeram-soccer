@@ -140,10 +140,10 @@
   margin: 5px 0;
   font-size: 15px;
 }
-.rival h4 span {
+.rival h4 .versus {
   color: var(--text-faint);
   font-weight: normal;
-  margin: 0 7px;
+  margin: 0 3px;
 }
 .projection {
   display: grid;
@@ -216,28 +216,6 @@
 }
 .standings .own .club {
   font-weight: bold;
-}
-.clubName {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  min-width: 0;
-}
-/* The club name opens its team sheet; it reads as text until pressed. */
-button.clubName {
-  min-height: 32px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-button.clubName > span {
-  text-decoration: underline dotted color-mix(in srgb, currentColor 40%, transparent);
-  text-underline-offset: 3px;
 }
 .myClub {
   display: inline-block;
@@ -391,7 +369,8 @@ button.clubName > span {
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.results .side:first-of-type {
+/* The home side reads toward the score; our own row's badge comes first in the markup. */
+.results .homeSide {
   justify-content: flex-end;
   text-align: right;
 }

@@ -30,6 +30,7 @@ import {
 } from '../../../../packages/engine/src/transfers';
 import { buildOf, cardOf } from '../../../../packages/engine/src/build';
 import { Dialog } from './Dialog';
+import { ClubLink } from './ClubLink';
 import { OvrBadge } from './OvrBadge';
 import {
   DEFAULT_ROSTER_VIEW,
@@ -94,7 +95,29 @@ function Header({
     </div>
   );
 }
-/** The squad page's two views; staff is its own destination in the navigation (→WEB-43). */
+const SQUAD_HEADS: Record<SquadTab, { eyebrow: string; title: string; description: string }> = {
+  roster: {
+    eyebrow: 'SQUAD',
+    title: '선수단',
+    description: '능력·피로·잠재력을 보고 매각을 결정해요. 선발과 기용은 감독이 맡아요.',
+  },
+  academy: {
+    eyebrow: 'SQUAD',
+    title: '유소년',
+    description:
+      '아카데미에서 키운 유망주를 1군으로 올려요. 유스 디렉터가 입단 수준과 성장을 좌우해요.',
+  },
+  market: {
+    eyebrow: 'TRANSFERS',
+    title: '이적 시장',
+    description:
+      '이적료가 있는 영입·임대·매각은 이적시장 기간에만 가능하고, 자유계약 선수는 언제든 영입해요.',
+  },
+};
+/**
+ * The squad page's three views: the players we have, the academy and the market that brings more;
+ * staff is its own destination in the navigation (→WEB-43).
+ */
 function SquadSegments({ current, players }: { current: SquadTab; players: number }) {
   const setTab = useSquadView((state) => state.setTab);
   return (
@@ -103,6 +126,7 @@ function SquadSegments({ current, players }: { current: SquadTab; players: numbe
         [
           ['roster', `선수단 ${players}/26`],
           ['academy', '유소년'],
+          ['market', '이적 시장'],
         ] as const
       ).map(([id, label]) => (
         <button
@@ -662,18 +686,11 @@ function Squad({ state, client }: Props) {
     visiblePlayers = listed.slice(shownPage * 25, (shownPage + 1) * 25);
   return (
     <>
-      <Header
-        eyebrow="SQUAD"
-        title={tab === 'academy' ? '유소년' : '선수단'}
-        description={
-          tab === 'academy'
-            ? '아카데미에서 키운 유망주를 1군으로 올려요. 유스 디렉터가 입단 수준과 성장을 좌우해요.'
-            : '능력·피로·잠재력을 보고 매각을 결정해요. 선발과 기용은 감독이 맡아요.'
-        }
-      >
+      <Header {...SQUAD_HEADS[tab]}>
         <SquadSegments current={tab} players={active.length} />
       </Header>
       {tab === 'academy' && <AcademyView w={w} client={client} />}
+      {tab === 'market' && <RecruitmentDesk state={state} client={client} />}
       {tab === 'roster' && (
         <div className={s.filters}>
           <button onClick={() => setComparing(true)}>우리 선수 비교</button>
@@ -1118,13 +1135,17 @@ function History({ state, client }: Props) {
               {matches.map((m) => (
                 <tr key={m.id}>
                   <td>{m.round}</td>
-                  <td>{w.clubs.find((c) => c.id === m.home)?.name}</td>
+                  <td>
+                    <ClubLink w={w} id={m.home} crest={14} />
+                  </td>
                   <td>
                     <b>
                       {m.score.home}–{m.score.away}
                     </b>
                   </td>
-                  <td>{w.clubs.find((c) => c.id === m.away)?.name}</td>
+                  <td>
+                    <ClubLink w={w} id={m.away} crest={14} />
+                  </td>
                   <td>{kindLabel[m.kind]}</td>
                   <td>
                     <button onClick={() => setMatch(m)}>경기 기록 보기</button>
@@ -1165,7 +1186,9 @@ function History({ state, client }: Props) {
                           {e.standings?.map((row) => (
                             <tr key={row[0]}>
                               <td>{row[1]}</td>
-                              <td>{w.clubs[row[0]].name}</td>
+                              <td>
+                                <ClubLink w={w} id={w.clubs[row[0]].id} crest={14} />
+                              </td>
                               <td>{row[2]}</td>
                               <td>{row[3]}</td>
                               <td>{row[4]}</td>
@@ -1275,7 +1298,9 @@ function History({ state, client }: Props) {
                         className={w.clubs[row[0]].id === w.playerClub ? s.own : undefined}
                       >
                         <td>{i + 1}</td>
-                        <td>{w.clubs[row[0]].name}</td>
+                        <td>
+                          <ClubLink w={w} id={w.clubs[row[0]].id} crest={14} />
+                        </td>
                         <td>{String.fromCharCode(65 + row[2])}</td>
                         <td>{row[3]}</td>
                         <td>{row[4]}</td>
@@ -1359,17 +1384,6 @@ function History({ state, client }: Props) {
 export default function Rich({ state, client, page }: Props & { page: Page }) {
   if (page === 'manager') return <ManagerView state={state} client={client} />;
   if (page === 'squad') return <Squad state={state} client={client} />;
-  if (page === 'transfers')
-    return (
-      <>
-        <Header
-          eyebrow="TRANSFERS"
-          title="이적 시장"
-          description="이적료가 있는 영입·임대·매각은 이적시장 기간에만 가능하고, 자유계약 선수는 언제든 영입해요."
-        />
-        <RecruitmentDesk state={state} client={client} />
-      </>
-    );
   if (page === 'business')
     return (
       <>

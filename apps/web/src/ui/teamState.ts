@@ -223,7 +223,8 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           id: 'market',
           label: '선수 매각 살펴보기',
           effect: '이적시장에서 제안과 매각 가능 선수를 확인해요',
-          page: 'transfers',
+          page: 'squad',
+          tab: 'market',
         },
       ];
     }
@@ -235,7 +236,8 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           id: 'market',
           label: '이적시장',
           effect: '자유계약 선수는 언제든, 이적료 선수는 이적시장 기간에 영입해요',
-          page: 'transfers',
+          page: 'squad',
+          tab: 'market',
         },
         {
           id: 'academy',

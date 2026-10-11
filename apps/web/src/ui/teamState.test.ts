@@ -91,9 +91,10 @@ describe('team state', () => {
     const states = teamStates(w);
     expect(cashState(w).tone).toBe('bad');
     expect(urgentState(states, cashState(w))!.key).toBe('cash');
-    expect(states.find((state) => state.key === 'squad')!.advice!.actions[0].page).toBe(
-      'transfers',
-    );
+    expect(states.find((state) => state.key === 'squad')!.advice!.actions[0]).toMatchObject({
+      page: 'squad',
+      tab: 'market',
+    });
   });
 
   it('speaks of runway in weeks and months, not rounds', () => {

@@ -40,7 +40,8 @@ test('discloses roster and opponent tactical fit before an actual seeded match',
   await page.getByTestId('club-hub').getByRole('button', { name: '전술·선발 준비' }).click();
   const dialog = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByText(opponent.name, { exact: true })).toBeVisible();
+  // The scouting note below names the club again, as the link to its team sheet.
+  await expect(dialog.getByText(opponent.name, { exact: true }).first()).toBeVisible();
   await expect(
     dialog.getByText(`상대 성향 ${tacticLabel[opponentTactic]}`, { exact: false }),
   ).toBeVisible();

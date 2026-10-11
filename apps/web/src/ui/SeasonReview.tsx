@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type PointerEvent } from 'react';
 import { ClubCrest } from './ClubCrest';
+import { ClubLink } from './ClubLink';
 import type { Event, MatchRecord, World } from '../../../../packages/contracts/src/types';
 import { country } from '../../../../packages/catalogs/src/index';
 import { clubOf } from '../../../../packages/engine/src/world';
@@ -192,7 +193,7 @@ function FinalTable({ w, rows }: { w: World; rows: FinalRow[] }) {
           {rows.map(([club, points, gf, ga], i) => (
             <tr key={club} className={w.clubs[club]?.id === w.playerClub ? s.own : undefined}>
               <td>{i + 1}</td>
-              <td>{w.clubs[club]?.name}</td>
+              <td>{w.clubs[club] && <ClubLink w={w} id={w.clubs[club].id} crest={14} />}</td>
               <td>{points}</td>
               <td>{signed(gf - ga)}</td>
             </tr>

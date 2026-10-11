@@ -427,6 +427,10 @@
   max-width: 0;
   width: 100%;
 }
+.table td:nth-child(2) button > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .own td {
   color: var(--gold);
   font-weight: 800;

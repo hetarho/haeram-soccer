@@ -37,9 +37,14 @@ async function foundMarket(
   await openMarket(page);
 }
 
+/** The market is the squad page's third segment. */
 async function openMarket(page: Page) {
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
+    .getByRole('button', { name: '선수단', exact: true })
+    .click();
+  await page
+    .getByRole('group', { name: '선수단 메뉴' })
     .getByRole('button', { name: '이적 시장', exact: true })
     .click();
   await expect(page.getByRole('heading', { name: '이적 시장', level: 2 })).toBeVisible();

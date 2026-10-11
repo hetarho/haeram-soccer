@@ -30,7 +30,12 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('tab', { name: '캠페인', exact: true }).click();
   await page.getByRole('button', { name: '캠페인 시작', exact: true }).first().click();
   await expect(page.getByRole('button', { name: '4라운드 남음' })).toBeVisible();
-  await page.getByRole('button', { name: '이적 시장', exact: true }).click();
+  // The market is a segment of the squad page.
+  await page.getByRole('button', { name: '선수단', exact: true }).click();
+  await page
+    .getByRole('group', { name: '선수단 메뉴' })
+    .getByRole('button', { name: '이적 시장', exact: true })
+    .click();
   await expect(page.getByRole('heading', { name: '이적 시장', level: 2 })).toBeVisible();
   await page.getByRole('button', { name: '자유계약 영입', exact: true }).click();
   await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toContainText(

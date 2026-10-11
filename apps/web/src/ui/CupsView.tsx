@@ -19,7 +19,7 @@ import {
 } from '../../../../packages/engine/src/knockout';
 import { phaseGroups } from '../../../../packages/engine/src/europe';
 import { emptyTable } from '../../../../packages/engine/src/season';
-import { ClubCrest } from './ClubCrest';
+import { ClubLink } from './ClubLink';
 import { number, seasonName } from './format';
 import s from './App.module.css';
 import c from './CupsView.module.css';
@@ -40,12 +40,14 @@ function rankIds(standings: Record<string, TableRow>, ids: string[]) {
   });
 }
 
+/** A club in a tie, table or final: its crest and name open its team sheet. */
 function Club({ w, id, strong }: { w: World; id: string; strong?: boolean }) {
   return (
-    <span className={`${c.club} ${strong ? c.strong : ''} ${id === w.playerClub ? c.ownName : ''}`}>
-      <ClubCrest w={w} id={id} size={16} />
-      <span>{nameOf(w, id)}</span>
-    </span>
+    <ClubLink
+      w={w}
+      id={id}
+      className={`${c.club} ${strong ? c.strong : ''} ${id === w.playerClub ? c.ownName : ''}`}
+    />
   );
 }
 
@@ -137,7 +139,9 @@ function TreeTie({
 }) {
   if (!slot || !round || index === undefined)
     return (
-      <li className={c.treeEmpty}>{slot && 'bye' in slot ? nameOf(w, slot.bye) : '추첨 전'}</li>
+      <li className={c.treeEmpty}>
+        {slot && 'bye' in slot ? <Club w={w} id={slot.bye} /> : '추첨 전'}
+      </li>
     );
   if ('bye' in slot)
     return (

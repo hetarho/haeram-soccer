@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { createWorld, advanceRound, groupKey, ranked } from '../../../../packages/engine/src/index';
 import { professionalStart } from '../../../../packages/engine/src/testing';
 import {
+  clubDivision,
   formFor,
   leagueFixtures,
+  leagueOf,
   leagueRules,
   leagueTimeline,
   orderIds,
@@ -96,5 +98,31 @@ describe('league insight facts', () => {
       .filter((c) => c.country === 'ITA' && c.tier === 0 && !c.representative)
       .map((c) => c.id);
     expect(leagueRules(w, top)).toMatchObject({ automatic: 0, playoff: 0, relegation: 3 });
+  });
+
+  it("finds any club's own league and names where it plays, whoever opens its sheet", () => {
+    const w = createWorld(input),
+      club = (id: string) => w.clubs.find((c) => c.id === id)!;
+    // Our amateur league is the clubs in its fixtures, representatives included.
+    const own = ownLeagueIds(w),
+      amateur = own.find((id) => id !== w.playerClub)!;
+    expect(leagueOf(w, club(w.playerClub))).toEqual(own);
+    expect(leagueOf(w, club(amateur))).toEqual(own);
+    expect(clubDivision(w, club(amateur))).toBe('아마추어 리그');
+    // A professional club abroad plays in its own division, named with its country.
+    const german = w.clubs.find((c) => c.country === 'GER' && c.tier === 1 && !c.representative)!;
+    const division = leagueOf(w, german);
+    expect(division).toContain(german.id);
+    expect(division.every((id) => club(id).country === 'GER' && club(id).tier === 1)).toBe(true);
+    expect(clubDivision(w, german)).toBe('독일 2부');
+    const regional = w.clubs.find((c) => c.country === 'ITA' && c.tier === 2 && c.group === 1)!;
+    expect(clubDivision(w, regional)).toBe('이탈리아 3부 B조');
+    // Continental representatives and amateurs outside our league play in no league.
+    const abroad = club('euro:4');
+    expect(leagueOf(w, abroad)).toEqual([]);
+    expect(clubDivision(w, abroad)).toBe('해외 클럽 · 그리스');
+    const idle = w.clubs.find((c) => c.representative && c.country === 'FRA' && c.tier > 0)!;
+    expect(leagueOf(w, idle)).toEqual([]);
+    expect(clubDivision(w, idle)).toBe('프랑스 아마추어 리그');
   });
 });

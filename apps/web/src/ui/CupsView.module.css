@@ -158,18 +158,12 @@
   color: var(--on-accent);
   background: var(--accent);
 }
-.club {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-}
 .club > span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.strong {
+.club.strong {
   font-weight: 800;
 }
 .ownName > span {

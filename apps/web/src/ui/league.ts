@@ -1,5 +1,6 @@
 import type { Club, Fixture, TableRow, World } from '../../../../packages/contracts/src/types';
-import { country } from '../../../../packages/catalogs/src/index';
+import { COUNTRIES, country } from '../../../../packages/catalogs/src/index';
+import { groupKey } from '../../../../packages/engine/src/season';
 
 const emptyRow = (): TableRow => ({
   played: 0,
@@ -32,6 +33,54 @@ export function ownLeagueIds(w: World): string[] {
         !c.representative,
     )
     .map((c) => c.id);
+}
+
+/**
+ * The clubs a club shares a league table with this season: ours (the amateur league while we play
+ * in it), else its professional division. Representatives outside our league play in none.
+ */
+export function leagueOf(w: World, club: Club): string[] {
+  const own = ownLeagueIds(w);
+  if (own.includes(club.id)) return own;
+  if (club.representative) return [];
+  const key = groupKey(club);
+  return w.clubs.filter((c) => !c.representative && groupKey(c) === key).map((c) => c.id);
+}
+
+/** Countries of the continental representatives, which play no league in the game. */
+const ABROAD: Record<string, string> = {
+  AUT: '오스트리아',
+  SCO: '스코틀랜드',
+  SUI: '스위스',
+  TUR: '튀르키예',
+  GRE: '그리스',
+  POL: '폴란드',
+  CZE: '체코',
+  DEN: '덴마크',
+  SWE: '스웨덴',
+  NOR: '노르웨이',
+  ROU: '루마니아',
+  CRO: '크로아티아',
+  SRB: '세르비아',
+  UKR: '우크라이나',
+  FIN: '핀란드',
+  HUN: '헝가리',
+};
+/**
+ * Where a club plays as a fan would say it: "2부" at home, "독일 1부" or "이탈리아 3부 B조"
+ * abroad, "아마추어 리그" below the professional game and "해외 클럽 · 그리스" for continental
+ * representatives.
+ */
+export function clubDivision(w: World, club: Club) {
+  const profile = COUNTRIES.find((c) => c.code === club.country);
+  if (!profile || club.id.startsWith('euro:'))
+    return `해외 클럽 · ${ABROAD[club.country] ?? club.country}`;
+  const groups = profile.groups[club.tier],
+    division = !groups
+      ? '아마추어 리그'
+      : `${club.tier + 1}부${groups.length > 1 ? ` ${String.fromCharCode(65 + club.group)}조` : ''}`,
+    home = w.clubs.find((c) => c.id === w.playerClub)?.country;
+  return club.country === home ? division : `${profile.name} ${division}`;
 }
 
 export function orderIds(ids: string[], tables: Record<string, TableRow>): string[] {

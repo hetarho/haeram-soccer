@@ -41,17 +41,9 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await page.setViewportSize({ width: 390, height: 844 });
   const mobileMenu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(mobileMenu).toBeVisible();
-  // The match view has no tab: it opens only from a watch action.
-  const tabs = [
-    '리그',
-    '컵 대회',
-    '클럽 기록실',
-    '클럽 홈',
-    '선수단',
-    '스태프',
-    '이적 시장',
-    '구단 운영',
-  ];
+  // The match view has no tab: it opens only from a watch action. The transfer market is a
+  // segment of the squad page.
+  const tabs = ['리그', '컵 대회', '클럽 기록실', '클럽 홈', '선수단', '스태프', '구단 운영'];
   await expect(mobileMenu.getByRole('button')).toHaveCount(tabs.length);
   expect(
     await mobileMenu

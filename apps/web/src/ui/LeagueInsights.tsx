@@ -13,9 +13,8 @@ import {
   rankChange,
   sameMembers,
 } from './league';
-import { ClubCrest } from './ClubCrest';
+import { ClubLink } from './ClubLink';
 import { clubOvr, ovrTier } from './OvrBadge';
-import { TeamSheet } from './TeamSheet';
 import s from './LeagueInsights.module.css';
 
 function Movement({ change }: { change?: number }) {
@@ -62,7 +61,6 @@ function Form({ results }: { results: ('승' | '무' | '패')[] }) {
 
 export function Standings({ w, ids, limit }: { w: World; ids: string[]; limit?: number }) {
   const [expanded, setExpanded] = useState(false);
-  const [team, setTeam] = useState<string>();
   const continental = w.europe.find((t) => t.standings === w.tables);
   const sorted = orderIds(ids, w.tables),
     rules = continental ? undefined : leagueRules(w, ids),
@@ -125,18 +123,9 @@ export function Standings({ w, ids, limit }: { w: World; ids: string[]; limit?: 
                   {i >= visibleLimit && <small aria-label="중간 순위 생략"> …</small>}
                 </td>
                 <th scope="row" className={s.club}>
-                  <button
-                    type="button"
-                    className={s.clubName}
-                    aria-label={`${club.name} 팀 정보`}
-                    onClick={() => setTeam(id)}
-                  >
-                    <ClubCrest w={w} id={id} size={16} />
-                    <span>
-                      {club.name}
-                      {id === w.playerClub && <span className={s.myClub}>우리 팀</span>}
-                    </span>
-                  </button>
+                  <ClubLink w={w} id={id}>
+                    {id === w.playerClub && <span className={s.myClub}>우리 팀</span>}
+                  </ClubLink>
                 </th>
                 <td>
                   <span className={s.teamOvr} data-tier={ovrTier(clubOvr(w, club))}>
@@ -175,7 +164,6 @@ export function Standings({ w, ids, limit }: { w: World; ids: string[]; limit?: 
           )}
         </div>
       )}
-      {team && <TeamSheet w={w} id={team} ids={ids} onClose={() => setTeam(undefined)} />}
       {rules && (
         <p className={s.legend}>
           {rules.automatic > 0 && (
@@ -359,8 +347,8 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
               {kindLabel[next.kind]} · 다음 상대 · {next.home === w.playerClub ? '홈' : '원정'}
             </span>
             <h4>
-              <ClubCrest w={w} id={own.id} size={18} /> {own.short} <span>vs</span>{' '}
-              <ClubCrest w={w} id={rival.id} size={18} /> {rival.name}
+              <ClubLink w={w} id={own.id} crest={18} short /> <span className={s.versus}>vs</span>{' '}
+              <ClubLink w={w} id={rival.id} crest={18} />
             </h4>
             <p>
               {leagueGame && rivalTable && t.played
@@ -634,7 +622,6 @@ export function RoundResults({ w, ids }: { w: World; ids: string[] }) {
   const round = selected !== undefined && rounds.includes(selected) ? selected : defaultRound;
   const results = fixtures.filter((f) => f.round === round),
     finished = results.filter((f) => f.score).length;
-  const club = (id: string) => w.clubs.find((c) => c.id === id)?.name || id;
   const resultClass = (f: Fixture) =>
     f.home === w.playerClub || f.away === w.playerClub ? s.ownResult : '';
   if (!rounds.length || !sameMembers(ids, ownLeagueIds(w))) return null;
@@ -670,16 +657,16 @@ export function RoundResults({ w, ids }: { w: World; ids: string[] }) {
           return (
             <li key={f.id} className={resultClass(f)} data-own={ours || undefined}>
               {ours && <span className={s.ownBadge}>우리 팀</span>}
-              <span className={`${s.side} ${f.home === w.playerClub ? s.ourName : ''}`}>
-                <span>{club(f.home)}</span>
-                <ClubCrest w={w} id={f.home} size={16} />
+              <span
+                className={`${s.side} ${s.homeSide} ${f.home === w.playerClub ? s.ourName : ''}`}
+              >
+                <ClubLink w={w} id={f.home} mirror />
               </span>
               <b aria-label={f.score ? `${f.score.home} 대 ${f.score.away}` : '경기 예정'}>
                 {f.score ? `${f.score.home} – ${f.score.away}` : 'vs'}
               </b>
               <span className={`${s.side} ${f.away === w.playerClub ? s.ourName : ''}`}>
-                <ClubCrest w={w} id={f.away} size={16} />
-                <span>{club(f.away)}</span>
+                <ClubLink w={w} id={f.away} />
               </span>
             </li>
           );

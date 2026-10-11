@@ -169,7 +169,10 @@ for (const viewport of [
     await career.click();
     await expect(career).toHaveAttribute('aria-checked', 'true');
     await page.keyboard.press('Escape');
-    await page.getByRole('button', { name: '이적 시장', exact: true }).click();
+    await page
+      .getByRole('group', { name: '선수단 메뉴' })
+      .getByRole('button', { name: '이적 시장', exact: true })
+      .click();
     const order = page.getByRole('combobox', { name: '영입 후보 정렬', exact: true });
     await expectTouchControl(order, viewport);
     await chooseOption(order, 'potential');
