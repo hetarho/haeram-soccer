@@ -27,11 +27,21 @@ test('advances real days at each speed, stops and restores the saved calendar', 
   await expect(pace('0.5초에 하루')).toHaveAttribute('aria-pressed', 'true');
   await expect(date).toHaveText('1950년 8월 3일');
   await page.getByRole('button', { name: '자동 진행 정지' }).click();
-  const stopped = await date.textContent();
+  // A day step already in flight when the owner stops still lands; read the date once it rests.
+  let stopped = await date.innerText();
+  await expect
+    .poll(async () => {
+      const before = stopped;
+      await page.waitForTimeout(400);
+      stopped = await date.innerText();
+      return stopped === before;
+    })
+    .toBe(true);
   await page.waitForTimeout(1200);
-  await expect(date).toHaveText(stopped!);
+  await expect(date).toHaveText(stopped);
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
-  await expect(date).toHaveText(stopped!);
+  await expect(date).toHaveText(stopped);
   await expect(page.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
   // x10 runs on to the eve of our first match and the clock stops there.
   await pace('0.1초에 하루').click();

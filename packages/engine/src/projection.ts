@@ -3,7 +3,7 @@ import { ratio } from './primitives';
 import { clubOf, quote } from './world';
 import { FINANCE_CONFIG, gateProjection, operatingCosts, seasonPrize } from './finance';
 import { sponsorAnnual } from './operations';
-import { groupKey, ranked } from './season';
+import { ownLeagueClubs, ranked } from './season';
 import { SEASON_ROUNDS } from './calendar';
 
 export type ProjectionKey = 'operating' | 'gate' | 'sponsor' | 'performance' | 'prize';
@@ -41,11 +41,7 @@ export { seasonPrize } from './finance';
 /** Our current league position, among the same members the season close ranks. */
 export function currentLeagueRank(w: World) {
   const own = clubOf(w);
-  const members = w.lower
-    ? w.clubs.filter((c) =>
-        w.fixtures.some((f) => f.kind === 'lower' && (f.home === c.id || f.away === c.id)),
-      )
-    : w.clubs.filter((c) => groupKey(c) === groupKey(own) && !c.representative);
+  const members = ownLeagueClubs(w);
   return { rank: ranked(w, members).findIndex((c) => c.id === own.id) + 1, clubs: members.length };
 }
 

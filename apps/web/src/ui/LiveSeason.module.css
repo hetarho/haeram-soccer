@@ -9,11 +9,10 @@
   top: -2px;
   z-index: 6;
   padding: 4px 0 6px;
-  /* Translucent so the page background shows through instead of a flat band. */
-  background: rgba(10, 22, 19, 0.72);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  mask-image: linear-gradient(180deg, #000 85%, transparent);
+  /* Near-opaque like the HUD: a backdrop blur or mask over the fixed page background re-rasters
+     the whole band on every league visit, about 20 times the cost of any other tab. */
+  background: var(--hud);
+  box-shadow: 0 8px 12px -10px rgba(0, 0, 0, 0.6);
 }
 .tabs {
   margin-bottom: 0;

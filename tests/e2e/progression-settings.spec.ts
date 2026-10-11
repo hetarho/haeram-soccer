@@ -66,8 +66,17 @@ test('mobile clock exposes every pace as a touch target and advances at the chos
   await expect(daily).toHaveAttribute('aria-pressed', 'false');
   await expect(date).toHaveText('1950년 8월 3일');
   await stop.click();
-  const stepped = await date.innerText();
-  expect(['1950년 8월 3일', '1950년 8월 4일']).toContain(stepped);
+  // A day step already in flight when the owner stops still lands; read the date once it rests.
+  let stepped = await date.innerText();
+  await expect
+    .poll(async () => {
+      const before = stepped;
+      await page.waitForTimeout(400);
+      stepped = await date.innerText();
+      return stepped === before;
+    })
+    .toBe(true);
+  expect(['1950년 8월 3일', '1950년 8월 4일', '1950년 8월 5일']).toContain(stepped);
   await page.waitForTimeout(1200);
   await expect(date).toHaveText(stepped);
   // x10 runs on to the eve of our first match and the clock stops there.

@@ -144,16 +144,26 @@ export function ranked(w: World, clubs: Club[]) {
     );
   });
 }
+/**
+ * The own league's clubs in world order: the amateur league's are those in its fixtures, found in
+ * one pass (testing each club against every fixture took most of a season and of a policy-board
+ * render).
+ */
+export function ownLeagueClubs(w: World) {
+  if (!w.lower) {
+    const key = groupKey(clubOf(w));
+    return w.clubs.filter((c) => groupKey(c) === key && !c.representative);
+  }
+  return lowerLeagueClubs(w);
+}
+function lowerLeagueClubs(w: World) {
+  const ids = new Set(w.fixtures.flatMap((f) => (f.kind === 'lower' ? [f.home, f.away] : [])));
+  return w.clubs.filter((c) => ids.has(c.id));
+}
 /** Preserve the league membership at this point, even after promotion or relegation. */
 export function snapshotStandings(w: World) {
   const own = clubOf(w);
-  // One pass over the fixtures: testing each club against every fixture took most of a season.
-  const lower = w.lower
-    ? new Set(w.fixtures.flatMap((f) => (f.kind === 'lower' ? [f.home, f.away] : [])))
-    : undefined;
-  const members = lower
-    ? w.clubs.filter((c) => lower.has(c.id))
-    : w.clubs.filter((c) => groupKey(c) === groupKey(own) && !c.representative);
+  const members = ownLeagueClubs(w);
   const snapshots = (w.rankHistory || []).filter(
     (s) =>
       !(s.year === w.year && s.round === w.round && s.tier === own.tier && s.group === own.group),
@@ -434,14 +444,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     oldTier = own.tier,
     oldGroup = own.group;
   const table = w.tables[own.id],
-    order = ranked(
-      w,
-      w.lower
-        ? w.clubs.filter((c) =>
-            w.fixtures.some((f) => f.kind === 'lower' && (f.home === c.id || f.away === c.id)),
-          )
-        : w.clubs.filter((c) => groupKey(c) === groupKey(own) && !c.representative),
-    );
+    order = ranked(w, ownLeagueClubs(w));
   settleSeasonPrize(w, order.findIndex((c) => c.id === own.id) + 1, order.length);
   const champions = COUNTRIES.map((c) => {
     const cup = w.cups?.find((entry) => entry.country === c.code);
@@ -512,9 +515,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   promote(w);
   const last = country(own.country).groups.length - 1;
   if (wasLower) {
-    const lowerClubs = w.clubs.filter((c) =>
-      w.fixtures.some((f) => f.kind === 'lower' && (f.home === c.id || f.away === c.id)),
-    );
+    const lowerClubs = lowerLeagueClubs(w);
     const lowerOrder = ranked(w, lowerClubs);
     let winner = lowerOrder[0];
     // The champions go up; second to fifth play off for the place when the own club is among them.
