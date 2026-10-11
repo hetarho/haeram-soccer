@@ -17,16 +17,16 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 4 | 4 | - | 2 |
-| WEB | 42 | 42 | - | 0 |
+| WEB | 43 | 43 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
 | CLUB | 15 | 15 | - | 0 |
 | MATCH | 7 | 7 | - | 0 |
 | LEAGUE | 4 | 4 | - | 0 |
-| STAFF | 9 | 9 | - | 0 |
+| STAFF | 10 | 10 | - | 0 |
 | ECON | 10 | 10 | - | 0 |
 | EURO | 2 | 2 | - | 0 |
-| HIST | 5 | 5 | - | 0 |
-| SAVE | 14 | 14 | - | 0 |
+| HIST | 6 | 6 | - | 0 |
+| SAVE | 15 | 15 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -38,6 +38,7 @@
 - Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
 
 ## log
+- 261012 WEB r43 STAFF r10 HIST r6 SAVE r15 implemented directly: manager candidates drawn within their school's bands (veteran firefighters, young developers) with the trait shown instead of ambition, the firefighter leaves at the close unless renewed each April (reminder, delegated renewal), staff page tabs 감독/감독 후보/코치진/위임, transfer market as the squad page's third segment (seven phone tabs), every club name opens a stacking team sheet for any club, closed seasons archive top scorers, per-round rank, the Elo spread and cup brackets from the last 32; rules 1.12.0, worst century checkpoint 1,312,340 bytes
 - 261012 CI fix: CI WebKit stalls its web process after reloading the long records page (flaky one run, failed twice the next); the record-book journey reopens the records room in a fresh page instead of reloading
 - 261012 WEB r42 LEAGUE r4 implemented directly: staff in the phone tab bar, OVR column and team sheets for every club, knockout tree view for cups, rival strength cap 92→99 with rare club projects (95+ rivals now appear by chance)
 - 261012 ECON r10 STAFF r9 WEB r41 SAVE r14 implemented directly: manager and coach ages, ceilings and growth (young hires as bets, decline from 60, managers retire at 70) with OVR/POT chips; staff out of the squad segments; manager departure choice; operations tabs with build areas pairing cards and dials (이적 기조→매각 기조); supporters follow reputation without a ceiling plus a global fan income; 20 facility levels at 250×1.38^(L−1); bankruptcy after 8 rounds in debt with a red status band and game-over page; rules 1.11.0, worst century checkpoint 1,237,356 bytes
@@ -57,4 +58,3 @@
 - 261009 WEB r32 MATCH r4 CLUB r9 SAVE r7 implemented directly: player-duel engine for own/own-league matches (summary formula elsewhere, matched scoring scale), event-driven playback with a 32/55 u/s ball, live possession/xG/shot charts, 1–16x speeds, watch-only match view, clock on every view, club crests (432,000 combinations), remedy sheets and care actions; rules 1.4.0, golden fixtures regenerated
 - 261009 update-ssot WEB r32 MATCH r4 CLUB r9 SAVE r7 start: watch-only match view, clock on every view, crests, player-duel engine, care actions; implementing directly
 - 261009 ARCH r4 implemented directly: npm→pnpm 10.34.6 workspaces, lockfile imported from package-lock, CI/Netlify/Playwright/benchmark fingerprints switched
-- 261009 WEB r31 CLUB r8 LEAGUE r2 STAFF r5 ECON r6 SAVE r6 implemented directly: 1/3/5-day paces stopping only for enabled events, season close after the final round with a review page and window ceremony, 46-game league income, business delegation, cash warnings, deferred youth promotions; rules 1.3.0; delegated 10-season sims 40/40 solvent (was 2/40 past year 8)

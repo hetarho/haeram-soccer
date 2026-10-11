@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r5 | Define the implemented browser-demo behavior for durable metrics and history.
+> r6 | Define the implemented browser-demo behavior for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -24,6 +24,10 @@
   - every club carries a Club Elo updated after every settled result in every competition: K 20, home advantage 60, margin weight 1 / 1.5 / (11 + margin)/8; it starts at 1350 + 16 × (strength − 60).
   - each season archive keeps the own club's Elo and its rank among all clubs, the squad value (sum of player values), the club value (squad value + half the facility build cost + a brand of one unit per 20 supporters × (1 + reputation/100) + cash) and how far it went in each cup.
   - views convert past money to today's prices and currency; the league position chart counts every club in the divisions above plus the rank.
+- HIST-13 [o] A closed season keeps what its pages need to stay readable. ← a fan rereads old seasons, scorer races and draws, not only the final table
+  - our league's top 10 scorers (name, club, role, goals, appearances; ties as the live table), our rank after every league round, and the Club Elo spread at the close (world lowest/highest, our league lowest/highest).
+  - our country's cup and every continental competition except the Super Cup as a bracket from the first round of 32 or fewer clubs (qualifiers skipped) to the final: each tie its two clubs, both legs and how it was decided (penalties, away goals).
+  - a field is written only when the season was tracked whole; seasons closed before rules 1.12.0 keep finals only. Scorers and brackets reach the screen through the season archive request, not every update.
 
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
@@ -32,6 +36,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r6 261012 HIST-13+ closed seasons keep top scorers, per-round rank, Elo spread and cup brackets from the last 32
 - r5 261011 HIST-11✎ +cup rounds, retirements, injuries, potential changes as news, cups celebrated on the day of the final; HIST-12+ Club Elo, squad and club value, cup runs and finals in the season archive
 - r4 261010 HIST-11+ derived club news with stable IDs, thresholds and celebrated achievements
 - r3 261008 HIST-9✎ milestone completion→100-season retention gate; HIST-10+ fact-backed milestone completion

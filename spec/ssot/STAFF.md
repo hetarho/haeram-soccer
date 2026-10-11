@@ -1,8 +1,8 @@
 # STAFF Manager demands and personality
-> r9 | Define the implemented browser-demo behavior for manager demands and personality.
+> r10 | Define the implemented browser-demo behavior for manager demands and personality.
 
 ## decisions
-- STAFF-1 [o] Manager offers show ability, development, philosophy, flexibility, pride, ambition, salary and term; hiring charges disclosed costs.
+- STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
 - STAFF-2 [o] Owner tactical requests specify possession/balanced/counter/pressing and a tone: respectful, evidence, support, or demand.
 - STAFF-3 [o] Response score combines flexibility and trust, philosophy mismatch, tone, pride, and prior conflicts; seeded response may accept, reluctantly accept, condition, or refuse.
 - STAFF-4 [o] Only accepted/reluctantly accepted requests change applied tactics; conditional requests require visible support acceptance.
@@ -19,7 +19,7 @@
   - effect multiplier 1 + (ability − 50)/200 within 0.85–1.25; traits: developer (age ≤ 21 growth), specialist (department skill ×1.15), recovery (+2 fatigue recovery), spotter (higher potential found), negotiator (lower fees, better acceptance)
   - absent staff (older saves) and ability-50 trait-less members are exactly neutral; a vacant department is worse than neutral
   - new clubs start with unpaid ability-50 volunteers; hired coaches cost wages plus a signing fee; replacing or releasing a paid coach pays 25% of the annual wage
-- STAFF-12 [o] Hired managers may carry a selection trait: youth (+4 selection value for age ≤ 21), rotation (fatigue weighs double) or stable (fatigue weighs half). The founding manager has none; a developer style (→STAFF-14) selects like the youth trait.
+- STAFF-12 [o] Hired managers may carry a selection trait: youth (+4 selection value for age ≤ 21), rotation (fatigue weighs double) or stable (fatigue weighs half). The founding manager has none; a developer style (→STAFF-14) selects like the youth trait, so a developer never draws it, a firefighter's youth draw becomes stable and a gegenpress coach's stable draw becomes rotation.
 - STAFF-13 [o] Training choice, academy promotion/release, answers to other clubs' offers, the main sponsor (→ECON-21) and coach hiring (→STAFF-15) can be delegated to the staff; new clubs delegate training and the academy and decide offers and sponsors themselves (→WEB-45 level 2); any explicit owner choice takes that decision back, and delegation can be restored. Delegated decisions are reported in the inbox.
   - a delegated youth director promotes nobody while cash is below one year of operating costs and reports the deferral. ← every promotion adds a first-team wage
   - releasing a coach takes coach hiring back, so the staff do not refill the post at once.
@@ -36,6 +36,8 @@
   | 소방수 | own | strength +1.5, morale baseline +3, morale +10 on arrival; growth ×0.85; one-season contract |
   | 데이터 헤드코치 | own | tactic requests +15, bid acceptance +5 points; morale baseline −2 |
   - a style with a tactic sets the manager's philosophy; contract terms are 3 seasons except the firefighter's 1.
+  - candidates fit their school: youth/flexibility/pride bands positional 50–80/15–45/60–95, gegenpress 55–85/25–55/45–80 (ages 34–58), counter 40–65/45–80/50–90, organizer 40–65/25–55/40–75, motivator 45–75/50–85/35–70, developer 70–90/40–75/25–60, firefighter 35–55/55–90/45–80 with level 55–85 and ages 50–64 (a veteran at or past his prime, OVR = POT), data head coach 50–80/60–90/25–50 (ages 32–48); other levels 45–85. The draws keep their order, so names, ids and philosophies stay put; the founding manager and interims are unbanded.
+  - a three-season manager renews himself at the close as before; the firefighter signs to the end of the current season and leaves at the close (interim, departure choice) unless renewed: renew-manager is allowed while he is not interim and his contract ends by next season, at quote(120 + ability) a year with a 10% fee, one season at a time. On 1 April the owner is reminded (연봉 · 계약금 · 1시즌); with coach hiring delegated the staff renew him when the club can afford it and report it. The reminder settles when he renews, leaves or is replaced.
   - the founding manager and an interim have no style and are exactly neutral; effects apply to the own club only, in the same profile the pre-match laboratory reads (→MATCH-9).
 
 - STAFF-15 [o] Coaching investment per department: the owner only chooses how much quality each department buys (절약 volunteers, 균형 the 55–78 band, 최고 the 65–90 band; absent is 균형); with hiring delegated the staff renew and hire to it, so no department is left empty. ← the owner decides the budget, not every contract
@@ -67,6 +69,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r10 261012 STAFF-1✎ ambition→selection trait, 육성 wording; STAFF-12✎ +trait remaps per school; STAFF-14✎ +attribute and age bands per school, the firefighter leaves at the close unless renewed season by season (1 April reminder, delegated renewal)
 - r9 261012 STAFF-15✎ bands are the level reached; STAFF-16+ ages, ceilings, growth to 60, decline after, managers retire at 70
 - r8 261011 STAFF-15✎ one club-wide coaching level→one dial per department, shown and acted on only with coach hiring delegated; a raised dial fills a volunteer post at once
 - r7 261011 STAFF-13✎ four delegable decisions→five with coach hiring, a released coach takes hiring back; STAFF-15+ coaching investment levels, delegated renewals and hires without vacancies, spring renewal season
