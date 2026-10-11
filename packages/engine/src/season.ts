@@ -147,10 +147,12 @@ export function ranked(w: World, clubs: Club[]) {
 /** Preserve the league membership at this point, even after promotion or relegation. */
 export function snapshotStandings(w: World) {
   const own = clubOf(w);
-  const members = w.lower
-    ? w.clubs.filter((c) =>
-        w.fixtures.some((f) => f.kind === 'lower' && (f.home === c.id || f.away === c.id)),
-      )
+  // One pass over the fixtures: testing each club against every fixture took most of a season.
+  const lower = w.lower
+    ? new Set(w.fixtures.flatMap((f) => (f.kind === 'lower' ? [f.home, f.away] : [])))
+    : undefined;
+  const members = lower
+    ? w.clubs.filter((c) => lower.has(c.id))
     : w.clubs.filter((c) => groupKey(c) === groupKey(own) && !c.representative);
   const snapshots = (w.rankHistory || []).filter(
     (s) =>
