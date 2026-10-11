@@ -1,5 +1,6 @@
 import type {
   CoachingLevel,
+  ManagerStyle,
   ManagerTrait,
   Player,
   Staff,
@@ -10,11 +11,19 @@ import type {
 } from '../../contracts/src/types';
 import { addEvent, clubOf, ownStarters, personName, quote } from './world';
 import { clamp, integer, random, ratio } from './primitives';
-import { CASH_WARNING_ROUNDS, debit } from './operations';
+import {
+  CASH_WARNING_ROUNDS,
+  contractSeason,
+  debit,
+  managerRenewal,
+  renewManager,
+} from './operations';
 import { pushInbox } from './inbox';
 import { operatingCosts } from './finance';
 import { currentDay, seasonDayOf } from './calendar';
 import { COACH_CAREER, coachProspect, coachSeason } from './coaching';
+import { STYLE_INFO } from './styles';
+import { moneyLabel } from './transfers';
 
 /** Coaching departments below the manager, in display order. */
 export const STAFF_ROLES: readonly StaffRole[] = [
@@ -90,11 +99,21 @@ export interface StaffEffects {
 /** Hire-candidate habits; a fourth of candidates have none. */
 export const MANAGER_TRAITS: readonly ManagerTrait[] = ['youth', 'rotation', 'stable'];
 
-/** A hire candidate's selection habit, drawn from its own stream so other attributes stay put. */
-export function managerTrait(w: World, index: number): ManagerTrait | undefined {
-  return MANAGER_TRAITS[
-    integer(random(`${w.seed}:manager-trait:${w.year}:${index}`), 0, MANAGER_TRAITS.length)
-  ];
+/**
+ * A hire candidate's selection habit, drawn from its own stream so other attributes stay put. A
+ * school that never shows the drawn habit shows the one it maps to instead (→STAFF-14).
+ */
+export function managerTrait(
+  w: World,
+  index: number,
+  style?: ManagerStyle,
+): ManagerTrait | undefined {
+  const drawn =
+    MANAGER_TRAITS[
+      integer(random(`${w.seed}:manager-trait:${w.year}:${index}`), 0, MANAGER_TRAITS.length)
+    ];
+  const shown = drawn && style ? STYLE_INFO[style].traits?.[drawn] : undefined;
+  return shown === undefined ? drawn : shown || undefined;
 }
 
 const NEUTRAL_ABILITY = 50;
@@ -305,7 +324,7 @@ export function hireStaff(w: World, role: StaffRole, candidate: number): void {
       `능력 ${member.ability}`,
       member.trait ? STAFF_TRAIT_INFO[member.trait].label : '특기 없음',
       `연봉 ${member.wage}`,
-      `계약 ${member.until}년까지`,
+      `계약 ${contractSeason(member.until)} 시즌 끝까지`,
       `계약금 ${fee}`,
       ...(owed !== '0' ? [`${current!.name} 보상금 ${owed}`] : []),
     ].join(' · '),
@@ -441,7 +460,7 @@ export function renewStaff(w: World, role: StaffRole) {
     w,
     'staff-renew',
     `${STAFF_INFO[role].label} ${member.name} 재계약`,
-    `능력 ${member.ability} · 연봉 ${terms.wage} · 계약 ${terms.until}년까지 · 계약금 ${terms.fee}`,
+    `능력 ${member.ability} · 연봉 ${terms.wage} · 계약 ${contractSeason(terms.until)} 시즌 끝까지 · 계약금 ${terms.fee}`,
     terms.fee,
   );
 }
@@ -460,7 +479,7 @@ function appoint(w: World, member: Staff & { fee?: string }) {
       `능력 ${staff.ability}`,
       staff.trait ? STAFF_TRAIT_INFO[staff.trait].label : '특기 없음',
       BigInt(staff.wage) > 0n ? `연봉 ${staff.wage}` : '무급 자원봉사',
-      `계약 ${staff.until}년까지`,
+      `계약 ${contractSeason(staff.until)} 시즌 끝까지`,
       '스태프 위임 선임',
     ].join(' · '),
     fee && BigInt(fee) > 0n ? fee : undefined,
@@ -509,7 +528,7 @@ export function seasonStaff(w: World): void {
           w,
           'staff-renew',
           `${label} ${member.name} 재계약`,
-          `능력 ${member.ability} · 계약 ${terms.until}년까지 · 스태프 위임`,
+          `능력 ${member.ability} · 계약 ${contractSeason(terms.until)} 시즌 끝까지 · 스태프 위임`,
           terms.fee,
         );
         report.push(`${tier} ${member.name} 재계약`);
@@ -581,15 +600,47 @@ function developStaff(w: World) {
       changes.join(' · ').slice(0, 400),
     );
 }
-/** Spring renewal day: the owner hears which coaches' contracts end at the season's close. */
+/** Spring renewal day: the owner hears whose contracts end at the season's close. */
 export function renewalDay(year: number) {
   return seasonDayOf(year, 4, 1);
 }
 /**
- * Daily: delegated staff fill an empty department at once; otherwise the renewal season is
- * announced on 1 April when contracts end at the close.
+ * 1 April for a manager on a season-long deal that ends at the close (the firefighter): delegated
+ * staff renew him when the club can afford it and report it; otherwise the owner hears that he
+ * leaves unless renewed. Coaching staff (absent in older saves) play no part.
+ */
+function shortContractRenewal(w: World) {
+  const m = w.manager,
+    school = m.style && STYLE_INFO[m.style],
+    terms = school && school.term === 1 ? managerRenewal(w) : undefined;
+  if (!school || !terms) return;
+  const wage = moneyLabel(w, terms.wage),
+    fee = moneyLabel(w, terms.fee),
+    delegated = !!w.delegation?.staff;
+  if (delegated && affordable(w, BigInt(terms.fee), BigInt(terms.wage) - BigInt(m.wage))) {
+    renewManager(w, true);
+    pushInbox(w, {
+      kind: 'staff-report',
+      title: `${school.label} ${m.name} 감독 재계약`,
+      detail: `스태프가 1시즌 더 계약했어요 · 연봉 ${wage} · 계약금 ${fee} · ${contractSeason(terms.until)} 시즌 끝까지`,
+      attention: false,
+    });
+    return;
+  }
+  pushInbox(w, {
+    kind: 'staff-renewal',
+    title: `${school.label} ${m.name} 감독 계약이 이번 시즌 끝에 끝나요`,
+    detail: `재계약하지 않으면 시즌이 끝날 때 떠나고 임시 감독이 팀을 맡아요 (연봉 ${wage} · 계약금 ${fee} · 1시즌)${delegated ? ' · 자금 여력이 부족해 스태프가 재계약하지 않았어요' : ''}`,
+    attention: true,
+    ref: m.id,
+  });
+}
+/**
+ * Daily: on 1 April a firefighter's renewal comes up; delegated staff fill an empty department at
+ * once; otherwise the renewal season is announced on 1 April when contracts end at the close.
  */
 export function dailyStaff(w: World) {
+  if (currentDay(w) === renewalDay(w.year)) shortContractRenewal(w);
   if (!w.staff) return;
   if (w.delegation?.staff) {
     for (const role of STAFF_ROLES)

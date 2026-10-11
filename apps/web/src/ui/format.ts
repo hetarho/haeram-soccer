@@ -34,6 +34,15 @@ export function compactMoney(value: string, code: string, year: number) {
 }
 export const number = (n: number) => Math.round(n).toLocaleString('ko-KR');
 export const seasonName = (year: number) => `${year}/${String(year + 1).slice(-2)}`;
+/**
+ * When a contract that runs `until` that year ends, in seasons rather than a bare year:
+ * "계약 이번 시즌(1950/51) 끝까지" at this season's close, else "계약 1952/53 시즌 끝까지".
+ */
+export function contractLine(until: number, year: number) {
+  return until === year + 1
+    ? `계약 이번 시즌(${seasonName(year)}) 끝까지`
+    : `계약 ${seasonName(until - 1)} 시즌 끝까지`;
+}
 export const percent = (a: number, b: number) => (b ? `${Math.round((a / b) * 100)}%` : '—');
 export const kindLabel: Record<string, string> = {
   league: '리그',

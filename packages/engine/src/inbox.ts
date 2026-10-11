@@ -40,6 +40,11 @@ export function pushInbox(
 export function readInbox(w: World, id?: string): void {
   w.inbox = (w.inbox || []).map((item) => (!id || item.id === id ? { ...item, read: true } : item));
 }
+/** Settles the items about `ref` once what they asked for is decided, e.g. a manager's renewal. */
+export function readRelated(w: World, ref: string): void {
+  if (w.inbox?.some((item) => item.ref === ref && !item.read))
+    w.inbox = w.inbox.map((item) => (item.ref === ref ? { ...item, read: true } : item));
+}
 export function unreadAttention(w: World): InboxItem[] {
   return (w.inbox || []).filter(waiting);
 }

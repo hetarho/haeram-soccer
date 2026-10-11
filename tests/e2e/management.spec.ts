@@ -12,7 +12,13 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page.getByRole('button', { name: '스태프', exact: true }).click();
   await expect(page.getByRole('heading', { name: '스태프', level: 2 })).toBeVisible();
+  // The staff page opens on the manager's office; coaches, candidates and delegation are tabs.
+  const staffTab = (name: string) => page.getByRole('tab', { name, exact: true });
+  await expect(staffTab('감독')).toHaveAttribute('aria-selected', 'true');
+  await staffTab('코치진').click();
   await expect(page.getByRole('region', { name: '코치진', exact: true })).toBeVisible();
+  await expect(page).toHaveURL(/\/manager\?view=coaches$/);
+  await staffTab('감독').click();
   await chooseOption(page.getByRole('combobox', { name: '요청 전술', exact: true }), 'counter');
   await chooseOption(page.getByRole('combobox', { name: '요청 말투', exact: true }), 'evidence');
   await page.getByRole('button', { name: '감독에게 제안하기' }).click();

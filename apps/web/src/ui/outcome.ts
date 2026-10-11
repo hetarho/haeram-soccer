@@ -35,6 +35,7 @@ const titles: Record<Command['type'], string> = {
   lineup: '다음 경기 선발을 정했어요',
   training: '훈련 방향을 바꿨어요',
   hire: '새 감독을 선임했어요',
+  'renew-manager': '감독과 재계약했어요',
   recruit: '선수를 영입했어요',
   'transfer-stance': '선수의 이적 상태를 바꿨어요',
   campaign: '마케팅 캠페인을 시작했어요',
@@ -68,6 +69,7 @@ const notes: Partial<Record<Command['type'], string>> = {
   'transfer-stance': '제안은 이적시장이 열려 있을 때 들어오고, 수락해야 이적이 성사돼요.',
   coaching:
     '개입 4에서는 스태프가 이 수준으로 공석·무급 자리를 바로 채우고, 계약이 끝나면 재계약하거나 교체해요.',
+  'renew-manager': '계약이 한 시즌 늘었어요. 새 연봉은 다음 라운드 정산부터 나가요.',
 };
 const trainingLabel: Record<NonNullable<World['training']>, string> = {
   balanced: '균형 훈련',

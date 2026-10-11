@@ -2,7 +2,7 @@ import type { World } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
-import { useNavigation, useSquadView } from './state';
+import { useNavigation, useSquadView, useStaffView } from './state';
 import {
   cashState,
   remedies,
@@ -17,11 +17,13 @@ import s from './ClubHub.module.css';
 export function useRemedyRunner(client: GameClient, onPrepare?: () => void) {
   const { setPage } = useNavigation();
   const setSquadTab = useSquadView((state) => state.setTab);
+  const openStaff = useStaffView((state) => state.open);
   return (action: StateAction) => {
     if (action.command) void client.command(action.command);
     else if (action.prepare) onPrepare?.();
     else if (action.page) {
       if (action.tab) setSquadTab(action.tab);
+      if (action.staffTab) openStaff(action.staffTab);
       setPage(action.page);
     }
   };

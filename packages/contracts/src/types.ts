@@ -570,6 +570,8 @@ export type Command =
   | { type: 'respond-bid'; id: string; accept: boolean }
   | { type: 'read-inbox'; id?: string }
   | { type: 'hire'; candidate: number }
+  /** Keeps the manager one more season when his contract ends at this season's close. */
+  | { type: 'renew-manager' }
   | { type: 'recruit'; candidate: number; loan?: boolean }
   /** Lists a player, opens him to offers or declares him untouchable. */
   | { type: 'transfer-stance'; id: string; stance: TransferStance }

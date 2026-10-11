@@ -76,10 +76,15 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
       .getByRole('navigation', { name: '모바일 게임 메뉴' })
       .getByRole('button', { name: '스태프', exact: true })
       .click();
+    const tab = (name: string) => page.getByRole('tab', { name, exact: true });
+    await tab('코치진').click();
     await expect(page.getByTestId('coaching-mode')).toContainText('직접');
     const dial = page.getByRole('radiogroup', { name: '공격 코치 투자 수준' });
     await expect(dial).toHaveCount(0);
+    await tab('위임').click();
     await page.getByRole('checkbox', { name: /코치 고용·재계약/ }).check();
+    await expect(page.getByRole('checkbox', { name: /코치 고용·재계약/ })).toBeChecked();
+    await tab('코치진').click();
     await expect(page.getByTestId('coaching-mode')).toContainText('자동');
     await expect(dial.getByRole('radio', { name: /균형/ })).toHaveAttribute('aria-checked', 'true');
     await dial.getByRole('radio', { name: /최고/ }).click();

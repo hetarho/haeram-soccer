@@ -62,3 +62,25 @@ export const useSquadView = create<{
   tab: SquadTab;
   setTab: (tab: SquadTab) => void;
 }>((set) => ({ tab: 'roster', setTab: (tab) => set({ tab }) }));
+
+/** The staff page's tabs, in tab-bar order. */
+export const STAFF_TABS = [
+  ['manager', '감독'],
+  ['candidates', '감독 후보'],
+  ['coaches', '코치진'],
+  ['delegation', '위임'],
+] as const;
+export type StaffTab = (typeof STAFF_TABS)[number][0];
+/**
+ * A staff tab asked for from elsewhere, such as the manager-departure alert opening the
+ * candidates. The staff page takes it once, even while it is showing; otherwise it opens on the
+ * tab in its address or on 감독.
+ */
+export const useStaffView = create<{
+  request?: StaffTab;
+  open: (tab: StaffTab) => void;
+  take: () => void;
+}>((set) => ({
+  open: (tab) => set({ request: tab }),
+  take: () => set({ request: undefined }),
+}));

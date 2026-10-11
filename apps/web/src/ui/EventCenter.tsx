@@ -3,10 +3,12 @@ import type { InboxItem, TransferBid, World } from '../../../../packages/contrac
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/world';
 import { isExpiring } from '../../../../packages/engine/src/staff';
+import { managerRenewal } from '../../../../packages/engine/src/operations';
+import { managerTerm } from '../../../../packages/engine/src/styles';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { stoppingEvents, useProgression, type ProgressionController } from '../runtime/progression';
-import { useNavigation, useSquadView } from './state';
+import { useNavigation, useSquadView, useStaffView } from './state';
 import { competitionLabel, money } from './format';
 import { Dialog } from './Dialog';
 import s from './EventCenter.module.css';
@@ -56,6 +58,7 @@ export function EventCenter({
   const { stopOn, matchEve, running } = useProgression(controller, (state) => state);
   const { setPage } = useNavigation();
   const setSquadTab = useSquadView((state) => state.setTab);
+  const openStaff = useStaffView((state) => state.open);
   const [opened, setOpened] = useState<string>();
   if (!w || running) return null;
   const events = stoppingEvents(w, stopOn);
@@ -127,6 +130,8 @@ export function EventCenter({
   const item = events[0];
   const bid = bidFor(w, item);
   const expiring = (w.staff || []).filter((member) => isExpiring(w, member));
+  // A firefighter's season-long deal can still be extended while it runs.
+  const keepManager = managerTerm(w.manager) === 1 && !!managerRenewal(w);
   const answer = async (accept: boolean) => {
     if (!bid) return;
     await client.command({ type: 'respond-bid', id: bid.id, accept });
@@ -213,6 +218,37 @@ export function EventCenter({
               확인
             </button>
           </>
+        ) : item.kind === 'staff-renewal' && item.ref === w.manager.id ? (
+          <>
+            {keepManager && (
+              <button
+                className={s.primary}
+                disabled={acting}
+                onClick={() => {
+                  void (async () => {
+                    await client.command({ type: 'renew-manager' });
+                    await read(item);
+                  })();
+                }}
+              >
+                감독 재계약
+              </button>
+            )}
+            <button
+              className={keepManager ? undefined : s.primary}
+              disabled={acting}
+              onClick={() => {
+                void read(item);
+                openStaff('manager');
+                setPage('manager');
+              }}
+            >
+              감독 보기
+            </button>
+            <button disabled={acting} onClick={() => void read(item)}>
+              확인
+            </button>
+          </>
         ) : item.kind === 'staff-renewal' ? (
           <>
             {expiring.length > 0 && (
@@ -235,6 +271,7 @@ export function EventCenter({
               disabled={acting}
               onClick={() => {
                 void read(item);
+                openStaff('coaches');
                 setPage('manager');
               }}
             >
@@ -303,7 +340,7 @@ export const KIND_LABEL: Record<InboxItem['kind'], string> = {
   'incoming-bid': '영입 제안 받음',
   'youth-intake': '유소년 입단',
   'staff-report': '스태프 보고',
-  'staff-renewal': '코치 재계약',
+  'staff-renewal': '스태프 재계약',
   cup: '컵 대진',
   finance: '자금·후원',
 };

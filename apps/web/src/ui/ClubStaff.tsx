@@ -25,7 +25,7 @@ import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
 import { OvrBadge } from './OvrBadge';
-import { money } from './format';
+import { contractLine, money } from './format';
 import s from './ClubStaff.module.css';
 
 const DELEGATION: [DelegationKey, string, string][] = [
@@ -40,7 +40,7 @@ const DELEGATION: [DelegationKey, string, string][] = [
   [
     'staff',
     '코치 고용·재계약',
-    '부서마다 정한 투자 수준으로 공석을 바로 채우고, 계약이 끝나는 코치를 재계약하거나 새 코치를 뽑아요',
+    '부서마다 정한 투자 수준으로 공석을 바로 채우고, 계약이 끝나는 코치를 재계약하거나 새 코치를 뽑아요. 소방수 감독도 4월 1일에 자금이 되면 1시즌 재계약해요',
   ],
 ];
 
@@ -126,7 +126,7 @@ export function CoachingPlan({ w }: { w: World }) {
       <p className={s.note}>
         {delegated
           ? `부서마다 정한 투자 수준(${counts.join(' · ')})으로 고용해요. 공석은 바로 채우고, 다이얼을 올린 부서의 무급 코치도 바로 바꿔요. 계약 중인 코치는 계약이 끝날 때 그 수준의 후보와 비교해 재계약하거나 교체하고, 남은 무급 코치는 시즌이 끝날 때 바꿔요. 자금 여력이 13주보다 짧아지면 한 단계 싼 코치를, 그래도 어려우면 무급 코치를 써요.`
-          : '개입 1–3에서는 코치 선임·재계약·교체를 직접 해요. 재계약 시즌은 4월 1일이에요. 개입 4(운영진에 모두 맡기기)나 아래 위임에서 코치 고용을 맡기면 부서별 투자 수준을 정할 수 있고, 스태프가 그 수준으로 알아서 고용해요.'}
+          : '개입 1–3에서는 코치 선임·재계약·교체를 직접 해요. 재계약 시즌은 4월 1일이에요. 개입 4(운영진에 모두 맡기기)나 위임 탭에서 코치 고용을 맡기면 부서별 투자 수준을 정할 수 있고, 스태프가 그 수준으로 알아서 고용해요.'}
         {expiring.length > 0 && ` · 이번 시즌 끝에 계약이 끝나는 코치 ${expiring.length}명`}
       </p>
     </section>
@@ -244,7 +244,8 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                   {isExpiring(w, member) && (
                     <small>
                       재계약: 연봉 {format(renewalTerms(w, member).wage)} · 계약금{' '}
-                      {format(renewalTerms(w, member).fee)} · {renewalTerms(w, member).until}년까지
+                      {format(renewalTerms(w, member).fee)} ·{' '}
+                      {contractLine(renewalTerms(w, member).until, w.year)}
                     </small>
                   )}
                 </div>
@@ -259,7 +260,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                   <button
                     className={s.primary}
                     disabled={acting}
-                    title={`연봉 ${format(renewalTerms(w, member).wage)} · 계약금 ${format(renewalTerms(w, member).fee)} · ${renewalTerms(w, member).until}년까지`}
+                    title={`연봉 ${format(renewalTerms(w, member).wage)} · 계약금 ${format(renewalTerms(w, member).fee)} · ${contractLine(renewalTerms(w, member).until, w.year)}`}
                     onClick={() => void client.command({ type: 'renew-staff', role: id })}
                   >
                     재계약
@@ -356,8 +357,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                   </small>
                   <small>
                     연봉 {format(candidate.wage)} · 계약금 {format(candidate.fee)} ·{' '}
-                    {candidate.until}
-                    년까지
+                    {contractLine(candidate.until, w.year)}
                   </small>
                 </button>
               ))}

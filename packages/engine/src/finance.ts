@@ -219,6 +219,7 @@ const expenseKinds: Record<string, string> = {
   campaign: '마케팅 집행',
   'transfer-in': '선수 영입·임대',
   'manager-hire': '감독 선임·보상',
+  'manager-renew': '감독 재계약',
   'staff-hire': '스태프 선임·보상',
   'staff-release': '스태프 계약 해지',
   'staff-renew': '코치 재계약',

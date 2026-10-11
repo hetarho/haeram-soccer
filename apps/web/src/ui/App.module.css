@@ -2592,9 +2592,38 @@
   font-size: 11px;
   color: var(--text-muted);
 }
-/* A section a notice jumps to lands below the pinned HUD and clock, not under them. */
-.anchorTarget {
-  scroll-margin-top: 12px;
+/* A contract that ends at this season's close, with the terms to keep the manager. */
+.renewal {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+/* He leaves at the close unless renewed. */
+.renewal.leaving {
+  border-color: var(--warm);
+  background: var(--warm-soft);
+}
+.renewal p {
+  margin: 0;
+  font-size: 12.5px;
+}
+.renewal small {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.renewal button {
+  justify-self: start;
+}
+/* What an attribute means, under its label (the manager's 육성 is not the academy). */
+.attribute small {
+  display: block;
+  font-size: 0.85em;
+  font-weight: 400;
+  color: var(--text-muted);
 }
 /* A person's rating chip beside their age and contract (managers, candidates). */
 .personHead {
@@ -2615,7 +2644,7 @@
 .personHead h3 {
   margin: 0;
 }
-/* The operations tab bar scrolls sideways on narrow phones instead of squeezing its labels. */
+/* The operations and staff tab bars scroll sideways on narrow phones instead of squeezing labels. */
 .operationsTabs {
   margin-bottom: 14px;
   overflow-x: auto;

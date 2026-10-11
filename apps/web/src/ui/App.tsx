@@ -2,7 +2,7 @@ import { memo, useDeferredValue, useEffect, useRef, useState, type ReactNode } f
 import type { World } from '../../../../packages/contracts/src/types';
 import { country, priceIndex } from '../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../runtime/client';
-import { useNavigation, type Page } from './state';
+import { useNavigation, useStaffView, type Page } from './state';
 import { ClubCrest } from './ClubCrest';
 import { watchNextMatch } from './watch';
 import { compactMoney, competitionLabel, money, number, percent, seasonName } from './format';
@@ -657,6 +657,7 @@ function RuntimeFeedback({ client, localError }: { client: GameClient; localErro
   const state = useGameState((state) => state);
   const critical = state.view?.world.critical;
   const { setPage } = useNavigation();
+  const openStaff = useStaffView((view) => view.open);
   const blocked = state.busy || state.readonly;
   return (
     <>
@@ -682,12 +683,8 @@ function RuntimeFeedback({ client, localError }: { client: GameClient; localErro
               disabled={blocked}
               onClick={() => {
                 void client.acknowledge();
+                openStaff('candidates');
                 setPage('manager');
-                requestAnimationFrame(() =>
-                  document
-                    .getElementById('manager-candidates')
-                    ?.scrollIntoView({ block: 'start', behavior: 'smooth' }),
-                );
               }}
             >
               감독 선임하러 가기

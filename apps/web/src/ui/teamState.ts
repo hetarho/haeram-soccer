@@ -16,7 +16,7 @@ import { careOffer, effectText, outcomeText } from '../../../../packages/engine/
 import { academySummary } from '../../../../packages/engine/src/academy';
 import { buildEffects } from '../../../../packages/engine/src/build';
 import { money } from './format';
-import type { Page, SquadTab } from './state';
+import type { Page, SquadTab, StaffTab } from './state';
 
 export type Tone = 'good' | 'ok' | 'warn' | 'bad';
 export type StateKey = 'fatigue' | 'morale' | 'manager' | 'squad' | 'cash';
@@ -25,6 +25,8 @@ export interface StateAction {
   command?: Command;
   page?: Page;
   tab?: SquadTab;
+  /** The staff page tab to open, e.g. the candidates for a manager search. */
+  staffTab?: StaffTab;
   /** Opens the tactic and lineup preparation sheet. */
   prepare?: boolean;
 }
@@ -168,6 +170,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           label: '다른 감독 후보 살펴보기',
           effect: '성향이 다른 감독 네 명의 장단점과 선임 비용을 비교해요',
           page: 'manager',
+          staffTab: 'candidates',
         },
       ];
     case 'cash': {
@@ -369,7 +372,7 @@ export function teamStates(w: World): TeamStateItem[] {
       advice: interim
         ? {
             text: '감독대행이 팀을 이끌고 있어요. 새 감독을 선임해야 전술과 성장이 제자리를 찾아요.',
-            actions: [{ label: '감독 후보 보기', page: 'manager' }],
+            actions: [{ label: '감독 후보 보기', page: 'manager', staffTab: 'candidates' }],
           }
         : trust < 55
           ? {

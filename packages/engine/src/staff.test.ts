@@ -380,10 +380,9 @@ describe('manager traits', () => {
       const offers = managerOffers({ ...w, year });
       expect(new Set(offers.map((offer) => offer.style)).size).toBe(4);
       offers.forEach((offer, i) => {
-        const plain = makeManager('ENG', w.seed, year, i + 1);
-        const { trait, fee, ambition, style, philosophy, until, ...rest } = offer;
+        const plain = makeManager('ENG', w.seed, year, i + 1, offer.style);
+        const { trait, fee, style, philosophy, until, ...rest } = offer;
         void fee;
-        void ambition;
         const { philosophy: plainPhilosophy, until: _until, ...plainRest } = plain;
         void _until;
         expect(rest).toEqual(plainRest);

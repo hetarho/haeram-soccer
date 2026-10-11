@@ -1,6 +1,7 @@
 import { Select } from './Select';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
 import type {
+  ManagerTrait,
   MatchRecord,
   Player,
   TransferStance,
@@ -36,7 +37,14 @@ import {
   rosterViewSummary,
   type RosterView,
 } from './RosterFilters';
-import { useSquadView, type Page, type SquadTab } from './state';
+import {
+  STAFF_TABS,
+  useSquadView,
+  useStaffView,
+  type Page,
+  type SquadTab,
+  type StaffTab,
+} from './state';
 import { AcademyView, CoachingPlan, CoachingStaff, Delegation } from './ClubStaff';
 import { Chart } from './Chart';
 import { Pitch } from './Pitch';
@@ -46,14 +54,16 @@ import { PlayerPerformance } from './PlayerPerformance';
 import { PlayerAdvancedStats } from './PlayerAdvancedStats';
 import { StyleCard } from './StyleCard';
 import { RemedySheet } from './RemedySheet';
-import { STYLE_INFO } from '../../../../packages/engine/src/styles';
+import { managerTerm, STYLE_INFO } from '../../../../packages/engine/src/styles';
+import { MANAGER_TRAIT_INFO } from '../../../../packages/engine/src/staff';
+import { managerRenewal } from '../../../../packages/engine/src/operations';
 import type { StateKey } from './teamState';
 import { PlayerComparison } from './PlayerComparison';
 import { SeasonAnalysis } from './SeasonAnalysis';
 import { CareerRecordBook } from './CareerRecordBook';
 import { ClubTrends } from './ClubTrends';
 import { AnalysisExport } from './AnalysisExport';
-import { money, number, percent, seasonName, kindLabel } from './format';
+import { contractLine, money, number, percent, seasonName, kindLabel } from './format';
 import s from './App.module.css';
 type Props = { state: ClientState; client: GameClient };
 const toneLabel = {
@@ -107,18 +117,23 @@ function SquadSegments({ current, players }: { current: SquadTab; players: numbe
     </div>
   );
 }
-function Attributes({ rows }: { rows: [string, string | number][] }) {
+function Attributes({ rows }: { rows: [label: string, value: string | number, hint?: string][] }) {
   return (
     <div className={s.attributes}>
-      {rows.map(([label, v]) => (
+      {rows.map(([label, v, hint]) => (
         <div className={s.attribute} key={label}>
-          <span>{label}</span>
+          <span>
+            {label}
+            {hint && <small>{hint}</small>}
+          </span>
           <b>{typeof v === 'number' ? Math.round(v) : v}</b>
         </div>
       ))}
     </div>
   );
 }
+/** The manager's youth attribute speeds every young player's growth; the academy is separate. */
+const YOUTH_HINT = '27세 미만 선수 성장';
 /** "38세", or nothing for someone from an older save without an age. */
 function personAge(w: World, born?: number) {
   return born === undefined ? '' : `${w.year - born}세`;
@@ -130,18 +145,51 @@ function growthNote(w: World, m: { ability: number; potential?: number; born?: n
   if (m.potential > m.ability) return ` · 성장 여지 +${m.potential - m.ability}`;
   return age >= 60 ? ' · 노쇠기' : ' · 전성기';
 }
+/** A manager's selection habit (→STAFF-12): its label and effect, or that he has none. */
+function TraitNote({ trait }: { trait?: ManagerTrait }) {
+  if (!trait) return <>선발 성향 없음</>;
+  return (
+    <>
+      선발 성향 <b>{MANAGER_TRAIT_INFO[trait].label}</b> · {MANAGER_TRAIT_INFO[trait].effect}
+    </>
+  );
+}
+/** The staff tab in the page's address, so a reload keeps it. */
+function savedStaffTab() {
+  const saved = new URLSearchParams(location.search).get('view');
+  return STAFF_TABS.find(([id]) => id === saved)?.[0];
+}
+/**
+ * The staff page as one tab bar instead of a long scroll: the manager first, then the
+ * candidates to replace him, the coaching staff and what the staff decide for the owner.
+ */
 function ManagerView({ state, client }: Props) {
-  const v = state.view!,
-    w = v.world,
-    m = w.manager,
-    c = w.clubs.find((c) => c.id === w.playerClub)!,
-    [tactic, setTactic] = useState(w.tactic),
-    [tone, setTone] = useState('respect'),
-    [hiring, setHiring] = useState<number>(),
-    [requests, setRequests] = useState<StateKey>();
-  const acting = useGameState((state) => !!state.pendingActions);
-  const disabled = state.busy || state.readonly || acting;
-  const response = w.events.filter((e) => e.kind === 'manager-response').at(-1);
+  const w = state.view!.world;
+  const request = useStaffView((view) => view.request);
+  const [tab, setTab] = useState<StaffTab>(() => request ?? savedStaffTab() ?? 'manager');
+  useEffect(() => {
+    if (!request) return;
+    setTab(request);
+    useStaffView.getState().take();
+  }, [request]);
+  useEffect(() => {
+    const url = new URL(location.href);
+    if (tab === 'manager') url.searchParams.delete('view');
+    else url.searchParams.set('view', tab);
+    history.replaceState(history.state, '', `${url.pathname}${url.search}${url.hash}`);
+  }, [tab]);
+  const keyboard = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const next =
+      event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? STAFF_TABS.length - 1
+          : (index + (event.key === 'ArrowRight' ? 1 : -1) + STAFF_TABS.length) % STAFF_TABS.length;
+    setTab(STAFF_TABS[next][0]);
+    document.getElementById(`staff-tab-${STAFF_TABS[next][0]}`)?.focus();
+  };
   return (
     <>
       <Header
@@ -149,9 +197,58 @@ function ManagerView({ state, client }: Props) {
         title="스태프"
         description="감독과 코치진이 선발·전술·훈련·유소년을 운영해요. 구단주는 사람을 고르고, 맡길 일을 정해요. 젊은 감독과 코치는 잠재력까지 성장해요."
       />
-      <CoachingPlan w={w} />
-      <CoachingStaff w={w} client={client} />
-      <Delegation w={w} client={client} />
+      <div
+        className={`${s.seasonTabs} ${s.operationsTabs}`}
+        role="tablist"
+        aria-label="스태프 보기"
+      >
+        {STAFF_TABS.map(([id, label], index) => (
+          <button
+            key={id}
+            id={`staff-tab-${id}`}
+            role="tab"
+            aria-selected={tab === id}
+            aria-controls="staff-panel"
+            tabIndex={tab === id ? 0 : -1}
+            onKeyDown={(event) => keyboard(event, index)}
+            onClick={() => setTab(id)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <div id="staff-panel" role="tabpanel" aria-labelledby={`staff-tab-${tab}`}>
+        {tab === 'manager' ? (
+          <ManagerOffice state={state} client={client} />
+        ) : tab === 'candidates' ? (
+          <ManagerCandidates state={state} client={client} />
+        ) : tab === 'coaches' ? (
+          <>
+            <CoachingPlan w={w} />
+            <CoachingStaff w={w} client={client} />
+          </>
+        ) : (
+          <Delegation w={w} client={client} />
+        )}
+      </div>
+    </>
+  );
+}
+/** The manager's office: who he is and what he signed, and the owner's requests to him. */
+function ManagerOffice({ state, client }: Props) {
+  const w = state.view!.world,
+    m = w.manager,
+    c = w.clubs.find((c) => c.id === w.playerClub)!,
+    [tactic, setTactic] = useState(w.tactic),
+    [tone, setTone] = useState('respect'),
+    [requests, setRequests] = useState<StateKey>();
+  const acting = useGameState((state) => !!state.pendingActions);
+  const disabled = state.busy || state.readonly || acting;
+  const response = w.events.filter((e) => e.kind === 'manager-response').at(-1);
+  const renewal = managerRenewal(w),
+    leaving = managerTerm(m) === 1;
+  return (
+    <>
       <div className={s.twoCols}>
         <Panel title={m.name} note={m.interim ? 'INTERIM MANAGER' : 'FIRST TEAM MANAGER'}>
           <div className={s.panelBody}>
@@ -160,12 +257,39 @@ function ManagerView({ state, client }: Props) {
               <div>
                 <b>{personAge(w, m.born)}</b>
                 <small>
-                  {m.since}년 부임 · {m.until}년까지
+                  {m.since}년 부임 ·{' '}
+                  {m.interim ? '새 감독을 뽑을 때까지 대행' : contractLine(m.until, w.year)}
                   {growthNote(w, m)}
                 </small>
               </div>
             </div>
+            {renewal && (
+              <div
+                className={leaving ? `${s.renewal} ${s.leaving}` : s.renewal}
+                data-testid="manager-renewal"
+              >
+                <p>
+                  {leaving
+                    ? '재계약하지 않으면 시즌이 끝날 때 떠나고 임시 감독이 팀을 맡아요.'
+                    : '재계약하지 않아도 시즌이 끝나면 3시즌 자동으로 갱신돼요.'}
+                </p>
+                <small>
+                  재계약하면 연봉 {money(renewal.wage, c.country, w.year)} · 계약금{' '}
+                  {money(renewal.fee, c.country, w.year)} · {contractLine(renewal.until, w.year)}
+                </small>
+                <button
+                  className={s.primary}
+                  disabled={disabled}
+                  onClick={() => void client.command({ type: 'renew-manager' })}
+                >
+                  재계약
+                </button>
+              </div>
+            )}
             <StyleCard style={m.interim ? undefined : m.style} />
+            <p className={s.muted}>
+              <TraitNote trait={m.trait} />
+            </p>
             <div className={s.actions}>
               <button onClick={() => setRequests('manager')}>감독에게 힘 실어주기</button>
               <button onClick={() => setRequests('morale')}>선수단 분위기 요청</button>
@@ -173,7 +297,7 @@ function ManagerView({ state, client }: Props) {
             <Attributes
               rows={[
                 ['철학', tacticLabel[m.philosophy]],
-                ['유소년 육성', m.youth],
+                ['육성', m.youth, YOUTH_HINT],
                 ['유연성', m.flexibility],
                 ['자존심', m.pride],
                 ['신뢰', m.trust],
@@ -258,61 +382,6 @@ function ManagerView({ state, client }: Props) {
           </div>
         </Panel>
       </div>
-      <div id="manager-candidates" className={s.anchorTarget}>
-        <Panel title="감독 후보 · 네 가지 성향" note="COMPARE FOUR SCHOOLS">
-          <div className={s.panelBody}>
-            <div className={s.cards}>
-              {v.managers.map((candidate, i) => {
-                const fee = (
-                  BigInt(candidate.fee) + (m.interim ? 0n : BigInt(ratio(m.wage, 1n, 4n)))
-                ).toString();
-                return (
-                  <article className={s.card} key={candidate.id}>
-                    <div className={s.personHead}>
-                      <OvrBadge
-                        value={candidate.ability}
-                        role="감독"
-                        potential={candidate.potential}
-                        large
-                      />
-                      <div>
-                        <h3>{candidate.name}</h3>
-                        <small>
-                          {personAge(w, candidate.born)}
-                          {growthNote(w, candidate)}
-                        </small>
-                      </div>
-                    </div>
-                    <span className={s.pill}>
-                      {STYLE_INFO[candidate.style].label} · {tacticLabel[candidate.philosophy]}
-                    </span>
-                    <StyleCard style={candidate.style} compact />
-                    <Attributes
-                      rows={[
-                        ['유소년 육성', candidate.youth],
-                        ['유연성', candidate.flexibility],
-                        ['자존심', candidate.pride],
-                        ['야망', candidate.ambition],
-                        ['연봉', money(candidate.wage, c.country, w.year)],
-                      ]}
-                    />
-                    <p>
-                      계약 {candidate.until}년까지 · 즉시 지출 {money(fee, c.country, w.year)} (이전
-                      감독 보상 포함)
-                    </p>
-                    <button
-                      disabled={disabled || candidate.id === m.id}
-                      onClick={() => setHiring(i)}
-                    >
-                      {candidate.id === m.id ? '현재 감독' : '감독 선임'}
-                    </button>
-                  </article>
-                );
-              })}
-            </div>
-          </div>
-        </Panel>
-      </div>
       {requests && (
         <RemedySheet
           w={w}
@@ -321,47 +390,102 @@ function ManagerView({ state, client }: Props) {
           onClose={() => setRequests(undefined)}
         />
       )}
-      {hiring !== undefined && v.managers[hiring] && (
+    </>
+  );
+}
+/** This season's four candidates, one school each, and the hire confirmation. */
+function ManagerCandidates({ state, client }: Props) {
+  const v = state.view!,
+    w = v.world,
+    m = w.manager,
+    c = w.clubs.find((c) => c.id === w.playerClub)!,
+    [hiring, setHiring] = useState<number>();
+  const acting = useGameState((state) => !!state.pendingActions);
+  const disabled = state.busy || state.readonly || acting;
+  // Replacing a contracted manager pays him a quarter of his wage; an interim leaves freely.
+  const outlay = (fee: string) =>
+    money(
+      (BigInt(fee) + (m.interim ? 0n : BigInt(ratio(m.wage, 1n, 4n)))).toString(),
+      c.country,
+      w.year,
+    );
+  const chosen = hiring !== undefined ? v.managers[hiring] : undefined;
+  return (
+    <>
+      <Panel title="감독 후보 · 네 가지 성향" note="COMPARE FOUR SCHOOLS">
+        <div className={s.panelBody}>
+          <div className={s.cards}>
+            {v.managers.map((candidate, i) => (
+              <article className={s.card} key={candidate.id}>
+                <div className={s.personHead}>
+                  <OvrBadge
+                    value={candidate.ability}
+                    role="감독"
+                    potential={candidate.potential}
+                    large
+                  />
+                  <div>
+                    <h3>{candidate.name}</h3>
+                    <small>
+                      {personAge(w, candidate.born)}
+                      {growthNote(w, candidate)}
+                    </small>
+                  </div>
+                </div>
+                <span className={s.pill}>
+                  {STYLE_INFO[candidate.style].label} · {tacticLabel[candidate.philosophy]}
+                </span>
+                <StyleCard style={candidate.style} compact />
+                <Attributes
+                  rows={[
+                    ['육성', candidate.youth, YOUTH_HINT],
+                    ['유연성', candidate.flexibility],
+                    ['자존심', candidate.pride],
+                    ['연봉', money(candidate.wage, c.country, w.year)],
+                  ]}
+                />
+                <p>
+                  <TraitNote trait={candidate.trait} />
+                </p>
+                <p>
+                  {contractLine(candidate.until, w.year)} · 즉시 지출 {outlay(candidate.fee)} (이전
+                  감독 보상 포함)
+                </p>
+                <button disabled={disabled || candidate.id === m.id} onClick={() => setHiring(i)}>
+                  {candidate.id === m.id ? '현재 감독' : '감독 선임'}
+                </button>
+              </article>
+            ))}
+          </div>
+        </div>
+      </Panel>
+      {hiring !== undefined && chosen && (
         <Dialog label="감독 선임 확인" onClose={() => setHiring(undefined)}>
-          <h2>{v.managers[hiring].name} 감독을 선임할까요?</h2>
+          <h2>{chosen.name} 감독을 선임할까요?</h2>
           <ul className={s.consequences}>
             <li>
-              즉시 지출{' '}
-              <b>
-                {money(
-                  (
-                    BigInt(v.managers[hiring].fee) +
-                    (m.interim ? 0n : BigInt(ratio(m.wage, 1n, 4n)))
-                  ).toString(),
-                  c.country,
-                  w.year,
-                )}
-              </b>{' '}
-              (이전 감독 보상 포함)
+              즉시 지출 <b>{outlay(chosen.fee)}</b> (이전 감독 보상 포함)
             </li>
             <li>
-              지도력 OVR <b>{v.managers[hiring].ability}</b> · 잠재력{' '}
-              <b>{v.managers[hiring].potential ?? v.managers[hiring].ability}</b> ·{' '}
-              {personAge(w, v.managers[hiring].born)}
-              {(v.managers[hiring].potential ?? 0) > v.managers[hiring].ability
-                ? ' · 시즌마다 잠재력에 가까워져요'
-                : ''}
+              지도력 OVR <b>{chosen.ability}</b> · 잠재력{' '}
+              <b>{chosen.potential ?? chosen.ability}</b> · {personAge(w, chosen.born)}
+              {(chosen.potential ?? 0) > chosen.ability ? ' · 시즌마다 잠재력에 가까워져요' : ''}
             </li>
             <li>{m.name} 감독은 오늘 팀을 떠나요.</li>
             <li>
-              새 감독 성향 <b>{STYLE_INFO[v.managers[hiring].style].label}</b> ·{' '}
-              {[
-                ...STYLE_INFO[v.managers[hiring].style].pros,
-                ...STYLE_INFO[v.managers[hiring].style].cons,
-              ].join(' · ')}
+              새 감독 성향 <b>{STYLE_INFO[chosen.style].label}</b> ·{' '}
+              {[...STYLE_INFO[chosen.style].pros, ...STYLE_INFO[chosen.style].cons].join(' · ')}
             </li>
             <li>
-              적용 전술 {tacticLabel[w.tactic]} →{' '}
-              <b>{tacticLabel[v.managers[hiring].philosophy]}</b> (새 감독의 철학)
+              <TraitNote trait={chosen.trait} />
             </li>
             <li>
-              연봉 {money(v.managers[hiring].wage, c.country, w.year)} · 계약{' '}
-              {v.managers[hiring].until}년까지
+              적용 전술 {tacticLabel[w.tactic]} → <b>{tacticLabel[chosen.philosophy]}</b> (새 감독의
+              철학)
+            </li>
+            <li>
+              연봉 {money(chosen.wage, c.country, w.year)} · {contractLine(chosen.until, w.year)}
+              {STYLE_INFO[chosen.style].term === 1 && ' · 남기려면 4월에 1시즌씩 재계약해요'}
             </li>
           </ul>
           <div className={s.actions}>

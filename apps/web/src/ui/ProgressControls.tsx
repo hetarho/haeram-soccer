@@ -408,7 +408,7 @@ export const INTERVENTION_LEVELS: {
     name: '모든 결정 확인',
     short: '모든 이벤트에서 멈추고 직접 결정해요',
     summary:
-      '경기 전날, 이적시장, 협상, 영입 제안, 유소년, 컵 대진, 스태프 보고, 코치 재계약, 자금 경고까지 모두 멈춰서 직접 결정해요.',
+      '경기 전날, 이적시장, 협상, 영입 제안, 유소년, 컵 대진, 스태프 보고, 감독·코치 재계약, 자금 경고까지 모두 멈춰서 직접 결정해요.',
     stopOn: stops(ALL_KINDS),
     delegation: {
       training: false,
@@ -422,7 +422,7 @@ export const INTERVENTION_LEVELS: {
     name: '중요한 결정만',
     short: '경기·이적·유소년·코치·자금에서 멈춰요',
     summary:
-      '경기 전날과 이적 협상·제안, 유소년 입단, 코치 재계약, 자금 경고에서만 멈춰요. 훈련과 유소년 승격은 스태프가 맡아요.',
+      '경기 전날과 이적 협상·제안, 유소년 입단, 감독·코치 재계약, 자금 경고에서만 멈춰요. 훈련과 유소년 승격은 스태프가 맡아요.',
     stopOn: stops([
       'match',
       'window-open',
@@ -436,9 +436,9 @@ export const INTERVENTION_LEVELS: {
   },
   {
     name: '이적만 직접',
-    short: '이적·코치 재계약·자금에서만 멈춰요',
+    short: '이적·재계약·자금에서만 멈춰요',
     summary:
-      '경기는 결과로 넘기고 이적시장 개장과 협상·제안, 코치 재계약, 자금 경고에서만 멈춰요. 훈련과 유소년은 스태프가 맡아요.',
+      '경기는 결과로 넘기고 이적시장 개장과 협상·제안, 감독·코치 재계약, 자금 경고에서만 멈춰요. 훈련과 유소년은 스태프가 맡아요.',
     stopOn: stops(['window-open', 'bid-response', 'incoming-bid', 'staff-renewal', 'finance']),
     delegation: { training: true, academy: true, transfers: false, business: false, staff: false },
   },

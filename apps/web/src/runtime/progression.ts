@@ -32,7 +32,7 @@ export const STOP_LABELS: Record<InboxKind, string> = {
   'incoming-bid': '우리 선수 영입 제안',
   'youth-intake': '유소년 입단',
   'staff-report': '스태프 보고',
-  'staff-renewal': '코치 재계약·공석',
+  'staff-renewal': '감독·코치 재계약·공석',
   cup: '컵 대진 발표',
   finance: '자금·후원 경고',
 };

@@ -43,13 +43,14 @@ import {
   respondBid,
   setTransferStance,
 } from './transfers';
-import { pushInbox, readInbox } from './inbox';
+import { pushInbox, readInbox, readRelated } from './inbox';
 import { careOffer, outcomeText, resolveCare } from './care';
 import { marketingFanGain, policyEffects, policyOf, setPolicy } from './policy';
 import {
   candidateStyles,
   FIREFIGHTER_ARRIVAL_MORALE,
   managerStyleEffects,
+  managerTerm,
   STYLE_INFO,
 } from './styles';
 import { synergyEffects } from './synergy';
@@ -372,24 +373,60 @@ function insolvency(w: World, annual: string) {
       attention: false,
     });
 }
+/** The season's four candidates, each drawn within his school's bands (→STAFF-14). */
 export function managerOffers(w: World) {
-  const styles = candidateStyles(w.seed, w.year);
+  const code = clubOf(w).country,
+    styles = candidateStyles(w.seed, w.year);
   return Array.from({ length: 4 }, (_, i) => {
-    const manager = makeManager(clubOf(w).country, w.seed, w.year, i + 1),
-      trait = managerTrait(w, i + 1),
-      style = styles[i],
-      info = STYLE_INFO[style];
+    const style = styles[i],
+      info = STYLE_INFO[style],
+      manager = makeManager(code, w.seed, w.year, i + 1, style),
+      trait = managerTrait(w, i + 1, style);
     return {
       ...manager,
       ...(trait ? { trait } : {}),
       style,
-      // A school that plays one way brings its tactic; a firefighter signs for one season.
+      // A school that plays one way brings its tactic; a firefighter signs to the season's end.
       philosophy: info.tactic ?? manager.philosophy,
       until: w.year + info.term,
-      fee: quote(clubOf(w).country, w.year, 60 + i * 40),
-      ambition: Math.round((manager.ability + manager.pride) / 2),
+      fee: quote(code, w.year, 60 + i * 40),
     };
   });
+}
+/** "1951/52": the season whose close ends a contract that runs `until` that year. */
+export function contractSeason(until: number) {
+  return `${until - 1}/${String(until).slice(2)}`;
+}
+/** The going wage a manager asks to stay, the same at the season boundary and in a renewal. */
+function managerWage(w: World) {
+  return quote(clubOf(w).country, w.year, 120 + w.manager.ability);
+}
+/**
+ * Terms for keeping the manager one more season: the going wage and a 10% signing fee. Only a
+ * contract that ends at this season's close can be renewed; an interim is never kept.
+ */
+export function managerRenewal(w: World) {
+  const m = w.manager;
+  if (m.interim || m.until > w.year + 1) return undefined;
+  const wage = managerWage(w);
+  return { wage, fee: ratio(wage, 1n, 10n), until: Math.max(m.until, w.year + 1) + 1 };
+}
+/** Extends the manager's contract by one season; delegated staff pay the fee as a planned cost. */
+export function renewManager(w: World, delegated = false) {
+  const terms = managerRenewal(w);
+  if (!terms) throw new Error('재계약할 수 있는 감독이 아닙니다.');
+  debit(w, terms.fee, delegated);
+  w.manager.wage = terms.wage;
+  w.manager.until = terms.until;
+  readRelated(w, w.manager.id);
+  addEvent(
+    w,
+    'manager-renew',
+    '감독 재계약',
+    `${w.manager.name} 재계약 · ${contractSeason(terms.until)} 시즌 끝까지`,
+    terms.fee,
+  );
+  return terms;
 }
 /** The season market; `year` reproduces an earlier season's list for negotiations in progress. */
 export function transferOffers(w: World, year = w.year) {
@@ -445,6 +482,8 @@ export function transferOffers(w: World, year = w.year) {
 export const MANAGER_GONE = '감독이 떠났습니다. 새 감독을 선임하세요.';
 function resign(w: World, reason: string) {
   const old = w.manager;
+  // His renewal reminder is moot once he has gone.
+  readRelated(w, old.id);
   addEvent(
     w,
     'manager-departure',
@@ -557,10 +596,14 @@ export function yearlyStaff(w: World) {
   }
   if (!m.interim && (age !== undefined ? age >= MANAGER_CAREER.retire : m.since + 25 <= w.year))
     resign(w, '긴 지도자 생활을 마치고 은퇴했습니다.');
-  else if (w.manager.until <= w.year && !w.manager.interim) {
-    w.manager.until = w.year + 3;
-    w.manager.wage = quote(clubOf(w).country, w.year, 120 + w.manager.ability);
-    addEvent(w, 'manager-renew', '감독 계약 갱신', `${w.manager.name} · 3년`);
+  else if (m.until <= w.year && !m.interim) {
+    // A season-long deal ends unless the owner renewed it; other contracts renew for three.
+    if (managerTerm(m) === 1) resign(w, '시즌 종료까지의 단기 계약을 마치고 떠났습니다.');
+    else {
+      m.until = w.year + 3;
+      m.wage = managerWage(w);
+      addEvent(w, 'manager-renew', '감독 계약 갱신', `${m.name} · 3년`);
+    }
   }
   delete w.manager.lastRequest;
   delete w.manager.requestHistory;
@@ -583,6 +626,9 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       break;
     case 'renew-staff':
       renewStaff(w, cmd.role);
+      break;
+    case 'renew-manager':
+      renewManager(w);
       break;
     case 'coaching':
       setCoaching(w, cmd.role, cmd.level);
@@ -705,9 +751,9 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
         `${w.manager.name} 감독 교체`,
         `${w.manager.since}–${w.year} · 구단의 선택`,
       );
-      const { fee: _fee, ambition: _ambition, ...manager } = offer;
+      const { fee: _fee, ...manager } = offer;
       void _fee;
-      void _ambition;
+      readRelated(w, w.manager.id);
       w.manager = manager;
       w.tactic = manager.philosophy;
       delete w.requested;
@@ -719,7 +765,7 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
         w,
         'manager-hire',
         `${manager.name} 감독 선임`,
-        `${manager.style ? `${STYLE_INFO[manager.style].label} · ` : ''}${tacticLabel[manager.philosophy]}${manager.trait ? ` · ${MANAGER_TRAIT_INFO[manager.trait].label}` : ''} · 계약 ${manager.until}년까지`,
+        `${manager.style ? `${STYLE_INFO[manager.style].label} · ` : ''}${tacticLabel[manager.philosophy]}${manager.trait ? ` · ${MANAGER_TRAIT_INFO[manager.trait].label}` : ''} · 계약 ${contractSeason(manager.until)} 시즌 끝까지`,
         fee.toString(),
       );
       break;

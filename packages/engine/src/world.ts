@@ -6,11 +6,20 @@ import {
   currency,
   priceIndex,
 } from '../../catalogs/src/index';
-import type { Club, Founding, Manager, Player, World, Tactic } from '../../contracts/src/types';
+import type {
+  Club,
+  Founding,
+  Manager,
+  ManagerStyle,
+  Player,
+  World,
+  Tactic,
+} from '../../contracts/src/types';
 import { clamp, hash, integer, random, ratio, zeroMetrics, compareIds } from './primitives';
 import { CURRENT_ENGINE_VERSION } from '../../contracts/src/versions';
 import { coachProspect, MANAGER_CAREER } from './coaching';
 import { dayCountedFrom } from './calendar';
+import { MARKET_BANDS, STYLE_INFO, YOUTH_SELECTION_BONUS } from './styles';
 export const ENGINE_VERSION = CURRENT_ENGINE_VERSION;
 export const TACTICS: Tactic[] = ['balanced', 'possession', 'counter', 'press'];
 export const tacticLabel: Record<Tactic, string> = {
@@ -92,17 +101,25 @@ export function fatigueLoad(fatigue: number) {
 /**
  * A manager first met in `year`. Market candidates (index 1–98) younger than their prime start
  * below the level they will reach and ask for less (→STAFF-16); the founding manager and an
- * interim keep the drawn level.
+ * interim keep the drawn level. A candidate of a school is drawn within its bands with the same
+ * draws, so his name, id and philosophy do not depend on the school (→STAFF-14).
  */
-export function makeManager(code: string, seed: string, year: number, index = 0): Manager {
-  const r = random(`${seed}:manager:${year}:${index}`);
+export function makeManager(
+  code: string,
+  seed: string,
+  year: number,
+  index = 0,
+  style?: ManagerStyle,
+): Manager {
+  const r = random(`${seed}:manager:${year}:${index}`),
+    bands = { ...MARKET_BANDS, ...(style && STYLE_INFO[style].bands) };
   const name = personName(code, r),
     philosophy = TACTICS[integer(r, 0, 3)],
-    peak = integer(r, 45, 85);
+    peak = integer(r, ...bands.peak);
   const career = coachProspect(
     `${seed}:manager-age:${year}:${index}`,
     peak,
-    MANAGER_CAREER.ages,
+    bands.ages,
     MANAGER_CAREER.prime,
     index > 0 && index < 99,
   );
@@ -111,9 +128,9 @@ export function makeManager(code: string, seed: string, year: number, index = 0)
     name,
     philosophy,
     ability: career.ability,
-    youth: integer(r, 40, 90),
-    flexibility: integer(r, 15, 90),
-    pride: integer(r, 25, 95),
+    youth: integer(r, ...bands.youth),
+    flexibility: integer(r, ...bands.flexibility),
+    pride: integer(r, ...bands.pride),
     trust: 65,
     conflicts: 0,
     wage: quote(code, year, 120 + index * 30 - (peak - career.ability) * 3),
@@ -413,7 +430,7 @@ export function selectionValue(p: Player, manager?: Manager, year?: number) {
     (manager?.trait === 'youth' || manager?.style === 'developer') &&
     year !== undefined &&
     year - p.born <= 21
-      ? 4
+      ? YOUTH_SELECTION_BONUS
       : 0;
   return overall(p) - p.fatigue / fatigueWeight + youth;
 }

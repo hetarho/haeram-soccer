@@ -104,6 +104,7 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('respond-bid'), id: ref, accept: z.boolean() }),
   z.object({ type: z.literal('read-inbox'), id: ref.optional() }),
   z.object({ type: z.literal('hire'), candidate: index }),
+  z.object({ type: z.literal('renew-manager') }),
   z.object({ type: z.literal('recruit'), candidate: index, loan: z.boolean().optional() }),
   z.object({
     type: z.literal('transfer-stance'),
