@@ -161,8 +161,7 @@
     margin-bottom: 5px;
   }
   .seasonPicker {
-    flex: 1 0 100%;
-    margin-bottom: 0;
+    margin-bottom: 6px;
   }
   .tabs {
     flex: 1;

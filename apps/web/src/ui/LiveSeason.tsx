@@ -481,27 +481,26 @@ export function LiveSeason({
   const inTabs = (id: Tab) => visibleTabs.some(([visible]) => visible === id);
   return (
     <div hidden={!active} data-testid="live-season" className={t.liveSeason}>
-      {page === 'league' && (
+      {page === 'league' && <SeasonPicker value={reviewYear} onChange={setReviewYear} />}
+      {/* Only the tabs stay pinned: a taller pinned band would hide what scrolls up under it. */}
+      {page === 'league' && !reviewing && (
         <div className={t.navigation}>
-          <SeasonPicker value={reviewYear} onChange={setReviewYear} />
-          {!reviewing && (
-            <div className={`${s.seasonTabs} ${t.tabs}`} role="tablist" aria-label="리그 보기">
-              {visibleTabs.map(([id, label], i) => (
-                <button
-                  key={id}
-                  id={`season-tab-${id}`}
-                  role="tab"
-                  aria-selected={tab === id}
-                  aria-controls={`season-panel-${id}`}
-                  tabIndex={tab === id || (i === 0 && !inTabs(tab)) ? 0 : -1}
-                  onKeyDown={(event) => keyboard(event, i)}
-                  onClick={() => setLeagueTab(id)}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          )}
+          <div className={`${s.seasonTabs} ${t.tabs}`} role="tablist" aria-label="리그 보기">
+            {visibleTabs.map(([id, label], i) => (
+              <button
+                key={id}
+                id={`season-tab-${id}`}
+                role="tab"
+                aria-selected={tab === id}
+                aria-controls={`season-panel-${id}`}
+                tabIndex={tab === id || (i === 0 && !inTabs(tab)) ? 0 : -1}
+                onKeyDown={(event) => keyboard(event, i)}
+                onClick={() => setLeagueTab(id)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
       )}
       {TABS.map(([id, label]) => (

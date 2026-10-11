@@ -38,6 +38,7 @@
 - Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
 
 ## log
+- 261012 CI fix: the league season list rode in the pinned tab band, which grew tall enough to cover controls scrolled up under it (Firefox 390x844 country selector); only the tabs stay pinned
 - 261011 WEB r40 implemented directly: OVR rating-card chips (bronze/silver/gold) on roster cards, academy rows and transfer candidates, OVR table column; roster view settings behind a header icon button (popover on desktop, bottom sheet on phones)
 - 261011 WEB r39 implemented directly: day steps play our match through without movement frames (x10 no longer stalls on match days, a season 6.1→0.65 s), season close no longer stops the clock, league page season list (◀ list ▶) showing closed seasons' reviews with final tables instead of the forced /season page
 - 261011 CI fix: the policy board's finance preview and season close re-scanned every fixture per amateur-league club (leaving operations took 50–90 ms at 4x CPU), the league page's blurred, masked sticky band re-rastered on every visit; desktop pointer p95 151→49 ms; WebKit pace tests wait for an in-flight day step after stop
@@ -57,4 +58,3 @@
 - 261009 CI fixes: /transfers route allowlisted, read-only tab ownership hand-over, clock toggle ignores clicks right after an automatic stop; SAVE r5
 - 261009 WEB r30 CLUB r7 STAFF r4 implemented directly: seven tabs, home-only clock, team state, intervention levels, morale, motion; T041 done
 - 261008 WEB r29 CLUB r6 STAFF r3 ECON r5 implemented directly: events and inbox, coaching staff, academy, transfer windows and bids, cash projection
-- 261008 WEB r28 implemented directly: clock stops only for watching/blockers, fixed shell scroller, league tabs
