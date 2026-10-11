@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { PlayerScope } from './playerAnalysis';
 export type Page =
   'dashboard' | 'match' | 'league' | 'europe' | 'squad' | 'manager' | 'business' | 'history';
 const paths: Record<Page, string> = {
@@ -100,6 +101,32 @@ export const useTeamSheet = create<{
   close: () => set(({ ids }) => ({ ids: ids.slice(0, -1) })),
   reset: () => set({ ids: [] }),
 }));
+
+/**
+ * The player of ours whose sheet is open: one at a time, from any view and over any dialog, the
+ * way team sheets open. `scope` is the record it starts on; players who left only have their club
+ * career.
+ */
+export const usePlayerSheet = create<{
+  id?: string;
+  scope: PlayerScope;
+  open: (id: string, scope?: PlayerScope) => void;
+  close: () => void;
+}>((set) => ({
+  scope: 'career',
+  open: (id, scope = 'career') => set({ id, scope }),
+  close: () => set({ id: undefined }),
+}));
+
+/** The records room's tabs, in tab-bar order; the first one keeps no ?view= in the address. */
+export const RECORD_TABS = [
+  ['summary', '요약'],
+  ['trends', '추이'],
+  ['players', '선수'],
+  ['season', '시즌 기록'],
+  ['managers', '감독'],
+] as const;
+export type RecordTab = (typeof RECORD_TABS)[number][0];
 
 /** The staff page's tabs, in tab-bar order. */
 export const STAFF_TABS = [

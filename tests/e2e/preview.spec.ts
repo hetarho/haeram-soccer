@@ -6,6 +6,9 @@ test('built deep links, module worker, cache/CSP and missing assets', async ({ p
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.goto('/history');
   await expect(page.getByRole('heading', { name: '클럽 기록실', exact: true })).toBeVisible();
+  // A records tab keeps its own address, so a reload reopens it.
+  await page.getByRole('tab', { name: '시즌 기록', exact: true }).click();
+  await expect(page).toHaveURL(/\/history\?view=season$/);
   await page.reload();
   await expect(page.getByRole('combobox', { name: '기록 시즌', exact: true })).toBeVisible();
   const html = await request.get('/history');

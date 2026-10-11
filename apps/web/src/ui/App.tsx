@@ -35,6 +35,7 @@ import { NewsButton, NewsSheet, useNewsSheet } from './NewsFeed';
 import { CelebrationHost } from './Celebration';
 import { CupsView } from './CupsView';
 import { TeamSheetHost } from './TeamSheet';
+import { PlayerSheetHost } from './PlayerSheet';
 import { cashState } from './teamState';
 import {
   BANKRUPTCY_ROUNDS,
@@ -1168,6 +1169,7 @@ export function App() {
       <GlossaryHost />
       {w && !replacing && <NewsSheet />}
       {w && !replacing && <TeamSheetHost />}
+      {w && !replacing && <PlayerSheetHost />}
       {w && !replacing && <CelebrationHost />}
       {pendingImport && (
         <Dialog label="기록 가져오기 확인" onClose={() => setPendingImport(undefined)}>

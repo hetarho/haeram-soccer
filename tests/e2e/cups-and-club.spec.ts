@@ -259,11 +259,12 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
   test('charts league position, Elo and values in the records room', async ({ page }) => {
     await found(page, 'trends-journey');
     await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
+    await expect(page.getByRole('table', { name: '시즌별 기록' })).toBeVisible();
+    await page.getByRole('tab', { name: '추이', exact: true }).click();
     await expect(page.getByRole('heading', { name: '리그 위치' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: '클럽 Elo' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: '클럽 Elo', exact: true })).toBeVisible();
     await expect(page.getByRole('heading', { name: '선수단 가치' })).toBeVisible();
     await expect(page.getByRole('heading', { name: '구단 가치' })).toBeVisible();
-    await expect(page.getByRole('table', { name: '시즌별 기록' })).toBeVisible();
     expect(await horizontalOverflow(page)).toBe(0);
   });
 });

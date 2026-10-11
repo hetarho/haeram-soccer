@@ -36,6 +36,45 @@
   line-height: 1.6;
   margin: 8px 0;
 }
+.book {
+  min-width: 0;
+}
+.book h3 {
+  font-size: 17px;
+  margin: 0 0 8px;
+  overflow-wrap: anywhere;
+}
+.book h4 {
+  font-size: 13px;
+  margin: 14px 0 8px;
+}
+/* A player sheet opens on his club career, whatever the roster was showing. */
+.clubCareer {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+}
+.clubCareer h3 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.clubCareer .careerLine {
+  margin: 0 0 8px;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+.clubCareer .note {
+  margin: 8px 0 0;
+}
+.chips .status[data-status='active'] {
+  border-color: var(--accent-edge);
+  color: var(--accent-text);
+}
 .facts {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -189,8 +228,9 @@
   width: 100%;
   min-height: 48px;
 }
-/* A card's club name stays a name: only the card's actions span its width. */
-.cards h4 button {
+/* A card's club or player name stays a name: only the card's actions span its width. */
+.cards h4 button,
+.cards b button {
   width: auto;
 }
 .cards button[aria-pressed='true'] {

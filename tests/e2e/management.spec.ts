@@ -65,6 +65,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
     .click();
   await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('Haeram');
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
+  await page.getByRole('tab', { name: '시즌 기록', exact: true }).click();
   await chooseOption(page.getByRole('combobox', { name: '기록 시즌', exact: true }), '1950');
   await page.getByRole('button', { name: '경기 기록 보기', exact: true }).first().click();
   await expect(page.getByRole('dialog', { name: '지난 경기 상세' })).toBeVisible();
@@ -114,6 +115,7 @@ test('browses every historical regional group and resets filters on country chan
   await page.keyboard.press('Escape');
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole('tab', { name: '시즌 기록', exact: true }).click();
   await chooseOption(page.getByRole('combobox', { name: '기록 시즌', exact: true }), '1950');
   await chooseOption(page.getByRole('combobox', { name: '과거 디비전', exact: true }), '2');
   const standings = page

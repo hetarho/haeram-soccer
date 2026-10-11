@@ -2,17 +2,15 @@ import { Select } from './Select';
 import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
 import type {
   ManagerTrait,
-  MatchRecord,
   Player,
   TransferStance,
   World,
 } from '../../../../packages/contracts/src/types';
-import { priceIndex, country, currency } from '../../../../packages/catalogs/src/index';
+import { priceIndex } from '../../../../packages/catalogs/src/index';
 import { injuryDaysLeft, quote, tacticLabel, overall } from '../../../../packages/engine/src/world';
 import { ratio } from '../../../../packages/engine/src/primitives';
 import { useGameState } from '../runtime/store';
 import type { ClientState, GameClient } from '../runtime/client';
-import type { Reply } from '../runtime/protocol';
 import { Panel } from './App';
 import { RecruitmentDesk } from './RecruitmentDesk';
 import { OperationsView } from './Operations';
@@ -30,7 +28,6 @@ import {
 } from '../../../../packages/engine/src/transfers';
 import { buildOf, cardOf } from '../../../../packages/engine/src/build';
 import { Dialog } from './Dialog';
-import { ClubLink } from './ClubLink';
 import { OvrBadge } from './OvrBadge';
 import {
   DEFAULT_ROSTER_VIEW,
@@ -47,12 +44,10 @@ import {
   type StaffTab,
 } from './state';
 import { AcademyView, CoachingPlan, CoachingStaff, Delegation } from './ClubStaff';
-import { Chart } from './Chart';
-import { Pitch } from './Pitch';
-import { archivePlayback } from './replay';
-import { explorePlayers } from './playerAnalysis';
-import { PlayerPerformance } from './PlayerPerformance';
-import { PlayerAdvancedStats } from './PlayerAdvancedStats';
+import { appearances, explorePlayers, playerStatus } from './playerAnalysis';
+import { PlayerLink } from './PlayerSheet';
+import { Attributes } from './Attributes';
+import { RecordsRoom } from './RecordsRoom';
 import { StyleCard } from './StyleCard';
 import { RemedySheet } from './RemedySheet';
 import { managerTerm, STYLE_INFO } from '../../../../packages/engine/src/styles';
@@ -60,11 +55,7 @@ import { MANAGER_TRAIT_INFO } from '../../../../packages/engine/src/staff';
 import { managerRenewal } from '../../../../packages/engine/src/operations';
 import type { StateKey } from './teamState';
 import { PlayerComparison } from './PlayerComparison';
-import { SeasonAnalysis } from './SeasonAnalysis';
-import { CareerRecordBook } from './CareerRecordBook';
-import { ClubTrends } from './ClubTrends';
-import { AnalysisExport } from './AnalysisExport';
-import { contractLine, money, number, percent, seasonName, kindLabel } from './format';
+import { contractLine, money, number } from './format';
 import s from './App.module.css';
 type Props = { state: ClientState; client: GameClient };
 const toneLabel = {
@@ -137,21 +128,6 @@ function SquadSegments({ current, players }: { current: SquadTab; players: numbe
         >
           {label}
         </button>
-      ))}
-    </div>
-  );
-}
-function Attributes({ rows }: { rows: [label: string, value: string | number, hint?: string][] }) {
-  return (
-    <div className={s.attributes}>
-      {rows.map(([label, v, hint]) => (
-        <div className={s.attribute} key={label}>
-          <span>
-            {label}
-            {hint && <small>{hint}</small>}
-          </span>
-          <b>{typeof v === 'number' ? Math.round(v) : v}</b>
-        </div>
       ))}
     </div>
   );
@@ -665,7 +641,6 @@ function Squad({ state, client }: Props) {
     w = v.world,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
     tab = useSquadView((state) => state.tab),
-    [selectedId, setSelectedId] = useState<string>(),
     [view, setView] = useState<RosterView>(DEFAULT_ROSTER_VIEW),
     [comparing, setComparing] = useState(false),
     [fullTable, setFullTable] = useState(false),
@@ -676,7 +651,6 @@ function Squad({ state, client }: Props) {
   const disabled = state.busy || state.readonly || acting;
   const active = w.players.filter((p) => p.status === 'active');
   const window = transferWindow(w);
-  const selected = w.players.find((p) => p.id === selectedId);
   const stancePlayer = w.players.find((p) => p.id === stanceId && canSetStance(p));
   const { scope } = view;
   const listed = explorePlayers(w.players, { ...view, query: playerQuery });
@@ -729,18 +703,16 @@ function Squad({ state, client }: Props) {
           <div className={s.rosterCards}>
             {visiblePlayers.map((p) => (
               <article key={p.id}>
-                <button onClick={() => setSelectedId(p.id)}>
+                <div className={s.rosterBody}>
                   <OvrBadge value={overall(p)} role={p.role} />
-                  <b>{p.name}</b>
+                  <PlayerLink id={p.id} name={p.name} scope={scope} className={s.cardLink} />
                   <small>
                     {p.status === 'active'
                       ? `${w.year - p.born}세 · 잠재력 ${Math.round(p.potential)}`
-                      : p.status === 'retired'
-                        ? '은퇴 · 클럽 기록 보존'
-                        : '이적 · 클럽 기록 보존'}
+                      : `${playerStatus(p)} · 통산 ${appearances(p.career)}경기 ${p.career[0]}골`}
                   </small>
                   {p.status === 'active' && <PlayerFlags w={w} player={p} />}
-                </button>
+                </div>
                 <div>
                   <b>피로 {Math.round(p.fatigue)}</b>
                   <small>성장 +{(p.developed || 0).toFixed(2)}</small>
@@ -786,6 +758,7 @@ function Squad({ state, client }: Props) {
                       <th>패스</th>
                       <th>수비</th>
                       <th>잠재력</th>
+                      <th>출전</th>
                       <th>득점</th>
                       <th>도움</th>
                       <th>피로</th>
@@ -801,7 +774,7 @@ function Squad({ state, client }: Props) {
                         <tr key={p.id}>
                           <td>{p.role}</td>
                           <td>
-                            <button onClick={() => setSelectedId(p.id)}>{p.name}</button>
+                            <PlayerLink id={p.id} name={p.name} scope={scope} />
                             <small>
                               {' '}
                               {p.status === 'retired'
@@ -819,6 +792,7 @@ function Squad({ state, client }: Props) {
                           <td>{number(p.passing)}</td>
                           <td>{number(p.defense)}</td>
                           <td>{number(p.potential)}</td>
+                          <td>{appearances(stats)}</td>
                           <td>{stats[0]}</td>
                           <td>{stats[1]}</td>
                           <td>{number(p.fatigue)}</td>
@@ -851,38 +825,6 @@ function Squad({ state, client }: Props) {
       ) : null}
       {comparing && (
         <PlayerComparison w={w} initialScope={scope} onClose={() => setComparing(false)} />
-      )}
-      {selected && (
-        <Dialog label="선수 상세 기록" onClose={() => setSelectedId(undefined)}>
-          <h2>{selected.name}</h2>
-          <p>
-            {selected.role} ·{' '}
-            {selected.status === 'active'
-              ? `${w.year - selected.born}세`
-              : `${selected.born}년생 · ${selected.status === 'retired' ? '은퇴' : '매각'}`}
-          </p>
-          <PlayerPerformance player={selected} scope={scope} />
-          <Attributes
-            rows={[
-              ['득점', selected[scope][0]],
-              ['도움', selected[scope][1]],
-              ['누적 출전 분', selected[scope][10]],
-              ['패스 성공률', percent(selected[scope][3], selected[scope][2])],
-              ['슈팅', selected[scope][4]],
-              ['유효 슈팅', selected[scope][5]],
-              ['태클', selected[scope][6]],
-              ['인터셉트', selected[scope][7]],
-              ['돌파', selected[scope][8]],
-              ['선방', selected[scope][9]],
-            ]}
-          />
-          <p>
-            분모: 패스 시도 {number(selected[scope][2])}회 ·{' '}
-            {scope === 'career' ? '우리 클럽 통산' : '이번 시즌 모든 대회'}
-          </p>
-          <PlayerAdvancedStats w={w} player={selected} scope={scope} />
-          <button onClick={() => setSelectedId(undefined)}>닫기</button>
-        </Dialog>
       )}
       {stancePlayer && (
         <StanceSheet
@@ -926,461 +868,6 @@ function EconomicContext({ state }: { state: ClientState }) {
     </Panel>
   );
 }
-function History({ state, client }: Props) {
-  const w = state.view!.world,
-    c = w.clubs.find((c) => c.id === w.playerClub)!,
-    [year, setYear] = useState(w.year),
-    [archiveResult, setArchiveResult] = useState<{
-      year: number;
-      revision: number;
-      data?: Reply['archive'];
-      error?: string;
-    }>(),
-    [match, setMatch] = useState<MatchRecord>(),
-    [filter, setFilter] = useState('all'),
-    [historicalCode, setHistoricalCode] = useState(c.country),
-    [tier, setTier] = useState(0),
-    [historicalGroup, setHistoricalGroup] = useState(0);
-  useEffect(() => {
-    let valid = true;
-    void client
-      .archive(year)
-      .then((result) => {
-        if (valid)
-          setArchiveResult({
-            year,
-            revision: w.revision,
-            data: result,
-            error: result ? undefined : '시즌 기록을 읽지 못했어요. 시즌을 다시 선택해보세요.',
-          });
-      })
-      .catch(() => {
-        if (valid)
-          setArchiveResult({
-            year,
-            revision: w.revision,
-            error: '시즌 기록을 읽지 못했어요. 시즌을 다시 선택해보세요.',
-          });
-      });
-    return () => {
-      valid = false;
-    };
-  }, [client, year, w.revision]);
-  const loaded =
-    archiveResult?.year === year && archiveResult?.revision === w.revision
-      ? archiveResult
-      : undefined;
-  const archive = loaded?.data;
-  const matches = archive?.matches.filter((m) => filter === 'all' || m.kind === filter) || [],
-    h = archive?.season;
-  const rows =
-    h?.standings
-      .filter(
-        (row) =>
-          w.clubs[row[0]].country === historicalCode &&
-          row[1] === tier &&
-          row[2] === historicalGroup,
-      )
-      .sort((a, b) => b[3] - a[3] || b[4] - b[5] - (a[4] - a[5]) || b[4] - a[4] || a[0] - b[0]) ||
-    [];
-  const f = (n: string, y = year) => money(n, c.country, y);
-  return (
-    <>
-      <Header
-        eyebrow="ARCHIVE"
-        title="클럽 기록실"
-        description="시즌과 선수, 경기와 장부. 그때의 숫자를 그대로 펼쳐봐요."
-      />
-      <CareerRecordBook w={w} />
-      <ClubTrends w={w} />
-      <div className={s.twoCols}>
-        <Panel title="서포터의 성장">
-          <div className={s.panelBody}>
-            <Chart
-              label="서포터"
-              values={w.history.map((h) => h.fans)}
-              labels={w.history.map((h) => String(h.year))}
-            />
-          </div>
-        </Panel>
-        <Panel title="현재 물가로 본 시즌 말 자금">
-          <div className={s.panelBody}>
-            <Chart
-              label="현재 물가 기준 자금"
-              values={w.history.map(
-                (h) =>
-                  Number(
-                    ratio(
-                      h.cash,
-                      BigInt(quote(c.country, w.year, 10000)),
-                      BigInt(quote(c.country, h.year, 10000)),
-                    ),
-                  ) / currency(c.country, w.year).units,
-              )}
-              labels={w.history.map((h) => String(h.year))}
-            />
-            <p className={s.muted}>
-              물가와 화폐 전환을 보정해 지금 돈으로 환산했어요. 초기 국가 자료가 없으면 영국 지수
-              추정을 씁니다. 실험 전후 변화는 인과관계의 증명이 아닙니다.
-            </p>
-          </div>
-        </Panel>
-        <Panel title="감독들이 남긴 계절">
-          <div className={s.panelBody}>
-            <ul className={s.timeline}>
-              {archive?.managers
-                .filter((e) => e.kind === 'manager-hire' || e.kind === 'manager-departure')
-                .map((e, i) => (
-                  <li key={i}>
-                    <small>
-                      {e.year} · ROUND {e.round}
-                    </small>
-                    <b>{e.title}</b>
-                    <p>{e.detail}</p>
-                  </li>
-                ))}
-              <li>
-                <b>{w.manager.name} · 현재</b>
-                <p>
-                  {w.manager.since}년부터 · {tacticLabel[w.manager.philosophy]}
-                </p>
-              </li>
-            </ul>
-          </div>
-        </Panel>
-      </div>
-      <div className={s.filters}>
-        <label>
-          시즌{' '}
-          <Select
-            aria-label="기록 시즌"
-            value={year}
-            onValueChange={(value) => setYear(Number(value))}
-          >
-            {[...w.history.map((h) => h.year), w.year].reverse().map((y) => (
-              <option key={y} value={y}>
-                {seasonName(y)}
-                {y === w.year ? ' 진행 중' : ''}
-              </option>
-            ))}
-          </Select>
-        </label>
-        <label>
-          대회 범위{' '}
-          <Select
-            aria-label="기록 대회 범위"
-            value={filter}
-            onValueChange={(value) => setFilter(value)}
-          >
-            <option value="all">모든 대회</option>
-            {Object.entries(kindLabel).map(([id, t]) => (
-              <option key={id} value={id}>
-                {t}
-              </option>
-            ))}
-          </Select>
-        </label>
-        <span className={s.pill}>
-          {matches.length}경기 · 전체 {state.view!.totalMatches}경기 보존
-        </span>
-      </div>
-      {h && (
-        <div className={s.stats}>
-          {[
-            ['리그 성적', `${h.tier + 1}부 ${h.rank}위 · ${h.points}pts`],
-            ['서포터', number(h.fans)],
-            ['당시 자금', f(h.cash)],
-            ['당시 손익', f((BigInt(h.income) - BigInt(h.expense)).toString())],
-          ].map(([label, value]) => (
-            <div className={s.stat} key={label}>
-              <div className={s.label}>{label}</div>
-              <strong>{value}</strong>
-            </div>
-          ))}
-        </div>
-      )}
-      {archive ? (
-        <SeasonAnalysis
-          records={matches}
-          club={w.playerClub}
-          year={year}
-          scope={filter === 'all' ? '모든 대회' : kindLabel[filter]}
-        />
-      ) : (
-        <p className={s.muted} role={loaded?.error ? 'alert' : 'status'}>
-          {loaded?.error || '선택한 시즌 기록을 펼치는 중…'}
-        </p>
-      )}
-      <AnalysisExport
-        w={w}
-        records={matches}
-        year={year}
-        scope={filter === 'all' ? '모든 대회' : kindLabel[filter]}
-        ready={!!archive}
-      />
-      <Panel title="경기의 페이지" note={seasonName(year)}>
-        <div className={s.tableWrap}>
-          <table>
-            <thead>
-              <tr>
-                <th>라운드</th>
-                <th>홈 클럽</th>
-                <th>결과</th>
-                <th>원정 클럽</th>
-                <th>대회</th>
-                <th>기록</th>
-              </tr>
-            </thead>
-            <tbody>
-              {matches.map((m) => (
-                <tr key={m.id}>
-                  <td>{m.round}</td>
-                  <td>
-                    <ClubLink w={w} id={m.home} crest={14} />
-                  </td>
-                  <td>
-                    <b>
-                      {m.score.home}–{m.score.away}
-                    </b>
-                  </td>
-                  <td>
-                    <ClubLink w={w} id={m.away} crest={14} />
-                  </td>
-                  <td>{kindLabel[m.kind]}</td>
-                  <td>
-                    <button onClick={() => setMatch(m)}>경기 기록 보기</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {archive && !matches.length && (
-            <div className={s.empty}>아직 기록된 경기가 없습니다.</div>
-          )}
-        </div>
-      </Panel>
-      {h && (
-        <>
-          <Panel title="클럽대항전 우승과 순위" note="HISTORICAL HONORS">
-            <div className={s.panelBody}>
-              {h.europe.length ? (
-                h.europe.map((e) => (
-                  <details key={e.kind} style={{ marginBottom: 14 }}>
-                    <summary>
-                      <b>{e.name}</b> · {w.clubs.find((c) => c.id === e.winner)?.name} 우승 ·{' '}
-                      {e.field}팀
-                    </summary>
-                    <div className={s.tableWrap}>
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>참가 클럽</th>
-                            <th>경기</th>
-                            <th>승점</th>
-                            <th>득점</th>
-                            <th>실점</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {e.standings?.map((row) => (
-                            <tr key={row[0]}>
-                              <td>{row[1]}</td>
-                              <td>
-                                <ClubLink w={w} id={w.clubs[row[0]].id} crest={14} />
-                              </td>
-                              <td>{row[2]}</td>
-                              <td>{row[3]}</td>
-                              <td>{row[4]}</td>
-                              <td>{row[5]}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    {e.secondStandings && (
-                      <p className={s.muted}>
-                        2차 조별 단계 {e.secondStandings.length}개 클럽 기록도 저장되어 있습니다.
-                      </p>
-                    )}
-                  </details>
-                ))
-              ) : (
-                <p className={s.muted}>아직 클럽대항전 창설 이전의 시즌입니다.</p>
-              )}
-            </div>
-          </Panel>
-          <Panel title="그해의 각국 리그">
-            <div className={s.panelBody}>
-              <div className={s.filters}>
-                <label>
-                  국가{' '}
-                  <Select
-                    aria-label="과거 국가"
-                    value={historicalCode}
-                    onValueChange={(value) => {
-                      setHistoricalCode(value);
-                      setTier(0);
-                      setHistoricalGroup(0);
-                    }}
-                  >
-                    {h.champions.map((ch) => (
-                      <option key={ch.country} value={ch.country}>
-                        {country(ch.country).name}
-                      </option>
-                    ))}
-                  </Select>
-                </label>
-                <label>
-                  디비전{' '}
-                  <Select
-                    aria-label="과거 디비전"
-                    value={tier}
-                    onValueChange={(value) => {
-                      setTier(Number(value));
-                      setHistoricalGroup(0);
-                    }}
-                  >
-                    {country(historicalCode).groups.map((_, i) => (
-                      <option key={i} value={i}>
-                        {i + 1}부
-                      </option>
-                    ))}
-                  </Select>
-                </label>
-                {country(historicalCode).groups[tier].length > 1 && (
-                  <label>
-                    지역 그룹{' '}
-                    <Select
-                      aria-label="과거 지역 그룹"
-                      value={historicalGroup}
-                      onValueChange={(value) => setHistoricalGroup(Number(value))}
-                    >
-                      {country(historicalCode).groups[tier].map((_, i) => (
-                        <option key={i} value={i}>
-                          {String.fromCharCode(65 + i)}
-                        </option>
-                      ))}
-                    </Select>
-                  </label>
-                )}
-              </div>
-              <p className={s.muted}>
-                리그 우승{' '}
-                {
-                  w.clubs.find(
-                    (c) => c.id === h.champions.find((ch) => ch.country === historicalCode)?.club,
-                  )?.name
-                }{' '}
-                · 국내 컵{' '}
-                {
-                  w.clubs.find(
-                    (c) => c.id === h.champions.find((ch) => ch.country === historicalCode)?.cup,
-                  )?.name
-                }
-              </p>
-              <div className={s.tableWrap}>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>클럽</th>
-                      <th>그룹</th>
-                      <th>승점</th>
-                      <th>득점</th>
-                      <th>실점</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((row, i) => (
-                      <tr
-                        key={row[0]}
-                        className={w.clubs[row[0]].id === w.playerClub ? s.own : undefined}
-                      >
-                        <td>{i + 1}</td>
-                        <td>
-                          <ClubLink w={w} id={w.clubs[row[0]].id} crest={14} />
-                        </td>
-                        <td>{String.fromCharCode(65 + row[2])}</td>
-                        <td>{row[3]}</td>
-                        <td>{row[4]}</td>
-                        <td>{row[5]}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </Panel>
-        </>
-      )}
-      <Panel title="그해의 결정들">
-        <div className={s.panelBody}>
-          <ul className={s.timeline}>
-            {archive?.events
-              .filter((e) => e.kind !== 'gate')
-              .map((e, i) => (
-                <li key={i}>
-                  <small>
-                    {e.year} · ROUND {e.round}{' '}
-                    {e.amount && `· ${e.amount} ${e.currency} (원래 최소 단위)`}
-                  </small>
-                  <b>{e.title}</b>
-                  <p>{e.detail}</p>
-                </li>
-              ))}
-          </ul>
-        </div>
-      </Panel>
-      {match && (
-        <Dialog label="지난 경기 상세" onClose={() => setMatch(undefined)} wide>
-          <button onClick={() => setMatch(undefined)}>닫기</button>
-          <h2>
-            {seasonName(match.year)} · {kindLabel[match.kind]}
-          </h2>
-          <Pitch playback={archivePlayback(match)} summary world={w} />
-          <h3>선수별 기록 · 우리 클럽</h3>
-          <div className={s.tableWrap}>
-            <table>
-              <thead>
-                <tr>
-                  <th>득점</th>
-                  <th>선수</th>
-                  <th>도움</th>
-                  <th>패스 성공/시도</th>
-                  <th>슈팅/유효</th>
-                  <th>태클</th>
-                  <th>선방</th>
-                </tr>
-              </thead>
-              <tbody>
-                {match.players.map((p) => (
-                  <tr key={p.id}>
-                    <td>{p.metrics[0]}</td>
-                    <td>{w.players.find((owned) => owned.id === p.id)?.name}</td>
-                    <td>{p.metrics[1]}</td>
-                    <td>
-                      {p.metrics[3]}/{p.metrics[2]}
-                    </td>
-                    <td>
-                      {p.metrics[4]}/{p.metrics[5]}
-                    </td>
-                    <td>{p.metrics[6]}</td>
-                    <td>{p.metrics[9]}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p className={s.muted}>
-            전체 경기 기록은 보존됩니다. 과거 관전에서는 저장된 골 이벤트를 재생하며, 상세 분 단위
-            패스와 이동 경로는 저장하지 않습니다.
-          </p>
-        </Dialog>
-      )}
-    </>
-  );
-}
 export default function Rich({ state, client, page }: Props & { page: Page }) {
   if (page === 'manager') return <ManagerView state={state} client={client} />;
   if (page === 'squad') return <Squad state={state} client={client} />;
@@ -1395,5 +882,5 @@ export default function Rich({ state, client, page }: Props & { page: Page }) {
         <OperationsView state={state} client={client} legacy={<EconomicContext state={state} />} />
       </>
     );
-  return <History state={state} client={client} />;
+  return <RecordsRoom state={state} client={client} />;
 }

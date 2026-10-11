@@ -14,6 +14,7 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
+  await page.getByRole('tab', { name: '시즌 기록', exact: true }).click();
   await page.getByText('분석 데이터 내보내기', { exact: true }).click();
   const panel = page.getByRole('region', { name: '분석 데이터 내보내기', exact: true }),
     button = panel.getByRole('button', { name: 'CSV 내려받기', exact: true });
@@ -117,8 +118,8 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   await expect(pastTab('득점 순위')).toHaveAttribute('aria-selected', 'true');
   await expect(scorers).toBeVisible();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
+  // The record book is on the records room's first tab, open rather than folded away.
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
-  await page.getByText('우리 클럽 기록집', { exact: true }).click();
   const book = page.getByRole('region', { name: '우리 클럽 기록집', exact: true });
   await expect(book).toContainText('완료한 1개 시즌');
   await expect(book).toContainText('최고 승점 페이스');
@@ -132,7 +133,6 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   const fresh = await context.newPage();
   await fresh.goto('/history');
   await expect(fresh.getByTestId('save-status')).toContainText('저장 완료');
-  await fresh.getByText('우리 클럽 기록집', { exact: true }).click();
   await expect(fresh.getByRole('region', { name: '우리 클럽 기록집', exact: true })).toHaveText(
     facts,
     { useInnerText: true },
@@ -149,6 +149,7 @@ test('uses matching archive samples for season splits and competition filters', 
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
+  await page.getByRole('tab', { name: '시즌 기록', exact: true }).click();
   const toggle = page.getByText('시즌 분석 · 홈과 원정', { exact: true });
   await toggle.click();
   const analysis = page.getByRole('region', { name: '선택 시즌 분석', exact: true });
@@ -270,8 +271,12 @@ test('filters player samples and shows scoped per-90 evidence on a mobile profil
   await detailTable.getByText('전체 선수 지표 표 보기', { exact: true }).click();
   await expect(detailTable.locator('table')).toHaveCount(0);
   const roster = page.locator('[class*="rosterCards"]');
-  await roster.locator('article > button').first().click();
-  const profile = page.getByRole('dialog', { name: '선수 상세 기록' });
+  // A roster name opens that player's sheet, his club career first.
+  const link = roster.getByRole('button', { name: / 선수 기록$/ }).first();
+  const name = (await link.getAttribute('aria-label'))!.replace(/ 선수 기록$/, '');
+  await link.click();
+  const profile = page.getByRole('dialog', { name, exact: true });
+  await expect(profile.getByRole('region', { name: '우리 클럽 통산' })).toContainText('출전 1경기');
   await expect(profile).toContainText('출전 90분');
   await expect(profile).toContainText('180분 미만');
   await expect(profile).toContainText('이번 시즌 · 모든 대회');

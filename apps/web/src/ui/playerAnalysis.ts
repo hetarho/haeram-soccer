@@ -6,6 +6,21 @@ export type PlayerOrder = 'roster' | 'ability' | 'minutes' | 'fatigue' | 'goals9
 export function per90(metrics: Metrics, index: number) {
   return metrics[10] > 0 ? (metrics[index] * 90) / metrics[10] : undefined;
 }
+/**
+ * Matches played: the engine has no substitutions and credits everyone in an own match's lineup
+ * the full 90 minutes, so minutes / 90 is the exact appearance count.
+ */
+export const appearances = (metrics: Metrics) => Math.floor(metrics[10] / 90);
+/** Where a player of ours stands now; a loan that ran out is archived as a retirement. */
+export function playerStatus(p: Player) {
+  return p.status === 'active'
+    ? '현역'
+    : p.status === 'sold'
+      ? '이적'
+      : p.loanUntil !== undefined
+        ? '임대 종료'
+        : '은퇴';
+}
 export function performanceRows(metrics: Metrics) {
   return (
     [

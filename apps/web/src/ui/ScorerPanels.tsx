@@ -1,5 +1,6 @@
 import { Select } from './Select';
 import { ClubLink } from './ClubLink';
+import { PlayerLink } from './PlayerSheet';
 import { memo, useState } from 'react';
 import type { GoalScorer, World } from '../../../../packages/contracts/src/types';
 import { seasonName } from './format';
@@ -37,6 +38,14 @@ export const ScorerStandings = memo(function ScorerStandings({ w }: Props) {
   const ranked = rankedScorers(players);
   const own = ranked.find((player) => player.club === w.playerClub);
   const ownRank = own ? ranked.indexOf(own) + 1 : undefined;
+  // Our own players open their player sheet; other clubs' players have none to open.
+  const ours = new Set(w.players.map((player) => player.id));
+  const name = (player: GoalScorer) =>
+    ours.has(player.id) ? (
+      <PlayerLink id={player.id} name={player.name} scope="season" />
+    ) : (
+      player.name
+    );
   return (
     <section className={s.panel} aria-label="리그 득점왕 순위">
       <div className={s.head}>
@@ -70,7 +79,7 @@ export const ScorerStandings = memo(function ScorerStandings({ w }: Props) {
                   <tr key={player.id} className={player.club === w.playerClub ? s.own : ''}>
                     <td>{i + 1}</td>
                     <th scope="row" className={s.player}>
-                      {player.name}
+                      {name(player)}
                       {player.club === w.playerClub && <span className={s.ownBadge}>우리 팀</span>}
                     </th>
                     <td className={s.club}>
@@ -86,7 +95,7 @@ export const ScorerStandings = memo(function ScorerStandings({ w }: Props) {
           </div>
           {own && ownRank && ownRank > 20 && (
             <p className={s.ownSummary}>
-              우리 팀 최고 득점자 <b>{own.name}</b> · {ownRank}위 · {own.goals}골 · 선두와{' '}
+              우리 팀 최고 득점자 <b>{name(own)}</b> · {ownRank}위 · {own.goals}골 · 선두와{' '}
               {ranked[0].goals - own.goals}골 차
             </p>
           )}
