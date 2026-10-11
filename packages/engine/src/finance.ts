@@ -205,6 +205,10 @@ const incomeKinds: Record<string, string> = {
   'season-prize': '최종 순위 상금',
   'campaign-result': '마케팅 회수금',
   'transfer-out': '선수 매각',
+  'cup-prize': '국내 컵 상금',
+  'cup-honor': '국내 컵 우승 상금',
+  'europe-prize': '클럽대항전 수당',
+  'europe-honor': '클럽대항전 우승 상금',
   support: '구단주 추가 출자',
 };
 const expenseKinds: Record<string, string> = {
@@ -215,6 +219,7 @@ const expenseKinds: Record<string, string> = {
   'manager-hire': '감독 선임·보상',
   'staff-hire': '스태프 선임·보상',
   'staff-release': '스태프 계약 해지',
+  'staff-renew': '코치 재계약',
   training: '훈련 지원',
   facility: '시설 확장',
 };

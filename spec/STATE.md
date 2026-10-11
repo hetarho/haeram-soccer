@@ -17,16 +17,16 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 4 | 4 | - | 2 |
-| WEB | 36 | 36 | - | 0 |
-| WORLD | 1 | 1 | - | 0 |
-| CLUB | 13 | 13 | - | 0 |
-| MATCH | 6 | 6 | - | 0 |
-| LEAGUE | 2 | 2 | - | 0 |
-| STAFF | 6 | 6 | - | 0 |
-| ECON | 8 | 8 | - | 0 |
-| EURO | 1 | 1 | - | 0 |
-| HIST | 4 | 4 | - | 0 |
-| SAVE | 11 | 11 | - | 0 |
+| WEB | 37 | 37 | - | 0 |
+| WORLD | 2 | 2 | - | 0 |
+| CLUB | 14 | 14 | - | 0 |
+| MATCH | 7 | 7 | - | 0 |
+| LEAGUE | 3 | 3 | - | 0 |
+| STAFF | 7 | 7 | - | 0 |
+| ECON | 9 | 9 | - | 0 |
+| EURO | 2 | 2 | - | 0 |
+| HIST | 5 | 5 | - | 0 |
+| SAVE | 12 | 12 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -34,10 +34,11 @@
 
 ## next
 - Player match ratings (평점) lead Korean headlines, but WEB-22/25 rule out synthetic ratings; decide whether a transparent rating belongs in the game.
-- Research levers not yet modelled: injuries (pressing load), set-piece coaching, ticket-price fan mood, fixture-gap rule for training camps.
+- Research levers not yet modelled: set-piece coaching, ticket-price fan mood, fixture-gap rule for training camps; tackles in a far-off flank still look like heavy touches (match.ts picks markers by zone, not flank).
 - Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
 
 ## log
+- 261011 WORLD r2 LEAGUE r3 EURO r2 CLUB r14 STAFF r7 MATCH r7 ECON r9 HIST r5 SAVE r12 WEB r37 implemented directly: 1950 founding in a 16-club amateur league, midweek domestic cups and stage-by-stage continental knockouts (two legs, away goals before 2021) with live brackets, phase tables and history of finals, Club Elo/squad/club value records, evolving clubs nobody owns, injuries, spring retirements, potential breakthroughs, transfer list instead of instant sales, coaching investment with delegated hiring and renewal season, intervention popover on every clock, faster curved ball landing at players, recalibrated match outcomes and clubs nobody owns with fixed giants per country; rules 1.9.0, worst century checkpoint 1,250,608 bytes
 - 261010 ECON r8 CLUB r13 WEB r36 SAVE r11 implemented directly: six club visions→a six-slot club build of 25 cards (15,625 builds) with presets, combined draft preview, synergy forecast and one commit a season; 머니볼/상업 제국 read build cards, +우리 동네 아이들 +트레이딩 머신; stored visions load as presets; rules 1.8.0
 - 261010 WEB r35 CLUB r12 implemented directly: phone HUD compact cash (K/M/B) and two-line club name, floating news button with NEW count, celebration banner above it and filing into it, "뉴스 표시 안 함" in inbox and news sheet; delegated sale bar 130% (prospects 200%) lowered for age, contract and cash runway, floor 80%; rules 1.7.0
 - 261010 HIST-11 fix: club news is derived in the worker from the full career; the projected 150-event/30-match windows shifted event news IDs, so the promotion celebration replayed after every match; event lookups no longer resolve the club per event (century feed 16→3 ms)
@@ -57,4 +58,3 @@
 - 261008 implement-task T040 start (ui)
 - 261008 T039 done; styled selectors verified in Chromium, Firefox and WebKit
 - 261008 create-task T039 refresh; accumulated reference latency/storage gates owned by T041
-- 261008 implement-task T039 resumed (ui)

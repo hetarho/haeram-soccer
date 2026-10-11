@@ -11,6 +11,7 @@ import {
   resolveTie,
   simulateMatch,
   simulateSeason,
+  FOUNDING_YEAR,
 } from './index';
 
 function world() {
@@ -123,7 +124,7 @@ describe('actual league scorer standings', () => {
     advanceRound(w, undefined, false);
     const previous = structuredClone(w.scorerSeason);
     simulateSeason(w);
-    expect(w.scorerSeason!.year).toBe(1902);
+    expect(w.scorerSeason!.year).toBe(FOUNDING_YEAR + 1);
     expect(w.scorerSeason!.players).toEqual([]);
     expect(w.scorerSeason!.trackedSinceRound).toBe(1);
     expect(w.scorerSeason!.history).toEqual([{ round: 0, day: 0, rows: [] }]);
@@ -133,7 +134,11 @@ describe('actual league scorer standings', () => {
     prepareSeason(w);
     advanceRound(w, undefined, false);
     expect(w.scorerSeason!.groupKey).toBe('lower');
-    expect(new Set(w.scorerSeason!.players.map((p) => p.club)).size).toBe(8);
+    const lowerClubs = new Set(
+      w.fixtures.filter((f) => f.kind === 'lower').flatMap((f) => [f.home, f.away]),
+    );
+    expect(lowerClubs.size).toBe(16);
+    expect(w.scorerSeason!.players.every((p) => lowerClubs.has(p.club))).toBe(true);
     expect(w.scorerSeason!.players.reduce((sum, p) => sum + p.goals, 0)).toBe(
       w.fixtures
         .filter((f) => f.kind === 'lower' && f.score)

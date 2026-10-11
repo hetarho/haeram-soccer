@@ -12,6 +12,7 @@ import {
   seasonDayOf,
   simulateSeason,
 } from './index';
+import { sellPlayer } from './testing';
 
 function world(strong = false) {
   const w = createWorld({
@@ -102,7 +103,7 @@ describe('milestones from retained club facts', () => {
     expect(byId(w, 'player-growth').done).toBe(true);
     // A fee-bearing sale needs an open transfer window: move the clock into the winter window.
     w.calendar = { day: seasonDayOf(w.year, 1, 10) };
-    operate(w, { type: 'sell', id: prospect.id });
+    sellPlayer(w, prospect.id);
     expect(prospect.status).toBe('sold');
     expect(byId(w, 'player-growth').done).toBe(true);
     // A retained retired-player snapshot carries the same earned facts as a retained sold one.

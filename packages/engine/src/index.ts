@@ -27,6 +27,11 @@ export * from './styles';
 export * from './build';
 export * from './synergy';
 export * from './news';
+export * from './knockout';
+export * from './cups';
+export * from './ratings';
+export * from './dynamics';
+export * from './careers';
 export function createWorld(input: Founding) {
   const w = createBase(input);
   prepareSeason(w);

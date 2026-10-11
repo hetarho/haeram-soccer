@@ -85,9 +85,9 @@ for (const viewport of [
     // Start the shared clock on home; it keeps running on other views until the owner stops it.
     const date = page.getByTestId('game-date');
     await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
-    await expect(date).toHaveText('1901년 8월 1일');
+    await expect(date).toHaveText('1950년 8월 1일');
     await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-    await expect(date).toHaveText('1901년 8월 2일');
+    await expect(date).toHaveText('1950년 8월 2일');
     await openBusiness();
     const mini = page.getByTestId('mini-clock');
     const entered = await date.innerText();

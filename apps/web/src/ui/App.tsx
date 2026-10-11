@@ -5,7 +5,7 @@ import { GameClient, type ClientState } from '../runtime/client';
 import { useNavigation, type Page } from './state';
 import { ClubCrest } from './ClubCrest';
 import { watchNextMatch } from './watch';
-import { compactMoney, money, number, percent, seasonName, kindLabel } from './format';
+import { compactMoney, competitionLabel, money, number, percent, seasonName } from './format';
 import { InterventionSettings, ProgressControls } from './ProgressControls';
 import { LiveSeason } from './LiveSeason';
 import { ClubHub } from './ClubHub';
@@ -131,7 +131,7 @@ function ClubJournal({
           <div className={s.eyebrow}>SEASON {seasonName(w.year)}</div>
           <h2>{c.name}</h2>
           <p>
-            {w.lower ? '프로 복귀 도전' : `${c.tier + 1}부`} · 남은 우리 리그 경기{' '}
+            {w.lower ? '아마추어 리그' : `${c.tier + 1}부`} · 남은 우리 리그 경기{' '}
             {Math.max(0, remaining)}개
           </p>
         </div>
@@ -443,7 +443,7 @@ function ConnectedRich({ client, page }: { client: GameClient; page: Page }) {
 function CalendarText() {
   const year = useGameState((state) => state.view?.world.year);
   const round = useGameState((state) => state.view?.world.round);
-  return <>{year ? `${seasonName(year)} · 라운드 ${round}` : '1901 · A NEW BEGINNING'}</>;
+  return <>{year ? `${seasonName(year)} · 라운드 ${round}` : '1950 · A NEW BEGINNING'}</>;
 }
 /**
  * Cash is the one resource every decision spends, so it stays pinned to the top right; tapping it
@@ -531,7 +531,7 @@ function GameHud({
         <div>
           <b>{own?.name || 'Haeram Football'}</b>
           <small data-testid="calendar">
-            {own && `${lower ? '프로 복귀 도전' : `${own.tier + 1}부`} · `}
+            {own && `${lower ? '아마추어 리그' : `${own.tier + 1}부`} · `}
             <CalendarText />
           </small>
         </div>
@@ -572,7 +572,7 @@ function NextMatchNote() {
   return (
     <>
       {next
-        ? `${fixtureDate(w, next)} · ${daysUntilNextMatch(w)}일 후 · ${kindLabel[next.kind]}`
+        ? `${fixtureDate(w, next)} · ${daysUntilNextMatch(w)}일 후 · ${competitionLabel(w, next)}`
         : '시즌 마무리'}
     </>
   );

@@ -1014,10 +1014,15 @@ function honours(w: World): NewsItem[] {
       title: `${name}, ${last.tier === 0 ? '리그 우승!' : `${last.tier + 1}부 우승!`}`,
       detail: `승점 ${last.points} · ${last.won}승 ${last.drawn}무 ${last.lost}패`,
     });
+  // Cups decided in May are celebrated on the day of the final (their events); older seasons
+  // without those events are celebrated here at the close.
+  const won = (kind: string) =>
+    w.events.some((event) => event.year === last.year && event.kind === kind);
   const cup = last.champions.find((c) => c.cup === w.playerClub);
-  if (cup) items.push({ ...base('cup'), title: `${name}, ${country(cup.country).name} 컵 우승!` });
+  if (cup && !won('cup-honor'))
+    items.push({ ...base('cup'), title: `${name}, ${country(cup.country).name} 컵 우승!` });
   for (const europe of last.europe)
-    if (europe.winner === w.playerClub)
+    if (europe.winner === w.playerClub && !won('europe-honor'))
       items.push({ ...base(`europe-${europe.kind}`), title: `${name}, ${europe.name} 정상!` });
   return items;
 }
@@ -1156,6 +1161,77 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
         tone: 'bad',
         weight: 'major',
         title: `${name}, 강등`,
+        detail: event.detail,
+      };
+    case 'cup-prize': {
+      // "8강 통과" puts the club in the semi-finals; passing the semi-final reaches the final.
+      const late = /(4강|8강) 통과/.test(event.title);
+      return {
+        ...base,
+        tag: '경기',
+        tone: 'good',
+        weight: event.title.includes('4강 통과') ? 'major' : late ? 'notable' : 'minor',
+        title: `${name}, ${event.title.replace('4강 통과', '결승 진출').replace('8강 통과', '4강 진출')}`,
+      };
+    }
+    case 'cup-exit':
+      return {
+        ...base,
+        tag: '경기',
+        tone: 'bad',
+        weight: /결승|4강|8강/.test(event.title) ? 'notable' : 'minor',
+        title: `${name}, ${event.title}`,
+      };
+    case 'cup-honor':
+    case 'europe-honor':
+      return {
+        ...base,
+        tag: '기록',
+        tone: 'good',
+        weight: 'major',
+        title: `${name}, ${event.title.replace(/ 우승$/, '')} ${event.kind === 'cup-honor' ? '우승!' : '정상!'}`,
+        detail: event.detail,
+        celebrate: true,
+      };
+    case 'retirement-announce':
+      return {
+        ...base,
+        tag: '선수',
+        tone: 'neutral',
+        weight: 'notable',
+        title: `${event.title}… 이번 시즌이 마지막`,
+        detail: event.detail,
+      };
+    case 'retirement':
+      return event.detail.includes('은퇴')
+        ? {
+            ...base,
+            tag: '선수',
+            tone: 'neutral',
+            weight: 'minor',
+            title: `${event.title.replace('의 다음 장', '')}, 현역 은퇴`,
+            detail: event.detail,
+          }
+        : undefined;
+    case 'injury': {
+      const weeks = Number(/약 (\d+)주/.exec(event.detail)?.[1] || 0);
+      return {
+        ...base,
+        tag: '선수',
+        tone: 'bad',
+        weight: weeks >= 6 ? 'notable' : 'minor',
+        title: `${event.title}… 약 ${weeks}주 결장`,
+        detail: event.detail.split(' · ')[1],
+      };
+    }
+    case 'potential-breakthrough':
+    case 'potential-stall':
+      return {
+        ...base,
+        tag: '유스',
+        tone: event.kind === 'potential-breakthrough' ? 'good' : 'bad',
+        weight: event.kind === 'potential-breakthrough' ? 'notable' : 'minor',
+        title: event.title,
         detail: event.detail,
       };
     default:

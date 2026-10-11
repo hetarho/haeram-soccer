@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Fixture } from '../../contracts/src/types';
 import { createWorld, simulateMatch } from './index';
+import { MATCH_MOTION_CONFIG } from './motion';
 
 const w = createWorld({
   country: 'ENG',
@@ -63,6 +64,7 @@ describe('player duel chain', () => {
 
   it('accumulates expected goals from the recorded shots only', () => {
     const { frames } = simulateMatch(w, own, true, true);
+    const { secondsPerMinute, stepSeconds } = MATCH_MOTION_CONFIG.integration;
     let previous: [number, number] = [0, 0];
     for (const frame of frames) {
       expect(frame.xg![0]).toBeGreaterThanOrEqual(previous[0]);
@@ -75,7 +77,9 @@ describe('player duel chain', () => {
       expect(frame.xg![0] - previous[0]).toBeCloseTo(added[0], 1);
       expect(frame.xg![1] - previous[1]).toBeCloseTo(added[1], 1);
       previous = frame.xg!;
-      expect(frame.ballTrack).toHaveLength(40);
+      // One ball position (x, y, height) per motion step: 80 steps of 0.1 s per minute.
+      expect(frame.ballTrack).toHaveLength(Math.round(secondsPerMinute / stepSeconds));
+      expect(frame.ballTrack!.every((point) => point.length === 3)).toBe(true);
     }
   });
 

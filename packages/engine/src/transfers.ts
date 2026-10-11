@@ -1,8 +1,8 @@
-import type { Club, Player, TransferBid, World } from '../../contracts/src/types';
+import type { Club, ListingAsk, Player, TransferBid, World } from '../../contracts/src/types';
 import { currency } from '../../catalogs/src/index';
 import { currentDay, SEASON_END_DAY, seasonDayLabel, seasonDayOf } from './calendar';
 import { clamp, compareIds, hash, integer, random, ratio } from './primitives';
-import { activePlayers, addEvent, clubOf, overall, quote, selectedLineup } from './world';
+import { activePlayers, addEvent, clubOf, overall, ownStarters, quote } from './world';
 import { CASH_WARNING_ROUNDS, credit, debit, transferOffers } from './operations';
 import { operatingCosts } from './finance';
 import { fixedCostRunway } from './investment';
@@ -180,6 +180,7 @@ function saleBlocker(w: World, p: Player | undefined) {
 function completeSale(w: World, bid: TransferBid, p: Player) {
   const club = w.clubs.find((c) => c.id === bid.club);
   p.status = 'sold';
+  delete p.listed;
   credit(w, bid.fee);
   addEvent(
     w,
@@ -487,6 +488,125 @@ function saleBarLabel(bar: ReturnType<typeof saleBar>) {
   const steps = [...bar.cuts, ...(bar.percent === SALE_BAR_FLOOR ? ['최저 80%'] : [])];
   return `${bar.prospect ? '유망주 기준' : '기준'} ${bar.percent}%${steps.length ? `(${bar.base}%에서 ${steps.join(' · ')})` : ''}`;
 }
+/**
+ * A club that would buy `p`: one whose level suits him (from 4 below to 12 above his ability),
+ * the stronger ones more often, from any country. Weaker players go to smaller clubs.
+ */
+export function suitorFor(w: World, p: Player, r: () => number): Club | undefined {
+  const ability = overall(p);
+  const pool = w.clubs
+    .filter(
+      (c) =>
+        c.id !== w.playerClub &&
+        c.strength >= ability - 4 &&
+        c.strength <= ability + 12 &&
+        !(c.representative && !c.id.startsWith('euro:') && ability >= 45),
+    )
+    .sort((a, b) => compareIds(a.id, b.id));
+  if (!pool.length) return undefined;
+  const weights = pool.map((c) => 1 + Math.max(0, c.strength - ability + 4) / 4);
+  let target = r() * weights.reduce((sum, v) => sum + v, 0);
+  for (let i = 0; i < pool.length; i++) {
+    target -= weights[i];
+    if (target < 0) return pool[i];
+  }
+  return pool[pool.length - 1];
+}
+/**
+ * The transfer list (→CLUB-22): a listed player draws offers only from real clubs, and only while
+ * a window is open; the lower the asking price, the sooner one comes.
+ */
+export const LISTING: Record<
+  ListingAsk,
+  { label: string; chance: number; low: number; high: number }
+> = {
+  90: { label: '빠른 매각', chance: 0.16, low: 0.85, high: 1 },
+  110: { label: '시장가', chance: 0.08, low: 0.9, high: 1.05 },
+  140: { label: '높은 호가', chance: 0.035, low: 0.92, high: 1.08 },
+};
+/** How much a player's profile draws buyers: good and young players attract more interest. */
+export function listingAppeal(w: World, p: Player) {
+  const age = w.year - p.born;
+  return clamp(0.6 + (overall(p) - 35) / 60 + (age <= 23 ? 0.25 : age >= 31 ? -0.2 : 0), 0.35, 1.5);
+}
+/** Expected days until the first offer for a listed player, for the listing preview. */
+export function expectedOfferDays(w: World, p: Player, ask: ListingAsk) {
+  return Math.round(1 / (LISTING[ask].chance * listingAppeal(w, p)));
+}
+export function listPlayer(w: World, id: string, ask: ListingAsk | null) {
+  const p = w.players.find((x) => x.id === id && x.status === 'active');
+  if (!p || p.loanUntil) throw new Error('이적 명단에 올릴 수 있는 선수가 아닙니다.');
+  if (ask === null) {
+    if (!p.listed) return;
+    delete p.listed;
+    addEvent(w, 'transfer-list', `${p.name} 이적 명단 제외`, '다른 구단의 제안을 더 받지 않아요.');
+    return;
+  }
+  if (!Object.hasOwn(LISTING, ask)) throw new Error('호가 단계를 확인하세요.');
+  if (p.retiring !== undefined) throw new Error('은퇴를 앞둔 선수는 이적 명단에 올릴 수 없어요.');
+  if (p.listed === ask) return;
+  p.listed = ask;
+  const value = playerValue(w, p);
+  addEvent(
+    w,
+    'transfer-list',
+    `${p.name} 이적 명단 등록`,
+    `${LISTING[ask].label} · 평가 가치 ${moneyLabel(w, value)}의 ${ask}% · 이적시장 기간에 다른 구단의 제안이 와요.`,
+  );
+}
+function listedOffers(w: World, day: number, until: number) {
+  const pending = new Set(
+    (w.bids || []).filter((b) => b.direction === 'in' && isOpen(b)).map((b) => b.playerId),
+  );
+  for (const p of activePlayers(w)) {
+    if (!p.listed || pending.has(p.id) || saleBlocker(w, p)) continue;
+    const ask = LISTING[p.listed];
+    const r = random(`${w.seed}:listed:${p.id}:${w.year}:${day}`);
+    if (r() >= ask.chance * listingAppeal(w, p)) continue;
+    const club = suitorFor(w, p, r);
+    if (!club) continue;
+    const value = playerValue(w, p),
+      share = (p.listed / 100) * (ask.low + r() * (ask.high - ask.low)) * buildEffects(w).saleFee;
+    const fee = ratio(value, BigInt(Math.round(share * 1000)), 1000n);
+    const bid: TransferBid = {
+      id: bidId('in', w, day, p.id, 'list:'),
+      direction: 'in',
+      playerId: p.id,
+      club: club.id,
+      fee,
+      year: w.year,
+      day,
+      due: Math.min(day + INCOMING_RESPONSE_DAYS, until),
+      status: 'pending',
+    };
+    w.bids = [...(w.bids || []), bid];
+    const summary = `${p.role} · ${w.year - p.born}세 · 능력 ${overall(p)} · 호가 ${moneyLabel(w, ratio(value, BigInt(p.listed), 100n))}`;
+    if (w.delegation?.transfers) {
+      // The owner listed him: the staff take any offer within 5% of the asking price.
+      const accept = BigInt(fee) * 100n >= BigInt(value) * BigInt(Math.round(p.listed * 0.95));
+      if (accept) completeSale(w, bid, p);
+      else bid.status = 'rejected';
+      pushInbox(w, {
+        kind: 'staff-report',
+        title: clip(
+          `스태프가 ${club.name}의 ${p.name} 제안(${moneyLabel(w, fee)})을 ${accept ? '수락' : '거절'}했어요`,
+          160,
+        ),
+        detail: `${summary} · ${accept ? '호가에 가까워 매각했어요.' : '호가의 95%에 못 미쳐 거절했어요.'}`,
+        attention: false,
+        ref: bid.id,
+      });
+      continue;
+    }
+    pushInbox(w, {
+      kind: 'incoming-bid',
+      title: clip(`${club.name}이(가) 이적 명단의 ${p.name}에게 ${moneyLabel(w, fee)} 제안`, 160),
+      detail: `${summary} · ${seasonDayLabel(w.year, bid.due)}까지 수락하거나 거절하세요.`,
+      attention: true,
+      ref: bid.id,
+    });
+  }
+}
 function incomingBid(w: World, day: number, until: number) {
   const pending = (w.bids || []).filter((b) => b.direction === 'in' && b.status === 'pending');
   if (pending.length >= MAX_PENDING_INCOMING) return;
@@ -495,16 +615,9 @@ function incomingBid(w: World, day: number, until: number) {
   if (r() >= INCOMING_BID_CHANCE * build.incomingBids) return;
   const wanted = new Set(pending.map((b) => b.playerId));
   const pool = activePlayers(w)
-    .filter((p) => !p.loanUntil && !wanted.has(p.id) && !saleBlocker(w, p))
+    .filter((p) => !p.loanUntil && !p.listed && !wanted.has(p.id) && !saleBlocker(w, p))
     .sort((a, b) => compareIds(a.id, b.id));
-  const own = clubOf(w);
-  const bidders = w.clubs
-    .filter(
-      (c) =>
-        c.country === own.country && !c.representative && c.id !== own.id && c.tier <= own.tier,
-    )
-    .sort((a, b) => compareIds(a.id, b.id));
-  if (!pool.length || !bidders.length) return;
+  if (!pool.length) return;
   const weights = pool.map(
     (p) => (Math.max(5, overall(p) - 30) + Math.max(0, p.potential - overall(p)) / 2) ** 2,
   );
@@ -517,8 +630,9 @@ function incomingBid(w: World, day: number, until: number) {
       break;
     }
   }
-  const club = bidders[integer(r, 0, bidders.length - 1)],
-    value = playerValue(w, player),
+  const club = suitorFor(w, player, r);
+  if (!club) return;
+  const value = playerValue(w, player),
     fee = ratio(value, BigInt(Math.round(integer(r, 90, 160) * build.saleFee)), 100n);
   const bid: TransferBid = {
     id: bidId('in', w, day, player.id),
@@ -535,9 +649,7 @@ function incomingBid(w: World, day: number, until: number) {
   const age = w.year - player.born,
     summary = `${player.role} · ${age}세 · 능력 ${overall(player)} · 평가 가치 ${moneyLabel(w, value)}`;
   if (w.delegation?.transfers) {
-    const starters = new Set(
-      selectedLineup(activePlayers(w), w.lineup, w.manager, w.year).map((p) => p.id),
-    );
+    const starters = new Set(ownStarters(w).map((p) => p.id));
     // A starter leaves only when an ageing player has a ready bench replacement in his role.
     const covered = activePlayers(w).some(
       (other) =>
@@ -599,6 +711,9 @@ export function dailyMarket(w: World): void {
     window = transferWindow(w, day);
   announceWindows(w, day);
   settleBids(w, window.open);
-  if (window.open) incomingBid(w, day, window.until!);
+  if (window.open) {
+    incomingBid(w, day, window.until!);
+    listedOffers(w, day, window.until!);
+  }
   pruneBids(w);
 }

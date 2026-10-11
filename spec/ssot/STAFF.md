@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r6 | Define the implemented browser-demo behavior for manager demands and personality.
+> r7 | Define the implemented browser-demo behavior for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development, philosophy, flexibility, pride, ambition, salary and term; hiring charges disclosed costs.
@@ -20,8 +20,9 @@
   - absent staff (older saves) and ability-50 trait-less members are exactly neutral; a vacant department is worse than neutral
   - new clubs start with unpaid ability-50 volunteers; hired coaches cost wages plus a signing fee; replacing or releasing a paid coach pays 25% of the annual wage
 - STAFF-12 [o] Hired managers may carry a selection trait: youth (+4 selection value for age ≤ 21), rotation (fatigue weighs double) or stable (fatigue weighs half). The founding manager has none; a developer style (→STAFF-14) selects like the youth trait.
-- STAFF-13 [o] Training choice, academy promotion/release, answers to other clubs' offers and the main sponsor (→ECON-21) can be delegated to the staff; new clubs delegate training and the academy and decide offers and sponsors themselves (→WEB-45 level 2); any explicit owner choice takes that decision back, and delegation can be restored. Delegated decisions are reported in the inbox.
+- STAFF-13 [o] Training choice, academy promotion/release, answers to other clubs' offers, the main sponsor (→ECON-21) and coach hiring (→STAFF-15) can be delegated to the staff; new clubs delegate training and the academy and decide offers and sponsors themselves (→WEB-45 level 2); any explicit owner choice takes that decision back, and delegation can be restored. Delegated decisions are reported in the inbox.
   - a delegated youth director promotes nobody while cash is below one year of operating costs and reports the deferral. ← every promotion adds a first-team wage
+  - releasing a coach takes coach hiring back, so the staff do not refill the post at once.
 
 - STAFF-14 [o] Every hire candidate belongs to a school of football; the four candidates of a season show four different schools from a seeded order of all eight, drawn from their own stream so the other attributes stay put. ← choosing a manager is choosing how the club plays and grows, with a clear price
   | style | tactic | effects |
@@ -37,6 +38,17 @@
   - a style with a tactic sets the manager's philosophy; contract terms are 3 seasons except the firefighter's 1.
   - the founding manager and an interim have no style and are exactly neutral; effects apply to the own club only, in the same profile the pre-match laboratory reads (→MATCH-9).
 
+- STAFF-15 [o] Coaching investment: the owner only chooses how much quality to buy; with hiring delegated the staff renew and hire to it, so no department is left empty. ← the owner decides the budget, not every contract
+  | level | label | hires |
+  |---|---|---|
+  | 1 | 절약 | unpaid ability-50 volunteers |
+  | 2 (default) | 균형 | the mid-market candidate (55–78) |
+  | 3 | 최고 | the best candidate (65–90), else the mid one |
+  - delegated, at the season boundary: an expiring paid coach is renewed (fee 10% of the going wage, two more seasons) when his ability is within 3 of the planned hire and the club can afford it; otherwise the planned hire replaces him; volunteers are upgraded to the plan; a vacancy is filled at once (daily).
+  - affordability: cash after the fee still covers 13 rounds (the cash warning) of costs with the new wage; failing that the next cheaper band, then a volunteer.
+  - not delegated: on 1 April a renewal-season inbox item (kind staff-renewal; stops the clock at intervention levels 1–3 →WEB-45) lists coaches whose contracts end at the close; the owner renews (going wage, 10% fee), replaces, or hands hiring to the staff. Unrenewed coaches leave at the close with a staff-renewal vacancy item.
+  - the delegated staff report one summary of renewals and hires.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -44,6 +56,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r7 261011 STAFF-13✎ four delegable decisions→five with coach hiring, a released coach takes hiring back; STAFF-15+ coaching investment levels, delegated renewals and hires without vacancies, spring renewal season
 - r6 261010 STAFF-12✎ +developer style selects youth; STAFF-14+ eight manager styles with tactic, effects and contract terms
 - r5 261009 STAFF-13✎ three delegable decisions→four with the main sponsor; delegated promotions wait while cash is under a year of costs
 - r4 261009 STAFF-13✎ all three delegated by default→training and academy delegated, transfer answers by the owner

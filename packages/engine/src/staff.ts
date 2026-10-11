@@ -1,4 +1,5 @@
 import type {
+  CoachingLevel,
   ManagerTrait,
   Player,
   Staff,
@@ -7,10 +8,12 @@ import type {
   TrainingFocus,
   World,
 } from '../../contracts/src/types';
-import { activePlayers, addEvent, clubOf, personName, quote, selectedLineup } from './world';
+import { addEvent, clubOf, ownStarters, personName, quote } from './world';
 import { clamp, integer, random, ratio } from './primitives';
-import { debit } from './operations';
+import { CASH_WARNING_ROUNDS, debit } from './operations';
 import { pushInbox } from './inbox';
+import { operatingCosts } from './finance';
+import { currentDay, seasonDayOf } from './calendar';
 
 /** Coaching departments below the manager, in display order. */
 export const STAFF_ROLES: readonly StaffRole[] = [
@@ -319,7 +322,7 @@ export function releaseStaff(w: World, role: StaffRole): void {
 export const AUTO_RECOVERY_FATIGUE = 30;
 /** The assistant's reasoning, for showing why the staff chose this week's focus. */
 export function autoTrainingAdvice(w: World): { focus: TrainingFocus; reason: string } {
-  const starters = selectedLineup(activePlayers(w), w.lineup, w.manager, w.year);
+  const starters = ownStarters(w);
   if (!starters.length)
     return { focus: 'balanced', reason: '선발 명단이 비어 균형 훈련을 유지해요.' };
   const fatigue = starters.reduce((sum, player) => sum + player.fatigue, 0) / starters.length,
@@ -337,33 +340,225 @@ export function autoTrainingAdvice(w: World): { focus: TrainingFocus; reason: st
 export function autoTrainingFocus(w: World): TrainingFocus {
   return autoTrainingAdvice(w).focus;
 }
-/** Season boundary: staff contracts renew or end. */
+/**
+ * Coaching investment (→STAFF-15): the owner only says how much quality to buy; delegated staff
+ * hire and renew to it. Level 1 keeps unpaid ability-50 volunteers, 2 hires the mid-market
+ * candidate (55–78), 3 the best available (65–90).
+ */
+export const COACHING_INFO: Record<CoachingLevel, { label: string; summary: string }> = {
+  1: { label: '절약', summary: '무급 자원봉사 코치로 운영해요. 부서 효과는 평범(능력 50)해요.' },
+  2: { label: '균형', summary: '시장 중간 수준 코치(능력 55–78)를 연봉에 맞춰 고용해요.' },
+  3: { label: '최고', summary: '구할 수 있는 최고 코치(능력 65–90)에 돈을 아끼지 않아요.' },
+};
+export function coachingLevel(w: World): CoachingLevel {
+  return w.coaching ?? 2;
+}
+export function setCoaching(w: World, level: CoachingLevel) {
+  if (![1, 2, 3].includes(level)) throw new Error('코치진 투자 단계를 확인하세요.');
+  if (coachingLevel(w) === level) return;
+  w.coaching = level;
+  addEvent(
+    w,
+    'coaching',
+    `코치진 투자 · ${COACHING_INFO[level].label}`,
+    COACHING_INFO[level].summary,
+  );
+}
+/** An unpaid ability-50 coach the staff can always find, so no department stays empty. */
+function volunteer(w: World, role: StaffRole): Staff {
+  return {
+    id: `${w.playerClub}:staff:volunteer:${role}:${w.year}`,
+    role,
+    name: personName(clubOf(w).country, random(`${w.seed}:staff:volunteer:${role}:${w.year}`)),
+    ability: NEUTRAL_ABILITY,
+    wage: '0',
+    since: w.year,
+    until: w.year + 1,
+  };
+}
+/** Cash left after `spend` still covers the cash-warning runway with `wage` added to the costs. */
+function affordable(w: World, spend: bigint, wage: bigint) {
+  const perRound = (BigInt(operatingCosts(w).annual) + wage) / 46n;
+  return BigInt(w.cash) - spend >= perRound * BigInt(CASH_WARNING_ROUNDS);
+}
+/** The candidate the coaching level asks for, falling back to cheaper bands the club can afford. */
+function plannedHire(w: World, role: StaffRole, replacing?: Staff) {
+  const level = coachingLevel(w);
+  if (level === 1) return undefined;
+  const offers = staffCandidates(w, role);
+  const band = (i: number) => offers.find((offer) => offer.id.endsWith(`:${i}`));
+  const order = level === 3 ? [2, 1, 0] : [1, 0];
+  const freed = replacing ? BigInt(replacing.wage) : 0n;
+  for (const i of order) {
+    const offer = band(i);
+    if (offer && affordable(w, BigInt(offer.fee), BigInt(offer.wage) - freed)) return offer;
+  }
+  return undefined;
+}
+/** Wage a coach asks to stay: the going rate for his ability this season. */
+export function renewalTerms(w: World, member: Staff) {
+  const wage = quote(clubOf(w).country, w.year, (member.ability - 30) * 1.5);
+  return { wage, fee: ratio(wage, 1n, 10n), until: Math.max(member.until, w.year + 1) + 2 };
+}
+/** A paid coach whose contract ends at this season's close. */
+export function isExpiring(w: World, member: Staff) {
+  return BigInt(member.wage) > 0n && member.until <= w.year + 1;
+}
+export function renewStaff(w: World, role: StaffRole) {
+  const member = staffMember(w, role);
+  if (!member || !isExpiring(w, member)) throw new Error('재계약할 수 있는 코치가 아닙니다.');
+  const terms = renewalTerms(w, member);
+  debit(w, terms.fee);
+  w.staff = w.staff!.map((other) =>
+    other.role === role ? { ...other, wage: terms.wage, until: terms.until } : other,
+  );
+  addEvent(
+    w,
+    'staff-renew',
+    `${STAFF_INFO[role].label} ${member.name} 재계약`,
+    `능력 ${member.ability} · 연봉 ${terms.wage} · 계약 ${terms.until}년까지 · 계약금 ${terms.fee}`,
+    terms.fee,
+  );
+}
+/** Puts `member` in charge of `role`, paying his signing fee. */
+function appoint(w: World, member: Staff & { fee?: string }) {
+  const { fee, ...staff } = member;
+  if (fee && BigInt(fee) > 0n) debit(w, fee, true);
+  w.staff = [...(w.staff || []).filter((other) => other.role !== staff.role), staff].sort(
+    roleOrder,
+  );
+  addEvent(
+    w,
+    'staff-hire',
+    `${STAFF_INFO[staff.role].label} ${staff.name} 선임`,
+    [
+      `능력 ${staff.ability}`,
+      staff.trait ? STAFF_TRAIT_INFO[staff.trait].label : '특기 없음',
+      BigInt(staff.wage) > 0n ? `연봉 ${staff.wage}` : '무급 자원봉사',
+      `계약 ${staff.until}년까지`,
+      '스태프 위임 선임',
+    ].join(' · '),
+    fee && BigInt(fee) > 0n ? fee : undefined,
+  );
+  return staff;
+}
+/**
+ * Season boundary: contracts end, renew or are replaced. With staff delegated (→STAFF-15) the
+ * club renews coaches at the level the owner asked for and replaces the rest, so no department is
+ * left empty; otherwise expiring coaches leave and the owner is told.
+ */
 export function seasonStaff(w: World): void {
   if (!w.staff) return;
-  const leaving = w.staff.filter((member) => BigInt(member.wage) > 0n && member.until <= w.year);
-  w.staff = w.staff.flatMap((member) =>
-    leaving.includes(member)
-      ? []
-      : BigInt(member.wage) === 0n && member.until <= w.year
-        ? [{ ...member, until: w.year + 1 }]
-        : [member],
-  );
-  for (const member of leaving) {
-    const label = STAFF_INFO[member.role].label;
-    addEvent(
-      w,
-      'staff-leave',
-      `${label} ${member.name} 계약 만료`,
-      `${member.since}–${w.year} · 새 코치를 선임할 때까지 공석입니다.`,
-    );
+  const delegated = !!w.delegation?.staff;
+  const report: string[] = [];
+  for (const role of STAFF_ROLES) {
+    const member = staffMember(w, role);
+    const expired = member && member.until <= w.year;
+    if (member && !expired) continue;
+    const label = STAFF_INFO[role].label;
+    if (member && BigInt(member.wage) === 0n) {
+      const hire = delegated ? plannedHire(w, role) : undefined;
+      if (hire) report.push(`${label} ${appoint(w, hire).name} 선임(능력 ${hire.ability})`);
+      else
+        w.staff = w.staff.map((other) =>
+          other.role === role ? { ...other, until: w.year + 1 } : other,
+        );
+      continue;
+    }
+    if (member) {
+      const target = delegated ? plannedHire(w, role, member) : undefined;
+      const terms = renewalTerms(w, member);
+      const keep =
+        delegated &&
+        coachingLevel(w) > 1 &&
+        member.ability >= (target?.ability ?? NEUTRAL_ABILITY) - 3 &&
+        affordable(w, BigInt(terms.fee), BigInt(terms.wage) - BigInt(member.wage));
+      if (keep) {
+        debit(w, terms.fee, true);
+        w.staff = w.staff.map((other) =>
+          other.role === role ? { ...other, wage: terms.wage, until: terms.until } : other,
+        );
+        addEvent(
+          w,
+          'staff-renew',
+          `${label} ${member.name} 재계약`,
+          `능력 ${member.ability} · 계약 ${terms.until}년까지 · 스태프 위임`,
+          terms.fee,
+        );
+        report.push(`${label} ${member.name} 재계약`);
+        continue;
+      }
+      w.staff = w.staff.filter((other) => other.role !== role);
+      addEvent(
+        w,
+        'staff-leave',
+        `${label} ${member.name} 계약 만료`,
+        `${member.since}–${w.year}${delegated ? '' : ' · 새 코치를 선임할 때까지 공석입니다.'}`,
+      );
+      if (!delegated) {
+        pushInbox(w, {
+          kind: 'staff-renewal',
+          title: `${label} ${member.name} 계약 만료 · 공석`,
+          detail: `${label} 자리가 비었습니다. 공석인 부서는 기본 코치보다 효과가 낮아요. 코치진에서 새 코치를 선임하거나 코치 선임을 스태프에게 맡기세요.`,
+          attention: true,
+          ref: member.id,
+        });
+        continue;
+      }
+      const hire = target || volunteer(w, role);
+      appoint(w, hire);
+      report.push(`${label} ${member.name} 계약 만료 → ${hire.name} 선임(능력 ${hire.ability})`);
+      continue;
+    }
+    if (delegated) {
+      const hire = plannedHire(w, role) || volunteer(w, role);
+      appoint(w, hire);
+      report.push(`${label} ${hire.name} 선임(능력 ${hire.ability})`);
+    }
+  }
+  if (report.length)
     pushInbox(w, {
       kind: 'staff-report',
-      title: `${label} ${member.name} 계약 만료`,
-      detail: `${label} 자리가 비었습니다. 공석인 부서는 기본 코치보다 효과가 낮아요. 코치진에서 새 코치를 선임하세요.`,
-      attention: true,
-      ref: member.id,
+      title: `코치진 정비 · ${report.length}건`,
+      detail:
+        `코치진 투자 ${COACHING_INFO[coachingLevel(w)].label} 기준 · ${report.join(' · ')}`.slice(
+          0,
+          400,
+        ),
+      attention: false,
     });
+}
+/** Spring renewal day: the owner hears which coaches' contracts end at the season's close. */
+export function renewalDay(year: number) {
+  return seasonDayOf(year, 4, 1);
+}
+/**
+ * Daily: delegated staff fill an empty department at once; otherwise the renewal season is
+ * announced on 1 April when contracts end at the close.
+ */
+export function dailyStaff(w: World) {
+  if (!w.staff) return;
+  if (w.delegation?.staff) {
+    for (const role of STAFF_ROLES)
+      if (!staffMember(w, role)) appoint(w, plannedHire(w, role) || volunteer(w, role));
+    return;
   }
+  if (currentDay(w) !== renewalDay(w.year)) return;
+  const expiring = w.staff.filter((member) => isExpiring(w, member));
+  if (!expiring.length) return;
+  pushInbox(w, {
+    kind: 'staff-renewal',
+    title: `코치 재계약 시즌이 돌아왔어요 · ${expiring.length}명`,
+    detail: `${expiring
+      .map((member) => `${STAFF_INFO[member.role].label} ${member.name}(능력 ${member.ability})`)
+      .join(
+        ' · ',
+      )}의 계약이 이번 시즌 끝에 끝나요. 재계약하지 않으면 떠나요. 코치진에서 재계약하거나 코치 선임을 스태프에게 맡기세요.`.slice(
+      0,
+      400,
+    ),
+    attention: true,
+  });
 }
 export function isYouth(w: World, player: Player) {
   return w.year - player.born <= 21;

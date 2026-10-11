@@ -105,7 +105,7 @@ for (const viewport of [
     await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
     const date = page.getByTestId('game-date');
     await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-    await expect(date).toHaveText('1901년 8월 2일');
+    await expect(date).toHaveText('1950년 8월 2일');
     const menuButton = page.getByRole('button', { name: '전체 메뉴', exact: true });
     await menuButton.click();
     const menu = page.getByRole('dialog', { name: '전체 메뉴' });

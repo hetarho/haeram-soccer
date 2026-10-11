@@ -21,7 +21,7 @@ describe('season analytics', () => {
       difficulty: 2,
     });
     for (let round = 0; round < 6; round++) advanceRound(w, undefined, false);
-    const league = w.ownMatches.filter((m) => m.kind === 'league');
+    const league = w.ownMatches.filter((m) => ['league', 'lower'].includes(m.kind));
     const stats = seasonStats(w, w.ownMatches);
     const table = w.tables[w.playerClub];
     expect(stats.played).toBe(league.length);

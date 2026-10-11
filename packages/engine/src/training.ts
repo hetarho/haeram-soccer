@@ -164,6 +164,43 @@ export function developAnnually(w: World, player: Player) {
     player[skill] = next;
   }
   recordDevelopment(player, actual / roleSkills[player.role].length);
+  revisePotential(w, player);
+}
+
+/**
+ * Young players' ceilings are not fixed (→CLUB-12): each summer a player aged 23 or younger may
+ * break through (5%: potential +5 to +9) or stall (5%: −4 to −7); the rest move by at most two.
+ */
+export const POTENTIAL_REVISION = {
+  maxAge: 23,
+  breakthrough: { chance: 0.05, min: 5, max: 9 },
+  stall: { chance: 0.05, min: 4, max: 7 },
+  drift: 2,
+} as const;
+export function revisePotential(w: World, player: Player) {
+  const age = w.year - player.born;
+  if (age > POTENTIAL_REVISION.maxAge || player.status !== 'active') return;
+  const r = random(`${w.seed}:potential:${player.id}:${w.year}`);
+  const u = r(),
+    c = POTENTIAL_REVISION;
+  const change =
+    u < c.breakthrough.chance
+      ? Math.round(c.breakthrough.min + r() * (c.breakthrough.max - c.breakthrough.min))
+      : u < c.breakthrough.chance + c.stall.chance
+        ? -Math.round(c.stall.min + r() * (c.stall.max - c.stall.min))
+        : Math.round((r() * 2 - 1) * c.drift);
+  if (!change) return;
+  const next = clamp(player.potential + change, overall(player), 99);
+  if (next === player.potential) return;
+  const before = player.potential;
+  player.potential = next;
+  if (Math.abs(change) >= c.stall.min)
+    addEvent(
+      w,
+      change > 0 ? 'potential-breakthrough' : 'potential-stall',
+      change > 0 ? `${player.name} 잠재력 폭발` : `${player.name} 성장 정체`,
+      `${age}세 · 잠재력 ${Math.round(before)} → ${Math.round(next)}`,
+    );
 }
 
 /** Pure read model; projected gain is not awarded by viewing or selecting a plan. */

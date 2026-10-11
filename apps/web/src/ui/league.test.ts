@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createWorld, advanceRound, groupKey, ranked } from '../../../../packages/engine/src/index';
+import { professionalStart } from '../../../../packages/engine/src/testing';
 import {
   formFor,
   leagueFixtures,
@@ -19,7 +20,7 @@ const input = {
 
 describe('league insight facts', () => {
   it('reconstructs each round from settled scores for old saves and matches the engine table', () => {
-    const w = createWorld(input);
+    const w = professionalStart(createWorld(input));
     for (let i = 0; i < 4; i++) advanceRound(w);
     delete w.rankHistory;
     const ids = ownLeagueIds(w),
@@ -31,7 +32,7 @@ describe('league insight facts', () => {
   });
 
   it('uses the same tiebreaks as engine ranking and never mixes another league into form', () => {
-    const w = createWorld(input),
+    const w = professionalStart(createWorld(input)),
       ids = ownLeagueIds(w);
     ids.forEach((id, i) => {
       w.tables[id] = {
@@ -64,7 +65,7 @@ describe('league insight facts', () => {
   });
 
   it('retains earlier rounds when a legacy save starts recording snapshots midseason', () => {
-    const w = createWorld(input);
+    const w = professionalStart(createWorld(input));
     for (let i = 0; i < 4; i++) advanceRound(w);
     const ids = ownLeagueIds(w);
     w.rankHistory = [

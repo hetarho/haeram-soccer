@@ -1,12 +1,26 @@
-import type { World, EuropeTournament, Fixture, MatchPlayback } from '../../contracts/src/types';
+import type { World, EuropeTournament, Fixture, KnockoutRound } from '../../contracts/src/types';
 import { COUNTRIES } from '../../catalogs/src/index';
 import { random, integer, compareIds, clamp } from './primitives';
-import { addEvent, clubOf, findClub } from './world';
-import { emptyTable, recordMatch, resolveTie } from './season';
-import { simulateMatch } from './match';
+import { addEvent, clubOf, findClub, initialElo, quote } from './world';
+import { emptyTable } from './season';
 import { credit } from './operations';
-import { quote } from './world';
-import { fixtureDay } from './calendar';
+import { SEASON_ROUNDS } from './calendar';
+import {
+  decideTie,
+  finalOf,
+  isDue,
+  legsOf,
+  openDraw,
+  playFixture,
+  roundDecided,
+  roundLabel,
+  roundsFor,
+  seededDraw,
+  splitByes,
+  survivors,
+  tieFixtures,
+  type Settlement,
+} from './knockout';
 export interface Era {
   key: string;
   name: string;
@@ -89,6 +103,7 @@ export function ensureRepresentatives(w: World) {
   for (let i = 0; i < 160; i++) {
     const r = random(`${w.seed}:euro:${i}`),
       code = places[i % places.length];
+    const strength = integer(r, 50, 84);
     w.clubs.push({
       id: `euro:${i}`,
       country: code,
@@ -96,11 +111,12 @@ export function ensureRepresentatives(w: World) {
       short: `${code}${Math.floor(i / places.length) + 1}`,
       tier: 0,
       group: 0,
-      strength: integer(r, 50, 84),
+      strength,
       reputation: integer(r, 30, 75),
       fans: integer(r, 3000, 40000),
       color: '#456b73',
       representative: true,
+      elo: initialElo(strength),
     });
     w.tables[`euro:${i}`] = emptyTable();
   }
@@ -123,24 +139,12 @@ function order(w: World, code: string) {
     .sort((a, b) => b.strength - a.strength || compareIds(a.id, b.id))
     .map((c) => c.id);
 }
-function fixture(
-  w: World,
-  t: EuropeTournament,
-  home: string,
-  away: string,
-  label: string,
-  round: number,
-): Fixture {
-  return {
-    id: `${w.year}:${t.key}:${label}`,
-    year: w.year,
-    round,
-    kind: 'europe',
-    home,
-    away,
-    country: 'UEFA',
-    groupKey: t.key,
-  };
+function sorted(t: EuropeTournament, ids: string[]) {
+  return [...ids].sort((a, b) => {
+    const x = t.standings[a],
+      y = t.standings[b];
+    return y.points - x.points || y.gf - y.ga - (x.gf - x.ga) || y.gf - x.gf || compareIds(a, b);
+  });
 }
 export function leaguePhasePairs(ids: string[], games: number) {
   if (ids.length !== 36 || ![6, 8].includes(games)) throw new Error('36팀 리그 페이즈 설정 오류');
@@ -170,77 +174,313 @@ function groupPairs(ids: string[], size: number, double: boolean) {
   }
   return result;
 }
-function play(
+
+/**
+ * The continental calendar in league rounds (a midweek three days before the league weekend),
+ * modelled on the UEFA season (→EURO-10): phase matchdays from September to January, two-legged
+ * knockout rounds from February and a single final in late May.
+ */
+export const EUROPE_CALENDAR = {
+  /** Phase matchdays by how many a club plays (5 for five-club groups with a bye). */
+  phase: {
+    5: [9, 12, 14, 17, 19],
+    6: [7, 9, 12, 14, 17, 19],
+    8: [7, 9, 12, 14, 17, 19, 25, 26],
+  } as Record<number, number[]>,
+  /** The 1999–2002 second group stage. */
+  second: [25, 26, 29, 30, 32, 33],
+  /** The 1991–93 knockout rounds before the groups, and those groups. */
+  qualifier: [7, 12],
+  qualifiedPhase: [17, 19, 25, 26, 29, 32],
+  /** First-leg rounds counted back from the final, after a phase and in knockout-only eras. */
+  afterPhase: [43, 39, 36, 32, 29],
+  knockout: [43, 39, 32, 14, 9, 7],
+} as const;
+
+function eraOf(w: World, t: EuropeTournament) {
+  return europeanEras(w.year).find((era) => era.key === t.key);
+}
+const phaseFixture = (
   w: World,
   t: EuropeTournament,
-  f: Fixture,
-  settlement?: (w: World, p: MatchPlayback) => void,
-  observe = true,
+  marker: string,
+  i: number,
+  a: string,
+  b: string,
+  round: number,
+): Fixture => ({
+  id: `${w.year}:${t.key}:${marker}:${i}`,
+  year: w.year,
+  round,
+  kind: 'europe',
+  home: a,
+  away: b,
+  country: 'UEFA',
+  groupKey: t.key,
+});
+/** Phase fixtures for `ids`: one 36-club league or groups of four (five with four matches). */
+function schedulePhase(
+  w: World,
+  t: EuropeTournament,
+  ids: string[],
+  marker: 'phase' | 'second',
+  slots?: readonly number[],
 ) {
-  if (f.score) return;
-  const own = f.home === w.playerClub || f.away === w.playerClub;
-  const p = simulateMatch(w, f, observe && !!settlement && own, own);
-  f.score = p.record.score;
-  recordMatch(w, p);
-  for (const [id, gf, ga] of [
-    [f.home, f.score.home, f.score.away],
-    [f.away, f.score.away, f.score.home],
-  ] as [string, number, number][]) {
-    const row = t.standings[id];
-    row.played++;
-    row.gf += gf;
-    row.ga += ga;
-    if (gf > ga) {
-      row.won++;
-      row.points += 3;
-    } else if (gf === ga) {
-      row.drawn++;
-      row.points++;
-    } else row.lost++;
-  }
-  if (own) {
-    credit(
-      w,
-      quote(
-        clubOf(w).country,
-        w.year,
-        35 +
-          (p.record.score.home === p.record.score.away
-            ? 10
-            : (f.home === w.playerClub ? f.score.home > f.score.away : f.score.away > f.score.home)
-              ? 25
-              : 0),
-      ),
-    );
-    clubOf(w).reputation = clamp(clubOf(w).reputation + 0.2);
-    settlement?.(w, p);
-  }
+  const pairs =
+    t.format === 'league' && marker === 'phase'
+      ? leaguePhasePairs(ids, t.games)
+      : groupPairs(ids, t.games === 4 ? 5 : 4, t.games !== 4);
+  const matchdays = Math.max(...pairs.map((p) => p[2]));
+  const calendar = slots || EUROPE_CALENDAR.phase[matchdays] || EUROPE_CALENDAR.phase[6];
+  pairs.forEach(([a, b, r], i) =>
+    t.fixtures.push(
+      phaseFixture(w, t, marker, i, a, b, calendar[Math.min(r - 1, calendar.length - 1)]),
+    ),
+  );
 }
-function knockout(w: World, t: EuropeTournament, ids: string[], label: string, until = 1) {
-  let next = ids,
-    stage = 0;
-  while (next.length > until) {
-    const winners: string[] = [];
-    for (let i = 0; i < next.length; i += 2) {
-      if (!next[i + 1]) {
-        winners.push(next[i]);
-        continue;
-      }
-      const f = fixture(w, t, next[i], next[i + 1], `${label}:${stage}:${i}`, 47 + stage);
-      t.fixtures.push(f);
-      const winner = resolveTie(w, f);
-      const stored = w.ownMatches.find((m) => m.id === f.id);
-      f.score = stored?.score || simulateMatch(w, f).record.score;
-      winners.push(winner);
-      if (f.home === w.playerClub || f.away === w.playerClub) {
-        credit(w, quote(clubOf(w).country, w.year, 60));
-        if (winner !== w.playerClub) t.ownExit = `${label} ${next.length}강`;
-      }
-    }
-    next = winners;
-    stage++;
+/** Knockout legs are `…:k<round>:<tie>`; every other continental fixture counts in the table. */
+const isKnockout = (id: string) => /:k\d+:\d+(:2)?$/.test(id);
+/** Groups recovered from who plays whom: every group is a round robin of its own. */
+export function phaseGroups(t: EuropeTournament, marker: 'phase' | 'second' = 'phase') {
+  const parent = new Map<string, string>();
+  const find = (id: string): string => {
+    const up = parent.get(id) ?? id;
+    if (up === id) return id;
+    const root = find(up);
+    parent.set(id, root);
+    return root;
+  };
+  const fixtures = t.fixtures.filter((f) => f.id.includes(`:${marker}:`));
+  for (const f of fixtures) {
+    parent.set(f.home, parent.get(f.home) ?? f.home);
+    parent.set(f.away, parent.get(f.away) ?? f.away);
+    const a = find(f.home),
+      b = find(f.away);
+    if (a !== b) parent.set(a, b);
   }
-  return next;
+  const groups = new Map<string, string[]>();
+  for (const id of t.clubs)
+    if (parent.has(id)) {
+      const root = find(id);
+      groups.set(root, [...(groups.get(root) || []), id]);
+    }
+  return [...groups.values()];
+}
+function play(w: World, t: EuropeTournament, f: Fixture, settlement?: Settlement, observe = true) {
+  const p = playFixture(w, f, settlement, observe);
+  if (!p || !f.score) return;
+  if (!isKnockout(f.id))
+    for (const [id, gf, ga] of [
+      [f.home, f.score.home, f.score.away],
+      [f.away, f.score.away, f.score.home],
+    ] as [string, number, number][]) {
+      const row = (t.standings[id] ||= emptyTable());
+      row.played++;
+      row.gf += gf;
+      row.ga += ga;
+      if (gf > ga) {
+        row.won++;
+        row.points += 3;
+      } else if (gf === ga) {
+        row.drawn++;
+        row.points++;
+      } else row.lost++;
+    }
+  const own = f.home === w.playerClub || f.away === w.playerClub;
+  if (!own) return;
+  if (!isKnockout(f.id)) {
+    const ownWin =
+      f.home === w.playerClub ? f.score.home > f.score.away : f.score.away > f.score.home;
+    const prize = quote(
+      clubOf(w).country,
+      w.year,
+      35 + (f.score.home === f.score.away ? 10 : ownWin ? 25 : 0),
+    );
+    credit(w, prize);
+    addEvent(w, 'europe-prize', `${t.name} 경기 수당`, `참가·결과 수당 · ${f.id}`, prize);
+  }
+  clubOf(w).reputation = clamp(clubOf(w).reputation + 0.2);
+  settlement?.(w, p);
+}
+/** Draws knockout round `index` of `total` from `clubs` (seeded order) and schedules its legs. */
+function drawRound(
+  w: World,
+  t: EuropeTournament,
+  clubs: string[],
+  ladder: readonly number[],
+  total: number,
+  seeded: boolean,
+  qualifier = false,
+) {
+  const rounds = (t.rounds ||= []);
+  const index = rounds.length,
+    within = qualifier ? index : rounds.filter((r) => !r.label.startsWith('예선')).length;
+  const { playing, byes } = within === 0 ? splitByes(clubs) : { playing: clubs, byes: [] };
+  const final = !qualifier && within === total - 1;
+  const label = qualifier
+    ? `예선 ${index + 1}라운드`
+    : byes.length && t.format !== 'knockout'
+      ? '플레이오프'
+      : roundLabel(clubs.length, within);
+  const round: KnockoutRound = {
+    label,
+    round: qualifier ? EUROPE_CALENDAR.qualifier[index] : ladder[Math.max(0, total - 1 - within)],
+    legs: final ? 1 : 2,
+    ties: seeded ? seededDraw(playing) : openDraw(w, playing, `${w.year}:${t.key}:${index}`),
+    ...(byes.length ? { byes } : {}),
+  };
+  rounds.push(round);
+  t.fixtures.push(...tieFixtures(w, t.key, 'europe', 'UEFA', index, round));
+  t.stage = round.label;
+}
+/** Qualifiers of a finished phase, in seeding order (group winners first). */
+function phaseQualifiers(w: World, t: EuropeTournament, marker: 'phase' | 'second') {
+  if (t.format === 'league' && marker === 'phase') {
+    const table = sorted(t, t.clubs);
+    if (table.slice(24).includes(w.playerClub)) t.ownExit = '리그 페이즈 탈락';
+    return table.slice(0, 24);
+  }
+  const groups = phaseGroups(t, marker).map((g) => sorted(t, g));
+  const members = groups.flat();
+  const perGroup =
+    marker === 'second'
+      ? 2
+      : t.field === 40
+        ? 3
+        : t.key === 'ucl' && w.year <= 1992 && members.length === 8
+          ? 1
+          : t.field === 16 || t.field >= 32
+            ? 2
+            : 1;
+  const qualified: string[] = [];
+  for (let place = 0; place < perGroup; place++)
+    qualified.push(...groups.map((g) => g[place]).filter(Boolean));
+  // The 24-club Champions League also sent its two best runners-up through.
+  if (marker === 'phase' && t.field === 24)
+    qualified.push(...sorted(t, groups.map((g) => g[1]).filter(Boolean)).slice(0, 2));
+  if (members.includes(w.playerClub) && !qualified.includes(w.playerClub))
+    t.ownExit = '조별 단계 탈락';
+  return qualified;
+}
+function phaseRows(w: World, t: EuropeTournament, ids: string[]) {
+  return sorted(t, ids).map((id, i) => {
+    const row = t.standings[id] || emptyTable();
+    return [w.clubs.findIndex((c) => c.id === id), i + 1, row.played, row.points, row.gf, row.ga];
+  });
+}
+/** Decides finished ties and moves the competition to its next stage once a stage is complete. */
+function progressEurope(w: World, t: EuropeTournament) {
+  if (t.winner) return false;
+  const era = eraOf(w, t);
+  // Only historical competitions (and the Super Cup's single tie) move through stages.
+  if (!era && !t.rounds?.length) return false;
+  const rounds = (t.rounds ||= []);
+  let changed = false;
+  const last = rounds.at(-1);
+  if (last) {
+    const index = rounds.length - 1;
+    last.ties.forEach((tie, i) => {
+      if (!decideTie(w, tie, legsOf(w, t.fixtures, t.key, index, i), w.year < 2021)) return;
+      changed = true;
+      if (tie.home !== w.playerClub && tie.away !== w.playerClub) return;
+      const prize = quote(clubOf(w).country, w.year, 60);
+      credit(w, prize);
+      addEvent(w, 'europe-prize', `${t.name} ${last.label} 수당`, `토너먼트 참가 수당`, prize);
+      if (tie.winner !== w.playerClub) t.ownExit = `${last.label} 탈락`;
+    });
+    if (!roundDecided(last)) return changed;
+  }
+  const phase = t.fixtures.filter((f) => f.id.includes(':phase:'));
+  const second = t.fixtures.filter((f) => f.id.includes(':second:'));
+  const afterPhase = rounds.filter((r) => !r.label.startsWith('예선'));
+  if (t.format === 'knockout') {
+    const total = roundsFor(t.clubs.length);
+    if (!last) drawRound(w, t, t.clubs, EUROPE_CALENDAR.knockout, total, false);
+    else if (survivors(last).length > 1)
+      drawRound(w, t, survivors(last), EUROPE_CALENDAR.knockout, total, false);
+    else return crown(w, t, survivors(last)[0]);
+    return true;
+  }
+  if (era?.qualifier && !phase.length) {
+    const left = last ? survivors(last) : t.clubs;
+    if (left.length > era.qualifier) {
+      drawRound(w, t, left, EUROPE_CALENDAR.knockout, 0, false, true);
+      return true;
+    }
+    for (const id of left) t.standings[id] = emptyTable();
+    schedulePhase(w, t, left, 'phase', EUROPE_CALENDAR.qualifiedPhase);
+    t.stage = '조별 리그';
+    return true;
+  }
+  if (!phase.length) {
+    schedulePhase(w, t, t.clubs, 'phase');
+    t.stage = t.format === 'league' ? '리그 페이즈' : '조별 리그';
+    return true;
+  }
+  if (phase.some((f) => !f.score)) return changed;
+  if (t.format === 'double-groups' && !second.length) {
+    const members = [...new Set(phase.flatMap((f) => [f.home, f.away]))];
+    t.firstStandings = phaseRows(w, t, members);
+    const qualified = phaseQualifiers(w, t, 'phase');
+    for (const id of qualified) t.standings[id] = emptyTable();
+    schedulePhase(w, t, qualified, 'second', EUROPE_CALENDAR.second);
+    t.stage = '2차 조별 리그';
+    return true;
+  }
+  if (second.some((f) => !f.score)) return changed;
+  if (!afterPhase.length) {
+    const marker = second.length ? 'second' : 'phase';
+    const members = [...new Set((second.length ? second : phase).flatMap((f) => [f.home, f.away]))];
+    if (second.length) t.secondStandings = phaseRows(w, t, members);
+    else t.firstStandings = phaseRows(w, t, members);
+    const qualified = phaseQualifiers(w, t, marker);
+    drawRound(w, t, qualified, EUROPE_CALENDAR.afterPhase, roundsFor(qualified.length), true);
+    return true;
+  }
+  const left = survivors(afterPhase.at(-1)!);
+  if (left.length === 1) return crown(w, t, left[0]);
+  const total = afterPhase.length + roundsFor(left.length);
+  drawRound(w, t, left, EUROPE_CALENDAR.afterPhase, total, false);
+  return true;
+}
+function crown(w: World, t: EuropeTournament, winner: string) {
+  t.winner = winner;
+  t.stage = '우승 확정';
+  if (t.format === 'knockout' && !t.firstStandings) {
+    for (const id of t.clubs) t.standings[id] = emptyTable();
+    for (const f of t.fixtures)
+      if (f.score)
+        for (const [id, gf, ga] of [
+          [f.home, f.score.home, f.score.away],
+          [f.away, f.score.away, f.score.home],
+        ] as [string, number, number][]) {
+          const row = t.standings[id];
+          row.played++;
+          row.gf += gf;
+          row.ga += ga;
+          if (gf > ga) {
+            row.won++;
+            row.points += 3;
+          } else if (gf === ga) {
+            row.drawn++;
+            row.points++;
+          } else row.lost++;
+        }
+    t.firstStandings = phaseRows(w, t, t.clubs);
+  }
+  if (winner === w.playerClub && t.key !== 'super') {
+    const prize = quote(clubOf(w).country, w.year, 500);
+    credit(w, prize);
+    clubOf(w).reputation = clamp(clubOf(w).reputation + 8);
+    addEvent(
+      w,
+      'europe-honor',
+      `${t.name} 우승`,
+      `${w.year}/${String(w.year + 1).slice(2)} · 대륙의 정상`,
+      prize,
+    );
+  }
+  return true;
 }
 export function prepareEurope(w: World) {
   ensureRepresentatives(w);
@@ -277,33 +517,19 @@ export function prepareEurope(w: World) {
     if (eligible.length !== era.field) throw new Error('유럽대회 참가팀 부족');
     eligible.forEach((id) => occupied.add(id));
     const t: EuropeTournament = {
-      ...era,
-      stage: era.format === 'knockout' ? '토너먼트 대기' : '리그/조별 단계',
+      key: era.key,
+      name: era.name,
+      field: era.field,
+      format: era.format,
+      games: era.games,
+      stage: era.format === 'knockout' ? '토너먼트' : '리그/조별 단계',
       clubs: eligible,
       fixtures: [],
       standings: Object.fromEntries(eligible.map((id) => [id, emptyTable()])),
+      rounds: [],
     };
     w.europe.push(t);
-    const phase = era.qualifier ? knockout(w, t, eligible, '예선', era.qualifier) : eligible;
-    if (era.format !== 'knockout') {
-      const pairs =
-        era.format === 'league'
-          ? leaguePhasePairs(phase, era.games)
-          : groupPairs(phase, era.games === 4 ? 5 : 4, era.games !== 4);
-      for (let i = 0; i < pairs.length; i++) {
-        const [a, b, r] = pairs[i];
-        t.fixtures.push(
-          fixture(
-            w,
-            t,
-            a,
-            b,
-            `phase:${i}`,
-            5 + Math.floor(((r - 1) * 36) / Math.max(1, Math.max(...pairs.map((p) => p[2])) - 1)),
-          ),
-        );
-      }
-    }
+    progressEurope(w, t);
     if (eligible.includes(w.playerClub))
       addEvent(
         w,
@@ -313,119 +539,27 @@ export function prepareEurope(w: World) {
       );
   }
 }
-export function advanceEurope(
-  w: World,
-  settlement?: (w: World, p: MatchPlayback) => void,
-  day?: number,
-  observe = true,
-) {
+/** Plays the continental fixtures due today (or by the current round) and moves each stage on. */
+export function advanceEurope(w: World, settlement?: Settlement, day?: number, observe = true) {
   for (const t of w.europe)
-    for (const f of t.fixtures)
-      if (!f.score && (day === undefined ? f.round <= w.round : fixtureDay(f) <= day))
-        play(w, t, f, settlement, observe);
-}
-function sorted(t: EuropeTournament, ids: string[]) {
-  return [...ids].sort((a, b) => {
-    const x = t.standings[a],
-      y = t.standings[b];
-    return y.points - x.points || y.gf - y.ga - (x.gf - x.ga) || y.gf - x.gf || compareIds(a, b);
-  });
-}
-export function finishEurope(w: World) {
-  for (const t of w.europe) {
-    for (const f of t.fixtures) if (!f.score) play(w, t, f);
-    if (t.format !== 'knockout') t.firstStandings = phaseRows(w, t, t.clubs);
-    let qualified = t.clubs;
-    if (t.format === 'league') {
-      const table = sorted(t, t.clubs);
-      qualified = [
-        ...table.slice(0, 8),
-        ...knockout(w, t, table.slice(8, 24), '리그 페이즈 플레이오프', 8),
-      ];
-      if (table.slice(24).includes(w.playerClub)) t.ownExit = '리그 페이즈 탈락';
-    } else if (t.format !== 'knockout') {
-      const phaseIds = [
-        ...new Set(
-          t.fixtures.filter((f) => f.id.includes(':phase:')).flatMap((f) => [f.home, f.away]),
-        ),
-      ];
-      const size = t.games === 4 ? 5 : 4;
-      qualified = [];
-      for (let i = 0; i < phaseIds.length; i += size) {
-        // Recover seeded group membership from the initial order, not fixture iteration.
-        const members = t.clubs.filter((id) => phaseIds.includes(id));
-        qualified.push(
-          ...sorted(t, members.slice(i, i + size)).slice(
-            0,
-            t.field === 40
-              ? 3
-              : t.key === 'ucl' && w.year <= 1992 && phaseIds.length === 8
-                ? 1
-                : t.field === 16 || t.field >= 32
-                  ? 2
-                  : 1,
-          ),
-        );
-      }
-      if (t.clubs.length === 24) {
-        const runners: string[] = [];
-        for (let i = 0; i < t.clubs.length; i += 4)
-          runners.push(sorted(t, t.clubs.slice(i, i + 4))[1]);
-        qualified.push(...sorted(t, runners).slice(0, 2));
-      }
-      if (t.clubs.includes(w.playerClub) && !qualified.includes(w.playerClub))
-        t.ownExit = '조별 단계 탈락';
-      if (t.format === 'double-groups') {
-        const second = qualified.slice(0, 16);
-        for (const id of second) t.standings[id] = emptyTable();
-        const pairs = groupPairs(second, 4, true);
-        pairs.forEach(([a, b, r], i) => {
-          const f = fixture(w, t, a, b, `second:${i}`, 47 + r);
-          t.fixtures.push(f);
-          play(w, t, f);
-        });
-        t.secondStandings = phaseRows(w, t, second);
-        qualified = [];
-        for (let i = 0; i < second.length; i += 4)
-          qualified.push(...sorted(t, second.slice(i, i + 4)).slice(0, 2));
-      }
-    }
-    t.winner = knockout(w, t, qualified, '본선')[0];
-    t.stage = '우승 확정';
-    if (t.format === 'knockout') {
-      for (const id of t.clubs) t.standings[id] = emptyTable();
+    for (let guard = 0; guard < 16; guard++) {
+      let played = false;
       for (const f of t.fixtures)
-        if (f.score)
-          for (const [id, gf, ga] of [
-            [f.home, f.score.home, f.score.away],
-            [f.away, f.score.away, f.score.home],
-          ] as [string, number, number][]) {
-            const row = t.standings[id];
-            row.played++;
-            row.gf += gf;
-            row.ga += ga;
-            if (gf > ga) {
-              row.won++;
-              row.points += 3;
-            } else if (gf === ga) {
-              row.drawn++;
-              row.points++;
-            } else row.lost++;
-          }
-      t.firstStandings = phaseRows(w, t, t.clubs);
+        if (isDue(w, f, day)) {
+          play(w, t, f, settlement, observe);
+          played = true;
+        }
+      if (!progressEurope(w, t) && !played) break;
     }
-    if (t.winner === w.playerClub) {
-      credit(w, quote(clubOf(w).country, w.year, 500));
-      clubOf(w).reputation = clamp(clubOf(w).reputation + 8);
-      addEvent(
-        w,
-        'europe-honor',
-        `${t.name} 우승`,
-        `${w.year}/${String(w.year + 1).slice(2)} · 대륙의 정상`,
-      );
+}
+/** Season close: plays out anything left (older saves) and the Super Cup between the winners. */
+export function finishEurope(w: World) {
+  for (const t of w.europe)
+    for (let guard = 0; guard < 40 && !t.winner; guard++) {
+      for (const f of t.fixtures) if (!f.score) play(w, t, f);
+      progressEurope(w, t);
     }
-  }
-  if (w.year >= 1973) {
+  if (w.year >= 1973 && !w.europe.some((t) => t.key === 'super')) {
     const ucl = w.europe.find((t) => t.key === 'ucl')?.winner,
       other = w.europe.find((t) => t.key === (w.year < 1999 ? 'cwc' : 'uel'))?.winner;
     if (ucl && other && ucl !== other) {
@@ -435,15 +569,26 @@ export function finishEurope(w: World) {
         field: 2,
         format: 'knockout',
         games: 1,
-        stage: '우승 확정',
+        stage: '결승',
         clubs: [ucl, other],
         fixtures: [],
         standings: { [ucl]: emptyTable(), [other]: emptyTable() },
+        rounds: [
+          { label: '결승', round: SEASON_ROUNDS, legs: 1, ties: [{ home: ucl, away: other }] },
+        ],
       };
-      t.winner = knockout(w, t, [ucl, other], '슈퍼컵')[0];
+      t.fixtures.push(...tieFixtures(w, 'super', 'europe', 'UEFA', 0, t.rounds![0]));
       w.europe.push(t);
+      for (let guard = 0; guard < 4 && !t.winner; guard++) {
+        for (const f of t.fixtures) if (!f.score) play(w, t, f);
+        progressEurope(w, t);
+      }
     }
   }
+}
+/** The final of a finished continental competition, for the season archive. */
+export function europeFinal(w: World, t: EuropeTournament) {
+  return t.rounds?.length ? finalOf(w, t.key, t.rounds, t.fixtures) : undefined;
 }
 export const continentalClub = findClub;
 
@@ -455,11 +600,4 @@ export function europeanCoefficient(w: World) {
         opponent = m.home === w.playerClub ? m.score.away : m.score.home;
       return sum + (own > opponent ? 2 : own === opponent ? 1 : 0);
     }, 0);
-}
-
-function phaseRows(w: World, t: EuropeTournament, ids: string[]) {
-  return sorted(t, ids).map((id, i) => {
-    const row = t.standings[id];
-    return [w.clubs.findIndex((c) => c.id === id), i + 1, row.played, row.points, row.gf, row.ga];
-  });
 }

@@ -303,3 +303,75 @@
 .meter i {
   transition: width 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
+.plan {
+  margin-bottom: 16px;
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  box-shadow: var(--shadow);
+}
+.plan header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+.plan header span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.planSteps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+.planSteps button {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  text-align: left;
+  min-height: 72px;
+  padding: 10px;
+}
+.planSteps button b {
+  font-size: 14px;
+}
+.planSteps button small {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--text-muted);
+}
+.planOn {
+  border-color: var(--gold);
+  background: linear-gradient(180deg, #33300f 0%, #1f2810 100%);
+}
+.planOn b {
+  color: var(--gold);
+}
+.expiring {
+  font-style: normal;
+  color: var(--warm);
+  font-size: 11px;
+}
+.rowActions {
+  display: grid;
+  gap: 6px;
+}
+.rowActions button {
+  min-width: 56px;
+  min-height: 44px;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+@media (max-width: 420px) {
+  .planSteps {
+    grid-template-columns: 1fr;
+  }
+  .planSteps button {
+    min-height: 52px;
+  }
+}

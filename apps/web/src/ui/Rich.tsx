@@ -1,8 +1,14 @@
 import { Select } from './Select';
 import { useEffect, useState, type ReactNode } from 'react';
-import type { MatchRecord, Player, Role } from '../../../../packages/contracts/src/types';
+import type {
+  ListingAsk,
+  MatchRecord,
+  Player,
+  Role,
+  World,
+} from '../../../../packages/contracts/src/types';
 import { priceIndex, country, currency } from '../../../../packages/catalogs/src/index';
-import { quote, tacticLabel, overall } from '../../../../packages/engine/src/world';
+import { injuryDaysLeft, quote, tacticLabel, overall } from '../../../../packages/engine/src/world';
 import { ratio } from '../../../../packages/engine/src/primitives';
 import { useGameState } from '../runtime/store';
 import type { ClientState, GameClient } from '../runtime/client';
@@ -12,10 +18,15 @@ import { RecruitmentDesk } from './RecruitmentDesk';
 import { BusinessWorkbench } from './BusinessWorkbench';
 import { PolicyBoard } from './PolicyBoard';
 import { FinanceOutlook } from './FinanceOutlook';
-import { transferWindow } from '../../../../packages/engine/src/transfers';
+import {
+  expectedOfferDays,
+  LISTING,
+  playerValue,
+  transferWindow,
+} from '../../../../packages/engine/src/transfers';
 import { Dialog } from './Dialog';
 import { useNavigation, useSquadView, type Page, type SquadTab } from './state';
-import { AcademyView, CoachingStaff, Delegation } from './ClubStaff';
+import { AcademyView, CoachingPlan, CoachingStaff, Delegation } from './ClubStaff';
 import { Chart } from './Chart';
 import { Pitch } from './Pitch';
 import { archivePlayback } from './replay';
@@ -30,6 +41,7 @@ import type { StateKey } from './teamState';
 import { PlayerComparison } from './PlayerComparison';
 import { SeasonAnalysis } from './SeasonAnalysis';
 import { CareerRecordBook } from './CareerRecordBook';
+import { ClubTrends } from './ClubTrends';
 import { AnalysisExport } from './AnalysisExport';
 import { money, number, percent, seasonName, kindLabel } from './format';
 import s from './App.module.css';
@@ -130,6 +142,7 @@ function ManagerView({ state, client }: Props) {
           players={w.players.filter((p) => p.status === 'active').length}
         />
       </Header>
+      <CoachingPlan w={w} client={client} />
       <CoachingStaff w={w} client={client} />
       <Delegation w={w} client={client} />
       <div className={s.twoCols}>
@@ -330,6 +343,23 @@ function ManagerView({ state, client }: Props) {
     </>
   );
 }
+/** Injury, transfer list and retirement at a glance on a roster card. */
+function PlayerFlags({ w, player }: { w: World; player: Player }) {
+  const out = injuryDaysLeft(w, player);
+  const flags = [
+    out > 0 && player.injury ? `부상 · ${player.injury.label} · ${Math.ceil(out / 7)}주` : '',
+    player.listed ? `이적 명단 ${player.listed}%` : '',
+    player.retiring !== undefined ? '시즌 후 은퇴' : '',
+  ].filter(Boolean);
+  if (!flags.length) return null;
+  return (
+    <em className={s.playerFlags}>
+      {flags.map((flag) => (
+        <i key={flag}>{flag}</i>
+      ))}
+    </em>
+  );
+}
 function Squad({ state, client }: Props) {
   const v = state.view!,
     w = v.world,
@@ -344,7 +374,8 @@ function Squad({ state, client }: Props) {
     [fullTable, setFullTable] = useState(false),
     [playerQuery, setPlayerQuery] = useState(''),
     [playerPage, setPlayerPage] = useState(0),
-    [confirm, setConfirm] = useState<Player>();
+    [confirm, setConfirm] = useState<Player>(),
+    [ask, setAsk] = useState<ListingAsk>(110);
   const acting = useGameState((state) => !!state.pendingActions);
   const disabled = state.busy || state.readonly || acting;
   const active = w.players.filter((p) => p.status === 'active');
@@ -466,20 +497,23 @@ function Squad({ state, client }: Props) {
                       ? `${w.year - p.born}세 · 능력 ${overall(p)} / 잠재력 ${Math.round(p.potential)}`
                       : p.status === 'retired'
                         ? '은퇴 · 클럽 기록 보존'
-                        : '매각 · 클럽 기록 보존'}
+                        : '이적 · 클럽 기록 보존'}
                   </small>
+                  {p.status === 'active' && <PlayerFlags w={w} player={p} />}
                 </button>
                 <div>
                   <b>피로 {Math.round(p.fatigue)}</b>
                   <small>성장 +{(p.developed || 0).toFixed(2)}</small>
                 </div>
-                {p.status === 'active' && !p.loanUntil && (
+                {p.status === 'active' && !p.loanUntil && p.retiring === undefined && (
                   <button
-                    disabled={disabled || !window.open}
-                    title={window.open ? undefined : window.label}
-                    onClick={() => setConfirm(p)}
+                    disabled={disabled}
+                    onClick={() => {
+                      setAsk(p.listed ?? 110);
+                      setConfirm(p);
+                    }}
                   >
-                    매각
+                    {p.listed ? '명단 관리' : '이적 명단'}
                   </button>
                 )}
               </article>
@@ -540,7 +574,7 @@ function Squad({ state, client }: Props) {
                               {p.status === 'retired'
                                 ? '은퇴'
                                 : p.status === 'sold'
-                                  ? '매각'
+                                  ? '이적'
                                   : p.loanUntil
                                     ? '임대'
                                     : ''}
@@ -557,12 +591,15 @@ function Squad({ state, client }: Props) {
                           <td>{p.status === 'active' ? money(p.wage, c.country, w.year) : '—'}</td>
                           <td>{p.until}</td>
                           <td>
-                            {p.status === 'active' && !p.loanUntil && (
+                            {p.status === 'active' && !p.loanUntil && p.retiring === undefined && (
                               <button
-                                disabled={disabled || !window.open}
-                                onClick={() => setConfirm(p)}
+                                disabled={disabled}
+                                onClick={() => {
+                                  setAsk(p.listed ?? 110);
+                                  setConfirm(p);
+                                }}
                               >
-                                매각
+                                {p.listed ? '명단 관리' : '이적 명단'}
                               </button>
                             )}
                           </td>
@@ -575,9 +612,9 @@ function Squad({ state, client }: Props) {
             )}
           </details>
           <div className={s.panelFoot}>
-            감독이 역할과 능력·피로에 따라 선발을 고릅니다. 시설과 코치진이 성장에 영향을 줍니다.
-            매각은 이적시장 기간에만 가능하고 최소 14명·골키퍼 1명을 유지해야 해요. 지금:{' '}
-            {window.label}
+            감독이 역할과 능력·피로에 따라 선발을 고르고, 부상 선수는 빼요. 이적 명단에 올리면
+            이적시장 기간에 실제 구단이 제안하고, 수락해야 이적이 성사돼요. 최소 14명·골키퍼 1명을
+            유지해야 해요. 지금: {window.label}
           </div>
         </Panel>
       ) : null}
@@ -617,41 +654,61 @@ function Squad({ state, client }: Props) {
         </Dialog>
       )}
       {confirm && (
-        <Dialog label="선수 매각 확인" onClose={() => setConfirm(undefined)}>
-          <h2>{confirm.name}의 다음 무대</h2>
+        <Dialog label="이적 명단" onClose={() => setConfirm(undefined)}>
+          <h2>{confirm.name} 이적 명단</h2>
           <p>
-            선수단 {active.length}명 → {active.length - 1}명 · 경력 기록은 보존됩니다. 매각 대금은{' '}
-            {money(
-              quote(
-                c.country,
-                w.year,
-                Math.max(
-                  10,
-                  ((confirm.role === 'GK'
-                    ? confirm.keeper
-                    : Math.round(
-                        (confirm.attack + confirm.passing + confirm.defense + confirm.stamina) / 4,
-                      )) -
-                    25) *
-                    5,
-                ),
-              ),
-              c.country,
-              w.year,
-            )}
-            입니다.
+            {confirm.role} · {w.year - confirm.born}세 · 능력 {overall(confirm)} · 평가 가치{' '}
+            {money(playerValue(w, confirm), c.country, w.year)}
+          </p>
+          <div className={s.listingAsks} role="radiogroup" aria-label="호가">
+            {([90, 110, 140] as const).map((value) => (
+              <button
+                key={value}
+                role="radio"
+                aria-checked={ask === value}
+                className={ask === value ? s.selected : undefined}
+                onClick={() => setAsk(value)}
+              >
+                <b>
+                  {LISTING[value].label} · {value}%
+                </b>
+                <span>
+                  호가{' '}
+                  {money(ratio(playerValue(w, confirm), BigInt(value), 100n), c.country, w.year)}
+                </span>
+                <small>
+                  이적시장 기간 첫 제안까지 평균 약 {expectedOfferDays(w, confirm, value)}일
+                </small>
+              </button>
+            ))}
+          </div>
+          <p className={s.muted}>
+            제안은 선수 수준에 맞는 실제 구단이 보내고, 금액은 호가 근처에서 정해져요. 수락해야
+            이적이 성사돼요. 지금: {window.label}
+            {window.open ? '' : ' · 시장이 열리면 제안이 들어와요.'}
           </p>
           <div className={s.actions}>
             <button onClick={() => setConfirm(undefined)}>취소</button>
+            {confirm.listed && (
+              <button
+                disabled={disabled}
+                onClick={() => {
+                  void client.command({ type: 'list-player', id: confirm.id, ask: null });
+                  setConfirm(undefined);
+                }}
+              >
+                명단에서 제외
+              </button>
+            )}
             <button
               className={s.primary}
-              disabled={disabled}
+              disabled={disabled || confirm.listed === ask}
               onClick={() => {
-                void client.command({ type: 'sell', id: confirm.id });
+                void client.command({ type: 'list-player', id: confirm.id, ask });
                 setConfirm(undefined);
               }}
             >
-              매각 확정
+              {confirm.listed ? '호가 바꾸기' : '이적 명단 등록'}
             </button>
           </div>
         </Dialog>
@@ -751,6 +808,7 @@ function History({ state, client }: Props) {
         description="시즌과 선수, 경기와 장부. 그때의 숫자를 그대로 펼쳐봐요."
       />
       <CareerRecordBook w={w} />
+      <ClubTrends w={w} />
       <div className={s.twoCols}>
         <Panel title="서포터의 성장">
           <div className={s.panelBody}>
@@ -761,34 +819,24 @@ function History({ state, client }: Props) {
             />
           </div>
         </Panel>
-        <Panel title="클럽의 디비전">
+        <Panel title="현재 물가로 본 시즌 말 자금">
           <div className={s.panelBody}>
             <Chart
-              label="디비전"
-              inverse
-              values={w.history.map((h) => h.tier + 1)}
-              labels={w.history.map((h) => String(h.year))}
-            />
-          </div>
-        </Panel>
-        <Panel title="1901년 가격으로 비교한 장부">
-          <div className={s.panelBody}>
-            <Chart
-              label="1901년 가격 기준 자금"
+              label="현재 물가 기준 자금"
               values={w.history.map(
                 (h) =>
                   Number(
                     ratio(
                       h.cash,
-                      BigInt(quote(c.country, 1901, 1)),
-                      BigInt(quote(c.country, h.year, 1)),
+                      BigInt(quote(c.country, w.year, 10000)),
+                      BigInt(quote(c.country, h.year, 10000)),
                     ),
-                  ) / currency(c.country, 1901).units,
+                  ) / currency(c.country, w.year).units,
               )}
               labels={w.history.map((h) => String(h.year))}
             />
             <p className={s.muted}>
-              물가와 화폐 전환을 보정한 1901년 기준 금액입니다. 초기 국가 자료가 없으면 영국 지수
+              물가와 화폐 전환을 보정해 지금 돈으로 환산했어요. 초기 국가 자료가 없으면 영국 지수
               추정을 씁니다. 실험 전후 변화는 인과관계의 증명이 아닙니다.
             </p>
           </div>

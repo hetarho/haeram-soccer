@@ -166,7 +166,7 @@ export function Standings({ w, ids, limit }: { w: World; ids: string[]; limit?: 
           {rules.automatic > 0 && (
             <span>
               <i className={s.autoDot} />
-              {rules.lower ? '프로 복귀' : '자동 승격'}
+              {rules.lower ? '프로 진입' : '자동 승격'}
             </span>
           )}
           {rules.playoff > 0 && (
@@ -283,7 +283,7 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
           <span>
             {rules?.automatic
               ? rules.lower
-                ? '프로 복귀 경쟁'
+                ? '프로 진입 경쟁'
                 : '자동 승격 경쟁'
               : '선두와 승점 차'}
           </span>

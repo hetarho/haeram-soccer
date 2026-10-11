@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { World } from '../../../../packages/contracts/src/types';
 import { createWorld, operate, settleRound } from '../../../../packages/engine/src/index';
+import { sellPlayer } from '../../../../packages/engine/src/testing';
 import { describeOutcome, newEvents } from './outcome';
 
 const world = () =>
@@ -53,8 +54,8 @@ describe('action outcome summaries', () => {
   it('lists only facts that changed and the squad size after a sale', () => {
     const before = world();
     const id = before.players.find((p) => p.role === 'MID' && p.status === 'active')!.id;
-    const next = after(before, (w) => operate(w, { type: 'sell', id }));
-    const outcome = describeOutcome({ type: 'sell', id }, before, next)!;
+    const next = after(before, (w) => sellPlayer(w, id));
+    const outcome = describeOutcome({ type: 'list-player', id, ask: 110 }, before, next)!;
     const labels = outcome.changes.map((c) => c.label);
     expect(labels).toContain('선수단');
     expect(labels).toContain('운영 자금');

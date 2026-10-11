@@ -1,5 +1,5 @@
 import type { MatchRecord, World } from '../../contracts/src/types';
-import { activePlayers, selectedLineup } from './world';
+import { ownStarters } from './world';
 import { clamp } from './primitives';
 import { policyOf } from './policy';
 import { managerStyleEffects } from './styles';
@@ -69,7 +69,7 @@ export function moraleAfterMatch(w: World, m: MatchRecord) {
 /** Each settled round drifts toward the baseline; an exhausted XI loses heart. */
 export function settleMorale(w: World) {
   if (w.morale === undefined) return;
-  const starters = selectedLineup(activePlayers(w), w.lineup, w.manager, w.year);
+  const starters = ownStarters(w);
   const fatigue = starters.length
     ? starters.reduce((sum, player) => sum + player.fatigue, 0) / starters.length
     : 0;

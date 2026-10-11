@@ -6,7 +6,7 @@ import type { GameClient } from '../runtime/client';
 import { fixtureDate, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { ownSeasonFixtures } from './fixtures';
 import { resultFor } from './scouting';
-import { kindLabel } from './format';
+import { competitionLabel, kindLabel } from './format';
 import { Dialog } from './Dialog';
 import { MatchReport } from './MatchReport';
 import s from './Analysis.module.css';
@@ -122,7 +122,7 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
                 return (
                   <article key={f.id} data-testid="fixture-card">
                     <p className={s.note}>
-                      {fixtureDate(w, f)} · {kindLabel[f.kind]} · {ownHome ? '홈' : '원정'}
+                      {fixtureDate(w, f)} · {competitionLabel(w, f)} · {ownHome ? '홈' : '원정'}
                       {f.id === next?.id && ' · 다음 경기'}
                     </p>
                     <h4>

@@ -77,6 +77,14 @@ export class Host {
           europe: h.europe.map((e) => ({ ...e, standings: [], secondStandings: undefined })),
         })),
         events: w.events.slice(-150),
+        // Only the own country's cup is shown in full; the others report their winners.
+        ...(w.cups
+          ? {
+              cups: w.cups.map((cup) =>
+                cup.country === own.country ? cup : { ...cup, clubs: [], rounds: [], fixtures: [] },
+              ),
+            }
+          : {}),
       },
       totalMatches: w.ownMatches.length,
       supportUsed: w.events.filter((event) => event.year === w.year && event.kind === 'support')

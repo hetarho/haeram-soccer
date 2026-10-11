@@ -29,7 +29,7 @@ test('keeps both home controls stable over real automatic ticks and keeps runnin
     }).observe(prep, { attributes: true, attributeFilter: ['disabled', 'style', 'class'] });
   });
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-  await expect(page.getByTestId('game-date')).toHaveText('1901년 8월 4일', { timeout: 10000 });
+  await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 4일', { timeout: 10000 });
   await expect(watch).toBeEnabled();
   await expect(prepare).toBeEnabled();
   expect(

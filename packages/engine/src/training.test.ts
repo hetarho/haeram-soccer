@@ -13,6 +13,7 @@ import {
   settleTraining,
   trainingFocusInfo,
   trainingSummary,
+  FOUNDING_YEAR,
 } from './index';
 
 function world(focus: TrainingFocus = 'balanced') {
@@ -91,7 +92,7 @@ describe('earned player growth and training choices', () => {
     operate(w, { type: 'training', focus: 'recovery' });
     settleTraining(w);
     expect(canonical(w.players)).toBe(before);
-    expect(w.trainingAt).toBe('1901:1');
+    expect(w.trainingAt).toBe(`${FOUNDING_YEAR}:1`);
     advanceRound(w, undefined, false);
     expect(development(w)).toBeGreaterThan(0);
     expect(development(w)).toBe(
@@ -100,7 +101,7 @@ describe('earned player growth and training choices', () => {
         0,
       ),
     );
-    expect(w.trainingAt).toBe('1901:2');
+    expect(w.trainingAt).toBe(`${FOUNDING_YEAR}:2`);
   });
 
   it('preserves focus, actual development and the boundary guard across export/import', async () => {
@@ -125,7 +126,7 @@ describe('earned player growth and training choices', () => {
     const restored = (await decode(await encode(old, 1, 0))).world;
     expect(trainingSummary(restored).focus).toBe('balanced');
     advanceRound(restored, undefined, false);
-    expect(restored.trainingAt).toBe('1901:1');
+    expect(restored.trainingAt).toBe(`${FOUNDING_YEAR}:1`);
     expect(development(restored)).toBeGreaterThan(0);
     validateWorld(restored);
   });

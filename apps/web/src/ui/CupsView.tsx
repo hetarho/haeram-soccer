@@ -1,219 +1,493 @@
 import { useState } from 'react';
-import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
+import type {
+  CupFinal,
+  EuropeTournament,
+  Fixture,
+  KnockoutRound,
+  TableRow,
+  World,
+} from '../../../../packages/contracts/src/types';
 import { country } from '../../../../packages/catalogs/src/index';
 import { clubOf } from '../../../../packages/engine/src/world';
-import { Panel, Table } from './App';
+import { fixtureDate } from '../../../../packages/engine/src/calendar';
+import { cupKey, domesticCupName } from '../../../../packages/engine/src/cups';
+import { legsOf, ownReached, tieAggregate } from '../../../../packages/engine/src/knockout';
+import { phaseGroups } from '../../../../packages/engine/src/europe';
+import { emptyTable } from '../../../../packages/engine/src/season';
 import { ClubCrest } from './ClubCrest';
 import { number, seasonName } from './format';
 import s from './App.module.css';
 import c from './CupsView.module.css';
 
-/** "결승", "4강", "16강" … from the clubs still in the draw, as football media name rounds. */
-export function cupRoundName(stage: number, stages: number) {
-  const left = 2 ** (stages - stage);
-  return left <= 2 ? '결승' : left <= 64 ? `${left}강` : `${stage + 1}라운드`;
+const nameOf = (w: World, id?: string) => w.clubs.find((club) => club.id === id)?.name ?? '—';
+
+/** Clubs ranked by a competition table: points, goal difference, goals, then ID. */
+function rankIds(standings: Record<string, TableRow>, ids: string[]) {
+  return [...ids].sort((a, b) => {
+    const x = standings[a] || emptyTable(),
+      y = standings[b] || emptyTable();
+    return (
+      y.points - x.points ||
+      y.gf - y.ga - (x.gf - x.ga) ||
+      y.gf - x.gf ||
+      (a < b ? -1 : a > b ? 1 : 0)
+    );
+  });
 }
 
-/** Our run in one season's domestic cup, from the recorded ties. */
-export function cupRun(w: World, year: number) {
-  const own = clubOf(w);
-  const ties = w.ownMatches
-    .filter((m) => m.kind === 'cup' && m.year === year)
-    .sort((a, b) => a.round - b.round);
-  if (!ties.length) return undefined;
-  const clubs = w.clubs.filter(
-    (club) => club.country === own.country && !club.representative,
-  ).length;
-  const stages = Math.ceil(Math.log2(Math.max(2, clubs)));
-  const stageOf = (m: MatchRecord) => Number(m.id.split(':')[3]) || 0;
-  const last = ties.at(-1)!;
-  const champion = w.history
-    .find((h) => h.year === year)
-    ?.champions.some((entry) => entry.country === own.country && entry.cup === w.playerClub);
-  return {
-    ties,
-    champion: !!champion,
-    reached: cupRoundName(stageOf(last), stages),
-    stageOf: (m: MatchRecord) => cupRoundName(stageOf(m), stages),
-  };
+function Club({ w, id, strong }: { w: World; id: string; strong?: boolean }) {
+  return (
+    <span className={`${c.club} ${strong ? c.strong : ''} ${id === w.playerClub ? c.ownName : ''}`}>
+      <ClubCrest w={w} id={id} size={16} />
+      <span>{nameOf(w, id)}</span>
+    </span>
+  );
 }
 
-function ownScore(w: World, m: MatchRecord) {
-  const home = m.home === w.playerClub;
-  const shootout = m.highlights.find((h) => h.player === '승부차기');
-  const won =
-    m.score.home === m.score.away
-      ? !!shootout && (shootout.side === 0) === home
-      : m.score.home > m.score.away === home;
-  return {
-    text: `${home ? m.score.home : m.score.away}–${home ? m.score.away : m.score.home}${
-      shootout ? ' (승부차기)' : ''
-    }`,
-    won,
-    opponent: w.clubs.find((club) => club.id === (home ? m.away : m.home)),
-  };
+/** One tie: both legs' scores, the aggregate and how a level tie went through. */
+function Tie({ w, tie, legs }: { w: World; tie: KnockoutRound['ties'][number]; legs: Fixture[] }) {
+  const own = tie.home === w.playerClub || tie.away === w.playerClub;
+  const played = legs.filter((f) => f.score);
+  const [home, away] = tieAggregate(tie, legs);
+  const score = played.length
+    ? legs.length === 2
+      ? `${played.map((f) => `${f.score!.home}–${f.score!.away}`).join(', ')}${played.length === 2 ? ` · 합계 ${home}–${away}` : ''}`
+      : `${home}–${away}`
+    : fixtureDate(w, legs[0]).replace(/^\d+년 /, '');
+  return (
+    <li className={own ? c.ownTie : undefined}>
+      <Club w={w} id={tie.home} strong={tie.winner === tie.home} />
+      <em>
+        {score}
+        {tie.decided === 'pens' && <small> 승부차기</small>}
+        {tie.decided === 'away' && <small> 원정 다득점</small>}
+      </em>
+      <Club w={w} id={tie.away} strong={tie.winner === tie.away} />
+      {own && <i className={c.ownBadge}>우리 팀</i>}
+    </li>
+  );
+}
+
+/** Knockout rounds, latest first; long early rounds fold behind our tie. */
+function Bracket({
+  w,
+  rounds,
+  fixtures,
+  competition,
+}: {
+  w: World;
+  rounds: KnockoutRound[];
+  fixtures: Fixture[];
+  competition: string;
+}) {
+  const [open, setOpen] = useState<Record<number, boolean>>({});
+  if (!rounds.length) return null;
+  return (
+    <div className={c.bracket} aria-label="토너먼트 대진">
+      {rounds
+        .map((round, index) => ({ round, index }))
+        .reverse()
+        .map(({ round, index }) => {
+          const decided = round.ties.filter((tie) => tie.winner).length;
+          const long = round.ties.length > 8;
+          const shown = long && !open[index];
+          const ties = round.ties
+            .map((tie, t) => ({ tie, t }))
+            .filter(({ tie }) => !shown || tie.home === w.playerClub || tie.away === w.playerClub);
+          const first = legsOf(w, fixtures, competition, index, 0)[0];
+          return (
+            <section key={index} className={c.round}>
+              <header>
+                <h4>{round.label}</h4>
+                <span>
+                  {first ? fixtureDate(w, first).replace(/^\d+년 /, '') : ''}
+                  {round.legs === 2 ? ' · 홈앤드어웨이' : ' · 단판'} · {decided}/{round.ties.length}{' '}
+                  경기 종료
+                  {round.byes?.length ? ` · 부전승 ${round.byes.length}팀` : ''}
+                </span>
+              </header>
+              <ul className={c.ties}>
+                {ties.map(({ tie, t }) => (
+                  <Tie key={t} w={w} tie={tie} legs={legsOf(w, fixtures, competition, index, t)} />
+                ))}
+              </ul>
+              {long && (
+                <button
+                  className={c.more}
+                  onClick={() => setOpen({ ...open, [index]: !open[index] })}
+                >
+                  {shown ? `${round.label} ${round.ties.length}경기 모두 보기` : '접기'}
+                </button>
+              )}
+            </section>
+          );
+        })}
+    </div>
+  );
+}
+
+/** A league-phase or group table with its qualification zones. */
+function PhaseTable({
+  w,
+  t,
+  ids,
+  zones,
+  title,
+}: {
+  w: World;
+  t: EuropeTournament;
+  ids: string[];
+  zones: { until: number; tone: 'direct' | 'playoff' | 'out'; label: string }[];
+  title?: string;
+}) {
+  const [all, setAll] = useState(ids.length <= 8);
+  const sorted = rankIds(t.standings, ids);
+  const zoneOf = (rank: number) => zones.find((zone) => rank <= zone.until);
+  return (
+    <section className={c.phase}>
+      {title && <h4>{title}</h4>}
+      <table className={c.table} aria-label={title || `${t.name} 순위표`}>
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">클럽</th>
+            <th scope="col">경기</th>
+            <th scope="col">득실</th>
+            <th scope="col">승점</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sorted.map((id, i) => {
+            if (!all && i >= 8 && id !== w.playerClub) return null;
+            const row = t.standings[id] || emptyTable();
+            const zone = zoneOf(i + 1);
+            return (
+              <tr
+                key={id}
+                className={`${zone ? c[zone.tone] : ''} ${id === w.playerClub ? c.ownRow : ''}`}
+              >
+                <td>{i + 1}</td>
+                <td>
+                  <Club w={w} id={id} />
+                </td>
+                <td>{row.played}</td>
+                <td>{row.gf - row.ga > 0 ? `+${row.gf - row.ga}` : row.gf - row.ga}</td>
+                <td>
+                  <b>{row.points}</b>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      {!all && (
+        <button className={c.more} onClick={() => setAll(true)}>
+          {sorted.length}팀 모두 보기
+        </button>
+      )}
+      <p className={c.legend}>
+        {zones
+          .filter((zone) => zone.tone !== 'out')
+          .map((zone) => (
+            <span key={zone.label}>
+              <i className={c[zone.tone]} /> {zone.label}
+            </span>
+          ))}
+      </p>
+    </section>
+  );
+}
+
+/** Our standing in one competition, in one line a fan would say. */
+function ownStatus(w: World, rounds: KnockoutRound[], fixtures: Fixture[], entered: boolean) {
+  if (!entered) return '우리 클럽은 참가하지 않아요.';
+  const reached = ownReached(w, rounds);
+  const next = fixtures
+    .filter((f) => !f.score && (f.home === w.playerClub || f.away === w.playerClub))
+    .sort((a, b) => a.round - b.round)[0];
+  if (reached?.champion) return '우승!';
+  if (reached?.eliminated) return `${reached.label} 탈락`;
+  if (next) {
+    const home = next.home === w.playerClub;
+    return `${reached ? `${reached.label} · ` : ''}다음 ${home ? '홈' : '원정'} ${nameOf(w, home ? next.away : next.home)} · ${fixtureDate(w, next).replace(/^\d+년 /, '')}`;
+  }
+  return reached ? `${reached.label} 진출` : '대진 추첨을 기다려요';
 }
 
 function DomesticCup({ w }: { w: World }) {
   const own = clubOf(w);
-  const cupName = `${country(own.country).name} 컵`;
-  const lastYear = w.year - 1;
-  const run = cupRun(w, lastYear);
+  const cup = w.cups?.find((entry) => entry.country === own.country);
+  const name = cup?.name ?? domesticCupName(own.country);
   const titles = w.history.filter((h) =>
     h.champions.some((entry) => entry.country === own.country && entry.cup === w.playerClub),
   ).length;
-  const winners = [...w.history]
-    .reverse()
-    .slice(0, 6)
-    .map((h) => ({
-      year: h.year,
-      club: h.champions.find((entry) => entry.country === own.country)?.cup,
-    }));
+  if (!cup)
+    return (
+      <section className={c.card}>
+        <h3>{name}</h3>
+        <p className={s.muted}>다음 시즌 시작과 함께 첫 라운드 대진을 추첨해요.</p>
+      </section>
+    );
+  const entered = cup.clubs.includes(w.playerClub);
   return (
-    <Panel title={cupName} note={`우승 ${titles}회`}>
-      <div className={c.body}>
-        <p className={s.muted}>
-          국내 컵은 리그 일정이 끝난 뒤 단판 토너먼트로 치러요. 무승부는 승부차기로 가려요.
-        </p>
-        {run ? (
-          <section className={c.run} aria-label={`${seasonName(lastYear)} ${cupName} 성적`}>
-            <h4>
-              {seasonName(lastYear)} ·{' '}
-              <b className={run.champion ? c.champion : undefined}>
-                {run.champion ? '우승' : `${run.reached} 탈락`}
-              </b>
-            </h4>
-            <ol>
-              {run.ties.map((m) => {
-                const result = ownScore(w, m);
-                return (
-                  <li key={m.id} className={result.won ? c.won : c.lost}>
-                    <span>{run.stageOf(m)}</span>
-                    <b>
-                      {result.opponent && <ClubCrest w={w} id={result.opponent.id} size={18} />}
-                      {result.opponent?.name ?? '상대'}
-                    </b>
-                    <em>{result.text}</em>
-                  </li>
-                );
-              })}
-            </ol>
-          </section>
-        ) : (
-          <p className={s.muted}>
-            {w.history.length
-              ? '지난 시즌 컵 경기 기록이 없어요.'
-              : '첫 시즌 리그가 끝나면 첫 컵 대회가 열려요.'}
-          </p>
+    <section className={c.card} aria-label={name}>
+      <header className={c.cardHead}>
+        <div>
+          <h3>{name}</h3>
+          <small>
+            {seasonName(w.year)} · {cup.clubs.length}팀 단판 토너먼트 · 우승 {titles}회
+          </small>
+        </div>
+        {cup.winner && (
+          <span className={c.winnerPill}>
+            우승 <Club w={w} id={cup.winner} />
+          </span>
         )}
-        {winners.some((entry) => entry.club) && (
-          <section aria-label="최근 우승팀">
-            <h4>최근 우승팀</h4>
-            <ul className={c.winners}>
-              {winners.map(
-                (entry) =>
-                  entry.club && (
-                    <li key={entry.year}>
-                      <span>{seasonName(entry.year)}</span>
-                      <b className={entry.club === w.playerClub ? c.champion : undefined}>
-                        <ClubCrest w={w} id={entry.club} size={16} />
-                        {w.clubs.find((club) => club.id === entry.club)?.name}
-                      </b>
-                    </li>
-                  ),
-              )}
-            </ul>
-          </section>
-        )}
-      </div>
-    </Panel>
+      </header>
+      <p className={c.status}>{ownStatus(w, cup.rounds, cup.fixtures, entered)}</p>
+      <Bracket
+        w={w}
+        rounds={cup.rounds}
+        fixtures={cup.fixtures}
+        competition={cupKey(cup.country)}
+      />
+      <p className={c.note}>
+        리그 일정 사이 주중에 치러요(9월 1라운드 → 5월 결승). 하부 리그 클럽이 먼저 1라운드를 치르고
+        상위 클럽은 다음 라운드부터 들어와요. 비기면 연장과 승부차기로 가려요.
+      </p>
+    </section>
   );
 }
 
-/** Cups: the domestic cup and the continental club competitions in one place (→WEB-10, EURO-8). */
+function Continental({ w, t }: { w: World; t: EuropeTournament }) {
+  const entered = t.clubs.includes(w.playerClub);
+  const rounds = t.rounds || [];
+  const groups = phaseGroups(t, 'phase');
+  const second = phaseGroups(t, 'second');
+  const qualifyPerGroup = t.field === 40 ? 3 : t.field === 16 || t.field >= 32 ? 2 : 1;
+  const status = !entered
+    ? '우리 클럽은 참가하지 않아요. 리그 상위권이나 국내 컵 우승으로 출전권을 얻어요.'
+    : t.winner === w.playerClub
+      ? '우승!'
+      : (t.ownExit ?? ownStatus(w, rounds, t.fixtures, true));
+  return (
+    <section className={c.card} aria-label={t.name}>
+      <header className={c.cardHead}>
+        <div>
+          <h3>{t.name}</h3>
+          <small>
+            {seasonName(w.year)} · {t.field}팀 ·{' '}
+            {t.format === 'league'
+              ? `리그 페이즈 ${t.games}경기`
+              : t.format === 'knockout'
+                ? '토너먼트'
+                : t.format === 'double-groups'
+                  ? '조별 리그 2회'
+                  : '조별 리그'}{' '}
+            · 지금 {t.stage}
+          </small>
+        </div>
+        {t.winner && (
+          <span className={c.winnerPill}>
+            우승 <Club w={w} id={t.winner} />
+          </span>
+        )}
+      </header>
+      <p className={c.status}>{status}</p>
+      <Bracket w={w} rounds={rounds} fixtures={t.fixtures} competition={t.key} />
+      {second.length > 0 &&
+        second.map((ids, g) => (
+          <PhaseTable
+            key={`second-${g}`}
+            w={w}
+            t={t}
+            ids={ids}
+            title={`2차 조별 리그 ${String.fromCharCode(65 + g)}조`}
+            zones={[{ until: 2, tone: 'direct', label: '8강 진출' }]}
+          />
+        ))}
+      {t.format === 'league' && groups.length > 0 && (
+        <PhaseTable
+          w={w}
+          t={t}
+          ids={groups.flat()}
+          title="리그 페이즈 순위"
+          zones={[
+            { until: 8, tone: 'direct', label: '1–8위 16강 직행' },
+            { until: 24, tone: 'playoff', label: '9–24위 플레이오프' },
+            { until: 36, tone: 'out', label: '탈락' },
+          ]}
+        />
+      )}
+      {t.format !== 'league' && groups.length > 0 && (
+        <div className={c.groups}>
+          {groups.map((ids, g) => (
+            <PhaseTable
+              key={g}
+              w={w}
+              t={t}
+              ids={ids}
+              title={`${String.fromCharCode(65 + g)}조`}
+              zones={[{ until: qualifyPerGroup, tone: 'direct', label: '토너먼트 진출' }]}
+            />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function finalLine(w: World, winner: string, final?: CupFinal) {
+  if (!final) return <Club w={w} id={winner} strong />;
+  return (
+    <>
+      <Club w={w} id={winner} strong />
+      <em>
+        {final.score[0]}–{final.score[1]}
+        {final.decided === 'pens' ? ' (승부차기)' : ''}
+      </em>
+      <Club w={w} id={final.runnerUp} />
+    </>
+  );
+}
+
+/** Winners and finals season by season, the most successful clubs and our runs. */
+function CupHistory({ w }: { w: World }) {
+  const own = clubOf(w);
+  const competitions = [
+    { key: 'cup', name: domesticCupName(own.country) },
+    { key: 'ucl', name: 'European Cup / Champions League' },
+    { key: 'uel', name: 'UEFA Cup / Europa League' },
+    { key: 'uecl', name: 'Conference League' },
+    { key: 'cwc', name: 'Cup Winners Cup' },
+  ];
+  const [key, setKey] = useState('cup');
+  const seasons = [...w.history].reverse();
+  const rows = seasons.flatMap((h) => {
+    if (key === 'cup') {
+      const entry = h.champions.find((ch) => ch.country === own.country);
+      return entry?.cup
+        ? [{ year: h.year, winner: entry.cup, final: entry.cupFinal, name: '' }]
+        : [];
+    }
+    const e = h.europe.find((entry) => entry.kind === key);
+    return e ? [{ year: h.year, winner: e.winner, final: e.final, name: e.name }] : [];
+  });
+  const titles = new Map<string, number>();
+  for (const row of rows) titles.set(row.winner, (titles.get(row.winner) || 0) + 1);
+  const leaders = [...titles.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const runs = seasons.flatMap((h) =>
+    (h.runs || []).filter((run) => run.key === key).map((run) => ({ year: h.year, ...run })),
+  );
+  return (
+    <section className={c.card} aria-label="컵 대회 역사">
+      <div className={s.filters} role="tablist" aria-label="역사를 볼 대회">
+        {competitions.map((entry) => (
+          <button
+            key={entry.key}
+            role="tab"
+            aria-selected={key === entry.key}
+            className={key === entry.key ? s.selected : undefined}
+            onClick={() => setKey(entry.key)}
+          >
+            {entry.key === 'cup' ? entry.name : entry.name.split(' / ').at(-1)}
+          </button>
+        ))}
+      </div>
+      {leaders.length > 0 && (
+        <section className={c.leaders}>
+          <h4>최다 우승</h4>
+          <ol>
+            {leaders.map(([club, count]) => (
+              <li key={club}>
+                <Club w={w} id={club} strong={club === w.playerClub} />
+                <b>{number(count)}회</b>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+      {runs.length > 0 && (
+        <section className={c.leaders}>
+          <h4>우리 클럽의 도전</h4>
+          <ol>
+            {runs.slice(0, 12).map((run) => (
+              <li key={run.year}>
+                <span>{seasonName(run.year)}</span>
+                <b className={run.champion ? c.champion : undefined}>
+                  {run.champion ? '우승' : run.reached}
+                </b>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+      {rows.length ? (
+        <ul className={c.finals}>
+          {rows.map((row) => (
+            <li key={row.year} className={row.winner === w.playerClub ? c.ownTie : undefined}>
+              <span>
+                {seasonName(row.year)}
+                {row.name && <small>{row.name}</small>}
+              </span>
+              <div>{finalLine(w, row.winner, row.final)}</div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className={s.muted}>
+          아직 기록된 대회가 없어요.{' '}
+          {key === 'cup' ? '첫 시즌이 끝나면 우승팀이 남아요.' : '대회가 창설되면 기록이 쌓여요.'}
+        </p>
+      )}
+    </section>
+  );
+}
+
+/** Cups: the domestic cup and the continental club competitions, live and in history (→WEB-40). */
 export function CupsView({ w, coefficient }: { w: World; coefficient: number }) {
-  const [key, setKey] = useState('ucl');
-  const t = w.europe.find((t) => t.key === key);
-  const cards = [
-    ['ucl', 1955, 'European Cup / Champions League', '1955/56 시작 · 1992/93 챔피언스리그'],
-    ['uel', 1971, 'UEFA Cup / Europa League', '1971/72 시작 · 2009/10 유로파리그'],
-    ['uecl', 2021, 'Conference League', '2021/22 시작 · 2024/25 명칭 변경'],
-  ] as const;
+  const tabs = [
+    { id: 'cup', label: domesticCupName(clubOf(w).country) },
+    ...w.europe.filter((t) => t.key !== 'super').map((t) => ({ id: t.key, label: t.name })),
+    { id: 'history', label: '역사' },
+  ];
+  const [tab, setTab] = useState('cup');
+  const active = tabs.some((entry) => entry.id === tab) ? tab : 'cup';
+  const tournament = w.europe.find((t) => t.key === active);
+  const nextEurope = w.year < 1955 ? 1955 - w.year : 0;
   return (
     <>
       <div className={s.hero}>
         <div>
           <div className={s.eyebrow}>CUP COMPETITIONS</div>
           <h2>컵 대회</h2>
-          <p>국내 컵과 대륙 클럽대항전. 대회는 실제 역사의 시기에 시작돼요.</p>
+          <p>
+            {country(clubOf(w).country).name} 컵과 대륙 클럽대항전의 대진·순위·역사.
+            {nextEurope > 0 && ` 유러피언컵은 ${nextEurope}년 후(1955/56) 창설돼요.`}
+          </p>
         </div>
         <span className={s.pill}>최근 5시즌 구단 계수 · {number(coefficient)}점</span>
       </div>
-      <DomesticCup w={w} />
-      <h3 className={c.section}>대륙 클럽대항전</h3>
-      <div className={s.competitionGrid}>
-        {cards.map(([id, year, title, note]) => (
-          <section
-            key={id}
-            className={`${s.panel} ${s.competition} ${w.year < year ? s.locked : ''}`}
+      <div className={`${s.filters} ${c.tabs}`} role="tablist" aria-label="컵 대회">
+        {tabs.map((entry) => (
+          <button
+            key={entry.id}
+            role="tab"
+            aria-selected={active === entry.id}
+            className={active === entry.id ? s.selected : undefined}
+            onClick={() => setTab(entry.id)}
           >
-            <div className={s.symbol}>{w.year < year ? '◷' : '♜'}</div>
-            <h3>{w.europe.find((t) => t.key === id)?.name || title}</h3>
-            <p>{note}</p>
-            <p>
-              {w.year < year
-                ? `${year - w.year}년 후 창설 예정`
-                : `${w.europe.find((t) => t.key === id)?.field}팀 · ${w.europe.find((t) => t.key === id)?.format} 단계`}
-            </p>
-            <button style={{ marginTop: 20 }} disabled={w.year < year} onClick={() => setKey(id)}>
-              {w.year < year ? '아직 창설되지 않은 대회' : '대회 보기 →'}
-            </button>
-          </section>
+            {entry.label}
+          </button>
         ))}
       </div>
-      {t && (
-        <>
-          <div className={s.filters}>
-            {w.europe.map((t) => (
-              <button
-                key={t.key}
-                onClick={() => setKey(t.key)}
-                className={t.key === key ? s.selected : undefined}
-              >
-                {t.name}
-              </button>
-            ))}
-          </div>
-          <Panel
-            title={t.name}
-            note={`${t.field} CLUBS · ${t.stage}`}
-            footer={
-              t.clubs.includes(w.playerClub)
-                ? `우리 클럽 참가 · ${t.ownExit || '지난 시즌 리그/컵 성적에 따른 자격'}`
-                : '우리 클럽은 참가하지 않습니다. 리그 성적과 국내 컵 우승으로 도전하세요.'
-            }
-          >
-            <Table w={{ ...w, tables: t.standings }} ids={t.clubs} />
-            {t.fixtures.length > 0 && (
-              <div className={s.panelBody}>
-                {t.fixtures
-                  .filter((f) => f.home === w.playerClub || f.away === w.playerClub)
-                  .map((f) => (
-                    <p key={f.id} className={s.muted}>
-                      {w.clubs.find((c) => c.id === f.home)?.name}{' '}
-                      {f.score ? `${f.score.home}–${f.score.away}` : '예정'}{' '}
-                      {w.clubs.find((c) => c.id === f.away)?.name}
-                    </p>
-                  ))}
-              </div>
-            )}
-          </Panel>
-        </>
-      )}
+      {active === 'cup' && <DomesticCup w={w} />}
+      {tournament && <Continental key={tournament.key} w={w} t={tournament} />}
+      {active === 'history' && <CupHistory w={w} />}
       <p className={s.muted}>
-        국가별 참가권, 시드와 추첨은 데모에 맞게 단순화했습니다. 2024/25부터 36팀 리그 페이즈와
-        8·8·6경기, 상위 8팀 직행과 9–24위 플레이오프를 적용합니다. 컵위너스컵은 1960–1998 시즌
-        운영됩니다.
+        국가별 참가권, 시드와 추첨은 데모에 맞게 단순화했습니다. 클럽대항전은 9–1월 리그·조별 단계,
+        2월부터 홈앤드어웨이 토너먼트, 5월 단판 결승으로 치르고 2021년 전까지는 원정 다득점 규칙을
+        씁니다.
       </p>
     </>
   );

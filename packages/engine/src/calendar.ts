@@ -11,10 +11,21 @@ export function currentDay(w: World) {
   return w.calendar?.day ?? w.round * ROUND_INTERVAL_DAYS;
 }
 export function seasonLength(w: World) {
-  return (Date.UTC(w.year + 1, 7, 1) - Date.UTC(w.year, 7, 1)) / DAY_MS;
+  return daysInSeason(w.year);
 }
+/** Days from 1 August of `year` to 1 August of the next year. */
+export function daysInSeason(year: number) {
+  return (Date.UTC(year + 1, 7, 1) - Date.UTC(year, 7, 1)) / DAY_MS;
+}
+/** Today counted from 1 August of `year`, so dates survive the season rollover. */
+export function dayCountedFrom(w: World, year: number) {
+  let day = currentDay(w);
+  for (let y = year; y < w.year; y++) day += daysInSeason(y);
+  return day;
+}
+/** League matches on the weekend; cup and continental ties three days earlier, midweek. */
 export function fixtureDay(f: Fixture) {
-  return f.round * ROUND_INTERVAL_DAYS - (f.kind === 'europe' ? 3 : 0);
+  return f.round * ROUND_INTERVAL_DAYS - (f.kind === 'europe' || f.kind === 'cup' ? 3 : 0);
 }
 function dateLabel(year: number, day: number) {
   const date = new Date(Date.UTC(year, 7, 1) + day * DAY_MS);
@@ -27,7 +38,11 @@ export function fixtureDate(_w: World, f: Fixture) {
   return dateLabel(f.year, fixtureDay(f));
 }
 export function nextOwnFixture(w: World) {
-  return [...w.fixtures, ...w.europe.flatMap((t) => t.fixtures)]
+  return [
+    ...w.fixtures,
+    ...w.europe.flatMap((t) => t.fixtures),
+    ...(w.cups || []).flatMap((cup) => cup.fixtures),
+  ]
     .filter(
       (f) =>
         !f.score &&

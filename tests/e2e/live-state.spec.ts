@@ -7,7 +7,7 @@ async function found(page: import('@playwright/test').Page) {
   await page.getByLabel('세계 생성 시드').fill('live-tabs-regression');
   await page.getByRole('button', { name: '넉넉한 출발' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('game-date')).toHaveText('1901년 8월 1일');
+  await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 1일');
 }
 
 test('keeps league views and nodes across silent progression from home and updates real scorers', async ({
@@ -43,7 +43,7 @@ test('keeps league views and nodes across silent progression from home and updat
   const threeDays = page.getByRole('button', { name: '1초에 3일 속도로 자동 진행', exact: true });
   await threeDays.click();
   await expect(threeDays).toHaveAttribute('aria-pressed', 'true');
-  await expect(date).toHaveText('1901년 8월 4일');
+  await expect(date).toHaveText('1950년 8월 4일');
   // Looking at the league keeps the run going; the selected statistics view is kept.
   await menu.getByRole('button', { name: '리그', exact: true }).click();
   await expect(mini.getByRole('button', { name: '자동 진행 정지' })).toBeVisible();
@@ -53,7 +53,7 @@ test('keeps league views and nodes across silent progression from home and updat
   // event waits as a small pill until it is opened.
   const pill = page.getByTestId('event-pill');
   await expect(pill).toContainText('내일 경기');
-  await expect(date).toHaveText('1901년 8월 7일');
+  await expect(date).toHaveText('1950년 8월 7일');
   await pill.click();
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');

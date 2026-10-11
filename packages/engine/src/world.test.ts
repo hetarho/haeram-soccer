@@ -12,6 +12,7 @@ import {
   clubOf,
   recordMatch,
   operate,
+  FOUNDING_YEAR,
 } from './index';
 const input = {
   country: 'ENG' as const,
@@ -102,8 +103,8 @@ describe('world progression', () => {
         ),
       ).toBe(season.gf);
     }
-    expect(w.year).toBe(1905);
-    expect(w.history[0].year).toBe(1901);
+    expect(w.year).toBe(FOUNDING_YEAR + 4);
+    expect(w.history[0].year).toBe(FOUNDING_YEAR);
   });
   it('replaces retiring goalkeepers even when the remaining squad exceeds 18 players', () => {
     const w = createWorld(input);

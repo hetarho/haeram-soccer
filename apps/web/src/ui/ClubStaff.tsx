@@ -1,12 +1,17 @@
 import { useState } from 'react';
 import type {
+  CoachingLevel,
   DelegationKey,
   Staff,
   StaffRole,
   World,
 } from '../../../../packages/contracts/src/types';
 import {
+  COACHING_INFO,
+  coachingLevel,
+  isExpiring,
   MANAGER_TRAIT_INFO,
+  renewalTerms,
   STAFF_INFO,
   STAFF_ROLES,
   STAFF_TRAIT_INFO,
@@ -31,6 +36,11 @@ const DELEGATION: [DelegationKey, string, string][] = [
     '평가 가치 130%(유망주 200%) 이상만 받아요. 30세 이상·계약 막바지·자금난이면 기준을 낮추고, 주전은 지켜요',
   ],
   ['business', '후원 계약', '후원이 비면 운영팀이 안정형 후원을 바로 맺어요'],
+  [
+    'staff',
+    '코치 고용·재계약',
+    '코치진 투자 수준에 맞춰 계약이 끝나는 코치를 재계약하거나 새 코치를 뽑아요. 공석을 두지 않아요',
+  ],
 ];
 
 function useActing() {
@@ -89,6 +99,54 @@ function hiredImpact(w: World, role: StaffRole, candidate: Staff) {
   return staffImpact({ ...w, staff }, role);
 }
 
+/**
+ * How much quality the club buys in coaches (→STAFF-15). With hiring delegated the staff renew and
+ * hire to this level; otherwise it is the owner's guide when contracts end.
+ */
+export function CoachingPlan({ w, client }: { w: World; client: GameClient }) {
+  const acting = useActing();
+  const [draft, setDraft] = useState<CoachingLevel>();
+  const level = draft ?? coachingLevel(w);
+  const delegated = !!w.delegation?.staff;
+  const expiring = (w.staff || []).filter((member) => isExpiring(w, member));
+  return (
+    <section className={s.plan} aria-label="코치 투자 수준">
+      <header>
+        <h3>코치진 투자</h3>
+        <span>
+          {delegated ? '스태프가 이 수준으로 고용·재계약' : '직접 고용 · 재계약 시즌 4월 1일'}
+        </span>
+      </header>
+      <div className={s.planSteps} role="radiogroup" aria-label="코치진 투자 수준">
+        {([1, 2, 3] as const).map((step) => (
+          <button
+            key={step}
+            role="radio"
+            aria-checked={level === step}
+            className={level === step ? s.planOn : undefined}
+            disabled={acting}
+            onClick={() => {
+              setDraft(step);
+              void client
+                .command({ type: 'coaching', level: step })
+                .finally(() => setDraft(undefined));
+            }}
+          >
+            <b>{COACHING_INFO[step].label}</b>
+            <small>{COACHING_INFO[step].summary}</small>
+          </button>
+        ))}
+      </div>
+      <p className={s.note}>
+        {delegated
+          ? '계약이 끝나면 이 수준의 후보와 비교해 재계약하거나 교체해요. 자금 여력이 13주보다 짧아지면 한 단계 싼 코치를 뽑고, 그래도 어려우면 무급 코치로 자리를 채워요.'
+          : '개입 수준 4(운영진에 모두 맡기기)나 아래 위임 설정에서 코치 고용을 맡기면 스태프가 이 수준으로 알아서 고용해요.'}
+        {expiring.length > 0 && ` · 이번 시즌 끝에 계약이 끝나는 코치 ${expiring.length}명`}
+      </p>
+    </section>
+  );
+}
+
 /** Coaching departments, their effect on the squad and replacements. */
 export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
   const acting = useActing();
@@ -125,6 +183,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                 <div className={s.member}>
                   <span>
                     {member.name} · 능력 {Math.round(member.ability)}
+                    {isExpiring(w, member) && <em className={s.expiring}> 계약 만료 예정</em>}
                   </span>
                   <Meter value={member.ability} />
                   <small>
@@ -134,6 +193,12 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                       : ' · 무급 자원봉사'}
                   </small>
                   <small className={s.impact}>{staffImpact(w, id)}</small>
+                  {isExpiring(w, member) && (
+                    <small>
+                      재계약: 연봉 {format(renewalTerms(w, member).wage)} · 계약금{' '}
+                      {format(renewalTerms(w, member).fee)} · {renewalTerms(w, member).until}년까지
+                    </small>
+                  )}
                 </div>
               ) : (
                 <div className={s.member}>
@@ -141,16 +206,28 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                   <small className={s.impact}>{staffImpact(w, id)}</small>
                 </div>
               )}
-              <button
-                disabled={acting}
-                onClick={(event) => {
-                  event.currentTarget.focus();
-                  setRole(id);
-                  setPick(undefined);
-                }}
-              >
-                {member ? '교체' : '선임'}
-              </button>
+              <div className={s.rowActions}>
+                {member && isExpiring(w, member) && (
+                  <button
+                    className={s.primary}
+                    disabled={acting}
+                    title={`연봉 ${format(renewalTerms(w, member).wage)} · 계약금 ${format(renewalTerms(w, member).fee)} · ${renewalTerms(w, member).until}년까지`}
+                    onClick={() => void client.command({ type: 'renew-staff', role: id })}
+                  >
+                    재계약
+                  </button>
+                )}
+                <button
+                  disabled={acting}
+                  onClick={(event) => {
+                    event.currentTarget.focus();
+                    setRole(id);
+                    setPick(undefined);
+                  }}
+                >
+                  {member ? '교체' : '선임'}
+                </button>
+              </div>
             </li>
           );
         })}

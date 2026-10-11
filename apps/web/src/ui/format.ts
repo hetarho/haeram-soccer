@@ -1,3 +1,4 @@
+import type { Fixture, World } from '../../../../packages/contracts/src/types';
 import { currency } from '../../../../packages/catalogs/src/index';
 export function money(value: string, code: string, year: number) {
   const c = currency(code, year),
@@ -36,8 +37,29 @@ export const seasonName = (year: number) => `${year}/${String(year + 1).slice(-2
 export const percent = (a: number, b: number) => (b ? `${Math.round((a / b) * 100)}%` : '—');
 export const kindLabel: Record<string, string> = {
   league: '리그',
-  lower: '하부 리그',
+  lower: '아마추어 리그',
   cup: '국내 컵',
   playoff: '승격 플레이오프',
   europe: '클럽대항전',
 };
+/**
+ * The competition and stage of a fixture as football media name it: "잉글랜드 컵 8강",
+ * "Champions League 16강 2차전", "Europa League 리그 페이즈"; league games keep their kind.
+ */
+export function competitionLabel(w: World, f: Fixture) {
+  const knockout = /:k(\d+):\d+(:2)?$/.exec(f.id);
+  if (f.kind === 'cup') {
+    const cup = w.cups?.find((entry) => `cup:${entry.country}` === f.groupKey);
+    const round = knockout && cup?.rounds[Number(knockout[1])];
+    return `${cup?.name ?? kindLabel.cup}${round ? ` ${round.label}` : ''}`;
+  }
+  if (f.kind === 'europe') {
+    const t = w.europe.find((entry) => entry.key === f.groupKey);
+    if (!t) return kindLabel.europe;
+    if (!knockout) return `${t.name} ${t.format === 'league' ? '리그 페이즈' : '조별 리그'}`;
+    const round = t.rounds?.[Number(knockout[1])];
+    const leg = round?.legs === 2 ? (knockout[2] ? ' 2차전' : ' 1차전') : '';
+    return `${t.name}${round ? ` ${round.label}${leg}` : ''}`;
+  }
+  return kindLabel[f.kind] || f.kind;
+}

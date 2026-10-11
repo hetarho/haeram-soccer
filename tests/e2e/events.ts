@@ -8,6 +8,8 @@ const STOP_KINDS = [
   'incoming-bid',
   'youth-intake',
   'staff-report',
+  'staff-renewal',
+  'cup',
   'finance',
 ] as const;
 

@@ -2,11 +2,12 @@ import { useState } from 'react';
 import type { InboxItem, TransferBid, World } from '../../../../packages/contracts/src/types';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/world';
+import { isExpiring } from '../../../../packages/engine/src/staff';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { stoppingEvents, useProgression, type ProgressionController } from '../runtime/progression';
 import { useNavigation, useSquadView } from './state';
-import { money, kindLabel } from './format';
+import { competitionLabel, money } from './format';
 import { Dialog } from './Dialog';
 import s from './EventCenter.module.css';
 import { fadeOutOnRemove } from './motion';
@@ -102,8 +103,7 @@ export function EventCenter({
           vs {opponent?.name}
         </h3>
         <p>
-          {home ? '홈' : '원정'} · {kindLabel[eve.kind] || eve.kind} · 선발과 전술은 스태프가
-          준비해요.
+          {home ? '홈' : '원정'} · {competitionLabel(w, eve)} · 선발과 전술은 스태프가 준비해요.
         </p>
         <label className={s.skip}>
           <input
@@ -126,6 +126,7 @@ export function EventCenter({
   }
   const item = events[0];
   const bid = bidFor(w, item);
+  const expiring = (w.staff || []).filter((member) => isExpiring(w, member));
   const answer = async (accept: boolean) => {
     if (!bid) return;
     await client.command({ type: 'respond-bid', id: bid.id, accept });
@@ -212,6 +213,61 @@ export function EventCenter({
               확인
             </button>
           </>
+        ) : item.kind === 'staff-renewal' ? (
+          <>
+            {expiring.length > 0 && (
+              <button
+                className={s.primary}
+                disabled={acting}
+                onClick={() => {
+                  void (async () => {
+                    for (const member of expiring)
+                      await client.command({ type: 'renew-staff', role: member.role });
+                    await read(item);
+                  })();
+                }}
+              >
+                모두 재계약
+              </button>
+            )}
+            <button
+              className={expiring.length ? undefined : s.primary}
+              disabled={acting}
+              onClick={() => {
+                void read(item);
+                setPage('manager');
+              }}
+            >
+              코치진 보기
+            </button>
+            <button
+              disabled={acting}
+              onClick={() => {
+                void (async () => {
+                  await client.command({ type: 'delegate', key: 'staff', value: true });
+                  await read(item);
+                })();
+              }}
+            >
+              스태프에게 맡기기
+            </button>
+          </>
+        ) : item.kind === 'cup' ? (
+          <>
+            <button
+              className={s.primary}
+              disabled={acting}
+              onClick={() => {
+                void read(item);
+                setPage('europe');
+              }}
+            >
+              대진표 보기
+            </button>
+            <button disabled={acting} onClick={() => void read(item)}>
+              확인
+            </button>
+          </>
         ) : item.kind === 'youth-intake' ? (
           <>
             <button
@@ -247,6 +303,8 @@ export const KIND_LABEL: Record<InboxItem['kind'], string> = {
   'incoming-bid': '영입 제안 받음',
   'youth-intake': '유소년 입단',
   'staff-report': '스태프 보고',
+  'staff-renewal': '코치 재계약',
+  cup: '컵 대진',
   finance: '자금·후원',
 };
 

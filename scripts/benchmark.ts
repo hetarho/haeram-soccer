@@ -10,6 +10,7 @@ import {
   quote,
   clubOf,
   operatingCost,
+  FOUNDING_YEAR,
 } from '../packages/engine/src/index';
 import { COUNTRIES } from '../packages/catalogs/src/index';
 import { canonical, validateWorld, type World } from '../packages/contracts/src/index';
@@ -187,13 +188,13 @@ for (const variant of ['baseline', 'active-management']) {
     w.history.length !== 100 ||
     w.history.some(
       (season, index) =>
-        season.year !== 1901 + index ||
+        season.year !== FOUNDING_YEAR + index ||
         season.champions.length !== COUNTRIES.length ||
-        // Every league club once, plus the own club in a season it spent in the lower tier.
+        // Every league club once, plus the own club in a season it spent in the amateur league.
         season.standings.filter((row) => row[1] < leagueTiers(row[0])).length !== leagueClubs ||
         season.standings.some((row) => row[1] >= leagueTiers(row[0]) && row[0] !== ownIndex),
     ) ||
-    !w.ownMatches.some((match) => match.year === 1901) ||
+    !w.ownMatches.some((match) => match.year === FOUNDING_YEAR) ||
     !w.events.some((event) => event.kind === 'founding')
   )
     throw new Error('Century own-club/global archival coverage failed');
@@ -240,7 +241,7 @@ const era = createWorld({
   seed: 'era-probe',
   difficulty: 2,
 });
-for (let i = 0; i < 124; i++) simulateSeason(era);
+for (let year = FOUNDING_YEAR; year < 2025; year++) simulateSeason(era);
 validateWorld(era);
 if (
   !era.history.find((h) => h.year === 2024)?.europe.some((e) => e.kind === 'uecl' && e.field === 36)
@@ -270,7 +271,7 @@ const report = {
   centuryCheckpointSha256: createHash('sha256')
     .update(readFileSync('.tmp/release-century.haeram-save.json'))
     .digest('hex'),
-  eraProbe: { seasons: 124, year: era.year, passed: true },
+  eraProbe: { seasons: 2025 - FOUNDING_YEAR, year: era.year, passed: true },
   elapsedMs: Math.round(performance.now() - start),
   heapBytes: process.memoryUsage().heapUsed,
   peakObservedHeapBytes,
@@ -278,7 +279,7 @@ const report = {
   resumedSeasonReplay: true,
   passed: true,
   scope:
-    'Two representative 100-season workloads, with real youth/recovery round training in the active profile, a settled round-23 checkpoint after 100 seasons, eight-country archive/capacity checks and a separate 1901–2025 era probe. Every checkpoint must round-trip the complete canonical world without loss; save limits and history retention remain unchanged. Throughput includes codec/replay checks; peak heap is sampled at checkpoints. No claim that all seeds/actions fit indefinitely. Direct engine harness records but does not stop at UI warnings.',
+    'Two representative 100-season workloads, with real youth/recovery round training in the active profile, a settled round-23 checkpoint after 100 seasons, eight-country archive/capacity checks and a separate 1950–2025 era probe. Every checkpoint must round-trip the complete canonical world without loss; save limits and history retention remain unchanged. Throughput includes codec/replay checks; peak heap is sampled at checkpoints. No claim that all seeds/actions fit indefinitely. Direct engine harness records but does not stop at UI warnings.',
 };
 mkdirSync('docs/benchmarks', { recursive: true });
 writeFileSync('docs/benchmarks/T010-storage.json', JSON.stringify(report, null, 2) + '\n');

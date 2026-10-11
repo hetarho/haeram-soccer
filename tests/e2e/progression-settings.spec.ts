@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { stopOnlyFor } from './events';
-import { settle } from './layout';
+import { horizontalOverflow, settle } from './layout';
 
 test('mobile clock exposes every pace as a touch target and advances the chosen days', async ({
   page,
@@ -12,7 +12,7 @@ test('mobile clock exposes every pace as a touch target and advances the chosen 
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   const date = page.getByTestId('game-date');
-  await expect(date).toHaveText('1901년 8월 1일');
+  await expect(date).toHaveText('1950년 8월 1일');
   const controls = page.getByRole('region', { name: '시즌 진행', exact: true });
   const pace = (label: string) =>
     controls.getByRole('button', { name: `${label} 속도로 자동 진행`, exact: true });
@@ -20,29 +20,52 @@ test('mobile clock exposes every pace as a touch target and advances the chosen 
     threeDays = pace('1초에 3일'),
     fiveDays = pace('1초에 5일'),
     toggle = controls.getByRole('button', { name: '자동 진행 시작', exact: true }),
-    stop = controls.getByRole('button', { name: '자동 진행 정지', exact: true });
-  for (const control of [toggle, daily, threeDays, fiveDays]) {
+    stop = controls.getByRole('button', { name: '자동 진행 정지', exact: true }),
+    level = controls.getByRole('button', { name: /^개입 수준/ });
+  await settle(page);
+  // Play and the intervention level are full touch targets; the paces are smaller chips in a
+  // track, each still answering taps across the track's height.
+  for (const [control, min] of [
+    [toggle, 44],
+    [level, 44],
+    [daily, 32],
+    [threeDays, 32],
+    [fiveDays, 32],
+  ] as const) {
     const rect = await control.boundingBox();
-    expect(rect!.width).toBeGreaterThanOrEqual(44);
-    expect(rect!.height).toBeGreaterThanOrEqual(44);
+    expect(rect!.width).toBeGreaterThanOrEqual(min);
+    expect(rect!.height).toBeGreaterThanOrEqual(min);
     expect(rect!.x).toBeGreaterThanOrEqual(0);
     expect(rect!.x + rect!.width).toBeLessThanOrEqual(360);
     expect(rect!.y + rect!.height).toBeLessThan(740);
   }
+  const toggleBox = (await toggle.boundingBox())!;
+  for (const chip of [daily, threeDays, fiveDays]) {
+    const rect = (await chip.boundingBox())!;
+    expect(rect.height).toBeLessThan(toggleBox.height);
+    const edge = await chip.evaluate((element) => {
+      const bounds = element.getBoundingClientRect();
+      const x = bounds.x + bounds.width / 2;
+      return [bounds.top - 4, bounds.bottom + 4].map((y) =>
+        element.contains(document.elementFromPoint(x, y)),
+      );
+    });
+    expect(edge).toEqual([true, true]);
+  }
   await expect(daily).toHaveAttribute('aria-pressed', 'true');
   // A pace tap starts the clock; stopping after the first tick advances exactly one day.
   await daily.click();
-  await expect(date).toHaveText('1901년 8월 2일');
+  await expect(date).toHaveText('1950년 8월 2일');
   await stop.click();
-  await expect(date).toHaveText('1901년 8월 2일');
+  await expect(date).toHaveText('1950년 8월 2일');
   await threeDays.click();
   await expect(threeDays).toHaveAttribute('aria-pressed', 'true');
   await expect(daily).toHaveAttribute('aria-pressed', 'false');
-  await expect(date).not.toHaveText('1901년 8월 2일');
+  await expect(date).not.toHaveText('1950년 8월 2일');
   await stop.click();
   // A three-day step moves up to three days and ends early on a day club news arrives.
   const stepped = await date.innerText();
-  expect(['1901년 8월 3일', '1901년 8월 4일', '1901년 8월 5일', '1901년 8월 6일']).toContain(
+  expect(['1950년 8월 3일', '1950년 8월 4일', '1950년 8월 5일', '1950년 8월 6일']).toContain(
     stepped,
   );
   await page.waitForTimeout(1200);
@@ -52,7 +75,7 @@ test('mobile clock exposes every pace as a touch target and advances the chosen 
   await expect(fiveDays).toHaveAttribute('aria-pressed', 'true');
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
-  await expect(date).toHaveText('1901년 8월 7일');
+  await expect(date).toHaveText('1950년 8월 7일');
   await expect(toggle).toBeVisible();
   await expect(
     eve.getByRole('checkbox', { name: '다음부터 경기는 안 보고 자동 진행', exact: true }),
@@ -82,12 +105,12 @@ test('mobile intervention levels set clock stops and staff delegation, and persi
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   const date = page.getByTestId('game-date');
-  // On a phone the clock row keeps its room for the date; the levels open from the HUD menu.
-  await expect(
-    page
-      .getByRole('region', { name: '시즌 진행', exact: true })
-      .getByRole('button', { name: /^개입 수준/ }),
-  ).toHaveCount(0);
+  // The clock row shows the level on phones too; the HUD menu still opens the full sheet.
+  const trigger = page
+    .getByRole('region', { name: '시즌 진행', exact: true })
+    .getByRole('button', { name: /^개입 수준/ });
+  await expect(trigger).toHaveAccessibleName('개입 수준 · 중요한 결정만');
+  await expect(trigger).toContainText('개입 2');
   await settle(page);
   const entry = async () => {
     await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
@@ -100,7 +123,7 @@ test('mobile intervention levels set clock stops and staff delegation, and persi
     await opener.click();
   };
   await entry();
-  let dialog = page.getByRole('dialog', { name: '개입 수준' });
+  let dialog = page.getByRole('dialog', { name: '개입 수준', exact: true });
   const levels = dialog.getByRole('radiogroup', { name: '개입 수준' });
   const level = (n: number) => levels.getByRole('radio', { name: new RegExp(`^${n}\\. `) });
   await expect(levels.getByRole('radio')).toHaveCount(4);
@@ -134,6 +157,8 @@ test('mobile intervention levels set clock stops and staff delegation, and persi
     else await expect(stop(label)).not.toBeChecked();
   await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(dialog).toHaveCount(0);
+  await expect(trigger).toHaveAccessibleName('개입 수준 · 운영진에 모두 맡기기');
+  await expect(trigger).toContainText('개입 4');
   const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await nav.getByRole('button', { name: '선수단', exact: true }).click();
   await page
@@ -147,18 +172,123 @@ test('mobile intervention levels set clock stops and staff delegation, and persi
   await page.reload();
   // The level survives a reload.
   await entry();
-  dialog = page.getByRole('dialog', { name: '개입 수준' });
+  dialog = page.getByRole('dialog', { name: '개입 수준', exact: true });
   await expect(level(4)).toHaveAttribute('aria-checked', 'true');
   await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(dialog).toHaveCount(0);
   await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
-  await expect(date).toHaveText('1901년 8월 1일');
+  await expect(date).toHaveText('1950년 8월 1일');
   // Without match stops, the 3-day pace plays straight through the first match day.
   await page.getByRole('button', { name: '1초에 3일 속도로 자동 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toContainText('라운드 1');
   await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
   await expect(page.getByTestId('event-card')).toHaveCount(0);
   await page.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
+});
+
+test('the phone clock picks the intervention level from a popover without stopping', async ({
+  page,
+}) => {
+  // Only match eves stop: a custom mix until a level is chosen.
+  await stopOnlyFor(page, ['match']);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  const date = page.getByTestId('game-date');
+  const clock = page.getByRole('region', { name: '시즌 진행', exact: true });
+  const trigger = clock.getByRole('button', { name: /^개입 수준/ });
+  await expect(trigger).toBeVisible();
+  await expect(trigger).toHaveAccessibleName('개입 수준 · 사용자 지정');
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  await settle(page);
+  // "▶ · 1 3 5 · 개입" stays one row: nothing spills out of it and the date is not cut.
+  const row = await clock.evaluate((section) => {
+    const box = section.getBoundingClientRect();
+    const date = section.querySelector<HTMLElement>('[data-testid="game-date"]')!;
+    return {
+      overflow: section.scrollWidth - section.clientWidth,
+      dateCut: date.scrollWidth - date.clientWidth,
+      outside: Array.from(section.querySelectorAll('button'))
+        .map((button) => button.getBoundingClientRect())
+        .filter((rect) => rect.left < box.left || rect.right > box.right).length,
+    };
+  });
+  expect(row).toEqual({ overflow: 0, dateCut: 0, outside: 0 });
+  const play = (await clock.getByRole('button', { name: '자동 진행 시작' }).boundingBox())!;
+  const anchor = (await trigger.boundingBox())!;
+  expect(anchor.height).toBe(play.height);
+  expect(anchor.width).toBeGreaterThanOrEqual(44);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+
+  // Opening the popover never pauses the running clock; Escape hands focus back.
+  await clock.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
+  await expect(date).toHaveText('1950년 8월 2일');
+  await trigger.click();
+  const popover = page.getByRole('dialog', { name: '개입 수준 빠른 선택', exact: true });
+  await expect(popover).toBeVisible();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  const opened = await date.innerText();
+  await expect(date).not.toHaveText(opened);
+  await page.keyboard.press('Escape');
+  await expect(popover).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  await clock.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
+
+  await trigger.click();
+  await expect(popover).toBeVisible();
+  await settle(page);
+  const box = (await popover.boundingBox())!;
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(390);
+  expect(box.y).toBeGreaterThan(anchor.y + anchor.height);
+  expect(box.y + box.height).toBeLessThanOrEqual(844);
+  expect(Math.abs(box.x + box.width - (anchor.x + anchor.width))).toBeLessThanOrEqual(1);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+  const levels = popover.getByRole('radiogroup', { name: '개입 수준', exact: true });
+  const level = (n: number) => levels.getByRole('radio', { name: new RegExp(`^${n}\\. `) });
+  await expect(levels.getByRole('radio')).toHaveCount(4);
+  await expect(levels.getByRole('radio', { checked: true })).toHaveCount(0);
+  await expect(popover).toContainText('사용자 지정 상태');
+  // Focus starts on the first level and the arrow keys move between levels.
+  await expect(level(1)).toBeFocused();
+  await page.keyboard.press('ArrowDown');
+  await expect(level(2)).toBeFocused();
+  await page.keyboard.press('ArrowUp');
+  await expect(level(1)).toBeFocused();
+  await page.keyboard.press('End');
+  await expect(level(4)).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(level(4)).toHaveAttribute('aria-checked', 'true');
+  await expect(trigger).toHaveAccessibleName('개입 수준 · 운영진에 모두 맡기기');
+  await expect(trigger).toContainText('개입 4');
+  await expect(popover).toBeVisible();
+  // A tap on another level applies it at once, delegation included.
+  await level(2).click();
+  await expect(level(2)).toHaveAttribute('aria-checked', 'true');
+  await expect(trigger).toHaveAccessibleName('개입 수준 · 중요한 결정만');
+  await level(4).click();
+  await expect(trigger).toHaveAccessibleName('개입 수준 · 운영진에 모두 맡기기');
+  // An outside tap closes it.
+  await date.click();
+  await expect(popover).toHaveCount(0);
+
+  // The detail button opens the full sheet with the same level checked.
+  await trigger.click();
+  await popover.getByRole('button', { name: '세부 설정…', exact: true }).click();
+  await expect(popover).toHaveCount(0);
+  const dialog = page.getByRole('dialog', { name: '개입 수준', exact: true });
+  await expect(dialog.getByRole('radio', { name: /^4\. / })).toHaveAttribute(
+    'aria-checked',
+    'true',
+  );
+  await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await expect(dialog).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  await page.reload();
+  await expect(trigger).toHaveAccessibleName('개입 수준 · 운영진에 모두 맡기기');
 });
 
 test('visibility events pause the shared clock only while hidden and resume on return', async ({
@@ -170,7 +300,7 @@ test('visibility events pause the shared clock only while hidden and resume on r
   await expect(page.getByTestId('club-hub')).toBeVisible();
   const date = page.getByTestId('game-date');
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-  await expect(date).toHaveText('1901년 8월 2일');
+  await expect(date).toHaveText('1950년 8월 2일');
   // Headless engines keep pages visible; exercise the real browser listener with its hidden input.
   await page.evaluate(() => {
     Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });

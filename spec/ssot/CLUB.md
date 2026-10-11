@@ -1,11 +1,13 @@
 # CLUB Squad and growth
-> r13 | Define the implemented browser-demo behavior for squad and growth.
+> r14 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating equals its league's average club XI (±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
 - CLUB-2 [o] Player attributes include attack, passing, defense, keeper, stamina, potential, birth year, wage, contract term, and reputation; overall derives from role.
-- CLUB-3 [o] Players age using the game calendar, develop through age/potential/manager ability, decline after 30, retire at 36, and are replaced by generated youth.
-- CLUB-4 [o] Recruitment offers immediate contributors, prospects, free agents, and short-term loans. Free agents sign instantly at any time; fee-bearing transfers are negotiated bids (→CLUB-18); selling produces money and removes the player from selection.
+- CLUB-3 [o] Players age using the game calendar, develop through age/potential/manager ability, decline after 30 and are replaced by generated youth. On 1 April each veteran decides from his own stream whether the season is his last; announced players play on and retire at the close, and at 41 everyone stops.
+  - chance by age at the season's end: 33 8%, 34 18%, 35 35%, 36 60%, 37 80%, 38+ 95%; keepers count a year younger; ×0.6 for a starter rated 60+, ×1.4 under 900 season minutes.
+  - the announcement is an inbox item, an event and news; an announced player cannot be listed.
+- CLUB-4 [o] Recruitment offers immediate contributors, prospects, free agents, and short-term loans. Free agents sign instantly at any time; fee-bearing transfers are negotiated bids (→CLUB-18). A player leaves only when another club's offer is accepted (→CLUB-22); there is no instant sale. ← a sale needs a buyer
 - CLUB-5 [o] Transfer price, recurring wage, and term are shown before acceptance. Keep at least 14 players and one goalkeeper; maximum squad size is 26.
 - CLUB-6 [o] Automatic starting lineup uses available role fit and fatigue unless a saved manual XI is selected. Strongest/rest presets require at most selection plus confirmation; detailed role-safe substitutions are optional.
 - CLUB-7 [o] Promotion, supporters, facilities, managers, player generations and finance measure growth; history survives transfers and retirement.
@@ -19,6 +21,8 @@
   - fatigue recovered per round: balanced 11, youth 7, recovery 16 (before staff and policy bonuses). ← a regular starter's 10–13 per match then levels off under balanced training; pressing or youth focus still accumulates
 
 - CLUB-12 [o] Player development uses each player own potential gap, age, manager youth ability and facilities; young role-relevant skills grow only up to their current/potential ceiling. Record bounded cumulative actual positive development on the player, preserve retirement/history, and show current ability, potential and earned growth.
+  - each summer a player aged 23 or younger may break through (5%: potential +5 to +9) or stall (5%: −4 to −7); otherwise potential moves by at most 2; never below current ability or above 99. Changes of 4+ are events and news.
+  - generated attributes top out at 99.
 
 - CLUB-13 [o] The training view exposes the three focus choices and their recovery/development tradeoffs, current focus, and promising young players. Focus selection is a single saved game command; optional player and market details are explicit.
 
@@ -30,7 +34,7 @@
   - academy investment (→ECON-16), the club build (→ECON-22) and the pipeline synergy (→CLUB-21) add prospects, potential and growth.
   - the academy dial and the build board show the exact chance that the next intake brings a prospect of potential 80+, from the same uniform draws the intake uses.
 - CLUB-17 [o] Fee-bearing purchases, loans and sales happen only in transfer windows: summer from the day the season closes (→LEAGUE-9) to 1 September and winter 1 January–1 February. ← the market opens as the season's review ends, not during its final rounds Free agents sign at any time. The market shows the window state and deadline.
-- CLUB-18 [o] Bids are answered 2–4 days later with accept, reject or a counter; acceptance chance rises with the offered fee against the asking value and the chief scout. The fee is paid on completion; unanswered bids lapse at the deadline. During windows other clubs bid for our players (answered by the owner, or by the staff when delegated) and lapse after 5 days; squad minimums still apply. Delegated staff accept an offer at or above their sale bar for a non-starter, or for a starter aged 30+ with a bench player of the same role within 3 ability. The report names the bar and each step.
+- CLUB-18 [o] Bids are answered 2–4 days later with accept, reject or a counter; acceptance chance rises with the offered fee against the asking value and the chief scout. The fee is paid on completion; unanswered bids lapse at the deadline. During windows other clubs bid for our players (answered by the owner, or by the staff when delegated) and lapse after 5 days; squad minimums still apply. The bidder is a real club whose strength suits the player (4 below to 12 above his ability, stronger clubs more often, any country). Delegated staff accept an offer at or above their sale bar for a non-starter, or for a starter aged 30+ with a bench player of the same role within 3 ability. The report names the bar and each step.
   - bar: 130% of value, or 200% for a prospect (aged 22 or under with potential at least 8 above ability)
   - age 30–32 −15 points, 33+ −30; contract in its final season −20, one season after this −10
   - fixed-cost runway under 13 rounds (the cash warning) −20, under 30 rounds −10; never below 80%
@@ -63,6 +67,23 @@
   | 우리 동네 아이들 | 성골 유스 or 유소년 클럽 제휴 · 지역 밀착 · 가족 같은 클럽 | morale baseline +2, intake potential +2 |
   | 트레이딩 머신 | 데이터 스카우팅 · 1군 직행 경로 · 셀링 클럽 or 쇼케이스 | candidate potential +2, academy growth ×1.1 |
 
+- CLUB-22 [o] The transfer list: the owner lists a player at an asking price of 90%, 110% or 140% of his value, any time; offers come only while a window is open and only from real clubs (→CLUB-18), and a sale happens only when one is accepted.
+  | ask | label | daily offer chance | offer as share of the ask |
+  |---|---|---|---|
+  | 90% | 빠른 매각 | 16% | 85–100% |
+  | 110% | 시장가 | 8% | 90–105% |
+  | 140% | 높은 호가 | 3.5% | 92–108% |
+  - the chance is multiplied by appeal 0.6 + (ability − 35)/60, +0.25 aged ≤ 23, −0.2 aged 31+, within 0.35–1.5; the listing sheet shows the asking fee and the average days to a first offer.
+  - each listed player has at most one open offer; delegated staff (→STAFF-13) accept a listed player's offer within 5% of the ask.
+- CLUB-23 [o] Own players can be injured in a match: each player who played has 1.8% × (1 + excess fatigue/25) × (1 + max(0, 55 − stamina)/150) × 1.15 when pressing, from the match's own stream (about one injury every five matches).
+  | share | days out | examples |
+  |---|---|---|
+  | 60% | 5–14 | 근육 타박상, 가벼운 발목 염좌 |
+  | 25% | 15–35 | 햄스트링, 종아리 |
+  | 12% | 36–90 | 발목 인대, 중족골 골절 |
+  | 3% | 120–240 | 전방 십자인대 파열, 아킬레스건 |
+  - injured players are left out of the automatic and saved XI while eleven fit players exist; the medical report is an inbox item and an event; healed injuries clear.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -70,6 +91,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r14 261011 CLUB-3✎ retire at 36→spring announcement with age chances, retirement at the close, 41 forced; CLUB-4✎ instant sale→sale only by an accepted offer; CLUB-12✎ +yearly potential breakthroughs and stalls, attributes capped at 99; CLUB-18✎ bidders from the same country and division→clubs suited to the player; CLUB-22+ transfer list; CLUB-23+ injuries
 - r13 261010 CLUB-21✎ 머니볼/상업 제국 vision conditions→build cards, +우리 동네 아이들 +트레이딩 머신 cross-slot combos
 - r12 261010 CLUB-18✎ delegated sales at a flat 130%→a sale bar of 130% (prospects 200%) lowered for age, contract and cash runway
 - r11 261010 CLUB-16✎ +academy investment, vision and synergy terms, golden-prospect odds; CLUB-19✎ +manager style/vision/synergy baseline terms and a motivator's defeat cushion; CLUB-20✎ care actions (rest day, intensive care, team dinner, special bonus, owner's visit, friendly)→owner requests to the manager and staff with stated chances (special bonus removed, win bonus per win); CLUB-21+ build synergies

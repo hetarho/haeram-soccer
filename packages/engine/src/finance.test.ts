@@ -17,6 +17,7 @@ import {
   simulateMatch,
   simulateSeason,
 } from './index';
+import { professionalStart, sellPlayer } from './testing';
 import { advanceEconomy } from './economy';
 
 function world() {
@@ -106,7 +107,7 @@ describe('earned, auditable club finances', () => {
   });
 
   it('earns sponsor money once per played league match instead of receiving a full annual grant', () => {
-    const w = world();
+    const w = professionalStart(world());
     operate(w, { type: 'sponsor', kind: 'stable' });
     const annual = w.sponsor!.annual;
     expect(w.income).toBe('0');
@@ -156,7 +157,7 @@ describe('earned, auditable club finances', () => {
     expect(BigInt(operatingCost(w))).toBeGreaterThan(BigInt(annual));
     const player = w.players.find((p) => p.status === 'active' && p.role !== 'GK')!;
     const beforeSale = operatingCost(w);
-    operate(w, { type: 'sell', id: player.id });
+    sellPlayer(w, player.id);
     expect(BigInt(operatingCost(w))).toBe(BigInt(beforeSale) - BigInt(player.wage));
   });
 

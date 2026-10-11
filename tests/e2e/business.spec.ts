@@ -12,6 +12,8 @@ import {
   roundShare,
   gateProjection,
   FINANCE_CONFIG,
+  isLeagueMatch,
+  leagueMatchFactor,
 } from '../../packages/engine/src/finance';
 import { clubOf, quote } from '../../packages/engine/src/world';
 import { money, number } from '../../apps/web/src/ui/format';
@@ -179,13 +181,16 @@ test('separates campaign recovery and net ranges and settles after four real rou
   expect(started.campaigns.find((campaign) => campaign.kind === 'outreach')?.remaining).toBe(4);
   await expect(card).toContainText(`지급한 비용${format(offer.cost)}`);
   await expect(card).toContainText(`현재 운영 자금${format(started.cash)}`);
-  for (let i = 1; i <= 4; i++) {
+  // Campaigns settle after four league rounds; the amateur league leaves some rounds without
+  // our match, so count rounds rather than matches.
+  for (let passed = 0; passed < 4;) {
     await playNext(page);
     const world = await exportWorld(page);
-    if (i < 4) {
+    passed = world.round - started.round;
+    if (passed < 4) {
       expect(world.events.filter((event) => event.kind === 'campaign-result')).toHaveLength(0);
       expect(world.campaigns.find((campaign) => campaign.kind === 'outreach')?.remaining).toBe(
-        4 - i,
+        4 - passed,
       );
     } else {
       expect(world.campaigns.find((campaign) => campaign.kind === 'outreach')).toBeUndefined();
@@ -239,7 +244,11 @@ test('keeps ticket drafts out of the save and applies their price to an actual h
   const attendance = Number(gate.detail.match(/관중 (\d+)명/)?.[1]);
   expect(attendance).toBeGreaterThan(0);
   const perFan = gateProjection(settled, match.id).perFan;
-  expect(gate.amount).toBe(quote(clubOf(settled).country, settled.year, attendance * perFan));
+  // League gates are sized for a 46-game season (the 30-game amateur league pays ×46/30).
+  const factor = isLeagueMatch(match.kind) ? leagueMatchFactor(settled) : 1;
+  expect(gate.amount).toBe(
+    quote(clubOf(settled).country, settled.year, attendance * perFan * factor),
+  );
   expect(settled.events.findLast((event) => event.kind === 'match-cost')?.amount).toBe(
     quote(
       clubOf(settled).country,

@@ -1764,8 +1764,9 @@
 .clockButtons {
   flex-shrink: 0;
   display: flex;
-  gap: 4px;
+  gap: 6px;
 }
+/* The play toggle stays a full touch target; the pace chips are styled in ProgressControls. */
 .clockButtons button {
   min-width: 44px;
   min-height: 44px;
@@ -1773,15 +1774,6 @@
   border-radius: 11px;
   font-size: 12px;
   font-weight: 800;
-}
-.clockButtons .selectedPace {
-  color: var(--gold);
-  border-color: var(--gold-edge);
-}
-.clockRunning .clockButtons .selectedPace {
-  color: var(--on-accent);
-  background: var(--gold-fill);
-  box-shadow: 0 3px 0 var(--gold-edge);
 }
 .clockButtons .clockToggle {
   width: 50px;
@@ -1900,7 +1892,7 @@
     font-size: 14px;
   }
   .clockButtons {
-    gap: 3px;
+    gap: 4px;
   }
   .clockButtons button {
     min-width: 44px;
@@ -2246,9 +2238,11 @@
   .clockButtons {
     flex: none;
   }
-  /* The gear also lives in the HUD menu; on a phone the row keeps its room for the date. */
-  .seasonControls .interventionButton {
-    display: none;
+}
+@media (max-width: 359px) {
+  .seasonControls {
+    gap: 4px;
+    padding-left: 8px;
   }
 }
 
@@ -2265,10 +2259,6 @@
 }
 .miniClock .clockButtons {
   flex: none;
-}
-.miniClock .clockButtons button:not(.clockToggle) {
-  flex: none;
-  min-width: 44px;
 }
 @media (max-width: 760px) {
   .mobileNav {
@@ -2325,7 +2315,6 @@
 }
 .segments .selected,
 .seasonTabs button[aria-selected='true'],
-.selectedPace,
 .moreMenu button[aria-current='page'] {
   animation: pop 280ms var(--ease);
 }
@@ -2418,32 +2407,7 @@
   }
 }
 
-/* Intervention level: one gear sets stops and delegation together. */
-.interventionButton {
-  position: relative;
-  flex: 0 0 44px;
-  width: 44px;
-  min-height: 44px;
-  padding: 0;
-  display: grid;
-  place-items: center;
-  font-size: 18px;
-}
-.interventionButton i {
-  position: absolute;
-  right: -3px;
-  bottom: -3px;
-  min-width: 18px;
-  height: 18px;
-  border-radius: 9px;
-  font-size: 11px;
-  font-style: normal;
-  font-weight: 900;
-  line-height: 18px;
-  color: var(--on-accent);
-  background: var(--gold-fill);
-  box-shadow: 0 0 0 2px var(--bg);
-}
+/* Intervention level: one choice sets stops and delegation together (the full sheet). */
 .levels {
   display: grid;
   gap: 8px;
@@ -2505,8 +2469,41 @@
   font-weight: 700;
   color: var(--text-muted);
 }
-@media (max-width: 760px) {
-  .interventionButton {
-    flex: 0 0 44px;
-  }
+
+/* Roster flags: injury, transfer list, retirement. */
+.playerFlags {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-style: normal;
+}
+.playerFlags i {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  color: var(--warm);
+  background: var(--warm-soft);
+}
+/* Asking-price choices of the transfer list sheet. */
+.listingAsks {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+}
+.listingAsks button {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  min-height: 56px;
+  padding: 10px 12px;
+}
+.listingAsks span {
+  font-size: 13px;
+}
+.listingAsks small {
+  font-size: 11px;
+  color: var(--text-muted);
 }

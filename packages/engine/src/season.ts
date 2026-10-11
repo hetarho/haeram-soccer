@@ -1,5 +1,15 @@
 import { advanceEconomy } from './economy';
-import { prepareEurope, advanceEurope, finishEurope as finishContinental } from './europe';
+import {
+  prepareEurope,
+  advanceEurope,
+  finishEurope as finishContinental,
+  europeFinal,
+} from './europe';
+import { advanceCups, cupKey, finishCups, prepareCups } from './cups';
+import { finalOf, ownReached } from './knockout';
+import { clubValuation, eloOf, eloRank, settleElo, squadValue } from './ratings';
+import { evolveClubs } from './dynamics';
+import { announceRetirements, clearHealed, injuriesAfterMatch, retireAtClose } from './careers';
 import {
   delegatedBusiness,
   gate,
@@ -8,10 +18,17 @@ import {
   sponsorReminder,
   yearlyStaff,
 } from './operations';
-import type { Club, Fixture, MatchPlayback, TableRow, World } from '../../contracts/src/types';
+import type {
+  Club,
+  CupRun,
+  Fixture,
+  MatchPlayback,
+  TableRow,
+  World,
+} from '../../contracts/src/types';
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import { addMetrics, clamp, random, zeroMetrics, compareIds } from './primitives';
-import { activePlayers, addEvent, clubOf, makePlayer, quote, rating } from './world';
+import { activePlayers, addEvent, AMATEUR_CLUBS, clubOf, makePlayer, quote, rating } from './world';
 import { simulateMatch } from './match';
 import { fatigueCost } from './strategy';
 import { developAnnually, settleTraining } from './training';
@@ -22,7 +39,7 @@ import { settleWinBonus } from './care';
 import { managerStyleEffects } from './styles';
 import { synergyEffects } from './synergy';
 import { buildEffects } from './build';
-import { seasonStaff } from './staff';
+import { dailyStaff, seasonStaff } from './staff';
 import {
   currentDay,
   ROUND_INTERVAL_DAYS,
@@ -97,7 +114,7 @@ export function prepareSeason(w: World, continental = true) {
             c.representative &&
             c.tier === country(c.country).groups.length,
         )
-        .slice(0, 7),
+        .slice(0, AMATEUR_CLUBS),
     ];
     w.fixtures.push(
       ...fixturesFor(lower, w.year).map((f) => ({
@@ -112,7 +129,10 @@ export function prepareSeason(w: World, continental = true) {
   prepareScorers(w);
   w.rankHistory = (w.rankHistory || []).filter((s) => s.year >= w.year - 9 && s.year < w.year);
   w.cupWinners = {};
-  if (continental) prepareEurope(w);
+  if (continental) {
+    prepareEurope(w);
+    prepareCups(w);
+  }
   snapshotStandings(w);
 }
 export function ranked(w: World, clubs: Club[]) {
@@ -167,6 +187,7 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
   const m = playback.record;
   const own = m.home === w.playerClub || m.away === w.playerClub;
   if (own && w.ownMatches.some((existing) => existing.id === m.id)) return;
+  settleElo(w, m);
   if (league) {
     settleTable(w.tables[m.home], m.score.home, m.score.away);
     settleTable(w.tables[m.away], m.score.away, m.score.home);
@@ -197,6 +218,7 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     );
     moraleAfterMatch(w, saved);
     settleWinBonus(w, saved);
+    injuriesAfterMatch(w, saved);
   }
 }
 export function resolveTie(w: World, f: Fixture) {
@@ -237,7 +259,7 @@ function tournament(w: World, clubs: Club[], key: string) {
         id: `${w.year}:${key}:${stage}:${i}`,
         year: w.year,
         round: 46 + stage,
-        kind: key.startsWith('cup') ? 'cup' : 'playoff',
+        kind: 'playoff',
         home: list[i].id,
         away: list[i + 1].id,
         country: list[i].country,
@@ -250,12 +272,6 @@ function tournament(w: World, clubs: Club[], key: string) {
     stage++;
   }
   return list[0];
-}
-export function finishDomesticCups(w: World) {
-  for (const c of COUNTRIES) {
-    const cs = w.clubs.filter((cl) => cl.country === c.code && !cl.representative);
-    w.cupWinners[c.code] = tournament(w, cs, `cup:${c.code}`).id;
-  }
 }
 export function promote(w: World) {
   const transfers: { club: Club; tier: number }[] = [];
@@ -347,7 +363,7 @@ export function promote(w: World) {
             w,
             'relegation',
             '다시 시작하는 계절',
-            '간소화된 하부 구간에서 프로 복귀에 도전합니다.',
+            '아마추어 리그에서 프로 복귀에 도전합니다.',
           );
         }
       }
@@ -364,10 +380,52 @@ export function promote(w: World) {
     }
   }
 }
+/** How far the own club went in this season's cups (→HIST-12). */
+function cupRuns(w: World): CupRun[] {
+  const own = clubOf(w),
+    runs: CupRun[] = [];
+  const cup = w.cups?.find((c) => c.country === own.country);
+  const domestic = cup && ownReached(w, cup.rounds);
+  if (cup && domestic)
+    runs.push({
+      key: 'cup',
+      name: cup.name,
+      reached: domestic.label,
+      ...(domestic.champion ? { champion: true } : {}),
+    });
+  for (const t of w.europe) {
+    if (t.key === 'super' || !t.clubs.includes(w.playerClub)) continue;
+    const rounds = t.rounds || [];
+    const knockout = ownReached(
+      w,
+      rounds.filter((r) => !r.label.startsWith('예선')),
+    );
+    const played = (marker: string) =>
+      t.fixtures.some(
+        (f) => f.id.includes(marker) && (f.home === w.playerClub || f.away === w.playerClub),
+      );
+    const reached =
+      knockout?.label ??
+      (played(':second:')
+        ? '2차 조별 리그'
+        : played(':phase:')
+          ? t.format === 'league'
+            ? '리그 페이즈'
+            : '조별 리그'
+          : (ownReached(w, rounds)?.label ?? '예선'));
+    runs.push({
+      key: t.key,
+      name: t.name,
+      reached,
+      ...(t.winner === w.playerClub ? { champion: true } : {}),
+    });
+  }
+  return runs;
+}
 export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   if (w.round < 46 || w.fixtures.some((f) => !f.score))
     throw new Error('아직 정규 시즌이 끝나지 않았습니다.');
-  finishDomesticCups(w);
+  finishCups(w);
   (finishEurope || finishContinental)(w);
   const wasLower = w.lower;
   const own = clubOf(w),
@@ -383,14 +441,20 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
         : w.clubs.filter((c) => groupKey(c) === groupKey(own) && !c.representative),
     );
   settleSeasonPrize(w, order.findIndex((c) => c.id === own.id) + 1, order.length);
-  const champions = COUNTRIES.map((c) => ({
-    country: c.code,
-    club: ranked(
-      w,
-      w.clubs.filter((cl) => cl.country === c.code && cl.tier === 0 && !cl.representative),
-    )[0].id,
-    cup: w.cupWinners[c.code],
-  }));
+  const champions = COUNTRIES.map((c) => {
+    const cup = w.cups?.find((entry) => entry.country === c.code);
+    const cupFinal = cup && finalOf(w, cupKey(c.code), cup.rounds, cup.fixtures);
+    return {
+      country: c.code,
+      club: ranked(
+        w,
+        w.clubs.filter((cl) => cl.country === c.code && cl.tier === 0 && !cl.representative),
+      )[0].id,
+      cup: w.cupWinners[c.code],
+      ...(cupFinal ? { cupFinal } : {}),
+    };
+  });
+  const valuation = clubValuation(w);
   w.history.push({
     year: w.year,
     tier: oldTier,
@@ -422,16 +486,27 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     champions,
     europe: w.europe
       .filter((t) => t.winner)
-      .map((t) => ({
-        kind: t.key,
-        name: t.name,
-        winner: t.winner!,
-        field: t.field,
-        standings: t.firstStandings,
-        secondStandings: t.secondStandings,
-      })),
+      .map((t) => {
+        const final = europeFinal(w, t);
+        return {
+          kind: t.key,
+          name: t.name,
+          winner: t.winner!,
+          field: t.field,
+          standings: t.firstStandings,
+          secondStandings: t.secondStandings,
+          ...(final ? { final } : {}),
+        };
+      }),
+    elo: Math.round(eloOf(own)),
+    eloRank: eloRank(w),
+    squadValue: squadValue(w),
+    clubValue: valuation.total,
+    runs: cupRuns(w),
   });
-  w.lastChampions = champions;
+  w.lastChampions = champions.map(({ country, club, cup }) => ({ country, club, cup }));
+  retireAtClose(w);
+  const tiers = new Map(w.clubs.map((c) => [c.id, c.tier]));
   promote(w);
   const last = country(own.country).groups.length - 1;
   if (wasLower) {
@@ -440,8 +515,9 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     );
     const lowerOrder = ranked(w, lowerClubs);
     let winner = lowerOrder[0];
-    if (winner.id !== own.id && lowerOrder.slice(1, 4).some((c) => c.id === own.id))
-      winner = tournament(w, lowerOrder.slice(1, 4), 'lower-promotion');
+    // The champions go up; second to fifth play off for the place when the own club is among them.
+    if (winner.id !== own.id && lowerOrder.slice(1, 5).some((c) => c.id === own.id))
+      winner = tournament(w, lowerOrder.slice(1, 5), 'lower-promotion');
     if (winner.id === own.id) {
       const replacement = ranked(
         w,
@@ -452,9 +528,16 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
       w.lower = false;
       own.tier = last;
       own.group = replacement.group;
-      addEvent(w, 'promotion', '프로 무대로 복귀', `${own.name} · ${last + 1}부`);
+      const returning = w.history.some((h) => h.tier <= last);
+      addEvent(
+        w,
+        'promotion',
+        returning ? '프로 무대로 복귀' : '프로 무대 입성',
+        `${own.name} · ${last + 1}부`,
+      );
     }
   }
+  evolveClubs(w, tiers);
   if (own.tier !== oldTier)
     addEvent(
       w,
@@ -476,15 +559,9 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   w.income = '0';
   w.expense = '0';
   for (const p of activePlayers(w)) {
-    const age = w.year - p.born;
-    if (age >= 36 || (p.loanUntil && p.loanUntil <= w.year)) {
+    if (p.loanUntil && p.loanUntil <= w.year) {
       p.status = 'retired';
-      addEvent(
-        w,
-        'retirement',
-        `${p.name}의 다음 장`,
-        age >= 36 ? '선수 생활을 마무리했습니다.' : '임대 기간이 끝났습니다.',
-      );
+      addEvent(w, 'retirement', `${p.name}의 다음 장`, '임대 기간이 끝났습니다.');
       continue;
     }
     developAnnually(w, p);
@@ -516,7 +593,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
         w.seed,
         `${own.id}:youth:${w.year}:${i++}`,
         w.year,
-        Math.max(35, rating(w, own) - 5),
+        Math.max(20, rating(w, own) - 5),
         role,
         18,
       ),
@@ -559,15 +636,12 @@ export function advanceRound(
     }
   }
   settleTraining(w);
-  advanceEurope(
-    w,
-    (world, p) => {
-      ownPlayback = p;
-      settlement?.(world, p);
-    },
-    undefined,
-    observe,
-  );
+  const capture = (world: World, p: MatchPlayback) => {
+    ownPlayback = p;
+    settlement?.(world, p);
+  };
+  advanceEurope(w, capture, undefined, observe);
+  advanceCups(w, capture, undefined, observe);
   settleRound(w);
   snapshotStandings(w);
   snapshotScorers(w);
@@ -575,11 +649,17 @@ export function advanceRound(
   return ownPlayback;
 }
 
-/** Daily club business outside matches: academy intake, the transfer market and sponsors. */
+/**
+ * Daily club business outside matches: academy intake, the transfer market, sponsors, the staff,
+ * spring retirement announcements and healed injuries.
+ */
 export function clubDay(w: World) {
   runAcademyIntake(w);
   dailyMarket(w);
   delegatedBusiness(w);
+  dailyStaff(w);
+  announceRetirements(w);
+  clearHealed(w);
 }
 /** Off days only move the clock. Matches and existing weekly costs settle on their due day. */
 export function advanceDays(
@@ -611,6 +691,7 @@ export function advanceDays(
       clubDay(w);
     } else {
       advanceEurope(w, capture, w.calendar.day, observe);
+      advanceCups(w, capture, w.calendar.day, observe);
       clubDay(w);
       w.revision++;
     }

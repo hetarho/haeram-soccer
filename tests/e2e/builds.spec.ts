@@ -93,7 +93,7 @@ test('discloses roster and opponent tactical fit before an actual seeded match',
   await dialog.getByRole('button', { name: '감독에게 전술 요청', exact: true }).click();
   await expect(dialog.getByRole('status')).toContainText('역습 요청 ·');
   const applied = await tactics.locator('[class*="sectionHead"] b').innerText();
-  await expect(page.getByTestId('calendar')).toHaveText(/1901\/02 · 라운드 0$/);
+  await expect(page.getByTestId('calendar')).toHaveText(/1950\/51 · 라운드 0$/);
   await dialog.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
   await expect(dialog).toHaveCount(0);
 

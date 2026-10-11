@@ -29,6 +29,8 @@ export const STOP_LABELS: Record<InboxKind, string> = {
   'incoming-bid': '우리 선수 영입 제안',
   'youth-intake': '유소년 입단',
   'staff-report': '스태프 보고',
+  'staff-renewal': '코치 재계약·공석',
+  cup: '컵 대진 발표',
   finance: '자금·후원 경고',
 };
 const WATCH_REASON = '관전 중에는 자동 진행을 잠시 멈춰요.';
@@ -41,6 +43,8 @@ const DEFAULT_STOP_ON: StopOn = {
   'incoming-bid': true,
   'youth-intake': true,
   'staff-report': false,
+  'staff-renewal': true,
+  cup: false,
   finance: true,
 };
 const STOP_KEY = 'haeram-soccor:stop-on';

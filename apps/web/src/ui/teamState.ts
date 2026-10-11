@@ -1,6 +1,12 @@
 import type { CareKind, Command, World } from '../../../../packages/contracts/src/types';
 import { lineupPreset, lineupSummary } from '../../../../packages/engine/src/strategy';
-import { activePlayers, clubOf, quote, startingSquad } from '../../../../packages/engine/src/world';
+import {
+  activePlayers,
+  clubOf,
+  isInjured,
+  quote,
+  startingSquad,
+} from '../../../../packages/engine/src/world';
 import { activeTrainingFocus } from '../../../../packages/engine/src/training';
 import { MORALE_LABEL, moraleOf, moraleState } from '../../../../packages/engine/src/morale';
 import { POLICY_INFO, policyOf } from '../../../../packages/engine/src/policy';
@@ -298,6 +304,8 @@ export function teamStates(w: World): TeamStateItem[] {
   const trust = Math.round(w.manager.trust),
     interim = w.manager.interim;
   const squad = activePlayers(w).length;
+  const injured = activePlayers(w).filter((p) => isInjured(w, p)).length;
+  const fit = squad - injured;
   return [
     {
       key: 'fatigue',
@@ -374,12 +382,12 @@ export function teamStates(w: World): TeamStateItem[] {
       key: 'squad',
       label: '선수단',
       value: `${squad}/26`,
-      status: squad < 16 ? '부족' : squad >= 26 ? '가득' : '여유',
-      tone: squad < 15 ? 'bad' : squad < 16 ? 'warn' : 'good',
+      status: injured ? `부상 ${injured}` : squad < 16 ? '부족' : squad >= 26 ? '가득' : '여유',
+      tone: fit < 14 || squad < 15 ? 'bad' : squad < 16 || injured >= 3 ? 'warn' : 'good',
       advice:
-        squad < 16
+        squad < 16 || fit < 14
           ? {
-              text: `선수 ${squad}명 · 부상이나 피로가 겹치면 선발을 채우기 어려워요.`,
+              text: `선수 ${squad}명${injured ? ` · 부상 ${injured}명` : ''} · 부상이나 피로가 겹치면 선발을 채우기 어려워요.`,
               actions: quick(w, 'squad'),
             }
           : undefined,

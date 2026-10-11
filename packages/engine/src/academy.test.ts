@@ -22,6 +22,7 @@ import {
   seasonAcademy,
   settleTraining,
   simulateSeason,
+  FOUNDING_YEAR,
 } from './index';
 
 function world(seed = 'youth-academy') {
@@ -138,7 +139,7 @@ describe('youth academy intake', () => {
     const intakes = w.events.filter(
       (event) => event.kind === 'youth-intake' && event.title.includes('입단'),
     );
-    expect(intakes.map((event) => event.year)).toEqual([1901, 1902]);
+    expect(intakes.map((event) => event.year)).toEqual([FOUNDING_YEAR, FOUNDING_YEAR + 1]);
     expect(
       academyPlayers(w).every((player) => player.id.startsWith(`${w.playerClub}:academy:`)),
     ).toBe(true);
@@ -197,8 +198,9 @@ describe('academy development', () => {
 
 describe('promotion and release', () => {
   it('promotes into the first team with a small wage and a three-year contract', () => {
+    // An amateur squad earns the minimum wage, so the prospect is a little weaker than it.
     const w = world(),
-      player = prospect(w, 'MID', 17, 40),
+      player = prospect(w, 'MID', 17, 34),
       squad = activePlayers(w).length;
     operate(w, { type: 'promote-youth', id: player.id });
     expect(academyPlayers(w)).toHaveLength(0);
@@ -343,7 +345,9 @@ describe('season boundary', () => {
     expect(first.length).toBe(3);
     w.delegation = { ...w.delegation, academy: true };
     simulateSeason(w);
-    expect(academyPlayers(w).some((player) => player.id.includes(':academy:1902:'))).toBe(true);
+    expect(
+      academyPlayers(w).some((player) => player.id.includes(`:academy:${FOUNDING_YEAR + 1}:`)),
+    ).toBe(true);
     expect(academyPlayers(w).every((player) => w.year - player.born < 22)).toBe(true);
     validateWorld(w);
   });

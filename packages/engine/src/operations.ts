@@ -1,11 +1,4 @@
-import type {
-  World,
-  Command,
-  MatchRecord,
-  Player,
-  Sponsor,
-  Tactic,
-} from '../../contracts/src/types';
+import type { World, Command, MatchRecord, Sponsor, Tactic } from '../../contracts/src/types';
 import {
   activePlayers,
   addEvent,
@@ -30,9 +23,17 @@ import {
 } from './finance';
 import { setLineup } from './strategy';
 import { setTrainingFocus } from './training';
-import { hireStaff, MANAGER_TRAIT_INFO, managerTrait, releaseStaff, staffEffects } from './staff';
+import {
+  hireStaff,
+  MANAGER_TRAIT_INFO,
+  managerTrait,
+  releaseStaff,
+  renewStaff,
+  setCoaching,
+  staffEffects,
+} from './staff';
 import { promoteYouth, releaseYouth } from './academy';
-import { assertTransferWindow, moneyLabel, placeBid, respondBid } from './transfers';
+import { assertTransferWindow, listPlayer, moneyLabel, placeBid, respondBid } from './transfers';
 import { pushInbox, readInbox } from './inbox';
 import { careOffer, outcomeText, resolveCare } from './care';
 import { marketingFanGain, policyEffects, policyOf, setPolicy } from './policy';
@@ -128,14 +129,6 @@ export function gate(w: World, m: MatchRecord) {
   );
   debit(w, cost, true);
   addEvent(w, 'match-cost', '홈 경기 개최비', `관중 ${attendance}명 · ${m.id}`, cost);
-}
-/** A direct sale earns the ability above replacement level, scaled by the club build. */
-export function saleFee(w: World, p: Player) {
-  return quote(
-    clubOf(w).country,
-    w.year,
-    Math.max(10, (overall(p) - 25) * 5) * buildEffects(w).saleFee,
-  );
 }
 export function sponsorAnnual(w: World) {
   if (!w.sponsor) return '0';
@@ -359,8 +352,8 @@ export function transferOffers(w: World, year = w.year) {
       scouting.scoutPotential +
       build.marketPotential +
       synergy.marketPotential;
-    if (potentialBonus)
-      p.potential = Math.max(overall(p), Math.min(99, p.potential + potentialBonus));
+    // A ceiling is never below what the player already shows.
+    p.potential = Math.max(overall(p), Math.min(99, p.potential + potentialBonus));
     return {
       player: p,
       fee: quote(
@@ -495,6 +488,14 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       break;
     case 'release-staff':
       releaseStaff(w, cmd.role);
+      // Releasing a coach takes hiring back, so delegated staff do not refill the post at once.
+      if (w.delegation?.staff) w.delegation = { ...w.delegation, staff: false };
+      break;
+    case 'renew-staff':
+      renewStaff(w, cmd.role);
+      break;
+    case 'coaching':
+      setCoaching(w, cmd.level);
       break;
     case 'promote-youth':
       promoteYouth(w, cmd.id);
@@ -651,27 +652,9 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       );
       break;
     }
-    case 'sell': {
-      const p = w.players.find((p) => p.id === cmd.id && p.status === 'active');
-      if (!p || p.loanUntil) throw new Error('매각 가능한 선수가 아닙니다.');
-      assertTransferWindow(w);
-      if (
-        activePlayers(w).length <= 14 ||
-        (p.role === 'GK' && activePlayers(w).filter((p) => p.role === 'GK').length <= 1)
-      )
-        throw new Error('최소 선수단과 골키퍼를 유지해야 합니다.');
-      const fee = saleFee(w, p);
-      p.status = 'sold';
-      credit(w, fee);
-      addEvent(
-        w,
-        'transfer-out',
-        `${p.name}의 새로운 도전`,
-        '매각 · 개인 경력 기록은 보존됩니다.',
-        fee,
-      );
+    case 'list-player':
+      listPlayer(w, cmd.id, cmd.ask);
       break;
-    }
     case 'campaign': {
       const o = campaignOffers(w).find((c) => c.kind === cmd.kind);
       if (!o || w.campaigns.some((c) => c.kind === cmd.kind))

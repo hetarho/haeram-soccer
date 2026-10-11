@@ -12,6 +12,7 @@ import {
   simulateMatch,
   ticketInvestmentPreview,
 } from './index';
+import { professionalStart } from './testing';
 
 function world() {
   const w = createWorld({
@@ -137,7 +138,7 @@ describe('shared club investment forecasts', () => {
   );
 
   it('reveals lower demand and possible gate losses without applying a draft', () => {
-    const w = world(),
+    const w = professionalStart(world()),
       before = canonical(w),
       cheap = ticketInvestmentPreview(w, 0.01),
       expensive = ticketInvestmentPreview(w, 0.5);

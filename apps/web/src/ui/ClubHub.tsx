@@ -3,7 +3,7 @@ import type { World } from '../../../../packages/contracts/src/types';
 import { clubOf, rating, tacticLabel } from '../../../../packages/engine/src/world';
 import { nextOwnFixture, daysUntilNextMatch } from '../../../../packages/engine/src/calendar';
 import { orderIds, ownLeagueIds } from './league';
-import { kindLabel, number } from './format';
+import { competitionLabel, number } from './format';
 import { cashState, teamStates, urgentState, type StateKey } from './teamState';
 import { RemedySheet, useRemedyRunner } from './RemedySheet';
 import { NewsHeadlines } from './NewsFeed';
@@ -311,7 +311,7 @@ export function ClubHub({
               </span>
               <small>/{ids.length}위</small>
             </b>
-            <small>{w.lower ? '프로 복귀 도전' : `${club.tier + 1}부`}</small>
+            <small>{w.lower ? '아마추어 리그' : `${club.tier + 1}부`}</small>
           </div>
           <div>
             <span>팀 전력</span>
@@ -370,7 +370,7 @@ export function ClubHub({
           <small>
             NEXT MATCH
             {next &&
-              ` · ${next.home === w.playerClub ? '홈' : '원정'} · ${kindLabel[next.kind] || next.kind}`}
+              ` · ${next.home === w.playerClub ? '홈' : '원정'} · ${competitionLabel(w, next)}`}
           </small>
           <h3>
             {opponent && <ClubCrest w={w} id={opponent.id} size={22} />}

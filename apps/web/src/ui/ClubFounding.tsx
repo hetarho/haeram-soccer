@@ -1,3 +1,4 @@
+import { FOUNDING_YEAR } from '../../../../packages/engine/src/world';
 import { Select } from './Select';
 import { useState, type FormEvent } from 'react';
 import type { CountryCode } from '../../../../packages/contracts/src/types';
@@ -122,7 +123,7 @@ export function ClubFounding({
         </details>
         <div className={s.origin}>
           <span>
-            {country(code).name} · {country(code).groups.length}부 · 1901년
+            {country(code).name} 아마추어 리그 · {FOUNDING_YEAR}년 창단
           </span>
           <small>계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요.</small>
         </div>

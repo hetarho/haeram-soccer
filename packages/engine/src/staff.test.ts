@@ -290,7 +290,7 @@ describe('coaching staff', () => {
     expect(w.staff!.every((member) => member.until === w.year + 1)).toBe(true);
     expect(w.events.at(-1)!.kind).toBe('staff-leave');
     expect(w.inbox!.at(-1)).toMatchObject({
-      kind: 'staff-report',
+      kind: 'staff-renewal',
       attention: true,
       ref: keeperCoach.id,
     });

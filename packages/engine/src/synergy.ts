@@ -1,5 +1,5 @@
 import type { Player, World } from '../../contracts/src/types';
-import { activePlayers, selectedLineup } from './world';
+import { ownStarters } from './world';
 import { policyOf } from './policy';
 import { staffMember } from './staff';
 import { buildOf } from './build';
@@ -229,7 +229,7 @@ const RULES: readonly SynergyRule[] = [
 ];
 
 export function synergyStates(w: World): SynergyState[] {
-  const starters = selectedLineup(activePlayers(w), w.lineup, w.manager, w.year);
+  const starters = ownStarters(w);
   return RULES.map((rule) => {
     const conditions = rule.conditions(w, starters);
     return {

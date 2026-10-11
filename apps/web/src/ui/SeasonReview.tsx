@@ -12,7 +12,7 @@ import s from './SeasonReview.module.css';
 import { Term } from './Glossary';
 
 function divisionName(w: World, tier: number) {
-  return tier >= country(clubOf(w).country).groups.length ? '하부 구간' : `${tier + 1}부`;
+  return tier >= country(clubOf(w).country).groups.length ? '아마추어 리그' : `${tier + 1}부`;
 }
 const signed = (value: number, digits = 0) => {
   const text = digits ? Math.abs(value).toFixed(digits) : number(Math.abs(value));
@@ -497,6 +497,25 @@ export function SeasonReview({
         </>
       )}
 
+      {!!season.runs?.length && (
+        <section className={s.next} aria-label="컵 대회 성적">
+          <h3>컵 대회</h3>
+          <ul>
+            {season.runs.map((run) => (
+              <li key={run.key}>
+                {run.name} · {run.champion ? '우승' : run.reached}
+              </li>
+            ))}
+            {season.elo !== undefined && (
+              <li>
+                클럽 Elo {season.elo}
+                {season.eloRank ? ` · 전체 ${season.eloRank}위` : ''}
+              </li>
+            )}
+          </ul>
+        </section>
+      )}
+
       <section className={s.money} aria-label="시즌 재정">
         <div>
           <span>수입</span>
@@ -522,7 +541,7 @@ export function SeasonReview({
 
       <section className={s.next} aria-label="다음 시즌">
         <h3>
-          {seasonName(w.year)} · {w.lower ? '프로 복귀 도전' : to}
+          {seasonName(w.year)} · {w.lower ? '아마추어 리그' : to}
         </h3>
         <ul>
           <li>자금 {money(w.cash, club.country, w.year)}</li>

@@ -10,7 +10,8 @@ import {
   addEvent,
   clubNews,
 } from '../../../../packages/engine/src/index';
-import { prepareSeason } from '../../../../packages/engine/src/season';
+import { FOUNDING_YEAR } from '../../../../packages/engine/src/world';
+import { professionalStart } from '../../../../packages/engine/src/testing';
 const input = {
   country: 'ENG' as const,
   name: 'Worker Athletic',
@@ -148,6 +149,7 @@ describe('worker command protocol', () => {
   it('projects the complete own league schedule and round results without unrelated leagues', async () => {
     const h = new Host();
     await h.handle(req('create', -1, { type: 'found', input }));
+    professionalStart(h.world!);
     const result = await h.handle(
       req('round', 0, { type: 'command', command: { type: 'advance', rounds: 1 } }),
     );
@@ -169,20 +171,17 @@ describe('worker command protocol', () => {
     expect(next.score).toBeUndefined();
     expect(next.round).toBe(2);
   });
-  it('projects every lower-league opponent fixture after relegation', async () => {
+  it('projects every amateur-league opponent fixture for a new club', async () => {
     const h = new Host();
     await h.handle(req('create', -1, { type: 'found', input }));
-    h.world!.lower = true;
-    h.world!.clubs.find((c) => c.id === h.world!.playerClub)!.tier = 4;
-    prepareSeason(h.world!);
     const result = await h.handle(
       req('round', 0, { type: 'command', command: { type: 'advance', rounds: 1 } }),
     );
     const view = result.view!.world;
-    expect(view.fixtures).toHaveLength(8 * 7);
+    expect(view.fixtures).toHaveLength(16 * 15);
     expect(view.fixtures.every((f) => f.kind === 'lower')).toBe(true);
-    expect(view.fixtures.filter((f) => f.round === 1 && f.score)).toHaveLength(4);
-    expect(nextOwnFixture(view)?.round).toBe(4);
+    expect(view.fixtures.filter((f) => f.round === 1 && f.score)).toHaveLength(8);
+    expect(nextOwnFixture(view)?.round).toBe(2);
   });
   it('simulates a fast season without sending empty observation playback', async () => {
     const h = new Host();
@@ -193,9 +192,11 @@ describe('worker command protocol', () => {
     );
     expect(result.ok).toBe(true);
     expect(result.playback).toBeUndefined();
-    expect(result.view?.world.year).toBe(1902);
+    expect(result.view?.world.year).toBe(FOUNDING_YEAR + 1);
     expect(result.view?.world.history).toHaveLength(1);
-    expect(h.world!.ownMatches.some((m) => m.year === 1901 && m.players.length > 0)).toBe(true);
+    expect(h.world!.ownMatches.some((m) => m.year === FOUNDING_YEAR && m.players.length > 0)).toBe(
+      true,
+    );
   });
 });
 

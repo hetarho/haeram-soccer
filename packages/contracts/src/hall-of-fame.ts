@@ -5,7 +5,7 @@ export interface HallEntry {
   engine: string;
   catalog: string;
   country: string;
-  foundingYear: 1901;
+  foundingYear: 1950;
   capitalCategory: 0.5 | 1 | 2;
   seasons: number;
   score: number;

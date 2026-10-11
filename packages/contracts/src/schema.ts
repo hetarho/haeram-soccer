@@ -34,6 +34,7 @@ const club = z.object({
   fans: z.number().int().nonnegative(),
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
   representative: z.boolean().optional(),
+  elo: z.number().finite().min(0).max(4000).optional(),
 });
 const player = z.object({
   id,
@@ -55,6 +56,15 @@ const player = z.object({
   career: metrics,
   season: metrics,
   loanUntil: z.number().int().optional(),
+  injury: z
+    .strictObject({
+      year: z.number().int(),
+      day: z.number().int().min(0).max(800),
+      label: text,
+    })
+    .optional(),
+  listed: z.union([z.literal(90), z.literal(110), z.literal(140)]).optional(),
+  retiring: z.number().int().optional(),
 });
 const manager = z.object({
   id,
@@ -202,7 +212,14 @@ const event = z.object({
   amount: money.optional(),
   currency: text.optional(),
 });
-const champions = z.array(z.object({ country: text, club: id, cup: id })).max(60);
+const cupFinal = z.strictObject({
+  runnerUp: id,
+  score: z.tuple([z.number().int().min(0).max(99), z.number().int().min(0).max(99)]),
+  decided: z.literal('pens').optional(),
+});
+const champions = z
+  .array(z.object({ country: text, club: id, cup: id, cupFinal: cupFinal.optional() }))
+  .max(60);
 const archive = z.object({
   year: number,
   tier: number,
@@ -234,9 +251,49 @@ const archive = z.object({
         field: number,
         standings: z.array(z.array(number).length(6)).max(100).optional(),
         secondStandings: z.array(z.array(number).length(6)).max(100).optional(),
+        final: cupFinal.optional(),
       }),
     )
     .max(10),
+  elo: z.number().finite().min(0).max(4000).optional(),
+  eloRank: z.number().int().min(1).max(5000).optional(),
+  squadValue: money.optional(),
+  clubValue: money.optional(),
+  runs: z
+    .array(
+      z.strictObject({
+        key: text,
+        name: text,
+        reached: text,
+        champion: z.boolean().optional(),
+      }),
+    )
+    .max(10)
+    .optional(),
+});
+const knockoutRound = z.strictObject({
+  label: text,
+  round: z.number().int().min(0).max(100),
+  legs: z.union([z.literal(1), z.literal(2)]),
+  ties: z
+    .array(
+      z.strictObject({
+        home: id,
+        away: id,
+        winner: id.optional(),
+        decided: z.enum(['away', 'pens']).optional(),
+      }),
+    )
+    .max(128),
+  byes: z.array(id).max(128).optional(),
+});
+const domesticCup = z.strictObject({
+  country: text,
+  name: text,
+  clubs: z.array(id).max(256),
+  rounds: z.array(knockoutRound).max(12),
+  fixtures: z.array(fixture).max(600),
+  winner: id.optional(),
 });
 const tournament = z.object({
   key: text,
@@ -252,6 +309,7 @@ const tournament = z.object({
   ownExit: text.optional(),
   firstStandings: z.array(z.array(number).length(6)).max(100).optional(),
   secondStandings: z.array(z.array(number).length(6)).max(100).optional(),
+  rounds: z.array(knockoutRound).max(12).optional(),
 });
 const staffRole = z.enum([
   'assistant',
@@ -297,6 +355,8 @@ const inboxItem = z.strictObject({
     'incoming-bid',
     'youth-intake',
     'staff-report',
+    'staff-renewal',
+    'cup',
     'finance',
   ]),
   title: text,
@@ -346,8 +406,10 @@ export const worldSchema: z.ZodType<World> = z.object({
       academy: z.boolean().optional(),
       transfers: z.boolean().optional(),
       business: z.boolean().optional(),
+      staff: z.boolean().optional(),
     })
     .optional(),
+  coaching: z.union([z.literal(1), z.literal(2), z.literal(3)]).optional(),
   bids: z.array(bid).max(200).optional(),
   morale: z.number().finite().min(0).max(100).optional(),
   build: clubBuildSchema.optional(),
@@ -395,6 +457,7 @@ export const worldSchema: z.ZodType<World> = z.object({
     })
     .optional(),
   cupWinners: z.record(id, id),
+  cups: z.array(domesticCup).max(10).optional(),
   europe: z.array(tournament).max(10),
   lastChampions: champions,
   lower: z.boolean(),

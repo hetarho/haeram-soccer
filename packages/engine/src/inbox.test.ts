@@ -9,6 +9,7 @@ import {
   pushInbox,
   readInbox,
   unreadAttention,
+  FOUNDING_YEAR,
 } from './index';
 
 function world() {
@@ -32,7 +33,7 @@ describe('owner inbox', () => {
       second = note(a, false);
     note(b, true);
     note(b, false);
-    expect(first).toMatchObject({ year: 1901, day: 5, attention: true });
+    expect(first).toMatchObject({ year: FOUNDING_YEAR, day: 5, attention: true });
     expect(first.read).toBeUndefined();
     expect(first.id).not.toBe(second.id);
     expect(a.inbox!.map((item) => item.id)).toEqual(b.inbox!.map((item) => item.id));

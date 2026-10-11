@@ -24,7 +24,11 @@ export type ManagerStyle =
   | 'developer'
   | 'firefighter'
   | 'headcoach';
-export type DelegationKey = 'training' | 'academy' | 'transfers' | 'business';
+export type DelegationKey = 'training' | 'academy' | 'transfers' | 'business' | 'staff';
+/** Coaching investment (→STAFF-15): 1 volunteers only, 2 mid-market coaches, 3 the best available. */
+export type CoachingLevel = 1 | 2 | 3;
+/** Asking price for a listed player as a percentage of his value (→CLUB-22). */
+export type ListingAsk = 90 | 110 | 140;
 /** Owner requests to the manager and staff (→CLUB-20). */
 export type CareKind =
   | 'rest-day'
@@ -44,6 +48,8 @@ export type InboxKind =
   | 'incoming-bid'
   | 'youth-intake'
   | 'staff-report'
+  | 'staff-renewal'
+  | 'cup'
   | 'finance';
 export type Metrics = number[];
 export interface Club {
@@ -58,6 +64,8 @@ export interface Club {
   fans: number;
   color: string;
   representative?: boolean;
+  /** Club Elo from every settled result (→HIST-12); absent in older saves, derived from strength. */
+  elo?: number;
 }
 export interface Player {
   id: string;
@@ -80,6 +88,12 @@ export interface Player {
   career: Metrics;
   season: Metrics;
   loanUntil?: number;
+  /** Out injured until this season day (→CLUB-23); `year` is the season it happened in. */
+  injury?: { year: number; day: number; label: string };
+  /** On the transfer list at this asking percentage of value (→CLUB-22). */
+  listed?: ListingAsk;
+  /** Season year whose close ends the career he has announced he will finish (→CLUB-3). */
+  retiring?: number;
 }
 export interface Manager {
   id: string;
@@ -277,8 +291,11 @@ export interface MatchFrame {
   events?: MatchEvent[];
   /** Cumulative expected goals after this minute, home then away (observed matches only). */
   xg?: [number, number];
-  /** Ball position every motion integration step of this minute (observed matches only). */
-  ballTrack?: [number, number][];
+  /**
+   * The ball every motion integration step of this minute as ground x, ground y and height above
+   * the pitch (observed matches only; never stored).
+   */
+  ballTrack?: [number, number, number][];
 }
 export interface MatchPlayback {
   record: MatchRecord;
@@ -333,7 +350,7 @@ export interface SeasonArchive {
   manager: string;
   metrics: Metrics;
   standings: number[][];
-  champions: { country: string; club: string; cup: string }[];
+  champions: { country: string; club: string; cup: string; cupFinal?: CupFinal }[];
   europe: {
     kind: string;
     name: string;
@@ -341,7 +358,62 @@ export interface SeasonArchive {
     field: number;
     standings?: number[][];
     secondStandings?: number[][];
+    final?: CupFinal;
   }[];
+  /** Club Elo at the season's close (→HIST-12). */
+  elo?: number;
+  /** Rank of that Elo among every club of the world. */
+  eloRank?: number;
+  /** Sum of the market values of the season-end squad. */
+  squadValue?: string;
+  /** Club valuation at the season's close (→HIST-12). */
+  clubValue?: string;
+  /** How far the own club went in each cup this season. */
+  runs?: CupRun[];
+}
+/** The final of a cup: the beaten finalist, the score (winner first) and how a level final ended. */
+export interface CupFinal {
+  runnerUp: string;
+  score: [number, number];
+  decided?: 'pens';
+}
+export interface CupRun {
+  /** `cup` for the domestic cup, otherwise the continental competition key. */
+  key: string;
+  name: string;
+  /** Media name of the last round reached (결승, 4강, 리그 페이즈 …). */
+  reached: string;
+  champion?: boolean;
+}
+/** One tie of a knockout round: a single match, or two legs on aggregate. */
+export interface KnockoutTie {
+  /** Home side of the (first) leg. */
+  home: string;
+  away: string;
+  /** Present once the last leg is played. */
+  winner?: string;
+  /** How a level tie went through: away goals or penalties after extra time. */
+  decided?: 'away' | 'pens';
+}
+export interface KnockoutRound {
+  /** Media name: 결승, 4강, 8강, 16강 …, 플레이오프, 1라운드. */
+  label: string;
+  /** League round of the (first) leg; a second leg follows a round later. */
+  round: number;
+  legs: 1 | 2;
+  ties: KnockoutTie[];
+  /** Seeded clubs that enter at the next round. */
+  byes?: string[];
+}
+/** A country's single-elimination cup, played between league rounds (→LEAGUE-5). */
+export interface DomesticCup {
+  country: string;
+  name: string;
+  /** Entrants in seeding order: higher divisions first. */
+  clubs: string[];
+  rounds: KnockoutRound[];
+  fixtures: Fixture[];
+  winner?: string;
 }
 export interface EuropeTournament {
   key: string;
@@ -357,6 +429,8 @@ export interface EuropeTournament {
   ownExit?: string;
   firstStandings?: number[][];
   secondStandings?: number[][];
+  /** Knockout rounds drawn so far (→EURO-10). */
+  rounds?: KnockoutRound[];
 }
 export interface World {
   schema: 1;
@@ -391,6 +465,8 @@ export interface World {
   academy?: Academy;
   /** Decisions the staff makes on the owner's behalf; absent keys mean the owner decides. */
   delegation?: Partial<Record<DelegationKey, boolean>>;
+  /** Coaching investment the staff hire to (→STAFF-15); absent means 2. */
+  coaching?: CoachingLevel;
   bids?: TransferBid[];
   inbox?: InboxItem[];
   /** Squad morale 0–100; absent in older saves, which keep pre-morale strength. */
@@ -420,6 +496,8 @@ export interface World {
   campaigns: Campaign[];
   sponsor?: Sponsor;
   cupWinners: Record<string, string>;
+  /** This season's domestic cups, one per country (→LEAGUE-5); absent in older saves. */
+  cups?: DomesticCup[];
   europe: EuropeTournament[];
   lastChampions: { country: string; club: string; cup: string }[];
   lower: boolean;
@@ -445,6 +523,8 @@ export type Command =
   | { type: 'policy'; key: PolicyKey; level: PolicyLevel }
   | { type: 'hire-staff'; role: StaffRole; candidate: number }
   | { type: 'release-staff'; role: StaffRole }
+  | { type: 'renew-staff'; role: StaffRole }
+  | { type: 'coaching'; level: CoachingLevel }
   | { type: 'promote-youth'; id: string }
   | { type: 'release-youth'; id: string }
   | { type: 'delegate'; key: DelegationKey; value: boolean }
@@ -453,7 +533,8 @@ export type Command =
   | { type: 'read-inbox'; id?: string }
   | { type: 'hire'; candidate: number }
   | { type: 'recruit'; candidate: number; loan?: boolean }
-  | { type: 'sell'; id: string }
+  /** Lists a player at an asking percentage of his value, or takes him off the list (null). */
+  | { type: 'list-player'; id: string; ask: ListingAsk | null }
   | { type: 'campaign'; kind: string }
   | { type: 'sponsor'; kind: Sponsor['kind'] }
   | { type: 'facility' }

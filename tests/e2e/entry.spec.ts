@@ -16,11 +16,11 @@ test('creates, computes and reloads through the bundled worker', async ({ page }
     .click();
   const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
   await journal.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
-  await expect(page.getByTestId('calendar')).toHaveText(/1901\/02 · 라운드 1$/);
+  await expect(page.getByTestId('calendar')).toHaveText(/1950\/51 · 라운드 1$/);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r1');
   await journal.getByRole('button', { name: '창 닫기' }).click();
   await page.reload();
-  await expect(page.getByTestId('calendar')).toHaveText(/1901\/02 · 라운드 1$/);
+  await expect(page.getByTestId('calendar')).toHaveText(/1950\/51 · 라운드 1$/);
   await expect(page.getByTestId('calendar')).toBeVisible();
 });
 test('observes event-backed metrics, historical locks and responsive navigation', async ({
@@ -33,11 +33,11 @@ test('observes event-backed metrics, historical locks and responsive navigation'
     page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
   ).toBeVisible();
   await page.getByRole('button', { name: '결과 보기' }).click();
-  await expect(page.getByText(/90′ ·/)).toBeVisible();
+  await expect(page.getByText(/90′ ·.*경기 종료/)).toBeVisible();
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await expect(page.getByText('유효 슈팅', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: '컵 대회' }).click();
-  await expect(page.getByText('54년 후 창설 예정')).toBeVisible();
+  await expect(page.getByText(/유러피언컵은 5년 후\(1955\/56\) 창설돼요/)).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
   const mobileMenu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(mobileMenu).toBeVisible();

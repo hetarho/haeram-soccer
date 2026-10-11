@@ -9,6 +9,7 @@ import {
 import type { Club, Founding, Manager, Player, World, Tactic } from '../../contracts/src/types';
 import { clamp, hash, integer, random, ratio, zeroMetrics, compareIds } from './primitives';
 import { CURRENT_ENGINE_VERSION } from '../../contracts/src/versions';
+import { dayCountedFrom } from './calendar';
 export const ENGINE_VERSION = CURRENT_ENGINE_VERSION;
 export const TACTICS: Tactic[] = ['balanced', 'possession', 'counter', 'press'];
 export const tacticLabel: Record<Tactic, string> = {
@@ -57,15 +58,17 @@ export function makePlayer(
 ): Player {
   const r = random(`${seed}:${id}`);
   const skill = () => clamp(integer(r, Math.round(rating) - 9, Math.round(rating) + 9), 15, 95);
+  // Attributes top out at 99, so no ability exceeds the highest potential.
+  const top = (value: number) => clamp(value, 0, 99);
   return {
     id,
     name: personName(code, r),
     role,
     born: year - age,
-    attack: clamp(skill() + (role === 'FWD' ? 9 : role === 'GK' ? -20 : 0)),
-    passing: clamp(skill() + (role === 'MID' ? 8 : 0)),
-    defense: clamp(skill() + (role === 'DEF' ? 10 : 0)),
-    keeper: role === 'GK' ? clamp(skill() + 12) : integer(r, 8, 20),
+    attack: top(skill() + (role === 'FWD' ? 9 : role === 'GK' ? -20 : 0)),
+    passing: top(skill() + (role === 'MID' ? 8 : 0)),
+    defense: top(skill() + (role === 'DEF' ? 10 : 0)),
+    keeper: role === 'GK' ? top(skill() + 12) : integer(r, 8, 20),
     stamina: skill(),
     potential: clamp(rating + integer(r, 10, 35), 50, 95),
     reputation: clamp(rating - 15),
@@ -103,6 +106,80 @@ export function makeManager(code: string, seed: string, year: number, index = 0)
     interim: false,
   };
 }
+/** The European Cup starts in 1955; every club is founded five seasons earlier (→WEB-2). */
+export const EUROPEAN_CUP_START = 1955;
+export const FOUNDING_YEAR = EUROPEAN_CUP_START - 5;
+/** Amateur clubs per country below the professional pyramid; with the owner's club, a league of 16. */
+export const AMATEUR_CLUBS = 15;
+/**
+ * Generated strength of a club in a pyramid tier: each professional tier is about 11 points below
+ * the one above, and the amateur level (tier = professional depth) sits one more step down.
+ */
+export function tierStrengthRange(tier: number, amateur = false): [number, number] {
+  return amateur ? [72 - tier * 11, 80 - tier * 11] : [72 - tier * 11, 82 - tier * 11];
+}
+/**
+ * Long-run size of each club relative to its division, stable for the career (→LEAGUE-10). Every
+ * country has three giants (+13, +11, +9) and four big clubs (+6, +5, +5, +4), drawn mostly from
+ * its upper divisions; of the rest 45% are ordinary (−1 to +1) and the others small (−3 to −5).
+ * Real leagues keep a handful of clubs persistently on top.
+ */
+const STATURE_TOP = [13, 11, 9, 6, 5, 5, 4] as const;
+const statures = new Map<string, Map<string, number>>();
+export function stature(seed: string, id: string) {
+  const code = id.split(':')[0];
+  const key = `${seed}:${code}`;
+  let table = statures.get(key);
+  if (!table) {
+    const profile = COUNTRIES.find((c) => c.code === code);
+    table = new Map();
+    if (profile) {
+      const ids: { id: string; tier: number }[] = [];
+      profile.groups.forEach((groups, tier) =>
+        groups.forEach((size, group) => {
+          for (let n = 0; n < size; n++) ids.push({ id: `${code}:${tier}:${group}:${n}`, tier });
+        }),
+      );
+      for (let i = 0; i < AMATEUR_CLUBS; i++)
+        ids.push({ id: `${code}:reserve:${i}`, tier: profile.groups.length });
+      const draw = (entry: string) => random(`${seed}:stature:${entry}`)();
+      const ranked = ids
+        .map((entry) => ({ ...entry, key: entry.tier * 0.35 + draw(entry.id) }))
+        .sort((a, b) => a.key - b.key);
+      ranked.forEach((entry, rank) => {
+        const v = random(`${seed}:stature-size:${entry.id}`)();
+        table!.set(
+          entry.id,
+          rank < STATURE_TOP.length
+            ? STATURE_TOP[rank]
+            : v < 0.55
+              ? Math.round(v * 3.6) - 1
+              : -3 - Math.round((v - 0.55) * 4.4),
+        );
+      });
+    }
+    if (statures.size > 64) statures.clear();
+    statures.set(key, table);
+  }
+  return (
+    table.get(id) ??
+    (id.startsWith('euro:') ? Math.round(random(`${seed}:stature:${id}`)() * 12) - 4 : 0)
+  );
+}
+/** Where a club of this stature settles in a division (professional, or the amateur level). */
+export function tierLevel(tier: number, amateur = false) {
+  const [low, high] = tierStrengthRange(tier, amateur);
+  return (low + high) / 2;
+}
+/** A rough Club Elo from strength: one rating point is about 16 Elo points (→HIST-12). */
+export function initialElo(strength: number) {
+  return Math.round(1350 + (strength - 60) * 16);
+}
+const colorOf = (r: () => number) =>
+  '#' +
+  Math.floor(r() * 0xffffff)
+    .toString(16)
+    .padStart(6, '0');
 export function createBase(input: Founding): World {
   if (
     !input.name.trim() ||
@@ -112,6 +189,7 @@ export function createBase(input: Founding): World {
     ![0.5, 1, 2].includes(input.difficulty)
   )
     throw new Error('창단 정보를 확인해 주세요.');
+  const year = FOUNDING_YEAR;
   const selected = country(input.country);
   const clubs: Club[] = [];
   for (const c of COUNTRIES)
@@ -122,6 +200,12 @@ export function createBase(input: Founding): World {
             r = random(`${input.seed}:${id}`);
           const city = c.cities[integer(r, 0, c.cities.length - 1)],
             term = c.terms[integer(r, 0, c.terms.length - 1)];
+          // Clubs start near their division's level, giants above it and small clubs below.
+          const strength = clamp(
+            Math.round(tierLevel(tier) + stature(input.seed, id) + integer(r, -3, 3)),
+            15,
+            92,
+          );
           clubs.push({
             id,
             name: `${city} ${term} ${String.fromCharCode(65 + Math.floor(n / c.cities.length))}${(n % c.cities.length) + 1}`,
@@ -129,46 +213,53 @@ export function createBase(input: Founding): World {
             country: c.code,
             tier,
             group,
-            strength: integer(r, 72 - tier * 11, 82 - tier * 11),
+            strength,
             reputation: Math.max(8, 75 - tier * 15),
             fans: Math.max(800, 18000 - tier * 4500),
-            color:
-              '#' +
-              Math.floor(r() * 0xffffff)
-                .toString(16)
-                .padStart(6, '0'),
+            color: colorOf(r),
+            elo: initialElo(strength),
           });
         }
+  // Amateur clubs below each professional pyramid: the owner's league and the pool that swaps
+  // places with clubs relegated out of the professional game.
   for (const c of COUNTRIES)
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < AMATEUR_CLUBS; i++) {
       const id = `${c.code}:reserve:${i}`,
         r = random(`${input.seed}:${id}`);
+      const strength = clamp(
+        Math.round(tierLevel(c.groups.length, true) + stature(input.seed, id) + integer(r, -3, 3)),
+        15,
+        92,
+      );
       clubs.push({
         id,
-        name: `${c.cities[i % c.cities.length]} ${c.terms[(i + 2) % c.terms.length]} Athletic`,
+        name: `${c.cities[i % c.cities.length]} ${c.terms[(i + 2) % c.terms.length]} ${i < c.cities.length ? 'Athletic' : 'Amateurs'}`,
         short: `R${i + 1}`,
         country: c.code,
         tier: c.groups.length,
         group: 0,
-        strength: integer(r, 35, 52),
+        strength,
         reputation: 8,
         fans: 500,
-        color:
-          '#' +
-          Math.floor(r() * 0xffffff)
-            .toString(16)
-            .padStart(6, '0'),
+        color: colorOf(r),
         representative: true,
+        elo: initialElo(strength),
       });
     }
-  const club = clubs.find(
-    (c) => c.country === input.country && c.tier === selected.groups.length - 1 && c.group === 0,
-  )!;
-  club.name = input.name.trim();
-  club.short = input.name.replace(/\s/g, '').slice(0, 3).toUpperCase();
-  club.color = input.color;
-  club.fans = 800;
-  club.reputation = 12;
+  // The new club starts as an amateur club, one league below the professional game (→WEB-2).
+  const club: Club = {
+    id: `${input.country}:club`,
+    name: input.name.trim(),
+    short: input.name.replace(/\s/g, '').slice(0, 3).toUpperCase(),
+    country: input.country,
+    tier: selected.groups.length,
+    group: 0,
+    strength: 0,
+    reputation: 12,
+    fans: 800,
+    color: input.color,
+  };
+  clubs.push(club);
   const roles: Player['role'][] = [
     'GK',
     'GK',
@@ -177,18 +268,17 @@ export function createBase(input: Founding): World {
     ...Array<Player['role']>(4).fill('FWD'),
   ];
   // A new club starts as an ordinary member of its league: the founders' best XI rates like the
-  // league's average club, whatever the country's pyramid depth.
-  const peers = clubs.filter(
-    (c) =>
-      c.country === club.country && c.tier === club.tier && c.group === club.group && c !== club,
-  );
+  // league's average club.
+  const peers = clubs
+    .filter((c) => c.country === club.country && c.representative && c.tier === club.tier)
+    .slice(0, AMATEUR_CLUBS);
   const target = Math.round(
-    peers.reduce((sum, c) => sum + xiRating(lineup(npcSquad(input.seed, 1901, c))), 0) /
+    peers.reduce((sum, c) => sum + xiRating(lineup(npcSquad(input.seed, year, c))), 0) /
       peers.length,
   );
   const found = (base: number) =>
     roles.map((role, i) =>
-      makePlayer(input.country, input.seed, `${club.id}:founder:${i}`, 1901, base, role),
+      makePlayer(input.country, input.seed, `${club.id}:founder:${i}`, year, base, role),
     );
   let base = target;
   for (let step = 0; step < 4; step++) {
@@ -197,12 +287,13 @@ export function createBase(input: Founding): World {
     base += gap;
   }
   club.strength = base;
+  club.elo = initialElo(base);
   const players = found(base);
-  const manager = makeManager(input.country, input.seed, 1901);
+  const manager = makeManager(input.country, input.seed, year);
   const baseline =
     players.reduce((s, p) => s + BigInt(p.wage), 0n) +
     BigInt(manager.wage) +
-    BigInt(quote(input.country, 1901, 180));
+    BigInt(quote(input.country, year, 180));
   const cash = ratio(baseline.toString(), BigInt(input.difficulty * 2), 2n);
   return {
     schema: 1,
@@ -211,7 +302,7 @@ export function createBase(input: Founding): World {
     catalogHash: CATALOG_HASH,
     id: `world:${hash(input.seed + input.name)}`,
     seed: input.seed,
-    year: 1901,
+    year,
     round: 0,
     revision: 0,
     playerClub: club.id,
@@ -226,20 +317,20 @@ export function createBase(input: Founding): World {
     history: [],
     events: [
       {
-        year: 1901,
+        year,
         round: 0,
         kind: 'founding',
         title: '클럽의 첫 페이지',
-        detail: `${club.name} 창단 · ${selected.name} ${club.tier + 1}부`,
+        detail: `${club.name} 창단 · ${selected.name} 아마추어 리그`,
         amount: cash,
-        currency: currency(input.country, 1901).code,
+        currency: currency(input.country, year).code,
       },
     ],
     cash,
     income: '0',
     expense: '0',
-    currency: currency(input.country, 1901).code,
-    priceIndex: priceIndex(input.country, 1901).value,
+    currency: currency(input.country, year).code,
+    priceIndex: priceIndex(input.country, year).value,
     support: 0,
     facilities: 0,
     ticket: 0.05,
@@ -247,7 +338,7 @@ export function createBase(input: Founding): World {
     cupWinners: {},
     europe: [],
     lastChampions: [],
-    lower: false,
+    lower: true,
     receiptIds: [],
   };
 }
@@ -373,15 +464,31 @@ export function selectedLineup(
     return [replacement];
   });
 }
+/** Days until an injured player can play again (→CLUB-23); 0 when fit. */
+export function injuryDaysLeft(w: World, p: Player) {
+  return p.injury ? Math.max(0, p.injury.day - dayCountedFrom(w, p.injury.year)) : 0;
+}
+export function isInjured(w: World, p: Player) {
+  return injuryDaysLeft(w, p) > 0;
+}
+/**
+ * The own club's starting XI: the manager's (or the owner's saved) choice among fit players; an
+ * injured player plays only when too few are fit to field eleven.
+ */
+export function ownStarters(w: World) {
+  const active = activePlayers(w);
+  const fit = active.filter((p) => !isInjured(w, p));
+  const xi = selectedLineup(fit, w.lineup, w.manager, w.year);
+  return xi.length >= 11 || fit.length === active.length
+    ? xi
+    : selectedLineup(active, w.lineup, w.manager, w.year);
+}
 /**
  * Match strength of a club: its actual starting XI for every club, so the own club and the clubs
  * it plays are measured on one scale, each paying for fatigue beyond ordinary match fitness.
  */
 export function rating(w: World, c: Club) {
-  const xi =
-    c.id === w.playerClub
-      ? selectedLineup(activePlayers(w), w.lineup, w.manager, w.year)
-      : startingSquad(w, c);
+  const xi = c.id === w.playerClub ? ownStarters(w) : startingSquad(w, c);
   return Math.round(xi.reduce((s, p) => s + overall(p) - fatigueLoad(p.fatigue) / 6, 0) / 11);
 }
 export function addEvent(w: World, kind: string, title: string, detail: string, amount?: string) {
@@ -397,8 +504,8 @@ export function addEvent(w: World, kind: string, title: string, detail: string, 
 
 const npcLineups = new WeakMap<Player[], Player[]>();
 export function startingSquad(w: World, c: Club) {
+  if (c.id === w.playerClub) return ownStarters(w);
   const ps = squad(w, c);
-  if (c.id === w.playerClub) return selectedLineup(ps, w.lineup, w.manager, w.year);
   let cached = npcLineups.get(ps);
   if (!cached) {
     cached = lineup(ps);

@@ -301,7 +301,7 @@ const TablePane = memo(function TablePane() {
               </option>
             ))}
             {w.lower && code === own.country && (
-              <option value={own.tier}>하부 리그 · 프로 복귀 도전</option>
+              <option value={own.tier}>아마추어 리그 · 프로 진입 도전</option>
             )}
           </Select>
         </label>

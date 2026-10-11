@@ -1,5 +1,10 @@
 import { expect, it } from 'vitest';
-import { createWorld, nextOwnFixture, simulateMatch } from '../../../../packages/engine/src/index';
+import {
+  createWorld,
+  FOUNDING_YEAR,
+  nextOwnFixture,
+  simulateMatch,
+} from '../../../../packages/engine/src/index';
 import { analysisDataset } from './analysisDataset';
 it('exports only explicit owned periods and keeps original source identity and inactive scopes', () => {
   const w = createWorld({
@@ -13,8 +18,8 @@ it('exports only explicit owned periods and keeps original source identity and i
   const dataset = analysisDataset(
     w,
     'matches',
-    [record, { ...record, year: 1902, id: 'future' }],
-    1901,
+    [record, { ...record, year: FOUNDING_YEAR + 1, id: 'future' }],
+    FOUNDING_YEAR,
     'season',
   );
   expect(dataset.rows).toHaveLength(1);
@@ -22,9 +27,11 @@ it('exports only explicit owned periods and keeps original source identity and i
   expect(dataset.rows[0][dataset.headers.indexOf('home_goals')]).toBe(record.score.home);
   expect(dataset.rows[0].length).toBe(dataset.headers.length);
   w.players[0].status = 'retired';
-  expect(analysisDataset(w, 'players', [], 1901, 'season').rows).toHaveLength(w.players.length - 1);
-  const players = analysisDataset(w, 'players', [], 1901, 'career');
+  expect(analysisDataset(w, 'players', [], FOUNDING_YEAR, 'season').rows).toHaveLength(
+    w.players.length - 1,
+  );
+  const players = analysisDataset(w, 'players', [], FOUNDING_YEAR, 'career');
   expect(players.rows).toHaveLength(w.players.length);
   expect(players.rows[0].length).toBe(players.headers.length);
-  expect(analysisDataset(w, 'seasons', [], 1901, 'season').rows).toEqual([]);
+  expect(analysisDataset(w, 'seasons', [], FOUNDING_YEAR, 'season').rows).toEqual([]);
 });

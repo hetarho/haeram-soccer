@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r8 | Define the implemented browser-demo behavior for historical club economy.
+> r9 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -37,7 +37,7 @@
 - ECON-18 [o] Operations show a read-only cash projection to season end and to 365 days ahead as low–high ranges, carrying forward current contracts, wages, staff, policy, sponsor terms and gate demand, with labelled lines. Uncertain campaign results and new decisions are excluded; policy previews show the projection their level would produce.
 
 - ECON-19 [o] League match income is sized for a 46-game season: gate receipts and result bonuses of league and lower-section matches are multiplied by 46 / own league games this season. ← season income must not depend on how many clubs share a division, and the 14-game lower section must not bankrupt a club that still pays a full year of wages
-  - ENG 24-club divisions ×1, 20-club ×1.21, 18-club ×1.35, lower section ×3.29.
+  - ENG 24-club divisions ×1, 20-club ×1.21, 18-club ×1.35, the 16-club amateur league ×1.53.
   - cup and European gates are not scaled; hosting costs are paid per actual match.
   - the gate projection, ticket previews and cash projection use the same factor.
 - ECON-20 [o] When cash after a round's costs is non-negative but covers fewer than 13 rounds of fixed costs, a cash warning inbox item (→WEB-42) appears once per season with its weeks left and remedies.
@@ -80,6 +80,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r9 261011 ECON-19✎ lower section ×3.29→amateur league ×1.53
 - r8 261010 ECON-22✎ one of six vision cards→a six-slot build of 25 cards (15,625 builds) with presets, combined previews and one commit a season
 - r7 261010 ECON-16✎ three settings→four with academy investment, support shown as squad investment; ECON-22+ club visions
 - r6 261009 ECON-19+ per-match income fixed→league income sized for a 46-game season; ECON-20+ cash warning before insolvency; ECON-21+ delegated stable sponsor and sponsor reminder

@@ -161,8 +161,9 @@ export function leagueRules(w: World, ids: string[]) {
     lower = first.tier >= cp.groups.length;
   const regional = (cp.groups[first.tier]?.length || 0) > 1;
   const automatic = lower ? 1 : first.tier === 0 ? 0 : regional ? 1 : cp.automatic[first.tier - 1];
+  // The amateur champions go up; second to fifth play off for one more place.
   const playoff = lower
-    ? 3
+    ? 4
     : first.tier > 0 && cp.moves[first.tier - 1] > cp.automatic[first.tier - 1]
       ? regional
         ? 3

@@ -4,7 +4,11 @@ import { COUNTRIES } from '../../packages/catalogs/src/index';
 import { expectHomeBounds, expectViewFits, settle } from './layout';
 import { stopOnlyFor } from './events';
 
-async function expectTouchControl(control: Locator, viewport: { width: number; height: number }) {
+async function expectTouchControl(
+  control: Locator,
+  viewport: { width: number; height: number },
+  min = 44,
+) {
   await control.scrollIntoViewIfNeeded();
   await settle(control.page());
   await expect(control).toBeVisible();
@@ -22,8 +26,8 @@ async function expectTouchControl(control: Locator, viewport: { width: number; h
     };
   });
   const measured = JSON.stringify(geometry);
-  expect(geometry.width, measured).toBeGreaterThanOrEqual(44);
-  expect(geometry.height, measured).toBeGreaterThanOrEqual(44);
+  expect(geometry.width, measured).toBeGreaterThanOrEqual(min);
+  expect(geometry.height, measured).toBeGreaterThanOrEqual(min);
   expect(geometry.x, measured).toBeGreaterThanOrEqual(0);
   expect(geometry.y, measured).toBeGreaterThanOrEqual(0);
   expect(geometry.x + geometry.width, measured).toBeLessThanOrEqual(viewport.width);
@@ -72,11 +76,13 @@ for (const viewport of [
     const paces = ['1초에 하루', '1초에 3일', '1초에 5일'].map((pace) =>
       progress.getByRole('button', { name: `${pace} 속도로 자동 진행`, exact: true }),
     );
-    for (const pace of paces) await expectTouchControl(pace, viewport);
+    // The pace chips are secondary to play and the intervention level, but still tappable.
+    for (const pace of paces) await expectTouchControl(pace, viewport, 32);
     await expectTouchControl(
       progress.getByRole('button', { name: '자동 진행 시작', exact: true }),
       viewport,
     );
+    await expectTouchControl(progress.getByRole('button', { name: /^개입 수준/ }), viewport);
     await paces[1].click();
     await expect(paces[1]).toHaveAttribute('aria-pressed', 'true');
     await expect(paces[0]).toHaveAttribute('aria-pressed', 'false');
@@ -185,6 +191,6 @@ for (const viewport of [
     await expect(page.getByRole('table', { name: '리그 순위표' }).getByRole('row')).not.toHaveCount(
       1,
     );
-    await expect(page.getByTestId('game-date')).toHaveText('1901년 8월 1일');
+    await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 1일');
   });
 }

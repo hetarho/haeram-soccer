@@ -14,18 +14,18 @@ test('advances real days at three paces, stops and restores the saved calendar',
   await page.getByRole('button', { name: '넉넉한 출발' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   const date = page.getByTestId('game-date');
-  await expect(date).toHaveText('1901년 8월 1일');
+  await expect(date).toHaveText('1950년 8월 1일');
   const pace = (label: string) =>
     page.getByRole('button', { name: `${label} 속도로 자동 진행`, exact: true });
   // The daily pace starts the clock; stopping after the first tick advances exactly one real day.
   await pace('1초에 하루').click();
-  await expect(date).toHaveText('1901년 8월 2일');
+  await expect(date).toHaveText('1950년 8월 2일');
   await page.getByRole('button', { name: '자동 진행 정지' }).click();
-  await expect(date).toHaveText('1901년 8월 2일');
+  await expect(date).toHaveText('1950년 8월 2일');
   await expect(page.getByTestId('calendar')).toContainText('라운드 0');
   await pace('1초에 3일').click();
   await expect(pace('1초에 3일')).toHaveAttribute('aria-pressed', 'true');
-  await expect(date).toHaveText('1901년 8월 5일');
+  await expect(date).toHaveText('1950년 8월 5일');
   await page.getByRole('button', { name: '자동 진행 정지' }).click();
   const stopped = await date.textContent();
   await page.waitForTimeout(1200);
@@ -37,14 +37,14 @@ test('advances real days at three paces, stops and restores the saved calendar',
   await pace('1초에 5일').click();
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
-  await expect(date).toHaveText('1901년 8월 7일');
+  await expect(date).toHaveText('1950년 8월 7일');
   await expect(page.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
   await expect(page.getByTestId('calendar')).toContainText('라운드 0');
   // Playing the match through as a result keeps going until the following match eve.
   await eve.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
   await expect(page.getByTestId('calendar')).toContainText('라운드 1');
   await expect(eve).toContainText('내일 경기');
-  await expect(date).not.toHaveText('1901년 8월 7일');
+  await expect(date).not.toHaveText('1950년 8월 7일');
   await expect(page.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
   await page.getByRole('button', { name: '리그', exact: true }).click();
   await page.getByRole('tab', { name: '순위표', exact: true }).click();
@@ -62,7 +62,7 @@ test('advances real days at three paces, stops and restores the saved calendar',
   });
   await expect(
     page.getByRole('region', { name: '리그 라운드 결과' }).getByRole('listitem'),
-  ).toHaveCount(12);
+  ).toHaveCount(8);
   await expect(
     page.getByRole('region', { name: '리그 라운드 결과' }).getByLabel('경기 예정'),
   ).toHaveCount(0);

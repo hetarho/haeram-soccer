@@ -17,7 +17,8 @@ type FieldState = Exclude<PlayerMotionState, 'keeper'>;
 // Named tuning surface for the observation engine. All distances use a 100 × 100 pitch.
 export const MATCH_MOTION_CONFIG = {
   integration: {
-    stepSeconds: 0.2,
+    /** Integration step; the ball track records every step, so it also sets the track's density. */
+    stepSeconds: 0.1,
     secondsPerMinute: 8,
     samplesPerMinute: 8,
     minPosition: 2,
@@ -27,13 +28,61 @@ export const MATCH_MOTION_CONFIG = {
     arrival: 1.4,
     separationRadius: 4.2,
     separationForce: 3.5,
-    /** The ball is several times faster than any player: passes, turnovers and shots. */
-    maxBallSpeed: 55,
-    passSpeed: 32,
-    turnoverSpeed: 28,
-    restartSpeed: 40,
-    shotSpeed: 55,
+    /**
+     * The ball is many times faster than any player. Flight speeds are averages along the curve
+     * (pitch units per motion second); no step may exceed `maxBallSpeed`.
+     */
+    maxBallSpeed: 100,
+    passSpeed: 48,
+    turnoverSpeed: 44,
+    restartSpeed: 60,
+    shotSpeed: 84,
     boundaryMargin: 2,
+  },
+  ball: {
+    /** Even a poke takes a couple of steps, so the renderer always has a path to draw. */
+    minimumFlight: 0.2,
+    /** Share of `maxBallSpeed` a launch may reach, leaving room to follow a moving receiver. */
+    launchHeadroom: 0.9,
+    /** Flights longer than this leave the ground; the peak grows with the extra distance. */
+    loftFrom: 18,
+    loftPerUnit: 0.17,
+    maxLoft: 9,
+    /** Share of long balls driven low instead of lofted, and the height they keep. */
+    drivenShare: 0.3,
+    drivenLoft: 0.3,
+    /** A miscontrolled pass bobbles to the teammate who recovers it. */
+    looseSpeed: 36,
+    /**
+     * A tackle pokes the ball from the carrier's feet to the tackler once he is within reach. The
+     * carrier runs into the challenge; the wait scales with the gap at this closing speed, inside
+     * the window (motion seconds). A tackler still out of reach collects a heavy touch instead.
+     */
+    tackleSpeed: 22,
+    tackleReach: 3,
+    tackleClosing: 7,
+    tackleWindow: [0.6, 1.8],
+    /** Where an interceptor may step into the passing lane, as a share of the intended pass. */
+    cutRange: [0.3, 0.85],
+    /** An intercepted pass first heads this share toward the lane before bending to the cutter. */
+    cutControl: 0.6,
+    /** Cutters this far from the lane (pitch units) get a pass drifting toward them instead. */
+    cutStray: [6, 18],
+    /** A receiver holds the ball this long before playing the next recorded duel. */
+    minimumTouch: 0.3,
+    /**
+     * Flight shapes. `ease` is the launch-speed boost (the ball slows by the same share toward the
+     * end), `bend` the lateral Bézier offset range as a share of the chord, `loft` scales the
+     * height rule and `bobble` adds a fixed hop.
+     */
+    styles: {
+      pass: { ease: 0.3, bend: [0.04, 0.16], loft: 1, bobble: 0 },
+      loose: { ease: 0.4, bend: [0.18, 0.32], loft: 1, bobble: 1.4 },
+      cut: { ease: 0.25, bend: [0, 0], loft: 0.5, bobble: 0 },
+      tackle: { ease: 0.5, bend: [0.1, 0.3], loft: 0, bobble: 0.4 },
+      shot: { ease: 0.12, bend: [0.02, 0.08], loft: 0.35, bobble: 0 },
+      reset: { ease: 0.5, bend: [0, 0], loft: 0, bobble: 0 },
+    },
   },
   decisions: {
     minimumDwell: 0.8,
@@ -85,6 +134,8 @@ export const MATCH_MOTION_CONFIG = {
     formationPull: 0.22,
     fatigueFromMinute: 0.24,
     laneVariation: 4,
+    /** The defender who will win the ball sprints to close in (still capped by `maxSpeed`). */
+    chaseSprint: 1.3,
   },
   possession: {
     controlDistance: 2.2,
@@ -312,18 +363,88 @@ interface Agent {
   roam: Point;
 }
 
+type DeadBall = 'kickoff' | 'goalKick';
+type FlightStyle = keyof typeof MATCH_MOTION_CONFIG.ball.styles;
+
+/**
+ * One kick: a quadratic Bézier from the launch point to the landing point with a height arc on
+ * top. A flight with a receiver re-aims its landing point at him every step, so it always ends
+ * at his feet; a flight without one (a shot into the net or wide, a dead ball carried to its
+ * spot) leaves the ball dead where it lands.
+ */
 interface BallFlight {
-  target: Point;
-  receiver?: Agent;
+  id: number;
   phase: 'transition' | 'pass' | 'shot' | 'restart';
-  speed: number;
+  style: FlightStyle;
+  receiver?: Agent;
+  /** The dead ball a receiver-less flight leaves behind. */
+  ends?: DeadBall;
+  from: Point;
+  to: Point;
+  /** Where the receiver runs to meet the ball while it travels. */
+  aim: Point;
+  /** A fixed control point (an intercepted pass leaves toward its lane); otherwise `bend`. */
+  control?: Point;
+  /** Signed lateral offset of the control point from the chord midpoint, as a chord share. */
+  bend: number;
+  /** Peak height in pitch units; 0 keeps the ball on the ground. */
+  loft: number;
+  ease: number;
+  duration: number;
+  elapsed: number;
+}
+
+const SHOT_ACTIONS = ['골', '슛', '선방'];
+
+function controlPoint(flight: Pick<BallFlight, 'from' | 'to' | 'control' | 'bend'>): Point {
+  if (flight.control) return [...flight.control];
+  const { from, to, bend } = flight;
+  return [
+    (from[0] + to[0]) / 2 - bend * (to[1] - from[1]),
+    (from[1] + to[1]) / 2 + bend * (to[0] - from[0]),
+  ];
+}
+
+/** The ground point at path parameter `s` (0 launch, 1 landing). */
+function curve(flight: Pick<BallFlight, 'from' | 'to' | 'control' | 'bend'>, s: number): Point {
+  const control = controlPoint(flight);
+  const u = 1 - s;
+  return [
+    u * u * flight.from[0] + 2 * u * s * control[0] + s * s * flight.to[0],
+    u * u * flight.from[1] + 2 * u * s * control[1] + s * s * flight.to[1],
+  ];
 }
 
 interface PlannedEvent {
   at: number;
   event?: MatchEvent;
+  /** Bring the ball to the minute's opening actor, or set a dead ball for its restart. */
+  open?: Agent;
   /** A restart played to the opening actor once the dead ball is set. */
   restart?: Agent;
+}
+
+/** The ball at one integration step, for tests and tuning tools. Frames never carry it. */
+export interface BallTraceStep {
+  seconds: number;
+  /** Ground position and height. */
+  ball: [number, number, number];
+  phase: NonNullable<MatchMotionSample['phase']>;
+  ownerId?: string;
+  /** Position of the owner, or of the receiver the ball is flying to. */
+  holder?: [number, number];
+  /** A dead ball (after a goal or a shot wide, before the restart) may rest. */
+  dead: boolean;
+  flight?: {
+    id: number;
+    style: FlightStyle;
+    receiverId?: string;
+    from: [number, number];
+    to: [number, number];
+    control: [number, number];
+    duration: number;
+    elapsed: number;
+  };
 }
 
 /** Observation-only dynamics. It has no access to the football outcome RNG. */
@@ -331,15 +452,26 @@ export class MatchMotion {
   private agents: [Agent[], Agent[]];
   private profiles: [ReturnType<typeof teamMotionProfile>, ReturnType<typeof teamMotionProfile>];
   private ball: Point = [50, 50];
+  private height = 0;
   private seconds = 0;
   private owner?: Agent;
+  private heldSince = 0;
   private flight?: BallFlight;
+  private flights = 0;
+  /** The match opens with a dead ball on the centre spot. */
+  private dead?: DeadBall = 'kickoff';
+  /** A tackler closing in on the carrier; the ball leaves the carrier's feet when he arrives. */
+  private challenge?: { tackler: Agent; until: number };
+  /**
+   * The defender who wins the ball this minute closes in on the player who will lose it: goal
+   * side of a dribbler or passer, or in the lane of the pass (or shot) he will cut out.
+   */
+  private shadow?: { marker: Agent; actor: Agent; lane?: Agent; goal?: Point };
   private phase: NonNullable<MatchMotionSample['phase']> = 'restart';
   private passCooldown = 0;
   private ballRandom: () => number;
   private shotTriggered = false;
   private interceptionTriggered = false;
-  private previousAction?: string;
   private dribbleTarget: Point = [50, 50];
   private plan: PlannedEvent[] = [];
 
@@ -379,25 +511,34 @@ export class MatchMotion {
     ) as [Agent[], Agent[]];
   }
 
+  /**
+   * Play one simulated minute. `trace` sees the ball after every integration step; it exists for
+   * tests and tuning and never changes the motion.
+   */
   minute(
     frame: MatchFrame,
+    trace?: (step: BallTraceStep) => void,
   ): Pick<MatchFrame, 'players' | 'motion' | 'elapsedSeconds' | 'ball' | 'ballTrack'> {
     const c = MATCH_MOTION_CONFIG.integration;
     const steps = Math.round(c.secondsPerMinute / c.stepSeconds);
     const sampleEvery = steps / c.samplesPerMinute;
     const samples: MatchMotionSample[] = [];
-    const ballTrack: [number, number][] = [];
+    const ballTrack: [number, number, number][] = [];
+    const tenth = (n: number) => Math.round(n * 10) / 10;
     // Recorded duels drive the minute; synthetic frames without them fall back to the action.
     const scripted = !!frame.events?.length;
     if (scripted) this.schedule(frame.events!);
     else this.preparePossession(frame);
     for (let step = 1; step <= steps; step++) {
       const progress = step / steps;
-      if (scripted) this.followPlan(progress * c.secondsPerMinute, c.stepSeconds);
-      else this.advancePossession(frame, progress, c.stepSeconds);
+      // Players move first, so the ball meets each receiver where he actually is this step.
       this.step(frame, c.stepSeconds);
       this.seconds += c.stepSeconds;
-      ballTrack.push([Math.round(this.ball[0] * 10) / 10, Math.round(this.ball[1] * 10) / 10]);
+      if (scripted) this.followPlan(progress * c.secondsPerMinute);
+      else this.advancePossession(frame, progress, c.stepSeconds);
+      this.moveBallState(c.stepSeconds);
+      ballTrack.push([tenth(this.ball[0]), tenth(this.ball[1]), tenth(this.height)]);
+      trace?.(this.trace());
       if (step % sampleEvery === 0)
         samples.push({
           elapsedSeconds: (frame.minute - 1 + progress) * 60,
@@ -407,7 +548,6 @@ export class MatchMotion {
           ownerId: this.owner?.player.id,
         });
     }
-    this.previousAction = frame.action;
     return {
       elapsedSeconds: frame.minute * 60,
       ball: [...this.ball],
@@ -424,79 +564,93 @@ export class MatchMotion {
 
   /**
    * Spread the minute's latest duels across its motion window. The ball first travels to the
-   * opening actor (a kickoff after a goal, a turnover or a pass), and markers who win the ball
-   * start closing in on it.
+   * opening actor (a kickoff after a goal, a turnover or a pass), and the defender who wins the
+   * ball (or blocks the shot) shadows its future loser from the start of the minute. Duels never
+   * cut a flight short: each waits until the ball has landed at its actor, so anything the last
+   * minute could not finish plays first.
    */
   private schedule(events: MatchEvent[]) {
     const c = MATCH_MOTION_CONFIG.possession;
-    const integration = MATCH_MOTION_CONFIG.integration;
     const visible = events.slice(-c.visibleEvents);
     const first = visible[0];
     const opener = this.agentAt(first.side, first.actor);
-    // A goal (or the opening whistle) sends the ball back to the centre spot; a shot wide becomes
-    // a goal kick. The ball stays dead for a moment before the restart is played.
-    const kickoff =
-      this.previousAction === '골' || (!this.owner && !this.flight && this.phase === 'restart');
-    const goalKick = !kickoff && this.phase === 'shot' && !this.owner;
-    const start = kickoff || goalKick ? c.restartDelay + 0.4 : c.firstEvent;
+    const carried = this.plan.map((item) => ({ ...item, at: 0 }));
+    // A goal sends the ball back to the centre spot and a shot wide becomes a goal kick. The ball
+    // stays dead for a moment before the restart is played.
+    const restarting = !!(this.dead ?? this.flight?.ends);
+    const start = restarting ? c.restartDelay + 0.4 : c.firstEvent;
     const span = c.lastEvent - start;
-    this.plan = visible.map((event, index) => ({
+    const timed: PlannedEvent[] = visible.map((event, index) => ({
       at:
         visible.length === 1
           ? (start + c.lastEvent) / 2
           : start + (index * span) / (visible.length - 1),
       event,
     }));
-    for (const { at, event } of this.plan)
-      if (event?.lost && event.opponent !== undefined) {
-        const marker = this.agentAt(event.side === 0 ? 1 : 0, event.opponent);
-        if (marker.slot !== 0) {
-          marker.state = 'press';
-          marker.dwell = Math.max(marker.dwell, at + 0.4);
-        }
-      }
-    this.shotTriggered = false;
-    if (kickoff || goalKick) {
-      this.owner = undefined;
-      this.phase = 'restart';
-      this.flight = {
-        phase: 'restart',
-        target: kickoff ? [50, 50] : [this.ball[0] > 50 ? 94 : 6, 50],
-        speed: integration.restartSpeed,
+    this.shadow = undefined;
+    for (const { at, event } of timed) {
+      if (!event || event.opponent === undefined) continue;
+      const block = event.kind === 'shot' && event.outcome === 'block';
+      if (!event.lost && !block) continue;
+      const marker = this.agentAt(event.side === 0 ? 1 : 0, event.opponent);
+      if (marker.slot === 0) continue;
+      const lane =
+        event.receiver === undefined ? undefined : this.agentAt(event.side, event.receiver);
+      this.shadow = {
+        marker,
+        actor: this.agentAt(event.side, event.actor),
+        lane,
+        goal: block ? [event.side === 0 ? 98 : 2, 50] : undefined,
       };
-      this.plan.unshift({ at: c.restartDelay, restart: opener });
+      marker.state = lane || block ? 'mark' : 'press';
+      marker.dwell = Math.max(marker.dwell, at + 0.4);
+    }
+    this.shotTriggered = false;
+    this.plan = [...carried, { at: 0, open: opener }, ...timed];
+  }
+
+  /** Play every due item of the plan, one flight at a time. */
+  private followPlan(time: number) {
+    this.resolveChallenge();
+    const integration = MATCH_MOTION_CONFIG.integration;
+    while (this.plan.length && this.plan[0].at <= time + 1e-9) {
+      if (this.flight || this.challenge) return;
+      const next = this.plan[0];
+      if (
+        next.event &&
+        this.owner &&
+        this.seconds - this.heldSince < MATCH_MOTION_CONFIG.ball.minimumTouch - 1e-9
+      )
+        return;
+      this.plan.shift();
+      if (next.event) this.play(next.event);
+      else if (next.open) this.open(next.open, time);
+      else if (next.restart && this.owner !== next.restart)
+        this.passTo(next.restart, 'restart', integration.passSpeed);
+    }
+  }
+
+  /** Bring the ball to the minute's opener, or carry a dead ball to its spot for the restart. */
+  private open(opener: Agent, time: number) {
+    const integration = MATCH_MOTION_CONFIG.integration;
+    if (this.dead) {
+      this.launch({
+        phase: 'restart',
+        style: 'reset',
+        speed: integration.restartSpeed,
+        to: this.dead === 'kickoff' ? [50, 50] : [this.ball[0] > 50 ? 94 : 6, 50],
+        ends: this.dead,
+      });
+      this.plan.unshift({
+        at: time + MATCH_MOTION_CONFIG.possession.restartDelay,
+        restart: opener,
+      });
       return;
     }
     if (this.owner === opener) return;
-    if ((this.owner?.side ?? this.flight?.receiver?.side) !== first.side)
+    if (this.owner?.side !== opener.side)
       this.passTo(opener, 'transition', integration.turnoverSpeed);
     else this.passTo(opener, 'pass', integration.passSpeed);
-  }
-
-  private followPlan(time: number, dt: number) {
-    while (this.plan.length && this.plan[0].at <= time) {
-      const next = this.plan.shift()!;
-      if (next.event) this.play(next.event);
-      else if (next.restart && this.owner !== next.restart)
-        this.passTo(next.restart, 'restart', MATCH_MOTION_CONFIG.integration.passSpeed);
-    }
-    const c = MATCH_MOTION_CONFIG.possession;
-    if (this.flight) {
-      this.moveBall(this.flight.target, dt, this.flight.speed);
-      if (distance(this.ball, this.flight.target) < 0.05) {
-        const receiver = this.flight.receiver;
-        if (receiver && distance(receiver.position, this.ball) <= c.controlDistance)
-          this.catchBall(receiver);
-      }
-      return;
-    }
-    if (!this.owner) return;
-    const direction = this.owner.side === 0 ? 1 : -1;
-    this.moveBall(
-      bounded([this.owner.position[0] + direction, this.owner.position[1]], 0),
-      dt,
-      MATCH_MOTION_CONFIG.integration.maxBallSpeed,
-    );
   }
 
   private play(event: MatchEvent) {
@@ -508,20 +662,17 @@ export class MatchMotion {
     if (event.kind === 'shot') {
       const goalLine = event.side === 0 ? 98 : 2;
       const r = this.ballRandom();
-      const target: Point =
-        event.outcome === 'goal'
-          ? [goalLine, 44 + r * 12]
-          : event.outcome === 'miss'
-            ? [goalLine, r < 0.5 ? 30 + r * 8 : 62 + r * 8]
-            : [...(opponent ?? this.agentAt(other, 0)).position];
-      this.flight = {
-        phase: 'shot',
-        target: bounded(target, 0),
-        receiver: event.outcome === 'save' || event.outcome === 'block' ? opponent : undefined,
-        speed: speed.shotSpeed,
-      };
-      this.owner = undefined;
-      this.phase = 'shot';
+      const mouth: Point = [goalLine, 44 + r * 12];
+      if (event.outcome === 'goal' || event.outcome === 'miss')
+        this.launch({
+          phase: 'shot',
+          style: 'shot',
+          speed: speed.shotSpeed,
+          to: event.outcome === 'goal' ? mouth : [goalLine, r < 0.5 ? 30 + r * 8 : 62 + r * 8],
+          ends: event.outcome === 'goal' ? 'kickoff' : 'goalKick',
+        });
+      // A save or a block meets the shot on its way to goal.
+      else this.cut(opponent ?? this.agentAt(other, 0), mouth, 'shot', speed.shotSpeed, 'shot');
       this.shotTriggered = true;
       return;
     }
@@ -535,7 +686,7 @@ export class MatchMotion {
             actor.position[1] + actor.roam[1] * 6,
           ]);
         }
-      } else if (opponent) this.passTo(opponent, 'transition', speed.turnoverSpeed);
+      } else if (opponent) this.tackle(opponent);
       return;
     }
     const receiver =
@@ -543,32 +694,18 @@ export class MatchMotion {
     if (event.ok && receiver) this.passTo(receiver, 'pass', speed.passSpeed);
     else if (event.lost && opponent) {
       // An interception cuts the pass on its way; a tackle takes the ball off the passer.
-      if (receiver) {
-        const from = this.ball;
-        const cut = bounded([
-          from[0] + (receiver.position[0] - from[0]) * 0.55,
-          from[1] + (receiver.position[1] - from[1]) * 0.55,
-        ]);
-        this.flight = {
-          phase: 'transition',
-          target: cut,
-          receiver: opponent,
-          speed: speed.passSpeed,
-        };
-        this.owner = undefined;
-        this.phase = 'transition';
-        opponent.state = 'press';
-      } else this.passTo(opponent, 'transition', speed.turnoverSpeed);
-    } else if (receiver) {
-      // A loose ball lands short of the receiver, who collects it.
-      const loose = bounded([
-        receiver.position[0] - direction * 3,
-        receiver.position[1] + (this.ballRandom() - 0.5) * 6,
-      ]);
-      this.flight = { phase: 'pass', target: loose, receiver, speed: speed.passSpeed };
-      this.owner = undefined;
-      this.phase = 'pass';
-    }
+      if (receiver)
+        this.cut(
+          opponent,
+          this.anticipate(receiver, speed.passSpeed),
+          'transition',
+          speed.passSpeed,
+          'cut',
+        );
+      else this.tackle(opponent);
+    } else if (receiver)
+      // A loose ball bobbles awkwardly to the teammate who recovers it.
+      this.passTo(receiver, 'pass', MATCH_MOTION_CONFIG.ball.looseSpeed, 'loose');
   }
 
   private preparePossession(frame: MatchFrame) {
@@ -581,46 +718,249 @@ export class MatchMotion {
         distance(agent.position, this.ball) < distance(best.position, this.ball) ? agent : best,
       candidates[0],
     );
-    if (this.previousAction === '골' || this.phase === 'shot') {
-      this.passTo(this.agents[frame.side][6], 'restart');
-    } else if (currentSide !== frame.side) {
-      this.passTo(nearest, 'transition');
-    }
-    if (['골', '슛', '선방'].includes(frame.action)) {
-      const shooter = this.agents[frame.side][frame.player];
-      if (this.owner !== shooter) this.passTo(shooter, 'pass');
-    }
+    const opener = SHOT_ACTIONS.includes(frame.action)
+      ? this.agentAt(frame.side, frame.player)
+      : (this.dead ?? this.flight?.ends)
+        ? this.agentAt(frame.side, 6)
+        : currentSide !== frame.side
+          ? nearest
+          : undefined;
+    this.plan = opener ? [{ at: 0, open: opener }] : [];
+  }
+
+  /** The anticipated spot where a receiver meets a ball played at `speed`. */
+  private anticipate(receiver: Agent, speed: number): Point {
+    const travelTime = distance(this.ball, receiver.position) / speed;
+    const anticipation =
+      receiver.traits.anticipation * MATCH_MOTION_CONFIG.possession.receiverAnticipation;
+    return bounded([
+      receiver.position[0] + receiver.velocity[0] * travelTime * anticipation,
+      receiver.position[1] + receiver.velocity[1] * travelTime * anticipation,
+    ]);
+  }
+
+  /** Where a player controls the ball: just ahead of him toward the goal he attacks. */
+  private feet(agent: Agent, at: Point = agent.position): Point {
+    return bounded([at[0] + (agent.side === 0 ? 1 : -1), at[1]], 0);
   }
 
   private passTo(
     receiver: Agent,
     phase: BallFlight['phase'],
     speed: number = MATCH_MOTION_CONFIG.integration.passSpeed,
+    style: FlightStyle = 'pass',
   ) {
-    const travelTime = distance(this.ball, receiver.position) / speed;
-    const anticipation =
-      receiver.traits.anticipation * MATCH_MOTION_CONFIG.possession.receiverAnticipation;
-    this.flight = {
-      receiver,
-      phase,
-      speed,
-      target: bounded([
-        receiver.position[0] + receiver.velocity[0] * travelTime * anticipation,
-        receiver.position[1] + receiver.velocity[1] * travelTime * anticipation,
-      ]),
-    };
-    this.owner = undefined;
-    this.phase = phase;
+    const aim = this.anticipate(receiver, speed);
+    this.launch({ phase, style, speed, receiver, aim, to: this.feet(receiver, aim) });
     receiver.state = receiver.slot === 0 ? 'keeper' : 'support';
     receiver.dwell = Math.max(
       receiver.dwell,
-      travelTime + MATCH_MOTION_CONFIG.decisions.minimumDwell,
+      this.flight!.duration + MATCH_MOTION_CONFIG.decisions.minimumDwell,
     );
+  }
+
+  /**
+   * A defender (or the keeper) steps into the path of a ball played toward `lane`. The cut point
+   * is his projection onto that line, clamped to a sensible share of it; he runs as far toward
+   * it as the flight allows. The ball leaves toward the lane and bends to wherever he meets it.
+   */
+  private cut(
+    marker: Agent,
+    lane: Point,
+    phase: BallFlight['phase'],
+    speed: number,
+    style: FlightStyle,
+  ) {
+    const c = MATCH_MOTION_CONFIG.ball;
+    const from = this.ball;
+    const line: Point = [lane[0] - from[0], lane[1] - from[1]];
+    const span = line[0] ** 2 + line[1] ** 2;
+    const share =
+      span > 1e-6
+        ? clamp(
+            ((marker.position[0] - from[0]) * line[0] + (marker.position[1] - from[1]) * line[1]) /
+              span,
+            c.cutRange[0],
+            c.cutRange[1],
+          )
+        : 0.5;
+    const meet: Point = [from[0] + line[0] * share, from[1] + line[1] * share];
+    const reach = MATCH_MOTION_CONFIG.integration.maxSpeed * (distance(from, meet) / speed + 0.2);
+    const gap = distance(marker.position, meet);
+    const run = gap > reach ? reach / gap : 1;
+    const aim = bounded([
+      marker.position[0] + (meet[0] - marker.position[0]) * run,
+      marker.position[1] + (meet[1] - marker.position[1]) * run,
+    ]);
+    // A cutter still far from the lane gets a pass that drifts toward him, not one bent through a
+    // right angle.
+    const offset =
+      span > 1e-6
+        ? Math.abs(line[0] * (aim[1] - from[1]) - line[1] * (aim[0] - from[0])) / Math.sqrt(span)
+        : 0;
+    const astray = unit((offset - c.cutStray[0]) / (c.cutStray[1] - c.cutStray[0]));
+    const lanePull: Point = [
+      from[0] + (meet[0] - from[0]) * c.cutControl,
+      from[1] + (meet[1] - from[1]) * c.cutControl,
+    ];
+    this.launch({
+      phase,
+      style,
+      speed,
+      receiver: marker,
+      aim,
+      to: this.feet(marker, aim),
+      control: [
+        lanePull[0] + ((from[0] + aim[0]) / 2 - lanePull[0]) * astray,
+        lanePull[1] + ((from[1] + aim[1]) / 2 - lanePull[1]) * astray,
+      ],
+    });
+    marker.state = marker.slot === 0 ? 'keeper' : 'press';
+    marker.dwell = Math.max(marker.dwell, this.flight!.duration + 0.4);
+  }
+
+  /**
+   * A tackler closes in on the carrier, who runs into the challenge; the ball leaves the
+   * carrier's feet once the tackler reaches it.
+   */
+  private tackle(tackler: Agent) {
+    const c = MATCH_MOTION_CONFIG.ball;
+    const window = clamp(
+      distance(tackler.position, this.ball) / c.tackleClosing,
+      c.tackleWindow[0],
+      c.tackleWindow[1],
+    );
+    this.challenge = { tackler, until: this.seconds + window };
+    if (tackler.slot !== 0) tackler.state = 'press';
+    tackler.dwell = Math.max(tackler.dwell, window + 0.4);
+    this.resolveChallenge();
+  }
+
+  private resolveChallenge() {
+    const challenge = this.challenge;
+    if (!challenge) return;
+    const c = MATCH_MOTION_CONFIG.ball;
+    const { tackler } = challenge;
+    const reached = distance(tackler.position, this.ball) <= c.tackleReach;
+    const carrier = this.owner;
+    if (carrier && !reached && this.seconds < challenge.until - 1e-9) {
+      this.dribbleTarget = bounded([
+        (carrier.position[0] + tackler.position[0]) / 2,
+        (carrier.position[1] + tackler.position[1]) / 2,
+      ]);
+      return;
+    }
+    this.challenge = undefined;
+    // Out of time, the carrier's heavy touch runs loose to the tackler instead.
+    if (reached) this.passTo(tackler, 'transition', c.tackleSpeed, 'tackle');
+    else this.passTo(tackler, 'transition', c.looseSpeed, 'loose');
+  }
+
+  /** Kick the ball from where it is now. Curve sign, bend and loft come from the ball stream. */
+  private launch(options: {
+    phase: BallFlight['phase'];
+    style: FlightStyle;
+    speed: number;
+    to: Point;
+    receiver?: Agent;
+    aim?: Point;
+    control?: Point;
+    ends?: DeadBall;
+  }) {
+    const c = MATCH_MOTION_CONFIG.ball;
+    const integration = MATCH_MOTION_CONFIG.integration;
+    const style = c.styles[options.style];
+    const from: Point = [...this.ball];
+    const to = bounded(options.to, 0);
+    const sign = this.ballRandom() < 0.5 ? -1 : 1;
+    const bend = sign * (style.bend[0] + (style.bend[1] - style.bend[0]) * this.ballRandom());
+    const flight: BallFlight = {
+      id: ++this.flights,
+      phase: options.phase,
+      style: options.style,
+      receiver: options.receiver,
+      ends: options.ends,
+      from,
+      to,
+      aim: options.aim ?? to,
+      control: options.control,
+      bend: options.control ? 0 : bend,
+      loft: 0,
+      ease: style.ease,
+      duration: 0,
+      elapsed: 0,
+    };
+    // Curl toward the middle rather than out over a touchline.
+    const apex = curve(flight, 0.5);
+    if (apex.some((n) => n < integration.minPosition + 1 || n > integration.maxPosition - 1))
+      flight.bend = -flight.bend;
+    const chord = distance(from, to);
+    const lift = this.ballRandom();
+    flight.loft =
+      Math.min(
+        c.maxLoft,
+        Math.max(0, chord - c.loftFrom) *
+          c.loftPerUnit *
+          style.loft *
+          (lift < c.drivenShare ? c.drivenLoft : 0.7 + 0.6 * lift),
+      ) + style.bobble;
+    const control = controlPoint(flight);
+    const legs = [distance(from, control), distance(control, to)];
+    // Average speed along the curve, and a launch that never breaks the ball's speed limit.
+    flight.duration = Math.max(
+      c.minimumFlight,
+      (chord + legs[0] + legs[1]) / 2 / options.speed,
+      ((1 + style.ease) * 2 * Math.max(...legs)) / (integration.maxBallSpeed * c.launchHeadroom),
+    );
+    this.flight = flight;
+    this.owner = undefined;
+    this.phase = options.phase;
+    if (options.receiver) this.dead = undefined;
+  }
+
+  /** Advance the flight one step; it ends at the receiver's feet or as a dead ball. */
+  private advanceFlight(flight: BallFlight, dt: number) {
+    flight.elapsed += dt;
+    const tau = Math.min(1, flight.elapsed / flight.duration);
+    const receiver = flight.receiver;
+    if (receiver) {
+      // Re-aim at where the receiver will be when the ball arrives; on arrival, at his feet.
+      const remaining = Math.max(0, flight.duration - flight.elapsed);
+      const feet = this.feet(receiver);
+      flight.to = bounded(
+        [feet[0] + receiver.velocity[0] * remaining, feet[1] + receiver.velocity[1] * remaining],
+        0,
+      );
+    }
+    const s = (1 + flight.ease) * tau - flight.ease * tau * tau;
+    this.moveBall(tau < 1 ? curve(flight, s) : flight.to, dt);
+    this.height = tau < 1 ? 4 * flight.loft * tau * (1 - tau) : 0;
+    if (tau < 1) return;
+    if (receiver) {
+      if (
+        distance(this.ball, this.feet(receiver)) <= MATCH_MOTION_CONFIG.possession.controlDistance
+      )
+        this.catchBall(receiver);
+    } else if (distance(this.ball, flight.to) < 0.05) {
+      this.flight = undefined;
+      this.dead = flight.ends;
+    }
+  }
+
+  private moveBallState(dt: number) {
+    if (this.flight) return this.advanceFlight(this.flight, dt);
+    this.height = 0;
+    // A carried ball stays at its owner's feet; a dead ball rests.
+    if (this.owner) this.moveBall(this.feet(this.owner), dt);
   }
 
   private catchBall(receiver: Agent) {
     this.owner = receiver;
+    this.heldSince = this.seconds;
+    if (this.shadow?.marker === receiver) this.shadow = undefined;
     this.flight = undefined;
+    this.dead = undefined;
+    this.height = 0;
     this.phase = 'possession';
     receiver.state = receiver.slot === 0 ? 'keeper' : 'carry';
     receiver.dwell = MATCH_MOTION_CONFIG.decisions.minimumDwell;
@@ -676,72 +1016,82 @@ export class MatchMotion {
     return options[0].agent;
   }
 
+  /** Synthetic minutes without recorded duels: the frame's action shapes the possession. */
   private advancePossession(frame: MatchFrame, progress: number, dt: number) {
     const c = MATCH_MOTION_CONFIG.possession;
+    this.followPlan(progress * MATCH_MOTION_CONFIG.integration.secondsPerMinute);
+    if (this.flight || this.challenge || this.plan.length || !this.owner) return;
+    const shooting = SHOT_ACTIONS.includes(frame.action);
     if (
       !this.interceptionTriggered &&
       frame.action === '인터셉트' &&
       progress >= c.interceptionProgress
     ) {
       const defending = this.agents[frame.side === 0 ? 1 : 0].filter((agent) => agent.slot !== 0);
-      const interceptor = defending.reduce(
-        (best, agent) =>
-          distance(agent.position, this.ball) < distance(best.position, this.ball) ? agent : best,
-        defending[0],
+      this.tackle(
+        defending.reduce(
+          (best, agent) =>
+            distance(agent.position, this.ball) < distance(best.position, this.ball) ? agent : best,
+          defending[0],
+        ),
       );
-      this.passTo(interceptor, 'transition');
       this.interceptionTriggered = true;
-    }
-    if (
-      !this.shotTriggered &&
-      ['골', '슛', '선방'].includes(frame.action) &&
-      progress >= c.shotProgress
-    ) {
-      const goalkeeper =
-        frame.action === '선방' ? this.agents[frame.side === 0 ? 1 : 0][0] : undefined;
-      this.flight = {
-        phase: 'shot',
-        target: goalkeeper
-          ? [...goalkeeper.position]
-          : [frame.side === 0 ? 98 : 2, frame.action === '골' ? 50 : clamp(frame.ball[1], 32, 68)],
-        receiver: goalkeeper,
-        speed: MATCH_MOTION_CONFIG.integration.shotSpeed,
-      };
-      this.owner = undefined;
-      this.phase = 'shot';
-      this.shotTriggered = true;
-    }
-    if (this.flight) {
-      this.moveBall(this.flight.target, dt, this.flight.speed);
-      if (distance(this.ball, this.flight.target) < 0.05) {
-        const receiver = this.flight.receiver;
-        if (receiver && distance(receiver.position, this.ball) <= c.controlDistance)
-          this.catchBall(receiver);
-      }
       return;
     }
-    if (!this.owner) return;
-    const direction = this.owner.side === 0 ? 1 : -1;
-    this.moveBall(
-      bounded([this.owner.position[0] + direction, this.owner.position[1]], 0),
-      dt,
-      MATCH_MOTION_CONFIG.integration.maxBallSpeed,
-    );
+    if (!this.shotTriggered && shooting && progress >= c.shotProgress) {
+      const goalLine = frame.side === 0 ? 98 : 2;
+      const speed = MATCH_MOTION_CONFIG.integration.shotSpeed;
+      if (frame.action === '선방')
+        this.cut(this.agents[frame.side === 0 ? 1 : 0][0], [goalLine, 50], 'shot', speed, 'shot');
+      else
+        this.launch({
+          phase: 'shot',
+          style: 'shot',
+          speed,
+          to: [goalLine, frame.action === '골' ? 50 : clamp(frame.ball[1], 32, 68)],
+          ends: frame.action === '골' ? 'kickoff' : 'goalKick',
+        });
+      this.shotTriggered = true;
+      return;
+    }
     this.passCooldown -= dt;
     // Preserve the shooting actor's possession until the shot; dribblers hold it longer.
-    if (['골', '슛', '선방'].includes(frame.action) && !this.shotTriggered) return;
+    if (shooting && !this.shotTriggered) return;
     if (frame.action === '돌파' && progress < 0.8) return;
     if (this.passCooldown <= 0) this.passTo(this.chooseReceiver(this.owner), 'pass');
   }
 
-  private moveBall(target: Point, dt: number, speed: number) {
+  /** Move the ball toward `target`, never faster than the ball's speed limit. */
+  private moveBall(target: Point, dt: number) {
     const delta: Point = [target[0] - this.ball[0], target[1] - this.ball[1]];
     const scale = Math.min(
       1,
-      (Math.min(speed, MATCH_MOTION_CONFIG.integration.maxBallSpeed) * dt) /
-        Math.max(length(delta), 0.001),
+      (MATCH_MOTION_CONFIG.integration.maxBallSpeed * dt) / Math.max(length(delta), 0.001),
     );
     this.ball = bounded([this.ball[0] + delta[0] * scale, this.ball[1] + delta[1] * scale], 0);
+  }
+
+  private trace(): BallTraceStep {
+    const flight = this.flight;
+    const holder = this.owner ?? flight?.receiver;
+    return {
+      seconds: this.seconds,
+      ball: [this.ball[0], this.ball[1], this.height],
+      phase: this.phase,
+      ownerId: this.owner?.player.id,
+      holder: holder && [...holder.position],
+      dead: !!this.dead,
+      flight: flight && {
+        id: flight.id,
+        style: flight.style,
+        receiverId: flight.receiver?.player.id,
+        from: [...flight.from],
+        to: [...flight.to],
+        control: controlPoint(flight),
+        duration: flight.duration,
+        elapsed: flight.elapsed,
+      },
+    };
   }
 
   private anchor(agent: Agent, side: Side): Point {
@@ -896,7 +1246,20 @@ export class MatchMotion {
     const lane = agent.roam[1] * c.laneVariation;
     const wave = Math.sin(this.seconds * (0.2 + t.creativity * 0.25) + agent.phase);
     const attack = agent.side === (this.owner?.side ?? this.flight?.receiver?.side ?? frame.side);
-    if (this.flight?.receiver === agent) return this.flight.target;
+    if (this.flight?.receiver === agent) return this.flight.aim;
+    if (this.challenge?.tackler === agent) return [...this.ball];
+    if (this.shadow?.marker === agent) {
+      const { actor, lane, goal } = this.shadow;
+      const toward = lane?.position ?? goal;
+      return bounded(
+        toward
+          ? [
+              actor.position[0] + (toward[0] - actor.position[0]) * (lane ? 0.55 : 0.3),
+              actor.position[1] + (toward[1] - actor.position[1]) * (lane ? 0.55 : 0.3),
+            ]
+          : [actor.position[0] - direction * 1.5, actor.position[1]],
+      );
+    }
     if (this.owner === agent && agent.slot !== 0) return this.dribbleTarget;
     // Old attacking intents decay toward shape when possession changes; no teleport or global switch.
     if (!attack && ['support', 'run', 'carry'].includes(agent.state)) return anchor;
@@ -969,17 +1332,23 @@ export class MatchMotion {
       c.maxSpeed *
       (0.45 + t.pace * 0.55) *
       Math.max(0.35, 1 - fatigue) *
-      (agent.state === 'recover' ? 1 + p.ability * MATCH_MOTION_CONFIG.manager.abilityRecovery : 1);
+      (agent.state === 'recover'
+        ? 1 + p.ability * MATCH_MOTION_CONFIG.manager.abilityRecovery
+        : 1) *
+      (this.shadow?.marker === agent || this.challenge?.tackler === agent
+        ? MATCH_MOTION_CONFIG.steering.chaseSprint
+        : 1);
     const toward: Point = [intent[0] - agent.position[0], intent[1] - agent.position[1]];
     const dist = length(toward);
     const arrive = Math.min(speed, dist * c.arrival) / Math.max(dist, 0.001);
     const desired: Point = [toward[0] * arrive, toward[1] * arrive];
-    const pull = ['recover', 'keeper', 'carry', 'press'].includes(agent.state)
-      ? 0
-      : MATCH_MOTION_CONFIG.steering.formationPull *
-        p.cohesion *
-        t.discipline *
-        (1 - t.freedom * p.freedom);
+    const pull =
+      ['recover', 'keeper', 'carry', 'press'].includes(agent.state) || this.shadow?.marker === agent
+        ? 0
+        : MATCH_MOTION_CONFIG.steering.formationPull *
+          p.cohesion *
+          t.discipline *
+          (1 - t.freedom * p.freedom);
     desired[0] += (anchor[0] - agent.position[0]) * pull;
     desired[1] += (anchor[1] - agent.position[1]) * pull;
     for (const other of all) {

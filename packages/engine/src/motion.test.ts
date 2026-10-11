@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { MatchFrame, MatchMotionSample, Tactic } from '../../contracts/src/types';
 import { createWorld, simulateMatch } from './index';
-import { MATCH_MOTION_CONFIG, MatchMotion, playerTraits, teamMotionProfile } from './motion';
+import {
+  MATCH_MOTION_CONFIG,
+  MatchMotion,
+  playerTraits,
+  teamMotionProfile,
+  type BallTraceStep,
+} from './motion';
 
 const world = createWorld({
   country: 'ENG',
@@ -203,5 +209,142 @@ describe('independent match movement', () => {
     expect(countPress(press)).toBeGreaterThan(countPress(counter));
     expect(line(press)).toBeGreaterThan(line(counter) + 5);
     expect(render('press', 'counter', 0)).not.toEqual(render('press', 'counter', 100));
+  });
+});
+
+describe('ball flights', () => {
+  const c = MATCH_MOTION_CONFIG;
+  const dt = c.integration.stepSeconds;
+  const manager = { philosophy: 'balanced' as const, ability: 60, flexibility: 50 };
+  // Replay the recorded duels of the observed match through a traced engine.
+  const replay = (minutes: number) => {
+    const motion = new MatchMotion('ball-flights', playback.squads, playback.record.tactics, [
+      manager,
+      manager,
+    ]);
+    const steps: BallTraceStep[] = [];
+    for (const frame of playback.frames.slice(0, minutes))
+      motion.minute(
+        {
+          minute: frame.minute,
+          score: frame.score,
+          metrics: frame.metrics,
+          ball: frame.ball,
+          side: frame.side,
+          player: frame.player,
+          action: frame.action,
+          events: frame.events,
+        },
+        (step) => steps.push(step),
+      );
+    return steps;
+  };
+  const trace = replay(90);
+  const flights = new Map<number, { first: number; last: number }>();
+  trace.forEach((step, index) => {
+    if (!step.flight) return;
+    const span = flights.get(step.flight.id);
+    if (span) span.last = index;
+    else flights.set(step.flight.id, { first: index, last: index });
+  });
+  const gap = (a: readonly number[], b: readonly number[]) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+
+  it('lands every flight at the feet of its receiver, who takes the ball at once', () => {
+    let landed = 0;
+    for (const { first, last } of flights.values()) {
+      const flight = trace[last].flight!;
+      const after = trace[last + 1];
+      // A flight without a receiver is a shot into the net or wide, or a dead ball to its spot;
+      // the final whistle may also blow with the ball in the air.
+      if (!flight.receiverId || !after) continue;
+      expect(after.ownerId).toBe(flight.receiverId);
+      expect(after.flight).toBeUndefined();
+      expect(gap(after.ball, after.holder!)).toBeLessThanOrEqual(c.possession.controlDistance);
+      expect((last - first + 2) * dt).toBeLessThanOrEqual(flight.duration + 0.3);
+      landed++;
+    }
+    expect(landed).toBeGreaterThan(300);
+    const styles = new Set([...flights.values()].map(({ last }) => trace[last].flight!.style));
+    expect(styles).toEqual(new Set(['pass', 'loose', 'cut', 'tackle', 'shot', 'reset']));
+    // A tackle pokes the ball off the carrier's feet; it never flies across the pitch.
+    for (const { first } of flights.values()) {
+      const flight = trace[first].flight!;
+      if (flight.style === 'tackle')
+        expect(gap(flight.from, trace[first].holder!)).toBeLessThanOrEqual(
+          c.ball.tackleReach + 2 + c.integration.maxSpeed * dt,
+        );
+    }
+  });
+
+  it('never leaves a live ball resting in open space', () => {
+    const window = Math.round(0.6 / dt);
+    for (let index = 0; index + window < trace.length; index++) {
+      const run = trace.slice(index, index + window + 1);
+      if (run.some((step) => step.ownerId || step.dead)) continue;
+      expect(gap(run[0].ball, run.at(-1)!.ball)).toBeGreaterThanOrEqual(0.05);
+    }
+    // Outside dead balls the ball is always either at someone's feet or on its way to someone.
+    expect(trace.filter((step) => !step.ownerId && !step.flight && !step.dead)).toEqual([]);
+  });
+
+  it('keeps the ball fast but inside its speed limit', () => {
+    expect(c.integration.passSpeed).toBeGreaterThan(c.integration.maxSpeed * 6);
+    const track = playback.frames.flatMap((frame) => frame.ballTrack!);
+    expect(track).toHaveLength(90 * Math.round(c.integration.secondsPerMinute / dt));
+    for (let index = 1; index < track.length; index++)
+      // Track points are rounded to a tenth of a unit.
+      expect(gap(track[index - 1], track[index])).toBeLessThanOrEqual(
+        c.integration.maxBallSpeed * dt + 0.15,
+      );
+    for (let index = 1; index < trace.length; index++)
+      expect(gap(trace[index - 1].ball, trace[index].ball)).toBeLessThanOrEqual(
+        c.integration.maxBallSpeed * dt + 1e-9,
+      );
+    const median = (style: string) => {
+      const speeds = [...flights.values()]
+        .map(({ last }) => trace[last].flight!)
+        .filter((flight) => flight.style === style && gap(flight.from, flight.to) >= 10)
+        .map((flight) => gap(flight.from, flight.to) / flight.duration)
+        .sort((a, b) => a - b);
+      return speeds[Math.floor(speeds.length / 2)];
+    };
+    expect(median('pass')).toBeGreaterThan(42);
+    expect(median('pass')).toBeLessThan(55);
+    expect(median('shot')).toBeGreaterThan(65);
+  });
+
+  it('curls passes off the straight line and lofts only the long ones', () => {
+    const deviations: number[] = [];
+    let lofted = 0;
+    for (const { first, last } of flights.values()) {
+      const flight = trace[last].flight!;
+      if (flight.style !== 'pass') continue;
+      const chord = gap(flight.from, flight.to);
+      const steps = trace.slice(first, last + 1);
+      const peak = Math.max(...steps.map((step) => step.ball[2]));
+      if (chord < c.ball.loftFrom - 4) expect(peak).toBe(0);
+      if (chord >= 35 && peak >= 2) lofted++;
+      if (chord < 15) continue;
+      const [ax, ay] = flight.from,
+        [bx, by] = flight.to;
+      // Distance of each ball position from the straight chord between launch and landing.
+      const off = steps.map(
+        ({ ball: [x, y] }) => Math.abs((bx - ax) * (ay - y) - (ax - x) * (by - ay)) / chord,
+      );
+      deviations.push(Math.max(...off) / chord);
+    }
+    deviations.sort((a, b) => a - b);
+    expect(deviations.length).toBeGreaterThan(150);
+    expect(deviations[Math.floor(deviations.length / 2)]).toBeGreaterThan(0.03);
+    expect(deviations.filter((d) => d >= 0.015).length / deviations.length).toBeGreaterThan(0.9);
+    expect(lofted).toBeGreaterThan(5);
+    expect(Math.max(...trace.map((step) => step.ball[2]))).toBeLessThanOrEqual(
+      c.ball.maxLoft + Math.max(...Object.values(c.ball.styles).map((style) => style.bobble)),
+    );
+  });
+
+  it('draws flight shapes from its own ball stream, so the same match repeats exactly', () => {
+    const repeat = replay(10);
+    expect(repeat).toEqual(trace.slice(0, repeat.length));
   });
 });

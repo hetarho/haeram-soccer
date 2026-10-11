@@ -1,7 +1,7 @@
 import type { World } from '../../../../packages/contracts/src/types';
 import { fixtureDate } from '../../../../packages/engine/src/calendar';
 import { tacticLabel } from '../../../../packages/engine/src/world';
-import { kindLabel, seasonName } from './format';
+import { competitionLabel, kindLabel, seasonName } from './format';
 import { resultFor, scoutOpponent } from './scouting';
 import s from './Analysis.module.css';
 
@@ -14,7 +14,7 @@ export function OpponentDossier({ w }: { w: World }) {
       <section className={s.content} aria-label="상대 스카우팅">
         <h3>스카우팅 · {scout.opponent.name}</h3>
         <p className={s.note}>
-          {fixtureDate(w, scout.next)} · {kindLabel[scout.next.kind]} ·{' '}
+          {fixtureDate(w, scout.next)} · {competitionLabel(w, scout.next)} ·{' '}
           {scout.next.home === w.playerClub ? '홈' : '원정'}
         </p>
         <dl className={s.facts}>

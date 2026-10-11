@@ -1,63 +1,305 @@
-.body {
+.tabs {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-bottom: 12px;
+}
+.tabs button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.card {
   display: grid;
   gap: 12px;
-  padding: 0 16px 14px;
+  margin-bottom: 16px;
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  box-shadow: var(--shadow);
+  min-width: 0;
 }
-.body h4 {
-  margin: 0 0 6px;
-  font-size: 13px;
+.cardHead {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px 12px;
+}
+.cardHead h3 {
+  margin: 0;
+  font-size: 17px;
+}
+.cardHead small {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
   color: var(--text-muted);
 }
-.run ol,
-.winners {
+.winnerPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  background: rgba(255, 203, 71, 0.08);
+}
+.status {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  background: rgba(0, 0, 0, 0.22);
+  border-left: 3px solid var(--accent);
+}
+.note,
+.legend {
+  margin: 0;
+  font-size: 11px;
+  color: var(--text-faint);
+  line-height: 1.45;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.legend i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+.bracket {
+  display: grid;
+  gap: 10px;
+}
+.round {
+  display: grid;
+  gap: 6px;
+}
+.round header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 10px;
+}
+.round h4,
+.phase h4,
+.leaders h4 {
+  margin: 0;
+  font-size: 14px;
+}
+.round header span {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+.ties,
+.finals {
   display: grid;
   gap: 0;
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.run li,
-.winners li {
+.ties li {
+  position: relative;
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) auto;
-  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  padding: 8px 0;
+  gap: 8px;
+  padding: 8px 6px;
   border-top: 1px solid var(--line);
   font-size: 13px;
 }
-.winners li {
-  grid-template-columns: 64px minmax(0, 1fr);
+.ties li > .club:last-of-type {
+  justify-content: flex-end;
+  text-align: right;
 }
-.run li span,
-.winners li span {
-  color: var(--text-faint);
-  font-size: 12px;
-  font-weight: 700;
-}
-.run li b,
-.winners li b {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.run li em {
+.ties em,
+.finals em {
   font-style: normal;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
+  text-align: center;
+  font-size: 12px;
 }
-.won em {
+.ties em small {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--gold);
+}
+.ownTie {
+  background: rgba(47, 194, 116, 0.1);
+  border-radius: 10px;
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.ownBadge {
+  position: absolute;
+  top: -6px;
+  right: 6px;
+  font-style: normal;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 999px;
+  color: var(--on-accent);
+  background: var(--accent);
+}
+.club {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.club > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.strong {
+  font-weight: 800;
+}
+.ownName > span {
   color: var(--accent-text);
 }
-.lost em {
-  color: var(--danger);
+.more {
+  justify-self: start;
+  min-height: 36px;
+  padding: 4px 12px;
+  font-size: 12px;
+}
+.phase {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  table-layout: fixed;
+}
+.table th,
+.table td {
+  padding: 6px 4px;
+  border-top: 1px solid var(--line);
+  text-align: right;
+}
+.table th {
+  font-size: 11px;
+  color: var(--text-faint);
+  font-weight: 700;
+}
+.table th:nth-child(1),
+.table td:nth-child(1) {
+  width: 28px;
+  text-align: left;
+}
+.table th:nth-child(2),
+.table td:nth-child(2) {
+  width: auto;
+  text-align: left;
+}
+.table th:nth-child(n + 3),
+.table td:nth-child(n + 3) {
+  width: 44px;
+}
+.table td:nth-child(2) {
+  overflow: hidden;
+}
+.direct {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.playoff {
+  box-shadow: inset 3px 0 0 var(--gold);
+}
+.out {
+  opacity: 0.8;
+}
+.legend .direct {
+  background: var(--accent);
+  box-shadow: none;
+}
+.legend .playoff {
+  background: var(--gold);
+  box-shadow: none;
+}
+.ownRow {
+  background: rgba(47, 194, 116, 0.12);
+}
+.leaders ol {
+  display: grid;
+  gap: 0;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.leaders li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+.leaders li > span {
+  color: var(--text-faint);
+  font-size: 12px;
+}
+.finals li {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  padding: 8px 4px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+.finals li > span {
+  display: grid;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-faint);
+}
+.finals li > span small {
+  font-size: 10px;
+  font-weight: 500;
+}
+.finals li > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
 }
 .champion {
   color: var(--gold);
 }
-.section {
-  margin: 18px 0 10px;
-  font-size: 15px;
+@media (max-width: 420px) {
+  .ties li {
+    gap: 4px;
+    font-size: 12px;
+  }
+  .finals li {
+    grid-template-columns: 58px minmax(0, 1fr);
+  }
 }

@@ -9,6 +9,7 @@ import {
   tacticRequestOutlook,
   TACTICS,
   yearlyStaff,
+  FOUNDING_YEAR,
 } from './index';
 
 function world() {
@@ -153,7 +154,7 @@ describe('bounded manager negotiations', () => {
     operate(w, { type: 'tactics', tactic: 'balanced', tone: 'respect' });
     expect(w.manager.trust).toBe(84);
     expect(w.manager.requestHistory).toEqual({
-      at: '1901:1',
+      at: `${FOUNDING_YEAR}:1`,
       keys: ['balanced:respect'],
       trustAwarded: true,
     });

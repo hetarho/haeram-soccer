@@ -10,6 +10,7 @@ import {
   currentDay,
   daysUntilNextMatch,
   fixtureDay,
+  FOUNDING_YEAR,
   nextOwnFixture,
   prepareSeason,
   seasonDate,
@@ -41,7 +42,7 @@ describe('persistent season calendar', () => {
     expect(w.ownMatches).toEqual([]);
     expect(w.cash).toBe(cash);
     expect(w.players).toEqual(players);
-    expect(seasonDate(w)).toBe('1901년 8월 7일');
+    expect(seasonDate(w)).toBe(`${FOUNDING_YEAR}년 8월 7일`);
     expect(daysUntilNextMatch(w)).toBe(1);
     const playback = advanceDays(w, 1);
     expect(w.round).toBe(1);
@@ -58,17 +59,19 @@ describe('persistent season calendar', () => {
     const b = structuredClone(a);
     const c = structuredClone(a);
     advanceToNextMatch(c);
-    const second = nextOwnFixture(c)!;
     advanceToNextMatch(c);
-    expect(currentDay(c)).toBe(fixtureDay(second));
-    expect(c.round).toBeGreaterThan(2);
+    // The 30-game amateur league leaves an empty round before the third match.
+    const third = nextOwnFixture(c)!;
+    advanceToNextMatch(c);
+    expect(currentDay(c)).toBe(fixtureDay(third));
+    expect(c.round).toBeGreaterThan(3);
     while (currentDay(a) < currentDay(c)) advanceDays(a, 1);
     while (currentDay(b) < currentDay(c))
       advanceDays(b, Math.min(3, currentDay(c) - currentDay(b)));
     expect(canonical(a)).toBe(canonical(b));
     expect(canonical(a)).toBe(canonical(c));
-    expect(c.ownMatches).toHaveLength(2);
-    expect(c.rankHistory?.at(-1)?.rows).toHaveLength(8);
+    expect(c.ownMatches).toHaveLength(3);
+    expect(c.rankHistory?.at(-1)?.rows).toHaveLength(16);
   });
 
   it('migrates older saves at the completed round without inventing earlier rank history', () => {
@@ -141,7 +144,7 @@ describe('persistent season calendar', () => {
     simulateSeason(fast);
     expect(canonical(fast)).toBe(canonical(observed));
     expect(fast.history).toHaveLength(1);
-    expect(fast.rankHistory?.filter((s) => s.year === 1901)).toHaveLength(47);
+    expect(fast.rankHistory?.filter((s) => s.year === FOUNDING_YEAR)).toHaveLength(47);
   });
 
   it('closes the season the day after its final round and keeps previous league memberships frozen', () => {
@@ -150,10 +153,11 @@ describe('persistent season calendar', () => {
     expect(currentDay(w)).toBe(SEASON_END_DAY);
     const snapshots = structuredClone(w.rankHistory);
     advanceDays(w, 1);
-    expect(w.year).toBe(1902);
+    expect(w.year).toBe(FOUNDING_YEAR + 1);
     expect(currentDay(w)).toBe(0);
-    expect(w.history.at(-1)).toMatchObject({ year: 1901, played: 46 });
-    expect(w.rankHistory?.filter((s) => s.year === 1901)).toEqual(snapshots);
+    // A new club plays its first season in the 16-club amateur league.
+    expect(w.history.at(-1)).toMatchObject({ year: FOUNDING_YEAR, played: 30 });
+    expect(w.rankHistory?.filter((s) => s.year === FOUNDING_YEAR)).toEqual(snapshots);
     expect(w.rankHistory?.at(-1)?.round).toBe(0);
     validateWorld(w);
   });
@@ -172,10 +176,10 @@ describe('persistent season calendar', () => {
 
   it('uses the correct leap-year season length and rejects a corrupted calendar', () => {
     const w = world();
-    w.year = 1903;
+    w.year = 1951;
     prepareSeason(w);
     expect(seasonLength(w)).toBe(366);
-    expect(seasonLength({ ...w, year: 1904 })).toBe(365);
+    expect(seasonLength({ ...w, year: 1952 })).toBe(365);
     w.calendar = { day: 8 };
     expect(() => validateWorld(w)).toThrow('시즌 날짜');
   });

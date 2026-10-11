@@ -21,7 +21,7 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
   const downloaded = page.waitForEvent('download');
   await button.click();
   const file = await downloaded;
-  expect(file.suggestedFilename()).toBe('haeram-matches-1901.csv');
+  expect(file.suggestedFilename()).toBe('haeram-matches-1950.csv');
   const csv = await readFile((await file.path())!, 'utf8');
   expect(csv.startsWith('\ufeff')).toBe(true);
   expect(csv).toContain('"fixture_id"');
@@ -39,7 +39,7 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
   const playerDownload = page.waitForEvent('download');
   await button.click();
   const players = await playerDownload;
-  expect(players.suggestedFilename()).toBe('haeram-players-career-1901.csv');
+  expect(players.suggestedFilename()).toBe('haeram-players-career-1950.csv');
   expect((await readFile((await players.path())!, 'utf8')).trim().split('\r\n')).toHaveLength(19);
   expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
@@ -56,7 +56,7 @@ test('reproduces earned season records after reload on mobile', async ({ page })
     .click();
   const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
   await journal.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
-  await expect(page.getByTestId('calendar')).toHaveText(/1902\/03 · 라운드 0$/);
+  await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
   // The closed season opens its review in place of the sheet.
   await expect(page.getByTestId('season-review')).toBeVisible();
   await expect(journal).toHaveCount(0);
@@ -164,7 +164,7 @@ test('compares distinct own players with a shared scope and returns focus withou
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   await sheet.getByRole('button', { name: '비교 마치기', exact: true }).click();
   await expect(opener).toBeFocused();
-  await expect(page.getByTestId('game-date')).toHaveText('1901년 8월 1일');
+  await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 1일');
 });
 
 test('filters player samples and shows scoped per-90 evidence on a mobile profile', async ({
@@ -258,7 +258,7 @@ test('compares tactical rules as previews while the applied tactic and date stay
   expect((await press.boundingBox())!.height).toBeGreaterThanOrEqual(44);
   await sheet.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
   await expect(page.getByTestId('hub-preparation')).toHaveText(appliedText);
-  await expect(page.getByTestId('game-date')).toHaveText('1901년 8월 1일');
+  await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 1일');
 });
 
 test('opens evidence-based opponent scouting without progressing the world', async ({ page }) => {
@@ -275,6 +275,6 @@ test('opens evidence-based opponent scouting without progressing the world', asy
   expect((await toggle.boundingBox())!.height).toBeGreaterThanOrEqual(44);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   await sheet.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
-  await expect(page.getByTestId('game-date')).toHaveText('1901년 8월 1일');
+  await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 1일');
   await expectHomeBounds(page);
 });

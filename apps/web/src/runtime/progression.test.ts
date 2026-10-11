@@ -234,6 +234,8 @@ describe('the global progression clock', () => {
       'incoming-bid': false,
       'youth-intake': false,
       'staff-report': false,
+      'staff-renewal': false,
+      cup: false,
       finance: true,
     });
     controller.setPace('five-days');

@@ -17,7 +17,7 @@ import type {
   PlayerMotionState,
   World,
 } from '../../../../packages/contracts/src/types';
-import { playerTraits } from '../../../../packages/engine/src/match';
+import { MATCH_MOTION_CONFIG, playerTraits } from '../../../../packages/engine/src/match';
 import { tacticLabel } from '../../../../packages/engine/src/world';
 import { percent } from './format';
 import { MatchReport } from './MatchReport';
@@ -53,9 +53,8 @@ const initialShape: [number, number][] = [
   [76, 50],
   [72, 80],
 ];
-/** Motion integration steps per simulated minute and between two player samples. */
-const STEPS_PER_MINUTE = 40;
-const STEPS_PER_SAMPLE = 5;
+/** Height (pitch units) at which a lofted ball reaches its largest drawn size. */
+const BALL_PEAK = MATCH_MOTION_CONFIG.ball.maxLoft;
 interface Sample {
   frame: number;
   ball: [number, number];
@@ -144,23 +143,28 @@ export function Pitch({
   const [details, setDetails] = useState(false);
   const [reviewedId, setReviewedId] = useState<string>();
   const [selection, setSelection] = useState('0:8');
-  const samples = useMemo<Sample[]>(
-    () =>
-      p?.frames.flatMap((frame, i) =>
-        frame.motion?.length
+  const samples = useMemo<Sample[]>(() => {
+    // Each minute's track covers its samples evenly; its offset is the length of the tracks before.
+    let offset = 0;
+    return (
+      p?.frames.flatMap((frame, i) => {
+        const start = offset,
+          steps = frame.ballTrack?.length ?? 0;
+        offset += steps;
+        return frame.motion?.length
           ? frame.motion.map((motion, j) => ({
               frame: i,
               ball: motion.ball,
               players: motion.players,
               phase: motion.phase,
               ownerId: motion.ownerId,
-              step: frame.ballTrack ? i * STEPS_PER_MINUTE + (j + 1) * STEPS_PER_SAMPLE : undefined,
+              step: steps ? start + ((j + 1) * steps) / frame.motion!.length : undefined,
               within: (j + 1) / frame.motion!.length,
             }))
-          : [{ frame: i, ball: frame.ball, players: frame.players, within: 1 }],
-      ) || [],
-    [p],
-  );
+          : [{ frame: i, ball: frame.ball, players: frame.players, within: 1 }];
+      }) || []
+    );
+  }, [p]);
   // Every recorded ball position of the match, so a fast pass is drawn at its real speed.
   const track = useMemo(() => p?.frames.flatMap((frame) => frame.ballTrack || []) || [], [p]);
   const [selectedSide, selectedIndex] = selection.split(':').map(Number);
@@ -338,6 +342,7 @@ export function Pitch({
           }
           let bx = current.ball[0] * (1 - mix) + next.ball[0] * mix;
           let by = current.ball[1] * (1 - mix) + next.ball[1] * mix;
+          let bh = 0;
           if (current.step !== undefined && next.step !== undefined && track.length) {
             const g = current.step + mix * (next.step - current.step) - 1;
             const a = track[Math.max(0, Math.min(track.length - 1, Math.floor(g)))],
@@ -345,15 +350,20 @@ export function Pitch({
               f = g - Math.floor(g);
             bx = a[0] * (1 - f) + b[0] * f;
             by = a[1] * (1 - f) + b[1] * f;
+            bh = a[2] * (1 - f) + b[2] * f;
           }
-          const ballRadius = Math.max(3.2, width * 0.0065);
-          ctx.fillStyle = '#0006';
+          // The shadow stays on the ground; a lofted ball rises above it and looks closer.
+          const air = Math.min(1, Math.max(0, bh) / BALL_PEAK);
+          const ballRadius = Math.max(3.2, width * 0.0065) * (1 + air * 0.35);
+          const shadowRadius = Math.max(3.2, width * 0.0065) * (1 - air * 0.3);
+          const lift = (Math.max(0, bh) * fh) / 100;
+          ctx.fillStyle = `rgba(0, 0, 0, ${0.4 - air * 0.18})`;
           ctx.beginPath();
-          ctx.ellipse(x(bx) + 1.5, y(by) + 2, ballRadius, ballRadius * 0.6, 0, 0, Math.PI * 2);
+          ctx.ellipse(x(bx) + 1.5, y(by) + 2, shadowRadius, shadowRadius * 0.6, 0, 0, Math.PI * 2);
           ctx.fill();
           ctx.fillStyle = '#fff';
           ctx.beginPath();
-          ctx.arc(x(bx), y(by), ballRadius, 0, Math.PI * 2);
+          ctx.arc(x(bx), y(by) - lift, ballRadius, 0, Math.PI * 2);
           ctx.fill();
           ctx.strokeStyle = '#21392a';
           ctx.lineWidth = 1;

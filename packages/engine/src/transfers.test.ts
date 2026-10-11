@@ -26,7 +26,9 @@ import {
   transferWindow,
   unreadAttention,
   operatingCosts,
+  FOUNDING_YEAR,
 } from './index';
+import { sellPlayer } from './testing';
 
 const CLOSED = '이적시장이 닫혀 있어요. 자유계약 선수만 언제든 영입할 수 있어요.';
 
@@ -149,13 +151,12 @@ describe('transfer windows', () => {
     expect(() => operate(w, { type: 'recruit', candidate: 3, loan: true })).toThrow(CLOSED);
     expect(() => operate(w, { type: 'recruit', candidate: 0, loan: true })).toThrow(CLOSED);
     const seller = activePlayers(w).find((p) => p.role === 'MID')!;
-    expect(() => operate(w, { type: 'sell', id: seller.id })).toThrow(CLOSED);
     expect(() => operate(w, { type: 'bid', candidate: 2, fee: offers[2].fee })).toThrow(CLOSED);
     expect(canonical(w)).toBe(before);
     operate(w, { type: 'recruit', candidate: 0 });
     expect(w.players.some((p) => p.id === offers[0].player.id)).toBe(true);
     on(w, 1, 15);
-    operate(w, { type: 'sell', id: seller.id });
+    sellPlayer(w, seller.id);
     operate(w, { type: 'recruit', candidate: 2 });
     expect(seller.status).toBe('sold');
     expect(w.players.some((p) => p.id === offers[2].player.id)).toBe(true);
@@ -165,18 +166,18 @@ describe('transfer windows', () => {
     const w = world();
     w.delegation = { ...w.delegation, transfers: false };
     while (currentDay(w) < SEASON_END_DAY) advanceDays(w, 1);
-    expect(w).toMatchObject({ year: 1901, round: 46 });
+    expect(w).toMatchObject({ year: FOUNDING_YEAR, round: 46 });
     expect(transferWindow(w)).toMatchObject({ open: false, kind: 'summer', daysLeft: 1 });
     // The day after the final round closes the season and opens the next summer window.
     advanceDays(w, 1);
-    expect(w.year).toBe(1902);
+    expect(w.year).toBe(FOUNDING_YEAR + 1);
     expect(currentDay(w)).toBe(0);
     expect(transferWindow(w)).toMatchObject({ open: true, kind: 'summer', daysLeft: 31 });
     const opens = (w.inbox || []).filter((item) => item.kind === 'window-open');
     const closes = (w.inbox || []).filter((item) => item.kind === 'window-close');
     expect(opens.map((item) => [item.year, item.day, item.attention])).toEqual([
-      [1901, 153, true],
-      [1902, 0, true],
+      [FOUNDING_YEAR, 153, true],
+      [FOUNDING_YEAR + 1, 0, true],
     ]);
     expect(closes.map((item) => [item.day, item.attention])).toEqual([
       [31, false],
@@ -371,7 +372,7 @@ describe('outgoing bids', () => {
     w.bids = [bid];
     expect(() => placeBid(w, 6, share(offers[6].fee, 500))).toThrow('이적시장이 닫혀');
     advanceDays(w, 1);
-    expect(w.year).toBe(1901);
+    expect(w.year).toBe(FOUNDING_YEAR);
     expect(w.bids?.[0]).toMatchObject({ id: 'out:legacy', status: 'expired' });
     expect(validateWorld(w).id).toBe(w.id);
   });

@@ -64,11 +64,13 @@ describe('historical evolution', () => {
       expect(Object.values(t.standings).every((row) => row.played === t.games)).toBe(true);
     finishEurope(w);
     expect(w.europe.every((t) => !!t.winner)).toBe(true);
-    expect(
-      w.europe
-        .find((t) => t.key === 'ucl')
-        ?.fixtures.filter((f) => f.id.includes('리그 페이즈 플레이오프')),
-    ).toHaveLength(8);
+    // Ranks 1–8 wait in the round of 16; 9–24 meet over two legs, 9th against 24th.
+    const ucl = w.europe.find((t) => t.key === 'ucl')!;
+    expect(ucl.rounds![0]).toMatchObject({ label: '플레이오프', legs: 2, round: 29 });
+    expect(ucl.rounds![0].ties).toHaveLength(8);
+    expect(ucl.rounds![0].byes).toHaveLength(8);
+    expect(ucl.rounds!.map((r) => r.label)).toEqual(['플레이오프', '16강', '8강', '4강', '결승']);
+    expect(ucl.rounds!.at(-1)!.legs).toBe(1);
     validateWorld(w);
   });
   it('qualifies domestic cup winners and archives owned European football', () => {

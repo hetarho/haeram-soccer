@@ -1,14 +1,6 @@
 import type { Player, Role, World } from '../../contracts/src/types';
 import { currentDay, seasonDayOf } from './calendar';
-import {
-  activePlayers,
-  addEvent,
-  clubOf,
-  makePlayer,
-  overall,
-  quote,
-  selectedLineup,
-} from './world';
+import { activePlayers, addEvent, clubOf, makePlayer, overall, ownStarters, quote } from './world';
 import { clamp, compareIds, integer, random } from './primitives';
 import { staffEffects, staffMember } from './staff';
 import { pushInbox } from './inbox';
@@ -175,7 +167,7 @@ export function developAcademy(w: World): void {
  * keeper's overall is his keeping alone and would otherwise always clear an outfield average.
  */
 function firstTeamLevels(w: World) {
-  const starters = selectedLineup(activePlayers(w), w.lineup, w.manager, w.year);
+  const starters = ownStarters(w);
   const all = starters.reduce((sum, player) => sum + overall(player), 0) / (starters.length || 1);
   const level = {} as Record<Role, number>;
   for (const role of INTAKE_ROLES) {

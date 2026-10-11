@@ -3,6 +3,7 @@ import { PD, TD } from '../../contracts/src/detail';
 import { validateWorld } from '../../contracts/src/index';
 import type { Tactic, World } from '../../contracts/src/types';
 import { advanceRound, createWorld } from './index';
+import { professionalStart } from './testing';
 
 function season(tactic: Tactic, seed: string) {
   const w = createWorld({
@@ -12,6 +13,7 @@ function season(tactic: Tactic, seed: string) {
     seed,
     difficulty: 1,
   });
+  professionalStart(w);
   w.tactic = tactic;
   for (let round = 0; round < 46; round++) advanceRound(w, undefined, false);
   return w;
