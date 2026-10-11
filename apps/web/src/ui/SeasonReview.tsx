@@ -1,22 +1,14 @@
-import { useEffect, useMemo, useState, type PointerEvent } from 'react';
+import { useMemo, useState, type PointerEvent } from 'react';
 import { ClubCrest } from './ClubCrest';
-import { ClubLink } from './ClubLink';
-import type { Event, MatchRecord, World } from '../../../../packages/contracts/src/types';
-import { country } from '../../../../packages/catalogs/src/index';
+import type { World } from '../../../../packages/contracts/src/types';
 import { clubOf } from '../../../../packages/engine/src/world';
-import type { GameClient } from '../runtime/client';
-import { money, number, seasonName } from './format';
+import { money, number, seasonName, signed } from './format';
+import { divisionName } from './league';
+import type { SeasonFiles } from './seasonArchive';
 import { seasonStats, share, type Leader, type SeasonStats } from './seasonStats';
 import s from './SeasonReview.module.css';
 import { Term } from './Glossary';
 
-function divisionName(w: World, tier: number) {
-  return tier >= country(clubOf(w).country).groups.length ? '아마추어 리그' : `${tier + 1}부`;
-}
-const signed = (value: number, digits = 0) => {
-  const text = digits ? Math.abs(value).toFixed(digits) : number(Math.abs(value));
-  return value > 0 ? `+${text}` : value < 0 ? `−${text}` : digits ? (0).toFixed(digits) : '0';
-};
 const one = (value: number) => value.toFixed(1);
 const two = (value?: number) => (value === undefined ? '—' : value.toFixed(2));
 
@@ -153,90 +145,27 @@ function Leaders({
 }
 
 /**
- * The closed season at a glance: where the club finished, the numbers football fans read (xG,
- * expected points, finishing, keeping, pressing), its leaders, the money and the season ahead.
+ * One closed season at a glance, the first of its tabs in the league page's season list
+ * (→WEB-47): where the club finished, the numbers football fans read (xG, expected points,
+ * finishing, keeping, pressing), its leaders, the money and the season ahead. `files` is the
+ * season's archive once read; `clubs` the size of its final table when one survives.
  */
-/** Rows of the own league's final table as [club index, points, goals for, goals against]. */
-type FinalRow = [number, number, number, number];
-/**
- * The own league's final table: the season's last standings snapshot (kept for ten seasons, and
- * the only record of an amateur league), else its archived standings.
- */
-function finalRows(w: World, year: number, standings?: number[][]): FinalRow[] | undefined {
-  const snapshot = w.rankHistory?.filter((row) => row.year === year).at(-1);
-  if (snapshot) return snapshot.rows.map(([club, points, gf, ga]) => [club, points, gf, ga]);
-  const season = w.history.find((h) => h.year === year);
-  if (!season || !standings) return undefined;
-  const code = clubOf(w).country;
-  return standings
-    .filter(
-      (row) =>
-        w.clubs[row[0]]?.country === code && row[1] === season.tier && row[2] === season.group,
-    )
-    .sort((a, b) => b[3] - a[3] || b[4] - b[5] - (a[4] - a[5]) || b[4] - a[4] || a[0] - b[0])
-    .map((row) => [row[0], row[3], row[4], row[5]]);
-}
-function FinalTable({ w, rows }: { w: World; rows: FinalRow[] }) {
-  return (
-    <section className={s.table} aria-label="최종 순위표">
-      <h3>최종 순위표</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>클럽</th>
-            <th>승점</th>
-            <th>득실</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map(([club, points, gf, ga], i) => (
-            <tr key={club} className={w.clubs[club]?.id === w.playerClub ? s.own : undefined}>
-              <td>{i + 1}</td>
-              <td>{w.clubs[club] && <ClubLink w={w} id={w.clubs[club].id} crest={14} />}</td>
-              <td>{points}</td>
-              <td>{signed(gf - ga)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </section>
-  );
-}
-
-/** One closed season, reviewed in the league page's season list (→WEB-47). */
-export function SeasonReview({ w, year, client }: { w: World; year: number; client: GameClient }) {
+export function SeasonReview({
+  w,
+  year,
+  files,
+  failed,
+  clubs,
+}: {
+  w: World;
+  year: number;
+  files?: SeasonFiles;
+  failed?: boolean;
+  clubs?: number;
+}) {
   const index = w.history.findIndex((h) => h.year === year),
     season = index >= 0 ? w.history[index] : undefined;
-  const [loaded, setLoaded] = useState<{
-    year: number;
-    matches?: MatchRecord[];
-    events?: Event[];
-    standings?: number[][];
-    error?: boolean;
-  }>();
-  useEffect(() => {
-    if (!season) return;
-    let valid = true;
-    void client
-      .archive(season.year)
-      .then(
-        (data) =>
-          valid &&
-          setLoaded({
-            year: season.year,
-            matches: data?.matches || [],
-            events: data?.events || [],
-            standings: data?.season?.standings || [],
-          }),
-      )
-      .catch(() => valid && setLoaded({ year: season.year, error: true }));
-    return () => {
-      valid = false;
-    };
-  }, [client, season?.year]);
-  const archive = loaded?.year === season?.year ? loaded : undefined;
-  const matches = archive?.matches;
+  const matches = files?.matches;
   const stats = useMemo(() => (matches ? seasonStats(w, matches) : undefined), [w, matches]);
   if (!season)
     return (
@@ -251,13 +180,11 @@ export function SeasonReview({ w, year, client }: { w: World; year: number; clie
     nextTier = w.history[index + 1]?.tier ?? club.tier,
     // Amounts were recorded in the closed season's currency.
     format = (value: string) => money(value, club.country, season.year),
-    table = finalRows(w, season.year, archive?.standings),
-    clubs = table?.length,
     move = nextTier < season.tier ? 'up' : nextTier > season.tier ? 'down' : 'stay',
-    from = divisionName(w, season.tier),
-    to = divisionName(w, nextTier),
+    from = divisionName(club.country, season.tier),
+    to = divisionName(club.country, nextTier),
     net = BigInt(season.income) - BigInt(season.expense),
-    prize = archive?.events?.find((e) => e.kind === 'season-prize')?.amount;
+    prize = files?.events.find((e) => e.kind === 'season-prize')?.amount;
   const ribbon =
     move === 'up'
       ? { text: `승격 · ${from} → ${to}`, tone: s.up }
@@ -331,7 +258,7 @@ export function SeasonReview({ w, year, client }: { w: World; year: number; clie
 
       {!stats ? (
         <p className={s.loading} role="status">
-          {loaded?.error
+          {failed
             ? '경기 기록을 읽지 못했어요. 다시 열어 주세요.'
             : '시즌 경기 기록을 불러오는 중…'}
         </p>
@@ -581,8 +508,6 @@ export function SeasonReview({ w, year, client }: { w: World; year: number; clie
           <small>{prize ? `상금 ${format(prize)} 포함` : '순위 상금 없음'}</small>
         </div>
       </section>
-
-      {table && table.length > 0 && <FinalTable w={w} rows={table} />}
     </div>
   );
 }

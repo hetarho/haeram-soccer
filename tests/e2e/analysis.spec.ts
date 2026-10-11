@@ -64,13 +64,58 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   await chooseOption(page.getByRole('combobox', { name: '리그 시즌', exact: true }), '1950');
   await expect(page.getByTestId('season-review')).toBeVisible();
   await expect(page.getByTestId('season-move')).toBeVisible();
-  await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('Haeram');
-  // The live tabs belong to the season in progress; the arrow steps back to it.
+  // The live tabs belong to the season in progress; a closed season keeps its pages in its own.
   await expect(page.getByRole('tablist', { name: '리그 보기' })).toHaveCount(0);
+  const past = page.getByRole('tablist', { name: '지난 시즌 보기' }),
+    pastTab = (name: string) => past.getByRole('tab', { name, exact: true });
+  await expect(pastTab('결산')).toHaveAttribute('aria-selected', 'true');
+  await pastTab('순위표').click();
+  const table = page.getByRole('region', { name: '최종 순위표' });
+  await expect(table).toContainText('Haeram');
+  await expect(table.locator('tbody tr')).toHaveCount(16);
+  await expect(page).toHaveURL(/season=1950&tab=table/);
+  // A rival from that table opens its sheet with the all-time record against us.
+  await table
+    .getByRole('button', { name: /팀 정보$/ })
+    .filter({ hasNotText: 'Haeram' })
+    .first()
+    .click();
+  await expect(
+    page.getByRole('dialog').getByRole('region', { name: '역대 상대 전적' }),
+  ).toContainText(/\d+전 \d+승 \d+무 \d+패 · 득실 \d+:\d+/);
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await pastTab('우리 경기').click();
+  const games = page.getByRole('region', { name: '우리 리그 경기' });
+  await expect(games.getByRole('listitem')).toHaveCount(30);
+  await games
+    .getByRole('button', { name: /경기 리포트$/ })
+    .first()
+    .click();
+  await expect(page.getByRole('dialog', { name: '경기 리포트' })).toContainText('경기 분석 리포트');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await pastTab('순위 추이').click();
+  await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
+  // The bar takes the live bar's keys.
+  await pastTab('순위 추이').press('ArrowRight');
+  await expect(pastTab('득점 순위')).toBeFocused();
+  await expect(pastTab('득점 순위')).toHaveAttribute('aria-selected', 'true');
+  const scorers = page.getByRole('table', { name: '지난 시즌 득점 순위' });
+  await expect(scorers).toBeVisible();
+  const scorerRows = await scorers.locator('tbody tr').count();
+  expect(scorerRows).toBeGreaterThan(0);
+  expect(scorerRows).toBeLessThanOrEqual(10);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+  // The arrow steps back to the season in progress; stepping back again keeps the closed tab.
   await expect(page.getByRole('button', { name: '이전 시즌', exact: true })).toBeDisabled();
   await page.getByRole('button', { name: '다음 시즌', exact: true }).click();
   await expect(page.getByRole('tablist', { name: '리그 보기' })).toBeVisible();
+  await expect(past).toHaveCount(0);
   await expect(page.getByRole('button', { name: '다음 시즌', exact: true })).toBeDisabled();
+  await page.getByRole('button', { name: '이전 시즌', exact: true }).click();
+  await expect(pastTab('득점 순위')).toHaveAttribute('aria-selected', 'true');
+  await expect(scorers).toBeVisible();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
   await page.getByText('우리 클럽 기록집', { exact: true }).click();

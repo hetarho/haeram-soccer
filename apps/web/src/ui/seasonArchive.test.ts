@@ -1,0 +1,74 @@
+import { describe, expect, it } from 'vitest';
+import { createWorld, simulateSeason } from '../../../../packages/engine/src/index';
+import { professionalStart } from '../../../../packages/engine/src/testing';
+import { finalRows, finalZones, seasonSnapshots } from './seasonArchive';
+
+const input = {
+  country: 'ENG' as const,
+  name: 'Haeram Archive',
+  color: '#24664f',
+  seed: 'season-archive',
+  difficulty: 1,
+};
+
+describe('closed season tables', () => {
+  it('reads an amateur season from its last snapshot only', () => {
+    const w = simulateSeason(createWorld(input)),
+      season = w.history[0];
+    expect(seasonSnapshots(w, season).map((s) => s.round)).toEqual(
+      Array.from({ length: 46 }, (_, i) => i + 1),
+    );
+    const rows = finalRows(w, season, season.standings)!;
+    expect(rows).toHaveLength(16);
+    const ours = rows.findIndex(([club]) => w.clubs[club].id === w.playerClub);
+    expect(ours + 1).toBe(season.rank);
+    expect(rows[ours][1]).toBe(season.points);
+    // The archived standings leave the amateur clubs out, so they are no table on their own.
+    delete w.rankHistory;
+    expect(finalRows(w, season, season.standings)).toBeUndefined();
+  });
+
+  it('rebuilds a professional table from the archived standings in the engine order', () => {
+    const w = simulateSeason(professionalStart(createWorld(input))),
+      season = w.history[0];
+    const kept = finalRows(w, season, season.standings)!;
+    expect(kept).toHaveLength(24);
+    delete w.rankHistory;
+    expect(finalRows(w, season, season.standings)).toEqual(kept);
+    expect(finalRows(w, season)).toBeUndefined();
+  });
+
+  it("marks places by the rules of the season's own division", () => {
+    const second = finalZones('ENG', 1, 24);
+    expect(second.zones.slice(0, 7)).toEqual([
+      'automatic',
+      'automatic',
+      'playoff',
+      'playoff',
+      'playoff',
+      'playoff',
+      undefined,
+    ]);
+    expect(second.zones.slice(-4)).toEqual([undefined, 'relegation', 'relegation', 'relegation']);
+    const top = finalZones('ENG', 0, 20);
+    expect(top.zones.filter(Boolean)).toEqual(['relegation', 'relegation', 'relegation']);
+    expect(top.zones.slice(-3)).toEqual(['relegation', 'relegation', 'relegation']);
+    // Regional groups send their winner up and three more to the play-off; amateurs never drop.
+    expect(finalZones('ITA', 2, 20).zones.slice(0, 5)).toEqual([
+      'automatic',
+      'playoff',
+      'playoff',
+      'playoff',
+      undefined,
+    ]);
+    const amateur = finalZones('ENG', 4, 16);
+    expect(amateur.lower).toBe(true);
+    expect(amateur.zones.filter(Boolean)).toEqual([
+      'automatic',
+      'playoff',
+      'playoff',
+      'playoff',
+      'playoff',
+    ]);
+  });
+});

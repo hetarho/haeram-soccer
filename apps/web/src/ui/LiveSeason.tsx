@@ -16,13 +16,12 @@ import { LeagueOverview, RankHistoryGraph, Standings, RoundResults } from './Lea
 import { ScorerStandings, ScorerHistory } from './ScorerPanels';
 import { StrategyPanel } from './StrategyPanel';
 import { FixtureNotebook } from './FixtureNotebook';
-import { SeasonReview } from './SeasonReview';
+import { ClosedSeason, PAST_TABS, type PastTab } from './PastSeason';
 import { seasonName } from './format';
 import { ownLeagueIds } from './league';
 import {
   selectLeagueWorld,
   selectMatchWorld,
-  selectReviewWorld,
   selectScorerWorld,
   selectStrategyWorld,
 } from './liveState';
@@ -358,20 +357,10 @@ const ResultsPane = memo(function ResultsPane() {
   const w = useGameState(selectLeagueWorld)!;
   return <RoundResults w={w} ids={ownLeagueIds(w)} />;
 });
-const ClosedSeason = memo(function ClosedSeason({
-  client,
-  year,
-}: {
-  client: GameClient;
-  year: number;
-}) {
-  const w = useGameState(selectReviewWorld)!;
-  return <SeasonReview w={w} year={year} client={client} />;
-});
 /**
  * Which season the league page shows: the one in progress (the live tabs) or a closed one (its
- * review). The list sits between previous/next arrows; a season close adds itself here instead of
- * stopping the clock.
+ * own tabs). The list sits between previous/next arrows; a season close adds itself here instead
+ * of stopping the clock.
  */
 function SeasonPicker({
   value,
@@ -448,15 +437,25 @@ export function LiveSeason({
     const saved = Number(new URLSearchParams(location.search).get('season'));
     return Number.isInteger(saved) && saved > 0 ? saved : undefined;
   });
+  // A closed season's tab stays while the list steps between closed seasons.
+  const [pastTab, setPastTab] = useState<PastTab>(() => {
+    const saved = new URLSearchParams(location.search).get('tab');
+    return PAST_TABS.find(([id]) => id === saved)?.[0] || 'review';
+  });
   const tab: Tab = page === 'match' ? 'match' : leagueTab;
   useEffect(() => {
     if (page !== 'league') return;
     const url = new URL(location.href);
     url.searchParams.set('view', leagueTab);
-    if (reviewYear === undefined) url.searchParams.delete('season');
-    else url.searchParams.set('season', String(reviewYear));
+    if (reviewYear === undefined) {
+      url.searchParams.delete('season');
+      url.searchParams.delete('tab');
+    } else {
+      url.searchParams.set('season', String(reviewYear));
+      url.searchParams.set('tab', pastTab);
+    }
     history.replaceState(history.state, '', `${url.pathname}${url.search}${url.hash}`);
-  }, [page, leagueTab, reviewYear]);
+  }, [page, leagueTab, reviewYear, pastTab]);
   const reviewing = page === 'league' && reviewYear !== undefined;
   useEffect(() => {
     controller.setWatching(active && requestedPage === page && tab === 'match');
@@ -536,9 +535,7 @@ export function LiveSeason({
         </section>
       ))}
       {reviewing && (
-        <section className={`${s.seasonPane} ${t.pane}`} aria-label="시즌 결산">
-          <ClosedSeason client={client} year={reviewYear} />
-        </section>
+        <ClosedSeason client={client} year={reviewYear} tab={pastTab} onTab={setPastTab} />
       )}
       {preparing && page === 'match' && (
         <StrategyPanelSheet client={client} onClose={() => setPreparing(false)} />

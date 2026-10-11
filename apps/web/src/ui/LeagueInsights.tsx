@@ -1,9 +1,10 @@
 import { Select } from './Select';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { Fixture, World } from '../../../../packages/contracts/src/types';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { kindLabel, seasonName } from './format';
 import {
+  divisionName,
   formFor,
   leagueFixtures,
   leagueRules,
@@ -382,25 +383,88 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
   );
 }
 
-export function RankHistoryGraph({ w, ids = ownLeagueIds(w) }: { w: World; ids?: string[] }) {
+/** The rank chart's frame for `rounds` points and `clubs` places: first place on top. */
+export function rankAxis(rounds: number, clubs: number) {
+  return {
+    x: (i: number) => 42 + (i / Math.max(1, rounds - 1)) * 572,
+    y: (rank: number) => 22 + ((rank - 1) / Math.max(1, clubs - 1)) * 150,
+    ticks: [...new Set([1, Math.ceil(clubs / 2), clubs])],
+  };
+}
+/** Rank grid lines and the first and last round under the series drawn as children. */
+export function RankChart({
+  label,
+  axis,
+  first,
+  last,
+  children,
+}: {
+  label: string;
+  axis: ReturnType<typeof rankAxis>;
+  first: number;
+  last: number;
+  children: ReactNode;
+}) {
+  return (
+    <svg viewBox="0 0 650 205" role="img" aria-label={label}>
+      {axis.ticks.map((rank) => (
+        <g key={rank}>
+          <line
+            x1="42"
+            x2="614"
+            y1={axis.y(rank)}
+            y2={axis.y(rank)}
+            stroke="#dce2d5"
+            strokeDasharray="3 5"
+          />
+          <text x="30" y={axis.y(rank) + 4} textAnchor="end">
+            {rank}위
+          </text>
+        </g>
+      ))}
+      {children}
+      <text x="42" y="198">
+        {first}라운드
+      </text>
+      <text x="614" y="198" textAnchor="end">
+        {last}라운드
+      </text>
+    </svg>
+  );
+}
+
+export function RankHistoryGraph({
+  w,
+  ids = ownLeagueIds(w),
+  year: pinned,
+}: {
+  w: World;
+  ids?: string[];
+  /** One closed season, drawn from its kept snapshots without the season list. */
+  year?: number;
+}) {
   const ownLeague = sameMembers(ids, ownLeagueIds(w));
-  const years = [
-    w.year,
-    ...new Set(
-      (w.rankHistory || [])
-        .filter(
-          (snapshot) =>
-            ownLeague &&
-            snapshot.year < w.year &&
-            snapshot.round > 0 &&
-            snapshot.rows.some(([index]) => w.clubs[index]?.id === w.playerClub),
-        )
-        .map((snapshot) => snapshot.year),
-    ),
-  ].sort((a, b) => b - a);
+  const years =
+    pinned !== undefined
+      ? [pinned]
+      : [
+          w.year,
+          ...new Set(
+            (w.rankHistory || [])
+              .filter(
+                (snapshot) =>
+                  ownLeague &&
+                  snapshot.year < w.year &&
+                  snapshot.round > 0 &&
+                  snapshot.rows.some(([index]) => w.clubs[index]?.id === w.playerClub),
+              )
+              .map((snapshot) => snapshot.year),
+          ),
+        ].sort((a, b) => b - a);
   const [selectedYear, setSelectedYear] = useState<number>(),
     [selectedComparison, setChoice] = useState('nearby');
-  const year = selectedYear !== undefined && years.includes(selectedYear) ? selectedYear : w.year;
+  const year =
+    pinned ?? (selectedYear !== undefined && years.includes(selectedYear) ? selectedYear : w.year);
   const archived = (w.rankHistory || []).filter(
     (snapshot) =>
       snapshot.year === year &&
@@ -438,9 +502,9 @@ export function RankHistoryGraph({ w, ids = ownLeagueIds(w) }: { w: World; ids?:
       ? [primary, ...graphIds.filter((id) => id !== primary)]
       : [primary, compare].filter((id): id is string => !!id);
   const name = (id: string) => w.clubs.find((c) => c.id === id)?.name || id;
-  const x = (i: number) => 42 + (i / Math.max(1, timeline.length - 1)) * 572,
-    y = (r: number) => 22 + ((r - 1) / Math.max(1, graphIds.length - 1)) * 150;
-  const ticks = [...new Set([1, Math.ceil(graphIds.length / 2), graphIds.length])];
+  const axis = rankAxis(timeline.length, graphIds.length),
+    { x, y } = axis;
+  const home = w.clubs.find((c) => c.id === w.playerClub)?.country ?? '';
   return (
     <section className={s.panel} aria-label="시즌 순위 추이">
       <div className={s.panelHead}>
@@ -448,8 +512,10 @@ export function RankHistoryGraph({ w, ids = ownLeagueIds(w) }: { w: World; ids?:
           <h3>시즌 순위 추이</h3>
           <span>
             {seasonName(year)}
-            {year !== w.year && archived[0] ? ` · 당시 ${archived[0].tier + 1}부` : ''} · 위로
-            올라갈수록 높은 순위
+            {year !== w.year && archived[0]
+              ? ` · 당시 ${divisionName(home, archived[0].tier, archived[0].group)}`
+              : ''}{' '}
+            · 위로 올라갈수록 높은 순위
           </span>
         </div>
         <div className={s.graphFilters}>
@@ -500,26 +566,12 @@ export function RankHistoryGraph({ w, ids = ownLeagueIds(w) }: { w: World; ids?:
       ) : (
         <>
           <figure className={s.chart}>
-            <svg
-              viewBox="0 0 650 205"
-              role="img"
-              aria-label={`${name(primary)} 순위 추이: ${timeline.map((r) => `${r.round}라운드 ${r.rows.find((row) => row.id === primary)?.rank}위`).join(', ')}`}
+            <RankChart
+              label={`${name(primary)} 순위 추이: ${timeline.map((r) => `${r.round}라운드 ${r.rows.find((row) => row.id === primary)?.rank}위`).join(', ')}`}
+              axis={axis}
+              first={timeline[0].round}
+              last={timeline.at(-1)!.round}
             >
-              {ticks.map((rank) => (
-                <g key={rank}>
-                  <line
-                    x1="42"
-                    x2="614"
-                    y1={y(rank)}
-                    y2={y(rank)}
-                    stroke="#dce2d5"
-                    strokeDasharray="3 5"
-                  />
-                  <text x="30" y={y(rank) + 4} textAnchor="end">
-                    {rank}위
-                  </text>
-                </g>
-              ))}
               {[...series].reverse().map((id) => (
                 <g key={id} opacity={choice === 'all' && id !== primary ? 0.35 : 1}>
                   <polyline
@@ -555,13 +607,7 @@ export function RankHistoryGraph({ w, ids = ownLeagueIds(w) }: { w: World; ids?:
                     })}
                 </g>
               ))}
-              <text x="42" y="198">
-                {timeline[0].round}라운드
-              </text>
-              <text x="614" y="198" textAnchor="end">
-                {timeline.at(-1)!.round}라운드
-              </text>
-            </svg>
+            </RankChart>
             <figcaption>
               <span>
                 <i className={s.primaryDot} />

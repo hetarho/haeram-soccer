@@ -58,6 +58,11 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await chooseOption(page.getByRole('combobox', { name: '리그 시즌', exact: true }), '1950');
   await expect(page.getByTestId('season-review')).toBeVisible();
   await expect(page.getByTestId('season-move')).toBeVisible();
+  // The review opens first; the final table is the closed season's next tab.
+  await page
+    .getByRole('tablist', { name: '지난 시즌 보기' })
+    .getByRole('tab', { name: '순위표', exact: true })
+    .click();
   await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('Haeram');
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
   await chooseOption(page.getByRole('combobox', { name: '기록 시즌', exact: true }), '1950');

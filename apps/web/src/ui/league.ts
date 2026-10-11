@@ -66,6 +66,12 @@ export const ABROAD: Record<string, string> = {
   FIN: '핀란드',
   HUN: '헝가리',
 };
+/** A division of a country: "2부", "3부 B조" for a regional group, "아마추어 리그" below them. */
+export function divisionName(code: string, tier: number, group?: number) {
+  const groups = COUNTRIES.find((c) => c.code === code)?.groups[tier];
+  if (!groups) return '아마추어 리그';
+  return `${tier + 1}부${group !== undefined && groups.length > 1 ? ` ${String.fromCharCode(65 + group)}조` : ''}`;
+}
 /**
  * Where a club plays as a fan would say it: "2부" at home, "독일 1부" or "이탈리아 3부 B조"
  * abroad, "아마추어 리그" below the professional game and "해외 클럽 · 그리스" for continental
@@ -75,10 +81,7 @@ export function clubDivision(w: World, club: Club) {
   const profile = COUNTRIES.find((c) => c.code === club.country);
   if (!profile || club.id.startsWith('euro:'))
     return `해외 클럽 · ${ABROAD[club.country] ?? club.country}`;
-  const groups = profile.groups[club.tier],
-    division = !groups
-      ? '아마추어 리그'
-      : `${club.tier + 1}부${groups.length > 1 ? ` ${String.fromCharCode(65 + club.group)}조` : ''}`,
+  const division = divisionName(club.country, club.tier, club.group),
     home = w.clubs.find((c) => c.id === w.playerClub)?.country;
   return club.country === home ? division : `${profile.name} ${division}`;
 }
@@ -196,6 +199,27 @@ export function formFor(fixtures: Fixture[], id: string): ('승' | '무' | '패'
     });
 }
 
+/**
+ * The promotion and relegation places of a division under its country's rules: `tier` beyond the
+ * professional divisions is the amateur league.
+ */
+export function divisionRules(code: string, tier: number) {
+  const cp = country(code),
+    lower = tier >= cp.groups.length;
+  const regional = (cp.groups[tier]?.length || 0) > 1;
+  const automatic = lower ? 1 : tier === 0 ? 0 : regional ? 1 : cp.automatic[tier - 1];
+  // The amateur champions go up; second to fifth play off for one more place.
+  const playoff = lower
+    ? 4
+    : tier > 0 && cp.moves[tier - 1] > cp.automatic[tier - 1]
+      ? regional
+        ? 3
+        : 4
+      : 0;
+  const relegation = lower ? 0 : cp.moves[tier] || 2;
+  return { automatic, playoff, relegation, lower, cp };
+}
+
 export function leagueRules(w: World, ids: string[]) {
   const clubs = ids.map((id) => w.clubs.find((c) => c.id === id)).filter((c): c is Club => !!c);
   const first = clubs[0];
@@ -206,18 +230,5 @@ export function leagueRules(w: World, ids: string[]) {
     )
   )
     return undefined;
-  const cp = country(first.country),
-    lower = first.tier >= cp.groups.length;
-  const regional = (cp.groups[first.tier]?.length || 0) > 1;
-  const automatic = lower ? 1 : first.tier === 0 ? 0 : regional ? 1 : cp.automatic[first.tier - 1];
-  // The amateur champions go up; second to fifth play off for one more place.
-  const playoff = lower
-    ? 4
-    : first.tier > 0 && cp.moves[first.tier - 1] > cp.automatic[first.tier - 1]
-      ? regional
-        ? 3
-        : 4
-      : 0;
-  const relegation = lower ? 0 : cp.moves[first.tier] || 2;
-  return { automatic, playoff, relegation, lower, first, cp };
+  return { ...divisionRules(first.country, first.tier), first };
 }

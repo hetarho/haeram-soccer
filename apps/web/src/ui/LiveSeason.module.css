@@ -244,10 +244,12 @@
 }
 
 @media (max-width: 760px) {
-  /* All six league views stay as tabs; labels wrap inside equal cells instead of overflowing. */
+  /* Every league view stays a tab (six live, five for a closed season); labels wrap inside
+     equal cells instead of overflowing. */
   .tabs.tabs {
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
     gap: 4px;
     overflow: visible;
   }

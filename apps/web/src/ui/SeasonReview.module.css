@@ -435,6 +435,165 @@
   color: var(--gold);
   font-weight: 800;
 }
+.tableMeta {
+  margin: -2px 0 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.champion {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+  color: #2a1c00;
+  background: var(--gold-fill);
+  vertical-align: middle;
+}
+/* Our record under our name: the only club whose wins, draws and losses survive. */
+.record {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.zones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 8px 0 4px;
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+.zones span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.zones i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+/* Our league games: result chip, round and opponent, score and the report. */
+.games {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 8px 10px;
+  list-style: none;
+}
+.games li {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 4px 3px 8px;
+  border-radius: 10px;
+  background: var(--surface-deep);
+  font-size: 13px;
+}
+.games b {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  font-size: 11px;
+}
+.gameText {
+  display: grid;
+  min-width: 0;
+  justify-items: start;
+}
+.gameText small {
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+.gameText > button > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.games em {
+  min-width: 34px;
+  font-style: normal;
+  font-weight: 900;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.games button {
+  padding: 4px 10px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+/* A note at the foot of a panel, inset like the panel's rows. */
+.panelNote {
+  margin: 0;
+  padding: 8px 14px 12px;
+  font-size: 10.5px;
+  line-height: 1.45;
+  color: var(--text-faint);
+}
+
+/* The season's top scorer, by goals and then fewer appearances. */
+.king {
+  background: color-mix(in srgb, var(--gold) 12%, transparent);
+}
+.tags {
+  display: inline-flex;
+  gap: 6px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.tags b {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.tags .crown {
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-weight: 900;
+  color: #2a1c00;
+  background: var(--gold-fill);
+}
+.scorers.scorers {
+  min-width: 520px;
+}
+.scorers th:nth-child(3) {
+  text-align: left;
+}
+/* Phones: the numbers keep their columns; names and clubs share what is left, cut short. */
+@media (max-width: 760px) {
+  .scorers.scorers {
+    min-width: 0;
+  }
+  .scorers th,
+  .scorers td {
+    padding: 9px 4px;
+    font-size: 11px;
+  }
+  .scorers tr > :nth-child(2),
+  .scorers tr > :nth-child(3) {
+    width: 50%;
+    max-width: 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .scorers td:nth-child(3) button > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tags {
+    display: flex;
+    margin: 2px 0 0;
+  }
+}
 
 .empty {
   display: grid;

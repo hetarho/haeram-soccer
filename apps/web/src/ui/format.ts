@@ -33,6 +33,11 @@ export function compactMoney(value: string, code: string, year: number) {
   return `${sign}${c.symbol}${whole.toLocaleString('en-GB')}${places ? '.' + String(fraction).padStart(places, '0') : ''}${unit}`;
 }
 export const number = (n: number) => Math.round(n).toLocaleString('ko-KR');
+/** A difference with its sign: "+3", "−1.5", "0". */
+export const signed = (value: number, digits = 0) => {
+  const text = digits ? Math.abs(value).toFixed(digits) : number(Math.abs(value));
+  return value > 0 ? `+${text}` : value < 0 ? `−${text}` : digits ? (0).toFixed(digits) : '0';
+};
 export const seasonName = (year: number) => `${year}/${String(year + 1).slice(-2)}`;
 /**
  * When a contract that runs `until` that year ends, in seasons rather than a bare year:
