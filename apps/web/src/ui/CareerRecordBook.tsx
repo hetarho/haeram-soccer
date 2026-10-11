@@ -15,8 +15,9 @@ import { PlayerLink } from './PlayerSheet';
 import a from './Analysis.module.css';
 import s from './App.module.css';
 
-function SeasonContext({ w, record }: { w: World; record: SeasonArchive }) {
-  const code = w.clubs.find((c) => c.id === w.playerClub)!.country;
+const ownCountry = (w: World) => w.clubs.find((c) => c.id === w.playerClub)!.country;
+
+function SeasonContext({ code, record }: { code: string; record: SeasonArchive }) {
   return (
     <p className={a.note}>
       {seasonName(record.year)} · {divisionName(code, record.tier, record.group)} · 리그{' '}
@@ -46,7 +47,8 @@ function Leader({ player, index, label }: { player?: Player; index: number; labe
 }
 /** The club's season records and its all-time player leaders, on the records room's front. */
 export function CareerRecordBook({ w }: { w: World }) {
-  const records = careerRecords(w);
+  const records = careerRecords(w),
+    code = ownCountry(w);
   return (
     <Panel title="우리 클럽 기록집" note="RECORD BOOK">
       <section className={`${s.panelBody} ${a.book}`} aria-label="우리 클럽 기록집">
@@ -60,13 +62,9 @@ export function CareerRecordBook({ w }: { w: World }) {
             <article>
               <h4>가장 높은 무대의 성적</h4>
               <b>
-                {divisionName(
-                  w.clubs.find((c) => c.id === w.playerClub)!.country,
-                  records.finish.tier,
-                )}{' '}
-                {records.finish.rank}위
+                {divisionName(code, records.finish.tier)} {records.finish.rank}위
               </b>
-              <SeasonContext w={w} record={records.finish} />
+              <SeasonContext code={code} record={records.finish} />
             </article>
           )}
           {records.points && (
@@ -76,7 +74,7 @@ export function CareerRecordBook({ w }: { w: World }) {
               <p className={a.note}>
                 {records.points.points}점 / {records.points.played}경기
               </p>
-              <SeasonContext w={w} record={records.points} />
+              <SeasonContext code={code} record={records.points} />
             </article>
           )}
           {records.attack && (
@@ -86,14 +84,14 @@ export function CareerRecordBook({ w }: { w: World }) {
               <p className={a.note}>
                 {records.attack.gf}골 / {records.attack.played}경기
               </p>
-              <SeasonContext w={w} record={records.attack} />
+              <SeasonContext code={code} record={records.attack} />
             </article>
           )}
           {records.supporters && (
             <article>
               <h4>시즌 결산 서포터 최다</h4>
               <b>{number(records.supporters.fans)}명</b>
-              <SeasonContext w={w} record={records.supporters} />
+              <SeasonContext code={code} record={records.supporters} />
             </article>
           )}
         </div>
@@ -134,7 +132,8 @@ function Trophy({ label, years, gold }: { label: string; years: number[]; gold?:
  */
 export function TrophyCabinet({ w }: { w: World }) {
   const cabinet = trophyCabinet(w),
-    code = w.clubs.find((c) => c.id === w.playerClub)!.country;
+    best = cabinet.best,
+    code = ownCountry(w);
   return (
     <Panel title="트로피 진열장" note={`${cabinet.seasons}시즌`}>
       <div className={s.panelBody}>
@@ -155,14 +154,11 @@ export function TrophyCabinet({ w }: { w: World }) {
               {cabinet.continental.map((title) => (
                 <Trophy key={title.name} label={`${title.name} 우승`} years={title.years} gold />
               ))}
-              {cabinet.best && (
+              {best && (
                 <li>
                   <span>최고 성적</span>{' '}
-                  <strong>
-                    {divisionName(code, cabinet.best.tier, cabinet.best.group)} {cabinet.best.rank}
-                    위
-                  </strong>{' '}
-                  <small>({seasonName(cabinet.best.year)})</small>
+                  <strong>{`${divisionName(code, best.tier, best.group)} ${best.rank}위`}</strong>{' '}
+                  <small>({seasonName(best.year)})</small>
                 </li>
               )}
             </ul>
