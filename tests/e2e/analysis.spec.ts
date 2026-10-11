@@ -78,10 +78,21 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   await expect(book).toContainText('완료한 1개 시즌');
   await expect(book).toContainText('최고 승점 페이스');
   const facts = await book.innerText();
-  await page.reload();
-  await page.getByText('우리 클럽 기록집', { exact: true }).click();
-  await expect(book).toHaveText(facts, { useInnerText: true });
-  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+  // A fresh page reads the same saved records. CI's software-rendered WebKit stalls its web
+  // process after a reload of this long page (no paints, then the page closes ~30 s later), so
+  // the old page closes, releasing the writer lock, and a new one opens on the records room.
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  const context = page.context();
+  await page.close();
+  const fresh = await context.newPage();
+  await fresh.goto('/history');
+  await expect(fresh.getByTestId('save-status')).toContainText('저장 완료');
+  await fresh.getByText('우리 클럽 기록집', { exact: true }).click();
+  await expect(fresh.getByRole('region', { name: '우리 클럽 기록집', exact: true })).toHaveText(
+    facts,
+    { useInnerText: true },
+  );
+  expect(await horizontalOverflow(fresh)).toBeLessThanOrEqual(0);
 });
 
 test('uses matching archive samples for season splits and competition filters', async ({
