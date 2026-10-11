@@ -62,6 +62,8 @@ function reader(s: string, width: number) {
   );
   let offset = 0;
   return {
+    /** Rows in the stream, for streams whose row counts are declared elsewhere. */
+    rows: count,
     take(n: number) {
       if (offset + n > values.length) throw new Error('통계 누락');
       const result = values.slice(offset, offset + n);
@@ -136,6 +138,10 @@ interface Packed {
   rankCounts?: number[];
   scorerRows?: string;
   scorerCounts?: number[];
+  /** Archived bracket tie rows of every season in one 7-wide stream. */
+  bracketTies?: string;
+  /** Per season, the tie count of each archived bracket round in order. */
+  bracketCounts?: number[][];
   events?: Tuple[];
   eventStats?: string;
   eventDetails?: string;
@@ -276,6 +282,9 @@ export function pack(w: World): Packed {
       event.currency === undefined ? 0 : id(event.currency) + 1,
     ];
   });
+  const bracketRounds = w.history.map((h) => (h.brackets || []).flatMap((b) => b.rounds));
+  const bracketRows = bracketRounds.flat().flatMap((round) => round.ties);
+  if (bracketRows.some((row) => row.length !== 7)) throw new Error('대진 기록 압축 차원 손상');
   return {
     format: 'compact1',
     world: {
@@ -300,6 +309,14 @@ export function pack(w: World): Packed {
           ...(e.standings ? { standings: [] } : {}),
           ...(e.secondStandings ? { secondStandings: [] } : {}),
         })),
+        ...(h.brackets
+          ? {
+              brackets: h.brackets.map((b) => ({
+                ...b,
+                rounds: b.rounds.map((round) => ({ ...round, ties: [] })),
+              })),
+            }
+          : {}),
       })),
     },
     dict,
@@ -389,7 +406,59 @@ export function pack(w: World): Packed {
           scorerCounts: w.scorerSeason.history.map((s) => s.rows.length),
         }
       : {}),
+    ...(w.history.some((h) => h.brackets)
+      ? {
+          bracketTies: integers(bracketRows.flat(), 7),
+          bracketCounts: bracketRounds.map((rounds) => rounds.map((round) => round.ties.length)),
+        }
+      : {}),
   };
+}
+/**
+ * Archived bracket ties per season: the 7-wide stream cut by each round's declared tie count.
+ * Counts that disagree with the archived rounds or with the stream reject the save.
+ */
+function unpackBrackets(p: Packed) {
+  const seasons = p.world.history;
+  if (!seasons.some((h) => h.brackets !== undefined)) {
+    if (p.bracketTies !== undefined || p.bracketCounts !== undefined)
+      throw new Error('대진 기록 압축 데이터 손상');
+    return undefined;
+  }
+  const counts = p.bracketCounts;
+  if (
+    typeof p.bracketTies !== 'string' ||
+    !Array.isArray(counts) ||
+    counts.length !== seasons.length
+  )
+    throw new Error('대진 기록 압축 데이터 손상');
+  let total = 0;
+  seasons.forEach((h, i) => {
+    const brackets = h.brackets || [];
+    if (
+      !Array.isArray(brackets) ||
+      brackets.some((b) => !Array.isArray(b?.rounds)) ||
+      !Array.isArray(counts[i]) ||
+      counts[i].length !== brackets.reduce((sum, b) => sum + b.rounds.length, 0) ||
+      counts[i].some((n) => !Number.isInteger(n) || n < 0 || n > 16)
+    )
+      throw new Error('대진 기록 압축 데이터 손상');
+    for (const n of counts[i]) total += n;
+  });
+  const ties = reader(p.bracketTies, 7);
+  if (ties.rows !== total) throw new Error('대진 기록 압축 데이터 손상');
+  const result = seasons.map((h, i) => {
+    let at = 0;
+    return h.brackets?.map((b) => ({
+      ...b,
+      rounds: b.rounds.map((round) => ({
+        ...round,
+        ties: Array.from({ length: counts[i][at++] }, () => ties.take(7)),
+      })),
+    }));
+  });
+  ties.done();
+  return result;
 }
 export function unpack(p: Packed): World {
   if (
@@ -621,11 +690,13 @@ export function unpack(p: Packed): World {
     fields.done();
     details.done();
   }
+  const brackets = unpackBrackets(p);
   const history = p.world.history.map((h, i) => {
     const count = p.counts[i];
     if (!Number.isInteger(count) || count < 0 || count > 1000) throw new Error('시즌 통계 손상');
     return {
       ...h,
+      ...(h.brackets ? { brackets: brackets![i] } : {}),
       standings: Array.from({ length: count }, () => standings.take(6)),
       europe: h.europe.map((e, j) => {
         const sizes = p.euroCounts?.[i]?.[j] || [0, 0];

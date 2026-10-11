@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { canonical } from '../../../../packages/contracts/src/index';
-import { advanceRound, createWorld } from '../../../../packages/engine/src/index';
-import { pack, unpack } from './packing';
+import { canonical, validateWorld } from '../../../../packages/contracts/src/index';
+import { advanceRound, createWorld, simulateSeason } from '../../../../packages/engine/src/index';
+import { base64, pack, unbase64, unpack } from './packing';
 import { packBitColumns } from './bitpacking';
 
 const career = () => {
@@ -110,6 +110,53 @@ describe('lossless career stream compaction', () => {
     expect(canonical(unpack(pack(w)))).toBe(canonical(w));
     w.ownMatches[0].metrics[0][7] = -1;
     expect(() => pack(w)).toThrow('안전한 정수');
+  });
+
+  it('streams archived bracket ties and rejects counts that disagree with the stream', () => {
+    const w = simulateSeason(
+      createWorld({
+        country: 'ENG',
+        name: 'Bracket Athletic',
+        color: '#126044',
+        seed: 'compact-brackets',
+        difficulty: 1,
+      }),
+    );
+    const rounds = w.history[0].brackets!.flatMap((b) => b.rounds);
+    expect(rounds.length).toBeGreaterThan(0);
+    const packed = pack(w);
+    expect(packed.world.history[0].brackets!.flatMap((b) => b.rounds)).toEqual(
+      rounds.map((round) => ({ ...round, ties: [] })),
+    );
+    expect(packed.bracketCounts).toEqual([rounds.map((round) => round.ties.length)]);
+    expect(canonical(validateWorld(unpack(structuredClone(packed))))).toBe(canonical(w));
+
+    const bytes = unbase64(packed.bracketTies!);
+    const damaged = [
+      // One tie short: the last column holds single-byte outcomes.
+      { bracketTies: base64(bytes.slice(0, -7)) },
+      { bracketCounts: [rounds.map((round, r) => round.ties.length - (r === 0 ? 1 : 0))] },
+      { bracketCounts: [[...rounds.map((round) => round.ties.length), 0]] },
+      { bracketCounts: [] },
+      { bracketCounts: undefined },
+      { bracketTies: undefined },
+    ];
+    for (const fields of damaged)
+      expect(() => unpack({ ...structuredClone(packed), ...fields })).toThrow(
+        '대진 기록 압축 데이터 손상',
+      );
+    // A cut inside a row leaves the stream ragged.
+    expect(() =>
+      unpack({ ...structuredClone(packed), bracketTies: base64(bytes.slice(0, -1)) }),
+    ).toThrow();
+
+    // Seasons closed before brackets were archived have neither the rounds nor the stream.
+    const legacy = structuredClone(w);
+    delete legacy.history[0].brackets;
+    const old = pack(legacy);
+    expect(old).not.toHaveProperty('bracketTies');
+    expect(canonical(unpack(structuredClone(old)))).toBe(canonical(legacy));
+    expect(() => unpack({ ...old, bracketTies: '' })).toThrow('대진 기록 압축 데이터 손상');
   });
 
   it('rejects damaged actor dimensions, incomplete/extra streams and unknown metadata', () => {

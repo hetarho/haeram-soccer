@@ -33,6 +33,18 @@ export function eloRank(w: World) {
   return w.clubs.filter((c) => c.id !== w.playerClub && eloOf(c) > own).length + 1;
 }
 
+/**
+ * The Club Elo spread, rounded: lowest and highest of every club in the world, then of `league`,
+ * the scale a season archive places the own rating on (→HIST-12).
+ */
+export function eloRange(w: World, league: readonly Club[]): [number, number, number, number] {
+  const spread = (clubs: readonly Club[]) => {
+    const elos = clubs.map(eloOf);
+    return [Math.round(Math.min(...elos)), Math.round(Math.max(...elos))] as const;
+  };
+  return [...spread(w.clubs), ...spread(league)];
+}
+
 /** Market value of the squad: the fee clubs would consider fair for each player. */
 export function squadValue(w: World) {
   return activePlayers(w)

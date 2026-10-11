@@ -223,6 +223,28 @@ const cupFinal = z.strictObject({
 const champions = z
   .array(z.object({ country: text, club: id, cup: id, cupFinal: cupFinal.optional() }))
   .max(60);
+const clubIndex = z.number().int().nonnegative();
+const goals = z.number().int().min(0).max(99);
+const archivedElo = z.number().int().min(0).max(4000);
+/** An archived bracket starts at a round of 32 clubs or fewer: at most 16 ties and five rounds. */
+const bracket = z.strictObject({
+  key: text,
+  rounds: z
+    .array(
+      z.strictObject({
+        label: text,
+        round: z.number().int().min(0).max(100),
+        legs: z.union([z.literal(1), z.literal(2)]),
+        ties: z
+          .array(
+            z.tuple([clubIndex, clubIndex, goals, goals, goals, goals, z.number().int().min(0)]),
+          )
+          .max(16),
+        byes: z.array(clubIndex).max(32).optional(),
+      }),
+    )
+    .max(6),
+});
 const archive = z.object({
   year: number,
   tier: number,
@@ -273,6 +295,28 @@ const archive = z.object({
     )
     .max(10)
     .optional(),
+  scorers: z
+    .array(
+      z.strictObject({
+        name: text,
+        club: clubIndex,
+        role: z.enum(['GK', 'DEF', 'MID', 'FWD']),
+        goals: z.number().int().positive(),
+        appearances: z.number().int().min(1).max(46),
+      }),
+    )
+    .max(10)
+    .optional(),
+  ranks: z.array(z.number().int().min(1).max(100)).max(46).optional(),
+  // The own league is part of the world, so its spread lies inside the world's.
+  eloRange: z
+    .tuple([archivedElo, archivedElo, archivedElo, archivedElo])
+    .refine(
+      ([low, high, leagueLow, leagueHigh]) =>
+        low <= leagueLow && leagueLow <= leagueHigh && leagueHigh <= high,
+    )
+    .optional(),
+  brackets: z.array(bracket).max(8).optional(),
 });
 const knockoutRound = z.strictObject({
   label: text,
@@ -708,6 +752,24 @@ export function validateWorld(input: unknown): World {
         row[0] >= w.clubs.length
       )
         throw new Error('시즌 순위 참조 손상');
+  for (const h of w.history) {
+    if (h.scorers?.some((scorer) => scorer.club >= w.clubs.length))
+      throw new Error('시즌 득점 기록 참조 손상');
+    for (const round of (h.brackets || []).flatMap((b) => b.rounds))
+      if (
+        round.byes?.some((club) => club >= w.clubs.length) ||
+        round.ties.some(
+          ([home, away, , , leg2Home, leg2Away, outcome]) =>
+            home >= w.clubs.length ||
+            away >= w.clubs.length ||
+            home === away ||
+            outcome > 5 ||
+            // A single match has no second leg to score or to win on away goals.
+            (round.legs === 1 && (leg2Home !== 0 || leg2Away !== 0 || outcome >= 4)),
+        )
+      )
+        throw new Error('대진 기록 참조 손상');
+  }
   for (const t of w.europe)
     if (t.clubs.some((c) => !ids.has(c)) || (t.winner && !ids.has(t.winner)))
       throw new Error('유럽대회 참조 손상');

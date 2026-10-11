@@ -6,8 +6,8 @@ import {
   europeFinal,
 } from './europe';
 import { advanceCups, cupKey, finishCups, prepareCups } from './cups';
-import { finalOf, ownReached } from './knockout';
-import { clubValuation, eloOf, eloRank, settleElo, squadValue } from './ratings';
+import { archivedRounds, finalOf, ownReached } from './knockout';
+import { clubValuation, eloOf, eloRange, eloRank, settleElo, squadValue } from './ratings';
 import { evolveClubs } from './dynamics';
 import { announceRetirements, clearHealed, injuriesAfterMatch, retireAtClose } from './careers';
 import {
@@ -19,6 +19,7 @@ import {
   yearlyStaff,
 } from './operations';
 import type {
+  BracketArchive,
   Club,
   CupRun,
   Fixture,
@@ -49,6 +50,7 @@ import {
   seasonLength,
 } from './calendar';
 import {
+  archivedScorers,
   ensureScorers,
   isScoringFixture,
   prepareScorers,
@@ -433,6 +435,54 @@ function cupRuns(w: World): CupRun[] {
   }
   return runs;
 }
+/**
+ * The own league position after each round, from the snapshots the live rank graph draws (pruned
+ * after ten seasons). None unless every round was recorded: older saves began mid-season, and a
+ * shorter series would put each rank against the wrong round.
+ */
+function seasonRanks(w: World, tier: number, group: number) {
+  const snapshots = (w.rankHistory || [])
+    .filter((s) => s.year === w.year && s.round > 0 && s.tier === tier && s.group === group)
+    .sort((a, b) => a.round - b.round);
+  const ranks = snapshots.map(
+    (s) => s.rows.findIndex(([index]) => w.clubs[index]?.id === w.playerClub) + 1,
+  );
+  return snapshots.length === w.round &&
+    snapshots.every((s, i) => s.round === i + 1) &&
+    ranks.every((rank) => rank > 0)
+    ? ranks
+    : undefined;
+}
+/** The brackets of the own country's cup and every continental knockout but the Super Cup. */
+function seasonBrackets(w: World): BracketArchive[] {
+  const cup = w.cups?.find((c) => c.country === clubOf(w).country);
+  const sources = [
+    ...(cup
+      ? [{ key: 'cup', id: cupKey(cup.country), rounds: cup.rounds, fixtures: cup.fixtures }]
+      : []),
+    ...w.europe
+      .filter((t) => t.key !== 'super')
+      .map((t) => ({ key: t.key, id: t.key, rounds: t.rounds || [], fixtures: t.fixtures })),
+  ];
+  return sources.flatMap(({ key, id, rounds, fixtures }) => {
+    const archived = archivedRounds(w, id, rounds, fixtures);
+    return archived ? [{ key, rounds: archived }] : [];
+  });
+}
+/**
+ * What a closed season's pages show once its live tables are gone: the league's leading scorers,
+ * the own rank after every round, the Club Elo spread against `league` and the brackets.
+ */
+function seasonRecords(w: World, league: Club[], tier: number, group: number) {
+  const scorers = archivedScorers(w),
+    ranks = seasonRanks(w, tier, group);
+  return {
+    ...(scorers ? { scorers } : {}),
+    ...(ranks ? { ranks } : {}),
+    ...(league.length ? { eloRange: eloRange(w, league) } : {}),
+    brackets: seasonBrackets(w),
+  };
+}
 export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   if (w.round < 46 || w.fixtures.some((f) => !f.score))
     throw new Error('아직 정규 시즌이 끝나지 않았습니다.');
@@ -507,6 +557,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     squadValue: squadValue(w),
     clubValue: valuation.total,
     runs: cupRuns(w),
+    ...seasonRecords(w, order, oldTier, oldGroup),
   });
   w.lastChampions = champions.map(({ country, club, cup }) => ({ country, club, cup }));
   retireAtClose(w);

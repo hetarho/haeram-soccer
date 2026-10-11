@@ -1,4 +1,10 @@
-import type { Fixture, GoalScorerSeason, MatchPlayback, World } from '../../contracts/src/types';
+import type {
+  Fixture,
+  GoalScorerSeason,
+  MatchPlayback,
+  SeasonArchive,
+  World,
+} from '../../contracts/src/types';
 import { currentDay } from './calendar';
 import { compareIds } from './primitives';
 import { clubOf } from './world';
@@ -46,6 +52,32 @@ export function rankedScorers(season: GoalScorerSeason) {
         a.player.appearances - b.player.appearances ||
         compareIds(a.player.id, b.player.id),
     );
+}
+
+/**
+ * The league's ten leading scorers of the season, for its archive. A table tracked only from a
+ * later round (an older save) is not the season's record, so it keeps none.
+ */
+export function archivedScorers(w: World): SeasonArchive['scorers'] {
+  const season = w.scorerSeason;
+  if (
+    !season ||
+    season.year !== w.year ||
+    season.groupKey !== competitionKey(w) ||
+    season.trackedSinceRound !== 1
+  )
+    return undefined;
+  const index = new Map(w.clubs.map((club, i) => [club.id, i]));
+  return rankedScorers(season)
+    .filter(({ player }) => index.has(player.club))
+    .slice(0, 10)
+    .map(({ player }) => ({
+      name: player.name,
+      club: index.get(player.club)!,
+      role: player.role,
+      goals: player.goals,
+      appearances: player.appearances,
+    }));
 }
 
 /** Contributions share the exact goal events used by highlights, including background games. */

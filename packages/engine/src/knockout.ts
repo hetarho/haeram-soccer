@@ -1,4 +1,5 @@
 import type {
+  BracketArchive,
   CupFinal,
   Fixture,
   KnockoutRound,
@@ -63,8 +64,9 @@ export function seededDraw(seeded: readonly string[]): KnockoutTie[] {
   return ties;
 }
 
-export function tieId(w: World, key: string, round: number, tie: number) {
-  return `${w.year}:${key}:k${round}:${tie}`;
+/** A tie's fixture ID; `year` reaches the fixtures of a season already closed. */
+export function tieId(w: World, key: string, round: number, tie: number, year = w.year) {
+  return `${year}:${key}:k${round}:${tie}`;
 }
 
 /** The fixtures of one tie: a single match, or a first leg and its return a round later. */
@@ -102,15 +104,16 @@ export function tieFixtures(
   });
 }
 
-/** The legs of tie `t` in round `index`, in playing order. */
+/** The legs of tie `t` in round `index` of the `year` season, in playing order. */
 export function legsOf(
   w: World,
   fixtures: readonly Fixture[],
   key: string,
   index: number,
   t: number,
+  year = w.year,
 ) {
-  const id = tieId(w, key, index, t);
+  const id = tieId(w, key, index, t, year);
   return fixtures
     .filter((f) => f.id === id || f.id === `${id}:2`)
     .sort((a, b) => a.round - b.round);
@@ -207,6 +210,69 @@ export function finalOf(
     score: homeWon ? [home, away] : [away, home],
     ...(tie.decided === 'pens' ? { decided: 'pens' as const } : {}),
   };
+}
+
+/** Clubs an archived bracket starts from at most, as the live bracket tree does (→WEB-40). */
+const ARCHIVED_FIELD = 32;
+
+/**
+ * A finished bracket for the season archive: from the first round of 32 clubs or fewer (byes
+ * counted, qualifying rounds aside) through the final, as `BracketArchive` tie rows. Undefined
+ * while any of those ties is undecided, so an archive never holds a half-played round.
+ */
+export function archivedRounds(
+  w: World,
+  key: string,
+  rounds: readonly KnockoutRound[],
+  fixtures: readonly Fixture[],
+): BracketArchive['rounds'] | undefined {
+  const index = new Map(w.clubs.map((club, i) => [club.id, i]));
+  const kept = rounds
+    .map((round, at) => ({ round, at }))
+    .filter(({ round }) => !round.label.startsWith('예선'));
+  const first = kept.findIndex(
+    ({ round }) => 2 * round.ties.length + (round.byes?.length ?? 0) <= ARCHIVED_FIELD,
+  );
+  const final = kept.at(-1)?.round;
+  if (first < 0 || final?.ties.length !== 1 || final.byes?.length) return undefined;
+  const archived: BracketArchive['rounds'] = [];
+  for (const { round, at } of kept.slice(first)) {
+    const ties: number[][] = [];
+    for (const [t, tie] of round.ties.entries()) {
+      const legs = legsOf(w, fixtures, key, at, t),
+        home = index.get(tie.home),
+        away = index.get(tie.away);
+      if (
+        !tie.winner ||
+        home === undefined ||
+        away === undefined ||
+        legs.length !== round.legs ||
+        legs.some((f) => !f.score)
+      )
+        return undefined;
+      const [leg1, leg2] = legs.map((f) => f.score!);
+      ties.push([
+        home,
+        away,
+        leg1.home,
+        leg1.away,
+        leg2?.home ?? 0,
+        leg2?.away ?? 0,
+        (tie.winner === tie.home ? 0 : 1) +
+          (tie.decided === 'pens' ? 2 : tie.decided === 'away' ? 4 : 0),
+      ]);
+    }
+    const byes = (round.byes || []).map((id) => index.get(id));
+    if (byes.some((club) => club === undefined)) return undefined;
+    archived.push({
+      label: round.label,
+      round: round.round,
+      legs: round.legs,
+      ties,
+      ...(byes.length ? { byes: byes as number[] } : {}),
+    });
+  }
+  return archived;
 }
 
 /**

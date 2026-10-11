@@ -72,11 +72,18 @@ export class Host {
             f.away === w.playerClub ||
             (w.lower ? f.kind === 'lower' : f.groupKey === ownGroup),
         ),
-        history: w.history.map((h) => ({
-          ...h,
-          standings: [],
-          europe: h.europe.map((e) => ({ ...e, standings: [], secondStandings: undefined })),
-        })),
+        // Brackets and scorer tables come with the archive request; the small rank series and Elo
+        // spread stay for the records charts.
+        history: w.history.map((h) => {
+          const season = {
+            ...h,
+            standings: [],
+            europe: h.europe.map((e) => ({ ...e, standings: [], secondStandings: undefined })),
+          };
+          delete season.brackets;
+          delete season.scorers;
+          return season;
+        }),
         events: w.events.slice(-150),
         // Only the own country's cup is shown in full; the others report their winners.
         ...(w.cups

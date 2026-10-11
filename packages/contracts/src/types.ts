@@ -378,6 +378,32 @@ export interface SeasonArchive {
   clubValue?: string;
   /** How far the own club went in each cup this season. */
   runs?: CupRun[];
+  /** The own league's ten leading scorers (goals, then fewer appearances); club indexes `clubs`. */
+  scorers?: { name: string; club: number; role: Role; goals: number; appearances: number }[];
+  /** The own league position after each league round, first round first. */
+  ranks?: number[];
+  /** Club Elo at the close, rounded: world lowest, world highest, own league lowest, highest. */
+  eloRange?: [number, number, number, number];
+  /** The own country's cup and every continental knockout but the Super Cup. */
+  brackets?: BracketArchive[];
+}
+/** A finished knockout from its first round of 32 clubs or fewer to the final; clubs index `clubs`. */
+export interface BracketArchive {
+  /** `cup` for the domestic cup, otherwise the continental competition key. */
+  key: string;
+  rounds: {
+    label: string;
+    round: number;
+    legs: 1 | 2;
+    /**
+     * One row per tie: [home, away, leg 1 home goals, leg 1 away goals, leg 2 home goals, leg 2
+     * away goals, outcome]. Each leg is in its own fixture's order (the away club hosts leg 2; a
+     * single match stores 0, 0); outcome is the winner's side (0 home, 1 away) + 2 if it went
+     * through on penalties + 4 if on away goals.
+     */
+    ties: number[][];
+    byes?: number[];
+  }[];
 }
 /** The final of a cup: the beaten finalist, the score (winner first) and how a level final ended. */
 export interface CupFinal {

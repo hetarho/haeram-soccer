@@ -6,6 +6,7 @@ import {
   lineupPreset,
   operate,
   simulateMatch,
+  simulateSeason,
   recordMatch,
   addEvent,
   clubNews,
@@ -57,6 +58,24 @@ describe('worker command protocol', () => {
     const r = await h.handle(req('read', 0, { type: 'archive', year: 1901 }));
     expect(r.archive?.matches).toEqual([]);
     expect(r.view?.world.fixtures.length).toBeLessThan(h.world!.fixtures.length);
+  });
+  it('projects closed seasons without brackets and scorer tables and returns them in the archive', async () => {
+    const h = new Host();
+    await h.handle(req('create', -1, { type: 'found', input }));
+    simulateSeason(h.world!);
+    const season = h.world!.history[0];
+    expect(season.brackets?.length).toBeGreaterThan(0);
+    expect(season.scorers?.length).toBeGreaterThan(0);
+    const r = await h.handle(
+      req('closed', h.world!.revision, { type: 'archive', year: season.year }),
+    );
+    const projected = r.view!.world.history[0];
+    expect(projected).not.toHaveProperty('brackets');
+    expect(projected).not.toHaveProperty('scorers');
+    expect(projected.ranks).toEqual(season.ranks);
+    expect(projected.eloRange).toEqual(season.eloRange);
+    expect(r.archive?.season).toEqual(season);
+    expect(h.world!.history[0].brackets).toBe(season.brackets);
   });
   it('ends a multi-day step on the day news arrives or our match is played', async () => {
     const h = new Host();
