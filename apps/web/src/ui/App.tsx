@@ -1168,7 +1168,7 @@ export function App() {
       )}
       <GlossaryHost />
       {w && !replacing && <NewsSheet />}
-      {w && !replacing && <TeamSheetHost />}
+      {client && w && !replacing && <TeamSheetHost client={client} />}
       {w && !replacing && <PlayerSheetHost />}
       {w && !replacing && <CelebrationHost />}
       {pendingImport && (

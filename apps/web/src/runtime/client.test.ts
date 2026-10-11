@@ -227,7 +227,6 @@ describe('background worker publication', () => {
   it('reads the all-time head-to-head without publishing a state or waiting for a tick', async () => {
     const publications: ClientState[] = [],
       client = await start((state) => publications.push(state));
-    expect(GameClient.active).toBe(client);
     await client.command({ type: 'next-match' });
     const w = client.state.view!.world,
       met = w.ownMatches.at(-1)!,

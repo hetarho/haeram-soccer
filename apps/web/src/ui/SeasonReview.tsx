@@ -8,6 +8,7 @@ import type { SeasonFiles } from './seasonArchive';
 import { seasonStats, share, type Leader, type SeasonStats } from './seasonStats';
 import s from './SeasonReview.module.css';
 import { Term } from './Glossary';
+import { PlayerLink } from './PlayerSheet';
 
 const one = (value: number) => value.toFixed(1);
 const two = (value?: number) => (value === undefined ? '—' : value.toFixed(2));
@@ -116,11 +117,14 @@ function Leaders({
   unit,
   leaders,
   digits,
+  players,
 }: {
   title: string;
   unit: string;
   leaders: Leader[];
   digits?: number;
+  /** Our players' ids: their names open the player sheet (→WEB-59). */
+  players: Set<string>;
 }) {
   return (
     <div className={s.leader}>
@@ -129,7 +133,13 @@ function Leaders({
         <ol>
           {leaders.map((leader) => (
             <li key={leader.id}>
-              <b>{leader.name}</b>
+              <b>
+                {players.has(leader.id) ? (
+                  <PlayerLink id={leader.id} name={leader.name} />
+                ) : (
+                  leader.name
+                )}
+              </b>
               <em>
                 {digits === undefined ? number(leader.value) : leader.value.toFixed(digits)}
                 {unit}
@@ -167,6 +177,7 @@ export function SeasonReview({
     season = index >= 0 ? w.history[index] : undefined;
   const matches = files?.matches;
   const stats = useMemo(() => (matches ? seasonStats(w, matches) : undefined), [w, matches]);
+  const players = useMemo(() => new Set(w.players.map((p) => p.id)), [w.players]);
   if (!season)
     return (
       <section className={s.empty} data-testid="season-review">
@@ -442,17 +453,33 @@ export function SeasonReview({
             </li>
           </ul>
           <section className={s.leaders} aria-label="시즌 리더">
-            <Leaders title="득점" unit="골" leaders={stats.leaders.goals} />
-            <Leaders title="도움" unit="개" leaders={stats.leaders.assists} />
+            <Leaders title="득점" unit="골" leaders={stats.leaders.goals} players={players} />
+            <Leaders title="도움" unit="개" leaders={stats.leaders.assists} players={players} />
             {stats.leaders.xa.length > 0 && (
-              <Leaders title="기대 도움 (xA)" unit="" leaders={stats.leaders.xa} digits={2} />
+              <Leaders
+                title="기대 도움 (xA)"
+                unit=""
+                leaders={stats.leaders.xa}
+                digits={2}
+                players={players}
+              />
             )}
             {stats.leaders.keyPasses.length > 0 && (
-              <Leaders title="키패스" unit="개" leaders={stats.leaders.keyPasses} />
+              <Leaders
+                title="키패스"
+                unit="개"
+                leaders={stats.leaders.keyPasses}
+                players={players}
+              />
             )}
-            <Leaders title="수비 (태클+인터셉트)" unit="회" leaders={stats.leaders.defending} />
-            <Leaders title="출전" unit="분" leaders={stats.leaders.minutes} />
-            <Leaders title="선방" unit="회" leaders={stats.leaders.saves} />
+            <Leaders
+              title="수비 (태클+인터셉트)"
+              unit="회"
+              leaders={stats.leaders.defending}
+              players={players}
+            />
+            <Leaders title="출전" unit="분" leaders={stats.leaders.minutes} players={players} />
+            <Leaders title="선방" unit="회" leaders={stats.leaders.saves} players={players} />
           </section>
           <p className={s.footnote}>
             리그 {stats.played}경기 기준.{' '}

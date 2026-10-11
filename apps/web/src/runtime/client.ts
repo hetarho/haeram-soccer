@@ -26,8 +26,6 @@ export interface ClientState {
   pendingActions?: number;
 }
 export class GameClient {
-  /** The running session's client, for views mounted without one, such as the team sheets. */
-  static active?: GameClient;
   state: ClientState = {
     busy: true,
     processing: true,
@@ -101,7 +99,6 @@ export class GameClient {
     this.worker.onerror = () => this.failWorker();
     this.channel.onmessage = (event) => this.refresh(event.data?.generation || 0);
     window.addEventListener('storage', this.storageListener);
-    GameClient.active = this;
   }
   private refresh(generation: number) {
     if (!this.state.readonly || !Number.isSafeInteger(generation) || generation < 0) return;
@@ -413,7 +410,6 @@ export class GameClient {
     return this.enqueue(() => this.mutate({ type: 'export' }));
   }
   dispose() {
-    if (GameClient.active === this) GameClient.active = undefined;
     window.removeEventListener('storage', this.storageListener);
     this.failed = true;
     for (const waiter of this.waiters.values()) {

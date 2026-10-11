@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type { Fixture, World } from '../../../../packages/contracts/src/types';
 import { fixtureDate, fixtureDay } from '../../../../packages/engine/src/calendar';
 import { eloOf } from '../../../../packages/engine/src/ratings';
-import { GameClient } from '../runtime/client';
+import type { GameClient } from '../runtime/client';
 import type { HeadToHead, Meeting } from '../runtime/headToHead';
 import { useGameState } from '../runtime/store';
 import { clubDivision, leagueOf, orderIds } from './league';
@@ -30,20 +30,20 @@ const meetingLine = (m: Meeting) =>
  * worker reads every meeting of the career; the answer stays for as long as the sheet is open and
  * is read again only when a new meeting is played.
  */
-function AllTimeMeetings({ w, id }: { w: World; id: string }) {
+function AllTimeMeetings({ w, id, client }: { w: World; id: string; client: GameClient }) {
   const latest = w.ownMatches.findLast((m) => m.home === id || m.away === id)?.id ?? '',
     key = `${id}:${latest}`;
   const [loaded, setLoaded] = useState<{ key: string; record?: HeadToHead; failed?: boolean }>();
   useEffect(() => {
     let valid = true;
-    (GameClient.active?.headToHead(id) ?? Promise.reject(new Error('세션이 없습니다.'))).then(
+    client.headToHead(id).then(
       (record) => valid && setLoaded({ key, record }),
       () => valid && setLoaded({ key, failed: true }),
     );
     return () => {
       valid = false;
     };
-  }, [id, key]);
+  }, [client, id, key]);
   // A newer meeting refreshes the record in place; the earlier one stays until it arrives.
   const shown = loaded && (loaded.key === key || loaded.record) ? loaded : undefined,
     record = shown?.record;
@@ -145,7 +145,17 @@ function AllTimeMeetings({ w, id }: { w: World; id: string }) {
  * is in the club's own league, wherever the sheet was opened. Only our league's games reach the
  * view, so a club from elsewhere lists its cup and continental games instead.
  */
-export function TeamSheet({ w, id, onClose }: { w: World; id: string; onClose: () => void }) {
+export function TeamSheet({
+  w,
+  id,
+  client,
+  onClose,
+}: {
+  w: World;
+  id: string;
+  client: GameClient;
+  onClose: () => void;
+}) {
   const club = w.clubs.find((c) => c.id === id);
   if (!club) return null;
   const ids = leagueOf(w, club),
@@ -240,7 +250,7 @@ export function TeamSheet({ w, id, onClose }: { w: World; id: string; onClose: (
       {!ours && table && (
         <p className={s.teamNote}>다른 리그 클럽의 경기별 리그 결과는 제공하지 않아요.</p>
       )}
-      {id !== w.playerClub && <AllTimeMeetings w={w} id={id} />}
+      {id !== w.playerClub && <AllTimeMeetings w={w} id={id} client={client} />}
     </Dialog>
   );
 }
@@ -259,19 +269,21 @@ const selectSheetWorld = worldSelector([
   'lineup',
   'manager',
 ]);
-function OpenSheets({ ids }: { ids: string[] }) {
+function OpenSheets({ ids, client }: { ids: string[]; client: GameClient }) {
   const w = useGameState(selectSheetWorld);
   const close = useTeamSheet((state) => state.close);
   if (!w) return null;
   // Each sheet is its own dialog layer, so Escape and the backdrop close only the top one.
-  return ids.map((id, i) => <TeamSheet key={`${i}:${id}`} w={w} id={id} onClose={close} />);
+  return ids.map((id, i) => (
+    <TeamSheet key={`${i}:${id}`} w={w} id={id} client={client} onClose={close} />
+  ));
 }
 /** The one place team sheets open, over any view or sheet (→WEB-58). */
-export function TeamSheetHost() {
+export function TeamSheetHost({ client }: { client: GameClient }) {
   const ids = useTeamSheet((state) => state.ids);
   const page = useNavigation((state) => state.page);
   const worldId = useGameState((state) => state.view?.world.id);
   // Sheets belong to the view and the world they were opened from.
   useEffect(() => () => useTeamSheet.getState().reset(), [page, worldId]);
-  return ids.length ? <OpenSheets ids={ids} /> : null;
+  return ids.length ? <OpenSheets ids={ids} client={client} /> : null;
 }
