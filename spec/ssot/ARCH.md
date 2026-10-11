@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r4 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r5 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -44,6 +44,7 @@
   - Worker messages include protocol version, session ID, request ID, expected world revision, and validated payloads.
   - Duplicate requests do not repeat recruitment fees, sponsor payments, tactics changes, currency transitions, or fixture settlement.
   - Publish bounded UI projections/deltas, not the complete world on every simulation step.
+  - Read-only requests (head-to-head) are validated like commands but answered between simulation steps, without the revision check, receipt or view, so a read never waits behind a season command or flickers the busy state.
   - A worker failure restores the last committed checkpoint and reports any uncommitted progress; it does not silently invent a continuation.
   - Vite provides worker bundling: [Vite worker support](https://vite.dev/guide/features.html#web-workers).
 - ARCH-7 [o] Render match snapshots with Canvas 2D and interpolation; animation is presentation only.
@@ -172,7 +173,7 @@
 - ARCH-27 [?] Netlify project/account and stable production hostname are deployment configuration inputs to supply before publishing.
   - Production repository: https://github.com/hetarho/haeram-soccer.git.
 - ARCH-28 [o] Browser interest and responsiveness have measured release budgets.
-  - Initial entry JavaScript + CSS: at most 250 KiB compressed, excluding lazy engine/catalog chunks; report all first-play transfer sizes separately.
+  - Initial entry JavaScript + CSS: at most 250 KiB compressed, excluding lazy engine/catalog chunks; report all first-play transfer sizes separately. Pages visited later (the records room, cup history) load as their own chunks.
   - Reference trace: pinned Chromium, 4x CPU slowdown, Fast 4G for cold loading, desktop and 390x844 mobile viewports.
   - UI feedback after controls: p95 below 100 ms during ordinary simulation; observed pitch rendering targets at least 30 FPS on the reference mobile viewport.
   - World initialization after a valid founding command: at most 5 seconds on the reference trace; present real generation progress while it runs.
@@ -195,6 +196,7 @@
 - Current product material: `spec/ideation/club-history-reboot.md`; human PRD: `docs/PRD.md` (repository-relative paths).
 
 ## chg
+- r5 261012 ARCH-6✎ +read-only requests answered between steps; ARCH-28✎ +later pages as lazy chunks
 - r4 261009 ARCH-2✎ npm workspaces→pnpm workspaces with pnpm pinned by packageManager; ARCH-22✎ verify commands npm run→pnpm run; ARCH-23✎ CI install npm ci→pnpm install --frozen-lockfile
 - r3 261007 ARCH-23✎ static provider Cloudflare Pages→Netlify; ARCH-27✎ account Cloudflare→Netlify and repository unspecified→hetarho/haeram-soccer
 - r2 261007 ARCH-25✎ unresolved NPC retention→HIST archive tiers; ARCH-9✎ numeric policy owner MONEY→ECON

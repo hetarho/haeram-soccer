@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r6 | Define the implemented browser-demo behavior for durable metrics and history.
+> r7 | Define the implemented browser-demo behavior for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -28,6 +28,7 @@
   - our league's top 10 scorers (name, club, role, goals, appearances; ties as the live table), our rank after every league round, and the Club Elo spread at the close (world lowest/highest, our league lowest/highest).
   - our country's cup and every continental competition except the Super Cup as a bracket from the first round of 32 or fewer clubs (qualifiers skipped) to the final: each tie its two clubs, both legs and how it was decided (penalties, away goals).
   - a field is written only when the season was tracked whole; seasons closed before rules 1.12.0 keep finals only. Scorers and brackets reach the screen through the season archive request, not every update.
+  - derived on read, never stored: a cup run's stages from match ids and calendar slots, titles by club and nation, doubles, trebles and runs of titles from the archived champions and finals, the head-to-head with any club from every own match, and appearances as minutes / 90 (every starter plays the full match; there are no substitutions).
 
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
@@ -36,6 +37,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r7 261012 HIST-13✎ +derived cup stages, honours, head-to-head and appearances
 - r6 261012 HIST-13+ closed seasons keep top scorers, per-round rank, Elo spread and cup brackets from the last 32
 - r5 261011 HIST-11✎ +cup rounds, retirements, injuries, potential changes as news, cups celebrated on the day of the final; HIST-12+ Club Elo, squad and club value, cup runs and finals in the season archive
 - r4 261010 HIST-11+ derived club news with stable IDs, thresholds and celebrated achievements
