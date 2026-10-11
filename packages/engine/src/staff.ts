@@ -14,6 +14,7 @@ import { CASH_WARNING_ROUNDS, debit } from './operations';
 import { pushInbox } from './inbox';
 import { operatingCosts } from './finance';
 import { currentDay, seasonDayOf } from './calendar';
+import { COACH_CAREER, coachProspect, coachSeason } from './coaching';
 
 /** Coaching departments below the manager, in display order. */
 export const STAFF_ROLES: readonly StaffRole[] = [
@@ -250,11 +251,19 @@ export function staffCandidates(w: World, role: StaffRole): (Staff & { fee: stri
   return CANDIDATE_ABILITY.map(([min, max], i) => {
     const r = random(`${w.seed}:staff-market:${w.year}:${role}:${i}`);
     const name = personName(code, r),
-      ability = integer(r, min, max),
+      peak = integer(r, min, max),
       traits = STAFF_INFO[role].traits,
       // The modest first candidate may have no specialty.
       pick = integer(r, i === 0 ? -1 : 0, traits.length - 1),
       until = w.year + integer(r, 2, 3),
+      // A young coach is cheaper now and grows toward the band's level (→STAFF-16).
+      career = coachProspect(
+        `${w.seed}:staff-age:${w.year}:${role}:${i}`,
+        peak,
+        COACH_CAREER.ages,
+        COACH_CAREER.prime,
+      ),
+      ability = career.ability,
       wage = quote(code, w.year, (ability - 30) * 1.5);
     return {
       id: `${w.playerClub}:staff:${role}:${w.year}:${i}`,
@@ -265,6 +274,8 @@ export function staffCandidates(w: World, role: StaffRole): (Staff & { fee: stri
       wage,
       since: w.year,
       until,
+      born: w.year - career.age,
+      potential: career.potential,
       fee: ratio(wage, 1n, 4n),
     };
   }).filter((candidate) => !employed.has(candidate.id));
@@ -347,8 +358,8 @@ export function autoTrainingFocus(w: World): TrainingFocus {
  */
 export const COACHING_INFO: Record<CoachingLevel, { label: string; summary: string }> = {
   1: { label: '절약', summary: '무급 자원봉사 코치 · 능력 50' },
-  2: { label: '균형', summary: '시장 중간 수준 코치 · 능력 55–78' },
-  3: { label: '최고', summary: '구할 수 있는 최고 코치 · 능력 65–90' },
+  2: { label: '균형', summary: '시장 중간 수준 코치 · 도달 수준 55–78' },
+  3: { label: '최고', summary: '구할 수 있는 최고 코치 · 도달 수준 65–90' },
 };
 export function coachingLevel(w: World, role: StaffRole): CoachingLevel {
   return w.coaching?.[role] ?? 2;
@@ -463,6 +474,7 @@ function appoint(w: World, member: Staff & { fee?: string }) {
  */
 export function seasonStaff(w: World): void {
   if (!w.staff) return;
+  developStaff(w);
   const delegated = !!w.delegation?.staff;
   const report: string[] = [];
   for (const role of STAFF_ROLES) {
@@ -538,6 +550,36 @@ export function seasonStaff(w: World): void {
       detail: `부서별 코치진 투자 기준 · ${report.join(' · ')}`.slice(0, 400),
       attention: false,
     });
+}
+/**
+ * A season of every paid coach's career (→STAFF-16): the young learn toward their ceiling, those
+ * past 60 fade. Volunteers and coaches from older saves have no age or ceiling and stay put.
+ */
+function developStaff(w: World) {
+  const changes: string[] = [];
+  w.staff = w.staff!.map((member) => {
+    if (member.born === undefined || member.potential === undefined) return member;
+    const age = w.year - member.born,
+      next = coachSeason(
+        `${w.seed}:staff-growth:${member.id}:${w.year}`,
+        member.ability,
+        member.potential,
+        age,
+      );
+    if (next.ability === member.ability && next.potential === member.potential) return member;
+    if (next.ability !== member.ability)
+      changes.push(
+        `${STAFF_INFO[member.role].label} ${member.name} ${member.ability}→${next.ability}`,
+      );
+    return { ...member, ability: next.ability, potential: next.potential };
+  });
+  if (changes.length)
+    addEvent(
+      w,
+      'staff-growth',
+      `코치진 성장 · ${changes.length}명`,
+      changes.join(' · ').slice(0, 400),
+    );
 }
 /** Spring renewal day: the owner hears which coaches' contracts end at the season's close. */
 export function renewalDay(year: number) {

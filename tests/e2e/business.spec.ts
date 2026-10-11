@@ -41,12 +41,14 @@ async function found(page: Page, seed: string) {
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
 
-async function openBusiness(page: Page) {
+/** Operations open on the build; `tab` picks 재정, 시설, 후원 or 캠페인 (→WEB-39). */
+async function openBusiness(page: Page, tab?: string) {
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
     .getByRole('button', { name: '구단 운영', exact: true })
     .click();
-  await expect(page.getByRole('region', { name: '클럽 투자 계획' })).toBeVisible();
+  await expect(page.getByRole('tablist', { name: '구단 운영 보기' })).toBeVisible();
+  if (tab) await page.getByRole('tab', { name: tab, exact: true }).click();
 }
 
 async function playNext(page: Page) {
@@ -71,13 +73,13 @@ for (const viewport of [
     const before = await exportWorld(page);
     const preview = facilityInvestmentPreview(before);
     const format = (value: string) => money(value, clubOf(before).country, before.year);
-    await openBusiness(page);
+    await openBusiness(page, '시설');
     await expect(page.getByRole('tab', { name: '시설', exact: true })).toHaveAttribute(
       'aria-selected',
       'true',
     );
     const review = page.getByRole('button', { name: '시설 투자 검토', exact: true });
-    // The policy board now sits above the workbench; scrolling must bring the CTA clear of the nav.
+    // Scrolling must bring the CTA clear of the nav.
     await review.evaluate((element) => element.scrollIntoView({ block: 'center' }));
     await settle(page);
     const reviewBounds = await review.boundingBox();
@@ -110,6 +112,7 @@ for (const viewport of [
     expect(BigInt(after.expense) - BigInt(before.expense)).toBe(BigInt(preview.cost));
     expect(operatingCosts(after).maintenance).toBe(preview.maintenanceAfter);
     expect(operatingCosts(after).annual).toBe(preview.annualAfter);
+    await page.getByRole('tab', { name: '재정', exact: true }).click();
     await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
     await expect(page.getByRole('region', { name: '수입과 지출 장부' })).toContainText('시설 확장');
     await page.getByRole('button', { name: '장부 확인 마치기', exact: true }).click();
@@ -209,8 +212,9 @@ test('keeps ticket drafts out of the save and applies their price to an actual h
   const preview = ticketInvestmentPreview(before, price);
   const format = (value: string) => money(value, clubOf(before).country, before.year);
   await openBusiness(page);
+  // The ticket dial sits with the home & fans strategy card on the build tab.
   const dial = page
-    .getByRole('region', { name: '구단 운영 방침' })
+    .locator('[data-slot="fans"]')
     .getByRole('radiogroup', { name: '티켓 가격', exact: true });
   const premium = dial.getByRole('radio', { name: '티켓 가격 프리미엄', exact: true });
   await expect(dial.getByRole('radio', { name: '티켓 가격 보통', exact: true })).toHaveAttribute(
@@ -269,6 +273,8 @@ test('recovers a genuine negative operating balance and enforces the three-contr
     difficulty: 0.5,
   });
   operate(fixture, { type: 'ticket', price: 0.01 });
+  // Real costs, not an edited balance, take the club below zero within a round or two.
+  fixture.cash = '1';
   for (let i = 0; i < 46 && BigInt(fixture.cash) >= 0n; i++)
     advanceRound(fixture, undefined, false);
   expect(BigInt(fixture.cash)).toBeLessThan(0n);
@@ -286,7 +292,7 @@ test('recovers a genuine negative operating balance and enforces the three-contr
   await expect(page.getByTestId('club-hub')).toBeVisible();
   // The imported mid-season career carries unread attention events (e.g. the winter window).
   await acknowledgeEvents(page);
-  await openBusiness(page);
+  await openBusiness(page, '재정');
   const support = page.getByRole('button', { name: '추가 출자', exact: true });
   await expect(support).toBeEnabled();
   await support.click();
@@ -295,9 +301,7 @@ test('recovers a genuine negative operating balance and enforces the three-contr
   ).toBeVisible();
   await page.getByText('운영을 이어갈 추가 출자', { exact: true }).click();
   await support.click();
-  await expect(page.getByRole('region', { name: '클럽 투자 계획' })).toContainText(
-    '이번 시즌 2/3회',
-  );
+  await expect(page.getByRole('region', { name: '클럽 재정' })).toContainText('이번 시즌 2/3회');
   await support.click();
   await expect(support).toBeDisabled();
   const recovered = await exportWorld(page);
@@ -308,4 +312,38 @@ test('recovers a genuine negative operating balance and enforces the three-contr
     recovered.events.filter((event) => event.kind === 'support' && event.year === fixture.year),
   ).toHaveLength(3);
   expect(recovered.critical).toBeUndefined();
+});
+
+test('ends a bankrupt career on the game-over page and founds a new club from it', async ({
+  page,
+}) => {
+  const fixture = createWorld({
+    country: 'ENG',
+    name: 'Bankrupt Fixture',
+    color: '#bf7956',
+    seed: 'business-bankruptcy',
+    difficulty: 0.5,
+  });
+  // Debt deeper than half a season's fixed costs ends the career at the next settlement.
+  fixture.cash = '-999999999';
+  advanceRound(fixture, undefined, false);
+  expect(fixture.bankrupt).toBeDefined();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
+  await page
+    .locator('input[type=file]')
+    .last()
+    .setInputFiles({
+      name: 'synthetic-bankruptcy.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(await encode(fixture)),
+    });
+  const over = page.getByTestId('game-over');
+  await expect(over).toContainText('Bankrupt Fixture 파산');
+  await expect(over).toContainText('함께한 시즌');
+  await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(0);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+  await over.getByRole('button', { name: '새 클럽 창단', exact: true }).click();
+  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeVisible();
 });

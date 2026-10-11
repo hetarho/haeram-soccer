@@ -34,6 +34,13 @@ import { NewsButton, NewsSheet, useNewsSheet } from './NewsFeed';
 import { CelebrationHost } from './Celebration';
 import { CupsView } from './CupsView';
 import { cashState } from './teamState';
+import {
+  BANKRUPTCY_ROUNDS,
+  CASH_WARNING_ROUNDS,
+  MANAGER_GONE,
+} from '../../../../packages/engine/src/operations';
+import { operatingCosts } from '../../../../packages/engine/src/finance';
+import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import Rich from './Rich';
 function NavIcon({ page }: { page: Page }) {
   const paths: Record<Page, string> = {
@@ -300,7 +307,7 @@ const TABS: [Page, string, string, Page[]][] = [
   ['europe', '컵', '컵 대회', ['europe']],
   ['history', '기록', '클럽 기록실', ['history']],
   ['dashboard', '홈', '클럽 홈', ['dashboard']],
-  ['squad', '선수단', '선수단', ['squad', 'manager']],
+  ['squad', '선수단', '선수단', ['squad']],
   ['transfers', '이적', '이적 시장', ['transfers']],
   ['business', '운영', '구단 운영', ['business']],
 ];
@@ -560,9 +567,96 @@ function NextMatchNote() {
     </>
   );
 }
+/**
+ * The end of a career (→ECON-24): what the club achieved before it went under, its records to
+ * keep and a new club to found.
+ */
+function GameOver({ w, onExport, onNew }: { w: World; onExport: () => void; onNew: () => void }) {
+  const own = w.clubs.find((club) => club.id === w.playerClub)!;
+  const best = w.history.reduce<(typeof w.history)[number] | undefined>(
+    (top, season) =>
+      !top || season.tier < top.tier || (season.tier === top.tier && season.rank < top.rank)
+        ? season
+        : top,
+    undefined,
+  );
+  // Leagues, cups and continental titles recorded season by season (the event tail is bounded).
+  const titles = w.history.reduce(
+    (count, season) =>
+      count +
+      season.champions.filter((title) => title.club === own.id).length +
+      season.europe.filter((tournament) => tournament.winner === own.id).length,
+    0,
+  );
+  const peak = Math.max(own.fans, ...w.history.map((season) => season.fans));
+  return (
+    <section className={s.gameOver} data-testid="game-over" aria-label="게임 오버">
+      <small>GAME OVER</small>
+      <h2>{own.name} 파산</h2>
+      <p>
+        {seasonName(w.bankrupt!.year)} 시즌, 적자를 {w.insolvent ?? 0}라운드 동안 벗어나지 못해
+        구단이 문을 닫았어요. 남은 건 우리가 쌓은 기록이에요.
+      </p>
+      <ul>
+        <li>
+          <span>함께한 시즌</span>
+          <b>{w.history.length}</b>
+        </li>
+        <li>
+          <span>최고 성적</span>
+          <b>
+            {best
+              ? `${best.tier >= country(own.country).groups.length ? '아마추어' : `${best.tier + 1}부`} ${best.rank}위`
+              : '—'}
+          </b>
+        </li>
+        <li>
+          <span>우승</span>
+          <b>{titles}</b>
+        </li>
+        <li>
+          <span>최다 서포터</span>
+          <b>{number(peak)}</b>
+        </li>
+      </ul>
+      <div className={s.gameOverActions}>
+        <button onClick={onExport}>기록 내보내기</button>
+        <button className={s.primary} onClick={onNew}>
+          새 클럽 창단
+        </button>
+      </div>
+    </section>
+  );
+}
+/** Debt plays on under a red band counting down to bankruptcy (→ECON-24). */
+function CashAlarm() {
+  const w = useGameState((state) => state.view?.world);
+  if (!w || w.bankrupt) return null;
+  const own = w.clubs.find((club) => club.id === w.playerClub)!;
+  const cash = BigInt(w.cash);
+  const runway = fixedCostRunway(w.cash, operatingCosts(w).annual);
+  if (cash >= 0n && runway >= CASH_WARNING_ROUNDS) return null;
+  return (
+    <div className={s.cashAlarm} role="status" data-testid="cash-alarm">
+      {cash < 0n ? (
+        <>
+          <b>파산 위기</b> 잔고 {money(w.cash, own.country, w.year)} ·{' '}
+          {BANKRUPTCY_ROUNDS - (w.insolvent ?? 0)}라운드 안에 흑자로 돌아오지 못하면 파산해요
+        </>
+      ) : (
+        <>
+          <b>자금 위기</b> 운영비 약 {runway}주분 남음 · 바닥난 채 {BANKRUPTCY_ROUNDS}라운드가
+          지나면 파산해요
+        </>
+      )}
+    </div>
+  );
+}
 function RuntimeFeedback({ client, localError }: { client: GameClient; localError: string }) {
   const state = useGameState((state) => state);
   const critical = state.view?.world.critical;
+  const { setPage } = useNavigation();
+  const blocked = state.busy || state.readonly;
   return (
     <>
       {(state.error || localError) && (
@@ -576,13 +670,41 @@ function RuntimeFeedback({ client, localError }: { client: GameClient; localErro
           {state.notice}
         </div>
       )}
-      {critical && (
+      <CashAlarm />
+      {critical === MANAGER_GONE ? (
+        // The interim manager can carry on, or the owner goes straight to the candidates.
         <div className={s.critical} role="status">
-          {critical}
-          <button disabled={state.busy || state.readonly} onClick={() => void client.acknowledge()}>
-            알림 확인 후 계속
-          </button>
+          감독이 떠났어요. 임시 감독이 팀을 맡고 있어요.
+          <div className={s.criticalActions}>
+            <button
+              className={s.primary}
+              disabled={blocked}
+              onClick={() => {
+                void client.acknowledge();
+                setPage('manager');
+                requestAnimationFrame(() =>
+                  document
+                    .getElementById('manager-candidates')
+                    ?.scrollIntoView({ block: 'start', behavior: 'smooth' }),
+                );
+              }}
+            >
+              감독 선임하러 가기
+            </button>
+            <button disabled={blocked} onClick={() => void client.acknowledge()}>
+              임시 감독으로 계속
+            </button>
+          </div>
         </div>
+      ) : (
+        critical && (
+          <div className={s.critical} role="status">
+            {critical}
+            <button disabled={blocked} onClick={() => void client.acknowledge()}>
+              알림 확인 후 계속
+            </button>
+          </div>
+        )
       )}
       {state.busy && (
         <div className={s.foregroundProgress}>
@@ -855,7 +977,7 @@ export function App() {
         )}
         {client && <RuntimeFeedback client={client} localError={localError} />}
         {/* The match theatre carries its own compact clock in its header row. */}
-        {client && controller && w && !replacing && page !== 'match' && (
+        {client && controller && w && !replacing && !w.bankrupt && page !== 'match' && (
           <ProgressControls
             client={client}
             controller={controller}
@@ -873,6 +995,8 @@ export function App() {
                   if (replacing) setPage('dashboard');
                 }}
               />
+            ) : w.bankrupt ? (
+              <GameOver w={w} onExport={() => void download()} onNew={() => setReplacing(true)} />
             ) : (
               <>
                 {changingView && (
@@ -945,7 +1069,7 @@ export function App() {
       {client && w && !replacing && <ActionOutcome />}
       {/* The match theatre keeps its own controls clear; news waits until the owner returns. */}
       {w && !replacing && page !== 'match' && <NewsButton />}
-      {client && controller && w && !replacing && page !== 'match' && (
+      {client && controller && w && !replacing && !w.bankrupt && page !== 'match' && (
         <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />
       )}
       {moreOpen && (

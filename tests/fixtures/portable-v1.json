@@ -1,6 +1,6 @@
 {
   "synthetic": true,
-  "engine": "1.10.0",
+  "engine": "1.11.0",
   "catalog": "2026-demo-1",
   "definitions": [
     {
@@ -40,10 +40,10 @@
         "year": 1950,
         "round": 5,
         "revision": 9,
-        "cash": "909816",
+        "cash": "918837",
         "currency": "GBP-LSD",
-        "income": "154833",
-        "expense": "226407",
+        "income": "164076",
+        "expense": "226629",
         "tactic": "counter",
         "manager": {
           "id": "coach:1950:0:1198314408",
@@ -56,7 +56,7 @@
         "club": {
           "id": "ENG:club",
           "tier": 4,
-          "fans": 865,
+          "fans": 1049,
           "lower": true
         },
         "players": [
@@ -646,6 +646,11 @@
             "amount": "5814"
           },
           {
+            "kind": "fan-income",
+            "title": "글로벌 팬 수익",
+            "amount": "1433"
+          },
+          {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
             "amount": "11903"
@@ -678,12 +683,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "31670"
+            "amount": "36013"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "5894"
+            "amount": "5993"
           },
           {
             "kind": "operating-cost",
@@ -713,12 +718,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "18750"
+            "amount": "22217"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "5826"
+            "amount": "5949"
           },
           {
             "kind": "cup-prize",
@@ -936,7 +941,7 @@
         "year": 1960,
         "round": 0,
         "revision": 47,
-        "cash": "125780",
+        "cash": "166298",
         "currency": "FRF",
         "income": "0",
         "expense": "0",
@@ -952,7 +957,7 @@
         "club": {
           "id": "FRA:club",
           "tier": 3,
-          "fans": 858,
+          "fans": 1804,
           "lower": true
         },
         "players": [
@@ -3749,7 +3754,7 @@
             "year": 1959,
             "rank": 9,
             "points": 37,
-            "cash": "12577973",
+            "cash": "16629767",
             "currency": "FRF-OLD",
             "champions": [
               {
@@ -3899,6 +3904,11 @@
             "amount": "88589"
           },
           {
+            "kind": "fan-income",
+            "title": "글로벌 팬 수익",
+            "amount": "292216"
+          },
+          {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
             "amount": "155778"
@@ -3916,12 +3926,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "400854"
+            "amount": "454838"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "88457"
+            "amount": "89699"
           },
           {
             "kind": "operating-cost",
@@ -3936,12 +3946,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "247943"
+            "amount": "293637"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "87982"
+            "amount": "89593"
           },
           {
             "kind": "cup-exit",
@@ -3966,12 +3976,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "317008"
+            "amount": "404300"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "86529"
+            "amount": "88537"
           },
           {
             "kind": "operating-cost",
@@ -3996,12 +4006,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "318157"
+            "amount": "441055"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "86556"
+            "amount": "89382"
           },
           {
             "kind": "operating-cost",
@@ -4031,12 +4041,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "410043"
+            "amount": "600707"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "88669"
+            "amount": "93053"
           },
           {
             "kind": "operating-cost",
@@ -4061,12 +4071,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "537535"
+            "amount": "825829"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "91600"
+            "amount": "98230"
           },
           {
             "kind": "operating-cost",
@@ -4096,12 +4106,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "569696"
+            "amount": "915418"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "92340"
+            "amount": "100290"
           },
           {
             "kind": "operating-cost",
@@ -4126,12 +4136,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "534090"
+            "amount": "895892"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "91521"
+            "amount": "99841"
           },
           {
             "kind": "operating-cost",
@@ -4156,12 +4166,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "422677"
+            "amount": "738537"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "88959"
+            "amount": "96223"
           },
           {
             "kind": "operating-cost",
@@ -4191,12 +4201,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "298631"
+            "amount": "542130"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "86107"
+            "amount": "91706"
           },
           {
             "kind": "injury",
@@ -4226,12 +4236,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "288294"
+            "amount": "540981"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "85869"
+            "amount": "91680"
           },
           {
             "kind": "injury",
@@ -4271,12 +4281,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "335385"
+            "amount": "643205"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "86952"
+            "amount": "94030"
           },
           {
             "kind": "operating-cost",
@@ -4306,12 +4316,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "406597"
+            "amount": "802857"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "88589"
+            "amount": "97702"
           },
           {
             "kind": "injury",
@@ -4341,12 +4351,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "402003"
+            "amount": "805155"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "88484"
+            "amount": "97755"
           },
           {
             "kind": "operating-cost",
@@ -4371,12 +4381,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "413489"
+            "amount": "846504"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "88748"
+            "amount": "98706"
           },
           {
             "kind": "injury",
@@ -4421,6 +4431,11 @@
           {
             "kind": "currency",
             "title": "새로운 화폐의 시대",
+            "amount": null
+          },
+          {
+            "kind": "manager-growth",
+            "title": "Emile Mercier 감독 성장",
             "amount": null
           }
         ],
@@ -4977,23 +4992,23 @@
         "year": 2025,
         "round": 0,
         "revision": 47,
-        "cash": "8158721",
+        "cash": "8248879",
         "currency": "EUR",
         "income": "0",
         "expense": "0",
         "tactic": "possession",
         "manager": {
-          "id": "coach:1950:0:1198314408",
-          "name": "Emile Mercier",
+          "id": "coach:2025:99:3462607730",
+          "name": "Paul Mercier",
           "trust": 65,
           "conflicts": 0,
-          "interim": false,
+          "interim": true,
           "pending": null
         },
         "club": {
           "id": "FRA:club",
           "tier": 3,
-          "fans": 816,
+          "fans": 1979,
           "lower": true
         },
         "players": [
@@ -8549,7 +8564,7 @@
             "year": 2024,
             "rank": 15,
             "points": 28,
-            "cash": "8158721",
+            "cash": "8248879",
             "currency": "EUR",
             "champions": [
               {
@@ -8813,6 +8828,11 @@
             "amount": "1662"
           },
           {
+            "kind": "fan-income",
+            "title": "글로벌 팬 수익",
+            "amount": "5645"
+          },
+          {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
             "amount": "105065"
@@ -8835,12 +8855,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "5705"
+            "amount": "6542"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1611"
+            "amount": "1630"
           },
           {
             "kind": "operating-cost",
@@ -8860,12 +8880,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "4197"
+            "amount": "5022"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1628"
+            "amount": "1657"
           },
           {
             "kind": "cup-prize",
@@ -8890,12 +8910,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "6285"
+            "amount": "8022"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1624"
+            "amount": "1664"
           },
           {
             "kind": "injury",
@@ -8920,12 +8940,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "4617"
+            "amount": "6296"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1643"
+            "amount": "1702"
           },
           {
             "kind": "injury",
@@ -8950,12 +8970,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "6588"
+            "amount": "9291"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1631"
+            "amount": "1693"
           },
           {
             "kind": "operating-cost",
@@ -8965,12 +8985,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "3583"
+            "amount": "5164"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1606"
+            "amount": "1662"
           },
           {
             "kind": "cup-exit",
@@ -8990,12 +9010,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "6008"
+            "amount": "9120"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1618"
+            "amount": "1689"
           },
           {
             "kind": "operating-cost",
@@ -9020,12 +9040,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "3191"
+            "amount": "4969"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1592"
+            "amount": "1655"
           },
           {
             "kind": "europe-prize",
@@ -9050,12 +9070,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "5066"
+            "amount": "8329"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1596"
+            "amount": "1671"
           },
           {
             "kind": "operating-cost",
@@ -9085,22 +9105,22 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "5926"
+            "amount": "10285"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1616"
+            "amount": "1716"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "4537"
+            "amount": "7828"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1640"
+            "amount": "1755"
           },
           {
             "kind": "europe-prize",
@@ -9135,12 +9155,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "6958"
+            "amount": "12671"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1640"
+            "amount": "1771"
           },
           {
             "kind": "operating-cost",
@@ -9165,12 +9185,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "7796"
+            "amount": "14969"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1659"
+            "amount": "1824"
           },
           {
             "kind": "operating-cost",
@@ -9185,12 +9205,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "4077"
+            "amount": "7957"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1623"
+            "amount": "1760"
           },
           {
             "kind": "injury",
@@ -9215,12 +9235,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "5199"
+            "amount": "10506"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1599"
+            "amount": "1721"
           },
           {
             "kind": "operating-cost",
@@ -9240,12 +9260,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "4985"
+            "amount": "10528"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1594"
+            "amount": "1721"
           },
           {
             "kind": "operating-cost",
@@ -9275,12 +9295,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "4641"
+            "amount": "10184"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1586"
+            "amount": "1714"
           },
           {
             "kind": "operating-cost",
@@ -9305,12 +9325,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "6661"
+            "amount": "15018"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1633"
+            "amount": "1825"
           },
           {
             "kind": "operating-cost",
@@ -9340,12 +9360,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "7455"
+            "amount": "17167"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1651"
+            "amount": "1874"
           },
           {
             "kind": "injury",
@@ -9375,12 +9395,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "7606"
+            "amount": "17876"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1654"
+            "amount": "1890"
           },
           {
             "kind": "operating-cost",
@@ -9410,6 +9430,11 @@
           {
             "kind": "season",
             "title": "시즌의 마지막 페이지",
+            "amount": null
+          },
+          {
+            "kind": "manager-departure",
+            "title": "Emile Mercier 감독의 마지막 날",
             "amount": null
           },
           {

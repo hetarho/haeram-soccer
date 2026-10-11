@@ -1,20 +1,20 @@
 {
-  "date": "2026-10-11T14:48:05.523Z",
+  "date": "2026-10-11T15:53:33.461Z",
   "browser": "153.0.8010.12",
   "playwright": "1.63.0",
   "node": "v26.8.1",
-  "gitHead": "ede771cac1677311cfab2cefab1dc8b9ccc18c76",
+  "gitHead": "cf3876913aa62cf7bbecbc506aa9e2bf148dc670",
   "gitDirty": true,
   "currentHeadVerified": false,
   "verifiedSource": "uncommitted working tree",
   "sourceFingerprint": {
     "algorithm": "sha256",
-    "sha256": "abe5441e58c683634100f19b83da10f4b1b31650a136a03fa952f63229e8563d",
-    "files": 241
+    "sha256": "cce1981a68e93247b7212843484438bbd055c795c4c7dd8cf6101141781d558f",
+    "files": 246
   },
   "buildFingerprint": {
     "algorithm": "sha256",
-    "sha256": "73a64c56299a3a6a40fc6911996a4e4cd2a2a795dd65ddfe5d9fd9b02fcdc7cd",
+    "sha256": "71b825e1c9c18a1c14cae8a0c6089781b188ccb1cd37516c1bfe9028f3d7c268",
     "files": 7
   },
   "servedBuildVerification": {
@@ -26,25 +26,25 @@
         "file": "index.html",
         "url": "http://127.0.0.1:4180/",
         "bytes": 665,
-        "sha256": "83f9ef82cfda7a0509805934f29153e3bfc5589574f0c87b9c4c5369b823e1bf"
+        "sha256": "102bb1e9f8bb796a2ad822821872b6b4ced5fb77b15110f4c3d99f3f20c8ae10"
       },
       {
-        "file": "assets/index-B4SeBP1_.js",
-        "url": "http://127.0.0.1:4180/assets/index-B4SeBP1_.js",
-        "bytes": 656821,
-        "sha256": "56b0eb334f27d5e1367ebff728c415a01aa36435d51af395dc4671c2228878e6"
+        "file": "assets/index-OcYF1_Qa.js",
+        "url": "http://127.0.0.1:4180/assets/index-OcYF1_Qa.js",
+        "bytes": 665081,
+        "sha256": "1b44ac89cf85088a4d34c1b745000ef8be5c954e52710927c8d1198bd0574a49"
       },
       {
-        "file": "assets/index-BWnt3DJs.css",
-        "url": "http://127.0.0.1:4180/assets/index-BWnt3DJs.css",
-        "bytes": 161706,
-        "sha256": "9bc516aa0bdd32d1140667d3570071f95fb327af61460e452b1dada88ccca734"
+        "file": "assets/index-i5Mvj4F3.css",
+        "url": "http://127.0.0.1:4180/assets/index-i5Mvj4F3.css",
+        "bytes": 165572,
+        "sha256": "7af16775a7e5348b5cf61d15deb07c225a8b91eff0fb481e9e3100daeefd0b05"
       },
       {
-        "file": "assets/worker-DisFgbJ1.js",
-        "url": "http://127.0.0.1:4180/assets/worker-DisFgbJ1.js",
-        "bytes": 332064,
-        "sha256": "048013d2e6b221c70962e4cb567c7af1e3e72889ca51574f2f18b929e5a0c32a"
+        "file": "assets/worker-BlOPvXpe.js",
+        "url": "http://127.0.0.1:4180/assets/worker-BlOPvXpe.js",
+        "bytes": 335936,
+        "sha256": "a95d033d8c7e4e0318f45c91cce576fd5fe5cf228ef8608e480c95c71eb6fe73"
       }
     ],
     "passed": true
@@ -63,8 +63,8 @@
       1440,
       1000
     ],
-    "coldLoadAndFoundMs": 1349,
-    "foundingCommandMs": 289,
+    "coldLoadAndFoundMs": 1341,
+    "foundingCommandMs": 279,
     "animationFps": 60
   },
   "mobile": {
@@ -73,83 +73,83 @@
       844
     ],
     "deviceScaleFactor": 2,
-    "coldLoadAndFoundMs": 1194,
-    "foundingCommandMs": 284,
-    "animationFps": 61,
+    "coldLoadAndFoundMs": 1284,
+    "foundingCommandMs": 269,
+    "animationFps": 60,
     "inputSamples": 12,
-    "pointerToSecondFrameP95Ms": 27
+    "pointerToSecondFrameP95Ms": 29
   },
-  "entryGzipBytes": 240531,
+  "entryGzipBytes": 243859,
   "entryGzipLimit": 256000,
   "entryFiles": [
     {
-      "file": "assets/index-B4SeBP1_.js",
-      "gzipBytes": 211861
+      "file": "assets/index-OcYF1_Qa.js",
+      "gzipBytes": 214534
     },
     {
-      "file": "assets/index-BWnt3DJs.css",
-      "gzipBytes": 28670
+      "file": "assets/index-i5Mvj4F3.css",
+      "gzipBytes": 29325
     }
   ],
-  "buildGzipBytes": 352378,
+  "buildGzipBytes": 357128,
   "buildGzipLimit": null,
   "buildFiles": [
     {
-      "file": "index-B4SeBP1_.js",
-      "gzipBytes": 211861
+      "file": "index-OcYF1_Qa.js",
+      "gzipBytes": 214534
     },
     {
-      "file": "index-BWnt3DJs.css",
-      "gzipBytes": 28670
+      "file": "index-i5Mvj4F3.css",
+      "gzipBytes": 29325
     },
     {
-      "file": "worker-DisFgbJ1.js",
-      "gzipBytes": 111847
+      "file": "worker-BlOPvXpe.js",
+      "gzipBytes": 113269
     }
   ],
   "firstPlayPageTargetTransfers": [
     {
       "url": "http://127.0.0.1:4180/",
       "type": "Document",
-      "bytes": 1029
+      "bytes": 1030
     },
     {
-      "url": "http://127.0.0.1:4180/assets/index-BWnt3DJs.css",
+      "url": "http://127.0.0.1:4180/assets/index-i5Mvj4F3.css",
       "type": "Stylesheet",
-      "bytes": 29262
+      "bytes": 29917
     },
     {
-      "url": "http://127.0.0.1:4180/assets/index-B4SeBP1_.js",
+      "url": "http://127.0.0.1:4180/assets/index-OcYF1_Qa.js",
       "type": "Script",
-      "bytes": 212461
+      "bytes": 215134
     }
   ],
   "mobileFirstPlayPageTargetTransfers": [
     {
       "url": "http://127.0.0.1:4180/",
       "type": "Document",
-      "bytes": 1029
+      "bytes": 1030
     },
     {
-      "url": "http://127.0.0.1:4180/assets/index-BWnt3DJs.css",
+      "url": "http://127.0.0.1:4180/assets/index-i5Mvj4F3.css",
       "type": "Stylesheet",
-      "bytes": 29262
+      "bytes": 29917
     },
     {
-      "url": "http://127.0.0.1:4180/assets/index-B4SeBP1_.js",
+      "url": "http://127.0.0.1:4180/assets/index-OcYF1_Qa.js",
       "type": "Script",
-      "bytes": 212461
+      "bytes": 215134
     }
   ],
-  "firstPlayPageTargetTransferBytes": 242752,
-  "mobileFirstPlayPageTargetTransferBytes": 242752,
+  "firstPlayPageTargetTransferBytes": 246081,
+  "mobileFirstPlayPageTargetTransferBytes": 246081,
   "transferNote": "Page-target CDP transfers may omit dedicated-worker target requests; build inventory additionally counts every worker/lazy JavaScript and CSS file as a conservative upper bound.",
-  "centuryLoadMs": 1399,
-  "centuryCheckpointSha256": "f53e961aac42331cd6269fb7a9ed0be13b88660f607492904136df6f73a58cce",
+  "centuryLoadMs": 1374,
+  "centuryCheckpointSha256": "4bd7e7f9429cb049b8aa8f0a63e5dfd54558f165cdb0d1b2a5ee24cdd62aac4d",
   "centuryRestoreReference": "Separate unthrottled 100-season initialization measurement",
   "initializationLimitMs": 5000,
   "inputSamples": 30,
-  "pointerToSecondFrameP95Ms": 51,
+  "pointerToSecondFrameP95Ms": 48,
   "inputLimitMs": 100,
   "minimumFps": 30,
   "mobileHorizontalOverflow": false,

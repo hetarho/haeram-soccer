@@ -1,6 +1,7 @@
 import type { Club, MatchRecord, World } from '../../contracts/src/types';
 import { activePlayers, clubOf, findClub, initialElo, quote } from './world';
 import { playerValue } from './transfers';
+import { facilityCostUnits } from './facilities';
 
 /**
  * Club Elo after every settled result, every club and competition (→HIST-12), in the World
@@ -47,7 +48,7 @@ export function clubValuation(w: World) {
   const club = clubOf(w),
     code = club.country;
   let built = 0;
-  for (let level = 1; level <= w.facilities; level++) built += 200 * level ** 1.5;
+  for (let level = 1; level <= w.facilities; level++) built += facilityCostUnits(level);
   const squad = squadValue(w),
     facilities = quote(code, w.year, 150 + built / 2),
     brand = quote(code, w.year, (club.fans / 20) * (1 + club.reputation / 100));

@@ -169,9 +169,9 @@ test('mobile intervention levels set clock stops and staff delegation, and persi
   await expect(trigger).toHaveAccessibleName('개입 수준 · 운영진에 모두 맡기기');
   await expect(trigger).toContainText('개입 4');
   const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
-  await nav.getByRole('button', { name: '선수단', exact: true }).click();
+  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   await page
-    .getByRole('group', { name: '선수단 메뉴' })
+    .getByRole('dialog', { name: '전체 메뉴' })
     .getByRole('button', { name: '스태프', exact: true })
     .click();
   const delegation = page.getByRole('region', { name: '스태프 위임' });

@@ -85,13 +85,13 @@ describe('business delegation and cash warnings', () => {
     expect(finance(delegated).every((item) => !item.attention)).toBe(true);
   });
 
-  it('warns once a season when cash covers under 13 rounds of fixed costs', () => {
+  it('warns once a season, as a status that never stops the clock, when cash covers under 13 rounds', () => {
     const w = world();
     const perRound = BigInt(operatingCosts(w).annual) / 46n;
     w.cash = (perRound * BigInt(CASH_WARNING_ROUNDS - 4)).toString();
     advanceRound(w, undefined, false);
     const [warning] = finance(w);
-    expect(warning).toMatchObject({ attention: true });
+    expect(warning).toMatchObject({ attention: false });
     expect(warning.title).toMatch(/^운영자금이 약 \d+주분 남았어요$/);
     advanceRound(w, undefined, false);
     expect(finance(w)).toHaveLength(1);

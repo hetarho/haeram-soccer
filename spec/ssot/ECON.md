@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r9 | Define the implemented browser-demo behavior for historical club economy.
+> r10 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -12,9 +12,12 @@
 - ECON-8 [o] Sponsors offer guaranteed, performance-linked, exclusive, or inflation-linked terms; one main sponsor slot, declared annual payment/bonus/term, no repeated contract grant.
 - ECON-9 [o] Match attendance and receipts use supporters, reputation, price and performance; no duplicate season-ticket or sponsor revenue.
 - ECON-10 [o] Cash, income, expense, recurring wages, annual profit, budget runway and CPI-adjusted comparison are separate statistics.
-- ECON-11 [o] If operations produce negative cash, play continues with an explicit budget warning; optional local-support recovery is a bounded game action, not a real-money payment.
+- ECON-11 [o] If operations produce negative cash, play continues with an explicit budget warning and the bankruptcy countdown (→ECON-24); optional local-support recovery is a bounded game action, not a real-money payment.
 
 - ECON-12 [o] Business decisions present immediate spend, post-decision cash, recurring fixed-cost changes and fixed-cost runway excluding future revenue before commitment. Facility decisions also compare capacity, current demand and maintenance; costly facility upgrades require an in-app review of these real effects.
+  - facilities have 20 levels; level L costs 250 × 1.38^(L−1) price units (250 → about 4,500 at 10 → 113,000 at 20) and upkeep is 180 + 40L + 5L² a year, so the top takes a career ← thirty cheap steps were too easy to climb
+  - each level holds 5,000 more spectators (102,500 at 20); development reads facilities/27, the top bonus thirty levels used to give
+  - a save built beyond 20 loads at 20
 
 - ECON-13 [o] Marketing ranges separate total recovery from net profit and identify the four-round delay and uncertainty. Ticket drafts compare gate demand, income and hosting costs through the same gateProjection used by settlement; changing a draft has no game effect until applied.
 
@@ -40,10 +43,10 @@
   - ENG 24-club divisions ×1, 20-club ×1.21, 18-club ×1.35, the 16-club amateur league ×1.53.
   - cup and European gates are not scaled; hosting costs are paid per actual match.
   - the gate projection, ticket previews and cash projection use the same factor.
-- ECON-20 [o] When cash after a round's costs is non-negative but covers fewer than 13 rounds of fixed costs, a cash warning inbox item (→WEB-42) appears once per season with its weeks left and remedies.
+- ECON-20 [o] When cash after a round's costs is non-negative but covers fewer than 13 rounds of fixed costs, a cash warning inbox item (→WEB-42) appears once per season with its weeks left and remedies. It is a status, never a stop: the HUD cash and a red band show it (→WEB-56).
 - ECON-21 [o] Sponsors with business delegated (→STAFF-13): whenever the main sponsor slot is empty the commercial staff sign the stable offer at once and report it. Without delegation a season that starts without a sponsor posts a sponsor reminder (→WEB-42).
 
-- ECON-22 [o] The club build is six slots — 유스 정책, 스카우팅, 이적 기조, 수익 모델, 홈·팬, 라커룸 문화 — each holding one card: the standard card or one of four others, so 5^6 = 15,625 builds before policy, staff or manager. ← builds are the fun: owners combine levers into their own club instead of picking one of a few presets Every card has at least one gain and one cost; additions add and multipliers multiply across slots. The owner drafts freely, sees combined effects, synergies (→CLUB-21) and odds before committing, and commits at most once per season (recorded as a build event). Presets fill the slots in one tap: 균형 운영 (all standard), 유스 명가 (성골 유스, 지역 인재 우선, 철저한 경쟁), 셀링 클럽 (셀링 클럽, 데이터 스카우팅), 상업 확장 (상업 확장, 글로벌 브랜드), 지역 밀착 (지역 밀착, 회원제 운영, 지역 인재 우선), 승격 올인 (구단주 투자, 즉시 전력, 스타 대우).
+- ECON-22 [o] The club build is six slots — 유스 정책, 스카우팅, 매각 기조, 수익 모델, 홈·팬, 라커룸 문화 — each holding one card: the standard card or one of four others, so 5^6 = 15,625 builds before policy, staff or manager. ← builds are the fun: owners combine levers into their own club instead of picking one of a few presets Every card has at least one gain and one cost; additions add and multipliers multiply across slots. The owner drafts freely, sees combined effects, synergies (→CLUB-21) and odds before committing, and commits at most once per season (recorded as a build event). Presets fill the slots in one tap: 균형 운영 (all standard), 유스 명가 (성골 유스, 지역 인재 우선, 철저한 경쟁), 셀링 클럽 (셀링 클럽, 데이터 스카우팅), 상업 확장 (상업 확장, 글로벌 브랜드), 지역 밀착 (지역 밀착, 회원제 운영, 지역 인재 우선), 승격 올인 (구단주 투자, 즉시 전력, 스타 대우).
   | slot | card | effects |
   |---|---|---|
   | 유스 정책 | 성골 유스 | intake +1, intake potential +3; market candidates −1 |
@@ -54,10 +57,10 @@
   | 스카우팅 | 즉시 전력 | candidate ability +4; player wages ×1.05 |
   | 스카우팅 | 광역 네트워크 | candidates +3; candidate potential −1 |
   | 스카우팅 | 지역 인재 우선 | home gate demand +2%, player wages ×0.97; candidates −1 |
-  | 이적 기조 | 셀링 클럽 | other clubs' offers ×1.6, sale fees ×1.25; morale baseline −2 |
-  | 이적 기조 | 쇼케이스 | offers ×1.3, sale fees ×1.1; morale baseline −1 |
-  | 이적 기조 | 핵심 지키기 | morale baseline +2; offers ×0.5 |
-  | 이적 기조 | 강경 협상 | sale fees ×1.15; offers ×0.8 |
+  | 매각 기조 | 셀링 클럽 | other clubs' offers ×1.6, sale fees ×1.25; morale baseline −2 |
+  | 매각 기조 | 쇼케이스 | offers ×1.3, sale fees ×1.1; morale baseline −1 |
+  | 매각 기조 | 핵심 지키기 | morale baseline +2; offers ×0.5 |
+  | 매각 기조 | 강경 협상 | sale fees ×1.15; offers ×0.8 |
   | 수익 모델 | 상업 확장 | new sponsor offers ×1.2, campaign income ×1.25, marketing fan growth ×1.2; home gate demand −3% |
   | 수익 모델 | 구단주 투자 | owner capital +2 a season (5); player wages ×1.05 |
   | 수익 모델 | 긴축 재정 | player wages ×0.94; morale baseline −2, candidate ability −2 |
@@ -73,6 +76,21 @@
   - signed sponsor contracts keep their amounts; a build changes new offers only.
   - a club vision stored by rules 1.6–1.7 loads as the preset of the same name.
 
+- ECON-23 [o] Supporters follow reputation, not the stadium: each league round they move 3% toward the following the reputation commands (800 × 1.085^reputation: about 2,000 at 12, 47,000 at 50, 1.2 million at 90), a win adds 0.4% × the build's win-fans effect, a defeat costs 0.1%, marketing and campaigns add theirs; there is no ceiling, never below 200. ← a fixed cap and compounding wins both broke the long game
+  - the stadium limits only who can come in (gate receipts, →ECON-9); every supporter also pays a global fan income each league round of 0.001 × fans^0.85 price units (online, shirts, broadcast), one ledger line a season that grows each round, projected per round at today's following (→ECON-18)
+- ECON-24 [o] Bankruptcy ends a career: each league round settled with negative cash counts one, getting back to zero or above resets the count; at 8 in a row, or at once when the debt passes half a season's fixed costs, the club goes bankrupt. ← debt used to freeze play behind an alert instead of ending it
+  - the first round in debt posts a "파산 위기" inbox item (a status, not a stop); the HUD cash and a red band count the rounds left (→WEB-56)
+  - a bankrupt club advances nothing and refuses every command but reading the inbox; the app shows the game-over page (→WEB-56)
+- ECON-25 [o] The build board pairs each strategy card with the ongoing dials that spend on the same area (→ECON-22, →ECON-16, →ECON-17), so the owner composes one build instead of two lists:
+  | area | strategy card (once a season) | dials (any time) |
+  |---|---|---|
+  | 선수단 | 라커룸 문화 | 선수단 투자, 훈련 방향 |
+  | 영입 | 스카우팅 | 영입 기조 |
+  | 매각 | 매각 기조 | — |
+  | 유소년 | 유스 정책 | 유소년 투자 |
+  | 수익 | 수익 모델 | 마케팅 |
+  | 홈·팬 | 홈·팬 | 티켓 가격 |
+  - the card says how the club goes about an area, the dial how much it puts in; presets only fill the six cards; the market slot is named 매각 기조 so it never reads like the 영입 기조 dial ← the build arrived after the policy board and duplicated its areas in a second, unstructured list
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -80,6 +98,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r10 261012 ECON-11✎ +bankruptcy countdown; ECON-12✎ 30 levels at 200×L^1.5→20 levels at 250×1.38^(L−1), upkeep 180+40L→180+40L+5L²; ECON-20✎ cash warning stop→status; ECON-22✎ 이적 기조→매각 기조; ECON-23+ supporters follow reputation without a ceiling, global fan income; ECON-24+ bankruptcy after 8 rounds in debt; ECON-25+ build areas pair cards with dials
 - r9 261011 ECON-19✎ lower section ×3.29→amateur league ×1.53
 - r8 261010 ECON-22✎ one of six vision cards→a six-slot build of 25 cards (15,625 builds) with presets, combined previews and one commit a season
 - r7 261010 ECON-16✎ three settings→four with academy investment, support shown as squad investment; ECON-22+ club visions

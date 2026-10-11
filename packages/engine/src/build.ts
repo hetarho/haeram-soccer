@@ -99,7 +99,7 @@ export interface BuildCard {
 export const BUILD_SLOT_INFO: Record<BuildSlot, { label: string; question: string }> = {
   youth: { label: '유스 정책', question: '아카데미 아이들을 어떻게 키울까' },
   scouting: { label: '스카우팅', question: '어떤 선수를 찾아 데려올까' },
-  market: { label: '이적 기조', question: '우리 선수를 원하는 구단에 어떻게 응할까' },
+  market: { label: '매각 기조', question: '우리 선수를 원하는 구단에 어떻게 응할까' },
   revenue: { label: '수익 모델', question: '구단 살림은 어디서 벌고 아낄까' },
   fans: { label: '홈·팬', question: '어떤 경기장과 팬층을 만들까' },
   culture: { label: '라커룸 문화', question: '선수단은 어떤 분위기로 뭉칠까' },

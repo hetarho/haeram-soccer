@@ -53,3 +53,14 @@
 .large.large b {
   font-size: 24px;
 }
+/* The ceiling beside the rating: same card tiers, outlined instead of filled. */
+.pair {
+  flex: none;
+  display: inline-flex;
+  gap: 4px;
+}
+.potential {
+  background: transparent;
+  border-style: dashed;
+  box-shadow: none;
+}

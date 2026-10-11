@@ -43,8 +43,10 @@ const TRAINING_LEVELS: { focus: TrainingFocus | 'staff'; name: string; summary: 
   { focus: 'youth', name: '유망주 집중', summary: '27세 미만 성장이 빨라지고 회복은 줄어요' },
 ];
 
+/** Every ongoing club dial; the build board shows each beside the strategy card it belongs to. */
+export type DialKey = PolicyKey | 'training' | 'ticket';
 type Dial = {
-  key: PolicyKey | 'training' | 'ticket';
+  key: DialKey;
   icon: string;
   label: string;
   question: string;
@@ -179,8 +181,19 @@ function dials(w: World): Dial[] {
   ];
 }
 
-/** Ongoing club decisions: one tap previews the consequence, a second tap applies it. */
-export function PolicyBoard({ w, client }: { w: World; client: GameClient }) {
+/**
+ * Ongoing club dials, any time: one tap previews the consequence, a second tap applies it. The
+ * build board places them by area (→ECON-22), so `keys` picks which to show.
+ */
+export function PolicyDials({
+  w,
+  client,
+  keys,
+}: {
+  w: World;
+  client: GameClient;
+  keys: readonly DialKey[];
+}) {
   const acting = useGameState((state) => !!state.pendingActions);
   const readonly = useGameState((state) => state.readonly);
   const error = useGameState((state) => state.error);
@@ -195,88 +208,86 @@ export function PolicyBoard({ w, client }: { w: World; client: GameClient }) {
     } else setFailure(client.state.error || '방침을 적용하지 못했어요.');
   };
   return (
-    <section className={s.board} aria-label="구단 운영 방침">
-      <header className={s.head}>
-        <h2>운영 방침</h2>
-        <p>단계를 누르면 바뀌는 점을 먼저 보여드려요. 적용하면 다음 정산부터 반영돼요.</p>
-      </header>
-      {dials(w).map((dial) => {
-        const chosen = draft?.key === dial.key ? draft.index : undefined;
-        const shown = chosen ?? dial.current;
-        return (
-          <article key={dial.key} className={s.dial} data-policy={dial.key}>
-            <div className={s.dialHead}>
-              <span className={s.icon} aria-hidden="true">
-                {dial.icon}
-              </span>
-              <div>
-                <h3>{dial.label}</h3>
-                <small>{dial.question}</small>
+    <div className={s.dials}>
+      {dials(w)
+        .filter((dial) => keys.includes(dial.key))
+        .map((dial) => {
+          const chosen = draft?.key === dial.key ? draft.index : undefined;
+          const shown = chosen ?? dial.current;
+          return (
+            <article key={dial.key} className={s.dial} data-policy={dial.key}>
+              <div className={s.dialHead}>
+                <span className={s.icon} aria-hidden="true">
+                  {dial.icon}
+                </span>
+                <div>
+                  <h3>{dial.label}</h3>
+                  <small>{dial.question}</small>
+                </div>
+                <b className={s.current}>
+                  {dial.current >= 0 ? dial.levels[dial.current].name : '사용자 지정'}
+                </b>
               </div>
-              <b className={s.current}>
-                {dial.current >= 0 ? dial.levels[dial.current].name : '사용자 지정'}
-              </b>
-            </div>
-            <div
-              className={s.steps}
-              role="radiogroup"
-              aria-label={dial.label}
-              style={{ gridTemplateColumns: `repeat(${dial.levels.length}, 1fr)` }}
-            >
-              {dial.levels.map((level, index) => (
-                <button
-                  key={level.name}
-                  role="radio"
-                  aria-checked={index === dial.current}
-                  aria-label={`${dial.label} ${level.name}`}
-                  className={`${index <= dial.current ? s.filled : ''} ${index === chosen ? s.drafted : ''}`}
-                  disabled={blocked}
-                  onClick={() =>
-                    setDraft(
-                      index === dial.current || index === chosen
-                        ? undefined
-                        : { key: dial.key, index },
-                    )
-                  }
-                >
-                  <i aria-hidden="true" />
-                  <span>{level.name}</span>
-                </button>
-              ))}
-            </div>
-            {shown >= 0 && (
-              <div className={`${s.effect} ${chosen !== undefined ? s.previewing : ''}`}>
-                <p>
-                  {chosen !== undefined && <b>바꾸면 · </b>}
-                  {dial.levels[shown].summary}
-                </p>
-                <ul>
-                  {dial.preview(shown).map((line) => (
-                    <li key={line}>{line}</li>
-                  ))}
-                </ul>
-                {chosen !== undefined && (
-                  <div className={s.confirm}>
-                    <button onClick={() => setDraft(undefined)}>그대로 두기</button>
-                    <button
-                      className={s.apply}
-                      disabled={blocked}
-                      onClick={() => void apply(dial, chosen)}
-                    >
-                      ‘{dial.levels[chosen].name}’ 적용
-                    </button>
-                  </div>
-                )}
+              <div
+                className={s.steps}
+                role="radiogroup"
+                aria-label={dial.label}
+                style={{ gridTemplateColumns: `repeat(${dial.levels.length}, 1fr)` }}
+              >
+                {dial.levels.map((level, index) => (
+                  <button
+                    key={level.name}
+                    role="radio"
+                    aria-checked={index === dial.current}
+                    aria-label={`${dial.label} ${level.name}`}
+                    className={`${index <= dial.current ? s.filled : ''} ${index === chosen ? s.drafted : ''}`}
+                    disabled={blocked}
+                    onClick={() =>
+                      setDraft(
+                        index === dial.current || index === chosen
+                          ? undefined
+                          : { key: dial.key, index },
+                      )
+                    }
+                  >
+                    <i aria-hidden="true" />
+                    <span>{level.name}</span>
+                  </button>
+                ))}
               </div>
-            )}
-          </article>
-        );
-      })}
+              {shown >= 0 && (
+                <div className={`${s.effect} ${chosen !== undefined ? s.previewing : ''}`}>
+                  <p>
+                    {chosen !== undefined && <b>바꾸면 · </b>}
+                    {dial.levels[shown].summary}
+                  </p>
+                  <ul>
+                    {dial.preview(shown).map((line) => (
+                      <li key={line}>{line}</li>
+                    ))}
+                  </ul>
+                  {chosen !== undefined && (
+                    <div className={s.confirm}>
+                      <button onClick={() => setDraft(undefined)}>그대로 두기</button>
+                      <button
+                        className={s.apply}
+                        disabled={blocked}
+                        onClick={() => void apply(dial, chosen)}
+                      >
+                        ‘{dial.levels[chosen].name}’ 적용
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </article>
+          );
+        })}
       {failure && (
         <p className={s.failure} role="alert">
           {failure}
         </p>
       )}
-    </section>
+    </div>
   );
 }

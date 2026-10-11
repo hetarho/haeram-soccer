@@ -5,6 +5,7 @@ import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { staffWageTotal } from './staff';
 import { SEASON_ROUNDS } from './calendar';
+import { facilityUpkeepUnits } from './facilities';
 
 export const FINANCE_CONFIG = {
   ticketDemandScale: 0.12,
@@ -33,7 +34,7 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     1000n,
   );
   const managerWage = w.manager.wage;
-  const maintenance = quote(clubOf(w).country, w.year, 180 + w.facilities * 40);
+  const maintenance = quote(clubOf(w).country, w.year, facilityUpkeepUnits(w.facilities));
   const marketing = effects.marketingUnits
     ? quote(clubOf(w).country, w.year, effects.marketingUnits * 46)
     : '0';
@@ -204,6 +205,7 @@ const incomeKinds: Record<string, string> = {
   'sponsor-bonus': '후원 성과 보너스',
   'season-prize': '최종 순위 상금',
   'campaign-result': '마케팅 회수금',
+  'fan-income': '글로벌 팬 수익',
   'transfer-out': '선수 매각',
   'cup-prize': '국내 컵 상금',
   'cup-honor': '국내 컵 우승 상금',

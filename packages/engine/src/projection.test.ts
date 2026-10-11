@@ -50,6 +50,7 @@ describe('finance projection', () => {
     expect(projection.lines.map((line) => line.label)).toEqual([
       '급여·운영비',
       '홈 경기 수입(개최비 제외)',
+      '글로벌 팬 수익',
       '후원 계약',
       '경기 성과 수입',
       '순위 상금',

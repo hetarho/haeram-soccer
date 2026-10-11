@@ -14,9 +14,7 @@ import type { ClientState, GameClient } from '../runtime/client';
 import type { Reply } from '../runtime/protocol';
 import { Panel } from './App';
 import { RecruitmentDesk } from './RecruitmentDesk';
-import { BusinessWorkbench } from './BusinessWorkbench';
-import { PolicyBoard } from './PolicyBoard';
-import { FinanceOutlook } from './FinanceOutlook';
+import { OperationsView } from './Operations';
 import {
   expectedOfferDays,
   LISTED_OFFER,
@@ -38,7 +36,7 @@ import {
   rosterViewSummary,
   type RosterView,
 } from './RosterFilters';
-import { useNavigation, useSquadView, type Page, type SquadTab } from './state';
+import { useSquadView, type Page, type SquadTab } from './state';
 import { AcademyView, CoachingPlan, CoachingStaff, Delegation } from './ClubStaff';
 import { Chart } from './Chart';
 import { Pitch } from './Pitch';
@@ -47,7 +45,6 @@ import { explorePlayers } from './playerAnalysis';
 import { PlayerPerformance } from './PlayerPerformance';
 import { PlayerAdvancedStats } from './PlayerAdvancedStats';
 import { StyleCard } from './StyleCard';
-import { BuildBoard } from './BuildBoard';
 import { RemedySheet } from './RemedySheet';
 import { STYLE_INFO } from '../../../../packages/engine/src/styles';
 import type { StateKey } from './teamState';
@@ -87,31 +84,22 @@ function Header({
     </div>
   );
 }
-/** Squad, market and manager are one group, so the segment control routes between them. */
-function SquadSegments({ current, players }: { current: SquadTab | 'manager'; players: number }) {
-  const { setPage } = useNavigation();
+/** The squad page's two views; staff is its own destination in the navigation (→WEB-43). */
+function SquadSegments({ current, players }: { current: SquadTab; players: number }) {
   const setTab = useSquadView((state) => state.setTab);
-  const go = (target: SquadTab | 'manager') => {
-    if (target === 'manager') setPage('manager');
-    else {
-      setTab(target);
-      setPage('squad');
-    }
-  };
   return (
     <div className={s.segments} role="group" aria-label="선수단 메뉴">
       {(
         [
           ['roster', `선수단 ${players}/26`],
           ['academy', '유소년'],
-          ['manager', '스태프'],
         ] as const
       ).map(([id, label]) => (
         <button
           key={id}
           aria-pressed={current === id}
           className={current === id ? s.selected : undefined}
-          onClick={() => go(id)}
+          onClick={() => setTab(id)}
         >
           {label}
         </button>
@@ -131,6 +119,17 @@ function Attributes({ rows }: { rows: [string, string | number][] }) {
     </div>
   );
 }
+/** "38세", or nothing for someone from an older save without an age. */
+function personAge(w: World, born?: number) {
+  return born === undefined ? '' : `${w.year - born}세`;
+}
+/** Where a manager's career is heading, for his card (→STAFF-16). */
+function growthNote(w: World, m: { ability: number; potential?: number; born?: number }) {
+  if (m.potential === undefined || m.born === undefined) return '';
+  const age = w.year - m.born;
+  if (m.potential > m.ability) return ` · 성장 여지 +${m.potential - m.ability}`;
+  return age >= 60 ? ' · 노쇠기' : ' · 전성기';
+}
 function ManagerView({ state, client }: Props) {
   const v = state.view!,
     w = v.world,
@@ -146,24 +145,26 @@ function ManagerView({ state, client }: Props) {
   return (
     <>
       <Header
-        eyebrow="SQUAD · STAFF"
+        eyebrow="STAFF"
         title="스태프"
-        description="감독과 코치진이 선발·전술·훈련·유소년을 운영해요. 구단주는 사람을 고르고, 맡길 일을 정해요."
-      >
-        <SquadSegments
-          current="manager"
-          players={w.players.filter((p) => p.status === 'active').length}
-        />
-      </Header>
+        description="감독과 코치진이 선발·전술·훈련·유소년을 운영해요. 구단주는 사람을 고르고, 맡길 일을 정해요. 젊은 감독과 코치는 잠재력까지 성장해요."
+      />
       <CoachingPlan w={w} />
       <CoachingStaff w={w} client={client} />
       <Delegation w={w} client={client} />
       <div className={s.twoCols}>
         <Panel title={m.name} note={m.interim ? 'INTERIM MANAGER' : 'FIRST TEAM MANAGER'}>
           <div className={s.panelBody}>
-            <span className={s.pill}>
-              {m.since}년 부임 · {m.until}년까지
-            </span>
+            <div className={s.personHead}>
+              <OvrBadge value={m.ability} role="감독" potential={m.potential} large />
+              <div>
+                <b>{personAge(w, m.born)}</b>
+                <small>
+                  {m.since}년 부임 · {m.until}년까지
+                  {growthNote(w, m)}
+                </small>
+              </div>
+            </div>
             <StyleCard style={m.interim ? undefined : m.style} />
             <div className={s.actions}>
               <button onClick={() => setRequests('manager')}>감독에게 힘 실어주기</button>
@@ -172,7 +173,6 @@ function ManagerView({ state, client }: Props) {
             <Attributes
               rows={[
                 ['철학', tacticLabel[m.philosophy]],
-                ['지도력', m.ability],
                 ['유소년 육성', m.youth],
                 ['유연성', m.flexibility],
                 ['자존심', m.pride],
@@ -258,43 +258,61 @@ function ManagerView({ state, client }: Props) {
           </div>
         </Panel>
       </div>
-      <Panel title="감독 후보 · 네 가지 성향" note="COMPARE FOUR SCHOOLS">
-        <div className={s.panelBody}>
-          <div className={s.cards}>
-            {v.managers.map((candidate, i) => {
-              const fee = (
-                BigInt(candidate.fee) + (m.interim ? 0n : BigInt(ratio(m.wage, 1n, 4n)))
-              ).toString();
-              return (
-                <article className={s.card} key={candidate.id}>
-                  <h3>{candidate.name}</h3>
-                  <span className={s.pill}>
-                    {STYLE_INFO[candidate.style].label} · {tacticLabel[candidate.philosophy]}
-                  </span>
-                  <StyleCard style={candidate.style} compact />
-                  <Attributes
-                    rows={[
-                      ['지도력', candidate.ability],
-                      ['유소년 육성', candidate.youth],
-                      ['유연성', candidate.flexibility],
-                      ['자존심', candidate.pride],
-                      ['야망', candidate.ambition],
-                      ['연봉', money(candidate.wage, c.country, w.year)],
-                    ]}
-                  />
-                  <p>
-                    계약 {candidate.until}년까지 · 즉시 지출 {money(fee, c.country, w.year)} (이전
-                    감독 보상 포함)
-                  </p>
-                  <button disabled={disabled || candidate.id === m.id} onClick={() => setHiring(i)}>
-                    {candidate.id === m.id ? '현재 감독' : '감독 선임'}
-                  </button>
-                </article>
-              );
-            })}
+      <div id="manager-candidates" className={s.anchorTarget}>
+        <Panel title="감독 후보 · 네 가지 성향" note="COMPARE FOUR SCHOOLS">
+          <div className={s.panelBody}>
+            <div className={s.cards}>
+              {v.managers.map((candidate, i) => {
+                const fee = (
+                  BigInt(candidate.fee) + (m.interim ? 0n : BigInt(ratio(m.wage, 1n, 4n)))
+                ).toString();
+                return (
+                  <article className={s.card} key={candidate.id}>
+                    <div className={s.personHead}>
+                      <OvrBadge
+                        value={candidate.ability}
+                        role="감독"
+                        potential={candidate.potential}
+                        large
+                      />
+                      <div>
+                        <h3>{candidate.name}</h3>
+                        <small>
+                          {personAge(w, candidate.born)}
+                          {growthNote(w, candidate)}
+                        </small>
+                      </div>
+                    </div>
+                    <span className={s.pill}>
+                      {STYLE_INFO[candidate.style].label} · {tacticLabel[candidate.philosophy]}
+                    </span>
+                    <StyleCard style={candidate.style} compact />
+                    <Attributes
+                      rows={[
+                        ['유소년 육성', candidate.youth],
+                        ['유연성', candidate.flexibility],
+                        ['자존심', candidate.pride],
+                        ['야망', candidate.ambition],
+                        ['연봉', money(candidate.wage, c.country, w.year)],
+                      ]}
+                    />
+                    <p>
+                      계약 {candidate.until}년까지 · 즉시 지출 {money(fee, c.country, w.year)} (이전
+                      감독 보상 포함)
+                    </p>
+                    <button
+                      disabled={disabled || candidate.id === m.id}
+                      onClick={() => setHiring(i)}
+                    >
+                      {candidate.id === m.id ? '현재 감독' : '감독 선임'}
+                    </button>
+                  </article>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      </Panel>
+        </Panel>
+      </div>
       {requests && (
         <RemedySheet
           w={w}
@@ -320,6 +338,14 @@ function ManagerView({ state, client }: Props) {
                 )}
               </b>{' '}
               (이전 감독 보상 포함)
+            </li>
+            <li>
+              지도력 OVR <b>{v.managers[hiring].ability}</b> · 잠재력{' '}
+              <b>{v.managers[hiring].potential ?? v.managers[hiring].ability}</b> ·{' '}
+              {personAge(w, v.managers[hiring].born)}
+              {(v.managers[hiring].potential ?? 0) > v.managers[hiring].ability
+                ? ' · 시즌마다 잠재력에 가까워져요'
+                : ''}
             </li>
             <li>{m.name} 감독은 오늘 팀을 떠나요.</li>
             <li>
@@ -428,8 +454,8 @@ function stanceConsequence(w: World, p: Player, stance: TransferStance) {
     what: `평가 가치 ${UNTOUCHABLE_BAR}%(${format(ratio(value, BigInt(UNTOUCHABLE_BAR), 100n))}) 미만 제안은 바로 거절해요`,
     who: delegated
       ? market === 'hold'
-        ? `거액 제안도 지켜요 · 이적 기조 ${card} (자금 위기면 매각)`
-        : `거액 제안은 스태프가 감독과 상의해요 · 이적 기조 ${card} 기준 ${UNTOUCHABLE_PRICE[market ?? 'standard']}%, 자금 사정과 주전 여부로 조정`
+        ? `거액 제안도 지켜요 · 매각 기조 ${card} (자금 위기면 매각)`
+        : `거액 제안은 스태프가 감독과 상의해요 · 매각 기조 ${card} 기준 ${UNTOUCHABLE_PRICE[market ?? 'standard']}%, 자금 사정과 주전 여부로 조정`
       : '그 이상 거액 제안만 구단주에게 확인받아요',
   };
 }
@@ -1226,16 +1252,9 @@ export default function Rich({ state, client, page }: Props & { page: Page }) {
         <Header
           eyebrow="CLUB OPERATIONS"
           title="구단 운영"
-          description="방침은 매 라운드 비용과 효과로 자동 정산되고, 투자와 계약은 한 번에 지출돼요."
+          description="구단 빌드로 방향과 씀씀이를 정하고, 재정에서 장부를, 시설·후원·캠페인에서 한 번 지출하고 오래 남는 결정을 해요."
         />
-        <BuildBoard w={state.view!.world} client={client} />
-        <FinanceOutlook w={state.view!.world} />
-        <PolicyBoard w={state.view!.world} client={client} />
-        <BusinessWorkbench
-          state={state}
-          client={client}
-          legacy={<EconomicContext state={state} />}
-        />
+        <OperationsView state={state} client={client} legacy={<EconomicContext state={state} />} />
       </>
     );
   return <History state={state} client={client} />;

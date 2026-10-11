@@ -1,3 +1,7 @@
+.dials {
+  display: grid;
+  gap: 10px;
+}
 .board {
   display: grid;
   gap: 10px;

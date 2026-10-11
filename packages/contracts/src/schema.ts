@@ -109,6 +109,8 @@ const manager = z.object({
     })
     .optional(),
   pending: tactic.optional(),
+  born: z.number().int().optional(),
+  potential: rating.optional(),
 });
 const score = z.object({
   home: z.number().int().min(0).max(99),
@@ -329,6 +331,8 @@ const staff = z.strictObject({
   wage: money,
   since: z.number().int(),
   until: z.number().int(),
+  born: z.number().int().optional(),
+  potential: rating.optional(),
 });
 const bid = z.strictObject({
   id,
@@ -432,7 +436,7 @@ export const worldSchema: z.ZodType<World> = z.object({
   currency: text,
   priceIndex: number,
   support: z.number().int().nonnegative(),
-  facilities: z.number().int().min(0).max(30),
+  facilities: z.number().int().min(0).max(20),
   ticket: z.number().finite().min(0.01).max(10),
   campaigns: z
     .array(
@@ -464,6 +468,14 @@ export const worldSchema: z.ZodType<World> = z.object({
   lastChampions: champions,
   lower: z.boolean(),
   critical: text.optional(),
+  insolvent: z.number().int().min(1).max(46).optional(),
+  bankrupt: z
+    .strictObject({
+      year: z.number().int(),
+      round: z.number().int().min(0).max(46),
+      day: z.number().int().min(0).max(800),
+    })
+    .optional(),
   receiptIds: z.array(id).max(200),
 });
 /**
@@ -514,9 +526,12 @@ function legacyMarket(input: unknown): unknown {
   const flat = typeof w.coaching === 'number';
   const listed =
     Array.isArray(w.players) && w.players.some((p) => p && typeof p === 'object' && 'listed' in p);
-  if (!flat && !listed) return input;
+  // Rules before 1.11 built up to 30 facility levels; twenty is the top now.
+  const tall = typeof w.facilities === 'number' && w.facilities > 20;
+  if (!flat && !listed && !tall) return input;
   return {
     ...w,
+    ...(tall ? { facilities: 20 } : {}),
     ...(flat
       ? {
           coaching: Object.fromEntries(staffRole.options.map((role) => [role, w.coaching])),

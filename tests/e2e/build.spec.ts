@@ -16,10 +16,17 @@ test('combines build cards from a preset, previews synergies and commits once a 
     .click();
   const board = page.getByTestId('build-board');
   await expect(board).toContainText('15,625가지 조합');
-  // Six slots, each a standard card plus four choices.
+  // Six areas, each a strategy card (the standard plus four) beside the dials that spend on it.
   await expect(board.locator('[data-slot]')).toHaveCount(6);
   for (const slot of await board.locator('[data-slot]').all())
-    await expect(slot.getByRole('radio')).toHaveCount(5);
+    await expect(slot.getByRole('radiogroup').first().getByRole('radio')).toHaveCount(5);
+  const squad = board.locator('[data-slot="culture"]');
+  await expect(squad.getByRole('radiogroup', { name: '선수단 투자' })).toBeVisible();
+  await expect(squad.getByRole('radiogroup', { name: '훈련 방향' })).toBeVisible();
+  await expect(
+    board.locator('[data-slot="scouting"]').getByRole('radiogroup', { name: '영입 기조' }),
+  ).toBeVisible();
+  await expect(board.locator('[data-slot="market"]')).toContainText('매각 기조');
 
   // A preset fills its slots; the owner then changes single cards.
   await board.getByRole('button', { name: /유스 명가/ }).click();

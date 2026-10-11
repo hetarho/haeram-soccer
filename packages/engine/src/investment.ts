@@ -2,6 +2,7 @@ import type { World } from '../../contracts/src/types';
 import { SEASON_ROUNDS } from './calendar';
 import { gateProjection, operatingCosts } from './finance';
 import { clubOf, quote } from './world';
+import { facilityCostUnits, MAX_FACILITIES } from './facilities';
 
 /** Fixed costs only: future gates, bonuses, sponsorship and other income are excluded. */
 export function fixedCostRunway(cash: string, annual: string): number {
@@ -14,8 +15,8 @@ export function fixedCostRunway(cash: string, annual: string): number {
 
 /** Hypothetical cost/read model; capped facilities have no further spend or improvement. */
 export function facilityInvestmentPreview(w: World) {
-  const eligible = w.facilities < 30,
-    cost = eligible ? quote(clubOf(w).country, w.year, 200 * (w.facilities + 1) ** 1.5) : '0',
+  const eligible = w.facilities < MAX_FACILITIES,
+    cost = eligible ? quote(clubOf(w).country, w.year, facilityCostUnits(w.facilities + 1)) : '0',
     facilitiesAfter = eligible ? w.facilities + 1 : w.facilities,
     draft = { ...w, facilities: facilitiesAfter },
     before = operatingCosts(w),
@@ -40,7 +41,7 @@ export function facilityInvestmentPreview(w: World) {
     affordable,
     eligible,
     reason: !eligible
-      ? '시설은 최대 30단계입니다.'
+      ? `시설은 최대 ${MAX_FACILITIES}단계입니다.`
       : !affordable
         ? '시설 확장에 쓸 보유 자금이 부족합니다.'
         : '확장 비용을 즉시 지출하며 연간 유지비가 늘어납니다.',

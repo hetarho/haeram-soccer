@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r8 | Define the implemented browser-demo behavior for manager demands and personality.
+> r9 | Define the implemented browser-demo behavior for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development, philosophy, flexibility, pride, ambition, salary and term; hiring charges disclosed costs.
@@ -42,6 +42,7 @@
   - only with coach hiring delegated (intervention level 4) do the dials show and act; at levels 1–3 the owner hires, renews and replaces coaches personally
   - raising a dial while delegated replaces that department's vacancy or volunteer at once when affordable; a contracted coach is compared at his contract's end
   - a 1.9 club-wide level loads as that level in every department
+  - the 균형 and 최고 bands are the level a coach reaches (→STAFF-16); a young one in the band starts below it
   | level | label | hires |
   |---|---|---|
   | 1 | 절약 | unpaid ability-50 volunteers |
@@ -52,6 +53,13 @@
   - not delegated: on 1 April a renewal-season inbox item (kind staff-renewal; stops the clock at intervention levels 1–3 →WEB-45) lists coaches whose contracts end at the close; the owner renews (going wage, 10% fee), replaces, or hands hiring to the staff. Unrenewed coaches leave at the close with a staff-renewal vacancy item.
   - the delegated staff report one summary of renewals and hires.
 
+- STAFF-16 [o] Managers and coaches have an age and a ceiling (potential): one younger than his prime starts 0.7 a year below the level drawn for him and can reach up to 1.1 a year above it; each season he closes 15–40% of the gap; from 60 he loses 0–2 a season with his ceiling. ← trusting a young manager or coach should be a real bet on growth
+  | | hired at | prime | other |
+  |---|---|---|---|
+  | manager | 32–64 | 46 | retires at 70; a young candidate asks 3 less wage per point he is still short |
+  | coach | 25–62 | 42 | wage follows his current ability |
+  - the founding manager and an interim keep the drawn level (an interim never grows); volunteers and people from older saves have no age or ceiling and stay put
+  - growth is reported as manager-growth and staff-growth events; OVR (ability) and POT (ceiling) show on every manager and coach (→WEB-55)
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -59,6 +67,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r9 261012 STAFF-15✎ bands are the level reached; STAFF-16+ ages, ceilings, growth to 60, decline after, managers retire at 70
 - r8 261011 STAFF-15✎ one club-wide coaching level→one dial per department, shown and acted on only with coach hiring delegated; a raised dial fills a volunteer post at once
 - r7 261011 STAFF-13✎ four delegable decisions→five with coach hiring, a released coach takes hiring back; STAFF-15+ coaching investment levels, delegated renewals and hires without vacancies, spring renewal season
 - r6 261010 STAFF-12✎ +developer style selects youth; STAFF-14+ eight manager styles with tactic, effects and contract terms

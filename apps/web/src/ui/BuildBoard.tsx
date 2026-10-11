@@ -2,7 +2,6 @@ import { useState } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import {
   BUILD_OPTIONS,
-  BUILD_SLOTS,
   type BuildSlot,
   type ClubBuild,
 } from '../../../../packages/contracts/src/build';
@@ -30,9 +29,66 @@ import { STYLE_INFO } from '../../../../packages/engine/src/styles';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { number } from './format';
+import { PolicyDials, type DialKey } from './PolicyBoard';
 import s from './BuildBoard.module.css';
 
 const pct = (value: number) => `${Math.round(value * 100)}%`;
+
+/**
+ * The build by area of the club: each pairs its strategy card (one slot, settled once a season)
+ * with the ongoing dials that spend on the same thing (→ECON-22). The card says how the club
+ * goes about it, the dial how much it puts in.
+ */
+const DOMAINS: {
+  slot: BuildSlot;
+  label: string;
+  icon: string;
+  question: string;
+  dials: readonly DialKey[];
+}[] = [
+  {
+    slot: 'culture',
+    label: '선수단',
+    icon: '★',
+    question: '선수단을 어떤 분위기로, 얼마나 투자해 키울까',
+    dials: ['support', 'training'],
+  },
+  {
+    slot: 'scouting',
+    label: '영입',
+    icon: '⇄',
+    question: '어떤 선수를 어떻게 찾아 데려올까',
+    dials: ['recruitment'],
+  },
+  {
+    slot: 'market',
+    label: '매각',
+    icon: '↗',
+    question: '우리 선수를 원하는 구단에 어떻게 응할까',
+    dials: [],
+  },
+  {
+    slot: 'youth',
+    label: '유소년',
+    icon: '✿',
+    question: '아카데미 아이들을 어떻게, 얼마나 키울까',
+    dials: ['academy'],
+  },
+  {
+    slot: 'revenue',
+    label: '수익',
+    icon: '₤',
+    question: '구단 살림을 어디서 벌고 얼마나 알릴까',
+    dials: ['marketing'],
+  },
+  {
+    slot: 'fans',
+    label: '홈·팬',
+    icon: '◎',
+    question: '어떤 경기장과 팬층을 만들고 입장권은 얼마에 팔까',
+    dials: ['ticket'],
+  },
+];
 
 /** The odds a build sets, stated as football outcomes the owner can watch for. */
 function buildOdds(w: World) {
@@ -132,8 +188,10 @@ export function BuildBoard({ w, client }: { w: World; client: GameClient }) {
           구단 빌드 <small>{number(BUILD_COMBINATIONS)}가지 조합</small>
         </h2>
         <p>
-          여섯 슬롯에 카드를 하나씩 골라 우리 구단만의 빌드를 짜요. 감독 성향·스태프·운영 방침과
-          같은 방향을 가리키면 시너지가 켜지고, 결과는 확률이라 매 시즌 달라질 수 있어요.
+          여섯 부문마다 전략 카드 한 장(시즌마다 한 번 확정)과 운영 다이얼(언제든)을 함께 정해 우리
+          구단만의 빌드를 짜요. 카드는 어떻게 할지, 다이얼은 얼마나 쓸지예요. 감독 성향·스태프와
+          같은 방향을 가리키면 시너지가 켜지고, 결과는 확률이라 시즌마다 달라질 수 있어요. 추천
+          빌드는 카드 여섯 장을 한 번에 채우는 지름길이에요.
         </p>
       </header>
 
@@ -152,44 +210,64 @@ export function BuildBoard({ w, client }: { w: World; client: GameClient }) {
         ))}
       </div>
 
-      <div className={s.slots}>
-        {BUILD_SLOTS.map((slot) => {
-          const info = BUILD_SLOT_INFO[slot],
+      <div className={s.domains}>
+        {DOMAINS.map((domain) => {
+          const slot = domain.slot,
+            info = BUILD_SLOT_INFO[slot],
             chosen = draft[slot],
             card: BuildCard = cardOf(draft, slot),
             options: (string | undefined)[] = [undefined, ...BUILD_OPTIONS[slot]];
           return (
             <article
               key={slot}
-              className={`${s.slot} ${chosen !== current[slot] ? s.slotChanged : ''}`}
+              className={`${s.domain} ${chosen !== current[slot] ? s.slotChanged : ''}`}
               data-slot={slot}
+              aria-label={`${domain.label} 부문`}
             >
-              <div className={s.slotHead}>
-                <b>{info.label}</b>
-                <small>{info.question}</small>
+              <header className={s.domainHead}>
+                <span className={s.domainIcon} aria-hidden="true">
+                  {domain.icon}
+                </span>
+                <div>
+                  <h3>{domain.label}</h3>
+                  <small>{domain.question}</small>
+                </div>
+              </header>
+              <div className={s.part}>
+                <span className={s.partLabel}>
+                  전략 카드 · {info.label} <em>시즌마다 한 번 확정</em>
+                </span>
+                <div className={s.options} role="radiogroup" aria-label={info.label}>
+                  {options.map((option) => {
+                    const label = option
+                      ? (BUILD_CARDS[slot] as Record<string, BuildCard>)[option].label
+                      : '기본';
+                    return (
+                      <button
+                        key={option ?? 'standard'}
+                        role="radio"
+                        aria-checked={option === chosen}
+                        aria-label={`${info.label} ${label}`}
+                        className={`${option === chosen ? s.picked : ''} ${option === current[slot] ? s.current : ''}`}
+                        disabled={acting}
+                        onClick={() => pick(slot, option)}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className={s.model}>{card.model}</p>
+                <Lines {...cardLines(card)} />
               </div>
-              <div className={s.options} role="radiogroup" aria-label={info.label}>
-                {options.map((option) => {
-                  const label = option
-                    ? (BUILD_CARDS[slot] as Record<string, BuildCard>)[option].label
-                    : '기본';
-                  return (
-                    <button
-                      key={option ?? 'standard'}
-                      role="radio"
-                      aria-checked={option === chosen}
-                      aria-label={`${info.label} ${label}`}
-                      className={`${option === chosen ? s.picked : ''} ${option === current[slot] ? s.current : ''}`}
-                      disabled={acting}
-                      onClick={() => pick(slot, option)}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
-              <p className={s.model}>{card.model}</p>
-              <Lines {...cardLines(card)} />
+              {domain.dials.length > 0 && (
+                <div className={s.part}>
+                  <span className={s.partLabel}>
+                    운영 다이얼 <em>언제든 · 다음 정산부터</em>
+                  </span>
+                  <PolicyDials w={w} client={client} keys={domain.dials} />
+                </div>
+              )}
             </article>
           );
         })}

@@ -17,6 +17,9 @@ export * from './goals';
 export * from './recruitment';
 export * from './investment';
 export * from './staff';
+export * from './coaching';
+export * from './fans';
+export * from './facilities';
 export * from './academy';
 export * from './inbox';
 export * from './transfers';
@@ -46,7 +49,9 @@ export function createWorld(input: Founding) {
   return w;
 }
 export function simulateSeason(w: World) {
-  while (w.round < 46) advanceRound(w, undefined, false);
+  while (w.round < 46 && !w.bankrupt) advanceRound(w, undefined, false);
+  // A bankrupt club's career is over (→ECON-24); its last season never closes.
+  if (w.bankrupt) return w;
   closeSeason(w);
   w.revision++;
   return w;

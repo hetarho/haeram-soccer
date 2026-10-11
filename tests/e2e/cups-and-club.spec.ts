@@ -71,7 +71,12 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     expect(await horizontalOverflow(page)).toBe(0);
 
     // Below level 4 the owner hires coaches himself; the department dials appear once delegated.
-    await page.getByRole('button', { name: '스태프', exact: true }).click();
+    // Staff is its own destination, reached from the menu on phones.
+    await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+    await page
+      .getByRole('dialog', { name: '전체 메뉴' })
+      .getByRole('button', { name: '스태프', exact: true })
+      .click();
     await expect(page.getByTestId('coaching-mode')).toContainText('직접');
     const dial = page.getByRole('radiogroup', { name: '공격 코치 투자 수준' });
     await expect(dial).toHaveCount(0);

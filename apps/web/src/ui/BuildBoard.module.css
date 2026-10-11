@@ -80,10 +80,70 @@
   border-color: var(--accent);
   box-shadow: 0 0 0 1px var(--accent);
 }
-.slots {
+/* One area of the club per card: its strategy card above the dials that spend on it. */
+.domains {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 8px;
+  gap: 10px;
+}
+.domain {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-deep);
+  min-width: 0;
+}
+.domainHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.domainHead h3 {
+  margin: 0;
+  font-size: 17px;
+}
+.domainHead small {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.domainIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--gold);
+  font-weight: 900;
+}
+.part {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.partLabel {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--text-faint);
+  letter-spacing: 0.02em;
+}
+.partLabel em {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+@media (min-width: 1100px) {
+  /* Wide screens put the card and its dials side by side. */
+  .domain {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    align-items: start;
+  }
+  .domainHead {
+    grid-column: 1 / -1;
+  }
 }
 .slotChanged {
   border-color: var(--accent);
@@ -291,4 +351,29 @@
 }
 .more > ul {
   margin-top: 4px;
+}
+/* A drafted build keeps its confirm bar in reach while the owner scrolls the areas. */
+.summary:has(.confirm) {
+  position: sticky;
+  bottom: 8px;
+  z-index: 5;
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+}
+@media (max-width: 760px) {
+  .summary:has(.confirm) {
+    gap: 6px;
+    padding: 10px;
+  }
+  .summary:has(.confirm) .summaryHead {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .summary:has(.confirm) .summaryHead b {
+    font-size: 15px;
+  }
+  .summary:has(.confirm) .confirm button {
+    min-height: 44px;
+  }
 }

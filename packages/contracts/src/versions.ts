@@ -1,6 +1,6 @@
 import type { World } from './types';
 
-export const CURRENT_ENGINE_VERSION = '1.10.0';
+export const CURRENT_ENGINE_VERSION = '1.11.0';
 /**
  * 1.1.0 added club policy; 1.2.0 staff, academy, transfer windows and the inbox; 1.3.0 closes
  * the season after its final round, opens the summer window there, normalizes league match
@@ -16,7 +16,9 @@ export const CURRENT_ENGINE_VERSION = '1.10.0';
  * announcements, a transfer list instead of instant sales and a coaching investment with
  * delegated hiring, and recalibrates match outcomes; 1.10.0 replaces the transfer list's asking
  * prices with a stance per player (listed, open, untouchable) and sets coaching investment per
- * department (a 1.9 listing loads as listed, a club-wide level as every department's).
+ * department (a 1.9 listing loads as listed, a club-wide level as every department's); 1.11.0
+ * gives managers and coaches an age and a ceiling they grow toward (fading from 60, managers
+ * retiring at 70); people from older saves keep their level.
  */
 export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.0.0',
@@ -29,6 +31,7 @@ export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.7.0',
   '1.8.0',
   '1.9.0',
+  '1.10.0',
   CURRENT_ENGINE_VERSION,
 ];
 export const SAVE_COMPATIBILITY_CODE = 'save-compatibility' as const;

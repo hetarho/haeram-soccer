@@ -9,6 +9,8 @@ import {
   autoTrainingFocus,
   basicStaff,
   coachingLevel,
+  coachProspect,
+  coachSeason,
   createWorld,
   departmentMultiplier,
   hireStaff,
@@ -218,8 +220,12 @@ describe('coaching staff', () => {
       expect(offers).toHaveLength(3);
       offers.forEach((offer, i) => {
         expect(offer.role).toBe(role);
-        expect(offer.ability).toBeGreaterThanOrEqual([45, 55, 65][i]);
+        // The band is the level a coach reaches; a young one is below it now (→STAFF-16).
+        expect(offer.potential).toBeGreaterThanOrEqual([45, 55, 65][i]);
         expect(offer.ability).toBeLessThanOrEqual([65, 78, 90][i]);
+        expect(offer.ability).toBeLessThanOrEqual(offer.potential!);
+        expect(w.year - offer.born!).toBeGreaterThanOrEqual(25);
+        expect(w.year - offer.born!).toBeLessThanOrEqual(62);
         if (i > 0) expect(offer.trait).toBeDefined();
         if (offer.trait) expect(STAFF_INFO[role].traits).toContain(offer.trait);
         expect(offer.fee).toBe(ratio(offer.wage, 1n, 4n));
@@ -511,5 +517,75 @@ describe('coaching investment per department', () => {
     expect(validateWorld(saved).coaching).toEqual(
       Object.fromEntries(STAFF_ROLES.map((role) => [role, 3])),
     );
+  });
+});
+
+describe('coach and manager careers', () => {
+  it('starts young coaches below the level they reach and grows them toward it', () => {
+    const young = coachProspect('career:young', 70, [30, 30], 46),
+      prime = coachProspect('career:prime', 70, [50, 50], 46);
+    expect(young.ability).toBeLessThan(70);
+    expect(young.potential).toBeGreaterThan(70);
+    expect(prime).toEqual({ age: 50, ability: 70, potential: 70 });
+    let { ability, potential } = young;
+    for (let season = 0; season < 12; season++)
+      ({ ability, potential } = coachSeason(`career:${season}`, ability, potential, 30 + season));
+    expect(ability).toBe(potential);
+    expect(potential).toBe(young.potential);
+    // From 60 a coach fades by up to two a season, his ceiling with him.
+    const old = coachSeason('career:old', 80, 80, 63);
+    expect(old.ability).toBeGreaterThanOrEqual(78);
+    expect(old.ability).toBeLessThanOrEqual(80);
+    expect(old.potential).toBe(old.ability);
+  });
+
+  it('offers managers with ages and ceilings and grows the hired one each season', () => {
+    const w = world('manager-careers');
+    const offers = managerOffers(w);
+    for (const offer of offers) {
+      const age = w.year - offer.born!;
+      expect(age).toBeGreaterThanOrEqual(32);
+      expect(age).toBeLessThanOrEqual(64);
+      expect(offer.potential!).toBeGreaterThanOrEqual(offer.ability);
+      if (age >= 46) expect(offer.potential).toBe(offer.ability);
+    }
+    w.manager = { ...w.manager, ability: 50, potential: 70, born: w.year - 34, interim: false };
+    simulateSeason(w);
+    expect(w.manager.ability).toBeGreaterThan(50);
+    expect(w.manager.ability).toBeLessThanOrEqual(70);
+    expect(w.events.some((e) => e.kind === 'manager-growth')).toBe(true);
+    validateWorld(w);
+  });
+
+  it('retires a manager at 70 and keeps older saves without ages in place', () => {
+    const w = world('manager-retire');
+    w.manager = { ...w.manager, born: w.year - 69, potential: w.manager.ability };
+    simulateSeason(w);
+    expect(w.critical).toBeDefined();
+    expect(w.manager.interim).toBe(true);
+    const old = world('manager-no-age');
+    const { born: _born, potential: _potential, ...rest } = old.manager;
+    void _born;
+    void _potential;
+    old.manager = { ...rest, since: old.year };
+    const ability = old.manager.ability;
+    simulateSeason(old);
+    expect(old.manager.ability).toBe(ability);
+  });
+
+  it('grows hired coaches and leaves volunteers at 50', () => {
+    const w = world('coach-growth');
+    hireStaff(w, 'attack', 0);
+    w.staff = w.staff!.map((member) =>
+      member.role === 'attack'
+        ? { ...member, ability: 50, potential: 72, born: w.year - 28, until: w.year + 3 }
+        : member,
+    );
+    w.year += 1;
+    seasonStaff(w);
+    const coach = w.staff!.find((member) => member.role === 'attack')!;
+    expect(coach.ability).toBeGreaterThan(50);
+    expect(w.staff!.find((member) => member.role === 'defense')!.ability).toBe(50);
+    expect(w.events.some((e) => e.kind === 'staff-growth')).toBe(true);
   });
 });

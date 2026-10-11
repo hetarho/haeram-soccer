@@ -24,6 +24,7 @@ import {
   setPolicy,
   trainingSummary,
   transferOffers,
+  driftFans,
 } from './index';
 
 function world(policy?: Partial<ClubPolicy>) {
@@ -215,10 +216,16 @@ describe('club operating policy', () => {
     const fans = clubOf(direct).fans,
       bill = operatingCosts(direct, 1),
       cash = BigInt(direct.cash);
+    const income = BigInt(direct.income);
     settleRound(direct);
-    expect(clubOf(direct).fans).toBe(fans + marketingFanGain(fans, 0.02));
+    const online = BigInt(direct.income) - income;
+    expect(online).toBeGreaterThan(0n);
+    // Marketing adds supporters before they drift toward the club's following (→ECON-23).
+    expect(clubOf(direct).fans).toBe(
+      driftFans(fans + marketingFanGain(fans, 0.02), clubOf(direct).reputation),
+    );
     expect(marketingFanGain(fans, 0.02)).toBeGreaterThan(0);
-    expect(BigInt(direct.cash)).toBe(cash - BigInt(bill.nextRound));
+    expect(BigInt(direct.cash)).toBe(cash - BigInt(bill.nextRound) + online);
     expect(direct.events.at(-1)!.detail).toContain(`마케팅 ${bill.payments.marketing}`);
 
     for (let round = 0; round < 6; round++) {

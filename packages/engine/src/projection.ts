@@ -5,8 +5,9 @@ import { FINANCE_CONFIG, gateProjection, operatingCosts, seasonPrize } from './f
 import { sponsorAnnual } from './operations';
 import { ownLeagueClubs, ranked } from './season';
 import { SEASON_ROUNDS } from './calendar';
+import { fanIncome } from './fans';
 
-export type ProjectionKey = 'operating' | 'gate' | 'sponsor' | 'performance' | 'prize';
+export type ProjectionKey = 'operating' | 'gate' | 'fans' | 'sponsor' | 'performance' | 'prize';
 export interface ProjectionLine {
   key: ProjectionKey;
   label: string;
@@ -31,6 +32,7 @@ export interface FinanceProjection {
 const LABELS: Record<ProjectionKey, string> = {
   operating: '급여·운영비',
   gate: '홈 경기 수입(개최비 제외)',
+  fans: '글로벌 팬 수익',
   sponsor: '후원 계약',
   performance: '경기 성과 수입',
   prize: '순위 상금',
@@ -131,9 +133,14 @@ export function financeProjection(w: World): FinanceProjection {
   const { rank, clubs } = currentLeagueRank(w);
   const prize = settled || !rank ? 0n : big(seasonPrize(w, rank, clubs));
 
+  // Fan income at today's following, one payment a league round (→ECON-23).
+  const fansRound = big(fanIncome(w)),
+    fansSeason = fansRound * BigInt(SEASON_ROUNDS - played),
+    fansYear = fansRound * BigInt(SEASON_ROUNDS);
   const seasonLines = [
     line('operating', -remainingCosts, -remainingCosts),
     line('gate', gateLow * BigInt(remainingHome), gateHigh * BigInt(remainingHome)),
+    line('fans', fansSeason, fansSeason),
     line('sponsor', sponsorSeason, sponsorSeason),
     line('performance', 0n, performanceSeason),
     line('prize', 0n, prize),
@@ -142,6 +149,7 @@ export function financeProjection(w: World): FinanceProjection {
   const lines = [
     line('operating', -yearCost, -yearCost),
     line('gate', gateLow * BigInt(homeGames), gateHigh * BigInt(homeGames)),
+    line('fans', fansYear, fansYear),
     line('sponsor', sponsorYear, sponsorYear),
     line('performance', 0n, performanceYear),
     line('prize', 0n, prize),

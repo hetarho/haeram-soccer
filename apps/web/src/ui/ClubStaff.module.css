@@ -44,7 +44,35 @@
   background: rgba(0, 0, 0, 0.2);
 }
 .role {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.role > div {
   display: grid;
+  min-width: 0;
+}
+.vacantChip {
+  flex: none;
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 46px;
+  border-radius: 10px;
+  border: 1px dashed var(--warm);
+  color: var(--warm);
+  font-size: 11px;
+  font-weight: 800;
+}
+.candidateHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.candidateHead > div {
+  display: grid;
+  gap: 2px;
   min-width: 0;
 }
 .role b {

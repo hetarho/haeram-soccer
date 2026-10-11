@@ -497,6 +497,16 @@
 .critical button {
   margin-left: 12px;
 }
+.criticalActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+.criticalActions button {
+  margin-left: 0;
+  min-height: 48px;
+}
 .progress {
   height: 4px;
   background: var(--surface-2);
@@ -2581,4 +2591,114 @@
 .stanceChoices small {
   font-size: 11px;
   color: var(--text-muted);
+}
+/* A section a notice jumps to lands below the pinned HUD and clock, not under them. */
+.anchorTarget {
+  scroll-margin-top: 12px;
+}
+/* A person's rating chip beside their age and contract (managers, candidates). */
+.personHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.personHead > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.personHead small {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.personHead h3 {
+  margin: 0;
+}
+/* The operations tab bar scrolls sideways on narrow phones instead of squeezing its labels. */
+.operationsTabs {
+  margin-bottom: 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.operationsTabs button {
+  flex: 1 0 auto;
+  white-space: nowrap;
+}
+/* Debt or a short runway: a red band on every view, never a stop (→ECON-24). */
+.cashAlarm {
+  margin-bottom: 12px;
+  padding: 9px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--danger);
+  background: color-mix(in srgb, var(--danger) 16%, var(--surface-deep));
+  color: var(--text);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.cashAlarm b {
+  margin-right: 6px;
+  color: var(--danger);
+  font-weight: 900;
+}
+.gameOver {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  max-width: 560px;
+  margin: 24px auto;
+  padding: 28px 20px;
+  border-radius: var(--radius);
+  border: 1px solid var(--danger);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--danger) 14%, var(--surface)) 0%,
+    var(--surface-deep) 100%
+  );
+  text-align: center;
+}
+.gameOver > small {
+  color: var(--danger);
+  font-weight: 900;
+  letter-spacing: 0.2em;
+}
+.gameOver h2 {
+  margin: 0;
+  font-size: 26px;
+}
+.gameOver p {
+  margin: 0;
+  color: var(--text-muted);
+}
+.gameOver ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin: 6px 0;
+  padding: 0;
+  list-style: none;
+}
+.gameOver li {
+  display: grid;
+  gap: 2px;
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--surface-deep);
+}
+.gameOver li span {
+  font-size: 11.5px;
+  color: var(--text-faint);
+}
+.gameOver li b {
+  font-size: 18px;
+}
+.gameOverActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+.gameOverActions button {
+  min-height: 48px;
 }

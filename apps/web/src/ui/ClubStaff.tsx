@@ -34,7 +34,7 @@ const DELEGATION: [DelegationKey, string, string][] = [
   [
     'transfers',
     '영입 제안 응대',
-    '이적 명단 선수는 제안을 받아요. 협상 가능 선수는 평가 가치 130%(유망주 200%) 이상만 받고(30세 이상·계약 막바지·자금난이면 낮춤) 주전은 지켜요. 이적 불가 선수의 150% 이상 거액 제안은 감독과 상의해 이적 기조와 자금 사정으로 정해요',
+    '이적 명단 선수는 제안을 받아요. 협상 가능 선수는 평가 가치 130%(유망주 200%) 이상만 받고(30세 이상·계약 막바지·자금난이면 낮춤) 주전은 지켜요. 이적 불가 선수의 150% 이상 거액 제안은 감독과 상의해 매각 기조와 자금 사정으로 정해요',
   ],
   ['business', '후원 계약', '후원이 비면 운영팀이 안정형 후원을 바로 맺어요'],
   [
@@ -94,6 +94,10 @@ function Meter({ value }: { value: number }) {
   );
 }
 
+/** " · 34세" for a coach with an age; volunteers and older saves have none. */
+function coachAge(w: World, member: Staff) {
+  return member.born === undefined ? '' : ` · ${w.year - member.born}세`;
+}
 /** The department effect if this candidate replaced the current member. */
 function hiredImpact(w: World, role: StaffRole, candidate: Staff) {
   const staff = [...(w.staff || []).filter((member) => member.role !== role), candidate];
@@ -208,13 +212,25 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
           return (
             <li key={id}>
               <div className={s.role}>
-                <b>{STAFF_INFO[id].label}</b>
-                <small>{STAFF_INFO[id].duty}</small>
+                {member ? (
+                  <OvrBadge
+                    value={Math.round(member.ability)}
+                    role="OVR"
+                    potential={member.potential}
+                  />
+                ) : (
+                  <span className={s.vacantChip}>공석</span>
+                )}
+                <div>
+                  <b>{STAFF_INFO[id].label}</b>
+                  <small>{STAFF_INFO[id].duty}</small>
+                </div>
               </div>
               {member ? (
                 <div className={s.member}>
                   <span>
-                    {member.name} · 능력 {Math.round(member.ability)}
+                    {member.name}
+                    {coachAge(w, member)}
                     {isExpiring(w, member) && <em className={s.expiring}> 계약 만료 예정</em>}
                   </span>
                   <Meter value={member.ability} />
@@ -310,13 +326,25 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                   className={pick === i ? s.picked : undefined}
                   onClick={() => setPick(i)}
                 >
-                  <b>{candidate.name}</b>
-                  <span>
-                    능력 {Math.round(candidate.ability)}
-                    {candidate.ability > (current?.ability ?? 0)
-                      ? ` (+${Math.round(candidate.ability - (current?.ability ?? 0))})`
-                      : ''}
-                  </span>
+                  <div className={s.candidateHead}>
+                    <OvrBadge
+                      value={Math.round(candidate.ability)}
+                      role="OVR"
+                      potential={candidate.potential}
+                    />
+                    <div>
+                      <b>{candidate.name}</b>
+                      <span>
+                        {coachAge(w, candidate).replace(/^ · /, '')}
+                        {candidate.ability > (current?.ability ?? 0)
+                          ? ` · 지금보다 +${Math.round(candidate.ability - (current?.ability ?? 0))}`
+                          : ''}
+                        {(candidate.potential ?? 0) > candidate.ability
+                          ? ` · 성장 여지 +${candidate.potential! - candidate.ability}`
+                          : ''}
+                      </span>
+                    </div>
+                  </div>
                   <Meter value={candidate.ability} />
                   <small>
                     {candidate.trait

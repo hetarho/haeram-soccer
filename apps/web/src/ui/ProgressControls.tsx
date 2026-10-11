@@ -82,7 +82,7 @@ export function ProgressControls({
   const w = state.view!.world;
   const next = nextOwnFixture(w);
   const days = daysUntilNextMatch(w);
-  const blocked = !!(state.readonly || state.error || w.critical);
+  const blocked = !!(state.readonly || state.error || w.critical || w.bankrupt);
   const detail = PACES.find(([value]) => value === pace)![2];
   const status = running
     ? watching

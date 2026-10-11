@@ -14,6 +14,7 @@ import {
   europeanCoefficient,
   unreadAttention,
   clubNews,
+  BANKRUPT_MESSAGE,
 } from '../../../../packages/engine/src/index';
 import type { World, MatchPlayback } from '../../../../packages/contracts/src/types';
 import {
@@ -140,6 +141,7 @@ export class Host {
         if (!w) throw new Error('먼저 클럽을 창단하세요.');
         if (r.body.type === 'command') {
           const cmd = r.body.command;
+          if (w.bankrupt && cmd.type !== 'read-inbox') throw new Error(BANKRUPT_MESSAGE);
           if (cmd.type === 'advance-days' || cmd.type === 'next-match') {
             if (w.critical) throw new Error('중요한 알림을 확인한 후 계속하세요.');
             const matchCount = w.ownMatches.length,
@@ -155,7 +157,11 @@ export class Host {
               if (this.cancelled) break;
               const p = advanceDays(w, 1, undefined, watched);
               if (p?.frames.length) playback = p;
-              if (w.critical || (cmd.type === 'next-match' && w.ownMatches.length > matchCount))
+              if (
+                w.critical ||
+                w.bankrupt ||
+                (cmd.type === 'next-match' && w.ownMatches.length > matchCount)
+              )
                 break;
               // Every step ends when the season closes. A multi-day step also ends on the day any
               // club news arrives or our match is played, so the date lands on that day; the
@@ -186,6 +192,7 @@ export class Host {
               }
               const p = advanceRound(w, undefined, cmd.type !== 'season');
               if (p?.frames.length) playback = p;
+              if (w.bankrupt) break;
               if (n % 5 === 0) {
                 this.progress({
                   requestId: r.requestId,
@@ -196,7 +203,7 @@ export class Host {
               }
               if (w.critical) break;
             }
-            if (cmd.type === 'season' && w.round === 46) {
+            if (cmd.type === 'season' && w.round === 46 && !w.bankrupt) {
               closeSeason(w);
               w.revision++;
             }

@@ -577,9 +577,9 @@ export function untouchableVerdict(w: World, offered: number, essential: boolean
   if (runway < CASH_WARNING_ROUNDS)
     return { accept: true, reason: `자금 여력 ${runway}주의 운영자금 위기라 매각을 택했어요.` };
   if (market === 'hold')
-    return { accept: false, reason: `이적 기조가 ${card}라 어떤 금액에도 지키기로 했어요.` };
+    return { accept: false, reason: `매각 기조가 ${card}라 어떤 금액에도 지키기로 했어요.` };
   const base = UNTOUCHABLE_PRICE[market ?? 'standard'],
-    steps = [`이적 기조 ${card} ${base}%`];
+    steps = [`매각 기조 ${card} ${base}%`];
   let bar = base;
   if (runway < 30) {
     bar -= 25;

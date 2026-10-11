@@ -117,7 +117,7 @@ describe('world progression', () => {
     expect(active.some((p) => p.role === 'GK')).toBe(true);
     expect(validateWorld(w).id).toBe(w.id);
   });
-  it('settles an owned fixture once and bounds its audience', () => {
+  it('settles an owned fixture once and lets supporters grow past any ceiling', () => {
     const w = createWorld(input);
     clubOf(w).fans = 5000000;
     const f = w.fixtures.find((f) => f.home === w.playerClub)!;
@@ -126,7 +126,8 @@ describe('world progression', () => {
     const snapshot = canonical(w);
     recordMatch(w, p, true);
     expect(canonical(w)).toBe(snapshot);
-    expect(clubOf(w).fans).toBeLessThanOrEqual(5000000);
+    // A win draws a few more supporters even past five million (→ECON-23).
+    expect(clubOf(w).fans).toBeGreaterThanOrEqual(5000000 * (1 - 0.001));
   });
   it('replays commands deterministically without browser time', () => {
     const a = createWorld(input),

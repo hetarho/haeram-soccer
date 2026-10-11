@@ -162,13 +162,14 @@ describe('persistent season calendar', () => {
     validateWorld(w);
   });
 
-  it('stops a multi-day advance exactly when a critical event appears', () => {
+  it('stops a multi-day advance exactly when the club goes bankrupt', () => {
     const w = world();
+    // Debt deeper than half a season's fixed costs ends the career at the next settlement.
     w.cash = '-999999999';
     advanceDays(w, 10);
     expect(currentDay(w)).toBe(7);
     expect(w.round).toBe(1);
-    expect(w.critical).toContain('운영자금');
+    expect(w.bankrupt).toEqual({ year: w.year, round: 1, day: 7 });
     const snapshot = canonical(w);
     advanceToNextMatch(w);
     expect(canonical(w)).toBe(snapshot);

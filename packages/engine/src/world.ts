@@ -9,6 +9,7 @@ import {
 import type { Club, Founding, Manager, Player, World, Tactic } from '../../contracts/src/types';
 import { clamp, hash, integer, random, ratio, zeroMetrics, compareIds } from './primitives';
 import { CURRENT_ENGINE_VERSION } from '../../contracts/src/versions';
+import { coachProspect, MANAGER_CAREER } from './coaching';
 import { dayCountedFrom } from './calendar';
 export const ENGINE_VERSION = CURRENT_ENGINE_VERSION;
 export const TACTICS: Tactic[] = ['balanced', 'possession', 'counter', 'press'];
@@ -88,22 +89,39 @@ export const FRESH_FATIGUE = 20;
 export function fatigueLoad(fatigue: number) {
   return Math.max(0, fatigue - FRESH_FATIGUE);
 }
+/**
+ * A manager first met in `year`. Market candidates (index 1–98) younger than their prime start
+ * below the level they will reach and ask for less (→STAFF-16); the founding manager and an
+ * interim keep the drawn level.
+ */
 export function makeManager(code: string, seed: string, year: number, index = 0): Manager {
   const r = random(`${seed}:manager:${year}:${index}`);
+  const name = personName(code, r),
+    philosophy = TACTICS[integer(r, 0, 3)],
+    peak = integer(r, 45, 85);
+  const career = coachProspect(
+    `${seed}:manager-age:${year}:${index}`,
+    peak,
+    MANAGER_CAREER.ages,
+    MANAGER_CAREER.prime,
+    index > 0 && index < 99,
+  );
   return {
     id: `coach:${year}:${index}:${hash(seed)}`,
-    name: personName(code, r),
-    philosophy: TACTICS[integer(r, 0, 3)],
-    ability: integer(r, 45, 85),
+    name,
+    philosophy,
+    ability: career.ability,
     youth: integer(r, 40, 90),
     flexibility: integer(r, 15, 90),
     pride: integer(r, 25, 95),
     trust: 65,
     conflicts: 0,
-    wage: quote(code, year, 120 + index * 30),
+    wage: quote(code, year, 120 + index * 30 - (peak - career.ability) * 3),
     since: year,
     until: year + 3,
     interim: false,
+    born: year - career.age,
+    potential: career.potential,
   };
 }
 /** The European Cup starts in 1955; every club is founded five seasons earlier (→WEB-2). */

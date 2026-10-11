@@ -77,17 +77,17 @@ describe('shared club investment forecasts', () => {
 
   it('has no imaginary level, bill or spend beyond the maximum facility level', () => {
     const w = world();
-    w.facilities = 30;
+    w.facilities = 20;
     const before = canonical(w),
       preview = facilityInvestmentPreview(w);
     expect(preview.eligible).toBe(false);
     expect(preview.cost).toBe('0');
     expect(preview.cashAfter).toBe(w.cash);
-    expect(preview.facilitiesAfter).toBe(30);
+    expect(preview.facilitiesAfter).toBe(20);
     expect(preview.capacityAfter).toBe(preview.capacityBefore);
     expect(preview.annualAfter).toBe(preview.annualBefore);
     expect(preview.maintenanceIncrease).toBe('0');
-    expect(preview.reason).toContain('30');
+    expect(preview.reason).toContain('20');
     expect(() => operate(w, { type: 'facility' })).toThrow('한도');
     expect(canonical(w)).toBe(before);
   });

@@ -119,12 +119,18 @@ export class ProgressionController {
       }
       if (
         this.store.getState().running &&
-        (state.error || state.readonly || state.view?.world.critical)
+        (state.error ||
+          state.readonly ||
+          state.view?.world.critical ||
+          state.view?.world.bankrupt ||
+          state.view?.world.bankrupt)
       ) {
         this.stop(
-          state.view?.world.critical
-            ? '클럽 소식을 확인하면 계속할 수 있습니다.'
-            : '진행을 멈췄습니다.',
+          state.view?.world.bankrupt
+            ? '구단이 파산했어요.'
+            : state.view?.world.critical
+              ? '클럽 소식을 확인하면 계속할 수 있습니다.'
+              : '진행을 멈췄습니다.',
         );
       }
       if (
@@ -248,7 +254,14 @@ export class ProgressionController {
       return;
     }
     if (this.inFlight || state.processing) return;
-    if (!state.view || state.readonly || state.error || state.view.world.critical) return;
+    if (
+      !state.view ||
+      state.readonly ||
+      state.error ||
+      state.view.world.critical ||
+      state.view.world.bankrupt
+    )
+      return;
     if (state.savedRevision !== state.view.world.revision) return;
     if (
       progress.watching &&
@@ -278,7 +291,12 @@ export class ProgressionController {
         { background: true, automatic: true },
       );
       // A cancelled tick after an explicit stop (e.g. to watch) keeps that stop's reason.
-      if (!reply?.ok || reply.cancelled || reply.view?.world.critical) {
+      if (
+        !reply?.ok ||
+        reply.cancelled ||
+        reply.view?.world.critical ||
+        reply.view?.world.bankrupt
+      ) {
         if (this.store.getState().running) this.stop();
       } else if (reply.view) {
         const fresh = stoppingEvents(reply.view.world, this.store.getState().stopOn).find(

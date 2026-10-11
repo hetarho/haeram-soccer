@@ -69,6 +69,7 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
     .getByRole('button', { name: '구단 운영' })
     .click();
+  await page.getByRole('tab', { name: '재정', exact: true }).click();
   await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
   await expect(page.getByRole('region', { name: '수입과 지출 장부' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '돈이 들어오고 나간 이유' })).toBeVisible();
@@ -123,6 +124,7 @@ for (const viewport of [
     await expect(country).toHaveAttribute('data-value', 'FRA');
 
     await nav.getByRole('button', { name: '구단 운영', exact: true }).click();
+    await page.getByRole('tab', { name: '시설', exact: true }).click();
     const review = page.getByRole('button', { name: '시설 투자 검토', exact: true });
     await review.click();
     const plan = page.getByRole('dialog', { name: '시설 투자 확인' });

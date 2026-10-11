@@ -74,7 +74,8 @@ function roundGain(
   const ageWeight = age < 21 ? 1 : age < 24 ? 0.85 : 0.65;
   const base = Math.min(
     0.12,
-    (gap / 400) * (0.5 + w.manager.youth / 100 + w.facilities / 40) * ageWeight,
+    // Twenty facility levels give the same top bonus thirty used to (→ECON-12).
+    (gap / 400) * (0.5 + w.manager.youth / 100 + w.facilities / 27) * ageWeight,
   );
   const style = managerStyleEffects(w);
   return hundredths(

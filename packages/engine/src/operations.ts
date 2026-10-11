@@ -33,6 +33,9 @@ import {
   staffEffects,
 } from './staff';
 import { promoteYouth, releaseYouth } from './academy';
+import { coachSeason, MANAGER_CAREER } from './coaching';
+import { currentDay } from './calendar';
+import { driftFans, fanIncome, MIN_FANS } from './fans';
 import {
   assertTransferWindow,
   moneyLabel,
@@ -52,6 +55,7 @@ import {
 import { synergyEffects } from './synergy';
 import { setBuild, buildEffects } from './build';
 import { MORALE_START } from './morale';
+import { facilityCostUnits, MAX_FACILITIES } from './facilities';
 export function operatingCost(w: World) {
   return operatingCosts(w).annual;
 }
@@ -178,6 +182,24 @@ export function sponsorReminder(w: World) {
     attention: true,
   });
 }
+/**
+ * Global fan income (→ECON-23) for this league round. The season keeps one ledger entry that
+ * grows each round, so a century of rounds does not fill the save.
+ */
+function settleFanIncome(w: World) {
+  const amount = fanIncome(w);
+  if (BigInt(amount) <= 0n) return;
+  credit(w, amount);
+  const entry = w.events.findLast(
+    (event) =>
+      event.kind === 'fan-income' && event.year === w.year && event.currency === w.currency,
+  );
+  const fans = `서포터 ${clubOf(w).fans.toLocaleString('en-US')}명 · 온라인·상품·중계`;
+  if (entry) {
+    entry.amount = (BigInt(entry.amount!) + BigInt(amount)).toString();
+    entry.detail = fans;
+  } else addEvent(w, 'fan-income', '글로벌 팬 수익', fans, amount);
+}
 /** Fixed-cost rounds left in cash below which the owner is warned, once per season. */
 export const CASH_WARNING_ROUNDS = 13;
 function cashWarning(w: World, perRound: string) {
@@ -190,8 +212,9 @@ function cashWarning(w: World, perRound: string) {
   pushInbox(w, {
     kind: 'finance',
     title: `운영자금이 약 ${weeks}주분 남았어요`,
-    detail: `라운드마다 급여·운영비 ${moneyLabel(w, perRound)}가 나가요. 후원 계약, 선수 매각, 선수단 투자·마케팅 축소나 구단주 출자로 버틸 시간을 늘리세요. 자금이 바닥나면 진행이 멈춰요.`,
-    attention: true,
+    detail: `라운드마다 급여·운영비 ${moneyLabel(w, perRound)}가 나가요. 후원 계약, 선수 매각, 선수단 투자·마케팅 축소나 구단주 출자로 버틸 시간을 늘리세요. 잔고가 바닥난 채 ${BANKRUPTCY_ROUNDS}라운드가 지나면 구단이 파산해요.`,
+    // A status, not a stop: the HUD and the warning band show it in red (→ECON-24).
+    attention: false,
   });
 }
 export function settleSeasonPrize(w: World, rank: number, clubs: number) {
@@ -265,7 +288,9 @@ export function settleRound(w: World) {
       club.fans,
       policyEffects(policyOf(w)).fanGrowth * buildEffects(w).marketingFans,
     );
-  if (fansGained) club.fans = Math.round(clamp(club.fans + fansGained, 200, 5000000));
+  // Supporters drift toward the following the club's reputation commands, without a ceiling.
+  club.fans = driftFans(club.fans + fansGained, club.reputation);
+  settleFanIncome(w);
   addEvent(
     w,
     'operating-cost',
@@ -289,7 +314,7 @@ export function settleRound(w: World) {
     );
     const fans = Math.round(clubOf(w).fans * offer.fans * (0.5 + r()) * fit * saturation);
     credit(w, income);
-    clubOf(w).fans = Math.round(clamp(clubOf(w).fans + fans, 200, 5000000));
+    clubOf(w).fans = Math.max(MIN_FANS, Math.round(clubOf(w).fans + fans));
     c.income = income;
     c.fans = fans;
     addEvent(
@@ -313,7 +338,39 @@ export function settleRound(w: World) {
       '필수 비용으로 잔고가 음수가 되었습니다. 지출 조정, 매각, 명시적인 구단주 출자로 회복할 수 있습니다. 자동 지원금은 없습니다.',
     );
   }
-  if (BigInt(w.cash) < 0) w.critical ||= '운영자금이 부족합니다.';
+  insolvency(w, cost.annual);
+}
+/** League rounds in debt before the club goes bankrupt, or debt deeper than half a year's costs. */
+export const BANKRUPTCY_ROUNDS = 8;
+/**
+ * Debt no longer freezes the club (→ECON-24): it plays on under a red warning, and after eight
+ * settled rounds in a row below zero, or at once if the debt passes half a season's fixed costs,
+ * it goes bankrupt and the career ends. Getting back above zero resets the count.
+ */
+function insolvency(w: World, annual: string) {
+  if (BigInt(w.cash) >= 0n) {
+    delete w.insolvent;
+    return;
+  }
+  w.insolvent = (w.insolvent ?? 0) + 1;
+  if (w.insolvent >= BANKRUPTCY_ROUNDS || BigInt(w.cash) * 2n < -BigInt(annual)) {
+    w.bankrupt = { year: w.year, round: w.round, day: currentDay(w) };
+    delete w.critical;
+    addEvent(
+      w,
+      'bankruptcy',
+      `${clubOf(w).name} 파산`,
+      `잔고 ${moneyLabel(w, w.cash)} · ${w.insolvent}라운드 연속 적자 · 구단이 문을 닫았어요.`,
+    );
+    return;
+  }
+  if (w.insolvent === 1)
+    pushInbox(w, {
+      kind: 'finance',
+      title: `파산 위기 · ${BANKRUPTCY_ROUNDS}라운드 안에 흑자로 돌아오세요`,
+      detail: `잔고가 ${moneyLabel(w, w.cash)}예요. 적자인 채로 ${BANKRUPTCY_ROUNDS}라운드가 정산되거나 빚이 연간 고정 지출의 절반을 넘으면 구단이 파산해 게임이 끝나요. 선수 매각, 지출 축소, 후원 계약, 구단주 출자로 흑자를 만드세요.`,
+      attention: false,
+    });
 }
 export function managerOffers(w: World) {
   const styles = candidateStyles(w.seed, w.year);
@@ -384,6 +441,8 @@ export function transferOffers(w: World, year = w.year) {
     };
   });
 }
+/** The blocking alert a departure raises; the app offers hiring or carrying on with the interim. */
+export const MANAGER_GONE = '감독이 떠났습니다. 새 감독을 선임하세요.';
 function resign(w: World, reason: string) {
   const old = w.manager;
   addEvent(
@@ -394,11 +453,13 @@ function resign(w: World, reason: string) {
   );
   const interim = makeManager(clubOf(w).country, `${w.seed}:interim:${w.revision}`, w.year, 99);
   interim.ability = 35;
+  // A caretaker steps in for now; he is not a bet on the future.
+  interim.potential = 35;
   interim.youth = 30;
   interim.wage = quote(clubOf(w).country, w.year, 40);
   interim.interim = true;
   w.manager = interim;
-  w.critical = '감독이 떠났습니다. 새 감독을 선임하세요.';
+  w.critical = MANAGER_GONE;
 }
 
 const requestTones = { respect: 12, evidence: 16, support: 8, demand: -25 } as const;
@@ -474,7 +535,27 @@ export function yearlyStaff(w: World) {
     addEvent(w, 'sponsor-end', '후원 계약 만료', w.sponsor.name);
     delete w.sponsor;
   }
-  if (w.manager.since + 25 <= w.year && !w.manager.interim)
+  const m = w.manager,
+    age = m.born === undefined ? undefined : w.year - m.born;
+  // A season of learning or, past 60, of fading (→STAFF-16); older saves keep their level.
+  if (age !== undefined && m.potential !== undefined && !m.interim) {
+    const next = coachSeason(
+      `${w.seed}:manager-growth:${m.id}:${w.year}`,
+      m.ability,
+      m.potential,
+      age,
+    );
+    if (next.ability !== m.ability)
+      addEvent(
+        w,
+        'manager-growth',
+        `${m.name} 감독 ${next.ability > m.ability ? '성장' : '노쇠'}`,
+        `${age}세 · 지도력 ${m.ability} → ${next.ability} · 잠재력 ${next.potential}`,
+      );
+    m.ability = next.ability;
+    m.potential = next.potential;
+  }
+  if (!m.interim && (age !== undefined ? age >= MANAGER_CAREER.retire : m.since + 25 <= w.year))
     resign(w, '긴 지도자 생활을 마치고 은퇴했습니다.');
   else if (w.manager.until <= w.year && !w.manager.interim) {
     w.manager.until = w.year + 3;
@@ -486,7 +567,10 @@ export function yearlyStaff(w: World) {
   delete w.manager.pending;
   delete w.requested;
 }
+/** Refusal for a bankrupt club: the career is over, only its records remain. */
+export const BANKRUPT_MESSAGE = '구단이 파산했어요. 기록을 내보내거나 새 클럽을 창단하세요.';
 export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'season' }>) {
+  if (w.bankrupt && cmd.type !== 'read-inbox') throw new Error(BANKRUPT_MESSAGE);
   const code = clubOf(w).country;
   switch (cmd.type) {
     case 'hire-staff':
@@ -694,8 +778,8 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       break;
     }
     case 'facility': {
-      if (w.facilities >= 30) throw new Error('시설 확장 한도입니다.');
-      const fee = quote(code, w.year, 200 * (w.facilities + 1) ** 1.5);
+      if (w.facilities >= MAX_FACILITIES) throw new Error('시설 확장 한도입니다.');
+      const fee = quote(code, w.year, facilityCostUnits(w.facilities + 1));
       debit(w, fee);
       w.facilities++;
       addEvent(

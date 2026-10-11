@@ -80,6 +80,7 @@ export const ROUTINE_EVENTS = new Set([
   'match-cost',
   'gate',
   'sponsor-payment',
+  'fan-income',
   'match-bonus',
   'sponsor-bonus',
   'europe-prize',

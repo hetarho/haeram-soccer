@@ -40,6 +40,7 @@ import { managerStyleEffects } from './styles';
 import { synergyEffects } from './synergy';
 import { buildEffects } from './build';
 import { dailyStaff, seasonStaff } from './staff';
+import { fansAfterMatch } from './fans';
 import {
   currentDay,
   ROUND_INTERVAL_DAYS,
@@ -225,9 +226,7 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     const side = m.home === w.playerClub ? 0 : 1;
     const win = side === 0 ? m.score.home > m.score.away : m.score.away > m.score.home;
     const club = clubOf(w);
-    club.fans = Math.round(
-      clamp(club.fans * (win ? 1 + 0.012 * buildEffects(w).winFans : 0.998), 200, 5000000),
-    );
+    club.fans = fansAfterMatch(club.fans, win, buildEffects(w).winFans);
     moraleAfterMatch(w, saved);
     settleWinBonus(w, saved);
     injuriesAfterMatch(w, saved);
@@ -615,7 +614,7 @@ export function advanceRound(
   settlement?: (w: World, p: MatchPlayback) => void,
   observe = true,
 ) {
-  if (w.round >= 46) return undefined;
+  if (w.round >= 46 || w.bankrupt) return undefined;
   if (!w.rankHistory) snapshotStandings(w);
   ensureScorers(w);
   w.round++;
@@ -673,7 +672,7 @@ export function advanceDays(
 ) {
   if (!Number.isInteger(days) || days < 1 || days > 366)
     throw new Error('진행할 날짜 범위가 올바르지 않습니다.');
-  if (w.critical) return undefined;
+  if (w.critical || w.bankrupt) return undefined;
   w.calendar ||= { day: currentDay(w) };
   if (!w.rankHistory) snapshotStandings(w);
   ensureScorers(w);
@@ -698,7 +697,7 @@ export function advanceDays(
       clubDay(w);
       w.revision++;
     }
-    if (w.critical) break;
+    if (w.critical || w.bankrupt) break;
   }
   return ownPlayback;
 }

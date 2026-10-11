@@ -117,6 +117,9 @@ export interface Manager {
   trait?: ManagerTrait;
   /** School of football; absent means the neutral founding all-rounder. */
   style?: ManagerStyle;
+  /** Birth year and the ability he can grow to (→STAFF-16); absent in older saves, which stay put. */
+  born?: number;
+  potential?: number;
 }
 export interface Staff {
   id: string;
@@ -127,6 +130,9 @@ export interface Staff {
   wage: string;
   since: number;
   until: number;
+  /** Birth year and the ability he can grow to (→STAFF-16); volunteers and older saves have none. */
+  born?: number;
+  potential?: number;
 }
 export interface Academy {
   /** Academy prospects are not first-team players until promoted. */
@@ -502,6 +508,10 @@ export interface World {
   lastChampions: { country: string; club: string; cup: string }[];
   lower: boolean;
   critical?: string;
+  /** League rounds settled in a row with negative cash (→ECON-24); absent while solvent. */
+  insolvent?: number;
+  /** The day the club went bankrupt: the career is over and nothing advances (→ECON-24). */
+  bankrupt?: { year: number; round: number; day: number };
   receiptIds: string[];
 }
 export interface Founding {
