@@ -27,6 +27,13 @@ export const selectLeagueWorld = worldSelector([
   'players',
 ]);
 export const selectScorerWorld = worldSelector(['clubs', 'scorerSeason', 'year', 'playerClub']);
+export const selectReviewWorld = worldSelector([
+  'history',
+  'clubs',
+  'players',
+  'playerClub',
+  'year',
+]);
 export const selectStrategyWorld = worldSelector([
   'cash',
   'players',

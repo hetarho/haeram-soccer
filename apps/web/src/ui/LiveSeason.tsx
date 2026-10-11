@@ -16,10 +16,13 @@ import { LeagueOverview, RankHistoryGraph, Standings, RoundResults } from './Lea
 import { ScorerStandings, ScorerHistory } from './ScorerPanels';
 import { StrategyPanel } from './StrategyPanel';
 import { FixtureNotebook } from './FixtureNotebook';
+import { SeasonReview } from './SeasonReview';
+import { seasonName } from './format';
 import { ownLeagueIds } from './league';
 import {
   selectLeagueWorld,
   selectMatchWorld,
+  selectReviewWorld,
   selectScorerWorld,
   selectStrategyWorld,
 } from './liveState';
@@ -355,6 +358,74 @@ const ResultsPane = memo(function ResultsPane() {
   const w = useGameState(selectLeagueWorld)!;
   return <RoundResults w={w} ids={ownLeagueIds(w)} />;
 });
+const ClosedSeason = memo(function ClosedSeason({
+  client,
+  year,
+}: {
+  client: GameClient;
+  year: number;
+}) {
+  const w = useGameState(selectReviewWorld)!;
+  return <SeasonReview w={w} year={year} client={client} />;
+});
+/**
+ * Which season the league page shows: the one in progress (the live tabs) or a closed one (its
+ * review). The list sits between previous/next arrows; a season close adds itself here instead of
+ * stopping the clock.
+ */
+function SeasonPicker({
+  value,
+  onChange,
+}: {
+  value: number | undefined;
+  onChange: (year: number | undefined) => void;
+}) {
+  const current = useGameState((state) => state.view?.world.year);
+  const closed = useGameState((state) => state.view?.world.history.map((h) => h.year).join(','));
+  if (current === undefined) return null;
+  // Oldest first; the season in progress is the last stop.
+  const years = [...(closed ? closed.split(',').map(Number) : []), current];
+  const at = Math.max(0, years.indexOf(value ?? current));
+  const go = (index: number) => onChange(years[index] === current ? undefined : years[index]);
+  return (
+    <div className={t.seasonPicker} role="group" aria-label="리그 시즌 선택">
+      <button
+        type="button"
+        className={t.seasonStep}
+        aria-label="이전 시즌"
+        disabled={at === 0}
+        onClick={() => go(at - 1)}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m15 6-6 6 6 6" />
+        </svg>
+      </button>
+      <Select
+        aria-label="리그 시즌"
+        className={t.seasonSelect}
+        value={value ?? 'current'}
+        onValueChange={(next) => onChange(next === 'current' ? undefined : Number(next))}
+      >
+        {[...years].reverse().map((year) => (
+          <option key={year} value={year === current ? 'current' : year}>
+            {seasonName(year)}
+          </option>
+        ))}
+      </Select>
+      <button
+        type="button"
+        className={t.seasonStep}
+        aria-label="다음 시즌"
+        disabled={at === years.length - 1}
+        onClick={() => go(at + 1)}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m9 6 6 6-6 6" />
+        </svg>
+      </button>
+    </div>
+  );
+}
 /** Panels stay mounted. The simulation and canvas keep their identity when tabs change. */
 export function LiveSeason({
   page,
@@ -373,13 +444,20 @@ export function LiveSeason({
     const saved = new URLSearchParams(location.search).get('view');
     return LEAGUE_TABS.find(([id]) => id === saved)?.[0] || 'overview';
   });
+  const [reviewYear, setReviewYear] = useState<number | undefined>(() => {
+    const saved = Number(new URLSearchParams(location.search).get('season'));
+    return Number.isInteger(saved) && saved > 0 ? saved : undefined;
+  });
   const tab: Tab = page === 'match' ? 'match' : leagueTab;
   useEffect(() => {
     if (page !== 'league') return;
     const url = new URL(location.href);
     url.searchParams.set('view', leagueTab);
+    if (reviewYear === undefined) url.searchParams.delete('season');
+    else url.searchParams.set('season', String(reviewYear));
     history.replaceState(history.state, '', `${url.pathname}${url.search}${url.hash}`);
-  }, [page, leagueTab]);
+  }, [page, leagueTab, reviewYear]);
+  const reviewing = page === 'league' && reviewYear !== undefined;
   useEffect(() => {
     controller.setWatching(active && requestedPage === page && tab === 'match');
   }, [active, requestedPage, page, tab, controller]);
@@ -405,22 +483,25 @@ export function LiveSeason({
     <div hidden={!active} data-testid="live-season" className={t.liveSeason}>
       {page === 'league' && (
         <div className={t.navigation}>
-          <div className={`${s.seasonTabs} ${t.tabs}`} role="tablist" aria-label="리그 보기">
-            {visibleTabs.map(([id, label], i) => (
-              <button
-                key={id}
-                id={`season-tab-${id}`}
-                role="tab"
-                aria-selected={tab === id}
-                aria-controls={`season-panel-${id}`}
-                tabIndex={tab === id || (i === 0 && !inTabs(tab)) ? 0 : -1}
-                onKeyDown={(event) => keyboard(event, i)}
-                onClick={() => setLeagueTab(id)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+          <SeasonPicker value={reviewYear} onChange={setReviewYear} />
+          {!reviewing && (
+            <div className={`${s.seasonTabs} ${t.tabs}`} role="tablist" aria-label="리그 보기">
+              {visibleTabs.map(([id, label], i) => (
+                <button
+                  key={id}
+                  id={`season-tab-${id}`}
+                  role="tab"
+                  aria-selected={tab === id}
+                  aria-controls={`season-panel-${id}`}
+                  tabIndex={tab === id || (i === 0 && !inTabs(tab)) ? 0 : -1}
+                  onKeyDown={(event) => keyboard(event, i)}
+                  onClick={() => setLeagueTab(id)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
       {TABS.map(([id, label]) => (
@@ -431,7 +512,7 @@ export function LiveSeason({
           role={id === 'match' ? undefined : 'tabpanel'}
           aria-labelledby={id !== 'match' && inTabs(id) ? `season-tab-${id}` : undefined}
           aria-label={id === 'match' ? '경기 관전' : inTabs(id) ? undefined : label}
-          hidden={tab !== id}
+          hidden={tab !== id || reviewing}
         >
           {id === 'match' ? (
             <MatchPane
@@ -455,6 +536,11 @@ export function LiveSeason({
           )}
         </section>
       ))}
+      {reviewing && (
+        <section className={`${s.seasonPane} ${t.pane}`} aria-label="시즌 결산">
+          <ClosedSeason client={client} year={reviewYear} />
+        </section>
+      )}
       {preparing && page === 'match' && (
         <StrategyPanelSheet client={client} onClose={() => setPreparing(false)} />
       )}

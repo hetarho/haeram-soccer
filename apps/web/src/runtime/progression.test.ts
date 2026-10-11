@@ -283,19 +283,19 @@ describe('the global progression clock', () => {
       { background: true, automatic: true },
     );
   });
-  it('stops when the season closes and holds its review until it is seen', async () => {
+  it('plays on through the season close, so an unattended clock never ends', async () => {
     const s = setup();
     controller = s.controller;
     controller.start();
     await vi.advanceTimersByTimeAsync(1000);
-    expect(controller.store.getState().running).toBe(true);
+    const next = { ...w, year: w.year + 1, revision: w.revision + 1 };
     gameStore.publish({
       ...gameStore.getSnapshot(),
-      view: { world: { ...w, year: w.year + 1, revision: w.revision + 1 } } as View,
+      savedRevision: next.revision,
+      view: { world: next } as View,
     });
-    expect(controller.store.getState().running).toBe(false);
-    expect(controller.store.getState().seasonEnd).toBe(w.year);
-    controller.clearSeasonEnd();
-    expect(controller.store.getState().seasonEnd).toBeUndefined();
+    expect(controller.store.getState().running).toBe(true);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(s.command).toHaveBeenCalledTimes(2);
   });
 });

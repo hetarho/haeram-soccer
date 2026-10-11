@@ -12,6 +12,7 @@ import type { ClientState, GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
 import { money } from './format';
+import { OvrBadge } from './OvrBadge';
 import s from './RecruitmentDesk.module.css';
 
 type Preview = ReturnType<typeof recruitmentPreview>;
@@ -66,6 +67,7 @@ function CandidateCard({
       data-role={player.role}
     >
       <header className={s.cardHead}>
+        <OvrBadge value={overall(player)} role={player.role} large />
         <div>
           <h3>{player.name}</h3>
           <span>
@@ -78,10 +80,10 @@ function CandidateCard({
       </header>
       <div className={s.ability}>
         <span>
-          능력 <b>{overall(player)}</b>
+          잠재력 <b>{Math.round(player.potential)}</b>
         </span>
         <span>
-          잠재력 <b>{Math.round(player.potential)}</b>
+          성장 여지 <b>+{Math.max(0, Math.round(player.potential) - overall(player))}</b>
         </span>
       </div>
       {offer.available && (

@@ -57,9 +57,20 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
   await journal.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
-  // The closed season opens its review in place of the sheet.
+  // A closed season no longer interrupts: its review waits in the league's season list.
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' })).toHaveCount(0);
+  await page.getByRole('button', { name: '리그', exact: true }).first().click();
+  await chooseOption(page.getByRole('combobox', { name: '리그 시즌', exact: true }), '1950');
   await expect(page.getByTestId('season-review')).toBeVisible();
-  await expect(journal).toHaveCount(0);
+  await expect(page.getByTestId('season-move')).toBeVisible();
+  await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('Haeram');
+  // The live tabs belong to the season in progress; the arrow steps back to it.
+  await expect(page.getByRole('tablist', { name: '리그 보기' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '이전 시즌', exact: true })).toBeDisabled();
+  await page.getByRole('button', { name: '다음 시즌', exact: true }).click();
+  await expect(page.getByRole('tablist', { name: '리그 보기' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '다음 시즌', exact: true })).toBeDisabled();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
   await page.getByText('우리 클럽 기록집', { exact: true }).click();
@@ -176,12 +187,26 @@ test('filters player samples and shows scoped per-90 evidence on a mobile profil
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   await page.getByRole('button', { name: '선수단', exact: true }).first().click();
-  await chooseOption(page.getByRole('combobox', { name: '선수 포지션 필터', exact: true }), 'FWD');
-  await chooseOption(
-    page.getByRole('combobox', { name: '우리 선수 정렬', exact: true }),
-    'goals90',
-  );
-  await chooseOption(page.getByRole('combobox', { name: '최소 출전 분', exact: true }), '90');
+  // Position, order and sample sit behind the panel's view-settings button (a sheet on phones).
+  const settings = page.getByRole('button', { name: /^선수 보기 설정/ });
+  await settings.click();
+  const sheet = page.getByRole('dialog', { name: '선수 보기 설정' });
+  await sheet
+    .getByRole('radiogroup', { name: '포지션' })
+    .getByRole('radio', { name: 'FWD' })
+    .click();
+  await sheet
+    .getByRole('radiogroup', { name: '정렬' })
+    .getByRole('radio', { name: '90분당 득점' })
+    .click();
+  await sheet
+    .getByRole('radiogroup', { name: '최소 표본' })
+    .getByRole('radio', { name: '90분+' })
+    .click();
+  await page.keyboard.press('Escape');
+  await expect(sheet).toHaveCount(0);
+  await expect(settings).toHaveAccessibleName('선수 보기 설정 · 3개 적용');
+  await expect(page.getByTestId('roster-view-summary')).toHaveText('FWD · 90분당 득점 · 90분+');
   const detailTable = page.locator('details[class*="rosterDetails"]');
   await expect(detailTable.locator('table')).toHaveCount(0);
   await detailTable.getByText('전체 선수 지표 표 보기', { exact: true }).click();
@@ -196,7 +221,12 @@ test('filters player samples and shows scoped per-90 evidence on a mobile profil
   await expect(profile).toContainText('이번 시즌 · 모든 대회');
   await expect(profile).toContainText('90분당');
   await profile.getByRole('button', { name: '창 닫기', exact: true }).click();
-  await chooseOption(page.getByRole('combobox', { name: '최소 출전 분', exact: true }), '180');
+  await settings.click();
+  await sheet
+    .getByRole('radiogroup', { name: '최소 표본' })
+    .getByRole('radio', { name: '180분+' })
+    .click();
+  await page.keyboard.press('Escape');
   await expect(page.getByText('이 조건에 맞는 선수가 없어요.', { exact: true })).toBeVisible();
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });

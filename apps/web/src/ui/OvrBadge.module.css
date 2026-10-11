@@ -1,0 +1,55 @@
+/* Overall rating chip: a rating card's corner, tinted by card tier. */
+.ovr {
+  --tone: #d99a62;
+  --tone-soft: #3a2a1d;
+  flex: none;
+  display: inline-grid;
+  justify-items: center;
+  align-content: center;
+  min-width: 44px;
+  min-height: 46px;
+  padding: 4px 6px 3px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--tone) 55%, transparent);
+  background: linear-gradient(180deg, var(--tone-soft) 0%, var(--surface-deep) 100%);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--tone) 35%, transparent);
+  line-height: 1;
+}
+.ovr[data-tier='silver'] {
+  --tone: #cfd8dc;
+  --tone-soft: #2c3438;
+}
+.ovr[data-tier='gold'] {
+  --tone: var(--gold);
+  --tone-soft: #3b3010;
+}
+.ovr.ovr b {
+  color: var(--tone);
+  font-size: 20px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+}
+.ovr.ovr small {
+  margin-top: 3px;
+  color: var(--text-muted);
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+/* Read as "OVR 62" by screen readers; the chip itself shows only the number. */
+.label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.large {
+  min-width: 52px;
+  min-height: 54px;
+}
+.large.large b {
+  font-size: 24px;
+}

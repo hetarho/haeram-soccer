@@ -24,6 +24,7 @@ import { clubOf } from '../../../../packages/engine/src/world';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
+import { OvrBadge } from './OvrBadge';
 import { money } from './format';
 import s from './ClubStaff.module.css';
 
@@ -374,11 +375,11 @@ export function AcademyView({ w, client }: { w: World; client: GameClient }) {
         <ul>
           {summary.players.map(({ player: p, overall, potential, age, readiness, label }) => (
             <li key={p.id}>
-              <span className={s.badge}>{p.role}</span>
+              <OvrBadge value={overall} role={p.role} />
               <div>
                 <b>{p.name}</b>
                 <small>
-                  {age}세 · 능력 {overall} / 잠재력 {potential}
+                  {age}세 · 잠재력 {potential}
                 </small>
                 <Meter value={(overall / Math.max(1, potential)) * 100} />
                 <small className={readiness === 'ready' ? s.ready : undefined}>{label}</small>

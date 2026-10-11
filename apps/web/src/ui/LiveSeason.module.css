@@ -17,6 +17,46 @@
 .tabs {
   margin-bottom: 0;
 }
+/* The season list sits centred on its own row above the league tabs, between two arrows. */
+.seasonPicker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.seasonPicker .seasonSelect.seasonSelect {
+  flex: 0 1 200px;
+  min-width: 0;
+  font-weight: 800;
+}
+.seasonSelect > span:first-child {
+  flex: 1;
+  text-align: center;
+}
+.seasonStep {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 12px;
+}
+.seasonStep svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.seasonStep:disabled {
+  opacity: 0.35;
+}
 .heading {
   display: flex;
   align-items: center;
@@ -116,8 +156,13 @@
 @media (max-width: 760px) {
   .navigation {
     display: flex;
+    flex-wrap: wrap;
     gap: 5px;
     margin-bottom: 5px;
+  }
+  .seasonPicker {
+    flex: 1 0 100%;
+    margin-bottom: 0;
   }
   .tabs {
     flex: 1;

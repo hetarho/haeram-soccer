@@ -371,7 +371,8 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
         </div>
       ) : (
         <p className={s.seasonEnd}>
-          이번 시즌 리그 일정이 끝났습니다. 시즌 결산에서 승강 결과를 확인하세요.
+          이번 시즌 리그 일정이 끝났습니다. 시즌이 마감되면 리그의 시즌 목록에서 결산과 승강 결과를
+          볼 수 있어요.
         </p>
       )}
     </section>

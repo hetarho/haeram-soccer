@@ -389,32 +389,47 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
-.actions {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-  gap: 8px;
+.table {
+  padding: 8px 10px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface);
 }
-.market {
-  min-height: 52px;
-  font-size: 16px;
-  font-weight: 900;
-  color: #2a1a00;
-  border-color: var(--gold-edge);
-  background: var(--gold-fill);
-  box-shadow:
-    0 4px 0 var(--gold-edge),
-    0 0 26px rgba(255, 203, 71, 0.3);
-  animation: glow 1800ms ease-in-out 1200ms infinite alternate;
+.table h3 {
+  font-size: 13px;
+  margin-bottom: 4px;
 }
-.primary {
-  min-height: 52px;
-  background: var(--accent-fill) !important;
-  color: var(--on-accent) !important;
-  border-color: var(--accent-edge) !important;
-  box-shadow: 0 3px 0 var(--accent-edge) !important;
+.table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
 }
-.actions button {
-  min-height: 52px;
+.table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-faint);
+  padding: 4px 6px;
+}
+.table td {
+  padding: 5px 6px;
+  border-top: 1px solid var(--line);
+}
+.table th:nth-child(n + 3),
+.table td:nth-child(n + 3) {
+  text-align: right;
+}
+.table td:nth-child(2) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 0;
+  width: 100%;
+}
+.own td {
+  color: var(--gold);
+  font-weight: 800;
 }
 
 .empty {
@@ -464,18 +479,11 @@
     transform: none;
   }
 }
-@keyframes glow {
-  to {
-    box-shadow:
-      0 4px 0 var(--gold-edge),
-      0 0 44px rgba(255, 203, 71, 0.55);
-  }
-}
+
 @media (prefers-reduced-motion: reduce) {
   .review > *,
   .rank b,
-  .ribbon,
-  .market {
+  .ribbon {
     animation: none;
   }
 }

@@ -1,7 +1,7 @@
 {
   "phase": "T010 complete engine, including money/personnel/commercial operations and all continental summaries",
   "synthetic": true,
-  "date": "2026-10-11T13:53:18.137Z",
+  "date": "2026-10-11T14:47:51.332Z",
   "node": "v26.8.1",
   "host": {
     "platform": "darwin",
@@ -9,14 +9,14 @@
     "cpu": "Apple M1 Max",
     "logicalCpus": 10
   },
-  "gitHead": "a0893936e1db5bf2311a362335db07999f80ad1e",
+  "gitHead": "ede771cac1677311cfab2cefab1dc8b9ccc18c76",
   "gitDirty": true,
   "currentHeadVerified": false,
   "verifiedSource": "uncommitted working tree",
   "sourceFingerprint": {
     "algorithm": "sha256",
-    "sha256": "8fb52f1565f2133989e7a684439135c42a9763d2b48594e3293034bf8b26675c",
-    "files": 237
+    "sha256": "abe5441e58c683634100f19b83da10f4b1b31650a136a03fa952f63229e8563d",
+    "files": 241
   },
   "engine": "1.10.0",
   "catalog": "2026-demo-1",
@@ -38,8 +38,8 @@
       "compressedPayloadBytes": 26899,
       "checkpointBytes": 31406,
       "totalBytes": 63324,
-      "heapBytes": 68364272,
-      "encodingMs": 16,
+      "heapBytes": 68345248,
+      "encodingMs": 17,
       "passed": true
     },
     {
@@ -57,8 +57,8 @@
       "compressedPayloadBytes": 582196,
       "checkpointBytes": 666032,
       "totalBytes": 1332576,
-      "heapBytes": 294716144,
-      "encodingMs": 185,
+      "heapBytes": 244216568,
+      "encodingMs": 190,
       "passed": true
     },
     {
@@ -76,8 +76,8 @@
       "compressedPayloadBytes": 983998,
       "checkpointBytes": 1125234,
       "totalBytes": 2250980,
-      "heapBytes": 396627776,
-      "encodingMs": 325,
+      "heapBytes": 584234720,
+      "encodingMs": 344,
       "passed": true
     },
     {
@@ -94,8 +94,8 @@
       "compressedPayloadBytes": 26899,
       "checkpointBytes": 31408,
       "totalBytes": 63328,
-      "heapBytes": 398850600,
-      "encodingMs": 7,
+      "heapBytes": 255918272,
+      "encodingMs": 8,
       "passed": true
     },
     {
@@ -113,8 +113,8 @@
       "compressedPayloadBytes": 578243,
       "checkpointBytes": 661516,
       "totalBytes": 1323544,
-      "heapBytes": 251300560,
-      "encodingMs": 181,
+      "heapBytes": 303640912,
+      "encodingMs": 211,
       "passed": true
     },
     {
@@ -132,8 +132,8 @@
       "compressedPayloadBytes": 1055125,
       "checkpointBytes": 1206524,
       "totalBytes": 2413560,
-      "heapBytes": 434166096,
-      "encodingMs": 355,
+      "heapBytes": 610313624,
+      "encodingMs": 363,
       "passed": true
     },
     {
@@ -151,8 +151,8 @@
       "compressedPayloadBytes": 1093702,
       "checkpointBytes": 1250612,
       "totalBytes": 2501736,
-      "heapBytes": 850408088,
-      "encodingMs": 346,
+      "heapBytes": 633476936,
+      "encodingMs": 373,
       "passed": true
     }
   ],
@@ -165,10 +165,10 @@
       "completeSeasonTrainingSelections": 0,
       "centuryActiveCheckpointTrainingSelections": 0,
       "trainingCycle": "balanced",
-      "elapsedMs": 49984,
-      "completedSeasonsPerSecond": 2,
+      "elapsedMs": 51943,
+      "completedSeasonsPerSecond": 1.93,
       "ownedMatches": 4567,
-      "ownedMatchesPerSecond": 91.37,
+      "ownedMatchesPerSecond": 87.92,
       "allRetainedFactsPreserved": true
     },
     {
@@ -179,10 +179,10 @@
       "completeSeasonTrainingSelections": 200,
       "centuryActiveCheckpointTrainingSelections": 2,
       "trainingCycle": "23 youth rounds then 23 recovery rounds each season; century checkpoint adds 12 youth and 11 recovery rounds",
-      "elapsedMs": 58433,
-      "completedSeasonsPerSecond": 1.71,
+      "elapsedMs": 61304,
+      "completedSeasonsPerSecond": 1.63,
       "ownedMatches": 4943,
-      "ownedMatchesPerSecond": 84.59,
+      "ownedMatchesPerSecond": 80.63,
       "allRetainedFactsPreserved": true
     }
   ],
@@ -192,9 +192,9 @@
     "year": 2025,
     "passed": true
   },
-  "elapsedMs": 142083,
-  "heapBytes": 1287164000,
-  "peakObservedHeapBytes": 850408088,
+  "elapsedMs": 147233,
+  "heapBytes": 342090056,
+  "peakObservedHeapBytes": 633476936,
   "losslessRoundtrip": true,
   "resumedSeasonReplay": true,
   "passed": true,

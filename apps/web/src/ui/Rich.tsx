@@ -3,7 +3,6 @@ import { useEffect, useState, type ReactNode } from 'react';
 import type {
   MatchRecord,
   Player,
-  Role,
   TransferStance,
   World,
 } from '../../../../packages/contracts/src/types';
@@ -32,12 +31,19 @@ import {
 } from '../../../../packages/engine/src/transfers';
 import { buildOf, cardOf } from '../../../../packages/engine/src/build';
 import { Dialog } from './Dialog';
+import { OvrBadge } from './OvrBadge';
+import {
+  DEFAULT_ROSTER_VIEW,
+  RosterFilters,
+  rosterViewSummary,
+  type RosterView,
+} from './RosterFilters';
 import { useNavigation, useSquadView, type Page, type SquadTab } from './state';
 import { AcademyView, CoachingPlan, CoachingStaff, Delegation } from './ClubStaff';
 import { Chart } from './Chart';
 import { Pitch } from './Pitch';
 import { archivePlayback } from './replay';
-import { explorePlayers, type PlayerOrder, type PlayerScope } from './playerAnalysis';
+import { explorePlayers } from './playerAnalysis';
 import { PlayerPerformance } from './PlayerPerformance';
 import { PlayerAdvancedStats } from './PlayerAdvancedStats';
 import { StyleCard } from './StyleCard';
@@ -486,10 +492,7 @@ function Squad({ state, client }: Props) {
     c = w.clubs.find((c) => c.id === w.playerClub)!,
     tab = useSquadView((state) => state.tab),
     [selectedId, setSelectedId] = useState<string>(),
-    [scope, setScope] = useState<PlayerScope>('season'),
-    [role, setRole] = useState<Role | 'all'>('all'),
-    [order, setOrder] = useState<PlayerOrder>('roster'),
-    [minutes, setMinutes] = useState(0),
+    [view, setView] = useState<RosterView>(DEFAULT_ROSTER_VIEW),
     [comparing, setComparing] = useState(false),
     [fullTable, setFullTable] = useState(false),
     [playerQuery, setPlayerQuery] = useState(''),
@@ -501,7 +504,9 @@ function Squad({ state, client }: Props) {
   const window = transferWindow(w);
   const selected = w.players.find((p) => p.id === selectedId);
   const stancePlayer = w.players.find((p) => p.id === stanceId && canSetStance(p));
-  const listed = explorePlayers(w.players, { scope, role, order, query: playerQuery, minutes });
+  const { scope } = view;
+  const listed = explorePlayers(w.players, { ...view, query: playerQuery });
+  const summary = rosterViewSummary(view);
   const lastPage = Math.max(0, Math.ceil(listed.length / 25) - 1),
     shownPage = Math.min(playerPage, lastPage),
     visiblePlayers = listed.slice(shownPage * 25, (shownPage + 1) * 25);
@@ -522,78 +527,21 @@ function Squad({ state, client }: Props) {
       {tab === 'roster' && (
         <div className={s.filters}>
           <button onClick={() => setComparing(true)}>우리 선수 비교</button>
-          <label>
-            지표 범위{' '}
-            <Select
-              aria-label="선수 지표 범위"
-              value={scope}
-              onValueChange={(value) => {
-                setScope(value as PlayerScope);
-                setPlayerPage(0);
-              }}
-            >
-              <option value="season">현재 시즌 · 모든 대회</option>
-              <option value="career">우리 클럽 통산</option>
-            </Select>
-          </label>
         </div>
       )}
       {tab === 'roster' ? (
-        <Panel title="우리 클럽의 선수들" note="GK · DEF · MID · FWD">
-          <div className={s.filters} style={{ padding: '12px 16px' }}>
-            <label>
-              포지션{' '}
-              <Select
-                aria-label="선수 포지션 필터"
-                value={role}
-                onValueChange={(value) => {
-                  setRole(value as Role | 'all');
-                  setPlayerPage(0);
-                }}
-              >
-                <option value="all">전체</option>
-                {(['GK', 'DEF', 'MID', 'FWD'] as const).map((value) => (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </Select>
-            </label>
-            <label>
-              정렬{' '}
-              <Select
-                aria-label="우리 선수 정렬"
-                value={order}
-                onValueChange={(value) => {
-                  setOrder(value as PlayerOrder);
-                  setPlayerPage(0);
-                }}
-              >
-                <option value="roster">선수단 순서</option>
-                <option value="ability">능력 높은 순</option>
-                <option value="minutes">출전 분 많은 순</option>
-                <option value="fatigue">피로 낮은 순</option>
-                <option value="goals90">90분당 득점 높은 순</option>
-              </Select>
-            </label>
-            <label>
-              최소 표본{' '}
-              <Select
-                aria-label="최소 출전 분"
-                value={minutes}
-                onValueChange={(value) => {
-                  setMinutes(Number(value));
-                  setPlayerPage(0);
-                }}
-              >
-                {[0, 90, 180, 450, 900].map((value) => (
-                  <option value={value} key={value}>
-                    {value ? `${value}분 이상` : '제한 없음'}
-                  </option>
-                ))}
-              </Select>
-            </label>
-          </div>
+        <Panel
+          title="우리 클럽의 선수들"
+          action={
+            <RosterFilters
+              view={view}
+              onChange={(next) => {
+                setView(next);
+                setPlayerPage(0);
+              }}
+            />
+          }
+        >
           <label className={s.rosterSearch}>
             선수 찾기{' '}
             <input
@@ -606,15 +554,20 @@ function Squad({ state, client }: Props) {
               placeholder="이름으로 찾기"
             />
           </label>
+          {summary.length > 0 && (
+            <p className={s.rosterViewSummary} data-testid="roster-view-summary">
+              {summary.join(' · ')}
+            </p>
+          )}
           <div className={s.rosterCards}>
             {visiblePlayers.map((p) => (
               <article key={p.id}>
                 <button onClick={() => setSelectedId(p.id)}>
-                  <span>{p.role}</span>
+                  <OvrBadge value={overall(p)} role={p.role} />
                   <b>{p.name}</b>
                   <small>
                     {p.status === 'active'
-                      ? `${w.year - p.born}세 · 능력 ${overall(p)} / 잠재력 ${Math.round(p.potential)}`
+                      ? `${w.year - p.born}세 · 잠재력 ${Math.round(p.potential)}`
                       : p.status === 'retired'
                         ? '은퇴 · 클럽 기록 보존'
                         : '이적 · 클럽 기록 보존'}
@@ -660,6 +613,7 @@ function Squad({ state, client }: Props) {
                     <tr>
                       <th>역할</th>
                       <th>선수</th>
+                      <th>OVR</th>
                       <th>나이</th>
                       <th>공격</th>
                       <th>패스</th>
@@ -692,6 +646,7 @@ function Squad({ state, client }: Props) {
                                     : ''}
                             </small>
                           </td>
+                          <td>{overall(p)}</td>
                           <td>{p.status === 'active' ? w.year - p.born : `${p.born}년생`}</td>
                           <td>{number(p.attack)}</td>
                           <td>{number(p.passing)}</td>

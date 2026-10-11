@@ -23,8 +23,6 @@ export interface ProgressionState {
   stopOn: StopOn;
   /** Tomorrow's own fixture the clock stopped for, until the owner watches or plays through. */
   matchEve?: string;
-  /** The season that just closed, until the owner has seen its review. */
-  seasonEnd?: number;
 }
 export const STOP_LABELS: Record<InboxKind, string> = {
   match: '경기 전날',
@@ -104,30 +102,21 @@ export class ProgressionController {
     return this.suspensionSources.size > 0;
   }
   private worldId?: string;
-  private year?: number;
   private finishedId?: string;
   /** When the last day step was sent; unset while stopped so a restart begins with one day. */
   private stepAt?: number;
 
   constructor(private client: GameClient) {
     this.worldId = gameStore.getSnapshot().view?.world.id;
-    this.year = gameStore.getSnapshot().view?.world.year;
+    // A season close is recorded, not a stop: its review waits in the league's season list, so a
+    // running clock plays on into the next season (→WEB-47).
     this.unsubscribe = gameStore.subscribe((state) => {
-      const id = state.view?.world.id,
-        year = state.view?.world.year;
+      const id = state.view?.world.id;
       if (this.worldId !== id) {
         this.worldId = id;
-        this.year = year;
         this.finishedId = undefined;
         this.stop('');
-        this.store.setState({ seasonEnd: undefined });
-      } else if (year !== undefined && this.year !== undefined && year > this.year) {
-        // However the season closed (clock, watching or a bulk action), its review comes first.
-        const closed = year - 1;
-        this.year = year;
-        this.stop('시즌이 끝났어요');
-        this.store.setState({ seasonEnd: closed, matchEve: undefined });
-      } else if (year !== undefined) this.year = year;
+      }
       if (
         this.store.getState().running &&
         (state.error || state.readonly || state.view?.world.critical)
@@ -181,10 +170,6 @@ export class ProgressionController {
   }
   clearMatchEve() {
     this.store.setState({ matchEve: undefined });
-  }
-  /** The owner has seen the closed season's review. */
-  clearSeasonEnd() {
-    this.store.setState({ seasonEnd: undefined });
   }
   setWatching(watching: boolean) {
     const previous = this.store.getState().watching;

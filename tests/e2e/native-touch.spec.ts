@@ -159,10 +159,16 @@ for (const viewport of [
       .getByRole('navigation', { name: '모바일 게임 메뉴' })
       .getByRole('button', { name: '선수단', exact: true })
       .click();
-    const scope = page.getByRole('combobox', { name: '선수 지표 범위', exact: true });
-    await expectTouchControl(scope, viewport);
-    await chooseOption(scope, 'career');
-    await expect(scope).toHaveAttribute('data-value', 'career');
+    const settings = page.getByRole('button', { name: /^선수 보기 설정/ });
+    await expectTouchControl(settings, viewport);
+    await settings.click();
+    const career = page
+      .getByRole('dialog', { name: '선수 보기 설정' })
+      .getByRole('radio', { name: '우리 클럽 통산' });
+    await expectTouchControl(career, viewport, 40);
+    await career.click();
+    await expect(career).toHaveAttribute('aria-checked', 'true');
+    await page.keyboard.press('Escape');
     await page.getByRole('button', { name: '이적 시장', exact: true }).click();
     const order = page.getByRole('combobox', { name: '영입 후보 정렬', exact: true });
     await expectTouchControl(order, viewport);

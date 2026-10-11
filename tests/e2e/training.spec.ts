@@ -176,8 +176,9 @@ for (const viewport of [
       // Names can repeat in a squad, so look for this player's card by name and its exact facts.
       const article = roster
         .filter({ has: page.getByText(player.name, { exact: true }) })
+        .filter({ hasText: `OVR ${overall(player)}` })
         .filter({
-          hasText: `${settled.year - player.born}세 · 능력 ${overall(player)} / 잠재력 ${Math.round(player.potential)}`,
+          hasText: `${settled.year - player.born}세 · 잠재력 ${Math.round(player.potential)}`,
         })
         .filter({ hasText: `성장 +${(player.developed || 0).toFixed(2)}` });
       await expect(article.first()).toBeVisible();

@@ -148,10 +148,13 @@ export class Host {
               seen = new Set(unreadAttention(w).map((item) => item.id)),
               known = new Set((w.inbox || []).map((item) => item.id));
             const limit = cmd.type === 'advance-days' ? cmd.days : 2 * seasonLength(w);
+            // Only a watched match needs its movement frames; a day step plays our match through
+            // as a result, with the same duel chain and facts, nine times faster.
+            const watched = cmd.type === 'next-match';
             for (let n = 0; n < limit; n++) {
               if (this.cancelled) break;
-              const p = advanceDays(w, 1);
-              if (p) playback = p;
+              const p = advanceDays(w, 1, undefined, watched);
+              if (p?.frames.length) playback = p;
               if (w.critical || (cmd.type === 'next-match' && w.ownMatches.length > matchCount))
                 break;
               // Every step ends when the season closes. A multi-day step also ends on the day any

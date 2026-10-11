@@ -40,9 +40,14 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  // The closed season opens its review in place of the sheet.
-  await expect(page.getByTestId('season-review')).toBeVisible();
+  // A closed season no longer interrupts: its review waits in the league's season list.
+  await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' })).toHaveCount(0);
+  await page.getByRole('button', { name: '리그', exact: true }).first().click();
+  await chooseOption(page.getByRole('combobox', { name: '리그 시즌', exact: true }), '1950');
+  await expect(page.getByTestId('season-review')).toBeVisible();
+  await expect(page.getByTestId('season-move')).toBeVisible();
+  await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('Haeram');
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
   await chooseOption(page.getByRole('combobox', { name: '기록 시즌', exact: true }), '1950');
   await page.getByRole('button', { name: '경기 기록 보기', exact: true }).first().click();
@@ -90,7 +95,7 @@ test('browses every historical regional group and resets filters on country chan
     .click();
   await page.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
-  await expect(page.getByTestId('season-review')).toBeVisible();
+  await page.keyboard.press('Escape');
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
   await page.setViewportSize({ width: 390, height: 844 });
   await chooseOption(page.getByRole('combobox', { name: '기록 시즌', exact: true }), '1950');

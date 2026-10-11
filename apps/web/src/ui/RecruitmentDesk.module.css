@@ -94,6 +94,7 @@
   gap: 8px;
 }
 .cardHead > div {
+  flex: 1;
   min-width: 0;
 }
 .cardHead h3 {

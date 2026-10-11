@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState, type PointerEvent } from 'react';
 import { ClubCrest } from './ClubCrest';
-import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
+import type { Event, MatchRecord, World } from '../../../../packages/contracts/src/types';
 import { country } from '../../../../packages/catalogs/src/index';
-import { operatingCosts } from '../../../../packages/engine/src/finance';
-import { transferWindow, WINDOW_INFO } from '../../../../packages/engine/src/transfers';
 import { clubOf } from '../../../../packages/engine/src/world';
 import type { GameClient } from '../runtime/client';
 import { money, number, seasonName } from './format';
@@ -157,23 +155,63 @@ function Leaders({
  * The closed season at a glance: where the club finished, the numbers football fans read (xG,
  * expected points, finishing, keeping, pressing), its leaders, the money and the season ahead.
  */
-export function SeasonReview({
-  w,
-  candidates,
-  client,
-  onMarket,
-  onHome,
-}: {
-  w: World;
-  candidates: number;
-  client: GameClient;
-  onMarket: () => void;
-  onHome: () => void;
-}) {
-  const season = w.history.at(-1);
+/** Rows of the own league's final table as [club index, points, goals for, goals against]. */
+type FinalRow = [number, number, number, number];
+/**
+ * The own league's final table: the season's last standings snapshot (kept for ten seasons, and
+ * the only record of an amateur league), else its archived standings.
+ */
+function finalRows(w: World, year: number, standings?: number[][]): FinalRow[] | undefined {
+  const snapshot = w.rankHistory?.filter((row) => row.year === year).at(-1);
+  if (snapshot) return snapshot.rows.map(([club, points, gf, ga]) => [club, points, gf, ga]);
+  const season = w.history.find((h) => h.year === year);
+  if (!season || !standings) return undefined;
+  const code = clubOf(w).country;
+  return standings
+    .filter(
+      (row) =>
+        w.clubs[row[0]]?.country === code && row[1] === season.tier && row[2] === season.group,
+    )
+    .sort((a, b) => b[3] - a[3] || b[4] - b[5] - (a[4] - a[5]) || b[4] - a[4] || a[0] - b[0])
+    .map((row) => [row[0], row[3], row[4], row[5]]);
+}
+function FinalTable({ w, rows }: { w: World; rows: FinalRow[] }) {
+  return (
+    <section className={s.table} aria-label="최종 순위표">
+      <h3>최종 순위표</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>클럽</th>
+            <th>승점</th>
+            <th>득실</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([club, points, gf, ga], i) => (
+            <tr key={club} className={w.clubs[club]?.id === w.playerClub ? s.own : undefined}>
+              <td>{i + 1}</td>
+              <td>{w.clubs[club]?.name}</td>
+              <td>{points}</td>
+              <td>{signed(gf - ga)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  );
+}
+
+/** One closed season, reviewed in the league page's season list (→WEB-47). */
+export function SeasonReview({ w, year, client }: { w: World; year: number; client: GameClient }) {
+  const index = w.history.findIndex((h) => h.year === year),
+    season = index >= 0 ? w.history[index] : undefined;
   const [loaded, setLoaded] = useState<{
     year: number;
     matches?: MatchRecord[];
+    events?: Event[];
+    standings?: number[][];
     error?: boolean;
   }>();
   useEffect(() => {
@@ -181,46 +219,50 @@ export function SeasonReview({
     let valid = true;
     void client
       .archive(season.year)
-      .then((data) => valid && setLoaded({ year: season.year, matches: data?.matches || [] }))
+      .then(
+        (data) =>
+          valid &&
+          setLoaded({
+            year: season.year,
+            matches: data?.matches || [],
+            events: data?.events || [],
+            standings: data?.season?.standings || [],
+          }),
+      )
       .catch(() => valid && setLoaded({ year: season.year, error: true }));
     return () => {
       valid = false;
     };
   }, [client, season?.year]);
-  const matches = loaded?.year === season?.year ? loaded?.matches : undefined;
+  const archive = loaded?.year === season?.year ? loaded : undefined;
+  const matches = archive?.matches;
   const stats = useMemo(() => (matches ? seasonStats(w, matches) : undefined), [w, matches]);
   if (!season)
     return (
       <section className={s.empty} data-testid="season-review">
         <h2>아직 마친 시즌이 없어요</h2>
-        <p>첫 시즌의 마지막 경기가 끝나면 이곳에서 한 시즌을 돌아봐요.</p>
-        <button className={s.primary} onClick={onHome}>
-          홈으로
-        </button>
+        <p>시즌의 마지막 경기가 끝나면 이곳에서 한 시즌을 돌아봐요.</p>
       </section>
     );
   const club = clubOf(w),
-    previous = w.history.at(-2),
+    previous = index > 0 ? w.history[index - 1] : undefined,
+    // The division a closed season led to: the next season's, or the current one for the latest.
+    nextTier = w.history[index + 1]?.tier ?? club.tier,
     // Amounts were recorded in the closed season's currency.
     format = (value: string) => money(value, club.country, season.year),
-    clubs = w.rankHistory?.filter((snapshot) => snapshot.year === season.year).at(-1)?.rows.length,
-    move = club.tier < season.tier ? 'up' : club.tier > season.tier ? 'down' : 'stay',
+    table = finalRows(w, season.year, archive?.standings),
+    clubs = table?.length,
+    move = nextTier < season.tier ? 'up' : nextTier > season.tier ? 'down' : 'stay',
     from = divisionName(w, season.tier),
-    to = divisionName(w, club.tier),
+    to = divisionName(w, nextTier),
     net = BigInt(season.income) - BigInt(season.expense),
-    prize = w.events.find((e) => e.year === season.year && e.kind === 'season-prize')?.amount,
-    window = transferWindow(w),
-    windowInfo = WINDOW_INFO[window.kind || 'summer'];
+    prize = archive?.events?.find((e) => e.kind === 'season-prize')?.amount;
   const ribbon =
     move === 'up'
       ? { text: `승격 · ${from} → ${to}`, tone: s.up }
       : move === 'down'
         ? { text: `강등 · ${from} → ${to}`, tone: s.down }
         : { text: `잔류 · ${from}`, tone: s.stay };
-  const openWindowItems = async () => {
-    for (const item of (w.inbox || []).filter((i) => i.kind === 'window-open' && !i.read))
-      await client.command({ type: 'read-inbox', id: item.id });
-  };
   const per = (value: number) => (stats?.played ? one(value / stats.played) : '—');
   const xgReady = !!stats?.xgMatches;
   return (
@@ -539,30 +581,7 @@ export function SeasonReview({
         </div>
       </section>
 
-      <section className={s.next} aria-label="다음 시즌">
-        <h3>
-          {seasonName(w.year)} · {w.lower ? '아마추어 리그' : to}
-        </h3>
-        <ul>
-          <li>자금 {money(w.cash, club.country, w.year)}</li>
-          <li>연간 운영비 {money(operatingCosts(w).annual, club.country, w.year)}</li>
-          <li>{w.sponsor ? `후원 ${w.sponsor.name} · ${w.sponsor.until}년까지` : '후원 없음'}</li>
-          <li>이적시장 {window.label}</li>
-        </ul>
-      </section>
-
-      <div className={s.actions}>
-        <button
-          className={s.primary}
-          onClick={() => {
-            if (window.open) void openWindowItems();
-            onMarket();
-          }}
-        >
-          {window.open ? `${windowInfo.name} 보기 · 후보 ${candidates}명` : '이적시장 보기'}
-        </button>
-        <button onClick={onHome}>홈으로</button>
-      </div>
+      {table && table.length > 0 && <FinalTable w={w} rows={table} />}
     </div>
   );
 }
