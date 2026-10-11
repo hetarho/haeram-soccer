@@ -1,5 +1,5 @@
 import { Select } from './Select';
-import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
 import type {
   ManagerTrait,
   Player,
@@ -47,7 +47,6 @@ import { AcademyView, CoachingPlan, CoachingStaff, Delegation } from './ClubStaf
 import { appearances, explorePlayers, playerStatus } from './playerAnalysis';
 import { PlayerLink } from './PlayerSheet';
 import { Attributes } from './Attributes';
-import { RecordsRoom } from './RecordsRoom';
 import { StyleCard } from './StyleCard';
 import { RemedySheet } from './RemedySheet';
 import { managerTerm, STYLE_INFO } from '../../../../packages/engine/src/styles';
@@ -58,6 +57,13 @@ import { PlayerComparison } from './PlayerComparison';
 import { contractLine, money, number } from './format';
 import s from './App.module.css';
 type Props = { state: ClientState; client: GameClient };
+/**
+ * The records room loads on its first visit: its charts, boards and archive tables stay out of
+ * the first-play entry bundle (→ARCH-28).
+ */
+const RecordsRoom = lazy(() =>
+  import('./RecordsRoom').then((module) => ({ default: module.RecordsRoom })),
+);
 const toneLabel = {
   respect: '정중하게 제안',
   evidence: '지표를 근거로',
@@ -882,5 +888,15 @@ export default function Rich({ state, client, page }: Props & { page: Page }) {
         <OperationsView state={state} client={client} legacy={<EconomicContext state={state} />} />
       </>
     );
-  return <RecordsRoom state={state} client={client} />;
+  return (
+    <Suspense
+      fallback={
+        <div className={s.loading} role="status">
+          클럽 기록실을 여는 중…
+        </div>
+      }
+    >
+      <RecordsRoom state={state} client={client} />
+    </Suspense>
+  );
 }
