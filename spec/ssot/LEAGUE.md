@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r3 | Define the implemented browser-demo behavior for domestic seasons and relegation.
+> r4 | Define the implemented browser-demo behavior for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -21,7 +21,9 @@
   - it closes 20% of the gap to its level: its division's midpoint + its stature + last season's success; promotion closes 35% more of the gap at once and relegation 15%.
   - stature is stable per club: each country has three giants (+13, +11, +9) and four big clubs (+6, +5, +5, +4), drawn mostly from its upper divisions; of the rest 45% are ordinary (−1 to +1) and the others small (−3 to −5).
   - success: last season's top-flight champion +3, the rest of the top four +1.5, a continental winner +2.
-  - a normal summer's luck (sum of three uniforms, sd ≈ 1.5) and, each year, a 1.5% takeover (+4 to +8) or a 1.5% crisis (−4 to −8); strength stays within 15–92; reputation drifts 30% toward its division's.
+  - a rare project (a new owner, a golden generation; 0.4% a club a summer, from its own stream) adds 8–18 to its level, fading 15% a summer; a project in the owner's country within one division is reported. ← any club can become as strong as the owner's, by chance
+  - strengths stay within 15–99, the very best an owner can build ← a cap below the owner's best would leave one club unbeatable
+  - a normal summer's luck (sum of three uniforms, sd ≈ 1.5) and, each year, a 1.5% takeover (+4 to +8) or a 1.5% crisis (−4 to −8); reputation drifts 30% toward its division's.
   - measured 261011 (30 seasons, eight countries): 5–9 different champions per country, the most successful club 8–15 titles, champions average 2.15 points per game.
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
@@ -30,6 +32,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r4 261012 LEAGUE-10✎ strength cap 92→99, +rare club projects adding 8–18 to a level and fading 15% a summer
 - r3 261011 LEAGUE-5✎ season-close cup→midweek rounds with seeded byes, open draws, prizes and archived finals; LEAGUE-6✎ 8-club 14-game lower section with 2nd–4th playoff→16-club 30-game amateur league with 2nd–5th playoff; LEAGUE-7✎ separate cup and European midweeks; LEAGUE-10+ clubs nobody owns evolve between seasons
 - r2 261009 LEAGUE-9+ season closed on 1 August→the day after the final round
 - r1 261007 initial

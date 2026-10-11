@@ -66,6 +66,8 @@ export interface Club {
   representative?: boolean;
   /** Club Elo from every settled result (→HIST-12); absent in older saves, derived from strength. */
   elo?: number;
+  /** Level a rare project (new owner, golden generation) adds, fading each summer (→LEAGUE-10). */
+  project?: number;
 }
 export interface Player {
   id: string;

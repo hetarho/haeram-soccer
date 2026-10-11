@@ -14,6 +14,8 @@ import {
   sameMembers,
 } from './league';
 import { ClubCrest } from './ClubCrest';
+import { clubOvr, ovrTier } from './OvrBadge';
+import { TeamSheet } from './TeamSheet';
 import s from './LeagueInsights.module.css';
 
 function Movement({ change }: { change?: number }) {
@@ -60,6 +62,7 @@ function Form({ results }: { results: ('승' | '무' | '패')[] }) {
 
 export function Standings({ w, ids, limit }: { w: World; ids: string[]; limit?: number }) {
   const [expanded, setExpanded] = useState(false);
+  const [team, setTeam] = useState<string>();
   const continental = w.europe.find((t) => t.standings === w.tables);
   const sorted = orderIds(ids, w.tables),
     rules = continental ? undefined : leagueRules(w, ids),
@@ -79,6 +82,7 @@ export function Standings({ w, ids, limit }: { w: World; ids: string[]; limit?: 
           <tr>
             <th scope="col">순위</th>
             <th scope="col">클럽</th>
+            <th scope="col">OVR</th>
             <th scope="col">승점</th>
             <th scope="col">경기</th>
             <th scope="col">승</th>
@@ -121,14 +125,24 @@ export function Standings({ w, ids, limit }: { w: World; ids: string[]; limit?: 
                   {i >= visibleLimit && <small aria-label="중간 순위 생략"> …</small>}
                 </td>
                 <th scope="row" className={s.club}>
-                  <span className={s.clubName}>
+                  <button
+                    type="button"
+                    className={s.clubName}
+                    aria-label={`${club.name} 팀 정보`}
+                    onClick={() => setTeam(id)}
+                  >
                     <ClubCrest w={w} id={id} size={16} />
                     <span>
                       {club.name}
                       {id === w.playerClub && <span className={s.myClub}>우리 팀</span>}
                     </span>
-                  </span>
+                  </button>
                 </th>
+                <td>
+                  <span className={s.teamOvr} data-tier={ovrTier(clubOvr(w, club))}>
+                    {clubOvr(w, club)}
+                  </span>
+                </td>
                 <td className={s.points}>{t.points}</td>
                 <td>{t.played}</td>
                 <td>{t.won}</td>
@@ -161,6 +175,7 @@ export function Standings({ w, ids, limit }: { w: World; ids: string[]; limit?: 
           )}
         </div>
       )}
+      {team && <TeamSheet w={w} id={team} ids={ids} onClose={() => setTeam(undefined)} />}
       {rules && (
         <p className={s.legend}>
           {rules.automatic > 0 && (

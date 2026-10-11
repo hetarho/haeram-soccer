@@ -303,3 +303,85 @@
     grid-template-columns: 58px minmax(0, 1fr);
   }
 }
+/* Tree or list switch above a knockout. */
+.viewSwitch {
+  display: inline-flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.viewSwitch button {
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+.viewSwitch button[aria-pressed='true'] {
+  color: var(--on-accent);
+  border-color: var(--accent-edge);
+  background: var(--accent-fill);
+}
+/* The knockout tree: rounds as columns, each tie centred between the two it came from. */
+.tree {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-bottom: 6px;
+}
+.treeColumn {
+  flex: 0 0 168px;
+  display: flex;
+  flex-direction: column;
+}
+.treeColumn h4 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+.treeColumn ul {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.treeTie,
+.treeEmpty {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface-deep);
+  font-size: 12px;
+}
+.treeTie > span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+}
+.treeTie em {
+  font-style: normal;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.treeTie small {
+  color: var(--gold);
+  font-size: 10px;
+}
+.treeEmpty {
+  min-height: 52px;
+  place-items: center;
+  border-style: dashed;
+  color: var(--text-faint);
+}
+.treeNote {
+  color: var(--text-muted);
+  font-size: 12px;
+}

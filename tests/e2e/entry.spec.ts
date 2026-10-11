@@ -42,7 +42,16 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   const mobileMenu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(mobileMenu).toBeVisible();
   // The match view has no tab: it opens only from a watch action.
-  const tabs = ['리그', '컵 대회', '클럽 기록실', '클럽 홈', '선수단', '이적 시장', '구단 운영'];
+  const tabs = [
+    '리그',
+    '컵 대회',
+    '클럽 기록실',
+    '클럽 홈',
+    '선수단',
+    '스태프',
+    '이적 시장',
+    '구단 운영',
+  ];
   await expect(mobileMenu.getByRole('button')).toHaveCount(tabs.length);
   expect(
     await mobileMenu
@@ -67,10 +76,12 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await menuButton.click();
   const allMenu = page.getByRole('dialog', { name: '전체 메뉴' });
   await expect(allMenu).toBeVisible();
-  // Tab destinations stay in the tab bar; staff is reached from the menu, not the squad page.
+  // Tab destinations, staff included, live in the tab bar; the menu lists none of them.
   await expect(allMenu.getByRole('button', { name: '선수단', exact: true })).toHaveCount(0);
-  await allMenu.getByRole('button', { name: '스태프', exact: true }).click();
+  await expect(allMenu.getByRole('button', { name: '스태프', exact: true })).toHaveCount(0);
+  await allMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(allMenu).toHaveCount(0);
+  await mobileMenu.getByRole('button', { name: '스태프', exact: true }).click();
   await expect(page.getByRole('heading', { name: '스태프', level: 2 })).toBeVisible();
   await expect(page.getByRole('group', { name: '선수단 메뉴' })).toHaveCount(0);
   await mobileMenu.getByRole('button', { name: '선수단', exact: true }).click();
@@ -87,6 +98,7 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   ).toHaveText([
     '순위',
     '클럽',
+    'OVR',
     '승점',
     '경기',
     '승',

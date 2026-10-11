@@ -223,6 +223,22 @@
   gap: 7px;
   min-width: 0;
 }
+/* The club name opens its team sheet; it reads as text until pressed. */
+button.clubName {
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+button.clubName > span {
+  text-decoration: underline dotted color-mix(in srgb, currentColor 40%, transparent);
+  text-underline-offset: 3px;
+}
 .myClub {
   display: inline-block;
   margin-left: 7px;
@@ -552,5 +568,97 @@
   .rival h4 {
     margin: 2px 0;
     font-size: 14px;
+  }
+}
+/* A club's overall rating in the table, tinted by card tier. */
+.teamOvr {
+  display: inline-block;
+  min-width: 28px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  border: 1px solid #d99a6266;
+  color: #d99a62;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.teamOvr[data-tier='silver'] {
+  border-color: #cfd8dc66;
+  color: #cfd8dc;
+}
+.teamOvr[data-tier='gold'] {
+  border-color: color-mix(in srgb, var(--gold) 50%, transparent);
+  color: var(--gold);
+}
+/* Team sheet */
+.teamHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.teamHead > div {
+  flex: 1;
+  min-width: 0;
+}
+.teamHead h2 {
+  margin: 0;
+  font-size: 20px;
+}
+.teamHead small {
+  color: var(--text-muted);
+}
+.teamFacts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 14px;
+}
+.teamFacts div {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--surface-deep);
+}
+.teamFacts dt {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+.teamFacts dd {
+  margin: 2px 0 0;
+  font-weight: 800;
+}
+.teamSub {
+  margin: 12px 0 6px;
+  font-size: 14px;
+}
+.teamList {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.teamList li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--surface-deep);
+  font-size: 13px;
+}
+.teamList em {
+  font-style: normal;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.teamNote {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+@media (max-width: 420px) {
+  .teamFacts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

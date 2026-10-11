@@ -12,7 +12,8 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   await page.getByRole('button', { name: '클럽 창단' }).click();
   const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(nav).toBeVisible();
-  await expect(nav.getByRole('button')).toHaveCount(7);
+  // Eight tabs, staff included, each still a 44 px touch target on a 360-390 px phone.
+  await expect(nav.getByRole('button')).toHaveCount(8);
   const metrics = await nav.getByRole('button').evaluateAll((buttons) =>
     buttons.map((button) => {
       const rect = button.getBoundingClientRect();

@@ -17,11 +17,11 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 4 | 4 | - | 2 |
-| WEB | 41 | 41 | - | 0 |
+| WEB | 42 | 42 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
 | CLUB | 15 | 15 | - | 0 |
 | MATCH | 7 | 7 | - | 0 |
-| LEAGUE | 3 | 3 | - | 0 |
+| LEAGUE | 4 | 4 | - | 0 |
 | STAFF | 9 | 9 | - | 0 |
 | ECON | 10 | 10 | - | 0 |
 | EURO | 2 | 2 | - | 0 |
@@ -38,6 +38,7 @@
 - Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
 
 ## log
+- 261012 WEB r42 LEAGUE r4 implemented directly: staff in the phone tab bar, OVR column and team sheets for every club, knockout tree view for cups, rival strength cap 92→99 with rare club projects (95+ rivals now appear by chance)
 - 261012 ECON r10 STAFF r9 WEB r41 SAVE r14 implemented directly: manager and coach ages, ceilings and growth (young hires as bets, decline from 60, managers retire at 70) with OVR/POT chips; staff out of the squad segments; manager departure choice; operations tabs with build areas pairing cards and dials (이적 기조→매각 기조); supporters follow reputation without a ceiling plus a global fan income; 20 facility levels at 250×1.38^(L−1); bankruptcy after 8 rounds in debt with a red status band and game-over page; rules 1.11.0, worst century checkpoint 1,237,356 bytes
 - 261012 CI fix: the league season list rode in the pinned tab band, which grew tall enough to cover controls scrolled up under it (Firefox 390x844 country selector); only the tabs stay pinned
 - 261011 WEB r40 implemented directly: OVR rating-card chips (bronze/silver/gold) on roster cards, academy rows and transfer candidates, OVR table column; roster view settings behind a header icon button (popover on desktop, bottom sheet on phones)
@@ -57,4 +58,3 @@
 - 261009 ARCH r4 implemented directly: npm→pnpm 10.34.6 workspaces, lockfile imported from package-lock, CI/Netlify/Playwright/benchmark fingerprints switched
 - 261009 WEB r31 CLUB r8 LEAGUE r2 STAFF r5 ECON r6 SAVE r6 implemented directly: 1/3/5-day paces stopping only for enabled events, season close after the final round with a review page and window ceremony, 46-game league income, business delegation, cash warnings, deferred youth promotions; rules 1.3.0; delegated 10-season sims 40/40 solvent (was 2/40 past year 8)
 - 261009 CI fixes: /transfers route allowlisted, read-only tab ownership hand-over, clock toggle ignores clicks right after an automatic stop; SAVE r5
-- 261009 WEB r30 CLUB r7 STAFF r4 implemented directly: seven tabs, home-only clock, team state, intervention levels, morale, motion; T041 done

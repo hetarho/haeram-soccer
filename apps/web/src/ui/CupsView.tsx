@@ -11,7 +11,12 @@ import { country } from '../../../../packages/catalogs/src/index';
 import { clubOf } from '../../../../packages/engine/src/world';
 import { fixtureDate } from '../../../../packages/engine/src/calendar';
 import { cupKey, domesticCupName } from '../../../../packages/engine/src/cups';
-import { legsOf, ownReached, tieAggregate } from '../../../../packages/engine/src/knockout';
+import {
+  legsOf,
+  ownReached,
+  roundLabel,
+  tieAggregate,
+} from '../../../../packages/engine/src/knockout';
 import { phaseGroups } from '../../../../packages/engine/src/europe';
 import { emptyTable } from '../../../../packages/engine/src/season';
 import { ClubCrest } from './ClubCrest';
@@ -68,8 +73,174 @@ function Tie({ w, tie, legs }: { w: World; tie: KnockoutRound['ties'][number]; l
   );
 }
 
+/** A slot of the tree: a drawn tie, a club through on a bye, or a tie still to be drawn. */
+type Slot = { tie: number } | { bye: string } | undefined;
+/** Rounds of 32 or fewer go on the tree; earlier rounds stay in the list. */
+const TREE_TIES = 16;
+/**
+ * The knockout as a tree (→WEB-40): from the first round of 32 or fewer to the final. Draws are
+ * open each round, so the tree is traced back from the latest drawn round: each tie's two clubs
+ * came out of one tie each in the round before (or a bye); rounds not drawn yet are empty slots.
+ */
+function treeColumns(rounds: KnockoutRound[]) {
+  const base = rounds.findIndex((round) => round.ties.length <= TREE_TIES);
+  if (base < 0) return undefined;
+  const last = rounds.length - 1;
+  const columns: { label: string; index?: number; slots: Slot[] }[] = [
+    { label: rounds[last].label, index: last, slots: rounds[last].ties.map((_, tie) => ({ tie })) },
+  ];
+  for (let r = last - 1; r >= base; r--) {
+    const where = new Map<string, number>();
+    rounds[r].ties.forEach((tie, t) => {
+      where.set(tie.home, t);
+      where.set(tie.away, t);
+    });
+    const slots: Slot[] = [];
+    for (const slot of columns[0].slots) {
+      if (!slot || !('tie' in slot)) {
+        slots.push(undefined, undefined);
+        continue;
+      }
+      const tie = rounds[r + 1].ties[slot.tie];
+      for (const club of [tie.home, tie.away]) {
+        const from = where.get(club);
+        slots.push(from === undefined ? { bye: club } : { tie: from });
+      }
+    }
+    columns.unshift({ label: rounds[r].label, index: r, slots });
+  }
+  // Rounds still to come halve until the final.
+  for (let ties = Math.ceil(rounds[last].ties.length / 2); ; ties = Math.ceil(ties / 2)) {
+    if (rounds[last].ties.length === 1) break;
+    columns.push({
+      label: roundLabel(ties * 2, rounds.length + columns.length),
+      slots: Array.from({ length: ties }, () => undefined),
+    });
+    if (ties === 1) break;
+  }
+  return columns;
+}
+function TreeTie({
+  w,
+  round,
+  index,
+  slot,
+  fixtures,
+  competition,
+}: {
+  w: World;
+  round?: KnockoutRound;
+  index?: number;
+  slot: Slot;
+  fixtures: Fixture[];
+  competition: string;
+}) {
+  if (!slot || !round || index === undefined)
+    return (
+      <li className={c.treeEmpty}>{slot && 'bye' in slot ? nameOf(w, slot.bye) : '추첨 전'}</li>
+    );
+  if ('bye' in slot)
+    return (
+      <li className={c.treeTie}>
+        <Club w={w} id={slot.bye} strong />
+        <small>부전승</small>
+      </li>
+    );
+  const tie = round.ties[slot.tie],
+    legs = legsOf(w, fixtures, competition, index, slot.tie),
+    played = legs.some((f) => f.score),
+    [home, away] = tieAggregate(tie, legs),
+    own = tie.home === w.playerClub || tie.away === w.playerClub;
+  return (
+    <li className={`${c.treeTie} ${own ? c.ownTie : ''}`}>
+      <span>
+        <Club w={w} id={tie.home} strong={tie.winner === tie.home} />
+        <em>{played ? home : ''}</em>
+      </span>
+      <span>
+        <Club w={w} id={tie.away} strong={tie.winner === tie.away} />
+        <em>{played ? away : ''}</em>
+      </span>
+      {(tie.decided === 'pens' || tie.decided === 'away') && (
+        <small>{tie.decided === 'pens' ? '승부차기' : '원정 다득점'}</small>
+      )}
+    </li>
+  );
+}
+function BracketTree({
+  w,
+  rounds,
+  fixtures,
+  competition,
+}: {
+  w: World;
+  rounds: KnockoutRound[];
+  fixtures: Fixture[];
+  competition: string;
+}) {
+  const columns = treeColumns(rounds);
+  if (!columns)
+    return (
+      <p className={c.treeNote}>
+        아직 초반 라운드예요. 32강부터 대진표가 채워지고, 지금은 목록에서 볼 수 있어요.
+      </p>
+    );
+  return (
+    <div className={c.tree} role="group" aria-label="대진표">
+      {columns.map((column, col) => (
+        <section key={`${column.label}-${col}`} className={c.treeColumn}>
+          <h4>{column.label}</h4>
+          <ul style={{ minHeight: `${columns[0].slots.length * 64}px` }}>
+            {column.slots.map((slot, i) => (
+              <TreeTie
+                key={i}
+                w={w}
+                round={column.index === undefined ? undefined : rounds[column.index]}
+                index={column.index}
+                slot={slot}
+                fixtures={fixtures}
+                competition={competition}
+              />
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  );
+}
+
+/** A knockout as a tree or as rounds, latest first; long early rounds fold behind our tie. */
+function Bracket(props: {
+  w: World;
+  rounds: KnockoutRound[];
+  fixtures: Fixture[];
+  competition: string;
+}) {
+  // The tree opens once it has drawn ties to show; early mass rounds read better as a list.
+  const [view, setView] = useState<'tree' | 'list'>(() =>
+    (props.rounds.at(-1)?.ties.length ?? 0) <= TREE_TIES ? 'tree' : 'list',
+  );
+  if (!props.rounds.length) return null;
+  return (
+    <>
+      <div className={c.viewSwitch} role="group" aria-label="대진 보기">
+        {(
+          [
+            ['tree', '대진표'],
+            ['list', '라운드별'],
+          ] as const
+        ).map(([id, label]) => (
+          <button key={id} aria-pressed={view === id} onClick={() => setView(id)}>
+            {label}
+          </button>
+        ))}
+      </div>
+      {view === 'tree' ? <BracketTree {...props} /> : <RoundList {...props} />}
+    </>
+  );
+}
 /** Knockout rounds, latest first; long early rounds fold behind our tie. */
-function Bracket({
+function RoundList({
   w,
   rounds,
   fixtures,

@@ -35,6 +35,7 @@ const club = z.object({
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
   representative: z.boolean().optional(),
   elo: z.number().finite().min(0).max(4000).optional(),
+  project: z.number().finite().min(0).max(60).optional(),
 });
 const player = z.object({
   id,

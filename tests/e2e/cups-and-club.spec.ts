@@ -71,10 +71,9 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     expect(await horizontalOverflow(page)).toBe(0);
 
     // Below level 4 the owner hires coaches himself; the department dials appear once delegated.
-    // Staff is its own destination, reached from the menu on phones.
-    await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+    // Staff is its own destination in the phone tab bar.
     await page
-      .getByRole('dialog', { name: '전체 메뉴' })
+      .getByRole('navigation', { name: '모바일 게임 메뉴' })
       .getByRole('button', { name: '스태프', exact: true })
       .click();
     await expect(page.getByTestId('coaching-mode')).toContainText('직접');
@@ -91,6 +90,39 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
         .getByRole('radiogroup', { name: '수비 코치 투자 수준' })
         .getByRole('radio', { name: /균형/ }),
     ).toHaveAttribute('aria-checked', 'true');
+    expect(await horizontalOverflow(page)).toBe(0);
+  });
+
+  test('rates every league club and opens any club from the table', async ({ page }) => {
+    await found(page, 'rivals-journey');
+    await page
+      .getByRole('navigation', { name: '모바일 게임 메뉴' })
+      .getByRole('button', { name: '리그', exact: true })
+      .click();
+    await page.getByRole('tab', { name: '순위표', exact: true }).click();
+    const table = page.getByRole('table', { name: '리그 순위표' });
+    await expect(table.getByRole('columnheader', { name: 'OVR' })).toBeVisible();
+    await table
+      .getByRole('button', { name: /팀 정보$/ })
+      .nth(1)
+      .click();
+    const sheet = page.getByRole('dialog');
+    await expect(sheet).toContainText('클럽 Elo');
+    await expect(sheet).toContainText('서포터');
+    await expect(sheet).toContainText('OVR');
+    await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
+    // The cup opens as a list in its mass first round; the tree waits for the last 32.
+    await page
+      .getByRole('navigation', { name: '모바일 게임 메뉴' })
+      .getByRole('button', { name: '컵 대회', exact: true })
+      .click();
+    const switcher = page.getByRole('group', { name: '대진 보기' });
+    await expect(switcher.getByRole('button', { name: '라운드별' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await switcher.getByRole('button', { name: '대진표' }).click();
+    await expect(page.getByText(/32강부터 대진표가 채워지고/)).toBeVisible();
     expect(await horizontalOverflow(page)).toBe(0);
   });
 

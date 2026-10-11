@@ -2,6 +2,7 @@ import type { Club, World } from '../../contracts/src/types';
 import { country } from '../../catalogs/src/index';
 import { clamp, random } from './primitives';
 import { stature, tierLevel } from './world';
+import { pushInbox } from './inbox';
 
 /**
  * Between seasons every club nobody owns rises or falls (→LEAGUE-10): it drifts toward the level
@@ -21,6 +22,13 @@ export const EVOLUTION = {
   /** Chance and size of a takeover or a financial crisis each summer. */
   takeover: { chance: 0.015, min: 4, max: 8 },
   crisis: { chance: 0.015, min: 4, max: 8 },
+  /**
+   * A rare project that remakes a club (a rich owner, a golden generation): its level rises for
+   * years, fading 15% a summer, so any club can build a side as strong as the owner's.
+   */
+  project: { chance: 0.004, min: 8, max: 18, fade: 0.85 },
+  /** No club nobody owns is capped below the very best an owner can build. */
+  ceiling: 99,
 } as const;
 
 /**
@@ -42,10 +50,14 @@ export function successBonus(w: World, c: Club) {
 }
 /** The strength a club settles toward in its current division. */
 export function levelOf(w: World, c: Club) {
-  if (c.id.startsWith('euro:')) return 68 + stature(w.seed, c.id) + successBonus(w, c);
+  if (c.id.startsWith('euro:'))
+    return 68 + stature(w.seed, c.id) + successBonus(w, c) + (c.project ?? 0);
   const depth = country(c.country).groups.length;
   return (
-    tierLevel(Math.min(c.tier, depth), c.tier >= depth) + stature(w.seed, c.id) + successBonus(w, c)
+    tierLevel(Math.min(c.tier, depth), c.tier >= depth) +
+    stature(w.seed, c.id) +
+    successBonus(w, c) +
+    (c.project ?? 0)
   );
 }
 
@@ -54,6 +66,18 @@ export function evolveClubs(w: World, tiers: ReadonlyMap<string, number>) {
   const e = EVOLUTION;
   for (const c of w.clubs) {
     if (c.id === w.playerClub) continue;
+    // A project fades each summer; a new one starts from its own stream so the rest stays put.
+    if (c.project !== undefined) {
+      c.project = Math.round(c.project * e.project.fade * 10) / 10;
+      if (c.project < 1) delete c.project;
+    }
+    const p = random(`${w.seed}:project:${w.year}:${c.id}`);
+    if (p() < e.project.chance) {
+      c.project = Math.round(
+        (c.project ?? 0) + e.project.min + p() * (e.project.max - e.project.min),
+      );
+      announceProject(w, c);
+    }
     const r = random(`${w.seed}:evolve:${w.year}:${c.id}`);
     const target = levelOf(w, c),
       gap = target - c.strength,
@@ -65,11 +89,22 @@ export function evolveClubs(w: World, tiers: ReadonlyMap<string, number>) {
     if (event < e.takeover.chance) next += e.takeover.min + r() * (e.takeover.max - e.takeover.min);
     else if (event < e.takeover.chance + e.crisis.chance)
       next -= e.crisis.min + r() * (e.crisis.max - e.crisis.min);
-    c.strength = Math.round(clamp(next, 15, 92));
+    c.strength = Math.round(clamp(next, 15, e.ceiling));
     if (!c.id.startsWith('euro:')) {
       const depth = country(c.country).groups.length;
       const reputation = c.tier >= depth ? 8 : Math.max(8, 75 - c.tier * 15);
       c.reputation = Math.round(clamp(c.reputation + (reputation - c.reputation) * 0.3));
     }
   }
+}
+/** A rival project in the owner's country and within a division of us makes the club news. */
+function announceProject(w: World, c: Club) {
+  const own = w.clubs.find((club) => club.id === w.playerClub);
+  if (!own || c.country !== own.country || Math.abs(c.tier - own.tier) > 1) return;
+  pushInbox(w, {
+    kind: 'staff-report',
+    title: `${c.name}, 대형 투자 유치`,
+    detail: `새 구단주와 대규모 투자로 앞으로 몇 시즌 동안 전력이 크게 오를 전망이에요. 지금 전력 ${c.strength}.`,
+    attention: false,
+  });
 }

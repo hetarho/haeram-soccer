@@ -308,6 +308,7 @@ const TABS: [Page, string, string, Page[]][] = [
   ['history', '기록', '클럽 기록실', ['history']],
   ['dashboard', '홈', '클럽 홈', ['dashboard']],
   ['squad', '선수단', '선수단', ['squad']],
+  ['manager', '스태프', '스태프', ['manager']],
   ['transfers', '이적', '이적 시장', ['transfers']],
   ['business', '운영', '구단 운영', ['business']],
 ];
