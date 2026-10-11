@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { stopOnlyFor } from './events';
 import { horizontalOverflow, settle } from './layout';
 
-test('mobile clock exposes every pace as a touch target and advances the chosen days', async ({
+test('mobile clock exposes every pace as a touch target and advances at the chosen speed', async ({
   page,
 }) => {
   // The paces are measured against match eves; offers from other clubs must not stop them.
@@ -17,8 +17,9 @@ test('mobile clock exposes every pace as a touch target and advances the chosen 
   const pace = (label: string) =>
     controls.getByRole('button', { name: `${label} 속도로 자동 진행`, exact: true });
   const daily = pace('1초에 하루'),
-    threeDays = pace('1초에 3일'),
-    fiveDays = pace('1초에 5일'),
+    double = pace('0.5초에 하루'),
+    five = pace('0.2초에 하루'),
+    ten = pace('0.1초에 하루'),
     toggle = controls.getByRole('button', { name: '자동 진행 시작', exact: true }),
     stop = controls.getByRole('button', { name: '자동 진행 정지', exact: true }),
     level = controls.getByRole('button', { name: /^개입 수준/ });
@@ -29,8 +30,9 @@ test('mobile clock exposes every pace as a touch target and advances the chosen 
     [toggle, 44],
     [level, 44],
     [daily, 32],
-    [threeDays, 32],
-    [fiveDays, 32],
+    [double, 32],
+    [five, 32],
+    [ten, 32],
   ] as const) {
     const rect = await control.boundingBox();
     expect(rect!.width).toBeGreaterThanOrEqual(min);
@@ -40,7 +42,7 @@ test('mobile clock exposes every pace as a touch target and advances the chosen 
     expect(rect!.y + rect!.height).toBeLessThan(740);
   }
   const toggleBox = (await toggle.boundingBox())!;
-  for (const chip of [daily, threeDays, fiveDays]) {
+  for (const chip of [daily, double, five, ten]) {
     const rect = (await chip.boundingBox())!;
     expect(rect.height).toBeLessThan(toggleBox.height);
     const edge = await chip.evaluate((element) => {
@@ -58,21 +60,19 @@ test('mobile clock exposes every pace as a touch target and advances the chosen 
   await expect(date).toHaveText('1950년 8월 2일');
   await stop.click();
   await expect(date).toHaveText('1950년 8월 2일');
-  await threeDays.click();
-  await expect(threeDays).toHaveAttribute('aria-pressed', 'true');
+  // x2 is a day every half second: it moves on and stops with the owner, short of the match eve.
+  await double.click();
+  await expect(double).toHaveAttribute('aria-pressed', 'true');
   await expect(daily).toHaveAttribute('aria-pressed', 'false');
-  await expect(date).not.toHaveText('1950년 8월 2일');
+  await expect(date).toHaveText('1950년 8월 3일');
   await stop.click();
-  // A three-day step moves up to three days and ends early on a day club news arrives.
   const stepped = await date.innerText();
-  expect(['1950년 8월 3일', '1950년 8월 4일', '1950년 8월 5일', '1950년 8월 6일']).toContain(
-    stepped,
-  );
+  expect(['1950년 8월 3일', '1950년 8월 4일']).toContain(stepped);
   await page.waitForTimeout(1200);
   await expect(date).toHaveText(stepped);
-  // A five-day step lands on the eve of our first match and the clock stops there.
-  await fiveDays.click();
-  await expect(fiveDays).toHaveAttribute('aria-pressed', 'true');
+  // x10 runs on to the eve of our first match and the clock stops there.
+  await ten.click();
+  await expect(ten).toHaveAttribute('aria-pressed', 'true');
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
   await expect(date).toHaveText('1950년 8월 7일');
@@ -178,8 +178,8 @@ test('mobile intervention levels set clock stops and staff delegation, and persi
   await expect(dialog).toHaveCount(0);
   await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await expect(date).toHaveText('1950년 8월 1일');
-  // Without match stops, the 3-day pace plays straight through the first match day.
-  await page.getByRole('button', { name: '1초에 3일 속도로 자동 진행', exact: true }).click();
+  // Without match stops, x10 plays straight through the first match day.
+  await page.getByRole('button', { name: '0.1초에 하루 속도로 자동 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toContainText('라운드 1');
   await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
   await expect(page.getByTestId('event-card')).toHaveCount(0);

@@ -1,4 +1,4 @@
-/* The clock row reads "▶ · 1 3 5 · 개입": a big play toggle, a recessed pace track, the level. */
+/* The clock row reads "▶ · x1 x2 x5 x10 · 개입": a play toggle, a recessed pace track, the level. */
 
 /* ===== Pace track: secondary chips that still take the track's height as their touch area. ===== */
 .paces {
@@ -48,6 +48,17 @@
   box-shadow: 0 2px 0 var(--gold-edge);
 }
 
+/* Four chips on a phone still leave the longest date ("2025년 11월 28일") its full width. */
+@media (max-width: 420px) {
+  .paces {
+    gap: 1px;
+    padding: 0 2px;
+  }
+  .paces .pace.pace {
+    min-width: 32px;
+    padding: 0 4px;
+  }
+}
 @media (max-width: 359px) {
   .paces {
     padding: 0 2px;

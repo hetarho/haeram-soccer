@@ -40,10 +40,10 @@ test('keeps league views and nodes across silent progression from home and updat
   const mini = page.getByTestId('mini-clock');
   await expect(mini.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
   await menu.getByRole('button', { name: '클럽 홈', exact: true }).click();
-  const threeDays = page.getByRole('button', { name: '1초에 3일 속도로 자동 진행', exact: true });
-  await threeDays.click();
-  await expect(threeDays).toHaveAttribute('aria-pressed', 'true');
-  await expect(date).toHaveText('1950년 8월 4일');
+  const double = page.getByRole('button', { name: '0.5초에 하루 속도로 자동 진행', exact: true });
+  await double.click();
+  await expect(double).toHaveAttribute('aria-pressed', 'true');
+  await expect(date).toHaveText('1950년 8월 3일');
   // Looking at the league keeps the run going; the selected statistics view is kept.
   await menu.getByRole('button', { name: '리그', exact: true }).click();
   await expect(mini.getByRole('button', { name: '자동 진행 정지' })).toBeVisible();

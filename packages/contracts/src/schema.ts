@@ -63,7 +63,7 @@ const player = z.object({
       label: text,
     })
     .optional(),
-  listed: z.union([z.literal(90), z.literal(110), z.literal(140)]).optional(),
+  stance: z.enum(['listed', 'untouchable']).optional(),
   retiring: z.number().int().optional(),
 });
 const manager = z.object({
@@ -409,7 +409,9 @@ export const worldSchema: z.ZodType<World> = z.object({
       staff: z.boolean().optional(),
     })
     .optional(),
-  coaching: z.union([z.literal(1), z.literal(2), z.literal(3)]).optional(),
+  coaching: z
+    .partialRecord(staffRole, z.union([z.literal(1), z.literal(2), z.literal(3)]))
+    .optional(),
   bids: z.array(bid).max(200).optional(),
   morale: z.number().finite().min(0).max(100).optional(),
   build: clubBuildSchema.optional(),
@@ -505,6 +507,32 @@ function detailConsistent(m: World['ownMatches'][number], side: 0 | 1) {
   return m.players.length !== 11 || keyPasses === m.detail[side][TD.keyPasses];
 }
 /** Rules 1.6–1.7 kept one of six visions; it loads as the build preset of the same name. */
+/** Rules 1.9 saved one coaching level for every department and listed players at an ask. */
+function legacyMarket(input: unknown): unknown {
+  if (!input || typeof input !== 'object') return input;
+  const w = input as Record<string, unknown>;
+  const flat = typeof w.coaching === 'number';
+  const listed =
+    Array.isArray(w.players) && w.players.some((p) => p && typeof p === 'object' && 'listed' in p);
+  if (!flat && !listed) return input;
+  return {
+    ...w,
+    ...(flat
+      ? {
+          coaching: Object.fromEntries(staffRole.options.map((role) => [role, w.coaching])),
+        }
+      : {}),
+    ...(listed
+      ? {
+          players: (w.players as Record<string, unknown>[]).map((p) => {
+            if (!p || typeof p !== 'object' || !('listed' in p)) return p;
+            const { listed, ...rest } = p;
+            return listed ? { ...rest, stance: 'listed' } : rest;
+          }),
+        }
+      : {}),
+  };
+}
 function legacyVision(input: unknown): unknown {
   if (!input || typeof input !== 'object' || !('vision' in input || 'visionYear' in input))
     return input;
@@ -521,7 +549,7 @@ function legacyVision(input: unknown): unknown {
 }
 
 export function validateWorld(input: unknown): World {
-  const w = worldSchema.parse(legacyVision(input));
+  const w = worldSchema.parse(legacyMarket(legacyVision(input)));
   const ids = new Set(w.clubs.map((c) => c.id));
   if (ids.size !== w.clubs.length || !ids.has(w.playerClub))
     throw new Error('저장된 클럽 식별자가 올바르지 않습니다.');

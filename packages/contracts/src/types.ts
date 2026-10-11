@@ -27,8 +27,8 @@ export type ManagerStyle =
 export type DelegationKey = 'training' | 'academy' | 'transfers' | 'business' | 'staff';
 /** Coaching investment (→STAFF-15): 1 volunteers only, 2 mid-market coaches, 3 the best available. */
 export type CoachingLevel = 1 | 2 | 3;
-/** Asking price for a listed player as a percentage of his value (→CLUB-22). */
-export type ListingAsk = 90 | 110 | 140;
+/** A player's standing on the market (→CLUB-22): listed to sell, open to offers, or untouchable. */
+export type TransferStance = 'listed' | 'open' | 'untouchable';
 /** Owner requests to the manager and staff (→CLUB-20). */
 export type CareKind =
   | 'rest-day'
@@ -90,8 +90,8 @@ export interface Player {
   loanUntil?: number;
   /** Out injured until this season day (→CLUB-23); `year` is the season it happened in. */
   injury?: { year: number; day: number; label: string };
-  /** On the transfer list at this asking percentage of value (→CLUB-22). */
-  listed?: ListingAsk;
+  /** Market standing (→CLUB-22); absent means open to offers. */
+  stance?: Exclude<TransferStance, 'open'>;
   /** Season year whose close ends the career he has announced he will finish (→CLUB-3). */
   retiring?: number;
 }
@@ -465,8 +465,8 @@ export interface World {
   academy?: Academy;
   /** Decisions the staff makes on the owner's behalf; absent keys mean the owner decides. */
   delegation?: Partial<Record<DelegationKey, boolean>>;
-  /** Coaching investment the staff hire to (→STAFF-15); absent means 2. */
-  coaching?: CoachingLevel;
+  /** Coaching investment per department that delegated staff hire to (→STAFF-15); absent is 2. */
+  coaching?: Partial<Record<StaffRole, CoachingLevel>>;
   bids?: TransferBid[];
   inbox?: InboxItem[];
   /** Squad morale 0–100; absent in older saves, which keep pre-morale strength. */
@@ -524,7 +524,7 @@ export type Command =
   | { type: 'hire-staff'; role: StaffRole; candidate: number }
   | { type: 'release-staff'; role: StaffRole }
   | { type: 'renew-staff'; role: StaffRole }
-  | { type: 'coaching'; level: CoachingLevel }
+  | { type: 'coaching'; role: StaffRole; level: CoachingLevel }
   | { type: 'promote-youth'; id: string }
   | { type: 'release-youth'; id: string }
   | { type: 'delegate'; key: DelegationKey; value: boolean }
@@ -533,8 +533,8 @@ export type Command =
   | { type: 'read-inbox'; id?: string }
   | { type: 'hire'; candidate: number }
   | { type: 'recruit'; candidate: number; loan?: boolean }
-  /** Lists a player at an asking percentage of his value, or takes him off the list (null). */
-  | { type: 'list-player'; id: string; ask: ListingAsk | null }
+  /** Lists a player, opens him to offers or declares him untouchable. */
+  | { type: 'transfer-stance'; id: string; stance: TransferStance }
   | { type: 'campaign'; kind: string }
   | { type: 'sponsor'; kind: Sponsor['kind'] }
   | { type: 'facility' }

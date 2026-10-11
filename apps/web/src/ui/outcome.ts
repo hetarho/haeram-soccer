@@ -36,7 +36,7 @@ const titles: Record<Command['type'], string> = {
   training: '훈련 방향을 바꿨어요',
   hire: '새 감독을 선임했어요',
   recruit: '선수를 영입했어요',
-  'list-player': '이적 명단을 바꿨어요',
+  'transfer-stance': '선수의 이적 상태를 바꿨어요',
   campaign: '마케팅 캠페인을 시작했어요',
   sponsor: '후원 계약을 맺었어요',
   facility: '구장 시설을 확장했어요',
@@ -47,7 +47,7 @@ const titles: Record<Command['type'], string> = {
   'hire-staff': '새 코치를 선임했어요',
   'release-staff': '코치와 계약을 정리했어요',
   'renew-staff': '코치와 재계약했어요',
-  coaching: '코치진 투자 수준을 바꿨어요',
+  coaching: '부서 코치진 투자를 바꿨어요',
   'promote-youth': '유소년을 1군으로 올렸어요',
   'release-youth': '유소년을 내보냈어요',
   delegate: '스태프 위임을 바꿨어요',
@@ -65,8 +65,9 @@ const notes: Partial<Record<Command['type'], string>> = {
   ticket: '다음 홈 경기 관중과 입장 수입부터 반영돼요.',
   policy: '다음 라운드 정산부터 비용과 효과가 반영돼요.',
   build: '빌드는 시즌마다 한 번만 바꿀 수 있어요.',
-  'list-player': '이적시장이 열려 있을 때 다른 구단의 제안이 들어와요. 수락해야 이적이 성사돼요.',
-  coaching: '코치 선임을 스태프에게 맡겼다면 다음 계약부터 이 수준으로 고용해요.',
+  'transfer-stance': '제안은 이적시장이 열려 있을 때 들어오고, 수락해야 이적이 성사돼요.',
+  coaching:
+    '개입 4에서는 스태프가 이 수준으로 공석·무급 자리를 바로 채우고, 계약이 끝나면 재계약하거나 교체해요.',
 };
 const trainingLabel: Record<NonNullable<World['training']>, string> = {
   balanced: '균형 훈련',

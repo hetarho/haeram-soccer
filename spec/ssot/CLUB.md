@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r14 | Define the implemented browser-demo behavior for squad and growth.
+> r15 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating equals its league's average club XI (±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -67,14 +67,14 @@
   | 우리 동네 아이들 | 성골 유스 or 유소년 클럽 제휴 · 지역 밀착 · 가족 같은 클럽 | morale baseline +2, intake potential +2 |
   | 트레이딩 머신 | 데이터 스카우팅 · 1군 직행 경로 · 셀링 클럽 or 쇼케이스 | candidate potential +2, academy growth ×1.1 |
 
-- CLUB-22 [o] The transfer list: the owner lists a player at an asking price of 90%, 110% or 140% of his value, any time; offers come only while a window is open and only from real clubs (→CLUB-18), and a sale happens only when one is accepted.
-  | ask | label | daily offer chance | offer as share of the ask |
-  |---|---|---|---|
-  | 90% | 빠른 매각 | 16% | 85–100% |
-  | 110% | 시장가 | 8% | 90–105% |
-  | 140% | 높은 호가 | 3.5% | 92–108% |
-  - the chance is multiplied by appeal 0.6 + (ability − 35)/60, +0.25 aged ≤ 23, −0.2 aged 31+, within 0.35–1.5; the listing sheet shows the asking fee and the average days to a first offer.
-  - each listed player has at most one open offer; delegated staff (→STAFF-13) accept a listed player's offer within 5% of the ask.
+- CLUB-22 [o] Every player has a transfer stance the owner switches any time; offers come only while a window is open and only from real clubs (→CLUB-18), and a sale happens only when one is accepted. ← one tap says how the club treats offers for him, instead of an asking price per listing
+  - 이적 명단 (listed, 적극 매도): draws its own offers at 10% a window day × appeal, fee 85–105% of value × build sale fee; delegated staff accept them
+  - 협상 가능 (open, default): only unsolicited bids; delegated staff apply the sale bar (→CLUB-18)
+  - 이적 불가 (untouchable): any bid below 150% of value is refused unseen, whoever decides; from 150% the owner is asked, or with transfers delegated the staff and manager decide (→CLUB-24)
+  - loaned players and announced retirements have no stance; a retirement announcement clears it
+  - a 1.9 listing at an ask loads as listed
+  - appeal is 0.6 + (ability − 35)/60, +0.25 aged ≤ 23, −0.2 aged 31+, within 0.35–1.5; the stance sheet shows the average days to a first offer.
+  - each listed player has at most one open offer; listed players are not targets of unsolicited bids.
 - CLUB-23 [o] Own players can be injured in a match: each player who played has 1.8% × (1 + excess fatigue/25) × (1 + max(0, 55 − stamina)/150) × 1.15 when pressing, from the match's own stream (about one injury every five matches).
   | share | days out | examples |
   |---|---|---|
@@ -83,6 +83,7 @@
   | 12% | 36–90 | 발목 인대, 중족골 골절 |
   | 3% | 120–240 | 전방 십자인대 파열, 아킬레스건 |
   - injured players are left out of the automatic and saved XI while eleven fit players exist; the medical report is an inbox item and an event; healed injuries clear.
+- CLUB-24 [o] With transfers delegated, a bid of 150%+ for an untouchable player is decided by the staff with the manager: the build's market card sets the price (셀링 클럽 150%, 쇼케이스 175%, standard 200%, 강경 협상 225%, 핵심 지키기 never), a runway under 30 weeks lowers it 25 points, a starter without a bench player of his role within 3 ability raises it 25, and a runway under the 13-week warning sells. The report states the price and each step. ← the owner's club identity and cash, not a fixed number, decide when a star is let go
 
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
@@ -91,6 +92,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r15 261011 CLUB-22✎ transfer list at a 90/110/140% ask→a stance per player (listed 85–105% offers, open, untouchable refusing below 150%); CLUB-24+ delegated verdict on big offers for untouchable players
 - r14 261011 CLUB-3✎ retire at 36→spring announcement with age chances, retirement at the close, 41 forced; CLUB-4✎ instant sale→sale only by an accepted offer; CLUB-12✎ +yearly potential breakthroughs and stalls, attributes capped at 99; CLUB-18✎ bidders from the same country and division→clubs suited to the player; CLUB-22+ transfer list; CLUB-23+ injuries
 - r13 261010 CLUB-21✎ 머니볼/상업 제국 vision conditions→build cards, +우리 동네 아이들 +트레이딩 머신 cross-slot combos
 - r12 261010 CLUB-18✎ delegated sales at a flat 130%→a sale bar of 130% (prospects 200%) lowered for age, contract and cash runway

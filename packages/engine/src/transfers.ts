@@ -1,4 +1,4 @@
-import type { Club, ListingAsk, Player, TransferBid, World } from '../../contracts/src/types';
+import type { Club, Player, TransferBid, TransferStance, World } from '../../contracts/src/types';
 import { currency } from '../../catalogs/src/index';
 import { currentDay, SEASON_END_DAY, seasonDayLabel, seasonDayOf } from './calendar';
 import { clamp, compareIds, hash, integer, random, ratio } from './primitives';
@@ -8,7 +8,7 @@ import { operatingCosts } from './finance';
 import { fixedCostRunway } from './investment';
 import { staffEffects } from './staff';
 import { managerStyleEffects } from './styles';
-import { buildEffects } from './build';
+import { buildEffects, buildOf, cardOf } from './build';
 import { pushInbox } from './inbox';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -180,7 +180,7 @@ function saleBlocker(w: World, p: Player | undefined) {
 function completeSale(w: World, bid: TransferBid, p: Player) {
   const club = w.clubs.find((c) => c.id === bid.club);
   p.status = 'sold';
-  delete p.listed;
+  delete p.stance;
   credit(w, bid.fee);
   addEvent(
     w,
@@ -513,60 +513,101 @@ export function suitorFor(w: World, p: Player, r: () => number): Club | undefine
   return pool[pool.length - 1];
 }
 /**
- * The transfer list (→CLUB-22): a listed player draws offers only from real clubs, and only while
- * a window is open; the lower the asking price, the sooner one comes.
+ * Market stance (→CLUB-22): a listed player draws offers from real clubs while a window is open
+ * and delegated staff take them; an open player sells only at the staff's sale bar (→CLUB-18); an
+ * untouchable player turns down anything below UNTOUCHABLE_BAR, and a bigger offer goes to the
+ * owner, or to the staff and manager when transfers are delegated.
  */
-export const LISTING: Record<
-  ListingAsk,
-  { label: string; chance: number; low: number; high: number }
-> = {
-  90: { label: '빠른 매각', chance: 0.16, low: 0.85, high: 1 },
-  110: { label: '시장가', chance: 0.08, low: 0.9, high: 1.05 },
-  140: { label: '높은 호가', chance: 0.035, low: 0.92, high: 1.08 },
+export const TRANSFER_STANCES: readonly TransferStance[] = ['listed', 'open', 'untouchable'];
+export const STANCE_INFO: Record<TransferStance, { label: string; tag: string; event: string }> = {
+  listed: { label: '이적 명단', tag: '적극 매도', event: '이적 명단 등록' },
+  open: { label: '협상 가능', tag: '좋은 제안이면 검토', event: '협상 가능으로 전환' },
+  untouchable: { label: '이적 불가', tag: '거액 제안만 검토', event: '이적 불가 선언' },
 };
+export function transferStance(p: Player): TransferStance {
+  return p.stance ?? 'open';
+}
+/** Daily offer chance for a listed player of ordinary appeal, and the fee band as a share of value. */
+export const LISTED_OFFER = { chance: 0.1, low: 0.85, high: 1.05 };
+/** Offers for an untouchable player below this percentage of his value are refused unseen. */
+export const UNTOUCHABLE_BAR = 150;
 /** How much a player's profile draws buyers: good and young players attract more interest. */
 export function listingAppeal(w: World, p: Player) {
   const age = w.year - p.born;
   return clamp(0.6 + (overall(p) - 35) / 60 + (age <= 23 ? 0.25 : age >= 31 ? -0.2 : 0), 0.35, 1.5);
 }
-/** Expected days until the first offer for a listed player, for the listing preview. */
-export function expectedOfferDays(w: World, p: Player, ask: ListingAsk) {
-  return Math.round(1 / (LISTING[ask].chance * listingAppeal(w, p)));
+/** Expected window days until the first offer for a listed player, for the stance sheet. */
+export function expectedOfferDays(w: World, p: Player) {
+  return Math.round(1 / (LISTED_OFFER.chance * listingAppeal(w, p)));
 }
-export function listPlayer(w: World, id: string, ask: ListingAsk | null) {
+export function setTransferStance(w: World, id: string, stance: TransferStance) {
   const p = w.players.find((x) => x.id === id && x.status === 'active');
-  if (!p || p.loanUntil) throw new Error('이적 명단에 올릴 수 있는 선수가 아닙니다.');
-  if (ask === null) {
-    if (!p.listed) return;
-    delete p.listed;
-    addEvent(w, 'transfer-list', `${p.name} 이적 명단 제외`, '다른 구단의 제안을 더 받지 않아요.');
-    return;
-  }
-  if (!Object.hasOwn(LISTING, ask)) throw new Error('호가 단계를 확인하세요.');
-  if (p.retiring !== undefined) throw new Error('은퇴를 앞둔 선수는 이적 명단에 올릴 수 없어요.');
-  if (p.listed === ask) return;
-  p.listed = ask;
+  if (!p || p.loanUntil) throw new Error('이적 상태를 정할 수 있는 선수가 아닙니다.');
+  if (!TRANSFER_STANCES.includes(stance)) throw new Error('이적 상태를 확인하세요.');
+  if (p.retiring !== undefined) throw new Error('은퇴를 앞둔 선수는 이적 상태를 바꿀 수 없어요.');
+  if (transferStance(p) === stance) return;
+  if (stance === 'open') delete p.stance;
+  else p.stance = stance;
   const value = playerValue(w, p);
   addEvent(
     w,
     'transfer-list',
-    `${p.name} 이적 명단 등록`,
-    `${LISTING[ask].label} · 평가 가치 ${moneyLabel(w, value)}의 ${ask}% · 이적시장 기간에 다른 구단의 제안이 와요.`,
+    `${p.name} ${STANCE_INFO[stance].event}`,
+    stance === 'listed'
+      ? `적극 매도 · 평가 가치 ${moneyLabel(w, value)} · 이적시장 기간에 실제 구단의 제안을 받아요.`
+      : stance === 'untouchable'
+        ? `평가 가치의 ${UNTOUCHABLE_BAR}%(${moneyLabel(w, ratio(value, BigInt(UNTOUCHABLE_BAR), 100n))}) 미만 제안은 바로 거절하고, 그 이상 거액 제안만 검토해요.`
+        : `평가 가치 ${moneyLabel(w, value)} · 다른 구단의 제안을 검토해요.`,
   );
+}
+/**
+ * The fee, as a percentage of value, at which delegated staff and the manager let an untouchable
+ * player go, by the build's market card; keeping the core sells at no price.
+ */
+export const UNTOUCHABLE_PRICE = { standard: 200, selling: 150, showcase: 175, hardball: 225 };
+/**
+ * The staff and manager's answer to a big offer for an untouchable player when transfers are
+ * delegated: the market card sets the price, a tight cash runway lowers it by 25 points, a cash
+ * crisis sells, and the manager holds out 25 points longer for a starter nobody can replace.
+ */
+export function untouchableVerdict(w: World, offered: number, essential: boolean) {
+  const runway = fixedCostRunway(w.cash, operatingCosts(w).annual),
+    market = w.build?.market,
+    card = cardOf(buildOf(w), 'market').label;
+  if (runway < CASH_WARNING_ROUNDS)
+    return { accept: true, reason: `자금 여력 ${runway}주의 운영자금 위기라 매각을 택했어요.` };
+  if (market === 'hold')
+    return { accept: false, reason: `이적 기조가 ${card}라 어떤 금액에도 지키기로 했어요.` };
+  const base = UNTOUCHABLE_PRICE[market ?? 'standard'],
+    steps = [`이적 기조 ${card} ${base}%`];
+  let bar = base;
+  if (runway < 30) {
+    bar -= 25;
+    steps.push('운영자금 빠듯 −25%p');
+  }
+  if (essential) {
+    bar += 25;
+    steps.push('감독이 대체할 선수가 없다며 반대 +25%p');
+  }
+  const accept = offered >= bar;
+  return {
+    accept,
+    reason: `평가 가치의 ${offered}%로 기준 ${bar}%(${steps.join(' · ')})${accept ? '를 넘어 매각했어요.' : '에 못 미쳐 지키기로 했어요.'}`,
+  };
 }
 function listedOffers(w: World, day: number, until: number) {
   const pending = new Set(
     (w.bids || []).filter((b) => b.direction === 'in' && isOpen(b)).map((b) => b.playerId),
   );
   for (const p of activePlayers(w)) {
-    if (!p.listed || pending.has(p.id) || saleBlocker(w, p)) continue;
-    const ask = LISTING[p.listed];
+    if (p.stance !== 'listed' || pending.has(p.id) || saleBlocker(w, p)) continue;
     const r = random(`${w.seed}:listed:${p.id}:${w.year}:${day}`);
-    if (r() >= ask.chance * listingAppeal(w, p)) continue;
+    if (r() >= LISTED_OFFER.chance * listingAppeal(w, p)) continue;
     const club = suitorFor(w, p, r);
     if (!club) continue;
     const value = playerValue(w, p),
-      share = (p.listed / 100) * (ask.low + r() * (ask.high - ask.low)) * buildEffects(w).saleFee;
+      share =
+        (LISTED_OFFER.low + r() * (LISTED_OFFER.high - LISTED_OFFER.low)) * buildEffects(w).saleFee;
     const fee = ratio(value, BigInt(Math.round(share * 1000)), 1000n);
     const bid: TransferBid = {
       id: bidId('in', w, day, p.id, 'list:'),
@@ -580,19 +621,17 @@ function listedOffers(w: World, day: number, until: number) {
       status: 'pending',
     };
     w.bids = [...(w.bids || []), bid];
-    const summary = `${p.role} · ${w.year - p.born}세 · 능력 ${overall(p)} · 호가 ${moneyLabel(w, ratio(value, BigInt(p.listed), 100n))}`;
+    const summary = `${p.role} · ${w.year - p.born}세 · 능력 ${overall(p)} · 평가 가치 ${moneyLabel(w, value)}`;
     if (w.delegation?.transfers) {
-      // The owner listed him: the staff take any offer within 5% of the asking price.
-      const accept = BigInt(fee) * 100n >= BigInt(value) * BigInt(Math.round(p.listed * 0.95));
-      if (accept) completeSale(w, bid, p);
-      else bid.status = 'rejected';
+      // The owner listed him to sell: the staff take the offer.
+      completeSale(w, bid, p);
       pushInbox(w, {
         kind: 'staff-report',
         title: clip(
-          `스태프가 ${club.name}의 ${p.name} 제안(${moneyLabel(w, fee)})을 ${accept ? '수락' : '거절'}했어요`,
+          `스태프가 ${club.name}의 ${p.name} 제안(${moneyLabel(w, fee)})을 수락했어요`,
           160,
         ),
-        detail: `${summary} · ${accept ? '호가에 가까워 매각했어요.' : '호가의 95%에 못 미쳐 거절했어요.'}`,
+        detail: `${summary} · 이적 명단에 오른 선수라 매각했어요.`,
         attention: false,
         ref: bid.id,
       });
@@ -615,7 +654,7 @@ function incomingBid(w: World, day: number, until: number) {
   if (r() >= INCOMING_BID_CHANCE * build.incomingBids) return;
   const wanted = new Set(pending.map((b) => b.playerId));
   const pool = activePlayers(w)
-    .filter((p) => !p.loanUntil && !p.listed && !wanted.has(p.id) && !saleBlocker(w, p))
+    .filter((p) => !p.loanUntil && p.stance !== 'listed' && !wanted.has(p.id) && !saleBlocker(w, p))
     .sort((a, b) => compareIds(a.id, b.id));
   if (!pool.length) return;
   const weights = pool.map(
@@ -647,7 +686,31 @@ function incomingBid(w: World, day: number, until: number) {
   };
   w.bids = [...(w.bids || []), bid];
   const age = w.year - player.born,
+    offered = Number((BigInt(fee) * 100n) / BigInt(value)),
+    untouchable = player.stance === 'untouchable',
     summary = `${player.role} · ${age}세 · 능력 ${overall(player)} · 평가 가치 ${moneyLabel(w, value)}`;
+  const report = (accept: boolean, detail: string, who = '스태프가') => {
+    if (accept) completeSale(w, bid, player);
+    else bid.status = 'rejected';
+    pushInbox(w, {
+      kind: 'staff-report',
+      title: clip(
+        `${who} ${club.name}의 ${player.name} 제안(${moneyLabel(w, fee)})을 ${accept ? '수락' : '거절'}했어요`,
+        160,
+      ),
+      detail: `${summary} · ${detail}`,
+      attention: false,
+      ref: bid.id,
+    });
+  };
+  if (untouchable && offered < UNTOUCHABLE_BAR) {
+    // Whoever decides, an untouchable player is not discussed below the bar.
+    report(
+      false,
+      `이적 불가 선수예요. 제안이 평가 가치의 ${offered}%로 기준 ${UNTOUCHABLE_BAR}%에 못 미쳐 바로 거절했어요.`,
+    );
+    return;
+  }
   if (w.delegation?.transfers) {
     const starters = new Set(ownStarters(w).map((p) => p.id));
     // A starter leaves only when an ageing player has a ready bench replacement in his role.
@@ -659,40 +722,41 @@ function incomingBid(w: World, day: number, until: number) {
         !other.loanUntil &&
         overall(other) >= overall(player) - 3,
     );
-    const bar = saleBar(w, player),
-      offered = Number((BigInt(fee) * 100n) / BigInt(value)),
-      premium = BigInt(fee) * 100n >= BigInt(value) * BigInt(bar.percent),
-      starter = starters.has(player.id),
-      expendable = !starter || (age >= 30 && covered),
+    const starter = starters.has(player.id),
       blocker = saleBlocker(w, player);
+    if (untouchable) {
+      const verdict = untouchableVerdict(w, offered, starter && !covered);
+      report(
+        verdict.accept && !blocker,
+        `이적 불가 선수의 거액 제안 · ${blocker || verdict.reason}`,
+        '감독과 상의한 스태프가',
+      );
+      return;
+    }
+    const bar = saleBar(w, player),
+      premium = BigInt(fee) * 100n >= BigInt(value) * BigInt(bar.percent),
+      expendable = !starter || (age >= 30 && covered);
     const accept = premium && expendable && !blocker;
     const against = `평가 가치의 ${offered}%로 ${saleBarLabel(bar)}`;
-    if (accept) completeSale(w, bid, player);
-    else bid.status = 'rejected';
-    pushInbox(w, {
-      kind: 'staff-report',
-      title: clip(
-        `스태프가 ${club.name}의 ${player.name} 제안(${moneyLabel(w, fee)})을 ${accept ? '수락' : '거절'}했어요`,
-        160,
-      ),
-      detail: `${summary} · ${
-        accept
-          ? `제안이 ${against}를 넘어 매각했어요.${starter ? ' 같은 포지션에 대신 뛸 선수가 있어요.' : ''}`
-          : blocker
-            ? blocker
-            : !premium
-              ? `제안이 ${against}에 못 미쳐 거절했어요.`
-              : '대체할 선수가 없는 주전이라 남기기로 했어요.'
-      }`,
-      attention: false,
-      ref: bid.id,
-    });
+    report(
+      accept,
+      accept
+        ? `제안이 ${against}를 넘어 매각했어요.${starter ? ' 같은 포지션에 대신 뛸 선수가 있어요.' : ''}`
+        : blocker
+          ? blocker
+          : !premium
+            ? `제안이 ${against}에 못 미쳐 거절했어요.`
+            : '대체할 선수가 없는 주전이라 남기기로 했어요.',
+    );
     return;
   }
   pushInbox(w, {
     kind: 'incoming-bid',
-    title: clip(`${club.name}이(가) ${player.name}에게 ${moneyLabel(w, fee)} 제안`, 160),
-    detail: `${summary} · ${seasonDayLabel(w.year, bid.due)}까지 수락하거나 거절하세요.`,
+    title: clip(
+      `${club.name}이(가) ${player.name}에게 ${moneyLabel(w, fee)} ${untouchable ? '거액 ' : ''}제안`,
+      160,
+    ),
+    detail: `${summary}${untouchable ? ` · 이적 불가 선수지만 평가 가치의 ${offered}%라 구단주의 확인이 필요해요` : ''} · ${seasonDayLabel(w.year, bid.due)}까지 수락하거나 거절하세요.`,
     attention: true,
     ref: bid.id,
   });

@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r7 | Define the implemented browser-demo behavior for manager demands and personality.
+> r8 | Define the implemented browser-demo behavior for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development, philosophy, flexibility, pride, ambition, salary and term; hiring charges disclosed costs.
@@ -38,7 +38,10 @@
   - a style with a tactic sets the manager's philosophy; contract terms are 3 seasons except the firefighter's 1.
   - the founding manager and an interim have no style and are exactly neutral; effects apply to the own club only, in the same profile the pre-match laboratory reads (→MATCH-9).
 
-- STAFF-15 [o] Coaching investment: the owner only chooses how much quality to buy; with hiring delegated the staff renew and hire to it, so no department is left empty. ← the owner decides the budget, not every contract
+- STAFF-15 [o] Coaching investment per department: the owner only chooses how much quality each department buys (절약 volunteers, 균형 the 55–78 band, 최고 the 65–90 band; absent is 균형); with hiring delegated the staff renew and hire to it, so no department is left empty. ← the owner decides the budget, not every contract
+  - only with coach hiring delegated (intervention level 4) do the dials show and act; at levels 1–3 the owner hires, renews and replaces coaches personally
+  - raising a dial while delegated replaces that department's vacancy or volunteer at once when affordable; a contracted coach is compared at his contract's end
+  - a 1.9 club-wide level loads as that level in every department
   | level | label | hires |
   |---|---|---|
   | 1 | 절약 | unpaid ability-50 volunteers |
@@ -56,6 +59,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r8 261011 STAFF-15✎ one club-wide coaching level→one dial per department, shown and acted on only with coach hiring delegated; a raised dial fills a volunteer post at once
 - r7 261011 STAFF-13✎ four delegable decisions→five with coach hiring, a released coach takes hiring back; STAFF-15+ coaching investment levels, delegated renewals and hires without vacancies, spring renewal season
 - r6 261010 STAFF-12✎ +developer style selects youth; STAFF-14+ eight manager styles with tactic, effects and contract terms
 - r5 261009 STAFF-13✎ three delegable decisions→four with the main sponsor; delegated promotions wait while cash is under a year of costs

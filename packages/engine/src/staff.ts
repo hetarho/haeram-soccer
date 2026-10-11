@@ -341,28 +341,42 @@ export function autoTrainingFocus(w: World): TrainingFocus {
   return autoTrainingAdvice(w).focus;
 }
 /**
- * Coaching investment (→STAFF-15): the owner only says how much quality to buy; delegated staff
- * hire and renew to it. Level 1 keeps unpaid ability-50 volunteers, 2 hires the mid-market
- * candidate (55–78), 3 the best available (65–90).
+ * Coaching investment (→STAFF-15), one dial per department: the owner only says how much quality
+ * to buy; delegated staff hire and renew to it. Level 1 keeps unpaid ability-50 volunteers, 2
+ * hires the mid-market candidate (55–78), 3 the best available (65–90).
  */
 export const COACHING_INFO: Record<CoachingLevel, { label: string; summary: string }> = {
-  1: { label: '절약', summary: '무급 자원봉사 코치로 운영해요. 부서 효과는 평범(능력 50)해요.' },
-  2: { label: '균형', summary: '시장 중간 수준 코치(능력 55–78)를 연봉에 맞춰 고용해요.' },
-  3: { label: '최고', summary: '구할 수 있는 최고 코치(능력 65–90)에 돈을 아끼지 않아요.' },
+  1: { label: '절약', summary: '무급 자원봉사 코치 · 능력 50' },
+  2: { label: '균형', summary: '시장 중간 수준 코치 · 능력 55–78' },
+  3: { label: '최고', summary: '구할 수 있는 최고 코치 · 능력 65–90' },
 };
-export function coachingLevel(w: World): CoachingLevel {
-  return w.coaching ?? 2;
+export function coachingLevel(w: World, role: StaffRole): CoachingLevel {
+  return w.coaching?.[role] ?? 2;
 }
-export function setCoaching(w: World, level: CoachingLevel) {
+/**
+ * Sets one department's investment. With hiring delegated the staff act at once where nobody is
+ * paid yet (a vacancy or a volunteer) and the budget allows; a contracted coach is reviewed at
+ * the end of his contract.
+ */
+export function setCoaching(w: World, role: StaffRole, level: CoachingLevel) {
+  if (!STAFF_ROLES.includes(role)) throw new Error('코치진 부서를 확인하세요.');
   if (![1, 2, 3].includes(level)) throw new Error('코치진 투자 단계를 확인하세요.');
-  if (coachingLevel(w) === level) return;
-  w.coaching = level;
+  if (coachingLevel(w, role) === level) return;
+  const rest = { ...w.coaching };
+  delete rest[role];
+  w.coaching = level === 2 ? rest : { ...rest, [role]: level };
+  if (!Object.keys(w.coaching).length) delete w.coaching;
   addEvent(
     w,
     'coaching',
-    `코치진 투자 · ${COACHING_INFO[level].label}`,
+    `${STAFF_INFO[role].label} 투자 · ${COACHING_INFO[level].label}`,
     COACHING_INFO[level].summary,
   );
+  if (!w.delegation?.staff || !w.staff) return;
+  const member = staffMember(w, role);
+  if (member && BigInt(member.wage) > 0n) return;
+  const hire = plannedHire(w, role);
+  if (hire) appoint(w, hire);
 }
 /** An unpaid ability-50 coach the staff can always find, so no department stays empty. */
 function volunteer(w: World, role: StaffRole): Staff {
@@ -383,7 +397,7 @@ function affordable(w: World, spend: bigint, wage: bigint) {
 }
 /** The candidate the coaching level asks for, falling back to cheaper bands the club can afford. */
 function plannedHire(w: World, role: StaffRole, replacing?: Staff) {
-  const level = coachingLevel(w);
+  const level = coachingLevel(w, role);
   if (level === 1) return undefined;
   const offers = staffCandidates(w, role);
   const band = (i: number) => offers.find((offer) => offer.id.endsWith(`:${i}`));
@@ -455,10 +469,11 @@ export function seasonStaff(w: World): void {
     const member = staffMember(w, role);
     const expired = member && member.until <= w.year;
     if (member && !expired) continue;
-    const label = STAFF_INFO[role].label;
+    const label = STAFF_INFO[role].label,
+      tier = `${label}(${COACHING_INFO[coachingLevel(w, role)].label})`;
     if (member && BigInt(member.wage) === 0n) {
       const hire = delegated ? plannedHire(w, role) : undefined;
-      if (hire) report.push(`${label} ${appoint(w, hire).name} 선임(능력 ${hire.ability})`);
+      if (hire) report.push(`${tier} ${appoint(w, hire).name} 선임(능력 ${hire.ability})`);
       else
         w.staff = w.staff.map((other) =>
           other.role === role ? { ...other, until: w.year + 1 } : other,
@@ -470,7 +485,7 @@ export function seasonStaff(w: World): void {
       const terms = renewalTerms(w, member);
       const keep =
         delegated &&
-        coachingLevel(w) > 1 &&
+        coachingLevel(w, role) > 1 &&
         member.ability >= (target?.ability ?? NEUTRAL_ABILITY) - 3 &&
         affordable(w, BigInt(terms.fee), BigInt(terms.wage) - BigInt(member.wage));
       if (keep) {
@@ -485,7 +500,7 @@ export function seasonStaff(w: World): void {
           `능력 ${member.ability} · 계약 ${terms.until}년까지 · 스태프 위임`,
           terms.fee,
         );
-        report.push(`${label} ${member.name} 재계약`);
+        report.push(`${tier} ${member.name} 재계약`);
         continue;
       }
       w.staff = w.staff.filter((other) => other.role !== role);
@@ -507,24 +522,20 @@ export function seasonStaff(w: World): void {
       }
       const hire = target || volunteer(w, role);
       appoint(w, hire);
-      report.push(`${label} ${member.name} 계약 만료 → ${hire.name} 선임(능력 ${hire.ability})`);
+      report.push(`${tier} ${member.name} 계약 만료 → ${hire.name} 선임(능력 ${hire.ability})`);
       continue;
     }
     if (delegated) {
       const hire = plannedHire(w, role) || volunteer(w, role);
       appoint(w, hire);
-      report.push(`${label} ${hire.name} 선임(능력 ${hire.ability})`);
+      report.push(`${tier} ${hire.name} 선임(능력 ${hire.ability})`);
     }
   }
   if (report.length)
     pushInbox(w, {
       kind: 'staff-report',
       title: `코치진 정비 · ${report.length}건`,
-      detail:
-        `코치진 투자 ${COACHING_INFO[coachingLevel(w)].label} 기준 · ${report.join(' · ')}`.slice(
-          0,
-          400,
-        ),
+      detail: `부서별 코치진 투자 기준 · ${report.join(' · ')}`.slice(0, 400),
       attention: false,
     });
 }

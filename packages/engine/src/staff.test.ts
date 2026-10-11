@@ -8,6 +8,7 @@ import {
   autoTrainingAdvice,
   autoTrainingFocus,
   basicStaff,
+  coachingLevel,
   createWorld,
   departmentMultiplier,
   hireStaff,
@@ -446,5 +447,69 @@ describe('manager traits', () => {
     advanceRound(a, undefined, false);
     advanceRound(b, undefined, false);
     expect(canonical(a)).toBe(canonical(b));
+  });
+});
+
+describe('coaching investment per department', () => {
+  it('keeps one dial per department, saving only the departments that differ from 균형', () => {
+    const w = world('department-dials');
+    expect(STAFF_ROLES.every((role) => coachingLevel(w, role) === 2)).toBe(true);
+    operate(w, { type: 'coaching', role: 'attack', level: 3 });
+    operate(w, { type: 'coaching', role: 'fitness', level: 1 });
+    expect(w.coaching).toEqual({ attack: 3, fitness: 1 });
+    expect(coachingLevel(w, 'defense')).toBe(2);
+    expect(w.events.at(-1)).toMatchObject({ kind: 'coaching', title: '피지컬 코치 투자 · 절약' });
+    operate(w, { type: 'coaching', role: 'attack', level: 2 });
+    operate(w, { type: 'coaching', role: 'fitness', level: 2 });
+    expect(w.coaching).toBeUndefined();
+    expect(() => operate(w, { type: 'coaching', role: 'kit' as StaffRole, level: 2 })).toThrow(
+      '부서',
+    );
+    validateWorld(w);
+  });
+
+  it('lets delegated staff fill a volunteer post at once while the owner hires himself', () => {
+    const manual = world('department-manual');
+    manual.delegation = { ...manual.delegation, staff: false };
+    operate(manual, { type: 'coaching', role: 'attack', level: 3 });
+    expect(manual.staff!.find((m) => m.role === 'attack')!.wage).toBe('0');
+
+    const w = world('department-auto');
+    w.delegation = { ...w.delegation, staff: true };
+    const best = staffCandidates(w, 'attack').find((c) => c.id.endsWith(':2'))!;
+    const cash = BigInt(w.cash);
+    operate(w, { type: 'coaching', role: 'attack', level: 3 });
+    const attack = w.staff!.find((m) => m.role === 'attack')!;
+    expect(attack.id).toBe(best.id);
+    expect(BigInt(w.cash)).toBe(cash - BigInt(best.fee));
+    // A contracted coach is reviewed when his contract ends, not replaced mid-contract.
+    operate(w, { type: 'coaching', role: 'attack', level: 2 });
+    expect(w.staff!.find((m) => m.role === 'attack')!.id).toBe(best.id);
+    // Saving on a department keeps its volunteer.
+    operate(w, { type: 'coaching', role: 'scout', level: 1 });
+    expect(w.staff!.find((m) => m.role === 'scout')!.wage).toBe('0');
+  });
+
+  it('hires each department to its own level at the season boundary', () => {
+    const w = world('department-season');
+    w.delegation = { ...w.delegation, staff: true };
+    w.coaching = { assistant: 3, scout: 1 };
+    // The founding volunteers' one-year terms end at the next boundary.
+    w.year += 1;
+    seasonStaff(w);
+    const member = (role: StaffRole) => w.staff!.find((m) => m.role === role)!;
+    expect(member('assistant').id.endsWith(':2')).toBe(true);
+    expect(member('attack').id.endsWith(':1')).toBe(true);
+    expect(member('scout').wage).toBe('0');
+    expect(w.inbox!.at(-1)!.detail).toContain('수석코치(최고)');
+  });
+
+  it('reads a club-wide level saved by rules 1.9 as the same level in every department', () => {
+    const w = world('department-legacy');
+    const saved = JSON.parse(canonical(w));
+    saved.coaching = 3;
+    expect(validateWorld(saved).coaching).toEqual(
+      Object.fromEntries(STAFF_ROLES.map((role) => [role, 3])),
+    );
   });
 });

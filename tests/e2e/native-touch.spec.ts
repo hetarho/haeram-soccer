@@ -73,7 +73,7 @@ for (const viewport of [
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await expectHomeBounds(page);
     const progress = page.getByRole('region', { name: '시즌 진행', exact: true });
-    const paces = ['1초에 하루', '1초에 3일', '1초에 5일'].map((pace) =>
+    const paces = ['1초에 하루', '0.5초에 하루', '0.2초에 하루', '0.1초에 하루'].map((pace) =>
       progress.getByRole('button', { name: `${pace} 속도로 자동 진행`, exact: true }),
     );
     // The pace chips are secondary to play and the intervention level, but still tappable.

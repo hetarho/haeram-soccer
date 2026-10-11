@@ -33,7 +33,13 @@ import {
   staffEffects,
 } from './staff';
 import { promoteYouth, releaseYouth } from './academy';
-import { assertTransferWindow, listPlayer, moneyLabel, placeBid, respondBid } from './transfers';
+import {
+  assertTransferWindow,
+  moneyLabel,
+  placeBid,
+  respondBid,
+  setTransferStance,
+} from './transfers';
 import { pushInbox, readInbox } from './inbox';
 import { careOffer, outcomeText, resolveCare } from './care';
 import { marketingFanGain, policyEffects, policyOf, setPolicy } from './policy';
@@ -495,7 +501,7 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       renewStaff(w, cmd.role);
       break;
     case 'coaching':
-      setCoaching(w, cmd.level);
+      setCoaching(w, cmd.role, cmd.level);
       break;
     case 'promote-youth':
       promoteYouth(w, cmd.id);
@@ -652,8 +658,8 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       );
       break;
     }
-    case 'list-player':
-      listPlayer(w, cmd.id, cmd.ask);
+    case 'transfer-stance':
+      setTransferStance(w, cmd.id, cmd.stance);
       break;
     case 'campaign': {
       const o = campaignOffers(w).find((c) => c.kind === cmd.kind);

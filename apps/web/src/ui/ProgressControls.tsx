@@ -31,9 +31,10 @@ import s from './App.module.css';
 import p from './ProgressControls.module.css';
 
 const PACES: [Pace, string, string][] = [
-  ['daily', '1일', '1초에 하루'],
-  ['three-days', '3일', '1초에 3일'],
-  ['five-days', '5일', '1초에 5일'],
+  ['x1', 'x1', '1초에 하루'],
+  ['x2', 'x2', '0.5초에 하루'],
+  ['x5', 'x5', '0.2초에 하루'],
+  ['x10', 'x10', '0.1초에 하루'],
 ];
 
 /** Game-speed controls: tapping a speed starts the shared clock at that pace. */

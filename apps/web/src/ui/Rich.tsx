@@ -1,10 +1,10 @@
 import { Select } from './Select';
 import { useEffect, useState, type ReactNode } from 'react';
 import type {
-  ListingAsk,
   MatchRecord,
   Player,
   Role,
+  TransferStance,
   World,
 } from '../../../../packages/contracts/src/types';
 import { priceIndex, country, currency } from '../../../../packages/catalogs/src/index';
@@ -20,10 +20,17 @@ import { PolicyBoard } from './PolicyBoard';
 import { FinanceOutlook } from './FinanceOutlook';
 import {
   expectedOfferDays,
-  LISTING,
+  LISTED_OFFER,
   playerValue,
+  saleBar,
+  STANCE_INFO,
+  TRANSFER_STANCES,
+  transferStance,
   transferWindow,
+  UNTOUCHABLE_BAR,
+  UNTOUCHABLE_PRICE,
 } from '../../../../packages/engine/src/transfers';
+import { buildOf, cardOf } from '../../../../packages/engine/src/build';
 import { Dialog } from './Dialog';
 import { useNavigation, useSquadView, type Page, type SquadTab } from './state';
 import { AcademyView, CoachingPlan, CoachingStaff, Delegation } from './ClubStaff';
@@ -142,7 +149,7 @@ function ManagerView({ state, client }: Props) {
           players={w.players.filter((p) => p.status === 'active').length}
         />
       </Header>
-      <CoachingPlan w={w} client={client} />
+      <CoachingPlan w={w} />
       <CoachingStaff w={w} client={client} />
       <Delegation w={w} client={client} />
       <div className={s.twoCols}>
@@ -343,12 +350,11 @@ function ManagerView({ state, client }: Props) {
     </>
   );
 }
-/** Injury, transfer list and retirement at a glance on a roster card. */
+/** Injury and retirement at a glance on a roster card; the stance badge shows the market. */
 function PlayerFlags({ w, player }: { w: World; player: Player }) {
   const out = injuryDaysLeft(w, player);
   const flags = [
     out > 0 && player.injury ? `부상 · ${player.injury.label} · ${Math.ceil(out / 7)}주` : '',
-    player.listed ? `이적 명단 ${player.listed}%` : '',
     player.retiring !== undefined ? '시즌 후 은퇴' : '',
   ].filter(Boolean);
   if (!flags.length) return null;
@@ -358,6 +364,120 @@ function PlayerFlags({ w, player }: { w: World; player: Player }) {
         <i key={flag}>{flag}</i>
       ))}
     </em>
+  );
+}
+const canSetStance = (p: Player) =>
+  p.status === 'active' && !p.loanUntil && p.retiring === undefined;
+/** A player's market stance on his roster card; tapping it opens the three choices. */
+function StanceBadge({
+  player,
+  disabled,
+  onOpen,
+}: {
+  player: Player;
+  disabled: boolean;
+  onOpen: () => void;
+}) {
+  const stance = transferStance(player);
+  return (
+    <button
+      type="button"
+      className={s.stanceBadge}
+      data-stance={stance}
+      disabled={disabled}
+      aria-label={`${player.name} 이적 상태 · ${STANCE_INFO[stance].label} · 바꾸기`}
+      onClick={onOpen}
+    >
+      <i aria-hidden="true" />
+      {STANCE_INFO[stance].label}
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m6 9 6 6 6-6" />
+      </svg>
+    </button>
+  );
+}
+/** What each stance does for this player, given who answers offers (→CLUB-22). */
+function stanceConsequence(w: World, p: Player, stance: TransferStance) {
+  const delegated = !!w.delegation?.transfers,
+    value = playerValue(w, p),
+    c = w.clubs.find((club) => club.id === w.playerClub)!,
+    format = (amount: string) => money(amount, c.country, w.year);
+  if (stance === 'listed')
+    return {
+      what: `이적시장 기간에 실제 구단이 평가 가치의 ${Math.round(LISTED_OFFER.low * 100)}–${Math.round(LISTED_OFFER.high * 100)}%로 제안해요 · 첫 제안까지 평균 약 ${expectedOfferDays(w, p)}일`,
+      who: delegated
+        ? '들어오는 제안은 스태프가 받아들여 매각해요'
+        : '제안마다 구단주가 수락·거절해요',
+    };
+  if (stance === 'open')
+    return {
+      what: '다른 구단이 먼저 제안해 올 때 협상해요',
+      who: delegated
+        ? `스태프가 평가 가치의 ${saleBar(w, p).percent}% 이상이면 팔아요 · 대체 선수 없는 주전은 지켜요`
+        : '제안마다 구단주가 수락·거절해요',
+    };
+  const market = buildOf(w).market,
+    card = cardOf(buildOf(w), 'market').label;
+  return {
+    what: `평가 가치 ${UNTOUCHABLE_BAR}%(${format(ratio(value, BigInt(UNTOUCHABLE_BAR), 100n))}) 미만 제안은 바로 거절해요`,
+    who: delegated
+      ? market === 'hold'
+        ? `거액 제안도 지켜요 · 이적 기조 ${card} (자금 위기면 매각)`
+        : `거액 제안은 스태프가 감독과 상의해요 · 이적 기조 ${card} 기준 ${UNTOUCHABLE_PRICE[market ?? 'standard']}%, 자금 사정과 주전 여부로 조정`
+      : '그 이상 거액 제안만 구단주에게 확인받아요',
+  };
+}
+function StanceSheet({
+  w,
+  player,
+  disabled,
+  onChoose,
+  onClose,
+}: {
+  w: World;
+  player: Player;
+  disabled: boolean;
+  onChoose: (stance: TransferStance) => void;
+  onClose: () => void;
+}) {
+  const c = w.clubs.find((club) => club.id === w.playerClub)!,
+    current = transferStance(player),
+    window = transferWindow(w);
+  return (
+    <Dialog label="이적 상태" onClose={onClose}>
+      <h2>{player.name} 이적 상태</h2>
+      <p>
+        {player.role} · {w.year - player.born}세 · 능력 {overall(player)} · 평가 가치{' '}
+        {money(playerValue(w, player), c.country, w.year)}
+      </p>
+      <div className={s.stanceChoices} role="radiogroup" aria-label="이적 상태">
+        {TRANSFER_STANCES.map((stance) => {
+          const consequence = stanceConsequence(w, player, stance);
+          return (
+            <button
+              key={stance}
+              type="button"
+              role="radio"
+              data-stance={stance}
+              aria-checked={current === stance}
+              className={current === stance ? s.selected : undefined}
+              disabled={disabled}
+              onClick={() => onChoose(stance)}
+            >
+              <b>
+                {STANCE_INFO[stance].label} · {STANCE_INFO[stance].tag}
+              </b>
+              <span>{consequence.what}</span>
+              <small>{consequence.who}</small>
+            </button>
+          );
+        })}
+      </div>
+      <p className={s.muted}>
+        수락해야 이적이 성사돼요. 지금: {window.label}
+        {window.open ? '' : ' · 시장이 열리면 제안이 들어와요.'}
+      </p>
+    </Dialog>
   );
 }
 function Squad({ state, client }: Props) {
@@ -374,13 +494,13 @@ function Squad({ state, client }: Props) {
     [fullTable, setFullTable] = useState(false),
     [playerQuery, setPlayerQuery] = useState(''),
     [playerPage, setPlayerPage] = useState(0),
-    [confirm, setConfirm] = useState<Player>(),
-    [ask, setAsk] = useState<ListingAsk>(110);
+    [stanceId, setStanceId] = useState<string>();
   const acting = useGameState((state) => !!state.pendingActions);
   const disabled = state.busy || state.readonly || acting;
   const active = w.players.filter((p) => p.status === 'active');
   const window = transferWindow(w);
   const selected = w.players.find((p) => p.id === selectedId);
+  const stancePlayer = w.players.find((p) => p.id === stanceId && canSetStance(p));
   const listed = explorePlayers(w.players, { scope, role, order, query: playerQuery, minutes });
   const lastPage = Math.max(0, Math.ceil(listed.length / 25) - 1),
     shownPage = Math.min(playerPage, lastPage),
@@ -505,16 +625,8 @@ function Squad({ state, client }: Props) {
                   <b>피로 {Math.round(p.fatigue)}</b>
                   <small>성장 +{(p.developed || 0).toFixed(2)}</small>
                 </div>
-                {p.status === 'active' && !p.loanUntil && p.retiring === undefined && (
-                  <button
-                    disabled={disabled}
-                    onClick={() => {
-                      setAsk(p.listed ?? 110);
-                      setConfirm(p);
-                    }}
-                  >
-                    {p.listed ? '명단 관리' : '이적 명단'}
-                  </button>
+                {canSetStance(p) && (
+                  <StanceBadge player={p} disabled={disabled} onOpen={() => setStanceId(p.id)} />
                 )}
               </article>
             ))}
@@ -591,16 +703,12 @@ function Squad({ state, client }: Props) {
                           <td>{p.status === 'active' ? money(p.wage, c.country, w.year) : '—'}</td>
                           <td>{p.until}</td>
                           <td>
-                            {p.status === 'active' && !p.loanUntil && p.retiring === undefined && (
-                              <button
+                            {canSetStance(p) && (
+                              <StanceBadge
+                                player={p}
                                 disabled={disabled}
-                                onClick={() => {
-                                  setAsk(p.listed ?? 110);
-                                  setConfirm(p);
-                                }}
-                              >
-                                {p.listed ? '명단 관리' : '이적 명단'}
-                              </button>
+                                onOpen={() => setStanceId(p.id)}
+                              />
                             )}
                           </td>
                         </tr>
@@ -612,9 +720,10 @@ function Squad({ state, client }: Props) {
             )}
           </details>
           <div className={s.panelFoot}>
-            감독이 역할과 능력·피로에 따라 선발을 고르고, 부상 선수는 빼요. 이적 명단에 올리면
-            이적시장 기간에 실제 구단이 제안하고, 수락해야 이적이 성사돼요. 최소 14명·골키퍼 1명을
-            유지해야 해요. 지금: {window.label}
+            감독이 역할과 능력·피로에 따라 선발을 고르고, 부상 선수는 빼요. 선수마다 이적 상태
+            뱃지(이적 명단·협상 가능·이적 불가)를 눌러 바꿀 수 있어요. 제안은 이적시장 기간에 실제
+            구단이 보내고, 수락해야 이적이 성사돼요. 최소 14명·골키퍼 1명을 유지해야 해요. 지금:{' '}
+            {window.label}
           </div>
         </Panel>
       ) : null}
@@ -653,65 +762,18 @@ function Squad({ state, client }: Props) {
           <button onClick={() => setSelectedId(undefined)}>닫기</button>
         </Dialog>
       )}
-      {confirm && (
-        <Dialog label="이적 명단" onClose={() => setConfirm(undefined)}>
-          <h2>{confirm.name} 이적 명단</h2>
-          <p>
-            {confirm.role} · {w.year - confirm.born}세 · 능력 {overall(confirm)} · 평가 가치{' '}
-            {money(playerValue(w, confirm), c.country, w.year)}
-          </p>
-          <div className={s.listingAsks} role="radiogroup" aria-label="호가">
-            {([90, 110, 140] as const).map((value) => (
-              <button
-                key={value}
-                role="radio"
-                aria-checked={ask === value}
-                className={ask === value ? s.selected : undefined}
-                onClick={() => setAsk(value)}
-              >
-                <b>
-                  {LISTING[value].label} · {value}%
-                </b>
-                <span>
-                  호가{' '}
-                  {money(ratio(playerValue(w, confirm), BigInt(value), 100n), c.country, w.year)}
-                </span>
-                <small>
-                  이적시장 기간 첫 제안까지 평균 약 {expectedOfferDays(w, confirm, value)}일
-                </small>
-              </button>
-            ))}
-          </div>
-          <p className={s.muted}>
-            제안은 선수 수준에 맞는 실제 구단이 보내고, 금액은 호가 근처에서 정해져요. 수락해야
-            이적이 성사돼요. 지금: {window.label}
-            {window.open ? '' : ' · 시장이 열리면 제안이 들어와요.'}
-          </p>
-          <div className={s.actions}>
-            <button onClick={() => setConfirm(undefined)}>취소</button>
-            {confirm.listed && (
-              <button
-                disabled={disabled}
-                onClick={() => {
-                  void client.command({ type: 'list-player', id: confirm.id, ask: null });
-                  setConfirm(undefined);
-                }}
-              >
-                명단에서 제외
-              </button>
-            )}
-            <button
-              className={s.primary}
-              disabled={disabled || confirm.listed === ask}
-              onClick={() => {
-                void client.command({ type: 'list-player', id: confirm.id, ask });
-                setConfirm(undefined);
-              }}
-            >
-              {confirm.listed ? '호가 바꾸기' : '이적 명단 등록'}
-            </button>
-          </div>
-        </Dialog>
+      {stancePlayer && (
+        <StanceSheet
+          w={w}
+          player={stancePlayer}
+          disabled={disabled}
+          onChoose={(stance) => {
+            if (stance !== transferStance(stancePlayer))
+              void client.command({ type: 'transfer-stance', id: stancePlayer.id, stance });
+            setStanceId(undefined);
+          }}
+          onClose={() => setStanceId(undefined)}
+        />
       )}
     </>
   );

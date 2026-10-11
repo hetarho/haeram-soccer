@@ -21,6 +21,8 @@
   --gold-edge: #a66f00;
   --warm: #ff9257;
   --warm-soft: #3b2a20;
+  --cool: #8cc8ff;
+  --cool-soft: #1a2a38;
   --danger: #ff6d60;
   --focus: #ffcb47;
   --paper: var(--surface);
@@ -2239,6 +2241,26 @@
     flex: none;
   }
 }
+@media (max-width: 420px) {
+  .seasonControls {
+    gap: 4px;
+  }
+  .seasonControls .clockButtons {
+    gap: 3px;
+  }
+  .seasonControls .clockButtons .clockToggle {
+    width: 44px;
+  }
+}
+@media (max-width: 389px) {
+  .seasonControls {
+    padding-left: 8px;
+  }
+  .seasonControls .calendarSummary strong {
+    font-size: 12px;
+    letter-spacing: -0.2px;
+  }
+}
 @media (max-width: 359px) {
   .seasonControls {
     gap: 4px;
@@ -2487,23 +2509,74 @@
   color: var(--warm);
   background: var(--warm-soft);
 }
-/* Asking-price choices of the transfer list sheet. */
-.listingAsks {
+/* Market stance: a tappable badge on each roster card and the three choices of its sheet. */
+.rosterCards .stanceBadge.stanceBadge,
+.tableWrap .stanceBadge.stanceBadge {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 44px;
+  padding: 0 8px 0 9px;
+  border: 1px solid color-mix(in srgb, var(--tone, var(--accent-text)) 45%, transparent);
+  border-radius: 999px;
+  background: var(--tone-soft, var(--surface-2));
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  color: var(--tone, var(--accent-text));
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.tableWrap .stanceBadge.stanceBadge {
+  min-height: 32px;
+}
+.stanceBadge[data-stance='listed'],
+.stanceChoices [data-stance='listed'] {
+  --tone: var(--warm);
+  --tone-soft: var(--warm-soft);
+}
+.stanceBadge[data-stance='untouchable'],
+.stanceChoices [data-stance='untouchable'] {
+  --tone: var(--cool);
+  --tone-soft: var(--cool-soft);
+}
+.stanceBadge i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+}
+.stanceBadge svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.8;
+}
+.stanceChoices {
   display: grid;
   gap: 8px;
   margin: 12px 0;
 }
-.listingAsks button {
+.stanceChoices button {
   display: grid;
-  gap: 2px;
+  gap: 3px;
   text-align: left;
-  min-height: 56px;
+  min-height: 64px;
   padding: 10px 12px;
+  border-left: 4px solid var(--tone, var(--accent-text));
 }
-.listingAsks span {
+.stanceChoices button b {
+  color: var(--tone, var(--accent-text));
+}
+.stanceChoices span {
   font-size: 13px;
 }
-.listingAsks small {
+.stanceChoices small {
   font-size: 11px;
   color: var(--text-muted);
 }

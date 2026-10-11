@@ -5,9 +5,14 @@ import { daysUntilNextMatch, nextOwnFixture } from '../../../../packages/engine/
 import type { GameClient } from './client';
 import { gameStore } from './store';
 
-export type Pace = 'daily' | 'three-days' | 'five-days';
-/** Game days per one-second tick. */
-export const PACE_DAYS: Record<Pace, number> = { daily: 1, 'three-days': 3, 'five-days': 5 };
+export type Pace = 'x1' | 'x2' | 'x5' | 'x10';
+/** Real milliseconds per game day: x1 is one day a second, x10 one day every 0.1 s. */
+export const PACE_MS: Record<Pace, number> = { x1: 1000, x2: 500, x5: 200, x10: 100 };
+/**
+ * A step normally advances one day. When saving takes longer than the pace allows, the next step
+ * carries the days that piled up, at most this many, so the calendar keeps the chosen rate.
+ */
+export const MAX_STEP_DAYS = 5;
 export type StopOn = Record<InboxKind, boolean>;
 export interface ProgressionState {
   running: boolean;
@@ -66,12 +71,11 @@ export function stoppingEvents(w: World, stopOn: StopOn) {
   return (w.inbox || []).filter((item) => item.attention && !item.read && stopOn[item.kind]);
 }
 /**
- * One tick of the clock. A multi-day step lands on a match eve instead of running through the
- * match day, and the host ends it early on the day an enabled event arrives.
+ * One tick of the clock. A multi-day catch-up step lands on a match eve instead of running
+ * through the match day, and the host ends it early on the day an enabled event arrives.
  */
-function command(pace: Pace, stopOn: StopOn, w: World): Command {
-  const until = daysUntilNextMatch(w),
-    days = PACE_DAYS[pace];
+function command(days: number, stopOn: StopOn, w: World): Command {
+  const until = daysUntilNextMatch(w);
   return {
     type: 'advance-days',
     days: stopOn.match && until !== undefined && until > 1 && until <= days ? until - 1 : days,
@@ -83,7 +87,7 @@ function command(pace: Pace, stopOn: StopOn, w: World): Command {
 export class ProgressionController {
   readonly store = createStore<ProgressionState>(() => ({
     running: false,
-    pace: 'daily',
+    pace: 'x1',
     watching: false,
     reason: '',
     stopOn: storedStopOn(),
@@ -102,6 +106,8 @@ export class ProgressionController {
   private worldId?: string;
   private year?: number;
   private finishedId?: string;
+  /** When the last day step was sent; unset while stopped so a restart begins with one day. */
+  private stepAt?: number;
 
   constructor(private client: GameClient) {
     this.worldId = gameStore.getSnapshot().view?.world.id;
@@ -140,10 +146,13 @@ export class ProgressionController {
       )
         void this.tick();
     });
-    this.timer = setInterval(() => void this.tick(), 1000);
+    this.timer = setInterval(() => void this.tick(), PACE_MS.x1);
   }
   setPace(pace: Pace) {
+    if (this.store.getState().pace === pace) return;
     this.store.setState({ pace });
+    clearInterval(this.timer);
+    this.timer = setInterval(() => void this.tick(), PACE_MS[pace]);
   }
   setStopOn(kind: InboxKind, value: boolean) {
     const stopOn = { ...this.store.getState().stopOn, [kind]: value };
@@ -228,8 +237,9 @@ export class ProgressionController {
     const eve = this.store.getState().matchEve;
     if (eve) this.passedMatch = eve;
     this.resumeAfterWatch = false;
+    this.stepAt = undefined;
     this.store.setState({ running: true, reason: '', matchEve: undefined });
-    // Date progression starts on the next one-second tick. Watching starts without an empty wait.
+    // Date progression starts on the next tick of the pace. Watching starts without an empty wait.
     if (this.store.getState().watching) void this.tick();
   }
   stop(reason = '자동 진행을 멈췄습니다.') {
@@ -247,7 +257,12 @@ export class ProgressionController {
   private async tick() {
     const progress = this.store.getState();
     const state = gameStore.getSnapshot();
-    if (!progress.running || this.suspended || this.inFlight || state.processing) return;
+    if (!progress.running || this.suspended) {
+      // Time spent stopped or behind a sheet is not owed to the calendar.
+      this.stepAt = undefined;
+      return;
+    }
+    if (this.inFlight || state.processing) return;
     if (!state.view || state.readonly || state.error || state.view.world.critical) return;
     if (state.savedRevision !== state.view.world.revision) return;
     if (
@@ -266,10 +281,15 @@ export class ProgressionController {
       }
     }
     const seen = new Set(stoppingEvents(w, progress.stopOn).map((item) => item.id));
+    const now = Date.now(),
+      owed =
+        this.stepAt === undefined ? 1 : Math.floor((now - this.stepAt) / PACE_MS[progress.pace]),
+      days = Math.max(1, Math.min(MAX_STEP_DAYS, owed));
+    this.stepAt = now;
     this.inFlight = true;
     try {
       const reply = await this.client.command(
-        progress.watching ? { type: 'next-match' } : command(progress.pace, progress.stopOn, w),
+        progress.watching ? { type: 'next-match' } : command(days, progress.stopOn, w),
         { background: true, automatic: true },
       );
       // A cancelled tick after an explicit stop (e.g. to watch) keeps that stop's reason.

@@ -107,15 +107,17 @@ describe('the global progression clock', () => {
       expect.objectContaining({ type: 'advance-days', days: 1 }),
       { background: true, automatic: true },
     );
-    controller.setPace('three-days');
+    // x10 is one day every 0.1 s.
+    controller.setPace('x10');
     await vi.advanceTimersByTimeAsync(1000);
+    expect(s.command).toHaveBeenCalledTimes(13);
     expect(s.command).toHaveBeenLastCalledWith(
-      expect.objectContaining({ type: 'advance-days', days: 3 }),
+      expect.objectContaining({ type: 'advance-days', days: 1 }),
       { background: true, automatic: true },
     );
     controller.stop();
     await vi.advanceTimersByTimeAsync(2000);
-    expect(s.command).toHaveBeenCalledTimes(4);
+    expect(s.command).toHaveBeenCalledTimes(13);
   });
   it('holds the calendar throughout observation and starts next match at the finish signal', async () => {
     const s = setup(playback('first'));
@@ -223,7 +225,7 @@ describe('the global progression clock', () => {
     expect(s.command).toHaveBeenCalledTimes(1);
     expect(controller.store.getState().matchEve).toBeUndefined();
   });
-  it('moves five days a tick, lands on a match eve and asks the host to stop only for enabled events', async () => {
+  it('catches up the days a slow save held back, lands on a match eve and asks the host to stop only for enabled events', async () => {
     const s = setup();
     controller = s.controller;
     controller.setStopOnAll({
@@ -238,20 +240,46 @@ describe('the global progression clock', () => {
       cup: false,
       finance: true,
     });
-    controller.setPace('five-days');
+    // Each step takes 0.45 s to save, so at x10 the days pile up behind it (at most five).
+    s.command.mockImplementation(
+      () =>
+        new Promise((resolve) =>
+          setTimeout(
+            () => resolve({ ok: true, requestId: 'slow', view: { world: w } as View }),
+            450,
+          ),
+        ),
+    );
+    controller.setPace('x10');
     controller.start();
-    await vi.advanceTimersByTimeAsync(1000);
+    await vi.advanceTimersByTimeAsync(100);
     expect(s.command).toHaveBeenLastCalledWith(
-      { type: 'advance-days', days: 5, stop: ['match', 'bid-response', 'finance'] },
+      { type: 'advance-days', days: 1, stop: ['match', 'bid-response', 'finance'] },
       { background: true, automatic: true },
     );
-    // Four days before kickoff, a five-day step ends on the match eve instead.
+    await vi.advanceTimersByTimeAsync(500);
+    expect(s.command).toHaveBeenCalledTimes(2);
+    expect(s.command).toHaveBeenLastCalledWith(
+      expect.objectContaining({ type: 'advance-days', days: 5 }),
+      { background: true, automatic: true },
+    );
+    // Four days before kickoff, a five-day catch-up ends on the match eve instead.
     const near = structuredClone(w);
     near.calendar = { day: 3 };
     gameStore.publish({ ...gameStore.getSnapshot(), view: { world: near } as View });
-    await vi.advanceTimersByTimeAsync(1000);
+    await vi.advanceTimersByTimeAsync(500);
     expect(s.command).toHaveBeenLastCalledWith(
       expect.objectContaining({ type: 'advance-days', days: 3 }),
+      { background: true, automatic: true },
+    );
+    // Time spent stopped is not owed: a restart begins with one day again.
+    controller.pause();
+    await vi.advanceTimersByTimeAsync(2000);
+    gameStore.publish({ ...gameStore.getSnapshot(), view: { world: w } as View });
+    controller.start();
+    await vi.advanceTimersByTimeAsync(100);
+    expect(s.command).toHaveBeenLastCalledWith(
+      expect.objectContaining({ type: 'advance-days', days: 1 }),
       { background: true, automatic: true },
     );
   });

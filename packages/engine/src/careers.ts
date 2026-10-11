@@ -49,7 +49,7 @@ export function announceRetirements(w: World) {
     const chance = retirementChance(w, p, starters);
     if (!chance || random(`${w.seed}:retire:${p.id}:${w.year}`)() >= chance) continue;
     p.retiring = w.year;
-    delete p.listed;
+    delete p.stance;
     const age = w.year + 1 - p.born;
     addEvent(
       w,
@@ -73,7 +73,7 @@ export function retireAtClose(w: World) {
     const age = w.year + 1 - p.born;
     if (p.retiring !== w.year && age < RETIREMENT.lastAge) continue;
     p.status = 'retired';
-    delete p.listed;
+    delete p.stance;
     addEvent(w, 'retirement', `${p.name}의 다음 장`, `${age}세 은퇴 · ${careerLine(w, p)}`);
   }
 }

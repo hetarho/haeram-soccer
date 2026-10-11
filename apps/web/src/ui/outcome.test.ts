@@ -55,7 +55,11 @@ describe('action outcome summaries', () => {
     const before = world();
     const id = before.players.find((p) => p.role === 'MID' && p.status === 'active')!.id;
     const next = after(before, (w) => sellPlayer(w, id));
-    const outcome = describeOutcome({ type: 'list-player', id, ask: 110 }, before, next)!;
+    const outcome = describeOutcome(
+      { type: 'transfer-stance', id, stance: 'listed' },
+      before,
+      next,
+    )!;
     const labels = outcome.changes.map((c) => c.label);
     expect(labels).toContain('선수단');
     expect(labels).toContain('운영 자금');

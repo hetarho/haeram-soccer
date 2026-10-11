@@ -69,7 +69,7 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('hire-staff'), role: staffRole, candidate: index }),
   z.object({ type: z.literal('release-staff'), role: staffRole }),
   z.object({ type: z.literal('renew-staff'), role: staffRole }),
-  z.object({ type: z.literal('coaching'), level: z.literal([1, 2, 3]) }),
+  z.object({ type: z.literal('coaching'), role: staffRole, level: z.literal([1, 2, 3]) }),
   z.object({ type: z.literal('promote-youth'), id: ref }),
   z.object({
     type: z.literal('care'),
@@ -106,9 +106,9 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('hire'), candidate: index }),
   z.object({ type: z.literal('recruit'), candidate: index, loan: z.boolean().optional() }),
   z.object({
-    type: z.literal('list-player'),
+    type: z.literal('transfer-stance'),
     id: ref,
-    ask: z.literal([90, 110, 140]).nullable(),
+    stance: z.enum(['listed', 'open', 'untouchable']),
   }),
   z.object({
     type: z.literal('campaign'),
