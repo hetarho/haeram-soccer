@@ -1,6 +1,14 @@
 import type { Command, World } from '../../contracts/src/types';
-import { activePlayers, addEvent, clubOf, makePlayer, overall, quote } from './world';
-import { hash, integer, random } from './primitives';
+import { activePlayers, addEvent, clubOf, makePlayer, overall } from './world';
+import { hash, integer, random, ratio } from './primitives';
+import {
+  declineContract,
+  divisionFor,
+  MARKET_CONFIG,
+  marketValueAt,
+  marketWageAt,
+  offerContract,
+} from './contracts';
 import { moneyLabel } from './finance';
 import { setLineup } from './strategy';
 import { setTrainingFocus } from './training';
@@ -63,17 +71,20 @@ export function transferOffers(w: World, year = w.year, legacy = false) {
   )
     .toString(36)
     .padStart(7, '0');
+  const own = clubOf(w),
+    feeMultiplier = profile.feeMultiplier * scouting.feeMultiplier * synergy.feeMultiplier;
   return Array.from({ length: count }, (_, i) => {
     const id = legacy ? `market:${year}:${i}` : `market:${year}:${sig}:${i}`;
     const r = random(`${w.seed}:${id}`);
     const p = makePlayer(
-      clubOf(w).country,
+      own.country,
       w.seed,
       id,
       year,
       Math.min(95, integer(r, profile.ability[0], profile.ability[1]) + build.marketAbility),
       roles[i % 4],
       integer(r, profile.age[0], profile.age[1]),
+      own.tier,
     );
     const potentialBonus =
       profile.potentialBonus +
@@ -82,24 +93,16 @@ export function transferOffers(w: World, year = w.year, legacy = false) {
       synergy.marketPotential;
     // A ceiling is never below what the player already shows.
     p.potential = Math.max(overall(p), Math.min(99, p.potential + potentialBonus));
+    // He would join on our division's market wage; his club sells at the market of the division
+    // his ability suits (→CLUB-25). A free agent has no club to ask a fee.
+    p.wage = marketWageAt(own.country, year, own.tier, p);
+    const value = marketValueAt(own.country, year, divisionFor(own.country, overall(p)), p);
+    const share = (multiplier: number) =>
+      i === 0 ? '0' : ratio(value, BigInt(Math.round(multiplier * 1000)), 1000n);
     return {
       player: p,
-      fee: quote(
-        clubOf(w).country,
-        year,
-        i === 0
-          ? 0
-          : Math.max(
-              0,
-              Math.round(
-                ((overall(p) - 25) * 9 + (p.potential - overall(p)) * 3) *
-                  profile.feeMultiplier *
-                  scouting.feeMultiplier *
-                  synergy.feeMultiplier,
-              ),
-            ),
-      ),
-      loanFee: quote(clubOf(w).country, year, Math.max(15, overall(p) * 1.5)),
+      fee: share(feeMultiplier),
+      loanFee: share(MARKET_CONFIG.loan),
       /** A player without a club signs outside transfer windows. */
       freeAgent: i === 0,
       available: !w.players.some((owned) => owned.id === p.id),
@@ -109,9 +112,11 @@ export function transferOffers(w: World, year = w.year, legacy = false) {
 export function squadCommand(w: World, cmd: SquadCommand) {
   switch (cmd.type) {
     case 'contract-offer':
+      offerContract(w, cmd.player, cmd.wage, cmd.term);
+      break;
     case 'contract-decline':
-      // Rules 1.16 commands are refused, never ignored, until their rules land.
-      throw new Error(`${cmd.type} 명령은 아직 지원하지 않습니다.`);
+      declineContract(w, cmd.player);
+      break;
     case 'promote-youth':
       promoteYouth(w, cmd.id);
       break;

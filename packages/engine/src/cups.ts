@@ -1,9 +1,8 @@
 import type { DomesticCup, KnockoutRound, World } from '../../contracts/src/types';
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import { compareIds } from './primitives';
-import { addEvent, clubOf, findClub } from './world';
+import { addEvent, clubOf, findClub, footballQuote } from './world';
 import { credit } from './operations';
-import { footballQuote } from './finance';
 import { pushInbox } from './inbox';
 import { seasonDayLabel } from './calendar';
 import {

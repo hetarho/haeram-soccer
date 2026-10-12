@@ -1,7 +1,8 @@
 import type { Player, Role, World } from '../../contracts/src/types';
 import { currentDay, seasonDayOf } from './calendar';
-import { activePlayers, addEvent, clubOf, makePlayer, overall, ownStarters, quote } from './world';
+import { activePlayers, addEvent, clubOf, makePlayer, overall, ownStarters } from './world';
 import { clamp, compareIds, integer, random } from './primitives';
+import { marketWage } from './contracts';
 import { staffEffects, staffMember } from './staff';
 import { pushInbox } from './inbox';
 import { recordDevelopment, roleSkills, skillAfter } from './training';
@@ -219,8 +220,8 @@ export function promoteYouth(w: World, id: string): void {
     throw new Error('아카데미에 없는 선수입니다.');
   if (activePlayers(w).length >= SQUAD_LIMIT) throw new Error('선수단 정원은 26명입니다.');
   const player = takeProspect(w, id);
-  // A first professional contract: a small wage for three seasons.
-  player.wage = quote(clubOf(w).country, w.year, Math.max(10, overall(player) - 25));
+  // A first professional contract for three seasons, at his market wage (→CLUB-25).
+  player.wage = marketWage(w, player);
   player.until = w.year + 3;
   player.status = 'active';
   player.fatigue = 0;

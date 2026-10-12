@@ -17,7 +17,14 @@ export function advanceEconomy(w: World, previousYear: number) {
     w.cash = convert(w.cash);
     w.income = convert(w.income);
     w.expense = convert(w.expense);
-    for (const p of w.players) p.wage = convert(p.wage);
+    for (const p of w.players) {
+      p.wage = convert(p.wage);
+      // An open contract talk is a price on offer: its demand and floor go on in the new money.
+      if (p.talk) {
+        p.talk.demand = convert(p.talk.demand);
+        p.talk.floor = convert(p.talk.floor);
+      }
+    }
     for (const p of w.academy?.players ?? []) p.wage = convert(p.wage);
     w.manager.wage = convert(w.manager.wage);
     for (const member of w.staff ?? []) member.wage = convert(member.wage);

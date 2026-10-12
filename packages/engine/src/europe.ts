@@ -1,10 +1,9 @@
 import type { World, EuropeTournament, Fixture, KnockoutRound } from '../../contracts/src/types';
 import { COUNTRIES } from '../../catalogs/src/index';
 import { random, integer, compareIds, clamp } from './primitives';
-import { addEvent, clubOf, findClub, initialElo } from './world';
+import { addEvent, clubOf, findClub, footballQuote, initialElo } from './world';
 import { emptyTable } from './season';
 import { credit } from './operations';
-import { footballQuote } from './finance';
 import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS } from './calendar';
 import {
   decideTie,

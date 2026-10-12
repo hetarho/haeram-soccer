@@ -1,6 +1,7 @@
 import { Select } from './Select';
 import { lazy, Suspense, useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
 import type {
+  ContractTalk,
   ContractTerm,
   ManagerTrait,
   Player,
@@ -8,7 +9,24 @@ import type {
   World,
 } from '../../../../packages/contracts/src/types';
 import { priceIndex } from '../../../../packages/catalogs/src/index';
-import { injuryDaysLeft, quote, tacticLabel, overall } from '../../../../packages/engine/src/world';
+import {
+  injuryDaysLeft,
+  quote,
+  tacticLabel,
+  overall,
+  UNHAPPY_PENALTY,
+} from '../../../../packages/engine/src/world';
+import {
+  marketWage,
+  talkFor,
+  talkRoundChance,
+  talkUntil,
+  UNHAPPY_CONFIG,
+  UNHAPPY_REASON,
+} from '../../../../packages/engine/src/contracts';
+import { operatingCosts } from '../../../../packages/engine/src/finance';
+import { fixedCostRunway } from '../../../../packages/engine/src/investment';
+import { UNHAPPY_MORALE } from '../../../../packages/engine/src/morale';
 import { ratio } from '../../../../packages/engine/src/primitives';
 import { useGameState } from '../runtime/store';
 import type { ClientState, GameClient } from '../runtime/client';
@@ -38,6 +56,7 @@ import {
 } from './RosterFilters';
 import {
   STAFF_TABS,
+  useContractTalk,
   useSquadView,
   useStaffView,
   type Page,
@@ -68,7 +87,7 @@ import {
 } from '../../../../packages/engine/src/ops-staff';
 import { roundsUntilRefresh } from '../../../../packages/engine/src/managerMarket';
 import { ClubLink } from './ClubLink';
-import type { StateKey } from './teamState';
+import { runwayText, type StateKey } from './teamState';
 import { PlayerComparison } from './PlayerComparison';
 import { compactMoney, contractLine, number } from './format';
 import { Money } from './Money';
@@ -579,12 +598,17 @@ function ManagerMarket({ state, client, onClose }: Props & { onClose: () => void
     </>
   );
 }
-/** Injury and retirement at a glance on a roster card; the stance badge shows the market. */
+/**
+ * Injury, retirement, an unhappy player with his reason and his transfer request at a glance on a
+ * roster card (→WEB-68); the stance badge shows the market.
+ */
 function PlayerFlags({ w, player }: { w: World; player: Player }) {
   const out = injuryDaysLeft(w, player);
   const flags = [
     out > 0 && player.injury ? `부상 · ${player.injury.label} · ${Math.ceil(out / 7)}주` : '',
     player.retiring !== undefined ? '시즌 후 은퇴' : '',
+    player.unhappy ? `언해피 · ${UNHAPPY_REASON[player.unhappy.reason]}` : '',
+    player.transferRequest ? '이적 요청' : '',
   ].filter(Boolean);
   if (!flags.length) return null;
   return (
@@ -710,6 +734,105 @@ function StanceSheet({
     </Dialog>
   );
 }
+const TERMS: ContractTerm[] = [1, 2, 3, 4, 5];
+/**
+ * A contract talk (→WEB-68, CLUB-26): his demand and the floor he settles for, the term, the yearly
+ * cost and the runway after it, and what a refusal risks (→CLUB-27). He accepts any offer at or
+ * above the floor, so the owner offers the floor or declines; an unhappy player has only his
+ * floor, as it stands today, to be met.
+ */
+function ContractTalkSheet({
+  w,
+  player,
+  talk,
+  disabled,
+  onOffer,
+  onDecline,
+  onClose,
+}: {
+  w: World;
+  player: Player;
+  talk: ContractTalk;
+  disabled: boolean;
+  onOffer: (term: ContractTerm) => void;
+  onDecline: () => void;
+  onClose: () => void;
+}) {
+  const [term, setTerm] = useState<ContractTerm>(2);
+  const c = w.clubs.find((club) => club.id === w.playerClub)!,
+    money = (value: string | bigint) => <Money value={value} code={c.country} year={w.year} />,
+    raise = BigInt(talk.floor) - BigInt(player.wage),
+    runway = fixedCostRunway(w.cash, (BigInt(operatingCosts(w).annual) + raise).toString()),
+    chance = Math.round(talkRoundChance(w) * 100),
+    label = talk.kind === 'renew' ? '재계약' : '연봉 인상';
+  return (
+    <Dialog
+      label="계약 협상"
+      onClose={onClose}
+      actions={
+        <div className={s.actions}>
+          {player.talk ? (
+            <button disabled={disabled} onClick={onDecline}>
+              거절
+            </button>
+          ) : (
+            <button onClick={onClose}>닫기</button>
+          )}
+          <button className={s.primary} disabled={disabled} onClick={() => onOffer(term)}>
+            하한 <Money value={talk.floor} code={c.country} year={w.year} plain /> · {term}시즌 제시
+          </button>
+        </div>
+      }
+    >
+      <h2>
+        {player.name} {player.talk ? `${label} 협상` : '언해피 · 하한 제시'}
+      </h2>
+      <p>
+        {player.role} · {w.year - player.born}세 · 능력 {overall(player)} · 지금 연봉{' '}
+        {money(player.wage)} · {contractLine(player.until, w.year)}
+      </p>
+      {player.unhappy && (
+        <p className={s.muted}>
+          {UNHAPPY_REASON[player.unhappy.reason]}로 언해피예요. 하한 이상을 제시하면 풀리고
+          {player.transferRequest ? ' 이적 요청도 거둬요' : ' 이적 요청을 하지 않아요'}.
+        </p>
+      )}
+      <p>
+        요구 {money(talk.demand)} · 하한 {money(talk.floor)} · 하한 이상이면 바로 합의해요.
+      </p>
+      <div className={s.segments} role="radiogroup" aria-label="계약 기간">
+        {TERMS.map((value) => (
+          <button
+            key={value}
+            type="button"
+            role="radio"
+            aria-checked={term === value}
+            className={term === value ? s.selected : undefined}
+            onClick={() => setTerm(value)}
+          >
+            {value}시즌
+          </button>
+        ))}
+      </div>
+      <p>
+        연 비용 {money(talk.floor)}
+        {raise > 0n ? (
+          <> (지금보다 +{money(raise)})</>
+        ) : raise < 0n ? (
+          <> (지금보다 −{money(-raise)})</>
+        ) : null}{' '}
+        · {contractLine(talkUntil(w, term), w.year)} · 합의 뒤 자금 여력 {runwayText(runway)}
+      </p>
+      {player.talk && (
+        <p className={s.muted}>
+          거절하면 감독이 설득해요: 성공 {chance}% · 실패하면 언해피(능력 −{UNHAPPY_PENALTY}, 선발로
+          뛴 라운드마다 분위기 −{UNHAPPY_MORALE}, 재계약 거부, {UNHAPPY_CONFIG.requestDays / 7}주 뒤
+          이적 요청)
+        </p>
+      )}
+    </Dialog>
+  );
+}
 function Squad({ state, client }: Props) {
   const v = state.view!,
     w = v.world,
@@ -721,11 +844,15 @@ function Squad({ state, client }: Props) {
     [playerQuery, setPlayerQuery] = useState(''),
     [playerPage, setPlayerPage] = useState(0),
     [stanceId, setStanceId] = useState<string>();
+  const talkId = useContractTalk((state) => state.id),
+    { open: openTalk, close: closeTalk } = useContractTalk.getState();
   const acting = useGameState((state) => !!state.pendingActions);
   const disabled = state.busy || state.readonly || acting;
   const active = w.players.filter((p) => p.status === 'active');
   const window = transferWindow(w);
   const stancePlayer = w.players.find((p) => p.id === stanceId && canSetStance(p));
+  const talkPlayer = active.find((p) => p.id === talkId),
+    talk = talkPlayer && talkFor(w, talkPlayer);
   const { scope } = view;
   const listed = explorePlayers(w.players, { ...view, query: playerQuery });
   const summary = rosterViewSummary(view);
@@ -781,9 +908,17 @@ function Squad({ state, client }: Props) {
                   <OvrBadge value={overall(p)} role={p.role} />
                   <PlayerLink id={p.id} name={p.name} scope={scope} className={s.cardLink} />
                   <small>
-                    {p.status === 'active'
-                      ? `${w.year - p.born}세 · 잠재력 ${Math.round(p.potential)}`
-                      : `${playerStatus(p)} · 통산 ${appearances(p.career)}경기 ${p.career[0]}골`}
+                    {p.status === 'active' ? (
+                      <>
+                        {w.year - p.born}세 · 잠재력 {Math.round(p.potential)}
+                        <br />
+                        연봉 <Money value={p.wage} code={c.country} year={w.year} plain /> / 시장{' '}
+                        <Money value={marketWage(w, p)} code={c.country} year={w.year} plain /> ·{' '}
+                        {contractLine(p.until, w.year)}
+                      </>
+                    ) : (
+                      `${playerStatus(p)} · 통산 ${appearances(p.career)}경기 ${p.career[0]}골`
+                    )}
                   </small>
                   {p.status === 'active' && <PlayerFlags w={w} player={p} />}
                 </div>
@@ -791,6 +926,18 @@ function Squad({ state, client }: Props) {
                   <b>피로 {Math.round(p.fatigue)}</b>
                   <small>성장 +{(p.developed || 0).toFixed(2)}</small>
                 </div>
+                {p.status === 'active' && talkFor(w, p) && (
+                  <button
+                    type="button"
+                    className={s.stanceBadge}
+                    data-stance="listed"
+                    disabled={disabled}
+                    aria-label={`${p.name} 계약 협상 열기`}
+                    onClick={() => openTalk(p.id)}
+                  >
+                    협상
+                  </button>
+                )}
                 {canSetStance(p) && (
                   <StanceBadge player={p} disabled={disabled} onOpen={() => setStanceId(p.id)} />
                 )}
@@ -917,6 +1064,28 @@ function Squad({ state, client }: Props) {
             setStanceId(undefined);
           }}
           onClose={() => setStanceId(undefined)}
+        />
+      )}
+      {talkPlayer && talk && (
+        <ContractTalkSheet
+          w={w}
+          player={talkPlayer}
+          talk={talk}
+          disabled={disabled}
+          onOffer={(term) => {
+            void client.command({
+              type: 'contract-offer',
+              player: talkPlayer.id,
+              wage: talk.floor,
+              term,
+            });
+            closeTalk();
+          }}
+          onDecline={() => {
+            void client.command({ type: 'contract-decline', player: talkPlayer.id });
+            closeTalk();
+          }}
+          onClose={closeTalk}
         />
       )}
     </>

@@ -8,6 +8,7 @@ import {
 } from '../../contracts/src/index';
 import { COUNTRIES, country, currency, priceIndex } from '../../catalogs/src/index';
 import {
+  activePlayers,
   advanceRound,
   closeSeason,
   clubOf,
@@ -17,9 +18,11 @@ import {
   finishCups,
   finishEurope,
   legsOf,
+  overall,
   ownLeagueClubs,
   prepareSeason,
   ranked,
+  rating,
   tieAggregate,
 } from './index';
 import { professionalStart } from './testing';
@@ -195,6 +198,59 @@ describe('closed season archive', () => {
     spread.history[0].eloRange = [leagueLow + 1, high, leagueLow, leagueHigh];
     expect(() => validateWorld(spread)).toThrow();
     expect(low).toBeLessThanOrEqual(leagueLow);
+  });
+
+  it('renews no contract by itself: unrenewed players leave at the close (→CLUB-26, CLUB-28)', () => {
+    const w = founded();
+    // Unanswered talks stay open: nobody signs for the owner.
+    w.delegation = { ...w.delegation, contracts: false };
+    for (const p of w.players) p.until = w.year + 1;
+    const year = w.year,
+      before = new Map(w.players.map((p) => [p.id, { wage: p.wage, until: p.until }]));
+    closedSeason(w);
+    const founders = w.players.filter((p) => before.has(p.id)),
+      left = founders.filter((p) => p.status === 'sold');
+    // Each asked to renew on 1 January instead, and left unrenewed; one who announced his
+    // retirement in spring needed no renewal.
+    const asked = new Set(
+      (w.inbox || []).filter((item) => item.kind === 'contract-talk').map((item) => item.ref),
+    );
+    expect(left.length).toBeGreaterThan(0);
+    for (const p of founders) {
+      expect(asked.has(p.id)).toBe(true);
+      expect(p.status === 'sold' || p.retiring === year).toBe(true);
+      expect({ wage: p.wage, until: p.until }).toEqual(before.get(p.id));
+      expect(p.talk).toBeUndefined();
+    }
+    expect(w.events.some((e) => e.kind === 'contract')).toBe(false);
+    // Before 1996 every departure brings his new club's compensation; youth fill the squad.
+    const paid = w.events.filter(
+      (e) => e.year === year + 1 && e.kind === 'free-transfer-compensation',
+    );
+    expect(paid).toHaveLength(left.length);
+    expect(w.players.filter((p) => p.status === 'active')).toHaveLength(18);
+  });
+
+  it('refills a squad its expiring contracts emptied at the level it played at (→CLUB-3, CLUB-28)', () => {
+    const w = founded();
+    w.delegation = { ...w.delegation, contracts: false };
+    // A squad well above the amateur level, so the floor of 20 would stand out.
+    for (const p of w.players) {
+      p.until = w.year + 1;
+      if (p.role === 'GK') p.keeper = 60;
+      else Object.assign(p, { attack: 60, passing: 60, defense: 60, stamina: 60 });
+    }
+    const { live } = closedSeason(w);
+    const level = rating(live, clubOf(live)),
+      youths = activePlayers(w).filter((p) => p.id.startsWith(`${w.playerClub}:youth:`));
+    // Nobody who played the season stays: expiry and retirement emptied the squad.
+    expect(activePlayers(w).filter((p) => live.players.some((x) => x.id === p.id))).toEqual([]);
+    expect(youths.length).toBeGreaterThanOrEqual(11);
+    // Each comes in about five below the XI he replaces (±9 per attribute), never at the floor.
+    for (const p of youths) expect(overall(p)).toBeGreaterThanOrEqual(level - 5 - 9);
+    const mean = youths.reduce((sum, p) => sum + overall(p), 0) / youths.length;
+    expect(mean).toBeGreaterThan(level - 8);
+    expect(mean).toBeLessThan(level + 2);
   });
 
   it('keeps no partial scorer table or rank series from a season tracked midway', () => {

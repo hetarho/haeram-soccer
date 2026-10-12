@@ -31,21 +31,19 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T057 | Market wages and values on the football index | CLUB ECON | T052 T054 | todo |
-| T058 | Contract talks with goodwill, floor and delegation | CLUB ECON STAFF | T057 | todo |
-| T059 | Unhappy players, transfer requests, expiring contracts and the squad UI | CLUB WEB | T058 | todo |
 | T062 | Rules 1.16.0: economy calibration, goldens and docs | SAVE ECON CLUB | T056 T059 T061 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
 | one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
-| club-realism | 4 | 13 | 9 | 4 | 0 | 3 | 0 | 2026-10-12T16:12:53.030Z | [history](work/club-realism.json) |
+| club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 0 | 2026-10-12T16:28:41.826Z | [history](work/club-realism.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261012 T057 T058 T059 integrated
 - 261012 T055 T056 integrated
 - 261012 T060 T061 integrated
 - 261012 T050 T051 T052 integrated
@@ -65,4 +63,3 @@
 - 261012 create-task SAVE WEB ARCH: lane background-save T048 background codec worker → T049 clock never waits for saving (30 s autosave, save on stop/hide/close), added to work group one-result
 - 261012 update-ssot SAVE r20 WEB r50 ARCH r8: owner decisions save at once, automatic progression every 30 s and on stop/hide/close through a background codec worker; clock steps never wait for saving
 - 261012 update-ssot SAVE WEB ARCH start: background autosave, clock not waiting for saves
-- 261012 WEB r49 implemented directly: records room season rows open that season in 시즌 기록; league picker (국가·디비전·지역 그룹, 우리 리그로, ?league=) on 개요, 순위표, 라운드 결과 and a closed season's 순위표, other leagues' fixtures read from the worker on demand (league-fixtures read) and closed seasons' tables from archived standings; closed seasons load lazily, entry 249,558 of 256,000 bytes (WEB-5✎ from r48 stays pending)

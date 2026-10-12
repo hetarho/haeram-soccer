@@ -10,7 +10,7 @@ import type {
 } from '../../contracts/src/types';
 import { clamp, integer, random, zeroMetrics } from './primitives';
 import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../contracts/src/detail';
-import { fatigueLoad, rating, startingSquad, findClub } from './world';
+import { fatigueLoad, rating, startingSquad, findClub, unhappyPenalty } from './world';
 import { moraleStrength } from './morale';
 import { npcTactic, ownTacticalProfile, tacticalProfile, type TacticalProfile } from './strategy';
 import { managerStyleEffects } from './styles';
@@ -345,20 +345,22 @@ export function simulateMatch(
 }
 
 /**
- * Effective skills per starting slot: pre-match fatigue, the day's shift and in-match drain. A
- * short list repeats its last player so no slot indexes past the end.
+ * Effective skills per starting slot: pre-match fatigue, an unhappy player's penalty (→CLUB-27),
+ * the day's shift and in-match drain. A short list repeats its last player so no slot indexes past
+ * the end.
  */
 function matchSkills({ squads, tactics, drain: drains, shift }: MatchSetup) {
   const base = squads.map((ps) => {
     const table = new Float64Array(11 * 5);
     for (let slot = 0; slot < 11; slot++) {
       const p = ps[Math.min(slot, ps.length - 1)];
-      const load = fatigueLoad(p.fatigue);
-      table[slot * 5 + ATTACK] = p.attack - load / 8;
-      table[slot * 5 + PASSING] = p.passing - load / 8;
-      table[slot * 5 + DEFENSE] = p.defense - load / 8;
-      table[slot * 5 + KEEPER] = p.keeper - load / 10;
-      table[slot * 5 + STAMINA] = p.stamina - load / 8;
+      const load = fatigueLoad(p.fatigue),
+        off = unhappyPenalty(p);
+      table[slot * 5 + ATTACK] = p.attack - load / 8 - off;
+      table[slot * 5 + PASSING] = p.passing - load / 8 - off;
+      table[slot * 5 + DEFENSE] = p.defense - load / 8 - off;
+      table[slot * 5 + KEEPER] = p.keeper - load / 10 - off;
+      table[slot * 5 + STAMINA] = p.stamina - load / 8 - off;
     }
     return table;
   });

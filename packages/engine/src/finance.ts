@@ -1,6 +1,6 @@
 import type { Event, MatchRecord, SponsorSlot, World } from '../../contracts/src/types';
-import { country, currency, footballIndex } from '../../catalogs/src/index';
-import { activePlayers, clubOf, quote } from './world';
+import { country, currency } from '../../catalogs/src/index';
+import { activePlayers, clubOf, footballQuote, quote } from './world';
 import { clamp, ratio } from './primitives';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
@@ -41,14 +41,6 @@ export const DISTRIBUTION_CONFIG = {
   parachute: 0.5,
 };
 
-/**
- * Price units in this season's money, grown with the football index rather than prices alone
- * (→ECON-26): what football pays and charges — distributions, prizes and tickets.
- */
-export function footballQuote(code: string, year: number, units: number) {
-  return quote(code, year, units * footballIndex(code, year).real);
-}
-
 export function roundShare(annual: string, round: number, count = 46) {
   if (round <= 0 || count <= 0) return '0';
   return (
@@ -83,14 +75,11 @@ export function moneyLabel(w: World, amount: string) {
 
 export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1) {
   const effects = policyEffects(policyOf(w));
-  // Squad investment acts in contract talks, not on the wage bill (→ECON-16).
-  const playerWages = ratio(
-    activePlayers(w)
-      .reduce((sum, p) => sum + BigInt(p.wage), 0n)
-      .toString(),
-    BigInt(Math.round(buildEffects(w).wage * 1000)),
-    1000n,
-  );
+  // Agreed wages are paid as signed: squad investment and the build's player-wage effects act in
+  // contract talks, not on the wage bill (→ECON-16, →CLUB-26).
+  const playerWages = activePlayers(w)
+    .reduce((sum, p) => sum + BigInt(p.wage), 0n)
+    .toString();
   const managerWage = w.manager.wage;
   const maintenance = quote(clubOf(w).country, w.year, facilityUpkeepUnits(w.facilities));
   const marketing = effects.marketingUnits
@@ -302,6 +291,7 @@ const incomeKinds: Record<string, string> = {
   'match-bonus': '컵·대륙 경기 성과 보너스',
   'campaign-result': '마케팅 회수금',
   'transfer-out': '선수 매각',
+  'free-transfer-compensation': '계약 만료 보상금',
   'cup-prize': '국내 컵 상금',
   'cup-honor': '국내 컵 우승 상금',
   'europe-prize': '클럽대항전 수당',

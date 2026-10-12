@@ -3,6 +3,7 @@ import { currentDay, dayCountedFrom, seasonDayLabel, seasonDayOf } from './calen
 import { clamp, integer, random } from './primitives';
 import { activePlayers, addEvent, fatigueLoad, isInjured, overall, ownStarters } from './world';
 import { pushInbox } from './inbox';
+import { leaveContract } from './contracts';
 
 /**
  * Players decide in spring whether this season is their last (→CLUB-3): the chance rises with
@@ -67,13 +68,17 @@ export function announceRetirements(w: World) {
   }
 }
 
-/** Season close: announced retirements take effect; career records stay with the club. */
+/**
+ * Season close: announced retirements take effect; career records stay with the club. Like a sale,
+ * retiring ends his talk, unhappiness and transfer request with their items (→CLUB-27).
+ */
 export function retireAtClose(w: World) {
   for (const p of activePlayers(w)) {
     const age = w.year + 1 - p.born;
     if (p.retiring !== w.year && age < RETIREMENT.lastAge) continue;
     p.status = 'retired';
     delete p.stance;
+    leaveContract(w, p);
     addEvent(w, 'retirement', `${p.name}의 다음 장`, `${age}세 은퇴 · ${careerLine(w, p)}`);
   }
 }

@@ -1,7 +1,13 @@
 import { useState } from 'react';
-import type { InboxItem, TransferBid, World } from '../../../../packages/contracts/src/types';
+import type {
+  InboxItem,
+  InboxKind,
+  TransferBid,
+  World,
+} from '../../../../packages/contracts/src/types';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/world';
+import { talkFor } from '../../../../packages/engine/src/contracts';
 import { isExpiring } from '../../../../packages/engine/src/staff';
 import { managerRenewal } from '../../../../packages/engine/src/operations';
 import { managerTerm } from '../../../../packages/engine/src/styles';
@@ -13,7 +19,7 @@ import {
   type SystemNotification,
 } from '../runtime/store';
 import { stoppingEvents, useProgression, type ProgressionController } from '../runtime/progression';
-import { openMarket, useNavigation, useSquadView, useStaffView } from './state';
+import { openContractTalk, openMarket, useNavigation, useSquadView, useStaffView } from './state';
 import { competitionLabel } from './format';
 import { Money } from './Money';
 import { Dialog } from './Dialog';
@@ -28,6 +34,8 @@ const cardExit = fadeOutOnRemove([
   { opacity: 0, transform: 'translateY(18px) scale(0.98)' },
 ]);
 
+/** Items about a player's contract: a talk, his unhappiness, his transfer request. */
+const PLAYER_KINDS: readonly InboxKind[] = ['contract-talk', 'unhappy', 'transfer-request'];
 function bidFor(w: World, item: InboxItem): TransferBid | undefined {
   return item.ref ? w.bids?.find((bid) => bid.id === item.ref) : undefined;
 }
@@ -135,6 +143,10 @@ export function EventCenter({
   }
   const item = events[0];
   const bid = bidFor(w, item);
+  // A talk still open, or an unhappy player's floor still to meet (→WEB-68).
+  const talker = PLAYER_KINDS.includes(item.kind)
+    ? w.players.find((p) => p.id === item.ref && p.status === 'active' && talkFor(w, p))
+    : undefined;
   const expiring = (w.staff || []).filter((member) => isExpiring(w, member));
   // A firefighter's season-long deal can still be extended while it runs.
   const keepManager = managerTerm(w.manager) === 1 && !!managerRenewal(w);
@@ -306,6 +318,22 @@ export function EventCenter({
               }}
             >
               대진표 보기
+            </button>
+            <button disabled={acting} onClick={() => void read(item)}>
+              확인
+            </button>
+          </>
+        ) : talker ? (
+          <>
+            <button
+              className={s.primary}
+              disabled={acting}
+              onClick={() => {
+                void read(item);
+                openContractTalk(talker.id);
+              }}
+            >
+              {talker.talk ? '협상하기' : '하한 제시하기'}
             </button>
             <button disabled={acting} onClick={() => void read(item)}>
               확인

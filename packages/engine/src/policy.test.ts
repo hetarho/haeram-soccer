@@ -9,6 +9,7 @@ import {
   createWorld,
   gateProjection,
   marketingFanGain,
+  marketWage,
   moneyLabel,
   operate,
   operatingCosts,
@@ -51,6 +52,8 @@ function academy(policy?: Partial<ClubPolicy>) {
     player.potential = 85;
     player.attack = player.passing = player.defense = player.keeper = player.stamina = 40;
     player.fatigue = 50;
+    // Paid as the market rates them now, so nobody asks for a raise (→CLUB-26).
+    player.wage = marketWage(w, player);
   }
   return w;
 }

@@ -35,6 +35,14 @@ function beforeChange(country: CountryCode, year: number, amount: string) {
     serial: 1,
   };
   w.academy = { players: [{ ...w.players[0], id: 'prospect:1', wage: amount }] };
+  // A raise talk the owner leaves open across the close (→CLUB-26).
+  w.players[3].talk = {
+    kind: 'raise',
+    demand: (BigInt(amount) * 2n).toString(),
+    floor: amount,
+    year: w.year,
+    day: 200,
+  };
   const bid = (id: string, status: TransferBid['status'], counterFee?: string): TransferBid => ({
     id,
     direction: 'out',
@@ -77,6 +85,7 @@ function liveAmounts(w: World) {
     coach: w.staff![0].wage,
     free: w.managerMarket!.free[0].wage,
     prospect: w.academy!.players[0].wage,
+    talk: [w.players[3].talk!.demand, w.players[3].talk!.floor],
     pending: w.bids![0].fee,
     countered: [w.bids![1].fee, w.bids![1].counterFee],
     incoming: w.bids![2].fee,
@@ -94,7 +103,7 @@ describe('currency change', () => {
     // 240 old pence to the pound became 100 new pence.
     ['ENG', 1971, '2400', '1000'],
   ] as const)
-    it(`converts coaches, free agents, prospects, open bids and their offers once in ${country} ${year}`, () => {
+    it(`converts coaches, free agents, prospects, open talks, open bids and their offers once in ${country} ${year}`, () => {
       const w = beforeChange(country, year, amount);
       const [num, den] = conversion(country, year);
       const expected = ratio(amount, num, den);
@@ -107,6 +116,7 @@ describe('currency change', () => {
         coach: expected,
         free: expected,
         prospect: expected,
+        talk: [doubled, expected],
         pending: expected,
         countered: [expected, doubled],
         incoming: expected,

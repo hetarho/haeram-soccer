@@ -43,7 +43,7 @@ describe('club decisions', () => {
       '동일',
     );
   });
-  it('refuses rules 1.16 commands until their rules land', () => {
+  it('refuses contract answers without a talk and the old single sponsor', () => {
     const w = world();
     // New clubs leave contract talks to the staff (→STAFF-13); the new posts can be delegated.
     expect(w.delegation).toMatchObject({ contracts: true });
@@ -51,10 +51,11 @@ describe('club decisions', () => {
     expect(w.delegation?.manager).toBe(true);
     const before = structuredClone(w);
     const player = w.players[0].id;
+    // Contract answers need a talk the player opened (→CLUB-26).
     expect(() => operate(w, { type: 'contract-offer', player, wage: '1', term: 2 })).toThrow(
-      'contract-offer 명령은 아직 지원하지 않습니다.',
+      '계약 협상 중인 선수가 아닙니다.',
     );
-    expect(() => operate(w, { type: 'contract-decline', player })).toThrow('아직');
+    expect(() => operate(w, { type: 'contract-decline', player })).toThrow('협상');
     // The single sponsor of rules before 1.16 is signed by slot now (→ECON-8).
     expect(() => operate(w, { type: 'sponsor', kind: 'stable' })).toThrow('자리별');
     expect(w).toEqual(before);

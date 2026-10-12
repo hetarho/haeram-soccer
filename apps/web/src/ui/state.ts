@@ -73,6 +73,21 @@ export function openMarket() {
   useSquadView.getState().setTab('market');
   useNavigation.getState().setPage('squad');
 }
+/** The player whose contract-talk sheet is open over the squad page (→WEB-68). */
+export const useContractTalk = create<{
+  id?: string;
+  open: (id: string) => void;
+  close: () => void;
+}>((set) => ({
+  open: (id) => set({ id }),
+  close: () => set({ id: undefined }),
+}));
+/** Opens a player's contract talk from elsewhere, such as its event card: the roster, then the sheet. */
+export function openContractTalk(id: string) {
+  useContractTalk.getState().open(id);
+  useSquadView.getState().setTab('roster');
+  useNavigation.getState().setPage('squad');
+}
 if (typeof window !== 'undefined')
   window.addEventListener('popstate', () => {
     const page = current();

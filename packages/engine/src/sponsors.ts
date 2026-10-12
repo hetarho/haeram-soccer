@@ -1,8 +1,8 @@
 import type { SponsorContract, SponsorKind, SponsorSlot, World } from '../../contracts/src/types';
 import { SPONSOR_SLOTS, sponsorSlotOpens, type Observation } from '../../catalogs/src/index';
-import { addEvent, clubOf } from './world';
+import { addEvent, clubOf, footballQuote } from './world';
 import { ratio } from './primitives';
-import { footballQuote, moneyLabel, SPONSOR_SLOT_LABELS } from './finance';
+import { moneyLabel, SPONSOR_SLOT_LABELS } from './finance';
 import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
 import { pushInbox } from './inbox';

@@ -1,11 +1,10 @@
 import type { MatchRecord, World } from '../../contracts/src/types';
-import { addEvent, clubOf, quote } from './world';
+import { addEvent, clubOf, footballQuote, quote } from './world';
 import { random, ratio } from './primitives';
 import {
   campaignEffectiveness,
   divisionLabel,
   FINANCE_CONFIG,
-  footballQuote,
   gateProjection,
   isLeagueMatch,
   leagueMerit,

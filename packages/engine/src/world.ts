@@ -4,6 +4,7 @@ import {
   CATALOG_HASH,
   country,
   currency,
+  footballIndex,
   priceIndex,
 } from '../../catalogs/src/index';
 import type {
@@ -20,6 +21,7 @@ import { CURRENT_ENGINE_VERSION } from '../../contracts/src/versions';
 import { coachProspect, MANAGER_CAREER } from './coaching';
 import { dayCountedFrom } from './calendar';
 import { MARKET_BANDS, STYLE_INFO, YOUTH_SELECTION_BONUS } from './styles';
+import { divisionFor, marketWageAt } from './contracts';
 export const ENGINE_VERSION = CURRENT_ENGINE_VERSION;
 export const TACTICS: Tactic[] = ['balanced', 'possession', 'counter', 'press'];
 export const tacticLabel: Record<Tactic, string> = {
@@ -32,31 +34,67 @@ export const clubOf = (w: World) => w.clubs.find((c) => c.id === w.playerClub)!;
 export const activePlayers = (w: World) => w.players.filter((p) => p.status === 'active');
 export const overall = (p: Player) =>
   Math.round(p.role === 'GK' ? p.keeper : (p.attack + p.passing + p.defense + p.stamina) / 4);
+/** Points an unhappy player plays below his ability (→CLUB-27); his attributes stay as they are. */
+export const UNHAPPY_PENALTY = 3;
+export const unhappyPenalty = (p: Player) => (p.unhappy ? UNHAPPY_PENALTY : 0);
+/** The ability a player plays at: his overall, less the unhappy penalty. */
+export const playingAbility = (p: Player) => overall(p) - unhappyPenalty(p);
+type Index = (code: string, year: number) => { value: number };
+/** What `indexed` scales by in a country and year, worked out once per index. */
+const indexFactors = new Map<
+  Index,
+  Map<string, { scale: number; initial: number; num: bigint; den: bigint }>
+>();
+/** `units` of 1901 money carried to `year` by an index, in that year's currency. */
+function indexed(code: string, year: number, units: number, index: Index) {
+  let byYear = indexFactors.get(index);
+  if (!byYear) indexFactors.set(index, (byYear = new Map()));
+  const key = `${code}:${year}`;
+  let f = byYear.get(key);
+  if (!f) {
+    const now = currency(code, year),
+      initial = currency(code, 1901);
+    const factor = BigInt(
+      Math.round((index(code, year).value / index(code, 1901).value) * 1000000),
+    );
+    f = {
+      scale: country(code).scale,
+      initial: initial.units,
+      num: factor * now.num * BigInt(now.units),
+      den: 10000n * 1000000n * now.den * BigInt(initial.units),
+    };
+    if (byYear.size > 4096) byYear.clear();
+    byYear.set(key, f);
+  }
+  const base = BigInt(Math.round(units * f.scale * f.initial * 10000));
+  return ratio(base.toString(), f.num, f.den);
+}
 const quoteCache = new Map<string, string>();
 export function quote(code: string, year: number, units: number): string {
   const key = `${code}:${year}:${units}`;
   const cached = quoteCache.get(key);
   if (cached !== undefined) return cached;
-  const c = country(code),
-    now = currency(code, year),
-    initial = currency(code, 1901);
-  const base = BigInt(Math.round(units * c.scale * initial.units * 10000));
-  const factor = BigInt(
-    Math.round((priceIndex(code, year).value / priceIndex(code, 1901).value) * 1000000),
-  );
-  const result = ratio(
-    base.toString(),
-    factor * now.num * BigInt(now.units),
-    10000n * 1000000n * now.den * BigInt(initial.units),
-  );
+  const result = indexed(code, year, units, priceIndex);
   if (quoteCache.size > 4096) quoteCache.clear();
   quoteCache.set(key, result);
   return result;
+}
+/**
+ * Like `quote`, carried by the football index instead of prices alone (→ECON-26): what football
+ * pays and charges. Amounts are not cached, because market amounts are rarely quoted twice; the
+ * country's and year's factors are.
+ */
+export function footballQuote(code: string, year: number, units: number): string {
+  return indexed(code, year, units, footballIndex);
 }
 export function personName(code: string, r: () => number) {
   const c = country(code);
   return `${c.given[integer(r, 0, c.given.length - 1)]} ${c.family[integer(r, 0, c.family.length - 1)]}`;
 }
+/**
+ * A generated player at his market wage (→CLUB-25) in `division`, the tier of the club he plays
+ * for; without one, the division his ability suits.
+ */
 export function makePlayer(
   code: string,
   seed: string,
@@ -65,12 +103,13 @@ export function makePlayer(
   rating: number,
   role: Player['role'],
   age = integer(random(id), 18, 32),
+  division?: number,
 ): Player {
   const r = random(`${seed}:${id}`);
   const skill = () => clamp(integer(r, Math.round(rating) - 9, Math.round(rating) + 9), 15, 95);
   // Attributes top out at 99, so no ability exceeds the highest potential.
   const top = (value: number) => clamp(value, 0, 99);
-  return {
+  const player: Player = {
     id,
     name: personName(code, r),
     role,
@@ -82,13 +121,15 @@ export function makePlayer(
     stamina: skill(),
     potential: clamp(rating + integer(r, 10, 35), 50, 95),
     reputation: clamp(rating - 15),
-    wage: quote(code, year, Math.max(15, rating - 18)),
+    wage: '0',
     until: year + 3,
     status: 'active',
     fatigue: 0,
     career: zeroMetrics(),
     season: zeroMetrics(),
   };
+  player.wage = marketWageAt(code, year, division ?? divisionFor(code, overall(player)), player);
+  return player;
 }
 /**
  * Fatigue up to this level is ordinary match fitness and costs nothing: other clubs carry the same
@@ -313,7 +354,16 @@ export function createBase(input: Founding): World {
   );
   const found = (base: number) =>
     roles.map((role, i) =>
-      makePlayer(input.country, input.seed, `${club.id}:founder:${i}`, year, base, role),
+      makePlayer(
+        input.country,
+        input.seed,
+        `${club.id}:founder:${i}`,
+        year,
+        base,
+        role,
+        undefined,
+        club.tier,
+      ),
     );
   let base = target;
   for (let step = 0; step < 4; step++) {
@@ -411,7 +461,16 @@ export function npcSquad(seed: string, year: number, c: Club): Player[] {
     const age = 18 + ((year + i) % 18),
       cohort = Math.floor((year + i) / 18);
     const role: Player['role'] = i < 2 ? 'GK' : i < 8 ? 'DEF' : i < 14 ? 'MID' : 'FWD';
-    const player = makePlayer(code, seed, `${c.id}:p:${i}:${cohort}`, year, c.strength, role, age);
+    const player = makePlayer(
+      code,
+      seed,
+      `${c.id}:p:${i}:${cohort}`,
+      year,
+      c.strength,
+      role,
+      age,
+      c.tier,
+    );
     player.fatigue = fatigue;
     return player;
   });
@@ -421,8 +480,9 @@ export function xiRating(players: readonly Player[]) {
   return Math.round(players.reduce((sum, p) => sum + overall(p), 0) / Math.max(1, players.length));
 }
 /**
- * Automatic selection value. A manager's trait shifts it: youth favours players aged 21 or
- * younger, rotation rests tired players sooner, stable keeps the best XI despite fatigue.
+ * Automatic selection value: the ability he plays at, less fatigue. A manager's trait shifts it:
+ * youth favours players aged 21 or younger, rotation rests tired players sooner, stable keeps the
+ * best XI despite fatigue.
  */
 export function selectionValue(p: Player, manager?: Manager, year?: number) {
   const fatigueWeight = manager?.trait === 'rotation' ? 2.5 : manager?.trait === 'stable' ? 10 : 5;
@@ -432,7 +492,7 @@ export function selectionValue(p: Player, manager?: Manager, year?: number) {
     year - p.born <= 21
       ? YOUTH_SELECTION_BONUS
       : 0;
-  return overall(p) - p.fatigue / fatigueWeight + youth;
+  return playingAbility(p) - p.fatigue / fatigueWeight + youth;
 }
 export function lineup(players: Player[], manager?: Manager, year?: number): Player[] {
   const value = (p: Player) => selectionValue(p, manager, year);
@@ -450,7 +510,7 @@ export function lineup(players: Player[], manager?: Manager, year?: number): Pla
         .slice(0, count),
     );
   }
-  for (const p of [...players].sort((a, b) => overall(b) - overall(a)))
+  for (const p of [...players].sort((a, b) => playingAbility(b) - playingAbility(a)))
     if (selected.length < 11 && !selected.includes(p)) selected.push(p);
   const result = selected.slice(0, 11);
   return result;
@@ -487,7 +547,9 @@ export function selectedLineup(
     return player;
   });
   const fit = [...active].sort(
-    (a, b) => overall(b) - b.fatigue / 5 - (overall(a) - a.fatigue / 5) || compareIds(a.id, b.id),
+    (a, b) =>
+      playingAbility(b) - b.fatigue / 5 - (playingAbility(a) - a.fatigue / 5) ||
+      compareIds(a.id, b.id),
   );
   return selected.flatMap((player, i) => {
     const replacement =
@@ -520,11 +582,14 @@ export function ownStarters(w: World) {
 }
 /**
  * Match strength of a club: its actual starting XI for every club, so the own club and the clubs
- * it plays are measured on one scale, each paying for fatigue beyond ordinary match fitness.
+ * it plays are measured on one scale, each paying for fatigue beyond ordinary match fitness and
+ * for unhappy players.
  */
 export function rating(w: World, c: Club) {
   const xi = c.id === w.playerClub ? ownStarters(w) : startingSquad(w, c);
-  return Math.round(xi.reduce((s, p) => s + overall(p) - fatigueLoad(p.fatigue) / 6, 0) / 11);
+  return Math.round(
+    xi.reduce((s, p) => s + playingAbility(p) - fatigueLoad(p.fatigue) / 6, 0) / 11,
+  );
 }
 export function addEvent(w: World, kind: string, title: string, detail: string, amount?: string) {
   w.events.push({

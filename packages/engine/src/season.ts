@@ -24,7 +24,8 @@ import type {
 } from '../../contracts/src/types';
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import { addMetrics, clamp, random, zeroMetrics, compareIds } from './primitives';
-import { activePlayers, addEvent, AMATEUR_CLUBS, clubOf, makePlayer, quote, rating } from './world';
+import { activePlayers, addEvent, AMATEUR_CLUBS, clubOf, makePlayer, rating } from './world';
+import { contractTalks, expireContracts, transferRequests } from './contracts';
 import { simulateMatch } from './match';
 import { fatigueCost } from './strategy';
 import { developAnnually, settleTraining } from './training';
@@ -621,6 +622,11 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   yearlyStaff(w);
   seasonStaff(w);
   seasonAcademy(w);
+  // Youth come in five below the squad as it finished the season: an XI that expiring contracts
+  // left short would otherwise bring every replacement in at the floor of 20 (→CLUB-3).
+  const youthLevel = Math.max(20, rating(w, own) - 5);
+  // Unrenewed contracts end: those players leave, before 1996 for a compensation (→CLUB-28).
+  expireContracts(w, oldTier);
   for (const p of activePlayers(w)) {
     if (p.loanUntil && p.loanUntil <= w.year) {
       p.status = 'retired';
@@ -630,14 +636,6 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     developAnnually(w, p);
     p.fatigue = 0;
     p.season = zeroMetrics();
-    if (p.until <= w.year) {
-      p.wage = quote(
-        own.country,
-        w.year,
-        Math.max(15, Math.round((p.attack + p.passing + p.defense) / 3) - 18),
-      );
-      p.until = w.year + 3;
-    }
   }
   let i = 0;
   while (activePlayers(w).length < 18 || !activePlayers(w).some((p) => p.role === 'GK')) {
@@ -656,9 +654,10 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
         w.seed,
         `${own.id}:youth:${w.year}:${i++}`,
         w.year,
-        Math.max(20, rating(w, own) - 5),
+        youthLevel,
         role,
         18,
+        own.tier,
       ),
     );
   }
@@ -748,7 +747,7 @@ function stepDay(w: World, capture: Settlement, observe: boolean) {
 
 /**
  * Daily club business outside matches: academy intake, the transfer market, sponsors, the staff,
- * spring retirement announcements and healed injuries.
+ * spring retirement announcements, contract talks, transfer requests and healed injuries.
  */
 export function clubDay(w: World) {
   runAcademyIntake(w);
@@ -756,6 +755,8 @@ export function clubDay(w: World) {
   delegatedBusiness(w);
   dailyStaff(w);
   announceRetirements(w);
+  contractTalks(w);
+  transferRequests(w);
   clearHealed(w);
 }
 /** Off days only move the clock. Matches and existing weekly costs settle on their due day. */
