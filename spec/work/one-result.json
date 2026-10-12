@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-12T08:53:57.954Z",
-  "sourceCommit": "2851074784fc9207a52591137580b1f6798fd1ca",
+  "snapshotAt": "2026-10-12T09:01:22.640Z",
+  "sourceCommit": "824cf7d37cf6628f4ab567584910a55b64b92299",
   "group": {
     "id": "one-result",
     "branch": "work/one-result",
@@ -13,7 +13,7 @@
       "maxPending": 8
     },
     "lastRun": {
-      "id": "30b2eefb-6935-4a81-b257-cfdeb76e726a",
+      "id": "e0aa9009-8aeb-4720-aac8-f57ec10b321d",
       "adapter": "builtin",
       "providers": {
         "worker": {
@@ -34,11 +34,17 @@
           "version": "2.1.296 (Claude Code)"
         }
       ],
-      "startedAt": "2026-10-12T08:26:34.649Z",
-      "stoppedAt": "2026-10-12T08:53:57.761Z",
-      "dispatched": 2,
+      "startedAt": "2026-10-12T08:54:18.180Z",
+      "stoppedAt": "2026-10-12T09:01:22.440Z",
+      "dispatched": 1,
       "outcome": "needs-attention",
-      "failures": []
+      "failures": [
+        {
+          "attempt": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+          "role": "worker",
+          "error": "T047: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+        }
+      ]
     }
   },
   "summary": {
@@ -803,26 +809,27 @@
         "T047"
       ],
       "lane": null,
-      "owner": "972d9a30-6bea-46b8-81f6-ead950c5011c/worker-2",
+      "owner": "e0aa9009-8aeb-4720-aac8-f57ec10b321d/worker-1",
       "contributors": [
-        "972d9a30-6bea-46b8-81f6-ead950c5011c/worker-2"
+        "972d9a30-6bea-46b8-81f6-ead950c5011c/worker-2",
+        "e0aa9009-8aeb-4720-aac8-f57ec10b321d/worker-1"
       ],
       "status": "blocked",
-      "reason": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session.",
+      "reason": "T047: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
       "createdAt": "2026-10-12T07:57:19.962Z",
       "startCommit": "1051b89d94fc3627fe7ac3cc1b414c8659c83464",
       "dispatch": {
-        "id": "a4da37d8-c06a-45e2-a1b7-4c8199f3a875",
-        "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+        "id": "88884ad5-2d56-4f97-a3f9-a6f8586fb4c4",
+        "runner": "e0aa9009-8aeb-4720-aac8-f57ec10b321d",
         "role": "worker",
-        "slot": 2,
+        "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-12T07:57:20.132Z",
-        "finishedAt": "2026-10-12T08:23:18.068Z",
-        "error": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session.",
-        "summary": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session."
+        "startedAt": "2026-10-12T08:54:18.266Z",
+        "finishedAt": "2026-10-12T09:01:21.913Z",
+        "error": "T047: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+        "summary": "T047 구현은 끝났습니다. 다만 완료기준 5번의 test:e2e 단계는 이 세션에서 실행하지 못해 체크하지 않은 채로 두었습니다.\n\n변경 범위(touches 안):\n- versions.ts: 엔진 1.15.0, 1.14.0 지원 목록 추가 (이전 WIP 커밋 f7e3b72). tsx로 다시 확인한 결과 1.14.0 월드는 engine과 revision+1만 바뀌고 나머지는 같습니다.\n- economy.ts: 화폐 전환 시 진행 중인 out 입찰의 `offer`(fee, loanFee, player.wage)도 환산합니다 (WIP). 이번에 화폐 이벤트 문구를 ECON-6 r13에 맞게 \"명목 잔고와 미지급 계약만 환산\"에서 \"현금·계약·진행 중 입찰·호가 모두 환산\"으로 고쳤습니다. T046 리뷰에서 T047과 함께 처리하라고 권고한 항목이며, 골든 사실은 kind, title, amount만 담고 있어서 바뀌지 않습니다.\n- portable-v1.json 골든은 WIP에서 재생성했습니다. 그 뒤 들어온 T048, T049, T063, T064는 엔진을 바꾸지 않아 test:contract에서 그대로 일치합니다.\n- docs/SEASON-PROGRESSION.md는 WIP 그대로입니다.\n- 태스크 result를 갱신했고, at은 `-`입니다.\n\n검증 (T064가 병합된 묶음 브랜치 기준, 모두 통과):\n- pnpm install --frozen-lockfile --prefer-offline, typecheck, test:unit (74개 파일, 527개 테스트)\n- test:contract (5개), validate:catalogs, lint, format:check, build\n\n실행하지 못한 것:\n- pnpm run test:e2e: Playwright 실행이 세션 권한에서 거부됐고, 전체 실행이 지난번 약 15분 걸려 10분 제한도 넘습니다. 이전 차단 원인이던 r1 기대값은 T064가 고쳤지만, 그때는 1.14.0에서 세 브라우저로 확인한 것입니다. e2e는 CURRENT_ENGINE_VERSION을 읽어 쓰므로 버전 문자열이 하드코딩된 곳은 없습니다. 부하로 인한 브라우저 타임아웃은 소유자 결정대로 CI의 pnpm run verify에 맡깁니다.\n- haeram-spec-creator lint와 work board: CLI 호출이 권한에서 거부됐습니다."
       }
     },
     {
@@ -6936,6 +6943,212 @@
           "dispatched": 2,
           "outcome": "needs-attention",
           "failures": []
+        }
+      }
+    },
+    {
+      "sequence": 243,
+      "at": "2026-10-12T08:54:16.626Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+      "taskId": "T047",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": "Unblocked: T064 (e2e revisions under the day order, SAVE-FORMAT 1.15.0) is integrated and work/one-result is merged into this workspace (your work is kept in f7e3b72). Finish T047: (1) update the currency event text in economy.ts, still '명목 잔고와 미지급 계약만 환산', to say every live amount is converted (ECON-6); (2) rerun test:contract and regenerate the goldens only if they changed; (3) run the full pnpm run verify. Owner's decision 261012: browser failures that are only load timeouts (they pass when that spec is rerun alone, e.g. training.spec.ts 360x740, intervention.spec.ts focus, recruitment.spec.ts:236 in WebKit) are checked in CI. Record such reruns and their results in the result and mark the verify item [v] only if every other check passes. Then submit."
+      }
+    },
+    {
+      "sequence": 244,
+      "at": "2026-10-12T08:54:18.191Z",
+      "type": "group",
+      "group": "one-result",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "e0aa9009-8aeb-4720-aac8-f57ec10b321d",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-12T08:54:18.180Z"
+        }
+      }
+    },
+    {
+      "sequence": 245,
+      "at": "2026-10-12T08:54:18.217Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+      "taskId": "T047",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "e0aa9009-8aeb-4720-aac8-f57ec10b321d/worker-1",
+        "contributors": [
+          "972d9a30-6bea-46b8-81f6-ead950c5011c/worker-2",
+          "e0aa9009-8aeb-4720-aac8-f57ec10b321d/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 246,
+      "at": "2026-10-12T08:54:18.266Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+      "taskId": "T047",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "88884ad5-2d56-4f97-a3f9-a6f8586fb4c4",
+          "runner": "e0aa9009-8aeb-4720-aac8-f57ec10b321d",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T08:54:18.266Z"
+        }
+      }
+    },
+    {
+      "sequence": 247,
+      "at": "2026-10-12T08:54:18.287Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+      "taskId": "T047",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "88884ad5-2d56-4f97-a3f9-a6f8586fb4c4",
+          "runner": "e0aa9009-8aeb-4720-aac8-f57ec10b321d",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T08:54:18.266Z"
+        }
+      }
+    },
+    {
+      "sequence": 248,
+      "at": "2026-10-12T09:01:21.729Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+      "taskId": "T047",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 249,
+      "at": "2026-10-12T09:01:21.880Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+      "taskId": "T047",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T047: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+      }
+    },
+    {
+      "sequence": 250,
+      "at": "2026-10-12T09:01:21.913Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+      "taskId": "T047",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "88884ad5-2d56-4f97-a3f9-a6f8586fb4c4",
+          "runner": "e0aa9009-8aeb-4720-aac8-f57ec10b321d",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T08:54:18.266Z",
+          "finishedAt": "2026-10-12T09:01:21.913Z",
+          "error": "T047: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+          "summary": "T047 구현은 끝났습니다. 다만 완료기준 5번의 test:e2e 단계는 이 세션에서 실행하지 못해 체크하지 않은 채로 두었습니다.\n\n변경 범위(touches 안):\n- versions.ts: 엔진 1.15.0, 1.14.0 지원 목록 추가 (이전 WIP 커밋 f7e3b72). tsx로 다시 확인한 결과 1.14.0 월드는 engine과 revision+1만 바뀌고 나머지는 같습니다.\n- economy.ts: 화폐 전환 시 진행 중인 out 입찰의 `offer`(fee, loanFee, player.wage)도 환산합니다 (WIP). 이번에 화폐 이벤트 문구를 ECON-6 r13에 맞게 \"명목 잔고와 미지급 계약만 환산\"에서 \"현금·계약·진행 중 입찰·호가 모두 환산\"으로 고쳤습니다. T046 리뷰에서 T047과 함께 처리하라고 권고한 항목이며, 골든 사실은 kind, title, amount만 담고 있어서 바뀌지 않습니다.\n- portable-v1.json 골든은 WIP에서 재생성했습니다. 그 뒤 들어온 T048, T049, T063, T064는 엔진을 바꾸지 않아 test:contract에서 그대로 일치합니다.\n- docs/SEASON-PROGRESSION.md는 WIP 그대로입니다.\n- 태스크 result를 갱신했고, at은 `-`입니다.\n\n검증 (T064가 병합된 묶음 브랜치 기준, 모두 통과):\n- pnpm install --frozen-lockfile --prefer-offline, typecheck, test:unit (74개 파일, 527개 테스트)\n- test:contract (5개), validate:catalogs, lint, format:check, build\n\n실행하지 못한 것:\n- pnpm run test:e2e: Playwright 실행이 세션 권한에서 거부됐고, 전체 실행이 지난번 약 15분 걸려 10분 제한도 넘습니다. 이전 차단 원인이던 r1 기대값은 T064가 고쳤지만, 그때는 1.14.0에서 세 브라우저로 확인한 것입니다. e2e는 CURRENT_ENGINE_VERSION을 읽어 쓰므로 버전 문자열이 하드코딩된 곳은 없습니다. 부하로 인한 브라우저 타임아웃은 소유자 결정대로 CI의 pnpm run verify에 맡깁니다.\n- haeram-spec-creator lint와 work board: CLI 호출이 권한에서 거부됐습니다."
+        }
+      }
+    },
+    {
+      "sequence": 251,
+      "at": "2026-10-12T09:01:22.440Z",
+      "type": "group",
+      "group": "one-result",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "e0aa9009-8aeb-4720-aac8-f57ec10b321d",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-12T08:54:18.180Z",
+          "stoppedAt": "2026-10-12T09:01:22.440Z",
+          "dispatched": 1,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+              "role": "worker",
+              "error": "T047: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+            }
+          ]
         }
       }
     }
