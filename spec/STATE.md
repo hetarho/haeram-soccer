@@ -32,17 +32,17 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T047 | Rules 1.15.0 with regenerated portable goldens | SAVE ECON ARCH LEAGUE | T044 T045 T046 | todo |
-| T064 | Browser journeys and save-format doc follow the day order and rules 1.15.0 | LEAGUE ARCH SAVE | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| one-result | 3 | 9 | 8 | 1 | 0 | 0 | 1 | 2026-10-12T08:23:57.212Z | [history](work/one-result.json) |
+| one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T08:52:08.563Z | [history](work/one-result.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261012 T064 integrated
 - 261012 create-task T064 (from T047's blocker): e2e save-status revisions under the day order, SAVE-FORMAT 1.15.0; load-induced browser timeouts are left to CI by the owner's decision
 - 261012 T048 T049 integrated
 - 261012 T063 integrated
@@ -62,4 +62,3 @@
 - 261012 MATCH r8 EURO r3 SAVE r18 implemented directly (rules 1.14.0): possession that changes sides between minutes without a duel now opens with a restart (throw-in, goal kick, corner chosen from where the ball was; ~27/7/12 a match) played on the pitch with the ball out of play and a taker, ghost turnovers 46→0 a match with results, counts and golden facts unchanged; continental legs on each era's real gap (2 weeks before 2003, then 1, UCL last 16 3 weeks 2003–23), knockout-only eras from September, brackets show both legs' dates, stages read the old calendar too; golden facts change only in 1960's drawn rounds
 - 261012 update-ssot ARCH LEAGUE WEB ECON CLUB start: one result for every progression mode (day/round/season order, draws never keyed by the command counter), amateur promotion room, currency conversion scope, complete ledger lines, market candidate identity
 - 261012 WEB r47 ECON r12 SAVE r17 STAFF r11 implemented directly (rules 1.13.0): strategy reservation for the next season at any time (buildNext, applied as the season starts as its one change, 예약 취소); manager market — free agents (4–8) refreshed every 4 rounds and at the close on their own stream, struggling and relegated clubs of our league sack into the pool (rival-sacking news), named derived managers for every club, poaching from our league and the division above with 1.5× wage compensation, hire by id so the hired man leaves the list; golden facts unchanged apart from the sacking events and the label; entry 254,162 of 256,000 bytes
-- 261012 update-ssot WEB r47 ECON r12 SAVE r17 STAFF r11 start: strategy reservation for the next season, manager market (free agents, sackings, poaching), rules 1.13.0; implementing directly
