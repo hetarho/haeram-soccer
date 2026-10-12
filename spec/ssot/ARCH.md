@@ -205,7 +205,7 @@
 - r8 261012 ARCH-13✎ candidate built and validated before the slot→in a background codec worker nobody waits for; autosave at settled fixture/period boundaries→decisions at once, automatic progression at a bounded interval (→SAVE-8)
 - r7 261012 ARCH-5✎ inputs simulation time→the game day each command applies at; +the same facts however time is advanced; +draws named by what they settle, never by a count of commands
 - r6 261012 ARCH-11✎ additional worlds as files only→parked game slots in IndexedDB beside the localStorage game in play; ARCH-29+ owner-scoped profile ports (device now, account later)
-- r5 261012 ARCH-6✎ +read-only requests answered between steps; ARCH-28✎ +later pages as lazy chunks
+- r5 261012 ARCH-6✎ none→read-only requests answered between steps; ARCH-28✎ none→later pages as lazy chunks
 - r4 261009 ARCH-2✎ npm workspaces→pnpm workspaces with pnpm pinned by packageManager; ARCH-22✎ verify commands npm run→pnpm run; ARCH-23✎ CI install npm ci→pnpm install --frozen-lockfile
 - r3 261007 ARCH-23✎ static provider Cloudflare Pages→Netlify; ARCH-27✎ account Cloudflare→Netlify and repository unspecified→hetarho/haeram-soccer
 - r2 261007 ARCH-25✎ unresolved NPC retention→HIST archive tiers; ARCH-9✎ numeric policy owner MONEY→ECON

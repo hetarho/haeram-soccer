@@ -77,10 +77,10 @@
 ## chg
 - r11 261012 STAFF-14✎ four seasonal candidates→schools for new free agents; STAFF-17+ manager market: free-agent pool refreshed every 4 rounds and at the close, sackings in our league, named managers for every club, poaching with 1.5× wage compensation, hired manager leaves the list
 - r10 261012 STAFF-1✎ ambition→selection trait, 육성 wording; STAFF-12✎ +trait remaps per school; STAFF-14✎ +attribute and age bands per school, the firefighter leaves at the close unless renewed season by season (1 April reminder, delegated renewal)
-- r9 261012 STAFF-15✎ bands are the level reached; STAFF-16+ ages, ceilings, growth to 60, decline after, managers retire at 70
+- r9 261012 STAFF-15✎ bands as the level at hire→bands as the level reached; STAFF-16+ ages, ceilings, growth to 60, decline after, managers retire at 70
 - r8 261011 STAFF-15✎ one club-wide coaching level→one dial per department, shown and acted on only with coach hiring delegated; a raised dial fills a volunteer post at once
 - r7 261011 STAFF-13✎ four delegable decisions→five with coach hiring, a released coach takes hiring back; STAFF-15+ coaching investment levels, delegated renewals and hires without vacancies, spring renewal season
-- r6 261010 STAFF-12✎ +developer style selects youth; STAFF-14+ eight manager styles with tactic, effects and contract terms
+- r6 261010 STAFF-12✎ none→a developer style selects youth; STAFF-14+ eight manager styles with tactic, effects and contract terms
 - r5 261009 STAFF-13✎ three delegable decisions→four with the main sponsor; delegated promotions wait while cash is under a year of costs
 - r4 261009 STAFF-13✎ all three delegated by default→training and academy delegated, transfer answers by the owner
 - r3 261008 STAFF-11+ STAFF-12+ STAFF-13+ manager-only staff→seven coaching departments with traits, manager selection traits and owner delegation

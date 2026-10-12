@@ -40,6 +40,11 @@
 | T048 | Background codec worker for checkpoints | SAVE ARCH | - | todo |
 | T049 | Clock never waits for saving; background autosave cadence | SAVE WEB ARCH | T048 | todo |
 
+## work
+| id | workers | total | done | remaining | running | review | blocked | updated | history |
+|---|---|---|---|---|---|---|---|---|---|
+| one-result | 3 | 8 | 0 | 8 | 0 | 1 | 5 | 2026-10-12T07:09:57.488Z | [history](work/one-result.json) |
+
 ## next
 - work group one-result (branch work/one-result, planning worktree ../haeram-soccor-one-result): `npx haeram-spec-creator work run --work one-result --provider claude`; T042, T046 and lane day-order (T043→T044) run first, T045 after T042, T047 (rules 1.15.0, goldens) last; lane background-save (T048→T049) takes the next free worker slot; merge to main afterwards with the user's approval.
 - Player match ratings (평점) lead Korean headlines, but WEB-22/25 rule out synthetic ratings; decide whether a transparent rating belongs in the game. Research levers not yet modelled: set-piece coaching, ticket-price fan mood, fixture-gap rule for training camps; tackles in a far-off flank still look like heavy touches (match.ts picks markers by zone, not flank).
