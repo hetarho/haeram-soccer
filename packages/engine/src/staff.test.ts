@@ -407,7 +407,7 @@ describe('manager traits', () => {
     w.year = year;
     const index = managerOffers(w).findIndex((offer) => offer.trait),
       offer = managerOffers(w)[index];
-    operate(w, { type: 'hire', candidate: index });
+    operate(w, { type: 'hire', id: offer.id });
     expect(w.manager.id).toBe(offer.id);
     expect(w.manager.trait).toBe(offer.trait);
     expect(w.events.at(-1)!.detail).toContain(MANAGER_TRAIT_INFO[offer.trait!].label);

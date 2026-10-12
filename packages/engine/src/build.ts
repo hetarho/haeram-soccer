@@ -426,3 +426,25 @@ export function setBuild(w: World, build: ClubBuild, name?: string) {
   const label = name?.trim().slice(0, STRATEGY_NAME_LIMIT) || buildLabel(next);
   addEvent(w, 'build', `운영 전략 · ${label}`, cards.join(' · ') || '모든 부문 기본');
 }
+
+/**
+ * Reserves a strategy for the next season (→ECON-22), at any time and whatever this season's
+ * change: it replaces an earlier reservation, and reserving the strategy in force cancels it.
+ */
+export function reserveBuild(w: World, build: ClubBuild, name?: string) {
+  const next = normalize(build);
+  if (sameBuild(next, buildOf(w))) {
+    delete w.buildNext;
+    return;
+  }
+  const label = name?.trim().slice(0, STRATEGY_NAME_LIMIT);
+  w.buildNext = { build: next, ...(label ? { name: label } : {}) };
+}
+/** As a season starts, its reserved strategy becomes that season's one change. */
+export function applyReservedBuild(w: World) {
+  const reserved = w.buildNext;
+  if (!reserved) return;
+  delete w.buildNext;
+  if (w.buildYear === w.year) return;
+  setBuild(w, reserved.build, reserved.name);
+}

@@ -52,6 +52,8 @@ import { RemedySheet } from './RemedySheet';
 import { managerTerm, STYLE_INFO } from '../../../../packages/engine/src/styles';
 import { MANAGER_TRAIT_INFO } from '../../../../packages/engine/src/staff';
 import { managerRenewal } from '../../../../packages/engine/src/operations';
+import { roundsUntilRefresh } from '../../../../packages/engine/src/managerMarket';
+import { ClubLink } from './ClubLink';
 import type { StateKey } from './teamState';
 import { PlayerComparison } from './PlayerComparison';
 import { contractLine, money, number } from './format';
@@ -399,85 +401,116 @@ function ManagerOffice({ state, client }: Props) {
     </>
   );
 }
-/** This season's four candidates, one school each, and the hire confirmation. */
+/**
+ * The manager market (→STAFF-17): free agents first, then the best managers of our league and the
+ * division above, who cost compensation to their clubs. The list moves every four rounds.
+ */
 function ManagerCandidates({ state, client }: Props) {
   const v = state.view!,
     w = v.world,
     m = w.manager,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
-    [hiring, setHiring] = useState<number>();
+    [hiring, setHiring] = useState<string>();
   const acting = useGameState((state) => !!state.pendingActions);
   const disabled = state.busy || state.readonly || acting;
+  const format = (value: bigint | string) => money(value.toString(), c.country, w.year);
   // Replacing a contracted manager pays him a quarter of his wage; an interim leaves freely.
-  const outlay = (fee: string) =>
-    money(
-      (BigInt(fee) + (m.interim ? 0n : BigInt(ratio(m.wage, 1n, 4n)))).toString(),
-      c.country,
-      w.year,
-    );
-  const chosen = hiring !== undefined ? v.managers[hiring] : undefined;
+  const payoff = m.interim ? 0n : BigInt(ratio(m.wage, 1n, 4n));
+  const outlay = (candidate: (typeof v.managers)[number]) =>
+    BigInt(candidate.fee) + BigInt(candidate.compensation ?? '0') + payoff;
+  const chosen = v.managers.find((candidate) => candidate.id === hiring);
+  const free = v.managers.filter((candidate) => candidate.source === 'free'),
+    others = v.managers.filter((candidate) => candidate.source === 'club');
+  const card = (candidate: (typeof v.managers)[number]) => (
+    <article className={s.card} key={candidate.id}>
+      <div className={s.personHead}>
+        <OvrBadge value={candidate.ability} role="감독" potential={candidate.potential} large />
+        <div>
+          <h3>{candidate.name}</h3>
+          <small>
+            {personAge(w, candidate.born)}
+            {growthNote(w, candidate)}
+          </small>
+          {candidate.club && (
+            <small className={s.candidateClub}>
+              현 소속 <ClubLink w={w} id={candidate.club} />
+            </small>
+          )}
+        </div>
+      </div>
+      <span className={s.pill}>
+        {STYLE_INFO[candidate.style].label} · {tacticLabel[candidate.philosophy]}
+      </span>
+      <StyleCard style={candidate.style} compact />
+      <Attributes
+        rows={[
+          ['육성', candidate.youth, YOUTH_HINT],
+          ['유연성', candidate.flexibility],
+          ['자존심', candidate.pride],
+          ['연봉', format(candidate.wage)],
+        ]}
+      />
+      <p>
+        <TraitNote trait={candidate.trait} />
+      </p>
+      <p>
+        {contractLine(w.year + STYLE_INFO[candidate.style].term, w.year)} · 계약금{' '}
+        {format(candidate.fee)}
+        {candidate.compensation && <> · 보상금(웃돈) {format(candidate.compensation)}</>}
+      </p>
+      <button disabled={disabled} onClick={() => setHiring(candidate.id)}>
+        {candidate.source === 'club' ? '데려오기' : '감독 선임'} · {format(outlay(candidate))}
+      </button>
+    </article>
+  );
   return (
     <>
-      <Panel title="감독 후보 · 네 가지 성향" note="COMPARE FOUR SCHOOLS">
+      <Panel title="자유계약 감독" note="FREE AGENTS">
         <div className={s.panelBody}>
-          <div className={s.cards}>
-            {v.managers.map((candidate, i) => (
-              <article className={s.card} key={candidate.id}>
-                <div className={s.personHead}>
-                  <OvrBadge
-                    value={candidate.ability}
-                    role="감독"
-                    potential={candidate.potential}
-                    large
-                  />
-                  <div>
-                    <h3>{candidate.name}</h3>
-                    <small>
-                      {personAge(w, candidate.born)}
-                      {growthNote(w, candidate)}
-                    </small>
-                  </div>
-                </div>
-                <span className={s.pill}>
-                  {STYLE_INFO[candidate.style].label} · {tacticLabel[candidate.philosophy]}
-                </span>
-                <StyleCard style={candidate.style} compact />
-                <Attributes
-                  rows={[
-                    ['육성', candidate.youth, YOUTH_HINT],
-                    ['유연성', candidate.flexibility],
-                    ['자존심', candidate.pride],
-                    ['연봉', money(candidate.wage, c.country, w.year)],
-                  ]}
-                />
-                <p>
-                  <TraitNote trait={candidate.trait} />
-                </p>
-                <p>
-                  {contractLine(candidate.until, w.year)} · 즉시 지출 {outlay(candidate.fee)} (이전
-                  감독 보상 포함)
-                </p>
-                <button disabled={disabled || candidate.id === m.id} onClick={() => setHiring(i)}>
-                  {candidate.id === m.id ? '현재 감독' : '감독 선임'}
-                </button>
-              </article>
-            ))}
-          </div>
+          <p className={s.muted}>
+            감독 시장은 {roundsUntilRefresh(w)}라운드 뒤에 다시 움직여요. 다른 구단에서 경질된
+            감독이 들어오고, 자리를 찾은 감독은 빠져요. 즉시 지출에는 지금 감독 보상(연봉의 1/4)이
+            포함돼요.
+          </p>
+          {free.length ? (
+            <div className={s.cards}>{free.map(card)}</div>
+          ) : (
+            <p className={s.muted}>지금은 자유계약 감독이 없어요.</p>
+          )}
         </div>
       </Panel>
-      {hiring !== undefined && chosen && (
+      <Panel title="다른 구단 감독 · 보상금 필요" note="POACH">
+        <div className={s.panelBody}>
+          <p className={s.muted}>
+            우리 리그와 바로 위 디비전 감독 중 지도력 상위 {others.length}명이에요. 데려오려면
+            계약금에 더해 그 구단에 연봉의 1.5배를 보상금으로 내요.
+          </p>
+          <div className={s.cards}>{others.map(card)}</div>
+        </div>
+      </Panel>
+      {chosen && (
         <Dialog label="감독 선임 확인" onClose={() => setHiring(undefined)}>
           <h2>{chosen.name} 감독을 선임할까요?</h2>
           <ul className={s.consequences}>
             <li>
-              즉시 지출 <b>{outlay(chosen.fee)}</b> (이전 감독 보상 포함)
+              즉시 지출 <b>{format(outlay(chosen))}</b> · 계약금 {format(chosen.fee)}
+              {chosen.compensation && <> · 보상금 {format(chosen.compensation)}</>}
+              {payoff > 0n && <> · 이전 감독 보상 {format(payoff)}</>}
             </li>
+            {chosen.club && (
+              <li>
+                <ClubLink w={w} id={chosen.club} />은 새 감독을 찾아요.
+              </li>
+            )}
             <li>
               지도력 OVR <b>{chosen.ability}</b> · 잠재력{' '}
               <b>{chosen.potential ?? chosen.ability}</b> · {personAge(w, chosen.born)}
               {(chosen.potential ?? 0) > chosen.ability ? ' · 시즌마다 잠재력에 가까워져요' : ''}
             </li>
-            <li>{m.name} 감독은 오늘 팀을 떠나요.</li>
+            <li>
+              {m.name} 감독은 오늘 팀을 떠나요
+              {!m.interim && m.style ? ' (자유계약 감독 명단에 올라요)' : ''}.
+            </li>
             <li>
               새 감독 성향 <b>{STYLE_INFO[chosen.style].label}</b> ·{' '}
               {[...STYLE_INFO[chosen.style].pros, ...STYLE_INFO[chosen.style].cons].join(' · ')}
@@ -490,7 +523,8 @@ function ManagerCandidates({ state, client }: Props) {
               철학)
             </li>
             <li>
-              연봉 {money(chosen.wage, c.country, w.year)} · {contractLine(chosen.until, w.year)}
+              연봉 {format(chosen.wage)} ·{' '}
+              {contractLine(w.year + STYLE_INFO[chosen.style].term, w.year)}
               {STYLE_INFO[chosen.style].term === 1 && ' · 남기려면 4월에 1시즌씩 재계약해요'}
             </li>
           </ul>
@@ -500,7 +534,7 @@ function ManagerCandidates({ state, client }: Props) {
               className={s.primary}
               disabled={disabled}
               onClick={() => {
-                void client.command({ type: 'hire', candidate: hiring });
+                void client.command({ type: 'hire', id: chosen.id });
                 setHiring(undefined);
               }}
             >

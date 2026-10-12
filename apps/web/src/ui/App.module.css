@@ -3046,3 +3046,10 @@
   border-color: var(--accent-edge);
   color: var(--accent-text);
 }
+/* Another club's manager names his club under his age (→STAFF-17). */
+.candidateClub {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}

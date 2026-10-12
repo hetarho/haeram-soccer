@@ -2,7 +2,7 @@ import { z } from 'zod';
 z.config({ jitless: true });
 import type { World } from './types';
 import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from './detail';
-import { BUILD_OPTIONS, LEGACY_VISION_BUILDS } from './build';
+import { BUILD_OPTIONS, LEGACY_VISION_BUILDS, STRATEGY_NAME_LIMIT } from './build';
 const money = z.string().regex(/^-?\d{1,80}$/);
 const rating = z.number().finite().min(0).max(100);
 const text = z.string().max(160);
@@ -465,6 +465,21 @@ export const worldSchema: z.ZodType<World> = z.object({
   morale: z.number().finite().min(0).max(100).optional(),
   build: clubBuildSchema.optional(),
   buildYear: z.number().int().min(1901).max(4000).optional(),
+  buildNext: z
+    .strictObject({
+      build: clubBuildSchema,
+      name: z.string().trim().min(1).max(STRATEGY_NAME_LIMIT).optional(),
+    })
+    .optional(),
+  managerMarket: z
+    .strictObject({
+      year: z.number().int().min(1901).max(4000),
+      round: z.number().int().min(0).max(46),
+      free: z.array(manager).max(8),
+      clubs: z.record(id, z.tuple([z.number().int().min(0).max(10000), z.number().int()])),
+      serial: z.number().int().min(0),
+    })
+    .optional(),
   winBonus: z.strictObject({ matches: z.number().int().min(1).max(10) }).optional(),
   inbox: z.array(inboxItem).max(200).optional(),
   manager,

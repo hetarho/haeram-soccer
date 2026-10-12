@@ -404,6 +404,8 @@ const selectContentWorld = worldSelector([
   'inbox',
   'build',
   'buildYear',
+  'buildNext',
+  'managerMarket',
 ]);
 function useContentState(): ClientState {
   const world = useGameState(selectContentWorld);

@@ -6,7 +6,7 @@ import {
   groupKey,
   closeSeason,
   operate,
-  managerOffers,
+  managerCandidates,
   transferOffers,
   sponsorOffers,
   campaignOffers,
@@ -108,7 +108,7 @@ export class Host {
       supportUsed: w.events.filter((event) => event.year === w.year && event.kind === 'support')
         .length,
       milestones: clubMilestones(w),
-      managers: managerOffers(w),
+      managers: managerCandidates(w),
       transfers: transferOffers(w),
       sponsors: sponsorOffers(w),
       campaigns: campaignOffers(w),

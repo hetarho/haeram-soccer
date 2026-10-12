@@ -1,6 +1,6 @@
 import type { World } from './types';
 
-export const CURRENT_ENGINE_VERSION = '1.12.0';
+export const CURRENT_ENGINE_VERSION = '1.13.0';
 /**
  * 1.1.0 added club policy; 1.2.0 staff, academy, transfer windows and the inbox; 1.3.0 closes
  * the season after its final round, opens the summer window there, normalizes league match
@@ -21,7 +21,8 @@ export const CURRENT_ENGINE_VERSION = '1.12.0';
  * retiring at 70); people from older saves keep their level; 1.12.0 archives what a closed
  * season's pages need once its live tables are gone: the league's ten leading scorers, the own
  * rank after every round, the Club Elo spread and the brackets of the own cup and the continental
- * knockouts (seasons closed earlier keep none).
+ * knockouts (seasons closed earlier keep none); 1.13.0 keeps a strategy reserved for the next
+ * season and a manager market of free agents, sacked managers and other clubs' managers.
  */
 export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.0.0',
@@ -36,6 +37,7 @@ export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.9.0',
   '1.10.0',
   '1.11.0',
+  '1.12.0',
   CURRENT_ENGINE_VERSION,
 ];
 export const SAVE_COMPATIBILITY_CODE = 'save-compatibility' as const;

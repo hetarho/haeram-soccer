@@ -82,7 +82,7 @@ describe('manager styles', () => {
       index = managerOffers(w).findIndex((offer) => offer.style === 'firefighter');
     }
     w.morale = 50;
-    operate(w, { type: 'hire', candidate: index });
+    operate(w, { type: 'hire', id: managerOffers(w)[index].id });
     expect(w.manager.style).toBe('firefighter');
     expect(w.manager.until).toBe(w.year + 1);
     expect(w.morale).toBe(60);

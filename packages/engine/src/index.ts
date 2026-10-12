@@ -58,6 +58,7 @@ export function simulateSeason(w: World) {
 }
 
 export * from './operations';
+export * from './managerMarket';
 
 export * from './economy';
 export * from './europe';

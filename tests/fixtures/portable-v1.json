@@ -1,6 +1,6 @@
 {
   "synthetic": true,
-  "engine": "1.12.0",
+  "engine": "1.13.0",
   "catalog": "2026-demo-1",
   "definitions": [
     {
@@ -699,6 +699,11 @@
             "kind": "campaign-result",
             "title": "동네와 함께 결과",
             "amount": "20575"
+          },
+          {
+            "kind": "rival-sacking",
+            "title": "Bristol Ironworks Athletic, Thomas Turner 감독 경질",
+            "amount": null
           },
           {
             "kind": "match-bonus",
@@ -3939,6 +3944,16 @@
             "amount": "155777"
           },
           {
+            "kind": "rival-sacking",
+            "title": "Metz Forges Athletic, Pierre Moreau 감독 경질",
+            "amount": null
+          },
+          {
+            "kind": "rival-sacking",
+            "title": "Lille Port Athletic, Paul Dubois 감독 경질",
+            "amount": null
+          },
+          {
             "kind": "match-bonus",
             "title": "무승부 성과 수입",
             "amount": "60750"
@@ -4034,6 +4049,11 @@
             "amount": "155776"
           },
           {
+            "kind": "rival-sacking",
+            "title": "Dijon Vallee Athletic, Emile Petit 감독 경질",
+            "amount": null
+          },
+          {
             "kind": "match-bonus",
             "title": "승리 성과 수입",
             "amount": "162000"
@@ -4084,6 +4104,16 @@
             "amount": "155777"
           },
           {
+            "kind": "rival-sacking",
+            "title": "Dijon Vallee Athletic, Emile Moreau 감독 경질",
+            "amount": null
+          },
+          {
+            "kind": "rival-sacking",
+            "title": "Reims Aurore Amateurs, Emile Dubois 감독 경질",
+            "amount": null
+          },
+          {
             "kind": "match-bonus",
             "title": "승리 성과 수입",
             "amount": "162000"
@@ -4129,6 +4159,11 @@
             "amount": "155777"
           },
           {
+            "kind": "rival-sacking",
+            "title": "Metz Forges Athletic, Pierre Petit 감독 경질",
+            "amount": null
+          },
+          {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
             "amount": "155778"
@@ -4157,6 +4192,11 @@
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
             "amount": "155778"
+          },
+          {
+            "kind": "rival-sacking",
+            "title": "Lille Port Athletic, Louis Moreau 감독 경질",
+            "amount": null
           },
           {
             "kind": "match-bonus",
@@ -8868,6 +8908,16 @@
             "amount": "105064"
           },
           {
+            "kind": "rival-sacking",
+            "title": "Tours Atelier Athletic, Louis Garnier 감독 경질",
+            "amount": null
+          },
+          {
+            "kind": "rival-sacking",
+            "title": "Dijon Vallee Athletic, Emile Petit 감독 경질",
+            "amount": null
+          },
+          {
             "kind": "match-bonus",
             "title": "무승부 성과 수입",
             "amount": "1134"
@@ -9083,6 +9133,11 @@
             "amount": "105064"
           },
           {
+            "kind": "rival-sacking",
+            "title": "Metz Port Amateurs, Louis Laurent 감독 경질",
+            "amount": null
+          },
+          {
             "kind": "europe-prize",
             "title": "Europa League 경기 수당",
             "amount": "8632"
@@ -9176,6 +9231,11 @@
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
             "amount": "105066"
+          },
+          {
+            "kind": "rival-sacking",
+            "title": "Reims Chene Athletic, Emile Petit 감독 경질",
+            "amount": null
           },
           {
             "kind": "match-bonus",
@@ -9378,6 +9438,11 @@
             "amount": "105065"
           },
           {
+            "kind": "rival-sacking",
+            "title": "Lille Vallee Amateurs, Paul Dubois 감독 경질",
+            "amount": null
+          },
+          {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
             "amount": "105064"
@@ -9411,6 +9476,11 @@
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
             "amount": "105066"
+          },
+          {
+            "kind": "rival-sacking",
+            "title": "Metz Port Amateurs, Paul Moreau 감독 경질",
+            "amount": null
           },
           {
             "kind": "injury",

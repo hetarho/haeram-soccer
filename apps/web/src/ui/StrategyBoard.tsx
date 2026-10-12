@@ -64,6 +64,17 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
   const lock = buildLock(w);
   const [composer, setComposer] = useState<{ id?: string; name: string; build: ClubBuild }>();
   const [removing, setRemoving] = useState<SavedStrategy>();
+  const reserved = w.buildNext;
+  // Commits now (once a season) or reserves it for the next season's start (→ECON-22).
+  const commit = (next = false) => {
+    void client.command({
+      type: 'build',
+      build: draftBuild,
+      ...(draft?.name ? { name: draft.name } : {}),
+      ...(next ? { next: true } : {}),
+    });
+    setEdits(undefined);
+  };
   const choose = (build: ClubBuild, name?: string) =>
     setEdits(sameBuild(build, current) ? undefined : { base: current, build, name });
   // The history names what was committed; a preset or saved match reads better when there is one.
@@ -140,6 +151,24 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
         <Lines {...effectLines(composeBuild(current))} />
         {lock && <p className={s.neutral}>{lock}</p>}
       </article>
+
+      {reserved && (
+        <article className={s.reserved} aria-label="다음 시즌 예약" data-testid="strategy-reserved">
+          <div className={s.summaryHead}>
+            <span>다음 시즌 예약</span>
+            <b>{reserved.name ?? strategyName(reserved.build, saved)}</b>
+          </div>
+          <small className={s.cards}>{cardSummary(reserved.build)}</small>
+          <p className={s.neutral}>다음 시즌이 시작되면 그 시즌의 변경으로 적용돼요.</p>
+          <button
+            type="button"
+            disabled={acting}
+            onClick={() => void client.command({ type: 'build', build: current, next: true })}
+          >
+            예약 취소
+          </button>
+        </article>
+      )}
 
       <section className={s.group} aria-label="추천 전략">
         <h3>추천 전략</h3>
@@ -237,24 +266,23 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
               {dropping.map((synergy) => `시너지 ${synergy.label} 꺼짐`).join(' · ')}
             </p>
           )}
+          {lock && <p className={s.neutral}>{lock} · 다음 시즌부터 적용하도록 예약할 수 있어요.</p>}
           <div className={s.confirm}>
             <button disabled={acting} onClick={() => setEdits(undefined)}>
               되돌리기
             </button>
             <button
-              className={s.apply}
-              disabled={acting || !!lock}
-              onClick={() => {
-                void client.command({
-                  type: 'build',
-                  build: draftBuild,
-                  ...(draft?.name ? { name: draft.name } : {}),
-                });
-                setEdits(undefined);
-              }}
+              className={lock ? s.apply : undefined}
+              disabled={acting}
+              onClick={() => commit(true)}
             >
-              {lock ?? '이 전략으로 확정'}
+              다음 시즌부터 적용
             </button>
+            {!lock && (
+              <button className={`${s.apply} ${s.wide}`} disabled={acting} onClick={() => commit()}>
+                이 전략으로 확정
+              </button>
+            )}
           </div>
         </article>
       )}

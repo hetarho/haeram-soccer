@@ -23,14 +23,19 @@ async function closeOutcome(page: Page, text: string) {
   await expect(outcome).toHaveCount(0);
 }
 
-/** Hires the firefighter from the candidates tab, checking what the dialog promises. */
+/** Hires the free-agent firefighter from the candidates tab, checking what the dialog promises. */
 async function hireFirefighter(page: Page) {
   await tab(page, '감독 후보').click();
-  const card = page.getByRole('article').filter({ hasText: '소방수' });
+  const free = page
+    .locator('section')
+    .filter({ has: page.getByRole('heading', { name: '자유계약 감독', exact: true }) });
+  await expect(page.getByRole('heading', { name: '다른 구단 감독 · 보상금 필요' })).toBeVisible();
+  const card = free.getByRole('article').filter({ hasText: '소방수' });
   await expect(card).toContainText('계약 이번 시즌(1950/51) 끝까지');
   await expect(card).toContainText('선발 성향');
   await expect(card).not.toContainText('야망');
-  await card.getByRole('button', { name: '감독 선임', exact: true }).click();
+  const name = await card.getByRole('heading').innerText();
+  await card.getByRole('button', { name: /^감독 선임 · / }).click();
   const dialog = page.getByRole('dialog', { name: '감독 선임 확인' });
   await expect(dialog).toContainText('시즌 종료까지 단기 계약');
   await expect(dialog).toContainText(
@@ -38,7 +43,8 @@ async function hireFirefighter(page: Page) {
   );
   await dialog.getByRole('button', { name: '선임 확정', exact: true }).click();
   await expect(dialog).toHaveCount(0);
-  await expect(card.getByRole('button', { name: '현재 감독', exact: true })).toBeDisabled();
+  // The man just hired leaves the market (→STAFF-17).
+  await expect(page.getByRole('article').filter({ hasText: name })).toHaveCount(0);
   await closeOutcome(page, '새 감독을 선임했어요');
 }
 
@@ -120,7 +126,11 @@ test('an unrenewed firefighter leaves at the close and the alert opens the candi
   await expect(page.getByRole('heading', { name: '스태프', level: 2 })).toBeVisible();
   await expect(tab(page, '감독 후보')).toHaveAttribute('aria-selected', 'true');
   await expect(page).toHaveURL(/\/manager\?view=candidates$/);
-  await expect(page.getByRole('article')).toHaveCount(4);
+  // The market keeps at least four free agents (→STAFF-17).
+  const free = page
+    .locator('section')
+    .filter({ has: page.getByRole('heading', { name: '자유계약 감독', exact: true }) });
+  expect(await free.getByRole('article').count()).toBeGreaterThanOrEqual(4);
 });
 
 test('the 1 April card renews the firefighter in one tap', async ({ page }) => {

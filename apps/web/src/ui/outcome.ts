@@ -220,8 +220,18 @@ export function describeOutcome(
       : before.tactic === after.tactic
         ? '적용 전술은 그대로예요. 감독의 답변을 확인하세요.'
         : '다음 경기부터 새 전술을 씁니다.';
+  // A reservation changes nothing today; it waits for the season start (→ECON-22).
+  const reserved = command.type === 'build' && command.next;
+  if (reserved)
+    note = after.buildNext
+      ? '다음 시즌이 시작되면 이 전략이 그 시즌의 변경으로 적용돼요.'
+      : '예약을 취소했어요. 지금 전략이 다음 시즌에도 이어져요.';
   return {
-    title: titles[command.type],
+    title: reserved
+      ? after.buildNext
+        ? '다음 시즌 운영 전략을 예약했어요'
+        : '운영 전략 예약을 취소했어요'
+      : titles[command.type],
     changes,
     events: shown.map(({ title, detail }) => ({ title, detail })),
     hiddenEvents: records.length - shown.length,

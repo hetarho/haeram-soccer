@@ -123,6 +123,17 @@ export interface Manager {
   born?: number;
   potential?: number;
 }
+/** Free-agent managers and the clubs whose managers changed (→STAFF-17). */
+export interface ManagerMarket {
+  /** Season and league round of the last refresh. */
+  year: number;
+  round: number;
+  free: Manager[];
+  /** Per club that changed manager: how many it has had since its first, and when he started. */
+  clubs: Record<string, [count: number, since: number]>;
+  /** Free agents created so far; numbers each new one. */
+  serial: number;
+}
 export interface Staff {
   id: string;
   role: StaffRole;
@@ -509,6 +520,10 @@ export interface World {
   build?: ClubBuild;
   /** Season year the build was last changed; one change per season. */
   buildYear?: number;
+  /** A strategy reserved for the next season (→ECON-22); it applies as that season starts. */
+  buildNext?: { build: ClubBuild; name?: string };
+  /** The manager market (→STAFF-17); absent until it first moves, when the season's four seed it. */
+  managerMarket?: ManagerMarket;
   /** Win bonus promised for the next own matches: pays per win until `matches` run out. */
   winBonus?: { matches: number };
   manager: Manager;
@@ -569,7 +584,8 @@ export type Command =
   | { type: 'bid'; candidate: number; fee: string; loan?: boolean }
   | { type: 'respond-bid'; id: string; accept: boolean }
   | { type: 'read-inbox'; id?: string }
-  | { type: 'hire'; candidate: number }
+  /** A manager from the market (→STAFF-17), by id: a free agent or another club's manager. */
+  | { type: 'hire'; id: string }
   /** Keeps the manager one more season when his contract ends at this season's close. */
   | { type: 'renew-manager' }
   | { type: 'recruit'; candidate: number; loan?: boolean }
@@ -583,4 +599,4 @@ export type Command =
   | { type: 'accept-condition' }
   | { type: 'care'; kind: CareKind }
   /** `name` labels an owner's saved strategy in the club's history (→WEB-61). */
-  | { type: 'build'; build: ClubBuild; name?: string };
+  | { type: 'build'; build: ClubBuild; name?: string; next?: boolean };

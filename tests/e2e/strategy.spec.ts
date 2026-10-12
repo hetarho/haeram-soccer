@@ -64,12 +64,17 @@ test('picks a preset strategy, saves its own strategy on the device and commits 
   await draft.getByRole('button', { name: '이 전략으로 확정' }).click();
   await expect(board.getByTestId('current-strategy')).toHaveText('우리 동네 축구');
   await expect(board.getByTestId('synergy-local-heroes')).toContainText('발동 중');
-  // A second change waits for next season.
+  // A second change this season is locked, but the next season can be planned at any time.
   await board.getByRole('button', { name: /트레이딩 머신/ }).click();
-  await expect(
-    draft.getByRole('button', { name: '운영 전략은 시즌마다 한 번만 바꿀 수 있어요' }),
-  ).toBeDisabled();
-  await draft.getByRole('button', { name: '되돌리기' }).click();
+  await expect(draft).toContainText('운영 전략은 시즌마다 한 번만 바꿀 수 있어요');
+  await expect(draft.getByRole('button', { name: '이 전략으로 확정' })).toHaveCount(0);
+  await draft.getByRole('button', { name: '다음 시즌부터 적용' }).click();
+  const reserved = board.getByTestId('strategy-reserved');
+  await expect(reserved).toContainText('트레이딩 머신');
+  await expect(draft).toHaveCount(0);
+  await expect(board.getByTestId('current-strategy')).toHaveText('우리 동네 축구');
+  await reserved.getByRole('button', { name: '예약 취소' }).click();
+  await expect(reserved).toHaveCount(0);
 
   // The library belongs to the device: it survives a reload and edits keep its ID.
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');

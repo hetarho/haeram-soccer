@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r11 | Define the implemented browser-demo behavior for historical club economy.
+> r12 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -47,6 +47,7 @@
 - ECON-21 [o] Sponsors with business delegated (→STAFF-13): whenever the main sponsor slot is empty the commercial staff sign the stable offer at once and report it. Without delegation a season that starts without a sponsor posts a sponsor reminder (→WEB-42).
 
 - ECON-22 [o] The club build — shown to the owner as the operating strategy (운영 전략, →WEB-60) — is six slots — 유스 정책, 스카우팅, 매각 기조, 수익 모델, 홈·팬, 라커룸 문화 — each holding one card: the standard card or one of four others, so 5^6 = 15,625 strategies before policy, staff or manager. ← combining levers is the fun: owners build their own club instead of picking one of a few presets Every card has at least one gain and one cost; additions add and multipliers multiply across slots. The owner drafts freely, sees combined effects, synergies (→CLUB-21) and odds before committing, and commits at most once per season (recorded as a build event titled 운영 전략 with the strategy's name: the preset's, the saved strategy's (→WEB-61), else 기본 전략 or 맞춤 전략).
+  - at any time the owner may instead reserve a strategy for the next season (rules 1.13.0): it waits as the reservation, replacing any earlier one, and applies as the new season starts — that season's one change, recorded like a commit with its name; reserving the strategy already in force cancels the reservation. ← a change already used this season should not block planning the next
   - presets fill the slots in one tap; each has one identity and lights or aims at a synergy:
     | preset | cards (others standard) | aim |
     |---|---|---|
@@ -106,6 +107,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r12 261012 ECON-22✎ +reservation for the next season at any time, applied as the season starts
 - r11 261012 ECON-22✎ shown as 운영 전략, presets 균형 운영/유스 명가/셀링 클럽/상업 확장/지역 밀착/승격 올인→동네의 자부심/트레이딩 머신/상업 제국/승격 올인/알뜰 생존 each aiming at a synergy, build event names the strategy, 1.6–1.7 visions load as their 1.8 cards; ECON-25✎ build board pairing→composer cards and 운영 다이얼 section by the same areas
 - r10 261012 ECON-11✎ +bankruptcy countdown; ECON-12✎ 30 levels at 200×L^1.5→20 levels at 250×1.38^(L−1), upkeep 180+40L→180+40L+5L²; ECON-20✎ cash warning stop→status; ECON-22✎ 이적 기조→매각 기조; ECON-23+ supporters follow reputation without a ceiling, global fan income; ECON-24+ bankruptcy after 8 rounds in debt; ECON-25+ build areas pair cards with dials
 - r9 261011 ECON-19✎ lower section ×3.29→amateur league ×1.53

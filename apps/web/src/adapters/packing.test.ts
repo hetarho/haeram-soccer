@@ -31,6 +31,15 @@ function legacyIntegers(values: number[]) {
 }
 
 describe('lossless career stream compaction', () => {
+  it('keeps a reserved strategy and the manager market through a pack round trip', () => {
+    const w = career();
+    for (let round = 2; round < 8; round++) advanceRound(w, undefined, false);
+    w.buildNext = { build: { youth: 'pathway' }, name: '다음 계획' };
+    expect(w.managerMarket?.free.length).toBeGreaterThan(0);
+    const restored = validateWorld(unpack(JSON.parse(JSON.stringify(pack(w)))));
+    expect(canonical(restored)).toBe(canonical(w));
+  });
+
   it('preserves column actors and arbitrary signed interception differences without mutating facts', () => {
     const w = career();
     w.ownMatches[0].metrics[0][6] = 20;

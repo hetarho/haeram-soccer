@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r10 | Define the implemented browser-demo behavior for manager demands and personality.
+> r11 | Define the implemented browser-demo behavior for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -24,7 +24,7 @@
   - a delegated youth director promotes nobody while cash is below one year of operating costs and reports the deferral. ← every promotion adds a first-team wage
   - releasing a coach takes coach hiring back, so the staff do not refill the post at once.
 
-- STAFF-14 [o] Every hire candidate belongs to a school of football; the four candidates of a season show four different schools from a seeded order of all eight, drawn from their own stream so the other attributes stay put. ← choosing a manager is choosing how the club plays and grows, with a clear price
+- STAFF-14 [o] Every hire candidate belongs to a school of football; new free agents (→STAFF-17) take their schools in turn from a seeded order of all eight per season, drawn from their own stream so the other attributes stay put. ← choosing a manager is choosing how the club plays and grows, with a clear price
   | style | tactic | effects |
   |---|---|---|
   | 포지셔널 플레이 | possession | pass +2, possession +2, shots −0.5 points; opponent build-up −1 point; tactic requests −6 |
@@ -62,6 +62,12 @@
   | coach | 25–62 | 42 | wage follows his current ability |
   - the founding manager and an interim keep the drawn level (an interim never grows); volunteers and people from older saves have no age or ceiling and stay put
   - growth is reported as manager-growth and staff-growth events; OVR (ability) and POT (ceiling) show on every manager and coach (→WEB-55)
+- STAFF-17 [o] Managers form a market that moves while the season runs (rules 1.13.0). ← a fixed list of four, still showing the man just hired, read as a menu rather than football
+  - free agents (자유계약 감독): a pool of 4–8 kept in the world. Every 4 league rounds and at the season close, from a stream of its own so matches and other draws stay put: each free agent signs elsewhere with 25% and leaves; managers sacked in our league join; new free agents fill the pool to at least 4 (school order →STAFF-14, school bands →STAFF-14, levels 45–85).
+  - every club has a named manager derived from the seed, the club and its count of managers; his level follows the club's strength (±8) inside his school's bands. A club in the bottom quarter of our league that lost 3 of its last 5 sacks its manager with 40% at a refresh, a relegated club at the close with 60%; the sacked manager joins the free agents, the club names its next one and the news reports it.
+  - hiring a free agent costs his signing fee; hiring another club's manager also pays compensation (웃돈) of 1.5 × his annual wage, and that club names its next manager. Candidates from other clubs are the managers of our league and the division above, the eight best by level.
+  - the manager the owner hires leaves the pool; the manager he replaces (not an interim) joins it; a hired candidate never shows as a candidate again while he is in charge.
+  - the 감독 후보 tab lists free agents first, then other clubs' managers with club, OVR/POT, school, wage, compensation and total, and says when the list next changes.
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -69,6 +75,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r11 261012 STAFF-14✎ four seasonal candidates→schools for new free agents; STAFF-17+ manager market: free-agent pool refreshed every 4 rounds and at the close, sackings in our league, named managers for every club, poaching with 1.5× wage compensation, hired manager leaves the list
 - r10 261012 STAFF-1✎ ambition→selection trait, 육성 wording; STAFF-12✎ +trait remaps per school; STAFF-14✎ +attribute and age bands per school, the firefighter leaves at the close unless renewed season by season (1 April reminder, delegated renewal)
 - r9 261012 STAFF-15✎ bands are the level reached; STAFF-16+ ages, ceilings, growth to 60, decline after, managers retire at 70
 - r8 261011 STAFF-15✎ one club-wide coaching level→one dial per department, shown and acted on only with coach hiring delegated; a raised dial fills a volunteer post at once

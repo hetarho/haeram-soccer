@@ -52,7 +52,7 @@ function withFirefighter(seed: string) {
     const w = world(`${seed}-${n}`),
       candidate = managerOffers(w).findIndex((offer) => offer.style === 'firefighter');
     if (candidate < 0) continue;
-    operate(w, { type: 'hire', candidate });
+    operate(w, { type: 'hire', id: managerOffers(w)[candidate].id });
     return w;
   }
 }

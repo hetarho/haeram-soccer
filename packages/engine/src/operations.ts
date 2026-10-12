@@ -26,7 +26,6 @@ import { setTrainingFocus } from './training';
 import {
   hireStaff,
   MANAGER_TRAIT_INFO,
-  managerTrait,
   releaseStaff,
   renewStaff,
   setCoaching,
@@ -46,15 +45,10 @@ import {
 import { pushInbox, readInbox, readRelated } from './inbox';
 import { careOffer, outcomeText, resolveCare } from './care';
 import { marketingFanGain, policyEffects, policyOf, setPolicy } from './policy';
-import {
-  candidateStyles,
-  FIREFIGHTER_ARRIVAL_MORALE,
-  managerStyleEffects,
-  managerTerm,
-  STYLE_INFO,
-} from './styles';
+import { FIREFIGHTER_ARRIVAL_MORALE, managerStyleEffects, managerTerm, STYLE_INFO } from './styles';
 import { synergyEffects } from './synergy';
-import { setBuild, buildEffects } from './build';
+import { setBuild, buildEffects, reserveBuild } from './build';
+import { managerCandidates, takeManager } from './managerMarket';
 import { MORALE_START } from './morale';
 import { facilityCostUnits, MAX_FACILITIES } from './facilities';
 export function operatingCost(w: World) {
@@ -372,26 +366,6 @@ function insolvency(w: World, annual: string) {
       detail: `잔고가 ${moneyLabel(w, w.cash)}예요. 적자인 채로 ${BANKRUPTCY_ROUNDS}라운드가 정산되거나 빚이 연간 고정 지출의 절반을 넘으면 구단이 파산해 게임이 끝나요. 선수 매각, 지출 축소, 후원 계약, 구단주 출자로 흑자를 만드세요.`,
       attention: false,
     });
-}
-/** The season's four candidates, each drawn within his school's bands (→STAFF-14). */
-export function managerOffers(w: World) {
-  const code = clubOf(w).country,
-    styles = candidateStyles(w.seed, w.year);
-  return Array.from({ length: 4 }, (_, i) => {
-    const style = styles[i],
-      info = STYLE_INFO[style],
-      manager = makeManager(code, w.seed, w.year, i + 1, style),
-      trait = managerTrait(w, i + 1, style);
-    return {
-      ...manager,
-      ...(trait ? { trait } : {}),
-      style,
-      // A school that plays one way brings its tactic; a firefighter signs to the season's end.
-      philosophy: info.tactic ?? manager.philosophy,
-      until: w.year + info.term,
-      fee: quote(code, w.year, 60 + i * 40),
-    };
-  });
 }
 /** "1951/52": the season whose close ends a contract that runs `until` that year. */
 export function contractSeason(until: number) {
@@ -727,7 +701,8 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       break;
     }
     case 'build':
-      setBuild(w, cmd.build, cmd.name);
+      if (cmd.next) reserveBuild(w, cmd.build, cmd.name);
+      else setBuild(w, cmd.build, cmd.name);
       break;
     case 'accept-condition': {
       if (!w.manager.pending) throw new Error('대기 중인 조건이 없습니다.');
@@ -740,10 +715,14 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       break;
     }
     case 'hire': {
-      const offer = managerOffers(w)[cmd.candidate];
-      if (!offer || offer.id === w.manager.id) throw new Error('유효하지 않은 감독 제안');
+      const candidate = managerCandidates(w).find((offer) => offer.id === cmd.id);
+      if (!candidate) throw new Error('지금 선임할 수 없는 감독입니다.');
+      // Replacing a contracted manager pays him a quarter of his wage; another club also takes
+      // compensation for its manager (→STAFF-17).
       const fee =
-        BigInt(offer.fee) + (w.manager.interim ? 0n : BigInt(ratio(w.manager.wage, 1n, 4n)));
+        BigInt(candidate.fee) +
+        BigInt(candidate.compensation ?? '0') +
+        (w.manager.interim ? 0n : BigInt(ratio(w.manager.wage, 1n, 4n)));
       debit(w, fee.toString());
       addEvent(
         w,
@@ -751,21 +730,37 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
         `${w.manager.name} 감독 교체`,
         `${w.manager.since}–${w.year} · 구단의 선택`,
       );
-      const { fee: _fee, ...manager } = offer;
+      const {
+        fee: _fee,
+        source: _source,
+        club: from,
+        compensation: _compensation,
+        ...manager
+      } = candidate;
       void _fee;
+      void _source;
+      void _compensation;
       readRelated(w, w.manager.id);
-      w.manager = manager;
+      takeManager(w, candidate, w.manager);
+      w.manager = {
+        ...manager,
+        trust: 65,
+        conflicts: 0,
+        since: w.year,
+        until: w.year + STYLE_INFO[manager.style].term,
+      };
       w.tactic = manager.philosophy;
       delete w.requested;
       delete w.critical;
       // A firefighter's arrival lifts the dressing room at once.
       if (manager.style === 'firefighter')
         w.morale = Math.round(clamp((w.morale ?? MORALE_START) + FIREFIGHTER_ARRIVAL_MORALE));
+      const club = from ? w.clubs.find((c) => c.id === from)?.name : undefined;
       addEvent(
         w,
         'manager-hire',
         `${manager.name} 감독 선임`,
-        `${manager.style ? `${STYLE_INFO[manager.style].label} · ` : ''}${tacticLabel[manager.philosophy]}${manager.trait ? ` · ${MANAGER_TRAIT_INFO[manager.trait].label}` : ''} · 계약 ${contractSeason(manager.until)} 시즌 끝까지`,
+        `${club ? `${club}에서 영입 · ` : ''}${STYLE_INFO[manager.style].label} · ${tacticLabel[manager.philosophy]}${manager.trait ? ` · ${MANAGER_TRAIT_INFO[manager.trait].label}` : ''} · 계약 ${contractSeason(w.year + STYLE_INFO[manager.style].term)} 시즌 끝까지`,
         fee.toString(),
       );
       break;

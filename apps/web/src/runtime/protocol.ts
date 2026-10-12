@@ -15,8 +15,8 @@ import type { clubMilestones } from '../../../../packages/engine/src/goals';
 import type { financialBreakdown } from '../../../../packages/engine/src/finance';
 import type { NewsItem } from '../../../../packages/engine/src/news';
 import type { HeadToHead } from './headToHead';
+import type { managerCandidates } from '../../../../packages/engine/src/managerMarket';
 import {
-  managerOffers,
   transferOffers,
   sponsorOffers,
   campaignOffers,
@@ -91,6 +91,7 @@ const command = z.discriminatedUnion('type', [
     type: z.literal('build'),
     build: clubBuildSchema,
     name: z.string().trim().min(1).max(STRATEGY_NAME_LIMIT).optional(),
+    next: z.boolean().optional(),
   }),
   z.object({ type: z.literal('release-youth'), id: ref }),
   z.object({
@@ -106,7 +107,7 @@ const command = z.discriminatedUnion('type', [
   }),
   z.object({ type: z.literal('respond-bid'), id: ref, accept: z.boolean() }),
   z.object({ type: z.literal('read-inbox'), id: ref.optional() }),
-  z.object({ type: z.literal('hire'), candidate: index }),
+  z.object({ type: z.literal('hire'), id: z.string().min(1).max(100) }),
   z.object({ type: z.literal('renew-manager') }),
   z.object({ type: z.literal('recruit'), candidate: index, loan: z.boolean().optional() }),
   z.object({
@@ -166,7 +167,8 @@ export interface View {
   totalMatches: number;
   supportUsed: number;
   milestones: ReturnType<typeof clubMilestones>;
-  managers: ReturnType<typeof managerOffers>;
+  /** The manager market (→STAFF-17): free agents, then other clubs' managers. */
+  managers: ReturnType<typeof managerCandidates>;
   transfers: ReturnType<typeof transferOffers>;
   sponsors: ReturnType<typeof sponsorOffers>;
   campaigns: ReturnType<typeof campaignOffers>;

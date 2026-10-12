@@ -1060,7 +1060,8 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
         detail: first(event.detail),
       };
     case 'manager-hire': {
-      const style = Object.values(STYLE_INFO).find((info) => event.detail.startsWith(info.label));
+      const parts = event.detail.split(' · ');
+      const style = Object.values(STYLE_INFO).find((info) => parts.includes(info.label));
       return {
         ...base,
         tag: '구단',
@@ -1070,6 +1071,16 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
         detail: style ? style.school : first(event.detail),
       };
     }
+    // Another club of our league let its manager go into the market (→STAFF-17).
+    case 'rival-sacking':
+      return {
+        ...base,
+        tag: '이적',
+        tone: 'neutral',
+        weight: 'minor',
+        title: event.title,
+        detail: event.detail,
+      };
     case 'manager-departure':
       return {
         ...base,

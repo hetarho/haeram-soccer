@@ -11,6 +11,7 @@ import {
   clubOf,
   operatingCost,
   FOUNDING_YEAR,
+  managerCandidates,
 } from '../packages/engine/src/index';
 import { COUNTRIES } from '../packages/catalogs/src/index';
 import { canonical, validateWorld, type World } from '../packages/contracts/src/index';
@@ -154,8 +155,10 @@ for (const variant of ['baseline', 'active-management']) {
         operate(w, { type: 'recruit', candidate: 0, loan: true });
       if (n % 15 === 0 && available(quote(code, w.year, 200 * (w.facilities + 1) ** 1.5)))
         operate(w, { type: 'facility' });
-      if (n % 10 === 0 && available(quote(code, w.year, 400)))
-        operate(w, { type: 'hire', candidate: 1 });
+      if (n % 10 === 0 && available(quote(code, w.year, 400))) {
+        const candidate = managerCandidates(w).find((offer) => offer.source === 'free');
+        if (candidate) operate(w, { type: 'hire', id: candidate.id });
+      }
       operate(w, { type: 'training', focus: 'youth' });
       trainingSelections++;
       for (let round = 0; round < 23; round++) advanceRound(w, undefined, false);

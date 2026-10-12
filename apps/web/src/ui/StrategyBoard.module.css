@@ -460,3 +460,21 @@ legend.domainHead + * {
     min-height: 44px;
   }
 }
+
+/* A strategy reserved for the next season waits under the one in force (→ECON-22). */
+.reserved {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px dashed var(--accent);
+  background: var(--surface-deep);
+  min-width: 0;
+}
+.reserved button {
+  justify-self: start;
+  min-height: 44px;
+}
+.confirm .wide {
+  grid-column: 1 / -1;
+}

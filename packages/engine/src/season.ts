@@ -39,7 +39,8 @@ import { moraleAfterMatch } from './morale';
 import { settleWinBonus } from './care';
 import { managerStyleEffects } from './styles';
 import { synergyEffects } from './synergy';
-import { buildEffects } from './build';
+import { applyReservedBuild, buildEffects } from './build';
+import { MARKET_REFRESH_ROUNDS, refreshManagerMarket } from './managerMarket';
 import { dailyStaff, seasonStaff } from './staff';
 import { fansAfterMatch } from './fans';
 import {
@@ -484,6 +485,8 @@ function seasonRecords(w: World, league: Club[], tier: number, group: number) {
   };
 }
 export function closeSeason(w: World, finishEurope?: (w: World) => void) {
+  // Clubs of our league as it was played, to see who went down once the season is closed.
+  const leagueTiers = new Map(ownLeagueClubs(w).map((club) => [club.id, club.tier]));
   if (w.round < 46 || w.fixtures.some((f) => !f.score))
     throw new Error('아직 정규 시즌이 끝나지 않았습니다.');
   finishCups(w);
@@ -605,6 +608,8 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     `${w.year}/${String(w.year + 1).slice(2)} · ${table.points}점`,
   );
   w.year++;
+  // A strategy reserved during the season becomes the new season's change (→ECON-22).
+  applyReservedBuild(w);
   advanceEconomy(w, w.year - 1);
   yearlyStaff(w);
   seasonStaff(w);
@@ -656,6 +661,17 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   own.strength = rating(w, own);
   w.europe = [];
   prepareSeason(w);
+  // Relegated clubs may sack their managers into the market (→STAFF-17).
+  refreshManagerMarket(
+    w,
+    new Set(
+      w.clubs
+        .filter(
+          (club) => (leagueTiers.get(club.id) ?? club.tier) < club.tier && club.id !== w.playerClub,
+        )
+        .map((club) => club.id),
+    ),
+  );
   // The new season's first day of club business opens the summer window.
   clubDay(w);
   sponsorReminder(w);
@@ -698,6 +714,7 @@ export function advanceRound(
   settleRound(w);
   snapshotStandings(w);
   snapshotScorers(w);
+  if (w.round % MARKET_REFRESH_ROUNDS === 0) refreshManagerMarket(w);
   w.revision++;
   return ownPlayback;
 }
