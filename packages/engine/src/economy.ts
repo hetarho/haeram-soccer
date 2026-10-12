@@ -28,6 +28,12 @@ export function advanceEconomy(w: World, previousYear: number) {
       if (bid.status !== 'pending' && bid.status !== 'countered') continue;
       bid.fee = convert(bid.fee);
       if (bid.counterFee !== undefined) bid.counterFee = convert(bid.counterFee);
+      // The terms an outgoing bid keeps are asked in the money it is answered in.
+      if (bid.offer) {
+        bid.offer.fee = convert(bid.offer.fee);
+        bid.offer.loanFee = convert(bid.offer.loanFee);
+        bid.offer.player.wage = convert(bid.offer.player.wage);
+      }
     }
     if (w.sponsor) {
       w.sponsor.annual = convert(w.sponsor.annual);
@@ -42,7 +48,7 @@ export function advanceEconomy(w: World, previousYear: number) {
       w,
       'currency',
       '새로운 화폐의 시대',
-      `${before.code} → ${after.code} · 명목 잔고와 미지급 계약만 환산 · 과거 장부 보존${before.estimated || after.estimated ? ' · 초기 화폐 단순화 추정' : ''}`,
+      `${before.code} → ${after.code} · 현금·계약·진행 중 입찰·호가 모두 환산 · 과거 장부 보존${before.estimated || after.estimated ? ' · 초기 화폐 단순화 추정' : ''}`,
     );
   }
   w.priceIndex = priceIndex(code, w.year).value;
