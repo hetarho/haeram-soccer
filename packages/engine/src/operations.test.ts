@@ -33,6 +33,26 @@ describe('club decisions', () => {
       '동일',
     );
   });
+  it('refuses rules 1.16 commands and chosen terms until their rules land', () => {
+    const w = world();
+    // New clubs leave contract talks to the staff (→STAFF-13); the new posts can be delegated.
+    expect(w.delegation).toMatchObject({ contracts: true });
+    operate(w, { type: 'delegate', key: 'manager', value: true });
+    expect(w.delegation?.manager).toBe(true);
+    const before = structuredClone(w);
+    const player = w.players[0].id;
+    expect(() => operate(w, { type: 'contract-offer', player, wage: '1', term: 2 })).toThrow(
+      'contract-offer 명령은 아직 지원하지 않습니다.',
+    );
+    expect(() => operate(w, { type: 'contract-decline', player })).toThrow('아직');
+    expect(() => operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 })).toThrow('아직');
+    expect(() => operate(w, { type: 'manager-rule', rule: 'best' })).toThrow('아직');
+    expect(() => operate(w, { type: 'renew-manager', term: 2 })).toThrow('계약 기간');
+    expect(() => operate(w, { type: 'hire-staff', role: 'attack', candidate: 0, term: 3 })).toThrow(
+      '계약 기간',
+    );
+    expect(w).toEqual(before);
+  });
   it('pays conditional support before switching tactic', () => {
     const w = world();
     w.manager.pending = 'counter';

@@ -1,4 +1,9 @@
-import { CATALOG_HASH, CATALOG_VERSION, currency } from '../../../../packages/catalogs/src/index';
+import {
+  CATALOG_HASH,
+  CATALOG_VERSION,
+  LOAD_CATALOG,
+  currency,
+} from '../../../../packages/catalogs/src/index';
 import { canonical, validateWorld, type World } from '../../../../packages/contracts/src/index';
 import { unbase64, pack, unpack } from './packing';
 import { denseBytes, denseText } from './dense';
@@ -110,6 +115,7 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
   if ((await digest(bytes)) !== e.checksum) throw new Error('체크섬이 일치하지 않습니다.');
   const world = validateWorld(
     unpack(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes))),
+    LOAD_CATALOG,
   );
   if (
     world.id !== e.worldId ||

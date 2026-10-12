@@ -33,6 +33,7 @@ const staffRole = z.enum([
   'scout',
 ]);
 const ref = z.string().min(1).max(100);
+const term = z.literal([1, 2, 3, 4, 5]);
 const inboxKind = z.enum([
   'match',
   'window-open',
@@ -44,6 +45,10 @@ const inboxKind = z.enum([
   'staff-renewal',
   'cup',
   'finance',
+  'contract-talk',
+  'unhappy',
+  'transfer-request',
+  'sponsor-ending',
 ]);
 const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('advance'), rounds: z.number().int().min(1).max(46) }),
@@ -69,9 +74,14 @@ const command = z.discriminatedUnion('type', [
     key: z.enum(['support', 'recruitment', 'marketing', 'academy']),
     level: z.literal([1, 2, 3, 4, 5]),
   }),
-  z.object({ type: z.literal('hire-staff'), role: staffRole, candidate: index }),
+  z.object({
+    type: z.literal('hire-staff'),
+    role: staffRole,
+    candidate: index,
+    term: term.optional(),
+  }),
   z.object({ type: z.literal('release-staff'), role: staffRole }),
-  z.object({ type: z.literal('renew-staff'), role: staffRole }),
+  z.object({ type: z.literal('renew-staff'), role: staffRole, term: term.optional() }),
   z.object({ type: z.literal('coaching'), role: staffRole, level: z.literal([1, 2, 3]) }),
   z.object({ type: z.literal('promote-youth'), id: ref }),
   z.object({
@@ -97,7 +107,7 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('release-youth'), id: ref }),
   z.object({
     type: z.literal('delegate'),
-    key: z.enum(['training', 'academy', 'transfers', 'business', 'staff']),
+    key: z.enum(['training', 'academy', 'transfers', 'business', 'staff', 'contracts', 'manager']),
     value: z.boolean(),
   }),
   z.object({
@@ -108,8 +118,21 @@ const command = z.discriminatedUnion('type', [
   }),
   z.object({ type: z.literal('respond-bid'), id: ref, accept: z.boolean() }),
   z.object({ type: z.literal('read-inbox'), id: ref.optional() }),
-  z.object({ type: z.literal('hire'), id: z.string().min(1).max(100) }),
-  z.object({ type: z.literal('renew-manager') }),
+  z.object({ type: z.literal('hire'), id: z.string().min(1).max(100), term: term.optional() }),
+  z.object({ type: z.literal('renew-manager'), term: term.optional() }),
+  z.object({ type: z.literal('manager-rule'), rule: z.enum(['school', 'best', 'strategy']) }),
+  z.object({
+    type: z.literal('contract-offer'),
+    player: ref,
+    wage: z.string().regex(/^\d{1,40}$/),
+    term,
+  }),
+  z.object({ type: z.literal('contract-decline'), player: ref }),
+  z.object({
+    type: z.literal('sign-sponsor'),
+    slot: z.enum(['local', 'kit', 'shirt', 'stadium', 'sleeve']),
+    offer: index,
+  }),
   z.object({ type: z.literal('recruit'), candidate: index, loan: z.boolean().optional() }),
   z.object({
     type: z.literal('transfer-stance'),

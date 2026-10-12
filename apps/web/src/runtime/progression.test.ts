@@ -277,6 +277,10 @@ describe('the global progression clock', () => {
       'staff-renewal': false,
       cup: false,
       finance: true,
+      'contract-talk': false,
+      unhappy: false,
+      'transfer-request': false,
+      'sponsor-ending': false,
     });
     // Each step itself takes 0.45 s, so at x10 the days pile up behind it (at most five).
     s.command.mockImplementation(

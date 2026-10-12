@@ -619,8 +619,22 @@ export function yearlyStaff(w: World) {
 export const BANKRUPT_MESSAGE = '구단이 파산했어요. 기록을 내보내거나 새 클럽을 창단하세요.';
 export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'season' }>) {
   if (w.bankrupt && cmd.type !== 'read-inbox') throw new Error(BANKRUPT_MESSAGE);
+  // Rules 1.16 commands and chosen terms are refused, never ignored, until their rules land.
+  if (
+    (cmd.type === 'hire' ||
+      cmd.type === 'hire-staff' ||
+      cmd.type === 'renew-manager' ||
+      cmd.type === 'renew-staff') &&
+    cmd.term !== undefined
+  )
+    throw new Error('감독·코치 계약 기간 선택은 아직 지원하지 않습니다.');
   const code = clubOf(w).country;
   switch (cmd.type) {
+    case 'contract-offer':
+    case 'contract-decline':
+    case 'sign-sponsor':
+    case 'manager-rule':
+      throw new Error(`${cmd.type} 명령은 아직 지원하지 않습니다.`);
     case 'hire-staff':
       hireStaff(w, cmd.role, cmd.candidate);
       break;

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
 import type { World } from '../../contracts/src/types';
+import { LOAD_CATALOG } from '../../catalogs/src/index';
 import {
   advanceDays,
   advanceRound,
@@ -70,7 +71,8 @@ describe('business delegation and cash warnings', () => {
     expect(finance(delegated)).toEqual([expect.objectContaining({ attention: false })]);
     advanceDays(delegated, 1);
     expect(delegated.events.filter((e) => e.kind === 'sponsor-sign')).toHaveLength(1);
-    validateWorld(delegated);
+    // The engine still signs the single sponsor of rules 1.15, which a load moves into its slot.
+    validateWorld(delegated, LOAD_CATALOG);
   });
 
   it('reminds an owner without a sponsor when a season starts, but not a delegating one', () => {

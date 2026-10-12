@@ -343,6 +343,10 @@ export const KIND_LABEL: Record<InboxItem['kind'], string> = {
   'staff-renewal': '스태프 재계약',
   cup: '컵 대진',
   finance: '자금·후원',
+  'contract-talk': '재계약 협상',
+  unhappy: '언해피',
+  'transfer-request': '이적 요청',
+  'sponsor-ending': '후원 계약 만료',
 };
 
 /** HUD bell: every club event, newest first, readable at any time. */

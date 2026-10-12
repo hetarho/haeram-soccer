@@ -20,7 +20,9 @@ async function legacy() {
   delete world.training;
   delete world.trainingAt;
   for (const player of world.players) delete player.developed;
-  return { world, raw: await encode(world, 1, 0) };
+  const raw = await encode(world, 1, 0);
+  // A load moves the single sponsor of rules before 1.16 into its slot (→SAVE-10).
+  return { world, raw, loaded: (await decode(raw)).world };
 }
 async function seed(page: Page, raw: string, other?: string) {
   await page.addInitScript(
@@ -56,7 +58,7 @@ const facts = (w: World) =>
 test('writer upgrades a legacy career through the other slot without changing past facts', async ({
   page,
 }) => {
-  const { world, raw } = await legacy();
+  const { world, raw, loaded } = await legacy();
   await seed(page, raw);
   await page.goto('/');
   // A save from before game slots is listed as slot 1.
@@ -72,7 +74,16 @@ test('writer upgrades a legacy career through the other slot without changing pa
   expect(stored.manifest).toMatchObject({ slot: 1, generation: 2, parentGeneration: 1 });
   const restored = (await decode(stored.next!)).world;
   expect(restored.engine).toBe(CURRENT_ENGINE_VERSION);
-  expect(facts(restored)).toEqual(facts(world));
+  expect(restored.sponsor).toBeUndefined();
+  // ENG opens the shirt-front slot in 1979: a 1950 sponsor is the local partner, until its end.
+  expect(restored.sponsors).toEqual([
+    expect.objectContaining({
+      slot: 'local',
+      annual: world.sponsor!.annual,
+      until: world.sponsor!.until,
+    }),
+  ]);
+  expect(facts(restored)).toEqual(facts(loaded));
 });
 
 test('read-only legacy view does not perform a disk or metadata upgrade', async ({
@@ -127,7 +138,7 @@ test('future selected save stays protected and exports exactly instead of downgr
 test('upgrade quota failure keeps old disk and exports new memory before an explicit retry', async ({
   page,
 }) => {
-  const { world, raw } = await legacy();
+  const { world, raw, loaded } = await legacy();
   await seed(page, raw);
   await page.addInitScript(() => {
     const set = Storage.prototype.setItem;
@@ -154,7 +165,7 @@ test('upgrade quota failure keeps old disk and exports new memory before an expl
   ).toBe(1);
   const upgraded = (await decode(await exportRaw(page))).world;
   expect(upgraded.engine).toBe(CURRENT_ENGINE_VERSION);
-  expect(facts(upgraded)).toEqual(facts(world));
+  expect(facts(upgraded)).toEqual(facts(loaded));
   await page.evaluate(() => Object.assign(window, { allowUpgrade: true }));
   await page.getByRole('button', { name: '저장 재시도', exact: true }).click();
   await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${world.revision + 1}`);

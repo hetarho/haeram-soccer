@@ -38,11 +38,11 @@ export * from './careers';
 export function createWorld(input: Founding) {
   const w = createBase(input);
   prepareSeason(w);
-  // New clubs start with unpaid basic coaches; staff run training and the academy while the
-  // owner answers transfer offers (the "important decisions" intervention level).
+  // New clubs start with unpaid basic coaches; staff run training, the academy and contract talks
+  // while the owner answers transfer offers (the "important decisions" intervention level).
   w.staff = basicStaff(w);
   w.academy = { players: [] };
-  w.delegation = { training: true, academy: true, transfers: false };
+  w.delegation = { training: true, academy: true, transfers: false, contracts: true };
   w.bids = [];
   w.inbox = [];
   w.morale = MORALE_START;

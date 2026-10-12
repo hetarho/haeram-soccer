@@ -57,6 +57,10 @@ const titles: Record<Command['type'], string> = {
   'read-inbox': '소식을 확인했어요',
   care: '구단주 요청을 전했어요',
   build: '운영 전략을 정했어요',
+  'manager-rule': '감독 선임 기준을 바꿨어요',
+  'contract-offer': '선수에게 계약을 제시했어요',
+  'contract-decline': '선수의 계약 요구를 거절했어요',
+  'sign-sponsor': '후원 계약을 맺었어요',
 };
 const notes: Partial<Record<Command['type'], string>> = {
   lineup: '다음 경기부터 바꿀 때까지 이 선발을 씁니다.',

@@ -3,6 +3,7 @@ import priceData from '../data/prices.json' with { type: 'json' };
 import footballData from '../data/football-index.json' with { type: 'json' };
 import type { CountryCode } from '../../contracts/src/types';
 import type { CatalogPin } from '../../contracts/src/versions';
+import type { LoadCatalog } from '../../contracts/src/schema';
 /** Provenance of a catalog figure (→ECON-3): never call a proxy or an estimate an observation. */
 export type Observation = 'observed' | 'estimated' | 'projected';
 export interface CountryProfile {
@@ -312,6 +313,10 @@ export function sponsorSlotOpens(code: string, slot: SponsorSlot): SponsorSlotEr
   if (!era) throw new Error('지원하지 않는 후원 슬롯입니다.');
   return era;
 }
+/** What a load reads from the catalog to bring a world from older rules forward (→SAVE-10). */
+export const LOAD_CATALOG: LoadCatalog = {
+  sponsorSlotOpens: (code, slot) => sponsorSlotOpens(code, slot).year,
+};
 export interface CurrencyPeriod {
   code: string;
   symbol: string;
