@@ -1,14 +1,42 @@
-import type { Command, Tactic, World } from '../../contracts/src/types';
+import type {
+  Command,
+  ContractTerm,
+  Manager,
+  ManagerRule,
+  ManagerStyle,
+  Tactic,
+  World,
+} from '../../contracts/src/types';
 import { addEvent, clubOf, makeManager, quote, tacticLabel, TACTICS } from './world';
 import { clamp, random, ratio } from './primitives';
-import { hireStaff, MANAGER_TRAIT_INFO, releaseStaff, renewStaff, setCoaching } from './staff';
+import {
+  checkTerm,
+  DELEGATED_TERM,
+  hireStaff,
+  MANAGER_TRAIT_INFO,
+  releaseCost,
+  releaseStaff,
+  renewStaff,
+  setCoaching,
+  staffQuote,
+  withTerm,
+} from './staff';
 import { coachSeason, MANAGER_CAREER } from './coaching';
 import { currentDay } from './calendar';
-import { readRelated } from './inbox';
+import { pushInbox, readRelated } from './inbox';
 import { FIREFIGHTER_ARRIVAL_MORALE, managerStyleEffects, managerTerm, STYLE_INFO } from './styles';
-import { managerCandidates, takeManager } from './managerMarket';
+import {
+  delegatedManagerPick,
+  MANAGER_RULE_INFO,
+  MANAGER_RULES,
+  managerCandidates,
+  managerRuleOf,
+  takeManager,
+  type ManagerCandidate,
+} from './managerMarket';
 import { MORALE_START } from './morale';
 import { debit } from './operations';
+import { moneyLabel } from './finance';
 
 /** Managers and their tactical requests, coaches, coaching investment and delegation. */
 export type StaffCommand = Extract<
@@ -32,27 +60,55 @@ export type StaffCommand = Extract<
 export function contractSeason(until: number) {
   return `${until - 1}/${String(until).slice(2)}`;
 }
-/** The going wage a manager asks to stay, the same at the season boundary and in a renewal. */
-function managerWage(w: World) {
-  return quote(clubOf(w).country, w.year, 120 + w.manager.ability);
+/**
+ * The most seasons a manager may sign for from the season starting `start` (→STAFF-14): five, the
+ * firefighter one, and never past his 70th year; older saves without an age have no age cap.
+ */
+export function managerTermLimit(m: Pick<Manager, 'style' | 'born'>, start: number) {
+  const most = managerTerm(m) === 1 ? 1 : 5;
+  return m.born === undefined ? most : Math.min(most, m.born + MANAGER_CAREER.retire - start);
+}
+/** The term a manager signs for when the owner names none: his school's length, within the limit. */
+export function defaultManagerTerm(m: Pick<Manager, 'style' | 'born'>, start: number) {
+  return Math.max(1, Math.min(managerTerm(m), managerTermLimit(m, start))) as ContractTerm;
 }
 /**
- * Terms for keeping the manager one more season: the going wage and a 10% signing fee. Only a
- * contract that ends at this season's close can be renewed; an interim is never kept.
+ * What replacing the manager today pays him: 25% of his annual wage for each season left on his
+ * contract (→STAFF-11); an interim leaves freely.
  */
-export function managerRenewal(w: World) {
+export function managerPayoff(w: World) {
+  return w.manager.interim ? '0' : releaseCost(w, w.manager);
+}
+function termRefusal(m: Pick<Manager, 'style'>) {
+  return managerTerm(m) === 1
+    ? '소방수 감독은 1시즌만 계약합니다.'
+    : '감독과는 70세가 되는 시즌까지만 계약할 수 있습니다.';
+}
+/**
+ * Terms for keeping the manager `term` more seasons (one when absent): the going wage, quote(120 +
+ * ability) on the football index and fixed for the term, and a 10% signing fee. Only a contract
+ * that ends at this season's close can be renewed, never an interim's or past his 70th year.
+ */
+export function managerRenewal(w: World, term?: ContractTerm) {
   const m = w.manager;
   if (m.interim || m.until > w.year + 1) return undefined;
-  const wage = managerWage(w);
-  return { wage, fee: ratio(wage, 1n, 10n), until: Math.max(m.until, w.year + 1) + 1 };
+  const start = Math.max(m.until, w.year + 1),
+    limit = managerTermLimit(m, start);
+  if (limit < 1) return undefined;
+  const wage = staffQuote(w, 120 + m.ability);
+  return { wage, fee: ratio(wage, 1n, 10n), until: start + (term ?? 1), limit };
 }
-/** Extends the manager's contract by one season; delegated staff pay the fee as a planned cost. */
-export function renewManager(w: World, delegated = false) {
-  const terms = managerRenewal(w);
+/** Extends the manager's contract by `term` seasons; delegated staff pay the fee as a planned cost. */
+export function renewManager(w: World, term?: ContractTerm, delegated = false) {
+  checkTerm(term);
+  const terms = managerRenewal(w, term);
   if (!terms) throw new Error('재계약할 수 있는 감독이 아닙니다.');
+  if (term !== undefined && term > terms.limit) throw new Error(termRefusal(w.manager));
   debit(w, terms.fee, delegated);
-  w.manager.wage = terms.wage;
-  w.manager.until = terms.until;
+  w.manager = withTerm(
+    { ...w.manager, wage: terms.wage, until: terms.until },
+    delegated ? undefined : term,
+  );
   readRelated(w, w.manager.id);
   addEvent(
     w,
@@ -63,8 +119,80 @@ export function renewManager(w: World, delegated = false) {
   );
   return terms;
 }
+/**
+ * Puts a market candidate in charge for `term` seasons at the wage he asked, fixed for the term:
+ * he leaves the market, the manager he replaces joins it (→STAFF-17) and his philosophy becomes
+ * the tactic. `chosen` is the term the owner picked, kept with the contract.
+ */
+function installManager(
+  w: World,
+  candidate: ManagerCandidate,
+  term: ContractTerm,
+  chosen?: ContractTerm,
+) {
+  const {
+    fee: _fee,
+    source: _source,
+    club: _club,
+    compensation: _compensation,
+    ...manager
+  } = candidate;
+  void _fee;
+  void _source;
+  void _club;
+  void _compensation;
+  readRelated(w, w.manager.id);
+  takeManager(w, candidate, w.manager);
+  w.manager = withTerm(
+    { ...manager, trust: 65, conflicts: 0, since: w.year, until: w.year + term },
+    chosen,
+  );
+  w.tactic = manager.philosophy;
+  delete w.requested;
+  delete w.critical;
+  // A firefighter's arrival lifts the dressing room at once.
+  if (manager.style === 'firefighter')
+    w.morale = Math.round(clamp((w.morale ?? MORALE_START) + FIREFIGHTER_ARRIVAL_MORALE));
+  return manager;
+}
+/** " · 유망주 중용" for a manager with a selection trait. */
+const traitNote = (m: Pick<Manager, 'trait'>) =>
+  m.trait ? ` · ${MANAGER_TRAIT_INFO[m.trait].label}` : '';
+/**
+ * With the manager post delegated the staff fill it (→STAFF-18): the free agent the owner's rule
+ * picks among those the club can afford, for two seasons (the firefighter one, never past his 70th
+ * year), reported in the inbox. Nobody affordable leaves the post as it is.
+ */
+export function appointDelegatedManager(w: World, departing?: ManagerStyle) {
+  const pick = delegatedManagerPick(w, departing);
+  if (!pick) return undefined;
+  const term = Math.min(DELEGATED_TERM, managerTermLimit(pick, w.year)) as ContractTerm;
+  debit(w, pick.fee, true);
+  const manager = installManager(w, pick, term),
+    school = STYLE_INFO[manager.style].label,
+    ends = contractSeason(w.year + term);
+  addEvent(
+    w,
+    'manager-hire',
+    `${manager.name} 감독 선임`,
+    `${school} · ${tacticLabel[manager.philosophy]}${traitNote(manager)} · 계약 ${ends} 시즌 끝까지 · 스태프 위임 선임`,
+    pick.fee,
+  );
+  pushInbox(w, {
+    kind: 'staff-report',
+    title: `${school} ${manager.name} 감독 선임`,
+    detail: `스태프가 ${MANAGER_RULE_INFO[managerRuleOf(w)].label} 기준으로 자유계약 감독 중에서 ${term}시즌 계약했어요 · OVR ${manager.ability} · 연봉 ${moneyLabel(w, manager.wage)} · 계약금 ${moneyLabel(w, pick.fee)} · ${ends} 시즌 끝까지`,
+    attention: false,
+  });
+  return manager;
+}
 /** The blocking alert a departure raises; the app offers hiring or carrying on with the interim. */
 export const MANAGER_GONE = '감독이 떠났습니다. 새 감독을 선임하세요.';
+/**
+ * The manager leaves and a basic interim steps in (→STAFF-7). With the post delegated the staff
+ * appoint a successor at once and the clock runs on; when nobody is affordable the interim stays,
+ * the owner is told and the staff keep looking. Otherwise the departure stops the clock.
+ */
 function resign(w: World, reason: string) {
   const old = w.manager;
   // His renewal reminder is moot once he has gone.
@@ -87,10 +215,22 @@ function resign(w: World, reason: string) {
   // A caretaker steps in for now; he is not a bet on the future.
   interim.potential = 35;
   interim.youth = 30;
-  interim.wage = quote(clubOf(w).country, w.year, 40);
+  interim.wage = staffQuote(w, 40);
   interim.interim = true;
   w.manager = interim;
-  w.critical = MANAGER_GONE;
+  if (!w.delegation?.manager) {
+    w.critical = MANAGER_GONE;
+    return;
+  }
+  if (appointDelegatedManager(w, old.style)) return;
+  pushInbox(w, {
+    kind: 'staff-report',
+    title: `${old.name} 감독이 떠나 임시 감독 체제예요`,
+    detail:
+      '자금 여력에 맞는 자유계약 감독이 없어 임시 감독이 팀을 맡아요. 스태프가 매일 다시 찾고, 감독 교체에서 직접 선임할 수도 있어요.',
+    attention: true,
+    ref: interim.id,
+  });
 }
 
 const requestTones = { respect: 12, evidence: 16, support: 8, demand: -25 } as const;
@@ -185,35 +325,32 @@ export function yearlyStaff(w: World) {
   }
   if (!m.interim && (age !== undefined ? age >= MANAGER_CAREER.retire : m.since + 25 <= w.year))
     resign(w, '긴 지도자 생활을 마치고 은퇴했습니다.');
-  else if (m.until <= w.year && !m.interim) {
-    // A season-long deal ends unless the owner renewed it; other contracts renew for three.
-    if (managerTerm(m) === 1) resign(w, '시즌 종료까지의 단기 계약을 마치고 떠났습니다.');
-    else {
-      m.until = w.year + 3;
-      m.wage = managerWage(w);
-      addEvent(w, 'manager-renew', '감독 계약 갱신', `${m.name} · 3년`);
-    }
-  }
+  // No manager renews himself (→STAFF-14): an unrenewed contract ends at the close.
+  else if (m.until <= w.year && !m.interim)
+    resign(
+      w,
+      managerTerm(m) === 1
+        ? '시즌 종료까지의 단기 계약을 마치고 떠났습니다.'
+        : '재계약 없이 계약 기간을 마치고 떠났습니다.',
+    );
   delete w.manager.lastRequest;
   delete w.manager.requestHistory;
   delete w.manager.pending;
   delete w.requested;
 }
+/** The rule delegated staff appoint a manager by (→STAFF-18); the default 같은 학파 우선 is not stored. */
+function setManagerRule(w: World, rule: ManagerRule) {
+  if (!MANAGER_RULES.includes(rule)) throw new Error('감독 선임 기준을 확인하세요.');
+  if (rule === 'school') delete w.managerRule;
+  else w.managerRule = rule;
+}
 export function staffCommand(w: World, cmd: StaffCommand) {
-  // Rules 1.16 commands and chosen terms are refused, never ignored, until their rules land.
-  if (
-    (cmd.type === 'hire' ||
-      cmd.type === 'hire-staff' ||
-      cmd.type === 'renew-manager' ||
-      cmd.type === 'renew-staff') &&
-    cmd.term !== undefined
-  )
-    throw new Error('감독·코치 계약 기간 선택은 아직 지원하지 않습니다.');
   switch (cmd.type) {
     case 'manager-rule':
-      throw new Error(`${cmd.type} 명령은 아직 지원하지 않습니다.`);
+      setManagerRule(w, cmd.rule);
+      break;
     case 'hire-staff':
-      hireStaff(w, cmd.role, cmd.candidate);
+      hireStaff(w, cmd.role, cmd.candidate, cmd.term);
       break;
     case 'release-staff':
       releaseStaff(w, cmd.role);
@@ -221,10 +358,10 @@ export function staffCommand(w: World, cmd: StaffCommand) {
       if (w.delegation?.staff) w.delegation = { ...w.delegation, staff: false };
       break;
     case 'renew-staff':
-      renewStaff(w, cmd.role);
+      renewStaff(w, cmd.role, cmd.term);
       break;
     case 'renew-manager':
-      renewManager(w);
+      renewManager(w, cmd.term);
       break;
     case 'coaching':
       setCoaching(w, cmd.role, cmd.level);
@@ -294,14 +431,16 @@ export function staffCommand(w: World, cmd: StaffCommand) {
       break;
     }
     case 'hire': {
+      checkTerm(cmd.term);
       const candidate = managerCandidates(w).find((offer) => offer.id === cmd.id);
       if (!candidate) throw new Error('지금 선임할 수 없는 감독입니다.');
-      // Replacing a contracted manager pays him a quarter of his wage; another club also takes
-      // compensation for its manager (→STAFF-17).
+      const limit = managerTermLimit(candidate, w.year);
+      if (limit < 1 || (cmd.term !== undefined && cmd.term > limit))
+        throw new Error(termRefusal(candidate));
+      const term = cmd.term ?? defaultManagerTerm(candidate, w.year);
+      // Another club also takes compensation for its manager (→STAFF-17).
       const fee =
-        BigInt(candidate.fee) +
-        BigInt(candidate.compensation ?? '0') +
-        (w.manager.interim ? 0n : BigInt(ratio(w.manager.wage, 1n, 4n)));
+        BigInt(candidate.fee) + BigInt(candidate.compensation ?? '0') + BigInt(managerPayoff(w));
       debit(w, fee.toString());
       addEvent(
         w,
@@ -309,37 +448,13 @@ export function staffCommand(w: World, cmd: StaffCommand) {
         `${w.manager.name} 감독 교체`,
         `${w.manager.since}–${w.year} · 구단의 선택`,
       );
-      const {
-        fee: _fee,
-        source: _source,
-        club: from,
-        compensation: _compensation,
-        ...manager
-      } = candidate;
-      void _fee;
-      void _source;
-      void _compensation;
-      readRelated(w, w.manager.id);
-      takeManager(w, candidate, w.manager);
-      w.manager = {
-        ...manager,
-        trust: 65,
-        conflicts: 0,
-        since: w.year,
-        until: w.year + STYLE_INFO[manager.style].term,
-      };
-      w.tactic = manager.philosophy;
-      delete w.requested;
-      delete w.critical;
-      // A firefighter's arrival lifts the dressing room at once.
-      if (manager.style === 'firefighter')
-        w.morale = Math.round(clamp((w.morale ?? MORALE_START) + FIREFIGHTER_ARRIVAL_MORALE));
-      const club = from ? w.clubs.find((c) => c.id === from)?.name : undefined;
+      const manager = installManager(w, candidate, term, cmd.term);
+      const club = candidate.club ? w.clubs.find((c) => c.id === candidate.club)?.name : undefined;
       addEvent(
         w,
         'manager-hire',
         `${manager.name} 감독 선임`,
-        `${club ? `${club}에서 영입 · ` : ''}${STYLE_INFO[manager.style].label} · ${tacticLabel[manager.philosophy]}${manager.trait ? ` · ${MANAGER_TRAIT_INFO[manager.trait].label}` : ''} · 계약 ${contractSeason(w.year + STYLE_INFO[manager.style].term)} 시즌 끝까지`,
+        `${club ? `${club}에서 영입 · ` : ''}${STYLE_INFO[manager.style].label} · ${tacticLabel[manager.philosophy]}${traitNote(manager)} · 계약 ${contractSeason(w.year + term)} 시즌 끝까지`,
         fee.toString(),
       );
       break;

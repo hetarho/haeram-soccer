@@ -1,7 +1,10 @@
 import { useState, type ReactNode } from 'react';
 import type {
   CoachingLevel,
+  ContractTerm,
   DelegationKey,
+  Manager,
+  ManagerRule,
   Staff,
   StaffRole,
   World,
@@ -9,15 +12,28 @@ import type {
 import {
   COACHING_INFO,
   coachingLevel,
+  CONTRACT_TERMS,
+  DELEGATED_TERM,
   isExpiring,
   MANAGER_TRAIT_INFO,
+  releaseCost,
   renewalTerms,
+  seasonsLeft,
   STAFF_INFO,
   STAFF_ROLES,
   STAFF_TRAIT_INFO,
   staffCandidates,
   staffImpact,
 } from '../../../../packages/engine/src/staff';
+import { managerRenewal, managerTermLimit } from '../../../../packages/engine/src/ops-staff';
+import {
+  delegatedManagerPick,
+  MANAGER_RULE_INFO,
+  MANAGER_RULES,
+  managerRuleOf,
+} from '../../../../packages/engine/src/managerMarket';
+import { aimedSynergy } from '../../../../packages/engine/src/synergy';
+import { managerTerm, STYLE_INFO } from '../../../../packages/engine/src/styles';
 import { academySummary } from '../../../../packages/engine/src/academy';
 import { currentDay, seasonDayLabel, seasonDayOf } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/world';
@@ -41,7 +57,12 @@ const DELEGATION: [DelegationKey, string, string][] = [
   [
     'staff',
     '코치 고용·재계약',
-    '부서마다 정한 투자 수준으로 공석을 바로 채우고, 계약이 끝나는 코치를 재계약하거나 새 코치를 뽑아요. 소방수 감독도 4월 1일에 자금이 되면 1시즌 재계약해요',
+    '부서마다 정한 투자 수준으로 공석을 바로 채우고, 계약이 끝나는 코치를 2시즌 재계약하거나 새 코치를 2시즌 계약으로 뽑아요',
+  ],
+  [
+    'manager',
+    '감독 선임',
+    '감독이 떠나면 아래 기준으로 형편에 맞는 자유계약 감독을 2시즌 계약으로 바로 뽑아 시계가 멈추지 않아요. 계약이 끝나는 감독은 OVR 3 이상 나은 감독이 없으면 2시즌 재계약해요. 다른 구단 감독 영입은 직접 해요',
   ],
 ];
 
@@ -83,7 +104,58 @@ export function Delegation({ w, client }: { w: World; client: GameClient }) {
           </span>
         </label>
       ))}
+      <ManagerRuleDial w={w} client={client} />
     </section>
+  );
+}
+
+/**
+ * The rule the staff appoint a manager by (→STAFF-18) as a three-step dial, with the man it would
+ * bring if the post fell vacant today.
+ */
+function ManagerRuleDial({ w, client }: { w: World; client: GameClient }) {
+  const acting = useActing();
+  const [draft, setDraft] = useState<ManagerRule>();
+  const rule = draft ?? managerRuleOf(w);
+  const shown = { ...w, managerRule: rule };
+  const pick = delegatedManagerPick(shown, w.manager.style),
+    aimed = rule === 'strategy' ? aimedSynergy(w) : undefined;
+  return (
+    <div className={s.ruleBlock}>
+      <b>감독 선임 기준</b>
+      <div className={s.ruleDial} role="radiogroup" aria-label="감독 선임 기준">
+        {MANAGER_RULES.map((step) => (
+          <button
+            key={step}
+            type="button"
+            role="radio"
+            aria-checked={rule === step}
+            className={rule === step ? s.planOn : undefined}
+            disabled={acting}
+            onClick={() => {
+              if (step === rule) return;
+              setDraft(step);
+              void client
+                .command({ type: 'manager-rule', rule: step })
+                .finally(() => setDraft(undefined));
+            }}
+          >
+            <b>{MANAGER_RULE_INFO[step].label}</b>
+            <small>{MANAGER_RULE_INFO[step].summary}</small>
+          </button>
+        ))}
+      </div>
+      <p data-testid="manager-rule-outlook">
+        {rule === 'strategy' &&
+          (aimed
+            ? `노리는 시너지 ${aimed.label} · ${aimed.schools.map((school) => STYLE_INFO[school].label).join('·')} 감독을 찾아요 · `
+            : '노리는 시너지가 없어 능력 최고로 골라요 · ')}
+        {pick
+          ? `지금 감독 자리가 비면 ${STYLE_INFO[pick.style].label} ${pick.name}(OVR ${pick.ability})을 뽑아요`
+          : '지금은 형편에 맞는 자유계약 감독이 없어 임시 감독 체제가 돼요'}
+        {!w.delegation?.manager && ' · 감독 선임을 맡기면 이 기준으로 골라요'}
+      </p>
+    </div>
   );
 }
 
@@ -103,6 +175,172 @@ function coachAge(w: World, member: Staff) {
 function hiredImpact(w: World, role: StaffRole, candidate: Staff) {
   const staff = [...(w.staff || []).filter((member) => member.role !== role), candidate];
   return staffImpact({ ...w, staff }, role);
+}
+
+/**
+ * The seasons a contract runs, chosen by the owner (→STAFF-11, →STAFF-14) as a five-step dial;
+ * steps past `limit` stay visible but unavailable, with the reason as their title.
+ */
+export function TermDial({
+  label,
+  value,
+  limit = CONTRACT_TERMS.length,
+  why,
+  disabled,
+  onChange,
+}: {
+  label: string;
+  value: ContractTerm;
+  limit?: number;
+  why?: string;
+  disabled?: boolean;
+  onChange: (term: ContractTerm) => void;
+}) {
+  return (
+    <div className={s.termDial} role="radiogroup" aria-label={label}>
+      {CONTRACT_TERMS.map((term) => (
+        <button
+          key={term}
+          type="button"
+          role="radio"
+          aria-checked={value === term}
+          className={value === term ? `${s.termStep} ${s.planOn}` : s.termStep}
+          disabled={disabled || term > limit}
+          title={term > limit ? why : undefined}
+          onClick={() => onChange(term)}
+        >
+          <b>{term}시즌</b>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * What a contract costs before it is signed: the wage over the term with the signing fee, when it
+ * ends, and what releasing or replacing him would pay right after (25% of the wage per season
+ * left, →STAFF-11).
+ */
+function TermCosts({
+  w,
+  wage,
+  fee,
+  term,
+  until,
+  ends = true,
+}: {
+  w: World;
+  wage: string;
+  fee: string;
+  term: number;
+  until: number;
+  /** Off where the sheet already says when the contract ends. */
+  ends?: boolean;
+}) {
+  const club = clubOf(w);
+  const format = (value: string | bigint) => (
+    <Money value={value} code={club.country} year={w.year} />
+  );
+  const total = BigInt(wage) * BigInt(term) + BigInt(fee);
+  return (
+    <p className={s.termCosts} data-testid="term-costs">
+      <span>
+        총 {format(total)} · 연봉 {format(wage)} × {term}시즌 + 계약금 {format(fee)}
+      </span>
+      <small>
+        {ends && `${contractLine(until, w.year)} · `}중도 해지·교체 보상금{' '}
+        {format(releaseCost(w, { wage, until }))} (남은 {seasonsLeft(w, until)}시즌 × 연봉의 25%)
+      </small>
+    </p>
+  );
+}
+
+const SEVENTY = '70세가 되는 시즌까지만 계약할 수 있어요';
+
+/**
+ * Renewing the manager whose contract ends at this close (→STAFF-14): nobody renews himself, so
+ * the owner chooses the seasons (the firefighter one, never past his 70th year) at the going
+ * wage, fixed for the term.
+ */
+export function ManagerRenewal({
+  w,
+  client,
+  disabled,
+}: {
+  w: World;
+  client: GameClient;
+  disabled: boolean;
+}) {
+  const offer = managerRenewal(w);
+  const [term, setTerm] = useState<ContractTerm>(managerTerm(w.manager) as ContractTerm);
+  if (!offer) return null;
+  const chosen = Math.min(term, offer.limit) as ContractTerm,
+    terms = managerRenewal(w, chosen)!;
+  return (
+    <>
+      <p>
+        재계약하지 않으면 시즌이 끝날 때 떠나고 임시 감독이 팀을 맡아요.
+        {offer.limit === 1 && managerTerm(w.manager) === 1 && ' 소방수는 1시즌씩 계약해요.'}
+      </p>
+      {offer.limit > 1 && (
+        <TermDial
+          label="감독 재계약 기간"
+          value={chosen}
+          limit={offer.limit}
+          why={SEVENTY}
+          disabled={disabled}
+          onChange={setTerm}
+        />
+      )}
+      <TermCosts w={w} wage={terms.wage} fee={terms.fee} term={chosen} until={terms.until} />
+      <button
+        className={s.primary}
+        disabled={disabled}
+        onClick={() => void client.command({ type: 'renew-manager', term: chosen })}
+      >
+        재계약
+      </button>
+    </>
+  );
+}
+
+/** The term a manager candidate signs for and what it costs (→STAFF-14). */
+export function ManagerHireTerm({
+  w,
+  candidate,
+  term,
+  disabled,
+  onChange,
+}: {
+  w: World;
+  candidate: Pick<Manager, 'style' | 'born' | 'wage'> & { fee: string };
+  term: ContractTerm;
+  disabled: boolean;
+  onChange: (term: ContractTerm) => void;
+}) {
+  const limit = managerTermLimit(candidate, w.year);
+  return (
+    <>
+      {limit > 1 && (
+        <TermDial
+          label="감독 계약 기간"
+          value={term}
+          limit={limit}
+          why={SEVENTY}
+          disabled={disabled}
+          onChange={onChange}
+        />
+      )}
+      <TermCosts
+        w={w}
+        wage={candidate.wage}
+        fee={candidate.fee}
+        term={term}
+        until={w.year + term}
+        ends={false}
+      />
+    </>
+  );
 }
 
 /**
@@ -189,6 +427,9 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
   const acting = useActing();
   const [role, setRole] = useState<StaffRole>();
   const [pick, setPick] = useState<number>();
+  // Hiring and renewing both start from the two seasons the staff would sign (→STAFF-15).
+  const [term, setTerm] = useState<ContractTerm>(DELEGATED_TERM);
+  const [renewing, setRenewing] = useState<StaffRole>();
   const club = clubOf(w);
   const format = (value: string) => <Money value={value} code={club.country} year={w.year} />,
     // Inside a control that already answers the tap: the notation, the exact amount as its title.
@@ -198,6 +439,9 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
   const candidates = role ? staffCandidates(w, role) : [];
   const chosen = pick !== undefined ? candidates[pick] : undefined;
   const current = role ? members.get(role) : undefined;
+  const owed = releaseCost(w, current);
+  const renewal = renewing ? members.get(renewing) : undefined;
+  const renewed = renewal && isExpiring(w, renewal) ? renewalTerms(w, renewal, term) : undefined;
   const delegated = !!w.delegation?.staff;
   return (
     <section className={s.staff} aria-label="코치진">
@@ -251,8 +495,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                   {isExpiring(w, member) && (
                     <small>
                       재계약: 연봉 {format(renewalTerms(w, member).wage)} · 계약금{' '}
-                      {format(renewalTerms(w, member).fee)} ·{' '}
-                      {contractLine(renewalTerms(w, member).until, w.year)}
+                      {format(renewalTerms(w, member).fee)} · 1–5시즌 선택
                     </small>
                   )}
                 </div>
@@ -267,8 +510,12 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                   <button
                     className={s.primary}
                     disabled={acting}
-                    title={`연봉 ${text(renewalTerms(w, member).wage)} · 계약금 ${text(renewalTerms(w, member).fee)} · ${contractLine(renewalTerms(w, member).until, w.year)}`}
-                    onClick={() => void client.command({ type: 'renew-staff', role: id })}
+                    title={`연봉 ${text(renewalTerms(w, member).wage)} · 계약금 ${text(renewalTerms(w, member).fee)} · 기간 선택`}
+                    onClick={(event) => {
+                      event.currentTarget.focus();
+                      setRenewing(id);
+                      setTerm(DELEGATED_TERM);
+                    }}
                   >
                     재계약
                   </button>
@@ -279,6 +526,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                     event.currentTarget.focus();
                     setRole(id);
                     setPick(undefined);
+                    setTerm(DELEGATED_TERM);
                   }}
                 >
                   {member ? '교체' : '선임'}
@@ -303,7 +551,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                     setRole(undefined);
                   }}
                 >
-                  계약 해지
+                  계약 해지{owed !== '0' && <> · {plain(owed)}</>}
                 </button>
               )}
               <button
@@ -311,11 +559,11 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                 disabled={acting || pick === undefined}
                 onClick={() => {
                   if (pick === undefined) return;
-                  void client.command({ type: 'hire-staff', role, candidate: pick });
+                  void client.command({ type: 'hire-staff', role, candidate: pick, term });
                   setRole(undefined);
                 }}
               >
-                {chosen ? `${chosen.name} 선임` : '후보를 고르세요'}
+                {chosen ? `${chosen.name} 선임 · ${term}시즌` : '후보를 고르세요'}
               </button>
             </div>
           }
@@ -363,8 +611,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                     선임 시 {hiredImpact(w, role, candidate)} (지금 {staffImpact(w, role)})
                   </small>
                   <small>
-                    연봉 {plain(candidate.wage)} · 계약금 {plain(candidate.fee)} ·{' '}
-                    {contractLine(candidate.until, w.year)}
+                    연봉 {plain(candidate.wage)} · 계약금 {plain(candidate.fee)}
                   </small>
                 </button>
               ))}
@@ -372,9 +619,58 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
           ) : (
             <p className={s.note}>이번 시즌 이 자리에 맞는 후보가 없어요.</p>
           )}
-          {current && BigInt(current.wage) > 0n && (
-            <p className={s.note}>교체·해지 시 기존 연봉의 25%를 보상금으로 지급해요.</p>
+          {candidates.length > 0 && (
+            <TermDial label="코치 계약 기간" value={term} disabled={acting} onChange={setTerm} />
           )}
+          {chosen && (
+            <TermCosts
+              w={w}
+              wage={chosen.wage}
+              fee={chosen.fee}
+              term={term}
+              until={w.year + term}
+            />
+          )}
+          {current && owed !== '0' && (
+            <p className={s.note}>
+              교체·해지 시 {current.name}에게 보상금 {format(owed)} (남은{' '}
+              {seasonsLeft(w, current.until)}시즌 × 연봉의 25%)
+            </p>
+          )}
+        </Dialog>
+      )}
+      {renewing && renewal && renewed && (
+        <Dialog
+          label={`${STAFF_INFO[renewing].label} 재계약`}
+          onClose={() => setRenewing(undefined)}
+          actions={
+            <div className={s.sheetActions}>
+              <button onClick={() => setRenewing(undefined)}>취소</button>
+              <button
+                className={s.primary}
+                disabled={acting}
+                onClick={() => {
+                  void client.command({ type: 'renew-staff', role: renewing, term });
+                  setRenewing(undefined);
+                }}
+              >
+                재계약 · {term}시즌
+              </button>
+            </div>
+          }
+        >
+          <p className={s.note}>
+            {renewal.name} (능력 {Math.round(renewal.ability)}) · 연봉은 지금 능력으로 다시 정해지고
+            계약 기간 동안 그대로예요.
+          </p>
+          <TermDial label="코치 재계약 기간" value={term} disabled={acting} onChange={setTerm} />
+          <TermCosts
+            w={w}
+            wage={renewed.wage}
+            fee={renewed.fee}
+            term={term}
+            until={renewed.until}
+          />
         </Dialog>
       )}
     </section>

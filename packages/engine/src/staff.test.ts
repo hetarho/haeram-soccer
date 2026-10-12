@@ -1,10 +1,23 @@
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
-import type { Player, StaffRole, StaffTrait, World } from '../../contracts/src/types';
+import { footballIndex } from '../../catalogs/src/index';
+import type {
+  ContractTerm,
+  ManagerRule,
+  ManagerStyle,
+  Player,
+  StaffRole,
+  StaffTrait,
+  World,
+} from '../../contracts/src/types';
 import {
   activePlayers,
   activeTrainingFocus,
   advanceRound,
+  aimedSynergy,
+  delegatedManagerPick,
+  managerCandidates,
+  policyOf,
   autoTrainingAdvice,
   autoTrainingFocus,
   basicStaff,
@@ -12,18 +25,29 @@ import {
   coachProspect,
   coachSeason,
   createWorld,
+  dailyStaff,
   departmentMultiplier,
   hireStaff,
   lineup,
   makeManager,
+  MANAGER_GONE,
   MANAGER_TRAIT_INFO,
   managerOffers,
+  managerRenewal,
+  managerTermLimit,
+  marketOf,
   operate,
   operatingCosts,
   overall,
+  quote,
   ratio,
+  releaseCost,
   releaseStaff,
+  renewalDay,
+  renewalTerms,
   seasonStaff,
+  staffQuote,
+  yearlyStaff,
   selectedLineup,
   settleTraining,
   simulateSeason,
@@ -253,14 +277,17 @@ describe('coaching staff', () => {
     expect(w.events.at(-1)).toMatchObject({ kind: 'staff-hire', amount: first.fee });
     // The hired coach is no longer offered, so indices refer to who is still available.
     expect(staffCandidates(w, 'attack').map((offer) => offer.id)).toEqual([second.id, third.id]);
+    // A replaced coach is owed 25% of his wage for each season left on his contract.
     const before = BigInt(w.cash),
-      owed = BigInt(ratio(first.wage, 1n, 4n));
+      owed = BigInt(ratio(first.wage, BigInt(first.until - w.year), 4n));
     hireStaff(w, 'attack', 0);
     expect(BigInt(w.cash)).toBe(before - BigInt(second.fee) - owed);
     expect(w.events.at(-1)!.amount).toBe((BigInt(second.fee) + owed).toString());
     const released = BigInt(w.cash);
     releaseStaff(w, 'attack');
-    expect(BigInt(w.cash)).toBe(released - BigInt(ratio(second.wage, 1n, 4n)));
+    expect(BigInt(w.cash)).toBe(
+      released - BigInt(ratio(second.wage, BigInt(second.until - w.year), 4n)),
+    );
     expect(w.staff!.some((member) => member.role === 'attack')).toBe(false);
     expect(() => hireStaff(w, 'attack', 7)).toThrow('스태프 후보');
     validateWorld(w);
@@ -586,5 +613,338 @@ describe('coach and manager careers', () => {
     expect(coach.ability).toBeGreaterThan(50);
     expect(w.staff!.find((member) => member.role === 'defense')!.ability).toBe(50);
     expect(w.events.some((e) => e.kind === 'staff-growth')).toBe(true);
+  });
+});
+
+describe('contract terms (STAFF-11, STAFF-14)', () => {
+  const coachOf = (w: World, role: StaffRole) => w.staff!.find((member) => member.role === role)!;
+  const ownReminder = (w: World) =>
+    (w.inbox || []).find((item) => item.kind === 'staff-renewal' && item.ref === w.manager.id);
+
+  it('signs coaches for the term the owner chooses at a wage fixed for it', () => {
+    const w = world('coach-terms');
+    const offer = staffCandidates(w, 'attack')[1],
+      start = BigInt(w.cash);
+    operate(w, { type: 'hire-staff', role: 'attack', candidate: 1, term: 4 });
+    expect(coachOf(w, 'attack')).toMatchObject({
+      id: offer.id,
+      wage: offer.wage,
+      until: w.year + 4,
+      term: 4,
+    });
+    expect(BigInt(w.cash)).toBe(start - BigInt(offer.fee));
+    // He grows over the seasons but his wage stays until a renewal prices his ability again.
+    w.year += 3;
+    seasonStaff(w);
+    const member = coachOf(w, 'attack');
+    expect(member.wage).toBe(offer.wage);
+    const terms = renewalTerms(w, member, 3);
+    operate(w, { type: 'renew-staff', role: 'attack', term: 3 });
+    expect(coachOf(w, 'attack')).toMatchObject({
+      wage: terms.wage,
+      until: member.until + 3,
+      term: 3,
+    });
+    // Without a choice the earlier two seasons apply, and no owner term is kept.
+    operate(w, { type: 'hire-staff', role: 'defense', candidate: 0, term: 1 });
+    expect(coachOf(w, 'defense').until).toBe(w.year + 1);
+    operate(w, { type: 'renew-staff', role: 'defense' });
+    expect(coachOf(w, 'defense').until).toBe(w.year + 3);
+    expect(coachOf(w, 'defense').term).toBeUndefined();
+    const before = canonical(w);
+    expect(() =>
+      operate(w, { type: 'hire-staff', role: 'scout', candidate: 0, term: 6 as ContractTerm }),
+    ).toThrow('계약 기간');
+    expect(() =>
+      operate(w, { type: 'renew-staff', role: 'attack', term: 0 as ContractTerm }),
+    ).toThrow('계약 기간');
+    expect(canonical(w)).toBe(before);
+  });
+
+  it('pays 25% of the annual wage for each season left when a coach goes early', () => {
+    const w = world('release-terms');
+    operate(w, { type: 'hire-staff', role: 'fitness', candidate: 2, term: 4 });
+    const coach = coachOf(w, 'fitness');
+    // Four seasons left: a whole year's wage.
+    expect(releaseCost(w, coach)).toBe(coach.wage);
+    const cash = BigInt(w.cash);
+    operate(w, { type: 'release-staff', role: 'fitness' });
+    expect(BigInt(w.cash)).toBe(cash - BigInt(coach.wage));
+    expect(w.events.at(-1)!.detail).toContain('잔여 계약 4시즌 보상금');
+    // In the final season a quarter; a volunteer leaves freely.
+    operate(w, { type: 'hire-staff', role: 'fitness', candidate: 1, term: 2 });
+    const short = coachOf(w, 'fitness');
+    w.year += 1;
+    expect(releaseCost(w, short)).toBe(ratio(short.wage, 1n, 4n));
+    expect(releaseCost(w, coachOf(w, 'scout'))).toBe('0');
+  });
+
+  it('never signs a manager past his 70th year, and the firefighter for one season', () => {
+    const w = world('seventy');
+    expect(managerTermLimit({ born: w.year - 50 }, w.year)).toBe(5);
+    expect(managerTermLimit({ born: w.year - 67 }, w.year)).toBe(3);
+    expect(managerTermLimit({ style: 'firefighter', born: w.year - 55 }, w.year)).toBe(1);
+    // Older saves without an age keep the plain five.
+    expect(managerTermLimit({}, w.year)).toBe(5);
+    const market = structuredClone(marketOf(w));
+    const [veteran, crisis] = market.free.filter((m) => m.style !== 'firefighter');
+    veteran.born = w.year - 67;
+    crisis.style = 'firefighter';
+    w.managerMarket = market;
+    const before = canonical(w);
+    expect(() => operate(w, { type: 'hire', id: crisis.id, term: 2 })).toThrow('소방수');
+    expect(() => operate(w, { type: 'hire', id: veteran.id, term: 4 })).toThrow('70세');
+    expect(canonical(w)).toBe(before);
+    // Three seasons take the veteran to the close of his 70th year.
+    operate(w, { type: 'hire', id: veteran.id, term: 3 });
+    expect(w.manager).toMatchObject({ id: veteran.id, until: veteran.born + 70, term: 3 });
+    // Renewing at 68 with the contract ending at this close: one more season fits.
+    w.manager.until = w.year + 1;
+    w.manager.born = w.year - 68;
+    expect(managerRenewal(w)!.limit).toBe(1);
+    expect(() => operate(w, { type: 'renew-manager', term: 2 })).toThrow('70세');
+    // A year older he retires at this close: nothing to renew and no 1 April reminder.
+    w.manager.born = w.year - 69;
+    expect(managerRenewal(w)).toBeUndefined();
+    w.calendar = { day: renewalDay(w.year) };
+    dailyStaff(w);
+    expect(ownReminder(w)).toBeUndefined();
+  });
+
+  it('lets no manager renew himself: a 1 April reminder, then he leaves at the close', () => {
+    const w = world('no-self-renewal');
+    w.manager.until = w.year + 1;
+    const { id, name } = w.manager,
+      { limit } = managerRenewal(w)!;
+    expect(limit).toBeGreaterThan(1);
+    w.calendar = { day: renewalDay(w.year) };
+    dailyStaff(w);
+    expect(ownReminder(w)).toMatchObject({
+      attention: true,
+      title: `${name} 감독 계약이 이번 시즌 끝에 끝나요`,
+    });
+    expect(ownReminder(w)!.detail).toContain(`· 1–${limit}시즌)`);
+    w.year++;
+    yearlyStaff(w);
+    expect(w.manager.interim).toBe(true);
+    expect(w.critical).toBe(MANAGER_GONE);
+    expect(w.events.some((event) => event.kind === 'manager-renew')).toBe(false);
+    expect(w.events.find((event) => event.kind === 'manager-departure')!.detail).toContain(
+      '재계약 없이 계약 기간을 마치고 떠났습니다.',
+    );
+    expect(w.inbox!.find((item) => item.ref === id)!.read).toBe(true);
+    // Renewed by the owner he stays, on the wage fixed when he signed.
+    const kept = world('no-self-renewal');
+    kept.manager.until = kept.year + 1;
+    const terms = managerRenewal(kept, 3)!;
+    operate(kept, { type: 'renew-manager', term: 3 });
+    expect(kept.manager).toMatchObject({ until: kept.year + 4, wage: terms.wage, term: 3 });
+    kept.year++;
+    yearlyStaff(kept);
+    expect(kept.manager).toMatchObject({ id, wage: terms.wage, interim: false });
+    expect(kept.critical).toBeUndefined();
+  });
+
+  it('lets delegated staff sign and renew coaches for two seasons', () => {
+    const w = world('delegated-terms');
+    w.delegation = { ...w.delegation, staff: true };
+    operate(w, { type: 'coaching', role: 'attack', level: 3 });
+    const hired = coachOf(w, 'attack');
+    expect(hired.until).toBe(w.year + 2);
+    expect(hired.term).toBeUndefined();
+    // A coach no new candidate beats: his contract ends with the season just closed and the staff
+    // keep him for two more.
+    w.staff = w.staff!.map((member) =>
+      member.id === hired.id
+        ? { ...member, ability: 95, potential: 95, born: hired.until - 40 }
+        : member,
+    );
+    w.year = hired.until;
+    seasonStaff(w);
+    expect(coachOf(w, 'attack')).toMatchObject({ id: hired.id, until: w.year + 2 });
+    expect(w.events.some((event) => event.kind === 'staff-renew')).toBe(true);
+  });
+
+  it('prices managers and coaches on the football index', () => {
+    const w = world('indexed-wages');
+    w.year = 2005;
+    w.manager = { ...w.manager, born: 1955, until: 2006 };
+    const real = footballIndex('ENG', 2005).real,
+      indexed = (units: number) =>
+        ratio(quote('ENG', 2005, units), BigInt(Math.round(real * 1_000_000)), 1_000_000n);
+    expect(real).toBeGreaterThan(1);
+    expect(managerRenewal(w)!.wage).toBe(indexed(120 + w.manager.ability));
+    const offer = staffCandidates(w, 'attack')[0];
+    expect(offer.wage).toBe(indexed((offer.ability - 30) * 1.5));
+    // Before commercialisation football follows prices, so early wages are unchanged.
+    expect(staffQuote(world(), 100)).toBe(quote('ENG', 1950, 100));
+  });
+});
+
+describe('delegated manager appointment (STAFF-18)', () => {
+  /** Four free agents of known schools and levels, with the manager post delegated. */
+  function seeded(seed: string, rule?: ManagerRule) {
+    const w = world(seed);
+    w.delegation = { ...w.delegation, manager: true };
+    if (rule) operate(w, { type: 'manager-rule', rule });
+    const market = structuredClone(marketOf(w));
+    const levels: [ManagerStyle, number][] = [
+      ['developer', 70],
+      ['positional', 80],
+      ['motivator', 60],
+      ['gegenpress', 75],
+    ];
+    market.free = market.free.slice(0, 4).map((m, i) => ({
+      ...m,
+      style: levels[i][0],
+      ability: levels[i][1],
+      potential: levels[i][1],
+      born: w.year - 50,
+      wage: staffQuote(w, 120 + levels[i][1]),
+    }));
+    w.managerMarket = market;
+    const by = (style: ManagerStyle) => market.free.find((m) => m.style === style)!;
+    return { w, by };
+  }
+  /** Makes the proud manager resign over one more strong demand (→STAFF-5). */
+  function resignOverDemand(w: World) {
+    w.manager = { ...w.manager, pride: 90, trust: 20, conflicts: 2 };
+    operate(w, { type: 'tactics', tactic: 'counter', tone: 'demand' });
+  }
+
+  it('picks by the rule among the free agents the club can afford, never poaching', () => {
+    const school = seeded('rule-school');
+    expect(delegatedManagerPick(school.w, 'developer')!.id).toBe(school.by('developer').id);
+    // Without a free agent of the departing school, or without a school, the best overall.
+    expect(delegatedManagerPick(school.w, 'counter')!.id).toBe(school.by('positional').id);
+    expect(delegatedManagerPick(school.w)!.id).toBe(school.by('positional').id);
+    // Other clubs' managers stay the owner's call, even when every free agent is worse.
+    const poach = managerCandidates(school.w).find((c) => c.source === 'club')!;
+    school.w.managerMarket!.free = school.w.managerMarket!.free.map((m) => ({
+      ...m,
+      ability: poach.ability - 10,
+    }));
+    expect(delegatedManagerPick(school.w)!.source).toBe('free');
+
+    const best = seeded('rule-best', 'best');
+    expect(best.w.managerRule).toBe('best');
+    expect(delegatedManagerPick(best.w, 'developer')!.id).toBe(best.by('positional').id);
+
+    // A strategy of squad investment 4 and good morale aims at 원 팀, which needs a motivator.
+    const strategy = seeded('rule-strategy', 'strategy');
+    strategy.w.policy = { ...policyOf(strategy.w), support: 4 };
+    strategy.w.morale = 70;
+    expect(aimedSynergy(strategy.w)).toMatchObject({ id: 'one-team', schools: ['motivator'] });
+    expect(delegatedManagerPick(strategy.w, 'developer')!.id).toBe(strategy.by('motivator').id);
+    // With no motivator on the market the staff fall back to the best overall.
+    strategy.w.managerMarket!.free = strategy.w.managerMarket!.free.filter(
+      (m) => m.style !== 'motivator',
+    );
+    expect(delegatedManagerPick(strategy.w)!.id).toBe(strategy.by('positional').id);
+
+    // The default is stored as no rule at all.
+    operate(best.w, { type: 'manager-rule', rule: 'school' });
+    expect(best.w.managerRule).toBeUndefined();
+    expect(() => operate(best.w, { type: 'manager-rule', rule: 'random' as ManagerRule })).toThrow(
+      '감독 선임 기준',
+    );
+  });
+
+  it('skips a best he cannot afford: cash after the fee must cover 13 rounds with his wage', () => {
+    const { w, by } = seeded('rule-afford', 'best');
+    const best = by('positional');
+    // Thirteen rounds of today's costs with the best man's wage in place of the manager's.
+    const runway = (wage: string) =>
+      ((BigInt(operatingCosts(w).annual) + BigInt(wage) - BigInt(w.manager.wage)) / 46n) * 13n;
+    const fee = BigInt(managerCandidates(w).find((c) => c.id === best.id)!.fee);
+    w.cash = (fee + runway(best.wage)).toString();
+    expect(delegatedManagerPick(w)!.id).toBe(best.id);
+    // A unit short, the staff take the next best, who asks less.
+    w.cash = (fee + runway(best.wage) - 1n).toString();
+    expect(delegatedManagerPick(w)!.id).toBe(by('gegenpress').id);
+    w.cash = '0';
+    expect(delegatedManagerPick(w)).toBeUndefined();
+  });
+
+  it('appoints a successor at once for two seasons when a manager resigns', () => {
+    const { w, by } = seeded('delegated-resign');
+    w.manager = { ...w.manager, style: 'developer' };
+    const developer = by('developer'),
+      fee = managerCandidates(w).find((c) => c.id === developer.id)!.fee;
+    const cash = BigInt(w.cash);
+    resignOverDemand(w);
+    expect(w.critical).toBeUndefined();
+    expect(w.manager).toMatchObject({
+      id: developer.id,
+      interim: false,
+      since: w.year,
+      until: w.year + 2,
+    });
+    expect(w.manager.term).toBeUndefined();
+    expect(w.tactic).toBe(w.manager.philosophy);
+    expect(BigInt(w.cash)).toBe(cash - BigInt(fee));
+    expect(w.events.at(-1)).toMatchObject({ kind: 'manager-hire', amount: fee });
+    expect(w.events.at(-1)!.detail).toContain('스태프 위임 선임');
+    expect(w.inbox!.at(-1)).toMatchObject({
+      kind: 'staff-report',
+      attention: false,
+      title: `육성형 ${developer.name} 감독 선임`,
+    });
+    expect(w.inbox!.at(-1)!.detail).toContain('같은 학파 우선 기준');
+    expect(managerCandidates(w).some((c) => c.id === developer.id)).toBe(false);
+    validateWorld(w);
+    // Without delegation the departure stops the clock for the owner.
+    const owner = seeded('owner-resign').w;
+    owner.delegation = { ...owner.delegation, manager: false };
+    resignOverDemand(owner);
+    expect(owner.manager.interim).toBe(true);
+    expect(owner.critical).toBe(MANAGER_GONE);
+  });
+
+  it('fills retirement and unrenewed vacancies at the close, a firefighter for one season', () => {
+    const retiring = seeded('delegated-retire').w;
+    retiring.manager = { ...retiring.manager, born: retiring.year - 69 };
+    retiring.year++;
+    yearlyStaff(retiring);
+    expect(retiring.manager.interim).toBe(false);
+    expect(retiring.critical).toBeUndefined();
+    expect(retiring.events.some((e) => e.detail.includes('은퇴'))).toBe(true);
+
+    const { w, by } = seeded('delegated-expiry', 'best');
+    const firefighter = by('positional');
+    w.managerMarket!.free = w.managerMarket!.free.map((m) =>
+      m.id === firefighter.id ? { ...m, style: 'firefighter' as const } : m,
+    );
+    w.manager.until = w.year + 1;
+    w.year++;
+    yearlyStaff(w);
+    expect(w.critical).toBeUndefined();
+    expect(w.manager).toMatchObject({ id: firefighter.id, until: w.year + 1 });
+  });
+
+  it('keeps the interim without stopping when nobody is affordable, then appoints daily', () => {
+    const { w, by } = seeded('delegated-broke', 'best');
+    const best = by('positional');
+    w.cash = '0';
+    resignOverDemand(w);
+    expect(w.manager.interim).toBe(true);
+    expect(w.critical).toBeUndefined();
+    const report = w.inbox!.at(-1)!;
+    expect(report).toMatchObject({ kind: 'staff-report', attention: true, ref: w.manager.id });
+    expect(report.title).toContain('임시 감독 체제');
+    dailyStaff(w);
+    expect(w.manager.interim).toBe(true);
+    // Once the club can afford him the staff appoint the best and the report is settled.
+    w.cash = '999999999';
+    dailyStaff(w);
+    expect(w.manager.id).toBe(best.id);
+    expect(w.inbox!.find((item) => item.id === report.id)!.read).toBe(true);
+    // Without delegation an interim the owner kept stays.
+    const kept = seeded('kept-interim').w;
+    kept.delegation = { ...kept.delegation, manager: false };
+    resignOverDemand(kept);
+    delete kept.critical;
+    dailyStaff(kept);
+    expect(kept.manager.interim).toBe(true);
   });
 });
