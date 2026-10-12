@@ -37,7 +37,7 @@
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
 | one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
-| club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T16:53:30.486Z | [history](work/club-realism.json) |
+| club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
 - inspect work board for remaining tasks
