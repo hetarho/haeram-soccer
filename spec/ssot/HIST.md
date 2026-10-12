@@ -37,9 +37,9 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
-- r7 261012 HIST-13✎ +derived cup stages, honours, head-to-head and appearances
+- r7 261012 HIST-13✎ none→derived cup stages, honours, head-to-head and appearances
 - r6 261012 HIST-13+ closed seasons keep top scorers, per-round rank, Elo spread and cup brackets from the last 32
-- r5 261011 HIST-11✎ +cup rounds, retirements, injuries, potential changes as news, cups celebrated on the day of the final; HIST-12+ Club Elo, squad and club value, cup runs and finals in the season archive
+- r5 261011 HIST-11✎ none→cup rounds, retirements, injuries, potential changes as news, cups celebrated on the day of the final; HIST-12+ Club Elo, squad and club value, cup runs and finals in the season archive
 - r4 261010 HIST-11+ derived club news with stable IDs, thresholds and celebrated achievements
 - r3 261008 HIST-9✎ milestone completion→100-season retention gate; HIST-10+ fact-backed milestone completion
 - r2 261008 HIST-9✎ 100-season retention gate→fact-backed milestone completion
