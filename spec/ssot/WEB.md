@@ -1,12 +1,12 @@
 # WEB Browser game delivery
-> r47 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r48 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
 - WEB-2 [o] Play a fictional club founded in 1950, five seasons before the 1955 European Cup, in its country's amateur league below the professional pyramid (→WORLD-5); choose country, name, colors, seed, and capital difficulty. ← clubs were founded at all times; starting close to the continental era keeps the road to Europe within reach
 - WEB-3 [o] Capital presets are 2, 1, and 0.5 times the founding annual operating budget; all other initial conditions remain identical for a shared seed.
 - WEB-4 [o] Dashboard, match observation, league/Europe, squad/market, manager, business, and history are playable views, with progress and actionable errors.
-- WEB-5 [o] Advance one round, finish the current season, or follow automatic x1/x2/x5/x10 pacing; the public interface has no multi-season jump. Manager resignation and saving failure interrupt unattended progress.
+- WEB-5 [o] Advance one round, finish the current season, or follow automatic x1/x2/x5/x10 pacing; the public interface has no multi-season jump. Every mode lives through the same days and records the same facts (→LEAGUE-11). Manager resignation and saving failure interrupt unattended progress.
 - WEB-6 [o] Free local play has no real-money purchases, identity collection, analytics upload, sign-in, or automatic cloud submission.
 - WEB-7 [o] A new game goes into an empty game slot (→WEB-62); starting one over an occupied slot's game requires an explicit in-app replacement choice and offers export first.
 - WEB-8 [o] A runtime error preserves a recoverable save and offers retry/export; do not replace failed loading with a new world.
@@ -176,6 +176,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r48 261012 WEB-5✎ +every progression mode records the same facts (→LEAGUE-11)
 - r47 261012 WEB-40✎ 감독 후보 four seasonal candidates→the manager market (free agents, other clubs' managers with compensation); WEB-60✎ +다음 시즌부터 적용 in the draft bar and the reserved strategy with 예약 취소
 - r46 261012 WEB-18✎ a hidden tab pauses and resumes the clock→never pauses it; WEB-52✎ +one-line phone banner with a light single confetti burst, takes no taps→a tap dismisses it; WEB-64+ background play at wall-clock pace, away catch-up on return up to a per-browser limit, away summary card, status in the tab title
 - r45 261012 WEB-7✎ new world replacing the active save→new game in an empty slot, replacing an occupied slot confirmed; WEB-10✎ menu +게임 슬롯; WEB-15✎ advanced settings scroll in the content region, founding names its slot; WEB-18✎ intervention popover stays open after a choice→closes with focus on the trigger; WEB-39✎ 구단 빌드 tab→운영 전략 (contents to WEB-60); WEB-56✎ 새 클럽 창단→이 슬롯에서 새 게임 and 게임 슬롯; WEB-60+ 운영 전략 tab (presets, saved strategies, dials section, no 빌드 wording); WEB-61+ device strategy library and composer; WEB-62+ three game slots and slot screen; WEB-63+ reachable scrolling in every content holder

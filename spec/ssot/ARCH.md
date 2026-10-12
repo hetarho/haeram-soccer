@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r6 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r7 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -34,10 +34,12 @@
   - Catalogs are data; schema validation occurs before they enter the engine.
   - React may display projections and submit commands; it does not directly modify canonical game state.
 - ARCH-5 [o] A versioned deterministic engine owns game progression.
-  - Inputs: world seed, explicit commands, simulation time, engine/rule versions, and catalog versions.
+  - Inputs: world seed, explicit commands and the game day each applies at, engine/rule versions, and catalog versions.
   - Use a documented seeded PRNG with portable test vectors and separately named streams for generation, matches, and other stochastic systems.
   - Persist PRNG state where needed; wall-clock time, `Math.random`, locale, and animation speed do not determine game outcomes.
   - A fixed simulation clock advances independently of rendering; viewing, pausing presentation, or fast-forwarding does not reroll completed facts.
+  - The same inputs produce the same facts however time is advanced — a day, a round or the rest of the season (→LEAGUE-11) — and whatever is viewed or read. ← the control that advanced time must not change the club's history
+  - A draw is named by what it settles (a fixture, a player, a bid, a request, a campaign) and its game date, never by a count of commands; reading the inbox or any other bookkeeping command changes no later outcome.
   - Decide the PRNG algorithm and simulation tick parameters with portable fixtures before implementing dependent domain systems.
 - ARCH-6 [o] One engine instance in a Web Worker is the sole writer for the active world. ← keep computation off the UI thread and centralize mutations
   - Browser commands are serialized; simulation runs in interruptible bounded batches.
@@ -200,6 +202,7 @@
 - Current product material: `spec/ideation/club-history-reboot.md`; human PRD: `docs/PRD.md` (repository-relative paths).
 
 ## chg
+- r7 261012 ARCH-5✎ inputs simulation time→the game day each command applies at; +the same facts however time is advanced; +draws named by what they settle, never by a count of commands
 - r6 261012 ARCH-11✎ additional worlds as files only→parked game slots in IndexedDB beside the localStorage game in play; ARCH-29+ owner-scoped profile ports (device now, account later)
 - r5 261012 ARCH-6✎ +read-only requests answered between steps; ARCH-28✎ +later pages as lazy chunks
 - r4 261009 ARCH-2✎ npm workspaces→pnpm workspaces with pnpm pinned by packageManager; ARCH-22✎ verify commands npm run→pnpm run; ARCH-23✎ CI install npm ci→pnpm install --frozen-lockfile

@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r4 | Define the implemented browser-demo behavior for domestic seasons and relegation.
+> r5 | Define the implemented browser-demo behavior for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -12,7 +12,9 @@
   - midweek rounds (league round × 7 − 3 days): the last N of 5, 11, 16, 23, 28, 35, 42, so the final is in late May; the own club's draw is an inbox item (→WEB-42).
   - own prize per tie won by rounds left after it: semi-final 40, quarter-final 20, round of 16 10, earlier 5; the title 150 (1901 units).
   - the season archive keeps each country's final: runner-up, score and a shoot-out.
-- LEAGUE-6 [o] The amateur league (→WORLD-9) is a 30-game, 16-club season. The own club in it, founded there or relegated to it, retains history/control; its champions go up, and second to fifth play off for the place when the own club is among them. The worst club of the last professional division drops to make room.
+- LEAGUE-6 [o] The amateur level swaps places with the last professional division: each of its groups relegates its bottom two of the season just played and as many amateur clubs go up, the own club taking one of those places like any other club. ← one exchange for every club; a promotion never needs an extra place
+  - while the own club plays in the amateur league (→WORLD-9) — a 30-game, 16-club season it was founded in or relegated to, keeping its history and control — that table decides who goes up: every place but the last by rank, the last by a playoff of the next four clubs.
+  - where no amateur league is played, the strongest amateur clubs go up.
 - LEAGUE-7 [o] Global rounds spread shorter schedules across the world season; domestic cup and European ties are played midweek in rounds the other never uses (→LEAGUE-5, →EURO-10). Completed fixtures settle once.
 - LEAGUE-8 [o] Close a season only after its fixtures/cups/Europe and financial settlement; archive standings, renew personnel and fixtures, then advance the season.
 
@@ -25,6 +27,11 @@
   - strengths stay within 15–99, the very best an owner can build ← a cap below the owner's best would leave one club unbeatable
   - a normal summer's luck (sum of three uniforms, sd ≈ 1.5) and, each year, a 1.5% takeover (+4 to +8) or a 1.5% crisis (−4 to −8); reputation drifts 30% toward its division's.
   - measured 261011 (30 seasons, eight countries): 5–9 different champions per country, the most successful club 8–15 titles, champions average 2.15 points per game.
+- LEAGUE-11 [o] The world season is lived one day at a time in one order, whatever advances it — a day step, one round or the rest of the season (→WEB-5) — so every mode records the same facts (→ARCH-5). ← the control that advanced time must not change results
+  - a midweek cup or continental tie plays on its own day, league round × 7 − 3 (→LEAGUE-5, →EURO-10), before that round's league matches.
+  - a league match day plays the round's matches first, then the round's settlement (training, wages, supporters), then that day's club business — academy intake, market, delegated business, staff, retirement announcements, healed injuries — so a player healed or signed that day plays from his next match.
+  - any other day plays its ties first, then its club business.
+  - the season closes on the day after its final round (→LEAGUE-9).
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -32,6 +39,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r5 261012 LEAGUE-6✎ worst last-division club dropped to make room for a promoted own club→one exchange: the bottom two of each last-division group for as many amateur clubs, chosen by the amateur table (playoff for the last place) while the own club plays in it; LEAGUE-11+ one day order for every progression mode
 - r4 261012 LEAGUE-10✎ strength cap 92→99, +rare club projects adding 8–18 to a level and fading 15% a summer
 - r3 261011 LEAGUE-5✎ season-close cup→midweek rounds with seeded byes, open draws, prizes and archived finals; LEAGUE-6✎ 8-club 14-game lower section with 2nd–4th playoff→16-club 30-game amateur league with 2nd–5th playoff; LEAGUE-7✎ separate cup and European midweeks; LEAGUE-10+ clubs nobody owns evolve between seasons
 - r2 261009 LEAGUE-9+ season closed on 1 August→the day after the final round

@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r15 | Define the implemented browser-demo behavior for squad and growth.
+> r16 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating equals its league's average club XI (±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -27,6 +27,9 @@
 - CLUB-13 [o] The training view exposes the three focus choices and their recovery/development tradeoffs, current focus, and promising young players. Focus selection is a single saved game command; optional player and market details are explicit.
 
 - CLUB-14 [o] The market supports role and roster-fit filters with stable seeded candidates. Each candidate shows current ability, potential, effect on the proposed XI/tactic fit, upfront transfer or loan fee, recurring annual wage and contract term before acceptance.
+  - the list is drawn per season and per the settings that shape it (recruitment level →ECON-16, chief scout →STAFF-11, strategy cards →ECON-22): the same settings always show the same candidates, so switching a setting away and back draws nothing new. ← a setting must not become a free reroll
+  - one ID names one player: lists of different settings never share a candidate ID.
+  - a bid concerns the player it was made for, on the terms it was made for, until it is answered or lapses (→CLUB-18), whatever the list shows meanwhile.
 
 - CLUB-15 [o] Recruitment previews distinguish automatic starter selection from optional manual-lineup replacement, never promise a win or guaranteed selection, and show post-fee cash and wage-inclusive fixed-cost runway excluding future revenue. Disable unaffordable/full/already-signed offers; free transfers still disclose wages.
 
@@ -41,7 +44,7 @@
 
 - CLUB-19 [o] Squad morale (0–100, new clubs 60) moves +6/+1/−6 after own wins/draws/defeats (±2 more for a two-goal margin; a motivator manager takes 2 off a defeat), drifts 15% per settled round toward a baseline of 58 + 4 per squad-investment level above standard + (manager trust − 50)/10 + the manager style, build and synergy terms, within 30–80, and falls 2 more per round while starters average fatigue ≥ 40. Match strength adds (morale − 60)/10; older saves without morale stay exactly unchanged.
 
-- CLUB-20 [o] The owner does not run the dressing room: morale and fitness actions are requests to the manager or the staff, made once per cooldown (settled rounds since the last use). Requests that depend on people can work, do little or backfire; every chance is stated before the request and drawn from the world's own stream for that round and revision. ← a chairman paying random bonuses or treating the squad himself is not how football clubs work
+- CLUB-20 [o] The owner does not run the dressing room: morale and fitness actions are requests to the manager or the staff, made once per cooldown (settled rounds since the last use). Requests that depend on people can work, do little or backfire; every chance is stated before the request and drawn from the world's own stream for that request and round. ← a chairman paying random bonuses or treating the squad himself is not how football clubs work
   | request | by | cost (1901 units) | outcomes | cooldown |
   |---|---|---|---|---|
   | squad meeting | manager | free | works: morale +7 · nothing much: +2 · backfires: −3 and trust −2; works 0.5 + 0.2 for a motivator + (trust − 50)/200 + 0.1 when morale < 45 (0.2–0.9) | 4 |
@@ -92,6 +95,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r16 261012 CLUB-14✎ +market list per season and settings (no reroll by switching back), one ID one player, a bid keeps its player and terms; CLUB-20✎ stream for that round and revision→for that request and round
 - r15 261011 CLUB-22✎ transfer list at a 90/110/140% ask→a stance per player (listed 85–105% offers, open, untouchable refusing below 150%); CLUB-24+ delegated verdict on big offers for untouchable players
 - r14 261011 CLUB-3✎ retire at 36→spring announcement with age chances, retirement at the close, 41 forced; CLUB-4✎ instant sale→sale only by an accepted offer; CLUB-12✎ +yearly potential breakthroughs and stalls, attributes capped at 99; CLUB-18✎ bidders from the same country and division→clubs suited to the player; CLUB-22+ transfer list; CLUB-23+ injuries
 - r13 261010 CLUB-21✎ 머니볼/상업 제국 vision conditions→build cards, +우리 동네 아이들 +트레이딩 머신 cross-slot combos
