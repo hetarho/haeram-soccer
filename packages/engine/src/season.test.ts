@@ -197,6 +197,25 @@ describe('closed season archive', () => {
     expect(low).toBeLessThanOrEqual(leagueLow);
   });
 
+  it('renews no contract by itself at the close (→CLUB-26)', () => {
+    const w = founded();
+    // Unanswered talks stay open: nobody signs for the owner.
+    w.delegation = { ...w.delegation, contracts: false };
+    for (const p of w.players) p.until = w.year + 1;
+    const year = w.year,
+      before = new Map(w.players.map((p) => [p.id, { wage: p.wage, until: p.until }]));
+    closedSeason(w);
+    const kept = w.players.filter((p) => p.status === 'active' && before.has(p.id));
+    expect(kept.length).toBeGreaterThan(0);
+    for (const p of kept) expect({ wage: p.wage, until: p.until }).toEqual(before.get(p.id));
+    // Each asked to renew on 1 January instead.
+    const asked = new Set(
+      (w.inbox || []).filter((item) => item.kind === 'contract-talk').map((item) => item.ref),
+    );
+    for (const p of kept) expect(asked.has(p.id)).toBe(true);
+    expect(w.events.some((e) => e.year === year && e.kind === 'contract')).toBe(false);
+  });
+
   it('keeps no partial scorer table or rank series from a season tracked midway', () => {
     const w = founded();
     advanceRound(w, undefined, false);

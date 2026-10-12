@@ -1,7 +1,14 @@
 import type { Command, World } from '../../contracts/src/types';
 import { activePlayers, addEvent, clubOf, makePlayer, overall } from './world';
 import { hash, integer, random, ratio } from './primitives';
-import { divisionFor, MARKET_CONFIG, marketValueAt, marketWageAt } from './contracts';
+import {
+  declineContract,
+  divisionFor,
+  MARKET_CONFIG,
+  marketValueAt,
+  marketWageAt,
+  offerContract,
+} from './contracts';
 import { moneyLabel } from './finance';
 import { setLineup } from './strategy';
 import { setTrainingFocus } from './training';
@@ -105,9 +112,11 @@ export function transferOffers(w: World, year = w.year, legacy = false) {
 export function squadCommand(w: World, cmd: SquadCommand) {
   switch (cmd.type) {
     case 'contract-offer':
+      offerContract(w, cmd.player, cmd.wage, cmd.term);
+      break;
     case 'contract-decline':
-      // Rules 1.16 commands are refused, never ignored, until their rules land.
-      throw new Error(`${cmd.type} 명령은 아직 지원하지 않습니다.`);
+      declineContract(w, cmd.player);
+      break;
     case 'promote-youth':
       promoteYouth(w, cmd.id);
       break;

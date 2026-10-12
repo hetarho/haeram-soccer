@@ -9,6 +9,7 @@ import {
   advanceRound,
   createWorld,
   developAnnually,
+  marketWage,
   operate,
   settleTraining,
   trainingFocusInfo,
@@ -34,6 +35,8 @@ function world(focus: TrainingFocus = 'balanced') {
     player.potential = 85;
     player.attack = player.passing = player.defense = player.keeper = player.stamina = 40;
     player.fatigue = 50;
+    // Paid as the market rates them now, so nobody asks for a raise (→CLUB-26).
+    player.wage = marketWage(w, player);
   }
   if (focus !== 'balanced') operate(w, { type: 'training', focus });
   return w;

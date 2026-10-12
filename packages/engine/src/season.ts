@@ -24,7 +24,8 @@ import type {
 } from '../../contracts/src/types';
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import { addMetrics, clamp, random, zeroMetrics, compareIds } from './primitives';
-import { activePlayers, addEvent, AMATEUR_CLUBS, clubOf, makePlayer, quote, rating } from './world';
+import { activePlayers, addEvent, AMATEUR_CLUBS, clubOf, makePlayer, rating } from './world';
+import { contractTalks } from './contracts';
 import { simulateMatch } from './match';
 import { fatigueCost } from './strategy';
 import { developAnnually, settleTraining } from './training';
@@ -630,14 +631,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     developAnnually(w, p);
     p.fatigue = 0;
     p.season = zeroMetrics();
-    if (p.until <= w.year) {
-      p.wage = quote(
-        own.country,
-        w.year,
-        Math.max(15, Math.round((p.attack + p.passing + p.defense) / 3) - 18),
-      );
-      p.until = w.year + 3;
-    }
+    // No contract renews itself: players negotiate (→CLUB-26).
   }
   let i = 0;
   while (activePlayers(w).length < 18 || !activePlayers(w).some((p) => p.role === 'GK')) {
@@ -749,7 +743,7 @@ function stepDay(w: World, capture: Settlement, observe: boolean) {
 
 /**
  * Daily club business outside matches: academy intake, the transfer market, sponsors, the staff,
- * spring retirement announcements and healed injuries.
+ * spring retirement announcements, contract talks and healed injuries.
  */
 export function clubDay(w: World) {
   runAcademyIntake(w);
@@ -757,6 +751,7 @@ export function clubDay(w: World) {
   delegatedBusiness(w);
   dailyStaff(w);
   announceRetirements(w);
+  contractTalks(w);
   clearHealed(w);
 }
 /** Off days only move the clock. Matches and existing weekly costs settle on their due day. */

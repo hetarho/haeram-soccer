@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { currency, footballIndex, priceIndex } from '../../catalogs/src/index';
-import type { Player, World } from '../../contracts/src/types';
+import type { Player, PolicyLevel, World } from '../../contracts/src/types';
 import {
   activePlayers,
+  buildEffects,
   clubOf,
+  contractTalks,
   createWorld,
   divisionFor,
   makePlayer,
@@ -11,10 +13,15 @@ import {
   marketValue,
   marketValueAt,
   marketWage,
+  moneyLabel,
   npcSquad,
   operate,
+  operatingCosts,
   overall,
   playerValue,
+  ratio,
+  seasonDayOf,
+  talkTerms,
   transferOffers,
 } from './index';
 
@@ -155,5 +162,180 @@ describe('market values (→CLUB-25)', () => {
       const value = marketValueAt(code, w.year, divisionFor(code, overall(player)), player);
       expect(amount(fee)).toBeCloseTo(amount(value) * 1.3, -1);
     }
+  });
+});
+
+/** A rich club whose first player is rated `ability`, aged `age`, in his contract's final season. */
+function talking(ability = 80, age = 26) {
+  const w = world();
+  w.cash = '999999999999';
+  const p = Object.assign(activePlayers(w)[0], rated(w, ability, age), { until: w.year + 1 });
+  return { w, p };
+}
+/** 1 January, when players in their final season ask to renew. */
+function newYear(w: World) {
+  w.calendar = { day: seasonDayOf(w.year, 1, 1) };
+  contractTalks(w);
+}
+const talkItems = (w: World, id: string) =>
+  (w.inbox || []).filter((item) => item.kind === 'contract-talk' && item.ref === id);
+
+describe('contract talks (→CLUB-26)', () => {
+  it('sets the floor at demand × (1 − goodwill) for each source of goodwill', () => {
+    const { w, p } = talking(80);
+    /** Goodwill after `setup`, checking the demand and floor it gives. */
+    const goodwill = (setup: (w: World, p: Player) => void) => {
+      const copy = structuredClone(w),
+        player = copy.players.find((x) => x.id === p.id)!;
+      setup(copy, player);
+      const terms = talkTerms(copy, player),
+        wage = BigInt(Math.round(buildEffects(copy).wage * 1000));
+      expect(terms.demand).toBe(ratio(marketWage(copy, player), wage, 1000n));
+      expect(terms.floor).toBe(
+        ratio(terms.demand, BigInt(Math.round((100 - terms.goodwill.percent) * 100)), 10000n),
+      );
+      return terms.goodwill.percent;
+    };
+    const support = (level: PolicyLevel) => (w: World) =>
+      operate(w, { type: 'policy', key: 'support', level });
+    const build = (cards: World['build']) => (w: World) => void (w.build = cards);
+    // The default squad investment (3) gives +5 at the starting morale of 60.
+    expect(goodwill(() => {})).toBe(5);
+    expect(([1, 2, 3, 4, 5] as const).map((level) => goodwill(support(level)))).toEqual([
+      -5, 0, 5, 10, 15,
+    ]);
+    expect(goodwill(build({ culture: 'family' }))).toBe(10);
+    expect(goodwill(build({ culture: 'stars' }))).toBe(15);
+    // 스타 대우 is goodwill only for players rated 70 or more.
+    expect(
+      goodwill((w, p) => {
+        w.build = { culture: 'stars' };
+        Object.assign(p, rated(w, 69));
+      }),
+    ).toBe(5);
+    expect(goodwill(build({ culture: 'meritocracy' }))).toBe(0);
+    expect(goodwill(build({ revenue: 'frugal' }))).toBe(0);
+    expect(goodwill((w) => void (w.morale = 80))).toBe(10);
+    expect(goodwill((w) => void (w.morale = 42))).toBe(0.5);
+    // Within −10 to +30%.
+    expect(
+      goodwill((w) => {
+        support(5)(w);
+        w.build = { culture: 'stars' };
+        w.morale = 100;
+      }),
+    ).toBe(30);
+    expect(
+      goodwill((w) => {
+        support(1)(w);
+        w.build = { culture: 'meritocracy', revenue: 'frugal' };
+        w.morale = 0;
+      }),
+    ).toBe(-10);
+    // The demand carries the build's player-wage effects.
+    const stars = structuredClone(w);
+    stars.build = { culture: 'stars' };
+    expect(amount(talkTerms(stars, p).demand)).toBeCloseTo(amount(marketWage(w, p)) * 1.1, -1);
+  });
+
+  it('lets a delegated club at squad investment 5 renew a star a level-1 club declines', () => {
+    const [generous, tight] = ([5, 1] as const).map((level) => {
+      const { w, p } = talking(80);
+      operate(w, { type: 'policy', key: 'support', level });
+      expect(w.delegation?.contracts).toBe(true);
+      const before = { wage: p.wage, until: p.until, floor: talkTerms(w, p).floor };
+      newYear(w);
+      expect(p.talk).toBeUndefined();
+      const items = talkItems(w, p.id);
+      expect(items).toHaveLength(1);
+      expect(items[0].attention).toBe(false);
+      return { w, p, before, report: items[0] };
+    });
+    // The staff offer the floor for two seasons beyond this one.
+    expect(generous.p.wage).toBe(generous.before.floor);
+    expect(generous.p.until).toBe(generous.w.year + 3);
+    expect(generous.report.title).toContain('받아들였어요');
+    expect(generous.w.events.at(-1)).toMatchObject({ kind: 'contract' });
+    // A level-1 ceiling (×0.9 of the market wage) is below what he settles for.
+    expect(tight.p).toMatchObject({ wage: tight.before.wage, until: tight.before.until });
+    expect(tight.report.title).toContain('거절했어요');
+    expect(tight.report.detail).toContain('연봉 상한');
+    expect(tight.w.events.at(-1)).toMatchObject({ kind: 'contract-decline' });
+  });
+
+  it('signs a veteran for one season and declines a raise the cash cannot carry', () => {
+    const veteran = talking(70, 33);
+    newYear(veteran.w);
+    expect(veteran.p.until).toBe(veteran.w.year + 2);
+
+    const broke = talking(80);
+    operate(broke.w, { type: 'policy', key: 'support', level: 5 });
+    // Twelve rounds of today's costs: short of the 13-round runway even before the raise.
+    broke.w.cash = ((BigInt(operatingCosts(broke.w).annual) / 46n) * 12n).toString();
+    const until = broke.p.until;
+    newYear(broke.w);
+    expect(broke.p.until).toBe(until);
+    expect(talkItems(broke.w, broke.p.id)[0].detail).toContain('13라운드');
+  });
+
+  it('refuses an owner’s offer below the floor, stating it, and signs one at the floor', () => {
+    const { w, p } = talking(80);
+    operate(w, { type: 'delegate', key: 'contracts', value: false });
+    newYear(w);
+    const talk = p.talk!;
+    expect(talk).toMatchObject({ kind: 'renew', year: w.year, day: seasonDayOf(w.year, 1, 1) });
+    const [item] = talkItems(w, p.id);
+    expect(item.attention).toBe(true);
+    const before = structuredClone(w),
+      low = (BigInt(talk.floor) - 1n).toString();
+    expect(() => operate(w, { type: 'contract-offer', player: p.id, wage: low, term: 3 })).toThrow(
+      moneyLabel(w, talk.floor),
+    );
+    expect(w).toEqual(before);
+    operate(w, { type: 'contract-offer', player: p.id, wage: talk.floor, term: 3 });
+    expect(p).toMatchObject({ wage: talk.floor, until: w.year + 4 });
+    expect(p.talk).toBeUndefined();
+    expect(talkItems(w, p.id)[0].read).toBe(true);
+    expect(w.events.at(-1)).toMatchObject({ kind: 'contract' });
+    // Nothing is left to answer.
+    expect(() => operate(w, { type: 'contract-decline', player: p.id })).toThrow('협상');
+  });
+
+  it('opens a raise talk for a player paid 25% below his market wage, once a season', () => {
+    const w = world();
+    operate(w, { type: 'delegate', key: 'contracts', value: false });
+    const p = activePlayers(w)[0],
+      market = BigInt(marketWage(w, p));
+    p.wage = ((market * 76n) / 100n).toString();
+    contractTalks(w);
+    expect(p.talk).toBeUndefined();
+    p.wage = ((market * 75n) / 100n).toString();
+    contractTalks(w);
+    expect(p.talk).toMatchObject({ kind: 'raise' });
+    expect(p.raiseAsked).toBe(w.year);
+    expect(talkItems(w, p.id)).toHaveLength(1);
+    // The owner's answer takes talks back from the staff.
+    w.delegation = { ...w.delegation, contracts: true };
+    operate(w, { type: 'contract-decline', player: p.id });
+    expect(w.delegation.contracts).toBe(false);
+    expect(p.talk).toBeUndefined();
+    expect(w.events.at(-1)).toMatchObject({ kind: 'contract-decline' });
+    contractTalks(w);
+    expect(p.talk).toBeUndefined();
+    w.year++;
+    contractTalks(w);
+    expect(p.talk).toMatchObject({ kind: 'raise', year: w.year });
+  });
+
+  it('pays agreed wages as signed whatever the build', () => {
+    const w = world(),
+      bill = operatingCosts(w).playerWages;
+    expect(bill).toBe(
+      activePlayers(w)
+        .reduce((sum, p) => sum + BigInt(p.wage), 0n)
+        .toString(),
+    );
+    w.build = { revenue: 'frugal', culture: 'stars' };
+    expect(operatingCosts(w).playerWages).toBe(bill);
   });
 });

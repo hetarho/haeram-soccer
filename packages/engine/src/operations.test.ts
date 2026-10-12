@@ -51,10 +51,11 @@ describe('club decisions', () => {
     expect(w.delegation?.manager).toBe(true);
     const before = structuredClone(w);
     const player = w.players[0].id;
+    // Contract answers need a talk the player opened (→CLUB-26).
     expect(() => operate(w, { type: 'contract-offer', player, wage: '1', term: 2 })).toThrow(
-      'contract-offer 명령은 아직 지원하지 않습니다.',
+      '계약 협상 중인 선수가 아닙니다.',
     );
-    expect(() => operate(w, { type: 'contract-decline', player })).toThrow('아직');
+    expect(() => operate(w, { type: 'contract-decline', player })).toThrow('협상');
     expect(() => operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 })).toThrow('아직');
     expect(() => operate(w, { type: 'manager-rule', rule: 'best' })).toThrow('아직');
     expect(() => operate(w, { type: 'renew-manager', term: 2 })).toThrow('계약 기간');

@@ -51,14 +51,11 @@ export function moneyLabel(w: World, amount: string) {
 
 export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1) {
   const effects = policyEffects(policyOf(w));
-  // Squad investment acts in contract talks, not on the wage bill (→ECON-16).
-  const playerWages = ratio(
-    activePlayers(w)
-      .reduce((sum, p) => sum + BigInt(p.wage), 0n)
-      .toString(),
-    BigInt(Math.round(buildEffects(w).wage * 1000)),
-    1000n,
-  );
+  // Agreed wages are paid as signed: squad investment and the build's player-wage effects act in
+  // contract talks, not on the wage bill (→ECON-16, →CLUB-26).
+  const playerWages = activePlayers(w)
+    .reduce((sum, p) => sum + BigInt(p.wage), 0n)
+    .toString();
   const managerWage = w.manager.wage;
   const maintenance = quote(clubOf(w).country, w.year, facilityUpkeepUnits(w.facilities));
   const marketing = effects.marketingUnits
