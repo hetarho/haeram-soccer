@@ -6,10 +6,16 @@ import { isExpiring } from '../../../../packages/engine/src/staff';
 import { managerRenewal } from '../../../../packages/engine/src/operations';
 import { managerTerm } from '../../../../packages/engine/src/styles';
 import type { GameClient } from '../runtime/client';
-import { useGameState } from '../runtime/store';
+import {
+  notificationStore,
+  useGameState,
+  useNotifications,
+  type SystemNotification,
+} from '../runtime/store';
 import { stoppingEvents, useProgression, type ProgressionController } from '../runtime/progression';
 import { openMarket, useNavigation, useSquadView, useStaffView } from './state';
-import { competitionLabel, money } from './format';
+import { competitionLabel } from './format';
+import { Money } from './Money';
 import { Dialog } from './Dialog';
 import s from './EventCenter.module.css';
 import { fadeOutOnRemove } from './motion';
@@ -81,7 +87,7 @@ export function EventCenter({
       </button>
     );
   const club = clubOf(w);
-  const format = (value: string) => money(value, club.country, w.year);
+  const format = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   if (eve) {
     const home = eve.home === w.playerClub;
     const opponent = w.clubs.find((c) => c.id === (home ? eve.away : eve.home));
@@ -349,12 +355,37 @@ export const KIND_LABEL: Record<InboxItem['kind'], string> = {
   'sponsor-ending': '후원 계약 만료',
 };
 
-/** HUD bell: every club event, newest first, readable at any time. */
+/** When a system notification arrived, in this browser's time. */
+const arrived = (at: number) =>
+  new Date(at).toLocaleString('ko-KR', {
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+
+/**
+ * HUD bell: every club event, newest first, readable at any time. The app's own notices join as
+ * 시스템 (→WEB-66): unread ones lead, and seeing them in the opened inbox reads them.
+ */
 export function InboxButton({ client }: { client: GameClient }) {
   const inbox = useGameState((state) => state.view?.world.inbox);
+  const notices = useNotifications((items) => items);
   const [open, setOpen] = useState(false);
   const items = [...(inbox || [])].reverse();
-  const unread = items.filter((item) => !item.read).length;
+  const system = [...notices].reverse();
+  const worldUnread = items.filter((item) => !item.read).length;
+  const unread = worldUnread + system.filter((notice) => !notice.read).length;
+  const close = () => {
+    setOpen(false);
+    notificationStore.read();
+  };
+  const systemRow = (item: SystemNotification) => (
+    <li key={item.id} className={item.read ? undefined : s.unread}>
+      <small>시스템 · {arrived(item.at)}</small>
+      <b>{item.text}</b>
+    </li>
+  );
   return (
     <>
       <button
@@ -387,22 +418,26 @@ export function InboxButton({ client }: { client: GameClient }) {
       {open && (
         <Dialog
           label="소식함"
-          onClose={() => setOpen(false)}
+          onClose={close}
           actions={
             <div className={s.inboxActions}>
               <button
                 disabled={!unread}
-                onClick={() => void client.command({ type: 'read-inbox' })}
+                onClick={() => {
+                  notificationStore.read();
+                  if (worldUnread) void client.command({ type: 'read-inbox' });
+                }}
               >
                 모두 읽음
               </button>
-              <button onClick={() => setOpen(false)}>닫기</button>
+              <button onClick={close}>닫기</button>
             </div>
           }
         >
           <NewsQuietToggle />
-          {items.length ? (
+          {items.length || system.length ? (
             <ul className={s.inbox}>
+              {system.filter((item) => !item.read).map(systemRow)}
               {items.map((item) => (
                 <li key={item.id} className={item.read ? undefined : s.unread}>
                   <small>
@@ -413,6 +448,7 @@ export function InboxButton({ client }: { client: GameClient }) {
                   <span>{item.detail}</span>
                 </li>
               ))}
+              {system.filter((item) => item.read).map(systemRow)}
             </ul>
           ) : (
             <p className={s.empty}>아직 소식이 없어요.</p>

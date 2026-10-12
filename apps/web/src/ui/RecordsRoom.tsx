@@ -1,4 +1,4 @@
-import { useEffect, useState, type KeyboardEvent } from 'react';
+import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import { country } from '../../../../packages/catalogs/src/index';
 import { tacticLabel } from '../../../../packages/engine/src/world';
@@ -11,7 +11,8 @@ import { divisionName } from './careerRecords';
 import { ClubLink } from './ClubLink';
 import { ClubTrends, EloStanding, SeasonTable, useEloStanding } from './ClubTrends';
 import { Dialog } from './Dialog';
-import { kindLabel, money, number, seasonName } from './format';
+import { kindLabel, number, seasonName } from './format';
+import { Money } from './Money';
 import { Pitch } from './Pitch';
 import { PlayerLink } from './PlayerSheet';
 import { archivePlayback } from './replay';
@@ -240,7 +241,7 @@ function SeasonRecords({
       )
       .sort((a, b) => b[3] - a[3] || b[4] - b[5] - (a[4] - a[5]) || b[4] - a[4] || a[0] - b[0]) ||
     [];
-  const f = (n: string, y = year) => money(n, c.country, y);
+  const f = (n: string, y = year) => <Money value={n} code={c.country} year={y} />;
   const scope = filter === 'all' ? '모든 대회' : kindLabel[filter];
   return (
     <>
@@ -281,15 +282,17 @@ function SeasonRecords({
       </div>
       {h && (
         <div className={s.stats}>
-          {[
+          {(
             [
-              '리그 성적',
-              `${divisionName(c.country, h.tier, h.group)} ${h.rank}위 · ${h.points}pts`,
-            ],
-            ['서포터', number(h.fans)],
-            ['당시 자금', f(h.cash)],
-            ['당시 손익', f((BigInt(h.income) - BigInt(h.expense)).toString())],
-          ].map(([label, value]) => (
+              [
+                '리그 성적',
+                `${divisionName(c.country, h.tier, h.group)} ${h.rank}위 · ${h.points}pts`,
+              ],
+              ['서포터', number(h.fans)],
+              ['당시 자금', f(h.cash)],
+              ['당시 손익', f((BigInt(h.income) - BigInt(h.expense)).toString())],
+            ] as [string, ReactNode][]
+          ).map(([label, value]) => (
             <div className={s.stat} key={label}>
               <div className={s.label}>{label}</div>
               <strong>{value}</strong>

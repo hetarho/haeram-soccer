@@ -15,7 +15,7 @@ import { operatingCosts } from '../../../../packages/engine/src/finance';
 import { careOffer, effectText, outcomeText } from '../../../../packages/engine/src/care';
 import { academySummary } from '../../../../packages/engine/src/academy';
 import { buildEffects } from '../../../../packages/engine/src/build';
-import { money } from './format';
+import { compactMoney } from './format';
 import type { Page, SquadTab, StaffTab } from './state';
 
 export type Tone = 'good' | 'ok' | 'warn' | 'bad';
@@ -71,7 +71,8 @@ export function runwayText(rounds: number) {
 function request(w: World, kind: CareKind): Remedy {
   const offer = careOffer(w, kind),
     club = clubOf(w);
-  const format = (value: string) => money(value, club.country, w.year);
+  // A choice states its cost and effect as one sentence, in the app's notation (→WEB-67).
+  const format = (value: string) => compactMoney(value, club.country, w.year);
   const single = offer.outcomes.length === 1;
   const effect =
     kind === 'friendly'
@@ -109,7 +110,7 @@ function request(w: World, kind: CareKind): Remedy {
 export function remedies(w: World, key: StateKey): Remedy[] {
   const club = clubOf(w),
     policy = policyOf(w),
-    format = (value: string) => money(value, club.country, w.year);
+    format = (value: string) => compactMoney(value, club.country, w.year);
   switch (key) {
     case 'fatigue': {
       const current = lineupSummary(startingSquad(w, club)).fatigue;

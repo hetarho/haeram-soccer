@@ -34,8 +34,6 @@
 | T050 | Football index and sponsor-slot eras in catalog 2026-demo-2 | ECON SAVE | - | todo |
 | T051 | Contracts for sponsors by slot, player talks, terms and new delegations | ECON CLUB STAFF WEB SAVE | T050 | todo |
 | T052 | Split commands by domain, close the season-close ledger gap, engine money notation | ECON WEB | T051 | todo |
-| T053 | One money notation across the app | WEB | - | todo |
-| T054 | App notices as notifications in the HUD inbox | WEB | T053 | todo |
 | T055 | League distribution, local-supporter gate, no supporter income | ECON | T052 T054 | todo |
 | T056 | Sponsor contracts by slot | ECON WEB | T055 | todo |
 | T057 | Market wages and values on the football index | CLUB ECON | T052 T054 | todo |
@@ -49,12 +47,13 @@
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
 | one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
+| club-realism | 4 | 13 | 2 | 11 | 0 | 3 | 0 | 2026-10-12T14:17:53.394Z | [history](work/club-realism.json) |
 
 ## next
-- next work = work group club-realism (T050–T062) from main: `npx haeram-spec-creator work start club-realism --workspace auto --workers 4 --reviewers 1 --task-verify 'pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit' --verify 'pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit' --group-verify 'pnpm install --frozen-lockfile --prefer-offline && pnpm run verify' --json`, then `npx haeram-spec-creator work run --work club-realism --provider claude --json` (Codex is unavailable). Lanes base (T050→T052) and ui-base (T053→T054) first, then commercial, players and staff in parallel, T062 last. Never commit spec/ssot to the group branch while it runs; a failed automatic integration is not retried in the same run (`work integrate --attempt`); the full e2e (~15 min) exceeds a worker's 10-min tool limit, so the coordinator runs it; browser deps are installed on this server.
-- Player match ratings (평점) lead Korean headlines, but WEB-22/25 rule out synthetic ratings; decide whether a transparent rating belongs in the game. Research levers not yet modelled: set-piece coaching, ticket-price fan mood, fixture-gap rule for training camps; tackles in a far-off flank still look like heavy touches (match.ts picks markers by zone, not flank). Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
+- inspect work board for remaining tasks
 
 ## log
+- 261012 T053 T054 integrated
 - 261012 T047 done: CI on main at 6cdc86b passed checks and test:e2e in every browser; its benchmark job fails desktop input p95 115 ms > 100 ms (left until club-realism is done, owner's order); one-result's runtime lives on the server that ran it, so this clone has no attempt to release
 - 261012 merged work group one-result, T047 (e2e unverified) and plan/club-realism (ECON r14 CLUB r17 STAFF r12 WEB r51 SAVE r21, T050–T062) into main; ARCH-13's change renumbered r8→r9 after main's ARCH-23 r8
 - 261012 pushed work/one-result, plan/club-realism and task/one-result/T047-fb57cca7 to origin before the main merge; next lists how to finish one-result
@@ -74,4 +73,3 @@
 - 261012 create-task ARCH LEAGUE WEB ECON CLUB SAVE: T042 draws named by what they settle, lane day-order T043 one day order → T044 amateur exchange, T045 market identity with bids keeping their offer (after T042), T046 currency conversion and ledger lines, T047 rules 1.15.0 with goldens (integration); work group one-result, workers 3, reviewers 1
 - 261012 update-ssot SAVE r19: rules 1.14.0→1.15.0, outgoing bids may carry `offer`, older pending bids answered as before
 - 261012 create-task ARCH LEAGUE WEB ECON CLUB start (work group one-result)
-- 261012 update-ssot ARCH r7 LEAGUE r5 WEB r48 ECON r13 CLUB r16: every progression mode lives through the same days in one order (ties on their day, a match day's club business after its matches) and no draw is keyed by a count of commands; the amateur level swaps places with the last professional division by the amateur table, never an extra place; a currency change converts every live amount, coaches and free agents included; the ledger names owner requests and win bonuses; market lists and IDs per settings, a bid keeping its player and terms

@@ -7,7 +7,7 @@ import { transferOffers, operatingCost } from '../../packages/engine/src/operati
 import { clubOf, startingSquad } from '../../packages/engine/src/world';
 import { daysUntilNextMatch } from '../../packages/engine/src/calendar';
 import { lineupSummary } from '../../packages/engine/src/strategy';
-import { money } from '../../apps/web/src/ui/format';
+import { compactMoney, money } from '../../apps/web/src/ui/format';
 import type { World } from '../../packages/contracts/src/types';
 import { horizontalOverflow } from './layout';
 import { stopOnlyFor } from './events';
@@ -118,9 +118,17 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   const freeCard = desk.getByTestId(`candidate-${free.player.id}`);
   expect(BigInt(free.player.wage)).toBeGreaterThan(0n);
   await expect(freeCard).toContainText('이적료 없음 · 연봉은 계속 지급해요');
-  await expect(freeCard).toContainText(
-    money(free.player.wage, clubOf(before).country, before.year),
-  );
+  // The wage reads in the one notation (→WEB-67); the exact amount is the title and opens on tap.
+  const country = clubOf(before).country;
+  const wage = compactMoney(free.player.wage, country, before.year),
+    exactWage = money(free.player.wage, country, before.year);
+  await expect(freeCard).toContainText(wage);
+  const disclosure = freeCard.locator(`button[title="${exactWage}"]`).first();
+  await expect(disclosure).toHaveText(wage);
+  await disclosure.click();
+  await expect(disclosure).toHaveText(exactWage);
+  await disclosure.click();
+  await expect(disclosure).toHaveText(wage);
   const preview = recruitmentPreview(before, free);
   await expect(freeCard.getByLabel('영입 전력 변화')).toContainText(
     `${preview.beforeStrength} → ${preview.afterStrength}`,
@@ -224,6 +232,13 @@ test('disables an unaffordable fee while keeping a cheaper loan available with h
   const fees = bid.getByRole('radiogroup', { name: '제안 이적료' });
   const send = bid.getByRole('button', { name: /제안 보내기$/ });
   await expect(fees.getByRole('radio', { name: /^100%/ })).toHaveAttribute('aria-checked', 'true');
+  // A step and the send button read in the notation with the exact fee as the title (→WEB-67).
+  const country = clubOf(before).country,
+    exactFee = money(offer.fee, country, before.year),
+    askedStep = fees.getByRole('radio', { name: /^100%/ }).locator('[data-money]');
+  await expect(askedStep).toHaveText(compactMoney(offer.fee, country, before.year));
+  await expect(askedStep).toHaveAttribute('title', exactFee);
+  await expect(send.locator('[data-money]')).toHaveAttribute('title', exactFee);
   expect(BigInt(offer.fee)).toBeGreaterThan(BigInt(before.cash));
   await expect(send).toBeDisabled();
   await expect(bid).toContainText('자금이 부족해요.');

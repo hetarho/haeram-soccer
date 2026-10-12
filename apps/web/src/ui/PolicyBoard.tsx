@@ -21,7 +21,7 @@ import { financeProjection } from '../../../../packages/engine/src/projection';
 import { academyIntakeOutlook } from '../../../../packages/engine/src/academy';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
-import { money, number } from './format';
+import { compactMoney, number } from './format';
 import s from './PolicyBoard.module.css';
 
 /** Ordered presets keep the existing ticket rule; 0.05 is the founding price. */
@@ -62,7 +62,8 @@ const signed = (value: string, format: (value: string) => string) =>
 function dials(w: World): Dial[] {
   const club = clubOf(w),
     policy = policyOf(w),
-    format = (value: string) => money(value, club.country, w.year);
+    // A dial's preview lines are sentences, so they carry the notation as text (→WEB-67).
+    format = (value: string) => compactMoney(value, club.country, w.year);
   const policyDial = (key: PolicyKey, icon: string, lines: (level: PolicyLevel) => string[]) => ({
     key,
     icon,

@@ -12,7 +12,8 @@ import type { ClientState, GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
 import { FinancialBreakdown } from './FinancialBreakdown';
-import { money, number } from './format';
+import { compactMoney, number } from './format';
+import { Money } from './Money';
 import s from './BusinessWorkbench.module.css';
 
 /** The operations page's money views: the ledger and fixed costs, or one kind of deal. */
@@ -39,7 +40,8 @@ export function BusinessWorkbench({
   const w = state.view!.world,
     club = clubOf(w),
     finance = state.view!.finance || financialBreakdown(w);
-  const format = (value: string) => money(value, club.country, w.year);
+  const format = (value: string) => <Money value={value} code={club.country} year={w.year} />,
+    text = (value: string) => compactMoney(value, club.country, w.year);
   const acting = useGameState((current) => !!current.pendingActions);
   const readonly = useGameState((current) => current.readonly);
   const error = useGameState((current) => current.error);
@@ -271,7 +273,7 @@ export function BusinessWorkbench({
                       </div>
                       <p className={s.note}>
                         {offer.kind === 'performance'
-                          ? `리그·하위 리그 홈/원정 승리 ${format(ratio(offer.bonus, 1n, BigInt(games)))} · 무승부 ${format(ratio(offer.bonus, 1n, BigInt(games * 3)))} 추가 지급`
+                          ? `리그·하위 리그 홈/원정 승리 ${text(ratio(offer.bonus, 1n, BigInt(games)))} · 무승부 ${text(ratio(offer.bonus, 1n, BigInt(games * 3)))} 추가 지급`
                           : offer.kind === 'exclusive'
                             ? '새 상품 캠페인이 제한돼요. 진행 중인 캠페인은 이어갑니다.'
                             : offer.kind === 'indexed'

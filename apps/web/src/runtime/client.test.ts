@@ -9,6 +9,7 @@ import { serve } from './codec';
 import type { CodecResult, Reply, Request } from './protocol';
 import { GameSlots } from './slots';
 import { ACTIVE_SAVE_KEYS, GameIndexStore, type ParkedStore } from '../adapters/games';
+import { NOTIFICATIONS_KEY, notificationStore, type SystemNotification } from './store';
 
 class MemoryStorage implements StoragePort {
   data = new Map<string, string>();
@@ -93,6 +94,11 @@ class ChannelPort {
   onmessage?: (event: MessageEvent<{ generation: number }>) => void;
   postMessage() {}
   close() {}
+}
+
+/** The system notifications this browser keeps (→WEB-66). */
+function notifications(): SystemNotification[] {
+  return JSON.parse(storage.getItem(NOTIFICATIONS_KEY) || '{"items":[]}').items;
 }
 
 const founding = {
@@ -238,6 +244,18 @@ describe('background worker publication', () => {
     ).toBe(false);
   });
 
+  it('keeps a tab without Web Locks read-only, its badge saying why, with no notification', async () => {
+    await start();
+    vi.stubGlobal('navigator', {});
+    const reader = new GameClient(() => {});
+    clients.push(reader);
+    await reader.start();
+    expect(reader.state.readonly).toBe(true);
+    expect(reader.state.notice).toContain('Web Locks');
+    expect(reader.state.view?.world.revision).toBe(0);
+    expect(notifications()).toHaveLength(0);
+  });
+
   it('takes over writing once the playing tab releases the writer lock', async () => {
     await start();
     let release: (lock: object) => void = () => {};
@@ -257,7 +275,8 @@ describe('background worker publication', () => {
     expect(reader.state.readonly).toBe(true);
     release({ name: 'haeram-soccor:writer' });
     await vi.waitFor(() => expect(reader.state.readonly).toBe(false));
-    expect(reader.state.notice).toContain('이어서 플레이');
+    expect(reader.state.notice).toBeUndefined();
+    expect(notifications()).toMatchObject([{ text: expect.stringContaining('이어서 플레이') }]);
     await vi.waitFor(() => expect(reader.state.view?.world.revision).toBe(0));
   });
   it('retains memory progress and the last recoverable checkpoint when background saving fails', async () => {
@@ -474,9 +493,11 @@ describe('legacy activation and compatibility recovery', () => {
     expect(client.state.error).toBeUndefined();
     expect(client.state.view?.world.engine).toBe(CURRENT_ENGINE_VERSION);
     expect(client.state.savedRevision).toBe(18);
+    // The checkpoint first, then the notice that tells of it.
     expect(writes.mock.calls.map(([key]) => key)).toEqual([
       'haeram-soccor:slot:b',
       'haeram-soccor:manifest',
+      NOTIFICATIONS_KEY,
     ]);
     const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
     expect(manifest).toEqual({ slot: 1, worldId: legacy.id, generation: 8, parentGeneration: 7 });
@@ -486,6 +507,34 @@ describe('legacy activation and compatibility recovery', () => {
       canonical({ ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 18 }),
     );
     expect(canonical((await decode((await client.exportFile())!)).world)).toBe(canonical(upgraded));
+  });
+
+  it('tells of an activated upgrade once as an unread system notification, with no banner', async () => {
+    await legacyCheckpoint();
+    const publications: ClientState[] = [];
+    const client = new GameClient((state) => publications.push(state));
+    clients.push(client);
+    await client.start();
+    expect(client.state.view?.world.engine).toBe(CURRENT_ENGINE_VERSION);
+    expect(publications.every((state) => state.notice === undefined)).toBe(true);
+    const [notice, ...others] = notifications();
+    expect(others).toHaveLength(0);
+    expect(notice).toEqual({
+      id: expect.any(String),
+      text: '기존 기록을 보존하고 새 게임 규칙으로 저장했습니다.',
+      at: expect.any(Number),
+      read: false,
+    });
+    expect(notificationStore.getState()).toEqual([notice]);
+    // This browser keeps it; the world and its checkpoint never carry it.
+    expect(JSON.stringify(client.state.view!.world)).not.toContain(notice.text);
+    const committed = JSON.parse(storage.getItem('haeram-soccor:manifest')!).slot ? 'b' : 'a';
+    expect(
+      JSON.stringify((await decode(storage.getItem(`haeram-soccor:slot:${committed}`)!)).world),
+    ).not.toContain(notice.text);
+    // A reload of the upgraded checkpoint has nothing new to tell.
+    await client.reload();
+    expect(notifications()).toHaveLength(1);
   });
 
   it('opens an old career read-only without upgrading memory or committing either slot', async () => {
@@ -611,7 +660,13 @@ describe('legacy activation and compatibility recovery', () => {
     clients.push(restored);
     await restored.start();
     expect(restored.state.error).toBeUndefined();
-    expect(restored.state.notice).toContain('체크포인트로 복구');
+    expect(restored.state.notice).toBeUndefined();
+    expect(notifications()).toMatchObject([
+      { text: expect.stringContaining('체크포인트로 복구'), read: false },
+    ]);
+    // Until a save moves the manifest off the corrupt slot, every load recovers; it tells once.
+    await restored.reload();
+    expect(notifications()).toHaveLength(1);
     expect(restored.state.view?.world.calendar?.day).toBe(0);
     expect(restored.state.savedRevision).toBe(0);
     await restored.command({ type: 'advance-days', days: 1 });

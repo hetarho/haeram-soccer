@@ -16,7 +16,7 @@ import {
   leagueMatchFactor,
 } from '../../packages/engine/src/finance';
 import { clubOf, quote } from '../../packages/engine/src/world';
-import { money, number } from '../../apps/web/src/ui/format';
+import { compactMoney, number } from '../../apps/web/src/ui/format';
 import type { World } from '../../packages/contracts/src/types';
 import { horizontalOverflow, settle } from './layout';
 import { acknowledgeEvents } from './events';
@@ -72,7 +72,8 @@ for (const viewport of [
     await found(page, `facility-ui-${viewport.width}`);
     const before = await exportWorld(page);
     const preview = facilityInvestmentPreview(before);
-    const format = (value: string) => money(value, clubOf(before).country, before.year);
+    // Every amount reads in the one notation (→WEB-67); the exact value opens on tap or hover.
+    const format = (value: string) => compactMoney(value, clubOf(before).country, before.year);
     await openBusiness(page, '시설');
     await expect(page.getByRole('tab', { name: '시설', exact: true })).toHaveAttribute(
       'aria-selected',
@@ -170,7 +171,7 @@ test('separates campaign recovery and net ranges and settles after four real rou
   await found(page, 'campaign-range-ui');
   const before = await exportWorld(page);
   const offer = campaignOffers(before).find((candidate) => candidate.kind === 'outreach')!;
-  const format = (value: string) => money(value, clubOf(before).country, before.year);
+  const format = (value: string) => compactMoney(value, clubOf(before).country, before.year);
   await openBusiness(page);
   await page.getByRole('tab', { name: '캠페인', exact: true }).click();
   const card = page.getByTestId('campaign-outreach');
@@ -211,7 +212,7 @@ test('keeps ticket drafts out of the save and applies their price to an actual h
   const before = await exportWorld(page);
   const price = 0.12;
   const preview = ticketInvestmentPreview(before, price);
-  const format = (value: string) => money(value, clubOf(before).country, before.year);
+  const format = (value: string) => compactMoney(value, clubOf(before).country, before.year);
   await openBusiness(page);
   // The ticket dial sits in the home & fans area of the strategy tab's dial section.
   const dial = page

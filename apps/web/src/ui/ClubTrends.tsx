@@ -7,7 +7,8 @@ import { Panel } from './App';
 import { Chart, type ChartBand } from './Chart';
 import { ClubLink } from './ClubLink';
 import { divisionName } from './careerRecords';
-import { number, seasonName } from './format';
+import { compactMoney, number, seasonName } from './format';
+import { Money } from './Money';
 import {
   eloDetail,
   eloStanding,
@@ -17,25 +18,25 @@ import {
 } from './recordTrends';
 import s from './App.module.css';
 
-/** A past amount in today's money: price index and currency changes both applied. */
+/** A past amount in today's money, in minor units: price index and currency change applied. */
 function inToday(w: World, amount: string, year: number) {
   const code = clubOf(w).country;
-  const today = ratio(amount, BigInt(quote(code, w.year, 10000)), BigInt(quote(code, year, 10000)));
-  return Number(today) / currency(code, w.year).units;
+  return ratio(amount, BigInt(quote(code, w.year, 10000)), BigInt(quote(code, year, 10000)));
 }
 
-/** Money on a chart: the currency symbol, then K, M or B. */
-function axisMoney(symbol: string, value: number) {
-  return `${symbol}${
-    Math.abs(value) >= 1e9
-      ? `${(value / 1e9).toFixed(1)}B`
-      : Math.abs(value) >= 1e6
-        ? `${(value / 1e6).toFixed(1)}M`
-        : Math.abs(value) >= 1e3
-          ? `${(value / 1e3).toFixed(0)}K`
-          : Math.round(value)
-  }`;
-}
+/** A chart plots major units, so a point carries its amount divided down. */
+const plotted = (w: World, amount: string) =>
+  Number(amount) / currency(clubOf(w).country, w.year).units;
+
+/** A chart axis writes money in the app's notation (→WEB-67), back from the plotted major units. */
+const axisMoney = (w: World, plot: number) => {
+  const code = clubOf(w).country;
+  return compactMoney(
+    BigInt(Math.round(plot * currency(code, w.year).units)).toString(),
+    code,
+    w.year,
+  );
+};
 
 /**
  * Every records chart's series with the line each season shows in its bubble, computed once per
@@ -44,7 +45,7 @@ function axisMoney(symbol: string, value: number) {
 function trendSeries(w: World) {
   const club = clubOf(w),
     code = club.country,
-    money = (value: number) => axisMoney(currency(code, w.year).symbol, value),
+    amount = (value: string) => compactMoney(value, code, w.year),
     seasons = w.history,
     rated = seasons.filter((h) => h.elo !== undefined),
     valued = seasons.filter((h) => h.squadValue && h.clubValue);
@@ -71,7 +72,7 @@ function trendSeries(w: World) {
     },
   ];
   return {
-    money,
+    axis: (value: number) => axisMoney(w, value),
     league: series(
       seasons,
       seasons.map((h) => pyramidPosition(code, h)),
@@ -88,18 +89,26 @@ function trendSeries(w: World) {
       unranged: rated.filter((h) => !h.eloRange).length,
     },
     unvalued: seasons.length - valued.length,
-    squad: series(valued, squad, (i) => `${seasonName(valued[i].year)} · ${money(squad[i])}`),
+    squad: series(
+      valued,
+      squad.map((value) => plotted(w, value)),
+      (i) => `${seasonName(valued[i].year)} · ${amount(squad[i])}`,
+    ),
     club: series(
       valued,
-      clubValue,
-      (i) => `${seasonName(valued[i].year)} · ${money(clubValue[i])}`,
+      clubValue.map((value) => plotted(w, value)),
+      (i) => `${seasonName(valued[i].year)} · ${amount(clubValue[i])}`,
     ),
     fans: series(
       seasons,
       seasons.map((h) => h.fans),
       (i) => `${seasonName(seasons[i].year)} · ${number(seasons[i].fans)}명`,
     ),
-    cash: series(seasons, cash, (i) => `${seasonName(seasons[i].year)} · ${money(cash[i])}`),
+    cash: series(
+      seasons,
+      cash.map((value) => plotted(w, value)),
+      (i) => `${seasonName(seasons[i].year)} · ${amount(cash[i])}`,
+    ),
   };
 }
 
@@ -238,7 +247,7 @@ export function ClubTrends({ w }: { w: World }) {
             label="시즌 말 선수단 가치"
             values={series.squad.values}
             labels={series.squad.labels}
-            format={series.money}
+            format={series.axis}
             detail={(i) => series.squad.details[i]}
           />
           <p className={s.muted}>
@@ -253,7 +262,7 @@ export function ClubTrends({ w }: { w: World }) {
             label="시즌 말 구단 가치"
             values={series.club.values}
             labels={series.club.labels}
-            format={series.money}
+            format={series.axis}
             detail={(i) => series.club.details[i]}
           />
           <p className={s.muted}>
@@ -279,7 +288,7 @@ export function ClubTrends({ w }: { w: World }) {
             label="현재 물가 기준 자금"
             values={series.cash.values}
             labels={series.cash.labels}
-            format={series.money}
+            format={series.axis}
             detail={(i) => series.cash.details[i]}
           />
           <p className={s.muted}>
@@ -295,8 +304,7 @@ export function ClubTrends({ w }: { w: World }) {
 /** One row per closed season, newest first; with `onSeason` a row opens that season's records. */
 export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: number) => void }) {
   const code = clubOf(w).country,
-    seasons = w.history,
-    money = (value: number) => axisMoney(currency(code, w.year).symbol, value);
+    seasons = w.history;
   return (
     <Panel title="시즌별 기록" note={`${seasons.length}시즌`}>
       <div className={s.tableWrap}>
@@ -356,7 +364,13 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                     ? `${Math.round(h.elo)}${h.eloRank ? ` (${h.eloRank}위)` : ''}`
                     : '—'}
                 </td>
-                <td>{h.squadValue ? money(inToday(w, h.squadValue, h.year)) : '—'}</td>
+                <td>
+                  {h.squadValue ? (
+                    <Money value={inToday(w, h.squadValue, h.year)} code={code} year={w.year} />
+                  ) : (
+                    '—'
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

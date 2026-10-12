@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { clubMilestones, createWorld } from '../../../../packages/engine/src/index';
+import type { StoragePort } from '../adapters/repository';
 import type { ClientState } from './client';
 import type { View } from './protocol';
-import { createGameStore, shareView } from './store';
+import { NOTIFICATIONS_KEY, createGameStore, createNotificationStore, shareView } from './store';
 
 function view(): View {
   const world = createWorld({
@@ -97,5 +98,85 @@ describe('selective simulation snapshots', () => {
     const current = shareView(initial, replacement)!;
     expect(current).toBe(replacement);
     expect(current.world.tables).not.toBe(initial.world.tables);
+  });
+});
+
+describe('system notifications (→WEB-66)', () => {
+  class MemoryStorage implements StoragePort {
+    data = new Map<string, string>();
+    fail = false;
+    getItem(key: string) {
+      return this.data.get(key) ?? null;
+    }
+    setItem(key: string, value: string) {
+      if (this.fail) throw new Error('QuotaExceededError');
+      this.data.set(key, value);
+    }
+    removeItem(key: string) {
+      this.data.delete(key);
+    }
+  }
+
+  it('marks a read notification read and keeps that in this browser', () => {
+    const storage = new MemoryStorage(),
+      store = createNotificationStore(() => storage);
+    store.add('기존 기록을 보존하고 새 게임 규칙으로 저장했습니다.');
+    store.add('이전의 정상 체크포인트로 복구했습니다.');
+    const [upgrade, recovery] = store.getState();
+    expect([upgrade.read, recovery.read]).toEqual([false, false]);
+    store.read(upgrade.id);
+    expect(store.getState().map((item) => item.read)).toEqual([true, false]);
+    // Another store over the same storage, as after a reload or in another tab.
+    const reopened = createNotificationStore(() => storage);
+    reopened.sync();
+    expect(reopened.getState()).toEqual(store.getState());
+    expect(JSON.parse(storage.getItem(NOTIFICATIONS_KEY)!).items[0]).toEqual({
+      ...upgrade,
+      read: true,
+    });
+    reopened.read();
+    store.sync();
+    expect(store.getState().every((item) => item.read)).toBe(true);
+  });
+
+  it('keeps unread notices until read, a few read ones, and memory when storage fails', () => {
+    const storage = new MemoryStorage(),
+      store = createNotificationStore(() => storage);
+    storage.data.set(NOTIFICATIONS_KEY, JSON.stringify({ v: 1, items: [{ id: 'bad' }] }));
+    store.sync();
+    expect(store.getState()).toEqual([]);
+    for (let n = 0; n < 8; n++) store.add(`읽은 알림 ${n}`);
+    store.read();
+    for (let n = 0; n < 8; n++) store.add(`새 알림 ${n}`);
+    const kept = store.getState();
+    expect(kept.filter((item) => !item.read)).toHaveLength(8);
+    expect(kept.filter((item) => item.read).map((item) => item.text)).toEqual(
+      [3, 4, 5, 6, 7].map((n) => `읽은 알림 ${n}`),
+    );
+    storage.fail = true;
+    store.add('다른 탭이 닫혀 이 탭에서 이어서 플레이합니다.');
+    expect(store.getState()).toHaveLength(14);
+    expect(JSON.parse(storage.getItem(NOTIFICATIONS_KEY)!).items).toHaveLength(13);
+    storage.fail = false;
+    store.read(store.getState().at(-1)!.id);
+    expect(JSON.parse(storage.getItem(NOTIFICATIONS_KEY)!).items).toEqual(store.getState());
+  });
+
+  it('tells a notice still unread once, and again only after it was read', () => {
+    const storage = new MemoryStorage(),
+      store = createNotificationStore(() => storage),
+      recovery = '이전의 정상 체크포인트로 복구했습니다.';
+    store.add(recovery);
+    // Another tab or a reload adds it again while the first is unread.
+    const reopened = createNotificationStore(() => storage);
+    reopened.add(recovery);
+    store.add(recovery);
+    expect(store.getState()).toHaveLength(1);
+    store.read();
+    store.add(recovery);
+    expect(store.getState().map((item) => [item.text, item.read])).toEqual([
+      [recovery, true],
+      [recovery, false],
+    ]);
   });
 });

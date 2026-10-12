@@ -1,0 +1,41 @@
+/* An amount that opens its exact value: it reads as text with a dotted underline until pressed. */
+.money {
+  text-decoration: underline dotted color-mix(in srgb, currentColor 45%, transparent);
+  text-underline-offset: 3px;
+}
+/*
+ * Repeated to outrank the rules that size the buttons of a view, a card or a notice (48 px on
+ * phones, full width, a block of its own): an amount keeps the box of its text, and ::after
+ * carries the hit area past it.
+ */
+.money.money.money {
+  position: relative;
+  display: inline;
+  width: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  text-align: inherit;
+  white-space: nowrap;
+}
+.money::after {
+  content: '';
+  position: absolute;
+  inset: -8px 0;
+}
+.money:active:not(:disabled) {
+  transform: none;
+  box-shadow: none;
+  opacity: 0.72;
+}
+/* The exact amount is open: the line turns solid so the longer number reads as the disclosure. */
+.money[aria-expanded='true'] {
+  text-decoration-style: solid;
+}

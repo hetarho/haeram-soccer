@@ -7,7 +7,7 @@ import {
   type SAVE_COMPATIBILITY_CODE,
 } from '../../../../packages/contracts/src/versions';
 import type { Body, CodecResult, Reply, View } from './protocol';
-import { shareView } from './store';
+import { NOTIFICATIONS_KEY, notificationStore, shareView } from './store';
 /** A 100-season checkpoint takes the codec seconds; this long without an answer, the save failed. */
 const CHECKPOINT_TIMEOUT_MS = 60000;
 /** Automatic progress waits at most this long for its background save (→SAVE-8). */
@@ -26,6 +26,10 @@ export interface ClientState {
   saveFailed?: boolean;
   error?: string;
   errorCode?: typeof SAVE_COMPATIBILITY_CODE;
+  /**
+   * Why this tab is read-only, for its HUD badge (→WEB-10). App notices are system notifications
+   * in the inbox instead (→WEB-66).
+   */
   notice?: string;
   progress: number;
   playback?: Reply['playback'];
@@ -76,6 +80,7 @@ export class GameClient {
   private refreshPending = false;
   private refreshGeneration = 0;
   private storageListener = (event: StorageEvent) => {
+    if (event.key === NOTIFICATIONS_KEY) notificationStore.sync();
     if (event.key === 'haeram-soccor:manifest' && event.newValue) {
       try {
         this.refresh(JSON.parse(event.newValue).generation);
@@ -127,6 +132,7 @@ export class GameClient {
     };
     this.channel.onmessage = (event) => this.refresh(event.data?.generation || 0);
     window.addEventListener('storage', this.storageListener);
+    notificationStore.sync();
   }
   private refresh(generation: number) {
     if (!this.state.readonly || !Number.isSafeInteger(generation) || generation < 0) return;
@@ -175,6 +181,7 @@ export class GameClient {
       return;
     }
     if (!navigator.locks) {
+      // No tab may write without the lock, so this one stays read-only and its badge says why.
       this.state.notice =
         '안전한 저장을 위해 Web Locks가 지원되는 HTTPS 또는 localhost 환경이 필요합니다.';
       await this.enqueue(() => this.load());
@@ -205,7 +212,8 @@ export class GameClient {
       .request('haeram-soccor:writer', { signal: this.lockWait.signal }, async (lock) => {
         if (!lock || this.failed) return;
         this.state.readonly = false;
-        this.state.notice = '다른 탭이 닫혀 이 탭에서 이어서 플레이합니다.';
+        delete this.state.notice;
+        notificationStore.add('다른 탭이 닫혀 이 탭에서 이어서 플레이합니다.');
         await this.enqueue(() => this.load());
         await new Promise<void>((done) => {
           this.release = done;
@@ -229,13 +237,15 @@ export class GameClient {
       this.state.savedRevision = result.world.revision;
       this.state.savedAt = undefined;
       this.state.saveFailed = false;
-      if (result.recovered) this.state.notice = '이전의 정상 체크포인트로 복구했습니다.';
+      // The writer tells; read-only tabs reloading the same checkpoint would only repeat it.
+      if (result.recovered && !this.state.readonly)
+        notificationStore.add('이전의 정상 체크포인트로 복구했습니다.');
       if (reply.upgraded && reply.raw) {
         try {
           await this.saves.commit(reply.raw);
           this.state.savedRevision = this.state.view!.world.revision;
           this.state.savedAt = Date.now();
-          this.state.notice = '기존 기록을 보존하고 새 게임 규칙으로 저장했습니다.';
+          notificationStore.add('기존 기록을 보존하고 새 게임 규칙으로 저장했습니다.');
           this.channel.postMessage({
             revision: this.state.savedRevision,
             generation: this.saves.generationInfo.parentGeneration,

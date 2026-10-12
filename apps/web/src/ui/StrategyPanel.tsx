@@ -19,7 +19,7 @@ import {
 import type { GameClient } from '../runtime/client';
 import { gameStore, useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
-import { money } from './format';
+import { Money } from './Money';
 import { OpponentDossier } from './OpponentDossier';
 import { TacticalLab } from './TacticalLab';
 import s from './StrategyPanel.module.css';
@@ -373,7 +373,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose }:
                 <div className={s.pending}>
                   <p>
                     {tacticLabel[w.manager.pending]} 조건부 수락 · 훈련 지원금{' '}
-                    {money(supportCost, clubOf(w).country, w.year)}
+                    <Money value={supportCost} code={clubOf(w).country} year={w.year} />
                   </p>
                 </div>
               )}
