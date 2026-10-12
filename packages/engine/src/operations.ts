@@ -464,7 +464,14 @@ function resign(w: World, reason: string) {
     `${old.name} 감독의 마지막 날`,
     `${old.since}–${w.year} · ${reason}`,
   );
-  const interim = makeManager(clubOf(w).country, `${w.seed}:interim:${w.revision}`, w.year, 99);
+  // Counting this departure keeps two caretakers on the same day apart.
+  const departures = w.events.filter((event) => event.kind === 'manager-departure').length;
+  const interim = makeManager(
+    clubOf(w).country,
+    `${w.seed}:interim:${w.year}:${currentDay(w)}:${departures}`,
+    w.year,
+    99,
+  );
   interim.ability = 35;
   // A caretaker steps in for now; he is not a bet on the future.
   interim.potential = 35;
@@ -794,7 +801,8 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
         throw new Error('독점 후원 계약 중에는 자체 상품 캠페인을 진행할 수 없습니다.');
       debit(w, o.cost);
       w.campaigns.push({
-        id: `${w.year}:${w.round}:${w.revision}:${o.kind}`,
+        // One campaign of a kind runs at a time, so its round names it.
+        id: `${w.year}:${w.round}:${o.kind}`,
         kind: o.kind,
         cost: o.cost,
         started: w.round,

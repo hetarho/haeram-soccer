@@ -231,12 +231,13 @@ export function outcomeText(outcome: Omit<CareOutcome, 'chance'>) {
 }
 
 /**
- * Picks the outcome from the world's own stream for this round and revision, applies it and
- * returns it. The caller settles cost or income first.
+ * Picks the outcome from the world's own stream for this request and round, applies it and
+ * returns it. The caller settles cost or income first. Every cooldown refuses a second use in the
+ * same round, so the stream is never drawn twice.
  */
 export function resolveCare(w: World, kind: CareKind): CareOutcome {
   const { outcomes } = careOffer(w, kind);
-  const draw = random(`${w.seed}:care:${kind}:${w.year}:${w.round}:${w.revision}`)() * 100;
+  const draw = random(`${w.seed}:care:${kind}:${w.year}:${w.round}`)() * 100;
   let at = 0;
   const outcome =
     outcomes.find((candidate) => (at += candidate.chance) > draw) ?? outcomes[outcomes.length - 1];
