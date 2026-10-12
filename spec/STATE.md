@@ -49,6 +49,7 @@
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
 | one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
+| club-realism | 4 | 13 | 0 | 13 | 0 | 0 | 5 | 2026-10-12T11:17:24.120Z | [history](work/club-realism.json) |
 
 ## next
 - next work = work group club-realism (T050–T062) from main: `npx haeram-spec-creator work start club-realism --workspace auto --workers 4 --reviewers 1 --task-verify 'pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit' --verify 'pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit' --group-verify 'pnpm install --frozen-lockfile --prefer-offline && pnpm run verify' --json`, then `npx haeram-spec-creator work run --work club-realism --provider claude --json` (Codex is unavailable). Lanes base (T050→T052) and ui-base (T053→T054) first, then commercial, players and staff in parallel, T062 last. Never commit spec/ssot to the group branch while it runs; a failed automatic integration is not retried in the same run (`work integrate --attempt`); the full e2e (~15 min) exceeds a worker's 10-min tool limit, so the coordinator runs it; browser deps are installed on this server.

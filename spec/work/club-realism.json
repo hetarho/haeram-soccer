@@ -1,0 +1,682 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-10-12T11:17:24.120Z",
+  "sourceCommit": "407119d00f94cc704b262bccefe881fae5ee0b83",
+  "group": {
+    "id": "club-realism",
+    "branch": "work/club-realism",
+    "status": "active",
+    "createdAt": "2026-10-12T10:35:01.030Z",
+    "limits": {
+      "workers": 4,
+      "reviewers": 1,
+      "maxPending": 8
+    },
+    "lastRun": {
+      "id": "ea92567d-d106-444b-af7d-f72823e5ca23",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.263 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.263 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.263 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-12T10:35:24.846Z",
+      "stoppedAt": "2026-10-12T11:17:23.781Z",
+      "dispatched": 2,
+      "outcome": "needs-attention",
+      "failures": [
+        {
+          "attempt": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+          "role": "worker",
+          "error": "T050 구현은 끝냈지만 카탈로그 지문(CATALOG_HASH) 재생성이 이 샌드박스에서 불가능해 blocked로 반환합니다.\n\n구현된 것\n- `packages/catalogs/data/football-index.json`: 8개국 축구 지수(1901~)와 후원 슬롯 개방 연도. 시대 앵커 1979/1992/2005/2020/2025의 실질 배수(ENG 1/2/6/10/11, ESP·GER·ITA 70%, FRA 50%, NED 35%, POR 30%, BEL 25% of ENG 실질 성장), 시대마다 note·status(estimated)·출처 키, 슬롯 40건(ENG 1901/1970/1979/1997/2017; ENG 메인·명명권·소매와 GER 1973 메인만 observed, 나머지 estimated).\n- `catalogs/src/index.ts`: `footballIndex(code, year)` → `{ value, real, status, source }` (물가지수 × 배수, 1979까지 평탄, 앵커 사이 기하 성장, 2025 이후 실질 배수 유지 + 물가 투영, observed로는 절대 표기 안 함, 연도별 캐시), `sponsorSlotOpens(code, slot)` → `{ year, status, source }`(로드 시 1회 구성), `SPONSOR_SLOTS`, `Observation`, `CURRENT_CATALOG`.\n- `scripts/validate-catalogs.ts`: 두 표의 커버리지·순서·출처 검사(시대 순서, 기준연도 실질 1, 각국 선언 share 일치, 1901–2030 양수 커버리지, 실질 비감소, 커버리지 이후 projected, 슬롯 순서·범위, 모든 출처에 https 링크) + 지문 입력에 신규 파일 포함.\n- `CATALOG_VERSION` = 2026-demo-2, `PRIOR_CATALOG_HASHES`(versions.ts)에 2026-demo-1 지문 기록 → decode가 당시 기록된 해시로 구 봉투를 수락, `upgradeWorldRules(w, pin)`이 엔진·카탈로그 핀·revision을 함께 올리고 host가 `CURRENT_CATALOG`를 전달. persistence.test.ts에 demo-1 저장 로드→업그레이드→왕복과 다른 해시 거부 케이스 추가, catalogs.test.ts에 지수/슬롯 테스트 4건 추가. 범위 밖 최소 수정: docs/DATA.md(축구 지수 절·카탈로그 ID), docs/SAVE-FORMAT.md(활성화가 카탈로그 핀도 올림), scripts/update-golden.ts(카탈로그 ID 하드코딩 제거).\n\n블로커\n- `packages/catalogs/src/fingerprint.ts`가 아직 2026-demo-1 해시입니다. 재생성에는 `pnpm exec tsx scripts/fingerprint-catalog.ts --write`가 필요한데, 이 세션에서 `pnpm install`(워크트리에 node_modules 없음), 모든 `node`/`tsx` 실행, 워크트리 밖 경로, shasum/python3가 전부 권한 거부되어 실행할 수 없었습니다. 그 전까지 `pnpm run validate:catalogs`는 \"Catalog fingerprint is stale\"로 실패하며(해당 메시지에 명령을 넣어 두었습니다), 그 구간에 만든 저장은 나중에 decode가 거부할 해시를 핀합니다. taskVerify(typecheck, test:unit)는 영향받지 않습니다.\n- 같은 이유로 typecheck·test:unit·lint·format:check·validate:catalogs를 하나도 실행하지 못했습니다. [v]로 채운 완료기준 4개는 작성한 데이터·코드를 읽어 확인한 것이고, 명령 통과가 걸린 3개는 열어 두었습니다. 포매팅도 prettier 규칙에 맞춰 수작업으로 맞췄을 뿐 검사하지 못했습니다."
+        },
+        {
+          "attempt": "d3895ae1-7cbf-446d-8762-61e6f50ef717",
+          "role": "worker",
+          "error": "T053: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+        }
+      ]
+    }
+  },
+  "summary": {
+    "total": 13,
+    "completed": 0,
+    "remaining": 13,
+    "running": 0,
+    "review": 0,
+    "blocked": 5,
+    "unassigned": 8
+  },
+  "tasks": [
+    {
+      "id": "T050",
+      "title": "Football index and sponsor-slot eras in catalog 2026-demo-2",
+      "dep": [],
+      "lane": "base",
+      "status": "blocked"
+    },
+    {
+      "id": "T051",
+      "title": "Contracts for sponsors by slot, player talks, terms and new delegations",
+      "dep": [
+        "T050"
+      ],
+      "lane": "base",
+      "status": "blocked"
+    },
+    {
+      "id": "T052",
+      "title": "Split commands by domain, close the season-close ledger gap, engine money notation",
+      "dep": [
+        "T051"
+      ],
+      "lane": "base",
+      "status": "blocked"
+    },
+    {
+      "id": "T053",
+      "title": "One money notation across the app",
+      "dep": [],
+      "lane": "ui-base",
+      "status": "blocked"
+    },
+    {
+      "id": "T054",
+      "title": "App notices as notifications in the HUD inbox",
+      "dep": [
+        "T053"
+      ],
+      "lane": "ui-base",
+      "status": "blocked"
+    },
+    {
+      "id": "T055",
+      "title": "League distribution, local-supporter gate, no supporter income",
+      "dep": [
+        "T052",
+        "T054"
+      ],
+      "lane": "commercial",
+      "status": "todo"
+    },
+    {
+      "id": "T056",
+      "title": "Sponsor contracts by slot",
+      "dep": [
+        "T055"
+      ],
+      "lane": "commercial",
+      "status": "todo"
+    },
+    {
+      "id": "T057",
+      "title": "Market wages and values on the football index",
+      "dep": [
+        "T052",
+        "T054"
+      ],
+      "lane": "players",
+      "status": "todo"
+    },
+    {
+      "id": "T058",
+      "title": "Contract talks with goodwill, floor and delegation",
+      "dep": [
+        "T057"
+      ],
+      "lane": "players",
+      "status": "todo"
+    },
+    {
+      "id": "T059",
+      "title": "Unhappy players, transfer requests, expiring contracts and the squad UI",
+      "dep": [
+        "T058"
+      ],
+      "lane": "players",
+      "status": "todo"
+    },
+    {
+      "id": "T060",
+      "title": "Owner-chosen terms for managers and coaches, no self-renewal",
+      "dep": [
+        "T052",
+        "T054"
+      ],
+      "lane": "staff",
+      "status": "todo"
+    },
+    {
+      "id": "T061",
+      "title": "Delegated manager appointment and the manager market behind 교체",
+      "dep": [
+        "T060"
+      ],
+      "lane": "staff",
+      "status": "todo"
+    },
+    {
+      "id": "T062",
+      "title": "Rules 1.16.0: economy calibration, goldens and docs",
+      "dep": [
+        "T056",
+        "T059",
+        "T061"
+      ],
+      "status": "todo"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "group": "club-realism",
+      "taskId": "T050",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "lane": "base",
+      "owner": "ea92567d-d106-444b-af7d-f72823e5ca23/worker-1",
+      "contributors": [
+        "ea92567d-d106-444b-af7d-f72823e5ca23/worker-1"
+      ],
+      "status": "blocked",
+      "reason": "T050 구현은 끝냈지만 카탈로그 지문(CATALOG_HASH) 재생성이 이 샌드박스에서 불가능해 blocked로 반환합니다.\n\n구현된 것\n- `packages/catalogs/data/football-index.json`: 8개국 축구 지수(1901~)와 후원 슬롯 개방 연도. 시대 앵커 1979/1992/2005/2020/2025의 실질 배수(ENG 1/2/6/10/11, ESP·GER·ITA 70%, FRA 50%, NED 35%, POR 30%, BEL 25% of ENG 실질 성장), 시대마다 note·status(estimated)·출처 키, 슬롯 40건(ENG 1901/1970/1979/1997/2017; ENG 메인·명명권·소매와 GER 1973 메인만 observed, 나머지 estimated).\n- `catalogs/src/index.ts`: `footballIndex(code, year)` → `{ value, real, status, source }` (물가지수 × 배수, 1979까지 평탄, 앵커 사이 기하 성장, 2025 이후 실질 배수 유지 + 물가 투영, observed로는 절대 표기 안 함, 연도별 캐시), `sponsorSlotOpens(code, slot)` → `{ year, status, source }`(로드 시 1회 구성), `SPONSOR_SLOTS`, `Observation`, `CURRENT_CATALOG`.\n- `scripts/validate-catalogs.ts`: 두 표의 커버리지·순서·출처 검사(시대 순서, 기준연도 실질 1, 각국 선언 share 일치, 1901–2030 양수 커버리지, 실질 비감소, 커버리지 이후 projected, 슬롯 순서·범위, 모든 출처에 https 링크) + 지문 입력에 신규 파일 포함.\n- `CATALOG_VERSION` = 2026-demo-2, `PRIOR_CATALOG_HASHES`(versions.ts)에 2026-demo-1 지문 기록 → decode가 당시 기록된 해시로 구 봉투를 수락, `upgradeWorldRules(w, pin)`이 엔진·카탈로그 핀·revision을 함께 올리고 host가 `CURRENT_CATALOG`를 전달. persistence.test.ts에 demo-1 저장 로드→업그레이드→왕복과 다른 해시 거부 케이스 추가, catalogs.test.ts에 지수/슬롯 테스트 4건 추가. 범위 밖 최소 수정: docs/DATA.md(축구 지수 절·카탈로그 ID), docs/SAVE-FORMAT.md(활성화가 카탈로그 핀도 올림), scripts/update-golden.ts(카탈로그 ID 하드코딩 제거).\n\n블로커\n- `packages/catalogs/src/fingerprint.ts`가 아직 2026-demo-1 해시입니다. 재생성에는 `pnpm exec tsx scripts/fingerprint-catalog.ts --write`가 필요한데, 이 세션에서 `pnpm install`(워크트리에 node_modules 없음), 모든 `node`/`tsx` 실행, 워크트리 밖 경로, shasum/python3가 전부 권한 거부되어 실행할 수 없었습니다. 그 전까지 `pnpm run validate:catalogs`는 \"Catalog fingerprint is stale\"로 실패하며(해당 메시지에 명령을 넣어 두었습니다), 그 구간에 만든 저장은 나중에 decode가 거부할 해시를 핀합니다. taskVerify(typecheck, test:unit)는 영향받지 않습니다.\n- 같은 이유로 typecheck·test:unit·lint·format:check·validate:catalogs를 하나도 실행하지 못했습니다. [v]로 채운 완료기준 4개는 작성한 데이터·코드를 읽어 확인한 것이고, 명령 통과가 걸린 3개는 열어 두었습니다. 포매팅도 prettier 규칙에 맞춰 수작업으로 맞췄을 뿐 검사하지 못했습니다.",
+      "createdAt": "2026-10-12T10:35:25.152Z",
+      "startCommit": "407119d00f94cc704b262bccefe881fae5ee0b83",
+      "dispatch": {
+        "id": "83133d15-ef28-46b1-acc6-6558948ea210",
+        "runner": "ea92567d-d106-444b-af7d-f72823e5ca23",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-12T10:35:25.350Z",
+        "finishedAt": "2026-10-12T11:06:04.428Z",
+        "error": "T050 구현은 끝냈지만 카탈로그 지문(CATALOG_HASH) 재생성이 이 샌드박스에서 불가능해 blocked로 반환합니다.\n\n구현된 것\n- `packages/catalogs/data/football-index.json`: 8개국 축구 지수(1901~)와 후원 슬롯 개방 연도. 시대 앵커 1979/1992/2005/2020/2025의 실질 배수(ENG 1/2/6/10/11, ESP·GER·ITA 70%, FRA 50%, NED 35%, POR 30%, BEL 25% of ENG 실질 성장), 시대마다 note·status(estimated)·출처 키, 슬롯 40건(ENG 1901/1970/1979/1997/2017; ENG 메인·명명권·소매와 GER 1973 메인만 observed, 나머지 estimated).\n- `catalogs/src/index.ts`: `footballIndex(code, year)` → `{ value, real, status, source }` (물가지수 × 배수, 1979까지 평탄, 앵커 사이 기하 성장, 2025 이후 실질 배수 유지 + 물가 투영, observed로는 절대 표기 안 함, 연도별 캐시), `sponsorSlotOpens(code, slot)` → `{ year, status, source }`(로드 시 1회 구성), `SPONSOR_SLOTS`, `Observation`, `CURRENT_CATALOG`.\n- `scripts/validate-catalogs.ts`: 두 표의 커버리지·순서·출처 검사(시대 순서, 기준연도 실질 1, 각국 선언 share 일치, 1901–2030 양수 커버리지, 실질 비감소, 커버리지 이후 projected, 슬롯 순서·범위, 모든 출처에 https 링크) + 지문 입력에 신규 파일 포함.\n- `CATALOG_VERSION` = 2026-demo-2, `PRIOR_CATALOG_HASHES`(versions.ts)에 2026-demo-1 지문 기록 → decode가 당시 기록된 해시로 구 봉투를 수락, `upgradeWorldRules(w, pin)`이 엔진·카탈로그 핀·revision을 함께 올리고 host가 `CURRENT_CATALOG`를 전달. persistence.test.ts에 demo-1 저장 로드→업그레이드→왕복과 다른 해시 거부 케이스 추가, catalogs.test.ts에 지수/슬롯 테스트 4건 추가. 범위 밖 최소 수정: docs/DATA.md(축구 지수 절·카탈로그 ID), docs/SAVE-FORMAT.md(활성화가 카탈로그 핀도 올림), scripts/update-golden.ts(카탈로그 ID 하드코딩 제거).\n\n블로커\n- `packages/catalogs/src/fingerprint.ts`가 아직 2026-demo-1 해시입니다. 재생성에는 `pnpm exec tsx scripts/fingerprint-catalog.ts --write`가 필요한데, 이 세션에서 `pnpm install`(워크트리에 node_modules 없음), 모든 `node`/`tsx` 실행, 워크트리 밖 경로, shasum/python3가 전부 권한 거부되어 실행할 수 없었습니다. 그 전까지 `pnpm run validate:catalogs`는 \"Catalog fingerprint is stale\"로 실패하며(해당 메시지에 명령을 넣어 두었습니다), 그 구간에 만든 저장은 나중에 decode가 거부할 해시를 핀합니다. taskVerify(typecheck, test:unit)는 영향받지 않습니다.\n- 같은 이유로 typecheck·test:unit·lint·format:check·validate:catalogs를 하나도 실행하지 못했습니다. [v]로 채운 완료기준 4개는 작성한 데이터·코드를 읽어 확인한 것이고, 명령 통과가 걸린 3개는 열어 두었습니다. 포매팅도 prettier 규칙에 맞춰 수작업으로 맞췄을 뿐 검사하지 못했습니다.",
+        "summary": "T050 구현은 끝냈지만 카탈로그 지문(CATALOG_HASH) 재생성이 이 샌드박스에서 불가능해 blocked로 반환합니다.\n\n구현된 것\n- `packages/catalogs/data/football-index.json`: 8개국 축구 지수(1901~)와 후원 슬롯 개방 연도. 시대 앵커 1979/1992/2005/2020/2025의 실질 배수(ENG 1/2/6/10/11, ESP·GER·ITA 70%, FRA 50%, NED 35%, POR 30%, BEL 25% of ENG 실질 성장), 시대마다 note·status(estimated)·출처 키, 슬롯 40건(ENG 1901/1970/1979/1997/2017; ENG 메인·명명권·소매와 GER 1973 메인만 observed, 나머지 estimated).\n- `catalogs/src/index.ts`: `footballIndex(code, year)` → `{ value, real, status, source }` (물가지수 × 배수, 1979까지 평탄, 앵커 사이 기하 성장, 2025 이후 실질 배수 유지 + 물가 투영, observed로는 절대 표기 안 함, 연도별 캐시), `sponsorSlotOpens(code, slot)` → `{ year, status, source }`(로드 시 1회 구성), `SPONSOR_SLOTS`, `Observation`, `CURRENT_CATALOG`.\n- `scripts/validate-catalogs.ts`: 두 표의 커버리지·순서·출처 검사(시대 순서, 기준연도 실질 1, 각국 선언 share 일치, 1901–2030 양수 커버리지, 실질 비감소, 커버리지 이후 projected, 슬롯 순서·범위, 모든 출처에 https 링크) + 지문 입력에 신규 파일 포함.\n- `CATALOG_VERSION` = 2026-demo-2, `PRIOR_CATALOG_HASHES`(versions.ts)에 2026-demo-1 지문 기록 → decode가 당시 기록된 해시로 구 봉투를 수락, `upgradeWorldRules(w, pin)`이 엔진·카탈로그 핀·revision을 함께 올리고 host가 `CURRENT_CATALOG`를 전달. persistence.test.ts에 demo-1 저장 로드→업그레이드→왕복과 다른 해시 거부 케이스 추가, catalogs.test.ts에 지수/슬롯 테스트 4건 추가. 범위 밖 최소 수정: docs/DATA.md(축구 지수 절·카탈로그 ID), docs/SAVE-FORMAT.md(활성화가 카탈로그 핀도 올림), scripts/update-golden.ts(카탈로그 ID 하드코딩 제거).\n\n블로커\n- `packages/catalogs/src/fingerprint.ts`가 아직 2026-demo-1 해시입니다. 재생성에는 `pnpm exec tsx scripts/fingerprint-catalog.ts --write`가 필요한데, 이 세션에서 `pnpm install`(워크트리에 node_modules 없음), 모든 `node`/`tsx` 실행, 워크트리 밖 경로, shasum/python3가 전부 권한 거부되어 실행할 수 없었습니다. 그 전까지 `pnpm run validate:catalogs`는 \"Catalog fingerprint is stale\"로 실패하며(해당 메시지에 명령을 넣어 두었습니다), 그 구간에 만든 저장은 나중에 decode가 거부할 해시를 핀합니다. taskVerify(typecheck, test:unit)는 영향받지 않습니다.\n- 같은 이유로 typecheck·test:unit·lint·format:check·validate:catalogs를 하나도 실행하지 못했습니다. [v]로 채운 완료기준 4개는 작성한 데이터·코드를 읽어 확인한 것이고, 명령 통과가 걸린 3개는 열어 두었습니다. 포매팅도 prettier 규칙에 맞춰 수작업으로 맞췄을 뿐 검사하지 못했습니다."
+      }
+    },
+    {
+      "id": "d3895ae1-7cbf-446d-8762-61e6f50ef717",
+      "group": "club-realism",
+      "taskId": "T053",
+      "tasks": [
+        "T053",
+        "T054"
+      ],
+      "lane": "ui-base",
+      "owner": "ea92567d-d106-444b-af7d-f72823e5ca23/worker-2",
+      "contributors": [
+        "ea92567d-d106-444b-af7d-f72823e5ca23/worker-2"
+      ],
+      "status": "blocked",
+      "reason": "T053: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+      "createdAt": "2026-10-12T10:35:25.593Z",
+      "startCommit": "407119d00f94cc704b262bccefe881fae5ee0b83",
+      "dispatch": {
+        "id": "0c629656-d932-4b7a-a844-e4c711a5a8ba",
+        "runner": "ea92567d-d106-444b-af7d-f72823e5ca23",
+        "role": "worker",
+        "slot": 2,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-12T10:35:25.812Z",
+        "finishedAt": "2026-10-12T11:17:22.851Z",
+        "error": "T053: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+        "summary": "T053 구현 완료(검증은 호스트 러너에 위임). 변경 내용: (1) 새 파일 apps/web/src/ui/Money.tsx + Money.module.css — compactMoney를 출력하고 exact money() 값을 title과 접근성 이름에 담으며 탭하면 정확한 금액으로 바뀌는 디스클로저. ClubLink와 같은 인라인 텍스트 버튼 패턴(전화 48px 버튼 규칙을 3중 클래스로 상쇄, ::after로 터치 영역 확보). 이미 탭을 받는 컨트롤 내부용 plain prop(span+title) 제공. (2) 단독으로 표시되는 모든 금액을 <Money>로 교체: App(운영 자금 타일·연간 손익·파산 밴드), FinanceOutlook, BusinessWorkbench, EventCenter, RecruitmentDesk, SeasonReview, RecordsRoom, AwaySummary, StrategyPanel, ClubStaff, Rich, ClubTrends 시즌 표. 문장·툴팁·라디오·결과 카드·차트 축에 섞인 금액은 같은 표기의 compactMoney 문자열(PolicyBoard, teamState, outcome, stanceConsequence, 코치 다이얼, 입찰 단계). ClubTrends의 자체 K/M/B 표기(axisMoney)를 WEB-67 표기로 통일(inToday가 minor units 문자열 반환, plotted/axisMoney 분리). (3) HUD: AnimatedMoney 하나로 모든 뷰포트에서 compact 표기, title/aria-label에 exact, App.module.css의 .cashFull/.cashCompact 규칙 삭제. (4) money(는 format.ts(정의)·format.test.ts·Money.tsx(title)·FinancialBreakdown.tsx(정확한 장부, WEB-14)·App.tsx HUD 라벨에만 남음. (5) Attributes.tsx 행 값 타입을 ReactNode로 확장(AttributeRow). (6) format.test.ts를 T052 moneyLabel 기대 문자열(EUR 8케이스 + £sd 2케이스)로 재작성. (7) e2e: business.spec·recruitment.spec(+ 탭 디스클로저 검증: title로 버튼 찾아 클릭→exact→재클릭→compact)·news.spec(폰 360px + 데스크톱 1280px HUD) 갱신. touches 밖 수정 파일: Money.module.css, Attributes.tsx, outcome.ts, teamState.ts, App.module.css, tests/e2e/recruitment.spec.ts (모두 acceptance의 money( 검색 범위 또는 컴포넌트 필수 부속). 미검증(중요): 이 세션에서는 Bash가 모든 pnpm/node 실행을 자동 거부하고 워크트리에 node_modules도 없어 어떤 명령도 실행하지 못했습니다 — typecheck/test:unit/lint/format:check/e2e 전부 미실행이라 acceptance 5·6은 체크하지 않았고 task result의 verified·limits에 그 사실과 prettier 미실행(포맷 재정렬 가능성)을 기록했습니다. 대신 읽기 전용 점검: 잔여 money( 없음, format이 노드를 반환하는 곳에 ${format(...)} 템플릿 없음, 추가한 줄 중 100열 초과 없음(기존 템플릿 리터럴 제외), BigInt 기반 지불 가능 판정과 비활성 사유 문구는 손대지 않음."
+      }
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "at": "2026-10-12T10:35:01.032Z",
+      "type": "group",
+      "group": "club-realism",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "club-realism",
+        "branch": "work/club-realism",
+        "status": "preparing",
+        "createdAt": "2026-10-12T10:35:01.030Z",
+        "limits": {
+          "workers": 4,
+          "reviewers": 1,
+          "maxPending": 8
+        }
+      }
+    },
+    {
+      "sequence": 2,
+      "at": "2026-10-12T10:35:01.153Z",
+      "type": "group",
+      "group": "club-realism",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 3,
+      "at": "2026-10-12T10:35:24.848Z",
+      "type": "group",
+      "group": "club-realism",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "ea92567d-d106-444b-af7d-f72823e5ca23",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.263 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.263 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.263 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-12T10:35:24.846Z"
+        }
+      }
+    },
+    {
+      "sequence": 4,
+      "at": "2026-10-12T10:35:25.152Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T050",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+        "group": "club-realism",
+        "taskId": "T050",
+        "tasks": [
+          "T050",
+          "T051",
+          "T052"
+        ],
+        "lane": "base",
+        "owner": "ea92567d-d106-444b-af7d-f72823e5ca23/worker-1",
+        "contributors": [
+          "ea92567d-d106-444b-af7d-f72823e5ca23/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-12T10:35:25.152Z",
+        "startCommit": "407119d00f94cc704b262bccefe881fae5ee0b83"
+      }
+    },
+    {
+      "sequence": 5,
+      "at": "2026-10-12T10:35:25.269Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T050",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 6,
+      "at": "2026-10-12T10:35:25.350Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T050",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "83133d15-ef28-46b1-acc6-6558948ea210",
+          "runner": "ea92567d-d106-444b-af7d-f72823e5ca23",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T10:35:25.350Z"
+        }
+      }
+    },
+    {
+      "sequence": 7,
+      "at": "2026-10-12T10:35:25.352Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T050",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "83133d15-ef28-46b1-acc6-6558948ea210",
+          "runner": "ea92567d-d106-444b-af7d-f72823e5ca23",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T10:35:25.350Z"
+        }
+      }
+    },
+    {
+      "sequence": 8,
+      "at": "2026-10-12T10:35:25.593Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "d3895ae1-7cbf-446d-8762-61e6f50ef717",
+      "taskId": "T053",
+      "tasks": [
+        "T053",
+        "T054"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "d3895ae1-7cbf-446d-8762-61e6f50ef717",
+        "group": "club-realism",
+        "taskId": "T053",
+        "tasks": [
+          "T053",
+          "T054"
+        ],
+        "lane": "ui-base",
+        "owner": "ea92567d-d106-444b-af7d-f72823e5ca23/worker-2",
+        "contributors": [
+          "ea92567d-d106-444b-af7d-f72823e5ca23/worker-2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-12T10:35:25.593Z",
+        "startCommit": "407119d00f94cc704b262bccefe881fae5ee0b83"
+      }
+    },
+    {
+      "sequence": 9,
+      "at": "2026-10-12T10:35:25.726Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "d3895ae1-7cbf-446d-8762-61e6f50ef717",
+      "taskId": "T053",
+      "tasks": [
+        "T053",
+        "T054"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 10,
+      "at": "2026-10-12T10:35:25.812Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "d3895ae1-7cbf-446d-8762-61e6f50ef717",
+      "taskId": "T053",
+      "tasks": [
+        "T053",
+        "T054"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "0c629656-d932-4b7a-a844-e4c711a5a8ba",
+          "runner": "ea92567d-d106-444b-af7d-f72823e5ca23",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T10:35:25.812Z"
+        }
+      }
+    },
+    {
+      "sequence": 11,
+      "at": "2026-10-12T10:35:25.814Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "d3895ae1-7cbf-446d-8762-61e6f50ef717",
+      "taskId": "T053",
+      "tasks": [
+        "T053",
+        "T054"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "0c629656-d932-4b7a-a844-e4c711a5a8ba",
+          "runner": "ea92567d-d106-444b-af7d-f72823e5ca23",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T10:35:25.812Z"
+        }
+      }
+    },
+    {
+      "sequence": 12,
+      "at": "2026-10-12T11:06:04.426Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T050",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T050 구현은 끝냈지만 카탈로그 지문(CATALOG_HASH) 재생성이 이 샌드박스에서 불가능해 blocked로 반환합니다.\n\n구현된 것\n- `packages/catalogs/data/football-index.json`: 8개국 축구 지수(1901~)와 후원 슬롯 개방 연도. 시대 앵커 1979/1992/2005/2020/2025의 실질 배수(ENG 1/2/6/10/11, ESP·GER·ITA 70%, FRA 50%, NED 35%, POR 30%, BEL 25% of ENG 실질 성장), 시대마다 note·status(estimated)·출처 키, 슬롯 40건(ENG 1901/1970/1979/1997/2017; ENG 메인·명명권·소매와 GER 1973 메인만 observed, 나머지 estimated).\n- `catalogs/src/index.ts`: `footballIndex(code, year)` → `{ value, real, status, source }` (물가지수 × 배수, 1979까지 평탄, 앵커 사이 기하 성장, 2025 이후 실질 배수 유지 + 물가 투영, observed로는 절대 표기 안 함, 연도별 캐시), `sponsorSlotOpens(code, slot)` → `{ year, status, source }`(로드 시 1회 구성), `SPONSOR_SLOTS`, `Observation`, `CURRENT_CATALOG`.\n- `scripts/validate-catalogs.ts`: 두 표의 커버리지·순서·출처 검사(시대 순서, 기준연도 실질 1, 각국 선언 share 일치, 1901–2030 양수 커버리지, 실질 비감소, 커버리지 이후 projected, 슬롯 순서·범위, 모든 출처에 https 링크) + 지문 입력에 신규 파일 포함.\n- `CATALOG_VERSION` = 2026-demo-2, `PRIOR_CATALOG_HASHES`(versions.ts)에 2026-demo-1 지문 기록 → decode가 당시 기록된 해시로 구 봉투를 수락, `upgradeWorldRules(w, pin)`이 엔진·카탈로그 핀·revision을 함께 올리고 host가 `CURRENT_CATALOG`를 전달. persistence.test.ts에 demo-1 저장 로드→업그레이드→왕복과 다른 해시 거부 케이스 추가, catalogs.test.ts에 지수/슬롯 테스트 4건 추가. 범위 밖 최소 수정: docs/DATA.md(축구 지수 절·카탈로그 ID), docs/SAVE-FORMAT.md(활성화가 카탈로그 핀도 올림), scripts/update-golden.ts(카탈로그 ID 하드코딩 제거).\n\n블로커\n- `packages/catalogs/src/fingerprint.ts`가 아직 2026-demo-1 해시입니다. 재생성에는 `pnpm exec tsx scripts/fingerprint-catalog.ts --write`가 필요한데, 이 세션에서 `pnpm install`(워크트리에 node_modules 없음), 모든 `node`/`tsx` 실행, 워크트리 밖 경로, shasum/python3가 전부 권한 거부되어 실행할 수 없었습니다. 그 전까지 `pnpm run validate:catalogs`는 \"Catalog fingerprint is stale\"로 실패하며(해당 메시지에 명령을 넣어 두었습니다), 그 구간에 만든 저장은 나중에 decode가 거부할 해시를 핀합니다. taskVerify(typecheck, test:unit)는 영향받지 않습니다.\n- 같은 이유로 typecheck·test:unit·lint·format:check·validate:catalogs를 하나도 실행하지 못했습니다. [v]로 채운 완료기준 4개는 작성한 데이터·코드를 읽어 확인한 것이고, 명령 통과가 걸린 3개는 열어 두었습니다. 포매팅도 prettier 규칙에 맞춰 수작업으로 맞췄을 뿐 검사하지 못했습니다."
+      }
+    },
+    {
+      "sequence": 13,
+      "at": "2026-10-12T11:06:04.428Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T050",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "83133d15-ef28-46b1-acc6-6558948ea210",
+          "runner": "ea92567d-d106-444b-af7d-f72823e5ca23",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T10:35:25.350Z",
+          "finishedAt": "2026-10-12T11:06:04.428Z",
+          "error": "T050 구현은 끝냈지만 카탈로그 지문(CATALOG_HASH) 재생성이 이 샌드박스에서 불가능해 blocked로 반환합니다.\n\n구현된 것\n- `packages/catalogs/data/football-index.json`: 8개국 축구 지수(1901~)와 후원 슬롯 개방 연도. 시대 앵커 1979/1992/2005/2020/2025의 실질 배수(ENG 1/2/6/10/11, ESP·GER·ITA 70%, FRA 50%, NED 35%, POR 30%, BEL 25% of ENG 실질 성장), 시대마다 note·status(estimated)·출처 키, 슬롯 40건(ENG 1901/1970/1979/1997/2017; ENG 메인·명명권·소매와 GER 1973 메인만 observed, 나머지 estimated).\n- `catalogs/src/index.ts`: `footballIndex(code, year)` → `{ value, real, status, source }` (물가지수 × 배수, 1979까지 평탄, 앵커 사이 기하 성장, 2025 이후 실질 배수 유지 + 물가 투영, observed로는 절대 표기 안 함, 연도별 캐시), `sponsorSlotOpens(code, slot)` → `{ year, status, source }`(로드 시 1회 구성), `SPONSOR_SLOTS`, `Observation`, `CURRENT_CATALOG`.\n- `scripts/validate-catalogs.ts`: 두 표의 커버리지·순서·출처 검사(시대 순서, 기준연도 실질 1, 각국 선언 share 일치, 1901–2030 양수 커버리지, 실질 비감소, 커버리지 이후 projected, 슬롯 순서·범위, 모든 출처에 https 링크) + 지문 입력에 신규 파일 포함.\n- `CATALOG_VERSION` = 2026-demo-2, `PRIOR_CATALOG_HASHES`(versions.ts)에 2026-demo-1 지문 기록 → decode가 당시 기록된 해시로 구 봉투를 수락, `upgradeWorldRules(w, pin)`이 엔진·카탈로그 핀·revision을 함께 올리고 host가 `CURRENT_CATALOG`를 전달. persistence.test.ts에 demo-1 저장 로드→업그레이드→왕복과 다른 해시 거부 케이스 추가, catalogs.test.ts에 지수/슬롯 테스트 4건 추가. 범위 밖 최소 수정: docs/DATA.md(축구 지수 절·카탈로그 ID), docs/SAVE-FORMAT.md(활성화가 카탈로그 핀도 올림), scripts/update-golden.ts(카탈로그 ID 하드코딩 제거).\n\n블로커\n- `packages/catalogs/src/fingerprint.ts`가 아직 2026-demo-1 해시입니다. 재생성에는 `pnpm exec tsx scripts/fingerprint-catalog.ts --write`가 필요한데, 이 세션에서 `pnpm install`(워크트리에 node_modules 없음), 모든 `node`/`tsx` 실행, 워크트리 밖 경로, shasum/python3가 전부 권한 거부되어 실행할 수 없었습니다. 그 전까지 `pnpm run validate:catalogs`는 \"Catalog fingerprint is stale\"로 실패하며(해당 메시지에 명령을 넣어 두었습니다), 그 구간에 만든 저장은 나중에 decode가 거부할 해시를 핀합니다. taskVerify(typecheck, test:unit)는 영향받지 않습니다.\n- 같은 이유로 typecheck·test:unit·lint·format:check·validate:catalogs를 하나도 실행하지 못했습니다. [v]로 채운 완료기준 4개는 작성한 데이터·코드를 읽어 확인한 것이고, 명령 통과가 걸린 3개는 열어 두었습니다. 포매팅도 prettier 규칙에 맞춰 수작업으로 맞췄을 뿐 검사하지 못했습니다.",
+          "summary": "T050 구현은 끝냈지만 카탈로그 지문(CATALOG_HASH) 재생성이 이 샌드박스에서 불가능해 blocked로 반환합니다.\n\n구현된 것\n- `packages/catalogs/data/football-index.json`: 8개국 축구 지수(1901~)와 후원 슬롯 개방 연도. 시대 앵커 1979/1992/2005/2020/2025의 실질 배수(ENG 1/2/6/10/11, ESP·GER·ITA 70%, FRA 50%, NED 35%, POR 30%, BEL 25% of ENG 실질 성장), 시대마다 note·status(estimated)·출처 키, 슬롯 40건(ENG 1901/1970/1979/1997/2017; ENG 메인·명명권·소매와 GER 1973 메인만 observed, 나머지 estimated).\n- `catalogs/src/index.ts`: `footballIndex(code, year)` → `{ value, real, status, source }` (물가지수 × 배수, 1979까지 평탄, 앵커 사이 기하 성장, 2025 이후 실질 배수 유지 + 물가 투영, observed로는 절대 표기 안 함, 연도별 캐시), `sponsorSlotOpens(code, slot)` → `{ year, status, source }`(로드 시 1회 구성), `SPONSOR_SLOTS`, `Observation`, `CURRENT_CATALOG`.\n- `scripts/validate-catalogs.ts`: 두 표의 커버리지·순서·출처 검사(시대 순서, 기준연도 실질 1, 각국 선언 share 일치, 1901–2030 양수 커버리지, 실질 비감소, 커버리지 이후 projected, 슬롯 순서·범위, 모든 출처에 https 링크) + 지문 입력에 신규 파일 포함.\n- `CATALOG_VERSION` = 2026-demo-2, `PRIOR_CATALOG_HASHES`(versions.ts)에 2026-demo-1 지문 기록 → decode가 당시 기록된 해시로 구 봉투를 수락, `upgradeWorldRules(w, pin)`이 엔진·카탈로그 핀·revision을 함께 올리고 host가 `CURRENT_CATALOG`를 전달. persistence.test.ts에 demo-1 저장 로드→업그레이드→왕복과 다른 해시 거부 케이스 추가, catalogs.test.ts에 지수/슬롯 테스트 4건 추가. 범위 밖 최소 수정: docs/DATA.md(축구 지수 절·카탈로그 ID), docs/SAVE-FORMAT.md(활성화가 카탈로그 핀도 올림), scripts/update-golden.ts(카탈로그 ID 하드코딩 제거).\n\n블로커\n- `packages/catalogs/src/fingerprint.ts`가 아직 2026-demo-1 해시입니다. 재생성에는 `pnpm exec tsx scripts/fingerprint-catalog.ts --write`가 필요한데, 이 세션에서 `pnpm install`(워크트리에 node_modules 없음), 모든 `node`/`tsx` 실행, 워크트리 밖 경로, shasum/python3가 전부 권한 거부되어 실행할 수 없었습니다. 그 전까지 `pnpm run validate:catalogs`는 \"Catalog fingerprint is stale\"로 실패하며(해당 메시지에 명령을 넣어 두었습니다), 그 구간에 만든 저장은 나중에 decode가 거부할 해시를 핀합니다. taskVerify(typecheck, test:unit)는 영향받지 않습니다.\n- 같은 이유로 typecheck·test:unit·lint·format:check·validate:catalogs를 하나도 실행하지 못했습니다. [v]로 채운 완료기준 4개는 작성한 데이터·코드를 읽어 확인한 것이고, 명령 통과가 걸린 3개는 열어 두었습니다. 포매팅도 prettier 규칙에 맞춰 수작업으로 맞췄을 뿐 검사하지 못했습니다."
+        }
+      }
+    },
+    {
+      "sequence": 14,
+      "at": "2026-10-12T11:17:22.627Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "d3895ae1-7cbf-446d-8762-61e6f50ef717",
+      "taskId": "T053",
+      "tasks": [
+        "T053",
+        "T054"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 15,
+      "at": "2026-10-12T11:17:22.848Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "d3895ae1-7cbf-446d-8762-61e6f50ef717",
+      "taskId": "T053",
+      "tasks": [
+        "T053",
+        "T054"
+      ],
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T053: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+      }
+    },
+    {
+      "sequence": 16,
+      "at": "2026-10-12T11:17:22.851Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "d3895ae1-7cbf-446d-8762-61e6f50ef717",
+      "taskId": "T053",
+      "tasks": [
+        "T053",
+        "T054"
+      ],
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "0c629656-d932-4b7a-a844-e4c711a5a8ba",
+          "runner": "ea92567d-d106-444b-af7d-f72823e5ca23",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T10:35:25.812Z",
+          "finishedAt": "2026-10-12T11:17:22.851Z",
+          "error": "T053: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+          "summary": "T053 구현 완료(검증은 호스트 러너에 위임). 변경 내용: (1) 새 파일 apps/web/src/ui/Money.tsx + Money.module.css — compactMoney를 출력하고 exact money() 값을 title과 접근성 이름에 담으며 탭하면 정확한 금액으로 바뀌는 디스클로저. ClubLink와 같은 인라인 텍스트 버튼 패턴(전화 48px 버튼 규칙을 3중 클래스로 상쇄, ::after로 터치 영역 확보). 이미 탭을 받는 컨트롤 내부용 plain prop(span+title) 제공. (2) 단독으로 표시되는 모든 금액을 <Money>로 교체: App(운영 자금 타일·연간 손익·파산 밴드), FinanceOutlook, BusinessWorkbench, EventCenter, RecruitmentDesk, SeasonReview, RecordsRoom, AwaySummary, StrategyPanel, ClubStaff, Rich, ClubTrends 시즌 표. 문장·툴팁·라디오·결과 카드·차트 축에 섞인 금액은 같은 표기의 compactMoney 문자열(PolicyBoard, teamState, outcome, stanceConsequence, 코치 다이얼, 입찰 단계). ClubTrends의 자체 K/M/B 표기(axisMoney)를 WEB-67 표기로 통일(inToday가 minor units 문자열 반환, plotted/axisMoney 분리). (3) HUD: AnimatedMoney 하나로 모든 뷰포트에서 compact 표기, title/aria-label에 exact, App.module.css의 .cashFull/.cashCompact 규칙 삭제. (4) money(는 format.ts(정의)·format.test.ts·Money.tsx(title)·FinancialBreakdown.tsx(정확한 장부, WEB-14)·App.tsx HUD 라벨에만 남음. (5) Attributes.tsx 행 값 타입을 ReactNode로 확장(AttributeRow). (6) format.test.ts를 T052 moneyLabel 기대 문자열(EUR 8케이스 + £sd 2케이스)로 재작성. (7) e2e: business.spec·recruitment.spec(+ 탭 디스클로저 검증: title로 버튼 찾아 클릭→exact→재클릭→compact)·news.spec(폰 360px + 데스크톱 1280px HUD) 갱신. touches 밖 수정 파일: Money.module.css, Attributes.tsx, outcome.ts, teamState.ts, App.module.css, tests/e2e/recruitment.spec.ts (모두 acceptance의 money( 검색 범위 또는 컴포넌트 필수 부속). 미검증(중요): 이 세션에서는 Bash가 모든 pnpm/node 실행을 자동 거부하고 워크트리에 node_modules도 없어 어떤 명령도 실행하지 못했습니다 — typecheck/test:unit/lint/format:check/e2e 전부 미실행이라 acceptance 5·6은 체크하지 않았고 task result의 verified·limits에 그 사실과 prettier 미실행(포맷 재정렬 가능성)을 기록했습니다. 대신 읽기 전용 점검: 잔여 money( 없음, format이 노드를 반환하는 곳에 ${format(...)} 템플릿 없음, 추가한 줄 중 100열 초과 없음(기존 템플릿 리터럴 제외), BigInt 기반 지불 가능 판정과 비활성 사유 문구는 손대지 않음."
+        }
+      }
+    },
+    {
+      "sequence": 17,
+      "at": "2026-10-12T11:17:23.781Z",
+      "type": "group",
+      "group": "club-realism",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "ea92567d-d106-444b-af7d-f72823e5ca23",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.263 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.263 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.263 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-12T10:35:24.846Z",
+          "stoppedAt": "2026-10-12T11:17:23.781Z",
+          "dispatched": 2,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+              "role": "worker",
+              "error": "T050 구현은 끝냈지만 카탈로그 지문(CATALOG_HASH) 재생성이 이 샌드박스에서 불가능해 blocked로 반환합니다.\n\n구현된 것\n- `packages/catalogs/data/football-index.json`: 8개국 축구 지수(1901~)와 후원 슬롯 개방 연도. 시대 앵커 1979/1992/2005/2020/2025의 실질 배수(ENG 1/2/6/10/11, ESP·GER·ITA 70%, FRA 50%, NED 35%, POR 30%, BEL 25% of ENG 실질 성장), 시대마다 note·status(estimated)·출처 키, 슬롯 40건(ENG 1901/1970/1979/1997/2017; ENG 메인·명명권·소매와 GER 1973 메인만 observed, 나머지 estimated).\n- `catalogs/src/index.ts`: `footballIndex(code, year)` → `{ value, real, status, source }` (물가지수 × 배수, 1979까지 평탄, 앵커 사이 기하 성장, 2025 이후 실질 배수 유지 + 물가 투영, observed로는 절대 표기 안 함, 연도별 캐시), `sponsorSlotOpens(code, slot)` → `{ year, status, source }`(로드 시 1회 구성), `SPONSOR_SLOTS`, `Observation`, `CURRENT_CATALOG`.\n- `scripts/validate-catalogs.ts`: 두 표의 커버리지·순서·출처 검사(시대 순서, 기준연도 실질 1, 각국 선언 share 일치, 1901–2030 양수 커버리지, 실질 비감소, 커버리지 이후 projected, 슬롯 순서·범위, 모든 출처에 https 링크) + 지문 입력에 신규 파일 포함.\n- `CATALOG_VERSION` = 2026-demo-2, `PRIOR_CATALOG_HASHES`(versions.ts)에 2026-demo-1 지문 기록 → decode가 당시 기록된 해시로 구 봉투를 수락, `upgradeWorldRules(w, pin)`이 엔진·카탈로그 핀·revision을 함께 올리고 host가 `CURRENT_CATALOG`를 전달. persistence.test.ts에 demo-1 저장 로드→업그레이드→왕복과 다른 해시 거부 케이스 추가, catalogs.test.ts에 지수/슬롯 테스트 4건 추가. 범위 밖 최소 수정: docs/DATA.md(축구 지수 절·카탈로그 ID), docs/SAVE-FORMAT.md(활성화가 카탈로그 핀도 올림), scripts/update-golden.ts(카탈로그 ID 하드코딩 제거).\n\n블로커\n- `packages/catalogs/src/fingerprint.ts`가 아직 2026-demo-1 해시입니다. 재생성에는 `pnpm exec tsx scripts/fingerprint-catalog.ts --write`가 필요한데, 이 세션에서 `pnpm install`(워크트리에 node_modules 없음), 모든 `node`/`tsx` 실행, 워크트리 밖 경로, shasum/python3가 전부 권한 거부되어 실행할 수 없었습니다. 그 전까지 `pnpm run validate:catalogs`는 \"Catalog fingerprint is stale\"로 실패하며(해당 메시지에 명령을 넣어 두었습니다), 그 구간에 만든 저장은 나중에 decode가 거부할 해시를 핀합니다. taskVerify(typecheck, test:unit)는 영향받지 않습니다.\n- 같은 이유로 typecheck·test:unit·lint·format:check·validate:catalogs를 하나도 실행하지 못했습니다. [v]로 채운 완료기준 4개는 작성한 데이터·코드를 읽어 확인한 것이고, 명령 통과가 걸린 3개는 열어 두었습니다. 포매팅도 prettier 규칙에 맞춰 수작업으로 맞췄을 뿐 검사하지 못했습니다."
+            },
+            {
+              "attempt": "d3895ae1-7cbf-446d-8762-61e6f50ef717",
+              "role": "worker",
+              "error": "T053: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
