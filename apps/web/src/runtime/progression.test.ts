@@ -32,9 +32,10 @@ function setup(current?: MatchPlayback) {
     view: { world: w } as View,
   });
   const command = vi.fn(async () => ({ ok: true, requestId: 'test', view: { world: w } as View }));
-  const client = { command, cancel: vi.fn() } as unknown as GameClient;
+  const saveSoon = vi.fn();
+  const client = { command, cancel: vi.fn(), saveSoon } as unknown as GameClient;
   const controller = new ProgressionController(client);
-  return { controller, command, client };
+  return { controller, command, client, saveSoon };
 }
 let controller: ProgressionController | undefined;
 beforeEach(() => vi.useFakeTimers());
@@ -118,6 +119,43 @@ describe('the global progression clock', () => {
     controller.stop();
     await vi.advanceTimersByTimeAsync(2000);
     expect(s.command).toHaveBeenCalledTimes(13);
+  });
+  it('steps one day every 0.1 s at x10 beside a 0.8 s background save and saves when it stops', async () => {
+    const s = setup();
+    controller = s.controller;
+    let revision = w.revision;
+    // Each day takes the engine 20 ms; the client's view moves on with it, saved or not.
+    s.command.mockImplementation(async () => {
+      gameStore.publish({ ...gameStore.getSnapshot(), processing: true });
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      const next = { ...w, revision: ++revision };
+      gameStore.publish({
+        ...gameStore.getSnapshot(),
+        processing: false,
+        view: { world: next } as View,
+      });
+      return { ok: true, requestId: 'day', view: { world: next } as View };
+    });
+    controller.setPace('x10');
+    controller.start();
+    await vi.advanceTimersByTimeAsync(150);
+    expect(s.command).toHaveBeenCalledTimes(1);
+    // The client saves that day in the background, which takes 0.8 s (→SAVE-8).
+    const saved = revision;
+    setTimeout(() => gameStore.publish({ ...gameStore.getSnapshot(), savedRevision: saved }), 800);
+    await vi.advanceTimersByTimeAsync(400);
+    expect(s.command).toHaveBeenCalledTimes(5);
+    expect(gameStore.getSnapshot().savedRevision).toBe(w.revision);
+    await vi.advanceTimersByTimeAsync(500);
+    expect(s.command).toHaveBeenCalledTimes(10);
+    expect(gameStore.getSnapshot().savedRevision).toBe(saved);
+    // Ordinary steps never owe days: each carries one.
+    const calls = s.command.mock.calls as unknown as [{ days: number }][];
+    expect(calls.map(([cmd]) => cmd.days)).toEqual(Array(10).fill(1));
+    // The clock never saves per step; stopping it saves at once.
+    expect(s.saveSoon).not.toHaveBeenCalled();
+    controller.stop();
+    expect(s.saveSoon).toHaveBeenCalledTimes(1);
   });
   it('holds the calendar throughout observation and starts next match at the finish signal', async () => {
     const s = setup(playback('first'));
@@ -225,7 +263,7 @@ describe('the global progression clock', () => {
     expect(s.command).toHaveBeenCalledTimes(1);
     expect(controller.store.getState().matchEve).toBeUndefined();
   });
-  it('catches up the days a slow save held back, lands on a match eve and asks the host to stop only for enabled events', async () => {
+  it('catches up the days a slow step held back, lands on a match eve and asks the host to stop only for enabled events', async () => {
     const s = setup();
     controller = s.controller;
     controller.setStopOnAll({
@@ -240,7 +278,7 @@ describe('the global progression clock', () => {
       cup: false,
       finance: true,
     });
-    // Each step takes 0.45 s to save, so at x10 the days pile up behind it (at most five).
+    // Each step itself takes 0.45 s, so at x10 the days pile up behind it (at most five).
     s.command.mockImplementation(
       () =>
         new Promise((resolve) =>

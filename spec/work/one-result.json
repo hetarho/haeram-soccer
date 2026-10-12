@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-12T08:23:18.831Z",
-  "sourceCommit": "34e96b089e52a2fc88bc7ee3d1c997bc8aef4267",
+  "snapshotAt": "2026-10-12T08:23:57.212Z",
+  "sourceCommit": "17bace2940cc7c6e57f54d1041c26e3c35e2c5d7",
   "group": {
     "id": "one-result",
     "branch": "work/one-result",
@@ -54,10 +54,10 @@
   },
   "summary": {
     "total": 9,
-    "completed": 6,
-    "remaining": 3,
+    "completed": 8,
+    "remaining": 1,
     "running": 0,
-    "review": 2,
+    "review": 0,
     "blocked": 1,
     "unassigned": 0
   },
@@ -71,22 +71,6 @@
         "T046"
       ],
       "status": "blocked"
-    },
-    {
-      "id": "T048",
-      "title": "Background codec worker for checkpoints",
-      "dep": [],
-      "lane": "background-save",
-      "status": "approved"
-    },
-    {
-      "id": "T049",
-      "title": "Clock never waits for saving; background autosave cadence",
-      "dep": [
-        "T048"
-      ],
-      "lane": "background-save",
-      "status": "approved"
     }
   ],
   "attempts": [
@@ -558,8 +542,8 @@
         "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/worker-1",
         "972d9a30-6bea-46b8-81f6-ead950c5011c/worker-1"
       ],
-      "status": "approved",
-      "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-10-12T06:19:25.170Z",
       "startCommit": "a37e137038d9f4211780569bddf8856da8860cd4",
       "verifiedCommit": "ecf7c93c5d796a6e828f540c64c8a8799c79d6d4",
@@ -6373,6 +6357,23 @@
             }
           ]
         }
+      }
+    },
+    {
+      "sequence": 221,
+      "at": "2026-10-12T08:23:56.800Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

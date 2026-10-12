@@ -90,7 +90,8 @@ test('quota failure preserves disk save, exports actual memory progress and retr
   });
   await advanceRound(page);
   await expect(page.getByRole('alert')).toContainText('저장 실패');
-  await expect(page.getByTestId('save-status')).toContainText('저장 대기 · r1');
+  // The status names the last save, the founding one, not this round.
+  await expect(page.getByTestId('save-status')).toContainText(/(방금|초 전) 저장 · r1/);
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBe(before);
   const event = page.waitForEvent('download');
   await page.getByRole('button', { name: '기록 내보내기', exact: true }).click();
@@ -136,7 +137,9 @@ test('a terminated real worker exposes recovery and retains the last committed c
     globalThis.Worker = class extends NativeWorker {
       constructor(url: string | URL, options?: WorkerOptions) {
         super(url, options);
-        (globalThis as typeof globalThis & { testWorker?: Worker }).testWorker = this;
+        // The engine worker, not the codec worker the client creates beside it.
+        if (!String(url).includes('codec'))
+          (globalThis as typeof globalThis & { testWorker?: Worker }).testWorker = this;
       }
     };
   });

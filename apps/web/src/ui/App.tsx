@@ -798,26 +798,50 @@ function RuntimeFeedback({ client, localError }: { client: GameClient; localErro
     </>
   );
 }
-function saveText(w: World | undefined, savedRevision: number) {
+function savedAgo(savedAt: number, now: number) {
+  const seconds = Math.max(0, Math.floor((now - savedAt) / 1000));
+  if (seconds < 5) return '방금 저장';
+  if (seconds < 60) return `${seconds}초 전 저장`;
+  const minutes = Math.floor(seconds / 60);
+  return minutes < 60 ? `${minutes}분 전 저장` : `${Math.floor(minutes / 60)}시간 전 저장`;
+}
+/**
+ * 저장 완료 while every revision is on disk; otherwise when this tab last saved, so a running clock
+ * between its background saves reads steadily instead of flipping on every step (→SAVE-8).
+ */
+function useSaveText() {
+  const w = useGameState((state) => state.view?.world);
+  const savedRevision = useGameState((state) => state.savedRevision);
+  const savedAt = useGameState((state) => state.savedAt);
+  const waiting = !!w && savedRevision !== w.revision && savedAt !== undefined;
+  const [now, setNow] = useState(Date.now);
+  useEffect(() => {
+    if (!waiting) return;
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [waiting]);
   if (!w) return '로그인 없이 시작하세요';
   const own = w.clubs.find((club) => club.id === w.playerClub)!;
   const status = priceIndex(own.country, w.year).status;
-  return `${savedRevision === w.revision ? '저장 완료' : '저장 대기'} · r${w.revision} · 물가 ${status === 'observed' ? '관측' : status === 'estimated' ? '추정' : '전망'}`;
+  const saved =
+    savedRevision === w.revision
+      ? '저장 완료'
+      : savedAt !== undefined
+        ? savedAgo(savedAt, now)
+        : '저장 대기';
+  return `${saved} · r${w.revision} · 물가 ${status === 'observed' ? '관측' : status === 'estimated' ? '추정' : '전망'}`;
 }
 function LiveFooter() {
-  const w = useGameState((state) => state.view?.world);
-  const savedRevision = useGameState((state) => state.savedRevision);
+  const text = useSaveText();
   return (
     <footer className={s.footer}>
       <span>HAERAM FOOTBALL · 가상의 클럽, 당신의 역사.</span>
-      <span data-testid="save-status">{saveText(w, savedRevision)}</span>
+      <span data-testid="save-status">{text}</span>
     </footer>
   );
 }
 function SaveStatus() {
-  const w = useGameState((state) => state.view?.world);
-  const savedRevision = useGameState((state) => state.savedRevision);
-  return <p className={s.menuSave}>기록 · {saveText(w, savedRevision)}</p>;
+  return <p className={s.menuSave}>기록 · {useSaveText()}</p>;
 }
 function SaveActions({
   client,
@@ -847,7 +871,7 @@ function SaveActions({
         {compact ? '기록 내보내기 ↓' : '기록 내보내기'}
       </button>
       {!compact && w && onSlots && <button onClick={onSlots}>게임 슬롯</button>}
-      {!compact && w && !state.processing && state.savedRevision !== w.revision && (
+      {!compact && w && state.saveFailed && state.savedRevision !== w.revision && (
         <button disabled={state.busy || state.readonly} onClick={() => void client.retrySave()}>
           저장 재시도
         </button>
@@ -929,14 +953,18 @@ export function App() {
       const library = new GameSlots(c);
       // A hidden tab plays on at its wall-clock pace unless the owner chose to pause it
       // (→WEB-64). Leaving also refreshes the slot card, so the slot screen shows where this
-      // game stood, and stores the clock so a later visit can play the time away.
+      // game stood, and stores the clock so a later visit can play the time away. Hiding and
+      // closing save automatic progress at once, a close as far as the browser lets it (→SAVE-8).
       const visibility = () => {
         progression.setHidden(document.hidden);
-        if (document.hidden) library.sync(gameStore.getSnapshot().view?.world, true);
+        if (!document.hidden) return;
+        library.sync(gameStore.getSnapshot().view?.world, true);
+        c.saveSoon();
       };
       const leave = () => {
         progression.writeClock(true);
         library.sync(gameStore.getSnapshot().view?.world, true);
+        c.saveSoon();
       };
       document.addEventListener('visibilitychange', visibility);
       window.addEventListener('pagehide', leave);

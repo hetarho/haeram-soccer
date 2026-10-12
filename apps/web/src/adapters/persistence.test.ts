@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../../../packages/contracts/src/index';
 import { createWorld, advanceRound } from '../../../../packages/engine/src/index';
-import { encode, decode, Saves, type StoragePort } from './persistence';
+import { checkpoint, encode, decode, Saves, type StoragePort } from './persistence';
 import { base64, pack, unpack } from './packing';
 import { denseBytes } from './dense';
 import {
@@ -237,6 +237,21 @@ describe('recoverable persistence', () => {
       expect((await decode(port.getItem('haeram-soccor:slot:b')!)).world.round).toBe(1);
     },
   );
+  it('commits a codec checkpoint by its envelope and never writes one older than the last commit', async () => {
+    const port = new Memory();
+    const saves = new Saves(port);
+    const w = world();
+    await saves.save(w);
+    advanceRound(w);
+    const second = await checkpoint(w, 2, 1);
+    await saves.commit(second.raw, { envelope: second.envelope });
+    const before = new Map(port.data);
+    const stale = await checkpoint(w, 2, 1);
+    await expect(saves.commit(stale.raw, { envelope: stale.envelope })).rejects.toThrow('오래된');
+    expect(port.data).toEqual(before);
+    expect(saves.generationInfo).toEqual({ generation: 3, parentGeneration: 2 });
+    expect((await new Saves(port).load())?.envelope.generation).toBe(2);
+  });
   it('reports recovery when the selected manifest parent disagrees with the checkpoint', async () => {
     const port = new Memory();
     const saves = new Saves(port);
@@ -280,6 +295,19 @@ it('preserves first and second European phases and global standings in a histori
   delete legacy.standingsDeltas;
   expect(canonical(unpack(legacy))).toBe(canonical(w));
 });
+it('builds a codec checkpoint of a 10-season career that decodes to the same world', async () => {
+  const { simulateSeason } = await import('../../../../packages/engine/src/index');
+  const w = world();
+  for (let season = 0; season < 10; season++) {
+    w.cash = '999999999999999';
+    simulateSeason(w);
+  }
+  expect(w.history).toHaveLength(10);
+  const { raw, envelope } = await checkpoint(w, 5, 4);
+  expect(envelope).toMatchObject({ worldId: w.id, generation: 5, parentGeneration: 4 });
+  expect(JSON.parse(raw)).toEqual(envelope);
+  expect(canonical((await decode(raw)).world)).toBe(canonical(w));
+}, 120000);
 it('rejects broken counters and historical club references before activation', async () => {
   const { simulateSeason } = await import('../../../../packages/engine/src/index');
   const w = world();

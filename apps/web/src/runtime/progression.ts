@@ -17,8 +17,9 @@ export type Pace = 'x1' | 'x2' | 'x5' | 'x10';
 /** Real milliseconds per game day: x1 is one day a second, x10 one day every 0.1 s. */
 export const PACE_MS: Record<Pace, number> = { x1: 1000, x2: 500, x5: 200, x10: 100 };
 /**
- * A step normally advances one day. When saving takes longer than the pace allows, the next step
- * carries the days that piled up, at most this many, so the calendar keeps the chosen rate.
+ * A step normally advances one day and never waits for saving (→SAVE-8). When a step itself takes
+ * longer than the pace allows, the next carries the days that piled up, at most this many, so the
+ * calendar keeps the chosen rate.
  */
 export const MAX_STEP_DAYS = 5;
 /** Background play (→WEB-64): how far a page that slept or closed catches up on return. */
@@ -193,6 +194,8 @@ export class ProgressionController {
   private finishedId?: string;
   /** When the last day step was sent; unset while stopped so a restart begins with one day. */
   private stepAt?: number;
+  /** The next step owes the days since stepAt: the last step itself ran late, or time away. */
+  private owing = false;
   private hidden = false;
   private hiddenAt?: number;
   /** Where the club stood when the owner last looked, until the run it started is summarized. */
@@ -302,6 +305,7 @@ export class ProgressionController {
     this.start();
     if (!this.store.getState().running) return;
     this.stepAt = record.at;
+    this.owing = true;
     this.seenMark = record.mark;
     void this.tick();
   }
@@ -430,7 +434,10 @@ export class ProgressionController {
     const was = this.store.getState().running;
     this.store.setState({ running: false, reason });
     if (this.inFlight) this.client.cancel();
-    if (was) this.writeClock(true);
+    if (!was) return;
+    this.writeClock(true);
+    // A clock that stops for any reason saves its automatic progress at once (→SAVE-8).
+    this.client.saveSoon();
   }
   finishMatch(id: string) {
     if (this.finishedId === id) return;
@@ -463,8 +470,10 @@ export class ProgressionController {
       if (!this.seenMark) this.seenMark = clockMark(w);
       return { days: Math.max(1, Math.min(days, limit)), catchUp: true };
     }
-    // A hidden tab's throttled timer pays every day it owes; a visible one at most a few.
+    // A hidden tab's throttled timer pays every day it owes; a visible one at most a few, and only
+    // after a step that itself ran late: an ordinary step is one day whatever its timer did.
     if (this.hidden) return { days: Math.max(1, days), catchUp: true };
+    if (!this.owing) return { days: 1, catchUp: false };
     return { days: Math.max(1, Math.min(MAX_STEP_DAYS, days)), catchUp: false };
   }
   private async tick() {
@@ -484,7 +493,7 @@ export class ProgressionController {
       state.view.world.bankrupt
     )
       return;
-    if (state.savedRevision !== state.view.world.revision) return;
+    // Saving runs in the background (→SAVE-8): an unsaved revision never holds the next step.
     if (
       progress.watching &&
       state.playback?.frames.length &&
@@ -494,7 +503,7 @@ export class ProgressionController {
     let w = state.view.world;
     if (this.eveStop(w)) return;
     const owed = progress.watching ? { days: 1, catchUp: false } : this.owed(w);
-    this.stepAt = Date.now();
+    const stepAt = (this.stepAt = Date.now());
     this.inFlight = true;
     try {
       let debt = owed.days;
@@ -537,6 +546,9 @@ export class ProgressionController {
       this.writeClock();
     } finally {
       this.inFlight = false;
+      this.owing = Date.now() - stepAt > PACE_MS[this.store.getState().pace];
+      // A stop that came while the step ran saved before the step landed; save what it played.
+      if (!this.store.getState().running) this.client.saveSoon();
       this.summarize();
     }
   }
