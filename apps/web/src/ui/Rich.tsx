@@ -56,7 +56,8 @@ import { roundsUntilRefresh } from '../../../../packages/engine/src/managerMarke
 import { ClubLink } from './ClubLink';
 import type { StateKey } from './teamState';
 import { PlayerComparison } from './PlayerComparison';
-import { contractLine, money, number } from './format';
+import { compactMoney, contractLine, number } from './format';
+import { Money } from './Money';
 import s from './App.module.css';
 type Props = { state: ClientState; client: GameClient };
 /**
@@ -254,7 +255,9 @@ function ManagerOffice({ state, client }: Props) {
   const disabled = state.busy || state.readonly || acting;
   const response = w.events.filter((e) => e.kind === 'manager-response').at(-1);
   const renewal = managerRenewal(w),
-    leaving = managerTerm(m) === 1;
+    leaving = managerTerm(m) === 1,
+    // What a conditional acceptance asks the owner to put into training.
+    support = quote(c.country, w.year, 30);
   return (
     <>
       <div className={s.twoCols}>
@@ -282,8 +285,9 @@ function ManagerOffice({ state, client }: Props) {
                     : '재계약하지 않아도 시즌이 끝나면 3시즌 자동으로 갱신돼요.'}
                 </p>
                 <small>
-                  재계약하면 연봉 {money(renewal.wage, c.country, w.year)} · 계약금{' '}
-                  {money(renewal.fee, c.country, w.year)} · {contractLine(renewal.until, w.year)}
+                  재계약하면 연봉 <Money value={renewal.wage} code={c.country} year={w.year} /> ·
+                  계약금 <Money value={renewal.fee} code={c.country} year={w.year} /> ·{' '}
+                  {contractLine(renewal.until, w.year)}
                 </small>
                 <button
                   className={s.primary}
@@ -310,7 +314,7 @@ function ManagerOffice({ state, client }: Props) {
                 ['자존심', m.pride],
                 ['신뢰', m.trust],
                 ['불만 누적', m.conflicts],
-                ['연봉', money(m.wage, c.country, w.year)],
+                ['연봉', <Money value={m.wage} code={c.country} year={w.year} />],
               ]}
             />
             <p className={s.muted}>
@@ -368,7 +372,9 @@ function ManagerOffice({ state, client }: Props) {
             {m.pending && (
               <div className={s.critical} style={{ marginTop: 20 }}>
                 조건 대기: {tacticLabel[m.pending]}
-                <p>훈련 지원 {money(quote(c.country, w.year, 30), c.country, w.year)} 필요</p>
+                <p>
+                  훈련 지원 <Money value={support} code={c.country} year={w.year} /> 필요
+                </p>
                 <button
                   disabled={disabled}
                   onClick={() => void client.command({ type: 'accept-condition' })}
@@ -413,7 +419,7 @@ function ManagerCandidates({ state, client }: Props) {
     [hiring, setHiring] = useState<string>();
   const acting = useGameState((state) => !!state.pendingActions);
   const disabled = state.busy || state.readonly || acting;
-  const format = (value: bigint | string) => money(value.toString(), c.country, w.year);
+  const format = (value: bigint | string) => <Money value={value} code={c.country} year={w.year} />;
   // Replacing a contracted manager pays him a quarter of his wage; an interim leaves freely.
   const payoff = m.interim ? 0n : BigInt(ratio(m.wage, 1n, 4n));
   const outlay = (candidate: (typeof v.managers)[number]) =>
@@ -459,7 +465,8 @@ function ManagerCandidates({ state, client }: Props) {
         {candidate.compensation && <> · 보상금(웃돈) {format(candidate.compensation)}</>}
       </p>
       <button disabled={disabled} onClick={() => setHiring(candidate.id)}>
-        {candidate.source === 'club' ? '데려오기' : '감독 선임'} · {format(outlay(candidate))}
+        {candidate.source === 'club' ? '데려오기' : '감독 선임'} ·{' '}
+        <Money value={outlay(candidate)} code={c.country} year={w.year} plain />
       </button>
     </article>
   );
@@ -597,7 +604,8 @@ function stanceConsequence(w: World, p: Player, stance: TransferStance) {
   const delegated = !!w.delegation?.transfers,
     value = playerValue(w, p),
     c = w.clubs.find((club) => club.id === w.playerClub)!,
-    format = (amount: string) => money(amount, c.country, w.year);
+    // Each stance reads as a sentence inside its own radio, so amounts come as text (→WEB-67).
+    format = (amount: string) => compactMoney(amount, c.country, w.year);
   if (stance === 'listed')
     return {
       what: `이적시장 기간에 실제 구단이 평가 가치의 ${Math.round(LISTED_OFFER.low * 100)}–${Math.round(LISTED_OFFER.high * 100)}%로 제안해요 · 첫 제안까지 평균 약 ${expectedOfferDays(w, p)}일`,
@@ -644,7 +652,7 @@ function StanceSheet({
       <h2>{player.name} 이적 상태</h2>
       <p>
         {player.role} · {w.year - player.born}세 · 능력 {overall(player)} · 평가 가치{' '}
-        {money(playerValue(w, player), c.country, w.year)}
+        <Money value={playerValue(w, player)} code={c.country} year={w.year} />
       </p>
       <div className={s.stanceChoices} role="radiogroup" aria-label="이적 상태">
         {TRANSFER_STANCES.map((stance) => {
@@ -836,7 +844,13 @@ function Squad({ state, client }: Props) {
                           <td>{stats[0]}</td>
                           <td>{stats[1]}</td>
                           <td>{number(p.fatigue)}</td>
-                          <td>{p.status === 'active' ? money(p.wage, c.country, w.year) : '—'}</td>
+                          <td>
+                            {p.status === 'active' ? (
+                              <Money value={p.wage} code={c.country} year={w.year} />
+                            ) : (
+                              '—'
+                            )}
+                          </td>
                           <td>{p.until}</td>
                           <td>
                             {canSetStance(p) && (

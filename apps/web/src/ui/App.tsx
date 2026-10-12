@@ -16,6 +16,7 @@ import { ClubCrest } from './ClubCrest';
 import { ClubLink } from './ClubLink';
 import { watchNextMatch } from './watch';
 import { compactMoney, competitionLabel, money, number, percent, seasonName } from './format';
+import { Money } from './Money';
 import { InterventionSettings, ProgressControls } from './ProgressControls';
 import { LiveSeason } from './LiveSeason';
 import { ClubHub } from './ClubHub';
@@ -223,20 +224,28 @@ function ClubJournal({
       </div>
       <LeagueOverview w={w} onOpenLeague={() => setPage('league')} />
       <div className={s.stats}>
-        {[
+        {(
           [
-            '운영 자금',
-            money(w.cash, c.country, w.year),
-            `연간 운영비 ${money(v.annualCost, c.country, w.year)}`,
-          ],
-          ['우리의 서포터', number(c.fans), '경기·마케팅 결과에 따라 변화'],
-          ['이번 시즌', `${t.points} pts`, `${t.played}경기 · ${t.won}승 ${t.drawn}무 ${t.lost}패`],
-          [
-            '쌓아온 기록',
-            `${number(v.totalMatches)} matches`,
-            `${w.history.length}개 시즌 · 승률 ${winRate}`,
-          ],
-        ].map(([label, value, note]) => (
+            [
+              '운영 자금',
+              <Money value={w.cash} code={c.country} year={w.year} />,
+              <>
+                연간 운영비 <Money value={v.annualCost} code={c.country} year={w.year} />
+              </>,
+            ],
+            ['우리의 서포터', number(c.fans), '경기·마케팅 결과에 따라 변화'],
+            [
+              '이번 시즌',
+              `${t.points} pts`,
+              `${t.played}경기 · ${t.won}승 ${t.drawn}무 ${t.lost}패`,
+            ],
+            [
+              '쌓아온 기록',
+              `${number(v.totalMatches)} matches`,
+              `${w.history.length}개 시즌 · 승률 ${winRate}`,
+            ],
+          ] as [string, ReactNode, ReactNode][]
+        ).map(([label, value, note]) => (
           <div className={s.stat} key={label}>
             <div className={s.label}>{label}</div>
             <strong>{value}</strong>
@@ -329,7 +338,13 @@ function ClubJournal({
               </div>
               <div className={s.attribute}>
                 <span>연간 손익</span>
-                <b>{money((BigInt(w.income) - BigInt(w.expense)).toString(), c.country, w.year)}</b>
+                <b>
+                  <Money
+                    value={BigInt(w.income) - BigInt(w.expense)}
+                    code={c.country}
+                    year={w.year}
+                  />
+                </b>
               </div>
             </div>
             <div className={s.panelFoot}>지표를 비교하고, 다음 선택을 바꿔보세요.</div>
@@ -511,13 +526,14 @@ function HudCash({ client }: { client?: GameClient }) {
   if (!w) return null;
   const own = w.clubs.find((club) => club.id === w.playerClub)!;
   const state = cashState(w);
-  const text = money(w.cash, own.country, w.year);
+  const exact = money(w.cash, own.country, w.year);
   return (
     <>
       <button
         className={`${s.hudCash} ${BigInt(w.cash) < 0n ? s.hudCashNegative : state.tone === 'warn' || state.tone === 'bad' ? s.hudCashWarn : ''}`}
         data-testid="hud-cash"
-        aria-label={`운영 자금 ${text} · ${state.status} · 자금 상황 보기`}
+        title={exact}
+        aria-label={`운영 자금 ${exact} · ${state.status} · 자금 상황 보기`}
         disabled={!client}
         onClick={(event) => {
           event.currentTarget.focus();
@@ -527,18 +543,10 @@ function HudCash({ client }: { client?: GameClient }) {
         <i aria-hidden="true" />
         <span>
           <small>운영 자금</small>
-          <AnimatedMoney
-            value={w.cash}
-            format={(value) => money(value, own.country, w.year)}
-            className={s.cashFull}
-            upClass={s.cashUp}
-            downClass={s.cashDown}
-          />
-          {/* Phones show whole units or K/M/B so the club name keeps its room; the sheet is exact. */}
+          {/* The money notation on every viewport (→WEB-67); the exact amount is the title. */}
           <AnimatedMoney
             value={w.cash}
             format={(value) => compactMoney(value, own.country, w.year)}
-            className={s.cashCompact}
             upClass={s.cashUp}
             downClass={s.cashDown}
           />
@@ -717,7 +725,7 @@ function CashAlarm() {
     <div className={s.cashAlarm} role="status" data-testid="cash-alarm">
       {cash < 0n ? (
         <>
-          <b>파산 위기</b> 잔고 {money(w.cash, own.country, w.year)} ·{' '}
+          <b>파산 위기</b> 잔고 <Money value={w.cash} code={own.country} year={w.year} /> ·{' '}
           {BANKRUPTCY_ROUNDS - (w.insolvent ?? 0)}라운드 안에 흑자로 돌아오지 못하면 파산해요
         </>
       ) : (

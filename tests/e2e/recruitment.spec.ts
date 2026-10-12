@@ -7,7 +7,7 @@ import { transferOffers, operatingCost } from '../../packages/engine/src/operati
 import { clubOf, startingSquad } from '../../packages/engine/src/world';
 import { daysUntilNextMatch } from '../../packages/engine/src/calendar';
 import { lineupSummary } from '../../packages/engine/src/strategy';
-import { money } from '../../apps/web/src/ui/format';
+import { compactMoney, money } from '../../apps/web/src/ui/format';
 import type { World } from '../../packages/contracts/src/types';
 import { horizontalOverflow } from './layout';
 import { stopOnlyFor } from './events';
@@ -118,9 +118,17 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   const freeCard = desk.getByTestId(`candidate-${free.player.id}`);
   expect(BigInt(free.player.wage)).toBeGreaterThan(0n);
   await expect(freeCard).toContainText('이적료 없음 · 연봉은 계속 지급해요');
-  await expect(freeCard).toContainText(
-    money(free.player.wage, clubOf(before).country, before.year),
-  );
+  // The wage reads in the one notation (→WEB-67); the exact amount is the title and opens on tap.
+  const country = clubOf(before).country;
+  const wage = compactMoney(free.player.wage, country, before.year),
+    exactWage = money(free.player.wage, country, before.year);
+  await expect(freeCard).toContainText(wage);
+  const disclosure = freeCard.locator(`button[title="${exactWage}"]`).first();
+  await expect(disclosure).toHaveText(wage);
+  await disclosure.click();
+  await expect(disclosure).toHaveText(exactWage);
+  await disclosure.click();
+  await expect(disclosure).toHaveText(wage);
   const preview = recruitmentPreview(before, free);
   await expect(freeCard.getByLabel('영입 전력 변화')).toContainText(
     `${preview.beforeStrength} → ${preview.afterStrength}`,

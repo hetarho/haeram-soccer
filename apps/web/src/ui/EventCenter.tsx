@@ -9,7 +9,8 @@ import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { stoppingEvents, useProgression, type ProgressionController } from '../runtime/progression';
 import { openMarket, useNavigation, useSquadView, useStaffView } from './state';
-import { competitionLabel, money } from './format';
+import { competitionLabel } from './format';
+import { Money } from './Money';
 import { Dialog } from './Dialog';
 import s from './EventCenter.module.css';
 import { fadeOutOnRemove } from './motion';
@@ -81,7 +82,7 @@ export function EventCenter({
       </button>
     );
   const club = clubOf(w);
-  const format = (value: string) => money(value, club.country, w.year);
+  const format = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   if (eve) {
     const home = eve.home === w.playerClub;
     const opponent = w.clubs.find((c) => c.id === (home ? eve.away : eve.home));

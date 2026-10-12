@@ -2203,10 +2203,7 @@
     align-self: flex-start;
   }
 }
-/* Phones: compact cash and tight gaps leave the club name room for up to two lines. */
-.cashCompact {
-  display: none;
-}
+/* Phones: tight gaps leave the club name room for up to two lines beside the cash. */
 @media (max-width: 760px) {
   .hud {
     gap: 6px;
@@ -2230,12 +2227,6 @@
   .hudCash i {
     width: 20px;
     height: 20px;
-  }
-  .hudCash .cashFull {
-    display: none;
-  }
-  .hudCash .cashCompact {
-    display: block;
   }
 }
 
