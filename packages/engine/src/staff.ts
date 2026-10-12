@@ -14,7 +14,8 @@ import { footballIndex } from '../../catalogs/src/index';
 import { addEvent, clubOf, ownStarters, personName, quote } from './world';
 import { clamp, integer, random, ratio } from './primitives';
 import { debit } from './operations';
-import { contractSeason, managerRenewal, renewManager } from './ops-staff';
+import { appointDelegatedManager, contractSeason, managerRenewal, renewManager } from './ops-staff';
+import { delegatedManagerPick, MANAGER_RULE_INFO, managerRuleOf } from './managerMarket';
 import { CASH_WARNING_ROUNDS } from './settlement';
 import { pushInbox } from './inbox';
 import { moneyLabel, operatingCosts } from './finance';
@@ -459,7 +460,7 @@ function volunteer(w: World, role: StaffRole): Staff {
   };
 }
 /** Cash left after `spend` still covers the cash-warning runway with `wage` added to the costs. */
-function affordable(w: World, spend: bigint, wage: bigint) {
+export function affordable(w: World, spend: bigint, wage: bigint) {
   const perRound = (BigInt(operatingCosts(w).annual) + wage) / 46n;
   return BigInt(w.cash) - spend >= perRound * BigInt(CASH_WARNING_ROUNDS);
 }
@@ -655,11 +656,15 @@ function developStaff(w: World) {
 export function renewalDay(year: number) {
   return seasonDayOf(year, 4, 1);
 }
+/** A free agent the rule picks must be this much better by OVR to replace an expiring manager. */
+export const MANAGER_RENEWAL_MARGIN = 3;
 /**
- * 1 April for a manager whose contract ends at the close: no contract renews itself (→STAFF-14),
- * so with the manager post delegated the staff renew him for two seasons (the firefighter one)
- * when the club can afford it and report it; otherwise the owner hears that he leaves unless
- * renewed. Coaching staff (absent in older saves) play no part.
+ * 1 April for a manager whose contract ends at the close: no contract renews itself (→STAFF-14).
+ * With the manager post delegated (→STAFF-18) the staff let him go when the owner's rule finds an
+ * affordable free agent 3+ OVR better, who replaces him at the close; otherwise they renew him for
+ * two seasons (the firefighter one) when the club can afford it. Either way they report it; else
+ * the owner hears that he leaves unless renewed. Coaching staff (absent in older saves) play no
+ * part.
  */
 function managerRenewalReminder(w: World) {
   const m = w.manager,
@@ -669,6 +674,17 @@ function managerRenewalReminder(w: World) {
     delegated = !!w.delegation?.manager,
     term = Math.min(DELEGATED_TERM, terms.limit) as ContractTerm,
     kept = managerRenewal(w, term)!;
+  const rival = delegated ? delegatedManagerPick(w, m.style) : undefined;
+  if (rival && rival.ability >= m.ability + MANAGER_RENEWAL_MARGIN) {
+    pushInbox(w, {
+      kind: 'staff-report',
+      title: `${school}${m.name} 감독과 재계약하지 않아요`,
+      detail: `스태프가 ${MANAGER_RULE_INFO[managerRuleOf(w)].label} 기준으로 OVR ${rival.ability}의 ${STYLE_INFO[rival.style].label} ${rival.name} 감독(지금 OVR ${m.ability})을 찾았어요 · 시즌이 끝나면 떠나고 스태프가 그때 형편에 맞는 감독을 선임해요`,
+      attention: false,
+      ref: m.id,
+    });
+    return;
+  }
   if (delegated && affordable(w, BigInt(kept.fee), BigInt(kept.wage) - BigInt(m.wage))) {
     renewManager(w, term, true);
     pushInbox(w, {
@@ -689,12 +705,14 @@ function managerRenewalReminder(w: World) {
   });
 }
 /**
- * Daily: on 1 April an expiring manager's renewal comes up; delegated staff fill an empty
- * department at once; otherwise the renewal season is announced on 1 April when contracts end at
- * the close.
+ * Daily: on 1 April an expiring manager's renewal comes up; with the manager post delegated the
+ * staff replace an interim as soon as the club can afford a free agent (→STAFF-18); delegated
+ * staff fill an empty department at once; otherwise the renewal season is announced on 1 April
+ * when contracts end at the close.
  */
 export function dailyStaff(w: World) {
   if (currentDay(w) === renewalDay(w.year)) managerRenewalReminder(w);
+  if (w.manager.interim && w.delegation?.manager) appointDelegatedManager(w);
   if (!w.staff) return;
   if (w.delegation?.staff) {
     for (const role of STAFF_ROLES)

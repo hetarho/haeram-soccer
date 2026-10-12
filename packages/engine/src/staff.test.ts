@@ -1,11 +1,23 @@
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import { footballIndex } from '../../catalogs/src/index';
-import type { ContractTerm, Player, StaffRole, StaffTrait, World } from '../../contracts/src/types';
+import type {
+  ContractTerm,
+  ManagerRule,
+  ManagerStyle,
+  Player,
+  StaffRole,
+  StaffTrait,
+  World,
+} from '../../contracts/src/types';
 import {
   activePlayers,
   activeTrainingFocus,
   advanceRound,
+  aimedSynergy,
+  delegatedManagerPick,
+  managerCandidates,
+  policyOf,
   autoTrainingAdvice,
   autoTrainingFocus,
   basicStaff,
@@ -766,5 +778,173 @@ describe('contract terms (STAFF-11, STAFF-14)', () => {
     expect(offer.wage).toBe(indexed((offer.ability - 30) * 1.5));
     // Before commercialisation football follows prices, so early wages are unchanged.
     expect(staffQuote(world(), 100)).toBe(quote('ENG', 1950, 100));
+  });
+});
+
+describe('delegated manager appointment (STAFF-18)', () => {
+  /** Four free agents of known schools and levels, with the manager post delegated. */
+  function seeded(seed: string, rule?: ManagerRule) {
+    const w = world(seed);
+    w.delegation = { ...w.delegation, manager: true };
+    if (rule) operate(w, { type: 'manager-rule', rule });
+    const market = structuredClone(marketOf(w));
+    const levels: [ManagerStyle, number][] = [
+      ['developer', 70],
+      ['positional', 80],
+      ['motivator', 60],
+      ['gegenpress', 75],
+    ];
+    market.free = market.free.slice(0, 4).map((m, i) => ({
+      ...m,
+      style: levels[i][0],
+      ability: levels[i][1],
+      potential: levels[i][1],
+      born: w.year - 50,
+      wage: staffQuote(w, 120 + levels[i][1]),
+    }));
+    w.managerMarket = market;
+    const by = (style: ManagerStyle) => market.free.find((m) => m.style === style)!;
+    return { w, by };
+  }
+  /** Makes the proud manager resign over one more strong demand (→STAFF-5). */
+  function resignOverDemand(w: World) {
+    w.manager = { ...w.manager, pride: 90, trust: 20, conflicts: 2 };
+    operate(w, { type: 'tactics', tactic: 'counter', tone: 'demand' });
+  }
+
+  it('picks by the rule among the free agents the club can afford, never poaching', () => {
+    const school = seeded('rule-school');
+    expect(delegatedManagerPick(school.w, 'developer')!.id).toBe(school.by('developer').id);
+    // Without a free agent of the departing school, or without a school, the best overall.
+    expect(delegatedManagerPick(school.w, 'counter')!.id).toBe(school.by('positional').id);
+    expect(delegatedManagerPick(school.w)!.id).toBe(school.by('positional').id);
+    // Other clubs' managers stay the owner's call, even when every free agent is worse.
+    const poach = managerCandidates(school.w).find((c) => c.source === 'club')!;
+    school.w.managerMarket!.free = school.w.managerMarket!.free.map((m) => ({
+      ...m,
+      ability: poach.ability - 10,
+    }));
+    expect(delegatedManagerPick(school.w)!.source).toBe('free');
+
+    const best = seeded('rule-best', 'best');
+    expect(best.w.managerRule).toBe('best');
+    expect(delegatedManagerPick(best.w, 'developer')!.id).toBe(best.by('positional').id);
+
+    // A strategy of squad investment 4 and good morale aims at 원 팀, which needs a motivator.
+    const strategy = seeded('rule-strategy', 'strategy');
+    strategy.w.policy = { ...policyOf(strategy.w), support: 4 };
+    strategy.w.morale = 70;
+    expect(aimedSynergy(strategy.w)).toMatchObject({ id: 'one-team', schools: ['motivator'] });
+    expect(delegatedManagerPick(strategy.w, 'developer')!.id).toBe(strategy.by('motivator').id);
+    // With no motivator on the market the staff fall back to the best overall.
+    strategy.w.managerMarket!.free = strategy.w.managerMarket!.free.filter(
+      (m) => m.style !== 'motivator',
+    );
+    expect(delegatedManagerPick(strategy.w)!.id).toBe(strategy.by('positional').id);
+
+    // The default is stored as no rule at all.
+    operate(best.w, { type: 'manager-rule', rule: 'school' });
+    expect(best.w.managerRule).toBeUndefined();
+    expect(() => operate(best.w, { type: 'manager-rule', rule: 'random' as ManagerRule })).toThrow(
+      '감독 선임 기준',
+    );
+  });
+
+  it('skips a best he cannot afford: cash after the fee must cover 13 rounds with his wage', () => {
+    const { w, by } = seeded('rule-afford', 'best');
+    const best = by('positional');
+    // Thirteen rounds of today's costs with the best man's wage in place of the manager's.
+    const runway = (wage: string) =>
+      ((BigInt(operatingCosts(w).annual) + BigInt(wage) - BigInt(w.manager.wage)) / 46n) * 13n;
+    const fee = BigInt(managerCandidates(w).find((c) => c.id === best.id)!.fee);
+    w.cash = (fee + runway(best.wage)).toString();
+    expect(delegatedManagerPick(w)!.id).toBe(best.id);
+    // A unit short, the staff take the next best, who asks less.
+    w.cash = (fee + runway(best.wage) - 1n).toString();
+    expect(delegatedManagerPick(w)!.id).toBe(by('gegenpress').id);
+    w.cash = '0';
+    expect(delegatedManagerPick(w)).toBeUndefined();
+  });
+
+  it('appoints a successor at once for two seasons when a manager resigns', () => {
+    const { w, by } = seeded('delegated-resign');
+    w.manager = { ...w.manager, style: 'developer' };
+    const developer = by('developer'),
+      fee = managerCandidates(w).find((c) => c.id === developer.id)!.fee;
+    const cash = BigInt(w.cash);
+    resignOverDemand(w);
+    expect(w.critical).toBeUndefined();
+    expect(w.manager).toMatchObject({
+      id: developer.id,
+      interim: false,
+      since: w.year,
+      until: w.year + 2,
+    });
+    expect(w.manager.term).toBeUndefined();
+    expect(w.tactic).toBe(w.manager.philosophy);
+    expect(BigInt(w.cash)).toBe(cash - BigInt(fee));
+    expect(w.events.at(-1)).toMatchObject({ kind: 'manager-hire', amount: fee });
+    expect(w.events.at(-1)!.detail).toContain('스태프 위임 선임');
+    expect(w.inbox!.at(-1)).toMatchObject({
+      kind: 'staff-report',
+      attention: false,
+      title: `육성형 ${developer.name} 감독 선임`,
+    });
+    expect(w.inbox!.at(-1)!.detail).toContain('같은 학파 우선 기준');
+    expect(managerCandidates(w).some((c) => c.id === developer.id)).toBe(false);
+    validateWorld(w);
+    // Without delegation the departure stops the clock for the owner.
+    const owner = seeded('owner-resign').w;
+    owner.delegation = { ...owner.delegation, manager: false };
+    resignOverDemand(owner);
+    expect(owner.manager.interim).toBe(true);
+    expect(owner.critical).toBe(MANAGER_GONE);
+  });
+
+  it('fills retirement and unrenewed vacancies at the close, a firefighter for one season', () => {
+    const retiring = seeded('delegated-retire').w;
+    retiring.manager = { ...retiring.manager, born: retiring.year - 69 };
+    retiring.year++;
+    yearlyStaff(retiring);
+    expect(retiring.manager.interim).toBe(false);
+    expect(retiring.critical).toBeUndefined();
+    expect(retiring.events.some((e) => e.detail.includes('은퇴'))).toBe(true);
+
+    const { w, by } = seeded('delegated-expiry', 'best');
+    const firefighter = by('positional');
+    w.managerMarket!.free = w.managerMarket!.free.map((m) =>
+      m.id === firefighter.id ? { ...m, style: 'firefighter' as const } : m,
+    );
+    w.manager.until = w.year + 1;
+    w.year++;
+    yearlyStaff(w);
+    expect(w.critical).toBeUndefined();
+    expect(w.manager).toMatchObject({ id: firefighter.id, until: w.year + 1 });
+  });
+
+  it('keeps the interim without stopping when nobody is affordable, then appoints daily', () => {
+    const { w, by } = seeded('delegated-broke', 'best');
+    const best = by('positional');
+    w.cash = '0';
+    resignOverDemand(w);
+    expect(w.manager.interim).toBe(true);
+    expect(w.critical).toBeUndefined();
+    const report = w.inbox!.at(-1)!;
+    expect(report).toMatchObject({ kind: 'staff-report', attention: true, ref: w.manager.id });
+    expect(report.title).toContain('임시 감독 체제');
+    dailyStaff(w);
+    expect(w.manager.interim).toBe(true);
+    // Once the club can afford him the staff appoint the best and the report is settled.
+    w.cash = '999999999';
+    dailyStaff(w);
+    expect(w.manager.id).toBe(best.id);
+    expect(w.inbox!.find((item) => item.id === report.id)!.read).toBe(true);
+    // Without delegation an interim the owner kept stays.
+    const kept = seeded('kept-interim').w;
+    kept.delegation = { ...kept.delegation, manager: false };
+    resignOverDemand(kept);
+    delete kept.critical;
+    dailyStaff(kept);
+    expect(kept.manager.interim).toBe(true);
   });
 });

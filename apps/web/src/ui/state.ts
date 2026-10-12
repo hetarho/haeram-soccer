@@ -141,19 +141,20 @@ export type RecordTab = (typeof RECORD_TABS)[number][0];
 /** The staff page's tabs, in tab-bar order. */
 export const STAFF_TABS = [
   ['manager', '감독'],
-  ['candidates', '감독 후보'],
   ['coaches', '코치진'],
   ['delegation', '위임'],
 ] as const;
 export type StaffTab = (typeof STAFF_TABS)[number][0];
+/** A staff tab, or `candidates`: 감독 with the manager market open (→WEB-40). */
+export type StaffRequest = StaffTab | 'candidates';
 /**
- * A staff tab asked for from elsewhere, such as the manager-departure alert opening the
- * candidates. The staff page takes it once, even while it is showing; otherwise it opens on the
- * tab in its address or on 감독.
+ * A staff view asked for from elsewhere, such as the manager-departure alert opening the market.
+ * The staff page takes it once, even while it is showing; otherwise it opens on the tab in its
+ * address or on 감독.
  */
 export const useStaffView = create<{
-  request?: StaffTab;
-  open: (tab: StaffTab) => void;
+  request?: StaffRequest;
+  open: (tab: StaffRequest) => void;
   take: () => void;
 }>((set) => ({
   open: (tab) => set({ request: tab }),

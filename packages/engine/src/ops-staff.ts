@@ -1,8 +1,17 @@
-import type { Command, ContractTerm, Manager, Tactic, World } from '../../contracts/src/types';
+import type {
+  Command,
+  ContractTerm,
+  Manager,
+  ManagerRule,
+  ManagerStyle,
+  Tactic,
+  World,
+} from '../../contracts/src/types';
 import { addEvent, clubOf, makeManager, quote, tacticLabel, TACTICS } from './world';
 import { clamp, random, ratio } from './primitives';
 import {
   checkTerm,
+  DELEGATED_TERM,
   hireStaff,
   MANAGER_TRAIT_INFO,
   releaseCost,
@@ -14,11 +23,20 @@ import {
 } from './staff';
 import { coachSeason, MANAGER_CAREER } from './coaching';
 import { currentDay } from './calendar';
-import { readRelated } from './inbox';
+import { pushInbox, readRelated } from './inbox';
 import { FIREFIGHTER_ARRIVAL_MORALE, managerStyleEffects, managerTerm, STYLE_INFO } from './styles';
-import { managerCandidates, takeManager } from './managerMarket';
+import {
+  delegatedManagerPick,
+  MANAGER_RULE_INFO,
+  MANAGER_RULES,
+  managerCandidates,
+  managerRuleOf,
+  takeManager,
+  type ManagerCandidate,
+} from './managerMarket';
 import { MORALE_START } from './morale';
 import { debit } from './operations';
+import { moneyLabel } from './finance';
 
 /** Managers and their tactical requests, coaches, coaching investment and delegation. */
 export type StaffCommand = Extract<
@@ -101,8 +119,80 @@ export function renewManager(w: World, term?: ContractTerm, delegated = false) {
   );
   return terms;
 }
+/**
+ * Puts a market candidate in charge for `term` seasons at the wage he asked, fixed for the term:
+ * he leaves the market, the manager he replaces joins it (→STAFF-17) and his philosophy becomes
+ * the tactic. `chosen` is the term the owner picked, kept with the contract.
+ */
+function installManager(
+  w: World,
+  candidate: ManagerCandidate,
+  term: ContractTerm,
+  chosen?: ContractTerm,
+) {
+  const {
+    fee: _fee,
+    source: _source,
+    club: _club,
+    compensation: _compensation,
+    ...manager
+  } = candidate;
+  void _fee;
+  void _source;
+  void _club;
+  void _compensation;
+  readRelated(w, w.manager.id);
+  takeManager(w, candidate, w.manager);
+  w.manager = withTerm(
+    { ...manager, trust: 65, conflicts: 0, since: w.year, until: w.year + term },
+    chosen,
+  );
+  w.tactic = manager.philosophy;
+  delete w.requested;
+  delete w.critical;
+  // A firefighter's arrival lifts the dressing room at once.
+  if (manager.style === 'firefighter')
+    w.morale = Math.round(clamp((w.morale ?? MORALE_START) + FIREFIGHTER_ARRIVAL_MORALE));
+  return manager;
+}
+/** " · 유망주 중용" for a manager with a selection trait. */
+const traitNote = (m: Pick<Manager, 'trait'>) =>
+  m.trait ? ` · ${MANAGER_TRAIT_INFO[m.trait].label}` : '';
+/**
+ * With the manager post delegated the staff fill it (→STAFF-18): the free agent the owner's rule
+ * picks among those the club can afford, for two seasons (the firefighter one, never past his 70th
+ * year), reported in the inbox. Nobody affordable leaves the post as it is.
+ */
+export function appointDelegatedManager(w: World, departing?: ManagerStyle) {
+  const pick = delegatedManagerPick(w, departing);
+  if (!pick) return undefined;
+  const term = Math.min(DELEGATED_TERM, managerTermLimit(pick, w.year)) as ContractTerm;
+  debit(w, pick.fee, true);
+  const manager = installManager(w, pick, term),
+    school = STYLE_INFO[manager.style].label,
+    ends = contractSeason(w.year + term);
+  addEvent(
+    w,
+    'manager-hire',
+    `${manager.name} 감독 선임`,
+    `${school} · ${tacticLabel[manager.philosophy]}${traitNote(manager)} · 계약 ${ends} 시즌 끝까지 · 스태프 위임 선임`,
+    pick.fee,
+  );
+  pushInbox(w, {
+    kind: 'staff-report',
+    title: `${school} ${manager.name} 감독 선임`,
+    detail: `스태프가 ${MANAGER_RULE_INFO[managerRuleOf(w)].label} 기준으로 자유계약 감독 중에서 ${term}시즌 계약했어요 · OVR ${manager.ability} · 연봉 ${moneyLabel(w, manager.wage)} · 계약금 ${moneyLabel(w, pick.fee)} · ${ends} 시즌 끝까지`,
+    attention: false,
+  });
+  return manager;
+}
 /** The blocking alert a departure raises; the app offers hiring or carrying on with the interim. */
 export const MANAGER_GONE = '감독이 떠났습니다. 새 감독을 선임하세요.';
+/**
+ * The manager leaves and a basic interim steps in (→STAFF-7). With the post delegated the staff
+ * appoint a successor at once and the clock runs on; when nobody is affordable the interim stays,
+ * the owner is told and the staff keep looking. Otherwise the departure stops the clock.
+ */
 function resign(w: World, reason: string) {
   const old = w.manager;
   // His renewal reminder is moot once he has gone.
@@ -128,7 +218,19 @@ function resign(w: World, reason: string) {
   interim.wage = staffQuote(w, 40);
   interim.interim = true;
   w.manager = interim;
-  w.critical = MANAGER_GONE;
+  if (!w.delegation?.manager) {
+    w.critical = MANAGER_GONE;
+    return;
+  }
+  if (appointDelegatedManager(w, old.style)) return;
+  pushInbox(w, {
+    kind: 'staff-report',
+    title: `${old.name} 감독이 떠나 임시 감독 체제예요`,
+    detail:
+      '자금 여력에 맞는 자유계약 감독이 없어 임시 감독이 팀을 맡아요. 스태프가 매일 다시 찾고, 감독 교체에서 직접 선임할 수도 있어요.',
+    attention: true,
+    ref: interim.id,
+  });
 }
 
 const requestTones = { respect: 12, evidence: 16, support: 8, demand: -25 } as const;
@@ -236,11 +338,17 @@ export function yearlyStaff(w: World) {
   delete w.manager.pending;
   delete w.requested;
 }
+/** The rule delegated staff appoint a manager by (→STAFF-18); the default 같은 학파 우선 is not stored. */
+function setManagerRule(w: World, rule: ManagerRule) {
+  if (!MANAGER_RULES.includes(rule)) throw new Error('감독 선임 기준을 확인하세요.');
+  if (rule === 'school') delete w.managerRule;
+  else w.managerRule = rule;
+}
 export function staffCommand(w: World, cmd: StaffCommand) {
   switch (cmd.type) {
     case 'manager-rule':
-      // Refused, never ignored, until its rule lands.
-      throw new Error(`${cmd.type} 명령은 아직 지원하지 않습니다.`);
+      setManagerRule(w, cmd.rule);
+      break;
     case 'hire-staff':
       hireStaff(w, cmd.role, cmd.candidate, cmd.term);
       break;
@@ -340,35 +448,13 @@ export function staffCommand(w: World, cmd: StaffCommand) {
         `${w.manager.name} 감독 교체`,
         `${w.manager.since}–${w.year} · 구단의 선택`,
       );
-      const {
-        fee: _fee,
-        source: _source,
-        club: from,
-        compensation: _compensation,
-        ...manager
-      } = candidate;
-      void _fee;
-      void _source;
-      void _compensation;
-      readRelated(w, w.manager.id);
-      takeManager(w, candidate, w.manager);
-      // His wage is the one he asked, fixed for the term.
-      w.manager = withTerm(
-        { ...manager, trust: 65, conflicts: 0, since: w.year, until: w.year + term },
-        cmd.term,
-      );
-      w.tactic = manager.philosophy;
-      delete w.requested;
-      delete w.critical;
-      // A firefighter's arrival lifts the dressing room at once.
-      if (manager.style === 'firefighter')
-        w.morale = Math.round(clamp((w.morale ?? MORALE_START) + FIREFIGHTER_ARRIVAL_MORALE));
-      const club = from ? w.clubs.find((c) => c.id === from)?.name : undefined;
+      const manager = installManager(w, candidate, term, cmd.term);
+      const club = candidate.club ? w.clubs.find((c) => c.id === candidate.club)?.name : undefined;
       addEvent(
         w,
         'manager-hire',
         `${manager.name} 감독 선임`,
-        `${club ? `${club}에서 영입 · ` : ''}${STYLE_INFO[manager.style].label} · ${tacticLabel[manager.philosophy]}${manager.trait ? ` · ${MANAGER_TRAIT_INFO[manager.trait].label}` : ''} · 계약 ${contractSeason(w.year + term)} 시즌 끝까지`,
+        `${club ? `${club}에서 영입 · ` : ''}${STYLE_INFO[manager.style].label} · ${tacticLabel[manager.philosophy]}${traitNote(manager)} · 계약 ${contractSeason(w.year + term)} 시즌 끝까지`,
         fee.toString(),
       );
       break;

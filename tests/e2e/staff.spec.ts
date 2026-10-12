@@ -1,12 +1,13 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
 import { stopOnlyFor } from './events';
 import { horizontalOverflow } from './layout';
+import { chooseOption } from './select';
 
-/** This seed's first season offers a firefighter among the four candidates. */
-async function found(page: Page) {
+/** The default seed's first season offers a firefighter among the four candidates. */
+async function found(page: Page, seed = 'short-contract') {
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill('short-contract');
+  await page.getByLabel('세계 생성 시드').fill(seed);
   await page.getByRole('button', { name: '넉넉한 출발' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
@@ -23,14 +24,22 @@ async function closeOutcome(page: Page, text: string) {
   await expect(outcome).toHaveCount(0);
 }
 
-/** Hires the free-agent firefighter from the candidates tab, checking what the dialog promises. */
-async function hireFirefighter(page: Page) {
-  await tab(page, '감독 후보').click();
-  const free = page
+/** The free agents' list inside the manager market. */
+const freeAgents = (market: Locator) =>
+  market
     .locator('section')
-    .filter({ has: page.getByRole('heading', { name: '자유계약 감독', exact: true }) });
-  await expect(page.getByRole('heading', { name: '다른 구단 감독 · 보상금 필요' })).toBeVisible();
-  const card = free.getByRole('article').filter({ hasText: '소방수' });
+    .filter({ has: market.page().getByRole('heading', { name: '자유계약 감독', exact: true }) });
+
+/**
+ * Hires the free-agent firefighter from the market the manager's 교체 opens, checking what the
+ * dialog promises.
+ */
+async function hireFirefighter(page: Page) {
+  await tab(page, '감독').click();
+  await page.getByRole('button', { name: '교체', exact: true }).click();
+  const market = page.getByRole('dialog', { name: '감독 교체' });
+  await expect(market.getByRole('heading', { name: '다른 구단 감독 · 보상금 필요' })).toBeVisible();
+  const card = freeAgents(market).getByRole('article').filter({ hasText: '소방수' });
   await expect(card).toContainText('계약 이번 시즌(1950/51) 끝까지');
   await expect(card).toContainText('선발 성향');
   await expect(card).not.toContainText('야망');
@@ -42,10 +51,16 @@ async function hireFirefighter(page: Page) {
     '계약 이번 시즌(1950/51) 끝까지 · 남기려면 4월에 1시즌씩 재계약해요',
   );
   await dialog.getByRole('button', { name: '선임 확정', exact: true }).click();
+  // Hiring closes the confirmation and the market, as a coach's hire closes his list.
   await expect(dialog).toHaveCount(0);
-  // The man just hired leaves the market (→STAFF-17).
-  await expect(page.getByRole('article').filter({ hasText: name })).toHaveCount(0);
+  await expect(market).toHaveCount(0);
   await closeOutcome(page, '새 감독을 선임했어요');
+  // The man just hired leaves the market (→STAFF-17).
+  await page.getByRole('button', { name: '교체', exact: true }).click();
+  await expect(freeAgents(market).getByRole('article').first()).toBeVisible();
+  await expect(market.getByRole('article').filter({ hasText: name })).toHaveCount(0);
+  await market.getByRole('button', { name: '창 닫기' }).click();
+  await expect(market).toHaveCount(0);
 }
 
 test.describe('the staff page at 360x740', () => {
@@ -58,7 +73,8 @@ test.describe('the staff page at 360x740', () => {
       .getByRole('button', { name: '스태프', exact: true })
       .click();
     const tabs = page.getByRole('tablist', { name: '스태프 보기' }).getByRole('tab');
-    await expect(tabs).toHaveText(['감독', '감독 후보', '코치진', '위임']);
+    // The market sits behind the manager's 교체, not in a tab of its own (→WEB-40).
+    await expect(tabs).toHaveText(['감독', '코치진', '위임']);
     await expect(tab(page, '감독')).toHaveAttribute('aria-selected', 'true');
     await expect(page).toHaveURL(/\/manager$/);
     for (const box of await tabs.evaluateAll((all) =>
@@ -72,9 +88,9 @@ test.describe('the staff page at 360x740', () => {
     // Arrow keys move along the tab bar like the operations tabs.
     await tab(page, '감독').focus();
     await page.keyboard.press('ArrowRight');
-    await expect(tab(page, '감독 후보')).toBeFocused();
-    await expect(tab(page, '감독 후보')).toHaveAttribute('aria-selected', 'true');
-    await expect(page).toHaveURL(/\/manager\?view=candidates$/);
+    await expect(tab(page, '코치진')).toBeFocused();
+    await expect(tab(page, '코치진')).toHaveAttribute('aria-selected', 'true');
+    await expect(page).toHaveURL(/\/manager\?view=coaches$/);
     expect(await horizontalOverflow(page)).toBe(0);
 
     await hireFirefighter(page);
@@ -98,12 +114,27 @@ test.describe('the staff page at 360x740', () => {
     await page.reload();
     await expect(tab(page, '코치진')).toHaveAttribute('aria-selected', 'true');
     await tab(page, '위임').click();
-    await expect(page.getByRole('region', { name: '스태프 위임' })).toBeVisible();
+    const delegation = page.getByRole('region', { name: '스태프 위임' });
+    await expect(delegation).toBeVisible();
+    // The manager post can be delegated, by one of three rules, 같은 학파 우선 by default.
+    await expect(delegation.getByRole('checkbox', { name: /^감독 선임/ })).not.toBeChecked();
+    const rules = delegation.getByRole('radiogroup', { name: '감독 선임 기준' }).getByRole('radio');
+    await expect(rules).toHaveText([/^같은 학파 우선/, /^능력 최고/, /^운영 전략 우선/]);
+    await expect(rules.first()).toHaveAttribute('aria-checked', 'true');
+    await expect(page.getByTestId('manager-rule-outlook')).toContainText('지금 감독 자리가 비면');
+    expect(await horizontalOverflow(page)).toBe(0);
+
+    // An old address of the candidates tab opens 감독 with the market open.
+    await page.goto('/manager?view=candidates');
+    await expect(tab(page, '감독')).toHaveAttribute('aria-selected', 'true');
+    const market = page.getByRole('dialog', { name: '감독 교체' });
+    await expect(freeAgents(market).getByRole('article').first()).toBeVisible();
+    await expect(page).toHaveURL(/\/manager$/);
     expect(await horizontalOverflow(page)).toBe(0);
   });
 });
 
-test('an unrenewed firefighter leaves at the close and the alert opens the candidates', async ({
+test('an unrenewed firefighter leaves at the close and the alert opens the market', async ({
   page,
 }) => {
   // Plays a whole season; slow CI browsers need longer.
@@ -124,13 +155,49 @@ test('an unrenewed firefighter leaves at the close and the alert opens the candi
   await expect(alert).toContainText('임시 감독이 팀을 맡고 있어요');
   await alert.getByRole('button', { name: '감독 선임하러 가기', exact: true }).click();
   await expect(page.getByRole('heading', { name: '스태프', level: 2 })).toBeVisible();
-  await expect(tab(page, '감독 후보')).toHaveAttribute('aria-selected', 'true');
-  await expect(page).toHaveURL(/\/manager\?view=candidates$/);
-  // The market keeps at least four free agents (→STAFF-17).
-  const free = page
-    .locator('section')
-    .filter({ has: page.getByRole('heading', { name: '자유계약 감독', exact: true }) });
-  expect(await free.getByRole('article').count()).toBeGreaterThanOrEqual(4);
+  await expect(tab(page, '감독')).toHaveAttribute('aria-selected', 'true');
+  await expect(page).toHaveURL(/\/manager$/);
+  // The interim's market is open; it keeps at least four free agents (→STAFF-17).
+  const market = page.getByRole('dialog', { name: '감독 선임' });
+  await expect(market).toContainText('(임시 감독)');
+  await expect(freeAgents(market).getByRole('article').first()).toBeVisible();
+  expect(await freeAgents(market).getByRole('article').count()).toBeGreaterThanOrEqual(4);
+});
+
+test('with the manager post delegated a resignation is filled at once and the clock runs on', async ({
+  page,
+}) => {
+  // Only the match eve may stop the clock, so nothing else explains a stop.
+  await stopOnlyFor(page, ['match']);
+  // This seed's founding manager is proud enough to resign over two strong demands (→STAFF-5).
+  await found(page, 'proud-0');
+  const date = page.getByTestId('game-date');
+  await expect(date).toHaveText('1950년 8월 1일');
+  await page.getByRole('button', { name: '스태프', exact: true }).click();
+  await tab(page, '위임').click();
+  const post = page
+    .getByRole('region', { name: '스태프 위임' })
+    .getByRole('checkbox', { name: /^감독 선임/ });
+  await post.check();
+  await expect(post).toBeChecked();
+  await closeOutcome(page, '스태프 위임을 바꿨어요');
+  await tab(page, '감독').click();
+  const founding = page.getByRole('heading', { name: 'William Hawkins', exact: true });
+  await expect(founding).toBeVisible();
+  for (const tactic of ['counter', 'press']) {
+    await chooseOption(page.getByRole('combobox', { name: '요청 전술', exact: true }), tactic);
+    await chooseOption(page.getByRole('combobox', { name: '요청 말투', exact: true }), 'demand');
+    await page.getByRole('button', { name: '감독에게 제안하기', exact: true }).click();
+    await closeOutcome(page, '감독에게 전술을 요청했어요');
+  }
+  await expect(page.locator('blockquote')).toContainText('감독의 사직서');
+  // The staff appointed a free agent at once: no departure alert, no interim in charge.
+  await expect(founding).toHaveCount(0);
+  await expect(page.getByText('FIRST TEAM MANAGER', { exact: true })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: '감독이 떠났어요' })).toHaveCount(0);
+  await page.getByTestId('mini-clock').getByRole('button', { name: '자동 진행 시작' }).click();
+  await expect(date).not.toHaveText('1950년 8월 1일');
+  await expect(page.getByRole('status').filter({ hasText: '감독이 떠났어요' })).toHaveCount(0);
 });
 
 test('the 1 April card renews the firefighter in one tap', async ({ page }) => {

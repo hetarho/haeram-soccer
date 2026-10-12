@@ -56,7 +56,6 @@ describe('club decisions', () => {
     );
     expect(() => operate(w, { type: 'contract-decline', player })).toThrow('아직');
     expect(() => operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 })).toThrow('아직');
-    expect(() => operate(w, { type: 'manager-rule', rule: 'best' })).toThrow('아직');
     expect(w).toEqual(before);
   });
   it('pays conditional support before switching tactic', () => {

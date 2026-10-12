@@ -1,9 +1,17 @@
-import type { Club, Manager, ManagerMarket, ManagerStyle, World } from '../../contracts/src/types';
+import type {
+  Club,
+  Manager,
+  ManagerMarket,
+  ManagerRule,
+  ManagerStyle,
+  World,
+} from '../../contracts/src/types';
 import { clamp, integer, random } from './primitives';
 import { candidateStyles, MANAGER_STYLES, STYLE_INFO } from './styles';
-import { footballScaled, managerTrait, staffQuote } from './staff';
+import { affordable, footballScaled, managerTrait, staffQuote } from './staff';
 import { addEvent, clubOf, FOUNDING_YEAR, makeManager } from './world';
 import { ownLeagueClubs } from './season';
+import { aimedSynergy } from './synergy';
 
 /** The market moves every four league rounds and at the season close (→STAFF-17). */
 export const MARKET_REFRESH_ROUNDS = 4;
@@ -138,18 +146,22 @@ function poachable(w: World) {
   return [...league, ...above];
 }
 
+/** The free agents we may sign now; nobody signs past his 70th year (→STAFF-14). */
+function freeCandidates(w: World): ManagerCandidate[] {
+  return marketOf(w)
+    .free.filter(
+      (m): m is MarketManager => !!m.style && m.id !== w.manager.id && age(w, m) < RETIREMENT_AGE,
+    )
+    .map((m) => ({ ...m, source: 'free' as const, fee: signingFee(w, m) }));
+}
+
 /**
  * Who the owner may hire now (→STAFF-17): free agents first, then the best managers of our league
  * and the division above, who cost compensation on top of the signing fee.
  */
 export function managerCandidates(w: World): ManagerCandidate[] {
   const current = w.manager.id;
-  // Nobody signs past his 70th year (→STAFF-14), so a free agent who reached it is not offered.
-  const free = marketOf(w)
-    .free.filter(
-      (m): m is MarketManager => !!m.style && m.id !== current && age(w, m) < RETIREMENT_AGE,
-    )
-    .map((m) => ({ ...m, source: 'free' as const, fee: signingFee(w, m) }));
+  const free = freeCandidates(w);
   const clubs = poachable(w)
     .map((club) => ({ club, manager: clubManager(w, club) }))
     .filter(({ manager }) => manager.id !== current && age(w, manager) < RETIREMENT_AGE)
@@ -163,6 +175,43 @@ export function managerCandidates(w: World): ManagerCandidate[] {
       compensation: ((BigInt(manager.wage) * COMPENSATION[0]) / COMPENSATION[1]).toString(),
     }));
   return [...free, ...clubs];
+}
+
+/** How delegated staff appoint a manager (→STAFF-18), in the order the 위임 tab shows them. */
+export const MANAGER_RULES: readonly ManagerRule[] = ['school', 'best', 'strategy'];
+export const MANAGER_RULE_INFO: Record<ManagerRule, { label: string; summary: string }> = {
+  school: {
+    label: '같은 학파 우선',
+    summary: '떠나는 감독과 같은 학파에서 가장 나은 감독, 없으면 능력 최고',
+  },
+  best: { label: '능력 최고', summary: '학파와 상관없이 OVR이 가장 높은 감독' },
+  strategy: {
+    label: '운영 전략 우선',
+    summary: '운영 전략이 노리는 시너지에 맞는 학파의 최고 감독, 없으면 능력 최고',
+  },
+};
+export function managerRuleOf(w: Pick<World, 'managerRule'>): ManagerRule {
+  return w.managerRule ?? 'school';
+}
+/** The schools the rule looks to first; none means the best overall. */
+export function ruleSchools(w: World, departing?: ManagerStyle): readonly ManagerStyle[] {
+  const rule = managerRuleOf(w);
+  if (rule === 'school') return departing ? [departing] : [];
+  return rule === 'strategy' ? (aimedSynergy(w)?.schools ?? []) : [];
+}
+/**
+ * The free agent delegated staff appoint (→STAFF-18): of those the club can afford in place of the
+ * manager in charge (cash after the fee still covers 13 rounds of costs with his wage), the best by
+ * OVR of the schools the rule looks to, else the best overall. Poaching another club's manager
+ * stays the owner's decision.
+ */
+export function delegatedManagerPick(w: World, departing?: ManagerStyle) {
+  const freed = BigInt(w.manager.wage);
+  const pool = freeCandidates(w)
+    .filter((m) => affordable(w, BigInt(m.fee), BigInt(m.wage) - freed))
+    .sort((a, b) => b.ability - a.ability);
+  const schools = ruleSchools(w, departing);
+  return pool.find((m) => schools.includes(m.style)) ?? pool[0];
 }
 
 /** The candidate leaves the market for our club; the manager he replaces becomes a free agent. */

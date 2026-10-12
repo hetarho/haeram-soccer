@@ -4,6 +4,7 @@ import type {
   ContractTerm,
   DelegationKey,
   Manager,
+  ManagerRule,
   Staff,
   StaffRole,
   World,
@@ -25,7 +26,14 @@ import {
   staffImpact,
 } from '../../../../packages/engine/src/staff';
 import { managerRenewal, managerTermLimit } from '../../../../packages/engine/src/ops-staff';
-import { managerTerm } from '../../../../packages/engine/src/styles';
+import {
+  delegatedManagerPick,
+  MANAGER_RULE_INFO,
+  MANAGER_RULES,
+  managerRuleOf,
+} from '../../../../packages/engine/src/managerMarket';
+import { aimedSynergy } from '../../../../packages/engine/src/synergy';
+import { managerTerm, STYLE_INFO } from '../../../../packages/engine/src/styles';
 import { academySummary } from '../../../../packages/engine/src/academy';
 import { currentDay, seasonDayLabel, seasonDayOf } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/world';
@@ -50,6 +58,11 @@ const DELEGATION: [DelegationKey, string, string][] = [
     'staff',
     '코치 고용·재계약',
     '부서마다 정한 투자 수준으로 공석을 바로 채우고, 계약이 끝나는 코치를 2시즌 재계약하거나 새 코치를 2시즌 계약으로 뽑아요',
+  ],
+  [
+    'manager',
+    '감독 선임',
+    '감독이 떠나면 아래 기준으로 형편에 맞는 자유계약 감독을 2시즌 계약으로 바로 뽑아 시계가 멈추지 않아요. 계약이 끝나는 감독은 OVR 3 이상 나은 감독이 없으면 2시즌 재계약해요. 다른 구단 감독 영입은 직접 해요',
   ],
 ];
 
@@ -91,7 +104,58 @@ export function Delegation({ w, client }: { w: World; client: GameClient }) {
           </span>
         </label>
       ))}
+      <ManagerRuleDial w={w} client={client} />
     </section>
+  );
+}
+
+/**
+ * The rule the staff appoint a manager by (→STAFF-18) as a three-step dial, with the man it would
+ * bring if the post fell vacant today.
+ */
+function ManagerRuleDial({ w, client }: { w: World; client: GameClient }) {
+  const acting = useActing();
+  const [draft, setDraft] = useState<ManagerRule>();
+  const rule = draft ?? managerRuleOf(w);
+  const shown = { ...w, managerRule: rule };
+  const pick = delegatedManagerPick(shown, w.manager.style),
+    aimed = rule === 'strategy' ? aimedSynergy(w) : undefined;
+  return (
+    <div className={s.ruleBlock}>
+      <b>감독 선임 기준</b>
+      <div className={s.ruleDial} role="radiogroup" aria-label="감독 선임 기준">
+        {MANAGER_RULES.map((step) => (
+          <button
+            key={step}
+            type="button"
+            role="radio"
+            aria-checked={rule === step}
+            className={rule === step ? s.planOn : undefined}
+            disabled={acting}
+            onClick={() => {
+              if (step === rule) return;
+              setDraft(step);
+              void client
+                .command({ type: 'manager-rule', rule: step })
+                .finally(() => setDraft(undefined));
+            }}
+          >
+            <b>{MANAGER_RULE_INFO[step].label}</b>
+            <small>{MANAGER_RULE_INFO[step].summary}</small>
+          </button>
+        ))}
+      </div>
+      <p data-testid="manager-rule-outlook">
+        {rule === 'strategy' &&
+          (aimed
+            ? `노리는 시너지 ${aimed.label} · ${aimed.schools.map((school) => STYLE_INFO[school].label).join('·')} 감독을 찾아요 · `
+            : '노리는 시너지가 없어 능력 최고로 골라요 · ')}
+        {pick
+          ? `지금 감독 자리가 비면 ${STYLE_INFO[pick.style].label} ${pick.name}(OVR ${pick.ability})을 뽑아요`
+          : '지금은 형편에 맞는 자유계약 감독이 없어 임시 감독 체제가 돼요'}
+        {!w.delegation?.manager && ' · 감독 선임을 맡기면 이 기준으로 골라요'}
+      </p>
+    </div>
   );
 }
 

@@ -255,8 +255,10 @@ describe('the firefighter contract', () => {
   });
 
   it('lets delegated staff renew him on 1 April when the club can afford it', () => {
-    const w = withFirefighter('firefighter-delegated'),
-      { id, ability } = w.manager;
+    const w = withFirefighter('firefighter-delegated');
+    // No free agent is 3 better, so the staff keep him (→STAFF-18).
+    w.manager.ability = 90;
+    const { id, ability } = w.manager;
     w.delegation = { ...w.delegation, manager: true };
     const cash = BigInt(w.cash),
       wage = quote('ENG', w.year, 120 + ability);

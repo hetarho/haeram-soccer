@@ -42,6 +42,7 @@ import {
   useStaffView,
   type Page,
   type SquadTab,
+  type StaffRequest,
   type StaffTab,
 } from './state';
 import {
@@ -176,22 +177,28 @@ function TraitNote({ trait }: { trait?: ManagerTrait }) {
     </>
   );
 }
-/** The staff tab in the page's address, so a reload keeps it. */
-function savedStaffTab() {
-  const saved = new URLSearchParams(location.search).get('view');
-  return STAFF_TABS.find(([id]) => id === saved)?.[0];
-}
 /**
- * The staff page as one tab bar instead of a long scroll: the manager first, then the
- * candidates to replace him, the coaching staff and what the staff decide for the owner.
+ * The staff view in the page's address, so a reload keeps the tab; an old ?view=candidates opens
+ * 감독 with the manager market (→WEB-40).
+ */
+function savedStaffView(): StaffRequest | undefined {
+  const saved = new URLSearchParams(location.search).get('view');
+  return saved === 'candidates' ? saved : STAFF_TABS.find(([id]) => id === saved)?.[0];
+}
+const tabOf = (view: StaffRequest): StaffTab => (view === 'candidates' ? 'manager' : view);
+/**
+ * The staff page as one tab bar instead of a long scroll: the manager first, whose 교체 opens the
+ * market to replace him, then the coaching staff and what the staff decide for the owner.
  */
 function ManagerView({ state, client }: Props) {
   const w = state.view!.world;
   const request = useStaffView((view) => view.request);
-  const [tab, setTab] = useState<StaffTab>(() => request ?? savedStaffTab() ?? 'manager');
+  const [tab, setTab] = useState<StaffTab>(() => tabOf(request ?? savedStaffView() ?? 'manager'));
+  const [market, setMarket] = useState(() => (request ?? savedStaffView()) === 'candidates');
   useEffect(() => {
     if (!request) return;
-    setTab(request);
+    setTab(tabOf(request));
+    if (request === 'candidates') setMarket(true);
     useStaffView.getState().take();
   }, [request]);
   useEffect(() => {
@@ -241,9 +248,7 @@ function ManagerView({ state, client }: Props) {
       </div>
       <div id="staff-panel" role="tabpanel" aria-labelledby={`staff-tab-${tab}`}>
         {tab === 'manager' ? (
-          <ManagerOffice state={state} client={client} />
-        ) : tab === 'candidates' ? (
-          <ManagerCandidates state={state} client={client} />
+          <ManagerOffice state={state} client={client} onReplace={() => setMarket(true)} />
         ) : tab === 'coaches' ? (
           <>
             <CoachingPlan w={w} />
@@ -253,11 +258,12 @@ function ManagerView({ state, client }: Props) {
           <Delegation w={w} client={client} />
         )}
       </div>
+      {market && <ManagerMarket state={state} client={client} onClose={() => setMarket(false)} />}
     </>
   );
 }
 /** The manager's office: who he is and what he signed, and the owner's requests to him. */
-function ManagerOffice({ state, client }: Props) {
+function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => void }) {
   const w = state.view!.world,
     m = w.manager,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
@@ -296,6 +302,8 @@ function ManagerOffice({ state, client }: Props) {
               <TraitNote trait={m.trait} />
             </p>
             <div className={s.actions}>
+              {/* Like a coach's 교체, the market opens as a list over the office (→WEB-40). */}
+              <button onClick={onReplace}>{m.interim ? '감독 선임' : '교체'}</button>
               <button onClick={() => setRequests('manager')}>감독에게 힘 실어주기</button>
               <button onClick={() => setRequests('morale')}>선수단 분위기 요청</button>
             </div>
@@ -401,10 +409,11 @@ function ManagerOffice({ state, client }: Props) {
   );
 }
 /**
- * The manager market (→STAFF-17): free agents first, then the best managers of our league and the
- * division above, who cost compensation to their clubs. The list moves every four rounds.
+ * The manager market behind 교체 (→STAFF-17, →WEB-40): free agents first, then the best managers
+ * of our league and the division above, who cost compensation to their clubs. The list moves every
+ * four rounds; hiring confirms on top of it and closes both.
  */
-function ManagerCandidates({ state, client }: Props) {
+function ManagerMarket({ state, client, onClose }: Props & { onClose: () => void }) {
   const v = state.view!,
     w = v.world,
     m = w.manager,
@@ -475,29 +484,36 @@ function ManagerCandidates({ state, client }: Props) {
   );
   return (
     <>
-      <Panel title="자유계약 감독" note="FREE AGENTS">
-        <div className={s.panelBody}>
-          <p className={s.muted}>
-            감독 시장은 {roundsUntilRefresh(w)}라운드 뒤에 다시 움직여요. 다른 구단에서 경질된
-            감독이 들어오고, 자리를 찾은 감독은 빠져요. 즉시 지출에는 지금 감독 보상(남은 시즌마다
-            연봉의 25%)이 포함돼요.
-          </p>
-          {free.length ? (
-            <div className={s.cards}>{free.map(card)}</div>
-          ) : (
-            <p className={s.muted}>지금은 자유계약 감독이 없어요.</p>
-          )}
-        </div>
-      </Panel>
-      <Panel title="다른 구단 감독 · 보상금 필요" note="POACH">
-        <div className={s.panelBody}>
-          <p className={s.muted}>
-            우리 리그와 바로 위 디비전 감독 중 지도력 상위 {others.length}명이에요. 데려오려면
-            계약금에 더해 그 구단에 연봉의 1.5배를 보상금으로 내요.
-          </p>
-          <div className={s.cards}>{others.map(card)}</div>
-        </div>
-      </Panel>
+      <Dialog label={m.interim ? '감독 선임' : '감독 교체'} wide onClose={onClose}>
+        <p className={s.muted}>
+          지금 {m.name}
+          {m.interim ? ' (임시 감독)' : ''} · OVR {m.ability}
+        </p>
+        <Panel title="자유계약 감독" note="FREE AGENTS">
+          <div className={s.panelBody}>
+            <p className={s.muted}>
+              감독 시장은 {roundsUntilRefresh(w)}라운드 뒤에 다시 움직여요. 다른 구단에서 경질된
+              감독이 들어오고, 자리를 찾은 감독은 빠져요. 즉시 지출에는 지금 감독 보상(남은 시즌마다
+              연봉의 25%)이 포함돼요.
+            </p>
+            {free.length ? (
+              <div className={s.cards}>{free.map(card)}</div>
+            ) : (
+              <p className={s.muted}>지금은 자유계약 감독이 없어요.</p>
+            )}
+          </div>
+        </Panel>
+        <Panel title="다른 구단 감독 · 보상금 필요" note="POACH">
+          <div className={s.panelBody}>
+            <p className={s.muted}>
+              우리 리그와 바로 위 디비전 감독 중 지도력 상위 {others.length}명이에요. 데려오려면
+              계약금에 더해 그 구단에 연봉의 1.5배를 보상금으로 내요. 스태프는 다른 구단 감독을
+              데려오지 않아요.
+            </p>
+            <div className={s.cards}>{others.map(card)}</div>
+          </div>
+        </Panel>
+      </Dialog>
       {chosen && (
         <Dialog label="감독 선임 확인" onClose={() => setHiring(undefined)}>
           <h2>{chosen.name} 감독을 선임할까요?</h2>
@@ -552,6 +568,7 @@ function ManagerCandidates({ state, client }: Props) {
               onClick={() => {
                 void client.command({ type: 'hire', id: chosen.id, term });
                 setHiring(undefined);
+                onClose();
               }}
             >
               선임 확정

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
+import type { ManagerRule, ManagerStyle } from '../../contracts/src/types';
 import {
   advanceRound,
   clubManager,
@@ -7,16 +8,22 @@ import {
   COMPENSATION,
   contractSeason,
   createWorld,
+  dailyStaff,
   FREE_AGENTS,
+  MANAGER_RENEWAL_MARGIN,
   managerCandidates,
   managerOffers,
   managerPayoff,
+  marketOf,
   MARKET_REFRESH_ROUNDS,
   operate,
   ownLeagueClubs,
   refreshManagerMarket,
+  renewalDay,
   simulateSeason,
+  staffQuote,
   STYLE_INFO,
+  yearlyStaff,
 } from './index';
 import { ratio } from './primitives';
 
@@ -128,6 +135,83 @@ describe('manager market (STAFF-17)', () => {
     refreshManagerMarket(w);
     expect(canonical({ ...w, managerMarket: undefined })).toBe(before);
     expect(clubOf(w).id).toBe(w.playerClub);
+  });
+});
+
+describe('delegated manager renewal (STAFF-18)', () => {
+  /**
+   * 1 April for an OVR-70 organizer whose contract ends at the close, with the manager post
+   * delegated and a market of the given free agents (school, OVR).
+   */
+  function april(seed: string, free: [ManagerStyle, number][], rule?: ManagerRule) {
+    const w = world(seed);
+    w.cash = '999999999';
+    w.delegation = { ...w.delegation, manager: true };
+    if (rule) operate(w, { type: 'manager-rule', rule });
+    w.manager = { ...w.manager, style: 'organizer', ability: 70, potential: 70, until: w.year + 1 };
+    const market = structuredClone(marketOf(w));
+    market.free = free.map(([style, ability], i) => ({
+      ...market.free[i],
+      style,
+      ability,
+      potential: ability,
+      born: w.year - 50,
+      wage: staffQuote(w, 120 + ability),
+    }));
+    w.managerMarket = market;
+    w.calendar = { day: renewalDay(w.year) };
+    dailyStaff(w);
+    return w;
+  }
+
+  it('takes the renewal against a free agent less than 3 better under the rule', () => {
+    const { manager, year } = april('renew-kept', [
+      ['organizer', 70 + MANAGER_RENEWAL_MARGIN - 1],
+      ['counter', 60],
+    ]);
+    expect(manager).toMatchObject({ interim: false, until: year + 3 });
+    expect(manager.term).toBeUndefined();
+    // Under 같은 학파 우선 his school's best counts, not a stronger man of another school.
+    const w = april('renew-school', [
+      ['organizer', 71],
+      ['positional', 85],
+    ]);
+    expect(w.manager.until).toBe(w.year + 3);
+    expect(w.inbox!.at(-1)).toMatchObject({ kind: 'staff-report', attention: false });
+    expect(w.inbox!.at(-1)!.title).toContain('감독 재계약');
+  });
+
+  it('lets him go for a free agent 3+ better and appoints at the close without stopping', () => {
+    const w = april('renew-replaced', [
+      ['organizer', 70 + MANAGER_RENEWAL_MARGIN],
+      ['counter', 60],
+    ]);
+    const { id, name } = w.manager,
+      rival = w.managerMarket!.free[0];
+    expect(w.manager.until).toBe(w.year + 1);
+    expect(w.events.some((event) => event.kind === 'manager-renew')).toBe(false);
+    const report = w.inbox!.at(-1)!;
+    expect(report).toMatchObject({ kind: 'staff-report', attention: false, ref: id });
+    expect(report.title).toBe(`수비 조직가 ${name} 감독과 재계약하지 않아요`);
+    expect(report.detail).toContain(`OVR ${rival.ability}`);
+    // No reminder stops the clock: the staff decided.
+    expect(w.inbox!.some((item) => item.kind === 'staff-renewal')).toBe(false);
+    w.year++;
+    yearlyStaff(w);
+    expect(w.critical).toBeUndefined();
+    expect(w.manager).toMatchObject({ id: rival.id, until: w.year + 2 });
+    expect(w.inbox!.find((item) => item.id === report.id)!.read).toBe(true);
+    // Under 능력 최고 a stronger man of another school counts.
+    const best = april(
+      'renew-best',
+      [
+        ['organizer', 71],
+        ['positional', 85],
+      ],
+      'best',
+    );
+    expect(best.manager.until).toBe(best.year + 1);
+    expect(best.inbox!.at(-1)!.detail).toContain('능력 최고 기준으로 OVR 85');
   });
 });
 
