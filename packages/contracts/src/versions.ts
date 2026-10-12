@@ -48,6 +48,16 @@ export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.14.0',
   CURRENT_ENGINE_VERSION,
 ];
+/** A world pins its catalog ID and the fingerprint recorded with it (→ARCH-10). */
+export type CatalogPin = Pick<World, 'catalog' | 'catalogHash'>;
+/**
+ * Catalogs an older checkpoint may be pinned to, each by the hash recorded then. 2026-demo-2 added
+ * the football index and the sponsor-slot eras and left prices as they were, so a 2026-demo-1 save
+ * changes no recorded fact and moves its pin on writer activation (→SAVE-10).
+ */
+export const PRIOR_CATALOG_HASHES: Readonly<Record<string, string>> = {
+  '2026-demo-1': '94375c9a798cba789f2d6b319171bf7b45d52090ab0b83ca56b14626d196f679',
+};
 export const SAVE_COMPATIBILITY_CODE = 'save-compatibility' as const;
 
 export class SaveCompatibilityError extends Error {
@@ -70,10 +80,19 @@ export function isSaveCompatibilityError(error: unknown): error is SaveCompatibi
   );
 }
 
-/** Only rule metadata and revision change; absent optional fields and all prior facts survive. */
-export function upgradeWorldRules(w: World): World {
-  if (w.engine === CURRENT_ENGINE_VERSION) return w;
+/**
+ * Only rule metadata, the catalog pin and the revision change; absent optional fields and all prior
+ * facts survive.
+ */
+export function upgradeWorldRules(w: World, pin: CatalogPin): World {
+  if (w.engine === CURRENT_ENGINE_VERSION && w.catalog === pin.catalog) return w;
   if (!SUPPORTED_ENGINE_VERSIONS.includes(w.engine)) throw new SaveCompatibilityError();
   if (!Number.isSafeInteger(w.revision + 1)) throw new Error('저장 revision 범위를 초과했습니다.');
-  return { ...w, engine: CURRENT_ENGINE_VERSION, revision: w.revision + 1 };
+  return {
+    ...w,
+    engine: CURRENT_ENGINE_VERSION,
+    catalog: pin.catalog,
+    catalogHash: pin.catalogHash,
+    revision: w.revision + 1,
+  };
 }

@@ -6,9 +6,15 @@ import { base64, pack, unpack } from './packing';
 import { denseBytes } from './dense';
 import {
   CURRENT_ENGINE_VERSION,
+  PRIOR_CATALOG_HASHES,
   SaveCompatibilityError,
   upgradeWorldRules,
 } from '../../../../packages/contracts/src/versions';
+import {
+  CATALOG_HASH,
+  CATALOG_VERSION,
+  CURRENT_CATALOG,
+} from '../../../../packages/catalogs/src/index';
 class Memory implements StoragePort {
   data = new Map<string, string>();
   fail = '';
@@ -337,21 +343,22 @@ describe('compatible rule upgrades', () => {
     expect(legacy.players.some((player) => (player.developed || 0) > 0)).toBe(true);
     const decoded = (await decode(await encode(legacy))).world;
     expect(canonical(decoded)).toBe(before);
-    const upgraded = upgradeWorldRules(decoded);
+    const upgraded = upgradeWorldRules(decoded, CURRENT_CATALOG);
     expect(canonical(upgraded)).toBe(
       canonical({ ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 24 }),
     );
     expect(canonical(legacy)).toBe(before);
     expect(upgraded.training).toBeUndefined();
     expect(Object.hasOwn(upgraded.players[0], 'developed')).toBe(false);
-    expect(upgradeWorldRules(upgraded)).toBe(upgraded);
+    expect(upgradeWorldRules(upgraded, CURRENT_CATALOG)).toBe(upgraded);
     expect(canonical((await decode(await encode(upgraded))).world)).toBe(canonical(upgraded));
     const old = world();
     old.engine = '1.0.0';
     delete old.calendar;
     delete old.rankHistory;
     delete old.scorerSeason;
-    const migratedOld = upgradeWorldRules((await decode(await encode(old))).world);
+    const loaded = (await decode(await encode(old))).world;
+    const migratedOld = upgradeWorldRules(loaded, CURRENT_CATALOG);
     for (const field of [
       'calendar',
       'rankHistory',
@@ -363,13 +370,41 @@ describe('compatible rule upgrades', () => {
       expect(Object.hasOwn(migratedOld, field)).toBe(false);
   });
 
+  it('loads a 2026-demo-1 save, moves its catalog pin on activation and round-trips', async () => {
+    const legacy = world();
+    legacy.engine = '1.14.0';
+    legacy.revision = 9;
+    legacy.catalog = '2026-demo-1';
+    legacy.catalogHash = PRIOR_CATALOG_HASHES['2026-demo-1'];
+    const before = canonical(legacy);
+    const decoded = (await decode(await encode(legacy))).world;
+    expect(canonical(decoded)).toBe(before);
+    expect(decoded.catalog).toBe('2026-demo-1');
+    expect(CATALOG_VERSION).toBe('2026-demo-2');
+    const upgraded = upgradeWorldRules(decoded, CURRENT_CATALOG);
+    expect(canonical(upgraded)).toBe(
+      canonical({
+        ...legacy,
+        engine: CURRENT_ENGINE_VERSION,
+        catalog: CATALOG_VERSION,
+        catalogHash: CATALOG_HASH,
+        revision: 10,
+      }),
+    );
+    expect(canonical(legacy)).toBe(before);
+    expect(canonical((await decode(await encode(upgraded))).world)).toBe(canonical(upgraded));
+    expect(upgradeWorldRules(upgraded, CURRENT_CATALOG)).toBe(upgraded);
+    const wrong = { ...legacy, catalogHash: 'a'.repeat(64) };
+    await expect(decode(await encode(wrong))).rejects.toThrow(SaveCompatibilityError);
+  });
+
   it('does not reinterpret future worlds or overflow a revision during a pure upgrade', () => {
     const future = { ...world(), engine: '2.0.0' };
     const before = canonical(future);
-    expect(() => upgradeWorldRules(future)).toThrow(SaveCompatibilityError);
+    expect(() => upgradeWorldRules(future, CURRENT_CATALOG)).toThrow(SaveCompatibilityError);
     expect(canonical(future)).toBe(before);
     const legacy = { ...world(), engine: '1.0.0', revision: Number.MAX_SAFE_INTEGER };
-    expect(() => upgradeWorldRules(legacy)).toThrow('revision');
+    expect(() => upgradeWorldRules(legacy, CURRENT_CATALOG)).toThrow('revision');
     expect(legacy.revision).toBe(Number.MAX_SAFE_INTEGER);
     expect(legacy.engine).toBe('1.0.0');
   });

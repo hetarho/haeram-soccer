@@ -1,6 +1,6 @@
 # Data sources and demo rules
 
-The catalog ID is `2026-demo-1`. Its SHA-256 fingerprint covers canonical country profiles and price observations; new worlds and envelopes pin it. `pnpm run validate:catalogs` checks that fingerprint and eight-country/year coverage. Football rules and currency algorithms also belong to engine version `1.0.0`; changing semantics requires a reviewed version/migration decision.
+The catalog ID is `2026-demo-2`. Its SHA-256 fingerprint covers canonical country profiles, price observations and the football index with its sponsor-slot eras; new worlds and envelopes pin it. A checkpoint pinned to `2026-demo-1` is still accepted by the fingerprint recorded with it, and its pin moves to `2026-demo-2` when a writer activates the save; prices did not change between the two, so no recorded fact changes. `pnpm run validate:catalogs` checks that fingerprint, eight-country/year coverage and the ordering and provenance of both football tables. Football rules and currency algorithms also belong to engine version `1.0.0`; changing semantics requires a reviewed version/migration decision.
 
 ## Domestic structures
 
@@ -17,6 +17,16 @@ Club names are generated from city/industry word banks, players from name banks,
 Before national coverage the index links UK historical prices to each national series; the non-UK estimate is explicitly labelled. After the last observation, prices project 2% annually and display that assumption. Currency-specific early wage/price scales are fictional calibration, not observed football salaries. Purchasing-power charts use these catalog indices and declared conversions.
 
 The game labels historical UK linked data as observed, non-UK proxies as estimated and later years as projected. Existing fixed wages/sponsorship payments and cash do not automatically inflate. Indexed sponsorship behaves separately.
+
+## Football index and sponsor eras
+
+`packages/catalogs/data/football-index.json` holds a football index per country and year from 1901: the country's price index multiplied by a real multiple normalized to 1950 = 1. The multiple is flat until 1979, so the index tracks prices before commercialisation, and then grows geometrically between the era anchors 1992, 2005, 2020 and 2025. England reaches about 2, 6, 10 and 11; Spain, Germany and Italy reach 70% of England's real growth, France 50%, the Netherlands 35%, Portugal 30% and Belgium 25%.
+
+Every index figure is this project's own estimate derived from published aggregates — [Deloitte Annual Review of Football Finance](https://www.deloitte.com), [UEFA club finance reports](https://www.uefa.com) and the national league archives named in the catalog — and never a reproduced national revenue series, so every era is labelled estimated and years after the 2025 coverage are labelled projected and follow projected prices.
+
+The same file records the year each sponsor slot first existed in a country: local partners from 1901, then the kit supplier, the shirt front, stadium naming and the sleeve. England's years are 1970, 1979, 1997 and 2017. England's shirt-front, stadium-naming and sleeve years and the Bundesliga's 1973 shirt front are documented firsts and labelled observed; every other year rests on an era rather than a documented first and is labelled estimated.
+
+`footballIndex(code, year)` and `sponsorSlotOpens(code, slot)` expose both tables with their status and sources. They are the scale the later economy work reads for league distributions, sponsor values, ticket presets and market wages; facility building and upkeep follow prices only. No game rule consumes the index yet.
 
 ## Currencies
 

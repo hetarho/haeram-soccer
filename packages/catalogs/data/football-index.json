@@ -1,0 +1,324 @@
+{
+  "from": 1901,
+  "base": 1950,
+  "coverage": 2025,
+  "notes": [
+    "A football index per country and year (→ECON-26): what football itself pays and charges, beyond consumer prices. Every figure here is our own estimate derived from published aggregates, never a reproduced national revenue series, so each era is labelled estimated (→ECON-3); years after the coverage year are projected like prices (→ECON-2).",
+    "The index is the country's price index multiplied by a real multiple normalised to the base year (1950 = 1). England's multiple is about 1 until 1979, 2 by 1992, 6 by 2005, 10 by 2020 and 11 by 2025; every other country reaches the share of England's real growth recorded as its share, so real = 1 + share × (England's real − 1). Within an era the multiple grows geometrically from the previous anchor; the first era is flat, so the index tracks prices until commercialisation.",
+    "Sponsor-slot opening years (→ECON-8) record the year a slot first existed in a country's football: local partners in every era, then the kit supplier, the shirt front, stadium naming and the sleeve. England's years are 1970, 1979, 1997 and 2017. A year that rests on an era rather than on a documented first is labelled estimated."
+  ],
+  "sources": {
+    "ons": "ONS long-run price series (https://www.ons.gov.uk/economy/inflationandpriceindices)",
+    "deloitte": "Deloitte Annual Review of Football Finance (https://www.deloitte.com)",
+    "uefa": "UEFA club licensing and European club finance reports (https://www.uefa.com)",
+    "kits": "Historical Football Kits shirt-sponsor chronology (https://www.historicalkits.co.uk)",
+    "ENG": "Premier League and EFL archives (https://www.premierleague.com)",
+    "ESP": "LaLiga institutional information (https://www.laliga.com)",
+    "GER": "Bundesliga and DFL reports (https://www.bundesliga.com)",
+    "ITA": "Lega Serie A archives (https://www.legaseriea.it)",
+    "FRA": "Ligue 1 and LFP archives (https://www.ligue1.com)",
+    "POR": "Liga Portugal archives (https://www.ligaportugal.pt)",
+    "NED": "KNVB and Eredivisie archives (https://www.knvb.nl)",
+    "BEL": "Pro League archives (https://www.proleague.be)"
+  },
+  "eras": [
+    {
+      "to": 1979,
+      "status": "estimated",
+      "note": "Before commercialisation no national football revenue series exists, so the index tracks the price index",
+      "sources": ["ons", "deloitte"]
+    },
+    {
+      "to": 1992,
+      "status": "estimated",
+      "note": "Shirt sponsorship and the first television contracts lift football above consumer prices",
+      "sources": ["deloitte"]
+    },
+    {
+      "to": 2005,
+      "status": "estimated",
+      "note": "Pay-television contracts multiply league income in real terms",
+      "sources": ["deloitte"]
+    },
+    {
+      "to": 2020,
+      "status": "estimated",
+      "note": "Global broadcasting and commercial income keep growing, led by England",
+      "sources": ["deloitte", "uefa"]
+    },
+    {
+      "to": 2025,
+      "status": "estimated",
+      "note": "Real growth slows as consumer prices rise faster",
+      "sources": ["uefa", "deloitte"]
+    }
+  ],
+  "index": {
+    "ENG": { "share": 1, "real": [1, 2, 6, 10, 11] },
+    "ESP": { "share": 0.7, "real": [1, 1.7, 4.5, 7.3, 8] },
+    "GER": { "share": 0.7, "real": [1, 1.7, 4.5, 7.3, 8] },
+    "ITA": { "share": 0.7, "real": [1, 1.7, 4.5, 7.3, 8] },
+    "FRA": { "share": 0.5, "real": [1, 1.5, 3.5, 5.5, 6] },
+    "POR": { "share": 0.3, "real": [1, 1.3, 2.5, 3.7, 4] },
+    "NED": { "share": 0.35, "real": [1, 1.35, 2.75, 4.15, 4.5] },
+    "BEL": { "share": 0.25, "real": [1, 1.25, 2.25, 3.25, 3.5] }
+  },
+  "slots": {
+    "ENG": {
+      "local": {
+        "year": 1901,
+        "status": "estimated",
+        "note": "Local and regional sponsorship exists in every era, so the slot opens from the catalog's first year",
+        "sources": ["deloitte", "ENG"]
+      },
+      "kit": {
+        "year": 1970,
+        "status": "estimated",
+        "note": "Named kit suppliers and replica kits spread through English football around 1970, before Admiral's 1973 Leeds United deal",
+        "sources": ["kits", "ENG"]
+      },
+      "shirt": {
+        "year": 1979,
+        "status": "observed",
+        "note": "Liverpool and Hitachi, the first shirt sponsorship worn in the English top flight",
+        "sources": ["kits", "ENG"]
+      },
+      "stadium": {
+        "year": 1997,
+        "status": "observed",
+        "note": "The Reebok Stadium in Bolton, the first English ground opened under naming rights",
+        "sources": ["deloitte", "ENG"]
+      },
+      "sleeve": {
+        "year": 2017,
+        "status": "observed",
+        "note": "The Premier League allowed a sleeve sponsor from the 2017/18 season",
+        "sources": ["ENG", "deloitte"]
+      }
+    },
+    "ESP": {
+      "local": {
+        "year": 1901,
+        "status": "estimated",
+        "note": "Local and regional sponsorship exists in every era, so the slot opens from the catalog's first year",
+        "sources": ["deloitte", "ESP"]
+      },
+      "kit": {
+        "year": 1972,
+        "status": "estimated",
+        "note": "Named kit suppliers followed the English pattern of the early 1970s",
+        "sources": ["kits", "ESP"]
+      },
+      "shirt": {
+        "year": 1982,
+        "status": "estimated",
+        "note": "Shirt advertising was permitted in the early 1980s, around Real Madrid's first shirt sponsor",
+        "sources": ["kits", "ESP"]
+      },
+      "stadium": {
+        "year": 2007,
+        "status": "estimated",
+        "note": "Naming rights stayed rare in Spain; estimated from the late 2000s",
+        "sources": ["deloitte", "ESP"]
+      },
+      "sleeve": {
+        "year": 2019,
+        "status": "estimated",
+        "note": "Sleeve sponsorship followed the English rule change by about two seasons",
+        "sources": ["ESP", "deloitte"]
+      }
+    },
+    "GER": {
+      "local": {
+        "year": 1901,
+        "status": "estimated",
+        "note": "Local and regional sponsorship exists in every era, so the slot opens from the catalog's first year",
+        "sources": ["deloitte", "GER"]
+      },
+      "kit": {
+        "year": 1971,
+        "status": "estimated",
+        "note": "Named kit suppliers spread through the Bundesliga in the early 1970s",
+        "sources": ["kits", "GER"]
+      },
+      "shirt": {
+        "year": 1973,
+        "status": "observed",
+        "note": "Eintracht Braunschweig and Jägermeister, the first shirt sponsorship in the Bundesliga",
+        "sources": ["kits", "GER"]
+      },
+      "stadium": {
+        "year": 2001,
+        "status": "estimated",
+        "note": "Hamburg's Volksparkstadion was renamed under naming rights in 2001; estimated as the German opening",
+        "sources": ["deloitte", "GER"]
+      },
+      "sleeve": {
+        "year": 2017,
+        "status": "estimated",
+        "note": "Sleeve sponsorship arrived with the same late-2010s rule changes",
+        "sources": ["GER", "deloitte"]
+      }
+    },
+    "ITA": {
+      "local": {
+        "year": 1901,
+        "status": "estimated",
+        "note": "Local and regional sponsorship exists in every era, so the slot opens from the catalog's first year",
+        "sources": ["deloitte", "ITA"]
+      },
+      "kit": {
+        "year": 1978,
+        "status": "estimated",
+        "note": "Named kit suppliers spread through Serie A in the late 1970s",
+        "sources": ["kits", "ITA"]
+      },
+      "shirt": {
+        "year": 1981,
+        "status": "estimated",
+        "note": "Shirt advertising was permitted in Serie A in the early 1980s",
+        "sources": ["kits", "ITA"]
+      },
+      "stadium": {
+        "year": 2010,
+        "status": "estimated",
+        "note": "Naming rights appeared with the privately owned grounds of the 2010s",
+        "sources": ["deloitte", "ITA"]
+      },
+      "sleeve": {
+        "year": 2019,
+        "status": "estimated",
+        "note": "Sleeve sponsorship followed the English rule change by about two seasons",
+        "sources": ["ITA", "deloitte"]
+      }
+    },
+    "FRA": {
+      "local": {
+        "year": 1901,
+        "status": "estimated",
+        "note": "Local and regional sponsorship exists in every era, so the slot opens from the catalog's first year",
+        "sources": ["deloitte", "FRA"]
+      },
+      "kit": {
+        "year": 1974,
+        "status": "estimated",
+        "note": "Named kit suppliers spread through French football in the mid 1970s",
+        "sources": ["kits", "FRA"]
+      },
+      "shirt": {
+        "year": 1980,
+        "status": "estimated",
+        "note": "Shirt advertising spread through the first division around 1980",
+        "sources": ["kits", "FRA"]
+      },
+      "stadium": {
+        "year": 2011,
+        "status": "estimated",
+        "note": "Naming rights arrived with the new grounds of the 2010s, such as Le Mans' MMArena",
+        "sources": ["deloitte", "FRA"]
+      },
+      "sleeve": {
+        "year": 2019,
+        "status": "estimated",
+        "note": "Sleeve sponsorship followed the English rule change by about two seasons",
+        "sources": ["FRA", "deloitte"]
+      }
+    },
+    "POR": {
+      "local": {
+        "year": 1901,
+        "status": "estimated",
+        "note": "Local and regional sponsorship exists in every era, so the slot opens from the catalog's first year",
+        "sources": ["deloitte", "POR"]
+      },
+      "kit": {
+        "year": 1977,
+        "status": "estimated",
+        "note": "Named kit suppliers spread through Portuguese football in the late 1970s",
+        "sources": ["kits", "POR"]
+      },
+      "shirt": {
+        "year": 1983,
+        "status": "estimated",
+        "note": "Shirt advertising spread through the first division in the early 1980s",
+        "sources": ["kits", "POR"]
+      },
+      "stadium": {
+        "year": 2010,
+        "status": "estimated",
+        "note": "Naming rights stayed rare; estimated from the 2010s",
+        "sources": ["deloitte", "POR"]
+      },
+      "sleeve": {
+        "year": 2020,
+        "status": "estimated",
+        "note": "Sleeve sponsorship arrived after the larger leagues",
+        "sources": ["POR", "deloitte"]
+      }
+    },
+    "NED": {
+      "local": {
+        "year": 1901,
+        "status": "estimated",
+        "note": "Local and regional sponsorship exists in every era, so the slot opens from the catalog's first year",
+        "sources": ["deloitte", "NED"]
+      },
+      "kit": {
+        "year": 1974,
+        "status": "estimated",
+        "note": "Named kit suppliers spread through Dutch football in the mid 1970s",
+        "sources": ["kits", "NED"]
+      },
+      "shirt": {
+        "year": 1978,
+        "status": "estimated",
+        "note": "Shirt advertising was permitted in Dutch football in the late 1970s",
+        "sources": ["kits", "NED"]
+      },
+      "stadium": {
+        "year": 1998,
+        "status": "estimated",
+        "note": "The Gelredome in Arnhem opened under naming rights in 1998; estimated as the Dutch opening",
+        "sources": ["deloitte", "NED"]
+      },
+      "sleeve": {
+        "year": 2019,
+        "status": "estimated",
+        "note": "Sleeve sponsorship followed the English rule change by about two seasons",
+        "sources": ["NED", "deloitte"]
+      }
+    },
+    "BEL": {
+      "local": {
+        "year": 1901,
+        "status": "estimated",
+        "note": "Local and regional sponsorship exists in every era, so the slot opens from the catalog's first year",
+        "sources": ["deloitte", "BEL"]
+      },
+      "kit": {
+        "year": 1975,
+        "status": "estimated",
+        "note": "Named kit suppliers spread through Belgian football in the mid 1970s",
+        "sources": ["kits", "BEL"]
+      },
+      "shirt": {
+        "year": 1979,
+        "status": "estimated",
+        "note": "Shirt advertising spread through the first division in the late 1970s",
+        "sources": ["kits", "BEL"]
+      },
+      "stadium": {
+        "year": 2009,
+        "status": "estimated",
+        "note": "Naming rights stayed rare; estimated from the late 2000s",
+        "sources": ["deloitte", "BEL"]
+      },
+      "sleeve": {
+        "year": 2019,
+        "status": "estimated",
+        "note": "Sleeve sponsorship followed the English rule change by about two seasons",
+        "sources": ["BEL", "deloitte"]
+      }
+    }
+  }
+}
