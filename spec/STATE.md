@@ -31,26 +31,26 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T042 | Draws named by what they settle | ARCH CLUB | - | todo |
 | T043 | One day order for every progression mode | LEAGUE WEB ARCH | - | todo |
 | T044 | Amateur exchange by the amateur table | LEAGUE | T043 | todo |
 | T045 | Market candidate identity and bids that keep their offer | CLUB ECON SAVE | T042 | todo |
-| T046 | Currency conversion of every live amount and complete ledger lines | ECON | - | todo |
 | T047 | Rules 1.15.0 with regenerated portable goldens | SAVE ECON ARCH LEAGUE | T044 T045 T046 | todo |
 | T048 | Background codec worker for checkpoints | SAVE ARCH | - | todo |
 | T049 | Clock never waits for saving; background autosave cadence | SAVE WEB ARCH | T048 | todo |
+| T063 | Amateur table zones follow the amateur exchange | LEAGUE WEB | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| one-result | 3 | 8 | 0 | 8 | 0 | 1 | 5 | 2026-10-12T07:09:57.488Z | [history](work/one-result.json) |
+| one-result | 3 | 8 | 2 | 6 | 0 | 2 | 2 | 2026-10-12T07:20:12.923Z | [history](work/one-result.json) |
 
 ## next
-- work group one-result (branch work/one-result, planning worktree ../haeram-soccor-one-result): `npx haeram-spec-creator work run --work one-result --provider claude`; T042, T046 and lane day-order (T043→T044) run first, T045 after T042, T047 (rules 1.15.0, goldens) last; lane background-save (T048→T049) takes the next free worker slot; merge to main afterwards with the user's approval.
-- Player match ratings (평점) lead Korean headlines, but WEB-22/25 rule out synthetic ratings; decide whether a transparent rating belongs in the game. Research levers not yet modelled: set-piece coaching, ticket-price fan mood, fixture-gap rule for training camps; tackles in a far-off flank still look like heavy touches (match.ts picks markers by zone, not flank).
-- Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
+- inspect work board for remaining tasks
 
 ## log
+- 261012 create-task T063 (from the day-order review P2): amateur table zones follow the exchange, outside the lane's touches
+- 261012 T042 integrated
+- 261012 T046 integrated
 - 261012 create-task SAVE WEB ARCH: lane background-save T048 background codec worker → T049 clock never waits for saving (30 s autosave, save on stop/hide/close), added to work group one-result
 - 261012 update-ssot SAVE r20 WEB r50 ARCH r8: owner decisions save at once, automatic progression every 30 s and on stop/hide/close through a background codec worker; clock steps never wait for saving
 - 261012 update-ssot SAVE WEB ARCH start: background autosave, clock not waiting for saves
@@ -68,6 +68,3 @@
 - 261012 WEB r45 ECON r11 SAVE r16 ARCH r6 implemented directly: intervention popover closes on a choice; 구단 빌드→운영 전략 tab (five presets each lighting or aiming at a synergy, device strategy library with composer, dials in their own section, build events name the strategy); three game slots with a slot screen at the start address, parked games in IndexedDB, legacy save as slot 1, 새 게임 wording; start-layout scroller could not shrink (main clipped founding and slot screens on phones), fixed; strategy board and slot screen load lazily (entry 251,220 of 256,000 bytes)
 - 261012 update-ssot WEB r45 ECON r11 SAVE r16 ARCH r6 start: intervention popover closes on choice, 구단 빌드→운영 전략 with redesigned presets and a device strategy library, three game slots (새 게임 wording), reachable scrolling everywhere; implementing directly
 - 261012 WEB r44 ARCH r5 HIST r7 implemented directly: records room tabs (요약/추이/선수/시즌 기록/감독) with a trophy cabinet, Elo standing against the world and league best and worst plus spread bands, chart bubbles by nearest point or keyboard slider, player sheets with club careers and all-time boards; closed league seasons keep 결산/순위표/우리 경기/순위 추이/득점 순위 tabs; all-time head-to-head in team sheets via a read-only worker request; cup history with archived brackets, our cup road and honours (doubles, trebles, runs); records room and cup history load lazily (entry under 250 KiB)
-- 261012 WEB r43 STAFF r10 HIST r6 SAVE r15 implemented directly: manager candidates drawn within their school's bands (veteran firefighters, young developers) with the trait shown instead of ambition, the firefighter leaves at the close unless renewed each April (reminder, delegated renewal), staff page tabs 감독/감독 후보/코치진/위임, transfer market as the squad page's third segment (seven phone tabs), every club name opens a stacking team sheet for any club, closed seasons archive top scorers, per-round rank, the Elo spread and cup brackets from the last 32; rules 1.12.0, worst century checkpoint 1,312,340 bytes
-- 261012 CI fix: CI WebKit stalls its web process after reloading the long records page (flaky one run, failed twice the next); the record-book journey reopens the records room in a fresh page instead of reloading
-- 261012 WEB r42 LEAGUE r4 implemented directly: staff in the phone tab bar, OVR column and team sheets for every club, knockout tree view for cups, rival strength cap 92→99 with rare club projects (95+ rivals now appear by chance)

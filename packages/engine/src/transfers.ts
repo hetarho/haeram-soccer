@@ -212,9 +212,13 @@ export function placeBid(w: World, candidate: number, fee: string, loan = false)
   if (typeof fee !== 'string' || !/^\d{1,80}$/.test(fee) || BigInt(fee) < 1n)
     throw new Error('제안 금액을 확인하세요.');
   if (BigInt(w.cash) < BigInt(fee)) throw new Error('보유 자금이 부족합니다.');
+  // Earlier bids for him this season keep a renewed bid on the same day apart.
+  const earlier = (w.bids || []).filter(
+    (b) => b.direction === 'out' && b.playerId === offer.player.id && b.year === w.year,
+  ).length;
   const day = currentDay(w),
     window = transferWindow(w, day),
-    id = bidId('out', w, day, offer.player.id, `${w.revision}:`),
+    id = bidId('out', w, day, offer.player.id, `${earlier}:`),
     wait = integer(random(`${w.seed}:bid-due:${id}`), 2, 4);
   const bid: TransferBid = {
     id,

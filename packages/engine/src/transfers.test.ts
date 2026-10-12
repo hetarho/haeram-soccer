@@ -430,6 +430,36 @@ describe('outgoing bids', () => {
     );
   });
 
+  it('an inbox read does not change a bid', () => {
+    const plain = world(),
+      read = world();
+    for (const w of [plain, read]) w.delegation = { ...w.delegation, transfers: false };
+    operate(read, { type: 'read-inbox' });
+    expect(read.revision).toBe(plain.revision + 1);
+    const fee = share(transferOffers(plain)[3].fee, 90);
+    for (const w of [plain, read]) operate(w, { type: 'bid', candidate: 3, fee });
+    const [bid] = outBids(plain);
+    expect(bid.id).toBe(`out:${plain.year}:0:0:${bid.playerId}`);
+    expect(outBids(read)).toEqual([bid]);
+    for (const w of [plain, read]) advanceDays(w, 4);
+    expect(outBids(plain)[0].status).not.toBe('pending');
+    expect(canonical(outBids(read))).toBe(canonical(outBids(plain)));
+    expect(canonical({ ...read, revision: plain.revision })).toBe(canonical(plain));
+  });
+
+  it('gives a renewed bid on the same day its own ID', () => {
+    const w = on(world(), 9, 1);
+    w.delegation = { ...w.delegation, transfers: false };
+    placeBid(w, 3, '1');
+    const [first] = outBids(w);
+    expect(first.status).toBe('rejected');
+    placeBid(w, 3, '1');
+    const [, renewed] = outBids(w);
+    expect(first.id).toBe(`out:${w.year}:${first.day}:0:${first.playerId}`);
+    expect(renewed.id).toBe(`out:${w.year}:${first.day}:1:${first.playerId}`);
+    expect(w.inbox?.filter((item) => item.ref === renewed.id)).toHaveLength(1);
+  });
+
   it('completes a negotiated loan like a direct loan', () => {
     const w = world();
     w.delegation = { ...w.delegation, transfers: false };

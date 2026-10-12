@@ -3,6 +3,7 @@ import { canonical } from '../../contracts/src/index';
 import {
   advanceDays,
   advanceRound,
+  careOffer,
   clubOf,
   createWorld,
   financialBreakdown,
@@ -203,5 +204,36 @@ describe('earned, auditable club finances', () => {
     const bottom = world();
     settleSeasonPrize(bottom, 24, 24);
     expect(bottom.income).toBe('0');
+  });
+
+  it('names owner requests and win bonuses in the season ledger, leaving no catch-all line', () => {
+    const w = world();
+    operate(w, { type: 'care', kind: 'meeting' });
+    operate(w, { type: 'care', kind: 'camp' });
+    operate(w, { type: 'care', kind: 'friendly' });
+    while (!w.events.some((event) => event.kind === 'win-bonus') && w.round < 46) {
+      if (careOffer(w, 'win-bonus').available) operate(w, { type: 'care', kind: 'win-bonus' });
+      advanceRound(w, undefined, false);
+    }
+    const total = (kind: string) =>
+      w.events
+        .filter((event) => event.kind === kind)
+        .reduce((sum, event) => sum + BigInt(event.amount ?? '0'), 0n)
+        .toString();
+    expect(BigInt(total('care:camp'))).toBeGreaterThan(0n);
+    expect(BigInt(total('care:friendly'))).toBeGreaterThan(0n);
+    expect(BigInt(total('win-bonus'))).toBeGreaterThan(0n);
+    const budget = financialBreakdown(w);
+    const line = (rows: typeof budget.income, key: string) =>
+      rows.find((row) => row.key === key)?.amount;
+    expect(line(budget.expense, 'care')).toBe(total('care:camp'));
+    expect(line(budget.income, 'care:friendly')).toBe(total('care:friendly'));
+    expect(line(budget.expense, 'win-bonus')).toBe(total('win-bonus'));
+    expect(budget.income.some((row) => row.key === 'older-ledger')).toBe(false);
+    expect(budget.expense.some((row) => row.key === 'older-ledger')).toBe(false);
+    expect(budget.income.reduce((sum, row) => sum + BigInt(row.amount), 0n)).toBe(BigInt(w.income));
+    expect(budget.expense.reduce((sum, row) => sum + BigInt(row.amount), 0n)).toBe(
+      BigInt(w.expense),
+    );
   });
 });
