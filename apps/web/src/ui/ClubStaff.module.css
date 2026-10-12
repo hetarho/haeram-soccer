@@ -391,3 +391,35 @@
   text-overflow: ellipsis;
   max-width: 100%;
 }
+/* A contract's length in seasons, chosen before hiring or renewing. */
+.termDial {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 12px;
+}
+/* Stretches each step even inside a container that aligns its buttons to the start. */
+.termDial .termStep {
+  justify-self: stretch;
+  min-height: 44px;
+  padding: 4px 2px;
+}
+.termDial .termStep b {
+  font-size: 12px;
+  white-space: nowrap;
+}
+.termDial .termStep:disabled {
+  opacity: 0.45;
+}
+.termCosts {
+  display: grid;
+  gap: 2px;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.termCosts small {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}

@@ -20,7 +20,6 @@ import {
   renewalDay,
   simulateSeason,
   STYLE_INFO,
-  yearlyStaff,
 } from './index';
 
 function world(seed = 'manager-schools') {
@@ -198,7 +197,8 @@ describe('the firefighter contract', () => {
       cash = BigInt(w.cash),
       wage = quote('ENG', year, 120 + ability),
       fee = ratio(wage, 1n, 10n);
-    expect(managerRenewal(w)).toEqual({ wage, fee, until: year + 2 });
+    // A firefighter signs one season at a time.
+    expect(managerRenewal(w)).toEqual({ wage, fee, until: year + 2, limit: 1 });
     operate(w, { type: 'renew-manager' });
     expect(w.manager).toMatchObject({ id, wage, until: year + 2 });
     expect(BigInt(w.cash)).toBe(cash - BigInt(fee));
@@ -233,18 +233,6 @@ describe('the firefighter contract', () => {
     expect(JSON.stringify(w)).toBe(before);
   });
 
-  it('keeps renewing three-season managers on their own and only near the end on request', () => {
-    const w = world('three-seasons');
-    expect(managerRenewal(w)).toBeUndefined();
-    w.manager.until = w.year + 1;
-    expect(managerRenewal(w)?.until).toBe(w.year + 2);
-    w.year++;
-    yearlyStaff(w);
-    expect(w.manager.interim).toBe(false);
-    expect(w.manager.until).toBe(w.year + 3);
-    expect(w.events.at(-1)).toMatchObject({ kind: 'manager-renew', title: '감독 계약 갱신' });
-  });
-
   it('reminds the owner on 1 April even without coaching staff', () => {
     const w = withFirefighter('firefighter-april');
     delete w.staff;
@@ -269,7 +257,7 @@ describe('the firefighter contract', () => {
   it('lets delegated staff renew him on 1 April when the club can afford it', () => {
     const w = withFirefighter('firefighter-delegated'),
       { id, ability } = w.manager;
-    w.delegation = { ...w.delegation, staff: true };
+    w.delegation = { ...w.delegation, manager: true };
     const cash = BigInt(w.cash),
       wage = quote('ENG', w.year, 120 + ability);
     april(w);
@@ -283,7 +271,7 @@ describe('the firefighter contract', () => {
     });
     // Without the money the owner is told instead, and why the staff held back.
     const broke = withFirefighter('firefighter-delegated-broke');
-    broke.delegation = { ...broke.delegation, staff: true };
+    broke.delegation = { ...broke.delegation, manager: true };
     broke.cash = '0';
     april(broke);
     expect(broke.manager.until).toBe(broke.year + 1);

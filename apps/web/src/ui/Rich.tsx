@@ -1,6 +1,7 @@
 import { Select } from './Select';
 import { lazy, Suspense, useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
 import type {
+  ContractTerm,
   ManagerTrait,
   Player,
   TransferStance,
@@ -43,15 +44,27 @@ import {
   type SquadTab,
   type StaffTab,
 } from './state';
-import { AcademyView, CoachingPlan, CoachingStaff, Delegation } from './ClubStaff';
+import {
+  AcademyView,
+  CoachingPlan,
+  CoachingStaff,
+  Delegation,
+  ManagerHireTerm,
+  ManagerRenewal,
+} from './ClubStaff';
 import { appearances, explorePlayers, playerStatus } from './playerAnalysis';
 import { PlayerLink } from './PlayerSheet';
 import { Attributes } from './Attributes';
 import { StyleCard } from './StyleCard';
 import { RemedySheet } from './RemedySheet';
-import { managerTerm, STYLE_INFO } from '../../../../packages/engine/src/styles';
+import { STYLE_INFO } from '../../../../packages/engine/src/styles';
 import { MANAGER_TRAIT_INFO } from '../../../../packages/engine/src/staff';
 import { managerRenewal } from '../../../../packages/engine/src/operations';
+import {
+  defaultManagerTerm,
+  managerPayoff,
+  managerTermLimit,
+} from '../../../../packages/engine/src/ops-staff';
 import { roundsUntilRefresh } from '../../../../packages/engine/src/managerMarket';
 import { ClubLink } from './ClubLink';
 import type { StateKey } from './teamState';
@@ -254,10 +267,8 @@ function ManagerOffice({ state, client }: Props) {
   const acting = useGameState((state) => !!state.pendingActions);
   const disabled = state.busy || state.readonly || acting;
   const response = w.events.filter((e) => e.kind === 'manager-response').at(-1);
-  const renewal = managerRenewal(w),
-    leaving = managerTerm(m) === 1,
-    // What a conditional acceptance asks the owner to put into training.
-    support = quote(c.country, w.year, 30);
+  // What a conditional acceptance asks the owner to put into training.
+  const support = quote(c.country, w.year, 30);
   return (
     <>
       <div className={s.twoCols}>
@@ -274,28 +285,10 @@ function ManagerOffice({ state, client }: Props) {
                 </small>
               </div>
             </div>
-            {renewal && (
-              <div
-                className={leaving ? `${s.renewal} ${s.leaving}` : s.renewal}
-                data-testid="manager-renewal"
-              >
-                <p>
-                  {leaving
-                    ? '재계약하지 않으면 시즌이 끝날 때 떠나고 임시 감독이 팀을 맡아요.'
-                    : '재계약하지 않아도 시즌이 끝나면 3시즌 자동으로 갱신돼요.'}
-                </p>
-                <small>
-                  재계약하면 연봉 <Money value={renewal.wage} code={c.country} year={w.year} /> ·
-                  계약금 <Money value={renewal.fee} code={c.country} year={w.year} /> ·{' '}
-                  {contractLine(renewal.until, w.year)}
-                </small>
-                <button
-                  className={s.primary}
-                  disabled={disabled}
-                  onClick={() => void client.command({ type: 'renew-manager' })}
-                >
-                  재계약
-                </button>
+            {/* No manager renews himself (→STAFF-14): unrenewed, he leaves at the close. */}
+            {managerRenewal(w) && (
+              <div className={`${s.renewal} ${s.leaving}`} data-testid="manager-renewal">
+                <ManagerRenewal w={w} client={client} disabled={disabled} />
               </div>
             )}
             <StyleCard style={m.interim ? undefined : m.style} />
@@ -416,12 +409,14 @@ function ManagerCandidates({ state, client }: Props) {
     w = v.world,
     m = w.manager,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
-    [hiring, setHiring] = useState<string>();
+    [hiring, setHiring] = useState<string>(),
+    [term, setTerm] = useState<ContractTerm>(1);
   const acting = useGameState((state) => !!state.pendingActions);
   const disabled = state.busy || state.readonly || acting;
   const format = (value: bigint | string) => <Money value={value} code={c.country} year={w.year} />;
-  // Replacing a contracted manager pays him a quarter of his wage; an interim leaves freely.
-  const payoff = m.interim ? 0n : BigInt(ratio(m.wage, 1n, 4n));
+  // Replacing a contracted manager pays him 25% of his wage per season left; an interim leaves
+  // freely.
+  const payoff = BigInt(managerPayoff(w));
   const outlay = (candidate: (typeof v.managers)[number]) =>
     BigInt(candidate.fee) + BigInt(candidate.compensation ?? '0') + payoff;
   const chosen = v.managers.find((candidate) => candidate.id === hiring);
@@ -460,11 +455,19 @@ function ManagerCandidates({ state, client }: Props) {
         <TraitNote trait={candidate.trait} />
       </p>
       <p>
-        {contractLine(w.year + STYLE_INFO[candidate.style].term, w.year)} · 계약금{' '}
-        {format(candidate.fee)}
+        {managerTermLimit(candidate, w.year) === 1
+          ? contractLine(w.year + 1, w.year)
+          : `계약 1–${managerTermLimit(candidate, w.year)}시즌 선택`}{' '}
+        · 계약금 {format(candidate.fee)}
         {candidate.compensation && <> · 보상금(웃돈) {format(candidate.compensation)}</>}
       </p>
-      <button disabled={disabled} onClick={() => setHiring(candidate.id)}>
+      <button
+        disabled={disabled}
+        onClick={() => {
+          setHiring(candidate.id);
+          setTerm(defaultManagerTerm(candidate, w.year));
+        }}
+      >
         {candidate.source === 'club' ? '데려오기' : '감독 선임'} ·{' '}
         <Money value={outlay(candidate)} code={c.country} year={w.year} plain />
       </button>
@@ -476,8 +479,8 @@ function ManagerCandidates({ state, client }: Props) {
         <div className={s.panelBody}>
           <p className={s.muted}>
             감독 시장은 {roundsUntilRefresh(w)}라운드 뒤에 다시 움직여요. 다른 구단에서 경질된
-            감독이 들어오고, 자리를 찾은 감독은 빠져요. 즉시 지출에는 지금 감독 보상(연봉의 1/4)이
-            포함돼요.
+            감독이 들어오고, 자리를 찾은 감독은 빠져요. 즉시 지출에는 지금 감독 보상(남은 시즌마다
+            연봉의 25%)이 포함돼요.
           </p>
           {free.length ? (
             <div className={s.cards}>{free.map(card)}</div>
@@ -530,9 +533,15 @@ function ManagerCandidates({ state, client }: Props) {
               철학)
             </li>
             <li>
-              연봉 {format(chosen.wage)} ·{' '}
-              {contractLine(w.year + STYLE_INFO[chosen.style].term, w.year)}
+              연봉 {format(chosen.wage)} · {contractLine(w.year + term, w.year)}
               {STYLE_INFO[chosen.style].term === 1 && ' · 남기려면 4월에 1시즌씩 재계약해요'}
+              <ManagerHireTerm
+                w={w}
+                candidate={chosen}
+                term={term}
+                disabled={disabled}
+                onChange={setTerm}
+              />
             </li>
           </ul>
           <div className={s.actions}>
@@ -541,7 +550,7 @@ function ManagerCandidates({ state, client }: Props) {
               className={s.primary}
               disabled={disabled}
               onClick={() => {
-                void client.command({ type: 'hire', id: chosen.id });
+                void client.command({ type: 'hire', id: chosen.id, term });
                 setHiring(undefined);
               }}
             >

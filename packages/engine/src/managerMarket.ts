@@ -1,8 +1,8 @@
 import type { Club, Manager, ManagerMarket, ManagerStyle, World } from '../../contracts/src/types';
 import { clamp, integer, random } from './primitives';
 import { candidateStyles, MANAGER_STYLES, STYLE_INFO } from './styles';
-import { managerTrait } from './staff';
-import { addEvent, clubOf, FOUNDING_YEAR, makeManager, quote } from './world';
+import { footballScaled, managerTrait, staffQuote } from './staff';
+import { addEvent, clubOf, FOUNDING_YEAR, makeManager } from './world';
 import { ownLeagueClubs } from './season';
 
 /** The market moves every four league rounds and at the season close (→STAFF-17). */
@@ -28,7 +28,10 @@ export interface ManagerCandidate extends MarketManager {
   compensation?: string;
 }
 
-/** The season's four seeded candidates, one school each (→STAFF-14); they open the market. */
+/**
+ * The season's four seeded candidates, one school each (→STAFF-14); they open the market. Wages
+ * and fees follow the football index (→ECON-26).
+ */
 export function managerOffers(w: World) {
   const code = clubOf(w).country,
     styles = candidateStyles(w.seed, w.year);
@@ -43,8 +46,9 @@ export function managerOffers(w: World) {
       style,
       // A school that plays one way brings its tactic; a firefighter signs to the season's end.
       philosophy: info.tactic ?? manager.philosophy,
+      wage: footballScaled(w, manager.wage),
       until: w.year + info.term,
-      fee: quote(code, w.year, 60 + i * 40),
+      fee: staffQuote(w, 60 + i * 40),
     };
   });
 }
@@ -94,7 +98,7 @@ export function clubManager(w: World, club: Club): MarketManager {
     philosophy: info.tactic ?? drawn.philosophy,
     ability: level,
     potential,
-    wage: quote(clubOf(w).country, w.year, 120 + level),
+    wage: staffQuote(w, 120 + level),
     since,
     until: w.year + info.term,
   };
@@ -115,11 +119,11 @@ function freeAgent(w: World, serial: number): MarketManager {
     ...(trait ? { trait } : {}),
     style,
     philosophy: info.tactic ?? drawn.philosophy,
-    wage: quote(code, w.year, 120 + drawn.ability),
+    wage: staffQuote(w, 120 + drawn.ability),
     until: w.year + info.term,
   };
 }
-const signingFee = (w: World, m: Manager) => quote(clubOf(w).country, w.year, 40 + m.ability);
+const signingFee = (w: World, m: Manager) => staffQuote(w, 40 + m.ability);
 
 /** The clubs whose managers we may hire away: our league and the division above. */
 function poachable(w: World) {
@@ -140,8 +144,11 @@ function poachable(w: World) {
  */
 export function managerCandidates(w: World): ManagerCandidate[] {
   const current = w.manager.id;
+  // Nobody signs past his 70th year (→STAFF-14), so a free agent who reached it is not offered.
   const free = marketOf(w)
-    .free.filter((m): m is MarketManager => !!m.style && m.id !== current)
+    .free.filter(
+      (m): m is MarketManager => !!m.style && m.id !== current && age(w, m) < RETIREMENT_AGE,
+    )
     .map((m) => ({ ...m, source: 'free' as const, fee: signingFee(w, m) }));
   const clubs = poachable(w)
     .map((club) => ({ club, manager: clubManager(w, club) }))
@@ -168,17 +175,19 @@ export function takeManager(w: World, candidate: ManagerCandidate, replaced: Man
   }
   // An interim or the founding all-rounder has no school to offer the market.
   if (!replaced.interim && replaced.style && age(w, replaced) < RETIREMENT_AGE) {
-    const { lastRequest: _l, requestHistory: _h, pending: _p, ...rest } = replaced;
+    // The term he signed with us goes with his contract; his next club chooses its own.
+    const { lastRequest: _l, requestHistory: _h, pending: _p, term: _t, ...rest } = replaced;
     void _l;
     void _h;
     void _p;
+    void _t;
     m.free = [
       ...m.free,
       {
         ...rest,
         trust: 65,
         conflicts: 0,
-        wage: quote(clubOf(w).country, w.year, 120 + rest.ability),
+        wage: staffQuote(w, 120 + rest.ability),
       },
     ].slice(-FREE_AGENTS.max);
   }

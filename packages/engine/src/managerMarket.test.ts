@@ -5,15 +5,18 @@ import {
   clubManager,
   clubOf,
   COMPENSATION,
+  contractSeason,
   createWorld,
   FREE_AGENTS,
   managerCandidates,
   managerOffers,
+  managerPayoff,
   MARKET_REFRESH_ROUNDS,
   operate,
   ownLeagueClubs,
   refreshManagerMarket,
   simulateSeason,
+  STYLE_INFO,
 } from './index';
 import { ratio } from './primitives';
 
@@ -42,8 +45,10 @@ describe('manager market (STAFF-17)', () => {
     const w = world();
     const target = managerCandidates(w).find((c) => c.source === 'club')!;
     const club = w.clubs.find((c) => c.id === target.club)!;
+    // The founding manager is owed 25% of his wage for each of his three seasons left.
     const cash = BigInt(w.cash),
-      payoff = BigInt(ratio(w.manager.wage, 1n, 4n));
+      payoff = BigInt(ratio(w.manager.wage, BigInt(w.manager.until - w.year), 4n));
+    expect(w.manager.until - w.year).toBe(3);
     expect(BigInt(target.compensation!)).toBe(
       (BigInt(target.wage) * COMPENSATION[0]) / COMPENSATION[1],
     );
@@ -53,6 +58,38 @@ describe('manager market (STAFF-17)', () => {
     expect(w.managerMarket!.clubs[club.id]).toEqual([1, w.year]);
     expect(clubManager(w, club).id).not.toBe(target.id);
     expect(w.events.at(-1)!.detail).toContain(`${club.name}에서 영입`);
+  });
+
+  it('hires for the term the owner chooses and pays the predecessor per season left', () => {
+    const w = world('market-terms');
+    w.cash = '999999999';
+    const [first, second, third] = managerCandidates(w).filter(
+      (c) => c.source === 'free' && c.style !== 'firefighter',
+    );
+    operate(w, { type: 'hire', id: first.id, term: 5 });
+    expect(w.manager).toMatchObject({
+      id: first.id,
+      wage: first.wage,
+      since: w.year,
+      until: w.year + 5,
+      term: 5,
+    });
+    expect(w.events.at(-1)!.detail).toContain(`계약 ${contractSeason(w.year + 5)} 시즌 끝까지`);
+    // Replacing him at once pays 25% of his wage for each of his five seasons left.
+    const payoff = ratio(first.wage, 5n, 4n);
+    expect(managerPayoff(w)).toBe(payoff);
+    const cash = BigInt(w.cash);
+    operate(w, { type: 'hire', id: second.id, term: 2 });
+    expect(BigInt(w.cash)).toBe(cash - BigInt(second.fee) - BigInt(payoff));
+    expect(w.manager).toMatchObject({ id: second.id, until: w.year + 2, term: 2 });
+    // In the pool he carries no term of ours.
+    const pooled = w.managerMarket!.free.find((m) => m.id === first.id)!;
+    expect(pooled.term).toBeUndefined();
+    // Without a choice a candidate signs for his school's length.
+    operate(w, { type: 'hire', id: third.id });
+    expect(w.manager.until).toBe(w.year + STYLE_INFO[third.style].term);
+    expect(w.manager.term).toBeUndefined();
+    validateWorld(w);
   });
 
   it('moves every four rounds within 4-8 free agents, the same for the same seed', () => {
