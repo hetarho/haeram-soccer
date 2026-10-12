@@ -137,7 +137,9 @@ test('a terminated real worker exposes recovery and retains the last committed c
     globalThis.Worker = class extends NativeWorker {
       constructor(url: string | URL, options?: WorkerOptions) {
         super(url, options);
-        (globalThis as typeof globalThis & { testWorker?: Worker }).testWorker = this;
+        // The engine worker, not the codec worker the client creates beside it.
+        if (!String(url).includes('codec'))
+          (globalThis as typeof globalThis & { testWorker?: Worker }).testWorker = this;
       }
     };
   });
