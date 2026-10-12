@@ -40,6 +40,12 @@ function beforeChange(country: CountryCode, year: number, amount: string) {
     direction: 'out',
     playerId: `market:${id}`,
     fee: amount,
+    // The player and asking terms the bid was made for (rules 1.15.0).
+    offer: {
+      player: { ...w.players[2], id: `market:${id}`, wage: amount },
+      fee: (BigInt(amount) * 2n).toString(),
+      loanFee: amount,
+    },
     year: w.year,
     day: 300,
     due: 303,
@@ -74,6 +80,10 @@ function liveAmounts(w: World) {
     pending: w.bids![0].fee,
     countered: [w.bids![1].fee, w.bids![1].counterFee],
     incoming: w.bids![2].fee,
+    offers: [0, 1].map((i) => {
+      const offer = w.bids![i].offer!;
+      return [offer.fee, offer.loanFee, offer.player.wage];
+    }),
   };
 }
 
@@ -84,7 +94,7 @@ describe('currency change', () => {
     // 240 old pence to the pound became 100 new pence.
     ['ENG', 1971, '2400', '1000'],
   ] as const)
-    it(`converts coaches, free agents, prospects and open bids once in ${country} ${year}`, () => {
+    it(`converts coaches, free agents, prospects, open bids and their offers once in ${country} ${year}`, () => {
       const w = beforeChange(country, year, amount);
       const [num, den] = conversion(country, year);
       const expected = ratio(amount, num, den);
@@ -100,9 +110,19 @@ describe('currency change', () => {
         pending: expected,
         countered: [expected, doubled],
         incoming: expected,
+        offers: [
+          [doubled, expected, expected],
+          [doubled, expected, expected],
+        ],
       });
-      // Settled bids keep the units they closed in.
+      // Settled bids keep the units they closed in, the terms they were made for too.
       expect(w.bids![3].fee).toBe(amount);
+      const settled = w.bids![3].offer!;
+      expect([settled.fee, settled.loanFee, settled.player.wage]).toEqual([
+        (BigInt(amount) * 2n).toString(),
+        amount,
+        amount,
+      ]);
       expect([w.bids![4].fee, w.bids![4].counterFee]).toEqual([
         amount,
         (BigInt(amount) * 2n).toString(),

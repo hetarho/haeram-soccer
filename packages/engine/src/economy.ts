@@ -28,6 +28,12 @@ export function advanceEconomy(w: World, previousYear: number) {
       if (bid.status !== 'pending' && bid.status !== 'countered') continue;
       bid.fee = convert(bid.fee);
       if (bid.counterFee !== undefined) bid.counterFee = convert(bid.counterFee);
+      // The terms an outgoing bid keeps are asked in the money it is answered in.
+      if (bid.offer) {
+        bid.offer.fee = convert(bid.offer.fee);
+        bid.offer.loanFee = convert(bid.offer.loanFee);
+        bid.offer.player.wage = convert(bid.offer.player.wage);
+      }
     }
     if (w.sponsor) {
       w.sponsor.annual = convert(w.sponsor.annual);
