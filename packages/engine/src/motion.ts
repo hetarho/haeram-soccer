@@ -36,6 +36,7 @@ export const MATCH_MOTION_CONFIG = {
     passSpeed: 48,
     turnoverSpeed: 44,
     restartSpeed: 60,
+    throwSpeed: 36,
     shotSpeed: 84,
     boundaryMargin: 2,
   },
@@ -82,6 +83,8 @@ export const MATCH_MOTION_CONFIG = {
       tackle: { ease: 0.5, bend: [0.1, 0.3], loft: 0, bobble: 0.4 },
       shot: { ease: 0.12, bend: [0.02, 0.08], loft: 0.35, bobble: 0 },
       reset: { ease: 0.5, bend: [0, 0], loft: 0, bobble: 0 },
+      throw: { ease: 0.1, bend: [0, 0.04], loft: 0, bobble: 2.2 },
+      cross: { ease: 0.2, bend: [0.06, 0.18], loft: 1.4, bobble: 1.5 },
     },
   },
   decisions: {
@@ -150,14 +153,25 @@ export const MATCH_MOTION_CONFIG = {
     spaceWeight: 1.8,
     progressWeight: 1.2,
     carryDistance: 10,
-    /** The latest duels of a minute that the pitch plays out; earlier ones are off-screen. */
+    /**
+     * The latest duels of a minute that the pitch plays out; earlier ones are off-screen. A minute
+     * that opens with a restart spends its first seconds on it and shows fewer.
+     */
     visibleEvents: 5,
+    afterRestart: 3,
     dribbleDistance: 14,
     /** Event times inside the minute's motion window, in motion seconds. */
     firstEvent: 0.6,
     lastEvent: 6.6,
-    /** A dead ball (kickoff, goal kick) waits this long before the restart pass. */
+    /** A dead ball (kickoff, goal kick, corner) waits this long before the restart pass. */
     restartDelay: 1.2,
+    throwDelay: 0.5,
+    /**
+     * A throw-in or corner waits for its taker to reach the ball (within `takerReach`), at most
+     * this long after the ball is set.
+     */
+    takerWait: 0.9,
+    takerReach: 2.5,
   },
   tactics: {
     balanced: {
@@ -363,7 +377,7 @@ interface Agent {
   roam: Point;
 }
 
-type DeadBall = 'kickoff' | 'goalKick';
+type DeadBall = 'kickoff' | 'goalKick' | 'throwIn' | 'corner';
 type FlightStyle = keyof typeof MATCH_MOTION_CONFIG.ball.styles;
 
 /**
@@ -418,6 +432,8 @@ function curve(flight: Pick<BallFlight, 'from' | 'to' | 'control' | 'bend'>, s: 
 interface PlannedEvent {
   at: number;
   event?: MatchEvent;
+  /** The ball goes out of play for the restart that opens the minute. */
+  out?: MatchEvent;
   /** Bring the ball to the minute's opening actor, or set a dead ball for its restart. */
   open?: Agent;
   /** A restart played to the opening actor once the dead ball is set. */
@@ -447,6 +463,17 @@ export interface BallTraceStep {
   };
 }
 
+/**
+ * The duels a minute plays out on the pitch: its latest ones, after the restart that opens it, so
+ * a change of sides is always shown.
+ */
+export function visibleEvents(events: readonly MatchEvent[]) {
+  const { visibleEvents: limit, afterRestart } = MATCH_MOTION_CONFIG.possession;
+  return events[0]?.kind === 'restart'
+    ? [events[0], ...events.slice(1).slice(-afterRestart)]
+    : events.slice(-limit);
+}
+
 /** Observation-only dynamics. It has no access to the football outcome RNG. */
 export class MatchMotion {
   private agents: [Agent[], Agent[]];
@@ -460,6 +487,10 @@ export class MatchMotion {
   private flights = 0;
   /** The match opens with a dead ball on the centre spot. */
   private dead?: DeadBall = 'kickoff';
+  /** Where the dead ball is restarted from, when not its usual spot (throw-ins, corners). */
+  private spot?: Point;
+  /** The player who walks to a throw-in or corner before it is taken. */
+  private taker?: { agent: Agent; spot: Point; until: number };
   /** A tackler closing in on the carrier; the ball leaves the carrier's feet when he arrives. */
   private challenge?: { tackler: Agent; until: number };
   /**
@@ -571,20 +602,23 @@ export class MatchMotion {
    */
   private schedule(events: MatchEvent[]) {
     const c = MATCH_MOTION_CONFIG.possession;
-    const visible = events.slice(-c.visibleEvents);
+    const visible = visibleEvents(events);
     const first = visible[0];
     const opener = this.agentAt(first.side, first.actor);
     const carried = this.plan.map((item) => ({ ...item, at: 0 }));
+    // A minute the other side ended with the ball opens with it going out of play.
+    const restart = first.kind === 'restart' ? first : undefined;
+    const duels = restart ? visible.slice(1) : visible;
     // A goal sends the ball back to the centre spot and a shot wide becomes a goal kick. The ball
     // stays dead for a moment before the restart is played.
-    const restarting = !!(this.dead ?? this.flight?.ends);
+    const restarting = !!(restart ?? this.dead ?? this.flight?.ends);
     const start = restarting ? c.restartDelay + 0.4 : c.firstEvent;
     const span = c.lastEvent - start;
-    const timed: PlannedEvent[] = visible.map((event, index) => ({
+    const timed: PlannedEvent[] = duels.map((event, index) => ({
       at:
-        visible.length === 1
+        duels.length === 1
           ? (start + c.lastEvent) / 2
-          : start + (index * span) / (visible.length - 1),
+          : start + (index * span) / (duels.length - 1),
       event,
     }));
     this.shadow = undefined;
@@ -606,13 +640,17 @@ export class MatchMotion {
       marker.dwell = Math.max(marker.dwell, at + 0.4);
     }
     this.shotTriggered = false;
-    this.plan = [...carried, { at: 0, open: opener }, ...timed];
+    this.plan = [
+      ...carried,
+      ...(restart ? [{ at: 0, out: restart }] : []),
+      { at: 0, open: opener },
+      ...timed,
+    ];
   }
 
   /** Play every due item of the plan, one flight at a time. */
   private followPlan(time: number) {
     this.resolveChallenge();
-    const integration = MATCH_MOTION_CONFIG.integration;
     while (this.plan.length && this.plan[0].at <= time + 1e-9) {
       if (this.flight || this.challenge) return;
       const next = this.plan[0];
@@ -622,27 +660,124 @@ export class MatchMotion {
         this.seconds - this.heldSince < MATCH_MOTION_CONFIG.ball.minimumTouch - 1e-9
       )
         return;
+      // A throw-in or corner is taken once its taker stands at the ball.
+      const taker = this.taker;
+      if (
+        next.restart &&
+        taker &&
+        distance(taker.agent.position, taker.spot) > MATCH_MOTION_CONFIG.possession.takerReach &&
+        this.seconds < taker.until - 1e-9
+      )
+        return;
       this.plan.shift();
       if (next.event) this.play(next.event);
+      else if (next.out) this.out(next.out);
       else if (next.open) this.open(next.open, time);
-      else if (next.restart && this.owner !== next.restart)
-        this.passTo(next.restart, 'restart', integration.passSpeed);
+      else if (next.restart) this.restart(next.restart);
     }
+  }
+
+  /** Take the dead ball to the minute's opener: thrown in, crossed from the corner or kicked. */
+  private restart(receiver: Agent) {
+    const integration = MATCH_MOTION_CONFIG.integration;
+    const dead = this.dead;
+    this.taker = undefined;
+    if (this.owner === receiver) return;
+    if (dead === 'throwIn') this.passTo(receiver, 'restart', integration.throwSpeed, 'throw');
+    else if (dead === 'corner') this.passTo(receiver, 'restart', integration.passSpeed, 'cross');
+    else this.passTo(receiver, 'restart', integration.passSpeed);
+  }
+
+  /**
+   * The ball goes out of play off the side that held it (MATCH-12): over the touchline, past the
+   * byline of the side restarting (a goal kick) or behind its own (a corner). A ball already dead
+   * after a shot wide only changes what restarts it.
+   */
+  private out(event: MatchEvent) {
+    const kind = event.restart ?? 'throwIn';
+    // Nothing goes out after a goal, or when the restarting side already has the ball.
+    if (this.dead === 'kickoff' || this.owner?.side === event.side) return;
+    const { minPosition: low, maxPosition: high } = MATCH_MOTION_CONFIG.integration;
+    const [x, y] = this.ball;
+    const top = y < 50,
+      touchline = top ? low : high;
+    // The restarting side defends the low end when it is the home side.
+    const own = event.side === 0 ? low : high,
+      their = event.side === 0 ? high : low;
+    const wide = (limit: number) => (top ? Math.min(y, 50 - limit) : Math.max(y, 50 + limit));
+    let to: Point, spot: Point;
+    if (kind === 'throwIn') {
+      // The side that loses it was playing toward the restarting side's goal.
+      to = [clamp(x + (event.side === 0 ? -6 : 6), 8, 92), touchline];
+      spot = to;
+    } else if (kind === 'goalKick') {
+      to = [own, clamp(wide(12), 15, 85)];
+      spot = [own === low ? 6 : 94, 50];
+    } else {
+      to = [their, clamp(wide(12), 10, 90)];
+      spot = [their, touchline];
+    }
+    if (this.dead) {
+      this.dead = kind;
+      this.spot = spot;
+    } else
+      this.launch({
+        phase: 'transition',
+        style: 'pass',
+        speed: MATCH_MOTION_CONFIG.integration.passSpeed,
+        to,
+        ends: kind,
+        spot,
+      });
+    // The taker sets off as soon as the ball is on its way out.
+    this.call(kind, this.agentAt(event.side, event.actor), spot);
+  }
+
+  /**
+   * Send the restart's taker to the ball: the keeper to his goal kick, the nearest teammate of the
+   * opener to a throw-in or corner. Nobody walks to a kickoff.
+   */
+  private call(dead: DeadBall, opener: Agent, spot: Point) {
+    const c = MATCH_MOTION_CONFIG.possession;
+    const team = this.agents[opener.side].filter((agent) => agent !== opener);
+    const taker =
+      dead === 'goalKick'
+        ? team.find((agent) => agent.slot === 0)
+        : dead === 'kickoff'
+          ? undefined
+          : team
+              .filter((agent) => agent.slot !== 0)
+              .reduce((best, agent) =>
+                distance(agent.position, spot) < distance(best.position, spot) ? agent : best,
+              );
+    if (!taker) return;
+    const wait = (this.flight?.duration ?? 0) + c.takerWait;
+    this.taker = { agent: taker, spot, until: this.seconds + wait };
+    taker.dwell = Math.max(taker.dwell, wait + MATCH_MOTION_CONFIG.decisions.minimumDwell);
   }
 
   /** Bring the ball to the minute's opener, or carry a dead ball to its spot for the restart. */
   private open(opener: Agent, time: number) {
     const integration = MATCH_MOTION_CONFIG.integration;
+    const c = MATCH_MOTION_CONFIG.possession;
     if (this.dead) {
-      this.launch({
-        phase: 'restart',
-        style: 'reset',
-        speed: integration.restartSpeed,
-        to: this.dead === 'kickoff' ? [50, 50] : [this.ball[0] > 50 ? 94 : 6, 50],
-        ends: this.dead,
-      });
+      const dead = this.dead;
+      const spot: Point =
+        this.spot ?? (dead === 'kickoff' ? [50, 50] : [this.ball[0] > 50 ? 94 : 6, 50]);
+      this.phase = 'restart';
+      if (distance(this.ball, spot) > 0.5)
+        this.launch({
+          phase: 'restart',
+          style: 'reset',
+          speed: integration.restartSpeed,
+          to: spot,
+          ends: dead,
+          spot: this.spot,
+        });
+      if (!this.taker) this.call(dead, opener, spot);
+      // A throw-in is taken quickly; other dead balls rest a moment first.
       this.plan.unshift({
-        at: time + MATCH_MOTION_CONFIG.possession.restartDelay,
+        at: time + (dead === 'throwIn' ? c.throwDelay : c.restartDelay),
         restart: opener,
       });
       return;
@@ -654,6 +789,7 @@ export class MatchMotion {
   }
 
   private play(event: MatchEvent) {
+    if (event.kind === 'restart') return;
     const speed = MATCH_MOTION_CONFIG.integration;
     const other: Side = event.side === 0 ? 1 : 0;
     const actor = this.agentAt(event.side, event.actor);
@@ -866,6 +1002,8 @@ export class MatchMotion {
     aim?: Point;
     control?: Point;
     ends?: DeadBall;
+    /** Where a dead ball is restarted from, when not its usual spot. */
+    spot?: Point;
   }) {
     const c = MATCH_MOTION_CONFIG.ball;
     const integration = MATCH_MOTION_CONFIG.integration;
@@ -915,7 +1053,11 @@ export class MatchMotion {
     this.flight = flight;
     this.owner = undefined;
     this.phase = options.phase;
-    if (options.receiver) this.dead = undefined;
+    if (options.ends) this.spot = options.spot;
+    if (options.receiver) {
+      this.dead = undefined;
+      this.spot = undefined;
+    }
   }
 
   /** Advance the flight one step; it ends at the receiver's feet or as a dead ball. */
@@ -1247,6 +1389,7 @@ export class MatchMotion {
     const wave = Math.sin(this.seconds * (0.2 + t.creativity * 0.25) + agent.phase);
     const attack = agent.side === (this.owner?.side ?? this.flight?.receiver?.side ?? frame.side);
     if (this.flight?.receiver === agent) return this.flight.aim;
+    if (this.taker?.agent === agent) return this.taker.spot;
     if (this.challenge?.tackler === agent) return [...this.ball];
     if (this.shadow?.marker === agent) {
       const { actor, lane, goal } = this.shadow;
@@ -1335,7 +1478,9 @@ export class MatchMotion {
       (agent.state === 'recover'
         ? 1 + p.ability * MATCH_MOTION_CONFIG.manager.abilityRecovery
         : 1) *
-      (this.shadow?.marker === agent || this.challenge?.tackler === agent
+      (this.shadow?.marker === agent ||
+      this.challenge?.tackler === agent ||
+      this.taker?.agent === agent
         ? MATCH_MOTION_CONFIG.steering.chaseSprint
         : 1);
     const toward: Point = [intent[0] - agent.position[0], intent[1] - agent.position[1]];
@@ -1343,7 +1488,9 @@ export class MatchMotion {
     const arrive = Math.min(speed, dist * c.arrival) / Math.max(dist, 0.001);
     const desired: Point = [toward[0] * arrive, toward[1] * arrive];
     const pull =
-      ['recover', 'keeper', 'carry', 'press'].includes(agent.state) || this.shadow?.marker === agent
+      ['recover', 'keeper', 'carry', 'press'].includes(agent.state) ||
+      this.shadow?.marker === agent ||
+      this.taker?.agent === agent
         ? 0
         : MATCH_MOTION_CONFIG.steering.formationPull *
           p.cohesion *

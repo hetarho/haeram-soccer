@@ -1,7 +1,7 @@
 import type { Fixture } from '../../contracts/src/types';
 import { DOMESTIC_CUP_ROUNDS } from './cups';
-import { EUROPE_CALENDAR, europeanEras } from './europe';
-import { roundLabel } from './knockout';
+import { afterPhaseBack, europeanEras, knockoutLegs, LEGACY_EUROPE_CALENDAR } from './europe';
+import { roundLabel, roundsFor } from './knockout';
 
 /** Where a cup match stood: its competition, the stage as media name it and the leg of a tie. */
 export interface CupStage {
@@ -23,7 +23,8 @@ const PHASE = /^\d+:([a-z]+):(phase|second):\d+$/;
  * The stage of a cup fixture or match record from its ID and calendar slot, so a closed season's
  * matches keep their stage once its brackets are gone (→HIST-13). The calendars place every round
  * by the rounds left to the final: a domestic cup's on DOMESTIC_CUP_ROUNDS, a continental knockout
- * on EUROPE_CALENDAR's ladder for that season's format. Undefined for league and play-off games.
+ * on EUROPE_CALENDAR's ladder for that season's format (or the one before rules 1.14.0, for matches
+ * archived then). Undefined for league and play-off games.
  */
 export function knockoutStage(
   f: Pick<Fixture, 'id' | 'round'>,
@@ -58,14 +59,24 @@ export function knockoutStage(
   if (key === 'super') return { competition: key, label: '결승' };
   const era = europeanEras(year).find((entry) => entry.key === key);
   if (!era) return undefined;
-  const slot = second ? f.round - 1 : f.round,
+  const round = Number(index),
     leg = second ? 2 : 1;
   // The 1991–93 Champions League played two knockout rounds before its groups.
-  if (era.qualifier && (EUROPE_CALENDAR.qualifier as readonly number[]).includes(slot))
-    return { competition: key, label: `예선 ${Number(index) + 1}라운드`, leg };
-  const ladder: readonly number[] =
-    era.format === 'knockout' ? EUROPE_CALENDAR.knockout : EUROPE_CALENDAR.afterPhase;
-  const back = ladder.indexOf(slot);
+  if (era.qualifier && round < Math.log2(era.field / era.qualifier))
+    return { competition: key, label: `예선 ${round + 1}라운드`, leg };
+  let back: number;
+  if (era.format === 'knockout') {
+    // Every round of a knockout-only era is a round of the draw, so the ID tells which; its legs
+    // must fall on that round's calendar, now or before rules 1.14.0.
+    const total = roundsFor(era.field);
+    back = total - 1 - round;
+    const legs = knockoutLegs(era, year, round, total);
+    if (
+      legs[second ? 1 : 0] !== f.round &&
+      LEGACY_EUROPE_CALENDAR.knockout[back] !== (second ? f.round - 1 : f.round)
+    )
+      return undefined;
+  } else back = afterPhaseBack(era, year, f.round, !!second);
   if (back < 0) return undefined;
   // A fifth round back from the final opens the knockout of 24 phase qualifiers, eight of them on
   // a bye: the play-off (every era with a phase sends 24 when it needs five rounds).

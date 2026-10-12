@@ -20,13 +20,13 @@
 | WEB | 47 | 47 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
 | CLUB | 15 | 15 | - | 0 |
-| MATCH | 7 | 7 | - | 0 |
+| MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 4 | 4 | - | 0 |
 | STAFF | 11 | 11 | - | 0 |
 | ECON | 12 | 12 | - | 0 |
-| EURO | 2 | 2 | - | 0 |
+| EURO | 3 | 3 | - | 0 |
 | HIST | 7 | 7 | - | 0 |
-| SAVE | 17 | 17 | - | 0 |
+| SAVE | 18 | 18 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -38,6 +38,7 @@
 - Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
 
 ## log
+- 261012 MATCH r8 EURO r3 SAVE r18 implemented directly (rules 1.14.0): possession that changes sides between minutes without a duel now opens with a restart (throw-in, goal kick, corner chosen from where the ball was; ~27/7/12 a match) played on the pitch with the ball out of play and a taker, ghost turnovers 46→0 a match with results, counts and golden facts unchanged; continental legs on each era's real gap (2 weeks before 2003, then 1, UCL last 16 3 weeks 2003–23), knockout-only eras from September, brackets show both legs' dates, stages read the old calendar too; golden facts change only in 1960's drawn rounds
 - 261012 WEB r47 ECON r12 SAVE r17 STAFF r11 implemented directly (rules 1.13.0): strategy reservation for the next season at any time (buildNext, applied as the season starts as its one change, 예약 취소); manager market — free agents (4–8) refreshed every 4 rounds and at the close on their own stream, struggling and relegated clubs of our league sack into the pool (rival-sacking news), named derived managers for every club, poaching from our league and the division above with 1.5× wage compensation, hire by id so the hired man leaves the list; golden facts unchanged apart from the sacking events and the label; entry 254,162 of 256,000 bytes
 - 261012 update-ssot WEB r47 ECON r12 SAVE r17 STAFF r11 start: strategy reservation for the next season, manager market (free agents, sackings, poaching), rules 1.13.0; implementing directly
 - 261012 WEB r46 implemented directly: hidden tabs play on at wall-clock pace (throttled ticks pay owed days in 30-day steps that still end on news and match days), a page that slept or closed with the clock running plays the time away on return up to a per-browser limit (끄기/30일/한 시즌, default a season), a "자리를 비운 동안" card sums up results, rank and cash, the hidden tab title shows the date and clock state, background settings in the intervention dialog; phone celebration is one dismissible 44 px line beside the news button with a lighter confetti burst; entry 253,554 of 256,000 bytes
@@ -57,4 +58,3 @@
 - 261011 CI fix: amateur-league standings snapshots tested every club against every fixture each round (83% of a season, 2.5→0.7 s); "시즌 끝까지 진행" journeys outran the 5 s wait in all three CI browsers
 - 261011 WORLD r2 LEAGUE r3 EURO r2 CLUB r14 STAFF r7 MATCH r7 ECON r9 HIST r5 SAVE r12 WEB r37 implemented directly: 1950 founding in a 16-club amateur league, midweek domestic cups and stage-by-stage continental knockouts (two legs, away goals before 2021) with live brackets, phase tables and history of finals, Club Elo/squad/club value records, evolving clubs nobody owns, injuries, spring retirements, potential breakthroughs, transfer list instead of instant sales, coaching investment with delegated hiring and renewal season, intervention popover on every clock, faster curved ball landing at players, recalibrated match outcomes and clubs nobody owns with fixed giants per country; rules 1.9.0, worst century checkpoint 1,250,608 bytes
 - 261010 ECON r8 CLUB r13 WEB r36 SAVE r11 implemented directly: six club visions→a six-slot club build of 25 cards (15,625 builds) with presets, combined draft preview, synergy forecast and one commit a season; 머니볼/상업 제국 read build cards, +우리 동네 아이들 +트레이딩 머신; stored visions load as presets; rules 1.8.0
-- 261010 WEB r35 CLUB r12 implemented directly: phone HUD compact cash (K/M/B) and two-line club name, floating news button with NEW count, celebration banner above it and filing into it, "뉴스 표시 안 함" in inbox and news sheet; delegated sale bar 130% (prospects 200%) lowered for age, contract and cash runway, floor 80%; rules 1.7.0

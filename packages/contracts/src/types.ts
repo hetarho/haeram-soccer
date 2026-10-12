@@ -278,14 +278,19 @@ export interface MatchMotionSample {
 export interface MatchEvent {
   /** Seconds into the minute, 0–60. */
   t: number;
-  kind: 'pass' | 'dribble' | 'shot';
+  /**
+   * A restart opens a minute that the other side ended with the ball: it went out of play off
+   * them and `side` restarts it to `actor` (MATCH-12).
+   */
+  kind: 'pass' | 'dribble' | 'shot' | 'restart';
   side: 0 | 1;
-  /** Passer, dribbler or shooter. */
+  /** Passer, dribbler or shooter; for a restart, the player it reaches. */
   actor: number;
   /** Pass receiver (or the teammate who recovered a loose ball). */
   receiver?: number;
-  /** Opposing marker, tackler, blocker or keeper slot. */
+  /** Opposing marker, tackler, blocker or keeper slot; for a restart, who put the ball out. */
   opponent?: number;
+  restart?: 'throwIn' | 'goalKick' | 'corner';
   /** Pass completed or dribble beaten; shots use `outcome`. */
   ok?: boolean;
   /** A failed pass or dribble lost the ball to `opponent`. */

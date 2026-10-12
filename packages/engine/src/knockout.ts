@@ -69,7 +69,7 @@ export function tieId(w: World, key: string, round: number, tie: number, year = 
   return `${year}:${key}:k${round}:${tie}`;
 }
 
-/** The fixtures of one tie: a single match, or a first leg and its return a round later. */
+/** The fixtures of one tie: a single match, or a first leg and its return (a round later). */
 export function tieFixtures(
   w: World,
   key: string,
@@ -77,6 +77,7 @@ export function tieFixtures(
   country: string,
   index: number,
   round: KnockoutRound,
+  returnRound = round.round + 1,
 ): Fixture[] {
   return round.ties.flatMap((tie, t) => {
     const first: Fixture = {
@@ -95,7 +96,7 @@ export function tieFixtures(
           {
             ...first,
             id: `${first.id}:2`,
-            round: round.round + 1,
+            round: returnRound,
             home: tie.away,
             away: tie.home,
           },

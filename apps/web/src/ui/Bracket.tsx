@@ -26,6 +26,18 @@ interface BracketProps {
   year?: number;
 }
 
+/** A fixture's date without its year. */
+const day = (w: World, f: Fixture) => fixtureDate(w, f).replace(/^\d+년 /, '');
+
+/** When a round plays: both legs of a two-legged round, otherwise its one match day. */
+export function roundDates(w: World, legs: readonly Fixture[]) {
+  return legs.length === 2
+    ? `1차전 ${day(w, legs[0])} · 2차전 ${day(w, legs[1])}`
+    : legs[0]
+      ? `${day(w, legs[0])} · 단판`
+      : '';
+}
+
 /** One tie: both legs' scores, the aggregate and how a level tie went through. */
 function Tie({ w, tie, legs }: { w: World; tie: KnockoutRound['ties'][number]; legs: Fixture[] }) {
   const own = tie.home === w.playerClub || tie.away === w.playerClub;
@@ -33,9 +45,9 @@ function Tie({ w, tie, legs }: { w: World; tie: KnockoutRound['ties'][number]; l
   const [home, away] = tieAggregate(tie, legs);
   const score = played.length
     ? legs.length === 2
-      ? `${played.map((f) => `${f.score!.home}–${f.score!.away}`).join(', ')}${played.length === 2 ? ` · 합계 ${home}–${away}` : ''}`
+      ? `${played.map((f) => `${f.score!.home}–${f.score!.away}`).join(', ')}${played.length === 2 ? ` · 합계 ${home}–${away}` : ` · 2차전 ${day(w, legs[1])}`}`
       : `${home}–${away}`
-    : fixtureDate(w, legs[0]).replace(/^\d+년 /, '');
+    : legs.map((f) => day(w, f)).join(' · ');
   return (
     <li className={own ? c.ownTie : undefined}>
       <Club w={w} id={tie.home} strong={tie.winner === tie.home} />
@@ -167,15 +179,13 @@ function RoundList({ w, rounds, fixtures, competition, year }: BracketProps) {
           const ties = round.ties
             .map((tie, t) => ({ tie, t }))
             .filter(({ tie }) => !shown || tie.home === w.playerClub || tie.away === w.playerClub);
-          const first = legsOf(w, fixtures, competition, index, 0, year)[0];
+          const legs = legsOf(w, fixtures, competition, index, 0, year);
           return (
             <section key={index} className={c.round}>
               <header>
                 <h4>{round.label}</h4>
                 <span>
-                  {first ? fixtureDate(w, first).replace(/^\d+년 /, '') : ''}
-                  {round.legs === 2 ? ' · 홈앤드어웨이' : ' · 단판'} · {decided}/{round.ties.length}{' '}
-                  경기 종료
+                  {roundDates(w, legs)} · {decided}/{round.ties.length} 경기 종료
                   {round.byes?.length ? ` · 부전승 ${round.byes.length}팀` : ''}
                 </span>
               </header>

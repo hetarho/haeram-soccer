@@ -13,6 +13,8 @@ import {
   snapshotScorers,
   quote,
   clubOf,
+  DOMESTIC_CUP_ROUNDS,
+  legsOf,
 } from './index';
 const world = () =>
   createWorld({
@@ -73,6 +75,61 @@ describe('historical evolution', () => {
     expect(ucl.rounds!.at(-1)!.legs).toBe(1);
     validateWorld(w);
   });
+  it("plays two-legged ties on each era's gap and never on a domestic cup midweek", () => {
+    const gaps: Record<string, Set<number>> = {};
+    for (const year of [1985, 1993, 1996, 2000, 2010, 2022, 2024]) {
+      const w = world();
+      w.year = year;
+      w.currency = currency('FRA', year).code;
+      prepareSeason(w);
+      finishEurope(w);
+      for (const t of w.europe) {
+        let last = 0;
+        t.rounds!.forEach((round, index) => {
+          const legs = legsOf(w, t.fixtures, t.key, index, 0);
+          expect(legs).toHaveLength(round.legs);
+          // Each round starts after the last one ended.
+          expect(legs[0].round, `${year} ${t.key} ${round.label}`).toBeGreaterThan(last);
+          last = legs.at(-1)!.round;
+          for (const f of legs)
+            expect((DOMESTIC_CUP_ROUNDS as readonly number[]).includes(f.round)).toBe(false);
+          if (round.legs === 2) {
+            const era =
+              year < 2003
+                ? 'before 2003'
+                : t.key === 'ucl' && year < 2024 && round.label === '16강'
+                  ? 'champions last 16'
+                  : 'since 2003';
+            (gaps[era] ||= new Set()).add(legs[1].round - legs[0].round);
+          }
+        });
+      }
+    }
+    // Two weeks before 2003, then one; the Champions League's last 16 three until 2024.
+    expect(gaps).toEqual({
+      'before 2003': new Set([2]),
+      'champions last 16': new Set([3]),
+      'since 2003': new Set([1]),
+    });
+  });
+
+  it('moves a round drawn after its first leg day past today, keeping the gap', () => {
+    const w = world();
+    w.year = 1985;
+    w.currency = currency('FRA', 1985).code;
+    prepareSeason(w);
+    // An older save reaching its first knockout round late: the next round's planned first leg
+    // (round 12) has already passed.
+    w.round = 33;
+    w.calendar = { day: 33 * 7 };
+    snapshotScorers(w);
+    advanceEurope(w);
+    const ucl = w.europe.find((t) => t.key === 'ucl')!;
+    const legs = legsOf(w, ucl.fixtures, 'ucl', 1, 0);
+    expect(legs.map((f) => f.round)).toEqual([34, 36]);
+    expect(legs.every((f) => !f.score)).toBe(true);
+  });
+
   it('qualifies domestic cup winners and archives owned European football', () => {
     const w = world();
     w.year = 1975;

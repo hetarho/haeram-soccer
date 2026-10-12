@@ -1,6 +1,6 @@
 {
   "synthetic": true,
-  "engine": "1.13.0",
+  "engine": "1.14.0",
   "catalog": "2026-demo-1",
   "definitions": [
     {
@@ -4522,224 +4522,224 @@
                 "id": "1960:ucl:k0:0",
                 "home": "FRA:0:0:10",
                 "away": "euro:80",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:0:2",
                 "home": "euro:80",
                 "away": "FRA:0:0:10",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:1",
                 "home": "euro:125",
                 "away": "euro:104",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:1:2",
                 "home": "euro:104",
                 "away": "euro:125",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:2",
                 "home": "euro:115",
                 "away": "euro:12",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:2:2",
                 "home": "euro:12",
                 "away": "euro:115",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:3",
                 "home": "euro:68",
                 "away": "euro:116",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:3:2",
                 "home": "euro:116",
                 "away": "euro:68",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:4",
                 "home": "euro:25",
                 "away": "euro:134",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:4:2",
                 "home": "euro:134",
                 "away": "euro:25",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:5",
                 "home": "euro:73",
                 "away": "BEL:0:0:4",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:5:2",
                 "home": "BEL:0:0:4",
                 "away": "euro:73",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:6",
                 "home": "euro:5",
                 "away": "euro:150",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:6:2",
                 "home": "euro:150",
                 "away": "euro:5",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:7",
                 "home": "GER:0:0:14",
                 "away": "euro:57",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:7:2",
                 "home": "euro:57",
                 "away": "GER:0:0:14",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:8",
                 "home": "euro:24",
                 "away": "ESP:0:0:3",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:8:2",
                 "home": "ESP:0:0:3",
                 "away": "euro:24",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:9",
                 "home": "euro:39",
                 "away": "euro:60",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:9:2",
                 "home": "euro:60",
                 "away": "euro:39",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:10",
                 "home": "euro:124",
                 "away": "ITA:0:0:5",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:10:2",
                 "home": "ITA:0:0:5",
                 "away": "euro:124",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:11",
                 "home": "euro:105",
                 "away": "euro:2",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:11:2",
                 "home": "euro:2",
                 "away": "euro:105",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:12",
                 "home": "euro:137",
                 "away": "ENG:0:0:19",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:12:2",
                 "home": "ENG:0:0:19",
                 "away": "euro:137",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:13",
                 "home": "euro:87",
                 "away": "euro:58",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:13:2",
                 "home": "euro:58",
                 "away": "euro:87",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:14",
                 "home": "POR:0:0:10",
                 "away": "euro:44",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:14:2",
                 "home": "euro:44",
                 "away": "POR:0:0:10",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:15",
                 "home": "NED:0:0:3",
                 "away": "euro:95",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:ucl:k0:15:2",
                 "home": "euro:95",
                 "away": "NED:0:0:3",
-                "round": 10,
+                "round": 9,
                 "score": null
               }
             ]
@@ -4786,224 +4786,224 @@
                 "id": "1960:cwc:k0:0",
                 "home": "euro:85",
                 "away": "euro:11",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:0:2",
                 "home": "euro:11",
                 "away": "euro:85",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:1",
                 "home": "euro:149",
                 "away": "euro:66",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:1:2",
                 "home": "euro:66",
                 "away": "euro:149",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:2",
                 "home": "euro:75",
                 "away": "euro:50",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:2:2",
                 "home": "euro:50",
                 "away": "euro:75",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:3",
                 "home": "euro:140",
                 "away": "euro:103",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:3:2",
                 "home": "euro:103",
                 "away": "euro:140",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:4",
                 "home": "euro:48",
                 "away": "euro:84",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:4:2",
                 "home": "euro:84",
                 "away": "euro:48",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:5",
                 "home": "euro:118",
                 "away": "euro:156",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:5:2",
                 "home": "euro:156",
                 "away": "euro:118",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:6",
                 "home": "ITA:0:0:18",
                 "away": "FRA:0:0:1",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:6:2",
                 "home": "FRA:0:0:1",
                 "away": "ITA:0:0:18",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:7",
                 "home": "GER:0:0:13",
                 "away": "euro:117",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:7:2",
                 "home": "euro:117",
                 "away": "GER:0:0:13",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:8",
                 "home": "euro:97",
                 "away": "euro:74",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:8:2",
                 "home": "euro:74",
                 "away": "euro:97",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:9",
                 "home": "euro:19",
                 "away": "euro:61",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:9:2",
                 "home": "euro:61",
                 "away": "euro:19",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:10",
                 "home": "euro:127",
                 "away": "NED:0:0:8",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:10:2",
                 "home": "NED:0:0:8",
                 "away": "euro:127",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:11",
                 "home": "euro:130",
                 "away": "ENG:0:0:4",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:11:2",
                 "home": "ENG:0:0:4",
                 "away": "euro:130",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:12",
                 "home": "POR:0:0:6",
                 "away": "BEL:0:0:10",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:12:2",
                 "home": "BEL:0:0:10",
                 "away": "POR:0:0:6",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:13",
                 "home": "euro:36",
                 "away": "euro:141",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:13:2",
                 "home": "euro:141",
                 "away": "euro:36",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:14",
                 "home": "euro:45",
                 "away": "euro:70",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:14:2",
                 "home": "euro:70",
                 "away": "euro:45",
-                "round": 10,
+                "round": 9,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:15",
                 "home": "euro:94",
                 "away": "euro:159",
-                "round": 9,
+                "round": 7,
                 "score": null
               },
               {
                 "id": "1960:cwc:k0:15:2",
                 "home": "euro:159",
                 "away": "euro:94",
-                "round": 10,
+                "round": 9,
                 "score": null
               }
             ]

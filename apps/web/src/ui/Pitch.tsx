@@ -17,7 +17,11 @@ import type {
   PlayerMotionState,
   World,
 } from '../../../../packages/contracts/src/types';
-import { MATCH_MOTION_CONFIG, playerTraits } from '../../../../packages/engine/src/match';
+import {
+  MATCH_MOTION_CONFIG,
+  playerTraits,
+  visibleEvents as shownEvents,
+} from '../../../../packages/engine/src/match';
 import { tacticLabel } from '../../../../packages/engine/src/world';
 import { percent } from './format';
 import { MatchReport } from './MatchReport';
@@ -83,6 +87,12 @@ export function describeEvent(event: MatchEvent, squads: MatchPlayback['squads']
   const actor = name(event.side, event.actor),
     receiver = name(event.side, event.receiver),
     opponent = name(other, event.opponent);
+  if (event.kind === 'restart')
+    return event.restart === 'goalKick'
+      ? `${opponent}의 공이 골라인을 넘어감 · 골킥 → ${actor}`
+      : event.restart === 'corner'
+        ? `${opponent} 맞고 골라인 밖으로 · 코너킥 → ${actor}`
+        : `${opponent}의 공이 터치라인 밖으로 · 스로인 → ${actor}`;
   if (event.kind === 'shot')
     return event.outcome === 'goal'
       ? `골! ${actor} · xG ${event.xg?.toFixed(2)}`
@@ -184,7 +194,7 @@ export function Pitch({
     .filter((event) => event.minute <= (frame?.minute ?? 0))
     .at(-1);
   // The duel the pitch is playing out now: the minute's last duels are spread across it.
-  const visibleEvents = frame?.events?.slice(-5) || [];
+  const visibleEvents = frame?.events ? shownEvents(frame.events) : [];
   const currentEvent = visibleEvents.length
     ? visibleEvents[
         Math.min(visibleEvents.length - 1, Math.floor((sample?.within ?? 1) * visibleEvents.length))

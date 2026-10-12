@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r7 | Define the implemented browser-demo behavior for observable match simulation.
+> r8 | Define the implemented browser-demo behavior for observable match simulation.
 
 ## decisions
 - MATCH-1 [o] A match is 90 discrete simulated minutes; each minute's possession plays as a chain of duels between named players (→MATCH-11). Events and team/player counts share one seeded engine. Pitch playback does not change outcomes.
@@ -39,7 +39,10 @@
 - MATCH-12 [o] Observed playback follows the recorded duel chain: passes fly to the recorded receiver, interceptions and tackles go to the recorded marker, shots leave at their recorded moment. ← a ball that stops in open space and then jumps to an opponent reads as a bug, not football
   - speed: passes about 48, turnovers 44, restarts 60, shots 84 pitch units per motion second (cap 100) against a 5.8 player maximum; a kick starts fast and slows a little.
   - flight: a quadratic curve from launch to landing whose sideways bend grows with distance; passes of 18+ units rise with distance (up to 9, about 30% of long balls driven low), shots stay low; bend and height come from the motion stream only.
-  - every open-play flight ends at a player: a pass re-aims each step at where its receiver will be; the interceptor steps into the passing lane and the ball bends to him; a tackler closes the carrier down and pokes the ball off his feet (a far-off recorded tackler gets a heavy touch instead); loose balls bounce to the teammate who recovers them; only kickoffs and goal kicks rest on their spot.
+  - every open-play flight ends at a player: a pass re-aims each step at where its receiver will be; the interceptor steps into the passing lane and the ball bends to him; a tackler closes the carrier down and pokes the ball off his feet (a far-off recorded tackler gets a heavy touch instead); loose balls bounce to the teammate who recovers them; only kickoffs, goal kicks, throw-ins and corners rest on their spot.
+  - the ball never passes to the other side without a duel: when a minute's possession goes to the side that did not end the last one with the ball, the chain opens with a restart — the ball went out off the last holder: after a shot behind off the keeper or a defender (corner), from the final third over the byline (goal kick), anywhere else over a touchline (throw-in); about 27 throw-ins, 7 goal kicks (plus those after shots wide) and 12 corners a match. ← a ball that leaves our forward for an opponent with no tackle reads as a pass to them
+  - restarts are chosen from where the ball was, never drawn: results, counts and archives stay as they were.
+  - on the pitch the ball runs out over the line, the keeper (goal kick) or the nearest teammate (throw-in, corner) walks to it for at most 0.9 s, and it is thrown (36 u/s, a low arc), crossed or kicked to the recorded player; a minute that opens with a restart shows it and its last three duels.
   - the next recorded duel waits until the ball has been received; the track records ground position and height every 0.1 motion seconds and the renderer draws the ball above its shadow, up to 35% larger when high.
 
 - MATCH-13 [o] Every own-club match records advanced counters for both sides and every own player (rules 1.6.0); older matches stay without them and are labelled as such, never zero-filled. ← xG, xA, key passes and final-third passing are what football fans compare
@@ -64,6 +67,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r8 261012 MATCH-12✎ +restart (throw-in, goal kick, corner) whenever possession changes sides between minutes without a duel, played on the pitch with the ball out of play and a taker; outcomes unchanged
 - r7 261011 MATCH-2✎ +gap with diminishing returns, match-day form, context points on player skills; MATCH-11✎ +flattened duel margins, shot volume 1×→1.7× (cap 0.6→0.75), score effects, summary path on the shared chance model; MATCH-12✎ ball 32/55→48/84 u/s on curved, lofted flights that always land at a player, track every 0.2→0.1 s
 - r6 261010 MATCH-2✎ +own manager style and vision home strength; MATCH-11✎ last passer always assists→solo runs unassisted, +tactic defensive lines, +high-regain transitions; MATCH-13+ advanced counters (key passes, xA, big chances, box shots, final-third passes, progressive passes, take-ons, high turnovers, PPDA, field tilt)
 - r5 261009 MATCH-2✎ NPC strength by club rating and raw fatigue→every club by its XI, fatigue above 20 only, pressing NPC load; MATCH-5✎ +match xG in archives; MATCH-11✎ raw chance xG→level-average finisher and keeper xG

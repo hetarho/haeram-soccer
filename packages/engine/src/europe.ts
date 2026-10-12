@@ -4,7 +4,7 @@ import { random, integer, compareIds, clamp } from './primitives';
 import { addEvent, clubOf, findClub, initialElo, quote } from './world';
 import { emptyTable } from './season';
 import { credit } from './operations';
-import { SEASON_ROUNDS } from './calendar';
+import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS } from './calendar';
 import {
   decideTie,
   finalOf,
@@ -175,10 +175,15 @@ function groupPairs(ids: string[], size: number, double: boolean) {
   return result;
 }
 
+/** League rounds of a knockout round's legs: first leg and return, or the final alone. */
+export type Legs = readonly [number, number] | readonly [number];
+
 /**
  * The continental calendar in league rounds (a midweek three days before the league weekend),
  * modelled on the UEFA season (→EURO-10): phase matchdays from September to January, two-legged
- * knockout rounds from February and a single final in late May.
+ * knockout rounds and a single final in late May. Legs keep each era's gap: two weeks before
+ * 2003, then a week, except the Champions League's last 16 (three weeks until 2024). No leg falls
+ * on a domestic cup midweek.
  */
 export const EUROPE_CALENDAR = {
   /** Phase matchdays by how many a club plays (5 for five-club groups with a bye). */
@@ -190,12 +195,73 @@ export const EUROPE_CALENDAR = {
   /** The 1999–2002 second group stage. */
   second: [25, 26, 29, 30, 32, 33],
   /** The 1991–93 knockout rounds before the groups, and those groups. */
-  qualifier: [7, 12],
+  qualifier: [
+    [7, 9],
+    [12, 14],
+  ] as readonly Legs[],
   qualifiedPhase: [17, 19, 25, 26, 29, 32],
-  /** First-leg rounds counted back from the final, after a phase and in knockout-only eras. */
+  /** Knockout-only eras: early rounds from September, the last three back from the final. */
+  knockout: {
+    early: [
+      [7, 9],
+      [12, 14],
+      [17, 19],
+    ] as readonly Legs[],
+    late: [[43], [36, 38], [31, 33]] as readonly Legs[],
+  },
+  /** Knockout rounds after a phase, back from the final. */
+  afterPhase: {
+    /** Before 2003; after the 1999–2002 second group stage the last eight move to April. */
+    early: [[43], [38, 40], [31, 33]] as readonly Legs[],
+    afterSecond: [[43], [39, 41], [36, 38]] as readonly Legs[],
+    /** 2003–2023; the Champions League's last 16 play three weeks apart. */
+    groups: [[43], [39, 40], [36, 37], [32, 33], [29, 30]] as readonly Legs[],
+    championsGroups: [[43], [39, 40], [36, 37], [29, 32]] as readonly Legs[],
+    /** From 2024: the play-off and the last 16 in consecutive fortnights. */
+    league: [[43], [39, 40], [36, 37], [31, 32], [29, 30]] as readonly Legs[],
+  },
+} as const;
+/**
+ * First-leg rounds back from the final before rules 1.14.0, every return a round later. Matches
+ * archived then keep their stage (→HIST-13).
+ */
+export const LEGACY_EUROPE_CALENDAR = {
   afterPhase: [43, 39, 36, 32, 29],
   knockout: [43, 39, 32, 14, 9, 7],
 } as const;
+
+type Format = Pick<EuropeTournament, 'key' | 'format'>;
+function afterPhaseLadder(t: Format, year: number) {
+  const c = EUROPE_CALENDAR.afterPhase;
+  if (t.format === 'league') return c.league;
+  if (year < 2003) return t.format === 'double-groups' ? c.afterSecond : c.early;
+  return t.key === 'ucl' ? c.championsGroups : c.groups;
+}
+/** The legs of knockout round `within` of `total` (qualifying rounds aside) in `year` (→EURO-10). */
+export function knockoutLegs(t: Format, year: number, within: number, total: number): Legs {
+  const back = Math.max(0, total - 1 - within);
+  if (t.format === 'knockout') {
+    const { early, late } = EUROPE_CALENDAR.knockout;
+    return back < late.length ? late[back] : early[Math.min(within, early.length - 1)];
+  }
+  const ladder = afterPhaseLadder(t, year);
+  return ladder[Math.min(back, ladder.length - 1)];
+}
+/** Rounds back from the final of a knockout match after a phase, from its league round. */
+export function afterPhaseBack(t: Format, year: number, round: number, second: boolean) {
+  const back = afterPhaseLadder(t, year).findIndex((legs) => legs[second ? 1 : 0] === round);
+  return back >= 0
+    ? back
+    : (LEGACY_EUROPE_CALENDAR.afterPhase as readonly number[]).indexOf(second ? round - 1 : round);
+}
+/** The round of a tie's return leg given its first leg's, for brackets rebuilt from archives. */
+export function returnLegRound(t: Format, year: number, first: number) {
+  const ladders =
+    t.format === 'knockout'
+      ? [...EUROPE_CALENDAR.knockout.early, ...EUROPE_CALENDAR.knockout.late]
+      : [...EUROPE_CALENDAR.qualifier, ...afterPhaseLadder(t, year)];
+  return ladders.find((legs) => legs[0] === first)?.[1] ?? first + 1;
+}
 
 function eraOf(w: World, t: EuropeTournament) {
   return europeanEras(w.year).find((era) => era.key === t.key);
@@ -307,7 +373,6 @@ function drawRound(
   w: World,
   t: EuropeTournament,
   clubs: string[],
-  ladder: readonly number[],
   total: number,
   seeded: boolean,
   qualifier = false,
@@ -322,15 +387,24 @@ function drawRound(
     : byes.length && t.format !== 'knockout'
       ? '플레이오프'
       : roundLabel(clubs.length, within);
+  const planned = qualifier
+    ? EUROPE_CALENDAR.qualifier[Math.min(index, EUROPE_CALENDAR.qualifier.length - 1)]
+    : knockoutLegs(t, w.year, within, total);
+  // A save from before rules 1.14.0 may draw a round its old calendar had already reached: its
+  // legs move past today, keeping their gap, so the two legs never share a day. Rounds drawn at
+  // the season close are played out there and keep their dates.
+  const today = Math.max(w.round, Math.floor((currentDay(w) + 3) / ROUND_INTERVAL_DAYS));
+  const shift = Math.max(0, today + 1 - planned[0]);
+  const legs = planned.at(-1)! + shift <= SEASON_ROUNDS ? planned.map((r) => r + shift) : planned;
   const round: KnockoutRound = {
     label,
-    round: qualifier ? EUROPE_CALENDAR.qualifier[index] : ladder[Math.max(0, total - 1 - within)],
+    round: legs[0],
     legs: final ? 1 : 2,
     ties: seeded ? seededDraw(playing) : openDraw(w, playing, `${w.year}:${t.key}:${index}`),
     ...(byes.length ? { byes } : {}),
   };
   rounds.push(round);
-  t.fixtures.push(...tieFixtures(w, t.key, 'europe', 'UEFA', index, round));
+  t.fixtures.push(...tieFixtures(w, t.key, 'europe', 'UEFA', index, round, legs[1]));
   t.stage = round.label;
 }
 /** Qualifiers of a finished phase, in seeding order (group winners first). */
@@ -395,16 +469,15 @@ function progressEurope(w: World, t: EuropeTournament) {
   const afterPhase = rounds.filter((r) => !r.label.startsWith('예선'));
   if (t.format === 'knockout') {
     const total = roundsFor(t.clubs.length);
-    if (!last) drawRound(w, t, t.clubs, EUROPE_CALENDAR.knockout, total, false);
-    else if (survivors(last).length > 1)
-      drawRound(w, t, survivors(last), EUROPE_CALENDAR.knockout, total, false);
+    if (!last) drawRound(w, t, t.clubs, total, false);
+    else if (survivors(last).length > 1) drawRound(w, t, survivors(last), total, false);
     else return crown(w, t, survivors(last)[0]);
     return true;
   }
   if (era?.qualifier && !phase.length) {
     const left = last ? survivors(last) : t.clubs;
     if (left.length > era.qualifier) {
-      drawRound(w, t, left, EUROPE_CALENDAR.knockout, 0, false, true);
+      drawRound(w, t, left, 0, false, true);
       return true;
     }
     for (const id of left) t.standings[id] = emptyTable();
@@ -434,13 +507,13 @@ function progressEurope(w: World, t: EuropeTournament) {
     if (second.length) t.secondStandings = phaseRows(w, t, members);
     else t.firstStandings = phaseRows(w, t, members);
     const qualified = phaseQualifiers(w, t, marker);
-    drawRound(w, t, qualified, EUROPE_CALENDAR.afterPhase, roundsFor(qualified.length), true);
+    drawRound(w, t, qualified, roundsFor(qualified.length), true);
     return true;
   }
   const left = survivors(afterPhase.at(-1)!);
   if (left.length === 1) return crown(w, t, left[0]);
   const total = afterPhase.length + roundsFor(left.length);
-  drawRound(w, t, left, EUROPE_CALENDAR.afterPhase, total, false);
+  drawRound(w, t, left, total, false);
   return true;
 }
 function crown(w: World, t: EuropeTournament, winner: string) {

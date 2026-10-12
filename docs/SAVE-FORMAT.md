@@ -20,6 +20,8 @@ Seasons closed under rules `1.12.0` or later also archive what their pages need 
 
 Rules `1.13.0` worlds may carry two optional fields inline in the world JSON: `buildNext` (a strategy reserved for the next season: its build cards and an optional name of at most 20 characters) and `managerMarket` (`year` and `round` of the last refresh, `free`: at most eight free-agent managers in the manager shape, `clubs`: per club that changed manager the pair [count, since], and `serial`, the number of free agents created). Other clubs' managers are derived from the seed, the club and its count, so only changes are stored. Earlier worlds have neither field.
 
+Rules `1.14.0` changes no field. Continental knockout rounds drawn from then on put a tie's return leg (`:2`) on its era's calendar instead of the next round; legs stored earlier keep their rounds, and stage labels read both calendars.
+
 Archived movement frames are not save facts. Historical goal playback uses preserved goal minutes; only the final recorded counters are displayed in that summary playback.
 
 ## Commit and recovery

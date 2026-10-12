@@ -46,7 +46,9 @@ describe('player duel chain', () => {
         expect(event.t).toBeGreaterThan(previous.t);
         expect(previous.lost).not.toBe(true);
         if (previous.kind === 'pass') expect(event.actor).toBe(previous.receiver);
-        if (previous.kind === 'dribble') expect(event.actor).toBe(previous.actor);
+        if (previous.kind === 'dribble' || previous.kind === 'restart')
+          expect(event.actor).toBe(previous.actor);
+        expect(event.kind).not.toBe('restart');
       }
       for (const event of events) {
         expect(event.t).toBeGreaterThan(0);
@@ -60,6 +62,38 @@ describe('player duel chain', () => {
       }
     }
     expect(shots).toBe(record.metrics[0][4] + record.metrics[1][4]);
+  });
+
+  it('opens a minute with a restart exactly when the ball changes sides without a duel', () => {
+    const { frames, record } = simulateMatch(w, own, true, true);
+    // Who holds the ball as each minute ends; nobody after a goal (a kickoff follows).
+    let holder: 0 | 1 | undefined;
+    const kinds = new Set<string>();
+    for (const frame of frames) {
+      const first = frame.events![0];
+      const changed = holder !== undefined && holder !== first.side;
+      expect(first.kind === 'restart', `minute ${frame.minute}`).toBe(changed);
+      if (first.kind === 'restart') {
+        kinds.add(first.restart!);
+        expect(first.opponent).toBeDefined();
+        // Out of play off the side that had it: corners are taken high up, goal kicks deep.
+        if (first.restart === 'corner') expect(first.zone).toBe(2);
+        if (first.restart === 'goalKick') expect(first.zone).toBe(0);
+      }
+      const last = frame.events!.at(-1)!;
+      const other = last.side === 0 ? 1 : 0;
+      holder =
+        last.kind === 'shot'
+          ? last.outcome === 'goal'
+            ? undefined
+            : other
+          : last.lost
+            ? other
+            : last.side;
+    }
+    expect(kinds).toEqual(new Set(['throwIn', 'goalKick', 'corner']));
+    // Restarts only describe the play; the record is the one an unwatched run settles.
+    expect(simulateMatch(w, own, false, true).record).toEqual(record);
   });
 
   it('accumulates expected goals from the recorded shots only', () => {

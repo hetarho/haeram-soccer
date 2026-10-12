@@ -17,7 +17,7 @@ import { managerStyleEffects } from './styles';
 import { synergyEffects } from './synergy';
 import { buildEffects } from './build';
 import { MatchMotion } from './motion';
-export { MATCH_MOTION_CONFIG, playerTraits, teamMotionProfile } from './motion';
+export { MATCH_MOTION_CONFIG, playerTraits, teamMotionProfile, visibleEvents } from './motion';
 export const METRICS = [
   '득점',
   '도움',
@@ -168,6 +168,15 @@ const bend = (margin: number) => C.saturation * Math.tanh(margin / C.saturation)
 /** The strength gap a match plays at: close to the gap up to ~15 points, never past the cap. */
 export const effectiveGap = (gap: number) =>
   gap / Math.sqrt(Math.sqrt(1 + (gap / C.gapSaturation) ** 4));
+/**
+ * The other side starts a minute with the ball though no duel won it: the ball went out of play off
+ * the side that held it (MATCH-12). After a shot it went behind off the keeper or a defender (a
+ * corner); from the final third past the byline (a goal kick); anywhere else over a touchline (a
+ * throw-in). Nothing is drawn, so outcomes stay where they were.
+ */
+const restartKind = (carrier: { zone: Zone; shot?: number }): NonNullable<MatchEvent['restart']> =>
+  carrier.shot !== undefined ? 'corner' : carrier.zone === 2 ? 'goalKick' : 'throwIn';
+
 /** The home side's chance to hold a minute once score effects shift the ball to the side behind. */
 const possessionAt = (chance: number, metrics: number[][]) =>
   chance - C.leadPossession * clamp(metrics[0][0] - metrics[1][0], -2, 2);
@@ -513,8 +522,11 @@ function duelMatch(
       base.reduce((sum, table) => sum + table[8 * 5] + table[9 * 5] + table[10 * 5], 0) / 6,
     levelKeeping = (base[0][KEEPER] + base[1][KEEPER]) / 2;
   const levelFactor = finishing(levelShooting, levelKeeping);
-  /** Who holds the ball as the minute ends; absent after a goal, when play restarts at kickoff. */
-  let carrier: { side: Side; slot: number; zone: Zone; won?: boolean } | undefined;
+  /**
+   * Who holds the ball as the minute ends; absent after a goal, when play restarts at kickoff.
+   * After a shot, `shot` is the defender or keeper who touched it last.
+   */
+  let carrier: { side: Side; slot: number; zone: Zone; won?: boolean; shot?: number } | undefined;
   for (minute = 1; minute <= 90; minute++) {
     const side: Side = r() < possessionAt(possessionChance, metrics) ? 0 : 1;
     const other: Side = side === 0 ? 1 : 0;
@@ -536,6 +548,7 @@ function duelMatch(
       r() < attemptChance(chanceRate, transition, metrics[side][0] - metrics[other][0]);
     metrics[side][11]++;
     let zone: Zone, slot: number;
+    let restart: MatchEvent | undefined;
     if (!carrier) {
       zone = 1;
       slot = 6;
@@ -543,12 +556,22 @@ function duelMatch(
       zone = carrier.zone;
       slot = carrier.slot;
     } else {
-      // Won straight back where the other side held it: deep for them is high up for us.
+      // The ball went out off the other side where it held it: deep for them is high up for us.
       zone = (2 - carrier.zone) as Zone;
       slot = pick(CARRIERS[zone], r());
+      if (observe)
+        restart = {
+          t: 0,
+          kind: 'restart',
+          restart: restartKind(carrier),
+          side,
+          actor: slot,
+          opponent: carrier.shot ?? carrier.slot,
+          zone,
+        };
     }
     carrier = undefined;
-    const events: MatchEvent[] | undefined = observe ? [] : undefined;
+    const events: MatchEvent[] | undefined = observe ? (restart ? [restart] : []) : undefined;
     let action = '패스',
       actor = slot,
       lastPasser: number | undefined,
@@ -828,16 +851,17 @@ function duelMatch(
             outcome = 'save';
             metrics[other][9]++;
             credit(other, 0, 9);
-            carrier = { side: other, slot: 0, zone: 0 };
+            carrier = { side: other, slot: 0, zone: 0, shot: 0 };
             action = '선방';
           }
         } else if ((shot - onTarget) / (1 - onTarget) < blockChance) {
           outcome = 'block';
-          carrier = { side: other, slot: defender, zone: 0 };
+          carrier = { side: other, slot: defender, zone: 0, shot: defender };
           action = '슛';
         } else {
           outcome = 'miss';
-          carrier = { side: other, slot: 0, zone: 0 };
+          // A goal kick; if the shooting side keeps the ball, it went wide off the defender.
+          carrier = { side: other, slot: 0, zone: 0, shot: defender };
           action = '슛';
         }
         events?.push({

@@ -1,6 +1,6 @@
 import type { World } from './types';
 
-export const CURRENT_ENGINE_VERSION = '1.13.0';
+export const CURRENT_ENGINE_VERSION = '1.14.0';
 /**
  * 1.1.0 added club policy; 1.2.0 staff, academy, transfer windows and the inbox; 1.3.0 closes
  * the season after its final round, opens the summer window there, normalizes league match
@@ -22,7 +22,9 @@ export const CURRENT_ENGINE_VERSION = '1.13.0';
  * season's pages need once its live tables are gone: the league's ten leading scorers, the own
  * rank after every round, the Club Elo spread and the brackets of the own cup and the continental
  * knockouts (seasons closed earlier keep none); 1.13.0 keeps a strategy reserved for the next
- * season and a manager market of free agents, sacked managers and other clubs' managers.
+ * season and a manager market of free agents, sacked managers and other clubs' managers; 1.14.0
+ * plays continental legs on each era's gap (two weeks before 2003, then one, the Champions
+ * League's last 16 three until 2024), knockout-only eras from September.
  */
 export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.0.0',
@@ -38,6 +40,7 @@ export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.10.0',
   '1.11.0',
   '1.12.0',
+  '1.13.0',
   CURRENT_ENGINE_VERSION,
 ];
 export const SAVE_COMPATIBILITY_CODE = 'save-compatibility' as const;

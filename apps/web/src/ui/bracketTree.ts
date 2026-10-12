@@ -6,6 +6,7 @@ import type {
   World,
 } from '../../../../packages/contracts/src/types';
 import { cupKey } from '../../../../packages/engine/src/cups';
+import { europeanEras, returnLegRound } from '../../../../packages/engine/src/europe';
 import { roundLabel, tieId } from '../../../../packages/engine/src/knockout';
 import { clubOf } from '../../../../packages/engine/src/world';
 
@@ -92,7 +93,8 @@ export function treeColumns(rounds: readonly KnockoutRound[]): TreeColumn[] | un
 /**
  * A closed season's bracket as the live knockout the bracket views draw (→HIST-13): its rounds,
  * ties with their winners, and a fixture per leg. IDs follow the live ones by archived round
- * (second legs `:2`, a round later) so legsOf and fixtureDate find them with the season's year.
+ * (second legs `:2`, on the era's return round) so legsOf and fixtureDate find them with the
+ * season's year.
  */
 export function archivedKnockout(w: World, year: number, bracket: BracketArchive) {
   const domestic = bracket.key === 'cup',
@@ -101,6 +103,7 @@ export function archivedKnockout(w: World, year: number, bracket: BracketArchive
     kind: Fixture['kind'] = domestic ? 'cup' : 'europe',
     country = domestic ? code : 'UEFA';
   const club = (index: number) => w.clubs[index]?.id ?? '';
+  const era = domestic ? undefined : europeanEras(year).find((entry) => entry.key === bracket.key);
   const fixtures: Fixture[] = [];
   const rounds = bracket.rounds.map((round, i): KnockoutRound => {
     const ties = round.ties.map(([home, away, home1, away1, home2, away2, outcome], t) => {
@@ -131,7 +134,7 @@ export function archivedKnockout(w: World, year: number, bracket: BracketArchive
         fixtures.push({
           ...first,
           id: `${first.id}:2`,
-          round: round.round + 1,
+          round: era ? returnLegRound(era, year, round.round) : round.round + 1,
           home: tie.away,
           away: tie.home,
           score: { home: home2, away: away2 },

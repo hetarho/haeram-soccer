@@ -265,7 +265,9 @@ describe('ball flights', () => {
     }
     expect(landed).toBeGreaterThan(300);
     const styles = new Set([...flights.values()].map(({ last }) => trace[last].flight!.style));
-    expect(styles).toEqual(new Set(['pass', 'loose', 'cut', 'tackle', 'shot', 'reset']));
+    expect(styles).toEqual(
+      new Set(['pass', 'loose', 'cut', 'tackle', 'shot', 'reset', 'throw', 'cross']),
+    );
     // A tackle pokes the ball off the carrier's feet; it never flies across the pitch.
     for (const { first } of flights.values()) {
       const flight = trace[first].flight!;
@@ -341,6 +343,28 @@ describe('ball flights', () => {
     expect(Math.max(...trace.map((step) => step.ball[2]))).toBeLessThanOrEqual(
       c.ball.maxLoft + Math.max(...Object.values(c.ball.styles).map((style) => style.bobble)),
     );
+  });
+
+  it('sends the ball out of play before every restart and takes it from the line', () => {
+    const { minPosition: low, maxPosition: high, secondsPerMinute } = c.integration;
+    const steps = Math.round(secondsPerMinute / dt);
+    let restarts = 0;
+    playback.frames.forEach((frame, index) => {
+      const restart = frame.events![0];
+      if (restart.kind !== 'restart') return;
+      restarts++;
+      const minute = trace.slice(index * steps, (index + 1) * steps);
+      const dead = minute.filter((step) => step.dead);
+      const line = (step: BallTraceStep) =>
+        restart.restart === 'throwIn'
+          ? step.ball[1] <= low + 0.01 || step.ball[1] >= high - 0.01
+          : step.ball[0] <= low + 0.01 ||
+            step.ball[0] >= high - 0.01 ||
+            Math.abs(step.ball[0] - 50) >= 44 - 0.01;
+      expect(dead.length, `minute ${frame.minute}`).toBeGreaterThan(0);
+      expect(dead.some(line), `minute ${frame.minute}`).toBe(true);
+    });
+    expect(restarts).toBeGreaterThan(15);
   });
 
   it('draws flight shapes from its own ball stream, so the same match repeats exactly', () => {

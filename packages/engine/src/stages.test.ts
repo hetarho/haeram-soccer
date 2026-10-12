@@ -102,10 +102,27 @@ describe('cup stages from fixture IDs', () => {
       competition: 'ucl',
       label: '결승',
     });
-    expect(knockoutStage({ id: '1987:ucl:k3:1:2', round: 40 })).toEqual({
+    expect(knockoutStage({ id: '1987:ucl:k3:1:2', round: 38 })).toEqual({
       competition: 'ucl',
       label: '4강',
       leg: 2,
     });
+  });
+
+  it('keeps the stage of matches archived on the calendar before rules 1.14.0', () => {
+    const stage = (id: string, round: number) => knockoutStage({ id, round })?.label;
+    // Knockout-only eras: the round of the draw, on the old ladder (a return a round later).
+    expect(stage('1987:ucl:k3:1:2', 40)).toBe('4강');
+    expect(stage('1985:uel:k1:0', 9)).toBe('32강');
+    expect(stage('1985:uel:k1:0', 12)).toBe('32강');
+    expect(stage('1985:uel:k1:0:2', 10)).toBe('32강');
+    expect(stage('1985:uel:k1:0:2', 14)).toBe('32강');
+    // After a phase: the old quarter-final first leg (round 36) is no semi-final now.
+    expect(stage('1996:ucl:k0:0', 36)).toBe('8강');
+    expect(stage('1996:ucl:k0:0', 31)).toBe('8강');
+    expect(stage('1996:ucl:k1:0', 38)).toBe('4강');
+    expect(stage('2010:ucl:k0:0:2', 33)).toBe('16강');
+    expect(stage('2010:ucl:k0:0:2', 32)).toBe('16강');
+    expect(stage('2010:ucl:k0:0', 29)).toBe('16강');
   });
 });
