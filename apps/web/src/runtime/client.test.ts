@@ -246,6 +246,19 @@ describe('background worker publication', () => {
     expect(client.state.error).toBeUndefined();
   });
 
+  it("reads another league's fixtures, which the view does not carry, without publishing", async () => {
+    const publications: ClientState[] = [],
+      client = await start((state) => publications.push(state));
+    const w = client.state.view!.world;
+    expect(w.fixtures.some((f) => f.groupKey === 'GER:0:0')).toBe(false);
+    publications.length = 0;
+    const fixtures = await client.leagueFixtures({ code: 'GER', tier: 0, group: 0 });
+    expect(publications).toHaveLength(0);
+    // 18 clubs, each meeting every other home and away.
+    expect(fixtures).toHaveLength(18 * 17);
+    expect(fixtures.every((f) => f.groupKey === 'GER:0:0' && f.year === w.year)).toBe(true);
+  });
+
   it('activates an explicit import while ignoring unsolicited stale worker responses', async () => {
     const client = await start(),
       replacement = createWorld({ ...founding, seed: 'replacement', name: 'New Athletic' });

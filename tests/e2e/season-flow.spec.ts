@@ -76,6 +76,21 @@ test('advances real days at each speed, stops and restores the saved calendar', 
   await expect(
     page.getByRole('region', { name: '리그 라운드 결과' }).getByLabel('경기 예정'),
   ).toHaveCount(0);
+  // Any league of the pyramid: its round, overview and table, then back to ours.
+  const picker = page.getByRole('group', { name: '리그 선택' });
+  await chooseOption(picker.getByRole('combobox', { name: '국가', exact: true }), 'GER');
+  await expect(page.getByRole('heading', { name: '라운드 결과', exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('region', { name: '리그 라운드 결과' }).getByRole('listitem'),
+  ).toHaveCount(9);
+  await expect(page).toHaveURL(/league=GER\.0\.0/);
+  await page.getByRole('tab', { name: '개요', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '독일 1부 개요' })).toBeVisible();
+  await page.getByRole('tab', { name: '순위표', exact: true }).click();
+  await expect(page.getByRole('table', { name: '리그 순위표' })).not.toContainText('우리 팀');
+  await page.getByRole('button', { name: '우리 리그로', exact: true }).click();
+  await expect(page.getByRole('table', { name: '리그 순위표' })).toContainText('우리 팀');
+  await expect(page).not.toHaveURL(/league=/);
   await page.getByRole('tab', { name: '득점 순위', exact: true }).click();
   await expect(page.getByRole('heading', { name: '득점왕 경쟁' })).toBeVisible();
   await expect(page.getByRole('table', { name: '리그 득점 순위표' })).toBeVisible();
