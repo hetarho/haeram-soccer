@@ -34,17 +34,17 @@
 | T047 | Rules 1.15.0 with regenerated portable goldens | SAVE ECON ARCH LEAGUE | T044 T045 T046 | todo |
 | T048 | Background codec worker for checkpoints | SAVE ARCH | - | todo |
 | T049 | Clock never waits for saving; background autosave cadence | SAVE WEB ARCH | T048 | todo |
-| T063 | Amateur table zones follow the amateur exchange | LEAGUE WEB | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| one-result | 3 | 9 | 5 | 4 | 2 | 1 | 0 | 2026-10-12T07:55:12.477Z | [history](work/one-result.json) |
+| one-result | 3 | 9 | 6 | 3 | 1 | 2 | 0 | 2026-10-12T08:00:23.701Z | [history](work/one-result.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261012 T063 integrated
 - 261012 T043 T044 integrated
 - 261012 T045 integrated
 - 261012 create-task T063 (from the day-order review P2): amateur table zones follow the exchange, outside the lane's touches
@@ -64,4 +64,3 @@
 - 261012 update-ssot WEB r47 ECON r12 SAVE r17 STAFF r11 start: strategy reservation for the next season, manager market (free agents, sackings, poaching), rules 1.13.0; implementing directly
 - 261012 WEB r46 implemented directly: hidden tabs play on at wall-clock pace (throttled ticks pay owed days in 30-day steps that still end on news and match days), a page that slept or closed with the clock running plays the time away on return up to a per-browser limit (끄기/30일/한 시즌, default a season), a "자리를 비운 동안" card sums up results, rank and cash, the hidden tab title shows the date and clock state, background settings in the intervention dialog; phone celebration is one dismissible 44 px line beside the news button with a lighter confetti burst; entry 253,554 of 256,000 bytes
 - 261012 update-ssot WEB r46 start: background play at wall-clock pace with away catch-up and summary, compact phone celebration; implementing directly
-- 261012 WEB r45 ECON r11 SAVE r16 ARCH r6 implemented directly: intervention popover closes on a choice; 구단 빌드→운영 전략 tab (five presets each lighting or aiming at a synergy, device strategy library with composer, dials in their own section, build events name the strategy); three game slots with a slot screen at the start address, parked games in IndexedDB, legacy save as slot 1, 새 게임 wording; start-layout scroller could not shrink (main clipped founding and slot screens on phones), fixed; strategy board and slot screen load lazily (entry 251,220 of 256,000 bytes)

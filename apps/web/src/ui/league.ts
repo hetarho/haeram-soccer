@@ -242,8 +242,15 @@ export function divisionRules(code: string, tier: number) {
   const cp = country(code),
     lower = tier >= cp.groups.length;
   const regional = (cp.groups[tier]?.length || 0) > 1;
-  const automatic = lower ? 1 : tier === 0 ? 0 : regional ? 1 : cp.automatic[tier - 1];
-  // The amateur champions go up; second to fifth play off for one more place.
+  // The amateur league fills the places its exchange opens (two per last-division group): all
+  // but the last by rank, the last by a play-off of the next four (→LEAGUE-6).
+  const automatic = lower
+    ? 2 * cp.groups[cp.groups.length - 1].length - 1
+    : tier === 0
+      ? 0
+      : regional
+        ? 1
+        : cp.automatic[tier - 1];
   const playoff = lower
     ? 4
     : tier > 0 && cp.moves[tier - 1] > cp.automatic[tier - 1]
