@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r14 | Define the implemented browser-demo behavior for historical club economy.
+> r15 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -115,14 +115,15 @@
   | 수익 | 수익 모델 | 마케팅 |
   | 홈·팬 | 홈·팬 | 티켓 가격 |
   - the card says how the club goes about an area, the dial how much it puts in; presets and saved strategies only fill the six cards and leave the dials as set; the market slot is named 매각 기조 so it never reads like the 영입 기조 dial ← the build arrived after the policy board and duplicated its areas in a second, unstructured list
-- ECON-26 [o] A football index per country and year scales what football pays and charges beyond prices: league distributions and prizes, sponsor values, ticket presets, player and staff market wages and transfer values. It grows with prices and, from commercialisation, much faster (the broadcasting boom of the 1990s–2010s); facility building and upkeep follow prices only (→ECON-12). ← income and wages must grow together, as they did in real football
+- ECON-26 [o] A football index per country and year scales what football pays and charges beyond prices: league distributions and prizes, sponsor values, ticket presets, player and staff market wages and transfer values, and clubs' operating expenses (→ECON-30). It grows with prices and, from commercialisation, much faster (the broadcasting boom of the 1990s–2010s); facility building and upkeep follow prices only (→ECON-12). ← income and wages must grow together, as they did in real football
   - the index is a source-attributed catalog per country and year, marked estimated where it is (→ECON-3), projected after its coverage like prices (→ECON-2).
 - ECON-27 [o] A club earns as real clubs do, simplified: competition money (league distribution →ECON-28, cup prizes →LEAGUE-5, continental prizes →EURO-7), matchday tickets (→ECON-9), sponsor contracts (→ECON-8) and player sales; owner capital and marketing campaigns stay bounded actions (→ECON-11, →ECON-7). No income grows with supporters alone. ← an income without a ceiling made every club rich by mid-career (measured 261012: £197m by 2004 from a 1950 founding with no owner action)
 - ECON-28 [o] Each league pays a season distribution that carries its broadcasting money: an equal share for every club of the division, paid in league-round installments, and a merit payment by final position, paid at the close; amounts per country and division follow the football index (→ECON-26). ← broadcasting is football's largest income, and real leagues share it by division and finish
   - the champion's total is 1.6× the bottom club's in the top flight and 1.3× in the divisions below.
   - a club relegated keeps 50% of the share it lost for one season (parachute); a promotion pays the new division's share from its first round.
   - the season prize line (최종 순위 상금) becomes the merit payment.
-- ECON-29 [o] The economy is calibrated against real football on 50-season runs with every delegation on, and the measured results are recorded here. ← balance is judged on whole careers, not single seasons
+- ECON-29 [o] The economy is calibrated against real football on 50-season runs of a reference club, and the measured results are recorded here. ← balance is judged on whole careers, not single seasons
+  - the reference club has every delegation on, no owner capital, and grows its stadium a level whenever cash after the build still covers 13 rounds of fixed costs; the attendance (→ECON-9) and wage (→CLUB-25) targets are measured on it too.
   | target | band |
   |---|---|
   | wage bill / income for a club keeping a squad at its division's level | 50–70% |
@@ -130,6 +131,9 @@
   | income mix, top flight, 2000s | distribution 40–55%, commercial 25–40%, matchday 15–25% |
   | income mix, any division, 1950s | matchday 60% or more |
   | the full facility ladder from level 1, in seasons of a top-flight club's average net result | 25 or more |
+- ECON-30 [o] Beyond wages, hosting costs and facility upkeep, every club pays operating expenses (운영 경비) — matchday operations, travel, administration, medical care and kit — each league round, an amount per country and division on the football index (→ECON-26), sized so that ECON-29's reference club ends its career near break-even; the amateur level pays the least. ← income grew with football money while every other cost followed prices, so delegated clubs kept about half their income (measured 261013: net result 47% of income over 50 seasons)
+  - it is a fixed cost: fixed costs and runway (→ECON-12), the cash projection (→ECON-18), the cash warning (→ECON-20) and the bankruptcy threshold (→ECON-24) count it, and the season ledger names it (→ECON-10).
+  - it follows the division the club plays in this season, so a promotion or relegation changes it from the first round.
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -137,6 +141,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r15 261013 ECON-30+ clubs' operating expenses per division on the football index; ECON-26✎ +operating expenses among what the index scales; ECON-29✎ runs with every delegation on→a reference club: every delegation on, no owner capital, the stadium grown whenever cash still covers 13 rounds of fixed costs
 - r14 261012 ECON-8✎ one main sponsor slot→five slots with 2–5 season contracts valued at signing, opening by era; ECON-9✎ attendance from all supporters→local supporters bounded by the catchment; ECON-14✎ +per contract; ECON-16✎ support player wage ×0.85–1.2→pay ceiling ×0.9–1.4 and goodwill −5 to +15% in contract talks; ECON-19✎ result bonuses→the league merit payment; ECON-21✎ the main slot→every open slot, +reminder for a contract's final season; ECON-23✎ global fan income 0.001 × fans^0.85 a round→none, the following raises sponsor offers; ECON-26+ football index; ECON-27+ four real income sources; ECON-28+ league distribution with broadcasting; ECON-29+ career calibration targets
 - r13 261012 ECON-6✎ balances and outstanding obligations→every live amount (cash, running contracts incl. coaches, pending bids and offers, prices on offer incl. free-agent managers and coaches); ECON-10✎ +the season ledger names every kind of entry, owner requests and win bonuses included; ECON-16✎ level 3 consuming the market RNG identically with offer IDs `market:<year>:<i>` at every level→a list and IDs per combination of settings
 - r12 261012 ECON-22✎ none→reservation for the next season at any time, applied as the season starts
