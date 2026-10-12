@@ -1,4 +1,4 @@
-import type { Event, MatchRecord, Sponsor, World } from '../../contracts/src/types';
+import type { Event, MatchRecord, SponsorSlot, World } from '../../contracts/src/types';
 import { country, currency, footballIndex } from '../../catalogs/src/index';
 import { activePlayers, clubOf, quote } from './world';
 import { clamp, ratio } from './primitives';
@@ -254,18 +254,19 @@ export function gateProjection(w: World, excluding?: string, opponent?: string) 
   };
 }
 
-/**
- * The club's one sponsor until contracts are signed by slot: the one these rules sign, or the
- * contract a load moved it into (→SAVE-10). Nothing signs while one is held, so never both.
- */
-export function clubSponsor(w: World): Sponsor | undefined {
-  return w.sponsor || w.sponsors?.[0];
-}
+/** Sponsor slots as the ledger and the 후원 tab name them (→ECON-8). */
+export const SPONSOR_SLOT_LABELS: Record<SponsorSlot, string> = {
+  local: '지역 후원',
+  kit: '용품 후원',
+  shirt: '메인 스폰서',
+  stadium: '경기장 명명권',
+  sleeve: '소매 스폰서',
+};
 
 /**
  * A match's result money: league games pay none, their results earning the merit payment at the
- * close (→ECON-19); cup and continental wins and draws keep their bonus; a performance sponsor
- * pays its bonus for league wins and draws (→ECON-14).
+ * close (→ECON-19); cup and continental wins and draws keep their bonus; the main sponsor pays
+ * its bonus for league wins and draws, home or away (→ECON-8, ECON-14).
  */
 export function matchBonus(w: World, match: MatchRecord) {
   const own = match.home === w.playerClub ? match.score.home : match.score.away;
@@ -281,10 +282,10 @@ export function matchBonus(w: World, match: MatchRecord) {
         (own > other ? FINANCE_CONFIG.winBonus : own === other ? FINANCE_CONFIG.drawBonus : 0) *
           prestige,
       );
-  const sponsor = clubSponsor(w);
+  const main = w.sponsors?.find((contract) => contract.slot === 'shirt');
   const sponsored =
-    sponsor?.kind === 'performance' && isLeagueMatch(match.kind)
-      ? ratio(sponsor.bonus, own > other ? 3n : own === other ? 1n : 0n, BigInt(games * 3))
+    main && isLeagueMatch(match.kind)
+      ? ratio(main.bonus, own > other ? 3n : own === other ? 1n : 0n, BigInt(games * 3))
       : '0';
   return { result, amount, sponsored };
 }
@@ -294,9 +295,11 @@ const incomeKinds: Record<string, string> = {
   'league-merit': '리그 순위 배분금',
   parachute: '강등 보전금',
   gate: '홈 경기 입장·상품',
-  'sponsor-payment': '후원 노출 대금',
+  // Each slot's contract, its base installments and bonus together (→ECON-8).
+  ...Object.fromEntries(
+    Object.entries(SPONSOR_SLOT_LABELS).map(([slot, label]) => [`sponsor:${slot}`, label]),
+  ),
   'match-bonus': '컵·대륙 경기 성과 보너스',
-  'sponsor-bonus': '후원 성과 보너스',
   'campaign-result': '마케팅 회수금',
   'transfer-out': '선수 매각',
   'cup-prize': '국내 컵 상금',

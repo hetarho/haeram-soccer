@@ -3,7 +3,6 @@ import { addEvent, clubOf, quote } from './world';
 import { random, ratio } from './primitives';
 import {
   campaignEffectiveness,
-  clubSponsor,
   divisionLabel,
   FINANCE_CONFIG,
   footballQuote,
@@ -14,8 +13,10 @@ import {
   matchBonus,
   moneyLabel,
   operatingCosts,
+  ownLeagueGames,
   parachutePayment,
   roundShare,
+  SPONSOR_SLOT_LABELS,
 } from './finance';
 import { currentDay, SEASON_ROUNDS } from './calendar';
 import { driftFans, MIN_FANS } from './fans';
@@ -23,12 +24,12 @@ import { pushInbox } from './inbox';
 import { marketingFanGain, policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { credit, debit } from './operations';
-import { CAMPAIGNS, sponsorAnnual } from './ops-commercial';
+import { CAMPAIGNS } from './ops-commercial';
+import { sponsorAnnual } from './sponsors';
 
 export function gate(w: World, m: MatchRecord) {
   if (m.home !== w.playerClub && m.away !== w.playerClub) return;
-  const bonus = matchBonus(w, m),
-    sponsor = clubSponsor(w);
+  const bonus = matchBonus(w, m);
   if (BigInt(bonus.amount) > 0n) {
     credit(w, bonus.amount);
     addEvent(
@@ -39,38 +40,7 @@ export function gate(w: World, m: MatchRecord) {
       bonus.amount,
     );
   }
-  if (BigInt(bonus.sponsored) > 0n) {
-    credit(w, bonus.sponsored);
-    addEvent(
-      w,
-      'sponsor-bonus',
-      `${bonus.result} 후원 성과 보너스`,
-      `${sponsor!.name} · ${m.id}`,
-      bonus.sponsored,
-    );
-  }
-  if (
-    sponsor &&
-    sponsor.lastPaid < w.year &&
-    sponsor.until > w.year &&
-    ['league', 'lower'].includes(m.kind)
-  ) {
-    const games = w.fixtures.filter(
-      (f) =>
-        ['league', 'lower'].includes(f.kind) &&
-        (f.home === w.playerClub || f.away === w.playerClub),
-    ).length;
-    const amount = roundShare(sponsorAnnual(w), w.tables[w.playerClub].played, games);
-    credit(w, amount);
-    addEvent(
-      w,
-      'sponsor-payment',
-      '후원 노출 대금',
-      `${sponsor.name} · 리그 경기 ${w.tables[w.playerClub].played}/${games} · ${m.id}`,
-      amount,
-    );
-    if (w.tables[w.playerClub].played === games) sponsor.lastPaid = w.year;
-  }
+  if (isLeagueMatch(m.kind)) paySponsors(w, m, bonus.result, bonus.sponsored);
   if (m.home !== w.playerClub) return;
   const c = clubOf(w),
     r = random(`${w.seed}:gate:${m.id}`);
@@ -97,14 +67,48 @@ export function gate(w: World, m: MatchRecord) {
   addEvent(w, 'match-cost', '홈 경기 개최비', `관중 ${attendance}명 · ${m.id}`, cost);
 }
 /**
- * One installment of a season-long payment. The season keeps one ledger entry per kind that grows
- * each round, so a century of rounds does not fill the save.
+ * Every sponsor contract's league payments (→ECON-14): a base installment per scheduled league
+ * game played since signing, never for earlier ones, and the main sponsor's bonus for a win or a
+ * draw, each on its slot's ledger line.
+ */
+function paySponsors(w: World, m: MatchRecord, result: string, resultBonus: string) {
+  const played = w.tables[w.playerClub].played,
+    games = ownLeagueGames(w);
+  for (const contract of w.sponsors ?? []) {
+    const label = SPONSOR_SLOT_LABELS[contract.slot];
+    if (contract.lastPaid < w.year && contract.until > w.year) {
+      accrue(
+        w,
+        `sponsor:${contract.slot}`,
+        label,
+        `${contract.name} · 리그 경기 ${played}/${games}`,
+        roundShare(sponsorAnnual(w, contract), played, games),
+      );
+      if (played === games) contract.lastPaid = w.year;
+    }
+    if (contract.slot === 'shirt')
+      accrue(
+        w,
+        'sponsor:shirt',
+        `${label} 경기 보너스`,
+        `${contract.name} · 리그 ${result} · ${m.id}`,
+        resultBonus,
+      );
+  }
+}
+/**
+ * One installment of a season-long payment. The season keeps one ledger entry per kind and title
+ * that grows each round, so a century of rounds does not fill the save.
  */
 function accrue(w: World, kind: string, title: string, detail: string, amount: string) {
   if (BigInt(amount) <= 0n) return;
   credit(w, amount);
   const entry = w.events.findLast(
-    (event) => event.kind === kind && event.year === w.year && event.currency === w.currency,
+    (event) =>
+      event.kind === kind &&
+      event.title === title &&
+      event.year === w.year &&
+      event.currency === w.currency,
   );
   if (entry) {
     entry.amount = (BigInt(entry.amount!) + BigInt(amount)).toString();

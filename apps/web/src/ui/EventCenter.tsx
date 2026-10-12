@@ -208,7 +208,7 @@ export function EventCenter({
               확인
             </button>
           </>
-        ) : item.kind === 'finance' ? (
+        ) : item.kind === 'finance' || item.kind === 'sponsor-ending' ? (
           <>
             <button
               className={s.primary}

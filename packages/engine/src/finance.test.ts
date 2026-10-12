@@ -29,6 +29,7 @@ import {
   settleRound,
   simulateMatch,
   simulateSeason,
+  sponsorOffers,
 } from './index';
 import { professionalStart, sellPlayer } from './testing';
 import { advanceEconomy } from './economy';
@@ -47,7 +48,7 @@ describe('earned, auditable club finances', () => {
   it('earns a larger surplus from commercial choices in a season with identical sporting results', () => {
     const unmanaged = world();
     const managed = world();
-    operate(managed, { type: 'sponsor', kind: 'stable' });
+    operate(managed, { type: 'sign-sponsor', slot: 'local', offer: 0 });
     operate(managed, { type: 'ticket', price: 0.12 });
     operate(managed, { type: 'campaign', kind: 'outreach' });
     simulateSeason(unmanaged);
@@ -64,7 +65,7 @@ describe('earned, auditable club finances', () => {
     const plain = BigInt(before.income) - BigInt(before.expense);
     const commercial = BigInt(after.income) - BigInt(after.expense);
     const sponsored = managed.events
-      .filter((event) => event.year === after.year && event.kind === 'sponsor-payment')
+      .filter((event) => event.year === after.year && event.kind === 'sponsor:local')
       .reduce((sum, event) => sum + BigInt(event.amount!), 0n);
     expect(sponsored).toBeGreaterThan(0n);
     expect(commercial).toBeGreaterThan(plain);
@@ -99,11 +100,25 @@ describe('earned, auditable club finances', () => {
     expect(w.cash).toBe(cash);
   });
 
-  it('pays no league result bonus, keeps cup bonuses and the sponsor’s league bonus, home and away', () => {
+  it('pays no league result bonus, keeps cup bonuses and the main sponsor’s league bonus, home and away', () => {
     const w = world();
     const fixture = w.fixtures.find((f) => f.home === w.playerClub)!;
     const record = simulateMatch(w, fixture, false, true).record;
-    operate(w, { type: 'sponsor', kind: 'performance' });
+    // The shirt-front slot opens in 1979 (→ECON-8); this 1950 club holds a contract as if it had.
+    const offer = sponsorOffers(w, 'shirt').find((o) => o.kind === 'performance')!;
+    w.sponsors = [
+      {
+        slot: 'shirt',
+        name: offer.name,
+        kind: offer.kind,
+        annual: offer.annual,
+        bonus: offer.bonus,
+        from: w.year,
+        until: offer.until,
+        lastPaid: w.year - 1,
+        index: offer.index,
+      },
+    ];
     const win = matchBonus(w, { ...record, score: { home: 2, away: 0 } });
     const draw = matchBonus(w, { ...record, score: { home: 1, away: 1 } });
     const loss = matchBonus(w, { ...record, score: { home: 0, away: 2 } });
@@ -131,24 +146,25 @@ describe('earned, auditable club finances', () => {
 
   it('earns sponsor money once per played league match instead of receiving a full annual grant', () => {
     const w = professionalStart(world());
-    operate(w, { type: 'sponsor', kind: 'stable' });
-    const annual = w.sponsor!.annual;
+    operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
+    const annual = w.sponsors![0].annual;
+    const paid = (world: typeof w) =>
+      world.events.filter((event) => event.kind === 'sponsor:local').map((event) => event.amount);
     expect(w.income).toBe('0');
     advanceDays(w, 6, undefined, false);
-    expect(w.events.filter((event) => event.kind === 'sponsor-payment')).toEqual([]);
+    expect(paid(w)).toEqual([]);
     advanceRound(w, undefined, false);
-    const first = w.events.filter((event) => event.kind === 'sponsor-payment');
-    expect(first).toHaveLength(1);
-    expect(BigInt(first[0].amount!)).toBeLessThan(BigInt(annual) / 40n);
+    expect(paid(w)).toHaveLength(1);
+    expect(BigInt(paid(w)[0]!)).toBeLessThan(BigInt(annual) / 40n);
     while (w.round < 46) advanceRound(w, undefined, false);
-    const payments = w.events.filter((event) => event.kind === 'sponsor-payment');
-    expect(payments.reduce((sum, event) => sum + BigInt(event.amount!), 0n)).toBe(BigInt(annual));
-    expect(w.sponsor!.lastPaid).toBe(w.year);
+    // One ledger entry of the season holds every installment, adding up to the annual amount.
+    expect(paid(w)).toEqual([annual]);
+    expect(w.sponsors![0].lastPaid).toBe(w.year);
     const oldSave = world();
-    operate(oldSave, { type: 'sponsor', kind: 'stable' });
-    oldSave.sponsor!.lastPaid = oldSave.year;
+    operate(oldSave, { type: 'sign-sponsor', slot: 'local', offer: 0 });
+    oldSave.sponsors![0].lastPaid = oldSave.year;
     advanceRound(oldSave, undefined, false);
-    expect(oldSave.events.filter((event) => event.kind === 'sponsor-payment')).toEqual([]);
+    expect(paid(oldSave)).toEqual([]);
   });
 
   it('changes ticket demand, attendance and costs through actual operating decisions', () => {
@@ -215,7 +231,7 @@ describe('earned, auditable club finances', () => {
 
   it('logs every receipt and expense, sums to the season books, and pays the merit once', () => {
     const w = world();
-    operate(w, { type: 'sponsor', kind: 'performance' });
+    operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
     operate(w, { type: 'campaign', kind: 'outreach' });
     for (let round = 0; round < 8; round++) advanceRound(w, undefined, false);
     settleLeagueMerit(w, 1, 24);

@@ -55,7 +55,8 @@ describe('club decisions', () => {
       'contract-offer 명령은 아직 지원하지 않습니다.',
     );
     expect(() => operate(w, { type: 'contract-decline', player })).toThrow('아직');
-    expect(() => operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 })).toThrow('아직');
+    // The single sponsor of rules before 1.16 is signed by slot now (→ECON-8).
+    expect(() => operate(w, { type: 'sponsor', kind: 'stable' })).toThrow('자리별');
     expect(() => operate(w, { type: 'manager-rule', rule: 'best' })).toThrow('아직');
     expect(() => operate(w, { type: 'renew-manager', term: 2 })).toThrow('계약 기간');
     expect(() => operate(w, { type: 'hire-staff', role: 'attack', candidate: 0, term: 3 })).toThrow(
@@ -83,15 +84,19 @@ describe('club decisions', () => {
     operate(w, { type: 'recruit', candidate: 2, loan: true });
     expect(BigInt(w.cash)).toBe(before - BigInt(offer.loanFee));
     expect(() => operate(w, { type: 'recruit', candidate: 2 })).toThrow('이미');
-    operate(w, { type: 'sponsor', kind: 'stable' });
-    expect(() => operate(w, { type: 'sponsor', kind: 'indexed' })).toThrow('기존');
+    operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
+    expect(() => operate(w, { type: 'sign-sponsor', slot: 'local', offer: 2 })).toThrow('남아');
+    const paid = () =>
+      w.events
+        .filter((e) => e.kind === 'sponsor:local')
+        .reduce((sum, e) => sum + BigInt(e.amount!), 0n);
     advanceRound(w);
-    const sponsorIncome = w.events.filter((e) => e.kind === 'sponsor-payment');
+    const first = paid();
     advanceRound(w);
-    expect(w.events.filter((e) => e.kind === 'sponsor-payment')).toHaveLength(
-      sponsorIncome.length + 1,
-    );
-    expect(BigInt(sponsorIncome[0].amount!)).toBeLessThan(BigInt(w.sponsor!.annual));
+    // Installments accrue on the slot's one ledger entry of the season.
+    expect(w.events.filter((e) => e.kind === 'sponsor:local')).toHaveLength(1);
+    expect(paid()).toBeGreaterThan(first);
+    expect(first).toBeLessThan(BigInt(w.sponsors![0].annual));
     simulateSeason(w);
     expect(w.players.find((p) => p.id === offer.player.id)?.status).toBe('retired');
   });

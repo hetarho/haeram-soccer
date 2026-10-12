@@ -1123,8 +1123,9 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
         tag: '구단',
         tone: 'neutral',
         weight: 'minor',
-        title: `${name}, 새 메인 스폰서와 계약`,
-        detail: first(event.detail),
+        title: `${name}, 새 후원 계약`,
+        // The event names the slot (→ECON-8) and its detail the partner.
+        detail: `${event.title} · ${first(event.detail)}`,
       };
     // Older saves record a vision; both read as the club announcing its direction.
     case 'vision':

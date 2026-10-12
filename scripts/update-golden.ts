@@ -16,7 +16,7 @@ const definitions: FixtureDefinition[] = [
     name: 'founding-and-commercial-decisions',
     input,
     commands: [
-      { type: 'sponsor', kind: 'stable' },
+      { type: 'sign-sponsor', slot: 'local', offer: 0 },
       { type: 'campaign', kind: 'outreach' },
       { type: 'recruit', candidate: 0, loan: true },
       { type: 'tactics', tactic: 'counter', tone: 'evidence' },

@@ -81,49 +81,49 @@ describe('no income from the following alone', () => {
 });
 
 describe('business delegation and cash warnings', () => {
-  it('lets the commercial staff fill an empty sponsor slot with the stable offer', () => {
+  it('lets the commercial staff fill every empty open sponsor slot with its stable offer', () => {
     const owner = world();
     advanceDays(owner, 1);
-    expect(owner.sponsor).toBeUndefined();
+    expect(owner.sponsors).toBeUndefined();
     const delegated = world();
     delegated.delegation = { ...delegated.delegation, business: true };
     advanceDays(delegated, 1);
-    expect(delegated.sponsor).toMatchObject({ kind: 'stable', until: delegated.year + 2 });
+    // A 1950 club in England has only the local slot open (→ECON-8).
+    expect(delegated.sponsors).toEqual([
+      expect.objectContaining({ slot: 'local', kind: 'stable', until: delegated.year + 3 }),
+    ]);
     expect(finance(delegated)).toEqual([expect.objectContaining({ attention: false })]);
     advanceDays(delegated, 1);
     expect(delegated.events.filter((e) => e.kind === 'sponsor-sign')).toHaveLength(1);
-    // The engine still signs the single sponsor of rules 1.15, which a load moves into its slot.
-    validateWorld(delegated, LOAD_CATALOG);
+    expect(() => operate(delegated, { type: 'sign-sponsor', slot: 'local', offer: 0 })).toThrow(
+      '남아',
+    );
+    // Signed contracts are what a load keeps.
+    expect(canonical(validateWorld(structuredClone(delegated), LOAD_CATALOG))).toBe(
+      canonical(delegated),
+    );
   });
 
-  it('runs a sponsor a load moved into its slot exactly as the one it signed, never signing twice', () => {
+  it('signs again once a contract has run its term, valued anew', () => {
     const w = world();
     w.delegation = { ...w.delegation, business: true };
     advanceDays(w, 1);
-    const loaded = validateWorld(structuredClone(w), LOAD_CATALOG);
-    expect(loaded.sponsor).toBeUndefined();
-    expect(() => operate(loaded, { type: 'sponsor', kind: 'stable' })).toThrow(
-      '기존 주 후원 계약이 남아 있습니다.',
-    );
-    // It pays through two seasons, ends at the close and the staff sign again, as if never loaded.
-    for (const career of [w, loaded]) {
-      simulateSeason(career);
-      simulateSeason(career);
-    }
-    expect(loaded.events.filter((e) => e.kind === 'sponsor-payment').length).toBeGreaterThan(0);
-    expect(loaded.events.filter((e) => e.kind === 'sponsor-end')).toHaveLength(1);
-    expect(loaded.sponsors).toBeUndefined();
-    expect(canonical(validateWorld(loaded, LOAD_CATALOG))).toBe(
-      canonical(validateWorld(w, LOAD_CATALOG)),
-    );
+    const first = w.sponsors![0];
+    for (let season = 0; season < 3; season++) simulateSeason(w);
+    expect(w.events.filter((e) => e.kind === 'sponsor-end')).toHaveLength(1);
+    expect(w.sponsors).toEqual([
+      expect.objectContaining({ slot: 'local', from: w.year, until: w.year + 3 }),
+    ]);
+    expect(w.sponsors![0].annual).not.toBe(first.annual);
   });
 
-  it('reminds an owner without a sponsor when a season starts, but not a delegating one', () => {
+  it('reminds an owner of empty open slots when a season starts, but not a delegating one', () => {
     const owner = world();
     simulateSeason(owner);
     expect(finance(owner).filter((item) => item.year === owner.year)).toEqual([
       expect.objectContaining({ title: '후원 계약이 비어 있어요', attention: true }),
     ]);
+    expect(finance(owner).at(-1)!.detail).toMatch(/^지역 후원 자리가 비어 있어요/);
     const delegated = world();
     delegated.delegation = { ...delegated.delegation, business: true };
     simulateSeason(delegated);

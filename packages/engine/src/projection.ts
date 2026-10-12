@@ -2,14 +2,13 @@ import type { World } from '../../contracts/src/types';
 import { ratio } from './primitives';
 import { clubOf } from './world';
 import {
-  clubSponsor,
   gateProjection,
   leagueMerit,
   leagueShare,
   operatingCosts,
   parachutePayment,
 } from './finance';
-import { sponsorAnnual } from './operations';
+import { sponsorAnnual } from './sponsors';
 import { ownLeagueClubs, ranked } from './season';
 import { SEASON_ROUNDS } from './calendar';
 
@@ -98,35 +97,39 @@ export function financeProjection(w: World): FinanceProjection {
     gateLow = big(gate.incomeLow) - big(gate.costLow),
     gateHigh = big(gate.incomeHigh) - big(gate.costHigh);
 
-  const sponsor = clubSponsor(w),
-    annual = big(sponsorAnnual(w)),
-    leaguePlayed = w.tables[w.playerClub]?.played ?? 0,
-    paying = !!sponsor && sponsor.lastPaid < w.year && sponsor.until > w.year,
-    continues = !!sponsor && sponsor.until > w.year + 1;
-  const sponsorSeason =
-    paying && games
-      ? annual - big(ratio(annual.toString(), BigInt(leaguePlayed), BigInt(games)))
-      : 0n;
-  const sponsorYear =
-    sponsorSeason +
-    (continues && games ? big(ratio(annual.toString(), BigInt(leaguePlayed), BigInt(games))) : 0n);
-
-  const table = w.tables[w.playerClub],
+  const leaguePlayed = w.tables[w.playerClub]?.played ?? 0,
+    table = w.tables[w.playerClub],
     winRate = table?.played ? table.won / table.played : 1 / 3,
     drawRate = table?.played ? table.drawn / table.played : 1 / 3;
-  // League results earn no match bonus (→ECON-19); only a performance sponsor pays per result.
-  const sponsorBonus = (count: number) =>
-    sponsor?.kind === 'performance' && games && count
+  // League results earn no match bonus (→ECON-19); only the main sponsor pays per result.
+  const resultBonus = (bonus: string, count: number) =>
+    games && count
       ? big(
           ratio(
-            sponsor.bonus,
+            bonus,
             BigInt(Math.round((winRate * 3 + drawRate) * 1000) * count),
             BigInt(games * 3 * 1000),
           ),
         )
       : 0n;
-  const performanceSeason = sponsorBonus(remainingGames);
-  const performanceYear = sponsorBonus(continues ? games : remainingGames);
+  // Every running contract at its fixed amount (→ECON-8); a kit bonus waits on an uncertain
+  // promotion or title and is left out.
+  let sponsorSeason = 0n,
+    sponsorYear = 0n,
+    performanceSeason = 0n,
+    performanceYear = 0n;
+  for (const contract of w.sponsors ?? []) {
+    const annual = big(sponsorAnnual(w, contract)),
+      paid = big(ratio(annual.toString(), BigInt(leaguePlayed), BigInt(Math.max(1, games)))),
+      continues = contract.until > w.year + 1;
+    const season =
+      contract.lastPaid < w.year && contract.until > w.year && games ? annual - paid : 0n;
+    sponsorSeason += season;
+    sponsorYear += season + (continues && games ? paid : 0n);
+    if (contract.slot !== 'shirt') continue;
+    performanceSeason += resultBonus(contract.bonus, remainingGames);
+    performanceYear += resultBonus(contract.bonus, continues ? games : remainingGames);
+  }
 
   // The division's share keeps paying a round at a time, next season as this one (→ECON-28);
   // a parachute ends with the season it pays in.

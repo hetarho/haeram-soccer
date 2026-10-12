@@ -35,7 +35,7 @@ const eventsTotal = (w: World, kind: string) =>
 describe('finance projection', () => {
   it('never changes the world and keeps every range ordered', () => {
     const w = world();
-    operate(w, { type: 'sponsor', kind: 'performance' });
+    operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
     for (let i = 0; i < 6; i++) advanceRound(w, undefined, false);
     const before = structuredClone(w);
     const projection = financeProjection(w);
@@ -115,16 +115,17 @@ describe('finance projection', () => {
     expect(BigInt(base.nextYear.low) - BigInt(dearer.nextYear.low)).toBe(46000n);
     expect(BigInt(base.seasonEnd.high) - BigInt(dearer.seasonEnd.high)).toBe(46000n);
     expect(BigInt(dearer.nextYear.high)).toBeLessThan(BigInt(base.nextYear.high));
-    operate(w, { type: 'sponsor', kind: 'stable' });
-    const signed = financeProjection(w);
-    expect(lineOf(signed.seasonLines, 'sponsor').amount).toBe(sponsorAnnual(w));
-    // A two-season contract keeps paying at the same point of next season.
-    expect(lineOf(signed.lines, 'sponsor').amount).toBe(sponsorAnnual(w));
+    operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
+    const signed = financeProjection(w),
+      annual = sponsorAnnual(w, w.sponsors![0]);
+    expect(lineOf(signed.seasonLines, 'sponsor').amount).toBe(annual);
+    // A three-season contract keeps paying at the same point of next season.
+    expect(lineOf(signed.lines, 'sponsor').amount).toBe(annual);
     for (let i = 0; i < 12; i++) advanceRound(w, undefined, false);
     const projected = BigInt(lineOf(financeProjection(w).seasonLines, 'sponsor').amount);
-    const paid = eventsTotal(w, 'sponsor-payment');
+    const paid = eventsTotal(w, 'sponsor:local');
     while (w.round < 46) advanceRound(w, undefined, false);
-    expect(eventsTotal(w, 'sponsor-payment') - paid).toBe(projected);
+    expect(eventsTotal(w, 'sponsor:local') - paid).toBe(projected);
     expect(lineOf(financeProjection(w).seasonLines, 'sponsor').amount).toBe('0');
   });
 

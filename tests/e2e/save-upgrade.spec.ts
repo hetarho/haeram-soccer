@@ -1,7 +1,7 @@
 import { CURRENT_ENGINE_VERSION } from '../../packages/contracts/src/versions';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
-import { createWorld, advanceRound, operate } from '../../packages/engine/src/index';
+import { createWorld, advanceRound, quote } from '../../packages/engine/src/index';
 import { encode, decode } from '../../apps/web/src/adapters/persistence';
 import type { World } from '../../packages/contracts/src/types';
 import { continueSlot } from './slots';
@@ -14,7 +14,16 @@ async function legacy() {
     seed: 'legacy-browser-upgrade',
     difficulty: 2,
   });
-  operate(world, { type: 'sponsor', kind: 'stable' });
+  // Rules before 1.16 kept one sponsor, as this older save does.
+  world.sponsor = {
+    name: 'Legacy Cooperative',
+    kind: 'stable',
+    annual: quote('ENG', world.year, 300),
+    bonus: '0',
+    until: world.year + 2,
+    lastPaid: world.year - 1,
+    index: world.priceIndex,
+  };
   advanceRound(world, undefined, false);
   world.engine = '1.0.0';
   delete world.training;
