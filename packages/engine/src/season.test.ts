@@ -223,7 +223,11 @@ function lastRound(code: CountryCode, start = (w: World) => w) {
       difficulty: 1,
     }),
   );
-  while (w.round < 46) advanceRound(w, undefined, false);
+  // A round step stays put once the club is bankrupt: fail here rather than loop to the timeout.
+  while (w.round < 46) {
+    expect(w.bankrupt).toBeUndefined();
+    advanceRound(w, undefined, false);
+  }
   return w;
 }
 
