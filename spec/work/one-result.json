@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-12T07:42:52.062Z",
-  "sourceCommit": "730d080682f751efafad8abb8d3acf069ba5a21b",
+  "snapshotAt": "2026-10-12T07:50:08.783Z",
+  "sourceCommit": "c42fa7394d75a45e6ddd5e3691ae0ec876e6acc9",
   "group": {
     "id": "one-result",
     "branch": "work/one-result",
@@ -12,7 +12,7 @@
       "reviewers": 1,
       "maxPending": 8
     },
-    "runner": {
+    "lastRun": {
       "id": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
       "adapter": "builtin",
       "providers": {
@@ -34,76 +34,25 @@
           "version": "2.1.296 (Claude Code)"
         }
       ],
-      "startedAt": "2026-10-12T07:10:13.945Z"
-    },
-    "lastRun": {
-      "id": "04bf1446-4df5-4608-aabb-68858781e112",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-10-12T05:51:17.333Z",
-      "stoppedAt": "2026-10-12T07:09:57.317Z",
-      "dispatched": 11,
-      "outcome": "needs-attention",
+      "startedAt": "2026-10-12T07:10:13.945Z",
+      "stoppedAt": "2026-10-12T07:50:08.596Z",
+      "dispatched": 10,
+      "outcome": "interrupted",
       "failures": [
         {
-          "attempt": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
-          "role": "integration",
-          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
-        },
-        {
-          "attempt": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
-          "role": "integration",
-          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
-        },
-        {
           "attempt": "86b16233-ef43-4161-8e24-743db5f76235",
           "role": "worker",
-          "error": "T043: WEB@48가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
-        },
-        {
-          "role": "reviewer",
-          "error": "T042: ARCH@7가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
-        },
-        {
-          "attempt": "86b16233-ef43-4161-8e24-743db5f76235",
-          "role": "worker",
-          "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+          "error": "T044 is blocked on the review's P2 finding. Fixing it needs a planner decision on scope, so I didn't change it. After T044, Italy's (ITA) amateur table sends its top 5 clubs up and plays off 6th–9th for one more place. But apps/web/src/ui/league.ts divisionRules still gives every amateur table 1 automatic place and 4 playoff places. So the live and closed-season ITA amateur tables show the wrong zones (LEAGUE-6, WEB-47). That file, plus an ITA test in league.test.ts / seasonArchive.test.ts, is outside the lane's declared touches, and no other task in one-result touches it. The planner needs to either add it to lane day-order or add a follow-up task to one-result. The reviewer's fix: for the amateur tier, automatic = groups[last].length × 2 − 1 and playoff = 4.\n\nChanges I made within T044's scope (not committed):\n- packages/engine/src/season.test.ts: the lastRound helper's season loop now fails when the club goes bankrupt instead of looping until the 30 s timeout (P3).\n- spec/tasks/T044.amateur-exchange.md: the result's at: line was f17c207 and is now `-`, because the checks ran on the uncommitted tree (P3). verified is updated, and limits records the blocker.\n\nLeft open: the P3 about unbounded loops at calendar.test.ts:194,205. That file belongs to T043 and this assignment covers only T044.\n\nChecks: `pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit` passed (73 files, 505 tests). eslint and prettier --check passed on season.test.ts and the task file.\n\nNot run because they needed approval and were denied: `work board --work one-result --json` (board and freshness check), a targeted vitest run, and spec lint. The CLI never recorded the blocked status; the host has to do that."
         },
         {
           "attempt": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
           "role": "worker",
-          "error": "T049: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
-        },
-        {
-          "role": "reviewer",
-          "error": "ECON: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요."
+          "error": "adapter exited 1"
         },
         {
           "attempt": "86b16233-ef43-4161-8e24-743db5f76235",
-          "role": "worker",
-          "error": "WEB: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요."
-        },
-        {
           "role": "reviewer",
-          "error": "ARCH: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요."
+          "error": "adapter exited 1"
         }
       ]
     }
@@ -340,17 +289,17 @@
       "submissionId": "e41b2d2f-b69e-4037-971e-4eed3cb5e065",
       "submittedAt": "2026-10-12T07:41:15.050Z",
       "dispatch": {
-        "id": "3e4085d2-b292-4b7e-a753-9738e4418b1a",
+        "id": "634fc69e-545f-488f-8c00-c454eab3df0a",
         "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
-        "role": "worker",
-        "slot": 2,
+        "role": "reviewer",
+        "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-12T07:36:35.051Z",
-        "finishedAt": "2026-10-12T07:41:15.061Z",
-        "error": null,
-        "summary": "I finished the T044 fixes from review 118ec12a, and the checks pass.\n\n**Checks:** On 07756b4, which includes work/one-result's T042 and T046 changes, `pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit` passed: 74 files, 513 tests. eslint and `prettier --check` also passed on `season.test.ts` and the T044 task file.\n\n**Review findings:**\n- **P3, unbounded loop in `season.test.ts` (`lastRound`):** fixed. The loop now checks that `w.bankrupt` is undefined on each round, so it fails with a message instead of hanging until the timeout. This edit was already committed in bc4542c.\n- **P3, wrong `at:` line:** fixed. T044's result now says `at: 07756b4`, the commit the checks ran on, with the new test counts. Its limits no longer say T044 is blocked.\n- **P2, Italian amateur table zones on the web:** not done here. The planner has added task T063 for it, since `apps/web/src/ui/league.ts` is outside T044's files.\n\n**Still open:**\n- **P3, unbounded loops in `calendar.test.ts` (lines 194 and 205):** not fixed. That file belongs to T043, and I was told to edit only T044.\n- **Portable goldens:** not run or regenerated; T047 handles them.\n- **Blocked commands:** spec lint and the `work board` check were both blocked by the permission system in this session, so neither ran.\n\nThe only file I changed is `spec/tasks/T044.amateur-exchange.md`."
+        "startedAt": "2026-10-12T07:44:41.832Z",
+        "finishedAt": "2026-10-12T07:50:08.505Z",
+        "error": "adapter exited 1",
+        "summary": null
       },
       "reviewHistory": [
         {
@@ -383,6 +332,17 @@
           "finishedAt": "2026-10-12T07:27:32.084Z",
           "invalidatedAt": "2026-10-12T07:27:32.126Z",
           "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "21a9dc45-01e8-4123-a59b-da0c48978345",
+          "owner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/reviewer-1",
+          "status": "reviewing",
+          "commit": "635fb189d38c30674936f0c3e992a23c32ad3103",
+          "baseCommit": "c42fa7394d75a45e6ddd5e3691ae0ec876e6acc9",
+          "submissionId": "e41b2d2f-b69e-4037-971e-4eed3cb5e065",
+          "createdAt": "2026-10-12T07:44:41.567Z",
+          "invalidatedAt": "2026-10-12T07:50:08.495Z",
+          "invalidationReason": "adapter exited 1"
         }
       ],
       "steps": [
@@ -586,26 +546,27 @@
         "T049"
       ],
       "lane": "background-save",
-      "owner": "04bf1446-4df5-4608-aabb-68858781e112/worker-1",
+      "owner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/worker-1",
       "contributors": [
-        "04bf1446-4df5-4608-aabb-68858781e112/worker-1"
+        "04bf1446-4df5-4608-aabb-68858781e112/worker-1",
+        "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/worker-1"
       ],
       "status": "blocked",
-      "reason": "T049: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+      "reason": "adapter exited 1",
       "createdAt": "2026-10-12T06:19:25.170Z",
       "startCommit": "a37e137038d9f4211780569bddf8856da8860cd4",
       "dispatch": {
-        "id": "7a8f8d42-3c61-4ee6-a154-ce888074c732",
-        "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+        "id": "3c2ce89c-3ec0-4c7d-92f7-de5a6bb54750",
+        "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
         "role": "worker",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-12T06:42:27.192Z",
-        "finishedAt": "2026-10-12T07:01:10.623Z",
-        "error": "T049: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
-        "summary": "T049 구현은 끝났습니다. 다만 e2e는 이 서버에서 브라우저가 실행되지 않아 돌리지 못했고, 해당 acceptance 항목 하나는 [ ]로 남겨 두었습니다.\n\n변경 내용:\n- progression.ts: 저장이 끝날 때까지 다음 걸음을 막던 조건을 없앴습니다. 명령은 여전히 한 번에 하나씩만 보냅니다(inFlight/processing). 밀린 날짜는 직전 걸음 자체가 속도보다 오래 걸렸을 때나 자리를 비웠다 돌아왔을 때만 갚습니다. 그래서 x10에서도 평소에는 한 걸음에 하루씩 갑니다. 시계가 멈추면 이유와 상관없이 바로 저장하고, 멈춘 뒤에 도착한 걸음의 결과도 저장합니다.\n- client.ts: 이제 어떤 명령도 저장을 기다리지 않습니다.\n  - 소유자 결정(명령, 창단, 알림 확인)은 `saveSoon()`으로 바로 백그라운드 저장을 요청합니다.\n  - 자동 진행은 저장되지 않은 구간마다 30초(`AUTOSAVE_MS`) 타이머를 하나 겁니다.\n  - 상태에 `savedAt`과 `saveFailed`를 추가했습니다.\n  - 백그라운드 저장 요청은 긴 명령 뒤에 줄을 설 수 있습니다. 그래서 15초 워커 감시 시간이 잘못 터지지 않도록 저장 요청에는 체크포인트 감시 시간(60초)을 씁니다.\n  - 게임 삭제(forget)와 종료(dispose) 때 자동 저장 타이머를 해제합니다.\n- App.tsx: 탭이 숨겨질 때와 `pagehide` 때 바로 저장합니다. 저장 상태는 모두 저장됐으면 `저장 완료`, 아니면 `방금 저장`/`n초 전 저장`으로 보입니다. 이 탭에서 한 번도 저장하지 않았으면 `저장 대기`입니다. `저장 재시도` 버튼은 저장이 실패했을 때만 나옵니다.\n- 테스트:\n  - progression.test: 가짜 타이머로 x10에서 20ms 명령과 0.8초 저장을 돌려, 100ms마다 하루씩 진행하고 저장을 기다리지 않으며 멈추면 저장한다는 것을 확인합니다.\n  - client.test: 자동 저장 타이머, 결정 직후 바로 저장하되 명령은 기다리지 않는다는 것, 커밋마다 읽기 전용 탭 알림이 가는 것을 확인합니다. 기존 테스트는 비동기 저장에 맞춰 `whenSaved()`를 기다리도록 고쳤습니다.\n  - e2e: builds, business, cups-and-club, founding, intervention, milestones, native-touch, news, recruitment에서 새로고침 전에 `저장 완료`를 기다리게 했습니다. recovery의 저장 실패 후 상태 문구 기대값도 바꿨습니다.\n\n검증 결과: `pnpm run typecheck`, `pnpm run test:unit`(73개 파일, 506개 테스트), `pnpm run lint`, `pnpm run format:check`, `pnpm run build`가 모두 통과했습니다. 아직 커밋 전이라 result의 at은 `-`입니다.\n\n검증하지 못한 것:\n- e2e: Playwright의 Chromium과 Firefox가 시작되지 않습니다(`libatk-1.0.so.0`, `libgtk-3.so.0` 없음). 그래서 e2e 수정이 브라우저에서 통과하는지는 확인하지 못했습니다.\n- `haeram-spec-creator` 실행(work board, lint)이 이 세션에서 허용되지 않아, 상위 브랜치 상태 확인과 spec lint를 하지 못했습니다.\n- first-play 진입 번들 크기는 다시 재지 않았습니다.\n\n알려진 동작: 체크포인트에 저장 시각이 없어서, 불러온 게임은 그 탭에서 처음 저장할 때까지 `저장 대기`로 표시됩니다."
+        "startedAt": "2026-10-12T07:44:41.237Z",
+        "finishedAt": "2026-10-12T07:50:08.463Z",
+        "error": "adapter exited 1",
+        "summary": null
       },
       "steps": [
         {
@@ -642,6 +603,8 @@
       "submittedBase": "730d080682f751efafad8abb8d3acf069ba5a21b",
       "submissionId": "20e6c114-d596-4e41-bd69-19e1a966ad88",
       "submittedAt": "2026-10-12T07:36:34.667Z",
+      "integratedCommit": "c42fa7394d75a45e6ddd5e3691ae0ec876e6acc9",
+      "integratedAt": "2026-10-12T07:44:41.180Z",
       "dispatch": {
         "id": "4a090d4c-7163-44f9-8d7e-f0ec7d0c06dc",
         "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
@@ -698,6 +661,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
           "startedAt": "2026-10-12T07:34:59.596Z",
           "finishedAt": "2026-10-12T07:36:34.452Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+          "startedAt": "2026-10-12T07:42:52.128Z",
+          "finishedAt": "2026-10-12T07:44:41.058Z"
         }
       ]
     },
@@ -4892,6 +4862,402 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 167,
+      "at": "2026-10-12T07:43:43.888Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": "Browser system dependencies are now installed on this server (Chromium, Firefox and WebKit launch). The T049 code is kept in commit 151f7ec. Run the affected journeys in Chromium with `pnpm run test:e2e -- --project=chromium <spec files>` (builds, business, cups-and-club, founding, intervention, milestones, native-touch, news, recruitment, recovery and any other spec that reads save-status). Fix failures, record the real results, mark the e2e acceptance [v] only if they pass, and submit the lane."
+      }
+    },
+    {
+      "sequence": 168,
+      "at": "2026-10-12T07:44:41.146Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "64126bf4-57f6-479d-8f83-38f7dfa81308",
+      "taskId": "T045",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+            "startedAt": "2026-10-12T07:42:52.128Z",
+            "finishedAt": "2026-10-12T07:44:41.058Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 169,
+      "at": "2026-10-12T07:44:41.181Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "64126bf4-57f6-479d-8f83-38f7dfa81308",
+      "taskId": "T045",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "c42fa7394d75a45e6ddd5e3691ae0ec876e6acc9",
+        "integratedAt": "2026-10-12T07:44:41.180Z"
+      }
+    },
+    {
+      "sequence": 170,
+      "at": "2026-10-12T07:44:41.196Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/worker-1",
+        "contributors": [
+          "04bf1446-4df5-4608-aabb-68858781e112/worker-1",
+          "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 171,
+      "at": "2026-10-12T07:44:41.237Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "3c2ce89c-3ec0-4c7d-92f7-de5a6bb54750",
+          "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T07:44:41.237Z"
+        }
+      }
+    },
+    {
+      "sequence": 172,
+      "at": "2026-10-12T07:44:41.251Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "3c2ce89c-3ec0-4c7d-92f7-de5a6bb54750",
+          "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T07:44:41.237Z"
+        }
+      }
+    },
+    {
+      "sequence": 173,
+      "at": "2026-10-12T07:44:41.567Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "21a9dc45-01e8-4123-a59b-da0c48978345",
+          "owner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/reviewer-1",
+          "status": "reviewing",
+          "commit": "635fb189d38c30674936f0c3e992a23c32ad3103",
+          "baseCommit": "c42fa7394d75a45e6ddd5e3691ae0ec876e6acc9",
+          "submissionId": "e41b2d2f-b69e-4037-971e-4eed3cb5e065",
+          "createdAt": "2026-10-12T07:44:41.567Z"
+        }
+      }
+    },
+    {
+      "sequence": 174,
+      "at": "2026-10-12T07:44:41.832Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "634fc69e-545f-488f-8c00-c454eab3df0a",
+          "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T07:44:41.832Z"
+        }
+      }
+    },
+    {
+      "sequence": 175,
+      "at": "2026-10-12T07:44:41.847Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "634fc69e-545f-488f-8c00-c454eab3df0a",
+          "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T07:44:41.832Z"
+        }
+      }
+    },
+    {
+      "sequence": 176,
+      "at": "2026-10-12T07:50:08.451Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "adapter exited 1"
+      }
+    },
+    {
+      "sequence": 177,
+      "at": "2026-10-12T07:50:08.463Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "3c2ce89c-3ec0-4c7d-92f7-de5a6bb54750",
+          "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T07:44:41.237Z",
+          "finishedAt": "2026-10-12T07:50:08.463Z",
+          "error": "adapter exited 1",
+          "summary": null
+        }
+      }
+    },
+    {
+      "sequence": 178,
+      "at": "2026-10-12T07:50:08.495Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "reviewing",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "118ec12a-b794-4df8-92d8-6a68a57c1d02",
+            "owner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "I read the code for both tasks. T043 and T044 meet their acceptance in the engine. The integration-blocking finding is a P2: after T044 changes who goes up from the Italian (ITA) amateur league, the web standings still show the old promotion and playoff places for it. The changes are 25e6ebf against base c60409c; merge-base 55c1a05 merges cleanly with the upstream T042/T046 work.\n\nT043: advanceDays and advanceRound now both step through one internal stepDay, and simulateSeason goes through advanceRound. On a league match day, playRound plays the matches and settles the round (training, Europe/cup catch-up, wages, snapshots), then the day's club business runs. Other days play their ties first, then club business. closeSeason moves the calendar to day 323 (SEASON_END_DAY + 1) before closing, as LEAGUE-9/11 require. advanceRound still carries on past a critical alert and stops on bankruptcy. The host's advance/season loop and simulateSeason keep working. The return value is now the last own match in day order (the league match rather than a later-processed cup tie), which is fine. With T042's day-keyed caretaker draw merged from upstream, a close on the same day in every mode also keeps that draw the same. A new test in calendar.test.ts checks day, round and season runs for ENG haeram-demo and ESP over 1.5 seasons, as the acceptance asks.\n\nT044: promote() now ranks the amateur table and plays the lower-promotion playoff before any club moves. Entrants are the top (places − 1) plus the playoff winner of the next four, filled in group order. The own club goes up through the normal exchange (w.lower=false and the 프로 무대 입성/복귀 event). The extra ranked().at(-1) drop is gone. The previous-standings filter stops a club just relegated into the last division from dropping again. Other countries keep the strength order. The new season.test.ts cases cover the champion, the third-place playoff, ITA and GER (including the former double-relegation clubs), group capacities and the professional season.\n\nThe runner's typecheck and unit tests pass at 25e6ebf (73 files, 505 tests). I reviewed the code by reading it and did not re-run the tests (read-only session).",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/ui/league.ts:245-248 (T044)",
+                "message": "After T044, Italy's (ITA) amateur exchange promotes the amateur table's top 5 automatically and plays off 6th–9th for the 6th place (last division of 3 groups × 2). divisionRules() still gives every amateur table 1 automatic and 4 playoff places. The live table (LeagueInsights.tsx via leagueRules) and the closed-season table (PastSeason.tsx via finalZones) therefore show the wrong places in every ITA game's amateur seasons, which conflicts with LEAGUE-6 and WEB-47 (zones come from the division's own rules). Before this lane, both rules were champion + 2nd–5th playoff, so this is a regression this submission introduces; the worker noted it under limits, but no task covers it. apps/web/src/ui/league.ts is outside the declared touches, so this is a scope question for the planner (manage-work/create-task), not something the reviewer decides. Either the lane extends to it, or a follow-up task joins one-result before the group merges to main. Fix: for an amateur tier, automatic = groups[last].length × 2 − 1 and playoff = 4. Add an ITA amateur case to league.test.ts / seasonArchive.test.ts next to the ENG one (finalZones('ENG', 4, 16) at seasonArchive.test.ts:64): ITA tier 3 should give five automatic places, then four playoff places."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/calendar.test.ts:194,205 (T043); packages/engine/src/season.test.ts:226 (T044)",
+                "message": "These loops have no bound. advanceDays returns without moving once w.critical is set, and advanceRound returns at once when w.bankrupt is set. If a later rule change (for example T047's goldens or a new alert) raises either on these seeds, the tests hang until the 30 s timeout instead of failing with a clear message, and this suite already runs close to that limit under full load. Consider failing on w.critical/w.bankrupt inside the loop, or capping the iterations."
+              },
+              {
+                "priority": "P3",
+                "where": "spec/tasks/T044.amateur-exchange.md:## result (T044)",
+                "message": "'at: f17c207' names the interrupted run's commit, but the lane's recorded verification (typecheck + test:unit, 505 tests) ran on 25e6ebf. Per FORMAT the at: line is the SHA the checks ran on, so it should be updated when the result is next touched."
+              }
+            ],
+            "commit": "25e6ebff0d31065718f1370cdfc16e51b86e9a91",
+            "baseCommit": "c60409cdf21c60ca1d10301cd1a67e1970e6c606",
+            "submissionId": "97877440-e9f9-40e7-80bd-0ba30c274da5",
+            "createdAt": "2026-10-12T07:22:01.884Z",
+            "finishedAt": "2026-10-12T07:27:32.084Z",
+            "invalidatedAt": "2026-10-12T07:27:32.126Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "21a9dc45-01e8-4123-a59b-da0c48978345",
+            "owner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/reviewer-1",
+            "status": "reviewing",
+            "commit": "635fb189d38c30674936f0c3e992a23c32ad3103",
+            "baseCommit": "c42fa7394d75a45e6ddd5e3691ae0ec876e6acc9",
+            "submissionId": "e41b2d2f-b69e-4037-971e-4eed3cb5e065",
+            "createdAt": "2026-10-12T07:44:41.567Z",
+            "invalidatedAt": "2026-10-12T07:50:08.495Z",
+            "invalidationReason": "adapter exited 1"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 179,
+      "at": "2026-10-12T07:50:08.505Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "634fc69e-545f-488f-8c00-c454eab3df0a",
+          "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T07:44:41.832Z",
+          "finishedAt": "2026-10-12T07:50:08.505Z",
+          "error": "adapter exited 1",
+          "summary": null
+        }
+      }
+    },
+    {
+      "sequence": 180,
+      "at": "2026-10-12T07:50:08.596Z",
+      "type": "group",
+      "group": "one-result",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-12T07:10:13.945Z",
+          "stoppedAt": "2026-10-12T07:50:08.596Z",
+          "dispatched": 10,
+          "outcome": "interrupted",
+          "failures": [
+            {
+              "attempt": "86b16233-ef43-4161-8e24-743db5f76235",
+              "role": "worker",
+              "error": "T044 is blocked on the review's P2 finding. Fixing it needs a planner decision on scope, so I didn't change it. After T044, Italy's (ITA) amateur table sends its top 5 clubs up and plays off 6th–9th for one more place. But apps/web/src/ui/league.ts divisionRules still gives every amateur table 1 automatic place and 4 playoff places. So the live and closed-season ITA amateur tables show the wrong zones (LEAGUE-6, WEB-47). That file, plus an ITA test in league.test.ts / seasonArchive.test.ts, is outside the lane's declared touches, and no other task in one-result touches it. The planner needs to either add it to lane day-order or add a follow-up task to one-result. The reviewer's fix: for the amateur tier, automatic = groups[last].length × 2 − 1 and playoff = 4.\n\nChanges I made within T044's scope (not committed):\n- packages/engine/src/season.test.ts: the lastRound helper's season loop now fails when the club goes bankrupt instead of looping until the 30 s timeout (P3).\n- spec/tasks/T044.amateur-exchange.md: the result's at: line was f17c207 and is now `-`, because the checks ran on the uncommitted tree (P3). verified is updated, and limits records the blocker.\n\nLeft open: the P3 about unbounded loops at calendar.test.ts:194,205. That file belongs to T043 and this assignment covers only T044.\n\nChecks: `pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit` passed (73 files, 505 tests). eslint and prettier --check passed on season.test.ts and the task file.\n\nNot run because they needed approval and were denied: `work board --work one-result --json` (board and freshness check), a targeted vitest run, and spec lint. The CLI never recorded the blocked status; the host has to do that."
+            },
+            {
+              "attempt": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+              "role": "worker",
+              "error": "adapter exited 1"
+            },
+            {
+              "attempt": "86b16233-ef43-4161-8e24-743db5f76235",
+              "role": "reviewer",
+              "error": "adapter exited 1"
+            }
+          ]
+        }
       }
     }
   ]
