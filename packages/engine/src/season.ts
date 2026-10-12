@@ -287,7 +287,26 @@ function tournament(w: World, clubs: Club[], key: string) {
   }
   return list[0];
 }
+/**
+ * The amateur clubs going up while the own club plays in the amateur league (→LEAGUE-6): one for
+ * each club the last division relegates (two a group), every place but the last by the table just
+ * played and the last by a playoff of the next four.
+ */
+function amateurEntrants(w: World) {
+  const cp = country(clubOf(w).country),
+    places = cp.groups[cp.groups.length - 1].length * 2;
+  const order = ranked(w, lowerLeagueClubs(w));
+  return {
+    country: cp.code,
+    clubs: [
+      ...order.slice(0, places - 1),
+      tournament(w, order.slice(places - 1, places + 3), 'lower-promotion'),
+    ],
+  };
+}
 export function promote(w: World) {
+  // The amateur table is the season just played: settle it before any club moves.
+  const amateurs = w.lower ? amateurEntrants(w) : undefined;
   const transfers: { club: Club; tier: number }[] = [];
   for (const cp of COUNTRIES) {
     for (let tier = 0; tier < cp.groups.length - 1; tier++) {
@@ -349,9 +368,13 @@ export function promote(w: World) {
   for (const t of transfers) t.club.tier = t.tier;
   for (const cp of COUNTRIES) {
     const last = cp.groups.length - 1;
-    const reservePool = w.clubs
-      .filter((c) => c.country === cp.code && c.representative && c.tier === last + 1)
-      .sort((a, b) => b.strength - a.strength || (a.id < b.id ? -1 : 1));
+    // Where no amateur league is played, the strongest amateur clubs go up.
+    const reservePool =
+      amateurs?.country === cp.code
+        ? [...amateurs.clubs]
+        : w.clubs
+            .filter((c) => c.country === cp.code && c.representative && c.tier === last + 1)
+            .sort((a, b) => b.strength - a.strength || (a.id < b.id ? -1 : 1));
     for (let group = 0; group < cp.groups[last].length; group++) {
       const members = w.clubs.filter(
         (c) => c.country === cp.code && c.tier === last && c.group === group && !c.representative,
@@ -371,6 +394,16 @@ export function promote(w: World) {
         entry.tier = last;
         entry.group = group;
         entry.representative = false;
+        if (entry.id === w.playerClub) {
+          w.lower = false;
+          const returning = w.history.some((h) => h.tier <= last);
+          addEvent(
+            w,
+            'promotion',
+            returning ? '프로 무대로 복귀' : '프로 무대 입성',
+            `${entry.name} · ${last + 1}부`,
+          );
+        }
         if (c.id === w.playerClub) {
           w.lower = true;
           addEvent(
@@ -493,7 +526,6 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   if (currentDay(w) < SEASON_END_DAY + 1) w.calendar = { day: SEASON_END_DAY + 1 };
   finishCups(w);
   (finishEurope || finishContinental)(w);
-  const wasLower = w.lower;
   const own = clubOf(w),
     oldTier = own.tier,
     oldGroup = own.group;
@@ -568,33 +600,6 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   retireAtClose(w);
   const tiers = new Map(w.clubs.map((c) => [c.id, c.tier]));
   promote(w);
-  const last = country(own.country).groups.length - 1;
-  if (wasLower) {
-    const lowerClubs = lowerLeagueClubs(w);
-    const lowerOrder = ranked(w, lowerClubs);
-    let winner = lowerOrder[0];
-    // The champions go up; second to fifth play off for the place when the own club is among them.
-    if (winner.id !== own.id && lowerOrder.slice(1, 5).some((c) => c.id === own.id))
-      winner = tournament(w, lowerOrder.slice(1, 5), 'lower-promotion');
-    if (winner.id === own.id) {
-      const replacement = ranked(
-        w,
-        w.clubs.filter((c) => c.country === own.country && c.tier === last && !c.representative),
-      ).at(-1)!;
-      replacement.tier = last + 1;
-      replacement.representative = true;
-      w.lower = false;
-      own.tier = last;
-      own.group = replacement.group;
-      const returning = w.history.some((h) => h.tier <= last);
-      addEvent(
-        w,
-        'promotion',
-        returning ? '프로 무대로 복귀' : '프로 무대 입성',
-        `${own.name} · ${last + 1}부`,
-      );
-    }
-  }
   evolveClubs(w, tiers);
   if (own.tier !== oldTier)
     addEvent(
