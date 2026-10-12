@@ -4,6 +4,7 @@ import {
   CATALOG_HASH,
   country,
   currency,
+  footballIndex,
   priceIndex,
 } from '../../catalogs/src/index';
 import type {
@@ -20,6 +21,7 @@ import { CURRENT_ENGINE_VERSION } from '../../contracts/src/versions';
 import { coachProspect, MANAGER_CAREER } from './coaching';
 import { dayCountedFrom } from './calendar';
 import { MARKET_BANDS, STYLE_INFO, YOUTH_SELECTION_BONUS } from './styles';
+import { divisionFor, marketWageAt } from './contracts';
 export const ENGINE_VERSION = CURRENT_ENGINE_VERSION;
 export const TACTICS: Tactic[] = ['balanced', 'possession', 'counter', 'press'];
 export const tacticLabel: Record<Tactic, string> = {
@@ -32,31 +34,49 @@ export const clubOf = (w: World) => w.clubs.find((c) => c.id === w.playerClub)!;
 export const activePlayers = (w: World) => w.players.filter((p) => p.status === 'active');
 export const overall = (p: Player) =>
   Math.round(p.role === 'GK' ? p.keeper : (p.attack + p.passing + p.defense + p.stamina) / 4);
+/** `units` of 1901 money carried to `year` by an index, in that year's currency. */
+function indexed(
+  code: string,
+  year: number,
+  units: number,
+  index: (code: string, year: number) => { value: number },
+) {
+  const c = country(code),
+    now = currency(code, year),
+    initial = currency(code, 1901);
+  const base = BigInt(Math.round(units * c.scale * initial.units * 10000));
+  const factor = BigInt(Math.round((index(code, year).value / index(code, 1901).value) * 1000000));
+  return ratio(
+    base.toString(),
+    factor * now.num * BigInt(now.units),
+    10000n * 1000000n * now.den * BigInt(initial.units),
+  );
+}
 const quoteCache = new Map<string, string>();
 export function quote(code: string, year: number, units: number): string {
   const key = `${code}:${year}:${units}`;
   const cached = quoteCache.get(key);
   if (cached !== undefined) return cached;
-  const c = country(code),
-    now = currency(code, year),
-    initial = currency(code, 1901);
-  const base = BigInt(Math.round(units * c.scale * initial.units * 10000));
-  const factor = BigInt(
-    Math.round((priceIndex(code, year).value / priceIndex(code, 1901).value) * 1000000),
-  );
-  const result = ratio(
-    base.toString(),
-    factor * now.num * BigInt(now.units),
-    10000n * 1000000n * now.den * BigInt(initial.units),
-  );
+  const result = indexed(code, year, units, priceIndex);
   if (quoteCache.size > 4096) quoteCache.clear();
   quoteCache.set(key, result);
   return result;
+}
+/**
+ * Like `quote`, carried by the football index instead of prices alone (→ECON-26): what football
+ * pays and charges. Uncached, because market amounts are rarely quoted twice.
+ */
+export function footballQuote(code: string, year: number, units: number): string {
+  return indexed(code, year, units, footballIndex);
 }
 export function personName(code: string, r: () => number) {
   const c = country(code);
   return `${c.given[integer(r, 0, c.given.length - 1)]} ${c.family[integer(r, 0, c.family.length - 1)]}`;
 }
+/**
+ * A generated player at his market wage (→CLUB-25) in `division`, the tier of the club he plays
+ * for; without one, the division his ability suits.
+ */
 export function makePlayer(
   code: string,
   seed: string,
@@ -65,12 +85,13 @@ export function makePlayer(
   rating: number,
   role: Player['role'],
   age = integer(random(id), 18, 32),
+  division?: number,
 ): Player {
   const r = random(`${seed}:${id}`);
   const skill = () => clamp(integer(r, Math.round(rating) - 9, Math.round(rating) + 9), 15, 95);
   // Attributes top out at 99, so no ability exceeds the highest potential.
   const top = (value: number) => clamp(value, 0, 99);
-  return {
+  const player: Player = {
     id,
     name: personName(code, r),
     role,
@@ -82,13 +103,15 @@ export function makePlayer(
     stamina: skill(),
     potential: clamp(rating + integer(r, 10, 35), 50, 95),
     reputation: clamp(rating - 15),
-    wage: quote(code, year, Math.max(15, rating - 18)),
+    wage: '0',
     until: year + 3,
     status: 'active',
     fatigue: 0,
     career: zeroMetrics(),
     season: zeroMetrics(),
   };
+  player.wage = marketWageAt(code, year, division ?? divisionFor(code, overall(player)), player);
+  return player;
 }
 /**
  * Fatigue up to this level is ordinary match fitness and costs nothing: other clubs carry the same
@@ -313,7 +336,16 @@ export function createBase(input: Founding): World {
   );
   const found = (base: number) =>
     roles.map((role, i) =>
-      makePlayer(input.country, input.seed, `${club.id}:founder:${i}`, year, base, role),
+      makePlayer(
+        input.country,
+        input.seed,
+        `${club.id}:founder:${i}`,
+        year,
+        base,
+        role,
+        undefined,
+        club.tier,
+      ),
     );
   let base = target;
   for (let step = 0; step < 4; step++) {
@@ -411,7 +443,16 @@ export function npcSquad(seed: string, year: number, c: Club): Player[] {
     const age = 18 + ((year + i) % 18),
       cohort = Math.floor((year + i) / 18);
     const role: Player['role'] = i < 2 ? 'GK' : i < 8 ? 'DEF' : i < 14 ? 'MID' : 'FWD';
-    const player = makePlayer(code, seed, `${c.id}:p:${i}:${cohort}`, year, c.strength, role, age);
+    const player = makePlayer(
+      code,
+      seed,
+      `${c.id}:p:${i}:${cohort}`,
+      year,
+      c.strength,
+      role,
+      age,
+      c.tier,
+    );
     player.fatigue = fatigue;
     return player;
   });

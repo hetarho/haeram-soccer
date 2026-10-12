@@ -659,6 +659,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
         Math.max(20, rating(w, own) - 5),
         role,
         18,
+        own.tier,
       ),
     );
   }

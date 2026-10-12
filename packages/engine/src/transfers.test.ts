@@ -8,14 +8,15 @@ import {
   assertTransferWindow,
   bidBoard,
   bidOutlook,
+  clubOf,
   createWorld,
   currentDay,
   dailyMarket,
+  marketValue,
   operate,
   overall,
   placeBid,
   playerValue,
-  quote,
   respondBid,
   saleBar,
   seasonDayOf,
@@ -199,14 +200,13 @@ describe('transfer windows', () => {
 });
 
 describe('player value', () => {
-  it('extends the sale price with a bounded youth premium', () => {
+  it('is his market value in our division unless another is given, more for promise', () => {
     const w = world();
+    const own = clubOf(w).tier;
     for (const p of activePlayers(w)) {
-      const sale = BigInt(quote('ENG', w.year, Math.max(10, (overall(p) - 25) * 5)));
-      const value = BigInt(playerValue(w, p));
-      expect(value).toBeGreaterThanOrEqual(sale);
-      expect(value).toBeLessThanOrEqual(sale * 2n + 1n);
-      if (w.year - p.born > 23) expect(value).toBe(sale);
+      expect(playerValue(w, p)).toBe(marketValue(w, p, own));
+      // The top flight pays more for the same player than the amateur league.
+      expect(BigInt(playerValue(w, p, 0))).toBeGreaterThan(BigInt(playerValue(w, p)));
     }
     const prospect = structuredClone(activePlayers(w)[3]);
     prospect.born = w.year - 18;

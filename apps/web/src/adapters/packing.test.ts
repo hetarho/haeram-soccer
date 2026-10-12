@@ -48,6 +48,8 @@ describe('lossless career stream compaction', () => {
 
   it('keeps the player and terms a pending bid was made for through a pack round trip', () => {
     const w = career();
+    // Asking fees follow the market (→CLUB-25); the round trip is what is tested, not the price.
+    w.cash = '999999999999';
     placeBid(w, 2, transferOffers(w)[2].fee);
     const bid = w.bids!.find((b) => b.direction === 'out')!;
     expect(bid).toMatchObject({ status: 'pending', offer: { player: { id: bid.playerId } } });

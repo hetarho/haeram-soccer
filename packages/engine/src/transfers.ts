@@ -2,7 +2,8 @@ import type { Club, Player, TransferBid, TransferStance, World } from '../../con
 import { currency } from '../../catalogs/src/index';
 import { currentDay, SEASON_END_DAY, seasonDayLabel, seasonDayOf } from './calendar';
 import { clamp, compareIds, hash, integer, random, ratio } from './primitives';
-import { activePlayers, addEvent, clubOf, overall, ownStarters, quote } from './world';
+import { activePlayers, addEvent, clubOf, overall, ownStarters } from './world';
+import { marketValue } from './contracts';
 import { credit, debit } from './operations';
 import { transferOffers } from './ops-squad';
 import { CASH_WARNING_ROUNDS } from './settlement';
@@ -80,20 +81,12 @@ export function assertTransferWindow(w: World, freeAgent = false): void {
     throw new Error('이적시장이 닫혀 있어요. 자유계약 선수만 언제든 영입할 수 있어요.');
 }
 /**
- * What another club would consider fair for one of our players: the direct sale price
- * plus a bounded premium for unrealised potential in players aged 23 or younger.
+ * What another club would consider fair for a player: his market value (→CLUB-25), steeply
+ * more for ability and a young player's promise, less with age, by the division (ours unless
+ * given) and the football index.
  */
-export function playerValue(w: World, player: Player): string {
-  const base = Math.max(10, (overall(player) - 25) * 5);
-  const age = w.year - player.born;
-  const premium =
-    age <= 23
-      ? Math.min(
-          base,
-          Math.max(0, player.potential - overall(player)) * 1.5 * (1 + (23 - age) * 0.15),
-        )
-      : 0;
-  return quote(clubOf(w).country, w.year, base + premium);
+export function playerValue(w: World, player: Player, division?: number): string {
+  return marketValue(w, player, division);
 }
 
 const isOpen = (bid: TransferBid) => bid.status === 'pending' || bid.status === 'countered';
