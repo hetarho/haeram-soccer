@@ -232,6 +232,13 @@ test('disables an unaffordable fee while keeping a cheaper loan available with h
   const fees = bid.getByRole('radiogroup', { name: '제안 이적료' });
   const send = bid.getByRole('button', { name: /제안 보내기$/ });
   await expect(fees.getByRole('radio', { name: /^100%/ })).toHaveAttribute('aria-checked', 'true');
+  // A step and the send button read in the notation with the exact fee as the title (→WEB-67).
+  const country = clubOf(before).country,
+    exactFee = money(offer.fee, country, before.year),
+    askedStep = fees.getByRole('radio', { name: /^100%/ }).locator('[data-money]');
+  await expect(askedStep).toHaveText(compactMoney(offer.fee, country, before.year));
+  await expect(askedStep).toHaveAttribute('title', exactFee);
+  await expect(send.locator('[data-money]')).toHaveAttribute('title', exactFee);
   expect(BigInt(offer.fee)).toBeGreaterThan(BigInt(before.cash));
   await expect(send).toBeDisabled();
   await expect(bid).toContainText('자금이 부족해요.');

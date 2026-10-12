@@ -244,6 +244,18 @@ describe('background worker publication', () => {
     ).toBe(false);
   });
 
+  it('keeps a tab without Web Locks read-only, its badge saying why, with no notification', async () => {
+    await start();
+    vi.stubGlobal('navigator', {});
+    const reader = new GameClient(() => {});
+    clients.push(reader);
+    await reader.start();
+    expect(reader.state.readonly).toBe(true);
+    expect(reader.state.notice).toContain('Web Locks');
+    expect(reader.state.view?.world.revision).toBe(0);
+    expect(notifications()).toHaveLength(0);
+  });
+
   it('takes over writing once the playing tab releases the writer lock', async () => {
     await start();
     let release: (lock: object) => void = () => {};
@@ -652,6 +664,9 @@ describe('legacy activation and compatibility recovery', () => {
     expect(notifications()).toMatchObject([
       { text: expect.stringContaining('체크포인트로 복구'), read: false },
     ]);
+    // Until a save moves the manifest off the corrupt slot, every load recovers; it tells once.
+    await restored.reload();
+    expect(notifications()).toHaveLength(1);
     expect(restored.state.view?.world.calendar?.day).toBe(0);
     expect(restored.state.savedRevision).toBe(0);
     await restored.command({ type: 'advance-days', days: 1 });

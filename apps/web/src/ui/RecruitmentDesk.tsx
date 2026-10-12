@@ -300,6 +300,8 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
     );
   const window = transferWindow(w);
   const format = (value: string) => <Money value={value} code={club.country} year={w.year} />,
+    // Inside a control that already answers the tap: the notation, the exact amount as its title.
+    plain = (value: string) => <Money value={value} code={club.country} year={w.year} plain />,
     text = (value: string) => compactMoney(value, club.country, w.year);
   const render = (candidate: Candidate) => (
     <CandidateCard
@@ -489,7 +491,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                   setBidding(undefined);
                 }}
               >
-                {text(fee)} 제안 보내기
+                {plain(fee)} 제안 보내기
               </button>
             </div>
           }
@@ -509,8 +511,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                 onClick={() => setStep(i)}
               >
                 <b>{String(percent)}%</b>
-                {/* The step itself answers the tap, so its fee reads as text. */}
-                <small>{text(((asking * percent) / 100n).toString())}</small>
+                <small>{plain(((asking * percent) / 100n).toString())}</small>
               </button>
             ))}
           </div>

@@ -141,8 +141,11 @@ export function createNotificationStore(storage: () => StoragePort | undefined =
   };
   return {
     ...store,
+    /** Tells once: the same notice still unread is not added again, as on reloading a recovery. */
     add(text: string) {
-      put([...current(), { id: crypto.randomUUID(), text, at: Date.now(), read: false }]);
+      const items = current();
+      if (items.some((item) => !item.read && item.text === text)) return;
+      put([...items, { id: crypto.randomUUID(), text, at: Date.now(), read: false }]);
     },
     /** Marks one notice read, or every notice without an ID. */
     read(id?: string) {

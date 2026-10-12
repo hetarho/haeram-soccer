@@ -181,6 +181,7 @@ export class GameClient {
       return;
     }
     if (!navigator.locks) {
+      // No tab may write without the lock, so this one stays read-only and its badge says why.
       this.state.notice =
         '안전한 저장을 위해 Web Locks가 지원되는 HTTPS 또는 localhost 환경이 필요합니다.';
       await this.enqueue(() => this.load());

@@ -161,4 +161,22 @@ describe('system notifications (→WEB-66)', () => {
     store.read(store.getState().at(-1)!.id);
     expect(JSON.parse(storage.getItem(NOTIFICATIONS_KEY)!).items).toEqual(store.getState());
   });
+
+  it('tells a notice still unread once, and again only after it was read', () => {
+    const storage = new MemoryStorage(),
+      store = createNotificationStore(() => storage),
+      recovery = '이전의 정상 체크포인트로 복구했습니다.';
+    store.add(recovery);
+    // Another tab or a reload adds it again while the first is unread.
+    const reopened = createNotificationStore(() => storage);
+    reopened.add(recovery);
+    store.add(recovery);
+    expect(store.getState()).toHaveLength(1);
+    store.read();
+    store.add(recovery);
+    expect(store.getState().map((item) => [item.text, item.read])).toEqual([
+      [recovery, true],
+      [recovery, false],
+    ]);
+  });
 });

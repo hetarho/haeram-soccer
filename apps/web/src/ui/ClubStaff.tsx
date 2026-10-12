@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type {
   CoachingLevel,
   DelegationKey,
@@ -135,10 +135,10 @@ export function CoachingPlan({ w }: { w: World }) {
 }
 
 /** The wage a department's investment step buys this season, from its candidate band. */
-function stepCost(w: World, role: StaffRole, step: CoachingLevel, text: (v: string) => string) {
+function stepCost(w: World, role: StaffRole, step: CoachingLevel, plain: (v: string) => ReactNode) {
   if (step === 1) return '무급';
   const band = staffCandidates(w, role).find((offer) => offer.id.endsWith(`:${step - 1}`));
-  return band ? `${text(band.wage)}/년` : '후보 없음';
+  return band ? <>{plain(band.wage)}/년</> : '후보 없음';
 }
 
 /** One department's investment dial; the staff hire to it while hiring is delegated. */
@@ -146,13 +146,13 @@ function DepartmentDial({
   w,
   role,
   client,
-  text,
+  plain,
 }: {
   w: World;
   role: StaffRole;
   client: GameClient;
-  /** A step's wage reads inside its radio, so the notation comes as text. */
-  text: (v: string) => string;
+  /** A step's wage sits inside its radio: the notation with the exact amount as its title. */
+  plain: (v: string) => ReactNode;
 }) {
   const acting = useActing();
   const [draft, setDraft] = useState<CoachingLevel>();
@@ -177,7 +177,7 @@ function DepartmentDial({
           }}
         >
           <b>{COACHING_INFO[step].label}</b>
-          <small>{stepCost(w, role, step, text)}</small>
+          <small>{stepCost(w, role, step, plain)}</small>
         </button>
       ))}
     </div>
@@ -191,6 +191,8 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
   const [pick, setPick] = useState<number>();
   const club = clubOf(w);
   const format = (value: string) => <Money value={value} code={club.country} year={w.year} />,
+    // Inside a control that already answers the tap: the notation, the exact amount as its title.
+    plain = (value: string) => <Money value={value} code={club.country} year={w.year} plain />,
     text = (value: string) => compactMoney(value, club.country, w.year);
   const members = new Map((w.staff || []).map((member) => [member.role, member]));
   const candidates = role ? staffCandidates(w, role) : [];
@@ -282,7 +284,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                   {member ? '교체' : '선임'}
                 </button>
               </div>
-              {delegated && <DepartmentDial w={w} role={id} client={client} text={text} />}
+              {delegated && <DepartmentDial w={w} role={id} client={client} plain={plain} />}
             </li>
           );
         })}
@@ -360,9 +362,8 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                   <small className={s.impact}>
                     선임 시 {hiredImpact(w, role, candidate)} (지금 {staffImpact(w, role)})
                   </small>
-                  {/* The candidate's own radio answers the tap, so the terms read as text. */}
                   <small>
-                    연봉 {text(candidate.wage)} · 계약금 {text(candidate.fee)} ·{' '}
+                    연봉 {plain(candidate.wage)} · 계약금 {plain(candidate.fee)} ·{' '}
                     {contractLine(candidate.until, w.year)}
                   </small>
                 </button>
