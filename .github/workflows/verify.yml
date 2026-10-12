@@ -1,7 +1,9 @@
 name: Verify web game
 on: [push, pull_request]
+# The checks, each browser's journeys and the benchmarks run as parallel jobs: the run takes as
+# long as its slowest job (WebKit, split in two) instead of the sum of every step.
 jobs:
-  verify:
+  checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -11,11 +13,65 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps
-      - run: pnpm run verify
+      - run: pnpm run typecheck
+      - run: pnpm run lint
+      - run: pnpm run format:check
+      - run: pnpm run test:unit
+      - run: pnpm run test:contract
+      - run: pnpm run validate:catalogs
+      - run: pnpm run build
+
+  e2e:
+    name: e2e (${{ matrix.browser }} ${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { browser: chromium, shard: 1/1, slug: chromium }
+          - { browser: firefox, shard: 1/1, slug: firefox }
+          # Software-rendered WebKit is two to three times slower; two shards keep it in step.
+          - { browser: webkit, shard: 1/2, slug: webkit-1 }
+          - { browser: webkit, shard: 2/2, slug: webkit-2 }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps ${{ matrix.browser }}
+      - run: pnpm run build
+      - run: pnpm exec playwright test --project=${{ matrix.browser }} --shard=${{ matrix.shard }}
+        env:
+          PREVIEW_BUILD: '1'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-${{ matrix.slug }}
+          include-hidden-files: true
+          path: |
+            playwright-report
+            test-results
+            .tmp/release-storage-failure-metrics.json
+
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run build
       - run: pnpm run benchmark
       - name: Verify browser performance against the production build
         run: |
+          mkdir -p .tmp
           PORT=4180 pnpm run preview > .tmp/benchmark-preview.log 2>&1 &
           benchmark_preview_pid=$!
           trap 'kill "$benchmark_preview_pid" 2>/dev/null || true' EXIT
@@ -33,9 +89,6 @@ jobs:
           include-hidden-files: true
           path: |
             apps/web/dist
-            playwright-report
-            test-results
             docs/benchmarks/T010-storage.json
             docs/benchmarks/T010-first-play.json
             .tmp/benchmark-preview.log
-            .tmp/release-storage-failure-metrics.json

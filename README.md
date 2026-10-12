@@ -52,7 +52,7 @@ pnpm run verify
 pnpm run benchmark
 ```
 
-`verify` runs type/lint/format, unit/property/portable-contract tests, real catalog validation, build and Chromium/Firefox/WebKit flows. CI runs the built-preview tests and the storage/browser performance gates; a remote run remains to be verified on an authorized pushed commit. [Verification notes](docs/VERIFICATION.md) record the tested environment and limits. [Netlify deployment](docs/DEPLOYMENT.md) explains protected production deployment, previews, caching and rollback.
+`verify` runs type/lint/format, unit/property/portable-contract tests, real catalog validation, build and Chromium/Firefox/WebKit flows. CI runs the same checks as parallel jobs — static checks and unit tests, built-preview browser tests per browser (WebKit in two shards), and the storage/browser performance gates; a remote run remains to be verified on an authorized pushed commit. [Verification notes](docs/VERIFICATION.md) record the tested environment and limits. [Netlify deployment](docs/DEPLOYMENT.md) explains protected production deployment, previews, caching and rollback.
 
 The installed `haeram-spec-creator` skills are project files, not a package dependency:
 

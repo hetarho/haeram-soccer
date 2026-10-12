@@ -16,7 +16,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 7 | 6 | ARCH-5✎ | 2 |
+| ARCH | 8 | 6 | ARCH-5✎ | 2 |
 | WEB | 49 | 47 | WEB-5✎ | 0 |
 | WORLD | 2 | 2 | - | 0 |
 | CLUB | 16 | 15 | CLUB-14✎ CLUB-20✎ | 0 |
@@ -38,6 +38,7 @@
 - Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
 
 ## log
+- 261012 ARCH r8 implemented directly: CI split into parallel jobs (checks; built-preview browser tests for Chromium, Firefox and WebKit in two shards, each installing only its browser; benchmarks) instead of one ~22-minute serial verify job (15½ minutes of it browser tests); ARCH-5✎ from r7 stays pending
 - 261012 WEB r49 implemented directly: records room season rows open that season in 시즌 기록; league picker (국가·디비전·지역 그룹, 우리 리그로, ?league=) on 개요, 순위표, 라운드 결과 and a closed season's 순위표, other leagues' fixtures read from the worker on demand (league-fixtures read) and closed seasons' tables from archived standings; closed seasons load lazily, entry 249,558 of 256,000 bytes (WEB-5✎ from r48 stays pending)
 - 261012 update-ssot ARCH r7 LEAGUE r5 WEB r48 ECON r13 CLUB r16: every progression mode lives through the same days in one order (ties on their day, a match day's club business after its matches) and no draw is keyed by a count of commands; the amateur level swaps places with the last professional division by the amateur table, never an extra place; a currency change converts every live amount, coaches and free agents included; the ledger names owner requests and win bonuses; market lists and IDs per settings, a bid keeping its player and terms
 - 261012 MATCH r8 EURO r3 SAVE r18 implemented directly (rules 1.14.0): possession that changes sides between minutes without a duel now opens with a restart (throw-in, goal kick, corner chosen from where the ball was; ~27/7/12 a match) played on the pitch with the ball out of play and a taker, ghost turnovers 46→0 a match with results, counts and golden facts unchanged; continental legs on each era's real gap (2 weeks before 2003, then 1, UCL last 16 3 weeks 2003–23), knockout-only eras from September, brackets show both legs' dates, stages read the old calendar too; golden facts change only in 1960's drawn rounds
@@ -57,4 +58,3 @@
 - 261011 WEB r40 implemented directly: OVR rating-card chips (bronze/silver/gold) on roster cards, academy rows and transfer candidates, OVR table column; roster view settings behind a header icon button (popover on desktop, bottom sheet on phones)
 - 261011 WEB r39 implemented directly: day steps play our match through without movement frames (x10 no longer stalls on match days, a season 6.1→0.65 s), season close no longer stops the clock, league page season list (◀ list ▶) showing closed seasons' reviews with final tables instead of the forced /season page
 - 261011 CI fix: the policy board's finance preview and season close re-scanned every fixture per amateur-league club (leaving operations took 50–90 ms at 4x CPU), the league page's blurred, masked sticky band re-rastered on every visit; desktop pointer p95 151→49 ms; WebKit pace tests wait for an in-flight day step after stop
-- 261011 CLUB r15 STAFF r8 WEB r38 SAVE r13 implemented directly: roster stance badge (이적 명단 적극 매도 · 협상 가능 · 이적 불가 refusing below 150%, bigger bids to the owner or, delegated, to staff and manager by market card, cash and the XI), coaching investment dial per department shown and acted on only with coach hiring delegated, x1/x2/x5/x10 clock at one day per 1/0.5/0.2/0.1 s with capped catch-up; rules 1.10.0, worst century checkpoint 1,250,612 bytes
