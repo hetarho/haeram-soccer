@@ -33,7 +33,6 @@
 |---|---|---|---|---|
 | T043 | One day order for every progression mode | LEAGUE WEB ARCH | - | todo |
 | T044 | Amateur exchange by the amateur table | LEAGUE | T043 | todo |
-| T045 | Market candidate identity and bids that keep their offer | CLUB ECON SAVE | T042 | todo |
 | T047 | Rules 1.15.0 with regenerated portable goldens | SAVE ECON ARCH LEAGUE | T044 T045 T046 | todo |
 | T048 | Background codec worker for checkpoints | SAVE ARCH | - | todo |
 | T049 | Clock never waits for saving; background autosave cadence | SAVE WEB ARCH | T048 | todo |
@@ -42,12 +41,13 @@
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| one-result | 3 | 8 | 2 | 6 | 0 | 2 | 2 | 2026-10-12T07:20:12.923Z | [history](work/one-result.json) |
+| one-result | 3 | 9 | 3 | 6 | 0 | 3 | 2 | 2026-10-12T07:42:52.062Z | [history](work/one-result.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261012 T045 integrated
 - 261012 create-task T063 (from the day-order review P2): amateur table zones follow the exchange, outside the lane's touches
 - 261012 T042 integrated
 - 261012 T046 integrated
@@ -67,4 +67,3 @@
 - 261012 update-ssot WEB r46 start: background play at wall-clock pace with away catch-up and summary, compact phone celebration; implementing directly
 - 261012 WEB r45 ECON r11 SAVE r16 ARCH r6 implemented directly: intervention popover closes on a choice; 구단 빌드→운영 전략 tab (five presets each lighting or aiming at a synergy, device strategy library with composer, dials in their own section, build events name the strategy); three game slots with a slot screen at the start address, parked games in IndexedDB, legacy save as slot 1, 새 게임 wording; start-layout scroller could not shrink (main clipped founding and slot screens on phones), fixed; strategy board and slot screen load lazily (entry 251,220 of 256,000 bytes)
 - 261012 update-ssot WEB r45 ECON r11 SAVE r16 ARCH r6 start: intervention popover closes on choice, 구단 빌드→운영 전략 with redesigned presets and a device strategy library, three game slots (새 게임 wording), reachable scrolling everywhere; implementing directly
-- 261012 WEB r44 ARCH r5 HIST r7 implemented directly: records room tabs (요약/추이/선수/시즌 기록/감독) with a trophy cabinet, Elo standing against the world and league best and worst plus spread bands, chart bubbles by nearest point or keyboard slider, player sheets with club careers and all-time boards; closed league seasons keep 결산/순위표/우리 경기/순위 추이/득점 순위 tabs; all-time head-to-head in team sheets via a read-only worker request; cup history with archived brackets, our cup road and honours (doubles, trebles, runs); records room and cup history load lazily (entry under 250 KiB)
