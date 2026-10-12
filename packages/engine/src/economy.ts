@@ -18,7 +18,17 @@ export function advanceEconomy(w: World, previousYear: number) {
     w.income = convert(w.income);
     w.expense = convert(w.expense);
     for (const p of w.players) p.wage = convert(p.wage);
+    for (const p of w.academy?.players ?? []) p.wage = convert(p.wage);
     w.manager.wage = convert(w.manager.wage);
+    for (const member of w.staff ?? []) member.wage = convert(member.wage);
+    // Free agents' asking wages are prices on offer; managers at other clubs are derived each read.
+    for (const m of w.managerMarket?.free ?? []) m.wage = convert(m.wage);
+    // Open negotiations carry on in the new money; settled bids keep the units they closed in.
+    for (const bid of w.bids ?? []) {
+      if (bid.status !== 'pending' && bid.status !== 'countered') continue;
+      bid.fee = convert(bid.fee);
+      if (bid.counterFee !== undefined) bid.counterFee = convert(bid.counterFee);
+    }
     if (w.sponsor) {
       w.sponsor.annual = convert(w.sponsor.annual);
       w.sponsor.bonus = convert(w.sponsor.bonus);
