@@ -16,28 +16,37 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 7 | 6 | ARCH-5✎ | 2 |
-| WEB | 48 | 47 | WEB-5✎ | 0 |
+| ARCH | 7 | 7 | - | 2 |
+| WEB | 48 | 48 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
-| CLUB | 16 | 15 | CLUB-14✎ CLUB-20✎ | 0 |
+| CLUB | 16 | 16 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
-| LEAGUE | 5 | 4 | LEAGUE-6✎ LEAGUE-11+ | 0 |
+| LEAGUE | 5 | 5 | - | 0 |
 | STAFF | 11 | 11 | - | 0 |
-| ECON | 13 | 12 | ECON-6✎ ECON-10✎ ECON-16✎ | 0 |
+| ECON | 13 | 13 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 7 | 7 | - | 0 |
-| SAVE | 18 | 18 | - | 0 |
+| SAVE | 19 | 19 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T042 | Draws named by what they settle | ARCH CLUB | - | todo |
+| T043 | One day order for every progression mode | LEAGUE WEB ARCH | - | todo |
+| T044 | Amateur exchange by the amateur table | LEAGUE | T043 | todo |
+| T045 | Market candidate identity and bids that keep their offer | CLUB ECON SAVE | T042 | todo |
+| T046 | Currency conversion of every live amount and complete ledger lines | ECON | - | todo |
+| T047 | Rules 1.15.0 with regenerated portable goldens | SAVE ECON ARCH LEAGUE | T044 T045 T046 | todo |
 
 ## next
-- create-task ARCH LEAGUE WEB ECON CLUB: one day order for every progression mode and draws named by what they settle (ARCH-5, LEAGUE-11, WEB-5), amateur exchange by the amateur table (LEAGUE-6), currency conversion of every live amount (ECON-6), complete ledger lines (ECON-10), market lists per settings with bids keeping their player (ECON-16, CLUB-14), owner-request stream without the revision (CLUB-20); a rules bump takes 1.15.0 or later.
+- work group one-result (branch work/one-result, planning worktree ../haeram-soccor-one-result): `npx haeram-spec-creator work run --work one-result --provider claude`; T042, T046 and lane day-order (T043→T044) run first, T045 after T042, T047 (rules 1.15.0, goldens) last; merge to main afterwards with the user's approval.
 - Player match ratings (평점) lead Korean headlines, but WEB-22/25 rule out synthetic ratings; decide whether a transparent rating belongs in the game. Research levers not yet modelled: set-piece coaching, ticket-price fan mood, fixture-gap rule for training camps; tackles in a far-off flank still look like heavy touches (match.ts picks markers by zone, not flank).
 - Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
 
 ## log
+- 261012 create-task ARCH LEAGUE WEB ECON CLUB SAVE: T042 draws named by what they settle, lane day-order T043 one day order → T044 amateur exchange, T045 market identity with bids keeping their offer (after T042), T046 currency conversion and ledger lines, T047 rules 1.15.0 with goldens (integration); work group one-result, workers 3, reviewers 1
+- 261012 update-ssot SAVE r19: rules 1.14.0→1.15.0, outgoing bids may carry `offer`, older pending bids answered as before
+- 261012 create-task ARCH LEAGUE WEB ECON CLUB start (work group one-result)
 - 261012 update-ssot ARCH r7 LEAGUE r5 WEB r48 ECON r13 CLUB r16: every progression mode lives through the same days in one order (ties on their day, a match day's club business after its matches) and no draw is keyed by a count of commands; the amateur level swaps places with the last professional division by the amateur table, never an extra place; a currency change converts every live amount, coaches and free agents included; the ledger names owner requests and win bonuses; market lists and IDs per settings, a bid keeping its player and terms
 - 261012 MATCH r8 EURO r3 SAVE r18 implemented directly (rules 1.14.0): possession that changes sides between minutes without a duel now opens with a restart (throw-in, goal kick, corner chosen from where the ball was; ~27/7/12 a match) played on the pitch with the ball out of play and a taker, ghost turnovers 46→0 a match with results, counts and golden facts unchanged; continental legs on each era's real gap (2 weeks before 2003, then 1, UCL last 16 3 weeks 2003–23), knockout-only eras from September, brackets show both legs' dates, stages read the old calendar too; golden facts change only in 1960's drawn rounds
 - 261012 update-ssot ARCH LEAGUE WEB ECON CLUB start: one result for every progression mode (day/round/season order, draws never keyed by the command counter), amateur promotion room, currency conversion scope, complete ledger lines, market candidate identity
@@ -55,6 +64,3 @@
 - 261012 CI fix: the league season list rode in the pinned tab band, which grew tall enough to cover controls scrolled up under it (Firefox 390x844 country selector); only the tabs stay pinned
 - 261011 WEB r40 implemented directly: OVR rating-card chips (bronze/silver/gold) on roster cards, academy rows and transfer candidates, OVR table column; roster view settings behind a header icon button (popover on desktop, bottom sheet on phones)
 - 261011 WEB r39 implemented directly: day steps play our match through without movement frames (x10 no longer stalls on match days, a season 6.1→0.65 s), season close no longer stops the clock, league page season list (◀ list ▶) showing closed seasons' reviews with final tables instead of the forced /season page
-- 261011 CI fix: the policy board's finance preview and season close re-scanned every fixture per amateur-league club (leaving operations took 50–90 ms at 4x CPU), the league page's blurred, masked sticky band re-rastered on every visit; desktop pointer p95 151→49 ms; WebKit pace tests wait for an in-flight day step after stop
-- 261011 CLUB r15 STAFF r8 WEB r38 SAVE r13 implemented directly: roster stance badge (이적 명단 적극 매도 · 협상 가능 · 이적 불가 refusing below 150%, bigger bids to the owner or, delegated, to staff and manager by market card, cash and the XI), coaching investment dial per department shown and acted on only with coach hiring delegated, x1/x2/x5/x10 clock at one day per 1/0.5/0.2/0.1 s with capped catch-up; rules 1.10.0, worst century checkpoint 1,250,612 bytes
-- 261011 CI fix: amateur-league standings snapshots tested every club against every fixture each round (83% of a season, 2.5→0.7 s); "시즌 끝까지 진행" journeys outran the 5 s wait in all three CI browsers
