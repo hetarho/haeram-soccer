@@ -32,6 +32,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T047 | Rules 1.15.0 with regenerated portable goldens | SAVE ECON ARCH LEAGUE | T044 T045 T046 | todo |
+| T064 | Browser journeys and save-format doc follow the day order and rules 1.15.0 | LEAGUE ARCH SAVE | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -42,6 +43,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261012 create-task T064 (from T047's blocker): e2e save-status revisions under the day order, SAVE-FORMAT 1.15.0; load-induced browser timeouts are left to CI by the owner's decision
 - 261012 T048 T049 integrated
 - 261012 T063 integrated
 - 261012 T043 T044 integrated
@@ -61,4 +63,3 @@
 - 261012 update-ssot ARCH LEAGUE WEB ECON CLUB start: one result for every progression mode (day/round/season order, draws never keyed by the command counter), amateur promotion room, currency conversion scope, complete ledger lines, market candidate identity
 - 261012 WEB r47 ECON r12 SAVE r17 STAFF r11 implemented directly (rules 1.13.0): strategy reservation for the next season at any time (buildNext, applied as the season starts as its one change, 예약 취소); manager market — free agents (4–8) refreshed every 4 rounds and at the close on their own stream, struggling and relegated clubs of our league sack into the pool (rival-sacking news), named derived managers for every club, poaching from our league and the division above with 1.5× wage compensation, hire by id so the hired man leaves the list; golden facts unchanged apart from the sacking events and the label; entry 254,162 of 256,000 bytes
 - 261012 update-ssot WEB r47 ECON r12 SAVE r17 STAFF r11 start: strategy reservation for the next season, manager market (free agents, sackings, poaching), rules 1.13.0; implementing directly
-- 261012 WEB r46 implemented directly: hidden tabs play on at wall-clock pace (throttled ticks pay owed days in 30-day steps that still end on news and match days), a page that slept or closed with the clock running plays the time away on return up to a per-browser limit (끄기/30일/한 시즌, default a season), a "자리를 비운 동안" card sums up results, rank and cash, the hidden tab title shows the date and clock state, background settings in the intervention dialog; phone celebration is one dismissible 44 px line beside the news button with a lighter confetti burst; entry 253,554 of 256,000 bytes
