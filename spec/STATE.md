@@ -16,22 +16,35 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 8 | 8 | - | 2 |
-| WEB | 50 | 50 | - | 0 |
+| ARCH | 9 | 9 | - | 2 |
+| WEB | 51 | 51 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
-| CLUB | 16 | 16 | - | 0 |
+| CLUB | 17 | 17 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
-| STAFF | 11 | 11 | - | 0 |
-| ECON | 13 | 13 | - | 0 |
+| STAFF | 12 | 12 | - | 0 |
+| ECON | 14 | 14 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 7 | 7 | - | 0 |
-| SAVE | 20 | 20 | - | 0 |
+| SAVE | 21 | 21 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T047 | Rules 1.15.0 with regenerated portable goldens | SAVE ECON ARCH LEAGUE | T044 T045 T046 | todo |
+| T047 | Rules 1.15.0 with regenerated portable goldens | SAVE ECON ARCH LEAGUE | T044 T045 T046 | blocked@261012 |
+| T050 | Football index and sponsor-slot eras in catalog 2026-demo-2 | ECON SAVE | - | todo |
+| T051 | Contracts for sponsors by slot, player talks, terms and new delegations | ECON CLUB STAFF WEB SAVE | T050 | todo |
+| T052 | Split commands by domain, close the season-close ledger gap, engine money notation | ECON WEB | T051 | todo |
+| T053 | One money notation across the app | WEB | - | todo |
+| T054 | App notices as notifications in the HUD inbox | WEB | T053 | todo |
+| T055 | League distribution, local-supporter gate, no supporter income | ECON | T052 T054 | todo |
+| T056 | Sponsor contracts by slot | ECON WEB | T055 | todo |
+| T057 | Market wages and values on the football index | CLUB ECON | T052 T054 | todo |
+| T058 | Contract talks with goodwill, floor and delegation | CLUB ECON STAFF | T057 | todo |
+| T059 | Unhappy players, transfer requests, expiring contracts and the squad UI | CLUB WEB | T058 | todo |
+| T060 | Owner-chosen terms for managers and coaches, no self-renewal | STAFF WEB | T052 T054 | todo |
+| T061 | Delegated manager appointment and the manager market behind 교체 | STAFF WEB | T060 | todo |
+| T062 | Rules 1.16.0: economy calibration, goldens and docs | SAVE ECON CLUB | T056 T059 T061 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -39,11 +52,12 @@
 | one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
 
 ## next
-- one-result (branch work/one-result, planning worktree ../haeram-soccor-one-result): 9 of 10 tasks integrated; T047 (rules 1.15.0, goldens) is blocked only on its full-verify item. Its work is on branch task/one-result/T047-fb57cca7 (worktree ../.haeram-worktrees/haeram-soccor-17cecd52/one-result-T047-fb57cca7). There run `pnpm run build && pnpm run test:e2e` (~15 min, longer than a worker's 10-min tool limit; browser deps are installed on this server; load-only timeouts go to CI by the owner's decision 261012), record the result in T047, then `npx haeram-spec-creator work submit --attempt fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc --json` and `npx haeram-spec-creator work run --work one-result --provider claude --json` to review and integrate.
-- then merge work/one-result into main: main's ARCH r8 (ARCH-23) stays r8, this branch's ARCH r8 (ARCH-13) becomes r9, STATE ARCH 9|9|-; then merge plan/club-realism (drop its stale T042–T049 rows, keep T050–T062), write next for work group club-realism (lanes base T050→T052 and ui-base T053→T054 first, then commercial, players and staff in parallel, T062 last) and push main. Lessons: never commit spec/ssot to a group branch while it runs; a failed automatic integration is not retried in the same run (`work integrate --attempt`).
+- T047 (rules 1.15.0, goldens) is merged into main with every check but test:e2e run (owner's decision 261012: leave before the browser suite finished). Check CI's e2e on main; if green, mark T047 done (st done@date, move to tasks/done/, drop its row); a failure that is not a load timeout becomes a fix task. Also release the leftover attempt: `npx haeram-spec-creator work release --attempt fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc --reason 'merged to main manually'`.
+- next work = work group club-realism (T050–T062) from main: `npx haeram-spec-creator work start club-realism --workspace auto --workers 4 --reviewers 1 --task-verify 'pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit' --verify 'pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit' --group-verify 'pnpm install --frozen-lockfile --prefer-offline && pnpm run verify' --json`, then `npx haeram-spec-creator work run --work club-realism --provider claude --json` (Codex is unavailable). Lanes base (T050→T052) and ui-base (T053→T054) first, then commercial, players and staff in parallel, T062 last. Never commit spec/ssot to the group branch while it runs; a failed automatic integration is not retried in the same run (`work integrate --attempt`); the full e2e (~15 min) exceeds a worker's 10-min tool limit, so the coordinator runs it; browser deps are installed on this server.
 - Player match ratings (평점) lead Korean headlines, but WEB-22/25 rule out synthetic ratings; decide whether a transparent rating belongs in the game. Research levers not yet modelled: set-piece coaching, ticket-price fan mood, fixture-gap rule for training camps; tackles in a far-off flank still look like heavy touches (match.ts picks markers by zone, not flank). Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
 
 ## log
+- 261012 merged work group one-result, T047 (e2e unverified) and plan/club-realism (ECON r14 CLUB r17 STAFF r12 WEB r51 SAVE r21, T050–T062) into main; ARCH-13's change renumbered r8→r9 after main's ARCH-23 r8
 - 261012 pushed work/one-result, plan/club-realism and task/one-result/T047-fb57cca7 to origin before the main merge; next lists how to finish one-result
 - 261012 T064 integrated
 - 261012 create-task T064 (from T047's blocker): e2e save-status revisions under the day order, SAVE-FORMAT 1.15.0; load-induced browser timeouts are left to CI by the owner's decision
@@ -63,4 +77,3 @@
 - 261012 create-task ARCH LEAGUE WEB ECON CLUB start (work group one-result)
 - 261012 update-ssot ARCH r7 LEAGUE r5 WEB r48 ECON r13 CLUB r16: every progression mode lives through the same days in one order (ties on their day, a match day's club business after its matches) and no draw is keyed by a count of commands; the amateur level swaps places with the last professional division by the amateur table, never an extra place; a currency change converts every live amount, coaches and free agents included; the ledger names owner requests and win bonuses; market lists and IDs per settings, a bid keeping its player and terms
 - 261012 MATCH r8 EURO r3 SAVE r18 implemented directly (rules 1.14.0): possession that changes sides between minutes without a duel now opens with a restart (throw-in, goal kick, corner chosen from where the ball was; ~27/7/12 a match) played on the pitch with the ball out of play and a taker, ghost turnovers 46→0 a match with results, counts and golden facts unchanged; continental legs on each era's real gap (2 weeks before 2003, then 1, UCL last 16 3 weeks 2003–23), knockout-only eras from September, brackets show both legs' dates, stages read the old calendar too; golden facts change only in 1960's drawn rounds
-- 261012 update-ssot ARCH LEAGUE WEB ECON CLUB start: one result for every progression mode (day/round/season order, draws never keyed by the command counter), amateur promotion room, currency conversion scope, complete ledger lines, market candidate identity
