@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
-import type { TransferBid, World } from '../../contracts/src/types';
+import type { Player, TransferBid, World } from '../../contracts/src/types';
 import {
   activePlayers,
   advanceDays,
@@ -430,6 +430,36 @@ describe('outgoing bids', () => {
     );
   });
 
+  it('an inbox read does not change a bid', () => {
+    const plain = world(),
+      read = world();
+    for (const w of [plain, read]) w.delegation = { ...w.delegation, transfers: false };
+    operate(read, { type: 'read-inbox' });
+    expect(read.revision).toBe(plain.revision + 1);
+    const fee = share(transferOffers(plain)[3].fee, 90);
+    for (const w of [plain, read]) operate(w, { type: 'bid', candidate: 3, fee });
+    const [bid] = outBids(plain);
+    expect(bid.id).toBe(`out:${plain.year}:0:0:${bid.playerId}`);
+    expect(outBids(read)).toEqual([bid]);
+    for (const w of [plain, read]) advanceDays(w, 4);
+    expect(outBids(plain)[0].status).not.toBe('pending');
+    expect(canonical(outBids(read))).toBe(canonical(outBids(plain)));
+    expect(canonical({ ...read, revision: plain.revision })).toBe(canonical(plain));
+  });
+
+  it('gives a renewed bid on the same day its own ID', () => {
+    const w = on(world(), 9, 1);
+    w.delegation = { ...w.delegation, transfers: false };
+    placeBid(w, 3, '1');
+    const [first] = outBids(w);
+    expect(first.status).toBe('rejected');
+    placeBid(w, 3, '1');
+    const [, renewed] = outBids(w);
+    expect(first.id).toBe(`out:${w.year}:${first.day}:0:${first.playerId}`);
+    expect(renewed.id).toBe(`out:${w.year}:${first.day}:1:${first.playerId}`);
+    expect(w.inbox?.filter((item) => item.ref === renewed.id)).toHaveLength(1);
+  });
+
   it('completes a negotiated loan like a direct loan', () => {
     const w = world();
     w.delegation = { ...w.delegation, transfers: false };
@@ -442,6 +472,80 @@ describe('outgoing bids', () => {
       expect(bid.loan).toBe(true);
       expect(w.players.find((p) => p.id === bid.playerId)?.loanUntil).toBe(w.year + 1);
     }
+  });
+});
+
+describe('market identity', () => {
+  const ids = (w: World) => transferOffers(w).map((o) => o.player.id);
+  const profile = (p: Player) => {
+    const { id, name, role, born, attack, passing, defense, keeper, stamina, potential, wage } = p;
+    return { id, name, role, born, attack, passing, defense, keeper, stamina, potential, wage };
+  };
+
+  it('draws one list per combination of settings and the same list on switching back', () => {
+    const w = world();
+    const balanced = transferOffers(w),
+      before = ids(w);
+    for (const id of before) expect(id).toMatch(/^market:\d{4}:[0-9a-z]{7}:\d+$/);
+    operate(w, { type: 'policy', key: 'recruitment', level: 1 });
+    const prospects = ids(w);
+    expect(prospects.filter((id) => before.includes(id))).toEqual([]);
+    operate(w, { type: 'policy', key: 'recruitment', level: 3 });
+    expect(transferOffers(w)).toEqual(balanced);
+    w.build = { scouting: 'data' };
+    expect(ids(w).filter((id) => [...before, ...prospects].includes(id))).toEqual([]);
+  });
+
+  it('signs the player a bid was made for at its fee after the list changed', () => {
+    const w = world();
+    w.delegation = { ...w.delegation, transfers: false };
+    const offer = transferOffers(w)[2],
+      fee = share(offer.fee, 500);
+    placeBid(w, 2, fee);
+    const [bid] = outBids(w);
+    expect(bid.offer).toEqual({ player: offer.player, fee: offer.fee, loanFee: offer.loanFee });
+    operate(w, { type: 'policy', key: 'recruitment', level: 5 });
+    expect(ids(w)).not.toContain(offer.player.id);
+    expect(bidBoard(w)[0]).toMatchObject({ player: offer.player, asking: offer.fee });
+    const cash = BigInt(w.cash);
+    advanceDays(w, 4);
+    expect(bid.status).toBe('completed');
+    // No match is played in the first four days, so the fee is the only movement.
+    expect(BigInt(w.cash)).toBe(cash - BigInt(fee));
+    const signed = w.players.find((p) => p.id === offer.player.id)!;
+    expect(profile(signed)).toEqual(profile(offer.player));
+    expect(signed).not.toBe(bid.offer!.player);
+    expect(w.events.some((e) => e.kind === 'transfer-in' && e.amount === fee)).toBe(true);
+    expect(validateWorld(w).id).toBe(w.id);
+  });
+
+  it('answers a bid pending from before 1.15.0 through its season list', () => {
+    const w = world();
+    w.delegation = { ...w.delegation, transfers: false };
+    const legacy = transferOffers(w, w.year, true)[2];
+    expect(legacy.player.id).toBe(`market:${w.year}:2`);
+    const fee = share(legacy.fee, 500);
+    const bid: TransferBid = {
+      id: `out:${w.year}:0:0:${legacy.player.id}`,
+      direction: 'out',
+      playerId: legacy.player.id,
+      fee,
+      year: w.year,
+      day: 0,
+      due: 2,
+      status: 'pending',
+    };
+    w.bids = [bid];
+    expect(bidBoard(w)[0]).toMatchObject({ player: legacy.player, asking: legacy.fee });
+    const cash = BigInt(w.cash);
+    advanceDays(w, 2);
+    expect(bid.status).toBe('completed');
+    expect(bid.offer).toBeUndefined();
+    expect(BigInt(w.cash)).toBe(cash - BigInt(fee));
+    expect(profile(w.players.find((p) => p.id === legacy.player.id)!)).toEqual(
+      profile(legacy.player),
+    );
+    expect(validateWorld(w).id).toBe(w.id);
   });
 });
 

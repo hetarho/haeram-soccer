@@ -81,6 +81,19 @@ describe('owner requests', () => {
     expect(careOffer(w, 'recovery').available).toBe(true);
   });
 
+  it('an inbox read does not change a request', () => {
+    // Every cooldown refuses a second use in the same round, so the round names the draw.
+    for (const kind of CARE_KINDS) expect(CARE_INFO[kind].cooldown).toBeGreaterThan(0);
+    const request = (reads: number) => {
+      const w = createWorld(input);
+      for (let i = 0; i < reads; i++) operate(w, { type: 'read-inbox' });
+      operate(w, { type: 'care', kind: 'owner-visit' });
+      return { event: w.events.at(-1), morale: w.morale, trust: w.manager.trust };
+    };
+    const plain = request(0);
+    for (let reads = 1; reads <= 6; reads++) expect(request(reads)).toEqual(plain);
+  });
+
   it('backs the manager publicly only while his standing needs it', () => {
     const w = createWorld(input);
     w.manager.trust = 50;

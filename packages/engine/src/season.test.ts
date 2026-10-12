@@ -1,9 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { canonical, validateWorld, type World } from '../../contracts/src/index';
-import { currency, priceIndex } from '../../catalogs/src/index';
+import {
+  canonical,
+  validateWorld,
+  type Club,
+  type CountryCode,
+  type World,
+} from '../../contracts/src/index';
+import { COUNTRIES, country, currency, priceIndex } from '../../catalogs/src/index';
 import {
   advanceRound,
   closeSeason,
+  clubOf,
   createWorld,
   cupKey,
   eloOf,
@@ -12,6 +19,7 @@ import {
   legsOf,
   ownLeagueClubs,
   prepareSeason,
+  ranked,
   tieAggregate,
 } from './index';
 import { professionalStart } from './testing';
@@ -201,5 +209,161 @@ describe('closed season archive', () => {
     expect(season).not.toHaveProperty('ranks');
     expect(season.brackets!.length).toBeGreaterThan(0);
     expect(season.eloRange).toHaveLength(4);
+  });
+});
+
+/** A club founded in `code`, its first season (amateur unless `start` says) played to the last round. */
+function lastRound(code: CountryCode, start = (w: World) => w) {
+  const w = start(
+    createWorld({
+      country: code,
+      name: 'Archive Rovers',
+      color: '#2a4d3a',
+      seed: 'amateur-exchange',
+      difficulty: 1,
+    }),
+  );
+  // A round step stays put once the club is bankrupt: fail here rather than loop to the timeout.
+  while (w.round < 46) {
+    expect(w.bankrupt).toBeUndefined();
+    advanceRound(w, undefined, false);
+  }
+  return w;
+}
+
+/**
+ * Orders the amateur table with the own club `rank`th and the others from the weakest down, so the
+ * table and the strength order disagree; returns the table.
+ */
+function standAt(w: World, rank: number) {
+  const order = ownLeagueClubs(w)
+    .filter((c) => c.id !== w.playerClub)
+    .sort((a, b) => a.strength - b.strength || (a.id < b.id ? -1 : 1));
+  order.splice(rank - 1, 0, clubOf(w));
+  order.forEach((c, i) => (w.tables[c.id].points = 100 - i * 2));
+  expect(ranked(w, order)).toEqual(order);
+  return order.map((c) => c.id);
+}
+
+/** Closes the season and reads who crossed between the last division and the amateur level. */
+function exchange(w: World) {
+  const code = clubOf(w).country,
+    groups = country(code).groups,
+    last = groups.length - 1;
+  const before = structuredClone(w);
+  closeSeason(w);
+  const was = new Map(before.clubs.map((c) => [c.id, c]));
+  const ids = (clubs: Club[]) => clubs.map((c) => c.id).sort();
+  const moved = (from: number, to: number, where: string = code) =>
+    ids(
+      w.clubs.filter((c) => c.country === where && was.get(c.id)!.tier === from && c.tier === to),
+    );
+  // Countries without a played amateur league send up their strongest amateur clubs.
+  for (const cp of COUNTRIES.filter((cp) => !(before.lower && cp.code === code))) {
+    const bottom = cp.groups.length - 1,
+      places = cp.groups[bottom].length * 2;
+    const strongest = before.clubs
+      .filter((c) => c.country === cp.code && c.representative && c.tier === bottom + 1)
+      .sort((a, b) => b.strength - a.strength || (a.id < b.id ? -1 : 1))
+      .slice(0, places);
+    expect(moved(bottom + 1, bottom, cp.code), cp.code).toEqual(ids(strongest));
+    expect(moved(bottom, bottom + 1, cp.code), cp.code).toHaveLength(places);
+  }
+  // Nobody falls or climbs two levels in one close.
+  for (const c of w.clubs)
+    expect(Math.abs(c.tier - was.get(c.id)!.tier), c.id).toBeLessThanOrEqual(1);
+  // Every group keeps its capacity.
+  groups.forEach((sizes, tier) =>
+    sizes.forEach((size, group) =>
+      expect(
+        w.clubs.filter(
+          (c) => c.country === code && c.tier === tier && c.group === group && !c.representative,
+        ),
+        `${code}:${tier}:${group}`,
+      ).toHaveLength(size),
+    ),
+  );
+  return {
+    last,
+    up: moved(last + 1, last),
+    down: moved(last, last + 1),
+    // The bottom two of each last-division group in the season just played.
+    bottom: ids(
+      groups[last].flatMap((_, group) =>
+        ranked(
+          before,
+          before.clubs.filter(
+            (c) => c.country === code && c.tier === last && c.group === group && !c.representative,
+          ),
+        ).slice(-2),
+      ),
+    ),
+  };
+}
+
+describe('amateur exchange (→LEAGUE-6)', () => {
+  let england: World | undefined;
+  const englandLastRound = () => structuredClone((england ??= lastRound('ENG')));
+
+  it('sends the champions up for exactly the bottom two of the last division', () => {
+    const w = englandLastRound(),
+      table = standAt(w, 1);
+    const { last, up, down, bottom } = exchange(w);
+    expect(down).toHaveLength(2);
+    expect(down).toEqual(bottom);
+    expect(up).toHaveLength(2);
+    expect(up).toContain(w.playerClub);
+    // The other place goes to the playoff winner of second to fifth, not the strongest amateurs.
+    expect(table.slice(1, 5)).toContain(up.find((id) => id !== w.playerClub));
+    expect(w.lower).toBe(false);
+    expect(clubOf(w).tier).toBe(last);
+    expect(clubOf(w).representative).toBeFalsy();
+    expect(w.events.some((e) => e.kind === 'promotion' && e.title === '프로 무대 입성')).toBe(true);
+  });
+
+  it('plays the own club third off for the last place', () => {
+    const w = englandLastRound(),
+      year = w.year,
+      table = standAt(w, 3);
+    const { last, up, down, bottom } = exchange(w);
+    expect(down).toEqual(bottom);
+    expect(up).toHaveLength(2);
+    expect(up).toContain(table[0]);
+    const winner = up.find((id) => id !== table[0])!;
+    expect(table.slice(1, 5)).toContain(winner);
+    // The own ties are archived (→LEAGUE-4).
+    expect(w.ownMatches.some((m) => m.id.startsWith(`${year}:lower-promotion:`))).toBe(true);
+    expect(w.lower).toBe(winner !== w.playerClub);
+    expect(clubOf(w).tier).toBe(winner === w.playerClub ? last : last + 1);
+  });
+
+  it.each([
+    ['ITA', 'ITA:1:0:2'],
+    ['GER', 'GER:1:0:15'],
+  ] as const)(
+    '%s exchanges two clubs a last-division group, and %s, relegated into it, stays there',
+    (code, fallen) => {
+      const w = lastRound(code),
+        table = standAt(w, 1);
+      // The worst record of the division above, below every last-division club once it falls.
+      Object.assign(w.tables[fallen], { points: 0, gf: 0, ga: 99 });
+      const { last, up, down, bottom } = exchange(w);
+      const places = country(code).groups[last].length * 2;
+      expect(down).toEqual(bottom);
+      expect(up).toHaveLength(places);
+      expect(up).toEqual(expect.arrayContaining(table.slice(0, places - 1)));
+      expect(table.slice(places - 1, places + 3)).toContain(
+        up.find((id) => !table.slice(0, places - 1).includes(id)),
+      );
+      expect(w.clubs.find((c) => c.id === fallen)).toMatchObject({ tier: last });
+      expect(w.clubs.find((c) => c.id === fallen)!.representative).toBeFalsy();
+      expect(w.lower).toBe(false);
+    },
+  );
+
+  it('keeps the strength order in a season the own club plays professionally', () => {
+    const w = lastRound('ENG', professionalStart);
+    // exchange() expects the strongest amateur clubs up in every country.
+    expect(exchange(w).down).toHaveLength(2);
   });
 });

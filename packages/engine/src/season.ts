@@ -6,7 +6,7 @@ import {
   europeFinal,
 } from './europe';
 import { advanceCups, cupKey, finishCups, prepareCups } from './cups';
-import { archivedRounds, finalOf, ownReached } from './knockout';
+import { archivedRounds, finalOf, ownReached, type Settlement } from './knockout';
 import { clubValuation, eloOf, eloRange, eloRank, settleElo, squadValue } from './ratings';
 import { evolveClubs } from './dynamics';
 import { announceRetirements, clearHealed, injuriesAfterMatch, retireAtClose } from './careers';
@@ -287,7 +287,26 @@ function tournament(w: World, clubs: Club[], key: string) {
   }
   return list[0];
 }
+/**
+ * The amateur clubs going up while the own club plays in the amateur league (→LEAGUE-6): one for
+ * each club the last division relegates (two a group), every place but the last by the table just
+ * played and the last by a playoff of the next four.
+ */
+function amateurEntrants(w: World) {
+  const cp = country(clubOf(w).country),
+    places = cp.groups[cp.groups.length - 1].length * 2;
+  const order = ranked(w, lowerLeagueClubs(w));
+  return {
+    country: cp.code,
+    clubs: [
+      ...order.slice(0, places - 1),
+      tournament(w, order.slice(places - 1, places + 3), 'lower-promotion'),
+    ],
+  };
+}
 export function promote(w: World) {
+  // The amateur table is the season just played: settle it before any club moves.
+  const amateurs = w.lower ? amateurEntrants(w) : undefined;
   const transfers: { club: Club; tier: number }[] = [];
   for (const cp of COUNTRIES) {
     for (let tier = 0; tier < cp.groups.length - 1; tier++) {
@@ -349,9 +368,13 @@ export function promote(w: World) {
   for (const t of transfers) t.club.tier = t.tier;
   for (const cp of COUNTRIES) {
     const last = cp.groups.length - 1;
-    const reservePool = w.clubs
-      .filter((c) => c.country === cp.code && c.representative && c.tier === last + 1)
-      .sort((a, b) => b.strength - a.strength || (a.id < b.id ? -1 : 1));
+    // Where no amateur league is played, the strongest amateur clubs go up.
+    const reservePool =
+      amateurs?.country === cp.code
+        ? [...amateurs.clubs]
+        : w.clubs
+            .filter((c) => c.country === cp.code && c.representative && c.tier === last + 1)
+            .sort((a, b) => b.strength - a.strength || (a.id < b.id ? -1 : 1));
     for (let group = 0; group < cp.groups[last].length; group++) {
       const members = w.clubs.filter(
         (c) => c.country === cp.code && c.tier === last && c.group === group && !c.representative,
@@ -371,6 +394,16 @@ export function promote(w: World) {
         entry.tier = last;
         entry.group = group;
         entry.representative = false;
+        if (entry.id === w.playerClub) {
+          w.lower = false;
+          const returning = w.history.some((h) => h.tier <= last);
+          addEvent(
+            w,
+            'promotion',
+            returning ? '프로 무대로 복귀' : '프로 무대 입성',
+            `${entry.name} · ${last + 1}부`,
+          );
+        }
         if (c.id === w.playerClub) {
           w.lower = true;
           addEvent(
@@ -489,9 +522,10 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   const leagueTiers = new Map(ownLeagueClubs(w).map((club) => [club.id, club.tier]));
   if (w.round < 46 || w.fixtures.some((f) => !f.score))
     throw new Error('아직 정규 시즌이 끝나지 않았습니다.');
+  // Every path closes on the day after the final round, the day a day step closes on (→LEAGUE-9).
+  if (currentDay(w) < SEASON_END_DAY + 1) w.calendar = { day: SEASON_END_DAY + 1 };
   finishCups(w);
   (finishEurope || finishContinental)(w);
-  const wasLower = w.lower;
   const own = clubOf(w),
     oldTier = own.tier,
     oldGroup = own.group;
@@ -566,33 +600,6 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   retireAtClose(w);
   const tiers = new Map(w.clubs.map((c) => [c.id, c.tier]));
   promote(w);
-  const last = country(own.country).groups.length - 1;
-  if (wasLower) {
-    const lowerClubs = lowerLeagueClubs(w);
-    const lowerOrder = ranked(w, lowerClubs);
-    let winner = lowerOrder[0];
-    // The champions go up; second to fifth play off for the place when the own club is among them.
-    if (winner.id !== own.id && lowerOrder.slice(1, 5).some((c) => c.id === own.id))
-      winner = tournament(w, lowerOrder.slice(1, 5), 'lower-promotion');
-    if (winner.id === own.id) {
-      const replacement = ranked(
-        w,
-        w.clubs.filter((c) => c.country === own.country && c.tier === last && !c.representative),
-      ).at(-1)!;
-      replacement.tier = last + 1;
-      replacement.representative = true;
-      w.lower = false;
-      own.tier = last;
-      own.group = replacement.group;
-      const returning = w.history.some((h) => h.tier <= last);
-      addEvent(
-        w,
-        'promotion',
-        returning ? '프로 무대로 복귀' : '프로 무대 입성',
-        `${own.name} · ${last + 1}부`,
-      );
-    }
-  }
   evolveClubs(w, tiers);
   if (own.tier !== oldTier)
     addEvent(
@@ -676,39 +683,34 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   clubDay(w);
   sponsorReminder(w);
 }
-export function advanceRound(
-  w: World,
-  settlement?: (w: World, p: MatchPlayback) => void,
-  observe = true,
-) {
-  if (w.round >= 46 || w.bankrupt) return undefined;
-  if (!w.rankHistory) snapshotStandings(w);
-  ensureScorers(w);
-  w.round++;
-  const from = currentDay(w),
-    to = Math.max(from, w.round * ROUND_INTERVAL_DAYS);
-  // Whole-round jumps still live through each skipped day of club business.
-  for (let day = from + 1; day <= to; day++) {
-    w.calendar = { day };
-    clubDay(w);
-  }
-  w.calendar = { day: to };
+/**
+ * One round: the days up to and including its league match day, each lived as a day step lives it
+ * (→LEAGUE-11), so midweek ties play on their own day before the league matches. Like the round
+ * step always has, it carries on past a critical alert; the host stops after the round.
+ */
+export function advanceRound(w: World, settlement?: Settlement, observe = true) {
+  if (w.round >= SEASON_ROUNDS || w.bankrupt) return undefined;
+  beginDays(w);
+  const round = w.round;
   let ownPlayback: MatchPlayback | undefined;
+  const capture = (world: World, p: MatchPlayback) => {
+    ownPlayback = p;
+    settlement?.(world, p);
+  };
+  while (w.round === round && !w.bankrupt) stepDay(w, capture, observe);
+  return ownPlayback;
+}
+/** A league match day: the round's matches, then its settlement and snapshots. */
+function playRound(w: World, capture: Settlement, observe: boolean) {
+  w.round++;
   for (const f of w.fixtures.filter((f) => f.round === w.round && !f.score)) {
     const own = f.home === w.playerClub || f.away === w.playerClub;
     const p = simulateMatch(w, f, own && observe, own || isScoringFixture(w, f));
     f.score = p.record.score;
     recordMatch(w, p, true);
-    if (own) {
-      ownPlayback = p;
-      settlement?.(w, p);
-    }
+    if (own) capture(w, p);
   }
   settleTraining(w);
-  const capture = (world: World, p: MatchPlayback) => {
-    ownPlayback = p;
-    settlement?.(world, p);
-  };
   advanceEurope(w, capture, undefined, observe);
   advanceCups(w, capture, undefined, observe);
   settleRound(w);
@@ -716,7 +718,34 @@ export function advanceRound(
   snapshotScorers(w);
   if (w.round % MARKET_REFRESH_ROUNDS === 0) refreshManagerMarket(w);
   w.revision++;
-  return ownPlayback;
+}
+/** Records an older save may lack, set up before its first day is lived. */
+function beginDays(w: World) {
+  w.calendar ||= { day: currentDay(w) };
+  if (!w.rankHistory) snapshotStandings(w);
+  ensureScorers(w);
+}
+/**
+ * The next day of the world season in its one order (→LEAGUE-11): the close on the day after the
+ * final round; a league match day's matches and settlement before its club business; any other
+ * day's ties before its club business.
+ */
+function stepDay(w: World, capture: Settlement, observe: boolean) {
+  const day = currentDay(w) + 1;
+  w.calendar = { day };
+  // The season closes the day after its final round; the empty summer is skipped.
+  if (day > SEASON_END_DAY || day >= seasonLength(w)) {
+    closeSeason(w);
+    w.revision++;
+  } else if (w.round < SEASON_ROUNDS && day >= (w.round + 1) * ROUND_INTERVAL_DAYS) {
+    playRound(w, capture, observe);
+    clubDay(w);
+  } else {
+    advanceEurope(w, capture, day, observe);
+    advanceCups(w, capture, day, observe);
+    clubDay(w);
+    w.revision++;
+  }
 }
 
 /**
@@ -741,30 +770,14 @@ export function advanceDays(
   if (!Number.isInteger(days) || days < 1 || days > 366)
     throw new Error('진행할 날짜 범위가 올바르지 않습니다.');
   if (w.critical || w.bankrupt) return undefined;
-  w.calendar ||= { day: currentDay(w) };
-  if (!w.rankHistory) snapshotStandings(w);
-  ensureScorers(w);
+  beginDays(w);
   let ownPlayback: MatchPlayback | undefined;
   const capture = (world: World, p: MatchPlayback) => {
     ownPlayback = p;
     settlement?.(world, p);
   };
   for (let n = 0; n < days; n++) {
-    w.calendar.day++;
-    // The season closes the day after its final round; the empty summer is skipped.
-    if (w.calendar.day > SEASON_END_DAY || w.calendar.day >= seasonLength(w)) {
-      closeSeason(w);
-      w.revision++;
-    } else if (w.round < SEASON_ROUNDS && w.calendar.day >= (w.round + 1) * ROUND_INTERVAL_DAYS) {
-      // The round has no skipped days here, so the match day's business runs once after it.
-      advanceRound(w, capture, observe);
-      clubDay(w);
-    } else {
-      advanceEurope(w, capture, w.calendar.day, observe);
-      advanceCups(w, capture, w.calendar.day, observe);
-      clubDay(w);
-      w.revision++;
-    }
+    stepDay(w, capture, observe);
     if (w.critical || w.bankrupt) break;
   }
   return ownPlayback;

@@ -175,6 +175,7 @@ for (const viewport of [
     expect(afterScroll!.y + afterScroll!.height).toBeLessThanOrEqual(viewport.height);
     await close.click();
     await expect(opener).toBeFocused();
+    await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
     await expect(page.getByTestId('hub-preparation')).toContainText('직접 고른 선발');
   });

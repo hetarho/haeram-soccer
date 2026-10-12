@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { Host } from './host';
-import type { Body } from './protocol';
+import { build } from './codec';
+import type { Body, CodecJob } from './protocol';
+import { canonical } from '../../../../packages/contracts/src/index';
+import { decode } from '../adapters/persistence';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import {
   lineupPreset,
@@ -30,6 +33,13 @@ const req = (id: string, revision: number, body: Body) => ({
   parentGeneration: 0,
   body,
 });
+/** A host wired to a codec port that keeps each posted snapshot, cloned as postMessage would. */
+function withCodec() {
+  const jobs: CodecJob[] = [];
+  const host = new Host();
+  host.codec = { postMessage: (job) => jobs.push(structuredClone(job)) };
+  return { host, jobs };
+}
 describe('worker command protocol', () => {
   it('serializes commands, returns duplicate acknowledgment and rejects stale/session requests', async () => {
     const h = new Host();
@@ -158,7 +168,8 @@ describe('worker command protocol', () => {
     expect(days.ok).toBe(true);
     expect(days.view?.world.calendar?.day).toBe(3);
     expect(days.view?.world.round).toBe(0);
-    expect(days.raw).toBeTruthy();
+    // A command is answered without encoding: checkpoints come from the codec worker.
+    expect(days.raw).toBeUndefined();
     expect(await h.handle(dayRequest)).toBe(days);
     const match = await h.handle(
       req('match', h.world!.revision, { type: 'command', command: { type: 'next-match' } }),
@@ -181,10 +192,38 @@ describe('worker command protocol', () => {
     expect(h.world!.revision).toBe(0);
     expect(result.raw).toBeUndefined();
   });
+  it('hands the codec a snapshot of the current world and revision, whatever revision the client saw', async () => {
+    const { host: h, jobs } = withCodec();
+    await h.handle(req('create', -1, { type: 'found', input }));
+    await h.handle(req('days', 0, { type: 'command', command: { type: 'advance-days', days: 2 } }));
+    const revision = h.world!.revision;
+    expect(revision).toBeGreaterThan(0);
+    const saving = await h.handle({ ...req('save', -1, { type: 'save' }), generation: 4 });
+    expect(saving.ok).toBe(true);
+    expect(saving.view).toBeUndefined();
+    expect(saving.raw).toBeUndefined();
+    expect(saving.saving).toEqual({ worldId: h.world!.id, revision });
+    expect(jobs).toHaveLength(1);
+    expect(jobs[0]).toMatchObject({ id: 'save', generation: 4, parentGeneration: 0 });
+    const result = await build(jobs[0]);
+    if (!result.ok) throw new Error(result.error);
+    expect(result.revision).toBe(revision);
+    expect(result.envelope).toMatchObject({ worldId: h.world!.id, generation: 4 });
+    const saved = (await decode(result.raw)).world;
+    expect(saved.revision).toBe(revision);
+    expect(canonical(saved)).toBe(canonical(h.world!));
+    // Nothing is posted without a world or a codec port.
+    expect((await new Host().handle(req('none', -1, { type: 'save' }))).ok).toBe(false);
+    const unwired = new Host();
+    await unwired.handle(req('create', -1, { type: 'found', input }));
+    expect((await unwired.handle(req('save', 0, { type: 'save' }))).error).toContain('저장 Worker');
+  });
   it('returns a restorable checkpoint when next-match progression is cancelled between days', async () => {
+    const jobs: CodecJob[] = [];
     const h = new Host(() => {
       h.cancelled = true;
     });
+    h.codec = { postMessage: (job) => jobs.push(structuredClone(job)) };
     await h.handle(req('create', -1, { type: 'found', input }));
     const result = await h.handle(
       req('match', 0, { type: 'command', command: { type: 'next-match' } }),
@@ -193,9 +232,12 @@ describe('worker command protocol', () => {
     expect(result.cancelled).toBe(true);
     expect(result.view?.world.calendar?.day).toBe(1);
     expect(result.view?.world.ownMatches).toHaveLength(0);
+    await h.handle(req('save', -1, { type: 'save' }));
+    const checkpoint = await build(jobs[0]);
+    if (!checkpoint.ok) throw new Error(checkpoint.error);
     const restored = new Host();
     const loaded = await restored.handle(
-      req('restore', -1, { type: 'inspect', raw: result.raw!, activate: true }),
+      req('restore', -1, { type: 'inspect', raw: checkpoint.raw, activate: true }),
     );
     expect(loaded.ok).toBe(true);
     expect(restored.world?.calendar?.day).toBe(1);

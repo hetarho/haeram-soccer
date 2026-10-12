@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r8 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r9 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -83,11 +83,11 @@
   - Checksum detects accidental corruption; it is not proof that a client-authored result is honest.
   - Export the envelope as a portable `.haeram-save.json` file; Flutter can decode the same format.
 - ARCH-13 [o] Checkpoint writes use two slots and a last-step manifest update.
-  - Build and validate the complete candidate checkpoint before touching the inactive slot.
+  - Build and validate the complete candidate checkpoint in a background codec worker before touching the inactive slot; the simulation and UI never wait for it.
   - Write the inactive slot; verify the stored candidate; update the manifest; then acknowledge the committed generation.
   - Keep the previously committed slot until a newer checkpoint commits successfully.
   - On quota/write errors retain the last committed save, preserve recoverable in-memory state, offer export/retry, and do not report success.
-  - Autosave at settled fixture/period boundaries and committed personnel/economic decisions, not at animation frames; expose the last saved revision and any unsaved changes.
+  - Autosave committed decisions at once and automatic progression in the background at a bounded interval (→SAVE-8), never per simulation step or animation frame; expose when the game was last saved.
   - On load validate the manifest and selected slot; use the compatible previous checkpoint for recovery, explaining the recovered generation.
   - Missing/invalid manifests require deterministic validated-slot recovery; invalid saves are never replaced with a fresh world automatically.
 - ARCH-14 [o] Storage and longevity must pass an early measurement gate.
@@ -202,10 +202,11 @@
 - Current product material: `spec/ideation/club-history-reboot.md`; human PRD: `docs/PRD.md` (repository-relative paths).
 
 ## chg
+- r9 261012 ARCH-13✎ candidate built and validated before the slot→in a background codec worker nobody waits for; autosave at settled fixture/period boundaries→decisions at once, automatic progression at a bounded interval (→SAVE-8)
 - r8 261012 ARCH-23✎ one serial `pnpm run verify` job→parallel jobs (checks, browser tests per browser with WebKit in two shards, benchmarks)
 - r7 261012 ARCH-5✎ inputs simulation time→the game day each command applies at; +the same facts however time is advanced; +draws named by what they settle, never by a count of commands
 - r6 261012 ARCH-11✎ additional worlds as files only→parked game slots in IndexedDB beside the localStorage game in play; ARCH-29+ owner-scoped profile ports (device now, account later)
-- r5 261012 ARCH-6✎ +read-only requests answered between steps; ARCH-28✎ +later pages as lazy chunks
+- r5 261012 ARCH-6✎ none→read-only requests answered between steps; ARCH-28✎ none→later pages as lazy chunks
 - r4 261009 ARCH-2✎ npm workspaces→pnpm workspaces with pnpm pinned by packageManager; ARCH-22✎ verify commands npm run→pnpm run; ARCH-23✎ CI install npm ci→pnpm install --frozen-lockfile
 - r3 261007 ARCH-23✎ static provider Cloudflare Pages→Netlify; ARCH-27✎ account Cloudflare→Netlify and repository unspecified→hetarho/haeram-soccer
 - r2 261007 ARCH-25✎ unresolved NPC retention→HIST archive tiers; ARCH-9✎ numeric policy owner MONEY→ECON

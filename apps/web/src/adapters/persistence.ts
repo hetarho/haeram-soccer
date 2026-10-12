@@ -117,6 +117,14 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
     throw new Error('저장 헤더와 세계가 일치하지 않습니다.');
   return { world, envelope: e };
 }
+/**
+ * The codec worker's checkpoint (→ARCH-13): encoded, then decoded and validated as a load would, so
+ * only a candidate that loads is ever handed to the slot writer.
+ */
+export async function checkpoint(w: World, generation = 1, parentGeneration = 0) {
+  const raw = await encode(w, generation, parentGeneration);
+  return { raw, envelope: (await decode(raw)).envelope };
+}
 /** Public codec API retained; browser clients inject their worker into lean SaveRepository. */
 export class Saves extends SaveRepository {
   constructor(storage: StoragePort, inspect: SaveInspector = decode) {

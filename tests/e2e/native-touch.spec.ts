@@ -129,6 +129,7 @@ for (const viewport of [
     await save.click();
     await expect(preparation.getByRole('status')).toContainText('선발 11명을 저장했습니다.');
     await preparation.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
+    await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await page

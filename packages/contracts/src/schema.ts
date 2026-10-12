@@ -386,6 +386,7 @@ const bid = z.strictObject({
   club: id.optional(),
   fee: money,
   loan: z.boolean().optional(),
+  offer: z.strictObject({ player, fee: money, loanFee: money }).optional(),
   year: z.number().int(),
   day: z.number().int().min(0).max(400),
   due: z.number().int().min(0).max(800),

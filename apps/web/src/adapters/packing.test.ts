@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../../../packages/contracts/src/index';
-import { advanceRound, createWorld, simulateSeason } from '../../../../packages/engine/src/index';
+import {
+  advanceRound,
+  createWorld,
+  placeBid,
+  simulateSeason,
+  transferOffers,
+} from '../../../../packages/engine/src/index';
 import { base64, pack, unbase64, unpack } from './packing';
 import { packBitColumns } from './bitpacking';
 
@@ -37,6 +43,16 @@ describe('lossless career stream compaction', () => {
     w.buildNext = { build: { youth: 'pathway' }, name: '다음 계획' };
     expect(w.managerMarket?.free.length).toBeGreaterThan(0);
     const restored = validateWorld(unpack(JSON.parse(JSON.stringify(pack(w)))));
+    expect(canonical(restored)).toBe(canonical(w));
+  });
+
+  it('keeps the player and terms a pending bid was made for through a pack round trip', () => {
+    const w = career();
+    placeBid(w, 2, transferOffers(w)[2].fee);
+    const bid = w.bids!.find((b) => b.direction === 'out')!;
+    expect(bid).toMatchObject({ status: 'pending', offer: { player: { id: bid.playerId } } });
+    const restored = validateWorld(unpack(JSON.parse(JSON.stringify(pack(w)))));
+    expect(restored.bids?.find((b) => b.id === bid.id)?.offer).toEqual(bid.offer);
     expect(canonical(restored)).toBe(canonical(w));
   });
 

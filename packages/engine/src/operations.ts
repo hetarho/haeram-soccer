@@ -10,7 +10,7 @@ import {
   tacticLabel,
   TACTICS,
 } from './world';
-import { clamp, integer, random, ratio } from './primitives';
+import { clamp, hash, integer, random, ratio } from './primitives';
 import {
   campaignEffectiveness,
   FINANCE_CONFIG,
@@ -402,20 +402,44 @@ export function renewManager(w: World, delegated = false) {
   );
   return terms;
 }
-/** The season market; `year` reproduces an earlier season's list for negotiations in progress. */
-export function transferOffers(w: World, year = w.year) {
+/**
+ * The season market. Each combination of the settings that shape the list draws its own
+ * candidates under its own IDs (→CLUB-14, →ECON-16), so switching a setting away and back shows
+ * the same list again. `year` and `legacy` reproduce a list under the `market:<year>:<i>` IDs of
+ * rules before 1.15.0 for the bids pending from then.
+ */
+export function transferOffers(w: World, year = w.year, legacy = false) {
   const roles = ['GK', 'DEF', 'MID', 'FWD'] as const;
   const profile = policyEffects(policyOf(w)).offer,
     scouting = staffEffects(w),
     build = buildEffects(w),
     synergy = synergyEffects(w);
   const count = Math.max(4, scouting.scoutCandidates + build.marketCandidates);
+  const sig = hash(
+    [
+      ...profile.ability,
+      ...profile.age,
+      profile.potentialBonus,
+      profile.feeMultiplier,
+      scouting.scoutCandidates,
+      scouting.scoutPotential,
+      scouting.feeMultiplier,
+      build.marketCandidates,
+      build.marketAbility,
+      build.marketPotential,
+      synergy.marketPotential,
+      synergy.feeMultiplier,
+    ].join(','),
+  )
+    .toString(36)
+    .padStart(7, '0');
   return Array.from({ length: count }, (_, i) => {
-    const r = random(`${w.seed}:market:${year}:${i}`);
+    const id = legacy ? `market:${year}:${i}` : `market:${year}:${sig}:${i}`;
+    const r = random(`${w.seed}:${id}`);
     const p = makePlayer(
       clubOf(w).country,
       w.seed,
-      `market:${year}:${i}`,
+      id,
       year,
       Math.min(95, integer(r, profile.ability[0], profile.ability[1]) + build.marketAbility),
       roles[i % 4],
@@ -464,7 +488,14 @@ function resign(w: World, reason: string) {
     `${old.name} 감독의 마지막 날`,
     `${old.since}–${w.year} · ${reason}`,
   );
-  const interim = makeManager(clubOf(w).country, `${w.seed}:interim:${w.revision}`, w.year, 99);
+  // Counting this departure keeps two caretakers on the same day apart.
+  const departures = w.events.filter((event) => event.kind === 'manager-departure').length;
+  const interim = makeManager(
+    clubOf(w).country,
+    `${w.seed}:interim:${w.year}:${currentDay(w)}:${departures}`,
+    w.year,
+    99,
+  );
   interim.ability = 35;
   // A caretaker steps in for now; he is not a bet on the future.
   interim.potential = 35;
@@ -794,7 +825,8 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
         throw new Error('독점 후원 계약 중에는 자체 상품 캠페인을 진행할 수 없습니다.');
       debit(w, o.cost);
       w.campaigns.push({
-        id: `${w.year}:${w.round}:${w.revision}:${o.kind}`,
+        // One campaign of a kind runs at a time, so its round names it.
+        id: `${w.year}:${w.round}:${o.kind}`,
         kind: o.kind,
         cost: o.cost,
         started: w.round,

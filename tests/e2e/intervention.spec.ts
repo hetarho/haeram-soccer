@@ -37,6 +37,8 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
     dialog.getByText('선발 11명을 저장했습니다. 다음 경기부터 변경할 때까지 적용합니다.'),
   ).toBeVisible();
   await dialog.getByRole('button', { name: '준비 마치고 돌아가기' }).click();
+  // A decision saves in the background (→SAVE-8); reload once it is on disk.
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(page.getByTestId('hub-preparation')).toContainText('직접 고른 선발');
@@ -62,6 +64,7 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
     '매 경기 능력과 피로에 따라 선발을 자동 구성합니다.',
   );
   await dialog.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await expect(page.getByTestId('hub-preparation')).toContainText('감독 자동 선발');

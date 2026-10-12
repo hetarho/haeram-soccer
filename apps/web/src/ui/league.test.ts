@@ -122,6 +122,25 @@ describe('league insight facts', () => {
     expect(leagueRules(w, top)).toMatchObject({ automatic: 0, playoff: 0, relegation: 3 });
   });
 
+  it('sends up as many amateur clubs as the last division relegates, the last by play-off', () => {
+    // One League Two group drops two: the champions go up and 2nd–5th play off for the other.
+    const eng = createWorld(input);
+    expect(leagueRules(eng, ownLeagueIds(eng))).toMatchObject({
+      automatic: 1,
+      playoff: 4,
+      relegation: 0,
+      lower: true,
+    });
+    // Three Serie C groups drop six: the top five go up and 6th–9th play off for the sixth.
+    const ita = createWorld({ ...input, country: 'ITA' });
+    expect(leagueRules(ita, ownLeagueIds(ita))).toMatchObject({
+      automatic: 5,
+      playoff: 4,
+      relegation: 0,
+      lower: true,
+    });
+  });
+
   it("finds any club's own league and names where it plays, whoever opens its sheet", () => {
     const w = createWorld(input),
       club = (id: string) => w.clubs.find((c) => c.id === id)!;

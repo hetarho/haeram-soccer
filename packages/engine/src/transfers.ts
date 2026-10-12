@@ -132,29 +132,35 @@ function acceptanceChance(w: World, fee: string, asking: string) {
     0.95,
   );
 }
-function marketOffer(w: World, bid: TransferBid) {
-  return transferOffers(w, bid.year).find((o) => o.player.id === bid.playerId);
+type MarketOffer = ReturnType<typeof transferOffers>[number];
+/**
+ * The player and terms a bid was made for, whatever the list shows meanwhile (→CLUB-14); a bid
+ * pending from before 1.15.0 has no `offer` and finds him in its season's list as it did then.
+ */
+function marketOffer(w: World, bid: TransferBid): MarketOffer | undefined {
+  if (!bid.offer)
+    return transferOffers(w, bid.year, true).find((o) => o.player.id === bid.playerId);
+  const { player, fee, loanFee } = bid.offer;
+  return {
+    player,
+    fee,
+    loanFee,
+    freeAgent: false,
+    available: !w.players.some((owned) => owned.id === player.id),
+  };
 }
-function askingFee(offer: ReturnType<typeof transferOffers>[number], loan?: boolean) {
+function askingFee(offer: MarketOffer, loan?: boolean) {
   return loan ? offer.loanFee : offer.fee;
 }
-function signingBlocker(
-  w: World,
-  offer: ReturnType<typeof transferOffers>[number] | undefined,
-  fee: string,
-) {
+function signingBlocker(w: World, offer: MarketOffer | undefined, fee: string) {
   if (!offer?.available) return '이미 계약했거나 없는 선수입니다.';
   if (activePlayers(w).length >= SQUAD_LIMIT) return '선수단 정원은 26명입니다.';
   if (BigInt(w.cash) < BigInt(fee)) return '보유 자금이 부족합니다.';
   return undefined;
 }
-function completeSigning(
-  w: World,
-  bid: TransferBid,
-  offer: ReturnType<typeof transferOffers>[number],
-  fee: string,
-) {
-  const p = offer.player;
+function completeSigning(w: World, bid: TransferBid, offer: MarketOffer, fee: string) {
+  // The bid keeps its record of him; the squad gets its own copy.
+  const p = structuredClone(offer.player);
   debit(w, fee);
   if (bid.loan) p.loanUntil = w.year + 1;
   w.players.push(p);
@@ -212,9 +218,13 @@ export function placeBid(w: World, candidate: number, fee: string, loan = false)
   if (typeof fee !== 'string' || !/^\d{1,80}$/.test(fee) || BigInt(fee) < 1n)
     throw new Error('제안 금액을 확인하세요.');
   if (BigInt(w.cash) < BigInt(fee)) throw new Error('보유 자금이 부족합니다.');
+  // Earlier bids for him this season keep a renewed bid on the same day apart.
+  const earlier = (w.bids || []).filter(
+    (b) => b.direction === 'out' && b.playerId === offer.player.id && b.year === w.year,
+  ).length;
   const day = currentDay(w),
     window = transferWindow(w, day),
-    id = bidId('out', w, day, offer.player.id, `${w.revision}:`),
+    id = bidId('out', w, day, offer.player.id, `${earlier}:`),
     wait = integer(random(`${w.seed}:bid-due:${id}`), 2, 4);
   const bid: TransferBid = {
     id,
@@ -222,6 +232,7 @@ export function placeBid(w: World, candidate: number, fee: string, loan = false)
     playerId: offer.player.id,
     fee,
     ...(loan ? { loan: true } : {}),
+    offer: { player: offer.player, fee: offer.fee, loanFee: offer.loanFee },
     year: w.year,
     day,
     due: Math.min(day + wait, window.until ?? day + wait),
@@ -300,17 +311,19 @@ export interface BidDetails {
 /** Read model for showing bids: newest first, open negotiations before closed ones. */
 export function bidBoard(w: World): BidDetails[] {
   const open = transferWindow(w).open;
-  const offers = new Map<number, ReturnType<typeof transferOffers>>();
+  const offers = new Map<number, MarketOffer[]>();
   const offersOf = (year: number) => {
-    if (!offers.has(year)) offers.set(year, transferOffers(w, year));
+    if (!offers.has(year)) offers.set(year, transferOffers(w, year, true));
     return offers.get(year)!;
   };
   return (w.bids || [])
     .map((bid, index) => {
       const offer =
-        bid.direction === 'out'
-          ? offersOf(bid.year).find((o) => o.player.id === bid.playerId)
-          : undefined;
+        bid.direction !== 'out'
+          ? undefined
+          : bid.offer
+            ? marketOffer(w, bid)
+            : offersOf(bid.year).find((o) => o.player.id === bid.playerId);
       const player =
         bid.direction === 'in' ? w.players.find((p) => p.id === bid.playerId) : offer?.player;
       return {
