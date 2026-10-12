@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-12T07:14:42.680Z",
-  "sourceCommit": "55c1a05b1c96b9e5902b055d0d315cd99523d392",
+  "snapshotAt": "2026-10-12T07:20:12.923Z",
+  "sourceCommit": "59857a3f11dc7ccc4d99a5a80fd8a1e33166b733",
   "group": {
     "id": "one-result",
     "branch": "work/one-result",
@@ -110,20 +110,14 @@
   },
   "summary": {
     "total": 8,
-    "completed": 1,
-    "remaining": 7,
+    "completed": 2,
+    "remaining": 6,
     "running": 0,
-    "review": 3,
+    "review": 2,
     "blocked": 2,
     "unassigned": 2
   },
   "tasks": [
-    {
-      "id": "T042",
-      "title": "Draws named by what they settle",
-      "dep": [],
-      "status": "ready"
-    },
     {
       "id": "T043",
       "title": "One day order for every progression mode",
@@ -188,7 +182,7 @@
       "contributors": [
         "04bf1446-4df5-4608-aabb-68858781e112/worker-1"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-12T05:51:17.525Z",
       "startCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
@@ -197,17 +191,36 @@
       "submissionId": "ed42a51a-9c4d-46b7-9f92-7ab58490ace9",
       "submittedAt": "2026-10-12T07:12:10.587Z",
       "dispatch": {
-        "id": "98fc18ef-8968-430f-b6fa-cab66de4e53f",
-        "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+        "id": "8b24ed66-b938-4111-96d3-8a741e70e3ce",
+        "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
         "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-12T06:47:10.834Z",
-        "finishedAt": "2026-10-12T06:51:47.362Z",
+        "startedAt": "2026-10-12T07:16:39.462Z",
+        "finishedAt": "2026-10-12T07:20:12.552Z",
         "error": null,
-        "summary": "T042 meets ARCH-5 (r8) and CLUB-20 (r16). Commit 22b9e8c changes the four draws (owner requests, caretaker managers, campaigns and outgoing bids) so they are named by what they settle and the game date instead of `w.revision`. In non-test engine source, `w.revision` now appears only in counter increments and its `revision: 0` start, and no other draw key counts commands or reads inbox or event lengths. I checked by reading the code that none of the new keys can repeat. Owner requests: a cooldown read from the event log blocks a second use of a request in the same year and round, because every cooldown is at least 1. Caretakers: the departure count includes the departure just recorded, and the engine never trims events (the save codec keeps the event count). Campaigns: an active campaign blocks a second one of the same kind, and campaigns only settle when a round advances. Bids: `pruneBids` only runs in `dailyMarket`, so no bid is pruned between two bids on the same day, and the ID includes the day. As the impl notes require, campaigns and bids already in saves keep their old IDs, and old campaign results still draw from the stored ID. The new tests in transfers.test.ts, care.test.ts and operations.test.ts would fail on the old revision-keyed code. They compare worlds with and without extra reads, including a whole-world `canonical` match after a bid is answered. No other code parses these IDs, and the save schema treats them as plain strings. I did not run the test suites in this read-only review; the worker reported typecheck and the full unit suite passing (73 files, 501 tests). Portable goldens are left for T047, as the task says."
+        "summary": "T042 meets ARCH-5 (r8: a draw is named by what it settles and its game date, never by a count of commands) and CLUB-20 (r16: a request is drawn for that request and round). In commit dd71098 against base 59857a3, the only code changes are the T042 changes in care.ts, operations.ts and transfers.ts and their tests. Four draws that used `w.revision` now use new keys:\n- owner requests: `${seed}:care:${kind}:${year}:${round}` (care.ts:240)\n- caretaker managers: `${seed}:interim:${year}:${day}:${departures}` (operations.ts:468-471)\n- campaign IDs: `${year}:${round}:${kind}` (operations.ts:805)\n- outgoing bid IDs: `out:${year}:${day}:${n}:${playerId}` (transfers.ts:216-221)\n\nIn non-test engine source, `revision` now appears only in counter increments (index.ts, operations.ts, season.ts) and the `revision: 0` start in world.ts. None of the other `random(...)` keys reads `revision` or a length of the inbox or event list.\n\nI checked independently that each new key cannot repeat:\n- Owner requests: `careOffer` blocks reuse of a request kind in the same year and round, because every cooldown is at least 2.\n- Caretakers: the departure count includes the departure just recorded. The engine never trims events, and the save codec keeps `eventCount`.\n- Campaigns: an active campaign blocks a second one of the same kind. Campaigns count down only in `settleRound`, which `season.ts` calls only when a round advances, so one cannot finish and restart within a round.\n- Bids: `pruneBids` runs only from `dailyMarket`, so no bid is dropped between two bids on the same day, and the ID includes the day.\n\nInterim manager IDs pass the key through `hash()` in `makeManager`, and bid IDs fall back to a hash past 100 characters, so both stay within the schema's 100-character `id` limit. Campaigns and bids already in saves keep their old IDs, and old campaign results still draw from the stored ID. No app code parses these IDs.\n\nThe new tests would fail on the old code. The renewed-bid test calls `placeBid` directly, so the revision counter does not change between the two bids and the old IDs would collide. The inbox-read test compares the whole world with `canonical` after the bid is answered.\n\nThe base adds T046 code that the worker's test run (at dd71098, on the older merge base 55c1a05) did not include. T046 touches economy.ts and finance.ts, which T042 does not change. The T046 ledger test uses several request kinds in one round and checks ledger totals against event totals, so it does not depend on the outcome of a draw. The integration step still has to run the combined suite.\n\nI did not run tests in this read-only review. The runner's record shows typecheck and the unit suite passing on dd71098 (73 files, 503 tests). As the impl notes require, portable goldens and the rules version bump are left to T047."
+      },
+      "review": {
+        "id": "bb5bcc69-dd1c-4011-a5a3-26f0dc882088",
+        "owner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T042 meets ARCH-5 (r8: a draw is named by what it settles and its game date, never by a count of commands) and CLUB-20 (r16: a request is drawn for that request and round). In commit dd71098 against base 59857a3, the only code changes are the T042 changes in care.ts, operations.ts and transfers.ts and their tests. Four draws that used `w.revision` now use new keys:\n- owner requests: `${seed}:care:${kind}:${year}:${round}` (care.ts:240)\n- caretaker managers: `${seed}:interim:${year}:${day}:${departures}` (operations.ts:468-471)\n- campaign IDs: `${year}:${round}:${kind}` (operations.ts:805)\n- outgoing bid IDs: `out:${year}:${day}:${n}:${playerId}` (transfers.ts:216-221)\n\nIn non-test engine source, `revision` now appears only in counter increments (index.ts, operations.ts, season.ts) and the `revision: 0` start in world.ts. None of the other `random(...)` keys reads `revision` or a length of the inbox or event list.\n\nI checked independently that each new key cannot repeat:\n- Owner requests: `careOffer` blocks reuse of a request kind in the same year and round, because every cooldown is at least 2.\n- Caretakers: the departure count includes the departure just recorded. The engine never trims events, and the save codec keeps `eventCount`.\n- Campaigns: an active campaign blocks a second one of the same kind. Campaigns count down only in `settleRound`, which `season.ts` calls only when a round advances, so one cannot finish and restart within a round.\n- Bids: `pruneBids` runs only from `dailyMarket`, so no bid is dropped between two bids on the same day, and the ID includes the day.\n\nInterim manager IDs pass the key through `hash()` in `makeManager`, and bid IDs fall back to a hash past 100 characters, so both stay within the schema's 100-character `id` limit. Campaigns and bids already in saves keep their old IDs, and old campaign results still draw from the stored ID. No app code parses these IDs.\n\nThe new tests would fail on the old code. The renewed-bid test calls `placeBid` directly, so the revision counter does not change between the two bids and the old IDs would collide. The inbox-read test compares the whole world with `canonical` after the bid is answered.\n\nThe base adds T046 code that the worker's test run (at dd71098, on the older merge base 55c1a05) did not include. T046 touches economy.ts and finance.ts, which T042 does not change. The T046 ledger test uses several request kinds in one round and checks ledger totals against event totals, so it does not depend on the outcome of a draw. The integration step still has to run the combined suite.\n\nI did not run tests in this read-only review. The runner's record shows typecheck and the unit suite passing on dd71098 (73 files, 503 tests). As the impl notes require, portable goldens and the rules version bump are left to T047.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "spec/tasks/T042.draws-named-by-what-they-settle.md:8 (T042 acceptance 1)",
+            "message": "T042: acceptance 1 says every request kind has a cooldown of at least 3 rounds. The CLUB-20 table (spec/ssot/CLUB.md:57) gives recovery support a cooldown of 2, and care.ts:138 correctly keeps that value. The key is still unique per use, because careOffer blocks any reuse in the same year and round whenever the cooldown is at least 1, and care.test.ts asserts every cooldown is above 0. The item is still ticked [v] although its literal wording is false; the worker noted this under limits. Hand off to planning to reword it as 'every cooldown refuses a second use in the same round'. No code change needed."
+          }
+        ],
+        "commit": "dd71098de838211a1086f28bc951e47507edf579",
+        "baseCommit": "59857a3f11dc7ccc4d99a5a80fd8a1e33166b733",
+        "submissionId": "ed42a51a-9c4d-46b7-9f92-7ab58490ace9",
+        "createdAt": "2026-10-12T07:16:39.182Z",
+        "finishedAt": "2026-10-12T07:20:12.542Z"
       },
       "reviewHistory": [
         {
@@ -385,6 +398,8 @@
       "submittedBase": "3596812561125f11e8f12934e613b2747fafd139",
       "submissionId": "33c52a5f-42b3-4ee3-a9fe-02ecacd8b3fc",
       "submittedAt": "2026-10-12T07:08:22.192Z",
+      "integratedCommit": "59857a3f11dc7ccc4d99a5a80fd8a1e33166b733",
+      "integratedAt": "2026-10-12T07:16:38.722Z",
       "dispatch": {
         "id": "20f44f24-6102-415d-8f3a-5445fb8f49a4",
         "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
@@ -511,6 +526,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
           "startedAt": "2026-10-12T07:06:50.451Z",
           "finishedAt": "2026-10-12T07:08:22.006Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+          "startedAt": "2026-10-12T07:14:42.784Z",
+          "finishedAt": "2026-10-12T07:16:38.581Z"
         }
       ]
     },
@@ -3459,6 +3481,176 @@
       "group": "one-result",
       "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
       "taskId": "T046",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 115,
+      "at": "2026-10-12T07:16:38.689Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+            "startedAt": "2026-10-12T07:14:42.784Z",
+            "finishedAt": "2026-10-12T07:16:38.581Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 116,
+      "at": "2026-10-12T07:16:38.722Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "59857a3f11dc7ccc4d99a5a80fd8a1e33166b733",
+        "integratedAt": "2026-10-12T07:16:38.722Z"
+      }
+    },
+    {
+      "sequence": 117,
+      "at": "2026-10-12T07:16:39.182Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "bb5bcc69-dd1c-4011-a5a3-26f0dc882088",
+          "owner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/reviewer-1",
+          "status": "reviewing",
+          "commit": "dd71098de838211a1086f28bc951e47507edf579",
+          "baseCommit": "59857a3f11dc7ccc4d99a5a80fd8a1e33166b733",
+          "submissionId": "ed42a51a-9c4d-46b7-9f92-7ab58490ace9",
+          "createdAt": "2026-10-12T07:16:39.182Z"
+        }
+      }
+    },
+    {
+      "sequence": 118,
+      "at": "2026-10-12T07:16:39.462Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "8b24ed66-b938-4111-96d3-8a741e70e3ce",
+          "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T07:16:39.462Z"
+        }
+      }
+    },
+    {
+      "sequence": 119,
+      "at": "2026-10-12T07:16:39.473Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "8b24ed66-b938-4111-96d3-8a741e70e3ce",
+          "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T07:16:39.462Z"
+        }
+      }
+    },
+    {
+      "sequence": 120,
+      "at": "2026-10-12T07:20:12.542Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "bb5bcc69-dd1c-4011-a5a3-26f0dc882088",
+          "owner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T042 meets ARCH-5 (r8: a draw is named by what it settles and its game date, never by a count of commands) and CLUB-20 (r16: a request is drawn for that request and round). In commit dd71098 against base 59857a3, the only code changes are the T042 changes in care.ts, operations.ts and transfers.ts and their tests. Four draws that used `w.revision` now use new keys:\n- owner requests: `${seed}:care:${kind}:${year}:${round}` (care.ts:240)\n- caretaker managers: `${seed}:interim:${year}:${day}:${departures}` (operations.ts:468-471)\n- campaign IDs: `${year}:${round}:${kind}` (operations.ts:805)\n- outgoing bid IDs: `out:${year}:${day}:${n}:${playerId}` (transfers.ts:216-221)\n\nIn non-test engine source, `revision` now appears only in counter increments (index.ts, operations.ts, season.ts) and the `revision: 0` start in world.ts. None of the other `random(...)` keys reads `revision` or a length of the inbox or event list.\n\nI checked independently that each new key cannot repeat:\n- Owner requests: `careOffer` blocks reuse of a request kind in the same year and round, because every cooldown is at least 2.\n- Caretakers: the departure count includes the departure just recorded. The engine never trims events, and the save codec keeps `eventCount`.\n- Campaigns: an active campaign blocks a second one of the same kind. Campaigns count down only in `settleRound`, which `season.ts` calls only when a round advances, so one cannot finish and restart within a round.\n- Bids: `pruneBids` runs only from `dailyMarket`, so no bid is dropped between two bids on the same day, and the ID includes the day.\n\nInterim manager IDs pass the key through `hash()` in `makeManager`, and bid IDs fall back to a hash past 100 characters, so both stay within the schema's 100-character `id` limit. Campaigns and bids already in saves keep their old IDs, and old campaign results still draw from the stored ID. No app code parses these IDs.\n\nThe new tests would fail on the old code. The renewed-bid test calls `placeBid` directly, so the revision counter does not change between the two bids and the old IDs would collide. The inbox-read test compares the whole world with `canonical` after the bid is answered.\n\nThe base adds T046 code that the worker's test run (at dd71098, on the older merge base 55c1a05) did not include. T046 touches economy.ts and finance.ts, which T042 does not change. The T046 ledger test uses several request kinds in one round and checks ledger totals against event totals, so it does not depend on the outcome of a draw. The integration step still has to run the combined suite.\n\nI did not run tests in this read-only review. The runner's record shows typecheck and the unit suite passing on dd71098 (73 files, 503 tests). As the impl notes require, portable goldens and the rules version bump are left to T047.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T042.draws-named-by-what-they-settle.md:8 (T042 acceptance 1)",
+              "message": "T042: acceptance 1 says every request kind has a cooldown of at least 3 rounds. The CLUB-20 table (spec/ssot/CLUB.md:57) gives recovery support a cooldown of 2, and care.ts:138 correctly keeps that value. The key is still unique per use, because careOffer blocks any reuse in the same year and round whenever the cooldown is at least 1, and care.test.ts asserts every cooldown is above 0. The item is still ticked [v] although its literal wording is false; the worker noted this under limits. Hand off to planning to reword it as 'every cooldown refuses a second use in the same round'. No code change needed."
+            }
+          ],
+          "commit": "dd71098de838211a1086f28bc951e47507edf579",
+          "baseCommit": "59857a3f11dc7ccc4d99a5a80fd8a1e33166b733",
+          "submissionId": "ed42a51a-9c4d-46b7-9f92-7ab58490ace9",
+          "createdAt": "2026-10-12T07:16:39.182Z",
+          "finishedAt": "2026-10-12T07:20:12.542Z"
+        }
+      }
+    },
+    {
+      "sequence": 121,
+      "at": "2026-10-12T07:20:12.552Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "8b24ed66-b938-4111-96d3-8a741e70e3ce",
+          "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T07:16:39.462Z",
+          "finishedAt": "2026-10-12T07:20:12.552Z",
+          "error": null,
+          "summary": "T042 meets ARCH-5 (r8: a draw is named by what it settles and its game date, never by a count of commands) and CLUB-20 (r16: a request is drawn for that request and round). In commit dd71098 against base 59857a3, the only code changes are the T042 changes in care.ts, operations.ts and transfers.ts and their tests. Four draws that used `w.revision` now use new keys:\n- owner requests: `${seed}:care:${kind}:${year}:${round}` (care.ts:240)\n- caretaker managers: `${seed}:interim:${year}:${day}:${departures}` (operations.ts:468-471)\n- campaign IDs: `${year}:${round}:${kind}` (operations.ts:805)\n- outgoing bid IDs: `out:${year}:${day}:${n}:${playerId}` (transfers.ts:216-221)\n\nIn non-test engine source, `revision` now appears only in counter increments (index.ts, operations.ts, season.ts) and the `revision: 0` start in world.ts. None of the other `random(...)` keys reads `revision` or a length of the inbox or event list.\n\nI checked independently that each new key cannot repeat:\n- Owner requests: `careOffer` blocks reuse of a request kind in the same year and round, because every cooldown is at least 2.\n- Caretakers: the departure count includes the departure just recorded. The engine never trims events, and the save codec keeps `eventCount`.\n- Campaigns: an active campaign blocks a second one of the same kind. Campaigns count down only in `settleRound`, which `season.ts` calls only when a round advances, so one cannot finish and restart within a round.\n- Bids: `pruneBids` runs only from `dailyMarket`, so no bid is dropped between two bids on the same day, and the ID includes the day.\n\nInterim manager IDs pass the key through `hash()` in `makeManager`, and bid IDs fall back to a hash past 100 characters, so both stay within the schema's 100-character `id` limit. Campaigns and bids already in saves keep their old IDs, and old campaign results still draw from the stored ID. No app code parses these IDs.\n\nThe new tests would fail on the old code. The renewed-bid test calls `placeBid` directly, so the revision counter does not change between the two bids and the old IDs would collide. The inbox-read test compares the whole world with `canonical` after the bid is answered.\n\nThe base adds T046 code that the worker's test run (at dd71098, on the older merge base 55c1a05) did not include. T046 touches economy.ts and finance.ts, which T042 does not change. The T046 ledger test uses several request kinds in one round and checks ledger totals against event totals, so it does not depend on the outcome of a draw. The integration step still has to run the combined suite.\n\nI did not run tests in this read-only review. The runner's record shows typecheck and the unit suite passing on dd71098 (73 files, 503 tests). As the impl notes require, portable goldens and the rules version bump are left to T047."
+        }
+      }
+    },
+    {
+      "sequence": 122,
+      "at": "2026-10-12T07:20:12.587Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

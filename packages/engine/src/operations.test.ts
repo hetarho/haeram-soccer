@@ -75,4 +75,35 @@ describe('club decisions', () => {
     for (let i = 0; i < 3; i++) operate(w, { type: 'support' });
     expect(() => operate(w, { type: 'support' })).toThrow('3회');
   });
+  it('names a campaign by its round and kind, so earlier commands do not change its result', () => {
+    const plain = world(),
+      busy = world();
+    operate(busy, { type: 'read-inbox' });
+    operate(busy, { type: 'delegate', key: 'academy', value: true });
+    operate(busy, { type: 'read-inbox' });
+    expect(busy.revision).toBe(plain.revision + 3);
+    for (const w of [plain, busy]) {
+      operate(w, { type: 'campaign', kind: 'outreach' });
+      expect(w.campaigns[0].id).toBe(`${w.year}:${w.round}:outreach`);
+      for (let i = 0; i < 4; i++) advanceRound(w);
+    }
+    const result = (w: ReturnType<typeof world>) =>
+      w.events.find((e) => e.kind === 'campaign-result');
+    expect(result(plain)).toBeDefined();
+    expect(result(busy)).toEqual(result(plain));
+    expect(busy.cash).toBe(plain.cash);
+  });
+  it('draws a caretaker by the day and the departures so far, not by earlier commands', () => {
+    const resigned = (reads: number) => {
+      const w = world();
+      for (let i = 0; i < reads; i++) operate(w, { type: 'read-inbox' });
+      w.manager.trust = 20;
+      w.manager.pride = 90;
+      operate(w, { type: 'tactics', tactic: 'press', tone: 'demand' });
+      return w.manager;
+    };
+    const plain = resigned(0);
+    expect(plain.interim).toBe(true);
+    expect(resigned(3)).toEqual(plain);
+  });
 });
