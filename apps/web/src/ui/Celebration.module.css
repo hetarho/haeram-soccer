@@ -1,4 +1,5 @@
-/* The layer never takes taps: the game keeps running and clickable underneath. */
+/* The layer never takes taps: the game keeps running and clickable underneath; only the banner
+   itself answers a tap, which dismisses it. */
 .layer {
   position: fixed;
   inset: 0;
@@ -42,16 +43,55 @@
     0 18px 48px rgba(0, 0, 0, 0.55),
     0 0 60px rgba(255, 203, 71, 0.18);
   transform-origin: 100% 100%;
+  pointer-events: auto;
+  cursor: pointer;
   animation:
     drop 520ms cubic-bezier(0.2, 1.2, 0.3, 1) both,
     file 420ms cubic-bezier(0.5, 0, 0.9, 0.4) var(--file-at) forwards;
 }
+/* Phones get one line beside the news button, so the view stays readable (→WEB-52). */
 @media (max-width: 760px) {
   .card {
     left: 12px;
-    right: 12px;
+    right: 76px;
     width: auto;
-    bottom: calc(148px + env(safe-area-inset-bottom));
+    bottom: calc(88px + env(safe-area-inset-bottom));
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 22px;
+    transform-origin: 100% 50%;
+    animation:
+      drop 520ms cubic-bezier(0.2, 1.2, 0.3, 1) both,
+      file-side 420ms cubic-bezier(0.5, 0, 0.9, 0.4) var(--file-at) forwards;
+  }
+  .card small {
+    flex: none;
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+  .card strong {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    line-height: 44px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .card span {
+    display: none;
+  }
+  /* A light burst: half the strips, smaller, falling once. */
+  .confetti i {
+    width: 6px;
+    height: 11px;
+    animation-iteration-count: 1;
+  }
+  .confetti i:nth-child(2n) {
+    display: none;
   }
 }
 .card small {
@@ -89,6 +129,12 @@
   to {
     opacity: 0;
     transform: translate(8px, 64px) scale(0.12);
+  }
+}
+@keyframes file-side {
+  to {
+    opacity: 0;
+    transform: translateX(56px) scale(0.12);
   }
 }
 @media (prefers-reduced-motion: reduce) {

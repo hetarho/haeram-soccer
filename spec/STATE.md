@@ -17,7 +17,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 6 | 6 | - | 2 |
-| WEB | 45 | 45 | - | 0 |
+| WEB | 46 | 46 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
 | CLUB | 15 | 15 | - | 0 |
 | MATCH | 7 | 7 | - | 0 |
@@ -38,6 +38,8 @@
 - Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
 
 ## log
+- 261012 WEB r46 implemented directly: hidden tabs play on at wall-clock pace (throttled ticks pay owed days in 30-day steps that still end on news and match days), a page that slept or closed with the clock running plays the time away on return up to a per-browser limit (끄기/30일/한 시즌, default a season), a "자리를 비운 동안" card sums up results, rank and cash, the hidden tab title shows the date and clock state, background settings in the intervention dialog; phone celebration is one dismissible 44 px line beside the news button with a lighter confetti burst; entry 253,554 of 256,000 bytes
+- 261012 update-ssot WEB r46 start: background play at wall-clock pace with away catch-up and summary, compact phone celebration; implementing directly
 - 261012 WEB r45 ECON r11 SAVE r16 ARCH r6 implemented directly: intervention popover closes on a choice; 구단 빌드→운영 전략 tab (five presets each lighting or aiming at a synergy, device strategy library with composer, dials in their own section, build events name the strategy); three game slots with a slot screen at the start address, parked games in IndexedDB, legacy save as slot 1, 새 게임 wording; start-layout scroller could not shrink (main clipped founding and slot screens on phones), fixed; strategy board and slot screen load lazily (entry 251,220 of 256,000 bytes)
 - 261012 update-ssot WEB r45 ECON r11 SAVE r16 ARCH r6 start: intervention popover closes on choice, 구단 빌드→운영 전략 with redesigned presets and a device strategy library, three game slots (새 게임 wording), reachable scrolling everywhere; implementing directly
 - 261012 WEB r44 ARCH r5 HIST r7 implemented directly: records room tabs (요약/추이/선수/시즌 기록/감독) with a trophy cabinet, Elo standing against the world and league best and worst plus spread bands, chart bubbles by nearest point or keyboard slider, player sheets with club careers and all-time boards; closed league seasons keep 결산/순위표/우리 경기/순위 추이/득점 순위 tabs; all-time head-to-head in team sheets via a read-only worker request; cup history with archived brackets, our cup road and honours (doubles, trebles, runs); records room and cup history load lazily (entry under 250 KiB)
@@ -56,5 +58,3 @@
 - 261010 WEB r35 CLUB r12 implemented directly: phone HUD compact cash (K/M/B) and two-line club name, floating news button with NEW count, celebration banner above it and filing into it, "뉴스 표시 안 함" in inbox and news sheet; delegated sale bar 130% (prospects 200%) lowered for age, contract and cash runway, floor 80%; rules 1.7.0
 - 261010 HIST-11 fix: club news is derived in the worker from the full career; the projected 150-event/30-match windows shifted event news IDs, so the promotion celebration replayed after every match; event lookups no longer resolve the club per event (century feed 16→3 ms)
 - 261010 WEB r34 CLUB r11 MATCH r6 STAFF r6 ECON r7 HIST r4 SAVE r10 implemented directly after research (Opta/FBref metrics, owner–manager practice, OptaJoe-style news, Korean football media wording): advanced match counters with tactic defensive lines and high-regain transitions, broadcast-style reports, player advanced stats, metrics glossary, eight manager styles, owner requests with stated chances (special bonus removed), club visions, academy investment, build synergies and odds board, derived club news with celebrations (window ceremony removed), cups tab, manager-standing tile with cash in the HUD; rules 1.6.0, worst century checkpoint 1,099,966 bytes
-- 261010 CI fix: WebKit project timeout 30→90 s (four-round journeys crossed 30 s on software-rendered CI WebKit); SAVE r9 implemented directly: gzip-cjk14 checkpoints, worst century 1,645,134→781,878 bytes (the 1,572,864 budget had failed since rules 1.5.0, hidden behind the WebKit failures)
-- 261009 WEB r33 MATCH r5 CLUB r10 SAVE r8 implemented directly: league-average founding XI, XI ratings for all clubs, excess-only fatigue, recovery 11/7/16, morale baseline 58 (delegated first seasons now average mid-table), steps end on news/match days, one-row clock, packed home/match/league, non-tab HUD menu, analytics season review with recorded xG; rules 1.5.0

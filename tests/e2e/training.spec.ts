@@ -143,6 +143,11 @@ for (const viewport of [
     await nav.getByRole('button', { name: '선수단', exact: true }).click();
     await expect(roster.first()).toBeVisible();
     for (const player of await roster.all()) await expect(player).toContainText('성장 +0.00');
+    // A clock left running resumes after a reload (→WEB-64); stop the run so the reload starts
+    // stopped. A start landing just after the eve stopped it is ignored by the clock itself.
+    const toggle = mini.getByRole('button', { name: /^자동 진행 (정지|시작)$/ });
+    if ((await toggle.getAttribute('aria-label')) === '자동 진행 정지') await toggle.click();
+    await expect(mini.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
     await openBusiness();

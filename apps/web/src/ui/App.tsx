@@ -22,7 +22,7 @@ import { ClubHub } from './ClubHub';
 import { ClubFounding } from './ClubFounding';
 import { PlayGuide } from './PlayGuide';
 import { gameStore, useGameState } from '../runtime/store';
-import { ProgressionController } from '../runtime/progression';
+import { ProgressionController, useProgression } from '../runtime/progression';
 import { worldSelector } from './liveState';
 import { LeagueOverview, RankHistoryGraph, Standings } from './LeagueInsights';
 import { ownLeagueIds } from './league';
@@ -56,7 +56,20 @@ import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import Rich from './Rich';
 import { GameSlots } from '../runtime/slots';
 import { GameIndexStore } from '../adapters/games';
+import { useTabTitle } from './tabTitle';
 
+/** The away card loads only when a run waits to be summarized (→WEB-64, →ARCH-28). */
+const AwaySummary = lazy(() =>
+  import('./AwaySummary').then((module) => ({ default: module.AwaySummary })),
+);
+function AwayHost({ controller }: { controller: ProgressionController }) {
+  const away = useProgression(controller, (state) => !!state.away);
+  return away ? (
+    <Suspense fallback={null}>
+      <AwaySummary controller={controller} />
+    </Suspense>
+  ) : null;
+}
 /** The slot screen loads on its own, outside the first-play entry (→ARCH-28). */
 const GameSlotScreen = lazy(() =>
   import('./GameSlotScreen').then((module) => ({ default: module.GameSlotScreen })),
@@ -912,13 +925,19 @@ export function App() {
       const c = new GameClient((state) => gameStore.publish(state));
       const progression = new ProgressionController(c);
       const library = new GameSlots(c);
-      // A hidden tab only pauses the clock; it resumes when the player returns. Leaving also
-      // refreshes the slot card, so the slot screen shows where this game stood.
+      // A hidden tab plays on at its wall-clock pace unless the owner chose to pause it
+      // (→WEB-64). Leaving also refreshes the slot card, so the slot screen shows where this
+      // game stood, and stores the clock so a later visit can play the time away.
       const visibility = () => {
-        progression.setSuspended(document.hidden, 'visibility');
+        progression.setHidden(document.hidden);
         if (document.hidden) library.sync(gameStore.getSnapshot().view?.world, true);
       };
+      const leave = () => {
+        progression.writeClock(true);
+        library.sync(gameStore.getSnapshot().view?.world, true);
+      };
       document.addEventListener('visibilitychange', visibility);
+      window.addEventListener('pagehide', leave);
       visibility();
       setClient(c);
       setController(progression);
@@ -926,6 +945,7 @@ export function App() {
       void c.start();
       return () => {
         document.removeEventListener('visibilitychange', visibility);
+        window.removeEventListener('pagehide', leave);
         progression.dispose();
         c.dispose();
       };
@@ -939,10 +959,15 @@ export function App() {
   useEffect(() => {
     if (worldId) slots?.sync(gameStore.getSnapshot().view?.world);
   }, [slots, worldId]);
-  // Once a game is on screen, a reload of this tab continues it (→WEB-62).
+  // Once a game is on screen, a reload of this tab continues it (→WEB-62), and a clock it left
+  // running when the page slept or closed plays the time away (→WEB-64).
   useEffect(() => {
     if (playing) rememberInGame(true);
   }, [playing]);
+  useEffect(() => {
+    if (playing && worldId) controller?.resumeAway();
+  }, [playing, worldId, controller]);
+  useTabTitle(controller);
   // A game in play that fails to load opens its recovery and export path, not the slots (→WEB-8).
   const loadFailed = useGameState((state) => !state.busy && !!state.error && !state.view);
   const launched = useRef(false);
@@ -1276,6 +1301,7 @@ export function App() {
       {client && playing && <TeamSheetHost client={client} />}
       {playing && <PlayerSheetHost />}
       {playing && <CelebrationHost />}
+      {playing && controller && <AwayHost controller={controller} />}
       {pendingImport && (
         <Dialog label="기록 가져오기 확인" onClose={() => setPendingImport(undefined)}>
           <h2>기록을 가져올까요?</h2>

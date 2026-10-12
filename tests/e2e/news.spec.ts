@@ -60,7 +60,9 @@ test('keeps the club name and compact cash readable in a 360 px HUD', async ({ p
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 
-test('celebrates above the news button, which then holds the headline as NEW', async ({ page }) => {
+test('celebrates in one line beside the news button, which then holds the headline as NEW', async ({
+  page,
+}) => {
   await found(page);
   await expect(newsButton(page)).toHaveAttribute('aria-label', '클럽 뉴스');
   await playRound(page);
@@ -72,8 +74,13 @@ test('celebrates above the news button, which then holds the headline as NEW', a
   await status.evaluate((el) => el.getAnimations()[0]?.finished);
   const clock = (await page.getByRole('region', { name: '시즌 진행' }).boundingBox())!;
   const card = (await status.boundingBox())!;
+  const button = (await newsButton(page).boundingBox())!;
   expect(card.y).toBeGreaterThan(clock.y + clock.height);
-  expect(card.y + card.height).toBeLessThanOrEqual((await newsButton(page).boundingBox())!.y);
+  // A phone keeps the view readable: one 44 px line left of the news button, beside it.
+  expect(card.height).toBeLessThanOrEqual(44);
+  expect(card.x + card.width).toBeLessThanOrEqual(button.x);
+  expect(card.y).toBeLessThan(button.y + button.height);
+  expect(card.y + card.height).toBeGreaterThan(button.y);
   await expect(banner).toHaveCount(0, { timeout: 8000 });
   await expect(newsButton(page)).toHaveAttribute('aria-label', /새 소식 \d+개/);
   await newsButton(page).click();

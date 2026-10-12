@@ -1,7 +1,15 @@
 import { createStore } from 'zustand/vanilla';
 import { useStore } from 'zustand';
 import type { Command, InboxKind, World } from '../../../../packages/contracts/src/types';
-import { daysUntilNextMatch, nextOwnFixture } from '../../../../packages/engine/src/calendar';
+import {
+  currentDay,
+  dayCountedFrom,
+  daysInSeason,
+  daysUntilNextMatch,
+  nextOwnFixture,
+  seasonDate,
+} from '../../../../packages/engine/src/calendar';
+import { currentLeagueRank } from '../../../../packages/engine/src/projection';
 import type { GameClient } from './client';
 import { gameStore } from './store';
 
@@ -13,6 +21,54 @@ export const PACE_MS: Record<Pace, number> = { x1: 1000, x2: 500, x5: 200, x10: 
  * carries the days that piled up, at most this many, so the calendar keeps the chosen rate.
  */
 export const MAX_STEP_DAYS = 5;
+/** Background play (→WEB-64): how far a page that slept or closed catches up on return. */
+export type AwayLimit = 'off' | 'month' | 'season';
+export interface BackgroundSettings {
+  /** Keep the clock running while the tab is hidden. */
+  hidden: boolean;
+  away: AwayLimit;
+}
+export const AWAY_LIMITS: Record<AwayLimit, string> = {
+  off: '끄기',
+  month: '최대 30일',
+  season: '최대 한 시즌',
+};
+/**
+ * A tick this late after the last step means the page slept (frozen, discarded or closed), not
+ * that the browser merely throttled a hidden tab, so the away limit applies to the days owed.
+ */
+export const AWAY_GAP_MS = 2 * 60 * 1000;
+/** Days one catch-up step may carry; the host still ends it on any news or match day. */
+export const CATCH_UP_STEP_DAYS = 30;
+/** Hidden this long, the owner gets a summary of what happened on return. */
+export const AWAY_SUMMARY_MS = 60 * 1000;
+/** Where the club stood when the owner last looked, for the "자리를 비운 동안" card. */
+export interface ClockMark {
+  at: number;
+  year: number;
+  day: number;
+  date: string;
+  cash: string;
+  matches: number;
+  lastMatch?: string;
+  rank: number;
+}
+/** `matches` counts the whole career; the view itself keeps only the latest own matches. */
+export function clockMark(
+  w: World,
+  matches = gameStore.getSnapshot().view?.totalMatches,
+): ClockMark {
+  return {
+    at: Date.now(),
+    year: w.year,
+    day: currentDay(w),
+    date: seasonDate(w),
+    cash: w.cash,
+    matches: matches ?? w.ownMatches.length,
+    lastMatch: w.ownMatches.at(-1)?.id,
+    rank: currentLeagueRank(w).rank,
+  };
+}
 export type StopOn = Record<InboxKind, boolean>;
 export interface ProgressionState {
   running: boolean;
@@ -23,6 +79,9 @@ export interface ProgressionState {
   stopOn: StopOn;
   /** Tomorrow's own fixture the clock stopped for, until the owner watches or plays through. */
   matchEve?: string;
+  background: BackgroundSettings;
+  /** A finished run while the owner was away, waiting to be summarized (→WEB-64). */
+  away?: ClockMark;
 }
 export const STOP_LABELS: Record<InboxKind, string> = {
   match: '경기 전날',
@@ -51,6 +110,34 @@ const DEFAULT_STOP_ON: StopOn = {
   finance: true,
 };
 const STOP_KEY = 'haeram-soccor:stop-on';
+const BACKGROUND_KEY = 'haeram-soccor:background';
+/** Per world: whether the clock ran, its pace and when it last stepped, for a later return. */
+const CLOCK_KEY = 'haeram-soccor:clock';
+interface ClockRecord {
+  running: boolean;
+  pace: Pace;
+  at: number;
+  mark?: ClockMark;
+}
+function storedBackground(): BackgroundSettings {
+  try {
+    const raw = JSON.parse(localStorage.getItem(BACKGROUND_KEY) || '{}');
+    return {
+      hidden: typeof raw.hidden === 'boolean' ? raw.hidden : true,
+      away: raw.away in AWAY_LIMITS ? raw.away : 'season',
+    };
+  } catch {
+    return { hidden: true, away: 'season' };
+  }
+}
+function storedClocks(): Record<string, ClockRecord> {
+  try {
+    const raw = JSON.parse(localStorage.getItem(CLOCK_KEY) || '{}');
+    return raw && typeof raw === 'object' ? raw : {};
+  } catch {
+    return {};
+  }
+}
 function storedStopOn(): StopOn {
   try {
     const raw = JSON.parse(localStorage.getItem(STOP_KEY) || '{}');
@@ -89,6 +176,7 @@ export class ProgressionController {
     watching: false,
     reason: '',
     stopOn: storedStopOn(),
+    background: storedBackground(),
   }));
   /** A fixture the owner chose to play through without watching. */
   private passedMatch?: string;
@@ -105,17 +193,30 @@ export class ProgressionController {
   private finishedId?: string;
   /** When the last day step was sent; unset while stopped so a restart begins with one day. */
   private stepAt?: number;
+  private hidden = false;
+  private hiddenAt?: number;
+  /** Where the club stood when the owner last looked, until the run it started is summarized. */
+  private seenMark?: ClockMark;
+  /** A clock left running in an earlier visit of this world, waiting for the game to be shown. */
+  private armed?: ClockRecord;
+  private clockWrittenAt = 0;
 
   constructor(private client: GameClient) {
     this.worldId = gameStore.getSnapshot().view?.world.id;
+    this.armed = this.worldId ? this.recordToResume(this.worldId) : undefined;
     // A season close is recorded, not a stop: its review waits in the league's season list, so a
     // running clock plays on into the next season (→WEB-47).
     this.unsubscribe = gameStore.subscribe((state) => {
       const id = state.view?.world.id;
       if (this.worldId !== id) {
+        // The world leaving play records its clock stopped: parked games never progress.
+        this.stop('');
         this.worldId = id;
         this.finishedId = undefined;
-        this.stop('');
+        this.seenMark = undefined;
+        this.store.setState({ away: undefined });
+        // A clock this world left running resumes once the game is on screen (→WEB-64).
+        this.armed = id ? this.recordToResume(id) : undefined;
       }
       if (
         this.store.getState().running &&
@@ -143,11 +244,102 @@ export class ProgressionController {
     });
     this.timer = setInterval(() => void this.tick(), PACE_MS.x1);
   }
+  private recordToResume(id: string) {
+    const record = storedClocks()[id];
+    return record?.running &&
+      record.pace in PACE_MS &&
+      Number.isFinite(record.at) &&
+      !gameStore.getSnapshot().readonly
+      ? record
+      : undefined;
+  }
   setPace(pace: Pace) {
     if (this.store.getState().pace === pace) return;
     this.store.setState({ pace });
     clearInterval(this.timer);
     this.timer = setInterval(() => void this.tick(), PACE_MS[pace]);
+    this.writeClock(true);
+  }
+  setBackground(settings: Partial<BackgroundSettings>) {
+    const background = { ...this.store.getState().background, ...settings };
+    this.store.setState({ background });
+    try {
+      localStorage.setItem(BACKGROUND_KEY, JSON.stringify(background));
+    } catch {
+      /* the setting still applies for this session */
+    }
+    this.setSuspended(this.hidden && !background.hidden, 'visibility');
+  }
+  /**
+   * The tab was hidden or shown. A hidden tab plays on at its wall-clock pace unless the owner
+   * chose otherwise; coming back after a minute or more brings a summary of the run.
+   */
+  setHidden(hidden: boolean) {
+    if (this.hidden === hidden) return;
+    this.hidden = hidden;
+    const w = gameStore.getSnapshot().view?.world;
+    if (hidden) {
+      this.hiddenAt = Date.now();
+      if (w && !this.seenMark) this.seenMark = clockMark(w);
+      this.writeClock(true);
+    } else {
+      const away = this.hiddenAt !== undefined && Date.now() - this.hiddenAt >= AWAY_SUMMARY_MS;
+      this.hiddenAt = undefined;
+      if (!away) this.seenMark = undefined;
+    }
+    this.setSuspended(hidden && !this.store.getState().background.hidden, 'visibility');
+    if (!hidden) this.summarize();
+  }
+  /**
+   * Called when the game is on screen: a clock this world left running when its page slept or
+   * closed plays the time away (within the away limit), then carries on.
+   */
+  resumeAway() {
+    const record = this.armed;
+    this.armed = undefined;
+    if (!record || this.store.getState().running) return;
+    this.setPace(record.pace);
+    this.start();
+    if (!this.store.getState().running) return;
+    this.stepAt = record.at;
+    this.seenMark = record.mark;
+    void this.tick();
+  }
+  /** The owner read the summary. */
+  clearAway() {
+    this.store.setState({ away: undefined });
+  }
+  /** Publishes the summary of a finished run once the owner is looking again. */
+  private summarize() {
+    if (!this.seenMark || this.hidden || this.inFlight) return;
+    const from = this.seenMark;
+    this.seenMark = undefined;
+    this.store.setState({ away: from });
+  }
+  /** Keeps this world's clock on disk (at most once a second unless forced) for a later return. */
+  writeClock(force = false) {
+    const id = this.worldId;
+    if (!id || gameStore.getSnapshot().readonly) return;
+    const now = Date.now();
+    if (!force && now - this.clockWrittenAt < 1000) return;
+    this.clockWrittenAt = now;
+    const { running, pace } = this.store.getState();
+    const w = gameStore.getSnapshot().view?.world;
+    const record: ClockRecord = {
+      running,
+      pace,
+      at: this.stepAt ?? now,
+      mark: this.seenMark ?? (w ? clockMark(w) : undefined),
+    };
+    try {
+      // Only the newest few worlds are kept; one per game slot is all a return needs.
+      const clocks = Object.entries({ ...storedClocks(), [id]: record })
+        .sort(([, a], [, b]) => b.at - a.at)
+        .slice(0, 5);
+      localStorage.setItem(CLOCK_KEY, JSON.stringify(Object.fromEntries(clocks)));
+    } catch {
+      /* without storage a return simply starts stopped */
+    }
   }
   setStopOn(kind: InboxKind, value: boolean) {
     const stopOn = { ...this.store.getState().stopOn, [kind]: value };
@@ -230,12 +422,15 @@ export class ProgressionController {
     this.resumeAfterWatch = false;
     this.stepAt = undefined;
     this.store.setState({ running: true, reason: '', matchEve: undefined });
+    this.writeClock(true);
     // Date progression starts on the next tick of the pace. Watching starts without an empty wait.
     if (this.store.getState().watching) void this.tick();
   }
   stop(reason = '자동 진행을 멈췄습니다.') {
+    const was = this.store.getState().running;
     this.store.setState({ running: false, reason });
     if (this.inFlight) this.client.cancel();
+    if (was) this.writeClock(true);
   }
   finishMatch(id: string) {
     if (this.finishedId === id) return;
@@ -244,6 +439,33 @@ export class ProgressionController {
   }
   beginMatch(id: string) {
     if (this.finishedId === id) this.finishedId = undefined;
+  }
+  /** Stops on the eve of an own match the owner wants to decide; true when it stopped. */
+  private eveStop(w: World) {
+    const progress = this.store.getState();
+    if (progress.watching || !progress.stopOn.match || daysUntilNextMatch(w) !== 1) return false;
+    const next = nextOwnFixture(w);
+    if (!next || next.id === this.passedMatch) return false;
+    this.stop('내일 경기가 있어요');
+    this.store.setState({ matchEve: next.id });
+    return true;
+  }
+  /** How many days the clock owes now, and whether it must catch them up step after step. */
+  private owed(w: World) {
+    const now = Date.now(),
+      progress = this.store.getState();
+    if (this.stepAt === undefined) return { days: 1, catchUp: false };
+    const gap = now - this.stepAt,
+      days = Math.floor(gap / PACE_MS[progress.pace]);
+    if (gap > AWAY_GAP_MS) {
+      // The page slept: the time away is played up to the away limit, then the run carries on.
+      const limit = { off: 1, month: 30, season: daysInSeason(w.year) }[progress.background.away];
+      if (!this.seenMark) this.seenMark = clockMark(w);
+      return { days: Math.max(1, Math.min(days, limit)), catchUp: true };
+    }
+    // A hidden tab's throttled timer pays every day it owes; a visible one at most a few.
+    if (this.hidden) return { days: Math.max(1, days), catchUp: true };
+    return { days: Math.max(1, Math.min(MAX_STEP_DAYS, days)), catchUp: false };
   }
   private async tick() {
     const progress = this.store.getState();
@@ -269,47 +491,59 @@ export class ProgressionController {
       this.finishedId !== state.playback.record.id
     )
       return;
-    const w = state.view.world;
-    if (!progress.watching && progress.stopOn.match && daysUntilNextMatch(w) === 1) {
-      const next = nextOwnFixture(w);
-      if (next && next.id !== this.passedMatch) {
-        this.stop('내일 경기가 있어요');
-        this.store.setState({ matchEve: next.id });
-        return;
-      }
-    }
-    const seen = new Set(stoppingEvents(w, progress.stopOn).map((item) => item.id));
-    const now = Date.now(),
-      owed =
-        this.stepAt === undefined ? 1 : Math.floor((now - this.stepAt) / PACE_MS[progress.pace]),
-      days = Math.max(1, Math.min(MAX_STEP_DAYS, owed));
-    this.stepAt = now;
+    let w = state.view.world;
+    if (this.eveStop(w)) return;
+    const owed = progress.watching ? { days: 1, catchUp: false } : this.owed(w);
+    this.stepAt = Date.now();
     this.inFlight = true;
     try {
-      const reply = await this.client.command(
-        progress.watching ? { type: 'next-match' } : command(days, progress.stopOn, w),
-        { background: true, automatic: true },
-      );
-      // A cancelled tick after an explicit stop (e.g. to watch) keeps that stop's reason.
-      if (
-        !reply?.ok ||
-        reply.cancelled ||
-        reply.view?.world.critical ||
-        reply.view?.world.bankrupt
-      ) {
-        if (this.store.getState().running) this.stop();
-      } else if (reply.view) {
+      let debt = owed.days;
+      while (debt > 0) {
+        const seen = new Set(
+          stoppingEvents(w, this.store.getState().stopOn).map((item) => item.id),
+        );
+        const days = owed.catchUp ? Math.min(debt, CATCH_UP_STEP_DAYS) : debt;
+        const reply = await this.client.command(
+          progress.watching
+            ? { type: 'next-match' }
+            : command(days, this.store.getState().stopOn, w),
+          { background: true, automatic: true },
+        );
+        // A cancelled tick after an explicit stop (e.g. to watch) keeps that stop's reason.
+        if (
+          !reply?.ok ||
+          reply.cancelled ||
+          reply.view?.world.critical ||
+          reply.view?.world.bankrupt
+        ) {
+          if (this.store.getState().running) this.stop();
+          break;
+        }
+        if (!reply.view) break;
         const fresh = stoppingEvents(reply.view.world, this.store.getState().stopOn).find(
           (item) => !seen.has(item.id),
         );
-        if (fresh) this.stop(fresh.title);
+        if (fresh) {
+          this.stop(fresh.title);
+          break;
+        }
+        const next = reply.view.world;
+        // A season close skips the empty summer, which pays for those days too.
+        debt -= Math.max(1, dayCountedFrom(next, w.year) - currentDay(w));
+        w = next;
+        if (!owed.catchUp || !this.store.getState().running || this.suspended) break;
+        if (this.eveStop(w)) break;
       }
+      this.writeClock();
     } finally {
       this.inFlight = false;
+      this.summarize();
     }
   }
   dispose() {
-    this.stop('');
+    // Leaving the page keeps the stored clock as it was, so a return can resume it.
+    this.store.setState({ running: false, reason: '' });
+    if (this.inFlight) this.client.cancel();
     clearInterval(this.timer);
     this.unsubscribe();
     this.suspensionSources.clear();

@@ -297,3 +297,33 @@
     transition: none;
   }
 }
+
+/* Background play (→WEB-64): keep running while hidden and how far a return catches up. */
+.background {
+  margin-top: 14px;
+}
+.background h3 {
+  margin: 0;
+  font-size: 15px;
+}
+.awayLabel {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.awayChoices {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.awayChoices button {
+  min-height: 44px;
+  padding: 4px 6px;
+  font-size: 13px;
+}
+.awayChoices button[aria-checked='true'] {
+  color: var(--on-accent);
+  border-color: var(--accent-edge);
+  background: var(--accent-fill);
+}

@@ -19,8 +19,10 @@ import { transferWindow } from '../../../../packages/engine/src/transfers';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import {
+  AWAY_LIMITS,
   STOP_LABELS,
   useProgression,
+  type AwayLimit,
   type Pace,
   type ProgressionController,
   type StopOn,
@@ -489,6 +491,7 @@ export function InterventionSettings({
   onClose: () => void;
 }) {
   const stopOn = useProgression(controller, (state) => state.stopOn);
+  const background = useProgression(controller, (state) => state.background);
   const w = useGameState((state) => state.view?.world);
   const acting = useGameState((state) => !!state.pendingActions || state.readonly);
   if (!w) return null;
@@ -540,6 +543,41 @@ export function InterventionSettings({
           ))}
         </div>
       </details>
+      <section className={p.background} aria-label="백그라운드 진행">
+        <h3>백그라운드 진행</h3>
+        <div className={s.toggles}>
+          <label>
+            <input
+              type="checkbox"
+              checked={background.hidden}
+              onChange={(event) => controller.setBackground({ hidden: event.target.checked })}
+            />
+            다른 탭을 보거나 창을 내려도 계속 진행
+          </label>
+        </div>
+        <span className={p.awayLabel} id="away-limit-label">
+          창을 닫았다 다시 열면 비운 시간만큼 진행
+        </span>
+        <div className={p.awayChoices} role="radiogroup" aria-labelledby="away-limit-label">
+          {(Object.keys(AWAY_LIMITS) as AwayLimit[]).map((limit) => (
+            <button
+              key={limit}
+              type="button"
+              role="radio"
+              aria-checked={background.away === limit}
+              onClick={() => controller.setBackground({ away: limit })}
+            >
+              {AWAY_LIMITS[limit]}
+            </button>
+          ))}
+        </div>
+        <p className={s.muted}>
+          브라우저가 절전 모드나 휴대폰 백그라운드에서 탭을 재우면 그동안은 멈춰요. 다시 열면 비운
+          시간만큼 위 한도까지 한꺼번에 진행하고, 무슨 일이 있었는지 요약해 드려요. 멈춤 설정은
+          그대로 지켜요. 방치형으로 두려면 개입 4(운영진에 모두 맡기기)를 고르세요. 경기 전날에도
+          멈추지 않아요.
+        </p>
+      </section>
       <div className={s.actions}>
         <button className={s.primary} onClick={onClose}>
           설정 완료

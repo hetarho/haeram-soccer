@@ -1,0 +1,39 @@
+.span {
+  margin: 0 0 8px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.facts {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.facts li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+.facts li span {
+  color: var(--text-muted);
+}
+.facts li b {
+  font-variant-numeric: tabular-nums;
+}
+.facts .result {
+  display: block;
+  padding: 4px 0 4px 12px;
+  border-top: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.up {
+  color: var(--accent-text);
+}
+.down {
+  color: var(--warm);
+}

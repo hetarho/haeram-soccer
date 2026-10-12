@@ -304,7 +304,7 @@ test('the phone clock picks the intervention level from a popover without stoppi
   await expect(trigger).toHaveAccessibleName('개입 수준 · 운영진에 모두 맡기기');
 });
 
-test('visibility events pause the shared clock only while hidden and resume on return', async ({
+test('a hidden tab plays on like an idle game, names the date in its title, and can pause instead', async ({
   page,
 }) => {
   await stopOnlyFor(page, ['match']);
@@ -315,20 +315,80 @@ test('visibility events pause the shared clock only while hidden and resume on r
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
   await expect(date).toHaveText('1950년 8월 2일');
   // Headless engines keep pages visible; exercise the real browser listener with its hidden input.
-  await page.evaluate(() => {
-    Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
-    document.dispatchEvent(new Event('visibilitychange'));
-  });
+  const setHidden = (hidden: boolean) =>
+    page.evaluate((hidden) => {
+      Object.defineProperty(document, 'hidden', { configurable: true, get: () => hidden });
+      document.dispatchEvent(new Event('visibilitychange'));
+    }, hidden);
+  await setHidden(true);
+  const hidden = await date.textContent();
+  // The clock keeps its pace behind other windows and the tab title tells the date (→WEB-64).
+  await expect(date).not.toHaveText(hidden!);
+  await expect(page).toHaveTitle(/^▶ 1950년 8월 \d+일 · Haeram Athletic$/);
+  await setHidden(false);
+  await expect(page).toHaveTitle('Haeram — Football Archives');
+  await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
+
+  // The owner may choose the old behaviour: hiding pauses ticks without ending the run.
+  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+  await page
+    .getByRole('dialog', { name: '전체 메뉴' })
+    .getByRole('button', { name: '개입 수준 설정', exact: true })
+    .click();
+  const settings = page.getByRole('dialog', { name: '개입 수준' });
+  const background = settings.getByRole('region', { name: '백그라운드 진행' });
+  await expect(
+    background.getByRole('radio', { name: '최대 한 시즌', exact: true }),
+  ).toHaveAttribute('aria-checked', 'true');
+  await background.getByLabel('다른 탭을 보거나 창을 내려도 계속 진행').uncheck();
+  await settings.getByRole('button', { name: '설정 완료', exact: true }).click();
+  await setHidden(true);
   const paused = await date.textContent();
   await page.waitForTimeout(1200);
   await expect(date).toHaveText(paused!);
-  // Hiding pauses ticks without ending the run.
   await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
-  await page.evaluate(() => {
-    Object.defineProperty(document, 'hidden', { configurable: true, get: () => false });
-    document.dispatchEvent(new Event('visibilitychange'));
-  });
+  await setHidden(false);
   await expect(date).not.toHaveText(paused!);
   await page.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
   await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
+});
+
+test('a page that closed with the clock running plays the time away on return and sums it up', async ({
+  page,
+}) => {
+  await stopOnlyFor(page, []);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  // The owner left the clock running at x1 and came back ten minutes later; the away limit is
+  // a month, so 30 of the 600 owed days are played.
+  const worldId = await page.evaluate(
+    () => JSON.parse(localStorage.getItem('haeram-soccor:manifest')!).worldId as string,
+  );
+  // Written as the next page starts, after the leaving page stored its own (stopped) clock.
+  await page.addInitScript((worldId) => {
+    localStorage.setItem(
+      'haeram-soccor:background',
+      JSON.stringify({ hidden: true, away: 'month' }),
+    );
+    localStorage.setItem(
+      'haeram-soccor:clock',
+      JSON.stringify({ [worldId]: { running: true, pace: 'x1', at: Date.now() - 600_000 } }),
+    );
+  }, worldId);
+  await page.reload();
+  const summary = page.getByRole('dialog', { name: '자리를 비운 동안' });
+  await expect(summary).toBeVisible({ timeout: 30000 });
+  await expect(summary).toContainText('1950년 8월 1일 →');
+  await expect(summary).toContainText(/\d+경기 · \d+승 \d+무 \d+패|경기 없음/);
+  await expect(summary).toContainText('리그 순위');
+  await expect(summary).toContainText('계속 진행 중');
+  const days = Number((await summary.innerText()).match(/· (\d+)일/)![1]);
+  expect(days).toBeGreaterThanOrEqual(30);
+  expect(days).toBeLessThan(40);
+  await summary.getByRole('button', { name: '확인', exact: true }).click();
+  await expect(summary).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
 });

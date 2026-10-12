@@ -3,7 +3,7 @@ import { createWorld } from '../../../../packages/engine/src/index';
 import type { MatchPlayback } from '../../../../packages/contracts/src/types';
 import type { GameClient } from './client';
 import { gameStore, initialClientState } from './store';
-import { ProgressionController } from './progression';
+import { ProgressionController, type StopOn } from './progression';
 import type { View } from './protocol';
 
 const w = createWorld({
@@ -297,5 +297,114 @@ describe('the global progression clock', () => {
     expect(controller.store.getState().running).toBe(true);
     await vi.advanceTimersByTimeAsync(1000);
     expect(s.command).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('background play (WEB-64)', () => {
+  const none = Object.fromEntries(
+    [
+      'match',
+      'window-open',
+      'window-close',
+      'bid-response',
+      'incoming-bid',
+      'youth-intake',
+      'staff-report',
+      'staff-renewal',
+      'cup',
+      'finance',
+    ].map((kind) => [kind, false]),
+  ) as StopOn;
+  /** A host that really advances the calendar by the days asked. */
+  function calendarHost(s: ReturnType<typeof setup>) {
+    let day = 0;
+    s.command.mockImplementation(async (...args: unknown[]) => {
+      const cmd = args[0] as { days: number };
+      day += cmd.days;
+      const next = { ...w, calendar: { day } };
+      gameStore.publish({ ...gameStore.getSnapshot(), view: { world: next } as View });
+      return { ok: true, requestId: 'day', view: { world: next } as View };
+    });
+    return () => day;
+  }
+  const memory = () => {
+    const data = new Map<string, string>();
+    return {
+      getItem: (key: string) => data.get(key) ?? null,
+      setItem: (key: string, value: string) => void data.set(key, value),
+      removeItem: (key: string) => void data.delete(key),
+    };
+  };
+  it('plays every owed day while hidden even when the browser throttles its timer', async () => {
+    vi.stubGlobal('localStorage', memory());
+    const s = setup();
+    controller = s.controller;
+    controller.setStopOnAll(none);
+    const day = calendarHost(s);
+    controller.setHidden(true);
+    expect(controller.store.getState().running).toBe(false);
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(day()).toBe(1);
+    // A throttled hidden tab wakes 90 s later: 90 days are owed and paid in 30-day steps.
+    vi.setSystemTime(Date.now() + 89_000);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(day()).toBe(91);
+    const calls = s.command.mock.calls as unknown as [{ days: number }][];
+    expect(calls.slice(1).map(([cmd]) => cmd.days)).toEqual([30, 30, 30]);
+    expect(controller.store.getState().running).toBe(true);
+    // Back after more than a minute: the run is summarized from where the owner left it.
+    controller.setHidden(false);
+    expect(controller.store.getState().away).toMatchObject({ day: 0 });
+    controller.clearAway();
+    vi.unstubAllGlobals();
+  });
+
+  it('plays a slept page only up to the away limit and can pause hidden tabs instead', async () => {
+    vi.stubGlobal('localStorage', memory());
+    const s = setup();
+    controller = s.controller;
+    controller.setStopOnAll(none);
+    controller.setBackground({ away: 'month' });
+    const day = calendarHost(s);
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    // The laptop slept for an hour: 3,600 days owed, 30 played, then the clock carries on.
+    vi.setSystemTime(Date.now() + 3_600_000);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(day()).toBe(31);
+    expect(controller.store.getState().running).toBe(true);
+    expect(controller.store.getState().away).toBeDefined();
+    // The owner may keep the old behaviour: a hidden tab pauses.
+    controller.clearAway();
+    controller.setBackground({ hidden: false });
+    controller.setHidden(true);
+    const before = s.command.mock.calls.length;
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(s.command.mock.calls.length).toBe(before);
+    vi.unstubAllGlobals();
+  });
+
+  it('resumes a clock left running when the page closed, once the game is shown', async () => {
+    const storage = memory();
+    vi.stubGlobal('localStorage', storage);
+    storage.setItem(
+      'haeram-soccor:clock',
+      JSON.stringify({ [w.id]: { running: true, pace: 'x2', at: Date.now() - 10_000 } }),
+    );
+    const s = setup();
+    controller = s.controller;
+    controller.setStopOnAll(none);
+    const day = calendarHost(s);
+    controller.resumeAway();
+    await vi.advanceTimersByTimeAsync(0);
+    // Ten seconds at x2 owe twenty days; visible, the first step carries the usual five at most.
+    expect(controller.store.getState()).toMatchObject({ running: true, pace: 'x2' });
+    expect(day()).toBe(5);
+    // A stopped clock is stored as stopped, so the next visit does not resume it.
+    controller.pause();
+    const stored = JSON.parse(storage.getItem('haeram-soccor:clock')!);
+    expect(stored[w.id].running).toBe(false);
+    vi.unstubAllGlobals();
   });
 });

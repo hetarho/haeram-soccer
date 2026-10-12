@@ -68,6 +68,9 @@ function Celebrating() {
         style={{ '--file-at': `${SHOW_MS - FILE_MS}ms` } as CSSProperties}
         role="status"
         aria-live="polite"
+        title="눌러서 닫기"
+        // A tap dismisses it; the headline stays behind the news button.
+        onClick={() => setQueue((items) => items.slice(1))}
       >
         <small>축하합니다</small>
         <strong>{current.title}</strong>
@@ -79,8 +82,8 @@ function Celebrating() {
 
 /**
  * Achievements the club earned while playing get a short celebration that never blocks play
- * (→WEB-52): it takes no taps, stays clear of the HUD and clock, and files itself into the news
- * button.
+ * (→WEB-52): a tap dismisses it, it stays clear of the HUD and clock (one line beside the news
+ * button on phones), and files itself into the news button.
  */
 export function CelebrationHost() {
   const id = useGameState((state) => state.view?.world.id);
