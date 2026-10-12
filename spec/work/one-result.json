@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-12T08:52:08.563Z",
-  "sourceCommit": "5463789fb013580131750a5f0ac1e4f5efc4ca79",
+  "snapshotAt": "2026-10-12T08:53:57.954Z",
+  "sourceCommit": "2851074784fc9207a52591137580b1f6798fd1ca",
   "group": {
     "id": "one-result",
     "branch": "work/one-result",
@@ -12,7 +12,7 @@
       "reviewers": 1,
       "maxPending": 8
     },
-    "runner": {
+    "lastRun": {
       "id": "30b2eefb-6935-4a81-b257-cfdeb76e726a",
       "adapter": "builtin",
       "providers": {
@@ -34,46 +34,11 @@
           "version": "2.1.296 (Claude Code)"
         }
       ],
-      "startedAt": "2026-10-12T08:26:34.649Z"
-    },
-    "lastRun": {
-      "id": "972d9a30-6bea-46b8-81f6-ead950c5011c",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-10-12T07:50:37.896Z",
-      "stoppedAt": "2026-10-12T08:23:18.621Z",
-      "dispatched": 5,
+      "startedAt": "2026-10-12T08:26:34.649Z",
+      "stoppedAt": "2026-10-12T08:53:57.761Z",
+      "dispatched": 2,
       "outcome": "needs-attention",
-      "failures": [
-        {
-          "attempt": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
-          "role": "integration",
-          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
-        },
-        {
-          "attempt": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
-          "role": "worker",
-          "error": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session."
-        }
-      ]
+      "failures": []
     }
   },
   "summary": {
@@ -880,6 +845,8 @@
       "submittedBase": "5463789fb013580131750a5f0ac1e4f5efc4ca79",
       "submissionId": "64a9bcb3-9fdf-4800-a669-23b5c63d2299",
       "submittedAt": "2026-10-12T08:49:13.465Z",
+      "integratedCommit": "2851074784fc9207a52591137580b1f6798fd1ca",
+      "integratedAt": "2026-10-12T08:53:57.272Z",
       "dispatch": {
         "id": "626087a4-beb9-4e5e-b80d-4ac453b1db99",
         "runner": "30b2eefb-6935-4a81-b257-cfdeb76e726a",
@@ -936,6 +903,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
           "startedAt": "2026-10-12T08:47:36.510Z",
           "finishedAt": "2026-10-12T08:49:13.265Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+          "startedAt": "2026-10-12T08:52:08.662Z",
+          "finishedAt": "2026-10-12T08:53:57.125Z"
         }
       ]
     }
@@ -6890,6 +6864,79 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 240,
+      "at": "2026-10-12T08:53:57.233Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+            "startedAt": "2026-10-12T08:52:08.662Z",
+            "finishedAt": "2026-10-12T08:53:57.125Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 241,
+      "at": "2026-10-12T08:53:57.272Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "2851074784fc9207a52591137580b1f6798fd1ca",
+        "integratedAt": "2026-10-12T08:53:57.272Z"
+      }
+    },
+    {
+      "sequence": 242,
+      "at": "2026-10-12T08:53:57.761Z",
+      "type": "group",
+      "group": "one-result",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "30b2eefb-6935-4a81-b257-cfdeb76e726a",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-12T08:26:34.649Z",
+          "stoppedAt": "2026-10-12T08:53:57.761Z",
+          "dispatched": 2,
+          "outcome": "needs-attention",
+          "failures": []
+        }
       }
     }
   ]
