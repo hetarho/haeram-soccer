@@ -17,7 +17,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 7 | 7 | - | 2 |
-| WEB | 48 | 48 | - | 0 |
+| WEB | 49 | 49 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
 | CLUB | 16 | 16 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
@@ -44,6 +44,7 @@
 - Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
 
 ## log
+- 261012 WEB r49 implemented directly: records room season rows open that season in 시즌 기록; league picker (국가·디비전·지역 그룹, 우리 리그로, ?league=) on 개요, 순위표, 라운드 결과 and a closed season's 순위표, other leagues' fixtures read from the worker on demand (league-fixtures read) and closed seasons' tables from archived standings; closed seasons load lazily, entry 249,558 of 256,000 bytes (WEB-5✎ from r48 stays pending)
 - 261012 create-task ARCH LEAGUE WEB ECON CLUB SAVE: T042 draws named by what they settle, lane day-order T043 one day order → T044 amateur exchange, T045 market identity with bids keeping their offer (after T042), T046 currency conversion and ledger lines, T047 rules 1.15.0 with goldens (integration); work group one-result, workers 3, reviewers 1
 - 261012 update-ssot SAVE r19: rules 1.14.0→1.15.0, outgoing bids may carry `offer`, older pending bids answered as before
 - 261012 create-task ARCH LEAGUE WEB ECON CLUB start (work group one-result)
