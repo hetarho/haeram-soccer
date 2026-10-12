@@ -6,16 +6,25 @@ const found = async (page: import('@playwright/test').Page) => {
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r0');
 };
+/** The world revision the save status names. */
+const shownRevision = async (page: import('@playwright/test').Page) =>
+  Number(/· r(\d+) ·/.exec((await page.getByTestId('save-status').textContent()) ?? '')?.[1]);
+/**
+ * Plays one round and returns the revision it reached: a round is lived one day at a time, one
+ * revision each (→LEAGUE-11), and the page receives the world once the round is over.
+ */
 const advanceRound = async (page: import('@playwright/test').Page) => {
   await page
     .getByTestId('club-hub')
     .getByRole('button', { name: '시즌 상세', exact: true })
     .click();
   const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
-  const before = await page.getByTestId('save-status').textContent();
+  const before = await shownRevision(page);
   await journal.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
-  await expect(page.getByTestId('save-status')).not.toHaveText(before!);
+  await expect.poll(() => shownRevision(page)).toBeGreaterThan(before);
+  const revision = await shownRevision(page);
   await journal.getByRole('button', { name: '창 닫기', exact: true }).click();
+  return revision;
 };
 test('one writer, live read-only updates and ownership after reload', async ({ page, context }) => {
   await found(page);
@@ -38,8 +47,8 @@ test('one writer, live read-only updates and ownership after reload', async ({ p
   );
   await expect(second.getByTestId('hub-play')).toBeDisabled();
   await page.bringToFront();
-  await advanceRound(page);
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r1');
+  const revision = await advanceRound(page);
+  await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${revision} ·`);
   await second.bringToFront();
   await expect(second.getByTestId('calendar')).toContainText('라운드 1', { timeout: 10000 });
   await page.close();
@@ -51,8 +60,8 @@ test('recovers prior checkpoint after active corruption without clearing another
   page,
 }) => {
   await found(page);
-  await advanceRound(page);
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r1');
+  const first = await advanceRound(page);
+  await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${first} ·`);
   await page.evaluate(() => {
     localStorage.setItem('another-app:keep', 'present');
     const m = JSON.parse(localStorage.getItem('haeram-soccor:manifest')!);
@@ -64,8 +73,8 @@ test('recovers prior checkpoint after active corruption without clearing another
   );
   await expect(page.getByTestId('calendar')).toContainText('라운드 0');
   expect(await page.evaluate(() => localStorage.getItem('another-app:keep'))).toBe('present');
-  await advanceRound(page);
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r1');
+  const again = await advanceRound(page);
+  await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${again} ·`);
   await page.reload();
   await expect(page.getByTestId('calendar')).toContainText('라운드 1');
 });
@@ -88,21 +97,24 @@ test('quota failure preserves disk save, exports actual memory progress and retr
   await page.evaluate(() => {
     (globalThis as typeof globalThis & { failWrites?: boolean }).failWrites = true;
   });
-  await advanceRound(page);
+  const revision = await advanceRound(page);
   await expect(page.getByRole('alert')).toContainText('저장 실패');
-  // The status names the last save, the founding one, not this round.
-  await expect(page.getByTestId('save-status')).toContainText(/(방금|초 전) 저장 · r1/);
+  // The status names the last save, the founding one, beside the revision this round reached.
+  await expect(page.getByTestId('save-status')).toContainText(
+    new RegExp(`(방금|초 전) 저장 · r${revision} ·`),
+  );
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBe(before);
   const event = page.waitForEvent('download');
   await page.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const download = await event;
   const memory = (await decode(readFileSync((await download.path())!, 'utf8'))).world;
   expect(memory.round).toBe(1);
+  expect(memory.revision).toBe(revision);
   await page.evaluate(() => {
     (globalThis as typeof globalThis & { failWrites?: boolean }).failWrites = false;
   });
   await page.getByRole('button', { name: '저장 재시도' }).click();
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r1');
+  await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${revision} ·`);
   await page.reload();
   await expect(page.getByTestId('calendar')).toContainText('라운드 1');
 });

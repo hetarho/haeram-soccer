@@ -17,7 +17,12 @@ test('creates, computes and reloads through the bundled worker', async ({ page }
   const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
   await journal.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toHaveText(/1950\/51 · 라운드 1$/);
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r1');
+  // A round is lived one day at a time, one revision each (→LEAGUE-11): the page names the
+  // revision it reached.
+  const shown = /· r(\d+) ·/.exec((await page.getByTestId('save-status').textContent()) ?? '');
+  const revision = Number(shown?.[1]);
+  expect(revision).toBeGreaterThan(0);
+  await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${revision} ·`);
   await journal.getByRole('button', { name: '창 닫기' }).click();
   await page.reload();
   await expect(page.getByTestId('calendar')).toHaveText(/1950\/51 · 라운드 1$/);

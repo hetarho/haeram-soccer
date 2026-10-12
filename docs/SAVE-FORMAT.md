@@ -22,6 +22,8 @@ Rules `1.13.0` worlds may carry two optional fields inline in the world JSON: `b
 
 Rules `1.14.0` changes no field. Continental knockout rounds drawn from then on put a tie's return leg (`:2`) on its era's calendar instead of the next round; legs stored earlier keep their rounds, and stage labels read both calendars.
 
+Rules `1.15.0` adds one optional field inline in the world JSON: an outgoing (`out`) bid may carry `offer`, the market player it was made for in the player shape with the asking `fee` and `loanFee` as decimal strings, so the bid is answered on those terms whatever the market list shows meanwhile. A bid pending from earlier rules has no `offer` and finds its player in its season's list as those rules did. The rest of `1.15.0` changes results, not fields: every progression mode lives the same days in one order with draws named by what they settle (each day lived advances `revision` by one, so a league round is as many revisions as its days), the amateur level swaps places with the last professional division by the amateur table, a currency change converts every live amount and market lists follow the settings. Checkpoints from `1.0.0` through `1.14.0` remain accepted.
+
 Archived movement frames are not save facts. Historical goal playback uses preserved goal minutes; only the final recorded counters are displayed in that summary playback.
 
 ## Commit and recovery
