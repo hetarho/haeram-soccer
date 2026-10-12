@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type {
   CoachingLevel,
   DelegationKey,
@@ -25,7 +25,8 @@ import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
 import { OvrBadge } from './OvrBadge';
-import { contractLine, money } from './format';
+import { compactMoney, contractLine } from './format';
+import { Money } from './Money';
 import s from './ClubStaff.module.css';
 
 const DELEGATION: [DelegationKey, string, string][] = [
@@ -134,10 +135,10 @@ export function CoachingPlan({ w }: { w: World }) {
 }
 
 /** The wage a department's investment step buys this season, from its candidate band. */
-function stepCost(w: World, role: StaffRole, step: CoachingLevel, format: (v: string) => string) {
+function stepCost(w: World, role: StaffRole, step: CoachingLevel, plain: (v: string) => ReactNode) {
   if (step === 1) return '무급';
   const band = staffCandidates(w, role).find((offer) => offer.id.endsWith(`:${step - 1}`));
-  return band ? `${format(band.wage)}/년` : '후보 없음';
+  return band ? <>{plain(band.wage)}/년</> : '후보 없음';
 }
 
 /** One department's investment dial; the staff hire to it while hiring is delegated. */
@@ -145,12 +146,13 @@ function DepartmentDial({
   w,
   role,
   client,
-  format,
+  plain,
 }: {
   w: World;
   role: StaffRole;
   client: GameClient;
-  format: (v: string) => string;
+  /** A step's wage sits inside its radio: the notation with the exact amount as its title. */
+  plain: (v: string) => ReactNode;
 }) {
   const acting = useActing();
   const [draft, setDraft] = useState<CoachingLevel>();
@@ -175,7 +177,7 @@ function DepartmentDial({
           }}
         >
           <b>{COACHING_INFO[step].label}</b>
-          <small>{stepCost(w, role, step, format)}</small>
+          <small>{stepCost(w, role, step, plain)}</small>
         </button>
       ))}
     </div>
@@ -188,7 +190,10 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
   const [role, setRole] = useState<StaffRole>();
   const [pick, setPick] = useState<number>();
   const club = clubOf(w);
-  const format = (value: string) => money(value, club.country, w.year);
+  const format = (value: string) => <Money value={value} code={club.country} year={w.year} />,
+    // Inside a control that already answers the tap: the notation, the exact amount as its title.
+    plain = (value: string) => <Money value={value} code={club.country} year={w.year} plain />,
+    text = (value: string) => compactMoney(value, club.country, w.year);
   const members = new Map((w.staff || []).map((member) => [member.role, member]));
   const candidates = role ? staffCandidates(w, role) : [];
   const chosen = pick !== undefined ? candidates[pick] : undefined;
@@ -236,9 +241,11 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                   <Meter value={member.ability} />
                   <small>
                     {member.trait ? STAFF_TRAIT_INFO[member.trait].label : '특성 없음'}
-                    {BigInt(member.wage) > 0n
-                      ? ` · 연봉 ${format(member.wage)}`
-                      : ' · 무급 자원봉사'}
+                    {BigInt(member.wage) > 0n ? (
+                      <> · 연봉 {format(member.wage)}</>
+                    ) : (
+                      ' · 무급 자원봉사'
+                    )}
                   </small>
                   <small className={s.impact}>{staffImpact(w, id)}</small>
                   {isExpiring(w, member) && (
@@ -260,7 +267,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                   <button
                     className={s.primary}
                     disabled={acting}
-                    title={`연봉 ${format(renewalTerms(w, member).wage)} · 계약금 ${format(renewalTerms(w, member).fee)} · ${contractLine(renewalTerms(w, member).until, w.year)}`}
+                    title={`연봉 ${text(renewalTerms(w, member).wage)} · 계약금 ${text(renewalTerms(w, member).fee)} · ${contractLine(renewalTerms(w, member).until, w.year)}`}
                     onClick={() => void client.command({ type: 'renew-staff', role: id })}
                   >
                     재계약
@@ -277,7 +284,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                   {member ? '교체' : '선임'}
                 </button>
               </div>
-              {delegated && <DepartmentDial w={w} role={id} client={client} format={format} />}
+              {delegated && <DepartmentDial w={w} role={id} client={client} plain={plain} />}
             </li>
           );
         })}
@@ -356,7 +363,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                     선임 시 {hiredImpact(w, role, candidate)} (지금 {staffImpact(w, role)})
                   </small>
                   <small>
-                    연봉 {format(candidate.wage)} · 계약금 {format(candidate.fee)} ·{' '}
+                    연봉 {plain(candidate.wage)} · 계약금 {plain(candidate.fee)} ·{' '}
                     {contractLine(candidate.until, w.year)}
                   </small>
                 </button>

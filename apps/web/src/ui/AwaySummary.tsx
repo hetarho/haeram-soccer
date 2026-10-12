@@ -6,7 +6,8 @@ import { clubOf } from '../../../../packages/engine/src/world';
 import { useProgression, type ClockMark, type ProgressionController } from '../runtime/progression';
 import { useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
-import { money, number } from './format';
+import { number } from './format';
+import { Money } from './Money';
 import a from './App.module.css';
 import s from './AwaySummary.module.css';
 
@@ -54,7 +55,7 @@ export function AwaySummary({ controller }: { controller: ProgressionController 
   const own = clubOf(w),
     rank = currentLeagueRank(w).rank,
     cash = BigInt(w.cash) - BigInt(from.cash),
-    format = (value: bigint) => money(value.toString(), own.country, w.year),
+    format = (value: bigint) => <Money value={value} code={own.country} year={w.year} />,
     newSeason = w.year !== from.year;
   return (
     <Dialog label="자리를 비운 동안" onClose={() => controller.clearAway()}>

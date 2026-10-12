@@ -11,7 +11,8 @@ import {
 import type { ClientState, GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
-import { money } from './format';
+import { compactMoney } from './format';
+import { Money } from './Money';
 import { OvrBadge } from './OvrBadge';
 import s from './RecruitmentDesk.module.css';
 
@@ -57,7 +58,7 @@ function CandidateCard({
   const { offer, buy, loan } = candidate,
     player = offer.player,
     club = clubOf(w);
-  const cash = (value: string) => money(value, club.country, w.year);
+  const cash = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   const window = transferWindow(w);
   return (
     <article
@@ -154,9 +155,14 @@ function CandidateCard({
       )}
       {pending ? (
         <p className={s.pending} data-testid="pending-bid">
-          {pending.status === 'countered'
-            ? `역제안 ${cash(pending.counterFee || pending.fee)} · 소식함에서 답해 주세요`
-            : `협상 중 · 제안 ${cash(pending.fee)} · ${Math.max(0, pending.due - (w.calendar?.day ?? 0))}일 안에 답이 와요`}
+          {pending.status === 'countered' ? (
+            <>역제안 {cash(pending.counterFee || pending.fee)} · 소식함에서 답해 주세요</>
+          ) : (
+            <>
+              협상 중 · 제안 {cash(pending.fee)} ·{' '}
+              {Math.max(0, pending.due - (w.calendar?.day ?? 0))}일 안에 답이 와요
+            </>
+          )}
         </p>
       ) : (
         <div className={s.transactions}>
@@ -293,7 +299,10 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
         (bid.status === 'pending' || bid.status === 'countered'),
     );
   const window = transferWindow(w);
-  const format = (value: string) => money(value, club.country, w.year);
+  const format = (value: string) => <Money value={value} code={club.country} year={w.year} />,
+    // Inside a control that already answers the tap: the notation, the exact amount as its title.
+    plain = (value: string) => <Money value={value} code={club.country} year={w.year} plain />,
+    text = (value: string) => compactMoney(value, club.country, w.year);
   const render = (candidate: Candidate) => (
     <CandidateCard
       key={candidate.offer.player.id}
@@ -350,9 +359,11 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                 </b>
                 <small>
                   {bid.direction === 'in' && other ? `${other.name} · ` : ''}
-                  {bid.status === 'countered'
-                    ? `역제안 ${format(bid.counterFee || bid.fee)}`
-                    : `${format(bid.fee)}`}{' '}
+                  {bid.status === 'countered' ? (
+                    <>역제안 {format(bid.counterFee || bid.fee)}</>
+                  ) : (
+                    format(bid.fee)
+                  )}{' '}
                   · {BID_STATUS[bid.status]}
                   {(bid.status === 'pending' || bid.status === 'countered') && ` · ${dueLabel}까지`}
                 </small>
@@ -474,13 +485,13 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                   );
                   setMessage(
                     reply?.ok
-                      ? `${bidding.offer.player.name}에게 ${format(fee)} 제안을 보냈어요. 며칠 안에 답이 와요.`
+                      ? `${bidding.offer.player.name}에게 ${text(fee)} 제안을 보냈어요. 며칠 안에 답이 와요.`
                       : client.state.error || '제안을 보내지 못했어요.',
                   );
                   setBidding(undefined);
                 }}
               >
-                {format(fee)} 제안 보내기
+                {plain(fee)} 제안 보내기
               </button>
             </div>
           }
@@ -500,7 +511,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                 onClick={() => setStep(i)}
               >
                 <b>{String(percent)}%</b>
-                <small>{format(((asking * percent) / 100n).toString())}</small>
+                <small>{plain(((asking * percent) / 100n).toString())}</small>
               </button>
             ))}
           </div>

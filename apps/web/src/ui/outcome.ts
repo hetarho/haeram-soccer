@@ -7,7 +7,7 @@ import {
   tacticLabel,
 } from '../../../../packages/engine/src/world';
 import { lineupSummary } from '../../../../packages/engine/src/strategy';
-import { money, number } from './format';
+import { compactMoney, number } from './format';
 import { orderIds, ownLeagueIds } from './league';
 
 export interface OutcomeChange {
@@ -154,7 +154,8 @@ export function describeOutcome(
     return undefined;
   const club = clubOf(after),
     previous = clubOf(before);
-  const cash = (value: string) => money(value, club.country, after.year);
+  // An outcome card carries recorded values as text, in the app's notation (→WEB-67).
+  const cash = (value: string) => compactMoney(value, club.country, after.year);
   const changes: OutcomeChange[] = [];
   if (progression.has(command.type))
     compare(changes, '날짜', seasonDate(before), seasonDate(after));

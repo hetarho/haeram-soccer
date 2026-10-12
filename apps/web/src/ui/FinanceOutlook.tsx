@@ -1,16 +1,23 @@
+import type { ReactNode } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { financeProjection } from '../../../../packages/engine/src/projection';
 import { clubOf } from '../../../../packages/engine/src/world';
-import { money } from './format';
+import { Money } from './Money';
 import s from './FinanceOutlook.module.css';
 
-const range = (low: string, high: string, format: (value: string) => string) =>
-  low === high ? format(low) : `${format(low)} ~ ${format(high)}`;
+function range(low: string, high: string, format: (value: string) => ReactNode) {
+  if (low === high) return format(low);
+  return (
+    <>
+      {format(low)} ~ {format(high)}
+    </>
+  );
+}
 
 /** Where cash heads if the club keeps its current contracts, policy and demand. */
 export function FinanceOutlook({ w }: { w: World }) {
   const club = clubOf(w);
-  const format = (value: string) => money(value, club.country, w.year);
+  const format = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   const projection = financeProjection(w);
   const tone = (value: string) =>
     BigInt(value) < 0n ? s.negative : BigInt(value) > 0n ? s.positive : '';

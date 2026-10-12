@@ -2,7 +2,8 @@ import { useMemo, useState, type PointerEvent } from 'react';
 import { ClubCrest } from './ClubCrest';
 import type { World } from '../../../../packages/contracts/src/types';
 import { clubOf } from '../../../../packages/engine/src/world';
-import { money, number, seasonName, signed } from './format';
+import { number, seasonName, signed } from './format';
+import { Money } from './Money';
 import { divisionName } from './league';
 import type { SeasonFiles } from './seasonArchive';
 import { seasonStats, share, type Leader, type SeasonStats } from './seasonStats';
@@ -190,7 +191,7 @@ export function SeasonReview({
     // The division a closed season led to: the next season's, or the current one for the latest.
     nextTier = w.history[index + 1]?.tier ?? club.tier,
     // Amounts were recorded in the closed season's currency.
-    format = (value: string) => money(value, club.country, season.year),
+    format = (value: string) => <Money value={value} code={club.country} year={season.year} />,
     move = nextTier < season.tier ? 'up' : nextTier > season.tier ? 'down' : 'stay',
     from = divisionName(club.country, season.tier),
     to = divisionName(club.country, nextTier),
@@ -532,7 +533,7 @@ export function SeasonReview({
         <div>
           <span>시즌 말 자금</span>
           <b>{format(season.cash)}</b>
-          <small>{prize ? `상금 ${format(prize)} 포함` : '순위 상금 없음'}</small>
+          <small>{prize ? <>상금 {format(prize)} 포함</> : '순위 상금 없음'}</small>
         </div>
       </section>
     </div>

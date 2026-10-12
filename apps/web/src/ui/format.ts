@@ -11,8 +11,10 @@ export function money(value: string, code: string, year: number) {
   return `${sign}${c.symbol}${(abs / units).toLocaleString('en-GB')}${c.units === 100 ? '.' + String(abs % units).padStart(2, '0') : ''}`;
 }
 /**
- * Money for a phone-width HUD: whole major units, then K/M/B at three significant figures,
- * rounded down so the glance never shows more cash than the club has.
+ * The one money notation (→WEB-67): whole major units below 100,000, then K/M/B at three
+ * significant figures, rounded toward zero so a glance never shows more than the club has.
+ * Amounts standing on their own render through `<Money>`, which opens the exact `money()` value;
+ * amounts inside a sentence, a label or a chart axis use this text.
  */
 export function compactMoney(value: string, code: string, year: number) {
   const c = currency(code, year),

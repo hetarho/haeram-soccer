@@ -54,10 +54,14 @@ test('keeps the club name and compact cash readable in a 360 px HUD', async ({ p
       (el) => el.scrollWidth <= el.clientWidth + 1 && el.scrollHeight <= el.clientHeight + 1,
     ),
   ).toBe(true);
-  // Whole pounds on a phone; the cash sheet and the label keep shillings and pence.
+  // The money notation on every viewport (→WEB-67); label and title keep the exact amount.
   expect(await page.getByTestId('hud-cash').innerText()).toMatch(/^£[\d,]+$/);
   await expect(page.getByTestId('hud-cash')).toHaveAttribute('aria-label', /\d+s \d+d/);
+  await expect(page.getByTestId('hud-cash')).toHaveAttribute('title', /\d+s \d+d/);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+  // The desktop HUD reads the same way: no second, fully written amount beside it.
+  await page.setViewportSize({ width: 1280, height: 800 });
+  expect(await page.getByTestId('hud-cash').innerText()).toMatch(/^운영 자금\s*£[\d,]+$/);
 });
 
 test('celebrates in one line beside the news button, which then holds the headline as NEW', async ({
