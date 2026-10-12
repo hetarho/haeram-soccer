@@ -93,6 +93,7 @@ for (const viewport of [
       .getByRole('navigation', { name: '모바일 게임 메뉴' })
       .getByRole('button', { name: '클럽 홈', exact: true })
       .click();
+    await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
     await expect(hub).toBeVisible();
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');

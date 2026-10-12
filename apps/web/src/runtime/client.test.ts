@@ -3,7 +3,7 @@ import { advanceRound, createWorld, simulateSeason } from '../../../../packages/
 import { canonical } from '../../../../packages/contracts/src/index';
 import { CURRENT_ENGINE_VERSION } from '../../../../packages/contracts/src/versions';
 import { decode, encode, type StoragePort } from '../adapters/persistence';
-import { GameClient, type ClientState } from './client';
+import { AUTOSAVE_MS, GameClient, type ClientState } from './client';
 import { Host } from './host';
 import { serve } from './codec';
 import type { CodecResult, Reply, Request } from './protocol';
@@ -104,11 +104,13 @@ const founding = {
 };
 let storage: MemoryStorage;
 const clients: GameClient[] = [];
+/** A writer with a founded club whose first checkpoint is committed. */
 async function start(notify: (state: ClientState) => void = () => {}) {
   const client = new GameClient(notify);
   clients.push(client);
   await client.start();
   await client.found(founding);
+  await client.whenSaved();
   return client;
 }
 
@@ -140,14 +142,15 @@ afterEach(() => {
 });
 
 describe('background worker publication', () => {
-  it('waits for admitted background work and its save before a manual decision', async () => {
+  it('waits for admitted background work before a manual decision and saves it beside the queue', async () => {
     const client = await start();
     const background = client.command({ type: 'advance-days', days: 1 }, { background: true });
     await client.whenIdle();
     await background;
     expect(client.state.processing).toBe(false);
-    expect(client.state.savedRevision).toBe(client.state.view!.world.revision);
     expect(client.state.view!.world.calendar?.day).toBe(1);
+    await client.whenSaved();
+    expect(client.state.savedRevision).toBe(client.state.view!.world.revision);
   });
   it('advances without foreground loading flashes and saves without a validation view', async () => {
     const publications: ClientState[] = [],
@@ -155,6 +158,7 @@ describe('background worker publication', () => {
     const initialTables = client.state.view!.world.tables;
     publications.length = 0;
     await client.command({ type: 'advance-days', days: 1 }, { background: true });
+    await client.whenSaved();
     const worker = WorkerPort.instances[0],
       command = worker.replies.findLast(({ request }) => request.body.type === 'command')!,
       save = worker.replies.findLast(({ request }) => request.body.type === 'save')!;
@@ -182,13 +186,20 @@ describe('background worker publication', () => {
       client.command({ type: 'advance-days', days: 1 }, { background: true }),
       client.command({ type: 'advance-days', days: 1 }, { background: true }),
     ]);
+    await client.whenSaved();
     const requests = WorkerPort.instances[0].requests,
       commands = requests.filter((request) => request.body.type === 'command'),
-      saves = requests.filter((request) => request.body.type === 'save');
+      generations = requests
+        .filter((request) => request.body.type === 'save')
+        .map((request) => request.generation);
     expect(commands.map((request) => request.expectedRevision)).toEqual([0, 1]);
-    // Founding, then each tick: every checkpoint follows the last committed one.
-    expect(saves.map((request) => request.generation)).toEqual([1, 2, 3]);
-    expect(JSON.parse(storage.getItem('haeram-soccor:manifest')!).generation).toBe(3);
+    // Founding, then the ticks' saves (folded when one was still building): every checkpoint
+    // follows the last committed one.
+    expect(generations).toEqual(generations.map((_, index) => index + 1));
+    expect(generations.length).toBeGreaterThan(1);
+    expect(JSON.parse(storage.getItem('haeram-soccor:manifest')!).generation).toBe(
+      generations.at(-1),
+    );
     expect(client.state.view?.world.calendar?.day).toBe(2);
     expect(client.state.savedRevision).toBe(2);
     expect(client.state.error).toBeUndefined();
@@ -254,8 +265,10 @@ describe('background worker publication', () => {
       manifest = storage.getItem('haeram-soccor:manifest')!;
     storage.fail = 'haeram-soccor:manifest';
     await client.command({ type: 'advance-days', days: 1 }, { background: true });
+    await client.whenSaved();
     expect(client.state.error).toContain('저장 실패');
     expect(client.state.error).toContain('파일로 내보내세요');
+    expect(client.state.saveFailed).toBe(true);
     expect(client.state.view?.world.calendar?.day).toBe(1);
     expect(client.state.savedRevision).toBe(0);
     expect(client.state.processing).toBe(false);
@@ -269,6 +282,7 @@ describe('background worker publication', () => {
   it('commits the codec checkpoint as built, without an inspect round trip', async () => {
     const client = await start();
     await client.command({ type: 'advance-days', days: 1 });
+    await client.whenSaved();
     const last = CodecPort.instances[0].results.at(-1)!;
     if (!last.ok) throw new Error(last.error);
     const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
@@ -291,6 +305,7 @@ describe('background worker publication', () => {
     // A world the engine plays on but a load would reject: the codec's validation must catch it.
     w.rankHistory![0].rows[0][0] = w.clubs.length;
     await client.command({ type: 'advance-days', days: 1 }, { background: true });
+    await client.whenSaved();
     const last = CodecPort.instances[0].results.at(-1)!;
     expect(last.ok).toBe(false);
     expect(client.state.error).toContain('저장 실패');
@@ -309,6 +324,7 @@ describe('background worker publication', () => {
       saves = () => worker.requests.filter((request) => request.body.type === 'save');
     storage.fail = 'haeram-soccor:manifest';
     await client.command({ type: 'advance-days', days: 1 }, { background: true });
+    await client.whenSaved();
     expect(client.state.savedRevision).toBe(0);
     storage.fail = '';
     let release = () => {};
@@ -332,6 +348,50 @@ describe('background worker publication', () => {
     codec.onmessage?.({ data: codec.results[2] } as MessageEvent<CodecResult>);
     await client.whenSaved();
     expect(storage.getItem('haeram-soccor:manifest')).toBe(manifest);
+  });
+
+  it('saves automatic days when the autosave comes due and an owner decision at once, neither command waiting', async () => {
+    // The autosave timer is held here so the test can bring it due.
+    const due: (() => void)[] = [];
+    vi.stubGlobal('window', {
+      setTimeout: (fn: () => void, ms: number) =>
+        ms === AUTOSAVE_MS ? due.push(fn) : setTimeout(fn, ms),
+      addEventListener() {},
+      removeEventListener() {},
+    });
+    const notices = vi.spyOn(ChannelPort.prototype, 'postMessage');
+    const client = await start(),
+      worker = WorkerPort.instances[0],
+      codec = CodecPort.instances[0],
+      saves = () => worker.requests.filter((request) => request.body.type === 'save').length;
+    // Clock ticks are not saved per step: one autosave waits for the whole unsaved run.
+    await client.command({ type: 'advance-days', days: 1 }, { background: true, automatic: true });
+    await client.command({ type: 'advance-days', days: 1 }, { background: true, automatic: true });
+    await client.whenSaved();
+    expect(saves()).toBe(1);
+    expect(due).toHaveLength(1);
+    expect(client.state.savedRevision).toBe(0);
+    const foundedAt = client.state.savedAt!;
+    due[0]();
+    await client.whenSaved();
+    expect(saves()).toBe(2);
+    expect(client.state.savedRevision).toBe(2);
+    expect(client.state.savedAt).toBeGreaterThanOrEqual(foundedAt);
+    // An owner decision asks at once; its command settles while the checkpoint is still held.
+    let release = () => {};
+    codec.gate = new Promise<void>((resolve) => (release = resolve));
+    await client.command({ type: 'advance-days', days: 1 });
+    expect(client.state.view?.world.revision).toBe(3);
+    await vi.waitFor(() => expect(saves()).toBe(3));
+    expect(client.state.savedRevision).toBe(2);
+    expect(client.state.processing).toBe(false);
+    release();
+    await client.whenSaved();
+    expect(client.state.savedRevision).toBe(3);
+    expect(due).toHaveLength(1);
+    // Read-only tabs hear of every commit.
+    const posted = notices.mock.calls as unknown as [{ revision: number }][];
+    expect(posted.map(([notice]) => notice.revision)).toEqual([0, 2, 3]);
   });
 
   it('reads the all-time head-to-head without publishing a state or waiting for a tick', async () => {
@@ -542,6 +602,7 @@ describe('legacy activation and compatibility recovery', () => {
   it('still recovers a compatible predecessor when the selected checkpoint is actually corrupt', async () => {
     const client = await start();
     await client.command({ type: 'advance-days', days: 1 });
+    await client.whenSaved();
     const selected = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
     storage.setItem(`haeram-soccor:slot:${selected.slot ? 'b' : 'a'}`, 'corrupt');
     client.dispose();
@@ -554,6 +615,7 @@ describe('legacy activation and compatibility recovery', () => {
     expect(restored.state.view?.world.calendar?.day).toBe(0);
     expect(restored.state.savedRevision).toBe(0);
     await restored.command({ type: 'advance-days', days: 1 });
+    await restored.whenSaved();
     expect(restored.state.error).toBeUndefined();
     expect(restored.state.savedRevision).toBe(1);
   });
