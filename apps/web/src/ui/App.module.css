@@ -3053,3 +3053,39 @@
   gap: 4px;
   flex-wrap: wrap;
 }
+/* A season row of the records room opens that season's records. */
+.seasonRow {
+  cursor: pointer;
+}
+.seasonRow:hover > td {
+  background: rgb(255 255 255 / 0.04);
+}
+.seasonRowLink.seasonRowLink.seasonRowLink {
+  position: relative;
+  width: auto;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--accent-text);
+  font-weight: 700;
+  text-align: left;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+.seasonRowLink::after {
+  content: '';
+  position: absolute;
+  inset: -6px 0;
+}
+/* The league views' league choice (→WEB-65); the way back to ours sits beside the selects. */
+.leaguePicker {
+  margin-bottom: 14px;
+}
+.leagueHome.leagueHome {
+  align-self: flex-end;
+  width: auto;
+  min-height: 48px;
+  padding: 0 16px;
+}

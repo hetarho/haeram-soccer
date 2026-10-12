@@ -2,6 +2,7 @@ import { z } from 'zod';
 z.config({ jitless: true });
 import type {
   World,
+  Fixture,
   MatchPlayback,
   MatchRecord,
   SeasonArchive,
@@ -157,6 +158,12 @@ export const requestSchema = z.object({
     z.object({ type: z.literal('export') }),
     z.object({ type: z.literal('archive'), year: z.number().int().min(1901).max(4000) }),
     z.object({ type: z.literal('head-to-head'), club: ref }),
+    z.object({
+      type: z.literal('league-fixtures'),
+      country: z.string().regex(/^[A-Z]{3}$/),
+      tier: z.number().int().min(0).max(20),
+      group: z.number().int().min(0).max(20),
+    }),
     z.object({ type: z.literal('ack-critical') }),
   ]),
 });
@@ -191,6 +198,8 @@ export interface Reply {
   candidate?: World;
   archive?: { season?: SeasonArchive; matches: MatchRecord[]; events: Event[]; managers: Event[] };
   headToHead?: HeadToHead;
+  /** Another league's fixtures this season; the view carries only the own league's (→WEB-65). */
+  leagueFixtures?: Fixture[];
   progress?: number;
   cancelled?: boolean;
 }

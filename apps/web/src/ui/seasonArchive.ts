@@ -89,13 +89,29 @@ export function finalRows(
 ): FinalRow[] | undefined {
   const last = seasonSnapshots(w, season).at(-1);
   if (last) return last.rows.map(([club, points, gf, ga]) => [club, points, gf, ga]);
-  const code = clubOf(w).country,
-    id = (index: number) => w.clubs[index]?.id ?? '';
-  if (!standings || season.tier >= country(code).groups.length) return undefined;
+  return leagueRows(w, standings, {
+    code: clubOf(w).country,
+    tier: season.tier,
+    group: season.group,
+  });
+}
+/**
+ * Any professional league's final table from a closed season's archived standings (→WEB-65):
+ * points, then goal difference, then goals. Amateur leagues kept none.
+ */
+export function leagueRows(
+  w: World,
+  standings: number[][] | undefined,
+  league: { code: string; tier: number; group: number },
+): FinalRow[] | undefined {
+  const id = (index: number) => w.clubs[index]?.id ?? '';
+  if (!standings || league.tier >= country(league.code).groups.length) return undefined;
   const rows = standings
     .filter(
       (row) =>
-        w.clubs[row[0]]?.country === code && row[1] === season.tier && row[2] === season.group,
+        w.clubs[row[0]]?.country === league.code &&
+        row[1] === league.tier &&
+        row[2] === league.group,
     )
     .sort(
       (a, b) =>
