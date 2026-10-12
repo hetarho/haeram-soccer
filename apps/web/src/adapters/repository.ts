@@ -140,9 +140,15 @@ export class SaveRepository {
       );
     return null;
   }
-  async commit(raw: string, options: { replaceIncompatible?: boolean } = {}) {
+  /**
+   * Writes the inactive slot, reads it back, then switches the manifest. A codec checkpoint comes
+   * with the envelope its worker validated; any other candidate is inspected first.
+   */
+  async commit(raw: string, options: { replaceIncompatible?: boolean; envelope?: Envelope } = {}) {
     if (this.incompatible && !options.replaceIncompatible) throw this.incompatible;
-    const { envelope } = await this.inspect(raw);
+    const envelope = options.envelope ?? (await this.inspect(raw)).envelope;
+    if (envelope.generation <= this.generation)
+      throw new Error('더 새로운 저장이 이미 있어 오래된 체크포인트를 쓰지 않았습니다.');
     const next = this.active === undefined ? 0 : 1 - this.active;
     const manifest = JSON.stringify({
       slot: next,

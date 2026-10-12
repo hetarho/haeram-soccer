@@ -24,7 +24,7 @@ import {
 import { decode, encode } from '../adapters/persistence';
 import { clubMilestones } from '../../../../packages/engine/src/goals';
 import { financialBreakdown } from '../../../../packages/engine/src/finance';
-import { requestSchema, type Request, type Reply, type View } from './protocol';
+import { requestSchema, type CodecJob, type Request, type Reply, type View } from './protocol';
 import { headToHead } from './headToHead';
 const failure = (input: unknown, request: Request | undefined, error: unknown) => ({
   requestId: request?.requestId ?? ((input as { requestId?: string })?.requestId || 'invalid'),
@@ -38,6 +38,8 @@ export class Host {
   private queue = Promise.resolve();
   private newsCache?: { key: string; news: View['news'] };
   cancelled = false;
+  /** The port to the client's codec worker, which builds every checkpoint (→ARCH-13). */
+  codec?: { postMessage(job: CodecJob): void };
   constructor(private progress: (reply: Reply) => void = () => {}) {}
   handle(input: unknown): Promise<Reply> {
     // A read is answered at once, between a command's simulation steps: queued behind a long
@@ -154,6 +156,22 @@ export class Host {
       return failure(input, request, error);
     }
   }
+  /**
+   * Posts the world as it stands after every earlier command to the codec worker, whatever revision
+   * the client last saw; posting copies it, so the next command never waits for the checkpoint.
+   */
+  private save(r: Request): Reply {
+    const w = this.world;
+    if (!w) throw new Error('먼저 클럽을 창단하세요.');
+    if (!this.codec) throw new Error('저장 Worker가 연결되지 않았습니다.');
+    this.codec.postMessage({
+      id: r.requestId,
+      world: w,
+      generation: r.generation,
+      parentGeneration: r.parentGeneration,
+    });
+    return { requestId: r.requestId, ok: true, saving: { worldId: w.id, revision: w.revision } };
+  }
   private async execute(input: unknown): Promise<Reply> {
     let request: Request | undefined;
     try {
@@ -163,6 +181,7 @@ export class Host {
       this.session = r.session;
       const previous = this.acknowledgments.get(r.requestId);
       if (previous) return previous;
+      if (r.body.type === 'save') return this.save(r);
       if (r.body.type !== 'inspect' && r.expectedRevision !== (this.world?.revision ?? -1))
         throw new Error('세계가 변경되었습니다. 오래된 요청은 적용하지 않습니다.');
       if (this.world?.receiptIds.includes(r.requestId)) throw new Error('이미 처리된 요청입니다.');
@@ -278,10 +297,8 @@ export class Host {
           };
         }
       }
-      if (changed && this.world) {
+      if (changed && this.world)
         this.world.receiptIds = [...this.world.receiptIds.slice(-199), r.requestId];
-        raw = await encode(this.world, r.generation, r.parentGeneration);
-      }
       const reply: Reply = {
         requestId: r.requestId,
         ok: true,

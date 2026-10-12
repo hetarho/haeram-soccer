@@ -156,6 +156,7 @@ export const requestSchema = z.object({
     }),
     z.object({ type: z.literal('command'), command }),
     z.object({ type: z.literal('export') }),
+    z.object({ type: z.literal('save') }),
     z.object({ type: z.literal('archive'), year: z.number().int().min(1901).max(4000) }),
     z.object({ type: z.literal('head-to-head'), club: ref }),
     z.object({
@@ -202,4 +203,18 @@ export interface Reply {
   leagueFixtures?: Fixture[];
   progress?: number;
   cancelled?: boolean;
+  /** A save request handed this world revision to the codec worker; its checkpoint follows there. */
+  saving?: { worldId: string; revision: number };
 }
+/** A snapshot the engine worker posts straight to the codec worker (→ARCH-13). */
+export interface CodecJob {
+  /** The save request's ID, which the client waits on for the checkpoint. */
+  id: string;
+  world: World;
+  generation: number;
+  parentGeneration: number;
+}
+/** The codec's validated checkpoint for the client, or why none was built; nothing is written. */
+export type CodecResult =
+  | { id: string; ok: true; revision: number; raw: string; envelope: Envelope }
+  | { id: string; ok: false; error: string; errorCode?: typeof SAVE_COMPATIBILITY_CODE };

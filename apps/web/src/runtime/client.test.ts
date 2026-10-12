@@ -5,7 +5,8 @@ import { CURRENT_ENGINE_VERSION } from '../../../../packages/contracts/src/versi
 import { decode, encode, type StoragePort } from '../adapters/persistence';
 import { GameClient, type ClientState } from './client';
 import { Host } from './host';
-import type { Reply, Request } from './protocol';
+import { serve } from './codec';
+import type { CodecResult, Reply, Request } from './protocol';
 import { GameSlots } from './slots';
 import { ACTIVE_SAVE_KEYS, GameIndexStore, type ParkedStore } from '../adapters/games';
 
@@ -31,7 +32,8 @@ class WorkerPort {
   replies: { request: Request; reply: Reply }[] = [];
   onmessage?: (event: MessageEvent<Reply>) => void;
   onerror?: () => void;
-  private host = new Host((reply) => this.deliver(reply));
+  host = new Host((reply) => this.deliver(reply));
+  private codecPort?: MessagePort;
   constructor() {
     WorkerPort.instances.push(this);
   }
@@ -40,9 +42,10 @@ class WorkerPort {
     this.onmessage?.({ data: cloned } as MessageEvent<Reply>);
     return cloned;
   }
-  postMessage(input: Request | { type: 'cancel' }) {
+  postMessage(input: Request | { type: 'cancel' } | { type: 'codec'; port: MessagePort }) {
     if ('type' in input) {
-      this.host.cancelled = true;
+      if (input.type === 'codec') this.host.codec = this.codecPort = input.port;
+      else this.host.cancelled = true;
       return;
     }
     this.requests.push(input);
@@ -50,7 +53,40 @@ class WorkerPort {
       this.replies.push({ request: input, reply: this.deliver(reply) });
     });
   }
-  terminate() {}
+  terminate() {
+    this.codecPort?.close();
+  }
+}
+
+/** The codec worker as codec.ts wires it; snapshots arrive through a real MessageChannel port. */
+class CodecPort {
+  static instances: CodecPort[] = [];
+  results: CodecResult[] = [];
+  onmessage?: (event: MessageEvent<CodecResult>) => void;
+  onerror?: () => void;
+  /** Answers wait for this, so a test can hold a checkpoint while the game moves on. */
+  gate = Promise.resolve();
+  private port?: MessagePort;
+  constructor() {
+    CodecPort.instances.push(this);
+  }
+  postMessage(input: { type: 'port'; port: MessagePort }) {
+    this.port = input.port;
+    serve(input.port, (result) => {
+      void this.gate.then(() => {
+        const cloned = structuredClone(result);
+        this.results.push(cloned);
+        this.onmessage?.({ data: cloned } as MessageEvent<CodecResult>);
+      });
+    });
+  }
+  terminate() {
+    this.port?.close();
+  }
+}
+
+function FakeWorker(url: URL) {
+  return String(url).endsWith('codec.ts') ? new CodecPort() : new WorkerPort();
 }
 
 class ChannelPort {
@@ -79,7 +115,8 @@ async function start(notify: (state: ClientState) => void = () => {}) {
 beforeEach(() => {
   storage = new MemoryStorage();
   WorkerPort.instances = [];
-  vi.stubGlobal('Worker', WorkerPort);
+  CodecPort.instances = [];
+  vi.stubGlobal('Worker', FakeWorker);
   vi.stubGlobal('BroadcastChannel', ChannelPort);
   vi.stubGlobal('localStorage', storage);
   vi.stubGlobal('window', {
@@ -112,7 +149,7 @@ describe('background worker publication', () => {
     expect(client.state.savedRevision).toBe(client.state.view!.world.revision);
     expect(client.state.view!.world.calendar?.day).toBe(1);
   });
-  it('advances without foreground loading flashes and does not activate save-validation views', async () => {
+  it('advances without foreground loading flashes and saves without a validation view', async () => {
     const publications: ClientState[] = [],
       client = await start((state) => publications.push(state));
     const initialTables = client.state.view!.world.tables;
@@ -120,7 +157,9 @@ describe('background worker publication', () => {
     await client.command({ type: 'advance-days', days: 1 }, { background: true });
     const worker = WorkerPort.instances[0],
       command = worker.replies.findLast(({ request }) => request.body.type === 'command')!,
-      validation = worker.replies.findLast(({ request }) => request.body.type === 'inspect')!;
+      save = worker.replies.findLast(({ request }) => request.body.type === 'save')!;
+    expect(save.reply.view).toBeUndefined();
+    expect(worker.requests.some((request) => request.body.type === 'inspect')).toBe(false);
     expect(publications.length).toBeGreaterThan(0);
     expect(publications.every((state) => !state.busy && state.progress === 0)).toBe(true);
     expect(publications.some((state) => state.processing && state.activity === 'background')).toBe(
@@ -132,7 +171,6 @@ describe('background worker publication', () => {
     expect(client.state.view).toBe(
       publications.find((state) => state.view?.world.calendar?.day === 1)?.view,
     );
-    expect(client.state.view).not.toBe(validation.reply.view);
     expect(client.state.view!.world.tables).toBe(initialTables);
     expect(client.state.view?.world.calendar?.day).toBe(1);
     expect(client.state.savedRevision).toBe(client.state.view?.world.revision);
@@ -144,11 +182,13 @@ describe('background worker publication', () => {
       client.command({ type: 'advance-days', days: 1 }, { background: true }),
       client.command({ type: 'advance-days', days: 1 }, { background: true }),
     ]);
-    const commands = WorkerPort.instances[0].requests.filter(
-      (request) => request.body.type === 'command',
-    );
+    const requests = WorkerPort.instances[0].requests,
+      commands = requests.filter((request) => request.body.type === 'command'),
+      saves = requests.filter((request) => request.body.type === 'save');
     expect(commands.map((request) => request.expectedRevision)).toEqual([0, 1]);
-    expect(commands.map((request) => request.generation)).toEqual([2, 3]);
+    // Founding, then each tick: every checkpoint follows the last committed one.
+    expect(saves.map((request) => request.generation)).toEqual([1, 2, 3]);
+    expect(JSON.parse(storage.getItem('haeram-soccor:manifest')!).generation).toBe(3);
     expect(client.state.view?.world.calendar?.day).toBe(2);
     expect(client.state.savedRevision).toBe(2);
     expect(client.state.error).toBeUndefined();
@@ -224,6 +264,74 @@ describe('background worker publication', () => {
     const slot = JSON.parse(manifest).slot ? 'b' : 'a',
       saved = await decode(storage.getItem(`haeram-soccor:slot:${slot}`)!);
     expect(saved.world.calendar?.day).toBe(0);
+  });
+
+  it('commits the codec checkpoint as built, without an inspect round trip', async () => {
+    const client = await start();
+    await client.command({ type: 'advance-days', days: 1 });
+    const last = CodecPort.instances[0].results.at(-1)!;
+    if (!last.ok) throw new Error(last.error);
+    const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
+    expect(manifest.generation).toBe(last.envelope.generation);
+    expect(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'b' : 'a'}`)).toBe(last.raw);
+    expect(last.revision).toBe(client.state.view!.world.revision);
+    expect(client.state.savedRevision).toBe(last.revision);
+    expect(
+      WorkerPort.instances[0].requests.some(
+        (request) => request.body.type === 'inspect' || request.body.type === 'export',
+      ),
+    ).toBe(false);
+    expect((await decode(last.raw)).world.calendar?.day).toBe(1);
+  });
+
+  it('writes no slot when the codec rejects its own candidate and reports the save error', async () => {
+    const client = await start(),
+      before = new Map(storage.data),
+      w = WorkerPort.instances[0].host.world!;
+    // A world the engine plays on but a load would reject: the codec's validation must catch it.
+    w.rankHistory![0].rows[0][0] = w.clubs.length;
+    await client.command({ type: 'advance-days', days: 1 }, { background: true });
+    const last = CodecPort.instances[0].results.at(-1)!;
+    expect(last.ok).toBe(false);
+    expect(client.state.error).toContain('저장 실패');
+    expect(client.state.error).toContain('순위 추이');
+    expect(client.state.error).toContain('파일로 내보내세요');
+    expect(storage.data).toEqual(before);
+    expect(client.state.savedRevision).toBe(0);
+    expect(client.state.view?.world.calendar?.day).toBe(1);
+    expect(client.state.processing).toBe(false);
+  });
+
+  it('builds one checkpoint at a time and folds requests made meanwhile into one newer save', async () => {
+    const client = await start(),
+      worker = WorkerPort.instances[0],
+      codec = CodecPort.instances[0],
+      saves = () => worker.requests.filter((request) => request.body.type === 'save');
+    storage.fail = 'haeram-soccor:manifest';
+    await client.command({ type: 'advance-days', days: 1 }, { background: true });
+    expect(client.state.savedRevision).toBe(0);
+    storage.fail = '';
+    let release = () => {};
+    codec.gate = new Promise<void>((resolve) => (release = resolve));
+    const first = client.save();
+    await vi.waitFor(() => expect(saves()).toHaveLength(3));
+    // While that checkpoint is held, a tick and another request each ask for a save.
+    const tick = client.command({ type: 'advance-days', days: 1 }, { background: true });
+    await vi.waitFor(() => expect(client.state.view?.world.calendar?.day).toBe(2));
+    const again = client.save();
+    expect(saves()).toHaveLength(3);
+    release();
+    await Promise.all([first, tick, again]);
+    expect(saves().map((request) => request.generation)).toEqual([1, 2, 2, 3]);
+    expect(codec.results.map((result) => result.ok && result.revision)).toEqual([0, 1, 1, 2]);
+    expect(client.state.savedRevision).toBe(2);
+    expect(client.state.error).toBeUndefined();
+    const manifest = storage.getItem('haeram-soccor:manifest');
+    expect(JSON.parse(manifest!).generation).toBe(3);
+    // A late answer for a checkpoint already superseded is never written.
+    codec.onmessage?.({ data: codec.results[2] } as MessageEvent<CodecResult>);
+    await client.whenSaved();
+    expect(storage.getItem('haeram-soccor:manifest')).toBe(manifest);
   });
 
   it('reads the all-time head-to-head without publishing a state or waiting for a tick', async () => {
