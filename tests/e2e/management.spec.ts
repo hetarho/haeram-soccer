@@ -64,6 +64,16 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
     .getByRole('tab', { name: '순위표', exact: true })
     .click();
   await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('Haeram');
+  // Any league's final table that season comes from the archive too.
+  await chooseOption(
+    page.getByRole('group', { name: '리그 선택' }).getByRole('combobox', { name: '국가' }),
+    'GER',
+  );
+  const german = page.getByRole('region', { name: '최종 순위표' });
+  await expect(german).toContainText('1950/51 · 독일 1부');
+  await expect(german.locator('tbody tr')).toHaveCount(18);
+  await page.getByRole('button', { name: '우리 리그로', exact: true }).click();
+  await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('Haeram');
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
   await page.getByRole('tab', { name: '시즌 기록', exact: true }).click();
   await chooseOption(page.getByRole('combobox', { name: '기록 시즌', exact: true }), '1950');

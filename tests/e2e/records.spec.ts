@@ -61,6 +61,14 @@ for (const [label, viewport] of [
       );
       await expect(page.getByRole('table', { name: '시즌별 기록' })).toContainText('1950/51');
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+      // A season's row opens that season in 시즌 기록.
+      await page.getByRole('button', { name: '1950/51 시즌 기록 보기', exact: true }).click();
+      await expect(tab('시즌 기록')).toHaveAttribute('aria-selected', 'true');
+      await expect(page.getByRole('combobox', { name: '기록 시즌', exact: true })).toHaveAttribute(
+        'data-value',
+        '1950',
+      );
+      await tab('요약').click();
 
       // The arrow keys move between the tabs, and the tab goes into the address.
       await tab('요약').focus();

@@ -60,13 +60,24 @@ function Form({ results }: { results: ('승' | '무' | '패')[] }) {
   );
 }
 
-export function Standings({ w, ids, limit }: { w: World; ids: string[]; limit?: number }) {
+/** A league table; `fixtures` brings another league's matches, which the view does not carry. */
+export function Standings({
+  w,
+  ids,
+  limit,
+  fixtures: read,
+}: {
+  w: World;
+  ids: string[];
+  limit?: number;
+  fixtures?: Fixture[];
+}) {
   const [expanded, setExpanded] = useState(false);
   const continental = w.europe.find((t) => t.standings === w.tables);
   const sorted = orderIds(ids, w.tables),
     rules = continental ? undefined : leagueRules(w, ids),
     timeline = continental ? [] : leagueTimeline(w, ids);
-  const domestic = leagueFixtures(w, ids);
+  const domestic = read ?? leagueFixtures(w, ids);
   const fixtures = continental
     ? continental.fixtures
     : domestic.length
@@ -659,8 +670,16 @@ export function RankHistoryGraph({
   );
 }
 
-export function RoundResults({ w, ids }: { w: World; ids: string[] }) {
-  const fixtures = leagueFixtures(w, ids),
+export function RoundResults({
+  w,
+  ids,
+  fixtures: read,
+}: {
+  w: World;
+  ids: string[];
+  fixtures?: Fixture[];
+}) {
+  const fixtures = read ?? leagueFixtures(w, ids),
     rounds = [...new Set(fixtures.map((f) => f.round))].sort((a, b) => a - b);
   const completed = fixtures.filter((f) => f.score),
     defaultRound = completed.length ? Math.max(...completed.map((f) => f.round)) : rounds[0];
@@ -670,16 +689,22 @@ export function RoundResults({ w, ids }: { w: World; ids: string[] }) {
     finished = results.filter((f) => f.score).length;
   const resultClass = (f: Fixture) =>
     f.home === w.playerClub || f.away === w.playerClub ? s.ownResult : '';
-  if (!rounds.length || !sameMembers(ids, ownLeagueIds(w))) return null;
+  // Any league's rounds (→WEB-65); ours reads as the rivals' results.
+  const ours = sameMembers(ids, ownLeagueIds(w));
+  if (!rounds.length) return null;
   return (
     <section className={s.panel} aria-label="리그 라운드 결과">
       <div className={s.panelHead}>
         <div>
-          <h3>같은 라운드, 다른 경기</h3>
+          <h3>{ours ? '같은 라운드, 다른 경기' : '라운드 결과'}</h3>
           <span>
             {finished
-              ? `${finished}경기 종료 · 경쟁 팀의 결과를 확인하세요`
-              : '예정된 경기 · 누구와 승점을 다툴까요?'}
+              ? ours
+                ? `${finished}경기 종료 · 경쟁 팀의 결과를 확인하세요`
+                : `${finished}경기 종료`
+              : ours
+                ? '예정된 경기 · 누구와 승점을 다툴까요?'
+                : '예정된 경기'}
           </span>
         </div>
         <label className={s.compare}>

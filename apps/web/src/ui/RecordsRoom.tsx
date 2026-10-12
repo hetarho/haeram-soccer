@@ -122,7 +122,14 @@ export function RecordsRoom({ state, client }: Props) {
         aria-labelledby={`records-tab-${tab}`}
       >
         {tab === 'summary' ? (
-          <Summary w={w} />
+          <Summary
+            w={w}
+            onSeason={(season) => {
+              setYear(season);
+              setTab('season');
+              document.getElementById('records-tab-season')?.scrollIntoView({ block: 'nearest' });
+            }}
+          />
         ) : tab === 'trends' ? (
           <ClubTrends w={w} />
         ) : tab === 'players' ? (
@@ -143,8 +150,11 @@ export function RecordsRoom({ state, client }: Props) {
   );
 }
 
-/** The front of the records room: honours, where our Elo stands, the record book and the seasons. */
-function Summary({ w }: { w: World }) {
+/**
+ * The front of the records room: honours, where our Elo stands, the record book and the seasons;
+ * a season's row opens it in 시즌 기록.
+ */
+function Summary({ w, onSeason }: { w: World; onSeason: (year: number) => void }) {
   const standing = useEloStanding(w);
   return (
     <>
@@ -155,7 +165,7 @@ function Summary({ w }: { w: World }) {
         </div>
       </Panel>
       <CareerRecordBook w={w} />
-      <SeasonTable w={w} />
+      <SeasonTable w={w} onSeason={onSeason} />
     </>
   );
 }

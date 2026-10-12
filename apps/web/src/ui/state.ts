@@ -119,6 +119,16 @@ export const usePlayerSheet = create<{
 }));
 
 /** The records room's tabs, in tab-bar order; the first one keeps no ?view= in the address. */
+/** A closed season's tabs on the league page, in tab-bar order; the review comes first. */
+export const PAST_TABS = [
+  ['review', '결산'],
+  ['table', '순위표'],
+  ['matches', '우리 경기'],
+  ['rank', '순위 추이'],
+  ['scorers', '득점 순위'],
+] as const;
+export type PastTab = (typeof PAST_TABS)[number][0];
+
 export const RECORD_TABS = [
   ['summary', '요약'],
   ['trends', '추이'],

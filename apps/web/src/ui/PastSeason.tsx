@@ -1,6 +1,7 @@
 import { memo, useState, type KeyboardEvent } from 'react';
 import type { MatchRecord, SeasonArchive, World } from '../../../../packages/contracts/src/types';
 import { clubOf } from '../../../../packages/engine/src/world';
+import { country } from '../../../../packages/catalogs/src/index';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { ClubLink } from './ClubLink';
@@ -9,11 +10,13 @@ import { MatchReport } from './MatchReport';
 import { RankChart, RankHistoryGraph, rankAxis } from './LeagueInsights';
 import { SeasonReview } from './SeasonReview';
 import { seasonName, signed } from './format';
-import { divisionName } from './league';
+import { divisionName, sameLeague, type LeagueChoice } from './league';
+import { LeaguePicker } from './LeaguePicker';
 import { selectReviewWorld } from './liveState';
 import {
   finalRows,
   finalZones,
+  leagueRows,
   seasonSnapshots,
   useSeasonFiles,
   type FinalRow,
@@ -24,15 +27,8 @@ import l from './LeagueInsights.module.css';
 import r from './SeasonReview.module.css';
 import c from './Scorers.module.css';
 
-/** A closed season's tabs in tab-bar order; the review comes first. */
-export const PAST_TABS = [
-  ['review', '결산'],
-  ['table', '순위표'],
-  ['matches', '우리 경기'],
-  ['rank', '순위 추이'],
-  ['scorers', '득점 순위'],
-] as const;
-export type PastTab = (typeof PAST_TABS)[number][0];
+import { PAST_TABS, type PastTab } from './state';
+export { PAST_TABS, type PastTab };
 
 type Read = ReturnType<typeof useSeasonFiles>;
 /** What a tab says while the season's archive loads or after reading it failed. */
@@ -48,19 +44,21 @@ function Pending({ read }: { read: Read }) {
 const markOf = (own: number, other: number) => (own > other ? '승' : own < other ? '패' : '무');
 
 /**
- * Our league's final table under the rules of the division it was played in. Only points and
- * goals survive for every club; wins, draws and losses only for ours.
+ * A league's final table under the rules of the division it was played in: ours, or `league`
+ * (→WEB-65). Only points and goals survive for every club; wins, draws and losses only for ours.
  */
 function FinalTable({
   w,
   season,
   rows,
   read,
+  league,
 }: {
   w: World;
   season: SeasonArchive;
   rows?: FinalRow[];
   read: Read;
+  league?: LeagueChoice;
 }) {
   if (!rows)
     return read?.files ? (
@@ -68,14 +66,16 @@ function FinalTable({
     ) : (
       <Pending read={read} />
     );
-  const code = clubOf(w).country,
-    { zones, lower } = finalZones(code, season.tier, rows.length);
+  const code = league?.code ?? clubOf(w).country,
+    tier = league?.tier ?? season.tier,
+    group = league?.group ?? season.group,
+    { zones, lower } = finalZones(code, tier, rows.length);
   return (
     <section className={r.table} aria-label="최종 순위표">
       <h3>최종 순위표</h3>
       <p className={r.tableMeta}>
-        {seasonName(season.year)} · {divisionName(code, season.tier, season.group)} · {rows.length}
-        팀
+        {seasonName(season.year)} · {league && `${country(code).name} `}
+        {divisionName(code, tier, group)} · {rows.length}팀
       </p>
       <table>
         <thead>
@@ -410,16 +410,28 @@ export const ClosedSeason = memo(function ClosedSeason({
   year,
   tab,
   onTab,
+  league,
+  onLeague,
 }: {
   client: GameClient;
   year: number;
   tab: PastTab;
   onTab: (tab: PastTab) => void;
+  league?: LeagueChoice;
+  onLeague: (league?: LeagueChoice) => void;
 }) {
   const w = useGameState(selectReviewWorld)!;
   const season = w.history.find((h) => h.year === year);
   const read = useSeasonFiles(client, season);
   const rows = season && finalRows(w, season, read?.files?.season?.standings);
+  // Another league's table that season; our own that season keeps its round snapshots.
+  const other =
+    season &&
+    league &&
+    !sameLeague(league, { code: clubOf(w).country, tier: season.tier, group: season.group })
+      ? league
+      : undefined;
+  const tableRows = other ? leagueRows(w, read?.files?.season?.standings, other) : rows;
   if (!season)
     return (
       <section className={`${s.seasonPane} ${t.pane}`} aria-label="시즌 결산">
@@ -475,7 +487,10 @@ export const ClosedSeason = memo(function ClosedSeason({
             clubs={rows?.length}
           />
         ) : tab === 'table' ? (
-          <FinalTable w={w} season={season} rows={rows} read={read} />
+          <>
+            <LeaguePicker league={league} onLeague={onLeague} />
+            <FinalTable w={w} season={season} rows={tableRows} read={read} league={other} />
+          </>
         ) : tab === 'matches' ? (
           <OwnMatches w={w} season={season} read={read} />
         ) : tab === 'rank' ? (
