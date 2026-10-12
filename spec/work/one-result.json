@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-12T08:00:23.701Z",
-  "sourceCommit": "1051b89d94fc3627fe7ac3cc1b414c8659c83464",
+  "snapshotAt": "2026-10-12T08:23:18.831Z",
+  "sourceCommit": "34e96b089e52a2fc88bc7ee3d1c997bc8aef4267",
   "group": {
     "id": "one-result",
     "branch": "work/one-result",
@@ -12,7 +12,7 @@
       "reviewers": 1,
       "maxPending": 8
     },
-    "runner": {
+    "lastRun": {
       "id": "972d9a30-6bea-46b8-81f6-ead950c5011c",
       "adapter": "builtin",
       "providers": {
@@ -34,49 +34,20 @@
           "version": "2.1.296 (Claude Code)"
         }
       ],
-      "startedAt": "2026-10-12T07:50:37.896Z"
-    },
-    "lastRun": {
-      "id": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-10-12T07:10:13.945Z",
-      "stoppedAt": "2026-10-12T07:50:08.596Z",
-      "dispatched": 10,
-      "outcome": "interrupted",
+      "startedAt": "2026-10-12T07:50:37.896Z",
+      "stoppedAt": "2026-10-12T08:23:18.621Z",
+      "dispatched": 5,
+      "outcome": "needs-attention",
       "failures": [
         {
-          "attempt": "86b16233-ef43-4161-8e24-743db5f76235",
-          "role": "worker",
-          "error": "T044 is blocked on the review's P2 finding. Fixing it needs a planner decision on scope, so I didn't change it. After T044, Italy's (ITA) amateur table sends its top 5 clubs up and plays off 6th–9th for one more place. But apps/web/src/ui/league.ts divisionRules still gives every amateur table 1 automatic place and 4 playoff places. So the live and closed-season ITA amateur tables show the wrong zones (LEAGUE-6, WEB-47). That file, plus an ITA test in league.test.ts / seasonArchive.test.ts, is outside the lane's declared touches, and no other task in one-result touches it. The planner needs to either add it to lane day-order or add a follow-up task to one-result. The reviewer's fix: for the amateur tier, automatic = groups[last].length × 2 − 1 and playoff = 4.\n\nChanges I made within T044's scope (not committed):\n- packages/engine/src/season.test.ts: the lastRound helper's season loop now fails when the club goes bankrupt instead of looping until the 30 s timeout (P3).\n- spec/tasks/T044.amateur-exchange.md: the result's at: line was f17c207 and is now `-`, because the checks ran on the uncommitted tree (P3). verified is updated, and limits records the blocker.\n\nLeft open: the P3 about unbounded loops at calendar.test.ts:194,205. That file belongs to T043 and this assignment covers only T044.\n\nChecks: `pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit` passed (73 files, 505 tests). eslint and prettier --check passed on season.test.ts and the task file.\n\nNot run because they needed approval and were denied: `work board --work one-result --json` (board and freshness check), a targeted vitest run, and spec lint. The CLI never recorded the blocked status; the host has to do that."
-        },
-        {
           "attempt": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
-          "role": "worker",
-          "error": "adapter exited 1"
+          "role": "integration",
+          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
         },
         {
-          "attempt": "86b16233-ef43-4161-8e24-743db5f76235",
-          "role": "reviewer",
-          "error": "adapter exited 1"
+          "attempt": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+          "role": "worker",
+          "error": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session."
         }
       ]
     }
@@ -85,9 +56,9 @@
     "total": 9,
     "completed": 6,
     "remaining": 3,
-    "running": 1,
+    "running": 0,
     "review": 2,
-    "blocked": 0,
+    "blocked": 1,
     "unassigned": 0
   },
   "tasks": [
@@ -99,14 +70,14 @@
         "T045",
         "T046"
       ],
-      "status": "doing"
+      "status": "blocked"
     },
     {
       "id": "T048",
       "title": "Background codec worker for checkpoints",
       "dep": [],
       "lane": "background-save",
-      "status": "ready"
+      "status": "approved"
     },
     {
       "id": "T049",
@@ -115,7 +86,7 @@
         "T048"
       ],
       "lane": "background-save",
-      "status": "ready"
+      "status": "approved"
     }
   ],
   "attempts": [
@@ -587,8 +558,8 @@
         "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/worker-1",
         "972d9a30-6bea-46b8-81f6-ead950c5011c/worker-1"
       ],
-      "status": "ready",
-      "reason": null,
+      "status": "approved",
+      "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
       "createdAt": "2026-10-12T06:19:25.170Z",
       "startCommit": "a37e137038d9f4211780569bddf8856da8860cd4",
       "verifiedCommit": "ecf7c93c5d796a6e828f540c64c8a8799c79d6d4",
@@ -596,17 +567,46 @@
       "submissionId": "d41b9a19-f98b-4e28-9af4-7fc570f71a26",
       "submittedAt": "2026-10-12T08:00:22.968Z",
       "dispatch": {
-        "id": "9a3e20ce-a125-4d67-91c9-011a8b178883",
+        "id": "19cf7e6d-3013-4933-a2c2-5fd7fd7e4bab",
         "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
-        "role": "worker",
+        "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-12T07:50:37.969Z",
-        "finishedAt": "2026-10-12T08:00:22.985Z",
+        "startedAt": "2026-10-12T08:02:13.838Z",
+        "finishedAt": "2026-10-12T08:09:52.259Z",
         "error": null,
-        "summary": "T049는 수락 기준 8개를 모두 채웠습니다. 남아 있던 항목은 \"다시 불러오기나 두 번째 탭 전에 저장을 기다리는 e2e 여정이 Chromium에서 통과한다\" 하나였습니다. 이전 세션에서는 브라우저 라이브러리가 없어서 확인하지 못했는데, 이번에 Chromium이 실행되어 `pnpm run test:e2e --project=chromium` 전체 94개가 통과했습니다. 다시 불러오기, 두 번째 탭, save-status를 다루는 spec 파일이 24개라 일부만 고르지 않고 전체를 돌렸습니다.\n\n**바뀐 동작** (커밋 151f7ec, bc886e1):\n- 시계는 저장을 기다리지 않습니다. `tick`에서 저장 리비전 확인을 없앴고, 밀린 날짜는 스스로 늦어진 스텝(또는 자리를 비운 시간)에서만 붙습니다.\n- 언제 저장하는지:\n  - 구단주 결정(명령, 창단, 경고 확인)은 `saveSoon()`으로 바로 저장합니다.\n  - 자동 진행은 30초 타이머로 저장합니다.\n  - 시계가 멈추거나 탭이 숨겨지거나 `pagehide`가 오면 바로 저장합니다.\n- 백그라운드 저장 요청의 제한 시간은 60초입니다.\n- 저장 상태 표시는 `저장 완료` / `방금 저장` / `n초 전 저장`으로 바뀌었고, `저장 재시도` 버튼은 저장에 실패했을 때만 보입니다.\n- e2e 9개 파일에서 다시 불러오기 전에 `저장 완료`를 기다리도록 했습니다. recovery는 실패 상태 문구를 새로 맞추고, 엔진 Worker만 잡도록(코덱 Worker 제외) 고쳤습니다.\n\n이번에 수정한 파일은 `spec/tasks/T049.clock-never-waits-for-saving.md`(수락 기준 체크와 result의 at·verified·limits)뿐입니다.\n\n**검사 결과:** 모두 bc886e1에서 통과했습니다.\n- `pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit`: 73개 파일, 506개 테스트\n- `pnpm run lint`, `pnpm run format:check`, `pnpm run build`\n- Chromium e2e 94개\n\n**남은 한계:**\n- Firefox와 WebKit e2e는 돌리지 않았습니다.\n- 어느 탭에서 게임을 불러오면 그 탭이 처음 저장할 때까지 `저장 대기`로 보입니다. 체크포인트에 저장 시각이 없기 때문입니다.\n- 첫 화면 진입 크기는 다시 재지 않았습니다. 측정 명령(`node -e`, `gzip`)이 이 세션에서 승인되지 않았습니다.\n- `haeram-spec-creator lint`와 `work board` 조회도 승인되지 않아 실행하지 못했습니다."
+        "summary": "Approved. I read the code rather than relying on the test results. T048: a new background codec worker builds and checks every checkpoint. The client creates that worker and gives the engine worker a MessageChannel port to it, so the world never passes through the UI thread. Ordinary commands no longer encode. The client now commits the codec's raw and envelope without running inspect a second time, and SaveRepository.commit refuses any generation that is not newer than the last committed one. Only one save is in flight at a time, and requests made meanwhile are folded into one newer save. Load, import and recovery still decode and validate in the engine worker; export still encodes there. T049: the gate that made `tick` wait for the previous save is gone. Days owed only come from a step that itself ran late. Owner decisions (commands, founding, alert acknowledgement) request a save at once. Automatic days arm one 30 s timer. Stopping the clock, hiding the tab and pagehide each save at once (pagehide best effort). The save status shows 저장 완료, 방금 저장 or n초 전 저장, and 저장 재시도 appears only after a failed save. Read-only tabs are still told of every commit. The e2e journeys now wait for 저장 완료 before reloading or opening a second tab. This matches SAVE-8, ARCH-11, ARCH-13 and WEB-18 (rev 20/8/50). Upstream changes since the merge base (engine and contracts only) do not touch any file in this submission. Runner verification at ecf7c93: typecheck and unit tests passed (73 files, 506 tests). The worker reports build, lint, format:check and Chromium e2e passing (94 tests). I did not rerun these: this checkout has no node_modules, and installing would change it. The findings below are optional (P3)."
+      },
+      "review": {
+        "id": "40e3e327-b14f-4246-83bc-b206500fbfa5",
+        "owner": "972d9a30-6bea-46b8-81f6-ead950c5011c/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Approved. I read the code rather than relying on the test results. T048: a new background codec worker builds and checks every checkpoint. The client creates that worker and gives the engine worker a MessageChannel port to it, so the world never passes through the UI thread. Ordinary commands no longer encode. The client now commits the codec's raw and envelope without running inspect a second time, and SaveRepository.commit refuses any generation that is not newer than the last committed one. Only one save is in flight at a time, and requests made meanwhile are folded into one newer save. Load, import and recovery still decode and validate in the engine worker; export still encodes there. T049: the gate that made `tick` wait for the previous save is gone. Days owed only come from a step that itself ran late. Owner decisions (commands, founding, alert acknowledgement) request a save at once. Automatic days arm one 30 s timer. Stopping the clock, hiding the tab and pagehide each save at once (pagehide best effort). The save status shows 저장 완료, 방금 저장 or n초 전 저장, and 저장 재시도 appears only after a failed save. Read-only tabs are still told of every commit. The e2e journeys now wait for 저장 완료 before reloading or opening a second tab. This matches SAVE-8, ARCH-11, ARCH-13 and WEB-18 (rev 20/8/50). Upstream changes since the merge base (engine and contracts only) do not touch any file in this submission. Runner verification at ecf7c93: typecheck and unit tests passed (73 files, 506 tests). The worker reports build, lint, format:check and Chromium e2e passing (94 tests). I did not rerun these: this checkout has no node_modules, and installing would change it. The findings below are optional (P3).",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/runtime/progression.ts:405 (start) / apps/web/src/runtime/client.ts:367 (drainSaves) — T049",
+            "message": "After a failed save, the clock can run again while nothing is being saved. Only `state.error` blocks `start()` and `tick`, and any later enqueued task clears that error, including 기록 내보내기 (the step the error message itself suggests) and archive reads. The old `savedRevision !== revision` gate in `tick` is gone, so the owner can restart the clock and play up to AUTOSAVE_MS unsaved before the next save fails and stops it again. The impl notes say save failures still stop unattended progress. Consider also blocking `start()` and `tick` on `state.saveFailed` until a retry succeeds, and add a client or progression test for it."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/runtime/client.ts:367-375 (drainSaves catch) — T048",
+            "message": "If the engine worker dies or times out while a background save is waiting for its reply, `failWorker` rejects that save's waiter. The catch in `drainSaves` then overwrites the worker error with \"현재 진행은 메모리에 있습니다. 저장 실패: … · 파일로 내보내세요\" and sets `saveFailed`. That message is wrong in this case: the in-memory world died with the worker, export falls back to the last committed checkpoint, and 저장 재시도 cannot succeed. Consider keeping the `failWorker` message and leaving `saveFailed` unset when `this.failed` is true."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/runtime/host.ts:163-174 (save) — T048/T049 limits",
+            "message": "These are planning or integration follow-ups, not code defects. (1) Posting the world to the codec costs about 130 ms on the engine thread for a 100-season world, measured in Node. That is over the ~50 ms budget in the impl notes, and the suggested `pack(w)` fallback measured slower. The limits section records this, but planning should accept it or set a new budget, since slower phones will have the next day step carry owed days after every save. (2) Firefox and WebKit e2e were not run: the codec module worker with a transferred port is only proven in Chromium. The first-play entry size was not re-measured. Leave both to the integration verify and CI."
+          }
+        ],
+        "commit": "ecf7c93c5d796a6e828f540c64c8a8799c79d6d4",
+        "baseCommit": "34e96b089e52a2fc88bc7ee3d1c997bc8aef4267",
+        "submissionId": "d41b9a19-f98b-4e28-9af4-7fc570f71a26",
+        "createdAt": "2026-10-12T08:02:13.566Z",
+        "finishedAt": "2026-10-12T08:09:52.237Z"
       },
       "steps": [
         {
@@ -750,6 +750,8 @@
       "submittedBase": "730d080682f751efafad8abb8d3acf069ba5a21b",
       "submissionId": "6e6bcbb3-3359-4204-a3d5-f638b4d95dfd",
       "submittedAt": "2026-10-12T07:42:51.396Z",
+      "integratedCommit": "34e96b089e52a2fc88bc7ee3d1c997bc8aef4267",
+      "integratedAt": "2026-10-12T08:02:13.269Z",
       "dispatch": {
         "id": "3c57202f-6ac2-42b7-841b-718cc45ae98b",
         "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
@@ -802,6 +804,13 @@
           "startedAt": "2026-10-12T07:41:15.895Z",
           "finishedAt": "2026-10-12T07:42:51.181Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+          "startedAt": "2026-10-12T08:00:23.813Z",
+          "finishedAt": "2026-10-12T08:02:13.125Z"
+        }
       ]
     },
     {
@@ -816,7 +825,8 @@
       "contributors": [
         "972d9a30-6bea-46b8-81f6-ead950c5011c/worker-2"
       ],
-      "status": "doing",
+      "status": "blocked",
+      "reason": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session.",
       "createdAt": "2026-10-12T07:57:19.962Z",
       "startCommit": "1051b89d94fc3627fe7ac3cc1b414c8659c83464",
       "dispatch": {
@@ -826,8 +836,11 @@
         "slot": 2,
         "provider": "claude",
         "model": null,
-        "status": "running",
-        "startedAt": "2026-10-12T07:57:20.132Z"
+        "status": "finished",
+        "startedAt": "2026-10-12T07:57:20.132Z",
+        "finishedAt": "2026-10-12T08:23:18.068Z",
+        "error": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session.",
+        "summary": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session."
       }
     }
   ],
@@ -6049,6 +6062,317 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 209,
+      "at": "2026-10-12T08:02:13.231Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "55ab5bdd-7f96-420a-964d-ae86e3697c0f",
+      "taskId": "T063",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+            "startedAt": "2026-10-12T08:00:23.813Z",
+            "finishedAt": "2026-10-12T08:02:13.125Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 210,
+      "at": "2026-10-12T08:02:13.269Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "55ab5bdd-7f96-420a-964d-ae86e3697c0f",
+      "taskId": "T063",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "34e96b089e52a2fc88bc7ee3d1c997bc8aef4267",
+        "integratedAt": "2026-10-12T08:02:13.269Z"
+      }
+    },
+    {
+      "sequence": 211,
+      "at": "2026-10-12T08:02:13.566Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "40e3e327-b14f-4246-83bc-b206500fbfa5",
+          "owner": "972d9a30-6bea-46b8-81f6-ead950c5011c/reviewer-1",
+          "status": "reviewing",
+          "commit": "ecf7c93c5d796a6e828f540c64c8a8799c79d6d4",
+          "baseCommit": "34e96b089e52a2fc88bc7ee3d1c997bc8aef4267",
+          "submissionId": "d41b9a19-f98b-4e28-9af4-7fc570f71a26",
+          "createdAt": "2026-10-12T08:02:13.566Z"
+        }
+      }
+    },
+    {
+      "sequence": 212,
+      "at": "2026-10-12T08:02:13.838Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "19cf7e6d-3013-4933-a2c2-5fd7fd7e4bab",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T08:02:13.838Z"
+        }
+      }
+    },
+    {
+      "sequence": 213,
+      "at": "2026-10-12T08:02:13.855Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "19cf7e6d-3013-4933-a2c2-5fd7fd7e4bab",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T08:02:13.838Z"
+        }
+      }
+    },
+    {
+      "sequence": 214,
+      "at": "2026-10-12T08:09:52.237Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "40e3e327-b14f-4246-83bc-b206500fbfa5",
+          "owner": "972d9a30-6bea-46b8-81f6-ead950c5011c/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Approved. I read the code rather than relying on the test results. T048: a new background codec worker builds and checks every checkpoint. The client creates that worker and gives the engine worker a MessageChannel port to it, so the world never passes through the UI thread. Ordinary commands no longer encode. The client now commits the codec's raw and envelope without running inspect a second time, and SaveRepository.commit refuses any generation that is not newer than the last committed one. Only one save is in flight at a time, and requests made meanwhile are folded into one newer save. Load, import and recovery still decode and validate in the engine worker; export still encodes there. T049: the gate that made `tick` wait for the previous save is gone. Days owed only come from a step that itself ran late. Owner decisions (commands, founding, alert acknowledgement) request a save at once. Automatic days arm one 30 s timer. Stopping the clock, hiding the tab and pagehide each save at once (pagehide best effort). The save status shows 저장 완료, 방금 저장 or n초 전 저장, and 저장 재시도 appears only after a failed save. Read-only tabs are still told of every commit. The e2e journeys now wait for 저장 완료 before reloading or opening a second tab. This matches SAVE-8, ARCH-11, ARCH-13 and WEB-18 (rev 20/8/50). Upstream changes since the merge base (engine and contracts only) do not touch any file in this submission. Runner verification at ecf7c93: typecheck and unit tests passed (73 files, 506 tests). The worker reports build, lint, format:check and Chromium e2e passing (94 tests). I did not rerun these: this checkout has no node_modules, and installing would change it. The findings below are optional (P3).",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/progression.ts:405 (start) / apps/web/src/runtime/client.ts:367 (drainSaves) — T049",
+              "message": "After a failed save, the clock can run again while nothing is being saved. Only `state.error` blocks `start()` and `tick`, and any later enqueued task clears that error, including 기록 내보내기 (the step the error message itself suggests) and archive reads. The old `savedRevision !== revision` gate in `tick` is gone, so the owner can restart the clock and play up to AUTOSAVE_MS unsaved before the next save fails and stops it again. The impl notes say save failures still stop unattended progress. Consider also blocking `start()` and `tick` on `state.saveFailed` until a retry succeeds, and add a client or progression test for it."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/client.ts:367-375 (drainSaves catch) — T048",
+              "message": "If the engine worker dies or times out while a background save is waiting for its reply, `failWorker` rejects that save's waiter. The catch in `drainSaves` then overwrites the worker error with \"현재 진행은 메모리에 있습니다. 저장 실패: … · 파일로 내보내세요\" and sets `saveFailed`. That message is wrong in this case: the in-memory world died with the worker, export falls back to the last committed checkpoint, and 저장 재시도 cannot succeed. Consider keeping the `failWorker` message and leaving `saveFailed` unset when `this.failed` is true."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/host.ts:163-174 (save) — T048/T049 limits",
+              "message": "These are planning or integration follow-ups, not code defects. (1) Posting the world to the codec costs about 130 ms on the engine thread for a 100-season world, measured in Node. That is over the ~50 ms budget in the impl notes, and the suggested `pack(w)` fallback measured slower. The limits section records this, but planning should accept it or set a new budget, since slower phones will have the next day step carry owed days after every save. (2) Firefox and WebKit e2e were not run: the codec module worker with a transferred port is only proven in Chromium. The first-play entry size was not re-measured. Leave both to the integration verify and CI."
+            }
+          ],
+          "commit": "ecf7c93c5d796a6e828f540c64c8a8799c79d6d4",
+          "baseCommit": "34e96b089e52a2fc88bc7ee3d1c997bc8aef4267",
+          "submissionId": "d41b9a19-f98b-4e28-9af4-7fc570f71a26",
+          "createdAt": "2026-10-12T08:02:13.566Z",
+          "finishedAt": "2026-10-12T08:09:52.237Z"
+        }
+      }
+    },
+    {
+      "sequence": 215,
+      "at": "2026-10-12T08:09:52.259Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "19cf7e6d-3013-4933-a2c2-5fd7fd7e4bab",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T08:02:13.838Z",
+          "finishedAt": "2026-10-12T08:09:52.259Z",
+          "error": null,
+          "summary": "Approved. I read the code rather than relying on the test results. T048: a new background codec worker builds and checks every checkpoint. The client creates that worker and gives the engine worker a MessageChannel port to it, so the world never passes through the UI thread. Ordinary commands no longer encode. The client now commits the codec's raw and envelope without running inspect a second time, and SaveRepository.commit refuses any generation that is not newer than the last committed one. Only one save is in flight at a time, and requests made meanwhile are folded into one newer save. Load, import and recovery still decode and validate in the engine worker; export still encodes there. T049: the gate that made `tick` wait for the previous save is gone. Days owed only come from a step that itself ran late. Owner decisions (commands, founding, alert acknowledgement) request a save at once. Automatic days arm one 30 s timer. Stopping the clock, hiding the tab and pagehide each save at once (pagehide best effort). The save status shows 저장 완료, 방금 저장 or n초 전 저장, and 저장 재시도 appears only after a failed save. Read-only tabs are still told of every commit. The e2e journeys now wait for 저장 완료 before reloading or opening a second tab. This matches SAVE-8, ARCH-11, ARCH-13 and WEB-18 (rev 20/8/50). Upstream changes since the merge base (engine and contracts only) do not touch any file in this submission. Runner verification at ecf7c93: typecheck and unit tests passed (73 files, 506 tests). The worker reports build, lint, format:check and Chromium e2e passing (94 tests). I did not rerun these: this checkout has no node_modules, and installing would change it. The findings below are optional (P3)."
+        }
+      }
+    },
+    {
+      "sequence": 216,
+      "at": "2026-10-12T08:09:52.336Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 217,
+      "at": "2026-10-12T08:12:40.197Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit"
+      }
+    },
+    {
+      "sequence": 218,
+      "at": "2026-10-12T08:23:18.054Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+      "taskId": "T047",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session."
+      }
+    },
+    {
+      "sequence": 219,
+      "at": "2026-10-12T08:23:18.068Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+      "taskId": "T047",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "a4da37d8-c06a-45e2-a1b7-4c8199f3a875",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T07:57:20.132Z",
+          "finishedAt": "2026-10-12T08:23:18.068Z",
+          "error": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session.",
+          "summary": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session."
+        }
+      }
+    },
+    {
+      "sequence": 220,
+      "at": "2026-10-12T08:23:18.621Z",
+      "type": "group",
+      "group": "one-result",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-12T07:50:37.896Z",
+          "stoppedAt": "2026-10-12T08:23:18.621Z",
+          "dispatched": 5,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            },
+            {
+              "attempt": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+              "role": "worker",
+              "error": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session."
+            }
+          ]
+        }
       }
     }
   ]

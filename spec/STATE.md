@@ -38,7 +38,7 @@
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| one-result | 3 | 9 | 6 | 3 | 1 | 2 | 0 | 2026-10-12T08:00:23.701Z | [history](work/one-result.json) |
+| one-result | 3 | 9 | 6 | 3 | 0 | 2 | 1 | 2026-10-12T08:23:18.831Z | [history](work/one-result.json) |
 
 ## next
 - inspect work board for remaining tasks
