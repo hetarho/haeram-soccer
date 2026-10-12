@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-12T07:09:57.488Z",
-  "sourceCommit": "3596812561125f11e8f12934e613b2747fafd139",
+  "snapshotAt": "2026-10-12T07:14:42.680Z",
+  "sourceCommit": "55c1a05b1c96b9e5902b055d0d315cd99523d392",
   "group": {
     "id": "one-result",
     "branch": "work/one-result",
@@ -11,6 +11,30 @@
       "workers": 3,
       "reviewers": 1,
       "maxPending": 8
+    },
+    "runner": {
+      "id": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.296 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.296 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.296 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-12T07:10:13.945Z"
     },
     "lastRun": {
       "id": "04bf1446-4df5-4608-aabb-68858781e112",
@@ -86,11 +110,11 @@
   },
   "summary": {
     "total": 8,
-    "completed": 0,
-    "remaining": 8,
+    "completed": 1,
+    "remaining": 7,
     "running": 0,
-    "review": 1,
-    "blocked": 5,
+    "review": 3,
+    "blocked": 2,
     "unassigned": 2
   },
   "tasks": [
@@ -98,14 +122,14 @@
       "id": "T042",
       "title": "Draws named by what they settle",
       "dep": [],
-      "status": "blocked"
+      "status": "ready"
     },
     {
       "id": "T043",
       "title": "One day order for every progression mode",
       "dep": [],
       "lane": "day-order",
-      "status": "blocked"
+      "status": "ready"
     },
     {
       "id": "T044",
@@ -114,7 +138,7 @@
         "T043"
       ],
       "lane": "day-order",
-      "status": "blocked"
+      "status": "ready"
     },
     {
       "id": "T045",
@@ -123,12 +147,6 @@
         "T042"
       ],
       "status": "todo"
-    },
-    {
-      "id": "T046",
-      "title": "Currency conversion of every live amount and complete ledger lines",
-      "dep": [],
-      "status": "ready"
     },
     {
       "id": "T047",
@@ -170,14 +188,14 @@
       "contributors": [
         "04bf1446-4df5-4608-aabb-68858781e112/worker-1"
       ],
-      "status": "blocked",
-      "reason": "ARCH: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요.",
+      "status": "ready",
+      "reason": null,
       "createdAt": "2026-10-12T05:51:17.525Z",
       "startCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
-      "verifiedCommit": "22b9e8c9e1718ad36b48c2334bdb2700b3d31a2f",
-      "submittedBase": "9d13f6dfcf1f25d5965ec811970fabd0cac51ce7",
-      "submissionId": "fefa6983-a123-4ff1-84f3-63c930aae0bc",
-      "submittedAt": "2026-10-12T06:30:31.738Z",
+      "verifiedCommit": "dd71098de838211a1086f28bc951e47507edf579",
+      "submittedBase": "55c1a05b1c96b9e5902b055d0d315cd99523d392",
+      "submissionId": "ed42a51a-9c4d-46b7-9f92-7ab58490ace9",
+      "submittedAt": "2026-10-12T07:12:10.587Z",
       "dispatch": {
         "id": "98fc18ef-8968-430f-b6fa-cab66de4e53f",
         "runner": "04bf1446-4df5-4608-aabb-68858781e112",
@@ -260,13 +278,13 @@
       "steps": [
         {
           "taskId": "T042",
-          "commit": "22b9e8c9e1718ad36b48c2334bdb2700b3d31a2f",
-          "at": "2026-10-12T06:30:31.730Z",
+          "commit": "dd71098de838211a1086f28bc951e47507edf579",
+          "at": "2026-10-12T07:12:10.577Z",
           "verification": [
             {
               "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
-              "startedAt": "2026-10-12T06:28:48.487Z",
-              "finishedAt": "2026-10-12T06:30:31.545Z"
+              "startedAt": "2026-10-12T07:10:43.865Z",
+              "finishedAt": "2026-10-12T07:12:10.387Z"
             }
           ]
         }
@@ -274,8 +292,8 @@
       "verification": [
         {
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
-          "startedAt": "2026-10-12T06:28:48.487Z",
-          "finishedAt": "2026-10-12T06:30:31.545Z"
+          "startedAt": "2026-10-12T07:10:43.865Z",
+          "finishedAt": "2026-10-12T07:12:10.387Z"
         }
       ]
     },
@@ -292,10 +310,14 @@
       "contributors": [
         "04bf1446-4df5-4608-aabb-68858781e112/worker-2"
       ],
-      "status": "blocked",
-      "reason": "WEB: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요.",
+      "status": "ready",
+      "reason": null,
       "createdAt": "2026-10-12T05:51:17.801Z",
       "startCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+      "verifiedCommit": "25e6ebff0d31065718f1370cdfc16e51b86e9a91",
+      "submittedBase": "55c1a05b1c96b9e5902b055d0d315cd99523d392",
+      "submissionId": "97877440-e9f9-40e7-80bd-0ba30c274da5",
+      "submittedAt": "2026-10-12T07:14:04.153Z",
       "dispatch": {
         "id": "b7a99434-ce6a-4da6-a756-da44b346e2ab",
         "runner": "04bf1446-4df5-4608-aabb-68858781e112",
@@ -321,6 +343,25 @@
               "finishedAt": "2026-10-12T06:07:02.844Z"
             }
           ]
+        },
+        {
+          "taskId": "T044",
+          "commit": "25e6ebff0d31065718f1370cdfc16e51b86e9a91",
+          "at": "2026-10-12T07:14:04.142Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+              "startedAt": "2026-10-12T07:12:26.829Z",
+              "finishedAt": "2026-10-12T07:14:03.912Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+          "startedAt": "2026-10-12T07:12:26.829Z",
+          "finishedAt": "2026-10-12T07:14:03.912Z"
         }
       ]
     },
@@ -336,7 +377,7 @@
       "contributors": [
         "04bf1446-4df5-4608-aabb-68858781e112/worker-3"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-12T05:51:18.086Z",
       "startCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
@@ -345,17 +386,46 @@
       "submissionId": "33c52a5f-42b3-4ee3-a9fe-02ecacd8b3fc",
       "submittedAt": "2026-10-12T07:08:22.192Z",
       "dispatch": {
-        "id": "55f78a18-9775-4966-bca3-4645c53e1250",
-        "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+        "id": "20f44f24-6102-415d-8f3a-5445fb8f49a4",
+        "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
         "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-12T06:42:27.615Z",
-        "finishedAt": "2026-10-12T06:47:10.280Z",
+        "startedAt": "2026-10-12T07:10:14.725Z",
+        "finishedAt": "2026-10-12T07:14:42.322Z",
         "error": null,
-        "summary": "T046 meets its acceptance and ECON-6 and ECON-10 (r13). advanceEconomy now converts coaches' wages (w.staff), free-agent managers' wages (managerMarket.free), academy prospects' wages, and the fee and counterFee of open bids (pending or countered). The `w.currency` guard keeps each conversion to exactly once. Settled bids and ledger events keep the units they were made in. I checked every money field in the World type, and with this change all stored live amounts are converted. Coach candidates, market candidates and other clubs' managers are recalculated from w.year on every read, so they need no conversion. The manager-market refresh at the season close runs after advanceEconomy. New agents and academy intake are priced in the new currency, so nothing is converted twice. The new FRA 1999 and ENG 1971 tests check exact `ratio` results (655957→100000, 2400→1000), that settled bids are left alone, and that replaying the change converts nothing more. In financialBreakdown, every paid `care:` kind is grouped into 구단주 요청 and `care:friendly` is income (친선 경기). `win-bonus` gets its own 승리 수당 line, and recent receipts use the same grouping. I traced every debit and credit call site in the engine, and each one now lands on a named line, so the catch-all line only catches entries no current rule produces. The changes stay inside the task's file list, with no version bump, and goldens are left to T047. I did not rerun the tests: the review checkout has no node_modules and the review is read-only. I rely on the worker's reported typecheck and test:unit run (74 files, 499 tests) together with the code reading above. The P3 notes below are optional or need a planning decision; none blocks this task."
+        "summary": "I'm approving T046 (051235f, merged at c38c85b), reviewed against base 55c1a05 and ECON r13 (ECON-6 and ECON-10). I checked the logic by reading the code; I did not run the tests, because this checkout has no node_modules and installing them would change it. The worker reports typecheck and test:unit passing (74 files, 499 tests).\n\nAll five acceptance items are met:\n- **Currency change:** `advanceEconomy` now also converts coaches' wages, free-agent managers' wages, academy prospects' wages, and the `fee`/`counterFee` of open (pending or countered) bids. Bids that are already settled keep the money they closed in.\n- **Exactly once:** the conversion runs only when `w.currency` differs from the new year's currency, and `advanceEconomy` has a single caller, in `closeSeason`. Free agents and staff created later in the rollover are quoted in the new currency, so nothing is converted twice. No academy player is shared with the squad list either.\n- **No missed amounts:** every other money field in World was already converted, or is worked out from the current year's prices when read (market candidates, coach candidates, sponsor offers, managers at other clubs, win-bonus pay). That covers the ECON-6 list.\n- **economy.test.ts (new):** checks FRA in 1999 and ENG in 1971 against fixed expected values (655957→100000 and 2400→1000), and checks that running the change again converts nothing more.\n- **Ledger:** owner requests (구단주 요청) and win bonuses (승리 수당) are expense lines and the friendly (친선 경기) is an income line. The new finance test confirms the lines add up to `w.income`/`w.expense` with nothing in the catch-all line.\n\nThe web ledger (FinancialBreakdown.tsx) draws its rows from whatever keys the engine sends, so it shows the new lines without changes. The task file follows the FORMAT notation. There are three optional findings, all P3 notes for planning."
+      },
+      "review": {
+        "id": "acea8700-4db4-4228-8bf4-7ec31e84f22a",
+        "owner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "I'm approving T046 (051235f, merged at c38c85b), reviewed against base 55c1a05 and ECON r13 (ECON-6 and ECON-10). I checked the logic by reading the code; I did not run the tests, because this checkout has no node_modules and installing them would change it. The worker reports typecheck and test:unit passing (74 files, 499 tests).\n\nAll five acceptance items are met:\n- **Currency change:** `advanceEconomy` now also converts coaches' wages, free-agent managers' wages, academy prospects' wages, and the `fee`/`counterFee` of open (pending or countered) bids. Bids that are already settled keep the money they closed in.\n- **Exactly once:** the conversion runs only when `w.currency` differs from the new year's currency, and `advanceEconomy` has a single caller, in `closeSeason`. Free agents and staff created later in the rollover are quoted in the new currency, so nothing is converted twice. No academy player is shared with the squad list either.\n- **No missed amounts:** every other money field in World was already converted, or is worked out from the current year's prices when read (market candidates, coach candidates, sponsor offers, managers at other clubs, win-bonus pay). That covers the ECON-6 list.\n- **economy.test.ts (new):** checks FRA in 1999 and ENG in 1971 against fixed expected values (655957→100000 and 2400→1000), and checks that running the change again converts nothing more.\n- **Ledger:** owner requests (구단주 요청) and win bonuses (승리 수당) are expense lines and the friendly (친선 경기) is an income line. The new finance test confirms the lines add up to `w.income`/`w.expense` with nothing in the catch-all line.\n\nThe web ledger (FinancialBreakdown.tsx) draws its rows from whatever keys the engine sends, so it shows the new lines without changes. The task file follows the FORMAT notation. There are three optional findings, all P3 notes for planning.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/economy.ts:26 / packages/engine/src/transfers.ts:431",
+            "message": "T046: the comment says open negotiations carry on in the new money, but `settleBids` still closes any bid from an earlier year in an older currency, giving the reason '화폐 단위가 바뀌어 이전 금액의 협상이 끝났어요'. So a bid converted at the rollover ends at its next daily settlement. In normal daily play none are open by then anyway, because `dailyMarket` closes every bid when the winter window shuts. The worker flagged this under limits. Planning needs to decide whether converted bids should continue; that matters for T045/T047, where the bid's offer snapshot is converted too. If they should, remove the currency-mismatch clause in `settleBids`. If not, reword the comment in economy.ts."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/season.ts:613-618",
+            "message": "Not caused by T046, but it breaks the ECON-10 r13 rule that the catch-all line holds only entries no current rule produces. At the rollover, `seasonStaff` runs before `w.income`/`w.expense` are reset to '0'. With staff delegated, it renews coaches (`debit(w, terms.fee, true)`, staff.ts:523) and appoints new ones (`appoint`, staff.ts:470) after the year has advanced. Their `staff-renew`/`staff-hire` events count in the new season's rows but not in `w.expense`. `financialBreakdown` then shows a negative 이전·기타 장부 line, and the cash leaves without being counted as expense. This is outside T046's touched files and acceptance. Hand it to planning as a follow-up: reset the totals before `yearlyStaff`/`seasonStaff`, and add a test of a delegated renewal at the season close."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/economy.ts:45",
+            "message": "T046: the currency event text still says '명목 잔고와 미지급 계약만 환산' (only nominal balances and unpaid contracts converted). Since ECON-6 r13 the conversion covers every live amount, including wages and prices on offer. Changing the text would change the golden facts, so if it is updated it belongs with T047's golden regeneration; the worker already listed this under limits."
+          }
+        ],
+        "commit": "c38c85b99871a6c2e413cd06f4a674a9d5d29276",
+        "baseCommit": "55c1a05b1c96b9e5902b055d0d315cd99523d392",
+        "submissionId": "33c52a5f-42b3-4ee3-a9fe-02ecacd8b3fc",
+        "createdAt": "2026-10-12T07:10:14.453Z",
+        "finishedAt": "2026-10-12T07:14:42.313Z"
       },
       "reviewHistory": [
         {
@@ -3070,6 +3140,329 @@
             }
           ]
         }
+      }
+    },
+    {
+      "sequence": 103,
+      "at": "2026-10-12T07:10:13.952Z",
+      "type": "group",
+      "group": "one-result",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-12T07:10:13.945Z"
+        }
+      }
+    },
+    {
+      "sequence": 104,
+      "at": "2026-10-12T07:10:14.453Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "acea8700-4db4-4228-8bf4-7ec31e84f22a",
+          "owner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/reviewer-1",
+          "status": "reviewing",
+          "commit": "c38c85b99871a6c2e413cd06f4a674a9d5d29276",
+          "baseCommit": "55c1a05b1c96b9e5902b055d0d315cd99523d392",
+          "submissionId": "33c52a5f-42b3-4ee3-a9fe-02ecacd8b3fc",
+          "createdAt": "2026-10-12T07:10:14.453Z"
+        }
+      }
+    },
+    {
+      "sequence": 105,
+      "at": "2026-10-12T07:10:14.725Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "20f44f24-6102-415d-8f3a-5445fb8f49a4",
+          "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T07:10:14.725Z"
+        }
+      }
+    },
+    {
+      "sequence": 106,
+      "at": "2026-10-12T07:10:14.738Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "20f44f24-6102-415d-8f3a-5445fb8f49a4",
+          "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T07:10:14.725Z"
+        }
+      }
+    },
+    {
+      "sequence": 107,
+      "at": "2026-10-12T07:10:42.721Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": "work/one-result merged into the lane after a wording-only SSOT fix; continue T044 from the WIP commit"
+      }
+    },
+    {
+      "sequence": 108,
+      "at": "2026-10-12T07:10:43.714Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying",
+        "verifiedCommit": null
+      }
+    },
+    {
+      "sequence": 109,
+      "at": "2026-10-12T07:12:10.587Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "submittedBase": "55c1a05b1c96b9e5902b055d0d315cd99523d392",
+        "submissionId": "ed42a51a-9c4d-46b7-9f92-7ab58490ace9",
+        "submittedAt": "2026-10-12T07:12:10.587Z",
+        "steps": [
+          {
+            "taskId": "T042",
+            "commit": "dd71098de838211a1086f28bc951e47507edf579",
+            "at": "2026-10-12T07:12:10.577Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T07:10:43.865Z",
+                "finishedAt": "2026-10-12T07:12:10.387Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+            "startedAt": "2026-10-12T07:10:43.865Z",
+            "finishedAt": "2026-10-12T07:12:10.387Z"
+          }
+        ],
+        "verifiedCommit": "dd71098de838211a1086f28bc951e47507edf579"
+      }
+    },
+    {
+      "sequence": 110,
+      "at": "2026-10-12T07:12:26.668Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 111,
+      "at": "2026-10-12T07:14:04.153Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "steps": [
+          {
+            "taskId": "T043",
+            "commit": "5c1cbe2db39160f0a446eeda6bfd70531f949bf3",
+            "at": "2026-10-12T06:07:03.038Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T06:05:17.374Z",
+                "finishedAt": "2026-10-12T06:07:02.844Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T044",
+            "commit": "25e6ebff0d31065718f1370cdfc16e51b86e9a91",
+            "at": "2026-10-12T07:14:04.142Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T07:12:26.829Z",
+                "finishedAt": "2026-10-12T07:14:03.912Z"
+              }
+            ]
+          }
+        ],
+        "verifiedCommit": "25e6ebff0d31065718f1370cdfc16e51b86e9a91",
+        "submittedBase": "55c1a05b1c96b9e5902b055d0d315cd99523d392",
+        "submissionId": "97877440-e9f9-40e7-80bd-0ba30c274da5",
+        "submittedAt": "2026-10-12T07:14:04.153Z",
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+            "startedAt": "2026-10-12T07:12:26.829Z",
+            "finishedAt": "2026-10-12T07:14:03.912Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 112,
+      "at": "2026-10-12T07:14:42.313Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "acea8700-4db4-4228-8bf4-7ec31e84f22a",
+          "owner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "I'm approving T046 (051235f, merged at c38c85b), reviewed against base 55c1a05 and ECON r13 (ECON-6 and ECON-10). I checked the logic by reading the code; I did not run the tests, because this checkout has no node_modules and installing them would change it. The worker reports typecheck and test:unit passing (74 files, 499 tests).\n\nAll five acceptance items are met:\n- **Currency change:** `advanceEconomy` now also converts coaches' wages, free-agent managers' wages, academy prospects' wages, and the `fee`/`counterFee` of open (pending or countered) bids. Bids that are already settled keep the money they closed in.\n- **Exactly once:** the conversion runs only when `w.currency` differs from the new year's currency, and `advanceEconomy` has a single caller, in `closeSeason`. Free agents and staff created later in the rollover are quoted in the new currency, so nothing is converted twice. No academy player is shared with the squad list either.\n- **No missed amounts:** every other money field in World was already converted, or is worked out from the current year's prices when read (market candidates, coach candidates, sponsor offers, managers at other clubs, win-bonus pay). That covers the ECON-6 list.\n- **economy.test.ts (new):** checks FRA in 1999 and ENG in 1971 against fixed expected values (655957→100000 and 2400→1000), and checks that running the change again converts nothing more.\n- **Ledger:** owner requests (구단주 요청) and win bonuses (승리 수당) are expense lines and the friendly (친선 경기) is an income line. The new finance test confirms the lines add up to `w.income`/`w.expense` with nothing in the catch-all line.\n\nThe web ledger (FinancialBreakdown.tsx) draws its rows from whatever keys the engine sends, so it shows the new lines without changes. The task file follows the FORMAT notation. There are three optional findings, all P3 notes for planning.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/economy.ts:26 / packages/engine/src/transfers.ts:431",
+              "message": "T046: the comment says open negotiations carry on in the new money, but `settleBids` still closes any bid from an earlier year in an older currency, giving the reason '화폐 단위가 바뀌어 이전 금액의 협상이 끝났어요'. So a bid converted at the rollover ends at its next daily settlement. In normal daily play none are open by then anyway, because `dailyMarket` closes every bid when the winter window shuts. The worker flagged this under limits. Planning needs to decide whether converted bids should continue; that matters for T045/T047, where the bid's offer snapshot is converted too. If they should, remove the currency-mismatch clause in `settleBids`. If not, reword the comment in economy.ts."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/season.ts:613-618",
+              "message": "Not caused by T046, but it breaks the ECON-10 r13 rule that the catch-all line holds only entries no current rule produces. At the rollover, `seasonStaff` runs before `w.income`/`w.expense` are reset to '0'. With staff delegated, it renews coaches (`debit(w, terms.fee, true)`, staff.ts:523) and appoints new ones (`appoint`, staff.ts:470) after the year has advanced. Their `staff-renew`/`staff-hire` events count in the new season's rows but not in `w.expense`. `financialBreakdown` then shows a negative 이전·기타 장부 line, and the cash leaves without being counted as expense. This is outside T046's touched files and acceptance. Hand it to planning as a follow-up: reset the totals before `yearlyStaff`/`seasonStaff`, and add a test of a delegated renewal at the season close."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/economy.ts:45",
+              "message": "T046: the currency event text still says '명목 잔고와 미지급 계약만 환산' (only nominal balances and unpaid contracts converted). Since ECON-6 r13 the conversion covers every live amount, including wages and prices on offer. Changing the text would change the golden facts, so if it is updated it belongs with T047's golden regeneration; the worker already listed this under limits."
+            }
+          ],
+          "commit": "c38c85b99871a6c2e413cd06f4a674a9d5d29276",
+          "baseCommit": "55c1a05b1c96b9e5902b055d0d315cd99523d392",
+          "submissionId": "33c52a5f-42b3-4ee3-a9fe-02ecacd8b3fc",
+          "createdAt": "2026-10-12T07:10:14.453Z",
+          "finishedAt": "2026-10-12T07:14:42.313Z"
+        }
+      }
+    },
+    {
+      "sequence": 113,
+      "at": "2026-10-12T07:14:42.323Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "20f44f24-6102-415d-8f3a-5445fb8f49a4",
+          "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T07:10:14.725Z",
+          "finishedAt": "2026-10-12T07:14:42.322Z",
+          "error": null,
+          "summary": "I'm approving T046 (051235f, merged at c38c85b), reviewed against base 55c1a05 and ECON r13 (ECON-6 and ECON-10). I checked the logic by reading the code; I did not run the tests, because this checkout has no node_modules and installing them would change it. The worker reports typecheck and test:unit passing (74 files, 499 tests).\n\nAll five acceptance items are met:\n- **Currency change:** `advanceEconomy` now also converts coaches' wages, free-agent managers' wages, academy prospects' wages, and the `fee`/`counterFee` of open (pending or countered) bids. Bids that are already settled keep the money they closed in.\n- **Exactly once:** the conversion runs only when `w.currency` differs from the new year's currency, and `advanceEconomy` has a single caller, in `closeSeason`. Free agents and staff created later in the rollover are quoted in the new currency, so nothing is converted twice. No academy player is shared with the squad list either.\n- **No missed amounts:** every other money field in World was already converted, or is worked out from the current year's prices when read (market candidates, coach candidates, sponsor offers, managers at other clubs, win-bonus pay). That covers the ECON-6 list.\n- **economy.test.ts (new):** checks FRA in 1999 and ENG in 1971 against fixed expected values (655957→100000 and 2400→1000), and checks that running the change again converts nothing more.\n- **Ledger:** owner requests (구단주 요청) and win bonuses (승리 수당) are expense lines and the friendly (친선 경기) is an income line. The new finance test confirms the lines add up to `w.income`/`w.expense` with nothing in the catch-all line.\n\nThe web ledger (FinancialBreakdown.tsx) draws its rows from whatever keys the engine sends, so it shows the new lines without changes. The task file follows the FORMAT notation. There are three optional findings, all P3 notes for planning."
+        }
+      }
+    },
+    {
+      "sequence": 114,
+      "at": "2026-10-12T07:14:42.358Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]
