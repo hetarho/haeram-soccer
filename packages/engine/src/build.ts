@@ -1,7 +1,7 @@
 import {
   BUILD_OPTIONS,
   BUILD_SLOTS,
-  LEGACY_VISION_BUILDS,
+  STRATEGY_NAME_LIMIT,
   type BuildSlot,
   type ClubBuild,
 } from '../../contracts/src/build';
@@ -246,43 +246,72 @@ export const BUILD_CARDS: {
   },
 };
 
-/** Ready-made builds, one tap to fill the slots; the owner can change any card after. */
-export const BUILD_PRESETS: { id: string; label: string; model: string; build: ClubBuild }[] = [
+/**
+ * Ready-made operating strategies (→ECON-22), one tap to fill the slots. Each has one identity and
+ * lights or aims at a synergy (→CLUB-21); the owner can still compose any other mix.
+ */
+export const BUILD_PRESETS: {
+  id: string;
+  label: string;
+  model: string;
+  /** The synergy the preset lights at once or points toward, in the owner's terms. */
+  aim: string;
+  build: ClubBuild;
+}[] = [
   {
-    id: 'balanced',
-    label: '균형 운영',
-    model: '모든 슬롯 기본',
-    build: LEGACY_VISION_BUILDS.balanced,
-  },
-  {
-    id: 'academy',
-    label: '유스 명가',
-    model: '키운 아이들로 1군을 채워요',
-    build: LEGACY_VISION_BUILDS.academy,
+    id: 'local-pride',
+    label: '동네의 자부심',
+    model: '동네 아이들과 동네 관중으로 버티는 구단',
+    aim: '시너지 우리 동네 아이들 바로 발동',
+    build: {
+      youth: 'homegrown',
+      scouting: 'local',
+      market: 'hold',
+      revenue: 'members',
+      fans: 'community',
+      culture: 'family',
+    },
   },
   {
     id: 'trading',
-    label: '셀링 클럽',
-    model: '찾고 키워서 비싸게 팔아요',
-    build: LEGACY_VISION_BUILDS.trading,
+    label: '트레이딩 머신',
+    model: '지표로 찾고 1군에서 키워 비싸게 팔아요',
+    aim: '시너지 트레이딩 머신 바로 발동 · 발굴형 스카우트를 쓰면 머니볼까지',
+    build: { youth: 'pathway', scouting: 'data', market: 'selling', culture: 'meritocracy' },
   },
   {
     id: 'commercial',
-    label: '상업 확장',
-    model: '후원과 브랜드로 벌어요',
-    build: LEGACY_VISION_BUILDS.commercial,
-  },
-  {
-    id: 'community',
-    label: '지역 밀착',
-    model: '동네가 경기장을 채워요',
-    build: LEGACY_VISION_BUILDS.community,
+    label: '상업 제국',
+    model: '브랜드로 벌어 스타를 데려와요',
+    aim: '마케팅 4단계 · 시설 6단계를 채우면 시너지 상업 제국',
+    build: { scouting: 'network', revenue: 'commercial', fans: 'global', culture: 'stars' },
   },
   {
     id: 'ambition',
     label: '승격 올인',
-    model: '구단주 돈으로 즉시 전력',
-    build: LEGACY_VISION_BUILDS.ambition,
+    model: '구단주 돈과 홈 요새로 지금 올라가요',
+    aim: '유스 성장을 내주고 당장의 전력을 사요',
+    build: {
+      scouting: 'proven',
+      market: 'hold',
+      revenue: 'owner',
+      fans: 'fortress',
+      culture: 'veterans',
+    },
+  },
+  {
+    id: 'shoestring',
+    label: '알뜰 생존',
+    model: '적은 돈으로 오래 버티는 작은 구단',
+    aim: '분위기를 지키며 선수 급여 ×0.91 · 작은 출발에 맞춰요',
+    build: {
+      youth: 'partnership',
+      scouting: 'local',
+      market: 'hardball',
+      revenue: 'frugal',
+      fans: 'families',
+      culture: 'veterans',
+    },
   },
 ];
 /** Every distinct build: each slot's cards plus its standard card. */
@@ -304,8 +333,12 @@ export const sameBuild = (a: ClubBuild, b: ClubBuild) => key(a) === key(b);
 export function buildPreset(build: ClubBuild) {
   return BUILD_PRESETS.find((preset) => sameBuild(preset.build, build));
 }
+/** The strategy's name: its preset's, 기본 전략 with every card standard, else 맞춤 전략. */
 export function buildLabel(build: ClubBuild) {
-  return buildPreset(build)?.label ?? '맞춤 빌드';
+  return (
+    buildPreset(build)?.label ??
+    (BUILD_SLOTS.some((slot) => build[slot]) ? '맞춤 전략' : '기본 전략')
+  );
 }
 
 const composed = new Map<string, BuildEffects>();
@@ -361,24 +394,27 @@ export function cardLines(card: BuildCard) {
 
 /** Why the build cannot change now, if it cannot. */
 export function buildLock(w: World): string | undefined {
-  return w.buildYear === w.year ? '빌드는 시즌마다 한 번만 바꿀 수 있어요' : undefined;
+  return w.buildYear === w.year ? '운영 전략은 시즌마다 한 번만 바꿀 수 있어요' : undefined;
 }
 
 /** Valid cards only, standard slots left out. */
 function normalize(build: ClubBuild): ClubBuild {
   const clean: ClubBuild = {};
   for (const [slot, option] of Object.entries(build) as [BuildSlot, string | undefined][]) {
-    if (!Object.hasOwn(BUILD_OPTIONS, slot)) throw new Error('빌드 슬롯을 확인하세요.');
+    if (!Object.hasOwn(BUILD_OPTIONS, slot)) throw new Error('운영 전략 부문을 확인하세요.');
     if (option === undefined) continue;
     if (!(BUILD_OPTIONS[slot] as readonly string[]).includes(option))
-      throw new Error('빌드 카드를 확인하세요.');
+      throw new Error('운영 전략 카드를 확인하세요.');
     (clean as Record<string, string>)[slot] = option;
   }
   return clean;
 }
 
-/** One change per season: a build is a commitment, not a weekly dial. */
-export function setBuild(w: World, build: ClubBuild) {
+/**
+ * One change per season: a strategy is a commitment, not a weekly dial. `name` is the owner's
+ * saved strategy (→WEB-61); without it the history names the preset or the mix.
+ */
+export function setBuild(w: World, build: ClubBuild, name?: string) {
   const next = normalize(build);
   if (sameBuild(next, buildOf(w))) return;
   const lock = buildLock(w);
@@ -387,5 +423,6 @@ export function setBuild(w: World, build: ClubBuild) {
   else delete w.build;
   w.buildYear = w.year;
   const cards = BUILD_SLOTS.filter((slot) => next[slot]).map((slot) => cardOf(next, slot).label);
-  addEvent(w, 'build', `구단 빌드 · ${buildLabel(next)}`, cards.join(' · ') || '모든 슬롯 기본');
+  const label = name?.trim().slice(0, STRATEGY_NAME_LIMIT) || buildLabel(next);
+  addEvent(w, 'build', `운영 전략 · ${label}`, cards.join(' · ') || '모든 부문 기본');
 }

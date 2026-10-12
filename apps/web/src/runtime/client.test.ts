@@ -6,6 +6,8 @@ import { decode, encode, type StoragePort } from '../adapters/persistence';
 import { GameClient, type ClientState } from './client';
 import { Host } from './host';
 import type { Reply, Request } from './protocol';
+import { GameSlots } from './slots';
+import { ACTIVE_SAVE_KEYS, GameIndexStore, type ParkedStore } from '../adapters/games';
 
 class MemoryStorage implements StoragePort {
   data = new Map<string, string>();
@@ -469,5 +471,78 @@ describe('legacy activation and compatibility recovery', () => {
       parentGeneration: 7,
     });
     expect(storage.getItem('haeram-soccor:slot:a')).toBe(future);
+  });
+});
+
+describe('game slots', () => {
+  class MemoryParked implements ParkedStore {
+    data = new Map<string, string>();
+    async get(id: string) {
+      return this.data.get(id);
+    }
+    async put(id: string, raw: string) {
+      this.data.set(id, raw);
+    }
+    async remove(id: string) {
+      this.data.delete(id);
+    }
+  }
+  it('parks the game in play, starts another in an empty slot and switches back intact', async () => {
+    const client = await start();
+    const parked = new MemoryParked();
+    const slots = new GameSlots(client, new GameIndexStore(storage), parked);
+    const first = client.state.view!.world.id;
+    expect(slots.sync(client.state.view!.world)).toMatchObject({ active: 0 });
+
+    await slots.prepare(1);
+    expect(parked.data.size).toBe(1);
+    await client.found({ ...founding, name: 'Second Rovers', seed: 'second-slot' }, true);
+    const second = client.state.view!.world.id;
+    expect(second).not.toBe(first);
+    let index = slots.sync(client.state.view!.world, true);
+    expect(index.active).toBe(1);
+    expect(index.slots.map((entry) => entry?.summary.club)).toEqual([
+      'Background Athletic',
+      'Second Rovers',
+      undefined,
+    ]);
+    await client.command({ type: 'advance-days', days: 1 });
+
+    await slots.continue(0);
+    expect(client.state.view!.world.id).toBe(first);
+    expect(slots.read().active).toBe(0);
+    expect(JSON.parse(storage.getItem('haeram-soccor:manifest')!).worldId).toBe(first);
+    // The second game kept the day it had played before it was parked.
+    await slots.continue(1);
+    expect(client.state.view!.world.id).toBe(second);
+    expect(client.state.view!.world.calendar?.day).toBe(1);
+
+    // A parked game is deleted with its copy; the game in play takes its checkpoints with it.
+    expect(await slots.remove(0)).toBe(false);
+    index = slots.read();
+    expect(index.slots[0]).toBeNull();
+    expect([...parked.data.keys()]).toEqual([index.slots[1]!.id]);
+    expect(await slots.remove(1)).toBe(true);
+    expect(ACTIVE_SAVE_KEYS.every((key) => storage.getItem(key) === null)).toBe(true);
+    expect(slots.read()).toMatchObject({ active: null, slots: [null, null, null] });
+  });
+
+  it('lists a save from before slots as slot 1 and refuses a slot whose copy is gone', async () => {
+    const client = await start();
+    const slots = new GameSlots(client, new GameIndexStore(storage), new MemoryParked());
+    expect(new GameIndexStore(storage).hasGames()).toBe(true);
+    const index = slots.sync(client.state.view!.world);
+    expect(index.active).toBe(0);
+    expect(index.slots[0]!.summary.division).toBe('아마추어 리그');
+    // A slot listed without its parked checkpoint is reported, and the game in play stays.
+    storage.setItem(
+      'haeram-soccor:games',
+      JSON.stringify({
+        ...index,
+        slots: [index.slots[0], { ...index.slots[0], id: 'lost', worldId: 'gone' }, null],
+      }),
+    );
+    await expect(slots.continue(1)).rejects.toThrow('찾지 못했어요');
+    expect(client.state.view!.world.id).toBe(index.slots[0]!.worldId);
   });
 });

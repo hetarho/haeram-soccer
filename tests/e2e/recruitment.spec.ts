@@ -122,7 +122,7 @@ test('filters and compares stable candidates, discloses free wages, and saves re
     money(free.player.wage, clubOf(before).country, before.year),
   );
   const preview = recruitmentPreview(before, free);
-  await expect(freeCard.getByLabel('영입 빌드 변화')).toContainText(
+  await expect(freeCard.getByLabel('영입 전력 변화')).toContainText(
     `${preview.beforeStrength} → ${preview.afterStrength}`,
   );
   await freeCard.getByRole('button', { name: '자유계약 영입', exact: true }).click();

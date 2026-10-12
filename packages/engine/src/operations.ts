@@ -727,7 +727,7 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       break;
     }
     case 'build':
-      setBuild(w, cmd.build);
+      setBuild(w, cmd.build, cmd.name);
       break;
     case 'accept-condition': {
       if (!w.manager.pending) throw new Error('대기 중인 조건이 없습니다.');

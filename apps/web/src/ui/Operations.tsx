@@ -1,16 +1,19 @@
-import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
 import type { ClientState, GameClient } from '../runtime/client';
-import { BuildBoard } from './BuildBoard';
 import { BusinessWorkbench } from './BusinessWorkbench';
 import { FinanceOutlook } from './FinanceOutlook';
 import s from './App.module.css';
 
 /**
- * Club operations as one tab bar instead of a long scroll (→WEB-39): the build first (strategy
- * cards with their dials), then money, then each kind of one-off deal.
+ * Club operations as one tab bar instead of a long scroll (→WEB-39): the operating strategy first
+ * (→WEB-60), then money, then each kind of one-off deal.
  */
+/** The strategy board and its composer load on first visit, outside the entry (→ARCH-28). */
+const StrategyBoard = lazy(() =>
+  import('./StrategyBoard').then((module) => ({ default: module.StrategyBoard })),
+);
 const TABS = [
-  ['build', '구단 빌드'],
+  ['strategy', '운영 전략'],
   ['finance', '재정'],
   ['facility', '시설'],
   ['sponsor', '후원'],
@@ -30,7 +33,8 @@ export function OperationsView({
   const w = state.view!.world;
   const [tab, setTab] = useState<Tab>(() => {
     const saved = new URLSearchParams(location.search).get('view');
-    return TABS.find(([id]) => id === saved)?.[0] || 'build';
+    // Addresses saved before the rename still open the strategy tab.
+    return TABS.find(([id]) => id === saved)?.[0] || 'strategy';
   });
   useEffect(() => {
     const url = new URL(location.href);
@@ -72,8 +76,16 @@ export function OperationsView({
         ))}
       </div>
       <div id="operations-panel" role="tabpanel" aria-labelledby={`operations-tab-${tab}`}>
-        {tab === 'build' ? (
-          <BuildBoard w={w} client={client} />
+        {tab === 'strategy' ? (
+          <Suspense
+            fallback={
+              <div className={s.loading} role="status">
+                운영 전략을 여는 중…
+              </div>
+            }
+          >
+            <StrategyBoard w={w} client={client} />
+          </Suspense>
         ) : tab === 'finance' ? (
           <>
             <FinanceOutlook w={w} />

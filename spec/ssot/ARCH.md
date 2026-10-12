@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r5 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r6 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -71,7 +71,7 @@
   - World generation is local and seeded; it does not require an LLM or external API call.
   - Keep supported old catalog versions available when needed by saves, or provide an explicit tested migration.
 - ARCH-11 [o] The browser save repository uses localStorage for the web demo.
-  - One active world, one recoverable previous checkpoint, small settings, and a save manifest; additional worlds are export/import files.
+  - The game in play (one active world, one recoverable previous checkpoint), small settings, and a save manifest; parked game slots keep their checkpoint envelopes in IndexedDB (→SAVE-14), never as a fallback for the game in play; export/import files stay the portable copy.
   - Namespace application keys; do not clear unrelated origin storage.
   - UI-thread adapters own localStorage reads/writes; workers handle serialization, compression, checksum calculation, and validation.
   - localStorage is synchronous; its documented typical allowance is 5 MiB per origin, not a guaranteed amount available to the application. [Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API), [storage quotas](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria)
@@ -179,6 +179,10 @@
   - World initialization after a valid founding command: at most 5 seconds on the reference trace; present real generation progress while it runs.
   - Benchmark reports record tool/browser versions, dataset size, world seed, save sizes, match/season throughput, and long-run memory; these are targets to measure, not invented results.
 
+- ARCH-29 [o] Owner-scoped data sits behind profile ports: a device profile now (a random device ID, the strategy library, the game-slot index), an account profile later. ← strategies and games should follow the owner once sign-in exists (→ARCH-19) without reshaping local data
+  - every record carries its owner, a stable ID and an updated time; an account adapter adopts device records on first sign-in and merges by ID and updated time.
+  - no sign-in, upload or sync exists now (→WEB-1, →WEB-6).
+
 ## flow
 - Planning: ARCH → gameplay domain SSOTs → create-task → implementation.
 - Local play: UI command → validated bridge → engine worker → domain facts/projections → UI statistics/Canvas.
@@ -196,6 +200,7 @@
 - Current product material: `spec/ideation/club-history-reboot.md`; human PRD: `docs/PRD.md` (repository-relative paths).
 
 ## chg
+- r6 261012 ARCH-11✎ additional worlds as files only→parked game slots in IndexedDB beside the localStorage game in play; ARCH-29+ owner-scoped profile ports (device now, account later)
 - r5 261012 ARCH-6✎ +read-only requests answered between steps; ARCH-28✎ +later pages as lazy chunks
 - r4 261009 ARCH-2✎ npm workspaces→pnpm workspaces with pnpm pinned by packageManager; ARCH-22✎ verify commands npm run→pnpm run; ARCH-23✎ CI install npm ci→pnpm install --frozen-lockfile
 - r3 261007 ARCH-23✎ static provider Cloudflare Pages→Netlify; ARCH-27✎ account Cloudflare→Netlify and repository unspecified→hetarho/haeram-soccer

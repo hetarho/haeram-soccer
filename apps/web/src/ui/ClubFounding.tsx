@@ -10,11 +10,17 @@ export function ClubFounding({
   client,
   state,
   replace = false,
+  slot = 0,
+  onBack,
   onDone,
 }: {
   client: GameClient;
   state: ClientState;
   replace?: boolean;
+  /** The game slot this club goes into (→WEB-62). */
+  slot?: number;
+  /** Back to the slot screen when another slot holds a game. */
+  onBack?: () => void;
   onDone?: () => void;
 }) {
   const [code, setCode] = useState<CountryCode>('ENG'),
@@ -32,11 +38,18 @@ export function ClubFounding({
       });
   };
   return (
-    <section className={s.start} data-testid="club-founding" aria-label="새 클럽 시작">
+    <section className={s.start} data-testid="club-founding" aria-label="새 게임">
       <header>
-        <span>HAERAM · CLUB SIM</span>
+        <div className={s.slotBar}>
+          <span>HAERAM · 슬롯 {slot + 1} · 새 게임</span>
+          {onBack && (
+            <button type="button" onClick={onBack}>
+              ← 게임 슬롯
+            </button>
+          )}
+        </div>
         <h2>작은 클럽의, 큰 내일.</h2>
-        <p>선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요.</p>
+        <p>선수와 구장을 키우고, 나만의 운영 전략으로 더 높은 무대에 도전해요.</p>
       </header>
       <div className={s.loop} aria-label="클럽 성장 흐름">
         <span>

@@ -1461,8 +1461,7 @@
 }
 @media (max-width: 760px) {
   .startLayout .sidebar,
-  .startLayout .footer > span:first-child,
-  .startLayout .main > .actions {
+  .startLayout .footer > span:first-child {
     display: none;
   }
   .startLayout .main {
@@ -1471,7 +1470,8 @@
     min-height: 100dvh;
     padding: 0 16px 8px;
   }
-  .startLayout .main > * {
+  /* Chrome keeps its height; the scroller alone gives way and scrolls (→WEB-63). */
+  .startLayout .main > :not(.scroller) {
     flex-shrink: 0;
   }
 
@@ -1498,12 +1498,6 @@
 }
 .startTools button {
   min-height: 44px;
-}
-
-.returnClub {
-  min-height: 44px;
-  display: block;
-  margin: 8px auto;
 }
 
 /* ===== Game shell: HUD, game clock, tab bar and page chrome ===== */
@@ -2054,7 +2048,7 @@
   overflow: hidden;
   padding: 0 var(--gutter);
 }
-.main > * {
+.main > :not(.scroller) {
   flex-shrink: 0;
 }
 .hud {

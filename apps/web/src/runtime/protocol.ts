@@ -9,6 +9,7 @@ import type {
 } from '../../../../packages/contracts/src/types';
 import type { Envelope } from '../adapters/repository';
 import { clubBuildSchema } from '../../../../packages/contracts/src/schema';
+import { STRATEGY_NAME_LIMIT } from '../../../../packages/contracts/src/build';
 import type { SAVE_COMPATIBILITY_CODE } from '../../../../packages/contracts/src/versions';
 import type { clubMilestones } from '../../../../packages/engine/src/goals';
 import type { financialBreakdown } from '../../../../packages/engine/src/finance';
@@ -89,6 +90,7 @@ const command = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('build'),
     build: clubBuildSchema,
+    name: z.string().trim().min(1).max(STRATEGY_NAME_LIMIT).optional(),
   }),
   z.object({ type: z.literal('release-youth'), id: ref }),
   z.object({

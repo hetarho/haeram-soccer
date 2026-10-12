@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { createWorld, advanceRound, operate } from '../../packages/engine/src/index';
 import { encode, decode } from '../../apps/web/src/adapters/persistence';
 import type { World } from '../../packages/contracts/src/types';
+import { continueSlot } from './slots';
 
 async function legacy() {
   const world = createWorld({
@@ -58,6 +59,8 @@ test('writer upgrades a legacy career through the other slot without changing pa
   const { world, raw } = await legacy();
   await seed(page, raw);
   await page.goto('/');
+  // A save from before game slots is listed as slot 1.
+  await continueSlot(page);
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${world.revision + 1}`);
   const stored = await page.evaluate(() => ({
@@ -89,6 +92,9 @@ test('read-only legacy view does not perform a disk or metadata upgrade', async 
   }, raw);
   const reader = await context.newPage();
   await reader.goto('/');
+  // Read-only, the tab may not list the game, yet its slot still shows and continues it.
+  await expect(reader.getByTestId('game-slots')).toContainText('Legacy Century');
+  await continueSlot(reader);
   await expect(reader.getByRole('status').filter({ hasText: '이 탭은 읽기 전용' })).toBeVisible();
   await expect(reader.getByTestId('hub-play')).toBeDisabled();
   await expect(reader.getByTestId('save-status')).toContainText(`저장 완료 · r${world.revision}`);
@@ -136,6 +142,8 @@ test('upgrade quota failure keeps old disk and exports new memory before an expl
     };
   });
   await page.goto('/');
+  await expect(page.getByRole('alert')).toContainText('저장 실패');
+  await continueSlot(page);
   await expect(page.getByRole('alert')).toContainText('저장 실패');
   await expect(page.getByTestId('club-hub')).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBe(raw);

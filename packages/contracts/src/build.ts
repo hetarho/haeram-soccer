@@ -14,7 +14,10 @@ export type BuildSlot = keyof typeof BUILD_OPTIONS;
 export const BUILD_SLOTS = Object.keys(BUILD_OPTIONS) as BuildSlot[];
 export type ClubBuild = { -readonly [S in BuildSlot]?: (typeof BUILD_OPTIONS)[S][number] };
 
-/** The six club visions of rules 1.6–1.7, now presets that fill the matching slots. */
+/** Saved strategy names are the owner's own words, kept short for news and history lines. */
+export const STRATEGY_NAME_LIMIT = 20;
+
+/** The six club visions of rules 1.6–1.7 and the cards each loads as (→ECON-22). */
 export const LEGACY_VISION_BUILDS: Record<string, ClubBuild> = {
   balanced: {},
   academy: { youth: 'homegrown', scouting: 'local', culture: 'meritocracy' },

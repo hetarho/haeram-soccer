@@ -582,4 +582,5 @@ export type Command =
   | { type: 'support' }
   | { type: 'accept-condition' }
   | { type: 'care'; kind: CareKind }
-  | { type: 'build'; build: ClubBuild };
+  /** `name` labels an owner's saved strategy in the club's history (→WEB-61). */
+  | { type: 'build'; build: ClubBuild; name?: string };

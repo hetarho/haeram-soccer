@@ -265,18 +265,25 @@ test('the phone clock picks the intervention level from a popover without stoppi
   await expect(level(1)).toBeFocused();
   await page.keyboard.press('End');
   await expect(level(4)).toBeFocused();
+  // Choosing applies the level and closes the popover, handing focus back to the trigger.
   await page.keyboard.press('Enter');
-  await expect(level(4)).toHaveAttribute('aria-checked', 'true');
+  await expect(popover).toHaveCount(0);
+  await expect(trigger).toBeFocused();
   await expect(trigger).toHaveAccessibleName('개입 수준 · 운영진에 모두 맡기기');
   await expect(trigger).toContainText('개입 4');
-  await expect(popover).toBeVisible();
   // A tap on another level applies it at once, delegation included.
+  await trigger.click();
+  await expect(level(4)).toHaveAttribute('aria-checked', 'true');
   await level(2).click();
-  await expect(level(2)).toHaveAttribute('aria-checked', 'true');
+  await expect(popover).toHaveCount(0);
   await expect(trigger).toHaveAccessibleName('개입 수준 · 중요한 결정만');
+  await trigger.click();
+  await expect(level(2)).toHaveAttribute('aria-checked', 'true');
   await level(4).click();
   await expect(trigger).toHaveAccessibleName('개입 수준 · 운영진에 모두 맡기기');
-  // An outside tap closes it.
+  // An outside tap closes it without a choice.
+  await trigger.click();
+  await expect(popover).toBeVisible();
   await date.click();
   await expect(popover).toHaveCount(0);
 

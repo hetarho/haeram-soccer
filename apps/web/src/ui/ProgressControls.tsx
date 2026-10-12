@@ -204,6 +204,8 @@ export function ProgressControls({
             if (acting) return;
             setChosen(index);
             applyInterventionLevel(client, controller, w, index);
+            // The trigger shows the new level at once, so the choice itself is the confirmation.
+            closeLevels(true);
           }}
           onDetails={() => {
             // The dialog hands focus back to the trigger, not to the vanished popover.
@@ -239,8 +241,9 @@ function LevelMeter({ level }: { level: number }) {
 
 /**
  * The quick level picker anchored under the clock's trigger. It sits in the top layer so the
- * clock row's clipping never cuts it, never pauses the clock, and closes on an outside tap,
- * Escape (focus back on the trigger), focus leaving it or any modal sheet opening.
+ * clock row's clipping never cuts it, never pauses the clock, and closes once a level is chosen
+ * or on Escape (both hand focus back to the trigger), an outside tap, focus leaving it or any
+ * modal sheet opening.
  */
 function InterventionPopover({
   id,

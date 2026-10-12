@@ -21,6 +21,18 @@ test('one writer, live read-only updates and ownership after reload', async ({ p
   await found(page);
   const second = await context.newPage();
   await second.goto('/');
+  // A new tab opens on the slot screen; read-only, it can only continue the game in play.
+  const slots = second.getByTestId('game-slots');
+  await expect(slots.getByRole('status').filter({ hasText: '읽기 전용' })).toBeVisible();
+  await expect(
+    slots
+      .getByRole('listitem', { name: '슬롯 2 · 빈 슬롯' })
+      .getByRole('button', { name: '새 게임' }),
+  ).toBeDisabled();
+  await slots
+    .getByRole('listitem', { name: '슬롯 1' })
+    .getByRole('button', { name: '이어하기' })
+    .click();
   await expect(second.getByRole('status').filter({ hasText: '읽기 전용' })).toContainText(
     '읽기 전용',
   );
@@ -147,22 +159,49 @@ test('a terminated real worker exposes recovery and retains the last committed c
   await expect(page.getByTestId('calendar')).toContainText('라운드 0');
   await expect(page.getByTestId('hub-play')).toBeEnabled();
 });
-test('safe explicit new-world replacement and browser back navigation', async ({ page }) => {
+test('a new game goes into another slot, both careers survive switching and back navigation works', async ({
+  page,
+}) => {
   await found(page);
   await page.getByRole('button', { name: '스태프', exact: true }).click();
   await expect(page).toHaveURL(/\/manager$/);
   await page.goBack();
   await expect(page.getByRole('button', { name: '다음 경기 관전' })).toBeVisible();
-  await page.getByRole('button', { name: '새로운 세계' }).click();
-  await page.getByRole('button', { name: '새 세계 설정' }).click();
+  await page.getByRole('button', { name: '게임 슬롯' }).click();
+  const slotScreen = page.getByTestId('game-slots');
+  await expect(slotScreen.getByRole('listitem', { name: '슬롯 1' })).toContainText('진행 중');
+  await slotScreen
+    .getByRole('listitem', { name: '슬롯 2 · 빈 슬롯' })
+    .getByRole('button', { name: '새 게임' })
+    .click();
+  await expect(page.getByTestId('club-founding')).toContainText('슬롯 2 · 새 게임');
   await page.getByLabel('클럽 이름').fill('New Fictional Club');
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  // Replacing the world builds and saves a whole new career before the HUD shows it; a loaded
-  // WebKit worker can take longer than 15 s.
+  // A new game builds and saves a whole career before the HUD shows it; a loaded WebKit worker
+  // can take longer than 15 s.
   await expect(page.getByText('New Fictional Club', { exact: true }).first()).toBeVisible({
     timeout: 30000,
   });
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  // A reload of a tab in a game continues it.
   await page.reload();
   await expect(page.getByText('New Fictional Club', { exact: true }).first()).toBeVisible();
+  // The first career waited in its slot and comes back intact.
+  await page.getByRole('button', { name: '게임 슬롯' }).click();
+  await expect(slotScreen.getByRole('listitem', { name: '슬롯 2' })).toContainText('진행 중');
+  await slotScreen
+    .getByRole('listitem', { name: '슬롯 1' })
+    .getByRole('button', { name: '이어하기' })
+    .click();
+  await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r0');
+  await expect(page.getByText('New Fictional Club', { exact: true })).toHaveCount(0);
+  // A fresh window opens on the slot screen.
+  const second = await page.context().newPage();
+  await second.goto('/');
+  await expect(second.getByTestId('game-slots')).toBeVisible();
+  await expect(second.getByRole('listitem', { name: '슬롯 2' })).toContainText(
+    'New Fictional Club',
+  );
+  await second.close();
 });

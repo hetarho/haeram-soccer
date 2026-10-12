@@ -883,7 +883,7 @@ export default function Rich({ state, client, page }: Props & { page: Page }) {
         <Header
           eyebrow="CLUB OPERATIONS"
           title="구단 운영"
-          description="구단 빌드로 방향과 씀씀이를 정하고, 재정에서 장부를, 시설·후원·캠페인에서 한 번 지출하고 오래 남는 결정을 해요."
+          description="운영 전략으로 방향과 씀씀이를 정하고, 재정에서 장부를, 시설·후원·캠페인에서 한 번 지출하고 오래 남는 결정을 해요."
         />
         <OperationsView state={state} client={client} legacy={<EconomicContext state={state} />} />
       </>

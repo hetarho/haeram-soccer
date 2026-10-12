@@ -1,5 +1,6 @@
 import type { Command, Founding, World } from '../../../../packages/contracts/src/types';
 import { SaveRepository } from '../adapters/repository';
+import { ACTIVE_SAVE_KEYS } from '../adapters/games';
 import {
   SaveCompatibilityError,
   isSaveCompatibilityError,
@@ -389,21 +390,52 @@ export class GameClient {
         : this.rawBackup();
     });
   }
+  /** Validates a checkpoint envelope, makes it the game in play and commits it (→SAVE-5). */
+  private async activate(raw: string) {
+    if (this.state.readonly) throw new Error('읽기 전용 탭입니다.');
+    await this.rpc({ type: 'inspect', raw, activate: true, upgrade: true });
+    this.replacingIncompatible = this.saves.incompatibleCheckpoint;
+    this.state.savedRevision = -1;
+    this.state.playback = undefined;
+    const reply = await this.rpc({ type: 'export' });
+    await this.saves.commit(reply.raw!, { replaceIncompatible: true });
+    this.replacingIncompatible = false;
+    this.state.savedRevision = this.state.view!.world.revision;
+    this.channel.postMessage({
+      revision: this.state.savedRevision,
+      generation: this.saves.generationInfo.parentGeneration,
+    });
+  }
   importFile(raw: string) {
+    return this.enqueue(() => this.activate(raw));
+  }
+  /** Brings a parked game into play; resolves true once it is the committed game (→SAVE-14). */
+  async switchTo(raw: string) {
+    return (await this.enqueue(async () => (await this.activate(raw), true))) === true;
+  }
+  /**
+   * The committed checkpoint of the game in play, saved first if the latest revision is not yet
+   * on disk, so parking never leaves progress behind.
+   */
+  async checkpoint() {
+    return (
+      (await this.enqueue(async () => {
+        if (this.state.readonly) throw new Error('읽기 전용 탭입니다.');
+        const w = this.state.view?.world;
+        if (w && this.state.savedRevision !== w.revision) await this.mutate({ type: 'export' });
+        return this.saves.committedRaw() ?? undefined;
+      })) ?? undefined
+    );
+  }
+  /** Reloads the committed game in play, e.g. after a switch that could not finish. */
+  reload() {
+    return this.enqueue(() => this.load());
+  }
+  /** Removes the game in play's checkpoints; the app reloads into the slot screen after. */
+  forget() {
     return this.enqueue(async () => {
       if (this.state.readonly) throw new Error('읽기 전용 탭입니다.');
-      await this.rpc({ type: 'inspect', raw, activate: true, upgrade: true });
-      this.replacingIncompatible = this.saves.incompatibleCheckpoint;
-      this.state.savedRevision = -1;
-      this.state.playback = undefined;
-      const reply = await this.rpc({ type: 'export' });
-      await this.saves.commit(reply.raw!, { replaceIncompatible: true });
-      this.replacingIncompatible = false;
-      this.state.savedRevision = this.state.view!.world.revision;
-      this.channel.postMessage({
-        revision: this.state.savedRevision,
-        generation: this.saves.generationInfo.parentGeneration,
-      });
+      for (const key of ACTIVE_SAVE_KEYS) localStorage.removeItem(key);
     });
   }
   retrySave() {

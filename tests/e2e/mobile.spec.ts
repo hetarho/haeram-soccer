@@ -33,7 +33,7 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   // Pages scroll inside the view scroller; open a long page and scroll it before the modal.
   await nav.getByRole('button', { name: '구단 운영', exact: true }).click();
   const scroller = page.getByTestId('view-scroller');
-  await expect(page.getByTestId('build-board')).toBeVisible();
+  await expect(page.getByTestId('strategy-board')).toBeVisible();
   await scroller.evaluate((element) => element.scrollTo(0, 240));
   const before = await scroller.evaluate((element) => element.scrollTop);
   expect(before).toBeGreaterThan(0);
@@ -84,11 +84,14 @@ test('keeps confirmation actions and its close control inside a small mobile vie
   await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   await page
     .getByRole('dialog', { name: '전체 메뉴' })
-    .getByRole('button', { name: '새로운 세계', exact: true })
+    .getByRole('button', { name: '게임 슬롯', exact: true })
     .click();
-  const dialog = page.getByRole('dialog', { name: '새로운 세계 창단 확인' }),
+  const slot = page.getByTestId('game-slots').getByRole('listitem', { name: '슬롯 1' });
+  await slot.getByText('관리', { exact: true }).click();
+  await slot.getByRole('button', { name: '삭제', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: '게임 삭제 확인' }),
     close = dialog.getByRole('button', { name: '창 닫기', exact: true }),
-    confirm = dialog.getByRole('button', { name: '새 세계 설정', exact: true });
+    confirm = dialog.getByRole('button', { name: '삭제', exact: true });
   await expect(dialog).toBeVisible();
   await settle(page);
   for (const control of [close, confirm]) {

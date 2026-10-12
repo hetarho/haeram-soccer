@@ -1,4 +1,13 @@
-import { memo, useDeferredValue, useEffect, useRef, useState, type ReactNode } from 'react';
+import {
+  lazy,
+  memo,
+  Suspense,
+  useDeferredValue,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { country, priceIndex } from '../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../runtime/client';
@@ -45,6 +54,36 @@ import {
 import { operatingCosts } from '../../../../packages/engine/src/finance';
 import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import Rich from './Rich';
+import { GameSlots } from '../runtime/slots';
+import { GameIndexStore } from '../adapters/games';
+
+/** The slot screen loads on its own, outside the first-play entry (→ARCH-28). */
+const GameSlotScreen = lazy(() =>
+  import('./GameSlotScreen').then((module) => ({ default: module.GameSlotScreen })),
+);
+
+/** Set while this tab is in a game, so a reload continues it instead of showing the slots. */
+const IN_GAME = 'haeram-soccor:in-game';
+/**
+ * The start address opens on the slot screen whenever a slot holds a game (→WEB-62); an in-game
+ * address or a reload of a tab already in a game continues the game in play.
+ */
+function initialScreen(): 'slots' | 'game' {
+  try {
+    if (location.pathname !== '/' || sessionStorage.getItem(IN_GAME) === '1') return 'game';
+    return new GameIndexStore(localStorage).hasGames() ? 'slots' : 'game';
+  } catch {
+    return 'game';
+  }
+}
+function rememberInGame(inGame: boolean) {
+  try {
+    if (inGame) sessionStorage.setItem(IN_GAME, '1');
+    else sessionStorage.removeItem(IN_GAME);
+  } catch {
+    /* Without session storage a reload shows the slots again. */
+  }
+}
 function NavIcon({ page }: { page: Page }) {
   const paths: Record<Page, string> = {
     dashboard: 'M3 11l9-8 9 8 M5 9.5V20h14V9.5 M10 20v-6h4v6',
@@ -388,10 +427,14 @@ function useContentState(): ClientState {
 const ConnectedFounding = memo(function ConnectedFounding({
   client,
   replace,
+  slot,
+  onBack,
   onDone,
 }: {
   client: GameClient;
   replace: boolean;
+  slot: number;
+  onBack?: () => void;
   onDone: () => void;
 }) {
   const state = useGameState((state) => state);
@@ -401,7 +444,16 @@ const ConnectedFounding = memo(function ConnectedFounding({
         클럽을 준비하고 있어요…
       </div>
     );
-  return <ClubFounding client={client} state={state} replace={replace} onDone={onDone} />;
+  return (
+    <ClubFounding
+      client={client}
+      state={state}
+      replace={replace}
+      slot={slot}
+      onBack={onBack}
+      onDone={onDone}
+    />
+  );
 });
 const ConnectedDashboard = memo(function ConnectedDashboard({
   client,
@@ -570,7 +622,17 @@ function NextMatchNote() {
  * The end of a career (→ECON-24): what the club achieved before it went under, its records to
  * keep and a new club to found.
  */
-function GameOver({ w, onExport, onNew }: { w: World; onExport: () => void; onNew: () => void }) {
+function GameOver({
+  w,
+  onExport,
+  onNew,
+  onSlots,
+}: {
+  w: World;
+  onExport: () => void;
+  onNew: () => void;
+  onSlots: () => void;
+}) {
   const own = w.clubs.find((club) => club.id === w.playerClub)!;
   const best = w.history.reduce<(typeof w.history)[number] | undefined>(
     (top, season) =>
@@ -620,8 +682,9 @@ function GameOver({ w, onExport, onNew }: { w: World; onExport: () => void; onNe
       </ul>
       <div className={s.gameOverActions}>
         <button onClick={onExport}>기록 내보내기</button>
+        <button onClick={onSlots}>게임 슬롯</button>
         <button className={s.primary} onClick={onNew}>
-          새 클럽 창단
+          이 슬롯에서 새 게임
         </button>
       </div>
     </section>
@@ -746,13 +809,13 @@ function SaveActions({
   compact = false,
   onDownload,
   onImport,
-  onNewWorld,
+  onSlots,
 }: {
   client: GameClient;
   compact?: boolean;
   onDownload: () => Promise<void>;
   onImport: (file?: File) => Promise<void>;
-  onNewWorld?: () => void;
+  onSlots?: () => void;
 }) {
   const state = useGameState((state) => state);
   const w = state.view?.world;
@@ -768,11 +831,7 @@ function SaveActions({
       <button disabled={(!w && !state.error) || state.busy} onClick={() => void onDownload()}>
         {compact ? '기록 내보내기 ↓' : '기록 내보내기'}
       </button>
-      {!compact && w && (
-        <button disabled={state.busy || state.readonly} onClick={onNewWorld}>
-          새로운 세계
-        </button>
-      )}
+      {!compact && w && onSlots && <button onClick={onSlots}>게임 슬롯</button>}
       {!compact && w && !state.processing && state.savedRevision !== w.revision && (
         <button disabled={state.busy || state.readonly} onClick={() => void client.retrySave()}>
           저장 재시도
@@ -832,7 +891,9 @@ export function App() {
     [controller, setController] = useState<ProgressionController>(),
     [localError, setLocalError] = useState(''),
     [replacing, setReplacing] = useState(false),
-    [newWorldConfirm, setNewWorldConfirm] = useState(false),
+    [screen, setScreen] = useState(initialScreen),
+    [slots, setSlots] = useState<GameSlots>(),
+    [targetSlot, setTargetSlot] = useState<number>(),
     [pendingImport, setPendingImport] = useState<string>(),
     [moreOpen, setMoreOpen] = useState(false),
     [stopSettings, setStopSettings] = useState(false),
@@ -850,12 +911,18 @@ export function App() {
         );
       const c = new GameClient((state) => gameStore.publish(state));
       const progression = new ProgressionController(c);
-      // A hidden tab only pauses the clock; it resumes when the player returns.
-      const visibility = () => progression.setSuspended(document.hidden, 'visibility');
+      const library = new GameSlots(c);
+      // A hidden tab only pauses the clock; it resumes when the player returns. Leaving also
+      // refreshes the slot card, so the slot screen shows where this game stood.
+      const visibility = () => {
+        progression.setSuspended(document.hidden, 'visibility');
+        if (document.hidden) library.sync(gameStore.getSnapshot().view?.world, true);
+      };
       document.addEventListener('visibilitychange', visibility);
       visibility();
       setClient(c);
       setController(progression);
+      setSlots(library);
       void c.start();
       return () => {
         document.removeEventListener('visibilitychange', visibility);
@@ -867,6 +934,51 @@ export function App() {
     }
   }, []);
   const w = state?.view?.world;
+  const playing = screen === 'game' && !!w && !replacing;
+  // Every world that comes into play joins the slot index (→SAVE-14).
+  useEffect(() => {
+    if (worldId) slots?.sync(gameStore.getSnapshot().view?.world);
+  }, [slots, worldId]);
+  // Once a game is on screen, a reload of this tab continues it (→WEB-62).
+  useEffect(() => {
+    if (playing) rememberInGame(true);
+  }, [playing]);
+  // A game in play that fails to load opens its recovery and export path, not the slots (→WEB-8).
+  const loadFailed = useGameState((state) => !state.busy && !!state.error && !state.view);
+  const launched = useRef(false);
+  const settled = useGameState((state) => !state.busy);
+  useEffect(() => {
+    if (!client || launched.current || !settled) return;
+    launched.current = true;
+    if (loadFailed) setScreen('game');
+  }, [client, settled, loadFailed]);
+  const openSlots = () => {
+    controller?.pause();
+    slots?.sync(gameStore.getSnapshot().view?.world, true);
+    slots?.cancel();
+    rememberInGame(false);
+    setMoreOpen(false);
+    setReplacing(false);
+    setTargetSlot(undefined);
+    setScreen('slots');
+  };
+  const enterGame = () => {
+    rememberInGame(true);
+    setScreen('game');
+  };
+  /** Readies a slot (parking the game in play) and opens founding for it. */
+  const startNew = async (slot: number) => {
+    await slots!.prepare(slot);
+    setTargetSlot(slot);
+    setReplacing(!!gameStore.getSnapshot().view?.world);
+    enterGame();
+  };
+  const foundingSlot = () => {
+    if (targetSlot !== undefined) return targetSlot;
+    const index = slots?.read();
+    const free = index?.slots.findIndex((entry) => !entry) ?? 0;
+    return index?.active ?? (free < 0 ? 0 : free);
+  };
   // The match view exists only for a live playback; its address alone leads home (→WEB-40).
   const hasPlayback = useGameState((state) => !!state.playback);
   const replacePage = useNavigation((state) => state.replacePage);
@@ -897,16 +1009,18 @@ export function App() {
   }, [contentPage]);
   useEffect(() => {
     scroller.current?.scrollTo(0, 0);
-  }, [page, worldId, replacing]);
-  const download = async () => {
-    const raw = await client?.exportFile();
-    if (!raw) return;
+  }, [page, worldId, replacing, screen]);
+  const saveFile = (raw: string, name: string) => {
     const url = URL.createObjectURL(new Blob([raw], { type: 'application/json' })),
       a = document.createElement('a');
     a.href = url;
-    a.download = `haeram-${gameStore.getSnapshot().view?.world.year || 'backup'}.haeram-save.json`;
+    a.download = `haeram-${name}.haeram-save.json`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+  const download = async () => {
+    const raw = await client?.exportFile();
+    if (raw) saveFile(raw, String(gameStore.getSnapshot().view?.world.year || 'backup'));
   };
   const importFile = async (file?: File) => {
     if (!file) return;
@@ -931,10 +1045,10 @@ export function App() {
       setPendingImport(raw);
     } else await client?.importFile(raw);
   };
-  const menuDisabled = !w || replacing;
+  const menuDisabled = !playing;
   return (
     <div
-      className={`${s.layout} ${w && !replacing ? s.playLayout : ''} ${w && !replacing && (page === 'dashboard' || page === 'match') ? s.coreLayout : ''} ${!w || replacing ? s.startLayout : ''} ${w && !replacing && page !== 'match' ? s.newsLayout : ''}`}
+      className={`${s.layout} ${playing ? s.playLayout : ''} ${playing && (page === 'dashboard' || page === 'match') ? s.coreLayout : ''} ${!playing ? s.startLayout : ''} ${playing && page !== 'match' ? s.newsLayout : ''}`}
     >
       <aside className={s.sidebar}>
         <div className={s.brand}>
@@ -965,15 +1079,17 @@ export function App() {
         )}
       </aside>
       <main className={s.main}>
-        <GameHud onMenu={() => setMoreOpen(true)} menuDisabled={menuDisabled} client={client} />
+        {screen === 'game' && (
+          <GameHud onMenu={() => setMoreOpen(true)} menuDisabled={menuDisabled} client={client} />
+        )}
         {!client && localError && (
           <div className={s.error} role="alert">
             {localError}
           </div>
         )}
-        {client && <RuntimeFeedback client={client} localError={localError} />}
+        {client && screen === 'game' && <RuntimeFeedback client={client} localError={localError} />}
         {/* The match theatre carries its own compact clock in its header row. */}
-        {client && controller && w && !replacing && !w.bankrupt && page !== 'match' && (
+        {client && controller && playing && !w.bankrupt && page !== 'match' && (
           <ProgressControls
             client={client}
             controller={controller}
@@ -982,17 +1098,40 @@ export function App() {
         )}
         <div ref={scroller} className={s.scroller} data-testid="view-scroller">
           {client && controller ? (
-            !w || replacing ? (
+            screen === 'slots' && slots ? (
+              <Suspense
+                fallback={
+                  <div className={s.loading} role="status">
+                    게임 슬롯을 여는 중…
+                  </div>
+                }
+              >
+                <GameSlotScreen
+                  slots={slots}
+                  onEnter={enterGame}
+                  onNew={startNew}
+                  onExport={saveFile}
+                />
+              </Suspense>
+            ) : !w || replacing ? (
               <ConnectedFounding
                 client={client}
                 replace={replacing}
+                slot={foundingSlot()}
+                onBack={slots?.read().slots.some(Boolean) ? openSlots : undefined}
                 onDone={() => {
                   setReplacing(false);
+                  setTargetSlot(undefined);
                   if (replacing) setPage('dashboard');
                 }}
               />
             ) : w.bankrupt ? (
-              <GameOver w={w} onExport={() => void download()} onNew={() => setReplacing(true)} />
+              <GameOver
+                w={w}
+                onExport={() => void download()}
+                onNew={() => void startNew(slots?.read().active ?? 0)}
+                onSlots={openSlots}
+              />
             ) : (
               <>
                 {changingView && (
@@ -1022,27 +1161,17 @@ export function App() {
           ) : (
             <div className={s.loading}>클럽 사무실을 여는 중…</div>
           )}
-          {client && (!w || replacing) && (
+          {client && screen === 'game' && (!w || replacing) && (
             <StartTools onDownload={download} onImport={importFile} />
           )}
-          {replacing && w && (
-            <button
-              className={s.returnClub}
-              onClick={() => {
-                setReplacing(false);
-                setPage('dashboard');
-              }}
-            >
-              현재 클럽 보기
-            </button>
-          )}
           <LiveFooter />
-          {client && (
+          {/* Start screens carry their own import and recovery tools. */}
+          {client && playing && (
             <SaveActions
               client={client}
               onDownload={download}
               onImport={importFile}
-              onNewWorld={() => setNewWorldConfirm(true)}
+              onSlots={openSlots}
             />
           )}
         </div>
@@ -1062,10 +1191,10 @@ export function App() {
           </button>
         ))}
       </nav>
-      {client && w && !replacing && <ActionOutcome />}
+      {client && playing && <ActionOutcome />}
       {/* The match theatre keeps its own controls clear; news waits until the owner returns. */}
-      {w && !replacing && page !== 'match' && <NewsButton />}
-      {client && controller && w && !replacing && !w.bankrupt && page !== 'match' && (
+      {playing && page !== 'match' && <NewsButton />}
+      {client && controller && playing && !w.bankrupt && page !== 'match' && (
         <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />
       )}
       {moreOpen && (
@@ -1127,10 +1256,7 @@ export function App() {
               client={client}
               onDownload={download}
               onImport={importFile}
-              onNewWorld={() => {
-                setMoreOpen(false);
-                setNewWorldConfirm(true);
-              }}
+              onSlots={openSlots}
             />
           )}
         </Dialog>
@@ -1145,32 +1271,11 @@ export function App() {
       {guideOpen && w && (
         <PlayGuide goals={state.view!.milestones.goals} onClose={() => setGuideOpen(false)} />
       )}
-      {newWorldConfirm && (
-        <Dialog label="새로운 세계 창단 확인" onClose={() => setNewWorldConfirm(false)}>
-          <h2>새로운 세계를 펼치기 전에.</h2>
-          <p>
-            현재 기록을 파일로 보관하세요. 새 세계를 창단하면 이 브라우저의 활성 기록을 교체합니다.
-          </p>
-          <div className={s.actions}>
-            <button onClick={() => void download()}>현재 기록 내보내기</button>
-            <button onClick={() => setNewWorldConfirm(false)}>취소</button>
-            <button
-              className={s.primary}
-              onClick={() => {
-                setNewWorldConfirm(false);
-                setReplacing(true);
-              }}
-            >
-              새 세계 설정
-            </button>
-          </div>
-        </Dialog>
-      )}
       <GlossaryHost />
-      {w && !replacing && <NewsSheet />}
-      {client && w && !replacing && <TeamSheetHost client={client} />}
-      {w && !replacing && <PlayerSheetHost />}
-      {w && !replacing && <CelebrationHost />}
+      {playing && <NewsSheet />}
+      {client && playing && <TeamSheetHost client={client} />}
+      {playing && <PlayerSheetHost />}
+      {playing && <CelebrationHost />}
       {pendingImport && (
         <Dialog label="기록 가져오기 확인" onClose={() => setPendingImport(undefined)}>
           <h2>기록을 가져올까요?</h2>

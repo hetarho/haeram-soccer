@@ -14,7 +14,7 @@ export function PlayGuide({ goals, onClose }: { goals: ClubGoal[]; onClose: () =
       }
     >
       <div className={s.intro}>
-        <span>한 경기씩, 우리만의 빌드.</span>
+        <span>한 경기씩, 우리만의 운영 전략.</span>
         <h2>쉬운 조작, 깊어지는 선택.</h2>
         <p>
           감독에게 맡겨 바로 출발해도 좋아요. 더 높은 성과에는 선수·전술·피로·자금의 조합이

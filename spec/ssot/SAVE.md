@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r15 | Define the implemented browser-demo behavior for browser persistence and protocol.
+> r16 | Define the implemented browser-demo behavior for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -21,6 +21,15 @@
 
 - SAVE-13 [o] Lossless compact encoding must retain the complete canonical career and support existing compact checkpoints. The baseline and active-management 100-season profiles, including a settled active round after the century, must remain within →SAVE-4 without pruning records or raising budgets. Invalid compact metadata fails before activation.
 
+- SAVE-14 [o] Three game slots (→WEB-62) are listed in a slot index (localStorage haeram-soccor:games): per slot its game ID, world ID, display summary and last-played time, plus the active slot. The game in play keeps the active two-slot checkpoint (→SAVE-3); every other occupied slot keeps its latest validated checkpoint envelope, unchanged, in IndexedDB (database haeram-soccor, store games, keyed by game ID). ← only the game in play needs the synchronous two-slot store; parked games are export envelopes the browser keeps
+  - switching parks the game in play first: its committed checkpoint is written to IndexedDB and read back equal before the next game is activated through the import path (→SAVE-5, →SAVE-10), so a failed switch leaves the game in play untouched.
+  - only the writer tab (→SAVE-6) switches, starts, imports or deletes games.
+  - a save present without an index (earlier versions) becomes slot 1.
+  - the index follows the loaded world: a world listed under another slot makes that slot active; an unlisted world takes the active slot.
+  - deleting a game removes its parked checkpoint, and for the game in play its active keys, only after confirmation (→WEB-62).
+  - IndexedDB unavailable ⇒ the game in play still saves; switching and new slots say why they are unavailable.
+- SAVE-15 [o] Device-owned data — the strategy library (→WEB-61) — lives per browser profile in localStorage (haeram-soccor:strategies) under an owner record { kind: device, id } whose random ID is kept in haeram-soccor:device, with stable item IDs and created/updated times, so an account can later adopt and merge it (→ARCH-29). Malformed entries are skipped, never fatal; nothing leaves the browser.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -28,6 +37,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r16 261012 SAVE-14+ three game slots: slot index, parked checkpoints in IndexedDB, park-then-activate switching, legacy save as slot 1; SAVE-15+ device strategy library with owner record
 - r15 261012 SAVE-10✎ current rules 1.11.0→1.12.0, accepting 1.0.0–1.11.0 checkpoints; archives may carry scorers, ranks, eloRange and brackets (tie rows in the bracketTies stream)
 - r14 261012 SAVE-10✎ current rules 1.10.0→1.11.0, accepting 1.0.0–1.10.0 checkpoints; facilities beyond 20 load at 20; worlds may carry insolvent and bankrupt
 - r13 261011 SAVE-10✎ current rules 1.9.0→1.10.0, accepting 1.0.0–1.9.0 checkpoints; 1.9 listings and club-wide coaching levels load into the new fields

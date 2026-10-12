@@ -57,6 +57,10 @@ export class SaveRepository {
   get incompatibleBackup() {
     return this.protectedRaw;
   }
+  /** The committed checkpoint of the game in play, exactly as stored (→SAVE-14 parking). */
+  committedRaw() {
+    return this.active === undefined ? null : this.storage.getItem(SLOT[this.active]);
+  }
   async load() {
     const manifest = this.storage.getItem(MANIFEST);
     let order = [0, 1];

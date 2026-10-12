@@ -1124,7 +1124,7 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
         tag: '구단',
         tone: 'neutral',
         weight: 'notable',
-        title: `${name}, ${event.kind === 'build' ? '구단 빌드' : '구단 비전'} '${label}' 발표`,
+        title: `${name}, ${event.kind === 'build' ? '운영 전략' : '구단 비전'} '${label}' 발표`,
         ...(event.kind === 'build' ? { detail: event.detail } : {}),
       };
     }

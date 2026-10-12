@@ -23,6 +23,7 @@ import {
   tacticalProfile,
   transferOffers,
   buildEffects,
+  buildLabel,
   BUILD_CARDS,
   BUILD_COMBINATIONS,
   BUILD_PRESETS,
@@ -107,14 +108,14 @@ describe('club builds', () => {
     expect(w.buildYear).toBe(w.year);
     expect(w.events.at(-1)).toMatchObject({
       kind: 'build',
-      title: '구단 빌드 · 맞춤 빌드',
+      title: '운영 전략 · 맞춤 전략',
       detail: '지역 밀착 · 가족 같은 클럽',
     });
     expect(() => operate(w, { type: 'build', build: { revenue: 'commercial' } })).toThrow('한 번');
     // Re-sending the same build is not a change.
     operate(w, { type: 'build', build: { culture: 'family', fans: 'community' } });
     expect(() => operate(w, { type: 'build', build: { fans: 'nowhere' } as never })).toThrow(
-      '빌드 카드',
+      '운영 전략 카드',
     );
     for (let round = 0; round < 46; round++) advanceRound(w, undefined, false);
     validateWorld(w);
@@ -130,7 +131,35 @@ describe('club builds', () => {
       }
     for (const preset of BUILD_PRESETS)
       expect(clubBuildSchema.parse(preset.build)).toEqual(preset.build);
-    expect(new Set(BUILD_PRESETS.map((preset) => JSON.stringify(preset.build))).size).toBe(6);
+    expect(new Set(BUILD_PRESETS.map((preset) => JSON.stringify(preset.build))).size).toBe(5);
+  });
+
+  it('names the strategy in the history: a saved name, a preset, the standard club or a mix', () => {
+    const saved = world();
+    operate(saved, { type: 'build', build: { youth: 'pathway' }, name: '  우리 방식  ' });
+    expect(saved.events.at(-1)!.title).toBe('운영 전략 · 우리 방식');
+    const preset = world();
+    operate(preset, { type: 'build', build: BUILD_PRESETS[0].build });
+    expect(preset.events.at(-1)!.title).toBe(`운영 전략 · ${BUILD_PRESETS[0].label}`);
+    expect(buildLabel({})).toBe('기본 전략');
+    expect(buildLabel({ youth: 'pathway' })).toBe('맞춤 전략');
+  });
+
+  it('gives every preset one synergy it lights or aims at', () => {
+    const lit = (id: string) => {
+      const w = world();
+      w.build = BUILD_PRESETS.find((preset) => preset.id === id)!.build;
+      return synergyStates(w);
+    };
+    expect(lit('local-pride').find((s) => s.id === 'local-heroes')!.active).toBe(true);
+    expect(lit('trading').find((s) => s.id === 'trading-machine')!.active).toBe(true);
+    // The others aim at a synergy the owner completes with dials, staff or facilities.
+    const commercial = lit('commercial').find((s) => s.id === 'commercial')!;
+    expect(commercial.conditions[0].met).toBe(true);
+    // Small starts keep morale level while wages fall.
+    const shoestring = composeBuild(BUILD_PRESETS.find((p) => p.id === 'shoestring')!.build);
+    expect(shoestring.moraleBaseline).toBe(0);
+    expect(shoestring.wage).toBeCloseTo(0.97 * 0.94);
   });
 
   it('adds additions and multiplies multipliers across slots, neutral when empty', () => {
@@ -168,7 +197,7 @@ describe('club builds', () => {
     expect(buildEffects(plain)).toMatchObject({ sponsor: 1, saleFee: 1, gateDemand: 0 });
   });
 
-  it('loads a rules 1.6–1.7 vision as the preset of the same name', () => {
+  it('loads a rules 1.6–1.7 vision as the cards it stood for', () => {
     const w = world();
     const legacy = { ...structuredClone(w), vision: 'trading', visionYear: w.year };
     const loaded = validateWorld(legacy);

@@ -95,7 +95,8 @@ for (const viewport of [
     await mini.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
     const paused = await date.innerText();
     const dial = page
-      .locator('[data-slot="culture"]')
+      .getByRole('region', { name: '운영 다이얼' })
+      .getByRole('article', { name: '선수단 다이얼' })
       .getByRole('radiogroup', { name: '훈련 방향', exact: true });
     const card = page.locator('[data-policy="training"]');
     const staff = dial.getByRole('radio', { name: '훈련 방향 스태프에 맡김', exact: true });

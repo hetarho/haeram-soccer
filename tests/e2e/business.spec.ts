@@ -212,9 +212,10 @@ test('keeps ticket drafts out of the save and applies their price to an actual h
   const preview = ticketInvestmentPreview(before, price);
   const format = (value: string) => money(value, clubOf(before).country, before.year);
   await openBusiness(page);
-  // The ticket dial sits with the home & fans strategy card on the build tab.
+  // The ticket dial sits in the home & fans area of the strategy tab's dial section.
   const dial = page
-    .locator('[data-slot="fans"]')
+    .getByRole('region', { name: '운영 다이얼' })
+    .getByRole('article', { name: '홈·팬 다이얼' })
     .getByRole('radiogroup', { name: '티켓 가격', exact: true });
   const premium = dial.getByRole('radio', { name: '티켓 가격 프리미엄', exact: true });
   await expect(dial.getByRole('radio', { name: '티켓 가격 보통', exact: true })).toHaveAttribute(
@@ -344,6 +345,7 @@ test('ends a bankrupt career on the game-over page and founds a new club from it
   await expect(over).toContainText('함께한 시즌');
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(0);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
-  await over.getByRole('button', { name: '새 클럽 창단', exact: true }).click();
+  await over.getByRole('button', { name: '이 슬롯에서 새 게임', exact: true }).click();
+  await expect(page.getByTestId('club-founding')).toContainText('슬롯 1 · 새 게임');
   await expect(page.getByRole('button', { name: '클럽 창단' })).toBeVisible();
 });

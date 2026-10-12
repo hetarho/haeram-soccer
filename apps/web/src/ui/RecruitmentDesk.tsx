@@ -88,7 +88,7 @@ function CandidateCard({
       </div>
       {offer.available && (
         <>
-          <div className={s.build} aria-label="영입 빌드 변화">
+          <div className={s.build} aria-label="영입 전력 변화">
             <div>
               <span>{buy.manual ? '직접 교체 시 전력' : '자동 선발 전력'}</span>
               <b>
