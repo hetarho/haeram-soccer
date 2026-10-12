@@ -35,9 +35,10 @@ export function advanceEconomy(w: World, previousYear: number) {
         bid.offer.player.wage = convert(bid.offer.player.wage);
       }
     }
-    if (w.sponsor) {
-      w.sponsor.annual = convert(w.sponsor.annual);
-      w.sponsor.bonus = convert(w.sponsor.bonus);
+    // The sponsor these rules sign, and the contracts a load moved one into (→SAVE-10).
+    for (const sponsor of [...(w.sponsor ? [w.sponsor] : []), ...(w.sponsors ?? [])]) {
+      sponsor.annual = convert(sponsor.annual);
+      sponsor.bonus = convert(sponsor.bonus);
     }
     for (const c of w.campaigns) {
       c.cost = convert(c.cost);

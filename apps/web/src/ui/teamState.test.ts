@@ -91,6 +91,12 @@ describe('team state', () => {
     const states = teamStates(w);
     expect(cashState(w).tone).toBe('bad');
     expect(urgentState(states, cashState(w))!.key).toBe('cash');
+    // Squad investment no longer scales wages, so lowering it saves no cash (→ECON-16).
+    expect(
+      remedies(w, 'cash').some(
+        (choice) => choice.command?.type === 'policy' && choice.command.key === 'support',
+      ),
+    ).toBe(false);
     expect(states.find((state) => state.key === 'squad')!.advice!.actions[0]).toMatchObject({
       page: 'squad',
       tab: 'market',

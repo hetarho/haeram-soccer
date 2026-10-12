@@ -3,6 +3,7 @@ import { addEvent, clubOf, quote } from './world';
 import { random, ratio } from './primitives';
 import {
   campaignEffectiveness,
+  clubSponsor,
   FINANCE_CONFIG,
   gateProjection,
   isLeagueMatch,
@@ -22,7 +23,8 @@ import { CAMPAIGNS, sponsorAnnual } from './ops-commercial';
 
 export function gate(w: World, m: MatchRecord) {
   if (m.home !== w.playerClub && m.away !== w.playerClub) return;
-  const bonus = matchBonus(w, m);
+  const bonus = matchBonus(w, m),
+    sponsor = clubSponsor(w);
   if (BigInt(bonus.amount) > 0n) {
     credit(w, bonus.amount);
     addEvent(
@@ -39,14 +41,14 @@ export function gate(w: World, m: MatchRecord) {
       w,
       'sponsor-bonus',
       `${bonus.result} 후원 성과 보너스`,
-      `${w.sponsor!.name} · ${m.id}`,
+      `${sponsor!.name} · ${m.id}`,
       bonus.sponsored,
     );
   }
   if (
-    w.sponsor &&
-    w.sponsor.lastPaid < w.year &&
-    w.sponsor.until > w.year &&
+    sponsor &&
+    sponsor.lastPaid < w.year &&
+    sponsor.until > w.year &&
     ['league', 'lower'].includes(m.kind)
   ) {
     const games = w.fixtures.filter(
@@ -60,10 +62,10 @@ export function gate(w: World, m: MatchRecord) {
       w,
       'sponsor-payment',
       '후원 노출 대금',
-      `${w.sponsor.name} · 리그 경기 ${w.tables[w.playerClub].played}/${games} · ${m.id}`,
+      `${sponsor.name} · 리그 경기 ${w.tables[w.playerClub].played}/${games} · ${m.id}`,
       amount,
     );
-    if (w.tables[w.playerClub].played === games) w.sponsor.lastPaid = w.year;
+    if (w.tables[w.playerClub].played === games) sponsor.lastPaid = w.year;
   }
   if (m.home !== w.playerClub) return;
   const c = clubOf(w),

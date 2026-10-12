@@ -1,7 +1,13 @@
 import type { World } from '../../contracts/src/types';
 import { ratio } from './primitives';
 import { clubOf, quote } from './world';
-import { FINANCE_CONFIG, gateProjection, operatingCosts, seasonPrize } from './finance';
+import {
+  clubSponsor,
+  FINANCE_CONFIG,
+  gateProjection,
+  operatingCosts,
+  seasonPrize,
+} from './finance';
 import { sponsorAnnual } from './operations';
 import { ownLeagueClubs, ranked } from './season';
 import { SEASON_ROUNDS } from './calendar';
@@ -92,7 +98,7 @@ export function financeProjection(w: World): FinanceProjection {
     gateLow = big(gate.incomeLow) - big(gate.costLow),
     gateHigh = big(gate.incomeHigh) - big(gate.costHigh);
 
-  const sponsor = w.sponsor,
+  const sponsor = clubSponsor(w),
     annual = big(sponsorAnnual(w)),
     leaguePlayed = w.tables[w.playerClub]?.played ?? 0,
     paying = !!sponsor && sponsor.lastPaid < w.year && sponsor.until > w.year,

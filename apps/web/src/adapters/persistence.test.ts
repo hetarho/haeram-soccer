@@ -314,6 +314,19 @@ it('builds a codec checkpoint of a 10-season career that decodes to the same wor
   expect(JSON.parse(raw)).toEqual(envelope);
   expect(canonical((await decode(raw)).world)).toBe(canonical(w));
 }, 120000);
+it('never signs a second sponsor after a load moved the first into its slot, so checkpoints still load', async () => {
+  const { advanceDays } = await import('../../../../packages/engine/src/index');
+  const w = world();
+  w.delegation = { ...w.delegation, business: true };
+  advanceDays(w, 1);
+  const loaded = (await decode(await encode(w))).world;
+  expect(loaded.sponsors).toEqual([expect.objectContaining({ name: w.sponsor!.name })]);
+  advanceDays(loaded, 1);
+  expect(loaded.sponsor).toBeUndefined();
+  expect(loaded.events.filter((event) => event.kind === 'sponsor-sign')).toHaveLength(1);
+  const { raw } = await checkpoint(loaded, 2, 1);
+  expect(canonical((await decode(raw)).world)).toBe(canonical(loaded));
+});
 it('rejects broken counters and historical club references before activation', async () => {
   const { simulateSeason } = await import('../../../../packages/engine/src/index');
   const w = world();

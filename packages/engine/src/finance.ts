@@ -1,4 +1,4 @@
-import type { Event, MatchRecord, World } from '../../contracts/src/types';
+import type { Event, MatchRecord, Sponsor, World } from '../../contracts/src/types';
 import { currency } from '../../catalogs/src/index';
 import { activePlayers, clubOf, quote } from './world';
 import { clamp, ratio } from './primitives';
@@ -204,6 +204,14 @@ export function gateProjection(w: World, excluding?: string) {
   };
 }
 
+/**
+ * The club's one sponsor until contracts are signed by slot: the one these rules sign, or the
+ * contract a load moved it into (→SAVE-10). Nothing signs while one is held, so never both.
+ */
+export function clubSponsor(w: World): Sponsor | undefined {
+  return w.sponsor || w.sponsors?.[0];
+}
+
 export function matchBonus(w: World, match: MatchRecord) {
   const own = match.home === w.playerClub ? match.score.home : match.score.away;
   const other = match.home === w.playerClub ? match.score.away : match.score.home;
@@ -217,9 +225,10 @@ export function matchBonus(w: World, match: MatchRecord) {
       prestige *
       (isLeagueMatch(match.kind) ? SEASON_ROUNDS / games : 1),
   );
+  const sponsor = clubSponsor(w);
   const sponsored =
-    w.sponsor?.kind === 'performance' && isLeagueMatch(match.kind)
-      ? ratio(w.sponsor.bonus, own > other ? 3n : own === other ? 1n : 0n, BigInt(games * 3))
+    sponsor?.kind === 'performance' && isLeagueMatch(match.kind)
+      ? ratio(sponsor.bonus, own > other ? 3n : own === other ? 1n : 0n, BigInt(games * 3))
       : '0';
   return { result, amount, sponsored };
 }

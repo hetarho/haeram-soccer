@@ -141,7 +141,8 @@ test('pays sponsor installments only for league games after the actual contract'
   const signed = await exportWorld(page);
   expect(signed.cash).toBe(before.cash);
   expect(signed.income).toBe(before.income);
-  expect(signed.sponsor?.annual).toBe(offer.annual);
+  // An export reads as a load does, which moves the sponsor into its slot (→SAVE-10).
+  expect(signed.sponsors).toEqual([expect.objectContaining({ annual: offer.annual })]);
   expect(signed.events.filter((event) => event.kind === 'sponsor-payment')).toHaveLength(0);
   await playNext(page);
   const settled = await exportWorld(page);
