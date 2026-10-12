@@ -1,0 +1,3076 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-10-12T07:09:57.488Z",
+  "sourceCommit": "3596812561125f11e8f12934e613b2747fafd139",
+  "group": {
+    "id": "one-result",
+    "branch": "work/one-result",
+    "status": "active",
+    "createdAt": "2026-10-12T05:46:59.818Z",
+    "limits": {
+      "workers": 3,
+      "reviewers": 1,
+      "maxPending": 8
+    },
+    "lastRun": {
+      "id": "04bf1446-4df5-4608-aabb-68858781e112",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.296 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.296 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.296 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-12T05:51:17.333Z",
+      "stoppedAt": "2026-10-12T07:09:57.317Z",
+      "dispatched": 11,
+      "outcome": "needs-attention",
+      "failures": [
+        {
+          "attempt": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+          "role": "integration",
+          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+        },
+        {
+          "attempt": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+          "role": "integration",
+          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+        },
+        {
+          "attempt": "86b16233-ef43-4161-8e24-743db5f76235",
+          "role": "worker",
+          "error": "T043: WEB@48가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+        },
+        {
+          "role": "reviewer",
+          "error": "T042: ARCH@7가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+        },
+        {
+          "attempt": "86b16233-ef43-4161-8e24-743db5f76235",
+          "role": "worker",
+          "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+        },
+        {
+          "attempt": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+          "role": "worker",
+          "error": "T049: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+        },
+        {
+          "role": "reviewer",
+          "error": "ECON: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요."
+        },
+        {
+          "attempt": "86b16233-ef43-4161-8e24-743db5f76235",
+          "role": "worker",
+          "error": "WEB: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요."
+        },
+        {
+          "role": "reviewer",
+          "error": "ARCH: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요."
+        }
+      ]
+    }
+  },
+  "summary": {
+    "total": 8,
+    "completed": 0,
+    "remaining": 8,
+    "running": 0,
+    "review": 1,
+    "blocked": 5,
+    "unassigned": 2
+  },
+  "tasks": [
+    {
+      "id": "T042",
+      "title": "Draws named by what they settle",
+      "dep": [],
+      "status": "blocked"
+    },
+    {
+      "id": "T043",
+      "title": "One day order for every progression mode",
+      "dep": [],
+      "lane": "day-order",
+      "status": "blocked"
+    },
+    {
+      "id": "T044",
+      "title": "Amateur exchange by the amateur table",
+      "dep": [
+        "T043"
+      ],
+      "lane": "day-order",
+      "status": "blocked"
+    },
+    {
+      "id": "T045",
+      "title": "Market candidate identity and bids that keep their offer",
+      "dep": [
+        "T042"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T046",
+      "title": "Currency conversion of every live amount and complete ledger lines",
+      "dep": [],
+      "status": "ready"
+    },
+    {
+      "id": "T047",
+      "title": "Rules 1.15.0 with regenerated portable goldens",
+      "dep": [
+        "T044",
+        "T045",
+        "T046"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T048",
+      "title": "Background codec worker for checkpoints",
+      "dep": [],
+      "lane": "background-save",
+      "status": "blocked"
+    },
+    {
+      "id": "T049",
+      "title": "Clock never waits for saving; background autosave cadence",
+      "dep": [
+        "T048"
+      ],
+      "lane": "background-save",
+      "status": "blocked"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "group": "one-result",
+      "taskId": "T042",
+      "tasks": [
+        "T042"
+      ],
+      "lane": null,
+      "owner": "04bf1446-4df5-4608-aabb-68858781e112/worker-1",
+      "contributors": [
+        "04bf1446-4df5-4608-aabb-68858781e112/worker-1"
+      ],
+      "status": "blocked",
+      "reason": "ARCH: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요.",
+      "createdAt": "2026-10-12T05:51:17.525Z",
+      "startCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+      "verifiedCommit": "22b9e8c9e1718ad36b48c2334bdb2700b3d31a2f",
+      "submittedBase": "9d13f6dfcf1f25d5965ec811970fabd0cac51ce7",
+      "submissionId": "fefa6983-a123-4ff1-84f3-63c930aae0bc",
+      "submittedAt": "2026-10-12T06:30:31.738Z",
+      "dispatch": {
+        "id": "98fc18ef-8968-430f-b6fa-cab66de4e53f",
+        "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-12T06:47:10.834Z",
+        "finishedAt": "2026-10-12T06:51:47.362Z",
+        "error": null,
+        "summary": "T042 meets ARCH-5 (r8) and CLUB-20 (r16). Commit 22b9e8c changes the four draws (owner requests, caretaker managers, campaigns and outgoing bids) so they are named by what they settle and the game date instead of `w.revision`. In non-test engine source, `w.revision` now appears only in counter increments and its `revision: 0` start, and no other draw key counts commands or reads inbox or event lengths. I checked by reading the code that none of the new keys can repeat. Owner requests: a cooldown read from the event log blocks a second use of a request in the same year and round, because every cooldown is at least 1. Caretakers: the departure count includes the departure just recorded, and the engine never trims events (the save codec keeps the event count). Campaigns: an active campaign blocks a second one of the same kind, and campaigns only settle when a round advances. Bids: `pruneBids` only runs in `dailyMarket`, so no bid is pruned between two bids on the same day, and the ID includes the day. As the impl notes require, campaigns and bids already in saves keep their old IDs, and old campaign results still draw from the stored ID. The new tests in transfers.test.ts, care.test.ts and operations.test.ts would fail on the old revision-keyed code. They compare worlds with and without extra reads, including a whole-world `canonical` match after a bid is answered. No other code parses these IDs, and the save schema treats them as plain strings. I did not run the test suites in this read-only review; the worker reported typecheck and the full unit suite passing (73 files, 501 tests). Portable goldens are left for T047, as the task says."
+      },
+      "reviewHistory": [
+        {
+          "id": "629ae061-9b4d-469d-a39e-280b74987957",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T042: draws and the IDs that feed them no longer use `w.revision`. At the base commit `w.revision` fed four draws, and all four now use the new keys: the care draw is `${seed}:care:${kind}:${year}:${round}`, the caretaker is `${seed}:interim:${year}:${day}:${departures}`, the campaign ID is `${year}:${round}:${kind}`, and the outgoing bid ID is `out:${year}:${day}:${n}:${playerId}`. In engine source (excluding tests), `w.revision` now appears only in counter increments and its `revision: 0` start. Checks on whether the new keys are unique: (1) every care cooldown is above 0, so `careOffer` blocks a second request of a kind in the same year and round. (2) Departure events are never trimmed and the count includes the current departure, so two caretakers on the same day still get different keys. (3) The `w.campaigns.some(kind)` check blocks a second campaign of a kind. `settleRound` runs only from `advanceRound`, so a campaign can't finish and restart within one round. (4) `pruneBids` runs only in `dailyMarket`, so within a day the count n only grows. Old saved IDs keep their stored form, and nothing parses ID strings. The new tests would fail on the old code. One of them compares the whole world, ignoring the revision counter, after a bid is answered. The worker reports typecheck and unit tests passing; this review checked the code and did not rerun the tests. As the T042 notes say, the portable goldens and the rules version bump are left to T047.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T042.draws-named-by-what-they-settle.md:8 (T042 acceptance 1)",
+              "message": "T042 acceptance 1 says every request kind has a cooldown of at least 3 rounds, but CLUB-20 (r16) sets recovery support's cooldown to 2, and the code correctly keeps 2. The key is still unique per use because every cooldown is at least 1, which blocks a second request in the same year and round; care.test.ts asserts every cooldown is above 0. The worker marked this item [v] and explained the gap under limits. Hand back to planning to reword the acceptance as 'every cooldown refuses a second use in the same round' instead of 'at least 3 rounds'. No code change needed."
+            }
+          ],
+          "commit": "e13b924ebb782d824cd8cce72491873577d66fd9",
+          "baseCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+          "submissionId": "cfdfb548-4aa9-4e5d-a332-1bbb7a05abeb",
+          "createdAt": "2026-10-12T06:05:16.544Z",
+          "finishedAt": "2026-10-12T06:09:46.649Z",
+          "invalidatedAt": "2026-10-12T06:19:25.613Z",
+          "invalidationReason": "review base changed"
+        },
+        {
+          "id": "c1550e39-1779-451d-9c9a-456e46a0acc5",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "reviewing",
+          "commit": "e13b924ebb782d824cd8cce72491873577d66fd9",
+          "baseCommit": "a37e137038d9f4211780569bddf8856da8860cd4",
+          "submissionId": "cfdfb548-4aa9-4e5d-a332-1bbb7a05abeb",
+          "createdAt": "2026-10-12T06:19:25.626Z",
+          "invalidatedAt": "2026-10-12T06:19:25.750Z",
+          "invalidationReason": "T042: ARCH@7가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+        },
+        {
+          "id": "2e9ee2fb-975b-43d6-9de1-054ab3b5a223",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T042 meets ARCH-5 (r8) and CLUB-20 (r16). Commit 22b9e8c changes the four draws (owner requests, caretaker managers, campaigns and outgoing bids) so they are named by what they settle and the game date instead of `w.revision`. In non-test engine source, `w.revision` now appears only in counter increments and its `revision: 0` start, and no other draw key counts commands or reads inbox or event lengths. I checked by reading the code that none of the new keys can repeat. Owner requests: a cooldown read from the event log blocks a second use of a request in the same year and round, because every cooldown is at least 1. Caretakers: the departure count includes the departure just recorded, and the engine never trims events (the save codec keeps the event count). Campaigns: an active campaign blocks a second one of the same kind, and campaigns only settle when a round advances. Bids: `pruneBids` only runs in `dailyMarket`, so no bid is pruned between two bids on the same day, and the ID includes the day. As the impl notes require, campaigns and bids already in saves keep their old IDs, and old campaign results still draw from the stored ID. The new tests in transfers.test.ts, care.test.ts and operations.test.ts would fail on the old revision-keyed code. They compare worlds with and without extra reads, including a whole-world `canonical` match after a bid is answered. No other code parses these IDs, and the save schema treats them as plain strings. I did not run the test suites in this read-only review; the worker reported typecheck and the full unit suite passing (73 files, 501 tests). Portable goldens are left for T047, as the task says.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T042.draws-named-by-what-they-settle.md:8 (T042 acceptance 1)",
+              "message": "Acceptance 1 says every request kind has a cooldown of at least 3 rounds, but the CLUB-20 table (spec/ssot/CLUB.md:57) gives recovery support a cooldown of 2, and care.ts:138 keeps that SSOT value, which is correct. The key is still unique per use because `careOffer` blocks any reuse in the same year and round whenever the cooldown is at least 1, so the code is right. Only the wording is wrong, and the box is ticked [v] even though the literal clause is false; the worker already noted this under limits. Hand off to planning to change the wording to 'at least 1 settled round'. No code change needed."
+            }
+          ],
+          "commit": "22b9e8c9e1718ad36b48c2334bdb2700b3d31a2f",
+          "baseCommit": "9d13f6dfcf1f25d5965ec811970fabd0cac51ce7",
+          "submissionId": "fefa6983-a123-4ff1-84f3-63c930aae0bc",
+          "createdAt": "2026-10-12T06:47:10.570Z",
+          "finishedAt": "2026-10-12T06:51:47.355Z",
+          "invalidatedAt": "2026-10-12T07:01:10.952Z",
+          "invalidationReason": "review base changed"
+        },
+        {
+          "id": "e99c4e4d-a2ec-4436-8d6f-9db8aade1234",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "reviewing",
+          "commit": "22b9e8c9e1718ad36b48c2334bdb2700b3d31a2f",
+          "baseCommit": "3596812561125f11e8f12934e613b2747fafd139",
+          "submissionId": "fefa6983-a123-4ff1-84f3-63c930aae0bc",
+          "createdAt": "2026-10-12T07:09:57.073Z",
+          "invalidatedAt": "2026-10-12T07:09:57.214Z",
+          "invalidationReason": "ARCH: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요."
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T042",
+          "commit": "22b9e8c9e1718ad36b48c2334bdb2700b3d31a2f",
+          "at": "2026-10-12T06:30:31.730Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+              "startedAt": "2026-10-12T06:28:48.487Z",
+              "finishedAt": "2026-10-12T06:30:31.545Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+          "startedAt": "2026-10-12T06:28:48.487Z",
+          "finishedAt": "2026-10-12T06:30:31.545Z"
+        }
+      ]
+    },
+    {
+      "id": "86b16233-ef43-4161-8e24-743db5f76235",
+      "group": "one-result",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "lane": "day-order",
+      "owner": "04bf1446-4df5-4608-aabb-68858781e112/worker-2",
+      "contributors": [
+        "04bf1446-4df5-4608-aabb-68858781e112/worker-2"
+      ],
+      "status": "blocked",
+      "reason": "WEB: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요.",
+      "createdAt": "2026-10-12T05:51:17.801Z",
+      "startCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+      "dispatch": {
+        "id": "b7a99434-ce6a-4da6-a756-da44b346e2ab",
+        "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+        "role": "worker",
+        "slot": 2,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-12T07:01:10.774Z",
+        "finishedAt": "2026-10-12T07:09:56.663Z",
+        "error": "WEB: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요.",
+        "summary": "T044 (amateur exchange) is done and checked; its code was already in WIP commit f17c207 from an interrupted run. I checked it against LEAGUE-6 and the task's acceptance, and the only file I changed is the T044 result in spec/tasks/T044.amateur-exchange.md.\n\n**What the code does:**\n- When the own club played in the amateur league, `amateurEntrants` ranks that league's table before any club moves. Two places a last-division group go up: everyone but the last by table rank, the last by the `lower-promotion` playoff among the next four.\n- `promote()` hands those clubs to the last-division exchange in group order. The own club goes up like any of them, with `w.lower = false` and the 프로 무대 입성/복귀 event.\n- The extra `ranked(...).at(-1)` drop in `closeSeason` is gone.\n- Other countries, and seasons played as a professional, still send up their strongest amateur clubs.\n\n**Checks:**\n- Typecheck passes.\n- The full unit suite (73 files, 505 tests) passed on two of three runs. On the first run one test failed: calendar.test.ts \"retains identical match, player and season facts when the fast path skips motion\". The failure output pointed at the test's `it(` line rather than an assertion, which suggests the 30 s timeout. That test passed on the two later full runs and alone in 13.6 s.\n- The five new amateur-exchange tests in season.test.ts and the capacity-conservation test in world.test.ts pass (18 tests run).\n- eslint and prettier pass on the changed files.\n- LEAGUE did not change on the group branch: its newest commit (3596812) only rewords docs.\n\n**Not done:**\n- Three commands were refused because they needed approval: `work board`, swapping in the old `season.ts` to confirm the new tests fail against the old engine, and spec lint. None of the three ran.\n- Portable goldens are left to T047, as the task says.\n- The web amateur table (`divisionRules` in apps/web/src/ui/league.ts) still marks one automatic place and a four-club playoff. That is wrong only for ITA (the only country whose last division has several groups), which now promotes five automatically plus one playoff winner from 6th–9th. It is recorded in the result's limits."
+      },
+      "steps": [
+        {
+          "taskId": "T043",
+          "commit": "5c1cbe2db39160f0a446eeda6bfd70531f949bf3",
+          "at": "2026-10-12T06:07:03.038Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+              "startedAt": "2026-10-12T06:05:17.374Z",
+              "finishedAt": "2026-10-12T06:07:02.844Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "group": "one-result",
+      "taskId": "T046",
+      "tasks": [
+        "T046"
+      ],
+      "lane": null,
+      "owner": "04bf1446-4df5-4608-aabb-68858781e112/worker-3",
+      "contributors": [
+        "04bf1446-4df5-4608-aabb-68858781e112/worker-3"
+      ],
+      "status": "ready",
+      "reason": null,
+      "createdAt": "2026-10-12T05:51:18.086Z",
+      "startCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+      "verifiedCommit": "c38c85b99871a6c2e413cd06f4a674a9d5d29276",
+      "submittedBase": "3596812561125f11e8f12934e613b2747fafd139",
+      "submissionId": "33c52a5f-42b3-4ee3-a9fe-02ecacd8b3fc",
+      "submittedAt": "2026-10-12T07:08:22.192Z",
+      "dispatch": {
+        "id": "55f78a18-9775-4966-bca3-4645c53e1250",
+        "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-12T06:42:27.615Z",
+        "finishedAt": "2026-10-12T06:47:10.280Z",
+        "error": null,
+        "summary": "T046 meets its acceptance and ECON-6 and ECON-10 (r13). advanceEconomy now converts coaches' wages (w.staff), free-agent managers' wages (managerMarket.free), academy prospects' wages, and the fee and counterFee of open bids (pending or countered). The `w.currency` guard keeps each conversion to exactly once. Settled bids and ledger events keep the units they were made in. I checked every money field in the World type, and with this change all stored live amounts are converted. Coach candidates, market candidates and other clubs' managers are recalculated from w.year on every read, so they need no conversion. The manager-market refresh at the season close runs after advanceEconomy. New agents and academy intake are priced in the new currency, so nothing is converted twice. The new FRA 1999 and ENG 1971 tests check exact `ratio` results (655957→100000, 2400→1000), that settled bids are left alone, and that replaying the change converts nothing more. In financialBreakdown, every paid `care:` kind is grouped into 구단주 요청 and `care:friendly` is income (친선 경기). `win-bonus` gets its own 승리 수당 line, and recent receipts use the same grouping. I traced every debit and credit call site in the engine, and each one now lands on a named line, so the catch-all line only catches entries no current rule produces. The changes stay inside the task's file list, with no version bump, and goldens are left to T047. I did not rerun the tests: the review checkout has no node_modules and the review is read-only. I rely on the worker's reported typecheck and test:unit run (74 files, 499 tests) together with the code reading above. The P3 notes below are optional or need a planning decision; none blocks this task."
+      },
+      "reviewHistory": [
+        {
+          "id": "a4bf6b77-8eb4-48df-9a0a-78065d69fea0",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T046 meets all five acceptance items and ECON-6/ECON-10 at ECON r13. I checked this by reading the code; I did not rerun the tests and relied on the worker's typecheck and test:unit record.\n\nCurrency conversion: advanceEconomy now also converts coaches' wages, free-agent managers' wages and academy prospects' wages. It converts fee and counterFee only on pending or countered bids, which matches transfers.ts isOpen. Completed and rejected bids keep the money they were settled in. The other places that hold prices on offer don't store money, so they don't need converting. Managers at other clubs, staff candidates and market candidates are rebuilt with quote(w.year) whenever they are read.\n\nNew economy test (economy.test.ts): it covers FRA 1999 and ENG 1971 against fixed expected values (655957→100000 and 2400→1000), not only a copy of the conversion formula. It also proves the conversion runs exactly once: replaying the change leaves canonical(w) unchanged, and the following year converts nothing.\n\nSeason ledger: the lookup is keyed by kind, so every paid care:* entry falls under 구단주 요청, care:friendly goes to income (친선 경기), and win-bonus goes to 승리 수당. This matches how operations.ts and care.ts record events: a friendly never has a cost, and requests with no cost record no amount. The recent-receipts list uses the same lookup. The web FinancialBreakdown component shows rows generically, so the new keys need no UI change. An audit of every debit/credit site found no other kind that would fall into the catch-all line. The finance test covers a meeting, a camp, a friendly and a paid win bonus, and the line totals match w.income and w.expense.\n\nOnly the four allowed files plus the task file changed. Acceptance checks are marked [v] and the result lines follow FORMAT. Two P3 handoffs, neither blocking.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/economy.ts:26 / packages/engine/src/transfers.ts:431",
+              "message": "T046: The comment says open negotiations 'carry on in the new money', but settleBids (transfers.ts:431, outside T046's allowed files) still ends any open bid from an earlier year whose currency differs from w.currency, with the message '화폐 단위가 바뀌어 이전 금액의 협상이 끝났어요'. So a bid converted correctly here is cancelled at the next settlement anyway. This is only reachable when a bid is still open at the season rollover, since no transfer window spans it, so the fix is not urgent. The worker already raised it under result.limits. Handoff to planning: decide whether this guard should only catch unconverted bids from older saves. That decision also affects T045/T047, which plan to convert the bid's `offer` snapshot."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/economy.ts:41",
+              "message": "T046: The currency event text still reads '명목 잔고와 미지급 계약만 환산', which describes less than is now converted: open bids and free agents' asking wages are converted too. Changing the text changes the golden event facts, so do it together with T047's golden regeneration or in a follow-up, not in this lane."
+            }
+          ],
+          "commit": "051235f78a6c297ffaba006bc500eee829716fbe",
+          "baseCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+          "submissionId": "8867c66e-a584-4d97-a30f-410af1b91e05",
+          "createdAt": "2026-10-12T06:09:47.285Z",
+          "finishedAt": "2026-10-12T06:14:13.645Z",
+          "invalidatedAt": "2026-10-12T06:19:25.626Z",
+          "invalidationReason": "review base changed"
+        },
+        {
+          "id": "92e1a38a-669f-41b7-88c2-57edf7d4e94a",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T046 meets its acceptance and ECON-6 and ECON-10 (r13). advanceEconomy now converts coaches' wages (w.staff), free-agent managers' wages (managerMarket.free), academy prospects' wages, and the fee and counterFee of open bids (pending or countered). The `w.currency` guard keeps each conversion to exactly once. Settled bids and ledger events keep the units they were made in. I checked every money field in the World type, and with this change all stored live amounts are converted. Coach candidates, market candidates and other clubs' managers are recalculated from w.year on every read, so they need no conversion. The manager-market refresh at the season close runs after advanceEconomy. New agents and academy intake are priced in the new currency, so nothing is converted twice. The new FRA 1999 and ENG 1971 tests check exact `ratio` results (655957→100000, 2400→1000), that settled bids are left alone, and that replaying the change converts nothing more. In financialBreakdown, every paid `care:` kind is grouped into 구단주 요청 and `care:friendly` is income (친선 경기). `win-bonus` gets its own 승리 수당 line, and recent receipts use the same grouping. I traced every debit and credit call site in the engine, and each one now lands on a named line, so the catch-all line only catches entries no current rule produces. The changes stay inside the task's file list, with no version bump, and goldens are left to T047. I did not rerun the tests: the review checkout has no node_modules and the review is read-only. I rely on the worker's reported typecheck and test:unit run (74 files, 499 tests) together with the code reading above. The P3 notes below are optional or need a planning decision; none blocks this task.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/economy.ts:26 (T046) / packages/engine/src/transfers.ts:431",
+              "message": "The new comment says 'Open negotiations carry on in the new money', but settleBids still ends any open bid whose year used a different currency. Every bid converted at the season close therefore expires on the next club day, with the message '화폐 단위가 바뀌어 이전 금액의 협상이 끝났어요' (the negotiation ended because the currency changed). The conversion only matters on the close day itself: a respondBid accept that day now pays or receives the correctly converted fee, where before this change it used old units. On that same day, accepting a legacy countered outgoing bid still signs the player at an old-currency wage, because marketOffer prices the player through transferOffers(w, bid.year). ECON-6 does not say whether converted open bids survive, and transfers.ts is outside T046's file list (the worker flagged this under limits). Handoff to planning: either converted open bids carry on, and the expiry at transfers.ts:431 is dropped (T045 already edits transfers.ts and T047 converts `offer`), or they end, and the comment at economy.ts:26 should say so."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/economy.ts:45 (T046)",
+              "message": "The currency event detail still says '명목 잔고와 미지급 계약만 환산' (only nominal balances and unpaid contracts are converted). That wording matches ECON-6 before r13. It now under-describes the conversion, which also covers open bids and free-agent asking wages. The line is in a file T046 owns, and T047 regenerates the goldens anyway, so rewording it to match 'every live amount' costs little. It can go with T047 if the goldens are the concern."
+            }
+          ],
+          "commit": "051235f78a6c297ffaba006bc500eee829716fbe",
+          "baseCommit": "9d13f6dfcf1f25d5965ec811970fabd0cac51ce7",
+          "submissionId": "8867c66e-a584-4d97-a30f-410af1b91e05",
+          "createdAt": "2026-10-12T06:42:27.373Z",
+          "finishedAt": "2026-10-12T06:47:10.275Z",
+          "invalidatedAt": "2026-10-12T07:01:10.964Z",
+          "invalidationReason": "review base changed"
+        },
+        {
+          "id": "a2276751-ce04-40fd-98a8-f4b89b823679",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "reviewing",
+          "commit": "051235f78a6c297ffaba006bc500eee829716fbe",
+          "baseCommit": "3596812561125f11e8f12934e613b2747fafd139",
+          "submissionId": "8867c66e-a584-4d97-a30f-410af1b91e05",
+          "createdAt": "2026-10-12T07:01:10.964Z",
+          "invalidatedAt": "2026-10-12T07:01:11.105Z",
+          "invalidationReason": "ECON: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요."
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T046",
+          "commit": "c38c85b99871a6c2e413cd06f4a674a9d5d29276",
+          "at": "2026-10-12T07:08:22.183Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+              "startedAt": "2026-10-12T07:06:50.451Z",
+              "finishedAt": "2026-10-12T07:08:22.006Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+          "startedAt": "2026-10-12T07:06:50.451Z",
+          "finishedAt": "2026-10-12T07:08:22.006Z"
+        }
+      ]
+    },
+    {
+      "id": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "group": "one-result",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "lane": "background-save",
+      "owner": "04bf1446-4df5-4608-aabb-68858781e112/worker-1",
+      "contributors": [
+        "04bf1446-4df5-4608-aabb-68858781e112/worker-1"
+      ],
+      "status": "blocked",
+      "reason": "T049: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+      "createdAt": "2026-10-12T06:19:25.170Z",
+      "startCommit": "a37e137038d9f4211780569bddf8856da8860cd4",
+      "dispatch": {
+        "id": "7a8f8d42-3c61-4ee6-a154-ce888074c732",
+        "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-12T06:42:27.192Z",
+        "finishedAt": "2026-10-12T07:01:10.623Z",
+        "error": "T049: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+        "summary": "T049 구현은 끝났습니다. 다만 e2e는 이 서버에서 브라우저가 실행되지 않아 돌리지 못했고, 해당 acceptance 항목 하나는 [ ]로 남겨 두었습니다.\n\n변경 내용:\n- progression.ts: 저장이 끝날 때까지 다음 걸음을 막던 조건을 없앴습니다. 명령은 여전히 한 번에 하나씩만 보냅니다(inFlight/processing). 밀린 날짜는 직전 걸음 자체가 속도보다 오래 걸렸을 때나 자리를 비웠다 돌아왔을 때만 갚습니다. 그래서 x10에서도 평소에는 한 걸음에 하루씩 갑니다. 시계가 멈추면 이유와 상관없이 바로 저장하고, 멈춘 뒤에 도착한 걸음의 결과도 저장합니다.\n- client.ts: 이제 어떤 명령도 저장을 기다리지 않습니다.\n  - 소유자 결정(명령, 창단, 알림 확인)은 `saveSoon()`으로 바로 백그라운드 저장을 요청합니다.\n  - 자동 진행은 저장되지 않은 구간마다 30초(`AUTOSAVE_MS`) 타이머를 하나 겁니다.\n  - 상태에 `savedAt`과 `saveFailed`를 추가했습니다.\n  - 백그라운드 저장 요청은 긴 명령 뒤에 줄을 설 수 있습니다. 그래서 15초 워커 감시 시간이 잘못 터지지 않도록 저장 요청에는 체크포인트 감시 시간(60초)을 씁니다.\n  - 게임 삭제(forget)와 종료(dispose) 때 자동 저장 타이머를 해제합니다.\n- App.tsx: 탭이 숨겨질 때와 `pagehide` 때 바로 저장합니다. 저장 상태는 모두 저장됐으면 `저장 완료`, 아니면 `방금 저장`/`n초 전 저장`으로 보입니다. 이 탭에서 한 번도 저장하지 않았으면 `저장 대기`입니다. `저장 재시도` 버튼은 저장이 실패했을 때만 나옵니다.\n- 테스트:\n  - progression.test: 가짜 타이머로 x10에서 20ms 명령과 0.8초 저장을 돌려, 100ms마다 하루씩 진행하고 저장을 기다리지 않으며 멈추면 저장한다는 것을 확인합니다.\n  - client.test: 자동 저장 타이머, 결정 직후 바로 저장하되 명령은 기다리지 않는다는 것, 커밋마다 읽기 전용 탭 알림이 가는 것을 확인합니다. 기존 테스트는 비동기 저장에 맞춰 `whenSaved()`를 기다리도록 고쳤습니다.\n  - e2e: builds, business, cups-and-club, founding, intervention, milestones, native-touch, news, recruitment에서 새로고침 전에 `저장 완료`를 기다리게 했습니다. recovery의 저장 실패 후 상태 문구 기대값도 바꿨습니다.\n\n검증 결과: `pnpm run typecheck`, `pnpm run test:unit`(73개 파일, 506개 테스트), `pnpm run lint`, `pnpm run format:check`, `pnpm run build`가 모두 통과했습니다. 아직 커밋 전이라 result의 at은 `-`입니다.\n\n검증하지 못한 것:\n- e2e: Playwright의 Chromium과 Firefox가 시작되지 않습니다(`libatk-1.0.so.0`, `libgtk-3.so.0` 없음). 그래서 e2e 수정이 브라우저에서 통과하는지는 확인하지 못했습니다.\n- `haeram-spec-creator` 실행(work board, lint)이 이 세션에서 허용되지 않아, 상위 브랜치 상태 확인과 spec lint를 하지 못했습니다.\n- first-play 진입 번들 크기는 다시 재지 않았습니다.\n\n알려진 동작: 체크포인트에 저장 시각이 없어서, 불러온 게임은 그 탭에서 처음 저장할 때까지 `저장 대기`로 표시됩니다."
+      },
+      "steps": [
+        {
+          "taskId": "T048",
+          "commit": "e03cc77d17961cf903a0e48f97ed49544fe8f81c",
+          "at": "2026-10-12T06:42:27.154Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+              "startedAt": "2026-10-12T06:40:53.279Z",
+              "finishedAt": "2026-10-12T06:42:26.952Z"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "at": "2026-10-12T05:46:59.828Z",
+      "type": "group",
+      "group": "one-result",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "one-result",
+        "branch": "work/one-result",
+        "status": "preparing",
+        "createdAt": "2026-10-12T05:46:59.818Z",
+        "limits": {
+          "workers": 3,
+          "reviewers": 1,
+          "maxPending": 8
+        }
+      }
+    },
+    {
+      "sequence": 2,
+      "at": "2026-10-12T05:46:59.856Z",
+      "type": "group",
+      "group": "one-result",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 3,
+      "at": "2026-10-12T05:51:17.336Z",
+      "type": "group",
+      "group": "one-result",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "04bf1446-4df5-4608-aabb-68858781e112",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-12T05:51:17.333Z"
+        }
+      }
+    },
+    {
+      "sequence": 4,
+      "at": "2026-10-12T05:51:17.525Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+        "group": "one-result",
+        "taskId": "T042",
+        "tasks": [
+          "T042"
+        ],
+        "lane": null,
+        "owner": "04bf1446-4df5-4608-aabb-68858781e112/worker-1",
+        "contributors": [
+          "04bf1446-4df5-4608-aabb-68858781e112/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-12T05:51:17.525Z",
+        "startCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea"
+      }
+    },
+    {
+      "sequence": 5,
+      "at": "2026-10-12T05:51:17.606Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 6,
+      "at": "2026-10-12T05:51:17.660Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "d881d3fd-1313-461d-89ed-788a39dd7865",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T05:51:17.660Z"
+        }
+      }
+    },
+    {
+      "sequence": 7,
+      "at": "2026-10-12T05:51:17.666Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "d881d3fd-1313-461d-89ed-788a39dd7865",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T05:51:17.660Z"
+        }
+      }
+    },
+    {
+      "sequence": 8,
+      "at": "2026-10-12T05:51:17.802Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T043",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "86b16233-ef43-4161-8e24-743db5f76235",
+        "group": "one-result",
+        "taskId": "T043",
+        "tasks": [
+          "T043",
+          "T044"
+        ],
+        "lane": "day-order",
+        "owner": "04bf1446-4df5-4608-aabb-68858781e112/worker-2",
+        "contributors": [
+          "04bf1446-4df5-4608-aabb-68858781e112/worker-2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-12T05:51:17.801Z",
+        "startCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea"
+      }
+    },
+    {
+      "sequence": 9,
+      "at": "2026-10-12T05:51:17.886Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T043",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 10,
+      "at": "2026-10-12T05:51:17.938Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T043",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "5c8d172c-d48b-4ac8-ad30-e098d51eb4cc",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T05:51:17.938Z"
+        }
+      }
+    },
+    {
+      "sequence": 11,
+      "at": "2026-10-12T05:51:17.943Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T043",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "5c8d172c-d48b-4ac8-ad30-e098d51eb4cc",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T05:51:17.938Z"
+        }
+      }
+    },
+    {
+      "sequence": 12,
+      "at": "2026-10-12T05:51:18.086Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+        "group": "one-result",
+        "taskId": "T046",
+        "tasks": [
+          "T046"
+        ],
+        "lane": null,
+        "owner": "04bf1446-4df5-4608-aabb-68858781e112/worker-3",
+        "contributors": [
+          "04bf1446-4df5-4608-aabb-68858781e112/worker-3"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-12T05:51:18.086Z",
+        "startCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea"
+      }
+    },
+    {
+      "sequence": 13,
+      "at": "2026-10-12T05:51:18.172Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 14,
+      "at": "2026-10-12T05:51:18.220Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "50fff551-1efd-4dfc-96a3-a184f75d8434",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T05:51:18.219Z"
+        }
+      }
+    },
+    {
+      "sequence": 15,
+      "at": "2026-10-12T05:51:18.225Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "50fff551-1efd-4dfc-96a3-a184f75d8434",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T05:51:18.219Z"
+        }
+      }
+    },
+    {
+      "sequence": 16,
+      "at": "2026-10-12T06:01:39.258Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 17,
+      "at": "2026-10-12T06:01:39.612Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 18,
+      "at": "2026-10-12T06:01:39.632Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 19,
+      "at": "2026-10-12T06:03:25.751Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "e13b924ebb782d824cd8cce72491873577d66fd9",
+        "submittedBase": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+        "submissionId": "cfdfb548-4aa9-4e5d-a332-1bbb7a05abeb",
+        "submittedAt": "2026-10-12T06:03:25.751Z",
+        "steps": [
+          {
+            "taskId": "T042",
+            "commit": "e13b924ebb782d824cd8cce72491873577d66fd9",
+            "at": "2026-10-12T06:03:25.746Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T06:01:39.813Z",
+                "finishedAt": "2026-10-12T06:03:25.580Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+            "startedAt": "2026-10-12T06:01:39.813Z",
+            "finishedAt": "2026-10-12T06:03:25.580Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 20,
+      "at": "2026-10-12T06:03:25.754Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "d881d3fd-1313-461d-89ed-788a39dd7865",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T05:51:17.660Z",
+          "finishedAt": "2026-10-12T06:03:25.754Z",
+          "error": null,
+          "summary": "T042 완료: 무작위 추첨과 그 추첨에 쓰이는 ID가 더는 명령 카운터 `w.revision`을 읽지 않습니다. 이제 받은편지함 읽기 같은 기록용 명령이 이후 결과를 바꾸지 않습니다. typecheck와 전체 단위 테스트(73개 파일, 501개)가 통과했습니다.\n\n**코드 변경**\n- `care.ts`: 구단주 요청 추첨 키를 `${seed}:care:${kind}:${year}:${round}`로 바꿨습니다.\n- `operations.ts`: 임시 감독 추첨 키는 `${seed}:interim:${year}:${day}:${n}`입니다. n은 이번 이탈을 포함한 manager-departure 이벤트 수입니다. 캠페인 ID는 `${year}:${round}:${kind}`입니다.\n- `transfers.ts`: 영입 제안 ID는 `out:${year}:${day}:${n}:${playerId}`입니다. n은 이번 시즌 그 선수에게 앞서 낸 제안 수라서, 같은 날 다시 제안해도 새 ID를 받습니다.\n- 저장된 이전 형식의 ID는 그대로 두고, 버전 올림과 portable golden 재생성은 하지 않았습니다(T047 몫).\n- 비테스트 엔진 소스에 남은 `revision`은 카운터 증가와 초기값 `revision: 0`뿐입니다.\n\n**추가한 테스트**\n- `transfers.test.ts`\n  - \"an inbox read does not change a bid\": 받은편지함 읽기가 한 번 더 있었던 월드와 없었던 월드에서 제안 ID, 답변일, 결과가 같습니다. 답변이 나온 뒤 revision을 빼면 월드 전체도 일치합니다.\n  - 같은 날 다시 낸 제안이 새 ID를 받는지 확인합니다.\n- `care.test.ts`: 읽기를 1~6번 더 해도 요청 결과가 같습니다.\n- `operations.test.ts`: 캠페인 ID와 정산 결과, 그리고 임시 감독이 이전 명령과 무관하게 같습니다.\n\n**리뷰 포인트**\n- **완료기준 1번 문구가 SSOT와 다릅니다.** 문구는 모든 요청의 쿨다운이 3라운드 이상이라고 하지만, CLUB-20 표에서 회복 집중 지원은 2라운드입니다. SSOT를 따라 2로 두고 항목에 [v]를 표시했습니다. 쿨다운이 1 이상이면 같은 해·같은 라운드에 두 번째 요청이 거절되므로 추첨 키는 그대로 고유합니다(테스트로 확인). result의 limits에 적어 두었으니 기획 쪽에서 문구를 고쳐 주세요.\n\n**실행하지 못한 것**\n- 이 세션에서 haeram CLI(`work status`, spec lint)가 권한 거부되어 spec lint를 돌리지 못했습니다. 그래서 신선도는 로컬 STATE로만 확인했습니다(ARCH@7, CLUB@16으로 태스크 base와 같음).\n- 같은 머신에서 다른 워커들이 돌아 부하가 높았고(12코어에 load 15), 한 시즌을 돌리는 테스트 하나(\"draws offers near value for listed players\")가 한 번 30초 제한에 걸렸습니다. 단독 실행과 전체 실행에서는 통과했습니다.\n- 변경 파일 6개는 eslint와 prettier 검사를 통과했습니다. 커밋과 제출은 하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 21,
+      "at": "2026-10-12T06:03:25.772Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 22,
+      "at": "2026-10-12T06:03:26.016Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 23,
+      "at": "2026-10-12T06:03:26.034Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 24,
+      "at": "2026-10-12T06:05:16.282Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "051235f78a6c297ffaba006bc500eee829716fbe",
+        "submittedBase": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+        "submissionId": "8867c66e-a584-4d97-a30f-410af1b91e05",
+        "submittedAt": "2026-10-12T06:05:16.282Z",
+        "steps": [
+          {
+            "taskId": "T046",
+            "commit": "051235f78a6c297ffaba006bc500eee829716fbe",
+            "at": "2026-10-12T06:05:16.276Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T06:03:26.149Z",
+                "finishedAt": "2026-10-12T06:05:16.100Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+            "startedAt": "2026-10-12T06:03:26.149Z",
+            "finishedAt": "2026-10-12T06:05:16.100Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 25,
+      "at": "2026-10-12T06:05:16.286Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "50fff551-1efd-4dfc-96a3-a184f75d8434",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T05:51:18.219Z",
+          "finishedAt": "2026-10-12T06:05:16.286Z",
+          "error": null,
+          "summary": "T046 구현을 마쳤고, typecheck와 전체 unit 스위트(74개 파일, 499건)가 모두 통과했습니다. 지시대로 커밋과 제출은 하지 않았습니다.\n\n**변경 내용**\n- `packages/engine/src/economy.ts`: 화폐가 바뀔 때 아래 금액도 한 번 환산합니다. 이미 끝난 입찰은 성사 당시 단위로 남깁니다.\n  - 코치 연봉 (`w.staff`)\n  - 자유계약 감독 연봉 (`w.managerMarket.free`)\n  - 아카데미 유망주 연봉 (`w.academy.players`)\n  - 진행 중(pending·countered) 입찰의 `fee`와 `counterFee`\n- `packages/engine/src/finance.ts`: 시즌 장부에 세 줄을 추가했습니다. 같은 분류가 '최근 실제 정산' 목록에도 적용됩니다.\n  - 지출 '구단주 요청': 친선 경기를 뺀 모든 유료 `care:` 항목을 한 줄로 합산\n  - 수입 '친선 경기' (`care:friendly`)\n  - 지출 '승리 수당' (`win-bonus`)\n- `packages/engine/src/economy.test.ts` (신규): FRA 1999(FRF→EUR, 655957→100000)와 ENG 1971(£sd→10진법, 2400→1000)에서 각 금액이 `ratio(old, conversion)`과 같은지 확인합니다. 같은 전환을 다시 호출하거나 다음 해로 넘어가도 금액이 더 바뀌지 않는 것(한 번만 환산)도 확인합니다.\n- `packages/engine/src/finance.test.ts`: 선수단 미팅, 전지훈련, 친선 경기, 지급된 승리 수당이 있는 시즌에 '이전·기타 장부' 줄이 생기지 않고, 장부 합계가 시즌 수입·지출과 맞는지 확인합니다.\n- `spec/tasks/T046.currency-and-ledger.md`: acceptance를 `[v]`로 채우고 result를 작성했습니다(at은 `-`).\n\n**검증**\n- 첫 실행에서 `transfers.test.ts`의 \"opens the summer window…\" 1건이 30초 타임아웃으로 실패했습니다. 당시 부하 평균이 약 10이었습니다. 이 테스트는 제 변경 경로를 지나지 않고(통화 전환 없음, `financialBreakdown` 미호출), 단독 실행과 전체 재실행 모두 통과했습니다.\n- 변경한 4개 파일에 eslint와 prettier --check를 돌렸고 모두 통과했습니다.\n\n**실행하지 못한 것**\n- `work board`와 `haeram-spec-creator lint`는 이 세션에서 승인이 필요한 명령이라 자동 거부되어 실행하지 못했습니다. 상위 브랜치 신선도는 로컬 STATE 기준으로만 확인했습니다(ECON@13 = 현재 rev).\n\n**남은 문제 (기획 판단 필요)**\n- `transfers.ts:431`의 `settleBids`는 이 태스크의 touches 밖이라 손대지 않았습니다. 이 코드는 화폐 전환 전에 낸 입찰을 다음 정산에서 만료시키므로, 이번에 환산한 진행 중 입찰도 결국 종료됩니다. 계속 협상하게 둘지 기획 공간에서 정해야 합니다.\n- 화폐 전환 이벤트 문구는 아직 \"명목 잔고와 미지급 계약만 환산\"입니다.\n- 화폐 전환을 거치는 golden 갱신은 T047에서 합니다."
+        }
+      }
+    },
+    {
+      "sequence": 26,
+      "at": "2026-10-12T06:05:16.545Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "629ae061-9b4d-469d-a39e-280b74987957",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "reviewing",
+          "commit": "e13b924ebb782d824cd8cce72491873577d66fd9",
+          "baseCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+          "submissionId": "cfdfb548-4aa9-4e5d-a332-1bbb7a05abeb",
+          "createdAt": "2026-10-12T06:05:16.544Z"
+        }
+      }
+    },
+    {
+      "sequence": 27,
+      "at": "2026-10-12T06:05:16.807Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "9c8bace1-bdb3-42e6-8f8a-8cc015cb7b81",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T06:05:16.807Z"
+        }
+      }
+    },
+    {
+      "sequence": 28,
+      "at": "2026-10-12T06:05:16.813Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "9c8bace1-bdb3-42e6-8f8a-8cc015cb7b81",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T06:05:16.807Z"
+        }
+      }
+    },
+    {
+      "sequence": 29,
+      "at": "2026-10-12T06:05:16.838Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T043",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 30,
+      "at": "2026-10-12T06:05:17.191Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T043",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 31,
+      "at": "2026-10-12T06:05:17.213Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T043",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 32,
+      "at": "2026-10-12T06:07:03.040Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T044",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T043",
+            "commit": "5c1cbe2db39160f0a446eeda6bfd70531f949bf3",
+            "at": "2026-10-12T06:07:03.038Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T06:05:17.374Z",
+                "finishedAt": "2026-10-12T06:07:02.844Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 33,
+      "at": "2026-10-12T06:07:03.044Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "5c8d172c-d48b-4ac8-ad30-e098d51eb4cc",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T05:51:17.938Z",
+          "finishedAt": "2026-10-12T06:07:03.044Z",
+          "error": null,
+          "summary": "T043 is done: day steps, round steps and full-season runs now go through the same days in the same order and record the same facts. Typecheck and the full unit suite pass (73 files, 498 tests).\n\n**What changed in `packages/engine/src/season.ts`**\n- `advanceDays` and `advanceRound` now share one internal per-day function, `stepDay`. In its order, the day after round 46 closes the season. A league match day plays the round's matches, then the round settlement, then `clubDay`. Every other day plays its due cup and European ties, then `clubDay`.\n- The old round body is now `playRound`, called only on a league match day.\n- `advanceRound` steps days until the round count goes up or the club goes bankrupt. Like the old version, it doesn't stop for a critical alert. `advanceDays` keeps its critical, bankrupt and range guards.\n- The setup for older saves (calendar, rank history, scorer table) is now a shared `beginDays` helper.\n- `closeSeason` moves the calendar to day 323 (`SEASON_END_DAY + 1`) before closing, so every path closes on the same day.\n\n**Tests**\n- New test in `calendar.test.ts`, \"every progression mode records the same facts\". It runs ENG `haeram-demo` and ESP `one-order` for 1.5 seasons three ways: day by day, round by round with `closeSeason` at round 46, and `simulateSeason` then days. All three give the same world once `revision` and `receiptIds` are set aside. The tests take 6.8 s and 5.7 s.\n- For `haeram-demo` in round mode, a temporary check showed the day-32 cup tie now comes before the day-35 league match.\n\n**Other checks:** prettier and eslint are clean on the two changed files. One season takes 1.0–1.35 s in Node on every path, measured with the machine heavily loaded.\n\n**Things to know**\n- The new test passes `observe=false` to both the day and round loops, which skips match movement frames. An existing test already shows frames don't change results. With frames on, a day-by-day season took about 15 s and the test hit the 30 s timeout.\n- The test seeds never trigger a critical alert. If one did, the day-by-day loop would stop on it. The replacement manager after a departure is still drawn using `w.revision` until T042 lands.\n- The `test:contract` golden checks were not run or regenerated; T047 does that.\n- Three CLI calls were blocked because this session can't approve commands: `work board`, `haeram-spec-creator lint`, and an A/B timing run against the old `season.ts`. So spec lint was not run, and I have no timing baseline from the old code.\n- The task file's acceptance boxes and result are filled in, with `at: -`. Nothing is committed and I didn't touch the files in `apps/web/src/runtime` or `index.ts`."
+        }
+      }
+    },
+    {
+      "sequence": 34,
+      "at": "2026-10-12T06:07:03.177Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "2cba0e65-ed03-451f-9d25-6b5062fc41d6",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T06:07:03.177Z"
+        }
+      }
+    },
+    {
+      "sequence": 35,
+      "at": "2026-10-12T06:07:03.183Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "2cba0e65-ed03-451f-9d25-6b5062fc41d6",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T06:07:03.177Z"
+        }
+      }
+    },
+    {
+      "sequence": 36,
+      "at": "2026-10-12T06:09:46.649Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "629ae061-9b4d-469d-a39e-280b74987957",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T042: draws and the IDs that feed them no longer use `w.revision`. At the base commit `w.revision` fed four draws, and all four now use the new keys: the care draw is `${seed}:care:${kind}:${year}:${round}`, the caretaker is `${seed}:interim:${year}:${day}:${departures}`, the campaign ID is `${year}:${round}:${kind}`, and the outgoing bid ID is `out:${year}:${day}:${n}:${playerId}`. In engine source (excluding tests), `w.revision` now appears only in counter increments and its `revision: 0` start. Checks on whether the new keys are unique: (1) every care cooldown is above 0, so `careOffer` blocks a second request of a kind in the same year and round. (2) Departure events are never trimmed and the count includes the current departure, so two caretakers on the same day still get different keys. (3) The `w.campaigns.some(kind)` check blocks a second campaign of a kind. `settleRound` runs only from `advanceRound`, so a campaign can't finish and restart within one round. (4) `pruneBids` runs only in `dailyMarket`, so within a day the count n only grows. Old saved IDs keep their stored form, and nothing parses ID strings. The new tests would fail on the old code. One of them compares the whole world, ignoring the revision counter, after a bid is answered. The worker reports typecheck and unit tests passing; this review checked the code and did not rerun the tests. As the T042 notes say, the portable goldens and the rules version bump are left to T047.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T042.draws-named-by-what-they-settle.md:8 (T042 acceptance 1)",
+              "message": "T042 acceptance 1 says every request kind has a cooldown of at least 3 rounds, but CLUB-20 (r16) sets recovery support's cooldown to 2, and the code correctly keeps 2. The key is still unique per use because every cooldown is at least 1, which blocks a second request in the same year and round; care.test.ts asserts every cooldown is above 0. The worker marked this item [v] and explained the gap under limits. Hand back to planning to reword the acceptance as 'every cooldown refuses a second use in the same round' instead of 'at least 3 rounds'. No code change needed."
+            }
+          ],
+          "commit": "e13b924ebb782d824cd8cce72491873577d66fd9",
+          "baseCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+          "submissionId": "cfdfb548-4aa9-4e5d-a332-1bbb7a05abeb",
+          "createdAt": "2026-10-12T06:05:16.544Z",
+          "finishedAt": "2026-10-12T06:09:46.649Z"
+        }
+      }
+    },
+    {
+      "sequence": 37,
+      "at": "2026-10-12T06:09:46.654Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "9c8bace1-bdb3-42e6-8f8a-8cc015cb7b81",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T06:05:16.807Z",
+          "finishedAt": "2026-10-12T06:09:46.654Z",
+          "error": null,
+          "summary": "T042: draws and the IDs that feed them no longer use `w.revision`. At the base commit `w.revision` fed four draws, and all four now use the new keys: the care draw is `${seed}:care:${kind}:${year}:${round}`, the caretaker is `${seed}:interim:${year}:${day}:${departures}`, the campaign ID is `${year}:${round}:${kind}`, and the outgoing bid ID is `out:${year}:${day}:${n}:${playerId}`. In engine source (excluding tests), `w.revision` now appears only in counter increments and its `revision: 0` start. Checks on whether the new keys are unique: (1) every care cooldown is above 0, so `careOffer` blocks a second request of a kind in the same year and round. (2) Departure events are never trimmed and the count includes the current departure, so two caretakers on the same day still get different keys. (3) The `w.campaigns.some(kind)` check blocks a second campaign of a kind. `settleRound` runs only from `advanceRound`, so a campaign can't finish and restart within one round. (4) `pruneBids` runs only in `dailyMarket`, so within a day the count n only grows. Old saved IDs keep their stored form, and nothing parses ID strings. The new tests would fail on the old code. One of them compares the whole world, ignoring the revision counter, after a bid is answered. The worker reports typecheck and unit tests passing; this review checked the code and did not rerun the tests. As the T042 notes say, the portable goldens and the rules version bump are left to T047."
+        }
+      }
+    },
+    {
+      "sequence": 38,
+      "at": "2026-10-12T06:09:46.675Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 39,
+      "at": "2026-10-12T06:09:47.050Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "통합 후보의 spec 검증에 실패했습니다."
+      }
+    },
+    {
+      "sequence": 40,
+      "at": "2026-10-12T06:09:47.285Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "a4bf6b77-8eb4-48df-9a0a-78065d69fea0",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "reviewing",
+          "commit": "051235f78a6c297ffaba006bc500eee829716fbe",
+          "baseCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+          "submissionId": "8867c66e-a584-4d97-a30f-410af1b91e05",
+          "createdAt": "2026-10-12T06:09:47.285Z"
+        }
+      }
+    },
+    {
+      "sequence": 41,
+      "at": "2026-10-12T06:09:47.509Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "3b73cc77-b3d4-427e-8aa1-2b15228310e3",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T06:09:47.509Z"
+        }
+      }
+    },
+    {
+      "sequence": 42,
+      "at": "2026-10-12T06:09:47.516Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "3b73cc77-b3d4-427e-8aa1-2b15228310e3",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T06:09:47.509Z"
+        }
+      }
+    },
+    {
+      "sequence": 43,
+      "at": "2026-10-12T06:14:13.645Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "a4bf6b77-8eb4-48df-9a0a-78065d69fea0",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T046 meets all five acceptance items and ECON-6/ECON-10 at ECON r13. I checked this by reading the code; I did not rerun the tests and relied on the worker's typecheck and test:unit record.\n\nCurrency conversion: advanceEconomy now also converts coaches' wages, free-agent managers' wages and academy prospects' wages. It converts fee and counterFee only on pending or countered bids, which matches transfers.ts isOpen. Completed and rejected bids keep the money they were settled in. The other places that hold prices on offer don't store money, so they don't need converting. Managers at other clubs, staff candidates and market candidates are rebuilt with quote(w.year) whenever they are read.\n\nNew economy test (economy.test.ts): it covers FRA 1999 and ENG 1971 against fixed expected values (655957→100000 and 2400→1000), not only a copy of the conversion formula. It also proves the conversion runs exactly once: replaying the change leaves canonical(w) unchanged, and the following year converts nothing.\n\nSeason ledger: the lookup is keyed by kind, so every paid care:* entry falls under 구단주 요청, care:friendly goes to income (친선 경기), and win-bonus goes to 승리 수당. This matches how operations.ts and care.ts record events: a friendly never has a cost, and requests with no cost record no amount. The recent-receipts list uses the same lookup. The web FinancialBreakdown component shows rows generically, so the new keys need no UI change. An audit of every debit/credit site found no other kind that would fall into the catch-all line. The finance test covers a meeting, a camp, a friendly and a paid win bonus, and the line totals match w.income and w.expense.\n\nOnly the four allowed files plus the task file changed. Acceptance checks are marked [v] and the result lines follow FORMAT. Two P3 handoffs, neither blocking.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/economy.ts:26 / packages/engine/src/transfers.ts:431",
+              "message": "T046: The comment says open negotiations 'carry on in the new money', but settleBids (transfers.ts:431, outside T046's allowed files) still ends any open bid from an earlier year whose currency differs from w.currency, with the message '화폐 단위가 바뀌어 이전 금액의 협상이 끝났어요'. So a bid converted correctly here is cancelled at the next settlement anyway. This is only reachable when a bid is still open at the season rollover, since no transfer window spans it, so the fix is not urgent. The worker already raised it under result.limits. Handoff to planning: decide whether this guard should only catch unconverted bids from older saves. That decision also affects T045/T047, which plan to convert the bid's `offer` snapshot."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/economy.ts:41",
+              "message": "T046: The currency event text still reads '명목 잔고와 미지급 계약만 환산', which describes less than is now converted: open bids and free agents' asking wages are converted too. Changing the text changes the golden event facts, so do it together with T047's golden regeneration or in a follow-up, not in this lane."
+            }
+          ],
+          "commit": "051235f78a6c297ffaba006bc500eee829716fbe",
+          "baseCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+          "submissionId": "8867c66e-a584-4d97-a30f-410af1b91e05",
+          "createdAt": "2026-10-12T06:09:47.285Z",
+          "finishedAt": "2026-10-12T06:14:13.645Z"
+        }
+      }
+    },
+    {
+      "sequence": 44,
+      "at": "2026-10-12T06:14:13.651Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "3b73cc77-b3d4-427e-8aa1-2b15228310e3",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T06:09:47.509Z",
+          "finishedAt": "2026-10-12T06:14:13.651Z",
+          "error": null,
+          "summary": "T046 meets all five acceptance items and ECON-6/ECON-10 at ECON r13. I checked this by reading the code; I did not rerun the tests and relied on the worker's typecheck and test:unit record.\n\nCurrency conversion: advanceEconomy now also converts coaches' wages, free-agent managers' wages and academy prospects' wages. It converts fee and counterFee only on pending or countered bids, which matches transfers.ts isOpen. Completed and rejected bids keep the money they were settled in. The other places that hold prices on offer don't store money, so they don't need converting. Managers at other clubs, staff candidates and market candidates are rebuilt with quote(w.year) whenever they are read.\n\nNew economy test (economy.test.ts): it covers FRA 1999 and ENG 1971 against fixed expected values (655957→100000 and 2400→1000), not only a copy of the conversion formula. It also proves the conversion runs exactly once: replaying the change leaves canonical(w) unchanged, and the following year converts nothing.\n\nSeason ledger: the lookup is keyed by kind, so every paid care:* entry falls under 구단주 요청, care:friendly goes to income (친선 경기), and win-bonus goes to 승리 수당. This matches how operations.ts and care.ts record events: a friendly never has a cost, and requests with no cost record no amount. The recent-receipts list uses the same lookup. The web FinancialBreakdown component shows rows generically, so the new keys need no UI change. An audit of every debit/credit site found no other kind that would fall into the catch-all line. The finance test covers a meeting, a camp, a friendly and a paid win bonus, and the line totals match w.income and w.expense.\n\nOnly the four allowed files plus the task file changed. Acceptance checks are marked [v] and the result lines follow FORMAT. Two P3 handoffs, neither blocking."
+        }
+      }
+    },
+    {
+      "sequence": 45,
+      "at": "2026-10-12T06:14:13.674Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 46,
+      "at": "2026-10-12T06:14:14.030Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "통합 후보의 spec 검증에 실패했습니다."
+      }
+    },
+    {
+      "sequence": 47,
+      "at": "2026-10-12T06:19:24.888Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 48,
+      "at": "2026-10-12T06:19:25.008Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T043: WEB@48가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+      }
+    },
+    {
+      "sequence": 49,
+      "at": "2026-10-12T06:19:25.018Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "2cba0e65-ed03-451f-9d25-6b5062fc41d6",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T06:07:03.177Z",
+          "finishedAt": "2026-10-12T06:19:25.018Z",
+          "error": "T043: WEB@48가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요.",
+          "summary": "T044 구현 완료(커밋하지 않음 — 변경 파일: packages/engine/src/season.ts, packages/engine/src/season.test.ts, spec/tasks/T044.amateur-exchange.md).\n\n변경 내용:\n- promote()가 시작할 때, 즉 어떤 클럽도 옮기기 전에 아마추어 표를 확정합니다(우리 클럽이 아마추어 리그에서 뛴 시즌만 해당). 승격 자리 수는 최하위 프로 리그 그룹 수 × 2입니다. 그중 마지막 한 자리를 뺀 나머지는 표 순위대로 올라가고, 마지막 자리는 그다음 4팀이 치르는 `lower-promotion` 플레이오프 승자가 차지합니다. 플레이오프는 이런 시즌 마감마다 항상 열리며, 우리 경기는 지금처럼 기록됩니다.\n- 이렇게 정해진 클럽들은 그룹 순서대로 최하위 리그 교환에 들어갑니다. 우리 클럽이 그 안에 있으면 거기서 승격합니다(`w.lower = false`, 프로 무대 입성/복귀 이벤트).\n- closeSeason의 별도 교체 블록(`ranked(...).at(-1)` 강등)과 쓰지 않게 된 `wasLower`는 삭제했습니다. 다른 나라와 프로 시즌은 여전히 강도 순서로 승격합니다.\n\n검증:\n- 태스크 검증 명령 `pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit` 통과(73개 파일, 503개 테스트). closeSeason을 쓰는 테스트가 많아 단위 테스트 전체를 돌렸습니다.\n- season.test.ts에 새 테스트 5개를 넣었습니다: ENG 우승, ENG 3위 플레이오프, ITA·GER에서 우리 클럽 우승(ITA:1:0:2와 GER:1:0:15를 위 리그 최하위 성적으로 설정), ENG 프로 시즌. 각 테스트는 한 번의 마감에 두 단계 이상 이동하는 클럽이 없는지, 모든 그룹 정원이 유지되는지, 다른 나라가 강도 순서를 따르는지도 확인합니다.\n- world.test.ts 정원 보존 테스트 통과, 수정한 두 파일의 eslint와 prettier --check 통과.\n\n남은 한계:\n- 골든(test:contract)은 실행·재생성하지 않았습니다. T047에서 처리합니다.\n- 웹의 divisionRules(apps/web/src/ui/league.ts)는 아마추어 표에 나라와 상관없이 자동 승격 1자리와 플레이오프 4자리만 표시합니다. 그래서 ITA의 자동 승격 5자리와 6–9위 플레이오프는 아직 화면에 나오지 않습니다.\n- 새 테스트를 옛 엔진에 대해 돌려 실패하는지 확인하지 못했습니다(worktree 밖 임시 파일 쓰기 권한이 거부됨).\n- `work board` 조회와 spec lint는 이 세션에서 CLI 실행 권한이 거부되어 실행하지 못했습니다."
+        }
+      }
+    },
+    {
+      "sequence": 50,
+      "at": "2026-10-12T06:19:25.170Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T048",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+        "group": "one-result",
+        "taskId": "T048",
+        "tasks": [
+          "T048",
+          "T049"
+        ],
+        "lane": "background-save",
+        "owner": "04bf1446-4df5-4608-aabb-68858781e112/worker-1",
+        "contributors": [
+          "04bf1446-4df5-4608-aabb-68858781e112/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-12T06:19:25.170Z",
+        "startCommit": "a37e137038d9f4211780569bddf8856da8860cd4"
+      }
+    },
+    {
+      "sequence": 51,
+      "at": "2026-10-12T06:19:25.258Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T048",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 52,
+      "at": "2026-10-12T06:19:25.313Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T048",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "89657dd5-b3cc-4863-ae27-4ec9f6a2c329",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T06:19:25.313Z"
+        }
+      }
+    },
+    {
+      "sequence": 53,
+      "at": "2026-10-12T06:19:25.322Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T048",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "89657dd5-b3cc-4863-ae27-4ec9f6a2c329",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T06:19:25.313Z"
+        }
+      }
+    },
+    {
+      "sequence": 54,
+      "at": "2026-10-12T06:19:25.626Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "approved",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "c1550e39-1779-451d-9c9a-456e46a0acc5",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "reviewing",
+          "commit": "e13b924ebb782d824cd8cce72491873577d66fd9",
+          "baseCommit": "a37e137038d9f4211780569bddf8856da8860cd4",
+          "submissionId": "cfdfb548-4aa9-4e5d-a332-1bbb7a05abeb",
+          "createdAt": "2026-10-12T06:19:25.626Z"
+        },
+        "reviewHistory": [
+          {
+            "id": "629ae061-9b4d-469d-a39e-280b74987957",
+            "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T042: draws and the IDs that feed them no longer use `w.revision`. At the base commit `w.revision` fed four draws, and all four now use the new keys: the care draw is `${seed}:care:${kind}:${year}:${round}`, the caretaker is `${seed}:interim:${year}:${day}:${departures}`, the campaign ID is `${year}:${round}:${kind}`, and the outgoing bid ID is `out:${year}:${day}:${n}:${playerId}`. In engine source (excluding tests), `w.revision` now appears only in counter increments and its `revision: 0` start. Checks on whether the new keys are unique: (1) every care cooldown is above 0, so `careOffer` blocks a second request of a kind in the same year and round. (2) Departure events are never trimmed and the count includes the current departure, so two caretakers on the same day still get different keys. (3) The `w.campaigns.some(kind)` check blocks a second campaign of a kind. `settleRound` runs only from `advanceRound`, so a campaign can't finish and restart within one round. (4) `pruneBids` runs only in `dailyMarket`, so within a day the count n only grows. Old saved IDs keep their stored form, and nothing parses ID strings. The new tests would fail on the old code. One of them compares the whole world, ignoring the revision counter, after a bid is answered. The worker reports typecheck and unit tests passing; this review checked the code and did not rerun the tests. As the T042 notes say, the portable goldens and the rules version bump are left to T047.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "spec/tasks/T042.draws-named-by-what-they-settle.md:8 (T042 acceptance 1)",
+                "message": "T042 acceptance 1 says every request kind has a cooldown of at least 3 rounds, but CLUB-20 (r16) sets recovery support's cooldown to 2, and the code correctly keeps 2. The key is still unique per use because every cooldown is at least 1, which blocks a second request in the same year and round; care.test.ts asserts every cooldown is above 0. The worker marked this item [v] and explained the gap under limits. Hand back to planning to reword the acceptance as 'every cooldown refuses a second use in the same round' instead of 'at least 3 rounds'. No code change needed."
+              }
+            ],
+            "commit": "e13b924ebb782d824cd8cce72491873577d66fd9",
+            "baseCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+            "submissionId": "cfdfb548-4aa9-4e5d-a332-1bbb7a05abeb",
+            "createdAt": "2026-10-12T06:05:16.544Z",
+            "finishedAt": "2026-10-12T06:09:46.649Z",
+            "invalidatedAt": "2026-10-12T06:19:25.613Z",
+            "invalidationReason": "review base changed"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 55,
+      "at": "2026-10-12T06:19:25.626Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "approved",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "a4bf6b77-8eb4-48df-9a0a-78065d69fea0",
+            "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T046 meets all five acceptance items and ECON-6/ECON-10 at ECON r13. I checked this by reading the code; I did not rerun the tests and relied on the worker's typecheck and test:unit record.\n\nCurrency conversion: advanceEconomy now also converts coaches' wages, free-agent managers' wages and academy prospects' wages. It converts fee and counterFee only on pending or countered bids, which matches transfers.ts isOpen. Completed and rejected bids keep the money they were settled in. The other places that hold prices on offer don't store money, so they don't need converting. Managers at other clubs, staff candidates and market candidates are rebuilt with quote(w.year) whenever they are read.\n\nNew economy test (economy.test.ts): it covers FRA 1999 and ENG 1971 against fixed expected values (655957→100000 and 2400→1000), not only a copy of the conversion formula. It also proves the conversion runs exactly once: replaying the change leaves canonical(w) unchanged, and the following year converts nothing.\n\nSeason ledger: the lookup is keyed by kind, so every paid care:* entry falls under 구단주 요청, care:friendly goes to income (친선 경기), and win-bonus goes to 승리 수당. This matches how operations.ts and care.ts record events: a friendly never has a cost, and requests with no cost record no amount. The recent-receipts list uses the same lookup. The web FinancialBreakdown component shows rows generically, so the new keys need no UI change. An audit of every debit/credit site found no other kind that would fall into the catch-all line. The finance test covers a meeting, a camp, a friendly and a paid win bonus, and the line totals match w.income and w.expense.\n\nOnly the four allowed files plus the task file changed. Acceptance checks are marked [v] and the result lines follow FORMAT. Two P3 handoffs, neither blocking.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/economy.ts:26 / packages/engine/src/transfers.ts:431",
+                "message": "T046: The comment says open negotiations 'carry on in the new money', but settleBids (transfers.ts:431, outside T046's allowed files) still ends any open bid from an earlier year whose currency differs from w.currency, with the message '화폐 단위가 바뀌어 이전 금액의 협상이 끝났어요'. So a bid converted correctly here is cancelled at the next settlement anyway. This is only reachable when a bid is still open at the season rollover, since no transfer window spans it, so the fix is not urgent. The worker already raised it under result.limits. Handoff to planning: decide whether this guard should only catch unconverted bids from older saves. That decision also affects T045/T047, which plan to convert the bid's `offer` snapshot."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/economy.ts:41",
+                "message": "T046: The currency event text still reads '명목 잔고와 미지급 계약만 환산', which describes less than is now converted: open bids and free agents' asking wages are converted too. Changing the text changes the golden event facts, so do it together with T047's golden regeneration or in a follow-up, not in this lane."
+              }
+            ],
+            "commit": "051235f78a6c297ffaba006bc500eee829716fbe",
+            "baseCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+            "submissionId": "8867c66e-a584-4d97-a30f-410af1b91e05",
+            "createdAt": "2026-10-12T06:09:47.285Z",
+            "finishedAt": "2026-10-12T06:14:13.645Z",
+            "invalidatedAt": "2026-10-12T06:19:25.626Z",
+            "invalidationReason": "review base changed"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 56,
+      "at": "2026-10-12T06:19:25.750Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "reviewing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T042: ARCH@7가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요.",
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "629ae061-9b4d-469d-a39e-280b74987957",
+            "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T042: draws and the IDs that feed them no longer use `w.revision`. At the base commit `w.revision` fed four draws, and all four now use the new keys: the care draw is `${seed}:care:${kind}:${year}:${round}`, the caretaker is `${seed}:interim:${year}:${day}:${departures}`, the campaign ID is `${year}:${round}:${kind}`, and the outgoing bid ID is `out:${year}:${day}:${n}:${playerId}`. In engine source (excluding tests), `w.revision` now appears only in counter increments and its `revision: 0` start. Checks on whether the new keys are unique: (1) every care cooldown is above 0, so `careOffer` blocks a second request of a kind in the same year and round. (2) Departure events are never trimmed and the count includes the current departure, so two caretakers on the same day still get different keys. (3) The `w.campaigns.some(kind)` check blocks a second campaign of a kind. `settleRound` runs only from `advanceRound`, so a campaign can't finish and restart within one round. (4) `pruneBids` runs only in `dailyMarket`, so within a day the count n only grows. Old saved IDs keep their stored form, and nothing parses ID strings. The new tests would fail on the old code. One of them compares the whole world, ignoring the revision counter, after a bid is answered. The worker reports typecheck and unit tests passing; this review checked the code and did not rerun the tests. As the T042 notes say, the portable goldens and the rules version bump are left to T047.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "spec/tasks/T042.draws-named-by-what-they-settle.md:8 (T042 acceptance 1)",
+                "message": "T042 acceptance 1 says every request kind has a cooldown of at least 3 rounds, but CLUB-20 (r16) sets recovery support's cooldown to 2, and the code correctly keeps 2. The key is still unique per use because every cooldown is at least 1, which blocks a second request in the same year and round; care.test.ts asserts every cooldown is above 0. The worker marked this item [v] and explained the gap under limits. Hand back to planning to reword the acceptance as 'every cooldown refuses a second use in the same round' instead of 'at least 3 rounds'. No code change needed."
+              }
+            ],
+            "commit": "e13b924ebb782d824cd8cce72491873577d66fd9",
+            "baseCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+            "submissionId": "cfdfb548-4aa9-4e5d-a332-1bbb7a05abeb",
+            "createdAt": "2026-10-12T06:05:16.544Z",
+            "finishedAt": "2026-10-12T06:09:46.649Z",
+            "invalidatedAt": "2026-10-12T06:19:25.613Z",
+            "invalidationReason": "review base changed"
+          },
+          {
+            "id": "c1550e39-1779-451d-9c9a-456e46a0acc5",
+            "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+            "status": "reviewing",
+            "commit": "e13b924ebb782d824cd8cce72491873577d66fd9",
+            "baseCommit": "a37e137038d9f4211780569bddf8856da8860cd4",
+            "submissionId": "cfdfb548-4aa9-4e5d-a332-1bbb7a05abeb",
+            "createdAt": "2026-10-12T06:19:25.626Z",
+            "invalidatedAt": "2026-10-12T06:19:25.750Z",
+            "invalidationReason": "T042: ARCH@7가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 57,
+      "at": "2026-10-12T06:28:09.844Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying",
+        "verifiedCommit": null
+      }
+    },
+    {
+      "sequence": 58,
+      "at": "2026-10-12T06:28:09.981Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T042: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+      }
+    },
+    {
+      "sequence": 59,
+      "at": "2026-10-12T06:28:47.355Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": "planning refreshed T043 base (WEB@50 ARCH@8) and work/one-result was merged into the lane; continue T044 from the uncommitted changes in this workspace"
+      }
+    },
+    {
+      "sequence": 60,
+      "at": "2026-10-12T06:28:48.342Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 61,
+      "at": "2026-10-12T06:30:31.738Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "submittedBase": "9d13f6dfcf1f25d5965ec811970fabd0cac51ce7",
+        "submissionId": "fefa6983-a123-4ff1-84f3-63c930aae0bc",
+        "submittedAt": "2026-10-12T06:30:31.738Z",
+        "steps": [
+          {
+            "taskId": "T042",
+            "commit": "22b9e8c9e1718ad36b48c2334bdb2700b3d31a2f",
+            "at": "2026-10-12T06:30:31.730Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T06:28:48.487Z",
+                "finishedAt": "2026-10-12T06:30:31.545Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+            "startedAt": "2026-10-12T06:28:48.487Z",
+            "finishedAt": "2026-10-12T06:30:31.545Z"
+          }
+        ],
+        "verifiedCommit": "22b9e8c9e1718ad36b48c2334bdb2700b3d31a2f"
+      }
+    },
+    {
+      "sequence": 62,
+      "at": "2026-10-12T06:40:52.721Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T048",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 63,
+      "at": "2026-10-12T06:40:53.081Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T048",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 64,
+      "at": "2026-10-12T06:40:53.104Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T048",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 65,
+      "at": "2026-10-12T06:42:27.156Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T049",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T048",
+            "commit": "e03cc77d17961cf903a0e48f97ed49544fe8f81c",
+            "at": "2026-10-12T06:42:27.154Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T06:40:53.279Z",
+                "finishedAt": "2026-10-12T06:42:26.952Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 66,
+      "at": "2026-10-12T06:42:27.161Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "89657dd5-b3cc-4863-ae27-4ec9f6a2c329",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T06:19:25.313Z",
+          "finishedAt": "2026-10-12T06:42:27.161Z",
+          "error": null,
+          "summary": "T048 is done; nothing is committed. Typecheck and the full unit suite pass (73 files, 504 tests), and repo-wide lint and format checks are clean. The build, the browser (e2e) tests and the spec lint were not run, so the new codec worker has not been checked in a real browser.\n\n**What works now**\n- **New codec worker (`apps/web/src/runtime/codec.ts`).** It encodes each checkpoint, decodes it again to validate it, and returns the save text plus its envelope. If anything fails it returns a typed error and nothing is written.\n- **Wiring.** The client creates the codec worker and gives the engine worker a `MessageChannel` port to it. The engine worker posts world snapshots straight to the codec, so the world never passes through the UI thread.\n- **Engine (`host.ts`).** Commands no longer encode, and their replies carry no `raw`. A new `save` request skips the revision check and posts the current world to the codec. Export still encodes as before.\n- **Committing (`SaveRepository.commit`).** It now accepts the codec's already-validated envelope, so there is no extra `inspect` round trip. It refuses any checkpoint whose generation is not newer than the last committed one.\n- **One save at a time (`GameClient.save()`).** Only one checkpoint is built at once. Requests that arrive meanwhile are merged into a single newer save. A checkpoint of a world that is no longer in play, or an older one, is dropped.\n- **Other save paths.** Import/switch, retry and parking now save through the codec. Load, load-time rule upgrades and recovery still decode and validate in the engine worker.\n- **Clock still waits for saves.** Each change is still committed before the client's queue moves on, as the task required until T049. This also keeps the \"저장 재시도\" button from flashing on every step.\n\n**Decision for you:** the task notes said to post `pack(w)` instead of the world if snapshotting cost more than ~50 ms. I measured a 100-season world in Node: posting the world costs 127–134 ms on the engine thread, but `pack(w)` costs 702–778 ms. So I kept posting the world, even though it is over the 50 ms limit. Planning should confirm that. This is recorded in the task's limits, and the measurement was not on `.tmp/release-storage-worst-world.json`, which isn't in this checkout.\n\n**Tests added or changed**\n- `host.test.ts`: commands return no `raw`; a `save` request yields a checkpoint matching the world's current revision.\n- `client.test.ts`: real host and codec connected through a `MessageChannel`. Covers commit without `inspect`, a validation failure that writes no slot and shows the existing save error, and merging of save requests.\n- `persistence.test.ts`: a 10-season world round-trips through the codec path, and an older checkpoint is refused.\n\n**Blocked by permissions:**\n- `work status`/`work board`, so I worked from the assignment JSON.\n- The spec lint.\n- `pnpm run build`.\n- Deleting a scratch file outside the repo, `/tmp/codec-measure/measure.ts`.\n\nThe temporary measurement test I added inside the repo was removed. The T048 acceptance boxes are ticked and its result is filled in, with `at: -` because nothing is committed."
+        }
+      }
+    },
+    {
+      "sequence": 67,
+      "at": "2026-10-12T06:42:27.193Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "7a8f8d42-3c61-4ee6-a154-ce888074c732",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T06:42:27.192Z"
+        }
+      }
+    },
+    {
+      "sequence": 68,
+      "at": "2026-10-12T06:42:27.199Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "7a8f8d42-3c61-4ee6-a154-ce888074c732",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T06:42:27.192Z"
+        }
+      }
+    },
+    {
+      "sequence": 69,
+      "at": "2026-10-12T06:42:27.212Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+      }
+    },
+    {
+      "sequence": 70,
+      "at": "2026-10-12T06:42:27.373Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "92e1a38a-669f-41b7-88c2-57edf7d4e94a",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "reviewing",
+          "commit": "051235f78a6c297ffaba006bc500eee829716fbe",
+          "baseCommit": "9d13f6dfcf1f25d5965ec811970fabd0cac51ce7",
+          "submissionId": "8867c66e-a584-4d97-a30f-410af1b91e05",
+          "createdAt": "2026-10-12T06:42:27.373Z"
+        }
+      }
+    },
+    {
+      "sequence": 71,
+      "at": "2026-10-12T06:42:27.615Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "55f78a18-9775-4966-bca3-4645c53e1250",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T06:42:27.615Z"
+        }
+      }
+    },
+    {
+      "sequence": 72,
+      "at": "2026-10-12T06:42:27.623Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "55f78a18-9775-4966-bca3-4645c53e1250",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T06:42:27.615Z"
+        }
+      }
+    },
+    {
+      "sequence": 73,
+      "at": "2026-10-12T06:47:10.275Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": null,
+        "review": {
+          "id": "92e1a38a-669f-41b7-88c2-57edf7d4e94a",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T046 meets its acceptance and ECON-6 and ECON-10 (r13). advanceEconomy now converts coaches' wages (w.staff), free-agent managers' wages (managerMarket.free), academy prospects' wages, and the fee and counterFee of open bids (pending or countered). The `w.currency` guard keeps each conversion to exactly once. Settled bids and ledger events keep the units they were made in. I checked every money field in the World type, and with this change all stored live amounts are converted. Coach candidates, market candidates and other clubs' managers are recalculated from w.year on every read, so they need no conversion. The manager-market refresh at the season close runs after advanceEconomy. New agents and academy intake are priced in the new currency, so nothing is converted twice. The new FRA 1999 and ENG 1971 tests check exact `ratio` results (655957→100000, 2400→1000), that settled bids are left alone, and that replaying the change converts nothing more. In financialBreakdown, every paid `care:` kind is grouped into 구단주 요청 and `care:friendly` is income (친선 경기). `win-bonus` gets its own 승리 수당 line, and recent receipts use the same grouping. I traced every debit and credit call site in the engine, and each one now lands on a named line, so the catch-all line only catches entries no current rule produces. The changes stay inside the task's file list, with no version bump, and goldens are left to T047. I did not rerun the tests: the review checkout has no node_modules and the review is read-only. I rely on the worker's reported typecheck and test:unit run (74 files, 499 tests) together with the code reading above. The P3 notes below are optional or need a planning decision; none blocks this task.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/economy.ts:26 (T046) / packages/engine/src/transfers.ts:431",
+              "message": "The new comment says 'Open negotiations carry on in the new money', but settleBids still ends any open bid whose year used a different currency. Every bid converted at the season close therefore expires on the next club day, with the message '화폐 단위가 바뀌어 이전 금액의 협상이 끝났어요' (the negotiation ended because the currency changed). The conversion only matters on the close day itself: a respondBid accept that day now pays or receives the correctly converted fee, where before this change it used old units. On that same day, accepting a legacy countered outgoing bid still signs the player at an old-currency wage, because marketOffer prices the player through transferOffers(w, bid.year). ECON-6 does not say whether converted open bids survive, and transfers.ts is outside T046's file list (the worker flagged this under limits). Handoff to planning: either converted open bids carry on, and the expiry at transfers.ts:431 is dropped (T045 already edits transfers.ts and T047 converts `offer`), or they end, and the comment at economy.ts:26 should say so."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/economy.ts:45 (T046)",
+              "message": "The currency event detail still says '명목 잔고와 미지급 계약만 환산' (only nominal balances and unpaid contracts are converted). That wording matches ECON-6 before r13. It now under-describes the conversion, which also covers open bids and free-agent asking wages. The line is in a file T046 owns, and T047 regenerates the goldens anyway, so rewording it to match 'every live amount' costs little. It can go with T047 if the goldens are the concern."
+            }
+          ],
+          "commit": "051235f78a6c297ffaba006bc500eee829716fbe",
+          "baseCommit": "9d13f6dfcf1f25d5965ec811970fabd0cac51ce7",
+          "submissionId": "8867c66e-a584-4d97-a30f-410af1b91e05",
+          "createdAt": "2026-10-12T06:42:27.373Z",
+          "finishedAt": "2026-10-12T06:47:10.275Z"
+        }
+      }
+    },
+    {
+      "sequence": 74,
+      "at": "2026-10-12T06:47:10.280Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "55f78a18-9775-4966-bca3-4645c53e1250",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T06:42:27.615Z",
+          "finishedAt": "2026-10-12T06:47:10.280Z",
+          "error": null,
+          "summary": "T046 meets its acceptance and ECON-6 and ECON-10 (r13). advanceEconomy now converts coaches' wages (w.staff), free-agent managers' wages (managerMarket.free), academy prospects' wages, and the fee and counterFee of open bids (pending or countered). The `w.currency` guard keeps each conversion to exactly once. Settled bids and ledger events keep the units they were made in. I checked every money field in the World type, and with this change all stored live amounts are converted. Coach candidates, market candidates and other clubs' managers are recalculated from w.year on every read, so they need no conversion. The manager-market refresh at the season close runs after advanceEconomy. New agents and academy intake are priced in the new currency, so nothing is converted twice. The new FRA 1999 and ENG 1971 tests check exact `ratio` results (655957→100000, 2400→1000), that settled bids are left alone, and that replaying the change converts nothing more. In financialBreakdown, every paid `care:` kind is grouped into 구단주 요청 and `care:friendly` is income (친선 경기). `win-bonus` gets its own 승리 수당 line, and recent receipts use the same grouping. I traced every debit and credit call site in the engine, and each one now lands on a named line, so the catch-all line only catches entries no current rule produces. The changes stay inside the task's file list, with no version bump, and goldens are left to T047. I did not rerun the tests: the review checkout has no node_modules and the review is read-only. I rely on the worker's reported typecheck and test:unit run (74 files, 499 tests) together with the code reading above. The P3 notes below are optional or need a planning decision; none blocks this task."
+        }
+      }
+    },
+    {
+      "sequence": 75,
+      "at": "2026-10-12T06:47:10.570Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "2e9ee2fb-975b-43d6-9de1-054ab3b5a223",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "reviewing",
+          "commit": "22b9e8c9e1718ad36b48c2334bdb2700b3d31a2f",
+          "baseCommit": "9d13f6dfcf1f25d5965ec811970fabd0cac51ce7",
+          "submissionId": "fefa6983-a123-4ff1-84f3-63c930aae0bc",
+          "createdAt": "2026-10-12T06:47:10.570Z"
+        }
+      }
+    },
+    {
+      "sequence": 76,
+      "at": "2026-10-12T06:47:10.834Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "98fc18ef-8968-430f-b6fa-cab66de4e53f",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T06:47:10.834Z"
+        }
+      }
+    },
+    {
+      "sequence": 77,
+      "at": "2026-10-12T06:47:10.842Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "98fc18ef-8968-430f-b6fa-cab66de4e53f",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T06:47:10.834Z"
+        }
+      }
+    },
+    {
+      "sequence": 78,
+      "at": "2026-10-12T06:51:47.355Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "2e9ee2fb-975b-43d6-9de1-054ab3b5a223",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T042 meets ARCH-5 (r8) and CLUB-20 (r16). Commit 22b9e8c changes the four draws (owner requests, caretaker managers, campaigns and outgoing bids) so they are named by what they settle and the game date instead of `w.revision`. In non-test engine source, `w.revision` now appears only in counter increments and its `revision: 0` start, and no other draw key counts commands or reads inbox or event lengths. I checked by reading the code that none of the new keys can repeat. Owner requests: a cooldown read from the event log blocks a second use of a request in the same year and round, because every cooldown is at least 1. Caretakers: the departure count includes the departure just recorded, and the engine never trims events (the save codec keeps the event count). Campaigns: an active campaign blocks a second one of the same kind, and campaigns only settle when a round advances. Bids: `pruneBids` only runs in `dailyMarket`, so no bid is pruned between two bids on the same day, and the ID includes the day. As the impl notes require, campaigns and bids already in saves keep their old IDs, and old campaign results still draw from the stored ID. The new tests in transfers.test.ts, care.test.ts and operations.test.ts would fail on the old revision-keyed code. They compare worlds with and without extra reads, including a whole-world `canonical` match after a bid is answered. No other code parses these IDs, and the save schema treats them as plain strings. I did not run the test suites in this read-only review; the worker reported typecheck and the full unit suite passing (73 files, 501 tests). Portable goldens are left for T047, as the task says.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T042.draws-named-by-what-they-settle.md:8 (T042 acceptance 1)",
+              "message": "Acceptance 1 says every request kind has a cooldown of at least 3 rounds, but the CLUB-20 table (spec/ssot/CLUB.md:57) gives recovery support a cooldown of 2, and care.ts:138 keeps that SSOT value, which is correct. The key is still unique per use because `careOffer` blocks any reuse in the same year and round whenever the cooldown is at least 1, so the code is right. Only the wording is wrong, and the box is ticked [v] even though the literal clause is false; the worker already noted this under limits. Hand off to planning to change the wording to 'at least 1 settled round'. No code change needed."
+            }
+          ],
+          "commit": "22b9e8c9e1718ad36b48c2334bdb2700b3d31a2f",
+          "baseCommit": "9d13f6dfcf1f25d5965ec811970fabd0cac51ce7",
+          "submissionId": "fefa6983-a123-4ff1-84f3-63c930aae0bc",
+          "createdAt": "2026-10-12T06:47:10.570Z",
+          "finishedAt": "2026-10-12T06:51:47.355Z"
+        }
+      }
+    },
+    {
+      "sequence": 79,
+      "at": "2026-10-12T06:51:47.362Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "98fc18ef-8968-430f-b6fa-cab66de4e53f",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T06:47:10.834Z",
+          "finishedAt": "2026-10-12T06:51:47.362Z",
+          "error": null,
+          "summary": "T042 meets ARCH-5 (r8) and CLUB-20 (r16). Commit 22b9e8c changes the four draws (owner requests, caretaker managers, campaigns and outgoing bids) so they are named by what they settle and the game date instead of `w.revision`. In non-test engine source, `w.revision` now appears only in counter increments and its `revision: 0` start, and no other draw key counts commands or reads inbox or event lengths. I checked by reading the code that none of the new keys can repeat. Owner requests: a cooldown read from the event log blocks a second use of a request in the same year and round, because every cooldown is at least 1. Caretakers: the departure count includes the departure just recorded, and the engine never trims events (the save codec keeps the event count). Campaigns: an active campaign blocks a second one of the same kind, and campaigns only settle when a round advances. Bids: `pruneBids` only runs in `dailyMarket`, so no bid is pruned between two bids on the same day, and the ID includes the day. As the impl notes require, campaigns and bids already in saves keep their old IDs, and old campaign results still draw from the stored ID. The new tests in transfers.test.ts, care.test.ts and operations.test.ts would fail on the old revision-keyed code. They compare worlds with and without extra reads, including a whole-world `canonical` match after a bid is answered. No other code parses these IDs, and the save schema treats them as plain strings. I did not run the test suites in this read-only review; the worker reported typecheck and the full unit suite passing (73 files, 501 tests). Portable goldens are left for T047, as the task says."
+        }
+      }
+    },
+    {
+      "sequence": 80,
+      "at": "2026-10-12T06:58:24.156Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": "the interrupted worker's T044 changes are kept as a WIP commit; continue T044 from it, finish the acceptance and submit the lane"
+      }
+    },
+    {
+      "sequence": 81,
+      "at": "2026-10-12T06:59:31.142Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 82,
+      "at": "2026-10-12T06:59:31.609Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "통합 후보의 spec 검증에 실패했습니다."
+      }
+    },
+    {
+      "sequence": 83,
+      "at": "2026-10-12T06:59:32.762Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 84,
+      "at": "2026-10-12T06:59:33.220Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "통합 후보의 spec 검증에 실패했습니다."
+      }
+    },
+    {
+      "sequence": 85,
+      "at": "2026-10-12T07:01:10.483Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 86,
+      "at": "2026-10-12T07:01:10.611Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T049: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+      }
+    },
+    {
+      "sequence": 87,
+      "at": "2026-10-12T07:01:10.623Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "7a8f8d42-3c61-4ee6-a154-ce888074c732",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T06:42:27.192Z",
+          "finishedAt": "2026-10-12T07:01:10.623Z",
+          "error": "T049: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+          "summary": "T049 구현은 끝났습니다. 다만 e2e는 이 서버에서 브라우저가 실행되지 않아 돌리지 못했고, 해당 acceptance 항목 하나는 [ ]로 남겨 두었습니다.\n\n변경 내용:\n- progression.ts: 저장이 끝날 때까지 다음 걸음을 막던 조건을 없앴습니다. 명령은 여전히 한 번에 하나씩만 보냅니다(inFlight/processing). 밀린 날짜는 직전 걸음 자체가 속도보다 오래 걸렸을 때나 자리를 비웠다 돌아왔을 때만 갚습니다. 그래서 x10에서도 평소에는 한 걸음에 하루씩 갑니다. 시계가 멈추면 이유와 상관없이 바로 저장하고, 멈춘 뒤에 도착한 걸음의 결과도 저장합니다.\n- client.ts: 이제 어떤 명령도 저장을 기다리지 않습니다.\n  - 소유자 결정(명령, 창단, 알림 확인)은 `saveSoon()`으로 바로 백그라운드 저장을 요청합니다.\n  - 자동 진행은 저장되지 않은 구간마다 30초(`AUTOSAVE_MS`) 타이머를 하나 겁니다.\n  - 상태에 `savedAt`과 `saveFailed`를 추가했습니다.\n  - 백그라운드 저장 요청은 긴 명령 뒤에 줄을 설 수 있습니다. 그래서 15초 워커 감시 시간이 잘못 터지지 않도록 저장 요청에는 체크포인트 감시 시간(60초)을 씁니다.\n  - 게임 삭제(forget)와 종료(dispose) 때 자동 저장 타이머를 해제합니다.\n- App.tsx: 탭이 숨겨질 때와 `pagehide` 때 바로 저장합니다. 저장 상태는 모두 저장됐으면 `저장 완료`, 아니면 `방금 저장`/`n초 전 저장`으로 보입니다. 이 탭에서 한 번도 저장하지 않았으면 `저장 대기`입니다. `저장 재시도` 버튼은 저장이 실패했을 때만 나옵니다.\n- 테스트:\n  - progression.test: 가짜 타이머로 x10에서 20ms 명령과 0.8초 저장을 돌려, 100ms마다 하루씩 진행하고 저장을 기다리지 않으며 멈추면 저장한다는 것을 확인합니다.\n  - client.test: 자동 저장 타이머, 결정 직후 바로 저장하되 명령은 기다리지 않는다는 것, 커밋마다 읽기 전용 탭 알림이 가는 것을 확인합니다. 기존 테스트는 비동기 저장에 맞춰 `whenSaved()`를 기다리도록 고쳤습니다.\n  - e2e: builds, business, cups-and-club, founding, intervention, milestones, native-touch, news, recruitment에서 새로고침 전에 `저장 완료`를 기다리게 했습니다. recovery의 저장 실패 후 상태 문구 기대값도 바꿨습니다.\n\n검증 결과: `pnpm run typecheck`, `pnpm run test:unit`(73개 파일, 506개 테스트), `pnpm run lint`, `pnpm run format:check`, `pnpm run build`가 모두 통과했습니다. 아직 커밋 전이라 result의 at은 `-`입니다.\n\n검증하지 못한 것:\n- e2e: Playwright의 Chromium과 Firefox가 시작되지 않습니다(`libatk-1.0.so.0`, `libgtk-3.so.0` 없음). 그래서 e2e 수정이 브라우저에서 통과하는지는 확인하지 못했습니다.\n- `haeram-spec-creator` 실행(work board, lint)이 이 세션에서 허용되지 않아, 상위 브랜치 상태 확인과 spec lint를 하지 못했습니다.\n- first-play 진입 번들 크기는 다시 재지 않았습니다.\n\n알려진 동작: 체크포인트에 저장 시각이 없어서, 불러온 게임은 그 탭에서 처음 저장할 때까지 `저장 대기`로 표시됩니다."
+        }
+      }
+    },
+    {
+      "sequence": 88,
+      "at": "2026-10-12T07:01:10.774Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "b7a99434-ce6a-4da6-a756-da44b346e2ab",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T07:01:10.774Z"
+        }
+      }
+    },
+    {
+      "sequence": 89,
+      "at": "2026-10-12T07:01:10.782Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "b7a99434-ce6a-4da6-a756-da44b346e2ab",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T07:01:10.774Z"
+        }
+      }
+    },
+    {
+      "sequence": 90,
+      "at": "2026-10-12T07:01:10.964Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "approved",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "629ae061-9b4d-469d-a39e-280b74987957",
+            "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T042: draws and the IDs that feed them no longer use `w.revision`. At the base commit `w.revision` fed four draws, and all four now use the new keys: the care draw is `${seed}:care:${kind}:${year}:${round}`, the caretaker is `${seed}:interim:${year}:${day}:${departures}`, the campaign ID is `${year}:${round}:${kind}`, and the outgoing bid ID is `out:${year}:${day}:${n}:${playerId}`. In engine source (excluding tests), `w.revision` now appears only in counter increments and its `revision: 0` start. Checks on whether the new keys are unique: (1) every care cooldown is above 0, so `careOffer` blocks a second request of a kind in the same year and round. (2) Departure events are never trimmed and the count includes the current departure, so two caretakers on the same day still get different keys. (3) The `w.campaigns.some(kind)` check blocks a second campaign of a kind. `settleRound` runs only from `advanceRound`, so a campaign can't finish and restart within one round. (4) `pruneBids` runs only in `dailyMarket`, so within a day the count n only grows. Old saved IDs keep their stored form, and nothing parses ID strings. The new tests would fail on the old code. One of them compares the whole world, ignoring the revision counter, after a bid is answered. The worker reports typecheck and unit tests passing; this review checked the code and did not rerun the tests. As the T042 notes say, the portable goldens and the rules version bump are left to T047.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "spec/tasks/T042.draws-named-by-what-they-settle.md:8 (T042 acceptance 1)",
+                "message": "T042 acceptance 1 says every request kind has a cooldown of at least 3 rounds, but CLUB-20 (r16) sets recovery support's cooldown to 2, and the code correctly keeps 2. The key is still unique per use because every cooldown is at least 1, which blocks a second request in the same year and round; care.test.ts asserts every cooldown is above 0. The worker marked this item [v] and explained the gap under limits. Hand back to planning to reword the acceptance as 'every cooldown refuses a second use in the same round' instead of 'at least 3 rounds'. No code change needed."
+              }
+            ],
+            "commit": "e13b924ebb782d824cd8cce72491873577d66fd9",
+            "baseCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+            "submissionId": "cfdfb548-4aa9-4e5d-a332-1bbb7a05abeb",
+            "createdAt": "2026-10-12T06:05:16.544Z",
+            "finishedAt": "2026-10-12T06:09:46.649Z",
+            "invalidatedAt": "2026-10-12T06:19:25.613Z",
+            "invalidationReason": "review base changed"
+          },
+          {
+            "id": "c1550e39-1779-451d-9c9a-456e46a0acc5",
+            "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+            "status": "reviewing",
+            "commit": "e13b924ebb782d824cd8cce72491873577d66fd9",
+            "baseCommit": "a37e137038d9f4211780569bddf8856da8860cd4",
+            "submissionId": "cfdfb548-4aa9-4e5d-a332-1bbb7a05abeb",
+            "createdAt": "2026-10-12T06:19:25.626Z",
+            "invalidatedAt": "2026-10-12T06:19:25.750Z",
+            "invalidationReason": "T042: ARCH@7가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+          },
+          {
+            "id": "2e9ee2fb-975b-43d6-9de1-054ab3b5a223",
+            "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T042 meets ARCH-5 (r8) and CLUB-20 (r16). Commit 22b9e8c changes the four draws (owner requests, caretaker managers, campaigns and outgoing bids) so they are named by what they settle and the game date instead of `w.revision`. In non-test engine source, `w.revision` now appears only in counter increments and its `revision: 0` start, and no other draw key counts commands or reads inbox or event lengths. I checked by reading the code that none of the new keys can repeat. Owner requests: a cooldown read from the event log blocks a second use of a request in the same year and round, because every cooldown is at least 1. Caretakers: the departure count includes the departure just recorded, and the engine never trims events (the save codec keeps the event count). Campaigns: an active campaign blocks a second one of the same kind, and campaigns only settle when a round advances. Bids: `pruneBids` only runs in `dailyMarket`, so no bid is pruned between two bids on the same day, and the ID includes the day. As the impl notes require, campaigns and bids already in saves keep their old IDs, and old campaign results still draw from the stored ID. The new tests in transfers.test.ts, care.test.ts and operations.test.ts would fail on the old revision-keyed code. They compare worlds with and without extra reads, including a whole-world `canonical` match after a bid is answered. No other code parses these IDs, and the save schema treats them as plain strings. I did not run the test suites in this read-only review; the worker reported typecheck and the full unit suite passing (73 files, 501 tests). Portable goldens are left for T047, as the task says.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "spec/tasks/T042.draws-named-by-what-they-settle.md:8 (T042 acceptance 1)",
+                "message": "Acceptance 1 says every request kind has a cooldown of at least 3 rounds, but the CLUB-20 table (spec/ssot/CLUB.md:57) gives recovery support a cooldown of 2, and care.ts:138 keeps that SSOT value, which is correct. The key is still unique per use because `careOffer` blocks any reuse in the same year and round whenever the cooldown is at least 1, so the code is right. Only the wording is wrong, and the box is ticked [v] even though the literal clause is false; the worker already noted this under limits. Hand off to planning to change the wording to 'at least 1 settled round'. No code change needed."
+              }
+            ],
+            "commit": "22b9e8c9e1718ad36b48c2334bdb2700b3d31a2f",
+            "baseCommit": "9d13f6dfcf1f25d5965ec811970fabd0cac51ce7",
+            "submissionId": "fefa6983-a123-4ff1-84f3-63c930aae0bc",
+            "createdAt": "2026-10-12T06:47:10.570Z",
+            "finishedAt": "2026-10-12T06:51:47.355Z",
+            "invalidatedAt": "2026-10-12T07:01:10.952Z",
+            "invalidationReason": "review base changed"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 91,
+      "at": "2026-10-12T07:01:10.964Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "approved",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "a2276751-ce04-40fd-98a8-f4b89b823679",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "reviewing",
+          "commit": "051235f78a6c297ffaba006bc500eee829716fbe",
+          "baseCommit": "3596812561125f11e8f12934e613b2747fafd139",
+          "submissionId": "8867c66e-a584-4d97-a30f-410af1b91e05",
+          "createdAt": "2026-10-12T07:01:10.964Z"
+        },
+        "reviewHistory": [
+          {
+            "id": "a4bf6b77-8eb4-48df-9a0a-78065d69fea0",
+            "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T046 meets all five acceptance items and ECON-6/ECON-10 at ECON r13. I checked this by reading the code; I did not rerun the tests and relied on the worker's typecheck and test:unit record.\n\nCurrency conversion: advanceEconomy now also converts coaches' wages, free-agent managers' wages and academy prospects' wages. It converts fee and counterFee only on pending or countered bids, which matches transfers.ts isOpen. Completed and rejected bids keep the money they were settled in. The other places that hold prices on offer don't store money, so they don't need converting. Managers at other clubs, staff candidates and market candidates are rebuilt with quote(w.year) whenever they are read.\n\nNew economy test (economy.test.ts): it covers FRA 1999 and ENG 1971 against fixed expected values (655957→100000 and 2400→1000), not only a copy of the conversion formula. It also proves the conversion runs exactly once: replaying the change leaves canonical(w) unchanged, and the following year converts nothing.\n\nSeason ledger: the lookup is keyed by kind, so every paid care:* entry falls under 구단주 요청, care:friendly goes to income (친선 경기), and win-bonus goes to 승리 수당. This matches how operations.ts and care.ts record events: a friendly never has a cost, and requests with no cost record no amount. The recent-receipts list uses the same lookup. The web FinancialBreakdown component shows rows generically, so the new keys need no UI change. An audit of every debit/credit site found no other kind that would fall into the catch-all line. The finance test covers a meeting, a camp, a friendly and a paid win bonus, and the line totals match w.income and w.expense.\n\nOnly the four allowed files plus the task file changed. Acceptance checks are marked [v] and the result lines follow FORMAT. Two P3 handoffs, neither blocking.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/economy.ts:26 / packages/engine/src/transfers.ts:431",
+                "message": "T046: The comment says open negotiations 'carry on in the new money', but settleBids (transfers.ts:431, outside T046's allowed files) still ends any open bid from an earlier year whose currency differs from w.currency, with the message '화폐 단위가 바뀌어 이전 금액의 협상이 끝났어요'. So a bid converted correctly here is cancelled at the next settlement anyway. This is only reachable when a bid is still open at the season rollover, since no transfer window spans it, so the fix is not urgent. The worker already raised it under result.limits. Handoff to planning: decide whether this guard should only catch unconverted bids from older saves. That decision also affects T045/T047, which plan to convert the bid's `offer` snapshot."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/economy.ts:41",
+                "message": "T046: The currency event text still reads '명목 잔고와 미지급 계약만 환산', which describes less than is now converted: open bids and free agents' asking wages are converted too. Changing the text changes the golden event facts, so do it together with T047's golden regeneration or in a follow-up, not in this lane."
+              }
+            ],
+            "commit": "051235f78a6c297ffaba006bc500eee829716fbe",
+            "baseCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+            "submissionId": "8867c66e-a584-4d97-a30f-410af1b91e05",
+            "createdAt": "2026-10-12T06:09:47.285Z",
+            "finishedAt": "2026-10-12T06:14:13.645Z",
+            "invalidatedAt": "2026-10-12T06:19:25.626Z",
+            "invalidationReason": "review base changed"
+          },
+          {
+            "id": "92e1a38a-669f-41b7-88c2-57edf7d4e94a",
+            "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T046 meets its acceptance and ECON-6 and ECON-10 (r13). advanceEconomy now converts coaches' wages (w.staff), free-agent managers' wages (managerMarket.free), academy prospects' wages, and the fee and counterFee of open bids (pending or countered). The `w.currency` guard keeps each conversion to exactly once. Settled bids and ledger events keep the units they were made in. I checked every money field in the World type, and with this change all stored live amounts are converted. Coach candidates, market candidates and other clubs' managers are recalculated from w.year on every read, so they need no conversion. The manager-market refresh at the season close runs after advanceEconomy. New agents and academy intake are priced in the new currency, so nothing is converted twice. The new FRA 1999 and ENG 1971 tests check exact `ratio` results (655957→100000, 2400→1000), that settled bids are left alone, and that replaying the change converts nothing more. In financialBreakdown, every paid `care:` kind is grouped into 구단주 요청 and `care:friendly` is income (친선 경기). `win-bonus` gets its own 승리 수당 line, and recent receipts use the same grouping. I traced every debit and credit call site in the engine, and each one now lands on a named line, so the catch-all line only catches entries no current rule produces. The changes stay inside the task's file list, with no version bump, and goldens are left to T047. I did not rerun the tests: the review checkout has no node_modules and the review is read-only. I rely on the worker's reported typecheck and test:unit run (74 files, 499 tests) together with the code reading above. The P3 notes below are optional or need a planning decision; none blocks this task.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/economy.ts:26 (T046) / packages/engine/src/transfers.ts:431",
+                "message": "The new comment says 'Open negotiations carry on in the new money', but settleBids still ends any open bid whose year used a different currency. Every bid converted at the season close therefore expires on the next club day, with the message '화폐 단위가 바뀌어 이전 금액의 협상이 끝났어요' (the negotiation ended because the currency changed). The conversion only matters on the close day itself: a respondBid accept that day now pays or receives the correctly converted fee, where before this change it used old units. On that same day, accepting a legacy countered outgoing bid still signs the player at an old-currency wage, because marketOffer prices the player through transferOffers(w, bid.year). ECON-6 does not say whether converted open bids survive, and transfers.ts is outside T046's file list (the worker flagged this under limits). Handoff to planning: either converted open bids carry on, and the expiry at transfers.ts:431 is dropped (T045 already edits transfers.ts and T047 converts `offer`), or they end, and the comment at economy.ts:26 should say so."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/economy.ts:45 (T046)",
+                "message": "The currency event detail still says '명목 잔고와 미지급 계약만 환산' (only nominal balances and unpaid contracts are converted). That wording matches ECON-6 before r13. It now under-describes the conversion, which also covers open bids and free-agent asking wages. The line is in a file T046 owns, and T047 regenerates the goldens anyway, so rewording it to match 'every live amount' costs little. It can go with T047 if the goldens are the concern."
+              }
+            ],
+            "commit": "051235f78a6c297ffaba006bc500eee829716fbe",
+            "baseCommit": "9d13f6dfcf1f25d5965ec811970fabd0cac51ce7",
+            "submissionId": "8867c66e-a584-4d97-a30f-410af1b91e05",
+            "createdAt": "2026-10-12T06:42:27.373Z",
+            "finishedAt": "2026-10-12T06:47:10.275Z",
+            "invalidatedAt": "2026-10-12T07:01:10.964Z",
+            "invalidationReason": "review base changed"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 92,
+      "at": "2026-10-12T07:01:11.105Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "reviewing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "ECON: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요.",
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "a4bf6b77-8eb4-48df-9a0a-78065d69fea0",
+            "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T046 meets all five acceptance items and ECON-6/ECON-10 at ECON r13. I checked this by reading the code; I did not rerun the tests and relied on the worker's typecheck and test:unit record.\n\nCurrency conversion: advanceEconomy now also converts coaches' wages, free-agent managers' wages and academy prospects' wages. It converts fee and counterFee only on pending or countered bids, which matches transfers.ts isOpen. Completed and rejected bids keep the money they were settled in. The other places that hold prices on offer don't store money, so they don't need converting. Managers at other clubs, staff candidates and market candidates are rebuilt with quote(w.year) whenever they are read.\n\nNew economy test (economy.test.ts): it covers FRA 1999 and ENG 1971 against fixed expected values (655957→100000 and 2400→1000), not only a copy of the conversion formula. It also proves the conversion runs exactly once: replaying the change leaves canonical(w) unchanged, and the following year converts nothing.\n\nSeason ledger: the lookup is keyed by kind, so every paid care:* entry falls under 구단주 요청, care:friendly goes to income (친선 경기), and win-bonus goes to 승리 수당. This matches how operations.ts and care.ts record events: a friendly never has a cost, and requests with no cost record no amount. The recent-receipts list uses the same lookup. The web FinancialBreakdown component shows rows generically, so the new keys need no UI change. An audit of every debit/credit site found no other kind that would fall into the catch-all line. The finance test covers a meeting, a camp, a friendly and a paid win bonus, and the line totals match w.income and w.expense.\n\nOnly the four allowed files plus the task file changed. Acceptance checks are marked [v] and the result lines follow FORMAT. Two P3 handoffs, neither blocking.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/economy.ts:26 / packages/engine/src/transfers.ts:431",
+                "message": "T046: The comment says open negotiations 'carry on in the new money', but settleBids (transfers.ts:431, outside T046's allowed files) still ends any open bid from an earlier year whose currency differs from w.currency, with the message '화폐 단위가 바뀌어 이전 금액의 협상이 끝났어요'. So a bid converted correctly here is cancelled at the next settlement anyway. This is only reachable when a bid is still open at the season rollover, since no transfer window spans it, so the fix is not urgent. The worker already raised it under result.limits. Handoff to planning: decide whether this guard should only catch unconverted bids from older saves. That decision also affects T045/T047, which plan to convert the bid's `offer` snapshot."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/economy.ts:41",
+                "message": "T046: The currency event text still reads '명목 잔고와 미지급 계약만 환산', which describes less than is now converted: open bids and free agents' asking wages are converted too. Changing the text changes the golden event facts, so do it together with T047's golden regeneration or in a follow-up, not in this lane."
+              }
+            ],
+            "commit": "051235f78a6c297ffaba006bc500eee829716fbe",
+            "baseCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+            "submissionId": "8867c66e-a584-4d97-a30f-410af1b91e05",
+            "createdAt": "2026-10-12T06:09:47.285Z",
+            "finishedAt": "2026-10-12T06:14:13.645Z",
+            "invalidatedAt": "2026-10-12T06:19:25.626Z",
+            "invalidationReason": "review base changed"
+          },
+          {
+            "id": "92e1a38a-669f-41b7-88c2-57edf7d4e94a",
+            "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T046 meets its acceptance and ECON-6 and ECON-10 (r13). advanceEconomy now converts coaches' wages (w.staff), free-agent managers' wages (managerMarket.free), academy prospects' wages, and the fee and counterFee of open bids (pending or countered). The `w.currency` guard keeps each conversion to exactly once. Settled bids and ledger events keep the units they were made in. I checked every money field in the World type, and with this change all stored live amounts are converted. Coach candidates, market candidates and other clubs' managers are recalculated from w.year on every read, so they need no conversion. The manager-market refresh at the season close runs after advanceEconomy. New agents and academy intake are priced in the new currency, so nothing is converted twice. The new FRA 1999 and ENG 1971 tests check exact `ratio` results (655957→100000, 2400→1000), that settled bids are left alone, and that replaying the change converts nothing more. In financialBreakdown, every paid `care:` kind is grouped into 구단주 요청 and `care:friendly` is income (친선 경기). `win-bonus` gets its own 승리 수당 line, and recent receipts use the same grouping. I traced every debit and credit call site in the engine, and each one now lands on a named line, so the catch-all line only catches entries no current rule produces. The changes stay inside the task's file list, with no version bump, and goldens are left to T047. I did not rerun the tests: the review checkout has no node_modules and the review is read-only. I rely on the worker's reported typecheck and test:unit run (74 files, 499 tests) together with the code reading above. The P3 notes below are optional or need a planning decision; none blocks this task.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/economy.ts:26 (T046) / packages/engine/src/transfers.ts:431",
+                "message": "The new comment says 'Open negotiations carry on in the new money', but settleBids still ends any open bid whose year used a different currency. Every bid converted at the season close therefore expires on the next club day, with the message '화폐 단위가 바뀌어 이전 금액의 협상이 끝났어요' (the negotiation ended because the currency changed). The conversion only matters on the close day itself: a respondBid accept that day now pays or receives the correctly converted fee, where before this change it used old units. On that same day, accepting a legacy countered outgoing bid still signs the player at an old-currency wage, because marketOffer prices the player through transferOffers(w, bid.year). ECON-6 does not say whether converted open bids survive, and transfers.ts is outside T046's file list (the worker flagged this under limits). Handoff to planning: either converted open bids carry on, and the expiry at transfers.ts:431 is dropped (T045 already edits transfers.ts and T047 converts `offer`), or they end, and the comment at economy.ts:26 should say so."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/economy.ts:45 (T046)",
+                "message": "The currency event detail still says '명목 잔고와 미지급 계약만 환산' (only nominal balances and unpaid contracts are converted). That wording matches ECON-6 before r13. It now under-describes the conversion, which also covers open bids and free-agent asking wages. The line is in a file T046 owns, and T047 regenerates the goldens anyway, so rewording it to match 'every live amount' costs little. It can go with T047 if the goldens are the concern."
+              }
+            ],
+            "commit": "051235f78a6c297ffaba006bc500eee829716fbe",
+            "baseCommit": "9d13f6dfcf1f25d5965ec811970fabd0cac51ce7",
+            "submissionId": "8867c66e-a584-4d97-a30f-410af1b91e05",
+            "createdAt": "2026-10-12T06:42:27.373Z",
+            "finishedAt": "2026-10-12T06:47:10.275Z",
+            "invalidatedAt": "2026-10-12T07:01:10.964Z",
+            "invalidationReason": "review base changed"
+          },
+          {
+            "id": "a2276751-ce04-40fd-98a8-f4b89b823679",
+            "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+            "status": "reviewing",
+            "commit": "051235f78a6c297ffaba006bc500eee829716fbe",
+            "baseCommit": "3596812561125f11e8f12934e613b2747fafd139",
+            "submissionId": "8867c66e-a584-4d97-a30f-410af1b91e05",
+            "createdAt": "2026-10-12T07:01:10.964Z",
+            "invalidatedAt": "2026-10-12T07:01:11.105Z",
+            "invalidationReason": "ECON: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요."
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 93,
+      "at": "2026-10-12T07:02:17.207Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying",
+        "verifiedCommit": null
+      }
+    },
+    {
+      "sequence": 94,
+      "at": "2026-10-12T07:04:19.803Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit"
+      }
+    },
+    {
+      "sequence": 95,
+      "at": "2026-10-12T07:06:50.293Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 96,
+      "at": "2026-10-12T07:08:22.192Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+      "taskId": "T046",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "submittedBase": "3596812561125f11e8f12934e613b2747fafd139",
+        "submissionId": "33c52a5f-42b3-4ee3-a9fe-02ecacd8b3fc",
+        "submittedAt": "2026-10-12T07:08:22.192Z",
+        "steps": [
+          {
+            "taskId": "T046",
+            "commit": "c38c85b99871a6c2e413cd06f4a674a9d5d29276",
+            "at": "2026-10-12T07:08:22.183Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T07:06:50.451Z",
+                "finishedAt": "2026-10-12T07:08:22.006Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+            "startedAt": "2026-10-12T07:06:50.451Z",
+            "finishedAt": "2026-10-12T07:08:22.006Z"
+          }
+        ],
+        "verifiedCommit": "c38c85b99871a6c2e413cd06f4a674a9d5d29276"
+      }
+    },
+    {
+      "sequence": 97,
+      "at": "2026-10-12T07:09:56.526Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 98,
+      "at": "2026-10-12T07:09:56.649Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "WEB: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요."
+      }
+    },
+    {
+      "sequence": 99,
+      "at": "2026-10-12T07:09:56.663Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "b7a99434-ce6a-4da6-a756-da44b346e2ab",
+          "runner": "04bf1446-4df5-4608-aabb-68858781e112",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T07:01:10.774Z",
+          "finishedAt": "2026-10-12T07:09:56.663Z",
+          "error": "WEB: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요.",
+          "summary": "T044 (amateur exchange) is done and checked; its code was already in WIP commit f17c207 from an interrupted run. I checked it against LEAGUE-6 and the task's acceptance, and the only file I changed is the T044 result in spec/tasks/T044.amateur-exchange.md.\n\n**What the code does:**\n- When the own club played in the amateur league, `amateurEntrants` ranks that league's table before any club moves. Two places a last-division group go up: everyone but the last by table rank, the last by the `lower-promotion` playoff among the next four.\n- `promote()` hands those clubs to the last-division exchange in group order. The own club goes up like any of them, with `w.lower = false` and the 프로 무대 입성/복귀 event.\n- The extra `ranked(...).at(-1)` drop in `closeSeason` is gone.\n- Other countries, and seasons played as a professional, still send up their strongest amateur clubs.\n\n**Checks:**\n- Typecheck passes.\n- The full unit suite (73 files, 505 tests) passed on two of three runs. On the first run one test failed: calendar.test.ts \"retains identical match, player and season facts when the fast path skips motion\". The failure output pointed at the test's `it(` line rather than an assertion, which suggests the 30 s timeout. That test passed on the two later full runs and alone in 13.6 s.\n- The five new amateur-exchange tests in season.test.ts and the capacity-conservation test in world.test.ts pass (18 tests run).\n- eslint and prettier pass on the changed files.\n- LEAGUE did not change on the group branch: its newest commit (3596812) only rewords docs.\n\n**Not done:**\n- Three commands were refused because they needed approval: `work board`, swapping in the old `season.ts` to confirm the new tests fail against the old engine, and spec lint. None of the three ran.\n- Portable goldens are left to T047, as the task says.\n- The web amateur table (`divisionRules` in apps/web/src/ui/league.ts) still marks one automatic place and a four-club playoff. That is wrong only for ITA (the only country whose last division has several groups), which now promotes five automatically plus one playoff winner from 6th–9th. It is recorded in the result's limits."
+        }
+      }
+    },
+    {
+      "sequence": 100,
+      "at": "2026-10-12T07:09:57.073Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "e99c4e4d-a2ec-4436-8d6f-9db8aade1234",
+          "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+          "status": "reviewing",
+          "commit": "22b9e8c9e1718ad36b48c2334bdb2700b3d31a2f",
+          "baseCommit": "3596812561125f11e8f12934e613b2747fafd139",
+          "submissionId": "fefa6983-a123-4ff1-84f3-63c930aae0bc",
+          "createdAt": "2026-10-12T07:09:57.073Z"
+        }
+      }
+    },
+    {
+      "sequence": 101,
+      "at": "2026-10-12T07:09:57.214Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+      "taskId": "T042",
+      "previousStatus": "reviewing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "ARCH: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요.",
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "629ae061-9b4d-469d-a39e-280b74987957",
+            "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T042: draws and the IDs that feed them no longer use `w.revision`. At the base commit `w.revision` fed four draws, and all four now use the new keys: the care draw is `${seed}:care:${kind}:${year}:${round}`, the caretaker is `${seed}:interim:${year}:${day}:${departures}`, the campaign ID is `${year}:${round}:${kind}`, and the outgoing bid ID is `out:${year}:${day}:${n}:${playerId}`. In engine source (excluding tests), `w.revision` now appears only in counter increments and its `revision: 0` start. Checks on whether the new keys are unique: (1) every care cooldown is above 0, so `careOffer` blocks a second request of a kind in the same year and round. (2) Departure events are never trimmed and the count includes the current departure, so two caretakers on the same day still get different keys. (3) The `w.campaigns.some(kind)` check blocks a second campaign of a kind. `settleRound` runs only from `advanceRound`, so a campaign can't finish and restart within one round. (4) `pruneBids` runs only in `dailyMarket`, so within a day the count n only grows. Old saved IDs keep their stored form, and nothing parses ID strings. The new tests would fail on the old code. One of them compares the whole world, ignoring the revision counter, after a bid is answered. The worker reports typecheck and unit tests passing; this review checked the code and did not rerun the tests. As the T042 notes say, the portable goldens and the rules version bump are left to T047.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "spec/tasks/T042.draws-named-by-what-they-settle.md:8 (T042 acceptance 1)",
+                "message": "T042 acceptance 1 says every request kind has a cooldown of at least 3 rounds, but CLUB-20 (r16) sets recovery support's cooldown to 2, and the code correctly keeps 2. The key is still unique per use because every cooldown is at least 1, which blocks a second request in the same year and round; care.test.ts asserts every cooldown is above 0. The worker marked this item [v] and explained the gap under limits. Hand back to planning to reword the acceptance as 'every cooldown refuses a second use in the same round' instead of 'at least 3 rounds'. No code change needed."
+              }
+            ],
+            "commit": "e13b924ebb782d824cd8cce72491873577d66fd9",
+            "baseCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
+            "submissionId": "cfdfb548-4aa9-4e5d-a332-1bbb7a05abeb",
+            "createdAt": "2026-10-12T06:05:16.544Z",
+            "finishedAt": "2026-10-12T06:09:46.649Z",
+            "invalidatedAt": "2026-10-12T06:19:25.613Z",
+            "invalidationReason": "review base changed"
+          },
+          {
+            "id": "c1550e39-1779-451d-9c9a-456e46a0acc5",
+            "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+            "status": "reviewing",
+            "commit": "e13b924ebb782d824cd8cce72491873577d66fd9",
+            "baseCommit": "a37e137038d9f4211780569bddf8856da8860cd4",
+            "submissionId": "cfdfb548-4aa9-4e5d-a332-1bbb7a05abeb",
+            "createdAt": "2026-10-12T06:19:25.626Z",
+            "invalidatedAt": "2026-10-12T06:19:25.750Z",
+            "invalidationReason": "T042: ARCH@7가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+          },
+          {
+            "id": "2e9ee2fb-975b-43d6-9de1-054ab3b5a223",
+            "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T042 meets ARCH-5 (r8) and CLUB-20 (r16). Commit 22b9e8c changes the four draws (owner requests, caretaker managers, campaigns and outgoing bids) so they are named by what they settle and the game date instead of `w.revision`. In non-test engine source, `w.revision` now appears only in counter increments and its `revision: 0` start, and no other draw key counts commands or reads inbox or event lengths. I checked by reading the code that none of the new keys can repeat. Owner requests: a cooldown read from the event log blocks a second use of a request in the same year and round, because every cooldown is at least 1. Caretakers: the departure count includes the departure just recorded, and the engine never trims events (the save codec keeps the event count). Campaigns: an active campaign blocks a second one of the same kind, and campaigns only settle when a round advances. Bids: `pruneBids` only runs in `dailyMarket`, so no bid is pruned between two bids on the same day, and the ID includes the day. As the impl notes require, campaigns and bids already in saves keep their old IDs, and old campaign results still draw from the stored ID. The new tests in transfers.test.ts, care.test.ts and operations.test.ts would fail on the old revision-keyed code. They compare worlds with and without extra reads, including a whole-world `canonical` match after a bid is answered. No other code parses these IDs, and the save schema treats them as plain strings. I did not run the test suites in this read-only review; the worker reported typecheck and the full unit suite passing (73 files, 501 tests). Portable goldens are left for T047, as the task says.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "spec/tasks/T042.draws-named-by-what-they-settle.md:8 (T042 acceptance 1)",
+                "message": "Acceptance 1 says every request kind has a cooldown of at least 3 rounds, but the CLUB-20 table (spec/ssot/CLUB.md:57) gives recovery support a cooldown of 2, and care.ts:138 keeps that SSOT value, which is correct. The key is still unique per use because `careOffer` blocks any reuse in the same year and round whenever the cooldown is at least 1, so the code is right. Only the wording is wrong, and the box is ticked [v] even though the literal clause is false; the worker already noted this under limits. Hand off to planning to change the wording to 'at least 1 settled round'. No code change needed."
+              }
+            ],
+            "commit": "22b9e8c9e1718ad36b48c2334bdb2700b3d31a2f",
+            "baseCommit": "9d13f6dfcf1f25d5965ec811970fabd0cac51ce7",
+            "submissionId": "fefa6983-a123-4ff1-84f3-63c930aae0bc",
+            "createdAt": "2026-10-12T06:47:10.570Z",
+            "finishedAt": "2026-10-12T06:51:47.355Z",
+            "invalidatedAt": "2026-10-12T07:01:10.952Z",
+            "invalidationReason": "review base changed"
+          },
+          {
+            "id": "e99c4e4d-a2ec-4436-8d6f-9db8aade1234",
+            "owner": "04bf1446-4df5-4608-aabb-68858781e112/reviewer-1",
+            "status": "reviewing",
+            "commit": "22b9e8c9e1718ad36b48c2334bdb2700b3d31a2f",
+            "baseCommit": "3596812561125f11e8f12934e613b2747fafd139",
+            "submissionId": "fefa6983-a123-4ff1-84f3-63c930aae0bc",
+            "createdAt": "2026-10-12T07:09:57.073Z",
+            "invalidatedAt": "2026-10-12T07:09:57.214Z",
+            "invalidationReason": "ARCH: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요."
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 102,
+      "at": "2026-10-12T07:09:57.317Z",
+      "type": "group",
+      "group": "one-result",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "04bf1446-4df5-4608-aabb-68858781e112",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-12T05:51:17.333Z",
+          "stoppedAt": "2026-10-12T07:09:57.317Z",
+          "dispatched": 11,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "f981b7b3-5b70-4d23-9b13-2232b78b90f1",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            },
+            {
+              "attempt": "41a63cc8-44e5-4a33-adaf-eeb6f6092ab2",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            },
+            {
+              "attempt": "86b16233-ef43-4161-8e24-743db5f76235",
+              "role": "worker",
+              "error": "T043: WEB@48가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+            },
+            {
+              "role": "reviewer",
+              "error": "T042: ARCH@7가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+            },
+            {
+              "attempt": "86b16233-ef43-4161-8e24-743db5f76235",
+              "role": "worker",
+              "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+            },
+            {
+              "attempt": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+              "role": "worker",
+              "error": "T049: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+            },
+            {
+              "role": "reviewer",
+              "error": "ECON: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요."
+            },
+            {
+              "attempt": "86b16233-ef43-4161-8e24-743db5f76235",
+              "role": "worker",
+              "error": "WEB: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요."
+            },
+            {
+              "role": "reviewer",
+              "error": "ARCH: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
