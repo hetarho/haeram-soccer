@@ -265,7 +265,9 @@ try {
   const restored = await restoreContext.newPage();
   restored.on('pageerror', (error) => errors.push(error.message));
   const t = performance.now();
-  await restored.goto(origin);
+  // An in-game address continues the game in play without the slot screen (→WEB-62), so this
+  // measures loading the century career itself.
+  await restored.goto(`${origin}/journal`);
   // The century checkpoint is 100 seasons after the 1950 founding.
   await expect(restored.getByTestId('calendar')).toContainText('2050/51');
   await expect(restored.getByTestId('save-status')).toContainText('저장 완료');

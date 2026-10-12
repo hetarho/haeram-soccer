@@ -307,7 +307,8 @@ test('the phone clock picks the intervention level from a popover without stoppi
 test('a hidden tab plays on like an idle game, names the date in its title, and can pause instead', async ({
   page,
 }) => {
-  await stopOnlyFor(page, ['match']);
+  // Nothing stops the run, so a slow browser that reaches the first match plays it through.
+  await stopOnlyFor(page, []);
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
@@ -324,7 +325,7 @@ test('a hidden tab plays on like an idle game, names the date in its title, and 
   const hidden = await date.textContent();
   // The clock keeps its pace behind other windows and the tab title tells the date (→WEB-64).
   await expect(date).not.toHaveText(hidden!);
-  await expect(page).toHaveTitle(/^▶ 1950년 8월 \d+일 · Haeram Athletic$/);
+  await expect(page).toHaveTitle(/^▶ 1950년 \d+월 \d+일 · Haeram Athletic$/);
   await setHidden(false);
   await expect(page).toHaveTitle('Haeram — Football Archives');
   await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();

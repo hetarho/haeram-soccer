@@ -15,7 +15,7 @@ pnpm install --frozen-lockfile
 pnpm run dev
 ```
 
-Open the printed **localhost** URL. For the finished static build:
+Open http://localhost:19500 (the project's fixed dev port). For the finished static build:
 
 ```sh
 pnpm run build
