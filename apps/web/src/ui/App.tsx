@@ -405,7 +405,7 @@ const selectContentWorld = worldSelector([
   'facilities',
   'ticket',
   'campaigns',
-  'sponsor',
+  'sponsors',
   'lower',
   'europe',
   'critical',

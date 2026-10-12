@@ -184,11 +184,11 @@ describe('club builds', () => {
     commercial.build = { revenue: 'commercial' };
     community.build = { revenue: 'members', fans: 'community' };
     network.build = { scouting: 'network' };
-    expect(BigInt(sponsorOffers(commercial)[0].annual)).toBeGreaterThan(
-      BigInt(sponsorOffers(plain)[0].annual),
+    expect(BigInt(sponsorOffers(commercial, 'local')[0].annual)).toBeGreaterThan(
+      BigInt(sponsorOffers(plain, 'local')[0].annual),
     );
-    expect(BigInt(sponsorOffers(community)[0].annual)).toBeLessThan(
-      BigInt(sponsorOffers(plain)[0].annual),
+    expect(BigInt(sponsorOffers(community, 'local')[0].annual)).toBeLessThan(
+      BigInt(sponsorOffers(plain, 'local')[0].annual),
     );
     expect(gateProjection(community).attendanceHigh).toBeGreaterThanOrEqual(
       gateProjection(plain).attendanceHigh,

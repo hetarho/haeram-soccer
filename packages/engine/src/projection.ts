@@ -1,19 +1,19 @@
 import type { World } from '../../contracts/src/types';
 import { ratio } from './primitives';
-import { clubOf, quote } from './world';
+import { clubOf } from './world';
 import {
-  clubSponsor,
-  FINANCE_CONFIG,
   gateProjection,
+  leagueMerit,
+  leagueShare,
   operatingCosts,
-  seasonPrize,
+  parachutePayment,
 } from './finance';
-import { sponsorAnnual } from './operations';
+import { sponsorAnnual } from './sponsors';
 import { ownLeagueClubs, ranked } from './season';
 import { SEASON_ROUNDS } from './calendar';
-import { fanIncome } from './fans';
 
-export type ProjectionKey = 'operating' | 'gate' | 'fans' | 'sponsor' | 'performance' | 'prize';
+export type ProjectionKey =
+  'operating' | 'gate' | 'share' | 'parachute' | 'sponsor' | 'performance' | 'merit';
 export interface ProjectionLine {
   key: ProjectionKey;
   label: string;
@@ -30,7 +30,7 @@ export interface FinanceProjection {
   seasonEnd: { low: string; high: string };
   /** Cash range 365 days from today if nothing changes. */
   nextYear: { low: string; high: string };
-  /** Lines over the next 365 days. */
+  /** Lines over the next 365 days; the parachute only in the season after a relegation. */
   lines: ProjectionLine[];
   /** The same lines up to the end of the current season. */
   seasonLines: ProjectionLine[];
@@ -38,14 +38,13 @@ export interface FinanceProjection {
 const LABELS: Record<ProjectionKey, string> = {
   operating: '급여·운영비',
   gate: '홈 경기 수입(개최비 제외)',
-  fans: '글로벌 팬 수익',
+  share: '리그 분배금',
+  parachute: '강등 보전금',
   sponsor: '후원 계약',
-  performance: '경기 성과 수입',
-  prize: '순위 상금',
+  performance: '후원 성과 보너스',
+  merit: '리그 순위 배분금',
 };
 
-/** Pure form of the season-end league prize; zero outside the paid bands. */
-export { seasonPrize } from './finance';
 /** Our current league position, among the same members the season close ranks. */
 export function currentLeagueRank(w: World) {
   const own = clubOf(w);
@@ -68,19 +67,19 @@ function line(key: ProjectionKey, low: bigint, high: bigint): ProjectionLine {
 
 /** Read model only: current contracts, policy and demand carried forward, no new decisions. */
 export function financeProjection(w: World): FinanceProjection {
-  const club = clubOf(w),
-    costs = operatingCosts(w),
+  const costs = operatingCosts(w),
     played = Math.min(w.round, SEASON_ROUNDS);
-  const components = [
-    costs.playerWages,
-    costs.managerWage,
-    costs.maintenance,
-    costs.marketing,
-    costs.staffWages,
-  ];
-  // settleRound pays roundShare(component, k) for rounds k = played+1..46, which telescopes.
+  // settleRound pays roundShare(annual, k) for rounds k = played+1..46, which telescopes.
+  const unpaid = (annual: string) =>
+    big(annual) - big(ratio(annual, BigInt(played), BigInt(SEASON_ROUNDS)));
   const remainingCosts = sum(
-    components.map((c) => big(c) - big(ratio(c, BigInt(played), BigInt(SEASON_ROUNDS)))),
+    [
+      costs.playerWages,
+      costs.managerWage,
+      costs.maintenance,
+      costs.marketing,
+      costs.staffWages,
+    ].map(unpaid),
   );
 
   const league = w.fixtures.filter(
@@ -98,68 +97,70 @@ export function financeProjection(w: World): FinanceProjection {
     gateLow = big(gate.incomeLow) - big(gate.costLow),
     gateHigh = big(gate.incomeHigh) - big(gate.costHigh);
 
-  const sponsor = clubSponsor(w),
-    annual = big(sponsorAnnual(w)),
-    leaguePlayed = w.tables[w.playerClub]?.played ?? 0,
-    paying = !!sponsor && sponsor.lastPaid < w.year && sponsor.until > w.year,
-    continues = !!sponsor && sponsor.until > w.year + 1;
-  const sponsorSeason =
-    paying && games
-      ? annual - big(ratio(annual.toString(), BigInt(leaguePlayed), BigInt(games)))
-      : 0n;
-  const sponsorYear =
-    sponsorSeason +
-    (continues && games ? big(ratio(annual.toString(), BigInt(leaguePlayed), BigInt(games))) : 0n);
-
-  const table = w.tables[w.playerClub],
+  const leaguePlayed = w.tables[w.playerClub]?.played ?? 0,
+    table = w.tables[w.playerClub],
     winRate = table?.played ? table.won / table.played : 1 / 3,
-    drawRate = table?.played ? table.drawn / table.played : 1 / 3,
-    prestige = 1 + Math.max(0, 3 - club.tier) * 0.35,
-    perGame =
-      (winRate * FINANCE_CONFIG.winBonus + drawRate * FINANCE_CONFIG.drawBonus) *
-      prestige *
-      (games ? SEASON_ROUNDS / games : 1);
-  const sponsorBonus = (count: number) =>
-    sponsor?.kind === 'performance' && games && count
+    drawRate = table?.played ? table.drawn / table.played : 1 / 3;
+  // League results earn no match bonus (→ECON-19); only the main sponsor pays per result.
+  const resultBonus = (bonus: string, count: number) =>
+    games && count
       ? big(
           ratio(
-            sponsor.bonus,
+            bonus,
             BigInt(Math.round((winRate * 3 + drawRate) * 1000) * count),
             BigInt(games * 3 * 1000),
           ),
         )
       : 0n;
-  const performanceSeason =
-    big(quote(club.country, w.year, perGame * remainingGames)) + sponsorBonus(remainingGames);
-  const performanceYear =
-    big(quote(club.country, w.year, perGame * games)) +
-    sponsorBonus(continues ? games : remainingGames);
+  // Every running contract at its fixed amount (→ECON-8); a kit bonus waits on an uncertain
+  // promotion or title and is left out.
+  let sponsorSeason = 0n,
+    sponsorYear = 0n,
+    performanceSeason = 0n,
+    performanceYear = 0n;
+  for (const contract of w.sponsors ?? []) {
+    const annual = big(sponsorAnnual(w, contract)),
+      paid = big(ratio(annual.toString(), BigInt(leaguePlayed), BigInt(Math.max(1, games)))),
+      continues = contract.until > w.year + 1;
+    const season =
+      contract.lastPaid < w.year && contract.until > w.year && games ? annual - paid : 0n;
+    sponsorSeason += season;
+    sponsorYear += season + (continues && games ? paid : 0n);
+    if (contract.slot !== 'shirt') continue;
+    performanceSeason += resultBonus(contract.bonus, remainingGames);
+    performanceYear += resultBonus(contract.bonus, continues ? games : remainingGames);
+  }
 
-  const settled = w.events.some((e) => e.year === w.year && e.kind === 'season-prize');
+  // The division's share keeps paying a round at a time, next season as this one (→ECON-28);
+  // a parachute ends with the season it pays in.
+  const share = leagueShare(w),
+    shareSeason = unpaid(share),
+    parachute = unpaid(parachutePayment(w));
+  const settled = w.events.some((e) => e.year === w.year && e.kind === 'league-merit');
   const { rank, clubs } = currentLeagueRank(w);
-  const prize = settled || !rank ? 0n : big(seasonPrize(w, rank, clubs));
+  const merit = settled || !rank ? 0n : big(leagueMerit(w, rank, clubs));
 
-  // Fan income at today's following, one payment a league round (→ECON-23).
-  const fansRound = big(fanIncome(w)),
-    fansSeason = fansRound * BigInt(SEASON_ROUNDS - played),
-    fansYear = fansRound * BigInt(SEASON_ROUNDS);
+  // The parachute line shows only in the season after a relegation.
+  const shown = (row: ProjectionLine) => row.key !== 'parachute' || row.high !== '0';
   const seasonLines = [
     line('operating', -remainingCosts, -remainingCosts),
     line('gate', gateLow * BigInt(remainingHome), gateHigh * BigInt(remainingHome)),
-    line('fans', fansSeason, fansSeason),
+    line('share', shareSeason, shareSeason),
+    line('parachute', parachute, parachute),
     line('sponsor', sponsorSeason, sponsorSeason),
     line('performance', 0n, performanceSeason),
-    line('prize', 0n, prize),
-  ];
+    line('merit', 0n, merit),
+  ].filter(shown);
   const yearCost = big(costs.annual);
   const lines = [
     line('operating', -yearCost, -yearCost),
     line('gate', gateLow * BigInt(homeGames), gateHigh * BigInt(homeGames)),
-    line('fans', fansYear, fansYear),
+    line('share', big(share), big(share)),
+    line('parachute', parachute, parachute),
     line('sponsor', sponsorYear, sponsorYear),
     line('performance', 0n, performanceYear),
-    line('prize', 0n, prize),
-  ];
+    line('merit', 0n, merit),
+  ].filter(shown);
   const range = (items: ProjectionLine[]) => ({
     low: (big(w.cash) + sum(items.map((l) => l.low))).toString(),
     high: (big(w.cash) + sum(items.map((l) => l.high))).toString(),

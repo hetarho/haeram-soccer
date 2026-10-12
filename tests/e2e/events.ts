@@ -35,7 +35,10 @@ export async function stopOnlyFor(page: Page, kinds: (typeof STOP_KINDS)[number]
 /** The card shown when the clock stops for a match eve or an attention event. */
 export const eventCard = (page: Page) => page.getByTestId('event-card');
 
-/** Reads every pending attention card with '확인', e.g. after importing a career mid-season. */
+/**
+ * Reads every pending attention card with '확인', e.g. after importing a career mid-season; an
+ * offer that waits for an answer instead (another club's bid) is declined.
+ */
 export async function acknowledgeEvents(page: Page) {
   const card = eventCard(page);
   // The whole card text, so two events that share a title still count as a change.
@@ -45,7 +48,10 @@ export async function acknowledgeEvents(page: Page) {
   for (let i = 0; i < 20; i++) {
     const current = await title();
     if (!current) return;
-    await card.getByRole('button', { name: '확인', exact: true }).click();
+    const read = card.getByRole('button', { name: '확인', exact: true });
+    await (
+      (await read.count()) ? read : card.getByRole('button', { name: '거절', exact: true })
+    ).click();
     await expect.poll(title, { timeout: 10000 }).not.toBe(current);
   }
   throw new Error('Too many pending events to acknowledge');

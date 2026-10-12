@@ -1,13 +1,28 @@
-import type { Command, Sponsor, World } from '../../contracts/src/types';
+import type { Command, World } from '../../contracts/src/types';
 import { addEvent, clubOf, quote } from './world';
-import { clamp, ratio } from './primitives';
-import { campaignEffectiveness, clubSponsor, moneyLabel } from './finance';
-import { pushInbox } from './inbox';
+import { clamp } from './primitives';
+import { campaignEffectiveness } from './finance';
 import { setPolicy } from './policy';
 import { buildEffects, reserveBuild, setBuild } from './build';
-import { synergyEffects } from './synergy';
 import { facilityCostUnits, MAX_FACILITIES } from './facilities';
 import { credit, debit } from './operations';
+import { delegatedSponsors, exclusiveSponsor, signSponsor, sponsorEnding } from './sponsors';
+
+export {
+  commercialValue,
+  contractOf,
+  exclusiveSponsor,
+  SPONSOR_CONFIG,
+  SPONSOR_KIND_LABELS,
+  SPONSOR_KINDS,
+  sponsorAnnual,
+  sponsorOffers,
+  sponsorReminder,
+  sponsorSlotOpen,
+  sponsorSlots,
+  yearlySponsor,
+} from './sponsors';
+export type { SponsorBonus, SponsorOffer, SponsorSlotView } from './sponsors';
 
 /** Sponsors, campaigns, tickets, facilities, owner capital, the operating dials and strategy. */
 export type CommercialCommand = Extract<
@@ -24,78 +39,13 @@ export type CommercialCommand = Extract<
       | 'build';
   }
 >;
-export type SponsorKind = Sponsor['kind'];
-
-export function sponsorAnnual(w: World) {
-  const sponsor = clubSponsor(w);
-  if (!sponsor) return '0';
-  return sponsor.kind === 'indexed'
-    ? ratio(
-        sponsor.annual,
-        BigInt(Math.round(w.priceIndex * 1000000)),
-        BigInt(Math.round(sponsor.index * 1000000)),
-      )
-    : sponsor.annual;
-}
-function signSponsor(w: World, offer: Sponsor) {
-  w.sponsor = offer;
-  addEvent(
-    w,
-    'sponsor-sign',
-    '우리의 첫 번째 파트너',
-    `${offer.name} · ${offer.kind} · 연간 ${moneyLabel(w, offer.annual)} · ${offer.until}년까지`,
-  );
-}
-/** With business delegated, the commercial staff fill an empty sponsor slot with the stable offer. */
+/**
+ * Daily business (→ECON-21): with business delegated the commercial staff fill empty sponsor
+ * slots; otherwise 1 April tells the owner of contracts in their final season.
+ */
 export function delegatedBusiness(w: World) {
-  if (!w.delegation?.business || clubSponsor(w)) return;
-  const offer = sponsorOffers(w).find((o) => o.kind === 'stable')!;
-  signSponsor(w, offer);
-  pushInbox(w, {
-    kind: 'finance',
-    title: `운영팀이 ${offer.name}와 후원 계약을 맺었어요`,
-    detail: `안정형 · 연간 ${moneyLabel(w, offer.annual)} · ${offer.until}년까지 · 리그 경기마다 나눠 들어오고, 끝나면 운영팀이 다시 계약해요.`,
-    attention: false,
-  });
-}
-/** Season start without a sponsor: the owner is told once, unless the staff handle business. */
-export function sponsorReminder(w: World) {
-  if (clubSponsor(w) || w.delegation?.business) return;
-  pushInbox(w, {
-    kind: 'finance',
-    title: '후원 계약이 비어 있어요',
-    detail:
-      '구단 운영에서 후원사를 고르면 리그 경기마다 후원금이 들어와요. 운영을 스태프에게 맡기면 안정형 후원을 대신 맺어요.',
-    attention: true,
-  });
-}
-/** Season boundary: a sponsor contract that has run its term ends. */
-export function yearlySponsor(w: World) {
-  const sponsor = clubSponsor(w);
-  if (sponsor && sponsor.until <= w.year) {
-    addEvent(w, 'sponsor-end', '후원 계약 만료', sponsor.name);
-    delete w.sponsor;
-    w.sponsors = w.sponsors?.filter((contract) => contract !== sponsor);
-    if (!w.sponsors?.length) delete w.sponsors;
-  }
-}
-export function sponsorOffers(w: World) {
-  const c = clubOf(w);
-  // A commercial club negotiates bigger deals; a community club smaller ones.
-  const scale = buildEffects(w).sponsor * synergyEffects(w).sponsor;
-  return (['stable', 'performance', 'exclusive', 'indexed'] as const).map((kind, i) => ({
-    name: `${c.name.split(' ')[0]} ${['Cooperative', 'Motors', 'Textiles', 'Foundry'][i]}`,
-    kind,
-    annual: quote(
-      c.country,
-      w.year,
-      (150 + c.reputation * 5 + c.fans / 50) * [1, 0.65, 1.6, 0.9][i] * scale,
-    ),
-    bonus: quote(c.country, w.year, kind === 'performance' ? 220 + c.reputation * 3 : 0),
-    until: w.year + (kind === 'exclusive' ? 4 : 2),
-    lastPaid: w.year - 1,
-    index: w.priceIndex,
-  }));
+  delegatedSponsors(w);
+  sponsorEnding(w);
 }
 export const CAMPAIGNS = [
   { kind: 'outreach', label: '동네와 함께', units: 25, fans: 0.08 },
@@ -133,8 +83,11 @@ export function commercialCommand(w: World, cmd: CommercialCommand) {
   const code = clubOf(w).country;
   switch (cmd.type) {
     case 'sign-sponsor':
-      // Rules 1.16 commands are refused, never ignored, until their rules land.
-      throw new Error(`${cmd.type} 명령은 아직 지원하지 않습니다.`);
+      signSponsor(w, cmd.slot, cmd.offer);
+      break;
+    case 'sponsor':
+      // The single sponsor of rules before 1.16 is signed by slot now (→ECON-8).
+      throw new Error('후원은 자리별로 계약해요. 후원 탭에서 자리와 제안을 고르세요.');
     case 'policy':
       setPolicy(w, cmd.key, cmd.level);
       break;
@@ -146,7 +99,7 @@ export function commercialCommand(w: World, cmd: CommercialCommand) {
       const o = campaignOffers(w).find((c) => c.kind === cmd.kind);
       if (!o || w.campaigns.some((c) => c.kind === cmd.kind))
         throw new Error('이미 진행 중이거나 없는 캠페인입니다.');
-      if (clubSponsor(w)?.kind === 'exclusive' && cmd.kind === 'merchandise')
+      if (exclusiveSponsor(w) && cmd.kind === 'merchandise')
         throw new Error('독점 후원 계약 중에는 자체 상품 캠페인을 진행할 수 없습니다.');
       debit(w, o.cost);
       w.campaigns.push({
@@ -166,13 +119,6 @@ export function commercialCommand(w: World, cmd: CommercialCommand) {
         '4라운드 후 수입과 신규 팬을 확인합니다. 수익은 보장되지 않습니다.',
         o.cost,
       );
-      break;
-    }
-    case 'sponsor': {
-      if (clubSponsor(w)) throw new Error('기존 주 후원 계약이 남아 있습니다.');
-      const offer = sponsorOffers(w).find((o) => o.kind === cmd.kind);
-      if (!offer) throw new Error('없는 후원 제안');
-      signSponsor(w, offer);
       break;
     }
     case 'facility': {

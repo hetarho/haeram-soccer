@@ -73,7 +73,6 @@ const notes: Partial<Record<Command['type'], string>> = {
   'transfer-stance': '제안은 이적시장이 열려 있을 때 들어오고, 수락해야 이적이 성사돼요.',
   coaching:
     '개입 4에서는 스태프가 이 수준으로 공석·무급 자리를 바로 채우고, 계약이 끝나면 재계약하거나 교체해요.',
-  'renew-manager': '계약이 한 시즌 늘었어요. 새 연봉은 다음 라운드 정산부터 나가요.',
 };
 const trainingLabel: Record<NonNullable<World['training']>, string> = {
   balanced: '균형 훈련',
@@ -85,10 +84,14 @@ export const ROUTINE_EVENTS = new Set([
   'operating-cost',
   'match-cost',
   'gate',
-  'sponsor-payment',
-  'fan-income',
+  'league-share',
+  'parachute',
   'match-bonus',
-  'sponsor-bonus',
+  'sponsor:local',
+  'sponsor:kit',
+  'sponsor:shirt',
+  'sponsor:stadium',
+  'sponsor:sleeve',
   'europe-prize',
 ]);
 const progression = new Set<Command['type']>(['advance', 'advance-days', 'season']);
@@ -219,6 +222,11 @@ export function describeOutcome(
   let note = notes[command.type];
   if (command.type === 'lineup' && !command.ids)
     note = '매 경기 감독이 능력과 피로를 보고 선발을 고릅니다.';
+  // The owner chooses how many seasons a renewal adds (→STAFF-14).
+  if (command.type === 'renew-manager') {
+    const seasons = after.manager.until - before.manager.until;
+    note = `계약이 ${seasons === 1 ? '한 시즌' : `${seasons}시즌`} 늘었어요. 새 연봉은 다음 라운드 정산부터 나가요.`;
+  }
   if (command.type === 'tactics')
     note = after.manager.pending
       ? '조건부 수락이에요. 훈련 지원금을 내면 전술이 바뀝니다.'

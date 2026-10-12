@@ -1,30 +1,34 @@
 import type { MatchRecord, World } from '../../contracts/src/types';
-import { addEvent, clubOf, quote } from './world';
+import { addEvent, clubOf, footballQuote, quote } from './world';
 import { random, ratio } from './primitives';
 import {
   campaignEffectiveness,
-  clubSponsor,
+  divisionLabel,
   FINANCE_CONFIG,
   gateProjection,
   isLeagueMatch,
+  leagueMerit,
+  leagueShare,
   matchBonus,
   moneyLabel,
   operatingCosts,
+  ownLeagueGames,
+  parachutePayment,
   roundShare,
-  seasonPrize,
+  SPONSOR_SLOT_LABELS,
 } from './finance';
-import { currentDay } from './calendar';
-import { driftFans, fanIncome, MIN_FANS } from './fans';
+import { currentDay, SEASON_ROUNDS } from './calendar';
+import { driftFans, MIN_FANS } from './fans';
 import { pushInbox } from './inbox';
 import { marketingFanGain, policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { credit, debit } from './operations';
-import { CAMPAIGNS, sponsorAnnual } from './ops-commercial';
+import { CAMPAIGNS } from './ops-commercial';
+import { sponsorAnnual } from './sponsors';
 
 export function gate(w: World, m: MatchRecord) {
   if (m.home !== w.playerClub && m.away !== w.playerClub) return;
-  const bonus = matchBonus(w, m),
-    sponsor = clubSponsor(w);
+  const bonus = matchBonus(w, m);
   if (BigInt(bonus.amount) > 0n) {
     credit(w, bonus.amount);
     addEvent(
@@ -35,47 +39,16 @@ export function gate(w: World, m: MatchRecord) {
       bonus.amount,
     );
   }
-  if (BigInt(bonus.sponsored) > 0n) {
-    credit(w, bonus.sponsored);
-    addEvent(
-      w,
-      'sponsor-bonus',
-      `${bonus.result} 후원 성과 보너스`,
-      `${sponsor!.name} · ${m.id}`,
-      bonus.sponsored,
-    );
-  }
-  if (
-    sponsor &&
-    sponsor.lastPaid < w.year &&
-    sponsor.until > w.year &&
-    ['league', 'lower'].includes(m.kind)
-  ) {
-    const games = w.fixtures.filter(
-      (f) =>
-        ['league', 'lower'].includes(f.kind) &&
-        (f.home === w.playerClub || f.away === w.playerClub),
-    ).length;
-    const amount = roundShare(sponsorAnnual(w), w.tables[w.playerClub].played, games);
-    credit(w, amount);
-    addEvent(
-      w,
-      'sponsor-payment',
-      '후원 노출 대금',
-      `${sponsor.name} · 리그 경기 ${w.tables[w.playerClub].played}/${games} · ${m.id}`,
-      amount,
-    );
-    if (w.tables[w.playerClub].played === games) sponsor.lastPaid = w.year;
-  }
+  if (isLeagueMatch(m.kind)) paySponsors(w, m, bonus.result, bonus.sponsored);
   if (m.home !== w.playerClub) return;
   const c = clubOf(w),
     r = random(`${w.seed}:gate:${m.id}`);
-  const projection = gateProjection(w, m.id);
+  const projection = gateProjection(w, m.id, m.away);
   const attendance = Math.round(
     projection.attendanceLow + r() * (projection.attendanceHigh - projection.attendanceLow),
   );
   const scale = isLeagueMatch(m.kind) ? projection.leagueFactor : 1;
-  const income = quote(c.country, w.year, attendance * projection.perFan * scale);
+  const income = footballQuote(c.country, w.year, attendance * projection.perFan * scale);
   credit(w, income);
   addEvent(
     w,
@@ -93,22 +66,79 @@ export function gate(w: World, m: MatchRecord) {
   addEvent(w, 'match-cost', '홈 경기 개최비', `관중 ${attendance}명 · ${m.id}`, cost);
 }
 /**
- * Global fan income (→ECON-23) for this league round. The season keeps one ledger entry that
- * grows each round, so a century of rounds does not fill the save.
+ * Every sponsor contract's league payments (→ECON-14): a base installment per scheduled league
+ * game played since signing, never for earlier ones, and the main sponsor's bonus for a win or a
+ * draw, each on its slot's ledger line.
  */
-function settleFanIncome(w: World) {
-  const amount = fanIncome(w);
+function paySponsors(w: World, m: MatchRecord, result: string, resultBonus: string) {
+  const played = w.tables[w.playerClub].played,
+    games = ownLeagueGames(w);
+  for (const contract of w.sponsors ?? []) {
+    const label = SPONSOR_SLOT_LABELS[contract.slot];
+    if (contract.lastPaid < w.year && contract.until > w.year) {
+      accrue(
+        w,
+        `sponsor:${contract.slot}`,
+        label,
+        `${contract.name} · 리그 경기 ${played}/${games}`,
+        roundShare(sponsorAnnual(w, contract), played, games),
+      );
+      if (played === games) contract.lastPaid = w.year;
+    }
+    if (contract.slot === 'shirt')
+      accrue(
+        w,
+        'sponsor:shirt',
+        `${label} 경기 보너스`,
+        `${contract.name} · 리그 ${result} · ${m.id}`,
+        resultBonus,
+      );
+  }
+}
+/**
+ * One installment of a season-long payment. The season keeps one ledger entry per kind and title
+ * that grows each round, so a century of rounds does not fill the save.
+ */
+function accrue(w: World, kind: string, title: string, detail: string, amount: string) {
   if (BigInt(amount) <= 0n) return;
   credit(w, amount);
   const entry = w.events.findLast(
     (event) =>
-      event.kind === 'fan-income' && event.year === w.year && event.currency === w.currency,
+      event.kind === kind &&
+      event.title === title &&
+      event.year === w.year &&
+      event.currency === w.currency,
   );
-  const fans = `서포터 ${clubOf(w).fans.toLocaleString('en-US')}명 · 온라인·상품·중계`;
   if (entry) {
     entry.amount = (BigInt(entry.amount!) + BigInt(amount)).toString();
-    entry.detail = fans;
-  } else addEvent(w, 'fan-income', '글로벌 팬 수익', fans, amount);
+    entry.detail = detail;
+  } else addEvent(w, kind, title, detail, amount);
+}
+/**
+ * The league distribution's round installment (→ECON-28): the division's equal share, carrying
+ * its broadcasting money, and in the season after a relegation the parachute.
+ */
+function settleDistribution(w: World) {
+  const c = clubOf(w),
+    division = divisionLabel(c.country, c.tier),
+    paid = `${w.round}/${SEASON_ROUNDS}라운드 분할`;
+  accrue(
+    w,
+    'league-share',
+    '리그 분배금',
+    `${division} 균등 배분·중계권 · ${paid}`,
+    roundShare(leagueShare(w), w.round),
+  );
+  const parachute = roundShare(parachutePayment(w), w.round);
+  if (parachute === '0') return;
+  const from = divisionLabel(c.country, w.history.at(-1)!.tier);
+  accrue(
+    w,
+    'parachute',
+    '강등 보전금',
+    `${from} → ${division} 강등 · 줄어든 분배금의 절반 · ${paid}`,
+    parachute,
+  );
 }
 /** Fixed-cost rounds left in cash below which the owner is warned, once per season. */
 export const CASH_WARNING_ROUNDS = 13;
@@ -127,16 +157,17 @@ function cashWarning(w: World, perRound: string) {
     attention: false,
   });
 }
-export function settleSeasonPrize(w: World, rank: number, clubs: number) {
-  if (w.events.some((event) => event.year === w.year && event.kind === 'season-prize')) return;
-  const amount = seasonPrize(w, rank, clubs);
+/** The league's merit payment for the final rank, once at the close (→ECON-28). */
+export function settleLeagueMerit(w: World, rank: number, clubs: number) {
+  if (w.events.some((event) => event.year === w.year && event.kind === 'league-merit')) return;
+  const amount = leagueMerit(w, rank, clubs);
   if (amount === '0') return;
   credit(w, amount);
   addEvent(
     w,
-    'season-prize',
-    '리그 최종 순위 상금',
-    `${rank}/${clubs}위 · 하위권 상금 없음`,
+    'league-merit',
+    '리그 순위 배분금',
+    `${rank}/${clubs}위 · 최하위는 균등 배분금만`,
     amount,
   );
 }
@@ -150,7 +181,7 @@ export function settleRound(w: World) {
     );
   // Supporters drift toward the following the club's reputation commands, without a ceiling.
   club.fans = driftFans(club.fans + fansGained, club.reputation);
-  settleFanIncome(w);
+  settleDistribution(w);
   const money = (amount: string) => moneyLabel(w, amount);
   addEvent(
     w,

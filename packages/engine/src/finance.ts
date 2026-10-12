@@ -1,20 +1,44 @@
-import type { Event, MatchRecord, Sponsor, World } from '../../contracts/src/types';
-import { currency } from '../../catalogs/src/index';
-import { activePlayers, clubOf, quote } from './world';
+import type { Event, MatchRecord, SponsorSlot, World } from '../../contracts/src/types';
+import { country, currency } from '../../catalogs/src/index';
+import { activePlayers, clubOf, footballQuote, quote } from './world';
 import { clamp, ratio } from './primitives';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { staffWageTotal } from './staff';
 import { SEASON_ROUNDS } from './calendar';
 import { facilityUpkeepUnits } from './facilities';
+import { catchment, localSupporters } from './fans';
 
 export const FINANCE_CONFIG = {
   ticketDemandScale: 0.12,
   homeMatchBaseCost: 6,
   homeMatchCostPerFan: 0.002,
+  /** Result bonuses of cup and continental matches; league games pay the merit instead. */
   winBonus: 8,
   drawBonus: 3,
-  rankAwards: [140, 90, 50, 20] as const,
+  /** How much a far bigger or smaller opponent moves the gate, either way. */
+  opponentDraw: 0.12,
+};
+
+/**
+ * League distributions (→ECON-28), first estimates for T062 to calibrate against ECON-29: each
+ * country's equal share a season by division, from the top flight down, the last entry being its
+ * amateur league, in 1901 price units before the football index; the champion's total against
+ * the bottom club's; the share of the lost equal share a relegated club keeps for a season.
+ */
+export const DISTRIBUTION_CONFIG = {
+  share: {
+    ENG: [9000, 3000, 1200, 700, 150],
+    ESP: [7500, 2400, 130],
+    GER: [7500, 2400, 1000, 130],
+    ITA: [7500, 2400, 1000, 130],
+    FRA: [6500, 2100, 900, 120],
+    POR: [5000, 1600, 100],
+    NED: [5000, 1600, 100],
+    BEL: [4500, 1500, 100],
+  } as Record<string, readonly number[]>,
+  champion: { top: 1.6, below: 1.3 },
+  parachute: 0.5,
 };
 
 export function roundShare(annual: string, round: number, count = 46) {
@@ -150,12 +174,26 @@ export function isLeagueMatch(kind: string) {
   return LEAGUE_KINDS.includes(kind);
 }
 
-/** A range for the next league home gate at today's prices, form, fans and facilities. */
-export function gateProjection(w: World, excluding?: string) {
+/** A bigger name than ours draws more of our supporters, a smaller one fewer (→ECON-9). */
+function opponentDraw(w: World, opponent?: string) {
+  const other = opponent && w.clubs.find((c) => c.id === opponent);
+  if (!other) return 1;
+  const reach = FINANCE_CONFIG.opponentDraw;
+  return 1 + clamp((other.reputation - clubOf(w).reputation) / 250, -reach, reach);
+}
+
+/**
+ * A range for a league home gate at today's prices, form and supporters (→ECON-9): the local
+ * supporters within the catchment come by price, form and opponent, up to the stadium's capacity.
+ * Without an opponent it reads an evenly matched one, the gate the cash projection carries forward.
+ */
+export function gateProjection(w: World, excluding?: string, opponent?: string) {
   const club = clubOf(w);
   const capacity = 2500 + w.facilities * 5000;
   const demand = Math.exp(-w.ticket / FINANCE_CONFIG.ticketDemandScale);
   const form = recentForm(w, excluding);
+  const supporters = localSupporters(w);
+  const draw = opponentDraw(w, opponent);
   const { gateBoost } = policyEffects(policyOf(w));
   const marketing = Math.min(
     gateBoost > 0 ? 1.35 : 1.25,
@@ -166,16 +204,17 @@ export function gateProjection(w: World, excluding?: string) {
         0,
       ),
   );
-  const reputation = 0.8 + club.reputation / 250;
-  const facilities = 1 + Math.min(0.12, w.facilities * 0.02);
   // The club build moves home demand on its own: community clubs fill seats, commercial ones lose some.
   const build = 1 + buildEffects(w).gateDemand;
+  // No campaign brings more than every local supporter.
   const expected = Math.min(
     capacity,
-    club.fans * demand * (0.6 + form * 0.55) * reputation * marketing * facilities * build,
+    supporters,
+    supporters * demand * (0.6 + form * 0.55) * draw * marketing * build,
   );
   const low = Math.round(expected * 0.8);
   const high = Math.round(expected);
+  // Ticket presets and matchday spend are 1901 prices grown with the football index (→ECON-26).
   const perFan = w.ticket + 0.006 + club.reputation * 0.00006;
   const leagueFactor = leagueMatchFactor(w);
   const gateCost = (attendance: number) =>
@@ -189,10 +228,13 @@ export function gateProjection(w: World, excluding?: string) {
     demand,
     form,
     marketing,
+    /** Local supporters within the catchment, the most who could come. */
+    supporters,
+    opponent: draw,
     attendanceLow: low,
     attendanceHigh: high,
-    incomeLow: quote(club.country, w.year, low * perFan * leagueFactor),
-    incomeHigh: quote(club.country, w.year, high * perFan * leagueFactor),
+    incomeLow: footballQuote(club.country, w.year, low * perFan * leagueFactor),
+    incomeHigh: footballQuote(club.country, w.year, high * perFan * leagueFactor),
     costLow: gateCost(low),
     costHigh: gateCost(high),
     perFan,
@@ -201,43 +243,53 @@ export function gateProjection(w: World, excluding?: string) {
   };
 }
 
-/**
- * The club's one sponsor until contracts are signed by slot: the one these rules sign, or the
- * contract a load moved it into (→SAVE-10). Nothing signs while one is held, so never both.
- */
-export function clubSponsor(w: World): Sponsor | undefined {
-  return w.sponsor || w.sponsors?.[0];
-}
+/** Sponsor slots as the ledger and the 후원 tab name them (→ECON-8). */
+export const SPONSOR_SLOT_LABELS: Record<SponsorSlot, string> = {
+  local: '지역 후원',
+  kit: '용품 후원',
+  shirt: '메인 스폰서',
+  stadium: '경기장 명명권',
+  sleeve: '소매 스폰서',
+};
 
+/**
+ * A match's result money: league games pay none, their results earning the merit payment at the
+ * close (→ECON-19); cup and continental wins and draws keep their bonus; the main sponsor pays
+ * its bonus for league wins and draws, home or away (→ECON-8, ECON-14).
+ */
 export function matchBonus(w: World, match: MatchRecord) {
   const own = match.home === w.playerClub ? match.score.home : match.score.away;
   const other = match.home === w.playerClub ? match.score.away : match.score.home;
   const result = own > other ? '승리' : own === other ? '무승부' : '패배';
   const prestige = 1 + Math.max(0, 3 - clubOf(w).tier) * 0.35;
   const games = ownLeagueGames(w);
-  const amount = quote(
-    clubOf(w).country,
-    w.year,
-    (own > other ? FINANCE_CONFIG.winBonus : own === other ? FINANCE_CONFIG.drawBonus : 0) *
-      prestige *
-      (isLeagueMatch(match.kind) ? SEASON_ROUNDS / games : 1),
-  );
-  const sponsor = clubSponsor(w);
+  const amount = isLeagueMatch(match.kind)
+    ? '0'
+    : footballQuote(
+        clubOf(w).country,
+        w.year,
+        (own > other ? FINANCE_CONFIG.winBonus : own === other ? FINANCE_CONFIG.drawBonus : 0) *
+          prestige,
+      );
+  const main = w.sponsors?.find((contract) => contract.slot === 'shirt');
   const sponsored =
-    sponsor?.kind === 'performance' && isLeagueMatch(match.kind)
-      ? ratio(sponsor.bonus, own > other ? 3n : own === other ? 1n : 0n, BigInt(games * 3))
+    main && isLeagueMatch(match.kind)
+      ? ratio(main.bonus, own > other ? 3n : own === other ? 1n : 0n, BigInt(games * 3))
       : '0';
   return { result, amount, sponsored };
 }
 
 const incomeKinds: Record<string, string> = {
+  'league-share': '리그 분배금',
+  'league-merit': '리그 순위 배분금',
+  parachute: '강등 보전금',
   gate: '홈 경기 입장·상품',
-  'sponsor-payment': '후원 노출 대금',
-  'match-bonus': '경기 성과 보너스',
-  'sponsor-bonus': '후원 성과 보너스',
-  'season-prize': '최종 순위 상금',
+  // Each slot's contract, its base installments and bonus together (→ECON-8).
+  ...Object.fromEntries(
+    Object.entries(SPONSOR_SLOT_LABELS).map(([slot, label]) => [`sponsor:${slot}`, label]),
+  ),
+  'match-bonus': '컵·대륙 경기 성과 보너스',
   'campaign-result': '마케팅 회수금',
-  'fan-income': '글로벌 팬 수익',
   'transfer-out': '선수 매각',
   'free-transfer-compensation': '계약 만료 보상금',
   'cup-prize': '국내 컵 상금',
@@ -301,6 +353,8 @@ export function financialBreakdown(w: World) {
   return {
     costs: operatingCosts(w),
     gate: gateProjection(w),
+    /** The most local supporters the club's town, division and stature hold (→ECON-9). */
+    catchment: catchment(w),
     income,
     expense,
     operatingIncome,
@@ -312,22 +366,43 @@ export function financialBreakdown(w: World) {
 
 export type FinancialReceipt = Event & { amount: string; direction: string };
 
-/** League prize for a final rank; the settlement and the projection share this rule. */
-export function seasonPrize(w: World, rank: number, clubs: number): string {
-  const band =
-    rank === 1
-      ? 0
-      : rank === 2
-        ? 1
-        : rank <= Math.ceil(clubs / 4)
-          ? 2
-          : rank <= Math.floor(clubs / 2)
-            ? 3
-            : -1;
-  if (band < 0) return '0';
-  return quote(
-    clubOf(w).country,
-    w.year,
-    FINANCE_CONFIG.rankAwards[band as 0 | 1 | 2 | 3] * (1 + Math.max(0, 3 - clubOf(w).tier) * 0.35),
+/** A division as the ledger names it: 1부, 2부 … or the amateur league. */
+export function divisionLabel(code: string, tier: number) {
+  return tier >= country(code).groups.length ? '아마추어 리그' : `${tier + 1}부`;
+}
+/**
+ * The equal share every club of a division earns in a season (→ECON-28), in this season's money;
+ * the settlement pays it in league-round installments through `roundShare`.
+ */
+export function leagueShare(w: World, tier = clubOf(w).tier) {
+  const code = clubOf(w).country,
+    table = DISTRIBUTION_CONFIG.share[code] ?? DISTRIBUTION_CONFIG.share.ENG;
+  return footballQuote(code, w.year, table[Math.min(tier, table.length - 1)]);
+}
+/**
+ * The merit payment for a final rank, paid at the close: nothing for the bottom club, rising evenly
+ * to the champion's, whose share and merit together are 1.6× the bottom club's in the top flight
+ * and 1.3× below. The settlement and the projection share this rule.
+ */
+export function leagueMerit(w: World, rank: number, clubs: number): string {
+  if (clubs < 2 || rank < 1 || rank >= clubs) return '0';
+  const { top, below } = DISTRIBUTION_CONFIG.champion,
+    champion = clubOf(w).tier === 0 ? top : below;
+  return ratio(
+    leagueShare(w),
+    BigInt(Math.round((champion - 1) * 1000)) * BigInt(clubs - rank),
+    1000n * BigInt(clubs - 1),
   );
+}
+/**
+ * The season after a relegation a club keeps half the equal share it lost (→ECON-28), paid
+ * alongside its new share; any other season pays none.
+ */
+export function parachutePayment(w: World): string {
+  const last = w.history.at(-1),
+    tier = clubOf(w).tier;
+  if (!last || last.year !== w.year - 1 || last.tier >= tier) return '0';
+  const lost = BigInt(leagueShare(w, last.tier)) - BigInt(leagueShare(w, tier));
+  if (lost <= 0n) return '0';
+  return ratio(lost.toString(), BigInt(Math.round(DISTRIBUTION_CONFIG.parachute * 1000)), 1000n);
 }

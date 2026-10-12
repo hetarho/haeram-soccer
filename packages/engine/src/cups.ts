@@ -1,7 +1,7 @@
 import type { DomesticCup, KnockoutRound, World } from '../../contracts/src/types';
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import { compareIds } from './primitives';
-import { addEvent, clubOf, findClub, quote } from './world';
+import { addEvent, clubOf, findClub, footballQuote } from './world';
 import { credit } from './operations';
 import { pushInbox } from './inbox';
 import { seasonDayLabel } from './calendar';
@@ -102,7 +102,8 @@ function progress(w: World, cup: DomesticCup) {
     const left = roundsFor(cup.clubs.length) - 1 - index;
     // Winning the final is the title itself, paid with the trophy below.
     if (tie.winner === w.playerClub && left > 0) {
-      const prize = quote(
+      // Cup prizes keep their rule and grow with the football index (→LEAGUE-5, →ECON-26).
+      const prize = footballQuote(
         clubOf(w).country,
         w.year,
         CUP_PRIZE[Math.min(left - 1, CUP_PRIZE.length - 1)],
@@ -118,7 +119,7 @@ function progress(w: World, cup: DomesticCup) {
     cup.winner = left[0];
     w.cupWinners[cup.country] = cup.winner;
     if (cup.winner === w.playerClub) {
-      const prize = quote(clubOf(w).country, w.year, 150);
+      const prize = footballQuote(clubOf(w).country, w.year, 150);
       credit(w, prize);
       addEvent(
         w,

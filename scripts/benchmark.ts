@@ -12,6 +12,7 @@ import {
   operatingCost,
   FOUNDING_YEAR,
   managerCandidates,
+  sponsorSlots,
 } from '../packages/engine/src/index';
 import { COUNTRIES, LOAD_CATALOG } from '../packages/catalogs/src/index';
 import { canonical, validateWorld, type World } from '../packages/contracts/src/index';
@@ -59,7 +60,7 @@ const gitHead = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' })
 const gitDirty = !!execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim();
 let peakObservedHeapBytes = 0;
 let worstCheckpointBytes = 0;
-/** The world as a load reads it, which moves the single sponsor these rules sign into its slot. */
+/** The world as a load reads it (→SAVE-10); these rules sign by slot, so a load changes nothing. */
 const loadedCanonical = (w: World) => canonical(validateWorld(w, LOAD_CATALOG));
 async function measure(w: World, label: string) {
   const worldCanonical = loadedCanonical(w);
@@ -150,7 +151,14 @@ for (const variant of ['baseline', 'active-management']) {
     if (variant === 'active-management') {
       const code = clubOf(w).country;
       const available = (cost: string) => BigInt(w.cash) > BigInt(cost) + BigInt(operatingCost(w));
-      if (!w.sponsor) operate(w, { type: 'sponsor', kind: n % 4 === 0 ? 'indexed' : 'stable' });
+      // Every open, empty sponsor slot: the inflation-linked offer (listed last) every fourth season.
+      for (const view of sponsorSlots(w))
+        if (view.offers.length)
+          operate(w, {
+            type: 'sign-sponsor',
+            slot: view.slot,
+            offer: n % 4 === 0 ? view.offers.length - 1 : 0,
+          });
       if (available(quote(code, w.year, 25))) operate(w, { type: 'campaign', kind: 'outreach' });
       if (n % 10 === 0 && w.players.filter((p) => p.status === 'active').length < 26)
         operate(w, { type: 'recruit', candidate: 0, loan: true });

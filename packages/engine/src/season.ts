@@ -10,7 +10,7 @@ import { archivedRounds, finalOf, ownReached, type Settlement } from './knockout
 import { clubValuation, eloOf, eloRange, eloRank, settleElo, squadValue } from './ratings';
 import { evolveClubs } from './dynamics';
 import { announceRetirements, clearHealed, injuriesAfterMatch, retireAtClose } from './careers';
-import { gate, settleRound, settleSeasonPrize } from './settlement';
+import { gate, settleLeagueMerit, settleRound } from './settlement';
 import { delegatedBusiness, sponsorReminder, yearlySponsor } from './ops-commercial';
 import { yearlyStaff } from './ops-staff';
 import type {
@@ -527,7 +527,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     oldGroup = own.group;
   const table = w.tables[own.id],
     order = ranked(w, ownLeagueClubs(w));
-  settleSeasonPrize(w, order.findIndex((c) => c.id === own.id) + 1, order.length);
+  settleLeagueMerit(w, order.findIndex((c) => c.id === own.id) + 1, order.length);
   const champions = COUNTRIES.map((c) => {
     const cup = w.cups?.find((entry) => entry.country === c.code);
     const cupFinal = cup && finalOf(w, cupKey(c.code), cup.rounds, cup.fixtures);

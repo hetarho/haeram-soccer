@@ -43,7 +43,7 @@ describe('club decisions', () => {
       '동일',
     );
   });
-  it('refuses rules 1.16 commands and chosen terms until their rules land', () => {
+  it('refuses contract answers without a talk and the old single sponsor', () => {
     const w = world();
     // New clubs leave contract talks to the staff (→STAFF-13); the new posts can be delegated.
     expect(w.delegation).toMatchObject({ contracts: true });
@@ -56,12 +56,8 @@ describe('club decisions', () => {
       '계약 협상 중인 선수가 아닙니다.',
     );
     expect(() => operate(w, { type: 'contract-decline', player })).toThrow('협상');
-    expect(() => operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 })).toThrow('아직');
-    expect(() => operate(w, { type: 'manager-rule', rule: 'best' })).toThrow('아직');
-    expect(() => operate(w, { type: 'renew-manager', term: 2 })).toThrow('계약 기간');
-    expect(() => operate(w, { type: 'hire-staff', role: 'attack', candidate: 0, term: 3 })).toThrow(
-      '계약 기간',
-    );
+    // The single sponsor of rules before 1.16 is signed by slot now (→ECON-8).
+    expect(() => operate(w, { type: 'sponsor', kind: 'stable' })).toThrow('자리별');
     expect(w).toEqual(before);
   });
   it('pays conditional support before switching tactic', () => {
@@ -84,15 +80,19 @@ describe('club decisions', () => {
     operate(w, { type: 'recruit', candidate: 2, loan: true });
     expect(BigInt(w.cash)).toBe(before - BigInt(offer.loanFee));
     expect(() => operate(w, { type: 'recruit', candidate: 2 })).toThrow('이미');
-    operate(w, { type: 'sponsor', kind: 'stable' });
-    expect(() => operate(w, { type: 'sponsor', kind: 'indexed' })).toThrow('기존');
+    operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
+    expect(() => operate(w, { type: 'sign-sponsor', slot: 'local', offer: 2 })).toThrow('남아');
+    const paid = () =>
+      w.events
+        .filter((e) => e.kind === 'sponsor:local')
+        .reduce((sum, e) => sum + BigInt(e.amount!), 0n);
     advanceRound(w);
-    const sponsorIncome = w.events.filter((e) => e.kind === 'sponsor-payment');
+    const first = paid();
     advanceRound(w);
-    expect(w.events.filter((e) => e.kind === 'sponsor-payment')).toHaveLength(
-      sponsorIncome.length + 1,
-    );
-    expect(BigInt(sponsorIncome[0].amount!)).toBeLessThan(BigInt(w.sponsor!.annual));
+    // Installments accrue on the slot's one ledger entry of the season.
+    expect(w.events.filter((e) => e.kind === 'sponsor:local')).toHaveLength(1);
+    expect(paid()).toBeGreaterThan(first);
+    expect(first).toBeLessThan(BigInt(w.sponsors![0].annual));
     simulateSeason(w);
     expect(w.players.find((p) => p.id === offer.player.id)?.status).toBe('retired');
   });
@@ -138,7 +138,10 @@ describe('club decisions', () => {
       `연봉 ${moneyLabel(w, coach.wage)} · 계약 ${contractSeason(coach.until)} 시즌 끝까지 · 계약금 ${moneyLabel(w, coach.fee)}`,
     );
     operate(w, { type: 'release-staff', role: 'attack' });
-    expect(w.events.at(-1)!.detail).toContain(`보상금 ${moneyLabel(w, ratio(coach.wage, 1n, 4n))}`);
+    const left = BigInt(coach.until - w.year);
+    expect(w.events.at(-1)!.detail).toContain(
+      `보상금 ${moneyLabel(w, ratio(coach.wage, left, 4n))}`,
+    );
   });
   it('draws a caretaker by the day and the departures so far, not by earlier commands', () => {
     const resigned = (reads: number) => {
