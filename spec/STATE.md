@@ -37,6 +37,7 @@
 | T047 | Rules 1.15.0 with regenerated portable goldens | SAVE ECON ARCH LEAGUE | T044 T045 T046 | todo |
 | T048 | Background codec worker for checkpoints | SAVE ARCH | - | todo |
 | T049 | Clock never waits for saving; background autosave cadence | SAVE WEB ARCH | T048 | todo |
+| T063 | Amateur table zones follow the amateur exchange | LEAGUE WEB | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -47,6 +48,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261012 create-task T063 (from the day-order review P2): amateur table zones follow the exchange, outside the lane's touches
 - 261012 T042 integrated
 - 261012 T046 integrated
 - 261012 create-task SAVE WEB ARCH: lane background-save T048 background codec worker → T049 clock never waits for saving (30 s autosave, save on stop/hide/close), added to work group one-result
@@ -66,4 +68,3 @@
 - 261012 WEB r45 ECON r11 SAVE r16 ARCH r6 implemented directly: intervention popover closes on a choice; 구단 빌드→운영 전략 tab (five presets each lighting or aiming at a synergy, device strategy library with composer, dials in their own section, build events name the strategy); three game slots with a slot screen at the start address, parked games in IndexedDB, legacy save as slot 1, 새 게임 wording; start-layout scroller could not shrink (main clipped founding and slot screens on phones), fixed; strategy board and slot screen load lazily (entry 251,220 of 256,000 bytes)
 - 261012 update-ssot WEB r45 ECON r11 SAVE r16 ARCH r6 start: intervention popover closes on choice, 구단 빌드→운영 전략 with redesigned presets and a device strategy library, three game slots (새 게임 wording), reachable scrolling everywhere; implementing directly
 - 261012 WEB r44 ARCH r5 HIST r7 implemented directly: records room tabs (요약/추이/선수/시즌 기록/감독) with a trophy cabinet, Elo standing against the world and league best and worst plus spread bands, chart bubbles by nearest point or keyboard slider, player sheets with club careers and all-time boards; closed league seasons keep 결산/순위표/우리 경기/순위 추이/득점 순위 tabs; all-time head-to-head in team sheets via a read-only worker request; cup history with archived brackets, our cup road and honours (doubles, trebles, runs); records room and cup history load lazily (entry under 250 KiB)
-- 261012 WEB r43 STAFF r10 HIST r6 SAVE r15 implemented directly: manager candidates drawn within their school's bands (veteran firefighters, young developers) with the trait shown instead of ambition, the firefighter leaves at the close unless renewed each April (reminder, delegated renewal), staff page tabs 감독/감독 후보/코치진/위임, transfer market as the squad page's third segment (seven phone tabs), every club name opens a stacking team sheet for any club, closed seasons archive top scorers, per-round rank, the Elo spread and cup brackets from the last 32; rules 1.12.0, worst century checkpoint 1,312,340 bytes
