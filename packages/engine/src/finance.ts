@@ -1,4 +1,5 @@
-import type { Event, MatchRecord, World } from '../../contracts/src/types';
+import type { Event, MatchRecord, Sponsor, World } from '../../contracts/src/types';
+import { currency } from '../../catalogs/src/index';
 import { activePlayers, clubOf, quote } from './world';
 import { clamp, ratio } from './primitives';
 import { policyEffects, policyOf } from './policy';
@@ -24,13 +25,38 @@ export function roundShare(annual: string, round: number, count = 46) {
   ).toString();
 }
 
+/**
+ * Money in the app's one notation (→WEB-67): whole currency units below 100,000, then K/M/B at
+ * three significant figures, rounded toward zero. Engine texts write every amount through it.
+ */
+export function moneyLabel(w: World, amount: string) {
+  const c = currency(clubOf(w).country, w.year),
+    n = BigInt(amount),
+    sign = n < 0n ? '−' : '',
+    major = (n < 0n ? -n : n) / BigInt(c.units);
+  const group = (v: bigint) => v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  if (major < 100_000n) return `${sign}${c.symbol}${group(major)}`;
+  const [unit, size]: [string, bigint] =
+    major >= 1_000_000_000n
+      ? ['B', 1_000_000_000n]
+      : major >= 1_000_000n
+        ? ['M', 1_000_000n]
+        : ['K', 1_000n];
+  const whole = major / size,
+    places = whole >= 100n ? 0 : whole >= 10n ? 1 : 2,
+    scale = 10n ** BigInt(places),
+    fraction = ((major * scale) / size) % scale;
+  return `${sign}${c.symbol}${group(whole)}${places ? '.' + String(fraction).padStart(places, '0') : ''}${unit}`;
+}
+
 export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1) {
   const effects = policyEffects(policyOf(w));
+  // Squad investment acts in contract talks, not on the wage bill (→ECON-16).
   const playerWages = ratio(
     activePlayers(w)
       .reduce((sum, p) => sum + BigInt(p.wage), 0n)
       .toString(),
-    BigInt(Math.round(effects.wageMultiplier * buildEffects(w).wage * 1000)),
+    BigInt(Math.round(buildEffects(w).wage * 1000)),
     1000n,
   );
   const managerWage = w.manager.wage;
@@ -178,6 +204,14 @@ export function gateProjection(w: World, excluding?: string) {
   };
 }
 
+/**
+ * The club's one sponsor until contracts are signed by slot: the one these rules sign, or the
+ * contract a load moved it into (→SAVE-10). Nothing signs while one is held, so never both.
+ */
+export function clubSponsor(w: World): Sponsor | undefined {
+  return w.sponsor || w.sponsors?.[0];
+}
+
 export function matchBonus(w: World, match: MatchRecord) {
   const own = match.home === w.playerClub ? match.score.home : match.score.away;
   const other = match.home === w.playerClub ? match.score.away : match.score.home;
@@ -191,9 +225,10 @@ export function matchBonus(w: World, match: MatchRecord) {
       prestige *
       (isLeagueMatch(match.kind) ? SEASON_ROUNDS / games : 1),
   );
+  const sponsor = clubSponsor(w);
   const sponsored =
-    w.sponsor?.kind === 'performance' && isLeagueMatch(match.kind)
-      ? ratio(w.sponsor.bonus, own > other ? 3n : own === other ? 1n : 0n, BigInt(games * 3))
+    sponsor?.kind === 'performance' && isLeagueMatch(match.kind)
+      ? ratio(sponsor.bonus, own > other ? 3n : own === other ? 1n : 0n, BigInt(games * 3))
       : '0';
   return { result, amount, sponsored };
 }

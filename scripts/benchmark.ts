@@ -13,7 +13,7 @@ import {
   FOUNDING_YEAR,
   managerCandidates,
 } from '../packages/engine/src/index';
-import { COUNTRIES } from '../packages/catalogs/src/index';
+import { COUNTRIES, LOAD_CATALOG } from '../packages/catalogs/src/index';
 import { canonical, validateWorld, type World } from '../packages/contracts/src/index';
 import {
   encode,
@@ -59,8 +59,10 @@ const gitHead = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' })
 const gitDirty = !!execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim();
 let peakObservedHeapBytes = 0;
 let worstCheckpointBytes = 0;
+/** The world as a load reads it, which moves the single sponsor these rules sign into its slot. */
+const loadedCanonical = (w: World) => canonical(validateWorld(w, LOAD_CATALOG));
 async function measure(w: World, label: string) {
-  validateWorld(w);
+  const worldCanonical = loadedCanonical(w);
   for (const cp of COUNTRIES)
     cp.groups.forEach((groups, tier) =>
       groups.forEach((count, group) => {
@@ -77,7 +79,6 @@ async function measure(w: World, label: string) {
     raw = await encode(w, 2, 1),
     encodingMs = performance.now() - t,
     restored = (await decode(raw)).world;
-  const worldCanonical = canonical(w);
   if (canonical(restored) !== worldCanonical) throw new Error('Lossless checkpoint failed');
   const checkpointBytes = 2 * (raw.length + 'haeram-soccor:slot:a'.length),
     totalBytes = checkpointBytes * 2 + 512;
@@ -175,7 +176,7 @@ for (const variant of ['baseline', 'active-management']) {
       const { restored } = await measure(mid, variant + ' mid-career active round');
       simulateSeason(mid);
       simulateSeason(restored);
-      if (canonical(mid) !== canonical(restored))
+      if (loadedCanonical(mid) !== loadedCanonical(restored))
         throw new Error('Resumed season differs from uninterrupted engine');
     }
   }
@@ -214,7 +215,7 @@ for (const variant of ['baseline', 'active-management']) {
     const continued = structuredClone(w);
     simulateSeason(continued);
     simulateSeason(restored);
-    if (canonical(continued) !== canonical(restored))
+    if (loadedCanonical(continued) !== loadedCanonical(restored))
       throw new Error('Resumed century active checkpoint differs from uninterrupted engine');
   }
   const elapsedMs = performance.now() - workloadStart;
@@ -245,7 +246,7 @@ const era = createWorld({
   difficulty: 2,
 });
 for (let year = FOUNDING_YEAR; year < 2025; year++) simulateSeason(era);
-validateWorld(era);
+validateWorld(era, LOAD_CATALOG);
 if (
   !era.history.find((h) => h.year === 2024)?.europe.some((e) => e.kind === 'uecl' && e.field === 36)
 )

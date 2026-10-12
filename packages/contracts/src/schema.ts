@@ -1,9 +1,14 @@
 import { z } from 'zod';
 z.config({ jitless: true });
-import type { World } from './types';
+import type { SponsorSlot, World } from './types';
 import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from './detail';
 import { BUILD_OPTIONS, LEGACY_VISION_BUILDS, STRATEGY_NAME_LIMIT } from './build';
 const money = z.string().regex(/^-?\d{1,80}$/);
+/** Money that is never negative: wages asked, contract amounts. */
+const amount = z.string().regex(/^\d{1,80}$/);
+const season = z.number().int().min(1901).max(4000);
+const seasonDay = z.number().int().min(0).max(365);
+const term = z.literal([1, 2, 3, 4, 5]);
 const rating = z.number().finite().min(0).max(100);
 const text = z.string().max(160);
 const id = z.string().min(1).max(100);
@@ -66,6 +71,24 @@ const player = z.object({
     .optional(),
   stance: z.enum(['listed', 'untouchable']).optional(),
   retiring: z.number().int().optional(),
+  talk: z
+    .strictObject({
+      kind: z.enum(['renew', 'raise']),
+      demand: amount,
+      floor: amount,
+      year: season,
+      day: seasonDay,
+    })
+    .optional(),
+  raiseAsked: season.optional(),
+  unhappy: z
+    .strictObject({
+      reason: z.enum(['renewal-declined', 'raise-declined']),
+      year: season,
+      day: seasonDay,
+    })
+    .optional(),
+  transferRequest: z.strictObject({ year: season, day: seasonDay }).optional(),
 });
 const manager = z.object({
   id,
@@ -112,6 +135,7 @@ const manager = z.object({
   pending: tactic.optional(),
   born: z.number().int().optional(),
   potential: rating.optional(),
+  term: term.optional(),
 });
 const score = z.object({
   home: z.number().int().min(0).max(99),
@@ -378,6 +402,7 @@ const staff = z.strictObject({
   until: z.number().int(),
   born: z.number().int().optional(),
   potential: rating.optional(),
+  term: term.optional(),
 });
 const bid = z.strictObject({
   id,
@@ -408,6 +433,10 @@ const inboxItem = z.strictObject({
     'staff-renewal',
     'cup',
     'finance',
+    'contract-talk',
+    'unhappy',
+    'transfer-request',
+    'sponsor-ending',
   ]),
   title: text,
   detail: z.string().max(400),
@@ -415,6 +444,21 @@ const inboxItem = z.strictObject({
   read: z.boolean().optional(),
   ref: id.optional(),
 });
+const sponsorSlot = z.enum(['local', 'kit', 'shirt', 'stadium', 'sleeve']);
+const sponsorContract = z
+  .strictObject({
+    slot: sponsorSlot,
+    name: text,
+    kind: z.enum(['stable', 'performance', 'exclusive', 'indexed']),
+    annual: amount,
+    bonus: amount,
+    from: season,
+    until: season,
+    // An offer from the club's first season counts the season before as paid.
+    lastPaid: z.number().int().min(1900).max(4000),
+    index: z.number().finite().positive(),
+  })
+  .refine((contract) => contract.from <= contract.until);
 export const worldSchema: z.ZodType<World> = z.object({
   schema: z.literal(1),
   engine: text,
@@ -457,6 +501,8 @@ export const worldSchema: z.ZodType<World> = z.object({
       transfers: z.boolean().optional(),
       business: z.boolean().optional(),
       staff: z.boolean().optional(),
+      contracts: z.boolean().optional(),
+      manager: z.boolean().optional(),
     })
     .optional(),
   coaching: z
@@ -512,6 +558,7 @@ export const worldSchema: z.ZodType<World> = z.object({
       }),
     )
     .max(50),
+  // Rules before 1.16 kept one sponsor; validateWorld moves it into its slot.
   sponsor: z
     .object({
       name: text,
@@ -523,6 +570,8 @@ export const worldSchema: z.ZodType<World> = z.object({
       index: number,
     })
     .optional(),
+  sponsors: z.array(sponsorContract).max(5).optional(),
+  managerRule: z.enum(['school', 'best', 'strategy']).optional(),
   cupWinners: z.record(id, id),
   cups: z.array(domesticCup).max(10).optional(),
   europe: z.array(tournament).max(10),
@@ -624,7 +673,38 @@ function legacyVision(input: unknown): unknown {
   };
 }
 
-export function validateWorld(input: unknown): World {
+/** Catalog facts a load needs to bring older rules forward; contracts never import catalogs (→ARCH-4). */
+export interface LoadCatalog {
+  /** Season year a sponsor slot opens in a country (→ECON-8). */
+  sponsorSlotOpens(country: string, slot: SponsorSlot): number;
+}
+/**
+ * Rules before 1.16 kept one sponsor (→SAVE-10): it becomes the 메인 스폰서 contract, or the 지역
+ * 후원 one before the shirt slot opens in the club's country, keeping its amounts and end.
+ */
+function legacySponsor(w: World, country: string, catalog: LoadCatalog | undefined) {
+  const sponsor = w.sponsor!;
+  if (!catalog) throw new Error('이전 규칙의 후원 계약을 옮길 카탈로그가 없습니다.');
+  // Those offers ran four seasons when exclusive and two otherwise.
+  const from = Math.min(w.year, sponsor.until - (sponsor.kind === 'exclusive' ? 4 : 2));
+  const contract = sponsorContract.safeParse({
+    slot: catalog.sponsorSlotOpens(country, 'shirt') <= w.year ? 'shirt' : 'local',
+    name: sponsor.name,
+    kind: sponsor.kind,
+    annual: sponsor.annual,
+    bonus: sponsor.bonus,
+    from,
+    until: sponsor.until,
+    lastPaid: sponsor.lastPaid,
+    index: sponsor.index,
+  });
+  if (!contract.success) throw new Error('후원 계약 손상');
+  delete w.sponsor;
+  w.sponsors = [...(w.sponsors || []), contract.data];
+}
+
+/** `catalog` is needed only for a world from rules before 1.16 that has a sponsor. */
+export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   const w = worldSchema.parse(legacyMarket(legacyVision(input)));
   const ids = new Set(w.clubs.map((c) => c.id));
   if (ids.size !== w.clubs.length || !ids.has(w.playerClub))
@@ -739,6 +819,9 @@ export function validateWorld(input: unknown): World {
   }
   if (!['ENG', 'ESP', 'GER', 'ITA', 'FRA', 'POR', 'NED', 'BEL'].includes(owner.country))
     throw new Error('지원하지 않는 창단 국가');
+  if (w.sponsor) legacySponsor(w, owner.country, catalog);
+  if (w.sponsors && new Set(w.sponsors.map((s) => s.slot)).size !== w.sponsors.length)
+    throw new Error('후원 계약 손상');
   if (w.players.filter((p) => p.status === 'active').length < 14)
     throw new Error('최소 선수단 부족');
   if (w.players.some((p) => p.born > w.year)) throw new Error('선수 생년 손상');
@@ -795,11 +878,6 @@ export function validateWorld(input: unknown): World {
     throw new Error('골키퍼 부족');
   if (w.priceIndex <= 0 || BigInt(w.income) < 0 || BigInt(w.expense) < 0)
     throw new Error('재무 지표 손상');
-  if (
-    w.sponsor &&
-    (w.sponsor.index <= 0 || BigInt(w.sponsor.annual) < 0 || BigInt(w.sponsor.bonus) < 0)
-  )
-    throw new Error('후원 계약 손상');
   if (
     w.campaigns.some(
       (c) =>

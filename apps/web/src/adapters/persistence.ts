@@ -1,8 +1,14 @@
-import { CATALOG_HASH, currency } from '../../../../packages/catalogs/src/index';
+import {
+  CATALOG_HASH,
+  CATALOG_VERSION,
+  LOAD_CATALOG,
+  currency,
+} from '../../../../packages/catalogs/src/index';
 import { canonical, validateWorld, type World } from '../../../../packages/contracts/src/index';
 import { unbase64, pack, unpack } from './packing';
 import { denseBytes, denseText } from './dense';
 import {
+  PRIOR_CATALOG_HASHES,
   SUPPORTED_ENGINE_VERSIONS,
   SaveCompatibilityError,
 } from '../../../../packages/contracts/src/versions';
@@ -75,7 +81,11 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
   if (!SUPPORTED_ENGINE_VERSIONS.includes(e.engine))
     throw new SaveCompatibilityError('지원하지 않는 저장 엔진 버전입니다. 원본 파일을 보관하세요.');
   if (typeof e.catalog !== 'string') throw new Error('저장 카탈로그 헤더가 올바르지 않습니다.');
-  if (e.catalog !== '2026-demo-1')
+  // An older catalog is accepted by the fingerprint recorded with it (→SAVE-10); the pin moves to
+  // the current catalog on writer activation, never while reading.
+  const latest = e.catalog === CATALOG_VERSION;
+  const pinned = latest ? CATALOG_HASH : PRIOR_CATALOG_HASHES[e.catalog];
+  if (!pinned)
     throw new SaveCompatibilityError(
       '지원하지 않는 저장 카탈로그 버전입니다. 원본 파일을 보관하세요.',
     );
@@ -83,7 +93,7 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
   if (!SAVE_CODECS.includes(e.codec))
     throw new SaveCompatibilityError('지원하지 않는 저장 코덱 버전입니다. 원본 파일을 보관하세요.');
   if (typeof e.catalogHash !== 'string') throw new Error('저장 카탈로그 해시가 올바르지 않습니다.');
-  if (e.catalogHash !== CATALOG_HASH)
+  if (e.catalogHash !== pinned)
     throw new SaveCompatibilityError(
       '지원하지 않는 저장 카탈로그 해시입니다. 원본 파일을 보관하세요.',
     );
@@ -105,6 +115,7 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
   if ((await digest(bytes)) !== e.checksum) throw new Error('체크섬이 일치하지 않습니다.');
   const world = validateWorld(
     unpack(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes))),
+    LOAD_CATALOG,
   );
   if (
     world.id !== e.worldId ||

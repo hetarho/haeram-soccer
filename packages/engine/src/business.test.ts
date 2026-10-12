@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { validateWorld } from '../../contracts/src/index';
+import { canonical, validateWorld } from '../../contracts/src/index';
 import type { World } from '../../contracts/src/types';
+import { LOAD_CATALOG } from '../../catalogs/src/index';
 import {
   advanceDays,
   advanceRound,
@@ -10,6 +11,7 @@ import {
   gateProjection,
   leagueMatchFactor,
   matchBonus,
+  operate,
   operatingCosts,
   ownLeagueGames,
   quote,
@@ -70,7 +72,30 @@ describe('business delegation and cash warnings', () => {
     expect(finance(delegated)).toEqual([expect.objectContaining({ attention: false })]);
     advanceDays(delegated, 1);
     expect(delegated.events.filter((e) => e.kind === 'sponsor-sign')).toHaveLength(1);
-    validateWorld(delegated);
+    // The engine still signs the single sponsor of rules 1.15, which a load moves into its slot.
+    validateWorld(delegated, LOAD_CATALOG);
+  });
+
+  it('runs a sponsor a load moved into its slot exactly as the one it signed, never signing twice', () => {
+    const w = world();
+    w.delegation = { ...w.delegation, business: true };
+    advanceDays(w, 1);
+    const loaded = validateWorld(structuredClone(w), LOAD_CATALOG);
+    expect(loaded.sponsor).toBeUndefined();
+    expect(() => operate(loaded, { type: 'sponsor', kind: 'stable' })).toThrow(
+      '기존 주 후원 계약이 남아 있습니다.',
+    );
+    // It pays through two seasons, ends at the close and the staff sign again, as if never loaded.
+    for (const career of [w, loaded]) {
+      simulateSeason(career);
+      simulateSeason(career);
+    }
+    expect(loaded.events.filter((e) => e.kind === 'sponsor-payment').length).toBeGreaterThan(0);
+    expect(loaded.events.filter((e) => e.kind === 'sponsor-end')).toHaveLength(1);
+    expect(loaded.sponsors).toBeUndefined();
+    expect(canonical(validateWorld(loaded, LOAD_CATALOG))).toBe(
+      canonical(validateWorld(w, LOAD_CATALOG)),
+    );
   });
 
   it('reminds an owner without a sponsor when a season starts, but not a delegating one', () => {

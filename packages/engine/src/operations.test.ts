@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld, operate, advanceRound, transferOffers, simulateSeason } from './index';
+import {
+  createWorld,
+  operate,
+  advanceRound,
+  transferOffers,
+  simulateSeason,
+  moneyLabel,
+  staffCandidates,
+  contractSeason,
+  ratio,
+} from './index';
 const world = () =>
   createWorld({
     country: 'ENG',
@@ -32,6 +42,26 @@ describe('club decisions', () => {
     expect(() => operate(w, { type: 'tactics', tactic: 'press', tone: 'evidence' })).toThrow(
       '동일',
     );
+  });
+  it('refuses rules 1.16 commands and chosen terms until their rules land', () => {
+    const w = world();
+    // New clubs leave contract talks to the staff (→STAFF-13); the new posts can be delegated.
+    expect(w.delegation).toMatchObject({ contracts: true });
+    operate(w, { type: 'delegate', key: 'manager', value: true });
+    expect(w.delegation?.manager).toBe(true);
+    const before = structuredClone(w);
+    const player = w.players[0].id;
+    expect(() => operate(w, { type: 'contract-offer', player, wage: '1', term: 2 })).toThrow(
+      'contract-offer 명령은 아직 지원하지 않습니다.',
+    );
+    expect(() => operate(w, { type: 'contract-decline', player })).toThrow('아직');
+    expect(() => operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 })).toThrow('아직');
+    expect(() => operate(w, { type: 'manager-rule', rule: 'best' })).toThrow('아직');
+    expect(() => operate(w, { type: 'renew-manager', term: 2 })).toThrow('계약 기간');
+    expect(() => operate(w, { type: 'hire-staff', role: 'attack', candidate: 0, term: 3 })).toThrow(
+      '계약 기간',
+    );
+    expect(w).toEqual(before);
   });
   it('pays conditional support before switching tactic', () => {
     const w = world();
@@ -92,6 +122,22 @@ describe('club decisions', () => {
     expect(result(plain)).toBeDefined();
     expect(result(busy)).toEqual(result(plain));
     expect(busy.cash).toBe(plain.cash);
+  });
+  it('writes amounts in event texts in the app notation, never in raw minor units', () => {
+    const w = world();
+    w.cash = '999999999';
+    const signing = transferOffers(w)[0];
+    operate(w, { type: 'recruit', candidate: 0 });
+    const signed = w.events.at(-1)!.detail;
+    expect(signed).toContain(`연봉 ${moneyLabel(w, signing.player.wage)}`);
+    expect(signed).not.toContain(`연봉 ${signing.player.wage}`);
+    const coach = staffCandidates(w, 'attack')[2];
+    operate(w, { type: 'hire-staff', role: 'attack', candidate: 2 });
+    expect(w.events.at(-1)!.detail).toContain(
+      `연봉 ${moneyLabel(w, coach.wage)} · 계약 ${contractSeason(coach.until)} 시즌 끝까지 · 계약금 ${moneyLabel(w, coach.fee)}`,
+    );
+    operate(w, { type: 'release-staff', role: 'attack' });
+    expect(w.events.at(-1)!.detail).toContain(`보상금 ${moneyLabel(w, ratio(coach.wage, 1n, 4n))}`);
   });
   it('draws a caretaker by the day and the departures so far, not by earlier commands', () => {
     const resigned = (reads: number) => {

@@ -1,6 +1,11 @@
-export const CATALOG_VERSION = '2026-demo-1';
+export const CATALOG_VERSION = '2026-demo-2';
 import priceData from '../data/prices.json' with { type: 'json' };
+import footballData from '../data/football-index.json' with { type: 'json' };
 import type { CountryCode } from '../../contracts/src/types';
+import type { CatalogPin } from '../../contracts/src/versions';
+import type { LoadCatalog } from '../../contracts/src/schema';
+/** Provenance of a catalog figure (→ECON-3): never call a proxy or an estimate an observation. */
+export type Observation = 'observed' | 'estimated' | 'projected';
 export interface CountryProfile {
   code: CountryCode;
   iso: string;
@@ -159,7 +164,7 @@ export const country = (code: string) => {
 function rawPriceIndex(
   code: string,
   year: number,
-): { value: number; status: 'observed' | 'estimated' | 'projected'; source: string } {
+): { value: number; status: Observation; source: string } {
   const c = country(code);
   const values = priceData.worldBank[c.iso as keyof typeof priceData.worldBank] as Record<
     string,
@@ -199,6 +204,119 @@ export function priceIndex(code: string, year: number) {
   priceCache.set(key, value);
   return value;
 }
+/** What football pays and charges in a country and year, beyond consumer prices (→ECON-26). */
+export interface FootballIndex {
+  value: number;
+  /** The index divided by the price index, normalized to the catalog's base year. */
+  real: number;
+  status: Observation;
+  source: string;
+}
+/** Sponsor slots in the order they open (→ECON-8). */
+export const SPONSOR_SLOTS = ['local', 'kit', 'shirt', 'stadium', 'sleeve'] as const;
+export type SponsorSlot = (typeof SPONSOR_SLOTS)[number];
+export interface SponsorSlotEra {
+  year: number;
+  status: Observation;
+  source: string;
+}
+interface FootballEra {
+  to: number;
+  status: Observation;
+  note: string;
+  sources: string[];
+}
+function observation(value: string): Observation {
+  if (value === 'observed' || value === 'estimated' || value === 'projected') return value;
+  throw new Error(`카탈로그 관측 상태가 올바르지 않습니다: ${value}`);
+}
+/** The less certain of two statuses: a football estimate on an observed price stays an estimate. */
+function leastCertain(a: Observation, b: Observation): Observation {
+  if (a === 'projected' || b === 'projected') return 'projected';
+  return a === 'observed' && b === 'observed' ? 'observed' : 'estimated';
+}
+const footballSources: Record<string, string> = footballData.sources;
+function attribute(note: string, keys: readonly string[]) {
+  const texts = keys.map((key) => {
+    const source = footballSources[key];
+    if (!source) throw new Error(`카탈로그 출처가 없습니다: ${key}`);
+    return source;
+  });
+  return `${note} — ${texts.join('; ')}`;
+}
+const footballEras: FootballEra[] = footballData.eras.map((era) => ({
+  to: era.to,
+  status: observation(era.status),
+  note: era.note,
+  sources: era.sources,
+}));
+const footballReal: Record<string, { share: number; real: number[] }> = footballData.index;
+interface SlotRow {
+  year: number;
+  status: string;
+  note: string;
+  sources: string[];
+}
+/** Opening years are composed once at load, so a lookup costs nothing (like priceIndex's cache). */
+function sponsorTable() {
+  const table: Record<string, Record<string, SponsorSlotEra>> = {};
+  for (const [code, rows] of Object.entries<Record<string, SlotRow>>(footballData.slots)) {
+    const eras: Record<string, SponsorSlotEra> = {};
+    for (const [slot, row] of Object.entries(rows))
+      eras[slot] = {
+        year: row.year,
+        status: observation(row.status),
+        source: attribute(row.note, row.sources),
+      };
+    table[code] = eras;
+  }
+  return table;
+}
+const sponsorEras = sponsorTable();
+function rawFootballIndex(code: string, year: number): FootballIndex {
+  const c = country(code);
+  const price = priceIndex(code, year);
+  const real = footballReal[c.code].real;
+  const last = footballEras.length - 1;
+  if (year > footballEras[last].to) {
+    const note = 'After the catalog coverage the real multiple holds and prices are projected';
+    return {
+      value: price.value * real[last],
+      real: real[last],
+      status: 'projected',
+      source: attribute(note, [...footballEras[last].sources, c.code]),
+    };
+  }
+  const era = footballEras.findIndex((e) => year <= e.to);
+  const from = era === 0 ? footballData.from : footballEras[era - 1].to;
+  const start = era === 0 ? real[0] : real[era - 1];
+  const progress = year <= from ? 0 : (year - from) / (footballEras[era].to - from);
+  const multiple = start * (real[era] / start) ** progress;
+  return {
+    value: price.value * multiple,
+    real: multiple,
+    status: leastCertain(price.status, footballEras[era].status),
+    source: attribute(footballEras[era].note, [...footballEras[era].sources, c.code]),
+  };
+}
+const footballCache = new Map<string, FootballIndex>();
+export function footballIndex(code: string, year: number): FootballIndex {
+  const key = `${code}:${year}`;
+  const cached = footballCache.get(key);
+  if (cached) return cached;
+  const value = rawFootballIndex(code, year);
+  footballCache.set(key, value);
+  return value;
+}
+export function sponsorSlotOpens(code: string, slot: SponsorSlot): SponsorSlotEra {
+  const era = sponsorEras[country(code).code][slot];
+  if (!era) throw new Error('지원하지 않는 후원 슬롯입니다.');
+  return era;
+}
+/** What a load reads from the catalog to bring a world from older rules forward (→SAVE-10). */
+export const LOAD_CATALOG: LoadCatalog = {
+  sponsorSlotOpens: (code, slot) => sponsorSlotOpens(code, slot).year,
+};
 export interface CurrencyPeriod {
   code: string;
   symbol: string;
@@ -257,6 +375,12 @@ export function currency(code: string, year: number): CurrencyPeriod {
     estimated: code === 'GER' && year < 1948,
   };
 }
-export { priceData };
+export { priceData, footballData };
 
-export { CATALOG_HASH } from './fingerprint';
+import { CATALOG_HASH } from './fingerprint';
+export { CATALOG_HASH };
+/** The catalog a world pins when it is founded or activated (→SAVE-10, →ARCH-10). */
+export const CURRENT_CATALOG: CatalogPin = {
+  catalog: CATALOG_VERSION,
+  catalogHash: CATALOG_HASH,
+};

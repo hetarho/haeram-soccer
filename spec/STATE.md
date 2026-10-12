@@ -31,9 +31,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T050 | Football index and sponsor-slot eras in catalog 2026-demo-2 | ECON SAVE | - | todo |
-| T051 | Contracts for sponsors by slot, player talks, terms and new delegations | ECON CLUB STAFF WEB SAVE | T050 | todo |
-| T052 | Split commands by domain, close the season-close ledger gap, engine money notation | ECON WEB | T051 | todo |
 | T055 | League distribution, local-supporter gate, no supporter income | ECON | T052 T054 | todo |
 | T056 | Sponsor contracts by slot | ECON WEB | T055 | todo |
 | T057 | Market wages and values on the football index | CLUB ECON | T052 T054 | todo |
@@ -47,12 +44,13 @@
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
 | one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
-| club-realism | 4 | 13 | 2 | 11 | 0 | 3 | 0 | 2026-10-12T14:17:53.394Z | [history](work/club-realism.json) |
+| club-realism | 4 | 13 | 5 | 8 | 0 | 0 | 0 | 2026-10-12T14:32:41.441Z | [history](work/club-realism.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261012 T050 T051 T052 integrated
 - 261012 T053 T054 integrated
 - 261012 T047 done: CI on main at 6cdc86b passed checks and test:e2e in every browser; its benchmark job fails desktop input p95 115 ms > 100 ms (left until club-realism is done, owner's order); one-result's runtime lives on the server that ran it, so this clone has no attempt to release
 - 261012 merged work group one-result, T047 (e2e unverified) and plan/club-realism (ECON r14 CLUB r17 STAFF r12 WEB r51 SAVE r21, T050–T062) into main; ARCH-13's change renumbered r8→r9 after main's ARCH-23 r8
@@ -72,4 +70,3 @@
 - 261012 WEB r49 implemented directly: records room season rows open that season in 시즌 기록; league picker (국가·디비전·지역 그룹, 우리 리그로, ?league=) on 개요, 순위표, 라운드 결과 and a closed season's 순위표, other leagues' fixtures read from the worker on demand (league-fixtures read) and closed seasons' tables from archived standings; closed seasons load lazily, entry 249,558 of 256,000 bytes (WEB-5✎ from r48 stays pending)
 - 261012 create-task ARCH LEAGUE WEB ECON CLUB SAVE: T042 draws named by what they settle, lane day-order T043 one day order → T044 amateur exchange, T045 market identity with bids keeping their offer (after T042), T046 currency conversion and ledger lines, T047 rules 1.15.0 with goldens (integration); work group one-result, workers 3, reviewers 1
 - 261012 update-ssot SAVE r19: rules 1.14.0→1.15.0, outgoing bids may carry `offer`, older pending bids answered as before
-- 261012 create-task ARCH LEAGUE WEB ECON CLUB start (work group one-result)

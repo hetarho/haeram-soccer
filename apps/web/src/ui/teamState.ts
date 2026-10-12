@@ -111,7 +111,6 @@ export function remedies(w: World, key: StateKey): Remedy[] {
   const club = clubOf(w),
     policy = policyOf(w),
     format = (value: string) => compactMoney(value, club.country, w.year);
-  const supportDown = POLICY_INFO.support.levels[policy.support - 2];
   switch (key) {
     case 'fatigue': {
       const current = lineupSummary(startingSquad(w, club)).fatigue;
@@ -191,19 +190,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
             ? { type: 'policy', key: 'marketing', level: marketing.level }
             : undefined,
         },
-        {
-          id: 'support-down',
-          label: supportDown
-            ? `${POLICY_INFO.support.label} · ${supportDown.name}`
-            : `${POLICY_INFO.support.label} 최저 단계`,
-          effect: supportDown
-            ? `${supportDown.summary} · 분위기 기준점 −4`
-            : '더 줄일 단계가 없어요',
-          unavailable: supportDown ? undefined : '이미 긴축',
-          command: supportDown
-            ? { type: 'policy', key: 'support', level: supportDown.level }
-            : undefined,
-        },
+        // Squad investment acts in contract talks and saves no cash (→ECON-16), so it is no remedy.
         {
           id: 'ticket-up',
           label: '티켓 가격 20% 인상',

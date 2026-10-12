@@ -21,6 +21,7 @@ import {
   isSaveCompatibilityError,
   upgradeWorldRules,
 } from '../../../../packages/contracts/src/versions';
+import { CURRENT_CATALOG } from '../../../../packages/catalogs/src/index';
 import { decode, encode } from '../adapters/persistence';
 import { clubMilestones } from '../../../../packages/engine/src/goals';
 import { financialBreakdown } from '../../../../packages/engine/src/finance';
@@ -197,7 +198,9 @@ export class Host {
         if (r.body.upgrade && !r.body.activate)
           throw new Error('규칙 업그레이드는 활성화할 때만 가능합니다.');
         const result = await decode(r.body.raw);
-        const activated = r.body.upgrade ? upgradeWorldRules(result.world) : result.world;
+        const activated = r.body.upgrade
+          ? upgradeWorldRules(result.world, CURRENT_CATALOG)
+          : result.world;
         upgraded = activated !== result.world;
         candidate = this.view(activated)!.world;
         if (r.body.activate) this.world = activated;

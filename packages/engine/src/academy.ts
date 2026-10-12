@@ -5,7 +5,7 @@ import { clamp, compareIds, integer, random } from './primitives';
 import { staffEffects, staffMember } from './staff';
 import { pushInbox } from './inbox';
 import { recordDevelopment, roleSkills, skillAfter } from './training';
-import { operatingCosts } from './finance';
+import { moneyLabel, operatingCosts } from './finance';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
@@ -229,7 +229,7 @@ export function promoteYouth(w: World, id: string): void {
     w,
     'youth-promotion',
     `${player.name} 1군 승격`,
-    `${player.role} · ${w.year - player.born}세 · 능력 ${overall(player)} · 잠재력 ${Math.round(player.potential)} · 연봉 ${player.wage} · 계약 ${player.until}년`,
+    `${player.role} · ${w.year - player.born}세 · 능력 ${overall(player)} · 잠재력 ${Math.round(player.potential)} · 연봉 ${moneyLabel(w, player.wage)} · 계약 ${player.until}년`,
   );
 }
 export function releaseYouth(w: World, id: string): void {
@@ -300,7 +300,7 @@ export function seasonAcademy(w: World): void {
     staffReport(
       w,
       `유스 디렉터가 ${player.name}을(를) 1군에 올렸어요`,
-      `${prospectLine(w, player)} · 연봉 ${player.wage} · 계약 ${player.until}년`,
+      `${prospectLine(w, player)} · 연봉 ${moneyLabel(w, player.wage)} · 계약 ${player.until}년`,
       player.id,
     );
   }

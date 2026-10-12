@@ -24,9 +24,37 @@ export type ManagerStyle =
   | 'developer'
   | 'firefighter'
   | 'headcoach';
-export type DelegationKey = 'training' | 'academy' | 'transfers' | 'business' | 'staff';
+/** `contracts`: player contract talks (→CLUB-26); `manager`: the manager post (→STAFF-18). */
+export type DelegationKey =
+  'training' | 'academy' | 'transfers' | 'business' | 'staff' | 'contracts' | 'manager';
+/**
+ * How delegated staff appoint a manager (→STAFF-18): the departing manager's school (the
+ * default), the best by OVR, or the school the operating strategy's aimed synergy needs.
+ */
+export type ManagerRule = 'school' | 'best' | 'strategy';
+/** Seasons a contract is signed for (→CLUB-26, STAFF-14). */
+export type ContractTerm = 1 | 2 | 3 | 4 | 5;
 /** Coaching investment (→STAFF-15): 1 volunteers only, 2 mid-market coaches, 3 the best available. */
 export type CoachingLevel = 1 | 2 | 3;
+/**
+ * Sponsor slots in the order they open (→ECON-8): 지역 후원, 용품 후원, 메인 스폰서, 경기장 명명권,
+ * 소매 스폰서. The catalog says when each opens per country.
+ */
+export type SponsorSlot = 'local' | 'kit' | 'shirt' | 'stadium' | 'sleeve';
+/** Guaranteed, performance-linked, exclusive (no merchandise campaigns) or inflation-linked. */
+export type SponsorKind = 'stable' | 'performance' | 'exclusive' | 'indexed';
+/** Why a player turned unhappy (→CLUB-27): the club declined his renewal or his raise. */
+export type UnhappyReason = 'renewal-declined' | 'raise-declined';
+/**
+ * Ledger kinds of competition money (→ECON-28), sponsor contracts (→ECON-8) and expiring
+ * contracts (→CLUB-28); `Event.kind` stays a string, so older entries keep theirs.
+ */
+export type LedgerKind =
+  | 'league-share'
+  | 'league-merit'
+  | 'parachute'
+  | `sponsor:${SponsorSlot}`
+  | 'free-transfer-compensation';
 /** A player's standing on the market (→CLUB-22): listed to sell, open to offers, or untouchable. */
 export type TransferStance = 'listed' | 'open' | 'untouchable';
 /** Owner requests to the manager and staff (→CLUB-20). */
@@ -50,7 +78,11 @@ export type InboxKind =
   | 'staff-report'
   | 'staff-renewal'
   | 'cup'
-  | 'finance';
+  | 'finance'
+  | 'contract-talk'
+  | 'unhappy'
+  | 'transfer-request'
+  | 'sponsor-ending';
 export type Metrics = number[];
 export interface Club {
   id: string;
@@ -96,6 +128,25 @@ export interface Player {
   stance?: Exclude<TransferStance, 'open'>;
   /** Season year whose close ends the career he has announced he will finish (→CLUB-3). */
   retiring?: number;
+  /** The contract talk he opened (→CLUB-26). */
+  talk?: ContractTalk;
+  /** Season year he last asked for a raise: at most once a season (→CLUB-26). */
+  raiseAsked?: number;
+  /** Unhappy since this day, and why (→CLUB-27). */
+  unhappy?: { reason: UnhappyReason; year: number; day: number };
+  /** The day he handed in a transfer request: listed, never untouchable (→CLUB-27). */
+  transferRequest?: { year: number; day: number };
+}
+/**
+ * A player's contract talk (→CLUB-26): his demand, the floor he accepts at or above (demand ×
+ * (1 − goodwill)) and the season day he asked.
+ */
+export interface ContractTalk {
+  kind: 'renew' | 'raise';
+  demand: string;
+  floor: string;
+  year: number;
+  day: number;
 }
 export interface Manager {
   id: string;
@@ -122,6 +173,8 @@ export interface Manager {
   /** Birth year and the ability he can grow to (→STAFF-16); absent in older saves, which stay put. */
   born?: number;
   potential?: number;
+  /** Seasons the owner chose at his last hiring or renewal (→STAFF-14); absent before rules 1.16. */
+  term?: ContractTerm;
 }
 /** Free-agent managers and the clubs whose managers changed (→STAFF-17). */
 export interface ManagerMarket {
@@ -146,6 +199,8 @@ export interface Staff {
   /** Birth year and the ability he can grow to (→STAFF-16); volunteers and older saves have none. */
   born?: number;
   potential?: number;
+  /** Seasons the owner chose at his last hiring or renewal (→STAFF-15); absent before rules 1.16. */
+  term?: ContractTerm;
 }
 export interface Academy {
   /** Academy prospects are not first-team players until promoted. */
@@ -340,13 +395,33 @@ export interface Event {
   amount?: string;
   currency?: string;
 }
+/** The single sponsor of rules before 1.16; a load moves it into its slot (→SAVE-10). */
 export interface Sponsor {
   name: string;
-  kind: 'stable' | 'performance' | 'exclusive' | 'indexed';
+  kind: SponsorKind;
   annual: string;
   bonus: string;
   until: number;
   lastPaid: number;
+  index: number;
+}
+/**
+ * One slot's sponsor contract (→ECON-8): an annual amount fixed for its term plus the slot's
+ * bonus, paid by league payments (→ECON-14).
+ */
+export interface SponsorContract {
+  slot: SponsorSlot;
+  name: string;
+  kind: SponsorKind;
+  annual: string;
+  bonus: string;
+  /** Season year it was signed in. */
+  from: number;
+  /** First season year it no longer pays; it ends at the close before. */
+  until: number;
+  /** Last season year it was paid in full. */
+  lastPaid: number;
+  /** Price index at signing; an inflation-linked amount pays annual × current / this. */
   index: number;
 }
 export interface Campaign {
@@ -553,7 +628,15 @@ export interface World {
   facilities: number;
   ticket: number;
   campaigns: Campaign[];
+  /**
+   * Written only by rules before 1.16, which kept one sponsor; a load moves it into `sponsors`
+   * (→SAVE-10), so a validated world never has it.
+   */
   sponsor?: Sponsor;
+  /** One contract per open slot at most (→ECON-8); absent or missing slots are empty. */
+  sponsors?: SponsorContract[];
+  /** The rule delegated staff appoint a manager by (→STAFF-18); absent is `school`. */
+  managerRule?: ManagerRule;
   cupWinners: Record<string, string>;
   /** This season's domestic cups, one per country (→LEAGUE-5); absent in older saves. */
   cups?: DomesticCup[];
@@ -584,9 +667,10 @@ export type Command =
   | { type: 'lineup'; ids: string[] | null }
   | { type: 'training'; focus: TrainingFocus }
   | { type: 'policy'; key: PolicyKey; level: PolicyLevel }
-  | { type: 'hire-staff'; role: StaffRole; candidate: number }
+  /** `term`: the seasons the owner chooses (→STAFF-15); absent keeps the earlier rule. */
+  | { type: 'hire-staff'; role: StaffRole; candidate: number; term?: ContractTerm }
   | { type: 'release-staff'; role: StaffRole }
-  | { type: 'renew-staff'; role: StaffRole }
+  | { type: 'renew-staff'; role: StaffRole; term?: ContractTerm }
   | { type: 'coaching'; role: StaffRole; level: CoachingLevel }
   | { type: 'promote-youth'; id: string }
   | { type: 'release-youth'; id: string }
@@ -594,10 +678,21 @@ export type Command =
   | { type: 'bid'; candidate: number; fee: string; loan?: boolean }
   | { type: 'respond-bid'; id: string; accept: boolean }
   | { type: 'read-inbox'; id?: string }
-  /** A manager from the market (→STAFF-17), by id: a free agent or another club's manager. */
-  | { type: 'hire'; id: string }
-  /** Keeps the manager one more season when his contract ends at this season's close. */
-  | { type: 'renew-manager' }
+  /**
+   * Hires a manager from the market (→STAFF-17), by id: a free agent or another club's manager.
+   * `term`: the seasons the owner chooses (→STAFF-14); absent keeps the earlier rule.
+   */
+  | { type: 'hire'; id: string; term?: ContractTerm }
+  /** Renews the manager whose contract ends at this season's close; `term` as for `hire`. */
+  | { type: 'renew-manager'; term?: ContractTerm }
+  /** How delegated staff appoint a manager (→STAFF-18). */
+  | { type: 'manager-rule'; rule: ManagerRule }
+  /** Answers a player's contract talk (→CLUB-26) with a wage fixed for `term` seasons. */
+  | { type: 'contract-offer'; player: string; wage: string; term: ContractTerm }
+  /** Declines a player's contract talk (→CLUB-27). */
+  | { type: 'contract-decline'; player: string }
+  /** Signs a slot's offer, by its index among that slot's offers (→ECON-8). */
+  | { type: 'sign-sponsor'; slot: SponsorSlot; offer: number }
   | { type: 'recruit'; candidate: number; loan?: boolean }
   /** Lists a player, opens him to offers or declares him untouchable. */
   | { type: 'transfer-stance'; id: string; stance: TransferStance }
