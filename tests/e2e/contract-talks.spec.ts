@@ -29,9 +29,11 @@ async function talking() {
   operate(w, { type: 'delegate', key: 'contracts', value: false });
   const newYear = seasonDayOf(w.year, 1, 1);
   advanceDays(w, newYear - 1 - currentDay(w), undefined, false);
+  // The journey finds his roster card by name, so it must be the only one with that name.
   const player = activePlayers(w).find(
     (p) =>
       !p.talk &&
+      activePlayers(w).filter((q) => q.name === p.name).length === 1 &&
       !talksRound(w, p, { kind: 'renew', demand: '0', floor: '0', year: w.year, day: newYear }),
   )!;
   player.until = w.year + 1;
