@@ -48,7 +48,7 @@ export function advanceEconomy(w: World, previousYear: number) {
       w,
       'currency',
       '새로운 화폐의 시대',
-      `${before.code} → ${after.code} · 명목 잔고와 미지급 계약만 환산 · 과거 장부 보존${before.estimated || after.estimated ? ' · 초기 화폐 단순화 추정' : ''}`,
+      `${before.code} → ${after.code} · 현금·계약·진행 중 입찰·호가 모두 환산 · 과거 장부 보존${before.estimated || after.estimated ? ' · 초기 화폐 단순화 추정' : ''}`,
     );
   }
   w.priceIndex = priceIndex(code, w.year).value;
