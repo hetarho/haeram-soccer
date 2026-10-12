@@ -162,6 +162,11 @@ export interface TransferBid {
   club?: string;
   fee: string;
   loan?: boolean;
+  /**
+   * The market player and asking terms an `out` bid was made for (rules 1.15.0); a bid pending
+   * from before has none and finds him in its season's list.
+   */
+  offer?: { player: Player; fee: string; loanFee: string };
   year: number;
   day: number;
   /** Season day on which the other side answers (`out`) or the offer lapses (`in`). */
