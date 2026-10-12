@@ -42,7 +42,8 @@ export class Host {
   handle(input: unknown): Promise<Reply> {
     // A read is answered at once, between a command's simulation steps: queued behind a long
     // command, its watchdog would run out while only the command reports progress.
-    if ((input as { body?: { type?: unknown } } | null)?.body?.type === 'head-to-head')
+    const type = (input as { body?: { type?: unknown } } | null)?.body?.type;
+    if (type === 'head-to-head' || type === 'league-fixtures')
       return Promise.resolve(this.read(input));
     const task = this.queue.then(() => this.execute(input));
     this.queue = task.then(
@@ -131,6 +132,16 @@ export class Host {
       if (this.session && this.session !== request.session)
         throw new Error('이전 세션의 요청입니다.');
       if (!w) throw new Error('먼저 클럽을 창단하세요.');
+      if (body.type === 'league-fixtures') {
+        const key = `${body.country}:${body.tier}:${body.group}`;
+        return {
+          requestId: request.requestId,
+          ok: true,
+          leagueFixtures: w.fixtures.filter(
+            (f) => f.year === w.year && f.kind === 'league' && f.groupKey === key,
+          ),
+        };
+      }
       if (body.type !== 'head-to-head') throw new Error('읽기 요청이 아닙니다.');
       if (body.club === w.playerClub || !w.clubs.some((club) => club.id === body.club))
         throw new Error('맞대결 상대를 찾을 수 없습니다.');

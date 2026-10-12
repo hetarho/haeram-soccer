@@ -99,6 +99,41 @@ export function orderIds(ids: string[], tables: Record<string, TableRow>): strin
   });
 }
 
+/** A league of the pyramid: country, division (tier) and regional group. */
+export interface LeagueChoice {
+  code: string;
+  tier: number;
+  group: number;
+}
+/** The own club's league; the league views open on it. */
+export function ownLeague(w: World): LeagueChoice {
+  const own = w.clubs.find((c) => c.id === w.playerClub)!;
+  return { code: own.country, tier: own.tier, group: own.group };
+}
+export const sameLeague = (a: LeagueChoice, b: LeagueChoice) =>
+  a.code === b.code && a.tier === b.tier && a.group === b.group;
+/** The clubs of a league this season; without a choice, the own league (amateur one included). */
+export function leagueIds(w: World, league?: LeagueChoice): string[] {
+  if (!league || sameLeague(league, ownLeague(w))) return ownLeagueIds(w);
+  return w.clubs
+    .filter(
+      (club) =>
+        club.country === league.code &&
+        club.tier === league.tier &&
+        club.group === league.group &&
+        !club.representative,
+    )
+    .map((club) => club.id);
+}
+/** A league in the address (`?league=GER.0.0`), for a reload to keep it. */
+export function leagueParam(league?: LeagueChoice) {
+  return league ? `${league.code}.${league.tier}.${league.group}` : undefined;
+}
+export function parseLeague(value: string | null): LeagueChoice | undefined {
+  const match = value && /^([A-Z]{3})\.(\d+)\.(\d+)$/.exec(value);
+  return match ? { code: match[1], tier: Number(match[2]), group: Number(match[3]) } : undefined;
+}
+
 export function leagueFixtures(w: World, ids: string[]): Fixture[] {
   const clubs = new Set(ids);
   return w.fixtures.filter(

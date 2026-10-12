@@ -292,8 +292,8 @@ export function ClubTrends({ w }: { w: World }) {
   );
 }
 
-/** One row per closed season, newest first. */
-export function SeasonTable({ w }: { w: World }) {
+/** One row per closed season, newest first; with `onSeason` a row opens that season's records. */
+export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: number) => void }) {
   const code = clubOf(w).country,
     seasons = w.history,
     money = (value: number) => axisMoney(currency(code, w.year).symbol, value);
@@ -313,8 +313,28 @@ export function SeasonTable({ w }: { w: World }) {
           </thead>
           <tbody>
             {[...seasons].reverse().map((h) => (
-              <tr key={h.year}>
-                <td>{seasonName(h.year)}</td>
+              <tr
+                key={h.year}
+                className={onSeason ? s.seasonRow : undefined}
+                onClick={onSeason && (() => onSeason(h.year))}
+              >
+                <td>
+                  {onSeason ? (
+                    <button
+                      type="button"
+                      className={s.seasonRowLink}
+                      aria-label={`${seasonName(h.year)} 시즌 기록 보기`}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onSeason(h.year);
+                      }}
+                    >
+                      {seasonName(h.year)}
+                    </button>
+                  ) : (
+                    seasonName(h.year)
+                  )}
+                </td>
                 <td>
                   {divisionName(code, h.tier, h.group)} {h.rank}위
                 </td>

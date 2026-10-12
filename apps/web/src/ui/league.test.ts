@@ -5,7 +5,10 @@ import {
   clubDivision,
   formFor,
   leagueFixtures,
+  leagueIds,
   leagueOf,
+  leagueParam,
+  parseLeague,
   leagueRules,
   leagueTimeline,
   orderIds,
@@ -19,6 +22,25 @@ const input = {
   seed: 'league-insights',
   difficulty: 1,
 };
+
+describe('league choice (WEB-65)', () => {
+  it('opens on the own league, amateur one included, and names any other in the address', () => {
+    const amateur = createWorld(input);
+    expect(leagueIds(amateur)).toEqual(ownLeagueIds(amateur));
+    const w = professionalStart(createWorld(input));
+    const own = w.clubs.find((c) => c.id === w.playerClub)!;
+    expect(leagueIds(w, { code: own.country, tier: own.tier, group: own.group })).toEqual(
+      ownLeagueIds(w),
+    );
+    const german = leagueIds(w, { code: 'GER', tier: 0, group: 0 });
+    expect(german).toHaveLength(18);
+    expect(german.every((id) => w.clubs.find((c) => c.id === id)!.country === 'GER')).toBe(true);
+    expect(leagueParam({ code: 'ITA', tier: 2, group: 1 })).toBe('ITA.2.1');
+    expect(parseLeague('ITA.2.1')).toEqual({ code: 'ITA', tier: 2, group: 1 });
+    expect(parseLeague('ita.2')).toBeUndefined();
+    expect(parseLeague(null)).toBeUndefined();
+  });
+});
 
 describe('league insight facts', () => {
   it('reconstructs each round from settled scores for old saves and matches the engine table', () => {

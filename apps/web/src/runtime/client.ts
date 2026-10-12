@@ -362,6 +362,16 @@ export class GameClient {
     if (!reply.headToHead) throw new Error('맞대결 기록 응답이 없습니다.');
     return reply.headToHead;
   }
+  /** Another league's fixtures this season, read like head-to-head without the command queue. */
+  async leagueFixtures(league: { code: string; tier: number; group: number }) {
+    const reply = await this.rpc({
+      type: 'league-fixtures',
+      country: league.code,
+      tier: league.tier,
+      group: league.group,
+    });
+    return reply.leagueFixtures ?? [];
+  }
   private rawBackup() {
     if (this.saves.incompatibleBackup) return this.saves.incompatibleBackup;
     try {
