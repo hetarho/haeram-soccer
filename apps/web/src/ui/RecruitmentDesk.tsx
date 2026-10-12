@@ -356,6 +356,8 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
               <span>
                 <b>
                   {bid.direction === 'in' ? '받은 제안' : '보낸 제안'} · {player?.name || '선수'}
+                  {/* A player who asked to leave (→CLUB-27) is the one the owner may want to sell. */}
+                  {bid.direction === 'in' && player?.transferRequest ? ' · 이적 요청' : ''}
                 </b>
                 <small>
                   {bid.direction === 'in' && other ? `${other.name} · ` : ''}

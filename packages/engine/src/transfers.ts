@@ -3,7 +3,7 @@ import { currency } from '../../catalogs/src/index';
 import { currentDay, SEASON_END_DAY, seasonDayLabel, seasonDayOf } from './calendar';
 import { clamp, compareIds, hash, integer, random, ratio } from './primitives';
 import { activePlayers, addEvent, clubOf, overall, ownStarters } from './world';
-import { marketValue } from './contracts';
+import { leaveContract, marketValue } from './contracts';
 import { credit, debit } from './operations';
 import { transferOffers } from './ops-squad';
 import { CASH_WARNING_ROUNDS } from './settlement';
@@ -170,6 +170,8 @@ function completeSale(w: World, bid: TransferBid, p: Player) {
   const club = w.clubs.find((c) => c.id === bid.club);
   p.status = 'sold';
   delete p.stance;
+  // His sale ends his talk, his unhappiness and his transfer request (→CLUB-27).
+  leaveContract(w, p);
   credit(w, bid.fee);
   addEvent(
     w,
@@ -541,6 +543,8 @@ export function setTransferStance(w: World, id: string, stance: TransferStance) 
   if (!p || p.loanUntil) throw new Error('이적 상태를 정할 수 있는 선수가 아닙니다.');
   if (!TRANSFER_STANCES.includes(stance)) throw new Error('이적 상태를 확인하세요.');
   if (p.retiring !== undefined) throw new Error('은퇴를 앞둔 선수는 이적 상태를 바꿀 수 없어요.');
+  if (p.transferRequest && stance === 'untouchable')
+    throw new Error('이적을 요청한 선수는 이적 불가로 둘 수 없어요.');
   if (transferStance(p) === stance) return;
   if (stance === 'open') delete p.stance;
   else p.stance = stance;

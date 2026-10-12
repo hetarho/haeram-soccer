@@ -239,6 +239,7 @@ const incomeKinds: Record<string, string> = {
   'campaign-result': '마케팅 회수금',
   'fan-income': '글로벌 팬 수익',
   'transfer-out': '선수 매각',
+  'free-transfer-compensation': '계약 만료 보상금',
   'cup-prize': '국내 컵 상금',
   'cup-honor': '국내 컵 우승 상금',
   'europe-prize': '클럽대항전 수당',

@@ -34,6 +34,11 @@ export const clubOf = (w: World) => w.clubs.find((c) => c.id === w.playerClub)!;
 export const activePlayers = (w: World) => w.players.filter((p) => p.status === 'active');
 export const overall = (p: Player) =>
   Math.round(p.role === 'GK' ? p.keeper : (p.attack + p.passing + p.defense + p.stamina) / 4);
+/** Points an unhappy player plays below his ability (→CLUB-27); his attributes stay as they are. */
+export const UNHAPPY_PENALTY = 3;
+export const unhappyPenalty = (p: Player) => (p.unhappy ? UNHAPPY_PENALTY : 0);
+/** The ability a player plays at: his overall, less the unhappy penalty. */
+export const playingAbility = (p: Player) => overall(p) - unhappyPenalty(p);
 /** `units` of 1901 money carried to `year` by an index, in that year's currency. */
 function indexed(
   code: string,
@@ -462,8 +467,9 @@ export function xiRating(players: readonly Player[]) {
   return Math.round(players.reduce((sum, p) => sum + overall(p), 0) / Math.max(1, players.length));
 }
 /**
- * Automatic selection value. A manager's trait shifts it: youth favours players aged 21 or
- * younger, rotation rests tired players sooner, stable keeps the best XI despite fatigue.
+ * Automatic selection value: the ability he plays at, less fatigue. A manager's trait shifts it:
+ * youth favours players aged 21 or younger, rotation rests tired players sooner, stable keeps the
+ * best XI despite fatigue.
  */
 export function selectionValue(p: Player, manager?: Manager, year?: number) {
   const fatigueWeight = manager?.trait === 'rotation' ? 2.5 : manager?.trait === 'stable' ? 10 : 5;
@@ -473,7 +479,7 @@ export function selectionValue(p: Player, manager?: Manager, year?: number) {
     year - p.born <= 21
       ? YOUTH_SELECTION_BONUS
       : 0;
-  return overall(p) - p.fatigue / fatigueWeight + youth;
+  return playingAbility(p) - p.fatigue / fatigueWeight + youth;
 }
 export function lineup(players: Player[], manager?: Manager, year?: number): Player[] {
   const value = (p: Player) => selectionValue(p, manager, year);
@@ -491,7 +497,7 @@ export function lineup(players: Player[], manager?: Manager, year?: number): Pla
         .slice(0, count),
     );
   }
-  for (const p of [...players].sort((a, b) => overall(b) - overall(a)))
+  for (const p of [...players].sort((a, b) => playingAbility(b) - playingAbility(a)))
     if (selected.length < 11 && !selected.includes(p)) selected.push(p);
   const result = selected.slice(0, 11);
   return result;
@@ -528,7 +534,9 @@ export function selectedLineup(
     return player;
   });
   const fit = [...active].sort(
-    (a, b) => overall(b) - b.fatigue / 5 - (overall(a) - a.fatigue / 5) || compareIds(a.id, b.id),
+    (a, b) =>
+      playingAbility(b) - b.fatigue / 5 - (playingAbility(a) - a.fatigue / 5) ||
+      compareIds(a.id, b.id),
   );
   return selected.flatMap((player, i) => {
     const replacement =
@@ -561,11 +569,14 @@ export function ownStarters(w: World) {
 }
 /**
  * Match strength of a club: its actual starting XI for every club, so the own club and the clubs
- * it plays are measured on one scale, each paying for fatigue beyond ordinary match fitness.
+ * it plays are measured on one scale, each paying for fatigue beyond ordinary match fitness and
+ * for unhappy players.
  */
 export function rating(w: World, c: Club) {
   const xi = c.id === w.playerClub ? ownStarters(w) : startingSquad(w, c);
-  return Math.round(xi.reduce((s, p) => s + overall(p) - fatigueLoad(p.fatigue) / 6, 0) / 11);
+  return Math.round(
+    xi.reduce((s, p) => s + playingAbility(p) - fatigueLoad(p.fatigue) / 6, 0) / 11,
+  );
 }
 export function addEvent(w: World, kind: string, title: string, detail: string, amount?: string) {
   w.events.push({

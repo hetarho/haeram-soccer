@@ -1,0 +1,143 @@
+import { expect, test, type Page } from '@playwright/test';
+import {
+  activePlayers,
+  advanceDays,
+  createWorld,
+  currentDay,
+  operate,
+  ROUND_INTERVAL_DAYS,
+  seasonDayOf,
+  talksRound,
+  UNHAPPY_CONFIG,
+} from '../../packages/engine/src/index';
+import { encode } from '../../apps/web/src/adapters/persistence';
+import { eventCard } from './events';
+import { continueSlot } from './slots';
+
+/**
+ * A club on 1 January 1951 whose owner answers contract talks: one player in his contract's final
+ * season has just asked to renew, and the manager would fail to talk him round (→CLUB-27).
+ */
+async function talking() {
+  const w = createWorld({
+    country: 'ENG',
+    name: 'Contract Talks',
+    color: '#2a5d8f',
+    seed: 'contract-talks-journey',
+    difficulty: 2,
+  });
+  operate(w, { type: 'delegate', key: 'contracts', value: false });
+  const newYear = seasonDayOf(w.year, 1, 1);
+  advanceDays(w, newYear - 1 - currentDay(w), undefined, false);
+  const player = activePlayers(w).find(
+    (p) =>
+      !p.talk &&
+      !talksRound(w, p, { kind: 'renew', demand: '0', floor: '0', year: w.year, day: newYear }),
+  )!;
+  player.until = w.year + 1;
+  advanceDays(w, 1, undefined, false);
+  expect(player.talk).toMatchObject({ kind: 'renew', day: newYear });
+  expect(talksRound(w, player, player.talk!)).toBe(false);
+  return {
+    raw: await encode(w, 1, 0),
+    name: player.name,
+    round: w.round,
+    // Six weeks unhappy from today end in this league round.
+    due: Math.ceil((currentDay(w) + UNHAPPY_CONFIG.requestDays) / ROUND_INTERVAL_DAYS),
+  };
+}
+async function seed(page: Page, raw: string) {
+  await page.addInitScript((raw) => {
+    const envelope = JSON.parse(raw);
+    localStorage.setItem('haeram-soccor:slot:a', raw);
+    localStorage.setItem(
+      'haeram-soccor:manifest',
+      JSON.stringify({
+        slot: 0,
+        worldId: envelope.worldId,
+        generation: envelope.generation,
+        parentGeneration: envelope.parentGeneration,
+      }),
+    );
+    // The clock stops only for this journey's events.
+    const stops = ['contract-talk', 'unhappy', 'transfer-request'];
+    localStorage.setItem(
+      'haeram-soccor:stop-on',
+      JSON.stringify({
+        match: false,
+        'window-open': false,
+        'window-close': false,
+        'bid-response': false,
+        'incoming-bid': false,
+        'youth-intake': false,
+        'staff-report': false,
+        'staff-renewal': false,
+        cup: false,
+        finance: false,
+        'sponsor-ending': false,
+        ...Object.fromEntries(stops.map((kind) => [kind, true])),
+      }),
+    );
+  }, raw);
+}
+
+test('declines a contract talk: the badge, then the transfer request', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName !== 'chromium', 'One browser covers the journey.');
+  // Seven league rounds of the whole world are played in the browser.
+  test.slow();
+  const { raw, name, round, due } = await talking();
+  await seed(page, raw);
+  await page.goto('/');
+  await continueSlot(page);
+  const card = eventCard(page);
+  await expect(card).toContainText(`${name}, 재계약 협상 요청`);
+  await card.getByRole('button', { name: '협상하기', exact: true }).click();
+
+  // The sheet states the demand, the floor, the term, the cost, the runway and the risk.
+  const sheet = page.getByRole('dialog', { name: '계약 협상' });
+  await expect(sheet.getByRole('heading', { name: `${name} 재계약 협상` })).toBeVisible();
+  await expect(sheet).toContainText('요구');
+  await expect(sheet).toContainText('하한');
+  await expect(sheet.getByRole('radiogroup', { name: '계약 기간' }).getByRole('radio')).toHaveCount(
+    5,
+  );
+  await expect(sheet).toContainText('연 비용');
+  await expect(sheet).toContainText('자금 여력');
+  await expect(sheet).toContainText(/거절하면 감독이 설득해요: 성공 \d+%/);
+  await sheet.getByRole('button', { name: '거절', exact: true }).click();
+  await expect(sheet).toHaveCount(0);
+
+  // The manager could not talk him round: the roster card wears the badge with its reason.
+  const roster = page.locator('article').filter({ hasText: name });
+  await expect(roster.getByText('언해피 · 재계약 거절')).toBeVisible();
+  await expect(roster).toContainText('시장');
+
+  await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
+  await expect(card).toContainText(`${name} 언해피 · 재계약 거절`);
+  await card.getByRole('button', { name: '확인', exact: true }).click();
+  await expect(card).toHaveCount(0);
+
+  // Six weeks later he hands in a transfer request.
+  await page
+    .getByTestId('club-hub')
+    .getByRole('button', { name: '시즌 상세', exact: true })
+    .click();
+  const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
+  for (let next = round + 1; next <= due; next++) {
+    await journal.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
+    await expect(page.getByTestId('calendar')).toHaveText(new RegExp(`라운드 ${next}$`));
+  }
+  await page.keyboard.press('Escape');
+  await expect(journal).toHaveCount(0);
+  await expect(card).toContainText(`${name}, 이적 요청서 제출`);
+  await card.getByRole('button', { name: '확인', exact: true }).click();
+
+  await page.getByRole('button', { name: '선수단', exact: true }).click();
+  await expect(roster.getByText('이적 요청', { exact: true })).toBeVisible();
+  await expect(
+    roster.getByRole('button', { name: `${name} 이적 상태 · 이적 명단 · 바꾸기` }),
+  ).toBeVisible();
+});

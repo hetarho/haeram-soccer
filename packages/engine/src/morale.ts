@@ -66,13 +66,22 @@ export function moraleAfterMatch(w: World, m: MatchRecord) {
         : -6 - margin + managerStyleEffects(w).defeatCushion;
   w.morale = Math.round(clamp(w.morale + change, 0, 100));
 }
-/** Each settled round drifts toward the baseline; an exhausted XI loses heart. */
+/** Squad morale each unhappy starter costs a settled round (→CLUB-27). */
+export const UNHAPPY_MORALE = 1;
+/**
+ * Each settled round drifts toward the baseline; an exhausted XI loses heart, and so does one
+ * with unhappy starters. An older save without morale starts from 60 once an unhappy starter
+ * costs it.
+ */
 export function settleMorale(w: World) {
+  const starters = ownStarters(w),
+    unhappy = starters.filter((player) => player.unhappy).length;
+  if (w.morale === undefined && unhappy) w.morale = MORALE_START;
   if (w.morale === undefined) return;
-  const starters = ownStarters(w);
   const fatigue = starters.length
     ? starters.reduce((sum, player) => sum + player.fatigue, 0) / starters.length
     : 0;
-  const drift = (moraleBaseline(w) - w.morale) * 0.15 - (fatigue >= 40 ? 2 : 0);
+  const drift =
+    (moraleBaseline(w) - w.morale) * 0.15 - (fatigue >= 40 ? 2 : 0) - unhappy * UNHAPPY_MORALE;
   w.morale = Math.round(clamp(w.morale + drift, 0, 100));
 }

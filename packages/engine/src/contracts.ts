@@ -1,15 +1,32 @@
-import type { ContractTalk, ContractTerm, Player, World } from '../../contracts/src/types';
+import type {
+  ContractTalk,
+  ContractTerm,
+  InboxKind,
+  Player,
+  UnhappyReason,
+  World,
+} from '../../contracts/src/types';
 import { country } from '../../catalogs/src/index';
-import { clamp, ratio } from './primitives';
-import { activePlayers, addEvent, clubOf, footballQuote, overall, tierLevel } from './world';
+import { clamp, random, ratio } from './primitives';
+import {
+  activePlayers,
+  addEvent,
+  clubOf,
+  footballQuote,
+  overall,
+  tierLevel,
+  UNHAPPY_PENALTY,
+} from './world';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
-import { moraleOf } from './morale';
+import { moraleOf, UNHAPPY_MORALE } from './morale';
 import { pushInbox } from './inbox';
 import { moneyLabel, operatingCosts } from './finance';
 import { CASH_WARNING_ROUNDS } from './settlement';
 import { contractSeason } from './ops-staff';
-import { currentDay, seasonDayOf } from './calendar';
+import { currentDay, dayCountedFrom, seasonDayOf } from './calendar';
+import { credit } from './operations';
+import { suitorFor } from './transfers';
 
 /**
  * Market wages and transfer values (→CLUB-25), in 1901 price units that the football index
@@ -191,12 +208,15 @@ const talkLabel = (talk: ContractTalk) => (talk.kind === 'renew' ? '재계약' :
 function playerLine(w: World, p: Player) {
   return `${p.role} · ${w.year - p.born}세 · 능력 ${overall(p)} · 연봉 ${moneyLabel(w, p.wage)} · 계약 ${contractSeason(p.until)} 시즌 끝까지`;
 }
+const TALK_KINDS: readonly InboxKind[] = ['contract-talk'];
+/** Every item about a player's contract: talks, his unhappiness and his transfer request. */
+const PLAYER_KINDS: readonly InboxKind[] = ['contract-talk', 'unhappy', 'transfer-request'];
 /** Settles the talk's inbox items once it is answered; other items about the player stay. */
-function settleTalkItems(w: World, id: string) {
-  if (w.inbox?.some((item) => item.kind === 'contract-talk' && item.ref === id && !item.read))
-    w.inbox = w.inbox.map((item) =>
-      item.kind === 'contract-talk' && item.ref === id ? { ...item, read: true } : item,
-    );
+function settleTalkItems(w: World, id: string, kinds = TALK_KINDS) {
+  const settles = (item: NonNullable<World['inbox']>[number]) =>
+    kinds.includes(item.kind) && item.ref === id;
+  if (w.inbox?.some((item) => settles(item) && !item.read))
+    w.inbox = w.inbox.map((item) => (settles(item) ? { ...item, read: true } : item));
 }
 /** The player asks: his demand and floor are fixed as he names them. */
 function openTalk(w: World, p: Player, kind: ContractTalk['kind']) {
@@ -214,15 +234,90 @@ function openTalk(w: World, p: Player, kind: ContractTalk['kind']) {
     ref: p.id,
   });
 }
+/** Unhappy players (→CLUB-27). */
+export const UNHAPPY_CONFIG = {
+  /**
+   * The manager's chance of talking a declined player round: `base`, `motivator` more for a
+   * 동기부여형 manager, plus (trust − 50)/200 and (flexibility − 50)/400, within `low`–`high`.
+   */
+  talkRound: { base: 0.15, motivator: 0.45, low: 0.05, high: 0.85 },
+  /** Days unhappy before he hands in a transfer request: six weeks. */
+  requestDays: 42,
+};
+export const UNHAPPY_REASON: Record<UnhappyReason, string> = {
+  'renewal-declined': '재계약 거절',
+  'raise-declined': '연봉 인상 거절',
+};
+/** The manager's chance of talking a player round after his demand is declined (→CLUB-27). */
+export function talkRoundChance(w: World) {
+  const { base, motivator, low, high } = UNHAPPY_CONFIG.talkRound,
+    m = w.manager;
+  return clamp(
+    base +
+      (m.style === 'motivator' ? motivator : 0) +
+      (m.trust - 50) / 200 +
+      (m.flexibility - 50) / 400,
+    low,
+    high,
+  );
+}
+/** Whether the manager talks him round after `talk` is declined, from his own stream for it. */
+export function talksRound(w: World, p: Player, talk: ContractTalk) {
+  return random(`${w.seed}:talk-round:${p.id}:${talk.year}:${talk.day}`)() < talkRoundChance(w);
+}
+const percentLabel = (chance: number) => `${Math.round(chance * 100)}%`;
+/**
+ * The talk an offer answers: his open talk or, for an unhappy player, the floor he holds out for
+ * today (→CLUB-27). Loan players and announced retirements have none to answer.
+ */
+export function talkFor(w: World, p: Player): ContractTalk | undefined {
+  if (p.talk) return p.talk;
+  if (!p.unhappy || p.loanUntil || p.retiring !== undefined) return undefined;
+  const terms = talkTerms(w, p);
+  return {
+    kind: p.unhappy.reason === 'raise-declined' ? 'raise' : 'renew',
+    demand: terms.demand,
+    floor: terms.floor,
+    year: w.year,
+    day: currentDay(w),
+  };
+}
+/**
+ * His floor met or his move ends it (→CLUB-27): the unhappiness, the transfer request with the
+ * listing it made, and their items. Returns what ended, for the report.
+ */
+function endUnhappiness(w: World, p: Player) {
+  if (!p.unhappy) return '';
+  const requested = !!p.transferRequest;
+  delete p.unhappy;
+  delete p.transferRequest;
+  if (requested && p.stance === 'listed') delete p.stance;
+  settleTalkItems(w, p.id, PLAYER_KINDS);
+  return requested ? '언해피 해소 · 이적 요청 철회' : '언해피 해소';
+}
+/** A player leaving the club takes his talk, unhappiness and transfer request with him. */
+export function leaveContract(w: World, p: Player) {
+  delete p.talk;
+  delete p.unhappy;
+  delete p.transferRequest;
+  settleTalkItems(w, p.id, PLAYER_KINDS);
+}
 /** Signs the agreed wage, fixed until the term ends (→ECON-4). */
-function signTalk(w: World, p: Player, wage: string, term: ContractTerm, staff: boolean) {
-  const talk = p.talk!,
-    before = p.wage;
+function signTalk(
+  w: World,
+  p: Player,
+  talk: ContractTalk,
+  wage: string,
+  term: ContractTerm,
+  staff: boolean,
+) {
+  const before = p.wage;
   p.wage = wage;
   p.until = talkUntil(w, term);
   delete p.talk;
   settleTalkItems(w, p.id);
-  const detail = `연봉 ${moneyLabel(w, before)} → ${moneyLabel(w, wage)} · ${term}시즌 · 계약 ${contractSeason(p.until)} 시즌 끝까지`;
+  const ended = endUnhappiness(w, p);
+  const detail = `연봉 ${moneyLabel(w, before)} → ${moneyLabel(w, wage)} · ${term}시즌 · 계약 ${contractSeason(p.until)} 시즌 끝까지${ended ? ` · ${ended}` : ''}`;
   addEvent(
     w,
     'contract',
@@ -231,12 +326,42 @@ function signTalk(w: World, p: Player, wage: string, term: ContractTerm, staff: 
   );
   return detail;
 }
-/** Closes the talk without an agreement; what follows a refusal is CLUB-27's. */
+/**
+ * Closes the talk without an agreement (→CLUB-27): the manager tries to talk him round, from the
+ * player's own stream for this talk; if he fails the player turns unhappy, which is an inbox item.
+ * Returns the outcome for the decliner's report.
+ */
 function declineTalk(w: World, p: Player, reason: string) {
-  const talk = p.talk!;
+  const talk = p.talk!,
+    chance = talkRoundChance(w),
+    kept = talksRound(w, p, talk);
   delete p.talk;
   settleTalkItems(w, p.id);
-  addEvent(w, 'contract-decline', `${p.name} ${talkLabel(talk)} 요구 거절`, reason);
+  const outcome = kept
+    ? `감독이 설득해 마음을 돌렸어요(설득 확률 ${percentLabel(chance)})`
+    : `감독의 설득이 실패해 언해피가 됐어요(설득 확률 ${percentLabel(chance)})`;
+  addEvent(
+    w,
+    'contract-decline',
+    `${p.name} ${talkLabel(talk)} 요구 거절`,
+    `${reason} · ${outcome}`,
+  );
+  if (!kept) {
+    p.unhappy = {
+      reason: talk.kind === 'renew' ? 'renewal-declined' : 'raise-declined',
+      year: w.year,
+      day: currentDay(w),
+    };
+    const weeks = UNHAPPY_CONFIG.requestDays / 7;
+    pushInbox(w, {
+      kind: 'unhappy',
+      title: `${p.name} 언해피 · ${UNHAPPY_REASON[p.unhappy.reason]}`,
+      detail: `${playerLine(w, p)} · ${outcome}. 능력보다 ${UNHAPPY_PENALTY} 낮게 뛰고, 선발로 뛴 라운드마다 선수단 분위기 −${UNHAPPY_MORALE}, 재계약을 거부하며 ${weeks}주 뒤 이적을 요청해요. 하한 ${moneyLabel(w, talkTerms(w, p).floor)} 이상을 제시하거나 매각하면 풀려요.`,
+      attention: true,
+      ref: p.id,
+    });
+  }
+  return { kept, outcome };
 }
 /**
  * Delegated staff (→STAFF-13) offer the floor for two seasons (one from 32) when it is within the
@@ -268,10 +393,10 @@ function staffAnswer(w: World, p: Player) {
     verdict = staffTalkVerdict(w, p);
   let detail: string;
   if (verdict.accept)
-    detail = `${signTalk(w, p, talk.floor, verdict.term, true)} · 하한으로 합의했어요.`;
+    detail = `${signTalk(w, p, talk, talk.floor, verdict.term, true)} · 하한으로 합의했어요.`;
   else {
-    declineTalk(w, p, `스태프 · ${verdict.reason}`);
-    detail = `${playerLine(w, p)} · ${verdict.reason}`;
+    const { outcome } = declineTalk(w, p, `스태프 · ${verdict.reason}`);
+    detail = `${playerLine(w, p)} · ${verdict.reason} ${outcome}.`;
   }
   pushInbox(w, {
     kind: 'contract-talk',
@@ -284,44 +409,123 @@ function staffAnswer(w: World, p: Player) {
 /**
  * Each day: on 1 January every player in his contract's final season asks to renew; any day a
  * player paid 25% or more below his market wage asks for a raise, once a season. Delegated staff
- * answer at once. Loan players and announced retirements do not negotiate.
+ * answer at once. Loan players do not negotiate, an announced retirement needs no renewal
+ * (→CLUB-28) so his open talk closes, and an unhappy player refuses to talk (→CLUB-27).
  */
 export function contractTalks(w: World) {
   const renewal = currentDay(w) === seasonDayOf(w.year, 1, 1);
   for (const p of activePlayers(w)) {
-    if (p.loanUntil || p.retiring !== undefined) continue;
+    if (p.loanUntil) continue;
+    if (p.retiring !== undefined) {
+      if (p.talk) {
+        delete p.talk;
+        settleTalkItems(w, p.id);
+      }
+      continue;
+    }
+    if (p.unhappy) continue;
     if (renewal && p.until <= w.year + 1) openTalk(w, p, 'renew');
     else if (!p.talk && p.raiseAsked !== w.year && underpaid(w, p)) openTalk(w, p, 'raise');
   }
   if (w.delegation?.contracts) for (const p of activePlayers(w)) if (p.talk) staffAnswer(w, p);
 }
-function talkOf(w: World, id: string) {
-  const p = w.players.find((x) => x.id === id && x.status === 'active');
-  if (!p?.talk) throw new Error('계약 협상 중인 선수가 아닙니다.');
-  return p as Player & { talk: ContractTalk };
+/**
+ * Each day: a player unhappy for six weeks hands in a transfer request (→CLUB-27). He goes on the
+ * transfer list and cannot be made untouchable (→CLUB-22); an announced retirement no longer asks.
+ */
+export function transferRequests(w: World) {
+  for (const p of activePlayers(w)) {
+    if (!p.unhappy || p.transferRequest || p.loanUntil || p.retiring !== undefined) continue;
+    if (dayCountedFrom(w, p.unhappy.year) - p.unhappy.day < UNHAPPY_CONFIG.requestDays) continue;
+    p.transferRequest = { year: w.year, day: currentDay(w) };
+    p.stance = 'listed';
+    const why = `${UNHAPPY_REASON[p.unhappy.reason]} 뒤 ${UNHAPPY_CONFIG.requestDays / 7}주`;
+    addEvent(w, 'transfer-request', `${p.name} 이적 요청`, `${why} · 이적 명단 등록`);
+    pushInbox(w, {
+      kind: 'transfer-request',
+      title: `${p.name}, 이적 요청서 제출`,
+      detail: `${playerLine(w, p)} · ${why}. 이적 명단에 올랐고 이적 불가로 바꿀 수 없어요. 이적시장에서 실제 구단의 제안을 받아요. 하한 ${moneyLabel(w, talkTerms(w, p).floor)} 이상을 제시하면 요청을 거둬요.`,
+      attention: true,
+      ref: p.id,
+    });
+  }
+}
+/** Before the 1995 Bosman ruling's first summer an expiring contract still earned a fee (→CLUB-28). */
+export const BOSMAN_YEAR = 1996;
+/** The share of his value, in percent, his new club pays for a player whose contract ran out. */
+export const EXPIRY_COMPENSATION = 50;
+/**
+ * Season close, once the new season's books are open (→CLUB-28): every player whose contract has
+ * run out leaves. From 1996 he leaves on a free; before, the club he joins pays 50% of his value,
+ * at `division`, the one he played in. Loan players go back when the loan ends, and announced
+ * retirements have already retired.
+ */
+export function expireContracts(w: World, division = clubOf(w).tier) {
+  for (const p of activePlayers(w)) {
+    if (p.loanUntil || p.until > w.year) continue;
+    const club = suitorFor(w, p, random(`${w.seed}:expiry:${p.id}:${w.year}`)),
+      where = club ? `${club.name} 입단` : '새 팀을 찾아 떠남';
+    p.status = 'sold';
+    delete p.stance;
+    leaveContract(w, p);
+    if (w.year >= BOSMAN_YEAR) {
+      addEvent(
+        w,
+        'contract-expiry',
+        `${p.name} 계약 만료`,
+        `${where} · 자유계약 이적, 보상금 없음`,
+      );
+      continue;
+    }
+    const value = marketValue(w, p, division),
+      amount = ratio(value, BigInt(EXPIRY_COMPENSATION), 100n);
+    credit(w, amount);
+    addEvent(
+      w,
+      'free-transfer-compensation',
+      `${p.name} 계약 만료 보상금`,
+      `${where} · 보스만 판례 이전 · 평가 가치 ${moneyLabel(w, value)}의 ${EXPIRY_COMPENSATION}%`,
+      amount,
+    );
+  }
 }
 /** The owner's own answer takes contract talks back from the staff (→STAFF-13). */
 function takeBack(w: World) {
   if (w.delegation?.contracts) w.delegation = { ...w.delegation, contracts: false };
 }
+function activePlayer(w: World, id: string) {
+  return w.players.find((x) => x.id === id && x.status === 'active');
+}
 /**
  * The owner's offer (→CLUB-26): at or above his floor it signs for `term` seasons; below it is
- * refused with the floor stated.
+ * refused with the floor stated. An unhappy player takes his floor as it stands today and the
+ * unhappiness ends (→CLUB-27).
  */
 export function offerContract(w: World, id: string, wage: string, term: ContractTerm) {
-  const p = talkOf(w, id);
+  const p = activePlayer(w, id),
+    talk = p && talkFor(w, p);
+  if (!p || !talk) throw new Error('계약 협상 중인 선수가 아닙니다.');
   if (!/^\d+$/.test(wage)) throw new Error('제시 연봉을 확인하세요.');
   if (!Number.isInteger(term) || term < 1 || term > 5)
     throw new Error('계약 기간은 1–5시즌이어야 합니다.');
-  if (BigInt(wage) < BigInt(p.talk.floor))
-    throw new Error(`${p.name}은(는) ${moneyLabel(w, p.talk.floor)} 이상이어야 합의해요.`);
+  if (BigInt(wage) < BigInt(talk.floor))
+    throw new Error(`${p.name}은(는) ${moneyLabel(w, talk.floor)} 이상이어야 합의해요.`);
   takeBack(w);
-  signTalk(w, p, wage, term, false);
+  signTalk(w, p, talk, wage, term, false);
 }
-/** The owner declines (→CLUB-27 handles what follows). */
+/** The owner declines; the manager then tries to talk him round (→CLUB-27). */
 export function declineContract(w: World, id: string) {
-  const p = talkOf(w, id),
-    reason = `구단주 결정 · 요구 ${moneyLabel(w, p.talk.demand)} · 하한 ${moneyLabel(w, p.talk.floor)}`;
+  const p = activePlayer(w, id);
+  if (!p?.talk) throw new Error('계약 협상 중인 선수가 아닙니다.');
+  const reason = `구단주 결정 · 요구 ${moneyLabel(w, p.talk.demand)} · 하한 ${moneyLabel(w, p.talk.floor)}`;
   takeBack(w);
-  declineTalk(w, p, reason);
+  const { kept, outcome } = declineTalk(w, p, reason);
+  if (kept)
+    pushInbox(w, {
+      kind: 'contract-talk',
+      title: `감독이 ${p.name}의 마음을 돌렸어요`,
+      detail: `${playerLine(w, p)} · ${outcome}. 언해피 없이 지금 계약대로 뛰어요.`,
+      attention: false,
+      ref: p.id,
+    });
 }
