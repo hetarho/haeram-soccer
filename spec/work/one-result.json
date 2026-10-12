@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-12T07:55:12.477Z",
-  "sourceCommit": "13f84740a3e9a325ea4479886ff8944f42d9772a",
+  "snapshotAt": "2026-10-12T08:53:57.954Z",
+  "sourceCommit": "2851074784fc9207a52591137580b1f6798fd1ca",
   "group": {
     "id": "one-result",
     "branch": "work/one-result",
@@ -12,32 +12,8 @@
       "reviewers": 1,
       "maxPending": 8
     },
-    "runner": {
-      "id": "972d9a30-6bea-46b8-81f6-ead950c5011c",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-10-12T07:50:37.896Z"
-    },
     "lastRun": {
-      "id": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+      "id": "30b2eefb-6935-4a81-b257-cfdeb76e726a",
       "adapter": "builtin",
       "providers": {
         "worker": {
@@ -58,37 +34,21 @@
           "version": "2.1.296 (Claude Code)"
         }
       ],
-      "startedAt": "2026-10-12T07:10:13.945Z",
-      "stoppedAt": "2026-10-12T07:50:08.596Z",
-      "dispatched": 10,
-      "outcome": "interrupted",
-      "failures": [
-        {
-          "attempt": "86b16233-ef43-4161-8e24-743db5f76235",
-          "role": "worker",
-          "error": "T044 is blocked on the review's P2 finding. Fixing it needs a planner decision on scope, so I didn't change it. After T044, Italy's (ITA) amateur table sends its top 5 clubs up and plays off 6th–9th for one more place. But apps/web/src/ui/league.ts divisionRules still gives every amateur table 1 automatic place and 4 playoff places. So the live and closed-season ITA amateur tables show the wrong zones (LEAGUE-6, WEB-47). That file, plus an ITA test in league.test.ts / seasonArchive.test.ts, is outside the lane's declared touches, and no other task in one-result touches it. The planner needs to either add it to lane day-order or add a follow-up task to one-result. The reviewer's fix: for the amateur tier, automatic = groups[last].length × 2 − 1 and playoff = 4.\n\nChanges I made within T044's scope (not committed):\n- packages/engine/src/season.test.ts: the lastRound helper's season loop now fails when the club goes bankrupt instead of looping until the 30 s timeout (P3).\n- spec/tasks/T044.amateur-exchange.md: the result's at: line was f17c207 and is now `-`, because the checks ran on the uncommitted tree (P3). verified is updated, and limits records the blocker.\n\nLeft open: the P3 about unbounded loops at calendar.test.ts:194,205. That file belongs to T043 and this assignment covers only T044.\n\nChecks: `pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit` passed (73 files, 505 tests). eslint and prettier --check passed on season.test.ts and the task file.\n\nNot run because they needed approval and were denied: `work board --work one-result --json` (board and freshness check), a targeted vitest run, and spec lint. The CLI never recorded the blocked status; the host has to do that."
-        },
-        {
-          "attempt": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
-          "role": "worker",
-          "error": "adapter exited 1"
-        },
-        {
-          "attempt": "86b16233-ef43-4161-8e24-743db5f76235",
-          "role": "reviewer",
-          "error": "adapter exited 1"
-        }
-      ]
+      "startedAt": "2026-10-12T08:26:34.649Z",
+      "stoppedAt": "2026-10-12T08:53:57.761Z",
+      "dispatched": 2,
+      "outcome": "needs-attention",
+      "failures": []
     }
   },
   "summary": {
-    "total": 9,
-    "completed": 5,
-    "remaining": 4,
-    "running": 2,
-    "review": 1,
-    "blocked": 0,
-    "unassigned": 1
+    "total": 10,
+    "completed": 9,
+    "remaining": 1,
+    "running": 0,
+    "review": 0,
+    "blocked": 1,
+    "unassigned": 0
   },
   "tasks": [
     {
@@ -99,29 +59,7 @@
         "T045",
         "T046"
       ],
-      "status": "todo"
-    },
-    {
-      "id": "T048",
-      "title": "Background codec worker for checkpoints",
-      "dep": [],
-      "lane": "background-save",
-      "status": "doing"
-    },
-    {
-      "id": "T049",
-      "title": "Clock never waits for saving; background autosave cadence",
-      "dep": [
-        "T048"
-      ],
-      "lane": "background-save",
-      "status": "doing"
-    },
-    {
-      "id": "T063",
-      "title": "Amateur table zones follow the amateur exchange",
-      "dep": [],
-      "status": "ready"
+      "status": "blocked"
     }
   ],
   "attempts": [
@@ -296,6 +234,8 @@
       "submittedBase": "730d080682f751efafad8abb8d3acf069ba5a21b",
       "submissionId": "e41b2d2f-b69e-4037-971e-4eed3cb5e065",
       "submittedAt": "2026-10-12T07:41:15.050Z",
+      "integratedCommit": "1051b89d94fc3627fe7ac3cc1b414c8659c83464",
+      "integratedAt": "2026-10-12T07:57:19.789Z",
       "dispatch": {
         "id": "439aeb8e-ff25-41d5-b637-4c99893aad84",
         "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
@@ -408,6 +348,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
           "startedAt": "2026-10-12T07:39:41.126Z",
           "finishedAt": "2026-10-12T07:41:14.838Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+          "startedAt": "2026-10-12T07:55:12.591Z",
+          "finishedAt": "2026-10-12T07:57:19.634Z"
         }
       ]
     },
@@ -584,19 +531,57 @@
         "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/worker-1",
         "972d9a30-6bea-46b8-81f6-ead950c5011c/worker-1"
       ],
-      "status": "doing",
-      "reason": "Resumed after the runner was stopped for an account switch. Browser system dependencies are installed (Chromium, Firefox and WebKit launch). The T049 code is in 151f7ec and the interrupted e2e fix is in bc886e1. Run the affected journeys in Chromium with `pnpm run test:e2e -- --project=chromium <spec files>` (builds, business, cups-and-club, founding, intervention, milestones, native-touch, news, recruitment, recovery and any other spec that reads save-status). Fix failures, record the real results, mark the e2e acceptance [v] only if they pass, and submit the lane.",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-10-12T06:19:25.170Z",
       "startCommit": "a37e137038d9f4211780569bddf8856da8860cd4",
+      "verifiedCommit": "ecf7c93c5d796a6e828f540c64c8a8799c79d6d4",
+      "submittedBase": "1051b89d94fc3627fe7ac3cc1b414c8659c83464",
+      "submissionId": "d41b9a19-f98b-4e28-9af4-7fc570f71a26",
+      "submittedAt": "2026-10-12T08:00:22.968Z",
+      "integratedCommit": "381d177e46bb2d45aacf71f06dcc3a36461bae87",
+      "integratedAt": "2026-10-12T08:25:47.340Z",
       "dispatch": {
-        "id": "9a3e20ce-a125-4d67-91c9-011a8b178883",
+        "id": "19cf7e6d-3013-4933-a2c2-5fd7fd7e4bab",
         "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
-        "role": "worker",
+        "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
-        "status": "running",
-        "startedAt": "2026-10-12T07:50:37.969Z"
+        "status": "finished",
+        "startedAt": "2026-10-12T08:02:13.838Z",
+        "finishedAt": "2026-10-12T08:09:52.259Z",
+        "error": null,
+        "summary": "Approved. I read the code rather than relying on the test results. T048: a new background codec worker builds and checks every checkpoint. The client creates that worker and gives the engine worker a MessageChannel port to it, so the world never passes through the UI thread. Ordinary commands no longer encode. The client now commits the codec's raw and envelope without running inspect a second time, and SaveRepository.commit refuses any generation that is not newer than the last committed one. Only one save is in flight at a time, and requests made meanwhile are folded into one newer save. Load, import and recovery still decode and validate in the engine worker; export still encodes there. T049: the gate that made `tick` wait for the previous save is gone. Days owed only come from a step that itself ran late. Owner decisions (commands, founding, alert acknowledgement) request a save at once. Automatic days arm one 30 s timer. Stopping the clock, hiding the tab and pagehide each save at once (pagehide best effort). The save status shows 저장 완료, 방금 저장 or n초 전 저장, and 저장 재시도 appears only after a failed save. Read-only tabs are still told of every commit. The e2e journeys now wait for 저장 완료 before reloading or opening a second tab. This matches SAVE-8, ARCH-11, ARCH-13 and WEB-18 (rev 20/8/50). Upstream changes since the merge base (engine and contracts only) do not touch any file in this submission. Runner verification at ecf7c93: typecheck and unit tests passed (73 files, 506 tests). The worker reports build, lint, format:check and Chromium e2e passing (94 tests). I did not rerun these: this checkout has no node_modules, and installing would change it. The findings below are optional (P3)."
+      },
+      "review": {
+        "id": "40e3e327-b14f-4246-83bc-b206500fbfa5",
+        "owner": "972d9a30-6bea-46b8-81f6-ead950c5011c/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Approved. I read the code rather than relying on the test results. T048: a new background codec worker builds and checks every checkpoint. The client creates that worker and gives the engine worker a MessageChannel port to it, so the world never passes through the UI thread. Ordinary commands no longer encode. The client now commits the codec's raw and envelope without running inspect a second time, and SaveRepository.commit refuses any generation that is not newer than the last committed one. Only one save is in flight at a time, and requests made meanwhile are folded into one newer save. Load, import and recovery still decode and validate in the engine worker; export still encodes there. T049: the gate that made `tick` wait for the previous save is gone. Days owed only come from a step that itself ran late. Owner decisions (commands, founding, alert acknowledgement) request a save at once. Automatic days arm one 30 s timer. Stopping the clock, hiding the tab and pagehide each save at once (pagehide best effort). The save status shows 저장 완료, 방금 저장 or n초 전 저장, and 저장 재시도 appears only after a failed save. Read-only tabs are still told of every commit. The e2e journeys now wait for 저장 완료 before reloading or opening a second tab. This matches SAVE-8, ARCH-11, ARCH-13 and WEB-18 (rev 20/8/50). Upstream changes since the merge base (engine and contracts only) do not touch any file in this submission. Runner verification at ecf7c93: typecheck and unit tests passed (73 files, 506 tests). The worker reports build, lint, format:check and Chromium e2e passing (94 tests). I did not rerun these: this checkout has no node_modules, and installing would change it. The findings below are optional (P3).",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/runtime/progression.ts:405 (start) / apps/web/src/runtime/client.ts:367 (drainSaves) — T049",
+            "message": "After a failed save, the clock can run again while nothing is being saved. Only `state.error` blocks `start()` and `tick`, and any later enqueued task clears that error, including 기록 내보내기 (the step the error message itself suggests) and archive reads. The old `savedRevision !== revision` gate in `tick` is gone, so the owner can restart the clock and play up to AUTOSAVE_MS unsaved before the next save fails and stops it again. The impl notes say save failures still stop unattended progress. Consider also blocking `start()` and `tick` on `state.saveFailed` until a retry succeeds, and add a client or progression test for it."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/runtime/client.ts:367-375 (drainSaves catch) — T048",
+            "message": "If the engine worker dies or times out while a background save is waiting for its reply, `failWorker` rejects that save's waiter. The catch in `drainSaves` then overwrites the worker error with \"현재 진행은 메모리에 있습니다. 저장 실패: … · 파일로 내보내세요\" and sets `saveFailed`. That message is wrong in this case: the in-memory world died with the worker, export falls back to the last committed checkpoint, and 저장 재시도 cannot succeed. Consider keeping the `failWorker` message and leaving `saveFailed` unset when `this.failed` is true."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/runtime/host.ts:163-174 (save) — T048/T049 limits",
+            "message": "These are planning or integration follow-ups, not code defects. (1) Posting the world to the codec costs about 130 ms on the engine thread for a 100-season world, measured in Node. That is over the ~50 ms budget in the impl notes, and the suggested `pack(w)` fallback measured slower. The limits section records this, but planning should accept it or set a new budget, since slower phones will have the next day step carry owed days after every save. (2) Firefox and WebKit e2e were not run: the codec module worker with a transferred port is only proven in Chromium. The first-play entry size was not re-measured. Leave both to the integration verify and CI."
+          }
+        ],
+        "commit": "ecf7c93c5d796a6e828f540c64c8a8799c79d6d4",
+        "baseCommit": "34e96b089e52a2fc88bc7ee3d1c997bc8aef4267",
+        "submissionId": "d41b9a19-f98b-4e28-9af4-7fc570f71a26",
+        "createdAt": "2026-10-12T08:02:13.566Z",
+        "finishedAt": "2026-10-12T08:09:52.237Z"
       },
       "steps": [
         {
@@ -610,6 +595,32 @@
               "finishedAt": "2026-10-12T06:42:26.952Z"
             }
           ]
+        },
+        {
+          "taskId": "T049",
+          "commit": "ecf7c93c5d796a6e828f540c64c8a8799c79d6d4",
+          "at": "2026-10-12T08:00:22.954Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+              "startedAt": "2026-10-12T07:58:54.107Z",
+              "finishedAt": "2026-10-12T08:00:22.722Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+          "startedAt": "2026-10-12T07:58:54.107Z",
+          "finishedAt": "2026-10-12T08:00:22.722Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+          "startedAt": "2026-10-12T08:23:57.320Z",
+          "finishedAt": "2026-10-12T08:25:47.181Z"
         }
       ]
     },
@@ -713,7 +724,7 @@
       "contributors": [
         "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/worker-1"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-12T07:36:34.837Z",
       "startCommit": "730d080682f751efafad8abb8d3acf069ba5a21b",
@@ -721,18 +732,39 @@
       "submittedBase": "730d080682f751efafad8abb8d3acf069ba5a21b",
       "submissionId": "6e6bcbb3-3359-4204-a3d5-f638b4d95dfd",
       "submittedAt": "2026-10-12T07:42:51.396Z",
+      "integratedCommit": "34e96b089e52a2fc88bc7ee3d1c997bc8aef4267",
+      "integratedAt": "2026-10-12T08:02:13.269Z",
       "dispatch": {
-        "id": "3eb08a74-a710-4ec3-ad0c-b9b2b3850837",
-        "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
-        "role": "worker",
+        "id": "3c57202f-6ac2-42b7-841b-718cc45ae98b",
+        "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+        "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-12T07:36:34.996Z",
-        "finishedAt": "2026-10-12T07:42:51.408Z",
+        "startedAt": "2026-10-12T07:57:20.723Z",
+        "finishedAt": "2026-10-12T08:00:23.264Z",
         "error": null,
-        "summary": "T063 is done. Amateur league tables now mark as many automatic promotion places as the amateur exchange opens: 2 × the number of groups in the last professional division − 1, with the next four clubs as the play-off (England 1 + 4, Italy 5 + 4, per LEAGUE-6). This applies to the live league page and to a closed season's 순위표.\n\nChanges:\n- `apps/web/src/ui/league.ts`: `divisionRules` computes the amateur automatic places from the last division's group count instead of always 1. The play-off stays at 4 and the amateur league still has no relegation zone.\n- `apps/web/src/ui/league.test.ts`: new test checking `leagueRules` for the England and Italy amateur leagues (1+4 and 5+4, no relegation).\n- `apps/web/src/ui/seasonArchive.test.ts`: new test that simulates an Italian amateur season and checks its closed table marks five automatic places, then four play-off places.\n- `spec/tasks/T063.amateur-table-zones.md`: all acceptance items ticked and the result filled in (at: -, since nothing is committed yet).\n\nChecks: `pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit` passed (74 files, 508 tests). eslint and prettier --check passed on the three changed code files.\n\nNot run: two haeram CLI commands, `work status --json` and the spec `lint`, were blocked because they need approval and this session can't give it. Spec consistency is unchecked, and I took the assignment from the dispatch JSON instead of `work status`.\n\nLeft for later (recorded in the result's limits): the doc comment on `finalZones` in `seasonArchive.ts` still says the amateur league's \"top place goes up\". That file is outside this task's touches, so I didn't edit it."
+        "summary": "T063 meets its acceptance and LEAGUE-6. For the amateur tier, `divisionRules` now gives 2 × (number of last-division groups) − 1 automatic places and a 4-club play-off: ENG 1 + 4, ITA 5 + 4. The submission branched from merge-base 730d080, not from baseCommit 1051b89. 1051b89 already contains T044's `amateurEntrants`, which promotes the top (places − 1) and holds a play-off for the next four: ENG 2nd–5th, ITA 6th–9th. The new live and closed-season zones match that engine behaviour. Upstream since the merge-base touched none of T063's files, so the merge has no overlap. Both consumers read the new value. LeagueInsights shows it in the table zones, the legend and the overview's threshold ('5위까지 승격권' for ITA). PastSeason gets it through `finalZones`. I checked the test expectations by hand against the catalog groups (ENG [[20],[24],[24],[24]], ITA last tier [20,20,20]). I did not re-run the suite because this review is read-only; the result relies on the worker's typecheck and unit run. Only an optional P3 remains."
+      },
+      "review": {
+        "id": "c7145863-a1ab-4033-8641-1298c89bf731",
+        "owner": "972d9a30-6bea-46b8-81f6-ead950c5011c/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T063 meets its acceptance and LEAGUE-6. For the amateur tier, `divisionRules` now gives 2 × (number of last-division groups) − 1 automatic places and a 4-club play-off: ENG 1 + 4, ITA 5 + 4. The submission branched from merge-base 730d080, not from baseCommit 1051b89. 1051b89 already contains T044's `amateurEntrants`, which promotes the top (places − 1) and holds a play-off for the next four: ENG 2nd–5th, ITA 6th–9th. The new live and closed-season zones match that engine behaviour. Upstream since the merge-base touched none of T063's files, so the merge has no overlap. Both consumers read the new value. LeagueInsights shows it in the table zones, the legend and the overview's threshold ('5위까지 승격권' for ITA). PastSeason gets it through `finalZones`. I checked the test expectations by hand against the catalog groups (ENG [[20],[24],[24],[24]], ITA last tier [20,20,20]). I did not re-run the suite because this review is read-only; the result relies on the worker's typecheck and unit run. Only an optional P3 remains.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/seasonArchive.ts:126-128",
+            "message": "T063: the `finalZones` doc comment still says the amateur league is the one 'whose top place goes up'. Since this change it marks 2 × last-division groups − 1 automatic places plus a 4-club play-off. The worker noted this under limits because the file was outside the task's touches. Update the comment the next time this file is touched, e.g. 'whose places in the amateur exchange go up (→LEAGUE-6)'. Related, optional: closed amateur seasons from saves made before this change were played when only the champion or the play-off winner went up. Their 순위표 will now show the new zones (5 + 4 for ITA). If that history should look exactly as it was played, that is a planning call for WEB-47 to make, not something to fix here."
+          }
+        ],
+        "commit": "0319d6d407eb273ade5031e34ae7668ce0b34ef5",
+        "baseCommit": "1051b89d94fc3627fe7ac3cc1b414c8659c83464",
+        "submissionId": "6e6bcbb3-3359-4204-a3d5-f638b4d95dfd",
+        "createdAt": "2026-10-12T07:57:20.375Z",
+        "finishedAt": "2026-10-12T08:00:23.249Z"
       },
       "steps": [
         {
@@ -753,6 +785,131 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
           "startedAt": "2026-10-12T07:41:15.895Z",
           "finishedAt": "2026-10-12T07:42:51.181Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+          "startedAt": "2026-10-12T08:00:23.813Z",
+          "finishedAt": "2026-10-12T08:02:13.125Z"
+        }
+      ]
+    },
+    {
+      "id": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+      "group": "one-result",
+      "taskId": "T047",
+      "tasks": [
+        "T047"
+      ],
+      "lane": null,
+      "owner": "972d9a30-6bea-46b8-81f6-ead950c5011c/worker-2",
+      "contributors": [
+        "972d9a30-6bea-46b8-81f6-ead950c5011c/worker-2"
+      ],
+      "status": "blocked",
+      "reason": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session.",
+      "createdAt": "2026-10-12T07:57:19.962Z",
+      "startCommit": "1051b89d94fc3627fe7ac3cc1b414c8659c83464",
+      "dispatch": {
+        "id": "a4da37d8-c06a-45e2-a1b7-4c8199f3a875",
+        "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+        "role": "worker",
+        "slot": 2,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-12T07:57:20.132Z",
+        "finishedAt": "2026-10-12T08:23:18.068Z",
+        "error": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session.",
+        "summary": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session."
+      }
+    },
+    {
+      "id": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "group": "one-result",
+      "taskId": "T064",
+      "tasks": [
+        "T064"
+      ],
+      "lane": null,
+      "owner": "30b2eefb-6935-4a81-b257-cfdeb76e726a/worker-1",
+      "contributors": [
+        "30b2eefb-6935-4a81-b257-cfdeb76e726a/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-12T08:26:34.805Z",
+      "startCommit": "5463789fb013580131750a5f0ac1e4f5efc4ca79",
+      "verifiedCommit": "805d490175825c4b11ebb257102235715d6d1454",
+      "submittedBase": "5463789fb013580131750a5f0ac1e4f5efc4ca79",
+      "submissionId": "64a9bcb3-9fdf-4800-a669-23b5c63d2299",
+      "submittedAt": "2026-10-12T08:49:13.465Z",
+      "integratedCommit": "2851074784fc9207a52591137580b1f6798fd1ca",
+      "integratedAt": "2026-10-12T08:53:57.272Z",
+      "dispatch": {
+        "id": "626087a4-beb9-4e5e-b80d-4ac453b1db99",
+        "runner": "30b2eefb-6935-4a81-b257-cfdeb76e726a",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-12T08:49:14.251Z",
+        "finishedAt": "2026-10-12T08:52:08.201Z",
+        "error": null,
+        "summary": "T064 meets its acceptance criteria. entry.spec.ts and every listed recovery.spec.ts case (base lines 42, 55, 68, 93, 104) now read the revision from the save status instead of the literal r1. The status text in useSaveText (apps/web/src/ui/App.tsx:832) is `<saved> · r<rev> · 물가 …`, so the pattern `/· r(\\d+) ·/` and the exact `r${n} ·` checks fit it. Reading the revision once is safe because the page only gets a world when the command's final reply arrives: host.ts sends progress messages without a view, and client.ts:99-108 publishes the view only on the final reply. A captured revision is therefore never a mid-round value. The '한 라운드 진행' button saves straight away (saveSoon) rather than through the 30 s autosave, so the 저장 완료 checks fit the default expect timeout, the same timeout the old not.toHaveText check used. In the quota case, the status still names the founding save (savedRevision 0, savedAt set) next to the current revision, and the new check that the exported world's revision equals the one shown ties the page to the world. The SAVE-FORMAT.md paragraph matches SAVE-10 r20 and the code: the optional `offer` is { player, fee, loanFee } in contracts types.ts:169 and schema.ts:389, both amounts are decimal strings, a bid pending from earlier rules has no offer, and 1.0.0–1.14.0 checkpoints stay accepted. It also says each day lived advances revision by one, which matches stepDay/playRound in season.ts:704-747. Other e2e specs that check revisions (save-upgrade, milestones, recruitment) compare relative values and are unaffected. I did not re-run the checks: this checkout has no node_modules, and installing would change it. The worker reports entry 3/3 and recovery 6/6 passing in chromium, firefox and webkit, plus typecheck and unit tests (527) passing, and the changed lines are under the 100-column limit. The three WebKit failures elsewhere in the suite are load stalls, which the owner decided are checked in CI."
+      },
+      "review": {
+        "id": "ca83b2b1-3db0-4fb7-b53f-c1278e632478",
+        "owner": "30b2eefb-6935-4a81-b257-cfdeb76e726a/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T064 meets its acceptance criteria. entry.spec.ts and every listed recovery.spec.ts case (base lines 42, 55, 68, 93, 104) now read the revision from the save status instead of the literal r1. The status text in useSaveText (apps/web/src/ui/App.tsx:832) is `<saved> · r<rev> · 물가 …`, so the pattern `/· r(\\d+) ·/` and the exact `r${n} ·` checks fit it. Reading the revision once is safe because the page only gets a world when the command's final reply arrives: host.ts sends progress messages without a view, and client.ts:99-108 publishes the view only on the final reply. A captured revision is therefore never a mid-round value. The '한 라운드 진행' button saves straight away (saveSoon) rather than through the 30 s autosave, so the 저장 완료 checks fit the default expect timeout, the same timeout the old not.toHaveText check used. In the quota case, the status still names the founding save (savedRevision 0, savedAt set) next to the current revision, and the new check that the exported world's revision equals the one shown ties the page to the world. The SAVE-FORMAT.md paragraph matches SAVE-10 r20 and the code: the optional `offer` is { player, fee, loanFee } in contracts types.ts:169 and schema.ts:389, both amounts are decimal strings, a bid pending from earlier rules has no offer, and 1.0.0–1.14.0 checkpoints stay accepted. It also says each day lived advances revision by one, which matches stepDay/playRound in season.ts:704-747. Other e2e specs that check revisions (save-upgrade, milestones, recruitment) compare relative values and are unaffected. I did not re-run the checks: this checkout has no node_modules, and installing would change it. The worker reports entry 3/3 and recovery 6/6 passing in chromium, firefox and webkit, plus typecheck and unit tests (527) passing, and the changed lines are under the 100-column limit. The three WebKit failures elsewhere in the suite are load stalls, which the owner decided are checked in CI.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "tests/e2e/entry.spec.ts:22",
+            "message": "T064: the revision now comes from the page, so the follow-up `저장 완료 · r${revision} ·` check only proves the save completed. The only guard on the value is `> 0`, and `> before` in recovery's advanceRound. A regression where a round is a single revision again (the opposite of LEAGUE-11's one-day-at-a-time order) would still pass. The quota case's exported-world check already covers page-vs-world consistency. Optional fix: also assert revision > 1 (a round lives several days), or derive the expected count from the world's day calendar."
+          },
+          {
+            "priority": "P3",
+            "where": "spec/tasks/T064.e2e-revisions-and-save-format.md:9",
+            "message": "T064 (hand off to the planner, not the worker): the acceptance command `pnpm run test:e2e -- --project=… <files>` does not narrow the run, because pnpm forwards the `--`. The worker reports that it ran the whole suite in all three projects. Future tasks should write `PREVIEW_BUILD=1 pnpm exec playwright test --project=<p> <files>` (after `pnpm run build`) so the per-project, per-spec criterion is actually what gets checked."
+          }
+        ],
+        "commit": "805d490175825c4b11ebb257102235715d6d1454",
+        "baseCommit": "5463789fb013580131750a5f0ac1e4f5efc4ca79",
+        "submissionId": "64a9bcb3-9fdf-4800-a669-23b5c63d2299",
+        "createdAt": "2026-10-12T08:49:13.942Z",
+        "finishedAt": "2026-10-12T08:52:08.186Z"
+      },
+      "steps": [
+        {
+          "taskId": "T064",
+          "commit": "805d490175825c4b11ebb257102235715d6d1454",
+          "at": "2026-10-12T08:49:13.451Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+              "startedAt": "2026-10-12T08:47:36.510Z",
+              "finishedAt": "2026-10-12T08:49:13.265Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+          "startedAt": "2026-10-12T08:47:36.510Z",
+          "finishedAt": "2026-10-12T08:49:13.265Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+          "startedAt": "2026-10-12T08:52:08.662Z",
+          "finishedAt": "2026-10-12T08:53:57.125Z"
         }
       ]
     }
@@ -5579,6 +5736,1207 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 192,
+      "at": "2026-10-12T07:57:19.750Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+            "startedAt": "2026-10-12T07:55:12.591Z",
+            "finishedAt": "2026-10-12T07:57:19.634Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 193,
+      "at": "2026-10-12T07:57:19.789Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "1051b89d94fc3627fe7ac3cc1b414c8659c83464",
+        "integratedAt": "2026-10-12T07:57:19.789Z"
+      }
+    },
+    {
+      "sequence": 194,
+      "at": "2026-10-12T07:57:19.962Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+      "taskId": "T047",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+        "group": "one-result",
+        "taskId": "T047",
+        "tasks": [
+          "T047"
+        ],
+        "lane": null,
+        "owner": "972d9a30-6bea-46b8-81f6-ead950c5011c/worker-2",
+        "contributors": [
+          "972d9a30-6bea-46b8-81f6-ead950c5011c/worker-2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-12T07:57:19.962Z",
+        "startCommit": "1051b89d94fc3627fe7ac3cc1b414c8659c83464"
+      }
+    },
+    {
+      "sequence": 195,
+      "at": "2026-10-12T07:57:20.068Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+      "taskId": "T047",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 196,
+      "at": "2026-10-12T07:57:20.132Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+      "taskId": "T047",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a4da37d8-c06a-45e2-a1b7-4c8199f3a875",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T07:57:20.132Z"
+        }
+      }
+    },
+    {
+      "sequence": 197,
+      "at": "2026-10-12T07:57:20.152Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+      "taskId": "T047",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a4da37d8-c06a-45e2-a1b7-4c8199f3a875",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T07:57:20.132Z"
+        }
+      }
+    },
+    {
+      "sequence": 198,
+      "at": "2026-10-12T07:57:20.375Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "55ab5bdd-7f96-420a-964d-ae86e3697c0f",
+      "taskId": "T063",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "c7145863-a1ab-4033-8641-1298c89bf731",
+          "owner": "972d9a30-6bea-46b8-81f6-ead950c5011c/reviewer-1",
+          "status": "reviewing",
+          "commit": "0319d6d407eb273ade5031e34ae7668ce0b34ef5",
+          "baseCommit": "1051b89d94fc3627fe7ac3cc1b414c8659c83464",
+          "submissionId": "6e6bcbb3-3359-4204-a3d5-f638b4d95dfd",
+          "createdAt": "2026-10-12T07:57:20.375Z"
+        }
+      }
+    },
+    {
+      "sequence": 199,
+      "at": "2026-10-12T07:57:20.723Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "55ab5bdd-7f96-420a-964d-ae86e3697c0f",
+      "taskId": "T063",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "3c57202f-6ac2-42b7-841b-718cc45ae98b",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T07:57:20.723Z"
+        }
+      }
+    },
+    {
+      "sequence": 200,
+      "at": "2026-10-12T07:57:20.739Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "55ab5bdd-7f96-420a-964d-ae86e3697c0f",
+      "taskId": "T063",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "3c57202f-6ac2-42b7-841b-718cc45ae98b",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T07:57:20.723Z"
+        }
+      }
+    },
+    {
+      "sequence": 201,
+      "at": "2026-10-12T07:58:53.538Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 202,
+      "at": "2026-10-12T07:58:53.898Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 203,
+      "at": "2026-10-12T07:58:53.934Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 204,
+      "at": "2026-10-12T08:00:22.968Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "steps": [
+          {
+            "taskId": "T048",
+            "commit": "e03cc77d17961cf903a0e48f97ed49544fe8f81c",
+            "at": "2026-10-12T06:42:27.154Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T06:40:53.279Z",
+                "finishedAt": "2026-10-12T06:42:26.952Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T049",
+            "commit": "ecf7c93c5d796a6e828f540c64c8a8799c79d6d4",
+            "at": "2026-10-12T08:00:22.954Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T07:58:54.107Z",
+                "finishedAt": "2026-10-12T08:00:22.722Z"
+              }
+            ]
+          }
+        ],
+        "verifiedCommit": "ecf7c93c5d796a6e828f540c64c8a8799c79d6d4",
+        "submittedBase": "1051b89d94fc3627fe7ac3cc1b414c8659c83464",
+        "submissionId": "d41b9a19-f98b-4e28-9af4-7fc570f71a26",
+        "submittedAt": "2026-10-12T08:00:22.968Z",
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+            "startedAt": "2026-10-12T07:58:54.107Z",
+            "finishedAt": "2026-10-12T08:00:22.722Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 205,
+      "at": "2026-10-12T08:00:22.985Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "9a3e20ce-a125-4d67-91c9-011a8b178883",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T07:50:37.969Z",
+          "finishedAt": "2026-10-12T08:00:22.985Z",
+          "error": null,
+          "summary": "T049는 수락 기준 8개를 모두 채웠습니다. 남아 있던 항목은 \"다시 불러오기나 두 번째 탭 전에 저장을 기다리는 e2e 여정이 Chromium에서 통과한다\" 하나였습니다. 이전 세션에서는 브라우저 라이브러리가 없어서 확인하지 못했는데, 이번에 Chromium이 실행되어 `pnpm run test:e2e --project=chromium` 전체 94개가 통과했습니다. 다시 불러오기, 두 번째 탭, save-status를 다루는 spec 파일이 24개라 일부만 고르지 않고 전체를 돌렸습니다.\n\n**바뀐 동작** (커밋 151f7ec, bc886e1):\n- 시계는 저장을 기다리지 않습니다. `tick`에서 저장 리비전 확인을 없앴고, 밀린 날짜는 스스로 늦어진 스텝(또는 자리를 비운 시간)에서만 붙습니다.\n- 언제 저장하는지:\n  - 구단주 결정(명령, 창단, 경고 확인)은 `saveSoon()`으로 바로 저장합니다.\n  - 자동 진행은 30초 타이머로 저장합니다.\n  - 시계가 멈추거나 탭이 숨겨지거나 `pagehide`가 오면 바로 저장합니다.\n- 백그라운드 저장 요청의 제한 시간은 60초입니다.\n- 저장 상태 표시는 `저장 완료` / `방금 저장` / `n초 전 저장`으로 바뀌었고, `저장 재시도` 버튼은 저장에 실패했을 때만 보입니다.\n- e2e 9개 파일에서 다시 불러오기 전에 `저장 완료`를 기다리도록 했습니다. recovery는 실패 상태 문구를 새로 맞추고, 엔진 Worker만 잡도록(코덱 Worker 제외) 고쳤습니다.\n\n이번에 수정한 파일은 `spec/tasks/T049.clock-never-waits-for-saving.md`(수락 기준 체크와 result의 at·verified·limits)뿐입니다.\n\n**검사 결과:** 모두 bc886e1에서 통과했습니다.\n- `pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit`: 73개 파일, 506개 테스트\n- `pnpm run lint`, `pnpm run format:check`, `pnpm run build`\n- Chromium e2e 94개\n\n**남은 한계:**\n- Firefox와 WebKit e2e는 돌리지 않았습니다.\n- 어느 탭에서 게임을 불러오면 그 탭이 처음 저장할 때까지 `저장 대기`로 보입니다. 체크포인트에 저장 시각이 없기 때문입니다.\n- 첫 화면 진입 크기는 다시 재지 않았습니다. 측정 명령(`node -e`, `gzip`)이 이 세션에서 승인되지 않았습니다.\n- `haeram-spec-creator lint`와 `work board` 조회도 승인되지 않아 실행하지 못했습니다."
+        }
+      }
+    },
+    {
+      "sequence": 206,
+      "at": "2026-10-12T08:00:23.250Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "55ab5bdd-7f96-420a-964d-ae86e3697c0f",
+      "taskId": "T063",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "c7145863-a1ab-4033-8641-1298c89bf731",
+          "owner": "972d9a30-6bea-46b8-81f6-ead950c5011c/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T063 meets its acceptance and LEAGUE-6. For the amateur tier, `divisionRules` now gives 2 × (number of last-division groups) − 1 automatic places and a 4-club play-off: ENG 1 + 4, ITA 5 + 4. The submission branched from merge-base 730d080, not from baseCommit 1051b89. 1051b89 already contains T044's `amateurEntrants`, which promotes the top (places − 1) and holds a play-off for the next four: ENG 2nd–5th, ITA 6th–9th. The new live and closed-season zones match that engine behaviour. Upstream since the merge-base touched none of T063's files, so the merge has no overlap. Both consumers read the new value. LeagueInsights shows it in the table zones, the legend and the overview's threshold ('5위까지 승격권' for ITA). PastSeason gets it through `finalZones`. I checked the test expectations by hand against the catalog groups (ENG [[20],[24],[24],[24]], ITA last tier [20,20,20]). I did not re-run the suite because this review is read-only; the result relies on the worker's typecheck and unit run. Only an optional P3 remains.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/seasonArchive.ts:126-128",
+              "message": "T063: the `finalZones` doc comment still says the amateur league is the one 'whose top place goes up'. Since this change it marks 2 × last-division groups − 1 automatic places plus a 4-club play-off. The worker noted this under limits because the file was outside the task's touches. Update the comment the next time this file is touched, e.g. 'whose places in the amateur exchange go up (→LEAGUE-6)'. Related, optional: closed amateur seasons from saves made before this change were played when only the champion or the play-off winner went up. Their 순위표 will now show the new zones (5 + 4 for ITA). If that history should look exactly as it was played, that is a planning call for WEB-47 to make, not something to fix here."
+            }
+          ],
+          "commit": "0319d6d407eb273ade5031e34ae7668ce0b34ef5",
+          "baseCommit": "1051b89d94fc3627fe7ac3cc1b414c8659c83464",
+          "submissionId": "6e6bcbb3-3359-4204-a3d5-f638b4d95dfd",
+          "createdAt": "2026-10-12T07:57:20.375Z",
+          "finishedAt": "2026-10-12T08:00:23.249Z"
+        }
+      }
+    },
+    {
+      "sequence": 207,
+      "at": "2026-10-12T08:00:23.264Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "55ab5bdd-7f96-420a-964d-ae86e3697c0f",
+      "taskId": "T063",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "3c57202f-6ac2-42b7-841b-718cc45ae98b",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T07:57:20.723Z",
+          "finishedAt": "2026-10-12T08:00:23.264Z",
+          "error": null,
+          "summary": "T063 meets its acceptance and LEAGUE-6. For the amateur tier, `divisionRules` now gives 2 × (number of last-division groups) − 1 automatic places and a 4-club play-off: ENG 1 + 4, ITA 5 + 4. The submission branched from merge-base 730d080, not from baseCommit 1051b89. 1051b89 already contains T044's `amateurEntrants`, which promotes the top (places − 1) and holds a play-off for the next four: ENG 2nd–5th, ITA 6th–9th. The new live and closed-season zones match that engine behaviour. Upstream since the merge-base touched none of T063's files, so the merge has no overlap. Both consumers read the new value. LeagueInsights shows it in the table zones, the legend and the overview's threshold ('5위까지 승격권' for ITA). PastSeason gets it through `finalZones`. I checked the test expectations by hand against the catalog groups (ENG [[20],[24],[24],[24]], ITA last tier [20,20,20]). I did not re-run the suite because this review is read-only; the result relies on the worker's typecheck and unit run. Only an optional P3 remains."
+        }
+      }
+    },
+    {
+      "sequence": 208,
+      "at": "2026-10-12T08:00:23.313Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "55ab5bdd-7f96-420a-964d-ae86e3697c0f",
+      "taskId": "T063",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 209,
+      "at": "2026-10-12T08:02:13.231Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "55ab5bdd-7f96-420a-964d-ae86e3697c0f",
+      "taskId": "T063",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+            "startedAt": "2026-10-12T08:00:23.813Z",
+            "finishedAt": "2026-10-12T08:02:13.125Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 210,
+      "at": "2026-10-12T08:02:13.269Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "55ab5bdd-7f96-420a-964d-ae86e3697c0f",
+      "taskId": "T063",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "34e96b089e52a2fc88bc7ee3d1c997bc8aef4267",
+        "integratedAt": "2026-10-12T08:02:13.269Z"
+      }
+    },
+    {
+      "sequence": 211,
+      "at": "2026-10-12T08:02:13.566Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "40e3e327-b14f-4246-83bc-b206500fbfa5",
+          "owner": "972d9a30-6bea-46b8-81f6-ead950c5011c/reviewer-1",
+          "status": "reviewing",
+          "commit": "ecf7c93c5d796a6e828f540c64c8a8799c79d6d4",
+          "baseCommit": "34e96b089e52a2fc88bc7ee3d1c997bc8aef4267",
+          "submissionId": "d41b9a19-f98b-4e28-9af4-7fc570f71a26",
+          "createdAt": "2026-10-12T08:02:13.566Z"
+        }
+      }
+    },
+    {
+      "sequence": 212,
+      "at": "2026-10-12T08:02:13.838Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "19cf7e6d-3013-4933-a2c2-5fd7fd7e4bab",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T08:02:13.838Z"
+        }
+      }
+    },
+    {
+      "sequence": 213,
+      "at": "2026-10-12T08:02:13.855Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "19cf7e6d-3013-4933-a2c2-5fd7fd7e4bab",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T08:02:13.838Z"
+        }
+      }
+    },
+    {
+      "sequence": 214,
+      "at": "2026-10-12T08:09:52.237Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "40e3e327-b14f-4246-83bc-b206500fbfa5",
+          "owner": "972d9a30-6bea-46b8-81f6-ead950c5011c/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Approved. I read the code rather than relying on the test results. T048: a new background codec worker builds and checks every checkpoint. The client creates that worker and gives the engine worker a MessageChannel port to it, so the world never passes through the UI thread. Ordinary commands no longer encode. The client now commits the codec's raw and envelope without running inspect a second time, and SaveRepository.commit refuses any generation that is not newer than the last committed one. Only one save is in flight at a time, and requests made meanwhile are folded into one newer save. Load, import and recovery still decode and validate in the engine worker; export still encodes there. T049: the gate that made `tick` wait for the previous save is gone. Days owed only come from a step that itself ran late. Owner decisions (commands, founding, alert acknowledgement) request a save at once. Automatic days arm one 30 s timer. Stopping the clock, hiding the tab and pagehide each save at once (pagehide best effort). The save status shows 저장 완료, 방금 저장 or n초 전 저장, and 저장 재시도 appears only after a failed save. Read-only tabs are still told of every commit. The e2e journeys now wait for 저장 완료 before reloading or opening a second tab. This matches SAVE-8, ARCH-11, ARCH-13 and WEB-18 (rev 20/8/50). Upstream changes since the merge base (engine and contracts only) do not touch any file in this submission. Runner verification at ecf7c93: typecheck and unit tests passed (73 files, 506 tests). The worker reports build, lint, format:check and Chromium e2e passing (94 tests). I did not rerun these: this checkout has no node_modules, and installing would change it. The findings below are optional (P3).",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/progression.ts:405 (start) / apps/web/src/runtime/client.ts:367 (drainSaves) — T049",
+              "message": "After a failed save, the clock can run again while nothing is being saved. Only `state.error` blocks `start()` and `tick`, and any later enqueued task clears that error, including 기록 내보내기 (the step the error message itself suggests) and archive reads. The old `savedRevision !== revision` gate in `tick` is gone, so the owner can restart the clock and play up to AUTOSAVE_MS unsaved before the next save fails and stops it again. The impl notes say save failures still stop unattended progress. Consider also blocking `start()` and `tick` on `state.saveFailed` until a retry succeeds, and add a client or progression test for it."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/client.ts:367-375 (drainSaves catch) — T048",
+              "message": "If the engine worker dies or times out while a background save is waiting for its reply, `failWorker` rejects that save's waiter. The catch in `drainSaves` then overwrites the worker error with \"현재 진행은 메모리에 있습니다. 저장 실패: … · 파일로 내보내세요\" and sets `saveFailed`. That message is wrong in this case: the in-memory world died with the worker, export falls back to the last committed checkpoint, and 저장 재시도 cannot succeed. Consider keeping the `failWorker` message and leaving `saveFailed` unset when `this.failed` is true."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/host.ts:163-174 (save) — T048/T049 limits",
+              "message": "These are planning or integration follow-ups, not code defects. (1) Posting the world to the codec costs about 130 ms on the engine thread for a 100-season world, measured in Node. That is over the ~50 ms budget in the impl notes, and the suggested `pack(w)` fallback measured slower. The limits section records this, but planning should accept it or set a new budget, since slower phones will have the next day step carry owed days after every save. (2) Firefox and WebKit e2e were not run: the codec module worker with a transferred port is only proven in Chromium. The first-play entry size was not re-measured. Leave both to the integration verify and CI."
+            }
+          ],
+          "commit": "ecf7c93c5d796a6e828f540c64c8a8799c79d6d4",
+          "baseCommit": "34e96b089e52a2fc88bc7ee3d1c997bc8aef4267",
+          "submissionId": "d41b9a19-f98b-4e28-9af4-7fc570f71a26",
+          "createdAt": "2026-10-12T08:02:13.566Z",
+          "finishedAt": "2026-10-12T08:09:52.237Z"
+        }
+      }
+    },
+    {
+      "sequence": 215,
+      "at": "2026-10-12T08:09:52.259Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "19cf7e6d-3013-4933-a2c2-5fd7fd7e4bab",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T08:02:13.838Z",
+          "finishedAt": "2026-10-12T08:09:52.259Z",
+          "error": null,
+          "summary": "Approved. I read the code rather than relying on the test results. T048: a new background codec worker builds and checks every checkpoint. The client creates that worker and gives the engine worker a MessageChannel port to it, so the world never passes through the UI thread. Ordinary commands no longer encode. The client now commits the codec's raw and envelope without running inspect a second time, and SaveRepository.commit refuses any generation that is not newer than the last committed one. Only one save is in flight at a time, and requests made meanwhile are folded into one newer save. Load, import and recovery still decode and validate in the engine worker; export still encodes there. T049: the gate that made `tick` wait for the previous save is gone. Days owed only come from a step that itself ran late. Owner decisions (commands, founding, alert acknowledgement) request a save at once. Automatic days arm one 30 s timer. Stopping the clock, hiding the tab and pagehide each save at once (pagehide best effort). The save status shows 저장 완료, 방금 저장 or n초 전 저장, and 저장 재시도 appears only after a failed save. Read-only tabs are still told of every commit. The e2e journeys now wait for 저장 완료 before reloading or opening a second tab. This matches SAVE-8, ARCH-11, ARCH-13 and WEB-18 (rev 20/8/50). Upstream changes since the merge base (engine and contracts only) do not touch any file in this submission. Runner verification at ecf7c93: typecheck and unit tests passed (73 files, 506 tests). The worker reports build, lint, format:check and Chromium e2e passing (94 tests). I did not rerun these: this checkout has no node_modules, and installing would change it. The findings below are optional (P3)."
+        }
+      }
+    },
+    {
+      "sequence": 216,
+      "at": "2026-10-12T08:09:52.336Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 217,
+      "at": "2026-10-12T08:12:40.197Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit"
+      }
+    },
+    {
+      "sequence": 218,
+      "at": "2026-10-12T08:23:18.054Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+      "taskId": "T047",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session."
+      }
+    },
+    {
+      "sequence": 219,
+      "at": "2026-10-12T08:23:18.068Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+      "taskId": "T047",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "a4da37d8-c06a-45e2-a1b7-4c8199f3a875",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T07:57:20.132Z",
+          "finishedAt": "2026-10-12T08:23:18.068Z",
+          "error": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session.",
+          "summary": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session."
+        }
+      }
+    },
+    {
+      "sequence": 220,
+      "at": "2026-10-12T08:23:18.621Z",
+      "type": "group",
+      "group": "one-result",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-12T07:50:37.896Z",
+          "stoppedAt": "2026-10-12T08:23:18.621Z",
+          "dispatched": 5,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            },
+            {
+              "attempt": "fb57cca7-6e9a-46ca-a50b-dcf5883ae7bc",
+              "role": "worker",
+              "error": "I finished all of T047's own work, but the task is blocked: the full `pnpm run verify` fails in test:e2e (15 failed, 267 passed), and the fix belongs in files outside T047's touches.\n\n**Done (uncommitted, all within touches):**\n- **versions.ts:** CURRENT_ENGINE_VERSION is 1.15.0 and 1.14.0 is in SUPPORTED_ENGINE_VERSIONS. A tsx check confirmed a 1.14.0 world upgrades with revision +1 and nothing else changed.\n- **economy.ts:** a currency change now also converts an open outgoing bid's `offer` (fee, loanFee, player.wage). Settled bids keep their values. economy.test.ts covers this.\n- **Goldens:** tests/fixtures/portable-v1.json was regenerated with `scripts/update-golden.ts --write`, then formatted with prettier. All four scenarios changed. I attributed each change by reverting one rule at a time and rerunning:\n  - founding-and-commercial-decisions: market IDs per settings (the loaned player is now Henry Turner, not Walter Brooks), the campaign ID named by its round (fans 1049→1031), and the day order (revision 9→39, cup tie before round 4's league match).\n  - proud-manager-departure: the caretaker draw key only (Walter Foster→Thomas Watson).\n  - french-redenomination: the day order only (revision 47→323, rank 9→12).\n  - modern-european-season: the day order plus the caretaker draw key.\n  - The amateur exchange and the wider currency conversion change no golden fact.\n- **docs/SEASON-PROGRESSION.md:** now states the close on day 323, the one day order for every control and stage-by-stage cups.\n- **Task file:** the first four acceptance items are checked and the result is filled in. The last item (full verify) is left open.\n\n**Checks:** typecheck, test:unit (517 tests), test:contract, validate:catalogs, lint, format:check and build all pass.\n\n**Blocker:** test:e2e fails.\n- 12 failures (4 tests × chromium, firefox, webkit): tests/e2e/entry.spec.ts:20 and tests/e2e/recovery.spec.ts:42/55/68/93/104 expect save status `r1` after one round. Since T043, each day adds one revision, so a round now shows `r7`. None of T047's changes cause this.\n- 3 more failures, probably from load by parallel runs: a 30 s timeout in training.spec.ts (360x740, chromium), a focus check in intervention.spec.ts (webkit) and a 5 s clock check in recruitment.spec.ts:236 (webkit). I did not rerun these.\n\n**Decision needed from planning:** add the two e2e specs to T047's touches (or open a follow-up task) so they expect r7.\n\n**Other limits:**\n- docs/SAVE-FORMAT.md (outside touches) does not yet describe 1.15.0 or the new `offer` field.\n- The currency change event detail still reads \"명목 잔고와 미지급 계약만 환산\", which is no longer accurate.\n- `haeram-spec-creator lint` and `work board` were not run: CLI calls need approval in this session."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 221,
+      "at": "2026-10-12T08:23:56.800Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 222,
+      "at": "2026-10-12T08:25:47.292Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+            "startedAt": "2026-10-12T08:23:57.320Z",
+            "finishedAt": "2026-10-12T08:25:47.181Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 223,
+      "at": "2026-10-12T08:25:47.340Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "reason": null,
+        "integratedCommit": "381d177e46bb2d45aacf71f06dcc3a36461bae87",
+        "integratedAt": "2026-10-12T08:25:47.340Z"
+      }
+    },
+    {
+      "sequence": 224,
+      "at": "2026-10-12T08:26:34.660Z",
+      "type": "group",
+      "group": "one-result",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "30b2eefb-6935-4a81-b257-cfdeb76e726a",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-12T08:26:34.649Z"
+        }
+      }
+    },
+    {
+      "sequence": 225,
+      "at": "2026-10-12T08:26:34.805Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+        "group": "one-result",
+        "taskId": "T064",
+        "tasks": [
+          "T064"
+        ],
+        "lane": null,
+        "owner": "30b2eefb-6935-4a81-b257-cfdeb76e726a/worker-1",
+        "contributors": [
+          "30b2eefb-6935-4a81-b257-cfdeb76e726a/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-12T08:26:34.805Z",
+        "startCommit": "5463789fb013580131750a5f0ac1e4f5efc4ca79"
+      }
+    },
+    {
+      "sequence": 226,
+      "at": "2026-10-12T08:26:34.905Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 227,
+      "at": "2026-10-12T08:26:34.969Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c2f87bc0-013e-4086-b3a4-1672e0dc826a",
+          "runner": "30b2eefb-6935-4a81-b257-cfdeb76e726a",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T08:26:34.969Z"
+        }
+      }
+    },
+    {
+      "sequence": 228,
+      "at": "2026-10-12T08:26:34.988Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c2f87bc0-013e-4086-b3a4-1672e0dc826a",
+          "runner": "30b2eefb-6935-4a81-b257-cfdeb76e726a",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T08:26:34.969Z"
+        }
+      }
+    },
+    {
+      "sequence": 229,
+      "at": "2026-10-12T08:47:35.988Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 230,
+      "at": "2026-10-12T08:47:36.318Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 231,
+      "at": "2026-10-12T08:47:36.357Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 232,
+      "at": "2026-10-12T08:49:13.465Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "805d490175825c4b11ebb257102235715d6d1454",
+        "submittedBase": "5463789fb013580131750a5f0ac1e4f5efc4ca79",
+        "submissionId": "64a9bcb3-9fdf-4800-a669-23b5c63d2299",
+        "submittedAt": "2026-10-12T08:49:13.465Z",
+        "steps": [
+          {
+            "taskId": "T064",
+            "commit": "805d490175825c4b11ebb257102235715d6d1454",
+            "at": "2026-10-12T08:49:13.451Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T08:47:36.510Z",
+                "finishedAt": "2026-10-12T08:49:13.265Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+            "startedAt": "2026-10-12T08:47:36.510Z",
+            "finishedAt": "2026-10-12T08:49:13.265Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 233,
+      "at": "2026-10-12T08:49:13.485Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "c2f87bc0-013e-4086-b3a4-1672e0dc826a",
+          "runner": "30b2eefb-6935-4a81-b257-cfdeb76e726a",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T08:26:34.969Z",
+          "finishedAt": "2026-10-12T08:49:13.485Z",
+          "error": null,
+          "summary": "T064 구현 완료 (커밋은 하지 않음). 브라우저 테스트가 이제 `r1`을 하드코딩하지 않고, 한 라운드가 실제로 만든 리비전을 읽습니다.\n\n**변경 내용**\n- `tests/e2e/entry.spec.ts`: 라운드 진행 후 화면의 저장 상태에서 리비전 번호를 읽고, `저장 완료 · r<n> ·`과 정확히 일치하는지 확인합니다.\n- `tests/e2e/recovery.spec.ts`: `advanceRound`가 리비전이 오를 때까지 기다린 뒤 그 값을 돌려줍니다. 42, 55, 68, 93, 104번째 줄의 확인은 모두 이 값을 씁니다. 저장 공간 부족(quota) 케이스는 내보낸 세계의 `revision`과도 같은지 확인합니다.\n- `docs/SAVE-FORMAT.md`: rules 1.15.0 문단을 추가했습니다. `out` 입찰에 붙는 선택 필드 `offer`, 그 전 규칙에서 대기 중이던 입찰은 이전 방식대로 응답한다는 점, 하루가 지날 때마다 리비전이 1씩 오른다는 점, 1.0.0–1.14.0 체크포인트를 계속 받는다는 점을 적었습니다.\n\n**검증 결과**\n- 두 spec 모두 chromium, firefox, webkit에서 통과했습니다 (entry 3/3, recovery 6/6).\n- 다만 acceptance에 적힌 `pnpm run test:e2e -- --project=chromium ...` 명령은 실제로는 전체 스위트를 세 브라우저 모두에서 돌립니다. pnpm이 `--`를 그대로 넘겨서 project·파일 필터가 무시되기 때문입니다. 범위를 좁히려면 `PREVIEW_BUILD=1 pnpm exec playwright test --project=… <files>` 형태가 필요합니다.\n- 그 결과 전체로는 279개 통과, 3개 실패로 종료 코드 1이 났습니다. 실패는 모두 이 작업과 무관한 webkit 테스트입니다.\n  - `intervention.spec.ts:90`(390 화면)과 `live-state.spec.ts:13`: 테스트 도중 페이지가 닫혔습니다.\n  - `native-touch.spec.ts:55`(360 화면): 클릭이 멈춰 270초 제한 시간을 넘겼습니다.\n  - `playwright.config.ts`에 적힌 webkit 프로세스 멈춤 현상과 같은 양상입니다. 부하로 인한 브라우저 시간 초과는 CI에서 확인하기로 한 결정에 따라 따로 손대지 않았습니다.\n- `pnpm run typecheck`와 `pnpm run test:unit`(74개 파일, 527개 테스트)은 통과했습니다. 바꾼 파일에 대한 eslint와 prettier 검사도 통과했습니다.\n\n**하지 못한 것**\n- `haeram-spec-creator lint`와 `work board` 조회는 이 세션에서 권한이 거부되어 실행하지 못했습니다.\n- 코드의 `CURRENT_ENGINE_VERSION`은 T047이 올리기 전까지 아직 1.14.0입니다.\n\n태스크 파일의 acceptance 4개를 모두 [v]로 표시하고 result를 채웠습니다 (아직 커밋 전이라 at은 `-`)."
+        }
+      }
+    },
+    {
+      "sequence": 234,
+      "at": "2026-10-12T08:49:13.942Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "ca83b2b1-3db0-4fb7-b53f-c1278e632478",
+          "owner": "30b2eefb-6935-4a81-b257-cfdeb76e726a/reviewer-1",
+          "status": "reviewing",
+          "commit": "805d490175825c4b11ebb257102235715d6d1454",
+          "baseCommit": "5463789fb013580131750a5f0ac1e4f5efc4ca79",
+          "submissionId": "64a9bcb3-9fdf-4800-a669-23b5c63d2299",
+          "createdAt": "2026-10-12T08:49:13.942Z"
+        }
+      }
+    },
+    {
+      "sequence": 235,
+      "at": "2026-10-12T08:49:14.251Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "626087a4-beb9-4e5e-b80d-4ac453b1db99",
+          "runner": "30b2eefb-6935-4a81-b257-cfdeb76e726a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T08:49:14.251Z"
+        }
+      }
+    },
+    {
+      "sequence": 236,
+      "at": "2026-10-12T08:49:14.277Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "626087a4-beb9-4e5e-b80d-4ac453b1db99",
+          "runner": "30b2eefb-6935-4a81-b257-cfdeb76e726a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T08:49:14.251Z"
+        }
+      }
+    },
+    {
+      "sequence": 237,
+      "at": "2026-10-12T08:52:08.186Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "ca83b2b1-3db0-4fb7-b53f-c1278e632478",
+          "owner": "30b2eefb-6935-4a81-b257-cfdeb76e726a/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T064 meets its acceptance criteria. entry.spec.ts and every listed recovery.spec.ts case (base lines 42, 55, 68, 93, 104) now read the revision from the save status instead of the literal r1. The status text in useSaveText (apps/web/src/ui/App.tsx:832) is `<saved> · r<rev> · 물가 …`, so the pattern `/· r(\\d+) ·/` and the exact `r${n} ·` checks fit it. Reading the revision once is safe because the page only gets a world when the command's final reply arrives: host.ts sends progress messages without a view, and client.ts:99-108 publishes the view only on the final reply. A captured revision is therefore never a mid-round value. The '한 라운드 진행' button saves straight away (saveSoon) rather than through the 30 s autosave, so the 저장 완료 checks fit the default expect timeout, the same timeout the old not.toHaveText check used. In the quota case, the status still names the founding save (savedRevision 0, savedAt set) next to the current revision, and the new check that the exported world's revision equals the one shown ties the page to the world. The SAVE-FORMAT.md paragraph matches SAVE-10 r20 and the code: the optional `offer` is { player, fee, loanFee } in contracts types.ts:169 and schema.ts:389, both amounts are decimal strings, a bid pending from earlier rules has no offer, and 1.0.0–1.14.0 checkpoints stay accepted. It also says each day lived advances revision by one, which matches stepDay/playRound in season.ts:704-747. Other e2e specs that check revisions (save-upgrade, milestones, recruitment) compare relative values and are unaffected. I did not re-run the checks: this checkout has no node_modules, and installing would change it. The worker reports entry 3/3 and recovery 6/6 passing in chromium, firefox and webkit, plus typecheck and unit tests (527) passing, and the changed lines are under the 100-column limit. The three WebKit failures elsewhere in the suite are load stalls, which the owner decided are checked in CI.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "tests/e2e/entry.spec.ts:22",
+              "message": "T064: the revision now comes from the page, so the follow-up `저장 완료 · r${revision} ·` check only proves the save completed. The only guard on the value is `> 0`, and `> before` in recovery's advanceRound. A regression where a round is a single revision again (the opposite of LEAGUE-11's one-day-at-a-time order) would still pass. The quota case's exported-world check already covers page-vs-world consistency. Optional fix: also assert revision > 1 (a round lives several days), or derive the expected count from the world's day calendar."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T064.e2e-revisions-and-save-format.md:9",
+              "message": "T064 (hand off to the planner, not the worker): the acceptance command `pnpm run test:e2e -- --project=… <files>` does not narrow the run, because pnpm forwards the `--`. The worker reports that it ran the whole suite in all three projects. Future tasks should write `PREVIEW_BUILD=1 pnpm exec playwright test --project=<p> <files>` (after `pnpm run build`) so the per-project, per-spec criterion is actually what gets checked."
+            }
+          ],
+          "commit": "805d490175825c4b11ebb257102235715d6d1454",
+          "baseCommit": "5463789fb013580131750a5f0ac1e4f5efc4ca79",
+          "submissionId": "64a9bcb3-9fdf-4800-a669-23b5c63d2299",
+          "createdAt": "2026-10-12T08:49:13.942Z",
+          "finishedAt": "2026-10-12T08:52:08.186Z"
+        }
+      }
+    },
+    {
+      "sequence": 238,
+      "at": "2026-10-12T08:52:08.201Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "626087a4-beb9-4e5e-b80d-4ac453b1db99",
+          "runner": "30b2eefb-6935-4a81-b257-cfdeb76e726a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T08:49:14.251Z",
+          "finishedAt": "2026-10-12T08:52:08.201Z",
+          "error": null,
+          "summary": "T064 meets its acceptance criteria. entry.spec.ts and every listed recovery.spec.ts case (base lines 42, 55, 68, 93, 104) now read the revision from the save status instead of the literal r1. The status text in useSaveText (apps/web/src/ui/App.tsx:832) is `<saved> · r<rev> · 물가 …`, so the pattern `/· r(\\d+) ·/` and the exact `r${n} ·` checks fit it. Reading the revision once is safe because the page only gets a world when the command's final reply arrives: host.ts sends progress messages without a view, and client.ts:99-108 publishes the view only on the final reply. A captured revision is therefore never a mid-round value. The '한 라운드 진행' button saves straight away (saveSoon) rather than through the 30 s autosave, so the 저장 완료 checks fit the default expect timeout, the same timeout the old not.toHaveText check used. In the quota case, the status still names the founding save (savedRevision 0, savedAt set) next to the current revision, and the new check that the exported world's revision equals the one shown ties the page to the world. The SAVE-FORMAT.md paragraph matches SAVE-10 r20 and the code: the optional `offer` is { player, fee, loanFee } in contracts types.ts:169 and schema.ts:389, both amounts are decimal strings, a bid pending from earlier rules has no offer, and 1.0.0–1.14.0 checkpoints stay accepted. It also says each day lived advances revision by one, which matches stepDay/playRound in season.ts:704-747. Other e2e specs that check revisions (save-upgrade, milestones, recruitment) compare relative values and are unaffected. I did not re-run the checks: this checkout has no node_modules, and installing would change it. The worker reports entry 3/3 and recovery 6/6 passing in chromium, firefox and webkit, plus typecheck and unit tests (527) passing, and the changed lines are under the 100-column limit. The three WebKit failures elsewhere in the suite are load stalls, which the owner decided are checked in CI."
+        }
+      }
+    },
+    {
+      "sequence": 239,
+      "at": "2026-10-12T08:52:08.242Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 240,
+      "at": "2026-10-12T08:53:57.233Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+            "startedAt": "2026-10-12T08:52:08.662Z",
+            "finishedAt": "2026-10-12T08:53:57.125Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 241,
+      "at": "2026-10-12T08:53:57.272Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "ae91a07b-9055-4715-b26f-9e1bc940d09a",
+      "taskId": "T064",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "2851074784fc9207a52591137580b1f6798fd1ca",
+        "integratedAt": "2026-10-12T08:53:57.272Z"
+      }
+    },
+    {
+      "sequence": 242,
+      "at": "2026-10-12T08:53:57.761Z",
+      "type": "group",
+      "group": "one-result",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "30b2eefb-6935-4a81-b257-cfdeb76e726a",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-12T08:26:34.649Z",
+          "stoppedAt": "2026-10-12T08:53:57.761Z",
+          "dispatched": 2,
+          "outcome": "needs-attention",
+          "failures": []
+        }
       }
     }
   ]

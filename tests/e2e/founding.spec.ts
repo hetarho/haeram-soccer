@@ -162,6 +162,7 @@ for (const viewport of [
       document.addEventListener('DOMContentLoaded', check);
       check();
     });
+    await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
@@ -259,6 +260,7 @@ test('starts with generous capital and shows a fact-aware guide without changing
     .click();
   const played = await exportWorld(page);
   expect(played.ownMatches).toHaveLength(1);
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await openGuide();

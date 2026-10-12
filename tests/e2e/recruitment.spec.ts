@@ -159,6 +159,7 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   expect(BigInt(operatingCost(borrowed)) - BigInt(operatingCost(recruited))).toBe(
     BigInt(loan.player.wage),
   );
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   await expect(page.getByRole('heading', { name: '이적 시장', level: 2 })).toBeVisible();
   await expect(freeCard.getByRole('button', { name: '계약 완료', exact: true })).toBeDisabled();

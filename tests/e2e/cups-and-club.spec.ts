@@ -202,6 +202,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(page).toHaveURL(/\/transfers$/);
     expect(await horizontalOverflow(page)).toBe(0);
     // The market's address reopens the squad page on the market.
+    await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
     await expect(page.getByRole('heading', { name: '이적 시장', level: 2 })).toBeVisible();
     await segments.getByRole('button', { name: '선수단 18/26' }).click();

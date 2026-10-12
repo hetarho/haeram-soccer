@@ -61,6 +61,7 @@ describe('closed season tables', () => {
       'playoff',
       undefined,
     ]);
+    // The amateur league sends up as many clubs as the last division drops, the last by play-off.
     const amateur = finalZones('ENG', 4, 16);
     expect(amateur.lower).toBe(true);
     expect(amateur.zones.filter(Boolean)).toEqual([
@@ -70,5 +71,27 @@ describe('closed season tables', () => {
       'playoff',
       'playoff',
     ]);
+  });
+
+  it('marks a closed Italian amateur season for the six places three Serie C groups open', () => {
+    const w = simulateSeason(createWorld({ ...input, country: 'ITA' })),
+      season = w.history[0];
+    const rows = finalRows(w, season, season.standings)!;
+    expect(rows).toHaveLength(16);
+    const { zones, lower } = finalZones('ITA', season.tier, rows.length);
+    expect(lower).toBe(true);
+    expect(zones.slice(0, 10)).toEqual([
+      'automatic',
+      'automatic',
+      'automatic',
+      'automatic',
+      'automatic',
+      'playoff',
+      'playoff',
+      'playoff',
+      'playoff',
+      undefined,
+    ]);
+    expect(zones.filter(Boolean)).toHaveLength(9);
   });
 });

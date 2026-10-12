@@ -102,6 +102,7 @@ test('"뉴스 표시 안 함" files achievements behind the news button without 
   await expect(newsButton(page)).toHaveAttribute('aria-label', /새 소식 \d+개/);
   await expect(page.getByTestId('celebration')).toHaveCount(0);
   // The choice is per browser and shared with the news sheet.
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   await newsButton(page).click();
   await expect(

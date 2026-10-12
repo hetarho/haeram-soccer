@@ -239,6 +239,7 @@ test('keeps ticket drafts out of the save and applies their price to an actual h
   const applied = await exportWorld(page);
   expect(applied.ticket).toBe(price);
   expect(applied.cash).toBe(before.cash);
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   await expect(premium).toHaveAttribute('aria-checked', 'true');
   await playNext(page);

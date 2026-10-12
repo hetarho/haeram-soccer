@@ -6,8 +6,12 @@ import {
   isSaveCompatibilityError,
   type SAVE_COMPATIBILITY_CODE,
 } from '../../../../packages/contracts/src/versions';
-import type { Body, Reply, View } from './protocol';
+import type { Body, CodecResult, Reply, View } from './protocol';
 import { shareView } from './store';
+/** A 100-season checkpoint takes the codec seconds; this long without an answer, the save failed. */
+const CHECKPOINT_TIMEOUT_MS = 60000;
+/** Automatic progress waits at most this long for its background save (→SAVE-8). */
+export const AUTOSAVE_MS = 30000;
 export interface ClientState {
   view?: View;
   busy: boolean;
@@ -16,6 +20,10 @@ export interface ClientState {
   activity: 'idle' | 'foreground' | 'background';
   readonly: boolean;
   savedRevision: number;
+  /** When this tab last committed a checkpoint (epoch ms); unknown for a checkpoint it loaded. */
+  savedAt?: number;
+  /** The last save failed and nothing newer is committed: progress waits for a retry. */
+  saveFailed?: boolean;
   error?: string;
   errorCode?: typeof SAVE_COMPATIBILITY_CODE;
   notice?: string;
@@ -36,6 +44,15 @@ export class GameClient {
     progress: 0,
   };
   private worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
+  /** Builds and validates every checkpoint from the engine worker's snapshots (→ARCH-13). */
+  private codec = new Worker(new URL('./codec.ts', import.meta.url), { type: 'module' });
+  /** Checkpoints the codec is building, by the save request that asked for them. */
+  private builds = new Map<string, { resolve: (result: CodecResult) => void; timer: number }>();
+  /** The save being built and committed, and whether a newer one was asked for meanwhile. */
+  private saving?: Promise<void>;
+  private saveWanted = false;
+  /** Saves automatic progress no later than AUTOSAVE_MS after its first unsaved day. */
+  private autosaveTimer?: number;
   private session = crypto.randomUUID();
   private serial = 0;
   private actionSerial = 0;
@@ -98,6 +115,16 @@ export class GameClient {
         );
     };
     this.worker.onerror = () => this.failWorker();
+    // Nested workers are not dependable on every browser (→ARCH-18), so the client creates the
+    // codec and hands the engine worker a port to it: snapshots never pass through this thread.
+    const codecChannel = new MessageChannel();
+    this.codec.postMessage({ type: 'port', port: codecChannel.port1 }, [codecChannel.port1]);
+    this.worker.postMessage({ type: 'codec', port: codecChannel.port2 }, [codecChannel.port2]);
+    this.codec.onmessage = (event: MessageEvent<CodecResult>) => this.built(event.data);
+    this.codec.onerror = () => {
+      for (const id of [...this.builds.keys()])
+        this.built({ id, ok: false, error: '저장 Worker가 종료되었습니다.' });
+    };
     this.channel.onmessage = (event) => this.refresh(event.data?.generation || 0);
     window.addEventListener('storage', this.storageListener);
   }
@@ -189,6 +216,7 @@ export class GameClient {
       });
   }
   private async load() {
+    await this.whenSaved();
     const result = await this.saves.load();
     if (result) {
       const reply = await this.rpc({
@@ -199,17 +227,21 @@ export class GameClient {
       });
       this.state.playback = undefined;
       this.state.savedRevision = result.world.revision;
+      this.state.savedAt = undefined;
+      this.state.saveFailed = false;
       if (result.recovered) this.state.notice = '이전의 정상 체크포인트로 복구했습니다.';
       if (reply.upgraded && reply.raw) {
         try {
           await this.saves.commit(reply.raw);
           this.state.savedRevision = this.state.view!.world.revision;
+          this.state.savedAt = Date.now();
           this.state.notice = '기존 기록을 보존하고 새 게임 규칙으로 저장했습니다.';
           this.channel.postMessage({
             revision: this.state.savedRevision,
             generation: this.saves.generationInfo.parentGeneration,
           });
         } catch (error) {
+          this.state.saveFailed = true;
           throw new Error(
             `현재 진행은 메모리에 있습니다. 규칙 업그레이드 저장 실패: ${String(error)} · 파일로 내보내세요.`,
           );
@@ -218,17 +250,19 @@ export class GameClient {
     }
     this.emit();
   }
-  private rpc(body: Body): Promise<Reply> {
+  private requestId() {
+    return `${this.session.slice(0, 8)}:${++this.serial}`;
+  }
+  private rpc(body: Body, requestId = this.requestId(), timeout = 15000): Promise<Reply> {
     if (this.failed)
       return Promise.reject(
         new Error('Worker를 다시 불러오세요. 마지막 저장은 파일로 보관할 수 있습니다.'),
       );
-    const requestId = `${this.session.slice(0, 8)}:${++this.serial}`;
     return new Promise((resolve, reject) => {
       this.waiters.set(requestId, {
         resolve,
         reject,
-        timer: window.setTimeout(() => this.failWorker(), 15000),
+        timer: window.setTimeout(() => this.failWorker(), timeout),
         publishView:
           body.type === 'found' ||
           body.type === 'command' ||
@@ -288,29 +322,127 @@ export class GameClient {
       this.replacingIncompatible = true;
     if (reply.playback) this.state.playback = reply.playback;
     this.emit();
-    if (reply.raw) {
-      try {
-        await this.saves.commit(reply.raw, {
-          replaceIncompatible: this.replacingIncompatible,
-        });
-        this.replacingIncompatible = false;
-        this.state.savedRevision = this.state.view!.world.revision;
-        this.channel.postMessage({
-          revision: this.state.savedRevision,
-          generation: this.saves.generationInfo.parentGeneration,
-        });
-      } catch (error) {
-        throw new Error(
-          `현재 진행은 메모리에 있습니다. 저장 실패: ${String(error)} · 파일로 내보내세요.`,
-        );
-      }
-    }
+    // The engine answered without encoding; the caller asks for the background save.
     return reply;
   }
-  found(input: Founding, replace = false) {
-    return this.enqueue(() => this.mutate({ type: 'found', input, replace } as Body));
+  /**
+   * Saves the world in play through the codec worker (→SAVE-8). One checkpoint is built at a time;
+   * requests made meanwhile become one newer save after it. Resolves once the world as it stood at
+   * the latest request is committed; a failure becomes the save error and rejects.
+   */
+  save(): Promise<void> {
+    clearTimeout(this.autosaveTimer);
+    this.autosaveTimer = undefined;
+    this.saveWanted = true;
+    this.saving ??= Promise.resolve().then(() => this.drainSaves());
+    return this.saving;
   }
-  /** `automatic` marks clock ticks; every other command reports its outcome. */
+  /**
+   * Asks for a background save without waiting for it: after an owner decision, when the clock
+   * stops and when the page hides or closes. A failure still becomes the save error.
+   */
+  saveSoon() {
+    // A failed engine worker holds the only copy of the world; its own error already says so.
+    if (this.failed) return;
+    void this.save().catch(() => {});
+  }
+  /** Automatic progress is saved within AUTOSAVE_MS, or sooner when anything else saves. */
+  private autosave() {
+    if (this.autosaveTimer !== undefined || this.state.readonly) return;
+    this.autosaveTimer = window.setTimeout(() => {
+      this.autosaveTimer = undefined;
+      this.saveSoon();
+    }, AUTOSAVE_MS);
+  }
+  /** Settles once no checkpoint is being built or waiting, whatever came of it. */
+  whenSaved(): Promise<void> {
+    return this.saving?.catch(() => {}) ?? Promise.resolve();
+  }
+  private async drainSaves() {
+    try {
+      while (this.saveWanted) {
+        this.saveWanted = false;
+        await this.saveOnce();
+      }
+    } catch (error) {
+      this.saveWanted = false;
+      const failure = new Error(
+        `현재 진행은 메모리에 있습니다. 저장 실패: ${String(error)} · 파일로 내보내세요.`,
+      );
+      this.state.error = String(failure);
+      this.state.saveFailed = true;
+      this.emit();
+      throw failure;
+    } finally {
+      this.saving = undefined;
+    }
+  }
+  /** One checkpoint of the engine's current world, committed with the envelope the codec validated. */
+  private async saveOnce() {
+    const w = this.state.view?.world;
+    if (!w || this.state.readonly || w.revision === this.state.savedRevision) return;
+    const requestId = this.requestId();
+    const built = new Promise<CodecResult>((resolve) =>
+      this.builds.set(requestId, {
+        resolve,
+        timer: window.setTimeout(
+          () => this.built({ id: requestId, ok: false, error: '저장 Worker가 응답하지 않습니다.' }),
+          CHECKPOINT_TIMEOUT_MS,
+        ),
+      }),
+    );
+    try {
+      // A background save may queue behind a long command that only reports its own progress.
+      await this.rpc({ type: 'save' }, requestId, CHECKPOINT_TIMEOUT_MS);
+    } catch (error) {
+      this.built({ id: requestId, ok: false, error: String(error) });
+      throw error;
+    }
+    const result = await built;
+    if (!result.ok)
+      throw result.errorCode === 'save-compatibility'
+        ? new SaveCompatibilityError(result.error)
+        : new Error(result.error);
+    // A checkpoint of a world no longer in play, or no newer than the committed one, is dropped.
+    if (
+      result.envelope.worldId !== this.state.view?.world.id ||
+      result.envelope.generation <= this.saves.generationInfo.parentGeneration
+    )
+      return;
+    await this.saves.commit(result.raw, {
+      envelope: result.envelope,
+      replaceIncompatible: this.replacingIncompatible,
+    });
+    this.replacingIncompatible = false;
+    this.state.savedRevision = result.revision;
+    this.state.savedAt = Date.now();
+    this.state.saveFailed = false;
+    // Read-only tabs reload on every commit.
+    this.channel.postMessage({
+      revision: result.revision,
+      generation: this.saves.generationInfo.parentGeneration,
+    });
+    this.emit();
+  }
+  private built(result: CodecResult) {
+    const build = this.builds.get(result.id);
+    if (!build) return;
+    clearTimeout(build.timer);
+    this.builds.delete(result.id);
+    build.resolve(result);
+  }
+  found(input: Founding, replace = false) {
+    return this.enqueue(async () => {
+      const reply = await this.mutate({ type: 'found', input, replace } as Body);
+      this.saveSoon();
+      return reply;
+    });
+  }
+  /**
+   * `automatic` marks clock ticks; every other command is an owner decision and reports its
+   * outcome. Neither waits for its save: a decision asks for one at once, automatic days within
+   * AUTOSAVE_MS (→SAVE-8).
+   */
   command(command: Command, options: { background?: boolean; automatic?: boolean } = {}) {
     this.cancelled = false;
     if (!options.automatic) {
@@ -321,13 +453,21 @@ export class GameClient {
       const before = this.state.view?.world;
       let reply: Reply | undefined;
       const count = command.type === 'season' ? Math.min(100, Math.max(1, command.count)) : 1;
-      for (let i = 0; i < count; i++) {
-        if (this.cancelled) break;
-        reply = await this.mutate({
-          type: 'command',
-          command: command.type === 'season' ? { type: 'season', count: 1 } : command,
-        } as Body);
-        if (reply.cancelled || this.state.view?.world.critical) break;
+      try {
+        for (let i = 0; i < count; i++) {
+          if (this.cancelled) break;
+          reply = await this.mutate({
+            type: 'command',
+            command: command.type === 'season' ? { type: 'season', count: 1 } : command,
+          } as Body);
+          if (reply.cancelled || this.state.view?.world.critical) break;
+        }
+      } finally {
+        // Seasons that ran before a failure are saved too.
+        if (reply) {
+          if (options.automatic) this.autosave();
+          else this.saveSoon();
+        }
       }
       if (reply?.ok && before && !options.automatic)
         this.state.lastAction = { id: ++this.actionSerial, command, before };
@@ -348,7 +488,11 @@ export class GameClient {
     this.worker.postMessage({ type: 'cancel' });
   }
   acknowledge() {
-    return this.enqueue(() => this.mutate({ type: 'ack-critical' }));
+    return this.enqueue(async () => {
+      const reply = await this.mutate({ type: 'ack-critical' });
+      this.saveSoon();
+      return reply;
+    });
   }
   archive(year: number) {
     return this.enqueue(async () => (await this.rpc({ type: 'archive', year })).archive);
@@ -403,18 +547,12 @@ export class GameClient {
   /** Validates a checkpoint envelope, makes it the game in play and commits it (→SAVE-5). */
   private async activate(raw: string) {
     if (this.state.readonly) throw new Error('읽기 전용 탭입니다.');
+    await this.whenSaved();
     await this.rpc({ type: 'inspect', raw, activate: true, upgrade: true });
     this.replacingIncompatible = this.saves.incompatibleCheckpoint;
     this.state.savedRevision = -1;
     this.state.playback = undefined;
-    const reply = await this.rpc({ type: 'export' });
-    await this.saves.commit(reply.raw!, { replaceIncompatible: true });
-    this.replacingIncompatible = false;
-    this.state.savedRevision = this.state.view!.world.revision;
-    this.channel.postMessage({
-      revision: this.state.savedRevision,
-      generation: this.saves.generationInfo.parentGeneration,
-    });
+    await this.save();
   }
   importFile(raw: string) {
     return this.enqueue(() => this.activate(raw));
@@ -431,8 +569,7 @@ export class GameClient {
     return (
       (await this.enqueue(async () => {
         if (this.state.readonly) throw new Error('읽기 전용 탭입니다.');
-        const w = this.state.view?.world;
-        if (w && this.state.savedRevision !== w.revision) await this.mutate({ type: 'export' });
+        await this.save();
         return this.saves.committedRaw() ?? undefined;
       })) ?? undefined
     );
@@ -445,23 +582,31 @@ export class GameClient {
   forget() {
     return this.enqueue(async () => {
       if (this.state.readonly) throw new Error('읽기 전용 탭입니다.');
+      // No autosave may bring the removed game back.
+      clearTimeout(this.autosaveTimer);
+      this.autosaveTimer = undefined;
+      await this.whenSaved();
       for (const key of ACTIVE_SAVE_KEYS) localStorage.removeItem(key);
     });
   }
   retrySave() {
-    return this.enqueue(() => this.mutate({ type: 'export' }));
+    return this.enqueue(() => this.save());
   }
   dispose() {
     window.removeEventListener('storage', this.storageListener);
+    clearTimeout(this.autosaveTimer);
     this.failed = true;
     for (const waiter of this.waiters.values()) {
       clearTimeout(waiter.timer);
       waiter.reject(new Error('세션이 닫혔습니다.'));
     }
     this.waiters.clear();
+    for (const id of [...this.builds.keys()])
+      this.built({ id, ok: false, error: '세션이 닫혔습니다.' });
     this.lockWait?.abort();
     this.release?.();
     this.channel.close();
     this.worker.terminate();
+    this.codec.terminate();
   }
 }
