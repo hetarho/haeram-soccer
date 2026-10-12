@@ -3,8 +3,10 @@ import { currency } from '../../catalogs/src/index';
 import { currentDay, SEASON_END_DAY, seasonDayLabel, seasonDayOf } from './calendar';
 import { clamp, compareIds, hash, integer, random, ratio } from './primitives';
 import { activePlayers, addEvent, clubOf, overall, ownStarters, quote } from './world';
-import { CASH_WARNING_ROUNDS, credit, debit, transferOffers } from './operations';
-import { operatingCosts } from './finance';
+import { credit, debit } from './operations';
+import { transferOffers } from './ops-squad';
+import { CASH_WARNING_ROUNDS } from './settlement';
+import { moneyLabel, operatingCosts } from './finance';
 import { fixedCostRunway } from './investment';
 import { staffEffects } from './staff';
 import { managerStyleEffects } from './styles';
@@ -93,18 +95,6 @@ export function playerValue(w: World, player: Player): string {
       : 0;
   return quote(clubOf(w).country, w.year, base + premium);
 }
-/** Compact money text for inbox records, matching the UI's currency notation. */
-export function moneyLabel(w: World, amount: string) {
-  const c = currency(clubOf(w).country, w.year),
-    n = BigInt(amount),
-    sign = n < 0n ? '−' : '',
-    abs = n < 0n ? -n : n;
-  const group = (v: bigint) => v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  if (c.code === 'GBP-LSD')
-    return `${sign}£${group(abs / 240n)} ${(abs % 240n) / 12n}s ${abs % 12n}d`;
-  const units = BigInt(c.units);
-  return `${sign}${c.symbol}${group(abs / units)}${c.units === 100 ? '.' + String(abs % units).padStart(2, '0') : ''}`;
-}
 
 const isOpen = (bid: TransferBid) => bid.status === 'pending' || bid.status === 'countered';
 /** Today's day counted from 1 August of `year`, so dues survive the season rollover. */
@@ -168,7 +158,7 @@ function completeSigning(w: World, bid: TransferBid, offer: MarketOffer, fee: st
     w,
     'transfer-in',
     `${p.name} ${bid.loan ? '임대' : '영입'}`,
-    `${p.role} · ${w.year - p.born}세 · 연봉 ${p.wage} · 계약 ${p.until}년 · 협상 타결`,
+    `${p.role} · ${w.year - p.born}세 · 연봉 ${moneyLabel(w, p.wage)} · 계약 ${p.until}년 · 협상 타결`,
     fee,
   );
   bid.status = 'completed';

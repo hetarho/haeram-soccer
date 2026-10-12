@@ -9,6 +9,7 @@ import {
   createWorld,
   gateProjection,
   marketingFanGain,
+  moneyLabel,
   operate,
   operatingCosts,
   overall,
@@ -18,7 +19,6 @@ import {
   policyEffects,
   policyOf,
   policyPreview,
-  ratio,
   settleRound,
   settleTraining,
   setPolicy,
@@ -107,7 +107,8 @@ describe('club operating policy', () => {
     }
     const effects = policyEffects(POLICY_DEFAULTS);
     expect(effects).toMatchObject({
-      wageMultiplier: 1,
+      payCeiling: 1.1,
+      goodwill: 5,
       developmentMultiplier: 1,
       recoveryBonus: 0,
       marketingUnits: 0,
@@ -121,18 +122,22 @@ describe('club operating policy', () => {
     });
   });
 
-  it('pays more wages for faster development and recovery under stronger squad support', () => {
-    const base = operatingCosts(world()).playerWages;
-    const generous = world({ support: 5 }),
-      frugal = world({ support: 1 });
-    expect(operatingCosts(generous).playerWages).toBe(ratio(base, 1200n, 1000n));
-    expect(operatingCosts(frugal).playerWages).toBe(ratio(base, 850n, 1000n));
-    expect(BigInt(operatingCosts(generous).annual)).toBeGreaterThan(
-      BigInt(operatingCosts(world()).annual),
-    );
-    expect(BigInt(operatingCosts(frugal).annual)).toBeLessThan(
-      BigInt(operatingCosts(world()).annual),
-    );
+  it('raises the contract-talk ceiling and goodwill, development and recovery under stronger squad support, never the wage bill', () => {
+    expect(
+      ([1, 2, 3, 4, 5] as const).map((support) => {
+        const { payCeiling, goodwill } = policyEffects({ ...POLICY_DEFAULTS, support });
+        return [payCeiling, goodwill];
+      }),
+    ).toEqual([
+      [0.9, -5],
+      [1, 0],
+      [1.1, 5],
+      [1.25, 10],
+      [1.4, 15],
+    ]);
+    const base = canonical(operatingCosts(world()));
+    expect(canonical(operatingCosts(world({ support: 5 })))).toBe(base);
+    expect(canonical(operatingCosts(world({ support: 1 })))).toBe(base);
 
     const high = academy({ support: 5 }),
       standard = academy(),
@@ -161,7 +166,10 @@ describe('club operating policy', () => {
     }
     expect(developed(generousSeason)).toBeGreaterThan(developed(frugalSeason));
     expect(fatigue(generousSeason)).toBeLessThan(fatigue(frugalSeason));
-    expect(BigInt(generousSeason.expense)).toBeGreaterThan(BigInt(frugalSeason.expense));
+    const bills = (w: World) =>
+      w.events.filter((event) => event.kind === 'operating-cost').map((event) => event.amount);
+    expect(bills(generousSeason)).toHaveLength(6);
+    expect(bills(generousSeason)).toEqual(bills(frugalSeason));
     validateWorld(generousSeason);
   });
 
@@ -226,7 +234,9 @@ describe('club operating policy', () => {
     );
     expect(marketingFanGain(fans, 0.02)).toBeGreaterThan(0);
     expect(BigInt(direct.cash)).toBe(cash - BigInt(bill.nextRound) + online);
-    expect(direct.events.at(-1)!.detail).toContain(`마케팅 ${bill.payments.marketing}`);
+    expect(direct.events.at(-1)!.detail).toContain(
+      `마케팅 ${moneyLabel(direct, bill.payments.marketing!)}`,
+    );
 
     for (let round = 0; round < 6; round++) {
       advanceRound(loud, undefined, false);
@@ -268,9 +278,8 @@ describe('club operating policy', () => {
   it('previews the annual cost change and effects without changing the club', () => {
     const w = world(),
       before = canonical(w);
-    expect(policyPreview(w, 'support', 3).annualCostChange).toBe('0');
-    expect(BigInt(policyPreview(w, 'support', 5).annualCostChange)).toBeGreaterThan(0n);
-    expect(BigInt(policyPreview(w, 'support', 1).annualCostChange)).toBeLessThan(0n);
+    for (const level of [1, 3, 5] as const)
+      expect(policyPreview(w, 'support', level).annualCostChange).toBe('0');
     expect(policyPreview(w, 'recruitment', 5).annualCostChange).toBe('0');
     expect(policyPreview(w, 'recruitment', 1)).toMatchObject({
       offerAge: [17, 21],
@@ -278,6 +287,8 @@ describe('club operating policy', () => {
       fansPerRound: 0,
     });
     expect(policyPreview(w, 'support', 5)).toMatchObject({
+      payCeiling: 1.4,
+      goodwill: 15,
       developmentMultiplier: 1.25,
       recoveryBonus: 2,
       fansPerRound: 0,

@@ -10,14 +10,9 @@ import { archivedRounds, finalOf, ownReached, type Settlement } from './knockout
 import { clubValuation, eloOf, eloRange, eloRank, settleElo, squadValue } from './ratings';
 import { evolveClubs } from './dynamics';
 import { announceRetirements, clearHealed, injuriesAfterMatch, retireAtClose } from './careers';
-import {
-  delegatedBusiness,
-  gate,
-  settleRound,
-  settleSeasonPrize,
-  sponsorReminder,
-  yearlyStaff,
-} from './operations';
+import { gate, settleRound, settleSeasonPrize } from './settlement';
+import { delegatedBusiness, sponsorReminder, yearlySponsor } from './ops-commercial';
+import { yearlyStaff } from './ops-staff';
 import type {
   BracketArchive,
   Club,
@@ -615,14 +610,17 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     `${w.year}/${String(w.year + 1).slice(2)} · ${table.points}점`,
   );
   w.year++;
+  // The new season's books open before the close pays anything, so its renewals and hires are
+  // booked where their events are (→ECON-10).
+  w.income = '0';
+  w.expense = '0';
   // A strategy reserved during the season becomes the new season's change (→ECON-22).
   applyReservedBuild(w);
   advanceEconomy(w, w.year - 1);
+  yearlySponsor(w);
   yearlyStaff(w);
   seasonStaff(w);
   seasonAcademy(w);
-  w.income = '0';
-  w.expense = '0';
   for (const p of activePlayers(w)) {
     if (p.loanUntil && p.loanUntil <= w.year) {
       p.status = 'retired';

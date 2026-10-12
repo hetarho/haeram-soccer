@@ -58,6 +58,10 @@ export function simulateSeason(w: World) {
 }
 
 export * from './operations';
+export * from './ops-commercial';
+export * from './ops-squad';
+export * from './ops-staff';
+export * from './settlement';
 export * from './managerMarket';
 
 export * from './economy';

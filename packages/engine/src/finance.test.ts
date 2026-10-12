@@ -9,10 +9,12 @@ import {
   financialBreakdown,
   gateProjection,
   matchBonus,
+  moneyLabel,
   operate,
   operatingCost,
   operatingCosts,
   prepareSeason,
+  quote,
   settleRound,
   settleSeasonPrize,
   simulateMatch,
@@ -235,5 +237,53 @@ describe('earned, auditable club finances', () => {
     expect(budget.expense.reduce((sum, row) => sum + BigInt(row.amount), 0n)).toBe(
       BigInt(w.expense),
     );
+  });
+
+  it('books renewals and hires the delegated staff make at the close to the new season', () => {
+    const w = world();
+    w.cash = '999999999';
+    w.delegation = { ...w.delegation, staff: true };
+    // A paid coach whose contract ends at this close; the volunteers' terms end too.
+    w.staff = w.staff!.map((member) =>
+      member.role === 'attack'
+        ? { ...member, ability: 90, wage: quote(clubOf(w).country, w.year, 90), until: w.year + 1 }
+        : member,
+    );
+    simulateSeason(w);
+    const renewal = w.events.find((event) => event.kind === 'staff-renew')!;
+    expect(renewal.year).toBe(w.year);
+    expect(BigInt(renewal.amount!)).toBeGreaterThan(0n);
+    const budget = financialBreakdown(w);
+    const line = (key: string) => budget.expense.find((row) => row.key === key)?.amount;
+    expect(line('staff-renew')).toBe(renewal.amount);
+    expect(BigInt(line('staff-hire')!)).toBeGreaterThan(0n);
+    expect(budget.income.some((row) => row.key === 'older-ledger')).toBe(false);
+    expect(budget.expense.some((row) => row.key === 'older-ledger')).toBe(false);
+    expect(budget.expense.reduce((sum, row) => sum + BigInt(row.amount), 0n)).toBe(
+      BigInt(w.expense),
+    );
+  });
+
+  it('writes money in the one notation of the app', () => {
+    const spain = createWorld({
+      country: 'ESP',
+      name: 'Notation CF',
+      color: '#335544',
+      seed: 'notation',
+      difficulty: 2,
+    });
+    const euro = { ...spain, year: 2001 },
+      sterling = { ...world(), year: 1950 };
+    const eur = (euros: number) => moneyLabel(euro, String(Math.round(euros * 100)));
+    expect(moneyLabel(euro, '9999999')).toBe('€99,999');
+    expect(eur(100_000)).toBe('€100K');
+    expect(eur(123_456.78)).toBe('€123K');
+    expect(eur(1_234_567)).toBe('€1.23M');
+    expect(eur(12_345_678)).toBe('€12.3M');
+    expect(eur(999_999_999)).toBe('€999M');
+    expect(eur(1_500_000_000)).toBe('€1.50B');
+    expect(eur(-1_500_000)).toBe('−€1.50M');
+    expect(moneyLabel(sterling, String(12_345 * 240))).toBe('£12,345');
+    expect(moneyLabel(sterling, String(1_234_567 * 240))).toBe('£1.23M');
   });
 });

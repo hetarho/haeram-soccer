@@ -1,0 +1,348 @@
+import type { Command, Tactic, World } from '../../contracts/src/types';
+import { addEvent, clubOf, makeManager, quote, tacticLabel, TACTICS } from './world';
+import { clamp, random, ratio } from './primitives';
+import { hireStaff, MANAGER_TRAIT_INFO, releaseStaff, renewStaff, setCoaching } from './staff';
+import { coachSeason, MANAGER_CAREER } from './coaching';
+import { currentDay } from './calendar';
+import { readRelated } from './inbox';
+import { FIREFIGHTER_ARRIVAL_MORALE, managerStyleEffects, managerTerm, STYLE_INFO } from './styles';
+import { managerCandidates, takeManager } from './managerMarket';
+import { MORALE_START } from './morale';
+import { debit } from './operations';
+
+/** Managers and their tactical requests, coaches, coaching investment and delegation. */
+export type StaffCommand = Extract<
+  Command,
+  {
+    type:
+      | 'hire'
+      | 'renew-manager'
+      | 'manager-rule'
+      | 'tactics'
+      | 'accept-condition'
+      | 'hire-staff'
+      | 'release-staff'
+      | 'renew-staff'
+      | 'coaching'
+      | 'delegate';
+  }
+>;
+
+/** "1951/52": the season whose close ends a contract that runs `until` that year. */
+export function contractSeason(until: number) {
+  return `${until - 1}/${String(until).slice(2)}`;
+}
+/** The going wage a manager asks to stay, the same at the season boundary and in a renewal. */
+function managerWage(w: World) {
+  return quote(clubOf(w).country, w.year, 120 + w.manager.ability);
+}
+/**
+ * Terms for keeping the manager one more season: the going wage and a 10% signing fee. Only a
+ * contract that ends at this season's close can be renewed; an interim is never kept.
+ */
+export function managerRenewal(w: World) {
+  const m = w.manager;
+  if (m.interim || m.until > w.year + 1) return undefined;
+  const wage = managerWage(w);
+  return { wage, fee: ratio(wage, 1n, 10n), until: Math.max(m.until, w.year + 1) + 1 };
+}
+/** Extends the manager's contract by one season; delegated staff pay the fee as a planned cost. */
+export function renewManager(w: World, delegated = false) {
+  const terms = managerRenewal(w);
+  if (!terms) throw new Error('재계약할 수 있는 감독이 아닙니다.');
+  debit(w, terms.fee, delegated);
+  w.manager.wage = terms.wage;
+  w.manager.until = terms.until;
+  readRelated(w, w.manager.id);
+  addEvent(
+    w,
+    'manager-renew',
+    '감독 재계약',
+    `${w.manager.name} 재계약 · ${contractSeason(terms.until)} 시즌 끝까지`,
+    terms.fee,
+  );
+  return terms;
+}
+/** The blocking alert a departure raises; the app offers hiring or carrying on with the interim. */
+export const MANAGER_GONE = '감독이 떠났습니다. 새 감독을 선임하세요.';
+function resign(w: World, reason: string) {
+  const old = w.manager;
+  // His renewal reminder is moot once he has gone.
+  readRelated(w, old.id);
+  addEvent(
+    w,
+    'manager-departure',
+    `${old.name} 감독의 마지막 날`,
+    `${old.since}–${w.year} · ${reason}`,
+  );
+  // Counting this departure keeps two caretakers on the same day apart.
+  const departures = w.events.filter((event) => event.kind === 'manager-departure').length;
+  const interim = makeManager(
+    clubOf(w).country,
+    `${w.seed}:interim:${w.year}:${currentDay(w)}:${departures}`,
+    w.year,
+    99,
+  );
+  interim.ability = 35;
+  // A caretaker steps in for now; he is not a bet on the future.
+  interim.potential = 35;
+  interim.youth = 30;
+  interim.wage = quote(clubOf(w).country, w.year, 40);
+  interim.interim = true;
+  w.manager = interim;
+  w.critical = MANAGER_GONE;
+}
+
+const requestTones = { respect: 12, evidence: 16, support: 8, demand: -25 } as const;
+
+function validateTacticRequest(tactic: Tactic, tone: string) {
+  if (!TACTICS.includes(tactic) || !Object.hasOwn(requestTones, tone))
+    throw new Error('전술 요청을 확인하세요.');
+}
+
+/** Shared response calculation excludes only the unchanged seeded ±6 noise. */
+function requestScoreBase(w: World, tactic: Tactic, tone: string) {
+  const m = w.manager;
+  return (
+    m.flexibility * 0.45 +
+    m.trust * 0.55 +
+    requestTones[tone as keyof typeof requestTones] -
+    (tactic === m.philosophy ? 0 : 24) -
+    m.pride * (tone === 'demand' ? 0.3 : 0.05) -
+    m.conflicts * 5 +
+    managerStyleEffects(w).requestBonus
+  );
+}
+
+function responseLabel(score: number) {
+  return score >= 65
+    ? '수락'
+    : score >= 50
+      ? '마지못해 수락'
+      : score >= 30
+        ? '조건부 수락'
+        : '거절';
+}
+
+export function tacticRequestOutlook(w: World, tactic: Tactic, tone: string) {
+  validateTacticRequest(tactic, tone);
+  const base = requestScoreBase(w, tactic, tone),
+    min = base - 6,
+    max = base + 6,
+    low = responseLabel(min),
+    high = responseLabel(max),
+    history = w.manager.requestHistory;
+  const trustAfterDemand = clamp(w.manager.trust - (tone === 'demand' ? 18 : 0));
+  const resignationRisk =
+    w.manager.pride >= 75 &&
+    trustAfterDemand <= 25 &&
+    (w.manager.conflicts >= 2 || tone === 'demand');
+  return {
+    label: resignationRisk ? '사직 위험' : low === high ? low : `${low} ~ ${high}`,
+    min,
+    max,
+    trustRisk: tone === 'demand' ? 18 : min < 30 ? 4 : min < 65 && max >= 50 ? 3 : 0,
+    alreadyAnswered:
+      history?.at === `${w.year}:${w.round}` && history.keys.includes(`${tactic}:${tone}`),
+  };
+}
+
+function currentRequestHistory(w: World) {
+  const at = `${w.year}:${w.round}`;
+  if (w.manager.requestHistory?.at !== at)
+    w.manager.requestHistory = { at, keys: [], trustAwarded: false };
+  return w.manager.requestHistory;
+}
+
+function awardRequestTrust(w: World, amount: number) {
+  const history = currentRequestHistory(w);
+  if (history.trustAwarded) return;
+  w.manager.trust = clamp(w.manager.trust + amount);
+  history.trustAwarded = true;
+}
+
+/** Season boundary for the manager: a season of growth or fading, retirement and his contract. */
+export function yearlyStaff(w: World) {
+  const m = w.manager,
+    age = m.born === undefined ? undefined : w.year - m.born;
+  // A season of learning or, past 60, of fading (→STAFF-16); older saves keep their level.
+  if (age !== undefined && m.potential !== undefined && !m.interim) {
+    const next = coachSeason(
+      `${w.seed}:manager-growth:${m.id}:${w.year}`,
+      m.ability,
+      m.potential,
+      age,
+    );
+    if (next.ability !== m.ability)
+      addEvent(
+        w,
+        'manager-growth',
+        `${m.name} 감독 ${next.ability > m.ability ? '성장' : '노쇠'}`,
+        `${age}세 · 지도력 ${m.ability} → ${next.ability} · 잠재력 ${next.potential}`,
+      );
+    m.ability = next.ability;
+    m.potential = next.potential;
+  }
+  if (!m.interim && (age !== undefined ? age >= MANAGER_CAREER.retire : m.since + 25 <= w.year))
+    resign(w, '긴 지도자 생활을 마치고 은퇴했습니다.');
+  else if (m.until <= w.year && !m.interim) {
+    // A season-long deal ends unless the owner renewed it; other contracts renew for three.
+    if (managerTerm(m) === 1) resign(w, '시즌 종료까지의 단기 계약을 마치고 떠났습니다.');
+    else {
+      m.until = w.year + 3;
+      m.wage = managerWage(w);
+      addEvent(w, 'manager-renew', '감독 계약 갱신', `${m.name} · 3년`);
+    }
+  }
+  delete w.manager.lastRequest;
+  delete w.manager.requestHistory;
+  delete w.manager.pending;
+  delete w.requested;
+}
+export function staffCommand(w: World, cmd: StaffCommand) {
+  // Rules 1.16 commands and chosen terms are refused, never ignored, until their rules land.
+  if (
+    (cmd.type === 'hire' ||
+      cmd.type === 'hire-staff' ||
+      cmd.type === 'renew-manager' ||
+      cmd.type === 'renew-staff') &&
+    cmd.term !== undefined
+  )
+    throw new Error('감독·코치 계약 기간 선택은 아직 지원하지 않습니다.');
+  switch (cmd.type) {
+    case 'manager-rule':
+      throw new Error(`${cmd.type} 명령은 아직 지원하지 않습니다.`);
+    case 'hire-staff':
+      hireStaff(w, cmd.role, cmd.candidate);
+      break;
+    case 'release-staff':
+      releaseStaff(w, cmd.role);
+      // Releasing a coach takes hiring back, so delegated staff do not refill the post at once.
+      if (w.delegation?.staff) w.delegation = { ...w.delegation, staff: false };
+      break;
+    case 'renew-staff':
+      renewStaff(w, cmd.role);
+      break;
+    case 'renew-manager':
+      renewManager(w);
+      break;
+    case 'coaching':
+      setCoaching(w, cmd.role, cmd.level);
+      break;
+    case 'delegate':
+      w.delegation = { ...w.delegation, [cmd.key]: cmd.value };
+      break;
+    case 'tactics': {
+      validateTacticRequest(cmd.tactic, cmd.tone);
+      const m = w.manager,
+        key = `${cmd.tactic}:${cmd.tone}`,
+        history = currentRequestHistory(w);
+      if (history.keys.includes(key)) throw new Error('동일한 요청에 이번 라운드 이미 답했습니다.');
+      history.keys.push(key);
+      m.lastRequest = key;
+      w.requested = cmd.tactic;
+      delete m.pending;
+      const noise = random(`${w.seed}:request:${w.year}:${w.round}:${m.id}:${key}`)() * 12 - 6;
+      const score = requestScoreBase(w, cmd.tactic, cmd.tone) + noise;
+      if (cmd.tone === 'demand') {
+        m.trust = clamp(m.trust - 18);
+        m.conflicts++;
+      }
+      if (m.pride >= 75 && m.trust <= 25 && (m.conflicts >= 2 || cmd.tone === 'demand')) {
+        addEvent(
+          w,
+          'manager-response',
+          '감독의 사직서',
+          '제 판단을 존중받을 수 없다면 함께할 수 없습니다.',
+        );
+        resign(w, '구단주의 강한 전술 간섭');
+        break;
+      }
+      let response: string;
+      if (score >= 65) {
+        w.tactic = cmd.tactic;
+        awardRequestTrust(w, 2);
+        response = '수락했습니다. 선수들과 새로운 방향을 준비하겠습니다.';
+      } else if (score >= 50) {
+        w.tactic = cmd.tactic;
+        m.trust = clamp(m.trust - 3);
+        response = '마음에 들지는 않지만 시도하겠습니다. 결과를 함께 봅시다.';
+      } else if (score >= 30) {
+        m.pending = cmd.tactic;
+        response = '조건부 수락입니다. 훈련 지원금이 확보되면 전환하겠습니다.';
+      } else {
+        m.trust = clamp(m.trust - 4);
+        m.conflicts++;
+        response = '거절합니다. 현재 선수단과 제 철학에는 맞지 않습니다.';
+      }
+      addEvent(
+        w,
+        'manager-response',
+        `${m.name}의 답변`,
+        `${tacticLabel[cmd.tactic]} 요청 · ${response}`,
+      );
+      break;
+    }
+    case 'accept-condition': {
+      if (!w.manager.pending) throw new Error('대기 중인 조건이 없습니다.');
+      const cost = quote(clubOf(w).country, w.year, 30);
+      debit(w, cost);
+      w.tactic = w.manager.pending;
+      delete w.manager.pending;
+      awardRequestTrust(w, 3);
+      addEvent(w, 'training', '훈련 지원과 전술 전환', tacticLabel[w.tactic], cost);
+      break;
+    }
+    case 'hire': {
+      const candidate = managerCandidates(w).find((offer) => offer.id === cmd.id);
+      if (!candidate) throw new Error('지금 선임할 수 없는 감독입니다.');
+      // Replacing a contracted manager pays him a quarter of his wage; another club also takes
+      // compensation for its manager (→STAFF-17).
+      const fee =
+        BigInt(candidate.fee) +
+        BigInt(candidate.compensation ?? '0') +
+        (w.manager.interim ? 0n : BigInt(ratio(w.manager.wage, 1n, 4n)));
+      debit(w, fee.toString());
+      addEvent(
+        w,
+        'manager-departure',
+        `${w.manager.name} 감독 교체`,
+        `${w.manager.since}–${w.year} · 구단의 선택`,
+      );
+      const {
+        fee: _fee,
+        source: _source,
+        club: from,
+        compensation: _compensation,
+        ...manager
+      } = candidate;
+      void _fee;
+      void _source;
+      void _compensation;
+      readRelated(w, w.manager.id);
+      takeManager(w, candidate, w.manager);
+      w.manager = {
+        ...manager,
+        trust: 65,
+        conflicts: 0,
+        since: w.year,
+        until: w.year + STYLE_INFO[manager.style].term,
+      };
+      w.tactic = manager.philosophy;
+      delete w.requested;
+      delete w.critical;
+      // A firefighter's arrival lifts the dressing room at once.
+      if (manager.style === 'firefighter')
+        w.morale = Math.round(clamp((w.morale ?? MORALE_START) + FIREFIGHTER_ARRIVAL_MORALE));
+      const club = from ? w.clubs.find((c) => c.id === from)?.name : undefined;
+      addEvent(
+        w,
+        'manager-hire',
+        `${manager.name} 감독 선임`,
+        `${club ? `${club}에서 영입 · ` : ''}${STYLE_INFO[manager.style].label} · ${tacticLabel[manager.philosophy]}${manager.trait ? ` · ${MANAGER_TRAIT_INFO[manager.trait].label}` : ''} · 계약 ${contractSeason(w.year + STYLE_INFO[manager.style].term)} 시즌 끝까지`,
+        fee.toString(),
+      );
+      break;
+    }
+  }
+}

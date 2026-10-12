@@ -11,19 +11,14 @@ import type {
 } from '../../contracts/src/types';
 import { addEvent, clubOf, ownStarters, personName, quote } from './world';
 import { clamp, integer, random, ratio } from './primitives';
-import {
-  CASH_WARNING_ROUNDS,
-  contractSeason,
-  debit,
-  managerRenewal,
-  renewManager,
-} from './operations';
+import { debit } from './operations';
+import { contractSeason, managerRenewal, renewManager } from './ops-staff';
+import { CASH_WARNING_ROUNDS } from './settlement';
 import { pushInbox } from './inbox';
-import { operatingCosts } from './finance';
+import { moneyLabel, operatingCosts } from './finance';
 import { currentDay, seasonDayOf } from './calendar';
 import { COACH_CAREER, coachProspect, coachSeason } from './coaching';
 import { STYLE_INFO } from './styles';
-import { moneyLabel } from './transfers';
 
 /** Coaching departments below the manager, in display order. */
 export const STAFF_ROLES: readonly StaffRole[] = [
@@ -323,10 +318,10 @@ export function hireStaff(w: World, role: StaffRole, candidate: number): void {
     [
       `능력 ${member.ability}`,
       member.trait ? STAFF_TRAIT_INFO[member.trait].label : '특기 없음',
-      `연봉 ${member.wage}`,
+      `연봉 ${moneyLabel(w, member.wage)}`,
       `계약 ${contractSeason(member.until)} 시즌 끝까지`,
-      `계약금 ${fee}`,
-      ...(owed !== '0' ? [`${current!.name} 보상금 ${owed}`] : []),
+      `계약금 ${moneyLabel(w, fee)}`,
+      ...(owed !== '0' ? [`${current!.name} 보상금 ${moneyLabel(w, owed)}`] : []),
     ].join(' · '),
     total,
   );
@@ -343,7 +338,7 @@ export function releaseStaff(w: World, role: StaffRole): void {
     'staff-release',
     `${STAFF_INFO[role].label} ${member.name} 계약 해지`,
     owed !== '0'
-      ? `잔여 계약 보상금 ${owed} · 새 코치를 선임할 때까지 공석입니다.`
+      ? `잔여 계약 보상금 ${moneyLabel(w, owed)} · 새 코치를 선임할 때까지 공석입니다.`
       : '무보수 코치 · 보상금 없음 · 새 코치를 선임할 때까지 공석입니다.',
     owed !== '0' ? owed : undefined,
   );
@@ -460,7 +455,7 @@ export function renewStaff(w: World, role: StaffRole) {
     w,
     'staff-renew',
     `${STAFF_INFO[role].label} ${member.name} 재계약`,
-    `능력 ${member.ability} · 연봉 ${terms.wage} · 계약 ${contractSeason(terms.until)} 시즌 끝까지 · 계약금 ${terms.fee}`,
+    `능력 ${member.ability} · 연봉 ${moneyLabel(w, terms.wage)} · 계약 ${contractSeason(terms.until)} 시즌 끝까지 · 계약금 ${moneyLabel(w, terms.fee)}`,
     terms.fee,
   );
 }
@@ -478,7 +473,7 @@ function appoint(w: World, member: Staff & { fee?: string }) {
     [
       `능력 ${staff.ability}`,
       staff.trait ? STAFF_TRAIT_INFO[staff.trait].label : '특기 없음',
-      BigInt(staff.wage) > 0n ? `연봉 ${staff.wage}` : '무급 자원봉사',
+      BigInt(staff.wage) > 0n ? `연봉 ${moneyLabel(w, staff.wage)}` : '무급 자원봉사',
       `계약 ${contractSeason(staff.until)} 시즌 끝까지`,
       '스태프 위임 선임',
     ].join(' · '),
