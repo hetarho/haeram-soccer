@@ -67,7 +67,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
-- r8 261012 MATCH-12✎ +restart (throw-in, goal kick, corner) whenever possession changes sides between minutes without a duel, played on the pitch with the ball out of play and a taker; outcomes unchanged
+- r8 261012 MATCH-12✎ none→restart (throw-in, goal kick, corner) whenever possession changes sides between minutes without a duel, played on the pitch with the ball out of play and a taker; outcomes unchanged
 - r7 261011 MATCH-2✎ +gap with diminishing returns, match-day form, context points on player skills; MATCH-11✎ +flattened duel margins, shot volume 1×→1.7× (cap 0.6→0.75), score effects, summary path on the shared chance model; MATCH-12✎ ball 32/55→48/84 u/s on curved, lofted flights that always land at a player, track every 0.2→0.1 s
 - r6 261010 MATCH-2✎ +own manager style and vision home strength; MATCH-11✎ last passer always assists→solo runs unassisted, +tactic defensive lines, +high-regain transitions; MATCH-13+ advanced counters (key passes, xA, big chances, box shots, final-third passes, progressive passes, take-ons, high turnovers, PPDA, field tilt)
 - r5 261009 MATCH-2✎ NPC strength by club rating and raw fatigue→every club by its XI, fatigue above 20 only, pressing NPC load; MATCH-5✎ +match xG in archives; MATCH-11✎ raw chance xG→level-average finisher and keeper xG
