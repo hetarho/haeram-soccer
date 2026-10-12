@@ -68,9 +68,14 @@ test('recovers prior checkpoint after active corruption without clearing another
     localStorage.setItem(`haeram-soccor:slot:${m.slot ? 'b' : 'a'}`, 'corrupt');
   });
   await page.reload();
-  await expect(page.getByRole('status').filter({ hasText: '체크포인트로 복구' })).toContainText(
+  // The recovery is an unread system notification in the HUD inbox, never a banner (→WEB-66).
+  await page.getByRole('button', { name: /^소식함 · 읽지 않은 소식/ }).click();
+  const inbox = page.getByRole('dialog', { name: '소식함' });
+  await expect(inbox.getByRole('listitem').filter({ hasText: '시스템' })).toContainText(
     '체크포인트로 복구',
   );
+  await inbox.getByRole('button', { name: '닫기', exact: true }).click();
+  await expect(page.getByRole('status').filter({ hasText: '체크포인트로 복구' })).toHaveCount(0);
   await expect(page.getByTestId('calendar')).toContainText('라운드 0');
   expect(await page.evaluate(() => localStorage.getItem('another-app:keep'))).toBe('present');
   const again = await advanceRound(page);

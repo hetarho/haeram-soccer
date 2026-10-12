@@ -751,11 +751,7 @@ function RuntimeFeedback({ client, localError }: { client: GameClient; localErro
           <button onClick={() => location.reload()}>저장 다시 불러오기</button>
         </div>
       )}
-      {state.notice && !state.readonly && (
-        <div className={s.notice} role="status">
-          {state.notice}
-        </div>
-      )}
+      {/* App notices arrive as system notifications in the HUD inbox, never over the view (→WEB-66). */}
       <CashAlarm />
       {critical === MANAGER_GONE ? (
         // The interim manager can carry on, or the owner goes straight to the candidates.
