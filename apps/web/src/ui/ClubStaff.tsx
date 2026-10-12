@@ -360,7 +360,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                   <small className={s.impact}>
                     선임 시 {hiredImpact(w, role, candidate)} (지금 {staffImpact(w, role)})
                   </small>
-                  {/* The candidate's own radio answers the tap, so his terms read as text. */}
+                  {/* The candidate's own radio answers the tap, so the terms read as text. */}
                   <small>
                     연봉 {text(candidate.wage)} · 계약금 {text(candidate.fee)} ·{' '}
                     {contractLine(candidate.until, w.year)}

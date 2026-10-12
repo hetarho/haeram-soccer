@@ -1,30 +1,34 @@
 /* An amount that opens its exact value: it reads as text with a dotted underline until pressed. */
 .money {
+  text-decoration: underline dotted color-mix(in srgb, currentColor 45%, transparent);
+  text-underline-offset: 3px;
+}
+/*
+ * Repeated to outrank the rules that size the buttons of a view, a card or a notice (48 px on
+ * phones, full width, a block of its own): an amount keeps the box of its text, and ::after
+ * carries the hit area past it.
+ */
+.money.money.money {
   position: relative;
   display: inline;
+  width: auto;
+  min-height: 0;
+  margin: 0;
   padding: 0;
   border: 0;
   border-radius: 6px;
   background: transparent;
   box-shadow: none;
   color: inherit;
+  font-size: inherit;
   font-weight: inherit;
   text-align: inherit;
   white-space: nowrap;
-  text-decoration: underline dotted color-mix(in srgb, currentColor 45%, transparent);
-  text-underline-offset: 3px;
-}
-/*
- * Repeated to outrank the phone rule that sizes every button in the view and in sheets to 48 px:
- * an amount keeps the height of its line, and ::after carries the hit area past it.
- */
-.money.money.money {
-  min-height: 0;
 }
 .money::after {
   content: '';
   position: absolute;
-  inset: -8px -3px;
+  inset: -8px 0;
 }
 .money:active:not(:disabled) {
   transform: none;
