@@ -19,7 +19,7 @@ import type { HeadToHead } from './headToHead';
 import type { managerCandidates } from '../../../../packages/engine/src/managerMarket';
 import {
   transferOffers,
-  sponsorOffers,
+  sponsorSlots,
   campaignOffers,
 } from '../../../../packages/engine/src/operations';
 const index = z.number().int().min(0).max(15);
@@ -201,7 +201,8 @@ export interface View {
   /** The manager market (→STAFF-17): free agents, then other clubs' managers. */
   managers: ReturnType<typeof managerCandidates>;
   transfers: ReturnType<typeof transferOffers>;
-  sponsors: ReturnType<typeof sponsorOffers>;
+  /** Every sponsor slot with its contract or offers (→WEB-39). */
+  sponsors: ReturnType<typeof sponsorSlots>;
   campaigns: ReturnType<typeof campaignOffers>;
   annualCost: string;
   coefficient: number;

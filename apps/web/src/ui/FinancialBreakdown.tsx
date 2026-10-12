@@ -106,10 +106,14 @@ export const FinancialBreakdown = memo(
         </div>
         <div className={s.forecast}>
           <div>
-            <h4>현재 조건의 다음 홈 경기</h4>
+            <h4>현재 조건의 리그 홈 경기</h4>
             <p>
               예상 관중 {number(breakdown.gate.attendanceLow)}–
               {number(breakdown.gate.attendanceHigh)}명 / 수용 {number(breakdown.gate.capacity)}명
+            </p>
+            <p>
+              지역 서포터 {number(breakdown.gate.supporters)}명 · 연고 상한{' '}
+              {number(breakdown.catchment)}명
             </p>
             <p>
               입장·상품 수입 {format(breakdown.gate.incomeLow)}–{format(breakdown.gate.incomeHigh)}{' '}
@@ -117,8 +121,10 @@ export const FinancialBreakdown = memo(
             </p>
           </div>
           <p>
-            최근 경기 성적, 평판, 가격, 진행 중인 마케팅과 시설을 반영한 범위입니다. 후원은 실제
-            리그 경기마다 나누어 받고, 승리·무승부 보너스와 최종 순위 상금은 별도로 정산합니다.
+            지역 서포터 중 최근 성적, 가격, 진행 중인 마케팅에 따라 경기장을 찾는 범위로, 비슷한
+            상대를 기준으로 합니다. 전 세계 팬은 관중이 아니라 후원 가치를 올립니다. 리그 분배금은
+            라운드마다, 후원은 실제 리그 경기마다 나누어 받고, 순위 배분금은 시즌 종료 때
+            정산합니다.
           </p>
         </div>
         {!!breakdown.recent.length && (

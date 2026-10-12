@@ -6,7 +6,7 @@ import { squadCommand } from './ops-squad';
 import { staffCommand } from './ops-staff';
 
 // Read models and limits the app and other modules import from here.
-export { campaignOffers, sponsorAnnual, sponsorOffers } from './ops-commercial';
+export { campaignOffers, sponsorAnnual, sponsorOffers, sponsorSlots } from './ops-commercial';
 export { transferOffers } from './ops-squad';
 export { MANAGER_GONE, managerRenewal } from './ops-staff';
 export { BANKRUPTCY_ROUNDS, CASH_WARNING_ROUNDS } from './settlement';

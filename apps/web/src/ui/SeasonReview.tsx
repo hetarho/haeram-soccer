@@ -196,7 +196,10 @@ export function SeasonReview({
     from = divisionName(club.country, season.tier),
     to = divisionName(club.country, nextTier),
     net = BigInt(season.income) - BigInt(season.expense),
-    prize = files?.events.find((e) => e.kind === 'season-prize')?.amount;
+    // The merit payment, or the rank prize of seasons closed before the league distribution.
+    prize = files?.events.find(
+      (e) => e.kind === 'league-merit' || e.kind === 'season-prize',
+    )?.amount;
   const ribbon =
     move === 'up'
       ? { text: `승격 · ${from} → ${to}`, tone: s.up }
@@ -533,7 +536,7 @@ export function SeasonReview({
         <div>
           <span>시즌 말 자금</span>
           <b>{format(season.cash)}</b>
-          <small>{prize ? <>상금 {format(prize)} 포함</> : '순위 상금 없음'}</small>
+          <small>{prize ? <>순위 배분금 {format(prize)} 포함</> : '순위 배분금 없음'}</small>
         </div>
       </section>
     </div>

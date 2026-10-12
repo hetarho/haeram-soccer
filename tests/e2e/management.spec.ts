@@ -25,8 +25,11 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await expect(page.locator('blockquote').getByText(/역습 요청 ·/)).toBeVisible();
   await page.getByRole('button', { name: '구단 운영', exact: true }).click();
   await page.getByRole('tab', { name: '후원', exact: true }).click();
-  await page.getByRole('button', { name: '후원 계약', exact: true }).first().click();
-  await expect(page.getByRole('button', { name: '후원 계약', exact: true })).toHaveCount(0);
+  // A 1950 club has only the local slot open; signing it replaces the offers with the contract.
+  const localSponsor = page.getByTestId('sponsor-slot-local');
+  await localSponsor.getByRole('button', { name: '지역 후원 계약', exact: true }).first().click();
+  await expect(localSponsor.getByTestId('sponsor-contract-local')).toBeVisible();
+  await expect(page.getByRole('button', { name: '지역 후원 계약', exact: true })).toHaveCount(0);
   await page.getByRole('tab', { name: '캠페인', exact: true }).click();
   await page.getByRole('button', { name: '캠페인 시작', exact: true }).first().click();
   await expect(page.getByRole('button', { name: '4라운드 남음' })).toBeVisible();

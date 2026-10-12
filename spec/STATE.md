@@ -31,8 +31,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T055 | League distribution, local-supporter gate, no supporter income | ECON | T052 T054 | todo |
-| T056 | Sponsor contracts by slot | ECON WEB | T055 | todo |
 | T057 | Market wages and values on the football index | CLUB ECON | T052 T054 | todo |
 | T058 | Contract talks with goodwill, floor and delegation | CLUB ECON STAFF | T057 | todo |
 | T059 | Unhappy players, transfer requests, expiring contracts and the squad UI | CLUB WEB | T058 | todo |
@@ -42,12 +40,13 @@
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
 | one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
-| club-realism | 4 | 13 | 7 | 6 | 0 | 2 | 3 | 2026-10-12T15:34:48.535Z | [history](work/club-realism.json) |
+| club-realism | 4 | 13 | 9 | 4 | 0 | 3 | 0 | 2026-10-12T16:03:15.537Z | [history](work/club-realism.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261012 T055 T056 integrated
 - 261012 T060 T061 integrated
 - 261012 T050 T051 T052 integrated
 - 261012 T053 T054 integrated
@@ -67,4 +66,3 @@
 - 261012 update-ssot SAVE r20 WEB r50 ARCH r8: owner decisions save at once, automatic progression every 30 s and on stop/hide/close through a background codec worker; clock steps never wait for saving
 - 261012 update-ssot SAVE WEB ARCH start: background autosave, clock not waiting for saves
 - 261012 WEB r49 implemented directly: records room season rows open that season in 시즌 기록; league picker (국가·디비전·지역 그룹, 우리 리그로, ?league=) on 개요, 순위표, 라운드 결과 and a closed season's 순위표, other leagues' fixtures read from the worker on demand (league-fixtures read) and closed seasons' tables from archived standings; closed seasons load lazily, entry 249,558 of 256,000 bytes (WEB-5✎ from r48 stays pending)
-- 261012 create-task ARCH LEAGUE WEB ECON CLUB SAVE: T042 draws named by what they settle, lane day-order T043 one day order → T044 amateur exchange, T045 market identity with bids keeping their offer (after T042), T046 currency conversion and ledger lines, T047 rules 1.15.0 with goldens (integration); work group one-result, workers 3, reviewers 1

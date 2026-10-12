@@ -128,23 +128,27 @@ test('pays sponsor installments only for league games after the actual contract'
   await found(page, 'sponsor-installment-ui');
   await playNext(page);
   const before = await exportWorld(page);
-  const offer = sponsorOffers(before).find((candidate) => candidate.kind === 'stable')!;
+  // A 1950 club in England has only the local slot open (→ECON-8).
+  const offer = sponsorOffers(before, 'local').find((candidate) => candidate.kind === 'stable')!;
   await openBusiness(page);
   await page.getByRole('tab', { name: '후원', exact: true }).click();
   await expect(page.getByRole('tabpanel', { name: '후원', exact: true })).toContainText(
-    '지난 경기를 소급해 받지 않아요.',
+    '계약 이후 경기만 지급하며',
   );
+  await expect(page.getByTestId('sponsor-slot-shirt')).toContainText('1979/80 시즌부터');
   await page
-    .getByTestId('sponsor-stable')
-    .getByRole('button', { name: '후원 계약', exact: true })
+    .getByTestId('sponsor-local-stable')
+    .getByRole('button', { name: '지역 후원 계약', exact: true })
     .click();
-  await expect(page.getByRole('button', { name: '후원 계약', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '지역 후원 계약', exact: true })).toHaveCount(0);
+  await expect(page.getByTestId('sponsor-contract-local')).toContainText(offer.name);
   const signed = await exportWorld(page);
   expect(signed.cash).toBe(before.cash);
   expect(signed.income).toBe(before.income);
-  // An export reads as a load does, which moves the sponsor into its slot (→SAVE-10).
-  expect(signed.sponsors).toEqual([expect.objectContaining({ annual: offer.annual })]);
-  expect(signed.events.filter((event) => event.kind === 'sponsor-payment')).toHaveLength(0);
+  expect(signed.sponsors).toEqual([
+    expect.objectContaining({ slot: 'local', annual: offer.annual }),
+  ]);
+  expect(signed.events.filter((event) => event.kind === 'sponsor:local')).toHaveLength(0);
   await playNext(page);
   const settled = await exportWorld(page);
   const games = settled.fixtures.filter(
@@ -152,10 +156,14 @@ test('pays sponsor installments only for league games after the actual contract'
       ['league', 'lower'].includes(fixture.kind) &&
       (fixture.home === settled.playerClub || fixture.away === settled.playerClub),
   ).length;
-  const payments = settled.events.filter((event) => event.kind === 'sponsor-payment');
+  const payments = settled.events.filter((event) => event.kind === 'sponsor:local');
   expect(payments).toHaveLength(1);
   expect(payments[0].amount).toBe(
-    roundShare(sponsorAnnual(settled), settled.tables[settled.playerClub].played, games),
+    roundShare(
+      sponsorAnnual(settled, settled.sponsors![0]),
+      settled.tables[settled.playerClub].played,
+      games,
+    ),
   );
   expect(BigInt(settled.cash) - BigInt(signed.cash)).toBe(
     BigInt(settled.income) -

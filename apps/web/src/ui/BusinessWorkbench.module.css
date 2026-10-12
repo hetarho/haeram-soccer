@@ -147,6 +147,34 @@
   min-height: 44px;
   margin-top: 5px;
 }
+.slots {
+  display: grid;
+  gap: 12px;
+}
+.slot {
+  min-width: 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.slotHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-bottom: 6px;
+}
+.slotHeading h4 {
+  margin: 0;
+  font-size: 14px;
+}
+.slotHeading span {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+.slot > .note {
+  margin: 0;
+}
 .ticketInput {
   display: flex;
   align-items: center;

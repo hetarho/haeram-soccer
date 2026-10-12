@@ -84,10 +84,14 @@ export const ROUTINE_EVENTS = new Set([
   'operating-cost',
   'match-cost',
   'gate',
-  'sponsor-payment',
-  'fan-income',
+  'league-share',
+  'parachute',
   'match-bonus',
-  'sponsor-bonus',
+  'sponsor:local',
+  'sponsor:kit',
+  'sponsor:shirt',
+  'sponsor:stadium',
+  'sponsor:sleeve',
   'europe-prize',
 ]);
 const progression = new Set<Command['type']>(['advance', 'advance-days', 'season']);
