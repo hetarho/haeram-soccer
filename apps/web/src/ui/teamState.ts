@@ -16,7 +16,7 @@ import { careOffer, effectText, outcomeText } from '../../../../packages/engine/
 import { academySummary } from '../../../../packages/engine/src/academy';
 import { buildEffects } from '../../../../packages/engine/src/build';
 import { compactMoney } from './format';
-import type { Page, SquadTab, StaffTab } from './state';
+import type { Page, SquadTab, StaffRequest } from './state';
 
 export type Tone = 'good' | 'ok' | 'warn' | 'bad';
 export type StateKey = 'fatigue' | 'morale' | 'manager' | 'squad' | 'cash';
@@ -25,8 +25,8 @@ export interface StateAction {
   command?: Command;
   page?: Page;
   tab?: SquadTab;
-  /** The staff page tab to open, e.g. the candidates for a manager search. */
-  staffTab?: StaffTab;
+  /** The staff view to open, e.g. the manager market for a manager search. */
+  staffTab?: StaffRequest;
   /** Opens the tactic and lineup preparation sheet. */
   prepare?: boolean;
 }

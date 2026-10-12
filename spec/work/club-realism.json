@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-12T14:32:41.441Z",
-  "sourceCommit": "ee572561c1fdfc61fdaeea1efb1d36183cd3e68f",
+  "snapshotAt": "2026-10-12T15:34:48.535Z",
+  "sourceCommit": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2",
   "group": {
     "id": "club-realism",
     "branch": "work/club-realism",
@@ -83,12 +83,12 @@
   },
   "summary": {
     "total": 13,
-    "completed": 5,
-    "remaining": 8,
+    "completed": 7,
+    "remaining": 6,
     "running": 0,
-    "review": 0,
-    "blocked": 0,
-    "unassigned": 8
+    "review": 2,
+    "blocked": 3,
+    "unassigned": 1
   },
   "tasks": [
     {
@@ -99,7 +99,7 @@
         "T054"
       ],
       "lane": "commercial",
-      "status": "todo"
+      "status": "ready"
     },
     {
       "id": "T056",
@@ -108,7 +108,7 @@
         "T055"
       ],
       "lane": "commercial",
-      "status": "todo"
+      "status": "ready"
     },
     {
       "id": "T057",
@@ -118,7 +118,7 @@
         "T054"
       ],
       "lane": "players",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T058",
@@ -127,7 +127,7 @@
         "T057"
       ],
       "lane": "players",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T059",
@@ -136,26 +136,7 @@
         "T058"
       ],
       "lane": "players",
-      "status": "todo"
-    },
-    {
-      "id": "T060",
-      "title": "Owner-chosen terms for managers and coaches, no self-renewal",
-      "dep": [
-        "T052",
-        "T054"
-      ],
-      "lane": "staff",
-      "status": "todo"
-    },
-    {
-      "id": "T061",
-      "title": "Delegated manager appointment and the manager market behind 교체",
-      "dep": [
-        "T060"
-      ],
-      "lane": "staff",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T062",
@@ -192,6 +173,8 @@
       "submittedBase": "ee572561c1fdfc61fdaeea1efb1d36183cd3e68f",
       "submissionId": "3e589590-f25f-4113-961c-f8614d216531",
       "submittedAt": "2026-10-12T14:23:42.014Z",
+      "integratedCommit": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2",
+      "integratedAt": "2026-10-12T14:33:31.227Z",
       "dispatch": {
         "id": "bf4db1dc-3387-43d5-b455-553918049302",
         "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
@@ -347,6 +330,13 @@
           "startedAt": "2026-10-12T14:22:59.478Z",
           "finishedAt": "2026-10-12T14:23:41.501Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+          "startedAt": "2026-10-12T14:32:41.533Z",
+          "finishedAt": "2026-10-12T14:33:31.009Z"
+        }
       ]
     },
     {
@@ -501,6 +491,267 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
           "startedAt": "2026-10-12T13:49:48.367Z",
           "finishedAt": "2026-10-12T13:50:39.129Z"
+        }
+      ]
+    },
+    {
+      "id": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "group": "club-realism",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "lane": "commercial",
+      "owner": "c889f1f7-0b60-4059-aea4-032cfcec6d62/worker-1",
+      "contributors": [
+        "c889f1f7-0b60-4059-aea4-032cfcec6d62/worker-1"
+      ],
+      "status": "ready",
+      "reason": null,
+      "createdAt": "2026-10-12T14:33:31.502Z",
+      "startCommit": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2",
+      "verifiedCommit": "88d79abe74db0038da66b7dcdba6aef7becb7040",
+      "submittedBase": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2",
+      "submissionId": "fe1bef9b-4cd9-4741-bcd1-553fcecfb46d",
+      "submittedAt": "2026-10-12T15:29:00.275Z",
+      "dispatch": {
+        "id": "214e8b40-4f9f-42cd-9071-c618f579d313",
+        "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-12T15:25:15.780Z",
+        "finishedAt": "2026-10-12T15:29:00.278Z",
+        "error": null,
+        "summary": "I fixed the reviewer's blocking P2 issue in T056; the e2e journey it flagged now passes in Chromium.\n\n**P2 fix:** tests/e2e/management.spec.ts was still looking for the old '후원 계약' button. It now clicks the '지역 후원 계약' button inside the local sponsor slot (`sponsor-slot-local`), checks that the signed contract card (`sponsor-contract-local`) appears, and checks that no '지역 후원 계약' button is left. A 1950 club in any country has only the local slot open, because every country's kit slot opens in 1970 or later. A search of tests/e2e found no other old sponsor labels or test IDs. The '후원 계약' checkbox in progression-settings.spec.ts is a different control: the staff delegation panel still uses that name, so the spec is still correct.\n\n**P3 (pre-1.16 performance sponsor moved into 지역 후원 is no longer paid its bonus):** I left this as it is, in line with the preference for clean designs over shims for old saves. SAVE-10 only says the contract runs \"until its end\", and it does. The base is still paid; only the results bonus stops, because only the shirt slot pays one. I recorded this in T056's result limits as a choice for update-ssot to settle.\n\n**Checks run:**\n- `pnpm exec prettier --check` and `pnpm exec eslint` on the edited spec, and `pnpm exec tsc --noEmit`: all passed.\n- `pnpm run build`: passed.\n- `pnpm run test:e2e` on management, business and save-upgrade specs, Chromium only: 13 passed.\n\nFirefox and WebKit e2e were not run and are left to integration. I didn't rerun test:unit because only an e2e spec changed; the earlier recorded run still covers the code. In T056's result I added these checks and the P3 choice, and removed the old note that e2e was never run. Changed files: tests/e2e/management.spec.ts and spec/tasks/T056.sponsor-slots.md. Nothing was committed or submitted."
+      },
+      "reviewHistory": [
+        {
+          "id": "70b20eba-0e2c-413d-8d6b-8b39d84128a3",
+          "owner": "c889f1f7-0b60-4059-aea4-032cfcec6d62/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T055 and T056 meet their acceptance criteria. T055: the league distribution has an equal share paid per round, merit by final position (1.6× at the top, 1.3× below), and a one-season parachute measured from history. The gate is now capped by local supporters within the catchment, and match bonuses and fan income are gone. Shares, the gate and prizes use the football index, and the cash projection matches settlement. T056: sponsor contracts sit in five slots that open by era, valued at signing. They are paid per league game with no back pay. The main sponsor pays a results bonus and the kit sponsor a promotion or title bonus at the close. A relegation cuts remaining seasons by 30%, delegated staff fill empty slots, reminders fire at season start and on 1 April, and the 후원 tab and ledger lines are in place. One P2 blocks approval: T056 renamed the sponsor sign buttons but left tests/e2e/management.spec.ts using the old name. That journey will fail in CI once integrated. Not verified here: the review checkout has no node_modules, and installing them would modify the checkout. So I relied on the worker's recorded typecheck and test:unit run (75 files, 559 tests), plus lint and format. test:contract fails only on the portable goldens, which T062 owns.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "tests/e2e/management.spec.ts:28-29 (T056)",
+              "message": "The 후원 tab's sign buttons are now named `${view.label} 계약`, e.g. '지역 후원 계약' (BusinessWorkbench.tsx). The offer cards moved to `sponsor-<slot>-<kind>`. management.spec.ts still runs `getByRole('button', { name: '후원 계약', exact: true }).first().click()` and then expects that name to have count 0. A new 1950 club has business delegation off, so nothing matches and the 'operates a club, reads a season and exports/imports the actual save' journey times out in every browser. The worker updated business.spec.ts and save-upgrade.spec.ts but missed this spec, and e2e was not run. Fix: click '지역 후원 계약', or scope to `getByTestId('sponsor-slot-local')`. Then assert the `sponsor-contract-local` card (or that the '지역 후원 계약' buttons are gone). Search tests/e2e for any other old sponsor labels or test IDs, and run this spec or record that e2e is left for integration."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/finance.ts matchBonus / packages/contracts/src/schema.ts:691 (T056)",
+              "message": "A performance-kind sponsor from before 1.16 that loads before the shirt slot opens (any ENG save before 1979) moves into 지역 후원. It keeps its `bonus`, but only the shirt slot pays result bonuses now. For the rest of its term it pays the lower performance base with no bonus, which does not quite match SAVE-10's 'until its end'. Option: pay a migrated contract's result bonus whatever its slot. Or leave it as is, given the robust-over-save-compatibility direction, and record the choice for update-ssot. Low impact before release."
+            }
+          ],
+          "commit": "9e114455ad40ad2e38c54bf53d12903df1af148e",
+          "baseCommit": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2",
+          "submissionId": "4bf84e15-9f53-46ba-a31c-0b2a1cf98c4b",
+          "createdAt": "2026-10-12T15:19:50.296Z",
+          "finishedAt": "2026-10-12T15:25:15.697Z",
+          "invalidatedAt": "2026-10-12T15:25:15.724Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T055",
+          "commit": "629454151840c72e806f0b310a52f7ab909c8fa7",
+          "at": "2026-10-12T14:52:47.036Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+              "startedAt": "2026-10-12T14:52:06.904Z",
+              "finishedAt": "2026-10-12T14:52:46.722Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T056",
+          "commit": "88d79abe74db0038da66b7dcdba6aef7becb7040",
+          "at": "2026-10-12T15:29:00.265Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+              "startedAt": "2026-10-12T15:28:04.179Z",
+              "finishedAt": "2026-10-12T15:28:59.899Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+          "startedAt": "2026-10-12T15:28:04.179Z",
+          "finishedAt": "2026-10-12T15:28:59.899Z"
+        }
+      ]
+    },
+    {
+      "id": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "group": "club-realism",
+      "taskId": "T059",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "lane": "players",
+      "owner": "c889f1f7-0b60-4059-aea4-032cfcec6d62/worker-2",
+      "contributors": [
+        "c889f1f7-0b60-4059-aea4-032cfcec6d62/worker-2"
+      ],
+      "status": "blocked",
+      "reason": "T059: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+      "createdAt": "2026-10-12T14:33:32.014Z",
+      "startCommit": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2",
+      "dispatch": {
+        "id": "28ee0122-1a71-4fd6-a077-379b6ce4d4c5",
+        "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+        "role": "worker",
+        "slot": 2,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-12T15:10:04.123Z",
+        "finishedAt": "2026-10-12T15:32:26.901Z",
+        "error": "T059: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+        "summary": "T059 is implemented, but the new screens and the Chromium e2e journey have never been run in a browser. Those are the two acceptance items I left unchecked. Running test:e2e and the browser benchmark is not allowed in this session, and the web tests have no DOM renderer, so CI will be the first browser run.\n\n**Engine (contracts.ts and world/morale/match/transfers/season):**\n- When a talk is declined, by the owner or by the staff, the manager tries to talk the player round. The chance is 15% + 45% for a 동기부여형 manager + (trust−50)/200 + (flexibility−50)/400, kept within 5–85%, drawn from that player's stream for that talk.\n- If that fails, the player becomes unhappy and gets an attention 'unhappy' inbox item. If it works, the result is also an inbox item.\n- An unhappy player:\n  - plays 3 below his ability in match rating, team selection and every duel skill; his stored attributes are unchanged;\n  - costs squad morale 1 for each settled round he starts;\n  - opens no new talks;\n  - after 42 days hands in a transfer request: he is put on 이적 명단 and cannot be set to 이적 불가.\n- Offering at or above his current floor, or selling him, ends the unhappiness and the request. When the request had listed him, the listing is removed too.\n- At the season close, every non-loan player whose contract has ended leaves. From 1996 he leaves on a free. Before 1996 the club he joins pays us 50% of his value as free-transfer-compensation, shown in the ledger as 계약 만료 보상금.\n- An announced retirement closes the player's open talk that same day.\n\n**UI (Rich, EventCenter, RecruitmentDesk, state.ts):**\n- Roster cards show wage against market wage, the contract end, an 언해피 badge with its reason, an 이적 요청 flag, and a 협상 button.\n- The talk sheet shows demand, floor, a 1–5 season term, yearly cost, runway after signing and the talk-round chance.\n- Event cards for talks, unhappy players and transfer requests open that sheet.\n- The market's offer board marks an offer for a player who asked to leave.\n- tests/e2e/contract-talks.spec.ts covers decline → badge → transfer request in Chromium.\n\n**Checks:**\n- Passed: install + typecheck + test:unit (the full suite, 565 tests including 7 new contract cases), lint, format:check and build.\n- test:contract: the schema tests pass. The 4 golden fixtures still differ in cash, as they have since T057; regenerating them is T062's job.\n- I ran the e2e's setup once from a scratch tsx script: the player is not talked round, turns unhappy on 1 January (day 153), and files his transfer request on day 195, inside league round 28.\n\n**For review or the planner:**\n- Edits outside the task's file list: match.ts, finance.ts, state.ts and season.test.ts. In season.test.ts the close test from T058 now expects unrenewed players to leave.\n- The sheet only offers the floor, because the rules accept any offer at or above it.\n- Three gaps in CLUB-27/CLUB-28 to settle with update-ssot:\n  - an unhappy player's floor uses today's terms, not the declined talk's;\n  - meeting his floor also removes the listing his request created;\n  - an expiring player is valued in the new season, at the division he played in.\n- Clubs that leave talks unanswered, or whose staff decline above the pay ceiling, now lose those players every summer; youth refill the squad to 18. T062 should calibrate this.\n- A gap left from T058: an open talk's amounts are not converted when the currency changes.\n- The entry bundle size budget was not measured.\n- The haeram CLI board read was denied, so freshness came from STATE (CLUB r17, WEB r51, matching the task's base)."
+      },
+      "steps": [
+        {
+          "taskId": "T057",
+          "commit": "1cfee4b06989d360977159a8fa7d829f57df1281",
+          "at": "2026-10-12T14:56:30.942Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+              "startedAt": "2026-10-12T14:55:50.668Z",
+              "finishedAt": "2026-10-12T14:56:30.572Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T058",
+          "commit": "11df8385d2c164903b43bacc8b42d0f0e0b02043",
+          "at": "2026-10-12T15:10:04.056Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+              "startedAt": "2026-10-12T15:09:20.060Z",
+              "finishedAt": "2026-10-12T15:10:03.563Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "group": "club-realism",
+      "taskId": "T061",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "lane": "staff",
+      "owner": "c889f1f7-0b60-4059-aea4-032cfcec6d62/worker-3",
+      "contributors": [
+        "c889f1f7-0b60-4059-aea4-032cfcec6d62/worker-3"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-12T14:33:32.474Z",
+      "startCommit": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2",
+      "verifiedCommit": "33720879b3704224a824e25182d40ee08e491fcb",
+      "submittedBase": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2",
+      "submissionId": "dbba24ae-1414-4e3e-97b5-3e730ad9f93b",
+      "submittedAt": "2026-10-12T15:26:06.973Z",
+      "dispatch": {
+        "id": "dd661d29-9a3a-4a87-853d-8d985a8f3d37",
+        "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-12T15:26:07.798Z",
+        "finishedAt": "2026-10-12T15:34:47.855Z",
+        "error": null,
+        "summary": "I reviewed T060 and T061 (base 94c2d4d → 3372087) against both tasks' acceptance, STAFF r12 (STAFF-7/11/14/15/17/18), WEB-40/45 and ECON-26 by reading the code. Every acceptance item is implemented, and I found no correctness bug that would block approval.\n\nT060: hire, hire-staff, renew-manager and renew-staff take a 1–5 season term. A manager never signs past his 70th year (managerTermLimit). The firefighter signs for 1. Wages are fixed for the term and priced on the football index (staffQuote). Release pays 25% of the wage per season left, counting the current one (releaseCost/managerPayoff). Managers no longer renew themselves: a 1 April reminder goes out for any expiring manager, and an unrenewed one leaves at the close. Delegated coach hires and renewals now really run 2 seasons (before, a renewal at the season boundary added 3). ClubStaff has the term dial and the cost line.\n\nT061: resign() appoints through appointDelegatedManager under delegation.manager. It sets no w.critical, so the clock runs on. When nobody is affordable the interim stays and the staff retry daily. delegatedManagerPick looks only at free agents and uses the STAFF-15 affordability test with the current manager's wage freed. The school, best and strategy rules work as specified. The 3-OVR renewal margin applies on 1 April. manager-rule is implemented, with the default stored as absent. STAFF_TABS drops 감독 후보. 교체/감독 선임 opens the market dialog, and ?view=candidates, the departure alert and the remedies open it too. The 위임 tab has the 감독 선임 toggle and the rule dial.\n\nThe tests cover each acceptance bullet: terms, the 70 cap, release per season left, no self-renewal, each rule, the unaffordable best being skipped, a delegated renewal kept against a free agent 2 better, and the e2e journeys.\n\nI did not run typecheck, unit tests or e2e myself. This review was read-only and the review checkout has no node_modules, so I relied on code reading plus the workers' records: 557 unit tests and staff.spec in Chromium.\n\nRemaining items are P3: planning hand-offs on interpretations of STAFF-18, small UI wording and cost-display issues, and an unmeasured entry-bundle budget."
+      },
+      "review": {
+        "id": "9dd3361d-d3c6-4c23-ac2f-470f913ba055",
+        "owner": "c889f1f7-0b60-4059-aea4-032cfcec6d62/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "I reviewed T060 and T061 (base 94c2d4d → 3372087) against both tasks' acceptance, STAFF r12 (STAFF-7/11/14/15/17/18), WEB-40/45 and ECON-26 by reading the code. Every acceptance item is implemented, and I found no correctness bug that would block approval.\n\nT060: hire, hire-staff, renew-manager and renew-staff take a 1–5 season term. A manager never signs past his 70th year (managerTermLimit). The firefighter signs for 1. Wages are fixed for the term and priced on the football index (staffQuote). Release pays 25% of the wage per season left, counting the current one (releaseCost/managerPayoff). Managers no longer renew themselves: a 1 April reminder goes out for any expiring manager, and an unrenewed one leaves at the close. Delegated coach hires and renewals now really run 2 seasons (before, a renewal at the season boundary added 3). ClubStaff has the term dial and the cost line.\n\nT061: resign() appoints through appointDelegatedManager under delegation.manager. It sets no w.critical, so the clock runs on. When nobody is affordable the interim stays and the staff retry daily. delegatedManagerPick looks only at free agents and uses the STAFF-15 affordability test with the current manager's wage freed. The school, best and strategy rules work as specified. The 3-OVR renewal margin applies on 1 April. manager-rule is implemented, with the default stored as absent. STAFF_TABS drops 감독 후보. 교체/감독 선임 opens the market dialog, and ?view=candidates, the departure alert and the remedies open it too. The 위임 tab has the 감독 선임 toggle and the rule dial.\n\nThe tests cover each acceptance bullet: terms, the 70 cap, release per season left, no self-renewal, each rule, the unaffordable best being skipped, a delegated renewal kept against a free agent 2 better, and the e2e journeys.\n\nI did not run typecheck, unit tests or e2e myself. This review was read-only and the review checkout has no node_modules, so I relied on code reading plus the workers' records: 557 unit tests and staff.spec in Chromium.\n\nRemaining items are P3: planning hand-offs on interpretations of STAFF-18, small UI wording and cost-display issues, and an unmeasured entry-bundle budget.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/staff.ts:677 (T061 managerRenewalReminder) with packages/engine/src/ops-staff.ts:329 (yearlyStaff)",
+            "message": "On 1 April the delegated staff decide to let the manager go because the rule's free agent is 3+ OVR better. Nothing re-checks that decision at the close. The market refreshes at rounds 40 and 44, and each refresh drops each free agent with 25% chance, so the rival is often gone by the close. resign() then appoints whoever is best and affordable at that point, who can be weaker than the manager who was let go. This follows the literal STAFF-14/18 wording, but it can leave the delegated owner with a worse manager. Hand off to planning (update-ssot STAFF-18): either re-check at the close and renew if no 3+ better free agent remains, or keep the 1 April rival. Then add a test where the rival leaves before the close."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/synergy.ts:258 (T061 aimedSynergy) and packages/engine/src/staff.ts:713 (dailyStaff interim retry)",
+            "message": "Several STAFF-18 rules are the worker's interpretation, and the task result already lists them. The aimed synergy for 운영 전략 우선 is a heuristic: the school synergy with the most conditions met (at least 2), because every BUILD_PRESET aims at a synergy with no manager school. When nobody is affordable, the interim stays without a stop and the staff retry daily. A daily retry falls back to the best overall under 같은 학파 우선. An owner hire under delegation does not take the post back. Planning should confirm or replace each of these through update-ssot STAFF-18. Do not change them in code without that decision."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/teamState.ts:171 (T061)",
+            "message": "The 'candidates' remedy still says '성향이 다른 감독 네 명의 장단점과 선임 비용을 비교해요' (four managers). That describes the removed four-candidate tab. It now opens a market of 4–8 free agents plus other clubs' managers. Reword it to describe the market, for example 자유계약·다른 구단 감독과 선임 비용을 비교해요. The management.spec.ts comment the worker mentioned needs the same fix."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/ClubStaff.tsx:244, 285, 324 (T060 TermCosts / ManagerRenewal / ManagerHireTerm)",
+            "message": "Two small display issues. (1) TermCosts shows the total as wage × term + fee. Wages are paid per round (finance.ts roundShare), so a mid-season hire's first 'season' costs only the remaining rounds, and the total overstates what the owner will pay. Label it as an upper bound or count the rounds left. (2) When the term limit is 1 because of age (a non-firefighter aged 68 at renewal or 69 at hire), the term dial is hidden and no reason is shown; only firefighters get one. Show the disabled dial with SEVENTY, or a note, so the sheet says why only one season is offered (WEB-40)."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/ClubStaff.tsx, apps/web/src/ui/Rich.tsx (T060 T061 verification)",
+            "message": "Both workers left the ARCH-28 entry budget (250 KiB gzipped JS+CSS) unmeasured. Rich.tsx is imported eagerly by App.tsx, and ClubStaff now adds TermDial, TermCosts, ManagerRenewal, ManagerHireTerm, ManagerRuleDial and the market dialog. The last recorded measurement left only about 6 KB of headroom (249,558 bytes at WEB r49). At integration, read the entry gzip size from the `pnpm run build` output or run benchmark:browser. Also, after the locator fix staff.spec was re-run only in Chromium; the full e2e run in integration should cover Firefox and WebKit."
+          }
+        ],
+        "commit": "33720879b3704224a824e25182d40ee08e491fcb",
+        "baseCommit": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2",
+        "submissionId": "dbba24ae-1414-4e3e-97b5-3e730ad9f93b",
+        "createdAt": "2026-10-12T15:26:07.340Z",
+        "finishedAt": "2026-10-12T15:34:47.849Z"
+      },
+      "steps": [
+        {
+          "taskId": "T060",
+          "commit": "e1b323ff478269dde24b9fd09c3de02a55a35fb5",
+          "at": "2026-10-12T14:57:22.982Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+              "startedAt": "2026-10-12T14:56:42.727Z",
+              "finishedAt": "2026-10-12T14:57:22.669Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T061",
+          "commit": "33720879b3704224a824e25182d40ee08e491fcb",
+          "at": "2026-10-12T15:26:06.964Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+              "startedAt": "2026-10-12T15:25:26.727Z",
+              "finishedAt": "2026-10-12T15:26:06.647Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+          "startedAt": "2026-10-12T15:25:26.727Z",
+          "finishedAt": "2026-10-12T15:26:06.647Z"
         }
       ]
     }
@@ -3659,6 +3910,1937 @@
         "T050",
         "T051",
         "T052"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 110,
+      "at": "2026-10-12T14:33:31.168Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T052",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+            "startedAt": "2026-10-12T14:32:41.533Z",
+            "finishedAt": "2026-10-12T14:33:31.009Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 111,
+      "at": "2026-10-12T14:33:31.227Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T052",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2",
+        "integratedAt": "2026-10-12T14:33:31.227Z"
+      }
+    },
+    {
+      "sequence": 112,
+      "at": "2026-10-12T14:33:31.502Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T055",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "91436603-12ec-4fa2-9c04-8f92c605590a",
+        "group": "club-realism",
+        "taskId": "T055",
+        "tasks": [
+          "T055",
+          "T056"
+        ],
+        "lane": "commercial",
+        "owner": "c889f1f7-0b60-4059-aea4-032cfcec6d62/worker-1",
+        "contributors": [
+          "c889f1f7-0b60-4059-aea4-032cfcec6d62/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-12T14:33:31.502Z",
+        "startCommit": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2"
+      }
+    },
+    {
+      "sequence": 113,
+      "at": "2026-10-12T14:33:31.676Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T055",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 114,
+      "at": "2026-10-12T14:33:31.750Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T055",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "634cb117-5a4e-406d-b6b0-43d02f9d88a3",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T14:33:31.750Z"
+        }
+      }
+    },
+    {
+      "sequence": 115,
+      "at": "2026-10-12T14:33:31.754Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T055",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "634cb117-5a4e-406d-b6b0-43d02f9d88a3",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T14:33:31.750Z"
+        }
+      }
+    },
+    {
+      "sequence": 116,
+      "at": "2026-10-12T14:33:32.014Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T057",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+        "group": "club-realism",
+        "taskId": "T057",
+        "tasks": [
+          "T057",
+          "T058",
+          "T059"
+        ],
+        "lane": "players",
+        "owner": "c889f1f7-0b60-4059-aea4-032cfcec6d62/worker-2",
+        "contributors": [
+          "c889f1f7-0b60-4059-aea4-032cfcec6d62/worker-2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-12T14:33:32.014Z",
+        "startCommit": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2"
+      }
+    },
+    {
+      "sequence": 117,
+      "at": "2026-10-12T14:33:32.159Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T057",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 118,
+      "at": "2026-10-12T14:33:32.247Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T057",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "1bc3d605-1498-4f86-9dbf-cb62aa1773b6",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T14:33:32.247Z"
+        }
+      }
+    },
+    {
+      "sequence": 119,
+      "at": "2026-10-12T14:33:32.251Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T057",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "1bc3d605-1498-4f86-9dbf-cb62aa1773b6",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T14:33:32.247Z"
+        }
+      }
+    },
+    {
+      "sequence": 120,
+      "at": "2026-10-12T14:33:32.474Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T060",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+        "group": "club-realism",
+        "taskId": "T060",
+        "tasks": [
+          "T060",
+          "T061"
+        ],
+        "lane": "staff",
+        "owner": "c889f1f7-0b60-4059-aea4-032cfcec6d62/worker-3",
+        "contributors": [
+          "c889f1f7-0b60-4059-aea4-032cfcec6d62/worker-3"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-12T14:33:32.474Z",
+        "startCommit": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2"
+      }
+    },
+    {
+      "sequence": 121,
+      "at": "2026-10-12T14:33:32.658Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T060",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 122,
+      "at": "2026-10-12T14:33:32.744Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T060",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "87ea07ce-a70b-4d2c-8039-5efa3f5492a6",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T14:33:32.744Z"
+        }
+      }
+    },
+    {
+      "sequence": 123,
+      "at": "2026-10-12T14:33:32.748Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T060",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "87ea07ce-a70b-4d2c-8039-5efa3f5492a6",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T14:33:32.744Z"
+        }
+      }
+    },
+    {
+      "sequence": 124,
+      "at": "2026-10-12T14:52:06.108Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T055",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 125,
+      "at": "2026-10-12T14:52:06.630Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T055",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 126,
+      "at": "2026-10-12T14:52:06.652Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T055",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 127,
+      "at": "2026-10-12T14:52:47.038Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T056",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T055",
+            "commit": "629454151840c72e806f0b310a52f7ab909c8fa7",
+            "at": "2026-10-12T14:52:47.036Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T14:52:06.904Z",
+                "finishedAt": "2026-10-12T14:52:46.722Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 128,
+      "at": "2026-10-12T14:52:47.043Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "634cb117-5a4e-406d-b6b0-43d02f9d88a3",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T14:33:31.750Z",
+          "finishedAt": "2026-10-12T14:52:47.043Z",
+          "error": null,
+          "summary": "T055 is implemented and passes its checks; nothing is committed yet. Typecheck passes and all 552 unit tests (74 files) pass. Lint and the format check also pass.\n\n**What changed:**\n- **League distribution:** each division pays an equal share every league round, recorded as one `league-share` entry per season. One table, `DISTRIBUTION_CONFIG` in `finance.ts`, holds the share for every country and division, amateur league included.\n- **Merit:** a merit payment (`league-merit`) at the season close replaces the old rank prize. The bottom club gets nothing; the champion's total is 1.6× the bottom club's in the top flight and 1.3× below.\n- **Parachute:** a relegated club keeps half the share it lost, for one season only (`parachute`).\n- **Football index:** a new `footballQuote` scales the shares, the merit, ticket receipts, the remaining cup and continental match bonuses, and the cup and continental prizes.\n- **Removed:** league games no longer pay a result bonus (the sponsor's league bonus stays), and fan income is gone entirely.\n- **Gate:** attendance now comes from local supporters, which is the smaller of the club's following and its catchment. The catchment depends on division, a per-country town factor and stature (`CATCHMENT_CONFIG` in `fans.ts`). Price, form, the opponent, marketing and the strategy cards then set the turnout. Attendance can't exceed the local supporters or the stadium's capacity. The old reputation and facility-comfort factors are dropped.\n- **Ledger and screens:** the breakdown names the three new lines (리그 분배금, 리그 순위 배분금, 강등 보전금). The cash projection lists 리그 분배금, 강등 보전금 (only while it is paying), 후원 성과 보너스 and 리그 순위 배분금. The finance screen also shows local supporters against the catchment.\n- **Tests:** added for the share totals, merit order, the one-season parachute, a third-tier club with 2M followers drawing no more than its catchment, and no `fan-income` entries.\n\n**Things to know:**\n- **Starting constants:** all the constants are first estimates for T062 to calibrate. In a 1950 test run, a new amateur club's income is about the same as before; a fourth-tier club gains about £2.5k a season; and a top-flight club with 228k followers draws 17–24k.\n- **Income mix can't shift by itself:** because both the distribution and ticket income grow with the same index, the index can't move the income mix from matchday-heavy in the 1950s to distribution-heavy in the 2000s. T062 will need to tune the share table or attendance for that.\n- **No city data:** clubs have no city in the game data, so the \"city\" part of the catchment is a per-country factor. The owner's club counts as ordinary stature.\n- **Cup and continental bonuses:** match result bonuses for cup and continental games remain, because the task says \"end for league games\". You may want to end those too, since ECON-27 lists only cup and continental prizes.\n- **Older saves:** in a save loaded mid-season, earlier fan-income and rank-prize entries now appear under 이전·기타 장부. The season review still reads the old prize for past seasons.\n- **Docs and goldens:** `docs/FINANCES.md`, `docs/GAMEPLAY-ITERATION.md` and the goldens still describe the old rules; they are left to T062.\n- **Not run:** the e2e tests. The work-board read was denied and spec lint wasn't run.\n- **Outside the listed files:** `cups.ts`, `europe.ts`, `projection.ts` and its test, `season.ts`, `SeasonReview.tsx` and `outcome.ts`."
+        }
+      }
+    },
+    {
+      "sequence": 129,
+      "at": "2026-10-12T14:52:47.094Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "8dc411e3-63e5-4c3e-bd8d-a70d08894f56",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T14:52:47.094Z"
+        }
+      }
+    },
+    {
+      "sequence": 130,
+      "at": "2026-10-12T14:52:47.097Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "8dc411e3-63e5-4c3e-bd8d-a70d08894f56",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T14:52:47.094Z"
+        }
+      }
+    },
+    {
+      "sequence": 131,
+      "at": "2026-10-12T14:55:49.711Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T057",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 132,
+      "at": "2026-10-12T14:55:50.333Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T057",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 133,
+      "at": "2026-10-12T14:55:50.356Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T057",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 134,
+      "at": "2026-10-12T14:56:30.943Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T058",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T058",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T057",
+            "commit": "1cfee4b06989d360977159a8fa7d829f57df1281",
+            "at": "2026-10-12T14:56:30.942Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T14:55:50.668Z",
+                "finishedAt": "2026-10-12T14:56:30.572Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 135,
+      "at": "2026-10-12T14:56:30.946Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T058",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "1bc3d605-1498-4f86-9dbf-cb62aa1773b6",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T14:33:32.247Z",
+          "finishedAt": "2026-10-12T14:56:30.946Z",
+          "error": null,
+          "summary": "T057 is done. Every player now gets a market wage and a transfer value on one scale, using the football index. typecheck and the full test:unit suite pass (551 tests), and lint and format:check also pass. The edits are uncommitted for the host runner to commit; result `at` is `-`.\n\n**What changed**\n- New `packages/engine/src/contracts.ts` holds all first constants in one `MARKET_CONFIG` for T062:\n  - Wages rise with ability at ×1.0965 a point, so a player rated 80 earns 6.3× one rated 60.\n  - Division shares are 1 / 0.42 / 0.35 / 0.3 / 0.25 by tier, so the second tier pays 42% of the top flight for the same player. The amateur league counts as the tier below the professional ones.\n  - Young players earn extra for the gap to their potential; wages drop a point per year under 21 and over 30.\n  - A value is 6 years of wage, one year fewer for each year after 28.\n  - The anchor is 200 units a year for a top-flight player rated 70 (about the 1950 English maximum wage).\n- `world.ts` gains `footballQuote`, which converts like `quote` but uses the football index instead of prices. `makePlayer` takes an optional division and starts every generated player at his market wage: founders, other clubs' squads, season-close youth fill, market candidates and academy promotions.\n- `playerValue(w, p, division?)` now returns the market value, so incoming offers, the staff sale bar, stances and squad value all follow it.\n- Market candidates are paid at our division's wage. Their asking fee is their value at the division their ability suits, times the existing fee multipliers. A loan costs 10% of value.\n- A free agent has no club, so his fee and his loan fee are both 0. Before this, his loan fee would have been 10% of his value — more than signing him outright — and it made the golden fixture's free-agent loan throw for lack of cash.\n- `contracts.test.ts` checks the CLUB-25 targets (80 vs 60 at 6–10×, second tier at 35–50%), that wages rise with the index across eras, the age and potential effects, that generated players start at market wage, and how values and asking fees are built. It notes that T062 recalibrates. The old youth-premium test in `transfers.test.ts` is rewritten for the market value.\n\n**Other checks**\n- test:contract: the schema tests pass. The 4 portable golden fixtures no longer match their recorded cash and wages (regenerating them is T062's job), but all 4 now run to completion.\n- test:e2e was not run because it isn't an allowed check. Instead, a script confirmed the recruitment e2e seeds still fit their founding cash.\n- The haeram CLI board read was denied, so freshness came from STATE: CLUB r17 and ECON r14 match the task's base.\n\n**Limits, for the planner and T062**\n- **Calibration risk:** combining CLUB-25's targets with the 11 ability points between tiers makes the top flight pay about 250× the ENG amateur league. The ECON-9/ECON-29 income bands may need flatter lower divisions. The division shares are per tier so T062 can tune them; if that isn't enough, it needs update-ssot.\n- **SSOT gap:** CLUB-25 doesn't say which division sets a market candidate's price. I priced him at the division his ability suits and pay his wage at ours. The planner should write that into CLUB-25.\n- **Left for T058:** `season.ts` still renews expiring contracts with the old wage formula, and build cards' player-wage effects still scale the wage bill.\n- **Founding cash is smaller:** cheaper amateur wages mean a year of costs is less, e.g. ENG on 넉넉한 출발 starts with about £2,400 instead of £4,050.\n- **Edits outside the task's touch list:** `ops-squad.ts`, `academy.ts`, `season.ts` (one argument), `index.ts` (exports the new module), and `apps/web/src/adapters/packing.test.ts` (gives the club cash for its bid)."
+        }
+      }
+    },
+    {
+      "sequence": 136,
+      "at": "2026-10-12T14:56:30.996Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T058",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "88ea0d19-5659-4ad6-abc2-96b61c0daba1",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T14:56:30.996Z"
+        }
+      }
+    },
+    {
+      "sequence": 137,
+      "at": "2026-10-12T14:56:31.002Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T058",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "88ea0d19-5659-4ad6-abc2-96b61c0daba1",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T14:56:30.996Z"
+        }
+      }
+    },
+    {
+      "sequence": 138,
+      "at": "2026-10-12T14:56:41.920Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T060",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 139,
+      "at": "2026-10-12T14:56:42.450Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T060",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 140,
+      "at": "2026-10-12T14:56:42.471Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T060",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 141,
+      "at": "2026-10-12T14:57:22.983Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T061",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T061",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T060",
+            "commit": "e1b323ff478269dde24b9fd09c3de02a55a35fb5",
+            "at": "2026-10-12T14:57:22.982Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T14:56:42.727Z",
+                "finishedAt": "2026-10-12T14:57:22.669Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 142,
+      "at": "2026-10-12T14:57:22.987Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T061",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "87ea07ce-a70b-4d2c-8039-5efa3f5492a6",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T14:33:32.744Z",
+          "finishedAt": "2026-10-12T14:57:22.987Z",
+          "error": null,
+          "summary": "T060 구현을 마쳤어요. 감독과 코치의 선임과 재계약은 1–5시즌 중에서 기간을 고르고, 연봉은 그 기간 동안 고정돼요. `pnpm run typecheck`와 `pnpm run test:unit`(74개 파일, 550개 테스트)은 통과했어요. 변경한 파일은 eslint와 prettier 검사를 통과했고, `pnpm run build`도 성공했어요. 커밋은 하지 않았어요.\n\n**엔진 변경**\n- **계약 기간**: 감독은 70세가 되는 시즌을 넘겨 계약할 수 없고, 소방수는 1시즌만 계약해요. 이를 어기거나 범위 밖 기간을 보내면 이유를 담은 오류로 거절해요.\n- **기간을 안 보낼 때**: 이전 규칙대로 동작해요. 코치는 후보가 제시한 2–3시즌, 감독은 학파 기본 기간, 재계약은 감독 1시즌·코치 2시즌이에요.\n- **연봉**: 코치 연봉은 계약 시점의 능력을 따르고, 감독 연봉은 quote(120+능력)이에요. 둘 다 축구 지수(ECON-26)를 반영하고, 1979년 이전에는 지수가 1이라 값이 그대로예요. 후보, 다른 구단 감독, 계약금, 임시 감독 연봉도 같은 지수를 따라요.\n- **해지·교체 보상금**: 남은 시즌(이번 시즌 포함)마다 연봉의 25%를 내요. 코치와 감독 모두 같고, 임시 감독은 보상금이 없어요.\n- **자동 갱신 폐지**: 감독 계약이 시즌 끝에 끝나면 4월 1일에 재계약 알림이 와요. 재계약하지 않으면 시즌 종료 때 떠나고 임시 감독이 맡아요.\n- **위임 시 감독 재계약**: 4월 1일 위임 재계약은 이제 감독직 위임(`delegation.manager`)일 때 작동해요(이전엔 코치 고용 위임). 소방수만이 아니라 모든 감독이 대상이고, 2시즌(소방수는 1시즌) 계약해요.\n- **위임 코치 계약**: 스태프가 뽑거나 재계약하는 코치는 2시즌이에요. 그런데 시즌 경계 재계약이 실제로는 3시즌을 붙이고 있어서, 2시즌이 되도록 고쳤어요.\n\n**UI 변경**\n- ClubStaff에 1–5시즌 기간 다이얼을 추가했어요. 고를 수 없는 시즌은 비활성으로 이유를 보여줘요.\n- 함께 총액(연봉×기간+계약금), 계약 종료 시점, 계약 직후 해지할 때의 보상금을 보여줘요.\n- 코치 선임 시트와 새 코치 재계약 시트에서 기간을 고르고, 교체되는 코치에게 줄 보상금도 표시해요.\n- 감독 재계약 블록과 선임 확인 창의 기간 선택도 ClubStaff 컴포넌트를 써요. 재계약 결과 안내는 실제로 늘어난 시즌 수를 말해요.\n\n**알아둘 점**\n- **실행하지 못한 검사**: haeram CLI(`work board`, spec lint)는 권한이 거부돼 실행하지 못했어요. e2e 테스트와 진입 번들 크기 측정도 돌리지 않았어요. 소방수 e2e 시나리오의 문구와 '재계약' 버튼은 그대로 뒀어요.\n- **T061 전까지의 공백**:\n  - 위임 탭에 감독직 위임 토글이 아직 없어요(개입 4단계에서만 켜져요).\n  - 스태프가 감독 공석을 채우지 않아요. 그래서 자금 부족으로 재계약하지 못한 4단계 구단은 감독 이탈 알림에서 멈춰요.\n- **자동 진행 영향**: 사람 없이 돌리면 창단 감독이 1953년 계약 종료 때 떠나요. 골든 파일과 경제 보정 결과가 바뀌는데, 이는 T062 몫이에요.\n- **touches 밖 수정**: managers.test.ts, operations.test.ts, Rich.tsx, outcome.ts를 고쳤어요.\n- **다른 레인과 겹칠 수 있는 부분**: 축구 지수 반영 헬퍼(`staffQuote`)를 staff.ts에 따로 뒀어요. T057의 선수 시장 연봉 헬퍼와 나중에 합칠 수 있어요."
+        }
+      }
+    },
+    {
+      "sequence": 143,
+      "at": "2026-10-12T14:57:23.040Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T061",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "d2e92ade-95d2-454a-b68d-b06de0a8a968",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T14:57:23.040Z"
+        }
+      }
+    },
+    {
+      "sequence": 144,
+      "at": "2026-10-12T14:57:23.044Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T061",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "d2e92ade-95d2-454a-b68d-b06de0a8a968",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T14:57:23.040Z"
+        }
+      }
+    },
+    {
+      "sequence": 145,
+      "at": "2026-10-12T15:09:18.911Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T058",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 146,
+      "at": "2026-10-12T15:09:19.641Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T058",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 147,
+      "at": "2026-10-12T15:09:19.669Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T058",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 148,
+      "at": "2026-10-12T15:10:04.058Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T059",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T059",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T057",
+            "commit": "1cfee4b06989d360977159a8fa7d829f57df1281",
+            "at": "2026-10-12T14:56:30.942Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T14:55:50.668Z",
+                "finishedAt": "2026-10-12T14:56:30.572Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T058",
+            "commit": "11df8385d2c164903b43bacc8b42d0f0e0b02043",
+            "at": "2026-10-12T15:10:04.056Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T15:09:20.060Z",
+                "finishedAt": "2026-10-12T15:10:03.563Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 149,
+      "at": "2026-10-12T15:10:04.063Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T059",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "88ea0d19-5659-4ad6-abc2-96b61c0daba1",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T14:56:30.996Z",
+          "finishedAt": "2026-10-12T15:10:04.063Z",
+          "error": null,
+          "summary": "T058 is done: players now negotiate their contracts (CLUB-26), and every acceptance item is ticked. The changes are left uncommitted for the runner.\n\n**Checks**\n- Passed: `pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit` (full suite, 558 tests). I ran the whole suite because talks run every club day and the wage bill changed, so the impact couldn't be narrowed.\n- Passed: `pnpm run lint` and `pnpm run format:check`.\n- `pnpm run test:contract`: the schema contract tests pass. The 4 portable golden fixtures still differ on cash and wages, as they have since T057; all 4 run to completion, and regenerating them is T062's job.\n- Not run: the haeram CLI board read was denied, so I took freshness from STATE (CLUB r17, ECON r14, STAFF r12, matching the task's base).\n\n**What changed**\n- **Talks open:**\n  - On 1 January, every player whose contract ends at this season's close asks to renew.\n  - On any day, a player paid 75% or less of his market wage asks for a raise, at most once a season.\n  - Loan players and players who have announced retirement don't open talks.\n  - Each talk is a `contract-talk` inbox item.\n- **Demand and floor:** demand is the market wage times the build's player-wage effects. Floor is demand × (1 − goodwill). Goodwill adds squad investment, the culture cards (가족 같은 클럽 +5, 스타 대우 +10 for players rated 70+, 철저한 경쟁 −5), 긴축 재정 −5 and (morale − 60)/4, kept within −10 to +30%. The function returns each source separately so T059's sheet can show them.\n- **Delegated staff:** they sign at the floor for 2 seasons (1 from age 32) when the floor is within the pay ceiling × market wage and cash still covers 13 rounds of costs after the raise. Otherwise they decline, and the report gives the reason.\n- **Owner answers:**\n  - An offer at or above the floor sets the wage and runs the contract to the end of this season plus the chosen term.\n  - An offer below the floor is refused with the floor in the message and leaves the world unchanged.\n  - Declining closes the talk through the same function the staff use, so T059 can add what follows.\n  - Either answer takes contract talks back from the staff.\n- **Season close:** the silent 3-season renewal is removed.\n\n**Outside the task's file list**\n- `finance.ts`: the wage bill no longer multiplies wages by the build's player-wage effect. That effect now sits in the demand; leaving it in both places would apply it twice and stop an agreed wage from staying fixed.\n- `operations.test.ts`: the case that expected the old \"not supported yet\" refusal now expects the \"no open talk\" refusal.\n- `policy.test.ts` and `training.test.ts`: their test helpers re-rate the squad to 40 without changing wages, so the players were asking for raises. The helpers now pay that squad its market wage.\n\n**For the planner (also in the task's limits)**\n- **Term start:** CLUB-26 doesn't say when a contract term starts. I used the rest of this season plus the term, for renewals and raises alike, so a raise can shorten a longer contract. This should go into CLUB-26.\n- **Raise right after signing:** at goodwill of about 25% or more, a floor can be at or below 75% of the market wage. A player who just signed can then ask for a raise the next day. The spec allows it; you may want \"not in the season he signed\".\n- **Build wage effects:** these now reach the wage bill only through renewals. Recruits and academy promotions still sign at the plain market wage, so the 알뜰 생존 preset's \"player wages ×0.91\" takes hold only as contracts renew. ECON-22's wording and the card label 선수 급여 may need updating.\n- **Left for T059:**\n  - Until T059 lands, a player whose contract ends unrenewed stays at the club.\n  - Without delegation, a renewal talk opened before an April retirement announcement stays open; CLUB-28 should close it.\n  - The talk sheet and squad cards are T059's."
+        }
+      }
+    },
+    {
+      "sequence": 150,
+      "at": "2026-10-12T15:10:04.123Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T059",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "28ee0122-1a71-4fd6-a077-379b6ce4d4c5",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T15:10:04.123Z"
+        }
+      }
+    },
+    {
+      "sequence": 151,
+      "at": "2026-10-12T15:10:04.126Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T059",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "28ee0122-1a71-4fd6-a077-379b6ce4d4c5",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T15:10:04.123Z"
+        }
+      }
+    },
+    {
+      "sequence": 152,
+      "at": "2026-10-12T15:18:57.306Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 153,
+      "at": "2026-10-12T15:18:57.957Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 154,
+      "at": "2026-10-12T15:18:57.983Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 155,
+      "at": "2026-10-12T15:19:49.817Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "steps": [
+          {
+            "taskId": "T055",
+            "commit": "629454151840c72e806f0b310a52f7ab909c8fa7",
+            "at": "2026-10-12T14:52:47.036Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T14:52:06.904Z",
+                "finishedAt": "2026-10-12T14:52:46.722Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T056",
+            "commit": "9e114455ad40ad2e38c54bf53d12903df1af148e",
+            "at": "2026-10-12T15:19:49.806Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T15:18:58.321Z",
+                "finishedAt": "2026-10-12T15:19:49.432Z"
+              }
+            ]
+          }
+        ],
+        "verifiedCommit": "9e114455ad40ad2e38c54bf53d12903df1af148e",
+        "submittedBase": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2",
+        "submissionId": "4bf84e15-9f53-46ba-a31c-0b2a1cf98c4b",
+        "submittedAt": "2026-10-12T15:19:49.817Z",
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+            "startedAt": "2026-10-12T15:18:58.321Z",
+            "finishedAt": "2026-10-12T15:19:49.432Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 156,
+      "at": "2026-10-12T15:19:49.820Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "8dc411e3-63e5-4c3e-bd8d-a70d08894f56",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T14:52:47.094Z",
+          "finishedAt": "2026-10-12T15:19:49.820Z",
+          "error": null,
+          "summary": "T056 구현을 마쳤습니다. 후원 수입이 이제 다섯 자리별 계약에서 나옵니다. 검사 명령 `pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit`은 75개 파일, 559개 테스트 모두 통과했고 lint와 format:check도 통과했습니다. 다만 golden 계약 테스트(`pnpm run test:contract`)는 실패합니다(아래 참고). 커밋과 제출은 하지 않았습니다.\n\n**구현 내용 (새 파일 `packages/engine/src/sponsors.ts`)**\n- **자리 열림:** 국가별 카탈로그 연도에 맞춰 열립니다. 경기장 명명권은 시설 10단계 이상이어야 열립니다.\n- **제안 금액:** 디비전, 평판, 지난 시즌 순위, 팬 수(많을수록 증가 폭이 줄어듦), 축구 지수로 구단의 상업 가치를 매기고, 자리별 비율(10/25/45/15/10%)을 곱합니다. 운영 전략과 시너지 효과도 반영됩니다.\n- **계약 종류와 기간:** 안정형 3시즌, 성과형 2시즌, 독점형 4시즌, 물가 연동형 5시즌입니다. 금액은 계약 기간 내내 고정되고, 재계약할 때 다시 매깁니다.\n- **지급:** 계약마다 리그 경기당 분할 지급되고, 계약 전 경기는 소급하지 않습니다. 장부에는 자리별로 시즌당 한 항목(`sponsor:<slot>`)으로 쌓입니다.\n- **보너스:** 메인 스폰서는 리그 승리·무승부 때, 용품 후원은 승격이나 우승 때 지급합니다.\n- **강등:** 진행 중인 모든 계약의 남은 기간이 30% 줄어듭니다. 남은 기간의 70%를 반올림해 남기므로, 1시즌 남은 계약은 줄지 않습니다.\n- **위임과 알림:** 운영을 맡기면 비어 있는 모든 열린 자리를 그날 안정형으로 채우고 한 번 보고합니다. 맡기지 않으면 시즌 시작에 빈 자리 알림을, 4월 1일에 마지막 시즌 계약마다 `sponsor-ending` 알림을 보냅니다.\n- **후원 탭:** 자리마다 계약 카드나 제안 카드를 보여 주고, 닫힌 자리는 열리는 시즌(추정이면 표시)이나 필요한 시설 단계를 알려 줍니다. 금액은 모두 `<Money>`로 표시합니다.\n- **장부와 기타:** financialBreakdown이 다섯 자리의 이름을 표시하고, 현금 전망은 모든 계약을 반영합니다.\n- **이전 명령:** 엔진은 더 이상 `w.sponsor`를 쓰지 않고, 이전 `sponsor` 명령은 거부합니다.\n- **테스트:** `sponsors.test.ts`에 7개 테스트를 넣었습니다. 요구된 네 경우 외에 위임·용품 보너스, 4월 1일 알림, 장부 이름·독점 계약도 확인합니다.\n\n**한계와 확인할 점**\n- **golden 테스트 실패:** `founding-and-commercial-decisions`는 저장된 명령에 이전 `sponsor`가 남아 있어 오류로 실패합니다. `french-redenomination`과 `modern-european-season`은 후원 계약이 없는데도 현금이 맞지 않습니다. golden 재생성은 T062 몫이고, 생성 스크립트(`scripts/update-golden.ts`)는 이미 `sign-sponsor`로 바꿔 두었습니다.\n- **e2e:** 허용 목록에 없어 실행하지 못했습니다. `tests/e2e/business.spec.ts`와 `save-upgrade.spec.ts`는 새 방식에 맞게 고쳤지만 검증되지 않았습니다.\n- **남은 계약 정의:** 이전 `sponsor` 명령과 `World.sponsor` 필드는 contracts 타입과 `protocol.ts`에 아직 남아 있습니다(엔진은 거부). 정리는 T062나 contracts 변경에서 하면 됩니다.\n- **SSOT에 올릴지 정할 판단:** 보너스가 없는 자리에는 성과형 제안을 내지 않았습니다. 용품 보너스는 시즌 경계에 지급되어 새 시즌 장부에 잡히고, 불확실하므로 현금 전망에서 뺐습니다.\n- **상수:** `SPONSOR_CONFIG`는 T062가 보정할 첫 추정치입니다. 1950년부터 위임한 잉글랜드 50시즌 실행에서 후원 비중은 1950년대 1–2%, 1980년대 17–21%, 1990년대 후반 32–42%였습니다. 처음 값으로는 1990년대에 42–53%가 나와 낮춘 결과입니다. 지출이 수입에 비해 아주 작은 문제는 T057/T062 몫입니다.\n- **아마추어 리그 순위:** 지난 시즌 기록에 아마추어 리그 상대 구단이 없어서, 아마추어 리그 순위는 평가에 반영되지 않습니다(중립 처리).\n- **touches 밖 수정:**\n  - 엔진: `projection.ts`, `operations.ts`, `news.ts`\n  - 웹: `host.ts`, `protocol.ts`, `App.tsx`, `outcome.ts`, `EventCenter.tsx`(후원 만료 알림에서 구단 운영 화면을 열도록 한 줄 수정)\n  - 테스트: 엔진 테스트 다섯 개, `persistence.test.ts`, e2e 스펙 두 개\n  - 스크립트: `benchmark.ts`, `update-golden.ts`\n- **거부된 명령:** haeram CLI(`work board`)와 셸 `sed -i`는 승인이 필요해 거부되었습니다. 그래서 작업 보드로 배정을 다시 확인하지 못했고, spec lint도 실행하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 157,
+      "at": "2026-10-12T15:19:50.296Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "70b20eba-0e2c-413d-8d6b-8b39d84128a3",
+          "owner": "c889f1f7-0b60-4059-aea4-032cfcec6d62/reviewer-1",
+          "status": "reviewing",
+          "commit": "9e114455ad40ad2e38c54bf53d12903df1af148e",
+          "baseCommit": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2",
+          "submissionId": "4bf84e15-9f53-46ba-a31c-0b2a1cf98c4b",
+          "createdAt": "2026-10-12T15:19:50.296Z"
+        }
+      }
+    },
+    {
+      "sequence": 158,
+      "at": "2026-10-12T15:19:50.950Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "41f57574-7213-47f5-9046-51fbaed66999",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T15:19:50.950Z"
+        }
+      }
+    },
+    {
+      "sequence": 159,
+      "at": "2026-10-12T15:19:50.955Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "41f57574-7213-47f5-9046-51fbaed66999",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T15:19:50.950Z"
+        }
+      }
+    },
+    {
+      "sequence": 160,
+      "at": "2026-10-12T15:25:15.697Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T055 and T056 meet their acceptance criteria. T055: the league distribution has an equal share paid per round, merit by final position (1.6× at the top, 1.3× below), and a one-season parachute measured from history. The gate is now capped by local supporters within the catchment, and match bonuses and fan income are gone. Shares, the gate and prizes use the football index, and the cash projection matches settlement. T056: sponsor contracts sit in five slots that open by era, valued at signing. They are paid per league game with no back pay. The main sponsor pays a results bonus and the kit sponsor a promotion or title bonus at the close. A relegation cuts remaining seasons by 30%, delegated staff fill empty slots, reminders fire at season start and on 1 April, and the 후원 tab and ledger lines are in place. One P2 blocks approval: T056 renamed the sponsor sign buttons but left tests/e2e/management.spec.ts using the old name. That journey will fail in CI once integrated. Not verified here: the review checkout has no node_modules, and installing them would modify the checkout. So I relied on the worker's recorded typecheck and test:unit run (75 files, 559 tests), plus lint and format. test:contract fails only on the portable goldens, which T062 owns.",
+        "review": {
+          "id": "70b20eba-0e2c-413d-8d6b-8b39d84128a3",
+          "owner": "c889f1f7-0b60-4059-aea4-032cfcec6d62/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T055 and T056 meet their acceptance criteria. T055: the league distribution has an equal share paid per round, merit by final position (1.6× at the top, 1.3× below), and a one-season parachute measured from history. The gate is now capped by local supporters within the catchment, and match bonuses and fan income are gone. Shares, the gate and prizes use the football index, and the cash projection matches settlement. T056: sponsor contracts sit in five slots that open by era, valued at signing. They are paid per league game with no back pay. The main sponsor pays a results bonus and the kit sponsor a promotion or title bonus at the close. A relegation cuts remaining seasons by 30%, delegated staff fill empty slots, reminders fire at season start and on 1 April, and the 후원 tab and ledger lines are in place. One P2 blocks approval: T056 renamed the sponsor sign buttons but left tests/e2e/management.spec.ts using the old name. That journey will fail in CI once integrated. Not verified here: the review checkout has no node_modules, and installing them would modify the checkout. So I relied on the worker's recorded typecheck and test:unit run (75 files, 559 tests), plus lint and format. test:contract fails only on the portable goldens, which T062 owns.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "tests/e2e/management.spec.ts:28-29 (T056)",
+              "message": "The 후원 tab's sign buttons are now named `${view.label} 계약`, e.g. '지역 후원 계약' (BusinessWorkbench.tsx). The offer cards moved to `sponsor-<slot>-<kind>`. management.spec.ts still runs `getByRole('button', { name: '후원 계약', exact: true }).first().click()` and then expects that name to have count 0. A new 1950 club has business delegation off, so nothing matches and the 'operates a club, reads a season and exports/imports the actual save' journey times out in every browser. The worker updated business.spec.ts and save-upgrade.spec.ts but missed this spec, and e2e was not run. Fix: click '지역 후원 계약', or scope to `getByTestId('sponsor-slot-local')`. Then assert the `sponsor-contract-local` card (or that the '지역 후원 계약' buttons are gone). Search tests/e2e for any other old sponsor labels or test IDs, and run this spec or record that e2e is left for integration."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/finance.ts matchBonus / packages/contracts/src/schema.ts:691 (T056)",
+              "message": "A performance-kind sponsor from before 1.16 that loads before the shirt slot opens (any ENG save before 1979) moves into 지역 후원. It keeps its `bonus`, but only the shirt slot pays result bonuses now. For the rest of its term it pays the lower performance base with no bonus, which does not quite match SAVE-10's 'until its end'. Option: pay a migrated contract's result bonus whatever its slot. Or leave it as is, given the robust-over-save-compatibility direction, and record the choice for update-ssot. Low impact before release."
+            }
+          ],
+          "commit": "9e114455ad40ad2e38c54bf53d12903df1af148e",
+          "baseCommit": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2",
+          "submissionId": "4bf84e15-9f53-46ba-a31c-0b2a1cf98c4b",
+          "createdAt": "2026-10-12T15:19:50.296Z",
+          "finishedAt": "2026-10-12T15:25:15.697Z"
+        }
+      }
+    },
+    {
+      "sequence": 161,
+      "at": "2026-10-12T15:25:15.701Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "41f57574-7213-47f5-9046-51fbaed66999",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T15:19:50.950Z",
+          "finishedAt": "2026-10-12T15:25:15.701Z",
+          "error": null,
+          "summary": "T055 and T056 meet their acceptance criteria. T055: the league distribution has an equal share paid per round, merit by final position (1.6× at the top, 1.3× below), and a one-season parachute measured from history. The gate is now capped by local supporters within the catchment, and match bonuses and fan income are gone. Shares, the gate and prizes use the football index, and the cash projection matches settlement. T056: sponsor contracts sit in five slots that open by era, valued at signing. They are paid per league game with no back pay. The main sponsor pays a results bonus and the kit sponsor a promotion or title bonus at the close. A relegation cuts remaining seasons by 30%, delegated staff fill empty slots, reminders fire at season start and on 1 April, and the 후원 tab and ledger lines are in place. One P2 blocks approval: T056 renamed the sponsor sign buttons but left tests/e2e/management.spec.ts using the old name. That journey will fail in CI once integrated. Not verified here: the review checkout has no node_modules, and installing them would modify the checkout. So I relied on the worker's recorded typecheck and test:unit run (75 files, 559 tests), plus lint and format. test:contract fails only on the portable goldens, which T062 owns."
+        }
+      }
+    },
+    {
+      "sequence": 162,
+      "at": "2026-10-12T15:25:15.724Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "70b20eba-0e2c-413d-8d6b-8b39d84128a3",
+            "owner": "c889f1f7-0b60-4059-aea4-032cfcec6d62/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T055 and T056 meet their acceptance criteria. T055: the league distribution has an equal share paid per round, merit by final position (1.6× at the top, 1.3× below), and a one-season parachute measured from history. The gate is now capped by local supporters within the catchment, and match bonuses and fan income are gone. Shares, the gate and prizes use the football index, and the cash projection matches settlement. T056: sponsor contracts sit in five slots that open by era, valued at signing. They are paid per league game with no back pay. The main sponsor pays a results bonus and the kit sponsor a promotion or title bonus at the close. A relegation cuts remaining seasons by 30%, delegated staff fill empty slots, reminders fire at season start and on 1 April, and the 후원 tab and ledger lines are in place. One P2 blocks approval: T056 renamed the sponsor sign buttons but left tests/e2e/management.spec.ts using the old name. That journey will fail in CI once integrated. Not verified here: the review checkout has no node_modules, and installing them would modify the checkout. So I relied on the worker's recorded typecheck and test:unit run (75 files, 559 tests), plus lint and format. test:contract fails only on the portable goldens, which T062 owns.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "tests/e2e/management.spec.ts:28-29 (T056)",
+                "message": "The 후원 tab's sign buttons are now named `${view.label} 계약`, e.g. '지역 후원 계약' (BusinessWorkbench.tsx). The offer cards moved to `sponsor-<slot>-<kind>`. management.spec.ts still runs `getByRole('button', { name: '후원 계약', exact: true }).first().click()` and then expects that name to have count 0. A new 1950 club has business delegation off, so nothing matches and the 'operates a club, reads a season and exports/imports the actual save' journey times out in every browser. The worker updated business.spec.ts and save-upgrade.spec.ts but missed this spec, and e2e was not run. Fix: click '지역 후원 계약', or scope to `getByTestId('sponsor-slot-local')`. Then assert the `sponsor-contract-local` card (or that the '지역 후원 계약' buttons are gone). Search tests/e2e for any other old sponsor labels or test IDs, and run this spec or record that e2e is left for integration."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/finance.ts matchBonus / packages/contracts/src/schema.ts:691 (T056)",
+                "message": "A performance-kind sponsor from before 1.16 that loads before the shirt slot opens (any ENG save before 1979) moves into 지역 후원. It keeps its `bonus`, but only the shirt slot pays result bonuses now. For the rest of its term it pays the lower performance base with no bonus, which does not quite match SAVE-10's 'until its end'. Option: pay a migrated contract's result bonus whatever its slot. Or leave it as is, given the robust-over-save-compatibility direction, and record the choice for update-ssot. Low impact before release."
+              }
+            ],
+            "commit": "9e114455ad40ad2e38c54bf53d12903df1af148e",
+            "baseCommit": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2",
+            "submissionId": "4bf84e15-9f53-46ba-a31c-0b2a1cf98c4b",
+            "createdAt": "2026-10-12T15:19:50.296Z",
+            "finishedAt": "2026-10-12T15:25:15.697Z",
+            "invalidatedAt": "2026-10-12T15:25:15.724Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 163,
+      "at": "2026-10-12T15:25:15.780Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "214e8b40-4f9f-42cd-9071-c618f579d313",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T15:25:15.780Z"
+        }
+      }
+    },
+    {
+      "sequence": 164,
+      "at": "2026-10-12T15:25:15.785Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "214e8b40-4f9f-42cd-9071-c618f579d313",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T15:25:15.780Z"
+        }
+      }
+    },
+    {
+      "sequence": 165,
+      "at": "2026-10-12T15:25:25.904Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T061",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 166,
+      "at": "2026-10-12T15:25:26.448Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T061",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 167,
+      "at": "2026-10-12T15:25:26.473Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T061",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 168,
+      "at": "2026-10-12T15:26:06.973Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T061",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "steps": [
+          {
+            "taskId": "T060",
+            "commit": "e1b323ff478269dde24b9fd09c3de02a55a35fb5",
+            "at": "2026-10-12T14:57:22.982Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T14:56:42.727Z",
+                "finishedAt": "2026-10-12T14:57:22.669Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T061",
+            "commit": "33720879b3704224a824e25182d40ee08e491fcb",
+            "at": "2026-10-12T15:26:06.964Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T15:25:26.727Z",
+                "finishedAt": "2026-10-12T15:26:06.647Z"
+              }
+            ]
+          }
+        ],
+        "verifiedCommit": "33720879b3704224a824e25182d40ee08e491fcb",
+        "submittedBase": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2",
+        "submissionId": "dbba24ae-1414-4e3e-97b5-3e730ad9f93b",
+        "submittedAt": "2026-10-12T15:26:06.973Z",
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+            "startedAt": "2026-10-12T15:25:26.727Z",
+            "finishedAt": "2026-10-12T15:26:06.647Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 169,
+      "at": "2026-10-12T15:26:06.977Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T061",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "d2e92ade-95d2-454a-b68d-b06de0a8a968",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T14:57:23.040Z",
+          "finishedAt": "2026-10-12T15:26:06.977Z",
+          "error": null,
+          "summary": "T061 is done: with the manager post delegated, the staff fill a vacancy at once and the clock keeps running. Typecheck, the full unit suite (74 files, 557 tests) and staff.spec in Chromium (4/4) all pass.\n\n**Engine**\n- **Vacancies:** every departure (resignation, retirement at 70, an unrenewed contract, a firefighter whose season ends) goes through `resign`. With `delegation.manager` set, `appointDelegatedManager` hires a free agent through `delegatedManagerPick`. No departure alert is raised, so the clock keeps running.\n- **Who gets picked:** only free agents the club can afford (cash after the signing fee still covers 13 rounds of costs with his wage), never another club's manager. The staff take the best by OVR among the schools the rule asks for, else the best overall:\n  - 같은 학파 우선 (default): the departing manager's school;\n  - 능력 최고: no school preference;\n  - 운영 전략 우선: the school the aimed synergy needs (`aimedSynergy` in synergy.ts).\n- **Contract and report:** 2 seasons (1 for a firefighter, never past his 70th year), the fee paid, a hire event and an inbox report.\n- **Nobody affordable:** the interim stays without stopping the clock, an attention report goes out, and the staff retry daily until someone is affordable.\n- **1 April renewal:** if the rule's pick is at least 3 OVR better, the staff let the manager go and report it; he leaves at the close and they appoint then. Otherwise he is renewed for 2 seasons.\n- **`manager-rule`:** now works; choosing the default stores nothing.\n\n**UI**\n- The staff tabs are now 감독 · 코치진 · 위임.\n- A 교체 button on the manager card (감독 선임 under an interim) opens the market as a dialog. Hiring confirms on top of it and closes both.\n- `?view=candidates`, the departure alert and the candidate remedies all open 감독 with the market.\n- The 위임 tab has the 감독 선임 toggle and a three-step rule dial, with a line saying whom the staff would appoint today.\n\n**Interpretations for planning (update-ssot STAFF-18)**\n- **Aimed synergy:** I defined it as the school-needing synergy with the most conditions met once a manager of that school is in charge, with at least one other condition already met. The presets only aim at synergies that need no school, so reading them literally would make the rule always fall back to best overall.\n- **Nobody affordable:** the interim stays and the staff retry daily.\n- **Daily retry:** it has no departing school, so 같은 학파 우선 falls back to the best overall.\n- **Owner hire:** hiring a manager yourself does not switch the delegation off.\n\n**Edits outside the touches list**\n- synergy.ts: which schools each synergy needs, plus `aimedSynergy`.\n- Rich.tsx: the 교체 button and the market dialog, since the market lived there.\n- teamState.ts: one type change.\n- ClubStaff.module.css: the rule dial.\n- operations.test.ts: no longer expects `manager-rule` to be refused.\n- managers.test.ts: the delegated firefighter renewal test raises his OVR to 90 so no free agent is 3 better.\n\n**Not done or not verified**\n- The haeram CLI (`work board`, spec lint) was denied, so neither ran.\n- A mistaken `test:e2e --` call ran the whole suite in all three browsers: 275 passed. The failures were the three staff.spec firefighter journeys in every browser, caused by a broken locator in my new test helper, plus one WebKit `styled-select.spec.ts` keyboard-focus test. I fixed the locator and re-ran staff.spec in Chromium only, not Firefox or WebKit. The styled-select test is on the club-creation page, which this change doesn't touch, and I did not re-run it.\n- The entry-bundle size was not measured.\n- One remedy text in teamState.ts ('성향이 다른 감독 네 명…') and a comment in management.spec.ts still describe the old candidates tab."
+        }
+      }
+    },
+    {
+      "sequence": 170,
+      "at": "2026-10-12T15:26:07.340Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T061",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "9dd3361d-d3c6-4c23-ac2f-470f913ba055",
+          "owner": "c889f1f7-0b60-4059-aea4-032cfcec6d62/reviewer-1",
+          "status": "reviewing",
+          "commit": "33720879b3704224a824e25182d40ee08e491fcb",
+          "baseCommit": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2",
+          "submissionId": "dbba24ae-1414-4e3e-97b5-3e730ad9f93b",
+          "createdAt": "2026-10-12T15:26:07.340Z"
+        }
+      }
+    },
+    {
+      "sequence": 171,
+      "at": "2026-10-12T15:26:07.798Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T061",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "dd661d29-9a3a-4a87-853d-8d985a8f3d37",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T15:26:07.798Z"
+        }
+      }
+    },
+    {
+      "sequence": 172,
+      "at": "2026-10-12T15:26:07.802Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T061",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "dd661d29-9a3a-4a87-853d-8d985a8f3d37",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T15:26:07.798Z"
+        }
+      }
+    },
+    {
+      "sequence": 173,
+      "at": "2026-10-12T15:28:03.364Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 174,
+      "at": "2026-10-12T15:28:03.883Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 175,
+      "at": "2026-10-12T15:28:03.908Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 176,
+      "at": "2026-10-12T15:29:00.275Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "fe1bef9b-4cd9-4741-bcd1-553fcecfb46d",
+        "submittedAt": "2026-10-12T15:29:00.275Z",
+        "steps": [
+          {
+            "taskId": "T055",
+            "commit": "629454151840c72e806f0b310a52f7ab909c8fa7",
+            "at": "2026-10-12T14:52:47.036Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T14:52:06.904Z",
+                "finishedAt": "2026-10-12T14:52:46.722Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T056",
+            "commit": "88d79abe74db0038da66b7dcdba6aef7becb7040",
+            "at": "2026-10-12T15:29:00.265Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T15:28:04.179Z",
+                "finishedAt": "2026-10-12T15:28:59.899Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+            "startedAt": "2026-10-12T15:28:04.179Z",
+            "finishedAt": "2026-10-12T15:28:59.899Z"
+          }
+        ],
+        "verifiedCommit": "88d79abe74db0038da66b7dcdba6aef7becb7040"
+      }
+    },
+    {
+      "sequence": 177,
+      "at": "2026-10-12T15:29:00.279Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "91436603-12ec-4fa2-9c04-8f92c605590a",
+      "taskId": "T056",
+      "tasks": [
+        "T055",
+        "T056"
+      ],
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "214e8b40-4f9f-42cd-9071-c618f579d313",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T15:25:15.780Z",
+          "finishedAt": "2026-10-12T15:29:00.278Z",
+          "error": null,
+          "summary": "I fixed the reviewer's blocking P2 issue in T056; the e2e journey it flagged now passes in Chromium.\n\n**P2 fix:** tests/e2e/management.spec.ts was still looking for the old '후원 계약' button. It now clicks the '지역 후원 계약' button inside the local sponsor slot (`sponsor-slot-local`), checks that the signed contract card (`sponsor-contract-local`) appears, and checks that no '지역 후원 계약' button is left. A 1950 club in any country has only the local slot open, because every country's kit slot opens in 1970 or later. A search of tests/e2e found no other old sponsor labels or test IDs. The '후원 계약' checkbox in progression-settings.spec.ts is a different control: the staff delegation panel still uses that name, so the spec is still correct.\n\n**P3 (pre-1.16 performance sponsor moved into 지역 후원 is no longer paid its bonus):** I left this as it is, in line with the preference for clean designs over shims for old saves. SAVE-10 only says the contract runs \"until its end\", and it does. The base is still paid; only the results bonus stops, because only the shirt slot pays one. I recorded this in T056's result limits as a choice for update-ssot to settle.\n\n**Checks run:**\n- `pnpm exec prettier --check` and `pnpm exec eslint` on the edited spec, and `pnpm exec tsc --noEmit`: all passed.\n- `pnpm run build`: passed.\n- `pnpm run test:e2e` on management, business and save-upgrade specs, Chromium only: 13 passed.\n\nFirefox and WebKit e2e were not run and are left to integration. I didn't rerun test:unit because only an e2e spec changed; the earlier recorded run still covers the code. In T056's result I added these checks and the P3 choice, and removed the old note that e2e was never run. Changed files: tests/e2e/management.spec.ts and spec/tasks/T056.sponsor-slots.md. Nothing was committed or submitted."
+        }
+      }
+    },
+    {
+      "sequence": 178,
+      "at": "2026-10-12T15:32:26.675Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T059",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 179,
+      "at": "2026-10-12T15:32:26.892Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T059",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T059: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+      }
+    },
+    {
+      "sequence": 180,
+      "at": "2026-10-12T15:32:26.901Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "b3370e3e-bcda-48c9-b991-c79b919b4a83",
+      "taskId": "T059",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059"
+      ],
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "28ee0122-1a71-4fd6-a077-379b6ce4d4c5",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T15:10:04.123Z",
+          "finishedAt": "2026-10-12T15:32:26.901Z",
+          "error": "T059: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+          "summary": "T059 is implemented, but the new screens and the Chromium e2e journey have never been run in a browser. Those are the two acceptance items I left unchecked. Running test:e2e and the browser benchmark is not allowed in this session, and the web tests have no DOM renderer, so CI will be the first browser run.\n\n**Engine (contracts.ts and world/morale/match/transfers/season):**\n- When a talk is declined, by the owner or by the staff, the manager tries to talk the player round. The chance is 15% + 45% for a 동기부여형 manager + (trust−50)/200 + (flexibility−50)/400, kept within 5–85%, drawn from that player's stream for that talk.\n- If that fails, the player becomes unhappy and gets an attention 'unhappy' inbox item. If it works, the result is also an inbox item.\n- An unhappy player:\n  - plays 3 below his ability in match rating, team selection and every duel skill; his stored attributes are unchanged;\n  - costs squad morale 1 for each settled round he starts;\n  - opens no new talks;\n  - after 42 days hands in a transfer request: he is put on 이적 명단 and cannot be set to 이적 불가.\n- Offering at or above his current floor, or selling him, ends the unhappiness and the request. When the request had listed him, the listing is removed too.\n- At the season close, every non-loan player whose contract has ended leaves. From 1996 he leaves on a free. Before 1996 the club he joins pays us 50% of his value as free-transfer-compensation, shown in the ledger as 계약 만료 보상금.\n- An announced retirement closes the player's open talk that same day.\n\n**UI (Rich, EventCenter, RecruitmentDesk, state.ts):**\n- Roster cards show wage against market wage, the contract end, an 언해피 badge with its reason, an 이적 요청 flag, and a 협상 button.\n- The talk sheet shows demand, floor, a 1–5 season term, yearly cost, runway after signing and the talk-round chance.\n- Event cards for talks, unhappy players and transfer requests open that sheet.\n- The market's offer board marks an offer for a player who asked to leave.\n- tests/e2e/contract-talks.spec.ts covers decline → badge → transfer request in Chromium.\n\n**Checks:**\n- Passed: install + typecheck + test:unit (the full suite, 565 tests including 7 new contract cases), lint, format:check and build.\n- test:contract: the schema tests pass. The 4 golden fixtures still differ in cash, as they have since T057; regenerating them is T062's job.\n- I ran the e2e's setup once from a scratch tsx script: the player is not talked round, turns unhappy on 1 January (day 153), and files his transfer request on day 195, inside league round 28.\n\n**For review or the planner:**\n- Edits outside the task's file list: match.ts, finance.ts, state.ts and season.test.ts. In season.test.ts the close test from T058 now expects unrenewed players to leave.\n- The sheet only offers the floor, because the rules accept any offer at or above it.\n- Three gaps in CLUB-27/CLUB-28 to settle with update-ssot:\n  - an unhappy player's floor uses today's terms, not the declined talk's;\n  - meeting his floor also removes the listing his request created;\n  - an expiring player is valued in the new season, at the division he played in.\n- Clubs that leave talks unanswered, or whose staff decline above the pay ceiling, now lose those players every summer; youth refill the squad to 18. T062 should calibrate this.\n- A gap left from T058: an open talk's amounts are not converted when the currency changes.\n- The entry bundle size budget was not measured.\n- The haeram CLI board read was denied, so freshness came from STATE (CLUB r17, WEB r51, matching the task's base)."
+        }
+      }
+    },
+    {
+      "sequence": 181,
+      "at": "2026-10-12T15:34:47.849Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T061",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "9dd3361d-d3c6-4c23-ac2f-470f913ba055",
+          "owner": "c889f1f7-0b60-4059-aea4-032cfcec6d62/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "I reviewed T060 and T061 (base 94c2d4d → 3372087) against both tasks' acceptance, STAFF r12 (STAFF-7/11/14/15/17/18), WEB-40/45 and ECON-26 by reading the code. Every acceptance item is implemented, and I found no correctness bug that would block approval.\n\nT060: hire, hire-staff, renew-manager and renew-staff take a 1–5 season term. A manager never signs past his 70th year (managerTermLimit). The firefighter signs for 1. Wages are fixed for the term and priced on the football index (staffQuote). Release pays 25% of the wage per season left, counting the current one (releaseCost/managerPayoff). Managers no longer renew themselves: a 1 April reminder goes out for any expiring manager, and an unrenewed one leaves at the close. Delegated coach hires and renewals now really run 2 seasons (before, a renewal at the season boundary added 3). ClubStaff has the term dial and the cost line.\n\nT061: resign() appoints through appointDelegatedManager under delegation.manager. It sets no w.critical, so the clock runs on. When nobody is affordable the interim stays and the staff retry daily. delegatedManagerPick looks only at free agents and uses the STAFF-15 affordability test with the current manager's wage freed. The school, best and strategy rules work as specified. The 3-OVR renewal margin applies on 1 April. manager-rule is implemented, with the default stored as absent. STAFF_TABS drops 감독 후보. 교체/감독 선임 opens the market dialog, and ?view=candidates, the departure alert and the remedies open it too. The 위임 tab has the 감독 선임 toggle and the rule dial.\n\nThe tests cover each acceptance bullet: terms, the 70 cap, release per season left, no self-renewal, each rule, the unaffordable best being skipped, a delegated renewal kept against a free agent 2 better, and the e2e journeys.\n\nI did not run typecheck, unit tests or e2e myself. This review was read-only and the review checkout has no node_modules, so I relied on code reading plus the workers' records: 557 unit tests and staff.spec in Chromium.\n\nRemaining items are P3: planning hand-offs on interpretations of STAFF-18, small UI wording and cost-display issues, and an unmeasured entry-bundle budget.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/staff.ts:677 (T061 managerRenewalReminder) with packages/engine/src/ops-staff.ts:329 (yearlyStaff)",
+              "message": "On 1 April the delegated staff decide to let the manager go because the rule's free agent is 3+ OVR better. Nothing re-checks that decision at the close. The market refreshes at rounds 40 and 44, and each refresh drops each free agent with 25% chance, so the rival is often gone by the close. resign() then appoints whoever is best and affordable at that point, who can be weaker than the manager who was let go. This follows the literal STAFF-14/18 wording, but it can leave the delegated owner with a worse manager. Hand off to planning (update-ssot STAFF-18): either re-check at the close and renew if no 3+ better free agent remains, or keep the 1 April rival. Then add a test where the rival leaves before the close."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/synergy.ts:258 (T061 aimedSynergy) and packages/engine/src/staff.ts:713 (dailyStaff interim retry)",
+              "message": "Several STAFF-18 rules are the worker's interpretation, and the task result already lists them. The aimed synergy for 운영 전략 우선 is a heuristic: the school synergy with the most conditions met (at least 2), because every BUILD_PRESET aims at a synergy with no manager school. When nobody is affordable, the interim stays without a stop and the staff retry daily. A daily retry falls back to the best overall under 같은 학파 우선. An owner hire under delegation does not take the post back. Planning should confirm or replace each of these through update-ssot STAFF-18. Do not change them in code without that decision."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/teamState.ts:171 (T061)",
+              "message": "The 'candidates' remedy still says '성향이 다른 감독 네 명의 장단점과 선임 비용을 비교해요' (four managers). That describes the removed four-candidate tab. It now opens a market of 4–8 free agents plus other clubs' managers. Reword it to describe the market, for example 자유계약·다른 구단 감독과 선임 비용을 비교해요. The management.spec.ts comment the worker mentioned needs the same fix."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/ClubStaff.tsx:244, 285, 324 (T060 TermCosts / ManagerRenewal / ManagerHireTerm)",
+              "message": "Two small display issues. (1) TermCosts shows the total as wage × term + fee. Wages are paid per round (finance.ts roundShare), so a mid-season hire's first 'season' costs only the remaining rounds, and the total overstates what the owner will pay. Label it as an upper bound or count the rounds left. (2) When the term limit is 1 because of age (a non-firefighter aged 68 at renewal or 69 at hire), the term dial is hidden and no reason is shown; only firefighters get one. Show the disabled dial with SEVENTY, or a note, so the sheet says why only one season is offered (WEB-40)."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/ClubStaff.tsx, apps/web/src/ui/Rich.tsx (T060 T061 verification)",
+              "message": "Both workers left the ARCH-28 entry budget (250 KiB gzipped JS+CSS) unmeasured. Rich.tsx is imported eagerly by App.tsx, and ClubStaff now adds TermDial, TermCosts, ManagerRenewal, ManagerHireTerm, ManagerRuleDial and the market dialog. The last recorded measurement left only about 6 KB of headroom (249,558 bytes at WEB r49). At integration, read the entry gzip size from the `pnpm run build` output or run benchmark:browser. Also, after the locator fix staff.spec was re-run only in Chromium; the full e2e run in integration should cover Firefox and WebKit."
+            }
+          ],
+          "commit": "33720879b3704224a824e25182d40ee08e491fcb",
+          "baseCommit": "94c2d4d5f7435415e68fe1cf7ec6652b9d0d6fa2",
+          "submissionId": "dbba24ae-1414-4e3e-97b5-3e730ad9f93b",
+          "createdAt": "2026-10-12T15:26:07.340Z",
+          "finishedAt": "2026-10-12T15:34:47.849Z"
+        }
+      }
+    },
+    {
+      "sequence": 182,
+      "at": "2026-10-12T15:34:47.855Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T061",
+      "tasks": [
+        "T060",
+        "T061"
+      ],
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "dd661d29-9a3a-4a87-853d-8d985a8f3d37",
+          "runner": "c889f1f7-0b60-4059-aea4-032cfcec6d62",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T15:26:07.798Z",
+          "finishedAt": "2026-10-12T15:34:47.855Z",
+          "error": null,
+          "summary": "I reviewed T060 and T061 (base 94c2d4d → 3372087) against both tasks' acceptance, STAFF r12 (STAFF-7/11/14/15/17/18), WEB-40/45 and ECON-26 by reading the code. Every acceptance item is implemented, and I found no correctness bug that would block approval.\n\nT060: hire, hire-staff, renew-manager and renew-staff take a 1–5 season term. A manager never signs past his 70th year (managerTermLimit). The firefighter signs for 1. Wages are fixed for the term and priced on the football index (staffQuote). Release pays 25% of the wage per season left, counting the current one (releaseCost/managerPayoff). Managers no longer renew themselves: a 1 April reminder goes out for any expiring manager, and an unrenewed one leaves at the close. Delegated coach hires and renewals now really run 2 seasons (before, a renewal at the season boundary added 3). ClubStaff has the term dial and the cost line.\n\nT061: resign() appoints through appointDelegatedManager under delegation.manager. It sets no w.critical, so the clock runs on. When nobody is affordable the interim stays and the staff retry daily. delegatedManagerPick looks only at free agents and uses the STAFF-15 affordability test with the current manager's wage freed. The school, best and strategy rules work as specified. The 3-OVR renewal margin applies on 1 April. manager-rule is implemented, with the default stored as absent. STAFF_TABS drops 감독 후보. 교체/감독 선임 opens the market dialog, and ?view=candidates, the departure alert and the remedies open it too. The 위임 tab has the 감독 선임 toggle and the rule dial.\n\nThe tests cover each acceptance bullet: terms, the 70 cap, release per season left, no self-renewal, each rule, the unaffordable best being skipped, a delegated renewal kept against a free agent 2 better, and the e2e journeys.\n\nI did not run typecheck, unit tests or e2e myself. This review was read-only and the review checkout has no node_modules, so I relied on code reading plus the workers' records: 557 unit tests and staff.spec in Chromium.\n\nRemaining items are P3: planning hand-offs on interpretations of STAFF-18, small UI wording and cost-display issues, and an unmeasured entry-bundle budget."
+        }
+      }
+    },
+    {
+      "sequence": 183,
+      "at": "2026-10-12T15:34:47.891Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "6662dd08-a3be-4749-a61f-b23318c03a9f",
+      "taskId": "T061",
+      "tasks": [
+        "T060",
+        "T061"
       ],
       "previousStatus": "approved",
       "status": "integrating",

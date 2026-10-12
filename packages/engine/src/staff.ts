@@ -1,5 +1,6 @@
 import type {
   CoachingLevel,
+  ContractTerm,
   ManagerStyle,
   ManagerTrait,
   Player,
@@ -9,10 +10,12 @@ import type {
   TrainingFocus,
   World,
 } from '../../contracts/src/types';
+import { footballIndex } from '../../catalogs/src/index';
 import { addEvent, clubOf, ownStarters, personName, quote } from './world';
 import { clamp, integer, random, ratio } from './primitives';
 import { debit } from './operations';
-import { contractSeason, managerRenewal, renewManager } from './ops-staff';
+import { appointDelegatedManager, contractSeason, managerRenewal, renewManager } from './ops-staff';
+import { delegatedManagerPick, MANAGER_RULE_INFO, managerRuleOf } from './managerMarket';
 import { CASH_WARNING_ROUNDS } from './settlement';
 import { pushInbox } from './inbox';
 import { moneyLabel, operatingCosts } from './finance';
@@ -257,6 +260,45 @@ export function basicStaff(w: World): Staff[] {
 export function staffWageTotal(w: World): bigint {
   return (w.staff || []).reduce((sum, member) => sum + BigInt(member.wage), 0n);
 }
+/** A price-indexed amount carried onto the football index of the club's country (→ECON-26). */
+export function footballScaled(w: World, amount: string) {
+  const real = footballIndex(clubOf(w).country, w.year).real;
+  return ratio(amount, BigInt(Math.round(real * 1_000_000)), 1_000_000n);
+}
+/** What a manager or coach asks this season: the price quote on the football index (→ECON-26). */
+export function staffQuote(w: World, units: number) {
+  return footballScaled(w, quote(clubOf(w).country, w.year, units));
+}
+/** Seasons a manager or coach may sign for when the owner chooses (→STAFF-11, →STAFF-14). */
+export const CONTRACT_TERMS: readonly ContractTerm[] = [1, 2, 3, 4, 5];
+/** Delegated staff hire and renew coaches for two seasons (→STAFF-15). */
+export const DELEGATED_TERM: ContractTerm = 2;
+export function checkTerm(term: ContractTerm | undefined) {
+  if (term !== undefined && !CONTRACT_TERMS.includes(term))
+    throw new Error('계약 기간은 1–5시즌이어야 합니다.');
+}
+/** The owner's chosen term stays with the contract; one signed without a choice has none. */
+export function withTerm<T extends { term?: ContractTerm }>(person: T, term?: ContractTerm): T {
+  const { term: _previous, ...rest } = person;
+  void _previous;
+  return (term === undefined ? rest : { ...rest, term }) as T;
+}
+/** Seasons left on a contract, this one included: a deal ending at this season's close has one. */
+export function seasonsLeft(w: World, until: number) {
+  return Math.max(0, until - w.year);
+}
+/**
+ * Releasing or replacing a paid coach or manager pays 25% of his annual wage for each season left
+ * on his contract (→STAFF-11); volunteers leave freely.
+ */
+export function releaseCost(w: World, person: Pick<Staff, 'wage' | 'until'> | undefined) {
+  if (!person || BigInt(person.wage) <= 0n) return '0';
+  return ratio(person.wage, BigInt(seasonsLeft(w, person.until)), 4n);
+}
+/** A coach's going wage: it follows his current ability (→STAFF-16). */
+function coachWage(w: World, ability: number) {
+  return staffQuote(w, (ability - 30) * 1.5);
+}
 /** Three seeded candidates per role and season; anyone already employed is not offered. */
 export function staffCandidates(w: World, role: StaffRole): (Staff & { fee: string })[] {
   if (!STAFF_ROLES.includes(role)) return [];
@@ -278,7 +320,7 @@ export function staffCandidates(w: World, role: StaffRole): (Staff & { fee: stri
         COACH_CAREER.prime,
       ),
       ability = career.ability,
-      wage = quote(code, w.year, (ability - 30) * 1.5);
+      wage = coachWage(w, ability);
     return {
       id: `${w.playerClub}:staff:${role}:${w.year}:${i}`,
       role,
@@ -294,22 +336,24 @@ export function staffCandidates(w: World, role: StaffRole): (Staff & { fee: stri
     };
   }).filter((candidate) => !employed.has(candidate.id));
 }
-/** A paid coach leaving early is owed a quarter of the annual wage; volunteers leave freely. */
-function compensation(member: Staff | undefined) {
-  return member && BigInt(member.wage) > 0n ? ratio(member.wage, 1n, 4n) : '0';
-}
 const roleOrder = (a: Staff, b: Staff) => STAFF_ROLES.indexOf(a.role) - STAFF_ROLES.indexOf(b.role);
 
-export function hireStaff(w: World, role: StaffRole, candidate: number): void {
+/**
+ * Hires a candidate for `term` seasons at the wage he asks now, fixed for the term; without a term
+ * he signs for the length he was offered with.
+ */
+export function hireStaff(w: World, role: StaffRole, candidate: number, term?: ContractTerm): void {
+  checkTerm(term);
   const offer = Number.isInteger(candidate) ? staffCandidates(w, role)[candidate] : undefined;
   if (!offer) throw new Error('유효하지 않은 스태프 후보입니다.');
   // Older saves without staff start from the neutral volunteers.
   const staff = w.staff || basicStaff(w),
     current = staff.find((member) => member.role === role),
-    owed = compensation(current),
+    owed = releaseCost(w, current),
     total = (BigInt(offer.fee) + BigInt(owed)).toString();
   debit(w, total);
-  const { fee, ...member } = offer;
+  const { fee, ...offered } = offer;
+  const member = withTerm(term ? { ...offered, until: w.year + term } : offered, term);
   w.staff = [...staff.filter((other) => other.role !== role), member].sort(roleOrder);
   addEvent(
     w,
@@ -330,7 +374,7 @@ export function releaseStaff(w: World, role: StaffRole): void {
   const staff = w.staff || basicStaff(w),
     member = staff.find((other) => other.role === role);
   if (!member) throw new Error('이미 비어 있는 자리입니다.');
-  const owed = compensation(member);
+  const owed = releaseCost(w, member);
   if (owed !== '0') debit(w, owed);
   w.staff = staff.filter((other) => other.role !== role);
   addEvent(
@@ -338,7 +382,7 @@ export function releaseStaff(w: World, role: StaffRole): void {
     'staff-release',
     `${STAFF_INFO[role].label} ${member.name} 계약 해지`,
     owed !== '0'
-      ? `잔여 계약 보상금 ${moneyLabel(w, owed)} · 새 코치를 선임할 때까지 공석입니다.`
+      ? `잔여 계약 ${seasonsLeft(w, member.until)}시즌 보상금 ${moneyLabel(w, owed)} · 새 코치를 선임할 때까지 공석입니다.`
       : '무보수 코치 · 보상금 없음 · 새 코치를 선임할 때까지 공석입니다.',
     owed !== '0' ? owed : undefined,
   );
@@ -416,11 +460,14 @@ function volunteer(w: World, role: StaffRole): Staff {
   };
 }
 /** Cash left after `spend` still covers the cash-warning runway with `wage` added to the costs. */
-function affordable(w: World, spend: bigint, wage: bigint) {
+export function affordable(w: World, spend: bigint, wage: bigint) {
   const perRound = (BigInt(operatingCosts(w).annual) + wage) / 46n;
   return BigInt(w.cash) - spend >= perRound * BigInt(CASH_WARNING_ROUNDS);
 }
-/** The candidate the coaching level asks for, falling back to cheaper bands the club can afford. */
+/**
+ * The candidate the coaching level asks for, falling back to cheaper bands the club can afford;
+ * the staff sign him for two seasons.
+ */
 function plannedHire(w: World, role: StaffRole, replacing?: Staff) {
   const level = coachingLevel(w, role);
   if (level === 1) return undefined;
@@ -430,26 +477,34 @@ function plannedHire(w: World, role: StaffRole, replacing?: Staff) {
   const freed = replacing ? BigInt(replacing.wage) : 0n;
   for (const i of order) {
     const offer = band(i);
-    if (offer && affordable(w, BigInt(offer.fee), BigInt(offer.wage) - freed)) return offer;
+    if (offer && affordable(w, BigInt(offer.fee), BigInt(offer.wage) - freed))
+      return { ...offer, until: w.year + DELEGATED_TERM };
   }
   return undefined;
 }
-/** Wage a coach asks to stay: the going rate for his ability this season. */
-export function renewalTerms(w: World, member: Staff) {
-  const wage = quote(clubOf(w).country, w.year, (member.ability - 30) * 1.5);
-  return { wage, fee: ratio(wage, 1n, 10n), until: Math.max(member.until, w.year + 1) + 2 };
+/**
+ * What a coach asks to stay `term` more seasons after his contract ends (two when absent, as
+ * delegated staff renew): the going rate for his ability this season, fixed for the term, and a
+ * 10% signing fee. At the season boundary his contract ended with the season just closed.
+ */
+export function renewalTerms(w: World, member: Staff, term: ContractTerm = DELEGATED_TERM) {
+  const wage = coachWage(w, member.ability);
+  return { wage, fee: ratio(wage, 1n, 10n), until: Math.max(member.until, w.year) + term };
 }
 /** A paid coach whose contract ends at this season's close. */
 export function isExpiring(w: World, member: Staff) {
   return BigInt(member.wage) > 0n && member.until <= w.year + 1;
 }
-export function renewStaff(w: World, role: StaffRole) {
+export function renewStaff(w: World, role: StaffRole, term?: ContractTerm) {
+  checkTerm(term);
   const member = staffMember(w, role);
   if (!member || !isExpiring(w, member)) throw new Error('재계약할 수 있는 코치가 아닙니다.');
-  const terms = renewalTerms(w, member);
+  const terms = renewalTerms(w, member, term);
   debit(w, terms.fee);
   w.staff = w.staff!.map((other) =>
-    other.role === role ? { ...other, wage: terms.wage, until: terms.until } : other,
+    other.role === role
+      ? withTerm({ ...other, wage: terms.wage, until: terms.until }, term)
+      : other,
   );
   addEvent(
     w,
@@ -517,7 +572,9 @@ export function seasonStaff(w: World): void {
       if (keep) {
         debit(w, terms.fee, true);
         w.staff = w.staff.map((other) =>
-          other.role === role ? { ...other, wage: terms.wage, until: terms.until } : other,
+          other.role === role
+            ? withTerm({ ...other, wage: terms.wage, until: terms.until })
+            : other,
         );
         addEvent(
           w,
@@ -599,43 +656,63 @@ function developStaff(w: World) {
 export function renewalDay(year: number) {
   return seasonDayOf(year, 4, 1);
 }
+/** A free agent the rule picks must be this much better by OVR to replace an expiring manager. */
+export const MANAGER_RENEWAL_MARGIN = 3;
 /**
- * 1 April for a manager on a season-long deal that ends at the close (the firefighter): delegated
- * staff renew him when the club can afford it and report it; otherwise the owner hears that he
- * leaves unless renewed. Coaching staff (absent in older saves) play no part.
+ * 1 April for a manager whose contract ends at the close: no contract renews itself (→STAFF-14).
+ * With the manager post delegated (→STAFF-18) the staff let him go when the owner's rule finds an
+ * affordable free agent 3+ OVR better, who replaces him at the close; otherwise they renew him for
+ * two seasons (the firefighter one) when the club can afford it. Either way they report it; else
+ * the owner hears that he leaves unless renewed. Coaching staff (absent in older saves) play no
+ * part.
  */
-function shortContractRenewal(w: World) {
+function managerRenewalReminder(w: World) {
   const m = w.manager,
-    school = m.style && STYLE_INFO[m.style],
-    terms = school && school.term === 1 ? managerRenewal(w) : undefined;
-  if (!school || !terms) return;
-  const wage = moneyLabel(w, terms.wage),
-    fee = moneyLabel(w, terms.fee),
-    delegated = !!w.delegation?.staff;
-  if (delegated && affordable(w, BigInt(terms.fee), BigInt(terms.wage) - BigInt(m.wage))) {
-    renewManager(w, true);
+    terms = managerRenewal(w);
+  if (!terms) return;
+  const school = m.style ? `${STYLE_INFO[m.style].label} ` : '',
+    delegated = !!w.delegation?.manager,
+    term = Math.min(DELEGATED_TERM, terms.limit) as ContractTerm,
+    kept = managerRenewal(w, term)!;
+  const rival = delegated ? delegatedManagerPick(w, m.style) : undefined;
+  if (rival && rival.ability >= m.ability + MANAGER_RENEWAL_MARGIN) {
     pushInbox(w, {
       kind: 'staff-report',
-      title: `${school.label} ${m.name} 감독 재계약`,
-      detail: `스태프가 1시즌 더 계약했어요 · 연봉 ${wage} · 계약금 ${fee} · ${contractSeason(terms.until)} 시즌 끝까지`,
+      title: `${school}${m.name} 감독과 재계약하지 않아요`,
+      detail: `스태프가 ${MANAGER_RULE_INFO[managerRuleOf(w)].label} 기준으로 OVR ${rival.ability}의 ${STYLE_INFO[rival.style].label} ${rival.name} 감독(지금 OVR ${m.ability})을 찾았어요 · 시즌이 끝나면 떠나고 스태프가 그때 형편에 맞는 감독을 선임해요`,
+      attention: false,
+      ref: m.id,
+    });
+    return;
+  }
+  if (delegated && affordable(w, BigInt(kept.fee), BigInt(kept.wage) - BigInt(m.wage))) {
+    renewManager(w, term, true);
+    pushInbox(w, {
+      kind: 'staff-report',
+      title: `${school}${m.name} 감독 재계약`,
+      detail: `스태프가 ${term}시즌 더 계약했어요 · 연봉 ${moneyLabel(w, kept.wage)} · 계약금 ${moneyLabel(w, kept.fee)} · ${contractSeason(kept.until)} 시즌 끝까지`,
       attention: false,
     });
     return;
   }
+  const seasons = terms.limit === 1 ? '1시즌' : `1–${terms.limit}시즌`;
   pushInbox(w, {
     kind: 'staff-renewal',
-    title: `${school.label} ${m.name} 감독 계약이 이번 시즌 끝에 끝나요`,
-    detail: `재계약하지 않으면 시즌이 끝날 때 떠나고 임시 감독이 팀을 맡아요 (연봉 ${wage} · 계약금 ${fee} · 1시즌)${delegated ? ' · 자금 여력이 부족해 스태프가 재계약하지 않았어요' : ''}`,
+    title: `${school}${m.name} 감독 계약이 이번 시즌 끝에 끝나요`,
+    detail: `재계약하지 않으면 시즌이 끝날 때 떠나고 임시 감독이 팀을 맡아요 (연봉 ${moneyLabel(w, terms.wage)} · 계약금 ${moneyLabel(w, terms.fee)} · ${seasons})${delegated ? ' · 자금 여력이 부족해 스태프가 재계약하지 않았어요' : ''}`,
     attention: true,
     ref: m.id,
   });
 }
 /**
- * Daily: on 1 April a firefighter's renewal comes up; delegated staff fill an empty department at
- * once; otherwise the renewal season is announced on 1 April when contracts end at the close.
+ * Daily: on 1 April an expiring manager's renewal comes up; with the manager post delegated the
+ * staff replace an interim as soon as the club can afford a free agent (→STAFF-18); delegated
+ * staff fill an empty department at once; otherwise the renewal season is announced on 1 April
+ * when contracts end at the close.
  */
 export function dailyStaff(w: World) {
-  if (currentDay(w) === renewalDay(w.year)) shortContractRenewal(w);
+  if (currentDay(w) === renewalDay(w.year)) managerRenewalReminder(w);
+  if (w.manager.interim && w.delegation?.manager) appointDelegatedManager(w);
   if (!w.staff) return;
   if (w.delegation?.staff) {
     for (const role of STAFF_ROLES)

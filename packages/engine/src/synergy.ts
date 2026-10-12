@@ -1,4 +1,4 @@
-import type { Player, World } from '../../contracts/src/types';
+import type { ManagerStyle, Player, World } from '../../contracts/src/types';
 import { ownStarters } from './world';
 import { policyOf } from './policy';
 import { staffMember } from './staff';
@@ -54,6 +54,8 @@ interface SynergyRule {
   idea: string;
   bonus: string;
   effects: Partial<SynergyEffects>;
+  /** The manager schools that meet its manager condition, if it has one. */
+  schools?: readonly ManagerStyle[];
   conditions: (w: World, starters: Player[]) => { label: string; met: boolean }[];
 }
 
@@ -68,6 +70,7 @@ const RULES: readonly SynergyRule[] = [
     idea: '압박 감독 · 회복을 맡은 피지컬 코치 · 체력 좋은 주전이 맞물린 고강도 압박',
     bonus: '경기당 피로 −2 · 상대 빌드업 패스 성공 −1%p 추가',
     effects: { fatigueRelief: 2, lineHigh: 0.01 },
+    schools: ['gegenpress'],
     conditions: (w, starters) => [
       {
         label: '게겐프레싱 감독 또는 전방 압박 전술',
@@ -86,6 +89,7 @@ const RULES: readonly SynergyRule[] = [
     idea: '포지셔널 플레이 감독 · 패스를 키우는 수석코치 · 패스 좋은 미드필드',
     bonus: '패스 성공률 +1%p · 점유율 +1%p',
     effects: { pass: 1, possession: 1 },
+    schools: ['positional'],
     conditions: (w, starters) => [
       {
         label: '포지셔널 플레이 감독 또는 점유 전술',
@@ -113,6 +117,7 @@ const RULES: readonly SynergyRule[] = [
     idea: '수비형 감독 · 수비 코치 · 단단한 수비진이 만드는 두 줄 수비',
     bonus: '상대 슈팅 기회 −1%p 추가',
     effects: { defense: 1 },
+    schools: ['organizer', 'counter'],
     conditions: (w, starters) => [
       {
         label: '수비 조직가·실리 역습 감독',
@@ -139,6 +144,7 @@ const RULES: readonly SynergyRule[] = [
     idea: '유소년 투자 · 육성형 유스 디렉터 · 유망주를 쓰는 감독이 이어진 육성 사다리',
     bonus: '아카데미 성장 ×1.15 · 유스 입단 잠재력 +3',
     effects: { academyGrowth: 1.15, academyPotential: 3 },
+    schools: ['developer'],
     conditions: (w) => [
       { label: '유소년 투자 3단계 이상', met: (policyOf(w).academy ?? 1) >= 3 },
       {
@@ -184,6 +190,7 @@ const RULES: readonly SynergyRule[] = [
     idea: '동기부여형 감독 · 넉넉한 선수단 투자 · 좋은 분위기가 이어지는 라커룸',
     bonus: '분위기 기준점 +3',
     effects: { moraleBaseline: 3 },
+    schools: ['motivator'],
     conditions: (w) => [
       { label: '동기부여형 감독', met: w.manager.style === 'motivator' },
       { label: '선수단 투자 4단계 이상', met: policyOf(w).support >= 4 },
@@ -241,6 +248,26 @@ export function synergyStates(w: World): SynergyState[] {
       bonus: rule.bonus,
     };
   });
+}
+
+/**
+ * The synergy the club's strategy aims a manager at (→STAFF-18): of those a manager's school helps
+ * light, the one with the most conditions met once a manager of its school is in charge, provided
+ * one besides the manager's is met already; ties go to the earlier synergy.
+ */
+export function aimedSynergy(
+  w: World,
+): { id: string; label: string; schools: readonly ManagerStyle[] } | undefined {
+  const starters = ownStarters(w);
+  let aimed: SynergyRule | undefined,
+    most = 1;
+  for (const rule of RULES) {
+    if (!rule.schools) continue;
+    const manager = { ...w.manager, style: rule.schools[0], interim: false };
+    const met = rule.conditions({ ...w, manager }, starters).filter((c) => c.met).length;
+    if (met > most) [aimed, most] = [rule, met];
+  }
+  return aimed && { id: aimed.id, label: aimed.label, schools: aimed.schools! };
 }
 
 /** The combined bonus of every active synergy; neutral when none is active. */
