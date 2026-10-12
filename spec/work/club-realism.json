@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-12T13:49:48.272Z",
-  "sourceCommit": "ccdec55556ae6049cb95f9838c20ba3a97cbed62",
+  "snapshotAt": "2026-10-12T14:17:53.394Z",
+  "sourceCommit": "2861ffb600ca06bc9cd2f54d45f636adc2fdc48c",
   "group": {
     "id": "club-realism",
     "branch": "work/club-realism",
@@ -12,7 +12,7 @@
       "reviewers": 1,
       "maxPending": 8
     },
-    "runner": {
+    "lastRun": {
       "id": "7784806a-f98d-49ec-94a4-f4f6c9b6c7ad",
       "adapter": "builtin",
       "providers": {
@@ -34,44 +34,25 @@
           "version": "2.1.296 (Claude Code)"
         }
       ],
-      "startedAt": "2026-10-12T12:10:05.106Z"
-    },
-    "lastRun": {
-      "id": "ea92567d-d106-444b-af7d-f72823e5ca23",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.263 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.263 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.263 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-10-12T10:35:24.846Z",
-      "stoppedAt": "2026-10-12T11:17:23.781Z",
-      "dispatched": 2,
+      "startedAt": "2026-10-12T12:10:05.106Z",
+      "stoppedAt": "2026-10-12T14:17:53.164Z",
+      "dispatched": 11,
       "outcome": "needs-attention",
       "failures": [
         {
           "attempt": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
           "role": "worker",
-          "error": "T050 구현은 끝냈지만 카탈로그 지문(CATALOG_HASH) 재생성이 이 샌드박스에서 불가능해 blocked로 반환합니다.\n\n구현된 것\n- `packages/catalogs/data/football-index.json`: 8개국 축구 지수(1901~)와 후원 슬롯 개방 연도. 시대 앵커 1979/1992/2005/2020/2025의 실질 배수(ENG 1/2/6/10/11, ESP·GER·ITA 70%, FRA 50%, NED 35%, POR 30%, BEL 25% of ENG 실질 성장), 시대마다 note·status(estimated)·출처 키, 슬롯 40건(ENG 1901/1970/1979/1997/2017; ENG 메인·명명권·소매와 GER 1973 메인만 observed, 나머지 estimated).\n- `catalogs/src/index.ts`: `footballIndex(code, year)` → `{ value, real, status, source }` (물가지수 × 배수, 1979까지 평탄, 앵커 사이 기하 성장, 2025 이후 실질 배수 유지 + 물가 투영, observed로는 절대 표기 안 함, 연도별 캐시), `sponsorSlotOpens(code, slot)` → `{ year, status, source }`(로드 시 1회 구성), `SPONSOR_SLOTS`, `Observation`, `CURRENT_CATALOG`.\n- `scripts/validate-catalogs.ts`: 두 표의 커버리지·순서·출처 검사(시대 순서, 기준연도 실질 1, 각국 선언 share 일치, 1901–2030 양수 커버리지, 실질 비감소, 커버리지 이후 projected, 슬롯 순서·범위, 모든 출처에 https 링크) + 지문 입력에 신규 파일 포함.\n- `CATALOG_VERSION` = 2026-demo-2, `PRIOR_CATALOG_HASHES`(versions.ts)에 2026-demo-1 지문 기록 → decode가 당시 기록된 해시로 구 봉투를 수락, `upgradeWorldRules(w, pin)`이 엔진·카탈로그 핀·revision을 함께 올리고 host가 `CURRENT_CATALOG`를 전달. persistence.test.ts에 demo-1 저장 로드→업그레이드→왕복과 다른 해시 거부 케이스 추가, catalogs.test.ts에 지수/슬롯 테스트 4건 추가. 범위 밖 최소 수정: docs/DATA.md(축구 지수 절·카탈로그 ID), docs/SAVE-FORMAT.md(활성화가 카탈로그 핀도 올림), scripts/update-golden.ts(카탈로그 ID 하드코딩 제거).\n\n블로커\n- `packages/catalogs/src/fingerprint.ts`가 아직 2026-demo-1 해시입니다. 재생성에는 `pnpm exec tsx scripts/fingerprint-catalog.ts --write`가 필요한데, 이 세션에서 `pnpm install`(워크트리에 node_modules 없음), 모든 `node`/`tsx` 실행, 워크트리 밖 경로, shasum/python3가 전부 권한 거부되어 실행할 수 없었습니다. 그 전까지 `pnpm run validate:catalogs`는 \"Catalog fingerprint is stale\"로 실패하며(해당 메시지에 명령을 넣어 두었습니다), 그 구간에 만든 저장은 나중에 decode가 거부할 해시를 핀합니다. taskVerify(typecheck, test:unit)는 영향받지 않습니다.\n- 같은 이유로 typecheck·test:unit·lint·format:check·validate:catalogs를 하나도 실행하지 못했습니다. [v]로 채운 완료기준 4개는 작성한 데이터·코드를 읽어 확인한 것이고, 명령 통과가 걸린 3개는 열어 두었습니다. 포매팅도 prettier 규칙에 맞춰 수작업으로 맞췄을 뿐 검사하지 못했습니다."
+          "error": "T050 is blocked: this session can't run any checks, the same as the previous dispatch. It denied `pnpm` (the worktree has no node_modules), `node -e`, `tsx`, `shasum`, the haeram CLI and shell access outside the worktree. Without them, three acceptance items can't be completed:\n- the catalog fingerprint can't be regenerated, so `packages/catalogs/src/fingerprint.ts` still holds the 2026-demo-1 hash and `validate:catalogs` will fail with \"Catalog fingerprint is stale\";\n- `pnpm run validate:catalogs` hasn't run;\n- `pnpm run typecheck && pnpm run test:unit` haven't run.\n\nThe code edits are in WIP commit fb792bd: the football-index catalog, `footballIndex` / `sponsorSlotOpens` / `SPONSOR_SLOTS`, CATALOG_VERSION 2026-demo-2, `PRIOR_CATALOG_HASHES`, `upgradeWorldRules(w, pin)` passed `CURRENT_CATALOG` from host.ts, the validate and fingerprint scripts, and the catalogs and persistence tests. I re-read all of it by hand against tsconfig (strict), prettier (width 100) and every caller of `upgradeWorldRules` and every reader of the catalog version. Each country's figures match its declared share of England's real growth, the sponsor-slot years are in order and every source has an https reference. I found nothing to change, but none of this was executed.\n\nThe only file I changed is `spec/tasks/T050.football-index-catalog.md`: its result `verified` line now records both dispatches.\n\nTo unblock, run these in a session that allows them:\n1. `pnpm install --frozen-lockfile --prefer-offline`\n2. `pnpm exec tsx scripts/fingerprint-catalog.ts --write`\n3. `pnpm run validate:catalogs`\n4. `pnpm run typecheck && pnpm run test:unit`, plus lint and format:check\n\nThen mark the last three acceptance items [v] and fill in the result `at`.\n\nSome edits sit outside the task's touches and the scope check may flag them: `apps/web/src/runtime/host.ts` (needed by the new `upgradeWorldRules` signature), `scripts/update-golden.ts`, `docs/DATA.md` and `docs/SAVE-FORMAT.md`."
         },
         {
           "attempt": "d3895ae1-7cbf-446d-8762-61e6f50ef717",
           "role": "worker",
           "error": "T053: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+        },
+        {
+          "attempt": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+          "role": "integration",
+          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
         }
       ]
     }
@@ -80,8 +61,8 @@
     "total": 13,
     "completed": 2,
     "remaining": 11,
-    "running": 3,
-    "review": 0,
+    "running": 0,
+    "review": 3,
     "blocked": 0,
     "unassigned": 8
   },
@@ -91,7 +72,7 @@
       "title": "Football index and sponsor-slot eras in catalog 2026-demo-2",
       "dep": [],
       "lane": "base",
-      "status": "doing"
+      "status": "approved"
     },
     {
       "id": "T051",
@@ -100,7 +81,7 @@
         "T050"
       ],
       "lane": "base",
-      "status": "doing"
+      "status": "approved"
     },
     {
       "id": "T052",
@@ -109,7 +90,7 @@
         "T051"
       ],
       "lane": "base",
-      "status": "doing"
+      "status": "approved"
     },
     {
       "id": "T055",
@@ -204,22 +185,50 @@
         "ea92567d-d106-444b-af7d-f72823e5ca23/worker-1",
         "7784806a-f98d-49ec-94a4-f4f6c9b6c7ad/worker-1"
       ],
-      "status": "doing",
-      "reason": "T050 is correct. The football-index figures, slot years, provenance checks, demo-1 hash acceptance and the catalog pin moving on writer activation all match ECON-26 and SAVE-10. T052's split is faithful to the old switch, moneyLabel matches every WEB-67 expected string, and the close-ordering fix leaves no 이전·기타 line. Changes are needed because of how T051's load-time sponsor migration interacts with the engine, which still uses `w.sponsor` until T056. After a reload, the club gets signed a second sponsor, and from then on every autosave fails in the codec checkpoint ('후원 계약 손상'). The migration also breaks the CI benchmark and an e2e journey that no remaining task owns. And T052 leaves a cash remedy in the UI that no longer saves any cash. Tests were not run by this reviewer: plan mode allows only read-only tools, so this verdict comes from reading the code.",
+      "status": "approved",
+      "reason": "Command failed: git -C /Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/club-realism-integrate-9e4982aa merge --no-ff --no-commit 070d66b0b8cd16687fa49e285a2b611b09d972fb\n",
       "createdAt": "2026-10-12T10:35:25.152Z",
       "startCommit": "407119d00f94cc704b262bccefe881fae5ee0b83",
-      "submittedBase": "ccdec55556ae6049cb95f9838c20ba3a97cbed62",
-      "submissionId": "e87b7092-1fed-4b8c-b14f-97d160226165",
-      "submittedAt": "2026-10-12T13:39:27.472Z",
+      "verifiedCommit": "070d66b0b8cd16687fa49e285a2b611b09d972fb",
+      "submittedBase": "2861ffb600ca06bc9cd2f54d45f636adc2fdc48c",
+      "submissionId": "67b9ca2b-27f0-4185-9d0d-a297eab3a822",
+      "submittedAt": "2026-10-12T14:10:16.427Z",
       "dispatch": {
-        "id": "edeb06bf-a98c-47dd-b6f5-dd171839cf94",
+        "id": "11ef909a-07bc-4c68-8656-27b205c06acf",
         "runner": "7784806a-f98d-49ec-94a4-f4f6c9b6c7ad",
-        "role": "worker",
+        "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
-        "status": "running",
-        "startedAt": "2026-10-12T13:47:15.871Z"
+        "status": "finished",
+        "startedAt": "2026-10-12T14:10:18.006Z",
+        "finishedAt": "2026-10-12T14:17:51.242Z",
+        "error": null,
+        "summary": "Approved. The correction at 070d66b fixes all three blocking findings from the previous review (a2a2e5bb), and nothing new in T050, T051 or T052 blocks it.\n\n- **P1, second sponsor after reload (T051/T052):** `clubSponsor` (finance.ts) now reads either the 1.15 `w.sponsor` or the contract a load moved into `w.sponsors`. Every path that still assumed one sponsor reads it: delegatedBusiness, sponsorReminder, the `sponsor` command guard, the exclusive-merchandise check, sponsorAnnual, matchBonus, gate payments and lastPaid, financeProjection, yearlySponsor expiry and currency conversion in economy.ts. `w.sponsor` and `w.sponsors` therefore never coexist, and checkpoints keep decoding.\n  - The migration's `from = until − 2/4` matches the offer terms, so an in-memory world and a reloaded one normalise to the same contract.\n  - Two new regression tests cover it. persistence.test.ts covers delegated business, encode→decode, a day more, then checkpoint. business.test.ts runs two seasons and checks payments, a single sponsor-end and canonical equality with the never-reloaded career.\n- **P2, benchmark and e2e:** benchmark.ts validates with LOAD_CATALOG and compares worlds through `loadedCanonical`. business.spec.ts expects the moved contract.\n- **P2, cash remedy:** the cash remedy no longer offers lowering 선수단 투자, and teamState.test.ts asserts it.\n\nStill correct from the earlier review:\n- T050's index, slot eras and catalog pinning.\n- T052's domain split and the re-exports the app imports.\n- The ECON-10 close order: books reset before the build, economy, sponsor and staff steps, and sponsor expiry still runs before the staff steps.\n- `moneyLabel` matches T053's `compactMoney` on base exactly.\n\nInteraction with base 2861ffb (T053/T054 integrated):\n- Four files overlap. EventCenter.tsx, outcome.ts and business.spec.ts merge cleanly.\n- teamState.ts conflicts (first finding).\n- Every symbol the base lane imports from operations, transfers, staff, policy and finance still exists after the split.\n\nChecks:\n- I did not run any checks. This session is read-only, and the checkout has no node_modules, so `pnpm install` would have changed it.\n- The runner's taskVerify on 070d66b passed typecheck and test:unit (74 files, 538 tests). That ran on the lane alone, without T053/T054.\n- The worker reports lint, format:check, test:contract, build, benchmark and e2e as run. In e2e, one test failed (281 passed): the known local macOS WebKit styled-select case."
+      },
+      "review": {
+        "id": "fe530d0d-d26d-4e72-954b-dea0dbfbee85",
+        "owner": "7784806a-f98d-49ec-94a4-f4f6c9b6c7ad/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Approved. The correction at 070d66b fixes all three blocking findings from the previous review (a2a2e5bb), and nothing new in T050, T051 or T052 blocks it.\n\n- **P1, second sponsor after reload (T051/T052):** `clubSponsor` (finance.ts) now reads either the 1.15 `w.sponsor` or the contract a load moved into `w.sponsors`. Every path that still assumed one sponsor reads it: delegatedBusiness, sponsorReminder, the `sponsor` command guard, the exclusive-merchandise check, sponsorAnnual, matchBonus, gate payments and lastPaid, financeProjection, yearlySponsor expiry and currency conversion in economy.ts. `w.sponsor` and `w.sponsors` therefore never coexist, and checkpoints keep decoding.\n  - The migration's `from = until − 2/4` matches the offer terms, so an in-memory world and a reloaded one normalise to the same contract.\n  - Two new regression tests cover it. persistence.test.ts covers delegated business, encode→decode, a day more, then checkpoint. business.test.ts runs two seasons and checks payments, a single sponsor-end and canonical equality with the never-reloaded career.\n- **P2, benchmark and e2e:** benchmark.ts validates with LOAD_CATALOG and compares worlds through `loadedCanonical`. business.spec.ts expects the moved contract.\n- **P2, cash remedy:** the cash remedy no longer offers lowering 선수단 투자, and teamState.test.ts asserts it.\n\nStill correct from the earlier review:\n- T050's index, slot eras and catalog pinning.\n- T052's domain split and the re-exports the app imports.\n- The ECON-10 close order: books reset before the build, economy, sponsor and staff steps, and sponsor expiry still runs before the staff steps.\n- `moneyLabel` matches T053's `compactMoney` on base exactly.\n\nInteraction with base 2861ffb (T053/T054 integrated):\n- Four files overlap. EventCenter.tsx, outcome.ts and business.spec.ts merge cleanly.\n- teamState.ts conflicts (first finding).\n- Every symbol the base lane imports from operations, transfers, staff, policy and finance still exists after the split.\n\nChecks:\n- I did not run any checks. This session is read-only, and the checkout has no node_modules, so `pnpm install` would have changed it.\n- The runner's taskVerify on 070d66b passed typecheck and test:unit (74 files, 538 tests). That ran on the lane alone, without T053/T054.\n- The worker reports lint, format:check, test:contract, build, benchmark and e2e as run. In e2e, one test failed (281 passed): the known local macOS WebKit styled-select case.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/teamState.ts:110-113 (T052, merge with base 2861ffb)",
+            "message": "This is not a code defect, but integration will stop here. `work integrate` runs `git merge --no-ff` of 070d66b into 2861ffb, and the two sides edit adjacent lines in remedies(). T053 rewrote the `format = (value) => money(...)` line to `compactMoney`, and this lane deletes the next line (`const supportDown = …`), so git reports a conflict. Fix: keep T053's `compactMoney` format line, drop `supportDown` (`policy` and `POLICY_INFO` are still used by the marketing remedy), then run typecheck, lint and test:unit on the merge. The new cash-remedy assertion in teamState.test.ts then runs against T053's notation. EventCenter.tsx, outcome.ts and tests/e2e/business.spec.ts also changed on both sides, but in separate hunks, so they merge cleanly."
+          },
+          {
+            "priority": "P3",
+            "where": "spec/tasks/T052.ops-split-and-engine-money.md:23 (limits) → planner",
+            "message": "Some hand-offs in T052's limits name a task that cannot take them:\n- PolicyBoard's squad-investment dial is handed to 'T053 or T058'. T053 is already done on base 2861ffb, and T058's touches don't include apps/web/src/ui/PolicyBoard.tsx. So levels other than the current one keep showing 연간 운영비 +0, with the pay ceiling and goodwill only in the summary text.\n- The STOP_KINDS gap in tests/e2e/events.ts is handed to T053's e2e pass, which already happened.\n- The question of delegating `contracts` on load for older saves at levels 2+ (they now show 맞춤, WEB-45/STAFF-13) is still open.\nThe planner should assign these, for example PolicyBoard to T058 and events.ts to T059. T056 already owns the reload-time 후원 tab gap: BusinessWorkbench still reads `w.sponsor` and its acceptance covers migrated contracts. Removing the legacy `sponsor` command later will touch scripts/benchmark.ts:153, scripts/update-golden.ts:19 and the business/management e2e journeys, and none of them is in T056's touches."
+          }
+        ],
+        "commit": "070d66b0b8cd16687fa49e285a2b611b09d972fb",
+        "baseCommit": "2861ffb600ca06bc9cd2f54d45f636adc2fdc48c",
+        "submissionId": "67b9ca2b-27f0-4185-9d0d-a297eab3a822",
+        "createdAt": "2026-10-12T14:10:17.352Z",
+        "finishedAt": "2026-10-12T14:17:51.239Z"
       },
       "reviewHistory": [
         {
@@ -291,13 +300,13 @@
         },
         {
           "taskId": "T052",
-          "commit": "d2312dd8442ac61cfead4b662b6912cea9b0890e",
-          "at": "2026-10-12T13:39:27.463Z",
+          "commit": "070d66b0b8cd16687fa49e285a2b611b09d972fb",
+          "at": "2026-10-12T14:10:16.418Z",
           "verification": [
             {
               "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
-              "startedAt": "2026-10-12T13:38:44.866Z",
-              "finishedAt": "2026-10-12T13:39:26.976Z"
+              "startedAt": "2026-10-12T14:09:33.397Z",
+              "finishedAt": "2026-10-12T14:10:15.893Z"
             }
           ]
         }
@@ -305,8 +314,8 @@
       "verification": [
         {
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
-          "startedAt": "2026-10-12T13:38:44.866Z",
-          "finishedAt": "2026-10-12T13:39:26.976Z"
+          "startedAt": "2026-10-12T14:09:33.397Z",
+          "finishedAt": "2026-10-12T14:10:15.893Z"
         }
       ]
     },
@@ -332,6 +341,8 @@
       "submittedBase": "ccdec55556ae6049cb95f9838c20ba3a97cbed62",
       "submissionId": "66a192cf-c931-4bdb-b476-18a18710908a",
       "submittedAt": "2026-10-12T13:46:51.328Z",
+      "integratedCommit": "2861ffb600ca06bc9cd2f54d45f636adc2fdc48c",
+      "integratedAt": "2026-10-12T13:50:39.325Z",
       "dispatch": {
         "id": "7dddb8a3-b7b5-4cff-bc4c-d8de4d8fcd6f",
         "runner": "7784806a-f98d-49ec-94a4-f4f6c9b6c7ad",
@@ -453,6 +464,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
           "startedAt": "2026-10-12T13:46:09.021Z",
           "finishedAt": "2026-10-12T13:46:50.953Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+          "startedAt": "2026-10-12T13:49:48.367Z",
+          "finishedAt": "2026-10-12T13:50:39.129Z"
         }
       ]
     }
@@ -2810,6 +2828,445 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 86,
+      "at": "2026-10-12T13:50:39.282Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "d3895ae1-7cbf-446d-8762-61e6f50ef717",
+      "taskId": "T054",
+      "tasks": [
+        "T053",
+        "T054"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
+            "startedAt": "2026-10-12T13:49:48.367Z",
+            "finishedAt": "2026-10-12T13:50:39.129Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 87,
+      "at": "2026-10-12T13:50:39.325Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "d3895ae1-7cbf-446d-8762-61e6f50ef717",
+      "taskId": "T054",
+      "tasks": [
+        "T053",
+        "T054"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "2861ffb600ca06bc9cd2f54d45f636adc2fdc48c",
+        "integratedAt": "2026-10-12T13:50:39.325Z"
+      }
+    },
+    {
+      "sequence": 88,
+      "at": "2026-10-12T14:09:32.218Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T052",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 89,
+      "at": "2026-10-12T14:09:32.996Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T052",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 90,
+      "at": "2026-10-12T14:09:33.017Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T052",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 91,
+      "at": "2026-10-12T14:10:16.427Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T052",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "2861ffb600ca06bc9cd2f54d45f636adc2fdc48c",
+        "submissionId": "67b9ca2b-27f0-4185-9d0d-a297eab3a822",
+        "submittedAt": "2026-10-12T14:10:16.427Z",
+        "steps": [
+          {
+            "taskId": "T050",
+            "commit": "a05a898c47a3ffbba937afd3945a98dfaa95ba3c",
+            "at": "2026-10-12T12:18:45.441Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T12:18:05.425Z",
+                "finishedAt": "2026-10-12T12:18:44.996Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T051",
+            "commit": "3d35c168e3e99d8442b977ebc32c458a07e8c028",
+            "at": "2026-10-12T13:21:34.974Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T13:20:53.301Z",
+                "finishedAt": "2026-10-12T13:21:34.514Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T052",
+            "commit": "070d66b0b8cd16687fa49e285a2b611b09d972fb",
+            "at": "2026-10-12T14:10:16.418Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+                "startedAt": "2026-10-12T14:09:33.397Z",
+                "finishedAt": "2026-10-12T14:10:15.893Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit",
+            "startedAt": "2026-10-12T14:09:33.397Z",
+            "finishedAt": "2026-10-12T14:10:15.893Z"
+          }
+        ],
+        "verifiedCommit": "070d66b0b8cd16687fa49e285a2b611b09d972fb"
+      }
+    },
+    {
+      "sequence": 92,
+      "at": "2026-10-12T14:10:16.430Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T052",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "edeb06bf-a98c-47dd-b6f5-dd171839cf94",
+          "runner": "7784806a-f98d-49ec-94a4-f4f6c9b6c7ad",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T13:47:15.871Z",
+          "finishedAt": "2026-10-12T14:10:16.430Z",
+          "error": null,
+          "summary": "T052 correction is done; all edits are uncommitted for the runner. One check failed: the e2e suite's known local macOS WebKit styled-select failure.\n\n**Fixes for the review findings**\n- **P1 (second sponsor, then saves stop):** reproduced and fixed. A new `clubSponsor(w)` in finance.ts returns the 1.15 `w.sponsor` or the contract a load moved into `sponsors`. Every engine sponsor path now reads it: delegated signing, the season-start reminder, the `sponsor` command, the exclusive-merchandise check, payments, bonuses, the cash projection, expiry at the close (economy.ts, projection.ts) and currency conversion. A reloaded career no longer signs a second sponsor, its checkpoints still load, and the moved sponsor pays and ends as if never reloaded. Two new tests cover this: one in business.test.ts and a real encode/decode/checkpoint test in persistence.test.ts. Both fail with the old guards and pass with the fix.\n- **P2 (benchmark and e2e):** scripts/benchmark.ts now validates with `LOAD_CATALOG` and compares worlds in the form a load produces. The one assertion at tests/e2e/business.spec.ts:144 now expects the moved contract.\n- **P2 (cash remedy):** the '선수단 투자' remedy is removed from teamState.ts, with a test that no cash remedy changes that dial.\n- **P3:** T051's result now records `at: 3d35c16` and its stale limits are corrected. T052 stays `at: -` because these checks ran on uncommitted changes. The planner hand-offs are recorded in T052's limits.\n\n**Checks (uncommitted tree over d2312dd)**\n- Passed: install, typecheck, test:unit (538 tests), test:contract (8), lint, format:check and build.\n- `pnpm run benchmark` passed. It rewrote the tracked docs/benchmarks/T010-storage.json, which I restored to HEAD.\n- `pnpm run test:e2e` was meant for one file in Chromium but ran the whole suite in every browser. 281 passed and 1 failed: webkit styled-select's Tab-to-button check, the known local macOS WebKit failure listed in STATE.\n\n**Not run:** the haeram CLI (board read and spec lint) was denied in this session.\n\n**Left open (in T052's limits)**\n- Until T056, the 후원 tab still reads `w.sponsor`. A reloaded career sees offers instead of its contract, and signing one is refused.\n- PolicyBoard's squad-investment dial still shows 연간 운영비 +0 (T053's file).\n- Planner decision: whether a load should delegate `contracts`, since older saves show a 맞춤 level.\n- STOP_KINDS in tests/e2e/events.ts lacks the four new kinds; T053's e2e pass could add them.\n\n**Edits outside T052's touches:** economy.ts, projection.ts, business.test.ts, persistence.test.ts, teamState.ts and its test, benchmark.ts, and the one line in business.spec.ts. That spec file is in T053's touches."
+        }
+      }
+    },
+    {
+      "sequence": 93,
+      "at": "2026-10-12T14:10:17.352Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T052",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "fe530d0d-d26d-4e72-954b-dea0dbfbee85",
+          "owner": "7784806a-f98d-49ec-94a4-f4f6c9b6c7ad/reviewer-1",
+          "status": "reviewing",
+          "commit": "070d66b0b8cd16687fa49e285a2b611b09d972fb",
+          "baseCommit": "2861ffb600ca06bc9cd2f54d45f636adc2fdc48c",
+          "submissionId": "67b9ca2b-27f0-4185-9d0d-a297eab3a822",
+          "createdAt": "2026-10-12T14:10:17.352Z"
+        }
+      }
+    },
+    {
+      "sequence": 94,
+      "at": "2026-10-12T14:10:18.006Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T052",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "11ef909a-07bc-4c68-8656-27b205c06acf",
+          "runner": "7784806a-f98d-49ec-94a4-f4f6c9b6c7ad",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T14:10:18.006Z"
+        }
+      }
+    },
+    {
+      "sequence": 95,
+      "at": "2026-10-12T14:10:18.010Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T052",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "11ef909a-07bc-4c68-8656-27b205c06acf",
+          "runner": "7784806a-f98d-49ec-94a4-f4f6c9b6c7ad",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T14:10:18.006Z"
+        }
+      }
+    },
+    {
+      "sequence": 96,
+      "at": "2026-10-12T14:17:51.239Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T052",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "fe530d0d-d26d-4e72-954b-dea0dbfbee85",
+          "owner": "7784806a-f98d-49ec-94a4-f4f6c9b6c7ad/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Approved. The correction at 070d66b fixes all three blocking findings from the previous review (a2a2e5bb), and nothing new in T050, T051 or T052 blocks it.\n\n- **P1, second sponsor after reload (T051/T052):** `clubSponsor` (finance.ts) now reads either the 1.15 `w.sponsor` or the contract a load moved into `w.sponsors`. Every path that still assumed one sponsor reads it: delegatedBusiness, sponsorReminder, the `sponsor` command guard, the exclusive-merchandise check, sponsorAnnual, matchBonus, gate payments and lastPaid, financeProjection, yearlySponsor expiry and currency conversion in economy.ts. `w.sponsor` and `w.sponsors` therefore never coexist, and checkpoints keep decoding.\n  - The migration's `from = until − 2/4` matches the offer terms, so an in-memory world and a reloaded one normalise to the same contract.\n  - Two new regression tests cover it. persistence.test.ts covers delegated business, encode→decode, a day more, then checkpoint. business.test.ts runs two seasons and checks payments, a single sponsor-end and canonical equality with the never-reloaded career.\n- **P2, benchmark and e2e:** benchmark.ts validates with LOAD_CATALOG and compares worlds through `loadedCanonical`. business.spec.ts expects the moved contract.\n- **P2, cash remedy:** the cash remedy no longer offers lowering 선수단 투자, and teamState.test.ts asserts it.\n\nStill correct from the earlier review:\n- T050's index, slot eras and catalog pinning.\n- T052's domain split and the re-exports the app imports.\n- The ECON-10 close order: books reset before the build, economy, sponsor and staff steps, and sponsor expiry still runs before the staff steps.\n- `moneyLabel` matches T053's `compactMoney` on base exactly.\n\nInteraction with base 2861ffb (T053/T054 integrated):\n- Four files overlap. EventCenter.tsx, outcome.ts and business.spec.ts merge cleanly.\n- teamState.ts conflicts (first finding).\n- Every symbol the base lane imports from operations, transfers, staff, policy and finance still exists after the split.\n\nChecks:\n- I did not run any checks. This session is read-only, and the checkout has no node_modules, so `pnpm install` would have changed it.\n- The runner's taskVerify on 070d66b passed typecheck and test:unit (74 files, 538 tests). That ran on the lane alone, without T053/T054.\n- The worker reports lint, format:check, test:contract, build, benchmark and e2e as run. In e2e, one test failed (281 passed): the known local macOS WebKit styled-select case.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/teamState.ts:110-113 (T052, merge with base 2861ffb)",
+              "message": "This is not a code defect, but integration will stop here. `work integrate` runs `git merge --no-ff` of 070d66b into 2861ffb, and the two sides edit adjacent lines in remedies(). T053 rewrote the `format = (value) => money(...)` line to `compactMoney`, and this lane deletes the next line (`const supportDown = …`), so git reports a conflict. Fix: keep T053's `compactMoney` format line, drop `supportDown` (`policy` and `POLICY_INFO` are still used by the marketing remedy), then run typecheck, lint and test:unit on the merge. The new cash-remedy assertion in teamState.test.ts then runs against T053's notation. EventCenter.tsx, outcome.ts and tests/e2e/business.spec.ts also changed on both sides, but in separate hunks, so they merge cleanly."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T052.ops-split-and-engine-money.md:23 (limits) → planner",
+              "message": "Some hand-offs in T052's limits name a task that cannot take them:\n- PolicyBoard's squad-investment dial is handed to 'T053 or T058'. T053 is already done on base 2861ffb, and T058's touches don't include apps/web/src/ui/PolicyBoard.tsx. So levels other than the current one keep showing 연간 운영비 +0, with the pay ceiling and goodwill only in the summary text.\n- The STOP_KINDS gap in tests/e2e/events.ts is handed to T053's e2e pass, which already happened.\n- The question of delegating `contracts` on load for older saves at levels 2+ (they now show 맞춤, WEB-45/STAFF-13) is still open.\nThe planner should assign these, for example PolicyBoard to T058 and events.ts to T059. T056 already owns the reload-time 후원 tab gap: BusinessWorkbench still reads `w.sponsor` and its acceptance covers migrated contracts. Removing the legacy `sponsor` command later will touch scripts/benchmark.ts:153, scripts/update-golden.ts:19 and the business/management e2e journeys, and none of them is in T056's touches."
+            }
+          ],
+          "commit": "070d66b0b8cd16687fa49e285a2b611b09d972fb",
+          "baseCommit": "2861ffb600ca06bc9cd2f54d45f636adc2fdc48c",
+          "submissionId": "67b9ca2b-27f0-4185-9d0d-a297eab3a822",
+          "createdAt": "2026-10-12T14:10:17.352Z",
+          "finishedAt": "2026-10-12T14:17:51.239Z"
+        }
+      }
+    },
+    {
+      "sequence": 97,
+      "at": "2026-10-12T14:17:51.242Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T052",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "11ef909a-07bc-4c68-8656-27b205c06acf",
+          "runner": "7784806a-f98d-49ec-94a4-f4f6c9b6c7ad",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T14:10:18.006Z",
+          "finishedAt": "2026-10-12T14:17:51.242Z",
+          "error": null,
+          "summary": "Approved. The correction at 070d66b fixes all three blocking findings from the previous review (a2a2e5bb), and nothing new in T050, T051 or T052 blocks it.\n\n- **P1, second sponsor after reload (T051/T052):** `clubSponsor` (finance.ts) now reads either the 1.15 `w.sponsor` or the contract a load moved into `w.sponsors`. Every path that still assumed one sponsor reads it: delegatedBusiness, sponsorReminder, the `sponsor` command guard, the exclusive-merchandise check, sponsorAnnual, matchBonus, gate payments and lastPaid, financeProjection, yearlySponsor expiry and currency conversion in economy.ts. `w.sponsor` and `w.sponsors` therefore never coexist, and checkpoints keep decoding.\n  - The migration's `from = until − 2/4` matches the offer terms, so an in-memory world and a reloaded one normalise to the same contract.\n  - Two new regression tests cover it. persistence.test.ts covers delegated business, encode→decode, a day more, then checkpoint. business.test.ts runs two seasons and checks payments, a single sponsor-end and canonical equality with the never-reloaded career.\n- **P2, benchmark and e2e:** benchmark.ts validates with LOAD_CATALOG and compares worlds through `loadedCanonical`. business.spec.ts expects the moved contract.\n- **P2, cash remedy:** the cash remedy no longer offers lowering 선수단 투자, and teamState.test.ts asserts it.\n\nStill correct from the earlier review:\n- T050's index, slot eras and catalog pinning.\n- T052's domain split and the re-exports the app imports.\n- The ECON-10 close order: books reset before the build, economy, sponsor and staff steps, and sponsor expiry still runs before the staff steps.\n- `moneyLabel` matches T053's `compactMoney` on base exactly.\n\nInteraction with base 2861ffb (T053/T054 integrated):\n- Four files overlap. EventCenter.tsx, outcome.ts and business.spec.ts merge cleanly.\n- teamState.ts conflicts (first finding).\n- Every symbol the base lane imports from operations, transfers, staff, policy and finance still exists after the split.\n\nChecks:\n- I did not run any checks. This session is read-only, and the checkout has no node_modules, so `pnpm install` would have changed it.\n- The runner's taskVerify on 070d66b passed typecheck and test:unit (74 files, 538 tests). That ran on the lane alone, without T053/T054.\n- The worker reports lint, format:check, test:contract, build, benchmark and e2e as run. In e2e, one test failed (281 passed): the known local macOS WebKit styled-select case."
+        }
+      }
+    },
+    {
+      "sequence": 98,
+      "at": "2026-10-12T14:17:51.270Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T052",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 99,
+      "at": "2026-10-12T14:17:52.064Z",
+      "type": "attempt",
+      "group": "club-realism",
+      "attemptId": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+      "taskId": "T052",
+      "tasks": [
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "Command failed: git -C /Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/club-realism-integrate-9e4982aa merge --no-ff --no-commit 070d66b0b8cd16687fa49e285a2b611b09d972fb\n"
+      }
+    },
+    {
+      "sequence": 100,
+      "at": "2026-10-12T14:17:53.164Z",
+      "type": "group",
+      "group": "club-realism",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "7784806a-f98d-49ec-94a4-f4f6c9b6c7ad",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-12T12:10:05.106Z",
+          "stoppedAt": "2026-10-12T14:17:53.164Z",
+          "dispatched": 11,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+              "role": "worker",
+              "error": "T050 is blocked: this session can't run any checks, the same as the previous dispatch. It denied `pnpm` (the worktree has no node_modules), `node -e`, `tsx`, `shasum`, the haeram CLI and shell access outside the worktree. Without them, three acceptance items can't be completed:\n- the catalog fingerprint can't be regenerated, so `packages/catalogs/src/fingerprint.ts` still holds the 2026-demo-1 hash and `validate:catalogs` will fail with \"Catalog fingerprint is stale\";\n- `pnpm run validate:catalogs` hasn't run;\n- `pnpm run typecheck && pnpm run test:unit` haven't run.\n\nThe code edits are in WIP commit fb792bd: the football-index catalog, `footballIndex` / `sponsorSlotOpens` / `SPONSOR_SLOTS`, CATALOG_VERSION 2026-demo-2, `PRIOR_CATALOG_HASHES`, `upgradeWorldRules(w, pin)` passed `CURRENT_CATALOG` from host.ts, the validate and fingerprint scripts, and the catalogs and persistence tests. I re-read all of it by hand against tsconfig (strict), prettier (width 100) and every caller of `upgradeWorldRules` and every reader of the catalog version. Each country's figures match its declared share of England's real growth, the sponsor-slot years are in order and every source has an https reference. I found nothing to change, but none of this was executed.\n\nThe only file I changed is `spec/tasks/T050.football-index-catalog.md`: its result `verified` line now records both dispatches.\n\nTo unblock, run these in a session that allows them:\n1. `pnpm install --frozen-lockfile --prefer-offline`\n2. `pnpm exec tsx scripts/fingerprint-catalog.ts --write`\n3. `pnpm run validate:catalogs`\n4. `pnpm run typecheck && pnpm run test:unit`, plus lint and format:check\n\nThen mark the last three acceptance items [v] and fill in the result `at`.\n\nSome edits sit outside the task's touches and the scope check may flag them: `apps/web/src/runtime/host.ts` (needed by the new `upgradeWorldRules` signature), `scripts/update-golden.ts`, `docs/DATA.md` and `docs/SAVE-FORMAT.md`."
+            },
+            {
+              "attempt": "d3895ae1-7cbf-446d-8762-61e6f50ef717",
+              "role": "worker",
+              "error": "T053: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+            },
+            {
+              "attempt": "54bc5fd5-c511-4d66-b7db-bfda69f46b05",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            }
+          ]
+        }
       }
     }
   ]
