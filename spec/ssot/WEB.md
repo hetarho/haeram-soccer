@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r49 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r50 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -32,7 +32,7 @@
 - WEB-16 [o] First-session help explains optional match preparation, one-action observation, earned player growth and cost-bearing club investment. It derives completion from actual milestones, does not require a tutorial gate, and can be reopened from the menu.
 
 - WEB-17 [o] The match theatre passes 360x740 and390x844 viewport bounds without masking essential overflow; home has no horizontal overflow and scrolls vertically when needed. Supporter count and small text remain readable; all primary buttons and selection controls, including match preparation, recruitment and league exploration, have touch targets of at least44 CSS pixels across Chromium, Firefox and Safari; the clock's secondary pace chips are at least 32 px inside a 44 px track. Expanded records/settings may scroll; short screens or accessibility magnification can use necessary vertical scrolling.
-- WEB-18 [o] One clock runs on every view as a single packed row: date and status on the left, a prominent play/pause plus smaller x1, x2, x5 and x10 pace chips (one day per 1, 0.5, 0.2 and 0.1 s; when saving lags, the next step carries the days owed, at most 5, and time stopped is never owed) and the intervention trigger on the right, the season's progress along its lower edge. The trigger (a level meter and "개입 N", the level's name on desktop) opens a popover with the four levels (→WEB-45) that applies a choice at once and closes with focus back on the trigger, never pauses the clock and links to the per-event settings; the HUD menu keeps the full dialog. The match theatre carries its buttons in the scoreboard row. ← a fixed pace keeps cash and dates moving visibly; no step jumps to an arbitrary next event; changing views is not a reason to stop
+- WEB-18 [o] One clock runs on every view as a single packed row: date and status on the left, a prominent play/pause plus smaller x1, x2, x5 and x10 pace chips (one day per 1, 0.5, 0.2 and 0.1 s; a step never waits for saving (→SAVE-8); when a step itself runs late, the next carries the days owed, at most 5, and time stopped is never owed) and the intervention trigger on the right, the season's progress along its lower edge. The trigger (a level meter and "개입 N", the level's name on desktop) opens a popover with the four levels (→WEB-45) that applies a choice at once and closes with focus back on the trigger, never pauses the clock and links to the per-event settings; the HUD menu keeps the full dialog. The match theatre carries its buttons in the scoreboard row. ← a fixed pace keeps cash and dates moving visibly; no step jumps to an arbitrary next event; changing views is not a reason to stop
   - stops only for event kinds enabled in the stop settings (→WEB-42) and on the eve of an own match when match stops are enabled (resuming there plays the match through as a result). A season close never stops it: the closed season joins the league's season list (→WEB-47), so a clock left running plays on season after season. ← records stay without forcing a page on an unattended run
   - a day step plays our match through as a result without building movement frames (same duel chain and facts, →MATCH-7); only watching builds them.
   - a multi-day step ends on the day any club news arrives or our match is played, so the date lands on that day, and never runs past a match eve when match stops are on; only enabled kinds stop the clock.
@@ -179,6 +179,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r50 261012 WEB-18✎ the next step waiting for the save and carrying the days owed→steps never wait for saving; days owed only when a step itself runs late
 - r49 261012 WEB-47✎ +a closed season's 순위표 for any league; WEB-54✎ +season rows open the season in 시즌 기록; WEB-65+ league picker on the league page (any country, division and group; other leagues' fixtures read on demand)
 - r48 261012 WEB-5✎ +every progression mode records the same facts (→LEAGUE-11)
 - r47 261012 WEB-40✎ 감독 후보 four seasonal candidates→the manager market (free agents, other clubs' managers with compensation); WEB-60✎ +다음 시즌부터 적용 in the draft bar and the reserved strategy with 예약 취소
