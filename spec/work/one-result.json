@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-12T07:50:08.783Z",
-  "sourceCommit": "c42fa7394d75a45e6ddd5e3691ae0ec876e6acc9",
+  "snapshotAt": "2026-10-12T07:55:12.477Z",
+  "sourceCommit": "13f84740a3e9a325ea4479886ff8944f42d9772a",
   "group": {
     "id": "one-result",
     "branch": "work/one-result",
@@ -11,6 +11,30 @@
       "workers": 3,
       "reviewers": 1,
       "maxPending": 8
+    },
+    "runner": {
+      "id": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.296 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.296 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.296 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-12T07:50:37.896Z"
     },
     "lastRun": {
       "id": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
@@ -59,30 +83,14 @@
   },
   "summary": {
     "total": 9,
-    "completed": 3,
-    "remaining": 6,
-    "running": 0,
-    "review": 3,
-    "blocked": 2,
+    "completed": 5,
+    "remaining": 4,
+    "running": 2,
+    "review": 1,
+    "blocked": 0,
     "unassigned": 1
   },
   "tasks": [
-    {
-      "id": "T043",
-      "title": "One day order for every progression mode",
-      "dep": [],
-      "lane": "day-order",
-      "status": "ready"
-    },
-    {
-      "id": "T044",
-      "title": "Amateur exchange by the amateur table",
-      "dep": [
-        "T043"
-      ],
-      "lane": "day-order",
-      "status": "ready"
-    },
     {
       "id": "T047",
       "title": "Rules 1.15.0 with regenerated portable goldens",
@@ -98,7 +106,7 @@
       "title": "Background codec worker for checkpoints",
       "dep": [],
       "lane": "background-save",
-      "status": "blocked"
+      "status": "doing"
     },
     {
       "id": "T049",
@@ -107,7 +115,7 @@
         "T048"
       ],
       "lane": "background-save",
-      "status": "blocked"
+      "status": "doing"
     },
     {
       "id": "T063",
@@ -280,7 +288,7 @@
         "04bf1446-4df5-4608-aabb-68858781e112/worker-2",
         "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/worker-2"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-12T05:51:17.801Z",
       "startCommit": "d9501f7e933f19871ceabcb2cebdd18e4853c2ea",
@@ -289,17 +297,41 @@
       "submissionId": "e41b2d2f-b69e-4037-971e-4eed3cb5e065",
       "submittedAt": "2026-10-12T07:41:15.050Z",
       "dispatch": {
-        "id": "634fc69e-545f-488f-8c00-c454eab3df0a",
-        "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+        "id": "439aeb8e-ff25-41d5-b637-4c99893aad84",
+        "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
         "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-12T07:44:41.832Z",
-        "finishedAt": "2026-10-12T07:50:08.505Z",
-        "error": "adapter exited 1",
-        "summary": null
+        "startedAt": "2026-10-12T07:50:38.654Z",
+        "finishedAt": "2026-10-12T07:55:12.018Z",
+        "error": null,
+        "summary": "Approved, with two optional P3s. I reviewed 635fb18 against base 13f8474 by reading the code; I didn't re-run the tests because this session is read-only. The only P2 from the last review was that the web amateur zones were wrong for Italy (ITA). The planner has moved it to T063, which is now in one-result with status ready, so it no longer blocks this lane. The submission merges cleanly with the T045 work that has since gone into the base: git merge-tree reports no conflicts. T045 calls only advanceDays, whose per-day behaviour this lane doesn't change. 635fb18 changes only the T044 result relative to 07756b4.\n\nT043: advanceDays, advanceRound and simulateSeason (through advanceRound) now all step through one internal stepDay. On a league match day, playRound plays the matches, then training, the catch-up for Europe and the cups, the round settlement, snapshots and the manager-market refresh, and then clubDay runs. Any other day plays its ties, then clubDay. The season closes on day 323. The catch-up in playRound finds nothing still due, because isDue counts by round and those ties were already played on their own days. closeSeason moves the calendar to SEASON_END_DAY + 1 before closing, so the host's advance and season commands close on the same day as a day step (LEAGUE-9/11, ARCH-5). advanceRound still carries on past a critical alert and stops on bankruptcy, as the impl notes say. No engine code reads w.revision any more, so normalising revision in the new test is sound. The new calendar.test.ts case checks day, round and season runs for ENG haeram-demo and ESP one-order. It covers 1.5 seasons and compares canonical worlds, as the acceptance requires.\n\nT044: promote() settles the amateur table before any club moves, but only while w.lower is set. The clubs going up are the top (2 × last-division groups − 1) plus the winner of a lower-promotion playoff among the next four. ENG gets 1 plus a playoff of 2nd–5th, ITA 5 plus a playoff of 6th–9th, and the 16-club league always has enough clubs for this. They fill the relegated clubs' places in group order. An own club that goes up sets w.lower to false, takes the dropped club's group and gets the 프로 무대 입성/복귀 event. Every other country, and the own country in a professional season, keeps the strength order. The ranked().at(-1) replacement drop is gone. The existing previous-standings filter stops a club that has just fallen into the last division from dropping again. If the own club is relegated in this close, w.lower was still false when the entrants were worked out, so it can't move twice. The playoff now runs in every close where w.lower is set. The own club's playoff ties are still archived in ownMatches (LEAGUE-4). The new season.test.ts cases cover:\n- the own club as champion and in third place;\n- ITA and GER, including ITA:1:0:2 and GER:1:0:15 given the worst record;\n- group capacities;\n- moves of at most one level;\n- the strength order elsewhere and in a professional season.\n\nThe season loops there now fail on bankruptcy instead of hanging. Golden files and the rules version are left to T047, as planned.\n\nThe runner's typecheck and test:unit passed at 635fb18 (74 files, 513 tests)."
+      },
+      "review": {
+        "id": "2f1cc3ef-e98c-4537-803e-91956a48017e",
+        "owner": "972d9a30-6bea-46b8-81f6-ead950c5011c/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Approved, with two optional P3s. I reviewed 635fb18 against base 13f8474 by reading the code; I didn't re-run the tests because this session is read-only. The only P2 from the last review was that the web amateur zones were wrong for Italy (ITA). The planner has moved it to T063, which is now in one-result with status ready, so it no longer blocks this lane. The submission merges cleanly with the T045 work that has since gone into the base: git merge-tree reports no conflicts. T045 calls only advanceDays, whose per-day behaviour this lane doesn't change. 635fb18 changes only the T044 result relative to 07756b4.\n\nT043: advanceDays, advanceRound and simulateSeason (through advanceRound) now all step through one internal stepDay. On a league match day, playRound plays the matches, then training, the catch-up for Europe and the cups, the round settlement, snapshots and the manager-market refresh, and then clubDay runs. Any other day plays its ties, then clubDay. The season closes on day 323. The catch-up in playRound finds nothing still due, because isDue counts by round and those ties were already played on their own days. closeSeason moves the calendar to SEASON_END_DAY + 1 before closing, so the host's advance and season commands close on the same day as a day step (LEAGUE-9/11, ARCH-5). advanceRound still carries on past a critical alert and stops on bankruptcy, as the impl notes say. No engine code reads w.revision any more, so normalising revision in the new test is sound. The new calendar.test.ts case checks day, round and season runs for ENG haeram-demo and ESP one-order. It covers 1.5 seasons and compares canonical worlds, as the acceptance requires.\n\nT044: promote() settles the amateur table before any club moves, but only while w.lower is set. The clubs going up are the top (2 × last-division groups − 1) plus the winner of a lower-promotion playoff among the next four. ENG gets 1 plus a playoff of 2nd–5th, ITA 5 plus a playoff of 6th–9th, and the 16-club league always has enough clubs for this. They fill the relegated clubs' places in group order. An own club that goes up sets w.lower to false, takes the dropped club's group and gets the 프로 무대 입성/복귀 event. Every other country, and the own country in a professional season, keeps the strength order. The ranked().at(-1) replacement drop is gone. The existing previous-standings filter stops a club that has just fallen into the last division from dropping again. If the own club is relegated in this close, w.lower was still false when the entrants were worked out, so it can't move twice. The playoff now runs in every close where w.lower is set. The own club's playoff ties are still archived in ownMatches (LEAGUE-4). The new season.test.ts cases cover:\n- the own club as champion and in third place;\n- ITA and GER, including ITA:1:0:2 and GER:1:0:15 given the worst record;\n- group capacities;\n- moves of at most one level;\n- the strength order elsewhere and in a professional season.\n\nThe season loops there now fail on bankruptcy instead of hanging. Golden files and the rules version are left to T047, as planned.\n\nThe runner's typecheck and test:unit passed at 635fb18 (74 files, 513 tests).",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/calendar.test.ts:194,197,205 (T043)",
+            "message": "Raised in the last review and still open (T044's limits mention it). advanceDays returns without moving once w.critical is set, and advanceRound returns at once when w.bankrupt is set. These `while (!done(...))` loops would then spin until the 30 s test timeout instead of failing with a clear message. T047 is about to regenerate rules and golden files, which could make that happen. Consider adding expect(w.critical/w.bankrupt).toBeUndefined() inside the loops, the same guard season.test.ts's lastRound now has."
+          },
+          {
+            "priority": "P3",
+            "where": "spec/tasks/T043.one-day-order.md:28 ## result limits (T043)",
+            "message": "The limits line says 'a manager departure's caretaker draw still reads w.revision until T042 lands'. That is out of date: T042 is merged into this lane (c60409c), and no engine code outside tests reads w.revision any more. Remove the line the next time the result is touched."
+          }
+        ],
+        "commit": "635fb189d38c30674936f0c3e992a23c32ad3103",
+        "baseCommit": "13f84740a3e9a325ea4479886ff8944f42d9772a",
+        "submissionId": "e41b2d2f-b69e-4037-971e-4eed3cb5e065",
+        "createdAt": "2026-10-12T07:50:38.339Z",
+        "finishedAt": "2026-10-12T07:55:12.000Z"
       },
       "reviewHistory": [
         {
@@ -546,27 +578,25 @@
         "T049"
       ],
       "lane": "background-save",
-      "owner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/worker-1",
+      "owner": "972d9a30-6bea-46b8-81f6-ead950c5011c/worker-1",
       "contributors": [
         "04bf1446-4df5-4608-aabb-68858781e112/worker-1",
-        "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/worker-1"
+        "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/worker-1",
+        "972d9a30-6bea-46b8-81f6-ead950c5011c/worker-1"
       ],
-      "status": "blocked",
-      "reason": "adapter exited 1",
+      "status": "doing",
+      "reason": "Resumed after the runner was stopped for an account switch. Browser system dependencies are installed (Chromium, Firefox and WebKit launch). The T049 code is in 151f7ec and the interrupted e2e fix is in bc886e1. Run the affected journeys in Chromium with `pnpm run test:e2e -- --project=chromium <spec files>` (builds, business, cups-and-club, founding, intervention, milestones, native-touch, news, recruitment, recovery and any other spec that reads save-status). Fix failures, record the real results, mark the e2e acceptance [v] only if they pass, and submit the lane.",
       "createdAt": "2026-10-12T06:19:25.170Z",
       "startCommit": "a37e137038d9f4211780569bddf8856da8860cd4",
       "dispatch": {
-        "id": "3c2ce89c-3ec0-4c7d-92f7-de5a6bb54750",
-        "runner": "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8",
+        "id": "9a3e20ce-a125-4d67-91c9-011a8b178883",
+        "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
         "role": "worker",
         "slot": 1,
         "provider": "claude",
         "model": null,
-        "status": "finished",
-        "startedAt": "2026-10-12T07:44:41.237Z",
-        "finishedAt": "2026-10-12T07:50:08.463Z",
-        "error": "adapter exited 1",
-        "summary": null
+        "status": "running",
+        "startedAt": "2026-10-12T07:50:37.969Z"
       },
       "steps": [
         {
@@ -5258,6 +5288,297 @@
             }
           ]
         }
+      }
+    },
+    {
+      "sequence": 181,
+      "at": "2026-10-12T07:50:36.590Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": "Resumed after the runner was stopped for an account switch. Browser system dependencies are installed (Chromium, Firefox and WebKit launch). The T049 code is in 151f7ec and the interrupted e2e fix is in bc886e1. Run the affected journeys in Chromium with `pnpm run test:e2e -- --project=chromium <spec files>` (builds, business, cups-and-club, founding, intervention, milestones, native-touch, news, recruitment, recovery and any other spec that reads save-status). Fix failures, record the real results, mark the e2e acceptance [v] only if they pass, and submit the lane."
+      }
+    },
+    {
+      "sequence": 182,
+      "at": "2026-10-12T07:50:37.907Z",
+      "type": "group",
+      "group": "one-result",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-12T07:50:37.896Z"
+        }
+      }
+    },
+    {
+      "sequence": 183,
+      "at": "2026-10-12T07:50:37.925Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "972d9a30-6bea-46b8-81f6-ead950c5011c/worker-1",
+        "contributors": [
+          "04bf1446-4df5-4608-aabb-68858781e112/worker-1",
+          "5c7bfd0d-a607-40a3-a722-e8961d6b2ec8/worker-1",
+          "972d9a30-6bea-46b8-81f6-ead950c5011c/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 184,
+      "at": "2026-10-12T07:50:37.969Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "9a3e20ce-a125-4d67-91c9-011a8b178883",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T07:50:37.969Z"
+        }
+      }
+    },
+    {
+      "sequence": 185,
+      "at": "2026-10-12T07:50:37.988Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "5c2496cb-c942-42cc-8c9d-4a74041594f1",
+      "taskId": "T049",
+      "tasks": [
+        "T048",
+        "T049"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "9a3e20ce-a125-4d67-91c9-011a8b178883",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T07:50:37.969Z"
+        }
+      }
+    },
+    {
+      "sequence": 186,
+      "at": "2026-10-12T07:50:38.339Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "2f1cc3ef-e98c-4537-803e-91956a48017e",
+          "owner": "972d9a30-6bea-46b8-81f6-ead950c5011c/reviewer-1",
+          "status": "reviewing",
+          "commit": "635fb189d38c30674936f0c3e992a23c32ad3103",
+          "baseCommit": "13f84740a3e9a325ea4479886ff8944f42d9772a",
+          "submissionId": "e41b2d2f-b69e-4037-971e-4eed3cb5e065",
+          "createdAt": "2026-10-12T07:50:38.339Z"
+        }
+      }
+    },
+    {
+      "sequence": 187,
+      "at": "2026-10-12T07:50:38.654Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "439aeb8e-ff25-41d5-b637-4c99893aad84",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-12T07:50:38.654Z"
+        }
+      }
+    },
+    {
+      "sequence": 188,
+      "at": "2026-10-12T07:50:38.670Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "439aeb8e-ff25-41d5-b637-4c99893aad84",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-12T07:50:38.654Z"
+        }
+      }
+    },
+    {
+      "sequence": 189,
+      "at": "2026-10-12T07:55:12.000Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "2f1cc3ef-e98c-4537-803e-91956a48017e",
+          "owner": "972d9a30-6bea-46b8-81f6-ead950c5011c/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Approved, with two optional P3s. I reviewed 635fb18 against base 13f8474 by reading the code; I didn't re-run the tests because this session is read-only. The only P2 from the last review was that the web amateur zones were wrong for Italy (ITA). The planner has moved it to T063, which is now in one-result with status ready, so it no longer blocks this lane. The submission merges cleanly with the T045 work that has since gone into the base: git merge-tree reports no conflicts. T045 calls only advanceDays, whose per-day behaviour this lane doesn't change. 635fb18 changes only the T044 result relative to 07756b4.\n\nT043: advanceDays, advanceRound and simulateSeason (through advanceRound) now all step through one internal stepDay. On a league match day, playRound plays the matches, then training, the catch-up for Europe and the cups, the round settlement, snapshots and the manager-market refresh, and then clubDay runs. Any other day plays its ties, then clubDay. The season closes on day 323. The catch-up in playRound finds nothing still due, because isDue counts by round and those ties were already played on their own days. closeSeason moves the calendar to SEASON_END_DAY + 1 before closing, so the host's advance and season commands close on the same day as a day step (LEAGUE-9/11, ARCH-5). advanceRound still carries on past a critical alert and stops on bankruptcy, as the impl notes say. No engine code reads w.revision any more, so normalising revision in the new test is sound. The new calendar.test.ts case checks day, round and season runs for ENG haeram-demo and ESP one-order. It covers 1.5 seasons and compares canonical worlds, as the acceptance requires.\n\nT044: promote() settles the amateur table before any club moves, but only while w.lower is set. The clubs going up are the top (2 × last-division groups − 1) plus the winner of a lower-promotion playoff among the next four. ENG gets 1 plus a playoff of 2nd–5th, ITA 5 plus a playoff of 6th–9th, and the 16-club league always has enough clubs for this. They fill the relegated clubs' places in group order. An own club that goes up sets w.lower to false, takes the dropped club's group and gets the 프로 무대 입성/복귀 event. Every other country, and the own country in a professional season, keeps the strength order. The ranked().at(-1) replacement drop is gone. The existing previous-standings filter stops a club that has just fallen into the last division from dropping again. If the own club is relegated in this close, w.lower was still false when the entrants were worked out, so it can't move twice. The playoff now runs in every close where w.lower is set. The own club's playoff ties are still archived in ownMatches (LEAGUE-4). The new season.test.ts cases cover:\n- the own club as champion and in third place;\n- ITA and GER, including ITA:1:0:2 and GER:1:0:15 given the worst record;\n- group capacities;\n- moves of at most one level;\n- the strength order elsewhere and in a professional season.\n\nThe season loops there now fail on bankruptcy instead of hanging. Golden files and the rules version are left to T047, as planned.\n\nThe runner's typecheck and test:unit passed at 635fb18 (74 files, 513 tests).",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/calendar.test.ts:194,197,205 (T043)",
+              "message": "Raised in the last review and still open (T044's limits mention it). advanceDays returns without moving once w.critical is set, and advanceRound returns at once when w.bankrupt is set. These `while (!done(...))` loops would then spin until the 30 s test timeout instead of failing with a clear message. T047 is about to regenerate rules and golden files, which could make that happen. Consider adding expect(w.critical/w.bankrupt).toBeUndefined() inside the loops, the same guard season.test.ts's lastRound now has."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T043.one-day-order.md:28 ## result limits (T043)",
+              "message": "The limits line says 'a manager departure's caretaker draw still reads w.revision until T042 lands'. That is out of date: T042 is merged into this lane (c60409c), and no engine code outside tests reads w.revision any more. Remove the line the next time the result is touched."
+            }
+          ],
+          "commit": "635fb189d38c30674936f0c3e992a23c32ad3103",
+          "baseCommit": "13f84740a3e9a325ea4479886ff8944f42d9772a",
+          "submissionId": "e41b2d2f-b69e-4037-971e-4eed3cb5e065",
+          "createdAt": "2026-10-12T07:50:38.339Z",
+          "finishedAt": "2026-10-12T07:55:12.000Z"
+        }
+      }
+    },
+    {
+      "sequence": 190,
+      "at": "2026-10-12T07:55:12.018Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "439aeb8e-ff25-41d5-b637-4c99893aad84",
+          "runner": "972d9a30-6bea-46b8-81f6-ead950c5011c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-12T07:50:38.654Z",
+          "finishedAt": "2026-10-12T07:55:12.018Z",
+          "error": null,
+          "summary": "Approved, with two optional P3s. I reviewed 635fb18 against base 13f8474 by reading the code; I didn't re-run the tests because this session is read-only. The only P2 from the last review was that the web amateur zones were wrong for Italy (ITA). The planner has moved it to T063, which is now in one-result with status ready, so it no longer blocks this lane. The submission merges cleanly with the T045 work that has since gone into the base: git merge-tree reports no conflicts. T045 calls only advanceDays, whose per-day behaviour this lane doesn't change. 635fb18 changes only the T044 result relative to 07756b4.\n\nT043: advanceDays, advanceRound and simulateSeason (through advanceRound) now all step through one internal stepDay. On a league match day, playRound plays the matches, then training, the catch-up for Europe and the cups, the round settlement, snapshots and the manager-market refresh, and then clubDay runs. Any other day plays its ties, then clubDay. The season closes on day 323. The catch-up in playRound finds nothing still due, because isDue counts by round and those ties were already played on their own days. closeSeason moves the calendar to SEASON_END_DAY + 1 before closing, so the host's advance and season commands close on the same day as a day step (LEAGUE-9/11, ARCH-5). advanceRound still carries on past a critical alert and stops on bankruptcy, as the impl notes say. No engine code reads w.revision any more, so normalising revision in the new test is sound. The new calendar.test.ts case checks day, round and season runs for ENG haeram-demo and ESP one-order. It covers 1.5 seasons and compares canonical worlds, as the acceptance requires.\n\nT044: promote() settles the amateur table before any club moves, but only while w.lower is set. The clubs going up are the top (2 × last-division groups − 1) plus the winner of a lower-promotion playoff among the next four. ENG gets 1 plus a playoff of 2nd–5th, ITA 5 plus a playoff of 6th–9th, and the 16-club league always has enough clubs for this. They fill the relegated clubs' places in group order. An own club that goes up sets w.lower to false, takes the dropped club's group and gets the 프로 무대 입성/복귀 event. Every other country, and the own country in a professional season, keeps the strength order. The ranked().at(-1) replacement drop is gone. The existing previous-standings filter stops a club that has just fallen into the last division from dropping again. If the own club is relegated in this close, w.lower was still false when the entrants were worked out, so it can't move twice. The playoff now runs in every close where w.lower is set. The own club's playoff ties are still archived in ownMatches (LEAGUE-4). The new season.test.ts cases cover:\n- the own club as champion and in third place;\n- ITA and GER, including ITA:1:0:2 and GER:1:0:15 given the worst record;\n- group capacities;\n- moves of at most one level;\n- the strength order elsewhere and in a professional season.\n\nThe season loops there now fail on bankruptcy instead of hanging. Golden files and the rules version are left to T047, as planned.\n\nThe runner's typecheck and test:unit passed at 635fb18 (74 files, 513 tests)."
+        }
+      }
+    },
+    {
+      "sequence": 191,
+      "at": "2026-10-12T07:55:12.061Z",
+      "type": "attempt",
+      "group": "one-result",
+      "attemptId": "86b16233-ef43-4161-8e24-743db5f76235",
+      "taskId": "T044",
+      "tasks": [
+        "T043",
+        "T044"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

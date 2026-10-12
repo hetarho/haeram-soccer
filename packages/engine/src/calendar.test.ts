@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canonical, validateWorld } from '../../contracts/src/index';
+import { canonical, validateWorld, type World } from '../../contracts/src/index';
 import {
   advanceDays,
   advanceRound,
@@ -173,6 +173,42 @@ describe('persistent season calendar', () => {
     const snapshot = canonical(w);
     advanceToNextMatch(w);
     expect(canonical(w)).toBe(snapshot);
+  });
+
+  it.each([
+    ['ENG', 'haeram-demo'],
+    ['ESP', 'one-order'],
+  ] as const)('every progression mode records the same facts (%s %s)', (code, seed) => {
+    const start = createWorld({
+      country: code,
+      name: 'Order FC',
+      color: '#335577',
+      seed,
+      difficulty: 2,
+    });
+    const year = start.year;
+    // Halfway through the second season, on its 23rd league match day.
+    const done = (w: World) => w.year > year && w.round === 23;
+    // Movement frames change no fact (see the fast path above); skipping them keeps this quick.
+    const days = structuredClone(start);
+    while (!done(days)) advanceDays(days, 1, undefined, false);
+    // The host's advance and season commands close the season once the final round is played.
+    const rounds = structuredClone(start);
+    while (!done(rounds)) {
+      if (rounds.round === 46) {
+        closeSeason(rounds);
+        rounds.revision++;
+      } else advanceRound(rounds, undefined, false);
+    }
+    const season = structuredClone(start);
+    simulateSeason(season);
+    while (!done(season)) advanceDays(season, 1, undefined, false);
+    // The revision counts commands and days differently per mode; it is a counter, not a fact.
+    const facts = (w: World) => canonical({ ...w, revision: 0, receiptIds: [] });
+    expect(days.history).toHaveLength(1);
+    expect(currentDay(days)).toBe(23 * 7);
+    expect(facts(rounds)).toBe(facts(days));
+    expect(facts(season)).toBe(facts(days));
   });
 
   it('uses the correct leap-year season length and rejects a corrupted calendar', () => {
