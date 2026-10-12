@@ -3,18 +3,21 @@ import { canonical, validateWorld } from '../../contracts/src/index';
 import {
   BANKRUPTCY_ROUNDS,
   BANKRUPT_MESSAGE,
+  catchment,
   clubOf,
   createWorld,
   driftFans,
   facilityCostUnits,
   facilityUpkeepUnits,
   fanFollowing,
-  fanIncomeUnits,
+  gateProjection,
+  localSupporters,
   MAX_FACILITIES,
   operate,
   operatingCosts,
   settleRound,
   simulateSeason,
+  stature,
 } from './index';
 
 const world = (seed = 'fans-and-money') =>
@@ -32,18 +35,53 @@ describe('supporters follow reputation, not the stadium', () => {
     expect(driftFans(9_000_000, 100)).toBeGreaterThan(5_000_000);
   });
 
-  it('pays a global fan income every round, more for more supporters but less per head', () => {
-    expect(fanIncomeUnits(1_000_000)).toBeGreaterThan(fanIncomeUnits(100_000));
-    expect(fanIncomeUnits(1_000_000) / 1_000_000).toBeLessThan(fanIncomeUnits(100_000) / 100_000);
+  it('pays nothing for the following itself', () => {
+    const w = world(),
+      rich = world();
+    clubOf(rich).fans = 2_000_000;
+    for (const club of [w, rich])
+      for (let round = 1; round <= 2; round++) {
+        club.round = round;
+        settleRound(club);
+      }
+    expect(rich.income).toBe(w.income);
+    expect(rich.events.some((event) => event.kind === 'fan-income')).toBe(false);
+  });
+
+  it('lets a club with 2M followers in the third tier draw no more than its catchment', () => {
     const w = world();
-    w.round = 1;
-    settleRound(w);
-    w.round = 2;
-    settleRound(w);
-    // One ledger line a season, however many rounds it pays.
-    const entries = w.events.filter((event) => event.kind === 'fan-income');
-    expect(entries).toHaveLength(1);
-    expect(BigInt(entries[0].amount!)).toBe(BigInt(w.income));
+    const club = clubOf(w);
+    club.tier = 2;
+    club.fans = 2_000_000;
+    // A stadium for 100,000, the cheapest tickets and every marketing push.
+    w.facilities = 20;
+    w.ticket = 0.02;
+    operate(w, { type: 'campaign', kind: 'tickets' });
+    const limit = catchment(w);
+    expect(limit).toBeLessThan(20_000);
+    expect(localSupporters(w)).toBe(limit);
+    const gate = gateProjection(w);
+    expect(gate.supporters).toBe(limit);
+    expect(gate.capacity).toBeGreaterThan(limit);
+    expect(gate.attendanceHigh).toBeLessThanOrEqual(limit);
+    // Followers beyond the catchment add nobody.
+    const local = structuredClone(w);
+    clubOf(local).fans = limit;
+    expect(gateProjection(local)).toEqual(gate);
+  });
+
+  it('sizes the catchment by division, stature and country', () => {
+    const w = world(),
+      club = clubOf(w);
+    const sizes = [0, 1, 2, 3, 4].map((tier) => catchment(w, { ...club, tier }));
+    for (let i = 1; i < sizes.length; i++) expect(sizes[i]).toBeLessThan(sizes[i - 1]);
+    // The amateur league holds a few thousand at most (→ECON-9: 0.3–2k gates).
+    expect(sizes[4]).toBeLessThan(5_000);
+    const top = w.clubs.filter((c) => c.country === 'ENG' && c.tier === 0 && !c.representative);
+    const giant = top.reduce((a, b) => (stature(w.seed, a.id) >= stature(w.seed, b.id) ? a : b));
+    const small = top.reduce((a, b) => (stature(w.seed, a.id) <= stature(w.seed, b.id) ? a : b));
+    expect(catchment(w, giant)).toBeGreaterThan(catchment(w, small));
+    expect(catchment(w, { ...club, tier: 0, country: 'BEL' })).toBeLessThan(sizes[0]);
   });
 });
 

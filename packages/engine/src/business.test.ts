@@ -8,13 +8,15 @@ import {
   CASH_WARNING_ROUNDS,
   clubOf,
   createWorld,
+  financialBreakdown,
+  footballQuote,
   gateProjection,
+  isLeagueMatch,
   leagueMatchFactor,
   matchBonus,
   operate,
   operatingCosts,
   ownLeagueGames,
-  quote,
   simulateSeason,
 } from './index';
 import { professionalStart } from './testing';
@@ -35,8 +37,9 @@ describe('league income sized for a 46-game season', () => {
     const gate = gateProjection(bel);
     expect(gate.leagueFactor).toBe(leagueMatchFactor(bel));
     const club = clubOf(bel);
+    // Tickets are priced on the football index (→ECON-26), hosting costs on prices.
     expect(gate.incomeHigh).toBe(
-      quote(club.country, bel.year, gate.attendanceHigh * gate.perFan * (46 / 28)),
+      footballQuote(club.country, bel.year, gate.attendanceHigh * gate.perFan * (46 / 28)),
     );
     // Hosting costs follow the actual match, not the season size.
     expect(gate.costHigh).toBe(gateProjection(professionalStart(world('BEL'))).costHigh);
@@ -44,19 +47,36 @@ describe('league income sized for a 46-game season', () => {
     expect(ownLeagueGames(world('ENG'))).toBe(30);
   });
 
-  it('scales league result bonuses but never cup or European ones', () => {
+  it('pays no league result bonus and an unscaled cup one', () => {
     const w = professionalStart(world('BEL'));
     const fixture = w.fixtures.find((f) => f.home === w.playerClub)!;
     const won = { ...fixture, score: { home: 2, away: 0 } } as unknown as Parameters<
       typeof matchBonus
     >[1];
     const prestige = 1 + Math.max(0, 3 - clubOf(w).tier) * 0.35;
-    expect(matchBonus(w, won).amount).toBe(
-      quote(clubOf(w).country, w.year, 8 * prestige * (46 / 28)),
-    );
+    expect(matchBonus(w, won).amount).toBe('0');
     expect(matchBonus(w, { ...won, kind: 'cup' }).amount).toBe(
-      quote(clubOf(w).country, w.year, 8 * prestige),
+      footballQuote(clubOf(w).country, w.year, 8 * prestige),
     );
+  });
+});
+
+describe('no income from the following alone', () => {
+  it('books no fan income and no league result bonus, and names every season line', () => {
+    const w = world();
+    clubOf(w).fans = 2_000_000;
+    while (w.round < 46) advanceRound(w, undefined, false);
+    const season = w.events.filter((e) => e.year === w.year);
+    expect(season.some((e) => e.kind === 'fan-income')).toBe(false);
+    expect(season.some((e) => e.kind === 'league-share')).toBe(true);
+    // Result bonuses are left only for cup and continental matches.
+    const kindOf = new Map(w.ownMatches.map((m) => [m.id, m.kind]));
+    expect(w.ownMatches.some((m) => isLeagueMatch(m.kind))).toBe(true);
+    for (const bonus of season.filter((e) => e.kind === 'match-bonus'))
+      expect(isLeagueMatch(kindOf.get(bonus.detail.split(' · ')[0])!)).toBe(false);
+    const books = financialBreakdown(w);
+    expect(books.income.some((row) => row.key === 'older-ledger')).toBe(false);
+    expect(books.income.some((row) => row.key === 'fan-income')).toBe(false);
   });
 });
 

@@ -1,22 +1,32 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
+import { COUNTRIES, footballIndex } from '../../catalogs/src/index';
 import {
   advanceDays,
   advanceRound,
   careOffer,
+  catchment,
   clubOf,
   createWorld,
+  DISTRIBUTION_CONFIG,
+  financeProjection,
   financialBreakdown,
+  footballQuote,
   gateProjection,
+  leagueMerit,
+  leagueShare,
   matchBonus,
   moneyLabel,
   operate,
   operatingCost,
   operatingCosts,
+  parachutePayment,
   prepareSeason,
   quote,
+  ratio,
+  roundShare,
+  settleLeagueMerit,
   settleRound,
-  settleSeasonPrize,
   simulateMatch,
   simulateSeason,
 } from './index';
@@ -67,17 +77,17 @@ describe('earned, auditable club finances', () => {
     w.round = 1;
     const cost = operatingCosts(w, 1).nextRound;
     settleRound(w);
-    // The global fan income still arrives; debt counts rounds toward bankruptcy, never a freeze.
-    const fans = w.income;
-    expect(BigInt(fans)).toBeGreaterThan(0n);
-    expect(w.events.find((event) => event.kind === 'fan-income')?.amount).toBe(fans);
-    expect(w.cash).toBe((BigInt(fans) - BigInt(cost)).toString());
+    // The league's share still arrives; debt counts rounds toward bankruptcy, never a freeze.
+    const share = w.income;
+    expect(share).toBe(roundShare(leagueShare(w), 1));
+    expect(w.events.find((event) => event.kind === 'league-share')?.amount).toBe(share);
+    expect(w.cash).toBe((BigInt(share) - BigInt(cost)).toString());
     expect(w.insolvent).toBe(1);
     expect(w.critical).toBeUndefined();
     expect(w.events.filter((event) => event.kind === 'support')).toEqual([]);
     w.round = 2;
     settleRound(w);
-    expect(BigInt(w.cash)).toBeLessThan(BigInt(fans) - BigInt(cost));
+    expect(BigInt(w.cash)).toBeLessThan(BigInt(share) - BigInt(cost));
     expect(w.insolvent).toBe(2);
     expect(w.bankrupt).toBeUndefined();
     const cash = w.cash;
@@ -89,7 +99,7 @@ describe('earned, auditable club finances', () => {
     expect(w.cash).toBe(cash);
   });
 
-  it('pays more for wins than draws and zero performance money for losses, home and away', () => {
+  it('pays no league result bonus, keeps cup bonuses and the sponsor’s league bonus, home and away', () => {
     const w = world();
     const fixture = w.fixtures.find((f) => f.home === w.playerClub)!;
     const record = simulateMatch(w, fixture, false, true).record;
@@ -97,19 +107,26 @@ describe('earned, auditable club finances', () => {
     const win = matchBonus(w, { ...record, score: { home: 2, away: 0 } });
     const draw = matchBonus(w, { ...record, score: { home: 1, away: 1 } });
     const loss = matchBonus(w, { ...record, score: { home: 0, away: 2 } });
-    expect(BigInt(win.amount)).toBeGreaterThan(BigInt(draw.amount));
-    expect(BigInt(draw.amount)).toBeGreaterThan(0n);
+    // League results earn the merit payment at the close instead (→ECON-19).
+    expect([win.amount, draw.amount, loss.amount]).toEqual(['0', '0', '0']);
     expect(BigInt(win.sponsored)).toBeGreaterThan(BigInt(draw.sponsored));
-    expect(loss.amount).toBe('0');
+    expect(BigInt(draw.sponsored)).toBeGreaterThan(0n);
     expect(loss.sponsored).toBe('0');
+    const cup = { ...record, kind: 'cup' as const };
+    const cupWin = matchBonus(w, { ...cup, score: { home: 2, away: 0 } });
+    const cupDraw = matchBonus(w, { ...cup, score: { home: 1, away: 1 } });
+    expect(BigInt(cupWin.amount)).toBeGreaterThan(BigInt(cupDraw.amount));
+    expect(BigInt(cupDraw.amount)).toBeGreaterThan(0n);
+    expect(cupWin.sponsored).toBe('0');
+    expect(matchBonus(w, { ...cup, score: { home: 0, away: 2 } }).amount).toBe('0');
     expect(
       matchBonus(w, {
-        ...record,
+        ...cup,
         home: fixture.away,
         away: w.playerClub,
         score: { home: 0, away: 2 },
       }).amount,
-    ).toBe(win.amount);
+    ).toBe(cupWin.amount);
   });
 
   it('earns sponsor money once per played league match instead of receiving a full annual grant', () => {
@@ -144,10 +161,23 @@ describe('earned, auditable club finances', () => {
     operate(w, { type: 'campaign', kind: 'tickets' });
     expect(gateProjection(w).attendanceLow).toBeGreaterThan(initial.attendanceLow);
     expect(BigInt(w.expense)).toBeGreaterThan(0n);
-    const highReputation = structuredClone(w);
-    clubOf(highReputation).reputation = 80;
-    expect(gateProjection(highReputation).attendanceLow).toBeGreaterThan(
-      gateProjection(w).attendanceLow,
+    // More local supporters fill more seats, up to the catchment.
+    const followed = structuredClone(w);
+    clubOf(followed).fans = Math.min(catchment(w), clubOf(w).fans * 2);
+    expect(gateProjection(followed).attendanceLow).toBeGreaterThan(gateProjection(w).attendanceLow);
+    // A bigger name than ours draws more, a smaller one fewer.
+    const opponent = w.clubs.find(
+      (c) => c.id === w.fixtures.find((f) => f.home === w.playerClub)!.away,
+    )!;
+    const famous = structuredClone(w),
+      obscure = structuredClone(w);
+    famous.clubs.find((c) => c.id === opponent.id)!.reputation = 90;
+    obscure.clubs.find((c) => c.id === opponent.id)!.reputation = 1;
+    expect(gateProjection(famous, undefined, opponent.id).attendanceHigh).toBeGreaterThan(
+      gateProjection(w).attendanceHigh,
+    );
+    expect(gateProjection(obscure, undefined, opponent.id).attendanceHigh).toBeLessThan(
+      gateProjection(w).attendanceHigh,
     );
     const homeFixture = w.fixtures.find((fixture) => fixture.home === w.playerClub)!;
     const record = simulateMatch(w, homeFixture, false, true).record;
@@ -183,14 +213,14 @@ describe('earned, auditable club finances', () => {
     expect(clubOf(w).reputation).toBe(10);
   });
 
-  it('logs every receipt and expense, sums to the season books, and awards final rank once', () => {
+  it('logs every receipt and expense, sums to the season books, and pays the merit once', () => {
     const w = world();
     operate(w, { type: 'sponsor', kind: 'performance' });
     operate(w, { type: 'campaign', kind: 'outreach' });
     for (let round = 0; round < 8; round++) advanceRound(w, undefined, false);
-    settleSeasonPrize(w, 1, 24);
+    settleLeagueMerit(w, 1, 24);
     const snapshot = canonical(w);
-    settleSeasonPrize(w, 1, 24);
+    settleLeagueMerit(w, 1, 24);
     expect(canonical(w)).toBe(snapshot);
     const budget = financialBreakdown(w);
     expect(budget.income.reduce((sum, row) => sum + BigInt(row.amount), 0n)).toBe(BigInt(w.income));
@@ -204,7 +234,7 @@ describe('earned, auditable club finances', () => {
       w.ownMatches.filter((match) => match.home === w.playerClub).length,
     );
     const bottom = world();
-    settleSeasonPrize(bottom, 24, 24);
+    settleLeagueMerit(bottom, 24, 24);
     expect(bottom.income).toBe('0');
   });
 
@@ -285,5 +315,85 @@ describe('earned, auditable club finances', () => {
     expect(eur(-1_500_000)).toBe('−€1.50M');
     expect(moneyLabel(sterling, String(12_345 * 240))).toBe('£12,345');
     expect(moneyLabel(sterling, String(1_234_567 * 240))).toBe('£1.23M');
+  });
+});
+
+describe('the league distribution', () => {
+  it('pays the division’s equal share in league-round installments that sum to the season’s share', () => {
+    const w = professionalStart(world());
+    const share = leagueShare(w);
+    expect(BigInt(share)).toBeGreaterThan(0n);
+    while (w.round < 46) advanceRound(w, undefined, false);
+    // One ledger entry a season, grown by every round's installment.
+    const entries = w.events.filter((e) => e.year === w.year && e.kind === 'league-share');
+    expect(entries).toHaveLength(1);
+    expect(entries[0].amount).toBe(share);
+    expect(financialBreakdown(w).income.find((row) => row.key === 'league-share')).toMatchObject({
+      label: '리그 분배금',
+      amount: share,
+    });
+  });
+
+  it('shares more in higher divisions of every country, priced on the football index', () => {
+    for (const profile of COUNTRIES) {
+      const table = DISTRIBUTION_CONFIG.share[profile.code];
+      // Every professional division and the amateur league below them.
+      expect(table).toHaveLength(profile.groups.length + 1);
+      for (let tier = 1; tier < table.length; tier++)
+        expect(table[tier]).toBeLessThan(table[tier - 1]);
+    }
+    const late = { ...world(), year: 2010 },
+      units = DISTRIBUTION_CONFIG.share.ENG[0];
+    expect(footballIndex('ENG', 2010).real).toBeGreaterThan(1);
+    expect(leagueShare(late, 0)).toBe(footballQuote('ENG', 2010, units));
+    expect(BigInt(leagueShare(late, 0))).toBeGreaterThan(BigInt(quote('ENG', 2010, units)));
+  });
+
+  it('orders the merit by final position, the champion taking 1.6× the bottom club up top and 1.3× below', () => {
+    const top = world(),
+      below = world();
+    clubOf(top).tier = 0;
+    clubOf(below).tier = 1;
+    for (const [w, champion] of [
+      [top, 1.6],
+      [below, 1.3],
+    ] as const) {
+      const clubs = 20,
+        share = BigInt(leagueShare(w));
+      const merits = Array.from({ length: clubs }, (_, i) => BigInt(leagueMerit(w, i + 1, clubs)));
+      for (let i = 1; i < clubs; i++) expect(merits[i]).toBeLessThan(merits[i - 1]);
+      expect(merits[clubs - 1]).toBe(0n);
+      expect(Number(share + merits[0]) / Number(share)).toBeCloseTo(champion, 5);
+    }
+  });
+
+  it('keeps half the lost share for the one season after a relegation', () => {
+    const w = world();
+    simulateSeason(w);
+    // The season just closed was played a division higher: the club went down into this one.
+    const tier = clubOf(w).tier,
+      last = w.history.length - 1;
+    w.history[last] = { ...w.history[last], tier: tier - 1 };
+    const lost = BigInt(leagueShare(w, tier - 1)) - BigInt(leagueShare(w, tier));
+    const parachute = ratio(lost.toString(), 500n, 1000n);
+    expect(BigInt(parachute)).toBeGreaterThan(0n);
+    expect(parachutePayment(w)).toBe(parachute);
+    const line = financeProjection(w).seasonLines.find((row) => row.key === 'parachute');
+    expect(line).toMatchObject({ label: '강등 보전금', amount: parachute });
+    while (w.round < 46) advanceRound(w, undefined, false);
+    const paid = w.events.filter((e) => e.year === w.year && e.kind === 'parachute');
+    expect(paid).toHaveLength(1);
+    expect(paid[0].amount).toBe(parachute);
+    expect(financialBreakdown(w).income.find((row) => row.key === 'parachute')?.amount).toBe(
+      parachute,
+    );
+    // One season only; staying up or going up pays none.
+    expect(parachutePayment({ ...w, year: w.year + 1 })).toBe('0');
+    for (const before of [tier, tier + 1]) {
+      const other = structuredClone(w);
+      other.history[last].tier = before;
+      expect(parachutePayment(other)).toBe('0');
+      expect(financeProjection(other).lines.some((row) => row.key === 'parachute')).toBe(false);
+    }
   });
 });

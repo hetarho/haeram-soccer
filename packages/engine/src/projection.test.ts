@@ -5,11 +5,12 @@ import {
   createWorld,
   currentLeagueRank,
   financeProjection,
+  leagueMerit,
+  leagueShare,
   operate,
   operatingCosts,
   ratio,
-  seasonPrize,
-  settleSeasonPrize,
+  settleLeagueMerit,
   sponsorAnnual,
 } from './index';
 
@@ -50,13 +51,13 @@ describe('finance projection', () => {
     expect(projection.lines.map((line) => line.label)).toEqual([
       '급여·운영비',
       '홈 경기 수입(개최비 제외)',
-      '글로벌 팬 수익',
+      '리그 분배금',
       '후원 계약',
-      '경기 성과 수입',
-      '순위 상금',
+      '후원 성과 보너스',
+      '리그 순위 배분금',
     ]);
     expect(lineOf(projection.lines, 'performance').low).toBe('0');
-    expect(lineOf(projection.lines, 'prize').low).toBe('0');
+    expect(lineOf(projection.lines, 'merit').low).toBe('0');
     expect(BigInt(projection.nextYear.low)).toBe(
       BigInt(w.cash) + sum(projection.lines.map((line) => line.low)),
     );
@@ -88,6 +89,22 @@ describe('finance projection', () => {
     const paidBefore = eventsTotal(w, 'operating-cost');
     while (w.round < 46) advanceRound(w, undefined, false);
     expect(eventsTotal(w, 'operating-cost') - paidBefore).toBe(remaining);
+  });
+
+  it('carries the league share a year ahead and the rest of it to season end', () => {
+    const w = world();
+    const share = leagueShare(w);
+    expect(lineOf(financeProjection(w).lines, 'share').amount).toBe(share);
+    for (let i = 0; i < 10; i++) advanceRound(w, undefined, false);
+    const mid = financeProjection(w);
+    expect(lineOf(mid.lines, 'share').amount).toBe(share);
+    const projected = BigInt(lineOf(mid.seasonLines, 'share').amount);
+    expect(projected).toBe(BigInt(share) - BigInt(ratio(share, 10n, 46n)));
+    // The remaining installments are exactly what the rounds then pay.
+    const paid = eventsTotal(w, 'league-share');
+    while (w.round < 46) advanceRound(w, undefined, false);
+    expect(eventsTotal(w, 'league-share') - paid).toBe(projected);
+    expect(lineOf(financeProjection(w).seasonLines, 'share').amount).toBe('0');
   });
 
   it('lowers the outlook by exactly a higher cost and counts the remaining sponsor installments', () => {
@@ -125,20 +142,20 @@ describe('finance projection', () => {
     expect(BigInt(lineOf(done.lines, 'gate').high)).toBeGreaterThan(0n);
   });
 
-  it('prices the prize like the season close does, by the current rank band', () => {
+  it('prices the merit like the season close does, by the current rank', () => {
     const w = world();
     for (let i = 0; i < 20; i++) advanceRound(w, undefined, false);
     const { rank, clubs } = currentLeagueRank(w);
     expect(rank).toBeGreaterThan(0);
-    expect(lineOf(financeProjection(w).lines, 'prize').high).toBe(seasonPrize(w, rank, clubs));
+    expect(lineOf(financeProjection(w).lines, 'merit').high).toBe(leagueMerit(w, rank, clubs));
     for (const position of [1, 2, 5, 10, 24]) {
       const paid = structuredClone(w);
-      settleSeasonPrize(paid, position, 24);
-      const event = paid.events.find((e) => e.year === w.year && e.kind === 'season-prize');
-      expect(event?.amount || '0').toBe(seasonPrize(w, position, 24));
+      settleLeagueMerit(paid, position, 24);
+      const event = paid.events.find((e) => e.year === w.year && e.kind === 'league-merit');
+      expect(event?.amount || '0').toBe(leagueMerit(w, position, 24));
     }
     const settled = structuredClone(w);
-    settleSeasonPrize(settled, 1, 24);
-    expect(lineOf(financeProjection(settled).lines, 'prize').high).toBe('0');
+    settleLeagueMerit(settled, 1, 24);
+    expect(lineOf(financeProjection(settled).lines, 'merit').high).toBe('0');
   });
 });

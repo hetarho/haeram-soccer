@@ -4,17 +4,21 @@ import { random, ratio } from './primitives';
 import {
   campaignEffectiveness,
   clubSponsor,
+  divisionLabel,
   FINANCE_CONFIG,
+  footballQuote,
   gateProjection,
   isLeagueMatch,
+  leagueMerit,
+  leagueShare,
   matchBonus,
   moneyLabel,
   operatingCosts,
+  parachutePayment,
   roundShare,
-  seasonPrize,
 } from './finance';
-import { currentDay } from './calendar';
-import { driftFans, fanIncome, MIN_FANS } from './fans';
+import { currentDay, SEASON_ROUNDS } from './calendar';
+import { driftFans, MIN_FANS } from './fans';
 import { pushInbox } from './inbox';
 import { marketingFanGain, policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
@@ -70,12 +74,12 @@ export function gate(w: World, m: MatchRecord) {
   if (m.home !== w.playerClub) return;
   const c = clubOf(w),
     r = random(`${w.seed}:gate:${m.id}`);
-  const projection = gateProjection(w, m.id);
+  const projection = gateProjection(w, m.id, m.away);
   const attendance = Math.round(
     projection.attendanceLow + r() * (projection.attendanceHigh - projection.attendanceLow),
   );
   const scale = isLeagueMatch(m.kind) ? projection.leagueFactor : 1;
-  const income = quote(c.country, w.year, attendance * projection.perFan * scale);
+  const income = footballQuote(c.country, w.year, attendance * projection.perFan * scale);
   credit(w, income);
   addEvent(
     w,
@@ -93,22 +97,45 @@ export function gate(w: World, m: MatchRecord) {
   addEvent(w, 'match-cost', '홈 경기 개최비', `관중 ${attendance}명 · ${m.id}`, cost);
 }
 /**
- * Global fan income (→ECON-23) for this league round. The season keeps one ledger entry that
- * grows each round, so a century of rounds does not fill the save.
+ * One installment of a season-long payment. The season keeps one ledger entry per kind that grows
+ * each round, so a century of rounds does not fill the save.
  */
-function settleFanIncome(w: World) {
-  const amount = fanIncome(w);
+function accrue(w: World, kind: string, title: string, detail: string, amount: string) {
   if (BigInt(amount) <= 0n) return;
   credit(w, amount);
   const entry = w.events.findLast(
-    (event) =>
-      event.kind === 'fan-income' && event.year === w.year && event.currency === w.currency,
+    (event) => event.kind === kind && event.year === w.year && event.currency === w.currency,
   );
-  const fans = `서포터 ${clubOf(w).fans.toLocaleString('en-US')}명 · 온라인·상품·중계`;
   if (entry) {
     entry.amount = (BigInt(entry.amount!) + BigInt(amount)).toString();
-    entry.detail = fans;
-  } else addEvent(w, 'fan-income', '글로벌 팬 수익', fans, amount);
+    entry.detail = detail;
+  } else addEvent(w, kind, title, detail, amount);
+}
+/**
+ * The league distribution's round installment (→ECON-28): the division's equal share, carrying
+ * its broadcasting money, and in the season after a relegation the parachute.
+ */
+function settleDistribution(w: World) {
+  const c = clubOf(w),
+    division = divisionLabel(c.country, c.tier),
+    paid = `${w.round}/${SEASON_ROUNDS}라운드 분할`;
+  accrue(
+    w,
+    'league-share',
+    '리그 분배금',
+    `${division} 균등 배분·중계권 · ${paid}`,
+    roundShare(leagueShare(w), w.round),
+  );
+  const parachute = roundShare(parachutePayment(w), w.round);
+  if (parachute === '0') return;
+  const from = divisionLabel(c.country, w.history.at(-1)!.tier);
+  accrue(
+    w,
+    'parachute',
+    '강등 보전금',
+    `${from} → ${division} 강등 · 줄어든 분배금의 절반 · ${paid}`,
+    parachute,
+  );
 }
 /** Fixed-cost rounds left in cash below which the owner is warned, once per season. */
 export const CASH_WARNING_ROUNDS = 13;
@@ -127,16 +154,17 @@ function cashWarning(w: World, perRound: string) {
     attention: false,
   });
 }
-export function settleSeasonPrize(w: World, rank: number, clubs: number) {
-  if (w.events.some((event) => event.year === w.year && event.kind === 'season-prize')) return;
-  const amount = seasonPrize(w, rank, clubs);
+/** The league's merit payment for the final rank, once at the close (→ECON-28). */
+export function settleLeagueMerit(w: World, rank: number, clubs: number) {
+  if (w.events.some((event) => event.year === w.year && event.kind === 'league-merit')) return;
+  const amount = leagueMerit(w, rank, clubs);
   if (amount === '0') return;
   credit(w, amount);
   addEvent(
     w,
-    'season-prize',
-    '리그 최종 순위 상금',
-    `${rank}/${clubs}위 · 하위권 상금 없음`,
+    'league-merit',
+    '리그 순위 배분금',
+    `${rank}/${clubs}위 · 최하위는 균등 배분금만`,
     amount,
   );
 }
@@ -150,7 +178,7 @@ export function settleRound(w: World) {
     );
   // Supporters drift toward the following the club's reputation commands, without a ceiling.
   club.fans = driftFans(club.fans + fansGained, club.reputation);
-  settleFanIncome(w);
+  settleDistribution(w);
   const money = (amount: string) => moneyLabel(w, amount);
   addEvent(
     w,
