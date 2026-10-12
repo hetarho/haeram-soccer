@@ -17,16 +17,16 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 8 | 8 | - | 2 |
-| WEB | 50 | 50 | - | 0 |
+| WEB | 51 | 51 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
-| CLUB | 16 | 16 | - | 0 |
+| CLUB | 17 | 17 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
-| STAFF | 11 | 11 | - | 0 |
-| ECON | 13 | 13 | - | 0 |
+| STAFF | 12 | 12 | - | 0 |
+| ECON | 14 | 14 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 7 | 7 | - | 0 |
-| SAVE | 20 | 20 | - | 0 |
+| SAVE | 21 | 21 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -39,13 +39,29 @@
 | T047 | Rules 1.15.0 with regenerated portable goldens | SAVE ECON ARCH LEAGUE | T044 T045 T046 | todo |
 | T048 | Background codec worker for checkpoints | SAVE ARCH | - | todo |
 | T049 | Clock never waits for saving; background autosave cadence | SAVE WEB ARCH | T048 | todo |
+| T050 | Football index and sponsor-slot eras in catalog 2026-demo-2 | ECON SAVE | - | todo |
+| T051 | Contracts for sponsors by slot, player talks, terms and new delegations | ECON CLUB STAFF WEB SAVE | T050 | todo |
+| T052 | Split commands by domain, close the season-close ledger gap, engine money notation | ECON WEB | T051 | todo |
+| T053 | One money notation across the app | WEB | - | todo |
+| T054 | App notices as notifications in the HUD inbox | WEB | T053 | todo |
+| T055 | League distribution, local-supporter gate, no supporter income | ECON | T052 T054 | todo |
+| T056 | Sponsor contracts by slot | ECON WEB | T055 | todo |
+| T057 | Market wages and values on the football index | CLUB ECON | T052 T054 | todo |
+| T058 | Contract talks with goodwill, floor and delegation | CLUB ECON STAFF | T057 | todo |
+| T059 | Unhappy players, transfer requests, expiring contracts and the squad UI | CLUB WEB | T058 | todo |
+| T060 | Owner-chosen terms for managers and coaches, no self-renewal | STAFF WEB | T052 T054 | todo |
+| T061 | Delegated manager appointment and the manager market behind 교체 | STAFF WEB | T060 | todo |
+| T062 | Rules 1.16.0: economy calibration, goldens and docs | SAVE ECON CLUB | T056 T059 T061 | todo |
 
 ## next
 - work group one-result (branch work/one-result, planning worktree ../haeram-soccor-one-result): `npx haeram-spec-creator work run --work one-result --provider claude`; T042, T046 and lane day-order (T043→T044) run first, T045 after T042, T047 (rules 1.15.0, goldens) last; lane background-save (T048→T049) takes the next free worker slot; merge to main afterwards with the user's approval.
+- after one-result merges to main: merge plan/club-realism (planning worktree ../haeram-soccor-realism) into main, renumber its ARCH r8 (ARCH-13) to r9 after main's r8 (ARCH-23), then start work group club-realism (T050–T062): lanes base (T050→T052) and ui-base (T053→T054) first, then commercial (T055→T056), players (T057→T059) and staff (T060→T061) in parallel, T062 last (rules 1.16.0, calibration).
 - Player match ratings (평점) lead Korean headlines, but WEB-22/25 rule out synthetic ratings; decide whether a transparent rating belongs in the game. Research levers not yet modelled: set-piece coaching, ticket-price fan mood, fixture-gap rule for training camps; tackles in a far-off flank still look like heavy touches (match.ts picks markers by zone, not flank).
-- Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
 
 ## log
+- 261012 create-task ECON CLUB STAFF WEB SAVE: T050–T062 for work group club-realism (lanes base, ui-base, commercial, players, staff; T062 integration with calibration)
+- 261012 update-ssot ECON r14 CLUB r17 STAFF r12 WEB r51 SAVE r21: four real income sources (league distribution with broadcasting, tickets from local supporters, sponsor slots with 2–5 season contracts by era, sales), football index, market wages, contract talks with goodwill, unhappy players and Bosman expiry, owner-chosen terms 1–5, delegated manager appointment by rule, 교체 market, app notices as notifications, one money notation, catalog 2026-demo-2, rules 1.16.0
+- 261012 update-ssot ECON CLUB STAFF WEB SAVE start on plan/club-realism: economy realism, player contracts, staff terms and appointment, notices, money notation
 - 261012 create-task SAVE WEB ARCH: lane background-save T048 background codec worker → T049 clock never waits for saving (30 s autosave, save on stop/hide/close), added to work group one-result
 - 261012 update-ssot SAVE r20 WEB r50 ARCH r8: owner decisions save at once, automatic progression every 30 s and on stop/hide/close through a background codec worker; clock steps never wait for saving
 - 261012 update-ssot SAVE WEB ARCH start: background autosave, clock not waiting for saves
@@ -63,6 +79,3 @@
 - 261012 WEB r45 ECON r11 SAVE r16 ARCH r6 implemented directly: intervention popover closes on a choice; 구단 빌드→운영 전략 tab (five presets each lighting or aiming at a synergy, device strategy library with composer, dials in their own section, build events name the strategy); three game slots with a slot screen at the start address, parked games in IndexedDB, legacy save as slot 1, 새 게임 wording; start-layout scroller could not shrink (main clipped founding and slot screens on phones), fixed; strategy board and slot screen load lazily (entry 251,220 of 256,000 bytes)
 - 261012 update-ssot WEB r45 ECON r11 SAVE r16 ARCH r6 start: intervention popover closes on choice, 구단 빌드→운영 전략 with redesigned presets and a device strategy library, three game slots (새 게임 wording), reachable scrolling everywhere; implementing directly
 - 261012 WEB r44 ARCH r5 HIST r7 implemented directly: records room tabs (요약/추이/선수/시즌 기록/감독) with a trophy cabinet, Elo standing against the world and league best and worst plus spread bands, chart bubbles by nearest point or keyboard slider, player sheets with club careers and all-time boards; closed league seasons keep 결산/순위표/우리 경기/순위 추이/득점 순위 tabs; all-time head-to-head in team sheets via a read-only worker request; cup history with archived brackets, our cup road and honours (doubles, trebles, runs); records room and cup history load lazily (entry under 250 KiB)
-- 261012 WEB r43 STAFF r10 HIST r6 SAVE r15 implemented directly: manager candidates drawn within their school's bands (veteran firefighters, young developers) with the trait shown instead of ambition, the firefighter leaves at the close unless renewed each April (reminder, delegated renewal), staff page tabs 감독/감독 후보/코치진/위임, transfer market as the squad page's third segment (seven phone tabs), every club name opens a stacking team sheet for any club, closed seasons archive top scorers, per-round rank, the Elo spread and cup brackets from the last 32; rules 1.12.0, worst century checkpoint 1,312,340 bytes
-- 261012 CI fix: CI WebKit stalls its web process after reloading the long records page (flaky one run, failed twice the next); the record-book journey reopens the records room in a fresh page instead of reloading
-- 261012 WEB r42 LEAGUE r4 implemented directly: staff in the phone tab bar, OVR column and team sheets for every club, knockout tree view for cups, rival strength cap 92→99 with rare club projects (95+ rivals now appear by chance)
