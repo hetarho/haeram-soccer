@@ -622,6 +622,9 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   yearlyStaff(w);
   seasonStaff(w);
   seasonAcademy(w);
+  // Youth come in five below the squad as it finished the season: an XI that expiring contracts
+  // left short would otherwise bring every replacement in at the floor of 20 (→CLUB-3).
+  const youthLevel = Math.max(20, rating(w, own) - 5);
   // Unrenewed contracts end: those players leave, before 1996 for a compensation (→CLUB-28).
   expireContracts(w, oldTier);
   for (const p of activePlayers(w)) {
@@ -651,7 +654,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
         w.seed,
         `${own.id}:youth:${w.year}:${i++}`,
         w.year,
-        Math.max(20, rating(w, own) - 5),
+        youthLevel,
         role,
         18,
         own.tier,

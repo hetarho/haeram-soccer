@@ -39,23 +39,35 @@ export const UNHAPPY_PENALTY = 3;
 export const unhappyPenalty = (p: Player) => (p.unhappy ? UNHAPPY_PENALTY : 0);
 /** The ability a player plays at: his overall, less the unhappy penalty. */
 export const playingAbility = (p: Player) => overall(p) - unhappyPenalty(p);
+type Index = (code: string, year: number) => { value: number };
+/** What `indexed` scales by in a country and year, worked out once per index. */
+const indexFactors = new Map<
+  Index,
+  Map<string, { scale: number; initial: number; num: bigint; den: bigint }>
+>();
 /** `units` of 1901 money carried to `year` by an index, in that year's currency. */
-function indexed(
-  code: string,
-  year: number,
-  units: number,
-  index: (code: string, year: number) => { value: number },
-) {
-  const c = country(code),
-    now = currency(code, year),
-    initial = currency(code, 1901);
-  const base = BigInt(Math.round(units * c.scale * initial.units * 10000));
-  const factor = BigInt(Math.round((index(code, year).value / index(code, 1901).value) * 1000000));
-  return ratio(
-    base.toString(),
-    factor * now.num * BigInt(now.units),
-    10000n * 1000000n * now.den * BigInt(initial.units),
-  );
+function indexed(code: string, year: number, units: number, index: Index) {
+  let byYear = indexFactors.get(index);
+  if (!byYear) indexFactors.set(index, (byYear = new Map()));
+  const key = `${code}:${year}`;
+  let f = byYear.get(key);
+  if (!f) {
+    const now = currency(code, year),
+      initial = currency(code, 1901);
+    const factor = BigInt(
+      Math.round((index(code, year).value / index(code, 1901).value) * 1000000),
+    );
+    f = {
+      scale: country(code).scale,
+      initial: initial.units,
+      num: factor * now.num * BigInt(now.units),
+      den: 10000n * 1000000n * now.den * BigInt(initial.units),
+    };
+    if (byYear.size > 4096) byYear.clear();
+    byYear.set(key, f);
+  }
+  const base = BigInt(Math.round(units * f.scale * f.initial * 10000));
+  return ratio(base.toString(), f.num, f.den);
 }
 const quoteCache = new Map<string, string>();
 export function quote(code: string, year: number, units: number): string {
@@ -69,7 +81,8 @@ export function quote(code: string, year: number, units: number): string {
 }
 /**
  * Like `quote`, carried by the football index instead of prices alone (→ECON-26): what football
- * pays and charges. Uncached, because market amounts are rarely quoted twice.
+ * pays and charges. Amounts are not cached, because market amounts are rarely quoted twice; the
+ * country's and year's factors are.
  */
 export function footballQuote(code: string, year: number, units: number): string {
   return indexed(code, year, units, footballIndex);

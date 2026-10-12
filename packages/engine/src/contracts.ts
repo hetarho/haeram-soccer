@@ -457,8 +457,8 @@ export const EXPIRY_COMPENSATION = 50;
 /**
  * Season close, once the new season's books are open (→CLUB-28): every player whose contract has
  * run out leaves. From 1996 he leaves on a free; before, the club he joins pays 50% of his value,
- * at `division`, the one he played in. Loan players go back when the loan ends, and announced
- * retirements have already retired.
+ * at `division`, the one he played in, and one no club signs brings nothing. Loan players go back
+ * when the loan ends, and announced retirements have already retired.
  */
 export function expireContracts(w: World, division = clubOf(w).tier) {
   for (const p of activePlayers(w)) {
@@ -468,12 +468,12 @@ export function expireContracts(w: World, division = clubOf(w).tier) {
     p.status = 'sold';
     delete p.stance;
     leaveContract(w, p);
-    if (w.year >= BOSMAN_YEAR) {
+    if (w.year >= BOSMAN_YEAR || !club) {
       addEvent(
         w,
         'contract-expiry',
         `${p.name} 계약 만료`,
-        `${where} · 자유계약 이적, 보상금 없음`,
+        `${where} · ${w.year >= BOSMAN_YEAR ? '자유계약 이적, 보상금 없음' : '보상금을 낼 구단이 없음'}`,
       );
       continue;
     }

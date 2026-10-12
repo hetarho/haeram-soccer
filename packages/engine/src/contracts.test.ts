@@ -31,8 +31,10 @@ import {
   playingAbility,
   rating,
   ratio,
+  retireAtClose,
   seasonDayOf,
   settleMorale,
+  suitorFor,
   talkFor,
   talkRoundChance,
   talksRound,
@@ -523,7 +525,7 @@ describe('unhappy players and expiring contracts (→CLUB-27, CLUB-28)', () => {
     expect(sale.p.unhappy).toBeUndefined();
   });
 
-  it('closes the talk of a player who announces his retirement: he needs no renewal', () => {
+  it('closes a retiring player’s talk on his announcement and his request when he retires', () => {
     const { w, p } = talking(70, 36);
     operate(w, { type: 'delegate', key: 'contracts', value: false });
     newYear(w);
@@ -532,9 +534,20 @@ describe('unhappy players and expiring contracts (→CLUB-27, CLUB-28)', () => {
     contractTalks(w);
     expect(p.talk).toBeUndefined();
     expect(talkItems(w, p.id).every((item) => item.read)).toBe(true);
+    // An unhappy player who retires at the close leaves his request behind, its item settled.
+    const later = unhappy();
+    later.w.calendar = { day: currentDay(later.w) + 42 };
+    transferRequests(later.w);
+    expect(later.w.inbox!.at(-1)).toMatchObject({ kind: 'transfer-request', ref: later.p.id });
+    expect(later.w.inbox!.at(-1)!.read).toBeFalsy();
+    later.p.retiring = later.w.year;
+    retireAtClose(later.w);
+    expect(later.p.status).toBe('retired');
+    expect([later.p.unhappy, later.p.transferRequest]).toEqual([undefined, undefined]);
+    expect(later.w.inbox!.filter((item) => item.ref === later.p.id && !item.read)).toEqual([]);
   });
 
-  it('brings compensation for an expiring 1990 contract and none for a 2000 one (→CLUB-28)', () => {
+  it('brings compensation for an expiring 1990 contract, none for a 2000 one or nobody’s signing (→CLUB-28)', () => {
     /** The close of the season before `year`, once the books of `year` are open. */
     const close = (year: number) => {
       const w = world();
@@ -560,5 +573,17 @@ describe('unhappy players and expiring contracts (→CLUB-27, CLUB-28)', () => {
     expect(bosman.event.kind).toBe('contract-expiry');
     expect(bosman.event.amount).toBeUndefined();
     expect(BigInt(bosman.w.cash)).toBe(bosman.cash);
+    // The club he joins pays: in 1990 one no club signs brings nothing.
+    const unsigned = world();
+    unsigned.year = 1990;
+    for (const p of activePlayers(unsigned)) p.until = 1992;
+    const nobody = Object.assign(activePlayers(unsigned)[0], rated(unsigned, 1), { until: 1990 }),
+      cash = unsigned.cash;
+    expect(suitorFor(unsigned, nobody, () => 0)).toBeUndefined();
+    expireContracts(unsigned);
+    expect(nobody.status).toBe('sold');
+    expect(unsigned.events.at(-1)).toMatchObject({ kind: 'contract-expiry' });
+    expect(unsigned.events.at(-1)!.amount).toBeUndefined();
+    expect(unsigned.cash).toBe(cash);
   });
 });
