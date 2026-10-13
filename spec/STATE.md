@@ -50,6 +50,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 T084/T085 code on work/intervention (e5d8276, CI green in every browser); recalibrated: 0 of 24 bankrupt, every band but the wage bill (44.3% vs 45–70%); measuring the pre-facility commit to find the cause
 - 261013 update-ssot ECON r22 CLUB r26 HIST r8 WEB r58 SAVE r28: facilities as three parts (stadium 8 expansion/rebuild steps to 90,000, training ground and academy 1–5) → T084 (doing), T085
 - 261013 T082 T083 done (094fa13): coaches set training, owner suggests or forces, academy U-17/U-19/U-21; Chromium e2e 104, unit 666, contract 11, benchmark pass
 - 261013 create-task → T082 (engine), T083 (web); T082 doing standalone on work/intervention
@@ -69,4 +70,3 @@
 - 261013 T078 doing standalone on levers (ea4d413)
 - 261013 T079 doing standalone on econ-port (00a483d), branch work/econ-port
 - 261013 update-ssot ECON r19 CLUB r22 SAVE r24: the other machine's calibration ported (broadcasting index series, prizes on it, facilities on the football index at 1.58, expenses the larger of the division amount and the turnover share, 65% delegated wage check, established-club crowds); create-task T079
-- 261013 T077 done: event cards and remedies open each setting's home (코치진, the one intervention dialog, 후원/재정, 훈련 with 회복 suggested, the board with marketing, squad investment or ticket drafted)
