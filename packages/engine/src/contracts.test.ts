@@ -804,11 +804,17 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
       };
     };
     const levels = ([1, 2, 3, 4, 5] as const).map(sample);
-    // 30% (1-rated) to 80% (5-rated) carry a rise, 80% to 40% a cut.
-    expect(levels[0].rise).toBeCloseTo(0.3, 1);
-    expect(levels[4].rise).toBeCloseTo(0.8, 1);
-    expect(levels[0].cut).toBeCloseTo(0.8, 1);
-    expect(levels[4].cut).toBeCloseTo(0.4, 1);
+    // The configured shares from a 1-rated to a 5-rated agent, within CLUB-29's 30–80% of contracts
+    // for a rise and 80–40% for a cut.
+    const { promotion: rise, relegation: cut } = CLAUSE_CONFIG;
+    expect(levels[0].rise).toBeCloseTo(rise.share[0], 1);
+    expect(levels[4].rise).toBeCloseTo(rise.share[1], 1);
+    expect(levels[0].cut).toBeCloseTo(cut.share[0], 1);
+    expect(levels[4].cut).toBeCloseTo(cut.share[1], 1);
+    for (const value of rise.share) expect(value).toBeGreaterThanOrEqual(0.3);
+    for (const value of rise.share) expect(value).toBeLessThanOrEqual(0.8);
+    for (const value of cut.share) expect(value).toBeGreaterThanOrEqual(0.4);
+    for (const value of cut.share) expect(value).toBeLessThanOrEqual(0.8);
     for (let i = 1; i < levels.length; i++) {
       expect(levels[i].rise).toBeGreaterThan(levels[i - 1].rise);
       expect(levels[i].cut).toBeLessThan(levels[i - 1].cut);

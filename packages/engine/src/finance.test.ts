@@ -568,21 +568,33 @@ describe('operating expenses (→ECON-30)', () => {
     expect(beyond.bankrupt).toBeDefined();
   });
 
+  /** The configured share of a turnover (→ECON-30). */
+  const shareOf = (turnover: string) =>
+    ratio(turnover, BigInt(Math.round(EXPENSE_CONFIG.share * 10000)), 10000n);
   it('raises the floor from the first round after a promotion', () => {
     const w = world(),
       amateur = clubOf(w).tier;
     while (w.round < 46) advanceRound(w, undefined, false);
     const before = operatingCosts(w).expenses;
     expect(entries(w)[0].amount).toBe(before);
-    // The amateur champions go up into the last professional division.
+    // The amateur champions go up into the last professional division, after a season whose
+    // income is left out of the ledger so its turnover's share stays below the new floor.
     w.tables[w.playerClub].points = 999;
+    w.events = w.events.filter(
+      (e) =>
+        e.year !== w.year ||
+        !(
+          ['gate', 'league-share', 'match-bonus', 'cup-prize'].includes(e.kind) ||
+          e.kind.startsWith('sponsor:')
+        ),
+    );
+    w.income = '0';
     closeSeason(w);
     const tier = clubOf(w).tier;
     expect(tier).toBe(amateur - 1);
     const floor = operatingExpensesAt('ENG', w.year, tier);
     expect(BigInt(floor)).toBeGreaterThan(BigInt(operatingExpensesAt('ENG', w.year, amateur)));
-    // An amateur season's turnover comes nowhere near the professional floor.
-    expect(BigInt(ratio(lastSeasonTurnover(w)!, 1200n, 10000n))).toBeLessThan(BigInt(floor));
+    expect(BigInt(shareOf(lastSeasonTurnover(w)!))).toBeLessThan(BigInt(floor));
     expect(w.operatingExpenses).toBe(floor);
     expect(operatingCosts(w).expenses).toBe(floor);
     expect(financeProjection(w).seasonLines.find((line) => line.key === 'expenses')).toMatchObject({
@@ -620,7 +632,6 @@ describe('operating expenses (→ECON-30)', () => {
       return w;
     };
     const floorOf = (w: World) => operatingExpensesAt('ENG', w.year, clubOf(w).tier);
-    const shareOf = (turnover: string) => ratio(turnover, 1200n, 10000n);
 
     it('pays the share of a high turnover instead of the floor', () => {
       const plain = close(),
@@ -633,7 +644,9 @@ describe('operating expenses (→ECON-30)', () => {
       expect(rich.operatingExpenses).toBe(shareOf(turnover));
       expect(operatingCosts(rich).expenses).toBe(rich.operatingExpenses);
       advanceRound(rich, undefined, false);
-      expect(entries(rich)[0].detail).toContain('직전 시즌 매출의 12%');
+      expect(entries(rich)[0].detail).toContain(
+        `직전 시즌 매출의 ${Math.round(EXPENSE_CONFIG.share * 100)}%`,
+      );
       expect(entries(rich)[0].amount).toBe(roundShare(rich.operatingExpenses!, 1));
     });
 
