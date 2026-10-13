@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r22 | Define the implemented browser-demo behavior for squad and growth.
+> r23 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating equals its league's average club XI (±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -112,7 +112,8 @@
   | relegation cut | 80% with a 1-rated agent to 40% with a 5-rated | −25% to −50% of the wage, smaller with a stronger agent |
   - the shares and sizes are calibrated with the economy (→ECON-29) within these ranges; a clause applies once per move and changes nothing else in the contract.
   - the contract talk (→WEB-68) and the player sheet show his clauses.
-- CLUB-30 [o] Every player has an agent rated 1–5, set when the player is created and never changing; better players more often have stronger agents. A stronger agent raises his client's demand by 3% per level above 1 (→CLUB-26) and tilts his contract clauses his way (→CLUB-29); the player sheet and the contract talk show the rating. Agent fees and agents steering transfers are not modelled. ← how well a player is represented decides his terms as much as his ability
+- CLUB-30 [o] Every player has an agent rated 1–5, set when the player is created and never changing; better players more often have stronger agents. A stronger agent raises his client's demand by 1% per level above 1 (→CLUB-26) and tilts his contract clauses his way (→CLUB-29); the player sheet and the contract talk show the rating. Agent fees and agents steering transfers are not modelled. ← how well a player is represented decides his terms as much as his ability
+  - the premium stays small so the default talk rule's 110% cap still renews a delegated squad at its market wage (measured 261013: 3% a level left ECON-29's wage bill at 43% of revenue, below its band).
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -120,6 +121,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r23 261013 CLUB-30✎ agent premium 3%→1% of the demand per level above 1
 - r22 261013 CLUB-3✎ top-up youths at the close five below the club's XI→five below the division's average strength on its market wage; CLUB-25✎ measured ratios none→recorded; CLUB-26✎ delegated checks: talk rule, 13 rounds of cash and the season projection→+the yearly wage bill after the raise within 65% of the last 12 months' revenue
 - r21 261013 CLUB-13✎ training view→the 훈련 tab, +the delegated assistant's rule; CLUB-16✎ odds on the academy dial and build board→on the operating board; CLUB-26✎ delegated within the squad investment's pay ceiling→within the owner's talk rule (wage cap 90–140% of market, minimum OVR, maximum age)
 - r20 261013 CLUB-26✎ delegated offers for 2 seasons→2 seasons past this one (1 from age 32), never ending before the running contract; +terms of a talk answered after its opening by the half of the season; CLUB-29✎ +the founding squad and the close's refills settle clauses

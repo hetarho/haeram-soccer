@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r19 | Define the implemented browser-demo behavior for historical club economy.
+> r20 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -25,6 +25,7 @@
 - ECON-9 [o] Match attendance comes from the club's local supporters, its division, form, the opponent and the ticket price, within the stadium's capacity; receipts are attendance × price; no duplicate season-ticket or sponsor revenue. ← a global following of millions filling any stadium made the gate limitless
   - local supporters are bounded by the club's catchment: its city, its division and its stature (giants and big clubs larger, →LEAGUE-10); the global following (→ECON-23) feeds sponsor values, not the gate.
   - targets (ENG; other countries by their football index →ECON-26) for a club established in its division, its reputation at the division's usual level, calibrated with →ECON-29 and then recorded as measured: average league attendance 20–45k in the top flight by era, 8–20k in the second tier, 4–10k in the third, 0.3–2k in the amateur league; a club that rose faster than its following draws less, and the reference club's own crowds are recorded beside the targets.
+  - measured 261013 (England-equivalent): established clubs 34,500 / 13,800 / 5,300 / 970; the reference club in at least its third straight season 25,000 / 7,100 / 3,200 / 890.
 - ECON-10 [o] Cash, income, expense, recurring wages, annual profit, budget runway and CPI-adjusted comparison are separate statistics.
   - the season ledger names every kind of income and expense, owner requests (→CLUB-20) and win bonuses included; a catch-all line holds only entries no current rule produces.
 - ECON-11 [o] If operations produce negative cash, play continues with an explicit budget warning and the bankruptcy countdown (→ECON-24); optional local-support recovery is a bounded game action, not a real-money payment.
@@ -128,13 +129,12 @@
   - the reference club has every delegation on, no owner capital, and grows its stadium a level whenever cash after the build still covers 13 rounds of fixed costs; its operating result counts that construction, since building is how it spends a surplus, and the result before construction is reported beside; the wage targets (→CLUB-25) are measured on it too, the attendance targets on clubs established in their division (→ECON-9), with the reference club's crowds in at least its third straight season in a division beside.
   | target | band | measured 261013 (rules 1.16.0, 24 careers: ENG ESP FRA GER × default and 트레이딩 머신 × 3 seeds, 1950–2009) |
   |---|---|---|
-  | wage bill / revenue for a club keeping a squad at its division's level | 45–70% | 43.0%, outside |
-  | operating result / revenue before player trading, career average without owner spending | −5% to +10% | +1.5% (player sales 15.1% of revenue beside it; before construction +24.3%; net result with sales +16.6%) |
-  | income mix, top flight, 2000s | distribution 40–55%, commercial 25–40%, matchday 15–25% | 43.4%, 33.6%, 23.0% |
-  | income mix, any division, 1950s | matchday 60% or more | 90.1% |
-  | the full facility ladder from level 1, in seasons of a top-flight club's average net result | 25 or more | 92.7 |
+  | wage bill / revenue for a club keeping a squad at its division's level | 45–70% | 46.1% |
+  | operating result / revenue before player trading, career average without owner spending | −5% to +10% | +3.4% (player sales 13.4% of revenue beside it; before construction +21.3%; net result with sales +16.8%) |
+  | income mix, top flight, 2000s | distribution 40–55%, commercial 25–40%, matchday 15–25% | 43.2%, 33.7%, 23.1% |
+  | income mix, any division, 1950s | matchday 60% or more | 89.5% |
+  | the full facility ladder from level 1, in seasons of a top-flight club's average net result | 25 or more | 95.5 |
   | reference careers that go bankrupt | none | none of 24 |
-  - the wage bill outside its band is accepted until it is retuned: agents' premiums (→CLUB-30) push delegated floors past the default talk rule's cap, so renewals are declined and cheaper youths replace the players (measured 261013: 47.7% with no premium, 43.9% without the season-projection check).
 - ECON-30 [o] Beyond wages, hosting costs and facility upkeep, every club pays operating expenses (운영 경비) — matchday operations, travel, administration, medical care, kit and its staff's yearly pay — each league round: the larger of an amount per country and division on the football index (→ECON-26) and a share of its turnover over its last completed season (income without player sales or owner capital), spread over this season's league rounds. Share and division amounts are sized so that ECON-29's reference club ends its career near break-even; the amateur level's amount is the lowest. ← other costs must grow with the club's own football money, from a newly promoted club to the dominant one it becomes (measured 261013: net result 47% of income with costs on prices; one amount per division bankrupted 5–7 of 8 reference careers)
   - it is a fixed cost: fixed costs and runway (→ECON-12), the cash projection (→ECON-18), the cash warning (→ECON-20) and the bankruptcy threshold (→ECON-24) count it, and the season ledger names it (→ECON-10).
   - the amount is set when a season starts; the division amount follows the division the club plays in this season, so a promotion or relegation changes it from the first round.
@@ -149,6 +149,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r20 261013 ECON-29✎ wage bill 43.0% outside its band, accepted→46.1% within it after agents' premiums 3%→1% a level (→CLUB-30), measured values recorded; ECON-9✎ measured crowds none→recorded
 - r19 261013 ECON-9✎ targets for any club, measured on 3rd+ straight seasons→for a club established in its division, the reference club's crowds beside; ECON-12✎ facility cost 250×1.38^(L−1) price units→250×1.58^(L−1) units on the football index, upkeep on prices→on the football index; ECON-26✎ prizes on the football index→cup and continental prizes on the broadcasting index, facilities on prices→on the football index; ECON-29✎ wage bill / income 50–70%→wage bill / revenue 45–70%, net result / income→operating result / revenue before player trading with construction counted, measured values rules 1.16.0 (16 careers)→24 careers on the ported calibration, bands outside wage bill and net→wage bill only; ECON-30✎ a turnover share never below a division floor→the larger of the division amount and the turnover share, a season after a relegation pays the division amount; ECON-31✎ small before television (0.15× prices)→flat with prices until television paid the league, +cup and continental prizes and their result bonuses
 - r18 261013 ECON-29✎ bands only→bands with the measured values of rules 1.16.0 and a bankrupt-careers row; bands outside accepted for now with the follow-up named
 - r17 261013 ECON-16✎ support pay ceiling×0.9–1.4→none (talk rule →CLUB-26), +operating expenses ×0.9–1.2; ECON-22✎ one commit a season and a reservation→applied at once, a changed slot locked 90 days; ECON-25✎ once a season→locked 90 days, 선수단 dials −훈련 방향, two sections→one board; ECON-30✎ +× the squad investment factor
