@@ -19,6 +19,7 @@ import { Dialog } from './Dialog';
 import { MilestoneCollection } from './MilestoneCollection';
 import { clubMilestones } from '../../../../packages/engine/src/goals';
 import s from './ClubHub.module.css';
+import { STADIUM_STEPS } from '../../../../packages/engine/src/facilities';
 
 function MatchAction({
   critical,
@@ -160,7 +161,7 @@ function ClubScene({ w }: { w: World }) {
   return (
     <figure
       className={s.scene}
-      aria-label={`우리 구장 · 시설 ${w.facilities}단계 · 팬 ${club.fans}명`}
+      aria-label={`우리 구장 · ${STADIUM_STEPS[w.stadium].name} ${STADIUM_STEPS[w.stadium].capacity}석 · 팬 ${club.fans}명`}
     >
       <div className={s.sceneCaption}>
         <span className={s.badge}>
@@ -168,21 +169,22 @@ function ClubScene({ w }: { w: World }) {
           {number(club.fans)}명의 서포터
         </span>
         <b>
-          {w.facilities < 3
+          {w.stadium < 2
             ? '동네의 작은 구장'
-            : w.facilities < 8
+            : w.stadium < 5
               ? '우리만의 홈 그라운드'
               : '도시의 자부심'}
         </b>
         <span className={s.badge}>
-          <i aria-hidden="true">▲</i>시설 Lv.{w.facilities}
+          <i aria-hidden="true">▲</i>
+          {number(STADIUM_STEPS[w.stadium].capacity)}석
         </span>
       </div>
       <svg
         viewBox="0 0 360 150"
         preserveAspectRatio="xMidYMid slice"
         role="img"
-        aria-label="시설과 서포터에 따라 성장하는 클럽 구장"
+        aria-label="경기장과 서포터에 따라 성장하는 클럽 구장"
       >
         <defs>
           <linearGradient id="club-sky" x2="0" y2="1">
@@ -208,9 +210,9 @@ function ClubScene({ w }: { w: World }) {
           strokeWidth="2"
         />
         <path d="M44 82L147 56L149 69L46 95Z" fill="#cdb88f" />
-        {w.facilities >= 2 && <path d="M213 57L317 81L315 94L211 70Z" fill="#cdb88f" />}
-        {w.facilities >= 4 && <path d="M36 73L149 44L157 51L44 82Z" fill={crest.primary} />}
-        {w.facilities >= 8 && <path d="M207 44L325 73L317 81L201 51Z" fill={crest.primary} />}
+        {w.stadium >= 1 && <path d="M213 57L317 81L315 94L211 70Z" fill="#cdb88f" />}
+        {w.stadium >= 3 && <path d="M36 73L149 44L157 51L44 82Z" fill={crest.primary} />}
+        {w.stadium >= 5 && <path d="M207 44L325 73L317 81L201 51Z" fill={crest.primary} />}
         {Array.from({ length: crowds }, (_, i) => (
           <circle
             key={i}

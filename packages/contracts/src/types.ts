@@ -3,6 +3,8 @@ export type { ClubBuild, BuildSlot } from './build';
 export type CountryCode = 'ENG' | 'ESP' | 'GER' | 'ITA' | 'FRA' | 'POR' | 'NED' | 'BEL';
 export type Tactic = 'balanced' | 'possession' | 'counter' | 'press';
 export type TrainingFocus = 'balanced' | 'youth' | 'recovery';
+/** The facility parts the owner builds separately (→ECON-32). */
+export type FacilityPart = 'stadium' | 'training' | 'academy';
 /** The academy's training focus, set by the youth director (→CLUB-31). */
 export type YouthFocus = 'balanced' | 'fundamentals' | 'firstTeam';
 /** The coaches who set a training focus (→STAFF-19). */
@@ -743,7 +745,14 @@ export interface World {
   currency: string;
   priceIndex: number;
   support: number;
-  facilities: number;
+  /** The stadium's step 0–8 (→ECON-32): 2,500 seats at founding, 90,000 at the top. */
+  stadium: number;
+  /** Training ground level 0–5 (→ECON-32). */
+  trainingGround: number;
+  /** Academy facilities level 0–5 (→ECON-32). */
+  academyFacility: number;
+  /** Facility works in progress, one per part: the step or level it builds and the day it began. */
+  facilityWorks?: Partial<Record<FacilityPart, { to: number; year: number; day: number }>>;
   ticket: number;
   campaigns: Campaign[];
   /**
@@ -830,7 +839,7 @@ export type Command =
   | { type: 'transfer-stance'; id: string; stance: TransferStance }
   | { type: 'campaign'; kind: string }
   | { type: 'sponsor'; kind: Sponsor['kind'] }
-  | { type: 'facility' }
+  | { type: 'facility'; part: FacilityPart }
   | { type: 'ticket'; price: number }
   | { type: 'support' }
   | { type: 'accept-condition' }

@@ -12,6 +12,7 @@ import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
 import { delegated } from './intervention';
 import { countDownOrder } from './orders';
+import { academyFacilityTerms } from './facilities';
 
 /** First-team squad limit shared with signings. */
 const SQUAD_LIMIT = 26;
@@ -85,13 +86,13 @@ export interface AcademyProspect {
 export function academyIntakeDay(w: World) {
   return seasonDayOf(w.year, 3, 15);
 }
-/** Prospects that arrive at the next intake: 3, +1 with a strong youth director, +1 with facilities. */
+/** Prospects that arrive at the next intake: 3, +1 with a strong youth director, +1 with academy facilities 2+. */
 export function academyIntakeSize(w: World) {
   const director = staffMember(w, 'youth');
   return (
     3 +
     (director && director.ability >= 70 ? 1 : 0) +
-    (w.facilities >= 4 ? 1 : 0) +
+    academyFacilityTerms(w).intake +
     policyEffects(policyOf(w)).academyIntake +
     buildEffects(w).academyIntake
   );
@@ -114,7 +115,7 @@ export function academyIntakeOutlook(w: World) {
   const size = academyIntakeSize(w),
     quality = staffEffects(w).academyQuality,
     bonus = academyPotentialBonus(w),
-    lift = Math.min(4, Math.floor(w.facilities / 2)) + Math.round(quality / 4);
+    lift = academyFacilityTerms(w).potential + Math.round(quality / 4);
   let hits = 0,
     cases = 0;
   for (let first = 25; first <= 36; first++)
@@ -146,7 +147,7 @@ export function runAcademyIntake(w: World): void {
     const role = INTAKE_ROLES[(w.year + i) % INTAKE_ROLES.length],
       age = integer(r, 15, 16),
       base = clamp(
-        integer(r, 25, 36) + Math.min(4, Math.floor(w.facilities / 2)) + Math.round(quality / 4),
+        integer(r, 25, 36) + academyFacilityTerms(w).potential + Math.round(quality / 4),
         20,
         45,
       );
@@ -208,11 +209,11 @@ export function developAcademy(w: World): void {
   }
   countDownOrder(w, 'youth');
 }
-/** The academy's growth factor before age group and focus: staff, facilities, investment, synergies. */
+/** The academy's growth factor before age group and focus: staff, academy facilities, investment, synergies. */
 export function academyGrowth(w: World) {
   return (
     staffEffects(w).academyGrowth *
-    (1 + w.facilities / 40) *
+    academyFacilityTerms(w).growth *
     policyEffects(policyOf(w)).academyGrowth *
     synergyEffects(w).academyGrowth
   );

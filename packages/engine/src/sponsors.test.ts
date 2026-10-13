@@ -60,7 +60,7 @@ function squadOf(w: World, skill: number) {
 }
 
 describe('sponsor contracts by slot', () => {
-  it('opens the shirt-front slot in England in 1979, not 1975, and stadium naming at facilities 10+', () => {
+  it('opens the shirt-front slot in England in 1979, not 1975, and stadium naming at 30,000 seats', () => {
     const w = club();
     w.year = 1975;
     expect(slot(w, 'shirt')).toMatchObject({ open: false, opens: 1979, offers: [] });
@@ -89,9 +89,13 @@ describe('sponsor contracts by slot', () => {
     for (const offer of [...shirt.offers, ...slot(w, 'local').offers])
       expect(offer.until - w.year).toBe(offer.term);
     w.year = 1997;
-    w.facilities = SPONSOR_CONFIG.stadiumFacilities - 1;
-    expect(slot(w, 'stadium')).toMatchObject({ open: false, facilities: 10, offers: [] });
-    w.facilities++;
+    w.stadium = 3;
+    expect(slot(w, 'stadium')).toMatchObject({
+      open: false,
+      capacity: SPONSOR_CONFIG.stadiumCapacity,
+      offers: [],
+    });
+    w.stadium = 4;
     expect(slot(w, 'stadium').open).toBe(true);
     expect(slot(w, 'stadium').offers).toHaveLength(3);
   });

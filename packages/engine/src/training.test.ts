@@ -187,12 +187,12 @@ describe('earned player growth and training choices', () => {
     expect(weak.players[0].developed).toBeCloseTo(weak.players[0].keeper - 40, 8);
   });
 
-  it('makes manager youth skill, facilities and younger age help uncapped development', () => {
-    const gain = (youth: number, facilities: number, age = 20) => {
+  it('makes manager youth skill, the training ground and younger age help uncapped development', () => {
+    const gain = (youth: number, ground: number, age = 20) => {
       const w = world(),
         player = w.players[0];
       w.manager.youth = youth;
-      w.facilities = facilities;
+      w.trainingGround = ground;
       player.born = w.year - age;
       player.keeper = 60;
       player.potential = 70;
@@ -201,7 +201,7 @@ describe('earned player growth and training choices', () => {
       return player.keeper - 60;
     };
     expect(gain(100, 0)).toBeGreaterThan(gain(0, 0));
-    expect(gain(60, 20)).toBeGreaterThan(gain(60, 0));
+    expect(gain(60, 5)).toBeGreaterThan(gain(60, 0));
     expect(gain(60, 0, 20)).toBeGreaterThan(gain(60, 0, 26));
   });
 
@@ -249,7 +249,7 @@ describe('earned player growth and training choices', () => {
     for (const style of ['developer', 'firefighter'] as const) {
       const w = world('youth');
       w.policy = { ...policyOf(w), support: 4 };
-      w.facilities = 6;
+      w.trainingGround = 3;
       w.manager.youth = 70;
       w.manager.style = style;
       w.build = { youth: 'pathway' };

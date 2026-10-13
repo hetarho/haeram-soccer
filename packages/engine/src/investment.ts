@@ -1,8 +1,7 @@
-import type { World } from '../../contracts/src/types';
+import type { FacilityPart, World } from '../../contracts/src/types';
 import { SEASON_ROUNDS } from './calendar';
 import { gateProjection, operatingCosts } from './finance';
-import { clubOf } from './world';
-import { facilityCost, MAX_FACILITIES } from './facilities';
+import { FACILITY_PART_LABEL, facilityWork, nextWork, stadiumCapacity } from './facilities';
 
 /** Fixed costs only: future gates, bonuses, sponsorship and other income are excluded. */
 export function fixedCostRunway(cash: string, annual: string): number {
@@ -13,38 +12,59 @@ export function fixedCostRunway(cash: string, annual: string): number {
   return Number(rounds > 999n ? 999n : rounds);
 }
 
-/** Hypothetical cost/read model; capped facilities have no further spend or improvement. */
-export function facilityInvestmentPreview(w: World) {
-  const eligible = w.facilities < MAX_FACILITIES,
-    cost = eligible ? facilityCost(clubOf(w).country, w.year, w.facilities + 1) : '0',
-    facilitiesAfter = eligible ? w.facilities + 1 : w.facilities,
-    draft = { ...w, facilities: facilitiesAfter },
+/**
+ * What starting the next work on a facility part would do (→ECON-12, ECON-32): its cost and the
+ * cash and runway after it, the upkeep it adds once open, the seats before, during and after for
+ * the stadium, and the days it takes. A part at its top or with a work in progress has none.
+ */
+export function facilityInvestmentPreview(w: World, part: FacilityPart) {
+  const next = nextWork(w, part),
+    working = facilityWork(w, part),
+    eligible = !!next && !working,
+    cost = eligible ? next.cost : '0',
+    built: World = next
+      ? {
+          ...w,
+          ...(part === 'stadium'
+            ? { stadium: next.to }
+            : part === 'training'
+              ? { trainingGround: next.to }
+              : { academyFacility: next.to }),
+          facilityWorks: undefined,
+        }
+      : w,
     before = operatingCosts(w),
-    after = operatingCosts(draft),
+    after = operatingCosts(built),
     cashAfter = (BigInt(w.cash) - BigInt(cost)).toString(),
     affordable = BigInt(w.cash) >= BigInt(cost);
   return {
+    part,
+    next,
+    working,
     cost,
     cashAfter,
-    facilitiesBefore: w.facilities,
-    facilitiesAfter,
-    capacityBefore: gateProjection(w).capacity,
-    capacityAfter: gateProjection(draft).capacity,
+    capacityBefore: stadiumCapacity(w),
+    capacityDuring:
+      part === 'stadium' && next?.kind === 'expansion'
+        ? stadiumCapacity({ ...w, facilityWorks: { stadium: { to: next.to, year: 0, day: 0 } } })
+        : stadiumCapacity(w),
+    capacityAfter: stadiumCapacity(built),
+    demand: gateProjection(w).wanted,
     maintenanceBefore: before.maintenance,
     maintenanceAfter: after.maintenance,
     maintenanceIncrease: (BigInt(after.maintenance) - BigInt(before.maintenance)).toString(),
     annualBefore: before.annual,
     annualAfter: after.annual,
-    nextRoundBefore: before.nextRound,
-    nextRoundAfter: after.nextRound,
     runwayRounds: fixedCostRunway(cashAfter, after.annual),
     affordable,
     eligible,
-    reason: !eligible
-      ? `시설은 최대 ${MAX_FACILITIES}단계입니다.`
-      : !affordable
-        ? '시설 확장에 쓸 보유 자금이 부족합니다.'
-        : '확장 비용을 즉시 지출하며 연간 유지비가 늘어납니다.',
+    reason: working
+      ? `${FACILITY_PART_LABEL[part]} 공사가 진행 중이에요 · ${working.left}일 남음`
+      : !next
+        ? `${FACILITY_PART_LABEL[part]}은(는) 최고 단계예요.`
+        : !affordable
+          ? '공사에 쓸 보유 자금이 부족합니다.'
+          : `공사비를 바로 지출하고 ${next.days}일 뒤 완공되면 연간 유지비가 늘어요.`,
   };
 }
 

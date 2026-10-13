@@ -1,7 +1,7 @@
 import type { Club, MatchRecord, World } from '../../contracts/src/types';
 import { activePlayers, clubOf, findClub, footballQuote, initialElo, quote } from './world';
 import { playerValue } from './transfers';
-import { facilityCostUnits } from './facilities';
+import { facilityBuiltUnits } from './facilities';
 
 /**
  * Club Elo after every settled result, every club and competition (→HIST-12), in the World
@@ -53,15 +53,14 @@ export function squadValue(w: World) {
 }
 
 /**
- * Club valuation (→HIST-12): squad value + half of what the facilities cost to build + a brand
+ * Club valuation (→HIST-12): squad value + half of what the facility parts cost to build + a brand
  * worth one unit per 20 supporters, raised by reputation + cash (debt counts against it).
  */
 export function clubValuation(w: World) {
   const club = clubOf(w),
     code = club.country;
-  let built = 0;
-  for (let level = 1; level <= w.facilities; level++) built += facilityCostUnits(level);
-  // Facilities are built on the football index (→ECON-12), so their half is valued on it too.
+  const built = facilityBuiltUnits(w);
+  // Facilities are built on the football index (→ECON-32), so their half is valued on it too.
   const squad = squadValue(w),
     facilities = footballQuote(code, w.year, 150 + built / 2),
     brand = quote(code, w.year, (club.fans / 20) * (1 + club.reputation / 100));

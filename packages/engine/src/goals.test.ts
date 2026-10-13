@@ -9,6 +9,7 @@ import {
   createWorld,
   lineupPreset,
   operate,
+  progressFacilityWorks,
   seasonDayOf,
   simulateSeason,
 } from './index';
@@ -62,10 +63,11 @@ describe('milestones from retained club facts', () => {
     operate(w, { type: 'lineup', ids: null });
     expect(w.lineup).toBeUndefined();
     expect(byId(w, 'preparation').done).toBe(true);
-    operate(w, { type: 'facility' });
-    expect(byId(w, 'facilities').current).toBe(1);
-    expect(byId(w, 'facilities').progress).toBe(50);
-    operate(w, { type: 'facility' });
+    // The milestone is the opened stand, not the order: it counts once the work is done.
+    operate(w, { type: 'facility', part: 'stadium' });
+    expect(byId(w, 'facilities').done).toBe(false);
+    w.facilityWorks!.stadium!.day -= 180;
+    progressFacilityWorks(w);
     expect(byId(w, 'facilities').done).toBe(true);
     expect(w.ownMatches).toHaveLength(0);
     advanceToNextMatch(w, undefined, false);
@@ -115,8 +117,7 @@ describe('milestones from retained club facts', () => {
   it('celebrates all milestones from an actual season and preserves archive evidence after decline', async () => {
     const w = world(true);
     operate(w, { type: 'lineup', ids: lineupPreset(w, 'strongest') });
-    operate(w, { type: 'facility' });
-    operate(w, { type: 'facility' });
+    operate(w, { type: 'facility', part: 'stadium' });
     for (const kind of ['outreach', 'tickets', 'player']) operate(w, { type: 'campaign', kind });
     simulateSeason(w);
     const milestones = clubMilestones(w),

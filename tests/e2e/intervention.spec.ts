@@ -128,9 +128,9 @@ for (const viewport of [
 
     await nav.getByRole('button', { name: '구단 운영', exact: true }).click();
     await page.getByRole('tab', { name: '시설', exact: true }).click();
-    const review = page.getByRole('button', { name: '시설 투자 검토', exact: true });
+    const review = page.getByRole('button', { name: '경기장 공사 검토', exact: true });
     await review.click();
-    const plan = page.getByRole('dialog', { name: '시설 투자 확인' });
+    const plan = page.getByRole('dialog', { name: '경기장 공사 확인' });
     await expect(plan).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(plan).toHaveCount(0);

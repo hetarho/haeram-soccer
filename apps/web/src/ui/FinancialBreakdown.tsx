@@ -173,6 +173,9 @@ export const FinancialBreakdown = memo(
     before.w.clubs === after.w.clubs &&
     before.w.events === after.w.events &&
     before.w.ticket === after.w.ticket &&
-    before.w.facilities === after.w.facilities &&
+    before.w.stadium === after.w.stadium &&
+    before.w.trainingGround === after.w.trainingGround &&
+    before.w.academyFacility === after.w.academyFacility &&
+    before.w.facilityWorks === after.w.facilityWorks &&
     before.w.campaigns === after.w.campaigns,
 );

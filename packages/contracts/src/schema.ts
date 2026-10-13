@@ -606,7 +606,15 @@ export const worldSchema: z.ZodType<World> = z.object({
   currency: text,
   priceIndex: number,
   support: z.number().int().nonnegative(),
-  facilities: z.number().int().min(0).max(20),
+  stadium: z.number().int().min(0).max(8),
+  trainingGround: z.number().int().min(0).max(5),
+  academyFacility: z.number().int().min(0).max(5),
+  facilityWorks: z
+    .partialRecord(
+      z.enum(['stadium', 'training', 'academy']),
+      z.strictObject({ to: z.number().int().min(1).max(8), year: season, day: seasonDay }),
+    )
+    .optional(),
   ticket: z.number().finite().min(0.01).max(10),
   campaigns: z
     .array(
@@ -705,12 +713,9 @@ function legacyMarket(input: unknown): unknown {
   const flat = typeof w.coaching === 'number';
   const listed =
     Array.isArray(w.players) && w.players.some((p) => p && typeof p === 'object' && 'listed' in p);
-  // Rules before 1.11 built up to 30 facility levels; twenty is the top now.
-  const tall = typeof w.facilities === 'number' && w.facilities > 20;
-  if (!flat && !listed && !tall) return input;
+  if (!flat && !listed) return input;
   return {
     ...w,
-    ...(tall ? { facilities: 20 } : {}),
     ...(flat
       ? {
           coaching: Object.fromEntries(staffRole.options.map((role) => [role, w.coaching])),
@@ -785,6 +790,25 @@ function legacyLevers(input: unknown): unknown {
   }
   return out;
 }
+/** Capacity of each stadium step (→ECON-32), for loading a single facility level. */
+const STADIUM_CAPACITY = [2500, 5000, 10000, 15000, 30000, 40000, 60000, 75000, 90000];
+/**
+ * One facility level F (`facilities`, up to 30 before rules 1.11) loads as the parts (→ECON-32):
+ * the highest stadium step holding at most 2,500 + 5,000F, and a training ground and academy of
+ * F/4 rounded, at most 5.
+ */
+function legacyFacilities(input: unknown): unknown {
+  if (!isRecord(input) || !('facilities' in input)) return input;
+  const { facilities, ...rest } = input;
+  if (typeof facilities !== 'number' || !Number.isInteger(facilities) || facilities < 0)
+    return input;
+  const seats = 2500 + 5000 * facilities,
+    level = Math.min(5, Math.round(facilities / 4));
+  rest.stadium ??= STADIUM_CAPACITY.filter((capacity) => capacity <= seats).length - 1;
+  rest.trainingGround ??= level;
+  rest.academyFacility ??= level;
+  return rest;
+}
 /** The staff switches saves kept before the intervention level (→SAVE-10). */
 const legacySwitches = z.strictObject({
   training: z.boolean().optional(),
@@ -856,7 +880,9 @@ function legacySponsor(w: World, country: string, catalog: LoadCatalog | undefin
 
 /** `catalog` is needed only for a world from rules before 1.16 that has a sponsor. */
 export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
-  const w = worldSchema.parse(legacyIntervention(legacyLevers(legacyMarket(legacyVision(input)))));
+  const w = worldSchema.parse(
+    legacyFacilities(legacyIntervention(legacyLevers(legacyMarket(legacyVision(input))))),
+  );
   const ids = new Set(w.clubs.map((c) => c.id));
   if (ids.size !== w.clubs.length || !ids.has(w.playerClub))
     throw new Error('저장된 클럽 식별자가 올바르지 않습니다.');

@@ -65,13 +65,13 @@ for (const viewport of [
   { width: 360, height: 740 },
   { width: 390, height: 844 },
 ]) {
-  test(`reviews and settles exact facility investment at ${viewport.width}x${viewport.height}`, async ({
+  test(`reviews and starts a stadium expansion at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
     await found(page, `facility-ui-${viewport.width}`);
     const before = await exportWorld(page);
-    const preview = facilityInvestmentPreview(before);
+    const preview = facilityInvestmentPreview(before, 'stadium');
     // Every amount reads in the one notation (→WEB-67); the exact value opens on tap or hover.
     const format = (value: string) => compactMoney(value, clubOf(before).country, before.year);
     await openBusiness(page, '시설');
@@ -79,7 +79,13 @@ for (const viewport of [
       'aria-selected',
       'true',
     );
-    const review = page.getByRole('button', { name: '시설 투자 검토', exact: true });
+    // Three parts built separately (→ECON-32): the stadium's ladder, the training ground and the
+    // academy facilities.
+    await expect(page.getByTestId('facility-stadium')).toContainText('동네 구장');
+    await expect(page.getByTestId('stadium-step-0')).toHaveAttribute('data-state', 'current');
+    await expect(page.getByTestId('facility-training')).toContainText('0/5단계');
+    await expect(page.getByTestId('facility-academy')).toContainText('0/5단계');
+    const review = page.getByRole('button', { name: '경기장 공사 검토', exact: true });
     // Scrolling must bring the CTA clear of the nav.
     await review.evaluate((element) => element.scrollIntoView({ block: 'center' }));
     await settle(page);
@@ -90,14 +96,14 @@ for (const viewport of [
     expect(reviewBounds!.height).toBeGreaterThanOrEqual(44);
     expect(reviewBounds!.y + reviewBounds!.height).toBeLessThanOrEqual(menuBounds!.y);
     await review.click();
-    const dialog = page.getByRole('dialog', { name: '시설 투자 확인' });
+    const dialog = page.getByRole('dialog', { name: '경기장 공사 확인' });
+    await expect(dialog).toContainText('증축 · 관중석 증축');
     await expect(dialog).toContainText(format(preview.cost));
     await expect(dialog).toContainText(format(preview.cashAfter));
-    await expect(dialog).toContainText(
-      `${number(preview.capacityBefore)} → ${number(preview.capacityAfter)}명`,
-    );
-    await expect(dialog).toContainText(format(preview.maintenanceIncrease));
-    const confirm = dialog.getByRole('button', { name: '시설 확장', exact: true });
+    // A stand is added: 10% of the ground closes while it is built.
+    await expect(dialog).toContainText('2,500 → 2,250 → 5,000석');
+    await expect(dialog).toContainText('180일');
+    const confirm = dialog.getByRole('button', { name: '공사 시작', exact: true });
     await settle(page);
     const bounds = await confirm.boundingBox();
     expect(bounds!.height).toBeGreaterThanOrEqual(44);
@@ -108,14 +114,22 @@ for (const viewport of [
     await confirm.click();
     await expect(dialog).toHaveCount(0);
     const after = await exportWorld(page);
-    expect(after.facilities).toBe(before.facilities + 1);
+    expect(after.stadium).toBe(0);
+    expect(after.facilityWorks?.stadium).toMatchObject({ to: 1 });
     expect(after.cash).toBe(preview.cashAfter);
     expect(BigInt(after.expense) - BigInt(before.expense)).toBe(BigInt(preview.cost));
-    expect(operatingCosts(after).maintenance).toBe(preview.maintenanceAfter);
-    expect(operatingCosts(after).annual).toBe(preview.annualAfter);
+    // Upkeep waits for the opening.
+    expect(operatingCosts(after).maintenance).toBe(preview.maintenanceBefore);
+    await expect(page.getByTestId('facility-work-stadium')).toContainText('완공까지 180일');
+    await expect(page.getByRole('button', { name: '경기장 공사 검토', exact: true })).toHaveCount(
+      1,
+    );
+    await expect(
+      page.getByRole('button', { name: '경기장 공사 검토', exact: true }),
+    ).toBeDisabled();
     await page.getByRole('tab', { name: '재정', exact: true }).click();
     await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
-    await expect(page.getByRole('region', { name: '수입과 지출 장부' })).toContainText('시설 확장');
+    await expect(page.getByRole('region', { name: '수입과 지출 장부' })).toContainText('시설 공사');
     await page.getByRole('button', { name: '장부 확인 마치기', exact: true }).click();
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   });

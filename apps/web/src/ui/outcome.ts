@@ -15,6 +15,7 @@ import {
 import { lineupSummary } from '../../../../packages/engine/src/strategy';
 import { compactMoney, number } from './format';
 import { orderIds, ownLeagueIds } from './league';
+import { STADIUM_STEPS } from '../../../../packages/engine/src/facilities';
 
 export interface OutcomeChange {
   label: string;
@@ -46,7 +47,7 @@ const titles: Record<Command['type'], string> = {
   'transfer-stance': '선수의 이적 상태를 바꿨어요',
   campaign: '마케팅 캠페인을 시작했어요',
   sponsor: '후원 계약을 맺었어요',
-  facility: '구장 시설을 확장했어요',
+  facility: '시설 공사를 시작했어요',
   ticket: '티켓 가격을 바꿨어요',
   support: '구단주 추가 출자를 받았어요',
   'accept-condition': '훈련을 지원하고 전술을 바꿨어요',
@@ -72,7 +73,7 @@ const notes: Partial<Record<Command['type'], string>> = {
   lineup: '다음 경기부터 바꿀 때까지 이 선발을 씁니다.',
   'coach-training': '받아들이거나 지시한 방향은 다음 라운드 정산부터 4라운드 동안 반영돼요.',
   campaign: '4라운드 뒤 실제 수입과 신규 팬이 정산돼요.',
-  facility: '관중 수용과 선수 성장이 좋아지고, 연간 유지비가 늘어요.',
+  facility: '완공되는 날부터 효과가 생기고 연간 유지비가 늘어요.',
   ticket: '다음 홈 경기 관중과 입장 수입부터 반영돼요.',
   policy: '다음 라운드 정산부터 비용과 효과가 반영돼요.',
   build: '바로 적용했어요. 카드와 다이얼은 언제든 다시 바꿀 수 있어요.',
@@ -196,7 +197,15 @@ export function describeOutcome(
     activePlayers(after).length,
     (n) => `${n}명`,
   );
-  compare(changes, '시설', before.facilities, after.facilities, (n) => `Lv.${n}`);
+  compare(
+    changes,
+    '경기장',
+    STADIUM_STEPS[before.stadium].capacity,
+    STADIUM_STEPS[after.stadium].capacity,
+    (n) => `${n.toLocaleString('en-US')}석`,
+  );
+  compare(changes, '훈련장', before.trainingGround, after.trainingGround, (n) => `${n}단계`);
+  compare(changes, '유소년 시설', before.academyFacility, after.academyFacility, (n) => `${n}단계`);
   compare(changes, '적용 전술', tacticLabel[before.tactic], tacticLabel[after.tactic]);
   compare(
     changes,

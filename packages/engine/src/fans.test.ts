@@ -7,16 +7,17 @@ import {
   clubOf,
   createWorld,
   driftFans,
-  facilityCostUnits,
+  facilityBuiltUnits,
   facilityUpkeepUnits,
   fanFollowing,
   gateProjection,
   localSupporters,
-  MAX_FACILITIES,
   operate,
   operatingCosts,
+  partCostUnits,
   settleRound,
   simulateSeason,
+  STADIUM_STEPS,
   stature,
 } from './index';
 
@@ -53,8 +54,8 @@ describe('supporters follow reputation, not the stadium', () => {
     const club = clubOf(w);
     club.tier = 2;
     club.fans = 2_000_000;
-    // A stadium for 100,000, the cheapest tickets and every marketing push.
-    w.facilities = 20;
+    // A stadium for 90,000, the cheapest tickets and every marketing push.
+    w.stadium = 8;
     w.ticket = 0.02;
     operate(w, { type: 'campaign', kind: 'tickets' });
     const limit = catchment(w);
@@ -85,21 +86,51 @@ describe('supporters follow reputation, not the stadium', () => {
   });
 });
 
-describe('facility levels', () => {
-  it('has twenty levels, each dearer than the last and dearer to keep', () => {
-    expect(MAX_FACILITIES).toBe(20);
-    for (let level = 2; level <= MAX_FACILITIES; level++) {
-      expect(facilityCostUnits(level)).toBeGreaterThan(facilityCostUnits(level - 1) * 1.3);
-      expect(facilityUpkeepUnits(level)).toBeGreaterThan(facilityUpkeepUnits(level - 1));
+describe('facility parts (→ECON-32)', () => {
+  it('climbs the stadium in eight expansion and rebuild steps, each dearer and dearer to keep', () => {
+    expect(STADIUM_STEPS.map((step) => step.capacity)).toEqual([
+      2500, 5000, 10000, 15000, 30000, 40000, 60000, 75000, 90000,
+    ]);
+    expect(STADIUM_STEPS.slice(1).map((step) => step.work)).toEqual([
+      'expansion',
+      'rebuild',
+      'expansion',
+      'rebuild',
+      'expansion',
+      'rebuild',
+      'expansion',
+      'expansion',
+    ]);
+    const parts = { stadium: 0, trainingGround: 0, academyFacility: 0 };
+    for (let step = 2; step <= 8; step++) {
+      expect(partCostUnits('stadium', step)).toBeGreaterThan(partCostUnits('stadium', step - 1));
+      expect(facilityUpkeepUnits({ ...parts, stadium: step })).toBeGreaterThan(
+        facilityUpkeepUnits({ ...parts, stadium: step - 1 }),
+      );
     }
-    expect(facilityCostUnits(1)).toBe(250);
-    expect(facilityCostUnits(20)).toBeGreaterThan(100_000);
+    // The three ladders together cost about what one 20-level facility once did: a career.
+    const all = { stadium: 8, trainingGround: 5, academyFacility: 5 };
+    expect(facilityBuiltUnits(all)).toBeGreaterThan(3_500_000);
+    expect(facilityBuiltUnits(all)).toBeLessThan(4_500_000);
   });
 
-  it('reads a club built to level 30 by older rules as level 20', () => {
+  it('reads a club built to one facility level F as the parts that level held', () => {
     const saved = JSON.parse(canonical(world('tall-stadium')));
+    for (const key of ['stadium', 'trainingGround', 'academyFacility']) delete saved[key];
+    saved.facilities = 6;
+    // 6 held 32,500 seats: the 30,000 stadium, and a training ground and academy of 2 (6/4 rounded).
+    expect(validateWorld(saved)).toMatchObject({
+      stadium: 4,
+      trainingGround: 2,
+      academyFacility: 2,
+    });
     saved.facilities = 30;
-    expect(validateWorld(saved).facilities).toBe(20);
+    expect(validateWorld(saved)).toMatchObject({
+      stadium: 8,
+      trainingGround: 5,
+      academyFacility: 5,
+    });
+    expect('facilities' in validateWorld(saved)).toBe(false);
   });
 });
 
@@ -121,7 +152,7 @@ describe('bankruptcy', () => {
     settleRound(w);
     expect(w.bankrupt).toMatchObject({ year: w.year, round: BANKRUPTCY_ROUNDS });
     expect(w.events.at(-1)).toMatchObject({ kind: 'bankruptcy' });
-    expect(() => operate(w, { type: 'facility' })).toThrow(BANKRUPT_MESSAGE);
+    expect(() => operate(w, { type: 'facility', part: 'stadium' })).toThrow(BANKRUPT_MESSAGE);
     const before = canonical(w);
     simulateSeason(w);
     expect(canonical(w)).toBe(before);

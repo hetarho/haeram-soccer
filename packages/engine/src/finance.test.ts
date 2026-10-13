@@ -15,9 +15,9 @@ import {
   broadcastQuote,
   careOffer,
   catchment,
-  COACH_CRITERIA_DEFAULT,
   closeSeason,
   clubOf,
+  COACH_CRITERIA_DEFAULT,
   createWorld,
   DISTRIBUTION_CONFIG,
   EXPENSE_CONFIG,
@@ -39,12 +39,13 @@ import {
   POLICY_DEFAULTS,
   policyOf,
   prepareSeason,
+  progressFacilityWorks,
   quote,
   ratio,
   roundShare,
   scaleOperatingExpenses,
-  settleLeagueMerit,
   seasonOperatingExpenses,
+  settleLeagueMerit,
   settleRound,
   simulateMatch,
   simulateSeason,
@@ -225,7 +226,11 @@ describe('earned, auditable club finances', () => {
       gateProjection(losing).attendanceHigh,
     );
     const annual = operatingCost(w);
-    operate(w, { type: 'facility' });
+    // A training ground level adds upkeep once its work is done (→ECON-32).
+    operate(w, { type: 'facility', part: 'training' });
+    expect(operatingCost(w)).toBe(annual);
+    w.facilityWorks!.training!.day -= 90;
+    progressFacilityWorks(w);
     expect(BigInt(operatingCost(w))).toBeGreaterThan(BigInt(annual));
     const player = w.players.find((p) => p.status === 'active' && p.role !== 'GK')!;
     const beforeSale = operatingCost(w);

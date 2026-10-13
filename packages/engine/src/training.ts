@@ -16,6 +16,7 @@ import { settleMorale } from './morale';
 import { managerStyleEffects, STYLE_INFO } from './styles';
 import { buildEffects, buildOf, cardOf } from './build';
 import { countDownOrder } from './orders';
+import { trainingGroundBase } from './facilities';
 
 export const trainingFocusInfo: Record<
   TrainingFocus,
@@ -73,10 +74,10 @@ export function activeTrainingFocus(w: World): TrainingFocus {
   return w.trainingOrders?.assistant?.focus ?? autoTrainingFocus(w);
 }
 
-/** The manager's youth work and the facilities, the base a round's growth multiplies (→CLUB-12). */
+/** The manager's youth work and the training ground, the base a round's growth multiplies (→CLUB-12). */
 export function developmentBase(w: World) {
   // Twenty facility levels give the same top bonus thirty used to (→ECON-12).
-  return 0.5 + w.manager.youth / 100 + w.facilities / 27;
+  return 0.5 + w.manager.youth / 100 + trainingGroundBase(w);
 }
 
 function roundGain(
@@ -154,7 +155,7 @@ export function developAnnually(w: World, player: Player) {
     variation = random(`${w.seed}:growth:${player.id}:${w.year}`);
   const growth =
     age < 27
-      ? Math.min(3, gap / 20 + w.manager.youth / 100 + w.facilities / 4)
+      ? Math.min(3, gap / 20 + w.manager.youth / 100 + (trainingGroundBase(w) * 27) / 4)
       : age > 30
         ? -1.5
         : 0.3;
@@ -310,11 +311,11 @@ export function developmentOutlook(w: World) {
     },
     {
       key: 'base',
-      label: '감독 육성·시설',
+      label: '감독 육성·훈련장',
       value: developmentBase(w),
       applies: 'all',
       home: 'business/facility',
-      detail: `감독 육성 ${Math.round(w.manager.youth)} · 시설 Lv.${w.facilities}`,
+      detail: `감독 육성 ${Math.round(w.manager.youth)} · 훈련장 ${w.trainingGround}단계`,
     },
     {
       key: 'style',

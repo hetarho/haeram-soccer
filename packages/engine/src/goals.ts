@@ -86,10 +86,10 @@ export function clubMilestones(w: World) {
     goal(
       'facilities',
       '동네의 작은 구장',
-      '시설을 2단계까지 키워 성장과 관중석을 준비해요.',
-      '구단 운영에서 시설 2단계 만들기',
-      w.facilities,
-      2,
+      '관중석을 증축해 5,000석 구장을 열어요.',
+      '구단 운영 › 시설에서 경기장 증축하기',
+      w.stadium,
+      1,
     ),
     goal(
       'supporters',

@@ -9,6 +9,7 @@ import { pushInbox } from './inbox';
 import { currentDay, seasonDayOf } from './calendar';
 import { credit } from './operations';
 import { delegated } from './intervention';
+import { STADIUM_STEPS } from './facilities';
 
 /**
  * Sponsor contracts by slot (→ECON-8), measured against ECON-29 (docs/FINANCES.md).
@@ -41,7 +42,8 @@ export const SPONSOR_CONFIG = {
     sleeve: { share: 0.1, bonus: 'none' },
   } as Record<SponsorSlot, { share: number; bonus: SponsorBonus }>,
   /** Stadium naming needs a ground worth naming. */
-  stadiumFacilities: 10,
+  /** Stadium naming needs a ground of this many seats (→ECON-8, ECON-32). */
+  stadiumCapacity: 30000,
   /** Annual and bonus as shares of the slot's value, and the seasons each kind is signed for. */
   kinds: {
     stable: { annual: 1, bonus: 0.2, term: 3 },
@@ -88,8 +90,8 @@ export interface SponsorSlotView {
   /** Season year the slot opens in the club's country, and how sure the catalog is of it. */
   opens: number;
   status: Observation;
-  /** Facility level the slot needs, for stadium naming. */
-  facilities?: number;
+  /** Seats the ground needs, for stadium naming. */
+  capacity?: number;
   contract?: SponsorContract;
   /** Signable offers: only an open slot without a contract has them. */
   offers: SponsorOffer[];
@@ -101,11 +103,11 @@ const seasonLabel = (year: number) => `${year}/${String(year + 1).slice(2)}`;
 export function contractOf(w: World, slot: SponsorSlot) {
   return w.sponsors?.find((contract) => contract.slot === slot);
 }
-/** Open by the year in the club's country; stadium naming also needs facilities 10+. */
+/** Open by the year in the club's country; stadium naming also needs a stadium of 30,000+. */
 export function sponsorSlotOpen(w: World, slot: SponsorSlot) {
   return (
     sponsorSlotOpens(clubOf(w).country, slot).year <= w.year &&
-    (slot !== 'stadium' || w.facilities >= SPONSOR_CONFIG.stadiumFacilities)
+    (slot !== 'stadium' || STADIUM_STEPS[w.stadium].capacity >= SPONSOR_CONFIG.stadiumCapacity)
   );
 }
 /** An exclusive contract in any slot blocks new merchandise campaigns (→ECON-14). */
@@ -192,7 +194,7 @@ export function sponsorSlots(w: World): SponsorSlotView[] {
       open,
       opens: era.year,
       status: era.status,
-      ...(slot === 'stadium' ? { facilities: SPONSOR_CONFIG.stadiumFacilities } : {}),
+      ...(slot === 'stadium' ? { capacity: SPONSOR_CONFIG.stadiumCapacity } : {}),
       ...(contract ? { contract } : {}),
       offers: open && !contract ? sponsorOffers(w, slot) : [],
     };

@@ -1,0 +1,93 @@
+/* One facility part: its heading, ladder or levels, demand, work in progress and next work. */
+.part {
+  display: grid;
+  gap: 10px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.part:last-of-type {
+  border-bottom: 0;
+}
+.part > button {
+  min-height: 48px;
+  width: 100%;
+}
+/* The stadium's eight steps as one track: built steps lit, the next work marked. */
+.ladder {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ladder li {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 6px 0;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--line);
+  min-width: 0;
+}
+.ladder li b {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.ladder li small {
+  font-size: 9px;
+  color: var(--text-faint);
+}
+.ladder li[data-state='built'] {
+  background: #173a2a;
+}
+.ladder li[data-state='current'] {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, #1c4a34 0%, #133526 100%);
+}
+.ladder li[data-state='building'] {
+  border-color: var(--gold);
+  border-style: dashed;
+}
+.levels {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.levels li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.levels li b {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  font-size: 11px;
+}
+.levels li[data-built] {
+  color: var(--text);
+}
+.levels li[data-built] b {
+  background: var(--accent-fill);
+  color: var(--on-accent);
+  border-color: var(--accent-edge);
+}
+.work {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px dashed var(--gold);
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 700;
+}

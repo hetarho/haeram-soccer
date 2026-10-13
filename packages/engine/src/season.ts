@@ -37,6 +37,7 @@ import { simulateMatch } from './match';
 import { fatigueCost } from './strategy';
 import { developAnnually, settleTraining } from './training';
 import { runAcademyIntake, seasonAcademy } from './academy';
+import { progressFacilityWorks } from './facilities';
 import { dailyMarket } from './transfers';
 import { moraleAfterMatch } from './morale';
 import { settleWinBonus } from './care';
@@ -773,10 +774,11 @@ function stepDay(w: World, capture: Settlement, observe: boolean) {
 }
 
 /**
- * Daily club business outside matches: academy intake, the transfer market, sponsors, the staff,
+ * Daily club business outside matches: facility works, academy intake, the transfer market, sponsors, the staff,
  * spring retirement announcements, contract talks, transfer requests and healed injuries.
  */
 export function clubDay(w: World) {
+  progressFacilityWorks(w);
   runAcademyIntake(w);
   dailyMarket(w);
   delegatedBusiness(w);

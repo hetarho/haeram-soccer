@@ -166,7 +166,7 @@ const command = z.discriminatedUnion('type', [
     type: z.literal('sponsor'),
     kind: z.enum(['stable', 'performance', 'exclusive', 'indexed']),
   }),
-  z.object({ type: z.literal('facility') }),
+  z.object({ type: z.literal('facility'), part: z.enum(['stadium', 'training', 'academy']) }),
   z.object({ type: z.literal('ticket'), price: z.number().min(0.01).max(0.5) }),
   z.object({ type: z.literal('support') }),
   z.object({ type: z.literal('accept-condition') }),

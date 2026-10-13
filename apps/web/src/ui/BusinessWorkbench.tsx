@@ -13,13 +13,12 @@ import {
   type SponsorBonus,
 } from '../../../../packages/engine/src/sponsors';
 import { ratio } from '../../../../packages/engine/src/primitives';
-import {
-  facilityInvestmentPreview,
-  fixedCostRunway,
-} from '../../../../packages/engine/src/investment';
+import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import type { ClientState, GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
+import { FacilityParts } from './FacilityParts';
+import { STADIUM_STEPS } from '../../../../packages/engine/src/facilities';
 import { FinancialBreakdown } from './FinancialBreakdown';
 import { number } from './format';
 import { DecisionOwner } from './DecisionOwner';
@@ -50,15 +49,15 @@ const season = (year: number) => `${year}/${String(year + 1).slice(2)} 시즌`;
 function opening(
   opens: number,
   status: string,
-  facilities: number | undefined,
+  capacity: number | undefined,
   year: number,
-  level: number,
+  seats: number,
 ) {
   const era = `${season(opens)}부터${status === 'observed' ? '' : '(추정)'}`;
-  if (!facilities) return `${era} 열려요.`;
+  if (!capacity) return `${era} 열려요.`;
   return opens <= year
-    ? `시설 Lv.${facilities}이 되면 열려요. 지금 Lv.${level}이에요.`
-    : `${era}, 시설 Lv.${facilities} 이상이면 열려요.`;
+    ? `경기장이 ${number(capacity)}석 이상이 되면 열려요. 지금 ${number(seats)}석이에요.`
+    : `${era}, 경기장 ${number(capacity)}석 이상이면 열려요.`;
 }
 
 function SponsorContractCard({
@@ -131,9 +130,8 @@ export function BusinessWorkbench({
   const error = useGameState((current) => current.error);
   const blocked = acting || readonly || !!error;
   const tab = part;
-  const [sheet, setSheet] = useState<'facility' | 'ledger' | 'legacy'>();
+  const [sheet, setSheet] = useState<'ledger' | 'legacy'>();
   const [message, setMessage] = useState('');
-  const facility = facilityInvestmentPreview(w);
   const games = Math.max(
     1,
     w.fixtures.filter(
@@ -237,58 +235,7 @@ export function BusinessWorkbench({
       ) : (
         <div className={s.panel}>
           {tab === 'facility' ? (
-            <>
-              <div className={s.panelHeading}>
-                <div>
-                  <h3>우리 구장의 다음 단계</h3>
-                  <p>시설 Lv.{w.facilities} · 선수 육성과 관중석을 키워요.</p>
-                </div>
-                <span>
-                  Lv.{facility.facilitiesBefore} → {facility.facilitiesAfter}
-                </span>
-              </div>
-              <div className={s.metrics}>
-                <div>
-                  <span>수용 인원</span>
-                  <b>
-                    {number(facility.capacityBefore)} → {number(facility.capacityAfter)}명
-                  </b>
-                </div>
-                <div>
-                  <span>현재 홈 관중 예상</span>
-                  <b>
-                    {number(finance.gate.attendanceLow)}–{number(finance.gate.attendanceHigh)}명
-                  </b>
-                </div>
-                <div>
-                  <span>즉시 확장 비용</span>
-                  <b>{format(facility.cost)}</b>
-                </div>
-                <div>
-                  <span>연간 유지비 증가</span>
-                  <b>+{format(facility.maintenanceIncrease)}</b>
-                </div>
-                <div>
-                  <span>투자 후 자금</span>
-                  <b>{format(facility.cashAfter)}</b>
-                </div>
-                <div>
-                  <span>투자 후 고정 지출 여유</span>
-                  <b>{runway(facility.runwayRounds)}</b>
-                </div>
-              </div>
-              <p className={s.note}>{facility.reason}</p>
-              <button
-                className={s.primary}
-                disabled={blocked || !facility.eligible || !facility.affordable}
-                onClick={(event) => {
-                  event.currentTarget.focus();
-                  setSheet('facility');
-                }}
-              >
-                시설 투자 검토
-              </button>
-            </>
+            <FacilityParts w={w} blocked={blocked} act={act} format={format} />
           ) : tab === 'sponsor' ? (
             <>
               <div className={s.panelHeading}>
@@ -317,7 +264,13 @@ export function BusinessWorkbench({
                     </header>
                     {!view.open ? (
                       <p className={s.note}>
-                        {opening(view.opens, view.status, view.facilities, w.year, w.facilities)}
+                        {opening(
+                          view.opens,
+                          view.status,
+                          view.capacity,
+                          w.year,
+                          STADIUM_STEPS[w.stadium].capacity,
+                        )}
                       </p>
                     ) : view.contract ? (
                       <SponsorContractCard
@@ -488,75 +441,7 @@ export function BusinessWorkbench({
           {message}
         </p>
       )}
-      {sheet === 'facility' ? (
-        <Dialog
-          label="시설 투자 확인"
-          onClose={() => setSheet(undefined)}
-          actions={
-            <div className={s.reviewActions}>
-              <button onClick={() => setSheet(undefined)}>취소</button>
-              <button
-                className={s.primary}
-                disabled={blocked || !facility.eligible || !facility.affordable}
-                onClick={async () => {
-                  if (await act({ type: 'facility' }, '시설 확장과 새 유지비를 기록했어요.'))
-                    setSheet(undefined);
-                }}
-              >
-                시설 확장
-              </button>
-            </div>
-          }
-        >
-          <h3>
-            시설 Lv.{facility.facilitiesBefore} → Lv.{facility.facilitiesAfter}
-          </h3>
-          <p className={s.note}>
-            선수 성장과 관중석을 키우는 대신, 즉시 비용과 반복 유지비가 늘어요.
-          </p>
-          <div className={s.metrics}>
-            <div>
-              <span>즉시 지출</span>
-              <b>{format(facility.cost)}</b>
-            </div>
-            <div>
-              <span>확장 후 자금</span>
-              <b>{format(facility.cashAfter)}</b>
-            </div>
-            <div>
-              <span>수용 인원</span>
-              <b>
-                {number(facility.capacityBefore)} → {number(facility.capacityAfter)}명
-              </b>
-            </div>
-            <div>
-              <span>현재 홈 관중 예상</span>
-              <b>
-                {number(finance.gate.attendanceLow)}–{number(finance.gate.attendanceHigh)}명
-              </b>
-            </div>
-            <div>
-              <span>연간 시설 유지비</span>
-              <b>
-                {format(facility.maintenanceBefore)} → {format(facility.maintenanceAfter)}
-              </b>
-            </div>
-            <div>
-              <span>유지비 증가</span>
-              <b>+{format(facility.maintenanceIncrease)}</b>
-            </div>
-            <div>
-              <span>새 연간 고정 지출</span>
-              <b>{format(facility.annualAfter)}</b>
-            </div>
-            <div>
-              <span>투자 후 고정 지출 여유</span>
-              <b>{runway(facility.runwayRounds)}</b>
-            </div>
-          </div>
-          <p className={s.note}>자금 여유에는 앞으로의 수입과 경기 개최비를 포함하지 않았어요.</p>
-        </Dialog>
-      ) : sheet === 'ledger' ? (
+      {sheet === 'ledger' ? (
         <Dialog
           label="클럽 수입·지출 장부"
           onClose={() => setSheet(undefined)}

@@ -155,7 +155,7 @@ describe('club builds', () => {
     };
     expect(lit('local-pride').find((s) => s.id === 'local-heroes')!.active).toBe(true);
     expect(lit('trading').find((s) => s.id === 'trading-machine')!.active).toBe(true);
-    // The others aim at a synergy the owner completes with dials, staff or facilities.
+    // The others aim at a synergy the owner completes with dials, staff or the stadium.
     const commercial = lit('commercial').find((s) => s.id === 'commercial')!;
     expect(commercial.conditions[0].met).toBe(true);
     // Small starts keep morale level while wages fall.
@@ -220,11 +220,11 @@ describe('build synergies and odds', () => {
     expect(synergyEffects(w)).toMatchObject({ pass: 0, sponsor: 1, academyGrowth: 1 });
     w.build = { revenue: 'commercial' };
     w.policy = { support: 3, recruitment: 3, marketing: 4, academy: 1 };
-    w.facilities = 6;
+    w.stadium = 4;
     const commercial = synergyStates(w).find((synergy) => synergy.id === 'commercial')!;
     expect(commercial.active).toBe(true);
     expect(synergyEffects(w).sponsor).toBeCloseTo(1.1);
-    w.facilities = 5;
+    w.stadium = 3;
     expect(synergyStates(w).find((synergy) => synergy.id === 'commercial')!.active).toBe(false);
   });
 

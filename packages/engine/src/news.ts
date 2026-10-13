@@ -1114,7 +1114,16 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
         tag: '구단',
         tone: 'good',
         weight: 'minor',
-        title: `${name}, 구장 시설 확장`,
+        title: `${name}, ${event.title}`,
+        detail: first(event.detail),
+      };
+    case 'facility-open':
+      return {
+        ...base,
+        tag: '구단',
+        tone: 'good',
+        weight: 'notable',
+        title: `${name}, ${event.title}`,
         detail: first(event.detail),
       };
     case 'sponsor-sign':

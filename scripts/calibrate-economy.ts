@@ -36,12 +36,14 @@ import {
   clubOf,
   closeSeason,
   createWorld,
-  facilityCostUnits,
   facilityInvestmentPreview,
   fanFollowing,
   gateProjection,
   marketWageUnits,
-  MAX_FACILITIES,
+  FACILITY_PARTS,
+  partCostUnits,
+  partTop,
+  STADIUM_STEPS,
   operate,
   operatingCosts,
   ownLeagueClubs,
@@ -153,6 +155,7 @@ interface Season {
   established: number[];
   facilitySpend: number;
   attendance: number[];
+  /** Facility steps built, the stadium's, training ground's and academy's together (0–18). */
   facilities: number;
   fans: number;
   catchment: number;
@@ -188,14 +191,18 @@ function delegateAll(w: World) {
   w.intervention = 4;
 }
 /**
- * The reference club's stadium (ECON-29): a level whenever the cash after it still covers 13 rounds
- * of the fixed costs after it, operating expenses and the new level's upkeep included.
+ * The reference club's facilities (ECON-29): the cheapest next work of the three parts whenever
+ * the cash after it still covers 13 rounds of the fixed costs after it, operating expenses and the
+ * new part's upkeep included (→ECON-32).
  */
 function buyFacilities(w: World) {
-  while (w.facilities < MAX_FACILITIES) {
-    const preview = facilityInvestmentPreview(w);
-    if (!preview.affordable || preview.runwayRounds < CASH_WARNING_ROUNDS) return;
-    operate(w, { type: 'facility' });
+  for (;;) {
+    const options = FACILITY_PARTS.map((part) => facilityInvestmentPreview(w, part))
+      .filter((preview) => preview.eligible)
+      .sort((a, b) => a.next!.units - b.next!.units);
+    const preview = options[0];
+    if (!preview || !preview.affordable || preview.runwayRounds < CASH_WARNING_ROUNDS) return;
+    operate(w, { type: 'facility', part: preview.part });
   }
 }
 
@@ -228,7 +235,8 @@ function establishedCrowd(w: World, tier: number) {
       policy: undefined,
       build: undefined,
       ticket: 0.05,
-      facilities: MAX_FACILITIES,
+      stadium: STADIUM_STEPS.length - 1,
+      facilityWorks: undefined,
     };
     const gate = gateProjection(draft);
     return (gate.attendanceLow + gate.attendanceHigh) / 2;
@@ -335,7 +343,7 @@ function playCareer(code: CountryCode, build: string, greedy: boolean, seed: str
       established,
       facilitySpend,
       attendance,
-      facilities: w.facilities,
+      facilities: w.stadium + w.trainingGround + w.academyFacility,
       fans: archive.fans,
       catchment: catchment(w, own),
       gap: Math.round(gap * 10) / 10,
@@ -381,9 +389,9 @@ function streaks(seasons: Season[]) {
 }
 /** ECON-29 measures attendance on clubs in at least their third straight season in a division. */
 const ESTABLISHED = 3;
-/** The full ladder from level 1 to the top, in football-index units (ECON-12). */
-const LADDER = Array.from({ length: MAX_FACILITIES - 1 }, (_, i) =>
-  facilityCostUnits(i + 2),
+/** Every facility part from its start to its top, in football-index units (ECON-32). */
+const LADDER = FACILITY_PARTS.flatMap((part) =>
+  Array.from({ length: partTop(part) }, (_, i) => partCostUnits(part, i + 1)),
 ).reduce((a, b) => a + b, 0);
 
 function printLog(c: Career) {

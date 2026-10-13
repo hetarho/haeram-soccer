@@ -4,7 +4,7 @@ import { clamp } from './primitives';
 import { campaignEffectiveness } from './finance';
 import { setPolicy } from './policy';
 import { buildEffects, setBuild } from './build';
-import { facilityCost, MAX_FACILITIES } from './facilities';
+import { startFacilityWork } from './facilities';
 import { credit, debit } from './operations';
 import { delegatedSponsors, exclusiveSponsor, signSponsor, sponsorEnding } from './sponsors';
 
@@ -120,20 +120,9 @@ export function commercialCommand(w: World, cmd: CommercialCommand) {
       );
       break;
     }
-    case 'facility': {
-      if (w.facilities >= MAX_FACILITIES) throw new Error('시설 확장 한도입니다.');
-      const fee = facilityCost(code, w.year, w.facilities + 1);
-      debit(w, fee);
-      w.facilities++;
-      addEvent(
-        w,
-        'facility',
-        '더 나은 내일의 운동장',
-        `시설 ${w.facilities}단계 · 관중 수용과 선수 성장 개선 · 운영비 증가`,
-        fee,
-      );
+    case 'facility':
+      startFacilityWork(w, cmd.part, (fee) => debit(w, fee));
       break;
-    }
     case 'ticket': {
       if (!Number.isFinite(cmd.price) || cmd.price < 0.01 || cmd.price > 0.5)
         throw new Error('티켓 기본가격은 0.01–0.5입니다.');

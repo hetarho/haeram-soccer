@@ -103,11 +103,11 @@ describe('youth academy intake', () => {
     expect(canonical(intake(world()))).toBe(canonical(players));
   });
 
-  it('grows the class with a strong youth director and facilities, and its quality with a spotter', () => {
+  it('grows the class with a strong youth director and academy facilities, and its quality with a spotter', () => {
     expect(academyIntakeSize(world())).toBe(3);
     expect(academyIntakeSize(director(world(), 70))).toBe(4);
     const big = director(world(), 75);
-    big.facilities = 4;
+    big.academyFacility = 2;
     expect(academyIntakeSize(big)).toBe(5);
     expect(intake(big)).toHaveLength(5);
     const average = (players: Player[]) =>
@@ -167,7 +167,7 @@ describe('academy development', () => {
     expect(capped.developed).toBeUndefined();
   });
 
-  it('develops faster with facilities and a developer youth director', () => {
+  it('develops faster with academy facilities and a developer youth director', () => {
     const gain = (setup: (w: World) => void) => {
       const w = world();
       setup(w);
@@ -177,7 +177,7 @@ describe('academy development', () => {
     };
     const base = gain(() => undefined);
     expect(base).toBeGreaterThan(0);
-    expect(gain((w) => (w.facilities = 8))).toBeGreaterThan(base);
+    expect(gain((w) => (w.academyFacility = 3))).toBeGreaterThan(base);
     expect(gain((w) => director(w, 50, 'developer'))).toBeGreaterThan(base);
     expect(gain((w) => (w.staff = []))).toBeLessThan(base);
   });

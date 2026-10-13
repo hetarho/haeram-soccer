@@ -3,6 +3,7 @@ import { ownStarters } from './world';
 import { policyOf } from './policy';
 import { staffMember } from './staff';
 import { buildOf } from './build';
+import { STADIUM_STEPS } from './facilities';
 
 /**
  * Build synergies (→CLUB-21): when the manager, the staff, the club's choices and the squad point
@@ -181,7 +182,7 @@ const RULES: readonly SynergyRule[] = [
     conditions: (w) => [
       { label: '수익 모델 · 상업 확장', met: buildOf(w).revenue === 'commercial' },
       { label: '마케팅 4단계 이상', met: policyOf(w).marketing >= 4 },
-      { label: '시설 6단계 이상', met: w.facilities >= 6 },
+      { label: '경기장 3만 석 이상', met: STADIUM_STEPS[w.stadium].capacity >= 30000 },
     ],
   },
   {

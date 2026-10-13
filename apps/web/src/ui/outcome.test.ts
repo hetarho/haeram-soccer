@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import type { World } from '../../../../packages/contracts/src/types';
-import { createWorld, operate, settleRound } from '../../../../packages/engine/src/index';
+import {
+  createWorld,
+  operate,
+  progressFacilityWorks,
+  settleRound,
+} from '../../../../packages/engine/src/index';
 import { sellPlayer } from '../../../../packages/engine/src/testing';
 import { managerCriteriaOf } from '../../../../packages/engine/src/hiring';
 import { describeOutcome, newEvents } from './outcome';
@@ -22,18 +27,26 @@ const after = (w: World, apply: (copy: World) => void) => {
 describe('action outcome summaries', () => {
   it('explains an investment with its recorded cost, level and engine record', () => {
     const before = world();
-    const next = after(before, (w) => operate(w, { type: 'facility' }));
-    const outcome = describeOutcome({ type: 'facility' }, before, next)!;
-    expect(outcome.title).toBe('구장 시설을 확장했어요');
-    expect(outcome.changes.find((c) => c.label === '시설')).toMatchObject({
-      previous: 'Lv.0',
-      value: 'Lv.1',
+    const command = { type: 'facility', part: 'training' } as const;
+    // Started, then opened 90 days later: the level moves once the work is done (→ECON-32).
+    const next = after(before, (w) => {
+      operate(w, command);
+      w.facilityWorks!.training!.day -= 90;
+      progressFacilityWorks(w);
+    });
+    const outcome = describeOutcome(command, before, next)!;
+    expect(outcome.title).toBe('시설 공사를 시작했어요');
+    expect(outcome.changes.find((c) => c.label === '훈련장')).toMatchObject({
+      previous: '0단계',
+      value: '1단계',
       trend: 'up',
     });
     const cash = outcome.changes.find((c) => c.label === '운영 자금')!;
     expect(cash.trend).toBe('down');
     expect(cash.value).toContain('(−');
-    expect(outcome.events[0].title).toBe(next.events.at(-1)!.title);
+    expect(outcome.events.map((event) => event.title)).toContain(
+      next.events.findLast((event) => event.kind === 'facility')!.title,
+    );
     expect(outcome.note).toContain('유지비');
   });
 
@@ -89,7 +102,7 @@ describe('action outcome summaries', () => {
   it('finds new records even when the view keeps a bounded event tail', () => {
     const before = world();
     const next = after(before, (w) => {
-      operate(w, { type: 'facility' });
+      operate(w, { type: 'facility', part: 'stadium' });
       operate(w, { type: 'support' });
       w.events = w.events.slice(-2);
     });

@@ -5,6 +5,7 @@ import { cpus, platform, arch } from 'node:os';
 import {
   activeTrainingFocus,
   createWorld,
+  nextWork,
   simulateSeason,
   advanceRound,
   operate,
@@ -163,8 +164,9 @@ for (const variant of ['baseline', 'active-management']) {
       if (available(quote(code, w.year, 25))) operate(w, { type: 'campaign', kind: 'outreach' });
       if (n % 10 === 0 && w.players.filter((p) => p.status === 'active').length < 26)
         operate(w, { type: 'recruit', candidate: 0, loan: true });
-      if (n % 15 === 0 && available(quote(code, w.year, 200 * (w.facilities + 1) ** 1.5)))
-        operate(w, { type: 'facility' });
+      const stand = nextWork(w, 'stadium');
+      if (n % 15 === 0 && stand && !w.facilityWorks?.stadium && available(stand.cost))
+        operate(w, { type: 'facility', part: 'stadium' });
       if (n % 10 === 0 && available(quote(code, w.year, 400))) {
         const candidate = managerCandidates(w).find((offer) => offer.source === 'free');
         if (candidate) operate(w, { type: 'hire', id: candidate.id });

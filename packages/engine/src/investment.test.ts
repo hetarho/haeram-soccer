@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
 import {
-  advanceRound,
+  advanceDays,
   createWorld,
   facilityInvestmentPreview,
   fixedCostRunway,
@@ -27,70 +27,70 @@ function world() {
 }
 
 describe('shared club investment forecasts', () => {
-  it('matches a real facility debit, capacity, maintenance and the next settled fixed-cost bill', () => {
+  it('starts a work at its real cost; seats and upkeep change when it opens (→ECON-32)', () => {
     const w = world(),
       before = canonical(w),
       costs = operatingCosts(w),
-      preview = facilityInvestmentPreview(w);
+      preview = facilityInvestmentPreview(w, 'stadium');
     expect(canonical(w)).toBe(before);
-    // The staff may sell a player to another club during the round; keep the wage bill fixed.
-    expect(preview.eligible).toBe(true);
-    expect(preview.affordable).toBe(true);
-    expect(preview.facilitiesBefore).toBe(0);
-    expect(preview.facilitiesAfter).toBe(1);
-    expect(preview.capacityBefore).toBe(2500);
-    expect(preview.capacityAfter).toBe(7500);
-    expect(preview.annualBefore).toBe(costs.annual);
-    operate(w, { type: 'facility' });
-    const actual = operatingCosts(w);
+    expect(preview).toMatchObject({
+      eligible: true,
+      affordable: true,
+      capacityBefore: 2500,
+      capacityDuring: 2250,
+      capacityAfter: 5000,
+      annualBefore: costs.annual,
+    });
+    expect(preview.next).toMatchObject({ to: 1, kind: 'expansion', capacity: 5000, days: 180 });
+    operate(w, { type: 'facility', part: 'stadium' });
     expect(w.cash).toBe(preview.cashAfter);
     expect(w.expense).toBe(preview.cost);
-    expect(w.facilities).toBe(preview.facilitiesAfter);
-    expect(gateProjection(w).capacity).toBe(preview.capacityAfter);
-    expect(actual.maintenance).toBe(preview.maintenanceAfter);
-    expect(actual.annual).toBe(preview.annualAfter);
-    expect(actual.nextRound).toBe(preview.nextRoundAfter);
-    expect(BigInt(actual.maintenance) - BigInt(costs.maintenance)).toBe(
+    // A stand is being added: the ground holds 10% fewer and upkeep waits for the opening.
+    expect(w.stadium).toBe(0);
+    expect(gateProjection(w).capacity).toBe(2250);
+    expect(operatingCosts(w).maintenance).toBe(costs.maintenance);
+    expect(() => operate(w, { type: 'facility', part: 'stadium' })).toThrow('진행 중');
+    expect(facilityInvestmentPreview(w, 'stadium').eligible).toBe(false);
+    advanceDays(w, 180, undefined, false);
+    expect(w.stadium).toBe(1);
+    expect(w.facilityWorks).toBeUndefined();
+    expect(gateProjection(w).capacity).toBe(5000);
+    expect(operatingCosts(w).maintenance).toBe(preview.maintenanceAfter);
+    expect(BigInt(preview.maintenanceAfter) - BigInt(costs.maintenance)).toBe(
       BigInt(preview.maintenanceIncrease),
     );
-    advanceRound(w, undefined, false);
-    // The round's fixed costs: wages and upkeep on one line, operating expenses on their own.
-    const paid = ['operating-cost', 'operating-expenses'].map((kind) =>
-      BigInt(w.events.find((event) => event.kind === kind)!.amount!),
-    );
-    expect(paid[0] + paid[1]).toBe(BigInt(preview.nextRoundAfter));
-    expect(paid[1]).toBe(BigInt(actual.payments.expenses));
+    expect(w.events.some((event) => event.kind === 'facility-open')).toBe(true);
   });
 
   it('shows the true cash shortfall and cannot make an unaffordable investment', () => {
     const w = world(),
-      cost = facilityInvestmentPreview(w).cost;
+      cost = facilityInvestmentPreview(w, 'training').cost;
     w.cash = (BigInt(cost) - 1n).toString();
     const before = canonical(w),
-      preview = facilityInvestmentPreview(w);
+      preview = facilityInvestmentPreview(w, 'training');
     expect(preview.cashAfter).toBe('-1');
     expect(preview.affordable).toBe(false);
     expect(preview.eligible).toBe(true);
     expect(preview.runwayRounds).toBe(0);
     expect(preview.reason).toContain('부족');
-    expect(() => operate(w, { type: 'facility' })).toThrow('부족');
+    expect(() => operate(w, { type: 'facility', part: 'training' })).toThrow('부족');
     expect(canonical(w)).toBe(before);
   });
 
-  it('has no imaginary level, bill or spend beyond the maximum facility level', () => {
+  it("has no imaginary step, bill or spend beyond a part's top", () => {
     const w = world();
-    w.facilities = 20;
+    w.stadium = 8;
     const before = canonical(w),
-      preview = facilityInvestmentPreview(w);
+      preview = facilityInvestmentPreview(w, 'stadium');
     expect(preview.eligible).toBe(false);
+    expect(preview.next).toBeUndefined();
     expect(preview.cost).toBe('0');
     expect(preview.cashAfter).toBe(w.cash);
-    expect(preview.facilitiesAfter).toBe(20);
-    expect(preview.capacityAfter).toBe(preview.capacityBefore);
+    expect(preview.capacityAfter).toBe(90000);
     expect(preview.annualAfter).toBe(preview.annualBefore);
     expect(preview.maintenanceIncrease).toBe('0');
-    expect(preview.reason).toContain('20');
-    expect(() => operate(w, { type: 'facility' })).toThrow('한도');
+    expect(preview.reason).toContain('최고');
+    expect(() => operate(w, { type: 'facility', part: 'stadium' })).toThrow('최고');
     expect(canonical(w)).toBe(before);
   });
 
@@ -105,8 +105,8 @@ describe('shared club investment forecasts', () => {
     expect(fixedCostRunway('10000000000000000000000000000000000000', '1')).toBe(999);
     const w = world();
     w.cash = '90071992547409931';
-    const preview = facilityInvestmentPreview(w);
-    operate(w, { type: 'facility' });
+    const preview = facilityInvestmentPreview(w, 'stadium');
+    operate(w, { type: 'facility', part: 'stadium' });
     expect(w.cash).toBe(preview.cashAfter);
     expect(preview.runwayRounds).toBe(999);
   });

@@ -126,7 +126,7 @@ describe('finance projection', () => {
       BigInt(costs.annual) - BigInt(operatingCosts({ ...w, operatingExpenses: floor }).annual),
     ).toBe(BigInt(recorded) - BigInt(floor));
     expect(operatingCost(w)).toBe(costs.annual);
-    expect(facilityInvestmentPreview(w).annualBefore).toBe(costs.annual);
+    expect(facilityInvestmentPreview(w, 'stadium').annualBefore).toBe(costs.annual);
     expect(fixedCostRunway(w.cash, operatingCost(w))).toBe(
       Math.min(999, Number((BigInt(w.cash) * 46n) / BigInt(costs.annual))),
     );

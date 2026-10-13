@@ -6,7 +6,7 @@ import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { staffWageTotal } from './staff';
 import { SEASON_ROUNDS } from './calendar';
-import { facilityUpkeep } from './facilities';
+import { facilityUpkeep, stadiumCapacity } from './facilities';
 import { catchment, localSupporters } from './fans';
 
 export const FINANCE_CONFIG = {
@@ -221,7 +221,7 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     .reduce((sum, p) => sum + BigInt(p.wage), 0n)
     .toString();
   const managerWage = w.manager.wage;
-  const maintenance = facilityUpkeep(clubOf(w).country, w.year, w.facilities);
+  const maintenance = facilityUpkeep(w);
   const marketing = effects.marketingUnits
     ? quote(clubOf(w).country, w.year, effects.marketingUnits * 46)
     : '0';
@@ -345,7 +345,7 @@ function opponentDraw(w: World, opponent?: string) {
  */
 export function gateProjection(w: World, excluding?: string, opponent?: string) {
   const club = clubOf(w);
-  const capacity = 2500 + w.facilities * 5000;
+  const capacity = stadiumCapacity(w);
   const demand = Math.exp(-w.ticket / FINANCE_CONFIG.ticketDemandScale);
   const form = recentForm(w, excluding);
   const supporters = localSupporters(w);
@@ -363,11 +363,11 @@ export function gateProjection(w: World, excluding?: string, opponent?: string) 
   // The club build moves home demand on its own: community clubs fill seats, commercial ones lose some.
   const build = 1 + buildEffects(w).gateDemand;
   // No campaign brings more than every local supporter.
-  const expected = Math.min(
-    capacity,
+  const wanted = Math.min(
     supporters,
     supporters * demand * (0.6 + form * 0.55) * draw * marketing * build,
   );
+  const expected = Math.min(capacity, wanted);
   const low = Math.round(expected * 0.8);
   const high = Math.round(expected);
   // Ticket presets and matchday spend are 1901 prices grown with the football index (→ECON-26).
@@ -389,6 +389,8 @@ export function gateProjection(w: World, excluding?: string, opponent?: string) 
     opponent: draw,
     attendanceLow: low,
     attendanceHigh: high,
+    /** The crowd that would come with seats enough: what a bigger ground could hold (→ECON-12). */
+    wanted: Math.round(wanted),
     incomeLow: footballQuote(club.country, w.year, low * perFan * leagueFactor),
     incomeHigh: footballQuote(club.country, w.year, high * perFan * leagueFactor),
     costLow: gateCost(low),
@@ -467,7 +469,7 @@ const expenseKinds: Record<string, string> = {
   'staff-release': '스태프 계약 해지',
   'staff-renew': '코치 재계약',
   training: '훈련 지원',
-  facility: '시설 확장',
+  facility: '시설 공사',
   /** Every paid owner request (`care:<kind>`, →CLUB-20); the friendly earns instead. */
   care: '구단주 요청',
   'win-bonus': '승리 수당',
