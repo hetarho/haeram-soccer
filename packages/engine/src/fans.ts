@@ -39,8 +39,8 @@ export function fansAfterMatch(fans: number, win: boolean, winFans = 1) {
 /**
  * How many local supporters a club can draw on (→ECON-9): an ordinary club's catchment in its
  * division, scaled by the town its country's clubs stand for and by its stature (→LEAGUE-10).
- * First estimates aimed at ENG average league gates of 20–45k in the top flight, 8–20k in the
- * second tier, 4–10k in the third and 0.3–2k in the amateur league; T062 calibrates them.
+ * Aimed at ENG average league gates of 20–45k in the top flight, 8–20k in the second tier, 4–10k
+ * in the third and 0.3–2k in the amateur league (→ECON-9); docs/FINANCES.md has what was measured.
  */
 export const CATCHMENT_CONFIG = {
   /** An ordinary club's catchment by professional division, from the top flight down. */

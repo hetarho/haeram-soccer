@@ -33,8 +33,8 @@ import { financeProjection } from './projection';
 
 /**
  * Market wages and transfer values (→CLUB-25), in 1901 price units that the football index
- * carries to a country and year (→ECON-26). These are the first constants: T062 recalibrates
- * them against the career targets (→ECON-29).
+ * carries to a country and year (→ECON-26), measured against the career targets (→ECON-29) with
+ * scripts/calibrate-economy.ts (docs/FINANCES.md).
  */
 export const MARKET_CONFIG = {
   /**
@@ -48,9 +48,10 @@ export const MARKET_CONFIG = {
   /**
    * What a division pays for the same player, as a share of the top flight, by tier from the top
    * (the amateur league is the tier below the professional ones); the last entry holds below.
-   * The second tier pays 42% (CLUB-25: 35–50%).
+   * The second tier pays 42% (CLUB-25: 35–50%); the third tier and below pay little, so a club
+   * that climbs from the amateur league can carry its squad on its gate.
    */
-  divisions: [1, 0.42, 0.35, 0.3, 0.25],
+  divisions: [1, 0.42, 0.15, 0.12, 0.1],
   /**
    * A young player is priced for a share of his headroom (potential − ability): the whole share
    * up to `full` years old, none from `none`; wages count `wage` of it, values `value`.
@@ -60,7 +61,7 @@ export const MARKET_CONFIG = {
   junior: 21,
   veteran: 30,
   /** A value is `years` of market wage up to age `peak`, one fewer each year after, at least `minYears`. */
-  years: 6,
+  years: 3,
   peak: 28,
   minYears: 1,
   /** A season's loan costs this share of the player's value. */
@@ -217,13 +218,14 @@ interface ClauseOdds {
   to: [number, number];
 }
 /**
- * Contract clauses (→CLUB-29): a promotion rise in 30–80% of contracts, +10% to +60%, larger with
- * a stronger agent; a relegation cut in 80–40%, 25% to 50%, smaller with a stronger agent. T062 may
- * tune them within CLUB-29's ranges.
+ * Contract clauses (→CLUB-29), within its ranges: a promotion rise in 30% (1-rated agent) to 60%
+ * (5-rated) of contracts, +10–20% to +20–40%, larger with a stronger agent; a relegation cut in
+ * 80% to 50% of them, 40–50% to 30–40%, smaller with a stronger agent. Measured with the economy
+ * (→ECON-29): small rises and deep cuts keep a promoted squad affordable and a relegated one alive.
  */
 export const CLAUSE_CONFIG: Record<'promotion' | 'relegation', ClauseOdds> = {
-  promotion: { share: [0.3, 0.8], from: [10, 35], to: [30, 60] },
-  relegation: { share: [0.8, 0.4], from: [35, 50], to: [25, 35] },
+  promotion: { share: [0.3, 0.6], from: [10, 20], to: [20, 40] },
+  relegation: { share: [0.8, 0.5], from: [40, 50], to: [30, 40] },
 };
 const between = (a: number, b: number, t: number) => a + (b - a) * t;
 /**

@@ -10,7 +10,7 @@ import { currentDay, seasonDayOf } from './calendar';
 import { credit } from './operations';
 
 /**
- * Sponsor contracts by slot (→ECON-8), first estimates for T062 to calibrate against ECON-29.
+ * Sponsor contracts by slot (→ECON-8), measured against ECON-29 (docs/FINANCES.md).
  * `value`: a club's yearly commercial value by division in 1901 price units before the football
  * index, from the top flight down, the last entry being the amateur league. Every factor below
  * multiplies it; each slot offers its share of the result.

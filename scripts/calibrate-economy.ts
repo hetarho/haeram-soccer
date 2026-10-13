@@ -8,7 +8,9 @@
  * for comparison. It prints the measured economy next to the real-football bands of ECON-29: wage
  * bill and net result against income, the income mix of the 1950s and of a top flight in the
  * 2000s, how many seasons of a top-flight club's net result the facility ladder costs, the
- * attendance of ECON-9 by division and the wage ratios of CLUB-25.
+ * attendance of ECON-9 by division on seasons that are at least the club's third straight one in
+ * that division (ECON-29), the wage ratios of CLUB-25 and how much the contracts' promotion and
+ * relegation clauses (CLUB-29) moved the squad's wages at each promotion and relegation.
  *
  *   pnpm exec tsx scripts/calibrate-economy.ts            ENG ESP FRA GER × default and 트레이딩
  *                                                          머신 × reference club and no building,
@@ -24,6 +26,7 @@
  */
 import type { CountryCode, World } from '../packages/contracts/src/types';
 import {
+  activePlayers,
   advanceRound,
   BUILD_PRESETS,
   CASH_WARNING_ROUNDS,
@@ -143,6 +146,17 @@ interface Season {
   /** Own XI rating against the league's average club. */
   gap: number;
   cash: number;
+  /**
+   * The close after this season moved the club (CLUB-29): the squad's wages before the clauses and
+   * after them, the players whose contracts went on and how many of them carried that clause.
+   */
+  move?: {
+    kind: 'promotion' | 'relegation';
+    before: number;
+    after: number;
+    players: number;
+    carrying: number;
+  };
 }
 interface Career {
   code: CountryCode;
@@ -216,8 +230,27 @@ function playCareer(code: CountryCode, build: string, greedy: boolean, seed: str
     const league = ownLeagueClubs(w).filter((c) => c.id !== own.id);
     const leagueRating = league.reduce((sum, c) => sum + rating(w, c), 0) / league.length;
     const gap = rating(w, own) - leagueRating;
+    // The squad as the close finds it, to read what the clauses do to its wages (CLUB-29).
+    const before = new Map(
+      activePlayers(w).map((p) => [p.id, { wage: Number(p.wage), clauses: p.clauses }]),
+    );
+    const oldTier = own.tier;
     closeSeason(w);
     w.revision++;
+    let move: Season['move'];
+    if (clubOf(w).tier !== oldTier) {
+      const kind = clubOf(w).tier < oldTier ? 'promotion' : 'relegation';
+      move = { kind, before: 0, after: 0, players: 0, carrying: 0 };
+      for (const p of activePlayers(w)) {
+        const was = before.get(p.id);
+        if (!was || p.loanUntil) continue;
+        const percent = was.clauses?.[kind] ?? 0;
+        move.before += was.wage / unit;
+        move.after += (was.wage * (100 + percent)) / 100 / unit;
+        move.players++;
+        if (percent) move.carrying++;
+      }
+    }
     const archive = w.history.at(-1)!;
     const sources: Record<Source, number> = {
       competition: 0,
@@ -263,6 +296,7 @@ function playCareer(code: CountryCode, build: string, greedy: boolean, seed: str
       catchment: catchment(w, own),
       gap: Math.round(gap * 10) / 10,
       cash: Number(archive.cash) / unit,
+      ...(move ? { move } : {}),
     });
   }
   return career;
@@ -287,6 +321,17 @@ const units = (value: number) =>
 const within = (value: number, [low, high]: readonly [number, number]) =>
   Number.isFinite(value) ? (value >= low && value <= high ? 'ok' : 'OUT') : '-';
 const divisionName = (s: Season) => (s.amateur ? 'amateur' : `${s.tier + 1}부`);
+/** How many straight seasons, this one included, the club has played in this season's division. */
+function streaks(seasons: Season[]) {
+  return seasons.map((s, i) => {
+    let n = 1;
+    while (i - n >= 0 && seasons[i - n].tier === s.tier && seasons[i - n].amateur === s.amateur)
+      n++;
+    return n;
+  });
+}
+/** ECON-29 measures attendance on clubs in at least their third straight season in a division. */
+const ESTABLISHED = 3;
 /** The full ladder from level 1 to the top, in price units (ECON-12). */
 const LADDER = Array.from({ length: MAX_FACILITIES - 1 }, (_, i) =>
   facilityCostUnits(i + 2),
@@ -403,28 +448,72 @@ function report(careers: Career[]) {
   for (const [label, band, measure] of targets)
     console.log(`| ${label} | ${band} | ${measure(modes[0])} | ${measure(modes[1])} |`);
 
-  console.log('\n### ECON-9 own league home attendance by division (season averages)\n');
-  console.log('| division | band | reference club (p10–p90) | no building (comparison) |');
-  console.log('|---|---|---|---|');
+  console.log(
+    `\n### ECON-9 own league home attendance by division (season averages; ECON-29: seasons that are at least the club's ${ESTABLISHED}rd straight one in that division)\n`,
+  );
+  console.log(
+    `| division | band | reference club, ${ESTABLISHED}rd+ straight season (p10–p90) | reference club, every season | no building, ${ESTABLISHED}rd+ straight season (comparison) |`,
+  );
+  console.log('|---|---|---|---|---|');
   const rows: [string, (s: Season) => boolean][] = [
     ['top flight', (s) => !s.amateur && s.tier === 0],
     ['second tier', (s) => !s.amateur && s.tier === 1],
     ['third tier', (s) => !s.amateur && s.tier === 2],
     ['amateur league', (s) => s.amateur],
   ];
+  /** Each season's average gate, of the seasons that pass `filter`, at least `streak` straight. */
+  const gates = (cs: Career[], filter: (s: Season) => boolean, streak: number) =>
+    cs
+      .flatMap((c) => {
+        const runs = streaks(c.seasons);
+        return c.seasons.filter((s, i) => runs[i] >= streak);
+      })
+      .filter((s) => filter(s) && s.attendance.length)
+      .map((s) => average(s.attendance))
+      .sort((a, b) => a - b);
+  const spread = (values: number[]) =>
+    values.length
+      ? ` (${units(values[Math.floor(values.length * 0.1)])}–${units(values[Math.floor(values.length * 0.9)])})`
+      : '';
   for (const [label, filter] of rows) {
-    const band = ATTENDANCE.find(([name]) => name === label)!;
-    const [greedy, plain] = modes.map((cs) =>
-      cs
-        .flatMap((c) => c.seasons)
-        .filter((s) => filter(s) && s.attendance.length)
-        .map((s) => average(s.attendance))
-        .sort((a, b) => a - b),
-    );
-    const spread = (values: number[]) =>
-      `${units(values[Math.floor(values.length * 0.1)])}–${units(values[Math.floor(values.length * 0.9)])}`;
+    const band = ATTENDANCE.find(([name]) => name === label)!,
+      range: [number, number] = [band[1], band[2]];
+    const established = gates(modes[0], filter, ESTABLISHED),
+      every = gates(modes[0], filter, 1),
+      plain = gates(modes[1], filter, ESTABLISHED);
     console.log(
-      `| ${label} | ${units(band[1])}–${units(band[2])} | ${cell(average(greedy), greedy.length, [band[1], band[2]], units)}${greedy.length ? ` (${spread(greedy)})` : ''} | ${cell(average(plain), plain.length, [band[1], band[2]], units)} |`,
+      `| ${label} | ${units(band[1])}–${units(band[2])} | ${cell(average(established), established.length, range, units)}${spread(established)} | ${cell(average(every), every.length, range, units)}${spread(every)} | ${cell(average(plain), plain.length, range, units)} |`,
+    );
+  }
+
+  console.log(
+    '\n### CLUB-29 clauses at each promotion and relegation (reference clubs and no building)\n',
+  );
+  console.log(
+    '| move | closes | squad wages change (p10–p90) | contracts carrying the clause | wage bill / income, season before → season after |',
+  );
+  console.log('|---|---:|---|---:|---|');
+  for (const kind of ['promotion', 'relegation'] as const) {
+    const moves = careers.flatMap((c) =>
+      c.seasons.flatMap((s, i) =>
+        s.move?.kind === kind && s.move.before > 0
+          ? [{ move: s.move, season: s, next: c.seasons[i + 1] }]
+          : [],
+      ),
+    );
+    if (!moves.length) {
+      console.log(`| ${kind} | 0 | - | - | - |`);
+      continue;
+    }
+    const changes = moves.map(({ move }) => move.after / move.before - 1).sort((a, b) => a - b),
+      carrying =
+        moves.reduce((total, { move }) => total + move.carrying, 0) /
+        moves.reduce((total, { move }) => total + move.players, 0),
+      before = moves.map(({ season }) => season),
+      after = moves.flatMap(({ next }) => (next ? [next] : []));
+    const signed = (v: number) => `${v >= 0 ? '+' : ''}${pct(v)}`;
+    console.log(
+      `| ${kind} | ${moves.length} | ${signed(average(changes))} (${signed(changes[Math.floor(changes.length * 0.1)])} to ${signed(changes[Math.floor(changes.length * 0.9)])}) | ${pct(carrying)} | ${pct(share(before, (s) => s.wages, income))} → ${pct(share(after, (s) => s.wages, income))} |`,
     );
   }
 

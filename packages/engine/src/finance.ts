@@ -21,7 +21,7 @@ export const FINANCE_CONFIG = {
 };
 
 /**
- * League distributions (→ECON-28), first estimates for T062 to calibrate against ECON-29: each
+ * League distributions (→ECON-28), measured against ECON-29 (docs/FINANCES.md): each
  * country's equal share a season by division, from the top flight down, the last entry being its
  * amateur league, in 1901 price units before the broadcasting index (→ECON-31); the champion's
  * total against the bottom club's; the share of the lost equal share a relegated club keeps for a
@@ -43,7 +43,7 @@ export const DISTRIBUTION_CONFIG = {
 };
 
 /**
- * Operating expenses (운영 경비, →ECON-30), first estimates for T062 to calibrate against ECON-29:
+ * Operating expenses (운영 경비, →ECON-30), measured against ECON-29 (docs/FINANCES.md):
  * matchday operations, travel, administration, medical care, kit and the club's staff. A season's
  * amount is `share` of the club's turnover over its last completed season, never below `floor`:
  * each country's floor by division, from the top flight down, the last entry being its amateur
@@ -51,16 +51,16 @@ export const DISTRIBUTION_CONFIG = {
  * and paid in league-round installments with the wages.
  */
 export const EXPENSE_CONFIG = {
-  share: 0.12,
+  share: 0.4,
   floor: {
-    ENG: [5000, 1600, 650, 380, 60],
-    ESP: [4200, 1300, 55],
-    GER: [4200, 1300, 540, 55],
-    ITA: [4200, 1300, 540, 55],
-    FRA: [3600, 1150, 480, 50],
-    POR: [2800, 900, 45],
-    NED: [2800, 900, 45],
-    BEL: [2500, 820, 45],
+    ENG: [3000, 800, 320, 190, 40],
+    ESP: [2500, 650, 35],
+    GER: [2500, 650, 270, 35],
+    ITA: [2500, 650, 270, 35],
+    FRA: [2200, 580, 240, 30],
+    POR: [1700, 450, 30],
+    NED: [1700, 450, 30],
+    BEL: [1500, 410, 30],
   } as Record<string, readonly number[]>,
 };
 
