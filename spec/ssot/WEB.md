@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r52 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r53 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -189,7 +189,7 @@
 - WEB-67 [o] Money has one notation everywhere — HUD, costs, fees, wages, prices, projections, previews, reports, news and the inbox: whole currency units below 100,000, then K/M/B at three significant figures, rounded toward zero; the exact amount opens on tap or hover, and the ledger detail sheet (→WEB-14) stays exact. ← a price written in full beside abbreviated cash could not be compared at a glance
   - affordability is decided on exact amounts; a disabled action says why.
   - texts the engine writes (events, inbox, news) use the same notation and never show raw minor units.
-- WEB-68 [o] Squad cards show each player's wage against his market wage, his contract end and an 언해피 badge with its reason; a contract talk (→CLUB-26) opens a sheet with his demand, floor, the term (1–5 seasons), the yearly cost, runway after it and the manager's chance of talking him round if declined (→CLUB-27). ← the owner should see what a refusal risks before making it
+- WEB-68 [o] Squad cards show each player's wage against his market wage, his contract end and an 언해피 badge with its reason; a contract talk (→CLUB-26) — a renewal or an improved contract, named so in the sheet and the inbox — opens a sheet with his agent's rating and premium (→CLUB-30), demand, floor, the term by window (1–5 seasons in summer, ½–4½ in winter), the new contract's clauses (→CLUB-29), the yearly cost, runway after it and the manager's chance of talking him round if declined (→CLUB-27). ← the owner should see what a refusal risks before making it
 - WEB-69 [o] Page tab bars (league, a closed season, cups, records, staff, operations) read as navigation, never as buttons: label text over a hairline, the selected tab marked by an accent underline and accent text, no filled or outlined boxes, at least 44 px tall, scrolling sideways when they do not fit. A choice between views inside a tab is a segment control (→WEB-43's track with the selected segment raised); boxed buttons stay for actions. ← tabs drawn as filled buttons read as actions
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
@@ -198,6 +198,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r53 261013 WEB-68✎ term 1–5 seasons→by window (½–4½ in winter), +agent rating and premium, +the new contract's clauses, +a renewal or an improved contract named in the sheet and the inbox
 - r52 261013 WEB-54✎ every view of a tab stacked→one view at a time (요약 segments 트로피/Elo/시즌별 기록/기타 기록 with drawn trophies and match records, 추이 one chart per metric segment, 선수 board per segment, 시즌 기록 season arrows and segments 개요/경기/결정; 개요 per-venue rates and recent-ten form→W-D-L and goals per venue and season-long points and goal-difference charts, analysis collapsed→open); season rows open the season in 시즌 기록→on the league page at 순위표; 시즌 기록 continental and national tables→none (league page and cups history); WEB-46✎ selected tabs pop→tabs and segments change without a pop; WEB-65✎ ours on a closed season's 순위표 the league we play in now→our league that season; WEB-69+ page tab bars as underlined text, segments inside a tab
 - r51 261012 WEB-10✎ phone HUD cash in whole units and K/M/B→the money notation everywhere; WEB-39✎ +sponsor slots in 후원; WEB-40✎ four staff tabs with 감독 후보→three, the manager's 교체 opening the market, terms 1–5; WEB-42✎ +contract talks, unhappy players, transfer requests, sponsor contracts ending; WEB-45✎ +contract talks delegated from level 2, +the manager post at level 4; WEB-66+ app notices as notifications; WEB-67+ one money notation; WEB-68+ squad contracts and talks
 - r50 261012 WEB-18✎ the next step waiting for the save and carrying the days owed→steps never wait for saving; days owed only when a step itself runs late

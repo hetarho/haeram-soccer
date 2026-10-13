@@ -17,21 +17,22 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 52 | 52 | - | 0 |
+| WEB | 53 | 53 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
-| CLUB | 19 | 19 | - | 0 |
+| CLUB | 20 | 20 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
 | STAFF | 12 | 12 | - | 0 |
 | ECON | 16 | 16 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 7 | 7 | - | 0 |
-| SAVE | 21 | 21 | - | 0 |
+| SAVE | 22 | 22 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T062 | Rules 1.16.0: economy calibration, goldens and docs | SAVE ECON CLUB | T056 T059 T061 T065 T066 T067 T068 | todo |
+| T069 | Contract follow-ups: delegated terms past this season, clauses for founding squads and refills, improved-contract labels | CLUB WEB | - | todo |
+| T062 | Rules 1.16.0: economy calibration, goldens and docs | SAVE ECON CLUB | T056 T059 T061 T065 T066 T067 T068 T069 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -40,11 +41,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- standalone on t062-standalone (work/club-realism + T062's attempts): T065→T066 done and merged here; T067→T068 on t062-contracts, merge them here; update-ssot SAVE-10 so its 1.16.0 list names the broadcasting index, operatingExpenses, the talk renames, clauses and agents; then T062's calibration with the new rules, goldens, docs and full verify (`BROWSER_TEST_PORT` other than 4173 while another run uses it); then merge work/club-realism (with this branch) into main and push after the owner's go.
+- standalone on t062-standalone (work/club-realism + T062's attempts + main's records room): T065–T068 done and merged; implement T069, then T062's calibration with the new rules, goldens, docs and full verify (`BROWSER_TEST_PORT` other than 4173 while another run uses it); then merge t062-standalone into work/club-realism and main and push after the owner's go.
 - after the merge: fix CI's benchmark job (desktop pointer-to-second-frame p95 115 ms > 100 since one-result merged; 74–82 ms at c63554c), its own commit on main.
 - planner questions from the reviews: whether loading a pre-1.16 save delegates contract talks at intervention level 2+ (they show 맞춤 now, WEB-45); CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10); from T067/T068 — WEB-68's 1–5 term text and missing agent/clauses, how the staff's 2/1 seasons count in each window, terms outside a window, SAVE-10 naming agent activation. Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 create-task CLUB r20 WEB r53: T069 contract follow-ups (delegated terms past this season, clauses for founding squads and refills, improved-contract labels); SAVE r22 no-op (code already activates agents); T062 depends on T069
+- 261013 update-ssot CLUB r20 SAVE r22 WEB r53: delegated terms past this season, late-answered terms by half-season, clauses for founding squads and refills; SAVE-10 lists 1.16.0's agents, clauses, broadcasting index and operatingExpenses; WEB-68 terms by window, agent and clauses
 - 261013 merged main (records room redesign, WEB r52) into t062-standalone: club-realism money notation kept in ClubTrends/RecordsRoom
 - 261013 WEB r52 implemented directly on branch records-room-ux: records room tabs pinned; 요약 segments 트로피 (SVG trophies) / Elo / 시즌별 기록 (rows open the league page's closed season at 순위표) / 기타 기록 (match records read from the worker: biggest win/defeat, most goals, win/unbeaten/clean-sheet/losing/winless runs, then the record book); 추이 one chart per metric segment; 선수 one board per segment; 시즌 기록 season arrows + filter + 개요/경기/결정, 개요 a W-D-L and goals table per venue and season-long points and goal-difference charts, no league/continental tables; closed-season archives no longer re-read on every tick; the closed-season league picker takes that season's league as ours; page tab bars (league, closed season, cups, records, staff, operations) as underlined text
 - 261013 update-ssot WEB r52: records room holds only our club's records, one view at a time (요약 트로피/Elo/시즌별 기록/기타 기록, 추이 chart per metric, 선수 board per segment, 시즌 기록 season arrows + 개요/경기/결정 with season-long charts, no league or continental tables); season rows open the league page at 순위표; WEB-65 a closed season's picker takes our league that season as ours; WEB-69 page tab bars as underlined text, segments inside a tab
@@ -63,5 +66,3 @@
 - 261013 T062 doing standalone on t062-standalone (work/club-realism + its first attempt, f8235db)
 - 261013 create-task ECON: T062 gains ECON-30 operating expenses (base ECON@15); its blocked attempt carries over
 - 261013 update-ssot ECON r15: ECON-30+ operating expenses per division on the football index, ECON-26✎, ECON-29✎ reference club (T062's attempt found net result 47% of income with every non-wage cost on prices)
-- 261012 T057 T058 T059 integrated
-- 261012 T055 T056 integrated
