@@ -22,7 +22,7 @@ import { CURRENT_ENGINE_VERSION } from '../../contracts/src/versions';
 import { coachProspect, MANAGER_CAREER } from './coaching';
 import { dayCountedFrom } from './calendar';
 import { MARKET_BANDS, STYLE_INFO, YOUTH_SELECTION_BONUS } from './styles';
-import { divisionFor, marketWageAt } from './contracts';
+import { divisionFor, drawAgent, marketWageAt } from './contracts';
 import { operatingExpensesAt } from './finance';
 export const ENGINE_VERSION = CURRENT_ENGINE_VERSION;
 export const TACTICS: Tactic[] = ['balanced', 'possession', 'counter', 'press'];
@@ -106,7 +106,8 @@ export function personName(code: string, r: () => number) {
 }
 /**
  * A generated player at his market wage (→CLUB-25) in `division`, the tier of the club he plays
- * for; without one, the division his ability suits.
+ * for; without one, the division his ability suits. His agent (→CLUB-30) is the last draw of his
+ * own stream, so it leaves every other attribute as it was.
  */
 export function makePlayer(
   code: string,
@@ -142,6 +143,7 @@ export function makePlayer(
     season: zeroMetrics(),
   };
   player.wage = marketWageAt(code, year, division ?? divisionFor(code, overall(player)), player);
+  player.agent = drawAgent(r, overall(player));
   return player;
 }
 /**

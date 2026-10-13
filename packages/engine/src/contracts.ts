@@ -1,8 +1,10 @@
 import type {
+  AgentRating,
+  ContractClauses,
   ContractTalk,
-  ContractTerm,
   InboxKind,
   Player,
+  TalkTerm,
   UnhappyReason,
   World,
 } from '../../contracts/src/types';
@@ -24,9 +26,10 @@ import { pushInbox } from './inbox';
 import { moneyLabel, operatingCosts } from './finance';
 import { CASH_WARNING_ROUNDS } from './settlement';
 import { contractSeason } from './ops-staff';
-import { currentDay, dayCountedFrom, seasonDayOf } from './calendar';
+import { currentDay, dayCountedFrom, SEASON_ROUNDS } from './calendar';
 import { credit } from './operations';
-import { suitorFor } from './transfers';
+import { suitorFor, transferWindowDays } from './transfers';
+import { financeProjection } from './projection';
 
 /**
  * Market wages and transfer values (→CLUB-25), in 1901 price units that the football index
@@ -143,17 +146,199 @@ export function marketValue(w: World, player: Player, division = clubOf(w).tier)
   return marketValueAt(clubOf(w).country, w.year, division, player);
 }
 
+/**
+ * Player agents (→CLUB-30): rated 1–5, drawn once when the player is created, more often strong
+ * for better players.
+ */
+export const AGENT_CONFIG = {
+  /** Each level above 1 raises the demand by this share (→CLUB-26). */
+  premium: 0.03,
+  /**
+   * The draw is a uniform number cut into five even bands; a player rated `pivot` keeps it, every
+   * point above or below moves it 1/`spread` toward 5 or 1, at most `shift`.
+   */
+  pivot: 60,
+  spread: 100,
+  shift: 0.3,
+};
+/** An agent from one uniform draw of `r`, tilted by the player's ability. */
+export function drawAgent(r: () => number, ability: number): AgentRating {
+  const { pivot, spread, shift } = AGENT_CONFIG,
+    tilt = clamp((ability - pivot) / spread, -shift, shift),
+    u = clamp(r() + tilt, 0, 0.999999);
+  return (1 + Math.floor(u * 5)) as AgentRating;
+}
+/**
+ * His agent: the one drawn when he was created, or for a player from before rules 1.16 the one
+ * activation draws from his id (→SAVE-10), the same until then.
+ */
+export function agentOf(w: Pick<World, 'seed'>, p: Player): AgentRating {
+  return p.agent ?? drawAgent(random(`${w.seed}:agent:${p.id}`), overall(p));
+}
+/** The demand multiplier his agent brings: 3% per level above 1 (→CLUB-26). */
+export function agentPremium(agent: AgentRating) {
+  return 1 + AGENT_CONFIG.premium * (agent - 1);
+}
+/**
+ * Activation of rules 1.16 (→SAVE-10): every player without an agent — squad and history, academy
+ * and the players pending bids were made for — gets the one drawn from his id; running contracts
+ * keep no clauses until their next signing. Returns `w` itself when nobody lacks one.
+ */
+export function activateAgents(w: World): World {
+  const missing = (p: Player) => p.agent === undefined;
+  const bids = w.bids ?? [];
+  if (
+    !w.players.some(missing) &&
+    !(w.academy?.players ?? []).some(missing) &&
+    !bids.some((bid) => bid.offer && missing(bid.offer.player))
+  )
+    return w;
+  const give = (p: Player): Player => (missing(p) ? { ...p, agent: agentOf(w, p) } : p);
+  return {
+    ...w,
+    players: w.players.map(give),
+    ...(w.academy ? { academy: { ...w.academy, players: w.academy.players.map(give) } } : {}),
+    ...(w.bids
+      ? {
+          bids: w.bids.map((bid) =>
+            bid.offer ? { ...bid, offer: { ...bid.offer, player: give(bid.offer.player) } } : bid,
+          ),
+        }
+      : {}),
+  };
+}
+/** One clause's odds and size, each interpolated linearly by the agent's level. */
+interface ClauseOdds {
+  /** Share of contracts carrying it with a 1-rated agent, and with a 5-rated one. */
+  share: [number, number];
+  /** The percent range its size is drawn from uniformly with a 1-rated agent… */
+  from: [number, number];
+  /** …and with a 5-rated one. */
+  to: [number, number];
+}
+/**
+ * Contract clauses (→CLUB-29): a promotion rise in 30–80% of contracts, +10% to +60%, larger with
+ * a stronger agent; a relegation cut in 80–40%, 25% to 50%, smaller with a stronger agent. T062 may
+ * tune them within CLUB-29's ranges.
+ */
+export const CLAUSE_CONFIG: Record<'promotion' | 'relegation', ClauseOdds> = {
+  promotion: { share: [0.3, 0.8], from: [10, 35], to: [30, 60] },
+  relegation: { share: [0.8, 0.4], from: [35, 50], to: [25, 35] },
+};
+const between = (a: number, b: number, t: number) => a + (b - a) * t;
+/**
+ * The clauses of a contract `p` signs on season day `day` of `year`, from his stream for that
+ * signing: four draws, whether each clause is in and its size, whatever the outcome.
+ */
+export function settleClauses(
+  seed: string,
+  p: Player,
+  agent: AgentRating,
+  year: number,
+  day: number,
+): ContractClauses {
+  const r = random(`${seed}:clauses:${p.id}:${year}:${day}`),
+    t = (agent - 1) / 4;
+  const draw = (clause: keyof typeof CLAUSE_CONFIG) => {
+    const { share, from, to } = CLAUSE_CONFIG[clause],
+      has = r() < between(share[0], share[1], t),
+      at = r(),
+      low = between(from[0], to[0], t),
+      high = between(from[1], to[1], t);
+    return has ? Math.round(low + (high - low) * at) : 0;
+  };
+  const promotion = draw('promotion'),
+    relegation = draw('relegation');
+  return {
+    ...(promotion ? { promotion } : {}),
+    ...(relegation ? { relegation: -relegation } : {}),
+  };
+}
+/** The clauses of a contract `p` signs today. */
+export function signingClauses(w: World, p: Player) {
+  return settleClauses(w.seed, p, agentOf(w, p), w.year, currentDay(w));
+}
+/** Clauses as the owner reads them: 승격 시 +25% · 강등 시 −40%, or 없음. */
+export function clausesLabel(clauses: ContractClauses | undefined) {
+  const parts = [
+    clauses?.promotion ? `승격 시 연봉 +${clauses.promotion}%` : '',
+    clauses?.relegation ? `강등 시 연봉 −${-clauses.relegation}%` : '',
+  ].filter(Boolean);
+  return parts.length ? parts.join(' · ') : '승격·강등 조항 없음';
+}
+/**
+ * The close after the club went up or down (→CLUB-29): every running contract's promotion rise or
+ * relegation cut applies once to its wage from the new season's first round, nothing else changes,
+ * and the inbox reports the squad's total wage change. Loans carry no clauses.
+ */
+export function applyClauses(w: World, move: 'promotion' | 'relegation') {
+  let before = 0n,
+    after = 0n,
+    changed = 0;
+  for (const p of activePlayers(w)) {
+    const percent = p.loanUntil ? undefined : p.clauses?.[move];
+    before += BigInt(p.wage);
+    if (percent) {
+      p.wage = ratio(p.wage, BigInt(100 + percent), 100n);
+      changed++;
+    }
+    after += BigInt(p.wage);
+  }
+  const label = move === 'promotion' ? '승격' : '강등',
+    delta = after - before;
+  pushInbox(w, {
+    kind: 'finance',
+    title: `${label} 조항: 선수단 연봉 ${delta < 0n ? '−' : '+'}${moneyLabel(w, (delta < 0n ? -delta : delta).toString())}`,
+    detail: changed
+      ? `${label} 조항이 있는 선수 ${changed}명의 연봉이 이번 시즌 첫 라운드부터 바뀌어요 · 선수단 연봉 ${moneyLabel(w, before.toString())} → ${moneyLabel(w, after.toString())}.`
+      : `${label} 조항이 있는 계약이 없어 선수단 연봉 ${moneyLabel(w, before.toString())}은 그대로예요.`,
+    attention: false,
+  });
+}
 /** Contract talks (→CLUB-26). */
 export const TALK_CONFIG = {
-  /** A player paid this share of his market wage or less asks for a raise. */
-  raiseBelow: 0.75,
+  /**
+   * A player paid this share of his market wage or less asks for an improved contract, once a
+   * season, while his contract has at most `improveSeasons` seasons left, this one included.
+   */
+  improveBelow: 0.75,
+  improveSeasons: 3,
   /** Goodwill, in percent of the demand, stays within these bounds. */
   goodwill: [-10, 30] as const,
-  /** What the delegated staff offer: two seasons, one from `veteranAge`. */
-  staffTerm: 2 as ContractTerm,
+  /** What the delegated staff offer, in the window's terms: two seasons, one from `veteranAge`. */
+  staffTerm: 2 as TalkTerm,
   veteranAge: 32,
-  veteranTerm: 1 as ContractTerm,
+  veteranTerm: 1 as TalkTerm,
 };
+/**
+ * The terms a contract signed today takes (→CLUB-26): the summer window's whole seasons until
+ * 1 January, the winter window's half seasons from it. An answer given after a window closes, or
+ * an unhappy player's floor met later (→CLUB-27), signs on the terms of the window before it.
+ */
+export type TalkWindow = 'summer' | 'winter';
+export function talkWindow(w: World, day = currentDay(w)): TalkWindow {
+  return day >= transferWindowDays(w.year).winterOpen ? 'winter' : 'summer';
+}
+/** Summer: 1–5 seasons, this one included; winter: the rest of this season and 0–4 more. */
+export const TALK_TERMS: Record<TalkWindow, readonly TalkTerm[]> = {
+  summer: [1, 2, 3, 4, 5],
+  winter: [0, 1, 2, 3, 4],
+};
+/** A term as the owner reads it: 2시즌 in the summer, 2½시즌 (the rest of this one and 2) in winter. */
+export function termLabel(window: TalkWindow, term: TalkTerm) {
+  return window === 'summer' ? `${term}시즌` : `${term || ''}½시즌`;
+}
+const termRange = (window: TalkWindow) => {
+  const terms = TALK_TERMS[window];
+  return `${termLabel(window, terms[0])}–${termLabel(window, terms[terms.length - 1])}`;
+};
+/**
+ * The season year whose close ends a contract signed today for `term` (→CLUB-28): in the summer
+ * `term` seasons, this one included; in winter the rest of this season and `term` more.
+ */
+export function talkUntil(w: World, term: TalkTerm) {
+  return w.year + term + (talkWindow(w) === 'winter' ? 1 : 0);
+}
 /** One reason a player comes down from his demand (positive) or holds out above it (negative). */
 export interface GoodwillPart {
   label: string;
@@ -185,11 +370,12 @@ export function talkGoodwill(w: World, p: Player) {
   };
 }
 /**
- * What a player asks now: his market wage times the build's player-wage effects (→ECON-22), and
- * the floor he accepts, demand × (1 − goodwill).
+ * What a player asks now: his market wage times the build's player-wage effects (→ECON-22) and his
+ * agent's premium (→CLUB-30), and the floor he accepts, demand × (1 − goodwill).
  */
 export function talkTerms(w: World, p: Player) {
-  const demand = ratio(marketWage(w, p), BigInt(Math.round(buildEffects(w).wage * 1000)), 1000n),
+  const multiplier = buildEffects(w).wage * agentPremium(agentOf(w, p)),
+    demand = ratio(marketWage(w, p), BigInt(Math.round(multiplier * 1000)), 1000n),
     goodwill = talkGoodwill(w, p);
   return {
     demand,
@@ -197,14 +383,17 @@ export function talkTerms(w: World, p: Player) {
     goodwill,
   };
 }
-/** The contract an agreement signs: the rest of this season and `term` seasons after it. */
-export const talkUntil = (w: World, term: ContractTerm) => w.year + 1 + term;
 /** Whether a player is paid 25% or more below his market wage. */
 function underpaid(w: World, p: Player) {
-  const share = BigInt(Math.round(TALK_CONFIG.raiseBelow * 1000));
+  const share = BigInt(Math.round(TALK_CONFIG.improveBelow * 1000));
   return BigInt(p.wage) * 1000n <= BigInt(marketWage(w, p)) * share;
 }
-const talkLabel = (talk: ContractTalk) => (talk.kind === 'renew' ? '재계약' : '연봉 인상');
+/** A renewal or an improved contract (계약 개선), as the talk is named. */
+export const TALK_LABEL: Record<ContractTalk['kind'], string> = {
+  renew: '재계약',
+  improve: '계약 개선',
+};
+const talkLabel = (talk: ContractTalk) => TALK_LABEL[talk.kind];
 function playerLine(w: World, p: Player) {
   return `${p.role} · ${w.year - p.born}세 · 능력 ${overall(p)} · 연봉 ${moneyLabel(w, p.wage)} · 계약 ${contractSeason(p.until)} 시즌 끝까지`;
 }
@@ -221,15 +410,22 @@ function settleTalkItems(w: World, id: string, kinds = TALK_KINDS) {
 /** The player asks: his demand and floor are fixed as he names them. */
 function openTalk(w: World, p: Player, kind: ContractTalk['kind']) {
   const terms = talkTerms(w, p);
-  p.talk = { kind, demand: terms.demand, floor: terms.floor, year: w.year, day: currentDay(w) };
-  if (kind === 'raise') p.raiseAsked = w.year;
+  p.talk = {
+    kind,
+    demand: terms.demand,
+    floor: terms.floor,
+    year: w.year,
+    day: currentDay(w),
+    clauses: signingClauses(w, p),
+  };
+  if (kind === 'improve') p.improveAsked = w.year;
   settleTalkItems(w, p.id);
   if (w.delegation?.contracts) return;
   const goodwill = Math.round(terms.goodwill.percent * 10) / 10;
   pushInbox(w, {
     kind: 'contract-talk',
     title: `${p.name}, ${talkLabel(p.talk)} 협상 요청`,
-    detail: `${playerLine(w, p)} · 요구 ${moneyLabel(w, terms.demand)} · 하한 ${moneyLabel(w, terms.floor)}(호감 ${goodwill > 0 ? '+' : ''}${goodwill}%) · 하한 이상으로 1–5시즌을 제시하거나 거절하세요.`,
+    detail: `${playerLine(w, p)} · 에이전트 ${agentOf(w, p)}등급 · 요구 ${moneyLabel(w, terms.demand)} · 하한 ${moneyLabel(w, terms.floor)}(호감 ${goodwill > 0 ? '+' : ''}${goodwill}%) · ${clausesLabel(p.talk.clauses)} · 하한 이상으로 ${termRange(talkWindow(w))}을 제시하거나 거절하세요.`,
     attention: true,
     ref: p.id,
   });
@@ -246,7 +442,7 @@ export const UNHAPPY_CONFIG = {
 };
 export const UNHAPPY_REASON: Record<UnhappyReason, string> = {
   'renewal-declined': '재계약 거절',
-  'raise-declined': '연봉 인상 거절',
+  'improve-declined': '계약 개선 거절',
 };
 /** The manager's chance of talking a player round after his demand is declined (→CLUB-27). */
 export function talkRoundChance(w: World) {
@@ -275,11 +471,12 @@ export function talkFor(w: World, p: Player): ContractTalk | undefined {
   if (!p.unhappy || p.loanUntil || p.retiring !== undefined) return undefined;
   const terms = talkTerms(w, p);
   return {
-    kind: p.unhappy.reason === 'raise-declined' ? 'raise' : 'renew',
+    kind: p.unhappy.reason === 'improve-declined' ? 'improve' : 'renew',
     demand: terms.demand,
     floor: terms.floor,
     year: w.year,
     day: currentDay(w),
+    clauses: signingClauses(w, p),
   };
 }
 /**
@@ -302,22 +499,26 @@ export function leaveContract(w: World, p: Player) {
   delete p.transferRequest;
   settleTalkItems(w, p.id, PLAYER_KINDS);
 }
-/** Signs the agreed wage, fixed until the term ends (→ECON-4). */
+/**
+ * Signs the agreed wage, fixed until the term ends (→ECON-4): the new contract replaces the
+ * running one from today, never backdated.
+ */
 function signTalk(
   w: World,
   p: Player,
   talk: ContractTalk,
   wage: string,
-  term: ContractTerm,
+  term: TalkTerm,
   staff: boolean,
 ) {
   const before = p.wage;
   p.wage = wage;
   p.until = talkUntil(w, term);
+  p.clauses = talk.clauses ?? signingClauses(w, p);
   delete p.talk;
   settleTalkItems(w, p.id);
   const ended = endUnhappiness(w, p);
-  const detail = `연봉 ${moneyLabel(w, before)} → ${moneyLabel(w, wage)} · ${term}시즌 · 계약 ${contractSeason(p.until)} 시즌 끝까지${ended ? ` · ${ended}` : ''}`;
+  const detail = `연봉 ${moneyLabel(w, before)} → ${moneyLabel(w, wage)} · ${termLabel(talkWindow(w), term)} · 계약 ${contractSeason(p.until)} 시즌 끝까지 · ${clausesLabel(p.clauses)}${ended ? ` · ${ended}` : ''}`;
   addEvent(
     w,
     'contract',
@@ -348,7 +549,7 @@ function declineTalk(w: World, p: Player, reason: string) {
   );
   if (!kept) {
     p.unhappy = {
-      reason: talk.kind === 'renew' ? 'renewal-declined' : 'raise-declined',
+      reason: talk.kind === 'renew' ? 'renewal-declined' : 'improve-declined',
       year: w.year,
       day: currentDay(w),
     };
@@ -364,16 +565,31 @@ function declineTalk(w: World, p: Player, reason: string) {
   return { kept, outcome };
 }
 /**
- * Delegated staff (→STAFF-13) offer the floor for two seasons (one from 32) when it is within the
- * squad investment's pay ceiling and cash still covers the warning runway after the raise;
- * otherwise they decline. Either way the talk's inbox item says why.
+ * The cautious end of the season-end cash projection (→ECON-18) with `p` paid `wage` from the next
+ * round, as the owner's projection would show it once agreed.
+ */
+export function seasonEndWithWage(w: World, p: Player, wage: string) {
+  const before = p.wage;
+  p.wage = wage;
+  try {
+    return financeProjection(w).seasonEnd.low;
+  } finally {
+    p.wage = before;
+  }
+}
+/**
+ * Delegated staff (→STAFF-13) offer the floor for two seasons (one from 32), in the window's terms,
+ * when it is within the squad investment's pay ceiling, cash after the raise still covers 13 rounds
+ * of costs and the season's cash projection with the new wage from the next round still ends the
+ * season covering them; otherwise they decline. Either way the talk's inbox item says why.
  */
 export function staffTalkVerdict(w: World, p: Player) {
   const talk = p.talk!,
     { payCeiling } = policyEffects(policyOf(w)),
     ceiling = ratio(marketWage(w, p), BigInt(Math.round(payCeiling * 1000)), 1000n),
     raise = BigInt(talk.floor) - BigInt(p.wage),
-    perRound = (BigInt(operatingCosts(w).annual) + raise) / 46n,
+    perRound = (BigInt(operatingCosts(w).annual) + raise) / BigInt(SEASON_ROUNDS),
+    runway = perRound * BigInt(CASH_WARNING_ROUNDS),
     term =
       w.year - p.born >= TALK_CONFIG.veteranAge ? TALK_CONFIG.veteranTerm : TALK_CONFIG.staffTerm;
   if (BigInt(talk.floor) > BigInt(ceiling))
@@ -381,10 +597,16 @@ export function staffTalkVerdict(w: World, p: Player) {
       accept: false as const,
       reason: `하한 ${moneyLabel(w, talk.floor)}이 선수단 투자 연봉 상한(시장가 ×${payCeiling}, ${moneyLabel(w, ceiling)})을 넘어 거절했어요.`,
     };
-  if (BigInt(w.cash) < perRound * BigInt(CASH_WARNING_ROUNDS))
+  if (BigInt(w.cash) < runway)
     return {
       accept: false as const,
       reason: `인상하면 운영자금이 ${CASH_WARNING_ROUNDS}라운드 운영비에 못 미쳐 거절했어요.`,
+    };
+  const seasonEnd = seasonEndWithWage(w, p, talk.floor);
+  if (BigInt(seasonEnd) < runway)
+    return {
+      accept: false as const,
+      reason: `인상한 연봉으로 시즌 말 자금 전망(낮게 잡아 ${moneyLabel(w, seasonEnd)})이 ${CASH_WARNING_ROUNDS}라운드 운영비(${moneyLabel(w, runway.toString())})에 못 미쳐 거절했어요.`,
     };
   return { accept: true as const, term };
 }
@@ -406,14 +628,22 @@ function staffAnswer(w: World, p: Player) {
     ref: p.id,
   });
 }
+/** Whether a transfer window opens today (→CLUB-17): the season's first day or 1 January. */
+export function talksOpen(w: World, day = currentDay(w)) {
+  const d = transferWindowDays(w.year);
+  return day === d.summerOpen || day === d.winterOpen;
+}
 /**
- * Each day: on 1 January every player in his contract's final season asks to renew; any day a
- * player paid 25% or more below his market wage asks for a raise, once a season. Delegated staff
- * answer at once. Loan players do not negotiate, an announced retirement needs no renewal
- * (→CLUB-28) so his open talk closes, and an unhappy player refuses to talk (→CLUB-27).
+ * Each day, but players ask only when a transfer window opens (→CLUB-26): one in his contract's
+ * final season asks to renew, at either opening until he has agreed or turned unhappy; one with
+ * at most three seasons left, this one included, paid 25% or more below his market wage asks for
+ * an improved contract, once a season. Nobody else asks, so a promotion or growth changes nothing
+ * before the next opening. Delegated staff answer at once. Loan players do not negotiate, an
+ * announced retirement needs no renewal (→CLUB-28) so his open talk closes, and an unhappy player
+ * refuses to talk (→CLUB-27).
  */
 export function contractTalks(w: World) {
-  const renewal = currentDay(w) === seasonDayOf(w.year, 1, 1);
+  const opening = talksOpen(w);
   for (const p of activePlayers(w)) {
     if (p.loanUntil) continue;
     if (p.retiring !== undefined) {
@@ -423,9 +653,11 @@ export function contractTalks(w: World) {
       }
       continue;
     }
-    if (p.unhappy) continue;
-    if (renewal && p.until <= w.year + 1) openTalk(w, p, 'renew');
-    else if (!p.talk && p.raiseAsked !== w.year && underpaid(w, p)) openTalk(w, p, 'raise');
+    if (p.unhappy || !opening) continue;
+    const left = p.until - w.year;
+    if (left <= 1) openTalk(w, p, 'renew');
+    else if (left <= TALK_CONFIG.improveSeasons && p.improveAsked !== w.year && underpaid(w, p))
+      openTalk(w, p, 'improve');
   }
   if (w.delegation?.contracts) for (const p of activePlayers(w)) if (p.talk) staffAnswer(w, p);
 }
@@ -497,17 +729,18 @@ function activePlayer(w: World, id: string) {
   return w.players.find((x) => x.id === id && x.status === 'active');
 }
 /**
- * The owner's offer (→CLUB-26): at or above his floor it signs for `term` seasons; below it is
- * refused with the floor stated. An unhappy player takes his floor as it stands today and the
- * unhappiness ends (→CLUB-27).
+ * The owner's offer (→CLUB-26): at or above his floor it signs for `term` in the window's terms;
+ * below it is refused with the floor stated. An unhappy player takes his floor as it stands today
+ * and the unhappiness ends (→CLUB-27).
  */
-export function offerContract(w: World, id: string, wage: string, term: ContractTerm) {
+export function offerContract(w: World, id: string, wage: string, term: TalkTerm) {
   const p = activePlayer(w, id),
     talk = p && talkFor(w, p);
   if (!p || !talk) throw new Error('계약 협상 중인 선수가 아닙니다.');
   if (!/^\d+$/.test(wage)) throw new Error('제시 연봉을 확인하세요.');
-  if (!Number.isInteger(term) || term < 1 || term > 5)
-    throw new Error('계약 기간은 1–5시즌이어야 합니다.');
+  const window = talkWindow(w);
+  if (!TALK_TERMS[window].includes(term))
+    throw new Error(`계약 기간은 ${termRange(window)}이어야 합니다.`);
   if (BigInt(wage) < BigInt(talk.floor))
     throw new Error(`${p.name}은(는) ${moneyLabel(w, talk.floor)} 이상이어야 합의해요.`);
   takeBack(w);

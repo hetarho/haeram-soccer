@@ -26,7 +26,7 @@ import type {
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import { addMetrics, clamp, random, zeroMetrics, compareIds } from './primitives';
 import { activePlayers, addEvent, AMATEUR_CLUBS, clubOf, makePlayer, rating } from './world';
-import { contractTalks, expireContracts, transferRequests } from './contracts';
+import { applyClauses, contractTalks, expireContracts, transferRequests } from './contracts';
 import { simulateMatch } from './match';
 import { fatigueCost } from './strategy';
 import { developAnnually, settleTraining } from './training';
@@ -631,6 +631,8 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   const youthLevel = Math.max(20, rating(w, own) - 5);
   // Unrenewed contracts end: those players leave, before 1996 for a compensation (→CLUB-28).
   expireContracts(w, oldTier);
+  // The running contracts' promotion or relegation clauses apply from the first round (→CLUB-29).
+  if (own.tier !== oldTier) applyClauses(w, own.tier < oldTier ? 'promotion' : 'relegation');
   for (const p of activePlayers(w)) {
     if (p.loanUntil && p.loanUntil <= w.year) {
       p.status = 'retired';

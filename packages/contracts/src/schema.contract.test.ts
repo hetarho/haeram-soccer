@@ -81,9 +81,18 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
   it('round-trips sponsor contracts, talks, unhappiness, terms, delegation and new kinds', () => {
     const w = world();
     const [player, other] = w.players;
-    player.talk = { kind: 'raise', demand: '250000', floor: '212500', year: w.year, day: 40 };
-    player.raiseAsked = w.year;
-    player.unhappy = { reason: 'raise-declined', year: w.year, day: 41 };
+    player.talk = {
+      kind: 'improve',
+      demand: '250000',
+      floor: '212500',
+      year: w.year,
+      day: 0,
+      clauses: { promotion: 25, relegation: -40 },
+    };
+    player.improveAsked = w.year;
+    player.agent = 4;
+    player.clauses = { relegation: -35 };
+    player.unhappy = { reason: 'improve-declined', year: w.year, day: 41 };
     player.transferRequest = { year: w.year, day: 83 };
     // A club whose goodwill is negative sets the floor above the demand.
     other.talk = { kind: 'renew', demand: '1000', floor: '1100', year: w.year, day: 153 };
@@ -171,6 +180,11 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
     ).toThrow();
     const talk = { kind: 'renew', demand: '1', floor: '1', year: w.year, day: 0 } as const;
     expect(load((c) => (c.players[0].talk = talk))).not.toThrow();
+    // Agents are rated 1–5; a promotion clause rises and a relegation clause cuts (→CLUB-29).
+    expect(load((c) => (c.players[0].agent = 6 as 5))).toThrow();
+    expect(load((c) => (c.players[0].clauses = { promotion: -10 }))).toThrow();
+    expect(load((c) => (c.players[0].clauses = { relegation: 30 }))).toThrow();
+    expect(load((c) => (c.players[0].clauses = { promotion: 20, relegation: -30 }))).not.toThrow();
     expect(load((c) => (c.players[0].talk = Object.assign({ wage: '1' }, talk)))).toThrow();
     expect(load((c) => (c.players[0].talk = { ...talk, demand: '-1' }))).toThrow();
     expect(

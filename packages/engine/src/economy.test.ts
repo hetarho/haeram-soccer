@@ -35,9 +35,9 @@ function beforeChange(country: CountryCode, year: number, amount: string) {
     serial: 1,
   };
   w.academy = { players: [{ ...w.players[0], id: 'prospect:1', wage: amount }] };
-  // A raise talk the owner leaves open across the close (→CLUB-26).
+  // An improved-contract talk the owner leaves open across the close (→CLUB-26).
   w.players[3].talk = {
-    kind: 'raise',
+    kind: 'improve',
     demand: (BigInt(amount) * 2n).toString(),
     floor: amount,
     year: w.year,

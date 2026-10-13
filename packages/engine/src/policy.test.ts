@@ -206,7 +206,9 @@ describe('club operating policy', () => {
     const offer = transferOffers(prospects)[2];
     operate(prospects, { type: 'recruit', candidate: 2 });
     const signed = prospects.players.find((player) => player.id === offer.player.id)!;
-    expect(canonical(signed)).toBe(canonical(offer.player));
+    // He signs as offered, with the clauses his signing settles (→CLUB-29).
+    expect(signed.clauses).toBeDefined();
+    expect(canonical(signed)).toBe(canonical({ ...offer.player, clauses: signed.clauses }));
     expect(prospects.year - signed.born).toBeLessThanOrEqual(21);
     validateWorld(prospects);
   });

@@ -5,6 +5,7 @@ import type {
   ContractTerm,
   ManagerTrait,
   Player,
+  TalkTerm,
   TransferStance,
   World,
 } from '../../../../packages/contracts/src/types';
@@ -17,10 +18,17 @@ import {
   UNHAPPY_PENALTY,
 } from '../../../../packages/engine/src/world';
 import {
+  agentOf,
+  agentPremium,
+  clausesLabel,
   marketWage,
+  TALK_LABEL,
+  TALK_TERMS,
   talkFor,
   talkRoundChance,
   talkUntil,
+  talkWindow,
+  termLabel,
   UNHAPPY_CONFIG,
   UNHAPPY_REASON,
 } from '../../../../packages/engine/src/contracts';
@@ -734,12 +742,13 @@ function StanceSheet({
     </Dialog>
   );
 }
-const TERMS: ContractTerm[] = [1, 2, 3, 4, 5];
 /**
- * A contract talk (→WEB-68, CLUB-26): his demand and the floor he settles for, the term, the yearly
- * cost and the runway after it, and what a refusal risks (→CLUB-27). He accepts any offer at or
- * above the floor, so the owner offers the floor or declines; an unhappy player has only his
- * floor, as it stands today, to be met.
+ * A contract talk (→WEB-68, CLUB-26): a renewal or an improved contract, his agent's rating and the
+ * clauses the new contract carries (→CLUB-29, CLUB-30), his demand and the floor he settles for, the
+ * window's terms (1–5 seasons in the summer, ½–4½ in winter), the yearly cost and the runway after
+ * it, and what a refusal risks (→CLUB-27). He accepts any offer at or above
+ * the floor, so the owner offers the floor or declines; an unhappy player has only his floor, as it
+ * stands today, to be met.
  */
 function ContractTalkSheet({
   w,
@@ -754,17 +763,23 @@ function ContractTalkSheet({
   player: Player;
   talk: ContractTalk;
   disabled: boolean;
-  onOffer: (term: ContractTerm) => void;
+  onOffer: (term: TalkTerm) => void;
   onDecline: () => void;
   onClose: () => void;
 }) {
-  const [term, setTerm] = useState<ContractTerm>(2);
+  const [picked, setTerm] = useState<TalkTerm>(2);
   const c = w.clubs.find((club) => club.id === w.playerClub)!,
     money = (value: string | bigint) => <Money value={value} code={c.country} year={w.year} />,
     raise = BigInt(talk.floor) - BigInt(player.wage),
     runway = fixedCostRunway(w.cash, (BigInt(operatingCosts(w).annual) + raise).toString()),
     chance = Math.round(talkRoundChance(w) * 100),
-    label = talk.kind === 'renew' ? '재계약' : '연봉 인상';
+    label = TALK_LABEL[talk.kind],
+    window = talkWindow(w),
+    terms = TALK_TERMS[window],
+    agent = agentOf(w, player),
+    premium = Math.round((agentPremium(agent) - 1) * 100),
+    // A sheet left open across 1 January keeps a term the new window offers.
+    term: TalkTerm = terms.includes(picked) ? picked : 2;
   return (
     <Dialog
       label="계약 협상"
@@ -779,7 +794,8 @@ function ContractTalkSheet({
             <button onClick={onClose}>닫기</button>
           )}
           <button className={s.primary} disabled={disabled} onClick={() => onOffer(term)}>
-            하한 <Money value={talk.floor} code={c.country} year={w.year} plain /> · {term}시즌 제시
+            하한 <Money value={talk.floor} code={c.country} year={w.year} plain /> ·{' '}
+            {termLabel(window, term)} 제시
           </button>
         </div>
       }
@@ -797,11 +813,26 @@ function ContractTalkSheet({
           {player.transferRequest ? ' 이적 요청도 거둬요' : ' 이적 요청을 하지 않아요'}.
         </p>
       )}
+      {talk.kind === 'improve' && (
+        <p className={s.muted}>
+          시장가보다 25% 넘게 적게 받아 계약 개선을 요구해요. 합의하면 오늘부터 새 계약으로 바뀌고
+          지난 기간은 소급하지 않아요.
+        </p>
+      )}
       <p>
         요구 {money(talk.demand)} · 하한 {money(talk.floor)} · 하한 이상이면 바로 합의해요.
       </p>
+      <p>
+        에이전트 {agent}등급(1–5){premium ? ` · 요구 +${premium}%` : ''} · 새 계약 조항:{' '}
+        {clausesLabel(talk.clauses)}
+      </p>
+      <p className={s.muted}>
+        {window === 'summer'
+          ? '여름 계약: 이번 시즌을 포함해 1–5시즌'
+          : '겨울 계약: 이번 시즌 남은 기간과 0–4시즌 더(½–4½시즌)'}
+      </p>
       <div className={s.segments} role="radiogroup" aria-label="계약 기간">
-        {TERMS.map((value) => (
+        {terms.map((value) => (
           <button
             key={value}
             type="button"
@@ -810,7 +841,7 @@ function ContractTalkSheet({
             className={term === value ? s.selected : undefined}
             onClick={() => setTerm(value)}
           >
-            {value}시즌
+            {termLabel(window, value)}
           </button>
         ))}
       </div>

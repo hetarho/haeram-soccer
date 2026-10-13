@@ -8,6 +8,7 @@ import {
   marketValueAt,
   marketWageAt,
   offerContract,
+  signingClauses,
 } from './contracts';
 import { moneyLabel } from './finance';
 import { setLineup } from './strategy';
@@ -157,7 +158,9 @@ export function squadCommand(w: World, cmd: SquadCommand) {
       assertTransferWindow(w, o.freeAgent && !cmd.loan);
       const cost = cmd.loan ? o.loanFee : o.fee;
       debit(w, cost);
+      // A loan keeps his club's contract; a signing has its own clauses (→CLUB-29).
       if (cmd.loan) o.player.loanUntil = w.year + 1;
+      else o.player.clauses = signingClauses(w, o.player);
       w.players.push(o.player);
       addEvent(
         w,

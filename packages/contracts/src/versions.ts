@@ -32,11 +32,13 @@ export const CURRENT_ENGINE_VERSION = '1.16.0';
  * distribution on the broadcasting index and a local-supporter gate on the football index of
  * catalog 2026-demo-2 with no global fan income, charges operating expenses as a share of last
  * season's turnover above a floor per division, recorded as `operatingExpenses` when a season
- * starts, signs sponsors per slot by era, pays players market wages agreed in contract talks
- * (unhappy players, transfer requests, expiring contracts), lets the owner choose staff and
- * manager terms and delegate contract talks and the manager post (a 1.15 sponsor loads as its
+ * starts, signs sponsors per slot by era, pays players market wages agreed in contract talks at
+ * the window openings (unhappy players, transfer requests, expiring contracts), gives every player
+ * an agent and every contract signed promotion and relegation clauses, lets the owner choose staff
+ * and manager terms and delegate contract talks and the manager post (a 1.15 sponsor loads as its
  * slot's contract; wages stay until renewal; a world without `operatingExpenses` pays its
- * division's floor until its next season starts).
+ * division's floor until its next season starts; activation draws each existing player's agent
+ * from his id, and running contracts carry no clauses until their next signing).
  */
 export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.0.0',

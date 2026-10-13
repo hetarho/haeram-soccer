@@ -34,6 +34,12 @@ export type DelegationKey =
 export type ManagerRule = 'school' | 'best' | 'strategy';
 /** Seasons a contract is signed for (→CLUB-26, STAFF-14). */
 export type ContractTerm = 1 | 2 | 3 | 4 | 5;
+/**
+ * The term of a player contract offered in a talk (→CLUB-26), one field for both windows: signed
+ * in the summer, 1–5 seasons, this one included; signed in the winter, the rest of this season and
+ * 0–4 more (½–4½ years). Either way the contract ends at a season's close (→CLUB-28).
+ */
+export type TalkTerm = 0 | ContractTerm;
 /** Coaching investment (→STAFF-15): 1 volunteers only, 2 mid-market coaches, 3 the best available. */
 export type CoachingLevel = 1 | 2 | 3;
 /**
@@ -43,8 +49,19 @@ export type CoachingLevel = 1 | 2 | 3;
 export type SponsorSlot = 'local' | 'kit' | 'shirt' | 'stadium' | 'sleeve';
 /** Guaranteed, performance-linked, exclusive (no merchandise campaigns) or inflation-linked. */
 export type SponsorKind = 'stable' | 'performance' | 'exclusive' | 'indexed';
-/** Why a player turned unhappy (→CLUB-27): the club declined his renewal or his raise. */
-export type UnhappyReason = 'renewal-declined' | 'raise-declined';
+/** How strongly a player's agent represents him (→CLUB-30), 1 to 5. */
+export type AgentRating = 1 | 2 | 3 | 4 | 5;
+/**
+ * A player contract's own clauses (→CLUB-29), settled when it is signed, in whole percent of the
+ * wage: `promotion` the rise from the first round after the club goes up, `relegation` the cut
+ * (negative) from the first round after it goes down. An absent clause is none.
+ */
+export interface ContractClauses {
+  promotion?: number;
+  relegation?: number;
+}
+/** Why a player turned unhappy (→CLUB-27): the club declined his renewal or improved contract. */
+export type UnhappyReason = 'renewal-declined' | 'improve-declined';
 /**
  * Ledger kinds of competition money (→ECON-28), sponsor contracts (→ECON-8), expiring contracts
  * (→CLUB-28) and operating expenses (→ECON-30); `Event.kind` stays a string, so older entries keep
@@ -132,23 +149,36 @@ export interface Player {
   retiring?: number;
   /** The contract talk he opened (→CLUB-26). */
   talk?: ContractTalk;
-  /** Season year he last asked for a raise: at most once a season (→CLUB-26). */
-  raiseAsked?: number;
+  /** Season year he last asked for an improved contract: at most once a season (→CLUB-26). */
+  improveAsked?: number;
   /** Unhappy since this day, and why (→CLUB-27). */
   unhappy?: { reason: UnhappyReason; year: number; day: number };
   /** The day he handed in a transfer request: listed, never untouchable (→CLUB-27). */
   transferRequest?: { year: number; day: number };
+  /**
+   * His agent (→CLUB-30), set when he was created and never changing; a player from before rules
+   * 1.16 has none until activation draws it from his id (→SAVE-10).
+   */
+  agent?: AgentRating;
+  /**
+   * The running contract's clauses (→CLUB-29), settled at its signing; contracts signed before
+   * rules 1.16, founding squads and loans have none.
+   */
+  clauses?: ContractClauses;
 }
 /**
- * A player's contract talk (→CLUB-26): his demand, the floor he accepts at or above (demand ×
- * (1 − goodwill)) and the season day he asked.
+ * A player's contract talk (→CLUB-26), opened when a transfer window opens: a renewal in his
+ * contract's final season or an improved contract with at most three seasons left; his demand,
+ * the floor he accepts at or above (demand × (1 − goodwill)) and the season day he asked.
  */
 export interface ContractTalk {
-  kind: 'renew' | 'raise';
+  kind: 'renew' | 'improve';
   demand: string;
   floor: string;
   year: number;
   day: number;
+  /** The clauses the new contract would carry, settled as he asks so no answer rerolls them. */
+  clauses?: ContractClauses;
 }
 export interface Manager {
   id: string;
@@ -696,7 +726,7 @@ export type Command =
   /** How delegated staff appoint a manager (→STAFF-18). */
   | { type: 'manager-rule'; rule: ManagerRule }
   /** Answers a player's contract talk (→CLUB-26) with a wage fixed for `term` seasons. */
-  | { type: 'contract-offer'; player: string; wage: string; term: ContractTerm }
+  | { type: 'contract-offer'; player: string; wage: string; term: TalkTerm }
   /** Declines a player's contract talk (→CLUB-27). */
   | { type: 'contract-decline'; player: string }
   /** Signs a slot's offer, by its index among that slot's offers (→ECON-8). */
