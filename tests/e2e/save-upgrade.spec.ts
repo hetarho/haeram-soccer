@@ -1,7 +1,7 @@
 import { CURRENT_ENGINE_VERSION } from '../../packages/contracts/src/versions';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
-import { createWorld, advanceRound, quote } from '../../packages/engine/src/index';
+import { createWorld, advanceRound, quote, BUILD_PRESETS } from '../../packages/engine/src/index';
 import { encode, decode } from '../../apps/web/src/adapters/persistence';
 import type { World } from '../../packages/contracts/src/types';
 import { continueSlot } from './slots';
@@ -93,6 +93,79 @@ test('writer upgrades a legacy career through the other slot without changing pa
     }),
   ]);
   expect(facts(restored)).toEqual(facts(loaded));
+});
+
+test('a 1.15 career at intervention level 2 with a reserved strategy upgrades to the three levers', async ({
+  page,
+}) => {
+  const world = createWorld({
+    country: 'ENG',
+    name: 'Lever Upgrade',
+    color: '#385577',
+    seed: 'levers-browser-upgrade',
+    difficulty: 2,
+  });
+  const reserved = BUILD_PRESETS.find((preset) => preset.id === 'local-pride')!;
+  // Rules 1.15 at intervention level 2: training and the academy delegated, contract talks not
+  // yet a switch; the attack department at coaching level 최고, this season's strategy change
+  // spent and next season's strategy reserved. The clock stops stay at their defaults.
+  Object.assign(world, {
+    engine: '1.15.0',
+    delegation: { training: true, academy: true },
+    coaching: { attack: 3 },
+    buildYear: world.year,
+    buildNext: { build: reserved.build },
+  });
+  delete world.hiring;
+  delete world.buildChanged;
+  await seed(page, await encode(world, 1, 0));
+  await page.goto('/');
+  await continueSlot(page);
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${world.revision + 1}`);
+  const upgraded = (
+    await decode((await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:b')))!)
+  ).world;
+  expect(upgraded.engine).toBe(CURRENT_ENGINE_VERSION);
+  // Contract talks join the academy, so the world still reads as level 2, not 맞춤.
+  expect(upgraded.delegation).toMatchObject({ academy: true, contracts: true });
+  const trigger = page
+    .getByRole('region', { name: '시즌 진행', exact: true })
+    .getByRole('button', { name: /^개입 수준/ });
+  await expect(trigger).toHaveAccessibleName('개입 수준 · 중요한 결정만');
+  await expect(trigger).toContainText('개입 2');
+  // 최고 becomes 최소 능력 65 with 능력 높은 순 for the attack coach.
+  expect(upgraded.hiring?.coaches?.attack).toMatchObject({
+    volunteer: false,
+    minAbility: 65,
+    priority: 'ability',
+  });
+  // The reservation is dropped and named in the inbox; no slot is locked.
+  expect(upgraded.buildNext).toBeUndefined();
+  expect(upgraded.buildChanged).toBeUndefined();
+  expect(Object.hasOwn(upgraded, 'buildYear')).toBe(false);
+  await page.getByRole('button', { name: /^소식함/ }).click();
+  await expect(page.getByRole('dialog', { name: '소식함' })).toContainText(
+    `예약했던 운영 전략 ‘${reserved.label}’ 취소`,
+  );
+  await page
+    .getByRole('dialog', { name: '소식함' })
+    .getByRole('button', { name: '닫기', exact: true })
+    .click();
+  await page.getByRole('button', { name: '구단 운영', exact: true }).first().click();
+  await expect(page.getByRole('tab', { name: '운영 전략', exact: true })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await expect(page.getByText(/에 변경 가능/)).toHaveCount(0);
+  // The attack coach's criteria show once his department is handed to the staff.
+  await page.getByRole('button', { name: '선수·스태프', exact: true }).first().click();
+  await page
+    .getByRole('tablist', { name: '선수·스태프 보기' })
+    .getByRole('tab', { name: '코치진', exact: true })
+    .click();
+  await page.getByRole('checkbox', { name: '공격 코치 자동으로 결정', exact: true }).check();
+  await expect(page.getByText(/능력 65 이상 · 능력 높은 순/)).toBeVisible();
 });
 
 test('read-only legacy view does not perform a disk or metadata upgrade', async ({

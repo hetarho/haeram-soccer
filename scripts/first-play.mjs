@@ -203,10 +203,12 @@ try {
     window.inputSamples = [];
   });
   // Thirty navigations make the p95 the second-slowest sample, so one shared-runner stall
-  // cannot decide the gate on its own.
+  // cannot decide the gate on its own. The owner's three levers (사람, 훈련, 운영) and the
+  // competitions and records, as the desktop navigation names them (→WEB-10).
+  const desktopNav = desktop.page.getByRole('navigation', { name: '게임 메뉴', exact: true });
   for (let i = 0; i < 5; i++)
-    for (const name of ['스태프', '선수단', '구단 운영', '리그', '컵 대회', '클럽 기록실'])
-      await desktop.page.getByRole('button', { name, exact: true }).click();
+    for (const name of ['선수·스태프', '훈련·육성', '구단 운영', '리그', '컵 대회', '클럽 기록실'])
+      await desktopNav.getByRole('button', { name, exact: true }).click();
   await desktop.page.evaluate(
     () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
   );
