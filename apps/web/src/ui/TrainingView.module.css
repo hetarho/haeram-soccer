@@ -1,0 +1,415 @@
+/* 훈련·육성 (→WEB-70): the focus, what drives growth, who is growing, and the academy. */
+.stack {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+/* Wide screens set the focus beside what drives growth, the growing players below both. */
+@media (min-width: 1100px) {
+  .pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+  .wide {
+    grid-column: 1 / -1;
+  }
+}
+.card {
+  min-width: 0;
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  box-shadow: var(--shadow);
+  animation: rise 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 2px 12px;
+}
+.head h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 900;
+}
+.head span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.note {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.primary {
+  color: var(--on-accent);
+  background: var(--accent-fill);
+  border-color: var(--accent-edge);
+  box-shadow: 0 3px 0 var(--accent-edge);
+}
+
+/* A focus suggested from elsewhere, waiting to be applied or closed. */
+.suggestion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--gold);
+  background: linear-gradient(180deg, #33300f 0%, #1f2810 100%);
+}
+.suggestion p {
+  margin: 0;
+  font-size: 14px;
+}
+.suggestion p b {
+  color: var(--gold);
+}
+.suggestion p small {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.suggestion div {
+  display: flex;
+  gap: 6px;
+}
+.suggestion button {
+  min-height: 44px;
+  padding: 6px 14px;
+  font-size: 13px;
+}
+
+/* The three focuses: rows on phones, three cards side by side when they fit. */
+.focuses {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+.focuses button {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 2px 10px;
+  min-height: 56px;
+  padding: 8px 12px;
+  text-align: left;
+  border-color: var(--line);
+  background: rgba(0, 0, 0, 0.22);
+  box-shadow: none;
+}
+.focuses button::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--line-strong);
+  box-sizing: border-box;
+}
+.focuses button b {
+  font-size: 15px;
+  font-weight: 800;
+}
+.focuses button span {
+  display: grid;
+  justify-items: end;
+  gap: 1px;
+}
+.focuses button small {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.focuses button[aria-checked='true'] {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, #1c4a34 0%, #133526 100%);
+  box-shadow: 0 3px 0 var(--accent-edge);
+}
+.focuses button[aria-checked='true']::before {
+  border-color: var(--accent);
+  background: radial-gradient(circle, var(--accent-text) 0 4px, transparent 5px);
+}
+.focuses button[aria-checked='true'] small {
+  color: var(--text);
+}
+@media (min-width: 640px) {
+  .focuses {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .focuses button {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-content: start;
+    padding: 12px 14px;
+  }
+  .focuses button span {
+    grid-column: 1 / -1;
+    justify-items: start;
+  }
+}
+
+/* A decision the staff can take, its switch and his rule in words (→STAFF-13). */
+.delegate {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.2);
+}
+.delegate label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+/* Repeated to outrank the phone rule that makes every input in the view 48 px tall. */
+.delegate.delegate label > input[type='checkbox'] {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  min-height: 22px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+.delegate > p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.rule {
+  list-style: none;
+  display: grid;
+  gap: 4px;
+  margin: 8px 0 0;
+  padding: 0;
+}
+.rule li {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.rule b {
+  color: var(--text);
+}
+.rule span {
+  color: var(--text-muted);
+}
+.advice {
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--cool-soft);
+  color: var(--cool);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+/* What drives development: one row per term, opening where it is set. */
+.drivers,
+.growing,
+.prospects {
+  list-style: none;
+  display: grid;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 0;
+}
+.drivers button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 8px 10px 8px 12px;
+  text-align: left;
+  font-weight: inherit;
+  border-color: var(--line);
+  background: rgba(0, 0, 0, 0.2);
+  box-shadow: none;
+}
+.driverText {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.driverText b {
+  font-size: 14px;
+  font-weight: 800;
+}
+.driverText small {
+  font-size: 11.5px;
+  color: var(--text-faint);
+  overflow-wrap: anywhere;
+}
+.driverValues {
+  display: grid;
+  justify-items: end;
+  gap: 1px;
+}
+.driverValues span {
+  font-size: 15px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.driverValues [data-tone='up'] {
+  color: var(--accent-text);
+}
+.driverValues [data-tone='down'] {
+  color: var(--warm);
+}
+.driverValues [data-tone='flat'] {
+  color: var(--text-muted);
+}
+.chevron {
+  color: var(--text-faint);
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Players still growing and the academy's prospects: a rating pair, a name, a figure. */
+.growing li,
+.prospects li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.2);
+}
+.growingName,
+.prospectText {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.growingName > button,
+.prospectText b {
+  justify-self: start;
+  font-size: 14px;
+  font-weight: 800;
+}
+.growingName small,
+.prospectText small {
+  font-size: 11.5px;
+  color: var(--text-faint);
+}
+.earned {
+  display: grid;
+  justify-items: end;
+}
+.earned b {
+  color: var(--accent-text);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+.earned small {
+  font-size: 10.5px;
+  color: var(--text-faint);
+}
+@media (min-width: 960px) {
+  .growing,
+  .prospects {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 유소년 */
+.intake {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.intake b {
+  color: var(--text);
+}
+.meter {
+  display: block;
+  height: 6px;
+  margin: 2px 0;
+  border-radius: 3px;
+  background: var(--surface-deep);
+  overflow: hidden;
+}
+.meter i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--accent-fill);
+  transition: width 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.prospectText .ready {
+  color: var(--accent-text);
+  font-weight: 700;
+}
+.prospectActions {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 6px;
+}
+.prospectActions button {
+  min-height: 44px;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+@media (max-width: 479px) {
+  .prospects li {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .prospectActions {
+    grid-column: 1 / -1;
+  }
+}
+/* A setting kept in another home, named with its value (→WEB-71). */
+.homeLine {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: inherit;
+  border-style: dashed;
+  background: transparent;
+  box-shadow: none;
+}
+.homeLine > span:first-child {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.homeLine b {
+  font-size: 13.5px;
+  font-weight: 800;
+}
+.homeLine small {
+  font-size: 11.5px;
+  color: var(--text-faint);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

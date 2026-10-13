@@ -1,12 +1,20 @@
 import type { Player, Role, TrainingFocus, World } from '../../contracts/src/types';
+import { BUILD_SLOTS } from '../../contracts/src/build';
 import { activePlayers, addEvent, overall } from './world';
 import { clamp, compareIds, random } from './primitives';
-import { policyEffects, policyOf } from './policy';
-import { autoTrainingFocus, staffEffects } from './staff';
+import { POLICY_INFO, policyEffects, policyOf } from './policy';
+import {
+  autoTrainingFocus,
+  STAFF_INFO,
+  STAFF_ROLES,
+  STAFF_TRAIT_INFO,
+  staffEffects,
+  staffMember,
+} from './staff';
 import { developAcademy } from './academy';
 import { settleMorale } from './morale';
-import { managerStyleEffects } from './styles';
-import { buildEffects } from './build';
+import { managerStyleEffects, STYLE_INFO } from './styles';
+import { buildEffects, buildOf, cardOf } from './build';
 
 export const trainingFocusInfo: Record<
   TrainingFocus,
@@ -61,6 +69,12 @@ export function activeTrainingFocus(w: World): TrainingFocus {
   return w.delegation?.training ? autoTrainingFocus(w) : w.training || 'balanced';
 }
 
+/** The manager's youth work and the facilities, the base a round's growth multiplies (→CLUB-12). */
+export function developmentBase(w: World) {
+  // Twenty facility levels give the same top bonus thirty used to (→ECON-12).
+  return 0.5 + w.manager.youth / 100 + w.facilities / 27;
+}
+
 function roundGain(
   w: World,
   player: Player,
@@ -72,11 +86,7 @@ function roundGain(
   if (age >= 27 || player.status !== 'active') return 0;
   const gap = Math.max(0, player.potential - overall(player));
   const ageWeight = age < 21 ? 1 : age < 24 ? 0.85 : 0.65;
-  const base = Math.min(
-    0.12,
-    // Twenty facility levels give the same top bonus thirty used to (→ECON-12).
-    (gap / 400) * (0.5 + w.manager.youth / 100 + w.facilities / 27) * ageWeight,
-  );
+  const base = Math.min(0.12, (gap / 400) * developmentBase(w) * ageWeight);
   const style = managerStyleEffects(w);
   return hundredths(
     base *
@@ -233,5 +243,151 @@ export function trainingSummary(w: World) {
         developed: player.developed || 0,
         nextGain: actualRoundGain(w, player),
       })),
+  };
+}
+
+/** Where a development term is set (→WEB-71), as `<page>/<tab>`. */
+export type DevelopmentHome =
+  | 'training/training'
+  | 'business/strategy'
+  | 'people/manager'
+  | 'people/coaches'
+  | 'business/facility';
+export interface DevelopmentFactor {
+  key: 'focus' | 'investment' | 'base' | 'style' | 'style-youth' | 'coaches-youth' | 'build-youth';
+  label: string;
+  /** What the term multiplies a settled round's growth by. */
+  value: number;
+  /** Every player still growing (under 27), or only those aged 21 or under. */
+  applies: 'all' | 'u21';
+  home: DevelopmentHome;
+  /** What sets the value now, in the owner's terms. */
+  detail: string;
+}
+export interface GrowingPlayer {
+  player: Player;
+  age: number;
+  ability: number;
+  potential: number;
+  /** Potential less ability: the room he has left. */
+  gap: number;
+  /** Growth he has earned so far (→CLUB-12). */
+  developed: number;
+}
+/** Players listed as still growing are this age or younger (→WEB-70). */
+export const GROWING_AGE = 23;
+/**
+ * What drives development now (→WEB-70): the focus in force, the terms `roundGain` multiplies a
+ * player's base growth by, each coach's per-skill multiplier and the players still growing. A
+ * pure read model: viewing it grants nothing.
+ */
+export function developmentOutlook(w: World) {
+  const focus = activeTrainingFocus(w),
+    info = trainingFocusInfo[focus],
+    delegated = !!w.delegation?.training,
+    policy = policyOf(w),
+    effects = policyEffects(policy),
+    staff = staffEffects(w),
+    style = managerStyleEffects(w),
+    build = buildOf(w);
+  const school = w.manager.interim
+      ? '임시 감독 · 학파 효과 없음'
+      : `${w.manager.name} · ${w.manager.style ? STYLE_INFO[w.manager.style].label : '기본형'}`,
+    developers = STAFF_ROLES.filter((role) => staffMember(w, role)?.trait === 'developer').map(
+      (role) => STAFF_INFO[role].label,
+    ),
+    youthCards = BUILD_SLOTS.map((slot) => cardOf(build, slot))
+      .filter((card) => card.effects.youthGrowth !== undefined)
+      .map((card) => card.label);
+  const factors: DevelopmentFactor[] = [
+    {
+      key: 'focus',
+      label: '훈련 방향',
+      value: info.developmentMultiplier,
+      applies: 'all',
+      home: 'training/training',
+      detail: `${info.label}${delegated ? ' · 수석코치가 정함' : ''}`,
+    },
+    {
+      key: 'investment',
+      label: '선수단 투자',
+      value: effects.developmentMultiplier,
+      applies: 'all',
+      home: 'business/strategy',
+      detail: POLICY_INFO.support.levels[policy.support - 1].name,
+    },
+    {
+      key: 'base',
+      label: '감독 육성·시설',
+      value: developmentBase(w),
+      applies: 'all',
+      home: 'business/facility',
+      detail: `감독 육성 ${Math.round(w.manager.youth)} · 시설 Lv.${w.facilities}`,
+    },
+    {
+      key: 'style',
+      label: '감독 학파',
+      value: style.growth,
+      applies: 'all',
+      home: 'people/manager',
+      detail: school,
+    },
+    {
+      key: 'style-youth',
+      label: '감독 학파',
+      value: style.youthGrowth,
+      applies: 'u21',
+      home: 'people/manager',
+      detail: school,
+    },
+    {
+      key: 'coaches-youth',
+      label: '코치진',
+      value: staff.youthDevelopment,
+      applies: 'u21',
+      home: 'people/coaches',
+      detail: developers.length
+        ? `${STAFF_TRAIT_INFO.developer.label} ${developers.join('·')}`
+        : `${STAFF_TRAIT_INFO.developer.label} 코치 없음`,
+    },
+    {
+      key: 'build-youth',
+      label: '운영 전략 카드',
+      value: buildEffects(w).youthGrowth,
+      applies: 'u21',
+      home: 'business/strategy',
+      detail: youthCards.length ? youthCards.join(' · ') : '21세 이하 성장 카드 없음',
+    },
+  ];
+  const growing: GrowingPlayer[] = activePlayers(w)
+    .map((player) => {
+      const ability = overall(player),
+        potential = Math.round(player.potential);
+      return {
+        player,
+        age: w.year - player.born,
+        ability,
+        potential,
+        gap: potential - ability,
+        developed: player.developed || 0,
+      };
+    })
+    .filter((entry) => entry.age <= GROWING_AGE && entry.gap > 0)
+    .sort((a, b) => b.gap - a.gap || compareIds(a.player.id, b.player.id));
+  return {
+    focus: {
+      focus,
+      label: info.label,
+      delegated,
+      developmentMultiplier: info.developmentMultiplier,
+      /** Fatigue recovered at the next settled round, staff and policy bonuses included. */
+      recovery: Math.max(0, info.recovery + effects.recoveryBonus + staff.recoveryBonus),
+      /** What the squad investment and the fitness coach add to every focus's recovery. */
+      recoveryBonus: effects.recoveryBonus + staff.recoveryBonus,
+    },
+    factors,
+    /** Each coach's multiplier on the skills he owns, applied after the factors. */
+    skills: { ...staff.development },
+    growing,
   };
 }
