@@ -46,9 +46,17 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await page.setViewportSize({ width: 390, height: 844 });
   const mobileMenu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(mobileMenu).toBeVisible();
-  // The match view has no tab: it opens only from a watch action. The transfer market is a
-  // segment of the squad page.
-  const tabs = ['리그', '컵 대회', '클럽 기록실', '클럽 홈', '선수단', '스태프', '구단 운영'];
+  // The match view has no tab: it opens only from a watch action. The owner's three levers sit
+  // right of home: 사람 (players, market and staff), 훈련 and 운영.
+  const tabs = [
+    '리그',
+    '컵 대회',
+    '클럽 기록실',
+    '클럽 홈',
+    '선수·스태프',
+    '훈련·육성',
+    '구단 운영',
+  ];
   await expect(mobileMenu.getByRole('button')).toHaveCount(tabs.length);
   expect(
     await mobileMenu
@@ -73,16 +81,29 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await menuButton.click();
   const allMenu = page.getByRole('dialog', { name: '전체 메뉴' });
   await expect(allMenu).toBeVisible();
-  // Tab destinations, staff included, live in the tab bar; the menu lists none of them.
-  await expect(allMenu.getByRole('button', { name: '선수단', exact: true })).toHaveCount(0);
-  await expect(allMenu.getByRole('button', { name: '스태프', exact: true })).toHaveCount(0);
+  // Tab destinations live in the tab bar; the menu lists none of them.
+  for (const label of ['선수·스태프', '훈련·육성', '구단 운영'])
+    await expect(allMenu.getByRole('button', { name: label, exact: true })).toHaveCount(0);
   await allMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(allMenu).toHaveCount(0);
-  await mobileMenu.getByRole('button', { name: '스태프', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '스태프', level: 2 })).toBeVisible();
-  await expect(page.getByRole('group', { name: '선수단 메뉴' })).toHaveCount(0);
-  await mobileMenu.getByRole('button', { name: '선수단', exact: true }).click();
-  await expect(page.getByRole('button', { name: '선수단 18/26' })).toBeVisible();
+  // The phone tab reads 사람; its page opens on 선수 with the squad count.
+  await expect(mobileMenu.getByRole('button', { name: '선수·스태프', exact: true })).toHaveText(
+    '사람',
+  );
+  await mobileMenu.getByRole('button', { name: '선수·스태프', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '선수·스태프', level: 2 })).toBeVisible();
+  const peopleTabs = page.getByRole('tablist', { name: '선수·스태프 보기' }).getByRole('tab');
+  await expect(peopleTabs).toHaveText(['선수', '이적시장', '감독', '코치진']);
+  await expect(peopleTabs.first()).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByText('선수단 18/26', { exact: true })).toBeVisible();
+  await expect(page).toHaveURL(/\/people$/);
+  await mobileMenu.getByRole('button', { name: '훈련·육성', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '훈련·육성', level: 2 })).toBeVisible();
+  await expect(page.getByRole('tablist', { name: '훈련·육성 보기' }).getByRole('tab')).toHaveText([
+    '훈련',
+    '유소년',
+  ]);
+  await expect(page).toHaveURL(/\/training$/);
   await mobileMenu.getByRole('button', { name: '리그', exact: true }).click();
   await expect(page.getByRole('tab', { name: '개요', exact: true })).toHaveAttribute(
     'aria-selected',

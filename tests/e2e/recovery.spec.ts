@@ -183,8 +183,8 @@ test('a new game goes into another slot, both careers survive switching and back
   page,
 }) => {
   await found(page);
-  await page.getByRole('button', { name: '스태프', exact: true }).click();
-  await expect(page).toHaveURL(/\/manager$/);
+  await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
+  await expect(page).toHaveURL(/\/people$/);
   await page.goBack();
   await expect(page.getByRole('button', { name: '다음 경기 관전' })).toBeVisible();
   await page.getByRole('button', { name: '게임 슬롯' }).click();

@@ -11,7 +11,7 @@ import {
 import type { World } from '../../../../packages/contracts/src/types';
 import { country, priceIndex } from '../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../runtime/client';
-import { useNavigation, useStaffView, type Page } from './state';
+import { openPeople, useNavigation, type Page } from './state';
 import { ClubCrest } from './ClubCrest';
 import { ClubLink } from './ClubLink';
 import { watchNextMatch } from './watch';
@@ -105,9 +105,9 @@ function NavIcon({ page }: { page: Page }) {
     league: 'M4 5h16 M4 12h16 M4 19h16',
     europe:
       'M7 3h10v7a5 5 0 0 1-10 0z M7 5H3v4a4 4 0 0 0 4 4 M17 5h4v4a4 4 0 0 1-4 4 M12 15v5 M8 21h8',
-    squad:
+    people:
       'M12 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6z M5 21v-5a7 7 0 0 1 14 0v5 M4 5a2 2 0 0 0 0 4 M20 5a2 2 0 0 1 0 4',
-    manager: 'M12 2l10 10-10 10L2 12z M8 12h8 M12 8v8',
+    training: 'M3 10v4 M6 7v10 M18 7v10 M21 10v4 M6 12h12',
     business: 'M3 18l6-6 4 3 8-11 M15 4h6v6',
     history: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z M12 7v5l4 3',
   };
@@ -360,21 +360,22 @@ const NAV: [Page, string][] = [
   ['league', '리그'],
   ['europe', '컵 대회'],
   ['history', '클럽 기록실'],
-  ['squad', '선수단'],
-  ['manager', '스태프'],
+  ['people', '선수·스태프'],
+  ['training', '훈련·육성'],
   ['business', '구단 운영'],
 ];
 /**
- * Home sits in the raised centre; competition destinations fan out to the left and club
- * management to the right. The transfer market is a segment of the squad page.
+ * Home sits in the raised centre; competition destinations fan out to the left and the owner's
+ * three levers to the right: 사람 (who joins and stays), 훈련 (how players develop) and 운영 (how
+ * the club earns and spends, →WEB-10). The transfer market and the staff are tabs of 사람.
  */
 const TABS: [Page, string, string, Page[]][] = [
   ['league', '리그', '리그', ['league']],
   ['europe', '컵', '컵 대회', ['europe']],
   ['history', '기록', '클럽 기록실', ['history']],
   ['dashboard', '홈', '클럽 홈', ['dashboard']],
-  ['squad', '선수단', '선수단', ['squad']],
-  ['manager', '스태프', '스태프', ['manager']],
+  ['people', '사람', '선수·스태프', ['people']],
+  ['training', '훈련', '훈련·육성', ['training']],
   ['business', '운영', '구단 운영', ['business']],
 ];
 /** The HUD menu lists only destinations the tab bar does not already show. */
@@ -741,8 +742,6 @@ function CashAlarm() {
 function RuntimeFeedback({ client, localError }: { client: GameClient; localError: string }) {
   const state = useGameState((state) => state);
   const critical = state.view?.world.critical;
-  const { setPage } = useNavigation();
-  const openStaff = useStaffView((view) => view.open);
   const blocked = state.busy || state.readonly;
   return (
     <>
@@ -764,8 +763,7 @@ function RuntimeFeedback({ client, localError }: { client: GameClient; localErro
               disabled={blocked}
               onClick={() => {
                 void client.acknowledge();
-                openStaff('candidates');
-                setPage('manager');
+                openPeople('candidates');
               }}
             >
               감독 선임하러 가기
@@ -1212,7 +1210,7 @@ export function App() {
                   <div hidden={contentPage !== 'europe'}>
                     <ConnectedEurope client={client} />
                   </div>
-                  {(['squad', 'manager', 'business', 'history'] as Page[]).includes(
+                  {(['people', 'training', 'business', 'history'] as Page[]).includes(
                     contentPage,
                   ) && <ConnectedRich page={contentPage} client={client} />}
                 </div>

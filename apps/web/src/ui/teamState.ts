@@ -16,7 +16,7 @@ import { careOffer, effectText, outcomeText } from '../../../../packages/engine/
 import { academySummary } from '../../../../packages/engine/src/academy';
 import { buildEffects } from '../../../../packages/engine/src/build';
 import { compactMoney } from './format';
-import type { Page, SquadTab, StaffRequest } from './state';
+import type { Page, PeopleRequest, TrainingTab } from './state';
 
 export type Tone = 'good' | 'ok' | 'warn' | 'bad';
 export type StateKey = 'fatigue' | 'morale' | 'manager' | 'squad' | 'cash';
@@ -24,9 +24,8 @@ export interface StateAction {
   label: string;
   command?: Command;
   page?: Page;
-  tab?: SquadTab;
-  /** The staff view to open, e.g. the manager market for a manager search. */
-  staffTab?: StaffRequest;
+  /** The tab of 사람 or 훈련 to open, `candidates` for 감독 with the manager market. */
+  tab?: PeopleRequest | TrainingTab;
   /** Opens the tactic and lineup preparation sheet. */
   prepare?: boolean;
 }
@@ -163,14 +162,15 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           id: 'office',
           label: '감독실에서 전술 이야기하기',
           effect: '감독의 철학과 신뢰를 보고 전술을 제안하거나 조건을 받아들여요',
-          page: 'manager',
+          page: 'people',
+          tab: 'manager',
         },
         {
           id: 'candidates',
           label: '다른 감독 후보 살펴보기',
           effect: '성향이 다른 감독 네 명의 장단점과 선임 비용을 비교해요',
-          page: 'manager',
-          staffTab: 'candidates',
+          page: 'people',
+          tab: 'candidates',
         },
       ];
     case 'cash': {
@@ -211,7 +211,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           id: 'market',
           label: '선수 매각 살펴보기',
           effect: '이적시장에서 제안과 매각 가능 선수를 확인해요',
-          page: 'squad',
+          page: 'people',
           tab: 'market',
         },
       ];
@@ -224,14 +224,14 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           id: 'market',
           label: '이적시장',
           effect: '자유계약 선수는 언제든, 이적료 선수는 이적시장 기간에 영입해요',
-          page: 'squad',
+          page: 'people',
           tab: 'market',
         },
         {
           id: 'academy',
           label: '유소년 보기',
           effect: `아카데미 ${academy.players.length}명 · 1군 자리 ${academy.room}개`,
-          page: 'squad',
+          page: 'training',
           tab: 'academy',
         },
         {
@@ -362,7 +362,7 @@ export function teamStates(w: World): TeamStateItem[] {
       advice: interim
         ? {
             text: '감독대행이 팀을 이끌고 있어요. 새 감독을 선임해야 전술과 성장이 제자리를 찾아요.',
-            actions: [{ label: '감독 후보 보기', page: 'manager', staffTab: 'candidates' }],
+            actions: [{ label: '감독 후보 보기', page: 'people', tab: 'candidates' }],
           }
         : trust < 55
           ? {

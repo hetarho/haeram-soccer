@@ -2586,6 +2586,34 @@
 .levelMeter .dotOn {
   background: var(--accent-fill);
 }
+/* The decisions the staff take now, each a way to the home where it is set (→WEB-45, WEB-71). */
+.delegatedDecisions {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0 8px;
+}
+.delegatedDecisions > b {
+  font-size: 13px;
+  font-weight: 800;
+}
+.delegatedDecisions ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.delegatedDecisions li button {
+  min-height: 44px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+.delegatedDecisions small {
+  font-size: 12px;
+  color: var(--text-muted);
+}
 .detailStops {
   margin-bottom: 8px;
 }
