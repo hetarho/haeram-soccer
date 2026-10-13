@@ -48,7 +48,6 @@ const titles: Record<Command['type'], string> = {
   'hire-staff': '새 코치를 선임했어요',
   'release-staff': '코치와 계약을 정리했어요',
   'renew-staff': '코치와 재계약했어요',
-  coaching: '부서 코치진 투자를 바꿨어요',
   'promote-youth': '유소년을 1군으로 올렸어요',
   'release-youth': '유소년을 내보냈어요',
   delegate: '스태프 위임을 바꿨어요',
@@ -57,7 +56,6 @@ const titles: Record<Command['type'], string> = {
   'read-inbox': '소식을 확인했어요',
   care: '구단주 요청을 전했어요',
   build: '운영 전략을 정했어요',
-  'manager-rule': '감독 선임 기준을 바꿨어요',
   hiring: '스태프 선임 기준을 바꿨어요',
   'talk-rule': '계약 협상 기준을 바꿨어요',
   'contract-offer': '선수에게 계약을 제시했어요',
@@ -73,8 +71,6 @@ const notes: Partial<Record<Command['type'], string>> = {
   policy: '다음 라운드 정산부터 비용과 효과가 반영돼요.',
   build: '바로 적용했어요. 바꾼 부문은 90일 동안 다시 바꿀 수 없어요.',
   'transfer-stance': '제안은 이적시장이 열려 있을 때 들어오고, 수락해야 이적이 성사돼요.',
-  coaching:
-    '개입 4에서는 스태프가 이 수준으로 공석·무급 자리를 바로 채우고, 계약이 끝나면 재계약하거나 교체해요.',
 };
 const trainingLabel: Record<NonNullable<World['training']>, string> = {
   balanced: '균형 훈련',

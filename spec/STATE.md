@@ -32,7 +32,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T071 | 사람 and 훈련 tabs: navigation shell, page tabs and intervention presets | WEB STAFF | T070 | todo |
-| T072 | Staff hire and renew by the owner's criteria | STAFF SAVE | T070 | todo |
+| T072 | Staff hire and renew by the owner's criteria | STAFF SAVE | T070 | doing@261013.ipl |
 | T073 | 사람 tab: each decision's staff switch and criteria where it lives | WEB STAFF CLUB | T072 T071 | todo |
 | T074 | 훈련 tab: focus, the coach's rule, what drives development, the academy | WEB CLUB STAFF | T071 | todo |
 | T075 | Squad investment pays through operating expenses | ECON | T070 | todo |
@@ -53,6 +53,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 T072 doing standalone on ia-people (5751099)
 - 261013 T070 done: per-department coach switches, hiring criteria and talk rule as data, talks by the talk rule, strategy applied at once with 90-day slot locks, load and activation mapping; goldens unchanged
 - 261013 T070 doing standalone on ia-plan (6dbfb46)
 - 261013 update-ssot ECON r18: ECON-29 records rules 1.16.0's measured values and accepts the bands outside for now (no code impact)

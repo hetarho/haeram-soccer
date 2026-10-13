@@ -50,13 +50,11 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       break;
     case 'hire':
     case 'renew-manager':
-    case 'manager-rule':
     case 'tactics':
     case 'accept-condition':
     case 'hire-staff':
     case 'release-staff':
     case 'renew-staff':
-    case 'coaching':
     case 'delegate':
     case 'hiring':
     case 'talk-rule':

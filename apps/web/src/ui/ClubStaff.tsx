@@ -1,17 +1,14 @@
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
 import type {
-  CoachingLevel,
   ContractTerm,
   DelegationKey,
   Manager,
-  ManagerRule,
   Staff,
   StaffRole,
   World,
 } from '../../../../packages/contracts/src/types';
 import {
-  COACHING_INFO,
-  coachingLevel,
+  coachPickPreview,
   CONTRACT_TERMS,
   DELEGATED_TERM,
   isExpiring,
@@ -27,14 +24,8 @@ import {
 } from '../../../../packages/engine/src/staff';
 import { managerRenewal, managerTermLimit } from '../../../../packages/engine/src/ops-staff';
 import { COACH_KEYS, coachDelegated } from '../../../../packages/engine/src/hiring';
-import {
-  delegatedManagerPick,
-  MANAGER_RULE_INFO,
-  MANAGER_RULES,
-  managerRuleOf,
-} from '../../../../packages/engine/src/managerMarket';
-import { aimedSynergy } from '../../../../packages/engine/src/synergy';
-import { managerTerm, STYLE_INFO } from '../../../../packages/engine/src/styles';
+import { managerPickPreview } from '../../../../packages/engine/src/managerMarket';
+import { managerTerm } from '../../../../packages/engine/src/styles';
 import { academySummary } from '../../../../packages/engine/src/academy';
 import { currentDay, seasonDayLabel, seasonDayOf } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/world';
@@ -59,12 +50,12 @@ const DELEGATION: [DelegationKey | 'coaches', string, string][] = [
   [
     'coaches',
     '코치 고용·재계약',
-    '부서마다 정한 투자 수준으로 공석을 바로 채우고, 계약이 끝나는 코치를 2시즌 재계약하거나 새 코치를 2시즌 계약으로 뽑아요',
+    '부서마다 정한 선임 기준으로 공석과 무급 자리를 바로 채우고, 계약이 끝나는 코치는 기준으로 재계약하거나 교체해요',
   ],
   [
     'manager',
     '감독 선임',
-    '감독이 떠나면 아래 기준으로 형편에 맞는 자유계약 감독을 2시즌 계약으로 바로 뽑아 시계가 멈추지 않아요. 계약이 끝나는 감독은 OVR 3 이상 나은 감독이 없으면 2시즌 재계약해요. 다른 구단 감독 영입은 직접 해요',
+    '감독이 떠나면 감독 선임 기준에 맞는 감독을 바로 뽑아 시계가 멈추지 않아요. 계약이 끝나는 감독은 기준으로 재계약하거나 교체해요',
   ],
 ];
 
@@ -115,58 +106,19 @@ export function Delegation({ w, client }: { w: World; client: GameClient }) {
           </span>
         </label>
       ))}
-      <ManagerRuleDial w={w} client={client} />
+      <ManagerOutlook w={w} />
     </section>
   );
 }
 
-/**
- * The rule the staff appoint a manager by (→STAFF-18) as a three-step dial, with the man it would
- * bring if the post fell vacant today.
- */
-function ManagerRuleDial({ w, client }: { w: World; client: GameClient }) {
-  const acting = useActing();
-  const [draft, setDraft] = useState<ManagerRule>();
-  const rule = draft ?? managerRuleOf(w);
-  const shown = { ...w, managerRule: rule };
-  const pick = delegatedManagerPick(shown, w.manager.style),
-    aimed = rule === 'strategy' ? aimedSynergy(w) : undefined;
+/** Whom the staff would appoint by the manager criteria if the post fell vacant today (→STAFF-18). */
+function ManagerOutlook({ w }: { w: World }) {
+  const preview = managerPickPreview(w);
   return (
-    <div className={s.ruleBlock}>
-      <b>감독 선임 기준</b>
-      <div className={s.ruleDial} role="radiogroup" aria-label="감독 선임 기준">
-        {MANAGER_RULES.map((step) => (
-          <button
-            key={step}
-            type="button"
-            role="radio"
-            aria-checked={rule === step}
-            className={rule === step ? s.planOn : undefined}
-            disabled={acting}
-            onClick={() => {
-              if (step === rule) return;
-              setDraft(step);
-              void client
-                .command({ type: 'manager-rule', rule: step })
-                .finally(() => setDraft(undefined));
-            }}
-          >
-            <b>{MANAGER_RULE_INFO[step].label}</b>
-            <small>{MANAGER_RULE_INFO[step].summary}</small>
-          </button>
-        ))}
-      </div>
-      <p data-testid="manager-rule-outlook">
-        {rule === 'strategy' &&
-          (aimed
-            ? `노리는 시너지 ${aimed.label} · ${aimed.schools.map((school) => STYLE_INFO[school].label).join('·')} 감독을 찾아요 · `
-            : '노리는 시너지가 없어 능력 최고로 골라요 · ')}
-        {pick
-          ? `지금 감독 자리가 비면 ${STYLE_INFO[pick.style].label} ${pick.name}(OVR ${pick.ability})을 뽑아요`
-          : '지금은 형편에 맞는 자유계약 감독이 없어 임시 감독 체제가 돼요'}
-        {!w.delegation?.manager && ' · 감독 선임을 맡기면 이 기준으로 골라요'}
-      </p>
-    </div>
+    <p data-testid="manager-rule-outlook">
+      지금 감독 자리가 비면 · {preview.reason}
+      {!w.delegation?.manager && ' · 감독 선임을 맡기면 이 기준으로 골라요'}
+    </p>
   );
 }
 
@@ -355,24 +307,20 @@ export function ManagerHireTerm({
 }
 
 /**
- * Who runs the coaching staff (→STAFF-15): at intervention level 4 (hiring delegated) the staff
- * hire and renew each department to its own investment dial; at levels 1–3 the owner does it.
+ * Who runs the coaching staff (→STAFF-15): each department the staff run hires and renews by its
+ * own criteria; the owner runs the rest.
  */
 export function CoachingPlan({ w }: { w: World }) {
   const delegatedRoles = STAFF_ROLES.filter((role) => coachDelegated(w, role)),
     delegated = delegatedRoles.length > 0;
   const expiring = (w.staff || []).filter((member) => isExpiring(w, member));
-  const counts = ([1, 2, 3] as const)
-    .map((step) => [step, STAFF_ROLES.filter((role) => coachingLevel(w, role) === step).length])
-    .filter(([, count]) => count > 0)
-    .map(([step, count]) => `${COACHING_INFO[step as CoachingLevel].label} ${count}`);
   return (
     <section className={s.plan} aria-label="코치진 운영">
       <header>
         <h3>코치진 운영</h3>
         <span data-testid="coaching-mode">
           {delegatedRoles.length === STAFF_ROLES.length
-            ? '자동 · 스태프가 부서별 투자로 고용·재계약'
+            ? '자동 · 스태프가 부서별 기준으로 고용·재계약'
             : delegated
               ? `일부 자동 · ${delegatedRoles.map((role) => STAFF_INFO[role].label).join('·')}`
               : '직접 · 구단주가 고용·재계약'}
@@ -380,61 +328,11 @@ export function CoachingPlan({ w }: { w: World }) {
       </header>
       <p className={s.note}>
         {delegated
-          ? `부서마다 정한 투자 수준(${counts.join(' · ')})으로 고용해요. 공석은 바로 채우고, 다이얼을 올린 부서의 무급 코치도 바로 바꿔요. 계약 중인 코치는 계약이 끝날 때 그 수준의 후보와 비교해 재계약하거나 교체하고, 남은 무급 코치는 시즌이 끝날 때 바꿔요. 자금 여력이 13주보다 짧아지면 한 단계 싼 코치를, 그래도 어려우면 무급 코치를 써요.`
-          : '개입 1–3에서는 코치 선임·재계약·교체를 직접 해요. 재계약 시즌은 4월 1일이에요. 개입 4(운영진에 모두 맡기기)나 위임 탭에서 코치 고용을 맡기면 부서별 투자 수준을 정할 수 있고, 스태프가 그 수준으로 알아서 고용해요.'}
+          ? `스태프가 ${delegatedRoles.length}개 부서를 맡아 부서마다 정한 선임 기준으로 고용해요. 공석과 무급 자리는 기준에 맞는 첫 후보로 바로 채우고, 맞는 후보가 없으면 무급 코치가 지켜요. 계약 중인 코치는 계약이 끝날 때 기준으로 재계약하거나 교체해요.`
+          : '코치 선임·재계약·교체를 직접 해요. 재계약 시즌은 4월 1일이에요. 부서를 스태프에게 맡기면 정한 선임 기준으로 알아서 고용해요.'}
         {expiring.length > 0 && ` · 이번 시즌 끝에 계약이 끝나는 코치 ${expiring.length}명`}
       </p>
     </section>
-  );
-}
-
-/** The wage a department's investment step buys this season, from its candidate band. */
-function stepCost(w: World, role: StaffRole, step: CoachingLevel, plain: (v: string) => ReactNode) {
-  if (step === 1) return '무급';
-  const band = staffCandidates(w, role).find((offer) => offer.id.endsWith(`:${step - 1}`));
-  return band ? <>{plain(band.wage)}/년</> : '후보 없음';
-}
-
-/** One department's investment dial; the staff hire to it while hiring is delegated. */
-function DepartmentDial({
-  w,
-  role,
-  client,
-  plain,
-}: {
-  w: World;
-  role: StaffRole;
-  client: GameClient;
-  /** A step's wage sits inside its radio: the notation with the exact amount as its title. */
-  plain: (v: string) => ReactNode;
-}) {
-  const acting = useActing();
-  const [draft, setDraft] = useState<CoachingLevel>();
-  const level = draft ?? coachingLevel(w, role);
-  return (
-    <div className={s.dial} role="radiogroup" aria-label={`${STAFF_INFO[role].label} 투자 수준`}>
-      {([1, 2, 3] as const).map((step) => (
-        <button
-          key={step}
-          type="button"
-          role="radio"
-          aria-checked={level === step}
-          className={level === step ? s.planOn : undefined}
-          disabled={acting}
-          title={COACHING_INFO[step].summary}
-          onClick={() => {
-            if (step === level) return;
-            setDraft(step);
-            void client
-              .command({ type: 'coaching', role, level: step })
-              .finally(() => setDraft(undefined));
-          }}
-        >
-          <b>{COACHING_INFO[step].label}</b>
-          <small>{stepCost(w, role, step, plain)}</small>
-        </button>
-      ))}
-    </div>
   );
 }
 
@@ -548,7 +446,9 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                 </button>
               </div>
               {coachDelegated(w, id) && (
-                <DepartmentDial w={w} role={id} client={client} plain={plain} />
+                <small className={s.impact} data-testid={`coach-pick-${id}`}>
+                  지금 기준이면 · {coachPickPreview(w, id).reason}
+                </small>
               )}
             </li>
           );

@@ -90,7 +90,6 @@ const command = z.discriminatedUnion('type', [
   }),
   z.object({ type: z.literal('release-staff'), role: staffRole }),
   z.object({ type: z.literal('renew-staff'), role: staffRole, term: term.optional() }),
-  z.object({ type: z.literal('coaching'), role: staffRole, level: z.literal([1, 2, 3]) }),
   z.object({ type: z.literal('promote-youth'), id: ref }),
   z.object({
     type: z.literal('care'),
@@ -135,7 +134,6 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('read-inbox'), id: ref.optional() }),
   z.object({ type: z.literal('hire'), id: z.string().min(1).max(100), term: term.optional() }),
   z.object({ type: z.literal('renew-manager'), term: term.optional() }),
-  z.object({ type: z.literal('manager-rule'), rule: z.enum(['school', 'best', 'strategy']) }),
   z.discriminatedUnion('role', [
     z.object({
       type: z.literal('hiring'),
