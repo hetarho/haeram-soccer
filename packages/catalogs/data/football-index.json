@@ -63,6 +63,67 @@
     "NED": { "share": 0.35, "real": [1, 1.35, 2.75, 4.15, 4.5] },
     "BEL": { "share": 0.25, "real": [1, 1.25, 2.25, 3.25, 3.5] }
   },
+  "broadcasting": {
+    "notes": [
+      "A broadcasting index per country and year (→ECON-31): what a league's central money, above all its television rights, is worth beyond consumer prices; league distributions (→ECON-28) are quoted on it instead of the football index. Every figure is our own estimate from the published history of league rights deals, never a reproduced national revenue series, so each era is labelled estimated (→ECON-3); after the coverage year the last real multiple holds and prices are projected (→ECON-2).",
+      "The index is the country's price index multiplied by a real multiple against prices, on the football index's footing (1 = prices, as the football index is at its 1950 base) but well below 1 before television sold league football. England's multiple is 0.15 until 1950, 0.3 by 1964 (regular league highlights on television), 1 by 1983 (the first live league contracts), 6 by 1992 (pay-television and the Premier League), 25 by 2005, 45 by 2020 and 48 by 2025. Within an era the multiple grows geometrically from the previous anchor; the first era is flat.",
+      "Every other country's multiple is 0.15 plus its football-index share of England's growth above 0.15, rounded to two decimals. Spain, Germany, Italy, Portugal, the Netherlands and Belgium reached pay-television's large league contracts after England, so at 1992 they hold their share of England's 1988 multiple; France, whose league Canal+ has shown live since 1984, follows England's path."
+    ],
+    "eras": [
+      {
+        "to": 1950,
+        "status": "estimated",
+        "note": "Before television a league's central money is gate levies and fixture fees, a small fraction of what its clubs take at the gate",
+        "sources": ["ons"]
+      },
+      {
+        "to": 1964,
+        "status": "estimated",
+        "note": "Newsreels and occasional broadcasts pay little while leagues keep regular league football off television",
+        "sources": ["ons"]
+      },
+      {
+        "to": 1983,
+        "status": "estimated",
+        "note": "Highlights contracts grow slowly until leagues sell their first live matches",
+        "sources": ["ons", "deloitte"]
+      },
+      {
+        "to": 1992,
+        "status": "estimated",
+        "note": "Live league contracts and the first pay-television deals multiply league money, England's Premier League contract of 1992 leading",
+        "sources": ["deloitte"]
+      },
+      {
+        "to": 2005,
+        "status": "estimated",
+        "note": "Pay-television competition makes broadcasting the largest income of top-flight clubs",
+        "sources": ["deloitte"]
+      },
+      {
+        "to": 2020,
+        "status": "estimated",
+        "note": "Domestic and overseas rights keep growing, led by England",
+        "sources": ["deloitte", "uefa"]
+      },
+      {
+        "to": 2025,
+        "status": "estimated",
+        "note": "Rights values level off in real terms",
+        "sources": ["uefa", "deloitte"]
+      }
+    ],
+    "index": {
+      "ENG": { "real": [0.15, 0.3, 1, 6, 25, 45, 48] },
+      "ESP": { "real": [0.15, 0.26, 0.75, 1.94, 17.55, 31.55, 33.65] },
+      "GER": { "real": [0.15, 0.26, 0.75, 1.94, 17.55, 31.55, 33.65] },
+      "ITA": { "real": [0.15, 0.26, 0.75, 1.94, 17.55, 31.55, 33.65] },
+      "FRA": { "real": [0.15, 0.23, 0.58, 3.08, 12.58, 22.58, 24.08] },
+      "POR": { "real": [0.15, 0.2, 0.41, 0.92, 7.61, 13.61, 14.51] },
+      "NED": { "real": [0.15, 0.2, 0.45, 1.04, 8.85, 15.85, 16.9] },
+      "BEL": { "real": [0.15, 0.19, 0.36, 0.79, 6.36, 11.36, 12.11] }
+    }
+  },
   "slots": {
     "ENG": {
       "local": {

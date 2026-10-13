@@ -1,6 +1,6 @@
 import type { Event, MatchRecord, SponsorSlot, World } from '../../contracts/src/types';
 import { country, currency } from '../../catalogs/src/index';
-import { activePlayers, clubOf, footballQuote, quote } from './world';
+import { activePlayers, broadcastQuote, clubOf, footballQuote, quote } from './world';
 import { clamp, ratio } from './primitives';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
@@ -23,8 +23,9 @@ export const FINANCE_CONFIG = {
 /**
  * League distributions (→ECON-28), first estimates for T062 to calibrate against ECON-29: each
  * country's equal share a season by division, from the top flight down, the last entry being its
- * amateur league, in 1901 price units before the football index; the champion's total against
- * the bottom club's; the share of the lost equal share a relegated club keeps for a season.
+ * amateur league, in 1901 price units before the broadcasting index (→ECON-31); the champion's
+ * total against the bottom club's; the share of the lost equal share a relegated club keeps for a
+ * season.
  */
 export const DISTRIBUTION_CONFIG = {
   share: {
@@ -405,13 +406,14 @@ export function divisionLabel(code: string, tier: number) {
   return tier >= country(code).groups.length ? '아마추어 리그' : `${tier + 1}부`;
 }
 /**
- * The equal share every club of a division earns in a season (→ECON-28), in this season's money;
- * the settlement pays it in league-round installments through `roundShare`.
+ * The equal share every club of a division earns in a season (→ECON-28), in this season's money on
+ * the broadcasting index (→ECON-31); the settlement pays it in league-round installments through
+ * `roundShare`, and the merit payment and the parachute are reckoned from it.
  */
 export function leagueShare(w: World, tier = clubOf(w).tier) {
   const code = clubOf(w).country,
     table = DISTRIBUTION_CONFIG.share[code] ?? DISTRIBUTION_CONFIG.share.ENG;
-  return footballQuote(code, w.year, table[Math.min(tier, table.length - 1)]);
+  return broadcastQuote(code, w.year, table[Math.min(tier, table.length - 1)]);
 }
 /**
  * The merit payment for a final rank, paid at the close: nothing for the bottom club, rising evenly

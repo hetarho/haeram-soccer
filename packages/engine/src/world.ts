@@ -4,6 +4,7 @@ import {
   CATALOG_HASH,
   country,
   currency,
+  broadcastingIndex,
   footballIndex,
   priceIndex,
 } from '../../catalogs/src/index';
@@ -46,7 +47,10 @@ const indexFactors = new Map<
   Index,
   Map<string, { scale: number; initial: number; num: bigint; den: bigint }>
 >();
-/** `units` of 1901 money carried to `year` by an index, in that year's currency. */
+/**
+ * `units` of 1901 money carried to `year` by an index, in that year's currency. The base is 1901
+ * prices, so an index whose real multiple starts below 1 (broadcasting) pays less than prices.
+ */
 function indexed(code: string, year: number, units: number, index: Index) {
   let byYear = indexFactors.get(index);
   if (!byYear) indexFactors.set(index, (byYear = new Map()));
@@ -56,7 +60,7 @@ function indexed(code: string, year: number, units: number, index: Index) {
     const now = currency(code, year),
       initial = currency(code, 1901);
     const factor = BigInt(
-      Math.round((index(code, year).value / index(code, 1901).value) * 1000000),
+      Math.round((index(code, year).value / priceIndex(code, 1901).value) * 1000000),
     );
     f = {
       scale: country(code).scale,
@@ -87,6 +91,14 @@ export function quote(code: string, year: number, units: number): string {
  */
 export function footballQuote(code: string, year: number, units: number): string {
   return indexed(code, year, units, footballIndex);
+}
+/**
+ * Like `footballQuote`, carried by the broadcasting index (→ECON-31): what league distributions pay
+ * (→ECON-28), a small fraction of prices before television and far above the football index from
+ * the 1990s.
+ */
+export function broadcastQuote(code: string, year: number, units: number): string {
+  return indexed(code, year, units, broadcastingIndex);
 }
 export function personName(code: string, r: () => number) {
   const c = country(code);

@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import type { World } from '../../contracts/src/types';
 import { canonical } from '../../contracts/src/index';
-import { COUNTRIES, footballIndex } from '../../catalogs/src/index';
+import { COUNTRIES, broadcastingIndex, currency, footballIndex } from '../../catalogs/src/index';
 import {
   advanceDays,
   advanceRound,
+  broadcastQuote,
   careOffer,
   catchment,
   closeSeason,
@@ -354,7 +355,7 @@ describe('the league distribution', () => {
     });
   });
 
-  it('shares more in higher divisions of every country, priced on the football index', () => {
+  it('shares more in higher divisions of every country, priced on the broadcasting index', () => {
     for (const profile of COUNTRIES) {
       const table = DISTRIBUTION_CONFIG.share[profile.code];
       // Every professional division and the amateur league below them.
@@ -364,9 +365,44 @@ describe('the league distribution', () => {
     }
     const late = { ...world(), year: 2010 },
       units = DISTRIBUTION_CONFIG.share.ENG[0];
-    expect(footballIndex('ENG', 2010).real).toBeGreaterThan(1);
-    expect(leagueShare(late, 0)).toBe(footballQuote('ENG', 2010, units));
-    expect(BigInt(leagueShare(late, 0))).toBeGreaterThan(BigInt(quote('ENG', 2010, units)));
+    expect(broadcastingIndex('ENG', 2010).real).toBeGreaterThan(footballIndex('ENG', 2010).real);
+    expect(leagueShare(late, 0)).toBe(broadcastQuote('ENG', 2010, units));
+    expect(BigInt(leagueShare(late, 0))).toBeGreaterThan(BigInt(footballQuote('ENG', 2010, units)));
+    // Before television the league's money is a small fraction of prices.
+    const early = { ...world(), year: 1955 };
+    expect(BigInt(leagueShare(early, 0)) * 4n).toBeLessThan(BigInt(quote('ENG', 1955, units)));
+  });
+
+  it('scales the top-flight share, merit and parachute from 1955 to 2005 by the broadcasting index', () => {
+    // In pounds, so the pre-decimal penny (240 a pound) and the new penny compare.
+    const pounds = (amount: string, year: number) =>
+      Number(BigInt(amount)) / currency('ENG', year).units;
+    const at = (year: number) => {
+      const w = { ...world(), year };
+      clubOf(w).tier = 0;
+      return w;
+    };
+    const growth = (index: typeof footballIndex) =>
+      index('ENG', 2005).value / index('ENG', 1955).value;
+    const broadcasting = growth(broadcastingIndex),
+      football = growth(footballIndex);
+    // The two indices tell very different stories over these fifty years.
+    expect(broadcasting / football).toBeGreaterThan(10);
+    const scaled = (money: (w: World) => string) =>
+      pounds(money(at(2005)), 2005) / pounds(money(at(1955)), 1955);
+    expect(scaled((w) => leagueShare(w)) / broadcasting).toBeCloseTo(1, 4);
+    expect(scaled((w) => leagueMerit(w, 1, 20)) / broadcasting).toBeCloseTo(1, 4);
+    // A club relegated from the top flight into the second tier keeps half the share it lost.
+    const relegated = (year: number) => {
+      const w = at(year);
+      clubOf(w).tier = 1;
+      w.history = [{ year: year - 1, tier: 0 } as World['history'][number]];
+      return parachutePayment(w);
+    };
+    expect(pounds(relegated(1955), 1955)).toBeGreaterThan(0);
+    expect(
+      pounds(relegated(2005), 2005) / pounds(relegated(1955), 1955) / broadcasting,
+    ).toBeCloseTo(1, 4);
   });
 
   it('orders the merit by final position, the champion taking 1.6× the bottom club up top and 1.3× below', () => {

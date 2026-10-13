@@ -3,6 +3,7 @@ import { canonical } from '../packages/contracts/src/index';
 import { CATALOG_HASH, priceData, footballData } from '../packages/catalogs/src/index';
 import { COUNTRIES, priceIndex, CATALOG_VERSION } from '../packages/catalogs/src/index';
 import { SPONSOR_SLOTS, footballIndex, sponsorSlotOpens } from '../packages/catalogs/src/index';
+import { broadcastingIndex } from '../packages/catalogs/src/index';
 const sources: Record<string, string> = footballData.sources;
 const table: Record<string, { share: number; real: number[] }> = footballData.index;
 const eras = footballData.eras;
@@ -21,6 +22,44 @@ eras.forEach((era, index) => {
   for (const key of era.sources)
     if (!sources[key]) throw new Error(`Football era ${era.to} cites unknown ${key}`);
 });
+// The broadcasting index (→ECON-31): its own eras over the same coverage, anchors that never fall.
+const broadcasting = footballData.broadcasting;
+if (
+  broadcasting.eras.length === 0 ||
+  broadcasting.eras[broadcasting.eras.length - 1].to !== coverage
+)
+  throw new Error('The last broadcasting era must end at the catalog coverage year');
+broadcasting.eras.forEach((era, index) => {
+  const previous = index === 0 ? from : broadcasting.eras[index - 1].to;
+  if (era.to <= previous) throw new Error(`Broadcasting eras out of order at ${era.to}`);
+  if (!era.note) throw new Error(`Broadcasting era ${era.to} has no note`);
+  if (era.sources.length === 0) throw new Error(`Broadcasting era ${era.to} has no source`);
+  for (const key of era.sources)
+    if (!sources[key]) throw new Error(`Broadcasting era ${era.to} cites unknown ${key}`);
+});
+const broadcastingTable: Record<string, { real: number[] }> = broadcasting.index;
+for (const c of COUNTRIES) {
+  const row = broadcastingTable[c.code];
+  if (!row || row.real.length !== broadcasting.eras.length)
+    throw new Error(`Broadcasting index ${c.code} does not cover every era`);
+  row.real.forEach((value, index) => {
+    if (!(value > 0) || (index > 0 && value < row.real[index - 1]))
+      throw new Error(`Broadcasting index ${c.code} falls at ${broadcasting.eras[index].to}`);
+  });
+  for (let year = from; year <= 2030; year++) {
+    const point = broadcastingIndex(c.code, year);
+    if (!Number.isFinite(point.value) || !(point.value > 0))
+      throw new Error(`Missing broadcasting index ${c.code} ${year}`);
+    if (!point.source.includes('https://'))
+      throw new Error(`Broadcasting index ${c.code} ${year} has no source`);
+    if (year > coverage && point.status !== 'projected')
+      throw new Error(
+        `Broadcasting index ${c.code} ${year} is past coverage and must be projected`,
+      );
+    if (year <= coverage && point.status === 'observed')
+      throw new Error(`Broadcasting index ${c.code} ${year} may not be called an observation`);
+  }
+}
 for (const c of COUNTRIES) {
   if (c.groups.flat().some((n) => n < 10 || n > 30) || c.moves.length !== c.groups.length - 1)
     throw new Error(`Invalid country: ${c.code}`);
@@ -67,7 +106,7 @@ for (const c of COUNTRIES) {
   }
 }
 console.log(
-  `${CATALOG_VERSION}: ${COUNTRIES.length} sourced profiles, 1901–2030 positive price and football index coverage with ${eras.length} attributed eras, ${SPONSOR_SLOTS.length} sponsor slots per country; normalization and estimates explicitly recorded.`,
+  `${CATALOG_VERSION}: ${COUNTRIES.length} sourced profiles, 1901–2030 positive price, football index (${eras.length} attributed eras) and broadcasting index (${broadcasting.eras.length} attributed eras) coverage, ${SPONSOR_SLOTS.length} sponsor slots per country; normalization and estimates explicitly recorded.`,
 );
 
 if (

@@ -1,6 +1,7 @@
 import { expect, it } from 'vitest';
 import { COUNTRIES, priceIndex, currency } from './index';
-import { SPONSOR_SLOTS, footballIndex, sponsorSlotOpens } from './index';
+import { SPONSOR_SLOTS, broadcastingIndex, footballIndex, sponsorSlotOpens } from './index';
+import { footballData } from './index';
 it('contains sourced eight-country group structures and an odd group', () => {
   expect(COUNTRIES).toHaveLength(8);
   expect(COUNTRIES.find((c) => c.code === 'ITA')!.groups[2]).toEqual([20, 20, 20]);
@@ -45,6 +46,46 @@ it('labels football figures estimated, projects after coverage and caches each l
   expect(footballIndex('ENG', 2030).real).toBe(footballIndex('ENG', 2026).real);
   expect(footballIndex('ENG', 2030).value).toBeGreaterThan(footballIndex('ENG', 2026).value);
   expect(footballIndex('ITA', 2005)).toBe(footballIndex('ITA', 2005));
+});
+it('keeps broadcasting money below the football index before television and above it from the 2000s', () => {
+  for (let year = 1950; year <= 1959; year++)
+    expect(broadcastingIndex('ENG', year).real).toBeLessThan(footballIndex('ENG', year).real);
+  for (let year = 2000; year <= 2025; year++)
+    expect(broadcastingIndex('ENG', year).real).toBeGreaterThan(footballIndex('ENG', year).real);
+  // England's anchors: flat before 1950, then each era's multiple against prices.
+  for (const year of [1901, 1950]) expect(broadcastingIndex('ENG', year).real).toBe(0.15);
+  expect(broadcastingIndex('ENG', 1983).real).toBeCloseTo(1, 6);
+  expect(broadcastingIndex('ENG', 1992).real).toBeCloseTo(6, 6);
+  expect(broadcastingIndex('ENG', 2005).real).toBeCloseTo(25, 6);
+  const multiple = broadcastingIndex('ENG', 2005).value / priceIndex('ENG', 2005).value;
+  expect(multiple).toBeCloseTo(25, 6);
+  // Every country grows from the same small start; England leads the boom.
+  for (const c of COUNTRIES) {
+    expect(broadcastingIndex(c.code, 1955).real).toBeLessThan(1);
+    expect(broadcastingIndex(c.code, 2005).real).toBeGreaterThan(footballIndex(c.code, 2005).real);
+    expect(broadcastingIndex(c.code, 2020).real).toBeLessThanOrEqual(
+      broadcastingIndex('ENG', 2020).real,
+    );
+  }
+});
+it('labels every broadcasting era estimated with a source, projects after coverage and caches', () => {
+  const eras = footballData.broadcasting.eras;
+  for (const c of COUNTRIES)
+    eras.forEach((era, index) => {
+      const year = index === 0 ? footballData.from : eras[index - 1].to + 1;
+      for (const point of [broadcastingIndex(c.code, year), broadcastingIndex(c.code, era.to)]) {
+        expect(point.status).toBe('estimated');
+        expect(point.source).toContain('https://');
+        expect(point.source).toContain(era.note);
+      }
+    });
+  const last = eras.at(-1)!.to;
+  expect(broadcastingIndex('ENG', last + 1).status).toBe('projected');
+  expect(broadcastingIndex('ENG', 2030).real).toBe(broadcastingIndex('ENG', last).real);
+  expect(broadcastingIndex('ENG', 2030).value).toBeGreaterThan(
+    broadcastingIndex('ENG', 2026).value,
+  );
+  expect(broadcastingIndex('ITA', 2005)).toBe(broadcastingIndex('ITA', 2005));
 });
 it('opens sponsor slots by country and year with their provenance', () => {
   expect(SPONSOR_SLOTS).toEqual(['local', 'kit', 'shirt', 'stadium', 'sleeve']);
