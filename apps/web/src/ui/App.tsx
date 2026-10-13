@@ -536,9 +536,9 @@ const ConnectedRich = memo(function ConnectedRich({
   );
 });
 function CalendarText() {
-  const year = useGameState((state) => state.view?.world.year);
+  const year = useGameState((state) => state.view?.world.year)!;
   const round = useGameState((state) => state.view?.world.round);
-  return <>{year ? `${seasonName(year)} · 라운드 ${round}` : '1950 · A NEW BEGINNING'}</>;
+  return <>{`${seasonName(year)} · 라운드 ${round}`}</>;
 }
 /**
  * Cash is the one resource every decision spends, so it stays pinned to the top right; tapping it
@@ -584,21 +584,24 @@ function HudCash({ client }: { client?: GameClient }) {
 }
 const GameHud = memo(function GameHud({
   onMenu,
-  menuDisabled,
+  playing,
   client,
 }: {
   onMenu: () => void;
-  menuDisabled: boolean;
+  /** Founding, even beside a parked game, shows the start HUD: no club, menu, inbox or cash. */
+  playing: boolean;
   client?: GameClient;
 }) {
   const own = useGameState((state) =>
-    state.view?.world.clubs.find((club) => club.id === state.view?.world.playerClub),
+    playing
+      ? state.view?.world.clubs.find((club) => club.id === state.view?.world.playerClub)
+      : undefined,
   );
   const lower = useGameState((state) => state.view?.world.lower);
   const crestWorld = useGameState((state) => state.view?.world.clubs && state.view.world);
   return (
     <header className={s.hud}>
-      {!menuDisabled && (
+      {playing && (
         <button
           className={s.hudMenu}
           aria-label="전체 메뉴"
@@ -619,14 +622,20 @@ const GameHud = memo(function GameHud({
         <div>
           <b>{own?.name || 'Haeram Football'}</b>
           <small data-testid="calendar">
-            {own && `${lower ? '아마추어 리그' : `${own.tier + 1}부`} · `}
-            <CalendarText />
+            {own ? (
+              <>
+                {`${lower ? '아마추어 리그' : `${own.tier + 1}부`} · `}
+                <CalendarText />
+              </>
+            ) : (
+              '1950 · A NEW BEGINNING'
+            )}
           </small>
         </div>
       </div>
       <ReadonlyBadge />
-      {client && !menuDisabled && <InboxButton client={client} />}
-      <HudCash client={menuDisabled ? undefined : client} />
+      {client && playing && <InboxButton client={client} />}
+      {playing && <HudCash client={client} />}
     </header>
   );
 });
@@ -764,12 +773,15 @@ function CashAlarm() {
 const RuntimeFeedback = memo(function RuntimeFeedback({
   client,
   localError,
+  playing,
 }: {
   client: GameClient;
   localError: string;
+  /** The club's bands belong to the game in play, never to founding beside a parked one. */
+  playing: boolean;
 }) {
   const state = useGameState((state) => state);
-  const critical = state.view?.world.critical;
+  const critical = playing ? state.view?.world.critical : undefined;
   const blocked = state.busy || state.readonly;
   return (
     <>
@@ -780,7 +792,7 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
         </div>
       )}
       {/* App notices arrive as system notifications in the HUD inbox, never over the view (→WEB-66). */}
-      <CashAlarm />
+      {playing && <CashAlarm />}
       {critical === MANAGER_GONE ? (
         // The interim manager can carry on, or the owner goes straight to the candidates.
         <div className={s.critical} role="status">
@@ -838,10 +850,11 @@ function savedAgo(savedAt: number, now: number) {
 }
 /**
  * 저장 완료 while every revision is on disk; otherwise when this tab last saved, so a running clock
- * between its background saves reads steadily instead of flipping on every step (→SAVE-8).
+ * between its background saves reads steadily instead of flipping on every step (→SAVE-8). Start
+ * screens say nothing of a game kept beside them.
  */
-function useSaveText() {
-  const w = useGameState((state) => state.view?.world);
+function useSaveText(playing = true) {
+  const w = useGameState((state) => (playing ? state.view?.world : undefined));
   const savedRevision = useGameState((state) => state.savedRevision);
   const savedAt = useGameState((state) => state.savedAt);
   const waiting = !!w && savedRevision !== w.revision && savedAt !== undefined;
@@ -862,8 +875,8 @@ function useSaveText() {
         : '저장 대기';
   return `${saved} · r${w.revision} · 물가 ${status === 'observed' ? '관측' : status === 'estimated' ? '추정' : '전망'}`;
 }
-const LiveFooter = memo(function LiveFooter() {
-  const text = useSaveText();
+const LiveFooter = memo(function LiveFooter({ playing }: { playing: boolean }) {
+  const text = useSaveText(playing);
   return (
     <footer className={s.footer}>
       <span>HAERAM FOOTBALL · 가상의 클럽, 당신의 역사.</span>
@@ -967,7 +980,7 @@ export function App() {
     [pendingImport, setPendingImport] = useState<string>(),
     [moreOpen, setMoreOpen] = useState(false),
     [guideOpen, setGuideOpen] = useState(false);
-  const { page, setPage } = useNavigation();
+  const { page, setPage, replacePage } = useNavigation();
   // One intervention dialog for the HUD menu, the clock's popover and the match-eve card.
   const stopSettings = useInterventionDialog((state) => state.open);
   const showNews = useNewsSheet((state) => state.show);
@@ -1052,10 +1065,15 @@ export function App() {
     setMoreOpen(false);
     setReplacing(false);
     setTargetSlot(undefined);
+    // Home is set on the way out, so the game entered next opens there without mounting the tab
+    // it was left on (a deferred page would let that tab write its ?view= into home's address).
+    replacePage('dashboard');
     setScreen('slots');
   };
+  /** A game entered from the slot screen or game over, continued or new, opens on home. */
   const enterGame = () => {
     rememberInGame(true);
+    replacePage('dashboard');
     setScreen('game');
   };
   /** Readies a slot (parking the game in play) and opens founding for it. */
@@ -1073,7 +1091,6 @@ export function App() {
   };
   // The match view exists only for a live playback; its address alone leads home (→WEB-40).
   const hasPlayback = useGameState((state) => !!state.playback);
-  const replacePage = useNavigation((state) => state.replacePage);
   useEffect(() => {
     if (page === 'match' && client && w && !hasPlayback) replacePage('dashboard');
   }, [page, client, w, hasPlayback, replacePage]);
@@ -1171,15 +1188,15 @@ export function App() {
         )}
       </aside>
       <main className={s.main}>
-        {screen === 'game' && (
-          <GameHud onMenu={openMenu} menuDisabled={menuDisabled} client={client} />
-        )}
+        {screen === 'game' && <GameHud onMenu={openMenu} playing={playing} client={client} />}
         {!client && localError && (
           <div className={s.error} role="alert">
             {localError}
           </div>
         )}
-        {client && screen === 'game' && <RuntimeFeedback client={client} localError={localError} />}
+        {client && screen === 'game' && (
+          <RuntimeFeedback client={client} localError={localError} playing={playing} />
+        )}
         {/* The match theatre carries its own compact clock in its header row. */}
         {client && controller && playing && !w.bankrupt && page !== 'match' && (
           <ProgressControls
@@ -1214,7 +1231,8 @@ export function App() {
                 onDone={() => {
                   setReplacing(false);
                   setTargetSlot(undefined);
-                  if (replacing) setPage('dashboard');
+                  // A new career always opens on home, whatever address founding was reached at.
+                  replacePage('dashboard');
                 }}
               />
             ) : w.bankrupt ? (
@@ -1256,7 +1274,7 @@ export function App() {
           {client && screen === 'game' && (!w || replacing) && (
             <StartTools onDownload={download} onImport={importFile} />
           )}
-          <LiveFooter />
+          <LiveFooter playing={playing} />
           {/* Start screens carry their own import and recovery tools. */}
           {client && playing && (
             <SaveActions

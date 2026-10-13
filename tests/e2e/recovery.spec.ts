@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
-import { decode } from '../../apps/web/src/adapters/persistence';
+import { decode, encode } from '../../apps/web/src/adapters/persistence';
+import { createWorld } from '../../packages/engine/src/index';
+import { MANAGER_GONE } from '../../packages/engine/src/operations';
 const found = async (page: import('@playwright/test').Page) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
@@ -187,6 +189,9 @@ test('a new game goes into another slot, both careers survive switching and back
   await expect(page).toHaveURL(/\/people$/);
   await page.goBack();
   await expect(page.getByRole('button', { name: '다음 경기 관전' })).toBeVisible();
+  // Whichever tab a game was left on, a game entered from the slot screen opens on home.
+  await page.getByRole('button', { name: '훈련·육성', exact: true }).click();
+  await expect(page).toHaveURL(/\/training$/);
   await page.getByRole('button', { name: '게임 슬롯' }).click();
   const slotScreen = page.getByTestId('game-slots');
   await expect(slotScreen.getByRole('listitem', { name: '슬롯 1' })).toContainText('진행 중');
@@ -203,10 +208,14 @@ test('a new game goes into another slot, both careers survive switching and back
     timeout: 30000,
   });
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await expect(page).toHaveURL(/\/journal$/);
   // A reload of a tab in a game continues it.
   await page.reload();
   await expect(page.getByText('New Fictional Club', { exact: true }).first()).toBeVisible();
   // The first career waited in its slot and comes back intact.
+  await page.getByRole('button', { name: '구단 운영', exact: true }).click();
+  await expect(page).toHaveURL(/\/business\?view=strategy$/);
   await page.getByRole('button', { name: '게임 슬롯' }).click();
   await expect(slotScreen.getByRole('listitem', { name: '슬롯 2' })).toContainText('진행 중');
   await slotScreen
@@ -214,6 +223,7 @@ test('a new game goes into another slot, both careers survive switching and back
     .getByRole('button', { name: '이어하기' })
     .click();
   await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
+  await expect(page).toHaveURL(/\/journal$/);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r0');
   await expect(page.getByText('New Fictional Club', { exact: true })).toHaveCount(0);
   // A fresh window opens on the slot screen.
@@ -224,4 +234,51 @@ test('a new game goes into another slot, both careers survive switching and back
     'New Fictional Club',
   );
   await second.close();
+});
+test('founding beside a parked game shows none of its club, cash or bands', async ({ page }) => {
+  const fixture = createWorld({
+    country: 'ENG',
+    name: 'Parked Crisis',
+    color: '#bf7956',
+    seed: 'parked-crisis',
+    difficulty: 0.5,
+  });
+  // In debt and without a manager: the red band and the manager notice sit under the HUD.
+  fixture.cash = '-1';
+  fixture.critical = MANAGER_GONE;
+  await page.goto('/');
+  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
+  await page
+    .locator('input[type=file]')
+    .last()
+    .setInputFiles({
+      name: 'parked-crisis.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(await encode(fixture)),
+    });
+  const alarm = page.getByTestId('cash-alarm');
+  const notice = page.getByText('감독이 떠났어요.');
+  await expect(alarm).toBeVisible();
+  await expect(notice).toBeVisible();
+  await page.getByRole('button', { name: '게임 슬롯' }).click();
+  const slotScreen = page.getByTestId('game-slots');
+  await slotScreen
+    .getByRole('listitem', { name: '슬롯 2 · 빈 슬롯' })
+    .getByRole('button', { name: '새 게임' })
+    .click();
+  await expect(page.getByTestId('club-founding')).toContainText('슬롯 2 · 새 게임');
+  await expect(page.getByTestId('calendar')).toHaveText('1950 · A NEW BEGINNING');
+  await expect(page.getByTestId('hud-cash')).toHaveCount(0);
+  await expect(page.getByText('Parked Crisis')).toHaveCount(0);
+  await expect(page.getByTestId('save-status')).toHaveText('로그인 없이 시작하세요');
+  await expect(alarm).toHaveCount(0);
+  await expect(notice).toHaveCount(0);
+  // The parked game brings its bands back when it is continued.
+  await page.getByRole('button', { name: '← 게임 슬롯' }).click();
+  await slotScreen
+    .getByRole('listitem', { name: '슬롯 1' })
+    .getByRole('button', { name: '이어하기' })
+    .click();
+  await expect(alarm).toBeVisible();
+  await expect(notice).toBeVisible();
 });
