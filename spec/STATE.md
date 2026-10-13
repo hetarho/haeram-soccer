@@ -31,7 +31,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T062 | Rules 1.16.0: economy calibration, goldens and docs | SAVE ECON CLUB | T056 T059 T061 | todo |
+| T062 | Rules 1.16.0: economy calibration, goldens and docs | SAVE ECON CLUB | T056 T059 T061 | blocked@261013 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -40,11 +40,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- work group club-realism: 12/13 integrated on work/club-realism; T062 is left (ECON-30 operating expenses + calibration, rules 1.16.0, goldens, FINANCES.md, full verify). Its first attempt's versions.ts bump and scripts/calibrate-economy.ts are on task/club-realism/T062-aa3f75e5. On the clone holding the runtime: merge work/club-realism into that workspace, `work update --attempt aa3f75e5-b1c8-4f23-aafb-7b4db9600e56 --status doing`, `work run --work club-realism --provider claude --timeout-ms 7200000`. Elsewhere (a fresh clone has no runtime): do T062 standalone on work/club-realism merged with that branch. Then merge work/club-realism into main and push.
+- T062 blocked 261013 (standalone on t062-standalone = work/club-realism + its first attempt): ECON-30 operating expenses and the reference-club calibration script are in; the bands need update-ssot for three conflicts — the 1950s matchday share against the 2000s top-flight mix under one football index (ECON-26), ECON-9's second/third-tier crowds on a reference club whose supporters follow reputation (ECON-23), and one operating-expense amount per division against the wage, net and ladder bands once delegated raises after a promotion bankrupt the club (ECON-30, CLUB-26, ECON-12). Measurements and options are in tasks/T062's result; then create-task, finish T062 (tuning, goldens, FINANCES.md, full verify) and merge work/club-realism into main.
 - after the merge: fix CI's benchmark job (desktop pointer-to-second-frame p95 115 ms > 100 since one-result merged; 74–82 ms at c63554c), its own commit on main.
 - planner questions from the reviews: whether loading a pre-1.16 save delegates contract talks at intervention level 2+ (they show 맞춤 now, WEB-45); CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 T062 blocked: calibration bands conflict with ECON-26, ECON-23 and ECON-30/CLUB-26 (measured r0–r5 in its result); ECON-30 operating expenses implemented
+- 261013 T062 doing standalone on t062-standalone (work/club-realism + its first attempt, f8235db)
 - 261013 create-task ECON: T062 gains ECON-30 operating expenses (base ECON@15); its blocked attempt carries over
 - 261013 update-ssot ECON r15: ECON-30+ operating expenses per division on the football index, ECON-26✎, ECON-29✎ reference club (T062's attempt found net result 47% of income with every non-wage cost on prices)
 - 261012 T057 T058 T059 integrated
@@ -63,5 +65,3 @@
 - 261012 T045 integrated
 - 261012 create-task T063 (from the day-order review P2): amateur table zones follow the exchange, outside the lane's touches
 - 261012 T042 integrated
-- 261012 T046 integrated
-- 261012 create-task SAVE WEB ARCH: lane background-save T048 background codec worker → T049 clock never waits for saving (30 s autosave, save on stop/hide/close), added to work group one-result
