@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { World } from '../../contracts/src/types';
+import type { PolicyLevel, World } from '../../contracts/src/types';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import {
   COUNTRIES,
@@ -23,6 +23,7 @@ import {
   EXPENSE_CONFIG,
   financeProjection,
   financialBreakdown,
+  fixedCostRunway,
   footballQuote,
   gateProjection,
   lastSeasonTurnover,
@@ -35,16 +36,20 @@ import {
   operatingCosts,
   operatingExpensesAt,
   parachutePayment,
+  POLICY_DEFAULTS,
+  policyOf,
   prepareSeason,
   quote,
   ratio,
   roundShare,
+  scaleOperatingExpenses,
   settleLeagueMerit,
   seasonOperatingExpenses,
   settleRound,
   simulateMatch,
   simulateSeason,
   sponsorOffers,
+  SUPPORT_EXPENSES,
 } from './index';
 import { professionalStart, sellPlayer } from './testing';
 import { advanceEconomy } from './economy';
@@ -538,8 +543,9 @@ describe('operating expenses (→ECON-30)', () => {
   });
 
   it('counts them in the cash warning and the bankruptcy threshold', () => {
-    const start = () => {
+    const start = (support: PolicyLevel = 3) => {
       const w = world();
+      if (support !== 3) w.policy = { ...POLICY_DEFAULTS, support };
       w.round = 1;
       const cost = operatingCosts(w, 1),
         share = BigInt(roundShare(leagueShare(w), 1));
@@ -567,6 +573,88 @@ describe('operating expenses (→ECON-30)', () => {
     expect(inDebt.insolvent).toBe(1);
     const beyond = start().settle(-(annual / 2n + 1n));
     expect(beyond.bankrupt).toBeDefined();
+    // Both count them at the squad investment's factor (→ECON-16): ×1.2 needs more rounds' cash
+    // and allows a deeper debt than the default level.
+    const generous = start(5),
+      dearer = BigInt(generous.cost.nextRound);
+    expect(dearer).toBeGreaterThan(perRound);
+    expect(
+      start()
+        .settle(perRound * 13n)
+        .events.some((e) => e.kind === 'cash-warning'),
+    ).toBe(false);
+    generous.settle(perRound * 13n);
+    expect(generous.w.events.some((e) => e.kind === 'cash-warning')).toBe(true);
+    expect(generous.w.inbox!.at(-1)!.detail).toContain(moneyLabel(generous.w, dearer.toString()));
+    expect(BigInt(generous.cost.annual) / 2n).toBeGreaterThan(annual / 2n + 1n);
+    expect(start(5).settle(-(annual / 2n + 1n)).bankrupt).toBeUndefined();
+  });
+
+  it("squad investment scales each round's operating expenses and the runway", () => {
+    const w = professionalStart(world()),
+      season = w.operatingExpenses!;
+    w.cash = (BigInt(operatingCosts(w).annual) * 2n).toString();
+    const at = (support: PolicyLevel) => ({ ...w, policy: { ...POLICY_DEFAULTS, support } }),
+      standard = operatingCosts(at(3));
+    for (const support of [1, 2, 3, 4, 5] as const) {
+      const factor = SUPPORT_EXPENSES[support - 1],
+        costs = operatingCosts(at(support));
+      // The recorded season amount stays; the year's operating expenses scale (→ECON-30).
+      expect(costs).toMatchObject({ seasonExpenses: season, operatingFactor: factor });
+      expect(costs.expenses).toBe(ratio(season, BigInt(Math.round(factor * 100)), 100n));
+      expect(costs.payments.expenses).toBe(roundShare(costs.expenses, 1));
+      // Only the operating expenses move: wages, upkeep and policy spend are as at the default.
+      expect(BigInt(costs.annual) - BigInt(standard.annual)).toBe(
+        BigInt(costs.expenses) - BigInt(season),
+      );
+      // Fixed costs and the runway count them (→ECON-12).
+      expect(operatingCost(at(support))).toBe(costs.annual);
+    }
+    const runway = (support: PolicyLevel) => fixedCostRunway(w.cash, operatingCost(at(support)));
+    expect(runway(3)).toBe(92);
+    expect(runway(5)).toBeLessThan(runway(4));
+    expect(runway(4)).toBeLessThan(runway(3));
+    expect(runway(1)).toBeGreaterThan(runway(3));
+
+    // Each round books its share at the factor in force at that settlement; a change acts from the
+    // next one and leaves the recorded season amount as it is.
+    operate(w, { type: 'policy', key: 'support', level: 5 });
+    advanceRound(w, undefined, false);
+    const first = roundShare(operatingCosts(at(5)).expenses, 1);
+    expect(entries(w)).toHaveLength(1);
+    expect(entries(w)[0].amount).toBe(first);
+    expect(BigInt(first)).toBeGreaterThan(BigInt(roundShare(season, 1)));
+    expect(entries(w)[0].detail).toContain('선수단 투자 ×1.2');
+    operate(w, { type: 'policy', key: 'support', level: 1 });
+    advanceRound(w, undefined, false);
+    const second = roundShare(operatingCosts(at(1)).expenses, 2);
+    expect(entries(w)[0].amount).toBe((BigInt(first) + BigInt(second)).toString());
+    expect(BigInt(second)).toBeLessThan(BigInt(roundShare(season, 2)));
+    expect(entries(w)[0].detail).toContain('선수단 투자 ×0.9');
+    expect(w.operatingExpenses).toBe(season);
+  });
+
+  it('the default level books exactly the season amount per round', () => {
+    const w = professionalStart(world()),
+      season = w.operatingExpenses!,
+      explicit = { ...w, policy: { ...POLICY_DEFAULTS } };
+    expect(policyOf(w).support).toBe(3);
+    expect(operatingCosts(explicit)).toEqual(operatingCosts(w));
+    expect(operatingCosts(w)).toMatchObject({
+      expenses: season,
+      seasonExpenses: season,
+      operatingFactor: 1,
+    });
+    for (const amount of ['0', '1', '45', season, '123456789012345678901'])
+      expect(scaleOperatingExpenses(amount, 1)).toBe(amount);
+    for (let round = 1; round <= 46; round++) {
+      advanceRound(w, undefined, false);
+      expect(w.round).toBe(round);
+      // The installments so far are the season amount's share of the rounds played, to the unit.
+      expect(entries(w)[0].amount).toBe(ratio(season, BigInt(round), 46n));
+    }
+    expect(entries(w)[0].amount).toBe(season);
+    expect(entries(w)[0].detail).not.toContain('선수단 투자');
   });
 
   /** The configured share of a turnover (→ECON-30). */

@@ -23,6 +23,7 @@ import {
   settleRound,
   settleTraining,
   setPolicy,
+  SUPPORT_EXPENSES,
   trainingSummary,
   transferOffers,
   driftFans,
@@ -115,6 +116,7 @@ describe('club operating policy', () => {
       goodwill: 5,
       developmentMultiplier: 1,
       recoveryBonus: 0,
+      operatingFactor: 1,
       marketingUnits: 0,
       fanGrowth: 0,
       gateBoost: 0,
@@ -135,15 +137,39 @@ describe('club operating policy', () => {
     expect(policyPreview(world(), 'support', 5)).not.toHaveProperty('payCeiling');
   });
 
+  it('the support effects table includes the operating-expense factor', () => {
+    // Squad investment is paid through the operating expenses it scales (→ECON-16, ECON-30).
+    expect(SUPPORT_EXPENSES).toEqual([0.9, 0.95, 1, 1.1, 1.2]);
+    for (const support of [1, 2, 3, 4, 5] as const) {
+      const factor = SUPPORT_EXPENSES[support - 1],
+        { summary } = POLICY_INFO.support.levels[support - 1];
+      expect(policyEffects({ ...POLICY_DEFAULTS, support }).operatingFactor).toBe(factor);
+      expect(policyPreview(world(), 'support', support).operatingFactor).toBe(factor);
+      expect(summary).toContain(factor === 1 ? '운영 경비 기본' : `운영 경비 ×${factor}`);
+    }
+    // Only squad investment moves the factor.
+    for (const key of ['recruitment', 'marketing', 'academy'] as const)
+      for (const level of [1, 5] as const)
+        expect(policyEffects({ ...POLICY_DEFAULTS, [key]: level }).operatingFactor).toBe(1);
+  });
+
   it('raises goodwill, development and recovery under stronger squad support, never the wage bill', () => {
     expect(
       ([1, 2, 3, 4, 5] as const).map(
         (support) => policyEffects({ ...POLICY_DEFAULTS, support }).goodwill,
       ),
     ).toEqual([-5, 0, 5, 10, 15]);
-    const base = canonical(operatingCosts(world()));
-    expect(canonical(operatingCosts(world({ support: 5 })))).toBe(base);
-    expect(canonical(operatingCosts(world({ support: 1 })))).toBe(base);
+    // Agreed wages are paid as signed at every level; squad investment costs operating expenses.
+    const base = operatingCosts(world());
+    for (const support of [1, 5] as const) {
+      const costs = operatingCosts(world({ support }));
+      expect(costs.playerWages).toBe(base.playerWages);
+      expect(costs.payments.playerWages).toBe(base.payments.playerWages);
+      expect(costs.managerWage).toBe(base.managerWage);
+      expect(BigInt(costs.annual) - BigInt(costs.expenses)).toBe(
+        BigInt(base.annual) - BigInt(base.expenses),
+      );
+    }
 
     const high = academy({ support: 5 }),
       standard = academy(),
@@ -286,8 +312,21 @@ describe('club operating policy', () => {
   it('previews the annual cost change and effects without changing the club', () => {
     const w = world(),
       before = canonical(w);
-    for (const level of [1, 3, 5] as const)
-      expect(policyPreview(w, 'support', level).annualCostChange).toBe('0');
+    // Squad investment changes the fixed costs through the operating expenses it scales.
+    const season = operatingCosts(w).seasonExpenses;
+    for (const level of [1, 3, 5] as const) {
+      const scaled = BigInt(operatingCosts(world({ support: level })).expenses);
+      expect(BigInt(policyPreview(w, 'support', level).annualCostChange)).toBe(
+        scaled - BigInt(season),
+      );
+    }
+    expect(policyPreview(w, 'support', 3)).toMatchObject({
+      annualCostChange: '0',
+      nextRoundChange: '0',
+    });
+    expect(BigInt(policyPreview(w, 'support', 5).annualCostChange)).toBeGreaterThan(0n);
+    expect(BigInt(policyPreview(w, 'support', 5).nextRoundChange)).toBeGreaterThan(0n);
+    expect(BigInt(policyPreview(w, 'support', 1).annualCostChange)).toBeLessThan(0n);
     expect(policyPreview(w, 'recruitment', 5).annualCostChange).toBe('0');
     expect(policyPreview(w, 'recruitment', 1)).toMatchObject({
       offerAge: [17, 21],
