@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r55 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r56 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -171,9 +171,9 @@
 - WEB-60 [o] The 운영 전략 tab is one operating board: the club's strategy cards (→ECON-22) and its dials (→ECON-16, →ECON-17) by area, applied at once, never called a build (빌드). ← cards and dials in two sections read as two plans for one club
   - the strategy in force: its name (a preset's, a saved strategy's, 기본 전략 when every card is standard, else 맞춤 전략) and combined gains and costs.
   - 추천 전략 and 내 전략: the presets and the owner's saved strategies (→WEB-61) as cards with their idea, key gains and costs and the synergy they light or aim at; 나만의 전략 만들기 and saving the strategy in force.
-  - six area rows (→ECON-25), each with its card row and its dials; a card locked by a recent change says on which day it frees.
+  - six area rows (→ECON-25), each with its card row and its dials, every card and step open at any time.
   - the synergies with met and missing conditions (→CLUB-21), lit and nearly lit first and the rest behind one disclosure; the odds the strategy sets (golden prospect at the next intake, a squad meeting working, an offer arriving in a window month).
-  - tapping a card, a dial step, a preset or a saved strategy adds it to a draft: a summary pinned while it is open with combined gains and costs, each dial's cost per round and projection, synergies lighting or dropping and odds moving, 되돌리기 and 적용. 적용 applies the whole draft at once; a draft that changes a locked card is refused with the card and the day it frees.
+  - tapping a card, a dial step, a preset or a saved strategy adds it to a draft: a summary pinned while it is open with combined gains and costs, each dial's cost per round and projection, synergies lighting or dropping and odds moving, 되돌리기 and 적용. 적용 applies the whole draft at once.
 - WEB-61 [o] 나만의 전략 만들기 opens a composer: the six areas each with its card row (idea, gains and costs), the combined effects and the synergies the cards light, a name of 1–20 characters, and save; a saved strategy can be edited, deleted or applied as a draft. Saved strategies (at most 12) belong to the device, not to a game: every slot on that browser lists them, they outlive new and deleted games (→SAVE-15), and editing or deleting one never changes a strategy already applied in a world. Applying a saved strategy records its name in the club's history. ← owners reuse the club identity they designed across careers; an account carries the same library later (→ARCH-29)
 - WEB-62 [o] The game keeps three game slots (게임 슬롯, →SAVE-14).
   - opening the start address (/) in a new tab or window shows the slot screen whenever a slot holds a game; an in-game address, or reloading a tab that is already in a game, continues the game in play; with every slot empty the app opens 새 게임 for slot 1; a game in play that fails to load opens its recovery path (→WEB-8) instead.
@@ -226,6 +226,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r56 261013 WEB-60✎ locked cards with their free day and refused drafts→no locks
 - r55 261013 WEB-45✎ preset over per-event stops and home switches (맞춤), training outside levels→the level alone sets stops and delegation, saved with the game, training at levels 2–4, criteria at any level, popover levels only; WEB-18✎ WEB-42✎ WEB-64✎ stops by setting→by level; WEB-39✎ WEB-43✎ WEB-70✎ WEB-71✎ switches in homes→who decides at the level; WEB-44✎ +unavailable while the staff decide
 - r54 261013 WEB-10✎ squad/staff/operations→사람/훈련/운영; WEB-4✎ WEB-40✎ WEB-57✎ WEB-69✎ staff page→사람; WEB-14✎ tickets→the board; WEB-39✎ +sponsor switch; WEB-42✎ hand hiring→open 코치진; WEB-43✎ squad, staff pages→사람 tabs with criteria; WEB-44✎ setting remedies→open the home; WEB-45✎ training in levels→none; WEB-60✎ two sections, yearly commit→one board at once; WEB-61✎ commit→apply; WEB-70+ WEB-71+
 - r53 261013 WEB-68✎ term 1–5 seasons→by window (½–4½ in winter), +agent rating and premium, +the new contract's clauses, +a renewal or an improved contract named in the sheet and the inbox

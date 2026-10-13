@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r20 | Define the implemented browser-demo behavior for historical club economy.
+> r21 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -63,7 +63,7 @@
 - ECON-21 [o] Sponsors with business delegated (→STAFF-13): whenever an open sponsor slot (→ECON-8) is empty the commercial staff sign its best guaranteed offer at once and report it. Without delegation a slot left empty at a season's start, or a contract in its final season on 1 April, posts a sponsor reminder (→WEB-42).
 
 - ECON-22 [o] The club build — shown to the owner as the operating strategy (운영 전략, →WEB-60) — is six slots — 유스 정책, 스카우팅, 매각 기조, 수익 모델, 홈·팬, 라커룸 문화 — each holding one card: the standard card or one of four others, so 5^6 = 15,625 strategies before policy, staff or manager. ← combining levers is the fun: owners build their own club instead of picking one of a few presets Every card has at least one gain and one cost; additions add and multipliers multiply across slots. The owner drafts freely, sees combined effects, synergies (→CLUB-21) and odds, and applies a draft at once (recorded as a build event titled 운영 전략 with the strategy's name: the preset's, the saved strategy's (→WEB-61), else 기본 전략 or 맞춤 전략); every rule that reads a card uses the new one from then on.
-  - a slot whose card changes is locked for 90 days; a draft that changes a locked slot is refused, naming the slot and the day it frees, so a preset or saved strategy applies only when every slot it changes is free. There is no reservation for a later season. ← a card that works at once must not be switched around one transfer window, youth intake or match and back; about a quarter of a season still lets a club change course within it
+  - cards change at any time, like the dials: a draft, preset or saved strategy applies at once whatever changed before, with no lock and no reservation for a later season. ← owners change course when the club needs it; each card's costs are the price of switching
   - presets fill the slots in one tap; each has one identity and lights or aims at a synergy:
     | preset | cards (others standard) | aim |
     |---|---|---|
@@ -107,7 +107,7 @@
   - the first round in debt posts a "파산 위기" inbox item (a status, not a stop); the HUD cash and a red band count the rounds left (→WEB-56)
   - a bankrupt club advances nothing and refuses every command but reading the inbox; the app shows the game-over page (→WEB-56)
 - ECON-25 [o] Strategy areas pair each strategy card with the ongoing dials that spend on the same area (→ECON-22, →ECON-16, →ECON-17); the operating board (→WEB-60) shows each area's card row with its dials and the composer (→WEB-61) the cards by the same areas, so cards and dials read as one plan:
-  | area | strategy card (locked 90 days after a change) | dials (any time) |
+  | area | strategy card (any time) | dials (any time) |
   |---|---|---|
   | 선수단 | 라커룸 문화 | 선수단 투자 |
   | 영입 | 스카우팅 | 영입 기조 |
@@ -149,6 +149,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r21 261013 ECON-22✎ a changed slot locked for 90 days→no lock, cards change at any time; ECON-25✎ card column locked 90 days→any time
 - r20 261013 ECON-29✎ wage bill 43.0% outside its band, accepted→46.1% within it after agents' premiums 3%→1% a level (→CLUB-30), measured values recorded; ECON-9✎ measured crowds none→recorded
 - r19 261013 ECON-9✎ targets for any club, measured on 3rd+ straight seasons→for a club established in its division, the reference club's crowds beside; ECON-12✎ facility cost 250×1.38^(L−1) price units→250×1.58^(L−1) units on the football index, upkeep on prices→on the football index; ECON-26✎ prizes on the football index→cup and continental prizes on the broadcasting index, facilities on prices→on the football index; ECON-29✎ wage bill / income 50–70%→wage bill / revenue 45–70%, net result / income→operating result / revenue before player trading with construction counted, measured values rules 1.16.0 (16 careers)→24 careers on the ported calibration, bands outside wage bill and net→wage bill only; ECON-30✎ a turnover share never below a division floor→the larger of the division amount and the turnover share, a season after a relegation pays the division amount; ECON-31✎ small before television (0.15× prices)→flat with prices until television paid the league, +cup and continental prizes and their result bonuses
 - r18 261013 ECON-29✎ bands only→bands with the measured values of rules 1.16.0 and a bankrupt-careers row; bands outside accepted for now with the follow-up named
