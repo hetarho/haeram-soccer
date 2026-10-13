@@ -173,7 +173,7 @@ async function exportWorld(page: Page): Promise<World> {
   return (await decode(raw)).world;
 }
 
-test('the fatigue remedy opens 훈련 with 회복 ready to apply, and applying it sets the focus', async ({
+test("the fatigue remedy opens the assistant's training sheet with 회복 ready, and an order sets it", async ({
   page,
 }) => {
   const w = createWorld({
@@ -184,8 +184,8 @@ test('the fatigue remedy opens 훈련 with 회복 ready to apply, and applying i
     difficulty: 2,
   });
   for (const player of w.players) player.fatigue = 55;
-  // The owner chooses the focus himself only at intervention level 1 (→CLUB-13).
-  w.intervention = 1;
+  // The owner forced youth training; left to his rule the assistant would rest them (→CLUB-13).
+  w.trainingOrders = { assistant: { focus: 'youth', rounds: 4, forced: true } };
   await seed(page, w);
   await page.goto('/');
   await continueSlot(page);
@@ -194,19 +194,19 @@ test('the fatigue remedy opens 훈련 with 회복 ready to apply, and applying i
   const sheet = page.getByRole('dialog', { name: '피로 관리' });
   await sheet
     .getByRole('listitem')
-    .filter({ hasText: '회복 훈련으로 전환' })
+    .filter({ hasText: '수석코치에게 회복 훈련 제안' })
     .getByRole('button', { name: '열기', exact: true })
     .click();
-  // The sheet closes and 훈련 opens with 회복 suggested; nothing has changed yet (→WEB-71).
+  // The sheet closes and the assistant's card in 코치진 opens with 회복 first; nothing has changed
+  // yet (→WEB-44, STAFF-19).
   await expect(sheet).toBeHidden();
-  const suggestion = page.getByRole('region', { name: '훈련 방향 제안' });
-  await expect(suggestion).toContainText('회복 집중');
-  const focus = page.getByRole('radiogroup', { name: '훈련 방향', exact: true });
-  const recovery = focus.getByRole('radio', { name: '회복 집중', exact: true });
-  await expect(recovery).toHaveAttribute('aria-checked', 'false');
-  await suggestion.getByRole('button', { name: '적용', exact: true }).click();
-  await expect(recovery).toHaveAttribute('aria-checked', 'true');
-  await expect(suggestion).toBeHidden();
+  await expect(page).toHaveURL(/\/people\?view=coaches$/);
+  const training = page.getByRole('dialog', { name: '수석코치 훈련 제안' });
+  await expect(training.getByRole('listitem').first()).toContainText('회복 집중');
+  await expect(training.getByTestId('training-call-assistant')).toContainText('유망주 집중');
+  await training.getByRole('button', { name: /^회복 집중 강행/ }).click();
+  await expect(training).toBeHidden();
+  await expect(page.getByTestId('coach-call-assistant')).toContainText('회복 집중 · 구단주 지시');
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  expect((await exportWorld(page)).training).toBe('recovery');
+  expect((await exportWorld(page)).trainingOrders?.assistant?.focus).toBe('recovery');
 });

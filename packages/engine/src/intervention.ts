@@ -17,7 +17,6 @@ export const COACH_KEYS: readonly CoachDelegationKey[] = [
 ];
 /** Every decision the staff can take for the owner (→STAFF-13). */
 export const DELEGATION_KEYS: readonly DelegationKey[] = [
-  'training',
   'academy',
   'contracts',
   'transfers',
@@ -31,12 +30,13 @@ export const INTERVENTION_LEVELS: readonly InterventionLevel[] = [1, 2, 3, 4];
 export const NEW_CLUB_INTERVENTION: InterventionLevel = 2;
 /**
  * The decisions the staff take at each level (→WEB-45). Where the clock stops is the clock's
- * half of the level and lives with it (→WEB-18).
+ * half of the level and lives with it (→WEB-18); the training focus is no level's, the coaches
+ * always set it (→CLUB-13).
  */
 export const INTERVENTION_DELEGATES: Record<InterventionLevel, readonly DelegationKey[]> = {
   1: [],
-  2: ['training', 'academy', 'contracts'],
-  3: ['training', 'academy', 'contracts'],
+  2: ['academy', 'contracts'],
+  3: ['academy', 'contracts'],
   4: DELEGATION_KEYS,
 };
 

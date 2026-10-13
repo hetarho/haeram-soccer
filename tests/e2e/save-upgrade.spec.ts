@@ -26,7 +26,7 @@ async function legacy() {
   };
   advanceRound(world, undefined, false);
   world.engine = '1.0.0';
-  delete world.training;
+  delete world.trainingOrders;
   delete world.trainingAt;
   for (const player of world.players) delete player.developed;
   const raw = await encode(world, 1, 0);

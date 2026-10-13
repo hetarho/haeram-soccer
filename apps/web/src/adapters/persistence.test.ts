@@ -348,7 +348,7 @@ describe('compatible rule upgrades', () => {
     legacy.engine = '1.0.0';
     legacy.revision = 23;
     legacy.cash = '98765432101234567890';
-    delete legacy.training;
+    delete legacy.trainingOrders;
     delete legacy.players[0].developed;
     const before = canonical(legacy);
     expect(legacy.history.length).toBeGreaterThan(0);
@@ -361,7 +361,7 @@ describe('compatible rule upgrades', () => {
       canonical({ ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 24 }),
     );
     expect(canonical(legacy)).toBe(before);
-    expect(upgraded.training).toBeUndefined();
+    expect(upgraded.trainingOrders).toBeUndefined();
     expect(Object.hasOwn(upgraded.players[0], 'developed')).toBe(false);
     expect(upgradeWorldRules(upgraded, CURRENT_CATALOG)).toBe(upgraded);
     expect(canonical((await decode(await encode(upgraded))).world)).toBe(canonical(upgraded));

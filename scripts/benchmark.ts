@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { cpus, platform, arch } from 'node:os';
 import {
+  activeTrainingFocus,
   createWorld,
   simulateSeason,
   advanceRound,
@@ -94,7 +95,7 @@ async function measure(w: World, label: string) {
     players: w.players.length,
     events: w.events.length,
     seed: w.seed,
-    trainingFocus: w.training || 'balanced',
+    trainingFocus: activeTrainingFocus(w),
     trainingAt: w.trainingAt,
     trainingFocusEvents: w.events.filter((event) => event.kind === 'training-focus').length,
     compressedPayloadBytes: denseBytes(JSON.parse(raw).payload).length,
@@ -145,8 +146,6 @@ for (const variant of ['baseline', 'active-management']) {
     seed: 'release-century-' + variant,
     difficulty: 2,
   });
-  // The active owner chooses the training focus himself, which only level 1 allows (→WEB-45).
-  if (variant === 'active-management') operate(w, { type: 'intervention', level: 1 });
   await measure(w, variant + ' founding');
   for (let n = 0; n < 100; n++) {
     const before = retainedFacts(w);
@@ -170,10 +169,10 @@ for (const variant of ['baseline', 'active-management']) {
         const candidate = managerCandidates(w).find((offer) => offer.source === 'free');
         if (candidate) operate(w, { type: 'hire', id: candidate.id });
       }
-      operate(w, { type: 'training', focus: 'youth' });
+      operate(w, { type: 'coach-training', coach: 'assistant', focus: 'youth', force: true });
       trainingSelections++;
       for (let round = 0; round < 23; round++) advanceRound(w, undefined, false);
-      operate(w, { type: 'training', focus: 'recovery' });
+      operate(w, { type: 'coach-training', coach: 'assistant', focus: 'recovery', force: true });
       trainingSelections++;
     }
     simulateSeason(w);
@@ -181,7 +180,8 @@ for (const variant of ['baseline', 'active-management']) {
     if (w.history.length !== n + 1) throw new Error('Missing completed season archive');
     if (n === 49) {
       const mid = structuredClone(w);
-      if (variant === 'active-management') operate(mid, { type: 'training', focus: 'youth' });
+      if (variant === 'active-management')
+        operate(mid, { type: 'coach-training', coach: 'assistant', focus: 'youth', force: true });
       for (let i = 0; i < 23; i++) advanceRound(mid, undefined, false);
       const { restored } = await measure(mid, variant + ' mid-career active round');
       simulateSeason(mid);
@@ -214,9 +214,9 @@ for (const variant of ['baseline', 'active-management']) {
     throw new Error('Century own-club/global archival coverage failed');
   if (variant === 'active-management') {
     const before = retainedFacts(w);
-    operate(w, { type: 'training', focus: 'youth' });
+    operate(w, { type: 'coach-training', coach: 'assistant', focus: 'youth', force: true });
     for (let round = 0; round < 12; round++) advanceRound(w, undefined, false);
-    operate(w, { type: 'training', focus: 'recovery' });
+    operate(w, { type: 'coach-training', coach: 'assistant', focus: 'recovery', force: true });
     for (let round = 12; round < 23; round++) advanceRound(w, undefined, false);
     assertRetained(w, before);
     if (w.history.length !== 100 || w.round !== 23 || w.trainingAt !== `${w.year}:23`)

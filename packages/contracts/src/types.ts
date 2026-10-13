@@ -3,6 +3,17 @@ export type { ClubBuild, BuildSlot } from './build';
 export type CountryCode = 'ENG' | 'ESP' | 'GER' | 'ITA' | 'FRA' | 'POR' | 'NED' | 'BEL';
 export type Tactic = 'balanced' | 'possession' | 'counter' | 'press';
 export type TrainingFocus = 'balanced' | 'youth' | 'recovery';
+/** The academy's training focus, set by the youth director (→CLUB-31). */
+export type YouthFocus = 'balanced' | 'fundamentals' | 'firstTeam';
+/** The coaches who set a training focus (→STAFF-19). */
+export type TrainingCoach = 'assistant' | 'youth';
+/** A focus the owner had a coach take: accepted when suggested, or forced (→STAFF-19). */
+export interface TrainingOrder<F> {
+  focus: F;
+  /** Settled rounds it still holds. */
+  rounds: number;
+  forced?: true;
+}
 export type PolicyKey = 'support' | 'recruitment' | 'marketing' | 'academy';
 export type PolicyLevel = 1 | 2 | 3 | 4 | 5;
 export type ClubPolicy = Record<PolicyKey, PolicyLevel>;
@@ -32,7 +43,7 @@ export type CoachDelegationKey = `coach:${StaffRole}`;
  * department. Which of them the staff take is decided by the intervention level alone (→WEB-45).
  */
 export type DelegationKey =
-  'training' | 'academy' | 'transfers' | 'business' | 'contracts' | 'manager' | CoachDelegationKey;
+  'academy' | 'transfers' | 'business' | 'contracts' | 'manager' | CoachDelegationKey;
 /**
  * How much the owner decides himself (→WEB-45): 1 every decision, 2 important decisions only,
  * 3 transfers only, 4 leave it to the staff.
@@ -290,6 +301,10 @@ export interface Staff {
   potential?: number;
   /** Seasons the owner chose at his last hiring or renewal (→STAFF-15); absent before rules 1.16. */
   term?: ContractTerm;
+  /** Orders the owner forced on him this season (→STAFF-19). */
+  strain?: { year: number; count: number };
+  /** The settled round of the owner's last suggestion to him (→STAFF-19). */
+  asked?: { year: number; round: number };
 }
 export interface Academy {
   /** Academy prospects are not first-team players until promoted. */
@@ -673,8 +688,14 @@ export interface World {
   players: Player[];
   /** Preferred starting XI in goalkeeper, four defenders, three midfielders, three forwards order. */
   lineup?: string[];
-  /** Older saves use balanced training until a focus is chosen. */
-  training?: TrainingFocus;
+  /**
+   * Focuses the owner had the coaches take (→STAFF-19); without one the coaches set it by rule
+   * (→CLUB-13, CLUB-31).
+   */
+  trainingOrders?: {
+    assistant?: TrainingOrder<TrainingFocus>;
+    youth?: TrainingOrder<YouthFocus>;
+  };
   /** Last settled training boundary, preventing repeated development/recovery. */
   trainingAt?: string;
   /** Club operating policy; absent means POLICY_DEFAULTS. */
@@ -768,7 +789,13 @@ export type Command =
   | { type: 'season'; count: number }
   | { type: 'tactics'; tactic: Tactic; tone: string }
   | { type: 'lineup'; ids: string[] | null }
-  | { type: 'training'; focus: TrainingFocus }
+  /** A training focus suggested to a coach, or forced on him (→STAFF-19). */
+  | {
+      type: 'coach-training';
+      coach: TrainingCoach;
+      focus: TrainingFocus | YouthFocus;
+      force?: boolean;
+    }
   | { type: 'policy'; key: PolicyKey; level: PolicyLevel }
   /** `term`: the seasons the owner chooses (→STAFF-15); absent keeps the earlier rule. */
   | { type: 'hire-staff'; role: StaffRole; candidate: number; term?: ContractTerm }

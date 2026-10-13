@@ -249,6 +249,8 @@ describe('season boundary', () => {
       young = prospect(w, 'FWD', 15, 90),
       review = prospect(w, 'FWD', 19, 10),
       aged = prospect(w, 'MID', 22, 90);
+    // At 19 a prospect whose potential cannot reach the first team is up for release (→STAFF-13).
+    review.potential = 15;
     return { w, ready, growing, young, review, aged };
   }
 
@@ -333,8 +335,10 @@ describe('season boundary', () => {
     );
     const keeper = prospect(keepers, 'GK', 19, 95);
     seasonAcademy(keepers);
+    // Ready but without a place, he stays in U-21 until one frees or he turns 21.
     expect(keepers.players.some((player) => player.id === keeper.id)).toBe(false);
-    expect(keepers.inbox!.at(-1)!.detail).toContain('자리가 없었어요');
+    expect(academyPlayers(keepers).some((player) => player.id === keeper.id)).toBe(true);
+    expect(keepers.inbox!.at(-1)!.detail).toContain('자리가 없어');
   });
 
   it('carries prospects across a real season close', () => {

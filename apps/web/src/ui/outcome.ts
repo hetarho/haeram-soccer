@@ -1,4 +1,10 @@
-import type { Command, Event, World } from '../../../../packages/contracts/src/types';
+import type {
+  Command,
+  Event,
+  TrainingFocus,
+  World,
+} from '../../../../packages/contracts/src/types';
+import { activeTrainingFocus } from '../../../../packages/engine/src/training';
 import { seasonDate } from '../../../../packages/engine/src/calendar';
 import {
   activePlayers,
@@ -33,7 +39,7 @@ const titles: Record<Command['type'], string> = {
   season: '시즌 끝까지 진행했어요',
   tactics: '감독에게 전술을 요청했어요',
   lineup: '다음 경기 선발을 정했어요',
-  training: '훈련 방향을 바꿨어요',
+  'coach-training': '코치에게 훈련 방향을 전했어요',
   hire: '새 감독을 선임했어요',
   'renew-manager': '감독과 재계약했어요',
   recruit: '선수를 영입했어요',
@@ -64,15 +70,15 @@ const titles: Record<Command['type'], string> = {
 };
 const notes: Partial<Record<Command['type'], string>> = {
   lineup: '다음 경기부터 바꿀 때까지 이 선발을 씁니다.',
-  training: '다음 라운드 정산부터 성장과 회복에 반영돼요.',
+  'coach-training': '받아들이거나 지시한 방향은 다음 라운드 정산부터 4라운드 동안 반영돼요.',
   campaign: '4라운드 뒤 실제 수입과 신규 팬이 정산돼요.',
   facility: '관중 수용과 선수 성장이 좋아지고, 연간 유지비가 늘어요.',
   ticket: '다음 홈 경기 관중과 입장 수입부터 반영돼요.',
   policy: '다음 라운드 정산부터 비용과 효과가 반영돼요.',
-  build: '바로 적용했어요. 바꾼 부문은 90일 동안 다시 바꿀 수 없어요.',
+  build: '바로 적용했어요. 카드와 다이얼은 언제든 다시 바꿀 수 있어요.',
   'transfer-stance': '제안은 이적시장이 열려 있을 때 들어오고, 수락해야 이적이 성사돼요.',
 };
-const trainingLabel: Record<NonNullable<World['training']>, string> = {
+const trainingLabel: Record<TrainingFocus, string> = {
   balanced: '균형 훈련',
   youth: '유망주 집중',
   recovery: '회복 집중',
@@ -195,8 +201,8 @@ export function describeOutcome(
   compare(
     changes,
     '훈련',
-    trainingLabel[before.training || 'balanced'],
-    trainingLabel[after.training || 'balanced'],
+    trainingLabel[activeTrainingFocus(before)],
+    trainingLabel[activeTrainingFocus(after)],
   );
   if (before.manager.id === after.manager.id)
     compare(

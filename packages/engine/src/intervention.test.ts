@@ -16,9 +16,9 @@ const world = (seed = 'intervention') =>
   createWorld({ country: 'ENG', name: 'Level Town', color: '#224466', seed, difficulty: 1 });
 
 describe('the intervention level decides who takes each decision (→WEB-45, STAFF-13)', () => {
-  it('hands the staff more decisions level by level, training from level 2', () => {
+  it('hands the staff more decisions level by level', () => {
     expect(INTERVENTION_DELEGATES[1]).toEqual([]);
-    expect(INTERVENTION_DELEGATES[2]).toEqual(['training', 'academy', 'contracts']);
+    expect(INTERVENTION_DELEGATES[2]).toEqual(['academy', 'contracts']);
     expect(INTERVENTION_DELEGATES[3]).toEqual(INTERVENTION_DELEGATES[2]);
     expect(INTERVENTION_DELEGATES[4]).toEqual(DELEGATION_KEYS);
     // Each level keeps every decision the level above it keeps for the owner.
@@ -30,11 +30,7 @@ describe('the intervention level decides who takes each decision (→WEB-45, STA
   it('starts new clubs at level 2 and reads a world without a level as the owner alone', () => {
     const w = world();
     expect(w.intervention).toBe(2);
-    expect(DELEGATION_KEYS.filter((key) => delegated(w, key))).toEqual([
-      'training',
-      'academy',
-      'contracts',
-    ]);
+    expect(DELEGATION_KEYS.filter((key) => delegated(w, key))).toEqual(['academy', 'contracts']);
     delete w.intervention;
     expect(interventionOf(w)).toBe(1);
     expect(DELEGATION_KEYS.some((key) => delegated(w, key))).toBe(false);
@@ -66,11 +62,8 @@ describe('the intervention level decides who takes each decision (→WEB-45, STA
     operate(w, { type: 'intervention', level: 4 });
     operate(w, { type: 'release-staff', role: 'scout' });
     expect(w.intervention).toBe(4);
-    // Only the training focus is closed to the owner while the assistant picks it.
-    expect(() => operate(w, { type: 'training', focus: 'youth' })).toThrow('개입 1단계');
-    operate(w, { type: 'intervention', level: 1 });
-    operate(w, { type: 'training', focus: 'youth' });
-    expect(w.training).toBe('youth');
-    expect(w.intervention).toBe(1);
+    // The training focus is no level's: the coaches set it at every level (→CLUB-13).
+    for (const level of INTERVENTION_LEVELS)
+      expect(INTERVENTION_DELEGATES[level]).not.toContain('training' as never);
   });
 });

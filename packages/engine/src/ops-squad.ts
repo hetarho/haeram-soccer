@@ -12,7 +12,6 @@ import {
 } from './contracts';
 import { moneyLabel } from './finance';
 import { setLineup } from './strategy';
-import { setTrainingFocus } from './training';
 import { staffEffects } from './staff';
 import { promoteYouth, releaseYouth } from './academy';
 import { assertTransferWindow, placeBid, respondBid, setTransferStance } from './transfers';
@@ -32,7 +31,6 @@ export type SquadCommand = Extract<
       | 'recruit'
       | 'transfer-stance'
       | 'lineup'
-      | 'training'
       | 'promote-youth'
       | 'release-youth'
       | 'care'
@@ -132,9 +130,6 @@ export function squadCommand(w: World, cmd: SquadCommand) {
       break;
     case 'lineup':
       setLineup(w, cmd.ids);
-      break;
-    case 'training':
-      setTrainingFocus(w, cmd.focus);
       break;
     case 'care': {
       const offer = careOffer(w, cmd.kind);

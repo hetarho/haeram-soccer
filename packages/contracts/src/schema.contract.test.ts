@@ -330,6 +330,15 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
     };
     w.talkRule = { maxPay: 1.25, minOvr: 60, maxAge: 33 };
     w.intervention = 4;
+    w.trainingOrders = {
+      assistant: { focus: 'youth', rounds: 3 },
+      youth: { focus: 'firstTeam', rounds: 4, forced: true },
+    };
+    w.staff![0] = {
+      ...w.staff![0],
+      strain: { year: w.year, count: 2 },
+      asked: { year: w.year, round: 5 },
+    };
     expect(canonical(validateWorld(structuredClone(w)))).toBe(canonical(w));
     const load = (change: (copy: World) => unknown) => () => {
       const copy = structuredClone(w);
@@ -357,5 +366,10 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
     expect('buildChanged' in locked).toBe(false);
     expect(canonical(locked)).toBe(canonical(w));
     expect(load((c) => Object.assign(c, { delegation: { 'coach:kit': true } }))).toThrow();
+    expect(load((c) => (c.trainingOrders!.assistant!.rounds = 5))).toThrow();
+    expect(load((c) => Object.assign(c.trainingOrders!.youth!, { focus: 'recovery' }))).toThrow();
+    // The owner's own focus of earlier builds goes: the coaches set it (→SAVE-10).
+    const owned = load((c) => Object.assign(c, { training: 'youth' }))();
+    expect('training' in owned).toBe(false);
   });
 });

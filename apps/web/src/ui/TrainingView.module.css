@@ -51,108 +51,79 @@
   box-shadow: 0 3px 0 var(--accent-edge);
 }
 
-/* A focus suggested from elsewhere, waiting to be applied or closed. */
-.suggestion {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 12px;
-  margin-bottom: 14px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid var(--gold);
-  background: linear-gradient(180deg, #33300f 0%, #1f2810 100%);
-}
-.suggestion p {
-  margin: 0;
-  font-size: 14px;
-}
-.suggestion p b {
-  color: var(--gold);
-}
-.suggestion p small {
-  display: block;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-.suggestion div {
-  display: flex;
-  gap: 6px;
-}
-.suggestion button {
-  min-height: 44px;
-  padding: 6px 14px;
-  font-size: 13px;
-}
-
 /* The three focuses: rows on phones, three cards side by side when they fit. */
 .focuses {
   display: grid;
   gap: 6px;
-  margin-top: 12px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
 }
-.focuses button {
-  position: relative;
+/* Read only: the coaches set the focus (→CLUB-13); the one in force is marked. */
+.focuses li {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 2px 10px;
-  min-height: 56px;
+  min-height: 48px;
   padding: 8px 12px;
-  text-align: left;
-  border-color: var(--line);
+  border-radius: 12px;
+  border: 1px solid var(--line);
   background: rgba(0, 0, 0, 0.22);
-  box-shadow: none;
+  opacity: 0.7;
 }
-.focuses button::before {
-  content: '';
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 2px solid var(--line-strong);
-  box-sizing: border-box;
-}
-.focuses button b {
+.focuses li b {
   font-size: 15px;
   font-weight: 800;
 }
-.focuses button span {
+.focuses li span {
   display: grid;
   justify-items: end;
   gap: 1px;
 }
-.focuses button small {
+.focuses li small {
   font-size: 12px;
   font-weight: 600;
   color: var(--text-muted);
   white-space: nowrap;
 }
-.focuses button[aria-checked='true'] {
+.focuses li[aria-current] {
   border-color: var(--accent);
   background: linear-gradient(180deg, #1c4a34 0%, #133526 100%);
-  box-shadow: 0 3px 0 var(--accent-edge);
+  opacity: 1;
 }
-.focuses button[aria-checked='true']::before {
-  border-color: var(--accent);
-  background: radial-gradient(circle, var(--accent-text) 0 4px, transparent 5px);
-}
-.focuses button[aria-checked='true'] small {
+.focuses li[aria-current] small {
   color: var(--text);
 }
 @media (min-width: 640px) {
   .focuses {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  .focuses button {
-    grid-template-columns: auto minmax(0, 1fr);
+  .focuses li {
+    grid-template-columns: minmax(0, 1fr);
     align-content: start;
-    padding: 12px 14px;
   }
-  .focuses button span {
-    grid-column: 1 / -1;
+  .focuses li span {
     justify-items: start;
   }
+}
+/* The growth factor in force as one number (→WEB-70). */
+.total {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 8px 0 4px;
+}
+.total b {
+  font-family: var(--display);
+  font-size: 34px;
+  line-height: 1;
+  color: var(--accent-text);
+}
+.total small {
+  font-size: 12px;
+  color: var(--text-muted);
 }
 
 /* A decision the staff can take: who decides at the current level and his rule (→STAFF-13). */
@@ -394,4 +365,25 @@
     opacity: 1;
     transform: none;
   }
+}
+
+/* The academy by age group (→CLUB-16): a heading with its growth factor, then its prospects. */
+.ageGroup {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+.ageGroup > header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.ageGroup > header b {
+  font-family: var(--display);
+  font-size: 15px;
+  color: var(--accent-text);
+}
+.ageGroup > header small {
+  font-size: 12px;
+  color: var(--text-muted);
 }

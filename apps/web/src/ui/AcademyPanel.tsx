@@ -1,8 +1,9 @@
 import type { World } from '../../../../packages/contracts/src/types';
 import {
   academySummary,
-  PROMOTION_AGE,
+  ACADEMY_LEAVE_AGE,
   RELEASE_AGE,
+  YOUTH_FOCUS_INFO,
 } from '../../../../packages/engine/src/academy';
 import { buildOf, cardOf } from '../../../../packages/engine/src/build';
 import { currentDay, seasonDayLabel, seasonDayOf } from '../../../../packages/engine/src/calendar';
@@ -11,7 +12,8 @@ import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { DecisionOwner } from './DecisionOwner';
 import { OvrBadge } from './OvrBadge';
-import { openBusiness } from './state';
+import { openBusiness, openCoachSheet } from './state';
+import { callLine } from './TrainingOrderSheet';
 import s from './TrainingView.module.css';
 
 function useActing() {
@@ -27,9 +29,10 @@ function Meter({ value }: { value: number }) {
 }
 
 /**
- * 유소년 (→WEB-70): the academy's prospects grow here until promoted or released (→CLUB-16), by
- * the owner or, with its switch on, by the youth director's rule (→STAFF-13). The academy
- * investment and youth policy are set in 운영 전략 and only named here (→WEB-71).
+ * 유소년 (→WEB-70): the academy's prospects by age group — U-17, U-19, U-21 — grow here until
+ * promoted or released (→CLUB-16), by the owner or, when the level delegates it, by the youth
+ * director's rule (→STAFF-13); the director sets the academy's training focus (→CLUB-31). The
+ * academy investment and youth policy are set in 운영 전략 and only named here (→WEB-71).
  */
 export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
   const acting = useActing();
@@ -55,38 +58,62 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
           다음 입단 <b>{nextIntake}</b> · 예상 {summary.nextIntakeSize}명
         </p>
         {summary.players.length ? (
-          <ul className={s.prospects}>
-            {summary.players.map(({ player: p, overall, potential, age, readiness, label }) => (
-              <li key={p.id}>
-                <OvrBadge value={overall} role={p.role} potential={potential} />
-                <div className={s.prospectText}>
-                  <b>{p.name}</b>
-                  <small>{age}세</small>
-                  <Meter value={(overall / Math.max(1, potential)) * 100} />
-                  <small className={readiness === 'ready' ? s.ready : undefined}>{label}</small>
-                </div>
-                <div className={s.prospectActions}>
-                  <button
-                    type="button"
-                    className={readiness === 'ready' ? s.primary : undefined}
-                    aria-label={`${p.name} 1군 승격`}
-                    disabled={acting || summary.room === 0}
-                    onClick={() => void client.command({ type: 'promote-youth', id: p.id })}
-                  >
-                    1군 승격
-                  </button>
-                  <button
-                    type="button"
-                    aria-label={`${p.name} 방출`}
-                    disabled={acting}
-                    onClick={() => void client.command({ type: 'release-youth', id: p.id })}
-                  >
-                    방출
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+          summary.groups.map((group) => (
+            <section
+              key={group.key}
+              className={s.ageGroup}
+              aria-label={`${group.label} ${group.ages}`}
+              data-testid={`age-group-${group.key}`}
+            >
+              <header>
+                <b>{group.label}</b>
+                <small>
+                  {group.ages} · {group.players.length}명 · 성장 ×{group.factor}
+                </small>
+              </header>
+              {group.players.length > 0 && (
+                <ul className={s.prospects}>
+                  {group.players.map(({ player: p, overall, potential, age, readiness, label }) => (
+                    <li key={p.id}>
+                      <OvrBadge value={overall} role={p.role} potential={potential} />
+                      <div className={s.prospectText}>
+                        <b>{p.name}</b>
+                        <small>{age}세</small>
+                        <Meter value={(overall / Math.max(1, potential)) * 100} />
+                        <small className={readiness === 'ready' ? s.ready : undefined}>
+                          {label}
+                        </small>
+                      </div>
+                      <div className={s.prospectActions}>
+                        <button
+                          type="button"
+                          className={readiness === 'ready' ? s.primary : undefined}
+                          aria-label={`${p.name} 1군 승격`}
+                          disabled={acting || summary.room === 0 || age < summary.promotionAge}
+                          title={
+                            age < summary.promotionAge
+                              ? `첫 프로 계약은 ${summary.promotionAge}세부터`
+                              : undefined
+                          }
+                          onClick={() => void client.command({ type: 'promote-youth', id: p.id })}
+                        >
+                          1군 승격
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={`${p.name} 방출`}
+                          disabled={acting}
+                          onClick={() => void client.command({ type: 'release-youth', id: p.id })}
+                        >
+                          방출
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))
         ) : (
           <p className={s.note}>아직 아카데미 선수가 없어요. 매년 3월 15일에 유소년이 입단해요.</p>
         )}
@@ -111,13 +138,16 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
             <li>
               <b>승격</b>
               <span>
-                {PROMOTION_AGE}세 이상이고 같은 포지션 1군 최하위나 주전 평균 −10에 이르면, 1군과 그
-                포지션에 자리가 있을 때
+                {summary.promotionAge}세(첫 프로 계약 나이) 이상이고 같은 포지션 1군 최하위나 주전
+                평균 −10에 이르면, 1군과 그 포지션에 자리가 있을 때
               </span>
             </li>
             <li>
               <b>방출</b>
-              <span>{RELEASE_AGE}세까지 1군 수준에 이르지 못한 유망주</span>
+              <span>
+                {RELEASE_AGE}세에 잠재력이 같은 포지션 1군 최하위에 못 미치는 유망주 · 나머지는{' '}
+                {ACADEMY_LEAVE_AGE}세가 되면 아카데미를 떠나요
+              </span>
             </li>
             <li>
               <b>보류</b>
@@ -126,6 +156,7 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
           </ul>
         </div>
       </section>
+      <YouthTraining w={w} />
       <button type="button" className={s.homeLine} onClick={() => openBusiness('strategy')}>
         <span>
           <b>유소년 투자 · 유스 정책은 운영 전략에서</b>
@@ -138,5 +169,55 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
         </span>
       </button>
     </div>
+  );
+}
+
+/**
+ * The academy's training focus the youth director sets (→CLUB-31): who set it and why, each
+ * focus's effect by age group read only, and a line opening his card to suggest or force
+ * (→STAFF-19).
+ */
+function YouthTraining({ w }: { w: World }) {
+  const call = callLine(w, 'youth'),
+    focus = academySummary(w).focus;
+  return (
+    <section className={s.card} aria-label="유소년 훈련 방향">
+      <header className={s.head}>
+        <h3>유소년 훈련 방향</h3>
+        <span data-testid="youth-focus">
+          지금 {call.focus} · {call.by}
+        </span>
+      </header>
+      <p className={s.advice}>{call.reason}</p>
+      <ul className={s.focuses} aria-label="유소년 훈련 방향별 효과">
+        {(Object.keys(YOUTH_FOCUS_INFO) as (keyof typeof YOUTH_FOCUS_INFO)[]).map((id) => {
+          const info = YOUTH_FOCUS_INFO[id];
+          return (
+            <li key={id} aria-current={focus === id || undefined}>
+              <b>{info.label}</b>
+              <span>
+                <small>
+                  U-17 ×{info.growth.u17} · U-19 ×{info.growth.u19}
+                </small>
+                <small>U-21 ×{info.growth.u21}</small>
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+      <p className={s.note}>
+        유스 디렉터는 U-19·U-21 유망주가 1군 수준까지 OVR 5 안쪽이면 1군 준비, U-17이 위 연령대보다
+        많으면 기본기 집중, 그 밖에는 균형으로 훈련해요.
+      </p>
+      <button type="button" className={s.homeLine} onClick={() => openCoachSheet('youth')}>
+        <span>
+          <b>유스 디렉터에게 훈련 제안·강행</b>
+          <small>받아들이면 4라운드 · 강행하면 사임 위험이 있어요</small>
+        </span>
+        <span className={s.chevron} aria-hidden="true">
+          ›
+        </span>
+      </button>
+    </section>
   );
 }

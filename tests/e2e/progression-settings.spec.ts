@@ -186,7 +186,7 @@ test('mobile intervention levels set clock stops and who decides, saved with the
   await expect(level(2)).toHaveAttribute('aria-checked', 'true');
   await expect(level(2)).toContainText('경기 전날과 이적 협상·제안');
   await expect(level(2)).toContainText(
-    '훈련 방향, 유소년 승격·방출, 선수 재계약·계약 개선 협상은 스태프가 맡아요',
+    '유소년 승격·방출, 선수 재계약·계약 개선 협상은 스태프가 맡아요',
   );
   // Level 4 hands everything to the staff, including offers and sponsors; only cash warnings stop.
   await level(4).click();

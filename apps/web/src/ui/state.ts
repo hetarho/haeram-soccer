@@ -2,7 +2,9 @@ import { create } from 'zustand';
 import type {
   PolicyKey,
   PolicyLevel,
+  TrainingCoach,
   TrainingFocus,
+  YouthFocus,
 } from '../../../../packages/contracts/src/types';
 import type { PlayerScope } from './playerAnalysis';
 /**
@@ -152,8 +154,19 @@ if (arrival?.market) usePeopleView.getState().open('candidates');
 export const useTrainingView = oneShot<TrainingTab>();
 /** A 운영 tab asked for while 운영 is showing; from elsewhere the address carries it. */
 export const useBusinessView = oneShot<BusinessView>();
-/** A training focus suggested from elsewhere (a fatigue remedy, →WEB-44), for 훈련 to offer. */
-export const useTrainingRequest = oneShot<{ focus?: TrainingFocus }>();
+/**
+ * A coach's training sheet asked for from elsewhere (훈련's lines, a fatigue remedy →WEB-44), for
+ * 코치진 to open with the focus ready to suggest (→STAFF-19).
+ */
+export const useCoachRequest = oneShot<{
+  coach: TrainingCoach;
+  focus?: TrainingFocus | YouthFocus;
+}>();
+/** Opens 사람's 코치진 on a coach's training sheet. */
+export function openCoachSheet(coach: TrainingCoach, focus?: TrainingFocus | YouthFocus) {
+  useCoachRequest.getState().open({ coach, focus });
+  openPeople('coaches');
+}
 /**
  * A dial change suggested from elsewhere (a cash remedy, →WEB-44), for the operating board to
  * open as a draft.

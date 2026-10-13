@@ -6,23 +6,22 @@ import {
   type DevelopmentFactor,
   type DevelopmentHome,
 } from '../../../../packages/engine/src/training';
-import { AUTO_RECOVERY_FATIGUE, autoTrainingAdvice } from '../../../../packages/engine/src/staff';
+import { AUTO_RECOVERY_FATIGUE } from '../../../../packages/engine/src/staff';
 import type { ClientState, GameClient } from '../runtime/client';
-import { useGameState } from '../runtime/store';
 import { AcademyPanel } from './AcademyPanel';
-import { DecisionOwner } from './DecisionOwner';
 import { OvrBadge } from './OvrBadge';
 import { PageTabs, TabPanel } from './PageTabs';
 import { PlayerLink } from './PlayerSheet';
 import {
+  openCoachSheet,
   openHome,
   routeOf,
   TRAINING_TABS,
-  useTrainingRequest,
   useTrainingView,
   type Home,
   type TrainingTab,
 } from './state';
+import { callLine } from './TrainingOrderSheet';
 import a from './App.module.css';
 import s from './TrainingView.module.css';
 
@@ -48,10 +47,6 @@ function focusEffect(focus: TrainingFocus, recoveryBonus: number) {
   };
 }
 
-function useActing() {
-  return useGameState((state) => !!state.pendingActions || state.readonly || !!state.error);
-}
-
 /** The 훈련 tab a request or the address asks for. */
 function trainingStart(request: TrainingTab | undefined): TrainingTab {
   if (request) return request;
@@ -60,29 +55,20 @@ function trainingStart(request: TrainingTab | undefined): TrainingTab {
 }
 
 /**
- * 훈련 (→WEB-70): how the club develops its players, as one tab bar — the training focus, what
- * drives growth and who is still growing, then the academy. A tab or a focus asked for from
+ * 훈련 (→WEB-70): how the club develops its players, as one tab bar — the focus the coaches set,
+ * what drives growth and who is still growing, then the academy. It changes nothing itself: the
+ * owner reaches training through the coaches' cards in 코치진 (→STAFF-19). A tab asked for from
  * elsewhere is taken once; otherwise the tab comes from the address.
  */
 export function TrainingView({ state, client }: Props) {
   const w = state.view!.world;
   const request = useTrainingView((view) => view.request);
-  const focusRequest = useTrainingRequest((view) => view.request);
   const [tab, setTab] = useState<TrainingTab>(() => trainingStart(request));
-  const [suggested, setSuggested] = useState<TrainingFocus>();
   useEffect(() => {
     if (!request) return;
     setTab(request);
     useTrainingView.getState().take();
   }, [request]);
-  useEffect(() => {
-    if (!focusRequest) return;
-    if (focusRequest.focus) {
-      setSuggested(focusRequest.focus);
-      setTab('training');
-    }
-    useTrainingRequest.getState().take();
-  }, [focusRequest]);
   const outlook = developmentOutlook(w);
   return (
     <>
@@ -90,7 +76,10 @@ export function TrainingView({ state, client }: Props) {
         <div>
           <div className={a.eyebrow}>TRAINING</div>
           <h2>훈련·육성</h2>
-          <p>선수들이 어떻게 자랄지 정해요. 1군의 훈련 방향과 아카데미의 유망주를 여기서 다뤄요.</p>
+          <p>
+            선수들이 어떻게 자라고 있는지 봐요. 훈련 방향은 코치들이 정하고, 구단주는 코치진에서
+            제안하거나 강행할 수 있어요.
+          </p>
         </div>
       </div>
       <PageTabs
@@ -103,13 +92,7 @@ export function TrainingView({ state, client }: Props) {
       <TabPanel idPrefix="training" value={tab}>
         {tab === 'training' ? (
           <div className={`${s.stack} ${s.pair}`}>
-            <TrainingFocusPanel
-              w={w}
-              client={client}
-              outlook={outlook}
-              suggested={suggested}
-              onSuggestionDone={() => setSuggested(undefined)}
-            />
+            <TrainingFocusPanel w={w} outlook={outlook} />
             <DevelopmentDrivers outlook={outlook} />
             <GrowingPlayers outlook={outlook} />
           </div>
@@ -122,101 +105,45 @@ export function TrainingView({ state, client }: Props) {
 }
 
 /**
- * The training focus in force, chosen on tap, or left to the assistant coach, who picks it each
- * round by his rule (→CLUB-13), and the choices stay read-only until the intervention level
- * hands the focus back (→WEB-45). A focus suggested from elsewhere waits in a banner until it is
- * applied or closed.
+ * The first team's focus in force (→CLUB-13): who set it — the assistant's rule, a suggestion he
+ * accepted or the owner's order, with the rounds left — and why, each focus's effect read only,
+ * and a line opening the assistant's card to suggest or force (→STAFF-19).
  */
-function TrainingFocusPanel({
-  w,
-  client,
-  outlook: { focus },
-  suggested,
-  onSuggestionDone,
-}: {
-  w: World;
-  client: GameClient;
-  outlook: Outlook;
-  suggested?: TrainingFocus;
-  onSuggestionDone: () => void;
-}) {
-  const acting = useActing();
-  const advice = autoTrainingAdvice(w),
-    choose = (next: TrainingFocus) => void client.command({ type: 'training', focus: next });
+function TrainingFocusPanel({ w, outlook: { focus } }: { w: World; outlook: Outlook }) {
+  const call = callLine(w, 'assistant');
   return (
     <section className={s.card} id="training-focus" aria-label="훈련 방향">
-      {suggested && !focus.delegated && (
-        <div className={s.suggestion} role="region" aria-label="훈련 방향 제안">
-          <p>
-            <b>{focusName(suggested)}</b>을 권해요
-            <small>
-              라운드마다 {Object.values(focusEffect(suggested, focus.recoveryBonus)).join(' · ')}
-            </small>
-          </p>
-          <div>
-            <button
-              type="button"
-              className={s.primary}
-              disabled={acting}
-              onClick={() => {
-                choose(suggested);
-                onSuggestionDone();
-              }}
-            >
-              적용
-            </button>
-            <button type="button" onClick={onSuggestionDone}>
-              닫기
-            </button>
-          </div>
-        </div>
-      )}
       <header className={s.head}>
         <h3>훈련 방향</h3>
         <span data-testid="training-focus">
-          지금 {focusName(focus.focus)}
-          {focus.delegated ? ' · 수석코치가 정함' : ''}
+          지금 {focusName(focus.focus)} · {call.by}
+          {focus.rounds ? ` · ${focus.rounds}라운드 남음` : ''}
         </span>
       </header>
-      <div className={s.focuses} role="radiogroup" aria-label="훈련 방향">
+      <p className={s.advice} data-testid="training-advice">
+        {call.reason}
+      </p>
+      <ul className={s.focuses} aria-label="훈련 방향별 효과">
         {FOCUSES.map(([id, label]) => {
           const effect = focusEffect(id, focus.recoveryBonus);
           return (
-            <button
-              key={id}
-              type="button"
-              role="radio"
-              aria-checked={focus.focus === id}
-              aria-label={label}
-              aria-describedby={`training-focus-${id}`}
-              disabled={acting || focus.delegated}
-              onClick={() => {
-                if (focus.focus === id) return;
-                choose(id);
-              }}
-            >
+            <li key={id} aria-current={focus.focus === id || undefined}>
               <b>{label}</b>
-              <span id={`training-focus-${id}`}>
+              <span>
                 <small>{effect.recovery}</small>
                 <small>{effect.growth}</small>
               </span>
-            </button>
+            </li>
           );
         })}
-      </div>
+      </ul>
       <p className={s.note}>
         라운드마다 한 번 적용돼요. 성장 배수는 27세 미만에게만 붙어요.
         {focus.recoveryBonus !== 0 &&
           ` 피로 회복에는 선수단 투자와 피지컬 코치의 ${focus.recoveryBonus > 0 ? '+' : ''}${focus.recoveryBonus}이 들어 있어요.`}
       </p>
       <div className={s.delegate}>
-        <DecisionOwner
-          w={w}
-          decision="training"
-          plain
-          auto="수석코치가 라운드마다 아래 기준으로 골라요. 직접 고르려면 개입 1단계로 바꾸세요."
-          owner="훈련 방향을 직접 골라요. 개입 2단계부터는 수석코치가 아래 기준으로 골라요."
-        />
+        <p>수석코치는 라운드마다 이 기준으로 골라요.</p>
         <ul className={s.rule}>
           <li>
             <b>회복 집중</b>
@@ -231,10 +158,16 @@ function TrainingFocusPanel({
             <span>그 밖에</span>
           </li>
         </ul>
-        <p className={s.advice} data-testid="training-advice">
-          {focus.delegated ? '' : '맡기면 '}이번 라운드: {focusName(advice.focus)} · {advice.reason}
-        </p>
       </div>
+      <button type="button" className={s.homeLine} onClick={() => openCoachSheet('assistant')}>
+        <span>
+          <b>수석코치에게 훈련 제안·강행</b>
+          <small>받아들이면 4라운드 · 강행하면 사임 위험이 있어요</small>
+        </span>
+        <span className={s.chevron} aria-hidden="true">
+          ›
+        </span>
+      </button>
     </section>
   );
 }
@@ -269,14 +202,12 @@ const shownTerms = (terms: DevelopmentFactor[]) => {
 const termText = (term: DevelopmentFactor) =>
   `${term.applies === 'u21' ? '21세 이하 ' : ''}${times(term.value)}`;
 
-/** Opens where a term is set (→WEB-71); the focus is set above, on this tab. */
+/** Opens where a term is set (→WEB-71); the focus is shown above, on this tab. */
 function openDriver(home: DevelopmentHome) {
   if (home === 'training/training') {
-    const section = document.getElementById('training-focus');
-    section?.scrollIntoView({ block: 'start', behavior: 'smooth' });
-    section
-      ?.querySelector<HTMLElement>('[role="radio"][aria-checked="true"]')
-      ?.focus({ preventScroll: true });
+    document
+      .getElementById('training-focus')
+      ?.scrollIntoView({ block: 'start', behavior: 'smooth' });
     return;
   }
   const [page, view] = home.split('/');
@@ -303,16 +234,18 @@ function DevelopmentDrivers({ outlook: { factors, skills } }: { outlook: Outlook
     .filter((skill) => skills[skill] !== 1)
     .map((skill) => `${skillName[skill]} ${times(skills[skill])}`);
   return (
-    <section className={s.card} aria-label="성장을 좌우하는 것">
+    <section className={s.card} aria-label="성장 배수">
       <header className={s.head}>
-        <h3>성장을 좌우하는 것</h3>
-        <span data-testid="development-total">
-          22–26세 {times(total(false))} · 21세 이하 {times(total(true))}
-        </span>
+        <h3>성장 배수</h3>
+        <span>라운드마다 곱해져요</span>
       </header>
+      <p className={s.total} data-testid="development-total">
+        <b>{times(total(true))}</b>
+        <small>21세 이하 · 22–26세 {times(total(false))}</small>
+      </p>
       <p className={s.note}>
         27세 미만 선수는 라운드마다 잠재력까지 남은 차이에 이 배수를 모두 곱한 만큼 자라요. 어릴수록
-        더 빨리 자라요.
+        더 빨리 자라요. 아래 항목을 누르면 정하는 곳으로 가요.
       </p>
       <ul className={s.drivers}>
         {rows.map((row) => {

@@ -18,18 +18,19 @@ describe('team state', () => {
   it('recommends recovery when the starters are tired', () => {
     const w = world();
     for (const player of w.players) player.fatigue = 55;
-    w.intervention = 1;
+    // The owner forced youth training; left to his rule the assistant would rest them.
+    w.trainingOrders = { assistant: { focus: 'youth', rounds: 4, forced: true } };
     const fatigue = teamStates(w).find((state) => state.key === 'fatigue')!;
     expect(fatigue.tone).toBe('warn');
-    // Recovery training is a setting of 훈련: the remedy opens it with 회복 ready to apply and
-    // changes nothing itself (→WEB-44, WEB-71). Everyone is equally tired, so a rest selection
-    // would change nothing: a rest day comes next.
+    // Recovery training is the assistant's call: the remedy opens his card in 코치진 with 회복
+    // ready to suggest and changes nothing itself (→WEB-44, STAFF-19). Everyone is equally tired,
+    // so a rest selection would change nothing: a rest day comes next.
     const [recovery, rest] = fatigue.advice!.actions;
-    expect(recovery).toMatchObject({ page: 'training', tab: 'training', focus: 'recovery' });
+    expect(recovery).toMatchObject({ coach: { coach: 'assistant', focus: 'recovery' } });
     expect(recovery.command).toBeUndefined();
     expect(rest.command).toEqual({ type: 'care', kind: 'rest-day' });
-    // A delegated assistant already switches to recovery, so the quick choices are requests.
-    w.intervention = 2;
+    // Left to his rule the assistant already rests them, so the quick choices are requests.
+    delete w.trainingOrders;
     const delegated = teamStates(w).find((state) => state.key === 'fatigue')!;
     expect(delegated.advice!.text).toContain('회복 훈련 중');
     expect(delegated.advice!.actions.map((action) => action.command)).toEqual([
@@ -47,7 +48,10 @@ describe('team state', () => {
       for (const choice of choices) {
         expect(choice.effect.length).toBeGreaterThan(0);
         if (!choice.unavailable)
-          expect(!!(choice.command || choice.page || choice.prepare), choice.id).toBe(true);
+          expect(
+            !!(choice.command || choice.page || choice.prepare || choice.coach),
+            choice.id,
+          ).toBe(true);
         if (choice.chances)
           expect(choice.chances.reduce((sum, chance) => sum + chance.chance, 0)).toBe(100);
       }

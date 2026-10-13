@@ -1,4 +1,4 @@
-import { useId, useState, type ReactNode } from 'react';
+import { useEffect, useId, useState, type ReactNode } from 'react';
 import type {
   ContractTerm,
   Manager,
@@ -7,8 +7,11 @@ import type {
   StaffRole,
   StaffTrait,
   TalkPayCap,
+  TrainingCoach,
+  TrainingFocus,
   WageCapOvr,
   World,
+  YouthFocus,
 } from '../../../../packages/contracts/src/types';
 import {
   coachPickPreview,
@@ -44,6 +47,7 @@ import { managerTerm, STYLE_INFO } from '../../../../packages/engine/src/styles'
 import { clubOf } from '../../../../packages/engine/src/world';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
+import { useCoachRequest } from './state';
 import {
   ATTRIBUTE_STEPS,
   canApply,
@@ -66,6 +70,7 @@ import {
 } from './criteria';
 import { Dialog } from './Dialog';
 import { DecisionOwner } from './DecisionOwner';
+import { callLine, TrainingOrderSheet } from './TrainingOrderSheet';
 import { OvrBadge } from './OvrBadge';
 import { Select } from './Select';
 import { compactMoney, contractLine } from './format';
@@ -291,10 +296,24 @@ export function CoachingPlan({ w }: { w: World }) {
   );
 }
 
+/** The departments whose head sets a training focus the owner can suggest or force (→STAFF-19). */
+const TRAINING_COACHES: readonly StaffRole[] = ['assistant', 'youth'];
+
 /** Coaching departments, their effect on the squad and replacements. */
 export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
   const acting = useActing();
   const [role, setRole] = useState<StaffRole>();
+  // A coach's training sheet asked for from 훈련 or a remedy opens once (→STAFF-19).
+  const coachRequest = useCoachRequest((state) => state.request);
+  const [sheet, setSheet] = useState<{
+    coach: TrainingCoach;
+    focus?: TrainingFocus | YouthFocus;
+  }>();
+  useEffect(() => {
+    if (!coachRequest) return;
+    setSheet(coachRequest);
+    useCoachRequest.getState().take();
+  }, [coachRequest]);
   const [pick, setPick] = useState<number>();
   // Hiring and renewing both start from the two seasons the staff would sign (→STAFF-15).
   const [term, setTerm] = useState<ContractTerm>(DELEGATED_TERM);
@@ -360,6 +379,12 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                     )}
                   </small>
                   <small className={s.impact}>{staffImpact(w, id)}</small>
+                  {TRAINING_COACHES.includes(id) && (
+                    <small data-testid={`coach-call-${id}`}>
+                      훈련: {callLine(w, id as TrainingCoach).focus} ·{' '}
+                      {callLine(w, id as TrainingCoach).by}
+                    </small>
+                  )}
                   {isExpiring(w, member) && (
                     <small>
                       재계약: 연봉 {format(renewalTerms(w, member).wage)} · 계약금{' '}
@@ -388,6 +413,17 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                     재계약
                   </button>
                 )}
+                {member && TRAINING_COACHES.includes(id) && (
+                  <button
+                    disabled={acting}
+                    onClick={(event) => {
+                      event.currentTarget.focus();
+                      setSheet({ coach: id as TrainingCoach });
+                    }}
+                  >
+                    훈련 제안
+                  </button>
+                )}
                 <button
                   disabled={acting}
                   onClick={(event) => {
@@ -408,6 +444,15 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
           );
         })}
       </ul>
+      {sheet && (
+        <TrainingOrderSheet
+          w={w}
+          client={client}
+          coach={sheet.coach}
+          ready={sheet.focus}
+          onClose={() => setSheet(undefined)}
+        />
+      )}
       {role && (
         <Dialog
           label={`${STAFF_INFO[role].label} 선임`}

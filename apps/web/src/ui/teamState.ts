@@ -15,8 +15,8 @@ import {
   startingSquad,
 } from '../../../../packages/engine/src/world';
 import { activeTrainingFocus } from '../../../../packages/engine/src/training';
-import { delegated } from '../../../../packages/engine/src/intervention';
-import { AUTO_RECOVERY_FATIGUE } from '../../../../packages/engine/src/staff';
+import { suggestionChance } from '../../../../packages/engine/src/coach-training';
+import { ORDER_ROUNDS } from '../../../../packages/engine/src/orders';
 import { MORALE_LABEL, moraleOf, moraleState } from '../../../../packages/engine/src/morale';
 import { POLICY_INFO, policyOf } from '../../../../packages/engine/src/policy';
 import { fixedCostRunway } from '../../../../packages/engine/src/investment';
@@ -38,8 +38,8 @@ export interface StateAction {
   tab?: PeopleRequest | TrainingTab;
   /** Opens the tactic and lineup preparation sheet. */
   prepare?: boolean;
-  /** Opens 훈련 with this focus suggested, ready to apply there (→WEB-44, WEB-71). */
-  focus?: TrainingFocus;
+  /** Opens 코치진 on this coach's training sheet with the focus ready to suggest (→WEB-44). */
+  coach?: { coach: 'assistant'; focus: TrainingFocus };
   /**
    * Opens 운영 전략 with this dial change as the board's draft, ready to apply there; the remedy
    * itself changes nothing (→WEB-44, WEB-71).
@@ -146,18 +146,11 @@ export function remedies(w: World, key: StateKey): Remedy[] {
       return [
         {
           id: 'recovery-training',
-          label: '회복 훈련으로 전환',
-          effect: '훈련에서 회복 집중을 적용하면 라운드마다 회복이 커지고 성장 기회는 줄어요',
+          label: '수석코치에게 회복 훈련 제안',
+          effect: `수락 확률 ${Math.round(suggestionChance(w, 'assistant', 'recovery') * 100)}% · 받아들이면 ${ORDER_ROUNDS}라운드 동안 회복이 커지고 성장 기회는 줄어요`,
           cost: '무료',
-          unavailable:
-            activeTrainingFocus(w) === 'recovery'
-              ? '이미 회복 훈련 중'
-              : delegated(w, 'training')
-                ? `수석코치가 훈련 방향을 정해요 · 피로 ${AUTO_RECOVERY_FATIGUE} 이상이면 회복 집중 (개입 1단계에서 직접 선택)`
-                : undefined,
-          page: 'training',
-          tab: 'training',
-          focus: 'recovery',
+          unavailable: activeTrainingFocus(w) === 'recovery' ? '이미 회복 훈련 중' : undefined,
+          coach: { coach: 'assistant', focus: 'recovery' },
         },
         {
           id: 'rest-lineup',

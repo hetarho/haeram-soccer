@@ -46,8 +46,8 @@ function world(policy?: Partial<ClubPolicy>) {
 function academy(policy?: Partial<ClubPolicy>) {
   const w = world(policy);
   w.manager.youth = 60;
-  // The owner sets training here; delegated staff would rest this fatigue-50 squad instead.
-  w.intervention = 1;
+  // The owner holds balanced training with an order; the assistant would rest this fatigue-50 squad.
+  w.trainingOrders = { assistant: { focus: 'balanced', rounds: 4, forced: true } };
   for (const player of w.players) {
     player.born = w.year - 20;
     player.potential = 85;

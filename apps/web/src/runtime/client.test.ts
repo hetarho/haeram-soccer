@@ -475,7 +475,7 @@ async function legacyCheckpoint(withHistory = false) {
   legacy.engine = '1.0.0';
   legacy.revision = 17;
   legacy.cash = '98765432101234567890';
-  delete legacy.training;
+  delete legacy.trainingOrders;
   delete legacy.players[0].developed;
   const raw = await encode(legacy, 7, 6);
   storage.setItem('haeram-soccor:slot:a', raw);

@@ -40,6 +40,8 @@ export * from './contracts';
 export * from './hiring';
 export * from './activation';
 export * from './intervention';
+export * from './orders';
+export * from './coach-training';
 export function createWorld(input: Founding) {
   const w = createBase(input);
   prepareSeason(w);

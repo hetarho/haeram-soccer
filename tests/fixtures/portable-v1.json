@@ -5199,6 +5199,18 @@
             "status": "active",
             "wage": "2294",
             "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "FRA:club:academy:2024:2",
+            "status": "active",
+            "wage": "1235",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "FRA:club:academy:2024:1",
+            "status": "active",
+            "wage": "1392",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
           }
         ],
         "matches": [
@@ -9454,6 +9466,21 @@
           {
             "kind": "youth-promotion",
             "title": "Jean Laurent 1군 승격",
+            "amount": null
+          },
+          {
+            "kind": "youth-promotion",
+            "title": "Pierre Laurent 1군 승격",
+            "amount": null
+          },
+          {
+            "kind": "youth-promotion",
+            "title": "Jean Dubois 1군 승격",
+            "amount": null
+          },
+          {
+            "kind": "potential-stall",
+            "title": "Jean Dubois 성장 정체",
             "amount": null
           },
           {

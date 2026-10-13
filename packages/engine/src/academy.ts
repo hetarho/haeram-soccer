@@ -1,4 +1,4 @@
-import type { Player, Role, World } from '../../contracts/src/types';
+import type { Player, Role, World, YouthFocus } from '../../contracts/src/types';
 import { currentDay, seasonDayOf } from './calendar';
 import { activePlayers, addEvent, clubOf, makePlayer, overall, ownStarters } from './world';
 import { clamp, compareIds, integer, random } from './primitives';
@@ -11,17 +11,57 @@ import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
 import { delegated } from './intervention';
+import { countDownOrder } from './orders';
 
 /** First-team squad limit shared with signings. */
 const SQUAD_LIMIT = 26;
 /** Prospects held at once; intakes stop while the academy is full. */
 export const ACADEMY_LIMIT = 24;
-/** Delegated staff promote from this age. */
-export const PROMOTION_AGE = 17;
-/** Prospects still unpromoted at this age are released by delegated staff. */
+/**
+ * The youngest age a prospect signs his first professional contract (→CLUB-16): 17 in England,
+ * 16 elsewhere.
+ */
+export function promotionAge(w: World) {
+  return clubOf(w).country === 'ENG' ? 17 : 16;
+}
+/** From this age delegated staff release a prospect whose potential is below the first team. */
 export const RELEASE_AGE = 19;
-/** Academy football ends at 21; older prospects leave even when the owner decides. */
-export const ACADEMY_LEAVE_AGE = 22;
+/** Academy football ends with U-21: a prospect leaves at the close of the season he turns 21. */
+export const ACADEMY_LEAVE_AGE = 21;
+/** The academy's age groups by age in the season, younger ones growing faster (→CLUB-16). */
+export const AGE_GROUPS = [
+  { key: 'u17', label: 'U-17', ages: '15–16세', growth: 1.2 },
+  { key: 'u19', label: 'U-19', ages: '17–18세', growth: 1 },
+  { key: 'u21', label: 'U-21', ages: '19–20세', growth: 0.8 },
+] as const;
+export type AgeGroup = (typeof AGE_GROUPS)[number]['key'];
+export function ageGroupOf(w: Pick<World, 'year'>, player: Player): AgeGroup {
+  const age = w.year - player.born;
+  return age <= 16 ? 'u17' : age <= 18 ? 'u19' : 'u21';
+}
+/** The youth director's training focuses and what each does to each age group (→CLUB-31). */
+export const YOUTH_FOCUS_INFO: Record<
+  YouthFocus,
+  { label: string; description: string; growth: Record<AgeGroup, number> }
+> = {
+  balanced: {
+    label: '균형',
+    description: '모든 연령대를 고르게',
+    growth: { u17: 1, u19: 1, u21: 1 },
+  },
+  fundamentals: {
+    label: '기본기 집중',
+    description: 'U-17의 기본기를 먼저 · 위 연령대는 조금 덜',
+    growth: { u17: 1.3, u19: 0.9, u21: 0.9 },
+  },
+  firstTeam: {
+    label: '1군 준비',
+    description: 'U-19·U-21을 1군 수준으로 · U-17은 조금 덜',
+    growth: { u17: 0.9, u19: 1.15, u21: 1.25 },
+  },
+};
+/** A prospect this close to being ready makes the director prepare the older groups. */
+export const FIRST_TEAM_GAP = 5;
 const INTAKE_ROLES: readonly Role[] = ['DEF', 'MID', 'FWD', 'GK'];
 const hundredths = (value: number) => Math.round(value * 100) / 100;
 
@@ -38,6 +78,7 @@ export interface AcademyProspect {
   age: number;
   readiness: AcademyReadiness;
   label: string;
+  group: AgeGroup;
 }
 
 /** Youth intake day, as in professional academies' spring intake. */
@@ -144,14 +185,17 @@ export function runAcademyIntake(w: World): void {
 export function developAcademy(w: World): void {
   const players = w.academy?.players;
   if (!players?.length) return;
-  const growth =
-    staffEffects(w).academyGrowth *
-    (1 + w.facilities / 40) *
-    policyEffects(policyOf(w)).academyGrowth *
-    synergyEffects(w).academyGrowth;
+  const growth = academyGrowth(w),
+    focus = YOUTH_FOCUS_INFO[youthFocus(w)];
   for (const player of players) {
-    const gap = Math.max(0, player.potential - overall(player)),
-      gain = hundredths(Math.min(0.3, gap / 150) * growth),
+    const group = ageGroupOf(w, player),
+      gap = Math.max(0, player.potential - overall(player)),
+      gain = hundredths(
+        Math.min(0.3, gap / 150) *
+          growth *
+          AGE_GROUPS.find((one) => one.key === group)!.growth *
+          focus.growth[group],
+      ),
       skills = roleSkills[player.role];
     if (gain <= 0) continue;
     let actual = 0;
@@ -162,6 +206,51 @@ export function developAcademy(w: World): void {
     }
     recordDevelopment(player, actual / skills.length);
   }
+  countDownOrder(w, 'youth');
+}
+/** The academy's growth factor before age group and focus: staff, facilities, investment, synergies. */
+export function academyGrowth(w: World) {
+  return (
+    staffEffects(w).academyGrowth *
+    (1 + w.facilities / 40) *
+    policyEffects(policyOf(w)).academyGrowth *
+    synergyEffects(w).academyGrowth
+  );
+}
+/** The OVR a prospect still lacks to be ready by the staff's measure; 0 once he is. */
+function readyGapOf(w: World) {
+  const active = activePlayers(w),
+    level = firstTeamLevels(w);
+  return (player: Player) => {
+    const peers = active.filter((other) => other.role === player.role).map(overall),
+      weakest = peers.length ? Math.min(...peers) : 0;
+    return Math.max(0, Math.min(weakest, level[player.role] - 10) - overall(player));
+  };
+}
+/** The youth director's rule (→CLUB-31), with his reason in words. */
+export function youthAdvice(w: World): { focus: YouthFocus; reason: string } {
+  const prospects = academyPlayers(w),
+    gap = readyGapOf(w);
+  const near = prospects
+    .filter((player) => ageGroupOf(w, player) !== 'u17')
+    .map((player) => ({ player, gap: gap(player) }))
+    .filter((entry) => entry.gap <= FIRST_TEAM_GAP)
+    .sort((a, b) => a.gap - b.gap || compareIds(a.player.id, b.player.id))[0];
+  if (near)
+    return {
+      focus: 'firstTeam',
+      reason: near.gap
+        ? `${near.player.name}이(가) 1군까지 OVR ${Math.ceil(near.gap)} 남았어요.`
+        : `${near.player.name}이(가) 1군 수준이에요.`,
+    };
+  const young = prospects.filter((player) => ageGroupOf(w, player) === 'u17').length;
+  if (young > prospects.length - young)
+    return { focus: 'fundamentals', reason: `U-17이 ${young}명으로 가장 많아 기본기부터 다져요.` };
+  return { focus: 'balanced', reason: '연령대를 고르게 키워요.' };
+}
+/** The academy's focus this round: the owner's order or accepted suggestion, else the rule. */
+export function youthFocus(w: World): YouthFocus {
+  return w.trainingOrders?.youth?.focus ?? youthAdvice(w).focus;
 }
 
 /**
@@ -189,9 +278,9 @@ function readinessOf(w: World) {
       rated = overall(player),
       peers = active.filter((other) => other.role === player.role).map(overall),
       weakest = peers.length ? Math.min(...peers) : 0;
-    if (age >= PROMOTION_AGE && (rated >= weakest || rated >= level[player.role] - 10))
+    if (age >= promotionAge(w) && (rated >= weakest || rated >= level[player.role] - 10))
       return 'ready';
-    return age >= RELEASE_AGE ? 'review' : 'growing';
+    return age >= RELEASE_AGE && player.potential < weakest ? 'review' : 'growing';
   };
 }
 /** Delegated staff keep a balanced squad: no promotion into an already full role. */
@@ -217,8 +306,10 @@ function takeProspect(w: World, id: string) {
 }
 
 export function promoteYouth(w: World, id: string): void {
-  if (!academyPlayers(w).some((prospect) => prospect.id === id))
-    throw new Error('아카데미에 없는 선수입니다.');
+  const prospect = academyPlayers(w).find((one) => one.id === id);
+  if (!prospect) throw new Error('아카데미에 없는 선수입니다.');
+  if (w.year - prospect.born < promotionAge(w))
+    throw new Error(`첫 프로 계약은 ${promotionAge(w)}세부터 맺을 수 있어요.`);
   if (activePlayers(w).length >= SQUAD_LIMIT) throw new Error('선수단 정원은 26명입니다.');
   const player = takeProspect(w, id);
   // A first professional contract for three seasons, at his market wage (→CLUB-25), with its own
@@ -308,19 +399,21 @@ export function seasonAcademy(w: World): void {
       player.id,
     );
   }
-  for (const player of prospects)
-    if (!promoted.has(player.id) && w.year - player.born >= RELEASE_AGE) {
+  for (const player of affordable ? ready : [])
+    if (!promoted.has(player.id))
+      staffReport(
+        w,
+        `유스 디렉터가 ${player.name}을(를) 아카데미에 남겼어요`,
+        `${prospectLine(w, player)} · 1군 수준이지만 같은 포지션이나 선수단에 자리가 없어 자리가 날 때까지 기다려요.`,
+        player.id,
+      );
+  for (const player of review)
+    if (!promoted.has(player.id)) {
       releaseYouth(w, player.id);
       staffReport(
         w,
         `유스 디렉터가 ${player.name}을(를) 내보냈어요`,
-        `${prospectLine(w, player)} · ${
-          ready.includes(player)
-            ? affordable
-              ? '1군 수준이지만 같은 포지션 자리가 없었어요.'
-              : '1군 수준이지만 자금이 부족해 올리지 못했어요.'
-            : `${RELEASE_AGE}세까지 1군 수준에 이르지 못했어요.`
-        }`,
+        `${prospectLine(w, player)} · ${RELEASE_AGE}세에 잠재력 ${Math.round(player.potential)}로 같은 포지션 1군 최하위에 못 미쳐요.`,
         player.id,
       );
     }
@@ -340,10 +433,25 @@ export function academySummary(w: World) {
       age: w.year - player.born,
       readiness: state,
       label: ACADEMY_READINESS_LABEL[state],
+      group: ageGroupOf(w, player),
     };
   });
+  const base = academyGrowth(w),
+    focus = youthFocus(w);
   return {
     players,
+    /**
+     * Each age group with its prospects and growth factor this round: the academy's factor × the
+     * group's × the youth focus's (→CLUB-16, CLUB-31).
+     */
+    groups: AGE_GROUPS.map((group) => ({
+      ...group,
+      factor:
+        Math.round(base * group.growth * YOUTH_FOCUS_INFO[focus].growth[group.key] * 100) / 100,
+      players: players.filter((prospect) => prospect.group === group.key),
+    })),
+    focus,
+    promotionAge: promotionAge(w),
     /** First-team places left for promotions. */
     room: Math.max(0, SQUAD_LIMIT - activePlayers(w).length),
     capacity: ACADEMY_LIMIT,

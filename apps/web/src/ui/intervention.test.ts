@@ -45,8 +45,8 @@ describe('intervention levels (→WEB-45)', () => {
         return Promise.resolve();
       },
     } as unknown as GameClient;
-    // New clubs start at level 2: the staff take training, the academy and contract talks.
-    expect(decisionOwner(w, 'training')).toEqual({ level: 2, name: '중요한 결정만', auto: true });
+    // New clubs start at level 2: the staff take the academy and contract talks.
+    expect(decisionOwner(w, 'academy')).toEqual({ level: 2, name: '중요한 결정만', auto: true });
     expect(decisionOwner(w, 'transfers').auto).toBe(false);
     await applyInterventionLevel(client, 4);
     expect(sent).toEqual([{ type: 'intervention', level: 4 }]);
@@ -57,6 +57,6 @@ describe('intervention levels (→WEB-45)', () => {
     });
     expect(decisionOwner(w, 'business').auto).toBe(true);
     await applyInterventionLevel(client, 1);
-    expect(decisionOwner(w, 'training')).toEqual({ level: 1, name: '모든 결정 확인', auto: false });
+    expect(decisionOwner(w, 'academy')).toEqual({ level: 1, name: '모든 결정 확인', auto: false });
   });
 });

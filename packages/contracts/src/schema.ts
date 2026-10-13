@@ -459,6 +459,8 @@ const staff = z.strictObject({
   born: z.number().int().optional(),
   potential: rating.optional(),
   term: term.optional(),
+  strain: z.strictObject({ year: season, count: z.number().int().min(1).max(40) }).optional(),
+  asked: z.strictObject({ year: season, round: z.number().int().min(0).max(46) }).optional(),
 });
 const bid = z.strictObject({
   id,
@@ -533,7 +535,24 @@ export const worldSchema: z.ZodType<World> = z.object({
   clubs: z.array(club).min(10).max(1000),
   players: z.array(player).max(20000),
   lineup: z.array(id).length(11).optional(),
-  training: z.enum(['balanced', 'youth', 'recovery']).optional(),
+  trainingOrders: z
+    .strictObject({
+      assistant: z
+        .strictObject({
+          focus: z.enum(['balanced', 'youth', 'recovery']),
+          rounds: z.number().int().min(1).max(4),
+          forced: z.literal(true).optional(),
+        })
+        .optional(),
+      youth: z
+        .strictObject({
+          focus: z.enum(['balanced', 'fundamentals', 'firstTeam']),
+          rounds: z.number().int().min(1).max(4),
+          forced: z.literal(true).optional(),
+        })
+        .optional(),
+    })
+    .optional(),
   trainingAt: z
     .string()
     .regex(/^\d{4}:\d{1,3}$/)
@@ -748,12 +767,15 @@ function legacyCoaching(levels: Record<string, unknown>, hiring: unknown) {
 /**
  * Rules before 1.16 (→SAVE-10): coaching investment levels (`coaching`) become coach criteria,
  * the strategy locks (the yearly `buildYear`, the per-slot `buildChanged`) go, so every card is
- * free, and so does the manager rule (`managerRule`), which no released rules wrote.
+ * free, the owner's own training focus (`training`) goes, since the coaches set it, and so does the
+ * manager rule (`managerRule`), which no released rules wrote.
  */
 function legacyLevers(input: unknown): unknown {
   if (!isRecord(input)) return input;
-  const { buildYear, buildChanged, managerRule, coaching, ...rest } = input;
-  if ([buildYear, buildChanged, managerRule, coaching].every((value) => value === undefined))
+  const { buildYear, buildChanged, managerRule, coaching, training, ...rest } = input;
+  if (
+    [buildYear, buildChanged, managerRule, coaching, training].every((value) => value === undefined)
+  )
     return input;
   const out: Record<string, unknown> = rest;
   // Rules 1.9's club-wide level is already a record here (legacyMarket).

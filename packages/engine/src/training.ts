@@ -15,7 +15,7 @@ import { developAcademy } from './academy';
 import { settleMorale } from './morale';
 import { managerStyleEffects, STYLE_INFO } from './styles';
 import { buildEffects, buildOf, cardOf } from './build';
-import { delegated } from './intervention';
+import { countDownOrder } from './orders';
 
 export const trainingFocusInfo: Record<
   TrainingFocus,
@@ -65,9 +65,12 @@ export function recordDevelopment(player: Player, gain: number) {
   player.developed = hundredths(Math.min(500, (player.developed || 0) + gain));
 }
 
-/** The focus in force: the assistant's choice while training is delegated, else the owner's. */
+/**
+ * The first team's focus in force: an order or accepted suggestion the assistant holds, else his
+ * rule (→CLUB-13, STAFF-19).
+ */
 export function activeTrainingFocus(w: World): TrainingFocus {
-  return delegated(w, 'training') ? autoTrainingFocus(w) : w.training || 'balanced';
+  return w.trainingOrders?.assistant?.focus ?? autoTrainingFocus(w);
 }
 
 /** The manager's youth work and the facilities, the base a round's growth multiplies (→CLUB-12). */
@@ -115,21 +118,6 @@ function actualRoundGain(w: World, player: Player) {
   );
 }
 
-export function setTrainingFocus(w: World, focus: TrainingFocus) {
-  if (!Object.hasOwn(trainingFocusInfo, focus)) throw new Error('훈련 계획을 확인하세요.');
-  // Only the intervention level hands the focus back to the owner (→CLUB-13, STAFF-13).
-  if (delegated(w, 'training'))
-    throw new Error('수석코치가 훈련 방향을 정하고 있어요. 개입 1단계에서 직접 고를 수 있어요.');
-  if (w.training === focus) return;
-  w.training = focus;
-  addEvent(
-    w,
-    'training-focus',
-    `${trainingFocusInfo[focus].label} 시작`,
-    '다음 라운드부터 적용 · 선택만으로 선수 능력이나 피로가 바뀌지 않습니다.',
-  );
-}
-
 /** A domestic boundary settles growth and recovery once, even after changing focus or reloading. */
 export function settleTraining(w: World) {
   if (w.round <= 0) return;
@@ -153,6 +141,7 @@ export function settleTraining(w: World) {
     recordDevelopment(player, actual / skills.length);
     player.fatigue = Math.max(0, player.fatigue - recovery);
   }
+  countDownOrder(w, 'assistant');
   developAcademy(w);
   settleMorale(w);
   w.trainingAt = at;
@@ -286,7 +275,8 @@ export const GROWING_AGE = 23;
 export function developmentOutlook(w: World) {
   const focus = activeTrainingFocus(w),
     info = trainingFocusInfo[focus],
-    isDelegated = delegated(w, 'training'),
+    order = w.trainingOrders?.assistant,
+    by = order ? (order.forced ? ('order' as const) : ('suggestion' as const)) : ('rule' as const),
     policy = policyOf(w),
     effects = policyEffects(policy),
     staff = staffEffects(w),
@@ -308,7 +298,7 @@ export function developmentOutlook(w: World) {
       value: info.developmentMultiplier,
       applies: 'all',
       home: 'training/training',
-      detail: `${info.label}${isDelegated ? ' · 수석코치가 정함' : ''}`,
+      detail: `${info.label} · ${by === 'rule' ? '수석코치가 정함' : by === 'order' ? '구단주 지시' : '구단주 제안'}`,
     },
     {
       key: 'investment',
@@ -376,11 +366,23 @@ export function developmentOutlook(w: World) {
     })
     .filter((entry) => entry.age <= GROWING_AGE && entry.gap > 0)
     .sort((a, b) => b.gap - a.gap || compareIds(a.player.id, b.player.id));
+  // One number for the owner: what a young player's base growth is multiplied by this round,
+  // before each coach's per-skill multiplier.
+  const combined = (applies: 'all' | 'u21') =>
+    Math.round(
+      factors
+        .filter((factor) => factor.applies === 'all' || factor.applies === applies)
+        .reduce((product, factor) => product * factor.value, 1) * 100,
+    ) / 100;
   return {
+    /** The growth factor in force for players aged 21 or under and for older ones (→WEB-70). */
+    combined: { u21: combined('u21'), senior: combined('all') },
     focus: {
       focus,
       label: info.label,
-      delegated: isDelegated,
+      /** Who set it (→STAFF-19) and how many settled rounds an order or suggestion still holds. */
+      by,
+      rounds: order?.rounds ?? 0,
       developmentMultiplier: info.developmentMultiplier,
       /** Fatigue recovered at the next settled round, staff and policy bonuses included. */
       recovery: Math.max(0, info.recovery + effects.recoveryBonus + staff.recoveryBonus),

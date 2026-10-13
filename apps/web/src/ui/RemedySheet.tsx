@@ -4,11 +4,11 @@ import { useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
 import {
   openBusiness,
+  openCoachSheet,
   openPeople,
   openTraining,
   useBoardRequest,
   useNavigation,
-  useTrainingRequest,
   type PeopleRequest,
   type TrainingTab,
 } from './state';
@@ -32,10 +32,8 @@ export function useRemedyRunner(client: GameClient, onPrepare?: () => void) {
   return (action: StateAction) => {
     if (action.command) void client.command(action.command);
     else if (action.prepare) onPrepare?.();
-    else if (action.focus) {
-      useTrainingRequest.getState().open({ focus: action.focus });
-      openTraining('training');
-    } else if (action.board) {
+    else if (action.coach) openCoachSheet(action.coach.coach, action.coach.focus);
+    else if (action.board) {
       useBoardRequest.getState().open(action.board);
       openBusiness('strategy');
     } else if (action.page === 'people') openPeople((action.tab as PeopleRequest) ?? 'players');

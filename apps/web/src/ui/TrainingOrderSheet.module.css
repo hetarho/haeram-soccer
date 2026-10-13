@@ -1,0 +1,71 @@
+.now {
+  display: grid;
+  gap: 2px;
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.2);
+  font-size: 14px;
+}
+.now small {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.note {
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+.focuses {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.focuses li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.focuses li[data-ready] {
+  border-color: var(--accent);
+}
+.focusText {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.focusText small {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.focusActions {
+  display: flex;
+  gap: 6px;
+}
+.focusActions button {
+  display: grid;
+  justify-items: center;
+  min-width: 76px;
+  min-height: 44px;
+  padding: 4px 10px;
+  font-weight: 800;
+}
+.focusActions small {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.force {
+  border-color: var(--warm);
+  color: var(--warm);
+}

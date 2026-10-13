@@ -32,8 +32,6 @@ function world(focus: TrainingFocus = 'balanced') {
   w.cash = '999999999';
   w.manager.youth = 60;
   w.tactic = 'balanced';
-  // These cases exercise the owner's focus; delegated staff would rest this fatigue-50 squad.
-  w.intervention = 1;
   for (const player of w.players) {
     player.born = w.year - 20;
     player.potential = 85;
@@ -42,7 +40,8 @@ function world(focus: TrainingFocus = 'balanced') {
     // Paid as the market rates them now, so nobody asks for a raise (→CLUB-26).
     player.wage = marketWage(w, player);
   }
-  if (focus !== 'balanced') operate(w, { type: 'training', focus });
+  // The owner holds the focus with an order; the assistant's rule would rest this tired squad.
+  w.trainingOrders = { assistant: { focus, rounds: 4, forced: true } };
   return w;
 }
 
@@ -56,11 +55,12 @@ describe('earned player growth and training choices', () => {
     const balanced = world(),
       youth = world('youth'),
       recovery = world('recovery');
-    for (let round = 0; round < 6; round++) {
-      advanceRound(balanced, undefined, false);
-      advanceRound(youth, undefined, false);
-      advanceRound(recovery, undefined, false);
-    }
+    for (let round = 0; round < 6; round++)
+      for (const w of [balanced, youth, recovery]) {
+        // An order holds four rounds; the owner renews it every round here.
+        w.trainingOrders = { assistant: { ...w.trainingOrders!.assistant!, rounds: 4 } };
+        advanceRound(w, undefined, false);
+      }
     expect(development(youth)).toBeGreaterThan(development(balanced));
     expect(development(balanced)).toBeGreaterThan(0);
     expect(development(recovery)).toBe(0);
@@ -80,7 +80,7 @@ describe('earned player growth and training choices', () => {
     expect(trainingSummary(w).players[0].nextGain).toBeGreaterThan(0);
     expect(canonical(w)).toBe(readBefore);
     for (const focus of ['youth', 'recovery', 'balanced', 'youth'] as const) {
-      operate(w, { type: 'training', focus });
+      operate(w, { type: 'coach-training', coach: 'assistant', focus, force: true });
       settleTraining(w);
     }
     advanceDays(w, 6, undefined, false);
@@ -96,7 +96,7 @@ describe('earned player growth and training choices', () => {
     const before = canonical(w.players);
     settleTraining(w);
     expect(canonical(w.players)).toBe(before);
-    operate(w, { type: 'training', focus: 'recovery' });
+    operate(w, { type: 'coach-training', coach: 'assistant', focus: 'recovery', force: true });
     settleTraining(w);
     expect(canonical(w.players)).toBe(before);
     expect(w.trainingAt).toBe(`${FOUNDING_YEAR}:1`);
@@ -125,13 +125,16 @@ describe('earned player growth and training choices', () => {
     expect(canonical(restored)).toBe(canonical(continuous));
   });
 
-  it('accepts older saves without fields and applies balanced defaults at the next round', async () => {
+  it('accepts older saves without fields and lets the assistant pick at the next round', async () => {
     const old = world();
-    expect(old.training).toBeUndefined();
+    delete old.trainingOrders;
+    for (const player of old.players) player.fatigue = 0;
+    expect(old.trainingOrders).toBeUndefined();
     expect(old.trainingAt).toBeUndefined();
     expect(old.players.every((player) => player.developed === undefined)).toBe(true);
     const restored = (await decode(await encode(old, 1, 0))).world;
-    expect(trainingSummary(restored).focus).toBe('balanced');
+    // A squad of 20-year-olds: the assistant trains the young.
+    expect(trainingSummary(restored).focus).toBe('youth');
     advanceRound(restored, undefined, false);
     expect(restored.trainingAt).toBe(`${FOUNDING_YEAR}:1`);
     expect(development(restored)).toBeGreaterThan(0);
@@ -342,13 +345,19 @@ describe('earned player growth and training choices', () => {
       expectedRevision: 0,
       generation: 1,
       parentGeneration: 0,
-      body: { type: 'command', command: { type: 'training', focus: 'youth' } },
+      body: {
+        type: 'command',
+        command: { type: 'coach-training', coach: 'assistant', focus: 'youth', force: true },
+      },
     };
     expect(requestSchema.parse(input).body).toEqual(input.body);
     expect(() =>
       requestSchema.parse({
         ...input,
-        body: { type: 'command', command: { type: 'training', focus: 'instant' } },
+        body: {
+          type: 'command',
+          command: { type: 'coach-training', coach: 'assistant', focus: 'instant' },
+        },
       }),
     ).toThrow();
     const w = world();

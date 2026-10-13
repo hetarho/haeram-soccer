@@ -28,7 +28,6 @@ import {
   coachWage,
   createWorld,
   dailyStaff,
-  delegated,
   departmentMultiplier,
   hireStaff,
   lineup,
@@ -90,10 +89,10 @@ function world(seed = 'coaching-staff') {
   return w;
 }
 
-/** Young equal players under the owner's balanced focus, so growth is directly comparable. */
+/** Young equal players under an ordered balanced focus, so growth is directly comparable. */
 function trainingWorld() {
   const w = world();
-  w.intervention = 1;
+  w.trainingOrders = { assistant: { focus: 'balanced', rounds: 4, forced: true } };
   w.manager.youth = 60;
   for (const player of w.players) {
     player.born = w.year - 20;
@@ -361,7 +360,7 @@ describe('delegated training focus', () => {
 
   it('rests a tired XI, nurtures young starters and otherwise trains balanced', () => {
     const w = rested();
-    expect(delegated(w, 'training')).toBe(true);
+    expect(activeTrainingFocus(w)).toBe(autoTrainingFocus(w));
     expect(autoTrainingFocus(w)).toBe('balanced');
     for (const player of starters(w).slice(0, 2)) player.born = w.year - 21;
     expect(autoTrainingFocus(w)).toBe('balanced');
@@ -378,20 +377,19 @@ describe('delegated training focus', () => {
     expect(autoTrainingAdvice(w).reason).toContain('21세 이하 선발 3명');
   });
 
-  it('applies the staff choice only while delegated and refuses an owner choice until level 1', () => {
+  it("applies the assistant's choice at every level until the owner forces another", () => {
     const w = rested();
     for (const player of w.players) player.fatigue = 40;
     expect(activeTrainingFocus(w)).toBe('recovery');
     settled(w);
     expect(activePlayers(w).every((player) => player.fatigue === 24)).toBe(true);
     expect(activePlayers(w).every((player) => player.developed === undefined)).toBe(true);
-    expect(() => operate(w, { type: 'training', focus: 'balanced' })).toThrow('개입 1단계');
-    expect(delegated(w, 'training')).toBe(true);
-    operate(w, { type: 'intervention', level: 1 });
-    operate(w, { type: 'training', focus: 'balanced' });
+    for (const level of [1, 4] as const) {
+      operate(w, { type: 'intervention', level });
+      expect(activeTrainingFocus(w)).toBe(autoTrainingFocus(w));
+    }
+    operate(w, { type: 'coach-training', coach: 'assistant', focus: 'balanced', force: true });
     expect(activeTrainingFocus(w)).toBe('balanced');
-    operate(w, { type: 'intervention', level: 4 });
-    expect(activeTrainingFocus(w)).toBe(autoTrainingFocus(w));
   });
 
   it('decides the focus once per round even as earlier players recover', () => {
