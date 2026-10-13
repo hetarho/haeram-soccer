@@ -871,7 +871,7 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
     expect(again.agent).toBe(weak[0]);
   });
 
-  it('raises the demand 3% per agent level above 1', () => {
+  it('raises the demand 1% per agent level above 1', () => {
     const { w, p } = talking(80);
     const demand = (agent: AgentRating) => {
       p.agent = agent;
@@ -879,10 +879,10 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
     };
     const market = BigInt(marketWage(w, p));
     expect(agentPremium(1)).toBe(1);
-    expect(agentPremium(5)).toBeCloseTo(1.12);
+    expect(agentPremium(5)).toBeCloseTo(1.04);
     expect(demand(1)).toBe(ratio(market.toString(), 1000n, 1000n));
-    expect(demand(3)).toBe(ratio(market.toString(), 1060n, 1000n));
-    expect(demand(5)).toBe(ratio(market.toString(), 1120n, 1000n));
+    expect(demand(3)).toBe(ratio(market.toString(), 1020n, 1000n));
+    expect(demand(5)).toBe(ratio(market.toString(), 1040n, 1000n));
   });
 
   it('keeps clause shares and sizes in their ranges, leaning with the agent', () => {

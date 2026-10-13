@@ -928,7 +928,7 @@
         "year": 1960,
         "round": 0,
         "revision": 323,
-        "cash": "138124",
+        "cash": "138153",
         "currency": "FRF",
         "income": "0",
         "expense": "0",
@@ -957,7 +957,7 @@
           {
             "id": "FRA:club:founder:1",
             "status": "active",
-            "wage": "2275",
+            "wage": "2231",
             "career": [0, 0, 8, 5, 0, 0, 0, 0, 0, 8, 180, 0]
           },
           {
@@ -981,49 +981,49 @@
           {
             "id": "FRA:club:founder:5",
             "status": "active",
-            "wage": "333",
+            "wage": "321",
             "career": [1, 5, 635, 472, 7, 5, 41, 79, 0, 0, 2790, 0]
           },
           {
             "id": "FRA:club:founder:6",
             "status": "active",
-            "wage": "302",
+            "wage": "290",
             "career": [0, 0, 82, 50, 1, 0, 6, 20, 0, 0, 450, 0]
           },
           {
             "id": "FRA:club:founder:7",
             "status": "active",
-            "wage": "578",
+            "wage": "556",
             "career": [2, 2, 587, 455, 7, 2, 36, 71, 2, 0, 2790, 0]
           },
           {
             "id": "FRA:club:founder:8",
             "status": "active",
-            "wage": "309",
+            "wage": "303",
             "career": [0, 0, 17, 13, 3, 1, 1, 0, 0, 0, 90, 0]
           },
           {
             "id": "FRA:club:founder:9",
             "status": "active",
-            "wage": "309",
+            "wage": "303",
             "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
           },
           {
             "id": "FRA:club:founder:10",
             "status": "active",
-            "wage": "388",
+            "wage": "373",
             "career": [2, 5, 760, 588, 24, 11, 31, 21, 32, 0, 2700, 0]
           },
           {
             "id": "FRA:club:founder:11",
             "status": "active",
-            "wage": "562",
+            "wage": "552",
             "career": [3, 4, 686, 518, 28, 11, 35, 19, 28, 0, 2700, 0]
           },
           {
             "id": "FRA:club:founder:12",
             "status": "active",
-            "wage": "461",
+            "wage": "452",
             "career": [4, 5, 1434, 1128, 21, 9, 41, 32, 37, 0, 2790, 0]
           },
           {
@@ -1035,19 +1035,19 @@
           {
             "id": "FRA:club:founder:14",
             "status": "active",
-            "wage": "562",
+            "wage": "552",
             "career": [9, 1, 783, 606, 94, 39, 12, 23, 28, 0, 2790, 0]
           },
           {
             "id": "FRA:club:founder:15",
             "status": "active",
-            "wage": "361",
+            "wage": "341",
             "career": [6, 2, 723, 524, 58, 30, 24, 26, 18, 0, 2520, 0]
           },
           {
             "id": "FRA:club:founder:16",
             "status": "active",
-            "wage": "441",
+            "wage": "417",
             "career": [8, 3, 784, 598, 95, 48, 23, 29, 34, 0, 2790, 0]
           },
           {
@@ -3748,7 +3748,7 @@
             "year": 1959,
             "rank": 12,
             "points": 36,
-            "cash": "13812427",
+            "cash": "13815324",
             "currency": "FRF-OLD",
             "champions": [
               {
@@ -4165,17 +4165,17 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94859"
+            "amount": "94742"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94860"
+            "amount": "94745"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94859"
+            "amount": "94744"
           },
           {
             "kind": "rival-sacking",
@@ -4195,12 +4195,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94859"
+            "amount": "94742"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94859"
+            "amount": "94744"
           },
           {
             "kind": "injury",
@@ -4215,7 +4215,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94860"
+            "amount": "94743"
           },
           {
             "kind": "gate",
@@ -4235,17 +4235,17 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94858"
+            "amount": "94743"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94860"
+            "amount": "94744"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94860"
+            "amount": "94744"
           },
           {
             "kind": "gate",
@@ -4265,12 +4265,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94859"
+            "amount": "94743"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94859"
+            "amount": "94743"
           },
           {
             "kind": "youth-intake",
@@ -4285,7 +4285,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94859"
+            "amount": "94743"
           },
           {
             "kind": "gate",
@@ -4300,12 +4300,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94860"
+            "amount": "94745"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94859"
+            "amount": "94742"
           },
           {
             "kind": "injury",
@@ -4315,7 +4315,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94859"
+            "amount": "94744"
           },
           {
             "kind": "gate",
@@ -4335,17 +4335,17 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94859"
+            "amount": "94743"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94859"
+            "amount": "94743"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94860"
+            "amount": "94744"
           },
           {
             "kind": "gate",
@@ -4360,17 +4360,17 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94860"
+            "amount": "94744"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94859"
+            "amount": "94743"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94858"
+            "amount": "94743"
           },
           {
             "kind": "gate",
@@ -4390,12 +4390,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94860"
+            "amount": "94743"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94860"
+            "amount": "94745"
           },
           {
             "kind": "injury",
@@ -4405,12 +4405,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94859"
+            "amount": "94742"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "94859"
+            "amount": "94744"
           },
           {
             "kind": "league-merit",
@@ -5095,7 +5095,7 @@
           {
             "id": "FRA:club:founder:1",
             "status": "active",
-            "wage": "28297",
+            "wage": "27748",
             "career": [0, 0, 34, 24, 0, 0, 0, 0, 0, 39, 630, 0]
           },
           {
@@ -5119,49 +5119,49 @@
           {
             "id": "FRA:club:founder:5",
             "status": "active",
-            "wage": "4827",
+            "wage": "4645",
             "career": [0, 2, 619, 463, 3, 1, 50, 91, 0, 0, 3150, 0]
           },
           {
             "id": "FRA:club:founder:6",
             "status": "active",
-            "wage": "4369",
+            "wage": "4204",
             "career": [0, 0, 201, 151, 2, 1, 27, 36, 0, 0, 900, 0]
           },
           {
             "id": "FRA:club:founder:7",
             "status": "active",
-            "wage": "6513",
+            "wage": "6267",
             "career": [0, 0, 696, 546, 9, 1, 57, 107, 0, 0, 3600, 0]
           },
           {
             "id": "FRA:club:founder:8",
             "status": "active",
-            "wage": "3477",
+            "wage": "3409",
             "career": [0, 0, 102, 71, 6, 1, 4, 3, 2, 0, 360, 0]
           },
           {
             "id": "FRA:club:founder:9",
             "status": "active",
-            "wage": "3477",
+            "wage": "3409",
             "career": [0, 0, 55, 44, 0, 0, 0, 1, 1, 0, 90, 0]
           },
           {
             "id": "FRA:club:founder:10",
             "status": "active",
-            "wage": "4369",
+            "wage": "4204",
             "career": [0, 2, 839, 623, 19, 4, 40, 31, 28, 0, 2880, 0]
           },
           {
             "id": "FRA:club:founder:11",
             "status": "active",
-            "wage": "5727",
+            "wage": "5615",
             "career": [2, 1, 920, 680, 41, 21, 53, 30, 35, 0, 3600, 0]
           },
           {
             "id": "FRA:club:founder:12",
             "status": "active",
-            "wage": "5183",
+            "wage": "5082",
             "career": [2, 4, 1480, 1136, 25, 7, 49, 24, 50, 0, 3420, 0]
           },
           {
@@ -5173,19 +5173,19 @@
           {
             "id": "FRA:club:founder:14",
             "status": "active",
-            "wage": "5727",
+            "wage": "5615",
             "career": [5, 3, 790, 618, 77, 38, 19, 37, 34, 0, 2970, 0]
           },
           {
             "id": "FRA:club:founder:15",
             "status": "active",
-            "wage": "4065",
+            "wage": "3842",
             "career": [6, 3, 799, 577, 78, 34, 25, 35, 29, 0, 3060, 0]
           },
           {
             "id": "FRA:club:founder:16",
             "status": "active",
-            "wage": "4964",
+            "wage": "4690",
             "career": [9, 2, 841, 621, 83, 42, 25, 32, 42, 0, 3330, 0]
           },
           {

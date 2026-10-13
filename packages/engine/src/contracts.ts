@@ -153,8 +153,11 @@ export function marketValue(w: World, player: Player, division = clubOf(w).tier)
  * for better players.
  */
 export const AGENT_CONFIG = {
-  /** Each level above 1 raises the demand by this share (→CLUB-26). */
-  premium: 0.03,
+  /**
+   * Each level above 1 raises the demand by this share (→CLUB-26), small enough that the default
+   * talk rule's 110% cap still keeps a delegated squad at its market wage (→ECON-29).
+   */
+  premium: 0.01,
   /**
    * The draw is a uniform number cut into five even bands; a player rated `pivot` keeps it, every
    * point above or below moves it 1/`spread` toward 5 or 1, at most `shift`.
@@ -177,7 +180,7 @@ export function drawAgent(r: () => number, ability: number): AgentRating {
 export function agentOf(w: Pick<World, 'seed'>, p: Player): AgentRating {
   return p.agent ?? drawAgent(random(`${w.seed}:agent:${p.id}`), overall(p));
 }
-/** The demand multiplier his agent brings: 3% per level above 1 (→CLUB-26). */
+/** The demand multiplier his agent brings: 1% per level above 1 (→CLUB-26). */
 export function agentPremium(agent: AgentRating) {
   return 1 + AGENT_CONFIG.premium * (agent - 1);
 }
