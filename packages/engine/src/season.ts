@@ -11,6 +11,7 @@ import { clubValuation, eloOf, eloRange, eloRank, settleElo, squadValue } from '
 import { evolveClubs } from './dynamics';
 import { announceRetirements, clearHealed, injuriesAfterMatch, retireAtClose } from './careers';
 import { gate, settleLeagueMerit, settleRound } from './settlement';
+import { assessOperatingExpenses } from './finance';
 import { delegatedBusiness, sponsorReminder, yearlySponsor } from './ops-commercial';
 import { yearlyStaff } from './ops-staff';
 import type {
@@ -618,6 +619,9 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   // A strategy reserved during the season becomes the new season's change (→ECON-22).
   applyReservedBuild(w);
   advanceEconomy(w, w.year - 1);
+  // The new season's operating expenses, in its money and on the division it plays (→ECON-30),
+  // before anything this rollover weighs fixed costs.
+  w.operatingExpenses = assessOperatingExpenses(w);
   yearlySponsor(w);
   yearlyStaff(w);
   seasonStaff(w);

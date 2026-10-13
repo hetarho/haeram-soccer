@@ -4,6 +4,7 @@ import { random, ratio } from './primitives';
 import {
   campaignEffectiveness,
   divisionLabel,
+  EXPENSE_CONFIG,
   FINANCE_CONFIG,
   gateProjection,
   isLeagueMatch,
@@ -12,6 +13,7 @@ import {
   matchBonus,
   moneyLabel,
   operatingCosts,
+  operatingExpensesAt,
   ownLeagueGames,
   parachutePayment,
   roundShare,
@@ -195,12 +197,15 @@ export function settleRound(w: World) {
     `선수 ${money(cost.payments.playerWages)} · 감독 ${money(cost.payments.managerWage)} · 시설 ${money(cost.payments.maintenance)}${cost.payments.marketing ? ` · 마케팅 ${money(cost.payments.marketing)}` : ''}${cost.payments.academy ? ` · 유소년 ${money(cost.payments.academy)}` : ''}${fansGained ? ` · 마케팅 팬 +${fansGained}명` : ''}`,
     (BigInt(cost.nextRound) - BigInt(cost.payments.expenses)).toString(),
   );
-  // Operating expenses keep one ledger line a season, grown each round (→ECON-30, ECON-10).
+  // Operating expenses keep one ledger line a season, grown each round (→ECON-30, ECON-10); the
+  // line says whether last season's turnover or the division's floor set them.
+  const floor =
+    BigInt(cost.expenses) <= BigInt(operatingExpensesAt(club.country, w.year, club.tier));
   book(
     w,
     'operating-expenses',
     '운영 경비',
-    `${divisionLabel(club.country, club.tier)} 경기 운영·원정·행정·의료·용품 · ${w.round}/${SEASON_ROUNDS}라운드 분할`,
+    `${floor ? `${divisionLabel(club.country, club.tier)} 최저 수준` : `직전 시즌 매출의 ${Math.round(EXPENSE_CONFIG.share * 100)}%`} · 경기 운영·원정·행정·의료·용품·직원 · ${w.round}/${SEASON_ROUNDS}라운드 분할`,
     cost.payments.expenses,
   );
   for (const c of w.campaigns) {

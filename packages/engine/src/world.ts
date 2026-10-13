@@ -388,13 +388,14 @@ export function createBase(input: Founding): World {
   club.elo = initialElo(base);
   const players = found(base);
   const manager = makeManager(input.country, input.seed, year);
-  // The founding season's fixed costs (→WEB-3): wages, upkeep and the amateur level's operating
-  // expenses (→ECON-30).
+  // A club's first season pays the amateur level's floor of operating expenses (→ECON-30).
+  const operatingExpenses = operatingExpensesAt(input.country, year, club.tier);
+  // The founding season's fixed costs (→WEB-3): wages, upkeep and those operating expenses.
   const baseline =
     players.reduce((s, p) => s + BigInt(p.wage), 0n) +
     BigInt(manager.wage) +
     BigInt(quote(input.country, year, 180)) +
-    BigInt(operatingExpensesAt(input.country, year, club.tier));
+    BigInt(operatingExpenses);
   const cash = ratio(baseline.toString(), BigInt(input.difficulty * 2), 2n);
   return {
     schema: 1,
@@ -430,6 +431,7 @@ export function createBase(input: Founding): World {
     cash,
     income: '0',
     expense: '0',
+    operatingExpenses,
     currency: currency(input.country, year).code,
     priceIndex: priceIndex(input.country, year).value,
     support: 0,

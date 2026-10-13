@@ -3,6 +3,7 @@ import { country } from '../../catalogs/src/index';
 import { clubOf } from './world';
 import { prepareSeason } from './season';
 import { currentDay } from './calendar';
+import { assessOperatingExpenses } from './finance';
 import { playerValue, respondBid } from './transfers';
 
 /**
@@ -26,6 +27,8 @@ export function professionalStart(w: World) {
   delete w.rankHistory;
   delete w.scorerSeason;
   prepareSeason(w);
+  // The season starts again in this division, at its floor of operating expenses (→ECON-30).
+  w.operatingExpenses = assessOperatingExpenses(w);
   return w;
 }
 

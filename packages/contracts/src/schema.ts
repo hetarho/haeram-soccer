@@ -540,6 +540,7 @@ export const worldSchema: z.ZodType<World> = z.object({
   cash: money,
   income: money,
   expense: money,
+  operatingExpenses: amount.optional(),
   currency: text,
   priceIndex: number,
   support: z.number().int().nonnegative(),

@@ -624,6 +624,12 @@ export interface World {
   cash: string;
   income: string;
   expense: string;
+  /**
+   * This season's operating expenses (→ECON-30), recorded when it starts: a share of the last
+   * completed season's turnover, never below the floor of the division played. Absent in worlds
+   * saved before rules 1.16, which pay that floor until their next season starts (→SAVE-10).
+   */
+  operatingExpenses?: string;
   currency: string;
   priceIndex: number;
   support: number;
