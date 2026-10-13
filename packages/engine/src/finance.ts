@@ -41,6 +41,30 @@ export const DISTRIBUTION_CONFIG = {
   parachute: 0.5,
 };
 
+/**
+ * Operating expenses (운영 경비, →ECON-30), first estimates for T062 to calibrate against ECON-29:
+ * matchday operations, travel, administration, medical care and kit. Each country's season amount
+ * by division, from the top flight down, the last entry being its amateur league, in 1901 price
+ * units before the football index; the club pays it in league-round installments with the wages,
+ * for the division it plays in this season.
+ */
+export const EXPENSE_CONFIG = {
+  ENG: [5000, 1600, 650, 380, 60],
+  ESP: [4200, 1300, 55],
+  GER: [4200, 1300, 540, 55],
+  ITA: [4200, 1300, 540, 55],
+  FRA: [3600, 1150, 480, 50],
+  POR: [2800, 900, 45],
+  NED: [2800, 900, 45],
+  BEL: [2500, 820, 45],
+} as Record<string, readonly number[]>;
+
+/** A season's operating expenses for a division in `code` and `year` money (→ECON-30). */
+export function operatingExpensesAt(code: string, year: number, tier: number) {
+  const table = EXPENSE_CONFIG[code] ?? EXPENSE_CONFIG.ENG;
+  return footballQuote(code, year, table[Math.min(tier, table.length - 1)]);
+}
+
 export function roundShare(annual: string, round: number, count = 46) {
   if (round <= 0 || count <= 0) return '0';
   return (
@@ -89,13 +113,18 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     ? quote(clubOf(w).country, w.year, effects.academyUnits * 46)
     : '0';
   const staffWages = staffWageTotal(w).toString();
+  // The division played this season sets them, so a promotion or relegation counts from its first
+  // round (→ECON-30).
+  const club = clubOf(w),
+    expenses = operatingExpensesAt(club.country, w.year, club.tier);
   const annual = (
     BigInt(playerWages) +
     BigInt(managerWage) +
     BigInt(maintenance) +
     BigInt(marketing) +
     BigInt(academy) +
-    BigInt(staffWages)
+    BigInt(staffWages) +
+    BigInt(expenses)
   ).toString();
   /** The marketing share appears only while the policy actually spends. */
   const payments: {
@@ -105,6 +134,7 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     marketing?: string;
     academy?: string;
     staffWages?: string;
+    expenses: string;
   } = {
     playerWages: roundShare(playerWages, round),
     managerWage: roundShare(managerWage, round),
@@ -112,6 +142,7 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     ...(marketing !== '0' ? { marketing: roundShare(marketing, round) } : {}),
     ...(academy !== '0' ? { academy: roundShare(academy, round) } : {}),
     ...(staffWages !== '0' ? { staffWages: roundShare(staffWages, round) } : {}),
+    expenses: roundShare(expenses, round),
   };
   const nextRound = Object.values(payments)
     .reduce((sum, value) => sum + BigInt(value), 0n)
@@ -123,6 +154,8 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     marketing,
     academy,
     staffWages,
+    /** Operating expenses (운영 경비) of the division played this season (→ECON-30). */
+    expenses,
     annual,
     nextRound,
     payments,
@@ -301,6 +334,7 @@ const incomeKinds: Record<string, string> = {
 };
 const expenseKinds: Record<string, string> = {
   'operating-cost': '급여·시설 유지',
+  'operating-expenses': '운영 경비',
   'match-cost': '홈 경기 개최비',
   campaign: '마케팅 집행',
   'transfer-in': '선수 영입·임대',

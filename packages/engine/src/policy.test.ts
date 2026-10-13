@@ -76,10 +76,12 @@ describe('club operating policy', () => {
     expect(policyOf(absent)).toEqual(POLICY_DEFAULTS);
     expect(canonical(operatingCosts(explicit))).toBe(canonical(operatingCosts(absent)));
     expect(operatingCosts(absent).marketing).toBe('0');
+    // Operating expenses are paid at every level (→ECON-30); policy spending appears only when set.
     expect(Object.keys(operatingCosts(absent).payments)).toEqual([
       'playerWages',
       'managerWage',
       'maintenance',
+      'expenses',
     ]);
     expect(operatingCosts(absent).playerWages).toBe(
       sum(absent.players.map((player) => Number(player.wage))).toString(),
@@ -237,7 +239,7 @@ describe('club operating policy', () => {
     );
     expect(marketingFanGain(fans, 0.02)).toBeGreaterThan(0);
     expect(BigInt(direct.cash)).toBe(cash - BigInt(bill.nextRound) + online);
-    expect(direct.events.at(-1)!.detail).toContain(
+    expect(direct.events.findLast((event) => event.kind === 'operating-cost')!.detail).toContain(
       `마케팅 ${moneyLabel(direct, bill.payments.marketing!)}`,
     );
 

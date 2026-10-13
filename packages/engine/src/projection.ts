@@ -13,7 +13,7 @@ import { ownLeagueClubs, ranked } from './season';
 import { SEASON_ROUNDS } from './calendar';
 
 export type ProjectionKey =
-  'operating' | 'gate' | 'share' | 'parachute' | 'sponsor' | 'performance' | 'merit';
+  'operating' | 'expenses' | 'gate' | 'share' | 'parachute' | 'sponsor' | 'performance' | 'merit';
 export interface ProjectionLine {
   key: ProjectionKey;
   label: string;
@@ -36,7 +36,8 @@ export interface FinanceProjection {
   seasonLines: ProjectionLine[];
 }
 const LABELS: Record<ProjectionKey, string> = {
-  operating: '급여·운영비',
+  operating: '급여·시설 유지',
+  expenses: '운영 경비',
   gate: '홈 경기 수입(개최비 제외)',
   share: '리그 분배금',
   parachute: '강등 보전금',
@@ -78,9 +79,12 @@ export function financeProjection(w: World): FinanceProjection {
       costs.managerWage,
       costs.maintenance,
       costs.marketing,
+      costs.academy,
       costs.staffWages,
     ].map(unpaid),
   );
+  // Operating expenses of the division played this season, a fixed cost of their own (→ECON-30).
+  const remainingExpenses = unpaid(costs.expenses);
 
   const league = w.fixtures.filter(
     (f) =>
@@ -144,6 +148,7 @@ export function financeProjection(w: World): FinanceProjection {
   const shown = (row: ProjectionLine) => row.key !== 'parachute' || row.high !== '0';
   const seasonLines = [
     line('operating', -remainingCosts, -remainingCosts),
+    line('expenses', -remainingExpenses, -remainingExpenses),
     line('gate', gateLow * BigInt(remainingHome), gateHigh * BigInt(remainingHome)),
     line('share', shareSeason, shareSeason),
     line('parachute', parachute, parachute),
@@ -151,9 +156,11 @@ export function financeProjection(w: World): FinanceProjection {
     line('performance', 0n, performanceSeason),
     line('merit', 0n, merit),
   ].filter(shown);
-  const yearCost = big(costs.annual);
+  const yearExpenses = big(costs.expenses),
+    yearCost = big(costs.annual) - yearExpenses;
   const lines = [
     line('operating', -yearCost, -yearCost),
+    line('expenses', -yearExpenses, -yearExpenses),
     line('gate', gateLow * BigInt(homeGames), gateHigh * BigInt(homeGames)),
     line('share', big(share), big(share)),
     line('parachute', parachute, parachute),

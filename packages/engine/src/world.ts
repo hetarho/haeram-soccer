@@ -22,6 +22,7 @@ import { coachProspect, MANAGER_CAREER } from './coaching';
 import { dayCountedFrom } from './calendar';
 import { MARKET_BANDS, STYLE_INFO, YOUTH_SELECTION_BONUS } from './styles';
 import { divisionFor, marketWageAt } from './contracts';
+import { operatingExpensesAt } from './finance';
 export const ENGINE_VERSION = CURRENT_ENGINE_VERSION;
 export const TACTICS: Tactic[] = ['balanced', 'possession', 'counter', 'press'];
 export const tacticLabel: Record<Tactic, string> = {
@@ -375,10 +376,13 @@ export function createBase(input: Founding): World {
   club.elo = initialElo(base);
   const players = found(base);
   const manager = makeManager(input.country, input.seed, year);
+  // The founding season's fixed costs (→WEB-3): wages, upkeep and the amateur level's operating
+  // expenses (→ECON-30).
   const baseline =
     players.reduce((s, p) => s + BigInt(p.wage), 0n) +
     BigInt(manager.wage) +
-    BigInt(quote(input.country, year, 180));
+    BigInt(quote(input.country, year, 180)) +
+    BigInt(operatingExpensesAt(input.country, year, club.tier));
   const cash = ratio(baseline.toString(), BigInt(input.difficulty * 2), 2n);
   return {
     schema: 1,

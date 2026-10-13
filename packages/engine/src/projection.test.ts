@@ -49,7 +49,8 @@ describe('finance projection', () => {
       expect(BigInt(line.amount)).toBeLessThanOrEqual(BigInt(line.high));
     }
     expect(projection.lines.map((line) => line.label)).toEqual([
-      '급여·운영비',
+      '급여·시설 유지',
+      '운영 경비',
       '홈 경기 수입(개최비 제외)',
       '리그 분배금',
       '후원 계약',
@@ -68,27 +69,41 @@ describe('finance projection', () => {
 
   it('charges the annual operating bill over a year and the remaining rounds by season end', () => {
     const w = world();
-    const start = financeProjection(w);
-    expect(lineOf(start.lines, 'operating').amount).toBe(`-${operatingCosts(w).annual}`);
-    expect(lineOf(start.seasonLines, 'operating').amount).toBe(`-${operatingCosts(w).annual}`);
+    operate(w, { type: 'policy', key: 'academy', level: 3 });
+    const start = financeProjection(w),
+      first = operatingCosts(w),
+      bill = BigInt(first.annual) - BigInt(first.expenses);
+    expect(BigInt(first.academy)).toBeGreaterThan(0n);
+    expect(lineOf(start.lines, 'operating').amount).toBe(`${-bill}`);
+    expect(lineOf(start.seasonLines, 'operating').amount).toBe(`${-bill}`);
+    expect(lineOf(start.lines, 'expenses').amount).toBe(`-${first.expenses}`);
+    expect(lineOf(start.seasonLines, 'expenses').amount).toBe(`-${first.expenses}`);
     for (let i = 0; i < 10; i++) advanceRound(w, undefined, false);
     const costs = operatingCosts(w),
+      unpaid = (part: string) => (BigInt(part) - BigInt(ratio(part, 10n, 46n))).toString(),
       remaining = sum(
         [
           costs.playerWages,
           costs.managerWage,
           costs.maintenance,
           costs.marketing,
+          costs.academy,
           costs.staffWages,
-        ].map((part) => (BigInt(part) - BigInt(ratio(part, 10n, 46n))).toString()),
-      );
+        ].map(unpaid),
+      ),
+      remainingExpenses = BigInt(unpaid(costs.expenses));
     const mid = financeProjection(w);
     expect(BigInt(lineOf(mid.seasonLines, 'operating').amount)).toBe(-remaining);
-    expect(lineOf(mid.lines, 'operating').amount).toBe(`-${costs.annual}`);
+    expect(BigInt(lineOf(mid.lines, 'operating').amount)).toBe(
+      BigInt(costs.expenses) - BigInt(costs.annual),
+    );
+    expect(BigInt(lineOf(mid.seasonLines, 'expenses').amount)).toBe(-remainingExpenses);
     // The remaining bills are exactly what the rounds then charge.
-    const paidBefore = eventsTotal(w, 'operating-cost');
+    const paidBefore = eventsTotal(w, 'operating-cost'),
+      expensesBefore = eventsTotal(w, 'operating-expenses');
     while (w.round < 46) advanceRound(w, undefined, false);
     expect(eventsTotal(w, 'operating-cost') - paidBefore).toBe(remaining);
+    expect(eventsTotal(w, 'operating-expenses') - expensesBefore).toBe(remainingExpenses);
   });
 
   it('carries the league share a year ahead and the rest of it to season end', () => {

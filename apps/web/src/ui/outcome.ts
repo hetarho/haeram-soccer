@@ -82,6 +82,7 @@ const trainingLabel: Record<NonNullable<World['training']>, string> = {
 /** Routine ledger records carry raw minor units and fixture IDs; the cash change summarizes them. */
 export const ROUTINE_EVENTS = new Set([
   'operating-cost',
+  'operating-expenses',
   'match-cost',
   'gate',
   'league-share',

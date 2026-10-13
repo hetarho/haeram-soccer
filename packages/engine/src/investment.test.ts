@@ -55,9 +55,12 @@ describe('shared club investment forecasts', () => {
       BigInt(preview.maintenanceIncrease),
     );
     advanceRound(w, undefined, false);
-    expect(w.events.find((event) => event.kind === 'operating-cost')?.amount).toBe(
-      preview.nextRoundAfter,
+    // The round's fixed costs: wages and upkeep on one line, operating expenses on their own.
+    const paid = ['operating-cost', 'operating-expenses'].map((kind) =>
+      BigInt(w.events.find((event) => event.kind === kind)!.amount!),
     );
+    expect(paid[0] + paid[1]).toBe(BigInt(preview.nextRoundAfter));
+    expect(paid[1]).toBe(BigInt(actual.payments.expenses));
   });
 
   it('shows the true cash shortfall and cannot make an unaffordable investment', () => {

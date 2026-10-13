@@ -44,7 +44,7 @@ export const FinancialBreakdown = memo(
           <div>
             <span>다음 라운드 고정 지출</span>
             <strong>{format(costs.nextRound)}</strong>
-            <small>급여와 시설 유지비 · 경기 개최비 별도</small>
+            <small>급여·시설 유지·운영 경비 · 경기 개최비 별도</small>
           </div>
         </div>
         <div className={s.columns}>
@@ -83,20 +83,26 @@ export const FinancialBreakdown = memo(
             </div>
           </div>
           <div>
-            <h4>계약상 연간 고정비</h4>
+            <h4>연간 고정비</h4>
             <dl>
-              <div>
-                <dt>선수 급여</dt>
-                <dd>{format(costs.playerWages)}</dd>
-              </div>
-              <div>
-                <dt>감독 급여</dt>
-                <dd>{format(costs.managerWage)}</dd>
-              </div>
-              <div>
-                <dt>시설 유지</dt>
-                <dd>{format(costs.maintenance)}</dd>
-              </div>
+              {(
+                [
+                  ['선수 급여', costs.playerWages],
+                  ['감독 급여', costs.managerWage],
+                  ['코치진 급여', costs.staffWages],
+                  ['시설 유지', costs.maintenance],
+                  ['마케팅', costs.marketing],
+                  ['유소년 투자', costs.academy],
+                  ['운영 경비', costs.expenses],
+                ] as const
+              )
+                .filter(([label, amount]) => label === '선수 급여' || BigInt(amount) !== 0n)
+                .map(([label, amount]) => (
+                  <div key={label}>
+                    <dt>{label}</dt>
+                    <dd>{format(amount)}</dd>
+                  </div>
+                ))}
             </dl>
             <div className={s.total}>
               <span>연간 합계</span>

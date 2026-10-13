@@ -202,7 +202,8 @@ export function BusinessWorkbench({
             </div>
           </div>
           <p className={s.note}>
-            자금 여유는 급여·시설 유지비·마케팅비 기준이에요. 미래 수입과 경기 개최비는 별도로 봐요.
+            자금 여유는 급여·시설 유지비·마케팅비·운영 경비 기준이에요. 미래 수입과 경기 개최비는
+            별도로 봐요.
           </p>
           {BigInt(w.cash) < 0n && contribution}
           <div className={s.detailActions}>

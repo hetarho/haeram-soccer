@@ -46,15 +46,17 @@ export type SponsorKind = 'stable' | 'performance' | 'exclusive' | 'indexed';
 /** Why a player turned unhappy (→CLUB-27): the club declined his renewal or his raise. */
 export type UnhappyReason = 'renewal-declined' | 'raise-declined';
 /**
- * Ledger kinds of competition money (→ECON-28), sponsor contracts (→ECON-8) and expiring
- * contracts (→CLUB-28); `Event.kind` stays a string, so older entries keep theirs.
+ * Ledger kinds of competition money (→ECON-28), sponsor contracts (→ECON-8), expiring contracts
+ * (→CLUB-28) and operating expenses (→ECON-30); `Event.kind` stays a string, so older entries keep
+ * theirs.
  */
 export type LedgerKind =
   | 'league-share'
   | 'league-merit'
   | 'parachute'
   | `sponsor:${SponsorSlot}`
-  | 'free-transfer-compensation';
+  | 'free-transfer-compensation'
+  | 'operating-expenses';
 /** A player's standing on the market (→CLUB-22): listed to sell, open to offers, or untouchable. */
 export type TransferStance = 'listed' | 'open' | 'untouchable';
 /** Owner requests to the manager and staff (→CLUB-20). */

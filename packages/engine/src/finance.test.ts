@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { World } from '../../contracts/src/types';
 import { canonical } from '../../contracts/src/index';
 import { COUNTRIES, footballIndex } from '../../catalogs/src/index';
 import {
@@ -6,9 +7,11 @@ import {
   advanceRound,
   careOffer,
   catchment,
+  closeSeason,
   clubOf,
   createWorld,
   DISTRIBUTION_CONFIG,
+  EXPENSE_CONFIG,
   financeProjection,
   financialBreakdown,
   footballQuote,
@@ -20,6 +23,7 @@ import {
   operate,
   operatingCost,
   operatingCosts,
+  operatingExpensesAt,
   parachutePayment,
   prepareSeason,
   quote,
@@ -411,5 +415,122 @@ describe('the league distribution', () => {
       expect(parachutePayment(other)).toBe('0');
       expect(financeProjection(other).lines.some((row) => row.key === 'parachute')).toBe(false);
     }
+  });
+});
+
+describe('operating expenses (→ECON-30)', () => {
+  const entries = (w: World) =>
+    w.events.filter((e) => e.year === w.year && e.kind === 'operating-expenses');
+
+  it('charges each division its own amount on the football index, the amateur level least', () => {
+    for (const profile of COUNTRIES) {
+      const table = EXPENSE_CONFIG[profile.code];
+      // Every professional division and the amateur league below them.
+      expect(table).toHaveLength(profile.groups.length + 1);
+      for (let tier = 1; tier < table.length; tier++)
+        expect(table[tier]).toBeLessThan(table[tier - 1]);
+      for (let tier = 0; tier < table.length; tier++)
+        expect(BigInt(operatingExpensesAt(profile.code, 2010, tier))).toBe(
+          BigInt(footballQuote(profile.code, 2010, table[tier])),
+        );
+    }
+    const units = EXPENSE_CONFIG.ENG[0];
+    // Before commercialisation the index is prices; from it, football money outgrows prices.
+    expect(operatingExpensesAt('ENG', 1950, 0)).toBe(quote('ENG', 1950, units));
+    expect(footballIndex('ENG', 2010).real).toBeGreaterThan(1);
+    expect(BigInt(operatingExpensesAt('ENG', 2010, 0))).toBeGreaterThan(
+      BigInt(quote('ENG', 2010, units)),
+    );
+    // A club pays its own division's amount, in its season's money.
+    const w = world(),
+      own = clubOf(w);
+    expect(operatingCosts(w).expenses).toBe(operatingExpensesAt('ENG', w.year, own.tier));
+    own.tier = 0;
+    const late = { ...w, year: 2010 };
+    expect(operatingCosts(late).expenses).toBe(operatingExpensesAt('ENG', 2010, 0));
+  });
+
+  it('pays them each league round as a fixed cost on their own ledger line', () => {
+    const w = professionalStart(world()),
+      costs = operatingCosts(w);
+    expect(BigInt(costs.annual)).toBe(
+      [
+        costs.playerWages,
+        costs.managerWage,
+        costs.maintenance,
+        costs.marketing,
+        costs.academy,
+        costs.staffWages,
+        costs.expenses,
+      ].reduce((sum, part) => sum + BigInt(part), 0n),
+    );
+    // Fixed costs and the runway read the annual total.
+    expect(operatingCost(w)).toBe(costs.annual);
+    expect(costs.payments.expenses).toBe(roundShare(costs.expenses, 1));
+    while (w.round < 46) advanceRound(w, undefined, false);
+    // One ledger entry a season, grown by every round's installment.
+    expect(entries(w)).toHaveLength(1);
+    expect(entries(w)[0].amount).toBe(costs.expenses);
+    const budget = financialBreakdown(w);
+    expect(budget.expense.find((row) => row.key === 'operating-expenses')).toMatchObject({
+      label: '운영 경비',
+      amount: costs.expenses,
+    });
+    expect(budget.expense.some((row) => row.key === 'older-ledger')).toBe(false);
+  });
+
+  it('counts them in the cash warning and the bankruptcy threshold', () => {
+    const start = () => {
+      const w = world();
+      w.round = 1;
+      const cost = operatingCosts(w, 1),
+        share = BigInt(roundShare(leagueShare(w), 1));
+      // Cash before the round that leaves `after` once its costs and installments are settled.
+      const settle = (after: bigint) => {
+        w.cash = (after + BigInt(cost.nextRound) - share).toString();
+        settleRound(w);
+        expect(BigInt(w.cash)).toBe(after);
+        return w;
+      };
+      return { w, cost, settle };
+    };
+    // Covering 13 rounds of every fixed cost but the expenses still warns.
+    const warned = start(),
+      perRound = BigInt(warned.cost.nextRound);
+    expect(BigInt(warned.cost.payments.expenses)).toBeGreaterThan(0n);
+    warned.settle(perRound * 13n - 1n);
+    expect(warned.w.events.some((e) => e.kind === 'cash-warning')).toBe(true);
+    expect(warned.w.inbox!.at(-1)!.detail).toContain(moneyLabel(warned.w, warned.cost.nextRound));
+    // Debt within half a year of every fixed cost, expenses included, is not yet bankruptcy.
+    const annual = BigInt(warned.cost.annual),
+      without = annual - BigInt(warned.cost.expenses);
+    const inDebt = start().settle(-(without / 2n + 1n));
+    expect(inDebt.bankrupt).toBeUndefined();
+    expect(inDebt.insolvent).toBe(1);
+    const beyond = start().settle(-(annual / 2n + 1n));
+    expect(beyond.bankrupt).toBeDefined();
+  });
+
+  it('follows the division played this season, so a promotion changes them from the first round', () => {
+    const w = world(),
+      amateur = clubOf(w).tier;
+    while (w.round < 46) advanceRound(w, undefined, false);
+    const before = operatingCosts(w).expenses;
+    expect(entries(w)[0].amount).toBe(before);
+    // The amateur champions go up into the last professional division.
+    w.tables[w.playerClub].points = 999;
+    closeSeason(w);
+    const tier = clubOf(w).tier;
+    expect(tier).toBe(amateur - 1);
+    const expenses = operatingExpensesAt('ENG', w.year, tier);
+    expect(BigInt(expenses)).toBeGreaterThan(BigInt(operatingExpensesAt('ENG', w.year, amateur)));
+    expect(operatingCosts(w).expenses).toBe(expenses);
+    expect(financeProjection(w).seasonLines.find((line) => line.key === 'expenses')).toMatchObject({
+      label: '운영 경비',
+      amount: `-${expenses}`,
+    });
+    advanceRound(w, undefined, false);
+    expect(entries(w)).toHaveLength(1);
+    expect(entries(w)[0].amount).toBe(roundShare(expenses, 1));
   });
 });

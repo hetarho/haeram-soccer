@@ -102,6 +102,11 @@ function paySponsors(w: World, m: MatchRecord, result: string, resultBonus: stri
 function accrue(w: World, kind: string, title: string, detail: string, amount: string) {
   if (BigInt(amount) <= 0n) return;
   credit(w, amount);
+  book(w, kind, title, detail, amount);
+}
+/** Adds an installment already paid or charged to the season's one ledger entry of its kind. */
+function book(w: World, kind: string, title: string, detail: string, amount: string) {
+  if (BigInt(amount) <= 0n) return;
   const entry = w.events.findLast(
     (event) =>
       event.kind === kind &&
@@ -152,7 +157,7 @@ function cashWarning(w: World, perRound: string) {
   pushInbox(w, {
     kind: 'finance',
     title: `운영자금이 약 ${weeks}주분 남았어요`,
-    detail: `라운드마다 급여·운영비 ${moneyLabel(w, perRound)}가 나가요. 후원 계약, 선수 매각, 마케팅·유소년 투자 축소나 구단주 출자로 버틸 시간을 늘리세요. 잔고가 바닥난 채 ${BANKRUPTCY_ROUNDS}라운드가 지나면 구단이 파산해요.`,
+    detail: `라운드마다 급여·시설 유지·운영 경비 ${moneyLabel(w, perRound)}가 나가요. 후원 계약, 선수 매각, 마케팅·유소년 투자 축소나 구단주 출자로 버틸 시간을 늘리세요. 잔고가 바닥난 채 ${BANKRUPTCY_ROUNDS}라운드가 지나면 구단이 파산해요.`,
     // A status, not a stop: the HUD and the warning band show it in red (→ECON-24).
     attention: false,
   });
@@ -188,7 +193,15 @@ export function settleRound(w: World) {
     'operating-cost',
     '급여와 시설 유지비',
     `선수 ${money(cost.payments.playerWages)} · 감독 ${money(cost.payments.managerWage)} · 시설 ${money(cost.payments.maintenance)}${cost.payments.marketing ? ` · 마케팅 ${money(cost.payments.marketing)}` : ''}${cost.payments.academy ? ` · 유소년 ${money(cost.payments.academy)}` : ''}${fansGained ? ` · 마케팅 팬 +${fansGained}명` : ''}`,
-    cost.nextRound,
+    (BigInt(cost.nextRound) - BigInt(cost.payments.expenses)).toString(),
+  );
+  // Operating expenses keep one ledger line a season, grown each round (→ECON-30, ECON-10).
+  book(
+    w,
+    'operating-expenses',
+    '운영 경비',
+    `${divisionLabel(club.country, club.tier)} 경기 운영·원정·행정·의료·용품 · ${w.round}/${SEASON_ROUNDS}라운드 분할`,
+    cost.payments.expenses,
   );
   for (const c of w.campaigns) {
     c.remaining--;

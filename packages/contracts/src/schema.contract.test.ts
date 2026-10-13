@@ -134,6 +134,7 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
       'parachute',
       'sponsor:shirt',
       'free-transfer-compensation',
+      'operating-expenses',
     ];
     for (const kind of ledger)
       w.events.push({ year: w.year, round: 0, kind, title: kind, detail: '', amount: '1000' });
