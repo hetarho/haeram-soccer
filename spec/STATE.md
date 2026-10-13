@@ -31,7 +31,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T078 | Three levers: upgrade journey, goldens, calibration check and full verify | SAVE ECON WEB | T077 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -40,16 +39,18 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- three levers on branch work/levers (pushed): T070–T077 done (T077 d303c5e: cards and remedies open each setting's home). Next: T078 (upgrade journey, goldens, calibration check ENG/GER — no bankrupt reference career is the must-hold; record other drift in ECON-29 and move on; full three-browser e2e via CI). Then let CI pass on work/levers and merge it into main (main's benchmark fix is already merged here).
-- benchmark (ARCH-28 p95 < 100 ms, entry ≤ 250 KiB): fixed on main (e797019; CI run 38368336768 passed the benchmark job and every browser) and merged into work/levers (0ac9c71); T078's CI run must keep the benchmark job green (the levers pages ride the lazy management chunk).
-- economy calibration ported (T079 done on work/econ-port, merged into work/levers): the other machine's calibration from origin/alt/club-realism-local plus this line's later rules holds every ECON-29 band on 24 careers — wage bill 46.1% of revenue, operating result +3.4% before player trading, 2000s mix 43.2/33.7/23.1%, 1950s matchday 89.5%, ladder 95.5 seasons, none bankrupt, established-club crowds in band (ECON r20, CLUB r23, SAVE r24; agent premium 3%→1% was the only retune). T078's calibration acceptance still compares with T062's old table (wage bill / income, net / income); the bands are now measured on revenue with the operating result (ECON-29), so that check reads the T079 table instead — no replanning needed unless a must-hold (no bankrupt reference career) fails.
-- CI on work/levers (0ac9c71, 261013): checks and every browser's e2e pass; only the benchmark job fails, because scripts/first-play.mjs still clicks the old tab labels (스태프 → 사람, 선수단, 구단 운영 …; `locator.click` timeout on '스태프'). T078: update its click path to the new tabs, then check the desktop p95 and the entry size (main's entry was 234,916 B of 256,000; levers adds pages to the lazy management chunk).
+- three levers and the economy port on branch work/levers (pushed): T070–T079 done — T077 d303c5e, T078 fe7b209/8c52745 (CI run 38378931078 on fe7b209 passed every job: checks, e2e in Chromium, Firefox and WebKit, and the benchmark), T079 merged from work/econ-port (merge unit 658, contract 11, build pass; goldens equal work/econ-port's). Next: let CI pass on the merged head in every browser and the benchmark, then merge work/levers into main (owner's standing decision: branch → CI in every browser → main). work/econ-port can then be deleted.
+- benchmark (ARCH-28 p95 < 100 ms, entry ≤ 250 KiB): scripts/first-play.mjs clicks the new navigation (선수·스태프, 훈련·육성, 구단 운영, 리그, 컵 대회, 클럽 기록실 in 게임 메뉴) since fe7b209, and CI's benchmark job passed there. Locally (host load 11–22) entry 239,264 B gzip, mobile p95 39–69 ms, desktop p95 118–149 ms: no headroom on a loaded machine; if CI turns flaky, profile the first render of 사람 and 훈련 (lazy management chunk).
+- economy calibration ported (T079 done on work/econ-port, merged into work/levers): the other machine's calibration from origin/alt/club-realism-local plus this line's later rules holds every ECON-29 band on 24 careers — wage bill 46.1% of revenue, operating result +3.4% before player trading, 2000s mix 43.2/33.7/23.1%, 1950s matchday 89.5%, ladder 95.5 seasons, none bankrupt, established-club crowds in band (ECON r20, CLUB r23, SAVE r24; agent premium 3%→1% was the only retune). T078 measured ENG/GER on the code before this port (wage bill 33.2%, net 21.6%, none bankrupt); the T079 table above, on the merged code, supersedes it.
 - goalkeepers (owner's report 261013: academy GKs show 93 while outfielders show 60s): `overall` is keeping alone for a GK (world.ts) but the mean of four skills for others, a generated GK gets keeping +12, and academy growth all goes into that one skill, so GK numbers sit far above outfield ones; delegated staff never promote into a full role (ROLE_LIMIT GK 3, academy.ts), so a ready GK prospect keeps growing toward potential until release at 19 (22 when the owner decides). Check whether CLUB-25 market wages and values, which read the overall, overpay keepers; plan a common OVR scale or a GK-specific wage/value curve (update-ssot), and let delegated staff list or sell surplus ready prospects.
 - owner's standing decisions (261013): decide without asking him; record gaps that do not change the game much and move on; push verified work (branch → CI in every browser → main); never touch his local checkout or its dev server on port 19500 while he may hold unsaved progress.
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 merged work/econ-port (T079) into work/levers: FINANCES.md keeps the levers talk rule plus the 65% wage-bill check and the ported expense amounts with the investment factor; goldens regenerated; unit 658, contract 11, build pass
+- 261013 T078 done: 1.15 level-2 upgrade journey, benchmark on the new navigation, goldens unchanged, ENG/GER calibration without bankruptcy, FINANCES.md; CI 38378931078 green on fe7b209
 - 261013 T079 done: calibration ported and retuned (agent premium 3%→1%), every ECON-29 band on 24 careers, checks pass (unit 657, contract 11 with goldens, build, Chromium e2e 101); ECON r20 CLUB r23
+- 261013 T078 doing standalone on levers (ea4d413)
 - 261013 T079 doing standalone on econ-port (00a483d), branch work/econ-port
 - 261013 update-ssot ECON r19 CLUB r22 SAVE r24: the other machine's calibration ported (broadcasting index series, prizes on it, facilities on the football index at 1.58, expenses the larger of the division amount and the turnover share, 65% delegated wage check, established-club crowds); create-task T079
 - 261013 T077 done: event cards and remedies open each setting's home (코치진, the one intervention dialog, 후원/재정, 훈련 with 회복 suggested, the board with marketing, squad investment or ticket drafted)
@@ -66,6 +67,3 @@
 - 261013 T076 doing standalone on ia-money (0c92085)
 - 261013 T074 done: 훈련 tab with focus on tap, the coach's rule and pick, what drives development (developmentOutlook) opening each home, players still growing, focus suggestion banner; 유소년 with prospects, intake, the director's switch and rule, investment line to 운영 전략
 - 261013 T074 doing standalone on ia-training (e142f23)
-- 261013 T075 done: squad investment scales operating expenses ×0.9–1.2 on each round's booking, fixed costs, runway, warning, bankruptcy threshold and projection; level 3 exactly ×1, goldens and calibration unchanged
-- 261013 T075 doing standalone on ia-money (5751099)
-- 261013 T070 done: per-department coach switches, hiring criteria and talk rule as data, talks by the talk rule, strategy applied at once with 90-day slot locks, load and activation mapping; goldens unchanged
