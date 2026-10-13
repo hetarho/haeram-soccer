@@ -6,6 +6,7 @@ import {
   seasonLength,
 } from '../../../../packages/engine/src/calendar';
 import {
+  memo,
   useEffect,
   useId,
   useLayoutEffect,
@@ -48,7 +49,7 @@ const PACES: [Pace, string, string][] = [
 ];
 
 /** Game-speed controls: tapping a speed starts the shared clock at that pace. */
-export function ProgressControls({
+export const ProgressControls = memo(function ProgressControls({
   client,
   controller,
   compact = false,
@@ -237,7 +238,7 @@ export function ProgressControls({
       )}
     </section>
   );
-}
+});
 
 /** Four bars: the more lit, the more the owner decides personally; none for a custom mix. */
 function LevelMeter({ level }: { level: number }) {

@@ -254,18 +254,20 @@ export function ClubHub({
   journal: ReactNode;
   milestoneFacts: ReturnType<typeof clubMilestones>;
 }) {
-  const { page, setPage } = useNavigation();
+  // Home stays mounted while hidden: only leaving it matters, not moves between other pages.
+  const away = useNavigation((state) => state.page !== 'dashboard');
+  const setPage = useNavigation((state) => state.setPage);
   const [journalOpen, setJournalOpen] = useState(false);
   const [goalsOpen, setGoalsOpen] = useState(false);
   const [preparing, setPreparing] = useState(false);
   const milestones = milestoneFacts;
   useEffect(() => {
-    if (page !== 'dashboard' && (journalOpen || goalsOpen || preparing)) {
+    if (away && (journalOpen || goalsOpen || preparing)) {
       setJournalOpen(false);
       setGoalsOpen(false);
       setPreparing(false);
     }
-  }, [page, journalOpen, goalsOpen, preparing]);
+  }, [away, journalOpen, goalsOpen, preparing]);
   const club = clubOf(w);
   const next = nextOwnFixture(w);
   const opponent = w.clubs.find(

@@ -21,7 +21,7 @@ import s from './ClubHub.module.css';
 
 /** Runs one remedy: an engine command, the preparation sheet, or another view. */
 export function useRemedyRunner(client: GameClient, onPrepare?: () => void) {
-  const { setPage } = useNavigation();
+  const setPage = useNavigation((state) => state.setPage);
   return (action: StateAction) => {
     if (action.command) void client.command(action.command);
     else if (action.prepare) onPrepare?.();
