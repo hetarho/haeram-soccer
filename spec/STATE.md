@@ -31,7 +31,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T073 | 사람 tab: each decision's staff switch and criteria where it lives | WEB STAFF CLUB | T072 T071 | todo |
 | T074 | 훈련 tab: focus, the coach's rule, what drives development, the academy | WEB CLUB STAFF | T071 | todo |
 | T075 | Squad investment pays through operating expenses | ECON | T070 | todo |
 | T076 | One operating board applied at once | WEB ECON CLUB | T075 T071 | todo |
@@ -46,11 +45,13 @@
 
 ## next
 - club-realism with T062–T069 is done on t062-standalone: push it as work/club-realism, let CI run every browser, then merge into main and push. ECON-29 bands still outside after T062 (owner accepted 261013, recorded): wage bill 36.2% (50–70), net 20.3% (−5..+10), 2000s commercial 12.3% / matchday 46.3%, ladder 6.0 seasons, 2nd/3rd-tier crowds 6,102 / 3,567; follow-up: per-country pre-1979 football index level or a country wage factor (update-ssot), and write the measured values into ECON-29.
-- three levers (branch ia-plan, planned from t062-standalone af28706): unit ia-base done (T070, T071); T072 done and T073 next on ia-people; T075 done and T076 on ia-money; T074 on ia-training; then T077 → T078 on ia-plan after merging the lanes.
+- three levers (branch ia-plan, planned from t062-standalone af28706): unit ia-base done (T070, T071); T072 and T073 done on ia-people (lane people complete); T075 done and T076 on ia-money; T074 on ia-training; then T077 → T078 on ia-plan after merging the lanes.
 - after the merge: fix CI's benchmark job (desktop pointer-to-second-frame p95 115 ms > 100 since one-result merged; 74–82 ms at c63554c), its own commit on main.
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 T073 done: 사람 tabs end with their switches and criteria editors (talk rule, offer switch with its sale bar, manager criteria with the pick preview, a switch and criteria per coaching department); the 위임 block is gone
+- 261013 T073 doing standalone on ia-people (c2f2db7)
 - 261013 T071 done: 사람/훈련 tabs with PageTabs and ?view=, older addresses landing on 사람's tabs, intervention levels as a preset without training, 스태프가 맡는 결정 opening each home
 - 261013 T071 doing standalone on ia-plan (5751099)
 - 261013 T072 done: coaches and the manager hired and renewed by the owner's criteria, coaching levels and the manager rule gone (loads map them), goldens unchanged
@@ -69,5 +70,3 @@
 - 261013 update-ssot CLUB r20 SAVE r22 WEB r53: delegated terms past this season, late-answered terms by half-season, clauses for founding squads and refills; SAVE-10 lists 1.16.0's agents, clauses, broadcasting index and operatingExpenses; WEB-68 terms by window, agent and clauses
 - 261013 merged main (records room redesign, WEB r52) into t062-standalone: club-realism money notation kept in ClubTrends/RecordsRoom
 - 261013 WEB r52 implemented directly on branch records-room-ux: records room tabs pinned; 요약 segments 트로피 (SVG trophies) / Elo / 시즌별 기록 (rows open the league page's closed season at 순위표) / 기타 기록 (match records read from the worker: biggest win/defeat, most goals, win/unbeaten/clean-sheet/losing/winless runs, then the record book); 추이 one chart per metric segment; 선수 one board per segment; 시즌 기록 season arrows + filter + 개요/경기/결정, 개요 a W-D-L and goals table per venue and season-long points and goal-difference charts, no league/continental tables; closed-season archives no longer re-read on every tick; the closed-season league picker takes that season's league as ours; page tab bars (league, closed season, cups, records, staff, operations) as underlined text
-- 261013 update-ssot WEB r52: records room holds only our club's records, one view at a time (요약 트로피/Elo/시즌별 기록/기타 기록, 추이 chart per metric, 선수 board per segment, 시즌 기록 season arrows + 개요/경기/결정 with season-long charts, no league or continental tables); season rows open the league page at 순위표; WEB-65 a closed season's picker takes our league that season as ours; WEB-69 page tab bars as underlined text, segments inside a tab
-- 261013 update-ssot WEB start
