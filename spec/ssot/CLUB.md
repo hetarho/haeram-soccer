@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r17 | Define the implemented browser-demo behavior for squad and growth.
+> r18 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating equals its league's average club XI (±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -91,11 +91,11 @@
 - CLUB-25 [o] Every player has a market wage from his ability, age and potential, his club's division and the football index (→ECON-26); it rises steeply with ability, so a star earns many times a squad player. ← players are paid what the market says they are worth
   - targets, calibrated with →ECON-29: in a top flight a player rated 80 earns 6–10× one rated 60; a second-tier squad earns 35–50% of a top-flight squad of the same ability.
   - transfer values follow the same index.
-- CLUB-26 [o] Players negotiate their contracts: one in the final season of his contract asks to renew on 1 January, and one paid 25% or more below his market wage asks for a raise at most once a season. He names a demand (market wage × the build's player-wage effects →ECON-22) and accepts any offer at or above his floor, demand × (1 − goodwill), for 1–5 seasons. ← a player asks to be paid what he is worth, and how a club treats its players decides what he settles for
+- CLUB-26 [o] Players negotiate their contracts only at renewal: one in the final season of his contract asks to renew on 1 January. He names a demand (market wage × the build's player-wage effects →ECON-22) and accepts any offer at or above his floor, demand × (1 − goodwill), for 1–5 seasons. ← a player asks to be paid what he is worth, and how a club treats its players decides what he settles for
   - goodwill: squad investment (→ECON-16) −5/0/+5/+10/+15%; the 라커룸 문화 card: 가족 같은 클럽 +5, 스타 대우 +10 for players rated 70+, 철저한 경쟁 −5; 긴축 재정 −5; (morale − 60)/4 %; within −10 to +30%.
   - the owner offers the floor or more with a term, or declines; the talk shows demand, floor, yearly cost and runway before the choice (→WEB-68).
-  - delegated (→STAFF-13): the staff offer the floor for 2 seasons (1 from age 32) when it is within the squad investment's pay ceiling (→ECON-16) and cash after the raise still covers 13 rounds of costs; otherwise they decline and say why.
-  - an agreed wage is fixed for its term; existing wages stay until renewal (→ECON-4); no contract renews itself.
+  - delegated (→STAFF-13): the staff offer the floor for 2 seasons (1 from age 32) when it is within the squad investment's pay ceiling (→ECON-16), cash after the raise still covers 13 rounds of costs and the season's cash projection with the raise (→ECON-18) still ends the season covering 13 rounds of costs; otherwise they decline and say why.
+  - an agreed wage is fixed for its term; existing wages stay until renewal (→ECON-4), however far a promotion or a player's growth lifts his market wage; no player asks for a raise mid-contract, and no contract renews itself.
 - CLUB-27 [o] A declined player becomes unhappy (언해피) unless the manager talks him round. Unhappy, he plays 3 below his ability, costs squad morale 1 each settled round he starts, refuses to renew, and after 6 weeks hands in a transfer request: his stance becomes 이적 명단 and cannot be set to 이적 불가 (→CLUB-22). Meeting his floor later, or his sale, ends it. ← refusing a player what he is worth has a price, as in real football
   - talking him round: 15% + 45% for a motivator (동기부여형, →STAFF-14) + (trust − 50)/200 + (flexibility − 50)/400, within 5–85%, from the player's own stream for that talk; the outcome is an inbox item.
   - the squad shows an 언해피 badge with its reason (→WEB-68).
@@ -107,6 +107,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r18 261013 CLUB-26✎ a player 25%+ below his market wage asks for a raise once a season→talks only at renewal, a running wage never changes mid-term; delegated offers +the season's cash projection with the raise still ends the season covering 13 rounds of costs
 - r17 261012 CLUB-25+ market wages; CLUB-26+ contract talks with goodwill and a floor (silent 3-season renewal at the close removed); CLUB-27+ unhappy players and transfer requests, a motivator talking them round; CLUB-28+ expiring contracts, Bosman from 1996
 - r16 261012 CLUB-14✎ +market list per season and settings (no reroll by switching back), one ID one player, a bid keeps its player and terms; CLUB-20✎ stream for that round and revision→for that request and round
 - r15 261011 CLUB-22✎ transfer list at a 90/110/140% ask→a stance per player (listed 85–105% offers, open, untouchable refusing below 150%); CLUB-24+ delegated verdict on big offers for untouchable players
