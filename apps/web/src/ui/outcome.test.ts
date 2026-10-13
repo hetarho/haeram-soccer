@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { World } from '../../../../packages/contracts/src/types';
 import { createWorld, operate, settleRound } from '../../../../packages/engine/src/index';
 import { sellPlayer } from '../../../../packages/engine/src/testing';
+import { managerCriteriaOf } from '../../../../packages/engine/src/hiring';
 import { describeOutcome, newEvents } from './outcome';
 
 const world = () =>
@@ -34,6 +35,19 @@ describe('action outcome summaries', () => {
     expect(cash.value).toContain('(−');
     expect(outcome.events[0].title).toBe(next.events.at(-1)!.title);
     expect(outcome.note).toContain('유지비');
+  });
+
+  it('names 사람 › 코치진 as the home of a coach change', () => {
+    const before = world();
+    const next = structuredClone(before);
+    const role = before.staff![0].role;
+    expect(describeOutcome({ type: 'renew-staff', role }, before, next)!.note).toContain(
+      '사람 › 코치진',
+    );
+    const criteria = managerCriteriaOf(before);
+    expect(
+      describeOutcome({ type: 'hiring', role: 'manager', criteria }, before, next)!.note,
+    ).toContain('사람 › 감독');
   });
 
   it('summarizes a care action with its fatigue and morale change', () => {

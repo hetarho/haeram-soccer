@@ -12,7 +12,7 @@ import {
 import type { World } from '../../../../packages/contracts/src/types';
 import { country, priceIndex } from '../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../runtime/client';
-import { openPeople, useNavigation, type Page } from './state';
+import { openPeople, useInterventionDialog, useNavigation, type Page } from './state';
 import { ClubCrest } from './ClubCrest';
 import { ClubLink } from './ClubLink';
 import { watchNextMatch } from './watch';
@@ -967,9 +967,10 @@ export function App() {
     [targetSlot, setTargetSlot] = useState<number>(),
     [pendingImport, setPendingImport] = useState<string>(),
     [moreOpen, setMoreOpen] = useState(false),
-    [stopSettings, setStopSettings] = useState(false),
     [guideOpen, setGuideOpen] = useState(false);
   const { page, setPage } = useNavigation();
+  // One intervention dialog for the HUD menu, the clock's popover and the match-eve card.
+  const stopSettings = useInterventionDialog((state) => state.open);
   const showNews = useNewsSheet((state) => state.show);
   const showGlossary = useGlossary((state) => state.show);
   const contentPage = useDeferredValue(page);
@@ -1304,7 +1305,7 @@ export function App() {
             className={s.guideOpen}
             onClick={() => {
               setMoreOpen(false);
-              setStopSettings(true);
+              useInterventionDialog.getState().show();
             }}
           >
             개입 수준 설정
@@ -1357,7 +1358,7 @@ export function App() {
         <InterventionSettings
           client={client}
           controller={controller}
-          onClose={() => setStopSettings(false)}
+          onClose={useInterventionDialog.getState().close}
         />
       )}
       {guideOpen && w && (

@@ -3,9 +3,12 @@ import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
 import {
+  openBusiness,
   openPeople,
   openTraining,
+  useBoardRequest,
   useNavigation,
+  useTrainingRequest,
   type PeopleRequest,
   type TrainingTab,
 } from './state';
@@ -19,13 +22,23 @@ import {
 } from './teamState';
 import s from './ClubHub.module.css';
 
-/** Runs one remedy: an engine command, the preparation sheet, or another view. */
+/**
+ * Runs one remedy: an engine command, the preparation sheet, or another view. A remedy for a
+ * setting opens its home with the choice ready to apply — 훈련 with the focus suggested, the
+ * operating board with the dial as its draft — and changes nothing itself (→WEB-44, WEB-71).
+ */
 export function useRemedyRunner(client: GameClient, onPrepare?: () => void) {
   const setPage = useNavigation((state) => state.setPage);
   return (action: StateAction) => {
     if (action.command) void client.command(action.command);
     else if (action.prepare) onPrepare?.();
-    else if (action.page === 'people') openPeople((action.tab as PeopleRequest) ?? 'players');
+    else if (action.focus) {
+      useTrainingRequest.getState().open({ focus: action.focus });
+      openTraining('training');
+    } else if (action.board) {
+      useBoardRequest.getState().open(action.board);
+      openBusiness('strategy');
+    } else if (action.page === 'people') openPeople((action.tab as PeopleRequest) ?? 'players');
     else if (action.page === 'training') openTraining((action.tab as TrainingTab) ?? 'training');
     else if (action.page) setPage(action.page);
   };

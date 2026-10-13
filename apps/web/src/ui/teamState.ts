@@ -1,4 +1,11 @@
-import type { CareKind, Command, World } from '../../../../packages/contracts/src/types';
+import type {
+  CareKind,
+  Command,
+  PolicyKey,
+  PolicyLevel,
+  TrainingFocus,
+  World,
+} from '../../../../packages/contracts/src/types';
 import { lineupPreset, lineupSummary } from '../../../../packages/engine/src/strategy';
 import {
   activePlayers,
@@ -16,6 +23,7 @@ import { careOffer, effectText, outcomeText } from '../../../../packages/engine/
 import { academySummary } from '../../../../packages/engine/src/academy';
 import { buildEffects } from '../../../../packages/engine/src/build';
 import { compactMoney } from './format';
+import { nextTicketLevel } from './ticketLevels';
 import type { Page, PeopleRequest, TrainingTab } from './state';
 
 export type Tone = 'good' | 'ok' | 'warn' | 'bad';
@@ -28,6 +36,13 @@ export interface StateAction {
   tab?: PeopleRequest | TrainingTab;
   /** Opens the tactic and lineup preparation sheet. */
   prepare?: boolean;
+  /** Opens 훈련 with this focus suggested, ready to apply there (→WEB-44, WEB-71). */
+  focus?: TrainingFocus;
+  /**
+   * Opens 운영 전략 with this dial change as the board's draft, ready to apply there; the remedy
+   * itself changes nothing (→WEB-44, WEB-71).
+   */
+  board?: { policy?: { key: PolicyKey; level: PolicyLevel }; ticket?: number };
 }
 /** One choice of a remedy sheet: what it costs and does, stated before commit (→WEB-44). */
 export interface Remedy extends StateAction {
@@ -65,6 +80,14 @@ export function runwayText(rounds: number) {
   if (rounds >= 999) return '1년 이상';
   if (rounds < 13) return `약 ${Math.max(0, rounds)}주`;
   return `약 ${Math.round(rounds / 4.35)}개월`;
+}
+
+/** A level name with 로 or 으로, as its last syllable asks (로 after a vowel or ㄹ). */
+function toward(name: string) {
+  const code = name.charCodeAt(name.length - 1) - 0xac00;
+  if (code < 0 || code > 11171) return `${name}(으)로`;
+  const last = code % 28;
+  return `${name}${last === 0 || last === 8 ? '로' : '으로'}`;
 }
 
 function request(w: World, kind: CareKind): Remedy {
@@ -122,10 +145,12 @@ export function remedies(w: World, key: StateKey): Remedy[] {
         {
           id: 'recovery-training',
           label: '회복 훈련으로 전환',
-          effect: '라운드마다 회복이 커지고 성장 기회는 줄어요',
+          effect: '훈련에서 회복 집중을 적용하면 라운드마다 회복이 커지고 성장 기회는 줄어요',
           cost: '무료',
           unavailable: activeTrainingFocus(w) === 'recovery' ? '이미 회복 훈련 중' : undefined,
-          command: { type: 'training', focus: 'recovery' },
+          page: 'training',
+          tab: 'training',
+          focus: 'recovery',
         },
         {
           id: 'rest-lineup',
@@ -160,43 +185,67 @@ export function remedies(w: World, key: StateKey): Remedy[] {
         request(w, 'backing'),
         {
           id: 'office',
-          label: '감독실에서 전술 이야기하기',
-          effect: '감독의 철학과 신뢰를 보고 전술을 제안하거나 조건을 받아들여요',
+          label: '감독과 전술 이야기하기',
+          effect: '사람 › 감독에서 감독의 철학과 신뢰를 보고 전술을 제안하거나 조건을 받아들여요',
           page: 'people',
           tab: 'manager',
         },
         {
           id: 'candidates',
           label: '다른 감독 후보 살펴보기',
-          effect: '성향이 다른 감독 네 명의 장단점과 선임 비용을 비교해요',
+          effect: '사람 › 감독의 감독 시장에서 후보의 스타일과 선임 비용을 비교해요',
           page: 'people',
           tab: 'candidates',
         },
       ];
     case 'cash': {
+      // Setting remedies open the operating board with the change as its draft (→WEB-71).
       const marketing = POLICY_INFO.marketing.levels[policy.marketing - 2];
-      const ticket = Math.min(0.5, Math.round(w.ticket * 1.2 * 1000) / 1000);
+      const support = POLICY_INFO.support.levels[policy.support - 2];
+      const ticket = nextTicketLevel(w.ticket);
       const seasonSupport = w.events.filter(
         (event) => event.kind === 'support' && event.year === w.year,
       ).length;
       const limit = buildEffects(w).ownerCapital;
+      // What one step less squad investment saves on this season's operating expenses (→ECON-16).
+      const saving = support
+        ? (
+            BigInt(operatingCosts(w).expenses) -
+            BigInt(operatingCosts({ ...w, policy: { ...policy, support: support.level } }).expenses)
+          ).toString()
+        : '0';
       return [
         {
           id: 'marketing-down',
-          label: marketing ? `마케팅 · ${marketing.name}` : '마케팅 지출 없음',
-          effect: marketing ? marketing.summary : '이미 추가 지출이 없어요',
+          label: '마케팅 줄이기',
+          effect: marketing
+            ? `운영 전략에서 ${toward(marketing.name)} 낮춰 적용해요 · ${marketing.summary}`
+            : '이미 추가 지출이 없어요',
           unavailable: marketing ? undefined : '이미 입소문',
-          command: marketing
-            ? { type: 'policy', key: 'marketing', level: marketing.level }
-            : undefined,
+          page: 'business',
+          board: marketing ? { policy: { key: 'marketing', level: marketing.level } } : undefined,
         },
-        // Squad investment acts in contract talks and saves no cash (→ECON-16), so it is no remedy.
+        // Squad investment scales operating expenses (→ECON-16); offered while it can go down.
+        ...(support
+          ? [
+              {
+                id: 'support-down',
+                label: '선수단 투자 낮추기',
+                effect: `운영 전략에서 ${toward(support.name)} 낮춰 적용해요 · 운영 경비 연 ${format(saving)} 절감 · 라운드 성장과 피로 회복이 줄어요`,
+                page: 'business' as const,
+                board: { policy: { key: 'support' as const, level: support.level } },
+              },
+            ]
+          : []),
         {
           id: 'ticket-up',
-          label: '티켓 가격 20% 인상',
-          effect: '홈 경기 입장 수입이 늘고 관중 수요는 줄어요',
-          unavailable: ticket <= w.ticket ? '티켓 가격 상한' : undefined,
-          command: { type: 'ticket', price: ticket },
+          label: '티켓 가격 올리기',
+          effect: ticket
+            ? `운영 전략에서 ${toward(ticket.name)} 올려 적용해요 · 홈 경기 입장 수입이 늘고 관중 수요는 줄어요`
+            : '이미 가장 비싼 가격이에요',
+          unavailable: ticket ? undefined : '티켓 가격 상한',
+          page: 'business',
+          board: ticket ? { ticket: ticket.price } : undefined,
         },
         request(w, 'friendly'),
         {
@@ -230,7 +279,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
         {
           id: 'academy',
           label: '유소년 보기',
-          effect: `아카데미 ${academy.players.length}명 · 1군 자리 ${academy.room}개`,
+          effect: `훈련 › 유소년 · 아카데미 ${academy.players.length}명 · 1군 자리 ${academy.room}개`,
           page: 'training',
           tab: 'academy',
         },

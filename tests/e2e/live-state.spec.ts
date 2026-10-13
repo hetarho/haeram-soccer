@@ -1,5 +1,10 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
+import { decode, encode } from '../../apps/web/src/adapters/persistence';
+import { createWorld } from '../../packages/engine/src/index';
+import type { World } from '../../packages/contracts/src/types';
 import { stopOnlyFor } from './events';
+import { continueSlot } from './slots';
 
 async function found(page: import('@playwright/test').Page) {
   await page.goto('/');
@@ -141,4 +146,71 @@ test('watching a match pauses the calendar and retains playback across page swit
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await expect(page.getByTestId('hub-play')).toHaveAccessibleName('다음 경기 관전');
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toBeVisible();
+});
+
+/** Puts a world in slot 1 with the clock stopping for nothing, to continue from the slot screen. */
+async function seed(page: Page, w: World) {
+  const raw = await encode(w, 1, 0);
+  await stopOnlyFor(page, []);
+  await page.addInitScript((raw) => {
+    if (localStorage.getItem('haeram-soccor:manifest')) return;
+    const envelope = JSON.parse(raw);
+    localStorage.setItem('haeram-soccor:slot:a', raw);
+    localStorage.setItem(
+      'haeram-soccor:manifest',
+      JSON.stringify({
+        slot: 0,
+        worldId: envelope.worldId,
+        generation: envelope.generation,
+        parentGeneration: envelope.parentGeneration,
+      }),
+    );
+  }, raw);
+}
+
+async function exportWorld(page: Page): Promise<World> {
+  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+  const menu = page.getByRole('dialog', { name: '전체 메뉴' });
+  const downloading = page.waitForEvent('download');
+  await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
+  const raw = await readFile((await (await downloading).path())!, 'utf8');
+  await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
+  return (await decode(raw)).world;
+}
+
+test('the fatigue remedy opens 훈련 with 회복 ready to apply, and applying it sets the focus', async ({
+  page,
+}) => {
+  const w = createWorld({
+    country: 'ENG',
+    name: 'Haeram Athletic',
+    color: '#bf7956',
+    seed: 'fatigue-remedy',
+    difficulty: 2,
+  });
+  for (const player of w.players) player.fatigue = 55;
+  w.delegation = { ...w.delegation, training: false };
+  await seed(page, w);
+  await page.goto('/');
+  await continueSlot(page);
+  const state = page.getByRole('region', { name: '팀 상태' });
+  await state.getByRole('button', { name: /^피로 .* 대처 방법 보기$/ }).click();
+  const sheet = page.getByRole('dialog', { name: '피로 관리' });
+  await sheet
+    .getByRole('listitem')
+    .filter({ hasText: '회복 훈련으로 전환' })
+    .getByRole('button', { name: '열기', exact: true })
+    .click();
+  // The sheet closes and 훈련 opens with 회복 suggested; nothing has changed yet (→WEB-71).
+  await expect(sheet).toBeHidden();
+  const suggestion = page.getByRole('region', { name: '훈련 방향 제안' });
+  await expect(suggestion).toContainText('회복 집중');
+  const focus = page.getByRole('radiogroup', { name: '훈련 방향', exact: true });
+  const recovery = focus.getByRole('radio', { name: '회복 집중', exact: true });
+  await expect(recovery).toHaveAttribute('aria-checked', 'false');
+  await suggestion.getByRole('button', { name: '적용', exact: true }).click();
+  await expect(recovery).toHaveAttribute('aria-checked', 'true');
+  await expect(suggestion).toBeHidden();
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  expect((await exportWorld(page)).training).toBe('recovery');
 });

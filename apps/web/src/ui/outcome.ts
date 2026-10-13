@@ -44,7 +44,7 @@ const titles: Record<Command['type'], string> = {
   ticket: '티켓 가격을 바꿨어요',
   support: '구단주 추가 출자를 받았어요',
   'accept-condition': '훈련을 지원하고 전술을 바꿨어요',
-  policy: '구단 운영 방침을 바꿨어요',
+  policy: '운영 전략의 투자 단계를 바꿨어요',
   'hire-staff': '새 코치를 선임했어요',
   'release-staff': '코치와 계약을 정리했어요',
   'renew-staff': '코치와 재계약했어요',
@@ -226,6 +226,14 @@ export function describeOutcome(
     const seasons = after.manager.until - before.manager.until;
     note = `계약이 ${seasons === 1 ? '한 시즌' : `${seasons}시즌`} 늘었어요. 새 연봉은 다음 라운드 정산부터 나가요.`;
   }
+  // Coaches are hired, renewed and delegated per department in 사람 › 코치진 (→WEB-43, WEB-71).
+  if (command.type === 'hire-staff' || command.type === 'renew-staff')
+    note = '다음 라운드부터 반영돼요. 계약과 자동 결정은 사람 › 코치진에서 관리해요.';
+  if (command.type === 'hiring')
+    note =
+      command.role === 'manager'
+        ? '감독 자리가 비면 스태프가 이 기준으로 골라요. 기준은 사람 › 감독에서 바꿔요.'
+        : '계약이 끝나거나 자리가 비면 스태프가 이 기준으로 골라요. 기준은 사람 › 코치진에서 바꿔요.';
   if (command.type === 'tactics')
     note = after.manager.pending
       ? '조건부 수락이에요. 훈련 지원금을 내면 전술이 바뀝니다.'

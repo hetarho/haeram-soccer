@@ -11,6 +11,10 @@ const STOP_KINDS = [
   'staff-renewal',
   'cup',
   'finance',
+  'contract-talk',
+  'unhappy',
+  'transfer-request',
+  'sponsor-ending',
 ] as const;
 
 /**

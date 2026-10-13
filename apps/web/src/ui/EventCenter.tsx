@@ -8,8 +8,7 @@ import type {
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/world';
 import { talkFor } from '../../../../packages/engine/src/contracts';
-import { isExpiring, STAFF_INFO, STAFF_ROLES } from '../../../../packages/engine/src/staff';
-import { coachKey } from '../../../../packages/engine/src/hiring';
+import { isExpiring } from '../../../../packages/engine/src/staff';
 import { managerRenewal } from '../../../../packages/engine/src/operations';
 import { managerTerm } from '../../../../packages/engine/src/styles';
 import type { GameClient } from '../runtime/client';
@@ -20,7 +19,15 @@ import {
   type SystemNotification,
 } from '../runtime/store';
 import { stoppingEvents, useProgression, type ProgressionController } from '../runtime/progression';
-import { openContractTalk, openMarket, openPeople, openTraining, useNavigation } from './state';
+import {
+  openBusiness,
+  openContractTalk,
+  openMarket,
+  openPeople,
+  openTraining,
+  useInterventionDialog,
+  useNavigation,
+} from './state';
 import { competitionLabel } from './format';
 import { Money } from './Money';
 import { Dialog } from './Dialog';
@@ -37,12 +44,9 @@ const cardExit = fadeOutOnRemove([
 
 /** Items about a player's contract: a talk, his unhappiness, his transfer request. */
 const PLAYER_KINDS: readonly InboxKind[] = ['contract-talk', 'unhappy', 'transfer-request'];
-/** The coaching departments a renewal or vacancy item names; every department if it names none. */
-function itemDepartments(item: InboxItem) {
-  const text = `${item.title} ${item.detail}`;
-  const named = STAFF_ROLES.filter((role) => text.includes(STAFF_INFO[role].label));
-  return named.length ? named : STAFF_ROLES;
-}
+/** Sponsor reminders and contracts ending open 운영's 후원; other money items open 재정. */
+const sponsorItem = (item: InboxItem) =>
+  item.kind === 'sponsor-ending' || item.title.includes('후원');
 function bidFor(w: World, item: InboxItem): TransferBid | undefined {
   return item.ref ? w.bids?.find((bid) => bid.id === item.ref) : undefined;
 }
@@ -60,7 +64,8 @@ function playerName(
 
 /**
  * The clock stops for events; this card says why and offers the decisions that event needs.
- * Reading or answering an event lets the owner resume.
+ * Reading or answering an event lets the owner resume. A card decides its event or opens a
+ * setting's home; it never changes a standing setting itself (→WEB-42, WEB-71).
  */
 export const EventCenter = memo(function EventCenter({
   client,
@@ -77,6 +82,7 @@ export const EventCenter = memo(function EventCenter({
   const read = (item: InboxItem) => client.command({ type: 'read-inbox', id: item.id });
   const acting = useGameState((state) => !!state.pendingActions || state.readonly);
   const { stopOn, matchEve, running } = useProgression(controller, (state) => state);
+  const showStops = useInterventionDialog((state) => state.show);
   const setPage = useNavigation((state) => state.setPage);
   const [opened, setOpened] = useState<string>();
   if (!w || running) return null;
@@ -127,14 +133,9 @@ export const EventCenter = memo(function EventCenter({
         <p>
           {home ? '홈' : '원정'} · {competitionLabel(w, eve)} · 선발과 전술은 스태프가 준비해요.
         </p>
-        <label className={s.skip}>
-          <input
-            type="checkbox"
-            checked={!stopOn.match}
-            onChange={(event) => controller.setStopOn('match', !event.target.checked)}
-          />
-          다음부터 경기는 안 보고 자동 진행
-        </label>
+        <button type="button" className={s.stops} onClick={showStops}>
+          멈춤 설정
+        </button>
         <div className={s.actions}>
           <button className={s.primary} disabled={acting} onClick={() => void watch()}>
             관전하기 ▶
@@ -232,10 +233,10 @@ export const EventCenter = memo(function EventCenter({
               disabled={acting}
               onClick={() => {
                 void read(item);
-                setPage('business');
+                openBusiness(sponsorItem(item) ? 'sponsor' : 'finance');
               }}
             >
-              구단 운영 보기
+              {sponsorItem(item) ? '후원 보기' : '재정 보기'}
             </button>
             <button disabled={acting} onClick={() => void read(item)}>
               확인
@@ -298,17 +299,15 @@ export const EventCenter = memo(function EventCenter({
             >
               코치진 보기
             </button>
+            {/* Each department's switch and criteria live in 사람's 코치진 (→WEB-43). */}
             <button
               disabled={acting}
               onClick={() => {
-                void (async () => {
-                  for (const role of itemDepartments(item))
-                    await client.command({ type: 'delegate', key: coachKey(role), value: true });
-                  await read(item);
-                })();
+                void read(item);
+                openPeople('coaches');
               }}
             >
-              스태프에게 맡기기
+              자동 결정 설정
             </button>
           </>
         ) : item.kind === 'cup' ? (

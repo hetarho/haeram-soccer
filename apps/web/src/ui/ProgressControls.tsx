@@ -37,7 +37,7 @@ import {
   levelName,
 } from './intervention';
 import { play } from './motion';
-import { openHome } from './state';
+import { openHome, useInterventionDialog } from './state';
 import s from './App.module.css';
 import p from './ProgressControls.module.css';
 
@@ -66,7 +66,6 @@ export const ProgressControls = memo(function ProgressControls({
 }) {
   const state = useGameState((state) => state);
   const { running, pace, watching, reason, stopOn } = useProgression(controller, (state) => state);
-  const [settings, setSettings] = useState(false);
   const [levelsOpen, setLevelsOpen] = useState(false);
   // The stops change at once but delegation waits for the worker; until then the chosen level
   // stands in for the brief "custom" mix so the label and the check never flicker.
@@ -224,16 +223,9 @@ export const ProgressControls = memo(function ProgressControls({
             // The dialog hands focus back to the trigger, not to the vanished popover.
             levelTrigger.current?.focus({ preventScroll: true });
             setLevelsOpen(false);
-            setSettings(true);
+            useInterventionDialog.getState().show();
           }}
           onClose={closeLevels}
-        />
-      )}
-      {settings && (
-        <InterventionSettings
-          client={client}
-          controller={controller}
-          onClose={() => setSettings(false)}
         />
       )}
     </section>
@@ -541,7 +533,7 @@ export function InterventionSettings({
         <p className={s.muted}>
           브라우저가 절전 모드나 휴대폰 백그라운드에서 탭을 재우면 그동안은 멈춰요. 다시 열면 비운
           시간만큼 위 한도까지 한꺼번에 진행하고, 무슨 일이 있었는지 요약해 드려요. 멈춤 설정은
-          그대로 지켜요. 방치형으로 두려면 개입 4(운영진에 모두 맡기기)를 고르세요. 경기 전날에도
+          그대로 지켜요. 방치형으로 두려면 4단계 운영진에 모두 맡기기를 고르세요. 경기 전날에도
           멈추지 않아요.
         </p>
       </section>

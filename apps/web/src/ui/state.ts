@@ -163,6 +163,20 @@ export const useBoardRequest = oneShot<{
   ticket?: number;
 }>();
 
+/**
+ * Whether the intervention dialog (levels, per-event stops, background play, →WEB-45) is open.
+ * The HUD menu, the clock's popover and the match-eve card's 멈춤 설정 all open the one dialog.
+ */
+export const useInterventionDialog = create<{
+  open: boolean;
+  show: () => void;
+  close: () => void;
+}>((set) => ({
+  open: false,
+  show: () => set({ open: true }),
+  close: () => set({ open: false }),
+}));
+
 /** Opens 사람 on a tab, or on 감독 with the manager market (`candidates`). */
 export function openPeople(tab: PeopleRequest) {
   usePeopleView.getState().open(tab);

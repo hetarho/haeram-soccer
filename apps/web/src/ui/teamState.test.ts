@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createWorld, operate } from '../../../../packages/engine/src/index';
+import { policyOf } from '../../../../packages/engine/src/policy';
 import { cashState, remedies, runwayText, teamStates, urgentState } from './teamState';
 
 const world = () =>
@@ -20,11 +21,13 @@ describe('team state', () => {
     w.delegation = { ...w.delegation, training: false };
     const fatigue = teamStates(w).find((state) => state.key === 'fatigue')!;
     expect(fatigue.tone).toBe('warn');
-    // Everyone is equally tired, so a rest selection would change nothing: a rest day comes next.
-    expect(fatigue.advice!.actions.map((action) => action.command?.type)).toEqual([
-      'training',
-      'care',
-    ]);
+    // Recovery training is a setting of 훈련: the remedy opens it with 회복 ready to apply and
+    // changes nothing itself (→WEB-44, WEB-71). Everyone is equally tired, so a rest selection
+    // would change nothing: a rest day comes next.
+    const [recovery, rest] = fatigue.advice!.actions;
+    expect(recovery).toMatchObject({ page: 'training', tab: 'training', focus: 'recovery' });
+    expect(recovery.command).toBeUndefined();
+    expect(rest.command).toEqual({ type: 'care', kind: 'rest-day' });
     // A delegated assistant already switches to recovery, so the quick choices are requests.
     w.delegation = { ...w.delegation, training: true };
     const delegated = teamStates(w).find((state) => state.key === 'fatigue')!;
@@ -91,12 +94,36 @@ describe('team state', () => {
     const states = teamStates(w);
     expect(cashState(w).tone).toBe('bad');
     expect(urgentState(states, cashState(w))!.key).toBe('cash');
-    // Squad investment no longer scales wages, so lowering it saves no cash (→ECON-16).
-    expect(
-      remedies(w, 'cash').some(
-        (choice) => choice.command?.type === 'policy' && choice.command.key === 'support',
-      ),
-    ).toBe(false);
+    // Marketing, squad investment and the ticket price are board settings: each remedy asks the
+    // operating board for one step and changes nothing by itself (→WEB-44, WEB-71).
+    w.policy = { ...policyOf(w), marketing: 3, support: 3 };
+    w.ticket = 0.05;
+    const cash = remedies(w, 'cash');
+    const settings = cash.filter((choice) => choice.board);
+    expect(settings.map((choice) => choice.id)).toEqual([
+      'marketing-down',
+      'support-down',
+      'ticket-up',
+    ]);
+    for (const choice of settings) {
+      expect(choice.page, choice.id).toBe('business');
+      expect(choice.command, choice.id).toBeUndefined();
+    }
+    expect(settings.map((choice) => choice.board)).toEqual([
+      { policy: { key: 'marketing', level: 2 } },
+      { policy: { key: 'support', level: 2 } },
+      { ticket: 0.08 },
+    ]);
+    // The squad investment remedy states what it saves on operating expenses.
+    expect(settings[1].effect).toMatch(/운영 경비 연 .+ 절감/);
+    expect(settings[1].effect).toContain('절약으로');
+    // Squad investment at its lowest is not offered; the dearest ticket says why it cannot rise.
+    w.policy = { ...policyOf(w), support: 1 };
+    w.ticket = 0.12;
+    expect(remedies(w, 'cash').some((choice) => choice.id === 'support-down')).toBe(false);
+    expect(remedies(w, 'cash').find((choice) => choice.id === 'ticket-up')!.unavailable).toBe(
+      '티켓 가격 상한',
+    );
     expect(states.find((state) => state.key === 'squad')!.advice!.actions[0]).toMatchObject({
       page: 'people',
       tab: 'market',

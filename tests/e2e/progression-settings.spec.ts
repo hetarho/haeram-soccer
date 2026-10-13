@@ -86,9 +86,8 @@ test('mobile clock exposes every pace as a touch target and advances at the chos
   await expect(eve).toContainText('내일 경기');
   await expect(date).toHaveText('1950년 8월 7일');
   await expect(toggle).toBeVisible();
-  await expect(
-    eve.getByRole('checkbox', { name: '다음부터 경기는 안 보고 자동 진행', exact: true }),
-  ).not.toBeChecked();
+  // The card decides the match only; whether eves stop lives in the intervention dialog (→WEB-71).
+  await expect(eve.getByRole('checkbox')).toHaveCount(0);
   const navTop = (await page.getByRole('navigation', { name: '모바일 게임 메뉴' }).boundingBox())!
     .y;
   for (const name of ['관전하기 ▶', '결과만 보고 계속']) {
@@ -102,6 +101,43 @@ test('mobile clock exposes every pace as a touch target and advances at the chos
   await expect(page.getByTestId('calendar')).toContainText('라운드 1');
   await expect(eve).toContainText('내일 경기');
   await expect(toggle).toBeVisible();
+});
+
+test("the match-eve card's 멈춤 설정 opens the per-event stops", async ({ page }) => {
+  await stopOnlyFor(page, ['match']);
+  await page.setViewportSize({ width: 360, height: 740 });
+  await page.goto('/');
+  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await settle(page);
+  await page
+    .getByRole('region', { name: '시즌 진행', exact: true })
+    .getByRole('button', { name: '0.1초에 하루 속도로 자동 진행', exact: true })
+    .click();
+  const eve = page.getByTestId('event-card');
+  await expect(eve).toContainText('내일 경기');
+  const link = eve.getByRole('button', { name: '멈춤 설정', exact: true });
+  // A full touch target once the card has settled from its entrance.
+  await expect.poll(async () => (await link.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  await link.click();
+  // The one intervention dialog opens, its per-event stops holding the match-eve stop.
+  const dialog = page.getByRole('dialog', { name: '개입 수준', exact: true });
+  await expect(dialog).toBeVisible();
+  await dialog.getByText('이벤트별 세부 설정', { exact: true }).click();
+  const stop = dialog.getByRole('checkbox', { name: '경기 전날에서 멈춤', exact: true });
+  await expect(stop).toBeChecked();
+  await stop.uncheck();
+  await expect(stop).not.toBeChecked();
+  await dialog.getByRole('button', { name: '설정 완료', exact: true }).click();
+  await expect(dialog).toBeHidden();
+  // The stop is the dialog's setting: opening it again from the HUD menu shows the change.
+  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+  await page
+    .getByRole('dialog', { name: '전체 메뉴' })
+    .getByRole('button', { name: '개입 수준 설정', exact: true })
+    .click();
+  await dialog.getByText('이벤트별 세부 설정', { exact: true }).click();
+  await expect(stop).not.toBeChecked();
 });
 
 test('mobile intervention levels set clock stops and staff delegation, and persist', async ({
