@@ -1,19 +1,22 @@
 /**
  * Economy calibration harness (ECON-29, ECON-9, CLUB-25; docs/FINANCES.md).
  *
- * Plays whole careers from the 1950 founding with every delegation on — the staff run training,
- * the academy, sales, sponsors, coaches, contract talks and the manager post, and the owner does
- * nothing — and prints the measured economy next to the real-football bands of ECON-29: wage bill
- * and net result against income, the income mix of the 1950s and of a top flight in the 2000s,
- * how many seasons of a top-flight club's net result the facility ladder costs, the attendance of
- * ECON-9 by division and the wage ratios of CLUB-25.
+ * Plays whole careers of ECON-29's reference club from the 1950 founding: every delegation on —
+ * the staff run training, the academy, sales, sponsors, coaches, contract talks and the manager
+ * post — no owner capital, and the stadium grown a level whenever the cash after the build still
+ * covers 13 rounds of fixed costs, operating expenses included. A run that never builds is kept
+ * for comparison. It prints the measured economy next to the real-football bands of ECON-29: wage
+ * bill and net result against income, the income mix of the 1950s and of a top flight in the
+ * 2000s, how many seasons of a top-flight club's net result the facility ladder costs, the
+ * attendance of ECON-9 by division and the wage ratios of CLUB-25.
  *
  *   pnpm exec tsx scripts/calibrate-economy.ts            ENG ESP FRA GER × default and 트레이딩
- *                                                          머신 × with and without greedy facility
- *                                                          buying, 60 seasons each (several minutes)
- *   pnpm exec tsx scripts/calibrate-economy.ts --quick    ENG only, default build
- *   options: --seasons N, --countries ENG,FRA, --seeds N (careers per setting), --log (per season),
- *            --out careers.json (keep the careers), --in a.json,b.json (report kept careers only)
+ *                                                          머신 × reference club and no building,
+ *                                                          60 seasons each (several minutes)
+ *   pnpm exec tsx scripts/calibrate-economy.ts --quick    ENG only, default build, reference club
+ *   options: --seasons N, --countries ENG,FRA, --builds default,trading, --modes greedy,none,
+ *            --seeds N (careers per setting), --log (per season), --out careers.json (keep the
+ *            careers), --in a.json,b.json (report kept careers only)
  *
  * Careers run 60 seasons by default: the first 50 make the career averages, and seasons 51–60
  * (2000–2009) are the only top-flight 2000s a 1950 founding reaches. Money is compared in 1901 price
@@ -23,11 +26,13 @@ import type { CountryCode, World } from '../packages/contracts/src/types';
 import {
   advanceRound,
   BUILD_PRESETS,
+  CASH_WARNING_ROUNDS,
   catchment,
   clubOf,
   closeSeason,
   createWorld,
   facilityCostUnits,
+  facilityInvestmentPreview,
   marketWageUnits,
   MAX_FACILITIES,
   operate,
@@ -54,8 +59,11 @@ const COUNTRY_CODES = option('countries', quick ? 'ENG' : 'ENG,ESP,FRA,GER').spl
 ) as CountryCode[];
 const SEEDS = Number(option('seeds', '1'));
 const LOG = args.includes('--log');
-const BUILDS = quick ? ['default'] : ['default', 'trading'];
-const FACILITY_MODES = quick ? [false] : [false, true];
+const BUILDS = option('builds', quick ? 'default' : 'default,trading').split(',');
+/** greedy: ECON-29's reference club, growing its stadium; none: never building, for comparison. */
+const FACILITY_MODES = option('modes', quick ? 'greedy' : 'greedy,none')
+  .split(',')
+  .map((mode) => mode === 'greedy');
 
 // ---- Targets ---------------------------------------------------------------------------------
 const BANDS = {
@@ -125,6 +133,8 @@ interface Season {
   expense: number;
   wages: number;
   playerWages: number;
+  /** Operating expenses (ECON-30). */
+  opex: number;
   facilitySpend: number;
   attendance: number[];
   facilities: number;
@@ -158,13 +168,14 @@ function delegateAll(w: World) {
     manager: true,
   };
 }
-/** Greedy facility buying: a level whenever the cash after it still covers 13 rounds of costs. */
+/**
+ * The reference club's stadium (ECON-29): a level whenever the cash after it still covers 13 rounds
+ * of the fixed costs after it, operating expenses and the new level's upkeep included.
+ */
 function buyFacilities(w: World) {
-  const code = clubOf(w).country;
   while (w.facilities < MAX_FACILITIES) {
-    const fee = BigInt(quote(code, w.year, facilityCostUnits(w.facilities + 1)));
-    const reserve = (BigInt(operatingCosts(w).annual) * 13n) / 46n;
-    if (BigInt(w.cash) - fee < reserve) return;
+    const preview = facilityInvestmentPreview(w);
+    if (!preview.affordable || preview.runwayRounds < CASH_WARNING_ROUNDS) return;
     operate(w, { type: 'facility' });
   }
 }
@@ -187,12 +198,14 @@ function playCareer(code: CountryCode, build: string, greedy: boolean, seed: str
       unit = unitOf(code, year),
       own = clubOf(w);
     let wages = 0,
-      playerWages = 0;
+      playerWages = 0,
+      opex = 0;
     const firstEvent = w.events.length;
     while (w.round < 46 && !w.bankrupt) {
       if (greedy) buyFacilities(w);
       const cost = operatingCosts(w, w.round + 1).payments;
       playerWages += Number(cost.playerWages);
+      opex += Number(cost.expenses);
       wages += Number(cost.playerWages) + Number(cost.managerWage) + Number(cost.staffWages ?? '0');
       advanceRound(w, undefined, false);
     }
@@ -242,6 +255,7 @@ function playCareer(code: CountryCode, build: string, greedy: boolean, seed: str
       expense: Number(archive.expense) / unit,
       wages: wages / unit,
       playerWages: playerWages / unit,
+      opex: opex / unit,
       facilitySpend,
       attendance,
       facilities: w.facilities,
@@ -280,19 +294,19 @@ const LADDER = Array.from({ length: MAX_FACILITIES - 1 }, (_, i) =>
 
 function printLog(c: Career) {
   console.log(
-    `\n#### ${c.code} · ${c.build} · ${c.greedy ? 'greedy facilities' : 'no facilities'} · ${c.seed}\n`,
+    `\n#### ${c.code} · ${c.build} · ${c.greedy ? 'reference club' : 'no building'} · ${c.seed}\n`,
   );
   console.log(
-    '| year | div | rank | XI gap | fans | catchment | gate avg | fac | turnover | comp | matchday | comm | sales | wages | expense | net | cash |',
+    '| year | div | rank | XI gap | fans | catchment | gate avg | fac | turnover | comp | matchday | comm | sales | wages | opex | expense | net | cash |',
   );
   console.log(
-    '|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|',
+    '|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|',
   );
   for (const s of c.seasons) {
     const t = turnover(s);
     const gateAvg = average(s.attendance);
     console.log(
-      `| ${s.year} | ${divisionName(s)} | ${s.rank}/${s.clubs} | ${s.gap} | ${units(s.fans)} | ${units(s.catchment)} | ${units(gateAvg)} | ${s.facilities} | ${units(t)} | ${pct(s.sources.competition / t)} | ${pct(s.sources.matchday / t)} | ${pct(s.sources.commercial / t)} | ${units(s.sources.sales)} | ${pct(s.wages / income(s))} | ${units(s.expense)} | ${pct(net(s) / income(s))} | ${units(s.cash)} |`,
+      `| ${s.year} | ${divisionName(s)} | ${s.rank}/${s.clubs} | ${s.gap} | ${units(s.fans)} | ${units(s.catchment)} | ${units(gateAvg)} | ${s.facilities} | ${units(t)} | ${pct(s.sources.competition / t)} | ${pct(s.sources.matchday / t)} | ${pct(s.sources.commercial / t)} | ${units(s.sources.sales)} | ${pct(s.wages / income(s))} | ${pct(s.opex / income(s))} | ${units(s.expense)} | ${pct(net(s) / income(s))} | ${units(s.cash)} |`,
     );
   }
 }
@@ -309,12 +323,13 @@ function report(careers: Career[]) {
     for (const s of first)
       divisions.set(divisionName(s), (divisions.get(divisionName(s)) ?? 0) + 1);
     console.log(
-      `| ${c.code} | ${c.build} | ${c.greedy ? 'greedy' : 'none'} | ${c.seasons.length} | ${c.bankrupt ?? '-'} | ${[...divisions].map(([d, n]) => `${d} ${n}`).join(', ')} | ${pct(share(first, (s) => s.wages, income))} | ${pct(share(first, net, income))} | ${c.seasons.at(-1)?.facilities ?? 0} |`,
+      `| ${c.code} | ${c.build} | ${c.greedy ? 'grown' : 'none'} | ${c.seasons.length} | ${c.bankrupt ?? '-'} | ${[...divisions].map(([d, n]) => `${d} ${n}`).join(', ')} | ${pct(share(first, (s) => s.wages, income))} | ${pct(share(first, net, income))} | ${c.seasons.at(-1)?.facilities ?? 0} |`,
     );
   }
 
-  // Each target is measured apart for careers that never build and careers that build greedily.
-  const modes = [false, true].map((greedy) => careers.filter((c) => c.greedy === greedy));
+  // Each target is measured on the reference club, which grows its stadium, and apart on careers
+  // that never build, for comparison.
+  const modes = [true, false].map((greedy) => careers.filter((c) => c.greedy === greedy));
   const cell = (value: number, seasons: number, band: readonly [number, number], text = pct) =>
     seasons ? `${text(value)} (${seasons}) ${within(value, band)}` : '-';
   const targets: [string, string, (cs: Career[]) => string][] = [
@@ -372,8 +387,9 @@ function report(careers: Career[]) {
       (cs) => {
         const s = cs.flatMap((c) => c.seasons.filter((x) => x.tier === 0 && !x.amateur));
         const perSeason = sum(s, (x) => net(x) + x.facilitySpend) / s.length;
+        // A club that does not earn its costs never pays for the ladder.
         return cell(
-          LADDER / perSeason,
+          perSeason > 0 ? LADDER / perSeason : Infinity,
           s.length,
           [BANDS.ladderSeasons, Infinity],
           (v) => `${v.toFixed(1)} (net ${units(perSeason)})`,
@@ -382,13 +398,13 @@ function report(careers: Career[]) {
     ],
   ];
   console.log('\n### ECON-29 — measured (seasons) and whether the band holds\n');
-  console.log('| target | band | no facility buying | greedy facility buying |');
+  console.log('| target | band | reference club (stadium grown) | no building (comparison) |');
   console.log('|---|---|---|---|');
   for (const [label, band, measure] of targets)
     console.log(`| ${label} | ${band} | ${measure(modes[0])} | ${measure(modes[1])} |`);
 
   console.log('\n### ECON-9 own league home attendance by division (season averages)\n');
-  console.log('| division | band | no facility buying | greedy facility buying (p10–p90) |');
+  console.log('| division | band | reference club (p10–p90) | no building (comparison) |');
   console.log('|---|---|---|---|');
   const rows: [string, (s: Season) => boolean][] = [
     ['top flight', (s) => !s.amateur && s.tier === 0],
@@ -398,7 +414,7 @@ function report(careers: Career[]) {
   ];
   for (const [label, filter] of rows) {
     const band = ATTENDANCE.find(([name]) => name === label)!;
-    const [plain, greedy] = modes.map((cs) =>
+    const [greedy, plain] = modes.map((cs) =>
       cs
         .flatMap((c) => c.seasons)
         .filter((s) => filter(s) && s.attendance.length)
@@ -408,21 +424,23 @@ function report(careers: Career[]) {
     const spread = (values: number[]) =>
       `${units(values[Math.floor(values.length * 0.1)])}–${units(values[Math.floor(values.length * 0.9)])}`;
     console.log(
-      `| ${label} | ${units(band[1])}–${units(band[2])} | ${cell(average(plain), plain.length, [band[1], band[2]], units)} | ${cell(average(greedy), greedy.length, [band[1], band[2]], units)}${greedy.length ? ` (${spread(greedy)})` : ''} |`,
+      `| ${label} | ${units(band[1])}–${units(band[2])} | ${cell(average(greedy), greedy.length, [band[1], band[2]], units)}${greedy.length ? ` (${spread(greedy)})` : ''} | ${cell(average(plain), plain.length, [band[1], band[2]], units)} |`,
     );
   }
 
-  console.log('\n### By decade (all careers; shares of turnover, which leaves out player sales)\n');
   console.log(
-    '| decade | seasons | top flight | competition | matchday | commercial | wage bill / income | other costs / income | net / income |',
+    '\n### By decade (reference clubs; shares of turnover, which leaves out player sales)\n',
   );
-  console.log('|---|---:|---:|---:|---:|---:|---:|---:|---:|');
-  const seasons = careers.flatMap((c) => c.seasons);
+  console.log(
+    '| decade | seasons | top flight | facilities | competition | matchday | commercial | wage bill / income | operating expenses / income | other costs / income | net / income |',
+  );
+  console.log('|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|');
+  const seasons = (modes[0].length ? modes[0] : careers).flatMap((c) => c.seasons);
   for (let decade = 1950; decade <= Math.max(...seasons.map((s) => s.year)); decade += 10) {
     const rows = seasons.filter((s) => s.year >= decade && s.year < decade + 10);
     if (!rows.length) continue;
     console.log(
-      `| ${decade}s | ${rows.length} | ${rows.filter((s) => !s.amateur && s.tier === 0).length} | ${pct(share(rows, (s) => s.sources.competition, turnover))} | ${pct(share(rows, (s) => s.sources.matchday, turnover))} | ${pct(share(rows, (s) => s.sources.commercial, turnover))} | ${pct(share(rows, (s) => s.wages, income))} | ${pct(share(rows, (s) => s.expense - s.wages - s.facilitySpend, income))} | ${pct(share(rows, net, income))} |`,
+      `| ${decade}s | ${rows.length} | ${rows.filter((s) => !s.amateur && s.tier === 0).length} | ${(sum(rows, (s) => s.facilities) / rows.length).toFixed(1)} | ${pct(share(rows, (s) => s.sources.competition, turnover))} | ${pct(share(rows, (s) => s.sources.matchday, turnover))} | ${pct(share(rows, (s) => s.sources.commercial, turnover))} | ${pct(share(rows, (s) => s.wages, income))} | ${pct(share(rows, (s) => s.opex, income))} | ${pct(share(rows, (s) => s.expense - s.wages - s.opex - s.facilitySpend, income))} | ${pct(share(rows, net, income))} |`,
     );
   }
 
@@ -437,16 +455,16 @@ function report(careers: Career[]) {
     `- pivot: a top-flight player rated ${MARKET_CONFIG.pivot} earns ${units(wage(0, MARKET_CONFIG.pivot))} units at index 1`,
   );
   const byDivision = new Map<string, Season[]>();
-  for (const s of careers.flatMap((c) => c.seasons.slice(0, CAREER)))
+  for (const s of (modes[0].length ? modes[0] : careers).flatMap((c) => c.seasons.slice(0, CAREER)))
     byDivision.set(divisionName(s), [...(byDivision.get(divisionName(s)) ?? []), s]);
-  console.log('\nFirst 50 seasons of every career by division:');
+  console.log('\nFirst 50 seasons of the reference clubs by division:');
   console.log(
-    '\n| division | seasons | XI gap to league | wage bill / income | player wages / turnover | turnover (units) | net / income |',
+    '\n| division | seasons | XI gap to league | wage bill / income | player wages / turnover | operating expenses / income | turnover (units) | net / income |',
   );
-  console.log('|---|---:|---:|---:|---:|---:|---:|');
+  console.log('|---|---:|---:|---:|---:|---:|---:|---:|');
   for (const [division, seasons] of [...byDivision].sort()) {
     console.log(
-      `| ${division} | ${seasons.length} | ${(sum(seasons, (s) => s.gap) / seasons.length).toFixed(1)} | ${pct(share(seasons, (s) => s.wages, income))} | ${pct(share(seasons, (s) => s.playerWages, turnover))} | ${units(sum(seasons, turnover) / seasons.length)} | ${pct(share(seasons, net, income))} |`,
+      `| ${division} | ${seasons.length} | ${(sum(seasons, (s) => s.gap) / seasons.length).toFixed(1)} | ${pct(share(seasons, (s) => s.wages, income))} | ${pct(share(seasons, (s) => s.playerWages, turnover))} | ${pct(share(seasons, (s) => s.opex, income))} | ${units(sum(seasons, turnover) / seasons.length)} | ${pct(share(seasons, net, income))} |`,
     );
   }
 }
@@ -466,7 +484,7 @@ else
           const career = playCareer(code, build, greedy, `economy-${code}-${i}`);
           careers.push(career);
           console.error(
-            `${code} ${build} ${greedy ? 'greedy' : 'none'} seed ${i}: ${career.seasons.length} seasons in ${((performance.now() - t) / 1000).toFixed(0)} s`,
+            `${code} ${build} ${greedy ? 'reference' : 'no building'} seed ${i}: ${career.seasons.length} seasons in ${((performance.now() - t) / 1000).toFixed(0)} s`,
           );
           if (LOG) printLog(career);
         }
