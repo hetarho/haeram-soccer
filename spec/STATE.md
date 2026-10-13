@@ -17,21 +17,30 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 53 | 53 | - | 0 |
+| WEB | 54 | 54 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
-| CLUB | 20 | 20 | - | 0 |
+| CLUB | 21 | 21 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
-| STAFF | 12 | 12 | - | 0 |
-| ECON | 16 | 16 | - | 0 |
+| STAFF | 13 | 13 | - | 0 |
+| ECON | 17 | 17 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 7 | 7 | - | 0 |
-| SAVE | 22 | 22 | - | 0 |
+| SAVE | 23 | 23 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T062 | Rules 1.16.0: economy calibration, goldens and docs | SAVE ECON CLUB | T056 T059 T061 T065 T066 T067 T068 T069 | todo |
+| T070 | Settings model for the three levers: switches, criteria, talk rule, strategy locks | STAFF CLUB ECON SAVE WEB | T062 | todo |
+| T071 | 사람 and 훈련 tabs: navigation shell, page tabs and intervention presets | WEB STAFF | T070 | todo |
+| T072 | Staff hire and renew by the owner's criteria | STAFF SAVE | T070 | todo |
+| T073 | 사람 tab: each decision's staff switch and criteria where it lives | WEB STAFF CLUB | T072 T071 | todo |
+| T074 | 훈련 tab: focus, the coach's rule, what drives development, the academy | WEB CLUB STAFF | T071 | todo |
+| T075 | Squad investment pays through operating expenses | ECON | T070 | todo |
+| T076 | One operating board applied at once | WEB ECON CLUB | T075 T071 | todo |
+| T077 | Event cards and remedies open each setting's home | WEB | T073 T074 T076 | todo |
+| T078 | Three levers: upgrade journey, goldens, calibration check and full verify | SAVE ECON WEB | T077 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -40,11 +49,14 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- standalone on t062-standalone (work/club-realism + T062's attempts + main's records room): T065–T069 done; T062's calibration with the new rules, goldens, docs and full verify (`BROWSER_TEST_PORT` other than 4173 while another run uses it); then merge t062-standalone into work/club-realism and main and push after the owner's go.
-- after the merge: fix CI's benchmark job (desktop pointer-to-second-frame p95 115 ms > 100 since one-result merged; 74–82 ms at c63554c), its own commit on main.
-- planner questions from the reviews: whether loading a pre-1.16 save delegates contract talks at intervention level 2+ (they show 맞춤 now, WEB-45); CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
+- standalone on t062-standalone: T062's calibration with the new rules, goldens, docs and full verify (`BROWSER_TEST_PORT` other than 4173 while another run uses it); then merge t062-standalone into work/club-realism and main after the owner's go. After the merge: fix CI's benchmark job (desktop pointer-to-second-frame p95 115 ms > 100), its own commit on main.
+- three levers (branch ia-plan, planned from t062-standalone af28706): implement T070… after T062 is merged — rebase ia-plan onto the merge, then a work group: unit ia-base (T070 → T071), then lanes people (T072 → T073), training (T074) and money (T075 → T076) in parallel, then ia-finish (T077 → T078).
+- planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 create-task WEB r54 STAFF r13 ECON r17 CLUB r21 SAVE r23: T070–T078 three levers (ia-base T070 T071 → lanes people T072 T073, training T074, money T075 T076 → ia-finish T077 T078), T070 after T062
+- 261013 update-ssot WEB r54 STAFF r13 ECON r17 CLUB r21 SAVE r23: 사람/훈련/운영 tabs, one home per setting (WEB-71), intervention level a preset without training, hiring and renewal by criteria per manager and coaching department, talk rule replacing the squad-investment pay ceiling, strategy applied at once with 90-day slot locks and no reservation, squad investment scaling operating expenses; answers the pre-1.16 contract-delegation question (activation delegates talks where the academy is)
+- 261013 update-ssot WEB STAFF ECON CLUB SAVE start (three levers IA: people, training, money) on ia-plan
 - 261013 T069 done: delegated terms past this season never ending before the running contract, clauses for founding squads and close refills, 선수 계약 협상/계약 협상 labels
 - 261013 T069 doing standalone on t062-standalone (42c6e15)
 - 261013 create-task CLUB r20 WEB r53: T069 contract follow-ups (delegated terms past this season, clauses for founding squads and refills, improved-contract labels); SAVE r22 no-op (code already activates agents); T062 depends on T069
@@ -62,6 +74,3 @@
 - 261013 create-task CLUB r19: T067 rewritten (talks at window openings, improved contracts with ≤3 seasons left, terms by window, delegated projection check); T068 clauses and agents (draft) after it; T062 depends on T068 too
 - 261013 update-ssot CLUB r19: CLUB-26✎ talks at window openings with improved contracts near the end and winter terms ½–4½ years, never backdated; CLUB-29+ promotion and relegation clauses per contract by chance; CLUB-30+ agents rated 1–5
 - 261013 create-task ECON CLUB: T065 broadcasting index → T066 operating expenses as a turnover share; T067 talks only at renewal + delegated renewals against the season projection; T062 now depends on them (base ECON@16 CLUB@18), back to todo
-- 261013 update-ssot ECON r16 CLUB r18: ECON-31+ broadcasting index for distributions (ECON-26✎ ECON-28✎), ECON-30✎ operating expenses a share of last season's turnover with a division floor, ECON-29✎ crowd targets on clubs in their third straight season in a division; CLUB-26✎ talks only at renewal, delegated renewals checked against the season projection
-- 261013 T062 blocked: calibration bands conflict with ECON-26, ECON-23 and ECON-30/CLUB-26 (measured r0–r5 in its result); ECON-30 operating expenses implemented
-- 261013 T062 doing standalone on t062-standalone (work/club-realism + its first attempt, f8235db)

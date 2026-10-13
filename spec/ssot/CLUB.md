@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r20 | Define the implemented browser-demo behavior for squad and growth.
+> r21 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating equals its league's average club XI (±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -24,7 +24,8 @@
   - each summer a player aged 23 or younger may break through (5%: potential +5 to +9) or stall (5%: −4 to −7); otherwise potential moves by at most 2; never below current ability or above 99. Changes of 4+ are events and news.
   - generated attributes top out at 99.
 
-- CLUB-13 [o] The training view exposes the three focus choices and their recovery/development tradeoffs, current focus, and promising young players. Focus selection is a single saved game command; optional player and market details are explicit.
+- CLUB-13 [o] The 훈련 tab (→WEB-70) exposes the three focus choices and their recovery/development tradeoffs, the focus in force and the players still growing. Focus selection is a single saved game command; optional player and market details are explicit.
+  - with the training focus delegated (→STAFF-13) the assistant picks it each round: 회복 집중 when the starters' average fatigue is 30 or more, else 유망주 집중 with a developer assistant or three or more starters aged 21 or under, else 균형; the tab states his pick and why.
 
 - CLUB-14 [o] The market supports role and roster-fit filters with stable seeded candidates. Each candidate shows current ability, potential, effect on the proposed XI/tactic fit, upfront transfer or loan fee, recurring annual wage and contract term before acceptance.
   - the list is drawn per season and per the settings that shape it (recruitment level →ECON-16, chief scout →STAFF-11, strategy cards →ECON-22): the same settings always show the same candidates, so switching a setting away and back draws nothing new. ← a setting must not become a free reroll
@@ -35,7 +36,7 @@
 
 - CLUB-16 [o] The youth academy keeps prospects outside the first team. Each season on 15 March 3–5 prospects aged 15–16 join (more with a strong youth director or facilities); they grow every settled round toward potential and can be promoted while the first team has room, or released.
   - academy investment (→ECON-16), the club build (→ECON-22) and the pipeline synergy (→CLUB-21) add prospects, potential and growth.
-  - the academy dial and the build board show the exact chance that the next intake brings a prospect of potential 80+, from the same uniform draws the intake uses.
+  - the operating board (→WEB-60) shows the exact chance that the next intake brings a prospect of potential 80+, from the same uniform draws the intake uses.
 - CLUB-17 [o] Fee-bearing purchases, loans and sales happen only in transfer windows: summer from the day the season closes (→LEAGUE-9) to 1 September and winter 1 January–1 February. ← the market opens as the season's review ends, not during its final rounds Free agents sign at any time. The market shows the window state and deadline.
 - CLUB-18 [o] Bids are answered 2–4 days later with accept, reject or a counter; acceptance chance rises with the offered fee against the asking value and the chief scout. The fee is paid on completion; unanswered bids lapse at the deadline. During windows other clubs bid for our players (answered by the owner, or by the staff when delegated) and lapse after 5 days; squad minimums still apply. The bidder is a real club whose strength suits the player (4 below to 12 above his ability, stronger clubs more often, any country). Delegated staff accept an offer at or above their sale bar for a non-starter, or for a starter aged 30+ with a bench player of the same role within 3 ability. The report names the bar and each step.
   - bar: 130% of value, or 200% for a prospect (aged 22 or under with potential at least 8 above ability)
@@ -94,7 +95,8 @@
 - CLUB-26 [o] Players negotiate contracts when a transfer window opens (summer as the season starts, winter on 1 January, →CLUB-17): one in the final season of his contract asks to renew, and one with at most three seasons left, this one included, who is paid 25% or more below his market wage asks for an improved contract, at most once a season. He names a demand (market wage × the build's player-wage effects →ECON-22 × his agent's premium →CLUB-30) and accepts any offer at or above his floor, demand × (1 − goodwill). ← a player is paid what he is worth when his contract comes up, as in real football, and how a club treats its players decides what he settles for
   - goodwill: squad investment (→ECON-16) −5/0/+5/+10/+15%; the 라커룸 문화 card: 가족 같은 클럽 +5, 스타 대우 +10 for players rated 70+, 철저한 경쟁 −5; 긴축 재정 −5; (morale − 60)/4 %; within −10 to +30%.
   - the owner offers the floor or more with a term, or declines; the talk shows demand, floor, the contract's clauses (→CLUB-29), yearly cost and runway before the choice (→WEB-68).
-  - delegated (→STAFF-13): the staff offer the floor for 2 seasons past this one (1 from age 32), never ending before the running contract, when it is within the squad investment's pay ceiling (→ECON-16), cash after the raise still covers 13 rounds of costs and the season's cash projection with the raise (→ECON-18) still ends the season covering 13 rounds of costs; otherwise they decline and say why.
+  - delegated (→STAFF-13): the staff offer the floor for 2 seasons past this one (1 from age 32), never ending before the running contract, when the talk rule allows the player, cash after the raise still covers 13 rounds of costs and the season's cash projection with the raise (→ECON-18) still ends the season covering 13 rounds of costs; otherwise they decline and say why (→CLUB-27).
+  - the talk rule, set by the owner in 사람's 선수 tab (→WEB-43): 연봉 상한, the floor at most 90/100/110/125/140% of his market wage (default 110%); 최소 OVR 0–99, players rated below are not kept (default 0); 최대 나이 none or 28–40, players that old or older are not kept (default none).
   - terms: a contract signed in the summer window runs 1–5 seasons, this one included; one signed in the winter window runs the rest of this season and 0–4 more (½ to 4½ years); every contract ends at a season's close (→CLUB-28). A talk answered after its opening, or an unhappy player's floor met later, takes the summer terms before 1 January and the winter terms from it.
   - an agreed wage is fixed for its term apart from its clauses (→CLUB-29); new terms run from the agreement and are never backdated; no player asks outside a window opening, and no contract renews itself.
 - CLUB-27 [o] A declined player becomes unhappy (언해피) unless the manager talks him round. Unhappy, he plays 3 below his ability, costs squad morale 1 each settled round he starts, refuses to renew, and after 6 weeks hands in a transfer request: his stance becomes 이적 명단 and cannot be set to 이적 불가 (→CLUB-22). Meeting his floor later, or his sale, ends it. ← refusing a player what he is worth has a price, as in real football
@@ -116,6 +118,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r21 261013 CLUB-13✎ training view→the 훈련 tab, +the delegated assistant's rule; CLUB-16✎ odds on the academy dial and build board→on the operating board; CLUB-26✎ delegated within the squad investment's pay ceiling→within the owner's talk rule (wage cap 90–140% of market, minimum OVR, maximum age)
 - r20 261013 CLUB-26✎ delegated offers for 2 seasons→2 seasons past this one (1 from age 32), never ending before the running contract; +terms of a talk answered after its opening by the half of the season; CLUB-29✎ +the founding squad and the close's refills settle clauses
 - r19 261013 CLUB-26✎ talks on 1 January→when a transfer window opens (summer and winter), renewal in the final season plus an improved contract with at most three seasons left and 25%+ below market once a season, ×agent premium, terms by window (winter ½–4½ years), never backdated; CLUB-29+ promotion and relegation clauses per contract by chance, tilted by the agent; CLUB-30+ agents rated 1–5 (fees and transfer steering not modelled)
 - r18 261013 CLUB-26✎ a player 25%+ below his market wage asks for a raise once a season→talks only at renewal, a running wage never changes mid-term; delegated offers +the season's cash projection with the raise still ends the season covering 13 rounds of costs
