@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r23 | Define the implemented browser-demo behavior for squad and growth.
+> r24 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating equals its league's average club XI (±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -26,7 +26,7 @@
   - generated attributes top out at 99.
 
 - CLUB-13 [o] The 훈련 tab (→WEB-70) exposes the three focus choices and their recovery/development tradeoffs, the focus in force and the players still growing. Focus selection is a single saved game command; optional player and market details are explicit.
-  - with the training focus delegated (→STAFF-13) the assistant picks it each round: 회복 집중 when the starters' average fatigue is 30 or more, else 유망주 집중 with a developer assistant or three or more starters aged 21 or under, else 균형; the tab states his pick and why.
+  - while the intervention level delegates the training focus (levels 2–4 →WEB-45, →STAFF-13) the owner cannot choose one and the assistant picks it each round: 회복 집중 when the starters' average fatigue is 30 or more, else 유망주 집중 with a developer assistant or three or more starters aged 21 or under, else 균형; the tab states his pick and why.
 
 - CLUB-14 [o] The market supports role and roster-fit filters with stable seeded candidates. Each candidate shows current ability, potential, effect on the proposed XI/tactic fit, upfront transfer or loan fee, recurring annual wage and contract term before acceptance.
   - the list is drawn per season and per the settings that shape it (recruitment level →ECON-16, chief scout →STAFF-11, strategy cards →ECON-22): the same settings always show the same candidates, so switching a setting away and back draws nothing new. ← a setting must not become a free reroll
@@ -121,6 +121,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r24 261013 CLUB-13✎ choosing a focus took the decision back from the assistant→refused while the level delegates it
 - r23 261013 CLUB-30✎ agent premium 3%→1% of the demand per level above 1
 - r22 261013 CLUB-3✎ top-up youths at the close five below the club's XI→five below the division's average strength on its market wage; CLUB-25✎ measured ratios none→recorded; CLUB-26✎ delegated checks: talk rule, 13 rounds of cash and the season projection→+the yearly wage bill after the raise within 65% of the last 12 months' revenue
 - r21 261013 CLUB-13✎ training view→the 훈련 tab, +the delegated assistant's rule; CLUB-16✎ odds on the academy dial and build board→on the operating board; CLUB-26✎ delegated within the squad investment's pay ceiling→within the owner's talk rule (wage cap 90–140% of market, minimum OVR, maximum age)

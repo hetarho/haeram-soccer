@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r13 | Define the implemented browser-demo behavior for manager demands and personality.
+> r14 | Define the implemented browser-demo behavior for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -20,8 +20,8 @@
   - absent staff (older saves) and ability-50 trait-less members are exactly neutral; a vacant department is worse than neutral
   - new clubs start with unpaid ability-50 volunteers; hired coaches cost a wage fixed for a term of 1–5 seasons the owner chooses (delegated staff: the department's criteria, →STAFF-15) plus a signing fee; replacing or releasing a paid coach or manager pays 25% of the annual wage for each season left on his contract
 - STAFF-12 [o] Hired managers may carry a selection trait: youth (+4 selection value for age ≤ 21), rotation (fatigue weighs double) or stable (fatigue weighs half). The founding manager has none; a developer style (→STAFF-14) selects like the youth trait, so a developer never draws it, a firefighter's youth draw becomes stable and a gegenpress coach's stable draw becomes rotation.
-- STAFF-13 [o] The staff can take these decisions for the owner, each by its own switch in its home (→WEB-71): the training focus (→CLUB-13), academy promotion and release, contract talks (→CLUB-26), answers to other clubs' offers (→CLUB-18), sponsors (→ECON-21), each coaching department's hiring and renewal (→STAFF-15) and the manager post (→STAFF-18). New clubs delegate the training focus, the academy and contract talks and decide the rest themselves (→WEB-45 level 2). Delegated decisions are reported in the inbox, and a switch can be turned back on at any time.
-  - an explicit owner choice takes its decision back: choosing a training focus, offering or declining in a contract talk, releasing a coach (that department only, so the staff do not refill the post at once). Promoting or releasing a prospect, answering a bid, signing a sponsor and the owner's own hiring or renewal leave the switch as it is.
+- STAFF-13 [o] The staff take these decisions for the owner exactly when the intervention level delegates them (→WEB-45), never by a switch of their own: the training focus (→CLUB-13), academy promotion and release, contract talks (→CLUB-26), answers to other clubs' offers (→CLUB-18), sponsors (→ECON-21), the coaching departments' hiring and renewal (→STAFF-15) and the manager post (→STAFF-18). New clubs start at level 2: the staff take the training focus, the academy and contract talks, the owner the rest. Delegated decisions are reported in the inbox.
+  - only the level changes who decides. At any level the owner may still promote or release a prospect, offer or decline in a pending contract talk, answer a bid, sign a sponsor, and hire, renew or release staff himself; none of these changes delegation, so a delegated department fills a post the owner empties by its criteria. The training focus is the exception: while it is delegated only the assistant chooses it.
   - a delegated youth director promotes a prospect of promotion age who matches the weakest first-teamer of his role or its starters minus 10 while the squad and the role have room, and releases a prospect turning 19 unpromoted; he promotes nobody while cash is below one year of operating costs and reports the deferral. ← every promotion adds a first-team wage
 
 - STAFF-14 [o] Every hire candidate belongs to a school of football; new free agents (→STAFF-17) take their schools in turn from a seeded order of all eight per season, drawn from their own stream so the other attributes stay put. ← choosing a manager is choosing how the club plays and grows, with a clear price
@@ -40,7 +40,7 @@
   - no manager renews himself: on 1 April the owner is reminded of a contract ending at the close (연봉 · 계약금 · term) and may renew while the manager is not interim, at quote(120 + ability) a year with a 10% fee, for 1–5 seasons (the firefighter 1); with the manager post delegated the staff decide (→STAFF-18); an unrenewed manager leaves at the close (interim, departure choice). The reminder settles when he renews, leaves or is replaced.
   - the founding manager and an interim have no style and are exactly neutral; effects apply to the own club only, in the same profile the pre-match laboratory reads (→MATCH-9).
 
-- STAFF-15 [o] Each coaching department is run by the owner or, with its switch on, by the staff under the department's hiring criteria. ← the owner decides what a good hire is, not every contract
+- STAFF-15 [o] The coaching departments are run by the owner or, when the intervention level delegates them (level 4 →WEB-45), by the staff under each department's hiring criteria, which the owner sets at any level. ← the owner decides what a good hire is, not every contract
   | criterion | values | default |
   |---|---|---|
   | 자원봉사로 운영 | on: an unpaid ability-50 volunteer holds the post | off |
@@ -86,7 +86,7 @@
   - a candidate matches when he meets every criterion and the club can afford him: cash after his fee and any compensation still covers 13 rounds of costs with his wage in place of the current one (as →STAFF-15).
   - a vacancy (resignation, retirement, an unrenewed contract, the firefighter leaving) is filled at once by the first match; with none, 기다림 keeps the interim in charge without stopping the clock while the staff look again daily (the market moves every 4 league rounds →STAFF-17).
   - on 1 April an expiring manager who meets the criteria is renewed unless a match beats him clearly in the chosen order: 3+ OVR, 3+ potential or a wage 10%+ lower. One who does not meet them leaves at the close when a match exists and is renewed when none does.
-  - 사람's 감독 tab shows the switch, the criteria and whom the staff would appoint today (→WEB-43); intervention level 4 turns the switch on (→WEB-45).
+  - 사람's 감독 tab shows who appoints at the current level, the criteria (editable at any level) and whom the staff would appoint today (→WEB-43); intervention level 4 delegates the post (→WEB-45).
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -94,6 +94,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r14 261013 STAFF-13✎ a switch per decision in its home, owner choices taking a decision back (focus, talk answer, coach release)→the intervention level alone, owner actions never change delegation, the focus only the assistant's while delegated; STAFF-15✎ a switch per department→the level (4) for every department, criteria set at any level; STAFF-18✎ the 감독 tab's switch→who appoints at the level
 - r13 261013 STAFF-11✎ delegated term 2→the criteria's; STAFF-13✎ one coach switch→one per department, +which owner choices take back, +the youth director's rule; STAFF-15✎ investment dial 절약/균형/최고→hiring criteria per department; STAFF-18✎ rule school/best/strategy→manager criteria (OVR, schools, flexibility, pride, youth work, trait, wage cap, order, term, poaching, no match)
 - r12 261012 STAFF-7✎ resignation always stopping the clock→the staff appoint a successor when the post is delegated; STAFF-11✎ release 25% of the annual wage→25% for each season left, +coach terms 1–5; STAFF-13✎ +contract talks and the manager post, the main sponsor→sponsors; STAFF-14✎ terms 3 seasons (firefighter 1) and self-renewal→owner-chosen 1–5 seasons, no self-renewal; STAFF-15✎ +renewal term 1–5; STAFF-17✎ 감독 후보 tab→the manager's 교체 action; STAFF-18+ delegated manager appointment with an owner-chosen rule
 - r11 261012 STAFF-14✎ four seasonal candidates→schools for new free agents; STAFF-17+ manager market: free-agent pool refreshed every 4 rounds and at the close, sackings in our league, named managers for every club, poaching with 1.5× wage compensation, hired manager leaves the list

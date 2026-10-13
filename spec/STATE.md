@@ -17,20 +17,21 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 54 | 54 | - | 0 |
+| WEB | 55 | 55 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
-| CLUB | 23 | 23 | - | 0 |
+| CLUB | 24 | 24 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
-| STAFF | 13 | 13 | - | 0 |
+| STAFF | 14 | 14 | - | 0 |
 | ECON | 20 | 20 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 7 | 7 | - | 0 |
-| SAVE | 24 | 24 | - | 0 |
+| SAVE | 25 | 25 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T080 | the intervention level as the only control over who decides | WEB STAFF CLUB SAVE | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -48,6 +49,9 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 create-task WEB r55 STAFF r14 CLUB r24 SAVE r25 → T080 (one task: engine level, save mapping, web homes and clock); next implement-task T080
+- 261013 update-ssot WEB r55 STAFF r14 CLUB r24 SAVE r25: the intervention level, saved with the game, alone sets the stops and who decides (training at levels 2–4); no staff switches in homes, no per-event stops, no 맞춤; criteria editable at any level, applied only while delegated; next create-task
+- 261013 update-ssot WEB STAFF CLUB SAVE start: the intervention level alone decides who takes each decision
 - 261013 main a25a5ec: the browser benchmark failed once on a docs-only commit after passing twice on the same code — desktop p95 sits at the 100 ms gate; recorded in next
 - 261013 work/levers (T070–T079) merged into main by fast-forward to 2de95c6 after CI run 38382526028 passed every job
 - 261013 merged work/econ-port (T079) into work/levers: FINANCES.md keeps the levers talk rule plus the 65% wage-bill check and the ported expense amounts with the investment factor; goldens regenerated; unit 658, contract 11, build pass
