@@ -50,7 +50,7 @@ const titles: Record<Command['type'], string> = {
   'renew-staff': '코치와 재계약했어요',
   'promote-youth': '유소년을 1군으로 올렸어요',
   'release-youth': '유소년을 내보냈어요',
-  delegate: '스태프 위임을 바꿨어요',
+  intervention: '개입 수준을 바꿨어요',
   bid: '이적 제안을 보냈어요',
   'respond-bid': '이적 제안에 답했어요',
   'read-inbox': '소식을 확인했어요',

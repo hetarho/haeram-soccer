@@ -159,33 +159,11 @@
 .slot > .note {
   margin: 0;
 }
-/* The sponsors' staff switch ends 후원 (→ECON-21): the checkbox, then its rule in words. */
+/* Who signs sponsors at the current intervention level ends 후원 (→ECON-21, WEB-45). */
 .delegation {
   margin-top: 14px;
   padding-top: 12px;
   border-top: 1px solid var(--line);
-}
-.switch {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 48px;
-  padding: 0 12px;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  background: var(--surface-2);
-  cursor: pointer;
-}
-.switch input {
-  width: 22px;
-  height: 22px;
-  accent-color: var(--accent);
-}
-.switch b {
-  font-size: 14px;
-}
-.delegation .note {
-  margin: 8px 2px 0;
 }
 .detailActions,
 .reviewActions {

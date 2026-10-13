@@ -63,7 +63,8 @@ const command = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('advance-days'),
     days: z.number().int().min(1).max(31),
-    stop: z.array(inboxKind).max(10).optional(),
+    // Level 1 stops for every kind (→WEB-45).
+    stop: z.array(inboxKind).max(inboxKind.options.length).optional(),
   }),
   z.object({ type: z.literal('next-match') }),
   z.object({ type: z.literal('season'), count: z.literal(1) }),
@@ -112,17 +113,8 @@ const command = z.discriminatedUnion('type', [
   }),
   z.object({ type: z.literal('release-youth'), id: ref }),
   z.object({
-    type: z.literal('delegate'),
-    key: z.enum([
-      'training',
-      'academy',
-      'transfers',
-      'business',
-      'contracts',
-      'manager',
-      ...staffRole.options.map((role) => `coach:${role}` as const),
-    ]),
-    value: z.boolean(),
+    type: z.literal('intervention'),
+    level: z.literal([1, 2, 3, 4]),
   }),
   z.object({
     type: z.literal('bid'),

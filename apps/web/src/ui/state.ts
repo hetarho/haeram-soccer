@@ -164,8 +164,8 @@ export const useBoardRequest = oneShot<{
 }>();
 
 /**
- * Whether the intervention dialog (levels, per-event stops, background play, →WEB-45) is open.
- * The HUD menu, the clock's popover and the match-eve card's 멈춤 설정 all open the one dialog.
+ * Whether the intervention dialog (levels and background play, →WEB-45) is open. The HUD menu,
+ * each home's who-decides line and the match-eve card all open the one dialog.
  */
 export const useInterventionDialog = create<{
   open: boolean;

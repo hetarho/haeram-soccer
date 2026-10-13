@@ -10,6 +10,7 @@ import { moneyLabel, operatingCosts } from './finance';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
+import { delegated } from './intervention';
 
 /** First-team squad limit shared with signings. */
 const SQUAD_LIMIT = 26;
@@ -272,7 +273,7 @@ export function seasonAcademy(w: World): void {
     prospects = [...w.academy.players].sort(byStrength),
     ready = prospects.filter((player) => readiness(player) === 'ready'),
     review = prospects.filter((player) => readiness(player) === 'review');
-  if (!w.delegation?.academy) {
+  if (!delegated(w, 'academy')) {
     if (!ready.length && !review.length) return;
     const lines = [
       ...(ready.length ? [`1군 준비 완료: ${listed(w, ready)}`] : []),
@@ -349,6 +350,6 @@ export function academySummary(w: World) {
     intakeDay: academyIntakeDay(w),
     intakeDone: w.academy?.intakeYear === w.year,
     nextIntakeSize: academyIntakeSize(w),
-    delegated: !!w.delegation?.academy,
+    delegated: delegated(w, 'academy'),
   };
 }

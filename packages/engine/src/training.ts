@@ -15,6 +15,7 @@ import { developAcademy } from './academy';
 import { settleMorale } from './morale';
 import { managerStyleEffects, STYLE_INFO } from './styles';
 import { buildEffects, buildOf, cardOf } from './build';
+import { delegated } from './intervention';
 
 export const trainingFocusInfo: Record<
   TrainingFocus,
@@ -66,7 +67,7 @@ export function recordDevelopment(player: Player, gain: number) {
 
 /** The focus in force: the assistant's choice while training is delegated, else the owner's. */
 export function activeTrainingFocus(w: World): TrainingFocus {
-  return w.delegation?.training ? autoTrainingFocus(w) : w.training || 'balanced';
+  return delegated(w, 'training') ? autoTrainingFocus(w) : w.training || 'balanced';
 }
 
 /** The manager's youth work and the facilities, the base a round's growth multiplies (→CLUB-12). */
@@ -116,8 +117,9 @@ function actualRoundGain(w: World, player: Player) {
 
 export function setTrainingFocus(w: World, focus: TrainingFocus) {
   if (!Object.hasOwn(trainingFocusInfo, focus)) throw new Error('훈련 계획을 확인하세요.');
-  // An explicit owner choice takes training back from the staff.
-  if (w.delegation?.training) w.delegation = { ...w.delegation, training: false };
+  // Only the intervention level hands the focus back to the owner (→CLUB-13, STAFF-13).
+  if (delegated(w, 'training'))
+    throw new Error('수석코치가 훈련 방향을 정하고 있어요. 개입 1단계에서 직접 고를 수 있어요.');
   if (w.training === focus) return;
   w.training = focus;
   addEvent(
@@ -284,7 +286,7 @@ export const GROWING_AGE = 23;
 export function developmentOutlook(w: World) {
   const focus = activeTrainingFocus(w),
     info = trainingFocusInfo[focus],
-    delegated = !!w.delegation?.training,
+    isDelegated = delegated(w, 'training'),
     policy = policyOf(w),
     effects = policyEffects(policy),
     staff = staffEffects(w),
@@ -306,7 +308,7 @@ export function developmentOutlook(w: World) {
       value: info.developmentMultiplier,
       applies: 'all',
       home: 'training/training',
-      detail: `${info.label}${delegated ? ' · 수석코치가 정함' : ''}`,
+      detail: `${info.label}${isDelegated ? ' · 수석코치가 정함' : ''}`,
     },
     {
       key: 'investment',
@@ -378,7 +380,7 @@ export function developmentOutlook(w: World) {
     focus: {
       focus,
       label: info.label,
-      delegated,
+      delegated: isDelegated,
       developmentMultiplier: info.developmentMultiplier,
       /** Fatigue recovered at the next settled round, staff and policy bonuses included. */
       recovery: Math.max(0, info.recovery + effects.recoveryBonus + staff.recoveryBonus),

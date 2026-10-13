@@ -542,7 +542,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           {BigInt(fee) > BigInt(w.cash) && <p className={s.warning}>자금이 부족해요.</p>}
         </Dialog>
       )}
-      <OfferAnswers w={w} client={client} />
+      <OfferAnswers w={w} />
     </section>
   );
 }

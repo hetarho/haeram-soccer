@@ -15,7 +15,7 @@ import {
 import { encode } from '../../apps/web/src/adapters/persistence';
 import type { TrainingFocus, World } from '../../packages/contracts/src/types';
 import { expectHomeBounds } from './layout';
-import { stopOnlyFor } from './events';
+import { chooseLevel } from './events';
 import { continueSlot } from './slots';
 
 /** The focuses as 훈련's radiogroup names them. */
@@ -25,10 +25,9 @@ const FOCUS: Record<TrainingFocus, string> = {
   recovery: '회복 집중',
 };
 
-/** Puts a world in slot 1 with the clock stopping for nothing, to continue from the slot screen. */
+/** Puts a world in slot 1, to continue from the slot screen. */
 async function seed(page: Page, w: World) {
   const raw = await encode(w, 1, 0);
-  await stopOnlyFor(page, []);
   await page.addInitScript((raw) => {
     // Once: a reload continues the game as saved.
     if (localStorage.getItem('haeram-soccor:manifest')) return;
@@ -88,8 +87,6 @@ for (const viewport of [
       difficulty: 2,
     };
     const reference = createWorld(founding);
-    // Only the match eve may stop the clock here, so an incoming offer cannot interrupt it.
-    await stopOnlyFor(page, ['match']);
     // The clock runs for a few days below; it must not reach the first match day.
     expect(daysUntilNextMatch(reference)).toBeGreaterThan(4);
     await page.setViewportSize(viewport);
@@ -103,8 +100,8 @@ for (const viewport of [
     await expectHomeBounds(page);
     const before = await exportWorld(page);
     expect(before.training || 'balanced').toBe('balanced');
-    // New clubs hand training to the staff until the owner picks a focus.
-    expect(before.delegation?.training).toBe(true);
+    // New clubs start at level 2, which hands the training focus to the assistant (→WEB-45).
+    expect(before.intervention).toBe(2);
     expect(abilities(before)).toEqual(abilities(reference));
 
     const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
@@ -135,7 +132,8 @@ for (const viewport of [
     const balanced = focus.getByRole('radio', { name: '균형', exact: true });
     const youth = focus.getByRole('radio', { name: '유망주 집중', exact: true });
     const recovery = focus.getByRole('radio', { name: '회복 집중', exact: true });
-    const coach = page.getByRole('checkbox', { name: '코치에게 맡기기', exact: true });
+    const owner = page.getByTestId('decision-owner-training');
+    await expect(page.getByRole('checkbox', { name: '코치에게 맡기기' })).toHaveCount(0);
     await expect(focus.getByRole('radio')).toHaveCount(3);
     for (const [radio, id] of [
       [balanced, 'balanced'],
@@ -146,19 +144,22 @@ for (const viewport of [
     await expect(balanced).toContainText('성장 ×1');
     await expect(youth).toContainText(`성장 ×${trainingFocusInfo.youth.developmentMultiplier}`);
     await expect(recovery).toContainText('라운드 성장 쉼');
-    // The assistant has it: his pick is the focus in force.
+    // The assistant has it: his pick is the focus in force and the choices are read-only.
     const pick = autoTrainingAdvice(before);
-    await expect(coach).toBeChecked();
+    await expect(owner).toContainText('자동 결정');
+    await expect(owner).toContainText('개입 2 · 중요한 결정만');
+    await expect(youth).toBeDisabled();
     await expect(
       focus.getByRole('radio', { name: FOCUS[pick.focus], exact: true }),
     ).toHaveAttribute('aria-checked', 'true');
     await expect(page.getByTestId('training-advice')).toHaveText(
       `이번 라운드: ${FOCUS[pick.focus]} · ${pick.reason}`,
     );
-    // A tap applies the focus at once and takes it back from the assistant.
+    // Only level 1 hands the focus back to the owner; then a tap applies it at once.
+    await chooseLevel(page, 1);
+    await expect(owner).toContainText('직접 결정');
     await youth.click();
     await expect(youth).toHaveAttribute('aria-checked', 'true');
-    await expect(coach).not.toBeChecked();
     await expect(page.getByTestId('training-focus')).toHaveText('지금 유망주 집중');
     const outcome = page.getByTestId('action-outcome');
     await expect(outcome).toContainText('훈련 방향을 바꿨어요');
@@ -182,7 +183,7 @@ for (const viewport of [
     await expect(youth).toHaveAttribute('aria-checked', 'true');
     const planned = await exportWorld(page);
     expect(planned.training).toBe('youth');
-    expect(planned.delegation?.training).toBe(false);
+    expect(planned.intervention).toBe(1);
     expect(planned.round).toBe(0);
     expect(abilities(planned)).toEqual(abilities(before));
 
@@ -232,18 +233,20 @@ for (const viewport of [
     const restedPlan = await exportWorld(page);
     expect(restedPlan.training).toBe('recovery');
     expect(abilities(restedPlan)).toEqual(abilities(settled));
-    // The switch hands training back to the assistant.
-    await coach.check();
-    await expect(coach).toBeChecked();
+    // Level 2 hands training back to the assistant.
+    await chooseLevel(page, 2);
+    await expect(owner).toContainText('자동 결정');
     await expect(page.getByTestId('training-focus')).toContainText('수석코치가 정함');
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-    expect((await exportWorld(page)).delegation?.training).toBe(true);
+    expect((await exportWorld(page)).intervention).toBe(2);
   });
 }
 
-test('hands the focus to the coach and shows his pick', async ({ page }) => {
-  // The owner trains for youth while the starters are tired: the assistant would rest them.
+test('hands the focus to the coach at level 2 and shows his pick', async ({ page }) => {
+  // At level 1 the owner trains for youth while the starters are tired: the assistant would rest
+  // them.
   const w = founded('training-coach');
+  operate(w, { type: 'intervention', level: 1 });
   operate(w, { type: 'training', focus: 'youth' });
   for (const player of w.players) player.fatigue = 40;
   const advice = autoTrainingAdvice(w);
@@ -253,20 +256,20 @@ test('hands the focus to the coach and shows his pick', async ({ page }) => {
   await continueSlot(page);
   await page.getByRole('button', { name: '훈련·육성', exact: true }).first().click();
   const focus = page.getByRole('radiogroup', { name: '훈련 방향', exact: true });
-  const coach = page.getByRole('checkbox', { name: '코치에게 맡기기', exact: true });
+  const owner = page.getByTestId('decision-owner-training');
   const advised = page.getByTestId('training-advice');
   await expect(focus.getByRole('radio', { name: '유망주 집중', exact: true })).toHaveAttribute(
     'aria-checked',
     'true',
   );
-  await expect(coach).not.toBeChecked();
+  await expect(owner).toContainText('직접 결정');
   // His rule in words, and what he would pick this round.
   await expect(page.getByRole('region', { name: '훈련 방향' })).toContainText(
     '선발 평균 피로 30 이상',
   );
   await expect(advised).toHaveText(`맡기면 이번 라운드: 회복 집중 · ${advice.reason}`);
-  await coach.check();
-  await expect(coach).toBeChecked();
+  await chooseLevel(page, 2);
+  await expect(owner).toContainText('자동 결정');
   await expect(focus.getByRole('radio', { name: '회복 집중', exact: true })).toHaveAttribute(
     'aria-checked',
     'true',
@@ -279,7 +282,7 @@ test('hands the focus to the coach and shows his pick', async ({ page }) => {
   ).toBeVisible();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
-  await expect(coach).toBeChecked();
+  await expect(owner).toContainText('자동 결정');
   await expect(advised).toHaveText(`이번 라운드: 회복 집중 · ${advice.reason}`);
 });
 
@@ -307,11 +310,10 @@ test('promotes a prospect from 유소년', async ({ page }) => {
   await nav.getByRole('button', { name: '훈련·육성', exact: true }).click();
   await page.getByRole('tab', { name: '유소년', exact: true }).click();
   await expect(page).toHaveURL(/\/training\?view=academy$/);
-  // The director's switch and rule live here (→STAFF-13); new clubs hand him the academy.
+  // Who decides and the director's rule live here (→STAFF-13); level 2 hands him the academy.
   const delegation = page.getByRole('region', { name: '유소년 위임' });
-  await expect(
-    delegation.getByRole('checkbox', { name: '유스 디렉터에게 맡기기', exact: true }),
-  ).toBeChecked();
+  await expect(delegation.getByRole('checkbox')).toHaveCount(0);
+  await expect(delegation.getByTestId('decision-owner-academy')).toContainText('자동 결정');
   await expect(delegation).toContainText('19세까지 1군 수준에 이르지 못한 유망주');
   const academy = page.getByRole('region', { name: '유소년 아카데미' });
   await expect(page.getByTestId('academy-intake')).toContainText('3월 15일');

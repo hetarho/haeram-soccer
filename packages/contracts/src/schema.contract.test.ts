@@ -98,7 +98,7 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
     other.talk = { kind: 'renew', demand: '1000', floor: '1100', year: w.year, day: 153 };
     w.manager.term = 3;
     w.staff![0].term = 1;
-    w.delegation = { ...w.delegation, contracts: false, manager: true };
+    w.intervention = 4;
     w.sponsors = [
       {
         slot: 'local',
@@ -196,7 +196,8 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
         Object.assign(c.players[0], { transferRequest: { year: w.year, day: 0, by: 'agent' } }),
       ),
     ).toThrow();
-    expect(load((c) => Object.assign(c.delegation!, { scouting: true }))).toThrow();
+    expect(load((c) => Object.assign(c, { delegation: { scouting: true } }))).toThrow();
+    expect(load((c) => Object.assign(c, { intervention: 5 }))).toThrow();
     expect(load((c) => Object.assign(c.manager, { term: 6 }))).toThrow();
     expect(load((c) => Object.assign(c.staff![0], { term: 0 }))).toThrow();
     expect(
@@ -222,33 +223,35 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
     ).toThrow('후원 계약 손상');
   });
 
-  it("loads a 1.15 coach-hiring switch as every department's and drops buildYear", () => {
+  it('loads staff switches as the intervention level and drops buildYear', () => {
     const w = world();
-    const saved = (delegation: Record<string, boolean>) => ({
-      ...structuredClone(w),
-      engine: '1.15.0',
-      delegation,
-      build: { fans: 'community' },
-      buildYear: w.year,
-    });
+    const saved = (delegation: Record<string, boolean>) => {
+      const copy: Record<string, unknown> = {
+        ...structuredClone(w),
+        engine: '1.15.0',
+        delegation,
+        build: { fans: 'community' },
+        buildYear: w.year,
+      };
+      delete copy.intervention;
+      return copy;
+    };
+    const level = (delegation: Record<string, boolean>) =>
+      validateWorld(saved(delegation)).intervention;
+    // Offers, sponsors, a coaching department or the manager post were only level 4's.
+    for (const key of ['transfers', 'business', 'manager', 'staff', 'coach:scout'])
+      expect(level({ training: true, academy: true, [key]: true })).toBe(4);
+    expect(level({ training: true, academy: true, transfers: false })).toBe(2);
+    expect(level({ academy: false, contracts: true })).toBe(2);
+    expect(level({ training: false, academy: false, staff: false })).toBe(1);
+    expect(level({})).toBe(1);
     const on = validateWorld(saved({ training: true, academy: true, staff: true }));
-    expect(on.delegation).toEqual({
-      training: true,
-      academy: true,
-      'coach:assistant': true,
-      'coach:attack': true,
-      'coach:defense': true,
-      'coach:goalkeeping': true,
-      'coach:fitness': true,
-      'coach:youth': true,
-      'coach:scout': true,
-    });
+    expect('delegation' in on).toBe(false);
+    // A saved level wins over switches kept beside it.
+    expect(validateWorld({ ...saved({ manager: true }), intervention: 2 }).intervention).toBe(2);
     expect('buildYear' in on).toBe(false);
     expect(on.build).toEqual({ fans: 'community' });
     expect(on.buildChanged).toBeUndefined();
-    const off = validateWorld(saved({ staff: false }));
-    expect(Object.values(off.delegation!)).toEqual(Array(7).fill(false));
-    expect(Object.keys(off.delegation!).every((key) => key.startsWith('coach:'))).toBe(true);
     // A reservation of 1.13–1.15 still loads; activation drops it (→SAVE-10).
     const reserved = {
       ...saved({}),
@@ -327,7 +330,7 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
     };
     w.talkRule = { maxPay: 1.25, minOvr: 60, maxAge: 33 };
     w.buildChanged = { youth: { year: w.year, day: 10 }, culture: { year: w.year - 1, day: 300 } };
-    w.delegation = { ...w.delegation, 'coach:scout': true, manager: true };
+    w.intervention = 4;
     expect(canonical(validateWorld(structuredClone(w)))).toBe(canonical(w));
     const load = (change: (copy: World) => unknown) => () => {
       const copy = structuredClone(w);
@@ -352,6 +355,6 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
       load((c) => Object.assign(c.buildChanged!, { stadium: { year: w.year, day: 0 } })),
     ).toThrow();
     expect(load((c) => (c.buildChanged!.youth = { year: w.year, day: 366 }))).toThrow();
-    expect(load((c) => Object.assign(c.delegation!, { 'coach:kit': true }))).toThrow();
+    expect(load((c) => Object.assign(c, { delegation: { 'coach:kit': true } }))).toThrow();
   });
 });

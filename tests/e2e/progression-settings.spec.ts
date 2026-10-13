@@ -1,16 +1,25 @@
-import { expect, test } from '@playwright/test';
-import { stopOnlyFor } from './events';
+import { expect, test, type Page } from '@playwright/test';
+import { chooseLevel } from './events';
 import { horizontalOverflow, settle } from './layout';
+
+/**
+ * Founds a club whose first offers arrive only after its second match eve, so a new club's level 2
+ * stops on match eves alone in these tests.
+ */
+async function foundQuiet(page: Page) {
+  await page.goto('/');
+  await page.getByText('고급 설정', { exact: true }).click();
+  await page.getByLabel('세계 생성 시드').fill('intervention-levels');
+  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+}
 
 test('mobile clock exposes every pace as a touch target and advances at the chosen speed', async ({
   page,
 }) => {
-  // The paces are measured against match eves; offers from other clubs must not stop them.
-  await stopOnlyFor(page, ['match']);
+  // The paces are measured against match eves.
   await page.setViewportSize({ width: 360, height: 740 });
-  await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await foundQuiet(page);
   const date = page.getByTestId('game-date');
   await expect(date).toHaveText('1950년 8월 1일');
   const controls = page.getByRole('region', { name: '시즌 진행', exact: true });
@@ -103,12 +112,11 @@ test('mobile clock exposes every pace as a touch target and advances at the chos
   await expect(toggle).toBeVisible();
 });
 
-test("the match-eve card's 멈춤 설정 opens the per-event stops", async ({ page }) => {
-  await stopOnlyFor(page, ['match']);
+test("the match-eve card's 개입 수준 opens the level dialog, which has no per-event stops", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 360, height: 740 });
-  await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await foundQuiet(page);
   await settle(page);
   await page
     .getByRole('region', { name: '시즌 진행', exact: true })
@@ -116,39 +124,37 @@ test("the match-eve card's 멈춤 설정 opens the per-event stops", async ({ pa
     .click();
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
-  const link = eve.getByRole('button', { name: '멈춤 설정', exact: true });
+  const link = eve.getByRole('button', { name: '개입 수준', exact: true });
   // A full touch target once the card has settled from its entrance.
   await expect.poll(async () => (await link.boundingBox())!.height).toBeGreaterThanOrEqual(44);
   await link.click();
-  // The one intervention dialog opens, its per-event stops holding the match-eve stop.
+  // The one intervention dialog opens: the level alone decides where the clock stops (→WEB-45).
   const dialog = page.getByRole('dialog', { name: '개입 수준', exact: true });
   await expect(dialog).toBeVisible();
-  await dialog.getByText('이벤트별 세부 설정', { exact: true }).click();
-  const stop = dialog.getByRole('checkbox', { name: '경기 전날에서 멈춤', exact: true });
-  await expect(stop).toBeChecked();
-  await stop.uncheck();
-  await expect(stop).not.toBeChecked();
+  const level = (n: number) => dialog.getByRole('radio', { name: new RegExp(`^${n}\\. `) });
+  await expect(level(2)).toHaveAttribute('aria-checked', 'true');
+  await expect(dialog.getByText('이벤트별 세부 설정')).toHaveCount(0);
+  await expect(dialog.getByRole('checkbox', { name: /에서 멈춤$/ })).toHaveCount(0);
+  await expect(dialog.getByRole('region', { name: '스태프가 맡는 결정' })).toHaveCount(0);
+  await expect(dialog).toContainText('개입 수준이 그 결정을 스태프에게 맡길 때만 쓰여요');
+  await level(3).click();
+  await expect(level(3)).toHaveAttribute('aria-checked', 'true');
   await dialog.getByRole('button', { name: '설정 완료', exact: true }).click();
   await expect(dialog).toBeHidden();
-  // The stop is the dialog's setting: opening it again from the HUD menu shows the change.
+  // The level is the dialog's setting: opening it again from the HUD menu shows the change.
   await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   await page
     .getByRole('dialog', { name: '전체 메뉴' })
     .getByRole('button', { name: '개입 수준 설정', exact: true })
     .click();
-  await dialog.getByText('이벤트별 세부 설정', { exact: true }).click();
-  await expect(stop).not.toBeChecked();
+  await expect(level(3)).toHaveAttribute('aria-checked', 'true');
 });
 
-test('mobile intervention levels set clock stops and staff delegation, and persist', async ({
+test('mobile intervention levels set clock stops and who decides, saved with the game', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 360, height: 740 });
-  await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill('intervention-levels');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await foundQuiet(page);
   const date = page.getByTestId('game-date');
   // The clock row shows the level on phones too; the HUD menu still opens the full sheet.
   const trigger = page
@@ -176,70 +182,35 @@ test('mobile intervention levels set clock stops and staff delegation, and persi
   await expect(level(2)).toHaveAccessibleName(/^2\. 중요한 결정만/);
   await expect(level(3)).toHaveAccessibleName(/^3\. 이적만 직접/);
   await expect(level(4)).toHaveAccessibleName(/^4\. 운영진에 모두 맡기기/);
-  // First run: level 2 stops for match eves, window openings, bids, offers, youth intake and cash.
+  // First run: level 2, whose summary names what it stops for and what the staff take.
   await expect(level(2)).toHaveAttribute('aria-checked', 'true');
-  await dialog.getByText('이벤트별 세부 설정', { exact: true }).click();
-  const stop = (label: string) =>
-    dialog.getByRole('checkbox', { name: `${label}에서 멈춤`, exact: true });
-  const expected: [string, boolean][] = [
-    ['경기 전날', true],
-    ['이적시장 개장', true],
-    ['이적시장 마감', false],
-    ['이적 협상 응답', true],
-    ['우리 선수 영입 제안', true],
-    ['유소년 입단', true],
-    ['스태프 보고', false],
-    ['선수 계약 협상', false],
-    ['자금·후원 경고', true],
-  ];
-  for (const [label, on] of expected)
-    if (on) await expect(stop(label)).toBeChecked();
-    else await expect(stop(label)).not.toBeChecked();
-  // The dialog lists what the staff decide: at level 2 the training focus (훈련's own switch,
-  // never set by a level), the academy and contract talks.
-  const decisions = dialog.getByRole('region', { name: '스태프가 맡는 결정' }).getByRole('button');
-  await expect(decisions).toHaveText(['훈련 방향', '유소년 승격·방출', '선수 계약 협상']);
+  await expect(level(2)).toContainText('경기 전날과 이적 협상·제안');
+  await expect(level(2)).toContainText(
+    '훈련 방향, 유소년 승격·방출, 선수 재계약·계약 개선 협상은 스태프가 맡아요',
+  );
   // Level 4 hands everything to the staff, including offers and sponsors; only cash warnings stop.
   await level(4).click();
   await expect(level(4)).toHaveAttribute('aria-checked', 'true');
-  for (const [label] of expected)
-    if (label === '자금·후원 경고') await expect(stop(label)).toBeChecked();
-    else await expect(stop(label)).not.toBeChecked();
-  await expect(decisions).toHaveText([
-    '훈련 방향',
-    '유소년 승격·방출',
-    '선수 계약 협상',
-    '이적 제안 응답',
-    '스폰서 계약',
-    '수석코치 선임·재계약',
-    '공격 코치 선임·재계약',
-    '수비 코치 선임·재계약',
-    '골키퍼 코치 선임·재계약',
-    '피지컬 코치 선임·재계약',
-    '유스 디렉터 선임·재계약',
-    '수석 스카우트 선임·재계약',
-    '감독 선임',
-  ]);
-  // Each decision opens its home, closing the dialog.
-  await decisions.filter({ hasText: '스폰서 계약' }).click();
+  await dialog.getByRole('button', { name: '설정 완료', exact: true }).click();
   await expect(dialog).toHaveCount(0);
-  await expect(page).toHaveURL(/\/business\?view=sponsor$/);
-  await expect(page.getByRole('tab', { name: '후원', exact: true })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
-  const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
-  await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await expect(trigger).toHaveAccessibleName('개입 수준 · 운영진에 모두 맡기기');
   await expect(trigger).toContainText('개입 4');
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  await page.reload();
+  // Each home names who decides now, with no switch of its own (→WEB-71).
+  await page.goto('/business?view=sponsor');
+  const sponsors = page.getByTestId('decision-owner-business');
+  await expect(sponsors).toContainText('자동 결정');
+  await expect(sponsors).toContainText('개입 4 · 운영진에 모두 맡기기');
+  await expect(page.getByRole('region', { name: '후원 위임' }).getByRole('checkbox')).toHaveCount(
+    0,
+  );
   // The level survives a reload.
   await entry();
   dialog = page.getByRole('dialog', { name: '개입 수준', exact: true });
   await expect(level(4)).toHaveAttribute('aria-checked', 'true');
   await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(dialog).toHaveCount(0);
+  const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await expect(date).toHaveText('1950년 8월 1일');
   // Without match stops, x10 plays straight through the first match day.
@@ -253,17 +224,13 @@ test('mobile intervention levels set clock stops and staff delegation, and persi
 test('the phone clock picks the intervention level from a popover without stopping', async ({
   page,
 }) => {
-  // Only match eves stop: a custom mix until a level is chosen.
-  await stopOnlyFor(page, ['match']);
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await foundQuiet(page);
   const date = page.getByTestId('game-date');
   const clock = page.getByRole('region', { name: '시즌 진행', exact: true });
   const trigger = clock.getByRole('button', { name: /^개입 수준/ });
   await expect(trigger).toBeVisible();
-  await expect(trigger).toHaveAccessibleName('개입 수준 · 맞춤');
+  await expect(trigger).toHaveAccessibleName('개입 수준 · 중요한 결정만');
   await expect(trigger).toHaveAttribute('aria-expanded', 'false');
   await settle(page);
   // "▶ · 1 3 5 · 개입" stays one row: nothing spills out of it and the date is not cut.
@@ -313,14 +280,17 @@ test('the phone clock picks the intervention level from a popover without stoppi
   const levels = popover.getByRole('radiogroup', { name: '개입 수준', exact: true });
   const level = (n: number) => levels.getByRole('radio', { name: new RegExp(`^${n}\\. `) });
   await expect(levels.getByRole('radio')).toHaveCount(4);
-  await expect(levels.getByRole('radio', { checked: true })).toHaveCount(0);
-  await expect(popover).toContainText('지금은 맞춤이에요');
-  // Focus starts on the first level and the arrow keys move between levels.
-  await expect(level(1)).toBeFocused();
-  await page.keyboard.press('ArrowDown');
+  await expect(level(2)).toHaveAttribute('aria-checked', 'true');
+  // The popover holds the levels and nothing else: no decision list, no detail settings.
+  await expect(popover.getByRole('button')).toHaveCount(0);
+  await expect(popover.getByRole('region', { name: '스태프가 맡는 결정' })).toHaveCount(0);
+  await expect(level(4)).toContainText('자금·후원 경고에서만 멈춰요');
+  // Focus starts on the level in force and the arrow keys move between levels.
   await expect(level(2)).toBeFocused();
+  await page.keyboard.press('ArrowDown');
+  await expect(level(3)).toBeFocused();
   await page.keyboard.press('ArrowUp');
-  await expect(level(1)).toBeFocused();
+  await expect(level(2)).toBeFocused();
   await page.keyboard.press('End');
   await expect(level(4)).toBeFocused();
   // Choosing applies the level and closes the popover, handing focus back to the trigger.
@@ -344,19 +314,6 @@ test('the phone clock picks the intervention level from a popover without stoppi
   await expect(popover).toBeVisible();
   await date.click();
   await expect(popover).toHaveCount(0);
-
-  // The detail button opens the full sheet with the same level checked.
-  await trigger.click();
-  await popover.getByRole('button', { name: '세부 설정…', exact: true }).click();
-  await expect(popover).toHaveCount(0);
-  const dialog = page.getByRole('dialog', { name: '개입 수준', exact: true });
-  await expect(dialog.getByRole('radio', { name: /^4\. / })).toHaveAttribute(
-    'aria-checked',
-    'true',
-  );
-  await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();
-  await expect(dialog).toHaveCount(0);
-  await expect(trigger).toBeFocused();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   await expect(trigger).toHaveAccessibleName('개입 수준 · 운영진에 모두 맡기기');
@@ -365,11 +322,11 @@ test('the phone clock picks the intervention level from a popover without stoppi
 test('a hidden tab plays on like an idle game, names the date in its title, and can pause instead', async ({
   page,
 }) => {
-  // Nothing stops the run, so a slow browser that reaches the first match plays it through.
-  await stopOnlyFor(page, []);
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
+  // Level 4 stops only for money, so a slow browser that reaches the first match plays it through.
+  await chooseLevel(page, 4);
   const date = page.getByTestId('game-date');
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
   await expect(date).toHaveText('1950년 8월 2일');
@@ -415,11 +372,11 @@ test('a hidden tab plays on like an idle game, names the date in its title, and 
 test('a page that closed with the clock running plays the time away on return and sums it up', async ({
   page,
 }) => {
-  await stopOnlyFor(page, []);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
+  await chooseLevel(page, 4);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   // The owner left the clock running at x1 and came back ten minutes later; the away limit is
   // a month, so 30 of the 600 owed days are played.

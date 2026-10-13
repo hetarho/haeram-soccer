@@ -30,7 +30,6 @@ function club({ year, professional = false }: { year?: number; professional?: bo
     difficulty: 2,
   });
   // The squad stays as founded, so results follow only what a test sets.
-  w.delegation = { ...w.delegation, transfers: false };
   if (year) {
     w.year = year;
     w.currency = currency('ENG', year).code;
@@ -162,7 +161,7 @@ describe('sponsor contracts by slot', () => {
 
   it('has delegated staff fill every open slot at once, and pays the kit bonus for promotion', () => {
     const w = club({ year: 1979 });
-    w.delegation = { ...w.delegation, business: true };
+    w.intervention = 4;
     advanceDays(w, 1, undefined, false);
     expect(w.sponsors?.map((contract) => [contract.slot, contract.kind])).toEqual([
       ['local', 'stable'],
@@ -186,7 +185,7 @@ describe('sponsor contracts by slot', () => {
     operate(owner, { type: 'sign-sponsor', slot: 'local', offer: 0 });
     owner.sponsors![0].until = owner.year + 1;
     const delegated = structuredClone(owner);
-    delegated.delegation = { ...delegated.delegation, business: true };
+    delegated.intervention = 4;
     const april = seasonDayOf(owner.year, 4, 1);
     for (const w of [owner, delegated]) {
       while (currentDay(w) < april)

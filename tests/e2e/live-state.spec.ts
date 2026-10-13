@@ -3,13 +3,12 @@ import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
 import { createWorld } from '../../packages/engine/src/index';
 import type { World } from '../../packages/contracts/src/types';
-import { stopOnlyFor } from './events';
 import { continueSlot } from './slots';
 
 async function found(page: import('@playwright/test').Page) {
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill('live-tabs-regression');
+  await page.getByLabel('세계 생성 시드').fill('live-tabs-quiet');
   await page.getByRole('button', { name: '넉넉한 출발' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 1일');
@@ -18,8 +17,7 @@ async function found(page: import('@playwright/test').Page) {
 test('keeps league views and nodes across silent progression from home and updates real scorers', async ({
   page,
 }) => {
-  // Only the match eve may stop the clock here, so an incoming offer cannot interrupt it.
-  await stopOnlyFor(page, ['match']);
+  // New clubs stop on match eves (level 2); this seed brings no offer before day 16.
   await found(page);
   const menu = page.getByRole('navigation', { name: '게임 메뉴', exact: true });
   const date = page.getByTestId('game-date');
@@ -92,8 +90,6 @@ test('keeps league views and nodes across silent progression from home and updat
 test('watching a match pauses the calendar and retains playback across page switches', async ({
   page,
 }) => {
-  // Only the match eve may stop the clock here, so an offer card cannot cover home's controls.
-  await stopOnlyFor(page, ['match']);
   await found(page);
   await page.getByRole('button', { name: '다음 경기 관전' }).click();
   await expect(
@@ -148,10 +144,9 @@ test('watching a match pauses the calendar and retains playback across page swit
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toBeVisible();
 });
 
-/** Puts a world in slot 1 with the clock stopping for nothing, to continue from the slot screen. */
+/** Puts a world in slot 1, to continue from the slot screen. */
 async function seed(page: Page, w: World) {
   const raw = await encode(w, 1, 0);
-  await stopOnlyFor(page, []);
   await page.addInitScript((raw) => {
     if (localStorage.getItem('haeram-soccor:manifest')) return;
     const envelope = JSON.parse(raw);
@@ -189,7 +184,8 @@ test('the fatigue remedy opens 훈련 with 회복 ready to apply, and applying i
     difficulty: 2,
   });
   for (const player of w.players) player.fatigue = 55;
-  w.delegation = { ...w.delegation, training: false };
+  // The owner chooses the focus himself only at intervention level 1 (→CLUB-13).
+  w.intervention = 1;
   await seed(page, w);
   await page.goto('/');
   await continueSlot(page);

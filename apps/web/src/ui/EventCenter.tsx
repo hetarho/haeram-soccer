@@ -81,12 +81,12 @@ export const EventCenter = memo(function EventCenter({
   const market = useGameState((state) => state.view?.transfers) || [];
   const read = (item: InboxItem) => client.command({ type: 'read-inbox', id: item.id });
   const acting = useGameState((state) => !!state.pendingActions || state.readonly);
-  const { stopOn, matchEve, running } = useProgression(controller, (state) => state);
-  const showStops = useInterventionDialog((state) => state.show);
+  const { matchEve, running } = useProgression(controller, (state) => state);
+  const showLevels = useInterventionDialog((state) => state.show);
   const setPage = useNavigation((state) => state.setPage);
   const [opened, setOpened] = useState<string>();
   if (!w || running) return null;
-  const events = stoppingEvents(w, stopOn);
+  const events = stoppingEvents(w);
   const next = nextOwnFixture(w);
   const eve = matchEve && next?.id === matchEve ? next : undefined;
   if (!eve && !events.length) return null;
@@ -133,8 +133,8 @@ export const EventCenter = memo(function EventCenter({
         <p>
           {home ? '홈' : '원정'} · {competitionLabel(w, eve)} · 선발과 전술은 스태프가 준비해요.
         </p>
-        <button type="button" className={s.stops} onClick={showStops}>
-          멈춤 설정
+        <button type="button" className={s.stops} onClick={showLevels}>
+          개입 수준
         </button>
         <div className={s.actions}>
           <button className={s.primary} disabled={acting} onClick={() => void watch()}>

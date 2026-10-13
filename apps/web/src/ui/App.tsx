@@ -416,11 +416,11 @@ const selectContentWorld = worldSelector([
   'lower',
   'europe',
   'critical',
-  // Staff, policy, delegation and bid decisions can change only these keys.
+  // Staff, policy, intervention and bid decisions can change only these keys.
   'policy',
   'staff',
   'academy',
-  'delegation',
+  'intervention',
   'bids',
   'morale',
   'inbox',

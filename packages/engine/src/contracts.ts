@@ -31,6 +31,7 @@ import { currentDay, dayCountedFrom, SEASON_ROUNDS } from './calendar';
 import { credit } from './operations';
 import { suitorFor, transferWindowDays } from './transfers';
 import { financeProjection } from './projection';
+import { delegated } from './intervention';
 
 /**
  * Market wages and transfer values (→CLUB-25), in 1901 price units that the football index
@@ -449,7 +450,7 @@ function openTalk(w: World, p: Player, kind: ContractTalk['kind']) {
   };
   if (kind === 'improve') p.improveAsked = w.year;
   settleTalkItems(w, p.id);
-  if (w.delegation?.contracts) return;
+  if (delegated(w, 'contracts')) return;
   const goodwill = Math.round(terms.goodwill.percent * 10) / 10;
   pushInbox(w, {
     kind: 'contract-talk',
@@ -709,7 +710,7 @@ export function contractTalks(w: World) {
     else if (left <= TALK_CONFIG.improveSeasons && p.improveAsked !== w.year && underpaid(w, p))
       openTalk(w, p, 'improve');
   }
-  if (w.delegation?.contracts) for (const p of activePlayers(w)) if (p.talk) staffAnswer(w, p);
+  if (delegated(w, 'contracts')) for (const p of activePlayers(w)) if (p.talk) staffAnswer(w, p);
 }
 /**
  * Each day: a player unhappy for six weeks hands in a transfer request (→CLUB-27). He goes on the
@@ -771,10 +772,6 @@ export function expireContracts(w: World, division = clubOf(w).tier) {
     );
   }
 }
-/** The owner's own answer takes contract talks back from the staff (→STAFF-13). */
-function takeBack(w: World) {
-  if (w.delegation?.contracts) w.delegation = { ...w.delegation, contracts: false };
-}
 function activePlayer(w: World, id: string) {
   return w.players.find((x) => x.id === id && x.status === 'active');
 }
@@ -793,7 +790,6 @@ export function offerContract(w: World, id: string, wage: string, term: TalkTerm
     throw new Error(`계약 기간은 ${termRange(window)}이어야 합니다.`);
   if (BigInt(wage) < BigInt(talk.floor))
     throw new Error(`${p.name}은(는) ${moneyLabel(w, talk.floor)} 이상이어야 합의해요.`);
-  takeBack(w);
   signTalk(w, p, talk, wage, term, false);
 }
 /** The owner declines; the manager then tries to talk him round (→CLUB-27). */
@@ -801,7 +797,6 @@ export function declineContract(w: World, id: string) {
   const p = activePlayer(w, id);
   if (!p?.talk) throw new Error('계약 협상 중인 선수가 아닙니다.');
   const reason = `구단주 결정 · 요구 ${moneyLabel(w, p.talk.demand)} · 하한 ${moneyLabel(w, p.talk.floor)}`;
-  takeBack(w);
   const { kept, outcome } = declineTalk(w, p, reason);
   if (kept)
     pushInbox(w, {

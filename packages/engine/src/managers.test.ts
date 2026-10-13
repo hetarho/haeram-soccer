@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
 import type { ManagerStyle, World } from '../../contracts/src/types';
 import {
+  COACH_CRITERIA_DEFAULT,
   coachProspect,
   createWorld,
   dailyStaff,
@@ -19,6 +20,7 @@ import {
   ratio,
   renewalDay,
   simulateSeason,
+  STAFF_ROLES,
   STYLE_INFO,
 } from './index';
 
@@ -64,6 +66,16 @@ function april(w: World) {
 
 const ownReminder = (w: World) =>
   (w.inbox || []).filter((item) => item.kind === 'staff-renewal' && item.ref === w.manager.id);
+
+/** Level 4 with every coaching department kept by volunteers: only the manager post moves money. */
+function managerToStaff(w: World) {
+  w.intervention = 4;
+  w.hiring = {
+    coaches: Object.fromEntries(
+      STAFF_ROLES.map((role) => [role, { ...COACH_CRITERIA_DEFAULT, volunteer: true }]),
+    ),
+  };
+}
 
 describe('manager schools', () => {
   it('draws every candidate within the bands of his school', () => {
@@ -259,7 +271,7 @@ describe('the firefighter contract', () => {
     // No free agent is 3 better, so the staff keep him (→STAFF-18).
     w.manager.ability = 90;
     const { id, ability } = w.manager;
-    w.delegation = { ...w.delegation, manager: true };
+    managerToStaff(w);
     const cash = BigInt(w.cash),
       wage = quote('ENG', w.year, 120 + ability);
     april(w);
@@ -273,7 +285,7 @@ describe('the firefighter contract', () => {
     });
     // Without the money the owner is told instead, and why the staff held back.
     const broke = withFirefighter('firefighter-delegated-broke');
-    broke.delegation = { ...broke.delegation, manager: true };
+    managerToStaff(broke);
     broke.cash = '0';
     april(broke);
     expect(broke.manager.until).toBe(broke.year + 1);

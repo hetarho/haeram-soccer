@@ -28,8 +28,6 @@ import {
 import { MORALE_START } from './morale';
 import {
   coachDelegated,
-  coachKey,
-  DELEGATION_KEYS,
   managerCriteriaLines,
   managerCriteriaOf,
   setCoachCriteria,
@@ -38,6 +36,7 @@ import {
 } from './hiring';
 import { debit } from './operations';
 import { moneyLabel } from './finance';
+import { delegated, INTERVENTION_LEVELS } from './intervention';
 
 /** Managers and their tactical requests, coaches, delegation and the staff's criteria. */
 export type StaffCommand = Extract<
@@ -51,7 +50,7 @@ export type StaffCommand = Extract<
       | 'hire-staff'
       | 'release-staff'
       | 'renew-staff'
-      | 'delegate'
+      | 'intervention'
       | 'hiring'
       | 'talk-rule';
   }
@@ -257,7 +256,7 @@ function resign(w: World, reason: string) {
   interim.wage = staffQuote(w, 40);
   interim.interim = true;
   w.manager = interim;
-  if (!w.delegation?.manager) {
+  if (!delegated(w, 'manager')) {
     w.critical = MANAGER_GONE;
     return;
   }
@@ -374,14 +373,11 @@ export function staffCommand(w: World, cmd: StaffCommand) {
     case 'hire-staff':
       hireStaff(w, cmd.role, cmd.candidate, cmd.term);
       break;
-    case 'release-staff': {
+    case 'release-staff':
+      // Delegation stays as the level sets it: a delegated department refills the post by its
+      // criteria on the daily look (→STAFF-13, STAFF-15).
       releaseStaff(w, cmd.role);
-      // Releasing a coach takes that department's hiring back (→STAFF-13), so the staff do not
-      // refill the post at once; the other departments stay as they are.
-      const key = coachKey(cmd.role);
-      if (w.delegation?.[key]) w.delegation = { ...w.delegation, [key]: false };
       break;
-    }
     case 'hiring':
       if (cmd.role === 'manager') setManagerCriteria(w, cmd.criteria);
       else {
@@ -399,15 +395,12 @@ export function staffCommand(w: World, cmd: StaffCommand) {
     case 'renew-manager':
       renewManager(w, cmd.term);
       break;
-    case 'delegate': {
-      if (!DELEGATION_KEYS.includes(cmd.key) || typeof cmd.value !== 'boolean')
-        throw new Error('스태프에게 맡길 결정을 확인하세요.');
-      w.delegation = { ...w.delegation, [cmd.key]: cmd.value };
+    case 'intervention':
+      if (!INTERVENTION_LEVELS.includes(cmd.level)) throw new Error('개입 수준을 확인하세요.');
+      w.intervention = cmd.level;
       // A department handed to the staff has its vacancy or volunteer's post filled at once.
-      const role = STAFF_ROLES.find((one) => coachKey(one) === cmd.key);
-      if (role && cmd.value) fillDelegatedPost(w, role);
+      for (const role of STAFF_ROLES) if (coachDelegated(w, role)) fillDelegatedPost(w, role);
       break;
-    }
     case 'tactics': {
       validateTacticRequest(cmd.tactic, cmd.tone);
       const m = w.manager,

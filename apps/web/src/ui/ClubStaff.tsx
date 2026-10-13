@@ -1,7 +1,6 @@
 import { useId, useState, type ReactNode } from 'react';
 import type {
   ContractTerm,
-  DelegationKey,
   Manager,
   ManagerCriteria,
   Staff,
@@ -66,6 +65,7 @@ import {
   type CapKind,
 } from './criteria';
 import { Dialog } from './Dialog';
+import { DecisionOwner } from './DecisionOwner';
 import { OvrBadge } from './OvrBadge';
 import { Select } from './Select';
 import { compactMoney, contractLine } from './format';
@@ -262,31 +262,31 @@ export function ManagerHireTerm({
 }
 
 /**
- * Who runs the coaching staff (→STAFF-15): each department the staff run hires and renews by its
- * own criteria; the owner runs the rest.
+ * Who runs the coaching staff (→STAFF-15): every department follows the intervention level
+ * together (level 4 →WEB-45), each by its own criteria while the staff hire.
  */
 export function CoachingPlan({ w }: { w: World }) {
-  const delegatedRoles = STAFF_ROLES.filter((role) => coachDelegated(w, role)),
-    delegated = delegatedRoles.length > 0;
+  const decision = coachKey(STAFF_ROLES[0]),
+    auto = coachDelegated(w, STAFF_ROLES[0]);
   const expiring = (w.staff || []).filter((member) => isExpiring(w, member));
   return (
     <section className={s.plan} aria-label="코치진 운영">
       <header>
         <h3>코치진 운영</h3>
         <span data-testid="coaching-mode">
-          {delegatedRoles.length === STAFF_ROLES.length
-            ? '자동 · 스태프가 부서별 기준으로 고용·재계약'
-            : delegated
-              ? `일부 자동 · ${delegatedRoles.map((role) => STAFF_INFO[role].label).join('·')}`
-              : '직접 · 구단주가 고용·재계약'}
+          {auto ? '자동 · 스태프가 부서별 기준으로 고용·재계약' : '직접 · 구단주가 고용·재계약'}
         </span>
       </header>
-      <p className={s.note}>
-        {delegated
-          ? `스태프가 ${delegatedRoles.length}개 부서를 맡아 부서마다 정한 선임 기준으로 고용해요. 공석과 무급 자리는 기준에 맞는 첫 후보로 바로 채우고, 맞는 후보가 없으면 무급 코치가 지켜요. 계약 중인 코치는 계약이 끝날 때 기준으로 재계약하거나 교체해요.`
-          : '코치 선임·재계약·교체를 직접 해요. 재계약 시즌은 4월 1일이에요. 부서 카드의 자동으로 결정을 켜면 스태프가 그 부서의 선임 기준으로 알아서 고용해요.'}
-        {expiring.length > 0 && ` · 이번 시즌 끝에 계약이 끝나는 코치 ${expiring.length}명`}
-      </p>
+      <DecisionOwner
+        w={w}
+        decision={decision}
+        criteria
+        auto="스태프가 부서마다 정한 선임 기준으로 고용해요. 공석과 무급 자리는 기준에 맞는 첫 후보로 바로 채우고, 맞는 후보가 없으면 무급 코치가 지켜요. 계약 중인 코치는 계약이 끝날 때 기준으로 재계약하거나 교체해요."
+        owner="코치 선임·재계약·교체를 직접 해요. 재계약 시즌은 4월 1일이에요."
+      />
+      {expiring.length > 0 && (
+        <p className={s.note}>이번 시즌 끝에 계약이 끝나는 코치 {expiring.length}명</p>
+      )}
     </section>
   );
 }
@@ -400,15 +400,9 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                   {member ? '교체' : '선임'}
                 </button>
               </div>
-              {/* The department's own switch and, while on, its criteria (→STAFF-15, →WEB-71). */}
+              {/* The department's criteria, used while the level hands hiring to the staff (→STAFF-15). */}
               <div className={s.department}>
-                <DecisionSwitch
-                  w={w}
-                  client={client}
-                  switchKey={coachKey(id)}
-                  label={`${STAFF_INFO[id].label} 자동으로 결정`}
-                />
-                {coachDelegated(w, id) && <CoachCriteriaPanel w={w} client={client} role={id} />}
+                <CoachCriteriaPanel w={w} client={client} role={id} />
               </div>
             </li>
           );
@@ -551,51 +545,6 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
         </Dialog>
       )}
     </section>
-  );
-}
-
-/**
- * A decision's staff switch (→STAFF-13) in its home (→WEB-71): the owner's choice shows at once
- * and the saved world confirms it a moment later.
- */
-function DecisionSwitch({
-  w,
-  client,
-  switchKey,
-  label = '자동으로 결정',
-  hint,
-}: {
-  w: World;
-  client: GameClient;
-  switchKey: DelegationKey;
-  label?: string;
-  hint?: string;
-}) {
-  const acting = useActing();
-  const [draft, setDraft] = useState<boolean>();
-  const id = useId();
-  const on = draft ?? !!w.delegation?.[switchKey];
-  return (
-    <label className={s.switch}>
-      <input
-        type="checkbox"
-        aria-label={label}
-        aria-describedby={hint ? id : undefined}
-        checked={on}
-        disabled={acting && draft === undefined}
-        onChange={(event) => {
-          const next = event.target.checked;
-          setDraft(next);
-          void client
-            .command({ type: 'delegate', key: switchKey, value: next })
-            .finally(() => setDraft(undefined));
-        }}
-      />
-      <span>
-        <b>자동으로 결정</b>
-        {hint && <small id={id}>{hint}</small>}
-      </span>
-    </label>
   );
 }
 
@@ -773,152 +722,146 @@ function CriteriaEditor<T extends object>({
 /** A world reading the draft criteria, for the preview of what applying would do. */
 const withHiring = (w: World, hiring: World['hiring']): World => ({ ...w, hiring });
 
-/** 감독 선임 (→STAFF-18): the switch, the manager criteria and whom the staff would appoint. */
+/** 감독 선임 (→STAFF-18): who appoints, the manager criteria and whom the staff would appoint. */
 export function ManagerPost({ w, client }: { w: World; client: GameClient }) {
-  const on = !!w.delegation?.manager;
   const stored = managerCriteriaOf(w);
   return (
     <section className={s.decision} aria-label="감독 선임 위임">
       <header>
         <h3>감독 선임</h3>
       </header>
-      <DecisionSwitch
+      <DecisionOwner
         w={w}
-        client={client}
-        switchKey="manager"
-        hint={
-          on
-            ? '감독이 떠나면 스태프가 아래 기준에 맞는 감독을 바로 뽑고, 4월 1일 계약이 끝나는 감독은 기준으로 재계약하거나 교체해요. 소식함에 보고해요.'
-            : '지금은 구단주가 감독을 뽑고 재계약해요. 켜면 스태프가 정한 기준으로 맡아요.'
-        }
+        decision="manager"
+        criteria
+        auto="감독이 떠나면 스태프가 아래 기준에 맞는 감독을 바로 뽑고, 4월 1일 계약이 끝나는 감독은 기준으로 재계약하거나 교체해요. 소식함에 보고해요."
+        owner="구단주가 감독을 뽑고 재계약해요."
       />
-      {on && (
-        <CriteriaEditor
-          label="감독 선임 기준"
-          stored={stored}
-          defaults={MANAGER_CRITERIA_DEFAULT}
-          onApply={(criteria) => client.command({ type: 'hiring', role: 'manager', criteria })}
-          preview={(draft, changed) => (
-            <ManagerPreview
-              w={withHiring(w, { ...w.hiring, manager: draft })}
-              title={changed ? '적용하면' : '지금 기준이면'}
-            />
-          )}
-        >
-          {(c, set, disabled) => (
-            <>
-              <Field label="최소 OVR">
-                <Threshold
-                  label="최소 OVR"
-                  value={c.minOvr}
-                  steps={OVR_STEPS}
-                  open={0}
-                  unit="이상"
-                  disabled={disabled}
-                  onChange={(minOvr) => set({ minOvr })}
-                />
-              </Field>
-              <Field label="학파">
-                <Chips
-                  label="학파"
-                  value={c.schools}
-                  options={SCHOOLS}
-                  disabled={disabled}
-                  onChange={(schools) => set({ schools })}
-                />
-              </Field>
-              <Field label="최소 유연성">
-                <Threshold
-                  label="최소 유연성"
-                  value={c.minFlexibility}
-                  steps={ATTRIBUTE_STEPS}
-                  open={0}
-                  unit="이상"
-                  disabled={disabled}
-                  onChange={(minFlexibility) => set({ minFlexibility })}
-                />
-              </Field>
-              <Field label="최대 자존심">
-                <Threshold
-                  label="최대 자존심"
-                  value={c.maxPride}
-                  steps={PRIDE_STEPS}
-                  open={100}
-                  unit="이하"
-                  disabled={disabled}
-                  onChange={(maxPride) => set({ maxPride })}
-                />
-              </Field>
-              <Field label="최소 육성">
-                <Threshold
-                  label="최소 육성"
-                  value={c.minYouth}
-                  steps={ATTRIBUTE_STEPS}
-                  open={0}
-                  unit="이상"
-                  disabled={disabled}
-                  onChange={(minYouth) => set({ minYouth })}
-                />
-              </Field>
-              <Field label="선발 성향">
-                <Chips
-                  label="선발 성향"
-                  value={c.traits}
-                  options={SELECTION_TRAITS}
-                  disabled={disabled}
-                  onChange={(traits) => set({ traits })}
-                />
-              </Field>
-              <Field label="연봉 상한">
-                <WageCap
-                  w={w}
-                  kind="manager"
-                  value={c.maxWageOvr}
-                  disabled={disabled}
-                  onChange={(maxWageOvr) => set({ maxWageOvr })}
-                />
-              </Field>
-              <Field label="우선">
-                <Segments
-                  label="우선"
-                  value={c.priority}
-                  options={Object.entries(MANAGER_PRIORITY_INFO) as [typeof c.priority, string][]}
-                  disabled={disabled}
-                  onChange={(priority) => set({ priority })}
-                />
-              </Field>
-              <Field label="계약 기간">
-                <Segments
-                  label="계약 기간"
-                  value={c.term}
-                  options={TERMS}
-                  disabled={disabled}
-                  onChange={(term) => set({ term })}
-                />
-                <small>소방수는 1시즌, 누구도 70세가 되는 시즌을 넘기지 않아요.</small>
-              </Field>
-              <Field label="다른 구단 감독">
-                <Segments
-                  label="다른 구단 감독"
-                  value={c.poach}
-                  options={POACH_OPTIONS}
-                  disabled={disabled}
-                  onChange={(poach) => set({ poach })}
-                />
-              </Field>
-              <Field label="맞는 후보가 없으면">
-                <Segments
-                  label="맞는 후보가 없으면"
-                  value={c.whenNone}
-                  options={WHEN_NONE_OPTIONS}
-                  disabled={disabled}
-                  onChange={(whenNone) => set({ whenNone })}
-                />
-              </Field>
-            </>
-          )}
-        </CriteriaEditor>
-      )}
+      <CriteriaEditor
+        label="감독 선임 기준"
+        stored={stored}
+        defaults={MANAGER_CRITERIA_DEFAULT}
+        onApply={(criteria) => client.command({ type: 'hiring', role: 'manager', criteria })}
+        preview={(draft, changed) => (
+          <ManagerPreview
+            w={withHiring(w, { ...w.hiring, manager: draft })}
+            title={changed ? '적용하면' : '지금 기준이면'}
+          />
+        )}
+      >
+        {(c, set, disabled) => (
+          <>
+            <Field label="최소 OVR">
+              <Threshold
+                label="최소 OVR"
+                value={c.minOvr}
+                steps={OVR_STEPS}
+                open={0}
+                unit="이상"
+                disabled={disabled}
+                onChange={(minOvr) => set({ minOvr })}
+              />
+            </Field>
+            <Field label="학파">
+              <Chips
+                label="학파"
+                value={c.schools}
+                options={SCHOOLS}
+                disabled={disabled}
+                onChange={(schools) => set({ schools })}
+              />
+            </Field>
+            <Field label="최소 유연성">
+              <Threshold
+                label="최소 유연성"
+                value={c.minFlexibility}
+                steps={ATTRIBUTE_STEPS}
+                open={0}
+                unit="이상"
+                disabled={disabled}
+                onChange={(minFlexibility) => set({ minFlexibility })}
+              />
+            </Field>
+            <Field label="최대 자존심">
+              <Threshold
+                label="최대 자존심"
+                value={c.maxPride}
+                steps={PRIDE_STEPS}
+                open={100}
+                unit="이하"
+                disabled={disabled}
+                onChange={(maxPride) => set({ maxPride })}
+              />
+            </Field>
+            <Field label="최소 육성">
+              <Threshold
+                label="최소 육성"
+                value={c.minYouth}
+                steps={ATTRIBUTE_STEPS}
+                open={0}
+                unit="이상"
+                disabled={disabled}
+                onChange={(minYouth) => set({ minYouth })}
+              />
+            </Field>
+            <Field label="선발 성향">
+              <Chips
+                label="선발 성향"
+                value={c.traits}
+                options={SELECTION_TRAITS}
+                disabled={disabled}
+                onChange={(traits) => set({ traits })}
+              />
+            </Field>
+            <Field label="연봉 상한">
+              <WageCap
+                w={w}
+                kind="manager"
+                value={c.maxWageOvr}
+                disabled={disabled}
+                onChange={(maxWageOvr) => set({ maxWageOvr })}
+              />
+            </Field>
+            <Field label="우선">
+              <Segments
+                label="우선"
+                value={c.priority}
+                options={Object.entries(MANAGER_PRIORITY_INFO) as [typeof c.priority, string][]}
+                disabled={disabled}
+                onChange={(priority) => set({ priority })}
+              />
+            </Field>
+            <Field label="계약 기간">
+              <Segments
+                label="계약 기간"
+                value={c.term}
+                options={TERMS}
+                disabled={disabled}
+                onChange={(term) => set({ term })}
+              />
+              <small>소방수는 1시즌, 누구도 70세가 되는 시즌을 넘기지 않아요.</small>
+            </Field>
+            <Field label="다른 구단 감독">
+              <Segments
+                label="다른 구단 감독"
+                value={c.poach}
+                options={POACH_OPTIONS}
+                disabled={disabled}
+                onChange={(poach) => set({ poach })}
+              />
+            </Field>
+            <Field label="맞는 후보가 없으면">
+              <Segments
+                label="맞는 후보가 없으면"
+                value={c.whenNone}
+                options={WHEN_NONE_OPTIONS}
+                disabled={disabled}
+                onChange={(whenNone) => set({ whenNone })}
+              />
+            </Field>
+          </>
+        )}
+      </CriteriaEditor>
     </section>
   );
 }
@@ -1147,130 +1090,116 @@ function CoachPreview({ w, role, title }: { w: World; role: StaffRole; title: st
  * a refusal may leave the player unhappy (→CLUB-27).
  */
 export function TalkRulePanel({ w, client }: { w: World; client: GameClient }) {
-  const on = !!w.delegation?.contracts;
   return (
     <section className={s.decision} aria-label="계약 협상 위임">
       <header>
         <h3>계약 협상</h3>
       </header>
-      <DecisionSwitch
+      <DecisionOwner
         w={w}
-        client={client}
-        switchKey="contracts"
-        hint={
-          on
-            ? '이적시장이 열릴 때 재계약·계약 개선을 요구하는 선수에게 스태프가 아래 기준으로 하한을 제시하거나 거절하고 소식함에 보고해요.'
-            : '지금은 구단주가 협상마다 제시하거나 거절해요. 켜면 스태프가 정한 기준으로 답해요.'
-        }
+        decision="contracts"
+        criteria
+        auto="이적시장이 열릴 때 재계약·계약 개선을 요구하는 선수에게 스태프가 아래 기준으로 하한을 제시하거나 거절하고 소식함에 보고해요."
+        owner="구단주가 협상마다 제시하거나 거절해요."
       />
-      {on && (
-        <CriteriaEditor
-          label="계약 협상 기준"
-          stored={talkRuleOf(w)}
-          defaults={TALK_RULE_DEFAULT}
-          onApply={(rule) => client.command({ type: 'talk-rule', rule })}
-          preview={() => (
-            <ul className={s.fixed}>
-              <li>
-                계약 기간: 이번 시즌 뒤로 2시즌(32세부터 1시즌), 지금 계약보다 먼저 끝나지 않아요.
-              </li>
-              <li>
-                자금: 인상 뒤에도 13라운드 운영비가 남고, 이번 시즌 자금 전망도 13라운드 운영비
-                이상으로 끝날 때만 하한을 제시해요.
-              </li>
-              <li>거절하면 감독이 설득하지 못할 때 선수가 언해피가 될 수 있어요.</li>
-            </ul>
-          )}
-        >
-          {(rule, set, disabled) => (
-            <>
-              <Field label="연봉 상한 · 시장가 대비">
-                <Segments
-                  label="연봉 상한"
-                  value={rule.maxPay}
-                  options={TALK_PAY_STEPS.map((cap): [TalkPayCap, string] => [
-                    cap,
-                    `${Math.round(cap * 100)}%`,
-                  ])}
-                  disabled={disabled}
-                  onChange={(maxPay) => set({ maxPay })}
-                />
-              </Field>
-              <Field label="최소 OVR">
-                <Threshold
-                  label="최소 OVR"
-                  value={rule.minOvr}
-                  steps={TALK_MIN_OVR_STEPS}
-                  open={0}
-                  unit="이상"
-                  disabled={disabled}
-                  onChange={(minOvr) => set({ minOvr })}
-                />
-              </Field>
-              <Field label="최대 나이">
-                <Select
-                  aria-label="최대 나이"
-                  value={rule.maxAge ?? 'none'}
-                  disabled={disabled}
-                  onValueChange={(next) =>
-                    set({ maxAge: next === 'none' ? undefined : Number(next) })
-                  }
-                >
-                  <option value="none">제한 없음</option>
-                  {stepsWith(TALK_AGE_STEPS, rule.maxAge).map((age) => (
-                    <option key={age} value={age}>
-                      {age}세부터 정리
-                    </option>
-                  ))}
-                </Select>
-              </Field>
-            </>
-          )}
-        </CriteriaEditor>
-      )}
+      <CriteriaEditor
+        label="계약 협상 기준"
+        stored={talkRuleOf(w)}
+        defaults={TALK_RULE_DEFAULT}
+        onApply={(rule) => client.command({ type: 'talk-rule', rule })}
+        preview={() => (
+          <ul className={s.fixed}>
+            <li>
+              계약 기간: 이번 시즌 뒤로 2시즌(32세부터 1시즌), 지금 계약보다 먼저 끝나지 않아요.
+            </li>
+            <li>
+              자금: 인상 뒤에도 13라운드 운영비가 남고, 이번 시즌 자금 전망도 13라운드 운영비
+              이상으로 끝날 때만 하한을 제시해요.
+            </li>
+            <li>거절하면 감독이 설득하지 못할 때 선수가 언해피가 될 수 있어요.</li>
+          </ul>
+        )}
+      >
+        {(rule, set, disabled) => (
+          <>
+            <Field label="연봉 상한 · 시장가 대비">
+              <Segments
+                label="연봉 상한"
+                value={rule.maxPay}
+                options={TALK_PAY_STEPS.map((cap): [TalkPayCap, string] => [
+                  cap,
+                  `${Math.round(cap * 100)}%`,
+                ])}
+                disabled={disabled}
+                onChange={(maxPay) => set({ maxPay })}
+              />
+            </Field>
+            <Field label="최소 OVR">
+              <Threshold
+                label="최소 OVR"
+                value={rule.minOvr}
+                steps={TALK_MIN_OVR_STEPS}
+                open={0}
+                unit="이상"
+                disabled={disabled}
+                onChange={(minOvr) => set({ minOvr })}
+              />
+            </Field>
+            <Field label="최대 나이">
+              <Select
+                aria-label="최대 나이"
+                value={rule.maxAge ?? 'none'}
+                disabled={disabled}
+                onValueChange={(next) =>
+                  set({ maxAge: next === 'none' ? undefined : Number(next) })
+                }
+              >
+                <option value="none">제한 없음</option>
+                {stepsWith(TALK_AGE_STEPS, rule.maxAge).map((age) => (
+                  <option key={age} value={age}>
+                    {age}세부터 정리
+                  </option>
+                ))}
+              </Select>
+            </Field>
+          </>
+        )}
+      </CriteriaEditor>
     </section>
   );
 }
 
 /**
- * 제안 응답 (→CLUB-18, CLUB-24): the switch and, while on, the sale bar the staff apply, in words.
+ * 제안 응답 (→CLUB-18, CLUB-24): who answers and the sale bar the staff apply, in words.
  */
-export function OfferAnswers({ w, client }: { w: World; client: GameClient }) {
-  const on = !!w.delegation?.transfers,
-    card = cardOf(buildOf(w), 'market').label;
+export function OfferAnswers({ w }: { w: World }) {
+  const card = cardOf(buildOf(w), 'market').label;
   return (
     <section className={s.decision} aria-label="이적 제안 위임">
       <header>
         <h3>제안 응답</h3>
       </header>
-      <DecisionSwitch
+      <DecisionOwner
         w={w}
-        client={client}
-        switchKey="transfers"
-        hint={
-          on
-            ? '다른 구단의 제안에 스태프가 아래 기준으로 답하고 소식함에 보고해요.'
-            : '지금은 구단주가 제안마다 수락·거절해요. 켜면 스태프가 정해진 기준으로 답해요.'
-        }
+        decision="transfers"
+        criteria
+        auto="다른 구단의 제안에 스태프가 아래 기준으로 답하고 소식함에 보고해요."
+        owner="구단주가 제안마다 수락·거절해요."
       />
-      {on && (
-        <ul className={s.fixed}>
-          <li>이적 명단 선수는 들어오는 제안을 받아들여 매각해요.</li>
-          <li>
-            협상 가능 선수는 평가 가치의 130%(유망주: 22세 이하·잠재력이 능력보다 8 이상 높으면
-            200%) 이상이면 팔아요. 주전은 같은 역할에 능력 3 안쪽의 후보가 있는 30세 이상일 때만
-            팔아요.
-          </li>
-          <li>
-            나이(30–32세 −15%p, 33세 이상 −30%p), 계약(마지막 시즌 −20%p, 1년 남음 −10%p),
-            자금(13라운드 미만 −20%p, 30라운드 미만 −10%p)만큼 낮추되 80% 밑으로는 내리지 않아요.
-          </li>
-          <li>
-            이적 불가 선수의 거액 제안은 감독과 상의해 매각 기조 <b>{card}</b>와 자금 사정으로
-            정해요.
-          </li>
-        </ul>
-      )}
+      <ul className={s.fixed}>
+        <li>이적 명단 선수는 들어오는 제안을 받아들여 매각해요.</li>
+        <li>
+          협상 가능 선수는 평가 가치의 130%(유망주: 22세 이하·잠재력이 능력보다 8 이상 높으면 200%)
+          이상이면 팔아요. 주전은 같은 역할에 능력 3 안쪽의 후보가 있는 30세 이상일 때만 팔아요.
+        </li>
+        <li>
+          나이(30–32세 −15%p, 33세 이상 −30%p), 계약(마지막 시즌 −20%p, 1년 남음 −10%p),
+          자금(13라운드 미만 −20%p, 30라운드 미만 −10%p)만큼 낮추되 80% 밑으로는 내리지 않아요.
+        </li>
+        <li>
+          이적 불가 선수의 거액 제안은 감독과 상의해 매각 기조 <b>{card}</b>와 자금 사정으로 정해요.
+        </li>
+      </ul>
     </section>
   );
 }

@@ -14,27 +14,30 @@ import type {
 import {
   activePlayers,
   activeTrainingFocus,
+  advanceRound,
+  autoTrainingAdvice,
+  autoTrainingFocus,
+  basicStaff,
   clearlyCheaper,
   COACH_CRITERIA_DEFAULT,
   COACH_RENEWAL_MARGIN,
   coachMatches,
   coachPickPreview,
-  coachWage,
-  advanceRound,
-  managerCandidates,
-  autoTrainingAdvice,
-  autoTrainingFocus,
-  basicStaff,
   coachProspect,
   coachSeason,
+  coachWage,
   createWorld,
   dailyStaff,
+  delegated,
   departmentMultiplier,
   hireStaff,
   lineup,
   makeManager,
+  MANAGER_CRITERIA_DEFAULT,
   MANAGER_GONE,
+  MANAGER_STYLES,
   MANAGER_TRAIT_INFO,
+  managerCandidates,
   managerOffers,
   managerRenewal,
   managerTermLimit,
@@ -49,8 +52,6 @@ import {
   renewalDay,
   renewalTerms,
   seasonStaff,
-  staffQuote,
-  yearlyStaff,
   selectedLineup,
   settleTraining,
   simulateSeason,
@@ -59,10 +60,10 @@ import {
   staffCandidates,
   staffEffects,
   staffImpact,
+  staffQuote,
   staffWageTotal,
-  MANAGER_CRITERIA_DEFAULT,
-  MANAGER_STYLES,
   STYLE_INFO,
+  yearlyStaff,
 } from './index';
 
 const NEUTRAL = {
@@ -92,7 +93,7 @@ function world(seed = 'coaching-staff') {
 /** Young equal players under the owner's balanced focus, so growth is directly comparable. */
 function trainingWorld() {
   const w = world();
-  w.delegation = { ...w.delegation, training: false };
+  w.intervention = 1;
   w.manager.youth = 60;
   for (const player of w.players) {
     player.born = w.year - 20;
@@ -143,7 +144,7 @@ describe('coaching staff', () => {
     const basic = world('neutral-season'),
       old = world('neutral-season');
     // Before delegation existed the owner decided everything.
-    for (const w of [basic, old]) delete w.delegation;
+    for (const w of [basic, old]) delete w.intervention;
     delete old.staff;
     simulateSeason(basic);
     simulateSeason(old);
@@ -360,7 +361,7 @@ describe('delegated training focus', () => {
 
   it('rests a tired XI, nurtures young starters and otherwise trains balanced', () => {
     const w = rested();
-    expect(w.delegation?.training).toBe(true);
+    expect(delegated(w, 'training')).toBe(true);
     expect(autoTrainingFocus(w)).toBe('balanced');
     for (const player of starters(w).slice(0, 2)) player.born = w.year - 21;
     expect(autoTrainingFocus(w)).toBe('balanced');
@@ -377,17 +378,19 @@ describe('delegated training focus', () => {
     expect(autoTrainingAdvice(w).reason).toContain('21세 이하 선발 3명');
   });
 
-  it('applies the staff choice only while delegated and hands training back on an owner choice', () => {
+  it('applies the staff choice only while delegated and refuses an owner choice until level 1', () => {
     const w = rested();
     for (const player of w.players) player.fatigue = 40;
     expect(activeTrainingFocus(w)).toBe('recovery');
     settled(w);
     expect(activePlayers(w).every((player) => player.fatigue === 24)).toBe(true);
     expect(activePlayers(w).every((player) => player.developed === undefined)).toBe(true);
+    expect(() => operate(w, { type: 'training', focus: 'balanced' })).toThrow('개입 1단계');
+    expect(delegated(w, 'training')).toBe(true);
+    operate(w, { type: 'intervention', level: 1 });
     operate(w, { type: 'training', focus: 'balanced' });
-    expect(w.delegation?.training).toBe(false);
     expect(activeTrainingFocus(w)).toBe('balanced');
-    operate(w, { type: 'delegate', key: 'training', value: true });
+    operate(w, { type: 'intervention', level: 4 });
     expect(activeTrainingFocus(w)).toBe(autoTrainingFocus(w));
   });
 
@@ -507,7 +510,7 @@ describe('coach hiring by criteria (STAFF-15)', () => {
       until: w.year,
     };
     w.staff = w.staff!.map((member) => (member.role === 'attack' ? veteran : member));
-    w.delegation = { ...w.delegation, 'coach:attack': true };
+    w.intervention = 4;
     w.hiring = { coaches: { attack: criteria(set) } };
     return { w, veteran };
   }
@@ -519,8 +522,17 @@ describe('coach hiring by criteria (STAFF-15)', () => {
       .filter((offer) => offer.ability >= 55)
       .sort(byWage)[0];
     expect(cheapest).toBeDefined();
+    // Level 4 hands every department over; the others are run by volunteers here.
+    w.hiring = {
+      coaches: Object.fromEntries(
+        STAFF_ROLES.filter((role) => role !== 'attack').map((role) => [
+          role,
+          criteria({ volunteer: true }),
+        ]),
+      ),
+    };
     const cash = BigInt(w.cash);
-    operate(w, { type: 'delegate', key: 'coach:attack', value: true });
+    operate(w, { type: 'intervention', level: 4 });
     expect(coachOf(w, 'attack')).toMatchObject({ id: cheapest.id, until: w.year + 2 });
     expect(coachOf(w, 'attack')!.term).toBeUndefined();
     expect(BigInt(w.cash)).toBe(cash - BigInt(cheapest.fee));
@@ -530,6 +542,7 @@ describe('coach hiring by criteria (STAFF-15)', () => {
     expect(coachOf(w, 'defense')!.wage).toBe('0');
 
     // Criteria set while the owner runs a department change nothing until it is handed over.
+    operate(w, { type: 'intervention', level: 2 });
     const ablest = [...staffCandidates(w, 'defense')].sort((a, b) => b.ability - a.ability)[0];
     operate(w, {
       type: 'hiring',
@@ -537,7 +550,7 @@ describe('coach hiring by criteria (STAFF-15)', () => {
       criteria: criteria({ minAbility: 0, priority: 'ability', term: 4 }),
     });
     expect(coachOf(w, 'defense')!.wage).toBe('0');
-    operate(w, { type: 'delegate', key: 'coach:defense', value: true });
+    operate(w, { type: 'intervention', level: 4 });
     expect(coachOf(w, 'defense')).toMatchObject({ id: ablest.id, until: w.year + 4 });
 
     // A trait and a wage cap narrow the candidates; ties keep the lower candidate.
@@ -571,7 +584,7 @@ describe('coach hiring by criteria (STAFF-15)', () => {
   it('with no match a volunteer holds the post and the staff report it once a season', () => {
     const w = world('criteria-none');
     operate(w, { type: 'hiring', role: 'attack', criteria: criteria({ minAbility: 99 }) });
-    operate(w, { type: 'delegate', key: 'coach:attack', value: true });
+    operate(w, { type: 'intervention', level: 4 });
     expect(coachOf(w, 'attack')).toMatchObject({ wage: '0', ability: 50 });
     const reports = () =>
       (w.inbox || []).filter((item) => item.ref?.startsWith('coach-search:attack:'));
@@ -600,7 +613,7 @@ describe('coach hiring by criteria (STAFF-15)', () => {
     const broke = world('criteria-broke');
     broke.cash = '0';
     operate(broke, { type: 'hiring', role: 'fitness', criteria: criteria({ minAbility: 0 }) });
-    operate(broke, { type: 'delegate', key: 'coach:fitness', value: true });
+    operate(broke, { type: 'intervention', level: 4 });
     expect(coachOf(broke, 'fitness')!.wage).toBe('0');
     expect(broke.inbox!.at(-1)!.detail).toMatch(/^자금 여력에 맞는 후보가 없어요 · /);
   });
@@ -671,7 +684,7 @@ describe('coach hiring by criteria (STAFF-15)', () => {
   it('자원봉사로 운영 keeps a volunteer', () => {
     const w = world('criteria-volunteer');
     operate(w, { type: 'hiring', role: 'scout', criteria: criteria({ volunteer: true }) });
-    operate(w, { type: 'delegate', key: 'coach:scout', value: true });
+    operate(w, { type: 'intervention', level: 4 });
     const volunteer = coachOf(w, 'scout')!;
     expect(volunteer.wage).toBe('0');
     // Nothing to report: the owner asked for a volunteer.
@@ -691,7 +704,7 @@ describe('coach hiring by criteria (STAFF-15)', () => {
 
   it("new criteria fill a volunteer post at once while a contracted coach waits for his contract's end", () => {
     const w = world('criteria-change');
-    w.delegation = { ...w.delegation, 'coach:attack': true, 'coach:defense': true };
+    w.intervention = 4;
     w.hiring = {
       coaches: { attack: criteria({ minAbility: 99 }), defense: criteria({ minAbility: 99 }) },
     };
@@ -722,16 +735,15 @@ describe('coach hiring by criteria (STAFF-15)', () => {
     );
   });
 
-  it('releasing a coach turns off only that department', () => {
+  it('releasing a coach leaves delegation to the level, so the staff refill the post', () => {
     const w = world('criteria-release');
-    operate(w, { type: 'delegate', key: 'coach:attack', value: true });
-    operate(w, { type: 'delegate', key: 'coach:fitness', value: true });
+    operate(w, { type: 'intervention', level: 4 });
     const fitness = coachOf(w, 'fitness')!;
     operate(w, { type: 'release-staff', role: 'attack' });
-    expect(w.delegation).toMatchObject({ 'coach:attack': false, 'coach:fitness': true });
-    // The staff do not refill the post the owner emptied; the other department is as it was.
+    expect(w.intervention).toBe(4);
+    // The staff fill the post the owner emptied by its criteria; the other department is as it was.
     dailyStaff(w);
-    expect(coachOf(w, 'attack')).toBeUndefined();
+    expect(coachOf(w, 'attack')).toBeDefined();
     expect(coachOf(w, 'fitness')).toEqual(fitness);
   });
 
@@ -955,7 +967,7 @@ describe('contract terms (STAFF-11, STAFF-14)', () => {
         attack: { ...COACH_CRITERIA_DEFAULT, minAbility: 0, priority: 'ability', term: 3 },
       },
     };
-    operate(w, { type: 'delegate', key: 'coach:attack', value: true });
+    operate(w, { type: 'intervention', level: 4 });
     const hired = coachOf(w, 'attack');
     expect(hired.until).toBe(w.year + 3);
     expect(hired.term).toBeUndefined();
@@ -992,7 +1004,7 @@ describe('delegated manager appointment (STAFF-7, STAFF-18)', () => {
   /** Four free agents of known schools and levels, with the manager post delegated. */
   function seeded(seed: string) {
     const w = world(seed);
-    w.delegation = { ...w.delegation, manager: true };
+    w.intervention = 4;
     const market = structuredClone(marketOf(w));
     const levels: [ManagerStyle, number][] = [
       ['developer', 70],
@@ -1050,7 +1062,7 @@ describe('delegated manager appointment (STAFF-7, STAFF-18)', () => {
     validateWorld(w);
     // Without delegation the departure stops the clock for the owner.
     const owner = seeded('owner-resign').w;
-    owner.delegation = { ...owner.delegation, manager: false };
+    owner.intervention = 2;
     resignOverDemand(owner);
     expect(owner.manager.interim).toBe(true);
     expect(owner.critical).toBe(MANAGER_GONE);

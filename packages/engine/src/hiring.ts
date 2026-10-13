@@ -2,7 +2,6 @@ import type {
   CoachCriteria,
   CoachDelegationKey,
   ContractTerm,
-  DelegationKey,
   ManagerCriteria,
   StaffRole,
   StaffTrait,
@@ -12,6 +11,7 @@ import type {
   World,
 } from '../../contracts/src/types';
 import { addEvent } from './world';
+import { delegated } from './intervention';
 import {
   CONTRACT_TERMS,
   MANAGER_TRAIT_INFO,
@@ -64,32 +64,12 @@ export const COACH_PRIORITY_INFO: Record<CoachCriteria['priority'], string> = {
   wage: '연봉 낮은 순',
 };
 
-/** One switch per coaching department, in display order (→STAFF-13). */
-export const COACH_KEYS: readonly CoachDelegationKey[] = [
-  'coach:assistant',
-  'coach:attack',
-  'coach:defense',
-  'coach:goalkeeping',
-  'coach:fitness',
-  'coach:youth',
-  'coach:scout',
-];
-/** Every staff switch (→STAFF-13). */
-export const DELEGATION_KEYS: readonly DelegationKey[] = [
-  'training',
-  'academy',
-  'contracts',
-  'transfers',
-  'business',
-  'manager',
-  ...COACH_KEYS,
-];
 export function coachKey(role: StaffRole): CoachDelegationKey {
   return `coach:${role}`;
 }
 /** Whether the staff hire and renew this department's coaches (→STAFF-15). */
-export function coachDelegated(w: Pick<World, 'delegation'>, role: StaffRole) {
-  return !!w.delegation?.[coachKey(role)];
+export function coachDelegated(w: Pick<World, 'intervention'>, role: StaffRole) {
+  return delegated(w, coachKey(role));
 }
 
 export function managerCriteriaOf(w: Pick<World, 'hiring'>): ManagerCriteria {

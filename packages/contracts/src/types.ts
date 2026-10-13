@@ -24,16 +24,20 @@ export type ManagerStyle =
   | 'developer'
   | 'firefighter'
   | 'headcoach';
-/** One coaching department's hiring and renewal (→STAFF-15), a switch of its own. */
+/** One coaching department's hiring and renewal (→STAFF-15). */
 export type CoachDelegationKey = `coach:${StaffRole}`;
 /**
- * The decisions the staff can take for the owner, each by its own switch (→STAFF-13):
- * `contracts` player contract talks (→CLUB-26), `manager` the manager post (→STAFF-18) and one
- * `coach:<department>` per coaching department. Rules before 1.16 kept one `staff` key for every
- * department; a load turns it into the seven (→SAVE-10).
+ * A decision the staff can take for the owner (→STAFF-13): `contracts` player contract talks
+ * (→CLUB-26), `manager` the manager post (→STAFF-18) and one `coach:<department>` per coaching
+ * department. Which of them the staff take is decided by the intervention level alone (→WEB-45).
  */
 export type DelegationKey =
   'training' | 'academy' | 'transfers' | 'business' | 'contracts' | 'manager' | CoachDelegationKey;
+/**
+ * How much the owner decides himself (→WEB-45): 1 every decision, 2 important decisions only,
+ * 3 transfers only, 4 leave it to the staff.
+ */
+export type InterventionLevel = 1 | 2 | 3 | 4;
 /** A wage cap names the going wage of a manager or coach of this OVR, in today's money. */
 export type WageCapOvr = 50 | 55 | 60 | 65 | 70 | 75 | 80 | 85 | 90;
 /**
@@ -678,8 +682,11 @@ export interface World {
   /** Coaching staff below the manager. Absent in older saves, whose effects stay neutral. */
   staff?: Staff[];
   academy?: Academy;
-  /** Decisions the staff makes on the owner's behalf; absent keys mean the owner decides. */
-  delegation?: Partial<Record<DelegationKey, boolean>>;
+  /**
+   * The intervention level (→WEB-45), which alone decides what the staff take on the owner's
+   * behalf; absent means 1, the owner decides everything.
+   */
+  intervention?: InterventionLevel;
   bids?: TransferBid[];
   inbox?: InboxItem[];
   /** Squad morale 0–100; absent in older saves, which keep pre-morale strength. */
@@ -774,7 +781,7 @@ export type Command =
   | { type: 'renew-staff'; role: StaffRole; term?: ContractTerm }
   | { type: 'promote-youth'; id: string }
   | { type: 'release-youth'; id: string }
-  | { type: 'delegate'; key: DelegationKey; value: boolean }
+  | { type: 'intervention'; level: InterventionLevel }
   | { type: 'bid'; candidate: number; fee: string; loan?: boolean }
   | { type: 'respond-bid'; id: string; accept: boolean }
   | { type: 'read-inbox'; id?: string }

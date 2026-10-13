@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type {
   CoachCriteria,
+  InterventionLevel,
   ManagerCriteria,
   StaffRole,
   StaffTrait,
@@ -120,56 +121,59 @@ describe('hiring criteria and the talk rule (→STAFF-15, STAFF-18, CLUB-26)', (
     expect(() =>
       operate(w, { type: 'talk-rule', rule: { maxPay: 1.1, minOvr: 0, maxAge: 27 } }),
     ).toThrow('계약 협상 기준');
-    expect(() => operate(w, { type: 'delegate', key: 'staff' as never, value: true })).toThrow(
-      '맡길 결정',
-    );
+    expect(() => operate(w, { type: 'intervention', level: 5 as never })).toThrow('개입 수준');
     // A refused command changes nothing but the world's revision.
     expect(canonical({ ...w, revision: 0 })).toBe(
       canonical({ ...JSON.parse(before), revision: 0 }),
     );
   });
 
-  it('coach switches are per department', () => {
+  it('every coaching department follows the intervention level together', () => {
     expect(COACH_KEYS).toEqual(STAFF_ROLES.map(coachKey));
     const w = world('hiring-departments');
-    // New clubs decide every coaching department themselves (→WEB-45 level 2).
-    expect(STAFF_ROLES.some((role) => coachDelegated(w, role))).toBe(false);
-    operate(w, { type: 'delegate', key: 'coach:scout', value: true });
-    expect(STAFF_ROLES.filter((role) => coachDelegated(w, role))).toEqual(['scout']);
+    // New clubs decide every coaching department themselves (→WEB-45 level 2); only level 4
+    // hands them to the staff, all at once.
+    for (const level of [2, 1, 3] as const) {
+      operate(w, { type: 'intervention', level });
+      expect(STAFF_ROLES.some((role) => coachDelegated(w, role))).toBe(false);
+    }
+    operate(w, { type: 'intervention', level: 4 });
+    expect(STAFF_ROLES.every((role) => coachDelegated(w, role))).toBe(true);
 
-    // Only the delegated department is refilled at once when its post falls vacant.
+    // Releasing a coach changes no delegation: the staff refill every vacancy at once.
     operate(w, { type: 'release-staff', role: 'attack' });
+    expect(w.intervention).toBe(4);
     w.staff = w.staff!.filter((member) => member.role !== 'scout');
     dailyStaff(w);
     expect(w.staff!.some((member) => member.role === 'scout')).toBe(true);
-    expect(w.staff!.some((member) => member.role === 'attack')).toBe(false);
+    expect(w.staff!.some((member) => member.role === 'attack')).toBe(true);
 
-    // Releasing a coach takes back only his department's switch.
-    operate(w, { type: 'delegate', key: 'coach:fitness', value: true });
-    operate(w, { type: 'release-staff', role: 'scout' });
-    expect(w.delegation?.['coach:scout']).toBe(false);
-    expect(w.delegation?.['coach:fitness']).toBe(true);
-
-    // The spring renewal reminder lists only the departments the owner runs.
-    const spring = world('hiring-spring');
-    spring.cash = '999999999999';
-    for (const role of ['attack', 'fitness'] as const)
-      operate(spring, { type: 'hire-staff', role, candidate: 1, term: 1 });
-    operate(spring, { type: 'delegate', key: 'coach:fitness', value: true });
-    spring.calendar = { day: renewalDay(spring.year) };
-    dailyStaff(spring);
-    const reminder = spring.inbox!.findLast((item) => item.kind === 'staff-renewal')!;
-    expect(reminder.title).toContain('1명');
+    // The owner is reminded of expiring coaches and loses those he does not renew; the staff
+    // renew or replace them without a reminder.
+    const spring = (level: InterventionLevel) => {
+      const s = world('hiring-spring');
+      s.cash = '999999999999';
+      for (const role of ['attack', 'fitness'] as const)
+        operate(s, { type: 'hire-staff', role, candidate: 1, term: 1 });
+      operate(s, { type: 'intervention', level });
+      s.calendar = { day: renewalDay(s.year) };
+      dailyStaff(s);
+      return s;
+    };
+    const owner = spring(2),
+      staffRun = spring(4);
+    const reminder = owner.inbox!.findLast((item) => item.kind === 'staff-renewal')!;
+    expect(reminder.title).toContain('2명');
     expect(reminder.detail).toContain('공격 코치');
-    expect(reminder.detail).not.toContain('피지컬 코치');
-
-    // At the close the staff renew or replace only the delegated department's coach; the owner's
-    // expiring coach leaves with a vacancy item.
-    spring.year++;
-    seasonStaff(spring);
-    expect(spring.staff!.some((member) => member.role === 'fitness')).toBe(true);
-    expect(spring.staff!.some((member) => member.role === 'attack')).toBe(false);
-    expect(spring.inbox!.at(-2)).toMatchObject({ kind: 'staff-renewal' });
-    expect(spring.inbox!.at(-2)!.title).toContain('공격 코치');
+    expect(reminder.detail).toContain('피지컬 코치');
+    expect(staffRun.inbox!.some((item) => item.detail?.includes('공격 코치'))).toBe(false);
+    for (const s of [owner, staffRun]) {
+      s.year++;
+      seasonStaff(s);
+    }
+    expect(owner.staff!.some((member) => member.role === 'attack')).toBe(false);
+    expect(owner.staff!.some((member) => member.role === 'fitness')).toBe(false);
+    expect(staffRun.staff!.some((member) => member.role === 'attack')).toBe(true);
+    expect(staffRun.staff!.some((member) => member.role === 'fitness')).toBe(true);
   });
 });

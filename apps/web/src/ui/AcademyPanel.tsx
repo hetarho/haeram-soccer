@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import type { DelegationKey, World } from '../../../../packages/contracts/src/types';
+import type { World } from '../../../../packages/contracts/src/types';
 import {
   academySummary,
   PROMOTION_AGE,
@@ -10,48 +9,13 @@ import { currentDay, seasonDayLabel, seasonDayOf } from '../../../../packages/en
 import { POLICY_DEFAULTS, POLICY_INFO, policyOf } from '../../../../packages/engine/src/policy';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
+import { DecisionOwner } from './DecisionOwner';
 import { OvrBadge } from './OvrBadge';
 import { openBusiness } from './state';
 import s from './TrainingView.module.css';
 
 function useActing() {
   return useGameState((state) => !!state.pendingActions || state.readonly || !!state.error);
-}
-
-/**
- * A decision's staff switch in its home (→STAFF-13). It shows the owner's choice at once; the
- * saved world confirms it a moment later.
- */
-export function StaffSwitch({
-  w,
-  client,
-  name,
-  label,
-}: {
-  w: World;
-  client: GameClient;
-  name: DelegationKey;
-  label: string;
-}) {
-  const acting = useActing();
-  const [draft, setDraft] = useState<boolean>();
-  return (
-    <label>
-      <input
-        type="checkbox"
-        checked={draft ?? !!w.delegation?.[name]}
-        disabled={acting && draft === undefined}
-        onChange={(event) => {
-          const value = event.target.checked;
-          setDraft(value);
-          void client
-            .command({ type: 'delegate', key: name, value })
-            .finally(() => setDraft(undefined));
-        }}
-      />
-      {label}
-    </label>
-  );
 }
 
 function Meter({ value }: { value: number }) {
@@ -136,12 +100,13 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
           </span>
         </header>
         <div className={s.delegate}>
-          <StaffSwitch w={w} client={client} name="academy" label="유스 디렉터에게 맡기기" />
-          <p>
-            {summary.delegated
-              ? '시즌이 끝날 때 유스 디렉터가 이 기준으로 승격과 방출을 정하고 소식함에 보고해요.'
-              : '시즌이 끝날 때 유스 디렉터가 이 기준으로 승격 추천과 방출 검토를 보고하고, 결정은 직접 해요.'}
-          </p>
+          <DecisionOwner
+            w={w}
+            decision="academy"
+            plain
+            auto="시즌이 끝날 때 유스 디렉터가 이 기준으로 승격과 방출을 정하고 소식함에 보고해요."
+            owner="시즌이 끝날 때 유스 디렉터가 이 기준으로 승격 추천과 방출 검토를 보고하고, 결정은 직접 해요."
+          />
           <ul className={s.rule}>
             <li>
               <b>승격</b>

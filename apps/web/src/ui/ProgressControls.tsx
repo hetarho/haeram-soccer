@@ -15,29 +15,21 @@ import {
   type KeyboardEvent,
   type RefObject,
 } from 'react';
-import type { World } from '../../../../packages/contracts/src/types';
+import type { InterventionLevel } from '../../../../packages/contracts/src/types';
+import { interventionOf } from '../../../../packages/engine/src/intervention';
 import { transferWindow } from '../../../../packages/engine/src/transfers';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import {
   AWAY_LIMITS,
-  STOP_LABELS,
   useProgression,
   type AwayLimit,
   type Pace,
   type ProgressionController,
 } from '../runtime/progression';
 import { Dialog } from './Dialog';
-import {
-  ALL_KINDS,
-  applyInterventionLevel,
-  delegatedDecisions,
-  INTERVENTION_LEVELS,
-  interventionLevel,
-  levelName,
-} from './intervention';
+import { applyInterventionLevel, INTERVENTION_LEVELS, levelName } from './intervention';
 import { play } from './motion';
-import { openHome, useInterventionDialog } from './state';
 import s from './App.module.css';
 import p from './ProgressControls.module.css';
 
@@ -65,16 +57,16 @@ export const ProgressControls = memo(function ProgressControls({
   className?: string;
 }) {
   const state = useGameState((state) => state);
-  const { running, pace, watching, reason, stopOn } = useProgression(controller, (state) => state);
+  const { running, pace, watching, reason } = useProgression(controller, (state) => state);
   const [levelsOpen, setLevelsOpen] = useState(false);
-  // The stops change at once but delegation waits for the worker; until then the chosen level
-  // stands in for the brief "custom" mix so the label and the check never flicker.
-  const [chosen, setChosen] = useState<number>();
+  // The level waits for the worker; until then the chosen one stands in so the label never
+  // flickers back.
+  const [chosen, setChosen] = useState<InterventionLevel>();
   const levelTrigger = useRef<HTMLButtonElement>(null);
   const popoverId = useId();
   const acting = !!state.pendingActions || !!state.readonly;
-  const matched = interventionLevel(stopOn, state.view!.world);
-  const level = matched < 0 && chosen !== undefined && state.pendingActions ? chosen : matched;
+  const level =
+    chosen !== undefined && state.pendingActions ? chosen : interventionOf(state.view!.world);
   useEffect(() => {
     if (!state.pendingActions) setChosen(undefined);
   }, [state.pendingActions]);
@@ -153,7 +145,6 @@ export const ProgressControls = memo(function ProgressControls({
         {buttons}
       </section>
     );
-  // A stop or switch changed in its home leaves the mix of no level: 맞춤 (→WEB-45).
   const name = levelName(level);
   const closeLevels = (focusTrigger: boolean) => {
     setLevelsOpen(false);
@@ -196,7 +187,7 @@ export const ProgressControls = memo(function ProgressControls({
       >
         <span className={p.badge} aria-hidden="true">
           <LevelMeter level={level} />
-          <b>개입 {level >= 0 ? level + 1 : '·'}</b>
+          <b>개입 {level}</b>
         </span>
         <span className={p.triggerName} aria-hidden="true">
           {name}
@@ -209,21 +200,14 @@ export const ProgressControls = memo(function ProgressControls({
         <InterventionPopover
           id={popoverId}
           anchor={levelTrigger}
-          w={w}
           level={level}
           acting={acting}
-          onChoose={(index) => {
+          onChoose={(next) => {
             if (acting) return;
-            setChosen(index);
-            applyInterventionLevel(client, controller, w, index);
+            setChosen(next);
+            void applyInterventionLevel(client, next);
             // The trigger shows the new level at once, so the choice itself is the confirmation.
             closeLevels(true);
-          }}
-          onDetails={() => {
-            // The dialog hands focus back to the trigger, not to the vanished popover.
-            levelTrigger.current?.focus({ preventScroll: true });
-            setLevelsOpen(false);
-            useInterventionDialog.getState().show();
           }}
           onClose={closeLevels}
         />
@@ -232,9 +216,9 @@ export const ProgressControls = memo(function ProgressControls({
   );
 });
 
-/** Four bars: the more lit, the more the owner decides personally; none for a custom mix. */
-function LevelMeter({ level }: { level: number }) {
-  const lit = level >= 0 ? INTERVENTION_LEVELS.length - level : 0;
+/** Four bars: the more lit, the more the owner decides personally. */
+function LevelMeter({ level }: { level: InterventionLevel }) {
+  const lit = INTERVENTION_LEVELS.length + 1 - level;
   return (
     <span className={p.meter}>
       {INTERVENTION_LEVELS.map((_, bar) => (
@@ -253,26 +237,22 @@ function LevelMeter({ level }: { level: number }) {
 function InterventionPopover({
   id,
   anchor,
-  w,
   level,
   acting,
   onChoose,
-  onDetails,
   onClose,
 }: {
   id: string;
   anchor: RefObject<HTMLButtonElement | null>;
-  w: World;
-  level: number;
+  level: InterventionLevel;
   acting: boolean;
-  onChoose: (index: number) => void;
-  onDetails: () => void;
+  onChoose: (level: InterventionLevel) => void;
   onClose: (focusTrigger: boolean) => void;
 }) {
   const panel = useRef<HTMLDivElement>(null);
   const close = useRef(onClose);
   close.current = onClose;
-  const [focused, setFocused] = useState(Math.max(0, level));
+  const [focused, setFocused] = useState(level - 1);
   useLayoutEffect(() => {
     const popup = panel.current!;
     const layered = typeof popup.showPopover === 'function';
@@ -376,16 +356,16 @@ function InterventionPopover({
               type="button"
               role="radio"
               className={p.choice}
-              aria-checked={level === index}
+              aria-checked={level === choice.level}
               aria-disabled={acting || undefined}
               tabIndex={index === focused ? 0 : -1}
               onFocus={() => setFocused(index)}
-              onClick={() => onChoose(index)}
+              onClick={() => onChoose(choice.level)}
             >
-              <LevelMeter level={index} />
+              <LevelMeter level={choice.level} />
               <span className={p.choiceText}>
                 <b>
-                  {index + 1}. {choice.name}
+                  {choice.level}. {choice.name}
                 </b>
                 <small>{choice.short}</small>
               </span>
@@ -393,52 +373,15 @@ function InterventionPopover({
             </button>
           ))}
         </div>
-        {level < 0 && <p className={p.custom}>{CUSTOM_NOTE}</p>}
-        <DelegatedDecisions w={w} onOpen={() => onClose(false)} />
-        <button type="button" className={p.details} onClick={onDetails}>
-          세부 설정…
-        </button>
       </div>
     </div>
   );
 }
 
-/** Why no level is checked: a stop or switch was changed where it lives (→WEB-45). */
-const CUSTOM_NOTE = '지금은 맞춤이에요. 멈춤이나 자동 결정을 따로 바꿔 어느 단계와도 같지 않아요.';
-
 /**
- * The decisions the staff take now (→WEB-45), each opening its home (→WEB-71); the popover or
- * dialog closes first.
+ * How much the owner steps in (→WEB-45): one level sets the stops and what the staff decide, with
+ * background play beside it (→WEB-64).
  */
-function DelegatedDecisions({ w, onOpen }: { w: World; onOpen: () => void }) {
-  const decisions = delegatedDecisions(w);
-  return (
-    <section className={s.delegatedDecisions} aria-label="스태프가 맡는 결정">
-      <b>스태프가 맡는 결정</b>
-      {decisions.length ? (
-        <ul>
-          {decisions.map((decision) => (
-            <li key={decision.key}>
-              <button
-                type="button"
-                onClick={() => {
-                  onOpen();
-                  openHome(decision.home);
-                }}
-              >
-                {decision.label}
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <small>지금은 모든 결정을 직접 해요.</small>
-      )}
-    </section>
-  );
-}
-
-/** How much the owner steps in: one choice sets stops and staff delegation together. */
 export function InterventionSettings({
   client,
   controller,
@@ -448,60 +391,42 @@ export function InterventionSettings({
   controller: ProgressionController;
   onClose: () => void;
 }) {
-  const stopOn = useProgression(controller, (state) => state.stopOn);
   const background = useProgression(controller, (state) => state.background);
   const w = useGameState((state) => state.view?.world);
   const acting = useGameState((state) => !!state.pendingActions || state.readonly);
   if (!w) return null;
-  const current = interventionLevel(stopOn, w);
-  const choose = (index: number) => applyInterventionLevel(client, controller, w, index);
+  const current = interventionOf(w);
   return (
     <Dialog label="개입 수준" onClose={onClose}>
       <p className={s.muted}>
         구단주가 얼마나 직접 결정할지 골라요. 아래로 갈수록 감독과 스태프가 더 많이 맡아요.
       </p>
       <div className={s.levels} role="radiogroup" aria-label="개입 수준">
-        {INTERVENTION_LEVELS.map((level, index) => (
+        {INTERVENTION_LEVELS.map(({ level, name, summary }) => (
           <button
-            key={level.name}
+            key={name}
             role="radio"
-            aria-checked={current === index}
-            className={current === index ? s.levelOn : undefined}
+            aria-checked={current === level}
+            className={current === level ? s.levelOn : undefined}
             disabled={acting}
-            onClick={() => choose(index)}
+            onClick={() => void applyInterventionLevel(client, level)}
           >
             <span className={s.levelMeter} aria-hidden="true">
               {INTERVENTION_LEVELS.map((_, dot) => (
-                <i
-                  key={dot}
-                  className={dot <= INTERVENTION_LEVELS.length - 1 - index ? s.dotOn : ''}
-                />
+                <i key={dot} className={dot <= INTERVENTION_LEVELS.length - level ? s.dotOn : ''} />
               ))}
             </span>
             <b>
-              {index + 1}. {level.name}
+              {level}. {name}
             </b>
-            <small>{level.summary}</small>
+            <small>{summary}</small>
           </button>
         ))}
       </div>
-      {current < 0 && <p className={s.muted}>{CUSTOM_NOTE}</p>}
-      <DelegatedDecisions w={w} onOpen={onClose} />
-      <details className={s.detailStops}>
-        <summary>이벤트별 세부 설정</summary>
-        <div className={s.toggles}>
-          {ALL_KINDS.map((kind) => (
-            <label key={kind}>
-              <input
-                type="checkbox"
-                checked={stopOn[kind]}
-                onChange={(event) => controller.setStopOn(kind, event.target.checked)}
-              />
-              {STOP_LABELS[kind]}에서 멈춤
-            </label>
-          ))}
-        </div>
-      </details>
+      <p className={s.muted}>
+        각 화면의 기준(계약 협상·코치 선임·감독 선임 등)은 언제든 바꿀 수 있고, 개입 수준이 그
+        결정을 스태프에게 맡길 때만 쓰여요.
+      </p>
       <section className={p.background} aria-label="백그라운드 진행">
         <h3>백그라운드 진행</h3>
         <div className={s.toggles}>
@@ -532,9 +457,9 @@ export function InterventionSettings({
         </div>
         <p className={s.muted}>
           브라우저가 절전 모드나 휴대폰 백그라운드에서 탭을 재우면 그동안은 멈춰요. 다시 열면 비운
-          시간만큼 위 한도까지 한꺼번에 진행하고, 무슨 일이 있었는지 요약해 드려요. 멈춤 설정은
-          그대로 지켜요. 방치형으로 두려면 4단계 운영진에 모두 맡기기를 고르세요. 경기 전날에도
-          멈추지 않아요.
+          시간만큼 위 한도까지 한꺼번에 진행하고, 무슨 일이 있었는지 요약해 드려요. 개입 수준의
+          멈춤은 그대로 지켜요. 방치형으로 두려면 4단계 운영진에 모두 맡기기를 고르세요. 경기
+          전날에도 멈추지 않아요.
         </p>
       </section>
       <div className={s.actions}>

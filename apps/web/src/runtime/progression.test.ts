@@ -3,7 +3,7 @@ import { createWorld } from '../../../../packages/engine/src/index';
 import type { MatchPlayback } from '../../../../packages/contracts/src/types';
 import type { GameClient } from './client';
 import { gameStore, initialClientState } from './store';
-import { ProgressionController, type StopOn } from './progression';
+import { LEVEL_STOPS, ProgressionController, stopsOf, STOP_KINDS } from './progression';
 import type { View } from './protocol';
 
 const w = createWorld({
@@ -20,7 +20,7 @@ function playback(id: string): MatchPlayback {
     squads: [[], []],
   };
 }
-function setup(current?: MatchPlayback) {
+function setup(current?: MatchPlayback, world = w) {
   gameStore.publish({
     ...initialClientState,
     busy: false,
@@ -29,7 +29,7 @@ function setup(current?: MatchPlayback) {
     readonly: false,
     savedRevision: w.revision,
     playback: current,
-    view: { world: w } as View,
+    view: { world } as View,
   });
   const command = vi.fn(async () => ({ ok: true, requestId: 'test', view: { world: w } as View }));
   const saveSoon = vi.fn();
@@ -243,8 +243,50 @@ describe('the global progression clock', () => {
     controller.start();
     await vi.advanceTimersByTimeAsync(1000);
     expect(controller.store.getState().running).toBe(true);
-    controller.setStopOn('window-open', false);
-    expect(controller.store.getState().stopOn['window-open']).toBe(false);
+  });
+  it('stops only where the intervention level does, with no stop setting of its own (→WEB-45)', async () => {
+    expect(STOP_KINDS.filter((kind) => stopsOf({ intervention: 1 })[kind])).toEqual(STOP_KINDS);
+    expect(STOP_KINDS.filter((kind) => stopsOf(w)[kind])).toEqual(LEVEL_STOPS[2]);
+    expect(STOP_KINDS.filter((kind) => stopsOf({ intervention: 4 })[kind])).toEqual([
+      'finance',
+      'sponsor-ending',
+    ]);
+    // An event the level does not stop for lets the clock run on.
+    const quiet = { ...structuredClone(w), intervention: 4 as const };
+    quiet.inbox = [
+      {
+        id: 'window',
+        year: w.year,
+        day: 1,
+        kind: 'window-open',
+        title: '여름 이적시장이 열렸어요',
+        detail: '9월 1일 마감',
+        attention: true,
+      },
+    ];
+    // A per-browser stop setting kept before the levels is cleared on start.
+    const stored = new Map([['haeram-soccor:stop-on', '{"match":false}']]);
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => stored.get(key) ?? null,
+      setItem: (key: string, value: string) => void stored.set(key, value),
+      removeItem: (key: string) => void stored.delete(key),
+    });
+    const s = setup(undefined, { ...quiet, inbox: [] });
+    controller = s.controller;
+    expect(stored.has('haeram-soccor:stop-on')).toBe(false);
+    s.command.mockImplementation(async () => ({
+      ok: true,
+      requestId: 'test',
+      view: { world: quiet } as View,
+    }));
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(controller.store.getState().running).toBe(true);
+    expect(s.command).toHaveBeenLastCalledWith(
+      expect.objectContaining({ stop: ['finance', 'sponsor-ending'] }),
+      { background: true, automatic: true },
+    );
+    vi.unstubAllGlobals();
   });
   it('stops on the eve of an own match and plays it through on resume', async () => {
     const eve = structuredClone(w);
@@ -263,25 +305,9 @@ describe('the global progression clock', () => {
     expect(s.command).toHaveBeenCalledTimes(1);
     expect(controller.store.getState().matchEve).toBeUndefined();
   });
-  it('catches up the days a slow step held back, lands on a match eve and asks the host to stop only for enabled events', async () => {
+  it("catches up the days a slow step held back, lands on a match eve and asks the host to stop only for the level's events", async () => {
     const s = setup();
     controller = s.controller;
-    controller.setStopOnAll({
-      match: true,
-      'window-open': false,
-      'window-close': false,
-      'bid-response': true,
-      'incoming-bid': false,
-      'youth-intake': false,
-      'staff-report': false,
-      'staff-renewal': false,
-      cup: false,
-      finance: true,
-      'contract-talk': false,
-      unhappy: false,
-      'transfer-request': false,
-      'sponsor-ending': false,
-    });
     // Each step itself takes 0.45 s, so at x10 the days pile up behind it (at most five).
     s.command.mockImplementation(
       () =>
@@ -296,7 +322,7 @@ describe('the global progression clock', () => {
     controller.start();
     await vi.advanceTimersByTimeAsync(100);
     expect(s.command).toHaveBeenLastCalledWith(
-      { type: 'advance-days', days: 1, stop: ['match', 'bid-response', 'finance'] },
+      { type: 'advance-days', days: 1, stop: [...LEVEL_STOPS[2]] },
       { background: true, automatic: true },
     );
     await vi.advanceTimersByTimeAsync(500);
@@ -343,27 +369,15 @@ describe('the global progression clock', () => {
 });
 
 describe('background play (WEB-64)', () => {
-  const none = Object.fromEntries(
-    [
-      'match',
-      'window-open',
-      'window-close',
-      'bid-response',
-      'incoming-bid',
-      'youth-intake',
-      'staff-report',
-      'staff-renewal',
-      'cup',
-      'finance',
-    ].map((kind) => [kind, false]),
-  ) as StopOn;
+  /** Level 4 stops only for money, which these runs never meet. */
+  const quiet = { ...w, intervention: 4 as const };
   /** A host that really advances the calendar by the days asked. */
   function calendarHost(s: ReturnType<typeof setup>) {
     let day = 0;
     s.command.mockImplementation(async (...args: unknown[]) => {
       const cmd = args[0] as { days: number };
       day += cmd.days;
-      const next = { ...w, calendar: { day } };
+      const next = { ...quiet, calendar: { day } };
       gameStore.publish({ ...gameStore.getSnapshot(), view: { world: next } as View });
       return { ok: true, requestId: 'day', view: { world: next } as View };
     });
@@ -379,9 +393,8 @@ describe('background play (WEB-64)', () => {
   };
   it('plays every owed day while hidden even when the browser throttles its timer', async () => {
     vi.stubGlobal('localStorage', memory());
-    const s = setup();
+    const s = setup(undefined, quiet);
     controller = s.controller;
-    controller.setStopOnAll(none);
     const day = calendarHost(s);
     controller.setHidden(true);
     expect(controller.store.getState().running).toBe(false);
@@ -404,9 +417,8 @@ describe('background play (WEB-64)', () => {
 
   it('plays a slept page only up to the away limit and can pause hidden tabs instead', async () => {
     vi.stubGlobal('localStorage', memory());
-    const s = setup();
+    const s = setup(undefined, quiet);
     controller = s.controller;
-    controller.setStopOnAll(none);
     controller.setBackground({ away: 'month' });
     const day = calendarHost(s);
     controller.start();
@@ -434,9 +446,8 @@ describe('background play (WEB-64)', () => {
       'haeram-soccor:clock',
       JSON.stringify({ [w.id]: { running: true, pace: 'x2', at: Date.now() - 10_000 } }),
     );
-    const s = setup();
+    const s = setup(undefined, quiet);
     controller = s.controller;
-    controller.setStopOnAll(none);
     const day = calendarHost(s);
     controller.resumeAway();
     await vi.advanceTimersByTimeAsync(0);

@@ -1,6 +1,11 @@
 import { createStore } from 'zustand/vanilla';
 import { useStore } from 'zustand';
-import type { Command, InboxKind, World } from '../../../../packages/contracts/src/types';
+import type {
+  Command,
+  InboxKind,
+  InterventionLevel,
+  World,
+} from '../../../../packages/contracts/src/types';
 import {
   currentDay,
   dayCountedFrom,
@@ -9,6 +14,7 @@ import {
   nextOwnFixture,
   seasonDate,
 } from '../../../../packages/engine/src/calendar';
+import { interventionOf } from '../../../../packages/engine/src/intervention';
 import { currentLeagueRank } from '../../../../packages/engine/src/projection';
 import type { GameClient } from './client';
 import { gameStore } from './store';
@@ -76,8 +82,6 @@ export interface ProgressionState {
   pace: Pace;
   watching: boolean;
   reason: string;
-  /** Event kinds that stop automatic progression. */
-  stopOn: StopOn;
   /** Tomorrow's own fixture the clock stopped for, until the owner watches or plays through. */
   matchEve?: string;
   background: BackgroundSettings;
@@ -101,23 +105,33 @@ export const STOP_LABELS: Record<InboxKind, string> = {
   'sponsor-ending': '후원 계약 만료',
 };
 const WATCH_REASON = '관전 중에는 자동 진행을 잠시 멈춰요.';
-/** First-run stops match the "important decisions" intervention level. */
-const DEFAULT_STOP_ON: StopOn = {
-  match: true,
-  'window-open': true,
-  'window-close': false,
-  'bid-response': true,
-  'incoming-bid': true,
-  'youth-intake': true,
-  'staff-report': false,
-  'staff-renewal': true,
-  cup: false,
-  finance: true,
-  'contract-talk': false,
-  unhappy: false,
-  'transfer-request': false,
-  'sponsor-ending': true,
+/** Every event kind that can stop the clock. */
+export const STOP_KINDS = Object.keys(STOP_LABELS) as InboxKind[];
+/**
+ * Where the clock stops at each intervention level (→WEB-45): the clock's half of the level; the
+ * engine holds the half the staff decide.
+ */
+export const LEVEL_STOPS: Record<InterventionLevel, readonly InboxKind[]> = {
+  1: STOP_KINDS,
+  2: [
+    'match',
+    'window-open',
+    'bid-response',
+    'incoming-bid',
+    'youth-intake',
+    'staff-renewal',
+    'finance',
+    'sponsor-ending',
+  ],
+  3: ['window-open', 'bid-response', 'incoming-bid', 'staff-renewal', 'finance', 'sponsor-ending'],
+  4: ['finance', 'sponsor-ending'],
 };
+/** The kinds the world's intervention level stops for; nothing else sets them (→WEB-18). */
+export function stopsOf(w: Pick<World, 'intervention'>): StopOn {
+  const on = LEVEL_STOPS[interventionOf(w)];
+  return Object.fromEntries(STOP_KINDS.map((kind) => [kind, on.includes(kind)])) as StopOn;
+}
+/** Per-browser stops kept before the level decided them; removed once on start. */
 const STOP_KEY = 'haeram-soccor:stop-on';
 const BACKGROUND_KEY = 'haeram-soccor:background';
 /** Per world: whether the clock ran, its pace and when it last stepped, for a later return. */
@@ -147,29 +161,18 @@ function storedClocks(): Record<string, ClockRecord> {
     return {};
   }
 }
-function storedStopOn(): StopOn {
-  try {
-    const raw = JSON.parse(localStorage.getItem(STOP_KEY) || '{}');
-    return Object.fromEntries(
-      Object.entries(DEFAULT_STOP_ON).map(([kind, value]) => [
-        kind,
-        typeof raw[kind] === 'boolean' ? raw[kind] : value,
-      ]),
-    ) as StopOn;
-  } catch {
-    return { ...DEFAULT_STOP_ON };
-  }
-}
-/** Unread attention items the owner asked to stop for. */
-export function stoppingEvents(w: World, stopOn: StopOn) {
+/** Unread attention items the intervention level stops for. */
+export function stoppingEvents(w: World) {
+  const stopOn = stopsOf(w);
   return (w.inbox || []).filter((item) => item.attention && !item.read && stopOn[item.kind]);
 }
 /**
  * One tick of the clock. A multi-day catch-up step lands on a match eve instead of running
  * through the match day, and the host ends it early on the day an enabled event arrives.
  */
-function command(days: number, stopOn: StopOn, w: World): Command {
-  const until = daysUntilNextMatch(w);
+function command(days: number, w: World): Command {
+  const until = daysUntilNextMatch(w),
+    stopOn = stopsOf(w);
   return {
     type: 'advance-days',
     days: stopOn.match && until !== undefined && until > 1 && until <= days ? until - 1 : days,
@@ -184,7 +187,6 @@ export class ProgressionController {
     pace: 'x1',
     watching: false,
     reason: '',
-    stopOn: storedStopOn(),
     background: storedBackground(),
   }));
   /** A fixture the owner chose to play through without watching. */
@@ -213,6 +215,11 @@ export class ProgressionController {
   private clockWrittenAt = 0;
 
   constructor(private client: GameClient) {
+    try {
+      localStorage.removeItem(STOP_KEY);
+    } catch {
+      /* nothing was kept */
+    }
     this.worldId = gameStore.getSnapshot().view?.world.id;
     this.armed = this.worldId ? this.recordToResume(this.worldId) : undefined;
     // A season close is recorded, not a stop: its review waits in the league's season list, so a
@@ -353,24 +360,6 @@ export class ProgressionController {
       /* without storage a return simply starts stopped */
     }
   }
-  setStopOn(kind: InboxKind, value: boolean) {
-    const stopOn = { ...this.store.getState().stopOn, [kind]: value };
-    this.store.setState({ stopOn });
-    try {
-      localStorage.setItem(STOP_KEY, JSON.stringify(stopOn));
-    } catch {
-      /* the setting still applies for this session */
-    }
-  }
-  /** Replaces every stop at once, as an intervention level does. */
-  setStopOnAll(stopOn: StopOn) {
-    this.store.setState({ stopOn: { ...stopOn } });
-    try {
-      localStorage.setItem(STOP_KEY, JSON.stringify(stopOn));
-    } catch {
-      /* the setting still applies for this session */
-    }
-  }
   /** Resolve a match eve by settling the fixture as a result, then keep the clock running. */
   playThrough() {
     const id = this.store.getState().matchEve;
@@ -458,7 +447,7 @@ export class ProgressionController {
   /** Stops on the eve of an own match the owner wants to decide; true when it stopped. */
   private eveStop(w: World) {
     const progress = this.store.getState();
-    if (progress.watching || !progress.stopOn.match || daysUntilNextMatch(w) !== 1) return false;
+    if (progress.watching || !stopsOf(w).match || daysUntilNextMatch(w) !== 1) return false;
     const next = nextOwnFixture(w);
     if (!next || next.id === this.passedMatch) return false;
     this.stop('내일 경기가 있어요');
@@ -516,14 +505,10 @@ export class ProgressionController {
     try {
       let debt = owed.days;
       while (debt > 0) {
-        const seen = new Set(
-          stoppingEvents(w, this.store.getState().stopOn).map((item) => item.id),
-        );
+        const seen = new Set(stoppingEvents(w).map((item) => item.id));
         const days = owed.catchUp ? Math.min(debt, CATCH_UP_STEP_DAYS) : debt;
         const reply = await this.client.command(
-          progress.watching
-            ? { type: 'next-match' }
-            : command(days, this.store.getState().stopOn, w),
+          progress.watching ? { type: 'next-match' } : command(days, w),
           { background: true, automatic: true },
         );
         // A cancelled tick after an explicit stop (e.g. to watch) keeps that stop's reason.
@@ -537,9 +522,7 @@ export class ProgressionController {
           break;
         }
         if (!reply.view) break;
-        const fresh = stoppingEvents(reply.view.world, this.store.getState().stopOn).find(
-          (item) => !seen.has(item.id),
-        );
+        const fresh = stoppingEvents(reply.view.world).find((item) => !seen.has(item.id));
         if (fresh) {
           this.stop(fresh.title);
           break;

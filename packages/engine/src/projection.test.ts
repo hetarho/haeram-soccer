@@ -28,7 +28,6 @@ function world(seed = 'projection') {
     difficulty: 2,
   });
   // The squad stays fixed, so every realised bill can be compared exactly.
-  w.delegation = { ...w.delegation, transfers: false };
   return w;
 }
 const sum = (values: string[]) => values.reduce((total, value) => total + BigInt(value), 0n);

@@ -302,7 +302,7 @@ describe('season boundary', () => {
 
   it('only recommends when the owner runs the academy, apart from players past academy age', () => {
     const { w, ready, review, aged } = cohort();
-    w.delegation = { ...w.delegation, academy: false };
+    w.intervention = 1;
     const players = canonical(w.players);
     seasonAcademy(w);
     expect(canonical(w.players)).toBe(players);
@@ -313,7 +313,7 @@ describe('season boundary', () => {
     expect(report.detail).toContain(ready.name);
     expect(report.detail).toContain(review.name);
     const quiet = world();
-    quiet.delegation = { ...quiet.delegation, academy: false };
+    quiet.intervention = 1;
     prospect(quiet, 'MID', 16, 10);
     seasonAcademy(quiet);
     expect(quiet.inbox).toEqual([]);
@@ -339,11 +339,11 @@ describe('season boundary', () => {
 
   it('carries prospects across a real season close', () => {
     const w = world('academy-close');
-    w.delegation = { ...w.delegation, academy: false };
+    w.intervention = 1;
     simulateSeason(w);
     const first = academyPlayers(w).map((player) => player.id);
     expect(first.length).toBe(3);
-    w.delegation = { ...w.delegation, academy: true };
+    w.intervention = 2;
     simulateSeason(w);
     expect(
       academyPlayers(w).some((player) => player.id.includes(`:academy:${FOUNDING_YEAR + 1}:`)),

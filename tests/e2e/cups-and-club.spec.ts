@@ -1,5 +1,6 @@
 import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
+import { chooseLevel } from './events';
 import { horizontalOverflow } from './layout';
 
 async function found(page: import('@playwright/test').Page, seed: string) {
@@ -71,8 +72,9 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(open).toHaveCount(total - 2);
     expect(await horizontalOverflow(page)).toBe(0);
 
-    // Below level 4 the owner hires coaches himself; each department card carries its own switch
-    // and, once it is on, its criteria behind 기준 (→STAFF-15). The coaches are a tab of 사람.
+    // Below level 4 the owner hires coaches himself; each department card carries its criteria
+    // behind 기준, editable at any level and used once level 4 hands hiring over (→STAFF-15).
+    // The coaches are a tab of 사람.
     const tab = (name: string) =>
       page
         .getByRole('tablist', { name: '선수·스태프 보기' })
@@ -80,19 +82,11 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await tab('코치진').click();
     await expect(page.getByTestId('coaching-mode')).toContainText('직접');
     const staff = page.getByRole('region', { name: '코치진', exact: true });
-    const attack = staff
-      .getByRole('listitem')
-      .filter({ has: page.getByRole('checkbox', { name: '공격 코치 자동으로 결정' }) });
-    const defense = staff
-      .getByRole('listitem')
-      .filter({ has: page.getByRole('checkbox', { name: '수비 코치 자동으로 결정' }) });
-    await expect(attack.getByRole('button', { name: /^기준 (능력|자원봉사)/ })).toHaveCount(0);
-    await attack.getByRole('checkbox', { name: '공격 코치 자동으로 결정' }).check();
-    await expect(page.getByTestId('coaching-mode')).toContainText('자동');
-    await page
-      .getByTestId('action-outcome')
-      .getByRole('button', { name: '확인', exact: true })
-      .click();
+    await expect(staff.getByRole('checkbox')).toHaveCount(0);
+    await expect(page.getByTestId('decision-owner-coach:assistant')).toContainText(
+      '아래 기준은 개입 수준이 이 결정을 스태프에게 맡길 때만 쓰여요',
+    );
+    const attack = staff.getByRole('listitem').filter({ hasText: '공격 코치' });
     await attack.getByRole('button', { name: /^기준 (능력|자원봉사)/ }).click();
     const criteria = page.getByRole('region', { name: '공격 코치 선임 기준' });
     await chooseOption(criteria.getByRole('combobox', { name: '최소 능력', exact: true }), '65');
@@ -102,11 +96,14 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
       '능력 65 이상',
     );
     await expect(criteria.getByTestId('coach-pick-attack')).toContainText('지금 기준이면');
-    // The other departments keep their own switch, off.
-    await expect(
-      defense.getByRole('checkbox', { name: '수비 코치 자동으로 결정' }),
-    ).not.toBeChecked();
-    await expect(defense.getByRole('button', { name: /^기준 (능력|자원봉사)/ })).toHaveCount(0);
+    await page
+      .getByTestId('action-outcome')
+      .getByRole('button', { name: '확인', exact: true })
+      .click();
+    // Level 4 hands every department to the staff at once.
+    await chooseLevel(page, 4);
+    await expect(page.getByTestId('coaching-mode')).toContainText('자동');
+    await expect(page.getByTestId('decision-owner-coach:assistant')).toContainText('자동 결정');
     expect(await horizontalOverflow(page)).toBe(0);
   });
 

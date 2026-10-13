@@ -27,7 +27,8 @@ async function talking() {
     seed: 'contract-talks-journey',
     difficulty: 2,
   });
-  operate(w, { type: 'delegate', key: 'contracts', value: false });
+  // The owner answers contract talks himself only at intervention level 1 (→WEB-45).
+  operate(w, { type: 'intervention', level: 1 });
   const newYear = seasonDayOf(w.year, 1, 1);
   advanceDays(w, newYear - 1 - currentDay(w), undefined, false);
   // The journey finds his roster card by name, so it must be the only one with that name.
@@ -41,6 +42,9 @@ async function talking() {
   advanceDays(w, 1, undefined, false);
   expect(player.talk).toMatchObject({ kind: 'renew', day: newYear });
   expect(talksRound(w, player, player.talk!)).toBe(false);
+  // Level 1 stops for every event: the news already in the inbox (the winter window opening) is
+  // read, so the journey starts at the talk.
+  for (const item of w.inbox ?? []) if (item.kind !== 'contract-talk') item.read = true;
   return {
     raw: await encode(w, 1, 0),
     name: player.name,
@@ -60,25 +64,6 @@ async function seed(page: Page, raw: string) {
         worldId: envelope.worldId,
         generation: envelope.generation,
         parentGeneration: envelope.parentGeneration,
-      }),
-    );
-    // The clock stops only for this journey's events.
-    const stops = ['contract-talk', 'unhappy', 'transfer-request'];
-    localStorage.setItem(
-      'haeram-soccor:stop-on',
-      JSON.stringify({
-        match: false,
-        'window-open': false,
-        'window-close': false,
-        'bid-response': false,
-        'incoming-bid': false,
-        'youth-intake': false,
-        'staff-report': false,
-        'staff-renewal': false,
-        cup: false,
-        finance: false,
-        'sponsor-ending': false,
-        ...Object.fromEntries(stops.map((kind) => [kind, true])),
       }),
     );
   }, raw);
@@ -121,12 +106,10 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   // reason.
   await expect(page).toHaveURL(/\/people$/);
   const roster = page.locator('article').filter({ hasText: name });
-  // 선수 ends with the talks' own switch, off while the owner answers them (→WEB-43).
+  // 선수 ends with who answers talks: the owner, at level 1 (→WEB-43).
   await expect(
-    page
-      .getByRole('region', { name: '계약 협상 위임' })
-      .getByRole('checkbox', { name: '자동으로 결정', exact: true }),
-  ).not.toBeChecked();
+    page.getByRole('region', { name: '계약 협상 위임' }).getByTestId('decision-owner-contracts'),
+  ).toContainText('직접 결정');
   await expect(roster.getByText('언해피 · 재계약 거절')).toBeVisible();
   await expect(roster).toContainText('시장');
 
@@ -171,7 +154,8 @@ test('the talk rule shows under 선수 and applies', async ({ page, browserName 
   await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
   // New clubs leave contract talks to the staff (→STAFF-13), by the default talk rule.
   const talks = page.getByRole('region', { name: '계약 협상 위임' });
-  await expect(talks.getByRole('checkbox', { name: '자동으로 결정', exact: true })).toBeChecked();
+  await expect(talks.getByRole('checkbox')).toHaveCount(0);
+  await expect(talks.getByTestId('decision-owner-contracts')).toContainText('자동 결정');
   const rule = talks.getByRole('region', { name: '계약 협상 기준' });
   await expect(
     rule.getByRole('radiogroup', { name: '연봉 상한' }).getByRole('radio', { name: '110%' }),

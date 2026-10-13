@@ -59,7 +59,7 @@ describe('lossless career stream compaction', () => {
     w.talkRule = { maxPay: 1.25, minOvr: 55, maxAge: 34 };
     w.build = { youth: 'pathway' };
     w.buildChanged = { youth: { year: w.year, day: 40 } };
-    w.delegation = { ...w.delegation, 'coach:scout': true };
+    w.intervention = 4;
     expect(w.managerMarket?.free.length).toBeGreaterThan(0);
     const restored = validateWorld(unpack(JSON.parse(JSON.stringify(pack(w)))));
     expect(canonical(restored)).toBe(canonical(w));

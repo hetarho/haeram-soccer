@@ -3,6 +3,7 @@ import { createBase } from './world';
 import { prepareSeason, advanceRound, closeSeason } from './season';
 import { basicStaff } from './staff';
 import { MORALE_START } from './morale';
+import { NEW_CLUB_INTERVENTION } from './intervention';
 export * from './world';
 export * from './season';
 export * from './match';
@@ -38,14 +39,15 @@ export * from './careers';
 export * from './contracts';
 export * from './hiring';
 export * from './activation';
+export * from './intervention';
 export function createWorld(input: Founding) {
   const w = createBase(input);
   prepareSeason(w);
-  // New clubs start with unpaid basic coaches; staff run training, the academy and contract talks
-  // while the owner answers transfer offers (the "important decisions" intervention level).
+  // New clubs start with unpaid basic coaches at the "important decisions" intervention level:
+  // the staff run training, the academy and contract talks, the owner the rest (→STAFF-13).
   w.staff = basicStaff(w);
   w.academy = { players: [] };
-  w.delegation = { training: true, academy: true, transfers: false, contracts: true };
+  w.intervention = NEW_CLUB_INTERVENTION;
   w.bids = [];
   w.inbox = [];
   w.morale = MORALE_START;

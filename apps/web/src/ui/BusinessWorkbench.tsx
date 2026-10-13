@@ -22,6 +22,7 @@ import { useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
 import { FinancialBreakdown } from './FinancialBreakdown';
 import { number } from './format';
+import { DecisionOwner } from './DecisionOwner';
 import { Money } from './Money';
 import s from './BusinessWorkbench.module.css';
 
@@ -383,29 +384,12 @@ export function BusinessWorkbench({
                 ))}
               </div>
               <section className={s.delegation} aria-label="후원 위임">
-                <label className={s.switch}>
-                  <input
-                    type="checkbox"
-                    checked={!!w.delegation?.business}
-                    disabled={blocked}
-                    aria-describedby="sponsor-delegation-rule"
-                    onChange={(event) =>
-                      void act(
-                        { type: 'delegate', key: 'business', value: event.target.checked },
-                        event.target.checked
-                          ? '스폰서 자동 계약을 켰어요. 빈 자리는 다음 진행일부터 운영팀이 채워요.'
-                          : '스폰서 자동 계약을 껐어요. 후원 계약은 직접 골라요.',
-                      )
-                    }
-                  />
-                  <b>스폰서 자동 계약</b>
-                </label>
-                <p className={s.note} id="sponsor-delegation-rule">
-                  {w.delegation?.business ? '켜져 있어요. ' : ''}
-                  열린 후원 자리가 비면 운영팀이 그 자리의 안정형 제안 중 보장 금액이 가장 큰 계약을
-                  바로 맺고 알려 줘요. 끄면 시즌을 빈 자리로 시작할 때와, 마지막 시즌인 계약이 남은
-                  4월 1일에 알림으로 알려 드려요.
-                </p>
+                <DecisionOwner
+                  w={w}
+                  decision="business"
+                  auto="열린 후원 자리가 비면 운영팀이 그 자리의 안정형 제안 중 보장 금액이 가장 큰 계약을 바로 맺고 알려 줘요."
+                  owner="후원 계약은 직접 골라요. 시즌을 빈 자리로 시작할 때와, 마지막 시즌인 계약이 남은 4월 1일에 알림으로 알려 드려요."
+                />
               </section>
             </>
           ) : tab === 'marketing' ? (

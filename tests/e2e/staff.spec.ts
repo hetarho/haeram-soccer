@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page } from '@playwright/test';
-import { stopOnlyFor } from './events';
+import { chooseLevel } from './events';
 import { horizontalOverflow } from './layout';
 import { chooseOption } from './select';
 
@@ -120,16 +120,15 @@ test.describe('사람 at 360x740', () => {
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
     await expect(tab(page, '코치진')).toHaveAttribute('aria-selected', 'true');
-    // 감독 ends with the manager post's own switch; its criteria show while it is on (→WEB-43).
+    // 감독 ends with who appoints and the manager criteria, editable at any level (→WEB-43).
     await tab(page, '감독').click();
     const post = page.getByRole('region', { name: '감독 선임 위임' });
     await expect(post).toBeVisible();
-    const delegated = post.getByRole('checkbox', { name: '자동으로 결정', exact: true });
-    await expect(delegated).not.toBeChecked();
-    await expect(post.getByRole('region', { name: '감독 선임 기준' })).toHaveCount(0);
-    await delegated.check();
-    await expect(delegated).toBeChecked();
-    await closeOutcome(page, '스태프 위임을 바꿨어요');
+    await expect(post.getByRole('checkbox')).toHaveCount(0);
+    await expect(post.getByTestId('decision-owner-manager')).toContainText('직접 결정');
+    await expect(post.getByTestId('decision-owner-manager')).toContainText(
+      '아래 기준은 개입 수준이 이 결정을 스태프에게 맡길 때만 쓰여요',
+    );
     const criteria = post.getByRole('region', { name: '감독 선임 기준' });
     const apply = criteria.getByRole('button', { name: '기준 적용', exact: true });
     // A draft equal to the stored criteria has nothing to apply.
@@ -205,21 +204,16 @@ test('an unrenewed firefighter leaves at the close and the alert opens the marke
 test('with the manager post delegated a resignation is filled at once and the clock runs on', async ({
   page,
 }) => {
-  // Only the match eve may stop the clock, so nothing else explains a stop.
-  await stopOnlyFor(page, ['match']);
   // This seed's founding manager is proud enough to resign over two strong demands (→STAFF-5).
   await found(page, 'proud-0');
   const date = page.getByTestId('game-date');
   await expect(date).toHaveText('1950년 8월 1일');
+  // Level 4 hands the manager post to the staff and stops only for money, so nothing else
+  // explains a stop.
+  await chooseLevel(page, 4);
   await openPeople(page);
   await tab(page, '감독').click();
-  const post = page
-    .getByRole('region', { name: '감독 선임 위임' })
-    .getByRole('checkbox', { name: '자동으로 결정', exact: true });
-  await post.check();
-  await expect(post).toBeChecked();
-  await closeOutcome(page, '스태프 위임을 바꿨어요');
-  await tab(page, '감독').click();
+  await expect(page.getByTestId('decision-owner-manager')).toContainText('자동 결정');
   const founding = page.getByRole('heading', { name: 'William Hawkins', exact: true });
   await expect(founding).toBeVisible();
   for (const tactic of ['counter', 'press']) {
@@ -239,19 +233,37 @@ test('with the manager post delegated a resignation is filled at once and the cl
 });
 
 test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
-  // Runs the clock from August to April at the fastest pace, stopping only for renewals.
+  // Runs the clock from August to April at the fastest pace. Level 3 skips match eves and keeps
+  // the manager's renewal with the owner; offers and the winter window still stop it on the way.
   test.slow();
-  await stopOnlyFor(page, ['staff-renewal']);
   await found(page);
+  await chooseLevel(page, 3);
   await openPeople(page);
   await hireFirefighter(page);
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
-  await page
+  const fastest = page
     .getByRole('region', { name: '시즌 진행', exact: true })
-    .getByRole('button', { name: '0.1초에 하루 속도로 자동 진행', exact: true })
-    .click();
+    .getByRole('button', { name: '0.1초에 하루 속도로 자동 진행', exact: true });
   const card = page.getByTestId('event-card');
-  await expect(card).toContainText('감독 계약이 이번 시즌 끝에 끝나요', { timeout: 75000 });
+  const renewal = '감독 계약이 이번 시즌 끝에 끝나요';
+  // Read without auto-waiting: a card may leave between a count and a text query.
+  const cardText = () =>
+    card.evaluateAll((cards) => (cards[0] as HTMLElement | undefined)?.innerText ?? '');
+  await fastest.click();
+  for (let stops = 0; ; stops++) {
+    expect(stops).toBeLessThan(30);
+    await expect(card).toBeVisible({ timeout: 75000 });
+    const text = await cardText();
+    if (text.includes(renewal)) break;
+    // Another stop on the way: decline an offer or read the news, then run on.
+    const decline = card.getByRole('button', { name: '거절', exact: true });
+    await (
+      (await decline.count()) ? decline : card.getByRole('button', { name: '확인', exact: true })
+    ).click();
+    await expect.poll(cardText, { timeout: 10000 }).not.toBe(text);
+    if (!(await cardText())) await fastest.click();
+  }
+  await expect(card).toContainText(renewal);
   await expect(page.getByTestId('game-date')).toHaveText('1951년 4월 1일');
   await expect(card).toContainText('스태프 재계약');
   await expect(card).toContainText(

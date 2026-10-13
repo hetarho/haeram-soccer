@@ -1,15 +1,15 @@
 import { expect, test } from '@playwright/test';
-import { stopOnlyFor } from './events';
+import { chooseLevel } from './events';
 test.use({ viewport: { width: 390, height: 844 } });
 
 test('keeps both home controls stable over real automatic ticks and keeps running through preparation', async ({
   page,
 }) => {
-  // Keep daily progress uninterrupted: no match eve or offer may stop this run.
-  await stopOnlyFor(page, []);
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  // Keep daily progress uninterrupted: level 4 stops for no match eve or offer.
+  await chooseLevel(page, 4);
   const watch = page.getByTestId('hub-play'),
     prepare = page
       .getByTestId('club-hub')

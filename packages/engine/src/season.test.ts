@@ -205,7 +205,7 @@ describe('closed season archive', () => {
   it('renews no contract by itself: unrenewed players leave at the close (→CLUB-26, CLUB-28)', () => {
     const w = founded();
     // Unanswered talks stay open: nobody signs for the owner.
-    w.delegation = { ...w.delegation, contracts: false };
+    w.intervention = 1;
     for (const p of w.players) p.until = w.year + 1;
     const year = w.year,
       before = new Map(w.players.map((p) => [p.id, { wage: p.wage, until: p.until }]));
@@ -235,7 +235,7 @@ describe('closed season archive', () => {
 
   it('refills a squad its expiring contracts emptied at its division’s level and wage (→CLUB-3, CLUB-25, CLUB-28)', () => {
     const w = founded();
-    w.delegation = { ...w.delegation, contracts: false };
+    w.intervention = 1;
     // An XI far above the amateur league and the division it goes up to.
     for (const p of w.players) {
       p.until = w.year + 1;

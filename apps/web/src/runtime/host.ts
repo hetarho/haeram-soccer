@@ -208,7 +208,7 @@ export class Host {
           throw new Error('규칙 업그레이드는 활성화할 때만 가능합니다.');
         const result = await decode(r.body.raw);
         // Activation also gives players from before rules 1.16 their agents (→SAVE-10, CLUB-30)
-        // and brings their delegation and reserved strategy to the owner's levers.
+        // and drops their reserved strategy now that strategies apply at once.
         const activated = r.body.upgrade
           ? activateLevers(
               activateAgents(upgradeWorldRules(result.world, CURRENT_CATALOG)),

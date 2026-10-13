@@ -15,6 +15,8 @@ import {
   startingSquad,
 } from '../../../../packages/engine/src/world';
 import { activeTrainingFocus } from '../../../../packages/engine/src/training';
+import { delegated } from '../../../../packages/engine/src/intervention';
+import { AUTO_RECOVERY_FATIGUE } from '../../../../packages/engine/src/staff';
 import { MORALE_LABEL, moraleOf, moraleState } from '../../../../packages/engine/src/morale';
 import { POLICY_INFO, policyOf } from '../../../../packages/engine/src/policy';
 import { fixedCostRunway } from '../../../../packages/engine/src/investment';
@@ -147,7 +149,12 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           label: '회복 훈련으로 전환',
           effect: '훈련에서 회복 집중을 적용하면 라운드마다 회복이 커지고 성장 기회는 줄어요',
           cost: '무료',
-          unavailable: activeTrainingFocus(w) === 'recovery' ? '이미 회복 훈련 중' : undefined,
+          unavailable:
+            activeTrainingFocus(w) === 'recovery'
+              ? '이미 회복 훈련 중'
+              : delegated(w, 'training')
+                ? `수석코치가 훈련 방향을 정해요 · 피로 ${AUTO_RECOVERY_FATIGUE} 이상이면 회복 집중 (개입 1단계에서 직접 선택)`
+                : undefined,
           page: 'training',
           tab: 'training',
           focus: 'recovery',

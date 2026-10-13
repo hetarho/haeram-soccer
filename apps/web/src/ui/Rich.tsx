@@ -10,6 +10,7 @@ import type {
   World,
 } from '../../../../packages/contracts/src/types';
 import { priceIndex } from '../../../../packages/catalogs/src/index';
+import { delegated } from '../../../../packages/engine/src/intervention';
 import {
   injuryDaysLeft,
   quote,
@@ -595,7 +596,7 @@ function StanceBadge({
 }
 /** What each stance does for this player, given who answers offers (→CLUB-22). */
 function stanceConsequence(w: World, p: Player, stance: TransferStance) {
-  const delegated = !!w.delegation?.transfers,
+  const staffAnswer = delegated(w, 'transfers'),
     value = playerValue(w, p),
     c = w.clubs.find((club) => club.id === w.playerClub)!,
     // Each stance reads as a sentence inside its own radio, so amounts come as text (→WEB-67).
@@ -603,14 +604,14 @@ function stanceConsequence(w: World, p: Player, stance: TransferStance) {
   if (stance === 'listed')
     return {
       what: `이적시장 기간에 실제 구단이 평가 가치의 ${Math.round(LISTED_OFFER.low * 100)}–${Math.round(LISTED_OFFER.high * 100)}%로 제안해요 · 첫 제안까지 평균 약 ${expectedOfferDays(w, p)}일`,
-      who: delegated
+      who: staffAnswer
         ? '들어오는 제안은 스태프가 받아들여 매각해요'
         : '제안마다 구단주가 수락·거절해요',
     };
   if (stance === 'open')
     return {
       what: '다른 구단이 먼저 제안해 올 때 협상해요',
-      who: delegated
+      who: staffAnswer
         ? `스태프가 평가 가치의 ${saleBar(w, p).percent}% 이상이면 팔아요 · 대체 선수 없는 주전은 지켜요`
         : '제안마다 구단주가 수락·거절해요',
     };
@@ -618,7 +619,7 @@ function stanceConsequence(w: World, p: Player, stance: TransferStance) {
     card = cardOf(buildOf(w), 'market').label;
   return {
     what: `평가 가치 ${UNTOUCHABLE_BAR}%(${format(ratio(value, BigInt(UNTOUCHABLE_BAR), 100n))}) 미만 제안은 바로 거절해요`,
-    who: delegated
+    who: staffAnswer
       ? market === 'hold'
         ? `거액 제안도 지켜요 · 매각 기조 ${card} (자금 위기면 매각)`
         : `거액 제안은 스태프가 감독과 상의해요 · 매각 기조 ${card} 기준 ${UNTOUCHABLE_PRICE[market ?? 'standard']}%, 자금 사정과 주전 여부로 조정`

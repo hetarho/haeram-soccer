@@ -30,7 +30,6 @@ import {
   activePlayers,
   advanceRound,
   BUILD_PRESETS,
-  COACH_KEYS,
   CASH_WARNING_ROUNDS,
   catchment,
   CATCHMENT_CONFIG,
@@ -184,17 +183,9 @@ interface Career {
 /** Minor units of one 1901 price unit in this country and year. */
 const unitOf = (code: string, year: number) => Number(quote(code, year, 1_000_000)) / 1_000_000;
 
-/** Every delegation on: the owner leaves the club to the staff (ECON-29). */
+/** Every delegation on: the owner leaves the club to the staff at level 4 (ECON-29, →WEB-45). */
 function delegateAll(w: World) {
-  w.delegation = {
-    training: true,
-    academy: true,
-    transfers: true,
-    business: true,
-    contracts: true,
-    manager: true,
-    ...Object.fromEntries(COACH_KEYS.map((key) => [key, true])),
-  };
+  w.intervention = 4;
 }
 /**
  * The reference club's stadium (ECON-29): a level whenever the cash after it still covers 13 rounds

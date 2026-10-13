@@ -16,13 +16,14 @@ import {
   agentOf,
   agentPremium,
   applyClauses,
+  buildEffects,
   CLAUSE_CONFIG,
   closeSeason,
-  buildEffects,
   clubOf,
   contractTalks,
   createWorld,
   currentDay,
+  delegated,
   divisionFor,
   expireContracts,
   makePlayer,
@@ -49,8 +50,8 @@ import {
   settleMorale,
   staffTerm,
   suitorFor,
-  talkFor,
   TALK_RULE_DEFAULT,
+  talkFor,
   talkRoundChance,
   talkRuleOf,
   talksRound,
@@ -292,7 +293,7 @@ describe('contract talks (→CLUB-26)', () => {
     const [generous, tight] = ([1.4, 0.9] as const).map((maxPay) => {
       const { w, p } = talking(80);
       operate(w, { type: 'talk-rule', rule: { maxPay, minOvr: 0 } });
-      expect(w.delegation?.contracts).toBe(true);
+      expect(delegated(w, 'contracts')).toBe(true);
       const before = { wage: p.wage, until: p.until, floor: talkTerms(w, p).floor };
       newYear(w);
       expect(p.talk).toBeUndefined();
@@ -425,7 +426,7 @@ describe('contract talks (→CLUB-26)', () => {
 
   it('refuses an owner’s offer below the floor, stating it, and signs one at the floor', () => {
     const { w, p } = talking(80);
-    operate(w, { type: 'delegate', key: 'contracts', value: false });
+    operate(w, { type: 'intervention', level: 1 });
     newYear(w);
     const talk = p.talk!;
     expect(talk).toMatchObject({ kind: 'renew', year: w.year, day: seasonDayOf(w.year, 1, 1) });
@@ -448,7 +449,7 @@ describe('contract talks (→CLUB-26)', () => {
 
   it('opens talks only when a window opens: the final season at both openings', () => {
     const w = world();
-    operate(w, { type: 'delegate', key: 'contracts', value: false });
+    operate(w, { type: 'intervention', level: 1 });
     const [final, underpaid] = activePlayers(w);
     final.until = w.year + 1;
     underpaid.wage = ((BigInt(marketWage(w, underpaid)) * 70n) / 100n).toString();
@@ -474,7 +475,7 @@ describe('contract talks (→CLUB-26)', () => {
 
   it('opens an improved-contract talk with at most three seasons left, once a season', () => {
     const w = world();
-    operate(w, { type: 'delegate', key: 'contracts', value: false });
+    operate(w, { type: 'intervention', level: 1 });
     const [three, four, fair] = activePlayers(w),
       below = (p: Player, percent: bigint) =>
         void (p.wage = ((BigInt(marketWage(w, p)) * percent) / 100n).toString());
@@ -489,10 +490,11 @@ describe('contract talks (→CLUB-26)', () => {
     expect(three.talk).toMatchObject({ kind: 'improve', year: w.year, day: 0 });
     expect(three.improveAsked).toBe(w.year);
     expect([four.talk, fair.talk]).toEqual([undefined, undefined]);
-    // The owner's answer takes talks back from the staff.
-    w.delegation = { ...w.delegation, contracts: true };
+    // The owner may still answer a pending talk; only the level changes who decides.
+    w.intervention = 2;
     operate(w, { type: 'contract-decline', player: three.id });
-    expect(w.delegation.contracts).toBe(false);
+    expect(w.intervention).toBe(2);
+    w.intervention = 1;
     expect(three.talk).toBeUndefined();
     expect(w.events.at(-1)).toMatchObject({ kind: 'contract-decline' });
     expect(w.events.at(-1)!.title).toContain('계약 개선');
@@ -517,7 +519,7 @@ describe('contract talks (→CLUB-26)', () => {
   it('signs whole seasons in the summer and half seasons in winter, ending at a close', () => {
     const offer = (day: number, term: number) => {
       const { w, p } = talking(80);
-      operate(w, { type: 'delegate', key: 'contracts', value: false });
+      operate(w, { type: 'intervention', level: 1 });
       talksOn(w, day);
       const command = { type: 'contract-offer', player: p.id, wage: p.talk!.floor } as const;
       operate(w, { ...command, term: term as 0 });
@@ -616,7 +618,7 @@ describe('contract talks (→CLUB-26)', () => {
 /** A club on 1 January whose owner answers talks, with `p` unhappy since that day. */
 function unhappy(reason: UnhappyReason = 'renewal-declined') {
   const { w, p } = talking(80);
-  operate(w, { type: 'delegate', key: 'contracts', value: false });
+  operate(w, { type: 'intervention', level: 1 });
   w.calendar = { day: seasonDayOf(w.year, 1, 1) };
   p.unhappy = { reason, year: w.year, day: currentDay(w) };
   return { w, p };
@@ -650,7 +652,7 @@ describe('unhappy players and expiring contracts (→CLUB-27, CLUB-28)', () => {
 
   it('turns a declined player unhappy unless the manager talks him round, each an inbox item', () => {
     const { w } = talking(80);
-    operate(w, { type: 'delegate', key: 'contracts', value: false });
+    operate(w, { type: 'intervention', level: 1 });
     for (const p of activePlayers(w)) p.until = w.year + 1;
     newYear(w);
     const players = activePlayers(w),
@@ -780,7 +782,7 @@ describe('unhappy players and expiring contracts (→CLUB-27, CLUB-28)', () => {
 
   it('closes a retiring player’s talk on his announcement and his request when he retires', () => {
     const { w, p } = talking(70, 36);
-    operate(w, { type: 'delegate', key: 'contracts', value: false });
+    operate(w, { type: 'intervention', level: 1 });
     newYear(w);
     expect(p.talk).toBeDefined();
     p.retiring = w.year;
@@ -933,7 +935,7 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
 
   it('settles a talk’s clauses as he asks and signs them unrerolled', () => {
     const { w, p } = talking(80);
-    operate(w, { type: 'delegate', key: 'contracts', value: false });
+    operate(w, { type: 'intervention', level: 1 });
     newYear(w);
     const clauses = p.talk!.clauses!;
     expect(clauses).toEqual(

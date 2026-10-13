@@ -12,23 +12,24 @@ import {
   createWorld,
   currentDay,
   dailyMarket,
+  delegated,
+  FOUNDING_YEAR,
   marketValue,
   operate,
+  operatingCosts,
   overall,
   placeBid,
   playerValue,
   respondBid,
   saleBar,
-  seasonDayOf,
   SEASON_END_DAY,
+  seasonDayOf,
   seasonLength,
   selectedLineup,
   transferOffers,
+  transferStance,
   transferWindow,
   unreadAttention,
-  operatingCosts,
-  FOUNDING_YEAR,
-  transferStance,
   UNTOUCHABLE_BAR,
   untouchableVerdict,
 } from './index';
@@ -58,7 +59,6 @@ const inBids = (w: World) => (w.bids || []).filter((b) => b.direction === 'in');
 /** Bids every fee-bearing candidate at a share of the asking fee and lets the clubs answer. */
 function bidAll(percent: number, seed?: string) {
   const w = world(seed);
-  w.delegation = { ...w.delegation, transfers: false };
   const offers = transferOffers(w);
   for (let i = 1; i < offers.length; i++) placeBid(w, i, share(offers[i].fee, percent));
   const cash = BigInt(w.cash);
@@ -168,7 +168,6 @@ describe('transfer windows', () => {
 
   it('opens the summer window at the season close and announces each opening once', () => {
     const w = world();
-    w.delegation = { ...w.delegation, transfers: false };
     while (currentDay(w) < SEASON_END_DAY) advanceDays(w, 1);
     expect(w).toMatchObject({ year: FOUNDING_YEAR, round: 46 });
     expect(transferWindow(w)).toMatchObject({ open: false, kind: 'summer', daysLeft: 1 });
@@ -189,7 +188,6 @@ describe('transfer windows', () => {
     ]);
     // Whole-round jumps live through the same days without announcing twice.
     const jumped = world();
-    jumped.delegation = { ...jumped.delegation, transfers: false };
     while (jumped.round < 46) advanceRound(jumped, undefined, false);
     expect((jumped.inbox || []).filter((item) => item.kind.startsWith('window-'))).toHaveLength(3);
     jumped.calendar = { day: 153 };
@@ -315,7 +313,6 @@ describe('outgoing bids', () => {
 
   it('refuses at completion when the money ran out after submission', () => {
     const w = world();
-    w.delegation = { ...w.delegation, transfers: false };
     const offers = transferOffers(w);
     const fees = offers.map((o) => share(o.fee, 500));
     for (let i = 1; i < offers.length; i++) placeBid(w, i, fees[i]);
@@ -332,7 +329,6 @@ describe('outgoing bids', () => {
 
   it('answers late bids by the deadline and expires open negotiations when the window closes', () => {
     const w = on(world(), 8, 30);
-    w.delegation = { ...w.delegation, transfers: false };
     const offers = transferOffers(w);
     for (let i = 1; i < offers.length; i++) placeBid(w, i, share(offers[i].fee, 80));
     expect(outBids(w).every((b) => b.due === 31)).toBe(true);
@@ -357,7 +353,6 @@ describe('outgoing bids', () => {
 
   it('ends a negotiation left open by older rules once the window is closed', () => {
     const w = world();
-    w.delegation = { ...w.delegation, transfers: false };
     while (w.round < 45) advanceRound(w, undefined, false);
     advanceDays(w, SEASON_END_DAY - 2 - currentDay(w));
     const offers = transferOffers(w);
@@ -382,7 +377,6 @@ describe('outgoing bids', () => {
 
   it('closes a negotiation once the player was signed directly', () => {
     const w = world();
-    w.delegation = { ...w.delegation, transfers: false };
     placeBid(w, 4, share(transferOffers(w)[4].fee, 90));
     operate(w, { type: 'recruit', candidate: 4 });
     expect(bidOutlook(w, 4, '100').chance).toBe(0);
@@ -395,7 +389,6 @@ describe('outgoing bids', () => {
 
   it('ends negotiations priced in a currency that has since been replaced', () => {
     const w = world();
-    w.delegation = { ...w.delegation, transfers: false };
     w.year = 1970;
     w.currency = 'GBP-LSD';
     const p = activePlayers(w)[5];
@@ -433,7 +426,6 @@ describe('outgoing bids', () => {
   it('an inbox read does not change a bid', () => {
     const plain = world(),
       read = world();
-    for (const w of [plain, read]) w.delegation = { ...w.delegation, transfers: false };
     operate(read, { type: 'read-inbox' });
     expect(read.revision).toBe(plain.revision + 1);
     const fee = share(transferOffers(plain)[3].fee, 90);
@@ -449,7 +441,6 @@ describe('outgoing bids', () => {
 
   it('gives a renewed bid on the same day its own ID', () => {
     const w = on(world(), 9, 1);
-    w.delegation = { ...w.delegation, transfers: false };
     placeBid(w, 3, '1');
     const [first] = outBids(w);
     expect(first.status).toBe('rejected');
@@ -462,7 +453,6 @@ describe('outgoing bids', () => {
 
   it('completes a negotiated loan like a direct loan', () => {
     const w = world();
-    w.delegation = { ...w.delegation, transfers: false };
     const offers = transferOffers(w);
     for (let i = 1; i < offers.length; i++) placeBid(w, i, share(offers[i].loanFee, 500), true);
     advanceDays(w, 4);
@@ -498,7 +488,6 @@ describe('market identity', () => {
 
   it('signs the player a bid was made for at its fee after the list changed', () => {
     const w = world();
-    w.delegation = { ...w.delegation, transfers: false };
     const offer = transferOffers(w)[2],
       fee = share(offer.fee, 500);
     placeBid(w, 2, fee);
@@ -521,7 +510,6 @@ describe('market identity', () => {
 
   it('answers a bid pending from before 1.15.0 through its season list', () => {
     const w = world();
-    w.delegation = { ...w.delegation, transfers: false };
     const legacy = transferOffers(w, w.year, true)[2];
     expect(legacy.player.id).toBe(`market:${w.year}:2`);
     const fee = share(legacy.fee, 500);
@@ -552,7 +540,6 @@ describe('market identity', () => {
 describe('incoming bids', () => {
   it('arrive only inside windows, at most three at a time, and lapse after their due day', () => {
     const w = world();
-    w.delegation = { ...w.delegation, transfers: false };
     const seen = new Set<string>();
     for (let n = 0; n < seasonLength(w) - 1; n++) {
       advanceDays(w, 1);
@@ -585,7 +572,6 @@ describe('incoming bids', () => {
 
   it('lets the owner sell to a bidder within the squad rules or refuse', () => {
     const w = world();
-    w.delegation = { ...w.delegation, transfers: false };
     const mid = activePlayers(w).find((p) => p.role === 'MID')!;
     const bid = incoming(w, mid.id, '12345');
     w.inbox = [];
@@ -662,8 +648,8 @@ describe('incoming bids', () => {
   it('lets delegated staff answer quietly: only generous offers for non-essential players', () => {
     const w = world();
     // New clubs answer offers themselves; this scenario hands transfers to the staff.
-    expect(w.delegation?.transfers).toBe(false);
-    w.delegation = { ...w.delegation, transfers: true };
+    expect(delegated(w, 'transfers')).toBe(false);
+    w.intervention = 4;
     const decisions: { bid: TransferBid; starter: boolean; age: number; value: bigint }[] = [];
     for (let n = 0; n < seasonLength(w) - 1; n++) {
       const known = new Set(inBids(w).map((b) => b.id));
@@ -710,7 +696,7 @@ describe('incoming bids', () => {
     const w = world();
     delete w.bids;
     delete w.inbox;
-    delete w.delegation;
+    delete w.intervention;
     for (let n = 0; n < 31; n++) advanceDays(w, 1);
     expect(Array.isArray(w.bids) || w.bids === undefined).toBe(true);
     expect(() => respondBid(w, 'missing', true)).toThrow('없는');
@@ -755,7 +741,7 @@ describe('transfer stance', () => {
 
   it('draws offers near value for listed players, which delegated staff accept', () => {
     const w = world('stance-listed');
-    w.delegation = { ...w.delegation, transfers: true };
+    w.intervention = 4;
     const listed = activePlayers(w).filter((p) => p.role === 'MID' || p.role === 'FWD');
     for (const p of listed) operate(w, { type: 'transfer-stance', id: p.id, stance: 'listed' });
     const bids = season(w).filter(({ bid }) => bid.id.includes(':list:'));
@@ -770,7 +756,6 @@ describe('transfer stance', () => {
 
   it('refuses offers below 150% for untouchable players and asks the owner about bigger ones', () => {
     const w = world('stance-untouchable');
-    w.delegation = { ...w.delegation, transfers: false };
     // A selling club draws more and richer offers, so both sides of the bar appear.
     w.build = { market: 'selling' };
     for (const p of activePlayers(w))

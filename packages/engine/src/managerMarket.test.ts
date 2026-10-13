@@ -198,7 +198,7 @@ function resignOverDemand(w: World) {
 function delegated(seed: string, set: Partial<ManagerCriteria> = {}) {
   const w = world(seed);
   w.cash = '999999999';
-  w.delegation = { ...w.delegation, manager: true };
+  w.intervention = 4;
   operate(w, { type: 'hiring', role: 'manager', criteria: criteria(set) });
   return w;
 }
@@ -335,7 +335,7 @@ describe('manager criteria (STAFF-18)', () => {
     expect(w.inbox!.find((item) => item.id === report.id)!.read).toBe(true);
     // Without delegation an interim the owner kept stays.
     const kept = delegated('criteria-wait-owner');
-    kept.delegation = { ...kept.delegation, manager: false };
+    kept.intervention = 2;
     resignOverDemand(kept);
     delete kept.critical;
     dailyStaff(kept);

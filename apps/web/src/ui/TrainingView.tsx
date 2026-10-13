@@ -9,7 +9,8 @@ import {
 import { AUTO_RECOVERY_FATIGUE, autoTrainingAdvice } from '../../../../packages/engine/src/staff';
 import type { ClientState, GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
-import { AcademyPanel, StaffSwitch } from './AcademyPanel';
+import { AcademyPanel } from './AcademyPanel';
+import { DecisionOwner } from './DecisionOwner';
 import { OvrBadge } from './OvrBadge';
 import { PageTabs, TabPanel } from './PageTabs';
 import { PlayerLink } from './PlayerSheet';
@@ -122,8 +123,9 @@ export function TrainingView({ state, client }: Props) {
 
 /**
  * The training focus in force, chosen on tap, or left to the assistant coach, who picks it each
- * round by his rule (→CLUB-13). Choosing a focus takes the decision back from him. A focus
- * suggested from elsewhere waits in a banner until it is applied or closed.
+ * round by his rule (→CLUB-13), and the choices stay read-only until the intervention level
+ * hands the focus back (→WEB-45). A focus suggested from elsewhere waits in a banner until it is
+ * applied or closed.
  */
 function TrainingFocusPanel({
   w,
@@ -143,7 +145,7 @@ function TrainingFocusPanel({
     choose = (next: TrainingFocus) => void client.command({ type: 'training', focus: next });
   return (
     <section className={s.card} id="training-focus" aria-label="훈련 방향">
-      {suggested && (
+      {suggested && !focus.delegated && (
         <div className={s.suggestion} role="region" aria-label="훈련 방향 제안">
           <p>
             <b>{focusName(suggested)}</b>을 권해요
@@ -187,9 +189,9 @@ function TrainingFocusPanel({
               aria-checked={focus.focus === id}
               aria-label={label}
               aria-describedby={`training-focus-${id}`}
-              disabled={acting}
+              disabled={acting || focus.delegated}
               onClick={() => {
-                if (!focus.delegated && focus.focus === id) return;
+                if (focus.focus === id) return;
                 choose(id);
               }}
             >
@@ -208,8 +210,13 @@ function TrainingFocusPanel({
           ` 피로 회복에는 선수단 투자와 피지컬 코치의 ${focus.recoveryBonus > 0 ? '+' : ''}${focus.recoveryBonus}이 들어 있어요.`}
       </p>
       <div className={s.delegate}>
-        <StaffSwitch w={w} client={client} name="training" label="코치에게 맡기기" />
-        <p>수석코치가 라운드마다 이 기준으로 골라요.</p>
+        <DecisionOwner
+          w={w}
+          decision="training"
+          plain
+          auto="수석코치가 라운드마다 아래 기준으로 골라요. 직접 고르려면 개입 1단계로 바꾸세요."
+          owner="훈련 방향을 직접 골라요. 개입 2단계부터는 수석코치가 아래 기준으로 골라요."
+        />
         <ul className={s.rule}>
           <li>
             <b>회복 집중</b>

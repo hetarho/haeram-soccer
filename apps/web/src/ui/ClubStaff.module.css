@@ -366,38 +366,9 @@
   font-weight: 500;
   color: var(--text-muted);
 }
-/* A decision's staff switch and its criteria, at the end of its 사람 tab (→WEB-43). */
+/* A decision's who-decides line and its criteria, at the end of its 사람 tab (→WEB-43). */
 .decision header h3 {
   font-size: 15px;
-}
-.switch {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 52px;
-  padding: 6px 12px;
-  margin-top: 8px;
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.2);
-}
-.switch input {
-  flex: 0 0 22px;
-  width: 22px;
-  height: 22px;
-  accent-color: var(--accent);
-}
-.switch span {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-}
-.switch b {
-  font-size: 13px;
-}
-.switch small {
-  font-size: 11px;
-  color: var(--text-faint);
-  line-height: 1.4;
 }
 .criteria {
   display: grid;
@@ -522,16 +493,12 @@
   height: 20px;
   accent-color: var(--accent);
 }
-/* A department card's switch and its 기준 disclosure span the whole card. */
+/* A department card's 기준 disclosure spans the whole card. */
 .department {
   grid-column: 1 / -1;
   display: grid;
   gap: 6px;
   min-width: 0;
-}
-.department .switch {
-  margin-top: 0;
-  min-height: 44px;
 }
 .coachCriteria {
   display: grid;

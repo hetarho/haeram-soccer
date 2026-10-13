@@ -2,7 +2,7 @@ import { chooseOption, selectOptions } from './select';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { COUNTRIES } from '../../packages/catalogs/src/index';
 import { expectHomeBounds, expectViewFits, settle } from './layout';
-import { stopOnlyFor } from './events';
+import { chooseLevel } from './events';
 
 async function expectTouchControl(
   control: Locator,
@@ -57,9 +57,6 @@ for (const viewport of [
   }) => {
     // Founding, preparation and match inspection in one journey; slow CI browsers need longer.
     test.slow();
-    // A pace tap below runs the clock briefly in the open window; an offer card must not cover
-    // the preparation controls this test measures.
-    await stopOnlyFor(page, ['match']);
     await page.setViewportSize(viewport);
     await page.goto('/');
     const country = page.getByRole('combobox', { name: '창단 국가', exact: true });
@@ -72,6 +69,9 @@ for (const viewport of [
     await page.getByRole('button', { name: '클럽 창단' }).click();
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await expectHomeBounds(page);
+    // A pace tap below runs the clock briefly in the open window; an offer card must not cover
+    // the preparation controls this test measures, so offers go to the staff (level 4).
+    await chooseLevel(page, 4);
     const progress = page.getByRole('region', { name: '시즌 진행', exact: true });
     const paces = ['1초에 하루', '0.5초에 하루', '0.2초에 하루', '0.1초에 하루'].map((pace) =>
       progress.getByRole('button', { name: `${pace} 속도로 자동 진행`, exact: true }),

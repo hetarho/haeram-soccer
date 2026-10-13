@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
-import { advanceRound, clubNews, createWorld } from '../../packages/engine/src/index';
-import { stopOnlyFor } from './events';
+import { advanceRound, clubNews, createWorld, operate } from '../../packages/engine/src/index';
+import { chooseLevel } from './events';
 import { horizontalOverflow } from './layout';
 
 const founding = (seed: string) => ({
@@ -14,6 +14,8 @@ const founding = (seed: string) => ({
 const seed = (() => {
   for (let i = 0; i < 60; i++) {
     const w = createWorld(founding(`news-celebrate-${i}`));
+    // As the test plays it: the staff run the club at level 4 (→WEB-45).
+    operate(w, { type: 'intervention', level: 4 });
     advanceRound(w, undefined, false);
     if (clubNews(w).some((item) => item.celebrate)) return `news-celebrate-${i}`;
   }
@@ -21,8 +23,6 @@ const seed = (() => {
 })();
 
 async function found(page: Page) {
-  // Nothing but the test's own steps may stop the clock or open a card.
-  await stopOnlyFor(page, []);
   await page.setViewportSize({ width: 360, height: 740 });
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
@@ -30,6 +30,9 @@ async function found(page: Page) {
   await page.getByRole('button', { name: '넉넉한 출발', exact: false }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
+  // Nothing but the test's own steps may stop the clock or open a card: level 4 stops only for
+  // money and leaves offers to the staff.
+  await chooseLevel(page, 4);
 }
 async function playRound(page: Page) {
   await page

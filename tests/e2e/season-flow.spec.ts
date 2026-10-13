@@ -1,13 +1,11 @@
 import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
 import { horizontalOverflow } from './layout';
-import { stopOnlyFor } from './events';
 
 test('advances real days at each speed, stops and restores the saved calendar', async ({
   page,
 }) => {
-  // The paces are measured against match eves; offers from other clubs must not stop them.
-  await stopOnlyFor(page, ['match']);
+  // The paces are measured against match eves (level 2); this seed brings no offer before them.
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('season-flow');

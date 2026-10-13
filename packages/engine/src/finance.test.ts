@@ -16,7 +16,6 @@ import {
   careOffer,
   catchment,
   COACH_CRITERIA_DEFAULT,
-  COACH_KEYS,
   closeSeason,
   clubOf,
   createWorld,
@@ -309,7 +308,7 @@ describe('earned, auditable club finances', () => {
   it('books renewals and hires the delegated staff make at the close to the new season', () => {
     const w = world();
     w.cash = '999999999';
-    w.delegation = { ...w.delegation, ...Object.fromEntries(COACH_KEYS.map((key) => [key, true])) };
+    w.intervention = 4;
     // Paid coaches whose contracts end at this close: the ablest one the staff keep (no candidate
     // is 3 better), the other no longer meets the criteria and is replaced.
     w.hiring = { coaches: { attack: { ...COACH_CRITERIA_DEFAULT, priority: 'ability' } } };

@@ -106,9 +106,9 @@ test('a 1.15 career at intervention level 2 with a reserved strategy upgrades to
     difficulty: 2,
   });
   const reserved = BUILD_PRESETS.find((preset) => preset.id === 'local-pride')!;
-  // Rules 1.15 at intervention level 2: training and the academy delegated, contract talks not
-  // yet a switch; the attack department at coaching level 최고, this season's strategy change
-  // spent and next season's strategy reserved. The clock stops stay at their defaults.
+  // Rules 1.15 at intervention level 2: staff switches with training and the academy delegated,
+  // contract talks not yet a switch; the attack department at coaching level 최고, this season's
+  // strategy change spent and next season's strategy reserved.
   Object.assign(world, {
     engine: '1.15.0',
     delegation: { training: true, academy: true },
@@ -116,6 +116,7 @@ test('a 1.15 career at intervention level 2 with a reserved strategy upgrades to
     buildYear: world.year,
     buildNext: { build: reserved.build },
   });
+  delete world.intervention;
   delete world.hiring;
   delete world.buildChanged;
   await seed(page, await encode(world, 1, 0));
@@ -127,8 +128,9 @@ test('a 1.15 career at intervention level 2 with a reserved strategy upgrades to
     await decode((await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:b')))!)
   ).world;
   expect(upgraded.engine).toBe(CURRENT_ENGINE_VERSION);
-  // Contract talks join the academy, so the world still reads as level 2, not 맞춤.
-  expect(upgraded.delegation).toMatchObject({ academy: true, contracts: true });
+  // The switches load as the level they were set by: 2, contract talks with the staff.
+  expect(upgraded.intervention).toBe(2);
+  expect(Object.hasOwn(upgraded, 'delegation')).toBe(false);
   const trigger = page
     .getByRole('region', { name: '시즌 진행', exact: true })
     .getByRole('button', { name: /^개입 수준/ });
@@ -158,13 +160,12 @@ test('a 1.15 career at intervention level 2 with a reserved strategy upgrades to
     'true',
   );
   await expect(page.getByText(/에 변경 가능/)).toHaveCount(0);
-  // The attack coach's criteria show once his department is handed to the staff.
+  // The attack coach's criteria show at any level; they act once level 4 hands hiring over.
   await page.getByRole('button', { name: '선수·스태프', exact: true }).first().click();
   await page
     .getByRole('tablist', { name: '선수·스태프 보기' })
     .getByRole('tab', { name: '코치진', exact: true })
     .click();
-  await page.getByRole('checkbox', { name: '공격 코치 자동으로 결정', exact: true }).check();
   await expect(page.getByText(/능력 65 이상 · 능력 높은 순/)).toBeVisible();
 });
 

@@ -33,7 +33,7 @@ function world(focus: TrainingFocus = 'balanced') {
   w.manager.youth = 60;
   w.tactic = 'balanced';
   // These cases exercise the owner's focus; delegated staff would rest this fatigue-50 squad.
-  w.delegation = { ...w.delegation, training: false };
+  w.intervention = 1;
   for (const player of w.players) {
     player.born = w.year - 20;
     player.potential = 85;

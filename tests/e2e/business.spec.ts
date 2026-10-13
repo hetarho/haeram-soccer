@@ -19,7 +19,7 @@ import { clubOf, quote } from '../../packages/engine/src/world';
 import { compactMoney, number } from '../../apps/web/src/ui/format';
 import type { World } from '../../packages/contracts/src/types';
 import { horizontalOverflow, settle } from './layout';
-import { acknowledgeEvents } from './events';
+import { acknowledgeEvents, chooseLevel } from './events';
 
 async function exportWorld(page: Page): Promise<World> {
   await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
@@ -172,20 +172,22 @@ test('pays sponsor installments only for league games after the actual contract'
   );
 });
 
-test("the sponsor switch signs an empty slot's best offer", async ({ page }) => {
+test("at level 4 the commercial staff sign an empty slot's best offer", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await found(page, 'sponsor-switch-ui');
   await openBusiness(page, '후원');
-  // 후원 ends with the sponsors' staff switch and its rule in words (→ECON-21).
+  // 후원 ends with who signs sponsors at the current level, never a switch (→ECON-21, WEB-45).
   const delegation = page.getByRole('region', { name: '후원 위임' });
-  const toggle = delegation.getByRole('checkbox', { name: '스폰서 자동 계약' });
-  await expect(toggle).not.toBeChecked();
-  await expect(delegation).toContainText('안정형 제안 중 보장 금액이 가장 큰');
+  const owner = delegation.getByTestId('decision-owner-business');
+  await expect(delegation.getByRole('checkbox')).toHaveCount(0);
+  await expect(owner).toContainText('직접 결정');
+  await expect(owner).toContainText('후원 계약은 직접 골라요');
   await expect(page.getByTestId('sponsor-local-stable')).toBeVisible();
-  await toggle.click();
-  await expect(toggle).toBeChecked();
+  await chooseLevel(page, 4);
+  await expect(owner).toContainText('자동 결정');
+  await expect(owner).toContainText('안정형 제안 중 보장 금액이 가장 큰');
   const delegated = await exportWorld(page);
-  expect(delegated.delegation?.business).toBe(true);
+  expect(delegated.intervention).toBe(4);
   expect(delegated.sponsors ?? []).toEqual([]);
   const best = sponsorOffers(delegated, 'local')
     .filter((offer) => offer.kind === 'stable')
@@ -204,11 +206,7 @@ test("the sponsor switch signs an empty slot's best offer", async ({ page }) => 
   await openBusiness(page, '후원');
   await expect(page.getByTestId('sponsor-contract-local')).toContainText(best.name);
   await expect(page.getByRole('button', { name: '지역 후원 계약', exact: true })).toHaveCount(0);
-  await expect(
-    page.getByRole('region', { name: '후원 위임' }).getByRole('checkbox', {
-      name: '스폰서 자동 계약',
-    }),
-  ).toBeChecked();
+  await expect(page.getByTestId('decision-owner-business')).toContainText('자동 결정');
 });
 
 test('separates campaign recovery and net ranges and settles after four real rounds', async ({

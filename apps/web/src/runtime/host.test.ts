@@ -17,6 +17,7 @@ import {
 import { FOUNDING_YEAR } from '../../../../packages/engine/src/world';
 import { professionalStart } from '../../../../packages/engine/src/testing';
 import { headToHead } from './headToHead';
+import { STOP_KINDS } from './progression';
 const input = {
   country: 'ENG' as const,
   name: 'Worker Athletic',
@@ -55,6 +56,34 @@ describe('worker command protocol', () => {
     expect(h.world?.round).toBe(1);
     expect(stale.ok).toBe(false);
     expect((await h.handle({ ...a, session: 'expired', requestId: 'expired' })).ok).toBe(false);
+  });
+  it('takes the intervention level by command and a day step stopping for every kind (→WEB-45)', async () => {
+    const h = new Host();
+    await h.handle(req('create', -1, { type: 'found', input }));
+    const level = await h.handle(
+      req('level', 0, { type: 'command', command: { type: 'intervention', level: 1 } }),
+    );
+    expect(level.ok).toBe(true);
+    expect(h.world!.intervention).toBe(1);
+    // Level 1 stops for every event kind, so the step names all of them.
+    const step = await h.handle(
+      req('step', 1, {
+        type: 'command',
+        command: { type: 'advance-days', days: 1, stop: [...STOP_KINDS] },
+      }),
+    );
+    expect(step.ok).toBe(true);
+    expect(
+      (
+        await h.handle(
+          req('bad-level', 2, {
+            type: 'command',
+            command: { type: 'intervention', level: 5 as never },
+          }),
+        )
+      ).ok,
+    ).toBe(false);
+    expect(h.world!.intervention).toBe(1);
   });
   it('validates commands before applying money or revisions and keeps complete archives behind projections', async () => {
     const h = new Host();

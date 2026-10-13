@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import {
-  createWorld,
-  operate,
   advanceRound,
-  transferOffers,
-  simulateSeason,
-  moneyLabel,
-  staffCandidates,
   contractSeason,
+  createWorld,
+  delegated,
+  moneyLabel,
+  operate,
   ratio,
+  simulateSeason,
+  staffCandidates,
+  transferOffers,
 } from './index';
 const world = () =>
   createWorld({
@@ -45,10 +46,10 @@ describe('club decisions', () => {
   });
   it('refuses contract answers without a talk and the old single sponsor', () => {
     const w = world();
-    // New clubs leave contract talks to the staff (→STAFF-13); the new posts can be delegated.
-    expect(w.delegation).toMatchObject({ contracts: true });
-    operate(w, { type: 'delegate', key: 'manager', value: true });
-    expect(w.delegation?.manager).toBe(true);
+    // New clubs leave contract talks to the staff (→STAFF-13); level 4 hands over the manager post.
+    expect(delegated(w, 'contracts')).toBe(true);
+    operate(w, { type: 'intervention', level: 4 });
+    expect(delegated(w, 'manager')).toBe(true);
     const before = structuredClone(w);
     const player = w.players[0].id;
     // Contract answers need a talk the player opened (→CLUB-26).
@@ -110,7 +111,7 @@ describe('club decisions', () => {
     const plain = world(),
       busy = world();
     operate(busy, { type: 'read-inbox' });
-    operate(busy, { type: 'delegate', key: 'academy', value: true });
+    operate(busy, { type: 'intervention', level: 3 });
     operate(busy, { type: 'read-inbox' });
     expect(busy.revision).toBe(plain.revision + 3);
     for (const w of [plain, busy]) {

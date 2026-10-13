@@ -317,7 +317,7 @@ it('builds a codec checkpoint of a 10-season career that decodes to the same wor
 it('keeps a signed slot contract through a load and never signs that slot twice, so checkpoints still load', async () => {
   const { advanceDays } = await import('../../../../packages/engine/src/index');
   const w = world();
-  w.delegation = { ...w.delegation, business: true };
+  w.intervention = 4;
   advanceDays(w, 1);
   const loaded = (await decode(await encode(w))).world;
   expect(loaded.sponsors).toEqual(w.sponsors);

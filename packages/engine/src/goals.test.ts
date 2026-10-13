@@ -93,6 +93,7 @@ describe('milestones from retained club facts', () => {
       player.potential = 85;
     }
     prospect.born = w.year - 20;
+    w.intervention = 1;
     operate(w, { type: 'training', focus: 'recovery' });
     advanceRound(w, undefined, false);
     expect(byId(w, 'player-growth').current).toBe(0);

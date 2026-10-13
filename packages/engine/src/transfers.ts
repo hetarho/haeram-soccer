@@ -13,6 +13,7 @@ import { staffEffects } from './staff';
 import { managerStyleEffects } from './styles';
 import { buildEffects, buildOf, cardOf } from './build';
 import { pushInbox } from './inbox';
+import { delegated } from './intervention';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 /** Daily chance that another club bids for one of our players while a window is open. */
@@ -624,7 +625,7 @@ function listedOffers(w: World, day: number, until: number) {
     };
     w.bids = [...(w.bids || []), bid];
     const summary = `${p.role} · ${w.year - p.born}세 · 능력 ${overall(p)} · 평가 가치 ${moneyLabel(w, value)}`;
-    if (w.delegation?.transfers) {
+    if (delegated(w, 'transfers')) {
       // The owner listed him to sell: the staff take the offer.
       completeSale(w, bid, p);
       pushInbox(w, {
@@ -713,7 +714,7 @@ function incomingBid(w: World, day: number, until: number) {
     );
     return;
   }
-  if (w.delegation?.transfers) {
+  if (delegated(w, 'transfers')) {
     const starters = new Set(ownStarters(w).map((p) => p.id));
     // A starter leaves only when an ageing player has a ready bench replacement in his role.
     const covered = activePlayers(w).some(

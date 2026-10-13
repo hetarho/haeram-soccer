@@ -18,7 +18,7 @@ describe('team state', () => {
   it('recommends recovery when the starters are tired', () => {
     const w = world();
     for (const player of w.players) player.fatigue = 55;
-    w.delegation = { ...w.delegation, training: false };
+    w.intervention = 1;
     const fatigue = teamStates(w).find((state) => state.key === 'fatigue')!;
     expect(fatigue.tone).toBe('warn');
     // Recovery training is a setting of 훈련: the remedy opens it with 회복 ready to apply and
@@ -29,7 +29,7 @@ describe('team state', () => {
     expect(recovery.command).toBeUndefined();
     expect(rest.command).toEqual({ type: 'care', kind: 'rest-day' });
     // A delegated assistant already switches to recovery, so the quick choices are requests.
-    w.delegation = { ...w.delegation, training: true };
+    w.intervention = 2;
     const delegated = teamStates(w).find((state) => state.key === 'fatigue')!;
     expect(delegated.advice!.text).toContain('회복 훈련 중');
     expect(delegated.advice!.actions.map((action) => action.command)).toEqual([

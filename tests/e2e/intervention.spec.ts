@@ -1,5 +1,5 @@
 import { chooseOption, selectOptions } from './select';
-import { stopOnlyFor } from './events';
+import { chooseLevel } from './events';
 import { test, expect } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
 
@@ -90,12 +90,12 @@ for (const viewport of [
   test(`intervenes over the league without losing filters or interrupting progress at ${viewport.width}`, async ({
     page,
   }) => {
-    // Only the match eve may stop the clock here, so an incoming offer cannot interrupt it.
-    await stopOnlyFor(page, ['match']);
     await page.setViewportSize(viewport);
     await page.goto('/');
     await page.getByRole('button', { name: '클럽 창단' }).click();
     await expect(page.getByTestId('club-hub')).toBeVisible();
+    // Level 4 stops only for money, so an incoming offer cannot interrupt the clock here.
+    await chooseLevel(page, 4);
     const nav = page.getByRole('navigation', {
       name: viewport.width < 760 ? '모바일 게임 메뉴' : '게임 메뉴',
       exact: true,

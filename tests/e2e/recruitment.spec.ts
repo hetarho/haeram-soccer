@@ -10,7 +10,7 @@ import { lineupSummary } from '../../packages/engine/src/strategy';
 import { compactMoney, money } from '../../apps/web/src/ui/format';
 import type { World } from '../../packages/contracts/src/types';
 import { horizontalOverflow } from './layout';
-import { stopOnlyFor } from './events';
+import { chooseLevel } from './events';
 
 async function exportWorld(page: Page): Promise<World> {
   await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
@@ -253,8 +253,6 @@ test('disables an unaffordable fee while keeping a cheaper loan available with h
 test('keeps the clock running while comparing candidates away from home until the owner stops it', async ({
   page,
 }) => {
-  // Only the match eve may stop the clock here, so an incoming offer cannot interrupt it.
-  await stopOnlyFor(page, ['match']);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
@@ -299,19 +297,31 @@ test('keeps the clock running while comparing candidates away from home until th
   expect(after.players.filter((player) => player.status === 'active')).toHaveLength(18);
 });
 
-test('the market ends with the offer switch and names the recruitment level, opening the board', async ({
+test('the market ends with who answers offers and names the recruitment level, opening the board', async ({
   page,
 }) => {
   await foundMarket(page, 'offer-switch-journey');
-  // The offers' own switch, off for a new club; the sale bar shows once it is on (→CLUB-18).
+  // Who answers is the intervention level's alone: no switch of its own (→WEB-45, CLUB-18).
   const offers = page.getByRole('region', { name: '이적 제안 위임' });
-  const delegated = offers.getByRole('checkbox', { name: '자동으로 결정', exact: true });
-  await expect(delegated).not.toBeChecked();
-  await expect(offers).not.toContainText('130%');
-  await delegated.check();
-  await expect(delegated).toBeChecked();
+  const owner = offers.getByTestId('decision-owner-transfers');
+  await expect(offers.getByRole('checkbox')).toHaveCount(0);
+  await expect(owner).toContainText('직접 결정');
+  await expect(owner).toContainText('개입 2 · 중요한 결정만');
+  // The sale bar the staff apply shows at every level.
   await expect(offers).toContainText('130%');
   await expect(offers).toContainText('80% 밑으로는 내리지 않아요');
+  await chooseLevel(page, 4);
+  await expect(owner).toContainText('자동 결정');
+  await expect(owner).toContainText('개입 4 · 운영진에 모두 맡기기');
+  // The line opens the one place the level is chosen.
+  await owner.getByRole('button', { name: /^개입 수준 바꾸기/ }).click();
+  const dialog = page.getByRole('dialog', { name: '개입 수준', exact: true });
+  await expect(dialog.getByRole('radio', { name: /^4\. 운영진에 모두 맡기기/ })).toHaveAttribute(
+    'aria-checked',
+    'true',
+  );
+  await dialog.getByRole('button', { name: '설정 완료', exact: true }).click();
+  await expect(dialog).toBeHidden();
   expect(await horizontalOverflow(page)).toBe(0);
   // The recruitment level is a line that opens its home on the operating board (→WEB-71).
   await page.getByRole('button', { name: /^영입 기조 · 균형/ }).click();

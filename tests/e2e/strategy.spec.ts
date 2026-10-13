@@ -1,11 +1,9 @@
 import { expect, test } from '@playwright/test';
-import { stopOnlyFor } from './events';
 import { horizontalOverflow } from './layout';
 
 test('applies a preset at once, shows its cards locked, and saves its own strategy', async ({
   page,
 }) => {
-  await stopOnlyFor(page, []);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();

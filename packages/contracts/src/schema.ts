@@ -551,23 +551,7 @@ export const worldSchema: z.ZodType<World> = z.object({
   academy: z
     .strictObject({ players: z.array(player).max(60), intakeYear: z.number().int().optional() })
     .optional(),
-  delegation: z
-    .strictObject({
-      training: z.boolean().optional(),
-      academy: z.boolean().optional(),
-      transfers: z.boolean().optional(),
-      business: z.boolean().optional(),
-      contracts: z.boolean().optional(),
-      manager: z.boolean().optional(),
-      'coach:assistant': z.boolean().optional(),
-      'coach:attack': z.boolean().optional(),
-      'coach:defense': z.boolean().optional(),
-      'coach:goalkeeping': z.boolean().optional(),
-      'coach:fitness': z.boolean().optional(),
-      'coach:youth': z.boolean().optional(),
-      'coach:scout': z.boolean().optional(),
-    })
-    .optional(),
+  intervention: z.literal([1, 2, 3, 4]).optional(),
   bids: z.array(bid).max(200).optional(),
   morale: z.number().finite().min(0).max(100).optional(),
   build: clubBuildSchema.optional(),
@@ -766,34 +750,59 @@ function legacyCoaching(levels: Record<string, unknown>, hiring: unknown) {
   return Object.keys(merged).length ? { ...kept, coaches: merged } : hiring;
 }
 /**
- * Rules before 1.16 (→SAVE-10): one coach-hiring switch (`staff`) becomes every department's
- * switch, coaching investment levels (`coaching`) become coach criteria, the yearly strategy lock
- * (`buildYear`) goes, so every slot is free, and so does the manager rule (`managerRule`), which
- * no released rules wrote.
+ * Rules before 1.16 (→SAVE-10): coaching investment levels (`coaching`) become coach criteria,
+ * the yearly strategy lock (`buildYear`) goes, so every slot is free, and so does the manager rule
+ * (`managerRule`), which no released rules wrote.
  */
 function legacyLevers(input: unknown): unknown {
   if (!isRecord(input)) return input;
   const { buildYear, managerRule, coaching, ...rest } = input;
-  const delegation = isRecord(rest.delegation) ? rest.delegation : undefined;
-  if (
-    !(delegation && 'staff' in delegation) &&
-    [buildYear, managerRule, coaching].every((value) => value === undefined)
-  )
-    return input;
+  if ([buildYear, managerRule, coaching].every((value) => value === undefined)) return input;
   const out: Record<string, unknown> = rest;
   // Rules 1.9's club-wide level is already a record here (legacyMarket).
   if (isRecord(coaching)) {
     const hiring = legacyCoaching(coaching, rest.hiring);
     if (hiring !== undefined) out.hiring = hiring;
   }
-  if (delegation && 'staff' in delegation) {
-    const { staff, ...keys } = delegation;
-    out.delegation = {
-      ...Object.fromEntries(staffRole.options.map((role) => [`coach:${role}`, staff])),
-      ...keys,
-    };
-  }
   return out;
+}
+/** The staff switches saves kept before the intervention level (→SAVE-10). */
+const legacySwitches = z.strictObject({
+  training: z.boolean().optional(),
+  academy: z.boolean().optional(),
+  transfers: z.boolean().optional(),
+  business: z.boolean().optional(),
+  contracts: z.boolean().optional(),
+  manager: z.boolean().optional(),
+  // Rules before 1.16: one coach-hiring switch for every department.
+  staff: z.boolean().optional(),
+  ...Object.fromEntries(
+    staffRole.options.map((role) => [`coach:${role}`, z.boolean().optional()] as const),
+  ),
+});
+/** Switches only level 4 turned on (→WEB-45). */
+const LEVEL_FOUR_SWITCHES = ['transfers', 'business', 'manager', 'staff'];
+/**
+ * Staff switches (`delegation`) become the intervention level (→SAVE-10): 4 when offers,
+ * sponsors, a coaching department or the manager post were delegated, else 2 when any decision
+ * was, else 1. A saved level wins; malformed switches are refused.
+ */
+function legacyIntervention(input: unknown): unknown {
+  if (!isRecord(input) || !('delegation' in input)) return input;
+  const { delegation, ...rest } = input;
+  if (delegation === undefined) return rest;
+  const on = Object.entries(legacySwitches.parse(delegation))
+    .filter(([, value]) => value)
+    .map(([key]) => key);
+  if (rest.intervention === undefined)
+    rest.intervention = on.some(
+      (key) => LEVEL_FOUR_SWITCHES.includes(key) || key.startsWith('coach:'),
+    )
+      ? 4
+      : on.length
+        ? 2
+        : 1;
+  return rest;
 }
 
 /** Catalog facts a load needs to bring older rules forward; contracts never import catalogs (→ARCH-4). */
@@ -828,7 +837,7 @@ function legacySponsor(w: World, country: string, catalog: LoadCatalog | undefin
 
 /** `catalog` is needed only for a world from rules before 1.16 that has a sponsor. */
 export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
-  const w = worldSchema.parse(legacyLevers(legacyMarket(legacyVision(input))));
+  const w = worldSchema.parse(legacyIntervention(legacyLevers(legacyMarket(legacyVision(input)))));
   const ids = new Set(w.clubs.map((c) => c.id));
   if (ids.size !== w.clubs.length || !ids.has(w.playerClub))
     throw new Error('저장된 클럽 식별자가 올바르지 않습니다.');

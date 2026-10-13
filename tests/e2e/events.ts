@@ -1,39 +1,27 @@
 import { expect, type Page } from '@playwright/test';
 
-const STOP_KINDS = [
-  'match',
-  'window-open',
-  'window-close',
-  'bid-response',
-  'incoming-bid',
-  'youth-intake',
-  'staff-report',
-  'staff-renewal',
-  'cup',
-  'finance',
-  'contract-talk',
-  'unhappy',
-  'transfer-request',
-  'sponsor-ending',
-] as const;
+const LEVEL_NAMES = ['모든 결정 확인', '중요한 결정만', '이적만 직접', '운영진에 모두 맡기기'];
 
 /**
- * Seeds the first-run clock stops (localStorage 'haeram-soccor:stop-on') so a test that is not
- * about events is not interrupted by, e.g., another club's offer arriving in the open window.
- * Choices the test makes later in the UI still persist across reloads.
+ * Picks the intervention level from the clock's popover (→WEB-45) once the game is shown. Level 4
+ * stops only for money, so a test that is not about events is not interrupted by, e.g., another
+ * club's offer arriving in the open window; new clubs start at level 2, which also stops on match
+ * eves and offers.
  */
-export async function stopOnlyFor(page: Page, kinds: (typeof STOP_KINDS)[number][]) {
-  await page.addInitScript(
-    ({ all, on }) => {
-      const key = 'haeram-soccor:stop-on';
-      if (!localStorage.getItem(key))
-        localStorage.setItem(
-          key,
-          JSON.stringify(Object.fromEntries(all.map((k) => [k, on.includes(k)]))),
-        );
-    },
-    { all: [...STOP_KINDS], on: kinds as string[] },
-  );
+export async function chooseLevel(page: Page, level: 1 | 2 | 3 | 4) {
+  const trigger = page.getByTestId('intervention-trigger');
+  await trigger.click();
+  await page
+    .getByTestId('intervention-popover')
+    .getByRole('radio', { name: new RegExp(`^${level}\\. `) })
+    .click();
+  await expect(trigger).toHaveAccessibleName(`개입 수준 · ${LEVEL_NAMES[level - 1]}`);
+  // The level is saved with the game: its outcome card says the worker applied it, and closing
+  // it keeps the card from covering the controls a test uses next.
+  const outcome = page.getByTestId('action-outcome');
+  await expect(outcome).toContainText('개입 수준을 바꿨어요');
+  await outcome.getByRole('button', { name: '확인', exact: true }).click();
+  await expect(outcome).toHaveCount(0);
 }
 
 /** The card shown when the clock stops for a match eve or an attention event. */
