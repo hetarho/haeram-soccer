@@ -41,12 +41,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- club-realism with T062–T069 is done on t062-standalone: push it as work/club-realism, let CI run every browser, then merge into main and push. ECON-29 bands still outside after T062 (owner accepted 261013, recorded): wage bill 36.2% (50–70), net 20.3% (−5..+10), 2000s commercial 12.3% / matchday 46.3%, ladder 6.0 seasons, 2nd/3rd-tier crowds 6,102 / 3,567; follow-up: per-country pre-1979 football index level or a country wage factor (update-ssot), and write the measured values into ECON-29.
-- three levers (branch work/levers): T070–T076 done and merged here; next T077 then T078 on this branch.
-- after the merge: fix CI's benchmark job (desktop pointer-to-second-frame p95 115 ms > 100 since one-result merged; 74–82 ms at c63554c), its own commit on main.
+- three levers on branch work/levers (pushed): T070–T076 done and merged here (unit 655, contract 11 incl. goldens, Chromium e2e of the people, training and money specs pass). Next: implement T077 (event cards and remedies open each setting's home), then T078 (upgrade journey, goldens, calibration check ENG/GER — no bankrupt reference career is the must-hold; record other drift in ECON-29 and move on; full three-browser e2e via CI). Then merge origin/main into work/levers (the benchmark fix on bench-fix memoises the shell, lazy-mounts league tabs and splits the management pages into a chunk — App.tsx, LiveSeason, PolicyBoard, Rich: expect conflicts), let CI pass, and merge into main.
+- benchmark (ARCH-28 p95 < 100 ms, entry ≤ 250 KiB): fix on branch bench-fix (cd8ad03, pushed), CI pending at handoff; merge into main when CI's benchmark job passes, else continue from bench-fix's STATE note.
+- owner's standing decisions (261013): decide without asking him; record gaps that do not change the game much and move on; push verified work (branch → CI in every browser → main); never touch his local checkout or its dev server on port 19500 while he may hold unsaved progress.
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 handoff: T073 merged; work/levers holds T070–T076; T077, T078 left; bench-fix pushed for CI
 - 261013 T073 done: 사람 tabs end with their switches and criteria editors (talk rule, offer switch with its sale bar, manager criteria with the pick preview, a switch and criteria per coaching department); the 위임 block is gone
 - 261013 T073 doing standalone on ia-people (c2f2db7)
 - 261013 T071 done: 사람/훈련 tabs with PageTabs and ?view=, older addresses landing on 사람's tabs, intervention levels as a preset without training, 스태프가 맡는 결정 opening each home
@@ -66,4 +67,3 @@
 - 261013 T062 doing standalone on t062-standalone (af28706), third attempt
 - 261013 create-task WEB r54 STAFF r13 ECON r17 CLUB r21 SAVE r23: T070–T078 three levers (ia-base T070 T071 → lanes people T072 T073, training T074, money T075 T076 → ia-finish T077 T078), T070 after T062
 - 261013 update-ssot WEB r54 STAFF r13 ECON r17 CLUB r21 SAVE r23: 사람/훈련/운영 tabs, one home per setting (WEB-71), intervention level a preset without training, hiring and renewal by criteria per manager and coaching department, talk rule replacing the squad-investment pay ceiling, strategy applied at once with 90-day slot locks and no reservation, squad investment scaling operating expenses; answers the pre-1.16 contract-delegation question (activation delegates talks where the academy is)
-- 261013 update-ssot WEB STAFF ECON CLUB SAVE start (three levers IA: people, training, money) on ia-plan
