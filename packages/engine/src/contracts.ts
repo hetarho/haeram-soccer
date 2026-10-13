@@ -305,10 +305,13 @@ export const TALK_CONFIG = {
   improveSeasons: 3,
   /** Goodwill, in percent of the demand, stays within these bounds. */
   goodwill: [-10, 30] as const,
-  /** What the delegated staff offer, in the window's terms: two seasons, one from `veteranAge`. */
-  staffTerm: 2 as TalkTerm,
+  /**
+   * What the delegated staff offer: `staffSeasons` seasons past this one, `veteranSeasons` from
+   * `veteranAge`, never ending before the running contract.
+   */
+  staffSeasons: 2,
   veteranAge: 32,
-  veteranTerm: 1 as TalkTerm,
+  veteranSeasons: 1,
 };
 /**
  * The terms a contract signed today takes (→CLUB-26): the summer window's whole seasons until
@@ -382,6 +385,21 @@ export function talkTerms(w: World, p: Player) {
     floor: ratio(demand, BigInt(Math.round((100 - goodwill.percent) * 100)), 10000n),
     goodwill,
   };
+}
+/**
+ * The term the delegated staff offer `p` today (→CLUB-26): the contract runs two seasons past this
+ * one (one from age 32) and never ends before the running one, in the window's terms — summer 3
+ * (2 from 32), winter 2 (1 from 32), raised to the running contract's remaining seasons when longer.
+ */
+export function staffTerm(w: World, p: Player): TalkTerm {
+  const past =
+      w.year - p.born >= TALK_CONFIG.veteranAge
+        ? TALK_CONFIG.veteranSeasons
+        : TALK_CONFIG.staffSeasons,
+    until = Math.max(p.until, w.year + 1 + past),
+    terms = TALK_TERMS[talkWindow(w)],
+    term = until - w.year - (talkWindow(w) === 'winter' ? 1 : 0);
+  return clamp(term, terms[0], terms[terms.length - 1]) as TalkTerm;
 }
 /** Whether a player is paid 25% or more below his market wage. */
 function underpaid(w: World, p: Player) {
@@ -578,10 +596,11 @@ export function seasonEndWithWage(w: World, p: Player, wage: string) {
   }
 }
 /**
- * Delegated staff (→STAFF-13) offer the floor for two seasons (one from 32), in the window's terms,
- * when it is within the squad investment's pay ceiling, cash after the raise still covers 13 rounds
- * of costs and the season's cash projection with the new wage from the next round still ends the
- * season covering them; otherwise they decline. Either way the talk's inbox item says why.
+ * Delegated staff (→STAFF-13) offer the floor for two seasons past this one (one from 32), never
+ * ending before the running contract (→staffTerm), when it is within the squad investment's pay
+ * ceiling, cash after the raise still covers 13 rounds of costs and the season's cash projection
+ * with the new wage from the next round still ends the season covering them; otherwise they
+ * decline. Either way the talk's inbox item says why.
  */
 export function staffTalkVerdict(w: World, p: Player) {
   const talk = p.talk!,
@@ -590,8 +609,7 @@ export function staffTalkVerdict(w: World, p: Player) {
     raise = BigInt(talk.floor) - BigInt(p.wage),
     perRound = (BigInt(operatingCosts(w).annual) + raise) / BigInt(SEASON_ROUNDS),
     runway = perRound * BigInt(CASH_WARNING_ROUNDS),
-    term =
-      w.year - p.born >= TALK_CONFIG.veteranAge ? TALK_CONFIG.veteranTerm : TALK_CONFIG.staffTerm;
+    term = staffTerm(w, p);
   if (BigInt(talk.floor) > BigInt(ceiling))
     return {
       accept: false as const,

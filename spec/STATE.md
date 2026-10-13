@@ -31,7 +31,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T069 | Contract follow-ups: delegated terms past this season, clauses for founding squads and refills, improved-contract labels | CLUB WEB | - | todo |
+| T069 | Contract follow-ups: delegated terms past this season, clauses for founding squads and refills, improved-contract labels | CLUB WEB | - | doing@261013.c62 |
 | T062 | Rules 1.16.0: economy calibration, goldens and docs | SAVE ECON CLUB | T056 T059 T061 T065 T066 T067 T068 T069 | todo |
 
 ## work
@@ -46,6 +46,7 @@
 - planner questions from the reviews: whether loading a pre-1.16 save delegates contract talks at intervention level 2+ (they show 맞춤 now, WEB-45); CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10); from T067/T068 — WEB-68's 1–5 term text and missing agent/clauses, how the staff's 2/1 seasons count in each window, terms outside a window, SAVE-10 naming agent activation. Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 T069 doing standalone on t062-standalone (42c6e15)
 - 261013 create-task CLUB r20 WEB r53: T069 contract follow-ups (delegated terms past this season, clauses for founding squads and refills, improved-contract labels); SAVE r22 no-op (code already activates agents); T062 depends on T069
 - 261013 update-ssot CLUB r20 SAVE r22 WEB r53: delegated terms past this season, late-answered terms by half-season, clauses for founding squads and refills; SAVE-10 lists 1.16.0's agents, clauses, broadcasting index and operatingExpenses; WEB-68 terms by window, agent and clauses
 - 261013 merged main (records room redesign, WEB r52) into t062-standalone: club-realism money notation kept in ClubTrends/RecordsRoom

@@ -95,7 +95,7 @@ export const STOP_LABELS: Record<InboxKind, string> = {
   'staff-renewal': '감독·코치 재계약·공석',
   cup: '컵 대진 발표',
   finance: '자금·후원 경고',
-  'contract-talk': '선수 재계약 협상',
+  'contract-talk': '선수 계약 협상',
   unhappy: '언해피 선수',
   'transfer-request': '선수 이적 요청',
   'sponsor-ending': '후원 계약 만료',

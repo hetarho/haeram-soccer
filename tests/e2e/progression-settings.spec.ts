@@ -153,6 +153,7 @@ test('mobile intervention levels set clock stops and staff delegation, and persi
     ['우리 선수 영입 제안', true],
     ['유소년 입단', true],
     ['스태프 보고', false],
+    ['선수 계약 협상', false],
     ['자금·후원 경고', true],
   ];
   for (const [label, on] of expected)

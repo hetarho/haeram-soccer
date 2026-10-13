@@ -517,7 +517,11 @@ describe('legacy activation and compatibility recovery', () => {
   it('gives players from before rules 1.16 their agents on activation, no clauses (→SAVE-10)', async () => {
     const legacy = createWorld(founding);
     legacy.engine = '1.15.0';
-    for (const p of legacy.players) delete p.agent;
+    // Rules 1.15 had neither agents nor contract clauses.
+    for (const p of legacy.players) {
+      delete p.agent;
+      delete p.clauses;
+    }
     storage.setItem('haeram-soccor:slot:a', await encode(legacy, 3, 2));
     storage.setItem(
       'haeram-soccor:manifest',

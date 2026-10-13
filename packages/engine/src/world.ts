@@ -22,7 +22,7 @@ import { CURRENT_ENGINE_VERSION } from '../../contracts/src/versions';
 import { coachProspect, MANAGER_CAREER } from './coaching';
 import { dayCountedFrom } from './calendar';
 import { MARKET_BANDS, STYLE_INFO, YOUTH_SELECTION_BONUS } from './styles';
-import { divisionFor, drawAgent, marketWageAt } from './contracts';
+import { divisionFor, drawAgent, marketWageAt, settleClauses } from './contracts';
 import { operatingExpensesAt } from './finance';
 export const ENGINE_VERSION = CURRENT_ENGINE_VERSION;
 export const TACTICS: Tactic[] = ['balanced', 'possession', 'counter', 'press'];
@@ -389,6 +389,8 @@ export function createBase(input: Founding): World {
   club.strength = base;
   club.elo = initialElo(base);
   const players = found(base);
+  // The founders sign on the founding day, each with his contract's clauses (→CLUB-29).
+  for (const p of players) p.clauses = settleClauses(input.seed, p, p.agent!, year, 0);
   const manager = makeManager(input.country, input.seed, year);
   // A club's first season pays the amateur level's floor of operating expenses (→ECON-30).
   const operatingExpenses = operatingExpensesAt(input.country, year, club.tier);

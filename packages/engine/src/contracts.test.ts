@@ -45,6 +45,7 @@ import {
   seasonEndWithWage,
   settleClauses,
   settleMorale,
+  staffTerm,
   suitorFor,
   talkFor,
   talkRoundChance,
@@ -304,6 +305,11 @@ describe('contract talks (→CLUB-26)', () => {
     const veteran = talking(70, 33);
     newYear(veteran.w);
     expect(veteran.p.until).toBe(veteran.w.year + 2);
+    // In the summer, a 33-year-old in his final season signs on until next season's close.
+    const summer = talking(70, 33);
+    talksOn(summer.w, transferWindowDays(summer.w.year).summerOpen);
+    expect(talkItems(summer.w, summer.p.id)[0].title).toContain('받아들였어요');
+    expect(summer.p.until).toBe(summer.w.year + 2);
 
     const broke = talking(80);
     operate(broke.w, { type: 'policy', key: 'support', level: 5 });
@@ -461,9 +467,35 @@ describe('contract talks (→CLUB-26)', () => {
     const [declined] = talkItems(short.w, short.p.id);
     expect(declined.title).toContain('거절했어요');
     expect(declined.detail).toContain('시즌 말 자금 전망');
-    // Accepted: the floor for two seasons, this one included.
-    expect(covered.p.until).toBe(covered.w.year + 2);
+    // Accepted: the floor for two seasons past this one (a summer term of three).
+    expect(covered.p.until).toBe(covered.w.year + 3);
     expect(talkItems(covered.w, covered.p.id)[0].title).toContain('받아들였어요');
+  });
+
+  it('never lets a delegated improved contract end before the running one', () => {
+    /** A delegated club whose 33-year-old has three seasons left, 30% below his market wage. */
+    const improving = (day: number) => {
+      const { w, p } = talking(70, 33);
+      operate(w, { type: 'policy', key: 'support', level: 5 });
+      p.until = w.year + 3;
+      p.wage = ((BigInt(marketWage(w, p)) * 70n) / 100n).toString();
+      talksOn(w, day);
+      expect(talkItems(w, p.id)[0].title).toContain('계약 개선 요구를 받아들였어요');
+      return { w, p };
+    };
+    // A veteran's offer would end next season's close; the running contract ends later, so it
+    // keeps that end: a summer term of three, a winter term of two.
+    for (const day of [0, transferWindowDays(world().year).winterOpen]) {
+      const { w, p } = improving(day);
+      expect(p.until).toBe(w.year + 3);
+      expect(staffTerm(w, { ...p, until: w.year + 1 })).toBe(day ? 1 : 2);
+    }
+    // Younger players sign for two seasons past this one in either window.
+    const { w, p } = talking(70, 26);
+    expect(staffTerm(w, p)).toBe(3);
+    w.calendar = { day: transferWindowDays(w.year).winterOpen };
+    expect(staffTerm(w, p)).toBe(2);
+    expect(talkUntil(w, staffTerm(w, p))).toBe(w.year + 3);
   });
 
   it('pays agreed wages as signed whatever the build', () => {
@@ -823,12 +855,40 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
     expect(promoted.clauses).toEqual(
       settleClauses(w.seed, promoted, promoted.agent!, w.year, currentDay(w)),
     );
-    // The founding squad signed before any clause.
-    expect(activePlayers(w)[0].clauses).toBeUndefined();
+  });
+
+  it('signs the founding squad and the close’s refills with clauses in CLUB-29’s ranges', () => {
+    const inRange = (p: Player) => {
+      expect(p.clauses).toBeDefined();
+      const { promotion, relegation } = p.clauses!;
+      if (promotion !== undefined) expect(promotion).toBeGreaterThanOrEqual(10);
+      if (promotion !== undefined) expect(promotion).toBeLessThanOrEqual(60);
+      if (relegation !== undefined) expect(relegation).toBeLessThanOrEqual(-25);
+      if (relegation !== undefined) expect(relegation).toBeGreaterThanOrEqual(-50);
+    };
+    const w = world();
+    // The founders sign on the founding day, each from his own stream.
+    for (const p of activePlayers(w)) {
+      inRange(p);
+      expect(p.clauses).toEqual(settleClauses(w.seed, p, p.agent!, w.year, 0));
+    }
+    expect(activePlayers(w).some((p) => p.clauses!.promotion)).toBe(true);
+    expect(activePlayers(w).some((p) => p.clauses!.relegation)).toBe(true);
+    // A squad left short at the close is refilled with players who sign their own clauses.
+    const close = professionalStart(world());
+    while (close.round < 46) advanceRound(close, undefined, false);
+    for (const p of activePlayers(close).slice(0, 4)) p.status = 'sold';
+    closeSeason(close);
+    const refills = activePlayers(close).filter((p) => p.id.includes(':youth:'));
+    expect(refills.length).toBeGreaterThanOrEqual(4);
+    for (const p of refills) inRange(p);
+    expect(refills.some((p) => Object.keys(p.clauses!).length)).toBe(true);
   });
 
   it('applies rises only to contracts carrying one, cuts on relegation, and reports the change', () => {
     const w = world();
+    // Only the contracts below carry clauses.
+    for (const p of activePlayers(w)) p.clauses = {};
     const [rise, cut, both, none, loan] = activePlayers(w);
     Object.assign(rise, { wage: '10000', clauses: { promotion: 25 } });
     Object.assign(cut, { wage: '10000', clauses: { relegation: -40 } });
@@ -872,7 +932,10 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
   it('activates a 1.15 world: every player gets the agent drawn from his id, no clauses', () => {
     const w = world();
     w.academy = { players: [makePlayer('ENG', w.seed, 'academy:old', w.year, 40, 'DEF', 16)] };
-    for (const p of [...w.players, ...w.academy.players]) delete p.agent;
+    for (const p of [...w.players, ...w.academy.players]) {
+      delete p.agent;
+      delete p.clauses;
+    }
     const before = structuredClone(w),
       activated = activateAgents(w);
     expect(w).toEqual(before);

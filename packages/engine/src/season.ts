@@ -26,7 +26,13 @@ import type {
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import { addMetrics, clamp, random, zeroMetrics, compareIds } from './primitives';
 import { activePlayers, addEvent, AMATEUR_CLUBS, clubOf, makePlayer, rating } from './world';
-import { applyClauses, contractTalks, expireContracts, transferRequests } from './contracts';
+import {
+  applyClauses,
+  contractTalks,
+  expireContracts,
+  signingClauses,
+  transferRequests,
+} from './contracts';
 import { simulateMatch } from './match';
 import { fatigueCost } from './strategy';
 import { developAnnually, settleTraining } from './training';
@@ -654,18 +660,19 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
           : roles.filter((p) => p.role === 'MID').length < 6
             ? 'MID'
             : 'FWD';
-    w.players.push(
-      makePlayer(
-        own.country,
-        w.seed,
-        `${own.id}:youth:${w.year}:${i++}`,
-        w.year,
-        youthLevel,
-        role,
-        18,
-        own.tier,
-      ),
+    const youth = makePlayer(
+      own.country,
+      w.seed,
+      `${own.id}:youth:${w.year}:${i++}`,
+      w.year,
+      youthLevel,
+      role,
+      18,
+      own.tier,
     );
+    // A refill signs at the close with his contract's clauses (→CLUB-29).
+    youth.clauses = signingClauses(w, youth);
+    w.players.push(youth);
   }
   own.reputation = clamp(own.reputation + Math.max(-1, table.points / 25 - 1));
   own.strength = rating(w, own);
