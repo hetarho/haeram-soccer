@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r25 | Define the implemented browser-demo behavior for squad and growth.
+> r26 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating equals its league's average club XI (±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -21,7 +21,7 @@
 - CLUB-11 [o] Training focus is balanced, youth or recovery, defaulting to balanced for older saves. It applies once at settled domestic round boundaries; selecting a focus, viewing it, or advancing idle days does not grant growth. Youth trades reduced recovery for faster young-player development; recovery trades development opportunity for fresher players.
   - fatigue recovered per round: balanced 11, youth 7, recovery 16 (before staff and policy bonuses). ← a regular starter's 10–13 per match then levels off under balanced training; pressing or youth focus still accumulates
 
-- CLUB-12 [o] Player development uses each player own potential gap, age, manager youth ability and facilities; young role-relevant skills grow only up to their current/potential ceiling. Record bounded cumulative actual positive development on the player, preserve retirement/history, and show current ability, potential and earned growth.
+- CLUB-12 [o] Player development uses each player own potential gap, age, manager youth ability and the training ground (→ECON-32); young role-relevant skills grow only up to their current/potential ceiling. Record bounded cumulative actual positive development on the player, preserve retirement/history, and show current ability, potential and earned growth.
   - each summer a player aged 23 or younger may break through (5%: potential +5 to +9) or stall (5%: −4 to −7); otherwise potential moves by at most 2; never below current ability or above 99. Changes of 4+ are events and news.
   - generated attributes top out at 99.
 
@@ -34,9 +34,9 @@
 
 - CLUB-15 [o] Recruitment previews distinguish automatic starter selection from optional manual-lineup replacement, never promise a win or guaranteed selection, and show post-fee cash and wage-inclusive fixed-cost runway excluding future revenue. Disable unaffordable/full/already-signed offers; free transfers still disclose wages.
 
-- CLUB-16 [o] The youth academy keeps prospects outside the first team in three age groups by their age in the season: U-17 (15–16), U-19 (17–18) and U-21 (19–20). Each season on 15 March 3–5 prospects aged 15–16 join U-17 (more with a strong youth director or facilities); they grow every settled round toward potential, faster the younger they are, can be promoted while the first team has room, or released; one who turns 21 unpromoted leaves at the season's close. ← real academies register boys from U-9, but a club's decisions start when he joins its U-16/U-17 group: groundstaff at 15 before 1972, scholars at 16 since
-  - younger age groups are not tracked as players: academy investment (→ECON-16), the youth director and facilities stand for them through the intake's size and potential.
-  - growth per settled round: min(0.3, gap to potential / 150) × the youth director, facilities, academy investment, build and synergy factors × the age group's (U-17 ×1.2, U-19 ×1.0, U-21 ×0.8) × the youth focus (→CLUB-31).
+- CLUB-16 [o] The youth academy keeps prospects outside the first team in three age groups by their age in the season: U-17 (15–16), U-19 (17–18) and U-21 (19–20). Each season on 15 March 3–5 prospects aged 15–16 join U-17 (more with a strong youth director or academy facilities); they grow every settled round toward potential, faster the younger they are, can be promoted while the first team has room, or released; one who turns 21 unpromoted leaves at the season's close. ← real academies register boys from U-9, but a club's decisions start when he joins its U-16/U-17 group: groundstaff at 15 before 1972, scholars at 16 since
+  - younger age groups are not tracked as players: academy investment (→ECON-16), the youth director and the academy facilities (→ECON-32) stand for them through the intake's size and potential.
+  - growth per settled round: min(0.3, gap to potential / 150) × the youth director, academy facilities, academy investment, build and synergy factors × the age group's (U-17 ×1.2, U-19 ×1.0, U-21 ×0.8) × the youth focus (→CLUB-31).
   - promotion signs a first professional contract, from 16 (17 in England); a prospect must still be ready to be promoted by the staff (→STAFF-13), so debuts at 16–17 stay rare in strong divisions and commoner in weak ones. ← measured: about 0.3 under-18 debutants per big-five club a season, 2009–2023 (CIES); weaker leagues field more debutants
   - academy investment (→ECON-16), the club build (→ECON-22) and the pipeline synergy (→CLUB-21) add prospects, potential and growth.
   - the operating board (→WEB-60) shows the exact chance that the next intake brings a prospect of potential 80+, from the same uniform draws the intake uses.
@@ -69,7 +69,7 @@
   | 철의 장막 | organizer or counter manager · defence coach 65+ or specialist · starting defenders' defence 62+ | opponent chances −1 point |
   | 유스 파이프라인 | academy investment 3+ · youth director developer or 70+ · developer manager or youth trait | academy growth ×1.15, intake potential +3 |
   | 머니볼 | 데이터 스카우팅 card · scout spotter or negotiator · recruitment level ≤ 2 | candidate potential +3, fees ×0.92 |
-  | 상업 제국 | 상업 확장 revenue card · marketing 4+ · facilities 6+ | new sponsor offers ×1.1 |
+  | 상업 제국 | 상업 확장 revenue card · marketing 4+ · a stadium of 30,000+ | new sponsor offers ×1.1 |
   | 원 팀 | motivator manager · squad investment 4+ · morale 65+ | morale baseline +3 |
   | 우리 동네 아이들 | 성골 유스 or 유소년 클럽 제휴 · 지역 밀착 · 가족 같은 클럽 | morale baseline +2, intake potential +2 |
   | 트레이딩 머신 | 데이터 스카우팅 · 1군 직행 경로 · 셀링 클럽 or 쇼케이스 | candidate potential +2, academy growth ×1.1 |
@@ -130,6 +130,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r26 261013 CLUB-12✎ facilities→the training ground; CLUB-16✎ facilities→academy facilities; CLUB-21✎ 상업 제국 facilities 6+→stadium 30,000+
 - r25 261013 CLUB-13✎ the owner's focus at intervention level 1, the assistant's otherwise→always the assistant's, owner suggestions or forced orders (→STAFF-19); CLUB-16✎ one academy→U-17/U-19/U-21 by age, growth ×1.2/1.0/0.8, leave at 21 (was 22, staff release at 19), promotion from 16 (17 in England); CLUB-31+ youth training focus by the youth director
 - r24 261013 CLUB-13✎ choosing a focus took the decision back from the assistant→refused while the level delegates it
 - r23 261013 CLUB-30✎ agent premium 3%→1% of the demand per level above 1

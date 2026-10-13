@@ -17,20 +17,22 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 57 | 57 | - | 0 |
+| WEB | 58 | 58 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
-| CLUB | 25 | 25 | - | 0 |
+| CLUB | 26 | 26 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
 | STAFF | 15 | 15 | - | 0 |
-| ECON | 21 | 21 | - | 0 |
+| ECON | 22 | 22 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 7 | 7 | - | 0 |
-| SAVE | 27 | 27 | - | 0 |
+| HIST | 8 | 8 | - | 0 |
+| SAVE | 28 | 28 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T084 | facility parts: stadium steps, training ground, academy facilities (engine, economy) | ECON CLUB HIST SAVE | T083 | doing@261013.ivl |
+| T085 | 운영 › 시설 shows the three parts and their works | WEB ECON | T084 | todo |
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
@@ -38,7 +40,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- owner's requests 261013, in this order after T080 (work/intervention, 41213cb): (1) done: T081; (2) done: T082/T083 — training is always the coaches' call: 훈련 shows what drives development and how it goes (multipliers), the owner suggests a focus like a manager request or forces it at the risk of the coach leaving, the same for youth training; academy intake below 15 if real football supports it, rare senior debuts at 16–17, youth squads U-17/U-19/U-21 (research real academies first); (3) facilities: the stadium grows by parts — expansions (증축) and rebuilds (재건축) in real steps (e.g. 10k → 15k → 30k → 40k), not 5,000 seats at a time.
+- owner's requests 261013, in this order after T080 (work/intervention, 41213cb): (1) done: T081; (2) done: T082/T083 — training is always the coaches' call: 훈련 shows what drives development and how it goes (multipliers), the owner suggests a focus like a manager request or forces it at the risk of the coach leaving, the same for youth training; academy intake below 15 if real football supports it, rare senior debuts at 16–17, youth squads U-17/U-19/U-21 (research real academies first); (3) in progress: T084/T085 — facilities: the stadium grows by parts — expansions (증축) and rebuilds (재건축) in real steps (e.g. 10k → 15k → 30k → 40k), not 5,000 seats at a time.
 - three levers and the economy port are on main (fast-forward to 2de95c6, 261013): T070–T079 done — T077 d303c5e, T078 fe7b209/8c52745, T079 merged from work/econ-port at 11c9c5c/66ce736 (unit 658, contract 11, build pass; goldens equal work/econ-port's). CI run 38382526028 on 2de95c6 passed every job (checks, the benchmark, e2e in Chromium, Firefox and both WebKit shards); the run before it on 66ce736 failed only Firefox e2e, which passed in full locally (102 passed, 2 skipped) and on the rerun — a flake. work/levers and work/econ-port are merged and can be deleted. Next: pick from the follow-ups below.
 - benchmark (ARCH-28 p95 < 100 ms, entry ≤ 250 KiB) is flaky on CI since the three levers: run 38386097171 on main a25a5ec (a docs-only commit) failed "Verify browser performance against the production build", while the same code passed on 2de95c6 in runs 38382526028 and 38386061266. scripts/first-play.mjs clicks the new navigation (선수·스태프, 훈련·육성, 구단 운영, 리그, 컵 대회, 클럽 기록실 in 게임 메뉴); locally (host load 11–22) the entry was 239,264 B gzip, mobile p95 39–69 ms and desktop p95 118–149 ms, so the desktop gate has no headroom. Next (first): profile the desktop clicks' first render of 사람 and 훈련 (lazy management chunk) and the records room, cut the slow frame below 100 ms with margin, then let CI pass twice in a row. Rerunning the job is the stopgap.
 - economy calibration ported (T079 done on work/econ-port, merged into work/levers): the other machine's calibration from origin/alt/club-realism-local plus this line's later rules holds every ECON-29 band on 24 careers — wage bill 46.1% of revenue, operating result +3.4% before player trading, 2000s mix 43.2/33.7/23.1%, 1950s matchday 89.5%, ladder 95.5 seasons, none bankrupt, established-club crowds in band (ECON r20, CLUB r23, SAVE r24; agent premium 3%→1% was the only retune). T078 measured ENG/GER on the code before this port (wage bill 33.2%, net 21.6%, none bankrupt); the T079 table above, on the merged code, supersedes it.
@@ -48,6 +50,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 update-ssot ECON r22 CLUB r26 HIST r8 WEB r58 SAVE r28: facilities as three parts (stadium 8 expansion/rebuild steps to 90,000, training ground and academy 1–5) → T084 (doing), T085
 - 261013 T082 T083 done (094fa13): coaches set training, owner suggests or forces, academy U-17/U-19/U-21; Chromium e2e 104, unit 666, contract 11, benchmark pass
 - 261013 create-task → T082 (engine), T083 (web); T082 doing standalone on work/intervention
 - 261013 update-ssot CLUB r25 STAFF r15 WEB r57 SAVE r27: coaches always set training (owner suggests or forces, risking a resignation), academy U-17/U-19/U-21 with youth focus, promotion from 16 (17 ENG), leave at 21; research: EPPP, CIES debut data
@@ -67,4 +70,3 @@
 - 261013 T079 doing standalone on econ-port (00a483d), branch work/econ-port
 - 261013 update-ssot ECON r19 CLUB r22 SAVE r24: the other machine's calibration ported (broadcasting index series, prizes on it, facilities on the football index at 1.58, expenses the larger of the division amount and the turnover share, 65% delegated wage check, established-club crowds); create-task T079
 - 261013 T077 done: event cards and remedies open each setting's home (코치진, the one intervention dialog, 후원/재정, 훈련 with 회복 suggested, the board with marketing, squad investment or ticket drafted)
-- 261013 T077 doing standalone on levers (00a483d)

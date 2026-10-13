@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r7 | Define the implemented browser-demo behavior for durable metrics and history.
+> r8 | Define the implemented browser-demo behavior for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -11,7 +11,7 @@
 - HIST-7 [o] Statistical changes after an action are observations with markers, not proof of causality; show relevant period and actual applied changes.
 - HIST-8 [o] No automatic expiry/pruning, data uploads or silent loss on save/import. Capacity errors keep the current save and offer export.
 - HIST-9 [o] Validate 100-season own-club and global summary retention within the ARCH save budget.
-- HIST-10 [o] Milestone completion derives from retained matches, events, player development, facilities and season archives. It grants no synthetic cash, performance multiplier or repeatable claim reward; viewing, importing and reloading the same career reproduce the same completed milestones.
+- HIST-10 [o] Milestone completion derives from retained matches, events, player development, facility work (→ECON-32) and season archives. It grants no synthetic cash, performance multiplier or repeatable claim reward; viewing, importing and reloading the same career reproduce the same completed milestones.
 - HIST-11 [o] Club news is derived from retained facts on every read and never stored: the same career always produces the same feed with stable item IDs. ← news must never contradict the record, and storing it would only duplicate facts
   - every own match yields one result line (comeback, ≥88′ winner or equaliser, a two-goal lead thrown away, rout, heavy defeat, clean win or the plain result, with possession, shots and xG), then at most 4 more items ranked by weight; major items and celebrations always stay.
   - sources: streaks across seasons, home/away runs, the opening five, possession and first-goal splits, xG against the result and finishing gaps, season highs and lows, player braces, hat-tricks, one-man shows, debut and academy first goals, scoring runs, droughts and milestones, keepers' saves, defensive actions and advanced counters; the round standings (top of the table, leads, promotion and relegation zones, three-place climbs); club events (official signings and departures, manager changes, academy, facilities, sponsor, vision, owner requests, cup rounds won and lost, retirement announcements and retirements, injuries, potential breakthroughs and stalls) and the closed season's honours.
@@ -22,7 +22,7 @@
 
 - HIST-12 [o] Club ratings and values are recorded facts. ← fans follow a club's standing and worth over decades, not only its division
   - every club carries a Club Elo updated after every settled result in every competition: K 20, home advantage 60, margin weight 1 / 1.5 / (11 + margin)/8; it starts at 1350 + 16 × (strength − 60).
-  - each season archive keeps the own club's Elo and its rank among all clubs, the squad value (sum of player values), the club value (squad value + half the facility build cost + a brand of one unit per 20 supporters × (1 + reputation/100) + cash) and how far it went in each cup.
+  - each season archive keeps the own club's Elo and its rank among all clubs, the squad value (sum of player values), the club value (squad value + half the build cost of the facility parts (→ECON-32) + a brand of one unit per 20 supporters × (1 + reputation/100) + cash) and how far it went in each cup.
   - views convert past money to today's prices and currency; the league position chart counts every club in the divisions above plus the rank.
 - HIST-13 [o] A closed season keeps what its pages need to stay readable. ← a fan rereads old seasons, scorer races and draws, not only the final table
   - our league's top 10 scorers (name, club, role, goals, appearances; ties as the live table), our rank after every league round, and the Club Elo spread at the close (world lowest/highest, our league lowest/highest).
@@ -37,6 +37,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r8 261013 HIST-10✎ facilities→facility work; HIST-12✎ club value: half the facility build cost→of the three parts
 - r7 261012 HIST-13✎ none→derived cup stages, honours, head-to-head and appearances
 - r6 261012 HIST-13+ closed seasons keep top scorers, per-round rank, Elo spread and cup brackets from the last 32
 - r5 261011 HIST-11✎ none→cup rounds, retirements, injuries, potential changes as news, cups celebrated on the day of the final; HIST-12+ Club Elo, squad and club value, cup runs and finals in the season archive
