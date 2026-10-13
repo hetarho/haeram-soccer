@@ -118,7 +118,6 @@ test('a 1.15 career at intervention level 2 with a reserved strategy upgrades to
   });
   delete world.intervention;
   delete world.hiring;
-  delete world.buildChanged;
   await seed(page, await encode(world, 1, 0));
   await page.goto('/');
   await continueSlot(page);
@@ -144,7 +143,7 @@ test('a 1.15 career at intervention level 2 with a reserved strategy upgrades to
   });
   // The reservation is dropped and named in the inbox; no slot is locked.
   expect(upgraded.buildNext).toBeUndefined();
-  expect(upgraded.buildChanged).toBeUndefined();
+  expect(Object.hasOwn(upgraded, 'buildChanged')).toBe(false);
   expect(Object.hasOwn(upgraded, 'buildYear')).toBe(false);
   await page.getByRole('button', { name: /^소식함/ }).click();
   await expect(page.getByRole('dialog', { name: '소식함' })).toContainText(

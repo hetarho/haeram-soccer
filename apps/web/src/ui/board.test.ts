@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createWorld, operate } from '../../../../packages/engine/src/index';
-import { BUILD_PRESETS, slotLocks } from '../../../../packages/engine/src/build';
+import { BUILD_PRESETS } from '../../../../packages/engine/src/build';
 import { financeProjection } from '../../../../packages/engine/src/projection';
 import { policyOf } from '../../../../packages/engine/src/policy';
 import {
@@ -8,7 +8,6 @@ import {
   draftChanges,
   draftCommands,
   draftFromRequest,
-  draftRefusal,
   draftWorld,
   withCard,
   withPolicy,
@@ -46,7 +45,6 @@ describe('operating board draft', () => {
       { type: 'policy', key: 'marketing', level: 3 },
       { type: 'ticket', price: 0.12 },
     ]);
-    expect(draftRefusal(w, draft)).toBeUndefined();
     // Sent in order they leave the world as the draft showed it, and the draft is spent.
     const shown = draftWorld(w, draft);
     for (const command of commands) send(w, command);
@@ -63,19 +61,14 @@ describe('operating board draft', () => {
     expect(withCard(w, mix, 'youth', 'homegrown')).toEqual({});
   });
 
-  it('a draft that changes a locked slot is refused with the slot and the day it frees', () => {
+  it('a card changed just now changes again at once: there are no locks (→ECON-22)', () => {
     const w = world();
     operate(w, { type: 'build', build: { youth: 'homegrown' } });
-    const [lock] = slotLocks(w);
-    const message = `유스 정책 카드는 최근에 바꿔 ${lock.frees}부터 다시 바꿀 수 있어요.`;
     const preset = withStrategy(w, {}, BUILD_PRESETS.find((p) => p.id === 'trading')!.build);
-    expect(draftRefusal(w, preset)).toBe(message);
-    expect(() => send(w, draftCommands(w, preset)[0])).toThrow(message);
-    expect(draftRefusal(w, withCard(w, {}, 'youth', undefined))).toBe(message);
-    // A free slot and the dials stay open while the youth slot is locked.
-    expect(draftRefusal(w, withCard(w, {}, 'fans', 'community'))).toBeUndefined();
-    expect(draftRefusal(w, withPolicy(w, {}, 'academy', 3))).toBeUndefined();
-    expect(draftRefusal(w, withTicket(w, {}, 0.08))).toBeUndefined();
+    for (const command of draftCommands(w, preset)) send(w, command);
+    expect(w.build).toEqual(BUILD_PRESETS.find((p) => p.id === 'trading')!.build);
+    for (const command of draftCommands(w, withCard(w, {}, 'youth', undefined))) send(w, command);
+    expect(w.build?.youth).toBeUndefined();
   });
 
   it('a remedy request becomes a one-dial draft', () => {

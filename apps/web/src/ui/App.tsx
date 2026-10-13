@@ -425,7 +425,6 @@ const selectContentWorld = worldSelector([
   'morale',
   'inbox',
   'build',
-  'buildChanged',
   'hiring',
   'talkRule',
   'managerMarket',

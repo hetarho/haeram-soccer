@@ -39,9 +39,9 @@ export const CURRENT_ENGINE_VERSION = '1.16.0';
  * relegation clauses, lets the owner choose staff and manager terms, saves one intervention
  * level (`intervention`) that alone delegates contract talks under a talk rule (`talkRule`,
  * declined past 65% of revenue on the wage bill), the manager post and the coaching departments
- * under hiring criteria (`hiring`), and applies the operating strategy at once with a 90-day lock
- * per slot (`buildChanged`) in place of one change a season (`buildYear`) and a reservation
- * (`buildNext`), both read only from older worlds (a 1.15 sponsor loads as its slot's contract;
+ * under hiring criteria (`hiring`), and applies the operating strategy at once with no lock in
+ * place of one change a season (`buildYear`), a lock per slot (`buildChanged`) and a reservation
+ * (`buildNext`), all read only from older worlds (a 1.15 sponsor loads as its slot's contract;
  * staff switches (`delegation`) load as the level and coaching investment levels as hiring
  * criteria; wages stay until renewal; a world without `operatingExpenses` pays its division's
  * floor until its next season starts; activation draws each existing player's agent from his id,

@@ -101,19 +101,19 @@ describe('manager styles', () => {
 });
 
 describe('club builds', () => {
-  it('applies a build at once, locks the changed slots and records it', () => {
+  it('applies a build at once and records it', () => {
     const w = world();
     operate(w, { type: 'build', build: { fans: 'community', culture: 'family' } });
     expect(w.build).toEqual({ fans: 'community', culture: 'family' });
-    expect(Object.keys(w.buildChanged!)).toEqual(['fans', 'culture']);
     expect(w.events.at(-1)).toMatchObject({
       kind: 'build',
       title: '운영 전략 · 맞춤 전략',
       detail: '지역 밀착 · 가족 같은 클럽',
     });
-    expect(() => operate(w, { type: 'build', build: { revenue: 'commercial' } })).toThrow(
-      '홈·팬 카드는 최근에 바꿔',
-    );
+    // The next change applies at once too: there are no locks (→ECON-22).
+    operate(w, { type: 'build', build: { revenue: 'commercial' } });
+    expect(w.build).toEqual({ revenue: 'commercial' });
+    operate(w, { type: 'build', build: { fans: 'community', culture: 'family' } });
     // Re-sending the same build is not a change.
     operate(w, { type: 'build', build: { culture: 'family', fans: 'community' } });
     expect(() => operate(w, { type: 'build', build: { fans: 'nowhere' } as never })).toThrow(

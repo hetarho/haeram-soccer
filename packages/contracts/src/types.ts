@@ -1,4 +1,4 @@
-import type { BuildSlot, ClubBuild } from './build';
+import type { ClubBuild } from './build';
 export type { ClubBuild, BuildSlot } from './build';
 export type CountryCode = 'ENG' | 'ESP' | 'GER' | 'ITA' | 'FRA' | 'POR' | 'NED' | 'BEL';
 export type Tactic = 'balanced' | 'possession' | 'counter' | 'press';
@@ -693,11 +693,6 @@ export interface World {
   morale?: number;
   /** The club build, one card per slot (→ECON-22); absent slots are standard. */
   build?: ClubBuild;
-  /**
-   * The day each slot's card last changed (→ECON-22): the slot stays locked for 90 days from it.
-   * Absent slots are free.
-   */
-  buildChanged?: Partial<Record<BuildSlot, { year: number; day: number }>>;
   /**
    * A strategy reserved for the next season, written only by rules 1.13–1.15; writer activation
    * drops it with an inbox item (→SAVE-10), and the engine never reads it.

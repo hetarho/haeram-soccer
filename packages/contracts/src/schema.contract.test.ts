@@ -251,7 +251,7 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
     expect(validateWorld({ ...saved({ manager: true }), intervention: 2 }).intervention).toBe(2);
     expect('buildYear' in on).toBe(false);
     expect(on.build).toEqual({ fans: 'community' });
-    expect(on.buildChanged).toBeUndefined();
+    expect('buildChanged' in on).toBe(false);
     // A reservation of 1.13–1.15 still loads; activation drops it (→SAVE-10).
     const reserved = {
       ...saved({}),
@@ -307,7 +307,7 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
     expect(() => validateWorld(saved({ coaching: { kit: 3 } }))).toThrow();
   });
 
-  it('accepts hiring, talkRule and buildChanged and refuses unknown criteria keys', () => {
+  it('accepts hiring and talkRule, drops strategy locks and refuses unknown criteria keys', () => {
     const w = world();
     w.hiring = {
       manager: {
@@ -329,7 +329,6 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
       },
     };
     w.talkRule = { maxPay: 1.25, minOvr: 60, maxAge: 33 };
-    w.buildChanged = { youth: { year: w.year, day: 10 }, culture: { year: w.year - 1, day: 300 } };
     w.intervention = 4;
     expect(canonical(validateWorld(structuredClone(w)))).toBe(canonical(w));
     const load = (change: (copy: World) => unknown) => () => {
@@ -351,10 +350,12 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
     expect(load((c) => (c.hiring!.coaches!.scout!.minAbility = 54.5))).toThrow();
     expect(load((c) => (c.talkRule!.maxPay = 1.2 as never))).toThrow();
     expect(load((c) => (c.talkRule!.maxAge = 41))).toThrow();
-    expect(
-      load((c) => Object.assign(c.buildChanged!, { stadium: { year: w.year, day: 0 } })),
-    ).toThrow();
-    expect(load((c) => (c.buildChanged!.youth = { year: w.year, day: 366 }))).toThrow();
+    // A per-slot strategy lock kept by earlier 1.16 builds loads as no lock (→SAVE-10).
+    const locked = load((c) =>
+      Object.assign(c, { buildChanged: { youth: { year: w.year, day: 10 } } }),
+    )();
+    expect('buildChanged' in locked).toBe(false);
+    expect(canonical(locked)).toBe(canonical(w));
     expect(load((c) => Object.assign(c, { delegation: { 'coach:kit': true } }))).toThrow();
   });
 });

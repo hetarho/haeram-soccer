@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { horizontalOverflow } from './layout';
 
-test('applies a preset at once, shows its cards locked, and saves its own strategy', async ({
+test('applies a preset at once, changes it again at once, and saves its own strategy', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -65,31 +65,31 @@ test('applies a preset at once, shows its cards locked, and saves its own strate
   await expect(board.getByTestId('current-strategy')).toHaveText('기본 전략');
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
-  // 적용 acts at once: the strategy and the dial are in force, and each changed card is locked.
+  // 적용 acts at once: the strategy and the dial are in force, and no card is locked (→ECON-22).
   await draft.getByRole('button', { name: '적용', exact: true }).click();
   await expect(draft).toHaveCount(0);
   await expect(board.getByTestId('current-strategy')).toHaveText('동네의 자부심');
   await expect(generous).toHaveAttribute('aria-checked', 'true');
   await expect(board.getByTestId('synergy-local-heroes')).toContainText('발동 중');
   const youth = board.getByRole('region', { name: '유소년', exact: true });
-  await expect(youth.getByTestId('lock-youth')).toHaveText('1950년 10월 30일에 변경 가능');
+  await expect(page.getByText(/에 변경 가능/)).toHaveCount(0);
   await expect(youth.getByRole('radio', { name: '유스 정책 성골 유스' })).toHaveAttribute(
     'aria-checked',
     'true',
   );
-  await expect(youth.getByRole('radio', { name: '유스 정책 1군 직행 경로' })).toBeDisabled();
-  // The dials stay free.
+  await expect(youth.getByRole('radio', { name: '유스 정책 1군 직행 경로' })).toBeEnabled();
   await expect(youth.getByRole('radio', { name: '유소년 투자 집중 투자' })).toBeEnabled();
 
-  // A second preset is refused while a slot it changes is locked; there is no reservation.
+  // A second preset applies at once too, the same day; there is no reservation.
   await board.getByRole('button', { name: /트레이딩 머신/ }).click();
-  await expect(draft).toContainText(
-    '유스 정책 카드는 최근에 바꿔 1950년 10월 30일부터 다시 바꿀 수 있어요',
-  );
-  await expect(draft.getByRole('button', { name: '적용', exact: true })).toBeDisabled();
   await expect(page.getByRole('button', { name: '다음 시즌부터 적용' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '예약 취소' })).toHaveCount(0);
-  await draft.getByRole('button', { name: '되돌리기' }).click();
+  await draft.getByRole('button', { name: '적용', exact: true }).click();
+  await expect(draft).toHaveCount(0);
+  await expect(board.getByTestId('current-strategy')).toHaveText('트레이딩 머신');
+  // And back again.
+  await board.getByRole('button', { name: /동네의 자부심/ }).click();
+  await draft.getByRole('button', { name: '적용', exact: true }).click();
   await expect(draft).toHaveCount(0);
   await expect(board.getByTestId('current-strategy')).toHaveText('동네의 자부심');
 
@@ -114,8 +114,8 @@ test('applies a preset at once, shows its cards locked, and saves its own strate
   await expect(board.getByRole('button', { name: '지금 전략 저장' })).toHaveCount(0);
   await expect(draft).toHaveCount(0);
 
-  // The composer saves a strategy of its own and puts it on the board as a draft, which waits
-  // for the locks like any other.
+  // The composer saves a strategy of its own and puts it on the board as a draft, ready to apply
+  // at once like any other.
   await board.getByRole('button', { name: '＋ 나만의 전략 만들기' }).click();
   const composer = page.getByRole('dialog', { name: '나만의 전략 만들기' });
   await expect(composer.locator('[data-slot]')).toHaveCount(6);
@@ -127,8 +127,7 @@ test('applies a preset at once, shows its cards locked, and saves its own strate
   await expect(composer).toHaveCount(0);
   await expect(mine).toContainText('젊은 피');
   await expect(draft).toContainText('젊은 피');
-  await expect(draft).toContainText('유스 정책 카드는 최근에 바꿔');
-  await expect(draft.getByRole('button', { name: '적용', exact: true })).toBeDisabled();
+  await expect(draft.getByRole('button', { name: '적용', exact: true })).toBeEnabled();
   await draft.getByRole('button', { name: '되돌리기' }).click();
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 

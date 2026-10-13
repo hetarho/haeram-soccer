@@ -10,7 +10,7 @@ import {
   type BuildSlot,
   type ClubBuild,
 } from '../../../../packages/contracts/src/build';
-import { buildOf, draftLock, sameBuild } from '../../../../packages/engine/src/build';
+import { buildOf, sameBuild } from '../../../../packages/engine/src/build';
 import { POLICY_KEYS, policyOf, policyPreview } from '../../../../packages/engine/src/policy';
 import { gateProjection, operatingCosts } from '../../../../packages/engine/src/finance';
 import { financeProjection } from '../../../../packages/engine/src/projection';
@@ -74,11 +74,6 @@ export function draftCommands(w: World, d: BoardDraft): Command[] {
       commands.push({ type: 'policy', key: change.key, level: change.to });
     else if (change.kind === 'ticket') commands.push({ type: 'ticket', price: change.to });
   return commands;
-}
-
-/** Why 적용 is refused: a changed card in a slot still locked, named with the day it frees (→ECON-22). */
-export function draftRefusal(w: World, d: BoardDraft): string | undefined {
-  return d.build && cardChanges(w, d).length ? draftLock(w, d.build) : undefined;
 }
 
 /** A request from elsewhere as a draft of that one dial; a level already in force drafts nothing. */

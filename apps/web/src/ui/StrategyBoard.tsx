@@ -17,7 +17,6 @@ import {
   composeBuild,
   effectLines,
   sameBuild,
-  slotLocks,
   type BuildCard,
 } from '../../../../packages/engine/src/build';
 import { synergyStates } from '../../../../packages/engine/src/synergy';
@@ -32,7 +31,6 @@ import {
   draftChanges,
   draftCommands,
   draftFromRequest,
-  draftRefusal,
   draftWorld,
   withCard,
   withPolicy,
@@ -70,20 +68,11 @@ export function cardSummary(build: ClubBuild) {
 }
 const cardLabel = (change: CardChange) => cardOf({ [change.slot]: change.to }, change.slot).label;
 
-function LockIcon() {
-  return (
-    <svg viewBox="0 0 16 16" aria-hidden="true">
-      <rect x="3" y="7" width="10" height="7" rx="1.5" fill="currentColor" />
-      <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" strokeWidth="1.6" />
-    </svg>
-  );
-}
-
 /**
  * The 운영 전략 tab as one operating board (→WEB-60, →ECON-25): the strategy in force, presets and
  * the owner's saved strategies (→WEB-61), six area rows each pairing its card row with its dials,
- * then the synergies and odds. Every tap adds to one draft; the pinned bar's 적용 sends it at once
- * and a changed card's slot stays locked for 90 days (→ECON-22).
+ * then the synergies and odds. Every tap adds to one draft; the pinned bar's 적용 sends it at once,
+ * cards and dials alike changing at any time (→ECON-22).
  */
 export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
   const acting = useGameState((state) => !!state.pendingActions);
@@ -127,9 +116,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
     changed = changes.length > 0,
     cards = changes.filter((change) => change.kind === 'card'),
     dials = changes.filter((change) => change.kind !== 'card'),
-    draftBuild = cards.length ? draft.build! : current,
-    refusal = changed ? draftRefusal(w, draft) : undefined,
-    locks = slotLocks(w);
+    draftBuild = cards.length ? draft.build! : current;
   // The history names what was applied; a preset or saved match reads better when there is one.
   const applied = w.events.findLast((event) => event.kind === 'build')?.title.split(' · ')[1];
   const currentName =
@@ -362,7 +349,6 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
         {STRATEGY_AREAS.map((area) => {
           const slot = area.slot,
             info = BUILD_SLOT_INFO[slot],
-            lock = locks.find((locked) => locked.slot === slot),
             chosen = draftBuild[slot],
             moved = cards.some((change) => change.slot === slot),
             card: BuildCard = cardOf(draftBuild, slot),
@@ -400,7 +386,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
                         aria-checked={option === current[slot]}
                         aria-label={`${info.label} ${label}`}
                         className={moved && option === chosen ? s.drafted : undefined}
-                        disabled={blocked || !!lock}
+                        disabled={blocked}
                         onClick={() =>
                           setDraft(
                             withCard(
@@ -427,12 +413,6 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
                   </p>
                   <Lines {...cardLines(card)} />
                 </div>
-                {lock && (
-                  <p className={s.lock} data-testid={`lock-${slot}`}>
-                    <LockIcon />
-                    {lock.frees}에 변경 가능
-                  </p>
-                )}
               </div>
               {area.dials.length > 0 && (
                 <div className={s.areaDials}>
@@ -541,12 +521,6 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
               </p>
             )}
           </div>
-          {refusal && (
-            <p className={s.refusal} id="strategy-refusal">
-              <LockIcon />
-              {refusal}
-            </p>
-          )}
           {failure && (
             <p className={s.failure} role="alert">
               {failure}
@@ -559,8 +533,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
             <button
               type="button"
               className={s.apply}
-              disabled={blocked || !!refusal}
-              aria-describedby={refusal ? 'strategy-refusal' : undefined}
+              disabled={blocked}
               onClick={() => void apply()}
             >
               적용

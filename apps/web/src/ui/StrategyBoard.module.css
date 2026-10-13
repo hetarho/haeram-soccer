@@ -268,23 +268,6 @@
 .model b {
   color: var(--text);
 }
-.lock,
-.refusal {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0;
-  color: var(--gold);
-  font-size: 12px;
-  font-weight: 800;
-  line-height: 1.4;
-}
-.lock svg,
-.refusal svg {
-  flex: none;
-  width: 14px;
-  height: 14px;
-}
 .lines {
   display: flex;
   flex-wrap: wrap;

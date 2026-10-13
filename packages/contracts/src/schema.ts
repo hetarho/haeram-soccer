@@ -447,7 +447,6 @@ export const talkRuleSchema = z.strictObject({
   minOvr: criterion(99),
   maxAge: z.number().int().min(28).max(40).optional(),
 });
-const buildSlot = z.enum(['youth', 'scouting', 'market', 'revenue', 'fans', 'culture']);
 const staff = z.strictObject({
   id,
   role: staffRole,
@@ -555,9 +554,6 @@ export const worldSchema: z.ZodType<World> = z.object({
   bids: z.array(bid).max(200).optional(),
   morale: z.number().finite().min(0).max(100).optional(),
   build: clubBuildSchema.optional(),
-  buildChanged: z
-    .partialRecord(buildSlot, z.strictObject({ year: season, day: seasonDay }))
-    .optional(),
   // Written only by rules 1.13–1.15; writer activation drops it (→SAVE-10).
   buildNext: z
     .strictObject({
@@ -751,13 +747,14 @@ function legacyCoaching(levels: Record<string, unknown>, hiring: unknown) {
 }
 /**
  * Rules before 1.16 (→SAVE-10): coaching investment levels (`coaching`) become coach criteria,
- * the yearly strategy lock (`buildYear`) goes, so every slot is free, and so does the manager rule
- * (`managerRule`), which no released rules wrote.
+ * the strategy locks (the yearly `buildYear`, the per-slot `buildChanged`) go, so every card is
+ * free, and so does the manager rule (`managerRule`), which no released rules wrote.
  */
 function legacyLevers(input: unknown): unknown {
   if (!isRecord(input)) return input;
-  const { buildYear, managerRule, coaching, ...rest } = input;
-  if ([buildYear, managerRule, coaching].every((value) => value === undefined)) return input;
+  const { buildYear, buildChanged, managerRule, coaching, ...rest } = input;
+  if ([buildYear, buildChanged, managerRule, coaching].every((value) => value === undefined))
+    return input;
   const out: Record<string, unknown> = rest;
   // Rules 1.9's club-wide level is already a record here (legacyMarket).
   if (isRecord(coaching)) {

@@ -24,9 +24,9 @@ import s from './StrategyBoard.module.css';
 import a from './App.module.css';
 
 /**
- * The club by area (→ECON-25): each pairs its strategy card (how the club goes about it, locked for
- * 90 days after a change) with the dials that spend on the same thing (how much it puts in, any
- * time). The training focus is no dial of the board: it belongs to 훈련 (→WEB-70).
+ * The club by area (→ECON-25): each pairs its strategy card (how the club goes about it) with the
+ * dials that spend on the same thing (how much it puts in), both changing at any time. The
+ * training focus is no dial of the board: it belongs to 훈련 (→WEB-70).
  */
 export const STRATEGY_AREAS: {
   slot: BuildSlot;

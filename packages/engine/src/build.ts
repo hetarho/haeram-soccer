@@ -7,7 +7,6 @@ import {
 } from '../../contracts/src/build';
 import type { World } from '../../contracts/src/types';
 import { addEvent } from './world';
-import { currentDay, dayCountedFrom, seasonDayLabel } from './calendar';
 
 /** Everything the club build changes, as additions or multipliers (→ECON-22). */
 export interface BuildEffects {
@@ -406,56 +405,16 @@ function normalize(build: ClubBuild): ClubBuild {
   return clean;
 }
 
-/** Days a slot stays locked after its card changes (→ECON-22). */
-export const BUILD_LOCK_DAYS = 90;
 /**
- * Each locked slot (→ECON-22): the days it stays locked and the date it frees. A lock runs across
- * a season's turn, since the days count from the season the card changed in.
- */
-export function slotLocks(w: World) {
-  const locks: { slot: BuildSlot; label: string; daysLeft: number; frees: string }[] = [];
-  for (const slot of BUILD_SLOTS) {
-    const changed = w.buildChanged?.[slot];
-    if (!changed) continue;
-    const daysLeft = changed.day + BUILD_LOCK_DAYS - dayCountedFrom(w, changed.year);
-    if (daysLeft <= 0) continue;
-    locks.push({
-      slot,
-      label: BUILD_SLOT_INFO[slot].label,
-      daysLeft,
-      frees: seasonDayLabel(changed.year, changed.day + BUILD_LOCK_DAYS),
-    });
-  }
-  return locks;
-}
-/** Why `build` cannot be applied now: the first locked slot it would change, if any. */
-export function draftLock(w: World, build: ClubBuild): string | undefined {
-  const current = buildOf(w);
-  const lock = slotLocks(w).find((locked) => build[locked.slot] !== current[locked.slot]);
-  return lock
-    ? `${lock.label} 카드는 최근에 바꿔 ${lock.frees}부터 다시 바꿀 수 있어요.`
-    : undefined;
-}
-
-/**
- * Applies a strategy at once (→ECON-22): every slot whose card changes is locked for 90 days, so
- * a draft that changes a locked slot is refused. `name` is the owner's saved strategy (→WEB-61);
- * without it the history names the preset or the mix.
+ * Applies a strategy at once (→ECON-22): cards change at any time, like the dials. `name` is the
+ * owner's saved strategy (→WEB-61); without it the history names the preset or the mix.
  */
 export function setBuild(w: World, build: ClubBuild, name?: string) {
   const next = normalize(build);
   const current = buildOf(w);
   if (sameBuild(next, current)) return;
-  const lock = draftLock(w, next);
-  if (lock) throw new Error(lock);
-  // Freed slots drop out, so only running locks are kept.
-  const changed: NonNullable<World['buildChanged']> = {};
-  for (const { slot } of slotLocks(w)) changed[slot] = w.buildChanged![slot];
-  for (const slot of BUILD_SLOTS)
-    if (next[slot] !== current[slot]) changed[slot] = { year: w.year, day: currentDay(w) };
   if (Object.keys(next).length) w.build = next;
   else delete w.build;
-  w.buildChanged = changed;
   const cards = BUILD_SLOTS.filter((slot) => next[slot]).map((slot) => cardOf(next, slot).label);
   const label = name?.trim().slice(0, STRATEGY_NAME_LIMIT) || buildLabel(next);
   addEvent(w, 'build', `운영 전략 · ${label}`, cards.join(' · ') || '모든 부문 기본');

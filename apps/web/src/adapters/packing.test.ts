@@ -37,7 +37,7 @@ function legacyIntegers(values: number[]) {
 }
 
 describe('lossless career stream compaction', () => {
-  it('keeps hiring criteria, the talk rule, strategy locks and the manager market through a pack round trip', () => {
+  it('keeps hiring criteria, the talk rule, the strategy and the manager market through a pack round trip', () => {
     const w = career();
     for (let round = 2; round < 8; round++) advanceRound(w, undefined, false);
     w.hiring = {
@@ -58,7 +58,6 @@ describe('lossless career stream compaction', () => {
     };
     w.talkRule = { maxPay: 1.25, minOvr: 55, maxAge: 34 };
     w.build = { youth: 'pathway' };
-    w.buildChanged = { youth: { year: w.year, day: 40 } };
     w.intervention = 4;
     expect(w.managerMarket?.free.length).toBeGreaterThan(0);
     const restored = validateWorld(unpack(JSON.parse(JSON.stringify(pack(w)))));
