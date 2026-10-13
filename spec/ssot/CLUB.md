@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r24 | Define the implemented browser-demo behavior for squad and growth.
+> r25 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating equals its league's average club XI (±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -25,9 +25,8 @@
   - each summer a player aged 23 or younger may break through (5%: potential +5 to +9) or stall (5%: −4 to −7); otherwise potential moves by at most 2; never below current ability or above 99. Changes of 4+ are events and news.
   - generated attributes top out at 99.
 
-- CLUB-13 [o] The 훈련 tab (→WEB-70) exposes the three focus choices and their recovery/development tradeoffs, the focus in force and the players still growing. Focus selection is a single saved game command; optional player and market details are explicit.
-  - while the intervention level delegates the training focus (levels 2–4 →WEB-45, →STAFF-13) the owner cannot choose one and the assistant picks it each round: 회복 집중 when the starters' average fatigue is 30 or more, else 유망주 집중 with a developer assistant or three or more starters aged 21 or under, else 균형; the tab states his pick and why.
-
+- CLUB-13 [o] The training focus is always the coaches' call: each settled round the assistant (수석코치) sets the first team's by his rule, unless a suggestion he accepted or an order the owner forced holds that round (→STAFF-19). Nobody else chooses it and no intervention level hands it over (→WEB-45). ← how a squad trains is the staff's job; an owner reaches it through them, at a cost
+  - his rule: 회복 집중 when the starters' average fatigue is 30 or more, else 유망주 집중 with a developer assistant or three or more starters aged 21 or under, else 균형; the 훈련 tab (→WEB-70) states the focus in force, who set it and why.
 - CLUB-14 [o] The market supports role and roster-fit filters with stable seeded candidates. Each candidate shows current ability, potential, effect on the proposed XI/tactic fit, upfront transfer or loan fee, recurring annual wage and contract term before acceptance.
   - the list is drawn per season and per the settings that shape it (recruitment level →ECON-16, chief scout →STAFF-11, strategy cards →ECON-22): the same settings always show the same candidates, so switching a setting away and back draws nothing new. ← a setting must not become a free reroll
   - one ID names one player: lists of different settings never share a candidate ID.
@@ -35,7 +34,10 @@
 
 - CLUB-15 [o] Recruitment previews distinguish automatic starter selection from optional manual-lineup replacement, never promise a win or guaranteed selection, and show post-fee cash and wage-inclusive fixed-cost runway excluding future revenue. Disable unaffordable/full/already-signed offers; free transfers still disclose wages.
 
-- CLUB-16 [o] The youth academy keeps prospects outside the first team. Each season on 15 March 3–5 prospects aged 15–16 join (more with a strong youth director or facilities); they grow every settled round toward potential and can be promoted while the first team has room, or released.
+- CLUB-16 [o] The youth academy keeps prospects outside the first team in three age groups by their age in the season: U-17 (15–16), U-19 (17–18) and U-21 (19–20). Each season on 15 March 3–5 prospects aged 15–16 join U-17 (more with a strong youth director or facilities); they grow every settled round toward potential, faster the younger they are, can be promoted while the first team has room, or released; one who turns 21 unpromoted leaves at the season's close. ← real academies register boys from U-9, but a club's decisions start when he joins its U-16/U-17 group: groundstaff at 15 before 1972, scholars at 16 since
+  - younger age groups are not tracked as players: academy investment (→ECON-16), the youth director and facilities stand for them through the intake's size and potential.
+  - growth per settled round: min(0.3, gap to potential / 150) × the youth director, facilities, academy investment, build and synergy factors × the age group's (U-17 ×1.2, U-19 ×1.0, U-21 ×0.8) × the youth focus (→CLUB-31).
+  - promotion signs a first professional contract, from 16 (17 in England); a prospect must still be ready to be promoted by the staff (→STAFF-13), so debuts at 16–17 stay rare in strong divisions and commoner in weak ones. ← measured: about 0.3 under-18 debutants per big-five club a season, 2009–2023 (CIES); weaker leagues field more debutants
   - academy investment (→ECON-16), the club build (→ECON-22) and the pipeline synergy (→CLUB-21) add prospects, potential and growth.
   - the operating board (→WEB-60) shows the exact chance that the next intake brings a prospect of potential 80+, from the same uniform draws the intake uses.
 - CLUB-17 [o] Fee-bearing purchases, loans and sales happen only in transfer windows: summer from the day the season closes (→LEAGUE-9) to 1 September and winter 1 January–1 February. ← the market opens as the season's review ends, not during its final rounds Free agents sign at any time. The market shows the window state and deadline.
@@ -114,6 +116,13 @@
   - the contract talk (→WEB-68) and the player sheet show his clauses.
 - CLUB-30 [o] Every player has an agent rated 1–5, set when the player is created and never changing; better players more often have stronger agents. A stronger agent raises his client's demand by 1% per level above 1 (→CLUB-26) and tilts his contract clauses his way (→CLUB-29); the player sheet and the contract talk show the rating. Agent fees and agents steering transfers are not modelled. ← how well a player is represented decides his terms as much as his ability
   - the premium stays small so the default talk rule's 110% cap still renews a delegated squad at its market wage (measured 261013: 3% a level left ECON-29's wage bill at 43% of revenue, below its band).
+- CLUB-31 [o] The youth director sets the academy's training focus each settled round by his rule, unless a suggestion he accepted or an order the owner forced holds that round (→STAFF-19). ← each age group needs different work: fundamentals early, first-team readiness late
+  | focus | U-17 | U-19 | U-21 |
+  |---|---|---|---|
+  | 균형 | ×1.0 | ×1.0 | ×1.0 |
+  | 기본기 집중 | ×1.3 | ×0.9 | ×0.9 |
+  | 1군 준비 | ×0.9 | ×1.15 | ×1.25 |
+  - his rule: 1군 준비 when a U-19 or U-21 prospect is within 5 OVR of being ready (→STAFF-13); else 기본기 집중 when U-17 holds more prospects than U-19 and U-21 together; else 균형.
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -121,6 +130,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r25 261013 CLUB-13✎ the owner's focus at intervention level 1, the assistant's otherwise→always the assistant's, owner suggestions or forced orders (→STAFF-19); CLUB-16✎ one academy→U-17/U-19/U-21 by age, growth ×1.2/1.0/0.8, leave at 21 (was 22, staff release at 19), promotion from 16 (17 in England); CLUB-31+ youth training focus by the youth director
 - r24 261013 CLUB-13✎ choosing a focus took the decision back from the assistant→refused while the level delegates it
 - r23 261013 CLUB-30✎ agent premium 3%→1% of the demand per level above 1
 - r22 261013 CLUB-3✎ top-up youths at the close five below the club's XI→five below the division's average strength on its market wage; CLUB-25✎ measured ratios none→recorded; CLUB-26✎ delegated checks: talk rule, 13 rounds of cash and the season projection→+the yearly wage bill after the raise within 65% of the last 12 months' revenue

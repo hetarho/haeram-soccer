@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r56 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r57 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -98,23 +98,24 @@
   - 선수: roster cards lead with the player's overall rating (OVR) as a rating-card chip, flag injuries (with weeks out) and announced retirements, show wage against market wage, contract end and 언해피 (→WEB-68), and carry a tappable stance badge (이적 명단 · 협상 가능 · 이적 불가) that opens a three-choice sheet stating each stance's offers and who answers them, applied on tap, instead of a sale (→CLUB-22); then the roster settings and the full table (→WEB-55); then 계약 협상: who answers and the talk rule (→CLUB-26).
   - 이적시장: the window and deadline, bids in progress with counters, incoming offers and candidates, with the recruitment level as a line that opens the operating board (→WEB-60); then 제안 응답: who answers and the sale bar the staff apply (→CLUB-18).
   - 감독: the manager with OVR/POT, style card, contract in seasons with a renew action choosing a term of 1–5 seasons while he can renew, request shortcuts and the tactic conversation, and 교체, which opens the manager market as a list the way a coach's 교체 does (→STAFF-17): free agents, then other clubs' managers with compensation, as style cards with effects, trait and costs; hiring chooses the term and confirms the style it brings, any compensation and, for one-season schools, that he stays only if renewed each April. Then 감독 선임: who appoints and the manager criteria (→STAFF-18).
-  - 코치진: one card per department with its coach, trait and effect, contract end with a renew action and 교체 with candidates and costs, and the department's hiring criteria, under one line saying who hires (→STAFF-15).
+  - 코치진: one card per department with its coach, trait and effect, contract end with a renew action and 교체 with candidates and costs, and the department's hiring criteria, under one line saying who hires (→STAFF-15). The assistant's and the youth director's cards also carry 훈련 제안 and 강행: the focus in force and why, a suggestion or order holding with its rounds left, each focus with its acceptance chance and the resignation chance an order brings (→STAFF-19).
   - older addresses open their tab: /squad 선수, /transfers 이적시장, /manager 감독, /manager?view=coaches 코치진, /manager?view=delegation 감독; ?view=candidates opens 감독 with the market open, as do the manager-departure alert and the candidate remedies.
 
 - WEB-44 [o] Home separates statistics from state. The team-state card shows starters' fatigue, squad morale (shown as 분위기), the manager's standing (trust as 굳건/안정/흔들림/위기, or 대행 체제) and squad size with the injured count, with good/ok/warning/critical tones. Cash is not a tile: it stays in the HUD and joins as the urgent advice when it runs short, winning ties because a club out of money cannot play on. The most urgent warning explains its effect, offers two one-tap remedies and a "more" entry.
   - tapping any state, or the HUD cash, opens its remedy sheet with 3–6 choices, each stating cost, effect and cooldown before commit; owner requests (→CLUB-20) also name who carries them out and list each result with its chance; unavailable choices say why (cooldown, cash, already applied, or the staff deciding it at the current intervention level →WEB-45).
-  - fatigue: recovery training, rest selection, rest days, recovery support, training camp, preparation sheet. morale: squad meeting, team-building day, win bonus, owner's visit, training camp, rest days. manager: public vote of confidence, manager office, candidates. cash: less marketing, lower squad investment, higher ticket price, friendly match, owner capital, the market. squad: market, academy, promote the best prospect.
+  - fatigue: suggesting recovery training to the assistant, rest selection, rest days, recovery support, training camp, preparation sheet. morale: squad meeting, team-building day, win bonus, owner's visit, training camp, rest days. manager: public vote of confidence, manager office, candidates. cash: less marketing, lower squad investment, higher ticket price, friendly match, owner capital, the market. squad: market, academy, promote the best prospect.
   - cash runway reads in weeks below 13 rounds and in months above, never in rounds.
   - choices act through engine commands; navigation choices close the sheet and open their view.
-  - a choice that changes a standing setting (recovery training, less marketing, lower squad investment, higher ticket price) opens that setting's home with the choice ready to apply (→WEB-71); the sheet never changes it itself.
+  - a choice that changes a standing setting (less marketing, lower squad investment, higher ticket price) opens that setting's home with the choice ready to apply (→WEB-71), and suggesting recovery opens the assistant's card with 회복 집중 ready to suggest; the sheet never changes either itself.
 
 - WEB-45 [o] The intervention level answers one question — which decisions the owner takes himself — and is the only control over it: the level alone sets the clock stops and which decisions the staff take (→STAFF-13), never a choice of direction; no home has a staff switch and no event kind has a stop of its own. ← one control says what the owner decides himself; switches spread over the homes left him unsure which one counts
   | level | stops | the staff decide |
   |---|---|---|
   | 1 every decision | all | nothing |
-  | 2 important decisions (new-club default) | match eve, window opening, bids, youth intake, coach renewals, cash/sponsor | the training focus, the academy, contract talks |
-  | 3 transfers only | window opening, bids, coach renewals, cash/sponsor | the training focus, the academy, contract talks |
-  | 4 leave it to the staff | cash/sponsor only | the training focus, the academy, contract talks, offers, sponsors, every coaching department, the manager post |
+  | 2 important decisions (new-club default) | match eve, window opening, bids, youth intake, coach renewals, cash/sponsor | the academy, contract talks |
+  | 3 transfers only | window opening, bids, coach renewals, cash/sponsor | the academy, contract talks |
+  | 4 leave it to the staff | cash/sponsor only | the academy, contract talks, offers, sponsors, every coaching department, the manager post |
+  - the training focus is no level's: the coaches always set it (→CLUB-13, →CLUB-31).
   - the level is saved with the game, so each game keeps its own; choosing one applies at once and leaves every criterion as set.
   - every criterion (the talk rule, hiring criteria, manager criteria) can be edited at any level; the staff apply it only while the level delegates its decision, and its home says which is the case (→WEB-43).
   - the clock's popover holds only the four levels, each with one line naming what it stops and what the staff take; the intervention dialog (HUD menu, and each home's who-decides line) holds the levels with their full summaries and background play (→WEB-64).
@@ -201,14 +202,15 @@
 - WEB-68 [o] Squad cards show each player's wage against his market wage, his contract end and an 언해피 badge with its reason; a contract talk (→CLUB-26) — a renewal or an improved contract, named so in the sheet and the inbox — opens a sheet with his agent's rating and premium (→CLUB-30), demand, floor, the term by window (1–5 seasons in summer, ½–4½ in winter), the new contract's clauses (→CLUB-29), the yearly cost, runway after it and the manager's chance of talking him round if declined (→CLUB-27). ← the owner should see what a refusal risks before making it
 - WEB-69 [o] Page tab bars (league, a closed season, cups, records, 사람, 훈련, 운영) read as navigation, never as buttons: label text over a hairline, the selected tab marked by an accent underline and accent text, no filled or outlined boxes, at least 44 px tall, scrolling sideways when they do not fit. A choice between views inside a tab is a segment control (→WEB-43's track with the selected segment raised); boxed buttons stay for actions. ← tabs drawn as filled buttons read as actions
 - WEB-70 [o] 훈련 holds how the club develops its players: page tabs (→WEB-69) 훈련 and 유소년, kept in /training?view= (훈련 left out; academy). ← development is the second of the owner's three levers, beside who joins (사람) and money (운영)
-  - 훈련: the focus — 균형, 유망주 집중, 회복 집중 with each one's recovery and development (→CLUB-11) — applied on tap at intervention level 1; at levels 2–4 the assistant chooses it each round and the tab shows his rule and this round's pick and reason, the choices read-only (→CLUB-13, →WEB-45).
-  - then what drives development now: the focus, squad investment (→ECON-16), the manager's youth work and style, facilities, the coaches, strategy cards and synergies, each with its factor and opening its home.
+  - 훈련 has no control of its own (→CLUB-13): the focus in force — 균형, 유망주 집중 or 회복 집중 with its recovery and development (→CLUB-11) — with who set it (the assistant's rule, a suggestion he accepted or the owner's order, with the rounds left) and why, and a line opening the assistant's card in 사람's 코치진 to suggest or force (→STAFF-19).
+  - then 성장 배수: the growth factor in force for a player aged 21 or under as one number, then each term — the focus, squad investment (→ECON-16), the manager's youth work and style, facilities, the coaches, strategy cards and synergies — with its factor, each opening its home.
   - then the players still growing (aged 23 or under): OVR, POT and the growth they earned.
-  - 유소년: the academy (→CLUB-16) — prospects with OVR, potential, age and readiness, promote and release, the next intake date — and who decides them at the current level, with the director's rule (→STAFF-13).
+  - 유소년: the academy (→CLUB-16) by age group — U-17, U-19, U-21, each with its growth factor and its prospects' OVR, potential, age and readiness — the youth director's focus in force with who set it and why and a line opening his card (→CLUB-31, →STAFF-19), the next intake date, promote and release, and who decides them at the current level, with the director's rule (→STAFF-13).
 - WEB-71 [o] Every setting has one home where it is shown and changed; anywhere else it appears only as a line naming its value that opens its home. ← a value controlled from several screens leaves owners unsure which one counts
   | setting | home |
   |---|---|
-  | training focus; the assistant's pick | 훈련 › 훈련 |
+  | the training focus in force and the growth factors (read only) | 훈련 › 훈련, 유소년 |
+  | training suggestions and orders to the assistant and the youth director | 사람 › 코치진 |
   | academy promotion and release; the youth director's rule | 훈련 › 유소년 |
   | transfer stances, contract talks; the talk rule | 사람 › 선수 |
   | bids and offers; the staff's sale bar | 사람 › 이적시장 |
@@ -226,6 +228,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r57 261013 WEB-45✎ training at levels 2–4→no level's; WEB-70✎ the focus chosen in 훈련 at level 1→read only, who set it, 성장 배수 as one number with its terms, 유소년 by U-17/U-19/U-21; WEB-43✎ +훈련 제안 and 강행 on the assistant's and youth director's cards; WEB-44✎ recovery training opens 훈련→suggest recovery on the assistant's card; WEB-71✎ +suggestions in 코치진
 - r56 261013 WEB-60✎ locked cards with their free day and refused drafts→no locks
 - r55 261013 WEB-45✎ preset over per-event stops and home switches (맞춤), training outside levels→the level alone sets stops and delegation, saved with the game, training at levels 2–4, criteria at any level, popover levels only; WEB-18✎ WEB-42✎ WEB-64✎ stops by setting→by level; WEB-39✎ WEB-43✎ WEB-70✎ WEB-71✎ switches in homes→who decides at the level; WEB-44✎ +unavailable while the staff decide
 - r54 261013 WEB-10✎ squad/staff/operations→사람/훈련/운영; WEB-4✎ WEB-40✎ WEB-57✎ WEB-69✎ staff page→사람; WEB-14✎ tickets→the board; WEB-39✎ +sponsor switch; WEB-42✎ hand hiring→open 코치진; WEB-43✎ squad, staff pages→사람 tabs with criteria; WEB-44✎ setting remedies→open the home; WEB-45✎ training in levels→none; WEB-60✎ two sections, yearly commit→one board at once; WEB-61✎ commit→apply; WEB-70+ WEB-71+

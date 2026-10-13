@@ -17,20 +17,22 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 56 | 56 | - | 0 |
+| WEB | 57 | 57 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
-| CLUB | 24 | 24 | - | 0 |
+| CLUB | 25 | 25 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
-| STAFF | 14 | 14 | - | 0 |
+| STAFF | 15 | 15 | - | 0 |
 | ECON | 21 | 21 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 7 | 7 | - | 0 |
-| SAVE | 26 | 26 | - | 0 |
+| SAVE | 27 | 27 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T082 | coaches set training; suggestions and orders; academy age groups (engine) | CLUB STAFF WEB SAVE | T081 | doing@261013.ivl |
+| T083 | 훈련 read only with growth factors; coach suggestion sheets (web) | WEB CLUB STAFF | T082 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -49,6 +51,8 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 create-task → T082 (engine), T083 (web); T082 doing standalone on work/intervention
+- 261013 update-ssot CLUB r25 STAFF r15 WEB r57 SAVE r27: coaches always set training (owner suggests or forces, risking a resignation), academy U-17/U-19/U-21 with youth focus, promotion from 16 (17 ENG), leave at 21; research: EPPP, CIES debut data
 - 261013 T081 done (0654d33): strategy cards change at any time; no lock, `buildChanged` dropped on load
 - 261013 update-ssot ECON r21 WEB r56 SAVE r26 (strategy cards change at any time, no 90-day lock) → T081, doing standalone on work/intervention
 - 261013 T080 done (41213cb): one intervention level saved with the game sets stops and delegation; homes show who decides; Chromium e2e 104, unit 661, contract 11
@@ -67,5 +71,3 @@
 - 261013 T077 done: event cards and remedies open each setting's home (코치진, the one intervention dialog, 후원/재정, 훈련 with 회복 suggested, the board with marketing, squad investment or ticket drafted)
 - 261013 T077 doing standalone on levers (00a483d)
 - 261013 merged main (benchmark fix e797019) into work/levers: App/EventCenter/RemedySheet keep the selector reads, PolicyBoard keeps T076's board; unit 655, build pass
-- 261013 benchmark fixed on main (bench-fix cd8ad03): CI passed the benchmark job and every browser; entry 234,916 B, shell memoised, league tabs mounted on first view, management pages a lazy chunk
-- 261013 handoff: T073 merged; work/levers holds T070–T076; T077, T078 left; bench-fix pushed for CI
