@@ -31,7 +31,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T080 | the intervention level as the only control over who decides | WEB STAFF CLUB SAVE | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -40,6 +39,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
+- owner's requests 261013, in this order after T080 (work/intervention, 41213cb): (1) no locks on the operating strategy — every card and dial changes at any time (ECON-22 lock, WEB-60 locked cards, `buildChanged`); (2) training is always the coaches' call: 훈련 shows what drives development and how it goes (multipliers), the owner suggests a focus like a manager request or forces it at the risk of the coach leaving, the same for youth training; academy intake below 15 if real football supports it, rare senior debuts at 16–17, youth squads U-17/U-19/U-21 (research real academies first); (3) facilities: the stadium grows by parts — expansions (증축) and rebuilds (재건축) in real steps (e.g. 10k → 15k → 30k → 40k), not 5,000 seats at a time.
 - three levers and the economy port are on main (fast-forward to 2de95c6, 261013): T070–T079 done — T077 d303c5e, T078 fe7b209/8c52745, T079 merged from work/econ-port at 11c9c5c/66ce736 (unit 658, contract 11, build pass; goldens equal work/econ-port's). CI run 38382526028 on 2de95c6 passed every job (checks, the benchmark, e2e in Chromium, Firefox and both WebKit shards); the run before it on 66ce736 failed only Firefox e2e, which passed in full locally (102 passed, 2 skipped) and on the rerun — a flake. work/levers and work/econ-port are merged and can be deleted. Next: pick from the follow-ups below.
 - benchmark (ARCH-28 p95 < 100 ms, entry ≤ 250 KiB) is flaky on CI since the three levers: run 38386097171 on main a25a5ec (a docs-only commit) failed "Verify browser performance against the production build", while the same code passed on 2de95c6 in runs 38382526028 and 38386061266. scripts/first-play.mjs clicks the new navigation (선수·스태프, 훈련·육성, 구단 운영, 리그, 컵 대회, 클럽 기록실 in 게임 메뉴); locally (host load 11–22) the entry was 239,264 B gzip, mobile p95 39–69 ms and desktop p95 118–149 ms, so the desktop gate has no headroom. Next (first): profile the desktop clicks' first render of 사람 and 훈련 (lazy management chunk) and the records room, cut the slow frame below 100 ms with margin, then let CI pass twice in a row. Rerunning the job is the stopgap.
 - economy calibration ported (T079 done on work/econ-port, merged into work/levers): the other machine's calibration from origin/alt/club-realism-local plus this line's later rules holds every ECON-29 band on 24 careers — wage bill 46.1% of revenue, operating result +3.4% before player trading, 2000s mix 43.2/33.7/23.1%, 1950s matchday 89.5%, ladder 95.5 seasons, none bankrupt, established-club crowds in band (ECON r20, CLUB r23, SAVE r24; agent premium 3%→1% was the only retune). T078 measured ENG/GER on the code before this port (wage bill 33.2%, net 21.6%, none bankrupt); the T079 table above, on the merged code, supersedes it.
@@ -49,6 +49,8 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 T080 done (41213cb): one intervention level saved with the game sets stops and delegation; homes show who decides; Chromium e2e 104, unit 661, contract 11
+- 261013 T080 doing standalone on work/intervention (139916a)
 - 261013 create-task WEB r55 STAFF r14 CLUB r24 SAVE r25 → T080 (one task: engine level, save mapping, web homes and clock); next implement-task T080
 - 261013 update-ssot WEB r55 STAFF r14 CLUB r24 SAVE r25: the intervention level, saved with the game, alone sets the stops and who decides (training at levels 2–4); no staff switches in homes, no per-event stops, no 맞춤; criteria editable at any level, applied only while delegated; next create-task
 - 261013 update-ssot WEB STAFF CLUB SAVE start: the intervention level alone decides who takes each decision
@@ -67,8 +69,3 @@
 - 261013 handoff: T073 merged; work/levers holds T070–T076; T077, T078 left; bench-fix pushed for CI
 - 261013 T073 done: 사람 tabs end with their switches and criteria editors (talk rule, offer switch with its sale bar, manager criteria with the pick preview, a switch and criteria per coaching department); the 위임 block is gone
 - 261013 T073 doing standalone on ia-people (c2f2db7)
-- 261013 T071 done: 사람/훈련 tabs with PageTabs and ?view=, older addresses landing on 사람's tabs, intervention levels as a preset without training, 스태프가 맡는 결정 opening each home
-- 261013 T071 doing standalone on ia-plan (5751099)
-- 261013 T072 done: coaches and the manager hired and renewed by the owner's criteria, coaching levels and the manager rule gone (loads map them), goldens unchanged
-- 261013 T076 done: one operating board (six area rows of cards beside dials, one draft, 적용 at once, locked cards with their free day), sponsor switch in 후원; training.spec waits for T074
-- 261013 T076 doing standalone on ia-money (0c92085)
