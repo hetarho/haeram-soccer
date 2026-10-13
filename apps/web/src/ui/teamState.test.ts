@@ -98,7 +98,7 @@ describe('team state', () => {
       ),
     ).toBe(false);
     expect(states.find((state) => state.key === 'squad')!.advice!.actions[0]).toMatchObject({
-      page: 'squad',
+      page: 'people',
       tab: 'market',
     });
   });

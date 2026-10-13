@@ -10,15 +10,16 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByLabel('세계 생성 시드').fill('ui-management');
   await page.getByRole('button', { name: '넉넉한 출발' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  await page.getByRole('button', { name: '스태프', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '스태프', level: 2 })).toBeVisible();
-  // The staff page opens on the manager's office; coaches, candidates and delegation are tabs.
-  const staffTab = (name: string) => page.getByRole('tab', { name, exact: true });
-  await expect(staffTab('감독')).toHaveAttribute('aria-selected', 'true');
-  await staffTab('코치진').click();
+  await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '선수·스태프', level: 2 })).toBeVisible();
+  // 사람 opens on 선수; the market, the manager's office and the coaches are tabs beside it.
+  const peopleTab = (name: string) =>
+    page.getByRole('tablist', { name: '선수·스태프 보기' }).getByRole('tab', { name, exact: true });
+  await expect(peopleTab('선수')).toHaveAttribute('aria-selected', 'true');
+  await peopleTab('코치진').click();
   await expect(page.getByRole('region', { name: '코치진', exact: true })).toBeVisible();
-  await expect(page).toHaveURL(/\/manager\?view=coaches$/);
-  await staffTab('감독').click();
+  await expect(page).toHaveURL(/\/people\?view=coaches$/);
+  await peopleTab('감독').click();
   await chooseOption(page.getByRole('combobox', { name: '요청 전술', exact: true }), 'counter');
   await chooseOption(page.getByRole('combobox', { name: '요청 말투', exact: true }), 'evidence');
   await page.getByRole('button', { name: '감독에게 제안하기' }).click();
@@ -33,19 +34,17 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('tab', { name: '캠페인', exact: true }).click();
   await page.getByRole('button', { name: '캠페인 시작', exact: true }).first().click();
   await expect(page.getByRole('button', { name: '4라운드 남음' })).toBeVisible();
-  // The market is a segment of the squad page.
-  await page.getByRole('button', { name: '선수단', exact: true }).click();
-  await page
-    .getByRole('group', { name: '선수단 메뉴' })
-    .getByRole('button', { name: '이적 시장', exact: true })
-    .click();
-  await expect(page.getByRole('heading', { name: '이적 시장', level: 2 })).toBeVisible();
+  // The market is a tab of 사람.
+  await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
+  await peopleTab('이적시장').click();
+  await expect(peopleTab('이적시장')).toHaveAttribute('aria-selected', 'true');
+  await expect(page).toHaveURL(/\/people\?view=market$/);
   await page.getByRole('button', { name: '자유계약 영입', exact: true }).click();
   await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toContainText(
     '선수단 정원 19/26',
   );
-  await page.getByRole('button', { name: '선수단', exact: true }).click();
-  await expect(page.getByRole('button', { name: '선수단 19/26' })).toBeVisible();
+  await peopleTab('선수').click();
+  await expect(page.getByText('선수단 19/26', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await page
     .getByTestId('club-hub')

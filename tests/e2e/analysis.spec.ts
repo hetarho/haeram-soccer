@@ -216,7 +216,7 @@ test('compares distinct own players with a shared scope and returns focus withou
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
-  await page.getByRole('button', { name: '선수단', exact: true }).first().click();
+  await page.getByRole('button', { name: '선수·스태프', exact: true }).first().click();
   const opener = page.getByRole('button', { name: '우리 선수 비교', exact: true });
   await opener.click();
   const sheet = page.getByRole('dialog', { name: '우리 선수 비교', exact: true });
@@ -251,7 +251,7 @@ test('filters player samples and shows scoped per-90 evidence on a mobile profil
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
-  await page.getByRole('button', { name: '선수단', exact: true }).first().click();
+  await page.getByRole('button', { name: '선수·스태프', exact: true }).first().click();
   // Position, order and sample sit behind the panel's view-settings button (a sheet on phones).
   const settings = page.getByRole('button', { name: /^선수 보기 설정/ });
   await settings.click();

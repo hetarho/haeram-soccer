@@ -39,7 +39,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     page,
   }) => {
     await found(page, 'listing-journey');
-    await page.getByRole('button', { name: '선수단', exact: true }).click();
+    await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
     const open = page.getByRole('button', { name: /이적 상태 · 협상 가능 · 바꾸기$/ });
     await expect(open.first()).toBeVisible();
     const total = await open.count();
@@ -71,17 +71,16 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     expect(await horizontalOverflow(page)).toBe(0);
 
     // Below level 4 the owner hires coaches himself; the department dials appear once delegated.
-    // Staff is its own destination in the phone tab bar.
-    await page
-      .getByRole('navigation', { name: '모바일 게임 메뉴' })
-      .getByRole('button', { name: '스태프', exact: true })
-      .click();
-    const tab = (name: string) => page.getByRole('tab', { name, exact: true });
+    // The coaches are a tab of 사람, beside the roster.
+    const tab = (name: string) =>
+      page
+        .getByRole('tablist', { name: '선수·스태프 보기' })
+        .getByRole('tab', { name, exact: true });
     await tab('코치진').click();
     await expect(page.getByTestId('coaching-mode')).toContainText('직접');
     const dial = page.getByRole('radiogroup', { name: '공격 코치 투자 수준' });
     await expect(dial).toHaveCount(0);
-    await tab('위임').click();
+    await tab('감독').click();
     await page.getByRole('checkbox', { name: /코치 고용·재계약/ }).check();
     await expect(page.getByRole('checkbox', { name: /코치 고용·재계약/ })).toBeChecked();
     await tab('코치진').click();
@@ -182,32 +181,42 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(page.getByRole('dialog')).toHaveCount(0);
   });
 
-  test('keeps the transfer market as a squad segment with its own address', async ({ page }) => {
+  test('keeps the transfer market as a 사람 tab with its own address', async ({ page }) => {
     await found(page, 'market-segment-journey');
     const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
-    await nav.getByRole('button', { name: '선수단', exact: true }).click();
-    const segments = page.getByRole('group', { name: '선수단 메뉴' });
-    await expect(segments.getByRole('button')).toHaveText(['선수단 18/26', '유소년', '이적 시장']);
-    await segments.getByRole('button', { name: '이적 시장', exact: true }).click();
-    await expect(page.getByRole('heading', { name: '이적 시장', level: 2 })).toBeVisible();
+    await nav.getByRole('button', { name: '선수·스태프', exact: true }).click();
+    const tabs = page.getByRole('tablist', { name: '선수·스태프 보기' });
+    await expect(tabs.getByRole('tab')).toHaveText(['선수', '이적시장', '감독', '코치진']);
+    await tabs.getByRole('tab', { name: '이적시장', exact: true }).click();
     await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
-    await expect(segments.getByRole('button', { name: '이적 시장' })).toHaveAttribute(
-      'aria-pressed',
+    await expect(tabs.getByRole('tab', { name: '이적시장' })).toHaveAttribute(
+      'aria-selected',
       'true',
     );
-    await expect(nav.getByRole('button', { name: '선수단', exact: true })).toHaveAttribute(
+    await expect(nav.getByRole('button', { name: '선수·스태프', exact: true })).toHaveAttribute(
       'aria-current',
       'page',
     );
-    await expect(page).toHaveURL(/\/transfers$/);
+    await expect(page).toHaveURL(/\/people\?view=market$/);
     expect(await horizontalOverflow(page)).toBe(0);
-    // The market's address reopens the squad page on the market.
+    // The market's address reopens 사람 on the market.
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
-    await expect(page.getByRole('heading', { name: '이적 시장', level: 2 })).toBeVisible();
-    await segments.getByRole('button', { name: '선수단 18/26' }).click();
-    await expect(page.getByRole('heading', { name: '선수단', level: 2 })).toBeVisible();
-    await expect(page).toHaveURL(/\/squad$/);
+    await expect(tabs.getByRole('tab', { name: '이적시장' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
+    await tabs.getByRole('tab', { name: '선수', exact: true }).click();
+    await expect(page.getByText('선수단 18/26', { exact: true })).toBeVisible();
+    await expect(page).toHaveURL(/\/people$/);
+    // The older market address lands there too, replaced in the address bar.
+    await page.goto('/transfers');
+    await expect(tabs.getByRole('tab', { name: '이적시장' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    await expect(page).toHaveURL(/\/people\?view=market$/);
   });
 
   test('replays a closed season of the cup: its bracket, our road, a report and the honours', async ({

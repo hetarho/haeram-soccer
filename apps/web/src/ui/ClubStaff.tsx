@@ -35,8 +35,6 @@ import {
 } from '../../../../packages/engine/src/managerMarket';
 import { aimedSynergy } from '../../../../packages/engine/src/synergy';
 import { managerTerm, STYLE_INFO } from '../../../../packages/engine/src/styles';
-import { academySummary } from '../../../../packages/engine/src/academy';
-import { currentDay, seasonDayLabel, seasonDayOf } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/world';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
@@ -381,7 +379,7 @@ export function CoachingPlan({ w }: { w: World }) {
       <p className={s.note}>
         {delegated
           ? `부서마다 정한 투자 수준(${counts.join(' · ')})으로 고용해요. 공석은 바로 채우고, 다이얼을 올린 부서의 무급 코치도 바로 바꿔요. 계약 중인 코치는 계약이 끝날 때 그 수준의 후보와 비교해 재계약하거나 교체하고, 남은 무급 코치는 시즌이 끝날 때 바꿔요. 자금 여력이 13주보다 짧아지면 한 단계 싼 코치를, 그래도 어려우면 무급 코치를 써요.`
-          : '개입 1–3에서는 코치 선임·재계약·교체를 직접 해요. 재계약 시즌은 4월 1일이에요. 개입 4(운영진에 모두 맡기기)나 위임 탭에서 코치 고용을 맡기면 부서별 투자 수준을 정할 수 있고, 스태프가 그 수준으로 알아서 고용해요.'}
+          : '개입 1–3에서는 코치 선임·재계약·교체를 직접 해요. 재계약 시즌은 4월 1일이에요. 개입 4(운영진에 모두 맡기기)나 감독 탭 아래 스태프에게 맡기기에서 코치 고용을 맡기면 부서별 투자 수준을 정할 수 있고, 스태프가 그 수준으로 알아서 고용해요.'}
         {expiring.length > 0 && ` · 이번 시즌 끝에 계약이 끝나는 코치 ${expiring.length}명`}
       </p>
     </section>
@@ -690,70 +688,6 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
           />
         </Dialog>
       )}
-    </section>
-  );
-}
-
-/** The youth academy: prospects grow here until promoted to the first team. */
-export function AcademyView({ w, client }: { w: World; client: GameClient }) {
-  const acting = useActing();
-  const summary = academySummary(w);
-  const today = currentDay(w);
-  const director = w.staff?.find((member) => member.role === 'youth');
-  const nextIntake =
-    summary.intakeDone || today > summary.intakeDay
-      ? seasonDayLabel(w.year + 1, seasonDayOf(w.year + 1, 3, 15))
-      : `${seasonDayLabel(w.year, summary.intakeDay)} · D-${summary.intakeDay - today}`;
-  return (
-    <section className={s.academy} aria-label="유소년 아카데미">
-      <header>
-        <h3>유소년 아카데미</h3>
-        <span>
-          {summary.players.length}/{summary.capacity}명 · 유스 디렉터{' '}
-          {director ? `${director.name} (능력 ${Math.round(director.ability)})` : '공석'}
-        </span>
-      </header>
-      <p className={s.note}>
-        다음 입단 {nextIntake} · 예상 {summary.nextIntakeSize}명
-        {summary.delegated
-          ? ' · 승격과 방출은 유스 디렉터가 시즌 끝에 결정해요'
-          : ' · 승격과 방출은 구단주가 직접 결정해요'}
-      </p>
-      {summary.players.length ? (
-        <ul>
-          {summary.players.map(({ player: p, overall, potential, age, readiness, label }) => (
-            <li key={p.id}>
-              <OvrBadge value={overall} role={p.role} />
-              <div>
-                <b>{p.name}</b>
-                <small>
-                  {age}세 · 잠재력 {potential}
-                </small>
-                <Meter value={(overall / Math.max(1, potential)) * 100} />
-                <small className={readiness === 'ready' ? s.ready : undefined}>{label}</small>
-              </div>
-              <div className={s.youthActions}>
-                <button
-                  className={s.primary}
-                  disabled={acting || summary.room === 0}
-                  onClick={() => void client.command({ type: 'promote-youth', id: p.id })}
-                >
-                  1군 승격
-                </button>
-                <button
-                  disabled={acting}
-                  onClick={() => void client.command({ type: 'release-youth', id: p.id })}
-                >
-                  방출
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className={s.empty}>아직 아카데미 선수가 없어요. 매년 3월 15일에 유소년이 입단해요.</p>
-      )}
-      {summary.room === 0 && <p className={s.note}>1군이 26명으로 가득 차 승격할 수 없어요.</p>}
     </section>
   );
 }

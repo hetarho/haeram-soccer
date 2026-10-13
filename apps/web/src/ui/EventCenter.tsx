@@ -20,7 +20,7 @@ import {
   type SystemNotification,
 } from '../runtime/store';
 import { stoppingEvents, useProgression, type ProgressionController } from '../runtime/progression';
-import { openContractTalk, openMarket, useNavigation, useSquadView, useStaffView } from './state';
+import { openContractTalk, openMarket, openPeople, openTraining, useNavigation } from './state';
 import { competitionLabel } from './format';
 import { Money } from './Money';
 import { Dialog } from './Dialog';
@@ -78,8 +78,6 @@ export function EventCenter({
   const acting = useGameState((state) => !!state.pendingActions || state.readonly);
   const { stopOn, matchEve, running } = useProgression(controller, (state) => state);
   const { setPage } = useNavigation();
-  const setSquadTab = useSquadView((state) => state.setTab);
-  const openStaff = useStaffView((state) => state.open);
   const [opened, setOpened] = useState<string>();
   if (!w || running) return null;
   const events = stoppingEvents(w, stopOn);
@@ -264,8 +262,7 @@ export function EventCenter({
               disabled={acting}
               onClick={() => {
                 void read(item);
-                openStaff('manager');
-                setPage('manager');
+                openPeople('manager');
               }}
             >
               감독 보기
@@ -296,8 +293,7 @@ export function EventCenter({
               disabled={acting}
               onClick={() => {
                 void read(item);
-                openStaff('coaches');
-                setPage('manager');
+                openPeople('coaches');
               }}
             >
               코치진 보기
@@ -354,8 +350,7 @@ export function EventCenter({
               disabled={acting}
               onClick={() => {
                 void read(item);
-                setSquadTab('academy');
-                setPage('squad');
+                openTraining('academy');
               }}
             >
               유소년 보기

@@ -19,6 +19,10 @@
   Cache-Control: no-cache
 /europe
   Cache-Control: no-cache
+/people
+  Cache-Control: no-cache
+/training
+  Cache-Control: no-cache
 /squad
   Cache-Control: no-cache
 /transfers

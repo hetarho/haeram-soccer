@@ -116,7 +116,9 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   await sheet.getByRole('button', { name: '거절', exact: true }).click();
   await expect(sheet).toHaveCount(0);
 
-  // The manager could not talk him round: the roster card wears the badge with its reason.
+  // The manager could not talk him round: the roster card on 사람's 선수 wears the badge with its
+  // reason.
+  await expect(page).toHaveURL(/\/people$/);
   const roster = page.locator('article').filter({ hasText: name });
   await expect(roster.getByText('언해피 · 재계약 거절')).toBeVisible();
   await expect(roster).toContainText('시장');
@@ -141,7 +143,9 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   await expect(card).toContainText(`${name}, 이적 요청서 제출`);
   await card.getByRole('button', { name: '확인', exact: true }).click();
 
-  await page.getByRole('button', { name: '선수단', exact: true }).click();
+  // 사람 opens on 선수, the roster.
+  await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
+  await expect(page).toHaveURL(/\/people$/);
   await expect(roster.getByText('이적 요청', { exact: true })).toBeVisible();
   await expect(
     roster.getByRole('button', { name: `${name} 이적 상태 · 이적 명단 · 바꾸기` }),
