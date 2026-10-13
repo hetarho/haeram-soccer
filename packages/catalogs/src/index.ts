@@ -212,6 +212,12 @@ export interface FootballIndex {
   status: Observation;
   source: string;
 }
+/**
+ * What a league's central money, above all its television rights, is worth in a country and year
+ * (→ECON-31). `real` is its multiple against prices on the football index's footing: below 1
+ * before television sold league football, far above the football index's from the 1990s.
+ */
+export type BroadcastingIndex = FootballIndex;
 /** Sponsor slots in the order they open (→ECON-8). */
 export const SPONSOR_SLOTS = ['local', 'kit', 'shirt', 'stadium', 'sleeve'] as const;
 export type SponsorSlot = (typeof SPONSOR_SLOTS)[number];
@@ -220,7 +226,7 @@ export interface SponsorSlotEra {
   status: Observation;
   source: string;
 }
-interface FootballEra {
+interface IndexEra {
   to: number;
   status: Observation;
   note: string;
@@ -244,13 +250,28 @@ function attribute(note: string, keys: readonly string[]) {
   });
   return `${note} — ${texts.join('; ')}`;
 }
-const footballEras: FootballEra[] = footballData.eras.map((era) => ({
-  to: era.to,
-  status: observation(era.status),
-  note: era.note,
-  sources: era.sources,
-}));
-const footballReal: Record<string, { share: number; real: number[] }> = footballData.index;
+/** An index's eras and each country's real multiple at the end of every era. */
+interface EraTable {
+  eras: IndexEra[];
+  real: Record<string, { real: number[] }>;
+}
+interface EraRows {
+  eras: { to: number; status: string; note: string; sources: string[] }[];
+  index: Record<string, { real: number[] }>;
+}
+function eraTable(data: EraRows): EraTable {
+  return {
+    eras: data.eras.map((era) => ({
+      to: era.to,
+      status: observation(era.status),
+      note: era.note,
+      sources: era.sources,
+    })),
+    real: data.index,
+  };
+}
+const football = eraTable(footballData),
+  broadcasting = eraTable(footballData.broadcasting);
 interface SlotRow {
   year: number;
   status: string;
@@ -273,40 +294,58 @@ function sponsorTable() {
   return table;
 }
 const sponsorEras = sponsorTable();
-function rawFootballIndex(code: string, year: number): FootballIndex {
+/**
+ * An era index in a country and year: prices times a real multiple that is flat through the first
+ * era, grows geometrically from each era's anchor to the next, and holds after the coverage while
+ * prices are projected (→ECON-2).
+ */
+function rawEraIndex(table: EraTable, code: string, year: number): FootballIndex {
   const c = country(code);
   const price = priceIndex(code, year);
-  const real = footballReal[c.code].real;
-  const last = footballEras.length - 1;
-  if (year > footballEras[last].to) {
+  const { eras } = table,
+    real = table.real[c.code].real;
+  const last = eras.length - 1;
+  if (year > eras[last].to) {
     const note = 'After the catalog coverage the real multiple holds and prices are projected';
     return {
       value: price.value * real[last],
       real: real[last],
       status: 'projected',
-      source: attribute(note, [...footballEras[last].sources, c.code]),
+      source: attribute(note, [...eras[last].sources, c.code]),
     };
   }
-  const era = footballEras.findIndex((e) => year <= e.to);
-  const from = era === 0 ? footballData.from : footballEras[era - 1].to;
+  const era = eras.findIndex((e) => year <= e.to);
+  const from = era === 0 ? footballData.from : eras[era - 1].to;
   const start = era === 0 ? real[0] : real[era - 1];
-  const progress = year <= from ? 0 : (year - from) / (footballEras[era].to - from);
+  const progress = year <= from ? 0 : (year - from) / (eras[era].to - from);
   const multiple = start * (real[era] / start) ** progress;
   return {
     value: price.value * multiple,
     real: multiple,
-    status: leastCertain(price.status, footballEras[era].status),
-    source: attribute(footballEras[era].note, [...footballEras[era].sources, c.code]),
+    status: leastCertain(price.status, eras[era].status),
+    source: attribute(eras[era].note, [...eras[era].sources, c.code]),
   };
 }
-const footballCache = new Map<string, FootballIndex>();
+/** Each lookup is composed once, like priceIndex's. */
+function cachedIndex(table: EraTable) {
+  const cache = new Map<string, FootballIndex>();
+  return (code: string, year: number): FootballIndex => {
+    const key = `${code}:${year}`;
+    const cached = cache.get(key);
+    if (cached) return cached;
+    const value = rawEraIndex(table, code, year);
+    cache.set(key, value);
+    return value;
+  };
+}
+const footballLookup = cachedIndex(football),
+  broadcastingLookup = cachedIndex(broadcasting);
 export function footballIndex(code: string, year: number): FootballIndex {
-  const key = `${code}:${year}`;
-  const cached = footballCache.get(key);
-  if (cached) return cached;
-  const value = rawFootballIndex(code, year);
-  footballCache.set(key, value);
-  return value;
+  return footballLookup(code, year);
+}
+/** The broadcasting index league distributions are quoted on (→ECON-31, →ECON-28). */
+export function broadcastingIndex(code: string, year: number): BroadcastingIndex {
+  return broadcastingLookup(code, year);
 }
 export function sponsorSlotOpens(code: string, slot: SponsorSlot): SponsorSlotEra {
   const era = sponsorEras[country(code).code][slot];

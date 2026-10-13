@@ -4,10 +4,13 @@ import {
   advanceRound,
   createWorld,
   currentLeagueRank,
+  facilityInvestmentPreview,
   financeProjection,
+  fixedCostRunway,
   leagueMerit,
   leagueShare,
   operate,
+  operatingCost,
   operatingCosts,
   ratio,
   settleLeagueMerit,
@@ -104,6 +107,31 @@ describe('finance projection', () => {
     while (w.round < 46) advanceRound(w, undefined, false);
     expect(eventsTotal(w, 'operating-cost') - paidBefore).toBe(remaining);
     expect(eventsTotal(w, 'operating-expenses') - expensesBefore).toBe(remainingExpenses);
+  });
+
+  it('reads the operating expenses recorded for the season, in the projection and the runway', () => {
+    const w = world();
+    // An amount recorded at the season's start, three times the division's floor (→ECON-30).
+    const floor = operatingCosts(w).expenses,
+      recorded = (BigInt(floor) * 3n).toString();
+    w.operatingExpenses = recorded;
+    const costs = operatingCosts(w);
+    expect(costs.expenses).toBe(recorded);
+    const projection = financeProjection(w);
+    expect(lineOf(projection.lines, 'expenses').amount).toBe(`-${recorded}`);
+    expect(lineOf(projection.seasonLines, 'expenses').amount).toBe(`-${recorded}`);
+    // The runway and every fixed-cost preview count the same annual bill.
+    expect(
+      BigInt(costs.annual) - BigInt(operatingCosts({ ...w, operatingExpenses: floor }).annual),
+    ).toBe(BigInt(recorded) - BigInt(floor));
+    expect(operatingCost(w)).toBe(costs.annual);
+    expect(facilityInvestmentPreview(w).annualBefore).toBe(costs.annual);
+    expect(fixedCostRunway(w.cash, operatingCost(w))).toBe(
+      Math.min(999, Number((BigInt(w.cash) * 46n) / BigInt(costs.annual))),
+    );
+    // The rounds then charge exactly what the projection carried.
+    for (let i = 0; i < 5; i++) advanceRound(w, undefined, false);
+    expect(eventsTotal(w, 'operating-expenses')).toBe(BigInt(ratio(recorded, 5n, 46n)));
   });
 
   it('carries the league share a year ahead and the rest of it to season end', () => {

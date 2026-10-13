@@ -31,8 +31,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T065 | Broadcasting index for league distributions | ECON | - | todo |
-| T066 | Operating expenses as a share of last season's turnover | ECON | T065 | todo |
 | T067 | Contract talks at the window openings, improved contracts near the end, terms by window, delegated renewals against the season projection | CLUB ECON | - | todo |
 | T068 | Promotion and relegation clauses per contract, and player agents (draft) | CLUB SAVE | T067 | todo |
 | T062 | Rules 1.16.0: economy calibration, goldens and docs | SAVE ECON CLUB | T056 T059 T061 T065 T066 T067 T068 | todo |
@@ -44,11 +42,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- standalone on t062-standalone (work/club-realism + T062's attempts): implement T065→T066 and T067→T068 (disjoint files, parallel worktrees), merge them here, then T062's calibration with the new rules, goldens, docs and full verify (`BROWSER_TEST_PORT` other than 4173 while another run uses it); then merge work/club-realism (with this branch) into main and push after the owner's go.
+- standalone on t062-standalone (work/club-realism + T062's attempts): T065→T066 done and merged here; T067→T068 on t062-contracts, merge them here; update-ssot SAVE-10 so its 1.16.0 list names the broadcasting index, operatingExpenses, the talk renames, clauses and agents; then T062's calibration with the new rules, goldens, docs and full verify (`BROWSER_TEST_PORT` other than 4173 while another run uses it); then merge work/club-realism (with this branch) into main and push after the owner's go.
 - after the merge: fix CI's benchmark job (desktop pointer-to-second-frame p95 115 ms > 100 since one-result merged; 74–82 ms at c63554c), its own commit on main.
-- planner questions from the reviews: whether loading a pre-1.16 save delegates contract talks at intervention level 2+ (they show 맞춤 now, WEB-45); CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
+- planner questions from the reviews: whether loading a pre-1.16 save delegates contract talks at intervention level 2+ (they show 맞춤 now, WEB-45); CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10); SAVE-10's 1.16.0 list names neither the broadcasting index nor `operatingExpenses` (T066 limits). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 T066 done
+- 261013 T065 done
 - 261013 create-task CLUB r19: T067 rewritten (talks at window openings, improved contracts with ≤3 seasons left, terms by window, delegated projection check); T068 clauses and agents (draft) after it; T062 depends on T068 too
 - 261013 update-ssot CLUB r19: CLUB-26✎ talks at window openings with improved contracts near the end and winter terms ½–4½ years, never backdated; CLUB-29+ promotion and relegation clauses per contract by chance; CLUB-30+ agents rated 1–5
 - 261013 create-task ECON CLUB: T065 broadcasting index → T066 operating expenses as a turnover share; T067 talks only at renewal + delegated renewals against the season projection; T062 now depends on them (base ECON@16 CLUB@18), back to todo
@@ -67,9 +67,3 @@
 - 261012 pushed work/one-result, plan/club-realism and task/one-result/T047-fb57cca7 to origin before the main merge; next lists how to finish one-result
 - 261012 T064 integrated
 - 261012 create-task T064 (from T047's blocker): e2e save-status revisions under the day order, SAVE-FORMAT 1.15.0; load-induced browser timeouts are left to CI by the owner's decision
-- 261012 T048 T049 integrated
-- 261012 T063 integrated
-- 261012 T043 T044 integrated
-- 261012 T045 integrated
-- 261012 create-task T063 (from the day-order review P2): amateur table zones follow the exchange, outside the lane's touches
-- 261012 T042 integrated

@@ -1,10 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import type { World } from '../../contracts/src/types';
-import { canonical } from '../../contracts/src/index';
-import { COUNTRIES, footballIndex } from '../../catalogs/src/index';
+import { canonical, validateWorld } from '../../contracts/src/index';
+import {
+  COUNTRIES,
+  LOAD_CATALOG,
+  broadcastingIndex,
+  currency,
+  footballIndex,
+} from '../../catalogs/src/index';
 import {
   advanceDays,
   advanceRound,
+  assessOperatingExpenses,
+  broadcastQuote,
   careOffer,
   catchment,
   closeSeason,
@@ -16,6 +24,7 @@ import {
   financialBreakdown,
   footballQuote,
   gateProjection,
+  lastSeasonTurnover,
   leagueMerit,
   leagueShare,
   matchBonus,
@@ -30,6 +39,7 @@ import {
   ratio,
   roundShare,
   settleLeagueMerit,
+  seasonOperatingExpenses,
   settleRound,
   simulateMatch,
   simulateSeason,
@@ -354,7 +364,7 @@ describe('the league distribution', () => {
     });
   });
 
-  it('shares more in higher divisions of every country, priced on the football index', () => {
+  it('shares more in higher divisions of every country, priced on the broadcasting index', () => {
     for (const profile of COUNTRIES) {
       const table = DISTRIBUTION_CONFIG.share[profile.code];
       // Every professional division and the amateur league below them.
@@ -364,9 +374,44 @@ describe('the league distribution', () => {
     }
     const late = { ...world(), year: 2010 },
       units = DISTRIBUTION_CONFIG.share.ENG[0];
-    expect(footballIndex('ENG', 2010).real).toBeGreaterThan(1);
-    expect(leagueShare(late, 0)).toBe(footballQuote('ENG', 2010, units));
-    expect(BigInt(leagueShare(late, 0))).toBeGreaterThan(BigInt(quote('ENG', 2010, units)));
+    expect(broadcastingIndex('ENG', 2010).real).toBeGreaterThan(footballIndex('ENG', 2010).real);
+    expect(leagueShare(late, 0)).toBe(broadcastQuote('ENG', 2010, units));
+    expect(BigInt(leagueShare(late, 0))).toBeGreaterThan(BigInt(footballQuote('ENG', 2010, units)));
+    // Before television the league's money is a small fraction of prices.
+    const early = { ...world(), year: 1955 };
+    expect(BigInt(leagueShare(early, 0)) * 4n).toBeLessThan(BigInt(quote('ENG', 1955, units)));
+  });
+
+  it('scales the top-flight share, merit and parachute from 1955 to 2005 by the broadcasting index', () => {
+    // In pounds, so the pre-decimal penny (240 a pound) and the new penny compare.
+    const pounds = (amount: string, year: number) =>
+      Number(BigInt(amount)) / currency('ENG', year).units;
+    const at = (year: number) => {
+      const w = { ...world(), year };
+      clubOf(w).tier = 0;
+      return w;
+    };
+    const growth = (index: typeof footballIndex) =>
+      index('ENG', 2005).value / index('ENG', 1955).value;
+    const broadcasting = growth(broadcastingIndex),
+      football = growth(footballIndex);
+    // The two indices tell very different stories over these fifty years.
+    expect(broadcasting / football).toBeGreaterThan(10);
+    const scaled = (money: (w: World) => string) =>
+      pounds(money(at(2005)), 2005) / pounds(money(at(1955)), 1955);
+    expect(scaled((w) => leagueShare(w)) / broadcasting).toBeCloseTo(1, 4);
+    expect(scaled((w) => leagueMerit(w, 1, 20)) / broadcasting).toBeCloseTo(1, 4);
+    // A club relegated from the top flight into the second tier keeps half the share it lost.
+    const relegated = (year: number) => {
+      const w = at(year);
+      clubOf(w).tier = 1;
+      w.history = [{ year: year - 1, tier: 0 } as World['history'][number]];
+      return parachutePayment(w);
+    };
+    expect(pounds(relegated(1955), 1955)).toBeGreaterThan(0);
+    expect(
+      pounds(relegated(2005), 2005) / pounds(relegated(1955), 1955) / broadcasting,
+    ).toBeCloseTo(1, 4);
   });
 
   it('orders the merit by final position, the champion taking 1.6× the bottom club up top and 1.3× below', () => {
@@ -422,9 +467,9 @@ describe('operating expenses (→ECON-30)', () => {
   const entries = (w: World) =>
     w.events.filter((e) => e.year === w.year && e.kind === 'operating-expenses');
 
-  it('charges each division its own amount on the football index, the amateur level least', () => {
+  it('floors each division on the football index, the amateur level lowest', () => {
     for (const profile of COUNTRIES) {
-      const table = EXPENSE_CONFIG[profile.code];
+      const table = EXPENSE_CONFIG.floor[profile.code];
       // Every professional division and the amateur league below them.
       expect(table).toHaveLength(profile.groups.length + 1);
       for (let tier = 1; tier < table.length; tier++)
@@ -434,20 +479,31 @@ describe('operating expenses (→ECON-30)', () => {
           BigInt(footballQuote(profile.code, 2010, table[tier])),
         );
     }
-    const units = EXPENSE_CONFIG.ENG[0];
+    const units = EXPENSE_CONFIG.floor.ENG[0];
     // Before commercialisation the index is prices; from it, football money outgrows prices.
     expect(operatingExpensesAt('ENG', 1950, 0)).toBe(quote('ENG', 1950, units));
     expect(footballIndex('ENG', 2010).real).toBeGreaterThan(1);
     expect(BigInt(operatingExpensesAt('ENG', 2010, 0))).toBeGreaterThan(
       BigInt(quote('ENG', 2010, units)),
     );
-    // A club pays its own division's amount, in its season's money.
+  });
+
+  it('records the floor for a club’s first season and pays the recorded amount', () => {
     const w = world(),
       own = clubOf(w);
-    expect(operatingCosts(w).expenses).toBe(operatingExpensesAt('ENG', w.year, own.tier));
+    // Founded in the amateur league with no completed season: the amateur floor.
+    expect(lastSeasonTurnover(w)).toBeUndefined();
+    expect(w.operatingExpenses).toBe(operatingExpensesAt('ENG', w.year, own.tier));
+    expect(seasonOperatingExpenses(w)).toBe(w.operatingExpenses);
+    expect(operatingCosts(w).expenses).toBe(w.operatingExpenses);
+    // A professional start is a first season too, at that division's floor.
+    const pro = professionalStart(world());
+    expect(pro.operatingExpenses).toBe(operatingExpensesAt('ENG', pro.year, clubOf(pro).tier));
+    // Fixed costs read the recorded amount, not whatever division or year the club is in later.
     own.tier = 0;
     const late = { ...w, year: 2010 };
-    expect(operatingCosts(late).expenses).toBe(operatingExpensesAt('ENG', 2010, 0));
+    expect(operatingCosts(late).expenses).toBe(w.operatingExpenses);
+    expect(operatingCosts({ ...w, operatingExpenses: '123456' }).expenses).toBe('123456');
   });
 
   it('pays them each league round as a fixed cost on their own ledger line', () => {
@@ -471,6 +527,7 @@ describe('operating expenses (→ECON-30)', () => {
     // One ledger entry a season, grown by every round's installment.
     expect(entries(w)).toHaveLength(1);
     expect(entries(w)[0].amount).toBe(costs.expenses);
+    expect(entries(w)[0].detail).toContain('4부 최저 수준');
     const budget = financialBreakdown(w);
     expect(budget.expense.find((row) => row.key === 'operating-expenses')).toMatchObject({
       label: '운영 경비',
@@ -511,7 +568,7 @@ describe('operating expenses (→ECON-30)', () => {
     expect(beyond.bankrupt).toBeDefined();
   });
 
-  it('follows the division played this season, so a promotion changes them from the first round', () => {
+  it('raises the floor from the first round after a promotion', () => {
     const w = world(),
       amateur = clubOf(w).tier;
     while (w.round < 46) advanceRound(w, undefined, false);
@@ -522,15 +579,110 @@ describe('operating expenses (→ECON-30)', () => {
     closeSeason(w);
     const tier = clubOf(w).tier;
     expect(tier).toBe(amateur - 1);
-    const expenses = operatingExpensesAt('ENG', w.year, tier);
-    expect(BigInt(expenses)).toBeGreaterThan(BigInt(operatingExpensesAt('ENG', w.year, amateur)));
-    expect(operatingCosts(w).expenses).toBe(expenses);
+    const floor = operatingExpensesAt('ENG', w.year, tier);
+    expect(BigInt(floor)).toBeGreaterThan(BigInt(operatingExpensesAt('ENG', w.year, amateur)));
+    // An amateur season's turnover comes nowhere near the professional floor.
+    expect(BigInt(ratio(lastSeasonTurnover(w)!, 1200n, 10000n))).toBeLessThan(BigInt(floor));
+    expect(w.operatingExpenses).toBe(floor);
+    expect(operatingCosts(w).expenses).toBe(floor);
     expect(financeProjection(w).seasonLines.find((line) => line.key === 'expenses')).toMatchObject({
       label: '운영 경비',
-      amount: `-${expenses}`,
+      amount: `-${floor}`,
     });
     advanceRound(w, undefined, false);
     expect(entries(w)).toHaveLength(1);
-    expect(entries(w)[0].amount).toBe(roundShare(expenses, 1));
+    expect(entries(w)[0].amount).toBe(roundShare(floor, 1));
+  });
+
+  describe('after a completed season', () => {
+    // One played season, closed with extra ledger entries of its final round.
+    let played: World | undefined;
+    const close = (extra: Record<string, bigint> = {}) => {
+      if (!played) {
+        played = world();
+        while (played.round < 46) advanceRound(played, undefined, false);
+      }
+      const w = structuredClone(played);
+      for (const [kind, amount] of Object.entries(extra)) {
+        w.events.push({
+          year: w.year,
+          round: 46,
+          kind,
+          title: kind,
+          detail: '',
+          amount: amount.toString(),
+          currency: w.currency,
+        });
+        w.income = (BigInt(w.income) + amount).toString();
+        w.cash = (BigInt(w.cash) + amount).toString();
+      }
+      closeSeason(w);
+      return w;
+    };
+    const floorOf = (w: World) => operatingExpensesAt('ENG', w.year, clubOf(w).tier);
+    const shareOf = (turnover: string) => ratio(turnover, 1200n, 10000n);
+
+    it('pays the share of a high turnover instead of the floor', () => {
+      const plain = close(),
+        rich = close({ 'cup-prize': 50_000_000n });
+      // The season's ledger income, nothing left out.
+      const turnover = lastSeasonTurnover(rich)!;
+      expect(turnover).toBe(rich.history.at(-1)!.income);
+      expect(BigInt(turnover)).toBe(BigInt(lastSeasonTurnover(plain)!) + 50_000_000n);
+      expect(BigInt(shareOf(turnover))).toBeGreaterThan(BigInt(floorOf(rich)));
+      expect(rich.operatingExpenses).toBe(shareOf(turnover));
+      expect(operatingCosts(rich).expenses).toBe(rich.operatingExpenses);
+      advanceRound(rich, undefined, false);
+      expect(entries(rich)[0].detail).toContain('직전 시즌 매출의 12%');
+      expect(entries(rich)[0].amount).toBe(roundShare(rich.operatingExpenses!, 1));
+    });
+
+    it('leaves player sales, compensation and owner capital out of the turnover', () => {
+      const plain = close(),
+        sold = close({
+          'transfer-out': 40_000_000n,
+          'free-transfer-compensation': 20_000_000n,
+          support: 30_000_000n,
+        });
+      expect(BigInt(sold.history.at(-1)!.income)).toBe(
+        BigInt(plain.history.at(-1)!.income) + 90_000_000n,
+      );
+      expect(lastSeasonTurnover(sold)).toBe(lastSeasonTurnover(plain));
+      expect(sold.operatingExpenses).toBe(plain.operatingExpenses);
+      expect(plain.operatingExpenses).toBe(assessOperatingExpenses(plain));
+    });
+
+    it('converts last season’s turnover when the currency changed at the close', () => {
+      const w = close({ 'cup-prize': 50_000_000n });
+      // The same season as if it had been the last of pre-decimal pounds (240 pence) before the
+      // new penny (100): every amount carried at 100/240.
+      const decimal = { ...w, currency: 'GBP', year: 1971 };
+      decimal.history = [...w.history.slice(0, -1), { ...w.history.at(-1)!, year: 1970 }];
+      decimal.events = w.events.map((e) => (e.year === w.year - 1 ? { ...e, year: 1970 } : e));
+      expect(lastSeasonTurnover(decimal)).toBe(ratio(lastSeasonTurnover(w)!, 100n, 240n));
+    });
+
+    it('loads a world saved without the amount at the floor of the division played now', () => {
+      const rich = close({ 'cup-prize': 50_000_000n });
+      expect(BigInt(rich.operatingExpenses!)).toBeGreaterThan(BigInt(floorOf(rich)));
+      for (let i = 0; i < 3; i++) advanceRound(rich, undefined, false);
+      // As rules 1.15 saved it (and a 1.16 world from before the field).
+      const legacy: World = { ...structuredClone(rich), engine: '1.15.0' };
+      delete legacy.operatingExpenses;
+      const loaded = validateWorld(legacy, LOAD_CATALOG);
+      expect(loaded.operatingExpenses).toBeUndefined();
+      expect(seasonOperatingExpenses(loaded)).toBe(floorOf(rich));
+      // Everything else reads as it did before the load: the floor is this season's amount.
+      const atFloor = { ...structuredClone(rich), operatingExpenses: floorOf(rich) };
+      expect(operatingCosts(loaded)).toEqual(operatingCosts(atFloor));
+      expect(financeProjection(loaded)).toEqual(financeProjection(atFloor));
+      // The amount survives a save, and only as money that is never negative.
+      expect(validateWorld(structuredClone(rich)).operatingExpenses).toBe(rich.operatingExpenses);
+      expect(() => validateWorld({ ...structuredClone(rich), operatingExpenses: '-1' })).toThrow();
+      // The next season start records it from the turnover again.
+      while (loaded.round < 46) advanceRound(loaded, undefined, false);
+      closeSeason(loaded);
+      expect(loaded.operatingExpenses).toBe(assessOperatingExpenses(loaded));
+    });
   });
 });

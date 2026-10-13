@@ -1,6 +1,6 @@
 import type { Event, MatchRecord, SponsorSlot, World } from '../../contracts/src/types';
 import { country, currency } from '../../catalogs/src/index';
-import { activePlayers, clubOf, footballQuote, quote } from './world';
+import { activePlayers, broadcastQuote, clubOf, footballQuote, quote } from './world';
 import { clamp, ratio } from './primitives';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
@@ -23,8 +23,9 @@ export const FINANCE_CONFIG = {
 /**
  * League distributions (→ECON-28), first estimates for T062 to calibrate against ECON-29: each
  * country's equal share a season by division, from the top flight down, the last entry being its
- * amateur league, in 1901 price units before the football index; the champion's total against
- * the bottom club's; the share of the lost equal share a relegated club keeps for a season.
+ * amateur league, in 1901 price units before the broadcasting index (→ECON-31); the champion's
+ * total against the bottom club's; the share of the lost equal share a relegated club keeps for a
+ * season.
  */
 export const DISTRIBUTION_CONFIG = {
   share: {
@@ -43,26 +44,86 @@ export const DISTRIBUTION_CONFIG = {
 
 /**
  * Operating expenses (운영 경비, →ECON-30), first estimates for T062 to calibrate against ECON-29:
- * matchday operations, travel, administration, medical care and kit. Each country's season amount
- * by division, from the top flight down, the last entry being its amateur league, in 1901 price
- * units before the football index; the club pays it in league-round installments with the wages,
- * for the division it plays in this season.
+ * matchday operations, travel, administration, medical care, kit and the club's staff. A season's
+ * amount is `share` of the club's turnover over its last completed season, never below `floor`:
+ * each country's floor by division, from the top flight down, the last entry being its amateur
+ * league, in 1901 price units before the football index. The amount is set when the season starts
+ * and paid in league-round installments with the wages.
  */
 export const EXPENSE_CONFIG = {
-  ENG: [5000, 1600, 650, 380, 60],
-  ESP: [4200, 1300, 55],
-  GER: [4200, 1300, 540, 55],
-  ITA: [4200, 1300, 540, 55],
-  FRA: [3600, 1150, 480, 50],
-  POR: [2800, 900, 45],
-  NED: [2800, 900, 45],
-  BEL: [2500, 820, 45],
-} as Record<string, readonly number[]>;
+  share: 0.12,
+  floor: {
+    ENG: [5000, 1600, 650, 380, 60],
+    ESP: [4200, 1300, 55],
+    GER: [4200, 1300, 540, 55],
+    ITA: [4200, 1300, 540, 55],
+    FRA: [3600, 1150, 480, 50],
+    POR: [2800, 900, 45],
+    NED: [2800, 900, 45],
+    BEL: [2500, 820, 45],
+  } as Record<string, readonly number[]>,
+};
 
-/** A season's operating expenses for a division in `code` and `year` money (→ECON-30). */
+/** A division's floor of season operating expenses, in `code` and `year` money (→ECON-30). */
 export function operatingExpensesAt(code: string, year: number, tier: number) {
-  const table = EXPENSE_CONFIG[code] ?? EXPENSE_CONFIG.ENG;
+  const table = EXPENSE_CONFIG.floor[code] ?? EXPENSE_CONFIG.floor.ENG;
   return footballQuote(code, year, table[Math.min(tier, table.length - 1)]);
+}
+/**
+ * Income lines that are not turnover (→ECON-30): player sales, compensation for players who left
+ * and owner capital.
+ */
+const NOT_TURNOVER = new Set(['transfer-out', 'free-transfer-compensation', 'support']);
+/**
+ * The club's turnover over its last completed season, in this season's money (→ECON-30): that
+ * season's ledger income (→ECON-10) without player sales, compensation for players who left or
+ * owner capital. Undefined when no completed season's ledger is kept, as in a club's first season.
+ */
+export function lastSeasonTurnover(w: World): string | undefined {
+  const season = w.history.at(-1);
+  if (!season || season.year !== w.year - 1) return undefined;
+  const lines = ledgerLines(
+    seasonEntries(w, season.year, season.currency),
+    incomeKinds,
+    season.income,
+  );
+  const turnover = lines
+    .filter((line) => !NOT_TURNOVER.has(line.key))
+    .reduce((sum, line) => sum + BigInt(line.amount), 0n);
+  const amount = turnover > 0n ? turnover.toString() : '0';
+  if (season.currency === w.currency) return amount;
+  // A currency change between the seasons converts it like every live amount (→ECON-6).
+  const code = clubOf(w).country,
+    before = currency(code, season.year),
+    after = currency(code, w.year);
+  if (before.code !== season.currency || after.code !== w.currency) return undefined;
+  return ratio(
+    amount,
+    after.num * before.den * BigInt(after.units),
+    after.den * before.num * BigInt(before.units),
+  );
+}
+/**
+ * This season's operating expenses as the season starts (→ECON-30): `share` of the last completed
+ * season's turnover, never below the floor of the division played this season, so a promotion or
+ * relegation at the close sets the floor first. A club's first season pays the floor.
+ */
+export function assessOperatingExpenses(w: World): string {
+  const club = clubOf(w),
+    floor = operatingExpensesAt(club.country, w.year, club.tier),
+    turnover = lastSeasonTurnover(w);
+  if (turnover === undefined) return floor;
+  const share = ratio(turnover, BigInt(Math.round(EXPENSE_CONFIG.share * 10000)), 10000n);
+  return BigInt(share) > BigInt(floor) ? share : floor;
+}
+/**
+ * The operating expenses recorded when this season started. A world saved without them (rules
+ * before 1.16) reads the floor of the division played now until its next season starts (→SAVE-10).
+ */
+export function seasonOperatingExpenses(w: World): string {
+  if (w.operatingExpenses !== undefined) return w.operatingExpenses;
+  const club = clubOf(w);
+  return operatingExpensesAt(club.country, w.year, club.tier);
 }
 
 export function roundShare(annual: string, round: number, count = 46) {
@@ -113,10 +174,8 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     ? quote(clubOf(w).country, w.year, effects.academyUnits * 46)
     : '0';
   const staffWages = staffWageTotal(w).toString();
-  // The division played this season sets them, so a promotion or relegation counts from its first
-  // round (→ECON-30).
-  const club = clubOf(w),
-    expenses = operatingExpensesAt(club.country, w.year, club.tier);
+  // The amount recorded when the season started (→ECON-30).
+  const expenses = seasonOperatingExpenses(w);
   const annual = (
     BigInt(playerWages) +
     BigInt(managerWage) +
@@ -154,7 +213,7 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     marketing,
     academy,
     staffWages,
-    /** Operating expenses (운영 경비) of the division played this season (→ECON-30). */
+    /** This season's operating expenses (운영 경비, →ECON-30), as recorded when it started. */
     expenses,
     annual,
     nextRound,
@@ -353,26 +412,35 @@ const expenseKinds: Record<string, string> = {
 const ledgerKey = (kind: string) =>
   kind.startsWith('care:') && !incomeKinds[kind] ? 'care' : kind;
 
-export function financialBreakdown(w: World) {
-  const period = w.events.filter(
-    (event) => event.year === w.year && event.currency === w.currency && event.amount !== undefined,
+/** A season's money entries in the currency its books were kept in. */
+function seasonEntries(w: World, year: number, money: string) {
+  return w.events.filter(
+    (event) => event.year === year && event.currency === money && event.amount !== undefined,
   );
-  const summarize = (kinds: Record<string, string>, total: string) => {
-    const rows = Object.entries(kinds).map(([key, label]) => ({
-      key,
-      label,
-      amount: period
-        .filter((event) => ledgerKey(event.kind) === key)
-        .reduce((sum, event) => sum + BigInt(event.amount!), 0n)
-        .toString(),
-    }));
-    const remainder = BigInt(total) - rows.reduce((sum, row) => sum + BigInt(row.amount), 0n);
-    if (remainder !== 0n)
-      rows.push({ key: 'older-ledger', label: '이전·기타 장부', amount: remainder.toString() });
-    return rows;
-  };
-  const income = summarize(incomeKinds, w.income);
-  const expense = summarize(expenseKinds, w.expense);
+}
+/**
+ * A season's ledger lines of one direction (→ECON-10): every named kind, and a catch-all line for
+ * the part of the season's total no current rule's entries explain.
+ */
+function ledgerLines(period: Event[], kinds: Record<string, string>, total: string) {
+  const rows = Object.entries(kinds).map(([key, label]) => ({
+    key,
+    label,
+    amount: period
+      .filter((event) => ledgerKey(event.kind) === key)
+      .reduce((sum, event) => sum + BigInt(event.amount!), 0n)
+      .toString(),
+  }));
+  const remainder = BigInt(total) - rows.reduce((sum, row) => sum + BigInt(row.amount), 0n);
+  if (remainder !== 0n)
+    rows.push({ key: 'older-ledger', label: '이전·기타 장부', amount: remainder.toString() });
+  return rows;
+}
+
+export function financialBreakdown(w: World) {
+  const period = seasonEntries(w, w.year, w.currency);
+  const income = ledgerLines(period, incomeKinds, w.income);
+  const expense = ledgerLines(period, expenseKinds, w.expense);
   const ownerInvestment = income.find((row) => row.key === 'support')!.amount;
   const operatingIncome = (BigInt(w.income) - BigInt(ownerInvestment)).toString();
   const operatingNet = (BigInt(operatingIncome) - BigInt(w.expense)).toString();
@@ -405,13 +473,14 @@ export function divisionLabel(code: string, tier: number) {
   return tier >= country(code).groups.length ? '아마추어 리그' : `${tier + 1}부`;
 }
 /**
- * The equal share every club of a division earns in a season (→ECON-28), in this season's money;
- * the settlement pays it in league-round installments through `roundShare`.
+ * The equal share every club of a division earns in a season (→ECON-28), in this season's money on
+ * the broadcasting index (→ECON-31); the settlement pays it in league-round installments through
+ * `roundShare`, and the merit payment and the parachute are reckoned from it.
  */
 export function leagueShare(w: World, tier = clubOf(w).tier) {
   const code = clubOf(w).country,
     table = DISTRIBUTION_CONFIG.share[code] ?? DISTRIBUTION_CONFIG.share.ENG;
-  return footballQuote(code, w.year, table[Math.min(tier, table.length - 1)]);
+  return broadcastQuote(code, w.year, table[Math.min(tier, table.length - 1)]);
 }
 /**
  * The merit payment for a final rank, paid at the close: nothing for the bottom club, rising evenly
