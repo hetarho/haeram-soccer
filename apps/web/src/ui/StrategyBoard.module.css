@@ -1,12 +1,8 @@
+/* The operating board is the tab's content: its sections are the cards, not one card of cards. */
 .board {
   display: grid;
-  gap: 12px;
+  gap: 16px;
   margin-bottom: 16px;
-  padding: 14px;
-  border-radius: var(--radius);
-  border: 1px solid var(--line);
-  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
-  box-shadow: var(--shadow);
   min-width: 0;
 }
 .head h2 {
@@ -19,54 +15,44 @@
   font-size: 13px;
   line-height: 1.5;
 }
-.head h2 small {
-  margin-left: 4px;
-  color: var(--gold);
-  font-size: 12px;
-  font-weight: 800;
-}
-.manager,
-.summary,
 .current {
   display: grid;
   gap: 6px;
-  padding: 12px;
-  border-radius: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
   border: 1px solid var(--line-strong);
-  background: var(--surface-deep);
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  box-shadow: var(--shadow);
   min-width: 0;
 }
-.manager {
-  gap: 2px;
+.summaryHead {
+  display: grid;
+  gap: 1px;
 }
-.manager span,
 .summaryHead span,
-.presetHead em {
+.presetHead em,
+.draftHead span {
   color: var(--text-faint);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.06em;
 }
-.manager b,
 .summaryHead b {
   font-size: 17px;
 }
-.manager small {
-  color: var(--text-muted);
-  font-size: 12px;
-  line-height: 1.5;
-}
-/* Groups: presets, the owner's saved strategies, the dials. */
+/* Groups: presets, the owner's saved strategies, the six areas. */
 .group {
   display: grid;
   gap: 8px;
   min-width: 0;
 }
-.group h3 {
+.group h3,
+.areas > h3 {
   margin: 0;
   font-size: 15px;
 }
-.group h3 small {
+.group h3 small,
+.areas > h3 small {
   margin-left: 4px;
   color: var(--text-faint);
   font-size: 12px;
@@ -119,9 +105,10 @@
   font-weight: 700;
   line-height: 1.4;
 }
+/* Drafted strategies and cards read gold, like a drafted dial step; the one in force green. */
 .presetOn {
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 0 1px var(--accent);
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 1px var(--gold);
 }
 .saved {
   display: grid;
@@ -155,88 +142,59 @@
   padding: 4px 10px;
   font-size: 12px;
 }
+.makeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 .make {
-  justify-self: start;
   min-height: 44px;
   font-weight: 800;
 }
-.shift {
-  margin: 0;
-  color: var(--gold);
-  font-size: 12px;
-  font-weight: 800;
-}
-.dials {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
-  gap: 10px;
-}
-.composer {
+
+/* Six areas (→ECON-25): each pairs its card row with the dials that spend on the same thing. */
+.areas {
   display: grid;
   gap: 10px;
   min-width: 0;
 }
-.nameField {
+.area {
   display: grid;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 700;
-}
-.nameField input {
-  width: 100%;
-  min-height: 44px;
-  font-size: 16px;
-}
-.error {
-  margin: 0;
-  color: var(--warm);
-  font-size: 13px;
-  font-weight: 700;
-}
-/* One area of the club per card: its strategy card above the dials that spend on it. */
-.domains {
-  display: grid;
-  gap: 10px;
-}
-.domain {
-  display: grid;
-  gap: 10px;
-  margin: 0;
-  padding: 12px;
   border-radius: 14px;
   border: 1px solid var(--line-strong);
-  background: var(--surface-deep);
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  box-shadow: var(--shadow);
+  min-width: 0;
+  scroll-margin-top: 8px;
+}
+.areaCard,
+.areaDials {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 12px;
   min-width: 0;
 }
-.domainHead {
+.areaDials {
+  border-top: 1px solid var(--line);
+}
+.areaHead {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-/* An area names the dials beneath it; each dial carries its own icon. */
-.areaLabel {
-  margin: 0;
-  color: var(--text-faint);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+.areaHead > span:last-child {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
 }
-.domainHead b {
-  display: block;
-  font-size: 15px;
+.areaHead b {
+  font-size: 16px;
 }
-.domainHead small {
+.areaHead small {
   color: var(--text-muted);
   font-size: 12px;
-}
-/* A legend stays one row with its icon instead of floating over the fieldset border. */
-legend.domainHead {
-  float: left;
-  width: 100%;
-  padding: 0;
-}
-legend.domainHead + * {
-  clear: both;
+  line-height: 1.35;
 }
 .domainIcon {
   flex: none;
@@ -245,34 +203,87 @@ legend.domainHead + * {
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: var(--surface-2);
+  background: var(--surface-deep);
+  border: 1px solid var(--line-strong);
   color: var(--gold);
   font-weight: 900;
 }
 .options {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
   gap: 5px;
 }
 .options button {
   min-height: 44px;
   padding: 4px 6px;
+  border-radius: 10px;
   font-size: 12px;
+  font-weight: 700;
   line-height: 1.25;
   word-break: keep-all;
+  color: var(--text-muted);
+  background: var(--surface-deep);
+  border-color: var(--line);
+  box-shadow: none;
 }
-/* Green marks the card being composed. */
-.options .picked {
-  color: var(--on-accent);
-  border-color: var(--accent-edge);
-  background: var(--accent-fill);
-  box-shadow: 0 2px 0 var(--accent-edge);
+/* The card in force reads green; a drafted one gold and dashed, as on the dials. */
+.options button[aria-checked='true'] {
+  color: var(--text);
+  border-color: var(--accent);
+  background: #173a2c;
+}
+.options .drafted,
+.options .drafted[aria-checked='true'] {
+  color: var(--gold);
+  border: 1px dashed var(--gold);
+  background: #2c2914;
+}
+.options button:disabled {
+  opacity: 0.55;
+}
+.options button[aria-checked='true']:disabled {
+  opacity: 0.85;
+}
+.cardNote {
+  display: grid;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: rgba(0, 0, 0, 0.22);
+}
+.cardDrafted {
+  border-color: var(--gold);
+  background: #241f0f;
+}
+.cardDrafted .model b {
+  color: var(--gold);
 }
 .model {
   margin: 0;
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.45;
+}
+.model b {
+  color: var(--text);
+}
+.lock,
+.refusal {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+.lock svg,
+.refusal svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
 }
 .lines {
   display: flex;
@@ -295,27 +306,20 @@ legend.domainHead + * {
 .con {
   color: var(--warm);
 }
-.summary {
-  border-color: var(--gold-edge);
+.shift {
+  margin: 0;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 800;
 }
-.summaryHead {
-  display: grid;
-  gap: 1px;
+.moving {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.45;
 }
-.confirm {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 4px;
-}
-.confirm button {
-  min-height: 46px;
-}
-.apply {
-  border-color: var(--accent-edge) !important;
-  background: var(--accent-fill) !important;
-  color: var(--on-accent) !important;
-}
+
+/* Synergies and odds, as the strategy in force or the draft sets them. */
 .synergies h3,
 .odds h3 {
   margin: 0 0 6px;
@@ -414,12 +418,6 @@ legend.domainHead + * {
   font-variant-numeric: tabular-nums;
   color: var(--gold);
 }
-@media (max-width: 420px) {
-  .options {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
 .more {
   margin-top: 8px;
 }
@@ -435,46 +433,233 @@ legend.domainHead + * {
 .more > ul {
   margin-top: 4px;
 }
-/* A drafted strategy keeps its confirm bar in reach while the owner scrolls the board. */
-.summary:has(.confirm) {
+
+/*
+ * The draft bar, pinned to the bottom of the view while the draft differs from the world: the
+ * board's last child, so it sticks over every section above it. Its body scrolls on its own so
+ * 되돌리기 and 적용 stay in reach.
+ */
+.draft {
   position: sticky;
   bottom: 8px;
-  z-index: 5;
-  border-color: var(--accent);
-  box-shadow: var(--shadow);
+  z-index: 90;
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--accent);
+  background: var(--surface);
+  box-shadow:
+    0 -8px 28px rgba(0, 0, 0, 0.5),
+    var(--shadow);
+  min-width: 0;
 }
-@media (max-width: 760px) {
-  .summary:has(.confirm) {
-    gap: 6px;
-    padding: 10px;
-  }
-  .summary:has(.confirm) .summaryHead {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-  }
-  .summary:has(.confirm) .summaryHead b {
-    font-size: 15px;
-  }
-  .summary:has(.confirm) .confirm button {
-    min-height: 44px;
-  }
+.draftHead {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
 }
-
-/* A strategy reserved for the next season waits under the one in force (→ECON-22). */
-.reserved {
+.draftHead b {
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fold {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 800;
+  background: transparent;
+  border-color: var(--gold-edge);
+  box-shadow: none;
+}
+.fold i {
+  font-style: normal;
+}
+.draftBody[hidden] {
+  display: none;
+}
+.draftBody {
   display: grid;
   gap: 6px;
+  max-height: min(34vh, 260px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  min-width: 0;
+}
+.draftCards {
+  margin: 0;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+.draftDials {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.failure {
+  margin: 0;
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 700;
+}
+.confirm {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 8px;
+}
+.confirm button {
+  min-height: 46px;
+}
+.apply {
+  border-color: var(--accent-edge) !important;
+  background: var(--accent-fill) !important;
+  color: var(--on-accent) !important;
+  font-weight: 900;
+}
+.apply:disabled {
+  opacity: 0.5;
+}
+
+/* The composer (→WEB-61): six areas of cards, a name and save. */
+.composer {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.composerActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.5fr;
+  gap: 8px;
+}
+.nameField {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.nameField input {
+  width: 100%;
+  min-height: 44px;
+  font-size: 16px;
+}
+.error {
+  margin: 0;
+  color: var(--warm);
+  font-size: 13px;
+  font-weight: 700;
+}
+.domain {
+  display: grid;
+  gap: 10px;
+  margin: 0;
   padding: 12px;
-  border-radius: 12px;
-  border: 1px dashed var(--accent);
+  border-radius: 14px;
+  border: 1px solid var(--line-strong);
   background: var(--surface-deep);
   min-width: 0;
 }
-.reserved button {
-  justify-self: start;
-  min-height: 44px;
+.domainHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-.confirm .wide {
-  grid-column: 1 / -1;
+.domainHead b {
+  display: block;
+  font-size: 15px;
+}
+.domainHead small {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+/* A legend stays one row with its icon instead of floating over the fieldset border. */
+legend.domainHead {
+  float: left;
+  width: 100%;
+  padding: 0;
+}
+legend.domainHead + * {
+  clear: both;
+}
+/* Green marks the card being composed. */
+.options button.picked {
+  color: var(--on-accent);
+  border-color: var(--accent-edge);
+  background: var(--accent-fill);
+  box-shadow: 0 2px 0 var(--accent-edge);
+}
+
+/* Wide screens: an area's cards beside its dials, five cards in a row like the five steps. */
+@media (min-width: 900px) {
+  .area {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .area .options {
+    grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+  }
+  .area.cardOnly {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .areaCard,
+  .areaDials {
+    padding: 14px;
+  }
+  .areaDials {
+    border-top: 0;
+    border-left: 1px solid var(--line);
+  }
+}
+/* Phones: presets slide sideways so the board reaches its areas sooner. */
+@media (max-width: 760px) {
+  .presets {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(230px, 80%);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 6px;
+    scrollbar-width: thin;
+  }
+  .preset {
+    scroll-snap-align: start;
+  }
+  .draft {
+    gap: 6px;
+    padding: 10px;
+  }
+  .draftBody {
+    max-height: min(24vh, 200px);
+  }
+  .draftHead .fold {
+    min-height: 44px;
+  }
+  .confirm button {
+    min-height: 44px;
+  }
+}
+@media (max-width: 420px) {
+  .options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .composerActions {
+    grid-template-columns: 1fr 1fr;
+  }
+  .composerActions > :last-child {
+    grid-column: 1 / -1;
+  }
 }

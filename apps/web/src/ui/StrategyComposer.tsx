@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import {
   BUILD_OPTIONS,
@@ -24,8 +24,9 @@ import s from './StrategyBoard.module.css';
 import a from './App.module.css';
 
 /**
- * The club by area (→ECON-25): each pairs its strategy card (how the club goes about it, settled
- * once a season) with the ongoing dials that spend on the same thing (how much it puts in).
+ * The club by area (→ECON-25): each pairs its strategy card (how the club goes about it, locked for
+ * 90 days after a change) with the dials that spend on the same thing (how much it puts in, any
+ * time). The training focus is no dial of the board: it belongs to 훈련 (→WEB-70).
  */
 export const STRATEGY_AREAS: {
   slot: BuildSlot;
@@ -39,7 +40,7 @@ export const STRATEGY_AREAS: {
     label: '선수단',
     icon: '★',
     question: '선수단을 어떤 분위기로 키울까',
-    dials: ['support', 'training'],
+    dials: ['support'],
   },
   {
     slot: 'scouting',
@@ -100,18 +101,24 @@ export function Lines({ pros, cons, limit }: { pros: string[]; cons: string[]; l
 
 /**
  * 나만의 전략 만들기 (→WEB-61): six areas of cards, the combined effects and the synergies they
- * light, a name, and save to this device's library.
+ * light, a name, and save to this device's library. 이 전략으로 적용 saves it too and puts it on
+ * the board as a draft; only the board's 적용 changes the club.
  */
 export function StrategyComposer({
   w,
   initial,
+  title,
   onClose,
   onSaved,
+  onApply,
 }: {
   w: World;
   initial: { id?: string; name: string; build: ClubBuild };
+  /** The sheet's name; an edit reads 전략 편집 and a new one 나만의 전략 만들기. */
+  title?: string;
   onClose: () => void;
   onSaved: (strategy: SavedStrategy) => void;
+  onApply: (strategy: SavedStrategy) => void;
 }) {
   const save = useStrategies((state) => state.save);
   const [name, setName] = useState(initial.name);
@@ -124,27 +131,39 @@ export function StrategyComposer({
     setBuild(next);
   };
   const lit = synergyStates({ ...w, build }).filter((synergy) => synergy.active);
+  // Both actions save to the library first; a name is required either way.
+  const apply = useRef(false);
   const submit = (event?: FormEvent) => {
     event?.preventDefault();
     try {
-      onSaved(save({ id: initial.id, name, build }));
+      const saved = save({ id: initial.id, name, build });
+      if (apply.current) onApply(saved);
+      else onSaved(saved);
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : String(failure));
     }
   };
   return (
     <Dialog
-      label={initial.id ? '전략 편집' : '나만의 전략 만들기'}
+      label={title ?? (initial.id ? '전략 편집' : '나만의 전략 만들기')}
       onClose={onClose}
       actions={
-        <>
+        <div className={s.composerActions}>
           <button type="button" onClick={onClose}>
             취소
           </button>
-          <button type="submit" form="strategy-composer" className={a.primary}>
+          <button type="submit" form="strategy-composer" onClick={() => (apply.current = false)}>
             저장
           </button>
-        </>
+          <button
+            type="submit"
+            form="strategy-composer"
+            className={a.primary}
+            onClick={() => (apply.current = true)}
+          >
+            이 전략으로 적용
+          </button>
+        </div>
       }
     >
       <form id="strategy-composer" className={s.composer} onSubmit={submit}>
@@ -163,7 +182,8 @@ export function StrategyComposer({
           />
         </label>
         <p className={s.neutral}>
-          저장한 전략은 이 기기의 모든 게임에서 고를 수 있어요. 다이얼은 전략과 따로 조절해요.
+          저장한 전략은 이 기기의 모든 게임에서 고를 수 있어요. 이 전략으로 적용을 누르면 운영 전략
+          보드에 올라가고, 보드에서 적용하면 바로 반영돼요. 다이얼은 보드에서 따로 정해요.
         </p>
         {STRATEGY_AREAS.map((area) => {
           const slot = area.slot,
