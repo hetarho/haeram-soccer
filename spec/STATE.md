@@ -31,7 +31,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T070 | Settings model for the three levers: switches, criteria, talk rule, strategy locks | STAFF CLUB ECON SAVE WEB | T062 | doing@261013.lv |
 | T071 | 사람 and 훈련 tabs: navigation shell, page tabs and intervention presets | WEB STAFF | T070 | todo |
 | T072 | Staff hire and renew by the owner's criteria | STAFF SAVE | T070 | todo |
 | T073 | 사람 tab: each decision's staff switch and criteria where it lives | WEB STAFF CLUB | T072 T071 | todo |
@@ -49,11 +48,12 @@
 
 ## next
 - club-realism with T062–T069 is done on t062-standalone: push it as work/club-realism, let CI run every browser, then merge into main and push. ECON-29 bands still outside after T062 (owner accepted 261013, recorded): wage bill 36.2% (50–70), net 20.3% (−5..+10), 2000s commercial 12.3% / matchday 46.3%, ladder 6.0 seasons, 2nd/3rd-tier crowds 6,102 / 3,567; follow-up: per-country pre-1979 football index level or a country wage factor (update-ssot), and write the measured values into ECON-29.
-- three levers (branch ia-plan, planned from t062-standalone af28706): T062 is merged into ia-plan; implement T070… as a work group: unit ia-base (T070 → T071), then lanes people (T072 → T073), training (T074) and money (T075 → T076) in parallel, then ia-finish (T077 → T078).
+- three levers (branch ia-plan, planned from t062-standalone af28706): T070 done; next T071 (rest of unit ia-base), then lanes people (T072 → T073), training (T074) and money (T075 → T076) in parallel, then ia-finish (T077 → T078); tests/e2e/strategy.spec.ts fails on the removed reservation until T076.
 - after the merge: fix CI's benchmark job (desktop pointer-to-second-frame p95 115 ms > 100 since one-result merged; 74–82 ms at c63554c), its own commit on main.
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 T070 done: per-department coach switches, hiring criteria and talk rule as data, talks by the talk rule, strategy applied at once with 90-day slot locks, load and activation mapping; goldens unchanged
 - 261013 T070 doing standalone on ia-plan (6dbfb46)
 - 261013 update-ssot ECON r18: ECON-29 records rules 1.16.0's measured values and accepts the bands outside for now (no code impact)
 - 261013 T062 done by the owner's decision (record what does not change the game much): solvent reference careers; wage bill and net outside their bands, recorded in next
@@ -73,5 +73,3 @@
 - 261013 T068 done: agents 1–5 at creation and activation, clauses per signing (CLAUSE_CONFIG), applied at a close that moves the club; SAVE-10 still says activation is metadata-only
 - 261013 T068 doing standalone on t062-contracts after T067
 - 261013 T067 done: talks at the window openings, improved contracts with ≤3 seasons left, terms by window (TalkTerm 0–5), delegated projection check; WEB-68 still says 1–5 seasons
-- 261013 T067 doing standalone on t062-contracts (from t062-standalone fde6a81)
-- 261013 T066 done
