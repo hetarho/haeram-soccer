@@ -2,6 +2,7 @@ import {
   lazy,
   memo,
   Suspense,
+  useCallback,
   useDeferredValue,
   useEffect,
   useRef,
@@ -54,7 +55,6 @@ import {
 } from '../../../../packages/engine/src/operations';
 import { operatingCosts } from '../../../../packages/engine/src/finance';
 import { fixedCostRunway } from '../../../../packages/engine/src/investment';
-import Rich from './Rich';
 import { GameSlots } from '../runtime/slots';
 import { GameIndexStore } from '../adapters/games';
 import { useTabTitle } from './tabTitle';
@@ -71,6 +71,12 @@ function AwayHost({ controller }: { controller: ProgressionController }) {
     </Suspense>
   ) : null;
 }
+/**
+ * The squad, staff, operations and records pages load as their own chunk, outside the first-play
+ * entry (→ARCH-28). It is fetched once a game is in play, so a first visit seldom waits for it.
+ */
+const loadRich = () => import('./Rich');
+const Rich = lazy(loadRich);
 /** The slot screen loads on its own, outside the first-play entry (→ARCH-28). */
 const GameSlotScreen = lazy(() =>
   import('./GameSlotScreen').then((module) => ({ default: module.GameSlotScreen })),
@@ -169,7 +175,7 @@ function ClubJournal({
   client: GameClient;
   controller: ProgressionController;
 }) {
-  const { setPage } = useNavigation();
+  const setPage = useNavigation((state) => state.setPage);
   const v = state.view!,
     w = v.world,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
@@ -507,10 +513,27 @@ const ConnectedEurope = memo(function ConnectedEurope({ client }: { client: Game
   const state = useContentState();
   return <CupsView w={state.view!.world} coefficient={state.view!.coefficient} client={client} />;
 });
-function ConnectedRich({ client, page }: { client: GameClient; page: Page }) {
+/** Kept apart from the shell's renders: a page change re-renders only the page shown next. */
+const ConnectedRich = memo(function ConnectedRich({
+  client,
+  page,
+}: {
+  client: GameClient;
+  page: Page;
+}) {
   const state = useContentState();
-  return <Rich client={client} state={state} page={page} />;
-}
+  return (
+    <Suspense
+      fallback={
+        <div className={s.loading} role="status">
+          화면을 여는 중…
+        </div>
+      }
+    >
+      <Rich client={client} state={state} page={page} />
+    </Suspense>
+  );
+});
 function CalendarText() {
   const year = useGameState((state) => state.view?.world.year);
   const round = useGameState((state) => state.view?.world.round);
@@ -558,7 +581,7 @@ function HudCash({ client }: { client?: GameClient }) {
     </>
   );
 }
-function GameHud({
+const GameHud = memo(function GameHud({
   onMenu,
   menuDisabled,
   client,
@@ -605,7 +628,7 @@ function GameHud({
       <HudCash client={menuDisabled ? undefined : client} />
     </header>
   );
-}
+});
 /** Read-only ownership is a small HUD badge that explains itself on tap (→WEB-10). */
 function ReadonlyBadge() {
   const readonly = useGameState((state) => state.readonly && !!state.view);
@@ -737,10 +760,16 @@ function CashAlarm() {
     </div>
   );
 }
-function RuntimeFeedback({ client, localError }: { client: GameClient; localError: string }) {
+const RuntimeFeedback = memo(function RuntimeFeedback({
+  client,
+  localError,
+}: {
+  client: GameClient;
+  localError: string;
+}) {
   const state = useGameState((state) => state);
   const critical = state.view?.world.critical;
-  const { setPage } = useNavigation();
+  const setPage = useNavigation((state) => state.setPage);
   const openStaff = useStaffView((view) => view.open);
   const blocked = state.busy || state.readonly;
   return (
@@ -801,7 +830,7 @@ function RuntimeFeedback({ client, localError }: { client: GameClient; localErro
       )}
     </>
   );
-}
+});
 function savedAgo(savedAt: number, now: number) {
   const seconds = Math.max(0, Math.floor((now - savedAt) / 1000));
   if (seconds < 5) return '방금 저장';
@@ -835,7 +864,7 @@ function useSaveText() {
         : '저장 대기';
   return `${saved} · r${w.revision} · 물가 ${status === 'observed' ? '관측' : status === 'estimated' ? '추정' : '전망'}`;
 }
-function LiveFooter() {
+const LiveFooter = memo(function LiveFooter() {
   const text = useSaveText();
   return (
     <footer className={s.footer}>
@@ -843,7 +872,7 @@ function LiveFooter() {
       <span data-testid="save-status">{text}</span>
     </footer>
   );
-}
+});
 function SaveStatus() {
   return <p className={s.menuSave}>기록 · {useSaveText()}</p>;
 }
@@ -946,6 +975,7 @@ export function App() {
   const showGlossary = useGlossary((state) => state.show);
   const contentPage = useDeferredValue(page);
   const changingView = contentPage !== page;
+  const openMenu = useCallback(() => setMoreOpen(true), []);
   useEffect(() => {
     try {
       if (!isSecureContext || !crypto.subtle || !crypto.randomUUID)
@@ -997,6 +1027,10 @@ export function App() {
   // running when the page slept or closed plays the time away (→WEB-64).
   useEffect(() => {
     if (playing) rememberInGame(true);
+  }, [playing]);
+  useEffect(() => {
+    // A failed fetch is retried when a page needs the chunk.
+    if (playing) loadRich().catch(() => undefined);
   }, [playing]);
   useEffect(() => {
     if (playing && worldId) controller?.resumeAway();
@@ -1139,7 +1173,7 @@ export function App() {
       </aside>
       <main className={s.main}>
         {screen === 'game' && (
-          <GameHud onMenu={() => setMoreOpen(true)} menuDisabled={menuDisabled} client={client} />
+          <GameHud onMenu={openMenu} menuDisabled={menuDisabled} client={client} />
         )}
         {!client && localError && (
           <div className={s.error} role="alert">

@@ -78,7 +78,6 @@ function dials(w: World): Dial[] {
     }),
     preview: (index: number) => lines((index + 1) as PolicyLevel),
   });
-  const gate = gateProjection(w);
   const outlook = (next: World) => {
     const p = financeProjection(next).nextYear;
     return `1시즌 뒤 예상 자금 ${p.low === p.high ? format(p.low) : `${format(p.low)} ~ ${format(p.high)}`}`;
@@ -171,7 +170,9 @@ function dials(w: World): Dial[] {
       current: ticketIndex,
       command: (index) => ({ type: 'ticket', price: TICKET_LEVELS[index].price }),
       preview: (index) => {
-        const after = ticketInvestmentPreview(w, TICKET_LEVELS[index].price).after;
+        // Only the ticket preview reads today's gate, so the other areas' dials never project it.
+        const after = ticketInvestmentPreview(w, TICKET_LEVELS[index].price).after,
+          gate = gateProjection(w);
         return [
           `홈 관중 ${number(after.attendanceLow)}–${number(after.attendanceHigh)}명 (지금 ${number(gate.attendanceLow)}–${number(gate.attendanceHigh)}명)`,
           `경기당 입장 수입 ${format(after.incomeLow)}–${format(after.incomeHigh)}`,

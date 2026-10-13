@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import type {
   InboxItem,
   InboxKind,
@@ -55,7 +55,7 @@ function playerName(
  * The clock stops for events; this card says why and offers the decisions that event needs.
  * Reading or answering an event lets the owner resume.
  */
-export function EventCenter({
+export const EventCenter = memo(function EventCenter({
   client,
   controller,
   compact = false,
@@ -70,7 +70,7 @@ export function EventCenter({
   const read = (item: InboxItem) => client.command({ type: 'read-inbox', id: item.id });
   const acting = useGameState((state) => !!state.pendingActions || state.readonly);
   const { stopOn, matchEve, running } = useProgression(controller, (state) => state);
-  const { setPage } = useNavigation();
+  const setPage = useNavigation((state) => state.setPage);
   const setSquadTab = useSquadView((state) => state.setTab);
   const openStaff = useStaffView((state) => state.open);
   const [opened, setOpened] = useState<string>();
@@ -364,7 +364,7 @@ export function EventCenter({
       </div>
     </aside>
   );
-}
+});
 
 export const KIND_LABEL: Record<InboxItem['kind'], string> = {
   match: '경기',

@@ -197,7 +197,7 @@ const MatchPane = memo(function MatchPane({
     [],
   );
   const finished = presentation.finished && presentation.matchId === playback?.record.id;
-  const { setPage } = useNavigation();
+  const setPage = useNavigation((state) => state.setPage);
   const publish = useMatchView((state) => state.set);
   useEffect(() => {
     publish({ matchId: presentation.matchId, finished: presentation.finished });
@@ -417,8 +417,11 @@ function SeasonPicker({
     </div>
   );
 }
-/** Panels stay mounted. The simulation and canvas keep their identity when tabs change. */
-export function LiveSeason({
+/**
+ * Panels stay mounted. The simulation and canvas keep their identity when tabs change; a league
+ * tab joins them once it has been opened.
+ */
+export const LiveSeason = memo(function LiveSeason({
   page,
   client,
   controller,
@@ -428,7 +431,8 @@ export function LiveSeason({
   controller: ProgressionController;
 }) {
   const active = page === 'match' || page === 'league';
-  const requestedPage = useNavigation((state) => state.page);
+  // Whether the page asked for is the one on screen; moves between other pages leave it alone.
+  const settled = useNavigation((state) => state.page === page);
   const [preparing, setPreparing] = useState(false);
   const visibleTabs = LEAGUE_TABS;
   const [leagueTab, setLeagueTab] = useState<Tab>(() => {
@@ -479,9 +483,14 @@ export function LiveSeason({
     history.replaceState(history.state, '', `${url.pathname}${url.search}${url.hash}`);
   }, [page, leagueTab, reviewYear, pastTab, league]);
   const reviewing = page === 'league' && reviewYear !== undefined;
+  // A league tab mounts the first time it is shown and stays mounted after, so it keeps what was
+  // chosen in it; a tab never opened renders nothing while hidden.
+  const shown = page === 'league' && !reviewing ? tab : undefined;
+  const [opened, setOpened] = useState<Tab[]>([]);
+  if (shown && !opened.includes(shown)) setOpened([...opened, shown]);
   useEffect(() => {
-    controller.setWatching(active && requestedPage === page && tab === 'match');
-  }, [active, requestedPage, page, tab, controller]);
+    controller.setWatching(active && settled && tab === 'match');
+  }, [active, settled, tab, controller]);
   useEffect(() => {
     if (page !== 'match') setPreparing(false);
   }, [page]);
@@ -541,7 +550,7 @@ export function LiveSeason({
               onPrepare={onPrepare}
               clock={page === 'match'}
             />
-          ) : id === 'overview' ? (
+          ) : !opened.includes(id) ? null : id === 'overview' ? (
             <OverviewPane client={client} league={league} onLeague={setLeague} />
           ) : id === 'table' ? (
             <TablePane client={client} league={league} onLeague={setLeague} />
@@ -579,7 +588,7 @@ export function LiveSeason({
       )}
     </div>
   );
-}
+});
 function StrategyPanelSheet({ client, onClose }: { client: GameClient; onClose: () => void }) {
   const w = useGameState(selectStrategyWorld)!;
   return <StrategyPanel w={w} client={client} onClose={onClose} />;
