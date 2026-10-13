@@ -15,6 +15,7 @@ import {
   broadcastQuote,
   careOffer,
   catchment,
+  COACH_CRITERIA_DEFAULT,
   COACH_KEYS,
   closeSeason,
   clubOf,
@@ -309,11 +310,20 @@ describe('earned, auditable club finances', () => {
     const w = world();
     w.cash = '999999999';
     w.delegation = { ...w.delegation, ...Object.fromEntries(COACH_KEYS.map((key) => [key, true])) };
-    // A paid coach whose contract ends at this close; the volunteers' terms end too.
+    // Paid coaches whose contracts end at this close: the ablest one the staff keep (no candidate
+    // is 3 better), the other no longer meets the criteria and is replaced.
+    w.hiring = { coaches: { attack: { ...COACH_CRITERIA_DEFAULT, priority: 'ability' } } };
     w.staff = w.staff!.map((member) =>
       member.role === 'attack'
         ? { ...member, ability: 90, wage: quote(clubOf(w).country, w.year, 90), until: w.year + 1 }
-        : member,
+        : member.role === 'defense'
+          ? {
+              ...member,
+              ability: 40,
+              wage: quote(clubOf(w).country, w.year, 15),
+              until: w.year + 1,
+            }
+          : member,
     );
     simulateSeason(w);
     const renewal = w.events.find((event) => event.kind === 'staff-renew')!;

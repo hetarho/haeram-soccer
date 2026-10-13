@@ -568,9 +568,6 @@ export const worldSchema: z.ZodType<World> = z.object({
       'coach:scout': z.boolean().optional(),
     })
     .optional(),
-  coaching: z
-    .partialRecord(staffRole, z.union([z.literal(1), z.literal(2), z.literal(3)]))
-    .optional(),
   bids: z.array(bid).max(200).optional(),
   morale: z.number().finite().min(0).max(100).optional(),
   build: clubBuildSchema.optional(),
@@ -638,7 +635,6 @@ export const worldSchema: z.ZodType<World> = z.object({
     })
     .optional(),
   sponsors: z.array(sponsorContract).max(5).optional(),
-  managerRule: z.enum(['school', 'best', 'strategy']).optional(),
   hiring: z
     .strictObject({
       manager: managerCriteriaSchema.optional(),
@@ -745,26 +741,59 @@ function legacyVision(input: unknown): unknown {
   return { ...rest, ...(Object.keys(build).length ? { build: { ...build } } : {}) };
 }
 /**
+ * Coaching investment levels of rules 1.10–1.15 as coach criteria (→SAVE-10), each over the
+ * defaults the engine keeps in hiring.ts (ability 55, cheapest first, two seasons): 절약 keeps a
+ * volunteer, 균형 is the defaults and so stores nothing, 최고 asks ability 65, the ablest first.
+ */
+const LEGACY_COACHING: Readonly<Record<number, z.input<typeof coachCriteriaSchema> | undefined>> = {
+  1: { volunteer: true, minAbility: 55, priority: 'wage', term: 2 },
+  3: { volunteer: false, minAbility: 65, priority: 'ability', term: 2 },
+};
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  !!value && typeof value === 'object' && !Array.isArray(value);
+/**
+ * The hiring criteria with a pre-1.16 `coaching` record's levels added as coach criteria; an
+ * existing `hiring` entry wins. A level outside 1–3 stays as saved, so validation refuses it.
+ */
+function legacyCoaching(levels: Record<string, unknown>, hiring: unknown) {
+  const kept = hiring === undefined ? {} : hiring;
+  // A malformed `hiring` stays as saved, so validation refuses it.
+  if (!isRecord(kept) || (kept.coaches !== undefined && !isRecord(kept.coaches))) return hiring;
+  const coaches: Record<string, unknown> = {};
+  for (const [role, level] of Object.entries(levels))
+    if (level !== 2) coaches[role] = LEGACY_COACHING[level as number] ?? level;
+  const merged = { ...coaches, ...kept.coaches };
+  return Object.keys(merged).length ? { ...kept, coaches: merged } : hiring;
+}
+/**
  * Rules before 1.16 (→SAVE-10): one coach-hiring switch (`staff`) becomes every department's
- * switch, and the yearly strategy lock (`buildYear`) goes, so every slot is free.
+ * switch, coaching investment levels (`coaching`) become coach criteria, the yearly strategy lock
+ * (`buildYear`) goes, so every slot is free, and so does the manager rule (`managerRule`), which
+ * no released rules wrote.
  */
 function legacyLevers(input: unknown): unknown {
-  if (!input || typeof input !== 'object') return input;
-  const w = input as Record<string, unknown>;
-  const delegation = w.delegation as Record<string, unknown> | undefined;
-  const switched = !!delegation && typeof delegation === 'object' && 'staff' in delegation;
-  if (!switched && !('buildYear' in w)) return input;
-  const { buildYear: _buildYear, ...rest } = w;
-  void _buildYear;
-  if (!switched) return rest;
-  const { staff, ...keys } = delegation;
-  return {
-    ...rest,
-    delegation: {
+  if (!isRecord(input)) return input;
+  const { buildYear, managerRule, coaching, ...rest } = input;
+  const delegation = isRecord(rest.delegation) ? rest.delegation : undefined;
+  if (
+    !(delegation && 'staff' in delegation) &&
+    [buildYear, managerRule, coaching].every((value) => value === undefined)
+  )
+    return input;
+  const out: Record<string, unknown> = rest;
+  // Rules 1.9's club-wide level is already a record here (legacyMarket).
+  if (isRecord(coaching)) {
+    const hiring = legacyCoaching(coaching, rest.hiring);
+    if (hiring !== undefined) out.hiring = hiring;
+  }
+  if (delegation && 'staff' in delegation) {
+    const { staff, ...keys } = delegation;
+    out.delegation = {
       ...Object.fromEntries(staffRole.options.map((role) => [`coach:${role}`, staff])),
       ...keys,
-    },
-  };
+    };
+  }
+  return out;
 }
 
 /** Catalog facts a load needs to bring older rules forward; contracts never import catalogs (→ARCH-4). */

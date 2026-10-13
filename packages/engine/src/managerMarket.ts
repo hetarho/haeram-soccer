@@ -1,17 +1,26 @@
 import type {
   Club,
   Manager,
+  ManagerCriteria,
   ManagerMarket,
-  ManagerRule,
   ManagerStyle,
   World,
 } from '../../contracts/src/types';
 import { clamp, integer, random } from './primitives';
 import { candidateStyles, MANAGER_STYLES, STYLE_INFO } from './styles';
-import { affordable, footballScaled, managerTrait, staffQuote } from './staff';
+import {
+  affordable,
+  clearlyCheaper,
+  footballScaled,
+  MANAGER_RENEWAL_MARGIN,
+  MANAGER_TRAIT_INFO,
+  managerTrait,
+  staffQuote,
+} from './staff';
 import { addEvent, clubOf, FOUNDING_YEAR, makeManager } from './world';
 import { ownLeagueClubs } from './season';
-import { aimedSynergy } from './synergy';
+import { managerCriteriaOf } from './hiring';
+import { moneyLabel } from './finance';
 
 /** The market moves every four league rounds and at the season close (→STAFF-17). */
 export const MARKET_REFRESH_ROUNDS = 4;
@@ -155,14 +164,10 @@ function freeCandidates(w: World): ManagerCandidate[] {
     .map((m) => ({ ...m, source: 'free' as const, fee: signingFee(w, m) }));
 }
 
-/**
- * Who the owner may hire now (→STAFF-17): free agents first, then the best managers of our league
- * and the division above, who cost compensation on top of the signing fee.
- */
-export function managerCandidates(w: World): ManagerCandidate[] {
+/** The best managers of our league and the division above, who cost compensation (→STAFF-17). */
+function clubCandidates(w: World): ManagerCandidate[] {
   const current = w.manager.id;
-  const free = freeCandidates(w);
-  const clubs = poachable(w)
+  return poachable(w)
     .map((club) => ({ club, manager: clubManager(w, club) }))
     .filter(({ manager }) => manager.id !== current && age(w, manager) < RETIREMENT_AGE)
     .sort((a, b) => b.manager.ability - a.manager.ability || (a.club.id < b.club.id ? -1 : 1))
@@ -174,44 +179,153 @@ export function managerCandidates(w: World): ManagerCandidate[] {
       fee: signingFee(w, manager),
       compensation: ((BigInt(manager.wage) * COMPENSATION[0]) / COMPENSATION[1]).toString(),
     }));
-  return [...free, ...clubs];
-}
-
-/** How delegated staff appoint a manager (→STAFF-18), in the order the 위임 tab shows them. */
-export const MANAGER_RULES: readonly ManagerRule[] = ['school', 'best', 'strategy'];
-export const MANAGER_RULE_INFO: Record<ManagerRule, { label: string; summary: string }> = {
-  school: {
-    label: '같은 학파 우선',
-    summary: '떠나는 감독과 같은 학파에서 가장 나은 감독, 없으면 능력 최고',
-  },
-  best: { label: '능력 최고', summary: '학파와 상관없이 OVR이 가장 높은 감독' },
-  strategy: {
-    label: '운영 전략 우선',
-    summary: '운영 전략이 노리는 시너지에 맞는 학파의 최고 감독, 없으면 능력 최고',
-  },
-};
-export function managerRuleOf(w: Pick<World, 'managerRule'>): ManagerRule {
-  return w.managerRule ?? 'school';
-}
-/** The schools the rule looks to first; none means the best overall. */
-export function ruleSchools(w: World, departing?: ManagerStyle): readonly ManagerStyle[] {
-  const rule = managerRuleOf(w);
-  if (rule === 'school') return departing ? [departing] : [];
-  return rule === 'strategy' ? (aimedSynergy(w)?.schools ?? []) : [];
 }
 /**
- * The free agent delegated staff appoint (→STAFF-18): of those the club can afford in place of the
- * manager in charge (cash after the fee still covers 13 rounds of costs with his wage), the best by
- * OVR of the schools the rule looks to, else the best overall. Poaching another club's manager
- * stays the owner's decision.
+ * Who the owner may hire now (→STAFF-17): free agents first, then the best managers of our league
+ * and the division above, who cost compensation on top of the signing fee.
  */
-export function delegatedManagerPick(w: World, departing?: ManagerStyle) {
-  const freed = BigInt(w.manager.wage);
-  const pool = freeCandidates(w)
-    .filter((m) => affordable(w, BigInt(m.fee), BigInt(m.wage) - freed))
-    .sort((a, b) => b.ability - a.ability);
-  const schools = ruleSchools(w, departing);
-  return pool.find((m) => schools.includes(m.style)) ?? pool[0];
+export function managerCandidates(w: World): ManagerCandidate[] {
+  return [...freeCandidates(w), ...clubCandidates(w)];
+}
+
+/** The going wage of a manager of this OVR: what a manager wage cap names (→STAFF-18). */
+export function managerCapWage(w: World, ovr: number) {
+  return staffQuote(w, 120 + ovr);
+}
+type ManagerCheck = [
+  why: string,
+  fits: (
+    m: Pick<Manager, 'ability' | 'style' | 'flexibility' | 'pride' | 'youth' | 'trait' | 'wage'>,
+  ) => boolean,
+];
+/** The manager criteria (→STAFF-18), affordability aside, each with the reason nobody passes it. */
+function managerChecks(w: World, c: ManagerCriteria): ManagerCheck[] {
+  const cap = c.maxWageOvr === undefined ? undefined : BigInt(managerCapWage(w, c.maxWageOvr));
+  const traitLabel = (trait: ManagerCriteria['traits'][number]) =>
+    trait === 'none' ? '성향 없음' : MANAGER_TRAIT_INFO[trait].label;
+  return [
+    [`OVR ${c.minOvr} 이상인 후보가 없어요`, (m) => m.ability >= c.minOvr],
+    [
+      `${c.schools.map((style) => STYLE_INFO[style].label).join('·')} 학파의 후보가 없어요`,
+      (m) => !c.schools.length || (!!m.style && c.schools.includes(m.style)),
+    ],
+    [`유연성 ${c.minFlexibility} 이상인 후보가 없어요`, (m) => m.flexibility >= c.minFlexibility],
+    [`자존심 ${c.maxPride} 이하인 후보가 없어요`, (m) => m.pride <= c.maxPride],
+    [`육성 ${c.minYouth} 이상인 후보가 없어요`, (m) => m.youth >= c.minYouth],
+    [
+      `선발 성향이 ${c.traits.map(traitLabel).join('·')}인 후보가 없어요`,
+      (m) => !c.traits.length || c.traits.includes(m.trait ?? 'none'),
+    ],
+    [
+      `연봉 상한(OVR ${c.maxWageOvr} 감독 시세) 안의 후보가 없어요`,
+      (m) => cap === undefined || BigInt(m.wage) <= cap,
+    ],
+  ];
+}
+/** Whether a manager meets every manager criterion, affordability aside (→STAFF-18). */
+export function managerFits(w: World, m: Parameters<ManagerCheck[1]>[0]) {
+  return managerChecks(w, managerCriteriaOf(w)).every(([, fits]) => fits(m));
+}
+const potentialOf = (m: Pick<Manager, 'ability' | 'potential'>) => m.potential ?? m.ability;
+/** The criteria's order: OVR or potential, highest first, or the lowest wage; ties keep the list. */
+function byPriority(priority: ManagerCriteria['priority']) {
+  return (a: ManagerCandidate, b: ManagerCandidate) =>
+    priority === 'ovr'
+      ? b.ability - a.ability
+      : priority === 'potential'
+        ? potentialOf(b) - potentialOf(a)
+        : BigInt(a.wage) < BigInt(b.wage)
+          ? -1
+          : BigInt(a.wage) > BigInt(b.wage)
+            ? 1
+            : 0;
+}
+/** The signing fee plus any compensation to his club. */
+const hireCost = (m: ManagerCandidate) => BigInt(m.fee) + BigInt(m.compensation ?? '0');
+/**
+ * Cash after his fee and any compensation still covers 13 rounds of costs with his wage in place
+ * of the current manager's (→STAFF-18, as →STAFF-15).
+ */
+function affordableManager(w: World, m: ManagerCandidate) {
+  return affordable(w, hireCost(m), BigInt(m.wage) - BigInt(w.manager.wage));
+}
+/** Free agents, and other clubs' managers too when the criteria allow poaching. */
+const pool = (w: World, c: ManagerCriteria) => (c.poach ? managerCandidates(w) : freeCandidates(w));
+/**
+ * The candidates who meet every manager criterion and whom the club can afford, in the criteria's
+ * order (→STAFF-18): the delegated staff appoint the first.
+ */
+export function managerMatches(w: World): ManagerCandidate[] {
+  const c = managerCriteriaOf(w),
+    checks = managerChecks(w, c);
+  return pool(w, c)
+    .filter((m) => checks.every(([, fits]) => fits(m)) && affordableManager(w, m))
+    .sort(byPriority(c.priority));
+}
+/** 가장 나은 후보 (→STAFF-18): the best affordable free agent in the criteria's order. */
+export function bestFreeAgent(w: World): ManagerCandidate | undefined {
+  return freeCandidates(w)
+    .filter((m) => affordableManager(w, m))
+    .sort(byPriority(managerCriteriaOf(w).priority))[0];
+}
+/**
+ * Whether the first match beats a manager in post who meets the criteria, at his renewal wage, by
+ * the criteria's own measure: 3+ OVR, 3+ potential, or a wage at most 90% of his (→STAFF-18).
+ */
+export function managerBeats(
+  c: ManagerCriteria,
+  match: ManagerCandidate,
+  m: Pick<Manager, 'ability' | 'potential'>,
+  renewalWage: string,
+) {
+  if (c.priority === 'ovr') return match.ability >= m.ability + MANAGER_RENEWAL_MARGIN;
+  if (c.priority === 'potential')
+    return potentialOf(match) >= potentialOf(m) + MANAGER_RENEWAL_MARGIN;
+  return clearlyCheaper(match.wage, renewalWage);
+}
+/** "육성형 Name(OVR 72/80, 연봉 …)" with his club and compensation when he is another club's. */
+export function managerLine(w: World, m: ManagerCandidate) {
+  const club = m.club ? w.clubs.find((other) => other.id === m.club)?.name : undefined;
+  return `${STYLE_INFO[m.style].label} ${m.name}(OVR ${m.ability}/${potentialOf(m)} · 연봉 ${moneyLabel(w, m.wage)}${
+    club ? ` · ${club} · 웃돈 ${moneyLabel(w, m.compensation ?? '0')}` : ''
+  })`;
+}
+/** Why no candidate matches: the first criterion nobody meets, or that nobody is affordable. */
+function noManagerReason(w: World, c: ManagerCriteria) {
+  let left = pool(w, c);
+  if (!left.length) return '선임할 수 있는 후보가 없어요';
+  for (const [why, fits] of managerChecks(w, c)) {
+    left = left.filter(fits);
+    if (!left.length) return why;
+  }
+  return '자금 여력에 맞는 후보가 없어요';
+}
+/**
+ * Whom the staff would appoint if the post fell vacant today (→STAFF-18): the first match, or with
+ * 가장 나은 후보 the fallback free agent, else why nobody and that the interim would stay.
+ */
+export function managerPickPreview(w: World): {
+  pick?: ManagerCandidate;
+  /** The pick is 가장 나은 후보's fallback, not a match. */
+  fallback?: boolean;
+  reason: string;
+} {
+  const c = managerCriteriaOf(w),
+    match = managerMatches(w)[0];
+  if (match) return { pick: match, reason: `${managerLine(w, match)} · 기준에 맞는 첫 후보` };
+  const why = noManagerReason(w, c),
+    best = c.whenNone === 'best' ? bestFreeAgent(w) : undefined;
+  if (best)
+    return {
+      pick: best,
+      fallback: true,
+      reason: `${managerLine(w, best)} · 기준에 맞는 감독이 없어(${why}) 가장 나은 자유계약 감독`,
+    };
+  return { reason: `기준에 맞는 감독이 없어요 · ${why} · 임시 감독 체제로 기다려요` };
+}
+/** Why nobody was appointed, for the staff's report. */
+export function managerSearchReason(w: World) {
+  return noManagerReason(w, managerCriteriaOf(w));
 }
 
 /** The candidate leaves the market for our club; the manager he replaces becomes a free agent. */

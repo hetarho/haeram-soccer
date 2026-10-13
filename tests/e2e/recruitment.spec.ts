@@ -298,3 +298,22 @@ test('keeps the clock running while comparing candidates away from home until th
   expect(after.ownMatches).toHaveLength(0);
   expect(after.players.filter((player) => player.status === 'active')).toHaveLength(18);
 });
+
+test('the market ends with the offer switch and names the recruitment level, opening the board', async ({
+  page,
+}) => {
+  await foundMarket(page, 'offer-switch-journey');
+  // The offers' own switch, off for a new club; the sale bar shows once it is on (→CLUB-18).
+  const offers = page.getByRole('region', { name: '이적 제안 위임' });
+  const delegated = offers.getByRole('checkbox', { name: '자동으로 결정', exact: true });
+  await expect(delegated).not.toBeChecked();
+  await expect(offers).not.toContainText('130%');
+  await delegated.check();
+  await expect(delegated).toBeChecked();
+  await expect(offers).toContainText('130%');
+  await expect(offers).toContainText('80% 밑으로는 내리지 않아요');
+  expect(await horizontalOverflow(page)).toBe(0);
+  // The recruitment level is a line that opens its home on the operating board (→WEB-71).
+  await page.getByRole('button', { name: /^영입 기조 · 균형/ }).click();
+  await expect(page).toHaveURL(/\/business\?view=strategy$/);
+});

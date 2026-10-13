@@ -99,7 +99,6 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
     w.manager.term = 3;
     w.staff![0].term = 1;
     w.delegation = { ...w.delegation, contracts: false, manager: true };
-    w.managerRule = 'strategy';
     w.sponsors = [
       {
         slot: 'local',
@@ -200,7 +199,6 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
     expect(load((c) => Object.assign(c.delegation!, { scouting: true }))).toThrow();
     expect(load((c) => Object.assign(c.manager, { term: 6 }))).toThrow();
     expect(load((c) => Object.assign(c.staff![0], { term: 0 }))).toThrow();
-    expect(load((c) => Object.assign(c, { managerRule: 'random' }))).toThrow();
     expect(
       load((c) =>
         c.inbox!.push(
@@ -257,6 +255,53 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
       buildNext: { build: { youth: 'pathway' }, name: '다음 계획' },
     };
     expect(validateWorld(reserved).buildNext).toEqual(reserved.buildNext);
+  });
+
+  it('loads coaching levels as hiring criteria and drops managerRule', () => {
+    const w = world();
+    const saved = (fields: Record<string, unknown>) => ({
+      ...structuredClone(w),
+      engine: '1.15.0',
+      ...fields,
+    });
+    const defaults = { volunteer: false, minAbility: 55, priority: 'wage', term: 2 } as const;
+    const on = validateWorld(
+      saved({ coaching: { assistant: 1, attack: 2, scout: 3 }, managerRule: 'strategy' }),
+    );
+    // 절약 keeps a volunteer, 균형 is the defaults, 최고 asks ability 65, the ablest first.
+    expect(on.hiring).toEqual({
+      coaches: {
+        assistant: { ...defaults, volunteer: true },
+        scout: { ...defaults, minAbility: 65, priority: 'ability' },
+      },
+    });
+    expect('coaching' in on).toBe(false);
+    expect('managerRule' in on).toBe(false);
+    // Every department at 균형 stores nothing; a rules 1.9 club-wide level is every department's.
+    expect(validateWorld(saved({ coaching: { attack: 2, defense: 2 } })).hiring).toBeUndefined();
+    expect(Object.keys(validateWorld(saved({ coaching: 1 })).hiring!.coaches!)).toHaveLength(7);
+    // An existing hiring entry wins over the level.
+    const scout = { ...defaults, minAbility: 70, trait: 'spotter' } as const;
+    const manager = {
+      minOvr: 60,
+      schools: [],
+      minFlexibility: 0,
+      maxPride: 100,
+      minYouth: 0,
+      traits: [],
+      priority: 'ovr',
+      term: 2,
+      poach: false,
+      whenNone: 'wait',
+    } as const;
+    expect(
+      validateWorld(
+        saved({ coaching: { scout: 3, fitness: 1 }, hiring: { manager, coaches: { scout } } }),
+      ).hiring,
+    ).toEqual({ manager, coaches: { scout, fitness: { ...defaults, volunteer: true } } });
+    // A level outside 1–3 or an unknown department is still a corrupt save.
+    expect(() => validateWorld(saved({ coaching: { attack: 4 } }))).toThrow();
+    expect(() => validateWorld(saved({ coaching: { kit: 3 } }))).toThrow();
   });
 
   it('accepts hiring, talkRule and buildChanged and refuses unknown criteria keys', () => {

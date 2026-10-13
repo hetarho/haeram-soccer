@@ -87,11 +87,6 @@ export interface HiringCriteria {
   manager?: ManagerCriteria;
   coaches?: Partial<Record<StaffRole, CoachCriteria>>;
 }
-/**
- * How delegated staff appoint a manager (→STAFF-18): the departing manager's school (the
- * default), the best by OVR, or the school the operating strategy's aimed synergy needs.
- */
-export type ManagerRule = 'school' | 'best' | 'strategy';
 /** Seasons a contract is signed for (→CLUB-26, STAFF-14). */
 export type ContractTerm = 1 | 2 | 3 | 4 | 5;
 /**
@@ -100,8 +95,6 @@ export type ContractTerm = 1 | 2 | 3 | 4 | 5;
  * 0–4 more (½–4½ years). Either way the contract ends at a season's close (→CLUB-28).
  */
 export type TalkTerm = 0 | ContractTerm;
-/** Coaching investment (→STAFF-15): 1 volunteers only, 2 mid-market coaches, 3 the best available. */
-export type CoachingLevel = 1 | 2 | 3;
 /**
  * Sponsor slots in the order they open (→ECON-8): 지역 후원, 용품 후원, 메인 스폰서, 경기장 명명권,
  * 소매 스폰서. The catalog says when each opens per country.
@@ -687,8 +680,6 @@ export interface World {
   academy?: Academy;
   /** Decisions the staff makes on the owner's behalf; absent keys mean the owner decides. */
   delegation?: Partial<Record<DelegationKey, boolean>>;
-  /** Coaching investment per department that delegated staff hire to (→STAFF-15); absent is 2. */
-  coaching?: Partial<Record<StaffRole, CoachingLevel>>;
   bids?: TransferBid[];
   inbox?: InboxItem[];
   /** Squad morale 0–100; absent in older saves, which keep pre-morale strength. */
@@ -739,9 +730,11 @@ export interface World {
   sponsor?: Sponsor;
   /** One contract per open slot at most (→ECON-8); absent or missing slots are empty. */
   sponsors?: SponsorContract[];
-  /** The rule delegated staff appoint a manager by (→STAFF-18); absent is `school`. */
-  managerRule?: ManagerRule;
-  /** The delegated staff's hiring criteria (→STAFF-15, STAFF-18); absent entries are default. */
+  /**
+   * The delegated staff's hiring criteria (→STAFF-15, STAFF-18); absent entries are default. Rules
+   * before 1.16 kept a coaching investment level per department (`coaching`); a load turns it into
+   * these criteria (→SAVE-10).
+   */
   hiring?: HiringCriteria;
   /** The delegated staff's contract-talk rule (→CLUB-26); absent is the default. */
   talkRule?: TalkRule;
@@ -779,7 +772,6 @@ export type Command =
   | { type: 'hire-staff'; role: StaffRole; candidate: number; term?: ContractTerm }
   | { type: 'release-staff'; role: StaffRole }
   | { type: 'renew-staff'; role: StaffRole; term?: ContractTerm }
-  | { type: 'coaching'; role: StaffRole; level: CoachingLevel }
   | { type: 'promote-youth'; id: string }
   | { type: 'release-youth'; id: string }
   | { type: 'delegate'; key: DelegationKey; value: boolean }
@@ -793,8 +785,6 @@ export type Command =
   | { type: 'hire'; id: string; term?: ContractTerm }
   /** Renews the manager whose contract ends at this season's close; `term` as for `hire`. */
   | { type: 'renew-manager'; term?: ContractTerm }
-  /** How delegated staff appoint a manager (→STAFF-18). */
-  | { type: 'manager-rule'; rule: ManagerRule }
   /** The criteria the delegated staff hire and renew by (→STAFF-15, STAFF-18). */
   | { type: 'hiring'; role: 'manager'; criteria: ManagerCriteria }
   | { type: 'hiring'; role: StaffRole; criteria: CoachCriteria }

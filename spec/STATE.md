@@ -31,8 +31,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T072 | Staff hire and renew by the owner's criteria | STAFF SAVE | T070 | todo |
-| T073 | 사람 tab: each decision's staff switch and criteria where it lives | WEB STAFF CLUB | T072 T071 | todo |
 | T077 | Event cards and remedies open each setting's home | WEB | T073 T074 T076 | todo |
 | T078 | Three levers: upgrade journey, goldens, calibration check and full verify | SAVE ECON WEB | T077 | todo |
 
@@ -44,17 +42,20 @@
 
 ## next
 - club-realism with T062–T069 is done on t062-standalone: push it as work/club-realism, let CI run every browser, then merge into main and push. ECON-29 bands still outside after T062 (owner accepted 261013, recorded): wage bill 36.2% (50–70), net 20.3% (−5..+10), 2000s commercial 12.3% / matchday 46.3%, ladder 6.0 seasons, 2nd/3rd-tier crowds 6,102 / 3,567; follow-up: per-country pre-1979 football index level or a country wage factor (update-ssot), and write the measured values into ECON-29.
-- three levers (branch work/levers = ia-plan): T070 T071 T074 T075 T076 done and merged; T072 done and T073 on ia-people (merge it here when done); then T077 → T078 on this branch.
+- three levers (branch work/levers): T070–T076 done and merged here; next T077 then T078 on this branch.
 - after the merge: fix CI's benchmark job (desktop pointer-to-second-frame p95 115 ms > 100 since one-result merged; 74–82 ms at c63554c), its own commit on main.
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 T073 done: 사람 tabs end with their switches and criteria editors (talk rule, offer switch with its sale bar, manager criteria with the pick preview, a switch and criteria per coaching department); the 위임 block is gone
+- 261013 T073 doing standalone on ia-people (c2f2db7)
+- 261013 T071 done: 사람/훈련 tabs with PageTabs and ?view=, older addresses landing on 사람's tabs, intervention levels as a preset without training, 스태프가 맡는 결정 opening each home
+- 261013 T071 doing standalone on ia-plan (5751099)
+- 261013 T072 done: coaches and the manager hired and renewed by the owner's criteria, coaching levels and the manager rule gone (loads map them), goldens unchanged
 - 261013 T076 done: one operating board (six area rows of cards beside dials, one draft, 적용 at once, locked cards with their free day), sponsor switch in 후원; training.spec waits for T074
 - 261013 T076 doing standalone on ia-money (0c92085)
 - 261013 T074 done: 훈련 tab with focus on tap, the coach's rule and pick, what drives development (developmentOutlook) opening each home, players still growing, focus suggestion banner; 유소년 with prospects, intake, the director's switch and rule, investment line to 운영 전략
 - 261013 T074 doing standalone on ia-training (e142f23)
-- 261013 T071 done: 사람/훈련 tabs with PageTabs and ?view=, older addresses landing on 사람's tabs, intervention levels as a preset without training, 스태프가 맡는 결정 opening each home
-- 261013 T071 doing standalone on ia-plan (5751099)
 - 261013 T075 done: squad investment scales operating expenses ×0.9–1.2 on each round's booking, fixed costs, runway, warning, bankruptcy threshold and projection; level 3 exactly ×1, goldens and calibration unchanged
 - 261013 T075 doing standalone on ia-money (5751099)
 - 261013 T070 done: per-department coach switches, hiring criteria and talk rule as data, talks by the talk rule, strategy applied at once with 90-day slot locks, load and activation mapping; goldens unchanged
@@ -66,6 +67,3 @@
 - 261013 create-task WEB r54 STAFF r13 ECON r17 CLUB r21 SAVE r23: T070–T078 three levers (ia-base T070 T071 → lanes people T072 T073, training T074, money T075 T076 → ia-finish T077 T078), T070 after T062
 - 261013 update-ssot WEB r54 STAFF r13 ECON r17 CLUB r21 SAVE r23: 사람/훈련/운영 tabs, one home per setting (WEB-71), intervention level a preset without training, hiring and renewal by criteria per manager and coaching department, talk rule replacing the squad-investment pay ceiling, strategy applied at once with 90-day slot locks and no reservation, squad investment scaling operating expenses; answers the pre-1.16 contract-delegation question (activation delegates talks where the academy is)
 - 261013 update-ssot WEB STAFF ECON CLUB SAVE start (three levers IA: people, training, money) on ia-plan
-- 261013 T069 done: delegated terms past this season never ending before the running contract, clauses for founding squads and close refills, 선수 계약 협상/계약 협상 labels
-- 261013 T069 doing standalone on t062-standalone (42c6e15)
-- 261013 create-task CLUB r20 WEB r53: T069 contract follow-ups (delegated terms past this season, clauses for founding squads and refills, improved-contract labels); SAVE r22 no-op (code already activates agents); T062 depends on T069

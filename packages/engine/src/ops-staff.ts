@@ -1,23 +1,15 @@
-import type {
-  Command,
-  ContractTerm,
-  Manager,
-  ManagerRule,
-  ManagerStyle,
-  Tactic,
-  World,
-} from '../../contracts/src/types';
+import type { Command, ContractTerm, Manager, Tactic, World } from '../../contracts/src/types';
 import { addEvent, clubOf, makeManager, quote, tacticLabel, TACTICS } from './world';
 import { clamp, random, ratio } from './primitives';
 import {
   checkTerm,
-  DELEGATED_TERM,
+  fillDelegatedPost,
   hireStaff,
   MANAGER_TRAIT_INFO,
   releaseCost,
   releaseStaff,
   renewStaff,
-  setCoaching,
+  STAFF_ROLES,
   staffQuote,
   withTerm,
 } from './staff';
@@ -26,18 +18,20 @@ import { currentDay } from './calendar';
 import { pushInbox, readRelated } from './inbox';
 import { FIREFIGHTER_ARRIVAL_MORALE, managerStyleEffects, managerTerm, STYLE_INFO } from './styles';
 import {
-  delegatedManagerPick,
-  MANAGER_RULE_INFO,
-  MANAGER_RULES,
+  bestFreeAgent,
   managerCandidates,
-  managerRuleOf,
+  managerMatches,
+  managerSearchReason,
   takeManager,
   type ManagerCandidate,
 } from './managerMarket';
 import { MORALE_START } from './morale';
 import {
+  coachDelegated,
   coachKey,
   DELEGATION_KEYS,
+  managerCriteriaLines,
+  managerCriteriaOf,
   setCoachCriteria,
   setManagerCriteria,
   setTalkRule,
@@ -45,20 +39,18 @@ import {
 import { debit } from './operations';
 import { moneyLabel } from './finance';
 
-/** Managers and their tactical requests, coaches, coaching investment and delegation. */
+/** Managers and their tactical requests, coaches, delegation and the staff's criteria. */
 export type StaffCommand = Extract<
   Command,
   {
     type:
       | 'hire'
       | 'renew-manager'
-      | 'manager-rule'
       | 'tactics'
       | 'accept-condition'
       | 'hire-staff'
       | 'release-staff'
       | 'renew-staff'
-      | 'coaching'
       | 'delegate'
       | 'hiring'
       | 'talk-rule';
@@ -168,15 +160,24 @@ function installManager(
 const traitNote = (m: Pick<Manager, 'trait'>) =>
   m.trait ? ` · ${MANAGER_TRAIT_INFO[m.trait].label}` : '';
 /**
- * With the manager post delegated the staff fill it (→STAFF-18): the free agent the owner's rule
- * picks among those the club can afford, for two seasons (the firefighter one, never past his 70th
- * year), reported in the inbox. Nobody affordable leaves the post as it is.
+ * With the manager post delegated the staff fill a vacancy (→STAFF-18): the first match by the
+ * owner's criteria for the criteria's term (the firefighter one, never past his 70th year), a
+ * poached manager through the market so his club takes compensation and names a successor; with
+ * none, 가장 나은 후보 takes the best affordable free agent, and 기다림 keeps the interim in charge
+ * without stopping the clock, reported once while the staff look again daily.
  */
-export function appointDelegatedManager(w: World, departing?: ManagerStyle) {
-  const pick = delegatedManagerPick(w, departing);
-  if (!pick) return undefined;
-  const term = Math.min(DELEGATED_TERM, managerTermLimit(pick, w.year)) as ContractTerm;
-  debit(w, pick.fee, true);
+export function appointDelegatedManager(w: World) {
+  const c = managerCriteriaOf(w),
+    match = managerMatches(w)[0],
+    pick = match ?? (c.whenNone === 'best' ? bestFreeAgent(w) : undefined);
+  if (!pick) {
+    reportManagerWait(w);
+    return undefined;
+  }
+  const term = Math.min(c.term, managerTermLimit(pick, w.year)) as ContractTerm,
+    cost = (BigInt(pick.fee) + BigInt(pick.compensation ?? '0')).toString(),
+    club = pick.club ? w.clubs.find((other) => other.id === pick.club)?.name : undefined;
+  debit(w, cost, true);
   const manager = installManager(w, pick, term),
     school = STYLE_INFO[manager.style].label,
     ends = contractSeason(w.year + term);
@@ -184,23 +185,52 @@ export function appointDelegatedManager(w: World, departing?: ManagerStyle) {
     w,
     'manager-hire',
     `${manager.name} 감독 선임`,
-    `${school} · ${tacticLabel[manager.philosophy]}${traitNote(manager)} · 계약 ${ends} 시즌 끝까지 · 스태프 위임 선임`,
-    pick.fee,
+    `${club ? `${club}에서 영입 · ` : ''}${school} · ${tacticLabel[manager.philosophy]}${traitNote(manager)} · 계약 ${ends} 시즌 끝까지 · 스태프 위임 선임`,
+    cost,
   );
   pushInbox(w, {
     kind: 'staff-report',
     title: `${school} ${manager.name} 감독 선임`,
-    detail: `스태프가 ${MANAGER_RULE_INFO[managerRuleOf(w)].label} 기준으로 자유계약 감독 중에서 ${term}시즌 계약했어요 · OVR ${manager.ability} · 연봉 ${moneyLabel(w, manager.wage)} · 계약금 ${moneyLabel(w, pick.fee)} · ${ends} 시즌 끝까지`,
+    detail: [
+      `${match ? '스태프가 감독 선임 기준에 맞는' : '기준에 맞는 감독이 없어 스태프가 가장 나은'} ${club ? `${club} 감독을 웃돈을 주고` : '자유계약 감독을'} ${term}시즌 계약했어요`,
+      `OVR ${manager.ability}`,
+      `연봉 ${moneyLabel(w, manager.wage)}`,
+      `계약금 ${moneyLabel(w, pick.fee)}`,
+      ...(pick.compensation ? [`웃돈 ${moneyLabel(w, pick.compensation)}`] : []),
+      `${ends} 시즌 끝까지`,
+      ...managerCriteriaLines(c),
+    ]
+      .join(' · ')
+      .slice(0, 400),
     attention: false,
   });
   return manager;
+}
+/** Once per interim: nobody to appoint, so the interim carries on (→STAFF-18). */
+function reportManagerWait(w: World) {
+  const interim = w.manager.id;
+  if (w.inbox?.some((item) => item.ref === interim)) return;
+  pushInbox(w, {
+    kind: 'staff-report',
+    title: '감독 선임 대기: 기준에 맞는 감독이 없어요',
+    detail: [
+      managerSearchReason(w),
+      ...managerCriteriaLines(managerCriteriaOf(w)),
+      '임시 감독 체제로 계속해요',
+    ]
+      .join(' · ')
+      .slice(0, 400),
+    attention: true,
+    ref: interim,
+  });
 }
 /** The blocking alert a departure raises; the app offers hiring or carrying on with the interim. */
 export const MANAGER_GONE = '감독이 떠났습니다. 새 감독을 선임하세요.';
 /**
  * The manager leaves and a basic interim steps in (→STAFF-7). With the post delegated the staff
- * appoint a successor at once and the clock runs on; when nobody is affordable the interim stays,
- * the owner is told and the staff keep looking. Otherwise the departure stops the clock.
+ * appoint a successor by the owner's criteria at once and the clock runs on; when nobody fits the
+ * interim stays, the owner is told and the staff keep looking. Otherwise the departure stops the
+ * clock.
  */
 function resign(w: World, reason: string) {
   const old = w.manager;
@@ -231,15 +261,7 @@ function resign(w: World, reason: string) {
     w.critical = MANAGER_GONE;
     return;
   }
-  if (appointDelegatedManager(w, old.style)) return;
-  pushInbox(w, {
-    kind: 'staff-report',
-    title: `${old.name} 감독이 떠나 임시 감독 체제예요`,
-    detail:
-      '자금 여력에 맞는 자유계약 감독이 없어 임시 감독이 팀을 맡아요. 스태프가 매일 다시 찾고, 감독 교체에서 직접 선임할 수도 있어요.',
-    attention: true,
-    ref: interim.id,
-  });
+  appointDelegatedManager(w);
 }
 
 const requestTones = { respect: 12, evidence: 16, support: 8, demand: -25 } as const;
@@ -347,17 +369,8 @@ export function yearlyStaff(w: World) {
   delete w.manager.pending;
   delete w.requested;
 }
-/** The rule delegated staff appoint a manager by (→STAFF-18); the default 같은 학파 우선 is not stored. */
-function setManagerRule(w: World, rule: ManagerRule) {
-  if (!MANAGER_RULES.includes(rule)) throw new Error('감독 선임 기준을 확인하세요.');
-  if (rule === 'school') delete w.managerRule;
-  else w.managerRule = rule;
-}
 export function staffCommand(w: World, cmd: StaffCommand) {
   switch (cmd.type) {
-    case 'manager-rule':
-      setManagerRule(w, cmd.rule);
-      break;
     case 'hire-staff':
       hireStaff(w, cmd.role, cmd.candidate, cmd.term);
       break;
@@ -371,7 +384,11 @@ export function staffCommand(w: World, cmd: StaffCommand) {
     }
     case 'hiring':
       if (cmd.role === 'manager') setManagerCriteria(w, cmd.criteria);
-      else setCoachCriteria(w, cmd.role, cmd.criteria);
+      else {
+        setCoachCriteria(w, cmd.role, cmd.criteria);
+        // New criteria act at once on a vacancy or a volunteer's post (→STAFF-15).
+        if (coachDelegated(w, cmd.role)) fillDelegatedPost(w, cmd.role);
+      }
       break;
     case 'talk-rule':
       setTalkRule(w, cmd.rule);
@@ -382,14 +399,15 @@ export function staffCommand(w: World, cmd: StaffCommand) {
     case 'renew-manager':
       renewManager(w, cmd.term);
       break;
-    case 'coaching':
-      setCoaching(w, cmd.role, cmd.level);
-      break;
-    case 'delegate':
+    case 'delegate': {
       if (!DELEGATION_KEYS.includes(cmd.key) || typeof cmd.value !== 'boolean')
         throw new Error('스태프에게 맡길 결정을 확인하세요.');
       w.delegation = { ...w.delegation, [cmd.key]: cmd.value };
+      // A department handed to the staff has its vacancy or volunteer's post filled at once.
+      const role = STAFF_ROLES.find((one) => coachKey(one) === cmd.key);
+      if (role && cmd.value) fillDelegatedPost(w, role);
       break;
+    }
     case 'tactics': {
       validateTacticRequest(cmd.tactic, cmd.tone);
       const m = w.manager,

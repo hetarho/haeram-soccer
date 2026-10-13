@@ -40,10 +40,11 @@ export const CURRENT_ENGINE_VERSION = '1.16.0';
  * applies the operating strategy at once with a 90-day lock per slot (`buildChanged`) in place
  * of one change a season (`buildYear`) and a reservation (`buildNext`), both read only from older
  * worlds (a 1.15 sponsor loads as its slot's contract; a 1.15 coach-hiring switch loads as every
- * department's; wages stay until renewal; a world without `operatingExpenses` pays its division's
- * floor until its next season starts; activation draws each existing player's agent from his id,
- * running contracts carry no clauses until their next signing, contract talks become delegated
- * where the academy is and a reserved strategy is dropped with an inbox item naming it).
+ * department's and coaching investment levels as hiring criteria; wages stay until renewal; a
+ * world without `operatingExpenses` pays its division's floor until its next season starts;
+ * activation draws each existing player's agent from his id, running contracts carry no clauses
+ * until their next signing, contract talks become delegated where the academy is and a reserved
+ * strategy is dropped with an inbox item naming it).
  */
 export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.0.0',

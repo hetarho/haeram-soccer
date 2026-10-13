@@ -14,6 +14,9 @@ import { Dialog } from './Dialog';
 import { compactMoney } from './format';
 import { Money } from './Money';
 import { OvrBadge } from './OvrBadge';
+import { OfferAnswers } from './ClubStaff';
+import { openBusiness } from './state';
+import { policyOf, POLICY_INFO } from '../../../../packages/engine/src/policy';
 import s from './RecruitmentDesk.module.css';
 
 type Preview = ReturnType<typeof recruitmentPreview>;
@@ -340,6 +343,13 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             : '지금은 자유계약 선수만 영입할 수 있어요. 이적 제안은 시장이 열리면 보내세요.'}
         </small>
       </div>
+      {/* The recruitment level lives on the operating board (→WEB-71); here it is a line to it. */}
+      <button type="button" className={s.policyLine} onClick={() => openBusiness('strategy')}>
+        <span>
+          영입 기조 · <b>{POLICY_INFO.recruitment.levels[policyOf(w).recruitment - 1].name}</b>
+        </span>
+        <small>운영 전략에서 바꿔요</small>
+      </button>
       <div className={s.summary}>
         <span>
           선수단 정원 <b>{active}/26</b>
@@ -532,6 +542,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           {BigInt(fee) > BigInt(w.cash) && <p className={s.warning}>자금이 부족해요.</p>}
         </Dialog>
       )}
+      <OfferAnswers w={w} client={client} />
     </section>
   );
 }

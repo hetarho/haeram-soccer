@@ -1,5 +1,5 @@
 import type {
-  CoachingLevel,
+  CoachCriteria,
   ContractTerm,
   ManagerStyle,
   ManagerTrait,
@@ -15,14 +15,20 @@ import { addEvent, clubOf, ownStarters, personName, quote } from './world';
 import { clamp, integer, random, ratio } from './primitives';
 import { debit } from './operations';
 import { appointDelegatedManager, contractSeason, managerRenewal, renewManager } from './ops-staff';
-import { delegatedManagerPick, MANAGER_RULE_INFO, managerRuleOf } from './managerMarket';
+import { managerBeats, managerFits, managerLine, managerMatches } from './managerMarket';
 import { CASH_WARNING_ROUNDS } from './settlement';
 import { pushInbox } from './inbox';
 import { moneyLabel, operatingCosts } from './finance';
 import { currentDay, seasonDayOf } from './calendar';
 import { COACH_CAREER, coachProspect, coachSeason } from './coaching';
 import { STYLE_INFO } from './styles';
-import { coachDelegated } from './hiring';
+import {
+  coachCriteriaLines,
+  coachCriteriaOf,
+  coachDelegated,
+  MANAGER_PRIORITY_INFO,
+  managerCriteriaOf,
+} from './hiring';
 
 /** Coaching departments below the manager, in display order. */
 export const STAFF_ROLES: readonly StaffRole[] = [
@@ -272,7 +278,7 @@ export function staffQuote(w: World, units: number) {
 }
 /** Seasons a manager or coach may sign for when the owner chooses (→STAFF-11, →STAFF-14). */
 export const CONTRACT_TERMS: readonly ContractTerm[] = [1, 2, 3, 4, 5];
-/** Delegated staff hire and renew coaches for two seasons (→STAFF-15). */
+/** The seasons a renewal signs for when nobody chose a term, and where the owner's choice starts. */
 export const DELEGATED_TERM: ContractTerm = 2;
 export function checkTerm(term: ContractTerm | undefined) {
   if (term !== undefined && !CONTRACT_TERMS.includes(term))
@@ -296,15 +302,33 @@ export function releaseCost(w: World, person: Pick<Staff, 'wage' | 'until'> | un
   if (!person || BigInt(person.wage) <= 0n) return '0';
   return ratio(person.wage, BigInt(seasonsLeft(w, person.until)), 4n);
 }
-/** A coach's going wage: it follows his current ability (→STAFF-16). */
-function coachWage(w: World, ability: number) {
+/**
+ * A coach's going wage: it follows his current ability (→STAFF-16). A coach wage cap names this
+ * wage for an ability of 50–90 (→STAFF-15).
+ */
+export function coachWage(w: World, ability: number) {
   return staffQuote(w, (ability - 30) * 1.5);
 }
+type StaffCandidate = Staff & { fee: string };
+/** The season's draws per club and department; delegated staff look at them every day. */
+const candidateCache = new Map<string, readonly StaffCandidate[]>();
 /** Three seeded candidates per role and season; anyone already employed is not offered. */
-export function staffCandidates(w: World, role: StaffRole): (Staff & { fee: string })[] {
+export function staffCandidates(w: World, role: StaffRole): StaffCandidate[] {
   if (!STAFF_ROLES.includes(role)) return [];
   const code = clubOf(w).country,
-    employed = new Set((w.staff || []).map((member) => member.id));
+    employed = new Set((w.staff || []).map((member) => member.id)),
+    key = `${w.seed}|${w.playerClub}|${code}|${w.year}|${role}`;
+  let drawn = candidateCache.get(key);
+  if (!drawn) {
+    drawn = drawCandidates(w, role, code);
+    if (candidateCache.size > 512) candidateCache.clear();
+    candidateCache.set(key, drawn);
+  }
+  return drawn
+    .filter((candidate) => !employed.has(candidate.id))
+    .map((candidate) => ({ ...candidate }));
+}
+function drawCandidates(w: World, role: StaffRole, code: string): StaffCandidate[] {
   return CANDIDATE_ABILITY.map(([min, max], i) => {
     const r = random(`${w.seed}:staff-market:${w.year}:${role}:${i}`);
     const name = personName(code, r),
@@ -335,7 +359,7 @@ export function staffCandidates(w: World, role: StaffRole): (Staff & { fee: stri
       potential: career.potential,
       fee: ratio(wage, 1n, 4n),
     };
-  }).filter((candidate) => !employed.has(candidate.id));
+  });
 }
 const roleOrder = (a: Staff, b: Staff) => STAFF_ROLES.indexOf(a.role) - STAFF_ROLES.indexOf(b.role);
 
@@ -410,44 +434,6 @@ export function autoTrainingAdvice(w: World): { focus: TrainingFocus; reason: st
 export function autoTrainingFocus(w: World): TrainingFocus {
   return autoTrainingAdvice(w).focus;
 }
-/**
- * Coaching investment (→STAFF-15), one dial per department: the owner only says how much quality
- * to buy; delegated staff hire and renew to it. Level 1 keeps unpaid ability-50 volunteers, 2
- * hires the mid-market candidate (55–78), 3 the best available (65–90).
- */
-export const COACHING_INFO: Record<CoachingLevel, { label: string; summary: string }> = {
-  1: { label: '절약', summary: '무급 자원봉사 코치 · 능력 50' },
-  2: { label: '균형', summary: '시장 중간 수준 코치 · 도달 수준 55–78' },
-  3: { label: '최고', summary: '구할 수 있는 최고 코치 · 도달 수준 65–90' },
-};
-export function coachingLevel(w: World, role: StaffRole): CoachingLevel {
-  return w.coaching?.[role] ?? 2;
-}
-/**
- * Sets one department's investment. With hiring delegated the staff act at once where nobody is
- * paid yet (a vacancy or a volunteer) and the budget allows; a contracted coach is reviewed at
- * the end of his contract.
- */
-export function setCoaching(w: World, role: StaffRole, level: CoachingLevel) {
-  if (!STAFF_ROLES.includes(role)) throw new Error('코치진 부서를 확인하세요.');
-  if (![1, 2, 3].includes(level)) throw new Error('코치진 투자 단계를 확인하세요.');
-  if (coachingLevel(w, role) === level) return;
-  const rest = { ...w.coaching };
-  delete rest[role];
-  w.coaching = level === 2 ? rest : { ...rest, [role]: level };
-  if (!Object.keys(w.coaching).length) delete w.coaching;
-  addEvent(
-    w,
-    'coaching',
-    `${STAFF_INFO[role].label} 투자 · ${COACHING_INFO[level].label}`,
-    COACHING_INFO[level].summary,
-  );
-  if (!coachDelegated(w, role) || !w.staff) return;
-  const member = staffMember(w, role);
-  if (member && BigInt(member.wage) > 0n) return;
-  const hire = plannedHire(w, role);
-  if (hire) appoint(w, hire);
-}
 /** An unpaid ability-50 coach the staff can always find, so no department stays empty. */
 function volunteer(w: World, role: StaffRole): Staff {
   return {
@@ -465,28 +451,155 @@ export function affordable(w: World, spend: bigint, wage: bigint) {
   const perRound = (BigInt(operatingCosts(w).annual) + wage) / 46n;
   return BigInt(w.cash) - spend >= perRound * BigInt(CASH_WARNING_ROUNDS);
 }
+/** A match this much abler beats an expiring coach who meets the criteria, under 능력 높은 순. */
+export const COACH_RENEWAL_MARGIN = 3;
 /**
- * The candidate the coaching level asks for, falling back to cheaper bands the club can afford;
- * the staff sign him for two seasons.
+ * Under 연봉 낮은 순 a match beats the man in post when he asks at most 90% of the going wage the
+ * man in post would renew at (→STAFF-15, STAFF-18).
  */
-function plannedHire(w: World, role: StaffRole, replacing?: Staff) {
-  const level = coachingLevel(w, role);
-  if (level === 1) return undefined;
-  const offers = staffCandidates(w, role);
-  const band = (i: number) => offers.find((offer) => offer.id.endsWith(`:${i}`));
-  const order = level === 3 ? [2, 1, 0] : [1, 0];
-  const freed = replacing ? BigInt(replacing.wage) : 0n;
-  for (const i of order) {
-    const offer = band(i);
-    if (offer && affordable(w, BigInt(offer.fee), BigInt(offer.wage) - freed))
-      return { ...offer, until: w.year + DELEGATED_TERM };
+export function clearlyCheaper(wage: string, than: string) {
+  return BigInt(wage) * 10n <= BigInt(than) * 9n;
+}
+type CoachCheck = [
+  why: string,
+  fits: (coach: Pick<Staff, 'ability' | 'trait' | 'wage'>) => boolean,
+];
+/**
+ * The criteria a coach is judged by, affordability aside, each with the reason nobody passes it. A
+ * trait the department lacks reads as any, as the criteria lines show it.
+ */
+function coachChecks(w: World, role: StaffRole, c: CoachCriteria): CoachCheck[] {
+  const trait = c.trait && STAFF_INFO[role].traits.includes(c.trait) ? c.trait : undefined,
+    cap = c.maxWageOvr === undefined ? undefined : BigInt(coachWage(w, c.maxWageOvr));
+  return [
+    [`능력 ${c.minAbility} 이상인 후보가 없어요`, (coach) => coach.ability >= c.minAbility],
+    ...(trait
+      ? [
+          [
+            `${STAFF_TRAIT_INFO[trait].label} 특성의 후보가 없어요`,
+            (coach) => coach.trait === trait,
+          ] satisfies CoachCheck,
+        ]
+      : []),
+    ...(cap === undefined
+      ? []
+      : [
+          [
+            `연봉 상한(능력 ${c.maxWageOvr} 코치 시세) 안의 후보가 없어요`,
+            (coach) => BigInt(coach.wage) <= cap,
+          ] satisfies CoachCheck,
+        ]),
+  ];
+}
+/** Whether a coach meets the department's criteria, affordability aside (→STAFF-15). */
+function coachFits(w: World, role: StaffRole, coach: Pick<Staff, 'ability' | 'trait' | 'wage'>) {
+  return coachChecks(w, role, coachCriteriaOf(w, role)).every(([, fits]) => fits(coach));
+}
+const byWage = (a: { wage: string }, b: { wage: string }) =>
+  BigInt(a.wage) < BigInt(b.wage) ? -1 : BigInt(a.wage) > BigInt(b.wage) ? 1 : 0;
+/**
+ * The season's candidates (→STAFF-11) who meet the department's criteria and whom the club can
+ * afford in place of `replacing` (cash after his fee still covers the cash-warning runway with his
+ * wage instead of the replaced one), in the criteria's order: the ablest or the cheapest first,
+ * ties to the lower candidate (→STAFF-15).
+ */
+export function coachMatches(w: World, role: StaffRole, replacing?: Staff) {
+  const c = coachCriteriaOf(w, role),
+    checks = coachChecks(w, role, c),
+    freed = replacing ? BigInt(replacing.wage) : 0n;
+  return staffCandidates(w, role)
+    .filter(
+      (offer) =>
+        checks.every(([, fits]) => fits(offer)) &&
+        affordable(w, BigInt(offer.fee), BigInt(offer.wage) - freed),
+    )
+    .sort(c.priority === 'ability' ? (a, b) => b.ability - a.ability : byWage);
+}
+/** Why no candidate matches: the first criterion nobody meets, or that nobody is affordable. */
+function noCoachReason(w: World, role: StaffRole) {
+  let pool = staffCandidates(w, role);
+  if (!pool.length) return '이번 시즌 후보가 없어요';
+  for (const [why, fits] of coachChecks(w, role, coachCriteriaOf(w, role))) {
+    pool = pool.filter(fits);
+    if (!pool.length) return why;
   }
-  return undefined;
+  return '자금 여력에 맞는 후보가 없어요';
+}
+const VOLUNTEER_HOLDS = '자원봉사 코치가 자리를 지켜요';
+/**
+ * Whom the department's criteria would hire today, or why nobody, for its card (→STAFF-15). A coach
+ * under contract stays until it ends; the line says so.
+ */
+export function coachPickPreview(
+  w: World,
+  role: StaffRole,
+): { pick?: Staff & { fee: string }; reason: string } {
+  const c = coachCriteriaOf(w, role),
+    member = staffMember(w, role),
+    contracted = !!member && BigInt(member.wage) > 0n,
+    later = contracted ? ' · 계약 중인 코치는 계약이 끝날 때 기준으로 다시 판단해요' : '';
+  if (c.volunteer)
+    return { reason: `자원봉사로 운영 · 무급 코치(능력 50)가 자리를 맡아요${later}` };
+  const pick = coachMatches(w, role, member)[0];
+  if (!pick)
+    return {
+      reason: `기준에 맞는 코치가 없어요 · ${noCoachReason(w, role)}${contracted ? later : ` · ${VOLUNTEER_HOLDS}`}`,
+    };
+  return {
+    pick,
+    reason:
+      [
+        `${pick.name} · 능력 ${pick.ability}`,
+        pick.trait ? STAFF_TRAIT_INFO[pick.trait].label : '특기 없음',
+        `연봉 ${moneyLabel(w, pick.wage)}`,
+        `계약금 ${moneyLabel(w, pick.fee)}`,
+        `${c.term}시즌 계약`,
+      ].join(' · ') + later,
+  };
+}
+/** Once a season per department: the staff found no coach who meets its criteria (→STAFF-15). */
+function reportNoCoach(w: World, role: StaffRole) {
+  const ref = `coach-search:${role}:${w.year}`;
+  if (w.inbox?.some((item) => item.ref === ref)) return;
+  const label = STAFF_INFO[role].label;
+  pushInbox(w, {
+    kind: 'staff-report',
+    title: `${label}: 기준에 맞는 코치가 없어요`,
+    detail: [
+      noCoachReason(w, role),
+      ...coachCriteriaLines(role, coachCriteriaOf(w, role)),
+      VOLUNTEER_HOLDS,
+    ]
+      .join(' · ')
+      .slice(0, 400),
+    attention: false,
+    ref,
+  });
 }
 /**
- * What a coach asks to stay `term` more seasons after his contract ends (two when absent, as
- * delegated staff renew): the going rate for his ability this season, fixed for the term, and a
- * 10% signing fee. At the season boundary his contract ended with the season just closed.
+ * A delegated department's vacancy or volunteer's post (→STAFF-15): the first match takes it at
+ * once for the criteria's term; with none, or with 자원봉사로 운영, a volunteer holds it, and a
+ * search that found nobody is reported once a season. A coach under contract stays until it ends.
+ * Older saves without staff are left as they are.
+ */
+export function fillDelegatedPost(w: World, role: StaffRole) {
+  if (!w.staff) return;
+  const member = staffMember(w, role);
+  if (member && BigInt(member.wage) > 0n) return;
+  const c = coachCriteriaOf(w, role),
+    hire = c.volunteer ? undefined : coachMatches(w, role, member)[0];
+  if (hire) {
+    appoint(w, { ...hire, until: w.year + c.term });
+    return;
+  }
+  if (!member) appoint(w, volunteer(w, role));
+  if (!c.volunteer) reportNoCoach(w, role);
+}
+/**
+ * What a coach asks to stay `term` more seasons after his contract ends (two when absent;
+ * delegated staff renew for their criteria's term): the going rate for his ability this season,
+ * fixed for the term, and a 10% signing fee. At the season boundary his contract ended with the
+ * season just closed.
  */
 export function renewalTerms(w: World, member: Staff, term: ContractTerm = DELEGATED_TERM) {
   const wage = coachWage(w, member.ability);
@@ -538,89 +651,100 @@ function appoint(w: World, member: Staff & { fee?: string }) {
   return staff;
 }
 /**
- * Season boundary: contracts end, renew or are replaced. In each department delegated to the
- * staff (→STAFF-15) the club renews coaches at the level the owner asked for and replaces the
- * rest, so no such department is left empty; elsewhere expiring coaches leave and the owner is
- * told.
+ * A delegated department at the season boundary (→STAFF-15), with `member` the coach whose term
+ * ended (or none): a vacancy or a volunteer's post goes to the first match; an expiring paid coach
+ * who meets the criteria and is affordable is renewed (going wage, 10% fee, the criteria's term)
+ * unless the first match beats him clearly, otherwise the first match replaces him, else he is
+ * renewed when affordable, else a volunteer takes the post. 자원봉사로 운영 keeps a volunteer.
+ * Returns the line for the season's summary.
+ */
+function delegatedSeason(w: World, role: StaffRole, member: Staff | undefined) {
+  const c = coachCriteriaOf(w, role),
+    label = STAFF_INFO[role].label,
+    first = c.volunteer ? undefined : coachMatches(w, role, member)[0],
+    hired = (offer: Staff & { fee: string }) => appoint(w, { ...offer, until: w.year + c.term });
+  if (!member || BigInt(member.wage) === 0n) {
+    if (first) return `${label} ${hired(first).name} 선임(능력 ${first.ability})`;
+    if (!member) return `${label} 자원봉사 ${appoint(w, volunteer(w, role)).name}`;
+    w.staff = w.staff!.map((other) =>
+      other.role === role ? { ...other, until: w.year + 1 } : other,
+    );
+    return undefined;
+  }
+  const terms = renewalTerms(w, member, c.term),
+    payable =
+      !c.volunteer && affordable(w, BigInt(terms.fee), BigInt(terms.wage) - BigInt(member.wage)),
+    beaten =
+      !!first &&
+      (c.priority === 'ability'
+        ? first.ability >= member.ability + COACH_RENEWAL_MARGIN
+        : clearlyCheaper(first.wage, terms.wage));
+  const keep = payable && (coachFits(w, role, { ...member, wage: terms.wage }) ? !beaten : !first);
+  if (keep) {
+    debit(w, terms.fee, true);
+    w.staff = w.staff!.map((other) =>
+      other.role === role ? withTerm({ ...other, wage: terms.wage, until: terms.until }) : other,
+    );
+    addEvent(
+      w,
+      'staff-renew',
+      `${label} ${member.name} 재계약`,
+      `능력 ${member.ability} · 연봉 ${moneyLabel(w, terms.wage)} · 계약 ${contractSeason(terms.until)} 시즌 끝까지 · 스태프 위임`,
+      terms.fee,
+    );
+    return `${label} ${member.name} 재계약(${c.term}시즌)`;
+  }
+  w.staff = w.staff!.filter((other) => other.role !== role);
+  addEvent(w, 'staff-leave', `${label} ${member.name} 계약 만료`, `${member.since}–${w.year}`);
+  return first
+    ? `${label} ${member.name} 계약 만료 → ${hired(first).name} 선임(능력 ${first.ability})`
+    : `${label} ${member.name} 계약 만료 → 자원봉사 ${appoint(w, volunteer(w, role)).name}`;
+}
+/**
+ * Season boundary: contracts end, renew or are replaced. Each department delegated to the staff
+ * (→STAFF-15) is judged by its criteria and never left empty; elsewhere expiring coaches leave
+ * and the owner is told, and volunteers stay another season.
  */
 export function seasonStaff(w: World): void {
   if (!w.staff) return;
   developStaff(w);
   const report: string[] = [];
   for (const role of STAFF_ROLES) {
-    const delegated = coachDelegated(w, role);
     const member = staffMember(w, role);
-    const expired = member && member.until <= w.year;
-    if (member && !expired) continue;
-    const label = STAFF_INFO[role].label,
-      tier = `${label}(${COACHING_INFO[coachingLevel(w, role)].label})`;
-    if (member && BigInt(member.wage) === 0n) {
-      const hire = delegated ? plannedHire(w, role) : undefined;
-      if (hire) report.push(`${tier} ${appoint(w, hire).name} 선임(능력 ${hire.ability})`);
-      else
-        w.staff = w.staff.map((other) =>
-          other.role === role ? { ...other, until: w.year + 1 } : other,
-        );
+    if (member && member.until > w.year) continue;
+    if (coachDelegated(w, role)) {
+      const line = delegatedSeason(w, role, member);
+      if (line) report.push(line);
       continue;
     }
-    if (member) {
-      const target = delegated ? plannedHire(w, role, member) : undefined;
-      const terms = renewalTerms(w, member);
-      const keep =
-        delegated &&
-        coachingLevel(w, role) > 1 &&
-        member.ability >= (target?.ability ?? NEUTRAL_ABILITY) - 3 &&
-        affordable(w, BigInt(terms.fee), BigInt(terms.wage) - BigInt(member.wage));
-      if (keep) {
-        debit(w, terms.fee, true);
-        w.staff = w.staff.map((other) =>
-          other.role === role
-            ? withTerm({ ...other, wage: terms.wage, until: terms.until })
-            : other,
-        );
-        addEvent(
-          w,
-          'staff-renew',
-          `${label} ${member.name} 재계약`,
-          `능력 ${member.ability} · 계약 ${contractSeason(terms.until)} 시즌 끝까지 · 스태프 위임`,
-          terms.fee,
-        );
-        report.push(`${tier} ${member.name} 재계약`);
-        continue;
-      }
-      w.staff = w.staff.filter((other) => other.role !== role);
-      addEvent(
-        w,
-        'staff-leave',
-        `${label} ${member.name} 계약 만료`,
-        `${member.since}–${w.year}${delegated ? '' : ' · 새 코치를 선임할 때까지 공석입니다.'}`,
+    if (!member) continue;
+    if (BigInt(member.wage) === 0n) {
+      w.staff = w.staff.map((other) =>
+        other.role === role ? { ...other, until: w.year + 1 } : other,
       );
-      if (!delegated) {
-        pushInbox(w, {
-          kind: 'staff-renewal',
-          title: `${label} ${member.name} 계약 만료 · 공석`,
-          detail: `${label} 자리가 비었습니다. 공석인 부서는 기본 코치보다 효과가 낮아요. 코치진에서 새 코치를 선임하거나 코치 선임을 스태프에게 맡기세요.`,
-          attention: true,
-          ref: member.id,
-        });
-        continue;
-      }
-      const hire = target || volunteer(w, role);
-      appoint(w, hire);
-      report.push(`${tier} ${member.name} 계약 만료 → ${hire.name} 선임(능력 ${hire.ability})`);
       continue;
     }
-    if (delegated) {
-      const hire = plannedHire(w, role) || volunteer(w, role);
-      appoint(w, hire);
-      report.push(`${tier} ${hire.name} 선임(능력 ${hire.ability})`);
-    }
+    const label = STAFF_INFO[role].label;
+    w.staff = w.staff.filter((other) => other.role !== role);
+    addEvent(
+      w,
+      'staff-leave',
+      `${label} ${member.name} 계약 만료`,
+      `${member.since}–${w.year} · 새 코치를 선임할 때까지 공석입니다.`,
+    );
+    pushInbox(w, {
+      kind: 'staff-renewal',
+      title: `${label} ${member.name} 계약 만료 · 공석`,
+      detail: `${label} 자리가 비었습니다. 공석인 부서는 기본 코치보다 효과가 낮아요. 코치진에서 새 코치를 선임하거나 코치 선임을 스태프에게 맡기세요.`,
+      attention: true,
+      ref: member.id,
+    });
   }
   if (report.length)
     pushInbox(w, {
       kind: 'staff-report',
       title: `코치진 정비 · ${report.length}건`,
-      detail: `부서별 코치진 투자 기준 · ${report.join(' · ')}`.slice(0, 400),
+      detail: `부서별 선임 기준 · ${report.join(' · ')}`.slice(0, 400),
       attention: false,
     });
 }
@@ -658,45 +782,59 @@ function developStaff(w: World) {
 export function renewalDay(year: number) {
   return seasonDayOf(year, 4, 1);
 }
-/** A free agent the rule picks must be this much better by OVR to replace an expiring manager. */
+/** A match this much better by OVR or potential beats an expiring manager who meets the criteria. */
 export const MANAGER_RENEWAL_MARGIN = 3;
 /**
+ * 1 April with the manager post delegated (→STAFF-18): a manager who meets the criteria is renewed
+ * for the criteria's term (the firefighter one, never past his 70th year) unless the first match
+ * beats him clearly in the chosen order; one who does not meet them is let go at the close when a
+ * match exists, the staff appointing then, and renewed when none does. Returns false when the club
+ * cannot afford the renewal it would make, so the owner is told instead.
+ */
+function delegatedManagerRenewal(w: World, school: string, limit: number) {
+  const m = w.manager,
+    c = managerCriteriaOf(w),
+    term = Math.min(c.term, limit) as ContractTerm,
+    kept = managerRenewal(w, term)!,
+    fits = managerFits(w, { ...m, wage: kept.wage }),
+    first = managerMatches(w)[0];
+  if (first && (!fits || managerBeats(c, first, m, kept.wage))) {
+    pushInbox(w, {
+      kind: 'staff-report',
+      title: `${school}${m.name} 감독과 재계약하지 않아요`,
+      detail: `${
+        fits
+          ? `스태프가 감독 선임 기준(${MANAGER_PRIORITY_INFO[c.priority]})으로 더 나은 ${managerLine(w, first)} 감독을 찾았어요 (지금 OVR ${m.ability}/${m.potential ?? m.ability} · 재계약 연봉 ${moneyLabel(w, kept.wage)})`
+          : `${m.name} 감독은 감독 선임 기준에 맞지 않고, 기준에 맞는 ${managerLine(w, first)} 감독이 있어요`
+      } · 시즌이 끝나면 떠나고 스태프가 그때 기준에 맞는 감독을 선임해요`.slice(0, 400),
+      attention: false,
+      ref: m.id,
+    });
+    return true;
+  }
+  if (!affordable(w, BigInt(kept.fee), BigInt(kept.wage) - BigInt(m.wage))) return false;
+  renewManager(w, term, true);
+  pushInbox(w, {
+    kind: 'staff-report',
+    title: `${school}${m.name} 감독 재계약`,
+    detail: `${fits ? '감독 선임 기준에 맞아' : '기준에 맞는 감독이 없어'} 스태프가 ${term}시즌 더 계약했어요 · 연봉 ${moneyLabel(w, kept.wage)} · 계약금 ${moneyLabel(w, kept.fee)} · ${contractSeason(kept.until)} 시즌 끝까지`,
+    attention: false,
+  });
+  return true;
+}
+/**
  * 1 April for a manager whose contract ends at the close: no contract renews itself (→STAFF-14).
- * With the manager post delegated (→STAFF-18) the staff let him go when the owner's rule finds an
- * affordable free agent 3+ OVR better, who replaces him at the close; otherwise they renew him for
- * two seasons (the firefighter one) when the club can afford it. Either way they report it; else
- * the owner hears that he leaves unless renewed. Coaching staff (absent in older saves) play no
- * part.
+ * With the manager post delegated the staff decide by the owner's criteria (→STAFF-18) and report
+ * it; else, or when the club cannot afford the renewal, the owner hears that he leaves unless
+ * renewed. Coaching staff (absent in older saves) play no part.
  */
 function managerRenewalReminder(w: World) {
   const m = w.manager,
     terms = managerRenewal(w);
   if (!terms) return;
   const school = m.style ? `${STYLE_INFO[m.style].label} ` : '',
-    delegated = !!w.delegation?.manager,
-    term = Math.min(DELEGATED_TERM, terms.limit) as ContractTerm,
-    kept = managerRenewal(w, term)!;
-  const rival = delegated ? delegatedManagerPick(w, m.style) : undefined;
-  if (rival && rival.ability >= m.ability + MANAGER_RENEWAL_MARGIN) {
-    pushInbox(w, {
-      kind: 'staff-report',
-      title: `${school}${m.name} 감독과 재계약하지 않아요`,
-      detail: `스태프가 ${MANAGER_RULE_INFO[managerRuleOf(w)].label} 기준으로 OVR ${rival.ability}의 ${STYLE_INFO[rival.style].label} ${rival.name} 감독(지금 OVR ${m.ability})을 찾았어요 · 시즌이 끝나면 떠나고 스태프가 그때 형편에 맞는 감독을 선임해요`,
-      attention: false,
-      ref: m.id,
-    });
-    return;
-  }
-  if (delegated && affordable(w, BigInt(kept.fee), BigInt(kept.wage) - BigInt(m.wage))) {
-    renewManager(w, term, true);
-    pushInbox(w, {
-      kind: 'staff-report',
-      title: `${school}${m.name} 감독 재계약`,
-      detail: `스태프가 ${term}시즌 더 계약했어요 · 연봉 ${moneyLabel(w, kept.wage)} · 계약금 ${moneyLabel(w, kept.fee)} · ${contractSeason(kept.until)} 시즌 끝까지`,
-      attention: false,
-    });
-    return;
-  }
+    delegated = !!w.delegation?.manager;
+  if (delegated && delegatedManagerRenewal(w, school, terms.limit)) return;
   const seasons = terms.limit === 1 ? '1시즌' : `1–${terms.limit}시즌`;
   pushInbox(w, {
     kind: 'staff-renewal',
@@ -708,17 +846,15 @@ function managerRenewalReminder(w: World) {
 }
 /**
  * Daily: on 1 April an expiring manager's renewal comes up; with the manager post delegated the
- * staff replace an interim as soon as the club can afford a free agent (→STAFF-18); the staff
- * fill an empty department delegated to them at once; for the other departments the renewal
- * season is announced on 1 April when contracts end at the close.
+ * staff look for a successor to an interim every day (→STAFF-18); each department delegated to the
+ * staff has its vacancy or volunteer's post filled by its criteria (→STAFF-15); for the other
+ * departments the renewal season is announced on 1 April when contracts end at the close.
  */
 export function dailyStaff(w: World) {
   if (currentDay(w) === renewalDay(w.year)) managerRenewalReminder(w);
   if (w.manager.interim && w.delegation?.manager) appointDelegatedManager(w);
   if (!w.staff) return;
-  for (const role of STAFF_ROLES)
-    if (coachDelegated(w, role) && !staffMember(w, role))
-      appoint(w, plannedHire(w, role) || volunteer(w, role));
+  for (const role of STAFF_ROLES) if (coachDelegated(w, role)) fillDelegatedPost(w, role);
   if (currentDay(w) !== renewalDay(w.year)) return;
   const expiring = w.staff.filter(
     (member) => isExpiring(w, member) && !coachDelegated(w, member.role),

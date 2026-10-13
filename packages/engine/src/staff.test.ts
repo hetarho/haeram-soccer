@@ -2,10 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import { footballIndex } from '../../catalogs/src/index';
 import type {
+  CoachCriteria,
   ContractTerm,
-  ManagerRule,
   ManagerStyle,
   Player,
+  Staff,
   StaffRole,
   StaffTrait,
   World,
@@ -13,16 +14,17 @@ import type {
 import {
   activePlayers,
   activeTrainingFocus,
-  COACH_KEYS,
+  clearlyCheaper,
+  COACH_CRITERIA_DEFAULT,
+  COACH_RENEWAL_MARGIN,
+  coachMatches,
+  coachPickPreview,
+  coachWage,
   advanceRound,
-  aimedSynergy,
-  delegatedManagerPick,
   managerCandidates,
-  policyOf,
   autoTrainingAdvice,
   autoTrainingFocus,
   basicStaff,
-  coachingLevel,
   coachProspect,
   coachSeason,
   createWorld,
@@ -58,6 +60,7 @@ import {
   staffEffects,
   staffImpact,
   staffWageTotal,
+  MANAGER_CRITERIA_DEFAULT,
   MANAGER_STYLES,
   STYLE_INFO,
 } from './index';
@@ -115,9 +118,6 @@ const settled = (w: World) => {
   settleTraining(w);
   return w;
 };
-
-/** Every coaching department's switch (→STAFF-13). */
-const allCoaches = (on: boolean) => Object.fromEntries(COACH_KEYS.map((key) => [key, on]));
 
 describe('coaching staff', () => {
   it('founds the club with seven unpaid ability-50 volunteers that change nothing', () => {
@@ -486,66 +486,265 @@ describe('manager traits', () => {
   });
 });
 
-describe('coaching investment per department', () => {
-  it('keeps one dial per department, saving only the departments that differ from 균형', () => {
-    const w = world('department-dials');
-    expect(STAFF_ROLES.every((role) => coachingLevel(w, role) === 2)).toBe(true);
-    operate(w, { type: 'coaching', role: 'attack', level: 3 });
-    operate(w, { type: 'coaching', role: 'fitness', level: 1 });
-    expect(w.coaching).toEqual({ attack: 3, fitness: 1 });
-    expect(coachingLevel(w, 'defense')).toBe(2);
-    expect(w.events.at(-1)).toMatchObject({ kind: 'coaching', title: '피지컬 코치 투자 · 절약' });
-    operate(w, { type: 'coaching', role: 'attack', level: 2 });
-    operate(w, { type: 'coaching', role: 'fitness', level: 2 });
-    expect(w.coaching).toBeUndefined();
-    expect(() => operate(w, { type: 'coaching', role: 'kit' as StaffRole, level: 2 })).toThrow(
-      '부서',
+describe('coach hiring by criteria (STAFF-15)', () => {
+  const coachOf = (w: World, role: StaffRole) => w.staff!.find((member) => member.role === role);
+  const criteria = (changes: Partial<CoachCriteria>): CoachCriteria => ({
+    ...COACH_CRITERIA_DEFAULT,
+    ...changes,
+  });
+  const byWage = (a: { wage: string }, b: { wage: string }) =>
+    BigInt(a.wage) < BigInt(b.wage) ? -1 : BigInt(a.wage) > BigInt(b.wage) ? 1 : 0;
+  /** A paid coach whose contract ended with the season just closed, his department delegated. */
+  function expiring(seed: string, ability: number, set: Partial<CoachCriteria>) {
+    const w = world(seed);
+    const veteran: Staff = {
+      id: `${seed}:veteran`,
+      role: 'attack',
+      name: 'Veteran Coach',
+      ability,
+      wage: coachWage(w, ability),
+      since: w.year - 2,
+      until: w.year,
+    };
+    w.staff = w.staff!.map((member) => (member.role === 'attack' ? veteran : member));
+    w.delegation = { ...w.delegation, 'coach:attack': true };
+    w.hiring = { coaches: { attack: criteria(set) } };
+    return { w, veteran };
+  }
+
+  it('a delegated department hires the first match by its criteria', () => {
+    const w = world('criteria-first');
+    // The defaults: ability 55 or more, the cheapest first, for two seasons.
+    const cheapest = staffCandidates(w, 'attack')
+      .filter((offer) => offer.ability >= 55)
+      .sort(byWage)[0];
+    expect(cheapest).toBeDefined();
+    const cash = BigInt(w.cash);
+    operate(w, { type: 'delegate', key: 'coach:attack', value: true });
+    expect(coachOf(w, 'attack')).toMatchObject({ id: cheapest.id, until: w.year + 2 });
+    expect(coachOf(w, 'attack')!.term).toBeUndefined();
+    expect(BigInt(w.cash)).toBe(cash - BigInt(cheapest.fee));
+    expect(w.events.at(-1)).toMatchObject({ kind: 'staff-hire', amount: cheapest.fee });
+    expect(w.events.at(-1)!.detail).toContain('스태프 위임 선임');
+    // Other departments keep their volunteers.
+    expect(coachOf(w, 'defense')!.wage).toBe('0');
+
+    // Criteria set while the owner runs a department change nothing until it is handed over.
+    const ablest = [...staffCandidates(w, 'defense')].sort((a, b) => b.ability - a.ability)[0];
+    operate(w, {
+      type: 'hiring',
+      role: 'defense',
+      criteria: criteria({ minAbility: 0, priority: 'ability', term: 4 }),
+    });
+    expect(coachOf(w, 'defense')!.wage).toBe('0');
+    operate(w, { type: 'delegate', key: 'coach:defense', value: true });
+    expect(coachOf(w, 'defense')).toMatchObject({ id: ablest.id, until: w.year + 4 });
+
+    // A trait and a wage cap narrow the candidates; ties keep the lower candidate.
+    const offers = staffCandidates(w, 'scout'),
+      trait = offers.find((offer) => offer.trait)!.trait!;
+    w.hiring = { coaches: { scout: criteria({ minAbility: 0, trait }) } };
+    expect(coachMatches(w, 'scout').map((offer) => offer.id)).toEqual(
+      offers
+        .filter((offer) => offer.trait === trait)
+        .sort(byWage)
+        .map((offer) => offer.id),
     );
+    w.hiring = { coaches: { scout: criteria({ minAbility: 0, maxWageOvr: 60 }) } };
+    const cap = BigInt(coachWage(w, 60));
+    expect(coachMatches(w, 'scout').map((offer) => offer.id)).toEqual(
+      offers
+        .filter((offer) => BigInt(offer.wage) <= cap)
+        .sort(byWage)
+        .map((offer) => offer.id),
+    );
+    // What the department's card shows: the pick, or why nobody.
+    expect(coachPickPreview(w, 'scout').pick?.id).toBe(coachMatches(w, 'scout')[0]?.id);
+    w.hiring = { coaches: { scout: criteria({ minAbility: 99 }) } };
+    expect(coachPickPreview(w, 'scout')).toEqual({
+      reason:
+        '기준에 맞는 코치가 없어요 · 능력 99 이상인 후보가 없어요 · 자원봉사 코치가 자리를 지켜요',
+    });
     validateWorld(w);
   });
 
-  it('lets delegated staff fill a volunteer post at once while the owner hires himself', () => {
-    const manual = world('department-manual');
-    manual.delegation = { ...manual.delegation, ...allCoaches(false) };
-    operate(manual, { type: 'coaching', role: 'attack', level: 3 });
-    expect(manual.staff!.find((m) => m.role === 'attack')!.wage).toBe('0');
-
-    const w = world('department-auto');
-    w.delegation = { ...w.delegation, ...allCoaches(true) };
-    const best = staffCandidates(w, 'attack').find((c) => c.id.endsWith(':2'))!;
-    const cash = BigInt(w.cash);
-    operate(w, { type: 'coaching', role: 'attack', level: 3 });
-    const attack = w.staff!.find((m) => m.role === 'attack')!;
-    expect(attack.id).toBe(best.id);
-    expect(BigInt(w.cash)).toBe(cash - BigInt(best.fee));
-    // A contracted coach is reviewed when his contract ends, not replaced mid-contract.
-    operate(w, { type: 'coaching', role: 'attack', level: 2 });
-    expect(w.staff!.find((m) => m.role === 'attack')!.id).toBe(best.id);
-    // Saving on a department keeps its volunteer.
-    operate(w, { type: 'coaching', role: 'scout', level: 1 });
-    expect(w.staff!.find((m) => m.role === 'scout')!.wage).toBe('0');
-  });
-
-  it('hires each department to its own level at the season boundary', () => {
-    const w = world('department-season');
-    w.delegation = { ...w.delegation, ...allCoaches(true) };
-    w.coaching = { assistant: 3, scout: 1 };
-    // The founding volunteers' one-year terms end at the next boundary.
+  it('with no match a volunteer holds the post and the staff report it once a season', () => {
+    const w = world('criteria-none');
+    operate(w, { type: 'hiring', role: 'attack', criteria: criteria({ minAbility: 99 }) });
+    operate(w, { type: 'delegate', key: 'coach:attack', value: true });
+    expect(coachOf(w, 'attack')).toMatchObject({ wage: '0', ability: 50 });
+    const reports = () =>
+      (w.inbox || []).filter((item) => item.ref?.startsWith('coach-search:attack:'));
+    expect(reports()).toHaveLength(1);
+    expect(reports()[0]).toMatchObject({
+      kind: 'staff-report',
+      attention: false,
+      ref: `coach-search:attack:${w.year}`,
+      title: '공격 코치: 기준에 맞는 코치가 없어요',
+    });
+    expect(reports()[0].detail).toBe(
+      '능력 99 이상인 후보가 없어요 · 자원봉사로 운영 끔 · 최소 능력 99 · 특성 모두 · 연봉 상한 없음 · 우선 연봉 낮은 순 · 계약 기간 2시즌 · 자원봉사 코치가 자리를 지켜요',
+    );
+    // The staff look again daily without repeating the report; a vacancy gets a volunteer.
+    w.staff = w.staff!.filter((member) => member.role !== 'attack');
+    dailyStaff(w);
+    dailyStaff(w);
+    expect(coachOf(w, 'attack')).toMatchObject({ wage: '0', ability: 50 });
+    expect(reports()).toHaveLength(1);
+    validateWorld(w);
+    // A new season's search reports again.
     w.year += 1;
-    seasonStaff(w);
-    const member = (role: StaffRole) => w.staff!.find((m) => m.role === role)!;
-    expect(member('assistant').id.endsWith(':2')).toBe(true);
-    expect(member('attack').id.endsWith(':1')).toBe(true);
-    expect(member('scout').wage).toBe('0');
-    expect(w.inbox!.at(-1)!.detail).toContain('수석코치(최고)');
+    dailyStaff(w);
+    expect(reports()).toHaveLength(2);
+    // Nobody affordable is a reason of its own.
+    const broke = world('criteria-broke');
+    broke.cash = '0';
+    operate(broke, { type: 'hiring', role: 'fitness', criteria: criteria({ minAbility: 0 }) });
+    operate(broke, { type: 'delegate', key: 'coach:fitness', value: true });
+    expect(coachOf(broke, 'fitness')!.wage).toBe('0');
+    expect(broke.inbox!.at(-1)!.detail).toMatch(/^자금 여력에 맞는 후보가 없어요 · /);
   });
 
-  it('reads a club-wide level saved by rules 1.9 as the same level in every department', () => {
+  it('renews an expiring coach who meets the criteria unless a match beats him by 3 ability or a 10% lower wage', () => {
+    // 능력 높은 순: the ablest match must be 3 better.
+    const probe = expiring('renew-ability', 50, { minAbility: 0, priority: 'ability' });
+    const ablest = coachMatches(probe.w, 'attack', probe.veteran)[0];
+    const kept = expiring('renew-ability', ablest.ability - COACH_RENEWAL_MARGIN + 1, {
+      minAbility: 0,
+      priority: 'ability',
+      term: 3,
+    });
+    const terms = renewalTerms(kept.w, kept.veteran, 3);
+    const cash = BigInt(kept.w.cash);
+    seasonStaff(kept.w);
+    expect(coachOf(kept.w, 'attack')).toMatchObject({
+      id: kept.veteran.id,
+      wage: terms.wage,
+      until: kept.w.year + 3,
+    });
+    expect(BigInt(kept.w.cash)).toBe(cash - BigInt(terms.fee));
+    expect(kept.w.inbox!.at(-1)).toMatchObject({
+      kind: 'staff-report',
+      title: '코치진 정비 · 1건',
+    });
+    expect(kept.w.inbox!.at(-1)!.detail).toBe(
+      '부서별 선임 기준 · 공격 코치 Veteran Coach 재계약(3시즌)',
+    );
+    const beaten = expiring('renew-ability', ablest.ability - COACH_RENEWAL_MARGIN, {
+      minAbility: 0,
+      priority: 'ability',
+    });
+    seasonStaff(beaten.w);
+    expect(coachOf(beaten.w, 'attack')).toMatchObject({ id: ablest.id, until: beaten.w.year + 2 });
+    expect(beaten.w.events.some((event) => event.kind === 'staff-leave')).toBe(true);
+
+    // 연봉 낮은 순: the cheapest match must ask at most 90% of his going wage.
+    const cheap = expiring('renew-wage', 50, { minAbility: 0 });
+    const cheapest = coachMatches(cheap.w, 'attack', cheap.veteran)[0];
+    const cutoff = Array.from({ length: 100 }, (_, ability) => ability).find((ability) =>
+      clearlyCheaper(cheapest.wage, coachWage(cheap.w, ability)),
+    )!;
+    const stays = expiring('renew-wage', cutoff - 1, { minAbility: 0 });
+    seasonStaff(stays.w);
+    expect(coachOf(stays.w, 'attack')!.id).toBe(stays.veteran.id);
+    const priced = expiring('renew-wage', cutoff, { minAbility: 0 });
+    seasonStaff(priced.w);
+    expect(coachOf(priced.w, 'attack')!.id).toBe(cheapest.id);
+
+    // One who no longer meets the criteria makes way for a match, is renewed when there is none
+    // and the club can afford him, and otherwise a volunteer takes the post.
+    const below = expiring('renew-below', 40, { minAbility: 45 });
+    const match = coachMatches(below.w, 'attack', below.veteran)[0];
+    seasonStaff(below.w);
+    expect(coachOf(below.w, 'attack')!.id).toBe(match.id);
+    const alone = expiring('renew-alone', 60, { minAbility: 99 });
+    seasonStaff(alone.w);
+    expect(coachOf(alone.w, 'attack')!.id).toBe(alone.veteran.id);
+    const broke = expiring('renew-broke', 60, { minAbility: 99 });
+    broke.w.cash = '0';
+    seasonStaff(broke.w);
+    expect(coachOf(broke.w, 'attack')).toMatchObject({ wage: '0', ability: 50 });
+    expect(broke.w.inbox!.at(-1)!.detail).toContain('Veteran Coach 계약 만료 → 자원봉사');
+    validateWorld(kept.w);
+  });
+
+  it('자원봉사로 운영 keeps a volunteer', () => {
+    const w = world('criteria-volunteer');
+    operate(w, { type: 'hiring', role: 'scout', criteria: criteria({ volunteer: true }) });
+    operate(w, { type: 'delegate', key: 'coach:scout', value: true });
+    const volunteer = coachOf(w, 'scout')!;
+    expect(volunteer.wage).toBe('0');
+    // Nothing to report: the owner asked for a volunteer.
+    expect((w.inbox || []).some((item) => item.ref?.startsWith('coach-search:'))).toBe(false);
+    expect(coachPickPreview(w, 'scout').pick).toBeUndefined();
+    expect(coachPickPreview(w, 'scout').reason).toContain('자원봉사로 운영');
+    // A vacancy gets one.
+    w.staff = w.staff!.filter((member) => member.role !== 'scout');
+    dailyStaff(w);
+    expect(coachOf(w, 'scout')).toMatchObject({ wage: '0', ability: 50 });
+    // An expiring paid coach makes way for a volunteer, even one who would fit.
+    const { w: season, veteran } = expiring('criteria-volunteer-season', 80, { volunteer: true });
+    seasonStaff(season);
+    expect(coachOf(season, 'attack')).toMatchObject({ wage: '0', ability: 50 });
+    expect(coachOf(season, 'attack')!.id).not.toBe(veteran.id);
+  });
+
+  it("new criteria fill a volunteer post at once while a contracted coach waits for his contract's end", () => {
+    const w = world('criteria-change');
+    w.delegation = { ...w.delegation, 'coach:attack': true, 'coach:defense': true };
+    w.hiring = {
+      coaches: { attack: criteria({ minAbility: 99 }), defense: criteria({ minAbility: 99 }) },
+    };
+    operate(w, { type: 'hire-staff', role: 'defense', candidate: 0, term: 2 });
+    const contracted = coachOf(w, 'defense')!;
+    const ablest = [...staffCandidates(w, 'attack')].sort((a, b) => b.ability - a.ability)[0];
+    operate(w, {
+      type: 'hiring',
+      role: 'attack',
+      criteria: criteria({ minAbility: 0, priority: 'ability' }),
+    });
+    expect(coachOf(w, 'attack')!.id).toBe(ablest.id);
+    // He no longer meets the defense criteria, yet stays until his contract ends.
+    operate(w, { type: 'hiring', role: 'defense', criteria: criteria({ minAbility: 95 }) });
+    dailyStaff(w);
+    expect(coachOf(w, 'defense')!.id).toBe(contracted.id);
+    expect(coachPickPreview(w, 'defense').reason).toContain('계약이 끝날 때');
+    // At its end he is judged by them (kept at his level, so the comparison is the one made).
+    w.year = contracted.until;
+    w.hiring = { coaches: { defense: criteria({ minAbility: 0, priority: 'ability' }) } };
+    w.staff = w.staff!.map((member) =>
+      member.id === contracted.id ? { ...member, born: undefined, potential: undefined } : member,
+    );
+    const next = coachMatches(w, 'defense', coachOf(w, 'defense'))[0];
+    seasonStaff(w);
+    expect(coachOf(w, 'defense')!.id).toBe(
+      next.ability >= contracted.ability + COACH_RENEWAL_MARGIN ? next.id : contracted.id,
+    );
+  });
+
+  it('releasing a coach turns off only that department', () => {
+    const w = world('criteria-release');
+    operate(w, { type: 'delegate', key: 'coach:attack', value: true });
+    operate(w, { type: 'delegate', key: 'coach:fitness', value: true });
+    const fitness = coachOf(w, 'fitness')!;
+    operate(w, { type: 'release-staff', role: 'attack' });
+    expect(w.delegation).toMatchObject({ 'coach:attack': false, 'coach:fitness': true });
+    // The staff do not refill the post the owner emptied; the other department is as it was.
+    dailyStaff(w);
+    expect(coachOf(w, 'attack')).toBeUndefined();
+    expect(coachOf(w, 'fitness')).toEqual(fitness);
+  });
+
+  it("reads coaching levels saved by rules 1.9–1.15 as each department's hiring criteria", () => {
     const w = world('department-legacy');
     const saved = JSON.parse(canonical(w));
     saved.coaching = 3;
-    expect(validateWorld(saved).coaching).toEqual(
-      Object.fromEntries(STAFF_ROLES.map((role) => [role, 3])),
+    const loaded = validateWorld(saved);
+    expect('coaching' in loaded).toBe(false);
+    expect(loaded.hiring?.coaches).toEqual(
+      Object.fromEntries(
+        STAFF_ROLES.map((role) => [role, criteria({ minAbility: 65, priority: 'ability' })]),
+      ),
     );
   });
 });
@@ -749,15 +948,19 @@ describe('contract terms (STAFF-11, STAFF-14)', () => {
     expect(kept.critical).toBeUndefined();
   });
 
-  it('lets delegated staff sign and renew coaches for two seasons', () => {
+  it("lets delegated staff sign and renew coaches for the criteria's term", () => {
     const w = world('delegated-terms');
-    w.delegation = { ...w.delegation, ...allCoaches(true) };
-    operate(w, { type: 'coaching', role: 'attack', level: 3 });
+    w.hiring = {
+      coaches: {
+        attack: { ...COACH_CRITERIA_DEFAULT, minAbility: 0, priority: 'ability', term: 3 },
+      },
+    };
+    operate(w, { type: 'delegate', key: 'coach:attack', value: true });
     const hired = coachOf(w, 'attack');
-    expect(hired.until).toBe(w.year + 2);
+    expect(hired.until).toBe(w.year + 3);
     expect(hired.term).toBeUndefined();
     // A coach no new candidate beats: his contract ends with the season just closed and the staff
-    // keep him for two more.
+    // keep him for three more.
     w.staff = w.staff!.map((member) =>
       member.id === hired.id
         ? { ...member, ability: 95, potential: 95, born: hired.until - 40 }
@@ -765,7 +968,7 @@ describe('contract terms (STAFF-11, STAFF-14)', () => {
     );
     w.year = hired.until;
     seasonStaff(w);
-    expect(coachOf(w, 'attack')).toMatchObject({ id: hired.id, until: w.year + 2 });
+    expect(coachOf(w, 'attack')).toMatchObject({ id: hired.id, until: w.year + 3 });
     expect(w.events.some((event) => event.kind === 'staff-renew')).toBe(true);
   });
 
@@ -785,12 +988,11 @@ describe('contract terms (STAFF-11, STAFF-14)', () => {
   });
 });
 
-describe('delegated manager appointment (STAFF-18)', () => {
+describe('delegated manager appointment (STAFF-7, STAFF-18)', () => {
   /** Four free agents of known schools and levels, with the manager post delegated. */
-  function seeded(seed: string, rule?: ManagerRule) {
+  function seeded(seed: string) {
     const w = world(seed);
     w.delegation = { ...w.delegation, manager: true };
-    if (rule) operate(w, { type: 'manager-rule', rule });
     const market = structuredClone(marketOf(w));
     const levels: [ManagerStyle, number][] = [
       ['developer', 70],
@@ -816,70 +1018,17 @@ describe('delegated manager appointment (STAFF-18)', () => {
     operate(w, { type: 'tactics', tactic: 'counter', tone: 'demand' });
   }
 
-  it('picks by the rule among the free agents the club can afford, never poaching', () => {
-    const school = seeded('rule-school');
-    expect(delegatedManagerPick(school.w, 'developer')!.id).toBe(school.by('developer').id);
-    // Without a free agent of the departing school, or without a school, the best overall.
-    expect(delegatedManagerPick(school.w, 'counter')!.id).toBe(school.by('positional').id);
-    expect(delegatedManagerPick(school.w)!.id).toBe(school.by('positional').id);
-    // Other clubs' managers stay the owner's call, even when every free agent is worse.
-    const poach = managerCandidates(school.w).find((c) => c.source === 'club')!;
-    school.w.managerMarket!.free = school.w.managerMarket!.free.map((m) => ({
-      ...m,
-      ability: poach.ability - 10,
-    }));
-    expect(delegatedManagerPick(school.w)!.source).toBe('free');
-
-    const best = seeded('rule-best', 'best');
-    expect(best.w.managerRule).toBe('best');
-    expect(delegatedManagerPick(best.w, 'developer')!.id).toBe(best.by('positional').id);
-
-    // A strategy of squad investment 4 and good morale aims at 원 팀, which needs a motivator.
-    const strategy = seeded('rule-strategy', 'strategy');
-    strategy.w.policy = { ...policyOf(strategy.w), support: 4 };
-    strategy.w.morale = 70;
-    expect(aimedSynergy(strategy.w)).toMatchObject({ id: 'one-team', schools: ['motivator'] });
-    expect(delegatedManagerPick(strategy.w, 'developer')!.id).toBe(strategy.by('motivator').id);
-    // With no motivator on the market the staff fall back to the best overall.
-    strategy.w.managerMarket!.free = strategy.w.managerMarket!.free.filter(
-      (m) => m.style !== 'motivator',
-    );
-    expect(delegatedManagerPick(strategy.w)!.id).toBe(strategy.by('positional').id);
-
-    // The default is stored as no rule at all.
-    operate(best.w, { type: 'manager-rule', rule: 'school' });
-    expect(best.w.managerRule).toBeUndefined();
-    expect(() => operate(best.w, { type: 'manager-rule', rule: 'random' as ManagerRule })).toThrow(
-      '감독 선임 기준',
-    );
-  });
-
-  it('skips a best he cannot afford: cash after the fee must cover 13 rounds with his wage', () => {
-    const { w, by } = seeded('rule-afford', 'best');
-    const best = by('positional');
-    // Thirteen rounds of today's costs with the best man's wage in place of the manager's.
-    const runway = (wage: string) =>
-      ((BigInt(operatingCosts(w).annual) + BigInt(wage) - BigInt(w.manager.wage)) / 46n) * 13n;
-    const fee = BigInt(managerCandidates(w).find((c) => c.id === best.id)!.fee);
-    w.cash = (fee + runway(best.wage)).toString();
-    expect(delegatedManagerPick(w)!.id).toBe(best.id);
-    // A unit short, the staff take the next best, who asks less.
-    w.cash = (fee + runway(best.wage) - 1n).toString();
-    expect(delegatedManagerPick(w)!.id).toBe(by('gegenpress').id);
-    w.cash = '0';
-    expect(delegatedManagerPick(w)).toBeUndefined();
-  });
-
-  it('appoints a successor at once for two seasons when a manager resigns', () => {
+  it("appoints a successor at once for the criteria's term when a manager resigns", () => {
     const { w, by } = seeded('delegated-resign');
     w.manager = { ...w.manager, style: 'developer' };
-    const developer = by('developer'),
-      fee = managerCandidates(w).find((c) => c.id === developer.id)!.fee;
+    // The default criteria: any school, the highest OVR first, two seasons.
+    const best = by('positional'),
+      fee = managerCandidates(w).find((c) => c.id === best.id)!.fee;
     const cash = BigInt(w.cash);
     resignOverDemand(w);
     expect(w.critical).toBeUndefined();
     expect(w.manager).toMatchObject({
-      id: developer.id,
+      id: best.id,
       interim: false,
       since: w.year,
       until: w.year + 2,
@@ -892,10 +1041,12 @@ describe('delegated manager appointment (STAFF-18)', () => {
     expect(w.inbox!.at(-1)).toMatchObject({
       kind: 'staff-report',
       attention: false,
-      title: `육성형 ${developer.name} 감독 선임`,
+      title: `포지셔널 플레이 ${best.name} 감독 선임`,
     });
-    expect(w.inbox!.at(-1)!.detail).toContain('같은 학파 우선 기준');
-    expect(managerCandidates(w).some((c) => c.id === developer.id)).toBe(false);
+    expect(w.inbox!.at(-1)!.detail).toMatch(
+      /^스태프가 감독 선임 기준에 맞는 자유계약 감독을 2시즌 계약했어요 · OVR 80 · .* · 우선 OVR 높은 순 · 계약 기간 2시즌 · /,
+    );
+    expect(managerCandidates(w).some((c) => c.id === best.id)).toBe(false);
     validateWorld(w);
     // Without delegation the departure stops the clock for the owner.
     const owner = seeded('owner-resign').w;
@@ -914,41 +1065,21 @@ describe('delegated manager appointment (STAFF-18)', () => {
     expect(retiring.critical).toBeUndefined();
     expect(retiring.events.some((e) => e.detail.includes('은퇴'))).toBe(true);
 
-    const { w, by } = seeded('delegated-expiry', 'best');
+    const { w, by } = seeded('delegated-expiry');
     const firefighter = by('positional');
     w.managerMarket!.free = w.managerMarket!.free.map((m) =>
       m.id === firefighter.id ? { ...m, style: 'firefighter' as const } : m,
     );
+    // Criteria of four seasons still sign the firefighter for one.
+    operate(w, {
+      type: 'hiring',
+      role: 'manager',
+      criteria: { ...MANAGER_CRITERIA_DEFAULT, term: 4 },
+    });
     w.manager.until = w.year + 1;
     w.year++;
     yearlyStaff(w);
     expect(w.critical).toBeUndefined();
     expect(w.manager).toMatchObject({ id: firefighter.id, until: w.year + 1 });
-  });
-
-  it('keeps the interim without stopping when nobody is affordable, then appoints daily', () => {
-    const { w, by } = seeded('delegated-broke', 'best');
-    const best = by('positional');
-    w.cash = '0';
-    resignOverDemand(w);
-    expect(w.manager.interim).toBe(true);
-    expect(w.critical).toBeUndefined();
-    const report = w.inbox!.at(-1)!;
-    expect(report).toMatchObject({ kind: 'staff-report', attention: true, ref: w.manager.id });
-    expect(report.title).toContain('임시 감독 체제');
-    dailyStaff(w);
-    expect(w.manager.interim).toBe(true);
-    // Once the club can afford him the staff appoint the best and the report is settled.
-    w.cash = '999999999';
-    dailyStaff(w);
-    expect(w.manager.id).toBe(best.id);
-    expect(w.inbox!.find((item) => item.id === report.id)!.read).toBe(true);
-    // Without delegation an interim the owner kept stays.
-    const kept = seeded('kept-interim').w;
-    kept.delegation = { ...kept.delegation, manager: false };
-    resignOverDemand(kept);
-    delete kept.critical;
-    dailyStaff(kept);
-    expect(kept.manager.interim).toBe(true);
   });
 });
