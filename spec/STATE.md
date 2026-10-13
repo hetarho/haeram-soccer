@@ -31,7 +31,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T065 | Broadcasting index for league distributions | ECON | - | todo |
 | T066 | Operating expenses as a share of last season's turnover | ECON | T065 | todo |
 | T067 | Contract talks only at renewal and delegated renewals checked against the season projection | CLUB ECON | - | todo |
 | T062 | Rules 1.16.0: economy calibration, goldens and docs | SAVE ECON CLUB | T056 T059 T061 T065 T066 T067 | todo |
@@ -48,6 +47,7 @@
 - planner questions from the reviews: whether loading a pre-1.16 save delegates contract talks at intervention level 2+ (they show 맞춤 now, WEB-45); CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 T065 done
 - 261013 create-task ECON CLUB: T065 broadcasting index → T066 operating expenses as a turnover share; T067 talks only at renewal + delegated renewals against the season projection; T062 now depends on them (base ECON@16 CLUB@18), back to todo
 - 261013 update-ssot ECON r16 CLUB r18: ECON-31+ broadcasting index for distributions (ECON-26✎ ECON-28✎), ECON-30✎ operating expenses a share of last season's turnover with a division floor, ECON-29✎ crowd targets on clubs in their third straight season in a division; CLUB-26✎ talks only at renewal, delegated renewals checked against the season projection
 - 261013 T062 blocked: calibration bands conflict with ECON-26, ECON-23 and ECON-30/CLUB-26 (measured r0–r5 in its result); ECON-30 operating expenses implemented
@@ -67,6 +67,3 @@
 - 261012 T048 T049 integrated
 - 261012 T063 integrated
 - 261012 T043 T044 integrated
-- 261012 T045 integrated
-- 261012 create-task T063 (from the day-order review P2): amateur table zones follow the exchange, outside the lane's touches
-- 261012 T042 integrated
