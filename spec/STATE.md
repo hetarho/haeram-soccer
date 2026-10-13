@@ -31,7 +31,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T062 | Rules 1.16.0: economy calibration, goldens and docs | SAVE ECON CLUB | T056 T059 T061 T065 T066 T067 T068 T069 | todo |
+| T062 | Rules 1.16.0: economy calibration, goldens and docs | SAVE ECON CLUB | T056 T059 T061 T065 T066 T067 T068 T069 | blocked@261013 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -40,11 +40,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- standalone on t062-standalone (work/club-realism + T062's attempts + main's records room): T065–T069 done; T062's calibration with the new rules, goldens, docs and full verify (`BROWSER_TEST_PORT` other than 4173 while another run uses it); then merge t062-standalone into work/club-realism and main and push after the owner's go.
+- T062 blocked for update-ssot on t062-standalone (39d6d48): no bankrupt reference career vs wage bill 50–70% and net −5% to +10% (pre-1979 market wages equal across countries while ESP/FRA/GER reference clubs reach the top flight with small followings; options in T062's result); shipped constants keep 0/16 careers solvent, goldens regenerated, docs/FINANCES.md rewritten; full verify/e2e left to CI on the pushed branch. ECON-29 bands still outside after T062: wage bill 36.2%, net result 20.3%, 2000s top-flight commercial 12.3% and matchday 46.3%, facility ladder 6.0 seasons, second- and third-tier crowds 6,102 and 3,567 (measured table in T062's result, for ECON-29). Then merge t062-standalone into work/club-realism and main and push after the owner's go.
 - after the merge: fix CI's benchmark job (desktop pointer-to-second-frame p95 115 ms > 100 since one-result merged; 74–82 ms at c63554c), its own commit on main.
 - planner questions from the reviews: whether loading a pre-1.16 save delegates contract talks at intervention level 2+ (they show 맞춤 now, WEB-45); CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 T062 blocked: three must-hold bands (owner decision) conflict — wage bill 36.2% and net 20.3% with 0/16 bankrupt, or bands held with 4–8/16 ESP/FRA/GER bankrupt; constants, goldens, FINANCES.md committed
+- 261013 T062 doing standalone on t062-standalone (af28706), third attempt
 - 261013 T069 done: delegated terms past this season never ending before the running contract, clauses for founding squads and close refills, 선수 계약 협상/계약 협상 labels
 - 261013 T069 doing standalone on t062-standalone (42c6e15)
 - 261013 create-task CLUB r20 WEB r53: T069 contract follow-ups (delegated terms past this season, clauses for founding squads and refills, improved-contract labels); SAVE r22 no-op (code already activates agents); T062 depends on T069
@@ -63,5 +65,3 @@
 - 261013 update-ssot CLUB r19: CLUB-26✎ talks at window openings with improved contracts near the end and winter terms ½–4½ years, never backdated; CLUB-29+ promotion and relegation clauses per contract by chance; CLUB-30+ agents rated 1–5
 - 261013 create-task ECON CLUB: T065 broadcasting index → T066 operating expenses as a turnover share; T067 talks only at renewal + delegated renewals against the season projection; T062 now depends on them (base ECON@16 CLUB@18), back to todo
 - 261013 update-ssot ECON r16 CLUB r18: ECON-31+ broadcasting index for distributions (ECON-26✎ ECON-28✎), ECON-30✎ operating expenses a share of last season's turnover with a division floor, ECON-29✎ crowd targets on clubs in their third straight season in a division; CLUB-26✎ talks only at renewal, delegated renewals checked against the season projection
-- 261013 T062 blocked: calibration bands conflict with ECON-26, ECON-23 and ECON-30/CLUB-26 (measured r0–r5 in its result); ECON-30 operating expenses implemented
-- 261013 T062 doing standalone on t062-standalone (work/club-realism + its first attempt, f8235db)
