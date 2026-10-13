@@ -15,6 +15,7 @@ import type { SAVE_COMPATIBILITY_CODE } from '../../../../packages/contracts/src
 import type { clubMilestones } from '../../../../packages/engine/src/goals';
 import type { financialBreakdown } from '../../../../packages/engine/src/finance';
 import type { NewsItem } from '../../../../packages/engine/src/news';
+import type { ClubRecords } from './clubRecords';
 import type { HeadToHead } from './headToHead';
 import type { managerCandidates } from '../../../../packages/engine/src/managerMarket';
 import {
@@ -184,6 +185,7 @@ export const requestSchema = z.object({
     z.object({ type: z.literal('save') }),
     z.object({ type: z.literal('archive'), year: z.number().int().min(1901).max(4000) }),
     z.object({ type: z.literal('head-to-head'), club: ref }),
+    z.object({ type: z.literal('club-records') }),
     z.object({
       type: z.literal('league-fixtures'),
       country: z.string().regex(/^[A-Z]{3}$/),
@@ -225,6 +227,8 @@ export interface Reply {
   candidate?: World;
   archive?: { season?: SeasonArchive; matches: MatchRecord[]; events: Event[]; managers: Event[] };
   headToHead?: HeadToHead;
+  /** Our match records over every own match (→WEB-54); the view keeps only recent matches. */
+  clubRecords?: ClubRecords;
   /** Another league's fixtures this season; the view carries only the own league's (→WEB-65). */
   leagueFixtures?: Fixture[];
   progress?: number;

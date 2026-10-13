@@ -1054,28 +1054,62 @@
 .moreMenu .navIcon {
   color: var(--text-muted);
 }
+/* Page tab bars read as navigation, not as buttons: labels over a hairline, the selected one
+   underlined in the accent (→WEB-69). Choices inside a tab use .segments instead. */
 .seasonTabs {
   display: flex;
-  gap: 6px;
+  gap: 2px;
   max-width: 100%;
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  padding: 4px 0 12px;
+  padding: 0;
   margin-bottom: 16px;
+  border-bottom: 1px solid var(--line);
   scrollbar-width: none;
 }
 .seasonTabs::-webkit-scrollbar {
   display: none;
 }
 .seasonTabs button {
+  position: relative;
   flex: 0 0 auto;
   min-height: 46px;
+  padding: 8px 14px;
   white-space: nowrap;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--text-muted);
+  transition: color 0.15s;
+}
+.seasonTabs button::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 0;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: transparent;
+  transition: background 0.15s;
+}
+.seasonTabs button:hover:not(:disabled) {
+  color: var(--text);
+  filter: none;
+}
+.seasonTabs button:active:not(:disabled) {
+  transform: none;
+  box-shadow: none;
+}
+.seasonTabs button:focus-visible {
+  outline-offset: -3px;
 }
 .seasonTabs button[aria-selected='true'] {
-  background: var(--accent-fill);
-  border-color: var(--accent);
-  color: var(--on-accent);
+  color: var(--accent-text);
+}
+.seasonTabs button[aria-selected='true']::after {
+  background: var(--accent);
 }
 .seasonPane[hidden] {
   display: none;
@@ -1887,6 +1921,51 @@
   border: 0 !important;
   box-shadow: 0 2px 0 var(--accent-edge) !important;
 }
+.segmentsWrap {
+  grid-auto-flow: row;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+}
+/* The records room keeps its tabs pinned while a view scrolls, like the league page. */
+.recordsNav {
+  position: sticky;
+  top: -2px;
+  z-index: 6;
+  margin-bottom: 16px;
+  padding-top: 4px;
+  background: var(--hud);
+}
+.recordsNav .seasonTabs {
+  margin-bottom: 0;
+}
+/* A records view's own choices sit together above it: season arrows, filters and segments. */
+.recordControls {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.seasonBar .recordSeason {
+  justify-content: flex-start;
+  margin-bottom: 0;
+}
+.seasonBar :global([data-select-trigger]) {
+  height: 44px;
+  min-height: 44px;
+}
+.seasonBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+}
+.seasonBar > label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
 .rosterSearch {
   white-space: nowrap;
 }
@@ -2333,13 +2412,13 @@
 }
 @keyframes pop {
   0% {
-    transform: scale(0.92);
+    scale: 0.92;
   }
   60% {
-    transform: scale(1.05);
+    scale: 1.05;
   }
   100% {
-    transform: none;
+    scale: 1;
   }
 }
 
@@ -2362,8 +2441,8 @@
 :global(details[open] > *:not(summary)) {
   animation: rise 240ms var(--ease) both;
 }
-.segments .selected,
-.seasonTabs button[aria-selected='true'],
+/* Tabs and segments change without a pop: a pop on a pressed tab or segment crashed WebKit's page
+   process when they were switched in a row (→WEB-46). */
 .moreMenu button[aria-current='page'] {
   animation: pop 280ms var(--ease);
 }
@@ -2752,6 +2831,9 @@
   .recordStack > * + * {
     margin-top: 22px;
   }
+  .recordStack > .recordControls {
+    margin-bottom: 0;
+  }
 }
 
 /* ===== Records charts: any season reads in a bubble under the pointer or the keyboard. ===== */
@@ -2966,24 +3048,49 @@
   padding: 0;
   list-style: none;
 }
+/* Each piece stands on its shelf: the trophy drawn in its metal once won, an outline before. */
 .trophies li {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
+  display: grid;
+  justify-items: center;
   align-content: start;
-  gap: 2px 6px;
+  gap: 3px;
   min-width: 0;
-  padding: 12px;
+  padding: 16px 10px 14px;
+  text-align: center;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.22);
+}
+.trophies li svg {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 6px;
+  color: var(--line-strong);
 }
 .trophies li[data-tone='gold'] {
   border-color: var(--gold-edge);
   background: linear-gradient(180deg, #2c2611 0%, var(--surface) 100%);
 }
+.trophies li[data-tone='gold'] svg,
+.trophies li[data-tone='best'] svg {
+  color: var(--gold);
+  filter: drop-shadow(0 4px 10px rgba(255, 203, 71, 0.35));
+}
+.trophies li[data-tone='silver'] svg {
+  color: #cfd8dc;
+  filter: drop-shadow(0 4px 10px rgba(207, 216, 220, 0.25));
+}
+.trophies li[data-tone='up'] svg {
+  color: var(--accent);
+}
+.trophies li[data-tone='down'] svg {
+  color: var(--danger);
+}
+.trophies li[data-tone='empty'] {
+  opacity: 0.6;
+}
 .trophies li > span {
-  flex: 1 0 100%;
   font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
@@ -2997,10 +3104,30 @@
   line-height: 1.2;
 }
 .trophies small {
-  flex: 1 0 100%;
   font-size: 11px;
   color: var(--text-muted);
   overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .trophies {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .trophies li {
+    padding: 12px 6px 10px;
+  }
+  .trophies li svg {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 4px;
+  }
+  .trophies strong {
+    font-size: 18px;
+  }
+  .trophies li > span {
+    font-size: 11px;
+    word-break: keep-all;
+  }
 }
 
 /* All-time boards: the record stays in view on a phone, the name wrapping over its status. */

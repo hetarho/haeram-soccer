@@ -44,17 +44,22 @@ export function useLeagueFixtures(client: GameClient, w: World, league?: LeagueC
 /**
  * Which league the league views show: any country, division and regional group of the pyramid,
  * the own league first (→WEB-65). Choosing the own league again clears the choice, so a promotion
- * or relegation carries the views along.
+ * or relegation carries the views along. A closed season passes `own`, our league that season, so
+ * the league we play in now reads like any other there.
  */
 export const LeaguePicker = memo(function LeaguePicker({
   league,
   onLeague,
+  own: base,
 }: {
   league?: LeagueChoice;
   onLeague: (league?: LeagueChoice) => void;
+  own?: LeagueChoice;
 }) {
   const w = useGameState(selectLeagueWorld)!;
-  const own = ownLeague(w),
+  const own = base ?? ownLeague(w),
+    // The amateur level sits one tier below the country's professional divisions.
+    amateur = !country(own.code).groups[own.tier],
     shown = league ?? own,
     cp = country(shown.code);
   const choose = (next: LeagueChoice) => onLeague(sameLeague(next, own) ? undefined : next);
@@ -92,7 +97,7 @@ export const LeaguePicker = memo(function LeaguePicker({
               {i + 1}부
             </option>
           ))}
-          {w.lower && shown.code === own.code && (
+          {amateur && shown.code === own.code && (
             <option value={own.tier}>아마추어 리그 · 프로 진입 도전</option>
           )}
         </Select>
@@ -113,7 +118,7 @@ export const LeaguePicker = memo(function LeaguePicker({
           </Select>
         </label>
       )}
-      {league && (
+      {league && !sameLeague(league, own) && (
         <button type="button" className={s.leagueHome} onClick={() => onLeague(undefined)}>
           우리 리그로
         </button>

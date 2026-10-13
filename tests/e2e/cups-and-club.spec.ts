@@ -260,12 +260,26 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
   test('charts league position, Elo and values in the records room', async ({ page }) => {
     await found(page, 'trends-journey');
     await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
+    // The season table is a part of 요약; the charts show one at a time on 추이.
+    await page
+      .getByRole('group', { name: '요약 보기' })
+      .getByRole('button', { name: '시즌별 기록', exact: true })
+      .click();
     await expect(page.getByRole('table', { name: '시즌별 기록' })).toBeVisible();
     await page.getByRole('tab', { name: '추이', exact: true }).click();
-    await expect(page.getByRole('heading', { name: '리그 위치' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: '클럽 Elo', exact: true })).toBeVisible();
-    await expect(page.getByRole('heading', { name: '선수단 가치' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: '구단 가치' })).toBeVisible();
+    const metrics = page.getByRole('group', { name: '추이 지표' });
+    for (const [metric, heading] of [
+      ['리그 위치', '리그 위치'],
+      ['Elo', '클럽 Elo'],
+      ['선수단 가치', '선수단 가치'],
+      ['구단 가치', '구단 가치'],
+    ]) {
+      await metrics.getByRole('button', { name: metric, exact: true }).click();
+      await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: /^(리그 위치|클럽 Elo|선수단 가치|구단 가치)$/ }),
+      ).toHaveCount(1);
+    }
     expect(await horizontalOverflow(page)).toBe(0);
   });
 });

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Player, SeasonArchive, World } from '../../../../packages/contracts/src/types';
 import { Panel } from './App';
 import {
@@ -12,6 +13,8 @@ import {
 import { number, seasonName } from './format';
 import { appearances, per90, playerStatus } from './playerAnalysis';
 import { PlayerLink } from './PlayerSheet';
+import { Segments } from './Segments';
+import { TrophyIcon, type TrophyKind } from './TrophyIcon';
 import a from './Analysis.module.css';
 import s from './App.module.css';
 
@@ -117,18 +120,32 @@ function seasonsText(years: number[]) {
     ? `첫 ${seasonName(years[0])} · 최근 ${seasonName(years.at(-1)!)}`
     : years.map(seasonName).join(' · ');
 }
-function Trophy({ label, years, gold }: { label: string; years: number[]; gold?: boolean }) {
+type Tone = 'gold' | 'silver' | 'up' | 'down';
+/** One piece in the cabinet: drawn in its metal once won, an empty outline before. */
+function Trophy({
+  label,
+  years,
+  kind,
+  tone,
+}: {
+  label: string;
+  years: number[];
+  kind: TrophyKind;
+  tone: Tone;
+}) {
   return (
-    <li data-tone={gold && years.length ? 'gold' : undefined}>
-      <span>{label}</span> <strong>{years.length}회</strong>
+    <li data-tone={years.length ? tone : 'empty'}>
+      <TrophyIcon kind={kind} />
+      <strong>{years.length}회</strong>
+      <span>{label}</span>
       {years.length > 0 && <small>{seasonsText(years)}</small>}
     </li>
   );
 }
 /**
- * The trophy cabinet first (→HIST-12): titles by division, moves up and down the pyramid, the
- * domestic cup's wins and finals, continental titles and the best finish, all read from the
- * season archives; seasons that kept no cup run are named, not guessed.
+ * The trophy cabinet (→HIST-12, →WEB-54): titles by division, the domestic cup's wins, continental
+ * titles, cup finals, moves up and down the pyramid and the best finish, each drawn as its piece,
+ * all read from the season archives; seasons that kept no cup run are named, not guessed.
  */
 export function TrophyCabinet({ w }: { w: World }) {
   const cabinet = trophyCabinet(w),
@@ -142,22 +159,35 @@ export function TrophyCabinet({ w }: { w: World }) {
             <ul className={s.trophies} aria-label="트로피 진열장">
               {cabinet.league.length ? (
                 cabinet.league.map((title) => (
-                  <Trophy key={title.tier} label={`${title.label} 우승`} years={title.years} gold />
+                  <Trophy
+                    key={title.tier}
+                    label={`${title.label} 우승`}
+                    years={title.years}
+                    kind="league"
+                    tone="gold"
+                  />
                 ))
               ) : (
-                <Trophy label="리그 우승" years={[]} />
+                <Trophy label="리그 우승" years={[]} kind="league" tone="gold" />
               )}
-              <Trophy label="승격" years={cabinet.promotions} />
-              <Trophy label="강등" years={cabinet.relegations} />
-              <Trophy label="국내 컵 우승" years={cabinet.cup.wins} gold />
-              <Trophy label="국내 컵 결승" years={cabinet.cup.finals} />
+              <Trophy label="국내 컵 우승" years={cabinet.cup.wins} kind="cup" tone="gold" />
               {cabinet.continental.map((title) => (
-                <Trophy key={title.name} label={`${title.name} 우승`} years={title.years} gold />
+                <Trophy
+                  key={title.name}
+                  label={`${title.name} 우승`}
+                  years={title.years}
+                  kind="continental"
+                  tone="gold"
+                />
               ))}
+              <Trophy label="국내 컵 결승" years={cabinet.cup.finals} kind="final" tone="silver" />
+              <Trophy label="승격" years={cabinet.promotions} kind="promotion" tone="up" />
+              <Trophy label="강등" years={cabinet.relegations} kind="relegation" tone="down" />
               {best && (
-                <li>
-                  <span>최고 성적</span>{' '}
-                  <strong>{`${divisionName(code, best.tier, best.group)} ${best.rank}위`}</strong>{' '}
+                <li data-tone="best">
+                  <TrophyIcon kind="best" />
+                  <strong>{`${divisionName(code, best.tier, best.group)} ${best.rank}위`}</strong>
+                  <span>최고 성적</span>
                   <small>({seasonName(best.year)})</small>
                 </li>
               )}
@@ -224,17 +254,23 @@ function LeaderTable({ w, board }: { w: World; board: LeaderBoard }) {
   );
 }
 /**
- * The club's all-time boards: appearances, goals, assists and keepers' saves over every player's
- * club career, sold and retired players included; the current squad stands out.
+ * The club's all-time boards, one at a time (→WEB-54): appearances, goals, assists and keepers'
+ * saves over every player's club career, sold and retired players included; the current squad
+ * stands out.
  */
 export function ClubLeaders({ w }: { w: World }) {
+  const [key, setKey] = useState<LeaderBoard['key']>('apps');
   return (
     <>
-      <div className={s.twoCols}>
-        {LEADER_BOARDS.map((board) => (
-          <LeaderTable key={board.key} w={w} board={board} />
-        ))}
+      <div className={s.recordControls}>
+        <Segments
+          label="통산 기록 종류"
+          options={LEADER_BOARDS.map((board) => [board.key, board.short] as const)}
+          value={key}
+          onChange={setKey}
+        />
       </div>
+      <LeaderTable w={w} board={LEADER_BOARDS.find((board) => board.key === key)!} />
       <p className={s.muted}>
         모든 대회에서 우리 클럽 소속으로 남긴 기록이에요. 교체 없이 선발 11명이 90분을 모두 뛰어
         출전 시간을 90분으로 나눈 값이 출전 경기 수예요. 같은 기록은 순위를 함께 나누고 선수 ID

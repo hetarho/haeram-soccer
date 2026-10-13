@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { country, currency } from '../../../../packages/catalogs/src/index';
 import { clubOf, quote } from '../../../../packages/engine/src/world';
@@ -16,6 +16,7 @@ import {
   pyramidPosition,
   type RatedClub,
 } from './recordTrends';
+import { Segments } from './Segments';
 import s from './App.module.css';
 
 /** A past amount in today's money, in minor units: price index and currency change applied. */
@@ -184,124 +185,157 @@ export function EloStanding({
   );
 }
 
+const TREND_METRICS = [
+  ['league', '리그 위치'],
+  ['elo', 'Elo'],
+  ['squad', '선수단 가치'],
+  ['club', '구단 가치'],
+  ['fans', '서포터'],
+  ['cash', '자금'],
+] as const;
+type TrendMetric = (typeof TREND_METRICS)[number][0];
+
 /**
- * The records charts (→WEB-54): league position in the pyramid, Club Elo against the world's and
- * our league's spread, squad and club value, supporters and season-end cash in today's money.
+ * The records charts (→WEB-54), one at a time: league position in the pyramid, Club Elo against
+ * the world's and our league's spread, squad and club value, supporters and season-end cash in
+ * today's money.
  */
 export function ClubTrends({ w }: { w: World }) {
   const club = clubOf(w),
     code = club.country;
   const series = useMemo(() => trendSeries(w), [w.history, w.year, club.tier]);
   const standing = useEloStanding(w);
+  const [metric, setMetric] = useState<TrendMetric>('league');
   return (
-    <div className={s.twoCols}>
-      <Panel
-        title="리그 위치"
-        note={`지금 ${w.lower ? '아마추어 리그' : divisionName(code, club.tier, club.group)}`}
-      >
-        <div className={s.panelBody}>
-          <Chart
-            label="피라미드 전체 순위"
-            inverse
-            values={series.league.values}
-            labels={series.league.labels}
-            format={(value) => `${Math.round(value)}위`}
-            detail={(i) => series.league.details[i]}
-          />
-          <p className={s.muted}>
-            위 디비전의 클럽 수에 그 시즌 순위를 더한 {country(code).name} 피라미드 전체 순위예요.
-            1위가 1부 우승이에요. 점을 누르거나 그래프 위를 움직이면 그 시즌의 리그와 순위가 떠요.
-          </p>
-        </div>
-      </Panel>
-      <Panel title="클럽 Elo" note={`지금 ${standing.elo} · 전체 ${standing.rank}위`}>
-        <div className={s.panelBody}>
-          <Chart
-            label="시즌 말 Elo"
-            values={series.elo.values}
-            labels={series.elo.labels}
-            bands={series.elo.bands}
-            format={(value) => String(Math.round(value))}
-            detail={(i) => series.elo.details[i]}
-          />
-          {series.elo.unrated > 0 && (
+    <>
+      <div className={s.recordControls}>
+        <Segments
+          label="추이 지표"
+          options={TREND_METRICS}
+          value={metric}
+          onChange={setMetric}
+          wrap
+        />
+      </div>
+      {metric === 'league' && (
+        <Panel
+          title="리그 위치"
+          note={`지금 ${w.lower ? '아마추어 리그' : divisionName(code, club.tier, club.group)}`}
+        >
+          <div className={s.panelBody}>
+            <Chart
+              label="피라미드 전체 순위"
+              inverse
+              values={series.league.values}
+              labels={series.league.labels}
+              format={(value) => `${Math.round(value)}위`}
+              detail={(i) => series.league.details[i]}
+            />
             <p className={s.muted}>
-              Elo가 기록되지 않은 시즌 {series.elo.unrated}개는 그래프에 없어요.
+              위 디비전의 클럽 수에 그 시즌 순위를 더한 {country(code).name} 피라미드 전체 순위예요.
+              1위가 1부 우승이에요. 점을 누르거나 그래프 위를 움직이면 그 시즌의 리그와 순위가 떠요.
             </p>
-          )}
-          {series.elo.unranged > 0 && (
+          </div>
+        </Panel>
+      )}
+      {metric === 'elo' && (
+        <Panel title="클럽 Elo" note={`지금 ${standing.elo} · 전체 ${standing.rank}위`}>
+          <div className={s.panelBody}>
+            <Chart
+              label="시즌 말 Elo"
+              values={series.elo.values}
+              labels={series.elo.labels}
+              bands={series.elo.bands}
+              format={(value) => String(Math.round(value))}
+              detail={(i) => series.elo.details[i]}
+            />
+            {series.elo.unrated > 0 && (
+              <p className={s.muted}>
+                Elo가 기록되지 않은 시즌 {series.elo.unrated}개는 그래프에 없어요.
+              </p>
+            )}
+            {series.elo.unranged > 0 && (
+              <p className={s.muted}>
+                Elo 범위가 기록되지 않은 시즌 {series.elo.unranged}개에는 띠가 없어요.
+              </p>
+            )}
+            <EloStanding w={w} standing={standing} />
             <p className={s.muted}>
-              Elo 범위가 기록되지 않은 시즌 {series.elo.unranged}개에는 띠가 없어요.
+              모든 대회 결과로 갱신하는 클럽 Elo예요(K 20, 홈 어드밴티지 60, 큰 점수 차 가중). 강한
+              상대를 이기면 많이 오르고 약한 상대에게 지면 많이 떨어져요.
             </p>
-          )}
-          <EloStanding w={w} standing={standing} />
-          <p className={s.muted}>
-            모든 대회 결과로 갱신하는 클럽 Elo예요(K 20, 홈 어드밴티지 60, 큰 점수 차 가중). 강한
-            상대를 이기면 많이 오르고 약한 상대에게 지면 많이 떨어져요.
-          </p>
-        </div>
-      </Panel>
-      <Panel title="선수단 가치" note="현재 물가·화폐로 환산">
-        <div className={s.panelBody}>
-          <Chart
-            label="시즌 말 선수단 가치"
-            values={series.squad.values}
-            labels={series.squad.labels}
-            format={series.axis}
-            detail={(i) => series.squad.details[i]}
-          />
-          <p className={s.muted}>
-            시즌 말 선수 전원의 평가 가치(다른 구단이 받아들일 이적료)의 합이에요.
-            {series.unvalued > 0 && ` 가치가 기록되지 않은 시즌 ${series.unvalued}개는 빠졌어요.`}
-          </p>
-        </div>
-      </Panel>
-      <Panel title="구단 가치" note="현재 물가·화폐로 환산">
-        <div className={s.panelBody}>
-          <Chart
-            label="시즌 말 구단 가치"
-            values={series.club.values}
-            labels={series.club.labels}
-            format={series.axis}
-            detail={(i) => series.club.details[i]}
-          />
-          <p className={s.muted}>
-            선수단 가치 + 시설 투자액의 절반 + 브랜드(서포터 20명당 1단위, 평판 가중) + 현금(부채는
-            차감)이에요.
-            {series.unvalued > 0 && ` 가치가 기록되지 않은 시즌 ${series.unvalued}개는 빠졌어요.`}
-          </p>
-        </div>
-      </Panel>
-      <Panel title="서포터의 성장">
-        <div className={s.panelBody}>
-          <Chart
-            label="서포터"
-            values={series.fans.values}
-            labels={series.fans.labels}
-            detail={(i) => series.fans.details[i]}
-          />
-        </div>
-      </Panel>
-      <Panel title="현재 물가로 본 시즌 말 자금">
-        <div className={s.panelBody}>
-          <Chart
-            label="현재 물가 기준 자금"
-            values={series.cash.values}
-            labels={series.cash.labels}
-            format={series.axis}
-            detail={(i) => series.cash.details[i]}
-          />
-          <p className={s.muted}>
-            물가와 화폐 전환을 보정해 지금 돈으로 환산했어요. 초기 국가 자료가 없으면 영국 지수
-            추정을 씁니다. 실험 전후 변화는 인과관계의 증명이 아닙니다.
-          </p>
-        </div>
-      </Panel>
-    </div>
+          </div>
+        </Panel>
+      )}
+      {metric === 'squad' && (
+        <Panel title="선수단 가치" note="현재 물가·화폐로 환산">
+          <div className={s.panelBody}>
+            <Chart
+              label="시즌 말 선수단 가치"
+              values={series.squad.values}
+              labels={series.squad.labels}
+              format={series.axis}
+              detail={(i) => series.squad.details[i]}
+            />
+            <p className={s.muted}>
+              시즌 말 선수 전원의 평가 가치(다른 구단이 받아들일 이적료)의 합이에요.
+              {series.unvalued > 0 && ` 가치가 기록되지 않은 시즌 ${series.unvalued}개는 빠졌어요.`}
+            </p>
+          </div>
+        </Panel>
+      )}
+      {metric === 'club' && (
+        <Panel title="구단 가치" note="현재 물가·화폐로 환산">
+          <div className={s.panelBody}>
+            <Chart
+              label="시즌 말 구단 가치"
+              values={series.club.values}
+              labels={series.club.labels}
+              format={series.axis}
+              detail={(i) => series.club.details[i]}
+            />
+            <p className={s.muted}>
+              선수단 가치 + 시설 투자액의 절반 + 브랜드(서포터 20명당 1단위, 평판 가중) +
+              현금(부채는 차감)이에요.
+              {series.unvalued > 0 && ` 가치가 기록되지 않은 시즌 ${series.unvalued}개는 빠졌어요.`}
+            </p>
+          </div>
+        </Panel>
+      )}
+      {metric === 'fans' && (
+        <Panel title="서포터의 성장">
+          <div className={s.panelBody}>
+            <Chart
+              label="서포터"
+              values={series.fans.values}
+              labels={series.fans.labels}
+              detail={(i) => series.fans.details[i]}
+            />
+          </div>
+        </Panel>
+      )}
+      {metric === 'cash' && (
+        <Panel title="현재 물가로 본 시즌 말 자금">
+          <div className={s.panelBody}>
+            <Chart
+              label="현재 물가 기준 자금"
+              values={series.cash.values}
+              labels={series.cash.labels}
+              format={series.axis}
+              detail={(i) => series.cash.details[i]}
+            />
+            <p className={s.muted}>
+              물가와 화폐 전환을 보정해 지금 돈으로 환산했어요. 초기 국가 자료가 없으면 영국 지수
+              추정을 씁니다. 실험 전후 변화는 인과관계의 증명이 아닙니다.
+            </p>
+          </div>
+        </Panel>
+      )}
+    </>
   );
 }
 
-/** One row per closed season, newest first; with `onSeason` a row opens that season's records. */
+/** One row per closed season, newest first; with `onSeason` a row opens that season (→WEB-54). */
 export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: number) => void }) {
   const code = clubOf(w).country,
     seasons = w.history;
@@ -331,7 +365,7 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                     <button
                       type="button"
                       className={s.seasonRowLink}
-                      aria-label={`${seasonName(h.year)} 시즌 기록 보기`}
+                      aria-label={`${seasonName(h.year)} 리그 보기`}
                       onClick={(event) => {
                         event.stopPropagation();
                         onSeason(h.year);

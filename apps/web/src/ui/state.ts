@@ -133,7 +133,19 @@ export const usePlayerSheet = create<{
   close: () => set({ id: undefined }),
 }));
 
-/** The records room's tabs, in tab-bar order; the first one keeps no ?view= in the address. */
+/**
+ * A season asked for on the league page from elsewhere, such as a records-room season row. The
+ * league page takes it once: a closed season opens on its final table in our league that season.
+ */
+export const useLeagueSeason = create<{ request?: number; take: () => void }>((set) => ({
+  take: () => set({ request: undefined }),
+}));
+/** Opens the league page on a season (→WEB-54). */
+export function openLeagueSeason(year: number) {
+  useLeagueSeason.setState({ request: year });
+  useNavigation.getState().setPage('league');
+}
+
 /** A closed season's tabs on the league page, in tab-bar order; the review comes first. */
 export const PAST_TABS = [
   ['review', '결산'],
@@ -144,6 +156,7 @@ export const PAST_TABS = [
 ] as const;
 export type PastTab = (typeof PAST_TABS)[number][0];
 
+/** The records room's tabs, in tab-bar order; the first one keeps no ?view= in the address. */
 export const RECORD_TABS = [
   ['summary', '요약'],
   ['trends', '추이'],

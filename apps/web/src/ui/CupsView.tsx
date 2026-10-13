@@ -294,13 +294,12 @@ export function CupsView({
         </div>
         <span className={s.pill}>최근 5시즌 구단 계수 · {number(coefficient)}점</span>
       </div>
-      <div className={`${s.filters} ${c.tabs}`} role="tablist" aria-label="컵 대회">
+      <div className={`${s.seasonTabs} ${c.tabs}`} role="tablist" aria-label="컵 대회">
         {tabs.map((entry) => (
           <button
             key={entry.id}
             role="tab"
             aria-selected={active === entry.id}
-            className={active === entry.id ? s.selected : undefined}
             onClick={() => setTab(entry.id)}
           >
             {entry.label}

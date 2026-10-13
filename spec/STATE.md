@@ -17,7 +17,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 51 | 51 | - | 0 |
+| WEB | 52 | 52 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
 | CLUB | 19 | 19 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
@@ -45,6 +45,10 @@
 - planner questions from the reviews: whether loading a pre-1.16 save delegates contract talks at intervention level 2+ (they show 맞춤 now, WEB-45); CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10); from T067/T068 — WEB-68's 1–5 term text and missing agent/clauses, how the staff's 2/1 seasons count in each window, terms outside a window, SAVE-10 naming agent activation. Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 merged main (records room redesign, WEB r52) into t062-standalone: club-realism money notation kept in ClubTrends/RecordsRoom
+- 261013 WEB r52 implemented directly on branch records-room-ux: records room tabs pinned; 요약 segments 트로피 (SVG trophies) / Elo / 시즌별 기록 (rows open the league page's closed season at 순위표) / 기타 기록 (match records read from the worker: biggest win/defeat, most goals, win/unbeaten/clean-sheet/losing/winless runs, then the record book); 추이 one chart per metric segment; 선수 one board per segment; 시즌 기록 season arrows + filter + 개요/경기/결정, 개요 a W-D-L and goals table per venue and season-long points and goal-difference charts, no league/continental tables; closed-season archives no longer re-read on every tick; the closed-season league picker takes that season's league as ours; page tab bars (league, closed season, cups, records, staff, operations) as underlined text
+- 261013 update-ssot WEB r52: records room holds only our club's records, one view at a time (요약 트로피/Elo/시즌별 기록/기타 기록, 추이 chart per metric, 선수 board per segment, 시즌 기록 season arrows + 개요/경기/결정 with season-long charts, no league or continental tables); season rows open the league page at 순위표; WEB-65 a closed season's picker takes our league that season as ours; WEB-69 page tab bars as underlined text, segments inside a tab
+- 261013 update-ssot WEB start
 - 261013 T068 done: agents 1–5 at creation and activation, clauses per signing (CLAUSE_CONFIG), applied at a close that moves the club; SAVE-10 still says activation is metadata-only
 - 261013 T068 doing standalone on t062-contracts after T067
 - 261013 T067 done: talks at the window openings, improved contracts with ≤3 seasons left, terms by window (TalkTerm 0–5), delegated projection check; WEB-68 still says 1–5 seasons
@@ -61,7 +65,3 @@
 - 261013 update-ssot ECON r15: ECON-30+ operating expenses per division on the football index, ECON-26✎, ECON-29✎ reference club (T062's attempt found net result 47% of income with every non-wage cost on prices)
 - 261012 T057 T058 T059 integrated
 - 261012 T055 T056 integrated
-- 261012 T060 T061 integrated
-- 261012 T050 T051 T052 integrated
-- 261012 T053 T054 integrated
-- 261012 T047 done: CI on main at 6cdc86b passed checks and test:e2e in every browser; its benchmark job fails desktop input p95 115 ms > 100 ms (left until club-realism is done, owner's order); one-result's runtime lives on the server that ran it, so this clone has no attempt to release

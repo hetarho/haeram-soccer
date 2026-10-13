@@ -1,7 +1,8 @@
 import { expect, it } from 'vitest';
 import { createWorld, nextOwnFixture, simulateMatch } from '../../../../packages/engine/src/index';
-import { matchSplit, recentGoalDifferences } from './seasonTrends';
-it('uses the own perspective, weighted denominators and a bounded chronological form sample', () => {
+import { fixtureDay } from '../../../../packages/engine/src/calendar';
+import { matchSplit, seasonProgress } from './seasonTrends';
+it('uses the own perspective, weighted denominators and the season built up in playing order', () => {
   const w = createWorld({
     country: 'ENG',
     name: 'Season',
@@ -39,9 +40,15 @@ it('uses the own perspective, weighted denominators and a bounded chronological 
   });
   expect(matchSplit([home, away], w.playerClub, 'away').played).toBe(1);
   expect(matchSplit([], w.playerClub).goalsPerMatch).toBeUndefined();
-  const many = Array.from({ length: 15 }, (_, i) => ({ ...home, id: `game-${i}`, round: 15 - i }));
-  const recent = recentGoalDifferences(many, w.playerClub);
-  expect(recent).toHaveLength(10);
-  expect(recent[0].record.round).toBe(6);
-  expect(recent.at(-1)!.record.round).toBe(15);
+  const cup = { ...home, id: 'cup', kind: 'cup' as const, score: { home: 0, away: 2 } };
+  const progress = seasonProgress([away, cup, home], w.playerClub);
+  expect(progress.map((step) => step.record.id)).toEqual(
+    [away, cup, home]
+      .slice()
+      .sort((a, b) => fixtureDay(a) - fixtureDay(b) || a.id.localeCompare(b.id))
+      .map((m) => m.id),
+  );
+  // The cup defeat moves the goal difference only; the league win and draw bring four points.
+  expect(progress.at(-1)).toMatchObject({ points: 4, difference: 0 });
+  expect(progress.filter((step) => step.league)).toHaveLength(2);
 });

@@ -516,6 +516,12 @@ export class GameClient {
     if (!reply.headToHead) throw new Error('맞대결 기록 응답이 없습니다.');
     return reply.headToHead;
   }
+  /** Our match records over every own match, read like head-to-head without the command queue. */
+  async clubRecords() {
+    const reply = await this.rpc({ type: 'club-records' });
+    if (!reply.clubRecords) throw new Error('클럽 기록 응답이 없습니다.');
+    return reply.clubRecords;
+  }
   /** Another league's fixtures this season, read like head-to-head without the command queue. */
   async leagueFixtures(league: { code: string; tier: number; group: number }) {
     const reply = await this.rpc({

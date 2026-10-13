@@ -325,3 +325,33 @@
   color: var(--text-faint);
   font-weight: 700;
 }
+/* A season's record overall, at home and away: one compact table of results and goals. */
+.split {
+  width: 100%;
+  min-width: 300px;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.split th,
+.split td {
+  padding: 9px 6px;
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+}
+.split thead th {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.split tbody th {
+  text-align: left;
+  font-weight: 800;
+  color: var(--text);
+}
+.split tbody tr:first-child {
+  background: var(--surface-2);
+}
+.split td:last-child {
+  font-weight: 800;
+}
