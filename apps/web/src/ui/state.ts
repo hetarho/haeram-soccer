@@ -1,40 +1,113 @@
 import { create } from 'zustand';
+import type {
+  PolicyKey,
+  PolicyLevel,
+  TrainingFocus,
+} from '../../../../packages/contracts/src/types';
 import type { PlayerScope } from './playerAnalysis';
+/**
+ * The destinations: home, the competitions and records, and the owner's three levers — 사람 (who
+ * joins and stays), 훈련 (how players develop) and 운영 (how the club earns and spends, →WEB-10).
+ */
 export type Page =
-  'dashboard' | 'match' | 'league' | 'europe' | 'squad' | 'manager' | 'business' | 'history';
+  'dashboard' | 'match' | 'league' | 'europe' | 'people' | 'training' | 'business' | 'history';
 const paths: Record<Page, string> = {
   dashboard: '/journal',
   match: '/matches',
   league: '/leagues',
   europe: '/europe',
-  squad: '/squad',
-  manager: '/manager',
+  people: '/people',
+  training: '/training',
   business: '/business',
   history: '/history',
 };
-/** The transfer market is the squad page's market segment; its own address opens it there. */
-const MARKET_PATH = '/transfers';
-const at = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
-const current = (): Page =>
-  at(MARKET_PATH)
-    ? 'squad'
-    : (Object.entries(paths).find(([, path]) => at(path))?.[0] as Page) || 'dashboard';
-/** The squad page's address names the market while that segment is open, so a reload keeps it. */
-const address = (page: Page) =>
-  page === 'squad' && useSquadView.getState().tab === 'market' ? MARKET_PATH : paths[page];
+
+/** 사람's tabs (→WEB-43), in tab-bar order; the first one keeps no ?view= in the address. */
+export const PEOPLE_TABS = [
+  ['players', '선수'],
+  ['market', '이적시장'],
+  ['manager', '감독'],
+  ['coaches', '코치진'],
+] as const;
+export type PeopleTab = (typeof PEOPLE_TABS)[number][0];
+/** A 사람 tab, or `candidates`: 감독 with the manager market open (→WEB-43, WEB-57). */
+export type PeopleRequest = PeopleTab | 'candidates';
+/** 훈련's tabs (→WEB-70), in tab-bar order; the first one keeps no ?view= in the address. */
+export const TRAINING_TABS = [
+  ['training', '훈련'],
+  ['academy', '유소년'],
+] as const;
+export type TrainingTab = (typeof TRAINING_TABS)[number][0];
+/** 운영's tabs (→WEB-39), as its address names them. */
+export type BusinessView = 'strategy' | 'finance' | 'facility' | 'sponsor' | 'marketing';
+/** Where a setting lives (→WEB-71): a page and its tab. */
+export type Home =
+  | { page: 'people'; view: PeopleTab }
+  | { page: 'training'; view: TrainingTab }
+  | { page: 'business'; view: BusinessView };
+
+/** Where an address lands. */
+export interface Route {
+  page: Page;
+  /** The tab 사람 or 훈련 opens on. */
+  view?: PeopleTab | TrainingTab;
+  /** 사람's 감독 opens with the manager market. */
+  market?: true;
+  /** The address to show instead of the one asked for, for older and non-canonical ones. */
+  address?: string;
+}
+const tabOf = <T extends string>(tabs: readonly (readonly [T, string])[], id: string | null) =>
+  tabs.find(([tab]) => tab === id)?.[0];
+/**
+ * Resolves an address. Older ones open 사람's tabs (→WEB-43): /squad 선수, /transfers 이적시장,
+ * /manager 감독 (its ?view=coaches 코치진, ?view=delegation 감독), and ?view=candidates — of
+ * /manager or /people — 감독 with the market open; each gets the address of the tab it opens.
+ */
+export function routeOf(pathname: string, search: string): Route {
+  const at = (path: string) => pathname === path || pathname.startsWith(path + '/');
+  const asked = new URLSearchParams(search).get('view');
+  let route: Route;
+  if (at('/squad')) route = { page: 'people', view: 'players' };
+  else if (at('/transfers')) route = { page: 'people', view: 'market' };
+  else if (at('/manager') || (at(paths.people) && asked === 'candidates'))
+    route = {
+      page: 'people',
+      view: asked === 'coaches' ? 'coaches' : 'manager',
+      ...(asked === 'candidates' ? { market: true as const } : {}),
+    };
+  else if (at(paths.people))
+    route = { page: 'people', view: tabOf(PEOPLE_TABS, asked) ?? 'players' };
+  else if (at(paths.training))
+    route = { page: 'training', view: tabOf(TRAINING_TABS, asked) ?? 'training' };
+  else
+    return {
+      page: (Object.entries(paths).find(([, path]) => at(path))?.[0] as Page) || 'dashboard',
+    };
+  const first = route.page === 'people' ? PEOPLE_TABS[0][0] : TRAINING_TABS[0][0];
+  const address = `${paths[route.page]}${route.view === first ? '' : `?view=${route.view}`}`;
+  return address === pathname + search ? route : { ...route, address };
+}
+/** The address in the bar, with an older one replaced by where it lands. */
+function arrive(): Route {
+  const route = routeOf(location.pathname, location.search);
+  if (route.address) history.replaceState(history.state, '', route.address + location.hash);
+  return route;
+}
+const arrival = typeof location === 'undefined' ? undefined : arrive();
+
 export const useNavigation = create<{
   page: Page;
   setPage: (page: Page) => void;
   /** Redirects without a history entry (e.g. a match address without a live match). */
   replacePage: (page: Page) => void;
 }>((set) => ({
-  page: typeof location === 'undefined' ? 'dashboard' : current(),
+  page: arrival?.page ?? 'dashboard',
   setPage: (page) => {
-    if (location.pathname !== address(page)) history.pushState(null, '', address(page));
+    if (location.pathname !== paths[page]) history.pushState(null, '', paths[page]);
     set({ page });
   },
   replacePage: (page) => {
-    if (location.pathname !== address(page)) history.replaceState(null, '', address(page));
+    if (location.pathname !== paths[page]) history.replaceState(null, '', paths[page]);
     set({ page });
   },
 }));
@@ -52,28 +125,74 @@ export const useMatchView = create<{
   set: ({ matchId, finished }) => set({ matchId, finished }),
 }));
 
-/**
- * The squad page's segments: roster, academy and the transfer market. The page keeps its segment
- * while the owner is elsewhere; switching segments swaps the address without a history entry.
- */
-export type SquadTab = 'roster' | 'academy' | 'market';
-export const useSquadView = create<{
-  tab: SquadTab;
-  setTab: (tab: SquadTab) => void;
-}>((set) => ({
-  tab: typeof location !== 'undefined' && at(MARKET_PATH) ? 'market' : 'roster',
-  setTab: (tab) => {
-    set({ tab });
-    if (useNavigation.getState().page === 'squad' && location.pathname !== address('squad'))
-      history.replaceState(history.state, '', address('squad'));
-  },
-}));
-/** Opens the transfer market: the squad page on its market segment. */
-export function openMarket() {
-  useSquadView.getState().setTab('market');
-  useNavigation.getState().setPage('squad');
+/** A one-shot request a page takes when it opens, or at once while it is showing. */
+export interface OneShot<T> {
+  request?: T;
+  open: (request: T) => void;
+  /** Clears the request and returns it. */
+  take: () => T | undefined;
 }
-/** The player whose contract-talk sheet is open over the squad page (→WEB-68). */
+const oneShot = <T>() =>
+  create<OneShot<T>>((set, get) => ({
+    open: (request) => set({ request }),
+    take: () => {
+      const { request } = get();
+      set({ request: undefined });
+      return request;
+    },
+  }));
+/**
+ * A 사람 tab asked for from elsewhere, such as the manager-departure alert opening the market.
+ * 사람 takes it once, even while it is showing; otherwise it opens on the tab in its address.
+ */
+export const usePeopleView = oneShot<PeopleRequest>();
+// The market an older address asked for opens once 사람 shows (the address keeps only its tab).
+if (arrival?.market) usePeopleView.getState().open('candidates');
+/** A 훈련 tab asked for from elsewhere, taken the same way. */
+export const useTrainingView = oneShot<TrainingTab>();
+/** A 운영 tab asked for while 운영 is showing; from elsewhere the address carries it. */
+export const useBusinessView = oneShot<BusinessView>();
+/** A training focus suggested from elsewhere (a fatigue remedy, →WEB-44), for 훈련 to offer. */
+export const useTrainingRequest = oneShot<{ focus?: TrainingFocus }>();
+/**
+ * A dial change suggested from elsewhere (a cash remedy, →WEB-44), for the operating board to
+ * open as a draft.
+ */
+export const useBoardRequest = oneShot<{
+  policy?: { key: PolicyKey; level: PolicyLevel };
+  ticket?: number;
+}>();
+
+/** Opens 사람 on a tab, or on 감독 with the manager market (`candidates`). */
+export function openPeople(tab: PeopleRequest) {
+  usePeopleView.getState().open(tab);
+  useNavigation.getState().setPage('people');
+}
+/** Opens 훈련 on a tab. */
+export function openTraining(tab: TrainingTab) {
+  useTrainingView.getState().open(tab);
+  useNavigation.getState().setPage('training');
+}
+/** Opens 운영 on a tab: from elsewhere through its address, while it shows through a request. */
+export function openBusiness(view: BusinessView) {
+  if (useNavigation.getState().page === 'business') {
+    useBusinessView.getState().open(view);
+    return;
+  }
+  history.pushState(null, '', `${paths.business}?view=${view}`);
+  useNavigation.setState({ page: 'business' });
+}
+/** Opens the page and tab where a setting lives (→WEB-71). */
+export function openHome(home: Home) {
+  if (home.page === 'people') openPeople(home.view);
+  else if (home.page === 'training') openTraining(home.view);
+  else openBusiness(home.view);
+}
+/** Opens the transfer market: 사람's 이적시장. */
+export function openMarket() {
+  openPeople('market');
+}
+/** The player whose contract-talk sheet is open over 사람's 선수 (→WEB-68). */
 export const useContractTalk = create<{
   id?: string;
   open: (id: string) => void;
@@ -82,19 +201,17 @@ export const useContractTalk = create<{
   open: (id) => set({ id }),
   close: () => set({ id: undefined }),
 }));
-/** Opens a player's contract talk from elsewhere, such as its event card: the roster, then the sheet. */
+/** Opens a player's contract talk from elsewhere, such as its event card: 선수, then the sheet. */
 export function openContractTalk(id: string) {
   useContractTalk.getState().open(id);
-  useSquadView.getState().setTab('roster');
-  useNavigation.getState().setPage('squad');
+  openPeople('players');
 }
 if (typeof window !== 'undefined')
   window.addEventListener('popstate', () => {
-    const page = current();
-    // Back and forward follow the address: the market's own address opens that segment.
-    if (page === 'squad' && at(MARKET_PATH) !== (useSquadView.getState().tab === 'market'))
-      useSquadView.setState({ tab: at(MARKET_PATH) ? 'market' : 'roster' });
-    useNavigation.setState({ page });
+    // Back and forward follow the address; an older one is replaced by where it lands.
+    const route = arrive();
+    if (route.market) usePeopleView.getState().open('candidates');
+    useNavigation.setState({ page: route.page });
   });
 
 /**
@@ -165,26 +282,3 @@ export const RECORD_TABS = [
   ['managers', '감독'],
 ] as const;
 export type RecordTab = (typeof RECORD_TABS)[number][0];
-
-/** The staff page's tabs, in tab-bar order. */
-export const STAFF_TABS = [
-  ['manager', '감독'],
-  ['coaches', '코치진'],
-  ['delegation', '위임'],
-] as const;
-export type StaffTab = (typeof STAFF_TABS)[number][0];
-/** A staff tab, or `candidates`: 감독 with the manager market open (→WEB-40). */
-export type StaffRequest = StaffTab | 'candidates';
-/**
- * A staff view asked for from elsewhere, such as the manager-departure alert opening the market.
- * The staff page takes it once, even while it is showing; otherwise it opens on the tab in its
- * address or on 감독.
- */
-export const useStaffView = create<{
-  request?: StaffRequest;
-  open: (tab: StaffRequest) => void;
-  take: () => void;
-}>((set) => ({
-  open: (tab) => set({ request: tab }),
-  take: () => set({ request: undefined }),
-}));

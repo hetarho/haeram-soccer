@@ -1,5 +1,5 @@
 import { Select } from './Select';
-import { lazy, Suspense, useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import type {
   ContractTalk,
   ContractTerm,
@@ -63,23 +63,24 @@ import {
   type RosterView,
 } from './RosterFilters';
 import {
-  STAFF_TABS,
+  PEOPLE_TABS,
+  routeOf,
+  useBusinessView,
   useContractTalk,
-  useSquadView,
-  useStaffView,
+  usePeopleView,
   type Page,
-  type SquadTab,
-  type StaffRequest,
-  type StaffTab,
+  type PeopleRequest,
+  type PeopleTab,
 } from './state';
 import {
-  AcademyView,
   CoachingPlan,
   CoachingStaff,
   Delegation,
   ManagerHireTerm,
   ManagerRenewal,
 } from './ClubStaff';
+import { PageTabs, TabPanel } from './PageTabs';
+import { TrainingView } from './TrainingView';
 import { appearances, explorePlayers, playerStatus } from './playerAnalysis';
 import { PlayerLink } from './PlayerSheet';
 import { Attributes } from './Attributes';
@@ -136,52 +137,6 @@ function Header({
     </div>
   );
 }
-const SQUAD_HEADS: Record<SquadTab, { eyebrow: string; title: string; description: string }> = {
-  roster: {
-    eyebrow: 'SQUAD',
-    title: '선수단',
-    description: '능력·피로·잠재력을 보고 매각을 결정해요. 선발과 기용은 감독이 맡아요.',
-  },
-  academy: {
-    eyebrow: 'SQUAD',
-    title: '유소년',
-    description:
-      '아카데미에서 키운 유망주를 1군으로 올려요. 유스 디렉터가 입단 수준과 성장을 좌우해요.',
-  },
-  market: {
-    eyebrow: 'TRANSFERS',
-    title: '이적 시장',
-    description:
-      '이적료가 있는 영입·임대·매각은 이적시장 기간에만 가능하고, 자유계약 선수는 언제든 영입해요.',
-  },
-};
-/**
- * The squad page's three views: the players we have, the academy and the market that brings more;
- * staff is its own destination in the navigation (→WEB-43).
- */
-function SquadSegments({ current, players }: { current: SquadTab; players: number }) {
-  const setTab = useSquadView((state) => state.setTab);
-  return (
-    <div className={s.segments} role="group" aria-label="선수단 메뉴">
-      {(
-        [
-          ['roster', `선수단 ${players}/26`],
-          ['academy', '유소년'],
-          ['market', '이적 시장'],
-        ] as const
-      ).map(([id, label]) => (
-        <button
-          key={id}
-          aria-pressed={current === id}
-          className={current === id ? s.selected : undefined}
-          onClick={() => setTab(id)}
-        >
-          {label}
-        </button>
-      ))}
-    </div>
-  );
-}
 /** The manager's youth attribute speeds every young player's growth; the academy is separate. */
 const YOUTH_HINT = '27세 미만 선수 성장';
 /** "38세", or nothing for someone from an older save without an age. */
@@ -204,87 +159,67 @@ function TraitNote({ trait }: { trait?: ManagerTrait }) {
     </>
   );
 }
-/**
- * The staff view in the page's address, so a reload keeps the tab; an old ?view=candidates opens
- * 감독 with the manager market (→WEB-40).
- */
-function savedStaffView(): StaffRequest | undefined {
-  const saved = new URLSearchParams(location.search).get('view');
-  return saved === 'candidates' ? saved : STAFF_TABS.find(([id]) => id === saved)?.[0];
+/** The 사람 tab a request or the address asks for, and whether 감독 opens with the market. */
+function peopleStart(request: PeopleRequest | undefined): { tab: PeopleTab; market: boolean } {
+  if (request)
+    return {
+      tab: request === 'candidates' ? 'manager' : request,
+      market: request === 'candidates',
+    };
+  const route = routeOf(location.pathname, location.search);
+  const tab = PEOPLE_TABS.find(([id]) => id === route.view)?.[0] ?? 'players';
+  return { tab, market: !!route.market };
 }
-const tabOf = (view: StaffRequest): StaffTab => (view === 'candidates' ? 'manager' : view);
 /**
- * The staff page as one tab bar instead of a long scroll: the manager first, whose 교체 opens the
- * market to replace him, then the coaching staff and what the staff decide for the owner.
+ * 사람 (→WEB-43): who is in the club and who joins or stays, as one tab bar — the players, the
+ * transfer market, the manager (whose 교체 opens the market to replace him) and the coaching
+ * staff. A request from elsewhere, such as the manager-departure alert, is taken once; otherwise
+ * the tab comes from the address.
  */
-function ManagerView({ state, client }: Props) {
+function People({ state, client }: Props) {
   const w = state.view!.world;
-  const request = useStaffView((view) => view.request);
-  const [tab, setTab] = useState<StaffTab>(() => tabOf(request ?? savedStaffView() ?? 'manager'));
-  const [market, setMarket] = useState(() => (request ?? savedStaffView()) === 'candidates');
+  const request = usePeopleView((view) => view.request);
+  const [start] = useState(() => peopleStart(request));
+  const [tab, setTab] = useState<PeopleTab>(start.tab);
+  const [market, setMarket] = useState(start.market);
   useEffect(() => {
     if (!request) return;
-    setTab(tabOf(request));
-    if (request === 'candidates') setMarket(true);
-    useStaffView.getState().take();
+    const next = peopleStart(request);
+    setTab(next.tab);
+    if (next.market) setMarket(true);
+    usePeopleView.getState().take();
   }, [request]);
-  useEffect(() => {
-    const url = new URL(location.href);
-    if (tab === 'manager') url.searchParams.delete('view');
-    else url.searchParams.set('view', tab);
-    history.replaceState(history.state, '', `${url.pathname}${url.search}${url.hash}`);
-  }, [tab]);
-  const keyboard = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
-    if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
-    event.preventDefault();
-    const next =
-      event.key === 'Home'
-        ? 0
-        : event.key === 'End'
-          ? STAFF_TABS.length - 1
-          : (index + (event.key === 'ArrowRight' ? 1 : -1) + STAFF_TABS.length) % STAFF_TABS.length;
-    setTab(STAFF_TABS[next][0]);
-    document.getElementById(`staff-tab-${STAFF_TABS[next][0]}`)?.focus();
-  };
   return (
     <>
       <Header
-        eyebrow="STAFF"
-        title="스태프"
-        description="감독과 코치진이 선발·전술·훈련·유소년을 운영해요. 구단주는 사람을 고르고, 맡길 일을 정해요. 젊은 감독과 코치는 잠재력까지 성장해요."
+        eyebrow="PEOPLE"
+        title="선수·스태프"
+        description="누가 뛰고, 누가 오고, 누가 남을지 정해요. 선수와 이적시장, 감독과 코치진을 한곳에서 다뤄요. 젊은 감독과 코치는 잠재력까지 성장해요."
       />
-      <div
-        className={`${s.seasonTabs} ${s.operationsTabs}`}
-        role="tablist"
-        aria-label="스태프 보기"
-      >
-        {STAFF_TABS.map(([id, label], index) => (
-          <button
-            key={id}
-            id={`staff-tab-${id}`}
-            role="tab"
-            aria-selected={tab === id}
-            aria-controls="staff-panel"
-            tabIndex={tab === id ? 0 : -1}
-            onKeyDown={(event) => keyboard(event, index)}
-            onClick={() => setTab(id)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-      <div id="staff-panel" role="tabpanel" aria-labelledby={`staff-tab-${tab}`}>
-        {tab === 'manager' ? (
-          <ManagerOffice state={state} client={client} onReplace={() => setMarket(true)} />
-        ) : tab === 'coaches' ? (
+      <PageTabs
+        tabs={PEOPLE_TABS}
+        value={tab}
+        onChange={setTab}
+        label="선수·스태프 보기"
+        idPrefix="people"
+      />
+      <TabPanel idPrefix="people" value={tab}>
+        {tab === 'players' ? (
+          <Roster state={state} client={client} />
+        ) : tab === 'market' ? (
+          <RecruitmentDesk state={state} client={client} />
+        ) : tab === 'manager' ? (
+          <>
+            <ManagerOffice state={state} client={client} onReplace={() => setMarket(true)} />
+            <Delegation w={w} client={client} />
+          </>
+        ) : (
           <>
             <CoachingPlan w={w} />
             <CoachingStaff w={w} client={client} />
           </>
-        ) : (
-          <Delegation w={w} client={client} />
         )}
-      </div>
+      </TabPanel>
       {market && <ManagerMarket state={state} client={client} onClose={() => setMarket(false)} />}
     </>
   );
@@ -864,11 +799,11 @@ function ContractTalkSheet({
     </Dialog>
   );
 }
-function Squad({ state, client }: Props) {
+/** 사람's 선수: the roster with each player's stance and contract talks (→WEB-43). */
+function Roster({ state, client }: Props) {
   const v = state.view!,
     w = v.world,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
-    tab = useSquadView((state) => state.tab),
     [view, setView] = useState<RosterView>(DEFAULT_ROSTER_VIEW),
     [comparing, setComparing] = useState(false),
     [fullTable, setFullTable] = useState(false),
@@ -892,195 +827,184 @@ function Squad({ state, client }: Props) {
     visiblePlayers = listed.slice(shownPage * 25, (shownPage + 1) * 25);
   return (
     <>
-      <Header {...SQUAD_HEADS[tab]}>
-        <SquadSegments current={tab} players={active.length} />
-      </Header>
-      {tab === 'academy' && <AcademyView w={w} client={client} />}
-      {tab === 'market' && <RecruitmentDesk state={state} client={client} />}
-      {tab === 'roster' && (
-        <div className={s.filters}>
-          <button onClick={() => setComparing(true)}>우리 선수 비교</button>
+      <div className={s.filters}>
+        <button onClick={() => setComparing(true)}>우리 선수 비교</button>
+      </div>
+      <Panel
+        title="우리 클럽의 선수들"
+        note={`선수단 ${active.length}/26`}
+        action={
+          <RosterFilters
+            view={view}
+            onChange={(next) => {
+              setView(next);
+              setPlayerPage(0);
+            }}
+          />
+        }
+      >
+        <label className={s.rosterSearch}>
+          선수 찾기{' '}
+          <input
+            aria-label="선수 찾기"
+            value={playerQuery}
+            onChange={(event) => {
+              setPlayerQuery(event.target.value);
+              setPlayerPage(0);
+            }}
+            placeholder="이름으로 찾기"
+          />
+        </label>
+        {summary.length > 0 && (
+          <p className={s.rosterViewSummary} data-testid="roster-view-summary">
+            {summary.join(' · ')}
+          </p>
+        )}
+        <div className={s.rosterCards}>
+          {visiblePlayers.map((p) => (
+            <article key={p.id}>
+              <div className={s.rosterBody}>
+                <OvrBadge value={overall(p)} role={p.role} />
+                <PlayerLink id={p.id} name={p.name} scope={scope} className={s.cardLink} />
+                <small>
+                  {p.status === 'active' ? (
+                    <>
+                      {w.year - p.born}세 · 잠재력 {Math.round(p.potential)}
+                      <br />
+                      연봉 <Money value={p.wage} code={c.country} year={w.year} plain /> / 시장{' '}
+                      <Money value={marketWage(w, p)} code={c.country} year={w.year} plain /> ·{' '}
+                      {contractLine(p.until, w.year)}
+                    </>
+                  ) : (
+                    `${playerStatus(p)} · 통산 ${appearances(p.career)}경기 ${p.career[0]}골`
+                  )}
+                </small>
+                {p.status === 'active' && <PlayerFlags w={w} player={p} />}
+              </div>
+              <div>
+                <b>피로 {Math.round(p.fatigue)}</b>
+                <small>성장 +{(p.developed || 0).toFixed(2)}</small>
+              </div>
+              {p.status === 'active' && talkFor(w, p) && (
+                <button
+                  type="button"
+                  className={s.stanceBadge}
+                  data-stance="listed"
+                  disabled={disabled}
+                  aria-label={`${p.name} 계약 협상 열기`}
+                  onClick={() => openTalk(p.id)}
+                >
+                  협상
+                </button>
+              )}
+              {canSetStance(p) && (
+                <StanceBadge player={p} disabled={disabled} onOpen={() => setStanceId(p.id)} />
+              )}
+            </article>
+          ))}
         </div>
-      )}
-      {tab === 'roster' ? (
-        <Panel
-          title="우리 클럽의 선수들"
-          action={
-            <RosterFilters
-              view={view}
-              onChange={(next) => {
-                setView(next);
-                setPlayerPage(0);
-              }}
-            />
-          }
-        >
-          <label className={s.rosterSearch}>
-            선수 찾기{' '}
-            <input
-              aria-label="선수 찾기"
-              value={playerQuery}
-              onChange={(event) => {
-                setPlayerQuery(event.target.value);
-                setPlayerPage(0);
-              }}
-              placeholder="이름으로 찾기"
-            />
-          </label>
-          {summary.length > 0 && (
-            <p className={s.rosterViewSummary} data-testid="roster-view-summary">
-              {summary.join(' · ')}
-            </p>
-          )}
-          <div className={s.rosterCards}>
-            {visiblePlayers.map((p) => (
-              <article key={p.id}>
-                <div className={s.rosterBody}>
-                  <OvrBadge value={overall(p)} role={p.role} />
-                  <PlayerLink id={p.id} name={p.name} scope={scope} className={s.cardLink} />
-                  <small>
-                    {p.status === 'active' ? (
-                      <>
-                        {w.year - p.born}세 · 잠재력 {Math.round(p.potential)}
-                        <br />
-                        연봉 <Money value={p.wage} code={c.country} year={w.year} plain /> / 시장{' '}
-                        <Money value={marketWage(w, p)} code={c.country} year={w.year} plain /> ·{' '}
-                        {contractLine(p.until, w.year)}
-                      </>
-                    ) : (
-                      `${playerStatus(p)} · 통산 ${appearances(p.career)}경기 ${p.career[0]}골`
-                    )}
-                  </small>
-                  {p.status === 'active' && <PlayerFlags w={w} player={p} />}
-                </div>
-                <div>
-                  <b>피로 {Math.round(p.fatigue)}</b>
-                  <small>성장 +{(p.developed || 0).toFixed(2)}</small>
-                </div>
-                {p.status === 'active' && talkFor(w, p) && (
-                  <button
-                    type="button"
-                    className={s.stanceBadge}
-                    data-stance="listed"
-                    disabled={disabled}
-                    aria-label={`${p.name} 계약 협상 열기`}
-                    onClick={() => openTalk(p.id)}
-                  >
-                    협상
-                  </button>
-                )}
-                {canSetStance(p) && (
-                  <StanceBadge player={p} disabled={disabled} onOpen={() => setStanceId(p.id)} />
-                )}
-              </article>
-            ))}
+        {listed.length === 0 && <p className={s.panelBody}>이 조건에 맞는 선수가 없어요.</p>}
+        {lastPage > 0 && (
+          <div className={s.rosterPages}>
+            <button disabled={shownPage === 0} onClick={() => setPlayerPage(shownPage - 1)}>
+              이전 선수
+            </button>
+            <span>
+              {shownPage + 1}/{lastPage + 1} · {listed.length}명
+            </span>
+            <button disabled={shownPage === lastPage} onClick={() => setPlayerPage(shownPage + 1)}>
+              다음 선수
+            </button>
           </div>
-          {listed.length === 0 && <p className={s.panelBody}>이 조건에 맞는 선수가 없어요.</p>}
-          {lastPage > 0 && (
-            <div className={s.rosterPages}>
-              <button disabled={shownPage === 0} onClick={() => setPlayerPage(shownPage - 1)}>
-                이전 선수
-              </button>
-              <span>
-                {shownPage + 1}/{lastPage + 1} · {listed.length}명
-              </span>
-              <button
-                disabled={shownPage === lastPage}
-                onClick={() => setPlayerPage(shownPage + 1)}
-              >
-                다음 선수
-              </button>
+        )}
+        <details
+          className={s.rosterDetails}
+          onToggle={(event) => setFullTable(event.currentTarget.open)}
+        >
+          <summary>전체 선수 지표 표 보기</summary>
+          {fullTable && (
+            <div className={s.tableWrap}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>역할</th>
+                    <th>선수</th>
+                    <th>OVR</th>
+                    <th>나이</th>
+                    <th>공격</th>
+                    <th>패스</th>
+                    <th>수비</th>
+                    <th>잠재력</th>
+                    <th>출전</th>
+                    <th>득점</th>
+                    <th>도움</th>
+                    <th>피로</th>
+                    <th>연봉</th>
+                    <th>계약</th>
+                    <th>선택</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visiblePlayers.map((p) => {
+                    const stats = scope === 'career' ? p.career : p.season;
+                    return (
+                      <tr key={p.id}>
+                        <td>{p.role}</td>
+                        <td>
+                          <PlayerLink id={p.id} name={p.name} scope={scope} />
+                          <small>
+                            {' '}
+                            {p.status === 'retired'
+                              ? '은퇴'
+                              : p.status === 'sold'
+                                ? '이적'
+                                : p.loanUntil
+                                  ? '임대'
+                                  : ''}
+                          </small>
+                        </td>
+                        <td>{overall(p)}</td>
+                        <td>{p.status === 'active' ? w.year - p.born : `${p.born}년생`}</td>
+                        <td>{number(p.attack)}</td>
+                        <td>{number(p.passing)}</td>
+                        <td>{number(p.defense)}</td>
+                        <td>{number(p.potential)}</td>
+                        <td>{appearances(stats)}</td>
+                        <td>{stats[0]}</td>
+                        <td>{stats[1]}</td>
+                        <td>{number(p.fatigue)}</td>
+                        <td>
+                          {p.status === 'active' ? (
+                            <Money value={p.wage} code={c.country} year={w.year} />
+                          ) : (
+                            '—'
+                          )}
+                        </td>
+                        <td>{p.until}</td>
+                        <td>
+                          {canSetStance(p) && (
+                            <StanceBadge
+                              player={p}
+                              disabled={disabled}
+                              onOpen={() => setStanceId(p.id)}
+                            />
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
-          <details
-            className={s.rosterDetails}
-            onToggle={(event) => setFullTable(event.currentTarget.open)}
-          >
-            <summary>전체 선수 지표 표 보기</summary>
-            {fullTable && (
-              <div className={s.tableWrap}>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>역할</th>
-                      <th>선수</th>
-                      <th>OVR</th>
-                      <th>나이</th>
-                      <th>공격</th>
-                      <th>패스</th>
-                      <th>수비</th>
-                      <th>잠재력</th>
-                      <th>출전</th>
-                      <th>득점</th>
-                      <th>도움</th>
-                      <th>피로</th>
-                      <th>연봉</th>
-                      <th>계약</th>
-                      <th>선택</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {visiblePlayers.map((p) => {
-                      const stats = scope === 'career' ? p.career : p.season;
-                      return (
-                        <tr key={p.id}>
-                          <td>{p.role}</td>
-                          <td>
-                            <PlayerLink id={p.id} name={p.name} scope={scope} />
-                            <small>
-                              {' '}
-                              {p.status === 'retired'
-                                ? '은퇴'
-                                : p.status === 'sold'
-                                  ? '이적'
-                                  : p.loanUntil
-                                    ? '임대'
-                                    : ''}
-                            </small>
-                          </td>
-                          <td>{overall(p)}</td>
-                          <td>{p.status === 'active' ? w.year - p.born : `${p.born}년생`}</td>
-                          <td>{number(p.attack)}</td>
-                          <td>{number(p.passing)}</td>
-                          <td>{number(p.defense)}</td>
-                          <td>{number(p.potential)}</td>
-                          <td>{appearances(stats)}</td>
-                          <td>{stats[0]}</td>
-                          <td>{stats[1]}</td>
-                          <td>{number(p.fatigue)}</td>
-                          <td>
-                            {p.status === 'active' ? (
-                              <Money value={p.wage} code={c.country} year={w.year} />
-                            ) : (
-                              '—'
-                            )}
-                          </td>
-                          <td>{p.until}</td>
-                          <td>
-                            {canSetStance(p) && (
-                              <StanceBadge
-                                player={p}
-                                disabled={disabled}
-                                onOpen={() => setStanceId(p.id)}
-                              />
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </details>
-          <div className={s.panelFoot}>
-            감독이 역할과 능력·피로에 따라 선발을 고르고, 부상 선수는 빼요. 선수마다 이적 상태
-            뱃지(이적 명단·협상 가능·이적 불가)를 눌러 바꿀 수 있어요. 제안은 이적시장 기간에 실제
-            구단이 보내고, 수락해야 이적이 성사돼요. 최소 14명·골키퍼 1명을 유지해야 해요. 지금:{' '}
-            {window.label}
-          </div>
-        </Panel>
-      ) : null}
+        </details>
+        <div className={s.panelFoot}>
+          감독이 역할과 능력·피로에 따라 선발을 고르고, 부상 선수는 빼요. 선수마다 이적 상태
+          뱃지(이적 명단·협상 가능·이적 불가)를 눌러 바꿀 수 있어요. 제안은 이적시장 기간에 실제
+          구단이 보내고, 수락해야 이적이 성사돼요. 최소 14명·골키퍼 1명을 유지해야 해요. 지금:{' '}
+          {window.label}
+        </div>
+      </Panel>
       {comparing && (
         <PlayerComparison w={w} initialScope={scope} onClose={() => setComparing(false)} />
       )}
@@ -1148,20 +1072,41 @@ function EconomicContext({ state }: { state: ClientState }) {
     </Panel>
   );
 }
+/**
+ * 운영 (→WEB-39). A tab asked for while it shows lands in the address and reopens the tab bar on
+ * it; from elsewhere the address already carries it.
+ */
+function Business({ state, client }: Props) {
+  const request = useBusinessView((view) => view.request);
+  const [opened, setOpened] = useState(0);
+  useEffect(() => {
+    if (!request) return;
+    useBusinessView.getState().take();
+    const url = new URL(location.href);
+    url.searchParams.set('view', request);
+    history.replaceState(history.state, '', `${url.pathname}${url.search}${url.hash}`);
+    setOpened((count) => count + 1);
+  }, [request]);
+  return (
+    <>
+      <Header
+        eyebrow="CLUB OPERATIONS"
+        title="구단 운영"
+        description="운영 전략으로 방향과 씀씀이를 정하고, 재정에서 장부를, 시설·후원·캠페인에서 한 번 지출하고 오래 남는 결정을 해요."
+      />
+      <OperationsView
+        key={opened}
+        state={state}
+        client={client}
+        legacy={<EconomicContext state={state} />}
+      />
+    </>
+  );
+}
 export default function Rich({ state, client, page }: Props & { page: Page }) {
-  if (page === 'manager') return <ManagerView state={state} client={client} />;
-  if (page === 'squad') return <Squad state={state} client={client} />;
-  if (page === 'business')
-    return (
-      <>
-        <Header
-          eyebrow="CLUB OPERATIONS"
-          title="구단 운영"
-          description="운영 전략으로 방향과 씀씀이를 정하고, 재정에서 장부를, 시설·후원·캠페인에서 한 번 지출하고 오래 남는 결정을 해요."
-        />
-        <OperationsView state={state} client={client} legacy={<EconomicContext state={state} />} />
-      </>
-    );
+  if (page === 'people') return <People state={state} client={client} />;
+  if (page === 'training') return <TrainingView state={state} client={client} />;
+  if (page === 'business') return <Business state={state} client={client} />;
   return (
     <Suspense
       fallback={

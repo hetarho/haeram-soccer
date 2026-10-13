@@ -75,7 +75,7 @@ for (const viewport of [
     const roster = page.locator('[class*="rosterCards"] article');
     // Delegated staff may sell a fringe player for a premium while the window is open.
     const openSquad = async (w: World) => {
-      await nav.getByRole('button', { name: '선수단', exact: true }).click();
+      await nav.getByRole('button', { name: '선수·스태프', exact: true }).click();
       await expect(roster).toHaveCount(w.players.filter((p) => p.status === 'active').length);
     };
     const openBusiness = () => nav.getByRole('button', { name: '구단 운영', exact: true }).click();
@@ -140,7 +140,7 @@ for (const viewport of [
     await mini.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
     await expect(date).not.toHaveText(paused);
     // The match-eve stop keeps it short of round 1.
-    await nav.getByRole('button', { name: '선수단', exact: true }).click();
+    await nav.getByRole('button', { name: '선수·스태프', exact: true }).click();
     await expect(roster.first()).toBeVisible();
     for (const player of await roster.all()) await expect(player).toContainText('성장 +0.00');
     // A clock left running resumes after a reload (→WEB-64); stop the run so the reload starts

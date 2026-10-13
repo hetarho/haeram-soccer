@@ -14,14 +14,8 @@ import {
   type KeyboardEvent,
   type RefObject,
 } from 'react';
-import type {
-  CoachDelegationKey,
-  DelegationKey,
-  InboxKind,
-  World,
-} from '../../../../packages/contracts/src/types';
+import type { World } from '../../../../packages/contracts/src/types';
 import { transferWindow } from '../../../../packages/engine/src/transfers';
-import { COACH_KEYS } from '../../../../packages/engine/src/hiring';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import {
@@ -31,10 +25,18 @@ import {
   type AwayLimit,
   type Pace,
   type ProgressionController,
-  type StopOn,
 } from '../runtime/progression';
 import { Dialog } from './Dialog';
+import {
+  ALL_KINDS,
+  applyInterventionLevel,
+  delegatedDecisions,
+  INTERVENTION_LEVELS,
+  interventionLevel,
+  levelName,
+} from './intervention';
 import { play } from './motion';
+import { openHome } from './state';
 import s from './App.module.css';
 import p from './ProgressControls.module.css';
 
@@ -151,7 +153,8 @@ export function ProgressControls({
         {buttons}
       </section>
     );
-  const levelName = level >= 0 ? INTERVENTION_LEVELS[level].name : '사용자 지정';
+  // A stop or switch changed in its home leaves the mix of no level: 맞춤 (→WEB-45).
+  const name = levelName(level);
   const closeLevels = (focusTrigger: boolean) => {
     setLevelsOpen(false);
     if (focusTrigger) levelTrigger.current?.focus({ preventScroll: true });
@@ -184,7 +187,7 @@ export function ProgressControls({
         ref={levelTrigger}
         type="button"
         className={p.trigger}
-        aria-label={`개입 수준 · ${levelName}`}
+        aria-label={`개입 수준 · ${name}`}
         aria-haspopup="dialog"
         aria-expanded={levelsOpen}
         aria-controls={levelsOpen ? popoverId : undefined}
@@ -196,7 +199,7 @@ export function ProgressControls({
           <b>개입 {level >= 0 ? level + 1 : '·'}</b>
         </span>
         <span className={p.triggerName} aria-hidden="true">
-          {levelName}
+          {name}
         </span>
         <svg className={p.chevron} viewBox="0 0 24 24" aria-hidden="true">
           <path d="m6 9 6 6 6-6" />
@@ -206,6 +209,7 @@ export function ProgressControls({
         <InterventionPopover
           id={popoverId}
           anchor={levelTrigger}
+          w={w}
           level={level}
           acting={acting}
           onChoose={(index) => {
@@ -256,6 +260,7 @@ function LevelMeter({ level }: { level: number }) {
 function InterventionPopover({
   id,
   anchor,
+  w,
   level,
   acting,
   onChoose,
@@ -264,6 +269,7 @@ function InterventionPopover({
 }: {
   id: string;
   anchor: RefObject<HTMLButtonElement | null>;
+  w: World;
   level: number;
   acting: boolean;
   onChoose: (index: number) => void;
@@ -394,7 +400,8 @@ function InterventionPopover({
             </button>
           ))}
         </div>
-        {level < 0 && <p className={p.custom}>지금은 세부 설정으로 고른 사용자 지정 상태예요.</p>}
+        {level < 0 && <p className={p.custom}>{CUSTOM_NOTE}</p>}
+        <DelegatedDecisions w={w} onOpen={() => onClose(false)} />
         <button type="button" className={p.details} onClick={onDetails}>
           세부 설정…
         </button>
@@ -403,124 +410,39 @@ function InterventionPopover({
   );
 }
 
-const ALL_KINDS = Object.keys(STOP_LABELS) as InboxKind[];
-/** Every coaching department's switch at once (→STAFF-13). */
-const coaches = (on: boolean) =>
-  Object.fromEntries(COACH_KEYS.map((key) => [key, on])) as Record<CoachDelegationKey, boolean>;
-const stops = (on: InboxKind[]): StopOn =>
-  Object.fromEntries(ALL_KINDS.map((kind) => [kind, on.includes(kind)])) as StopOn;
-/** From watching every decision to leaving the whole club to the manager and staff. */
-export const INTERVENTION_LEVELS: {
-  name: string;
-  /** One line for the clock's quick picker. */
-  short: string;
-  summary: string;
-  stopOn: StopOn;
-  delegation: Record<DelegationKey, boolean>;
-}[] = [
-  {
-    name: '모든 결정 확인',
-    short: '모든 이벤트에서 멈추고 직접 결정해요',
-    summary:
-      '경기 전날, 이적시장, 협상, 영입 제안, 유소년, 컵 대진, 스태프 보고, 감독·코치 재계약, 자금 경고까지 모두 멈춰서 직접 결정해요.',
-    stopOn: stops(ALL_KINDS),
-    delegation: {
-      training: false,
-      academy: false,
-      transfers: false,
-      business: false,
-      ...coaches(false),
-      contracts: false,
-      manager: false,
-    },
-  },
-  {
-    name: '중요한 결정만',
-    short: '경기·이적·유소년·코치·자금에서 멈춰요',
-    summary:
-      '경기 전날과 이적 협상·제안, 유소년 입단, 감독·코치 재계약, 자금·후원 경고에서만 멈춰요. 훈련, 유소년 승격과 선수 재계약·계약 개선 협상은 스태프가 맡아요.',
-    stopOn: stops([
-      'match',
-      'window-open',
-      'bid-response',
-      'incoming-bid',
-      'youth-intake',
-      'staff-renewal',
-      'finance',
-      'sponsor-ending',
-    ]),
-    delegation: {
-      training: true,
-      academy: true,
-      transfers: false,
-      business: false,
-      ...coaches(false),
-      contracts: true,
-      manager: false,
-    },
-  },
-  {
-    name: '이적만 직접',
-    short: '이적·재계약·자금에서만 멈춰요',
-    summary:
-      '경기는 결과로 넘기고 이적시장 개장과 협상·제안, 감독·코치 재계약, 자금·후원 경고에서만 멈춰요. 훈련, 유소년과 선수 재계약·계약 개선 협상은 스태프가 맡아요.',
-    stopOn: stops([
-      'window-open',
-      'bid-response',
-      'incoming-bid',
-      'staff-renewal',
-      'finance',
-      'sponsor-ending',
-    ]),
-    delegation: {
-      training: true,
-      academy: true,
-      transfers: false,
-      business: false,
-      ...coaches(false),
-      contracts: true,
-      manager: false,
-    },
-  },
-  {
-    name: '운영진에 모두 맡기기',
-    short: '운영진이 처리하고 자금·후원 경고만 멈춰요',
-    summary:
-      '감독과 스태프가 경기·훈련·유소년·선수 재계약·계약 개선 협상·영입 제안·후원 계약·코치 고용·감독 선임까지 처리하고, 자금·후원 경고에서만 멈춰요. 결과는 소식함에 남아요.',
-    stopOn: stops(['finance', 'sponsor-ending']),
-    delegation: {
-      training: true,
-      academy: true,
-      transfers: true,
-      business: true,
-      ...coaches(true),
-      contracts: true,
-      manager: true,
-    },
-  },
-];
-/** The level matching the current stops and delegation, or -1 for a custom mix. */
-export function interventionLevel(stopOn: StopOn, w: World) {
-  return INTERVENTION_LEVELS.findIndex(
-    (level) =>
-      ALL_KINDS.every((kind) => level.stopOn[kind] === stopOn[kind]) &&
-      (Object.keys(level.delegation) as DelegationKey[]).every(
-        (key) => level.delegation[key] === !!w.delegation?.[key],
-      ),
+/** Why no level is checked: a stop or switch was changed where it lives (→WEB-45). */
+const CUSTOM_NOTE = '지금은 맞춤이에요. 멈춤이나 자동 결정을 따로 바꿔 어느 단계와도 같지 않아요.';
+
+/**
+ * The decisions the staff take now (→WEB-45), each opening its home (→WEB-71); the popover or
+ * dialog closes first.
+ */
+function DelegatedDecisions({ w, onOpen }: { w: World; onOpen: () => void }) {
+  const decisions = delegatedDecisions(w);
+  return (
+    <section className={s.delegatedDecisions} aria-label="스태프가 맡는 결정">
+      <b>스태프가 맡는 결정</b>
+      {decisions.length ? (
+        <ul>
+          {decisions.map((decision) => (
+            <li key={decision.key}>
+              <button
+                type="button"
+                onClick={() => {
+                  onOpen();
+                  openHome(decision.home);
+                }}
+              >
+                {decision.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <small>지금은 모든 결정을 직접 해요.</small>
+      )}
+    </section>
   );
-}
-/** Applies a level: its clock stops at once, then every staff delegation that differs. */
-export function applyInterventionLevel(
-  client: GameClient,
-  controller: ProgressionController,
-  w: World,
-  index: number,
-) {
-  const level = INTERVENTION_LEVELS[index];
-  controller.setStopOnAll(level.stopOn);
-  for (const key of Object.keys(level.delegation) as DelegationKey[])
-    if (!!w.delegation?.[key] !== level.delegation[key])
-      void client.command({ type: 'delegate', key, value: level.delegation[key] });
 }
 
 /** How much the owner steps in: one choice sets stops and staff delegation together. */
@@ -570,7 +492,8 @@ export function InterventionSettings({
           </button>
         ))}
       </div>
-      {current < 0 && <p className={s.muted}>지금은 세부 설정으로 고른 사용자 지정 상태예요.</p>}
+      {current < 0 && <p className={s.muted}>{CUSTOM_NOTE}</p>}
+      <DelegatedDecisions w={w} onOpen={onClose} />
       <details className={s.detailStops}>
         <summary>이벤트별 세부 설정</summary>
         <div className={s.toggles}>

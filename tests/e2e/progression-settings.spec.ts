@@ -159,22 +159,43 @@ test('mobile intervention levels set clock stops and staff delegation, and persi
   for (const [label, on] of expected)
     if (on) await expect(stop(label)).toBeChecked();
     else await expect(stop(label)).not.toBeChecked();
+  // The dialog lists what the staff decide: at level 2 the training focus (훈련's own switch,
+  // never set by a level), the academy and contract talks.
+  const decisions = dialog.getByRole('region', { name: '스태프가 맡는 결정' }).getByRole('button');
+  await expect(decisions).toHaveText(['훈련 방향', '유소년 승격·방출', '선수 계약 협상']);
   // Level 4 hands everything to the staff, including offers and sponsors; only cash warnings stop.
   await level(4).click();
   await expect(level(4)).toHaveAttribute('aria-checked', 'true');
   for (const [label] of expected)
     if (label === '자금·후원 경고') await expect(stop(label)).toBeChecked();
     else await expect(stop(label)).not.toBeChecked();
-  await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await expect(decisions).toHaveText([
+    '훈련 방향',
+    '유소년 승격·방출',
+    '선수 계약 협상',
+    '이적 제안 응답',
+    '스폰서 계약',
+    '수석코치 선임·재계약',
+    '공격 코치 선임·재계약',
+    '수비 코치 선임·재계약',
+    '골키퍼 코치 선임·재계약',
+    '피지컬 코치 선임·재계약',
+    '유스 디렉터 선임·재계약',
+    '수석 스카우트 선임·재계약',
+    '감독 선임',
+  ]);
+  // Each decision opens its home, closing the dialog.
+  await decisions.filter({ hasText: '스폰서 계약' }).click();
   await expect(dialog).toHaveCount(0);
+  await expect(page).toHaveURL(/\/business\?view=sponsor$/);
+  await expect(page.getByRole('tab', { name: '후원', exact: true })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
+  await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await expect(trigger).toHaveAccessibleName('개입 수준 · 운영진에 모두 맡기기');
   await expect(trigger).toContainText('개입 4');
-  const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
-  await nav.getByRole('button', { name: '스태프', exact: true }).click();
-  await page.getByRole('tab', { name: '위임', exact: true }).click();
-  const delegation = page.getByRole('region', { name: '스태프 위임' });
-  for (const label of ['훈련 방향', '유소년 승격·방출', '영입 제안 응대', '후원 계약'])
-    await expect(delegation.getByRole('checkbox', { name: new RegExp(`^${label}`) })).toBeChecked();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   // The level survives a reload.
@@ -206,7 +227,7 @@ test('the phone clock picks the intervention level from a popover without stoppi
   const clock = page.getByRole('region', { name: '시즌 진행', exact: true });
   const trigger = clock.getByRole('button', { name: /^개입 수준/ });
   await expect(trigger).toBeVisible();
-  await expect(trigger).toHaveAccessibleName('개입 수준 · 사용자 지정');
+  await expect(trigger).toHaveAccessibleName('개입 수준 · 맞춤');
   await expect(trigger).toHaveAttribute('aria-expanded', 'false');
   await settle(page);
   // "▶ · 1 3 5 · 개입" stays one row: nothing spills out of it and the date is not cut.
@@ -257,7 +278,7 @@ test('the phone clock picks the intervention level from a popover without stoppi
   const level = (n: number) => levels.getByRole('radio', { name: new RegExp(`^${n}\\. `) });
   await expect(levels.getByRole('radio')).toHaveCount(4);
   await expect(levels.getByRole('radio', { checked: true })).toHaveCount(0);
-  await expect(popover).toContainText('사용자 지정 상태');
+  await expect(popover).toContainText('지금은 맞춤이에요');
   // Focus starts on the first level and the arrow keys move between levels.
   await expect(level(1)).toBeFocused();
   await page.keyboard.press('ArrowDown');

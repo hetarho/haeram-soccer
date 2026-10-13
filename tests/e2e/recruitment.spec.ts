@@ -37,17 +37,18 @@ async function foundMarket(
   await openMarket(page);
 }
 
-/** The market is the squad page's third segment. */
+/** The market is 사람's second tab. */
+const marketTab = (page: Page) =>
+  page
+    .getByRole('tablist', { name: '선수·스태프 보기' })
+    .getByRole('tab', { name: '이적시장', exact: true });
 async function openMarket(page: Page) {
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '선수단', exact: true })
+    .getByRole('button', { name: '선수·스태프', exact: true })
     .click();
-  await page
-    .getByRole('group', { name: '선수단 메뉴' })
-    .getByRole('button', { name: '이적 시장', exact: true })
-    .click();
-  await expect(page.getByRole('heading', { name: '이적 시장', level: 2 })).toBeVisible();
+  await marketTab(page).click();
+  await expect(marketTab(page)).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
 }
 
@@ -169,7 +170,7 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   );
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
-  await expect(page.getByRole('heading', { name: '이적 시장', level: 2 })).toBeVisible();
+  await expect(marketTab(page)).toHaveAttribute('aria-selected', 'true');
   await expect(freeCard.getByRole('button', { name: '계약 완료', exact: true })).toBeDisabled();
   await expect(loanCard.getByRole('button', { name: '1시즌 임대', exact: true })).toBeDisabled();
   const restored = await exportWorld(page);
