@@ -9,8 +9,12 @@ import {
   advanceRound,
   createWorld,
   developAnnually,
+  developmentOutlook,
   marketWage,
   operate,
+  overall,
+  policyOf,
+  roleSkills,
   settleTraining,
   trainingFocusInfo,
   trainingSummary,
@@ -236,6 +240,98 @@ describe('earned player growth and training choices', () => {
     expect(
       w.events.filter((event) => event.kind !== 'founding' && event.kind !== 'training-focus'),
     ).toEqual([]);
+  });
+
+  it('developmentOutlook multiplies the same terms a settled round uses', () => {
+    for (const style of ['developer', 'firefighter'] as const) {
+      const w = world('youth');
+      w.policy = { ...policyOf(w), support: 4 };
+      w.facilities = 6;
+      w.manager.youth = 70;
+      w.manager.style = style;
+      w.build = { youth: 'pathway' };
+      w.staff = w.staff!.map((member) =>
+        member.role === 'assistant'
+          ? { ...member, ability: 80, trait: 'developer' as const }
+          : member.role === 'defense'
+            ? { ...member, ability: 20 }
+            : member,
+      );
+      w.players.forEach((player, index) => {
+        player.born = w.year - (17 + (index % 10));
+        player.potential = 44 + (index % 7) * 3;
+      });
+      const read = canonical(w),
+        outlook = developmentOutlook(w);
+      expect(canonical(w)).toBe(read);
+      const value = (key: string) => outlook.factors.find((factor) => factor.key === key)!.value;
+      expect(value('focus')).toBe(trainingFocusInfo.youth.developmentMultiplier);
+      expect(value('investment')).toBe(1.12);
+      expect(value('build-youth')).toBe(1.2);
+      expect(value('coaches-youth')).toBe(1.3);
+      expect(value(style === 'developer' ? 'style-youth' : 'style')).toBe(
+        style === 'developer' ? 1.3 : 0.85,
+      );
+      expect(outlook.skills.defense).toBeLessThan(1);
+      const before = structuredClone(w.players);
+      w.round = 1;
+      settleTraining(w);
+      let checked = 0,
+        young = 0;
+      for (const was of before) {
+        const age = w.year - was.born,
+          gap = Math.max(0, was.potential - overall(was)),
+          ageWeight = age < 21 ? 1 : age < 24 ? 0.85 : 0.65;
+        // Above the base cap the round grows by the cap instead (→CLUB-12).
+        if (age >= 27 || (gap / 400) * value('base') * ageWeight >= 0.12) continue;
+        const product = outlook.factors
+          .filter((factor) => factor.applies === 'all' || age <= 21)
+          .reduce((all, factor) => all * factor.value, 1);
+        const gain = Math.round((gap / 400) * ageWeight * product * 100) / 100,
+          now = w.players.find((player) => player.id === was.id)!;
+        for (const skill of roleSkills[was.role]) {
+          const multiplier = outlook.skills[skill],
+            expected = multiplier === 1 ? gain : Math.round(gain * multiplier * 100) / 100;
+          expect(Math.abs(now[skill] - was[skill] - expected)).toBeLessThanOrEqual(0.0100001);
+        }
+        checked++;
+        if (age <= 21) young++;
+      }
+      expect(checked).toBeGreaterThan(15);
+      expect(young).toBeGreaterThan(5);
+      expect(checked - young).toBeGreaterThan(5);
+    }
+  });
+
+  it('lists players aged 23 or under who can still grow, largest gap first', () => {
+    const w = world();
+    w.players.forEach((player, index) => {
+      player.born = w.year - (18 + (index % 8));
+      player.potential = 40 + ((index * 7) % 13);
+      player.developed = index / 4;
+    });
+    const growing = developmentOutlook(w).growing;
+    const expected = w.players.filter(
+      (player) =>
+        player.status === 'active' &&
+        w.year - player.born <= 23 &&
+        Math.round(player.potential) > overall(player),
+    );
+    expect(expected.length).toBeGreaterThan(5);
+    expect(growing.map((entry) => entry.player.id).sort()).toEqual(
+      expected.map((player) => player.id).sort(),
+    );
+    for (const [index, entry] of growing.entries()) {
+      expect(entry.age).toBe(w.year - entry.player.born);
+      expect(entry.age).toBeLessThanOrEqual(23);
+      expect(entry.ability).toBe(overall(entry.player));
+      expect(entry.potential).toBe(Math.round(entry.player.potential));
+      expect(entry.gap).toBe(entry.potential - entry.ability);
+      expect(entry.gap).toBeGreaterThan(0);
+      expect(entry.developed).toBe(entry.player.developed);
+      if (index) expect(growing[index - 1].gap).toBeGreaterThanOrEqual(entry.gap);
+    }
+    expect(new Set(growing.map((entry) => entry.gap)).size).toBeGreaterThan(2);
   });
 
   it('validates the saved training command at the worker boundary and rejects invalid plans', () => {

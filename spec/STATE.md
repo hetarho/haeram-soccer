@@ -33,7 +33,7 @@
 |---|---|---|---|---|
 | T072 | Staff hire and renew by the owner's criteria | STAFF SAVE | T070 | todo |
 | T073 | 사람 tab: each decision's staff switch and criteria where it lives | WEB STAFF CLUB | T072 T071 | todo |
-| T074 | 훈련 tab: focus, the coach's rule, what drives development, the academy | WEB CLUB STAFF | T071 | todo |
+| T074 | 훈련 tab: focus, the coach's rule, what drives development, the academy | WEB CLUB STAFF | T071 | doing@261013.trn |
 | T075 | Squad investment pays through operating expenses | ECON | T070 | todo |
 | T076 | One operating board applied at once | WEB ECON CLUB | T075 T071 | todo |
 | T077 | Event cards and remedies open each setting's home | WEB | T073 T074 T076 | todo |
@@ -52,6 +52,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 T074 doing standalone on ia-training (e142f23)
 - 261013 T071 done: 사람/훈련 tabs with PageTabs and ?view=, older addresses landing on 사람's tabs, intervention levels as a preset without training, 스태프가 맡는 결정 opening each home
 - 261013 T071 doing standalone on ia-plan (5751099)
 - 261013 T070 done: per-department coach switches, hiring criteria and talk rule as data, talks by the talk rule, strategy applied at once with 90-day slot locks, load and activation mapping; goldens unchanged
