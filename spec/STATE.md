@@ -39,7 +39,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- owner's requests 261013 are done on work/intervention: T080 level only, T081 no strategy locks, T082/T083 coaches set training with suggestions and orders and the academy by U-17/U-19/U-21, T084/T085 facilities as stadium steps, training ground and academy facilities.
+- owner's requests 261013 are on main (caa5e83, CI 38448231873 green in every browser): T080 level only, T081 no strategy locks, T082/T083 coaches set training with suggestions and orders and the academy by U-17/U-19/U-21, T084/T085 facilities as stadium steps, training ground and academy facilities.
 - wage bill / revenue sits at 44.3% on the facility parts (ECON-29 band 45–70%, 45.3% before them): base wage 925 and a 25% youth promise did not move it; try the contract-talk floor next (agent premium per level, as T079 did: 0% gave 47.7%, 1% 46.1%) and re-measure 40 careers.
 - three levers and the economy port are on main (fast-forward to 2de95c6, 261013): T070–T079 done — T077 d303c5e, T078 fe7b209/8c52745, T079 merged from work/econ-port at 11c9c5c/66ce736 (unit 658, contract 11, build pass; goldens equal work/econ-port's). CI run 38382526028 on 2de95c6 passed every job (checks, the benchmark, e2e in Chromium, Firefox and both WebKit shards); the run before it on 66ce736 failed only Firefox e2e, which passed in full locally (102 passed, 2 skipped) and on the rerun — a flake. work/levers and work/econ-port are merged and can be deleted. Next: pick from the follow-ups below.
 - benchmark (ARCH-28 p95 < 100 ms, entry ≤ 250 KiB) is flaky on CI since the three levers: run 38386097171 on main a25a5ec (a docs-only commit) failed "Verify browser performance against the production build", while the same code passed on 2de95c6 in runs 38382526028 and 38386061266. scripts/first-play.mjs clicks the new navigation (선수·스태프, 훈련·육성, 구단 운영, 리그, 컵 대회, 클럽 기록실 in 게임 메뉴); locally (host load 11–22) the entry was 239,264 B gzip, mobile p95 39–69 ms and desktop p95 118–149 ms, so the desktop gate has no headroom. Next (first): profile the desktop clicks' first render of 사람 and 훈련 (lazy management chunk) and the records room, cut the slow frame below 100 ms with margin, then let CI pass twice in a row. Rerunning the job is the stopgap.
@@ -50,6 +50,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 work/intervention (T080–T085) merged with main's start-screen fix and pushed to main at caa5e83 after CI passed every job
 - 261014 T084 T085 done (e5d8276): facility parts; 40-career calibration — none bankrupt, every band but the wage bill (44.3%); ECON r23
 - 261014 T084/T085 code on work/intervention (e5d8276, CI green in every browser); recalibrated: 0 of 24 bankrupt, every band but the wage bill (44.3% vs 45–70%); measuring the pre-facility commit to find the cause
 - 261013 update-ssot ECON r22 CLUB r26 HIST r8 WEB r58 SAVE r28: facilities as three parts (stadium 8 expansion/rebuild steps to 90,000, training ground and academy 1–5) → T084 (doing), T085
@@ -69,4 +70,3 @@
 - 261013 T078 done: 1.15 level-2 upgrade journey, benchmark on the new navigation, goldens unchanged, ENG/GER calibration without bankruptcy, FINANCES.md; CI 38378931078 green on fe7b209
 - 261013 T079 done: calibration ported and retuned (agent premium 3%→1%), every ECON-29 band on 24 careers, checks pass (unit 657, contract 11 with goldens, build, Chromium e2e 101); ECON r20 CLUB r23
 - 261013 T078 doing standalone on levers (ea4d413)
-- 261013 T079 doing standalone on econ-port (00a483d), branch work/econ-port
