@@ -16,7 +16,14 @@ import { lineupSummary } from '../../../../packages/engine/src/strategy';
 import type { GameClient } from '../runtime/client';
 import { gameStore, useGameState } from '../runtime/store';
 import { useProgression, type ProgressionController } from '../runtime/progression';
-import { PAST_TABS, useMatchView, useNavigation, type Page, type PastTab } from './state';
+import {
+  PAST_TABS,
+  useLeagueSeason,
+  useMatchView,
+  useNavigation,
+  type Page,
+  type PastTab,
+} from './state';
 import { Pitch, type PitchControls } from './Pitch';
 import { ProgressControls } from './ProgressControls';
 import { watchNextMatch } from './watch';
@@ -442,6 +449,19 @@ export function LiveSeason({
     return PAST_TABS.find(([id]) => id === saved)?.[0] || 'review';
   });
   const tab: Tab = page === 'match' ? 'match' : leagueTab;
+  // A season asked for from elsewhere (a records-room season row) opens in our league that season.
+  const requestedSeason = useLeagueSeason((state) => state.request);
+  const currentYear = useGameState((state) => state.view?.world.year);
+  useEffect(() => {
+    if (requestedSeason === undefined || currentYear === undefined) return;
+    useLeagueSeason.getState().take();
+    setLeague(undefined);
+    if (requestedSeason === currentYear) setReviewYear(undefined);
+    else {
+      setReviewYear(requestedSeason);
+      setPastTab('table');
+    }
+  }, [requestedSeason, currentYear]);
   useEffect(() => {
     if (page !== 'league') return;
     const url = new URL(location.href);

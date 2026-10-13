@@ -1,4 +1,4 @@
-import { memo, useState, type KeyboardEvent } from 'react';
+import { memo, useMemo, useState, type KeyboardEvent } from 'react';
 import type { MatchRecord, SeasonArchive, World } from '../../../../packages/contracts/src/types';
 import { clubOf } from '../../../../packages/engine/src/world';
 import { country } from '../../../../packages/catalogs/src/index';
@@ -425,12 +425,11 @@ export const ClosedSeason = memo(function ClosedSeason({
   const read = useSeasonFiles(client, season);
   const rows = season && finalRows(w, season, read?.files?.season?.standings);
   // Another league's table that season; our own that season keeps its round snapshots.
-  const other =
-    season &&
-    league &&
-    !sameLeague(league, { code: clubOf(w).country, tier: season.tier, group: season.group })
-      ? league
-      : undefined;
+  const ownThen = useMemo(
+    () => season && { code: clubOf(w).country, tier: season.tier, group: season.group },
+    [w, season],
+  );
+  const other = ownThen && league && !sameLeague(league, ownThen) ? league : undefined;
   const tableRows = other ? leagueRows(w, read?.files?.season?.standings, other) : rows;
   if (!season)
     return (
@@ -488,7 +487,7 @@ export const ClosedSeason = memo(function ClosedSeason({
           />
         ) : tab === 'table' ? (
           <>
-            <LeaguePicker league={league} onLeague={onLeague} />
+            <LeaguePicker league={league} onLeague={onLeague} own={ownThen} />
             <FinalTable w={w} season={season} rows={tableRows} read={read} league={other} />
           </>
         ) : tab === 'matches' ? (

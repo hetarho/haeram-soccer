@@ -77,6 +77,10 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
   await page.getByRole('tab', { name: '시즌 기록', exact: true }).click();
   await chooseOption(page.getByRole('combobox', { name: '기록 시즌', exact: true }), '1950');
+  await page
+    .getByRole('group', { name: '시즌 기록 보기' })
+    .getByRole('button', { name: '경기', exact: true })
+    .click();
   await page.getByRole('button', { name: '경기 기록 보기', exact: true }).first().click();
   await expect(page.getByRole('dialog', { name: '지난 경기 상세' })).toBeVisible();
   await page.getByRole('button', { name: '결과 보기' }).click();
@@ -123,14 +127,17 @@ test('browses every historical regional group and resets filters on country chan
   await page.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
   await page.keyboard.press('Escape');
-  await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.getByRole('tab', { name: '시즌 기록', exact: true }).click();
-  await chooseOption(page.getByRole('combobox', { name: '기록 시즌', exact: true }), '1950');
-  await chooseOption(page.getByRole('combobox', { name: '과거 디비전', exact: true }), '2');
-  const standings = page
-    .locator('section')
-    .filter({ has: page.getByRole('heading', { name: '그해의 각국 리그' }) });
+  // Other leagues' past tables live on the league page, never in the records room (→WEB-54).
+  await page.getByRole('button', { name: '리그', exact: true }).first().click();
+  await chooseOption(page.getByRole('combobox', { name: '리그 시즌', exact: true }), '1950');
+  await page
+    .getByRole('tablist', { name: '지난 시즌 보기' })
+    .getByRole('tab', { name: '순위표', exact: true })
+    .click();
+  const picker = page.getByRole('group', { name: '리그 선택' });
+  await chooseOption(picker.getByRole('combobox', { name: '디비전', exact: true }), '2');
+  const standings = page.getByRole('region', { name: '최종 순위표' });
   const rows = standings.locator('tbody tr');
   const firstClubs: string[] = [];
   for (const [value, group] of [
@@ -138,15 +145,15 @@ test('browses every historical regional group and resets filters on country chan
     ['1', 'B'],
     ['2', 'C'],
   ]) {
-    await chooseOption(page.getByRole('combobox', { name: '과거 지역 그룹', exact: true }), value);
+    await chooseOption(picker.getByRole('combobox', { name: '지역 그룹', exact: true }), value);
+    await expect(standings).toContainText(`1950/51 · 이탈리아 3부 ${group}조 · 20팀`);
     await expect(rows).toHaveCount(20);
-    await expect(rows.locator('td:nth-child(3)')).toHaveText(Array(20).fill(group));
     firstClubs.push(await rows.first().locator('td:nth-child(2)').innerText());
   }
   expect(new Set(firstClubs).size).toBe(3);
-  await chooseOption(page.getByRole('combobox', { name: '과거 국가', exact: true }), 'ENG');
-  await expect(page.getByRole('combobox', { name: '과거 지역 그룹', exact: true })).toHaveCount(0);
+  await chooseOption(picker.getByRole('combobox', { name: '국가', exact: true }), 'ENG');
+  await expect(picker.getByRole('combobox', { name: '지역 그룹', exact: true })).toHaveCount(0);
+  await expect(standings).toContainText('1950/51 · 잉글랜드 1부 · 20팀');
   await expect(rows).toHaveCount(20);
-  await expect(rows.locator('td:nth-child(3)')).toHaveText(Array(20).fill('A'));
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });

@@ -118,8 +118,12 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   await expect(pastTab('득점 순위')).toHaveAttribute('aria-selected', 'true');
   await expect(scorers).toBeVisible();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
-  // The record book is on the records room's first tab, open rather than folded away.
+  // The record book is on the records room's first tab, under 기타 기록.
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
+  await page
+    .getByRole('group', { name: '요약 보기' })
+    .getByRole('button', { name: '기타 기록', exact: true })
+    .click();
   const book = page.getByRole('region', { name: '우리 클럽 기록집', exact: true });
   await expect(book).toContainText('완료한 1개 시즌');
   await expect(book).toContainText('최고 승점 페이스');
@@ -133,6 +137,10 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   const fresh = await context.newPage();
   await fresh.goto('/history');
   await expect(fresh.getByTestId('save-status')).toContainText('저장 완료');
+  await fresh
+    .getByRole('group', { name: '요약 보기' })
+    .getByRole('button', { name: '기타 기록', exact: true })
+    .click();
   await expect(fresh.getByRole('region', { name: '우리 클럽 기록집', exact: true })).toHaveText(
     facts,
     { useInnerText: true },
@@ -150,15 +158,15 @@ test('uses matching archive samples for season splits and competition filters', 
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
   await page.getByRole('tab', { name: '시즌 기록', exact: true }).click();
-  const toggle = page.getByText('시즌 분석 · 홈과 원정', { exact: true });
-  await toggle.click();
+  // The analysis is open from the start, so a competition filter shows at once.
   const analysis = page.getByRole('region', { name: '선택 시즌 분석', exact: true });
-  await expect(analysis.getByRole('article', { name: '전체 성적' })).toContainText('전체 · 1경기');
+  const overall = analysis.getByRole('row', { name: /^전체/ });
+  await expect(overall.getByRole('cell').first()).toHaveText('1');
   await chooseOption(page.getByRole('combobox', { name: '기록 대회 범위', exact: true }), 'europe');
   await expect(analysis).toContainText('클럽대항전');
-  await expect(analysis.getByRole('article', { name: '전체 성적' })).toContainText('전체 · 0경기');
+  await expect(overall.getByRole('cell').first()).toHaveText('0');
   await chooseOption(page.getByRole('combobox', { name: '기록 대회 범위', exact: true }), 'all');
-  await expect(analysis.getByRole('img', { name: /경기 득실차/ })).toBeVisible();
+  await expect(analysis.getByRole('img', { name: /누적 득실차/ })).toBeVisible();
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 

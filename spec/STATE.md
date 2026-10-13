@@ -17,7 +17,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 51 | 51 | - | 0 |
+| WEB | 52 | 52 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
 | CLUB | 17 | 17 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
@@ -55,6 +55,9 @@
 - Player match ratings (평점) lead Korean headlines, but WEB-22/25 rule out synthetic ratings; decide whether a transparent rating belongs in the game. Research levers not yet modelled: set-piece coaching, ticket-price fan mood, fixture-gap rule for training camps; tackles in a far-off flank still look like heavy touches (match.ts picks markers by zone, not flank). Local macOS WebKit fails styled-select's Tab-to-button check (also at f6aeb02, before WEB r32); confirm on Linux CI.
 
 ## log
+- 261013 WEB r52 implemented directly on branch records-room-ux: records room tabs pinned; 요약 segments 트로피 (SVG trophies) / Elo / 시즌별 기록 (rows open the league page's closed season at 순위표) / 기타 기록 (match records read from the worker: biggest win/defeat, most goals, win/unbeaten/clean-sheet/losing/winless runs, then the record book); 추이 one chart per metric segment; 선수 one board per segment; 시즌 기록 season arrows + filter + 개요/경기/결정, 개요 a W-D-L and goals table per venue and season-long points and goal-difference charts, no league/continental tables; closed-season archives no longer re-read on every tick; the closed-season league picker takes that season's league as ours; page tab bars (league, closed season, cups, records, staff, operations) as underlined text
+- 261013 update-ssot WEB r52: records room holds only our club's records, one view at a time (요약 트로피/Elo/시즌별 기록/기타 기록, 추이 chart per metric, 선수 board per segment, 시즌 기록 season arrows + 개요/경기/결정 with season-long charts, no league or continental tables); season rows open the league page at 순위표; WEB-65 a closed season's picker takes our league that season as ours; WEB-69 page tab bars as underlined text, segments inside a tab
+- 261013 update-ssot WEB start
 - 261012 T047 done: CI on main at 6cdc86b passed checks and test:e2e in every browser; its benchmark job fails desktop input p95 115 ms > 100 ms (left until club-realism is done, owner's order); one-result's runtime lives on the server that ran it, so this clone has no attempt to release
 - 261012 merged work group one-result, T047 (e2e unverified) and plan/club-realism (ECON r14 CLUB r17 STAFF r12 WEB r51 SAVE r21, T050–T062) into main; ARCH-13's change renumbered r8→r9 after main's ARCH-23 r8
 - 261012 pushed work/one-result, plan/club-realism and task/one-result/T047-fb57cca7 to origin before the main merge; next lists how to finish one-result
@@ -72,6 +75,3 @@
 - 261012 update-ssot SAVE WEB ARCH start: background autosave, clock not waiting for saves
 - 261012 WEB r49 implemented directly: records room season rows open that season in 시즌 기록; league picker (국가·디비전·지역 그룹, 우리 리그로, ?league=) on 개요, 순위표, 라운드 결과 and a closed season's 순위표, other leagues' fixtures read from the worker on demand (league-fixtures read) and closed seasons' tables from archived standings; closed seasons load lazily, entry 249,558 of 256,000 bytes (WEB-5✎ from r48 stays pending)
 - 261012 create-task ARCH LEAGUE WEB ECON CLUB SAVE: T042 draws named by what they settle, lane day-order T043 one day order → T044 amateur exchange, T045 market identity with bids keeping their offer (after T042), T046 currency conversion and ledger lines, T047 rules 1.15.0 with goldens (integration); work group one-result, workers 3, reviewers 1
-- 261012 update-ssot SAVE r19: rules 1.14.0→1.15.0, outgoing bids may carry `offer`, older pending bids answered as before
-- 261012 create-task ARCH LEAGUE WEB ECON CLUB start (work group one-result)
-- 261012 update-ssot ARCH r7 LEAGUE r5 WEB r48 ECON r13 CLUB r16: every progression mode lives through the same days in one order (ties on their day, a match day's club business after its matches) and no draw is keyed by a count of commands; the amateur level swaps places with the last professional division by the amateur table, never an extra place; a currency change converts every live amount, coaches and free agents included; the ledger names owner requests and win bonuses; market lists and IDs per settings, a bid keeping its player and terms

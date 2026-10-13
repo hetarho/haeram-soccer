@@ -25,6 +25,7 @@ import { decode, encode } from '../adapters/persistence';
 import { clubMilestones } from '../../../../packages/engine/src/goals';
 import { financialBreakdown } from '../../../../packages/engine/src/finance';
 import { requestSchema, type CodecJob, type Request, type Reply, type View } from './protocol';
+import { clubRecords } from './clubRecords';
 import { headToHead } from './headToHead';
 const failure = (input: unknown, request: Request | undefined, error: unknown) => ({
   requestId: request?.requestId ?? ((input as { requestId?: string })?.requestId || 'invalid'),
@@ -45,7 +46,7 @@ export class Host {
     // A read is answered at once, between a command's simulation steps: queued behind a long
     // command, its watchdog would run out while only the command reports progress.
     const type = (input as { body?: { type?: unknown } } | null)?.body?.type;
-    if (type === 'head-to-head' || type === 'league-fixtures')
+    if (type === 'head-to-head' || type === 'league-fixtures' || type === 'club-records')
       return Promise.resolve(this.read(input));
     const task = this.queue.then(() => this.execute(input));
     this.queue = task.then(
@@ -144,6 +145,12 @@ export class Host {
           ),
         };
       }
+      if (body.type === 'club-records')
+        return {
+          requestId: request.requestId,
+          ok: true,
+          clubRecords: clubRecords(w.ownMatches, w.playerClub),
+        };
       if (body.type !== 'head-to-head') throw new Error('읽기 요청이 아닙니다.');
       if (body.club === w.playerClub || !w.clubs.some((club) => club.id === body.club))
         throw new Error('맞대결 상대를 찾을 수 없습니다.');

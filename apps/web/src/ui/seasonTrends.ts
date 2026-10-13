@@ -47,11 +47,23 @@ export function matchSplit(
     shot: observedRate(onTarget, shots),
   };
 }
-export function recentGoalDifferences(records: MatchRecord[], club: string) {
+/**
+ * The season match by match in playing order (→WEB-54): league points and the goal difference as
+ * they built up. Points count only league matches (the amateur league included); the goal
+ * difference counts every match given.
+ */
+export function seasonProgress(records: MatchRecord[], club: string) {
+  let points = 0,
+    difference = 0;
   return records
     .filter((m) => resultFor(m, club))
     .slice()
     .sort((a, b) => a.year - b.year || fixtureDay(a) - fixtureDay(b) || a.id.localeCompare(b.id))
-    .slice(-10)
-    .map((m) => ({ record: m, difference: resultFor(m, club)!.own - resultFor(m, club)!.other }));
+    .map((record) => {
+      const result = resultFor(record, club)!,
+        league = record.kind === 'league' || record.kind === 'lower';
+      if (league) points += result.own > result.other ? 3 : result.own === result.other ? 1 : 0;
+      difference += result.own - result.other;
+      return { record, result, league, points, difference };
+    });
 }
