@@ -13,6 +13,7 @@ import type {
 import {
   activePlayers,
   activeTrainingFocus,
+  COACH_KEYS,
   advanceRound,
   aimedSynergy,
   delegatedManagerPick,
@@ -114,6 +115,9 @@ const settled = (w: World) => {
   settleTraining(w);
   return w;
 };
+
+/** Every coaching department's switch (→STAFF-13). */
+const allCoaches = (on: boolean) => Object.fromEntries(COACH_KEYS.map((key) => [key, on]));
 
 describe('coaching staff', () => {
   it('founds the club with seven unpaid ability-50 volunteers that change nothing', () => {
@@ -502,12 +506,12 @@ describe('coaching investment per department', () => {
 
   it('lets delegated staff fill a volunteer post at once while the owner hires himself', () => {
     const manual = world('department-manual');
-    manual.delegation = { ...manual.delegation, staff: false };
+    manual.delegation = { ...manual.delegation, ...allCoaches(false) };
     operate(manual, { type: 'coaching', role: 'attack', level: 3 });
     expect(manual.staff!.find((m) => m.role === 'attack')!.wage).toBe('0');
 
     const w = world('department-auto');
-    w.delegation = { ...w.delegation, staff: true };
+    w.delegation = { ...w.delegation, ...allCoaches(true) };
     const best = staffCandidates(w, 'attack').find((c) => c.id.endsWith(':2'))!;
     const cash = BigInt(w.cash);
     operate(w, { type: 'coaching', role: 'attack', level: 3 });
@@ -524,7 +528,7 @@ describe('coaching investment per department', () => {
 
   it('hires each department to its own level at the season boundary', () => {
     const w = world('department-season');
-    w.delegation = { ...w.delegation, staff: true };
+    w.delegation = { ...w.delegation, ...allCoaches(true) };
     w.coaching = { assistant: 3, scout: 1 };
     // The founding volunteers' one-year terms end at the next boundary.
     w.year += 1;
@@ -747,7 +751,7 @@ describe('contract terms (STAFF-11, STAFF-14)', () => {
 
   it('lets delegated staff sign and renew coaches for two seasons', () => {
     const w = world('delegated-terms');
-    w.delegation = { ...w.delegation, staff: true };
+    w.delegation = { ...w.delegation, ...allCoaches(true) };
     operate(w, { type: 'coaching', role: 'attack', level: 3 });
     const hired = coachOf(w, 'attack');
     expect(hired.until).toBe(w.year + 2);

@@ -58,6 +58,8 @@ const titles: Record<Command['type'], string> = {
   care: '구단주 요청을 전했어요',
   build: '운영 전략을 정했어요',
   'manager-rule': '감독 선임 기준을 바꿨어요',
+  hiring: '스태프 선임 기준을 바꿨어요',
+  'talk-rule': '계약 협상 기준을 바꿨어요',
   'contract-offer': '선수에게 계약을 제시했어요',
   'contract-decline': '선수의 계약 요구를 거절했어요',
   'sign-sponsor': '후원 계약을 맺었어요',
@@ -69,7 +71,7 @@ const notes: Partial<Record<Command['type'], string>> = {
   facility: '관중 수용과 선수 성장이 좋아지고, 연간 유지비가 늘어요.',
   ticket: '다음 홈 경기 관중과 입장 수입부터 반영돼요.',
   policy: '다음 라운드 정산부터 비용과 효과가 반영돼요.',
-  build: '운영 전략은 시즌마다 한 번만 바꿀 수 있어요.',
+  build: '바로 적용했어요. 바꾼 부문은 90일 동안 다시 바꿀 수 없어요.',
   'transfer-stance': '제안은 이적시장이 열려 있을 때 들어오고, 수락해야 이적이 성사돼요.',
   coaching:
     '개입 4에서는 스태프가 이 수준으로 공석·무급 자리를 바로 채우고, 계약이 끝나면 재계약하거나 교체해요.',
@@ -234,18 +236,8 @@ export function describeOutcome(
       : before.tactic === after.tactic
         ? '적용 전술은 그대로예요. 감독의 답변을 확인하세요.'
         : '다음 경기부터 새 전술을 씁니다.';
-  // A reservation changes nothing today; it waits for the season start (→ECON-22).
-  const reserved = command.type === 'build' && command.next;
-  if (reserved)
-    note = after.buildNext
-      ? '다음 시즌이 시작되면 이 전략이 그 시즌의 변경으로 적용돼요.'
-      : '예약을 취소했어요. 지금 전략이 다음 시즌에도 이어져요.';
   return {
-    title: reserved
-      ? after.buildNext
-        ? '다음 시즌 운영 전략을 예약했어요'
-        : '운영 전략 예약을 취소했어요'
-      : titles[command.type],
+    title: titles[command.type],
     changes,
     events: shown.map(({ title, detail }) => ({ title, detail })),
     hiddenEvents: records.length - shown.length,

@@ -2,8 +2,14 @@ import { describe, expect, it } from 'vitest';
 import type { Fixture, Tactic, World } from '../../contracts/src/types';
 import { canonical } from '../../contracts/src/index';
 import {
+  BUILD_LOCK_DAYS,
+  BUILD_PRESETS,
   clubOf,
   createWorld,
+  draftLock,
+  operate,
+  seasonDayLabel,
+  slotLocks,
   fatigueCost,
   npcTactic,
   recordMatch,
@@ -190,5 +196,107 @@ describe('tactical roster tradeoffs', () => {
     });
     simulateMatch(w, { ...fixture, id: 'later-build' }, false, true);
     expect(canonical(w.ownMatches[0])).toBe(saved);
+  });
+});
+
+describe('the operating strategy applied at once (→ECON-22)', () => {
+  const club = (day: number) => {
+    const w = createWorld({
+      country: 'ENG',
+      name: 'Strategy Lockers',
+      color: '#445566',
+      seed: 'strategy-locks',
+      difficulty: 1,
+    });
+    w.calendar = { day };
+    return w;
+  };
+
+  it('applies a strategy at once and locks each changed slot for 90 days', () => {
+    const w = club(10);
+    operate(w, { type: 'build', build: { youth: 'homegrown', fans: 'community' } });
+    expect(w.build).toEqual({ youth: 'homegrown', fans: 'community' });
+    expect(w.buildChanged).toEqual({
+      youth: { year: w.year, day: 10 },
+      fans: { year: w.year, day: 10 },
+    });
+    expect(w.events.at(-1)).toMatchObject({
+      kind: 'build',
+      title: '운영 전략 · 맞춤 전략',
+      detail: '성골 유스 · 지역 밀착',
+    });
+    const frees = seasonDayLabel(w.year, 10 + BUILD_LOCK_DAYS);
+    expect(slotLocks(w)).toEqual([
+      { slot: 'youth', label: '유스 정책', daysLeft: 90, frees },
+      { slot: 'fans', label: '홈·팬', daysLeft: 90, frees },
+    ]);
+    // A free slot changes at once while the locked ones keep their cards; its own lock starts.
+    w.calendar = { day: 40 };
+    operate(w, {
+      type: 'build',
+      build: { youth: 'homegrown', fans: 'community', scouting: 'data' },
+    });
+    expect(w.build).toEqual({ youth: 'homegrown', fans: 'community', scouting: 'data' });
+    expect(slotLocks(w).map((lock) => [lock.slot, lock.daysLeft])).toEqual([
+      ['youth', 60],
+      ['scouting', 90],
+      ['fans', 60],
+    ]);
+    // Day 100 frees the first two; a later change keeps only the lock still running.
+    w.calendar = { day: 100 };
+    expect(slotLocks(w).map((lock) => lock.slot)).toEqual(['scouting']);
+    operate(w, { type: 'build', build: { scouting: 'data' } });
+    expect(w.build).toEqual({ scouting: 'data' });
+    expect(w.buildChanged).toEqual({
+      youth: { year: w.year, day: 100 },
+      scouting: { year: w.year, day: 40 },
+      fans: { year: w.year, day: 100 },
+    });
+  });
+
+  it('refuses a draft that changes a locked slot, naming the slot and the day it frees', () => {
+    const w = club(10);
+    operate(w, { type: 'build', build: { youth: 'homegrown' } });
+    w.calendar = { day: 50 };
+    const message = `유스 정책 카드는 최근에 바꿔 ${seasonDayLabel(w.year, 100)}부터 다시 바꿀 수 있어요.`;
+    expect(draftLock(w, {})).toBe(message);
+    expect(draftLock(w, { youth: 'homegrown', culture: 'family' })).toBeUndefined();
+    const before = canonical(w);
+    expect(() => operate(w, { type: 'build', build: { youth: 'pathway' } })).toThrow(message);
+    // A preset applies only when every slot it changes is free.
+    const preset = BUILD_PRESETS.find((p) => p.id === 'commercial')!;
+    expect(() => operate(w, { type: 'build', build: preset.build })).toThrow('유스 정책');
+    expect(canonical(w)).toBe(before);
+    // Re-sending the strategy in force is no change and never refused.
+    operate(w, { type: 'build', build: { youth: 'homegrown' } });
+    expect(canonical({ ...w, revision: 0 })).toBe(
+      canonical({ ...JSON.parse(before), revision: 0 }),
+    );
+  });
+
+  it("a slot frees after 90 days across a season's turn", () => {
+    const w = club(300);
+    const year = w.year;
+    operate(w, { type: 'build', build: { culture: 'family' } });
+    // The season closes and the next starts on 1 August; the lock counts on from the change.
+    w.year = year + 1;
+    w.calendar = { day: 0 };
+    const left = 300 + BUILD_LOCK_DAYS - 365;
+    expect(slotLocks(w)).toEqual([
+      {
+        slot: 'culture',
+        label: '라커룸 문화',
+        daysLeft: left,
+        frees: seasonDayLabel(w.year, left),
+      },
+    ]);
+    expect(() => operate(w, { type: 'build', build: {} })).toThrow('라커룸 문화');
+    w.calendar = { day: left - 1 };
+    expect(draftLock(w, {})).toContain('라커룸 문화');
+    w.calendar = { day: left };
+    expect(slotLocks(w)).toEqual([]);
+    operate(w, { type: 'build', build: {} });
+    expect(w.build).toBeUndefined();
+    expect(w.buildChanged).toEqual({ culture: { year: year + 1, day: left } });
   });
 });

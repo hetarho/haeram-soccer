@@ -20,6 +20,7 @@ import {
   UNHAPPY_PENALTY,
 } from './world';
 import { policyEffects, policyOf } from './policy';
+import { talkRuleOf } from './hiring';
 import { buildEffects } from './build';
 import { moraleOf, UNHAPPY_MORALE } from './morale';
 import { pushInbox } from './inbox';
@@ -599,23 +600,35 @@ export function seasonEndWithWage(w: World, p: Player, wage: string) {
 }
 /**
  * Delegated staff (→STAFF-13) offer the floor for two seasons past this one (one from 32), never
- * ending before the running contract (→staffTerm), when it is within the squad investment's pay
- * ceiling, cash after the raise still covers 13 rounds of costs and the season's cash projection
- * with the new wage from the next round still ends the season covering them; otherwise they
- * decline. Either way the talk's inbox item says why.
+ * ending before the running contract (→staffTerm), when the owner's talk rule allows the player
+ * (the floor within its wage cap, his OVR at least its minimum, younger than its age limit), cash
+ * after the raise still covers 13 rounds of costs and the season's cash projection with the new
+ * wage from the next round still ends the season covering them; otherwise they decline. Either way
+ * the talk's inbox item says why.
  */
 export function staffTalkVerdict(w: World, p: Player) {
   const talk = p.talk!,
-    { payCeiling } = policyEffects(policyOf(w)),
-    ceiling = ratio(marketWage(w, p), BigInt(Math.round(payCeiling * 1000)), 1000n),
+    rule = talkRuleOf(w),
+    ceiling = ratio(marketWage(w, p), BigInt(Math.round(rule.maxPay * 1000)), 1000n),
     raise = BigInt(talk.floor) - BigInt(p.wage),
     perRound = (BigInt(operatingCosts(w).annual) + raise) / BigInt(SEASON_ROUNDS),
     runway = perRound * BigInt(CASH_WARNING_ROUNDS),
-    term = staffTerm(w, p);
+    term = staffTerm(w, p),
+    age = w.year - p.born;
   if (BigInt(talk.floor) > BigInt(ceiling))
     return {
       accept: false as const,
-      reason: `하한 ${moneyLabel(w, talk.floor)}이 선수단 투자 연봉 상한(시장가 ×${payCeiling}, ${moneyLabel(w, ceiling)})을 넘어 거절했어요.`,
+      reason: `하한 ${moneyLabel(w, talk.floor)}이 계약 협상 기준의 연봉 상한(시장가의 ${Math.round(rule.maxPay * 100)}%, ${moneyLabel(w, ceiling)})을 넘어 거절했어요.`,
+    };
+  if (overall(p) < rule.minOvr)
+    return {
+      accept: false as const,
+      reason: `OVR ${overall(p)}로 계약 협상 기준의 최소 OVR ${rule.minOvr}에 못 미쳐 거절했어요.`,
+    };
+  if (rule.maxAge !== undefined && age >= rule.maxAge)
+    return {
+      accept: false as const,
+      reason: `${age}세로 계약 협상 기준의 최대 나이 ${rule.maxAge}세에 걸려 거절했어요.`,
     };
   if (BigInt(w.cash) < runway)
     return {

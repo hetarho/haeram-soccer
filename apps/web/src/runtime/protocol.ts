@@ -9,7 +9,12 @@ import type {
   Event,
 } from '../../../../packages/contracts/src/types';
 import type { Envelope } from '../adapters/repository';
-import { clubBuildSchema } from '../../../../packages/contracts/src/schema';
+import {
+  clubBuildSchema,
+  coachCriteriaSchema,
+  managerCriteriaSchema,
+  talkRuleSchema,
+} from '../../../../packages/contracts/src/schema';
 import { STRATEGY_NAME_LIMIT } from '../../../../packages/contracts/src/build';
 import type { SAVE_COMPATIBILITY_CODE } from '../../../../packages/contracts/src/versions';
 import type { clubMilestones } from '../../../../packages/engine/src/goals';
@@ -105,12 +110,19 @@ const command = z.discriminatedUnion('type', [
     type: z.literal('build'),
     build: clubBuildSchema,
     name: z.string().trim().min(1).max(STRATEGY_NAME_LIMIT).optional(),
-    next: z.boolean().optional(),
   }),
   z.object({ type: z.literal('release-youth'), id: ref }),
   z.object({
     type: z.literal('delegate'),
-    key: z.enum(['training', 'academy', 'transfers', 'business', 'staff', 'contracts', 'manager']),
+    key: z.enum([
+      'training',
+      'academy',
+      'transfers',
+      'business',
+      'contracts',
+      'manager',
+      ...staffRole.options.map((role) => `coach:${role}` as const),
+    ]),
     value: z.boolean(),
   }),
   z.object({
@@ -124,6 +136,15 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('hire'), id: z.string().min(1).max(100), term: term.optional() }),
   z.object({ type: z.literal('renew-manager'), term: term.optional() }),
   z.object({ type: z.literal('manager-rule'), rule: z.enum(['school', 'best', 'strategy']) }),
+  z.discriminatedUnion('role', [
+    z.object({
+      type: z.literal('hiring'),
+      role: z.literal('manager'),
+      criteria: managerCriteriaSchema,
+    }),
+    z.object({ type: z.literal('hiring'), role: staffRole, criteria: coachCriteriaSchema }),
+  ]),
+  z.object({ type: z.literal('talk-rule'), rule: talkRuleSchema }),
   z.object({
     type: z.literal('contract-offer'),
     player: ref,

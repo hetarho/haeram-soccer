@@ -223,4 +223,90 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
       validateWorld({ ...legacy(w, sponsor), sponsors: [contract] }, LOAD_CATALOG),
     ).toThrow('후원 계약 손상');
   });
+
+  it("loads a 1.15 coach-hiring switch as every department's and drops buildYear", () => {
+    const w = world();
+    const saved = (delegation: Record<string, boolean>) => ({
+      ...structuredClone(w),
+      engine: '1.15.0',
+      delegation,
+      build: { fans: 'community' },
+      buildYear: w.year,
+    });
+    const on = validateWorld(saved({ training: true, academy: true, staff: true }));
+    expect(on.delegation).toEqual({
+      training: true,
+      academy: true,
+      'coach:assistant': true,
+      'coach:attack': true,
+      'coach:defense': true,
+      'coach:goalkeeping': true,
+      'coach:fitness': true,
+      'coach:youth': true,
+      'coach:scout': true,
+    });
+    expect('buildYear' in on).toBe(false);
+    expect(on.build).toEqual({ fans: 'community' });
+    expect(on.buildChanged).toBeUndefined();
+    const off = validateWorld(saved({ staff: false }));
+    expect(Object.values(off.delegation!)).toEqual(Array(7).fill(false));
+    expect(Object.keys(off.delegation!).every((key) => key.startsWith('coach:'))).toBe(true);
+    // A reservation of 1.13–1.15 still loads; activation drops it (→SAVE-10).
+    const reserved = {
+      ...saved({}),
+      buildNext: { build: { youth: 'pathway' }, name: '다음 계획' },
+    };
+    expect(validateWorld(reserved).buildNext).toEqual(reserved.buildNext);
+  });
+
+  it('accepts hiring, talkRule and buildChanged and refuses unknown criteria keys', () => {
+    const w = world();
+    w.hiring = {
+      manager: {
+        minOvr: 60,
+        schools: ['positional', 'developer'],
+        minFlexibility: 30,
+        maxPride: 80,
+        minYouth: 50,
+        traits: ['none', 'youth'],
+        maxWageOvr: 75,
+        priority: 'potential',
+        term: 3,
+        poach: true,
+        whenNone: 'best',
+      },
+      coaches: {
+        scout: { volunteer: false, minAbility: 70, trait: 'spotter', priority: 'ability', term: 4 },
+        fitness: { volunteer: true, minAbility: 55, priority: 'wage', term: 2 },
+      },
+    };
+    w.talkRule = { maxPay: 1.25, minOvr: 60, maxAge: 33 };
+    w.buildChanged = { youth: { year: w.year, day: 10 }, culture: { year: w.year - 1, day: 300 } };
+    w.delegation = { ...w.delegation, 'coach:scout': true, manager: true };
+    expect(canonical(validateWorld(structuredClone(w)))).toBe(canonical(w));
+    const load = (change: (copy: World) => unknown) => () => {
+      const copy = structuredClone(w);
+      change(copy);
+      return validateWorld(copy);
+    };
+    expect(load((c) => Object.assign(c.hiring!.manager!, { budget: 1 }))).toThrow();
+    expect(load((c) => Object.assign(c.hiring!.coaches!.scout!, { budget: 1 }))).toThrow();
+    expect(load((c) => Object.assign(c.hiring!, { director: {} }))).toThrow();
+    expect(
+      load((c) => Object.assign(c.hiring!.coaches!, { kit: c.hiring!.coaches!.scout })),
+    ).toThrow();
+    expect(load((c) => Object.assign(c.talkRule!, { minWage: 1 }))).toThrow();
+    expect(load((c) => (c.hiring!.manager!.schools = ['tiki-taka' as never]))).toThrow();
+    expect(load((c) => (c.hiring!.manager!.schools = ['counter', 'counter']))).toThrow();
+    expect(load((c) => (c.hiring!.manager!.maxWageOvr = 52 as never))).toThrow();
+    expect(load((c) => (c.hiring!.manager!.minOvr = 100))).toThrow();
+    expect(load((c) => (c.hiring!.coaches!.scout!.minAbility = 54.5))).toThrow();
+    expect(load((c) => (c.talkRule!.maxPay = 1.2 as never))).toThrow();
+    expect(load((c) => (c.talkRule!.maxAge = 41))).toThrow();
+    expect(
+      load((c) => Object.assign(c.buildChanged!, { stadium: { year: w.year, day: 0 } })),
+    ).toThrow();
+    expect(load((c) => (c.buildChanged!.youth = { year: w.year, day: 366 }))).toThrow();
+    expect(load((c) => Object.assign(c.delegation!, { 'coach:kit': true }))).toThrow();
+  });
 });

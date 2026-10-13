@@ -5,6 +5,7 @@ import type {
   ManagerStyle,
   Player,
   PolicyLevel,
+  TalkRule,
   UnhappyReason,
   World,
 } from '../../contracts/src/types';
@@ -48,7 +49,9 @@ import {
   staffTerm,
   suitorFor,
   talkFor,
+  TALK_RULE_DEFAULT,
   talkRoundChance,
+  talkRuleOf,
   talksRound,
   talkTerms,
   talkUntil,
@@ -60,14 +63,15 @@ import { professionalStart } from './testing';
 
 // The first constants (MARKET_CONFIG); T062 recalibrates them against whole careers (→ECON-29),
 // so these tests hold the CLUB-25 targets, not the constants.
+const founding = {
+  country: 'ENG' as const,
+  name: 'Market Wages',
+  color: '#224433',
+  seed: 'market-wages',
+  difficulty: 1,
+};
 function world(country: 'ENG' | 'ESP' = 'ENG') {
-  return createWorld({
-    country,
-    name: 'Market Wages',
-    color: '#224433',
-    seed: 'market-wages',
-    difficulty: 1,
-  });
+  return createWorld({ ...founding, country });
 }
 /** A midfielder rated `ability` everywhere, aged `age` in the world's year. */
 function rated(w: World, ability: number, age = 26, potential = ability): Player {
@@ -276,10 +280,10 @@ describe('contract talks (→CLUB-26)', () => {
     expect(amount(talkTerms(stars, p).demand)).toBeCloseTo(amount(marketWage(w, p)) * 1.1, -1);
   });
 
-  it('lets a delegated club at squad investment 5 renew a star a level-1 club declines', () => {
-    const [generous, tight] = ([5, 1] as const).map((level) => {
+  it('lets a delegated club with a 140% wage cap renew a star a 90% cap declines', () => {
+    const [generous, tight] = ([1.4, 0.9] as const).map((maxPay) => {
       const { w, p } = talking(80);
-      operate(w, { type: 'policy', key: 'support', level });
+      operate(w, { type: 'talk-rule', rule: { maxPay, minOvr: 0 } });
       expect(w.delegation?.contracts).toBe(true);
       const before = { wage: p.wage, until: p.until, floor: talkTerms(w, p).floor };
       newYear(w);
@@ -294,11 +298,48 @@ describe('contract talks (→CLUB-26)', () => {
     expect(generous.p.until).toBe(generous.w.year + 3);
     expect(generous.report.title).toContain('받아들였어요');
     expect(generous.w.events.at(-1)).toMatchObject({ kind: 'contract' });
-    // A level-1 ceiling (×0.9 of the market wage) is below what he settles for.
+    // A cap of 90% of the market wage is below what he settles for.
     expect(tight.p).toMatchObject({ wage: tight.before.wage, until: tight.before.until });
     expect(tight.report.title).toContain('거절했어요');
     expect(tight.report.detail).toContain('연봉 상한');
     expect(tight.w.events.at(-1)).toMatchObject({ kind: 'contract-decline' });
+  });
+
+  it('delegated talks follow the talk rule: wage cap, minimum OVR and maximum age', () => {
+    /** The staff's answer to `p` at the winter opening under `rule`. */
+    const answer = (rule: TalkRule, ability = 80, age = 26) => {
+      const { w, p } = talking(ability, age);
+      operate(w, { type: 'talk-rule', rule });
+      const floor = talkTerms(w, p).floor,
+        market = marketWage(w, p);
+      newYear(w);
+      return { w, p, floor, market, item: talkItems(w, p.id)[0] };
+    };
+    // The default rule is 110% of the market wage, no minimum OVR and no age limit.
+    expect(talkRuleOf(createWorld(founding))).toEqual(TALK_RULE_DEFAULT);
+    expect(TALK_RULE_DEFAULT).toEqual({ maxPay: 1.1, minOvr: 0 });
+    const kept = answer({ maxPay: 1.4, minOvr: 0 });
+    expect(kept.item.title).toContain('받아들였어요');
+    expect(kept.p.wage).toBe(kept.floor);
+    // A cap below his floor: declined, naming the cap.
+    const capped = answer({ maxPay: 0.9, minOvr: 0 });
+    expect(BigInt(capped.floor)).toBeGreaterThan(BigInt(ratio(capped.market, 9n, 10n)));
+    expect(capped.item.title).toContain('거절했어요');
+    expect(capped.item.detail).toContain('연봉 상한(시장가의 90%');
+    // Rated below the minimum: not kept, whatever the cap.
+    const weak = answer({ maxPay: 1.4, minOvr: 81 });
+    expect(weak.item.title).toContain('거절했어요');
+    expect(weak.item.detail).toContain('최소 OVR 81');
+    expect(answer({ maxPay: 1.4, minOvr: 80 }).item.title).toContain('받아들였어요');
+    // As old as the limit or older: not kept; younger: kept.
+    const old = answer({ maxPay: 1.4, minOvr: 0, maxAge: 30 }, 80, 30);
+    expect(old.item.title).toContain('거절했어요');
+    expect(old.item.detail).toContain('최대 나이 30세');
+    expect(answer({ maxPay: 1.4, minOvr: 0, maxAge: 31 }, 80, 30).item.title).toContain(
+      '받아들였어요',
+    );
+    // A declined player turns unhappy unless the manager talks him round (→CLUB-27).
+    expect(old.w.events.at(-1)).toMatchObject({ kind: 'contract-decline' });
   });
 
   it('signs a veteran for one season and declines a raise the cash cannot carry', () => {
@@ -312,7 +353,7 @@ describe('contract talks (→CLUB-26)', () => {
     expect(summer.p.until).toBe(summer.w.year + 2);
 
     const broke = talking(80);
-    operate(broke.w, { type: 'policy', key: 'support', level: 5 });
+    operate(broke.w, { type: 'talk-rule', rule: { maxPay: 1.4, minOvr: 0 } });
     // Twelve rounds of today's costs: short of the 13-round runway even before the raise.
     broke.w.cash = ((BigInt(operatingCosts(broke.w).annual) / 46n) * 12n).toString();
     const until = broke.p.until;
@@ -443,7 +484,7 @@ describe('contract talks (→CLUB-26)', () => {
     /** A club at the summer opening whose season loses money, `p` in his final season. */
     const losing = () => {
       const { w, p } = talking(80);
-      operate(w, { type: 'policy', key: 'support', level: 5 });
+      operate(w, { type: 'talk-rule', rule: { maxPay: 1.4, minOvr: 0 } });
       w.calendar = { day: 0 };
       // A manager paid far beyond the club's income makes the season a loss.
       w.manager.wage = (BigInt(operatingCosts(w).annual) * 4n).toString();
@@ -476,7 +517,7 @@ describe('contract talks (→CLUB-26)', () => {
     /** A delegated club whose 33-year-old has three seasons left, 30% below his market wage. */
     const improving = (day: number) => {
       const { w, p } = talking(70, 33);
-      operate(w, { type: 'policy', key: 'support', level: 5 });
+      operate(w, { type: 'talk-rule', rule: { maxPay: 1.4, minOvr: 0 } });
       p.until = w.year + 3;
       p.wage = ((BigInt(marketWage(w, p)) * 70n) / 100n).toString();
       talksOn(w, day);

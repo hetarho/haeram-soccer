@@ -26,6 +26,7 @@ import {
   staffImpact,
 } from '../../../../packages/engine/src/staff';
 import { managerRenewal, managerTermLimit } from '../../../../packages/engine/src/ops-staff';
+import { COACH_KEYS, coachDelegated } from '../../../../packages/engine/src/hiring';
 import {
   delegatedManagerPick,
   MANAGER_RULE_INFO,
@@ -45,7 +46,8 @@ import { compactMoney, contractLine } from './format';
 import { Money } from './Money';
 import s from './ClubStaff.module.css';
 
-const DELEGATION: [DelegationKey, string, string][] = [
+/** One checkbox per decision; 코치 고용·재계약 turns every department's switch together. */
+const DELEGATION: [DelegationKey | 'coaches', string, string][] = [
   ['training', '훈련 방향', '수석코치가 피로와 유망주를 보고 매 라운드 정해요'],
   ['academy', '유소년 승격·방출', '유스 디렉터가 준비된 유망주를 올리고 정리해요'],
   [
@@ -55,7 +57,7 @@ const DELEGATION: [DelegationKey, string, string][] = [
   ],
   ['business', '후원 계약', '후원이 비면 운영팀이 안정형 후원을 바로 맺어요'],
   [
-    'staff',
+    'coaches',
     '코치 고용·재계약',
     '부서마다 정한 투자 수준으로 공석을 바로 채우고, 계약이 끝나는 코치를 2시즌 재계약하거나 새 코치를 2시즌 계약으로 뽑아요',
   ],
@@ -70,12 +72,17 @@ function useActing() {
   return useGameState((state) => !!state.pendingActions || state.readonly || !!state.error);
 }
 
+/** The switches one checkbox stands for: the seven departments' for 코치 고용·재계약. */
+const switchesOf = (key: DelegationKey | 'coaches'): readonly DelegationKey[] =>
+  key === 'coaches' ? COACH_KEYS : [key];
+
 /** What the staff decides for the owner; turning one off hands that decision back. */
 export function Delegation({ w, client }: { w: World; client: GameClient }) {
   const acting = useActing();
   // Show the owner's choice immediately; the saved world confirms it a moment later.
-  const [draft, setDraft] = useState<Partial<Record<DelegationKey, boolean>>>({});
-  const value = (key: DelegationKey) => draft[key] ?? !!w.delegation?.[key];
+  const [draft, setDraft] = useState<Partial<Record<DelegationKey | 'coaches', boolean>>>({});
+  const value = (key: DelegationKey | 'coaches') =>
+    draft[key] ?? switchesOf(key).every((one) => !!w.delegation?.[one]);
   return (
     <section className={s.delegation} aria-label="스태프 위임">
       <h3>스태프에게 맡기기</h3>
@@ -89,7 +96,11 @@ export function Delegation({ w, client }: { w: World; client: GameClient }) {
             onChange={(event) => {
               const next = event.target.checked;
               setDraft((current) => ({ ...current, [key]: next }));
-              void client.command({ type: 'delegate', key, value: next }).finally(() =>
+              void (async () => {
+                for (const one of switchesOf(key))
+                  if (!!w.delegation?.[one] !== next)
+                    await client.command({ type: 'delegate', key: one, value: next });
+              })().finally(() =>
                 setDraft((current) => {
                   const rest = { ...current };
                   delete rest[key];
@@ -348,7 +359,8 @@ export function ManagerHireTerm({
  * hire and renew each department to its own investment dial; at levels 1–3 the owner does it.
  */
 export function CoachingPlan({ w }: { w: World }) {
-  const delegated = !!w.delegation?.staff;
+  const delegatedRoles = STAFF_ROLES.filter((role) => coachDelegated(w, role)),
+    delegated = delegatedRoles.length > 0;
   const expiring = (w.staff || []).filter((member) => isExpiring(w, member));
   const counts = ([1, 2, 3] as const)
     .map((step) => [step, STAFF_ROLES.filter((role) => coachingLevel(w, role) === step).length])
@@ -359,7 +371,11 @@ export function CoachingPlan({ w }: { w: World }) {
       <header>
         <h3>코치진 운영</h3>
         <span data-testid="coaching-mode">
-          {delegated ? '자동 · 스태프가 부서별 투자로 고용·재계약' : '직접 · 구단주가 고용·재계약'}
+          {delegatedRoles.length === STAFF_ROLES.length
+            ? '자동 · 스태프가 부서별 투자로 고용·재계약'
+            : delegated
+              ? `일부 자동 · ${delegatedRoles.map((role) => STAFF_INFO[role].label).join('·')}`
+              : '직접 · 구단주가 고용·재계약'}
         </span>
       </header>
       <p className={s.note}>
@@ -442,7 +458,6 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
   const owed = releaseCost(w, current);
   const renewal = renewing ? members.get(renewing) : undefined;
   const renewed = renewal && isExpiring(w, renewal) ? renewalTerms(w, renewal, term) : undefined;
-  const delegated = !!w.delegation?.staff;
   return (
     <section className={s.staff} aria-label="코치진">
       <header>
@@ -532,7 +547,9 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                   {member ? '교체' : '선임'}
                 </button>
               </div>
-              {delegated && <DepartmentDial w={w} role={id} client={client} plain={plain} />}
+              {coachDelegated(w, id) && (
+                <DepartmentDial w={w} role={id} client={client} plain={plain} />
+              )}
             </li>
           );
         })}

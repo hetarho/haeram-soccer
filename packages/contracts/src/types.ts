@@ -1,4 +1,4 @@
-import type { ClubBuild } from './build';
+import type { BuildSlot, ClubBuild } from './build';
 export type { ClubBuild, BuildSlot } from './build';
 export type CountryCode = 'ENG' | 'ESP' | 'GER' | 'ITA' | 'FRA' | 'POR' | 'NED' | 'BEL';
 export type Tactic = 'balanced' | 'possession' | 'counter' | 'press';
@@ -24,9 +24,69 @@ export type ManagerStyle =
   | 'developer'
   | 'firefighter'
   | 'headcoach';
-/** `contracts`: player contract talks (→CLUB-26); `manager`: the manager post (→STAFF-18). */
+/** One coaching department's hiring and renewal (→STAFF-15), a switch of its own. */
+export type CoachDelegationKey = `coach:${StaffRole}`;
+/**
+ * The decisions the staff can take for the owner, each by its own switch (→STAFF-13):
+ * `contracts` player contract talks (→CLUB-26), `manager` the manager post (→STAFF-18) and one
+ * `coach:<department>` per coaching department. Rules before 1.16 kept one `staff` key for every
+ * department; a load turns it into the seven (→SAVE-10).
+ */
 export type DelegationKey =
-  'training' | 'academy' | 'transfers' | 'business' | 'staff' | 'contracts' | 'manager';
+  'training' | 'academy' | 'transfers' | 'business' | 'contracts' | 'manager' | CoachDelegationKey;
+/** A wage cap names the going wage of a manager or coach of this OVR, in today's money. */
+export type WageCapOvr = 50 | 55 | 60 | 65 | 70 | 75 | 80 | 85 | 90;
+/**
+ * How the delegated staff appoint and renew managers (→STAFF-18). Empty lists mean any school or
+ * selection trait (`none` matches a manager without one); an absent `maxWageOvr` is no wage cap.
+ */
+export interface ManagerCriteria {
+  /** 0–99. */
+  minOvr: number;
+  schools: ManagerStyle[];
+  /** 0–100 each. */
+  minFlexibility: number;
+  maxPride: number;
+  minYouth: number;
+  traits: ('none' | ManagerTrait)[];
+  maxWageOvr?: WageCapOvr;
+  priority: 'ovr' | 'potential' | 'wage';
+  term: ContractTerm;
+  /** Other clubs' managers too, paying their compensation (→STAFF-17). */
+  poach: boolean;
+  /** With no match: keep the interim (`wait`) or take the best affordable free agent. */
+  whenNone: 'wait' | 'best';
+}
+/**
+ * How the delegated staff hire and renew one coaching department (→STAFF-15). An absent `trait`
+ * is any; an absent `maxWageOvr` is no wage cap.
+ */
+export interface CoachCriteria {
+  /** An unpaid ability-50 volunteer holds the post. */
+  volunteer: boolean;
+  /** 0–99. */
+  minAbility: number;
+  /** One of the department's traits (→STAFF-11). */
+  trait?: StaffTrait;
+  maxWageOvr?: WageCapOvr;
+  priority: 'ability' | 'wage';
+  term: ContractTerm;
+}
+/** The talk rule's wage cap: the floor at most this multiple of the player's market wage. */
+export type TalkPayCap = 0.9 | 1 | 1.1 | 1.25 | 1.4;
+/** Which players the delegated staff keep in contract talks (→CLUB-26). */
+export interface TalkRule {
+  maxPay: TalkPayCap;
+  /** 0–99: players rated below are not kept. */
+  minOvr: number;
+  /** 28–40: players this old or older are not kept; absent is no limit. */
+  maxAge?: number;
+}
+/** What the owner set for the delegated staff's hiring (→STAFF-15, STAFF-18); absent is default. */
+export interface HiringCriteria {
+  manager?: ManagerCriteria;
+  coaches?: Partial<Record<StaffRole, CoachCriteria>>;
+}
 /**
  * How delegated staff appoint a manager (→STAFF-18): the departing manager's school (the
  * default), the best by OVR, or the school the operating strategy's aimed synergy needs.
@@ -635,9 +695,15 @@ export interface World {
   morale?: number;
   /** The club build, one card per slot (→ECON-22); absent slots are standard. */
   build?: ClubBuild;
-  /** Season year the build was last changed; one change per season. */
-  buildYear?: number;
-  /** A strategy reserved for the next season (→ECON-22); it applies as that season starts. */
+  /**
+   * The day each slot's card last changed (→ECON-22): the slot stays locked for 90 days from it.
+   * Absent slots are free.
+   */
+  buildChanged?: Partial<Record<BuildSlot, { year: number; day: number }>>;
+  /**
+   * A strategy reserved for the next season, written only by rules 1.13–1.15; writer activation
+   * drops it with an inbox item (→SAVE-10), and the engine never reads it.
+   */
   buildNext?: { build: ClubBuild; name?: string };
   /** The manager market (→STAFF-17); absent until it first moves, when the season's four seed it. */
   managerMarket?: ManagerMarket;
@@ -675,6 +741,10 @@ export interface World {
   sponsors?: SponsorContract[];
   /** The rule delegated staff appoint a manager by (→STAFF-18); absent is `school`. */
   managerRule?: ManagerRule;
+  /** The delegated staff's hiring criteria (→STAFF-15, STAFF-18); absent entries are default. */
+  hiring?: HiringCriteria;
+  /** The delegated staff's contract-talk rule (→CLUB-26); absent is the default. */
+  talkRule?: TalkRule;
   cupWinners: Record<string, string>;
   /** This season's domestic cups, one per country (→LEAGUE-5); absent in older saves. */
   cups?: DomesticCup[];
@@ -725,6 +795,11 @@ export type Command =
   | { type: 'renew-manager'; term?: ContractTerm }
   /** How delegated staff appoint a manager (→STAFF-18). */
   | { type: 'manager-rule'; rule: ManagerRule }
+  /** The criteria the delegated staff hire and renew by (→STAFF-15, STAFF-18). */
+  | { type: 'hiring'; role: 'manager'; criteria: ManagerCriteria }
+  | { type: 'hiring'; role: StaffRole; criteria: CoachCriteria }
+  /** The rule the delegated staff answer contract talks by (→CLUB-26). */
+  | { type: 'talk-rule'; rule: TalkRule }
   /** Answers a player's contract talk (→CLUB-26) with a wage fixed for `term` seasons. */
   | { type: 'contract-offer'; player: string; wage: string; term: TalkTerm }
   /** Declines a player's contract talk (→CLUB-27). */
@@ -741,5 +816,8 @@ export type Command =
   | { type: 'support' }
   | { type: 'accept-condition' }
   | { type: 'care'; kind: CareKind }
-  /** `name` labels an owner's saved strategy in the club's history (→WEB-61). */
-  | { type: 'build'; build: ClubBuild; name?: string; next?: boolean };
+  /**
+   * Applies a strategy at once (→ECON-22); `name` labels an owner's saved strategy in the club's
+   * history (→WEB-61).
+   */
+  | { type: 'build'; build: ClubBuild; name?: string };

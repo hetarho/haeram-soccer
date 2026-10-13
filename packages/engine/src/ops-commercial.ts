@@ -3,7 +3,7 @@ import { addEvent, clubOf, quote } from './world';
 import { clamp } from './primitives';
 import { campaignEffectiveness } from './finance';
 import { setPolicy } from './policy';
-import { buildEffects, reserveBuild, setBuild } from './build';
+import { buildEffects, setBuild } from './build';
 import { facilityCostUnits, MAX_FACILITIES } from './facilities';
 import { credit, debit } from './operations';
 import { delegatedSponsors, exclusiveSponsor, signSponsor, sponsorEnding } from './sponsors';
@@ -92,8 +92,7 @@ export function commercialCommand(w: World, cmd: CommercialCommand) {
       setPolicy(w, cmd.key, cmd.level);
       break;
     case 'build':
-      if (cmd.next) reserveBuild(w, cmd.build, cmd.name);
-      else setBuild(w, cmd.build, cmd.name);
+      setBuild(w, cmd.build, cmd.name);
       break;
     case 'campaign': {
       const o = campaignOffers(w).find((c) => c.kind === cmd.kind);

@@ -42,7 +42,7 @@ import { moraleAfterMatch } from './morale';
 import { settleWinBonus } from './care';
 import { managerStyleEffects } from './styles';
 import { synergyEffects } from './synergy';
-import { applyReservedBuild, buildEffects } from './build';
+import { buildEffects } from './build';
 import { MARKET_REFRESH_ROUNDS, refreshManagerMarket } from './managerMarket';
 import { dailyStaff, seasonStaff } from './staff';
 import { fansAfterMatch } from './fans';
@@ -622,8 +622,6 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   // booked where their events are (→ECON-10).
   w.income = '0';
   w.expense = '0';
-  // A strategy reserved during the season becomes the new season's change (→ECON-22).
-  applyReservedBuild(w);
   advanceEconomy(w, w.year - 1);
   // The new season's operating expenses, in its money and on the division it plays (→ECON-30),
   // before anything this rollover weighs fixed costs.

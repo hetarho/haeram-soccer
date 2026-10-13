@@ -101,17 +101,19 @@ describe('manager styles', () => {
 });
 
 describe('club builds', () => {
-  it('commits to one build change a season and records it', () => {
+  it('applies a build at once, locks the changed slots and records it', () => {
     const w = world();
     operate(w, { type: 'build', build: { fans: 'community', culture: 'family' } });
     expect(w.build).toEqual({ fans: 'community', culture: 'family' });
-    expect(w.buildYear).toBe(w.year);
+    expect(Object.keys(w.buildChanged!)).toEqual(['fans', 'culture']);
     expect(w.events.at(-1)).toMatchObject({
       kind: 'build',
       title: '운영 전략 · 맞춤 전략',
       detail: '지역 밀착 · 가족 같은 클럽',
     });
-    expect(() => operate(w, { type: 'build', build: { revenue: 'commercial' } })).toThrow('한 번');
+    expect(() => operate(w, { type: 'build', build: { revenue: 'commercial' } })).toThrow(
+      '홈·팬 카드는 최근에 바꿔',
+    );
     // Re-sending the same build is not a change.
     operate(w, { type: 'build', build: { culture: 'family', fans: 'community' } });
     expect(() => operate(w, { type: 'build', build: { fans: 'nowhere' } as never })).toThrow(
@@ -202,7 +204,8 @@ describe('club builds', () => {
     const legacy = { ...structuredClone(w), vision: 'trading', visionYear: w.year };
     const loaded = validateWorld(legacy);
     expect(loaded.build).toEqual(LEGACY_VISION_BUILDS.trading);
-    expect(loaded.buildYear).toBe(w.year);
+    // Its yearly lock is gone with the yearly change (→SAVE-10).
+    expect('buildYear' in loaded).toBe(false);
     expect('vision' in loaded).toBe(false);
     expect(validateWorld({ ...structuredClone(w), vision: 'balanced' }).build).toBeUndefined();
     // Like any unknown field, an unrecognised vision is dropped: the club stays standard.

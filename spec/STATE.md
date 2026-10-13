@@ -31,7 +31,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T070 | Settings model for the three levers: switches, criteria, talk rule, strategy locks | STAFF CLUB ECON SAVE WEB | T062 | todo |
+| T070 | Settings model for the three levers: switches, criteria, talk rule, strategy locks | STAFF CLUB ECON SAVE WEB | T062 | doing@261013.lv |
 | T071 | 사람 and 훈련 tabs: navigation shell, page tabs and intervention presets | WEB STAFF | T070 | todo |
 | T072 | Staff hire and renew by the owner's criteria | STAFF SAVE | T070 | todo |
 | T073 | 사람 tab: each decision's staff switch and criteria where it lives | WEB STAFF CLUB | T072 T071 | todo |
@@ -54,6 +54,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 T070 doing standalone on ia-plan (6dbfb46)
 - 261013 update-ssot ECON r18: ECON-29 records rules 1.16.0's measured values and accepts the bands outside for now (no code impact)
 - 261013 T062 done by the owner's decision (record what does not change the game much): solvent reference careers; wage bill and net outside their bands, recorded in next
 - 261013 T062 blocked: three must-hold bands (owner decision) conflict — wage bill 36.2% and net 20.3% with 0/16 bankrupt, or bands held with 4–8/16 ESP/FRA/GER bankrupt; constants, goldens, FINANCES.md committed

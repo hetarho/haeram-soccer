@@ -214,27 +214,3 @@ describe('delegated manager renewal (STAFF-18)', () => {
     expect(best.inbox!.at(-1)!.detail).toContain('능력 최고 기준으로 OVR 85');
   });
 });
-
-describe('strategy reservation (ECON-22)', () => {
-  it('reserves a strategy at any time and applies it as the next season starts', () => {
-    const w = world('reserve');
-    operate(w, { type: 'build', build: { fans: 'community' } });
-    expect(() => operate(w, { type: 'build', build: { youth: 'pathway' } })).toThrow('한 번');
-    operate(w, { type: 'build', build: { youth: 'pathway' }, name: '다음 계획', next: true });
-    expect(w.buildNext).toEqual({ build: { youth: 'pathway' }, name: '다음 계획' });
-    // Reserving the strategy in force cancels the reservation.
-    operate(w, { type: 'build', build: { fans: 'community' }, next: true });
-    expect(w.buildNext).toBeUndefined();
-    operate(w, { type: 'build', build: { youth: 'pathway' }, name: '다음 계획', next: true });
-    validateWorld(w);
-    const year = w.year;
-    simulateSeason(w);
-    expect(w.year).toBe(year + 1);
-    expect(w.build).toEqual({ youth: 'pathway' });
-    expect(w.buildYear).toBe(w.year);
-    expect(w.buildNext).toBeUndefined();
-    expect(w.events.some((e) => e.kind === 'build' && e.title === '운영 전략 · 다음 계획')).toBe(
-      true,
-    );
-  });
-});

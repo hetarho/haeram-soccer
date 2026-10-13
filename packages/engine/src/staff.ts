@@ -22,6 +22,7 @@ import { moneyLabel, operatingCosts } from './finance';
 import { currentDay, seasonDayOf } from './calendar';
 import { COACH_CAREER, coachProspect, coachSeason } from './coaching';
 import { STYLE_INFO } from './styles';
+import { coachDelegated } from './hiring';
 
 /** Coaching departments below the manager, in display order. */
 export const STAFF_ROLES: readonly StaffRole[] = [
@@ -441,7 +442,7 @@ export function setCoaching(w: World, role: StaffRole, level: CoachingLevel) {
     `${STAFF_INFO[role].label} 투자 · ${COACHING_INFO[level].label}`,
     COACHING_INFO[level].summary,
   );
-  if (!w.delegation?.staff || !w.staff) return;
+  if (!coachDelegated(w, role) || !w.staff) return;
   const member = staffMember(w, role);
   if (member && BigInt(member.wage) > 0n) return;
   const hire = plannedHire(w, role);
@@ -537,16 +538,17 @@ function appoint(w: World, member: Staff & { fee?: string }) {
   return staff;
 }
 /**
- * Season boundary: contracts end, renew or are replaced. With staff delegated (→STAFF-15) the
- * club renews coaches at the level the owner asked for and replaces the rest, so no department is
- * left empty; otherwise expiring coaches leave and the owner is told.
+ * Season boundary: contracts end, renew or are replaced. In each department delegated to the
+ * staff (→STAFF-15) the club renews coaches at the level the owner asked for and replaces the
+ * rest, so no such department is left empty; elsewhere expiring coaches leave and the owner is
+ * told.
  */
 export function seasonStaff(w: World): void {
   if (!w.staff) return;
   developStaff(w);
-  const delegated = !!w.delegation?.staff;
   const report: string[] = [];
   for (const role of STAFF_ROLES) {
+    const delegated = coachDelegated(w, role);
     const member = staffMember(w, role);
     const expired = member && member.until <= w.year;
     if (member && !expired) continue;
@@ -706,21 +708,21 @@ function managerRenewalReminder(w: World) {
 }
 /**
  * Daily: on 1 April an expiring manager's renewal comes up; with the manager post delegated the
- * staff replace an interim as soon as the club can afford a free agent (→STAFF-18); delegated
- * staff fill an empty department at once; otherwise the renewal season is announced on 1 April
- * when contracts end at the close.
+ * staff replace an interim as soon as the club can afford a free agent (→STAFF-18); the staff
+ * fill an empty department delegated to them at once; for the other departments the renewal
+ * season is announced on 1 April when contracts end at the close.
  */
 export function dailyStaff(w: World) {
   if (currentDay(w) === renewalDay(w.year)) managerRenewalReminder(w);
   if (w.manager.interim && w.delegation?.manager) appointDelegatedManager(w);
   if (!w.staff) return;
-  if (w.delegation?.staff) {
-    for (const role of STAFF_ROLES)
-      if (!staffMember(w, role)) appoint(w, plannedHire(w, role) || volunteer(w, role));
-    return;
-  }
+  for (const role of STAFF_ROLES)
+    if (coachDelegated(w, role) && !staffMember(w, role))
+      appoint(w, plannedHire(w, role) || volunteer(w, role));
   if (currentDay(w) !== renewalDay(w.year)) return;
-  const expiring = w.staff.filter((member) => isExpiring(w, member));
+  const expiring = w.staff.filter(
+    (member) => isExpiring(w, member) && !coachDelegated(w, member.role),
+  );
   if (!expiring.length) return;
   pushInbox(w, {
     kind: 'staff-renewal',

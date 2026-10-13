@@ -29,6 +29,7 @@ import {
   activePlayers,
   advanceRound,
   BUILD_PRESETS,
+  COACH_KEYS,
   CASH_WARNING_ROUNDS,
   catchment,
   clubOf,
@@ -177,9 +178,9 @@ function delegateAll(w: World) {
     academy: true,
     transfers: true,
     business: true,
-    staff: true,
     contracts: true,
     manager: true,
+    ...Object.fromEntries(COACH_KEYS.map((key) => [key, true])),
   };
 }
 /**

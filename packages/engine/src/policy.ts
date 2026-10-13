@@ -23,32 +23,32 @@ export const POLICY_INFO: Record<
 > = {
   support: {
     label: '선수단 투자',
-    question: '급여 수준과 훈련·의료 환경에 얼마나 쓸까요?',
+    question: '훈련·의료 환경과 협상에서의 선수 대우에 얼마나 쓸까요?',
     levels: [
       {
         level: 1,
         name: '긴축',
-        summary: '연봉 상한 시장가 ×0.9 · 협상 호감 −5% · 라운드 성장 ×0.8 · 피로 회복 −2',
+        summary: '협상 호감 −5% · 라운드 성장 ×0.8 · 피로 회복 −2',
       },
       {
         level: 2,
         name: '절약',
-        summary: '연봉 상한 시장가 ×1 · 협상 호감 0% · 라운드 성장 ×0.9 · 피로 회복 −1',
+        summary: '협상 호감 0% · 라운드 성장 ×0.9 · 피로 회복 −1',
       },
       {
         level: 3,
         name: '표준',
-        summary: '연봉 상한 시장가 ×1.1 · 협상 호감 +5% · 라운드 성장·피로 회복 기본',
+        summary: '협상 호감 +5% · 라운드 성장·피로 회복 기본',
       },
       {
         level: 4,
         name: '후한 지원',
-        summary: '연봉 상한 시장가 ×1.25 · 협상 호감 +10% · 라운드 성장 ×1.12 · 피로 회복 +1',
+        summary: '협상 호감 +10% · 라운드 성장 ×1.12 · 피로 회복 +1',
       },
       {
         level: 5,
         name: '최고 대우',
-        summary: '연봉 상한 시장가 ×1.4 · 협상 호감 +15% · 라운드 성장 ×1.25 · 피로 회복 +2',
+        summary: '협상 호감 +15% · 라운드 성장 ×1.25 · 피로 회복 +2',
       },
     ],
   },
@@ -128,8 +128,6 @@ export const POLICY_INFO: Record<
 };
 
 export interface PolicyEffects {
-  /** Highest wage the staff agree in a contract talk, as a multiple of the market wage. */
-  payCeiling: number;
   /** Percent a player comes down from his demand in a contract talk (→CLUB-26). */
   goodwill: number;
   developmentMultiplier: number;
@@ -152,7 +150,6 @@ export interface PolicyEffects {
   };
 }
 
-const SUPPORT_PAY_CEILING = [0.9, 1, 1.1, 1.25, 1.4];
 const SUPPORT_GOODWILL = [-5, 0, 5, 10, 15];
 const SUPPORT_DEVELOPMENT = [0.8, 0.9, 1, 1.12, 1.25];
 const SUPPORT_RECOVERY = [-2, -1, 0, 1, 2];
@@ -191,7 +188,6 @@ export function policyEffects(policy: ClubPolicy): PolicyEffects {
     academy = (policy.academy ?? POLICY_DEFAULTS.academy) - 1,
     offer = OFFERS[policy.recruitment - 1];
   return {
-    payCeiling: SUPPORT_PAY_CEILING[support],
     goodwill: SUPPORT_GOODWILL[support],
     developmentMultiplier: SUPPORT_DEVELOPMENT[support],
     recoveryBonus: SUPPORT_RECOVERY[support],
@@ -237,7 +233,6 @@ export function policyPreview(w: World, key: PolicyKey, level: PolicyLevel) {
   return {
     annualCostChange: (BigInt(after.annual) - BigInt(before.annual)).toString(),
     fansPerRound: key === 'marketing' ? marketingFanGain(clubOf(w).fans, effects.fanGrowth) : 0,
-    payCeiling: effects.payCeiling,
     goodwill: effects.goodwill,
     developmentMultiplier: effects.developmentMultiplier,
     recoveryBonus: effects.recoveryBonus,

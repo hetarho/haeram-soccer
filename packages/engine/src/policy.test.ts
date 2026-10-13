@@ -112,7 +112,6 @@ describe('club operating policy', () => {
     }
     const effects = policyEffects(POLICY_DEFAULTS);
     expect(effects).toMatchObject({
-      payCeiling: 1.1,
       goodwill: 5,
       developmentMultiplier: 1,
       recoveryBonus: 0,
@@ -127,19 +126,21 @@ describe('club operating policy', () => {
     });
   });
 
-  it('raises the contract-talk ceiling and goodwill, development and recovery under stronger squad support, never the wage bill', () => {
+  it('support effects carry no pay ceiling', () => {
+    // The owner's talk rule caps what the staff agree in contract talks (→CLUB-26).
+    for (const support of [1, 2, 3, 4, 5] as const) {
+      expect(policyEffects({ ...POLICY_DEFAULTS, support })).not.toHaveProperty('payCeiling');
+      expect(POLICY_INFO.support.levels[support - 1].summary).not.toContain('연봉 상한');
+    }
+    expect(policyPreview(world(), 'support', 5)).not.toHaveProperty('payCeiling');
+  });
+
+  it('raises goodwill, development and recovery under stronger squad support, never the wage bill', () => {
     expect(
-      ([1, 2, 3, 4, 5] as const).map((support) => {
-        const { payCeiling, goodwill } = policyEffects({ ...POLICY_DEFAULTS, support });
-        return [payCeiling, goodwill];
-      }),
-    ).toEqual([
-      [0.9, -5],
-      [1, 0],
-      [1.1, 5],
-      [1.25, 10],
-      [1.4, 15],
-    ]);
+      ([1, 2, 3, 4, 5] as const).map(
+        (support) => policyEffects({ ...POLICY_DEFAULTS, support }).goodwill,
+      ),
+    ).toEqual([-5, 0, 5, 10, 15]);
     const base = canonical(operatingCosts(world()));
     expect(canonical(operatingCosts(world({ support: 5 })))).toBe(base);
     expect(canonical(operatingCosts(world({ support: 1 })))).toBe(base);
@@ -294,7 +295,6 @@ describe('club operating policy', () => {
       fansPerRound: 0,
     });
     expect(policyPreview(w, 'support', 5)).toMatchObject({
-      payCeiling: 1.4,
       goodwill: 15,
       developmentMultiplier: 1.25,
       recoveryBonus: 2,

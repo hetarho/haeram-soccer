@@ -36,6 +36,8 @@ export * from './ratings';
 export * from './dynamics';
 export * from './careers';
 export * from './contracts';
+export * from './hiring';
+export * from './activation';
 export function createWorld(input: Founding) {
   const w = createBase(input);
   prepareSeason(w);

@@ -35,6 +35,13 @@ import {
   type ManagerCandidate,
 } from './managerMarket';
 import { MORALE_START } from './morale';
+import {
+  coachKey,
+  DELEGATION_KEYS,
+  setCoachCriteria,
+  setManagerCriteria,
+  setTalkRule,
+} from './hiring';
 import { debit } from './operations';
 import { moneyLabel } from './finance';
 
@@ -52,7 +59,9 @@ export type StaffCommand = Extract<
       | 'release-staff'
       | 'renew-staff'
       | 'coaching'
-      | 'delegate';
+      | 'delegate'
+      | 'hiring'
+      | 'talk-rule';
   }
 >;
 
@@ -352,10 +361,20 @@ export function staffCommand(w: World, cmd: StaffCommand) {
     case 'hire-staff':
       hireStaff(w, cmd.role, cmd.candidate, cmd.term);
       break;
-    case 'release-staff':
+    case 'release-staff': {
       releaseStaff(w, cmd.role);
-      // Releasing a coach takes hiring back, so delegated staff do not refill the post at once.
-      if (w.delegation?.staff) w.delegation = { ...w.delegation, staff: false };
+      // Releasing a coach takes that department's hiring back (→STAFF-13), so the staff do not
+      // refill the post at once; the other departments stay as they are.
+      const key = coachKey(cmd.role);
+      if (w.delegation?.[key]) w.delegation = { ...w.delegation, [key]: false };
+      break;
+    }
+    case 'hiring':
+      if (cmd.role === 'manager') setManagerCriteria(w, cmd.criteria);
+      else setCoachCriteria(w, cmd.role, cmd.criteria);
+      break;
+    case 'talk-rule':
+      setTalkRule(w, cmd.rule);
       break;
     case 'renew-staff':
       renewStaff(w, cmd.role, cmd.term);
@@ -367,6 +386,8 @@ export function staffCommand(w: World, cmd: StaffCommand) {
       setCoaching(w, cmd.role, cmd.level);
       break;
     case 'delegate':
+      if (!DELEGATION_KEYS.includes(cmd.key) || typeof cmd.value !== 'boolean')
+        throw new Error('스태프에게 맡길 결정을 확인하세요.');
       w.delegation = { ...w.delegation, [cmd.key]: cmd.value };
       break;
     case 'tactics': {

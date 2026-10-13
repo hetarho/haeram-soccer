@@ -35,10 +35,15 @@ export const CURRENT_ENGINE_VERSION = '1.16.0';
  * starts, signs sponsors per slot by era, pays players market wages agreed in contract talks at
  * the window openings (unhappy players, transfer requests, expiring contracts), gives every player
  * an agent and every contract signed promotion and relegation clauses, lets the owner choose staff
- * and manager terms and delegate contract talks and the manager post (a 1.15 sponsor loads as its
- * slot's contract; wages stay until renewal; a world without `operatingExpenses` pays its
- * division's floor until its next season starts; activation draws each existing player's agent
- * from his id, and running contracts carry no clauses until their next signing).
+ * and manager terms and delegate contract talks under a talk rule (`talkRule`), the manager post
+ * and each coaching department (`coach:<department>`) under hiring criteria (`hiring`), and
+ * applies the operating strategy at once with a 90-day lock per slot (`buildChanged`) in place
+ * of one change a season (`buildYear`) and a reservation (`buildNext`), both read only from older
+ * worlds (a 1.15 sponsor loads as its slot's contract; a 1.15 coach-hiring switch loads as every
+ * department's; wages stay until renewal; a world without `operatingExpenses` pays its division's
+ * floor until its next season starts; activation draws each existing player's agent from his id,
+ * running contracts carry no clauses until their next signing, contract talks become delegated
+ * where the academy is and a reserved strategy is dropped with an inbox item naming it).
  */
 export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.0.0',

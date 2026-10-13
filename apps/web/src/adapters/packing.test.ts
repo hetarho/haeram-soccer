@@ -37,10 +37,29 @@ function legacyIntegers(values: number[]) {
 }
 
 describe('lossless career stream compaction', () => {
-  it('keeps a reserved strategy and the manager market through a pack round trip', () => {
+  it('keeps hiring criteria, the talk rule, strategy locks and the manager market through a pack round trip', () => {
     const w = career();
     for (let round = 2; round < 8; round++) advanceRound(w, undefined, false);
-    w.buildNext = { build: { youth: 'pathway' }, name: '다음 계획' };
+    w.hiring = {
+      manager: {
+        minOvr: 60,
+        schools: ['positional'],
+        minFlexibility: 0,
+        maxPride: 90,
+        minYouth: 0,
+        traits: [],
+        maxWageOvr: 70,
+        priority: 'wage',
+        term: 3,
+        poach: false,
+        whenNone: 'best',
+      },
+      coaches: { scout: { volunteer: false, minAbility: 70, priority: 'ability', term: 2 } },
+    };
+    w.talkRule = { maxPay: 1.25, minOvr: 55, maxAge: 34 };
+    w.build = { youth: 'pathway' };
+    w.buildChanged = { youth: { year: w.year, day: 40 } };
+    w.delegation = { ...w.delegation, 'coach:scout': true };
     expect(w.managerMarket?.free.length).toBeGreaterThan(0);
     const restored = validateWorld(unpack(JSON.parse(JSON.stringify(pack(w)))));
     expect(canonical(restored)).toBe(canonical(w));

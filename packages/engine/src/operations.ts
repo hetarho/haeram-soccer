@@ -58,6 +58,8 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
     case 'renew-staff':
     case 'coaching':
     case 'delegate':
+    case 'hiring':
+    case 'talk-rule':
       staffCommand(w, cmd);
       break;
     default:

@@ -8,7 +8,8 @@ import type {
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/world';
 import { talkFor } from '../../../../packages/engine/src/contracts';
-import { isExpiring } from '../../../../packages/engine/src/staff';
+import { isExpiring, STAFF_INFO, STAFF_ROLES } from '../../../../packages/engine/src/staff';
+import { coachKey } from '../../../../packages/engine/src/hiring';
 import { managerRenewal } from '../../../../packages/engine/src/operations';
 import { managerTerm } from '../../../../packages/engine/src/styles';
 import type { GameClient } from '../runtime/client';
@@ -36,6 +37,12 @@ const cardExit = fadeOutOnRemove([
 
 /** Items about a player's contract: a talk, his unhappiness, his transfer request. */
 const PLAYER_KINDS: readonly InboxKind[] = ['contract-talk', 'unhappy', 'transfer-request'];
+/** The coaching departments a renewal or vacancy item names; every department if it names none. */
+function itemDepartments(item: InboxItem) {
+  const text = `${item.title} ${item.detail}`;
+  const named = STAFF_ROLES.filter((role) => text.includes(STAFF_INFO[role].label));
+  return named.length ? named : STAFF_ROLES;
+}
 function bidFor(w: World, item: InboxItem): TransferBid | undefined {
   return item.ref ? w.bids?.find((bid) => bid.id === item.ref) : undefined;
 }
@@ -299,7 +306,8 @@ export function EventCenter({
               disabled={acting}
               onClick={() => {
                 void (async () => {
-                  await client.command({ type: 'delegate', key: 'staff', value: true });
+                  for (const role of itemDepartments(item))
+                    await client.command({ type: 'delegate', key: coachKey(role), value: true });
                   await read(item);
                 })();
               }}

@@ -4,12 +4,13 @@ import { BUILD_SLOTS, type ClubBuild } from '../../../../packages/contracts/src/
 import {
   BUILD_PRESETS,
   buildEffects,
-  buildLock,
   buildOf,
   cardOf,
   composeBuild,
+  draftLock,
   effectLines,
   sameBuild,
+  slotLocks,
 } from '../../../../packages/engine/src/build';
 import { synergyStates } from '../../../../packages/engine/src/synergy';
 import { academyIntakeOutlook } from '../../../../packages/engine/src/academy';
@@ -49,7 +50,8 @@ export function cardSummary(build: ClubBuild) {
 /**
  * The club's operating strategy (→WEB-60, →ECON-22): the one in force, ready-made presets, the
  * owner's saved strategies (→WEB-61), the dials that spend on each area, then the synergies and
- * odds the strategy sets. Choosing opens a draft that commits once a season.
+ * odds the strategy sets. Choosing opens a draft that applies at once; a changed card's slot stays
+ * locked for 90 days.
  */
 export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
   const acting = useGameState((state) => !!state.pendingActions || state.readonly);
@@ -61,17 +63,16 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
   const draft = edits && sameBuild(edits.base, current) ? edits : undefined;
   const draftBuild = draft?.build ?? current;
   const changed = !sameBuild(draftBuild, current);
-  const lock = buildLock(w);
+  const locks = slotLocks(w);
+  // A draft that changes a locked slot is refused, naming the slot and the day it frees (→ECON-22).
+  const lock = changed ? draftLock(w, draftBuild) : undefined;
   const [composer, setComposer] = useState<{ id?: string; name: string; build: ClubBuild }>();
   const [removing, setRemoving] = useState<SavedStrategy>();
-  const reserved = w.buildNext;
-  // Commits now (once a season) or reserves it for the next season's start (→ECON-22).
-  const commit = (next = false) => {
+  const commit = () => {
     void client.command({
       type: 'build',
       build: draftBuild,
       ...(draft?.name ? { name: draft.name } : {}),
-      ...(next ? { next: true } : {}),
     });
     setEdits(undefined);
   };
@@ -138,7 +139,8 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
         <h2>운영 전략</h2>
         <p>
           구단이 어떤 방식으로 굴러갈지 정해요. 추천 전략을 고르거나 나만의 전략을 만들어 저장해
-          두고, 시즌마다 한 번 확정해요. 결과는 확률이라 시즌마다 달라질 수 있어요.
+          두고, 확정하면 바로 적용돼요. 바꾼 부문은 90일 동안 다시 바꿀 수 없어요. 결과는 확률이라
+          시즌마다 달라질 수 있어요.
         </p>
       </header>
 
@@ -149,26 +151,13 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
         </div>
         <small className={s.cards}>{cardSummary(current)}</small>
         <Lines {...effectLines(composeBuild(current))} />
-        {lock && <p className={s.neutral}>{lock}</p>}
+        {locks.length > 0 && (
+          <p className={s.neutral} data-testid="strategy-locks">
+            {locks.map((locked) => `${locked.label} ${locked.frees}부터`).join(' · ')} 바꿀 수
+            있어요
+          </p>
+        )}
       </article>
-
-      {reserved && (
-        <article className={s.reserved} aria-label="다음 시즌 예약" data-testid="strategy-reserved">
-          <div className={s.summaryHead}>
-            <span>다음 시즌 예약</span>
-            <b>{reserved.name ?? strategyName(reserved.build, saved)}</b>
-          </div>
-          <small className={s.cards}>{cardSummary(reserved.build)}</small>
-          <p className={s.neutral}>다음 시즌이 시작되면 그 시즌의 변경으로 적용돼요.</p>
-          <button
-            type="button"
-            disabled={acting}
-            onClick={() => void client.command({ type: 'build', build: current, next: true })}
-          >
-            예약 취소
-          </button>
-        </article>
-      )}
 
       <section className={s.group} aria-label="추천 전략">
         <h3>추천 전략</h3>
@@ -266,23 +255,18 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
               {dropping.map((synergy) => `시너지 ${synergy.label} 꺼짐`).join(' · ')}
             </p>
           )}
-          {lock && <p className={s.neutral}>{lock} · 다음 시즌부터 적용하도록 예약할 수 있어요.</p>}
+          {lock && <p className={s.neutral}>{lock}</p>}
           <div className={s.confirm}>
             <button disabled={acting} onClick={() => setEdits(undefined)}>
               되돌리기
             </button>
             <button
-              className={lock ? s.apply : undefined}
-              disabled={acting}
-              onClick={() => commit(true)}
+              className={`${s.apply} ${s.wide}`}
+              disabled={acting || !!lock}
+              onClick={() => commit()}
             >
-              다음 시즌부터 적용
+              이 전략으로 확정
             </button>
-            {!lock && (
-              <button className={`${s.apply} ${s.wide}`} disabled={acting} onClick={() => commit()}>
-                이 전략으로 확정
-              </button>
-            )}
           </div>
         </article>
       )}

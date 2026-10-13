@@ -15,6 +15,7 @@ import {
   broadcastQuote,
   careOffer,
   catchment,
+  COACH_KEYS,
   closeSeason,
   clubOf,
   createWorld,
@@ -302,7 +303,7 @@ describe('earned, auditable club finances', () => {
   it('books renewals and hires the delegated staff make at the close to the new season', () => {
     const w = world();
     w.cash = '999999999';
-    w.delegation = { ...w.delegation, staff: true };
+    w.delegation = { ...w.delegation, ...Object.fromEntries(COACH_KEYS.map((key) => [key, true])) };
     // A paid coach whose contract ends at this close; the volunteers' terms end too.
     w.staff = w.staff!.map((member) =>
       member.role === 'attack'

@@ -14,8 +14,14 @@ import {
   type KeyboardEvent,
   type RefObject,
 } from 'react';
-import type { DelegationKey, InboxKind, World } from '../../../../packages/contracts/src/types';
+import type {
+  CoachDelegationKey,
+  DelegationKey,
+  InboxKind,
+  World,
+} from '../../../../packages/contracts/src/types';
 import { transferWindow } from '../../../../packages/engine/src/transfers';
+import { COACH_KEYS } from '../../../../packages/engine/src/hiring';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import {
@@ -398,6 +404,9 @@ function InterventionPopover({
 }
 
 const ALL_KINDS = Object.keys(STOP_LABELS) as InboxKind[];
+/** Every coaching department's switch at once (→STAFF-13). */
+const coaches = (on: boolean) =>
+  Object.fromEntries(COACH_KEYS.map((key) => [key, on])) as Record<CoachDelegationKey, boolean>;
 const stops = (on: InboxKind[]): StopOn =>
   Object.fromEntries(ALL_KINDS.map((kind) => [kind, on.includes(kind)])) as StopOn;
 /** From watching every decision to leaving the whole club to the manager and staff. */
@@ -420,7 +429,7 @@ export const INTERVENTION_LEVELS: {
       academy: false,
       transfers: false,
       business: false,
-      staff: false,
+      ...coaches(false),
       contracts: false,
       manager: false,
     },
@@ -445,7 +454,7 @@ export const INTERVENTION_LEVELS: {
       academy: true,
       transfers: false,
       business: false,
-      staff: false,
+      ...coaches(false),
       contracts: true,
       manager: false,
     },
@@ -468,7 +477,7 @@ export const INTERVENTION_LEVELS: {
       academy: true,
       transfers: false,
       business: false,
-      staff: false,
+      ...coaches(false),
       contracts: true,
       manager: false,
     },
@@ -484,7 +493,7 @@ export const INTERVENTION_LEVELS: {
       academy: true,
       transfers: true,
       business: true,
-      staff: true,
+      ...coaches(true),
       contracts: true,
       manager: true,
     },

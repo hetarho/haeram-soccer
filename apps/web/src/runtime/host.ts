@@ -16,6 +16,7 @@ import {
   clubNews,
   BANKRUPT_MESSAGE,
   activateAgents,
+  activateLevers,
 } from '../../../../packages/engine/src/index';
 import type { World, MatchPlayback } from '../../../../packages/contracts/src/types';
 import {
@@ -206,9 +207,13 @@ export class Host {
         if (r.body.upgrade && !r.body.activate)
           throw new Error('규칙 업그레이드는 활성화할 때만 가능합니다.');
         const result = await decode(r.body.raw);
-        // Activation also gives players from before rules 1.16 their agents (→SAVE-10, CLUB-30).
+        // Activation also gives players from before rules 1.16 their agents (→SAVE-10, CLUB-30)
+        // and brings their delegation and reserved strategy to the owner's levers.
         const activated = r.body.upgrade
-          ? activateAgents(upgradeWorldRules(result.world, CURRENT_CATALOG))
+          ? activateLevers(
+              activateAgents(upgradeWorldRules(result.world, CURRENT_CATALOG)),
+              result.world.engine,
+            )
           : result.world;
         upgraded = activated !== result.world;
         candidate = this.view(activated)!.world;

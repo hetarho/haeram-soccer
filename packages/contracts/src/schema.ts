@@ -399,12 +399,61 @@ const staffRole = z.enum([
   'youth',
   'scout',
 ]);
+const staffTrait = z.enum(['developer', 'specialist', 'recovery', 'spotter', 'negotiator']);
+const managerStyle = z.enum([
+  'positional',
+  'gegenpress',
+  'counter',
+  'organizer',
+  'motivator',
+  'developer',
+  'firefighter',
+  'headcoach',
+]);
+/** Each value at most once in a list. */
+const distinct = <T>(values: T[]) => new Set(values).size === values.length;
+const criterion = (max: number) => z.number().int().min(0).max(max);
+/** A wage cap names the going wage of a manager or coach of OVR 50–90 in steps of 5. */
+const wageCapOvr = z.literal([50, 55, 60, 65, 70, 75, 80, 85, 90]);
+/** The manager criteria (→STAFF-18); shared by saves and the hiring command. */
+export const managerCriteriaSchema = z.strictObject({
+  minOvr: criterion(99),
+  schools: z.array(managerStyle).max(8).refine(distinct),
+  minFlexibility: criterion(100),
+  maxPride: criterion(100),
+  minYouth: criterion(100),
+  traits: z
+    .array(z.enum(['none', 'youth', 'rotation', 'stable']))
+    .max(4)
+    .refine(distinct),
+  maxWageOvr: wageCapOvr.optional(),
+  priority: z.enum(['ovr', 'potential', 'wage']),
+  term,
+  poach: z.boolean(),
+  whenNone: z.enum(['wait', 'best']),
+});
+/** One coaching department's criteria (→STAFF-15); the engine checks the department's traits. */
+export const coachCriteriaSchema = z.strictObject({
+  volunteer: z.boolean(),
+  minAbility: criterion(99),
+  trait: staffTrait.optional(),
+  maxWageOvr: wageCapOvr.optional(),
+  priority: z.enum(['ability', 'wage']),
+  term,
+});
+/** The contract-talk rule (→CLUB-26); shared by saves and the talk-rule command. */
+export const talkRuleSchema = z.strictObject({
+  maxPay: z.literal([0.9, 1, 1.1, 1.25, 1.4]),
+  minOvr: criterion(99),
+  maxAge: z.number().int().min(28).max(40).optional(),
+});
+const buildSlot = z.enum(['youth', 'scouting', 'market', 'revenue', 'fans', 'culture']);
 const staff = z.strictObject({
   id,
   role: staffRole,
   name: text,
   ability: rating,
-  trait: z.enum(['developer', 'specialist', 'recovery', 'spotter', 'negotiator']).optional(),
+  trait: staffTrait.optional(),
   wage: money,
   since: z.number().int(),
   until: z.number().int(),
@@ -508,9 +557,15 @@ export const worldSchema: z.ZodType<World> = z.object({
       academy: z.boolean().optional(),
       transfers: z.boolean().optional(),
       business: z.boolean().optional(),
-      staff: z.boolean().optional(),
       contracts: z.boolean().optional(),
       manager: z.boolean().optional(),
+      'coach:assistant': z.boolean().optional(),
+      'coach:attack': z.boolean().optional(),
+      'coach:defense': z.boolean().optional(),
+      'coach:goalkeeping': z.boolean().optional(),
+      'coach:fitness': z.boolean().optional(),
+      'coach:youth': z.boolean().optional(),
+      'coach:scout': z.boolean().optional(),
     })
     .optional(),
   coaching: z
@@ -519,7 +574,10 @@ export const worldSchema: z.ZodType<World> = z.object({
   bids: z.array(bid).max(200).optional(),
   morale: z.number().finite().min(0).max(100).optional(),
   build: clubBuildSchema.optional(),
-  buildYear: z.number().int().min(1901).max(4000).optional(),
+  buildChanged: z
+    .partialRecord(buildSlot, z.strictObject({ year: season, day: seasonDay }))
+    .optional(),
+  // Written only by rules 1.13–1.15; writer activation drops it (→SAVE-10).
   buildNext: z
     .strictObject({
       build: clubBuildSchema,
@@ -581,6 +639,13 @@ export const worldSchema: z.ZodType<World> = z.object({
     .optional(),
   sponsors: z.array(sponsorContract).max(5).optional(),
   managerRule: z.enum(['school', 'best', 'strategy']).optional(),
+  hiring: z
+    .strictObject({
+      manager: managerCriteriaSchema.optional(),
+      coaches: z.partialRecord(staffRole, coachCriteriaSchema).optional(),
+    })
+    .optional(),
+  talkRule: talkRuleSchema.optional(),
   cupWinners: z.record(id, id),
   cups: z.array(domesticCup).max(10).optional(),
   europe: z.array(tournament).max(10),
@@ -675,10 +740,30 @@ function legacyVision(input: unknown): unknown {
     typeof vision === 'string' && Object.hasOwn(LEGACY_VISION_BUILDS, vision)
       ? LEGACY_VISION_BUILDS[vision]
       : {};
+  // Its yearly lock went with the yearly strategy change (→SAVE-10): every slot is free.
+  void visionYear;
+  return { ...rest, ...(Object.keys(build).length ? { build: { ...build } } : {}) };
+}
+/**
+ * Rules before 1.16 (→SAVE-10): one coach-hiring switch (`staff`) becomes every department's
+ * switch, and the yearly strategy lock (`buildYear`) goes, so every slot is free.
+ */
+function legacyLevers(input: unknown): unknown {
+  if (!input || typeof input !== 'object') return input;
+  const w = input as Record<string, unknown>;
+  const delegation = w.delegation as Record<string, unknown> | undefined;
+  const switched = !!delegation && typeof delegation === 'object' && 'staff' in delegation;
+  if (!switched && !('buildYear' in w)) return input;
+  const { buildYear: _buildYear, ...rest } = w;
+  void _buildYear;
+  if (!switched) return rest;
+  const { staff, ...keys } = delegation;
   return {
     ...rest,
-    ...(Object.keys(build).length ? { build: { ...build } } : {}),
-    ...(visionYear !== undefined ? { buildYear: visionYear } : {}),
+    delegation: {
+      ...Object.fromEntries(staffRole.options.map((role) => [`coach:${role}`, staff])),
+      ...keys,
+    },
   };
 }
 
@@ -714,7 +799,7 @@ function legacySponsor(w: World, country: string, catalog: LoadCatalog | undefin
 
 /** `catalog` is needed only for a world from rules before 1.16 that has a sponsor. */
 export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
-  const w = worldSchema.parse(legacyMarket(legacyVision(input)));
+  const w = worldSchema.parse(legacyLevers(legacyMarket(legacyVision(input))));
   const ids = new Set(w.clubs.map((c) => c.id));
   if (ids.size !== w.clubs.length || !ids.has(w.playerClub))
     throw new Error('저장된 클럽 식별자가 올바르지 않습니다.');
