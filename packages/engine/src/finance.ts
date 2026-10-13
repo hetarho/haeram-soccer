@@ -6,16 +6,19 @@ import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { staffWageTotal } from './staff';
 import { SEASON_ROUNDS } from './calendar';
-import { facilityUpkeepUnits } from './facilities';
+import { facilityUpkeep } from './facilities';
 import { catchment, localSupporters } from './fans';
 
 export const FINANCE_CONFIG = {
   ticketDemandScale: 0.12,
   homeMatchBaseCost: 6,
   homeMatchCostPerFan: 0.002,
-  /** Result bonuses of cup and continental matches; league games pay the merit instead. */
-  winBonus: 8,
-  drawBonus: 3,
+  /**
+   * Result bonuses of cup and continental matches, units on the broadcasting index (→ECON-31);
+   * league games pay the merit instead.
+   */
+  winBonus: 1.5,
+  drawBonus: 0.5,
   /** How much a far bigger or smaller opponent moves the gate, either way. */
   opponentDraw: 0.12,
 };
@@ -29,14 +32,14 @@ export const FINANCE_CONFIG = {
  */
 export const DISTRIBUTION_CONFIG = {
   share: {
-    ENG: [9000, 3000, 1200, 700, 150],
-    ESP: [7500, 2400, 130],
-    GER: [7500, 2400, 1000, 130],
-    ITA: [7500, 2400, 1000, 130],
-    FRA: [6500, 2100, 900, 120],
-    POR: [5000, 1600, 100],
-    NED: [5000, 1600, 100],
-    BEL: [4500, 1500, 100],
+    ENG: [12700, 900, 400, 220, 40],
+    ESP: [10500, 600, 30],
+    GER: [10500, 750, 330, 30],
+    ITA: [10500, 750, 330, 30],
+    FRA: [9100, 700, 300, 28],
+    POR: [7000, 400, 22],
+    NED: [7000, 400, 22],
+    BEL: [6400, 370, 22],
   } as Record<string, readonly number[]>,
   champion: { top: 1.6, below: 1.3 },
   parachute: 0.5,
@@ -45,22 +48,23 @@ export const DISTRIBUTION_CONFIG = {
 /**
  * Operating expenses (운영 경비, →ECON-30), measured against ECON-29 (docs/FINANCES.md):
  * matchday operations, travel, administration, medical care, kit and the club's staff. A season's
- * amount is `share` of the club's turnover over its last completed season, never below `floor`:
- * each country's floor by division, from the top flight down, the last entry being its amateur
- * league, in 1901 price units before the football index. The amount is set when the season starts
- * and paid in league-round installments with the wages.
+ * amount is the larger of `share` of the club's turnover over its last completed season and
+ * `floor`, the division amount: each country's by division, from the top flight down, the last
+ * entry being its amateur league, in 1901 price units before the football index. A club's first
+ * season and a season after a relegation pay the division amount. The amount is set when the
+ * season starts and paid in league-round installments with the wages.
  */
 export const EXPENSE_CONFIG = {
-  share: 0.4,
+  share: 0.35,
   floor: {
-    ENG: [3000, 800, 320, 190, 40],
-    ESP: [2500, 650, 35],
-    GER: [2500, 650, 270, 35],
-    ITA: [2500, 650, 270, 35],
-    FRA: [2200, 580, 240, 30],
-    POR: [1700, 450, 30],
-    NED: [1700, 450, 30],
-    BEL: [1500, 410, 30],
+    ENG: [8000, 900, 450, 300, 80],
+    ESP: [6600, 500, 60],
+    GER: [6600, 700, 350, 60],
+    ITA: [6600, 700, 350, 60],
+    FRA: [5700, 650, 330, 60],
+    POR: [4400, 340, 50],
+    NED: [4400, 340, 50],
+    BEL: [4000, 310, 50],
   } as Record<string, readonly number[]>,
 };
 
@@ -105,13 +109,17 @@ export function lastSeasonTurnover(w: World): string | undefined {
 }
 /**
  * This season's operating expenses as the season starts (→ECON-30): `share` of the last completed
- * season's turnover, never below the floor of the division played this season, so a promotion or
- * relegation at the close sets the floor first. A club's first season pays the floor.
+ * season's turnover, never below the division amount (floor) of the division played this season,
+ * so a promotion or relegation at the close sets the floor first. A club's first season and a
+ * season after a relegation pay the floor: a relegated club runs at its new division's size, and
+ * last season's books were a bigger club's.
  */
 export function assessOperatingExpenses(w: World): string {
   const club = clubOf(w),
     floor = operatingExpensesAt(club.country, w.year, club.tier),
-    turnover = lastSeasonTurnover(w);
+    closed = w.history.at(-1);
+  if (closed !== undefined && closed.year === w.year - 1 && closed.tier < club.tier) return floor;
+  const turnover = lastSeasonTurnover(w);
   if (turnover === undefined) return floor;
   const share = ratio(turnover, BigInt(Math.round(EXPENSE_CONFIG.share * 10000)), 10000n);
   return BigInt(share) > BigInt(floor) ? share : floor;
@@ -124,6 +132,45 @@ export function seasonOperatingExpenses(w: World): string {
   if (w.operatingExpenses !== undefined) return w.operatingExpenses;
   const club = clubOf(w);
   return operatingExpensesAt(club.country, w.year, club.tier);
+}
+
+/** The yearly wage bill: players, the manager and the coaching staff (→CLUB-26, →ECON-29). */
+export function wageBill(w: World) {
+  const costs = operatingCosts(w);
+  return (
+    BigInt(costs.playerWages) +
+    BigInt(costs.managerWage) +
+    BigInt(costs.staffWages)
+  ).toString();
+}
+/**
+ * This season's turnover so far (→ECON-30): its income without player sales, compensation for
+ * players who left or owner capital. Events are only appended, so the scan stops at the first
+ * older one.
+ */
+export function seasonTurnover(w: World) {
+  let notTurnover = 0n;
+  for (let i = w.events.length - 1; i >= 0; i--) {
+    const e = w.events[i];
+    if (e.year < w.year) break;
+    if (e.year === w.year && e.currency === w.currency && e.amount && NOT_TURNOVER.has(e.kind))
+      notTurnover += BigInt(e.amount);
+  }
+  return BigInt(w.income) - notTurnover;
+}
+/**
+ * The club's revenue over the last 12 months, the income a wage bill can rest on (→CLUB-26): this
+ * season's turnover so far and last season's share for the league rounds not yet played, in
+ * today's money. A club without a completed season counts its season so far at its pace over a
+ * whole season; before its first round it has earned nothing yet.
+ */
+export function recentRevenue(w: World): string {
+  const rounds = BigInt(SEASON_ROUNDS),
+    played = BigInt(Math.min(w.round, SEASON_ROUNDS)),
+    season = seasonTurnover(w),
+    earlier = lastSeasonTurnover(w);
+  if (earlier === undefined) return played === 0n ? '0' : ((season * rounds) / played).toString();
+  return (season + (BigInt(earlier) * (rounds - played)) / rounds).toString();
 }
 
 /**
@@ -174,7 +221,7 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     .reduce((sum, p) => sum + BigInt(p.wage), 0n)
     .toString();
   const managerWage = w.manager.wage;
-  const maintenance = quote(clubOf(w).country, w.year, facilityUpkeepUnits(w.facilities));
+  const maintenance = facilityUpkeep(clubOf(w).country, w.year, w.facilities);
   const marketing = effects.marketingUnits
     ? quote(clubOf(w).country, w.year, effects.marketingUnits * 46)
     : '0';
@@ -374,7 +421,7 @@ export function matchBonus(w: World, match: MatchRecord) {
   const games = ownLeagueGames(w);
   const amount = isLeagueMatch(match.kind)
     ? '0'
-    : footballQuote(
+    : broadcastQuote(
         clubOf(w).country,
         w.year,
         (own > other ? FINANCE_CONFIG.winBonus : own === other ? FINANCE_CONFIG.drawBonus : 0) *

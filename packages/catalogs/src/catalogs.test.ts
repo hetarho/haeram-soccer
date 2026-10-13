@@ -47,21 +47,20 @@ it('labels football figures estimated, projects after coverage and caches each l
   expect(footballIndex('ENG', 2030).value).toBeGreaterThan(footballIndex('ENG', 2026).value);
   expect(footballIndex('ITA', 2005)).toBe(footballIndex('ITA', 2005));
 });
-it('keeps broadcasting money below the football index before television and above it from the 2000s', () => {
-  for (let year = 1950; year <= 1959; year++)
-    expect(broadcastingIndex('ENG', year).real).toBeLessThan(footballIndex('ENG', year).real);
+it('keeps broadcasting money with prices before television and above the football index from the 2000s', () => {
+  for (let year = 1901; year <= 1964; year++)
+    expect(broadcastingIndex('ENG', year).real).toBeCloseTo(1, 6);
   for (let year = 2000; year <= 2025; year++)
     expect(broadcastingIndex('ENG', year).real).toBeGreaterThan(footballIndex('ENG', year).real);
-  // England's anchors: flat before 1950, then each era's multiple against prices.
-  for (const year of [1901, 1950]) expect(broadcastingIndex('ENG', year).real).toBe(0.15);
-  expect(broadcastingIndex('ENG', 1983).real).toBeCloseTo(1, 6);
-  expect(broadcastingIndex('ENG', 1992).real).toBeCloseTo(6, 6);
-  expect(broadcastingIndex('ENG', 2005).real).toBeCloseTo(25, 6);
+  // England's anchors: each era's multiple against prices.
+  expect(broadcastingIndex('ENG', 1979).real).toBeCloseTo(1.2, 6);
+  expect(broadcastingIndex('ENG', 1992).real).toBeCloseTo(2, 6);
+  expect(broadcastingIndex('ENG', 2005).real).toBeCloseTo(36, 6);
   const multiple = broadcastingIndex('ENG', 2005).value / priceIndex('ENG', 2005).value;
-  expect(multiple).toBeCloseTo(25, 6);
-  // Every country grows from the same small start; England leads the boom.
+  expect(multiple).toBeCloseTo(36, 6);
+  // Every country starts with prices; England leads the boom.
   for (const c of COUNTRIES) {
-    expect(broadcastingIndex(c.code, 1955).real).toBeLessThan(1);
+    expect(broadcastingIndex(c.code, 1955).real).toBeCloseTo(1, 6);
     expect(broadcastingIndex(c.code, 2005).real).toBeGreaterThan(footballIndex(c.code, 2005).real);
     expect(broadcastingIndex(c.code, 2020).real).toBeLessThanOrEqual(
       broadcastingIndex('ENG', 2020).real,

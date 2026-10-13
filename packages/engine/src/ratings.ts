@@ -1,5 +1,5 @@
 import type { Club, MatchRecord, World } from '../../contracts/src/types';
-import { activePlayers, clubOf, findClub, initialElo, quote } from './world';
+import { activePlayers, clubOf, findClub, footballQuote, initialElo, quote } from './world';
 import { playerValue } from './transfers';
 import { facilityCostUnits } from './facilities';
 
@@ -61,8 +61,9 @@ export function clubValuation(w: World) {
     code = club.country;
   let built = 0;
   for (let level = 1; level <= w.facilities; level++) built += facilityCostUnits(level);
+  // Facilities are built on the football index (→ECON-12), so their half is valued on it too.
   const squad = squadValue(w),
-    facilities = quote(code, w.year, 150 + built / 2),
+    facilities = footballQuote(code, w.year, 150 + built / 2),
     brand = quote(code, w.year, (club.fans / 20) * (1 + club.reputation / 100));
   const total = BigInt(squad) + BigInt(facilities) + BigInt(brand) + BigInt(w.cash);
   return { squad, facilities, brand, cash: w.cash, total: total.toString() };

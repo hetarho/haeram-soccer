@@ -99,6 +99,34 @@ export function fixturesFor(clubs: Club[], year: number, globalRounds = 46): Fix
   }
   return matches;
 }
+/** The amateur clubs the own club meets in the amateur league. */
+function amateurOpponents(w: World) {
+  const own = clubOf(w);
+  return w.clubs
+    .filter(
+      (c) =>
+        c.country === own.country &&
+        c.representative &&
+        c.tier === country(c.country).groups.length,
+    )
+    .slice(0, AMATEUR_CLUBS);
+}
+/**
+ * The average strength of the other clubs in the division the own club plays in, its league group
+ * or the amateur clubs it meets: the level their squads are generated at, the scale `makePlayer`
+ * rates a player on. It reads the clubs as they are, so after the close's promotions it is the
+ * division the club will play in, before its fixtures exist.
+ */
+export function divisionStrength(w: World) {
+  const own = clubOf(w),
+    key = groupKey(own);
+  const peers = w.lower
+    ? amateurOpponents(w)
+    : w.clubs.filter((c) => c.id !== own.id && !c.representative && groupKey(c) === key);
+  return peers.length
+    ? peers.reduce((sum, c) => sum + c.strength, 0) / peers.length
+    : rating(w, own);
+}
 export function prepareSeason(w: World, continental = true) {
   w.fixtures = [];
   w.tables = {};
@@ -111,20 +139,8 @@ export function prepareSeason(w: World, continental = true) {
     }
   for (const cs of groups.values()) w.fixtures.push(...fixturesFor(cs, w.year));
   if (w.lower) {
-    const own = clubOf(w);
-    const lower = [
-      own,
-      ...w.clubs
-        .filter(
-          (c) =>
-            c.country === own.country &&
-            c.representative &&
-            c.tier === country(c.country).groups.length,
-        )
-        .slice(0, AMATEUR_CLUBS),
-    ];
     w.fixtures.push(
-      ...fixturesFor(lower, w.year).map((f) => ({
+      ...fixturesFor([clubOf(w), ...amateurOpponents(w)], w.year).map((f) => ({
         ...f,
         kind: 'lower' as const,
         groupKey: 'lower',
@@ -630,9 +646,9 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   yearlyStaff(w);
   seasonStaff(w);
   seasonAcademy(w);
-  // Youth come in five below the squad as it finished the season: an XI that expiring contracts
-  // left short would otherwise bring every replacement in at the floor of 20 (→CLUB-3).
-  const youthLevel = Math.max(20, rating(w, own) - 5);
+  // Youth come in five below the division the club will play in, on its market wage: rated
+  // against an XI that had outgrown its division they arrived on star wages (→CLUB-3).
+  const youthLevel = Math.max(20, Math.round(divisionStrength(w)) - 5);
   // Unrenewed contracts end: those players leave, before 1996 for a compensation (→CLUB-28).
   expireContracts(w, oldTier);
   // The running contracts' promotion or relegation clauses apply from the first round (→CLUB-29).

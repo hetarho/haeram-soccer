@@ -24,7 +24,7 @@ import { talkRuleOf } from './hiring';
 import { buildEffects } from './build';
 import { moraleOf, UNHAPPY_MORALE } from './morale';
 import { pushInbox } from './inbox';
-import { moneyLabel, operatingCosts } from './finance';
+import { moneyLabel, operatingCosts, recentRevenue, wageBill } from './finance';
 import { CASH_WARNING_ROUNDS } from './settlement';
 import { contractSeason } from './ops-staff';
 import { currentDay, dayCountedFrom, SEASON_ROUNDS } from './calendar';
@@ -39,30 +39,30 @@ import { financeProjection } from './projection';
  */
 export const MARKET_CONFIG = {
   /**
-   * Yearly wage of a top-flight player rated `pivot` in his prime at football index 1: about the
-   * English maximum wage of 1950, £14 a week.
+   * Yearly wage of a top-flight player rated `pivot` in his prime at football index 1, sized so a
+   * top-flight wage bill weighs against the gate as it does in real football.
    */
-  wage: 200,
+  wage: 900,
   pivot: 70,
-  /** Each ability point multiplies wage and value, so 80 earns 6.3× 60 (CLUB-25: 6–10×). */
-  perPoint: 1.0965,
+  /** Each ability point multiplies wage and value, so 80 earns 7.4× 60 (CLUB-25: 6–10×). */
+  perPoint: 1.105,
   /**
    * What a division pays for the same player, as a share of the top flight, by tier from the top
    * (the amateur league is the tier below the professional ones); the last entry holds below.
-   * The second tier pays 42% (CLUB-25: 35–50%); the third tier and below pay little, so a club
-   * that climbs from the amateur league can carry its squad on its gate.
+   * The second tier pays 40% (CLUB-25: 35–50%); lower divisions pay far less, so an amateur club
+   * can keep the players its academy grows.
    */
-  divisions: [1, 0.42, 0.15, 0.12, 0.1],
+  divisions: [1, 0.4, 0.15, 0.07, 0.03],
   /**
    * A young player is priced for a share of his headroom (potential − ability): the whole share
    * up to `full` years old, none from `none`; wages count `wage` of it, values `value`.
    */
   promise: { full: 18, none: 24, wage: 0.2, value: 0.4 },
   /** Ability points off for each year under `junior` and over `veteran`. */
-  junior: 21,
+  junior: 30,
   veteran: 30,
   /** A value is `years` of market wage up to age `peak`, one fewer each year after, at least `minYears`. */
-  years: 3,
+  years: 2,
   peak: 28,
   minYears: 1,
   /** A season's loan costs this share of the player's value. */
@@ -153,8 +153,11 @@ export function marketValue(w: World, player: Player, division = clubOf(w).tier)
  * for better players.
  */
 export const AGENT_CONFIG = {
-  /** Each level above 1 raises the demand by this share (→CLUB-26). */
-  premium: 0.03,
+  /**
+   * Each level above 1 raises the demand by this share (→CLUB-26), small enough that the default
+   * talk rule's 110% cap still keeps a delegated squad at its market wage (→ECON-29).
+   */
+  premium: 0.01,
   /**
    * The draw is a uniform number cut into five even bands; a player rated `pivot` keeps it, every
    * point above or below moves it 1/`spread` toward 5 or 1, at most `shift`.
@@ -177,7 +180,7 @@ export function drawAgent(r: () => number, ability: number): AgentRating {
 export function agentOf(w: Pick<World, 'seed'>, p: Player): AgentRating {
   return p.agent ?? drawAgent(random(`${w.seed}:agent:${p.id}`), overall(p));
 }
-/** The demand multiplier his agent brings: 3% per level above 1 (→CLUB-26). */
+/** The demand multiplier his agent brings: 1% per level above 1 (→CLUB-26). */
 export function agentPremium(agent: AgentRating) {
   return 1 + AGENT_CONFIG.premium * (agent - 1);
 }
@@ -315,6 +318,11 @@ export const TALK_CONFIG = {
   staffSeasons: 2,
   veteranAge: 32,
   veteranSeasons: 1,
+  /**
+   * The delegated staff keep the yearly wage bill, staff included, within this share of the
+   * club's revenue over the last 12 months (→CLUB-26).
+   */
+  wageShare: 0.65,
 };
 /**
  * The terms a contract signed today takes (→CLUB-26): the summer window's whole seasons until
@@ -602,9 +610,10 @@ export function seasonEndWithWage(w: World, p: Player, wage: string) {
  * Delegated staff (→STAFF-13) offer the floor for two seasons past this one (one from 32), never
  * ending before the running contract (→staffTerm), when the owner's talk rule allows the player
  * (the floor within its wage cap, his OVR at least its minimum, younger than its age limit), cash
- * after the raise still covers 13 rounds of costs and the season's cash projection with the new
- * wage from the next round still ends the season covering them; otherwise they decline. Either way
- * the talk's inbox item says why.
+ * after the raise still covers 13 rounds of costs, the yearly wage bill after it, staff included,
+ * stays within 65% of the last 12 months' revenue, and the season's cash projection with the new
+ * wage from the next round still ends the season covering 13 rounds of costs; otherwise they
+ * decline. Either way the talk's inbox item says why.
  */
 export function staffTalkVerdict(w: World, p: Player) {
   const talk = p.talk!,
@@ -634,6 +643,14 @@ export function staffTalkVerdict(w: World, p: Player) {
     return {
       accept: false as const,
       reason: `인상하면 운영자금이 ${CASH_WARNING_ROUNDS}라운드 운영비에 못 미쳐 거절했어요.`,
+    };
+  const bill = BigInt(wageBill(w)) + raise,
+    revenue = recentRevenue(w),
+    share = Math.round(TALK_CONFIG.wageShare * 100);
+  if (bill * 100n > BigInt(revenue) * BigInt(share))
+    return {
+      accept: false as const,
+      reason: `인상하면 연간 인건비 ${moneyLabel(w, bill.toString())}가 최근 12개월 수입 ${moneyLabel(w, revenue)}의 ${share}%를 넘어 거절했어요.`,
     };
   const seasonEnd = seasonEndWithWage(w, p, talk.floor);
   if (BigInt(seasonEnd) < runway)

@@ -28,14 +28,16 @@ export const CURRENT_ENGINE_VERSION = '1.16.0';
  * progression mode through the same days in one order with draws named by what they settle,
  * swaps the amateur level with the last professional division by the amateur table, converts
  * every live amount at a currency change, lists the market per settings and keeps an outgoing
- * bid's player and terms as its `offer` (a bid pending from before has none); 1.16.0 pays a league
- * distribution on the broadcasting index and a local-supporter gate on the football index of
- * catalog 2026-demo-2 with no global fan income, charges operating expenses as a share of last
- * season's turnover above a floor per division, recorded as `operatingExpenses` when a season
- * starts, signs sponsors per slot by era, pays players market wages agreed in contract talks at
- * the window openings (unhappy players, transfer requests, expiring contracts), gives every player
- * an agent and every contract signed promotion and relegation clauses, lets the owner choose staff
- * and manager terms and delegate contract talks under a talk rule (`talkRule`), the manager post
+ * bid's player and terms as its `offer` (a bid pending from before has none); 1.16.0 pays league
+ * distributions and cup and continental prizes on the broadcasting index and a local-supporter
+ * gate on the football index of catalog 2026-demo-2 with no global fan income, quotes facilities
+ * on the football index, charges operating expenses on the larger of the division amount and a
+ * share of last season's turnover (the division amount after a relegation), recorded as
+ * `operatingExpenses` when a season starts, signs sponsors per slot by era, pays players market
+ * wages agreed in contract talks at the window openings (unhappy players, transfer requests,
+ * expiring contracts), gives every player an agent and every contract signed promotion and
+ * relegation clauses, lets the owner choose staff and manager terms and delegate contract talks
+ * under a talk rule (`talkRule`, declined past 65% of revenue on the wage bill), the manager post
  * and each coaching department (`coach:<department>`) under hiring criteria (`hiring`), and
  * applies the operating strategy at once with a 90-day lock per slot (`buildChanged`) in place
  * of one change a season (`buildYear`) and a reservation (`buildNext`), both read only from older

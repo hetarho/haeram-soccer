@@ -398,7 +398,7 @@ export function createBase(input: Founding): World {
   const baseline =
     players.reduce((s, p) => s + BigInt(p.wage), 0n) +
     BigInt(manager.wage) +
-    BigInt(quote(input.country, year, 180)) +
+    BigInt(footballQuote(input.country, year, 180)) +
     BigInt(operatingExpenses);
   const cash = ratio(baseline.toString(), BigInt(input.difficulty * 2), 2n);
   return {

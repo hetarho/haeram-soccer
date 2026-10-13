@@ -19,14 +19,14 @@
 | ARCH | 9 | 9 | - | 2 |
 | WEB | 54 | 54 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
-| CLUB | 21 | 21 | - | 0 |
+| CLUB | 23 | 23 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
 | STAFF | 13 | 13 | - | 0 |
-| ECON | 18 | 18 | - | 0 |
+| ECON | 20 | 20 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 7 | 7 | - | 0 |
-| SAVE | 23 | 23 | - | 0 |
+| SAVE | 24 | 24 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -42,13 +42,16 @@
 ## next
 - three levers on branch work/levers (pushed): T070–T077 done (T077 d303c5e: cards and remedies open each setting's home). Next: T078 (upgrade journey, goldens, calibration check ENG/GER — no bankrupt reference career is the must-hold; record other drift in ECON-29 and move on; full three-browser e2e via CI). Then let CI pass on work/levers and merge it into main (main's benchmark fix is already merged here).
 - benchmark (ARCH-28 p95 < 100 ms, entry ≤ 250 KiB): fixed on main (e797019; CI run 38368336768 passed the benchmark job and every browser) and merged into work/levers (0ac9c71); T078's CI run must keep the benchmark job green (the levers pages ride the lazy management chunk).
-- after T078: port the other machine's economy calibration from origin/alt/club-realism-local (a1e4cbb, never merged; ECON r16–r21, CLUB r18–r21, SAVE r22 there) instead of merging that branch: it held every ECON-29 band on 24 careers (wage bill 46.8% of revenue with the band at 45–70%, operating result before player trading +1.1%, 2000s mix 42.5/34.6/22.9%, ladder 99.8 seasons, none bankrupt) where this line's T062 left wage 36.2% and net 20.3% outside. Bring over its decisions — distributions and prizes on the broadcasting index, facilities on the football index with growth 1.58, operating expenses the larger of the division amount and last season's revenue share (a relegated season pays the division amount), the delegated wage-bill check within 65% of revenue, the operating-result metric — reconcile them with this line's T065/T066/T067 rules in update-ssot, then re-measure with the contract clauses and agents in place. Constants alone do not carry over (checked 261013 17:40): that line's broadcasting index is another series (catalog key `broadcast`, a real multiple near 1 before television paid the league, built by `series()` in packages/catalogs/src/index.ts) and its constants are scaled to it (top-flight distribution 12,700 vs 9,000 here, market wage 900 vs 200, perPoint 1.105, divisions [1, .4, .15, .07, .03], junior 30, years 2, shirt sponsor 26,400 vs 4,800, win/draw bonus 1.5/0.5, FACILITY_CONFIG growth 1.58 on the football index, expenses revenueShare 0.35): port the index data and code, the facility and expense rules and these constants together, then calibrate.
+- economy calibration ported (T079 done on work/econ-port, merged into work/levers): the other machine's calibration from origin/alt/club-realism-local plus this line's later rules holds every ECON-29 band on 24 careers — wage bill 46.1% of revenue, operating result +3.4% before player trading, 2000s mix 43.2/33.7/23.1%, 1950s matchday 89.5%, ladder 95.5 seasons, none bankrupt, established-club crowds in band (ECON r20, CLUB r23, SAVE r24; agent premium 3%→1% was the only retune). T078's calibration acceptance still compares with T062's old table (wage bill / income, net / income); the bands are now measured on revenue with the operating result (ECON-29), so that check reads the T079 table instead — no replanning needed unless a must-hold (no bankrupt reference career) fails.
 - CI on work/levers (0ac9c71, 261013): checks and every browser's e2e pass; only the benchmark job fails, because scripts/first-play.mjs still clicks the old tab labels (스태프 → 사람, 선수단, 구단 운영 …; `locator.click` timeout on '스태프'). T078: update its click path to the new tabs, then check the desktop p95 and the entry size (main's entry was 234,916 B of 256,000; levers adds pages to the lazy management chunk).
 - goalkeepers (owner's report 261013: academy GKs show 93 while outfielders show 60s): `overall` is keeping alone for a GK (world.ts) but the mean of four skills for others, a generated GK gets keeping +12, and academy growth all goes into that one skill, so GK numbers sit far above outfield ones; delegated staff never promote into a full role (ROLE_LIMIT GK 3, academy.ts), so a ready GK prospect keeps growing toward potential until release at 19 (22 when the owner decides). Check whether CLUB-25 market wages and values, which read the overall, overpay keepers; plan a common OVR scale or a GK-specific wage/value curve (update-ssot), and let delegated staff list or sell surplus ready prospects.
 - owner's standing decisions (261013): decide without asking him; record gaps that do not change the game much and move on; push verified work (branch → CI in every browser → main); never touch his local checkout or its dev server on port 19500 while he may hold unsaved progress.
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 T079 done: calibration ported and retuned (agent premium 3%→1%), every ECON-29 band on 24 careers, checks pass (unit 657, contract 11 with goldens, build, Chromium e2e 101); ECON r20 CLUB r23
+- 261013 T079 doing standalone on econ-port (00a483d), branch work/econ-port
+- 261013 update-ssot ECON r19 CLUB r22 SAVE r24: the other machine's calibration ported (broadcasting index series, prizes on it, facilities on the football index at 1.58, expenses the larger of the division amount and the turnover share, 65% delegated wage check, established-club crowds); create-task T079
 - 261013 T077 done: event cards and remedies open each setting's home (코치진, the one intervention dialog, 후원/재정, 훈련 with 회복 suggested, the board with marketing, squad investment or ticket drafted)
 - 261013 T077 doing standalone on levers (00a483d)
 - 261013 merged main (benchmark fix e797019) into work/levers: App/EventCenter/RemedySheet keep the selector reads, PolicyBoard keeps T076's board; unit 655, build pass
@@ -66,6 +69,3 @@
 - 261013 T075 done: squad investment scales operating expenses ×0.9–1.2 on each round's booking, fixed costs, runway, warning, bankruptcy threshold and projection; level 3 exactly ×1, goldens and calibration unchanged
 - 261013 T075 doing standalone on ia-money (5751099)
 - 261013 T070 done: per-department coach switches, hiring criteria and talk rule as data, talks by the talk rule, strategy applied at once with 90-day slot locks, load and activation mapping; goldens unchanged
-- 261013 T070 doing standalone on ia-plan (6dbfb46)
-- 261013 update-ssot ECON r18: ECON-29 records rules 1.16.0's measured values and accepts the bands outside for now (no code impact)
-- 261013 T062 done by the owner's decision (record what does not change the game much): solvent reference careers; wage bill and net outside their bands, recorded in next

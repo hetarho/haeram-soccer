@@ -1,7 +1,7 @@
 import type { DomesticCup, KnockoutRound, World } from '../../contracts/src/types';
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import { compareIds } from './primitives';
-import { addEvent, clubOf, findClub, footballQuote } from './world';
+import { addEvent, broadcastQuote, clubOf, findClub } from './world';
 import { credit } from './operations';
 import { pushInbox } from './inbox';
 import { seasonDayLabel } from './calendar';
@@ -25,8 +25,14 @@ import {
  * clear of every round the continental competitions use.
  */
 export const DOMESTIC_CUP_ROUNDS = [5, 11, 16, 23, 28, 35, 42] as const;
-/** Prize for each tie the own club wins, by rounds left after it (semi-final first), in 1901 units. */
-const CUP_PRIZE = [40, 20, 10, 5] as const;
+/**
+ * Cup prizes in units on the broadcasting index (→ECON-31): `ties` for each tie the own club wins,
+ * by rounds left after it (semi-final first), and `honor` for the title.
+ */
+export const CUP_PRIZE_CONFIG = {
+  ties: [7, 3.5, 1.8, 0.9] as readonly number[],
+  honor: 27,
+};
 
 export const cupKey = (code: string) => `cup:${code}`;
 export const domesticCupName = (code: string) => `${country(code).name} 컵`;
@@ -102,12 +108,13 @@ function progress(w: World, cup: DomesticCup) {
     const left = roundsFor(cup.clubs.length) - 1 - index;
     // Winning the final is the title itself, paid with the trophy below.
     if (tie.winner === w.playerClub && left > 0) {
-      // Cup prizes keep their rule and grow with the football index (→LEAGUE-5, →ECON-26).
-      const prize = footballQuote(
-        clubOf(w).country,
-        w.year,
-        CUP_PRIZE[Math.min(left - 1, CUP_PRIZE.length - 1)],
-      );
+      // Cup prizes keep their rule and grow with the broadcasting index (→LEAGUE-5, →ECON-31).
+      const ties = CUP_PRIZE_CONFIG.ties,
+        prize = broadcastQuote(
+          clubOf(w).country,
+          w.year,
+          ties[Math.min(left - 1, ties.length - 1)],
+        );
       credit(w, prize);
       addEvent(w, 'cup-prize', `${cup.name} ${round.label} 통과`, `${cup.name} 상금`, prize);
     } else if (tie.winner !== w.playerClub)
@@ -119,7 +126,7 @@ function progress(w: World, cup: DomesticCup) {
     cup.winner = left[0];
     w.cupWinners[cup.country] = cup.winner;
     if (cup.winner === w.playerClub) {
-      const prize = footballQuote(clubOf(w).country, w.year, 150);
+      const prize = broadcastQuote(clubOf(w).country, w.year, CUP_PRIZE_CONFIG.honor);
       credit(w, prize);
       addEvent(
         w,

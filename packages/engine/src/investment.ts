@@ -1,8 +1,8 @@
 import type { World } from '../../contracts/src/types';
 import { SEASON_ROUNDS } from './calendar';
 import { gateProjection, operatingCosts } from './finance';
-import { clubOf, quote } from './world';
-import { facilityCostUnits, MAX_FACILITIES } from './facilities';
+import { clubOf } from './world';
+import { facilityCost, MAX_FACILITIES } from './facilities';
 
 /** Fixed costs only: future gates, bonuses, sponsorship and other income are excluded. */
 export function fixedCostRunway(cash: string, annual: string): number {
@@ -16,7 +16,7 @@ export function fixedCostRunway(cash: string, annual: string): number {
 /** Hypothetical cost/read model; capped facilities have no further spend or improvement. */
 export function facilityInvestmentPreview(w: World) {
   const eligible = w.facilities < MAX_FACILITIES,
-    cost = eligible ? quote(clubOf(w).country, w.year, facilityCostUnits(w.facilities + 1)) : '0',
+    cost = eligible ? facilityCost(clubOf(w).country, w.year, w.facilities + 1) : '0',
     facilitiesAfter = eligible ? w.facilities + 1 : w.facilities,
     draft = { ...w, facilities: facilitiesAfter },
     before = operatingCosts(w),
