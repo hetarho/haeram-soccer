@@ -14,10 +14,12 @@ import {
   clubOf,
   createWorld,
   cupKey,
+  divisionStrength,
   eloOf,
   finishCups,
   finishEurope,
   legsOf,
+  marketWageAt,
   overall,
   ownLeagueClubs,
   prepareSeason,
@@ -231,23 +233,34 @@ describe('closed season archive', () => {
     expect(w.players.filter((p) => p.status === 'active')).toHaveLength(18);
   });
 
-  it('refills a squad its expiring contracts emptied at the level it played at (→CLUB-3, CLUB-28)', () => {
+  it('refills a squad its expiring contracts emptied at its division’s level and wage (→CLUB-3, CLUB-25, CLUB-28)', () => {
     const w = founded();
     w.delegation = { ...w.delegation, contracts: false };
-    // A squad well above the amateur level, so the floor of 20 would stand out.
+    // An XI far above the amateur league and the division it goes up to.
     for (const p of w.players) {
       p.until = w.year + 1;
-      if (p.role === 'GK') p.keeper = 60;
-      else Object.assign(p, { attack: 60, passing: 60, defense: 60, stamina: 60 });
+      if (p.role === 'GK') p.keeper = 90;
+      else Object.assign(p, { attack: 90, passing: 90, defense: 90, stamina: 90 });
     }
     const { live } = closedSeason(w);
-    const level = rating(live, clubOf(live)),
+    const own = clubOf(w),
+      xi = rating(live, clubOf(live)),
+      level = divisionStrength(w),
       youths = activePlayers(w).filter((p) => p.id.startsWith(`${w.playerClub}:youth:`));
+    // The champions go up: the division they will play in is the professional one above.
+    expect(own.tier).toBeLessThan(live.clubs.find((c) => c.id === own.id)!.tier);
+    expect(xi).toBeGreaterThan(level + 30);
     // Nobody who played the season stays: expiry and retirement emptied the squad.
     expect(activePlayers(w).filter((p) => live.players.some((x) => x.id === p.id))).toEqual([]);
     expect(youths.length).toBeGreaterThanOrEqual(11);
-    // Each comes in about five below the XI he replaces (±9 per attribute), never at the floor.
-    for (const p of youths) expect(overall(p)).toBeGreaterThanOrEqual(level - 5 - 9);
+    // Each comes in about five below the division (±9 per attribute), not against the old XI.
+    for (const p of youths) {
+      expect(overall(p)).toBeGreaterThanOrEqual(level - 5 - 9);
+      expect(overall(p)).toBeLessThan(xi - 15);
+      expect(p.born).toBe(w.year - 18);
+      // On the market wage of the division he joins.
+      expect(p.wage).toBe(marketWageAt(own.country, w.year, own.tier, p));
+    }
     const mean = youths.reduce((sum, p) => sum + overall(p), 0) / youths.length;
     expect(mean).toBeGreaterThan(level - 8);
     expect(mean).toBeLessThan(level + 2);

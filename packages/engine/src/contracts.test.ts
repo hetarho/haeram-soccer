@@ -41,6 +41,7 @@ import {
   playingAbility,
   rating,
   ratio,
+  recentRevenue,
   retireAtClose,
   seasonDayOf,
   seasonEndWithWage,
@@ -58,11 +59,12 @@ import {
   transferOffers,
   transferRequests,
   transferWindowDays,
+  wageBill,
 } from './index';
 import { professionalStart } from './testing';
 
-// The first constants (MARKET_CONFIG); T062 recalibrates them against whole careers (→ECON-29),
-// so these tests hold the CLUB-25 targets, not the constants.
+// The constants (MARKET_CONFIG) follow the career calibration (→ECON-29), so these tests hold the
+// CLUB-25 targets, not the constants.
 const founding = {
   country: 'ENG' as const,
   name: 'Market Wages',
@@ -136,13 +138,14 @@ describe('market wages (→CLUB-25)', () => {
     );
   });
 
-  it('pays for promise when young and less before 21 and after 30', () => {
+  it('pays for promise when young and peaks at 30', () => {
     const w = world();
     const wage = (p: Player) => amount(marketWage(w, p, 0));
     expect(wage(rated(w, 60, 19, 85))).toBeGreaterThan(wage(rated(w, 60, 19)));
     expect(wage(rated(w, 60, 26, 85))).toBe(wage(rated(w, 60, 26)));
     expect(wage(rated(w, 60, 18))).toBeLessThan(wage(rated(w, 60, 26)));
-    expect(wage(rated(w, 60, 34))).toBeLessThan(wage(rated(w, 60, 26)));
+    expect(wage(rated(w, 60, 26))).toBeLessThan(wage(rated(w, 60, MARKET_CONFIG.junior)));
+    expect(wage(rated(w, 60, 34))).toBeLessThan(wage(rated(w, 60, MARKET_CONFIG.veteran)));
   });
 
   it('starts generated players at their market wage', () => {
@@ -202,10 +205,15 @@ describe('market values (→CLUB-25)', () => {
   });
 });
 
-/** A rich club whose first player is rated `ability`, aged `age`, in his contract's final season. */
+/**
+ * A rich club whose first player is rated `ability`, aged `age`, in his contract's final season:
+ * half its founding season played with revenue far beyond its wage bill (→CLUB-26).
+ */
 function talking(ability = 80, age = 26) {
   const w = world();
   w.cash = '999999999999';
+  w.round = 23;
+  w.income = '999999999999';
   const p = Object.assign(activePlayers(w)[0], rated(w, ability, age), { until: w.year + 1 });
   return { w, p };
 }
@@ -303,6 +311,59 @@ describe('contract talks (→CLUB-26)', () => {
     expect(tight.report.title).toContain('거절했어요');
     expect(tight.report.detail).toContain('연봉 상한');
     expect(tight.w.events.at(-1)).toMatchObject({ kind: 'contract-decline' });
+  });
+
+  it('declines a raise that takes the wage bill past 65% of the last 12 months’ revenue', () => {
+    /** Half a founding season played with `income` booked, so its year reads as twice that. */
+    const verdict = (income: (bill: bigint, raise: bigint) => bigint) => {
+      const { w, p } = talking(80);
+      operate(w, { type: 'talk-rule', rule: { maxPay: 1.4, minOvr: 0 } });
+      const raise = BigInt(talkTerms(w, p).floor) - BigInt(p.wage),
+        bill = BigInt(wageBill(w));
+      w.income = income(bill, raise).toString();
+      expect(recentRevenue(w)).toBe((BigInt(w.income) * 2n).toString());
+      newYear(w);
+      return { w, p, item: talkItems(w, p.id)[0] };
+    };
+    // The bill after the raise, staff included, is just within 65% of the year: signed.
+    const within = verdict((bill, raise) => ((bill + raise) * 100n) / 65n / 2n + 1n);
+    expect(within.item.title).toContain('받아들였어요');
+    // A little less revenue and the staff decline, saying why.
+    const past = verdict((bill, raise) => ((bill + raise) * 100n) / 65n / 2n - 1000n);
+    expect(past.item.title).toContain('거절했어요');
+    expect(past.item.detail).toContain('최근 12개월 수입');
+    expect(past.item.detail).toContain('65%');
+    expect(past.w.events.at(-1)).toMatchObject({ kind: 'contract-decline' });
+    // Staff wages count in the bill.
+    const costs = operatingCosts(past.w);
+    expect(BigInt(wageBill(past.w))).toBe(
+      BigInt(costs.playerWages) + BigInt(costs.managerWage) + BigInt(costs.staffWages),
+    );
+    // Owner capital and player trading are not revenue a wage bill rests on.
+    const { w } = talking(80);
+    w.income = '100000';
+    const before = recentRevenue(w);
+    w.events.push(
+      {
+        year: w.year,
+        round: 3,
+        kind: 'support',
+        title: '',
+        detail: '',
+        amount: '40000',
+        currency: w.currency,
+      },
+      {
+        year: w.year,
+        round: 4,
+        kind: 'transfer-out',
+        title: '',
+        detail: '',
+        amount: '20000',
+        currency: w.currency,
+      },
+    );
+    expect(BigInt(recentRevenue(w))).toBe(BigInt(before) - 120000n);
   });
 
   it('delegated talks follow the talk rule: wage cap, minimum OVR and maximum age', () => {
@@ -925,8 +986,10 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
     const close = professionalStart(world());
     while (close.round < 46) advanceRound(close, undefined, false);
     for (const p of activePlayers(close).slice(0, 4)) p.status = 'sold';
+    const kept = new Set(activePlayers(close).map((p) => p.id));
     closeSeason(close);
-    const refills = activePlayers(close).filter((p) => p.id.includes(':youth:'));
+    // Generated youths and academy graduates fill the places.
+    const refills = activePlayers(close).filter((p) => !kept.has(p.id));
     expect(refills.length).toBeGreaterThanOrEqual(4);
     for (const p of refills) inRange(p);
     expect(refills.some((p) => Object.keys(p.clauses!).length)).toBe(true);

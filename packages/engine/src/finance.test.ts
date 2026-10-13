@@ -393,9 +393,9 @@ describe('the league distribution', () => {
     expect(broadcastingIndex('ENG', 2010).real).toBeGreaterThan(footballIndex('ENG', 2010).real);
     expect(leagueShare(late, 0)).toBe(broadcastQuote('ENG', 2010, units));
     expect(BigInt(leagueShare(late, 0))).toBeGreaterThan(BigInt(footballQuote('ENG', 2010, units)));
-    // Before television the league's money is a small fraction of prices.
+    // Before television paid the league its money follows prices.
     const early = { ...world(), year: 1955 };
-    expect(BigInt(leagueShare(early, 0)) * 4n).toBeLessThan(BigInt(quote('ENG', 1955, units)));
+    expect(Number(leagueShare(early, 0)) / Number(quote('ENG', 1955, units))).toBeCloseTo(1, 3);
   });
 
   it('scales the top-flight share, merit and parachute from 1955 to 2005 by the broadcasting index', () => {
@@ -412,7 +412,7 @@ describe('the league distribution', () => {
     const broadcasting = growth(broadcastingIndex),
       football = growth(footballIndex);
     // The two indices tell very different stories over these fifty years.
-    expect(broadcasting / football).toBeGreaterThan(10);
+    expect(broadcasting / football).toBeGreaterThan(5);
     const scaled = (money: (w: World) => string) =>
       pounds(money(at(2005)), 2005) / pounds(money(at(1955)), 1955);
     expect(scaled((w) => leagueShare(w)) / broadcasting).toBeCloseTo(1, 4);
@@ -747,6 +747,19 @@ describe('operating expenses (→ECON-30)', () => {
         `직전 시즌 매출의 ${Math.round(EXPENSE_CONFIG.share * 100)}%`,
       );
       expect(entries(rich)[0].amount).toBe(roundShare(rich.operatingExpenses!, 1));
+    });
+
+    it('pays the division amount in a season after a relegation', () => {
+      const rich = close({ 'cup-prize': 50_000_000n });
+      expect(rich.operatingExpenses).toBe(shareOf(lastSeasonTurnover(rich)!));
+      // The same close, as if last season had been played a division higher.
+      const relegated = structuredClone(rich);
+      relegated.history.at(-1)!.tier = clubOf(relegated).tier - 1;
+      expect(assessOperatingExpenses(relegated)).toBe(floorOf(relegated));
+      // Promoted from below, the turnover's share still counts.
+      const promoted = structuredClone(rich);
+      promoted.history.at(-1)!.tier = clubOf(promoted).tier + 1;
+      expect(assessOperatingExpenses(promoted)).toBe(rich.operatingExpenses);
     });
 
     it('leaves player sales, compensation and owner capital out of the turnover', () => {

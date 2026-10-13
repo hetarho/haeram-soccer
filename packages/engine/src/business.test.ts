@@ -5,9 +5,11 @@ import { LOAD_CATALOG } from '../../catalogs/src/index';
 import {
   advanceDays,
   advanceRound,
+  broadcastQuote,
   CASH_WARNING_ROUNDS,
   clubOf,
   createWorld,
+  FINANCE_CONFIG,
   financialBreakdown,
   footballQuote,
   gateProjection,
@@ -47,7 +49,7 @@ describe('league income sized for a 46-game season', () => {
     expect(ownLeagueGames(world('ENG'))).toBe(30);
   });
 
-  it('pays no league result bonus and an unscaled cup one', () => {
+  it('pays no league result bonus and an unscaled cup one on the broadcasting index', () => {
     const w = professionalStart(world('BEL'));
     const fixture = w.fixtures.find((f) => f.home === w.playerClub)!;
     const won = { ...fixture, score: { home: 2, away: 0 } } as unknown as Parameters<
@@ -56,7 +58,7 @@ describe('league income sized for a 46-game season', () => {
     const prestige = 1 + Math.max(0, 3 - clubOf(w).tier) * 0.35;
     expect(matchBonus(w, won).amount).toBe('0');
     expect(matchBonus(w, { ...won, kind: 'cup' }).amount).toBe(
-      footballQuote(clubOf(w).country, w.year, 8 * prestige),
+      broadcastQuote(clubOf(w).country, w.year, FINANCE_CONFIG.winBonus * prestige),
     );
   });
 });

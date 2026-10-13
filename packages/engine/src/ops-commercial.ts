@@ -4,7 +4,7 @@ import { clamp } from './primitives';
 import { campaignEffectiveness } from './finance';
 import { setPolicy } from './policy';
 import { buildEffects, setBuild } from './build';
-import { facilityCostUnits, MAX_FACILITIES } from './facilities';
+import { facilityCost, MAX_FACILITIES } from './facilities';
 import { credit, debit } from './operations';
 import { delegatedSponsors, exclusiveSponsor, signSponsor, sponsorEnding } from './sponsors';
 
@@ -122,7 +122,7 @@ export function commercialCommand(w: World, cmd: CommercialCommand) {
     }
     case 'facility': {
       if (w.facilities >= MAX_FACILITIES) throw new Error('시설 확장 한도입니다.');
-      const fee = quote(code, w.year, facilityCostUnits(w.facilities + 1));
+      const fee = facilityCost(code, w.year, w.facilities + 1);
       debit(w, fee);
       w.facilities++;
       addEvent(

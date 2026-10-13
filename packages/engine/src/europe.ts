@@ -1,7 +1,7 @@
 import type { World, EuropeTournament, Fixture, KnockoutRound } from '../../contracts/src/types';
 import { COUNTRIES } from '../../catalogs/src/index';
 import { random, integer, compareIds, clamp } from './primitives';
-import { addEvent, clubOf, findClub, footballQuote, initialElo } from './world';
+import { addEvent, broadcastQuote, clubOf, findClub, initialElo } from './world';
 import { emptyTable } from './season';
 import { credit } from './operations';
 import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS } from './calendar';
@@ -21,6 +21,11 @@ import {
   tieFixtures,
   type Settlement,
 } from './knockout';
+/**
+ * Continental prizes in units on the broadcasting index (→EURO-7, →ECON-31): each league or group
+ * match pays `match`, plus `draw` or `win`; each knockout tie `knockout`; the title `honor`.
+ */
+export const EUROPE_PRIZE_CONFIG = { match: 6.4, draw: 1.8, win: 4.5, knockout: 11, honor: 90 };
 export interface Era {
   key: string;
   name: string;
@@ -357,12 +362,13 @@ function play(w: World, t: EuropeTournament, f: Fixture, settlement?: Settlement
   if (!isKnockout(f.id)) {
     const ownWin =
       f.home === w.playerClub ? f.score.home > f.score.away : f.score.away > f.score.home;
-    // Continental prizes keep their rule and grow with the football index (→EURO-7, →ECON-26).
-    const prize = footballQuote(
-      clubOf(w).country,
-      w.year,
-      35 + (f.score.home === f.score.away ? 10 : ownWin ? 25 : 0),
-    );
+    // Continental prizes keep their rule and grow with the broadcasting index (→EURO-7, →ECON-31).
+    const pay = EUROPE_PRIZE_CONFIG,
+      prize = broadcastQuote(
+        clubOf(w).country,
+        w.year,
+        pay.match + (f.score.home === f.score.away ? pay.draw : ownWin ? pay.win : 0),
+      );
     credit(w, prize);
     addEvent(w, 'europe-prize', `${t.name} 경기 수당`, `참가·결과 수당 · ${f.id}`, prize);
   }
@@ -458,7 +464,7 @@ function progressEurope(w: World, t: EuropeTournament) {
       if (!decideTie(w, tie, legsOf(w, t.fixtures, t.key, index, i), w.year < 2021)) return;
       changed = true;
       if (tie.home !== w.playerClub && tie.away !== w.playerClub) return;
-      const prize = footballQuote(clubOf(w).country, w.year, 60);
+      const prize = broadcastQuote(clubOf(w).country, w.year, EUROPE_PRIZE_CONFIG.knockout);
       credit(w, prize);
       addEvent(w, 'europe-prize', `${t.name} ${last.label} 수당`, `토너먼트 참가 수당`, prize);
       if (tie.winner !== w.playerClub) t.ownExit = `${last.label} 탈락`;
@@ -543,7 +549,7 @@ function crown(w: World, t: EuropeTournament, winner: string) {
     t.firstStandings = phaseRows(w, t, t.clubs);
   }
   if (winner === w.playerClub && t.key !== 'super') {
-    const prize = footballQuote(clubOf(w).country, w.year, 500);
+    const prize = broadcastQuote(clubOf(w).country, w.year, EUROPE_PRIZE_CONFIG.honor);
     credit(w, prize);
     clubOf(w).reputation = clamp(clubOf(w).reputation + 8);
     addEvent(
