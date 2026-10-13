@@ -126,6 +126,14 @@ export function seasonOperatingExpenses(w: World): string {
   return operatingExpensesAt(club.country, w.year, club.tier);
 }
 
+/**
+ * A season's operating expenses at a squad-investment factor (→ECON-16): ×0.9–1.2 by level, in
+ * hundredths, so the default level's ×1 is the amount itself.
+ */
+export function scaleOperatingExpenses(amount: string, factor: number) {
+  return ratio(amount, BigInt(Math.round(factor * 100)), 100n);
+}
+
 export function roundShare(annual: string, round: number, count = 46) {
   if (round <= 0 || count <= 0) return '0';
   return (
@@ -174,8 +182,10 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     ? quote(clubOf(w).country, w.year, effects.academyUnits * 46)
     : '0';
   const staffWages = staffWageTotal(w).toString();
-  // The amount recorded when the season started (→ECON-30).
-  const expenses = seasonOperatingExpenses(w);
+  // The amount recorded when the season started (→ECON-30), scaled by the squad investment in
+  // force (→ECON-16): a change of level acts from the next settlement, the recorded amount stays.
+  const seasonExpenses = seasonOperatingExpenses(w),
+    expenses = scaleOperatingExpenses(seasonExpenses, effects.operatingFactor);
   const annual = (
     BigInt(playerWages) +
     BigInt(managerWage) +
@@ -213,8 +223,15 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     marketing,
     academy,
     staffWages,
-    /** This season's operating expenses (운영 경비, →ECON-30), as recorded when it started. */
+    /**
+     * This season's operating expenses (운영 경비, →ECON-30) a year at today's squad investment:
+     * the recorded amount × `operatingFactor`. Fixed costs, the runway and the projection count it.
+     */
     expenses,
+    /** This season's operating expenses as recorded when it started, before the factor. */
+    seasonExpenses,
+    /** The squad investment's factor on operating expenses (→ECON-16). */
+    operatingFactor: effects.operatingFactor,
     annual,
     nextRound,
     payments,

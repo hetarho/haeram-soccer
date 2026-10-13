@@ -66,7 +66,10 @@ function line(key: ProjectionKey, low: bigint, high: bigint): ProjectionLine {
   };
 }
 
-/** Read model only: current contracts, policy and demand carried forward, no new decisions. */
+/**
+ * Read model only: current contracts, policy and demand carried forward, no new decisions. A policy
+ * level's preview reads it on the world at that level (→ECON-18).
+ */
 export function financeProjection(w: World): FinanceProjection {
   const costs = operatingCosts(w),
     played = Math.min(w.round, SEASON_ROUNDS);
@@ -83,7 +86,8 @@ export function financeProjection(w: World): FinanceProjection {
       costs.staffWages,
     ].map(unpaid),
   );
-  // Operating expenses of the division played this season, a fixed cost of their own (→ECON-30).
+  // This season's operating expenses, a fixed cost of their own (→ECON-30), carried forward at the
+  // squad investment in force (→ECON-16): the rounds left then pay exactly this at that level.
   const remainingExpenses = unpaid(costs.expenses);
 
   const league = w.fixtures.filter(

@@ -12,6 +12,8 @@ import {
   operate,
   operatingCost,
   operatingCosts,
+  policyOf,
+  policyPreview,
   ratio,
   settleLeagueMerit,
   sponsorAnnual,
@@ -132,6 +134,47 @@ describe('finance projection', () => {
     // The rounds then charge exactly what the projection carried.
     for (let i = 0; i < 5; i++) advanceRound(w, undefined, false);
     expect(eventsTotal(w, 'operating-expenses')).toBe(BigInt(ratio(recorded, 5n, 46n)));
+  });
+
+  it('the projection and a support preview carry the operating-expense factor', () => {
+    const w = world();
+    for (let i = 0; i < 10; i++) advanceRound(w, undefined, false);
+    const standard = operatingCosts(w),
+      base = financeProjection(w),
+      preview = policyPreview(w, 'support', 5),
+      previewed = financeProjection({ ...w, policy: { ...policyOf(w), support: 5 } });
+    operate(w, { type: 'policy', key: 'support', level: 5 });
+    const costs = operatingCosts(w),
+      projection = financeProjection(w),
+      unpaid = (part: string) => BigInt(part) - BigInt(ratio(part, 10n, 46n));
+    expect(costs.seasonExpenses).toBe(standard.seasonExpenses);
+    expect(costs.expenses).toBe(ratio(costs.seasonExpenses, 120n, 100n));
+    // The preview is the level's change to fixed costs and the next round's bill (→ECON-12)…
+    expect(preview.operatingFactor).toBe(1.2);
+    expect(BigInt(preview.annualCostChange)).toBe(BigInt(costs.annual) - BigInt(standard.annual));
+    expect(BigInt(preview.annualCostChange)).toBe(
+      BigInt(costs.expenses) - BigInt(standard.expenses),
+    );
+    expect(BigInt(preview.nextRoundChange)).toBe(
+      BigInt(costs.nextRound) - BigInt(standard.nextRound),
+    );
+    // …and the projection at that level is the one the club then has (→ECON-18).
+    expect(projection).toEqual(previewed);
+    expect(lineOf(projection.lines, 'expenses').amount).toBe(`-${costs.expenses}`);
+    expect(BigInt(lineOf(projection.seasonLines, 'expenses').amount)).toBe(-unpaid(costs.expenses));
+    expect(lineOf(projection.seasonLines, 'operating')).toEqual(
+      lineOf(base.seasonLines, 'operating'),
+    );
+    const extra = unpaid(costs.expenses) - unpaid(standard.expenses);
+    expect(extra).toBeGreaterThan(0n);
+    expect(BigInt(base.seasonEnd.low) - BigInt(projection.seasonEnd.low)).toBe(extra);
+    expect(BigInt(base.nextYear.high) - BigInt(projection.nextYear.high)).toBe(
+      BigInt(preview.annualCostChange),
+    );
+    // The rounds then charge exactly what the projection carried.
+    const before = eventsTotal(w, 'operating-expenses');
+    while (w.round < 46) advanceRound(w, undefined, false);
+    expect(eventsTotal(w, 'operating-expenses') - before).toBe(unpaid(costs.expenses));
   });
 
   it('carries the league share a year ahead and the rest of it to season end', () => {

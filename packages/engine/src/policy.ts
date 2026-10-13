@@ -28,27 +28,27 @@ export const POLICY_INFO: Record<
       {
         level: 1,
         name: '긴축',
-        summary: '협상 호감 −5% · 라운드 성장 ×0.8 · 피로 회복 −2',
+        summary: '협상 호감 −5% · 라운드 성장 ×0.8 · 피로 회복 −2 · 운영 경비 ×0.9',
       },
       {
         level: 2,
         name: '절약',
-        summary: '협상 호감 0% · 라운드 성장 ×0.9 · 피로 회복 −1',
+        summary: '협상 호감 0% · 라운드 성장 ×0.9 · 피로 회복 −1 · 운영 경비 ×0.95',
       },
       {
         level: 3,
         name: '표준',
-        summary: '협상 호감 +5% · 라운드 성장·피로 회복 기본',
+        summary: '협상 호감 +5% · 라운드 성장·피로 회복·운영 경비 기본',
       },
       {
         level: 4,
         name: '후한 지원',
-        summary: '협상 호감 +10% · 라운드 성장 ×1.12 · 피로 회복 +1',
+        summary: '협상 호감 +10% · 라운드 성장 ×1.12 · 피로 회복 +1 · 운영 경비 ×1.1',
       },
       {
         level: 5,
         name: '최고 대우',
-        summary: '협상 호감 +15% · 라운드 성장 ×1.25 · 피로 회복 +2',
+        summary: '협상 호감 +15% · 라운드 성장 ×1.25 · 피로 회복 +2 · 운영 경비 ×1.2',
       },
     ],
   },
@@ -133,6 +133,8 @@ export interface PolicyEffects {
   developmentMultiplier: number;
   /** Fatigue recovered per settled round, added to the training focus recovery. */
   recoveryBonus: number;
+  /** Multiplies each round's operating expenses (운영 경비, →ECON-30); the default level's is 1. */
+  operatingFactor: number;
   /** Per-round marketing spend in 1901 price units. */
   marketingUnits: number;
   fanGrowth: number;
@@ -153,6 +155,8 @@ export interface PolicyEffects {
 const SUPPORT_GOODWILL = [-5, 0, 5, 10, 15];
 const SUPPORT_DEVELOPMENT = [0.8, 0.9, 1, 1.12, 1.25];
 const SUPPORT_RECOVERY = [-2, -1, 0, 1, 2];
+/** Squad investment is paid through the operating expenses it scales (→ECON-16). */
+export const SUPPORT_EXPENSES = [0.9, 0.95, 1, 1.1, 1.2];
 /** Spend per fan rises with each level, so loud campaigns trade efficiency for reach. */
 const MARKETING_UNITS = [0, 1, 2.5, 4.5, 7];
 const MARKETING_FANS = [0, 0.004, 0.008, 0.013, 0.02];
@@ -191,6 +195,7 @@ export function policyEffects(policy: ClubPolicy): PolicyEffects {
     goodwill: SUPPORT_GOODWILL[support],
     developmentMultiplier: SUPPORT_DEVELOPMENT[support],
     recoveryBonus: SUPPORT_RECOVERY[support],
+    operatingFactor: SUPPORT_EXPENSES[support],
     marketingUnits: MARKETING_UNITS[marketing],
     fanGrowth: MARKETING_FANS[marketing],
     gateBoost: MARKETING_GATE[marketing],
@@ -223,7 +228,11 @@ export function setPolicy(w: World, key: PolicyKey, level: PolicyLevel) {
   addEvent(w, 'policy', `${info.label} · ${chosen.name}`, chosen.summary);
 }
 
-/** Pure read model of choosing `level` for `key`; nothing is spent or changed. */
+/**
+ * Pure read model of choosing `level` for `key`; nothing is spent or changed. Cost changes are the
+ * fixed costs at that level against today's (→ECON-12): squad investment's through the operating
+ * expenses it scales, marketing's and the academy's through their spend.
+ */
 export function policyPreview(w: World, key: PolicyKey, level: PolicyLevel) {
   validate(key, level);
   const next: ClubPolicy = { ...policyOf(w), [key]: level },
@@ -231,11 +240,15 @@ export function policyPreview(w: World, key: PolicyKey, level: PolicyLevel) {
     before = operatingCosts(w),
     after = operatingCosts({ ...w, policy: next });
   return {
+    /** Yearly fixed costs at this level minus today's. */
     annualCostChange: (BigInt(after.annual) - BigInt(before.annual)).toString(),
+    /** The next round's bill at this level minus today's (zero once the season's rounds are paid). */
+    nextRoundChange: (BigInt(after.nextRound) - BigInt(before.nextRound)).toString(),
     fansPerRound: key === 'marketing' ? marketingFanGain(clubOf(w).fans, effects.fanGrowth) : 0,
     goodwill: effects.goodwill,
     developmentMultiplier: effects.developmentMultiplier,
     recoveryBonus: effects.recoveryBonus,
+    operatingFactor: effects.operatingFactor,
     offerAge: effects.offer.age,
     offerAbility: effects.offer.ability,
   };

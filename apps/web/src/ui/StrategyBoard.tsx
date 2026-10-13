@@ -1,27 +1,49 @@
-import { useState } from 'react';
-import type { World } from '../../../../packages/contracts/src/types';
-import { BUILD_SLOTS, type ClubBuild } from '../../../../packages/contracts/src/build';
+import { useEffect, useState } from 'react';
+import type { PolicyLevel, World } from '../../../../packages/contracts/src/types';
 import {
+  BUILD_OPTIONS,
+  BUILD_SLOTS,
+  type ClubBuild,
+} from '../../../../packages/contracts/src/build';
+import {
+  BUILD_CARDS,
   BUILD_PRESETS,
+  BUILD_SLOT_INFO,
   buildEffects,
   buildOf,
+  buildPreset,
+  cardLines,
   cardOf,
   composeBuild,
-  draftLock,
   effectLines,
   sameBuild,
   slotLocks,
+  type BuildCard,
 } from '../../../../packages/engine/src/build';
 import { synergyStates } from '../../../../packages/engine/src/synergy';
 import { academyIntakeOutlook } from '../../../../packages/engine/src/academy';
 import { careOffer } from '../../../../packages/engine/src/care';
 import { INCOMING_BID_CHANCE } from '../../../../packages/engine/src/transfers';
-import { STYLE_INFO } from '../../../../packages/engine/src/styles';
+import { policyOf } from '../../../../packages/engine/src/policy';
 import type { SavedStrategy } from '../adapters/profile';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
+import {
+  draftChanges,
+  draftCommands,
+  draftFromRequest,
+  draftRefusal,
+  draftWorld,
+  withCard,
+  withPolicy,
+  withStrategy,
+  withTicket,
+  type BoardDraft,
+  type CardChange,
+} from './board';
 import { Dialog } from './Dialog';
-import { PolicyDials } from './PolicyBoard';
+import { DialChange, DialRow, stepIndex, stepValue, type DialKey } from './PolicyBoard';
+import { useBoardRequest } from './state';
 import { Lines, StrategyComposer, STRATEGY_AREAS } from './StrategyComposer';
 import { strategyName, useStrategies } from './strategies';
 import s from './StrategyBoard.module.css';
@@ -46,61 +68,95 @@ export function cardSummary(build: ClubBuild) {
   const cards = BUILD_SLOTS.filter((slot) => build[slot]).map((slot) => cardOf(build, slot).label);
   return cards.join(' · ') || '모든 부문 기본';
 }
+const cardLabel = (change: CardChange) => cardOf({ [change.slot]: change.to }, change.slot).label;
+
+function LockIcon() {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <rect x="3" y="7" width="10" height="7" rx="1.5" fill="currentColor" />
+      <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  );
+}
 
 /**
- * The club's operating strategy (→WEB-60, →ECON-22): the one in force, ready-made presets, the
- * owner's saved strategies (→WEB-61), the dials that spend on each area, then the synergies and
- * odds the strategy sets. Choosing opens a draft that applies at once; a changed card's slot stays
- * locked for 90 days.
+ * The 운영 전략 tab as one operating board (→WEB-60, →ECON-25): the strategy in force, presets and
+ * the owner's saved strategies (→WEB-61), six area rows each pairing its card row with its dials,
+ * then the synergies and odds. Every tap adds to one draft; the pinned bar's 적용 sends it at once
+ * and a changed card's slot stays locked for 90 days (→ECON-22).
  */
 export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
-  const acting = useGameState((state) => !!state.pendingActions || state.readonly);
+  const acting = useGameState((state) => !!state.pendingActions);
+  const readonly = useGameState((state) => state.readonly);
+  const blocked = acting || readonly || !!w.critical;
   const saved = useStrategies((state) => state.items);
   const removeSaved = useStrategies((state) => state.remove);
-  const current = buildOf(w);
-  // A draft stays until the owner confirms; a newly committed strategy clears it.
-  const [edits, setEdits] = useState<{ base: ClubBuild; build: ClubBuild; name?: string }>();
-  const draft = edits && sameBuild(edits.base, current) ? edits : undefined;
-  const draftBuild = draft?.build ?? current;
-  const changed = !sameBuild(draftBuild, current);
-  const locks = slotLocks(w);
-  // A draft that changes a locked slot is refused, naming the slot and the day it frees (→ECON-22).
-  const lock = changed ? draftLock(w, draftBuild) : undefined;
-  const [composer, setComposer] = useState<{ id?: string; name: string; build: ClubBuild }>();
-  const [removing, setRemoving] = useState<SavedStrategy>();
-  const commit = () => {
-    void client.command({
-      type: 'build',
-      build: draftBuild,
-      ...(draft?.name ? { name: draft.name } : {}),
-    });
-    setEdits(undefined);
+  const [draft, setDraftState] = useState<BoardDraft>({});
+  const [failure, setFailure] = useState('');
+  // The bar's details fold away on a small screen; the head and 적용 stay.
+  const [folded, setFolded] = useState(false);
+  const setDraft = (next: BoardDraft) => {
+    setDraftState(next);
+    setFailure('');
   };
-  const choose = (build: ClubBuild, name?: string) =>
-    setEdits(sameBuild(build, current) ? undefined : { base: current, build, name });
-  // The history names what was committed; a preset or saved match reads better when there is one.
-  const committed = w.events.findLast((event) => event.kind === 'build')?.title.split(' · ')[1];
+  const [composer, setComposer] = useState<{
+    id?: string;
+    name: string;
+    build: ClubBuild;
+    title?: string;
+  }>();
+  const [removing, setRemoving] = useState<SavedStrategy>();
+
+  // A dial change asked for elsewhere (a cash remedy) opens as the draft, its area in view.
+  const request = useBoardRequest((store) => store.request);
+  useEffect(() => {
+    if (!request) return;
+    useBoardRequest.getState().take();
+    setDraft(draftFromRequest(w, request));
+    const key: DialKey = request.policy?.key ?? 'ticket';
+    const area = STRATEGY_AREAS.find((item) => item.dials.includes(key));
+    requestAnimationFrame(() =>
+      document
+        .getElementById(`board-area-${area?.slot}`)
+        ?.scrollIntoView({ block: 'start', behavior: 'smooth' }),
+    );
+  }, [request]);
+
+  const current = buildOf(w),
+    changes = draftChanges(w, draft),
+    changed = changes.length > 0,
+    cards = changes.filter((change) => change.kind === 'card'),
+    dials = changes.filter((change) => change.kind !== 'card'),
+    draftBuild = cards.length ? draft.build! : current,
+    refusal = changed ? draftRefusal(w, draft) : undefined,
+    locks = slotLocks(w);
+  // The history names what was applied; a preset or saved match reads better when there is one.
+  const applied = w.events.findLast((event) => event.kind === 'build')?.title.split(' · ')[1];
   const currentName =
-    strategyName(current, saved) === '맞춤 전략' && committed
-      ? committed
+    strategyName(current, saved) === '맞춤 전략' && applied
+      ? applied
       : strategyName(current, saved);
-  const draftName = draft?.name ?? strategyName(draftBuild, saved);
-  // Synergies and odds follow the draft, so the owner sees what a strategy would do before it counts.
-  const preview = changed ? { ...w, build: draftBuild } : w;
+  const draftName = cards.length
+    ? (draft.name ?? strategyName(draftBuild, saved))
+    : `다이얼 ${dials.length}개`;
+  // The strategy in force can join the library unless it is standard or already there.
+  const savable =
+    BUILD_SLOTS.some((slot) => current[slot]) &&
+    !saved.some((item) => sameBuild(item.build, current));
+
+  // Synergies and odds follow the draft, so the owner sees what it would do before it counts.
+  const preview = changed ? draftWorld(w, draft) : w;
   const now = synergyStates(w);
   const synergies = changed ? synergyStates(preview) : now;
+  const wasActive = (id: string) => now.find((state) => state.id === id)!.active;
   const active = synergies.filter((synergy) => synergy.active).length;
   const met = (synergy: (typeof synergies)[number]) =>
     synergy.conditions.filter((condition) => condition.met).length;
   const ordered = [...synergies].sort((x, y) => met(y) - met(x));
-  const lighting = synergies.filter(
-    (synergy) => synergy.active && !now.find((state) => state.id === synergy.id)!.active,
-  );
-  const dropping = synergies.filter(
-    (synergy) => !synergy.active && now.find((state) => state.id === synergy.id)!.active,
-  );
+  const lighting = synergies.filter((synergy) => synergy.active && !wasActive(synergy.id));
+  const dropping = synergies.filter((synergy) => !synergy.active && wasActive(synergy.id));
   const synergyCard = (synergy: (typeof synergies)[number]) => {
-    const was = now.find((state) => state.id === synergy.id)!.active;
+    const was = wasActive(synergy.id);
     return (
       <li
         key={synergy.id}
@@ -111,9 +167,9 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
           <b>{synergy.label}</b>
           <em>
             {synergy.active && !was
-              ? '확정하면 발동'
+              ? '적용하면 발동'
               : !synergy.active && was
-                ? '확정하면 꺼짐'
+                ? '적용하면 꺼짐'
                 : synergy.active
                   ? '발동 중'
                   : `${met(synergy)}/${synergy.conditions.length}`}
@@ -132,15 +188,45 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
     );
   };
   const oddsNow = strategyOdds(w),
-    oddsDraft = changed ? strategyOdds(preview) : oddsNow;
+    oddsDraft = changed ? strategyOdds(preview) : oddsNow,
+    moving = oddsDraft.filter((odd, index) => odd.value !== oddsNow[index].value);
+
+  // 적용 sends the strategy, then each dial, then the ticket, and stops at the first refusal.
+  const apply = async () => {
+    for (const command of draftCommands(w, draft)) {
+      const reply = await client.command(command, { background: true });
+      if (!reply?.ok) {
+        setFailure(
+          (client.state.error || '운영 전략을 적용하지 못했어요.').replace(/^Error: /, ''),
+        );
+        return;
+      }
+    }
+    setDraft({});
+  };
+  const pickDial = (key: DialKey, index: number) => {
+    const drafted = dials.find((change) =>
+      change.kind === 'ticket' ? key === 'ticket' : change.key === key,
+    );
+    const shown = drafted ? stepIndex(key, drafted.to) : undefined;
+    // Tapping the drafted step again, or the step in force, takes the dial out of the draft.
+    const value =
+      index === shown ? (key === 'ticket' ? w.ticket : policyOf(w)[key]) : stepValue(key, index);
+    setDraft(
+      key === 'ticket'
+        ? withTicket(w, draft, value)
+        : withPolicy(w, draft, key, value as PolicyLevel),
+    );
+  };
+
   return (
     <section className={s.board} aria-label="운영 전략" data-testid="strategy-board">
       <header className={s.head}>
         <h2>운영 전략</h2>
         <p>
-          구단이 어떤 방식으로 굴러갈지 정해요. 추천 전략을 고르거나 나만의 전략을 만들어 저장해
-          두고, 확정하면 바로 적용돼요. 바꾼 부문은 90일 동안 다시 바꿀 수 없어요. 결과는 확률이라
-          시즌마다 달라질 수 있어요.
+          카드는 구단이 어떻게 할지, 다이얼은 얼마나 쓸지예요. 누른 것은 화면 아래에 모이고,
+          적용하면 한 번에 바로 반영돼요. 바꾼 카드는 90일 동안 다시 바꿀 수 없고, 다이얼은 언제든
+          바꿀 수 있어요.
         </p>
       </header>
 
@@ -151,12 +237,6 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
         </div>
         <small className={s.cards}>{cardSummary(current)}</small>
         <Lines {...effectLines(composeBuild(current))} />
-        {locks.length > 0 && (
-          <p className={s.neutral} data-testid="strategy-locks">
-            {locks.map((locked) => `${locked.label} ${locked.frees}부터`).join(' · ')} 바꿀 수
-            있어요
-          </p>
-        )}
       </article>
 
       <section className={s.group} aria-label="추천 전략">
@@ -164,19 +244,25 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
         <div className={s.presets}>
           {BUILD_PRESETS.map((preset) => {
             const lines = effectLines(composeBuild(preset.build));
-            const isCurrent = sameBuild(preset.build, current);
+            const drafted = cards.length > 0 && sameBuild(preset.build, draftBuild);
             return (
               <button
                 key={preset.id}
                 type="button"
-                aria-pressed={sameBuild(preset.build, draftBuild)}
-                className={`${s.preset} ${sameBuild(preset.build, draftBuild) ? s.presetOn : ''}`}
-                disabled={acting}
-                onClick={() => choose(preset.build)}
+                aria-pressed={drafted}
+                className={`${s.preset} ${drafted ? s.presetOn : ''}`}
+                disabled={blocked}
+                onClick={() =>
+                  setDraft(
+                    drafted
+                      ? withStrategy(w, draft, current)
+                      : withStrategy(w, draft, preset.build, preset.label),
+                  )
+                }
               >
                 <span className={s.presetHead}>
                   <b>{preset.label}</b>
-                  {isCurrent && <em>지금 전략</em>}
+                  {sameBuild(preset.build, current) && <em>지금 전략</em>}
                 </span>
                 <small>{preset.model}</small>
                 <Lines {...lines} limit={2} />
@@ -193,106 +279,190 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
         </h3>
         {saved.length ? (
           <ul className={s.saved}>
-            {saved.map((item) => (
-              <li key={item.id} className={sameBuild(item.build, draftBuild) ? s.presetOn : ''}>
-                <button
-                  type="button"
-                  className={s.savedPick}
-                  aria-pressed={sameBuild(item.build, draftBuild)}
-                  disabled={acting}
-                  onClick={() => choose(item.build, item.name)}
-                >
-                  <span className={s.presetHead}>
-                    <b>{item.name}</b>
-                    {sameBuild(item.build, current) && <em>지금 전략</em>}
-                  </span>
-                  <small>{cardSummary(item.build)}</small>
-                </button>
-                <div className={s.savedTools}>
+            {saved.map((item) => {
+              const drafted = cards.length > 0 && sameBuild(item.build, draftBuild);
+              return (
+                <li key={item.id} className={drafted ? s.presetOn : ''}>
                   <button
                     type="button"
-                    aria-label={`${item.name} 편집`}
-                    onClick={() => setComposer({ id: item.id, name: item.name, build: item.build })}
+                    className={s.savedPick}
+                    aria-pressed={drafted}
+                    disabled={blocked}
+                    onClick={() =>
+                      setDraft(
+                        drafted
+                          ? withStrategy(w, draft, current)
+                          : withStrategy(w, draft, item.build, item.name),
+                      )
+                    }
                   >
-                    편집
+                    <span className={s.presetHead}>
+                      <b>{item.name}</b>
+                      {sameBuild(item.build, current) && <em>지금 전략</em>}
+                    </span>
+                    <small>{cardSummary(item.build)}</small>
                   </button>
-                  <button
-                    type="button"
-                    aria-label={`${item.name} 삭제`}
-                    onClick={() => setRemoving(item)}
-                  >
-                    삭제
-                  </button>
-                </div>
-              </li>
-            ))}
+                  <div className={s.savedTools}>
+                    <button
+                      type="button"
+                      aria-label={`${item.name} 편집`}
+                      onClick={() =>
+                        setComposer({ id: item.id, name: item.name, build: item.build })
+                      }
+                    >
+                      편집
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`${item.name} 삭제`}
+                      onClick={() => setRemoving(item)}
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p className={s.neutral}>
             아직 저장한 전략이 없어요. 여섯 부문의 카드를 골라 우리 구단만의 전략을 만들어 보세요.
           </p>
         )}
-        <button
-          type="button"
-          className={s.make}
-          onClick={() => setComposer({ name: '', build: draftBuild })}
-        >
-          ＋ 나만의 전략 만들기
-        </button>
+        <div className={s.makeRow}>
+          <button
+            type="button"
+            className={s.make}
+            onClick={() => setComposer({ name: '', build: draftBuild })}
+          >
+            ＋ 나만의 전략 만들기
+          </button>
+          {savable && (
+            <button
+              type="button"
+              className={s.make}
+              onClick={() =>
+                setComposer({
+                  name: buildPreset(current) || currentName === '맞춤 전략' ? '' : currentName,
+                  build: current,
+                  title: '지금 전략 저장',
+                })
+              }
+            >
+              지금 전략 저장
+            </button>
+          )}
+        </div>
       </section>
 
-      {changed && (
-        <article className={s.summary} aria-live="polite" data-testid="strategy-draft">
-          <div className={s.summaryHead}>
-            <span>확정하면</span>
-            <b>{draftName}</b>
-          </div>
-          <Lines {...effectLines(composeBuild(draftBuild))} />
-          {(lighting.length > 0 || dropping.length > 0) && (
-            <p className={s.shift}>
-              {lighting.map((synergy) => `시너지 ${synergy.label} 발동`).join(' · ')}
-              {lighting.length > 0 && dropping.length > 0 ? ' · ' : ''}
-              {dropping.map((synergy) => `시너지 ${synergy.label} 꺼짐`).join(' · ')}
-            </p>
-          )}
-          {lock && <p className={s.neutral}>{lock}</p>}
-          <div className={s.confirm}>
-            <button disabled={acting} onClick={() => setEdits(undefined)}>
-              되돌리기
-            </button>
-            <button
-              className={`${s.apply} ${s.wide}`}
-              disabled={acting || !!lock}
-              onClick={() => commit()}
-            >
-              이 전략으로 확정
-            </button>
-          </div>
-        </article>
-      )}
-
-      <section className={s.group} aria-label="운영 다이얼">
+      <section className={s.areas} aria-label="부문별 카드와 다이얼">
         <h3>
-          운영 다이얼 <small>언제든 · 다음 정산부터</small>
+          여섯 부문 <small>카드는 어떻게 · 다이얼은 얼마나</small>
         </h3>
-        <p className={s.neutral}>
-          전략이 어떻게 할지라면, 다이얼은 얼마나 쓸지예요. 전략을 바꿔도 다이얼은 그대로예요.
-        </p>
-        <div className={s.dials}>
-          {STRATEGY_AREAS.filter((area) => area.dials.length).map((area) => (
-            <article key={area.slot} className={s.domain} aria-label={`${area.label} 다이얼`}>
-              <h4 className={s.areaLabel}>{area.label}</h4>
-              <PolicyDials w={w} client={client} keys={area.dials} />
-            </article>
-          ))}
-        </div>
+        {STRATEGY_AREAS.map((area) => {
+          const slot = area.slot,
+            info = BUILD_SLOT_INFO[slot],
+            lock = locks.find((locked) => locked.slot === slot),
+            chosen = draftBuild[slot],
+            moved = cards.some((change) => change.slot === slot),
+            card: BuildCard = cardOf(draftBuild, slot),
+            options: (string | undefined)[] = [undefined, ...BUILD_OPTIONS[slot]];
+          return (
+            <section
+              key={slot}
+              id={`board-area-${slot}`}
+              className={`${s.area} ${area.dials.length ? '' : s.cardOnly}`}
+              aria-label={area.label}
+              data-area={slot}
+            >
+              <div className={s.areaCard}>
+                <header className={s.areaHead}>
+                  <span className={s.domainIcon} aria-hidden="true">
+                    {area.icon}
+                  </span>
+                  <span>
+                    <b>{area.label}</b>
+                    <small>
+                      {info.label} 카드 · {area.question}
+                    </small>
+                  </span>
+                </header>
+                <div className={s.options} role="radiogroup" aria-label={info.label}>
+                  {options.map((option) => {
+                    const label = option
+                      ? (BUILD_CARDS[slot] as Record<string, BuildCard>)[option].label
+                      : '기본';
+                    return (
+                      <button
+                        key={option ?? 'standard'}
+                        type="button"
+                        role="radio"
+                        aria-checked={option === current[slot]}
+                        aria-label={`${info.label} ${label}`}
+                        className={moved && option === chosen ? s.drafted : undefined}
+                        disabled={blocked || !!lock}
+                        onClick={() =>
+                          setDraft(
+                            withCard(
+                              w,
+                              draft,
+                              slot,
+                              moved && option === chosen ? current[slot] : option,
+                            ),
+                          )
+                        }
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className={`${s.cardNote} ${moved ? s.cardDrafted : ''}`}>
+                  <p className={s.model}>
+                    <b>
+                      {moved ? '적용하면 · ' : ''}
+                      {card.label}
+                    </b>{' '}
+                    {card.model}
+                  </p>
+                  <Lines {...cardLines(card)} />
+                </div>
+                {lock && (
+                  <p className={s.lock} data-testid={`lock-${slot}`}>
+                    <LockIcon />
+                    {lock.frees}에 변경 가능
+                  </p>
+                )}
+              </div>
+              {area.dials.length > 0 && (
+                <div className={s.areaDials}>
+                  {area.dials.map((key) => {
+                    const drafted = dials.find((change) =>
+                      change.kind === 'ticket' ? key === 'ticket' : change.key === key,
+                    );
+                    return (
+                      <DialRow
+                        key={key}
+                        w={w}
+                        dialKey={key}
+                        drafted={drafted ? stepIndex(key, drafted.to) : undefined}
+                        disabled={blocked}
+                        onPick={(index) => pickDial(key, index)}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          );
+        })}
       </section>
 
       <section className={s.synergies} aria-label="전략 시너지">
         <h3>
           시너지{' '}
           <small>
-            {active}/{synergies.length} 발동{changed ? ' · 확정 시' : ''}
+            {active}/{synergies.length} 발동{changed ? ' · 적용 시' : ''}
           </small>
         </h3>
         <ul>{ordered.slice(0, 3).map(synergyCard)}</ul>
@@ -303,7 +473,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
       </section>
 
       <section className={s.odds} aria-label="전략 확률">
-        <h3>{changed ? '확정하면 바뀌는 확률' : '지금 전략의 확률'}</h3>
+        <h3>{changed ? '적용하면 바뀌는 확률' : '지금 전략의 확률'}</h3>
         <ul>
           {oddsDraft.map((odd, index) => (
             <li key={odd.label}>
@@ -318,29 +488,104 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
         </ul>
       </section>
 
-      <article className={s.manager}>
-        <span>감독 성향</span>
-        <b>
-          {w.manager.style && !w.manager.interim ? STYLE_INFO[w.manager.style].label : '기본형'}
-        </b>
-        <small>감독실에서 성향이 다른 후보를 비교하고 선임할 수 있어요.</small>
-      </article>
+      {changed && (
+        <aside className={s.draft} aria-label="적용 대기" data-testid="strategy-draft">
+          <div className={s.draftHead}>
+            <span>적용하면</span>
+            <b>{draftName}</b>
+            <button
+              type="button"
+              className={s.fold}
+              aria-expanded={!folded}
+              aria-controls="strategy-draft-body"
+              onClick={() => setFolded(!folded)}
+            >
+              {changes.length}건 변경 <i aria-hidden="true">{folded ? '▴' : '▾'}</i>
+            </button>
+          </div>
+          <div className={s.draftBody} id="strategy-draft-body" hidden={folded} aria-live="polite">
+            {(lighting.length > 0 || dropping.length > 0) && (
+              <p className={s.shift}>
+                {[
+                  ...lighting.map((synergy) => `시너지 ${synergy.label} 발동`),
+                  ...dropping.map((synergy) => `시너지 ${synergy.label} 꺼짐`),
+                ].join(' · ')}
+              </p>
+            )}
+            {cards.length > 0 && (
+              <>
+                <p className={s.draftCards}>
+                  카드 {cards.map((change) => cardLabel(change)).join(' · ')}
+                </p>
+                <Lines {...effectLines(composeBuild(draftBuild))} />
+              </>
+            )}
+            {dials.length > 0 && (
+              <ul className={s.draftDials}>
+                {dials.map((change) => (
+                  <DialChange
+                    key={change.kind === 'ticket' ? 'ticket' : change.key}
+                    w={w}
+                    change={change}
+                  />
+                ))}
+              </ul>
+            )}
+            {moving.length > 0 && (
+              <p className={s.moving}>
+                {moving
+                  .map(
+                    (odd) => `${odd.label} ${oddsNow[oddsDraft.indexOf(odd)].value} → ${odd.value}`,
+                  )
+                  .join(' · ')}
+              </p>
+            )}
+          </div>
+          {refusal && (
+            <p className={s.refusal} id="strategy-refusal">
+              <LockIcon />
+              {refusal}
+            </p>
+          )}
+          {failure && (
+            <p className={s.failure} role="alert">
+              {failure}
+            </p>
+          )}
+          <div className={s.confirm}>
+            <button type="button" disabled={acting} onClick={() => setDraft({})}>
+              되돌리기
+            </button>
+            <button
+              type="button"
+              className={s.apply}
+              disabled={blocked || !!refusal}
+              aria-describedby={refusal ? 'strategy-refusal' : undefined}
+              onClick={() => void apply()}
+            >
+              적용
+            </button>
+          </div>
+        </aside>
+      )}
 
       {composer && (
         <StrategyComposer
           w={w}
           initial={composer}
+          title={composer.title}
           onClose={() => setComposer(undefined)}
-          onSaved={(item) => {
+          onSaved={() => setComposer(undefined)}
+          onApply={(item) => {
             setComposer(undefined);
-            choose(item.build, item.name);
+            setDraft(withStrategy(w, draft, item.build, item.name));
           }}
         />
       )}
       {removing && (
         <Dialog label="전략 삭제" onClose={() => setRemoving(undefined)}>
           <p>
-            ‘{removing.name}’ 전략을 이 기기에서 지울까요? 이미 확정해 쓰고 있는 전략은 그대로
+            ‘{removing.name}’ 전략을 이 기기에서 지울까요? 이미 적용해 쓰고 있는 전략은 그대로
             유지돼요.
           </p>
           <div className={a.actions}>

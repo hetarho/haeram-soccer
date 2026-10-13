@@ -298,8 +298,6 @@ export function BusinessWorkbench({
                 올해 예정된 우리 리그 {games}경기 기준이에요. 금액은 계약할 때 정해져 기간 내내
                 고정되고, 끝나면 그때의 디비전·평판·순위·팬으로 다시 매겨요. 계약 이후 경기만
                 지급하며 강등되면 남은 기간이 30% 줄어요.
-                {w.delegation?.business &&
-                  ' 운영을 맡겨 두어 빈 자리는 스태프가 안정형으로 바로 채워요.'}
               </p>
               <div className={s.slots}>
                 {state.view!.sponsors.map((view) => (
@@ -384,6 +382,31 @@ export function BusinessWorkbench({
                   </section>
                 ))}
               </div>
+              <section className={s.delegation} aria-label="후원 위임">
+                <label className={s.switch}>
+                  <input
+                    type="checkbox"
+                    checked={!!w.delegation?.business}
+                    disabled={blocked}
+                    aria-describedby="sponsor-delegation-rule"
+                    onChange={(event) =>
+                      void act(
+                        { type: 'delegate', key: 'business', value: event.target.checked },
+                        event.target.checked
+                          ? '스폰서 자동 계약을 켰어요. 빈 자리는 다음 진행일부터 운영팀이 채워요.'
+                          : '스폰서 자동 계약을 껐어요. 후원 계약은 직접 골라요.',
+                      )
+                    }
+                  />
+                  <b>스폰서 자동 계약</b>
+                </label>
+                <p className={s.note} id="sponsor-delegation-rule">
+                  {w.delegation?.business ? '켜져 있어요. ' : ''}
+                  열린 후원 자리가 비면 운영팀이 그 자리의 안정형 제안 중 보장 금액이 가장 큰 계약을
+                  바로 맺고 알려 줘요. 끄면 시즌을 빈 자리로 시작할 때와, 마지막 시즌인 계약이 남은
+                  4월 1일에 알림으로 알려 드려요.
+                </p>
+              </section>
             </>
           ) : tab === 'marketing' ? (
             <>

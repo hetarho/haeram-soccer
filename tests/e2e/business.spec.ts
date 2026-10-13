@@ -41,7 +41,7 @@ async function found(page: Page, seed: string) {
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
 
-/** Operations open on the build; `tab` picks 재정, 시설, 후원 or 캠페인 (→WEB-39). */
+/** Operations open on the operating board; `tab` picks 재정, 시설, 후원 or 캠페인 (→WEB-39). */
 async function openBusiness(page: Page, tab?: string) {
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
@@ -172,6 +172,45 @@ test('pays sponsor installments only for league games after the actual contract'
   );
 });
 
+test("the sponsor switch signs an empty slot's best offer", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await found(page, 'sponsor-switch-ui');
+  await openBusiness(page, '후원');
+  // 후원 ends with the sponsors' staff switch and its rule in words (→ECON-21).
+  const delegation = page.getByRole('region', { name: '후원 위임' });
+  const toggle = delegation.getByRole('checkbox', { name: '스폰서 자동 계약' });
+  await expect(toggle).not.toBeChecked();
+  await expect(delegation).toContainText('안정형 제안 중 보장 금액이 가장 큰');
+  await expect(page.getByTestId('sponsor-local-stable')).toBeVisible();
+  await toggle.click();
+  await expect(toggle).toBeChecked();
+  const delegated = await exportWorld(page);
+  expect(delegated.delegation?.business).toBe(true);
+  expect(delegated.sponsors ?? []).toEqual([]);
+  const best = sponsorOffers(delegated, 'local')
+    .filter((offer) => offer.kind === 'stable')
+    .reduce((top, offer) => (BigInt(offer.annual) > BigInt(top.annual) ? offer : top));
+  // The commercial staff sign it on the next day the game plays.
+  await playNext(page);
+  const signed = await exportWorld(page);
+  expect(signed.sponsors).toEqual([
+    expect.objectContaining({
+      slot: 'local',
+      kind: 'stable',
+      name: best.name,
+      annual: best.annual,
+    }),
+  ]);
+  await openBusiness(page, '후원');
+  await expect(page.getByTestId('sponsor-contract-local')).toContainText(best.name);
+  await expect(page.getByRole('button', { name: '지역 후원 계약', exact: true })).toHaveCount(0);
+  await expect(
+    page.getByRole('region', { name: '후원 위임' }).getByRole('checkbox', {
+      name: '스폰서 자동 계약',
+    }),
+  ).toBeChecked();
+});
+
 test('separates campaign recovery and net ranges and settles after four real rounds', async ({
   page,
 }) => {
@@ -222,10 +261,10 @@ test('keeps ticket drafts out of the save and applies their price to an actual h
   const preview = ticketInvestmentPreview(before, price);
   const format = (value: string) => compactMoney(value, clubOf(before).country, before.year);
   await openBusiness(page);
-  // The ticket dial sits in the home & fans area of the strategy tab's dial section.
-  const dial = page
-    .getByRole('region', { name: '운영 다이얼' })
-    .getByRole('article', { name: '홈·팬 다이얼' })
+  // The ticket dial sits in the 홈·팬 row of the operating board, beside its card row.
+  const board = page.getByTestId('strategy-board');
+  const dial = board
+    .getByRole('region', { name: '홈·팬', exact: true })
     .getByRole('radiogroup', { name: '티켓 가격', exact: true });
   const premium = dial.getByRole('radio', { name: '티켓 가격 프리미엄', exact: true });
   await expect(dial.getByRole('radio', { name: '티켓 가격 보통', exact: true })).toHaveAttribute(
@@ -241,9 +280,16 @@ test('keeps ticket drafts out of the save and applies their price to an actual h
     `경기당 입장 수입 ${format(preview.after.incomeLow)}–${format(preview.after.incomeHigh)}`,
   );
   expect(preview.after.attendanceHigh).toBeLessThan(preview.before.attendanceHigh);
+  // The pinned draft bar carries the gate projection; drafting writes nothing to the save.
+  const draft = board.getByTestId('strategy-draft');
+  await expect(draft).toContainText('티켓 가격 보통 → 프리미엄');
+  await expect(draft).toContainText(
+    `경기당 입장 수입 ${format(preview.after.incomeLow)}–${format(preview.after.incomeHigh)}`,
+  );
   await expect(premium).toHaveAttribute('aria-checked', 'false');
   expect(await exportWorld(page)).toEqual(before);
-  await ticket.getByRole('button', { name: '‘프리미엄’ 적용', exact: true }).click();
+  await draft.getByRole('button', { name: '적용', exact: true }).click();
+  await expect(draft).toHaveCount(0);
   await expect(premium).toHaveAttribute('aria-checked', 'true');
   await expect(page.getByTestId('action-outcome')).toContainText('티켓 가격을 바꿨어요');
   const applied = await exportWorld(page);
