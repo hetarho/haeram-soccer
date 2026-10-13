@@ -19,20 +19,21 @@
 | ARCH | 9 | 9 | - | 2 |
 | WEB | 54 | 54 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
-| CLUB | 21 | 21 | - | 0 |
+| CLUB | 22 | 22 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
 | STAFF | 13 | 13 | - | 0 |
-| ECON | 18 | 18 | - | 0 |
+| ECON | 19 | 19 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 7 | 7 | - | 0 |
-| SAVE | 23 | 23 | - | 0 |
+| SAVE | 24 | 24 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T077 | Event cards and remedies open each setting's home | WEB | T073 T074 T076 | todo |
 | T078 | Three levers: upgrade journey, goldens, calibration check and full verify | SAVE ECON WEB | T077 | todo |
+| T079 | Port the other machine's economy calibration | ECON CLUB SAVE | - | doing@261013.econ |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -50,6 +51,8 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 T079 doing standalone on econ-port (00a483d), branch work/econ-port
+- 261013 update-ssot ECON r19 CLUB r22 SAVE r24: the other machine's calibration ported (broadcasting index series, prizes on it, facilities on the football index at 1.58, expenses the larger of the division amount and the turnover share, 65% delegated wage check, established-club crowds); create-task T079
 - 261013 merged main (benchmark fix e797019) into work/levers: App/EventCenter/RemedySheet keep the selector reads, PolicyBoard keeps T076's board; unit 655, build pass
 - 261013 benchmark fixed on main (bench-fix cd8ad03): CI passed the benchmark job and every browser; entry 234,916 B, shell memoised, league tabs mounted on first view, management pages a lazy chunk
 - 261013 handoff: T073 merged; work/levers holds T070–T076; T077, T078 left; bench-fix pushed for CI
