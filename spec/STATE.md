@@ -31,7 +31,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T066 | Operating expenses as a share of last season's turnover | ECON | T065 | todo |
 | T067 | Contract talks only at renewal and delegated renewals checked against the season projection | CLUB ECON | - | todo |
 | T062 | Rules 1.16.0: economy calibration, goldens and docs | SAVE ECON CLUB | T056 T059 T061 T065 T066 T067 | todo |
 
@@ -42,11 +41,12 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- standalone on t062-standalone (work/club-realism + T062's attempts): implement T065→T066 and T067 (disjoint files, parallel worktrees), merge them here, then T062's calibration with the new rules, goldens, docs and full verify (`BROWSER_TEST_PORT` other than 4173 while another run uses it); then merge work/club-realism (with this branch) into main and push after the owner's go.
+- standalone on t062-standalone (work/club-realism + T062's attempts): T065→T066 done on t062-finance; with T067 merge them here, then T062's calibration with the new rules, goldens, docs and full verify (`BROWSER_TEST_PORT` other than 4173 while another run uses it); then merge work/club-realism (with this branch) into main and push after the owner's go.
 - after the merge: fix CI's benchmark job (desktop pointer-to-second-frame p95 115 ms > 100 since one-result merged; 74–82 ms at c63554c), its own commit on main.
-- planner questions from the reviews: whether loading a pre-1.16 save delegates contract talks at intervention level 2+ (they show 맞춤 now, WEB-45); CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
+- planner questions from the reviews: whether loading a pre-1.16 save delegates contract talks at intervention level 2+ (they show 맞춤 now, WEB-45); CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10); SAVE-10's 1.16.0 list names neither the broadcasting index nor `operatingExpenses` (T066 limits). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 T066 done
 - 261013 T065 done
 - 261013 create-task ECON CLUB: T065 broadcasting index → T066 operating expenses as a turnover share; T067 talks only at renewal + delegated renewals against the season projection; T062 now depends on them (base ECON@16 CLUB@18), back to todo
 - 261013 update-ssot ECON r16 CLUB r18: ECON-31+ broadcasting index for distributions (ECON-26✎ ECON-28✎), ECON-30✎ operating expenses a share of last season's turnover with a division floor, ECON-29✎ crowd targets on clubs in their third straight season in a division; CLUB-26✎ talks only at renewal, delegated renewals checked against the season projection
@@ -66,4 +66,3 @@
 - 261012 create-task T064 (from T047's blocker): e2e save-status revisions under the day order, SAVE-FORMAT 1.15.0; load-induced browser timeouts are left to CI by the owner's decision
 - 261012 T048 T049 integrated
 - 261012 T063 integrated
-- 261012 T043 T044 integrated
