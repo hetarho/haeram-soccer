@@ -81,9 +81,9 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
   it('round-trips sponsor contracts, talks, unhappiness, terms, delegation and new kinds', () => {
     const w = world();
     const [player, other] = w.players;
-    player.talk = { kind: 'raise', demand: '250000', floor: '212500', year: w.year, day: 40 };
-    player.raiseAsked = w.year;
-    player.unhappy = { reason: 'raise-declined', year: w.year, day: 41 };
+    player.talk = { kind: 'improve', demand: '250000', floor: '212500', year: w.year, day: 0 };
+    player.improveAsked = w.year;
+    player.unhappy = { reason: 'improve-declined', year: w.year, day: 41 };
     player.transferRequest = { year: w.year, day: 83 };
     // A club whose goodwill is negative sets the floor above the demand.
     other.talk = { kind: 'renew', demand: '1000', floor: '1100', year: w.year, day: 153 };

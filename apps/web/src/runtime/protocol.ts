@@ -34,6 +34,8 @@ const staffRole = z.enum([
 ]);
 const ref = z.string().min(1).max(100);
 const term = z.literal([1, 2, 3, 4, 5]);
+/** A player contract's term (→CLUB-26): 1–5 seasons in the summer, 0–4 after this one in winter. */
+const talkTerm = z.literal([0, 1, 2, 3, 4, 5]);
 const inboxKind = z.enum([
   'match',
   'window-open',
@@ -125,7 +127,7 @@ const command = z.discriminatedUnion('type', [
     type: z.literal('contract-offer'),
     player: ref,
     wage: z.string().regex(/^\d{1,40}$/),
-    term,
+    term: talkTerm,
   }),
   z.object({ type: z.literal('contract-decline'), player: ref }),
   z.object({

@@ -73,17 +73,17 @@ const player = z.object({
   retiring: z.number().int().optional(),
   talk: z
     .strictObject({
-      kind: z.enum(['renew', 'raise']),
+      kind: z.enum(['renew', 'improve']),
       demand: amount,
       floor: amount,
       year: season,
       day: seasonDay,
     })
     .optional(),
-  raiseAsked: season.optional(),
+  improveAsked: season.optional(),
   unhappy: z
     .strictObject({
-      reason: z.enum(['renewal-declined', 'raise-declined']),
+      reason: z.enum(['renewal-declined', 'improve-declined']),
       year: season,
       day: seasonDay,
     })

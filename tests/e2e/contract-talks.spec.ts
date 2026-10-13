@@ -103,9 +103,10 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   await expect(sheet.getByRole('heading', { name: `${name} 재계약 협상` })).toBeVisible();
   await expect(sheet).toContainText('요구');
   await expect(sheet).toContainText('하한');
-  await expect(sheet.getByRole('radiogroup', { name: '계약 기간' }).getByRole('radio')).toHaveCount(
-    5,
-  );
+  // Signed in the winter window: the rest of this season and 0–4 more (→CLUB-26).
+  const terms = sheet.getByRole('radiogroup', { name: '계약 기간' }).getByRole('radio');
+  await expect(terms).toHaveText(['½시즌', '1½시즌', '2½시즌', '3½시즌', '4½시즌']);
+  await expect(sheet).toContainText('겨울 계약');
   await expect(sheet).toContainText('연 비용');
   await expect(sheet).toContainText('자금 여력');
   await expect(sheet).toContainText(/거절하면 감독이 설득해요: 성공 \d+%/);
