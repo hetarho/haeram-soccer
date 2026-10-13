@@ -460,3 +460,22 @@
 .negotiation:nth-child(8) {
   animation-delay: 245ms;
 }
+/* The recruitment level, a line naming its value that opens the operating board (→WEB-71). */
+.policyLine {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2px 12px;
+  width: 100%;
+  min-height: 44px;
+  margin: 8px 0;
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 13px;
+}
+.policyLine small {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+}

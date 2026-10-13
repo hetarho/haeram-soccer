@@ -69,7 +69,7 @@ async function hireFirefighter(page: Page) {
 test.describe('사람 at 360x740', () => {
   test.use({ viewport: { width: 360, height: 740 } });
 
-  test('keeps the manager and the coaches in tabs of 사람 and renews a firefighter one season', async ({
+  test('사람 tabs keep their address and the manager criteria preview a gegenpress pick', async ({
     page,
   }) => {
     await found(page);
@@ -120,16 +120,38 @@ test.describe('사람 at 360x740', () => {
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
     await expect(tab(page, '코치진')).toHaveAttribute('aria-selected', 'true');
-    // The staff switches sit at the end of 감독 until each moves to its home.
+    // 감독 ends with the manager post's own switch; its criteria show while it is on (→WEB-43).
     await tab(page, '감독').click();
-    const delegation = page.getByRole('region', { name: '스태프 위임' });
-    await expect(delegation).toBeVisible();
-    // The manager post can be delegated, by one of three rules, 같은 학파 우선 by default.
-    await expect(delegation.getByRole('checkbox', { name: /^감독 선임/ })).not.toBeChecked();
-    const rules = delegation.getByRole('radiogroup', { name: '감독 선임 기준' }).getByRole('radio');
-    await expect(rules).toHaveText([/^같은 학파 우선/, /^능력 최고/, /^운영 전략 우선/]);
-    await expect(rules.first()).toHaveAttribute('aria-checked', 'true');
-    await expect(page.getByTestId('manager-rule-outlook')).toContainText('지금 감독 자리가 비면');
+    const post = page.getByRole('region', { name: '감독 선임 위임' });
+    await expect(post).toBeVisible();
+    const delegated = post.getByRole('checkbox', { name: '자동으로 결정', exact: true });
+    await expect(delegated).not.toBeChecked();
+    await expect(post.getByRole('region', { name: '감독 선임 기준' })).toHaveCount(0);
+    await delegated.check();
+    await expect(delegated).toBeChecked();
+    await closeOutcome(page, '스태프 위임을 바꿨어요');
+    const criteria = post.getByRole('region', { name: '감독 선임 기준' });
+    const apply = criteria.getByRole('button', { name: '기준 적용', exact: true });
+    // A draft equal to the stored criteria has nothing to apply.
+    await expect(apply).toBeDisabled();
+    await criteria
+      .getByRole('group', { name: '학파' })
+      .getByRole('button', { name: '게겐프레싱', exact: true })
+      .click();
+    await chooseOption(criteria.getByRole('combobox', { name: '최소 OVR', exact: true }), '60');
+    await expect(apply).toBeEnabled();
+    expect(await horizontalOverflow(page)).toBe(0);
+    await apply.click();
+    await closeOutcome(page, '스태프 선임 기준을 바꿨어요');
+    await expect(apply).toBeDisabled();
+    // Whom the staff would appoint today: a gegenpress manager, or why nobody.
+    const pick = post.getByTestId('manager-pick');
+    await expect(pick).toContainText('지금 기준이면');
+    await expect(pick).toContainText(/게겐프레싱|기준에 맞는 감독이 없어요/);
+    // 기본값으로 puts the defaults into the draft only.
+    await criteria.getByRole('button', { name: '기본값으로', exact: true }).click();
+    await expect(apply).toBeEnabled();
+    await expect(pick).toContainText('적용하면');
     expect(await horizontalOverflow(page)).toBe(0);
 
     // An old address of the candidates tab opens 감독 with the market open.
@@ -192,8 +214,8 @@ test('with the manager post delegated a resignation is filled at once and the cl
   await openPeople(page);
   await tab(page, '감독').click();
   const post = page
-    .getByRole('region', { name: '스태프 위임' })
-    .getByRole('checkbox', { name: /^감독 선임/ });
+    .getByRole('region', { name: '감독 선임 위임' })
+    .getByRole('checkbox', { name: '자동으로 결정', exact: true });
   await post.check();
   await expect(post).toBeChecked();
   await closeOutcome(page, '스태프 위임을 바꿨어요');

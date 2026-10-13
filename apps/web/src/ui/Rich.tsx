@@ -75,9 +75,10 @@ import {
 import {
   CoachingPlan,
   CoachingStaff,
-  Delegation,
   ManagerHireTerm,
+  ManagerPost,
   ManagerRenewal,
+  TalkRulePanel,
 } from './ClubStaff';
 import { PageTabs, TabPanel } from './PageTabs';
 import { TrainingView } from './TrainingView';
@@ -211,7 +212,7 @@ function People({ state, client }: Props) {
         ) : tab === 'manager' ? (
           <>
             <ManagerOffice state={state} client={client} onReplace={() => setMarket(true)} />
-            <Delegation w={w} client={client} />
+            <ManagerPost w={w} client={client} />
           </>
         ) : (
           <>
@@ -469,8 +470,8 @@ function ManagerMarket({ state, client, onClose }: Props & { onClose: () => void
           <div className={s.panelBody}>
             <p className={s.muted}>
               우리 리그와 바로 위 디비전 감독 중 지도력 상위 {others.length}명이에요. 데려오려면
-              계약금에 더해 그 구단에 연봉의 1.5배를 보상금으로 내요. 스태프는 다른 구단 감독을
-              데려오지 않아요.
+              계약금에 더해 그 구단에 연봉의 1.5배를 보상금으로 내요. 감독 선임을 맡기면 기준이
+              허락할 때만 스태프가 다른 구단 감독을 데려와요.
             </p>
             <div className={s.cards}>{others.map(card)}</div>
           </div>
@@ -1005,6 +1006,7 @@ function Roster({ state, client }: Props) {
           {window.label}
         </div>
       </Panel>
+      <TalkRulePanel w={w} client={client} />
       {comparing && (
         <PlayerComparison w={w} initialScope={scope} onClose={() => setComparing(false)} />
       )}

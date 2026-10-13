@@ -12,6 +12,7 @@ import {
 } from '../../packages/engine/src/index';
 import { encode } from '../../apps/web/src/adapters/persistence';
 import { eventCard } from './events';
+import { chooseOption } from './select';
 import { continueSlot } from './slots';
 
 /**
@@ -120,6 +121,12 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   // reason.
   await expect(page).toHaveURL(/\/people$/);
   const roster = page.locator('article').filter({ hasText: name });
+  // 선수 ends with the talks' own switch, off while the owner answers them (→WEB-43).
+  await expect(
+    page
+      .getByRole('region', { name: '계약 협상 위임' })
+      .getByRole('checkbox', { name: '자동으로 결정', exact: true }),
+  ).not.toBeChecked();
   await expect(roster.getByText('언해피 · 재계약 거절')).toBeVisible();
   await expect(roster).toContainText('시장');
 
@@ -150,4 +157,38 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   await expect(
     roster.getByRole('button', { name: `${name} 이적 상태 · 이적 명단 · 바꾸기` }),
   ).toBeVisible();
+});
+
+test('the talk rule shows under 선수 and applies', async ({ page, browserName }) => {
+  test.skip(browserName !== 'chromium', 'One browser covers the journey.');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.getByText('고급 설정', { exact: true }).click();
+  await page.getByLabel('세계 생성 시드').fill('talk-rule-journey');
+  await page.getByRole('button', { name: '넉넉한 출발' }).click();
+  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
+  // New clubs leave contract talks to the staff (→STAFF-13), by the default talk rule.
+  const talks = page.getByRole('region', { name: '계약 협상 위임' });
+  await expect(talks.getByRole('checkbox', { name: '자동으로 결정', exact: true })).toBeChecked();
+  const rule = talks.getByRole('region', { name: '계약 협상 기준' });
+  await expect(
+    rule.getByRole('radiogroup', { name: '연봉 상한' }).getByRole('radio', { name: '110%' }),
+  ).toHaveAttribute('aria-checked', 'true');
+  await expect(rule).toContainText('32세부터 1시즌');
+  await expect(rule).toContainText('언해피');
+  const apply = rule.getByRole('button', { name: '기준 적용', exact: true });
+  await expect(apply).toBeDisabled();
+  const age = rule.getByRole('combobox', { name: '최대 나이', exact: true });
+  await chooseOption(age, '33');
+  await apply.click();
+  await expect(apply).toBeDisabled();
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  await page.reload();
+  await expect(
+    page
+      .getByRole('region', { name: '계약 협상 기준' })
+      .getByRole('combobox', { name: '최대 나이', exact: true }),
+  ).toHaveAttribute('data-value', '33');
 });
