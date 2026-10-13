@@ -1,5 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { advanceRound, createWorld, simulateSeason } from '../../../../packages/engine/src/index';
+import {
+  advanceRound,
+  agentOf,
+  createWorld,
+  simulateSeason,
+} from '../../../../packages/engine/src/index';
 import { canonical } from '../../../../packages/contracts/src/index';
 import { CURRENT_ENGINE_VERSION } from '../../../../packages/contracts/src/versions';
 import { decode, encode, type StoragePort } from '../adapters/persistence';
@@ -507,6 +512,35 @@ describe('legacy activation and compatibility recovery', () => {
       canonical({ ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 18 }),
     );
     expect(canonical((await decode((await client.exportFile())!)).world)).toBe(canonical(upgraded));
+  });
+
+  it('gives players from before rules 1.16 their agents on activation, no clauses (→SAVE-10)', async () => {
+    const legacy = createWorld(founding);
+    legacy.engine = '1.15.0';
+    for (const p of legacy.players) delete p.agent;
+    storage.setItem('haeram-soccor:slot:a', await encode(legacy, 3, 2));
+    storage.setItem(
+      'haeram-soccor:manifest',
+      JSON.stringify({ slot: 0, worldId: legacy.id, generation: 3, parentGeneration: 2 }),
+    );
+    const client = new GameClient(() => {});
+    clients.push(client);
+    await client.start();
+    expect(client.state.error).toBeUndefined();
+    const upgraded = (await decode(storage.getItem('haeram-soccor:slot:b')!)).world;
+    expect(upgraded.engine).toBe(CURRENT_ENGINE_VERSION);
+    expect(upgraded.players.map((p) => p.agent)).toEqual(
+      legacy.players.map((p) => agentOf(legacy, p)),
+    );
+    expect(upgraded.players.every((p) => p.clauses === undefined)).toBe(true);
+    expect(canonical(upgraded)).toBe(
+      canonical({
+        ...legacy,
+        engine: CURRENT_ENGINE_VERSION,
+        revision: legacy.revision + 1,
+        players: legacy.players.map((p) => ({ ...p, agent: agentOf(legacy, p) })),
+      }),
+    );
   });
 
   it('tells of an activated upgrade once as an unread system notification, with no banner', async () => {

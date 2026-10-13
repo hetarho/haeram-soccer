@@ -3,7 +3,7 @@ import { currency } from '../../catalogs/src/index';
 import { currentDay, SEASON_END_DAY, seasonDayLabel, seasonDayOf } from './calendar';
 import { clamp, compareIds, hash, integer, random, ratio } from './primitives';
 import { activePlayers, addEvent, clubOf, overall, ownStarters } from './world';
-import { leaveContract, marketValue } from './contracts';
+import { leaveContract, marketValue, signingClauses } from './contracts';
 import { credit, debit } from './operations';
 import { transferOffers } from './ops-squad';
 import { CASH_WARNING_ROUNDS } from './settlement';
@@ -145,7 +145,9 @@ function completeSigning(w: World, bid: TransferBid, offer: MarketOffer, fee: st
   // The bid keeps its record of him; the squad gets its own copy.
   const p = structuredClone(offer.player);
   debit(w, fee);
+  // A loan keeps his club's contract; a transfer signs one with its own clauses (→CLUB-29).
   if (bid.loan) p.loanUntil = w.year + 1;
+  else p.clauses = signingClauses(w, p);
   w.players.push(p);
   addEvent(
     w,

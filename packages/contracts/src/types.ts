@@ -49,6 +49,17 @@ export type CoachingLevel = 1 | 2 | 3;
 export type SponsorSlot = 'local' | 'kit' | 'shirt' | 'stadium' | 'sleeve';
 /** Guaranteed, performance-linked, exclusive (no merchandise campaigns) or inflation-linked. */
 export type SponsorKind = 'stable' | 'performance' | 'exclusive' | 'indexed';
+/** How strongly a player's agent represents him (→CLUB-30), 1 to 5. */
+export type AgentRating = 1 | 2 | 3 | 4 | 5;
+/**
+ * A player contract's own clauses (→CLUB-29), settled when it is signed, in whole percent of the
+ * wage: `promotion` the rise from the first round after the club goes up, `relegation` the cut
+ * (negative) from the first round after it goes down. An absent clause is none.
+ */
+export interface ContractClauses {
+  promotion?: number;
+  relegation?: number;
+}
 /** Why a player turned unhappy (→CLUB-27): the club declined his renewal or improved contract. */
 export type UnhappyReason = 'renewal-declined' | 'improve-declined';
 /**
@@ -144,6 +155,16 @@ export interface Player {
   unhappy?: { reason: UnhappyReason; year: number; day: number };
   /** The day he handed in a transfer request: listed, never untouchable (→CLUB-27). */
   transferRequest?: { year: number; day: number };
+  /**
+   * His agent (→CLUB-30), set when he was created and never changing; a player from before rules
+   * 1.16 has none until activation draws it from his id (→SAVE-10).
+   */
+  agent?: AgentRating;
+  /**
+   * The running contract's clauses (→CLUB-29), settled at its signing; contracts signed before
+   * rules 1.16, founding squads and loans have none.
+   */
+  clauses?: ContractClauses;
 }
 /**
  * A player's contract talk (→CLUB-26), opened when a transfer window opens: a renewal in his
@@ -156,6 +177,8 @@ export interface ContractTalk {
   floor: string;
   year: number;
   day: number;
+  /** The clauses the new contract would carry, settled as he asks so no answer rerolls them. */
+  clauses?: ContractClauses;
 }
 export interface Manager {
   id: string;

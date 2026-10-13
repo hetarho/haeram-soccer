@@ -42,6 +42,11 @@ const club = z.object({
   elo: z.number().finite().min(0).max(4000).optional(),
   project: z.number().finite().min(0).max(60).optional(),
 });
+/** Whole percent of the wage (→CLUB-29): a promotion rise, a relegation cut. */
+const clauses = z.strictObject({
+  promotion: z.number().int().min(1).max(100).optional(),
+  relegation: z.number().int().min(-99).max(-1).optional(),
+});
 const player = z.object({
   id,
   name: text,
@@ -78,6 +83,7 @@ const player = z.object({
       floor: amount,
       year: season,
       day: seasonDay,
+      clauses: clauses.optional(),
     })
     .optional(),
   improveAsked: season.optional(),
@@ -89,6 +95,8 @@ const player = z.object({
     })
     .optional(),
   transferRequest: z.strictObject({ year: season, day: seasonDay }).optional(),
+  agent: z.literal([1, 2, 3, 4, 5]).optional(),
+  clauses: clauses.optional(),
 });
 const manager = z.object({
   id,

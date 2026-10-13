@@ -18,6 +18,9 @@ import {
   UNHAPPY_PENALTY,
 } from '../../../../packages/engine/src/world';
 import {
+  agentOf,
+  agentPremium,
+  clausesLabel,
   marketWage,
   TALK_LABEL,
   TALK_TERMS,
@@ -740,9 +743,10 @@ function StanceSheet({
   );
 }
 /**
- * A contract talk (→WEB-68, CLUB-26): a renewal or an improved contract, his demand and the floor
- * he settles for, the window's terms (1–5 seasons in the summer, ½–4½ in winter), the yearly cost
- * and the runway after it, and what a refusal risks (→CLUB-27). He accepts any offer at or above
+ * A contract talk (→WEB-68, CLUB-26): a renewal or an improved contract, his agent's rating and the
+ * clauses the new contract carries (→CLUB-29, CLUB-30), his demand and the floor he settles for, the
+ * window's terms (1–5 seasons in the summer, ½–4½ in winter), the yearly cost and the runway after
+ * it, and what a refusal risks (→CLUB-27). He accepts any offer at or above
  * the floor, so the owner offers the floor or declines; an unhappy player has only his floor, as it
  * stands today, to be met.
  */
@@ -772,6 +776,8 @@ function ContractTalkSheet({
     label = TALK_LABEL[talk.kind],
     window = talkWindow(w),
     terms = TALK_TERMS[window],
+    agent = agentOf(w, player),
+    premium = Math.round((agentPremium(agent) - 1) * 100),
     // A sheet left open across 1 January keeps a term the new window offers.
     term: TalkTerm = terms.includes(picked) ? picked : 2;
   return (
@@ -815,6 +821,10 @@ function ContractTalkSheet({
       )}
       <p>
         요구 {money(talk.demand)} · 하한 {money(talk.floor)} · 하한 이상이면 바로 합의해요.
+      </p>
+      <p>
+        에이전트 {agent}등급(1–5){premium ? ` · 요구 +${premium}%` : ''} · 새 계약 조항:{' '}
+        {clausesLabel(talk.clauses)}
       </p>
       <p className={s.muted}>
         {window === 'summer'
