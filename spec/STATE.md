@@ -41,26 +41,30 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- club-realism with T062–T069 is done on t062-standalone: push it as work/club-realism, let CI run every browser, then merge into main and push. ECON-29 bands still outside after T062 (owner accepted 261013, recorded): wage bill 36.2% (50–70), net 20.3% (−5..+10), 2000s commercial 12.3% / matchday 46.3%, ladder 6.0 seasons, 2nd/3rd-tier crowds 6,102 / 3,567; follow-up: per-country pre-1979 football index level or a country wage factor (update-ssot), and write the measured values into ECON-29.
-- planner questions from the reviews: whether loading a pre-1.16 save delegates contract talks at intervention level 2+ (they show 맞춤 now, WEB-45); CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
+- three levers on branch work/levers (pushed): T070–T076 done and merged here (unit 655, contract 11 incl. goldens, Chromium e2e of the people, training and money specs pass). Next: implement T077 (event cards and remedies open each setting's home), then T078 (upgrade journey, goldens, calibration check ENG/GER — no bankrupt reference career is the must-hold; record other drift in ECON-29 and move on; full three-browser e2e via CI). Then let CI pass on work/levers and merge it into main (main's benchmark fix is already merged here).
+- benchmark (ARCH-28 p95 < 100 ms, entry ≤ 250 KiB): fixed on main (e797019; CI run 38368336768 passed the benchmark job and every browser) and merged into work/levers (0ac9c71); T078's CI run must keep the benchmark job green (the levers pages ride the lazy management chunk).
+- origin/alt/club-realism-local (a1e4cbb, pushed 16:37 from the other machine) is a parallel club-realism finish with its own T062 calibration, never merged; main and work/levers build on this machine's T062 (8fe49b0). Compare it only if the owner asks; do not merge it.
+- owner's standing decisions (261013): decide without asking him; record gaps that do not change the game much and move on; push verified work (branch → CI in every browser → main); never touch his local checkout or its dev server on port 19500 while he may hold unsaved progress.
+- planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
+
 ## log
-- 261013 benchmark fixed (bench-fix cd8ad03): CI run 38368336768 passed the benchmark job and every browser's e2e; entry 234,916 B (≤ 256,000), shell memoised, league tabs mounted on first view, management pages a lazy chunk
-- 261013 WIP benchmark (bench-fix): memoised shell, lazy league tabs, lazy management-pages chunk; entry 263,867→234,916 B; desktop p95 locally 106–164 → 88–119 under load, CI not run
+- 261013 merged main (benchmark fix e797019) into work/levers: App/EventCenter/RemedySheet keep the selector reads, PolicyBoard keeps T076's board; unit 655, build pass
+- 261013 benchmark fixed on main (bench-fix cd8ad03): CI passed the benchmark job and every browser; entry 234,916 B, shell memoised, league tabs mounted on first view, management pages a lazy chunk
+- 261013 handoff: T073 merged; work/levers holds T070–T076; T077, T078 left; bench-fix pushed for CI
+- 261013 T073 done: 사람 tabs end with their switches and criteria editors (talk rule, offer switch with its sale bar, manager criteria with the pick preview, a switch and criteria per coaching department); the 위임 block is gone
+- 261013 T073 doing standalone on ia-people (c2f2db7)
+- 261013 T071 done: 사람/훈련 tabs with PageTabs and ?view=, older addresses landing on 사람's tabs, intervention levels as a preset without training, 스태프가 맡는 결정 opening each home
+- 261013 T071 doing standalone on ia-plan (5751099)
+- 261013 T072 done: coaches and the manager hired and renewed by the owner's criteria, coaching levels and the manager rule gone (loads map them), goldens unchanged
+- 261013 T076 done: one operating board (six area rows of cards beside dials, one draft, 적용 at once, locked cards with their free day), sponsor switch in 후원; training.spec waits for T074
+- 261013 T076 doing standalone on ia-money (0c92085)
+- 261013 T074 done: 훈련 tab with focus on tap, the coach's rule and pick, what drives development (developmentOutlook) opening each home, players still growing, focus suggestion banner; 유소년 with prospects, intake, the director's switch and rule, investment line to 운영 전략
+- 261013 T074 doing standalone on ia-training (e142f23)
+- 261013 T075 done: squad investment scales operating expenses ×0.9–1.2 on each round's booking, fixed costs, runway, warning, bankruptcy threshold and projection; level 3 exactly ×1, goldens and calibration unchanged
+- 261013 T075 doing standalone on ia-money (5751099)
+- 261013 T070 done: per-department coach switches, hiring criteria and talk rule as data, talks by the talk rule, strategy applied at once with 90-day slot locks, load and activation mapping; goldens unchanged
+- 261013 T070 doing standalone on ia-plan (6dbfb46)
+- 261013 update-ssot ECON r18: ECON-29 records rules 1.16.0's measured values and accepts the bands outside for now (no code impact)
 - 261013 T062 done by the owner's decision (record what does not change the game much): solvent reference careers; wage bill and net outside their bands, recorded in next
 - 261013 T062 blocked: three must-hold bands (owner decision) conflict — wage bill 36.2% and net 20.3% with 0/16 bankrupt, or bands held with 4–8/16 ESP/FRA/GER bankrupt; constants, goldens, FINANCES.md committed
 - 261013 T062 doing standalone on t062-standalone (af28706), third attempt
-- 261013 T069 done: delegated terms past this season never ending before the running contract, clauses for founding squads and close refills, 선수 계약 협상/계약 협상 labels
-- 261013 T069 doing standalone on t062-standalone (42c6e15)
-- 261013 create-task CLUB r20 WEB r53: T069 contract follow-ups (delegated terms past this season, clauses for founding squads and refills, improved-contract labels); SAVE r22 no-op (code already activates agents); T062 depends on T069
-- 261013 update-ssot CLUB r20 SAVE r22 WEB r53: delegated terms past this season, late-answered terms by half-season, clauses for founding squads and refills; SAVE-10 lists 1.16.0's agents, clauses, broadcasting index and operatingExpenses; WEB-68 terms by window, agent and clauses
-- 261013 merged main (records room redesign, WEB r52) into t062-standalone: club-realism money notation kept in ClubTrends/RecordsRoom
-- 261013 WEB r52 implemented directly on branch records-room-ux: records room tabs pinned; 요약 segments 트로피 (SVG trophies) / Elo / 시즌별 기록 (rows open the league page's closed season at 순위표) / 기타 기록 (match records read from the worker: biggest win/defeat, most goals, win/unbeaten/clean-sheet/losing/winless runs, then the record book); 추이 one chart per metric segment; 선수 one board per segment; 시즌 기록 season arrows + filter + 개요/경기/결정, 개요 a W-D-L and goals table per venue and season-long points and goal-difference charts, no league/continental tables; closed-season archives no longer re-read on every tick; the closed-season league picker takes that season's league as ours; page tab bars (league, closed season, cups, records, staff, operations) as underlined text
-- 261013 update-ssot WEB r52: records room holds only our club's records, one view at a time (요약 트로피/Elo/시즌별 기록/기타 기록, 추이 chart per metric, 선수 board per segment, 시즌 기록 season arrows + 개요/경기/결정 with season-long charts, no league or continental tables); season rows open the league page at 순위표; WEB-65 a closed season's picker takes our league that season as ours; WEB-69 page tab bars as underlined text, segments inside a tab
-- 261013 update-ssot WEB start
-- 261013 T068 done: agents 1–5 at creation and activation, clauses per signing (CLAUSE_CONFIG), applied at a close that moves the club; SAVE-10 still says activation is metadata-only
-- 261013 T068 doing standalone on t062-contracts after T067
-- 261013 T067 done: talks at the window openings, improved contracts with ≤3 seasons left, terms by window (TalkTerm 0–5), delegated projection check; WEB-68 still says 1–5 seasons
-- 261013 T067 doing standalone on t062-contracts (from t062-standalone fde6a81)
-- 261013 T066 done
-- 261013 T065 done
-- 261013 create-task CLUB r19: T067 rewritten (talks at window openings, improved contracts with ≤3 seasons left, terms by window, delegated projection check); T068 clauses and agents (draft) after it; T062 depends on T068 too
