@@ -1,6 +1,6 @@
 import type { World } from './types';
 
-export const CURRENT_ENGINE_VERSION = '1.15.0';
+export const CURRENT_ENGINE_VERSION = '1.16.0';
 /**
  * 1.1.0 added club policy; 1.2.0 staff, academy, transfer windows and the inbox; 1.3.0 closes
  * the season after its final round, opens the summer window there, normalizes league match
@@ -28,7 +28,12 @@ export const CURRENT_ENGINE_VERSION = '1.15.0';
  * progression mode through the same days in one order with draws named by what they settle,
  * swaps the amateur level with the last professional division by the amateur table, converts
  * every live amount at a currency change, lists the market per settings and keeps an outgoing
- * bid's player and terms as its `offer` (a bid pending from before has none).
+ * bid's player and terms as its `offer` (a bid pending from before has none); 1.16.0 pays a league
+ * distribution and a local-supporter gate on the football index of catalog 2026-demo-2 with no
+ * global fan income, signs sponsors per slot by era, pays players market wages agreed in contract
+ * talks (unhappy players, transfer requests, expiring contracts), lets the owner choose staff and
+ * manager terms and delegate contract talks and the manager post (a 1.15 sponsor loads as its
+ * slot's contract; wages stay until renewal).
  */
 export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.0.0',
@@ -46,6 +51,7 @@ export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.12.0',
   '1.13.0',
   '1.14.0',
+  '1.15.0',
   CURRENT_ENGINE_VERSION,
 ];
 /** A world pins its catalog ID and the fingerprint recorded with it (→ARCH-10). */
