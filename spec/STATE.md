@@ -23,7 +23,7 @@
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
 | STAFF | 13 | 13 | - | 0 |
-| ECON | 17 | 17 | - | 0 |
+| ECON | 18 | 18 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 7 | 7 | - | 0 |
 | SAVE | 23 | 23 | - | 0 |
@@ -54,6 +54,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 update-ssot ECON r18: ECON-29 records rules 1.16.0's measured values and accepts the bands outside for now (no code impact)
 - 261013 T062 done by the owner's decision (record what does not change the game much): solvent reference careers; wage bill and net outside their bands, recorded in next
 - 261013 T062 blocked: three must-hold bands (owner decision) conflict — wage bill 36.2% and net 20.3% with 0/16 bankrupt, or bands held with 4–8/16 ESP/FRA/GER bankrupt; constants, goldens, FINANCES.md committed
 - 261013 T062 doing standalone on t062-standalone (af28706), third attempt
@@ -73,4 +74,3 @@
 - 261013 T067 done: talks at the window openings, improved contracts with ≤3 seasons left, terms by window (TalkTerm 0–5), delegated projection check; WEB-68 still says 1–5 seasons
 - 261013 T067 doing standalone on t062-contracts (from t062-standalone fde6a81)
 - 261013 T066 done
-- 261013 T065 done
