@@ -145,6 +145,8 @@ for (const variant of ['baseline', 'active-management']) {
     seed: 'release-century-' + variant,
     difficulty: 2,
   });
+  // The active owner chooses the training focus himself, which only level 1 allows (→WEB-45).
+  if (variant === 'active-management') operate(w, { type: 'intervention', level: 1 });
   await measure(w, variant + ' founding');
   for (let n = 0; n < 100; n++) {
     const before = retainedFacts(w);
