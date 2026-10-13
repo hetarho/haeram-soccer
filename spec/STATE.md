@@ -31,7 +31,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T069 | Contract follow-ups: delegated terms past this season, clauses for founding squads and refills, improved-contract labels | CLUB WEB | - | doing@261013.c62 |
 | T062 | Rules 1.16.0: economy calibration, goldens and docs | SAVE ECON CLUB | T056 T059 T061 T065 T066 T067 T068 T069 | todo |
 
 ## work
@@ -41,11 +40,12 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- standalone on t062-standalone (work/club-realism + T062's attempts + main's records room): T065–T068 done and merged; implement T069, then T062's calibration with the new rules, goldens, docs and full verify (`BROWSER_TEST_PORT` other than 4173 while another run uses it); then merge t062-standalone into work/club-realism and main and push after the owner's go.
+- standalone on t062-standalone (work/club-realism + T062's attempts + main's records room): T065–T069 done; T062's calibration with the new rules, goldens, docs and full verify (`BROWSER_TEST_PORT` other than 4173 while another run uses it); then merge t062-standalone into work/club-realism and main and push after the owner's go.
 - after the merge: fix CI's benchmark job (desktop pointer-to-second-frame p95 115 ms > 100 since one-result merged; 74–82 ms at c63554c), its own commit on main.
-- planner questions from the reviews: whether loading a pre-1.16 save delegates contract talks at intervention level 2+ (they show 맞춤 now, WEB-45); CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10); from T067/T068 — WEB-68's 1–5 term text and missing agent/clauses, how the staff's 2/1 seasons count in each window, terms outside a window, SAVE-10 naming agent activation. Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
+- planner questions from the reviews: whether loading a pre-1.16 save delegates contract talks at intervention level 2+ (they show 맞춤 now, WEB-45); CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261013 T069 done: delegated terms past this season never ending before the running contract, clauses for founding squads and close refills, 선수 계약 협상/계약 협상 labels
 - 261013 T069 doing standalone on t062-standalone (42c6e15)
 - 261013 create-task CLUB r20 WEB r53: T069 contract follow-ups (delegated terms past this season, clauses for founding squads and refills, improved-contract labels); SAVE r22 no-op (code already activates agents); T062 depends on T069
 - 261013 update-ssot CLUB r20 SAVE r22 WEB r53: delegated terms past this season, late-answered terms by half-season, clauses for founding squads and refills; SAVE-10 lists 1.16.0's agents, clauses, broadcasting index and operatingExpenses; WEB-68 terms by window, agent and clauses
@@ -65,5 +65,3 @@
 - 261013 update-ssot ECON r16 CLUB r18: ECON-31+ broadcasting index for distributions (ECON-26✎ ECON-28✎), ECON-30✎ operating expenses a share of last season's turnover with a division floor, ECON-29✎ crowd targets on clubs in their third straight season in a division; CLUB-26✎ talks only at renewal, delegated renewals checked against the season projection
 - 261013 T062 blocked: calibration bands conflict with ECON-26, ECON-23 and ECON-30/CLUB-26 (measured r0–r5 in its result); ECON-30 operating expenses implemented
 - 261013 T062 doing standalone on t062-standalone (work/club-realism + its first attempt, f8235db)
-- 261013 create-task ECON: T062 gains ECON-30 operating expenses (base ECON@15); its blocked attempt carries over
-- 261013 update-ssot ECON r15: ECON-30+ operating expenses per division on the football index, ECON-26✎, ECON-29✎ reference club (T062's attempt found net result 47% of income with every non-wage cost on prices)
