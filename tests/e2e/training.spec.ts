@@ -15,6 +15,7 @@ import {
 import { encode } from '../../apps/web/src/adapters/persistence';
 import type { TrainingFocus, World } from '../../packages/contracts/src/types';
 import { expectHomeBounds } from './layout';
+import { acknowledgeEvents } from './events';
 import { continueSlot } from './slots';
 
 /** The focuses as 훈련 names them. */
@@ -189,6 +190,8 @@ for (const { seed: worldSeed, ...viewport } of [
     expect(abilities(planned)).toEqual(abilities(before));
 
     await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
+    // An offer that arrived while the clock ran waits on home as a card; answer it first.
+    await acknowledgeEvents(page);
     await page.getByTestId('hub-play').click();
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90′ ·.*경기 종료/)).toBeVisible();
