@@ -8,7 +8,7 @@ describe('activating the levers of rules 1.16 (→SAVE-10)', () => {
   it('drops a reservation and names it in the inbox', () => {
     const w = world();
     w.calendar = { day: 40 };
-    w.buildNext = { build: { youth: 'pathway' }, name: '다음 계획' };
+    w.buildNext = { build: { youth: 'elite' }, name: '다음 계획' };
     const activated = activateLevers(w, '1.15.0');
     expect(activated.buildNext).toBeUndefined();
     expect(w.buildNext).toBeDefined();
@@ -24,15 +24,15 @@ describe('activating the levers of rules 1.16 (→SAVE-10)', () => {
     // Without a name the item names the preset the cards match, else the cards.
     const preset = world();
     preset.buildNext = {
-      build: { youth: 'pathway', scouting: 'data', market: 'selling', culture: 'meritocracy' },
+      build: { scouting: 'data', market: 'selling', culture: 'meritocracy' },
     };
     expect(activateLevers(preset, '1.14.0').inbox!.at(-1)!.title).toBe(
       '예약했던 방향 ‘트레이딩 머신’ 취소',
     );
     const cards = world();
-    cards.buildNext = { build: { youth: 'pathway', fans: 'community' } };
+    cards.buildNext = { build: { youth: 'elite', fans: 'community' } };
     expect(activateLevers(cards, '1.13.0').inbox!.at(-1)!.title).toBe(
-      '예약했던 방향 ‘1군 직행 경로 · 지역 밀착’ 취소',
+      '예약했던 방향 ‘엘리트 선발 · 지역 밀착’ 취소',
     );
   });
 
@@ -40,7 +40,7 @@ describe('activating the levers of rules 1.16 (→SAVE-10)', () => {
     const w = world();
     expect(activateLevers(w, '1.15.0')).toBe(w);
     // 1.16.0 worlds (unreleased, never activated twice) and later stay as they are.
-    w.buildNext = { build: { youth: 'pathway' } };
+    w.buildNext = { build: { youth: 'elite' } };
     expect(activateLevers(w, '1.16.0')).toBe(w);
     expect(activateLevers(w, '2.0.0')).toBe(w);
   });

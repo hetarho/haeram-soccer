@@ -252,7 +252,7 @@ describe('earned player growth and training choices', () => {
       w.trainingGround = 3;
       w.manager.youth = 70;
       w.manager.style = style;
-      w.build = { youth: 'pathway' };
+      w.direction = { debut: 'early' };
       w.staff = w.staff!.map((member) =>
         member.role === 'assistant'
           ? { ...member, ability: 80, trait: 'developer' as const }

@@ -10,18 +10,21 @@ import {
   academySummary,
   activePlayers,
   advanceRound,
+  autoTrainingAdvice,
   basicStaff,
   createWorld,
   developAcademy,
   makePlayer,
   operate,
   overall,
+  ownStarters,
   promoteYouth,
   releaseYouth,
   runAcademyIntake,
   seasonAcademy,
   settleTraining,
   simulateSeason,
+  youthAdvice,
   FOUNDING_YEAR,
 } from './index';
 
@@ -354,5 +357,84 @@ describe('season boundary', () => {
     ).toBe(true);
     expect(academyPlayers(w).every((player) => w.year - player.born < 22)).toBe(true);
     validateWorld(w);
+  });
+});
+
+describe('육성 목표 and 데뷔 시점 (→CLUB-32)', () => {
+  /** The weakest first-teamer of the role and the starters' average, as the director measures. */
+  const levels = (w: World, role: Role) => {
+    const peers = activePlayers(w)
+      .filter((player) => player.role === role)
+      .map(overall);
+    const starters = ownStarters(w)
+      .filter((player) => player.role === role)
+      .map(overall);
+    return {
+      weakest: Math.min(...peers),
+      starters: starters.reduce((sum, value) => sum + value, 0) / starters.length,
+    };
+  };
+  const state = (w: World, player: Player) =>
+    academySummary(w).players.find((one) => one.player.id === player.id)!.readiness;
+  const row = (w: World, key: 'youthGoal' | 'debut', option: string) =>
+    operate(w, { type: 'direction', key, option });
+
+  it("데뷔 시점 sets readiness and the coaches' focus rules", () => {
+    const w = world('debut-rows');
+    const { weakest, starters } = levels(w, 'DEF');
+    // Below both of 표준's bars, within 빠른 데뷔's.
+    const near = prospect(w, 'DEF', 18, Math.floor(Math.min(weakest - 2, starters - 11)));
+    expect(state(w, near)).not.toBe('ready');
+    row(w, 'debut', 'early');
+    expect(state(w, near)).toBe('ready');
+    row(w, 'debut', 'ready');
+    expect(state(w, near)).not.toBe('ready');
+    const level = prospect(w, 'DEF', 18, Math.ceil(starters));
+    expect(state(w, level)).toBe('ready');
+    // 늦게: nobody before 19, whatever his rating.
+    row(w, 'debut', 'late');
+    expect(state(w, level)).not.toBe('ready');
+    const nineteen = prospect(w, 'DEF', 19, Math.ceil(starters));
+    expect(state(w, nineteen)).toBe('ready');
+
+    // The youth director readies a U-19 within 10 under 빠른 데뷔, and only U-21 under 늦게.
+    const focus = world('debut-focus');
+    const bars = levels(focus, 'MID');
+    prospect(focus, 'MID', 17, Math.floor(Math.min(bars.weakest, bars.starters - 10)) - 8);
+    expect(youthAdvice(focus).focus).not.toBe('firstTeam');
+    row(focus, 'debut', 'early');
+    expect(youthAdvice(focus).focus).toBe('firstTeam');
+    const late = world('debut-late');
+    const lateBars = levels(late, 'MID');
+    prospect(late, 'MID', 17, Math.ceil(lateBars.starters));
+    expect(youthAdvice(late).focus).toBe('firstTeam');
+    row(late, 'debut', 'late');
+    expect(youthAdvice(late).focus).not.toBe('firstTeam');
+
+    // The assistant turns to youth work from two young starters under 빠른 데뷔 (→CLUB-13).
+    const first = world('debut-assistant');
+    for (const player of ownStarters(first)) player.born = first.year - 26;
+    for (const player of ownStarters(first).slice(0, 2)) player.born = first.year - 20;
+    expect(autoTrainingAdvice(first).focus).toBe('balanced');
+    row(first, 'debut', 'early');
+    expect(autoTrainingAdvice(first).focus).toBe('youth');
+  });
+
+  it('육성 목표 sets release', () => {
+    const w = world('goal-rows');
+    const { weakest, starters } = levels(w, 'DEF');
+    // 19 and short of the weakest first-teamer's level for good: released at 표준.
+    const stalled = prospect(w, 'DEF', 19, 5);
+    stalled.potential = weakest - 5;
+    expect(state(w, stalled)).toBe('review');
+    row(w, 'youthGoal', 'firstTeam');
+    expect(state(w, stalled)).toBe('growing');
+    // 18 and short of the starters' level, though above the weakest: only 최소 운영 lets him go.
+    const middling = prospect(w, 'DEF', 18, 5);
+    middling.potential = Math.max(weakest + 1, Math.floor(starters) - 1);
+    row(w, 'youthGoal', 'standard');
+    expect(state(w, middling)).toBe('growing');
+    row(w, 'youthGoal', 'minimal');
+    expect(state(w, middling)).toBe(middling.potential < starters ? 'review' : 'growing');
   });
 });

@@ -649,6 +649,8 @@ export const worldSchema: z.ZodType<World> = z.object({
       manager: z.enum(['developer', 'proven', 'young', 'cheap']).optional(),
       coaches: z.enum(['volunteer', 'cheap', 'elite']).optional(),
       finance: z.enum(['aggressive', 'bold', 'careful', 'stable']).optional(),
+      youthGoal: z.enum(['firstTeam', 'sell', 'minimal']).optional(),
+      debut: z.enum(['early', 'ready', 'late']).optional(),
     })
     .optional(),
   cupWinners: z.record(id, id),
@@ -854,6 +856,34 @@ function legacyDirection(input: unknown): unknown {
   }
   return Object.keys(direction).length ? { ...rest, direction } : rest;
 }
+/**
+ * Rules before 1.18 (→SAVE-10): the 1군 직행 경로 card (`youth: 'pathway'`) went to 데뷔 시점 빠른
+ * 데뷔, so a build holding it loads without it and with that row; a strategy reserved by rules
+ * 1.13–1.15 (`buildNext`) only drops it, since activation drops the reservation itself.
+ */
+function legacyPathway(input: unknown): unknown {
+  if (!isRecord(input)) return input;
+  const build = isRecord(input.build) ? input.build : undefined,
+    next = isRecord(input.buildNext) ? input.buildNext : undefined,
+    nextBuild = next && isRecord(next.build) ? next.build : undefined;
+  if (build?.youth !== 'pathway' && nextBuild?.youth !== 'pathway') return input;
+  const out: Record<string, unknown> = { ...input };
+  if (build?.youth === 'pathway') {
+    const { youth: _youth, ...rest } = build;
+    void _youth;
+    if (Object.keys(rest).length) out.build = rest;
+    else delete out.build;
+    const direction = isRecord(input.direction) ? { ...input.direction } : {};
+    direction.debut ??= 'early';
+    out.direction = direction;
+  }
+  if (nextBuild?.youth === 'pathway') {
+    const { youth: _youth, ...rest } = nextBuild;
+    void _youth;
+    out.buildNext = { ...next, build: rest };
+  }
+  return out;
+}
 /** Capacity of each stadium step (→ECON-32), for loading a single facility level. */
 const STADIUM_CAPACITY = [2500, 5000, 10000, 15000, 30000, 40000, 60000, 75000, 90000];
 /**
@@ -945,8 +975,10 @@ function legacySponsor(w: World, country: string, catalog: LoadCatalog | undefin
 /** `catalog` is needed only for a world from rules before 1.16 that has a sponsor. */
 export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   const w = worldSchema.parse(
-    legacyDirection(
-      legacyFacilities(legacyIntervention(legacyLevers(legacyMarket(legacyVision(input))))),
+    legacyPathway(
+      legacyDirection(
+        legacyFacilities(legacyIntervention(legacyLevers(legacyMarket(legacyVision(input))))),
+      ),
     ),
   );
   const ids = new Set(w.clubs.map((c) => c.id));

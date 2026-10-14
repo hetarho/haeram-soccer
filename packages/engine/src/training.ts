@@ -349,7 +349,11 @@ export function developmentOutlook(w: World) {
       value: buildEffects(w).youthGrowth,
       applies: 'u21',
       home: 'business/strategy',
-      detail: youthCards.length ? youthCards.join(' · ') : '21세 이하 성장 카드 없음',
+      // 데뷔 시점 빠른 데뷔 lifts the same growth (→CLUB-32).
+      detail:
+        [...youthCards, ...(w.direction?.debut === 'early' ? ['데뷔 시점 빠른 데뷔'] : [])].join(
+          ' · ',
+        ) || '21세 이하 성장 카드 없음',
     },
   ];
   const growing: GrowingPlayer[] = activePlayers(w)

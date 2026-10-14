@@ -425,8 +425,9 @@ export function autoTrainingAdvice(w: World): { focus: TrainingFocus; reason: st
     return { focus: 'recovery', reason: `${tired} · 회복이 먼저예요.` };
   if (staffMember(w, 'assistant')?.trait === 'developer')
     return { focus: 'youth', reason: `${tired} · 육성형 수석코치가 유망주 성장에 집중해요.` };
+  // 데뷔 시점 빠른 데뷔 calls for youth work from two young starters (→CLUB-13, CLUB-32).
   const young = starters.filter((player) => isYouth(w, player)).length;
-  if (young >= 3)
+  if (young >= (w.direction?.debut === 'early' ? 2 : 3))
     return { focus: 'youth', reason: `${tired} · 21세 이하 선발 ${young}명의 성장에 집중해요.` };
   return { focus: 'balanced', reason: `${tired} · 성장과 회복을 함께 챙겨요.` };
 }

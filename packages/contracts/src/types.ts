@@ -104,8 +104,8 @@ export interface TalkRule {
 }
 /**
  * The direction rows the delegated staff follow (→ECON-25), each absent at its default (표준, or
- * any school): 재계약 기조 (→CLUB-26), 선호 학파 and 감독 기조 (→STAFF-18), 코치 기조 (→STAFF-15)
- * and 재정 기조 (→ECON-33).
+ * any school): 재계약 기조 (→CLUB-26), 선호 학파 and 감독 기조 (→STAFF-18), 코치 기조 (→STAFF-15),
+ * 재정 기조 (→ECON-33), 육성 목표 and 데뷔 시점 (→CLUB-32).
  */
 export interface Direction {
   renewal?: 'keepAll' | 'coreOnly' | 'frugal' | 'youngFirst';
@@ -113,6 +113,10 @@ export interface Direction {
   manager?: 'developer' | 'proven' | 'young' | 'cheap';
   coaches?: 'volunteer' | 'cheap' | 'elite';
   finance?: 'aggressive' | 'bold' | 'careful' | 'stable';
+  /** 육성 목표 (→CLUB-32): what the academy is for. */
+  youthGoal?: 'firstTeam' | 'sell' | 'minimal';
+  /** 데뷔 시점 (→CLUB-32): how early prospects go up. */
+  debut?: 'early' | 'ready' | 'late';
 }
 export type DirectionKey = keyof Direction;
 /** What rules before 1.17 kept for the delegated staff's hiring; a load turns it into rows (→SAVE-10). */

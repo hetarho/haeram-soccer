@@ -20,6 +20,8 @@ export const DIRECTION_KEYS: readonly DirectionKey[] = [
   'manager',
   'coaches',
   'finance',
+  'youthGoal',
+  'debut',
 ];
 /** Each row's default option: 표준, or any school. */
 export const DIRECTION_DEFAULT: Readonly<Record<DirectionKey, string>> = {
@@ -28,6 +30,8 @@ export const DIRECTION_DEFAULT: Readonly<Record<DirectionKey, string>> = {
   manager: 'standard',
   coaches: 'standard',
   finance: 'standard',
+  youthGoal: 'standard',
+  debut: 'standard',
 };
 
 /**
@@ -141,7 +145,88 @@ export const DIRECTION_INFO: Readonly<
       { id: 'stable', name: '안정적', summary: financeSummary('stable') },
     ],
   },
+  youthGoal: {
+    label: '육성 목표',
+    question: '아카데미는 무엇을 위해 키울까요?',
+    options: [
+      {
+        id: 'standard',
+        name: '표준',
+        summary: '19세에 잠재력이 같은 포지션 1군 최하위에 못 미치는 아이를 내보내요',
+      },
+      {
+        id: 'firstTeam',
+        name: '1군 공급',
+        summary: '21세가 될 때까지 아무도 내보내지 않고 키워요',
+      },
+      {
+        id: 'sell',
+        name: '판매용 육성',
+        summary: '표준처럼 키우고, 이적을 맡기면 21세 이하 비주전을 이적 명단에 올려요',
+      },
+      {
+        id: 'minimal',
+        name: '최소 운영',
+        summary: '18세에 잠재력이 같은 포지션 주전 수준에 못 미치면 일찍 내보내요',
+      },
+    ],
+  },
+  debut: {
+    label: '데뷔 시점',
+    question: '유망주를 얼마나 일찍 1군에 올릴까요?',
+    options: [
+      {
+        id: 'standard',
+        name: '표준',
+        summary: '같은 포지션 1군 최하위만큼, 또는 주전 수준 −10이면 올려요',
+      },
+      {
+        id: 'early',
+        name: '빠른 데뷔',
+        summary: '1군 최하위 −3이나 주전 수준 −15면 올리고, 21세 이하 성장 ×1.2 · 분위기 기준점 −1',
+      },
+      { id: 'ready', name: '준비된 뒤', summary: '같은 포지션 주전 수준이 돼야 올려요' },
+      {
+        id: 'late',
+        name: '늦게',
+        summary: '19세 전에는 올리지 않고 U-21에서 다듬어요(U-21 성장 ×1.15)',
+      },
+    ],
+  },
 };
+
+/**
+ * When the delegated youth director calls a prospect ready (→CLUB-32): within `weakestMargin` of
+ * the weakest first-teamer of his role or `startersMargin` of its starters' level (no margin to
+ * the weakest when it is undefined), from `fromAge` at the earliest beside the promotion age.
+ */
+export function debutRule(w: Pick<World, 'direction'>) {
+  switch (directionOf(w, 'debut')) {
+    case 'early':
+      return { weakestMargin: 3, startersMargin: 15, fromAge: 0, gap: 10, u21Growth: 1 };
+    case 'ready':
+      return { weakestMargin: undefined, startersMargin: 0, fromAge: 0, gap: 5, u21Growth: 1 };
+    case 'late':
+      return { weakestMargin: 0, startersMargin: 10, fromAge: 19, gap: 5, u21Growth: 1.15 };
+    default:
+      return { weakestMargin: 0, startersMargin: 10, fromAge: 0, gap: 5, u21Growth: 1 };
+  }
+}
+/**
+ * Whom the delegated youth director releases (→CLUB-32): from `age`, a prospect whose potential
+ * is below the weakest first-teamer of his role or its starters' level; never before 21 under 1군
+ * 공급.
+ */
+export function releaseRule(w: Pick<World, 'direction'>) {
+  switch (directionOf(w, 'youthGoal')) {
+    case 'firstTeam':
+      return { age: Infinity, against: 'weakest' as const };
+    case 'minimal':
+      return { age: 18, against: 'starters' as const };
+    default:
+      return { age: 19, against: 'weakest' as const };
+  }
+}
 
 /** The option in force for a row, its default when absent. */
 export function directionOf(w: Pick<World, 'direction'>, key: DirectionKey): string {

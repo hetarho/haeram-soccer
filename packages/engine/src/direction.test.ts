@@ -12,6 +12,7 @@ import {
   coachKey,
   createWorld,
   dailyStaff,
+  dailyMarket,
   delegated,
   DIRECTION_INFO,
   DIRECTION_KEYS,
@@ -20,14 +21,18 @@ import {
   MANAGER_CRITERIA_DEFAULT,
   operate,
   operatingCosts,
+  overall,
+  ownStarters,
   promotionFloor,
   renewalDay,
   saleAllowed,
   saleBar,
   seasonStaff,
   STAFF_ROLES,
+  staffStances,
   TALK_RULE_DEFAULT,
   talkRuleOf,
+  transferWindowDays,
   untouchableVerdict,
 } from './index';
 
@@ -56,6 +61,8 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
       '감독 기조',
       '코치 기조',
       '재정 기조',
+      '육성 목표',
+      '데뷔 시점',
     ]);
 
     operate(w, { type: 'direction', key: 'finance', option: 'careful' });
@@ -295,5 +302,52 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     expect(activated.inbox!.at(-1)!.detail).toContain('재계약 기조 짠물');
     expect(activated.inbox!.at(-1)!.detail).toContain('재정 기조 표준');
     expect(activateDirection(loaded, '1.17.0')).toBe(loaded);
+  });
+
+  it('the staff set stances at window openings by the direction', () => {
+    const w = world('direction-stances');
+    const starters = new Set(ownStarters(w).map((player) => player.id));
+    const bench = activePlayers(w).filter((player) => !starters.has(player.id));
+    const [old, young, kept] = bench;
+    old.born = w.year - 31;
+    young.born = w.year - 20;
+    kept.born = w.year - 32;
+    // The owner's own stance is never touched.
+    operate(w, { type: 'transfer-stance', id: kept.id, stance: 'untouchable' });
+    operate(w, { type: 'build', build: { market: 'selling' } });
+    operate(w, { type: 'direction', key: 'youthGoal', option: 'sell' });
+    // Owners deciding transfers themselves keep every stance.
+    w.calendar = { day: transferWindowDays(w.year).summerOpen };
+    dailyMarket(w);
+    expect(old.stance).toBeUndefined();
+    // With transfers delegated the staff list surplus veterans and young non-starters.
+    const fresh = world('direction-stances');
+    const freshStarters = new Set(ownStarters(fresh).map((player) => player.id));
+    const freshBench = activePlayers(fresh).filter((player) => !freshStarters.has(player.id));
+    freshBench[0].born = fresh.year - 31;
+    freshBench[1].born = fresh.year - 20;
+    operate(fresh, { type: 'transfer-stance', id: freshBench[2].id, stance: 'untouchable' });
+    freshBench[2].born = fresh.year - 32;
+    operate(fresh, { type: 'build', build: { market: 'selling' } });
+    operate(fresh, { type: 'direction', key: 'youthGoal', option: 'sell' });
+    fresh.intervention = 4;
+    staffStances(fresh);
+    expect(freshBench[0].stance).toBe('listed');
+    expect(freshBench[1].stance).toBe('listed');
+    expect(freshBench[2].stance).toBe('untouchable');
+    expect(ownStarters(fresh).every((player) => player.stance === undefined)).toBe(true);
+    expect(fresh.inbox!.at(-1)!.title).toMatch(/^스태프가 이적 상태 \d+건을 정했어요$/);
+    // 핵심 지키기 marks the three best starters 이적 불가.
+    const hold = world('direction-hold');
+    operate(hold, { type: 'build', build: { market: 'hold' } });
+    hold.intervention = 4;
+    hold.calendar = { day: transferWindowDays(hold.year).summerOpen };
+    dailyMarket(hold);
+    const marked = activePlayers(hold).filter((player) => player.stance === 'untouchable');
+    expect(marked).toHaveLength(3);
+    const best = [...ownStarters(hold)].sort((a, b) => overall(b) - overall(a)).slice(0, 3);
+    expect(new Set(marked.map((player) => player.id))).toEqual(
+      new Set(best.map((player) => player.id)),
+    );
   });
 });

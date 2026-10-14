@@ -257,7 +257,14 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
       ...saved({}),
       buildNext: { build: { youth: 'pathway' }, name: '다음 계획' },
     };
-    expect(validateWorld(reserved).buildNext).toEqual(reserved.buildNext);
+    // 1군 직행 경로 is no card since rules 1.18: a reservation holding it loads without it.
+    expect(validateWorld(reserved).buildNext).toEqual({ build: {}, name: '다음 계획' });
+    const kept = { ...saved({}), buildNext: { build: { youth: 'elite' }, name: '다음 계획' } };
+    expect(validateWorld(kept).buildNext).toEqual(kept.buildNext);
+    // A build holding it loads with 데뷔 시점 빠른 데뷔, which took its effects (→CLUB-32).
+    const pathway = validateWorld({ ...saved({}), build: { youth: 'pathway', fans: 'community' } });
+    expect(pathway.build).toEqual({ fans: 'community' });
+    expect(pathway.direction).toEqual({ debut: 'early' });
   });
 
   it('loads coaching levels as the nearest 코치 기조 and drops managerRule', () => {

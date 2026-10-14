@@ -226,7 +226,7 @@ const RULES: readonly SynergyRule[] = [
       const build = buildOf(w);
       return [
         { label: '스카우팅 · 데이터 스카우팅', met: build.scouting === 'data' },
-        { label: '유스 정책 · 1군 직행 경로', met: build.youth === 'pathway' },
+        { label: '데뷔 시점 · 빠른 데뷔', met: w.direction?.debut === 'early' },
         {
           label: '매각 기조 · 셀링 클럽 또는 쇼케이스',
           met: build.market === 'selling' || build.market === 'showcase',

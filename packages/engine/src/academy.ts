@@ -11,7 +11,7 @@ import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
 import { delegated } from './intervention';
-import { directionOption, financeStance } from './direction';
+import { debutRule, directionOf, directionOption, financeStance, releaseRule } from './direction';
 import { countDownOrder } from './orders';
 import { academyFacilityTerms } from './facilities';
 
@@ -193,10 +193,7 @@ export function developAcademy(w: World): void {
     const group = ageGroupOf(w, player),
       gap = Math.max(0, player.potential - overall(player)),
       gain = hundredths(
-        Math.min(0.3, gap / 150) *
-          growth *
-          AGE_GROUPS.find((one) => one.key === group)!.growth *
-          focus.growth[group],
+        Math.min(0.3, gap / 150) * growth * ageGroupGrowth(w, group) * focus.growth[group],
       ),
       skills = roleSkills[player.role];
     if (gain <= 0) continue;
@@ -210,6 +207,11 @@ export function developAcademy(w: World): void {
   }
   countDownOrder(w, 'youth');
 }
+/** An age group's growth factor, with U-21's lift under 데뷔 시점 늦게 (→CLUB-32). */
+export function ageGroupGrowth(w: World, group: AgeGroup) {
+  const base = AGE_GROUPS.find((one) => one.key === group)!.growth;
+  return group === 'u21' ? base * debutRule(w).u21Growth : base;
+}
 /** The academy's growth factor before age group and focus: staff, academy facilities, investment, synergies. */
 export function academyGrowth(w: World) {
   return (
@@ -222,21 +224,30 @@ export function academyGrowth(w: World) {
 /** The OVR a prospect still lacks to be ready by the staff's measure; 0 once he is. */
 function readyGapOf(w: World) {
   const active = activePlayers(w),
-    level = firstTeamLevels(w);
+    level = firstTeamLevels(w),
+    debut = debutRule(w);
   return (player: Player) => {
     const peers = active.filter((other) => other.role === player.role).map(overall),
-      weakest = peers.length ? Math.min(...peers) : 0;
-    return Math.max(0, Math.min(weakest, level[player.role] - 10) - overall(player));
+      weakest = peers.length ? Math.min(...peers) : 0,
+      bar = level[player.role] - debut.startersMargin;
+    return Math.max(
+      0,
+      (debut.weakestMargin === undefined ? bar : Math.min(weakest - debut.weakestMargin, bar)) -
+        overall(player),
+    );
   };
 }
 /** The youth director's rule (→CLUB-31), with his reason in words. */
 export function youthAdvice(w: World): { focus: YouthFocus; reason: string } {
   const prospects = academyPlayers(w),
     gap = readyGapOf(w);
+  // 데뷔 시점 늦게 readies only U-21 for the first team (→CLUB-32).
+  const late = directionOf(w, 'debut') === 'late';
   const near = prospects
     .filter((player) => ageGroupOf(w, player) !== 'u17')
+    .filter((player) => !late || ageGroupOf(w, player) === 'u21')
     .map((player) => ({ player, gap: gap(player) }))
-    .filter((entry) => entry.gap <= FIRST_TEAM_GAP)
+    .filter((entry) => entry.gap <= debutRule(w).gap)
     .sort((a, b) => a.gap - b.gap || compareIds(a.player.id, b.player.id))[0];
   if (near)
     return {
@@ -271,18 +282,30 @@ function firstTeamLevels(w: World) {
   }
   return level;
 }
-/** Ready when the prospect matches the weakest first-teamer in the role or its starters minus 10. */
+/**
+ * Ready by 데뷔 시점 (→CLUB-32): at the weakest first-teamer of his role (less its margin) or its
+ * starters' level less its margin, from the promotion age and the row's earliest age. Up for
+ * release by 육성 목표: from its age, potential below the weakest first-teamer or the starters'
+ * level.
+ */
 function readinessOf(w: World) {
   const active = activePlayers(w),
-    level = firstTeamLevels(w);
+    level = firstTeamLevels(w),
+    debut = debutRule(w),
+    release = releaseRule(w);
   return (player: Player): AcademyReadiness => {
     const age = w.year - player.born,
       rated = overall(player),
       peers = active.filter((other) => other.role === player.role).map(overall),
       weakest = peers.length ? Math.min(...peers) : 0;
-    if (age >= promotionAge(w) && (rated >= weakest || rated >= level[player.role] - 10))
+    if (
+      age >= Math.max(promotionAge(w), debut.fromAge) &&
+      ((debut.weakestMargin !== undefined && rated >= weakest - debut.weakestMargin) ||
+        rated >= level[player.role] - debut.startersMargin)
+    )
       return 'ready';
-    return age >= RELEASE_AGE && player.potential < weakest ? 'review' : 'growing';
+    const bar = release.against === 'starters' ? level[player.role] : weakest;
+    return age >= release.age && player.potential < bar ? 'review' : 'growing';
   };
 }
 /** Delegated staff keep a balanced squad: no promotion into an already full role. */
@@ -422,7 +445,7 @@ export function seasonAcademy(w: World): void {
       staffReport(
         w,
         `유스 디렉터가 ${player.name}을(를) 내보냈어요`,
-        `${prospectLine(w, player)} · ${RELEASE_AGE}세에 잠재력 ${Math.round(player.potential)}로 같은 포지션 1군 최하위에 못 미쳐요.`,
+        `${prospectLine(w, player)} · 잠재력 ${Math.round(player.potential)}로 육성 목표 ${directionOption(w, 'youthGoal').name}의 기준(${releaseRule(w).age}세, 같은 포지션 ${releaseRule(w).against === 'starters' ? '주전 수준' : '1군 최하위'})에 못 미쳐요.`,
         player.id,
       );
     }
@@ -456,7 +479,9 @@ export function academySummary(w: World) {
     groups: AGE_GROUPS.map((group) => ({
       ...group,
       factor:
-        Math.round(base * group.growth * YOUTH_FOCUS_INFO[focus].growth[group.key] * 100) / 100,
+        Math.round(
+          base * ageGroupGrowth(w, group.key) * YOUTH_FOCUS_INFO[focus].growth[group.key] * 100,
+        ) / 100,
       players: players.filter((prospect) => prospect.group === group.key),
     })),
     focus,

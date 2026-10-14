@@ -141,13 +141,13 @@ describe('club builds', () => {
 
   it('names the strategy in the history: a saved name, a preset, the standard club or a mix', () => {
     const saved = world();
-    operate(saved, { type: 'build', build: { youth: 'pathway' }, name: '  우리 방식  ' });
+    operate(saved, { type: 'build', build: { youth: 'elite' }, name: '  우리 방식  ' });
     expect(saved.events.at(-1)!.title).toBe('방향 · 우리 방식');
     const preset = world();
     operate(preset, { type: 'build', build: BUILD_PRESETS[0].build });
     expect(preset.events.at(-1)!.title).toBe(`방향 · ${BUILD_PRESETS[0].label}`);
     expect(buildLabel({})).toBe('기본 방향');
-    expect(buildLabel({ youth: 'pathway' })).toBe('맞춤 방향');
+    expect(buildLabel({ youth: 'elite' })).toBe('맞춤 방향');
   });
 
   it('reads build titles recorded before the rename', () => {
@@ -179,7 +179,9 @@ describe('club builds', () => {
       return synergyStates(w);
     };
     expect(lit('local-pride').find((s) => s.id === 'local-heroes')!.active).toBe(true);
-    expect(lit('trading').find((s) => s.id === 'trading-machine')!.active).toBe(true);
+    // 트레이딩 머신 aims at its synergy: its cards meet two conditions, 빠른 데뷔 the third.
+    const trading = lit('trading').find((s) => s.id === 'trading-machine')!;
+    expect(trading.conditions.filter((condition) => condition.met)).toHaveLength(2);
     // The others aim at a synergy the owner completes with dials, staff or the stadium.
     const commercial = lit('commercial').find((s) => s.id === 'commercial')!;
     expect(commercial.conditions[0].met).toBe(true);
@@ -261,7 +263,12 @@ describe('build synergies and odds', () => {
     w.build = { youth: 'partnership', fans: 'community', culture: 'family' };
     expect(local().active).toBe(true);
     expect(synergyEffects(w)).toMatchObject({ moraleBaseline: 2, academyPotential: 2 });
-    w.build = { scouting: 'data', youth: 'pathway', market: 'showcase' };
+    // 트레이딩 머신 asks 데뷔 시점 빠른 데뷔, the row that took 1군 직행 경로's place (→CLUB-32).
+    w.build = { scouting: 'data', market: 'showcase' };
+    expect(synergyStates(w).find((synergy) => synergy.id === 'trading-machine')!.active).toBe(
+      false,
+    );
+    w.direction = { debut: 'early' };
     expect(synergyStates(w).find((synergy) => synergy.id === 'trading-machine')!.active).toBe(true);
   });
 

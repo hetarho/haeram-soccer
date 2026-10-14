@@ -3,7 +3,7 @@
  * card, so a club that never chose keeps neutral effects and a small save.
  */
 export const BUILD_OPTIONS = {
-  youth: ['homegrown', 'pathway', 'partnership', 'worldwide'],
+  youth: ['homegrown', 'partnership', 'worldwide', 'elite'],
   scouting: ['data', 'proven', 'network', 'local'],
   market: ['selling', 'showcase', 'hold', 'hardball'],
   revenue: ['commercial', 'owner', 'frugal', 'members'],

@@ -97,7 +97,7 @@ export interface BuildCard {
   effects: Partial<BuildEffects>;
 }
 export const BUILD_SLOT_INFO: Record<BuildSlot, { label: string; question: string }> = {
-  youth: { label: '유스 정책', question: '아카데미 아이들을 어떻게 키울까' },
+  youth: { label: '유입 방식', question: '아카데미 아이들을 어디서 데려올까' },
   scouting: { label: '스카우팅', question: '어떤 선수를 찾아 데려올까' },
   market: { label: '매각 기조', question: '우리 선수를 원하는 구단에 어떻게 응할까' },
   revenue: { label: '수익 모델', question: '구단 살림은 어디서 벌고 아낄까' },
@@ -118,11 +118,6 @@ export const BUILD_CARDS: {
       model: '아카데미 출신으로 1군 뼈대를 세우는 유스 명가',
       effects: { academyIntake: 1, academyPotential: 3, marketCandidates: -1 },
     },
-    pathway: {
-      label: '1군 직행 경로',
-      model: '어린 선수에게 1군 출전 시간을 먼저 주는 구단',
-      effects: { youthGrowth: 1.2, moraleBaseline: -1 },
-    },
     partnership: {
       label: '유소년 클럽 제휴',
       model: '지역 유소년 클럽과 손잡고 많이 데려와 고르는 방식',
@@ -132,6 +127,11 @@ export const BUILD_CARDS: {
       label: '해외 유스 스카우트',
       model: '적게 뽑되 재능이 확실한 아이만 데려오는 방식',
       effects: { academyIntake: -1, academyPotential: 5 },
+    },
+    elite: {
+      label: '엘리트 선발',
+      model: '아주 적게 뽑아 가장 뛰어난 아이에게만 투자하는 방식',
+      effects: { academyIntake: -2, academyPotential: 8 },
     },
   },
   scouting: {
@@ -276,8 +276,8 @@ export const BUILD_PRESETS: {
     id: 'trading',
     label: '트레이딩 머신',
     model: '지표로 찾고 1군에서 키워 비싸게 팔아요',
-    aim: '시너지 트레이딩 머신 바로 발동 · 발굴형 스카우트를 쓰면 머니볼까지',
-    build: { youth: 'pathway', scouting: 'data', market: 'selling', culture: 'meritocracy' },
+    aim: '데뷔 시점을 빠른 데뷔로 두면 시너지 트레이딩 머신 · 발굴형 스카우트를 쓰면 머니볼까지',
+    build: { scouting: 'data', market: 'selling', culture: 'meritocracy' },
   },
   {
     id: 'commercial',
@@ -373,9 +373,23 @@ export function composeBuild(build: ClubBuild): BuildEffects {
   composed.set(cacheKey, Object.freeze(effects));
   return composed.get(cacheKey)!;
 }
-export function buildEffects(w: Pick<World, 'build'>): BuildEffects {
-  return composeBuild(buildOf(w));
+/**
+ * The build's combined effects, with 데뷔 시점 빠른 데뷔's (→CLUB-32) joined: it carries what the
+ * 1군 직행 경로 card gave before rules 1.18.
+ */
+export function buildEffects(
+  w: Pick<World, 'build'> & Partial<Pick<World, 'direction'>>,
+): BuildEffects {
+  const effects = composeBuild(buildOf(w));
+  if (w.direction?.debut !== 'early') return effects;
+  return {
+    ...effects,
+    youthGrowth: effects.youthGrowth * EARLY_DEBUT.youthGrowth,
+    moraleBaseline: effects.moraleBaseline + EARLY_DEBUT.moraleBaseline,
+  };
 }
+/** What 데뷔 시점 빠른 데뷔 adds to the build's effects (→CLUB-32). */
+export const EARLY_DEBUT = { youthGrowth: 1.2, moraleBaseline: -1 } as const;
 
 /** Card lines in the owner's terms: ▲ what it helps, ▼ what it costs. */
 export function effectLines(effects: Partial<BuildEffects>) {

@@ -340,13 +340,15 @@ function announceWindows(w: World, day: number) {
   const already = (kind: 'window-open' | 'window-close') =>
     (w.inbox || []).some((item) => item.kind === kind && item.year === w.year && item.day === day);
   const opening = day === d.summerOpen ? 'summer' : day === d.winterOpen ? 'winter' : undefined;
-  if (opening && !already('window-open'))
+  if (opening && !already('window-open')) {
     pushInbox(w, {
       kind: 'window-open',
       title: `${WINDOW_INFO[opening].name} 개장`,
       detail: `${WINDOW_INFO[opening].deadline}까지 이적료가 있는 영입·임대·매각과 협상을 진행할 수 있어요. 다른 구단의 제안도 들어옵니다.`,
       attention: true,
     });
+    if (delegated(w, 'transfers')) staffStances(w);
+  }
   const closing = day === d.summerClose ? 'summer' : day === d.winterClose ? 'winter' : undefined;
   if (closing && !already('window-close'))
     pushInbox(w, {
@@ -559,6 +561,44 @@ export function listingAppeal(w: World, p: Player) {
 /** Expected window days until the first offer for a listed player, for the stance sheet. */
 export function expectedOfferDays(w: World, p: Player) {
   return Math.round(1 / (LISTED_OFFER.chance * listingAppeal(w, p)));
+}
+/**
+ * At a window opening with transfers delegated (→CLUB-22), the staff set stances by the direction,
+ * for players at 협상 가능 only: 셀링 클럽 lists non-starters aged 30+, 육성 목표 판매용 육성 lists
+ * non-starters aged 21 or under, and 핵심 지키기 marks the three best starters 이적 불가. One staff
+ * report names the changes; the owner may switch any of them back.
+ */
+export function staffStances(w: World) {
+  const market = w.build?.market,
+    sell = w.direction?.youthGoal === 'sell',
+    starters = new Set(ownStarters(w).map((p) => p.id)),
+    candidates = activePlayers(w).filter(
+      (p) => transferStance(p) === 'open' && !p.loanUntil && p.retiring === undefined,
+    ),
+    age = (p: Player) => w.year - p.born,
+    changes: [Player, TransferStance, string][] = [];
+  for (const p of candidates) {
+    if (starters.has(p.id)) continue;
+    if (market === 'selling' && age(p) >= 30) changes.push([p, 'listed', '매각 기조 셀링 클럽']);
+    else if (sell && age(p) <= 21) changes.push([p, 'listed', '육성 목표 판매용 육성']);
+  }
+  if (market === 'hold')
+    for (const p of candidates
+      .filter((one) => starters.has(one.id) && !one.transferRequest)
+      .sort((a, b) => overall(b) - overall(a) || compareIds(a.id, b.id))
+      .slice(0, 3))
+      changes.push([p, 'untouchable', '매각 기조 핵심 지키기']);
+  if (!changes.length) return;
+  for (const [p, stance] of changes) setTransferStance(w, p.id, stance);
+  pushInbox(w, {
+    kind: 'staff-report',
+    title: `스태프가 이적 상태 ${changes.length}건을 정했어요`,
+    detail: changes
+      .map(([p, stance, why]) => `${p.name} ${STANCE_INFO[stance].label}(${why})`)
+      .join(' · ')
+      .slice(0, 400),
+    attention: false,
+  });
 }
 export function setTransferStance(w: World, id: string, stance: TransferStance) {
   const p = w.players.find((x) => x.id === id && x.status === 'active');
