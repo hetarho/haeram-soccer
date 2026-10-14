@@ -100,6 +100,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 CI fix (91c26cb): CI 38610433686 failed only WebKit 2/2 — native-touch's tap on 전술·선발 준비 stalled in Playwright's WebKit scroll/click step; a probe on wip/p7ad (run 38616628989, green) opened the sheet in 0.15–0.29 s and the page idles after the stop, so the spec now measures and settles the button before the tap
 - 261015 T109 done: training per player (assistant's 회복 rule at 40+, suggestions and orders for one player), 하드's injuries and morale streak, 리더 morale, training settles adaptation to 0.80, growth × 프로의식, past potential at 0.90+, ageing by attribute group; PLAYER r3 (PLAYER-16 rate below potential)
 - 261015 CI fix (33ecd43): founding 360×740 overflow and the 3× season slowdown of T107 (CI 38607253495 failed in Chromium and WebKit)
 - 261015 T108 done (0ce14ed): adaptation and 조직력 move with starts, managers and change
@@ -119,4 +120,3 @@
 - 261014 update-ssot WEB r65 CLUB r32 STAFF r19 ECON r33 SAVE r34 (the owner's inbox review): the 방향 tab at /direction; the 단장 (STAFF-20) takes contract talks, the manager post and transfers when delegated and carries the transfer negotiation; signings from the chief scout's all-season shortlist and the manager's requests, −3 trust for none met at a window's close
 - 261014 inbox: the owner confirmed 21 of the 23 decisions one by one; changed WEB-39 (the 방향 tab moves to /direction) and CLUB-33 (a 단장 decides signings from the chief scout's all-season shortlist and the manager's requests) — update-ssot follows
 - 261014 slice 6 on main after CI 38519213867 passed every job on 4806bc4; autopilot run v7dq closed (report reports/261014-v7dq.md)
-- 261014 T100 done: 40 careers on rules 1.21.0 — wage bill 41.4% (below 45–70%), operating +2.4%, none bankrupt; ECON r32; club-direction converted (all six slices in the SSOTs)
