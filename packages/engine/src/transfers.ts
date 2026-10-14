@@ -248,7 +248,7 @@ export function placeBid(
 export function respondBid(w: World, id: string, accept: boolean): void {
   const bid = (w.bids || []).find((b) => b.id === id);
   if (!bid) throw new Error('없는 이적 제안입니다.');
-  if (bid.staff) throw new Error('스카우트의 제안은 스카우트가 답해요.');
+  if (bid.staff) throw new Error('단장의 제안은 단장이 답해요.');
   if (bid.direction === 'out' && bid.status === 'countered') {
     if (accept) {
       assertTransferWindow(w);
@@ -398,7 +398,7 @@ function decideOutgoing(w: World, bid: TransferBid) {
     feeShare = feeRatio(bid.fee, asking);
   if (roll < chance) {
     const blocker = signingBlocker(w, offer, bid.fee);
-    // The chief scout's bids are his to follow up; their answers only report (→CLUB-33).
+    // The 단장's bids are his to follow up; their answers only report (→CLUB-33).
     const attention = !bid.staff;
     if (blocker) {
       bid.status = 'rejected';
@@ -415,7 +415,7 @@ function decideOutgoing(w: World, bid: TransferBid) {
     pushInbox(w, {
       kind: 'bid-response',
       title: clip(`${p.name} ${move} 완료`, 160),
-      detail: `${p.role} · ${w.year - p.born}세 · ${moneyLabel(w, bid.fee)} 제안이 받아들여졌어요.${bid.staff ? ' 스카우트의 제안이에요.' : ''}`,
+      detail: `${p.role} · ${w.year - p.born}세 · ${moneyLabel(w, bid.fee)} 제안이 받아들여졌어요.${bid.staff ? ' 단장의 제안이에요.' : ''}`,
       attention,
       ref: bid.id,
     });
@@ -439,7 +439,7 @@ function decideOutgoing(w: World, bid: TransferBid) {
       kind: 'bid-response',
       title: clip(`${p.name} ${move} 제안 거절`, 160),
       detail: bid.staff
-        ? `스카우트의 제안 ${moneyLabel(w, bid.fee)} · 요구액 ${moneyLabel(w, asking)}. 다음에 다른 선수를 찾아요.`
+        ? `단장의 제안 ${moneyLabel(w, bid.fee)} · 요구액 ${moneyLabel(w, asking)}. 다음에 다른 선수를 찾아요.`
         : `우리 제안 ${moneyLabel(w, bid.fee)} · 요구액 ${moneyLabel(w, asking)}. 더 높은 금액으로 다시 제안할 수 있어요.`,
       attention: !bid.staff,
       ref: bid.id,
@@ -447,7 +447,7 @@ function decideOutgoing(w: World, bid: TransferBid) {
   }
 }
 /**
- * The chief scout answers a counter to his own bid at once (→CLUB-33): he accepts while it still
+ * The 단장 answers a counter to his own bid at once (→CLUB-33, →STAFF-20): he accepts while it still
  * passes 재정 기조's money checks, else declines; the report says which and why.
  */
 function answerStaffCounter(w: World, bid: TransferBid, offer: MarketOffer, asking: string) {
@@ -461,10 +461,10 @@ function answerStaffCounter(w: World, bid: TransferBid, offer: MarketOffer, aski
   pushInbox(w, {
     kind: 'bid-response',
     title: clip(
-      `${p.name} 측 역제안 ${moneyLabel(w, fee)} · 스카우트가 ${accept ? '수락' : '거절'}`,
+      `${p.name} 측 역제안 ${moneyLabel(w, fee)} · 단장이 ${accept ? '수락' : '거절'}`,
       160,
     ),
-    detail: `스카우트의 제안 ${moneyLabel(w, bid.fee)} · 요구액 ${moneyLabel(w, asking)} · ${accept ? verdict.reason : (blocker ?? verdict.reason)}`,
+    detail: `단장의 제안 ${moneyLabel(w, bid.fee)} · 요구액 ${moneyLabel(w, asking)} · ${accept ? verdict.reason : (blocker ?? verdict.reason)}`,
     attention: false,
     ref: bid.id,
   });
@@ -635,7 +635,7 @@ export function staffStances(w: World) {
   for (const [p, stance] of changes) setTransferStance(w, p.id, stance);
   pushInbox(w, {
     kind: 'staff-report',
-    title: `스태프가 이적 상태 ${changes.length}건을 정했어요`,
+    title: `단장이 이적 상태 ${changes.length}건을 정했어요`,
     detail: changes
       .map(([p, stance, why]) => `${p.name} ${STANCE_INFO[stance].label}(${why})`)
       .join(' · ')
@@ -734,7 +734,7 @@ function listedOffers(w: World, day: number, until: number) {
       pushInbox(w, {
         kind: 'staff-report',
         title: clip(
-          `스태프가 ${club.name}의 ${p.name} 제안(${moneyLabel(w, fee)})을 수락했어요`,
+          `단장이 ${club.name}의 ${p.name} 제안(${moneyLabel(w, fee)})을 수락했어요`,
           160,
         ),
         detail: `${summary} · 이적 명단에 오른 선수라 매각했어요.`,
@@ -795,7 +795,11 @@ function incomingBid(w: World, day: number, until: number) {
     offered = Number((BigInt(fee) * 100n) / BigInt(value)),
     untouchable = player.stance === 'untouchable',
     summary = `${player.role} · ${age}세 · 능력 ${overall(player)} · 평가 가치 ${moneyLabel(w, value)}`;
-  const report = (accept: boolean, detail: string, who = '스태프가') => {
+  const report = (
+    accept: boolean,
+    detail: string,
+    who = delegated(w, 'transfers') ? '단장이' : '구단이',
+  ) => {
     if (accept) completeSale(w, bid, player);
     else bid.status = 'rejected';
     pushInbox(w, {
@@ -835,7 +839,7 @@ function incomingBid(w: World, day: number, until: number) {
       report(
         verdict.accept && !blocker,
         `이적 불가 선수의 거액 제안 · ${blocker || verdict.reason}`,
-        '감독과 상의한 스태프가',
+        '감독과 상의한 단장이',
       );
       return;
     }
@@ -884,7 +888,7 @@ export function dailyMarket(w: World): void {
   if (window.open) {
     incomingBid(w, day, window.until!);
     listedOffers(w, day, window.until!);
-    // With transfers delegated the chief scout looks for players (→CLUB-33).
+    // With transfers delegated the 단장 looks for players (→CLUB-33).
     staffSignings(w);
   }
   pruneBids(w);

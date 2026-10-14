@@ -677,6 +677,8 @@ describe('incoming bids', () => {
       expect(['completed', 'rejected']).toContain(bid.status);
       const item = w.inbox?.find((i) => i.ref === bid.id);
       if (item) expect(item).toMatchObject({ kind: 'staff-report', attention: false });
+      // The 단장 answers and the report names him (→STAFF-20).
+      if (item) expect(item.title).toMatch(/^(감독과 상의한 )?단장이 /);
       // The report states the bar the staff applied; the decision must agree with it.
       const bar = Number(item?.detail.match(/기준 (\d+)%/)?.[1]);
       if (bid.status === 'completed') {

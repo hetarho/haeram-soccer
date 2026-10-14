@@ -71,7 +71,7 @@ export const BUILD_PRESETS: {
     id: 'trading',
     label: '트레이딩 머신',
     model: '지표로 찾고 1군에서 키워 비싸게 팔아요',
-    aim: '시너지 트레이딩 머신 바로 발동 · 발굴형 스카우트를 쓰면 머니볼까지',
+    aim: '시너지 트레이딩 머신 바로 발동 · 발굴가 스카우트나 협상가 단장을 쓰면 머니볼까지',
     summary: '젊은 선수 위주 영입 · 판매용 육성 · 빠른 데뷔 · 젊은 선수 우선 재계약',
     build: { scouting: 'data', market: 'selling', culture: 'meritocracy' },
     rows: {

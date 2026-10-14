@@ -284,8 +284,6 @@ describe('the firefighter contract', () => {
     april(broke);
     expect(broke.manager.until).toBe(broke.year + 1);
     expect(ownReminder(broke)[0]).toMatchObject({ attention: true });
-    expect(ownReminder(broke)[0].detail).toContain(
-      '자금 여력이 부족해 스태프가 재계약하지 않았어요',
-    );
+    expect(ownReminder(broke)[0].detail).toContain('자금 여력이 부족해 단장이 재계약하지 않았어요');
   });
 });

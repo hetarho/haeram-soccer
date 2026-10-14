@@ -237,8 +237,9 @@ export function ManagerHireTerm({
  * together (level 3 and up →WEB-45), all by 코치 기조 while the staff hire.
  */
 export function CoachingPlan({ w }: { w: World }) {
-  const decision = coachKey(STAFF_ROLES[0]),
-    auto = coachDelegated(w, STAFF_ROLES[0]);
+  // The 단장's post among them; every post follows the same level, so one department speaks.
+  const decision = coachKey('assistant'),
+    auto = coachDelegated(w, 'assistant');
   const expiring = (w.staff || []).filter((member) => isExpiring(w, member));
   return (
     <section className={s.plan} aria-label="코치진 운영">

@@ -307,11 +307,13 @@ describe('contract talks (→CLUB-26)', () => {
     // In winter the staff offer the floor for the rest of this season and two more.
     expect(generous.p.wage).toBe(generous.before.floor);
     expect(generous.p.until).toBe(generous.w.year + 3);
-    expect(generous.report.title).toContain('받아들였어요');
+    // The 단장 takes delegated talks and his reports name him (→STAFF-20).
+    expect(generous.report.title).toMatch(/^단장이 .*받아들였어요$/);
     expect(generous.w.events.at(-1)).toMatchObject({ kind: 'contract' });
+    expect(generous.w.events.at(-1)!.detail).toMatch(/^단장 합의 · /);
     // 짠물's market wage is below what he settles for.
     expect(tight.p).toMatchObject({ wage: tight.before.wage, until: tight.before.until });
-    expect(tight.report.title).toContain('거절했어요');
+    expect(tight.report.title).toMatch(/^단장이 .*거절했어요$/);
     expect(tight.report.detail).toContain('연봉 상한');
     expect(tight.w.events.at(-1)).toMatchObject({ kind: 'contract-decline' });
   });

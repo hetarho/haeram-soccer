@@ -5,8 +5,9 @@ import type {
   World,
 } from '../../contracts/src/types';
 
-/** One key per coaching department, in display order (→STAFF-13). */
+/** One key per staff post the staff fill, the 단장's first, in display order (→STAFF-13). */
 export const COACH_KEYS: readonly CoachDelegationKey[] = [
+  'coach:director',
   'coach:assistant',
   'coach:attack',
   'coach:defense',

@@ -21,6 +21,7 @@ import type { managerCandidates } from '../../../../packages/engine/src/managerM
 import { transferOffers, sponsorSlots } from '../../../../packages/engine/src/operations';
 const index = z.number().int().min(0).max(15);
 const staffRole = z.enum([
+  'director',
   'assistant',
   'attack',
   'defense',

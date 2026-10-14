@@ -36,9 +36,12 @@ export type ClubPolicy = Record<PolicyKey, PolicyLevel>;
 export type SavedPolicy = Pick<ClubPolicy, 'support' | 'recruitment'> &
   Partial<Omit<ClubPolicy, 'support' | 'recruitment'>>;
 export type Role = 'GK' | 'DEF' | 'MID' | 'FWD';
-/** Backroom roles below the manager, following a professional club's coaching staff. */
+/**
+ * Backroom roles: the 단장 (`director`, →STAFF-20) beside the manager and the coaching
+ * departments below him, following a professional club's staff.
+ */
 export type StaffRole =
-  'assistant' | 'attack' | 'defense' | 'goalkeeping' | 'fitness' | 'youth' | 'scout';
+  'director' | 'assistant' | 'attack' | 'defense' | 'goalkeeping' | 'fitness' | 'youth' | 'scout';
 export type StaffTrait = 'developer' | 'specialist' | 'recovery' | 'spotter' | 'negotiator';
 export type ManagerTrait = 'youth' | 'rotation' | 'stable';
 /** A manager's school of football (→STAFF-14); absent means the founding all-rounder. */
@@ -368,7 +371,7 @@ export interface TransferBid {
   due: number;
   status: 'pending' | 'accepted' | 'rejected' | 'countered' | 'expired' | 'completed';
   counterFee?: string;
-  /** The chief scout's bid or free-agent signing with transfers delegated (→CLUB-33), by its need. */
+  /** The 단장's bid or free-agent signing with transfers delegated (→CLUB-33), by its need. */
   staff?: 'short' | 'upgrade';
 }
 export interface InboxItem {

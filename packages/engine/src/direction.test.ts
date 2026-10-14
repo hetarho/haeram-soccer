@@ -337,7 +337,7 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     expect(freshBench[1].stance).toBe('listed');
     expect(freshBench[2].stance).toBe('untouchable');
     expect(ownStarters(fresh).every((player) => player.stance === undefined)).toBe(true);
-    expect(fresh.inbox!.at(-1)!.title).toMatch(/^스태프가 이적 상태 \d+건을 정했어요$/);
+    expect(fresh.inbox!.at(-1)!.title).toMatch(/^단장이 이적 상태 \d+건을 정했어요$/);
     // 핵심 지키기 marks the three best starters 이적 불가.
     const hold = world('direction-hold');
     operate(hold, { type: 'build', build: { market: 'hold' } });

@@ -17,6 +17,7 @@ import {
   activateAgents,
   activateBases,
   activateDirection,
+  activateDirector,
   activateLevers,
 } from '../../../../packages/engine/src/index';
 import type { World, MatchPlayback } from '../../../../packages/contracts/src/types';
@@ -209,17 +210,21 @@ export class Host {
         const result = await decode(r.body.raw);
         // Activation also gives players from before rules 1.16 their agents (→SAVE-10, CLUB-30)
         // and drops their reserved strategy now that strategies apply at once; from before 1.17 it
-        // names the direction rows the old staff criteria became.
+        // names the direction rows the old staff criteria became; from before 1.22 it seats a 단장.
+        const before = result.world.engine;
         const activated = r.body.upgrade
-          ? activateBases(
-              activateDirection(
-                activateLevers(
-                  activateAgents(upgradeWorldRules(result.world, CURRENT_CATALOG)),
-                  result.world.engine,
+          ? activateDirector(
+              activateBases(
+                activateDirection(
+                  activateLevers(
+                    activateAgents(upgradeWorldRules(result.world, CURRENT_CATALOG)),
+                    before,
+                  ),
+                  before,
                 ),
-                result.world.engine,
+                before,
               ),
-              result.world.engine,
+              before,
             )
           : result.world;
         upgraded = activated !== result.world;

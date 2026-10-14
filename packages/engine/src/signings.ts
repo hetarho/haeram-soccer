@@ -13,7 +13,7 @@ import { POLICY_INFO, policyOf } from './policy';
 import { placeBid, transferWindow, transferWindowDays } from './transfers';
 
 /**
- * The chief scout's signings with transfers delegated (→CLUB-33): what a squad must hold before he
+ * The 단장's signings with transfers delegated (→CLUB-33, →STAFF-20): what a squad must hold before he
  * looks for upgrades, and how often he looks while a window is open.
  */
 export const SIGNING_CONFIG = {
@@ -32,7 +32,7 @@ const ROLE_NAME: Readonly<Record<Role, string>> = {
 };
 
 type Offer = ReturnType<typeof transferOffers>[number];
-/** Why the chief scout wants a player: a short role, or an upgrade over a starter. */
+/** Why the 단장 wants a player: a short role, or an upgrade over a starter. */
 export type SigningNeed =
   | { kind: 'short'; role: Role; count: number; minimum: number; squad: number }
   | { kind: 'upgrade'; role: Role; starter: Player; margin: number };
@@ -43,7 +43,7 @@ function windowOpening(w: World, day: number) {
   const d = transferWindowDays(w.year);
   return day <= d.summerClose ? d.summerOpen : d.winterOpen;
 }
-/** The bids of this window, the owner's and the chief scout's. */
+/** The bids of this window, the owner's and the 단장's. */
 function windowBids(w: World, day: number) {
   const opening = windowOpening(w, day);
   return (w.bids || []).filter(
@@ -192,12 +192,12 @@ function signFreeAgent(w: World, offer: Offer, need: SigningNeed, why: string) {
     w,
     'transfer-in',
     `${p.name} 영입`,
-    `${p.role} · ${w.year - p.born}세 · 연봉 ${moneyLabel(w, p.wage)} · 계약 ${p.until}년 · 스카우트 영입`,
+    `${p.role} · ${w.year - p.born}세 · 연봉 ${moneyLabel(w, p.wage)} · 계약 ${p.until}년 · 단장 영입`,
     '0',
   );
   pushInbox(w, {
     kind: 'staff-report',
-    title: `스카우트 영입 · 자유계약 ${p.name}`,
+    title: `단장 영입 · 자유계약 ${p.name}`,
     detail:
       `${needLine(w, need)} · ${p.role} · ${w.year - p.born}세 · OVR ${overall(p)} · 연봉 ${moneyLabel(w, p.wage)} · ${recruitmentLine(w)} · ${why}`.slice(
         0,
@@ -208,7 +208,7 @@ function signFreeAgent(w: World, offer: Offer, need: SigningNeed, why: string) {
 }
 
 /**
- * The chief scout's look (→CLUB-33): with transfers delegated and a window open, on its opening
+ * The 단장's look (→CLUB-33): with transfers delegated and a window open, on its opening
  * day and every 7th day after it, at most one move — a free agent signed or a bid at the asking
  * fee — for the first need a candidate meets within 재정 기조; none while one of his bids is open.
  */
@@ -248,7 +248,7 @@ export function staffSignings(w: World) {
         const bid = w.bids!.findLast((one) => one.playerId === offer.player.id)!;
         pushInbox(w, {
           kind: 'staff-report',
-          title: `스카우트 영입 제안 · ${offer.player.name}`,
+          title: `단장 영입 제안 · ${offer.player.name}`,
           detail:
             `${needLine(w, need)} · ${offer.player.role} · ${w.year - offer.player.born}세 · OVR ${overall(offer.player)} · 제안 ${moneyLabel(w, fee)} (요구액 ${moneyLabel(w, offer.fee)}) · ${recruitmentLine(w)} · ${verdict.reason}`.slice(
               0,

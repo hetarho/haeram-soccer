@@ -30,8 +30,9 @@ import {
 } from './hiring';
 import { delegated } from './intervention';
 
-/** Coaching departments below the manager, in display order. */
+/** The 단장 beside the manager, then the coaching departments below him, in display order. */
 export const STAFF_ROLES: readonly StaffRole[] = [
+  'director',
   'assistant',
   'attack',
   'defense',
@@ -42,6 +43,11 @@ export const STAFF_ROLES: readonly StaffRole[] = [
 ];
 export const STAFF_INFO: Record<StaffRole, { label: string; duty: string; traits: StaffTrait[] }> =
   {
+    director: {
+      label: '단장',
+      duty: '이적·계약 협상과 감독 선임',
+      traits: ['negotiator'],
+    },
     assistant: {
       label: '수석코치',
       duty: '훈련 방향과 미드필더 패스 성장',
@@ -62,8 +68,8 @@ export const STAFF_INFO: Record<StaffRole, { label: string; duty: string; traits
     },
     scout: {
       label: '수석 스카우트',
-      duty: '이적 시장 후보 수와 잠재력, 협상',
-      traits: ['spotter', 'negotiator'],
+      duty: '이적 시장 후보 수와 잠재력',
+      traits: ['spotter'],
     },
   };
 export const STAFF_TRAIT_INFO: Record<StaffTrait, { label: string; effect: string }> = {
@@ -194,6 +200,9 @@ function applyDepartment(effects: StaffEffects, role: StaffRole, member: Staff |
     effects.scoutCandidates = member
       ? clamp(8 + whole((member.ability - NEUTRAL_ABILITY) / 15), 5, 12)
       : 6;
+  }
+  // The 단장 carries the transfer negotiation (→STAFF-20).
+  if (role === 'director') {
     effects.feeMultiplier = member?.trait === 'negotiator' ? 0.9 : 1;
     effects.bidAcceptance = member
       ? (member.ability - NEUTRAL_ABILITY) / 250 + (member.trait === 'negotiator' ? 0.1 : 0)
@@ -238,19 +247,19 @@ export function staffImpact(w: World, role: StaffRole): string {
       `입단 잠재력 ${signed(effects.academyQuality)}`,
       `아카데미 성장 ${times(effects.academyGrowth)}`,
     );
-  if (role === 'scout') {
+  if (role === 'scout')
     lines.push(
       `이적 후보 ${effects.scoutCandidates}명`,
       `후보 잠재력 ${signed(effects.scoutPotential)}`,
     );
+  if (role === 'director') {
+    lines.push(`협상 성공률 ${signed(Math.round(effects.bidAcceptance * 100))}%p`);
     if (effects.feeMultiplier !== 1) lines.push(`이적료 ${times(effects.feeMultiplier)}`);
-    if (effects.bidAcceptance)
-      lines.push(`협상 성공률 ${signed(Math.round(effects.bidAcceptance * 100))}%p`);
   }
   return `${member ? '' : '공석 · '}${lines.join(' · ')}`;
 }
 
-/** Founding staff: one unpaid ability-50 coach per role, so a new club starts neutral. */
+/** Founding staff: one unpaid ability-50 member per post, the 단장 too, so a new club starts neutral. */
 export function basicStaff(w: World): Staff[] {
   const code = clubOf(w).country;
   return STAFF_ROLES.map((role) => ({
@@ -436,7 +445,7 @@ export function autoTrainingFocus(w: World): TrainingFocus {
   return autoTrainingAdvice(w).focus;
 }
 /** An unpaid ability-50 coach the staff can always find, so no department stays empty. */
-function volunteer(w: World, role: StaffRole): Staff {
+export function volunteer(w: World, role: StaffRole): Staff {
   return {
     id: `${w.playerClub}:staff:volunteer:${role}:${w.year}`,
     role,
@@ -801,9 +810,9 @@ function delegatedManagerRenewal(w: World, school: string, limit: number) {
       title: `${school}${m.name} 감독과 재계약하지 않아요`,
       detail: `${
         fits
-          ? `스태프가 ${directionLine(w, 'manager')}(${MANAGER_PRIORITY_INFO[c.priority]})으로 더 나은 ${managerLine(w, first)} 감독을 찾았어요 (지금 OVR ${m.ability}/${m.potential ?? m.ability} · 재계약 연봉 ${moneyLabel(w, kept.wage)})`
+          ? `단장이 ${directionLine(w, 'manager')}(${MANAGER_PRIORITY_INFO[c.priority]})으로 더 나은 ${managerLine(w, first)} 감독을 찾았어요 (지금 OVR ${m.ability}/${m.potential ?? m.ability} · 재계약 연봉 ${moneyLabel(w, kept.wage)})`
           : `${m.name} 감독은 선호 학파·감독 기조에 맞지 않고, 맞는 ${managerLine(w, first)} 감독이 있어요`
-      } · 시즌이 끝나면 떠나고 스태프가 그때 감독 기조에 맞는 감독을 선임해요`.slice(0, 400),
+      } · 시즌이 끝나면 떠나고 단장이 그때 감독 기조에 맞는 감독을 선임해요`.slice(0, 400),
       attention: false,
       ref: m.id,
     });
@@ -814,7 +823,7 @@ function delegatedManagerRenewal(w: World, school: string, limit: number) {
   pushInbox(w, {
     kind: 'staff-report',
     title: `${school}${m.name} 감독 재계약`,
-    detail: `${fits ? '선호 학파와 감독 기조에 맞아' : '감독 기조에 맞는 감독이 없어'} 스태프가 ${term}시즌 더 계약했어요 · 연봉 ${moneyLabel(w, kept.wage)} · 계약금 ${moneyLabel(w, kept.fee)} · ${contractSeason(kept.until)} 시즌 끝까지`,
+    detail: `${fits ? '선호 학파와 감독 기조에 맞아' : '감독 기조에 맞는 감독이 없어'} 단장이 ${term}시즌 더 계약했어요 · 연봉 ${moneyLabel(w, kept.wage)} · 계약금 ${moneyLabel(w, kept.fee)} · ${contractSeason(kept.until)} 시즌 끝까지`,
     attention: false,
   });
   return true;
@@ -836,7 +845,7 @@ function managerRenewalReminder(w: World) {
   pushInbox(w, {
     kind: 'staff-renewal',
     title: `${school}${m.name} 감독 계약이 이번 시즌 끝에 끝나요`,
-    detail: `재계약하지 않으면 시즌이 끝날 때 떠나고 임시 감독이 팀을 맡아요 (연봉 ${moneyLabel(w, terms.wage)} · 계약금 ${moneyLabel(w, terms.fee)} · ${seasons})${isDelegated ? ' · 자금 여력이 부족해 스태프가 재계약하지 않았어요' : ''}`,
+    detail: `재계약하지 않으면 시즌이 끝날 때 떠나고 임시 감독이 팀을 맡아요 (연봉 ${moneyLabel(w, terms.wage)} · 계약금 ${moneyLabel(w, terms.fee)} · ${seasons})${isDelegated ? ' · 자금 여력이 부족해 단장이 재계약하지 않았어요' : ''}`,
     attention: true,
     ref: m.id,
   });

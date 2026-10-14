@@ -11,10 +11,12 @@ import type {
   World,
 } from '../../contracts/src/types';
 import {
+  activateDirector,
   activePlayers,
   activeTrainingFocus,
   advanceRound,
   autoTrainingAdvice,
+  bidOutlook,
   autoTrainingFocus,
   basicStaff,
   clearlyCheaper,
@@ -59,6 +61,7 @@ import {
   staffQuote,
   staffWageTotal,
   STYLE_INFO,
+  transferOffers,
   yearlyStaff,
 } from './index';
 
@@ -117,9 +120,10 @@ const settled = (w: World) => {
 };
 
 describe('coaching staff', () => {
-  it('founds the club with seven unpaid ability-50 volunteers that change nothing', () => {
+  it('founds the club with eight unpaid ability-50 volunteers, the 단장 first, that change nothing', () => {
     const w = world();
-    expect(w.staff).toHaveLength(7);
+    expect(w.staff).toHaveLength(8);
+    expect(w.staff![0]).toMatchObject({ role: 'director', ability: 50, wage: '0' });
     expect(w.staff!.map((member) => member.role)).toEqual(STAFF_ROLES);
     for (const member of w.staff!) {
       expect(member.ability).toBe(50);
@@ -144,7 +148,7 @@ describe('coaching staff', () => {
     delete old.staff;
     simulateSeason(basic);
     simulateSeason(old);
-    expect(basic.staff).toHaveLength(7);
+    expect(basic.staff).toHaveLength(8);
     expect(old.staff).toBeUndefined();
     expect(canonical({ ...basic, staff: undefined })).toBe(canonical(old));
     validateWorld(basic);
@@ -175,7 +179,9 @@ describe('coaching staff', () => {
       expect(high('youth').academyGrowth).toBeGreaterThanOrEqual(low('youth').academyGrowth);
       expect(high('scout').scoutPotential).toBeGreaterThanOrEqual(low('scout').scoutPotential);
       expect(high('scout').scoutCandidates).toBeGreaterThanOrEqual(low('scout').scoutCandidates);
-      expect(high('scout').bidAcceptance).toBeGreaterThan(low('scout').bidAcceptance);
+      expect(high('director').bidAcceptance).toBeGreaterThan(low('director').bidAcceptance);
+      // The chief scout no longer negotiates (→STAFF-20).
+      expect(high('scout').bidAcceptance).toBe(0);
     }
     expect(at('attack', 90).development.attack).toBeCloseTo(1.2, 10);
     expect(at('attack', 90, 'specialist').development.attack).toBeCloseTo(1.2 * 1.15, 10);
@@ -192,7 +198,19 @@ describe('coaching staff', () => {
     expect(at('scout', 80, 'spotter').scoutPotential).toBe(9);
     expect(at('scout', 95).scoutCandidates).toBe(11);
     expect(at('scout', 10).scoutCandidates).toBe(5);
-    expect(at('scout', 50, 'negotiator')).toMatchObject({ feeMultiplier: 0.9, bidAcceptance: 0.1 });
+    // The 단장 carries the negotiation: (ability − 50)/250, a negotiator +0.1 and fees ×0.9.
+    expect(at('director', 50)).toMatchObject({ feeMultiplier: 1, bidAcceptance: 0 });
+    expect(at('director', 70).bidAcceptance).toBeCloseTo(0.08, 10);
+    expect(at('director', 50, 'negotiator')).toMatchObject({
+      feeMultiplier: 0.9,
+      bidAcceptance: 0.1,
+    });
+    expect(at('director', 70, 'negotiator').bidAcceptance).toBeCloseTo(0.18, 10);
+    expect(at('scout', 90, 'spotter')).toMatchObject({ feeMultiplier: 1, bidAcceptance: 0 });
+    expect(staffImpact(coach(world(), 'director', 70, 'negotiator'), 'director')).toBe(
+      '협상 성공률 +18%p · 이적료 ×0.90',
+    );
+    expect(staffImpact(world(), 'director')).toBe('협상 성공률 0%p');
     expect(staffImpact(coach(world(), 'attack', 90, 'specialist'), 'attack')).toContain('×1.38');
   });
 
@@ -227,10 +245,11 @@ describe('coaching staff', () => {
       bidAcceptance: -0.05,
     });
     const releases = w.events.filter((event) => event.kind === 'staff-release');
-    expect(releases).toHaveLength(7);
+    expect(releases).toHaveLength(8);
     expect(releases.every((event) => event.amount === undefined)).toBe(true);
     expect(() => releaseStaff(w, 'scout')).toThrow('비어 있는');
     expect(staffImpact(w, 'scout')).toContain('공석');
+    expect(staffImpact(w, 'director')).toBe('공석 · 협상 성공률 -5%p');
     const fwd = (x: World) => activePlayers(x).find((player) => player.role === 'FWD')!;
     const vacant = trainingWorld();
     vacant.staff = [];
@@ -305,7 +324,7 @@ describe('coaching staff', () => {
     const old = world();
     delete old.staff;
     hireStaff(old, 'scout', 2);
-    expect(old.staff).toHaveLength(7);
+    expect(old.staff).toHaveLength(8);
     expect(old.staff!.find((member) => member.role === 'scout')!.ability).toBeGreaterThanOrEqual(
       65,
     );
@@ -321,7 +340,7 @@ describe('coaching staff', () => {
     w.year = keeperCoach.until;
     seasonStaff(w);
     expect(w.staff!.some((member) => member.role === 'goalkeeping')).toBe(false);
-    expect(w.staff).toHaveLength(6);
+    expect(w.staff).toHaveLength(7);
     expect(w.staff!.every((member) => member.until === w.year + 1)).toBe(true);
     expect(w.events.at(-1)!.kind).toBe('staff-leave');
     expect(w.inbox!.at(-1)).toMatchObject({
@@ -995,14 +1014,14 @@ describe('delegated manager appointment (STAFF-7, STAFF-18)', () => {
     expect(w.tactic).toBe(w.manager.philosophy);
     expect(BigInt(w.cash)).toBe(cash - BigInt(fee));
     expect(w.events.at(-1)).toMatchObject({ kind: 'manager-hire', amount: fee });
-    expect(w.events.at(-1)!.detail).toContain('스태프 위임 선임');
+    expect(w.events.at(-1)!.detail).toContain('단장 선임');
     expect(w.inbox!.at(-1)).toMatchObject({
       kind: 'staff-report',
       attention: false,
       title: `포지셔널 플레이 ${best.name} 감독 선임`,
     });
     expect(w.inbox!.at(-1)!.detail).toMatch(
-      /^스태프가 선호 학파와 감독 기조에 맞는 자유계약 감독을 2시즌 계약했어요 · OVR 80 · .* · 선호 학파 상관없음 · 감독 기조 표준$/,
+      /^단장이 선호 학파와 감독 기조에 맞는 자유계약 감독을 2시즌 계약했어요 · OVR 80 · .* · 선호 학파 상관없음 · 감독 기조 표준$/,
     );
     expect(managerCandidates(w).some((c) => c.id === best.id)).toBe(false);
     validateWorld(w);
@@ -1035,5 +1054,149 @@ describe('delegated manager appointment (STAFF-7, STAFF-18)', () => {
     yearlyStaff(w);
     expect(w.critical).toBeUndefined();
     expect(w.manager).toMatchObject({ id: firefighter.id, until: w.year + 1 });
+  });
+});
+
+describe('the 단장 (STAFF-20)', () => {
+  /** A world as rules 1.21 left it: the seven departments and no 단장. */
+  function before122(seed: string, scout?: Partial<Staff>) {
+    const w = world(seed);
+    w.staff = w.staff!.filter((member) => member.role !== 'director');
+    if (scout)
+      w.staff = w.staff.map((member) =>
+        member.role === 'scout' ? { ...member, ...scout } : member,
+      );
+    return w;
+  }
+
+  it('is hired, released and renewed like any department, from three candidates a season', () => {
+    const w = world('director-post');
+    expect(STAFF_ROLES[0]).toBe('director');
+    expect(STAFF_INFO.director).toEqual({
+      label: '단장',
+      duty: '이적·계약 협상과 감독 선임',
+      traits: ['negotiator'],
+    });
+    expect(STAFF_INFO.scout.traits).toEqual(['spotter']);
+    const offers = staffCandidates(w, 'director');
+    expect(offers).toHaveLength(3);
+    expect(offers.every((offer) => !offer.trait || offer.trait === 'negotiator')).toBe(true);
+    expect(
+      Array.from({ length: 12 }, (_, i) => staffCandidates(world(`scouts-${i}`), 'scout'))
+        .flat()
+        .every((offer) => !offer.trait || offer.trait === 'spotter'),
+    ).toBe(true);
+    operate(w, { type: 'hire-staff', role: 'director', candidate: 2, term: 3 });
+    const hired = w.staff!.find((member) => member.role === 'director')!;
+    expect(hired).toMatchObject({ id: offers[2].id, until: w.year + 3, term: 3 });
+    expect(w.staff![0]).toBe(hired);
+    expect(w.events.at(-1)!.title).toBe(`단장 ${hired.name} 선임`);
+    w.year = hired.until - 1;
+    operate(w, { type: 'renew-staff', role: 'director', term: 2 });
+    expect(w.staff![0]).toMatchObject({ id: hired.id, until: hired.until + 2 });
+    operate(w, { type: 'release-staff', role: 'director' });
+    expect(w.staff!.some((member) => member.role === 'director')).toBe(false);
+    expect(staffEffects(w).bidAcceptance).toBe(-0.05);
+  });
+
+  it('the staff fill his post by 코치 기조 from level 3, the coaching departments with him', () => {
+    const w = world('director-delegated');
+    expect(w.intervention).toBe(2);
+    dailyStaff(w);
+    expect(w.staff![0]).toMatchObject({ role: 'director', wage: '0' });
+    operate(w, { type: 'intervention', level: 3 });
+    const director = w.staff![0];
+    expect(director.role).toBe('director');
+    expect(BigInt(director.wage)).toBeGreaterThan(0n);
+    expect(director.ability).toBeGreaterThanOrEqual(55);
+    expect(w.events.some((event) => event.title === `단장 ${director.name} 선임`)).toBe(true);
+  });
+
+  it('carries the transfer negotiation the chief scout carried', () => {
+    // The chance of a bid at a candidate's asking fee, whichever list the settings draw.
+    const base = world('director-talks'),
+      asking = transferOffers(base)[2].fee,
+      chance = (w: World) => bidOutlook(w, 2, transferOffers(w)[2].fee).chance;
+    const set = (w: World, role: StaffRole, ability: number, trait?: StaffTrait) => {
+      w.staff = w.staff!.map((member) =>
+        member.role === role ? { ...member, ability, ...(trait ? { trait } : {}) } : member,
+      );
+      return w;
+    };
+    // His ability alone keeps the list as it is and moves the chance by (ability − 50)/250.
+    const able = set(world('director-talks'), 'director', 75);
+    expect(transferOffers(able)[2].fee).toBe(asking);
+    expect(chance(able)).toBeCloseTo(chance(base) + 0.1, 10);
+    // A chief scout of any ability or trait no longer negotiates.
+    const scout = set(world('director-talks'), 'scout', 90, 'negotiator');
+    expect(staffEffects(scout)).toMatchObject({ feeMultiplier: 1, bidAcceptance: 0 });
+    expect(chance(scout)).toBe(chance(base));
+    // A negotiator asks less of every selling club: the list's fees fall by a tenth.
+    const negotiator = set(world('director-talks'), 'director', 50, 'negotiator');
+    const fees = (w: World) =>
+      transferOffers(w)
+        .slice(1)
+        .reduce((sum, offer) => sum + BigInt(offer.fee), 0n);
+    expect(staffEffects(negotiator)).toMatchObject({ feeMultiplier: 0.9, bidAcceptance: 0.1 });
+    expect(Number((fees(negotiator) * 1000n) / fees(base)) / 1000).toBeLessThan(1);
+    // A vacant post costs 5 points.
+    const vacant = world('director-talks');
+    vacant.staff = vacant.staff!.filter((member) => member.role !== 'director');
+    expect(chance(vacant)).toBeCloseTo(chance(base) - 0.05, 10);
+  });
+
+  it('activation of rules 1.22 seats a volunteer 단장 in an older club', () => {
+    const w = before122('director-activation'),
+      before = canonical(w);
+    expect(activateDirector(w, '1.22.0')).toBe(w);
+    const next = activateDirector(w, '1.21.0');
+    expect(canonical(w)).toBe(before);
+    expect(next.staff).toHaveLength(8);
+    expect(next.staff![0]).toMatchObject({ role: 'director', ability: 50, wage: '0' });
+    expect(next.staff!.slice(1)).toEqual(w.staff);
+    expect(next.inbox!.at(-1)).toMatchObject({
+      kind: 'staff-report',
+      title: `단장 ${next.staff![0].name} 부임`,
+      attention: false,
+    });
+    expect(staffEffects(next)).toStrictEqual(NEUTRAL);
+    validateWorld(next);
+    // A world with no staff at all (rules before 1.2) stays neutral without one.
+    const bare = world('director-bare');
+    delete bare.staff;
+    expect(activateDirector(bare, '1.1.0')).toBe(bare);
+  });
+
+  it('activation moves a negotiator chief scout to the post with his contract', () => {
+    const scout = {
+      ability: 72,
+      trait: 'negotiator' as const,
+      wage: '5000',
+      since: 1950,
+      until: 1953,
+      born: 1905,
+      potential: 74,
+      term: 3 as ContractTerm,
+    };
+    const w = before122('director-move', scout),
+      old = w.staff!.find((member) => member.role === 'scout')!,
+      negotiation = (({ feeMultiplier, bidAcceptance }) => ({ feeMultiplier, bidAcceptance }))(
+        staffEffects({ ...w, staff: [{ ...old, role: 'director' }] }),
+      );
+    const next = activateDirector(w, '1.21.0');
+    expect(next.staff![0]).toEqual({ ...old, role: 'director' });
+    const volunteer = next.staff!.find((member) => member.role === 'scout')!;
+    expect(volunteer).toMatchObject({ ability: 50, wage: '0' });
+    expect(volunteer.id).not.toBe(old.id);
+    expect(volunteer.trait).toBeUndefined();
+    expect(next.staff).toHaveLength(8);
+    expect(staffEffects(next)).toMatchObject(negotiation);
+    expect(staffEffects(next)).toMatchObject({ feeMultiplier: 0.9 });
+    expect(next.inbox!.at(-1)!.detail).toContain('계약 그대로 단장');
+    validateWorld(next);
+    // A spotter or trait-less chief scout keeps his post; a volunteer 단장 arrives.
+    const spotter = activateDirector(before122('director-spotter', { trait: 'spotter' }), '1.21.0');
+    expect(spotter.staff!.find((member) => member.role === 'scout')!.trait).toBe('spotter');
+    expect(spotter.staff![0]).toMatchObject({ role: 'director', wage: '0' });
   });
 });

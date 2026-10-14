@@ -41,7 +41,7 @@ function club(finance?: Direction['finance'], seed = 'staff-signings') {
 const staffBids = (w: World) => (w.bids || []).filter((bid) => bid.staff);
 const reports = (w: World) =>
   (w.inbox || []).filter(
-    (item) => item.kind === 'staff-report' && item.title.startsWith('스카우트'),
+    (item) => item.kind === 'staff-report' && item.title.startsWith('단장 영입'),
   );
 /** Leaves `count` active players of `role`, the others sold. */
 function keep(w: World, role: Role, count: number) {
@@ -80,7 +80,7 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     expect(signed.clauses).toBeDefined();
     expect(w.cash).toBe(cash);
     expect(staffBids(w)).toMatchObject([{ staff: 'short', status: 'completed', fee: '0' }]);
-    expect(reports(w).at(-1)!.title).toBe(`스카우트 영입 · 자유계약 ${free.player.name}`);
+    expect(reports(w).at(-1)!.title).toBe(`단장 영입 · 자유계약 ${free.player.name}`);
     expect(reports(w).at(-1)!.detail).toContain('영입 기조');
   });
 
@@ -100,7 +100,7 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
         .map((p) => overall(p)),
     );
     expect(overall(offer.player)).toBeGreaterThanOrEqual(starter + 5);
-    expect(reports(w).at(-1)!.title).toBe(`스카우트 영입 제안 · ${offer.player.name}`);
+    expect(reports(w).at(-1)!.title).toBe(`단장 영입 제안 · ${offer.player.name}`);
     // 공격적 bids 110% of asking.
     const bold = club('aggressive');
     tried(bold, transferOffers(bold)[0].player.id);
@@ -155,7 +155,7 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
       if (!answer) continue;
       expect(['completed', 'rejected']).toContain(bid.status);
       expect(answer.attention).toBe(false);
-      expect(answer.detail).toContain('스카우트');
+      expect(answer.detail).toContain('단장');
       return;
     }
     throw new Error('no countered staff bid in 40 seeds');

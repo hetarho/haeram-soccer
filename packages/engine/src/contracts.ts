@@ -549,7 +549,7 @@ function signTalk(
     w,
     'contract',
     `${p.name} ${talkLabel(talk)} 합의`,
-    staff ? `스태프 합의 · ${detail}` : detail,
+    staff ? `단장 합의 · ${detail}` : detail,
   );
   return detail;
 }
@@ -672,12 +672,12 @@ function staffAnswer(w: World, p: Player) {
   if (verdict.accept)
     detail = `${signTalk(w, p, talk, talk.floor, verdict.term, true)} · 하한으로 합의했어요.`;
   else {
-    const { outcome } = declineTalk(w, p, `스태프 · ${verdict.reason}`);
+    const { outcome } = declineTalk(w, p, `단장 · ${verdict.reason}`);
     detail = `${playerLine(w, p)} · ${verdict.reason} ${outcome}.`;
   }
   pushInbox(w, {
     kind: 'contract-talk',
-    title: `스태프가 ${p.name}의 ${talkLabel(talk)} 요구를 ${verdict.accept ? '받아들였어요' : '거절했어요'}`,
+    title: `단장이 ${p.name}의 ${talkLabel(talk)} 요구를 ${verdict.accept ? '받아들였어요' : '거절했어요'}`,
     detail,
     attention: false,
     ref: p.id,

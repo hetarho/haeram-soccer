@@ -338,7 +338,7 @@ describe('선호 학파 and 감독 기조 (STAFF-18)', () => {
     expect(w.manager).toMatchObject({ id: 'agent-1', interim: false });
     expect(w.critical).toBeUndefined();
     expect(w.inbox!.at(-1)!.detail).toMatch(
-      /^선호 학파와 감독 기조에 맞는 감독이 없어 스태프가 가장 나은 자유계약 감독을 2시즌 계약했어요 · /,
+      /^선호 학파와 감독 기조에 맞는 감독이 없어 단장이 가장 나은 자유계약 감독을 2시즌 계약했어요 · /,
     );
     // Other clubs' managers are never the fallback, and nobody affordable keeps the interim.
     const broke = delegated('criteria-best-broke', 'proven', 'headcoach');
@@ -385,7 +385,7 @@ describe('선호 학파 and 감독 기조 (STAFF-18)', () => {
       title: `수비 조직가 ${kept.manager.name} 감독 재계약`,
     });
     expect(kept.inbox!.at(-1)!.detail).toMatch(
-      /^선호 학파와 감독 기조에 맞아 스태프가 2시즌 더 계약했어요/,
+      /^선호 학파와 감독 기조에 맞아 단장이 2시즌 더 계약했어요/,
     );
     const gone = april('april-ovr-gone', [
       { style: 'positional', ovr: 70 + MANAGER_RENEWAL_MARGIN },
@@ -442,7 +442,7 @@ describe('선호 학파 and 감독 기조 (STAFF-18)', () => {
     const alone = april('april-alone', [{ style: 'counter', ovr: 85 }], 'standard', 'developer');
     expect(alone.manager.until).toBe(alone.year + 3);
     expect(alone.inbox!.at(-1)!.detail).toMatch(
-      /^감독 기조에 맞는 감독이 없어 스태프가 2시즌 더 계약했어요/,
+      /^감독 기조에 맞는 감독이 없어 단장이 2시즌 더 계약했어요/,
     );
     const replaced = april(
       'april-replaced',

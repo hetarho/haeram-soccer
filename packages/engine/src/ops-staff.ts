@@ -179,14 +179,14 @@ export function appointDelegatedManager(w: World) {
     w,
     'manager-hire',
     `${manager.name} 감독 선임`,
-    `${club ? `${club}에서 영입 · ` : ''}${school} · ${tacticLabel[manager.philosophy]}${traitNote(manager)} · 계약 ${ends} 시즌 끝까지 · 스태프 위임 선임`,
+    `${club ? `${club}에서 영입 · ` : ''}${school} · ${tacticLabel[manager.philosophy]}${traitNote(manager)} · 계약 ${ends} 시즌 끝까지 · 단장 선임`,
     cost,
   );
   pushInbox(w, {
     kind: 'staff-report',
     title: `${school} ${manager.name} 감독 선임`,
     detail: [
-      `${match ? '스태프가 선호 학파와 감독 기조에 맞는' : '선호 학파와 감독 기조에 맞는 감독이 없어 스태프가 가장 나은'} ${club ? `${club} 감독을 웃돈을 주고` : '자유계약 감독을'} ${term}시즌 계약했어요`,
+      `${match ? '단장이 선호 학파와 감독 기조에 맞는' : '선호 학파와 감독 기조에 맞는 감독이 없어 단장이 가장 나은'} ${club ? `${club} 감독을 웃돈을 주고` : '자유계약 감독을'} ${term}시즌 계약했어요`,
       `OVR ${manager.ability}`,
       `연봉 ${moneyLabel(w, manager.wage)}`,
       `계약금 ${moneyLabel(w, pick.fee)}`,

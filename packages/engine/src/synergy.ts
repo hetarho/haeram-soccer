@@ -161,14 +161,14 @@ const RULES: readonly SynergyRule[] = [
   {
     id: 'moneyball',
     label: '머니볼',
-    idea: '데이터 스카우팅 · 발굴·협상에 강한 수석 스카우트 · 젊은 선수 위주 영입',
+    idea: '데이터 스카우팅 · 발굴에 강한 수석 스카우트나 협상에 강한 단장 · 젊은 선수 위주 영입',
     bonus: '영입 후보 잠재력 +3 · 이적료 ×0.92',
     effects: { marketPotential: 3, feeMultiplier: 0.92 },
     conditions: (w) => [
       { label: '스카우팅 · 데이터 스카우팅', met: buildOf(w).scouting === 'data' },
       {
-        label: '수석 스카우트 발굴가·협상가',
-        met: coach(w, 'scout')?.trait === 'spotter' || coach(w, 'scout')?.trait === 'negotiator',
+        label: '발굴가 수석 스카우트 또는 협상가 단장',
+        met: coach(w, 'scout')?.trait === 'spotter' || coach(w, 'director')?.trait === 'negotiator',
       },
       { label: '영입 기조 유망주·젊은 선수 위주', met: policyOf(w).recruitment <= 2 },
     ],

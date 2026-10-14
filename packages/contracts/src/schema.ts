@@ -390,7 +390,8 @@ const tournament = z.object({
   secondStandings: z.array(z.array(number).length(6)).max(100).optional(),
   rounds: z.array(knockoutRound).max(12).optional(),
 });
-const staffRole = z.enum([
+/** The seven coaching departments, as every save before rules 1.22 knew the staff. */
+const coachingDepartments = [
   'assistant',
   'attack',
   'defense',
@@ -398,7 +399,9 @@ const staffRole = z.enum([
   'fitness',
   'youth',
   'scout',
-]);
+] as const;
+/** The 단장 (→STAFF-20) and the coaching departments. */
+const staffRole = z.enum(['director', ...coachingDepartments]);
 const staffTrait = z.enum(['developer', 'specialist', 'recovery', 'spotter', 'negotiator']);
 const managerStyle = z.enum([
   'positional',
@@ -729,7 +732,7 @@ function legacyMarket(input: unknown): unknown {
     ...w,
     ...(flat
       ? {
-          coaching: Object.fromEntries(staffRole.options.map((role) => [role, w.coaching])),
+          coaching: Object.fromEntries(coachingDepartments.map((role) => [role, w.coaching])),
         }
       : {}),
     ...(listed
@@ -851,7 +854,7 @@ function legacyDirection(input: unknown): unknown {
                 : undefined;
       if (stance) direction.manager ??= stance;
     }
-    const counts = new Map<string, number>([['standard', staffRole.options.length]]);
+    const counts = new Map<string, number>([['standard', coachingDepartments.length]]);
     for (const criteria of Object.values(coaches ?? {})) {
       if (!criteria) continue;
       const stance = coachStance(criteria);
@@ -956,7 +959,7 @@ const legacySwitches = z.strictObject({
   // Rules before 1.16: one coach-hiring switch for every department.
   staff: z.boolean().optional(),
   ...Object.fromEntries(
-    staffRole.options.map((role) => [`coach:${role}`, z.boolean().optional()] as const),
+    coachingDepartments.map((role) => [`coach:${role}`, z.boolean().optional()] as const),
   ),
 });
 /** Switches only level 4 turned on (→WEB-45). */
