@@ -14,9 +14,10 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| p7ad | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T15:45Z | 2026-10-14T20:01Z | T115 |
 
 ## inbox
+- 261015 suggest LEAGUE-13 WEB-3: difficulty levels do not separate on 60-season careers (every level ≈60% titles near season 50, T115) because a level sets only the start → decide whether a level keeps a lasting effect (its offset on later signings and youth, or rivals' strength by level) or the bands move; update-ssot either way
+- 261015 suggest -: the player model added 10 tasks (T106–T115) in one day — run review-code on packages/engine/src (match.ts, training.ts, signings.ts, adaptation.ts) and apps/web/src/ui (PlayerProfile, TrainingView, GameSlotScreen) before the next feature
 - 261015 decided CLUB-27: does an incoming offer left to lapse count as declined for 야망 → yes, like the owner's reject (alt: only an explicit reject) — silence must not dodge an ambitious player's resentment
 - 261015 decided PLAYER-16: what "the rate below potential" is when growth shrinks with the gap to it (zero at potential) → the rate 2 under potential, a floor for a settled (0.90+) player's round growth near and past it (alt: a flat rate past potential | the season's growth term only) — without a floor PLAYER-16 had nothing to scale
 - 261015 decided PLAYER-3 CLUB-32 CLUB-33: how rules that counted GK/DEF/MID/FWD read with 14 positions → four lines (GK, DF, MF, FW) by main position (alt: every listed position counts | each rule rewritten by formation slot) — squad needs stay readable; requests still name formation slots
@@ -59,9 +60,9 @@
 | WORLD | 3 | 3 | - | 0 |
 | CLUB | 34 | 34 | - | 0 |
 | MATCH | 9 | 9 | - | 0 |
-| LEAGUE | 6 | 6 | - | 0 |
+| LEAGUE | 7 | 7 | - | 0 |
 | STAFF | 20 | 20 | - | 0 |
-| ECON | 35 | 35 | - | 0 |
+| ECON | 36 | 36 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 9 | 9 | - | 0 |
 | SAVE | 35 | 35 | - | 0 |
@@ -70,7 +71,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T115 | Measure the balance bands on the new model | LEAGUE ECON | T108 T109 T110 T111 | doing@261015.p7ad |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -79,9 +79,9 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- run p7ad (autopilot): implement T106 → T107 (the foundation) → T108–T113 (separate units, touches disjoint except T108/T109 sharing ops-staff.ts) → T114 → T115 (explore 2h); push main after each.
-- PLAYER r1 written (261015): 14 attributes, 14 sided positions with levels and retraining, 27 roles, OVR per position and role, personality and play traits, adaptation (starts, gains, manager change, 적응 실패), growth by 프로의식 and past potential, ageing by attribute group, scout ranges; PLAYER-8 (야망) open for the CLUB update. Next: update-ssot MATCH STAFF CLUB LEAGUE WORLD ECON WEB SAVE from ideation/difficulty-and-adaptation (CLUB-2 and CLUB-12 move to PLAYER), then create-task PLAYER and those revs as parallel bundles.
-- ideation difficulty-and-adaptation is ready (261015): four levels by the start only, 14 attributes, ~12 sided positions with football-named roles, personality and play traits, adaptation (0.8 = ×1.0) and other clubs' 조직력, per-player growth rates past potential, training 균형/회복/하드 per team and player, 동네의 자부심 → 유스 순혈주의, balance bands per level; sugar daddies dropped. Next: create-ssot PLAYER, then update-ssot MATCH STAFF CLUB LEAGUE WORLD ECON WEB SAVE, then create-task as parallel bundles.
+- run p7ad (autopilot) closed 261015: the player model is on main (T106–T115: 14 attributes, sided positions with levels, roles and traits, adaptation and 조직력, per-player training, slot requests, the profile UI, earlier-rules saves, the balance measured); report reports/261015-p7ad.md, 17 inbox decisions to review.
+- follow-up (T115): difficulty levels do not separate (every level ≈60% titles near season 50; LEAGUE-13 measured) — decide a lasting level rule or new bands (update-ssot LEAGUE-13/WEB-3); ESP/FRA reference careers often stay 33–50 seasons in the amateur league (3 of 160 bankrupt there); ECON-29's wage bill 40.0% below 45–70%.
+- next: review-code over the player model (inbox suggest), then the follow-ups above.
 - the 단장 plan is done and on main (T101–T105, autopilot run q7m2, report reports/261014-q7m2.md): 방향 at /direction, the 단장 post (rules 1.22.0), the scout shortlist and the manager's requests, their screens, ECON r34; review the inbox decisions.
 - follow-up (T105): 1 of 40 reference careers went bankrupt on rules 1.22.0 (ESP 기본 방향 seed 4, 1971, after 19 amateur seasons; none on 1.21) — the same career survives with the 단장's post kept a volunteer or without the −3 trust, so decide by update-ssot whether the delegated staff hire a paid 단장 only from a division up, or whether an amateur club's money checks (ECON-33) are tighter; then re-measure the 40 careers.
 - follow-up: the wage bill is 41.4% of revenue (ECON-29 band 45–70%) after the presets filled rows — the 트레이딩 머신 careers run 25–48%; decide by update-ssot whether the band judges a selling club or the contract-talk floor rises.
@@ -96,6 +96,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 T115 done (explore 2h, 20:01–20:35Z): 160 careers at four levels — every level ≈60% titles near season 50, ≈21% after the first; 보통·어려움·최상 outside LEAGUE-13; LEAGUE r7, ECON r36 measured, docs/BALANCE.md; no tuning
 - 261015 CI fix: the benchmark failed the entry budget after T114 (256,910 B gzip > 256,000); the player sheet's dialog and the match report now load on demand (entry 251,264 B measured locally)
 - 261015 CI fix: CI 38627339966 failed save-upgrade's earlier-rules test in Chromium and Firefox — the slot screen read the slots before the active load had failed; it now reads them again when the load settles (5× repeats pass in both)
 - 261015 T115 doing (explore 2h from 20:01Z)
@@ -115,4 +116,3 @@
 - 261015 update-ssot PLAYER r2 MATCH r9 STAFF r20 CLUB r34 LEAGUE r6 WORLD r3 ECON r35 HIST r9 SAVE r35 WEB r66 from ideation/difficulty-and-adaptation (converted)
 - 261015 create-ssot PLAYER r1: the player model from ideation/difficulty-and-adaptation (20 decisions, 1 open)
 - 261015 ideation difficulty-and-adaptation ready: difficulty by the start only, the new player model (attributes, sided positions, roles, traits, adaptation, growth rates), training 균형/회복/하드; sugar daddies dropped; next create-ssot PLAYER
-- 261014 ideation difficulty-and-adaptation start

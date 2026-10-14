@@ -18,6 +18,7 @@
  *                                                          60 seasons each (several minutes)
  *   pnpm exec tsx scripts/calibrate-economy.ts --quick    ENG only, default build, reference club
  *   options: --seasons N, --countries ENG,FRA, --builds default,trading, --modes greedy,none,
+ *            --levels easy,normal,hard,extreme (difficulty levels, →LEAGUE-13; normal by default),
  *            --seeds N (careers per setting), --first-seed N (the first seed's number), --log
  *            (per season), --out careers.json (keep the careers), --in a.json,b.json (report
  *            kept careers only)
@@ -26,7 +27,7 @@
  * (2000–2009) are the only top-flight 2000s a 1950 founding reaches. Money is compared in 1901 price
  * units, each season's amounts divided by what one unit cost that year.
  */
-import type { Club, CountryCode, World } from '../packages/contracts/src/types';
+import type { Club, CountryCode, DifficultyLevel, World } from '../packages/contracts/src/types';
 import {
   activePlayers,
   advanceRound,
@@ -75,6 +76,8 @@ const BUILDS = option('builds', quick ? 'default' : 'default,trading').split(','
 const FACILITY_MODES = option('modes', quick ? 'greedy' : 'greedy,none')
   .split(',')
   .map((mode) => mode === 'greedy');
+/** Difficulty levels the careers start at (→WEB-3, LEAGUE-13). */
+const LEVELS = option('levels', 'normal').split(',') as DifficultyLevel[];
 
 // ---- Targets ---------------------------------------------------------------------------------
 const BANDS = {
@@ -181,6 +184,8 @@ interface Career {
   build: string;
   greedy: boolean;
   seed: string;
+  /** The difficulty level it started at; careers kept before levels were normal. */
+  level?: DifficultyLevel;
   seasons: Season[];
   bankrupt?: number;
 }
@@ -245,18 +250,24 @@ function establishedCrowd(w: World, tier: number) {
   });
   return average(crowds) / (CATCHMENT_CONFIG.city[code] ?? 1);
 }
-function playCareer(code: CountryCode, build: string, greedy: boolean, seed: string): Career {
+function playCareer(
+  code: CountryCode,
+  build: string,
+  greedy: boolean,
+  seed: string,
+  level: DifficultyLevel,
+): Career {
   const w = createWorld({
     country: code,
     name: 'Calibration Town',
     color: '#335577',
     seed,
-    level: 'normal',
+    level,
     // A preset is founded as the club's whole direction (→ECON-22, →WEB-15).
     ...(build !== 'default' ? { preset: build } : {}),
   });
   delegateAll(w);
-  const career: Career = { code, build, greedy, seed, seasons: [] };
+  const career: Career = { code, build, greedy, seed, level, seasons: [] };
   const depth = country(code).groups.length;
   for (let n = 0; n < SEASONS && !w.bankrupt; n++) {
     const year = w.year,
@@ -415,7 +426,59 @@ function printLog(c: Career) {
   }
 }
 
+// ---- Competitive balance (LEAGUE-13) -------------------------------------------------------------
+const LEVEL_BANDS: Record<DifficultyLevel, string> = {
+  easy: 'most careers win; median first title 35–50 seasons, fastest ≈25; 20–35% after; none bankrupt',
+  normal: 'about a third win; 20% or less after; none bankrupt',
+  hard: '1 in 5 or fewer win; 1 in 20 or fewer bankrupt',
+  extreme: 'half or fewer reach the top flight; 1 in 5 or fewer bankrupt',
+};
+const median = (values: number[]) => {
+  if (!values.length) return NaN;
+  const sorted = [...values].sort((a, b) => a - b),
+    mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid]! : (sorted[mid - 1]! + sorted[mid]!) / 2;
+};
+/**
+ * Per level (→LEAGUE-13): careers with a top-flight title, seasons to the first (median, fastest),
+ * the share of top-flight titles in the seasons after the first, top-flight seasons, careers that
+ * reached the top flight, and bankruptcies.
+ */
+function balanceReport(careers: Career[]) {
+  console.log('\n### Competitive balance by level (LEAGUE-13)\n');
+  console.log(
+    '| level | careers | with a title | first title: median / fastest (season) | titles after the first | top-flight seasons (avg) | reached the top flight | bankrupt | band |',
+  );
+  console.log('|---|---:|---:|---|---:|---:|---:|---:|---|');
+  for (const level of ['easy', 'normal', 'hard', 'extreme'] as DifficultyLevel[]) {
+    const group = careers.filter((c) => (c.level ?? 'normal') === level && c.greedy);
+    if (!group.length) continue;
+    const firsts: number[] = [];
+    let after = 0,
+      afterTitles = 0,
+      top = 0,
+      reached = 0;
+    for (const c of group) {
+      const first = c.seasons.findIndex((s) => s.tier === 0 && !s.amateur && s.rank === 1);
+      if (first >= 0) {
+        firsts.push(first + 1);
+        const later = c.seasons.slice(first + 1);
+        after += later.length;
+        afterTitles += later.filter((s) => s.tier === 0 && !s.amateur && s.rank === 1).length;
+      }
+      const flight = c.seasons.filter((s) => s.tier === 0 && !s.amateur).length;
+      top += flight;
+      if (flight) reached++;
+    }
+    const bankrupt = group.filter((c) => c.bankrupt !== undefined).length;
+    console.log(
+      `| ${level} | ${group.length} | ${firsts.length} (${pct(firsts.length / group.length)}) | ${firsts.length ? `${median(firsts)} / ${Math.min(...firsts)}` : '-'} | ${after ? pct(afterTitles / after) : '-'} | ${(top / group.length).toFixed(1)} | ${reached} | ${bankrupt} | ${LEVEL_BANDS[level]} |`,
+    );
+  }
+}
+
 function report(careers: Career[]) {
+  balanceReport(careers);
   console.log('\n### Careers\n');
   console.log(
     '| country | build | facilities | seasons | bankrupt | divisions (seasons) | wage bill / revenue | operating result / revenue | facilities reached |',
@@ -671,18 +734,19 @@ if (saved)
   for (const file of saved.split(','))
     careers.push(...(JSON.parse(readFileSync(file, 'utf8')) as Career[]));
 else
-  for (const code of COUNTRY_CODES)
-    for (const build of BUILDS)
-      for (const greedy of FACILITY_MODES)
-        for (let i = FIRST_SEED; i < FIRST_SEED + SEEDS; i++) {
-          const t = performance.now();
-          const career = playCareer(code, build, greedy, `economy-${code}-${i}`);
-          careers.push(career);
-          console.error(
-            `${code} ${build} ${greedy ? 'reference' : 'no building'} seed ${i}: ${career.seasons.length} seasons in ${((performance.now() - t) / 1000).toFixed(0)} s`,
-          );
-          if (LOG) printLog(career);
-        }
+  for (const level of LEVELS)
+    for (const code of COUNTRY_CODES)
+      for (const build of BUILDS)
+        for (const greedy of FACILITY_MODES)
+          for (let i = FIRST_SEED; i < FIRST_SEED + SEEDS; i++) {
+            const t = performance.now();
+            const career = playCareer(code, build, greedy, `economy-${code}-${i}`, level);
+            careers.push(career);
+            console.error(
+              `${level} ${code} ${build} ${greedy ? 'reference' : 'no building'} seed ${i}: ${career.seasons.length} seasons in ${((performance.now() - t) / 1000).toFixed(0)} s`,
+            );
+            if (LOG) printLog(career);
+          }
 const out = option('out', '');
 if (out) writeFileSync(out, JSON.stringify(careers));
 console.log(

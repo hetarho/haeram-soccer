@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r35 | Define the implemented browser-demo behavior for historical club economy.
+> r36 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -162,14 +162,14 @@
 - ECON-29 [o] The economy is calibrated against real football on 50-season runs of a reference club, and the measured results are recorded here. ← balance is judged on whole careers, not single seasons
   - revenue is competition money, matchday and commercial income; player trading is reported beside the bands: the delegated staff sell, and sign only to fill short roles or upgrade by 재정 기조 (→CLUB-33), so the reference club stays a net seller with a youth-heavy wage bill. ← net results including those sales measured 10–17% on every constant set that kept every career solvent
   - the reference club has every delegation on, no owner capital, and starts the cheapest next facility work of the three parts (→ECON-32) whenever cash after it still covers 13 rounds of fixed costs; its operating result counts that construction, since building is how it spends a surplus, and the result before construction is reported beside; the wage targets (→CLUB-25) are measured on it too, the attendance targets on clubs established in their division (→ECON-9), with the reference club's crowds in at least its third straight season in a division beside.
-  | target | band | measured 261014 (rules 1.22.0 with the 단장 and the manager's requests: the default careers at 기본 방향, the 트레이딩 머신 careers founded with that preset's whole board, the 단장 signing from the shortlist at level 4 and the staff filling his post by 코치 기조; 40 careers: ENG ESP FRA GER × default and 트레이딩 머신 × 5 seeds, 1950–2009) |
+  | target | band | measured 261015 (rules 2.0.0, the player model: default careers at 기본 방향 and every difficulty level, the 단장 signing at level 4; 160 careers: ENG ESP FRA GER × four levels × 10 seeds, 1950–2009) |
   |---|---|---|
-  | wage bill / revenue for a club keeping a squad at its division's level | 45–70% | 41.3%, below the band (41.4% under rules 1.21, 44.8% with the rows at their defaults): the 트레이딩 머신 careers, raising to sell, letting 30+ go and buying young, run 29–48% while the default careers sit near 45%; the stadium's steps lift mid-career gates while market wages do not follow revenue |
-  | operating result / revenue before player trading, career average without owner spending | −5% to +10% | +1.3% (+2.4% under rules 1.21; player sales 16.3% of revenue beside it; before construction +22.3%; net result with sales +17.6%) |
-  | income mix, top flight, 2000s | distribution 40–55%, commercial 25–40%, matchday 15–25% | 45.4%, 32.0%, 22.6% |
-  | income mix, any division, 1950s | matchday 60% or more | 83.2% |
-  | every facility part to its top (4,045,150 units), in seasons of a top-flight club's average net result before construction | 25 or more | 91.4 |
-  | reference careers that go bankrupt | none | 1 of 40, outside the band (none under rules 1.21): ESP at 기본 방향, seed 4, in 1971 after 19 amateur seasons and two relegations from 2부; the same career survives with the 단장's post kept by a volunteer and, separately, without the −3 trust of unmet requests, so no single rule of 1.22 breaks it — a fragile amateur career tipped by the new path |
+  | wage bill / revenue for a club keeping a squad at its division's level | 45–70% | 40.0%, below the band (41.3% under rules 1.22): the stadium's steps lift mid-career gates while market wages do not follow revenue |
+  | operating result / revenue before player trading, career average without owner spending | −5% to +10% | +9.7% (player sales 7.3% of revenue beside it; before construction +24.6%; net result with sales +17.0%) |
+  | income mix, top flight, 2000s | distribution 40–55%, commercial 25–40%, matchday 15–25% | 46.5%, 30.5%, 23.0% |
+  | income mix, any division, 1950s | matchday 60% or more | 89.6% |
+  | every facility part to its top (4,045,150 units), in seasons of a top-flight club's average net result before construction | 25 or more | 98.4 |
+  | reference careers that go bankrupt | none | 3 of 160, outside the band (none of the 40 at 보통): ESP careers that never left the amateur league (21, 39 and 47 seasons, at 어려움, 최상 and 쉬움) |
 - ECON-30 [o] Beyond wages, hosting costs and facility upkeep (→ECON-32), every club pays operating expenses (운영 경비) — matchday operations, travel, administration, medical care, kit and its staff's yearly pay — each league round: the larger of an amount per country and division on the football index (→ECON-26) and a share of its turnover over its last completed season (income without player sales or owner capital), spread over this season's league rounds. Share and division amounts are sized so that ECON-29's reference club ends its career near break-even; the amateur level's amount is the lowest. ← other costs must grow with the club's own football money, from a newly promoted club to the dominant one it becomes (measured 261013: net result 47% of income with costs on prices; one amount per division bankrupted 5–7 of 8 reference careers)
   - it is a fixed cost: fixed costs and runway (→ECON-12), the cash projection (→ECON-18), the cash warning (→ECON-20) and the bankruptcy threshold (→ECON-24) count it, and the season ledger names it (→ECON-10).
   - the amount is set when a season starts; the division amount follows the division the club plays in this season, so a promotion or relegation changes it from the first round.
@@ -201,6 +201,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r36 261015 ECON-29✎ measured 261014 (rules 1.22, 40 careers)→measured 261015 (rules 2.0.0, 160 careers at four levels): wage bill 41.3%→40.0%, operating +1.3%→+9.7%, mix 45.4/32.0/22.6→46.5/30.5/23.0, 1950s matchday 83.2%→89.6%, ladder 91.4→98.4, bankrupt 1 of 40→3 of 160 (ESP amateur careers)
 - r35 261015 ECON-22✎ preset 동네의 자부심→유스 순혈주의
 - r34 261014 ECON-29✎ measured on rules 1.21.0→1.22.0 (the 단장, the shortlist and the manager's requests): wage bill 41.4→41.3%, operating result +2.4→+1.3%, 2000s mix 45.4/31.7/22.9→45.4/32.0/22.6%, 1950s matchday 84.8→83.2%, ladder 94.1→91.4, bankrupt none→1 of 40 (ESP 기본 방향 seed 4, 1971)
 - r33 261014 ECON-22✎ 트레이딩 머신 lights 머니볼 with a negotiator scout→a negotiator 단장 (→STAFF-20)
