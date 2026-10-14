@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T05:14Z | - |
+| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T05:19Z | T098 |
 
 ## inbox
 - 261014 decided ECON-22 ideation/club-direction: the preset set → seven presets filling every row: the five redesigned with rows, plus 유스 명가 (aims 유스 파이프라인) and 세계로 (aims 글로벌 스카우팅) (alt: keep five presets of cards only | eight with a commercial-global split)
@@ -63,7 +63,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T098 | Presets over every row, 글로벌 스카우팅 and the founding direction | ECON CLUB SAVE | - | todo |
+| T098 | Presets over every row, 글로벌 스카우팅 and the founding direction | ECON CLUB SAVE | - | doing@261014.v7dq |
 | T099 | Presets and saved directions over every row, and the founding direction | WEB ECON SAVE | T098 | todo |
 | T100 | Calibrate the economy after the whole direction plan | ECON CLUB | T098 | todo |
 
