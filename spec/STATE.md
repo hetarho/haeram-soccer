@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T01:57Z | - |
+| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T02:04Z | T086 |
 
 ## inbox
 - 261014 decided WEB-39: the 방향 tab's address → keep /business?view= with build, finance and sponsor, older values opening their tab (alt: a new /direction route | the old view values)
@@ -45,7 +45,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T086 | Direction names in the engine | ECON WEB | - | todo |
+| T086 | Direction names in the engine | ECON WEB | - | doing@261014.v7dq |
 | T087 | The 방향 tab and its wording | WEB ECON | T086 | todo |
 | T088 | One row kind on the 방향 board | WEB ECON | T087 | todo |
 
@@ -68,6 +68,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 T086 doing standalone on work/direction (worktree ../haeram-soccor-direction; the owner's dev server runs from the main checkout)
 - 261014 create-task WEB r59 ECON r24 → T086 (engine names), T087 (tab and wording), T088 (one row component); next implement-task T086
 - 261014 update-ssot WEB r59 ECON r24 (club-direction slice 1): 운영 → 방향 with 방향·증축·재정·후원, every card and dial one row of named options drawn and drafted alike, 전략 → 방향; CLUB-16 wording only
 - 261014 update-ssot WEB ECON start: club-direction slice 1
@@ -87,4 +88,3 @@
 - 261013 create-task WEB r55 STAFF r14 CLUB r24 SAVE r25 → T080 (one task: engine level, save mapping, web homes and clock); next implement-task T080
 - 261013 update-ssot WEB r55 STAFF r14 CLUB r24 SAVE r25: the intervention level, saved with the game, alone sets the stops and who decides (training at levels 2–4); no staff switches in homes, no per-event stops, no 맞춤; criteria editable at any level, applied only while delegated; next create-task
 - 261013 update-ssot WEB STAFF CLUB SAVE start: the intervention level alone decides who takes each decision
-- 261013 main a25a5ec: the browser benchmark failed once on a docs-only commit after passing twice on the same code — desktop p95 sits at the 100 ms gate; recorded in next
