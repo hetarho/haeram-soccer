@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T03:56Z | T092 |
+| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T04:04Z | - |
 
 ## inbox
 - 261014 decided WEB-39: the 방향 tab's address → keep /business?view= with build, finance and sponsor, older values opening their tab (alt: a new /direction route | the old view values)
@@ -52,8 +52,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T092 | Youth rows and staff stances in the engine | CLUB ECON STAFF SAVE | T089 | doing@261014.v7dq |
-| T093 | Youth rows on the board and in 유소년 | ECON WEB | T092 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -62,7 +60,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- slice 2 is on main (d877453, CI green in every browser); slice 3 in progress on work/direction: T092 (engine youth rows) → T093 (screens); then slices 4–6 per spec/ideation/club-direction.md shape and the calibration after slice 6.
+- slice 3 (T092–T093) on work/direction waits for CI before main; then slice 4 (지역 and 글로벌 stocks, marketing and campaigns gone), 5 (delegated signings), 6 (founding preset, presets, synergies) and the calibration after slice 6.
 - owner's requests 261013 are on main (caa5e83, CI 38448231873 green in every browser): T080 level only, T081 no strategy locks, T082/T083 coaches set training with suggestions and orders and the academy by U-17/U-19/U-21, T084/T085 facilities as stadium steps, training ground and academy facilities.
 - wage bill / revenue sits at 44.3% on the facility parts (ECON-29 band 45–70%, 45.3% before them): base wage 925 and a 25% youth promise did not move it; try the contract-talk floor next (agent premium per level, as T079 did: 0% gave 47.7%, 1% 46.1%) and re-measure 40 careers.
 - three levers and the economy port are on main (fast-forward to 2de95c6, 261013): T070–T079 done — T077 d303c5e, T078 fe7b209/8c52745, T079 merged from work/econ-port at 11c9c5c/66ce736 (unit 658, contract 11, build pass; goldens equal work/econ-port's). CI run 38382526028 on 2de95c6 passed every job (checks, the benchmark, e2e in Chromium, Firefox and both WebKit shards); the run before it on 66ce736 failed only Firefox e2e, which passed in full locally (102 passed, 2 skipped) and on the rerun — a flake. work/levers and work/econ-port are merged and can be deleted. Next: pick from the follow-ups below.
@@ -74,6 +72,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 T092 done (cb6d2d8), T093 done (bbb99ff): youth rows, 엘리트 선발, staff stances, rules 1.18.0 on work/direction
 - 261014 T091 done: 40 careers on slice 2, none bankrupt, wage bill 44.8% (band 45–70%), operating +3.5%; ECON r27; T092 doing
 - 261014 create-task slice 3 → T092 (engine youth rows, stances, rules 1.18.0), T093 (board and 유소년)
 - 261014 update-ssot ECON r26 CLUB r28 STAFF r17 WEB r61 SAVE r30 (club-direction slice 3): 육성 목표 and 데뷔 시점 drive the academy and the coaches' focus, 엘리트 선발 replaces 1군 직행 경로, staff stances by direction
@@ -93,4 +92,3 @@
 - 261014 ideation club-direction ready: eight areas of direction rows replace cards, dials and staff criteria; 재정 기조, 지역 기반·글로벌 인지도, delegated signings, a level ladder; six slices, the first unifying UI and entities
 - 261014 ideation club-direction start: one direction tab, delegated staff decide by it, one card shape and behaviour
 - 261014 work/intervention (T080–T085) merged with main's start-screen fix and pushed to main at caa5e83 after CI passed every job
-- 261014 T084 T085 done (e5d8276): facility parts; 40-career calibration — none bankrupt, every band but the wage bill (44.3%); ECON r23
