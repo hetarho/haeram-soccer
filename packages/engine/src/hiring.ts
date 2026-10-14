@@ -1,7 +1,6 @@
 import type {
   CoachCriteria,
   CoachDelegationKey,
-  ContractTerm,
   ManagerCriteria,
   StaffRole,
   StaffTrait,
@@ -10,22 +9,15 @@ import type {
   WageCapOvr,
   World,
 } from '../../contracts/src/types';
-import { addEvent } from './world';
+import { directionOf, preferredSchool } from './direction';
 import { delegated } from './intervention';
-import {
-  CONTRACT_TERMS,
-  MANAGER_TRAIT_INFO,
-  MANAGER_TRAITS,
-  STAFF_INFO,
-  STAFF_ROLES,
-  STAFF_TRAIT_INFO,
-} from './staff';
-import { MANAGER_STYLES, STYLE_INFO } from './styles';
+import { MANAGER_TRAIT_INFO, STAFF_INFO, STAFF_TRAIT_INFO } from './staff';
+import { STYLE_INFO } from './styles';
 
 /**
- * The owner's levers over the delegated staff (→STAFF-13): the manager criteria (→STAFF-18), each
- * coaching department's criteria (→STAFF-15) and the contract-talk rule (→CLUB-26). Only values
- * that differ from the defaults are stored, so a club that never set them keeps a small save.
+ * The searches the delegated staff run (→STAFF-13), derived from the direction rows the owner
+ * sets (→ECON-25): the manager criteria (→STAFF-18), the coaches' criteria (→STAFF-15) and the
+ * contract-talk rule (→CLUB-26). The defaults are what every row's default makes.
  */
 export const MANAGER_CRITERIA_DEFAULT: Readonly<ManagerCriteria> = Object.freeze({
   minOvr: 0,
@@ -58,6 +50,7 @@ export const MANAGER_PRIORITY_INFO: Record<ManagerCriteria['priority'], string> 
   ovr: 'OVR 높은 순',
   potential: '잠재력 높은 순',
   wage: '연봉 낮은 순',
+  youth: '육성 높은 순',
 };
 export const COACH_PRIORITY_INFO: Record<CoachCriteria['priority'], string> = {
   ability: '능력 높은 순',
@@ -72,110 +65,47 @@ export function coachDelegated(w: Pick<World, 'intervention'>, role: StaffRole) 
   return delegated(w, coachKey(role));
 }
 
-export function managerCriteriaOf(w: Pick<World, 'hiring'>): ManagerCriteria {
-  return w.hiring?.manager ?? MANAGER_CRITERIA_DEFAULT;
-}
-export function coachCriteriaOf(w: Pick<World, 'hiring'>, role: StaffRole): CoachCriteria {
-  return w.hiring?.coaches?.[role] ?? COACH_CRITERIA_DEFAULT;
-}
-export function talkRuleOf(w: Pick<World, 'talkRule'>): TalkRule {
-  return w.talkRule ?? TALK_RULE_DEFAULT;
-}
+/** 감독 기조's search over the default criteria (→STAFF-18); 표준 is the defaults. */
+const MANAGER_STANCES: Readonly<Record<string, Partial<ManagerCriteria>>> = {
+  standard: {},
+  developer: { minYouth: 60, priority: 'youth', term: 3, whenNone: 'best' },
+  proven: { priority: 'ovr', term: 3, poach: true, whenNone: 'best' },
+  young: { priority: 'potential', term: 3, whenNone: 'best' },
+  cheap: { priority: 'wage', term: 2, whenNone: 'best' },
+};
+/** 코치 기조 as each department's criteria (→STAFF-15); 표준 is the defaults. */
+const COACH_STANCES: Readonly<Record<string, CoachCriteria>> = {
+  volunteer: { volunteer: true, minAbility: 55, priority: 'wage', term: 2 },
+  cheap: { volunteer: false, minAbility: 45, priority: 'wage', term: 2 },
+  standard: COACH_CRITERIA_DEFAULT,
+  elite: { volunteer: false, minAbility: 65, priority: 'ability', term: 3 },
+};
+/** 재계약 기조 as the rule the staff answer contract talks by (→CLUB-26); 표준 is the default. */
+const TALK_STANCES: Readonly<Record<string, TalkRule>> = {
+  standard: TALK_RULE_DEFAULT,
+  keepAll: { maxPay: 1.4, minOvr: 0 },
+  coreOnly: { maxPay: 1.4, minOvr: 0, startersOnly: true },
+  frugal: { maxPay: 1, minOvr: 0 },
+  youngFirst: { maxPay: 1.1, minOvr: 0, maxAge: 30 },
+};
 
-const whole = (value: unknown, min: number, max: number) =>
-  Number.isInteger(value) && (value as number) >= min && (value as number) <= max;
-const oneOf = <T>(values: readonly T[], value: unknown): value is T => values.includes(value as T);
-/** Members of `values`, each once, in the order `values` lists them; undefined if any is not. */
-function subset<T>(values: readonly T[], chosen: unknown): T[] | undefined {
-  if (!Array.isArray(chosen) || !chosen.every((value) => oneOf(values, value))) return undefined;
-  if (new Set(chosen).size !== chosen.length) return undefined;
-  return values.filter((value) => chosen.includes(value));
-}
-const isTerm = (term: unknown): term is ContractTerm => oneOf(CONTRACT_TERMS, term);
-const isCap = (cap: unknown) => cap === undefined || oneOf(WAGE_CAP_OVRS, cap);
-
-/** The criteria as stored: known fields only, lists in their canonical order. */
-function checkManagerCriteria(c: ManagerCriteria): ManagerCriteria {
-  const refuse = () => new Error('감독 선임 기준을 확인하세요.');
-  if (!c || typeof c !== 'object') throw refuse();
-  const schools = subset(MANAGER_STYLES, c.schools),
-    traits = subset(['none', ...MANAGER_TRAITS] as const, c.traits);
-  if (
-    !schools ||
-    !traits ||
-    !whole(c.minOvr, 0, 99) ||
-    !whole(c.minFlexibility, 0, 100) ||
-    !whole(c.maxPride, 0, 100) ||
-    !whole(c.minYouth, 0, 100) ||
-    !isCap(c.maxWageOvr) ||
-    !oneOf(['ovr', 'potential', 'wage'] as const, c.priority) ||
-    !isTerm(c.term) ||
-    typeof c.poach !== 'boolean' ||
-    !oneOf(['wait', 'best'] as const, c.whenNone)
-  )
-    throw refuse();
+/** The manager search 선호 학파 and 감독 기조 make (→STAFF-18). */
+export function managerCriteriaOf(w: Pick<World, 'direction'>): ManagerCriteria {
+  const school = preferredSchool(w);
   return {
-    minOvr: c.minOvr,
-    schools,
-    minFlexibility: c.minFlexibility,
-    maxPride: c.maxPride,
-    minYouth: c.minYouth,
-    traits,
-    ...(c.maxWageOvr !== undefined ? { maxWageOvr: c.maxWageOvr } : {}),
-    priority: c.priority,
-    term: c.term,
-    poach: c.poach,
-    whenNone: c.whenNone,
+    ...MANAGER_CRITERIA_DEFAULT,
+    ...MANAGER_STANCES[directionOf(w, 'manager')],
+    schools: school ? [school] : [],
   };
 }
-function checkCoachCriteria(role: StaffRole, c: CoachCriteria): CoachCriteria {
-  if (!STAFF_ROLES.includes(role)) throw new Error('코치진 부서를 확인하세요.');
-  const refuse = () => new Error(`${STAFF_INFO[role].label} 선임 기준을 확인하세요.`);
-  if (!c || typeof c !== 'object') throw refuse();
-  if (c.trait !== undefined && !STAFF_INFO[role].traits.includes(c.trait))
-    throw new Error(`${STAFF_INFO[role].label}에게는 없는 특성이에요.`);
-  if (
-    typeof c.volunteer !== 'boolean' ||
-    !whole(c.minAbility, 0, 99) ||
-    !isCap(c.maxWageOvr) ||
-    !oneOf(['ability', 'wage'] as const, c.priority) ||
-    !isTerm(c.term)
-  )
-    throw refuse();
-  return {
-    volunteer: c.volunteer,
-    minAbility: c.minAbility,
-    ...(c.trait !== undefined ? { trait: c.trait } : {}),
-    ...(c.maxWageOvr !== undefined ? { maxWageOvr: c.maxWageOvr } : {}),
-    priority: c.priority,
-    term: c.term,
-  };
+/** The hire 코치 기조 makes in every department (→STAFF-15). */
+export function coachCriteriaOf(w: Pick<World, 'direction'>): CoachCriteria {
+  return COACH_STANCES[directionOf(w, 'coaches')];
 }
-function checkTalkRule(rule: TalkRule): TalkRule {
-  if (
-    !rule ||
-    typeof rule !== 'object' ||
-    !oneOf(TALK_PAY_CAPS, rule.maxPay) ||
-    !whole(rule.minOvr, 0, 99) ||
-    (rule.maxAge !== undefined && !whole(rule.maxAge, TALK_AGE_LIMITS.min, TALK_AGE_LIMITS.max))
-  )
-    throw new Error('계약 협상 기준을 확인하세요.');
-  return {
-    maxPay: rule.maxPay,
-    minOvr: rule.minOvr,
-    ...(rule.maxAge !== undefined ? { maxAge: rule.maxAge } : {}),
-  };
+/** The talk rule 재계약 기조 makes (→CLUB-26). */
+export function talkRuleOf(w: Pick<World, 'direction'>): TalkRule {
+  return TALK_STANCES[directionOf(w, 'renewal')];
 }
-/** Object keys in one order, so criteria read back from a save compare like fresh ones. */
-const sortedKeys = (_key: string, value: unknown) =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? Object.fromEntries(Object.entries(value).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)))
-    : value;
-const same = (a: object, b: object) =>
-  JSON.stringify(a, sortedKeys) === JSON.stringify(b, sortedKeys);
-/** The lines of `after` that differ from `before`'s line in the same place. */
-const changedLines = (before: string[], after: string[]) =>
-  after.filter((line, i) => line !== before[i]).join(' · ');
 
 const none = (value: number, open: number, text = String(value)) =>
   value === open ? '없음' : text;
@@ -221,57 +151,4 @@ export function talkRuleLines(rule: TalkRule): string[] {
     `최소 OVR ${none(rule.minOvr, 0)}`,
     `최대 나이 ${rule.maxAge === undefined ? '없음' : `${rule.maxAge}세`}`,
   ];
-}
-
-/** Keeps `hiring` only while it holds something. */
-function storeHiring(w: World, hiring: NonNullable<World['hiring']>) {
-  if (hiring.coaches && !Object.keys(hiring.coaches).length) delete hiring.coaches;
-  if (Object.keys(hiring).length) w.hiring = hiring;
-  else delete w.hiring;
-}
-/** Sets the manager criteria (→STAFF-18); an unchanged value records nothing. */
-export function setManagerCriteria(w: World, criteria: ManagerCriteria) {
-  const next = checkManagerCriteria(criteria),
-    before = managerCriteriaOf(w);
-  if (same(next, before)) return;
-  const hiring = { ...w.hiring };
-  if (same(next, MANAGER_CRITERIA_DEFAULT)) delete hiring.manager;
-  else hiring.manager = next;
-  storeHiring(w, hiring);
-  addEvent(
-    w,
-    'hiring',
-    '감독 선임 기준',
-    changedLines(managerCriteriaLines(before), managerCriteriaLines(next)),
-  );
-}
-/** Sets one coaching department's criteria (→STAFF-15); an unchanged value records nothing. */
-export function setCoachCriteria(w: World, role: StaffRole, criteria: CoachCriteria) {
-  const next = checkCoachCriteria(role, criteria),
-    before = coachCriteriaOf(w, role);
-  if (same(next, before)) return;
-  const coaches = { ...w.hiring?.coaches };
-  if (same(next, COACH_CRITERIA_DEFAULT)) delete coaches[role];
-  else coaches[role] = next;
-  storeHiring(w, { ...w.hiring, coaches });
-  addEvent(
-    w,
-    'hiring',
-    `${STAFF_INFO[role].label} 선임 기준`,
-    changedLines(coachCriteriaLines(role, before), coachCriteriaLines(role, next)),
-  );
-}
-/** Sets the contract-talk rule (→CLUB-26); an unchanged value records nothing. */
-export function setTalkRule(w: World, rule: TalkRule) {
-  const next = checkTalkRule(rule),
-    before = talkRuleOf(w);
-  if (same(next, before)) return;
-  if (same(next, TALK_RULE_DEFAULT)) delete w.talkRule;
-  else w.talkRule = next;
-  addEvent(
-    w,
-    'talk-rule',
-    '계약 협상 기준',
-    changedLines(talkRuleLines(before), talkRuleLines(next)),
-  );
 }

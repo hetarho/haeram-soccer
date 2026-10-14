@@ -642,13 +642,15 @@ export const worldSchema: z.ZodType<World> = z.object({
     })
     .optional(),
   sponsors: z.array(sponsorContract).max(5).optional(),
-  hiring: z
+  direction: z
     .strictObject({
-      manager: managerCriteriaSchema.optional(),
-      coaches: z.partialRecord(staffRole, coachCriteriaSchema).optional(),
+      renewal: z.enum(['keepAll', 'coreOnly', 'frugal', 'youngFirst']).optional(),
+      school: managerStyle.optional(),
+      manager: z.enum(['developer', 'proven', 'young', 'cheap']).optional(),
+      coaches: z.enum(['volunteer', 'cheap', 'elite']).optional(),
+      finance: z.enum(['aggressive', 'bold', 'careful', 'stable']).optional(),
     })
     .optional(),
-  talkRule: talkRuleSchema.optional(),
   cupWinners: z.record(id, id),
   cups: z.array(domesticCup).max(10).optional(),
   europe: z.array(tournament).max(10),
@@ -790,6 +792,68 @@ function legacyLevers(input: unknown): unknown {
   }
   return out;
 }
+/** The hiring criteria rules 1.16 kept (→STAFF-15, STAFF-18), read only to load them as rows. */
+const legacyHiring = z.strictObject({
+  manager: managerCriteriaSchema.optional(),
+  coaches: z.partialRecord(staffRole, coachCriteriaSchema).optional(),
+});
+/** 코치 기조 a department's criteria stood for (→SAVE-10). */
+function coachStance(c: z.infer<typeof coachCriteriaSchema>) {
+  if (c.volunteer) return 'volunteer';
+  if (c.minAbility >= 65 || c.priority === 'ability') return 'elite';
+  if (c.minAbility <= 45) return 'cheap';
+  return 'standard';
+}
+/**
+ * Rules before 1.17 (→SAVE-10): the talk rule (`talkRule`), the hiring criteria (`hiring`) and
+ * the manager criteria in it load as the nearest direction rows (`direction`); malformed criteria
+ * are refused. 코치 기조 takes the departments' most common stance, ties going to 표준; 재정 기조
+ * stays at 표준.
+ */
+function legacyDirection(input: unknown): unknown {
+  if (!isRecord(input) || (!('talkRule' in input) && !('hiring' in input))) return input;
+  const { talkRule, hiring, ...rest } = input;
+  const direction: Record<string, unknown> = isRecord(rest.direction) ? { ...rest.direction } : {};
+  if (talkRule !== undefined) {
+    const rule = talkRuleSchema.parse(talkRule);
+    const renewal =
+      rule.maxPay <= 1
+        ? 'frugal'
+        : rule.maxAge !== undefined && rule.maxAge <= 30
+          ? 'youngFirst'
+          : rule.maxPay >= 1.4
+            ? 'keepAll'
+            : undefined;
+    if (renewal) direction.renewal ??= renewal;
+  }
+  if (hiring !== undefined) {
+    const { manager, coaches } = legacyHiring.parse(hiring);
+    if (manager) {
+      if (manager.schools.length === 1) direction.school ??= manager.schools[0];
+      const stance =
+        manager.minYouth >= 50
+          ? 'developer'
+          : manager.poach
+            ? 'proven'
+            : manager.priority === 'potential'
+              ? 'young'
+              : manager.priority === 'wage'
+                ? 'cheap'
+                : undefined;
+      if (stance) direction.manager ??= stance;
+    }
+    const counts = new Map<string, number>([['standard', staffRole.options.length]]);
+    for (const criteria of Object.values(coaches ?? {})) {
+      if (!criteria) continue;
+      const stance = coachStance(criteria);
+      counts.set('standard', counts.get('standard')! - 1);
+      counts.set(stance, (counts.get(stance) ?? 0) + 1);
+    }
+    const [top] = [...counts].reduce((best, entry) => (entry[1] > best[1] ? entry : best));
+    if (top !== 'standard') direction.coaches ??= top;
+  }
+  return Object.keys(direction).length ? { ...rest, direction } : rest;
+}
 /** Capacity of each stadium step (→ECON-32), for loading a single facility level. */
 const STADIUM_CAPACITY = [2500, 5000, 10000, 15000, 30000, 40000, 60000, 75000, 90000];
 /**
@@ -881,7 +945,9 @@ function legacySponsor(w: World, country: string, catalog: LoadCatalog | undefin
 /** `catalog` is needed only for a world from rules before 1.16 that has a sponsor. */
 export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   const w = worldSchema.parse(
-    legacyFacilities(legacyIntervention(legacyLevers(legacyMarket(legacyVision(input))))),
+    legacyDirection(
+      legacyFacilities(legacyIntervention(legacyLevers(legacyMarket(legacyVision(input))))),
+    ),
   );
   const ids = new Set(w.clubs.map((c) => c.id));
   if (ids.size !== w.clubs.length || !ids.has(w.playerClub))

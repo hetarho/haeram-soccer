@@ -1,6 +1,6 @@
 import type { World } from './types';
 
-export const CURRENT_ENGINE_VERSION = '1.16.0';
+export const CURRENT_ENGINE_VERSION = '1.17.0';
 /**
  * 1.1.0 added club policy; 1.2.0 staff, academy, transfer windows and the inbox; 1.3.0 closes
  * the season after its final round, opens the summer window there, normalizes league match
@@ -46,7 +46,10 @@ export const CURRENT_ENGINE_VERSION = '1.16.0';
  * criteria; wages stay until renewal; a world without `operatingExpenses` pays its division's
  * floor until its next season starts; activation draws each existing player's agent from his id,
  * running contracts carry no clauses until their next signing and a reserved strategy is dropped
- * with an inbox item naming it).
+ * with an inbox item naming it); 1.17.0 keeps the direction rows the delegated staff follow
+ * (`direction`: 재계약 기조, 선호 학파, 감독 기조, 코치 기조, 재정 기조) in place of the talk rule
+ * and the hiring and manager criteria, which load as the nearest rows (activation names them in
+ * the inbox), and hands the staff sponsors, the coaches and the manager from intervention level 3.
  */
 export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.0.0',
@@ -65,6 +68,7 @@ export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.13.0',
   '1.14.0',
   '1.15.0',
+  '1.16.0',
   CURRENT_ENGINE_VERSION,
 ];
 /** A world pins its catalog ID and the fingerprint recorded with it (→ARCH-10). */

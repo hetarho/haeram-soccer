@@ -26,14 +26,8 @@ import {
   type ManagerCandidate,
 } from './managerMarket';
 import { MORALE_START } from './morale';
-import {
-  coachDelegated,
-  managerCriteriaLines,
-  managerCriteriaOf,
-  setCoachCriteria,
-  setManagerCriteria,
-  setTalkRule,
-} from './hiring';
+import { coachDelegated, managerCriteriaOf } from './hiring';
+import { directionLine, setDirection } from './direction';
 import { debit } from './operations';
 import { moneyLabel } from './finance';
 import { delegated, INTERVENTION_LEVELS } from './intervention';
@@ -53,8 +47,7 @@ export type StaffCommand = Extract<
       | 'renew-staff'
       | 'intervention'
       | 'coach-training'
-      | 'hiring'
-      | 'talk-rule';
+      | 'direction';
   }
 >;
 
@@ -193,13 +186,14 @@ export function appointDelegatedManager(w: World) {
     kind: 'staff-report',
     title: `${school} ${manager.name} 감독 선임`,
     detail: [
-      `${match ? '스태프가 감독 선임 기준에 맞는' : '기준에 맞는 감독이 없어 스태프가 가장 나은'} ${club ? `${club} 감독을 웃돈을 주고` : '자유계약 감독을'} ${term}시즌 계약했어요`,
+      `${match ? '스태프가 선호 학파와 감독 기조에 맞는' : '선호 학파와 감독 기조에 맞는 감독이 없어 스태프가 가장 나은'} ${club ? `${club} 감독을 웃돈을 주고` : '자유계약 감독을'} ${term}시즌 계약했어요`,
       `OVR ${manager.ability}`,
       `연봉 ${moneyLabel(w, manager.wage)}`,
       `계약금 ${moneyLabel(w, pick.fee)}`,
       ...(pick.compensation ? [`웃돈 ${moneyLabel(w, pick.compensation)}`] : []),
       `${ends} 시즌 끝까지`,
-      ...managerCriteriaLines(c),
+      directionLine(w, 'school'),
+      directionLine(w, 'manager'),
     ]
       .join(' · ')
       .slice(0, 400),
@@ -213,10 +207,11 @@ function reportManagerWait(w: World) {
   if (w.inbox?.some((item) => item.ref === interim)) return;
   pushInbox(w, {
     kind: 'staff-report',
-    title: '감독 선임 대기: 기준에 맞는 감독이 없어요',
+    title: '감독 선임 대기: 감독 기조에 맞는 감독이 없어요',
     detail: [
       managerSearchReason(w),
-      ...managerCriteriaLines(managerCriteriaOf(w)),
+      directionLine(w, 'school'),
+      directionLine(w, 'manager'),
       '임시 감독 체제로 계속해요',
     ]
       .join(' · ')
@@ -376,20 +371,15 @@ export function staffCommand(w: World, cmd: StaffCommand) {
       hireStaff(w, cmd.role, cmd.candidate, cmd.term);
       break;
     case 'release-staff':
-      // Delegation stays as the level sets it: a delegated department refills the post by its
-      // criteria on the daily look (→STAFF-13, STAFF-15).
+      // Delegation stays as the level sets it: a delegated department refills the post by 코치
+      // 기조 on the daily look (→STAFF-13, STAFF-15).
       releaseStaff(w, cmd.role);
       break;
-    case 'hiring':
-      if (cmd.role === 'manager') setManagerCriteria(w, cmd.criteria);
-      else {
-        setCoachCriteria(w, cmd.role, cmd.criteria);
-        // New criteria act at once on a vacancy or a volunteer's post (→STAFF-15).
-        if (coachDelegated(w, cmd.role)) fillDelegatedPost(w, cmd.role);
-      }
-      break;
-    case 'talk-rule':
-      setTalkRule(w, cmd.rule);
+    case 'direction':
+      setDirection(w, cmd.key, cmd.option);
+      // A new 코치 기조 acts at once on a vacancy or a volunteer's post (→STAFF-15).
+      if (cmd.key === 'coaches')
+        for (const role of STAFF_ROLES) if (coachDelegated(w, role)) fillDelegatedPost(w, role);
       break;
     case 'renew-staff':
       renewStaff(w, cmd.role, cmd.term);

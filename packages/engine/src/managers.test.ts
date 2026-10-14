@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
 import type { ManagerStyle, World } from '../../contracts/src/types';
 import {
-  COACH_CRITERIA_DEFAULT,
   coachProspect,
   createWorld,
   dailyStaff,
@@ -20,7 +19,6 @@ import {
   ratio,
   renewalDay,
   simulateSeason,
-  STAFF_ROLES,
   STYLE_INFO,
 } from './index';
 
@@ -70,11 +68,7 @@ const ownReminder = (w: World) =>
 /** Level 4 with every coaching department kept by volunteers: only the manager post moves money. */
 function managerToStaff(w: World) {
   w.intervention = 4;
-  w.hiring = {
-    coaches: Object.fromEntries(
-      STAFF_ROLES.map((role) => [role, { ...COACH_CRITERIA_DEFAULT, volunteer: true }]),
-    ),
-  };
+  w.direction = { coaches: 'volunteer' };
 }
 
 describe('manager schools', () => {

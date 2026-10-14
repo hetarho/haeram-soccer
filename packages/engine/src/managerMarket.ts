@@ -227,24 +227,29 @@ export function managerFits(w: World, m: Parameters<ManagerCheck[1]>[0]) {
   return managerChecks(w, managerCriteriaOf(w)).every(([, fits]) => fits(m));
 }
 const potentialOf = (m: Pick<Manager, 'ability' | 'potential'>) => m.potential ?? m.ability;
-/** The criteria's order: OVR or potential, highest first, or the lowest wage; ties keep the list. */
+/**
+ * The criteria's order: OVR, potential or 육성 (youth work), highest first, or the lowest wage;
+ * ties keep the list.
+ */
 function byPriority(priority: ManagerCriteria['priority']) {
   return (a: ManagerCandidate, b: ManagerCandidate) =>
     priority === 'ovr'
       ? b.ability - a.ability
       : priority === 'potential'
         ? potentialOf(b) - potentialOf(a)
-        : BigInt(a.wage) < BigInt(b.wage)
-          ? -1
-          : BigInt(a.wage) > BigInt(b.wage)
-            ? 1
-            : 0;
+        : priority === 'youth'
+          ? b.youth - a.youth
+          : BigInt(a.wage) < BigInt(b.wage)
+            ? -1
+            : BigInt(a.wage) > BigInt(b.wage)
+              ? 1
+              : 0;
 }
 /** The signing fee plus any compensation to his club. */
 const hireCost = (m: ManagerCandidate) => BigInt(m.fee) + BigInt(m.compensation ?? '0');
 /**
- * Cash after his fee and any compensation still covers 13 rounds of costs with his wage in place
- * of the current manager's (→STAFF-18, as →STAFF-15).
+ * Cash after his fee and any compensation still keeps 재정 기조's runway with his wage in place of
+ * the current manager's (→STAFF-18, as →STAFF-15, →ECON-33).
  */
 function affordableManager(w: World, m: ManagerCandidate) {
   return affordable(w, hireCost(m), BigInt(m.wage) - BigInt(w.manager.wage));
@@ -270,15 +275,17 @@ export function bestFreeAgent(w: World): ManagerCandidate | undefined {
 }
 /**
  * Whether the first match beats a manager in post who meets the criteria, at his renewal wage, by
- * the criteria's own measure: 3+ OVR, 3+ potential, or a wage at most 90% of his (→STAFF-18).
+ * the criteria's own measure: 3+ OVR, 3+ 육성, 3+ potential, or a wage at most 90% of his
+ * (→STAFF-18).
  */
 export function managerBeats(
   c: ManagerCriteria,
   match: ManagerCandidate,
-  m: Pick<Manager, 'ability' | 'potential'>,
+  m: Pick<Manager, 'ability' | 'potential' | 'youth'>,
   renewalWage: string,
 ) {
   if (c.priority === 'ovr') return match.ability >= m.ability + MANAGER_RENEWAL_MARGIN;
+  if (c.priority === 'youth') return match.youth >= m.youth + MANAGER_RENEWAL_MARGIN;
   if (c.priority === 'potential')
     return potentialOf(match) >= potentialOf(m) + MANAGER_RENEWAL_MARGIN;
   return clearlyCheaper(match.wage, renewalWage);
@@ -312,16 +319,16 @@ export function managerPickPreview(w: World): {
 } {
   const c = managerCriteriaOf(w),
     match = managerMatches(w)[0];
-  if (match) return { pick: match, reason: `${managerLine(w, match)} · 기준에 맞는 첫 후보` };
+  if (match) return { pick: match, reason: `${managerLine(w, match)} · 감독 기조에 맞는 첫 후보` };
   const why = noManagerReason(w, c),
     best = c.whenNone === 'best' ? bestFreeAgent(w) : undefined;
   if (best)
     return {
       pick: best,
       fallback: true,
-      reason: `${managerLine(w, best)} · 기준에 맞는 감독이 없어(${why}) 가장 나은 자유계약 감독`,
+      reason: `${managerLine(w, best)} · 감독 기조에 맞는 감독이 없어(${why}) 가장 나은 자유계약 감독`,
     };
-  return { reason: `기준에 맞는 감독이 없어요 · ${why} · 임시 감독 체제로 기다려요` };
+  return { reason: `감독 기조에 맞는 감독이 없어요 · ${why} · 임시 감독 체제로 기다려요` };
 }
 /** Why nobody was appointed, for the staff's report. */
 export function managerSearchReason(w: World) {

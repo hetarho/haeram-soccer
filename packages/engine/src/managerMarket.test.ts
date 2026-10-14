@@ -1,12 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
-import type {
-  Manager,
-  ManagerCriteria,
-  ManagerStyle,
-  ManagerTrait,
-  World,
-} from '../../contracts/src/types';
+import type { Manager, ManagerStyle, ManagerTrait, World } from '../../contracts/src/types';
 import {
   advanceRound,
   clubManager,
@@ -16,7 +10,6 @@ import {
   createWorld,
   dailyStaff,
   FREE_AGENTS,
-  MANAGER_CRITERIA_DEFAULT,
   MANAGER_RENEWAL_MARGIN,
   managerCandidates,
   managerMatches,
@@ -184,27 +177,27 @@ function withAgents(w: World, agents: Agent[]) {
   w.managerMarket = market;
   return market.free;
 }
-const criteria = (changes: Partial<ManagerCriteria>): ManagerCriteria => ({
-  ...MANAGER_CRITERIA_DEFAULT,
-  ...changes,
-});
 const ids = (w: World) => managerMatches(w).map((m) => m.id);
 /** Makes the proud manager resign over one more strong demand (→STAFF-5). */
 function resignOverDemand(w: World) {
   w.manager = { ...w.manager, pride: 90, trust: 20, conflicts: 2 };
   operate(w, { type: 'tactics', tactic: 'counter', tone: 'demand' });
 }
-/** A rich club with the manager post delegated under `set`. */
-function delegated(seed: string, set: Partial<ManagerCriteria> = {}) {
+/** Sets one direction row (→ECON-25). */
+const row = (w: World, key: 'manager' | 'school' | 'finance', option: string) =>
+  operate(w, { type: 'direction', key, option });
+/** A rich club with the manager post delegated (level 3) under 감독 기조 and 선호 학파. */
+function delegated(seed: string, manager = 'standard', school = 'any') {
   const w = world(seed);
   w.cash = '999999999';
-  w.intervention = 4;
-  operate(w, { type: 'hiring', role: 'manager', criteria: criteria(set) });
+  w.intervention = 3;
+  row(w, 'manager', manager);
+  row(w, 'school', school);
   return w;
 }
 
-describe('manager criteria (STAFF-18)', () => {
-  it('manager criteria filter by school, flexibility, pride, youth work, trait and wage cap in the chosen order', () => {
+describe('선호 학파 and 감독 기조 (STAFF-18)', () => {
+  it("choose the candidates the staff appoint, in the option's order", () => {
     const w = delegated('criteria-filter');
     withAgents(w, [
       { style: 'developer', ovr: 70, potential: 84, flexibility: 60, pride: 40, youth: 85 },
@@ -214,66 +207,54 @@ describe('manager criteria (STAFF-18)', () => {
       // A young man still short of his level asks less than the going wage of his OVR.
       { style: 'gegenpress', ovr: 74, potential: 90, wage: staffQuote(w, 120 + 60) },
     ]);
-    // The defaults: everyone, the highest OVR first.
+    // 표준: everyone, the highest OVR first.
     expect(ids(w)).toEqual(['agent-1', 'agent-3', 'agent-4', 'agent-0', 'agent-2']);
-    const only = (set: Partial<ManagerCriteria>) => {
-      operate(w, { type: 'hiring', role: 'manager', criteria: criteria(set) });
-      return ids(w);
-    };
-    expect(only({ schools: ['developer', 'positional'] })).toEqual(['agent-1', 'agent-0']);
-    expect(only({ minFlexibility: 55 })).toEqual(['agent-3', 'agent-0', 'agent-2']);
-    expect(only({ maxPride: 50 })).toEqual(['agent-4', 'agent-0', 'agent-2']);
-    expect(only({ minYouth: 60 })).toEqual(['agent-1', 'agent-0']);
-    expect(only({ traits: ['none'] })).toEqual(['agent-4', 'agent-0']);
-    expect(only({ traits: ['youth', 'stable'] })).toEqual(['agent-1', 'agent-2']);
-    expect(only({ minOvr: 75 })).toEqual(['agent-1', 'agent-3']);
-    // The cap names the going wage of an OVR-70 manager.
-    expect(only({ maxWageOvr: 70 })).toEqual(['agent-4', 'agent-0', 'agent-2']);
-    expect(only({ priority: 'potential' })).toEqual([
-      'agent-4',
-      'agent-0',
-      'agent-1',
-      'agent-2',
-      'agent-3',
-    ]);
-    expect(only({ priority: 'wage' })).toEqual([
-      'agent-4',
-      'agent-2',
-      'agent-0',
-      'agent-3',
-      'agent-1',
-    ]);
-    expect(
-      only({ schools: ['counter', 'gegenpress'], minFlexibility: 50, priority: 'potential' }),
-    ).toEqual(['agent-4', 'agent-3']);
-    // The staff would appoint the first; with nobody, the card says which criterion left nobody.
+    row(w, 'school', 'developer');
+    expect(ids(w)).toEqual(['agent-0']);
+    row(w, 'school', 'any');
+    // 육성가: youth work 60 or more, the best developer first.
+    row(w, 'manager', 'developer');
+    expect(ids(w)).toEqual(['agent-0', 'agent-1']);
+    row(w, 'manager', 'young');
+    expect(ids(w)).toEqual(['agent-4', 'agent-0', 'agent-1', 'agent-2', 'agent-3']);
+    row(w, 'manager', 'cheap');
+    expect(ids(w)).toEqual(['agent-4', 'agent-2', 'agent-0', 'agent-3', 'agent-1']);
+    row(w, 'manager', 'young');
+    row(w, 'school', 'gegenpress');
+    expect(ids(w)).toEqual(['agent-4']);
+    // The staff would appoint the first; with nobody, the card says why and that 표준 waits.
     expect(managerPickPreview(w).pick?.id).toBe('agent-4');
-    operate(w, { type: 'hiring', role: 'manager', criteria: criteria({ schools: ['headcoach'] }) });
+    row(w, 'manager', 'standard');
+    row(w, 'school', 'headcoach');
     expect(managerPickPreview(w)).toEqual({
       reason:
-        '기준에 맞는 감독이 없어요 · 데이터 헤드코치 학파의 후보가 없어요 · 임시 감독 체제로 기다려요',
+        '감독 기조에 맞는 감독이 없어요 · 데이터 헤드코치 학파의 후보가 없어요 · 임시 감독 체제로 기다려요',
     });
 
-    // Only those the club can afford: cash after the fee still covers 13 rounds of costs with his
-    // wage in place of the current manager's.
-    operate(w, { type: 'hiring', role: 'manager', criteria: criteria({}) });
+    // Only those the club can afford: cash after the fee still keeps 재정 기조's runway (13
+    // rounds at 표준, 20 at 신중) with his wage in place of the current manager's.
+    row(w, 'school', 'any');
     const best = managerCandidates(w).find((m) => m.id === 'agent-1')!;
-    const runway = (wage: string) =>
-      ((BigInt(operatingCosts(w).annual) + BigInt(wage) - BigInt(w.manager.wage)) / 46n) * 13n;
-    w.cash = (BigInt(best.fee) + runway(best.wage)).toString();
+    const runway = (wage: string, rounds: bigint) =>
+      ((BigInt(operatingCosts(w).annual) + BigInt(wage) - BigInt(w.manager.wage)) / 46n) * rounds;
+    w.cash = (BigInt(best.fee) + runway(best.wage, 13n)).toString();
     expect(ids(w)[0]).toBe('agent-1');
-    w.cash = (BigInt(best.fee) + runway(best.wage) - 1n).toString();
+    w.cash = (BigInt(best.fee) + runway(best.wage, 13n) - 1n).toString();
     expect(ids(w)[0]).toBe('agent-3');
+    w.cash = (BigInt(best.fee) + runway(best.wage, 13n)).toString();
+    row(w, 'finance', 'careful');
+    expect(ids(w)[0]).not.toBe('agent-1');
+    row(w, 'finance', 'standard');
     w.cash = '0';
     expect(ids(w)).toEqual([]);
     expect(managerPickPreview(w).reason).toContain('자금 여력에 맞는 후보가 없어요');
   });
 
-  it('poaching counts compensation and only when allowed', () => {
+  it("검증된 승부사 poaches other clubs' managers, counting their compensation", () => {
     const w = delegated('criteria-poach');
     withAgents(w, [{ style: 'organizer', ovr: 40 }]);
     expect(managerMatches(w).every((m) => m.source === 'free')).toBe(true);
-    operate(w, { type: 'hiring', role: 'manager', criteria: criteria({ poach: true }) });
+    row(w, 'manager', 'proven');
     const target = managerMatches(w)[0];
     expect(target.source).toBe('club');
     const club = w.clubs.find((c) => c.id === target.club)!;
@@ -292,6 +273,7 @@ describe('manager criteria (STAFF-18)', () => {
     const cash = BigInt(w.cash);
     resignOverDemand(w);
     expect(w.manager.id).toBe(target.id);
+    expect(w.manager.until).toBe(w.year + 3);
     expect(BigInt(w.cash)).toBe(cash - cost);
     expect(w.managerMarket!.clubs[club.id]).toEqual([1, w.year]);
     expect(clubManager(w, club).id).not.toBe(target.id);
@@ -300,8 +282,8 @@ describe('manager criteria (STAFF-18)', () => {
     validateWorld(w);
   });
 
-  it('기다림 keeps the interim without stopping the clock and appoints once a match arrives', () => {
-    const w = delegated('criteria-wait', { minOvr: 85 });
+  it('표준 waits with the interim, without stopping the clock, and appoints once a match arrives', () => {
+    const w = delegated('criteria-wait', 'standard', 'motivator');
     withAgents(w, [
       { style: 'organizer', ovr: 70 },
       { style: 'counter', ovr: 80 },
@@ -314,10 +296,10 @@ describe('manager criteria (STAFF-18)', () => {
     expect(waiting()[0]).toMatchObject({
       kind: 'staff-report',
       attention: true,
-      title: '감독 선임 대기: 기준에 맞는 감독이 없어요',
+      title: '감독 선임 대기: 감독 기조에 맞는 감독이 없어요',
     });
-    expect(waiting()[0].detail).toMatch(
-      /^OVR 85 이상인 후보가 없어요 · 최소 OVR 85 · .* · 맞는 후보가 없으면 기다림 · 임시 감독 체제로 계속해요$/,
+    expect(waiting()[0].detail).toBe(
+      '동기부여형 학파의 후보가 없어요 · 선호 학파 동기부여형 · 감독 기조 표준 · 임시 감독 체제로 계속해요',
     );
     // The staff look again every day without repeating themselves.
     dailyStaff(w);
@@ -342,8 +324,8 @@ describe('manager criteria (STAFF-18)', () => {
     expect(kept.manager.interim).toBe(true);
   });
 
-  it('가장 나은 후보 falls back to the best affordable free agent', () => {
-    const w = delegated('criteria-best', { minOvr: 99, whenNone: 'best', priority: 'wage' });
+  it('the other options fall back to the best affordable free agent in their order', () => {
+    const w = delegated('criteria-best', 'cheap', 'headcoach');
     withAgents(w, [
       { style: 'organizer', ovr: 72 },
       { style: 'counter', ovr: 58 },
@@ -352,14 +334,14 @@ describe('manager criteria (STAFF-18)', () => {
     expect(managerMatches(w)).toEqual([]);
     expect(managerPickPreview(w)).toMatchObject({ pick: { id: 'agent-1' }, fallback: true });
     resignOverDemand(w);
-    // The cheapest, as the criteria order, though nobody meets OVR 99.
+    // The cheapest, as 저비용 orders them, though nobody is of the school.
     expect(w.manager).toMatchObject({ id: 'agent-1', interim: false });
     expect(w.critical).toBeUndefined();
     expect(w.inbox!.at(-1)!.detail).toMatch(
-      /^기준에 맞는 감독이 없어 스태프가 가장 나은 자유계약 감독을 2시즌 계약했어요 · /,
+      /^선호 학파와 감독 기조에 맞는 감독이 없어 스태프가 가장 나은 자유계약 감독을 2시즌 계약했어요 · /,
     );
     // Other clubs' managers are never the fallback, and nobody affordable keeps the interim.
-    const broke = delegated('criteria-best-broke', { minOvr: 99, whenNone: 'best', poach: true });
+    const broke = delegated('criteria-best-broke', 'proven', 'headcoach');
     withAgents(broke, [{ style: 'organizer', ovr: 72 }]);
     broke.cash = '0';
     resignOverDemand(broke);
@@ -367,19 +349,20 @@ describe('manager criteria (STAFF-18)', () => {
     expect(broke.critical).toBeUndefined();
     expect(broke.inbox!.at(-1)).toMatchObject({
       attention: true,
-      title: '감독 선임 대기: 기준에 맞는 감독이 없어요',
+      title: '감독 선임 대기: 감독 기조에 맞는 감독이 없어요',
     });
   });
 
-  it('1 April renews a manager who meets the criteria unless a match beats him by 3, and keeps one who does not when nobody matches', () => {
-    /** 1 April for an OVR-70 organizer whose contract ends at the close. */
-    function april(seed: string, agents: Agent[], set: Partial<ManagerCriteria> = {}) {
-      const w = delegated(seed, set);
+  it('1 April renews a manager who meets the rows unless a match beats him by 3 in their order, and keeps one who does not when nobody matches', () => {
+    /** 1 April for an OVR-70 organizer of youth work 70 whose contract ends at the close. */
+    function april(seed: string, agents: Agent[], manager = 'standard', school = 'any') {
+      const w = delegated(seed, manager, school);
       w.manager = {
         ...w.manager,
         style: 'organizer',
         ability: 70,
         potential: 70,
+        youth: 70,
         born: w.year - 50,
         until: w.year + 1,
       };
@@ -388,9 +371,9 @@ describe('manager criteria (STAFF-18)', () => {
       dailyStaff(w);
       return w;
     }
-    const renewed = (w: World) => w.manager.until === w.year + 1 + MANAGER_CRITERIA_DEFAULT.term;
+    const renewed = (w: World, term = 2) => w.manager.until === w.year + 1 + term;
 
-    // OVR 높은 순: 3 better beats him, 2 better does not.
+    // 표준 (OVR first): 3 better beats him, 2 better does not.
     const kept = april('april-ovr-kept', [
       { style: 'positional', ovr: 70 + MANAGER_RENEWAL_MARGIN - 1 },
     ]);
@@ -402,7 +385,7 @@ describe('manager criteria (STAFF-18)', () => {
       title: `수비 조직가 ${kept.manager.name} 감독 재계약`,
     });
     expect(kept.inbox!.at(-1)!.detail).toMatch(
-      /^감독 선임 기준에 맞아 스태프가 2시즌 더 계약했어요/,
+      /^선호 학파와 감독 기조에 맞아 스태프가 2시즌 더 계약했어요/,
     );
     const gone = april('april-ovr-gone', [
       { style: 'positional', ovr: 70 + MANAGER_RENEWAL_MARGIN },
@@ -425,53 +408,49 @@ describe('manager criteria (STAFF-18)', () => {
     expect(gone.manager).toMatchObject({ id: 'agent-0', until: gone.year + 2 });
     expect(gone.inbox!.find((item) => item.id === report.id)!.read).toBe(true);
 
-    // 잠재력 높은 순 measures potential; 연봉 낮은 순 a wage at most 90% of his renewal wage.
+    // 젊은 감독 measures potential, 육성가 youth work (both 3 seasons), 저비용 a wage at most 90%
+    // of his renewal wage.
+    expect(
+      renewed(april('april-pot-kept', [{ style: 'counter', ovr: 60, potential: 72 }], 'young'), 3),
+    ).toBe(true);
+    expect(
+      renewed(april('april-pot-gone', [{ style: 'counter', ovr: 60, potential: 73 }], 'young'), 3),
+    ).toBe(false);
     expect(
       renewed(
-        april('april-pot-kept', [{ style: 'counter', ovr: 60, potential: 72 }], {
-          priority: 'potential',
-        }),
+        april('april-youth-kept', [{ style: 'counter', ovr: 60, youth: 72 }], 'developer'),
+        3,
       ),
     ).toBe(true);
     expect(
       renewed(
-        april('april-pot-gone', [{ style: 'counter', ovr: 60, potential: 73 }], {
-          priority: 'potential',
-        }),
+        april('april-youth-gone', [{ style: 'counter', ovr: 60, youth: 73 }], 'developer'),
+        3,
       ),
     ).toBe(false);
     // His renewal wage is the going wage of his OVR.
     const going = BigInt(staffQuote(world(), 120 + 70));
     const at = (share: bigint) => ((going * share) / 100n).toString();
     expect(
-      renewed(
-        april('april-wage-kept', [{ style: 'counter', ovr: 60, wage: at(91n) }], {
-          priority: 'wage',
-        }),
-      ),
+      renewed(april('april-wage-kept', [{ style: 'counter', ovr: 60, wage: at(91n) }], 'cheap')),
     ).toBe(true);
     expect(
-      renewed(
-        april('april-wage-gone', [{ style: 'counter', ovr: 60, wage: at(90n) }], {
-          priority: 'wage',
-        }),
-      ),
+      renewed(april('april-wage-gone', [{ style: 'counter', ovr: 60, wage: at(90n) }], 'cheap')),
     ).toBe(false);
 
-    // One who does not meet the criteria stays when nobody does, for the criteria's term, and
-    // makes way when somebody does.
-    const alone = april('april-alone', [{ style: 'counter', ovr: 85 }], {
-      schools: ['developer'],
-      term: 4,
-    });
-    expect(alone.manager.until).toBe(alone.year + 5);
+    // One who is not of the preferred school stays when nobody is, and makes way when somebody is.
+    const alone = april('april-alone', [{ style: 'counter', ovr: 85 }], 'standard', 'developer');
+    expect(alone.manager.until).toBe(alone.year + 3);
     expect(alone.inbox!.at(-1)!.detail).toMatch(
-      /^기준에 맞는 감독이 없어 스태프가 4시즌 더 계약했어요/,
+      /^감독 기조에 맞는 감독이 없어 스태프가 2시즌 더 계약했어요/,
     );
-    const replaced = april('april-replaced', [{ style: 'developer', ovr: 50 }], {
-      schools: ['developer'],
-    });
+    const replaced = april(
+      'april-replaced',
+      [{ style: 'developer', ovr: 50 }],
+      'standard',
+      'developer',
+    );
     expect(replaced.manager.until).toBe(replaced.year + 1);
-    expect(replaced.inbox!.at(-1)!.detail).toContain('감독 선임 기준에 맞지 않고');
+    expect(replaced.inbox!.at(-1)!.detail).toContain('선호 학파·감독 기조에 맞지 않고');
   });
 });

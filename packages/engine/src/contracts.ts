@@ -16,6 +16,7 @@ import {
   clubOf,
   footballQuote,
   overall,
+  ownStarters,
   tierLevel,
   UNHAPPY_PENALTY,
 } from './world';
@@ -25,7 +26,7 @@ import { buildEffects } from './build';
 import { moraleOf, UNHAPPY_MORALE } from './morale';
 import { pushInbox } from './inbox';
 import { moneyLabel, operatingCosts, recentRevenue, wageBill } from './finance';
-import { CASH_WARNING_ROUNDS } from './settlement';
+import { directionOption, financeStance } from './direction';
 import { contractSeason } from './ops-staff';
 import { currentDay, dayCountedFrom, SEASON_ROUNDS } from './calendar';
 import { credit } from './operations';
@@ -319,11 +320,6 @@ export const TALK_CONFIG = {
   staffSeasons: 2,
   veteranAge: 32,
   veteranSeasons: 1,
-  /**
-   * The delegated staff keep the yearly wage bill, staff included, within this share of the
-   * club's revenue over the last 12 months (→CLUB-26).
-   */
-  wageShare: 0.65,
 };
 /**
  * The terms a contract signed today takes (→CLUB-26): the summer window's whole seasons until
@@ -609,55 +605,63 @@ export function seasonEndWithWage(w: World, p: Player, wage: string) {
 }
 /**
  * Delegated staff (→STAFF-13) offer the floor for two seasons past this one (one from 32), never
- * ending before the running contract (→staffTerm), when the owner's talk rule allows the player
- * (the floor within its wage cap, his OVR at least its minimum, younger than its age limit), cash
- * after the raise still covers 13 rounds of costs, the yearly wage bill after it, staff included,
- * stays within 65% of the last 12 months' revenue, and the season's cash projection with the new
- * wage from the next round still ends the season covering 13 rounds of costs; otherwise they
- * decline. Either way the talk's inbox item says why.
+ * ending before the running contract (→staffTerm), when 재계약 기조 keeps the player (the floor
+ * within its wage cap, a starter when it keeps only the XI, younger than its age limit) and
+ * 재정 기조 allows the raise (→ECON-33): cash after it keeps the runway, the yearly wage bill after
+ * it, staff included, stays within the ceiling of the last 12 months' revenue, and the season's
+ * cash projection with the new wage from the next round still ends the season keeping the runway;
+ * otherwise they decline. Either way the talk's inbox item says why.
  */
 export function staffTalkVerdict(w: World, p: Player) {
   const talk = p.talk!,
     rule = talkRuleOf(w),
+    renewal = directionOption(w, 'renewal').name,
+    stance = financeStance(w),
+    finance = directionOption(w, 'finance').name,
     ceiling = ratio(marketWage(w, p), BigInt(Math.round(rule.maxPay * 1000)), 1000n),
     raise = BigInt(talk.floor) - BigInt(p.wage),
     perRound = (BigInt(operatingCosts(w).annual) + raise) / BigInt(SEASON_ROUNDS),
-    runway = perRound * BigInt(CASH_WARNING_ROUNDS),
+    runway = perRound * BigInt(stance.runway),
     term = staffTerm(w, p),
     age = w.year - p.born;
   if (BigInt(talk.floor) > BigInt(ceiling))
     return {
       accept: false as const,
-      reason: `하한 ${moneyLabel(w, talk.floor)}이 계약 협상 기준의 연봉 상한(시장가의 ${Math.round(rule.maxPay * 100)}%, ${moneyLabel(w, ceiling)})을 넘어 거절했어요.`,
+      reason: `하한 ${moneyLabel(w, talk.floor)}이 연봉 상한(시장가의 ${Math.round(rule.maxPay * 100)}%, ${moneyLabel(w, ceiling)})을 넘어 거절했어요(재계약 기조 ${renewal}).`,
+    };
+  if (rule.startersOnly && !ownStarters(w).some((starter) => starter.id === p.id))
+    return {
+      accept: false as const,
+      reason: `주전이 아니라 거절했어요(재계약 기조 ${renewal}: 주전만 붙잡기).`,
     };
   if (overall(p) < rule.minOvr)
     return {
       accept: false as const,
-      reason: `OVR ${overall(p)}로 계약 협상 기준의 최소 OVR ${rule.minOvr}에 못 미쳐 거절했어요.`,
+      reason: `OVR ${overall(p)}로 최소 OVR ${rule.minOvr}에 못 미쳐 거절했어요(재계약 기조 ${renewal}).`,
     };
   if (rule.maxAge !== undefined && age >= rule.maxAge)
     return {
       accept: false as const,
-      reason: `${age}세로 계약 협상 기준의 최대 나이 ${rule.maxAge}세에 걸려 거절했어요.`,
+      reason: `${age}세라 거절했어요(재계약 기조 ${renewal}: ${rule.maxAge}세 미만만 붙잡기).`,
     };
   if (BigInt(w.cash) < runway)
     return {
       accept: false as const,
-      reason: `인상하면 운영자금이 ${CASH_WARNING_ROUNDS}라운드 운영비에 못 미쳐 거절했어요.`,
+      reason: `인상하면 운영자금이 ${stance.runway}라운드 운영비에 못 미쳐 거절했어요(재정 기조 ${finance}).`,
     };
   const bill = BigInt(wageBill(w)) + raise,
     revenue = recentRevenue(w),
-    share = Math.round(TALK_CONFIG.wageShare * 100);
+    share = Math.round(stance.wageShare * 100);
   if (bill * 100n > BigInt(revenue) * BigInt(share))
     return {
       accept: false as const,
-      reason: `인상하면 연간 인건비 ${moneyLabel(w, bill.toString())}가 최근 12개월 수입 ${moneyLabel(w, revenue)}의 ${share}%를 넘어 거절했어요.`,
+      reason: `인상하면 연간 인건비 ${moneyLabel(w, bill.toString())}가 최근 12개월 수입 ${moneyLabel(w, revenue)}의 ${share}%를 넘어 거절했어요(재정 기조 ${finance}).`,
     };
   const seasonEnd = seasonEndWithWage(w, p, talk.floor);
   if (BigInt(seasonEnd) < runway)
     return {
       accept: false as const,
-      reason: `인상한 연봉으로 시즌 말 자금 전망(낮게 잡아 ${moneyLabel(w, seasonEnd)})이 ${CASH_WARNING_ROUNDS}라운드 운영비(${moneyLabel(w, runway.toString())})에 못 미쳐 거절했어요.`,
+      reason: `인상한 연봉으로 시즌 말 자금 전망(낮게 잡아 ${moneyLabel(w, seasonEnd)})이 ${stance.runway}라운드 운영비(${moneyLabel(w, runway.toString())})에 못 미쳐 거절했어요(재정 기조 ${finance}).`,
     };
   return { accept: true as const, term };
 }

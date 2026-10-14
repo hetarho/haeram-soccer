@@ -992,7 +992,7 @@ function CoachCriteriaPanel({
 }) {
   const [open, setOpen] = useState(false);
   const id = useId();
-  const stored = coachCriteriaOf(w, role),
+  const stored = coachCriteriaOf(w),
     label = STAFF_INFO[role].label;
   const traitOptions: [StaffTrait | 'any', string][] = [
     ['any', '상관없음'],
@@ -1102,7 +1102,7 @@ function CoachCriteriaPanel({
 function CoachPreview({ w, role, title }: { w: World; role: StaffRole; title: string }) {
   const preview = coachPickPreview(w, role),
     pick = preview.pick,
-    c = coachCriteriaOf(w, role),
+    c = coachCriteriaOf(w),
     member = (w.staff || []).find((one) => one.role === role),
     contracted = !!member && BigInt(member.wage) > 0n,
     club = clubOf(w),

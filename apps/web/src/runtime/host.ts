@@ -16,6 +16,7 @@ import {
   clubNews,
   BANKRUPT_MESSAGE,
   activateAgents,
+  activateDirection,
   activateLevers,
 } from '../../../../packages/engine/src/index';
 import type { World, MatchPlayback } from '../../../../packages/contracts/src/types';
@@ -208,10 +209,14 @@ export class Host {
           throw new Error('규칙 업그레이드는 활성화할 때만 가능합니다.');
         const result = await decode(r.body.raw);
         // Activation also gives players from before rules 1.16 their agents (→SAVE-10, CLUB-30)
-        // and drops their reserved strategy now that strategies apply at once.
+        // and drops their reserved strategy now that strategies apply at once; from before 1.17 it
+        // names the direction rows the old staff criteria became.
         const activated = r.body.upgrade
-          ? activateLevers(
-              activateAgents(upgradeWorldRules(result.world, CURRENT_CATALOG)),
+          ? activateDirection(
+              activateLevers(
+                activateAgents(upgradeWorldRules(result.world, CURRENT_CATALOG)),
+                result.world.engine,
+              ),
               result.world.engine,
             )
           : result.world;

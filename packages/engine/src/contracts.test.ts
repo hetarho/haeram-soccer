@@ -5,7 +5,6 @@ import type {
   ManagerStyle,
   Player,
   PolicyLevel,
-  TalkRule,
   UnhappyReason,
   World,
 } from '../../contracts/src/types';
@@ -289,10 +288,13 @@ describe('contract talks (→CLUB-26)', () => {
     expect(amount(talkTerms(stars, p).demand)).toBeCloseTo(amount(marketWage(w, p)) * 1.1, -1);
   });
 
-  it('lets a delegated club with a 140% wage cap renew a star a 90% cap declines', () => {
-    const [generous, tight] = ([1.4, 0.9] as const).map((maxPay) => {
+  it('lets a delegated club keeping everyone at 140% renew a star 짠물 declines', () => {
+    const [generous, tight] = (['keepAll', 'frugal'] as const).map((option) => {
       const { w, p } = talking(80);
-      operate(w, { type: 'talk-rule', rule: { maxPay, minOvr: 0 } });
+      // A strong agent and a slightly low 분위기 put his floor just above his market wage.
+      p.agent = 5;
+      w.morale = 50;
+      operate(w, { type: 'direction', key: 'renewal', option });
       expect(delegated(w, 'contracts')).toBe(true);
       const before = { wage: p.wage, until: p.until, floor: talkTerms(w, p).floor };
       newYear(w);
@@ -307,7 +309,7 @@ describe('contract talks (→CLUB-26)', () => {
     expect(generous.p.until).toBe(generous.w.year + 3);
     expect(generous.report.title).toContain('받아들였어요');
     expect(generous.w.events.at(-1)).toMatchObject({ kind: 'contract' });
-    // A cap of 90% of the market wage is below what he settles for.
+    // 짠물's market wage is below what he settles for.
     expect(tight.p).toMatchObject({ wage: tight.before.wage, until: tight.before.until });
     expect(tight.report.title).toContain('거절했어요');
     expect(tight.report.detail).toContain('연봉 상한');
@@ -318,7 +320,7 @@ describe('contract talks (→CLUB-26)', () => {
     /** Half a founding season played with `income` booked, so its year reads as twice that. */
     const verdict = (income: (bill: bigint, raise: bigint) => bigint) => {
       const { w, p } = talking(80);
-      operate(w, { type: 'talk-rule', rule: { maxPay: 1.4, minOvr: 0 } });
+      operate(w, { type: 'direction', key: 'renewal', option: 'keepAll' });
       const raise = BigInt(talkTerms(w, p).floor) - BigInt(p.wage),
         bill = BigInt(wageBill(w));
       w.income = income(bill, raise).toString();
@@ -367,39 +369,43 @@ describe('contract talks (→CLUB-26)', () => {
     expect(BigInt(recentRevenue(w))).toBe(BigInt(before) - 120000n);
   });
 
-  it('delegated talks follow the talk rule: wage cap, minimum OVR and maximum age', () => {
-    /** The staff's answer to `p` at the winter opening under `rule`. */
-    const answer = (rule: TalkRule, ability = 80, age = 26) => {
+  it('delegated talks follow 재계약 기조: whom the staff keep and how far they go', () => {
+    /** The staff's answer to `p` at the winter opening under 재계약 기조 `option`. */
+    const answer = (option: string, ability = 80, age = 26) => {
       const { w, p } = talking(ability, age);
-      operate(w, { type: 'talk-rule', rule });
+      // A strong agent and a slightly low 분위기 put his floor just above his market wage
+      // (→CLUB-30), within 표준's 110%.
+      p.agent = 5;
+      w.morale = 50;
+      operate(w, { type: 'direction', key: 'renewal', option });
       const floor = talkTerms(w, p).floor,
         market = marketWage(w, p);
       newYear(w);
       return { w, p, floor, market, item: talkItems(w, p.id)[0] };
     };
-    // The default rule is 110% of the market wage, no minimum OVR and no age limit.
+    // 표준 is 110% of the market wage, no minimum OVR and no age limit.
     expect(talkRuleOf(createWorld(founding))).toEqual(TALK_RULE_DEFAULT);
     expect(TALK_RULE_DEFAULT).toEqual({ maxPay: 1.1, minOvr: 0 });
-    const kept = answer({ maxPay: 1.4, minOvr: 0 });
+    expect(answer('standard').item.title).toContain('받아들였어요');
+    const kept = answer('keepAll');
     expect(kept.item.title).toContain('받아들였어요');
     expect(kept.p.wage).toBe(kept.floor);
-    // A cap below his floor: declined, naming the cap.
-    const capped = answer({ maxPay: 0.9, minOvr: 0 });
-    expect(BigInt(capped.floor)).toBeGreaterThan(BigInt(ratio(capped.market, 9n, 10n)));
-    expect(capped.item.title).toContain('거절했어요');
-    expect(capped.item.detail).toContain('연봉 상한(시장가의 90%');
-    // Rated below the minimum: not kept, whatever the cap.
-    const weak = answer({ maxPay: 1.4, minOvr: 81 });
-    expect(weak.item.title).toContain('거절했어요');
-    expect(weak.item.detail).toContain('최소 OVR 81');
-    expect(answer({ maxPay: 1.4, minOvr: 80 }).item.title).toContain('받아들였어요');
-    // As old as the limit or older: not kept; younger: kept.
-    const old = answer({ maxPay: 1.4, minOvr: 0, maxAge: 30 }, 80, 30);
+    // 짠물 pays at most his market wage: a floor above it is declined, naming the cap.
+    const frugal = answer('frugal');
+    expect(BigInt(frugal.floor)).toBeGreaterThan(BigInt(frugal.market));
+    expect(frugal.item.title).toContain('거절했어요');
+    expect(frugal.item.detail).toContain('연봉 상한(시장가의 100%');
+    expect(frugal.item.detail).toContain('재계약 기조 짠물');
+    // 핵심만 붙잡기 keeps a starter and lets a squad player go.
+    expect(answer('coreOnly').item.title).toContain('받아들였어요');
+    const squad = answer('coreOnly', 30);
+    expect(squad.item.title).toContain('거절했어요');
+    expect(squad.item.detail).toContain('주전이 아니라');
+    // 젊은 선수 우선 lets a player of 30 or more go and keeps a younger one.
+    const old = answer('youngFirst', 80, 30);
     expect(old.item.title).toContain('거절했어요');
-    expect(old.item.detail).toContain('최대 나이 30세');
-    expect(answer({ maxPay: 1.4, minOvr: 0, maxAge: 31 }, 80, 30).item.title).toContain(
-      '받아들였어요',
-    );
+    expect(old.item.detail).toContain('30세 미만만 붙잡기');
+    expect(answer('youngFirst', 80, 29).item.title).toContain('받아들였어요');
     // A declined player turns unhappy unless the manager talks him round (→CLUB-27).
     expect(old.w.events.at(-1)).toMatchObject({ kind: 'contract-decline' });
   });
@@ -415,7 +421,7 @@ describe('contract talks (→CLUB-26)', () => {
     expect(summer.p.until).toBe(summer.w.year + 2);
 
     const broke = talking(80);
-    operate(broke.w, { type: 'talk-rule', rule: { maxPay: 1.4, minOvr: 0 } });
+    operate(broke.w, { type: 'direction', key: 'renewal', option: 'keepAll' });
     // Twelve rounds of today's costs: short of the 13-round runway even before the raise.
     broke.w.cash = ((BigInt(operatingCosts(broke.w).annual) / 46n) * 12n).toString();
     const until = broke.p.until;
@@ -547,7 +553,7 @@ describe('contract talks (→CLUB-26)', () => {
     /** A club at the summer opening whose season loses money, `p` in his final season. */
     const losing = () => {
       const { w, p } = talking(80);
-      operate(w, { type: 'talk-rule', rule: { maxPay: 1.4, minOvr: 0 } });
+      operate(w, { type: 'direction', key: 'renewal', option: 'keepAll' });
       w.calendar = { day: 0 };
       // A manager paid far beyond the club's income makes the season a loss.
       w.manager.wage = (BigInt(operatingCosts(w).annual) * 4n).toString();
@@ -580,7 +586,7 @@ describe('contract talks (→CLUB-26)', () => {
     /** A delegated club whose 33-year-old has three seasons left, 30% below his market wage. */
     const improving = (day: number) => {
       const { w, p } = talking(70, 33);
-      operate(w, { type: 'talk-rule', rule: { maxPay: 1.4, minOvr: 0 } });
+      operate(w, { type: 'direction', key: 'renewal', option: 'keepAll' });
       p.until = w.year + 3;
       p.wage = ((BigInt(marketWage(w, p)) * 70n) / 100n).toString();
       talksOn(w, day);

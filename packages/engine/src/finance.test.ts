@@ -17,7 +17,6 @@ import {
   catchment,
   closeSeason,
   clubOf,
-  COACH_CRITERIA_DEFAULT,
   createWorld,
   DISTRIBUTION_CONFIG,
   EXPENSE_CONFIG,
@@ -315,8 +314,8 @@ describe('earned, auditable club finances', () => {
     w.cash = '999999999';
     w.intervention = 4;
     // Paid coaches whose contracts end at this close: the ablest one the staff keep (no candidate
-    // is 3 better), the other no longer meets the criteria and is replaced.
-    w.hiring = { coaches: { attack: { ...COACH_CRITERIA_DEFAULT, priority: 'ability' } } };
+    // is 3 better), the other no longer meets 코치 기조 최고 수준 and is replaced.
+    w.direction = { coaches: 'elite' };
     w.staff = w.staff!.map((member) =>
       member.role === 'attack'
         ? { ...member, ability: 90, wage: quote(clubOf(w).country, w.year, 90), until: w.year + 1 }

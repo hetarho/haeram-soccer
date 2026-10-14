@@ -38,6 +38,7 @@ export * from './dynamics';
 export * from './careers';
 export * from './contracts';
 export * from './hiring';
+export * from './direction';
 export * from './activation';
 export * from './intervention';
 export * from './orders';

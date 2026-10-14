@@ -67,7 +67,8 @@ export interface ManagerCriteria {
   minYouth: number;
   traits: ('none' | ManagerTrait)[];
   maxWageOvr?: WageCapOvr;
-  priority: 'ovr' | 'potential' | 'wage';
+  /** `youth` orders by 육성 (youth work), 감독 기조 육성가's order (→STAFF-18). */
+  priority: 'ovr' | 'potential' | 'wage' | 'youth';
   term: ContractTerm;
   /** Other clubs' managers too, paying their compensation (→STAFF-17). */
   poach: boolean;
@@ -94,12 +95,27 @@ export type TalkPayCap = 0.9 | 1 | 1.1 | 1.25 | 1.4;
 /** Which players the delegated staff keep in contract talks (→CLUB-26). */
 export interface TalkRule {
   maxPay: TalkPayCap;
+  /** Keep only players in the starting XI as home shows it (재계약 기조 핵심만 붙잡기 →CLUB-26). */
+  startersOnly?: boolean;
   /** 0–99: players rated below are not kept. */
   minOvr: number;
   /** 28–40: players this old or older are not kept; absent is no limit. */
   maxAge?: number;
 }
-/** What the owner set for the delegated staff's hiring (→STAFF-15, STAFF-18); absent is default. */
+/**
+ * The direction rows the delegated staff follow (→ECON-25), each absent at its default (표준, or
+ * any school): 재계약 기조 (→CLUB-26), 선호 학파 and 감독 기조 (→STAFF-18), 코치 기조 (→STAFF-15)
+ * and 재정 기조 (→ECON-33).
+ */
+export interface Direction {
+  renewal?: 'keepAll' | 'coreOnly' | 'frugal' | 'youngFirst';
+  school?: ManagerStyle;
+  manager?: 'developer' | 'proven' | 'young' | 'cheap';
+  coaches?: 'volunteer' | 'cheap' | 'elite';
+  finance?: 'aggressive' | 'bold' | 'careful' | 'stable';
+}
+export type DirectionKey = keyof Direction;
+/** What rules before 1.17 kept for the delegated staff's hiring; a load turns it into rows (→SAVE-10). */
 export interface HiringCriteria {
   manager?: ManagerCriteria;
   coaches?: Partial<Record<StaffRole, CoachCriteria>>;
@@ -762,14 +778,8 @@ export interface World {
   sponsor?: Sponsor;
   /** One contract per open slot at most (→ECON-8); absent or missing slots are empty. */
   sponsors?: SponsorContract[];
-  /**
-   * The delegated staff's hiring criteria (→STAFF-15, STAFF-18); absent entries are default. Rules
-   * before 1.16 kept a coaching investment level per department (`coaching`); a load turns it into
-   * these criteria (→SAVE-10).
-   */
-  hiring?: HiringCriteria;
-  /** The delegated staff's contract-talk rule (→CLUB-26); absent is the default. */
-  talkRule?: TalkRule;
+  /** The direction rows the delegated staff follow (→ECON-25); absent rows are at their default. */
+  direction?: Direction;
   cupWinners: Record<string, string>;
   /** This season's domestic cups, one per country (→LEAGUE-5); absent in older saves. */
   cups?: DomesticCup[];
@@ -823,11 +833,8 @@ export type Command =
   | { type: 'hire'; id: string; term?: ContractTerm }
   /** Renews the manager whose contract ends at this season's close; `term` as for `hire`. */
   | { type: 'renew-manager'; term?: ContractTerm }
-  /** The criteria the delegated staff hire and renew by (→STAFF-15, STAFF-18). */
-  | { type: 'hiring'; role: 'manager'; criteria: ManagerCriteria }
-  | { type: 'hiring'; role: StaffRole; criteria: CoachCriteria }
-  /** The rule the delegated staff answer contract talks by (→CLUB-26). */
-  | { type: 'talk-rule'; rule: TalkRule }
+  /** Sets one direction row; `standard` (or `any` for the school) is its default (→ECON-25). */
+  | { type: 'direction'; key: DirectionKey; option: string }
   /** Answers a player's contract talk (→CLUB-26) with a wage fixed for `term` seasons. */
   | { type: 'contract-offer'; player: string; wage: string; term: TalkTerm }
   /** Declines a player's contract talk (→CLUB-27). */

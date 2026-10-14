@@ -36,7 +36,7 @@ export const NEW_CLUB_INTERVENTION: InterventionLevel = 2;
 export const INTERVENTION_DELEGATES: Record<InterventionLevel, readonly DelegationKey[]> = {
   1: [],
   2: ['academy', 'contracts'],
-  3: ['academy', 'contracts'],
+  3: DELEGATION_KEYS.filter((key) => key !== 'transfers'),
   4: DELEGATION_KEYS,
 };
 

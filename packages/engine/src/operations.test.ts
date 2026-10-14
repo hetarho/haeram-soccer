@@ -111,7 +111,7 @@ describe('club decisions', () => {
     const plain = world(),
       busy = world();
     operate(busy, { type: 'read-inbox' });
-    operate(busy, { type: 'intervention', level: 3 });
+    operate(busy, { type: 'intervention', level: 1 });
     operate(busy, { type: 'read-inbox' });
     expect(busy.revision).toBe(plain.revision + 3);
     for (const w of [plain, busy]) {

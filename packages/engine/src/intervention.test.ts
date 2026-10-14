@@ -19,7 +19,8 @@ describe('the intervention level decides who takes each decision (→WEB-45, STA
   it('hands the staff more decisions level by level', () => {
     expect(INTERVENTION_DELEGATES[1]).toEqual([]);
     expect(INTERVENTION_DELEGATES[2]).toEqual(['academy', 'contracts']);
-    expect(INTERVENTION_DELEGATES[3]).toEqual(INTERVENTION_DELEGATES[2]);
+    // Level 3 adds sponsors, the manager post and every coaching department; 4 adds transfers.
+    expect(INTERVENTION_DELEGATES[3]).toEqual(DELEGATION_KEYS.filter((key) => key !== 'transfers'));
     expect(INTERVENTION_DELEGATES[4]).toEqual(DELEGATION_KEYS);
     // Each level keeps every decision the level above it keeps for the owner.
     for (const level of INTERVENTION_LEVELS.slice(1))

@@ -6,7 +6,7 @@ import { activePlayers, addEvent, clubOf, overall, ownStarters } from './world';
 import { leaveContract, marketValue, signingClauses } from './contracts';
 import { credit, debit } from './operations';
 import { transferOffers } from './ops-squad';
-import { CASH_WARNING_ROUNDS } from './settlement';
+import { financeStance } from './direction';
 import { moneyLabel, operatingCosts } from './finance';
 import { fixedCostRunway } from './investment';
 import { staffEffects } from './staff';
@@ -468,7 +468,8 @@ export function saleBar(w: World, p: Player) {
     seasons = p.until - w.year,
     runway = fixedCostRunway(w.cash, operatingCosts(w).annual),
     prospect = isProspect(w, p),
-    base = prospect ? 200 : 130,
+    base = SALE_BARS[w.build?.market ?? 'standard'][prospect ? 1 : 0],
+    [first, second] = financeStance(w).sellSteps,
     cuts: string[] = [];
   let percent = base;
   const cut = (points: number, why: string) => {
@@ -479,10 +480,28 @@ export function saleBar(w: World, p: Player) {
   else if (age >= 30) cut(15, `${age}세`);
   if (seasons <= 1) cut(20, '계약 마지막 시즌');
   else if (seasons === 2) cut(10, '계약 1년 남음');
-  if (runway < CASH_WARNING_ROUNDS) cut(20, '운영자금 위기');
-  else if (runway < 30) cut(10, '운영자금 빠듯');
+  if (runway < first) cut(20, '운영자금 위기');
+  else if (runway < second) cut(10, '운영자금 빠듯');
   return { percent: Math.max(SALE_BAR_FLOOR, percent), base, prospect, cuts };
 }
+/**
+ * Whether the delegated staff may sell this player at all (→CLUB-18): a non-starter, or a starter
+ * aged 30+ with a bench player of his role within 3 ability — never a starter under 핵심 지키기.
+ */
+export function saleAllowed(w: World, starter: boolean, age: number, covered: boolean) {
+  return !starter || (w.build?.market !== 'hold' && age >= 30 && covered);
+}
+/**
+ * The sale bar's base by the 매각 기조 card (→CLUB-18), of value and for a prospect: the club's
+ * stance on selling sets how good an offer must be before the staff take it.
+ */
+export const SALE_BARS: Readonly<Record<string, readonly [number, number]>> = {
+  selling: [110, 160],
+  showcase: [120, 180],
+  standard: [130, 200],
+  hardball: [150, 230],
+  hold: [150, 250],
+};
 const SALE_BAR_FLOOR = 80;
 /** "유망주 기준 200%" or "기준 95%(130%에서 31세 −15%p · …)" for the staff report. */
 function saleBarLabel(bar: ReturnType<typeof saleBar>) {
@@ -576,15 +595,16 @@ export const UNTOUCHABLE_PRICE = { standard: 200, selling: 150, showcase: 175, h
 export function untouchableVerdict(w: World, offered: number, essential: boolean) {
   const runway = fixedCostRunway(w.cash, operatingCosts(w).annual),
     market = w.build?.market,
-    card = cardOf(buildOf(w), 'market').label;
-  if (runway < CASH_WARNING_ROUNDS)
+    card = cardOf(buildOf(w), 'market').label,
+    [first, second] = financeStance(w).sellSteps;
+  if (runway < first)
     return { accept: true, reason: `자금 여력 ${runway}주의 운영자금 위기라 매각을 택했어요.` };
   if (market === 'hold')
     return { accept: false, reason: `매각 기조가 ${card}라 어떤 금액에도 지키기로 했어요.` };
   const base = UNTOUCHABLE_PRICE[market ?? 'standard'],
     steps = [`매각 기조 ${card} ${base}%`];
   let bar = base;
-  if (runway < 30) {
+  if (runway < second) {
     bar -= 25;
     steps.push('운영자금 빠듯 −25%p');
   }
@@ -738,7 +758,7 @@ function incomingBid(w: World, day: number, until: number) {
     }
     const bar = saleBar(w, player),
       premium = BigInt(fee) * 100n >= BigInt(value) * BigInt(bar.percent),
-      expendable = !starter || (age >= 30 && covered);
+      expendable = saleAllowed(w, starter, age, covered);
     const accept = premium && expendable && !blocker;
     const against = `평가 가치의 ${offered}%로 ${saleBarLabel(bar)}`;
     report(
