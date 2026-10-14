@@ -3,6 +3,7 @@ import type { Manager, World } from '../../contracts/src/types';
 import { validateWorld } from '../../contracts/src/index';
 import {
   ADAPTATION_CONFIG,
+  settleRate,
   cohesionAfterManager,
   cohesionAfterSummer,
   onManagerChange,
@@ -11,7 +12,7 @@ import {
   settleStarts,
 } from './adaptation';
 import { activePlayers, advanceRound, clubNews, createWorld, ownStarters } from './index';
-import { FORMATIONS, MATCH_GAIN } from './player';
+import { FORMATIONS, MATCH_GAIN, TRAINING_GAIN } from './player';
 
 function world(seed = 'adaptation') {
   const w = createWorld({
@@ -56,12 +57,17 @@ describe('adaptation moves with starts, managers and stays (→PLAYER-4, PLAYER-
   it('bench gains nothing', () => {
     const w = world('bench');
     at(w, 0.6);
+    // The squad trains 균형 by order, so the round's training gain is known for everyone.
+    w.trainingOrders = { assistant: { focus: 'balanced', rounds: 4, forced: true } };
     advanceRound(w, undefined, false);
     const played = new Set(w.ownMatches.at(-1)!.players.map((p) => p.id));
     expect(played.size).toBe(11);
-    for (const p of activePlayers(w))
-      if (played.has(p.id)) expect(p.adaptation).toBeGreaterThan(0.6);
-      else expect(p.adaptation).toBe(0.6);
+    for (const p of activePlayers(w)) {
+      // Training settles everyone a little (→PLAYER-12); only a start adds to it.
+      const training = 0.6 + TRAINING_GAIN.balanced * settleRate(w, p);
+      if (played.has(p.id)) expect(p.adaptation).toBeGreaterThan(training);
+      else expect(p.adaptation).toBeCloseTo(training, 4);
+    }
     validateWorld(w);
   });
 

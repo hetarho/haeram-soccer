@@ -34,7 +34,7 @@ const round4 = (value: number) => Math.round(value * 10000) / 10000;
 const neutral = (m: Pick<Manager, 'style' | 'interim'>) => m.interim || !m.style;
 
 /** How fast a player settles under the manager in charge: his 적응력 and the school's taste. */
-function settleRate(w: World, p: Player) {
+export function settleRate(w: World, p: Player) {
   return (
     ADAPTABILITY_RATE[p.personality.adaptability - 1] *
     schoolFactor(

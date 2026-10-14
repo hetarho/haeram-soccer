@@ -922,6 +922,8 @@ export type Command =
       coach: TrainingCoach;
       focus: TrainingFocus | YouthFocus;
       force?: boolean;
+      /** One first-team player's own focus instead of the squad's (→CLUB-11). */
+      player?: string;
     }
   | { type: 'policy'; key: PolicyKey; level: PolicyLevel }
   /** `term`: the seasons the owner chooses (→STAFF-15); absent keeps the earlier rule. */

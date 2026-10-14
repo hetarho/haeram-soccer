@@ -1,11 +1,22 @@
 import type { Player, TrainingFocus, World } from '../../contracts/src/types';
 import { ATTRIBUTES, type Attribute } from '../../contracts/src/player';
-import { mainOvr, weightsFor } from './player';
+import {
+  adaptationAfter,
+  AGEING,
+  mainOvr,
+  overshootFactor,
+  PROFESSIONALISM_RATE,
+  TRAINING_GAIN,
+  weightsFor,
+} from './player';
+import { settleRate } from './adaptation';
+import { trainingInjuries } from './careers';
 import { BUILD_SLOTS } from '../../contracts/src/build';
 import { activePlayers, addEvent, overall } from './world';
 import { clamp, compareIds, random } from './primitives';
 import { POLICY_INFO, policyEffects, policyOf } from './policy';
 import {
+  autoPlayerFocus,
   autoTrainingFocus,
   STAFF_INFO,
   STAFF_ROLES,
@@ -17,7 +28,7 @@ import { developAcademy } from './academy';
 import { settleMorale } from './morale';
 import { managerStyleEffects, STYLE_INFO } from './styles';
 import { buildEffects, buildOf, cardOf } from './build';
-import { countDownOrder } from './orders';
+import { countDownOrder, countDownPlayerOrders, tidyOrders } from './orders';
 import { trainingGroundBase } from './facilities';
 
 export const trainingFocusInfo: Record<
@@ -53,42 +64,54 @@ const GROWTH_SHARE = 0.5;
 /** Attributes top out at 99 (→PLAYER-2). */
 const TOP = 99;
 
+/** Adaptation he needs before he grows past his potential (→PLAYER-16). */
+export const OVERSHOOT_ADAPTATION = 0.9;
+/**
+ * A settled player's round rate never falls below the one he had this far below potential, so he
+ * still has a rate to outgrow it by (→PLAYER-16); the curve past potential scales it down.
+ */
+export const OVERSHOOT_GAP = 2;
 /**
  * Spreads `gain` main-OVR points of growth over his attributes by his main position's weights, so
- * primary attributes grow fastest (→PLAYER-15); each attribute × its department's factor; growth
- * stops at potential. Returns the main OVR's actual rise.
+ * primary attributes grow fastest (→PLAYER-15); each attribute × its department's factor. Growth
+ * stops at potential, unless he is settled (0.90+), when it goes on past it on a curve that
+ * flattens sharply (→PLAYER-16). `only` limits it to the attributes still growing at his age;
+ * `share` is how much of `gain` reaches the main OVR (a round's half, a season's whole).
+ * Returns the main OVR's actual rise.
  */
 export function growAttributes(
   player: Player,
   gain: number,
   factor: (attribute: Attribute) => number = () => 1,
+  { only, share = GROWTH_SHARE }: { only?: (a: Attribute) => boolean; share?: number } = {},
 ) {
   if (gain <= 0) return 0;
   const before = mainOvr(player);
-  const room = player.potential - before;
-  if (room <= 0) return 0;
+  const excess = before - player.potential;
+  const rise =
+    excess < 0
+      ? Math.min(gain * share, -excess)
+      : player.adaptation >= OVERSHOOT_ADAPTATION
+        ? gain * share * overshootFactor(excess)
+        : 0;
+  if (rise <= 0) return 0;
   const weights = weightsFor(player.position);
   let total = 0,
     squares = 0;
   for (const a of ATTRIBUTES) {
+    if (only && !only(a)) continue;
     total += weights[a];
     squares += weights[a] ** 2;
   }
-  // Each attribute's step ∝ its weight, scaled so the main OVR rises by the share of `gain`.
-  const scale = (Math.min(gain * GROWTH_SHARE, room) * total) / squares;
+  if (!squares) return 0;
+  // Each attribute's step ∝ its weight, scaled so the main OVR rises by `rise`.
+  const scale = (rise * total) / squares;
   for (const a of ATTRIBUTES) {
-    if (!weights[a]) continue;
+    if (!weights[a] || (only && !only(a))) continue;
     const step = hundredths(scale * weights[a] * factor(a));
     player.attrs[a] = hundredths(Math.min(TOP, Math.max(player.attrs[a], player.attrs[a] + step)));
   }
   return Math.max(0, hundredths(mainOvr(player) - before));
-}
-/** A season's change to every attribute: growth through `growAttributes`, decline as it falls. */
-function changeAttributes(player: Player, change: number, noise: () => number, young: boolean) {
-  if (young) return growAttributes(player, Math.max(0, change + noise()));
-  for (const a of ATTRIBUTES)
-    player.attrs[a] = hundredths(clamp(player.attrs[a] + change + noise(), 5, TOP));
-  return 0;
 }
 
 export function recordDevelopment(player: Player, gain: number) {
@@ -102,6 +125,13 @@ export function recordDevelopment(player: Player, gain: number) {
  */
 export function activeTrainingFocus(w: World): TrainingFocus {
   return w.trainingOrders?.assistant?.focus ?? autoTrainingFocus(w);
+}
+/**
+ * A player's focus this round (→CLUB-11, CLUB-13): an order or accepted suggestion for him, else
+ * the assistant's player rule, else the squad's.
+ */
+export function focusFor(w: World, p: Player, squad = activeTrainingFocus(w)): TrainingFocus {
+  return w.trainingOrders?.players?.[p.id]?.focus ?? autoPlayerFocus(w, p) ?? squad;
 }
 
 /** The manager's youth work and the training ground, the base a round's growth multiplies (→CLUB-12). */
@@ -119,13 +149,17 @@ function roundGain(
 ) {
   const age = w.year - player.born;
   if (age >= 27 || player.status !== 'active') return 0;
-  const gap = Math.max(0, player.potential - mainOvr(player));
+  const gap = Math.max(
+    player.potential - mainOvr(player),
+    player.adaptation >= OVERSHOOT_ADAPTATION ? OVERSHOOT_GAP : 0,
+  );
   const ageWeight = age < 21 ? 1 : age < 24 ? 0.85 : 0.65;
   const base = Math.min(0.12, (gap / 400) * developmentBase(w) * ageWeight);
   const style = managerStyleEffects(w);
   return hundredths(
     base *
       trainingFocusInfo[focus].developmentMultiplier *
+      PROFESSIONALISM_RATE[player.personality.professionalism - 1] *
       policy.developmentMultiplier *
       style.growth *
       (age <= 21 ? staff.youthDevelopment * style.youthGrowth * buildEffects(w).youthGrowth : 1),
@@ -134,7 +168,7 @@ function roundGain(
 /** The main-OVR rise a round would bring him, read without changing him. */
 function actualRoundGain(w: World, player: Player) {
   const staff = staffEffects(w),
-    gain = roundGain(w, player, undefined, staff);
+    gain = roundGain(w, player, undefined, staff, focusFor(w, player));
   const copy = { ...player, attrs: { ...player.attrs } };
   return growAttributes(copy, gain, (a) => staff.development[a]);
 }
@@ -145,26 +179,48 @@ export function settleTraining(w: World) {
   const at = `${w.year}:${w.round}`;
   if (w.trainingAt === at) return;
   // Decided once per round: recovering earlier players must not flip later players' focus.
-  const focus = activeTrainingFocus(w),
-    info = trainingFocusInfo[focus],
+  const squad = activeTrainingFocus(w),
     policy = policyEffects(policyOf(w)),
     staff = staffEffects(w),
-    recovery = Math.max(0, info.recovery + policy.recoveryBonus + staff.recoveryBonus);
+    focuses = new Map(activePlayers(w).map((player) => [player.id, focusFor(w, player, squad)]));
   for (const player of activePlayers(w)) {
+    const focus = focuses.get(player.id)!,
+      info = trainingFocusInfo[focus],
+      recovery = Math.max(0, info.recovery + policy.recoveryBonus + staff.recoveryBonus);
     const gain = roundGain(w, player, policy, staff, focus);
     recordDevelopment(
       player,
       growAttributes(player, gain, (a) => staff.development[a]),
     );
+    // Training settles him too, but alone never past 0.80 (→PLAYER-12).
+    player.adaptation = adaptationAfter(
+      player.adaptation,
+      TRAINING_GAIN[focus] * settleRate(w, player),
+      { trainingOnly: true },
+    );
     player.fatigue = Math.max(0, player.fatigue - recovery);
   }
+  // 하드 트레이닝 can hurt: the draw comes before fatigue eases, from each player's own stream.
+  trainingInjuries(
+    w,
+    activePlayers(w).filter((player) => focuses.get(player.id) === 'hard'),
+  );
+  const orders = (w.trainingOrders ||= {});
+  if (squad === 'hard') orders.hardStreak = (orders.hardStreak ?? 0) + 1;
+  else delete orders.hardStreak;
   countDownOrder(w, 'assistant');
+  countDownPlayerOrders(w);
   developAcademy(w);
   settleMorale(w);
+  tidyOrders(w);
   w.trainingAt = at;
 }
 
-/** Annual progression retains seeded variation/aging but uses the player's own potential gap. */
+/**
+ * A season's development and ageing (→PLAYER-15, PLAYER-17): attributes still in their growing
+ * years take the season's growth by the main position's weights; those past it hold; those past
+ * their decline age fall by their group's amount. Every change carries noise of ±0.5.
+ */
 export function developAnnually(w: World, player: Player) {
   const age = w.year - player.born,
     gap = Math.max(0, player.potential - mainOvr(player)),
@@ -172,12 +228,24 @@ export function developAnnually(w: World, player: Player) {
   const growth =
     age < 27
       ? Math.min(3, gap / 20 + w.manager.youth / 100 + (trainingGroundBase(w) * 27) / 4)
-      : age > 30
-        ? -1.5
-        : 0.3;
-  // One draw of noise per season, as the five skills each had one before.
-  const noise = () => variation() - 0.5;
-  recordDevelopment(player, changeAttributes(player, growth, noise, growth > 0));
+      : age <= 30
+        ? 0.3
+        : 0;
+  const growing = (a: Attribute) => age <= AGEING[a].growUntil;
+  const before = mainOvr(player);
+  // A season's growth reaches the main OVR whole. Under 27 its noise rides inside it, so it never
+  // carries him past his potential; later every attribute takes its own.
+  const young = age < 27;
+  growAttributes(player, Math.max(0, growth + (young ? variation() - 0.5 : 0)), undefined, {
+    only: growing,
+    share: 1,
+  });
+  for (const a of ATTRIBUTES) {
+    if (young && growing(a)) continue;
+    const decline = age >= AGEING[a].declineFrom ? AGEING[a].perSeason : 0;
+    player.attrs[a] = hundredths(clamp(player.attrs[a] + variation() - 0.5 - decline, 5, TOP));
+  }
+  recordDevelopment(player, hundredths(mainOvr(player) - before));
   revisePotential(w, player);
 }
 
@@ -242,7 +310,23 @@ export function trainingSummary(w: World) {
         potential: player.potential,
         developed: player.developed || 0,
         nextGain: actualRoundGain(w, player),
+        focus: focusFor(w, player, focus),
       })),
+    /** Players on a focus of their own this round, and who set it (→CLUB-11, CLUB-13). */
+    own: active.flatMap((player) => {
+      const order = w.trainingOrders?.players?.[player.id],
+        own = focusFor(w, player, focus);
+      if (!order && own === focus) return [];
+      const by = order ? (order.forced ? 'order' : 'suggestion') : 'rule';
+      return [
+        {
+          player,
+          focus: own,
+          by: by as 'order' | 'suggestion' | 'rule',
+          rounds: order?.rounds ?? 0,
+        },
+      ];
+    }),
   };
 }
 

@@ -1,5 +1,5 @@
 # PLAYER Player model
-> r2 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
+> r3 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
 
 ## decisions
 - PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 14 attributes, positions with levels, personality and play traits, potential. Other clubs' squads are generated from their club's strength each season and do not develop (→WORLD-6, →LEAGUE-10); development, adaptation and ageing below apply to the own club's players and academy. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
@@ -136,6 +136,7 @@
   - each coaching department scales the attributes it owns (→STAFF-11): the assistant 패스 and 시야, the attack coach 슈팅, 드리블 and 크로스, the defence coach 태클, 위치선정 and 공중볼, the goalkeeping coach the three GK attributes, the fitness coach 속도, 체력 and 몸싸움.
   - each summer a player aged 23 or younger may break through (5%: potential +5 to +9) or stall (5%: −4 to −7); otherwise potential moves by at most 2; never below his OVR or above 99. Changes of 4+ are events and news.
 - PLAYER-16 [o] With his adaptation at 0.90 or more a player grows past his potential, with no cap but 99, on a curve that flattens sharply: growth at +1 over potential runs ×0.25 of the rate below it, +3 ×0.10, +5 ×0.05, +10 ×0.02 (log-like between); the age rules still hold. ← a player who suits his manager can outgrow his potential, rarely and slowly
+  - "the rate below it" is his rate 2 under potential: a settled player's round growth never falls below that rate, nearing potential or past it; an unsettled player's still shrinks with the gap and stops at potential.
 - PLAYER-17 [o] Attributes age by group: ← veterans drop back into playmaking or centre back as their legs go
   | attributes | grow until about | from | per season after |
   |---|---|---|---|
@@ -155,5 +156,6 @@
 - in a match: slot position and role → OVR (PLAYER-6) × level (PLAYER-4) × adaptation multiplier (PLAYER-10) = 실효 OVR; each action reads its attributes (PLAYER-2)
 
 ## chg
+- r3 261015 PLAYER-16✎ +the rate below potential is the rate 2 under it, a settled player's floor
 - r2 261015 PLAYER-3✎ +four lines (GK, DF, MF, FW) for rules that count by line; PLAYER-8✎ [?]→[o] 야망: a declined bigger club's offer makes 높음 25% and 매우 높음 50% unhappy (→CLUB-27)
 - r1 261015 initial

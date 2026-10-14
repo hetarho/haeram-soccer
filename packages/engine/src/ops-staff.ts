@@ -393,7 +393,7 @@ export function staffCommand(w: World, cmd: StaffCommand) {
       renewManager(w, cmd.term);
       break;
     case 'coach-training':
-      orderTraining(w, cmd.coach, cmd.focus, !!cmd.force);
+      orderTraining(w, cmd.coach, cmd.focus, !!cmd.force, cmd.player);
       break;
     case 'intervention':
       if (!INTERVENTION_LEVELS.includes(cmd.level)) throw new Error('개입 수준을 확인하세요.');

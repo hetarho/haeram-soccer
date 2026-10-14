@@ -74,6 +74,7 @@ const command = z.discriminatedUnion('type', [
     coach: z.enum(['assistant', 'youth']),
     focus: z.enum(['balanced', 'recovery', 'hard', 'fundamentals', 'firstTeam']),
     force: z.boolean().optional(),
+    player: z.string().max(100).optional(),
   }),
   z.object({
     type: z.literal('policy'),

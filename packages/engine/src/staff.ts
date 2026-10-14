@@ -447,6 +447,12 @@ export function autoTrainingAdvice(w: World): { focus: TrainingFocus; reason: st
     };
   return { focus: 'balanced', reason: `${tired} · 성장과 회복을 함께 챙겨요.` };
 }
+/** A player's fatigue at which the assistant rests him whatever the squad does (→CLUB-13). */
+export const AUTO_PLAYER_RECOVERY = 40;
+/** The assistant's player rule: 회복 for a player at 40+ fatigue, no other exception of his own. */
+export function autoPlayerFocus(_w: World, p: Player): TrainingFocus | undefined {
+  return p.fatigue >= AUTO_PLAYER_RECOVERY ? 'recovery' : undefined;
+}
 /** The assistant's choice when training is delegated. */
 export function autoTrainingFocus(w: World): TrainingFocus {
   return autoTrainingAdvice(w).focus;

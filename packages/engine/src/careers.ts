@@ -113,6 +113,11 @@ export function injuryChance(p: Player, pressing: boolean) {
   );
 }
 
+/** Chance a player training under 하드 picks up an injury in a settled round (→CLUB-23). */
+export const TRAINING_INJURY = 0.005;
+export function trainingInjuryChance(p: Player) {
+  return TRAINING_INJURY * (1 + fatigueLoad(p.fatigue) * INJURY.fatigue);
+}
 /** After an own match: each own player who played may pick up an injury, from the match stream. */
 export function injuriesAfterMatch(w: World, m: MatchRecord) {
   const side = m.home === w.playerClub ? 0 : 1;
@@ -122,33 +127,46 @@ export function injuriesAfterMatch(w: World, m: MatchRecord) {
     const p = w.players.find((player) => player.id === line.id);
     if (!p || p.status !== 'active' || !line.metrics[10] || isInjured(w, p)) continue;
     if (r() >= injuryChance(p, pressing)) continue;
-    let u = r(),
-      band: (typeof INJURY.bands)[number] = INJURY.bands[INJURY.bands.length - 1];
-    for (const b of INJURY.bands) {
-      if (u < b.share) {
-        band = b;
-        break;
-      }
-      u -= b.share;
-    }
-    const days = integer(r, band.days[0], band.days[1]),
-      label = band.label[integer(r, 0, band.label.length - 1)];
-    p.injury = { year: w.year, day: dayCountedFrom(w, w.year) + days, label };
-    const back = seasonDayLabel(w.year, p.injury.day);
-    addEvent(
-      w,
-      'injury',
-      `${p.name} ${label}`,
-      `약 ${Math.max(1, Math.round(days / 7))}주 결장 · ${back} 복귀 예상`,
-    );
-    pushInbox(w, {
-      kind: 'staff-report',
-      title: `의료팀 보고: ${p.name} ${label}`,
-      detail: `${p.position} · 약 ${Math.max(1, Math.round(days / 7))}주 결장 예상(${back} 복귀). 감독이 다른 선수로 선발을 짜요.`,
-      attention: false,
-      ref: p.id,
-    });
+    injure(w, p, r);
   }
+}
+/** A settled round of 하드 트레이닝: each player in it may get hurt, from his own stream (→CLUB-23). */
+export function trainingInjuries(w: World, players: readonly Player[]) {
+  for (const p of players) {
+    if (p.status !== 'active' || isInjured(w, p)) continue;
+    const r = random(`${w.seed}:training-injury:${w.year}:${w.round}:${p.id}`);
+    if (r() >= trainingInjuryChance(p)) continue;
+    injure(w, p, r, '훈련 중 ');
+  }
+}
+/** An injury of the table's bands, reported to the inbox (→CLUB-23). */
+function injure(w: World, p: Player, r: () => number, where = '') {
+  let u = r(),
+    band: (typeof INJURY.bands)[number] = INJURY.bands[INJURY.bands.length - 1];
+  for (const b of INJURY.bands) {
+    if (u < b.share) {
+      band = b;
+      break;
+    }
+    u -= b.share;
+  }
+  const days = integer(r, band.days[0], band.days[1]),
+    label = band.label[integer(r, 0, band.label.length - 1)];
+  p.injury = { year: w.year, day: dayCountedFrom(w, w.year) + days, label };
+  const back = seasonDayLabel(w.year, p.injury.day);
+  addEvent(
+    w,
+    'injury',
+    `${p.name} ${where}${label}`,
+    `약 ${Math.max(1, Math.round(days / 7))}주 결장 · ${back} 복귀 예상`,
+  );
+  pushInbox(w, {
+    kind: 'staff-report',
+    title: `의료팀 보고: ${p.name} ${where}${label}`,
+    detail: `${p.position} · 약 ${Math.max(1, Math.round(days / 7))}주 결장 예상(${back} 복귀). 감독이 다른 선수로 선발을 짜요.`,
+    attention: false,
+    ref: p.id,
+  });
 }
 
 /** Healed injuries leave the record clean; the event log keeps the history. */

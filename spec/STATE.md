@@ -14,9 +14,10 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| p7ad | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T15:45Z | 2026-10-14T17:31Z | T108 |
+| p7ad | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T15:45Z | 2026-10-14T18:41Z | - |
 
 ## inbox
+- 261015 decided PLAYER-16: what "the rate below potential" is when growth shrinks with the gap to it (zero at potential) → the rate 2 under potential, a floor for a settled (0.90+) player's round growth near and past it (alt: a flat rate past potential | the season's growth term only) — without a floor PLAYER-16 had nothing to scale
 - 261015 decided PLAYER-3 CLUB-32 CLUB-33: how rules that counted GK/DEF/MID/FWD read with 14 positions → four lines (GK, DF, MF, FW) by main position (alt: every listed position counts | each rule rewritten by formation slot) — squad needs stay readable; requests still name formation slots
 - 261015 decided STAFF-22: what formation a manager plays → the applied tactic's: possession 4-3-3, press 4-2-3-1, counter 4-4-2, balanced 3-5-2, each slot with a role (alt: one formation per school | the owner picks a formation) — the tactic already exists and changes through the manager; a back three gives wing-backs a home
 - 261015 decided STAFF-21: what each school prefers and how much it speeds adaptation → two attributes and two or three play traits per school; factor 0.8 + 0.1 per preferred attribute at 65+ and per preferred trait (+0.1 aged ≤21 under 육성형), at most 1.3, 1.0 under the founding manager or an interim (alt: attributes only | a flat ±0.2) — readable and reaches the 0.8–1.3 range the owner saw
@@ -63,12 +64,11 @@
 | EURO | 3 | 3 | - | 0 |
 | HIST | 9 | 9 | - | 0 |
 | SAVE | 35 | 35 | - | 0 |
-| PLAYER | 2 | 2 | - | 0 |
+| PLAYER | 3 | 3 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T109 | Training per player, its costs, and growth by 프로의식, past potential and by age | CLUB STAFF PLAYER | T107 | todo |
 | T110 | The match reads every attribute, role and play trait | MATCH PLAYER | T107 | todo |
 | T111 | Requests by formation slot, cover by slot, ambition and the arrival preview | CLUB PLAYER | T107 | todo |
 | T112 | Player profile, positions and the formation in the web game | WEB CLUB PLAYER | T107 | todo |
@@ -100,6 +100,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 T109 done: training per player (assistant's 회복 rule at 40+, suggestions and orders for one player), 하드's injuries and morale streak, 리더 morale, training settles adaptation to 0.80, growth × 프로의식, past potential at 0.90+, ageing by attribute group; PLAYER r3 (PLAYER-16 rate below potential)
 - 261015 CI fix (33ecd43): founding 360×740 overflow and the 3× season slowdown of T107 (CI 38607253495 failed in Chromium and WebKit)
 - 261015 T108 done (0ce14ed): adaptation and 조직력 move with starts, managers and change
 - 261015 T107 done (cc1d610): the world on the player model, rules 2.0.0; unit 718, contract 11, Chromium e2e 108
@@ -119,4 +120,3 @@
 - 261014 inbox: the owner confirmed 21 of the 23 decisions one by one; changed WEB-39 (the 방향 tab moves to /direction) and CLUB-33 (a 단장 decides signings from the chief scout's all-season shortlist and the manager's requests) — update-ssot follows
 - 261014 slice 6 on main after CI 38519213867 passed every job on 4806bc4; autopilot run v7dq closed (report reports/261014-v7dq.md)
 - 261014 T100 done: 40 careers on rules 1.21.0 — wage bill 41.4% (below 45–70%), operating +2.4%, none bankrupt; ECON r32; club-direction converted (all six slices in the SSOTs)
-- 261014 T099 done (58d4711): presets and saved directions over every row, founding 구단 방향, the protocol accepts 육성 목표/데뷔 시점 (refused since slice 3); unit 699, Chromium e2e 107, entry 245,897 B; T100 doing (measured 05:26–05:5x on 6aed2e3)

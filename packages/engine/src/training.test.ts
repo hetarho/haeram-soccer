@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { Player, TrainingFocus } from '../../contracts/src/types';
 import { ATTRIBUTES } from '../../contracts/src/player';
-import { mainOvr, weightsFor } from './player';
+import { mainOvr, TRAINING_GAIN, weightsFor } from './player';
+import { settleRate } from './adaptation';
+import { TRAINING_INJURY, trainingInjuryChance } from './careers';
 import { decode, encode } from '../../../apps/web/src/adapters/persistence';
 import { requestSchema } from '../../../apps/web/src/runtime/protocol';
 import {
@@ -12,6 +14,7 @@ import {
   createWorld,
   developAnnually,
   developmentOutlook,
+  focusFor,
   marketWage,
   operate,
   overall,
@@ -37,7 +40,9 @@ function world(focus: TrainingFocus = 'balanced') {
     player.born = w.year - 20;
     player.potential = 85;
     for (const a of ATTRIBUTES) player.attrs[a] = 40;
-    player.fatigue = 50;
+    // Tired, but short of the 40 at which the assistant rests a player whatever the squad does.
+    player.fatigue = 30;
+    player.personality = { ...player.personality, professionalism: 3 };
     // Paid as the market rates them now, so nobody asks for a raise (→CLUB-26).
     player.wage = marketWage(w, player);
   }
@@ -380,5 +385,163 @@ describe('earned player growth and training choices', () => {
     const w = world();
     w.players[0].developed = 501;
     expect(() => validateWorld(w)).toThrow();
+  });
+});
+
+describe('training per player, its costs and growth (→CLUB-11, CLUB-23, PLAYER-12, PLAYER-15–17)', () => {
+  /** Two identical worlds: one to change, one to compare against. */
+  const twins = (focus: TrainingFocus = 'balanced') => [world(focus), world(focus)] as const;
+  const cm = (w: ReturnType<typeof world>) => w.players.find((p) => p.position === 'CM')!;
+
+  it("own focus beats the squad's", () => {
+    const [w, same] = twins();
+    const p = cm(w);
+    w.trainingOrders!.players = { [p.id]: { focus: 'hard', rounds: 4, forced: true } };
+    expect(focusFor(w, p)).toBe('hard');
+    expect(
+      focusFor(
+        w,
+        w.players.find((other) => other.id !== p.id)!,
+      ),
+    ).toBe('balanced');
+    for (const one of [w, same]) {
+      one.round = 1;
+      settleTraining(one);
+    }
+    const twin = cm(same);
+    // 하드 recovers 6 a round against 균형's 11, and grows ×1.6.
+    expect(p.fatigue - twin.fatigue).toBe(5);
+    expect(p.developed!).toBeGreaterThan(twin.developed!);
+    expect(w.trainingOrders!.players![p.id]!.rounds).toBe(3);
+    // Rounds were set by hand; back on the calendar's round the saved orders validate.
+    w.round = 0;
+    validateWorld(w);
+  });
+
+  it('player rule rests the tired', () => {
+    const w = world('hard'),
+      p = cm(w),
+      fresh = w.players.find((other) => other.id !== p.id)!;
+    p.fatigue = 45;
+    // The owner forced 하드 on the squad; the assistant still rests a player at 40+.
+    expect(focusFor(w, p)).toBe('recovery');
+    expect(focusFor(w, fresh)).toBe('hard');
+    w.round = 1;
+    settleTraining(w);
+    expect(p.fatigue).toBe(45 - 16);
+    expect(fresh.fatigue).toBe(30 - 6);
+    // The summary names him as resting by the assistant's rule.
+    p.fatigue = 45;
+    expect(trainingSummary(w).own).toEqual([
+      { player: p, focus: 'recovery', by: 'rule', rounds: 0 },
+    ]);
+    // An order for him outranks the rule.
+    w.trainingOrders = { players: { [p.id]: { focus: 'balanced', rounds: 4 } } };
+    expect(focusFor(w, p)).toBe('balanced');
+    expect(trainingSummary(w).own).toMatchObject([
+      { focus: 'balanced', by: 'suggestion', rounds: 4 },
+    ]);
+  });
+
+  it('hard training injures', () => {
+    expect(trainingInjuryChance({ fatigue: 0 } as Player)).toBe(TRAINING_INJURY);
+    expect(trainingInjuryChance({ fatigue: 90 } as Player)).toBeGreaterThan(TRAINING_INJURY);
+    const [hard, balanced] = [world('hard'), world('balanced')];
+    for (const w of [hard, balanced])
+      for (let round = 1; round <= 60; round++) {
+        w.trainingOrders = {
+          ...w.trainingOrders,
+          assistant: { focus: w === hard ? 'hard' : 'balanced', rounds: 4, forced: true },
+        };
+        for (const p of w.players) p.fatigue = 30;
+        w.round = round;
+        settleTraining(w);
+      }
+    const hurt = (w: ReturnType<typeof world>) =>
+      w.events.filter((event) => event.kind === 'injury' && event.title.includes('훈련 중'));
+    expect(hurt(hard).length).toBeGreaterThan(0);
+    expect(hurt(balanced)).toEqual([]);
+    expect(hard.inbox!.some((item) => item.title.includes('훈련 중'))).toBe(true);
+    hard.round = 0;
+    validateWorld(hard);
+  });
+
+  it('adaptation capped by training', () => {
+    const w = world('balanced'),
+      p = cm(w);
+    p.personality = { ...p.personality, adaptability: 3 };
+    p.adaptation = 0.5;
+    w.round = 1;
+    settleTraining(w);
+    expect(p.adaptation).toBeCloseTo(0.5 + TRAINING_GAIN.balanced * settleRate(w, p), 4);
+    p.adaptation = 0.799;
+    w.round = 2;
+    settleTraining(w);
+    expect(p.adaptation).toBe(0.8);
+    // Past 0.80 only starts take him further; training leaves him where he is.
+    p.adaptation = 0.85;
+    w.round = 3;
+    settleTraining(w);
+    expect(p.adaptation).toBe(0.85);
+    // 하드 settles faster than 회복.
+    const [hard, rest] = [world('hard'), world('recovery')];
+    for (const one of [hard, rest]) {
+      cm(one).adaptation = 0.5;
+      one.round = 1;
+      settleTraining(one);
+    }
+    expect(cm(hard).adaptation).toBeGreaterThan(cm(rest).adaptation);
+  });
+
+  it('professional grows faster', () => {
+    const [w, twin] = twins('hard');
+    cm(w).personality = { ...cm(w).personality, professionalism: 5 };
+    cm(twin).personality = { ...cm(twin).personality, professionalism: 1 };
+    for (const one of [w, twin])
+      for (let round = 1; round <= 4; round++) {
+        one.round = round;
+        settleTraining(one);
+      }
+    expect(cm(w).developed!).toBeGreaterThan(cm(twin).developed! * 1.5);
+  });
+
+  it('past potential only when settled', () => {
+    const [w, twin] = twins('hard');
+    for (const one of [w, twin]) {
+      const p = cm(one);
+      for (const a of ATTRIBUTES) p.attrs[a] = 60;
+      p.potential = 60;
+    }
+    cm(w).adaptation = 0.95;
+    cm(twin).adaptation = 0.85;
+    for (const one of [w, twin])
+      for (let round = 1; round <= 8; round++) {
+        one.trainingOrders = { assistant: { focus: 'hard', rounds: 4, forced: true } };
+        one.round = round;
+        settleTraining(one);
+      }
+    expect(ovr(cm(twin))).toBe(60);
+    expect(ovr(cm(w))).toBeGreaterThan(60);
+    // The curve flattens sharply: eight rounds past potential stay well short of a point.
+    expect(ovr(cm(w))).toBeLessThan(60.5);
+    // A season's growth past it is cut the same way, and none for the unsettled.
+    const settled = cm(w),
+      before = ovr(settled);
+    developAnnually(w, settled);
+    developAnnually(twin, cm(twin));
+    expect(ovr(settled) - before).toBeLessThan(1);
+  });
+
+  it('pace fades before vision', () => {
+    const w = world(),
+      p = cm(w);
+    p.born = w.year - 30;
+    for (const a of ATTRIBUTES) p.attrs[a] = 60;
+    p.potential = 70;
+    developAnnually(w, p);
+    // 속도 declines from 29 by 2 a season; 시야 still grows until 32 (±0.5 noise each).
+    expect(p.attrs.pace).toBeLessThanOrEqual(58.5);
+    expect(p.attrs.pace).toBeGreaterThanOrEqual(57.5);
+    expect(p.attrs.vision).toBeGreaterThanOrEqual(59.5);
   });
 });

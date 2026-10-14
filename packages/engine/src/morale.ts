@@ -35,13 +35,24 @@ export function moraleState(value: number): MoraleState {
           ? 'low'
           : 'crisis';
 }
+/** Baseline each 리더 in the last starting XI adds, and the most they add together (→CLUB-19). */
+export const LEADER_MORALE = { each: 1, most: 3 } as const;
+/** 리더 among the starters of the last own match (→PLAYER-9). */
+export function leadersInLastXi(w: World) {
+  const last = w.ownMatches.at(-1);
+  if (!last) return 0;
+  const ids = new Set(last.players.map((line) => line.id));
+  return w.players.filter((p) => ids.has(p.id) && p.traits.includes('leader')).length;
+}
 /**
- * Where morale settles between results: squad support and the manager's standing. A standard
- * club with a trusted manager settles at the neutral 60, so ordinary results never drag it down.
+ * Where morale settles between results: squad support, the manager's standing and the dressing
+ * room's 리더. A standard club with a trusted manager settles at the neutral 60, so ordinary
+ * results never drag it down.
  */
 export function moraleBaseline(w: World) {
   return clamp(
     58 +
+      Math.min(LEADER_MORALE.most, leadersInLastXi(w) * LEADER_MORALE.each) +
       (policyOf(w).support - 3) * 4 +
       (w.manager.trust - 50) / 10 +
       managerStyleEffects(w).moraleBaseline +
@@ -68,10 +79,12 @@ export function moraleAfterMatch(w: World, m: MatchRecord) {
 }
 /** Squad morale each unhappy starter costs a settled round (→CLUB-27). */
 export const UNHAPPY_MORALE = 1;
+/** Morale a settled round costs from the squad's third 하드 round in a row on (→CLUB-19). */
+export const HARD_STREAK = { from: 3, cost: 1 } as const;
 /**
  * Each settled round drifts toward the baseline; an exhausted XI loses heart, and so does one
- * with unhappy starters. An older save without morale starts from 60 once an unhappy starter
- * costs it.
+ * with unhappy starters or one worn by a run of 하드 트레이닝. An older save without morale starts
+ * from 60 once an unhappy starter costs it.
  */
 export function settleMorale(w: World) {
   const starters = ownStarters(w),
@@ -81,7 +94,11 @@ export function settleMorale(w: World) {
   const fatigue = starters.length
     ? starters.reduce((sum, player) => sum + player.fatigue, 0) / starters.length
     : 0;
+  const hard = (w.trainingOrders?.hardStreak ?? 0) >= HARD_STREAK.from ? HARD_STREAK.cost : 0;
   const drift =
-    (moraleBaseline(w) - w.morale) * 0.15 - (fatigue >= 40 ? 2 : 0) - unhappy * UNHAPPY_MORALE;
+    (moraleBaseline(w) - w.morale) * 0.15 -
+    (fatigue >= 40 ? 2 : 0) -
+    unhappy * UNHAPPY_MORALE -
+    hard;
   w.morale = Math.round(clamp(w.morale + drift, 0, 100));
 }

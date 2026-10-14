@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import type { World } from '../../contracts/src/types';
-import { createWorld, advanceRound, simulateMatch, nextOwnFixture } from './index';
+import { createWorld, advanceRound, simulateMatch, nextOwnFixture, settleTraining } from './index';
 import {
+  HARD_STREAK,
+  LEADER_MORALE,
   MORALE_START,
   moraleAfterMatch,
   moraleBaseline,
@@ -79,5 +81,58 @@ describe('squad morale', () => {
     }
     expect(a.morale).toBe(b.morale);
     expect(a.morale).not.toBe(MORALE_START);
+  });
+
+  it('hard streak costs morale', () => {
+    const w = world(),
+      twin = world();
+    for (const one of [w, twin]) {
+      for (const p of one.players) p.fatigue = 0;
+      one.morale = 50;
+    }
+    w.trainingOrders = { hardStreak: HARD_STREAK.from - 1 };
+    settleMorale(w);
+    settleMorale(twin);
+    expect(w.morale).toBe(twin.morale);
+    w.morale = twin.morale = 50;
+    w.trainingOrders = { hardStreak: HARD_STREAK.from };
+    settleMorale(w);
+    settleMorale(twin);
+    expect(w.morale).toBe(twin.morale! - HARD_STREAK.cost);
+    // The streak counts the squad's settled 하드 rounds and ends with any other focus.
+    const run = world();
+    for (let round = 1; round <= 3; round++) {
+      run.trainingOrders = {
+        ...run.trainingOrders,
+        assistant: { focus: 'hard', rounds: 4, forced: true },
+      };
+      run.round = round;
+      settleTraining(run);
+    }
+    expect(run.trainingOrders?.hardStreak).toBe(3);
+    run.trainingOrders = {
+      ...run.trainingOrders,
+      assistant: { focus: 'balanced', rounds: 4, forced: true },
+    };
+    run.round = 4;
+    settleTraining(run);
+    expect(run.trainingOrders?.hardStreak).toBeUndefined();
+  });
+
+  it('leaders lift the baseline', () => {
+    const w = world();
+    advanceRound(w, undefined, false);
+    for (const p of w.players) p.traits = p.traits.filter((trait) => trait !== 'leader');
+    const plain = moraleBaseline(w);
+    const xi = w.ownMatches.at(-1)!.players.map((line) => w.players.find((p) => p.id === line.id)!);
+    for (const p of xi.slice(0, 2)) p.traits = ['leader'];
+    expect(moraleBaseline(w)).toBe(plain + 2 * LEADER_MORALE.each);
+    for (const p of xi.slice(0, 5)) p.traits = ['leader'];
+    expect(moraleBaseline(w)).toBe(plain + LEADER_MORALE.most);
+    // A 리더 on the bench lifts nobody.
+    for (const p of xi) p.traits = [];
+    const bench = w.players.find((p) => !xi.includes(p))!;
+    bench.traits = ['leader'];
+    expect(moraleBaseline(w)).toBe(plain);
   });
 });

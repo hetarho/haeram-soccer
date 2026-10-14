@@ -48,13 +48,15 @@ function world(policy?: Partial<ClubPolicy>) {
 function academy(policy?: Partial<ClubPolicy>) {
   const w = world(policy);
   w.manager.youth = 60;
-  // The owner holds balanced training with an order; the assistant would rest this fatigue-50 squad.
+  // The owner holds balanced training with an order; the assistant would rest this tired squad.
   w.trainingOrders = { assistant: { focus: 'balanced', rounds: 4, forced: true } };
   for (const player of w.players) {
     player.born = w.year - 20;
     player.potential = 85;
     for (const a of ATTRIBUTES) player.attrs[a] = 40;
-    player.fatigue = 50;
+    // Short of the 40 at which the assistant rests a player whatever the squad does.
+    player.fatigue = 30;
+    player.personality = { ...player.personality, professionalism: 3 };
     // Paid as the market rates them now, so nobody asks for a raise (→CLUB-26).
     player.wage = marketWage(w, player);
   }
@@ -211,9 +213,9 @@ describe('club operating policy', () => {
       w.round = 1;
       settleTraining(w);
     }
-    expect(high.players.every((player) => player.fatigue === 37)).toBe(true);
-    expect(standard.players.every((player) => player.fatigue === 39)).toBe(true);
-    expect(low.players.every((player) => player.fatigue === 41)).toBe(true);
+    expect(high.players.every((player) => player.fatigue === 17)).toBe(true);
+    expect(standard.players.every((player) => player.fatigue === 19)).toBe(true);
+    expect(low.players.every((player) => player.fatigue === 21)).toBe(true);
     expect(developed(high)).toBeGreaterThan(developed(standard));
     expect(developed(standard)).toBeGreaterThan(developed(low));
 
