@@ -100,6 +100,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 CI fix (33ecd43): founding 360×740 overflow and the 3× season slowdown of T107 (CI 38607253495 failed in Chromium and WebKit)
 - 261015 T108 done (0ce14ed): adaptation and 조직력 move with starts, managers and change
 - 261015 T107 done (cc1d610): the world on the player model, rules 2.0.0; unit 718, contract 11, Chromium e2e 108
 - 261015 T106 done (5ce3792): the player model as a pure module
@@ -119,4 +120,3 @@
 - 261014 slice 6 on main after CI 38519213867 passed every job on 4806bc4; autopilot run v7dq closed (report reports/261014-v7dq.md)
 - 261014 T100 done: 40 careers on rules 1.21.0 — wage bill 41.4% (below 45–70%), operating +2.4%, none bankrupt; ECON r32; club-direction converted (all six slices in the SSOTs)
 - 261014 T099 done (58d4711): presets and saved directions over every row, founding 구단 방향, the protocol accepts 육성 목표/데뷔 시점 (refused since slice 3); unit 699, Chromium e2e 107, entry 245,897 B; T100 doing (measured 05:26–05:5x on 6aed2e3)
-- 261014 T098 done (6aed2e3): seven presets over every row, 글로벌 스카우팅, founding preset, rules 1.21.0; unit 695, contract 13; T099 doing
