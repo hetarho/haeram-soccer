@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| p7ad | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T15:45Z | 2026-10-14T19:25Z | - |
+| p7ad | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T15:45Z | 2026-10-14T19:26Z | T112 |
 
 ## inbox
 - 261015 decided CLUB-27: does an incoming offer left to lapse count as declined for 야망 → yes, like the owner's reject (alt: only an explicit reject) — silence must not dodge an ambitious player's resentment
@@ -70,7 +70,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T112 | Player profile, positions and the formation in the web game | WEB CLUB PLAYER | T107 | todo |
+| T112 | Player profile, positions and the formation in the web game | WEB CLUB PLAYER | T107 | doing@261015.p7ad |
 | T113 | Earlier-rules careers are listed, never opened, and the century still fits | SAVE | T107 | todo |
 | T114 | Instruct training from 훈련, see adaptation, read rivals' 조직력 | WEB STAFF CLUB PLAYER LEAGUE | T108 T109 T112 | todo |
 | T115 | Measure the balance bands on the new model | LEAGUE ECON | T108 T109 T110 T111 | todo |
