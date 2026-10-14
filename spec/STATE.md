@@ -14,6 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
+| p7ad | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T15:45Z | 2026-10-14T15:45Z | - |
 
 ## inbox
 - 261014 decided T105: a reference career went bankrupt on rules 1.22.0 (ESP 기본 방향 seed 4, 1971) → recorded with its cause and left as a follow-up, nothing tuned (alt: keep the 단장's post a volunteer below the professional divisions | tighten 재정 기조 for amateur clubs now) — the explore task's exit records, and no single 1.22 rule breaks the career
