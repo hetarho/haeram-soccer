@@ -53,21 +53,31 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 66 | 65 | WEB-2✎ WEB-3✎ WEB-15✎ WEB-21✎ WEB-24✎ WEB-25✎ WEB-43✎ WEB-55✎ WEB-58✎ WEB-59✎ WEB-70✎ WEB-71✎ | 0 |
-| WORLD | 3 | 2 | WORLD-6✎ | 0 |
-| CLUB | 34 | 33 | CLUB-1✎ CLUB-2✎ CLUB-3✎ CLUB-6✎ CLUB-9✎ CLUB-10✎ CLUB-11✎ CLUB-12✎ CLUB-13✎ CLUB-14✎ CLUB-16✎ CLUB-19✎ CLUB-21✎ CLUB-23✎ CLUB-24✎ CLUB-25✎ CLUB-27✎ CLUB-32✎ CLUB-33✎ | 0 |
-| MATCH | 9 | 8 | MATCH-2✎ MATCH-8✎ MATCH-9✎ MATCH-11✎ MATCH-12✎ | 0 |
-| LEAGUE | 6 | 5 | LEAGUE-12+ LEAGUE-13+ | 0 |
-| STAFF | 20 | 19 | STAFF-11✎ STAFF-13✎ STAFF-19✎ STAFF-21+ STAFF-22+ | 0 |
-| ECON | 35 | 34 | ECON-22✎ | 0 |
+| WEB | 66 | 66 | - | 0 |
+| WORLD | 3 | 3 | - | 0 |
+| CLUB | 34 | 34 | - | 0 |
+| MATCH | 9 | 9 | - | 0 |
+| LEAGUE | 6 | 6 | - | 0 |
+| STAFF | 20 | 20 | - | 0 |
+| ECON | 35 | 35 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 9 | 8 | HIST-13✎ | 0 |
-| SAVE | 35 | 34 | SAVE-10✎ SAVE-16+ | 0 |
-| PLAYER | 2 | 0 | all | 0 |
+| HIST | 9 | 9 | - | 0 |
+| SAVE | 35 | 35 | - | 0 |
+| PLAYER | 2 | 2 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T106 | The player model as a pure module | PLAYER STAFF | - | todo |
+| T107 | Swap the world onto the new player model (rules 2.0.0) | PLAYER MATCH STAFF CLUB WORLD LEAGUE WEB SAVE HIST | T106 | todo |
+| T108 | Adaptation and 조직력 move with matches, managers and change | PLAYER LEAGUE STAFF | T107 | todo |
+| T109 | Training per player, its costs, and growth by 프로의식, past potential and by age | CLUB STAFF PLAYER | T107 | todo |
+| T110 | The match reads every attribute, role and play trait | MATCH PLAYER | T107 | todo |
+| T111 | Requests by formation slot, cover by slot, ambition and the arrival preview | CLUB PLAYER | T107 | todo |
+| T112 | Player profile, positions and the formation in the web game | WEB CLUB PLAYER | T107 | todo |
+| T113 | Earlier-rules careers are listed, never opened, and the century still fits | SAVE | T107 | todo |
+| T114 | Instruct training from 훈련, see adaptation, read rivals' 조직력 | WEB STAFF CLUB PLAYER LEAGUE | T108 T109 T112 | todo |
+| T115 | Measure the balance bands on the new model | LEAGUE ECON | T108 T109 T110 T111 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -76,6 +86,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
+- run p7ad (autopilot): implement T106 → T107 (the foundation) → T108–T113 (separate units, touches disjoint except T108/T109 sharing ops-staff.ts) → T114 → T115 (explore 2h); push main after each.
 - PLAYER r1 written (261015): 14 attributes, 14 sided positions with levels and retraining, 27 roles, OVR per position and role, personality and play traits, adaptation (starts, gains, manager change, 적응 실패), growth by 프로의식 and past potential, ageing by attribute group, scout ranges; PLAYER-8 (야망) open for the CLUB update. Next: update-ssot MATCH STAFF CLUB LEAGUE WORLD ECON WEB SAVE from ideation/difficulty-and-adaptation (CLUB-2 and CLUB-12 move to PLAYER), then create-task PLAYER and those revs as parallel bundles.
 - ideation difficulty-and-adaptation is ready (261015): four levels by the start only, 14 attributes, ~12 sided positions with football-named roles, personality and play traits, adaptation (0.8 = ×1.0) and other clubs' 조직력, per-player growth rates past potential, training 균형/회복/하드 per team and player, 동네의 자부심 → 유스 순혈주의, balance bands per level; sugar daddies dropped. Next: create-ssot PLAYER, then update-ssot MATCH STAFF CLUB LEAGUE WORLD ECON WEB SAVE, then create-task as parallel bundles.
 - the 단장 plan is done and on main (T101–T105, autopilot run q7m2, report reports/261014-q7m2.md): 방향 at /direction, the 단장 post (rules 1.22.0), the scout shortlist and the manager's requests, their screens, ECON r34; review the inbox decisions.
@@ -92,6 +103,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 create-task T106–T115 from PLAYER r2 MATCH r9 STAFF r20 CLUB r34 LEAGUE r6 WORLD r3 ECON r35 HIST r9 SAVE r35 WEB r66 (ECON r35 and HIST r9 folded into T107)
 - 261015 update-ssot PLAYER r2 MATCH r9 STAFF r20 CLUB r34 LEAGUE r6 WORLD r3 ECON r35 HIST r9 SAVE r35 WEB r66 from ideation/difficulty-and-adaptation (converted)
 - 261015 create-ssot PLAYER r1: the player model from ideation/difficulty-and-adaptation (20 decisions, 1 open)
 - 261015 ideation difficulty-and-adaptation ready: difficulty by the start only, the new player model (attributes, sided positions, roles, traits, adaptation, growth rates), training 균형/회복/하드; sugar daddies dropped; next create-ssot PLAYER
@@ -111,4 +123,3 @@
 - 261014 slice 5 on main: fast-forward to 2535320 after CI 38515600980 passed every job
 - 261014 update-ssot ECON r31 CLUB r31 WEB r64 SAVE r33 (club-direction slice 6): seven presets over every row, 글로벌 스카우팅, the founding direction, saved directions over every row; create-task T098 (engine), T099 (screens), T100 (explore 1h: final calibration)
 - 261014 T097 done (8a2a121): level 4 names signings, 스태프 제안 in the market; full Chromium e2e 106
-- 261014 T096 done (90bc773): the chief scout's signings at level 4, rules 1.20.0; unit 691, contract 13, Chromium e2e 106; WebKit gets two CI retries; T097 doing (session haeram-soccor-6f took over after the first session exited)
