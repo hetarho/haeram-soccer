@@ -77,7 +77,7 @@
 - not: sugar daddies; per-level coefficients or probabilities; the owner setting training directly; mental attributes beyond personality traits; converting old saves
 
 ## domains
-- PLAYER (new): 14 attributes, sided positions with per-player levels, roles, personality and play traits, OVR per position, adaptation (multiplier, starts, resets, growth by starts and training), growth and adaptation rates, growth past potential, what is shown and what the scout estimates — takes over CLUB-2 and CLUB-12
+- PLAYER (new) →PLAYER: 14 attributes, sided positions with per-player levels, roles, personality and play traits, OVR per position, adaptation (multiplier, starts, resets, growth by starts and training), growth and adaptation rates, growth past potential, what is shown and what the scout estimates — takes over CLUB-2 and CLUB-12
 - MATCH: each attribute feeds the actions it names (MATCH-11 duels), the formation and the slot roles, the adaptation multiplier and the other club's 조직력 in match strength (MATCH-2)
 - STAFF: each school's formation, slot roles, preferred attributes and traits (STAFF-14); a manager change costs adaptation; STAFF-19's training controls move to the 훈련 tab and to single players
 - CLUB: training 균형/회복/하드 and its costs (CLUB-11, CLUB-13), per-player training, lineups by positions (CLUB-6); the starting XI per level (CLUB-1); 야망 and other clubs' offers (CLUB-18, CLUB-22)

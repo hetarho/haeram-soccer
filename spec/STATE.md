@@ -47,6 +47,7 @@
 | EURO | 3 | 3 | - | 0 |
 | HIST | 8 | 8 | - | 0 |
 | SAVE | 34 | 34 | - | 0 |
+| PLAYER | 1 | 0 | all | 1 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -59,6 +60,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
+- PLAYER r1 written (261015): 14 attributes, 14 sided positions with levels and retraining, 27 roles, OVR per position and role, personality and play traits, adaptation (starts, gains, manager change, 적응 실패), growth by 프로의식 and past potential, ageing by attribute group, scout ranges; PLAYER-8 (야망) open for the CLUB update. Next: update-ssot MATCH STAFF CLUB LEAGUE WORLD ECON WEB SAVE from ideation/difficulty-and-adaptation (CLUB-2 and CLUB-12 move to PLAYER), then create-task PLAYER and those revs as parallel bundles.
 - ideation difficulty-and-adaptation is ready (261015): four levels by the start only, 14 attributes, ~12 sided positions with football-named roles, personality and play traits, adaptation (0.8 = ×1.0) and other clubs' 조직력, per-player growth rates past potential, training 균형/회복/하드 per team and player, 동네의 자부심 → 유스 순혈주의, balance bands per level; sugar daddies dropped. Next: create-ssot PLAYER, then update-ssot MATCH STAFF CLUB LEAGUE WORLD ECON WEB SAVE, then create-task as parallel bundles.
 - the 단장 plan is done and on main (T101–T105, autopilot run q7m2, report reports/261014-q7m2.md): 방향 at /direction, the 단장 post (rules 1.22.0), the scout shortlist and the manager's requests, their screens, ECON r34; review the inbox decisions.
 - follow-up (T105): 1 of 40 reference careers went bankrupt on rules 1.22.0 (ESP 기본 방향 seed 4, 1971, after 19 amateur seasons; none on 1.21) — the same career survives with the 단장's post kept a volunteer or without the −3 trust, so decide by update-ssot whether the delegated staff hire a paid 단장 only from a division up, or whether an amateur club's money checks (ECON-33) are tighter; then re-measure the 40 careers.
@@ -74,6 +76,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 create-ssot PLAYER r1: the player model from ideation/difficulty-and-adaptation (20 decisions, 1 open)
 - 261015 ideation difficulty-and-adaptation ready: difficulty by the start only, the new player model (attributes, sided positions, roles, traits, adaptation, growth rates), training 균형/회복/하드; sugar daddies dropped; next create-ssot PLAYER
 - 261014 ideation difficulty-and-adaptation start
 - 261014 T105 done: 40 careers on rules 1.22.0 — wage bill 41.3%, operating +1.3%, 1 of 40 bankrupt (ESP 기본 방향 seed 4); ECON r34; T104 on main after CI 38553541092; run q7m2 closed
