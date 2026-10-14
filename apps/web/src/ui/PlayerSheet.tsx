@@ -10,6 +10,7 @@ import { worldSelector } from './liveState';
 import { PlayerAdvancedStats } from './PlayerAdvancedStats';
 import { appearances, playerStatus, type PlayerScope } from './playerAnalysis';
 import { PlayerPerformance } from './PlayerPerformance';
+import { PlayerProfile } from './PlayerProfile';
 import { useNavigation, usePlayerSheet } from './state';
 import link from './ClubLink.module.css';
 import a from './Analysis.module.css';
@@ -75,6 +76,7 @@ export function PlayerSheet({
         {agentOf(w, player)}등급
       </p>
       {active && !player.loanUntil && <p>계약 조항: {clausesLabel(player.clauses)}</p>}
+      <PlayerProfile w={w} player={player} own={active} />
       <section className={a.clubCareer} aria-label="우리 클럽 통산">
         <h3>우리 클럽 통산</h3>
         <p className={a.careerLine}>
@@ -142,7 +144,16 @@ export function PlayerSheet({
   );
 }
 
-const selectPlayerWorld = worldSelector(['players', 'ownMatches', 'year', 'playerClub']);
+const selectPlayerWorld = worldSelector([
+  'players',
+  'ownMatches',
+  'year',
+  'playerClub',
+  'tactic',
+  'lineup',
+  'manager',
+  'staff',
+]);
 function OpenPlayerSheet({ id }: { id: string }) {
   const w = useGameState(selectPlayerWorld);
   const scope = usePlayerSheet((state) => state.scope);

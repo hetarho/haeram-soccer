@@ -1,4 +1,5 @@
-import type { Line, Metrics, Player } from '../../../../packages/contracts/src/types';
+import type { Line, Metrics, Player, Position } from '../../../../packages/contracts/src/types';
+import { LINES } from '../../../../packages/contracts/src/player';
 import { lineOf } from '../../../../packages/engine/src/player';
 import { overall } from '../../../../packages/engine/src/world';
 export type PlayerScope = 'season' | 'career';
@@ -33,11 +34,24 @@ export function performanceRows(metrics: Metrics) {
     ] as const
   ).map(([label, index]) => ({ label, total: metrics[index], per90: per90(metrics, index) }));
 }
+/** A roster filter: everyone, a line, or one of the 14 positions (→WEB-55). */
+export type PositionFilter = Line | Position | 'all';
+/**
+ * Whether a player counts under a filter (→WEB-55): under every position he plays at 준수 or better,
+ * and under the line of each of them.
+ */
+export function playsUnder(p: Pick<Player, 'positions'>, filter: PositionFilter) {
+  if (filter === 'all') return true;
+  const at = Object.entries(p.positions) as [Position, number][];
+  return (LINES as readonly string[]).includes(filter)
+    ? at.some(([position, level]) => level >= 2 && lineOf(position) === filter)
+    : (p.positions[filter as Position] ?? 0) >= 2;
+}
 export function explorePlayers(
   players: Player[],
   options: {
     scope: PlayerScope;
-    role: Line | 'all';
+    role: PositionFilter;
     query: string;
     minutes: number;
     order: PlayerOrder;
@@ -46,7 +60,7 @@ export function explorePlayers(
   const listed = players.filter(
     (p) =>
       (p.status === 'active' || options.scope === 'career') &&
-      (options.role === 'all' || options.role === lineOf(p.position)) &&
+      playsUnder(p, options.role) &&
       p.name.toLowerCase().includes(options.query.trim().toLowerCase()) &&
       p[options.scope][10] >= options.minutes,
   );

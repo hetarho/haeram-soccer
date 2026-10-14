@@ -6,7 +6,7 @@ import { clubOf, overall } from '../../../../packages/engine/src/world';
 import type { TransferOffer } from '../../../../packages/engine/src/recruitment';
 import { Money } from './Money';
 import { OvrBadge } from './OvrBadge';
-import { REQUEST_WHY, requestStakes, LINE_NAMES, shortlistRows } from './shortlist';
+import { REQUEST_WHY, requestName, requestStakes, LINE_NAMES, shortlistRows } from './shortlist';
 import s from './ScoutShortlist.module.css';
 
 /**
@@ -55,7 +55,7 @@ export function ScoutShortlist({
               <li key={line} data-kind={request.kind}>
                 <span className={s.why}>{REQUEST_WHY[request.kind]}</span>
                 <span>
-                  {LINE_NAMES[line]}
+                  {request.position ? `${requestName(request)} 자리` : LINE_NAMES[line]}
                   {request.pick && <small> · 감독 지목 {pickName(request.pick)}</small>}
                 </span>
               </li>
@@ -99,7 +99,8 @@ export function ScoutShortlist({
                         {pick && <i className={s.pickTag}>감독 지목</i>}
                       </b>
                       <small>
-                        POT {Math.round(offer.player.potential)} · {w.year - offer.player.born}세
+                        {offer.player.position} · {LINE_NAMES[row.line]} · POT{' '}
+                        {Math.round(offer.player.potential)} · {w.year - offer.player.born}세
                       </small>
                     </span>
                     <span className={s.money}>

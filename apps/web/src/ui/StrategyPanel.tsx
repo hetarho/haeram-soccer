@@ -17,7 +17,8 @@ import {
   tacticLabel,
   tacticRequestOutlook,
 } from '../../../../packages/engine/src/index';
-import { ROLE_LABEL } from '../../../../packages/engine/src/player';
+import { FORMATIONS, lineOf, ROLE_LABEL } from '../../../../packages/engine/src/player';
+import { FormationPitch, LEVEL_LABEL } from './FormationPitch';
 import type { GameClient } from '../runtime/client';
 import { gameStore, useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
@@ -391,7 +392,15 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose }:
             <section className={s.section} aria-label="선발 선수 준비">
               <div className={s.sectionHead}>
                 <h3>선발 11명 고르기</h3>
-                <span>GK 1 · DEF 4 · MID 3 · FWD 3</span>
+                <span>
+                  {FORMATIONS[w.tactic].name} ·{' '}
+                  {(['GK', 'DF', 'MF', 'FW'] as const)
+                    .map(
+                      (line) =>
+                        `${line} ${slots.filter((place) => lineOf(place.position) === line).length}`,
+                    )
+                    .join(' · ')}
+                </span>
               </div>
               <div className={s.presets}>
                 <button
@@ -416,6 +425,36 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose }:
                 </button>
               </div>
               <Preview players={selected} baseline={baseline} tactic={w.tactic} />
+              <FormationPitch
+                tactic={w.tactic}
+                label={`${FORMATIONS[w.tactic].name} 선발 배치`}
+                slot={(index) => {
+                  const place = slots[index]!,
+                    player = byId.get(draft[index] ?? '');
+                  const level = player?.positions[place.position];
+                  return (
+                    <div
+                      className={s.slotCard}
+                      data-testid={`formation-slot-${index}`}
+                      data-level={level ?? 0}
+                    >
+                      <small>
+                        {place.position} · {ROLE_LABEL[place.role]}
+                      </small>
+                      <b>{player ? player.name.split(' ').at(-1) : '—'}</b>
+                      {player && (
+                        <>
+                          <span>
+                            실효 {Math.round(slotOvr(player, place, ownMultiplier(player)))} ·{' '}
+                            {level ? LEVEL_LABEL[level] : '미숙'}
+                          </span>
+                          <span>적응 {player.adaptation.toFixed(2)}</span>
+                        </>
+                      )}
+                    </div>
+                  );
+                }}
+              />
               {replaced > 0 && (
                 <p className={s.hint}>이탈한 선발 {replaced}명은 활동 중인 선수로 대체합니다.</p>
               )}

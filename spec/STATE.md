@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| p7ad | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T15:45Z | 2026-10-14T19:26Z | T112 |
+| p7ad | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T15:45Z | 2026-10-14T19:37Z | - |
 
 ## inbox
 - 261015 decided CLUB-27: does an incoming offer left to lapse count as declined for 야망 → yes, like the owner's reject (alt: only an explicit reject) — silence must not dodge an ambitious player's resentment
@@ -70,7 +70,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T112 | Player profile, positions and the formation in the web game | WEB CLUB PLAYER | T107 | doing@261015.p7ad |
 | T113 | Earlier-rules careers are listed, never opened, and the century still fits | SAVE | T107 | todo |
 | T114 | Instruct training from 훈련, see adaptation, read rivals' 조직력 | WEB STAFF CLUB PLAYER LEAGUE | T108 T109 T112 | todo |
 | T115 | Measure the balance bands on the new model | LEAGUE ECON | T108 T109 T110 T111 | todo |
@@ -99,6 +98,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 T112 done: the player profile (attributes, positions by level, roles, personality, traits, adaptation, 실효 OVR), adaptation on the roster, position filters by 준수+, candidates with the scout's range and arrival/settled 실효 OVR, the formation on a pitch in the lineup tab
 - 261015 T111 done: requests by formation slot (준수+ at its position), the 단장's upgrades by slot, slot cover in the untouchable price, 야망 unhappiness after a declined bigger offer (ends at the close), the preview's arrival and settled slot
 - 261015 T110 done: the duels read every attribute, roles and play traits pick who acts within the team rates, crosses and headers, the sweeper keeper, the tactical profile on MATCH-8/9's attributes, roles move players in playback; calibration MAE duel 1.7 / summary 1.6
 - 261015 CI fix: CI 38618399787 failed only WebKit 2/2 — progression-settings' hidden-tab pause read the date while a day was still being played; the spec now waits for the clock to come to rest (one in-flight day may land) and then holds it still
@@ -118,4 +118,3 @@
 - 261014 T103 done (69e0808): shortlist, requests with the manager's pick, −3 trust at an unmet window's close, the 단장 signing from them; goldens regenerated; update-ssot CLUB r33 (CLUB-33 judged the day after the close, loans count, a new manager is not judged); T102 on main after CI 38550303926; T104 doing
 - 261014 T102 done (5583688): the 단장 post, negotiation moved from the chief scout, delegated reports name him, rules 1.22.0 with activation; unit 705, Chromium e2e 107; T101 on main after CI 38548269434; T103 doing
 - 261014 T101 done (d825700): 방향 at /direction, older /business addresses open their tab there; unit 700, Chromium e2e 31 of the touched specs; T102 doing
-- 261014 create-task T101 (/direction), T102 (the 단장 post), T103 (shortlist and requests), T104 (screens), T105 (explore 1h: calibration)

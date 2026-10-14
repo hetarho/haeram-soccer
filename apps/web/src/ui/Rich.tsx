@@ -57,6 +57,7 @@ import {
 import { buildOf, cardOf } from '../../../../packages/engine/src/build';
 import { Dialog } from './Dialog';
 import { OvrBadge } from './OvrBadge';
+import { positionsLabel } from './FormationPitch';
 import {
   DEFAULT_ROSTER_VIEW,
   RosterFilters,
@@ -871,7 +872,8 @@ function Roster({ state, client }: Props) {
                 <small>
                   {p.status === 'active' ? (
                     <>
-                      {w.year - p.born}세 · 잠재력 {Math.round(p.potential)}
+                      {w.year - p.born}세 · 잠재력 {Math.round(p.potential)} · 적응{' '}
+                      <span data-testid="roster-adaptation">{p.adaptation.toFixed(2)}</span>
                       <br />
                       연봉 <Money value={p.wage} code={c.country} year={w.year} plain /> / 시장{' '}
                       <Money value={marketWage(w, p)} code={c.country} year={w.year} plain /> ·{' '}
@@ -932,6 +934,7 @@ function Roster({ state, client }: Props) {
                     <th>포지션</th>
                     <th>선수</th>
                     <th>OVR</th>
+                    <th>적응</th>
                     <th>나이</th>
                     <th>잠재력</th>
                     <th>출전</th>
@@ -948,7 +951,7 @@ function Roster({ state, client }: Props) {
                     const stats = scope === 'career' ? p.career : p.season;
                     return (
                       <tr key={p.id}>
-                        <td>{p.position}</td>
+                        <td title={positionsLabel(p.positions)}>{p.position}</td>
                         <td>
                           <PlayerLink id={p.id} name={p.name} scope={scope} />
                           <small>
@@ -963,6 +966,7 @@ function Roster({ state, client }: Props) {
                           </small>
                         </td>
                         <td>{overall(p)}</td>
+                        <td>{p.status === 'active' ? p.adaptation.toFixed(2) : '—'}</td>
                         <td>{p.status === 'active' ? w.year - p.born : `${p.born}년생`}</td>
                         <td>{number(p.potential)}</td>
                         <td>{appearances(stats)}</td>

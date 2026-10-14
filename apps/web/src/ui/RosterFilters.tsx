@@ -1,13 +1,13 @@
 import { useId, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
-import type { Line } from '../../../../packages/contracts/src/types';
-import type { PlayerOrder, PlayerScope } from './playerAnalysis';
+import { POSITIONS } from '../../../../packages/contracts/src/player';
+import type { PlayerOrder, PlayerScope, PositionFilter } from './playerAnalysis';
 import { Dialog } from './Dialog';
 import { play } from './motion';
 import s from './RosterFilters.module.css';
 
 export interface RosterView {
   scope: PlayerScope;
-  role: Line | 'all';
+  role: PositionFilter;
   order: PlayerOrder;
   minutes: number;
 }
@@ -36,6 +36,8 @@ const GROUPS: {
     options: [
       { value: 'all', label: '전체' },
       ...(['GK', 'DF', 'MF', 'FW'] as const).map((value) => ({ value, label: value })),
+      // Every outfield position; a player counts under each he plays at 준수 or better.
+      ...POSITIONS.filter((value) => value !== 'GK').map((value) => ({ value, label: value })),
     ],
   },
   {

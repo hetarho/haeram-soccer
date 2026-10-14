@@ -1,0 +1,78 @@
+/* A vertical pitch: stripes of grass, the halfway line and our penalty box. */
+.pitch {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4.2;
+  max-height: 560px;
+  margin: 0 auto 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(47, 194, 116, 0.08) 0 10%,
+      rgba(47, 194, 116, 0.03) 10% 20%
+    ),
+    var(--surface-deep);
+  overflow: hidden;
+}
+.half {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 1px solid var(--line);
+}
+.box {
+  position: absolute;
+  left: 25%;
+  right: 25%;
+  bottom: 0;
+  height: 14%;
+  border: 1px solid var(--line);
+  border-bottom: 0;
+}
+.slot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 19%;
+  max-width: 104px;
+  box-sizing: border-box;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+.mini {
+  max-width: 150px;
+  max-height: 210px;
+  aspect-ratio: 3 / 4;
+  margin: 0;
+}
+.dot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  min-width: 30px;
+  padding: 3px 4px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-align: center;
+  line-height: 1;
+}
+.dot[data-level='3'] {
+  border-color: var(--gold-edge);
+  background: var(--gold-fill);
+  color: #2b1d00;
+}
+.dot[data-level='2'] {
+  border-color: var(--accent-edge);
+  background: var(--accent-fill);
+  color: var(--on-accent);
+}
+.dot[data-main] {
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
+}

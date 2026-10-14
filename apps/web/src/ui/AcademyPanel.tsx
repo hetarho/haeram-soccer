@@ -4,6 +4,7 @@ import {
   ACADEMY_LEAVE_AGE,
   YOUTH_FOCUS_INFO,
 } from '../../../../packages/engine/src/academy';
+import { LINE_LABEL, lineOf, POSITION_LABEL } from '../../../../packages/engine/src/player';
 import { buildOf, cardOf } from '../../../../packages/engine/src/build';
 import { currentDay, seasonDayLabel, seasonDayOf } from '../../../../packages/engine/src/calendar';
 import { POLICY_DEFAULTS, POLICY_INFO, policyOf } from '../../../../packages/engine/src/policy';
@@ -79,7 +80,9 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
                       <OvrBadge value={overall} role={p.position} potential={potential} />
                       <div className={s.prospectText}>
                         <b>{p.name}</b>
-                        <small>{age}세</small>
+                        <small>
+                          {age}세 · {POSITION_LABEL[p.position]} · {LINE_LABEL[lineOf(p.position)]}
+                        </small>
                         <Meter value={(overall / Math.max(1, potential)) * 100} />
                         <small className={readiness === 'ready' ? s.ready : undefined}>
                           {label}

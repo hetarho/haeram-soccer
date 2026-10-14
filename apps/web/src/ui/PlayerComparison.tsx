@@ -4,6 +4,7 @@ import type { Player, World } from '../../../../packages/contracts/src/types';
 import { ATTRIBUTES } from '../../../../packages/contracts/src/player';
 import { ATTRIBUTE_LABEL } from '../../../../packages/engine/src/player';
 import { Dialog } from './Dialog';
+import { positionsLabel } from './FormationPitch';
 import { PlayerPerformance } from './PlayerPerformance';
 import { performanceRows, type PlayerScope } from './playerAnalysis';
 import s from './Analysis.module.css';
@@ -98,6 +99,7 @@ export function PlayerComparison({
               <small>
                 {left.position} · {status(left)}
               </small>
+              <small data-testid="compare-positions">{positionsLabel(left.positions)}</small>
             </b>
             <span>vs</span>
             <b>
@@ -105,6 +107,7 @@ export function PlayerComparison({
               <small>
                 {right.position} · {status(right)}
               </small>
+              <small>{positionsLabel(right.positions)}</small>
             </b>
           </div>
           <p className={s.note}>

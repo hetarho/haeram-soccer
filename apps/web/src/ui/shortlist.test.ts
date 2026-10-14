@@ -7,7 +7,8 @@ import {
   transferOffers,
   transferWindowDays,
 } from '../../../../packages/engine/src/index';
-import { directorDecisions, requestStakes, shortlistRows } from './shortlist';
+import { lineOf } from '../../../../packages/engine/src/player';
+import { directorDecisions, requestName, requestStakes, shortlistRows } from './shortlist';
 
 function club(seed = 'shortlist-ui') {
   return createWorld({
@@ -59,9 +60,7 @@ describe('스카우트 명단 and 감독 요청 on 이적시장 (→WEB-43, CLUB
     const w = club();
     oneKeeper(w);
     openShortlistWindow(w);
-    const roles = w.shortlist!.window!.requests.map(
-      (request) => ({ GK: '골키퍼', DF: '수비수', MF: '미드필더', FW: '공격수' })[request.line],
-    );
+    const roles = w.shortlist!.window!.requests.map(requestName);
     expect(roles[0]).toBe('골키퍼');
     expect(requestStakes(w)).toBe(
       `이적시장이 닫힐 때까지 ${roles.join('·')} 자리에 아무도 오지 않으면 감독 신뢰 −3`,
@@ -86,5 +85,22 @@ describe('스카우트 명단 and 감독 요청 on 이적시장 (→WEB-43, CLUB
     expect(at(2)).toBe('재계약 협상 맡김 · 감독 선임 직접 · 이적 직접');
     expect(at(3)).toBe('재계약 협상 맡김 · 감독 선임 맡김 · 이적 직접');
     expect(at(4)).toBe('재계약 협상 맡김 · 감독 선임 맡김 · 이적 맡김');
+  });
+});
+
+describe('the shortlist by line and slot requests by position (→WEB-43, PLAYER-3)', () => {
+  it('by line', () => {
+    const w = club('shortlist-lines');
+    openShortlistWindow(w);
+    const rows = shortlistRows(w, transferOffers(w));
+    // Each row holds the candidates whose main position is in its line.
+    for (const row of rows)
+      for (const { offer } of row.entries) expect(lineOf(offer.player.position)).toBe(row.line);
+    expect(rows.reduce((sum, row) => sum + row.entries.length, 0)).toBe(
+      w.shortlist!.entries.length,
+    );
+    // A line request reads as its line, a slot request as its position.
+    expect(requestName({ line: 'DF' })).toBe('수비수');
+    expect(requestName({ line: 'DF', position: 'CB' })).toBe('센터백');
   });
 });

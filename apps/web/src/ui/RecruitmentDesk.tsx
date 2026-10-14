@@ -1,8 +1,17 @@
 import { Select } from './Select';
 import { useState } from 'react';
 import type { Line, TransferBid, World } from '../../../../packages/contracts/src/types';
-import { ATTRIBUTES } from '../../../../packages/contracts/src/player';
-import { ATTRIBUTE_LABEL, lineOf, POSITION_LABEL } from '../../../../packages/engine/src/player';
+import type { Personality } from '../../../../packages/contracts/src/player';
+import {
+  lineOf,
+  PERSONALITY_LABEL,
+  POSITION_LABEL,
+  ROLE_LABEL,
+  TRAIT_LABEL,
+} from '../../../../packages/engine/src/player';
+import { staffMember } from '../../../../packages/engine/src/staff';
+import { positionsLabel } from './FormationPitch';
+import { gradeLabel, PlayerProfile } from './PlayerProfile';
 import { bidBoard, bidOutlook, transferWindow } from '../../../../packages/engine/src/transfers';
 import { bidKind } from './bids';
 import { clubOf, overall } from '../../../../packages/engine/src/world';
@@ -67,6 +76,7 @@ function CandidateCard({
     club = clubOf(w);
   const cash = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   const window = transferWindow(w);
+  const scout = staffMember(w, 'scout')?.ability;
   return (
     <article
       className={s.card}
@@ -81,6 +91,9 @@ function CandidateCard({
           <span>
             {player.position} · {POSITION_LABEL[player.position]} · {w.year - player.born}세
           </span>
+          <small className={s.positions} data-testid="candidate-positions">
+            {positionsLabel(player.positions)}
+          </small>
         </div>
         <button aria-pressed={selected} onClick={onCompare}>
           비교
@@ -94,9 +107,30 @@ function CandidateCard({
           성장 여지 <b>+{Math.max(0, Math.round(player.potential) - overall(player))}</b>
         </span>
       </div>
+      <p className={s.traits}>
+        {player.traits.length
+          ? player.traits.map((trait) => TRAIT_LABEL[trait]).join(' · ')
+          : '특성 없음'}
+      </p>
+      <p className={s.personality} data-testid="candidate-personality">
+        {(Object.keys(PERSONALITY_LABEL) as (keyof Personality)[])
+          .map(
+            (key) =>
+              `${PERSONALITY_LABEL[key]} ${gradeLabel(player.personality[key], false, scout)}`,
+          )
+          .join(' · ')}
+      </p>
       {offer.available && (
         <>
           <div className={s.build} aria-label="영입 전력 변화">
+            <div data-testid="candidate-slot">
+              <span>
+                {buy.slot.position} {ROLE_LABEL[buy.slot.role]} 자리 실효 OVR
+              </span>
+              <b>
+                합류 {buy.slot.arrival} → 적응 후 {buy.slot.settled}
+              </b>
+            </div>
             <div>
               <span>{buy.manual ? '직접 교체 시 전력' : '자동 선발 전력'}</span>
               <b>
@@ -210,17 +244,7 @@ function CandidateCard({
       )}
       <details className={s.details}>
         <summary>능력 자세히</summary>
-        <div className={s.attributes}>
-          {[
-            ...ATTRIBUTES.map((a) => [ATTRIBUTE_LABEL[a], Math.round(player.attrs[a])] as const),
-            ['잠재력', Math.round(player.potential)] as const,
-          ].map(([label, value]) => (
-            <span key={label}>
-              <span>{label}</span>
-              <b>{value}</b>
-            </span>
-          ))}
-        </div>
+        <PlayerProfile w={w} player={player} own={false} compact />
       </details>
     </article>
   );

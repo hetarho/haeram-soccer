@@ -1,6 +1,6 @@
 import type { Line, SigningRequest, World } from '../../../../packages/contracts/src/types';
 import { LINES } from '../../../../packages/contracts/src/player';
-import { lineOf } from '../../../../packages/engine/src/player';
+import { lineOf, POSITION_LABEL } from '../../../../packages/engine/src/player';
 import type { TransferOffer } from '../../../../packages/engine/src/recruitment';
 import { delegated } from '../../../../packages/engine/src/intervention';
 import { transferWindow } from '../../../../packages/engine/src/transfers';
@@ -12,6 +12,9 @@ export const LINE_NAMES: Readonly<Record<Line, string>> = {
   FW: '공격수',
 };
 
+/** What a request asks for: its line, or the formation slot's position (→CLUB-33). */
+export const requestName = (request: Pick<SigningRequest, 'line' | 'position'>) =>
+  request.position ? POSITION_LABEL[request.position] : LINE_NAMES[request.line];
 /** One line of the chief scout's shortlist (→CLUB-33), with the manager's request for it. */
 export interface ShortlistRow {
   line: Line;
@@ -63,7 +66,7 @@ export function requestStakes(w: World): string | undefined {
   const window = w.shortlist?.window;
   if (!window || window.year !== w.year || !window.requests.length || !transferWindow(w).open)
     return undefined;
-  const roles = window.requests.map((request) => LINE_NAMES[request.line]).join('·');
+  const roles = window.requests.map(requestName).join('·');
   return window.met
     ? `요청한 ${roles} 자리에 선수가 합류했어요 · 이번 이적시장은 감독 신뢰가 떨어지지 않아요`
     : `이적시장이 닫힐 때까지 ${roles} 자리에 아무도 오지 않으면 감독 신뢰 −3`;

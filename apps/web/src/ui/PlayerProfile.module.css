@@ -1,0 +1,150 @@
+/* A player's card as football media print it: head, positions, roles and the 14 attributes. */
+.profile {
+  display: grid;
+  gap: 12px;
+  margin: 8px 0 14px;
+  min-width: 0;
+}
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.headText {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.headText b {
+  color: var(--text);
+  font-size: 15px;
+}
+.flag {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--warm-soft);
+  color: var(--warm);
+  font-style: normal;
+  font-weight: 800;
+  font-size: 11px;
+}
+.columns {
+  display: grid;
+  grid-template-columns: minmax(120px, 180px) minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+.side {
+  min-width: 0;
+}
+.side h4,
+.group h4 {
+  margin: 0 0 4px;
+  color: var(--text-faint);
+  font-size: 11px;
+  letter-spacing: 0.4px;
+}
+.side h4:not(:first-child) {
+  margin-top: 10px;
+}
+.roles {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+.roles li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.roles b {
+  font-variant-numeric: tabular-nums;
+}
+.personality {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  font-size: 13px;
+}
+.personality div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.personality dt {
+  color: var(--text-muted);
+}
+.personality dd {
+  margin: 0;
+  font-weight: 700;
+}
+.note {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-faint);
+  font-size: 11px;
+}
+.traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.traits span {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  color: var(--text);
+}
+.groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px 14px;
+}
+.bar {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) 26px;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+.bar span {
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bar i {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--text-faint);
+}
+.bar i[data-tone='mid'] {
+  background: var(--accent);
+}
+.bar i[data-tone='high'] {
+  background: var(--gold);
+}
+.bar b {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.compact .groups {
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+}
+@media (max-width: 420px) {
+  .columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .columns > :first-child {
+    justify-self: center;
+  }
+}

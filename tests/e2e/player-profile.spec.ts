@@ -1,0 +1,101 @@
+import { expect, test, type Locator, type Page } from '@playwright/test';
+import { horizontalOverflow } from './layout';
+
+/**
+ * How far a dialog's content runs past its own width: any block that shows its overflow (a
+ * visually hidden label clips its own, a scroll area scrolls).
+ */
+const sideways = (dialog: Locator) =>
+  dialog.evaluate((element) =>
+    Math.max(
+      0,
+      ...[element, ...element.querySelectorAll('*')]
+        .filter((node) => {
+          const style = getComputedStyle(node);
+          // An inline box has no client width of its own to overflow.
+          return node === element || (style.overflowX === 'visible' && style.display !== 'inline');
+        })
+        .map((node) => node.scrollWidth - node.clientWidth),
+    ),
+  );
+async function people(page: Page) {
+  await page.getByRole('button', { name: '선수·스태프', exact: true }).first().click();
+}
+
+for (const viewport of [
+  { width: 360, height: 740 },
+  { width: 390, height: 844 },
+]) {
+  test(`reads players as football media would at ${viewport.width}x${viewport.height} (→WEB-59, CLUB-10, CLUB-14)`, async ({
+    page,
+  }) => {
+    test.slow();
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    await page.getByRole('button', { name: '클럽 창단' }).click();
+    await expect(page.getByTestId('club-hub')).toBeVisible();
+
+    // The roster: each card shows adaptation; a name opens the sheet with the full profile.
+    await people(page);
+    const roster = page.locator('[class*="rosterCards"]');
+    await expect(roster.getByTestId('roster-adaptation').first()).toHaveText(/^\d\.\d\d$/);
+    const link = roster.getByRole('button', { name: / 선수 기록$/ }).first();
+    const name = (await link.getAttribute('aria-label'))!.replace(/ 선수 기록$/, '');
+    await link.click();
+    const sheet = page.getByRole('dialog', { name, exact: true });
+    const profile = sheet.getByRole('region', { name: '선수 프로필' });
+    await expect(profile.getByTestId('profile-attributes')).toContainText('위치선정');
+    await expect(profile.getByTestId('profile-attributes')).toContainText('공중볼 처리');
+    await expect(profile.getByRole('img', { name: /^포지션 [A-Z]+ 최상/ })).toBeVisible();
+    await expect(profile.getByTestId('profile-effective')).toContainText('실효 OVR');
+    await expect(profile.getByTestId('profile-adaptation')).toHaveText(/적응도 \d\.\d\d · ×[\d.]+/);
+    // His own personality is exact.
+    await expect(profile.getByTestId('profile-personality')).not.toContainText('~');
+    expect(await sideways(sheet)).toBeLessThanOrEqual(1);
+    await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
+
+    // A position filter lists everyone who plays it at 준수 or better.
+    const settings = page.getByRole('button', { name: /^선수 보기 설정/ });
+    await settings.click();
+    const view = page.getByRole('dialog', { name: '선수 보기 설정' });
+    await view
+      .getByRole('radiogroup', { name: '포지션' })
+      .getByRole('radio', { name: 'CB' })
+      .click();
+    await page.keyboard.press('Escape');
+    await expect(page.getByTestId('roster-view-summary')).toHaveText('CB');
+    await expect(roster.getByRole('article').first()).toBeVisible();
+
+    // A market candidate: positions with levels, the scout's range on his personality, and his
+    // 실효 OVR at the slot he would take on arrival and settled.
+    await page
+      .getByRole('tablist', { name: '선수·스태프 보기' })
+      .getByRole('tab', { name: '이적시장', exact: true })
+      .click();
+    const desk = page.getByRole('region', { name: '선수 영입 데스크' });
+    const card = desk.getByRole('article').first();
+    await expect(card.getByTestId('candidate-positions')).toHaveText(/[A-Z]+ 최상/);
+    await expect(card.getByTestId('candidate-personality')).toContainText('~');
+    await expect(card.getByTestId('candidate-slot')).toHaveText(/합류 \d+ → 적응 후 \d+/);
+    await card.getByText('능력 자세히', { exact: true }).click();
+    await expect(card.getByRole('region', { name: '선수 프로필' })).toContainText(
+      '수석 스카우트가 본 범위',
+    );
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+
+    // The lineup tab draws the formation: each slot its position, role, player and 실효 OVR.
+    await page.getByRole('button', { name: '클럽 홈', exact: true }).first().click();
+    await page
+      .getByTestId('club-hub')
+      .getByRole('button', { name: '전술·선발 준비', exact: true })
+      .click();
+    const preparation = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
+    await preparation.getByRole('tab', { name: '선발 선택', exact: true }).click();
+    const pitch = preparation.getByRole('group', { name: /선발 배치$/ });
+    await expect(pitch).toBeVisible();
+    await expect(pitch.getByTestId('formation-slot-0')).toContainText('GK');
+    await expect(pitch.getByTestId('formation-slot-0')).toContainText(/실효 \d+/);
+    await expect(pitch.locator('[data-testid^="formation-slot-"]')).toHaveCount(11);
+    expect(await sideways(preparation)).toBeLessThanOrEqual(1);
+  });
+}

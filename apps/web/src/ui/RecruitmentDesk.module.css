@@ -237,18 +237,6 @@
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
-.attributes {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px 12px;
-  font-size: 11px;
-}
-.attributes > span {
-  display: flex;
-  justify-content: space-between;
-  gap: 7px;
-  color: var(--text-muted);
-}
 .warning,
 .message {
   margin: 10px 0;
@@ -478,4 +466,17 @@
   font-size: 11px;
   font-weight: 500;
   color: var(--text-muted);
+}
+
+/* Positions with levels, traits and the scout's read of his personality. */
+.positions {
+  display: block;
+  color: var(--text-faint);
+  font-size: 11px;
+}
+.traits,
+.personality {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
 }
