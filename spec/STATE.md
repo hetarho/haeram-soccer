@@ -8,7 +8,12 @@
 - level: mid
 - lang: ko   # user's language — interviews, confirmations, reports
 - docs: en  # doc language
-- push: ?   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
+- push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
+
+## active
+| tag | host | mode | since | at | doing |
+|---|---|---|---|---|---|
+| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T01:57Z | - |
 
 ## ideation
 | id | st |
