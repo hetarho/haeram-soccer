@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T02:37Z | - |
+| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T02:45Z | T089 |
 
 ## inbox
 - 261014 parked -: the owner's dev server (pnpm dev, port 19500, in the main checkout) was found stopped during T087 — not restarted, since vite's client reloads the open game tab when its server returns; restart it yourself once the game is saved
@@ -53,7 +53,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T089 | Direction rows drive the delegated staff | ECON CLUB STAFF WEB SAVE | - | todo |
+| T089 | Direction rows drive the delegated staff | ECON CLUB STAFF WEB SAVE | - | doing@261014.v7dq |
 | T090 | Direction rows on the board and lines in 사람 | ECON WEB | T089 | todo |
 | T091 | Calibrate the economy with the direction rows | ECON CLUB | T089 | todo |
 
@@ -64,7 +64,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- slice 1 (T086–T088) waits for CI on work/direction before main; then implement-task T089 → T090, T091 (club-direction slice 2).
+- implement-task T089 (doing on work/direction) → T090, T091 (club-direction slice 2).
 - owner's requests 261013 are on main (caa5e83, CI 38448231873 green in every browser): T080 level only, T081 no strategy locks, T082/T083 coaches set training with suggestions and orders and the academy by U-17/U-19/U-21, T084/T085 facilities as stadium steps, training ground and academy facilities.
 - wage bill / revenue sits at 44.3% on the facility parts (ECON-29 band 45–70%, 45.3% before them): base wage 925 and a 25% youth promise did not move it; try the contract-talk floor next (agent premium per level, as T079 did: 0% gave 47.7%, 1% 46.1%) and re-measure 40 careers.
 - three levers and the economy port are on main (fast-forward to 2de95c6, 261013): T070–T079 done — T077 d303c5e, T078 fe7b209/8c52745, T079 merged from work/econ-port at 11c9c5c/66ce736 (unit 658, contract 11, build pass; goldens equal work/econ-port's). CI run 38382526028 on 2de95c6 passed every job (checks, the benchmark, e2e in Chromium, Firefox and both WebKit shards); the run before it on 66ce736 failed only Firefox e2e, which passed in full locally (102 passed, 2 skipped) and on the rerun — a flake. work/levers and work/econ-port are merged and can be deleted. Next: pick from the follow-ups below.
@@ -76,6 +76,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 slice 1 on main: fast-forward to 84a3a97 after CI 38502027150 passed every job on b2ed331; T089 doing on work/direction
 - 261014 create-task slice 2 → T089 (engine rows, 재정 기조, ladder, load mapping), T090 (board rows, 사람 lines, 자금), T091 (explore 1h: ECON-29 on 40 careers)
 - 261014 update-ssot ECON r25 CLUB r27 STAFF r16 WEB r60 SAVE r29 (club-direction slice 2): 재정 기조, 재계약 기조, the 스태프 area replace the talk rule and the hiring and manager criteria; 매각 기조 sets the sale bar; the level ladder; 자금 page tab
 - 261014 T088 done (c3f8106): one row kind for cards and dials, areas folded behind headers; full Chromium e2e 106, unit 671
@@ -95,4 +96,3 @@
 - 261013 create-task → T082 (engine), T083 (web); T082 doing standalone on work/intervention
 - 261013 update-ssot CLUB r25 STAFF r15 WEB r57 SAVE r27: coaches always set training (owner suggests or forces, risking a resignation), academy U-17/U-19/U-21 with youth focus, promotion from 16 (17 ENG), leave at 21; research: EPPP, CIES debut data
 - 261013 T081 done (0654d33): strategy cards change at any time; no lock, `buildChanged` dropped on load
-- 261013 update-ssot ECON r21 WEB r56 SAVE r26 (strategy cards change at any time, no 90-day lock) → T081, doing standalone on work/intervention
