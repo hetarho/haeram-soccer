@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| q7m2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T10:10Z | 2026-10-14T10:11Z | T101 |
+| q7m2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T10:10Z | 2026-10-14T10:15Z | T102 |
 
 ## inbox
 - 261014 suggest -: club-direction added 15 tasks (T086–T100) in one day — run review-code on apps/web/src/ui and packages/engine/src before the next feature
@@ -43,8 +43,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T101 | The 방향 page at /direction | WEB | - | doing@261014.q7m2 |
-| T102 | The 단장 post | STAFF CLUB ECON SAVE | - | todo |
+| T102 | The 단장 post | STAFF CLUB ECON SAVE | - | doing@261014.q7m2 |
 | T103 | The shortlist, the manager's requests and the 단장's signings | CLUB STAFF SAVE | T102 | todo |
 | T104 | The 단장's card, the shortlist and the requests on screen | WEB STAFF CLUB | T102 T103 | todo |
 | T105 | Re-measure the economy with the 단장 | ECON | T102 T103 | todo |
@@ -69,7 +68,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
-- 261014 T101 doing (q7m2, autopilot)
+- 261014 T101 done (d825700): 방향 at /direction, older /business addresses open their tab there; unit 700, Chromium e2e 31 of the touched specs; T102 doing
 - 261014 create-task T101 (/direction), T102 (the 단장 post), T103 (shortlist and requests), T104 (screens), T105 (explore 1h: calibration)
 - 261014 update-ssot WEB r65 CLUB r32 STAFF r19 ECON r33 SAVE r34 (the owner's inbox review): the 방향 tab at /direction; the 단장 (STAFF-20) takes contract talks, the manager post and transfers when delegated and carries the transfer negotiation; signings from the chief scout's all-season shortlist and the manager's requests, −3 trust for none met at a window's close
 - 261014 inbox: the owner confirmed 21 of the 23 decisions one by one; changed WEB-39 (the 방향 tab moves to /direction) and CLUB-33 (a 단장 decides signings from the chief scout's all-season shortlist and the manager's requests) — update-ssot follows
