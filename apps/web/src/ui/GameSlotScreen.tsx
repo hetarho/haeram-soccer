@@ -47,6 +47,11 @@ export function GameSlotScreen({
     slots.sync(gameStoreWorld());
     setIndex(slots.display(gameStoreWorld()));
   }, [slots, worldId]);
+  // A load that settles after the screen opened may have found an earlier-rules checkpoint in
+  // play: the slots are read again once it does (→SAVE-16).
+  useEffect(() => {
+    if (!loading) setIndex(slots.display(gameStoreWorld()));
+  }, [slots, loading, clientError]);
   // Games parked before slots kept their rules version learn it from their header (→SAVE-16).
   useEffect(() => {
     let live = true;
