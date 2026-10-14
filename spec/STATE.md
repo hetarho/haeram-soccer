@@ -13,18 +13,13 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T03:12Z | T090 |
+| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T03:37Z | T091 |
 
 ## inbox
-- 261014 parked -: the owner's dev server (pnpm dev, port 19500, in the main checkout) was found stopped during T087 — not restarted, since vite's client reloads the open game tab when its server returns; restart it yourself once the game is saved
 - 261014 decided WEB-39: the 방향 tab's address → keep /business?view= with build, finance and sponsor, older values opening their tab (alt: a new /direction route | the old view values)
 - 261014 decided WEB-60: how the six areas show on one screen → folded behind headers naming the options in force, a drafted or remedy-opened area unfolded (alt: all unfolded | only the first unfolded)
 - 261014 decided WEB-60 ECON-25 ideation/club-direction: area names in slice 1 → today's six (선수단, 영입, 매각, 유소년, 수익, 홈·팬) until their rows change in slices 2–4, and campaigns under 재정 until slice 4 (alt: rename to 선수단·계약, 재정, 지역 now)
 - 261014 decided WEB-60: the standard card option's label → 표준, as every row will have (alt: keep 기본)
-- 261014 decided ECON-33 ideation/club-direction: 재정 기조's numbers → five options, 표준 keeping today's 13 rounds, 65%, a year and 13/30, the others stepping 6–30 rounds, 75–55%, ¼–2 years (alt: three options | runway only)
-- 261014 decided CLUB-26: 재계약 기조 → 표준 110%, 모두 붙잡기 140%, 핵심만 붙잡기 starters only at 140%, 짠물 100%, 젊은 선수 우선 under 30 (alt: keep the owner's numeric talk rule beside it)
-- 261014 decided STAFF-15 STAFF-18: staff rows → one 코치 기조 for every department (자원봉사, 저비용 45+, 표준 55+, 최고 수준 65+) and 선호 학파 + 감독 기조 (표준, 육성가, 검증된 승부사, 젊은 감독, 저비용); flexibility, pride, trait and per-department criteria dropped (alt: keep them as hidden defaults)
-- 261014 decided WEB-45: the ladder → 3 hands over sponsors, the coaches and the manager; 4 adds offers (signings join in slice 5) (alt: keep today's table)
 - 261014 decided WEB-39: the cash page tab → 자금, so it never reads like the 재정 area (alt: rename the area instead)
 - 261014 decided CLUB-18 ideation/club-direction: slice 2's scope → 매각 기조 sets the sale bar now; staff changing stances and the youth rows driving promotion move to slice 3 with 육성 목표 (alt: all in slice 2)
 - 261014 decided SAVE-10: older criteria → the nearest rows with an inbox item naming them, 재정 기조 표준 (alt: every row 표준)
@@ -53,8 +48,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T090 | Direction rows on the board and lines in 사람 | ECON WEB | T089 | doing@261014.v7dq |
-| T091 | Calibrate the economy with the direction rows | ECON CLUB | T089 | todo |
+| T091 | Calibrate the economy with the direction rows | ECON CLUB | T089 | doing@261014.v7dq |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -75,6 +69,8 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 T090 done (aaf2aeb): seven areas with direction rows on the board, lines in 사람, 자금 tab, ladder texts; T091 doing
+- 261014 owner confirmed (relayed by session haeram-soccor-6f): ECON-33 재정 기조 options, CLUB-26 재계약 기조 options, STAFF-15/STAFF-18 staff rows, WEB-45 ladder; dev-server note dropped (stopped on purpose)
 - 261014 T089 done (63a6c7d): engine rows, 재정 기조, ladder, rules 1.17.0; unit 451, contract 11; T090 doing
 - 261014 slice 1 on main: fast-forward to 84a3a97 after CI 38502027150 passed every job on b2ed331; T089 doing on work/direction
 - 261014 create-task slice 2 → T089 (engine rows, 재정 기조, ladder, load mapping), T090 (board rows, 사람 lines, 자금), T091 (explore 1h: ECON-29 on 40 careers)
@@ -93,5 +89,3 @@
 - 261014 T084/T085 code on work/intervention (e5d8276, CI green in every browser); recalibrated: 0 of 24 bankrupt, every band but the wage bill (44.3% vs 45–70%); measuring the pre-facility commit to find the cause
 - 261013 update-ssot ECON r22 CLUB r26 HIST r8 WEB r58 SAVE r28: facilities as three parts (stadium 8 expansion/rebuild steps to 90,000, training ground and academy 1–5) → T084 (doing), T085
 - 261013 T082 T083 done (094fa13): coaches set training, owner suggests or forces, academy U-17/U-19/U-21; Chromium e2e 104, unit 666, contract 11, benchmark pass
-- 261013 create-task → T082 (engine), T083 (web); T082 doing standalone on work/intervention
-- 261013 update-ssot CLUB r25 STAFF r15 WEB r57 SAVE r27: coaches always set training (owner suggests or forces, risking a resignation), academy U-17/U-19/U-21 with youth focus, promotion from 16 (17 ENG), leave at 21; research: EPPP, CIES debut data
