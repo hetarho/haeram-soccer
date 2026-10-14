@@ -6,10 +6,10 @@ import type {
   YouthFocus,
 } from '../../../../packages/contracts/src/types';
 import {
+  activeTrainingFocus,
   developmentOutlook,
   focusFor,
   trainingFocusInfo,
-  trainingSummary,
   type DevelopmentFactor,
   type DevelopmentHome,
 } from '../../../../packages/engine/src/training';
@@ -254,22 +254,25 @@ function TrainingFocusPanel({
  * first-team player with his focus this round and the sheet to suggest or force one for him.
  */
 function PlayerTraining({ w, onSheet }: { w: World; onSheet: (sheet: Sheet) => void }) {
-  const own = trainingSummary(w).own;
-  const squad = [...activePlayers(w)].sort((a, b) => b.fatigue - a.fatigue);
+  // The squad's focus is read once: each row only adds his own order or rule to it.
+  const squadFocus = activeTrainingFocus(w);
+  const squad = [...activePlayers(w)]
+    .sort((a, b) => b.fatigue - a.fatigue)
+    .map((player) => ({ player, call: playerCallLine(w, player, squadFocus) }));
+  const own = squad.filter(({ call }) => call.by !== '팀 훈련').length;
   return (
     <section className={s.card} aria-label="개별 훈련">
       <header className={s.head}>
         <h3>개별 훈련</h3>
-        <span data-testid="own-focus-count">따로 훈련 {own.length}명</span>
+        <span data-testid="own-focus-count">따로 훈련 {own}명</span>
       </header>
       <p className={s.note}>
         선수마다 팀과 다른 훈련을 제안하거나 강행할 수 있어요. 제안은 선수마다 2라운드에 한 번이고,
         강행은 수석코치의 사임 위험을 올려요.
       </p>
       <ul className={s.players}>
-        {squad.map((player) => {
-          const call = playerCallLine(w, player),
-            wait = playerSuggestionWait(w, player.id),
+        {squad.map(({ player, call }) => {
+          const wait = playerSuggestionWait(w, player.id),
             own = call.by !== '팀 훈련';
           return (
             <li key={player.id} data-own={own || undefined}>
@@ -280,7 +283,7 @@ function PlayerTraining({ w, onSheet }: { w: World; onSheet: (sheet: Sheet) => v
                 </small>
               </span>
               <span className={s.playerFocus} data-testid={`player-focus-${player.id}`}>
-                <b>{focusName(focusFor(w, player))}</b>
+                <b>{focusName(focusFor(w, player, squadFocus))}</b>
                 <small>
                   {call.by}
                   {call.rounds ? ` · ${call.rounds}라운드 남음` : ''}

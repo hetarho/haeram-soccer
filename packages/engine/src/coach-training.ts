@@ -40,11 +40,18 @@ export function coachFocuses(coach: TrainingCoach): Focus[] {
 }
 const ruleOf = (w: World, coach: TrainingCoach) =>
   coach === 'assistant' ? autoTrainingAdvice(w) : youthAdvice(w);
-/** The assistant's call for one player: his player rule, else the squad's focus (→CLUB-13). */
-export function playerRule(w: World, p: Player): { focus: TrainingFocus; reason: string } {
+/**
+ * The assistant's call for one player: his player rule, else the squad's focus (→CLUB-13); `squad`
+ * is the squad's focus when the caller already has it.
+ */
+export function playerRule(
+  w: World,
+  p: Player,
+  squad?: TrainingFocus,
+): { focus: TrainingFocus; reason: string } {
   const own = autoPlayerFocus(w, p);
   if (own) return { focus: own, reason: `피로도 ${Math.round(p.fatigue)}라 회복부터 시켜야 해요.` };
-  const squad = activeTrainingFocus(w);
+  squad ??= activeTrainingFocus(w);
   return { focus: squad, reason: `팀과 같은 ${trainingFocusInfo[squad].label}을(를) 소화해요.` };
 }
 
@@ -71,9 +78,9 @@ export function trainingCall(w: World, coach: TrainingCoach) {
  * One first-team player's focus in force, who set it and why (→CLUB-11, CLUB-13, STAFF-19):
  * `squad` when he simply trains with the squad.
  */
-export function playerTrainingCall(w: World, p: Player) {
+export function playerTrainingCall(w: World, p: Player, squad?: TrainingFocus) {
   const order = w.trainingOrders?.players?.[p.id],
-    rule = playerRule(w, p);
+    rule = playerRule(w, p, squad);
   if (order)
     return {
       focus: order.focus,

@@ -55,9 +55,9 @@ export function callLine(w: World, coach: TrainingCoach) {
   };
 }
 
-/** Who sets one player's focus now and why (→CLUB-11, CLUB-13). */
-export function playerCallLine(w: World, player: Player) {
-  const call = playerTrainingCall(w, player);
+/** Who sets one player's focus now and why (→CLUB-11, CLUB-13), given the squad's when known. */
+export function playerCallLine(w: World, player: Player, squad?: TrainingFocus) {
+  const call = playerTrainingCall(w, player, squad);
   return {
     focus: focusLabel('assistant', call.focus),
     by: BY_LABEL[call.by],

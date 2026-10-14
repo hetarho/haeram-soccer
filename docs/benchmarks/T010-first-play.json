@@ -1,21 +1,21 @@
 {
-  "date": "2026-10-11T16:13:48.528Z",
+  "date": "2026-10-14T20:36:27.419Z",
   "browser": "153.0.8010.12",
   "playwright": "1.63.0",
   "node": "v26.8.1",
-  "gitHead": "ded1baf189fbff9b580cc044b751d9b14650cd97",
+  "gitHead": "070398b9124b4125fbe0d86ae0b08d90300740ab",
   "gitDirty": true,
   "currentHeadVerified": false,
   "verifiedSource": "uncommitted working tree",
   "sourceFingerprint": {
     "algorithm": "sha256",
-    "sha256": "06d5aa7d794c4ed9878c3afcc323a594307ec1a17fee29d09626266643ef022b",
-    "files": 248
+    "sha256": "c7260857caf8258666c10514497e53b955be1e4f5524118d26c262acd7726217",
+    "files": 361
   },
   "buildFingerprint": {
     "algorithm": "sha256",
-    "sha256": "021901622e2afac5f1d6949d195ea5654124d223492e7f60149260875e20a46d",
-    "files": 7
+    "sha256": "2c6bb33334b34d491ce5e00b2863136a9b9ae5e01d3142eca76a01863bf0c52e",
+    "files": 35
   },
   "servedBuildVerification": {
     "origin": "http://127.0.0.1:4180",
@@ -25,26 +25,194 @@
       {
         "file": "index.html",
         "url": "http://127.0.0.1:4180/",
-        "bytes": 665,
-        "sha256": "e9e58067a7c3c3a7fa9aa4383acdaf7d50aac809ef351f4e98f53f813c9a1f1f"
+        "bytes": 1442,
+        "sha256": "ed38ecefcbe44b6178775f18ef56fe03491b0e24692ce445b9e907c5cd4e4981"
       },
       {
-        "file": "assets/index-BSl7dA-O.css",
-        "url": "http://127.0.0.1:4180/assets/index-BSl7dA-O.css",
-        "bytes": 168753,
-        "sha256": "dbf21d8f62938f23f9ff45ae1a6de6f9ae6492bb941a4c02ddb6824935f82915"
+        "file": "assets/AwaySummary-B5ijKdUV.css",
+        "url": "http://127.0.0.1:4180/assets/AwaySummary-B5ijKdUV.css",
+        "bytes": 583,
+        "sha256": "f2e84f503da44e5fadf7a3e41e3e345c8343cd886c8c1793d732121db6d0257c"
       },
       {
-        "file": "assets/index-D4TAMTu9.js",
-        "url": "http://127.0.0.1:4180/assets/index-D4TAMTu9.js",
-        "bytes": 671771,
-        "sha256": "2efda58cb3204ac3a0f094daa3a91229e656a8fb5e840028115b2276623803dc"
+        "file": "assets/AwaySummary-BNgtxNC8.js",
+        "url": "http://127.0.0.1:4180/assets/AwaySummary-BNgtxNC8.js",
+        "bytes": 2426,
+        "sha256": "a39cc042c411b697e9d242af6869f53dc509fe9ea23f7153329a9c54377040a0"
       },
       {
-        "file": "assets/worker-BBK3awZ9.js",
-        "url": "http://127.0.0.1:4180/assets/worker-BBK3awZ9.js",
-        "bytes": 336682,
-        "sha256": "5284b490e21146bb905eea0245a816945ace77e7db5b563280b487660a072d36"
+        "file": "assets/CupHistory-CgDntsTE.js",
+        "url": "http://127.0.0.1:4180/assets/CupHistory-CgDntsTE.js",
+        "bytes": 20045,
+        "sha256": "0852cb84414304f274e8bb1782696805ddf43c65f10722bdf2c5df9dea5894ee"
+      },
+      {
+        "file": "assets/CupHistory-larGODBd.css",
+        "url": "http://127.0.0.1:4180/assets/CupHistory-larGODBd.css",
+        "bytes": 5196,
+        "sha256": "f655f89a9e173a5ddc556c60675a7622a05a6873cad526c8318b8d1d64ae8d04"
+      },
+      {
+        "file": "assets/Dialog-BfxbYs6K.css",
+        "url": "http://127.0.0.1:4180/assets/Dialog-BfxbYs6K.css",
+        "bytes": 53706,
+        "sha256": "3656020cc4d93dec42612d348dc3089ea9f477280192de84f0e62e5aa6fb2e71"
+      },
+      {
+        "file": "assets/Dialog-CyvZr5RH.js",
+        "url": "http://127.0.0.1:4180/assets/Dialog-CyvZr5RH.js",
+        "bytes": 168558,
+        "sha256": "4b14740ddd22cc65aa6e8e8f0f089f0d618ce47f3c2664a4cb5a89ff9060965f"
+      },
+      {
+        "file": "assets/GameSlotScreen-CkURRcNU.js",
+        "url": "http://127.0.0.1:4180/assets/GameSlotScreen-CkURRcNU.js",
+        "bytes": 6961,
+        "sha256": "a44e4c1d64db8a22f17952a765dfc19abd22b9f52c47f6052793b3f69016a2a7"
+      },
+      {
+        "file": "assets/GameSlotScreen-CzCBf5O5.css",
+        "url": "http://127.0.0.1:4180/assets/GameSlotScreen-CzCBf5O5.css",
+        "bytes": 2661,
+        "sha256": "7875a57ce293cd1b3021a227573a6cd2f0fe64ba5314fab24b9f5025631c5aad"
+      },
+      {
+        "file": "assets/Glossary-Dr2-_MQ_.js",
+        "url": "http://127.0.0.1:4180/assets/Glossary-Dr2-_MQ_.js",
+        "bytes": 14263,
+        "sha256": "330cbb9c2854155b381cb7c44f382473a0d750bb1156e1ecece75468bf43a99b"
+      },
+      {
+        "file": "assets/Glossary-oCpK3ONj.css",
+        "url": "http://127.0.0.1:4180/assets/Glossary-oCpK3ONj.css",
+        "bytes": 7450,
+        "sha256": "50112d6636c5c15d5e05a52e0b79a0cef8f2804b4b190fb39299e2cb6bd5ed73"
+      },
+      {
+        "file": "assets/PastSeason-Bb9-ZdCq.js",
+        "url": "http://127.0.0.1:4180/assets/PastSeason-Bb9-ZdCq.js",
+        "bytes": 29432,
+        "sha256": "f8b216eeef2f02d1e447cfc9da95300f79c498b57c3cff9f1a7709ef126a77bc"
+      },
+      {
+        "file": "assets/PastSeason-CpHh4d2a.css",
+        "url": "http://127.0.0.1:4180/assets/PastSeason-CpHh4d2a.css",
+        "bytes": 10169,
+        "sha256": "cac957fe9ca072a1c3b06aa2143cdf626e836a98c1989f8a8b3326d5f8f2493d"
+      },
+      {
+        "file": "assets/PlayerProfile-3MdYSQYL.css",
+        "url": "http://127.0.0.1:4180/assets/PlayerProfile-3MdYSQYL.css",
+        "bytes": 2313,
+        "sha256": "afdd2881b05a259836499418e3e1dc59d8f007f49741cc10cf552b5b9b2e8243"
+      },
+      {
+        "file": "assets/PlayerProfile-DxirZnH0.js",
+        "url": "http://127.0.0.1:4180/assets/PlayerProfile-DxirZnH0.js",
+        "bytes": 5567,
+        "sha256": "b4e34510511c58b59f4aec59b83bf82d793501f5e56ebcf785618b2cfa379f75"
+      },
+      {
+        "file": "assets/PlayerSheetDialog-ClIPL7RA.js",
+        "url": "http://127.0.0.1:4180/assets/PlayerSheetDialog-ClIPL7RA.js",
+        "bytes": 4458,
+        "sha256": "63b9a0923d91bced374cc3b04b88c510b7cdfdba19242d6e1ffc2d5a0086abf3"
+      },
+      {
+        "file": "assets/RecordsRoom-Duo-Mj4W.js",
+        "url": "http://127.0.0.1:4180/assets/RecordsRoom-Duo-Mj4W.js",
+        "bytes": 45275,
+        "sha256": "f06687ad7c1d7798719ab5e18b1d4f3f00c7cd7c7d6b85b834892d1738bbcd82"
+      },
+      {
+        "file": "assets/Rich-Bf2cPbHE.js",
+        "url": "http://127.0.0.1:4180/assets/Rich-Bf2cPbHE.js",
+        "bytes": 117028,
+        "sha256": "d31e699624512644c115d4222729ab3732b55c7d3aa87401a2cfb0d376c1e2f7"
+      },
+      {
+        "file": "assets/Rich-CYMEqhnc.css",
+        "url": "http://127.0.0.1:4180/assets/Rich-CYMEqhnc.css",
+        "bytes": 42091,
+        "sha256": "8bf1ac0757ba32f98be45897a3f76c924d261d10486148e6eb6236511ca33a26"
+      },
+      {
+        "file": "assets/StrategyBoard-BPPuwaBU.css",
+        "url": "http://127.0.0.1:4180/assets/StrategyBoard-BPPuwaBU.css",
+        "bytes": 11181,
+        "sha256": "a87beaa1054c540e133e027b5df0a07be7eda5d67e68ee7389f94dc5f6132f5f"
+      },
+      {
+        "file": "assets/StrategyBoard-CQyGeLAa.js",
+        "url": "http://127.0.0.1:4180/assets/StrategyBoard-CQyGeLAa.js",
+        "bytes": 27027,
+        "sha256": "b06e4677ae963f72cbf4542a841e919c54278581e74d45f97d73e6d1754da250"
+      },
+      {
+        "file": "assets/careerRecords-DcdlVcES.js",
+        "url": "http://127.0.0.1:4180/assets/careerRecords-DcdlVcES.js",
+        "bytes": 2653,
+        "sha256": "9f0bc25c9b69e815d69cb5160ac07c26f4201d136de0d64e1306d9c09675de25"
+      },
+      {
+        "file": "assets/codec-D1pfvOty.js",
+        "url": "http://127.0.0.1:4180/assets/codec-D1pfvOty.js",
+        "bytes": 197830,
+        "sha256": "b5932e58f3c1b8c604bb7c89ee1949589e76b165aaf1266c227c65b9465f7096"
+      },
+      {
+        "file": "assets/index-Cd0_DHNF.css",
+        "url": "http://127.0.0.1:4180/assets/index-Cd0_DHNF.css",
+        "bytes": 78266,
+        "sha256": "136422ba926fd96d4c0b993459755f7376b182daf73c8cafa1ae54491373d08f"
+      },
+      {
+        "file": "assets/index-DmMNQzpP.js",
+        "url": "http://127.0.0.1:4180/assets/index-DmMNQzpP.js",
+        "bytes": 445432,
+        "sha256": "4ed3fa268dbda02474d8d2c07f8afe817a62f53f85e810950aed13fb647dabf4"
+      },
+      {
+        "file": "assets/league-2liMRO71.css",
+        "url": "http://127.0.0.1:4180/assets/league-2liMRO71.css",
+        "bytes": 164,
+        "sha256": "f279950dfaef5d11da4915faa4300d7ef176ebbbaa718c10b1971e9864d39df6"
+      },
+      {
+        "file": "assets/league-C4c0t28f.js",
+        "url": "http://127.0.0.1:4180/assets/league-C4c0t28f.js",
+        "bytes": 10557,
+        "sha256": "e8eb1d7d350ac3bd611575aa93a6d9108fbf61ad03de56ce9031e682042b6ec0"
+      },
+      {
+        "file": "assets/profile-BiuKi-wB.js",
+        "url": "http://127.0.0.1:4180/assets/profile-BiuKi-wB.js",
+        "bytes": 3043,
+        "sha256": "becef81675599782b3eb9f5eaaf4a791c02da6ba29fbc7e6afaf2bdb295bb81f"
+      },
+      {
+        "file": "assets/rolldown-runtime-hePW80VL.js",
+        "url": "http://127.0.0.1:4180/assets/rolldown-runtime-hePW80VL.js",
+        "bytes": 716,
+        "sha256": "580ad8c58061a4dde99bde0a56905e382f0568516ee2f5b84dbfb52085709021"
+      },
+      {
+        "file": "assets/slots-DVFXRAPH.js",
+        "url": "http://127.0.0.1:4180/assets/slots-DVFXRAPH.js",
+        "bytes": 7040,
+        "sha256": "f70cef52a6b7be60e7ce0100ea434e0f01b9e4acad835b0ed4dfc876e58cc9b3"
+      },
+      {
+        "file": "assets/state-CIILcJ3B.js",
+        "url": "http://127.0.0.1:4180/assets/state-CIILcJ3B.js",
+        "bytes": 3668,
+        "sha256": "77c1570e0ebe99a026591b8571af89afda0c203bf0a2546a39cc6dfcf7fdedfe"
+      },
+      {
+        "file": "assets/worker-DalQ4fu6.js",
+        "url": "http://127.0.0.1:4180/assets/worker-DalQ4fu6.js",
+        "bytes": 462893,
+        "sha256": "1e9e9f5d36622d948b838250614a41edaa42794766cf5154c604d0c8d1dbd8cd"
       }
     ],
     "passed": true
@@ -63,9 +231,9 @@
       1440,
       1000
     ],
-    "coldLoadAndFoundMs": 1403,
-    "foundingCommandMs": 300,
-    "animationFps": 61
+    "coldLoadAndFoundMs": 1208,
+    "foundingCommandMs": 277,
+    "animationFps": 60
   },
   "mobile": {
     "viewport": [
@@ -73,83 +241,375 @@
       844
     ],
     "deviceScaleFactor": 2,
-    "coldLoadAndFoundMs": 1217,
-    "foundingCommandMs": 285,
-    "animationFps": 61,
+    "coldLoadAndFoundMs": 1176,
+    "foundingCommandMs": 273,
+    "animationFps": 60,
     "inputSamples": 12,
-    "pointerToSecondFrameP95Ms": 26
+    "pointerToSecondFrameP95Ms": 27
   },
-  "entryGzipBytes": 246331,
+  "entryGzipBytes": 250566,
   "entryGzipLimit": 256000,
   "entryFiles": [
     {
-      "file": "assets/index-D4TAMTu9.js",
-      "gzipBytes": 216561
+      "file": "assets/index-DmMNQzpP.js",
+      "gzipBytes": 141389
     },
     {
-      "file": "assets/index-BSl7dA-O.css",
-      "gzipBytes": 29770
+      "file": "assets/rolldown-runtime-hePW80VL.js",
+      "gzipBytes": 428
+    },
+    {
+      "file": "assets/Dialog-CyvZr5RH.js",
+      "gzipBytes": 64198
+    },
+    {
+      "file": "assets/profile-BiuKi-wB.js",
+      "gzipBytes": 1479
+    },
+    {
+      "file": "assets/league-C4c0t28f.js",
+      "gzipBytes": 5114
+    },
+    {
+      "file": "assets/slots-DVFXRAPH.js",
+      "gzipBytes": 3008
+    },
+    {
+      "file": "assets/state-CIILcJ3B.js",
+      "gzipBytes": 1664
+    },
+    {
+      "file": "assets/Glossary-Dr2-_MQ_.js",
+      "gzipBytes": 5809
+    },
+    {
+      "file": "assets/Dialog-BfxbYs6K.css",
+      "gzipBytes": 10969
+    },
+    {
+      "file": "assets/league-2liMRO71.css",
+      "gzipBytes": 156
+    },
+    {
+      "file": "assets/Glossary-oCpK3ONj.css",
+      "gzipBytes": 1819
+    },
+    {
+      "file": "assets/index-Cd0_DHNF.css",
+      "gzipBytes": 14533
     }
   ],
-  "buildGzipBytes": 359877,
+  "buildGzipBytes": 572009,
   "buildGzipLimit": null,
   "buildFiles": [
     {
-      "file": "index-BSl7dA-O.css",
-      "gzipBytes": 29770
+      "file": "AwaySummary-B5ijKdUV.css",
+      "gzipBytes": 300
     },
     {
-      "file": "index-D4TAMTu9.js",
-      "gzipBytes": 216561
+      "file": "AwaySummary-BNgtxNC8.js",
+      "gzipBytes": 1291
     },
     {
-      "file": "worker-BBK3awZ9.js",
-      "gzipBytes": 113546
+      "file": "CupHistory-CgDntsTE.js",
+      "gzipBytes": 7145
+    },
+    {
+      "file": "CupHistory-larGODBd.css",
+      "gzipBytes": 1494
+    },
+    {
+      "file": "Dialog-BfxbYs6K.css",
+      "gzipBytes": 10969
+    },
+    {
+      "file": "Dialog-CyvZr5RH.js",
+      "gzipBytes": 64198
+    },
+    {
+      "file": "GameSlotScreen-CkURRcNU.js",
+      "gzipBytes": 2640
+    },
+    {
+      "file": "GameSlotScreen-CzCBf5O5.css",
+      "gzipBytes": 906
+    },
+    {
+      "file": "Glossary-Dr2-_MQ_.js",
+      "gzipBytes": 5809
+    },
+    {
+      "file": "Glossary-oCpK3ONj.css",
+      "gzipBytes": 1819
+    },
+    {
+      "file": "PastSeason-Bb9-ZdCq.js",
+      "gzipBytes": 9453
+    },
+    {
+      "file": "PastSeason-CpHh4d2a.css",
+      "gzipBytes": 2376
+    },
+    {
+      "file": "PlayerProfile-3MdYSQYL.css",
+      "gzipBytes": 815
+    },
+    {
+      "file": "PlayerProfile-DxirZnH0.js",
+      "gzipBytes": 2470
+    },
+    {
+      "file": "PlayerSheetDialog-ClIPL7RA.js",
+      "gzipBytes": 2093
+    },
+    {
+      "file": "RecordsRoom-Duo-Mj4W.js",
+      "gzipBytes": 14867
+    },
+    {
+      "file": "Rich-Bf2cPbHE.js",
+      "gzipBytes": 35795
+    },
+    {
+      "file": "Rich-CYMEqhnc.css",
+      "gzipBytes": 7565
+    },
+    {
+      "file": "StrategyBoard-BPPuwaBU.css",
+      "gzipBytes": 2643
+    },
+    {
+      "file": "StrategyBoard-CQyGeLAa.js",
+      "gzipBytes": 9370
+    },
+    {
+      "file": "careerRecords-DcdlVcES.js",
+      "gzipBytes": 1332
+    },
+    {
+      "file": "codec-D1pfvOty.js",
+      "gzipBytes": 62453
+    },
+    {
+      "file": "index-Cd0_DHNF.css",
+      "gzipBytes": 14533
+    },
+    {
+      "file": "index-DmMNQzpP.js",
+      "gzipBytes": 141389
+    },
+    {
+      "file": "league-2liMRO71.css",
+      "gzipBytes": 156
+    },
+    {
+      "file": "league-C4c0t28f.js",
+      "gzipBytes": 5114
+    },
+    {
+      "file": "profile-BiuKi-wB.js",
+      "gzipBytes": 1479
+    },
+    {
+      "file": "rolldown-runtime-hePW80VL.js",
+      "gzipBytes": 428
+    },
+    {
+      "file": "slots-DVFXRAPH.js",
+      "gzipBytes": 3008
+    },
+    {
+      "file": "state-CIILcJ3B.js",
+      "gzipBytes": 1664
+    },
+    {
+      "file": "worker-DalQ4fu6.js",
+      "gzipBytes": 156435
     }
   ],
   "firstPlayPageTargetTransfers": [
     {
       "url": "http://127.0.0.1:4180/",
       "type": "Document",
-      "bytes": 1030
+      "bytes": 1195
     },
     {
-      "url": "http://127.0.0.1:4180/assets/index-BSl7dA-O.css",
-      "type": "Stylesheet",
-      "bytes": 30362
-    },
-    {
-      "url": "http://127.0.0.1:4180/assets/index-D4TAMTu9.js",
+      "url": "http://127.0.0.1:4180/assets/rolldown-runtime-hePW80VL.js",
       "type": "Script",
-      "bytes": 217161
+      "bytes": 1025
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/profile-BiuKi-wB.js",
+      "type": "Script",
+      "bytes": 2077
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/slots-DVFXRAPH.js",
+      "type": "Script",
+      "bytes": 3606
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/league-C4c0t28f.js",
+      "type": "Script",
+      "bytes": 5712
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/Dialog-BfxbYs6K.css",
+      "type": "Stylesheet",
+      "bytes": 11561
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/league-2liMRO71.css",
+      "type": "Stylesheet",
+      "bytes": 746
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/Glossary-oCpK3ONj.css",
+      "type": "Stylesheet",
+      "bytes": 2410
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/index-Cd0_DHNF.css",
+      "type": "Stylesheet",
+      "bytes": 15125
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/state-CIILcJ3B.js",
+      "type": "Script",
+      "bytes": 2262
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/Dialog-CyvZr5RH.js",
+      "type": "Script",
+      "bytes": 64797
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/Glossary-Dr2-_MQ_.js",
+      "type": "Script",
+      "bytes": 6407
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/index-DmMNQzpP.js",
+      "type": "Script",
+      "bytes": 141989
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/PlayerProfile-3MdYSQYL.css",
+      "type": "Stylesheet",
+      "bytes": 1405
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/Rich-CYMEqhnc.css",
+      "type": "Stylesheet",
+      "bytes": 8156
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/PlayerProfile-DxirZnH0.js",
+      "type": "Script",
+      "bytes": 3068
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/Rich-Bf2cPbHE.js",
+      "type": "Script",
+      "bytes": 36394
     }
   ],
   "mobileFirstPlayPageTargetTransfers": [
     {
       "url": "http://127.0.0.1:4180/",
       "type": "Document",
-      "bytes": 1030
+      "bytes": 1195
     },
     {
-      "url": "http://127.0.0.1:4180/assets/index-BSl7dA-O.css",
-      "type": "Stylesheet",
-      "bytes": 30362
-    },
-    {
-      "url": "http://127.0.0.1:4180/assets/index-D4TAMTu9.js",
+      "url": "http://127.0.0.1:4180/assets/rolldown-runtime-hePW80VL.js",
       "type": "Script",
-      "bytes": 217161
+      "bytes": 1025
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/profile-BiuKi-wB.js",
+      "type": "Script",
+      "bytes": 2077
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/slots-DVFXRAPH.js",
+      "type": "Script",
+      "bytes": 3606
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/league-C4c0t28f.js",
+      "type": "Script",
+      "bytes": 5712
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/Dialog-BfxbYs6K.css",
+      "type": "Stylesheet",
+      "bytes": 11561
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/league-2liMRO71.css",
+      "type": "Stylesheet",
+      "bytes": 746
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/Glossary-oCpK3ONj.css",
+      "type": "Stylesheet",
+      "bytes": 2410
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/index-Cd0_DHNF.css",
+      "type": "Stylesheet",
+      "bytes": 15125
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/state-CIILcJ3B.js",
+      "type": "Script",
+      "bytes": 2262
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/Dialog-CyvZr5RH.js",
+      "type": "Script",
+      "bytes": 64797
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/Glossary-Dr2-_MQ_.js",
+      "type": "Script",
+      "bytes": 6407
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/index-DmMNQzpP.js",
+      "type": "Script",
+      "bytes": 141989
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/PlayerProfile-3MdYSQYL.css",
+      "type": "Stylesheet",
+      "bytes": 1405
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/Rich-CYMEqhnc.css",
+      "type": "Stylesheet",
+      "bytes": 8156
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/PlayerProfile-DxirZnH0.js",
+      "type": "Script",
+      "bytes": 3068
+    },
+    {
+      "url": "http://127.0.0.1:4180/assets/Rich-Bf2cPbHE.js",
+      "type": "Script",
+      "bytes": 36394
     }
   ],
-  "firstPlayPageTargetTransferBytes": 248553,
-  "mobileFirstPlayPageTargetTransferBytes": 248553,
+  "firstPlayPageTargetTransferBytes": 307935,
+  "mobileFirstPlayPageTargetTransferBytes": 307935,
   "transferNote": "Page-target CDP transfers may omit dedicated-worker target requests; build inventory additionally counts every worker/lazy JavaScript and CSS file as a conservative upper bound.",
-  "centuryLoadMs": 1416,
-  "centuryCheckpointSha256": "5174e46a6310efc6686522b1f651234e0c8b4dfbe5ed9ab917ce8899c1c5081a",
+  "centuryLoadMs": 1868,
+  "centuryCheckpointSha256": "70498d8d9f0ae8e0efd2a876ab7d588d1d995b28928bd470f5470d52429801f4",
   "centuryRestoreReference": "Separate unthrottled 100-season initialization measurement",
   "initializationLimitMs": 5000,
   "inputSamples": 30,
-  "pointerToSecondFrameP95Ms": 60,
+  "pointerToSecondFrameP95Ms": 44,
   "inputLimitMs": 100,
   "minimumFps": 30,
   "mobileHorizontalOverflow": false,
