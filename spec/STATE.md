@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T02:45Z | T089 |
+| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T03:12Z | T090 |
 
 ## inbox
 - 261014 parked -: the owner's dev server (pnpm dev, port 19500, in the main checkout) was found stopped during T087 — not restarted, since vite's client reloads the open game tab when its server returns; restart it yourself once the game is saved
@@ -53,8 +53,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T089 | Direction rows drive the delegated staff | ECON CLUB STAFF WEB SAVE | - | doing@261014.v7dq |
-| T090 | Direction rows on the board and lines in 사람 | ECON WEB | T089 | todo |
+| T090 | Direction rows on the board and lines in 사람 | ECON WEB | T089 | doing@261014.v7dq |
 | T091 | Calibrate the economy with the direction rows | ECON CLUB | T089 | todo |
 
 ## work
@@ -76,6 +75,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 T089 done (63a6c7d): engine rows, 재정 기조, ladder, rules 1.17.0; unit 451, contract 11; T090 doing
 - 261014 slice 1 on main: fast-forward to 84a3a97 after CI 38502027150 passed every job on b2ed331; T089 doing on work/direction
 - 261014 create-task slice 2 → T089 (engine rows, 재정 기조, ladder, load mapping), T090 (board rows, 사람 lines, 자금), T091 (explore 1h: ECON-29 on 40 careers)
 - 261014 update-ssot ECON r25 CLUB r27 STAFF r16 WEB r60 SAVE r29 (club-direction slice 2): 재정 기조, 재계약 기조, the 스태프 area replace the talk rule and the hiring and manager criteria; 매각 기조 sets the sale bar; the level ladder; 자금 page tab
@@ -95,4 +95,3 @@
 - 261013 T082 T083 done (094fa13): coaches set training, owner suggests or forces, academy U-17/U-19/U-21; Chromium e2e 104, unit 666, contract 11, benchmark pass
 - 261013 create-task → T082 (engine), T083 (web); T082 doing standalone on work/intervention
 - 261013 update-ssot CLUB r25 STAFF r15 WEB r57 SAVE r27: coaches always set training (owner suggests or forces, risking a resignation), academy U-17/U-19/U-21 with youth focus, promotion from 16 (17 ENG), leave at 21; research: EPPP, CIES debut data
-- 261013 T081 done (0654d33): strategy cards change at any time; no lock, `buildChanged` dropped on load
