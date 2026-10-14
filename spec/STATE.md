@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T05:07Z | T097 |
+| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T05:14Z | - |
 
 ## inbox
 - 261014 decided WEB-39: the 방향 tab's address → keep /business?view= with build, finance and sponsor, older values opening their tab (alt: a new /direction route | the old view values)
@@ -59,7 +59,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T097 | The staff's signings on screen | WEB CLUB | T096 | doing@261014.v7dq |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -68,7 +67,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- slice 5: T096 done on work/direction, T097 (screens) doing; then slice 6 (founding preset, presets, synergies) and the calibration after slice 6.
+- slice 5 (T096–T097) on work/direction waits for CI before main; then slice 6 (founding preset, presets, synergies) and the calibration after slice 6.
 - owner's requests 261013 are on main (caa5e83, CI 38448231873 green in every browser): T080 level only, T081 no strategy locks, T082/T083 coaches set training with suggestions and orders and the academy by U-17/U-19/U-21, T084/T085 facilities as stadium steps, training ground and academy facilities.
 - wage bill / revenue sits at 44.3% on the facility parts (ECON-29 band 45–70%, 45.3% before them): base wage 925 and a 25% youth promise did not move it; try the contract-talk floor next (agent premium per level, as T079 did: 0% gave 47.7%, 1% 46.1%) and re-measure 40 careers.
 - three levers and the economy port are on main (fast-forward to 2de95c6, 261013): T070–T079 done — T077 d303c5e, T078 fe7b209/8c52745, T079 merged from work/econ-port at 11c9c5c/66ce736 (unit 658, contract 11, build pass; goldens equal work/econ-port's). CI run 38382526028 on 2de95c6 passed every job (checks, the benchmark, e2e in Chromium, Firefox and both WebKit shards); the run before it on 66ce736 failed only Firefox e2e, which passed in full locally (102 passed, 2 skipped) and on the rerun — a flake. work/levers and work/econ-port are merged and can be deleted. Next: pick from the follow-ups below.
@@ -80,6 +79,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 T097 done (8a2a121): level 4 names signings, 스태프 제안 in the market; full Chromium e2e 106
 - 261014 T096 done (90bc773): the chief scout's signings at level 4, rules 1.20.0; unit 691, contract 13, Chromium e2e 106; WebKit gets two CI retries; T097 doing (session haeram-soccor-6f took over after the first session exited)
 - 261014 slices 3–4 on main: fast-forward to 5ae503c after CI 38513354367 passed every job
 - 261014 update-ssot CLUB r30 ECON r30 STAFF r18 WEB r63 SAVE r32 (club-direction slice 5): the chief scout's signings at level 4 within 재정 기조; create-task T096 (engine), T097 (screens)
@@ -99,4 +99,3 @@
 - 261014 T088 done (c3f8106): one row kind for cards and dials, areas folded behind headers; full Chromium e2e 106, unit 671
 - 261014 T087 done (d0f53b9): 방향 tab with 방향·증축·재정·후원, campaigns under 재정, 방향 wording; T088 doing
 - 261014 T086 done (6f4ade0): engine names 방향, old 운영 전략 titles read the same
-- 261014 T086 doing standalone on work/direction (worktree ../haeram-soccor-direction; the owner's dev server runs from the main checkout)
