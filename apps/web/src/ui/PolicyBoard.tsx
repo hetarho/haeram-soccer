@@ -11,7 +11,8 @@ import { gateProjection, operatingCosts } from '../../../../packages/engine/src/
 import { clubOf } from '../../../../packages/engine/src/world';
 import { financeProjection } from '../../../../packages/engine/src/projection';
 import { academyIntakeOutlook } from '../../../../packages/engine/src/academy';
-import { dialPreview, type PolicyChange, type TicketChange } from './board';
+import { dialPreview, type DirectionChange, type PolicyChange, type TicketChange } from './board';
+import { DIRECTION_INFO } from '../../../../packages/engine/src/direction';
 import { number } from './format';
 import { Money } from './Money';
 import { TICKET_LEVELS } from './ticketLevels';
@@ -19,11 +20,8 @@ import s from './PolicyBoard.module.css';
 
 export { TICKET_LEVELS };
 
-/**
- * The board's dials (→ECON-16, →ECON-17), any time: how much the club puts into an area. The
- * training focus is no dial: it belongs to 훈련 (→ECON-25, →WEB-70).
- */
-export type DialKey = PolicyKey | 'ticket';
+import type { DialKey } from './areas';
+export type { DialKey };
 
 /** A dial's steps and the one in force (−1 for a custom ticket price from an older save). */
 export function dialInfo(w: World, key: DialKey) {
@@ -179,6 +177,21 @@ export function DialChange({ w, change }: { w: World; change: PolicyChange | Tic
         )}
         {key !== 'recruitment' && <> · 시즌 말 예상 자금 {range(preview.seasonEnd)}</>}
       </span>
+    </li>
+  );
+}
+
+/** A changed direction row in the draft bar: from → to, then what the new option has the staff do. */
+export function DirectionChangeLine({ change }: { change: DirectionChange }) {
+  const info = DIRECTION_INFO[change.key],
+    name = (id: string) => info.options.find((option) => option.id === id)!.name,
+    to = info.options.find((option) => option.id === change.to)!;
+  return (
+    <li className={s.change} data-change={change.key}>
+      <b>
+        {info.label} {name(change.from)} → {to.name}
+      </b>
+      <span>{to.summary}</span>
     </li>
   );
 }

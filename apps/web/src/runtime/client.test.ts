@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  activateDirection,
   advanceRound,
   agentOf,
   createWorld,
@@ -509,7 +510,13 @@ describe('legacy activation and compatibility recovery', () => {
     expect(storage.getItem('haeram-soccor:slot:a')).toBe(raw);
     const upgraded = (await decode(storage.getItem('haeram-soccor:slot:b')!)).world;
     expect(canonical(upgraded)).toBe(
-      canonical({ ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 18 }),
+      // Activation also names, in the inbox, the direction rows older staff criteria became.
+      canonical(
+        activateDirection(
+          { ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 18 },
+          legacy.engine,
+        ),
+      ),
     );
     expect(canonical((await decode((await client.exportFile())!)).world)).toBe(canonical(upgraded));
   });
@@ -538,12 +545,17 @@ describe('legacy activation and compatibility recovery', () => {
     );
     expect(upgraded.players.every((p) => p.clauses === undefined)).toBe(true);
     expect(canonical(upgraded)).toBe(
-      canonical({
-        ...legacy,
-        engine: CURRENT_ENGINE_VERSION,
-        revision: legacy.revision + 1,
-        players: legacy.players.map((p) => ({ ...p, agent: agentOf(legacy, p) })),
-      }),
+      canonical(
+        activateDirection(
+          {
+            ...legacy,
+            engine: CURRENT_ENGINE_VERSION,
+            revision: legacy.revision + 1,
+            players: legacy.players.map((p) => ({ ...p, agent: agentOf(legacy, p) })),
+          },
+          '1.15.0',
+        ),
+      ),
     );
   });
 
@@ -619,7 +631,13 @@ describe('legacy activation and compatibility recovery', () => {
       expect(storage.getItem('haeram-soccor:manifest')).toBe(manifest);
       const exported = (await decode((await client.exportFile())!)).world;
       expect(canonical(exported)).toBe(
-        canonical({ ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 18 }),
+        // Activation also names, in the inbox, the direction rows older staff criteria became.
+        canonical(
+          activateDirection(
+            { ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 18 },
+            legacy.engine,
+          ),
+        ),
       );
       storage.fail = '';
       await client.retrySave();

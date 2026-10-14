@@ -1,4 +1,3 @@
-import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
 import { chooseLevel } from './events';
 import { horizontalOverflow } from './layout';
@@ -72,9 +71,8 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(open).toHaveCount(total - 2);
     expect(await horizontalOverflow(page)).toBe(0);
 
-    // Below level 4 the owner hires coaches himself; each department card carries its criteria
-    // behind 기준, editable at any level and used once level 4 hands hiring over (→STAFF-15).
-    // The coaches are a tab of 사람.
+    // Below level 3 the owner hires coaches himself; 코치진 names the 코치 기조 the staff would
+    // follow and each department shows whom it would hire (→STAFF-15). The coaches are a tab of 사람.
     const tab = (name: string) =>
       page
         .getByRole('tablist', { name: '선수·스태프 보기' })
@@ -84,24 +82,28 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     const staff = page.getByRole('region', { name: '코치진', exact: true });
     await expect(staff.getByRole('checkbox')).toHaveCount(0);
     await expect(page.getByTestId('decision-owner-coach:assistant')).toContainText(
-      '아래 기준은 개입 수준이 이 결정을 스태프에게 맡길 때만 쓰여요',
+      '아래 방향은 개입 수준이 이 결정을 스태프에게 맡길 때만 쓰여요',
     );
-    const attack = staff.getByRole('listitem').filter({ hasText: '공격 코치' });
-    await attack.getByRole('button', { name: /^기준 (능력|자원봉사)/ }).click();
-    const criteria = page.getByRole('region', { name: '공격 코치 선임 기준' });
-    await chooseOption(criteria.getByRole('combobox', { name: '최소 능력', exact: true }), '65');
-    await criteria.getByRole('button', { name: '기준 적용', exact: true }).click();
-    await expect(criteria.getByRole('button', { name: '기준 적용', exact: true })).toBeDisabled();
-    await expect(attack.getByRole('button', { name: /^기준 (능력|자원봉사)/ })).toContainText(
-      '능력 65 이상',
+    await expect(page.getByTestId('coach-pick-attack')).toContainText('코치 기조로 뽑는다면');
+    // The 코치 기조 line opens its area on the 방향 board, where it is chosen like any row.
+    await page.getByRole('button', { name: /^코치 기조 · 표준/ }).click();
+    const staffArea = page
+      .getByTestId('strategy-board')
+      .getByRole('region', { name: '스태프', exact: true });
+    await expect(staffArea.locator('button[aria-controls^="board-area-body-"]')).toHaveAttribute(
+      'aria-expanded',
+      'true',
     );
-    await expect(criteria.getByTestId('coach-pick-attack')).toContainText('지금 기준이면');
-    await page
-      .getByTestId('action-outcome')
-      .getByRole('button', { name: '확인', exact: true })
-      .click();
-    // Level 4 hands every department to the staff at once.
-    await chooseLevel(page, 4);
+    await staffArea.getByRole('radio', { name: '코치 기조 최고 수준', exact: true }).click();
+    const draft = page.getByTestId('strategy-draft');
+    await expect(draft).toContainText('코치 기조 표준 → 최고 수준');
+    await draft.getByRole('button', { name: '적용', exact: true }).click();
+    await expect(draft).toHaveCount(0);
+    await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
+    await tab('코치진').click();
+    await expect(page.getByRole('button', { name: /^코치 기조 · 최고 수준/ })).toBeVisible();
+    // Level 3 hands every department to the staff at once.
+    await chooseLevel(page, 3);
     await expect(page.getByTestId('coaching-mode')).toContainText('자동');
     await expect(page.getByTestId('decision-owner-coach:assistant')).toContainText('자동 결정');
     expect(await horizontalOverflow(page)).toBe(0);

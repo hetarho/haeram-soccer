@@ -7,7 +7,6 @@ import {
   settleRound,
 } from '../../../../packages/engine/src/index';
 import { sellPlayer } from '../../../../packages/engine/src/testing';
-import { managerCriteriaOf } from '../../../../packages/engine/src/hiring';
 import { describeOutcome, newEvents } from './outcome';
 
 const world = () =>
@@ -57,10 +56,9 @@ describe('action outcome summaries', () => {
     expect(describeOutcome({ type: 'renew-staff', role }, before, next)!.note).toContain(
       '사람 › 코치진',
     );
-    const criteria = managerCriteriaOf(before);
     expect(
-      describeOutcome({ type: 'hiring', role: 'manager', criteria }, before, next)!.note,
-    ).toContain('사람 › 감독');
+      describeOutcome({ type: 'direction', key: 'manager', option: 'young' }, before, next)!.note,
+    ).toContain('이 방향으로');
   });
 
   it('summarizes a care action with its fatigue and morale change', () => {

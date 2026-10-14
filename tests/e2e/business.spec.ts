@@ -41,7 +41,7 @@ async function found(page: Page, seed: string) {
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
 
-/** 방향 opens on the direction board; `tab` picks 증축, 재정 or 후원 (→WEB-39). */
+/** 방향 opens on the direction board; `tab` picks 증축, 자금 or 후원 (→WEB-39). */
 async function openBusiness(page: Page, tab?: string) {
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
@@ -74,7 +74,7 @@ test('older operations addresses open their tab', async ({ page }) => {
   await expect(page.getByRole('tab', { name: '캠페인', exact: true })).toHaveCount(0);
   for (const [view, tab, now] of [
     ['facility', '증축', /\/business\?view=build$/],
-    ['marketing', '재정', /\/business\?view=finance$/],
+    ['marketing', '자금', /\/business\?view=finance$/],
     ['strategy', '방향', /\/business$/],
     ['sponsor', '후원', /\/business\?view=sponsor$/],
   ] as const) {
@@ -86,7 +86,7 @@ test('older operations addresses open their tab', async ({ page }) => {
     await expect(page).toHaveURL(now);
   }
   await expect(page.getByRole('region', { name: '캠페인', exact: true })).toHaveCount(0);
-  await page.getByRole('tab', { name: '재정', exact: true }).click();
+  await page.getByRole('tab', { name: '자금', exact: true }).click();
   await expect(page.getByRole('region', { name: '캠페인', exact: true })).toBeVisible();
 });
 
@@ -156,7 +156,7 @@ for (const viewport of [
     await expect(
       page.getByRole('button', { name: '경기장 공사 검토', exact: true }),
     ).toBeDisabled();
-    await page.getByRole('tab', { name: '재정', exact: true }).click();
+    await page.getByRole('tab', { name: '자금', exact: true }).click();
     await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
     await expect(page.getByRole('region', { name: '수입과 지출 장부' })).toContainText('시설 공사');
     await page.getByRole('button', { name: '장부 확인 마치기', exact: true }).click();
@@ -260,8 +260,8 @@ test('separates campaign recovery and net ranges and settles after four real rou
   const before = await exportWorld(page);
   const offer = campaignOffers(before).find((candidate) => candidate.kind === 'outreach')!;
   const format = (value: string) => compactMoney(value, clubOf(before).country, before.year);
-  // Campaigns sit under 재정 (→WEB-39).
-  await openBusiness(page, '재정');
+  // Campaigns sit under 자금 (→WEB-39).
+  await openBusiness(page, '자금');
   await expect(page.getByRole('region', { name: '캠페인', exact: true })).toBeVisible();
   const card = page.getByTestId('campaign-outreach');
   await expect(card).toContainText(`예상 총 회수${format(offer.min)}–${format(offer.max)}`);
@@ -393,7 +393,7 @@ test('recovers a genuine negative operating balance and enforces the three-contr
   await expect(page.getByTestId('club-hub')).toBeVisible();
   // The imported mid-season career carries unread attention events (e.g. the winter window).
   await acknowledgeEvents(page);
-  await openBusiness(page, '재정');
+  await openBusiness(page, '자금');
   const support = page.getByRole('button', { name: '추가 출자', exact: true });
   await expect(support).toBeEnabled();
   await support.click();

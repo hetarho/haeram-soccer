@@ -31,7 +31,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await localSponsor.getByRole('button', { name: '지역 후원 계약', exact: true }).first().click();
   await expect(localSponsor.getByTestId('sponsor-contract-local')).toBeVisible();
   await expect(page.getByRole('button', { name: '지역 후원 계약', exact: true })).toHaveCount(0);
-  await page.getByRole('tab', { name: '재정', exact: true }).click();
+  await page.getByRole('tab', { name: '자금', exact: true }).click();
   await page.getByRole('button', { name: '캠페인 시작', exact: true }).first().click();
   await expect(page.getByRole('button', { name: '4라운드 남음' })).toBeVisible();
   // The market is a tab of 사람.

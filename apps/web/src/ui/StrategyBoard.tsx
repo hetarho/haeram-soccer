@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import type { PolicyLevel, World } from '../../../../packages/contracts/src/types';
+import type { DirectionKey, PolicyLevel, World } from '../../../../packages/contracts/src/types';
 import {
   BUILD_OPTIONS,
   BUILD_SLOTS,
-  type BuildSlot,
   type ClubBuild,
 } from '../../../../packages/contracts/src/build';
 import {
@@ -35,17 +34,31 @@ import {
   draftFromRequest,
   draftWorld,
   withCard,
+  withDirection,
   withPolicy,
   withStrategy,
   withTicket,
   type BoardDraft,
   type CardChange,
+  type DirectionChange,
+  type PolicyChange,
+  type TicketChange,
 } from './board';
 import { Dialog } from './Dialog';
-import { DialChange, dialInfo, DialLines, stepIndex, stepValue, type DialKey } from './PolicyBoard';
+import {
+  DialChange,
+  DirectionChangeLine,
+  dialInfo,
+  DialLines,
+  stepIndex,
+  stepValue,
+  type DialKey,
+} from './PolicyBoard';
 import { DirectionRow } from './DirectionRow';
 import { useBoardRequest } from './state';
-import { Lines, StrategyComposer, STRATEGY_AREAS } from './StrategyComposer';
+import { Lines, StrategyComposer } from './StrategyComposer';
+import { areaOf, DIRECTION_AREAS, isDirectionRow, type AreaKey } from './areas';
+import { DIRECTION_INFO, directionOf } from '../../../../packages/engine/src/direction';
 import { strategyName, useStrategies } from './strategies';
 import s from './StrategyBoard.module.css';
 import a from './App.module.css';
@@ -100,27 +113,29 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
   const [removing, setRemoving] = useState<SavedStrategy>();
   // Areas start folded behind headers naming their options in force; the owner opens the ones he
   // works on, and a request from elsewhere opens its own (→WEB-60).
-  const [opened, setOpened] = useState<ReadonlySet<BuildSlot>>(() => new Set());
-  const toggle = (slot: BuildSlot) =>
+  const [opened, setOpened] = useState<ReadonlySet<AreaKey>>(() => new Set());
+  const toggle = (key: AreaKey) =>
     setOpened((open) => {
       const next = new Set(open);
-      if (next.has(slot)) next.delete(slot);
-      else next.add(slot);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
       return next;
     });
 
-  // A dial change asked for elsewhere (a cash remedy) opens as the draft, its area in view.
+  // A dial change asked for elsewhere (a cash remedy) opens as the draft, its area in view; a line
+  // naming a row elsewhere (사람's decision panels) only unfolds its area.
   const request = useBoardRequest((store) => store.request);
   useEffect(() => {
     if (!request) return;
     useBoardRequest.getState().take();
-    setDraft(draftFromRequest(w, request));
-    const key: DialKey = request.policy?.key ?? 'ticket';
-    const area = STRATEGY_AREAS.find((item) => item.dials.includes(key));
-    if (area) setOpened((open) => new Set(open).add(area.slot));
+    const area = request.area
+      ? DIRECTION_AREAS.find((item) => item.key === request.area)
+      : areaOf(request.policy?.key ?? 'ticket');
+    if (!request.area) setDraft(draftFromRequest(w, request));
+    if (area) setOpened((open) => new Set(open).add(area.key));
     requestAnimationFrame(() =>
       document
-        .getElementById(`board-area-${area?.slot}`)
+        .getElementById(`board-area-${area?.key}`)
         ?.scrollIntoView({ block: 'start', behavior: 'smooth' }),
     );
   }, [request]);
@@ -129,7 +144,11 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
     changes = draftChanges(w, draft),
     changed = changes.length > 0,
     cards = changes.filter((change) => change.kind === 'card'),
-    dials = changes.filter((change) => change.kind !== 'card'),
+    dials = changes.filter(
+      (change): change is PolicyChange | TicketChange =>
+        change.kind === 'policy' || change.kind === 'ticket',
+    ),
+    rows = changes.filter((change): change is DirectionChange => change.kind === 'direction'),
     draftBuild = cards.length ? draft.build! : current;
   // The history names what was applied; a preset or saved match reads better when there is one.
   const last = w.events.findLast((event) => event.kind === 'build'),
@@ -140,7 +159,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
       : strategyName(current, saved);
   const draftName = cards.length
     ? (draft.name ?? strategyName(draftBuild, saved))
-    : `줄 ${dials.length}개`;
+    : `줄 ${dials.length + rows.length}개`;
   // The strategy in force can join the library unless it is standard or already there.
   const savable =
     BUILD_SLOTS.some((slot) => current[slot]) &&
@@ -217,6 +236,13 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
         ? withTicket(w, draft, value)
         : withPolicy(w, draft, key, value as PolicyLevel),
     );
+  };
+
+  const pickDirection = (key: DirectionKey, index: number) => {
+    const option = DIRECTION_INFO[key].options[index].id,
+      drafted = rows.find((change) => change.key === key);
+    // Tapping the drafted option again, or the option in force, takes the row out of the draft.
+    setDraft(withDirection(w, draft, key, drafted?.to === option ? directionOf(w, key) : option));
   };
 
   return (
@@ -355,33 +381,33 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
 
       <section className={s.areas} aria-label="부문별 방향">
         <h3>
-          여섯 부문 <small>부문을 열어 줄마다 하나씩 골라요</small>
+          일곱 부문 <small>부문을 열어 줄마다 하나씩 골라요</small>
         </h3>
-        {STRATEGY_AREAS.map((area) => {
-          const slot = area.slot,
-            info = BUILD_SLOT_INFO[slot],
-            open = opened.has(slot),
-            cardMoved = cards.some((change) => change.slot === slot),
-            dialMoved = dials.some((change) =>
-              area.dials.includes(change.kind === 'ticket' ? 'ticket' : change.key),
+        {DIRECTION_AREAS.map((area) => {
+          const key = area.key,
+            open = opened.has(key),
+            slot = area.card,
+            cardMoved = !!slot && cards.some((change) => change.slot === slot),
+            rowMoved = [...dials, ...rows].some((change) =>
+              area.rows.includes(change.kind === 'ticket' ? 'ticket' : change.key),
             ),
-            card: BuildCard = cardOf(draftBuild, slot),
-            options: (string | undefined)[] = [undefined, ...BUILD_OPTIONS[slot]],
-            drafted = cardMoved ? options.indexOf(draftBuild[slot]) : undefined;
+            card: BuildCard | undefined = slot && cardOf(draftBuild, slot),
+            options: (string | undefined)[] = slot ? [undefined, ...BUILD_OPTIONS[slot]] : [],
+            drafted = slot && cardMoved ? options.indexOf(draftBuild[slot]) : undefined;
           return (
             <section
-              key={slot}
-              id={`board-area-${slot}`}
+              key={key}
+              id={`board-area-${key}`}
               className={s.area}
               aria-label={area.label}
-              data-area={slot}
+              data-area={key}
             >
               <button
                 type="button"
                 className={s.areaHead}
                 aria-expanded={open}
-                aria-controls={`board-area-body-${slot}`}
-                onClick={() => toggle(slot)}
+                aria-controls={`board-area-body-${key}`}
+                onClick={() => toggle(key)}
               >
                 <span className={s.domainIcon} aria-hidden="true">
                   {area.icon}
@@ -389,61 +415,97 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
                 <span>
                   <b>
                     {area.label}
-                    {(cardMoved || dialMoved) && <em className={s.areaDraft}>초안</em>}
+                    {(cardMoved || rowMoved) && <em className={s.areaDraft}>초안</em>}
                   </b>
                   <small>{area.question}</small>
-                  <span className={s.areaSummary} data-testid={`area-summary-${slot}`}>
-                    {areaSummary(w, slot, area.dials)}
+                  <span className={s.areaSummary} data-testid={`area-summary-${key}`}>
+                    {areaSummary(w, area)}
                   </span>
                 </span>
                 <i aria-hidden="true">{open ? '▴' : '▾'}</i>
               </button>
               {open && (
-                <div id={`board-area-body-${slot}`} className={s.areaBody}>
-                  <DirectionRow
-                    row={slot}
-                    label={info.label}
-                    // The header already asks the area's question; a card row asks only its own.
-                    question={info.question === area.question ? undefined : info.question}
-                    options={options.map((option) => cardOf({ [slot]: option }, slot).label)}
-                    inForce={options.indexOf(current[slot])}
-                    drafted={drafted}
-                    disabled={blocked}
-                    detail={
-                      <>
-                        <p className={s.model}>
-                          <b>
-                            {cardMoved ? '적용하면 · ' : ''}
-                            {card.label}
-                          </b>{' '}
-                          {card.model}
-                        </p>
-                        <Lines {...cardLines(card)} />
-                      </>
-                    }
-                    onPick={(index) =>
-                      setDraft(
-                        withCard(
-                          w,
-                          draft,
-                          slot,
-                          // Tapping the drafted card again takes the row out of the draft.
-                          index === drafted ? current[slot] : options[index],
+                <div id={`board-area-body-${key}`} className={s.areaBody}>
+                  {slot && card && (
+                    <DirectionRow
+                      row={slot}
+                      label={BUILD_SLOT_INFO[slot].label}
+                      // The header already asks the area's question; a card row asks only its own.
+                      question={
+                        BUILD_SLOT_INFO[slot].question === area.question
+                          ? undefined
+                          : BUILD_SLOT_INFO[slot].question
+                      }
+                      options={options.map((option) => cardOf({ [slot]: option }, slot).label)}
+                      inForce={options.indexOf(current[slot])}
+                      drafted={drafted}
+                      disabled={blocked}
+                      detail={
+                        <>
+                          <p className={s.model}>
+                            <b>
+                              {cardMoved ? '적용하면 · ' : ''}
+                              {card.label}
+                            </b>{' '}
+                            {card.model}
+                          </p>
+                          <Lines {...cardLines(card)} />
+                        </>
+                      }
+                      onPick={(index) =>
+                        setDraft(
+                          withCard(
+                            w,
+                            draft,
+                            slot,
+                            // Tapping the drafted card again takes the row out of the draft.
+                            index === drafted ? current[slot] : options[index],
+                          ),
+                        )
+                      }
+                    />
+                  )}
+                  {area.rows.map((row) => {
+                    if (isDirectionRow(row)) {
+                      const info = DIRECTION_INFO[row],
+                        change = rows.find((item) => item.key === row),
+                        inForce = info.options.findIndex(
+                          (option) => option.id === directionOf(w, row),
                         ),
-                      )
+                        step = change
+                          ? info.options.findIndex((option) => option.id === change.to)
+                          : undefined,
+                        shown = info.options[step ?? inForce];
+                      return (
+                        <DirectionRow
+                          key={row}
+                          row={row}
+                          label={info.label}
+                          question={info.question}
+                          options={info.options.map((option) => option.name)}
+                          inForce={inForce}
+                          drafted={step}
+                          disabled={blocked}
+                          detail={
+                            <p>
+                              {step !== undefined && <b>적용하면 · </b>}
+                              {shown.summary}
+                            </p>
+                          }
+                          onPick={(index) => pickDirection(row, index)}
+                        />
+                      );
                     }
-                  />
-                  {area.dials.map((key) => {
-                    const dial = dialInfo(w, key),
+                    const dial = dialInfo(w, row),
                       change = dials.find((item) =>
-                        item.kind === 'ticket' ? key === 'ticket' : item.key === key,
+                        item.kind === 'ticket' ? row === 'ticket' : item.key === row,
                       ),
-                      step = change ? stepIndex(key, change.to) : undefined,
+                      step = change ? stepIndex(row, change.to) : undefined,
                       shown = step ?? dial.current;
                     return (
                       <DirectionRow
-                        key={key}
-                        row={key}
+                        key={row}
+                        row={row}
                         label={dial.label}
                         question={dial.question}
                         options={dial.levels.map((level) => level.name)}
@@ -457,11 +519,11 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
                                 {step !== undefined && <b>적용하면 · </b>}
                                 {dial.levels[shown].summary}
                               </p>
-                              <DialLines w={w} dialKey={key} index={shown} />
+                              <DialLines w={w} dialKey={row} index={shown} />
                             </>
                           )
                         }
-                        onPick={(index) => pickDial(key, index)}
+                        onPick={(index) => pickDial(row, index)}
                       />
                     );
                   })}
@@ -534,7 +596,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
                 <Lines {...effectLines(composeBuild(draftBuild))} />
               </>
             )}
-            {dials.length > 0 && (
+            {dials.length + rows.length > 0 && (
               <ul className={s.draftDials}>
                 {dials.map((change) => (
                   <DialChange
@@ -542,6 +604,9 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
                     w={w}
                     change={change}
                   />
+                ))}
+                {rows.map((change) => (
+                  <DirectionChangeLine key={change.key} change={change} />
                 ))}
               </ul>
             )}

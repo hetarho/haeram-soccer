@@ -37,26 +37,16 @@ function legacyIntegers(values: number[]) {
 }
 
 describe('lossless career stream compaction', () => {
-  it('keeps hiring criteria, the talk rule, the strategy and the manager market through a pack round trip', () => {
+  it('keeps the direction rows, the strategy and the manager market through a pack round trip', () => {
     const w = career();
     for (let round = 2; round < 8; round++) advanceRound(w, undefined, false);
-    w.hiring = {
-      manager: {
-        minOvr: 60,
-        schools: ['positional'],
-        minFlexibility: 0,
-        maxPride: 90,
-        minYouth: 0,
-        traits: [],
-        maxWageOvr: 70,
-        priority: 'wage',
-        term: 3,
-        poach: false,
-        whenNone: 'best',
-      },
-      coaches: { scout: { volunteer: false, minAbility: 70, priority: 'ability', term: 2 } },
+    w.direction = {
+      renewal: 'coreOnly',
+      school: 'positional',
+      manager: 'cheap',
+      coaches: 'elite',
+      finance: 'careful',
     };
-    w.talkRule = { maxPay: 1.25, minOvr: 55, maxAge: 34 };
     w.build = { youth: 'pathway' };
     w.intervention = 4;
     expect(w.managerMarket?.free.length).toBeGreaterThan(0);

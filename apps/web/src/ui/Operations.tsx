@@ -16,7 +16,7 @@ const StrategyBoard = lazy(() =>
 const TABS = [
   ['strategy', '방향'],
   ['build', '증축'],
-  ['finance', '재정'],
+  ['finance', '자금'],
   ['sponsor', '후원'],
 ] as const;
 type Tab = (typeof TABS)[number][0];

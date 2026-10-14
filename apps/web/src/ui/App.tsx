@@ -428,8 +428,7 @@ const selectContentWorld = worldSelector([
   'morale',
   'inbox',
   'build',
-  'hiring',
-  'talkRule',
+  'direction',
   'managerMarket',
 ]);
 function useContentState(): ClientState {

@@ -22,7 +22,7 @@ export function DecisionOwner({
   auto: string;
   /** What the owner does while he takes it himself. */
   owner: string;
-  /** The home's criteria act only while the staff decide (→WEB-45). */
+  /** The direction rows named below act only while the staff decide (→WEB-45). */
   criteria?: boolean;
   /** Inside a panel that already frames the decision: no frame of its own. */
   plain?: boolean;
@@ -51,7 +51,7 @@ export function DecisionOwner({
       </div>
       <p>
         {on ? auto : owner}
-        {!on && criteria && ' 아래 기준은 개입 수준이 이 결정을 스태프에게 맡길 때만 쓰여요.'}
+        {!on && criteria && ' 아래 방향은 개입 수준이 이 결정을 스태프에게 맡길 때만 쓰여요.'}
       </p>
     </div>
   );

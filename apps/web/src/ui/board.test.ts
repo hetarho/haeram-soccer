@@ -14,7 +14,9 @@ import {
   withPolicy,
   withStrategy,
   withTicket,
+  withDirection,
 } from './board';
+import { DIRECTION_AREAS, type AreaKey } from './areas';
 
 const world = () =>
   createWorld({ country: 'ENG', name: 'Board', color: '#24664f', seed: 'board', difficulty: 2 });
@@ -97,13 +99,39 @@ describe('operating board draft', () => {
 describe('direction areas', () => {
   it('area summary names the options in force', () => {
     const w = world();
-    expect(areaSummary(w, 'youth', ['academy'])).toBe('표준 · 기본 운영');
-    expect(areaSummary(w, 'market', [])).toBe('표준');
+    const area = (key: AreaKey) => DIRECTION_AREAS.find((item) => item.key === key)!;
+    expect(areaSummary(w, area('youth'))).toBe('표준 · 기본 운영');
+    expect(areaSummary(w, area('market'))).toBe('표준');
+    // The staff area has no card: its rows only.
+    expect(areaSummary(w, area('staff'))).toBe('상관없음 · 표준 · 표준');
     send(w, { type: 'build', build: { scouting: 'data' } });
     send(w, { type: 'policy', key: 'recruitment', level: 2 });
-    expect(areaSummary(w, 'scouting', ['recruitment'])).toBe('데이터 스카우팅 · 젊은 선수 위주');
-    expect(areaSummary(w, 'fans', ['ticket'])).toBe('표준 · 보통');
+    expect(areaSummary(w, area('scouting'))).toBe('데이터 스카우팅 · 젊은 선수 위주');
+    expect(areaSummary(w, area('fans'))).toBe('표준 · 보통');
     w.ticket = 0.06;
-    expect(areaSummary(w, 'fans', ['ticket'])).toBe('표준 · 사용자 지정');
+    expect(areaSummary(w, area('fans'))).toBe('표준 · 사용자 지정');
+    send(w, { type: 'direction', key: 'finance', option: 'careful' });
+    send(w, { type: 'direction', key: 'renewal', option: 'frugal' });
+    expect(areaSummary(w, area('finance'))).toBe('표준 · 입소문 · 신중');
+    expect(areaSummary(w, area('squad'))).toBe('표준 · 표준 · 짠물');
+  });
+
+  it('drafts a direction row like a dial and sends it last', () => {
+    const w = world();
+    let d = withDirection(w, {}, 'finance', 'stable');
+    d = withPolicy(w, d, 'marketing', 2);
+    expect(draftChanges(w, d)).toEqual([
+      { kind: 'policy', key: 'marketing', from: 1, to: 2 },
+      { kind: 'direction', key: 'finance', from: 'standard', to: 'stable' },
+    ]);
+    expect(draftCommands(w, d)).toEqual([
+      { type: 'policy', key: 'marketing', level: 2 },
+      { type: 'direction', key: 'finance', option: 'stable' },
+    ]);
+    expect(draftWorld(w, d).direction).toEqual({ finance: 'stable' });
+    // The option in force takes the row out of the draft.
+    expect(withDirection(w, d, 'finance', 'standard')).toEqual({ policy: { marketing: 2 } });
+    for (const command of draftCommands(w, d)) send(w, command);
+    expect(w.direction).toEqual({ finance: 'stable' });
   });
 });

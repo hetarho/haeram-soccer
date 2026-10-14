@@ -123,8 +123,8 @@ export const LEVEL_STOPS: Record<InterventionLevel, readonly InboxKind[]> = {
     'finance',
     'sponsor-ending',
   ],
-  3: ['window-open', 'bid-response', 'incoming-bid', 'staff-renewal', 'finance', 'sponsor-ending'],
-  4: ['finance', 'sponsor-ending'],
+  3: ['window-open', 'bid-response', 'incoming-bid', 'finance'],
+  4: ['finance'],
 };
 /** The kinds the world's intervention level stops for; nothing else sets them (→WEB-18). */
 export function stopsOf(w: Pick<World, 'intervention'>): StopOn {

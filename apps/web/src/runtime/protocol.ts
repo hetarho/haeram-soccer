@@ -9,12 +9,7 @@ import type {
   Event,
 } from '../../../../packages/contracts/src/types';
 import type { Envelope } from '../adapters/repository';
-import {
-  clubBuildSchema,
-  coachCriteriaSchema,
-  managerCriteriaSchema,
-  talkRuleSchema,
-} from '../../../../packages/contracts/src/schema';
+import { clubBuildSchema } from '../../../../packages/contracts/src/schema';
 import { STRATEGY_NAME_LIMIT } from '../../../../packages/contracts/src/build';
 import type { SAVE_COMPATIBILITY_CODE } from '../../../../packages/contracts/src/versions';
 import type { clubMilestones } from '../../../../packages/engine/src/goals';
@@ -131,15 +126,11 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('read-inbox'), id: ref.optional() }),
   z.object({ type: z.literal('hire'), id: z.string().min(1).max(100), term: term.optional() }),
   z.object({ type: z.literal('renew-manager'), term: term.optional() }),
-  z.discriminatedUnion('role', [
-    z.object({
-      type: z.literal('hiring'),
-      role: z.literal('manager'),
-      criteria: managerCriteriaSchema,
-    }),
-    z.object({ type: z.literal('hiring'), role: staffRole, criteria: coachCriteriaSchema }),
-  ]),
-  z.object({ type: z.literal('talk-rule'), rule: talkRuleSchema }),
+  z.object({
+    type: z.literal('direction'),
+    key: z.enum(['renewal', 'school', 'manager', 'coaches', 'finance']),
+    option: z.string().min(1).max(40),
+  }),
   z.object({
     type: z.literal('contract-offer'),
     player: ref,

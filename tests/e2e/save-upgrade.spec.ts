@@ -61,8 +61,12 @@ async function exportRaw(page: Page, recovery = false) {
   const file = await event;
   return await readFile((await file.path())!, 'utf8');
 }
+/** What an upgrade must keep: everything but the rules, the revision and the inbox, where
+ * activation names the direction rows older staff criteria became (→SAVE-10). */
 const facts = (w: World) =>
-  Object.fromEntries(Object.entries(w).filter(([key]) => key !== 'engine' && key !== 'revision'));
+  Object.fromEntries(
+    Object.entries(w).filter(([key]) => key !== 'engine' && key !== 'revision' && key !== 'inbox'),
+  );
 
 test('writer upgrades a legacy career through the other slot without changing past facts', async ({
   page,
@@ -117,7 +121,7 @@ test('a 1.15 career at intervention level 2 with a reserved strategy upgrades to
     buildNext: { build: reserved.build },
   });
   delete world.intervention;
-  delete world.hiring;
+  delete (world as unknown as Partial<Record<string, unknown>>).hiring;
   await seed(page, await encode(world, 1, 0));
   await page.goto('/');
   await continueSlot(page);
@@ -135,12 +139,12 @@ test('a 1.15 career at intervention level 2 with a reserved strategy upgrades to
     .getByRole('button', { name: /^개입 수준/ });
   await expect(trigger).toHaveAccessibleName('개입 수준 · 중요한 결정만');
   await expect(trigger).toContainText('개입 2');
-  // 최고 becomes 최소 능력 65 with 능력 높은 순 for the attack coach.
-  expect(upgraded.hiring?.coaches?.attack).toMatchObject({
-    volunteer: false,
-    minAbility: 65,
-    priority: 'ability',
-  });
+  // One department at 최고 among seven keeps 코치 기조 표준; the rows it follows are named.
+  expect(upgraded.direction).toBeUndefined();
+  expect(Object.hasOwn(upgraded, 'hiring')).toBe(false);
+  expect(upgraded.inbox!.some((item) => item.title === '직원 기준이 방향의 줄로 바뀌었어요')).toBe(
+    true,
+  );
   // The reservation is dropped and named in the inbox; no slot is locked.
   expect(upgraded.buildNext).toBeUndefined();
   expect(Object.hasOwn(upgraded, 'buildChanged')).toBe(false);
@@ -159,13 +163,13 @@ test('a 1.15 career at intervention level 2 with a reserved strategy upgrades to
     'true',
   );
   await expect(page.getByText(/에 변경 가능/)).toHaveCount(0);
-  // The attack coach's criteria show at any level; they act once level 4 hands hiring over.
+  // 코치진 names the 코치 기조 the staff follow from level 3 on: one department at 최고 kept 표준.
   await page.getByRole('button', { name: '선수·스태프', exact: true }).first().click();
   await page
     .getByRole('tablist', { name: '선수·스태프 보기' })
     .getByRole('tab', { name: '코치진', exact: true })
     .click();
-  await expect(page.getByText(/능력 65 이상 · 능력 높은 순/)).toBeVisible();
+  await expect(page.getByRole('button', { name: /^코치 기조 · 표준/ })).toBeVisible();
 });
 
 test('read-only legacy view does not perform a disk or metadata upgrade', async ({

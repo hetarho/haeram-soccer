@@ -120,37 +120,36 @@ test.describe('사람 at 360x740', () => {
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
     await expect(tab(page, '코치진')).toHaveAttribute('aria-selected', 'true');
-    // 감독 ends with who appoints and the manager criteria, editable at any level (→WEB-43).
+    // 감독 ends with who appoints, the rows the staff follow and whom they would appoint (→WEB-43).
     await tab(page, '감독').click();
     const post = page.getByRole('region', { name: '감독 선임 위임' });
     await expect(post).toBeVisible();
     await expect(post.getByRole('checkbox')).toHaveCount(0);
     await expect(post.getByTestId('decision-owner-manager')).toContainText('직접 결정');
     await expect(post.getByTestId('decision-owner-manager')).toContainText(
-      '아래 기준은 개입 수준이 이 결정을 스태프에게 맡길 때만 쓰여요',
+      '아래 방향은 개입 수준이 이 결정을 스태프에게 맡길 때만 쓰여요',
     );
-    const criteria = post.getByRole('region', { name: '감독 선임 기준' });
-    const apply = criteria.getByRole('button', { name: '기준 적용', exact: true });
-    // A draft equal to the stored criteria has nothing to apply.
-    await expect(apply).toBeDisabled();
-    await criteria
-      .getByRole('group', { name: '학파' })
-      .getByRole('button', { name: '게겐프레싱', exact: true })
-      .click();
-    await chooseOption(criteria.getByRole('combobox', { name: '최소 OVR', exact: true }), '60');
-    await expect(apply).toBeEnabled();
-    expect(await horizontalOverflow(page)).toBe(0);
-    await apply.click();
-    await closeOutcome(page, '스태프 선임 기준을 바꿨어요');
-    await expect(apply).toBeDisabled();
-    // Whom the staff would appoint today: a gegenpress manager, or why nobody.
+    await expect(post.getByRole('button', { name: /^선호 학파 · 상관없음/ })).toBeVisible();
     const pick = post.getByTestId('manager-pick');
-    await expect(pick).toContainText('지금 기준이면');
-    await expect(pick).toContainText(/게겐프레싱|기준에 맞는 감독이 없어요/);
-    // 기본값으로 puts the defaults into the draft only.
-    await criteria.getByRole('button', { name: '기본값으로', exact: true }).click();
-    await expect(apply).toBeEnabled();
-    await expect(pick).toContainText('적용하면');
+    await expect(pick).toContainText('지금 방향이면');
+    // The rows are chosen on the 방향 board's 스태프 area.
+    await post.getByRole('button', { name: /^감독 기조 · 표준/ }).click();
+    const staffArea = page
+      .getByTestId('strategy-board')
+      .getByRole('region', { name: '스태프', exact: true });
+    await staffArea.getByRole('radio', { name: '선호 학파 게겐프레싱', exact: true }).click();
+    await staffArea.getByRole('radio', { name: '감독 기조 젊은 감독', exact: true }).click();
+    const draft = page.getByTestId('strategy-draft');
+    await expect(draft).toContainText('선호 학파 상관없음 → 게겐프레싱');
+    await expect(draft).toContainText('감독 기조 표준 → 젊은 감독');
+    expect(await horizontalOverflow(page)).toBe(0);
+    await draft.getByRole('button', { name: '적용', exact: true }).click();
+    await expect(draft).toHaveCount(0);
+    await openPeople(page);
+    await tab(page, '감독').click();
+    await expect(post.getByRole('button', { name: /^선호 학파 · 게겐프레싱/ })).toBeVisible();
+    // Whom the staff would appoint today: a gegenpress manager, or why nobody.
+    await expect(pick).toContainText(/게겐프레싱|감독 기조에 맞는 감독이 없어/);
     expect(await horizontalOverflow(page)).toBe(0);
 
     // An old address of the candidates tab opens 감독 with the market open.
@@ -233,11 +232,12 @@ test('with the manager post delegated a resignation is filled at once and the cl
 });
 
 test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
-  // Runs the clock from August to April at the fastest pace. Level 3 skips match eves and keeps
-  // the manager's renewal with the owner; offers and the winter window still stop it on the way.
+  // Runs the clock from August to April at the fastest pace. Level 2 keeps the manager's renewal
+  // with the owner (from level 3 the staff take it →WEB-45); match eves, offers and the winter
+  // window stop it on the way.
   test.slow();
   await found(page);
-  await chooseLevel(page, 3);
+  await chooseLevel(page, 2);
   await openPeople(page);
   await hireFirefighter(page);
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
@@ -251,14 +251,19 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
     card.evaluateAll((cards) => (cards[0] as HTMLElement | undefined)?.innerText ?? '');
   await fastest.click();
   for (let stops = 0; ; stops++) {
-    expect(stops).toBeLessThan(30);
+    expect(stops).toBeLessThan(80);
     await expect(card).toBeVisible({ timeout: 75000 });
     const text = await cardText();
     if (text.includes(renewal)) break;
-    // Another stop on the way: decline an offer or read the news, then run on.
-    const decline = card.getByRole('button', { name: '거절', exact: true });
+    // Another stop on the way: decline an offer, play a match through or read the news, then run on.
+    const decline = card.getByRole('button', { name: '거절', exact: true }),
+      through = card.getByRole('button', { name: '결과만 보고 계속', exact: true });
     await (
-      (await decline.count()) ? decline : card.getByRole('button', { name: '확인', exact: true })
+      (await decline.count())
+        ? decline
+        : (await through.count())
+          ? through
+          : card.getByRole('button', { name: '확인', exact: true })
     ).click();
     await expect.poll(cardText, { timeout: 10000 }).not.toBe(text);
     if (!(await cardText())) await fastest.click();

@@ -247,10 +247,14 @@ describe('the global progression clock', () => {
   it('stops only where the intervention level does, with no stop setting of its own (→WEB-45)', async () => {
     expect(STOP_KINDS.filter((kind) => stopsOf({ intervention: 1 })[kind])).toEqual(STOP_KINDS);
     expect(STOP_KINDS.filter((kind) => stopsOf(w)[kind])).toEqual(LEVEL_STOPS[2]);
-    expect(STOP_KINDS.filter((kind) => stopsOf({ intervention: 4 })[kind])).toEqual([
+    // From level 3 the staff sign sponsors, so only money stops level 4 (→WEB-45).
+    expect(STOP_KINDS.filter((kind) => stopsOf({ intervention: 3 })[kind])).toEqual([
+      'window-open',
+      'bid-response',
+      'incoming-bid',
       'finance',
-      'sponsor-ending',
     ]);
+    expect(STOP_KINDS.filter((kind) => stopsOf({ intervention: 4 })[kind])).toEqual(['finance']);
     // An event the level does not stop for lets the clock run on.
     const quiet = { ...structuredClone(w), intervention: 4 as const };
     quiet.inbox = [
@@ -282,10 +286,10 @@ describe('the global progression clock', () => {
     controller.start();
     await vi.advanceTimersByTimeAsync(1000);
     expect(controller.store.getState().running).toBe(true);
-    expect(s.command).toHaveBeenLastCalledWith(
-      expect.objectContaining({ stop: ['finance', 'sponsor-ending'] }),
-      { background: true, automatic: true },
-    );
+    expect(s.command).toHaveBeenLastCalledWith(expect.objectContaining({ stop: ['finance'] }), {
+      background: true,
+      automatic: true,
+    });
     vi.unstubAllGlobals();
   });
   it('stops on the eve of an own match and plays it through on resume', async () => {

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
+import type { BoardRequest } from './board';
+import type { AreaKey } from './areas';
 import type {
-  PolicyKey,
-  PolicyLevel,
   TrainingCoach,
   TrainingFocus,
   YouthFocus,
@@ -171,10 +171,12 @@ export function openCoachSheet(coach: TrainingCoach, focus?: TrainingFocus | You
  * A dial change suggested from elsewhere (a cash remedy, →WEB-44), for the operating board to
  * open as a draft.
  */
-export const useBoardRequest = oneShot<{
-  policy?: { key: PolicyKey; level: PolicyLevel };
-  ticket?: number;
-}>();
+export const useBoardRequest = oneShot<BoardRequest>();
+/** Opens 방향 with an area unfolded, from a line naming one of its rows (→WEB-43, →WEB-71). */
+export function openDirection(area: AreaKey) {
+  useBoardRequest.getState().open({ area });
+  openBusiness('strategy');
+}
 
 /**
  * Whether the intervention dialog (levels and background play, →WEB-45) is open. The HUD menu,

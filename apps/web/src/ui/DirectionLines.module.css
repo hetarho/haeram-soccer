@@ -1,0 +1,23 @@
+/* Lines naming the direction rows a decision follows (→WEB-43); each opens its area on 방향. */
+.lines {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0;
+}
+.line {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2px 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 13px;
+}
+.line small {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+}

@@ -1,6 +1,8 @@
 import type {
   ClubPolicy,
   Command,
+  Direction,
+  DirectionKey,
   PolicyKey,
   PolicyLevel,
   World,
@@ -20,7 +22,14 @@ import {
 import { gateProjection, operatingCosts } from '../../../../packages/engine/src/finance';
 import { financeProjection } from '../../../../packages/engine/src/projection';
 import { SEASON_ROUNDS } from '../../../../packages/engine/src/calendar';
+import {
+  DIRECTION_DEFAULT,
+  DIRECTION_KEYS,
+  directionOf,
+  directionOption,
+} from '../../../../packages/engine/src/direction';
 import { TICKET_LEVELS } from './ticketLevels';
+import { isDirectionRow, type AreaKey, type DirectionArea } from './areas';
 
 /**
  * The operating board's draft (→WEB-60): the strategy cards and the dials the owner tapped, kept
@@ -31,15 +40,23 @@ export type BoardDraft = {
   build?: ClubBuild;
   policy?: Partial<ClubPolicy>;
   ticket?: number;
+  /** Direction rows (→ECON-25) by key: the option ids the draft would set. */
+  direction?: Partial<Record<DirectionKey, string>>;
   name?: string;
 };
 /** A dial change asked for from elsewhere, such as a cash remedy (→WEB-44); T071's store. */
-export type BoardRequest = { policy?: { key: PolicyKey; level: PolicyLevel }; ticket?: number };
+export type BoardRequest = {
+  policy?: { key: PolicyKey; level: PolicyLevel };
+  ticket?: number;
+  /** An area to unfold without drafting anything, from a line naming one of its rows. */
+  area?: AreaKey;
+};
 
 export type CardChange = { kind: 'card'; slot: BuildSlot; from?: string; to?: string };
 export type PolicyChange = { kind: 'policy'; key: PolicyKey; from: PolicyLevel; to: PolicyLevel };
 export type TicketChange = { kind: 'ticket'; from: number; to: number };
-export type DraftChange = CardChange | PolicyChange | TicketChange;
+export type DirectionChange = { kind: 'direction'; key: DirectionKey; from: string; to: string };
+export type DraftChange = CardChange | PolicyChange | TicketChange | DirectionChange;
 
 /** The cards the draft would change, in slot order; none when its build is the one in force. */
 function cardChanges(w: World, d: BoardDraft): CardChange[] {
@@ -64,12 +81,18 @@ export function draftChanges(w: World, d: BoardDraft): DraftChange[] {
   }
   if (d.ticket !== undefined && d.ticket !== w.ticket)
     changes.push({ kind: 'ticket', from: w.ticket, to: d.ticket });
+  for (const key of DIRECTION_KEYS) {
+    const option = d.direction?.[key];
+    if (option !== undefined && option !== directionOf(w, key))
+      changes.push({ kind: 'direction', key, from: directionOf(w, key), to: option });
+  }
   return changes;
 }
 
 /**
  * The commands 적용 sends, in order: the strategy first (named for a preset or a saved strategy),
- * then one `policy` per changed dial, the ticket last. A draft equal to the world sends nothing.
+ * then one `policy` per changed dial, the ticket, then one `direction` per changed row. A draft
+ * equal to the world sends nothing.
  */
 export function draftCommands(w: World, d: BoardDraft): Command[] {
   const commands: Command[] = [];
@@ -79,6 +102,8 @@ export function draftCommands(w: World, d: BoardDraft): Command[] {
     if (change.kind === 'policy')
       commands.push({ type: 'policy', key: change.key, level: change.to });
     else if (change.kind === 'ticket') commands.push({ type: 'ticket', price: change.to });
+    else if (change.kind === 'direction')
+      commands.push({ type: 'direction', key: change.key, option: change.to });
   return commands;
 }
 
@@ -98,7 +123,16 @@ export function draftWorld(w: World, d: BoardDraft): World {
     ...(d.build ? { build: d.build } : {}),
     ...(d.policy ? { policy: { ...policyOf(w), ...d.policy } } : {}),
     ...(d.ticket !== undefined ? { ticket: d.ticket } : {}),
+    ...(d.direction ? { direction: directionWith(w, d.direction) } : {}),
   };
+}
+/** The world's rows with the draft's over them, defaults left out as the engine stores them. */
+function directionWith(w: World, rows: Partial<Record<DirectionKey, string>>): Direction {
+  const next: Record<string, string> = { ...w.direction };
+  for (const [key, option] of Object.entries(rows) as [DirectionKey, string][])
+    if (option === DIRECTION_DEFAULT[key]) delete next[key];
+    else next[key] = option;
+  return next as Direction;
 }
 
 /** Drops whatever equals the world, so an untouched or reverted draft is empty. */
@@ -115,6 +149,12 @@ function tidy(w: World, d: BoardDraft): BoardDraft {
   ) as Partial<ClubPolicy>;
   if (Object.keys(policy).length) next.policy = policy;
   if (d.ticket !== undefined && d.ticket !== w.ticket) next.ticket = d.ticket;
+  const direction = Object.fromEntries(
+    draftChanges(w, d).flatMap((change) =>
+      change.kind === 'direction' ? [[change.key, change.to]] : [],
+    ),
+  );
+  if (Object.keys(direction).length) next.direction = direction;
   return next;
 }
 /** One card tapped in its area row; the draft's strategy becomes the owner's own mix. */
@@ -135,6 +175,10 @@ export function withPolicy(w: World, d: BoardDraft, key: PolicyKey, level: Polic
 /** A ticket preset tapped. */
 export function withTicket(w: World, d: BoardDraft, price: number) {
   return tidy(w, { ...d, ticket: price });
+}
+/** A direction row's option tapped; the option in force takes the row out of the draft. */
+export function withDirection(w: World, d: BoardDraft, key: DirectionKey, option: string) {
+  return tidy(w, { ...d, direction: { ...d.direction, [key]: option } });
 }
 
 /**
@@ -165,15 +209,18 @@ export function dialPreview(w: World, change: PolicyChange | TicketChange) {
 }
 
 /**
- * The options in force in an area's rows — its card, then each dial's step — as the folded area's
- * header names them (→WEB-60): 데이터 스카우팅 · 균형. A custom ticket price reads 사용자 지정.
+ * The options in force in an area's rows — its card, then each dial's step and direction row's
+ * option — as the folded area's header names them (→WEB-60): 데이터 스카우팅 · 균형. A custom
+ * ticket price reads 사용자 지정.
  */
-export function areaSummary(w: World, slot: BuildSlot, dials: readonly (PolicyKey | 'ticket')[]) {
+export function areaSummary(w: World, area: DirectionArea) {
   const policy = policyOf(w);
-  const steps = dials.map((key) =>
-    key === 'ticket'
-      ? (TICKET_LEVELS.find((level) => level.price === w.ticket)?.name ?? '사용자 지정')
-      : POLICY_INFO[key].levels[policy[key] - 1].name,
+  const rows = area.rows.map((key) =>
+    isDirectionRow(key)
+      ? directionOption(w, key).name
+      : key === 'ticket'
+        ? (TICKET_LEVELS.find((level) => level.price === w.ticket)?.name ?? '사용자 지정')
+        : POLICY_INFO[key].levels[policy[key] - 1].name,
   );
-  return [cardOf(buildOf(w), slot).label, ...steps].join(' · ');
+  return [...(area.card ? [cardOf(buildOf(w), area.card).label] : []), ...rows].join(' · ');
 }

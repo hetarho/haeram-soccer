@@ -18,66 +18,10 @@ import { synergyStates } from '../../../../packages/engine/src/synergy';
 import type { SavedStrategy } from '../adapters/profile';
 import { Dialog } from './Dialog';
 import { DirectionRow } from './DirectionRow';
-import type { DialKey } from './PolicyBoard';
+import { DIRECTION_AREAS } from './areas';
 import { useStrategies } from './strategies';
 import s from './StrategyBoard.module.css';
 import a from './App.module.css';
-
-/**
- * The club by area (→ECON-25): each pairs its strategy card (how the club goes about it) with the
- * dials that spend on the same thing (how much it puts in), both changing at any time. The
- * training focus is no dial of the board: it belongs to 훈련 (→WEB-70).
- */
-export const STRATEGY_AREAS: {
-  slot: BuildSlot;
-  label: string;
-  icon: string;
-  question: string;
-  dials: readonly DialKey[];
-}[] = [
-  {
-    slot: 'culture',
-    label: '선수단',
-    icon: '★',
-    question: '선수단을 어떤 분위기로 키울까',
-    dials: ['support'],
-  },
-  {
-    slot: 'scouting',
-    label: '영입',
-    icon: '⇄',
-    question: '어떤 선수를 어떻게 찾아 데려올까',
-    dials: ['recruitment'],
-  },
-  {
-    slot: 'market',
-    label: '매각',
-    icon: '↗',
-    question: '우리 선수를 원하는 구단에 어떻게 응할까',
-    dials: [],
-  },
-  {
-    slot: 'youth',
-    label: '유소년',
-    icon: '✿',
-    question: '아카데미 아이들을 어떻게 키울까',
-    dials: ['academy'],
-  },
-  {
-    slot: 'revenue',
-    label: '수익',
-    icon: '₤',
-    question: '구단 살림을 어디서 벌고 아낄까',
-    dials: ['marketing'],
-  },
-  {
-    slot: 'fans',
-    label: '홈·팬',
-    icon: '◎',
-    question: '어떤 경기장과 팬층을 만들까',
-    dials: ['ticket'],
-  },
-];
 
 /** Strategy lines in the owner's terms: ▲ what it helps, ▼ what it costs. */
 export function Lines({ pros, cons, limit }: { pros: string[]; cons: string[]; limit?: number }) {
@@ -185,8 +129,9 @@ export function StrategyComposer({
           저장한 방향은 이 기기의 모든 게임에서 고를 수 있어요. 이 방향으로 적용을 누르면 방향
           보드의 초안에 올라가고, 보드에서 적용하면 바로 반영돼요. 투자 줄은 보드에서 따로 정해요.
         </p>
-        {STRATEGY_AREAS.map((area) => {
-          const slot = area.slot,
+        {DIRECTION_AREAS.map((area) => {
+          if (!area.card) return null;
+          const slot = area.card,
             info = BUILD_SLOT_INFO[slot],
             chosen = build[slot],
             card: BuildCard = cardOf(build, slot),

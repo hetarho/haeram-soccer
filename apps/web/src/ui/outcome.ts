@@ -63,8 +63,7 @@ const titles: Record<Command['type'], string> = {
   'read-inbox': '소식을 확인했어요',
   care: '구단주 요청을 전했어요',
   build: '방향을 정했어요',
-  hiring: '스태프 선임 기준을 바꿨어요',
-  'talk-rule': '계약 협상 기준을 바꿨어요',
+  direction: '방향을 바꿨어요',
   'contract-offer': '선수에게 계약을 제시했어요',
   'contract-decline': '선수의 계약 요구를 거절했어요',
   'sign-sponsor': '후원 계약을 맺었어요',
@@ -244,11 +243,8 @@ export function describeOutcome(
   // Coaches are hired, renewed and delegated per department in 사람 › 코치진 (→WEB-43, WEB-71).
   if (command.type === 'hire-staff' || command.type === 'renew-staff')
     note = '다음 라운드부터 반영돼요. 계약과 자동 결정은 사람 › 코치진에서 관리해요.';
-  if (command.type === 'hiring')
-    note =
-      command.role === 'manager'
-        ? '감독 자리가 비면 스태프가 이 기준으로 골라요. 기준은 사람 › 감독에서 바꿔요.'
-        : '계약이 끝나거나 자리가 비면 스태프가 이 기준으로 골라요. 기준은 사람 › 코치진에서 바꿔요.';
+  if (command.type === 'direction')
+    note = '스태프가 맡은 결정에서 이 방향으로 골라요. 개입 수준이 그 결정을 맡길 때만 쓰여요.';
   if (command.type === 'tactics')
     note = after.manager.pending
       ? '조건부 수락이에요. 훈련 지원금을 내면 전술이 바뀝니다.'

@@ -9,7 +9,7 @@ import type { GameClient } from '../runtime/client';
 /**
  * Which decisions the owner takes himself (→WEB-45), in his words: the level alone sets where the
  * clock stops (LEVEL_STOPS in runtime/progression) and what the staff decide
- * (INTERVENTION_DELEGATES in the engine). Every criterion stays as set.
+ * (INTERVENTION_DELEGATES in the engine). Every direction row stays as set.
  */
 export const INTERVENTION_LEVELS: {
   level: InterventionLevel;
@@ -35,16 +35,16 @@ export const INTERVENTION_LEVELS: {
   {
     level: 3,
     name: '이적만 직접',
-    short: '이적·재계약·자금에서만 멈춰요 · 유소년·선수 협상은 스태프',
+    short: '이적·자금에서만 멈춰요 · 유소년·선수 협상·후원·감독·코치진은 스태프',
     summary:
-      '경기는 결과로 넘기고 이적시장 개장과 협상·제안, 감독·코치 재계약, 자금·후원 경고에서만 멈춰요. 유소년, 선수 재계약·계약 개선 협상은 스태프가 맡아요.',
+      '경기는 결과로 넘기고 이적시장 개장과 협상·제안, 자금 경고에서만 멈춰요. 유소년, 선수 재계약·계약 개선 협상, 후원 계약, 감독 선임, 모든 코치진 부서의 고용은 스태프가 방향에 따라 맡아요.',
   },
   {
     level: 4,
     name: '운영진에 모두 맡기기',
-    short: '자금·후원 경고에서만 멈춰요 · 나머지는 모두 스태프',
+    short: '자금 경고에서만 멈춰요 · 이적 제안까지 모두 스태프',
     summary:
-      '감독과 스태프가 경기·유소년·선수 재계약·계약 개선 협상·영입 제안·후원 계약·모든 코치진 부서의 고용·감독 선임까지 처리하고, 자금·후원 경고에서만 멈춰요. 결과는 소식함에 남아요.',
+      '3단계에 더해 다른 구단의 영입 제안 응답까지 스태프가 방향에 따라 처리하고, 자금 경고에서만 멈춰요. 결과는 소식함에 남아요.',
   },
 ];
 

@@ -1095,7 +1095,7 @@ function Business({ state, client }: Props) {
       <Header
         eyebrow="CLUB DIRECTION"
         title="구단 방향"
-        description="방향에서 구단이 나아갈 길과 씀씀이를 정하고, 증축에서 시설을, 재정에서 장부와 캠페인을, 후원에서 계약을 다뤄요."
+        description="방향에서 구단이 나아갈 길과 씀씀이를 정하고, 증축에서 시설을, 자금에서 장부와 캠페인을, 후원에서 계약을 다뤄요."
       />
       <OperationsView
         key={opened}
