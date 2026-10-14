@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r23 | Define the implemented browser-demo behavior for historical club economy.
+> r24 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -84,7 +84,7 @@
 - ECON-20 [o] When cash after a round's costs is non-negative but covers fewer than 13 rounds of fixed costs, a cash warning inbox item (→WEB-42) appears once per season with its weeks left and remedies. It is a status, never a stop: the HUD cash and a red band show it (→WEB-56).
 - ECON-21 [o] Sponsors with business delegated (→STAFF-13): whenever an open sponsor slot (→ECON-8) is empty the commercial staff sign its best guaranteed offer at once and report it. Without delegation a slot left empty at a season's start, or a contract in its final season on 1 April, posts a sponsor reminder (→WEB-42).
 
-- ECON-22 [o] The club build — shown to the owner as the operating strategy (운영 전략, →WEB-60) — is six slots — 유스 정책, 스카우팅, 매각 기조, 수익 모델, 홈·팬, 라커룸 문화 — each holding one card: the standard card or one of four others, so 5^6 = 15,625 strategies before policy, staff or manager. ← combining levers is the fun: owners build their own club instead of picking one of a few presets Every card has at least one gain and one cost; additions add and multipliers multiply across slots. The owner drafts freely, sees combined effects, synergies (→CLUB-21) and odds, and applies a draft at once (recorded as a build event titled 운영 전략 with the strategy's name: the preset's, the saved strategy's (→WEB-61), else 기본 전략 or 맞춤 전략); every rule that reads a card uses the new one from then on.
+- ECON-22 [o] The club build — shown to the owner as the club's direction (방향, →WEB-60) — is six slots — 유스 정책, 스카우팅, 매각 기조, 수익 모델, 홈·팬, 라커룸 문화 — each holding one card: the standard card or one of four others, so 5^6 = 15,625 strategies before policy, staff or manager. ← combining levers is the fun: owners build their own club instead of picking one of a few presets Every card has at least one gain and one cost; additions add and multipliers multiply across slots. The owner drafts freely, sees combined effects, synergies (→CLUB-21) and odds, and applies a draft at once (recorded as a build event titled 방향 with the direction's name: the preset's, the saved direction's (→WEB-61), else 기본 방향 or 맞춤 방향; a name recorded as 기본 전략 or 맞춤 전략 reads 기본 방향 or 맞춤 방향); every rule that reads a card uses the new one from then on.
   - cards change at any time, like the dials: a draft, preset or saved strategy applies at once whatever changed before, with no lock and no reservation for a later season. ← owners change course when the club needs it; each card's costs are the price of switching
   - presets fill the slots in one tap; each has one identity and lights or aims at a synergy:
     | preset | cards (others standard) | aim |
@@ -128,8 +128,8 @@
 - ECON-24 [o] Bankruptcy ends a career: each league round settled with negative cash counts one, getting back to zero or above resets the count; at 8 in a row, or at once when the debt passes half a season's fixed costs, the club goes bankrupt. ← debt used to freeze play behind an alert instead of ending it
   - the first round in debt posts a "파산 위기" inbox item (a status, not a stop); the HUD cash and a red band count the rounds left (→WEB-56)
   - a bankrupt club advances nothing and refuses every command but reading the inbox; the app shows the game-over page (→WEB-56)
-- ECON-25 [o] Strategy areas pair each strategy card with the ongoing dials that spend on the same area (→ECON-22, →ECON-16, →ECON-17); the operating board (→WEB-60) shows each area's card row with its dials and the composer (→WEB-61) the cards by the same areas, so cards and dials read as one plan:
-  | area | strategy card (any time) | dials (any time) |
+- ECON-25 [o] Direction areas pair each strategy card with the ongoing dials that spend on the same area (→ECON-22, →ECON-16, →ECON-17), and both are rows of named options of one kind: the 방향 board (→WEB-60) draws and drafts an area's card row and dial rows alike, and the composer (→WEB-61) shows the cards by the same areas, so cards and dials read as one plan:
+  | area | card row (any time) | dial rows (any time) |
   |---|---|---|
   | 선수단 | 라커룸 문화 | 선수단 투자 |
   | 영입 | 스카우팅 | 영입 기조 |
@@ -171,6 +171,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r24 261014 ECON-22✎ shown as the operating strategy (운영 전략), events titled 운영 전략 with 기본 전략/맞춤 전략→the club's direction (방향), titled 방향 with 기본 방향/맞춤 방향, older names read so; ECON-25✎ strategy areas, the operating board's card rows and dials→direction areas whose cards and dials are rows of named options drawn and drafted alike on the 방향 board
 - r23 261014 ECON-29✎ measured on 24 careers of one facility level→40 careers on the facility parts: wage bill 46.1%→44.3% (below the band), operating result +3.4%→+4.8%, none bankrupt
 - r22 261013 ECON-12✎ 20 facility levels of 5,000 seats→ECON-32+ three parts: stadium in 8 expansion/rebuild steps (2,500→90,000), training ground and academy facilities 1–5; ECON-8✎ naming facilities 10+→stadium 30,000+; ECON-22✎ 상업 제국 facilities 6+→stadium 30,000+; ECON-29✎ reference club builds a level→the cheapest next work of the three parts
 - r21 261013 ECON-22✎ a changed slot locked for 90 days→no lock, cards change at any time; ECON-25✎ card column locked 90 days→any time

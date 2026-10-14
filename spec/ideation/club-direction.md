@@ -138,3 +138,4 @@
 - How fast 지역 기반 and 글로벌 인지도 rise and decay, their scale, and whether home shows them (slice 4).
 - 엘리트 선발: fewer prospects of higher potential, or something else (slice 3).
 - Delegated signings in detail: roles, how many per window, loans, free agents first or not (slice 5).
+- The area 재정 (slice 2) shares its name with the page tab 재정 (cash and ledger); one of them needs another name.
