@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r29 | Define the implemented browser-demo behavior for historical club economy.
+> r30 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -140,7 +140,7 @@
   | area | card row | other rows | the delegated staff decide by them |
   |---|---|---|---|
   | 선수단·계약 | 라커룸 문화 | 선수단 투자, 재계약 기조 (→CLUB-26) | contract talks |
-  | 영입 | 스카우팅 | 영입 기조 | - |
+  | 영입 | 스카우팅 | 영입 기조 | signings (→CLUB-33) |
   | 매각 | 매각 기조 | - | answers to offers (→CLUB-18, →CLUB-24) |
   | 유소년 | 유입 방식 | 육성 목표, 데뷔 시점 (→CLUB-32), 유소년 투자 | academy promotion, release and listing; the youth director's focus (→CLUB-31) |
   | 스태프 | - | 선호 학파, 감독 기조 (→STAFF-18), 코치 기조 (→STAFF-15) | the manager post, the coaching departments |
@@ -174,14 +174,14 @@
   - each round's payment is multiplied by the squad investment's factor in force that round (→ECON-16); the default level's ×1 leaves ECON-29's reference club as calibrated.
 - ECON-31 [o] A broadcasting index per country and year scales league distributions (→ECON-28) and cup and continental prizes with their result bonuses (→LEAGUE-5, →EURO-7): flat with prices until television paid the league, growing with each country's rights deals and, through the broadcasting boom of the 1990s–2010s, far faster than the football index. ← the 1950s game lived on the gate and the 2000s game on television; one index for distributions and tickets could not give both income mixes (measured 261013: 1950s matchday 21–35% whenever the 2000s top-flight mix held)
   - the index is a source-attributed catalog per country and year, marked estimated where it is (→ECON-3), projected after its coverage like prices (→ECON-2).
-- ECON-33 [o] 재정 기조, a row of the 재정 area (→ECON-25), is the one money rule of every delegated spend — contract talks (→CLUB-26), academy promotions (→STAFF-13), coach and manager hires and renewals (→STAFF-15, →STAFF-18) — and sets the runway at which the staff sell harder (→CLUB-18, →CLUB-24); the owner's own decisions are never bounded by it. ← fixed checks spread over each staff rule could not say how boldly the owner wants the club run
-  | option | runway kept after a spend | wage bill ceiling | promotions wait below | sell harder below |
-  |---|---|---|---|---|
-  | 공격적 | 6 rounds | 75% | a quarter of a year's operating costs | 6 rounds (−20), 14 rounds (−10) |
-  | 적극 | 9 rounds | 70% | half a year's | 9, 20 |
-  | 표준 (default) | 13 rounds (the cash warning) | 65% | a year's | 13, 30 |
-  | 신중 | 20 rounds | 60% | one and a half years' | 20, 45 |
-  | 안정적 | 30 rounds | 55% | two years' | 30, 65 |
+- ECON-33 [o] 재정 기조, a row of the 재정 area (→ECON-25), is the one money rule of every delegated spend — contract talks (→CLUB-26), signings (→CLUB-33), academy promotions (→STAFF-13), coach and manager hires and renewals (→STAFF-15, →STAFF-18) — and sets the runway at which the staff sell harder (→CLUB-18, →CLUB-24); the owner's own decisions are never bounded by it. ← fixed checks spread over each staff rule could not say how boldly the owner wants the club run
+  | option | runway kept after a spend | wage bill ceiling | promotions wait below | sell harder below | a signing's fee at most |
+  |---|---|---|---|---|---|
+  | 공격적 | 6 rounds | 75% | a quarter of a year's operating costs | 6 rounds (−20), 14 rounds (−10) | all the cash above the runway |
+  | 적극 | 9 rounds | 70% | half a year's | 9, 20 | 75% of it |
+  | 표준 (default) | 13 rounds (the cash warning) | 65% | a year's | 13, 30 | 50% |
+  | 신중 | 20 rounds | 60% | one and a half years' | 20, 45 | 35% |
+  | 안정적 | 30 rounds | 55% | two years' | 30, 65 | 25% |
   - runway kept: cash after the spend covers that many rounds of fixed costs with the new wage in place of the old (→ECON-20), and the season's cash projection with it (→ECON-18) still ends the season covering them.
   - wage bill ceiling: the yearly wage bill after a raise, staff included, against the club's revenue over the last 12 months (→CLUB-26).
 
@@ -198,6 +198,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r30 261014 ECON-33✎ +signings, +a signing's fee at most a share of the cash above the runway (공격적 100%…안정적 25%); ECON-25✎ 영입 staff decide -→signings
 - r29 261014 ECON-14✎ ECON-8✎ exclusive contract: blocks merchandise campaigns→halves 해외 마케팅's fan growth
 - r28 261014 ECON-34+ 지역 기반 and 글로벌 인지도 (0–100) built by the 지역 and 글로벌 rows; ECON-16✎ marketing dial→주변 투자, 풀뿌리 유망주 투자, 해외 마케팅, 해외 스카우트망, 해외 투어; ECON-7✎ four campaigns→none to start, older ones settle; ECON-22✎ 홈·팬 slot→지역 관계 방식, 글로벌 브랜드→지역 상생, 상업 제국 preset without it, marketing/campaign effects→해외 마케팅; ECON-25✎ +지역, 글로벌 areas, 마케팅 out of 재정; ECON-8✎ ECON-9✎ ECON-23✎ read the bases
 - r27 261014 ECON-29✎ measured under rules 1.16→1.17 (direction rows, 셀링 클럽 bar 110%): wage bill 44.3%→44.8% (still below 45%), operating result +4.8%→+3.5%, sales 12.3%→13.2%, 2000s mix 43.7/32.8/23.5→43.6/32.9/23.5, 1950s 88.8→88.5%, ladder 95.2→93.9, none bankrupt

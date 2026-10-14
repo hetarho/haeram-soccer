@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r62 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r63 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -106,7 +106,7 @@
 
 - WEB-44 [o] Home separates statistics from state. The team-state card shows starters' fatigue, squad morale (shown as 분위기), the manager's standing (trust as 굳건/안정/흔들림/위기, or 대행 체제) and squad size with the injured count, with good/ok/warning/critical tones. Cash is not a tile: it stays in the HUD and joins as the urgent advice when it runs short, winning ties because a club out of money cannot play on. The most urgent warning explains its effect, offers two one-tap remedies and a "more" entry.
   - tapping any state, or the HUD cash, opens its remedy sheet with 3–6 choices, each stating cost, effect and cooldown before commit; owner requests (→CLUB-20) also name who carries them out and list each result with its chance; unavailable choices say why (cooldown, cash, already applied, or the staff deciding it at the current intervention level →WEB-45).
-  - fatigue: suggesting recovery training to the assistant, rest selection, rest days, recovery support, training camp, preparation sheet. morale: squad meeting, team-building day, win bonus, owner's visit, training camp, rest days. manager: public vote of confidence, manager office, candidates. cash: less 해외 마케팅 or 주변 투자, lower squad investment, higher ticket price, friendly match, owner capital, the market. squad: market, academy, promote the best prospect.
+  - fatigue: suggesting recovery training to the assistant, rest selection, rest days, recovery support, training camp, preparation sheet. morale: squad meeting, team-building day, win bonus, owner's visit, training camp, rest days. manager: public vote of confidence, manager office, candidates. cash: one step less on the costliest 지역 or 글로벌 investment row, lower squad investment, higher ticket price, friendly match, owner capital, the market. squad: market, academy, promote the best prospect.
   - cash runway reads in weeks below 13 rounds and in months above, never in rounds.
   - choices act through engine commands; navigation choices close the sheet and open their view.
   - a choice that changes a standing setting (less investment abroad or in the town, lower squad investment, higher ticket price) opens that setting's home with the choice ready to apply (→WEB-71), and suggesting recovery opens the assistant's card with 회복 집중 ready to suggest; the sheet never changes either itself.
@@ -117,8 +117,9 @@
   | 1 every decision | all | nothing |
   | 2 important decisions (new-club default) | match eve, window opening, bids, youth intake, coach renewals, cash/sponsor | the academy, contract talks |
   | 3 transfers only | window opening, bids, cash | the academy, contract talks, sponsors, every coaching department, the manager post |
-  | 4 leave it to the staff | cash only | all of level 3's and offers |
+  | 4 leave it to the staff | cash only | all of level 3's, offers and signings (→CLUB-33) |
   - the training focus is no level's: the coaches always set it (→CLUB-13, →CLUB-31).
+  - the market's bid list marks the chief scout's bids 스태프 제안; the owner sees their answers but answers none of them.
   - each level hands over one more group: the academy and contract talks, then sponsors and the staff posts, then transfers.
   - the level is saved with the game, so each game keeps its own; choosing one applies at once and leaves every direction row as set.
   - the direction rows the staff follow (→ECON-25) are set on the 방향 board at any level; the staff apply them only while the level delegates the decision, and its home says which is the case (→WEB-43).
@@ -235,6 +236,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r63 261014 WEB-45✎ level 4 offers→offers and signings, the market marks the staff's bids; WEB-44✎ cash remedy less 해외 마케팅 or 주변 투자→the costliest 지역 or 글로벌 investment row
 - r62 261014 WEB-60✎ seven→eight areas, 지역 and 글로벌 headers show their base; WEB-39✎ 자금 campaigns→only those started before 1.19; WEB-44✎ cash remedy less marketing→less 해외 마케팅 or 주변 투자; WEB-14✎ WEB-71✎ marketing→the 지역 and 글로벌 rows
 - r61 261014 WEB-70✎ 유소년's director's rule→lines naming 육성 목표 and 데뷔 시점; WEB-71✎ the youth rows' home→방향
 - r60 261014 WEB-45✎ level 3 staff = level 2's→+sponsors, coaches, manager (stops window opening, bids, cash); level 4→+offers (stops cash); criteria editable at any level→direction rows on the board; WEB-43✎ criteria editors→lines naming the rows; WEB-71✎ criteria homes→방향; WEB-39✎ 재정 tab→자금; WEB-60✎ six→seven areas; WEB-61✎ composer card rows by area

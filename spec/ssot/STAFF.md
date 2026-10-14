@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r17 | Define the implemented browser-demo behavior for manager demands and personality.
+> r18 | Define the implemented browser-demo behavior for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -20,7 +20,7 @@
   - absent staff (older saves) and ability-50 trait-less members are exactly neutral; a vacant department is worse than neutral
   - new clubs start with unpaid ability-50 volunteers; hired coaches cost a wage fixed for a term of 1–5 seasons the owner chooses (delegated staff: 코치 기조's term, →STAFF-15) plus a signing fee; replacing or releasing a paid coach or manager pays 25% of the annual wage for each season left on his contract
 - STAFF-12 [o] Hired managers may carry a selection trait: youth (+4 selection value for age ≤ 21), rotation (fatigue weighs double) or stable (fatigue weighs half). The founding manager has none; a developer style (→STAFF-14) selects like the youth trait, so a developer never draws it, a firefighter's youth draw becomes stable and a gegenpress coach's stable draw becomes rotation.
-- STAFF-13 [o] The staff take these decisions for the owner exactly when the intervention level delegates them (→WEB-45), never by a switch of their own: academy promotion and release, contract talks (→CLUB-26), answers to other clubs' offers (→CLUB-18), sponsors (→ECON-21), the coaching departments' hiring and renewal (→STAFF-15) and the manager post (→STAFF-18), by the direction rows of the decision's area (→ECON-25) and within 재정 기조 (→ECON-33). New clubs start at level 2: the staff take the academy and contract talks, the owner the rest. Delegated decisions are reported in the inbox. The training focus of the first team and the academy is never among them: the coaches always set it (→CLUB-13, →CLUB-31).
+- STAFF-13 [o] The staff take these decisions for the owner exactly when the intervention level delegates them (→WEB-45), never by a switch of their own: academy promotion and release, contract talks (→CLUB-26), answers to other clubs' offers (→CLUB-18), signings (→CLUB-33), sponsors (→ECON-21), the coaching departments' hiring and renewal (→STAFF-15) and the manager post (→STAFF-18), by the direction rows of the decision's area (→ECON-25) and within 재정 기조 (→ECON-33). New clubs start at level 2: the staff take the academy and contract talks, the owner the rest. Delegated decisions are reported in the inbox. The training focus of the first team and the academy is never among them: the coaches always set it (→CLUB-13, →CLUB-31).
   - only the level changes who decides. At any level the owner may still promote or release a prospect, offer or decline in a pending contract talk, answer a bid, sign a sponsor, and hire, renew or release staff himself; none of these changes delegation, so a delegated department fills a post the owner empties by 코치 기조.
   - a delegated youth director promotes a prospect of promotion age (→CLUB-16) who is ready by 데뷔 시점 (→CLUB-32) while the squad and the role have room, and releases by 육성 목표 (→CLUB-32), keeping the rest in U-21 until they are ready or turn 21; he promotes nobody while cash is below the 재정 기조 promotion floor (→ECON-33; a year of operating costs at 표준) and reports the deferral. ← every promotion adds a first-team wage
 
@@ -92,6 +92,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r18 261014 STAFF-13✎ +signings (→CLUB-33)
 - r17 261014 STAFF-13✎ youth director's fixed readiness (weakest first-teamer or starters minus 10) and release (19, below the weakest)→by 데뷔 시점 and 육성 목표 (→CLUB-32)
 - r16 261014 STAFF-13✎ +decide by the area's direction rows within 재정 기조, promotion floor a year of costs→the 재정 기조 floor; STAFF-15✎ six hiring criteria per department at level 4→one 코치 기조 row (자원봉사, 저비용 45+, 표준 55+, 최고 수준 65+) at level 3+, 13 rounds→the 재정 기조 runway; STAFF-18✎ eleven manager criteria at level 4→선호 학파 and 감독 기조 (표준, 육성가, 검증된 승부사, 젊은 감독, 저비용) at level 3+, 기다림 by default→표준 waits, the others take the best affordable
 - r15 261013 STAFF-13✎ the training focus among delegated decisions→never delegated, the coaches always set it; staff release at 19→at 19 only below the first team, else kept until 21; STAFF-19+ owner suggestions and forced orders to the assistant and the youth director

@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r29 | Define the implemented browser-demo behavior for squad and growth.
+> r30 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating equals its league's average club XI (±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -146,6 +146,15 @@
   | 준비된 뒤 | at the starters' level of his role | - |
   | 늦게 | as 표준, but not before 19 | U-21 growth ×1.15 |
 
+- CLUB-33 [o] With transfers delegated (→STAFF-13), the chief scout signs players while a window is open (→CLUB-17): from the market list as 영입's rows shape it (→CLUB-14), within 재정 기조 (→ECON-33); the owner's own bids are never his to answer. ← at level 4 a squad must still be rebuilt and strengthened without the owner
+  - he looks on the window's opening day and every 7th day after it; a look makes at most one move, and none while one of his bids is pending.
+  - needs, first met first: a short role (fewer than 2 GK, 6 DEF, 6 MID or 4 FWD, or under 18 players), then an upgrade: a candidate whose ability beats the weakest starter of his role by the margin of 재정 기조 (표준 5, 적극 3, 공격적 2), while the squad has 24 players or fewer; 안정적 and 신중 never upgrade.
+  - upgrades per window: 표준 1, 적극 2, 공격적 3; a short role has no cap.
+  - the candidate: of the role the need names, free agents before fee-bearing players, each by ability, then potential; never a player he bid for in this window before, never on loan.
+  - he signs a free agent at once and bids the asking fee for anyone else (공격적 110%); a counter he accepts when it still passes the money checks, else he declines.
+  - money: the fee is at most the 재정 기조 share of the cash above its runway, and with his wage the runway, the wage bill ceiling and the season's cash projection still hold, as for a raise (→ECON-33).
+  - each move and each answer reaches the inbox as a staff report naming the need, the row behind it and the money check.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -153,6 +162,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r30 261014 CLUB-33+ delegated signings at level 4: weekly looks in a window, short roles then upgrades by 재정 기조, free agents first, bids at the asking fee, within 재정 기조's money checks
 - r29 261014 CLUB-21✎ 상업 제국 marketing 4+→해외 마케팅 4+; CLUB-16✎ +풀뿌리 유망주 투자 and the bases add prospects and potential
 - r28 261014 CLUB-32+ 육성 목표 (표준, 1군 공급, 판매용 육성, 최소 운영) and 데뷔 시점 (표준, 빠른 데뷔, 준비된 뒤, 늦게) set the youth director's promotion, release and listing; CLUB-22✎ +staff set stances at window openings by 매각 기조 and 육성 목표; CLUB-21✎ 트레이딩 머신 1군 직행 경로→데뷔 시점 빠른 데뷔; CLUB-13✎ CLUB-31✎ focus rules read 데뷔 시점
 - r27 261014 CLUB-18✎ sale bar 130%/200% of value→by 매각 기조 (셀링 클럽 110/160 … 핵심 지키기 150/250, never a starter), runway steps 13/30 rounds→the 재정 기조 steps; CLUB-24✎ runway 30 weeks / 13-week warning→the 재정 기조 steps; CLUB-26✎ the owner's talk rule (wage cap 90–140%, minimum OVR, maximum age)→재계약 기조 (표준 110%, 모두 붙잡기 140%, 핵심만 붙잡기 starters 140%, 짠물 100%, 젊은 선수 우선 under 30), cash checks 13 rounds and 65%→재정 기조
