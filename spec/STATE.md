@@ -13,9 +13,10 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T02:08Z | T087 |
+| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T02:23Z | T088 |
 
 ## inbox
+- 261014 parked -: the owner's dev server (pnpm dev, port 19500, in the main checkout) was found stopped during T087 — not restarted, since vite's client reloads the open game tab when its server returns; restart it yourself once the game is saved
 - 261014 decided WEB-39: the 방향 tab's address → keep /business?view= with build, finance and sponsor, older values opening their tab (alt: a new /direction route | the old view values)
 - 261014 decided WEB-60: how the six areas show on one screen → folded behind headers naming the options in force, a drafted or remedy-opened area unfolded (alt: all unfolded | only the first unfolded)
 - 261014 decided WEB-60 ECON-25 ideation/club-direction: area names in slice 1 → today's six (선수단, 영입, 매각, 유소년, 수익, 홈·팬) until their rows change in slices 2–4, and campaigns under 재정 until slice 4 (alt: rename to 선수단·계약, 재정, 지역 now)
@@ -45,8 +46,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T087 | The 방향 tab and its wording | WEB ECON | T086 | doing@261014.v7dq |
-| T088 | One row kind on the 방향 board | WEB ECON | T087 | todo |
+| T088 | One row kind on the 방향 board | WEB ECON | T087 | doing@261014.v7dq |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -67,6 +67,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 T087 done (d0f53b9): 방향 tab with 방향·증축·재정·후원, campaigns under 재정, 방향 wording; T088 doing
 - 261014 T086 done (6f4ade0): engine names 방향, old 운영 전략 titles read the same
 - 261014 T086 doing standalone on work/direction (worktree ../haeram-soccor-direction; the owner's dev server runs from the main checkout)
 - 261014 create-task WEB r59 ECON r24 → T086 (engine names), T087 (tab and wording), T088 (one row component); next implement-task T086
@@ -86,4 +87,3 @@
 - 261013 T080 done (41213cb): one intervention level saved with the game sets stops and delegation; homes show who decides; Chromium e2e 104, unit 661, contract 11
 - 261013 T080 doing standalone on work/intervention (139916a)
 - 261013 create-task WEB r55 STAFF r14 CLUB r24 SAVE r25 → T080 (one task: engine level, save mapping, web homes and clock); next implement-task T080
-- 261013 update-ssot WEB r55 STAFF r14 CLUB r24 SAVE r25: the intervention level, saved with the game, alone sets the stops and who decides (training at levels 2–4); no staff switches in homes, no per-event stops, no 맞춤; criteria editable at any level, applied only while delegated; next create-task
