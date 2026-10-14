@@ -16,7 +16,7 @@
 | v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T01:57Z | - |
 
 ## inbox
-- 261014 decided WEB-39: the 방향 tab's address → keep /operations?view= with build, finance and sponsor, older values opening their tab (alt: a new /direction route | the old view values)
+- 261014 decided WEB-39: the 방향 tab's address → keep /business?view= with build, finance and sponsor, older values opening their tab (alt: a new /direction route | the old view values)
 - 261014 decided WEB-60: how the six areas show on one screen → folded behind headers naming the options in force, a drafted or remedy-opened area unfolded (alt: all unfolded | only the first unfolded)
 - 261014 decided WEB-60 ECON-25 ideation/club-direction: area names in slice 1 → today's six (선수단, 영입, 매각, 유소년, 수익, 홈·팬) until their rows change in slices 2–4, and campaigns under 재정 until slice 4 (alt: rename to 선수단·계약, 재정, 지역 now)
 - 261014 decided WEB-60: the standard card option's label → 표준, as every row will have (alt: keep 기본)
@@ -31,13 +31,13 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 59 | 58 | WEB-10✎ WEB-14✎ WEB-39✎ WEB-43✎ WEB-60✎ WEB-61✎ WEB-69✎ WEB-70✎ WEB-71✎ | 0 |
+| WEB | 59 | 59 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
 | CLUB | 26 | 26 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
 | STAFF | 15 | 15 | - | 0 |
-| ECON | 24 | 23 | ECON-22✎ ECON-25✎ | 0 |
+| ECON | 24 | 24 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 8 | 8 | - | 0 |
 | SAVE | 28 | 28 | - | 0 |
@@ -45,6 +45,9 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T086 | Direction names in the engine | ECON WEB | - | todo |
+| T087 | The 방향 tab and its wording | WEB ECON | T086 | todo |
+| T088 | One row kind on the 방향 board | WEB ECON | T087 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -53,7 +56,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- create-task WEB ECON (club-direction slice 1: the 방향 tab and one row component, no rule change), then implement-task; slices 2–6 in spec/ideation/club-direction.md shape.
+- implement-task T086 → T087 → T088 (club-direction slice 1, standalone); slices 2–6 in spec/ideation/club-direction.md shape.
 - owner's requests 261013 are on main (caa5e83, CI 38448231873 green in every browser): T080 level only, T081 no strategy locks, T082/T083 coaches set training with suggestions and orders and the academy by U-17/U-19/U-21, T084/T085 facilities as stadium steps, training ground and academy facilities.
 - wage bill / revenue sits at 44.3% on the facility parts (ECON-29 band 45–70%, 45.3% before them): base wage 925 and a 25% youth promise did not move it; try the contract-talk floor next (agent premium per level, as T079 did: 0% gave 47.7%, 1% 46.1%) and re-measure 40 careers.
 - three levers and the economy port are on main (fast-forward to 2de95c6, 261013): T070–T079 done — T077 d303c5e, T078 fe7b209/8c52745, T079 merged from work/econ-port at 11c9c5c/66ce736 (unit 658, contract 11, build pass; goldens equal work/econ-port's). CI run 38382526028 on 2de95c6 passed every job (checks, the benchmark, e2e in Chromium, Firefox and both WebKit shards); the run before it on 66ce736 failed only Firefox e2e, which passed in full locally (102 passed, 2 skipped) and on the rerun — a flake. work/levers and work/econ-port are merged and can be deleted. Next: pick from the follow-ups below.
@@ -65,6 +68,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 create-task WEB r59 ECON r24 → T086 (engine names), T087 (tab and wording), T088 (one row component); next implement-task T086
 - 261014 update-ssot WEB r59 ECON r24 (club-direction slice 1): 운영 → 방향 with 방향·증축·재정·후원, every card and dial one row of named options drawn and drafted alike, 전략 → 방향; CLUB-16 wording only
 - 261014 update-ssot WEB ECON start: club-direction slice 1
 - 261014 ideation club-direction ready: eight areas of direction rows replace cards, dials and staff criteria; 재정 기조, 지역 기반·글로벌 인지도, delegated signings, a level ladder; six slices, the first unifying UI and entities
@@ -84,4 +88,3 @@
 - 261013 update-ssot WEB r55 STAFF r14 CLUB r24 SAVE r25: the intervention level, saved with the game, alone sets the stops and who decides (training at levels 2–4); no staff switches in homes, no per-event stops, no 맞춤; criteria editable at any level, applied only while delegated; next create-task
 - 261013 update-ssot WEB STAFF CLUB SAVE start: the intervention level alone decides who takes each decision
 - 261013 main a25a5ec: the browser benchmark failed once on a docs-only commit after passing twice on the same code — desktop p95 sits at the 100 ms gate; recorded in next
-- 261013 work/levers (T070–T079) merged into main by fast-forward to 2de95c6 after CI run 38382526028 passed every job
