@@ -39,20 +39,23 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 60 | 59 | WEB-39✎ WEB-43✎ WEB-45✎ WEB-60✎ WEB-61✎ WEB-71✎ | 0 |
+| WEB | 60 | 60 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
-| CLUB | 27 | 26 | CLUB-18✎ CLUB-24✎ CLUB-26✎ | 0 |
+| CLUB | 27 | 27 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
-| STAFF | 16 | 15 | STAFF-13✎ STAFF-15✎ STAFF-18✎ | 0 |
-| ECON | 25 | 24 | ECON-25✎ ECON-33+ | 0 |
+| STAFF | 16 | 16 | - | 0 |
+| ECON | 25 | 25 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 8 | 8 | - | 0 |
-| SAVE | 29 | 28 | SAVE-10✎ | 0 |
+| SAVE | 29 | 29 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T089 | Direction rows drive the delegated staff | ECON CLUB STAFF WEB SAVE | - | todo |
+| T090 | Direction rows on the board and lines in 사람 | ECON WEB | T089 | todo |
+| T091 | Calibrate the economy with the direction rows | ECON CLUB | T089 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -61,7 +64,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- slice 1 (T086–T088) waits for CI on work/direction before main; slice 2 is planned (ECON r25 CLUB r27 STAFF r16 WEB r60 SAVE r29) → create-task, then implement.
+- slice 1 (T086–T088) waits for CI on work/direction before main; then implement-task T089 → T090, T091 (club-direction slice 2).
 - owner's requests 261013 are on main (caa5e83, CI 38448231873 green in every browser): T080 level only, T081 no strategy locks, T082/T083 coaches set training with suggestions and orders and the academy by U-17/U-19/U-21, T084/T085 facilities as stadium steps, training ground and academy facilities.
 - wage bill / revenue sits at 44.3% on the facility parts (ECON-29 band 45–70%, 45.3% before them): base wage 925 and a 25% youth promise did not move it; try the contract-talk floor next (agent premium per level, as T079 did: 0% gave 47.7%, 1% 46.1%) and re-measure 40 careers.
 - three levers and the economy port are on main (fast-forward to 2de95c6, 261013): T070–T079 done — T077 d303c5e, T078 fe7b209/8c52745, T079 merged from work/econ-port at 11c9c5c/66ce736 (unit 658, contract 11, build pass; goldens equal work/econ-port's). CI run 38382526028 on 2de95c6 passed every job (checks, the benchmark, e2e in Chromium, Firefox and both WebKit shards); the run before it on 66ce736 failed only Firefox e2e, which passed in full locally (102 passed, 2 skipped) and on the rerun — a flake. work/levers and work/econ-port are merged and can be deleted. Next: pick from the follow-ups below.
@@ -73,6 +76,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 create-task slice 2 → T089 (engine rows, 재정 기조, ladder, load mapping), T090 (board rows, 사람 lines, 자금), T091 (explore 1h: ECON-29 on 40 careers)
 - 261014 update-ssot ECON r25 CLUB r27 STAFF r16 WEB r60 SAVE r29 (club-direction slice 2): 재정 기조, 재계약 기조, the 스태프 area replace the talk rule and the hiring and manager criteria; 매각 기조 sets the sale bar; the level ladder; 자금 page tab
 - 261014 T088 done (c3f8106): one row kind for cards and dials, areas folded behind headers; full Chromium e2e 106, unit 671
 - 261014 T087 done (d0f53b9): 방향 tab with 방향·증축·재정·후원, campaigns under 재정, 방향 wording; T088 doing
@@ -92,4 +96,3 @@
 - 261013 update-ssot CLUB r25 STAFF r15 WEB r57 SAVE r27: coaches always set training (owner suggests or forces, risking a resignation), academy U-17/U-19/U-21 with youth focus, promotion from 16 (17 ENG), leave at 21; research: EPPP, CIES debut data
 - 261013 T081 done (0654d33): strategy cards change at any time; no lock, `buildChanged` dropped on load
 - 261013 update-ssot ECON r21 WEB r56 SAVE r26 (strategy cards change at any time, no 90-day lock) → T081, doing standalone on work/intervention
-- 261013 T080 done (41213cb): one intervention level saved with the game sets stops and delegation; homes show who decides; Chromium e2e 104, unit 661, contract 11
