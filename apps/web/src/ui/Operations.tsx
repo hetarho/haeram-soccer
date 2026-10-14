@@ -3,6 +3,7 @@ import type { ClientState, GameClient } from '../runtime/client';
 import { BusinessWorkbench } from './BusinessWorkbench';
 import { FinanceOutlook } from './FinanceOutlook';
 import { PageTabs, TabPanel } from './PageTabs';
+import { BUSINESS_TABS, businessTab, type BusinessView } from './state';
 import s from './App.module.css';
 
 /**
@@ -13,21 +14,6 @@ import s from './App.module.css';
 const StrategyBoard = lazy(() =>
   import('./StrategyBoard').then((module) => ({ default: module.StrategyBoard })),
 );
-const TABS = [
-  ['strategy', '방향'],
-  ['build', '증축'],
-  ['finance', '자금'],
-  ['sponsor', '후원'],
-] as const;
-type Tab = (typeof TABS)[number][0];
-/** Addresses from before 방향 open the tab that now holds their content. */
-const OLDER: Record<string, Tab> = { facility: 'build', marketing: 'finance' };
-
-/** The page tab an address asks for: 방향 without a view, an older view's new home, else 방향. */
-export function operationsTab(view: string | null): Tab {
-  if (!view) return 'strategy';
-  return TABS.find(([id]) => id === view)?.[0] ?? OLDER[view] ?? 'strategy';
-}
 
 export function OperationsView({
   state,
@@ -39,13 +25,13 @@ export function OperationsView({
   legacy: ReactNode;
 }) {
   const w = state.view!.world;
-  const [tab, setTab] = useState<Tab>(() =>
-    operationsTab(new URLSearchParams(location.search).get('view')),
+  const [tab, setTab] = useState<BusinessView>(() =>
+    businessTab(new URLSearchParams(location.search).get('view')),
   );
   return (
     <>
       <PageTabs
-        tabs={TABS}
+        tabs={BUSINESS_TABS}
         value={tab}
         onChange={setTab}
         label="구단 방향 보기"

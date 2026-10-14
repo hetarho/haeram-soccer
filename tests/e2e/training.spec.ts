@@ -335,5 +335,5 @@ test('promotes a prospect from 유소년', async ({ page }) => {
   await expect(page.getByRole('button', { name: /^육성 목표 · 표준/ })).toBeVisible();
   await expect(page.getByRole('button', { name: /^데뷔 시점 · 표준/ })).toBeVisible();
   await page.getByRole('button', { name: /^유소년 투자 · 유입 방식은 방향에서/ }).click();
-  await expect(page).toHaveURL(/\/business$/);
+  await expect(page).toHaveURL(/\/direction$/);
 });

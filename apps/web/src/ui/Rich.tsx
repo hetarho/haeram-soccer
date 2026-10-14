@@ -1076,7 +1076,7 @@ function EconomicContext({ state }: { state: ClientState }) {
   );
 }
 /**
- * 운영 (→WEB-39). A tab asked for while it shows lands in the address and reopens the tab bar on
+ * 방향 (→WEB-39). A tab asked for while it shows lands in the address and reopens the tab bar on
  * it; from elsewhere the address already carries it.
  */
 function Business({ state, client }: Props) {

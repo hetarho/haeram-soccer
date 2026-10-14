@@ -197,7 +197,7 @@ test('mobile intervention levels set clock stops and who decides, saved with the
   await expect(trigger).toContainText('개입 4');
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   // Each home names who decides now, with no switch of its own (→WEB-71).
-  await page.goto('/business?view=sponsor');
+  await page.goto('/direction?view=sponsor');
   const sponsors = page.getByTestId('decision-owner-business');
   await expect(sponsors).toContainText('자동 결정');
   await expect(sponsors).toContainText('개입 4 · 운영진에 모두 맡기기');

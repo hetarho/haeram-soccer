@@ -70,15 +70,20 @@ test('older operations addresses open their tab', async ({ page }) => {
     'aria-selected',
     'true',
   );
-  await expect(page).toHaveURL(/\/business$/);
+  await expect(page).toHaveURL(/\/direction$/);
   await expect(page.getByRole('tab', { name: '캠페인', exact: true })).toHaveCount(0);
-  for (const [view, tab, now] of [
-    ['facility', '증축', /\/business\?view=build$/],
-    ['marketing', '자금', /\/business\?view=finance$/],
-    ['strategy', '방향', /\/business$/],
-    ['sponsor', '후원', /\/business\?view=sponsor$/],
+  // Every older /business address opens its tab under /direction.
+  for (const [asked, tab, now] of [
+    ['/business', '방향', /\/direction$/],
+    ['/business?view=facility', '증축', /\/direction\?view=build$/],
+    ['/business?view=marketing', '자금', /\/direction\?view=finance$/],
+    ['/business?view=strategy', '방향', /\/direction$/],
+    ['/business?view=build', '증축', /\/direction\?view=build$/],
+    ['/business?view=finance', '자금', /\/direction\?view=finance$/],
+    ['/business?view=sponsor', '후원', /\/direction\?view=sponsor$/],
+    ['/direction?view=build', '증축', /\/direction\?view=build$/],
   ] as const) {
-    await page.goto(`/business?view=${view}`);
+    await page.goto(asked);
     await expect(page.getByRole('tab', { name: tab, exact: true })).toHaveAttribute(
       'aria-selected',
       'true',

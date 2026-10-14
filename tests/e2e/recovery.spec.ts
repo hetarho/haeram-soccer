@@ -215,7 +215,7 @@ test('a new game goes into another slot, both careers survive switching and back
   await expect(page.getByText('New Fictional Club', { exact: true }).first()).toBeVisible();
   // The first career waited in its slot and comes back intact.
   await page.getByRole('button', { name: '구단 방향', exact: true }).click();
-  await expect(page).toHaveURL(/\/business$/);
+  await expect(page).toHaveURL(/\/direction$/);
   await page.getByRole('button', { name: '게임 슬롯' }).click();
   await expect(slotScreen.getByRole('listitem', { name: '슬롯 2' })).toContainText('진행 중');
   await slotScreen

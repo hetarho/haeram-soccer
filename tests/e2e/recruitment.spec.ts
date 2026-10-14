@@ -325,5 +325,5 @@ test('the market ends with who answers offers and names the recruitment level, o
   expect(await horizontalOverflow(page)).toBe(0);
   // The recruitment level is a line that opens its home on the 방향 board (→WEB-71).
   await page.getByRole('button', { name: /^영입 기조 · 균형/ }).click();
-  await expect(page).toHaveURL(/\/business$/);
+  await expect(page).toHaveURL(/\/direction$/);
 });

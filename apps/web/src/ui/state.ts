@@ -9,7 +9,8 @@ import type {
 import type { PlayerScope } from './playerAnalysis';
 /**
  * The destinations: home, the competitions and records, and the owner's three levers — 사람 (who
- * joins and stays), 훈련 (how players develop) and 운영 (how the club earns and spends, →WEB-10).
+ * joins and stays), 훈련 (how players develop) and 방향 (where the club is going and its money,
+ * →WEB-10).
  */
 export type Page =
   'dashboard' | 'match' | 'league' | 'europe' | 'people' | 'training' | 'business' | 'history';
@@ -20,7 +21,7 @@ const paths: Record<Page, string> = {
   europe: '/europe',
   people: '/people',
   training: '/training',
-  business: '/business',
+  business: '/direction',
   history: '/history',
 };
 
@@ -40,8 +41,22 @@ export const TRAINING_TABS = [
   ['academy', '유소년'],
 ] as const;
 export type TrainingTab = (typeof TRAINING_TABS)[number][0];
-/** 운영's tabs (→WEB-39), as its address names them. */
-export type BusinessView = 'strategy' | 'finance' | 'facility' | 'sponsor' | 'marketing';
+const tabOf = <T extends string>(tabs: readonly (readonly [T, string])[], id: string | null) =>
+  tabs.find(([tab]) => tab === id)?.[0];
+/** 방향's tabs (→WEB-39), in tab-bar order; the first one keeps no ?view= in the address. */
+export const BUSINESS_TABS = [
+  ['strategy', '방향'],
+  ['build', '증축'],
+  ['finance', '자금'],
+  ['sponsor', '후원'],
+] as const;
+export type BusinessView = (typeof BUSINESS_TABS)[number][0];
+/** Views from before 방향 open the tab that now holds their content. */
+const OLDER_BUSINESS: Record<string, BusinessView> = { facility: 'build', marketing: 'finance' };
+/** The 방향 tab a ?view= asks for: an older view's new home, else the first tab. */
+export function businessTab(view: string | null): BusinessView {
+  return tabOf(BUSINESS_TABS, view) ?? OLDER_BUSINESS[view ?? ''] ?? 'strategy';
+}
 /** Where a setting lives (→WEB-71): a page and its tab. */
 export type Home =
   | { page: 'people'; view: PeopleTab }
@@ -51,19 +66,18 @@ export type Home =
 /** Where an address lands. */
 export interface Route {
   page: Page;
-  /** The tab 사람 or 훈련 opens on. */
-  view?: PeopleTab | TrainingTab;
+  /** The tab 사람, 훈련 or 방향 opens on. */
+  view?: PeopleTab | TrainingTab | BusinessView;
   /** 사람's 감독 opens with the manager market. */
   market?: true;
   /** The address to show instead of the one asked for, for older and non-canonical ones. */
   address?: string;
 }
-const tabOf = <T extends string>(tabs: readonly (readonly [T, string])[], id: string | null) =>
-  tabs.find(([tab]) => tab === id)?.[0];
 /**
  * Resolves an address. Older ones open 사람's tabs (→WEB-43): /squad 선수, /transfers 이적시장,
  * /manager 감독 (its ?view=coaches 코치진, ?view=delegation 감독), and ?view=candidates — of
- * /manager or /people — 감독 with the market open; each gets the address of the tab it opens.
+ * /manager or /people — 감독 with the market open; /business opens 방향's tabs (→WEB-39) with its
+ * views. Each gets the address of the tab it opens.
  */
 export function routeOf(pathname: string, search: string): Route {
   const at = (path: string) => pathname === path || pathname.startsWith(path + '/');
@@ -81,11 +95,17 @@ export function routeOf(pathname: string, search: string): Route {
     route = { page: 'people', view: tabOf(PEOPLE_TABS, asked) ?? 'players' };
   else if (at(paths.training))
     route = { page: 'training', view: tabOf(TRAINING_TABS, asked) ?? 'training' };
+  else if (at(paths.business) || at('/business'))
+    route = { page: 'business', view: businessTab(asked) };
   else
     return {
       page: (Object.entries(paths).find(([, path]) => at(path))?.[0] as Page) || 'dashboard',
     };
-  const first = route.page === 'people' ? PEOPLE_TABS[0][0] : TRAINING_TABS[0][0];
+  const first = {
+    people: PEOPLE_TABS[0][0],
+    training: TRAINING_TABS[0][0],
+    business: BUSINESS_TABS[0][0],
+  }[route.page as 'people' | 'training' | 'business'];
   const address = `${paths[route.page]}${route.view === first ? '' : `?view=${route.view}`}`;
   return address === pathname + search ? route : { ...route, address };
 }
@@ -152,7 +172,7 @@ export const usePeopleView = oneShot<PeopleRequest>();
 if (arrival?.market) usePeopleView.getState().open('candidates');
 /** A 훈련 tab asked for from elsewhere, taken the same way. */
 export const useTrainingView = oneShot<TrainingTab>();
-/** A 운영 tab asked for while 운영 is showing; from elsewhere the address carries it. */
+/** A 방향 tab asked for while 방향 is showing; from elsewhere the address carries it. */
 export const useBusinessView = oneShot<BusinessView>();
 /**
  * A coach's training sheet asked for from elsewhere (훈련's lines, a fatigue remedy →WEB-44), for
@@ -202,13 +222,17 @@ export function openTraining(tab: TrainingTab) {
   useTrainingView.getState().open(tab);
   useNavigation.getState().setPage('training');
 }
-/** Opens 운영 on a tab: from elsewhere through its address, while it shows through a request. */
+/** Opens 방향 on a tab: from elsewhere through its address, while it shows through a request. */
 export function openBusiness(view: BusinessView) {
   if (useNavigation.getState().page === 'business') {
     useBusinessView.getState().open(view);
     return;
   }
-  history.pushState(null, '', `${paths.business}?view=${view}`);
+  history.pushState(
+    null,
+    '',
+    `${paths.business}${view === BUSINESS_TABS[0][0] ? '' : `?view=${view}`}`,
+  );
   useNavigation.setState({ page: 'business' });
 }
 /** Opens the page and tab where a setting lives (→WEB-71). */

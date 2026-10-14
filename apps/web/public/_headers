@@ -29,6 +29,8 @@
   Cache-Control: no-cache
 /manager
   Cache-Control: no-cache
+/direction
+  Cache-Control: no-cache
 /business
   Cache-Control: no-cache
 /history

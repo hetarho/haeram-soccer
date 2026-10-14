@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { routeOf } from './state';
 
-describe('addresses (→WEB-43, WEB-70)', () => {
+describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
   it("routeOf maps /squad, /transfers and /manager with each view to 사람's tabs", () => {
     expect(routeOf('/squad', '')).toEqual({ page: 'people', view: 'players', address: '/people' });
     expect(routeOf('/transfers', '')).toEqual({
@@ -52,9 +52,36 @@ describe('addresses (→WEB-43, WEB-70)', () => {
       address: '/training',
     });
     // Other pages keep their addresses as they are.
-    expect(routeOf('/business', '?view=sponsor')).toEqual({ page: 'business' });
     expect(routeOf('/leagues', '?view=table')).toEqual({ page: 'league' });
     expect(routeOf('/history/1951', '')).toEqual({ page: 'history' });
     expect(routeOf('/', '')).toEqual({ page: 'dashboard' });
+  });
+
+  it('routeOf opens 방향 at /direction and every older /business address on its tab', () => {
+    expect(routeOf('/direction', '')).toEqual({ page: 'business', view: 'strategy' });
+    for (const view of ['build', 'finance', 'sponsor'])
+      expect(routeOf('/direction', `?view=${view}`)).toEqual({ page: 'business', view });
+    // The first tab keeps no ?view=; an unknown view opens the first tab.
+    expect(routeOf('/direction', '?view=strategy')).toEqual({
+      page: 'business',
+      view: 'strategy',
+      address: '/direction',
+    });
+    expect(routeOf('/direction', '?view=campaigns')).toEqual({
+      page: 'business',
+      view: 'strategy',
+      address: '/direction',
+    });
+    for (const [search, view, address] of [
+      ['', 'strategy', '/direction'],
+      ['?view=strategy', 'strategy', '/direction'],
+      ['?view=build', 'build', '/direction?view=build'],
+      ['?view=finance', 'finance', '/direction?view=finance'],
+      ['?view=sponsor', 'sponsor', '/direction?view=sponsor'],
+      // Views from before 방향: 시설 is 증축 now, 마케팅 and its campaigns sit under 자금.
+      ['?view=facility', 'build', '/direction?view=build'],
+      ['?view=marketing', 'finance', '/direction?view=finance'],
+    ] as const)
+      expect(routeOf('/business', search)).toEqual({ page: 'business', view, address });
   });
 });
