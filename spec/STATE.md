@@ -96,4 +96,3 @@
 - 261014 T097 done (8a2a121): level 4 names signings, 스태프 제안 in the market; full Chromium e2e 106
 - 261014 T096 done (90bc773): the chief scout's signings at level 4, rules 1.20.0; unit 691, contract 13, Chromium e2e 106; WebKit gets two CI retries; T097 doing (session haeram-soccor-6f took over after the first session exited)
 - 261014 slices 3–4 on main: fast-forward to 5ae503c after CI 38513354367 passed every job
-- 261014 update-ssot CLUB r30 ECON r30 STAFF r18 WEB r63 SAVE r32 (club-direction slice 5): the chief scout's signings at level 4 within 재정 기조; create-task T096 (engine), T097 (screens)
