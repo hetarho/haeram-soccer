@@ -14,6 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
+| q7m2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T10:10Z | 2026-10-14T10:10Z | - |
 
 ## inbox
 - 261014 suggest -: club-direction added 15 tasks (T086–T100) in one day — run review-code on apps/web/src/ui and packages/engine/src before the next feature
