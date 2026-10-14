@@ -274,7 +274,7 @@ export function sponsorReminder(w: World) {
   pushInbox(w, {
     kind: 'finance',
     title: '후원 계약이 비어 있어요',
-    detail: `${empty.map((slot) => SPONSOR_SLOT_LABELS[slot]).join(', ')} 자리가 비어 있어요. 구단 운영의 후원 탭에서 제안을 고르면 리그 경기마다 후원금이 들어와요. 운영을 스태프에게 맡기면 안정형 후원을 대신 맺어요.`,
+    detail: `${empty.map((slot) => SPONSOR_SLOT_LABELS[slot]).join(', ')} 자리가 비어 있어요. 방향의 후원 탭에서 제안을 고르면 리그 경기마다 후원금이 들어와요. 후원을 스태프에게 맡기면 안정형 후원을 대신 맺어요.`,
     attention: true,
   });
 }

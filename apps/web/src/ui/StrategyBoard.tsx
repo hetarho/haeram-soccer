@@ -12,6 +12,7 @@ import {
   buildEffects,
   buildOf,
   buildPreset,
+  buildTitleName,
   cardLines,
   cardOf,
   composeBuild,
@@ -118,9 +119,10 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
     dials = changes.filter((change) => change.kind !== 'card'),
     draftBuild = cards.length ? draft.build! : current;
   // The history names what was applied; a preset or saved match reads better when there is one.
-  const applied = w.events.findLast((event) => event.kind === 'build')?.title.split(' · ')[1];
+  const last = w.events.findLast((event) => event.kind === 'build'),
+    applied = last && buildTitleName(last.title);
   const currentName =
-    strategyName(current, saved) === '맞춤 전략' && applied
+    strategyName(current, saved) === '맞춤 방향' && applied
       ? applied
       : strategyName(current, saved);
   const draftName = cards.length

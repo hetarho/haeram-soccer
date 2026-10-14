@@ -14,8 +14,8 @@ describe('activating the levers of rules 1.16 (→SAVE-10)', () => {
     expect(w.buildNext).toBeDefined();
     expect(activated.inbox!.at(-1)).toMatchObject({
       kind: 'staff-report',
-      title: '예약했던 운영 전략 ‘다음 계획’ 취소',
-      detail: '운영 전략은 이제 바로 적용돼요. 구단 운영 › 운영 전략에서 다시 고를 수 있어요.',
+      title: '예약했던 방향 ‘다음 계획’ 취소',
+      detail: '방향은 이제 바로 적용돼요. 방향 탭에서 다시 고를 수 있어요.',
       attention: false,
       year: w.year,
       day: 40,
@@ -27,12 +27,12 @@ describe('activating the levers of rules 1.16 (→SAVE-10)', () => {
       build: { youth: 'pathway', scouting: 'data', market: 'selling', culture: 'meritocracy' },
     };
     expect(activateLevers(preset, '1.14.0').inbox!.at(-1)!.title).toBe(
-      '예약했던 운영 전략 ‘트레이딩 머신’ 취소',
+      '예약했던 방향 ‘트레이딩 머신’ 취소',
     );
     const cards = world();
     cards.buildNext = { build: { youth: 'pathway', fans: 'community' } };
     expect(activateLevers(cards, '1.13.0').inbox!.at(-1)!.title).toBe(
-      '예약했던 운영 전략 ‘1군 직행 경로 · 지역 밀착’ 취소',
+      '예약했던 방향 ‘1군 직행 경로 · 지역 밀착’ 취소',
     );
   });
 

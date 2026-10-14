@@ -3,6 +3,7 @@ import { PD, TD } from '../../contracts/src/detail';
 import { country } from '../../catalogs/src/index';
 import { clubOf } from './world';
 import { STYLE_INFO } from './styles';
+import { buildTitleName } from './build';
 
 /**
  * Club news (→HIST-11): headlines derived from recorded facts only, the way football media write
@@ -1139,13 +1140,16 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
     // Older saves record a vision; both read as the club announcing its direction.
     case 'vision':
     case 'build': {
-      const label = event.title.split(' · ')[1] ?? event.title;
+      const label =
+        event.kind === 'build'
+          ? buildTitleName(event.title)
+          : (event.title.split(' · ')[1] ?? event.title);
       return {
         ...base,
         tag: '구단',
         tone: 'neutral',
         weight: 'notable',
-        title: `${name}, ${event.kind === 'build' ? '운영 전략' : '구단 비전'} '${label}' 발표`,
+        title: `${name}, ${event.kind === 'build' ? '방향' : '구단 비전'} '${label}' 발표`,
         ...(event.kind === 'build' ? { detail: event.detail } : {}),
       };
     }

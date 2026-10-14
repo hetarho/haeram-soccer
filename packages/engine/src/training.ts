@@ -345,7 +345,7 @@ export function developmentOutlook(w: World) {
     },
     {
       key: 'build-youth',
-      label: '운영 전략 카드',
+      label: '방향',
       value: buildEffects(w).youthGrowth,
       applies: 'u21',
       home: 'business/strategy',

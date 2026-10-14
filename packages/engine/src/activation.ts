@@ -31,11 +31,11 @@ export function activateLevers(w: World, before: string): World {
     (slot) => cardOf(reserved.build, slot).label,
   );
   const name =
-    reserved.name ?? buildPreset(reserved.build)?.label ?? (cards.join(' · ') || '기본 전략');
+    reserved.name ?? buildPreset(reserved.build)?.label ?? (cards.join(' · ') || '기본 방향');
   pushInbox(next, {
     kind: 'staff-report',
-    title: `예약했던 운영 전략 ‘${name}’ 취소`,
-    detail: '운영 전략은 이제 바로 적용돼요. 구단 운영 › 운영 전략에서 다시 고를 수 있어요.',
+    title: `예약했던 방향 ‘${name}’ 취소`,
+    detail: '방향은 이제 바로 적용돼요. 방향 탭에서 다시 고를 수 있어요.',
     attention: false,
   });
   return next;

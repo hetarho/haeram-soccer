@@ -87,7 +87,7 @@ export function clubMilestones(w: World) {
       'facilities',
       '동네의 작은 구장',
       '관중석을 증축해 5,000석 구장을 열어요.',
-      '구단 운영 › 시설에서 경기장 증축하기',
+      '방향 › 증축에서 경기장 증축하기',
       w.stadium,
       1,
     ),

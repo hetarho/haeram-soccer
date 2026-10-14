@@ -214,7 +214,7 @@ describe('the operating strategy applied at once (→ECON-22)', () => {
     expect(w.build).toEqual({ youth: 'homegrown', fans: 'community' });
     expect(w.events.at(-1)).toMatchObject({
       kind: 'build',
-      title: '운영 전략 · 맞춤 전략',
+      title: '방향 · 맞춤 방향',
       detail: '성골 유스 · 지역 밀착',
     });
     // The very next day a preset replaces every card it names; no slot waits.

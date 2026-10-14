@@ -333,12 +333,28 @@ export const sameBuild = (a: ClubBuild, b: ClubBuild) => key(a) === key(b);
 export function buildPreset(build: ClubBuild) {
   return BUILD_PRESETS.find((preset) => sameBuild(preset.build, build));
 }
-/** The strategy's name: its preset's, 기본 전략 with every card standard, else 맞춤 전략. */
+/** The direction's name: its preset's, 기본 방향 with every card standard, else 맞춤 방향. */
 export function buildLabel(build: ClubBuild) {
   return (
     buildPreset(build)?.label ??
-    (BUILD_SLOTS.some((slot) => build[slot]) ? '맞춤 전략' : '기본 전략')
+    (BUILD_SLOTS.some((slot) => build[slot]) ? '맞춤 방향' : '기본 방향')
   );
+}
+
+/** Names worlds recorded before the strategy became the club's direction (→ECON-22). */
+const RENAMED: Record<string, string> = { '기본 전략': '기본 방향', '맞춤 전략': '맞춤 방향' };
+/**
+ * The name in a build event's title (`방향 · <name>`, or `운영 전략 · <name>` as recorded before
+ * the rename), with the old default names read as 기본 방향 and 맞춤 방향 (→ECON-22).
+ */
+export function buildTitleName(title: string) {
+  const at = title.indexOf(' · ');
+  const name = at < 0 ? title : title.slice(at + 3);
+  return RENAMED[name] ?? name;
+}
+/** A build event's title as it reads now: `방향 · <name>`, whatever words recorded it. */
+export function readBuildTitle(title: string) {
+  return `방향 · ${buildTitleName(title)}`;
 }
 
 const composed = new Map<string, BuildEffects>();
@@ -396,18 +412,18 @@ export function cardLines(card: BuildCard) {
 function normalize(build: ClubBuild): ClubBuild {
   const clean: ClubBuild = {};
   for (const [slot, option] of Object.entries(build) as [BuildSlot, string | undefined][]) {
-    if (!Object.hasOwn(BUILD_OPTIONS, slot)) throw new Error('운영 전략 부문을 확인하세요.');
+    if (!Object.hasOwn(BUILD_OPTIONS, slot)) throw new Error('방향 부문을 확인하세요.');
     if (option === undefined) continue;
     if (!(BUILD_OPTIONS[slot] as readonly string[]).includes(option))
-      throw new Error('운영 전략 카드를 확인하세요.');
+      throw new Error('방향 카드를 확인하세요.');
     (clean as Record<string, string>)[slot] = option;
   }
   return clean;
 }
 
 /**
- * Applies a strategy at once (→ECON-22): cards change at any time, like the dials. `name` is the
- * owner's saved strategy (→WEB-61); without it the history names the preset or the mix.
+ * Applies a direction at once (→ECON-22): cards change at any time, like the dials. `name` is the
+ * owner's saved direction (→WEB-61); without it the history names the preset or the mix.
  */
 export function setBuild(w: World, build: ClubBuild, name?: string) {
   const next = normalize(build);
@@ -417,5 +433,5 @@ export function setBuild(w: World, build: ClubBuild, name?: string) {
   else delete w.build;
   const cards = BUILD_SLOTS.filter((slot) => next[slot]).map((slot) => cardOf(next, slot).label);
   const label = name?.trim().slice(0, STRATEGY_NAME_LIMIT) || buildLabel(next);
-  addEvent(w, 'build', `운영 전략 · ${label}`, cards.join(' · ') || '모든 부문 기본');
+  addEvent(w, 'build', `방향 · ${label}`, cards.join(' · ') || '모든 부문 표준');
 }

@@ -24,6 +24,9 @@ import {
   transferOffers,
   buildEffects,
   buildLabel,
+  buildTitleName,
+  clubNews,
+  readBuildTitle,
   BUILD_CARDS,
   BUILD_COMBINATIONS,
   BUILD_PRESETS,
@@ -107,7 +110,7 @@ describe('club builds', () => {
     expect(w.build).toEqual({ fans: 'community', culture: 'family' });
     expect(w.events.at(-1)).toMatchObject({
       kind: 'build',
-      title: '운영 전략 · 맞춤 전략',
+      title: '방향 · 맞춤 방향',
       detail: '지역 밀착 · 가족 같은 클럽',
     });
     // The next change applies at once too: there are no locks (→ECON-22).
@@ -117,7 +120,7 @@ describe('club builds', () => {
     // Re-sending the same build is not a change.
     operate(w, { type: 'build', build: { culture: 'family', fans: 'community' } });
     expect(() => operate(w, { type: 'build', build: { fans: 'nowhere' } as never })).toThrow(
-      '운영 전략 카드',
+      '방향 카드',
     );
     for (let round = 0; round < 46; round++) advanceRound(w, undefined, false);
     validateWorld(w);
@@ -139,12 +142,34 @@ describe('club builds', () => {
   it('names the strategy in the history: a saved name, a preset, the standard club or a mix', () => {
     const saved = world();
     operate(saved, { type: 'build', build: { youth: 'pathway' }, name: '  우리 방식  ' });
-    expect(saved.events.at(-1)!.title).toBe('운영 전략 · 우리 방식');
+    expect(saved.events.at(-1)!.title).toBe('방향 · 우리 방식');
     const preset = world();
     operate(preset, { type: 'build', build: BUILD_PRESETS[0].build });
-    expect(preset.events.at(-1)!.title).toBe(`운영 전략 · ${BUILD_PRESETS[0].label}`);
-    expect(buildLabel({})).toBe('기본 전략');
-    expect(buildLabel({ youth: 'pathway' })).toBe('맞춤 전략');
+    expect(preset.events.at(-1)!.title).toBe(`방향 · ${BUILD_PRESETS[0].label}`);
+    expect(buildLabel({})).toBe('기본 방향');
+    expect(buildLabel({ youth: 'pathway' })).toBe('맞춤 방향');
+  });
+
+  it('reads build titles recorded before the rename', () => {
+    expect(readBuildTitle('운영 전략 · 기본 전략')).toBe('방향 · 기본 방향');
+    expect(readBuildTitle('운영 전략 · 맞춤 전략')).toBe('방향 · 맞춤 방향');
+    expect(readBuildTitle(`운영 전략 · ${BUILD_PRESETS[0].label}`)).toBe(
+      `방향 · ${BUILD_PRESETS[0].label}`,
+    );
+    expect(readBuildTitle('방향 · 우리 방식')).toBe('방향 · 우리 방식');
+    expect(buildTitleName('운영 전략 · 맞춤 전략')).toBe('맞춤 방향');
+    // Club news reads either title the same way; an older vision keeps its own word.
+    const w = world();
+    const club = clubOf(w).name;
+    w.events.push(
+      { ...w.events[0], kind: 'build', title: '운영 전략 · 맞춤 전략', detail: '지역 밀착' },
+      { ...w.events[0], kind: 'build', title: '방향 · 우리 방식', detail: '성골 유스' },
+      { ...w.events[0], kind: 'vision', title: '구단 비전 · 유스 명가', detail: '' },
+    );
+    const titles = clubNews(w).map((item) => item.title);
+    expect(titles).toContain(`${club}, 방향 '맞춤 방향' 발표`);
+    expect(titles).toContain(`${club}, 방향 '우리 방식' 발표`);
+    expect(titles).toContain(`${club}, 구단 비전 '유스 명가' 발표`);
   });
 
   it('gives every preset one synergy it lights or aims at', () => {
