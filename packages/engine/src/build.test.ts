@@ -1,3 +1,4 @@
+import { ATTRIBUTES, POSITIONS } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import type { Fixture, Tactic, World } from '../../contracts/src/types';
 import { canonical } from '../../contracts/src/index';
@@ -30,15 +31,22 @@ function scenario(build: Build, opponentTactic: Tactic = 'balanced') {
     name: 'Build Laboratory',
     color: '#112233',
     seed: 'build-samples',
-    difficulty: 1,
+    level: 'normal' as const,
   });
   w.manager.ability = 50;
+  // Every outfielder plays every outfield position alike, so each tactic's formation reads the
+  // build's qualities whoever fills a slot: finishing, passing, defending and stamina.
   for (const player of w.players) {
-    player.attack = player.role === 'FWD' ? build.attack : 55;
-    player.passing = player.role === 'MID' ? build.passing : 55;
-    player.defense = player.role === 'DEF' ? build.defense : 55;
-    player.keeper = 55;
-    player.stamina = build.stamina;
+    for (const a of ATTRIBUTES) player.attrs[a] = 55;
+    if (player.position !== 'GK') {
+      player.positions = Object.fromEntries(
+        POSITIONS.filter((position) => position !== 'GK').map((position) => [position, 3]),
+      );
+      player.attrs.finishing = build.attack;
+      player.attrs.passing = build.passing;
+      player.attrs.tackling = player.attrs.positioning = build.defense;
+    }
+    player.attrs.stamina = build.stamina;
     player.fatigue = build.fatigue || 0;
   }
   // Every preset uses exactly this XI, so comparisons cannot select different players.
@@ -49,8 +57,8 @@ function scenario(build: Build, opponentTactic: Tactic = 'balanced') {
   const opponent = w.clubs.find(
     (club) => club.id !== w.playerClub && npcTactic(club) === opponentTactic,
   )!;
-  // Generated squads rate about five above their club strength; 50 fields an XI rated like ours.
-  opponent.strength = 50;
+  // Generated squads rate at their club strength; 55 fields an XI rated about like ours.
+  opponent.strength = 55;
   const fixture: Fixture = {
     id: 'build-fixture',
     year: w.year,
@@ -148,18 +156,18 @@ describe('tactical roster tradeoffs', () => {
 
   it('gives pressing a strictly higher bounded fatigue cost at every stamina level', () => {
     for (let stamina = 0; stamina <= 100; stamina++) {
-      const press = fatigueCost({ stamina }, 'press');
+      const press = fatigueCost({ attrs: { stamina } }, 'press');
       expect(press).toBeGreaterThanOrEqual(14);
       expect(press).toBeLessThanOrEqual(19);
       for (const tactic of TACTICS.filter((value) => value !== 'press')) {
-        const ordinary = fatigueCost({ stamina }, tactic);
+        const ordinary = fatigueCost({ attrs: { stamina } }, tactic);
         expect(ordinary).toBeGreaterThanOrEqual(8);
         expect(ordinary).toBeLessThanOrEqual(13);
         expect(press).toBe(ordinary + 6);
       }
     }
-    expect(fatigueCost({ stamina: 95 }, 'press')).toBeLessThan(
-      fatigueCost({ stamina: 20 }, 'press'),
+    expect(fatigueCost({ attrs: { stamina: 95 } }, 'press')).toBeLessThan(
+      fatigueCost({ attrs: { stamina: 20 } }, 'press'),
     );
   });
 
@@ -187,8 +195,8 @@ describe('tactical roster tradeoffs', () => {
     const saved = canonical(w.ownMatches[0]);
     w.tactic = 'counter';
     w.players.forEach((player) => {
-      player.passing = 95;
-      player.defense = 95;
+      player.attrs.passing = 95;
+      player.attrs.tackling = 95;
     });
     simulateMatch(w, { ...fixture, id: 'later-build' }, false, true);
     expect(canonical(w.ownMatches[0])).toBe(saved);
@@ -202,7 +210,7 @@ describe('the operating strategy applied at once (→ECON-22)', () => {
       name: 'Strategy Lockers',
       color: '#445566',
       seed: 'strategy-locks',
-      difficulty: 1,
+      level: 'normal' as const,
     });
     w.calendar = { day };
     return w;

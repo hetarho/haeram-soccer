@@ -97,7 +97,7 @@ describe('Elo standing', () => {
       name: 'Standing',
       color: '#24664f',
       seed: 'elo-standing',
-      difficulty: 2,
+      level: 'easy' as const,
     });
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     const league = ownLeagueIds(w).filter((id) => id !== own.id);

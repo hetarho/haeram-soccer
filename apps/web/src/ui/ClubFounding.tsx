@@ -2,7 +2,7 @@ import { FOUNDING_YEAR } from '../../../../packages/engine/src/world';
 import { BUILD_PRESETS } from '../../../../packages/engine/src/preset-data';
 import { Select } from './Select';
 import { useState, type FormEvent } from 'react';
-import type { CountryCode } from '../../../../packages/contracts/src/types';
+import type { CountryCode, DifficultyLevel } from '../../../../packages/contracts/src/types';
 import { COUNTRIES, country } from '../../../../packages/catalogs/src/index';
 import type { ClientState, GameClient } from '../runtime/client';
 import s from './ClubFounding.module.css';
@@ -26,7 +26,7 @@ export function ClubFounding({
 }) {
   const [code, setCode] = useState<CountryCode>('ENG'),
     [name, setName] = useState('Haeram Athletic'),
-    [difficulty, setDifficulty] = useState(2),
+    [level, setLevel] = useState<DifficultyLevel>('easy'),
     [color, setColor] = useState('#bf7956'),
     [seed, setSeed] = useState(() => crypto.randomUUID().slice(0, 18)),
     // 기본 방향 shows selected; a preset founds the club with its whole direction (→WEB-15).
@@ -39,7 +39,7 @@ export function ClubFounding({
         {
           country: code,
           name: name.trim(),
-          difficulty,
+          level,
           color,
           seed,
           ...(preset !== 'default' ? { preset } : {}),
@@ -125,23 +125,26 @@ export function ClubFounding({
           </Select>
         </label>
         <fieldset>
-          <legend>첫 자금</legend>
+          <legend>난이도</legend>
           <div className={s.capital}>
             {(
               [
-                [2, '넉넉한 출발', '추천 · 운영비 2배'],
-                [1, '표준 출발', '운영비 1배'],
-                [0.5, '작은 출발', '운영비 0.5배'],
+                ['easy', '쉬움', '자금 2배', '리그 평균'],
+                ['normal', '보통', '자금 1배', '선발 −2'],
+                ['hard', '어려움', '자금 0.5배', '선발 −4'],
+                ['extreme', '최상', '자금 0.25배', '선발 −6'],
               ] as const
-            ).map(([value, title, note]) => (
+            ).map(([value, title, cash, squad]) => (
               <button
                 key={value}
                 type="button"
-                aria-pressed={difficulty === value}
-                onClick={() => setDifficulty(value)}
+                aria-pressed={level === value}
+                aria-label={`${title} · ${cash} · ${squad}`}
+                onClick={() => setLevel(value)}
               >
                 <b>{title}</b>
-                <small>{note}</small>
+                <small>{cash}</small>
+                <small>{squad}</small>
               </button>
             ))}
           </div>
@@ -166,7 +169,7 @@ export function ClubFounding({
                 autoComplete="off"
               />
             </label>
-            <p>같은 시드는 같은 선수와 상대를 만들어요. 첫 자금만 난이도에 따라 달라집니다.</p>
+            <p>같은 시드는 같은 세계를 만들어요. 난이도는 첫 자금과 창단 선수단만 바꿉니다.</p>
           </div>
         </details>
         <div className={s.origin}>

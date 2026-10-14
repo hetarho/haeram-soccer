@@ -17,6 +17,7 @@ export function canonical(value: unknown): string {
   throw new Error('Unsupported canonical value');
 }
 export * from './types';
+export { ATTRIBUTES, LINES, PLAY_TRAITS, POSITIONS, ROLE_IDS } from './player';
 export * from './build';
 export * from './detail';
 export * from './schema';

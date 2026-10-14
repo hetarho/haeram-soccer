@@ -251,7 +251,7 @@ function playCareer(code: CountryCode, build: string, greedy: boolean, seed: str
     name: 'Calibration Town',
     color: '#335577',
     seed,
-    difficulty: 1,
+    level: 'normal',
     // A preset is founded as the club's whole direction (→ECON-22, →WEB-15).
     ...(build !== 'default' ? { preset: build } : {}),
   });

@@ -4,7 +4,13 @@ import type { World } from '../../contracts/src/types';
 import { advanceRound, clubNews, closeSeason, createWorld } from './index';
 
 const world = (seed = 'news') =>
-  createWorld({ country: 'ENG', name: 'News United', color: '#24664f', seed, difficulty: 2 });
+  createWorld({
+    country: 'ENG',
+    name: 'News United',
+    color: '#24664f',
+    seed,
+    level: 'easy' as const,
+  });
 const results = (w: World) =>
   w.ownMatches
     .filter((m) => m.year === w.year)

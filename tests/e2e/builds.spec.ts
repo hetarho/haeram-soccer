@@ -22,7 +22,7 @@ test('discloses roster and opponent tactical fit before an actual seeded match',
     name: 'Haeram Athletic',
     color: '#bf7956',
     seed: 'tactical-build-disclosure',
-    difficulty: 2,
+    level: 'easy' as const,
   };
   const reference = createWorld(founding);
   const next = nextOwnFixture(reference)!;
@@ -35,7 +35,7 @@ test('discloses roster and opponent tactical fit before an actual seeded match',
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill(founding.seed);
-  await page.getByRole('button', { name: '넉넉한 출발' }).click();
+  await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page.getByTestId('club-hub').getByRole('button', { name: '전술·선발 준비' }).click();
   const dialog = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
@@ -128,7 +128,7 @@ for (const viewport of [
     await page.goto('/');
     await page.getByText('고급 설정', { exact: true }).click();
     await page.getByLabel('세계 생성 시드').fill(`preparation-${viewport.width}`);
-    await page.getByRole('button', { name: '넉넉한 출발' }).click();
+    await page.getByRole('button', { name: '쉬움' }).click();
     await page.getByRole('button', { name: '클럽 창단' }).click();
     const opener = page.getByTestId('club-hub').getByRole('button', { name: '전술·선발 준비' });
     await opener.click();

@@ -87,12 +87,12 @@
 }
 .capital {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 6px;
 }
 .capital button {
   display: grid;
-  gap: 6px;
+  gap: 2px;
   text-align: center;
   padding: 12px 6px;
   border-radius: 10px;

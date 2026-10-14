@@ -10,10 +10,14 @@ import {
 } from '../../catalogs/src/index';
 import type {
   Club,
+  DifficultyLevel,
   Founding,
+  Line,
   Manager,
   ManagerStyle,
   Player,
+  Position,
+  RoleId,
   World,
   Tactic,
 } from '../../contracts/src/types';
@@ -24,6 +28,19 @@ import { dayCountedFrom } from './calendar';
 import { MARKET_BANDS, STYLE_INFO, YOUTH_SELECTION_BONUS } from './styles';
 import { divisionFor, drawAgent, marketWageAt, settleClauses } from './contracts';
 import { operatingExpensesAt } from './finance';
+import {
+  adaptationMultiplier,
+  adaptationStart,
+  FORMATIONS,
+  generateProfile,
+  levelFactor,
+  LINE_MINIMUM,
+  lineOf,
+  mainOvr,
+  ovrAt,
+  type Joined,
+  type Slot,
+} from './player';
 export const ENGINE_VERSION = CURRENT_ENGINE_VERSION;
 export const TACTICS: Tactic[] = ['balanced', 'possession', 'counter', 'press'];
 export const tacticLabel: Record<Tactic, string> = {
@@ -34,13 +51,53 @@ export const tacticLabel: Record<Tactic, string> = {
 };
 export const clubOf = (w: World) => w.clubs.find((c) => c.id === w.playerClub)!;
 export const activePlayers = (w: World) => w.players.filter((p) => p.status === 'active');
-export const overall = (p: Player) =>
-  Math.round(p.role === 'GK' ? p.keeper : (p.attack + p.passing + p.defense + p.stamina) / 4);
+/** His OVR at his main position in his best role there (→PLAYER-6). */
+export const overall = (p: Player) => Math.round(mainOvr(p));
+/** His line: his main position's (→PLAYER-3). */
+export const lineOfPlayer = (p: Player): Line => lineOf(p.position);
 /** Points an unhappy player plays below his ability (→CLUB-27); his attributes stay as they are. */
 export const UNHAPPY_PENALTY = 3;
 export const unhappyPenalty = (p: Player) => (p.unhappy ? UNHAPPY_PENALTY : 0);
 /** The ability a player plays at: his overall, less the unhappy penalty. */
 export const playingAbility = (p: Player) => overall(p) - unhappyPenalty(p);
+/** An own player plays at his adaptation's multiplier (→PLAYER-10). */
+export const ownMultiplier = (p: Player) => adaptationMultiplier(p.adaptation);
+/** A club nobody owns plays at its 조직력's multiplier (→LEAGUE-12). */
+export const cohesionMultiplier = (c: Club) => adaptationMultiplier(c.cohesion ?? 0.8);
+/**
+ * 실효 OVR at a formation slot: his OVR there in its role × his level there × his multiplier, less
+ * the unhappy penalty (→PLAYER-6).
+ */
+export function slotOvr(p: Player, slot: Slot, multiplier = 1) {
+  return (
+    ovrAt(p.attrs, slot.position, slot.role) *
+      levelFactor(p.positions, slot.position) *
+      multiplier -
+    unhappyPenalty(p)
+  );
+}
+export const formationOf = (tactic: Tactic) => FORMATIONS[tactic].slots;
+/** Where a player joining the club starts to settle (→PLAYER-11). */
+export function joinClub(p: Player, joined: Joined) {
+  p.adaptation = adaptationStart(p.personality.adaptability, joined);
+  p.clubRounds = 0;
+  delete p.unsettled;
+  delete p.positionStarts;
+}
+/** What a difficulty level sets: cash × the founding budget and the founding XI's offset (→WEB-3). */
+export const LEVEL_CASH: Record<DifficultyLevel, number> = {
+  easy: 2,
+  normal: 1,
+  hard: 0.5,
+  extreme: 0.25,
+};
+export const LEVEL_OFFSET: Record<DifficultyLevel, number> = {
+  easy: 0,
+  normal: -2,
+  hard: -4,
+  extreme: -6,
+};
+export const DIFFICULTY_LEVELS = Object.keys(LEVEL_CASH) as DifficultyLevel[];
 type Index = (code: string, year: number) => { value: number };
 /** What `indexed` scales by in a country and year, worked out once per index. */
 const indexFactors = new Map<
@@ -115,24 +172,29 @@ export function makePlayer(
   id: string,
   year: number,
   rating: number,
-  role: Player['role'],
+  position: Position,
   age = integer(random(id), 18, 32),
   division?: number,
+  role?: RoleId,
 ): Player {
   const r = random(`${seed}:${id}`);
-  const skill = () => clamp(integer(r, Math.round(rating) - 9, Math.round(rating) + 9), 15, 95);
-  // Attributes top out at 99, so no ability exceeds the highest potential.
-  const top = (value: number) => clamp(value, 0, 99);
+  // The profile has a stream of its own, so the name, potential and agent stay as they were drawn.
+  const profile = generateProfile(
+    random(`${seed}:player:${id}`),
+    position,
+    Math.round(rating),
+    role,
+  );
   const player: Player = {
     id,
     name: personName(code, r),
-    role,
+    position,
+    positions: profile.positions,
     born: year - age,
-    attack: top(skill() + (role === 'FWD' ? 9 : role === 'GK' ? -20 : 0)),
-    passing: top(skill() + (role === 'MID' ? 8 : 0)),
-    defense: top(skill() + (role === 'DEF' ? 10 : 0)),
-    keeper: role === 'GK' ? top(skill() + 12) : integer(r, 8, 20),
-    stamina: skill(),
+    attrs: profile.attrs,
+    personality: profile.personality,
+    traits: profile.traits,
+    adaptation: 0.8,
     potential: clamp(rating + integer(r, 10, 35), 50, 95),
     reputation: clamp(rating - 15),
     wage: '0',
@@ -277,7 +339,7 @@ export function createBase(input: Founding): World {
     input.name.length > 60 ||
     !/^#[0-9a-fA-F]{6}$/.test(input.color) ||
     input.seed.length > 80 ||
-    ![0.5, 1, 2].includes(input.difficulty)
+    !DIFFICULTY_LEVELS.includes(input.level)
   )
     throw new Error('창단 정보를 확인해 주세요.');
   const year = FOUNDING_YEAR;
@@ -351,38 +413,38 @@ export function createBase(input: Founding): World {
     color: input.color,
   };
   clubs.push(club);
-  const roles: Player['role'][] = [
-    'GK',
-    'GK',
-    ...Array<Player['role']>(6).fill('DEF'),
-    ...Array<Player['role']>(6).fill('MID'),
-    ...Array<Player['role']>(4).fill('FWD'),
-  ];
-  // A new club starts as an ordinary member of its league: the founders' best XI rates like the
-  // league's average club.
+  const manager = makeManager(input.country, input.seed, year);
+  // The founders cover the founding manager's formation: one per slot, then the bench (→CLUB-1).
+  const tactic = manager.philosophy;
+  const places = squadPlaces(tactic);
+  // A new club starts at its league's average club plus its level's offset (→CLUB-1, →WEB-3).
   const peers = clubs
     .filter((c) => c.country === club.country && c.representative && c.tier === club.tier)
     .slice(0, AMATEUR_CLUBS);
-  const target = Math.round(
-    peers.reduce((sum, c) => sum + xiRating(lineup(npcSquad(input.seed, year, c))), 0) /
-      peers.length,
-  );
+  const target =
+    Math.round(
+      peers.reduce((sum, c) => {
+        const style = clubStyle(c);
+        return sum + xiRating(lineup(npcSquad(input.seed, year, c), style), style);
+      }, 0) / peers.length,
+    ) + LEVEL_OFFSET[input.level];
   const found = (base: number) =>
-    roles.map((role, i) =>
+    places.map((place, i) =>
       makePlayer(
         input.country,
         input.seed,
         `${club.id}:founder:${i}`,
         year,
         base,
-        role,
+        place.position,
         undefined,
         club.tier,
+        place.role,
       ),
     );
   let base = target;
   for (let step = 0; step < 4; step++) {
-    const gap = target - xiRating(lineup(found(base)));
+    const gap = target - xiRating(lineup(found(base), tactic), tactic);
     if (!gap) break;
     base += gap;
   }
@@ -390,8 +452,10 @@ export function createBase(input: Founding): World {
   club.elo = initialElo(base);
   const players = found(base);
   // The founders sign on the founding day, each with his contract's clauses (→CLUB-29).
-  for (const p of players) p.clauses = settleClauses(input.seed, p, p.agent!, year, 0);
-  const manager = makeManager(input.country, input.seed, year);
+  for (const p of players) {
+    p.clauses = settleClauses(input.seed, p, p.agent!, year, 0);
+    joinClub(p, 'founding');
+  }
   // A club's first season pays the amateur level's floor of operating expenses (→ECON-30).
   const operatingExpenses = operatingExpensesAt(input.country, year, club.tier);
   // The founding season's fixed costs (→WEB-3): wages, upkeep and those operating expenses.
@@ -400,7 +464,7 @@ export function createBase(input: Founding): World {
     BigInt(manager.wage) +
     BigInt(footballQuote(input.country, year, 180)) +
     BigInt(operatingExpenses);
-  const cash = ratio(baseline.toString(), BigInt(input.difficulty * 2), 2n);
+  const cash = ratio(baseline.toString(), BigInt(LEVEL_CASH[input.level] * 4), 4n);
   return {
     schema: 1,
     engine: ENGINE_VERSION,
@@ -412,7 +476,7 @@ export function createBase(input: Founding): World {
     round: 0,
     revision: 0,
     playerClub: club.id,
-    difficulty: input.difficulty,
+    level: input.level,
     clubs,
     players,
     manager,
@@ -477,38 +541,63 @@ export function clubStyle(club: Pick<Club, 'id'>): Tactic {
  * pressing style pays its usual cost up front instead of pressing for free.
  */
 export const PRESS_LOAD_FATIGUE = 32;
-/** The 18 generated players of a club nobody owns, renewed by cohort each year. */
+export { LINE_MINIMUM };
+/**
+ * The 18 places of a squad playing a tactic (→CLUB-1, →WORLD-6): its formation's 11 slots, then a
+ * bench bringing every line to its minimum, each at the line's formation positions in turn.
+ */
+export function squadPlaces(tactic: Tactic): { position: Position; role?: RoleId }[] {
+  const slots = formationOf(tactic);
+  const bench = (['GK', 'DF', 'MF', 'FW'] as const).flatMap((line) => {
+    const options = slots.filter((s) => lineOf(s.position) === line);
+    return Array.from({ length: LINE_MINIMUM[line] - options.length }, (_, k) => ({
+      position: options[k % options.length]!.position,
+    }));
+  });
+  return [...slots.map((s) => ({ position: s.position, role: s.role })), ...bench];
+}
+/** The 18 generated players of a club nobody owns, renewed by cohort each year (→WORLD-6). */
 export function npcSquad(seed: string, year: number, c: Club): Player[] {
   const code = COUNTRIES.some((p) => p.code === c.country) ? c.country : 'ENG';
-  const fatigue = clubStyle(c) === 'press' ? PRESS_LOAD_FATIGUE : 0;
-  return Array.from({ length: 18 }, (_, i) => {
+  const style = clubStyle(c);
+  const fatigue = style === 'press' ? PRESS_LOAD_FATIGUE : 0;
+  return squadPlaces(style).map((place, i) => {
     const age = 18 + ((year + i) % 18),
       cohort = Math.floor((year + i) / 18);
-    const role: Player['role'] = i < 2 ? 'GK' : i < 8 ? 'DEF' : i < 14 ? 'MID' : 'FWD';
     const player = makePlayer(
       code,
       seed,
       `${c.id}:p:${i}:${cohort}`,
       year,
       c.strength,
-      role,
+      place.position,
       age,
       c.tier,
+      place.role,
     );
     player.fatigue = fatigue;
     return player;
   });
 }
-/** Average role rating of a starting XI. */
-export function xiRating(players: readonly Player[]) {
-  return Math.round(players.reduce((sum, p) => sum + overall(p), 0) / Math.max(1, players.length));
+/** Average 실효 OVR of a starting XI at its formation's slots, before any multiplier. */
+export function xiRating(players: readonly Player[], tactic: Tactic) {
+  const slots = formationOf(tactic);
+  return Math.round(
+    players.reduce((sum, p, i) => sum + slotOvr(p, slots[i]!), 0) / Math.max(1, players.length),
+  );
 }
 /**
  * Automatic selection value: the ability he plays at, less fatigue. A manager's trait shifts it:
  * youth favours players aged 21 or younger, rotation rests tired players sooner, stable keeps the
  * best XI despite fatigue.
  */
-export function selectionValue(p: Player, manager?: Manager, year?: number) {
+export function selectionValue(
+  p: Player,
+  slot: Slot,
+  manager?: Manager,
+  year?: number,
+  multiplier = 1,
+) {
   const fatigueWeight = manager?.trait === 'rotation' ? 2.5 : manager?.trait === 'stable' ? 10 : 5;
   const youth =
     (manager?.trait === 'youth' || manager?.style === 'developer') &&
@@ -516,70 +605,72 @@ export function selectionValue(p: Player, manager?: Manager, year?: number) {
     year - p.born <= 21
       ? YOUTH_SELECTION_BONUS
       : 0;
-  return playingAbility(p) - p.fatigue / fatigueWeight + youth;
+  return slotOvr(p, slot, multiplier) - p.fatigue / fatigueWeight + youth;
 }
-export function lineup(players: Player[], manager?: Manager, year?: number): Player[] {
-  const value = (p: Player) => selectionValue(p, manager, year);
-  const selected: Player[] = [];
-  for (const [role, count] of [
-    ['GK', 1],
-    ['DEF', 4],
-    ['MID', 3],
-    ['FWD', 3],
-  ] as const) {
-    selected.push(
-      ...players
-        .filter((p) => p.role === role)
-        .sort((a, b) => value(b) - value(a) || compareIds(a.id, b.id))
-        .slice(0, count),
-    );
-  }
-  for (const p of [...players].sort((a, b) => playingAbility(b) - playingAbility(a)))
-    if (selected.length < 11 && !selected.includes(p)) selected.push(p);
-  const result = selected.slice(0, 11);
-  return result;
-}
-export const LINEUP_ROLES: Player['role'][] = [
-  'GK',
-  'DEF',
-  'DEF',
-  'DEF',
-  'DEF',
-  'MID',
-  'MID',
-  'MID',
-  'FWD',
-  'FWD',
-  'FWD',
-];
-
-/** Preferred starters remain slot-safe; a sold or retired player is replaced automatically. */
-export function selectedLineup(
+/**
+ * The automatic XI in a tactic's formation, slot order (→CLUB-6): the best remaining pairing of a
+ * player and a slot goes first, so a centre back is not spent at full back while a full back waits.
+ * Own players carry their adaptation's multiplier; other clubs' players share one, so it is left out.
+ */
+export function lineup(
   players: Player[],
-  preferred?: string[],
+  tactic: Tactic,
   manager?: Manager,
   year?: number,
+  multiplier: (p: Player) => number = () => 1,
 ): Player[] {
-  if (!preferred) return lineup(players, manager, year);
+  const slots = formationOf(tactic);
+  const pairs: { p: Player; slot: number; value: number }[] = [];
+  for (const p of players)
+    slots.forEach((slot, i) =>
+      pairs.push({ p, slot: i, value: selectionValue(p, slot, manager, year, multiplier(p)) }),
+    );
+  pairs.sort((a, b) => b.value - a.value || a.slot - b.slot || compareIds(a.p.id, b.p.id));
+  const chosen: (Player | undefined)[] = Array(slots.length);
+  const used = new Set<string>();
+  for (const pair of pairs) {
+    if (chosen[pair.slot] || used.has(pair.p.id)) continue;
+    chosen[pair.slot] = pair.p;
+    used.add(pair.p.id);
+  }
+  return chosen.filter((p): p is Player => !!p);
+}
+
+/**
+ * The owner's saved XI keeps its slots, anyone in any slot (→CLUB-6); a sold, retired or unfit
+ * player's slot takes the best available player there (→CLUB-9).
+ */
+export function selectedLineup(
+  players: Player[],
+  preferred: string[] | undefined,
+  tactic: Tactic,
+  manager?: Manager,
+  year?: number,
+  multiplier: (p: Player) => number = ownMultiplier,
+): Player[] {
+  if (!preferred) return lineup(players, tactic, manager, year, multiplier);
+  const slots = formationOf(tactic);
   const active = players.filter((player) => player.status === 'active');
   const byId = new Map(active.map((player) => [player.id, player]));
   const used = new Set<string>();
-  const selected = LINEUP_ROLES.map((role, i) => {
-    const player = byId.get(preferred[i]);
-    if (!player || player.role !== role || used.has(player.id)) return undefined;
+  const selected = slots.map((_, i) => {
+    const player = byId.get(preferred[i]!);
+    if (!player || used.has(player.id)) return undefined;
     used.add(player.id);
     return player;
   });
-  const fit = [...active].sort(
-    (a, b) =>
-      playingAbility(b) - b.fatigue / 5 - (playingAbility(a) - a.fatigue / 5) ||
-      compareIds(a.id, b.id),
-  );
   return selected.flatMap((player, i) => {
+    const slot = slots[i]!;
     const replacement =
       player ||
-      fit.find((candidate) => candidate.role === LINEUP_ROLES[i] && !used.has(candidate.id)) ||
-      fit.find((candidate) => !used.has(candidate.id));
+      active
+        .filter((candidate) => !used.has(candidate.id))
+        .sort(
+          (a, b) =>
+            selectionValue(b, slot, undefined, undefined, multiplier(b)) -
+              selectionValue(a, slot, undefined, undefined, multiplier(a)) ||
+            compareIds(a.id, b.id),
+        )[0];
     if (!replacement) return [];
     used.add(replacement.id);
     return [replacement];
@@ -599,20 +690,28 @@ export function isInjured(w: World, p: Player) {
 export function ownStarters(w: World) {
   const active = activePlayers(w);
   const fit = active.filter((p) => !isInjured(w, p));
-  const xi = selectedLineup(fit, w.lineup, w.manager, w.year);
+  const xi = selectedLineup(fit, w.lineup, w.tactic, w.manager, w.year);
   return xi.length >= 11 || fit.length === active.length
     ? xi
-    : selectedLineup(active, w.lineup, w.manager, w.year);
+    : selectedLineup(active, w.lineup, w.tactic, w.manager, w.year);
 }
+/** The tactic a club plays: the own club's applied one, else its style. */
+export const tacticOf = (w: World, c: Club) => (c.id === w.playerClub ? w.tactic : clubStyle(c));
 /**
  * Match strength of a club: its actual starting XI for every club, so the own club and the clubs
  * it plays are measured on one scale, each paying for fatigue beyond ordinary match fitness and
  * for unhappy players.
  */
 export function rating(w: World, c: Club) {
-  const xi = c.id === w.playerClub ? ownStarters(w) : startingSquad(w, c);
+  const own = c.id === w.playerClub;
+  const xi = own ? ownStarters(w) : startingSquad(w, c);
+  const slots = formationOf(tacticOf(w, c));
+  const club = own ? undefined : cohesionMultiplier(c);
   return Math.round(
-    xi.reduce((s, p) => s + playingAbility(p) - fatigueLoad(p.fatigue) / 6, 0) / 11,
+    xi.reduce(
+      (s, p, i) => s + slotOvr(p, slots[i]!, club ?? ownMultiplier(p)) - fatigueLoad(p.fatigue) / 6,
+      0,
+    ) / 11,
   );
 }
 export function addEvent(w: World, kind: string, title: string, detail: string, amount?: string) {
@@ -632,7 +731,7 @@ export function startingSquad(w: World, c: Club) {
   const ps = squad(w, c);
   let cached = npcLineups.get(ps);
   if (!cached) {
-    cached = lineup(ps);
+    cached = lineup(ps, clubStyle(c));
     npcLineups.set(ps, cached);
   }
   return cached;

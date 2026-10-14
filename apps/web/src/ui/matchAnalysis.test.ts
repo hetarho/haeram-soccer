@@ -7,7 +7,7 @@ it('keeps real home/away denominators and leaves an unattempted rate undefined',
     name: 'Report',
     color: '#24664f',
     seed: 'report',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   const record = simulateMatch(w, nextOwnFixture(w)!, false, true).record;
   const rows = matchRates(record);

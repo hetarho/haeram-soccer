@@ -8,7 +8,7 @@ const founding = (seed: string) => ({
   name: 'Haeram Athletic',
   color: '#bf7956',
   seed,
-  difficulty: 2 as const,
+  level: 'easy' as const,
 });
 /** A seed whose first round brings a celebrated achievement (the club's first win). */
 const seed = (() => {
@@ -27,7 +27,7 @@ async function found(page: Page) {
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill(seed);
-  await page.getByRole('button', { name: '넉넉한 출발', exact: false }).click();
+  await page.getByRole('button', { name: '쉬움', exact: false }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   // Nothing but the test's own steps may stop the clock or open a card: level 4 stops only for

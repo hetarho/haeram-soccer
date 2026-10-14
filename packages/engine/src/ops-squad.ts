@@ -1,3 +1,4 @@
+import type { Position } from '../../contracts/src/types';
 import type { Command, World } from '../../contracts/src/types';
 import { activePlayers, addEvent, clubOf, makePlayer, overall } from './world';
 import { hash, integer, random, ratio } from './primitives';
@@ -46,8 +47,24 @@ export type SquadCommand = Extract<
  * the same list again. `year` and `legacy` reproduce a list under the `market:<year>:<i>` IDs of
  * rules before 1.15.0 for the bids pending from then.
  */
+/**
+ * The positions market candidates cycle through (→CLUB-14): the lines in turn, as the four roles
+ * were, and within each line its positions in turn.
+ */
+const MARKET_LINES: readonly (readonly Position[])[] = [
+  ['GK'],
+  ['CB', 'LB', 'RB', 'LWB', 'RWB'],
+  ['CM', 'DM', 'AM', 'LM', 'RM'],
+  ['ST', 'LW', 'RW'],
+];
+const marketPosition = (i: number) => {
+  const line = MARKET_LINES[i % MARKET_LINES.length]!;
+  return line[Math.floor(i / MARKET_LINES.length) % line.length]!;
+};
+/** Marks a candidate from abroad in his id, so his origin stays with him after he signs. */
+const FOREIGN_MARK = 'f';
+export const isForeignCandidate = (id: string) => /^market:\d+:[^:]+:f\d+$/.test(id);
 export function transferOffers(w: World, year = w.year, legacy = false) {
-  const roles = ['GK', 'DEF', 'MID', 'FWD'] as const;
   const policy = policyEffects(policyOf(w)),
     profile = policy.offer,
     scouting = staffEffects(w),
@@ -80,7 +97,11 @@ export function transferOffers(w: World, year = w.year, legacy = false) {
   const own = clubOf(w),
     feeMultiplier = profile.feeMultiplier * scouting.feeMultiplier * synergy.feeMultiplier;
   return Array.from({ length: count }, (_, i) => {
-    const id = legacy ? `market:${year}:${i}` : `market:${year}:${sig}:${i}`;
+    // The candidates 해외 스카우트망 adds come from abroad (→PLAYER-11).
+    const foreign = i >= count - policy.scoutCandidates;
+    const id = legacy
+      ? `market:${year}:${i}`
+      : `market:${year}:${sig}:${foreign ? FOREIGN_MARK : ''}${i}`;
     const r = random(`${w.seed}:${id}`);
     const p = makePlayer(
       own.country,
@@ -88,7 +109,7 @@ export function transferOffers(w: World, year = w.year, legacy = false) {
       id,
       year,
       Math.min(95, integer(r, profile.ability[0], profile.ability[1]) + build.marketAbility),
-      roles[i % 4],
+      marketPosition(i),
       integer(r, profile.age[0], profile.age[1]),
       own.tier,
     );
@@ -170,7 +191,7 @@ export function squadCommand(w: World, cmd: SquadCommand) {
         w,
         'transfer-in',
         `${o.player.name} ${cmd.loan ? '임대' : '영입'}`,
-        `${o.player.role} · ${w.year - o.player.born}세 · 연봉 ${moneyLabel(w, o.player.wage)} · 계약 ${o.player.until}년`,
+        `${o.player.position} · ${w.year - o.player.born}세 · 연봉 ${moneyLabel(w, o.player.wage)} · 계약 ${o.player.until}년`,
         cost,
       );
       break;

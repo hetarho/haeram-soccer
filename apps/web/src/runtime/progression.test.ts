@@ -11,7 +11,7 @@ const w = createWorld({
   name: 'Clock Club',
   color: '#24543b',
   seed: 'clock-regression',
-  difficulty: 2,
+  level: 'easy' as const,
 });
 function playback(id: string): MatchPlayback {
   return {

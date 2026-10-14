@@ -1,3 +1,4 @@
+import { lineOf } from '../../packages/engine/src/player';
 import { chooseOption } from './select';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -23,11 +24,7 @@ async function exportWorld(page: Page): Promise<World> {
   return (await decode(raw)).world;
 }
 
-async function foundMarket(
-  page: Page,
-  seed: string,
-  difficulty: '넉넉한 출발' | '작은 출발' = '넉넉한 출발',
-) {
+async function foundMarket(page: Page, seed: string, difficulty: '쉬움' | '어려움' = '쉬움') {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
@@ -69,7 +66,7 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   await expect(cards).toHaveCount(2);
   expect((await ids()).sort()).toEqual(
     offers
-      .filter((offer) => offer.player.role === 'GK')
+      .filter((offer) => offer.player.position === 'GK')
       .map((offer) => offer.player.id)
       .sort(),
   );
@@ -87,7 +84,7 @@ test('filters and compares stable candidates, discloses free wages, and saves re
       .getByTestId(`candidate-${id}`)
       .getByRole('button', { name: '비교', exact: true })
       .click();
-  await roles.getByRole('button', { name: 'MID', exact: true }).click();
+  await roles.getByRole('button', { name: 'MF', exact: true }).click();
   await desk.getByRole('button', { name: '선택한 2명 비교', exact: true }).click();
   const comparison = page.getByRole('dialog', { name: '영입 후보 비교' });
   expect(
@@ -147,11 +144,11 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   expect(BigInt(operatingCost(recruited)) - BigInt(operatingCost(before))).toBe(
     BigInt(free.player.wage),
   );
-  expect(lineupSummary(startingSquad(recruited, clubOf(recruited))).strength).toBe(
-    preview.afterStrength,
-  );
+  expect(
+    lineupSummary(startingSquad(recruited, clubOf(recruited)), recruited.tactic).strength,
+  ).toBe(preview.afterStrength);
 
-  const loan = offers.find((offer) => offer.player.role === 'DEF')!;
+  const loan = offers.find((offer) => lineOf(offer.player.position) === 'DF')!;
   const loanCard = desk.getByTestId(`candidate-${loan.player.id}`);
   const loanPreview = recruitmentPreview(recruited, loan, true);
   await loanCard.getByRole('button', { name: '1시즌 임대', exact: true }).click();
@@ -213,7 +210,7 @@ test('reaches the real squad capacity with eight loans and prevents any further 
 test('disables an unaffordable fee while keeping a cheaper loan available with honest ongoing costs', async ({
   page,
 }) => {
-  await foundMarket(page, 'recruitment-poor-ui', '작은 출발');
+  await foundMarket(page, 'recruitment-poor-ui', '어려움');
   const before = await exportWorld(page);
   const offer = transferOffers(before).find(
     (candidate) =>
@@ -257,7 +254,7 @@ test('keeps the clock running while comparing candidates away from home until th
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('recruitment-dialog-clock');
-  await page.getByRole('button', { name: '넉넉한 출발' }).click();
+  await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   const before = await exportWorld(page);

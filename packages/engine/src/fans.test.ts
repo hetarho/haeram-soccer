@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canonical, validateWorld } from '../../contracts/src/index';
+import { canonical } from '../../contracts/src/index';
 import {
   BANKRUPTCY_ROUNDS,
   BANKRUPT_MESSAGE,
@@ -22,7 +22,13 @@ import {
 } from './index';
 
 const world = (seed = 'fans-and-money') =>
-  createWorld({ country: 'ENG', name: 'Gate Town', color: '#224433', seed, difficulty: 2 });
+  createWorld({
+    country: 'ENG',
+    name: 'Gate Town',
+    color: '#224433',
+    seed,
+    level: 'easy' as const,
+  });
 
 describe('supporters follow reputation, not the stadium', () => {
   it('drifts toward a following that grows with reputation and has no ceiling', () => {
@@ -113,25 +119,6 @@ describe('facility parts (→ECON-32)', () => {
     const all = { stadium: 8, trainingGround: 5, academyFacility: 5 };
     expect(facilityBuiltUnits(all)).toBeGreaterThan(3_500_000);
     expect(facilityBuiltUnits(all)).toBeLessThan(4_500_000);
-  });
-
-  it('reads a club built to one facility level F as the parts that level held', () => {
-    const saved = JSON.parse(canonical(world('tall-stadium')));
-    for (const key of ['stadium', 'trainingGround', 'academyFacility']) delete saved[key];
-    saved.facilities = 6;
-    // 6 held 32,500 seats: the 30,000 stadium, and a training ground and academy of 2 (6/4 rounded).
-    expect(validateWorld(saved)).toMatchObject({
-      stadium: 4,
-      trainingGround: 2,
-      academyFacility: 2,
-    });
-    saved.facilities = 30;
-    expect(validateWorld(saved)).toMatchObject({
-      stadium: 8,
-      trainingGround: 5,
-      academyFacility: 5,
-    });
-    expect('facilities' in validateWorld(saved)).toBe(false);
   });
 });
 

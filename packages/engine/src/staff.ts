@@ -1,3 +1,6 @@
+import { ATTRIBUTES, type Attribute } from '../../contracts/src/player';
+import { ATTRIBUTE_LABEL } from './player';
+import { moraleOf } from './morale';
 import type {
   CoachCriteria,
   ContractTerm,
@@ -85,10 +88,9 @@ export const MANAGER_TRAIT_INFO: Record<ManagerTrait, { label: string; effect: s
   stable: { label: '베스트 일레븐', effect: '피로가 있어도 주전을 꾸준히 기용해요' },
 };
 
-export type DevelopmentSkill = 'attack' | 'passing' | 'defense' | 'keeper' | 'stamina';
 export interface StaffEffects {
-  /** Per-skill round development multipliers. */
-  development: Record<DevelopmentSkill, number>;
+  /** Per-attribute round development multipliers, set by the department owning each (→STAFF-11). */
+  development: Record<Attribute, number>;
   /** Extra multiplier for players aged 21 or younger. */
   youthDevelopment: number;
   /** Fatigue recovered per settled round, added to the training focus. */
@@ -136,12 +138,13 @@ const CANDIDATE_ABILITY: readonly (readonly [number, number])[] = [
   [55, 78],
   [65, 90],
 ];
-const SKILL_OF: Partial<Record<StaffRole, DevelopmentSkill>> = {
-  assistant: 'passing',
-  attack: 'attack',
-  defense: 'defense',
-  goalkeeping: 'keeper',
-  fitness: 'stamina',
+/** The attributes each coaching department grows (→STAFF-11, →PLAYER-15). */
+export const DEPARTMENT_ATTRIBUTES: Partial<Record<StaffRole, readonly Attribute[]>> = {
+  assistant: ['passing', 'vision'],
+  attack: ['finishing', 'dribbling', 'crossing'],
+  defense: ['tackling', 'positioning', 'heading'],
+  goalkeeping: ['reflexes', 'handling', 'distribution'],
+  fitness: ['pace', 'stamina', 'strength'],
 };
 /** A developer coach's pull on growth of players aged 21 or younger, multiplied across roles. */
 const YOUTH_DEVELOPER: Partial<Record<StaffRole, number>> = {
@@ -160,7 +163,7 @@ export function departmentMultiplier(ability: number) {
 
 function neutralEffects(): StaffEffects {
   return {
-    development: { attack: 1, passing: 1, defense: 1, keeper: 1, stamina: 1 },
+    development: Object.fromEntries(ATTRIBUTES.map((a) => [a, 1])) as Record<Attribute, number>,
     youthDevelopment: 1,
     recoveryBonus: 0,
     academyQuality: 0,
@@ -174,11 +177,11 @@ function neutralEffects(): StaffEffects {
 
 /** Applies one department's coach (or vacancy) to the effects it owns. */
 function applyDepartment(effects: StaffEffects, role: StaffRole, member: Staff | undefined) {
-  const skill = SKILL_OF[role];
-  if (skill)
-    effects.development[skill] = member
-      ? departmentMultiplier(member.ability) * (member.trait === 'specialist' ? 1.15 : 1)
-      : VACANT_MULTIPLIER;
+  const factor = member
+    ? departmentMultiplier(member.ability) * (member.trait === 'specialist' ? 1.15 : 1)
+    : VACANT_MULTIPLIER;
+  for (const attribute of DEPARTMENT_ATTRIBUTES[role] ?? [])
+    effects.development[attribute] = factor;
   if (member?.trait === 'developer') effects.youthDevelopment *= YOUTH_DEVELOPER[role] ?? 1;
   if (role === 'fitness')
     effects.recoveryBonus = member
@@ -230,15 +233,11 @@ export function staffImpact(w: World, role: StaffRole): string {
   const member = w.staff ? staffMember(w, role) : ({ role, ability: NEUTRAL_ABILITY } as Staff);
   applyDepartment(effects, role, member);
   const lines: string[] = [];
-  const skill = SKILL_OF[role];
-  const skillLabel: Record<DevelopmentSkill, string> = {
-    attack: '공격',
-    passing: '패스',
-    defense: '수비',
-    keeper: '골키핑',
-    stamina: '체력',
-  };
-  if (skill) lines.push(`${skillLabel[skill]} 성장 ${times(effects.development[skill])}`);
+  const owned = DEPARTMENT_ATTRIBUTES[role];
+  if (owned)
+    lines.push(
+      `${owned.map((a) => ATTRIBUTE_LABEL[a]).join('·')} 성장 ${times(effects.development[owned[0]!])}`,
+    );
   if (effects.youthDevelopment !== 1)
     lines.push(`21세 이하 성장 ${times(effects.youthDevelopment)}`);
   if (role === 'fitness') lines.push(`라운드 피로 회복 ${signed(effects.recoveryBonus)}`);
@@ -423,6 +422,9 @@ export function releaseStaff(w: World, role: StaffRole): void {
 }
 /** Starting XI average fatigue that makes the assistant call a recovery week. */
 export const AUTO_RECOVERY_FATIGUE = 30;
+/** Below this starters' fatigue, with morale at least AUTO_HARD_MORALE, he may call 하드 (→CLUB-13). */
+export const AUTO_HARD_FATIGUE = 15;
+export const AUTO_HARD_MORALE = 50;
 /** The assistant's reasoning, for showing why the staff chose this week's focus. */
 export function autoTrainingAdvice(w: World): { focus: TrainingFocus; reason: string } {
   const starters = ownStarters(w);
@@ -432,12 +434,17 @@ export function autoTrainingAdvice(w: World): { focus: TrainingFocus; reason: st
     tired = `선발 평균 피로 ${Math.round(fatigue)}`;
   if (fatigue >= AUTO_RECOVERY_FATIGUE)
     return { focus: 'recovery', reason: `${tired} · 회복이 먼저예요.` };
-  if (staffMember(w, 'assistant')?.trait === 'developer')
-    return { focus: 'youth', reason: `${tired} · 육성형 수석코치가 유망주 성장에 집중해요.` };
-  // 데뷔 시점 빠른 데뷔 calls for youth work from two young starters (→CLUB-13, CLUB-32).
+  // 하드 트레이닝 only on fresh legs and a squad in good spirits (→CLUB-13).
+  const fresh = fatigue < AUTO_HARD_FATIGUE && moraleOf(w) >= AUTO_HARD_MORALE;
+  if (fresh && staffMember(w, 'assistant')?.trait === 'developer')
+    return { focus: 'hard', reason: `${tired} · 육성형 수석코치가 하드 트레이닝으로 끌어올려요.` };
+  // 데뷔 시점 빠른 데뷔 calls for hard work from two young starters (→CLUB-13, CLUB-32).
   const young = starters.filter((player) => isYouth(w, player)).length;
-  if (young >= (w.direction?.debut === 'early' ? 2 : 3))
-    return { focus: 'youth', reason: `${tired} · 21세 이하 선발 ${young}명의 성장에 집중해요.` };
+  if (fresh && young >= (w.direction?.debut === 'early' ? 2 : 3))
+    return {
+      focus: 'hard',
+      reason: `${tired} · 21세 이하 선발 ${young}명을 하드 트레이닝으로 키워요.`,
+    };
   return { focus: 'balanced', reason: `${tired} · 성장과 회복을 함께 챙겨요.` };
 }
 /** The assistant's choice when training is delegated. */

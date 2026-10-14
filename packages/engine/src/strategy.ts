@@ -1,5 +1,14 @@
 import type { Club, Player, Tactic, World } from '../../contracts/src/types';
-import { activePlayers, addEvent, clubStyle, fatigueLoad, LINEUP_ROLES, overall } from './world';
+import {
+  activePlayers,
+  addEvent,
+  clubStyle,
+  fatigueLoad,
+  formationOf,
+  ownMultiplier,
+  slotOvr,
+} from './world';
+import { slotLine } from './player';
 import { clamp, compareIds } from './primitives';
 import { managerStyleEffects } from './styles';
 import { synergyEffects } from './synergy';
@@ -31,7 +40,11 @@ const tacticTradeoffs: Record<Tactic, string> = {
   press: '체력과 신선함으로 기회 창출 · 피로가 크고 역습에 노출됩니다',
 };
 
-/** Role quality and the opposing preset determine the same tradeoffs shown before a match. */
+/**
+ * The XI's line quality at its formation's slots and the opposing preset determine the same
+ * tradeoffs shown before a match (→MATCH-8, →MATCH-9): midfielders' passing, defenders' tackling
+ * and positioning, forwards' finishing, everyone's stamina.
+ */
 export function tacticalProfile(
   players: readonly Player[],
   tactic: Tactic,
@@ -41,25 +54,21 @@ export function tacticalProfile(
     selected.length
       ? selected.reduce((sum, player) => sum + value(player), 0) / selected.length
       : 50;
+  const inLine = (line: string) => players.filter((_, i) => slotLine(tactic, i) === line);
   const passing = clamp(
-    average(
-      players.filter((player) => player.role === 'MID'),
-      (player) => player.passing - fatigueLoad(player.fatigue) / 8,
-    ),
+    average(inLine('MF'), (player) => player.attrs.passing - fatigueLoad(player.fatigue) / 8),
   );
   const defenseQuality = clamp(
     average(
-      players.filter((player) => player.role === 'DEF'),
-      (player) => player.defense - fatigueLoad(player.fatigue) / 8,
+      inLine('DF'),
+      (player) =>
+        (player.attrs.tackling + player.attrs.positioning) / 2 - fatigueLoad(player.fatigue) / 8,
     ),
   );
   const attack = clamp(
-    average(
-      players.filter((player) => player.role === 'FWD'),
-      (player) => player.attack - fatigueLoad(player.fatigue) / 8,
-    ),
+    average(inLine('FW'), (player) => player.attrs.finishing - fatigueLoad(player.fatigue) / 8),
   );
-  const stamina = average(players, (player) => player.stamina);
+  const stamina = average(players, (player) => player.attrs.stamina);
   const fatigue = average(players, (player) => player.fatigue);
   const endurance = clamp(
     stamina - average(players, (player) => fatigueLoad(player.fatigue)) * 0.65,
@@ -132,10 +141,10 @@ export function ownTacticalProfile(
 }
 
 /** Press always costs six more fatigue points for the same player, including at the bounds. */
-export function fatigueCost(player: Pick<Player, 'stamina'>, tactic: Tactic): number {
+export function fatigueCost(player: { attrs: { stamina: number } }, tactic: Tactic): number {
   return Math.round(
     clamp(
-      (tactic === 'press' ? 16 : 10) + (50 - player.stamina) / 20,
+      (tactic === 'press' ? 16 : 10) + (50 - player.attrs.stamina) / 20,
       tactic === 'press' ? 14 : 8,
       tactic === 'press' ? 19 : 13,
     ),
@@ -156,8 +165,8 @@ export function setLineup(w: World, ids: string[] | null) {
   if (!Array.isArray(ids) || ids.length !== 11 || new Set(ids).size !== 11)
     throw new Error('중복 없이 선발 11명을 선택하세요.');
   const byId = new Map(activePlayers(w).map((player) => [player.id, player]));
-  if (ids.some((id, i) => !byId.has(id) || byId.get(id)!.role !== LINEUP_ROLES[i]))
-    throw new Error('활동 중인 선수로 GK 1명, DEF 4명, MID 3명, FWD 3명을 선택하세요.');
+  // Anyone may play any slot; he plays at his level there (→CLUB-6).
+  if (ids.some((id) => !byId.has(id))) throw new Error('활동 중인 선수로 선발 11명을 선택하세요.');
   w.lineup = [...ids];
   addEvent(
     w,
@@ -167,42 +176,56 @@ export function setLineup(w: World, ids: string[] | null) {
   );
 }
 
-/** The rest preset values recovery more heavily, trading immediate quality for fresher starters. */
+/**
+ * The rest preset values recovery more heavily, trading immediate quality for fresher starters;
+ * both fill the formation's slots with the best remaining pairing first.
+ */
 export function lineupPreset(w: World, preset: 'strongest' | 'rest'): string[] {
   const players = activePlayers(w);
+  const slots = formationOf(w.tactic);
+  const penalty = preset === 'rest' ? 0.8 : 0.2;
+  const pairs = players.flatMap((p) =>
+    slots.map((slot, i) => ({
+      p,
+      slot: i,
+      value: slotOvr(p, slot, ownMultiplier(p)) - p.fatigue * penalty,
+    })),
+  );
+  pairs.sort((a, b) => b.value - a.value || a.slot - b.slot || compareIds(a.p.id, b.p.id));
+  const chosen: (string | undefined)[] = Array(slots.length);
   const used = new Set<string>();
-  return LINEUP_ROLES.flatMap((role) => {
-    const candidates = players
-      .filter((player) => player.role === role && !used.has(player.id))
-      .sort((a, b) => {
-        const penalty = preset === 'rest' ? 0.8 : 0.2;
-        return (
-          overall(b) - b.fatigue * penalty - (overall(a) - a.fatigue * penalty) ||
-          compareIds(a.id, b.id)
-        );
-      });
-    const chosen = candidates[0];
-    if (!chosen) return [];
-    used.add(chosen.id);
-    return [chosen.id];
-  });
+  for (const pair of pairs) {
+    if (chosen[pair.slot] || used.has(pair.p.id)) continue;
+    chosen[pair.slot] = pair.p.id;
+    used.add(pair.p.id);
+  }
+  return chosen.filter((id): id is string => !!id);
 }
 
-/** Scores mirror the quantities that the event simulation uses for strength, attacks and saves. */
-export function lineupSummary(players: readonly Player[]) {
+/**
+ * Scores mirror the quantities that the event simulation uses for strength, attacks and saves:
+ * 실효 OVR at the slots, the forwards' finishing and the keeper's reflexes.
+ */
+export function lineupSummary(players: readonly Player[], tactic: Tactic) {
   const count = players.length || 1;
-  const forwards = players.filter((player) => player.role === 'FWD');
-  const keeper = players.find((player) => player.role === 'GK');
+  const slots = formationOf(tactic);
+  const forwards = players.filter((_, i) => slotLine(tactic, i) === 'FW');
+  const keeper = players[0];
   return {
     strength: Math.round(
-      players.reduce((sum, player) => sum + overall(player) - fatigueLoad(player.fatigue) / 6, 0) /
-        count,
+      players.reduce(
+        (sum, player, i) =>
+          sum + slotOvr(player, slots[i]!, ownMultiplier(player)) - fatigueLoad(player.fatigue) / 6,
+        0,
+      ) / count,
     ),
     fatigue: Math.round(players.reduce((sum, player) => sum + player.fatigue, 0) / count),
     attack: Math.round(
-      forwards.reduce((sum, player) => sum + player.attack - fatigueLoad(player.fatigue) / 8, 0) /
-        (forwards.length || 1),
+      forwards.reduce(
+        (sum, player) => sum + player.attrs.finishing - fatigueLoad(player.fatigue) / 8,
+        0,
+      ) / (forwards.length || 1),
     ),
-    keeper: keeper ? Math.round(keeper.keeper - fatigueLoad(keeper.fatigue) / 10) : 0,
+    keeper: keeper ? Math.round(keeper.attrs.reflexes - fatigueLoad(keeper.fatigue) / 10) : 0,
   };
 }

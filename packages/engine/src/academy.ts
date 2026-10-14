@@ -1,12 +1,22 @@
 import { baseEffects } from './bases';
-import type { Player, Role, World, YouthFocus } from '../../contracts/src/types';
+import type { Line, Player, Position, World, YouthFocus } from '../../contracts/src/types';
+import { LINES } from '../../contracts/src/player';
 import { currentDay, seasonDayOf } from './calendar';
-import { activePlayers, addEvent, clubOf, makePlayer, overall, ownStarters } from './world';
+import {
+  activePlayers,
+  addEvent,
+  clubOf,
+  joinClub,
+  lineOfPlayer,
+  makePlayer,
+  overall,
+  ownStarters,
+} from './world';
 import { clamp, compareIds, integer, random } from './primitives';
 import { marketWage, signingClauses } from './contracts';
 import { staffEffects, staffMember } from './staff';
 import { pushInbox } from './inbox';
-import { recordDevelopment, roleSkills, skillAfter } from './training';
+import { growAttributes, recordDevelopment } from './training';
 import { moneyLabel, operatingCosts } from './finance';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
@@ -65,7 +75,21 @@ export const YOUTH_FOCUS_INFO: Record<
 };
 /** A prospect this close to being ready makes the director prepare the older groups. */
 export const FIRST_TEAM_GAP = 5;
-const INTAKE_ROLES: readonly Role[] = ['DEF', 'MID', 'FWD', 'GK'];
+/** The positions intakes cycle through, so every line keeps coming (→CLUB-16). */
+const INTAKE_POSITIONS: readonly Position[] = [
+  'CB',
+  'CM',
+  'ST',
+  'GK',
+  'LB',
+  'DM',
+  'LW',
+  'RB',
+  'AM',
+  'RW',
+  'LM',
+  'RM',
+];
 const hundredths = (value: number) => Math.round(value * 100) / 100;
 
 export type AcademyReadiness = 'ready' | 'growing' | 'review';
@@ -149,7 +173,7 @@ export function runAcademyIntake(w: World): void {
     prospects: Player[] = [];
   for (let i = 0; i < count; i++) {
     const r = random(`${w.seed}:academy-intake:${w.year}:${i}`);
-    const role = INTAKE_ROLES[(w.year + i) % INTAKE_ROLES.length],
+    const position = INTAKE_POSITIONS[(w.year + i) % INTAKE_POSITIONS.length]!,
       age = integer(r, 15, 16),
       base = clamp(
         integer(r, 25, 36) + academyFacilityTerms(w).potential + Math.round(quality / 4),
@@ -162,7 +186,7 @@ export function runAcademyIntake(w: World): void {
       `${w.playerClub}:academy:${w.year}:${i}`,
       w.year,
       base,
-      role,
+      position,
       age,
     );
     player.potential = Math.max(
@@ -177,7 +201,7 @@ export function runAcademyIntake(w: World): void {
   const best = [...prospects].sort(
     (a, b) => b.potential - a.potential || overall(b) - overall(a) || compareIds(a.id, b.id),
   )[0];
-  const headline = `${best.name} · ${best.role} ${w.year - best.born}세 · 능력 ${overall(best)} · 잠재력 ${Math.round(best.potential)}`;
+  const headline = `${best.name} · ${best.position} ${w.year - best.born}세 · 능력 ${overall(best)} · 잠재력 ${Math.round(best.potential)}`;
   addEvent(w, 'youth-intake', `유스 아카데미 입단 ${count}명`, `가장 기대되는 유망주 ${headline}`);
   pushInbox(w, {
     kind: 'youth-intake',
@@ -198,16 +222,9 @@ export function developAcademy(w: World): void {
       gap = Math.max(0, player.potential - overall(player)),
       gain = hundredths(
         Math.min(0.3, gap / 150) * growth * ageGroupGrowth(w, group) * focus.growth[group],
-      ),
-      skills = roleSkills[player.role];
+      );
     if (gain <= 0) continue;
-    let actual = 0;
-    for (const skill of skills) {
-      const next = skillAfter(player, skill, gain);
-      actual += next - player[skill];
-      player[skill] = next;
-    }
-    recordDevelopment(player, actual / skills.length);
+    recordDevelopment(player, growAttributes(player, gain));
   }
   countDownOrder(w, 'youth');
 }
@@ -231,9 +248,11 @@ function readyGapOf(w: World) {
     level = firstTeamLevels(w),
     debut = debutRule(w);
   return (player: Player) => {
-    const peers = active.filter((other) => other.role === player.role).map(overall),
+    const peers = active
+        .filter((other) => lineOfPlayer(other) === lineOfPlayer(player))
+        .map(overall),
       weakest = peers.length ? Math.min(...peers) : 0,
-      bar = level[player.role] - debut.startersMargin;
+      bar = level[lineOfPlayer(player)] - debut.startersMargin;
     return Math.max(
       0,
       (debut.weakestMargin === undefined ? bar : Math.min(weakest - debut.weakestMargin, bar)) -
@@ -270,18 +289,15 @@ export function youthFocus(w: World): YouthFocus {
   return w.trainingOrders?.youth?.focus ?? youthAdvice(w).focus;
 }
 
-/**
- * Average overall of the automatic starters in each role, ignoring fatigue. Per role, because a
- * keeper's overall is his keeping alone and would otherwise always clear an outfield average.
- */
+/** Average OVR of the automatic starters in each line, ignoring fatigue (→CLUB-32). */
 function firstTeamLevels(w: World) {
   const starters = ownStarters(w);
   const all = starters.reduce((sum, player) => sum + overall(player), 0) / (starters.length || 1);
-  const level = {} as Record<Role, number>;
-  for (const role of INTAKE_ROLES) {
-    const inRole = starters.filter((player) => player.role === role);
-    level[role] = inRole.length
-      ? inRole.reduce((sum, player) => sum + overall(player), 0) / inRole.length
+  const level = {} as Record<Line, number>;
+  for (const line of LINES) {
+    const inLine = starters.filter((player) => lineOfPlayer(player) === line);
+    level[line] = inLine.length
+      ? inLine.reduce((sum, player) => sum + overall(player), 0) / inLine.length
       : all;
   }
   return level;
@@ -300,24 +316,24 @@ function readinessOf(w: World) {
   return (player: Player): AcademyReadiness => {
     const age = w.year - player.born,
       rated = overall(player),
-      peers = active.filter((other) => other.role === player.role).map(overall),
+      peers = active.filter((other) => lineOfPlayer(other) === lineOfPlayer(player)).map(overall),
       weakest = peers.length ? Math.min(...peers) : 0;
     if (
       age >= Math.max(promotionAge(w), debut.fromAge) &&
       ((debut.weakestMargin !== undefined && rated >= weakest - debut.weakestMargin) ||
-        rated >= level[player.role] - debut.startersMargin)
+        rated >= level[lineOfPlayer(player)] - debut.startersMargin)
     )
       return 'ready';
-    const bar = release.against === 'starters' ? level[player.role] : weakest;
+    const bar = release.against === 'starters' ? level[lineOfPlayer(player)] : weakest;
     return age >= release.age && player.potential < bar ? 'review' : 'growing';
   };
 }
-/** Delegated staff keep a balanced squad: no promotion into an already full role. */
-export const ROLE_LIMIT: Record<Role, number> = { GK: 3, DEF: 8, MID: 8, FWD: 7 };
-const roleRoom = (w: World, role: Role) =>
-  activePlayers(w).filter((player) => player.role === role).length < ROLE_LIMIT[role];
+/** Delegated staff keep a balanced squad: no promotion into an already full line. */
+export const LINE_LIMIT: Record<Line, number> = { GK: 3, DF: 8, MF: 8, FW: 7 };
+const lineRoom = (w: World, line: Line) =>
+  activePlayers(w).filter((player) => lineOfPlayer(player) === line).length < LINE_LIMIT[line];
 const prospectLine = (w: World, player: Player) =>
-  `${player.name}(${player.role} ${w.year - player.born}세 ${overall(player)})`;
+  `${player.name}(${player.position} ${w.year - player.born}세 ${overall(player)})`;
 function listed(w: World, players: Player[], limit = 4) {
   const shown = players.slice(0, limit).map((player) => prospectLine(w, player));
   return players.length > limit
@@ -348,12 +364,13 @@ export function promoteYouth(w: World, id: string): void {
   player.clauses = signingClauses(w, player);
   player.status = 'active';
   player.fatigue = 0;
+  joinClub(player, 'academy');
   w.players.push(player);
   addEvent(
     w,
     'youth-promotion',
     `${player.name} 1군 승격`,
-    `${player.role} · ${w.year - player.born}세 · 능력 ${overall(player)} · 잠재력 ${Math.round(player.potential)} · 연봉 ${moneyLabel(w, player.wage)} · 계약 ${player.until}년`,
+    `${player.position} · ${w.year - player.born}세 · 능력 ${overall(player)} · 잠재력 ${Math.round(player.potential)} · 연봉 ${moneyLabel(w, player.wage)} · 계약 ${player.until}년`,
   );
 }
 export function releaseYouth(w: World, id: string): void {
@@ -362,7 +379,7 @@ export function releaseYouth(w: World, id: string): void {
     w,
     'youth-release',
     `${player.name} 아카데미 방출`,
-    `${player.role} · ${w.year - player.born}세 · 능력 ${overall(player)} · 잠재력 ${Math.round(player.potential)}`,
+    `${player.position} · ${w.year - player.born}세 · 능력 ${overall(player)} · 잠재력 ${Math.round(player.potential)}`,
   );
 }
 function staffReport(w: World, title: string, detail: string, ref?: string) {
@@ -425,7 +442,7 @@ export function seasonAcademy(w: World): void {
     );
   for (const player of affordable ? ready : []) {
     if (activePlayers(w).length >= SQUAD_LIMIT) break;
-    if (!roleRoom(w, player.role)) continue;
+    if (!lineRoom(w, lineOfPlayer(player))) continue;
     promoteYouth(w, player.id);
     promoted.add(player.id);
     staffReport(

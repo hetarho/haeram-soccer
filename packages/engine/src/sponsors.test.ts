@@ -1,3 +1,4 @@
+import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
 import type { World } from '../../contracts/src/types';
@@ -27,7 +28,7 @@ function club({ year, professional = false }: { year?: number; professional?: bo
     name: 'Slot Town',
     color: '#335544',
     seed: 'sponsors',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   // The squad stays as founded, so results follow only what a test sets.
   if (year) {
@@ -54,7 +55,7 @@ const paidIn = (w: World, id: string, year: number, title: string) =>
 /** Every player of the squad at one skill, to decide where the season ends. */
 function squadOf(w: World, skill: number) {
   for (const p of activePlayers(w)) {
-    p.attack = p.passing = p.defense = p.keeper = p.stamina = skill;
+    for (const a of ATTRIBUTES) p.attrs[a] = skill;
     p.potential = skill;
   }
 }

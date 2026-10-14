@@ -1,14 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  activateBases,
-  activateDirection,
-  advanceRound,
-  agentOf,
-  createWorld,
-  simulateSeason,
-} from '../../../../packages/engine/src/index';
+import { advanceRound, createWorld, simulateSeason } from '../../../../packages/engine/src/index';
 import { canonical } from '../../../../packages/contracts/src/index';
-import { CURRENT_ENGINE_VERSION } from '../../../../packages/contracts/src/versions';
 import { decode, encode, type StoragePort } from '../adapters/persistence';
 import { AUTOSAVE_MS, GameClient, type ClientState } from './client';
 import { Host } from './host';
@@ -16,7 +8,7 @@ import { serve } from './codec';
 import type { CodecResult, Reply, Request } from './protocol';
 import { GameSlots } from './slots';
 import { ACTIVE_SAVE_KEYS, GameIndexStore, type ParkedStore } from '../adapters/games';
-import { NOTIFICATIONS_KEY, notificationStore, type SystemNotification } from './store';
+import { NOTIFICATIONS_KEY, type SystemNotification } from './store';
 
 class MemoryStorage implements StoragePort {
   data = new Map<string, string>();
@@ -113,7 +105,7 @@ const founding = {
   name: 'Background Athletic',
   color: '#223344',
   seed: 'client-background',
-  difficulty: 1,
+  level: 'normal' as const,
 };
 let storage: MemoryStorage;
 const clients: GameClient[] = [];
@@ -488,183 +480,25 @@ async function legacyCheckpoint(withHistory = false) {
   return { legacy, raw };
 }
 
-describe('legacy activation and compatibility recovery', () => {
-  it('commits a writer upgrade through the inactive slot and preserves the full old career', async () => {
-    const { legacy, raw } = await legacyCheckpoint(true);
-    expect(legacy.ownMatches.length).toBeGreaterThan(30);
-    expect(legacy.history.length).toBeGreaterThan(0);
-    const writes = vi.spyOn(storage, 'setItem');
-    const client = new GameClient(() => {});
-    clients.push(client);
-    await client.start();
-    expect(client.state.error).toBeUndefined();
-    expect(client.state.view?.world.engine).toBe(CURRENT_ENGINE_VERSION);
-    expect(client.state.savedRevision).toBe(18);
-    // The checkpoint first, then the notice that tells of it.
-    expect(writes.mock.calls.map(([key]) => key)).toEqual([
-      'haeram-soccor:slot:b',
-      'haeram-soccor:manifest',
-      NOTIFICATIONS_KEY,
-    ]);
-    const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
-    expect(manifest).toEqual({ slot: 1, worldId: legacy.id, generation: 8, parentGeneration: 7 });
-    expect(storage.getItem('haeram-soccor:slot:a')).toBe(raw);
-    const upgraded = (await decode(storage.getItem('haeram-soccor:slot:b')!)).world;
-    expect(canonical(upgraded)).toBe(
-      // Activation also names, in the inbox, the direction rows older staff criteria became.
-      canonical(
-        activateBases(
-          activateDirection(
-            { ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 18 },
-            legacy.engine,
-          ),
-          legacy.engine,
-        ),
-      ),
-    );
-    expect(canonical((await decode((await client.exportFile())!)).world)).toBe(canonical(upgraded));
-  });
-
-  it('gives players from before rules 1.16 their agents on activation, no clauses (→SAVE-10)', async () => {
-    const legacy = createWorld(founding);
-    legacy.engine = '1.15.0';
-    // Rules 1.15 had neither agents nor contract clauses.
-    for (const p of legacy.players) {
-      delete p.agent;
-      delete p.clauses;
-    }
-    storage.setItem('haeram-soccor:slot:a', await encode(legacy, 3, 2));
-    storage.setItem(
-      'haeram-soccor:manifest',
-      JSON.stringify({ slot: 0, worldId: legacy.id, generation: 3, parentGeneration: 2 }),
-    );
-    const client = new GameClient(() => {});
-    clients.push(client);
-    await client.start();
-    expect(client.state.error).toBeUndefined();
-    const upgraded = (await decode(storage.getItem('haeram-soccor:slot:b')!)).world;
-    expect(upgraded.engine).toBe(CURRENT_ENGINE_VERSION);
-    expect(upgraded.players.map((p) => p.agent)).toEqual(
-      legacy.players.map((p) => agentOf(legacy, p)),
-    );
-    expect(upgraded.players.every((p) => p.clauses === undefined)).toBe(true);
-    expect(canonical(upgraded)).toBe(
-      canonical(
-        activateBases(
-          activateDirection(
-            {
-              ...legacy,
-              engine: CURRENT_ENGINE_VERSION,
-              revision: legacy.revision + 1,
-              players: legacy.players.map((p) => ({ ...p, agent: agentOf(legacy, p) })),
-            },
-            '1.15.0',
-          ),
-          '1.15.0',
-        ),
-      ),
-    );
-  });
-
-  it('tells of an activated upgrade once as an unread system notification, with no banner', async () => {
-    await legacyCheckpoint();
-    const publications: ClientState[] = [];
-    const client = new GameClient((state) => publications.push(state));
-    clients.push(client);
-    await client.start();
-    expect(client.state.view?.world.engine).toBe(CURRENT_ENGINE_VERSION);
-    expect(publications.every((state) => state.notice === undefined)).toBe(true);
-    const [notice, ...others] = notifications();
-    expect(others).toHaveLength(0);
-    expect(notice).toEqual({
-      id: expect.any(String),
-      text: '기존 기록을 보존하고 새 게임 규칙으로 저장했습니다.',
-      at: expect.any(Number),
-      read: false,
-    });
-    expect(notificationStore.getState()).toEqual([notice]);
-    // This browser keeps it; the world and its checkpoint never carry it.
-    expect(JSON.stringify(client.state.view!.world)).not.toContain(notice.text);
-    const committed = JSON.parse(storage.getItem('haeram-soccor:manifest')!).slot ? 'b' : 'a';
-    expect(
-      JSON.stringify((await decode(storage.getItem(`haeram-soccor:slot:${committed}`)!)).world),
-    ).not.toContain(notice.text);
-    // A reload of the upgraded checkpoint has nothing new to tell.
-    await client.reload();
-    expect(notifications()).toHaveLength(1);
-  });
-
-  it('opens an old career read-only without upgrading memory or committing either slot', async () => {
-    const { legacy } = await legacyCheckpoint();
+describe('earlier-rules and future saves: compatibility recovery', () => {
+  it('refuses an earlier-rules career and keeps its slot (→SAVE-16)', async () => {
+    const { raw } = await legacyCheckpoint();
     const before = new Map(storage.data);
-    vi.stubGlobal('navigator', {
-      locks: {
-        request: (_name: string, _options: unknown, callback: (lock: null) => Promise<void>) =>
-          callback(null),
-      },
-    });
     const client = new GameClient(() => {});
     clients.push(client);
     await client.start();
-    expect(client.state.readonly).toBe(true);
-    expect(client.state.error).toBeUndefined();
-    expect(client.state.view?.world.engine).toBe('1.0.0');
-    expect(client.state.savedRevision).toBe(17);
+    expect(client.state.errorCode).toBe('save-compatibility');
+    expect(client.state.view).toBeUndefined();
     expect(storage.data).toEqual(before);
-    expect(canonical((await decode((await client.exportFile())!)).world)).toBe(canonical(legacy));
-    expect(storage.data).toEqual(before);
-    expect(
-      WorkerPort.instances[0].requests
-        .filter((request) => request.body.type === 'inspect')
-        .some((request) => request.body.type === 'inspect' && request.body.upgrade),
-    ).toBe(false);
+    expect(await client.exportFile()).toBe(raw);
   });
-
-  it.each(['haeram-soccor:slot:b', 'haeram-soccor:manifest'])(
-    'keeps old disk and exports upgraded memory when %s rejects the upgrade write',
-    async (failedKey) => {
-      const { legacy, raw } = await legacyCheckpoint();
-      const manifest = storage.getItem('haeram-soccor:manifest');
-      storage.fail = failedKey;
-      const client = new GameClient(() => {});
-      clients.push(client);
-      await client.start();
-      expect(client.state.error).toContain('규칙 업그레이드 저장 실패');
-      expect(client.state.error).toContain('파일로 내보내세요');
-      expect(client.state.view?.world.engine).toBe(CURRENT_ENGINE_VERSION);
-      expect(client.state.view?.world.revision).toBe(18);
-      expect(client.state.savedRevision).toBe(17);
-      expect(storage.getItem('haeram-soccor:slot:a')).toBe(raw);
-      expect(storage.getItem('haeram-soccor:manifest')).toBe(manifest);
-      const exported = (await decode((await client.exportFile())!)).world;
-      expect(canonical(exported)).toBe(
-        // Activation also names, in the inbox, the direction rows older staff criteria became.
-        canonical(
-          activateBases(
-            activateDirection(
-              { ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 18 },
-              legacy.engine,
-            ),
-            legacy.engine,
-          ),
-        ),
-      );
-      storage.fail = '';
-      await client.retrySave();
-      expect(client.state.savedRevision).toBe(18);
-      const current = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
-      expect(current.slot).toBe(1);
-      expect(current.generation).toBe(8);
-      expect(storage.getItem('haeram-soccor:slot:a')).toBe(raw);
-    },
-  );
 
   it.each([true, false])(
     'returns a typed error and exports the selected future checkpoint with manifest=%s',
     async (hasManifest) => {
       await legacyCheckpoint();
       const old = storage.getItem('haeram-soccor:slot:a')!;
-      const future = JSON.stringify({ ...JSON.parse(old), engine: '2.0.0', generation: 8 });
+      const future = JSON.stringify({ ...JSON.parse(old), engine: '9.0.0', generation: 8 });
       storage.setItem('haeram-soccor:slot:b', future);
       if (hasManifest)
         storage.setItem(
@@ -743,7 +577,7 @@ describe('legacy activation and compatibility recovery', () => {
 
   it('keeps an explicitly imported replacement exportable and retryable after future-save write failure', async () => {
     const { raw } = await legacyCheckpoint();
-    const future = JSON.stringify({ ...JSON.parse(raw), engine: '2.0.0' });
+    const future = JSON.stringify({ ...JSON.parse(raw), engine: '9.0.0' });
     storage.setItem('haeram-soccor:slot:a', future);
     const manifest = storage.getItem('haeram-soccor:manifest');
     const client = new GameClient(() => {});

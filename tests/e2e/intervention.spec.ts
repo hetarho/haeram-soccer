@@ -10,7 +10,7 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('lineup-ui-regression');
-  await page.getByRole('button', { name: '넉넉한 출발' }).click();
+  await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   // Before the first match the preparation sheet opens from home's next-match card.
   const hub = page.getByTestId('club-hub');
@@ -19,7 +19,7 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   const dialog = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
   await dialog.getByRole('tab', { name: '선발 선택', exact: true }).click();
   await dialog.getByText('선수별 교체', { exact: true }).click();
-  const keeper = dialog.getByRole('combobox', { name: '선발 1 골키퍼', exact: true });
+  const keeper = dialog.getByRole('combobox', { name: '선발 1 GK', exact: true });
   const selected = await keeper.getAttribute('data-value');
   const other = (await selectOptions(keeper)).find(
     (option) => option.value && option.value !== selected,

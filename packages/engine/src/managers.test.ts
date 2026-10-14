@@ -28,7 +28,7 @@ function world(seed = 'manager-schools') {
     name: 'Dugout Athletic',
     color: '#224466',
     seed,
-    difficulty: 2,
+    level: 'easy' as const,
   });
   w.cash = '999999999';
   return w;

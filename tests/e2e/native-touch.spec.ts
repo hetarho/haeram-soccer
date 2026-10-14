@@ -117,7 +117,7 @@ for (const viewport of [
       expect(geometry.width, JSON.stringify(geometry)).toBeGreaterThanOrEqual(44);
       expect(geometry.height, JSON.stringify(geometry)).toBeGreaterThanOrEqual(44);
     }
-    const keeper = preparation.getByRole('combobox', { name: '선발 1 골키퍼', exact: true });
+    const keeper = preparation.getByRole('combobox', { name: '선발 1 GK', exact: true });
     await expectTouchControl(keeper, viewport);
     const original = await keeper.getAttribute('data-value');
     const replacement = (await selectOptions(keeper)).find(

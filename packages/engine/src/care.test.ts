@@ -16,7 +16,7 @@ const input = {
   name: 'Care Club',
   color: '#7a3b2e',
   seed: 'care-actions',
-  difficulty: 1,
+  level: 'normal' as const,
 };
 
 describe('owner requests', () => {

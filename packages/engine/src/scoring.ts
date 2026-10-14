@@ -74,7 +74,7 @@ export function archivedScorers(w: World): SeasonArchive['scorers'] {
     .map(({ player }) => ({
       name: player.name,
       club: index.get(player.club)!,
-      role: player.role,
+      position: player.position,
       goals: player.goals,
       appearances: player.appearances,
     }));
@@ -101,7 +101,7 @@ export function recordScorers(w: World, playback: MatchPlayback) {
           id: player.id,
           name: player.name,
           club,
-          role: player.role,
+          position: player.position,
           goals: 0,
           appearances: 0,
         });

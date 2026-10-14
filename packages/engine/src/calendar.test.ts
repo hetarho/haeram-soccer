@@ -25,7 +25,7 @@ function world(country: 'ENG' | 'BEL' = 'ENG') {
     name: 'Calendar United',
     color: '#223344',
     seed: 'calendar',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   w.cash = '999999999999';
   return w;
@@ -184,7 +184,7 @@ describe('persistent season calendar', () => {
       name: 'Order FC',
       color: '#335577',
       seed,
-      difficulty: 2,
+      level: 'easy' as const,
     });
     const year = start.year;
     // Halfway through the second season, on its 23rd league match day.

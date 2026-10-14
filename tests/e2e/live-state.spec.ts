@@ -9,7 +9,7 @@ async function found(page: import('@playwright/test').Page) {
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('live-tabs-quiet');
-  await page.getByRole('button', { name: '넉넉한 출발' }).click();
+  await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 1일');
 }
@@ -181,11 +181,11 @@ test("the fatigue remedy opens the assistant's training sheet with 회복 ready,
     name: 'Haeram Athletic',
     color: '#bf7956',
     seed: 'fatigue-remedy',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   for (const player of w.players) player.fatigue = 55;
-  // The owner forced youth training; left to his rule the assistant would rest them (→CLUB-13).
-  w.trainingOrders = { assistant: { focus: 'youth', rounds: 4, forced: true } };
+  // The owner forced 하드 트레이닝; left to his rule the assistant would rest them (→CLUB-13).
+  w.trainingOrders = { assistant: { focus: 'hard', rounds: 4, forced: true } };
   await seed(page, w);
   await page.goto('/');
   await continueSlot(page);
@@ -202,11 +202,11 @@ test("the fatigue remedy opens the assistant's training sheet with 회복 ready,
   await expect(sheet).toBeHidden();
   await expect(page).toHaveURL(/\/people\?view=coaches$/);
   const training = page.getByRole('dialog', { name: '수석코치 훈련 제안' });
-  await expect(training.getByRole('listitem').first()).toContainText('회복 집중');
-  await expect(training.getByTestId('training-call-assistant')).toContainText('유망주 집중');
-  await training.getByRole('button', { name: /^회복 집중 강행/ }).click();
+  await expect(training.getByRole('listitem').first()).toContainText('회복 훈련');
+  await expect(training.getByTestId('training-call-assistant')).toContainText('하드 트레이닝');
+  await training.getByRole('button', { name: /^회복 훈련 강행/ }).click();
   await expect(training).toBeHidden();
-  await expect(page.getByTestId('coach-call-assistant')).toContainText('회복 집중 · 구단주 지시');
+  await expect(page.getByTestId('coach-call-assistant')).toContainText('회복 훈련 · 구단주 지시');
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   expect((await exportWorld(page)).trainingOrders?.assistant?.focus).toBe('recovery');
 });

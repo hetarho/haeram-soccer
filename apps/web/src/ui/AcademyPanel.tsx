@@ -76,7 +76,7 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
                 <ul className={s.prospects}>
                   {group.players.map(({ player: p, overall, potential, age, readiness, label }) => (
                     <li key={p.id}>
-                      <OvrBadge value={overall} role={p.role} potential={potential} />
+                      <OvrBadge value={overall} role={p.position} potential={potential} />
                       <div className={s.prospectText}>
                         <b>{p.name}</b>
                         <small>{age}세</small>

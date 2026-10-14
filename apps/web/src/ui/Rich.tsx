@@ -646,7 +646,7 @@ function StanceSheet({
     <Dialog label="이적 상태" onClose={onClose}>
       <h2>{player.name} 이적 상태</h2>
       <p>
-        {player.role} · {w.year - player.born}세 · 능력 {overall(player)} · 평가 가치{' '}
+        {player.position} · {w.year - player.born}세 · 능력 {overall(player)} · 평가 가치{' '}
         <Money value={playerValue(w, player)} code={c.country} year={w.year} />
       </p>
       <div className={s.stanceChoices} role="radiogroup" aria-label="이적 상태">
@@ -741,7 +741,7 @@ function ContractTalkSheet({
         {player.name} {player.talk ? `${label} 협상` : '언해피 · 하한 제시'}
       </h2>
       <p>
-        {player.role} · {w.year - player.born}세 · 능력 {overall(player)} · 지금 연봉{' '}
+        {player.position} · {w.year - player.born}세 · 능력 {overall(player)} · 지금 연봉{' '}
         {money(player.wage)} · {contractLine(player.until, w.year)}
       </p>
       {player.unhappy && (
@@ -866,7 +866,7 @@ function Roster({ state, client }: Props) {
           {visiblePlayers.map((p) => (
             <article key={p.id}>
               <div className={s.rosterBody}>
-                <OvrBadge value={overall(p)} role={p.role} />
+                <OvrBadge value={overall(p)} role={p.position} />
                 <PlayerLink id={p.id} name={p.name} scope={scope} className={s.cardLink} />
                 <small>
                   {p.status === 'active' ? (
@@ -929,13 +929,10 @@ function Roster({ state, client }: Props) {
               <table>
                 <thead>
                   <tr>
-                    <th>역할</th>
+                    <th>포지션</th>
                     <th>선수</th>
                     <th>OVR</th>
                     <th>나이</th>
-                    <th>공격</th>
-                    <th>패스</th>
-                    <th>수비</th>
                     <th>잠재력</th>
                     <th>출전</th>
                     <th>득점</th>
@@ -951,7 +948,7 @@ function Roster({ state, client }: Props) {
                     const stats = scope === 'career' ? p.career : p.season;
                     return (
                       <tr key={p.id}>
-                        <td>{p.role}</td>
+                        <td>{p.position}</td>
                         <td>
                           <PlayerLink id={p.id} name={p.name} scope={scope} />
                           <small>
@@ -967,9 +964,6 @@ function Roster({ state, client }: Props) {
                         </td>
                         <td>{overall(p)}</td>
                         <td>{p.status === 'active' ? w.year - p.born : `${p.born}년생`}</td>
-                        <td>{number(p.attack)}</td>
-                        <td>{number(p.passing)}</td>
-                        <td>{number(p.defense)}</td>
                         <td>{number(p.potential)}</td>
                         <td>{appearances(stats)}</td>
                         <td>{stats[0]}</td>
@@ -1001,10 +995,10 @@ function Roster({ state, client }: Props) {
           )}
         </details>
         <div className={s.panelFoot}>
-          감독이 역할과 능력·피로에 따라 선발을 고르고, 부상 선수는 빼요. 선수마다 이적 상태
-          뱃지(이적 명단·협상 가능·이적 불가)를 눌러 바꿀 수 있어요. 제안은 이적시장 기간에 실제
-          구단이 보내고, 수락해야 이적이 성사돼요. 최소 14명·골키퍼 1명을 유지해야 해요. 지금:{' '}
-          {window.label}
+          감독이 포메이션 자리마다 실효 능력과 피로를 따져 선발을 고르고, 부상 선수는 빼요. 선수마다
+          이적 상태 뱃지(이적 명단·협상 가능·이적 불가)를 눌러 바꿀 수 있어요. 제안은 이적시장
+          기간에 실제 구단이 보내고, 수락해야 이적이 성사돼요. 최소 14명·골키퍼 1명을 유지해야 해요.
+          지금: {window.label}
         </div>
       </Panel>
       <TalkRulePanel w={w} client={client} />

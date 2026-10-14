@@ -18,7 +18,7 @@ function world() {
     name: 'Letters United',
     color: '#334455',
     seed: 'inbox',
-    difficulty: 2,
+    level: 'easy' as const,
   });
 }
 const note = (w: World, attention: boolean, title = 'note') =>

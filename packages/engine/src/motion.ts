@@ -9,6 +9,7 @@ import type {
   Tactic,
 } from '../../contracts/src/types';
 import { clamp, random } from './primitives';
+import { slotLine } from './player';
 
 type Point = [number, number];
 type Side = 0 | 1;
@@ -207,19 +208,20 @@ export const MATCH_MOTION_CONFIG = {
       line: 7,
     },
   },
+  // Each tactic's formation (→STAFF-22), one spot per slot in slot order: GK, DF, MF, FW lines.
   formations: {
     balanced: [
       [5, 50],
-      [24, 15],
-      [22, 38],
-      [22, 62],
-      [24, 85],
-      [44, 26],
-      [42, 50],
-      [44, 74],
-      [66, 18],
-      [72, 50],
-      [66, 82],
+      [36, 12],
+      [20, 30],
+      [18, 50],
+      [20, 70],
+      [36, 88],
+      [38, 50],
+      [48, 32],
+      [48, 68],
+      [68, 40],
+      [70, 60],
     ],
     possession: [
       [5, 50],
@@ -227,9 +229,9 @@ export const MATCH_MOTION_CONFIG = {
       [24, 38],
       [24, 62],
       [28, 88],
-      [46, 29],
-      [42, 50],
-      [46, 71],
+      [40, 50],
+      [47, 30],
+      [45, 70],
       [69, 16],
       [73, 50],
       [69, 84],
@@ -240,12 +242,12 @@ export const MATCH_MOTION_CONFIG = {
       [20, 39],
       [20, 61],
       [22, 83],
-      [34, 50],
-      [46, 31],
-      [46, 69],
-      [49, 14],
-      [66, 50],
-      [49, 86],
+      [44, 14],
+      [42, 39],
+      [42, 61],
+      [44, 86],
+      [64, 40],
+      [66, 60],
     ],
     press: [
       [5, 50],
@@ -253,8 +255,8 @@ export const MATCH_MOTION_CONFIG = {
       [27, 38],
       [27, 62],
       [30, 84],
-      [47, 35],
-      [47, 65],
+      [44, 38],
+      [46, 62],
       [60, 50],
       [64, 16],
       [75, 50],
@@ -283,7 +285,7 @@ const bounded = (
 ];
 
 /** Stable implicit personality; a new fixture never rerolls a player's tendencies. */
-export function playerTraits(player: Player) {
+export function motionTraits(player: Player) {
   const r = random(`personality:${player.id}`);
   const innate = {
     freedom: r(),
@@ -294,10 +296,11 @@ export function playerTraits(player: Player) {
     pace: r(),
   };
   const c = MATCH_MOTION_CONFIG.traits;
-  const attack = unit(player.attack / 100),
-    passing = unit(player.passing / 100),
-    defense = unit(player.defense / 100);
-  const endurance = unit(player.stamina / 100);
+  const a = player.attrs;
+  const attack = unit((a.finishing + a.dribbling) / 200),
+    passing = unit(a.passing / 100),
+    defense = unit((a.tackling + a.positioning) / 200);
+  const endurance = unit(a.stamina / 100);
   return {
     freedom: unit(0.15 + attack * 0.28 + passing * 0.16 + innate.freedom * c.innateWeight),
     discipline: unit(
@@ -371,7 +374,7 @@ interface Agent {
   intent: Point;
   state: PlayerMotionState;
   dwell: number;
-  traits: ReturnType<typeof playerTraits>;
+  traits: ReturnType<typeof motionTraits>;
   r: () => number;
   phase: number;
   roam: Point;
@@ -533,7 +536,7 @@ export class MatchMotion {
           intent: [...position],
           state: slot === 0 ? 'keeper' : 'shape',
           dwell: r() * 2.5,
-          traits: playerTraits(player),
+          traits: motionTraits(player),
           r,
           phase: r() * Math.PI * 2,
           roam: [r() * 2 - 1, r() * 2 - 1],
@@ -1121,7 +1124,7 @@ export class MatchMotion {
     const profile = this.profiles[owner.side];
     const direction = owner.side === 0 ? 1 : -1;
     const opponents = this.agents[owner.side === 0 ? 1 : 0];
-    const idealRange = c.passRange + (owner.player.passing / 100) * c.passingRange;
+    const idealRange = c.passRange + (owner.player.attrs.passing / 100) * c.passingRange;
     const options = this.agents[owner.side]
       .filter((agent) => agent !== owner && agent.slot !== 0)
       .map((agent) => {
@@ -1236,6 +1239,11 @@ export class MatchMotion {
     };
   }
 
+  /** The line of the slot an agent plays, from his side's formation (→STAFF-22). */
+  private lineOf(agent: Agent) {
+    return slotLine(this.tactics[agent.side], agent.slot);
+  }
+
   private anchor(agent: Agent, side: Side): Point {
     const profile = this.profiles[agent.side];
     const direction = agent.side === 0 ? 1 : -1;
@@ -1279,14 +1287,14 @@ export class MatchMotion {
         ? c.supportWeight *
           (0.2 + t.anticipation * t.creativity) *
           (0.35 + freedom) *
-          (agent.player.role === 'MID' ? 1.5 : 1)
+          (this.lineOf(agent) === 'MF' ? 1.5 : 1)
         : 0,
       run: attacking
         ? c.runWeight *
           freedom *
           p.risk *
           freshness *
-          (agent.player.role === 'FWD' ? 1.8 : agent.player.role === 'MID' ? 0.9 : 0.35)
+          (this.lineOf(agent) === 'FW' ? 1.8 : this.lineOf(agent) === 'MF' ? 0.9 : 0.35)
         : 0,
       press:
         !attacking && nearestPressers.has(agent.player.id)
@@ -1296,7 +1304,7 @@ export class MatchMotion {
         ? c.markWeight *
           t.discipline *
           t.anticipation *
-          (agent.player.role === 'DEF' ? 1.5 : 0.65) *
+          (this.lineOf(agent) === 'DF' ? 1.5 : 0.65) *
           (1 - p.pressing * 0.3)
         : 0,
       recover:
@@ -1411,7 +1419,7 @@ export class MatchMotion {
       case 'keeper':
         return bounded([
           agent.side === 0 ? 5 + (attack ? 2 : 0) : 95 - (attack ? 2 : 0),
-          50 + (this.ball[1] - 50) * (0.15 + agent.player.keeper / 500),
+          50 + (this.ball[1] - 50) * (0.15 + agent.player.attrs.reflexes / 500),
         ]);
       case 'support':
         return bounded([

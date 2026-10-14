@@ -1,3 +1,4 @@
+import { lineOf } from './player';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { Player, TransferBid, World } from '../../contracts/src/types';
@@ -43,7 +44,7 @@ function world(seed = 'transfer-market') {
     name: 'Market Town',
     color: '#224433',
     seed,
-    difficulty: 2,
+    level: 'easy' as const,
   });
   w.cash = '999999999999';
   return w;
@@ -154,7 +155,7 @@ describe('transfer windows', () => {
     expect(() => operate(w, { type: 'recruit', candidate: 2 })).toThrow(CLOSED);
     expect(() => operate(w, { type: 'recruit', candidate: 3, loan: true })).toThrow(CLOSED);
     expect(() => operate(w, { type: 'recruit', candidate: 0, loan: true })).toThrow(CLOSED);
-    const seller = activePlayers(w).find((p) => p.role === 'MID')!;
+    const seller = activePlayers(w).find((p) => lineOf(p.position) === 'MF')!;
     expect(() => operate(w, { type: 'bid', candidate: 2, fee: offers[2].fee })).toThrow(CLOSED);
     expect(canonical(w)).toBe(before);
     operate(w, { type: 'recruit', candidate: 0 });
@@ -468,15 +469,15 @@ describe('outgoing bids', () => {
 describe('market identity', () => {
   const ids = (w: World) => transferOffers(w).map((o) => o.player.id);
   const profile = (p: Player) => {
-    const { id, name, role, born, attack, passing, defense, keeper, stamina, potential, wage } = p;
-    return { id, name, role, born, attack, passing, defense, keeper, stamina, potential, wage };
+    const { id, name, position, born, attrs, potential, wage } = p;
+    return { id, name, position, born, attrs, potential, wage };
   };
 
   it('draws one list per combination of settings and the same list on switching back', () => {
     const w = world();
     const balanced = transferOffers(w),
       before = ids(w);
-    for (const id of before) expect(id).toMatch(/^market:\d{4}:[0-9a-z]{7}:\d+$/);
+    for (const id of before) expect(id).toMatch(/^market:\d{4}:[0-9a-z]{7}:f?\d+$/);
     operate(w, { type: 'policy', key: 'recruitment', level: 1 });
     const prospects = ids(w);
     expect(prospects.filter((id) => before.includes(id))).toEqual([]);
@@ -572,7 +573,7 @@ describe('incoming bids', () => {
 
   it('lets the owner sell to a bidder within the squad rules or refuse', () => {
     const w = world();
-    const mid = activePlayers(w).find((p) => p.role === 'MID')!;
+    const mid = activePlayers(w).find((p) => lineOf(p.position) === 'MF')!;
     const bid = incoming(w, mid.id, '12345');
     w.inbox = [];
     const cash = BigInt(w.cash);
@@ -581,22 +582,26 @@ describe('incoming bids', () => {
     expect(bid.status).toBe('completed');
     expect(BigInt(w.cash)).toBe(cash + 12345n);
     expect(w.events.at(-1)).toMatchObject({ kind: 'transfer-out', amount: '12345' });
-    const def = activePlayers(w).find((p) => p.role === 'DEF')!;
+    const def = activePlayers(w).find((p) => lineOf(p.position) === 'DF')!;
     const refused = incoming(w, def.id, '500');
     respondBid(w, refused.id, false);
     expect(refused.status).toBe('rejected');
     expect(def.status).toBe('active');
     // Squad minimum and the last goalkeeper.
-    const keepers = activePlayers(w).filter((p) => p.role === 'GK');
+    const keepers = activePlayers(w).filter((p) => p.position === 'GK');
     keepers[1].status = 'retired';
     const lastKeeper = incoming(w, keepers[0].id, '500');
     expect(() => respondBid(w, lastKeeper.id, true)).toThrow('골키퍼');
     for (const p of activePlayers(w)
-      .filter((p) => p.role !== 'GK')
+      .filter((p) => p.position !== 'GK')
       .slice(14 - 1))
       p.status = 'retired';
     expect(activePlayers(w)).toHaveLength(14);
-    const minimum = incoming(w, activePlayers(w).find((p) => p.role === 'FWD')!.id, '500');
+    const minimum = incoming(
+      w,
+      activePlayers(w).find((p) => lineOf(p.position) === 'FW')!.id,
+      '500',
+    );
     const before = canonical(w);
     expect(() => respondBid(w, minimum.id, true)).toThrow('최소 선수단');
     expect(canonical(w)).toBe(before);
@@ -647,7 +652,7 @@ describe('incoming bids', () => {
 
   it('lets delegated staff answer quietly: only generous offers for non-essential players', () => {
     // A season whose offers include both answers once the 단장 has signed from the shortlist.
-    const w = world('market-2');
+    const w = world('market-1');
     // New clubs answer offers themselves; this scenario hands transfers to the staff.
     expect(delegated(w, 'transfers')).toBe(false);
     w.intervention = 4;
@@ -662,7 +667,9 @@ describe('incoming bids', () => {
           ...activePlayers(w),
           ...(p.status === 'sold' ? [{ ...p, status: 'active' as const }] : []),
         ];
-        const starters = selectedLineup(squad, w.lineup, w.manager, w.year).map((x) => x.id);
+        const starters = selectedLineup(squad, w.lineup, w.tactic, w.manager, w.year).map(
+          (x) => x.id,
+        );
         decisions.push({
           bid,
           starter: starters.includes(p.id),
@@ -719,7 +726,7 @@ describe('transfer stance', () => {
 
   it('sets a stance per player, recording each change and saving only listed or untouchable', () => {
     const w = world('stance-switch');
-    const p = activePlayers(w).find((x) => x.role === 'MID')!;
+    const p = activePlayers(w).find((x) => lineOf(x.position) === 'MF')!;
     expect(transferStance(p)).toBe('open');
     operate(w, { type: 'transfer-stance', id: p.id, stance: 'untouchable' });
     expect(p.stance).toBe('untouchable');
@@ -745,7 +752,9 @@ describe('transfer stance', () => {
   it('draws offers near value for listed players, which delegated staff accept', () => {
     const w = world('stance-listed');
     w.intervention = 4;
-    const listed = activePlayers(w).filter((p) => p.role === 'MID' || p.role === 'FWD');
+    const listed = activePlayers(w).filter(
+      (p) => lineOf(p.position) === 'MF' || lineOf(p.position) === 'FW',
+    );
     for (const p of listed) operate(w, { type: 'transfer-stance', id: p.id, stance: 'listed' });
     const bids = season(w).filter(({ bid }) => bid.id.includes(':list:'));
     expect(bids.length).toBeGreaterThan(0);
@@ -809,14 +818,5 @@ describe('transfer stance', () => {
     w.build = { market: 'hold' };
     w.cash = '0';
     expect(untouchableVerdict(w, 150, false).accept).toBe(true);
-  });
-
-  it('reads a listing saved by rules 1.9 as the listed stance', () => {
-    const w = world('stance-legacy');
-    const saved = JSON.parse(canonical(w));
-    saved.players[0].listed = 110;
-    const loaded = validateWorld(saved);
-    expect(loaded.players[0].stance).toBe('listed');
-    expect('listed' in loaded.players[0]).toBe(false);
   });
 });

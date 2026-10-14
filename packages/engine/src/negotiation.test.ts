@@ -18,7 +18,7 @@ function world() {
     name: 'Dialogue United',
     color: '#125544',
     seed: 'dialogue-boundaries',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   w.cash = '999999999';
   w.manager.philosophy = 'balanced';

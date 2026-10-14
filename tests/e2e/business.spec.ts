@@ -36,7 +36,7 @@ async function found(page: Page, seed: string) {
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill(seed);
-  await page.getByRole('button', { name: '넉넉한 출발' }).click();
+  await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
@@ -375,7 +375,7 @@ test('recovers a genuine negative operating balance and enforces the three-contr
     name: 'Budget Fixture',
     color: '#bf7956',
     seed: 'business-budget-recovery',
-    difficulty: 0.5,
+    level: 'hard' as const,
   });
   operate(fixture, { type: 'ticket', price: 0.01 });
   // Real costs, not an edited balance, take the club below zero within a round or two.
@@ -427,7 +427,7 @@ test('ends a bankrupt career on the game-over page and founds a new club from it
     name: 'Bankrupt Fixture',
     color: '#bf7956',
     seed: 'business-bankruptcy',
-    difficulty: 0.5,
+    level: 'hard' as const,
   });
   // Debt deeper than half a season's fixed costs ends the career at the next settlement.
   fixture.cash = '-999999999';

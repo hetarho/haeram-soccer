@@ -9,7 +9,7 @@ test('advances real days at each speed, stops and restores the saved calendar', 
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('season-flow');
-  await page.getByRole('button', { name: '넉넉한 출발' }).click();
+  await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   const date = page.getByTestId('game-date');
   await expect(date).toHaveText('1950년 8월 1일');

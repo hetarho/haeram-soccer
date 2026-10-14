@@ -1,20 +1,19 @@
 import { Select } from './Select';
 import { useState } from 'react';
 import type { Player, World } from '../../../../packages/contracts/src/types';
+import { ATTRIBUTES } from '../../../../packages/contracts/src/player';
+import { ATTRIBUTE_LABEL } from '../../../../packages/engine/src/player';
 import { Dialog } from './Dialog';
 import { PlayerPerformance } from './PlayerPerformance';
 import { performanceRows, type PlayerScope } from './playerAnalysis';
 import s from './Analysis.module.css';
 
-const skills = [
-  ['공격', 'attack'],
-  ['패스', 'passing'],
-  ['수비', 'defense'],
-  ['골키핑', 'keeper'],
-  ['체력', 'stamina'],
-  ['잠재력', 'potential'],
-  ['피로 · 낮을수록 회복', 'fatigue'],
-] as const;
+/** The 14 attributes, then potential and fatigue (→WEB-25). */
+const skills: readonly (readonly [string, string, (p: Player) => number])[] = [
+  ...ATTRIBUTES.map((a) => [ATTRIBUTE_LABEL[a], a, (p: Player) => p.attrs[a]] as const),
+  ['잠재력', 'potential', (p: Player) => p.potential],
+  ['피로 · 낮을수록 회복', 'fatigue', (p: Player) => p.fatigue],
+];
 const status = (p: Player) =>
   p.status === 'active'
     ? '활동 중'
@@ -69,7 +68,7 @@ export function PlayerComparison({
               .filter((p) => p.id !== right?.id)
               .map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name} · {p.role} · {status(p)}
+                  {p.name} · {p.position} · {status(p)}
                 </option>
               ))}
           </Select>
@@ -85,7 +84,7 @@ export function PlayerComparison({
               .filter((p) => p.id !== left?.id)
               .map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name} · {p.role} · {status(p)}
+                  {p.name} · {p.position} · {status(p)}
                 </option>
               ))}
           </Select>
@@ -97,38 +96,40 @@ export function PlayerComparison({
             <b>
               {left.name}
               <small>
-                {left.role} · {status(left)}
+                {left.position} · {status(left)}
               </small>
             </b>
             <span>vs</span>
             <b>
               {right.name}
               <small>
-                {right.role} · {status(right)}
+                {right.position} · {status(right)}
               </small>
             </b>
           </div>
-          <p className={s.note}>능력은 100점 척도예요. 역할이 다른 선수는 필요한 능력도 달라요.</p>
+          <p className={s.note}>
+            능력은 100점 척도예요. 주 포지션이 다른 선수는 필요한 능력도 달라요.
+          </p>
           <div className={s.metricRows}>
-            {skills.map(([label, key]) => (
+            {skills.map(([label, key, read]) => (
               <div key={key}>
                 <strong>
-                  {left[key].toFixed(1)}
+                  {read(left).toFixed(1)}
                   <progress
                     className={s.skillBar}
                     aria-label={`${left.name} ${label}`}
                     max={100}
-                    value={left[key]}
+                    value={read(left)}
                   />
                 </strong>
                 <span>{label}</span>
                 <strong>
-                  {right[key].toFixed(1)}
+                  {read(right).toFixed(1)}
                   <progress
                     className={s.skillBar}
                     aria-label={`${right.name} ${label}`}
                     max={100}
-                    value={right[key]}
+                    value={read(right)}
                   />
                 </strong>
               </div>

@@ -1,5 +1,5 @@
 import { useId, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
-import type { Role } from '../../../../packages/contracts/src/types';
+import type { Line } from '../../../../packages/contracts/src/types';
 import type { PlayerOrder, PlayerScope } from './playerAnalysis';
 import { Dialog } from './Dialog';
 import { play } from './motion';
@@ -7,7 +7,7 @@ import s from './RosterFilters.module.css';
 
 export interface RosterView {
   scope: PlayerScope;
-  role: Role | 'all';
+  role: Line | 'all';
   order: PlayerOrder;
   minutes: number;
 }
@@ -35,7 +35,7 @@ const GROUPS: {
     label: '포지션',
     options: [
       { value: 'all', label: '전체' },
-      ...(['GK', 'DEF', 'MID', 'FWD'] as const).map((value) => ({ value, label: value })),
+      ...(['GK', 'DF', 'MF', 'FW'] as const).map((value) => ({ value, label: value })),
     ],
   },
   {

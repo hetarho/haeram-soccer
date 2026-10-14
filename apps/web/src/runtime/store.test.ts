@@ -11,7 +11,7 @@ function view(): View {
     name: 'Stable Athletic',
     color: '#223344',
     seed: 'stable-store',
-    difficulty: 1,
+    level: 'normal' as const,
   });
   return {
     world,

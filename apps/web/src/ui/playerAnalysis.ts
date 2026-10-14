@@ -1,4 +1,5 @@
-import type { Metrics, Player, Role } from '../../../../packages/contracts/src/types';
+import type { Line, Metrics, Player } from '../../../../packages/contracts/src/types';
+import { lineOf } from '../../../../packages/engine/src/player';
 import { overall } from '../../../../packages/engine/src/world';
 export type PlayerScope = 'season' | 'career';
 export type PlayerOrder = 'roster' | 'ability' | 'minutes' | 'fatigue' | 'goals90';
@@ -36,7 +37,7 @@ export function explorePlayers(
   players: Player[],
   options: {
     scope: PlayerScope;
-    role: Role | 'all';
+    role: Line | 'all';
     query: string;
     minutes: number;
     order: PlayerOrder;
@@ -45,7 +46,7 @@ export function explorePlayers(
   const listed = players.filter(
     (p) =>
       (p.status === 'active' || options.scope === 'career') &&
-      (options.role === 'all' || options.role === p.role) &&
+      (options.role === 'all' || options.role === lineOf(p.position)) &&
       p.name.toLowerCase().includes(options.query.trim().toLowerCase()) &&
       p[options.scope][10] >= options.minutes,
   );

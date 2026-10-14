@@ -20,7 +20,7 @@ function world() {
     name: 'Investment United',
     color: '#224433',
     seed: 'investment-plans',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   w.cash = '999999999999';
   return w;

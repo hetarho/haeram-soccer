@@ -20,13 +20,26 @@ import type {
   Club,
   CupRun,
   Fixture,
+  Line,
   MatchPlayback,
+  Position,
   TableRow,
   World,
 } from '../../contracts/src/types';
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import { addMetrics, clamp, random, zeroMetrics, compareIds } from './primitives';
-import { activePlayers, addEvent, AMATEUR_CLUBS, clubOf, makePlayer, rating } from './world';
+import {
+  activePlayers,
+  addEvent,
+  AMATEUR_CLUBS,
+  clubOf,
+  formationOf,
+  joinClub,
+  LINE_MINIMUM,
+  makePlayer,
+  rating,
+} from './world';
+import { lineOf } from './player';
 import {
   applyClauses,
   contractTalks,
@@ -667,28 +680,21 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     p.season = zeroMetrics();
   }
   let i = 0;
-  while (activePlayers(w).length < 18 || !activePlayers(w).some((p) => p.role === 'GK')) {
-    const roles = activePlayers(w);
-    const role =
-      roles.filter((p) => p.role === 'GK').length < 2
-        ? 'GK'
-        : roles.filter((p) => p.role === 'DEF').length < 6
-          ? 'DEF'
-          : roles.filter((p) => p.role === 'MID').length < 6
-            ? 'MID'
-            : 'FWD';
+  while (activePlayers(w).length < 18 || !activePlayers(w).some((p) => p.position === 'GK')) {
+    const position = refillPosition(w);
     const youth = makePlayer(
       own.country,
       w.seed,
       `${own.id}:youth:${w.year}:${i++}`,
       w.year,
       youthLevel,
-      role,
+      position,
       18,
       own.tier,
     );
     // A refill signs at the close with his contract's clauses (→CLUB-29).
     youth.clauses = signingClauses(w, youth);
+    joinClub(youth, 'domestic');
     w.players.push(youth);
   }
   own.reputation = clamp(own.reputation + Math.max(-1, table.points / 25 - 1));
@@ -834,4 +840,18 @@ export function advanceToNextMatch(
     if (w.ownMatches.length > matchCount) break;
   }
   return playback;
+}
+/**
+ * The position a close-of-season refill plays (→CLUB-3): a goalkeeper while fewer than two, else
+ * the line furthest below its minimum (→CLUB-33), at that line's formation positions in turn.
+ */
+function refillPosition(w: World): Position {
+  const active = activePlayers(w);
+  const held = (line: Line) => active.filter((p) => lineOf(p.position) === line).length;
+  if (held('GK') < LINE_MINIMUM.GK) return 'GK';
+  const line = (['DF', 'MF', 'FW'] as const)
+    .map((line, order) => ({ line, order, short: held(line) - LINE_MINIMUM[line] }))
+    .sort((a, b) => a.short - b.short || a.order - b.order)[0]!.line;
+  const options = formationOf(w.tactic).filter((s) => lineOf(s.position) === line);
+  return options[held(line) % options.length]!.position;
 }

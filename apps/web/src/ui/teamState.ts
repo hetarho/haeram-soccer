@@ -137,7 +137,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
     format = (value: string) => compactMoney(value, club.country, w.year);
   switch (key) {
     case 'fatigue': {
-      const current = lineupSummary(startingSquad(w, club)).fatigue;
+      const current = lineupSummary(startingSquad(w, club), w.tactic).fatigue;
       const rest = lineupPreset(w, 'rest');
       const restFatigue = Math.round(
         rest.reduce((sum, id) => sum + (w.players.find((p) => p.id === id)?.fatigue || 0), 0) /
@@ -291,7 +291,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           id: 'promote',
           label: best ? `${best.player.name} 승격` : '승격할 유망주 없음',
           effect: best
-            ? `${best.player.role} · ${best.age}세 · 능력 ${best.overall} · 잠재력 ${best.potential}`
+            ? `${best.player.position} · ${best.age}세 · 능력 ${best.overall} · 잠재력 ${best.potential}`
             : '3월 15일 유소년 입단을 기다려요',
           unavailable: !best
             ? '아카데미가 비어 있어요'
@@ -344,7 +344,7 @@ export function cashState(w: World): TeamStateItem {
 
 /** Current club condition (not season statistics), each with actions when it needs care. */
 export function teamStates(w: World): TeamStateItem[] {
-  const fatigue = lineupSummary(startingSquad(w, clubOf(w))).fatigue;
+  const fatigue = lineupSummary(startingSquad(w, clubOf(w)), w.tactic).fatigue;
   const morale = moraleOf(w),
     mood = moraleState(morale);
   const trust = Math.round(w.manager.trust),

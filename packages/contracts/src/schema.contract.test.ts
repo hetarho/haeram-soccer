@@ -1,3 +1,5 @@
+import { SaveCompatibilityError, SUPPORTED_ENGINE_VERSIONS, upgradeWorldRules } from './versions';
+import { CURRENT_CATALOG } from '../../catalogs/src/index';
 import { describe, expect, it } from 'vitest';
 import { canonical } from './index';
 import { validateWorld, type LoadCatalog } from './schema';
@@ -19,7 +21,7 @@ const world = () =>
     name: 'Contract Rovers',
     color: '#224466',
     seed: 'contracts',
-    difficulty: 2,
+    level: 'easy' as const,
   });
 /** The world as rules 1.15 saved it, with that rule's single sponsor. */
 const legacy = (w: World, sponsor: Sponsor) => ({
@@ -196,7 +198,6 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
         Object.assign(c.players[0], { transferRequest: { year: w.year, day: 0, by: 'agent' } }),
       ),
     ).toThrow();
-    expect(load((c) => Object.assign(c, { delegation: { scouting: true } }))).toThrow();
     expect(load((c) => Object.assign(c, { intervention: 5 }))).toThrow();
     expect(load((c) => Object.assign(c.manager, { term: 6 }))).toThrow();
     expect(load((c) => Object.assign(c.staff![0], { term: 0 }))).toThrow();
@@ -222,200 +223,26 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
       validateWorld({ ...legacy(w, sponsor), sponsors: [contract] }, LOAD_CATALOG),
     ).toThrow('후원 계약 손상');
   });
-
-  it('loads staff switches as the intervention level and drops buildYear', () => {
-    const w = world();
-    const saved = (delegation: Record<string, boolean>) => {
-      const copy: Record<string, unknown> = {
-        ...structuredClone(w),
-        engine: '1.15.0',
-        delegation,
-        build: { fans: 'community' },
-        buildYear: w.year,
-      };
-      delete copy.intervention;
-      return copy;
-    };
-    const level = (delegation: Record<string, boolean>) =>
-      validateWorld(saved(delegation)).intervention;
-    // Offers, sponsors, a coaching department or the manager post were only level 4's.
-    for (const key of ['transfers', 'business', 'manager', 'staff', 'coach:scout'])
-      expect(level({ training: true, academy: true, [key]: true })).toBe(4);
-    expect(level({ training: true, academy: true, transfers: false })).toBe(2);
-    expect(level({ academy: false, contracts: true })).toBe(2);
-    expect(level({ training: false, academy: false, staff: false })).toBe(1);
-    expect(level({})).toBe(1);
-    const on = validateWorld(saved({ training: true, academy: true, staff: true }));
-    expect('delegation' in on).toBe(false);
-    // A saved level wins over switches kept beside it.
-    expect(validateWorld({ ...saved({ manager: true }), intervention: 2 }).intervention).toBe(2);
-    expect('buildYear' in on).toBe(false);
-    expect(on.build).toEqual({ fans: 'community' });
-    expect('buildChanged' in on).toBe(false);
-    // A reservation of 1.13–1.15 still loads; activation drops it (→SAVE-10).
-    const reserved = {
-      ...saved({}),
-      buildNext: { build: { youth: 'pathway' }, name: '다음 계획' },
-    };
-    // 1군 직행 경로 is no card since rules 1.18: a reservation holding it loads without it.
-    expect(validateWorld(reserved).buildNext).toEqual({ build: {}, name: '다음 계획' });
-    const kept = { ...saved({}), buildNext: { build: { youth: 'elite' }, name: '다음 계획' } };
-    expect(validateWorld(kept).buildNext).toEqual(kept.buildNext);
-    // A build holding it loads with 데뷔 시점 빠른 데뷔, which took its effects (→CLUB-32).
-    const pathway = validateWorld({ ...saved({}), build: { youth: 'pathway', fans: 'community' } });
-    expect(pathway.build).toEqual({ fans: 'community' });
-    expect(pathway.direction).toEqual({ debut: 'early' });
-  });
-
-  it('loads coaching levels as the nearest 코치 기조 and drops managerRule', () => {
-    const w = world();
-    const saved = (fields: Record<string, unknown>) => ({
-      ...structuredClone(w),
-      engine: '1.15.0',
-      ...fields,
-    });
-    const on = validateWorld(
-      saved({ coaching: { assistant: 1, attack: 2, scout: 3 }, managerRule: 'strategy' }),
-    );
-    // One 절약 and one 최고 among seven departments: the rest at 균형 keep 표준.
-    expect(on.direction).toBeUndefined();
-    expect('coaching' in on).toBe(false);
-    expect('managerRule' in on).toBe(false);
-    expect('hiring' in on).toBe(false);
-    // A rules 1.9 club-wide level is every department's.
-    expect(validateWorld(saved({ coaching: 1 })).direction).toEqual({ coaches: 'volunteer' });
-    expect(validateWorld(saved({ coaching: 3 })).direction).toEqual({ coaches: 'elite' });
-    // A level outside 1–3 or an unknown department is still a corrupt save.
-    expect(() => validateWorld(saved({ coaching: { attack: 4 } }))).toThrow();
-    expect(() => validateWorld(saved({ coaching: { kit: 3 } }))).toThrow();
-  });
-
-  it('loads rules-1.16 hiring and talkRule as direction rows and refuses malformed criteria', () => {
-    const w = world();
-    w.intervention = 4;
-    w.trainingOrders = {
-      assistant: { focus: 'youth', rounds: 3 },
-      youth: { focus: 'firstTeam', rounds: 4, forced: true },
-    };
-    w.staff![0] = {
-      ...w.staff![0],
-      strain: { year: w.year, count: 2 },
-      asked: { year: w.year, round: 5 },
-    };
-    const legacy = {
-      ...structuredClone(w),
-      engine: '1.16.0',
-      hiring: {
-        manager: {
-          minOvr: 60,
-          schools: ['positional', 'developer'],
-          minFlexibility: 30,
-          maxPride: 80,
-          minYouth: 50,
-          traits: ['none', 'youth'],
-          maxWageOvr: 75,
-          priority: 'potential',
-          term: 3,
-          poach: true,
-          whenNone: 'best',
-        },
-        coaches: {
-          scout: {
-            volunteer: false,
-            minAbility: 70,
-            trait: 'spotter',
-            priority: 'ability',
-            term: 4,
-          },
-          fitness: { volunteer: true, minAbility: 55, priority: 'wage', term: 2 },
-        },
-      },
-      talkRule: { maxPay: 1.25, minOvr: 60, maxAge: 33 },
-    };
-    // 육성 50+ reads as 육성가; two schools, two departments of seven and a 125% cap stay at the
-    // defaults.
-    const loaded = validateWorld(structuredClone(legacy));
-    expect(loaded.direction).toEqual({ manager: 'developer' });
-    expect(canonical(loaded)).toBe(
-      canonical({ ...structuredClone(w), engine: '1.16.0', direction: { manager: 'developer' } }),
-    );
-    const load = (change: (copy: typeof legacy) => unknown) => () => {
-      const copy = structuredClone(legacy);
-      change(copy);
-      return validateWorld(copy);
-    };
-    expect(load((c) => Object.assign(c.hiring.manager, { budget: 1 }))).toThrow();
-    expect(load((c) => Object.assign(c.hiring.coaches.scout, { budget: 1 }))).toThrow();
-    expect(load((c) => Object.assign(c.hiring, { director: {} }))).toThrow();
-    expect(load((c) => Object.assign(c.hiring.coaches, { kit: c.hiring.coaches.scout }))).toThrow();
-    expect(load((c) => Object.assign(c.talkRule, { minWage: 1 }))).toThrow();
-    expect(load((c) => (c.hiring.manager.schools = ['tiki-taka']))).toThrow();
-    expect(load((c) => (c.hiring.manager.schools = ['counter', 'counter']))).toThrow();
-    expect(load((c) => (c.hiring.manager.maxWageOvr = 52))).toThrow();
-    expect(load((c) => (c.hiring.manager.minOvr = 100))).toThrow();
-    expect(load((c) => (c.hiring.coaches.scout.minAbility = 54.5))).toThrow();
-    expect(load((c) => (c.talkRule.maxPay = 1.2))).toThrow();
-    expect(load((c) => (c.talkRule.maxAge = 41))).toThrow();
-    // A direction row outside its options is refused too.
-    expect(() =>
-      validateWorld({ ...structuredClone(w), direction: { finance: 'reckless' } }),
-    ).toThrow();
-    // A per-slot strategy lock kept by earlier 1.16 builds loads as no lock (→SAVE-10).
-    const locked = load((c) =>
-      Object.assign(c, { buildChanged: { youth: { year: w.year, day: 10 } } }),
-    )();
-    expect('buildChanged' in locked).toBe(false);
-    expect(canonical(locked)).toBe(canonical(loaded));
-    expect(load((c) => Object.assign(c, { delegation: { 'coach:kit': true } }))).toThrow();
-    expect(load((c) => (c.trainingOrders!.assistant!.rounds = 5))).toThrow();
-    expect(load((c) => Object.assign(c.trainingOrders!.youth!, { focus: 'recovery' }))).toThrow();
-    // The owner's own focus of earlier builds goes: the coaches set it (→SAVE-10).
-    const owned = load((c) => Object.assign(c, { training: 'youth' }))();
-    expect('training' in owned).toBe(false);
-  });
 });
 
-describe('rules 1.19 contracts (→SAVE-10)', () => {
-  const saved = (fields: Record<string, unknown>) => ({
-    ...structuredClone(world()),
-    engine: '1.18.0',
-    ...fields,
+describe('rules 2.0.0 (→SAVE-10, →SAVE-16)', () => {
+  it('refuses 1.22.0', () => {
+    const w = world();
+    expect(SUPPORTED_ENGINE_VERSIONS).toEqual(['2.0.0']);
+    expect(() => upgradeWorldRules({ ...w, engine: '1.22.0' }, CURRENT_CATALOG)).toThrow(
+      SaveCompatibilityError,
+    );
   });
-
-  it('loads the marketing dial as 해외 마케팅 and drops the 글로벌 브랜드 card', () => {
-    const loud = validateWorld(
-      saved({ policy: { support: 4, recruitment: 3, marketing: 4, academy: 2 } }),
-    );
-    expect(loud.policy).toEqual({ support: 4, recruitment: 3, academy: 2, globalMarketing: 4 });
-    // The default level carries nothing over.
-    const quiet = validateWorld(saved({ policy: { support: 3, recruitment: 3, marketing: 1 } }));
-    expect(quiet.policy).toEqual({ support: 3, recruitment: 3 });
-    // A build or a reservation holding 글로벌 브랜드 loads without it.
-    const branded = validateWorld(
-      saved({
-        build: { fans: 'global', revenue: 'commercial' },
-        buildNext: { build: { fans: 'global' }, name: '다음 계획' },
-      }),
-    );
-    expect(branded.build).toEqual({ revenue: 'commercial' });
-    expect(branded.buildNext).toEqual({ build: {}, name: '다음 계획' });
-    expect('build' in validateWorld(saved({ build: { fans: 'global' } }))).toBe(false);
-    // A save already on 1.19 loads unchanged; the bases stay within 0–100.
-    const current = saved({
-      engine: '1.19.0',
-      policy: { support: 3, recruitment: 3, localInvest: 5, tour: 3 },
-      localBase: 42.5,
-      globalReach: 7,
-    });
-    expect(canonical(validateWorld(structuredClone(current)))).toBe(canonical(current));
-    for (const fields of [
-      { localBase: 101 },
-      { globalReach: -1 },
-      { policy: { support: 3, recruitment: 3, tour: 4 } },
-      { policy: { support: 3, recruitment: 3, grassroots: 6 } },
-      { build: { fans: 'nowhere' } },
-    ])
-      expect(() => validateWorld(saved({ engine: '1.19.0', ...fields }))).toThrow();
+  it('refuses a player without his main position among his positions, or a trait twice', () => {
+    const w = world();
+    const broken = structuredClone(w);
+    broken.players[0].positions = { CB: 3 };
+    broken.players[0].position = 'ST';
+    expect(() => validateWorld(broken)).toThrow();
+    const twice = structuredClone(w);
+    twice.players[0].traits = ['leader', 'leader'];
+    expect(() => validateWorld(twice)).toThrow();
+    expect(validateWorld(structuredClone(w)).id).toBe(w.id);
   });
 });
 

@@ -104,7 +104,7 @@ for (const viewport of [
     expect(bounds!.y).toBeGreaterThanOrEqual(0);
     expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(viewport.width);
     expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(viewport.height);
-    await expect(founding.getByRole('button', { name: '넉넉한 출발' })).toHaveAttribute(
+    await expect(founding.getByRole('button', { name: '쉬움' })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
@@ -127,11 +127,11 @@ for (const viewport of [
       name: `우리 동네 FC ${viewport.width}`,
       color: '#477c9a',
       seed: `quick-founding-${viewport.width}`,
-      difficulty: 0.5,
+      level: 'hard' as const,
     };
     await founding.getByLabel('클럽 이름').fill(input.name);
     await chooseOption(countries, input.country);
-    await founding.getByRole('button', { name: '작은 출발' }).click();
+    await founding.getByRole('button', { name: '어려움' }).click();
     await founding.getByText('고급 설정', { exact: true }).click();
     await founding.getByLabel('세계 생성 시드').fill(input.seed);
     await founding.getByLabel('클럽 색상').fill(input.color);
@@ -146,7 +146,7 @@ for (const viewport of [
     expect(club.name).toBe(input.name);
     expect(club.color).toBe(input.color);
     expect(actual.seed).toBe(input.seed);
-    expect(actual.difficulty).toBe(input.difficulty);
+    expect(actual.level).toBe(input.level);
     expect(actual.cash).toBe(reference.cash);
     expect(actual.players).toEqual(reference.players);
 
@@ -202,8 +202,8 @@ for (const viewport of [
     ).toBe(true);
     expectCompleteFoundingFits(geometry);
     const founding = page.getByTestId('club-founding');
-    await founding.getByRole('button', { name: '작은 출발' }).click();
-    await expect(founding.getByRole('button', { name: '작은 출발' })).toHaveAttribute(
+    await founding.getByRole('button', { name: '어려움' }).click();
+    await expect(founding.getByRole('button', { name: '어려움' })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
@@ -255,13 +255,10 @@ test('starts with generous capital and shows a fact-aware guide without changing
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await expect(page.getByRole('button', { name: '넉넉한 출발' })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(page.getByRole('button', { name: '쉬움' })).toHaveAttribute('aria-pressed', 'true');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   const before = await exportWorld(page);
-  expect(before.difficulty).toBe(2);
+  expect(before.level).toBe('easy');
   expect(BigInt(before.cash)).toBe(BigInt(operatingCost(before)) * 2n);
   const openGuide = async () => {
     await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();

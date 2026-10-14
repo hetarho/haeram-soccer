@@ -307,7 +307,7 @@ describe('our cup road', () => {
       name: 'Route Rovers',
       color: '#2a4d3a',
       seed: 'cup-route',
-      difficulty: 1,
+      level: 'normal' as const,
     });
     world.year = 1980;
     world.currency = currency('ENG', 1980).code;

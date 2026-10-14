@@ -1,3 +1,5 @@
+import { ATTRIBUTES, type Attribute } from '../../contracts/src/player';
+import { lineOf } from './player';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import { footballIndex } from '../../catalogs/src/index';
@@ -11,7 +13,6 @@ import type {
   World,
 } from '../../contracts/src/types';
 import {
-  activateDirector,
   activePlayers,
   activeTrainingFocus,
   advanceRound,
@@ -66,7 +67,7 @@ import {
 } from './index';
 
 const NEUTRAL = {
-  development: { attack: 1, passing: 1, defense: 1, keeper: 1, stamina: 1 },
+  development: Object.fromEntries(ATTRIBUTES.map((a) => [a, 1])) as Record<Attribute, number>,
   youthDevelopment: 1,
   recoveryBonus: 0,
   academyQuality: 0,
@@ -83,7 +84,7 @@ function world(seed = 'coaching-staff') {
     name: 'Bootroom Rovers',
     color: '#334455',
     seed,
-    difficulty: 2,
+    level: 'easy' as const,
   });
   w.cash = '999999999';
   return w;
@@ -97,7 +98,7 @@ function trainingWorld() {
   for (const player of w.players) {
     player.born = w.year - 20;
     player.potential = 85;
-    player.attack = player.passing = player.defense = player.keeper = player.stamina = 40;
+    for (const a of ATTRIBUTES) player.attrs[a] = 40;
     player.fatigue = 30;
   }
   return w;
@@ -164,9 +165,9 @@ describe('coaching staff', () => {
     expect(departmentMultiplier(10)).toBe(0.85);
     const pairs: [StaffRole, keyof typeof NEUTRAL.development][] = [
       ['assistant', 'passing'],
-      ['attack', 'attack'],
-      ['defense', 'defense'],
-      ['goalkeeping', 'keeper'],
+      ['attack', 'finishing'],
+      ['defense', 'tackling'],
+      ['goalkeeping', 'reflexes'],
       ['fitness', 'stamina'],
     ];
     for (let ability = 20; ability < 100; ability += 10) {
@@ -183,9 +184,10 @@ describe('coaching staff', () => {
       // The chief scout no longer negotiates (→STAFF-20).
       expect(high('scout').bidAcceptance).toBe(0);
     }
-    expect(at('attack', 90).development.attack).toBeCloseTo(1.2, 10);
-    expect(at('attack', 90, 'specialist').development.attack).toBeCloseTo(1.2 * 1.15, 10);
-    expect(at('attack', 90).development.defense).toBe(1);
+    expect(at('attack', 90).development.finishing).toBeCloseTo(1.2, 10);
+    expect(at('attack', 90).development.crossing).toBeCloseTo(1.2, 10);
+    expect(at('attack', 90, 'specialist').development.finishing).toBeCloseTo(1.2 * 1.15, 10);
+    expect(at('attack', 90).development.tackling).toBe(1);
     expect(at('assistant', 50, 'developer').youthDevelopment).toBe(1.3);
     const both = coach(coach(world(), 'assistant', 50, 'developer'), 'youth', 50, 'developer');
     expect(staffEffects(both).youthDevelopment).toBeCloseTo(1.3 * 1.1, 10);
@@ -215,11 +217,11 @@ describe('coaching staff', () => {
   });
 
   it('turns better coaches into faster growth and recovery on the same settled round', () => {
-    const forward = (w: World) => activePlayers(w).find((player) => player.role === 'FWD')!;
+    const forward = (w: World) => activePlayers(w).find((player) => player.position === 'ST')!;
     const base = settled(trainingWorld()),
       strong = settled(coach(trainingWorld(), 'attack', 90, 'specialist'));
-    expect(forward(strong).attack).toBeGreaterThan(forward(base).attack);
-    expect(forward(strong).stamina).toBe(forward(base).stamina);
+    expect(forward(strong).attrs.finishing).toBeGreaterThan(forward(base).attrs.finishing);
+    expect(forward(strong).attrs.stamina).toBe(forward(base).attrs.stamina);
     expect(forward(strong).developed).toBeGreaterThan(forward(base).developed!);
     const rested = settled(coach(trainingWorld(), 'fitness', 90, 'recovery'));
     expect(forward(rested).fatigue).toBe(forward(base).fatigue - 4);
@@ -234,7 +236,7 @@ describe('coaching staff', () => {
     expect(w.cash).toBe(cash);
     expect(w.staff).toEqual([]);
     expect(staffEffects(w)).toStrictEqual({
-      development: { attack: 0.9, passing: 0.9, defense: 0.9, keeper: 0.9, stamina: 0.9 },
+      development: Object.fromEntries(ATTRIBUTES.map((a) => [a, 0.9])),
       youthDevelopment: 1,
       recoveryBonus: -1,
       academyQuality: -5,
@@ -250,10 +252,12 @@ describe('coaching staff', () => {
     expect(() => releaseStaff(w, 'scout')).toThrow('비어 있는');
     expect(staffImpact(w, 'scout')).toContain('공석');
     expect(staffImpact(w, 'director')).toBe('공석 · 협상 성공률 -5%p');
-    const fwd = (x: World) => activePlayers(x).find((player) => player.role === 'FWD')!;
+    const fwd = (x: World) => activePlayers(x).find((player) => player.position === 'ST')!;
     const vacant = trainingWorld();
     vacant.staff = [];
-    expect(fwd(settled(vacant)).attack).toBeLessThan(fwd(settled(trainingWorld())).attack);
+    expect(fwd(settled(vacant)).attrs.finishing).toBeLessThan(
+      fwd(settled(trainingWorld())).attrs.finishing,
+    );
   });
 
   it('offers three seeded candidates per role and season, never someone already employed', () => {
@@ -372,7 +376,8 @@ describe('delegated training focus', () => {
     }
     return w;
   }
-  const starters = (w: World) => selectedLineup(activePlayers(w), w.lineup, w.manager, w.year);
+  const starters = (w: World) =>
+    selectedLineup(activePlayers(w), w.lineup, w.tactic, w.manager, w.year);
 
   it('rests a tired XI, nurtures young starters and otherwise trains balanced', () => {
     const w = rested();
@@ -381,14 +386,21 @@ describe('delegated training focus', () => {
     for (const player of starters(w).slice(0, 2)) player.born = w.year - 21;
     expect(autoTrainingFocus(w)).toBe('balanced');
     starters(w)[2].born = w.year - 19;
-    expect(autoTrainingFocus(w)).toBe('youth');
+    expect(autoTrainingFocus(w)).toBe('hard');
     // Uniform fatigue keeps the same XI, whose average is what the assistant reads.
     for (const player of w.players) player.fatigue = 30;
     expect(autoTrainingFocus(w)).toBe('recovery');
+    // 하드 needs fresh legs (under 15) and morale 50+ (→CLUB-13).
     for (const player of w.players) player.fatigue = 29;
-    expect(autoTrainingFocus(w)).toBe('youth');
+    expect(autoTrainingFocus(w)).toBe('balanced');
+    for (const player of w.players) player.fatigue = 14;
+    expect(autoTrainingFocus(w)).toBe('hard');
+    w.morale = 49;
+    expect(autoTrainingFocus(w)).toBe('balanced');
+    w.morale = 60;
+    for (const player of w.players) player.fatigue = 0;
     const developer = coach(rested(), 'assistant', 50, 'developer');
-    expect(autoTrainingFocus(developer)).toBe('youth');
+    expect(autoTrainingFocus(developer)).toBe('hard');
     expect(autoTrainingAdvice(developer).reason).toContain('육성형');
     expect(autoTrainingAdvice(w).reason).toContain('21세 이하 선발 3명');
   });
@@ -399,7 +411,8 @@ describe('delegated training focus', () => {
     expect(activeTrainingFocus(w)).toBe('recovery');
     settled(w);
     expect(activePlayers(w).every((player) => player.fatigue === 24)).toBe(true);
-    expect(activePlayers(w).every((player) => player.developed === undefined)).toBe(true);
+    // 회복 still grows a little (×0.4, →CLUB-11).
+    expect(activePlayers(w).some((player) => (player.developed ?? 0) > 0)).toBe(true);
     for (const level of [1, 4] as const) {
       operate(w, { type: 'intervention', level });
       expect(activeTrainingFocus(w)).toBe(autoTrainingFocus(w));
@@ -415,7 +428,6 @@ describe('delegated training focus', () => {
     w.round = 1;
     settleTraining(w);
     expect(new Set(activePlayers(w).map((player) => player.fatigue))).toEqual(new Set([14]));
-    expect(activePlayers(w).every((player) => player.developed === undefined)).toBe(true);
   });
 });
 
@@ -465,15 +477,29 @@ describe('manager traits', () => {
   it('lets the trait change the automatic lineup', () => {
     const w = world(),
       base = (player: Player, value: number, age: number, fatigue = 0) => {
-        player.attack = player.passing = player.defense = player.stamina = value;
+        for (const a of ATTRIBUTES) player.attrs[a] = value;
         player.born = w.year - age;
         player.fatigue = fatigue;
       };
-    const defenders = w.players.filter((player) => player.role === 'DEF');
-    defenders.forEach((player) => base(player, 50, 28));
+    // A back four, every defender at home anywhere in it; everyone else far better elsewhere.
+    w.tactic = 'possession';
+    for (const player of w.players)
+      if (lineOf(player.position) !== 'DF') {
+        base(player, 70, 28);
+        player.positions = { [player.position]: 3 };
+      }
+    const defenders = w.players.filter((player) => lineOf(player.position) === 'DF');
+    defenders.forEach((player) => {
+      base(player, 50, 28);
+      player.positions = { CB: 3, LB: 3, RB: 3, LWB: 3, RWB: 3 };
+      player.position = 'CB';
+    });
+    // Six defenders for four places, whatever the founding formation brought.
+    for (const extra of defenders.slice(6)) extra.status = 'sold';
     base(defenders[4], 30, 28);
     base(defenders[5], 49, 20);
-    const picked = () => lineup(activePlayers(w), w.manager, w.year).map((player) => player.id);
+    const picked = () =>
+      lineup(activePlayers(w), w.tactic, w.manager, w.year).map((player) => player.id);
     expect(picked()).not.toContain(defenders[5].id);
     w.manager = { ...w.manager, trait: 'youth' };
     expect(picked()).toContain(defenders[5].id);
@@ -711,19 +737,6 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
     dailyStaff(w);
     expect(coachOf(w, 'attack')).toBeDefined();
     expect(coachOf(w, 'fitness')).toEqual(fitness);
-  });
-
-  it('reads coaching levels saved by rules 1.9–1.15 as the nearest 코치 기조', () => {
-    const w = world('department-legacy');
-    const saved = JSON.parse(canonical(w));
-    // A club-wide 최고 level, then 절약 in every department.
-    saved.coaching = 3;
-    const elite = validateWorld(saved);
-    expect('coaching' in elite).toBe(false);
-    expect('hiring' in elite).toBe(false);
-    expect(elite.direction).toEqual({ coaches: 'elite' });
-    saved.coaching = Object.fromEntries(STAFF_ROLES.map((role) => [role, 1]));
-    expect(validateWorld(saved).direction).toEqual({ coaches: 'volunteer' });
   });
 });
 
@@ -1058,17 +1071,6 @@ describe('delegated manager appointment (STAFF-7, STAFF-18)', () => {
 });
 
 describe('the 단장 (STAFF-20)', () => {
-  /** A world as rules 1.21 left it: the seven departments and no 단장. */
-  function before122(seed: string, scout?: Partial<Staff>) {
-    const w = world(seed);
-    w.staff = w.staff!.filter((member) => member.role !== 'director');
-    if (scout)
-      w.staff = w.staff.map((member) =>
-        member.role === 'scout' ? { ...member, ...scout } : member,
-      );
-    return w;
-  }
-
   it('is hired, released and renewed like any department, from three candidates a season', () => {
     const w = world('director-post');
     expect(STAFF_ROLES[0]).toBe('director');
@@ -1143,60 +1145,5 @@ describe('the 단장 (STAFF-20)', () => {
     const vacant = world('director-talks');
     vacant.staff = vacant.staff!.filter((member) => member.role !== 'director');
     expect(chance(vacant)).toBeCloseTo(chance(base) - 0.05, 10);
-  });
-
-  it('activation of rules 1.22 seats a volunteer 단장 in an older club', () => {
-    const w = before122('director-activation'),
-      before = canonical(w);
-    expect(activateDirector(w, '1.22.0')).toBe(w);
-    const next = activateDirector(w, '1.21.0');
-    expect(canonical(w)).toBe(before);
-    expect(next.staff).toHaveLength(8);
-    expect(next.staff![0]).toMatchObject({ role: 'director', ability: 50, wage: '0' });
-    expect(next.staff!.slice(1)).toEqual(w.staff);
-    expect(next.inbox!.at(-1)).toMatchObject({
-      kind: 'staff-report',
-      title: `단장 ${next.staff![0].name} 부임`,
-      attention: false,
-    });
-    expect(staffEffects(next)).toStrictEqual(NEUTRAL);
-    validateWorld(next);
-    // A world with no staff at all (rules before 1.2) stays neutral without one.
-    const bare = world('director-bare');
-    delete bare.staff;
-    expect(activateDirector(bare, '1.1.0')).toBe(bare);
-  });
-
-  it('activation moves a negotiator chief scout to the post with his contract', () => {
-    const scout = {
-      ability: 72,
-      trait: 'negotiator' as const,
-      wage: '5000',
-      since: 1950,
-      until: 1953,
-      born: 1905,
-      potential: 74,
-      term: 3 as ContractTerm,
-    };
-    const w = before122('director-move', scout),
-      old = w.staff!.find((member) => member.role === 'scout')!,
-      negotiation = (({ feeMultiplier, bidAcceptance }) => ({ feeMultiplier, bidAcceptance }))(
-        staffEffects({ ...w, staff: [{ ...old, role: 'director' }] }),
-      );
-    const next = activateDirector(w, '1.21.0');
-    expect(next.staff![0]).toEqual({ ...old, role: 'director' });
-    const volunteer = next.staff!.find((member) => member.role === 'scout')!;
-    expect(volunteer).toMatchObject({ ability: 50, wage: '0' });
-    expect(volunteer.id).not.toBe(old.id);
-    expect(volunteer.trait).toBeUndefined();
-    expect(next.staff).toHaveLength(8);
-    expect(staffEffects(next)).toMatchObject(negotiation);
-    expect(staffEffects(next)).toMatchObject({ feeMultiplier: 0.9 });
-    expect(next.inbox!.at(-1)!.detail).toContain('계약 그대로 단장');
-    validateWorld(next);
-    // A spotter or trait-less chief scout keeps his post; a volunteer 단장 arrives.
-    const spotter = activateDirector(before122('director-spotter', { trait: 'spotter' }), '1.21.0');
-    expect(spotter.staff!.find((member) => member.role === 'scout')!.trait).toBe('spotter');
-    expect(spotter.staff![0]).toMatchObject({ role: 'director', wage: '0' });
   });
 });

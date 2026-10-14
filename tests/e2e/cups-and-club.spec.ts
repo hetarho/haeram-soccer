@@ -6,7 +6,7 @@ async function found(page: import('@playwright/test').Page, seed: string) {
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill(seed);
-  await page.getByRole('button', { name: '넉넉한 출발' }).click();
+  await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }

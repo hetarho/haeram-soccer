@@ -72,7 +72,7 @@ const command = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('coach-training'),
     coach: z.enum(['assistant', 'youth']),
-    focus: z.enum(['balanced', 'youth', 'recovery', 'fundamentals', 'firstTeam']),
+    focus: z.enum(['balanced', 'recovery', 'hard', 'fundamentals', 'firstTeam']),
     force: z.boolean().optional(),
   }),
   z.object({
@@ -186,7 +186,7 @@ export const requestSchema = z.object({
         name: z.string().min(1).max(60),
         color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
         seed: z.string().max(80),
-        difficulty: z.union([z.literal(0.5), z.literal(1), z.literal(2)]),
+        level: z.enum(['easy', 'normal', 'hard', 'extreme']),
         preset: z.string().min(1).max(40).optional(),
       }),
     }),

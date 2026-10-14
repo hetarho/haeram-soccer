@@ -35,7 +35,7 @@ const world = () =>
     name: 'Archive United',
     color: '#126044',
     seed: 'save-test',
-    difficulty: 1,
+    level: 'normal' as const,
   });
 // The original compact1 unsigned stream, used to exercise historical save compatibility.
 function legacyIntegers(values: number[], width: number) {
@@ -340,52 +340,17 @@ it('rejects broken counters and historical club references before activation', a
 });
 
 describe('compatible rule upgrades', () => {
-  it('upgrades only metadata/revision and retains exact career facts and absent optional fields', async () => {
-    const { simulateSeason, advanceDays } = await import('../../../../packages/engine/src/index');
+  it('refuses a save of earlier rules: nothing converts it into the player model (→SAVE-16)', async () => {
     const legacy = world();
-    simulateSeason(legacy);
-    advanceDays(legacy, 10);
-    legacy.engine = '1.0.0';
-    legacy.revision = 23;
-    legacy.cash = '98765432101234567890';
-    delete legacy.trainingOrders;
-    delete legacy.players[0].developed;
-    const before = canonical(legacy);
-    expect(legacy.history.length).toBeGreaterThan(0);
-    expect(legacy.ownMatches.length).toBeGreaterThan(30);
-    expect(legacy.players.some((player) => (player.developed || 0) > 0)).toBe(true);
-    const decoded = (await decode(await encode(legacy))).world;
-    expect(canonical(decoded)).toBe(before);
-    const upgraded = upgradeWorldRules(decoded, CURRENT_CATALOG);
-    expect(canonical(upgraded)).toBe(
-      canonical({ ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 24 }),
-    );
-    expect(canonical(legacy)).toBe(before);
-    expect(upgraded.trainingOrders).toBeUndefined();
-    expect(Object.hasOwn(upgraded.players[0], 'developed')).toBe(false);
-    expect(upgradeWorldRules(upgraded, CURRENT_CATALOG)).toBe(upgraded);
-    expect(canonical((await decode(await encode(upgraded))).world)).toBe(canonical(upgraded));
-    const old = world();
-    old.engine = '1.0.0';
-    delete old.calendar;
-    delete old.rankHistory;
-    delete old.scorerSeason;
-    const loaded = (await decode(await encode(old))).world;
-    const migratedOld = upgradeWorldRules(loaded, CURRENT_CATALOG);
-    for (const field of [
-      'calendar',
-      'rankHistory',
-      'scorerSeason',
-      'training',
-      'trainingAt',
-      'policy',
-    ])
-      expect(Object.hasOwn(migratedOld, field)).toBe(false);
+    legacy.engine = '1.22.0';
+    await expect(decode(await encode(legacy))).rejects.toThrow(SaveCompatibilityError);
+    expect(() => upgradeWorldRules(legacy, CURRENT_CATALOG)).toThrow(SaveCompatibilityError);
+    const current = world();
+    expect(upgradeWorldRules(current, CURRENT_CATALOG)).toBe(current);
   });
 
   it('loads a 2026-demo-1 save, moves its catalog pin on activation and round-trips', async () => {
     const legacy = world();
-    legacy.engine = '1.14.0';
     legacy.revision = 9;
     legacy.catalog = '2026-demo-1';
     legacy.catalogHash = PRIOR_CATALOG_HASHES['2026-demo-1'];
@@ -412,21 +377,26 @@ describe('compatible rule upgrades', () => {
   });
 
   it('does not reinterpret future worlds or overflow a revision during a pure upgrade', () => {
-    const future = { ...world(), engine: '2.0.0' };
+    const future = { ...world(), engine: '9.0.0' };
     const before = canonical(future);
     expect(() => upgradeWorldRules(future, CURRENT_CATALOG)).toThrow(SaveCompatibilityError);
     expect(canonical(future)).toBe(before);
-    const legacy = { ...world(), engine: '1.0.0', revision: Number.MAX_SAFE_INTEGER };
+    const legacy = {
+      ...world(),
+      catalog: '2026-demo-1',
+      catalogHash: PRIOR_CATALOG_HASHES['2026-demo-1'],
+      revision: Number.MAX_SAFE_INTEGER,
+    };
     expect(() => upgradeWorldRules(legacy, CURRENT_CATALOG)).toThrow('revision');
     expect(legacy.revision).toBe(Number.MAX_SAFE_INTEGER);
-    expect(legacy.engine).toBe('1.0.0');
+    expect(legacy.catalog).toBe('2026-demo-1');
   });
 });
 
 describe('incompatible checkpoint protection', () => {
   it.each([
     ['schema', 2],
-    ['engine', '2.0.0'],
+    ['engine', '9.0.0'],
     ['catalog', 'future-catalog'],
     ['catalogHash', 'f'.repeat(64)],
     ['codec', 'future-codec'],
@@ -460,7 +430,7 @@ describe('incompatible checkpoint protection', () => {
       await saves.save(w);
       const future = JSON.stringify({
         ...JSON.parse(port.getItem('haeram-soccor:slot:b')!),
-        engine: '2.0.0',
+        engine: '9.0.0',
       });
       port.data.set('haeram-soccor:slot:b', future);
       if (manifest === null) port.removeItem('haeram-soccor:manifest');
@@ -478,7 +448,7 @@ describe('incompatible checkpoint protection', () => {
     async (slot) => {
       const port = new Memory();
       const w = world();
-      const future = JSON.stringify({ ...JSON.parse(await encode(w, 9, 8)), engine: '2.0.0' });
+      const future = JSON.stringify({ ...JSON.parse(await encode(w, 9, 8)), engine: '9.0.0' });
       const selected = `haeram-soccor:slot:${slot ? 'b' : 'a'}`;
       port.data.set(selected, future);
       port.data.set(`haeram-soccor:slot:${slot ? 'a' : 'b'}`, await encode(w, 8, 7));

@@ -1,6 +1,6 @@
 import type { World } from './types';
 
-export const CURRENT_ENGINE_VERSION = '1.22.0';
+export const CURRENT_ENGINE_VERSION = '2.0.0';
 /**
  * 1.1.0 added club policy; 1.2.0 staff, academy, transfer windows and the inbox; 1.3.0 closes
  * the season after its final round, opens the summer window there, normalizes league match
@@ -60,33 +60,12 @@ export const CURRENT_ENGINE_VERSION = '1.22.0';
  * `director`), who carries the transfer negotiation the chief scout carried and takes contract
  * talks, the manager post and transfers when delegated, his bids marked `staff` (activation gives
  * an older club a volunteer 단장, or moves a negotiator chief scout to the post with his contract
- * and a volunteer to the scout's).
+ * and a volunteer to the scout's). 2.0.0 is the player model (→PLAYER): 14 attributes, sided
+ * positions with levels, roles, traits, adaptation and other clubs' 조직력, formations, four
+ * difficulty levels; it starts new careers, and earlier versions are no longer read (→SAVE-16).
  */
-export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
-  '1.0.0',
-  '1.1.0',
-  '1.2.0',
-  '1.3.0',
-  '1.4.0',
-  '1.5.0',
-  '1.6.0',
-  '1.7.0',
-  '1.8.0',
-  '1.9.0',
-  '1.10.0',
-  '1.11.0',
-  '1.12.0',
-  '1.13.0',
-  '1.14.0',
-  '1.15.0',
-  '1.16.0',
-  '1.17.0',
-  '1.18.0',
-  '1.19.0',
-  '1.20.0',
-  '1.21.0',
-  CURRENT_ENGINE_VERSION,
-];
+/** Only rules 2.0.0: an earlier career is never converted into the player model (→SAVE-16). */
+export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [CURRENT_ENGINE_VERSION];
 /** A world pins its catalog ID and the fingerprint recorded with it (→ARCH-10). */
 export type CatalogPin = Pick<World, 'catalog' | 'catalogHash'>;
 /**

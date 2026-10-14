@@ -13,7 +13,13 @@ import {
 import { appearances, playerStatus } from './playerAnalysis';
 
 const world = () =>
-  createWorld({ country: 'ENG', name: 'Book', color: '#24664f', seed: 'book', difficulty: 2 });
+  createWorld({
+    country: 'ENG',
+    name: 'Book',
+    color: '#24664f',
+    seed: 'book',
+    level: 'easy' as const,
+  });
 const season = (year: number, fields: Partial<SeasonArchive> = {}): SeasonArchive => ({
   year,
   tier: 3,
@@ -135,8 +141,8 @@ describe('all-time boards', () => {
     const w = world();
     for (const p of w.players) p.career = p.career.map(() => 0);
     const [a, b, c, d, keeper] = [
-      ...w.players.filter((p) => p.role !== 'GK').slice(0, 4),
-      w.players.find((p) => p.role === 'GK')!,
+      ...w.players.filter((p) => p.position !== 'GK').slice(0, 4),
+      w.players.find((p) => p.position === 'GK')!,
     ];
     a.career[0] = 5;
     b.career[0] = 7;
@@ -169,7 +175,7 @@ describe('all-time boards', () => {
 
   it('leaves a player off a board below tenth place', () => {
     const w = world();
-    const outfield = w.players.filter((p) => p.role !== 'GK').slice(0, 11);
+    const outfield = w.players.filter((p) => p.position !== 'GK').slice(0, 11);
     outfield.forEach((p, i) => (p.career[1] = 20 - i));
     const last = outfield[10];
     expect(clubLeaders(w.players, leaderBoard('assists'))).toHaveLength(10);

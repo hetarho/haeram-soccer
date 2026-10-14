@@ -25,7 +25,7 @@ function world(seed = 'projection') {
     name: 'Forecast Rovers',
     color: '#335544',
     seed,
-    difficulty: 2,
+    level: 'easy' as const,
   });
   // The squad stays fixed, so every realised bill can be compared exactly.
   return w;

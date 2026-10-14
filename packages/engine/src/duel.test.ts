@@ -8,7 +8,7 @@ const w = createWorld({
   name: 'Duel Laboratory',
   color: '#2a5d8f',
   seed: 'duel-chain',
-  difficulty: 1,
+  level: 'normal' as const,
 });
 const own = w.fixtures.find((f) => f.home === w.playerClub)!;
 const npc = w.clubs.filter((c) => c.country === 'ENG' && c.tier === 0);

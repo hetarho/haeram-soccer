@@ -186,34 +186,6 @@ export function agentOf(w: Pick<World, 'seed'>, p: Player): AgentRating {
 export function agentPremium(agent: AgentRating) {
   return 1 + AGENT_CONFIG.premium * (agent - 1);
 }
-/**
- * Activation of rules 1.16 (→SAVE-10): every player without an agent — squad and history, academy
- * and the players pending bids were made for — gets the one drawn from his id; running contracts
- * keep no clauses until their next signing. Returns `w` itself when nobody lacks one.
- */
-export function activateAgents(w: World): World {
-  const missing = (p: Player) => p.agent === undefined;
-  const bids = w.bids ?? [];
-  if (
-    !w.players.some(missing) &&
-    !(w.academy?.players ?? []).some(missing) &&
-    !bids.some((bid) => bid.offer && missing(bid.offer.player))
-  )
-    return w;
-  const give = (p: Player): Player => (missing(p) ? { ...p, agent: agentOf(w, p) } : p);
-  return {
-    ...w,
-    players: w.players.map(give),
-    ...(w.academy ? { academy: { ...w.academy, players: w.academy.players.map(give) } } : {}),
-    ...(w.bids
-      ? {
-          bids: w.bids.map((bid) =>
-            bid.offer ? { ...bid, offer: { ...bid.offer, player: give(bid.offer.player) } } : bid,
-          ),
-        }
-      : {}),
-  };
-}
 /** One clause's odds and size, each interpolated linearly by the agent's level. */
 interface ClauseOdds {
   /** Share of contracts carrying it with a 1-rated agent, and with a 5-rated one. */
@@ -421,7 +393,7 @@ export const TALK_LABEL: Record<ContractTalk['kind'], string> = {
 };
 const talkLabel = (talk: ContractTalk) => TALK_LABEL[talk.kind];
 function playerLine(w: World, p: Player) {
-  return `${p.role} · ${w.year - p.born}세 · 능력 ${overall(p)} · 연봉 ${moneyLabel(w, p.wage)} · 계약 ${contractSeason(p.until)} 시즌 끝까지`;
+  return `${p.position} · ${w.year - p.born}세 · 능력 ${overall(p)} · 연봉 ${moneyLabel(w, p.wage)} · 계약 ${contractSeason(p.until)} 시즌 끝까지`;
 }
 const TALK_KINDS: readonly InboxKind[] = ['contract-talk'];
 /** Every item about a player's contract: talks, his unhappiness and his transfer request. */
@@ -469,6 +441,7 @@ export const UNHAPPY_CONFIG = {
 export const UNHAPPY_REASON: Record<UnhappyReason, string> = {
   'renewal-declined': '재계약 거절',
   'improve-declined': '계약 개선 거절',
+  ambition: '빅클럽 이적 무산',
 };
 /** The manager's chance of talking a player round after his demand is declined (→CLUB-27). */
 export function talkRoundChance(w: World) {

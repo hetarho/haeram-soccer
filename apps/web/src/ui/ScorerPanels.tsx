@@ -85,7 +85,7 @@ export const ScorerStandings = memo(function ScorerStandings({ w }: Props) {
                     <td className={s.club}>
                       <ClubLink w={w} id={player.club} crest={14} />
                     </td>
-                    <td>{player.role}</td>
+                    <td>{player.position}</td>
                     <td>{player.appearances}</td>
                     <td className={s.goals}>{player.goals}</td>
                   </tr>
@@ -116,7 +116,7 @@ export const ScorerHistory = memo(function ScorerHistory({ w }: Props) {
   const ownPlayers = players.filter((player) => player.club === w.playerClub);
   const ownLead =
     ranked.find((player) => player.club === w.playerClub) ||
-    ownPlayers.find((player) => player.role === 'FWD') ||
+    ownPlayers.find((player) => player.position === 'ST') ||
     ownPlayers[0];
   const leader = ranked[0] || ownLead;
   const choice =

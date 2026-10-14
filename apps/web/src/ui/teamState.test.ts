@@ -4,7 +4,13 @@ import { policyOf } from '../../../../packages/engine/src/policy';
 import { cashState, remedies, runwayText, teamStates, urgentState } from './teamState';
 
 const world = () =>
-  createWorld({ country: 'ENG', name: 'State', color: '#24664f', seed: 'state', difficulty: 2 });
+  createWorld({
+    country: 'ENG',
+    name: 'State',
+    color: '#24664f',
+    seed: 'state',
+    level: 'easy' as const,
+  });
 
 describe('team state', () => {
   it('is calm for a new club and keeps cash in the HUD', () => {
@@ -19,7 +25,7 @@ describe('team state', () => {
     const w = world();
     for (const player of w.players) player.fatigue = 55;
     // The owner forced youth training; left to his rule the assistant would rest them.
-    w.trainingOrders = { assistant: { focus: 'youth', rounds: 4, forced: true } };
+    w.trainingOrders = { assistant: { focus: 'hard', rounds: 4, forced: true } };
     const fatigue = teamStates(w).find((state) => state.key === 'fatigue')!;
     expect(fatigue.tone).toBe('warn');
     // Recovery training is the assistant's call: the remedy opens his card in 코치진 with 회복

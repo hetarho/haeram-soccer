@@ -31,7 +31,7 @@ for (const viewport of [
     await page.goto('/');
     await page.getByText('고급 설정', { exact: true }).click();
     await page.getByLabel('세계 생성 시드').fill(`milestone-ui-${viewport.width}`);
-    await page.getByRole('button', { name: '넉넉한 출발' }).click();
+    await page.getByRole('button', { name: '쉬움' }).click();
     await page.getByRole('button', { name: '클럽 창단' }).click();
     const hub = page.getByTestId('club-hub');
     await expect(hub).toBeVisible();

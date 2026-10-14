@@ -2,7 +2,7 @@ import type { Club, Player, TransferBid, TransferStance, World } from '../../con
 import { currency } from '../../catalogs/src/index';
 import { currentDay, SEASON_END_DAY, seasonDayLabel, seasonDayOf } from './calendar';
 import { clamp, compareIds, hash, integer, random, ratio } from './primitives';
-import { activePlayers, addEvent, clubOf, overall, ownStarters } from './world';
+import { activePlayers, addEvent, clubOf, lineOfPlayer, overall, ownStarters } from './world';
 import { leaveContract, marketValue, signingClauses } from './contracts';
 import { credit, debit } from './operations';
 import { transferOffers } from './ops-squad';
@@ -162,7 +162,7 @@ function completeSigning(w: World, bid: TransferBid, offer: MarketOffer, fee: st
     w,
     'transfer-in',
     `${p.name} ${bid.loan ? '임대' : '영입'}`,
-    `${p.role} · ${w.year - p.born}세 · 연봉 ${moneyLabel(w, p.wage)} · 계약 ${p.until}년 · 협상 타결`,
+    `${p.position} · ${w.year - p.born}세 · 연봉 ${moneyLabel(w, p.wage)} · 계약 ${p.until}년 · 협상 타결`,
     fee,
   );
   bid.status = 'completed';
@@ -172,7 +172,7 @@ function saleBlocker(w: World, p: Player | undefined) {
   const active = activePlayers(w);
   if (
     active.length <= SQUAD_MINIMUM ||
-    (p.role === 'GK' && active.filter((x) => x.role === 'GK').length <= 1)
+    (p.position === 'GK' && active.filter((x) => x.position === 'GK').length <= 1)
   )
     return '최소 선수단과 골키퍼를 유지해야 합니다.';
   return undefined;
@@ -246,7 +246,7 @@ export function placeBid(
     w,
     'transfer-bid',
     `${offer.player.name} ${loan ? '임대' : '영입'} 제안`,
-    `${offer.player.role} · ${w.year - offer.player.born}세 · 제안 ${moneyLabel(w, fee)} · 요구액 ${moneyLabel(w, askingFee(offer, loan))} · ${seasonDayLabel(w.year, bid.due)}까지 답변`,
+    `${offer.player.position} · ${w.year - offer.player.born}세 · 제안 ${moneyLabel(w, fee)} · 요구액 ${moneyLabel(w, askingFee(offer, loan))} · ${seasonDayLabel(w.year, bid.due)}까지 답변`,
   );
   // On deadline day the selling club answers at once, so the owner can still reply to a counter.
   if (bid.due <= day) decideOutgoing(w, bid);
@@ -427,7 +427,7 @@ function decideOutgoing(w: World, bid: TransferBid) {
     pushInbox(w, {
       kind: 'bid-response',
       title: clip(`${p.name} ${move} 완료`, 160),
-      detail: `${p.role} · ${w.year - p.born}세 · ${moneyLabel(w, bid.fee)} 제안이 받아들여졌어요.${bid.staff ? ' 단장의 제안이에요.' : ''}`,
+      detail: `${p.position} · ${w.year - p.born}세 · ${moneyLabel(w, bid.fee)} 제안이 받아들여졌어요.${bid.staff ? ' 단장의 제안이에요.' : ''}`,
       attention,
       ref: bid.id,
     });
@@ -739,7 +739,7 @@ function listedOffers(w: World, day: number, until: number) {
       status: 'pending',
     };
     w.bids = [...(w.bids || []), bid];
-    const summary = `${p.role} · ${w.year - p.born}세 · 능력 ${overall(p)} · 평가 가치 ${moneyLabel(w, value)}`;
+    const summary = `${p.position} · ${w.year - p.born}세 · 능력 ${overall(p)} · 평가 가치 ${moneyLabel(w, value)}`;
     if (delegated(w, 'transfers')) {
       // The owner listed him to sell: the staff take the offer.
       completeSale(w, bid, p);
@@ -806,7 +806,7 @@ function incomingBid(w: World, day: number, until: number) {
   const age = w.year - player.born,
     offered = Number((BigInt(fee) * 100n) / BigInt(value)),
     untouchable = player.stance === 'untouchable',
-    summary = `${player.role} · ${age}세 · 능력 ${overall(player)} · 평가 가치 ${moneyLabel(w, value)}`;
+    summary = `${player.position} · ${age}세 · 능력 ${overall(player)} · 평가 가치 ${moneyLabel(w, value)}`;
   const report = (
     accept: boolean,
     detail: string,
@@ -835,11 +835,11 @@ function incomingBid(w: World, day: number, until: number) {
   }
   if (delegated(w, 'transfers')) {
     const starters = new Set(ownStarters(w).map((p) => p.id));
-    // A starter leaves only when an ageing player has a ready bench replacement in his role.
+    // A starter leaves only when an ageing player has a ready bench replacement in his line.
     const covered = activePlayers(w).some(
       (other) =>
         other.id !== player.id &&
-        other.role === player.role &&
+        lineOfPlayer(other) === lineOfPlayer(player) &&
         !starters.has(other.id) &&
         !other.loanUntil &&
         overall(other) >= overall(player) - 3,

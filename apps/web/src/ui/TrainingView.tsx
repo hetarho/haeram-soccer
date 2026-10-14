@@ -22,6 +22,8 @@ import {
   type TrainingTab,
 } from './state';
 import { callLine } from './TrainingOrderSheet';
+import { ATTRIBUTES } from '../../../../packages/contracts/src/player';
+import { ATTRIBUTE_LABEL } from '../../../../packages/engine/src/player';
 import a from './App.module.css';
 import s from './TrainingView.module.css';
 
@@ -30,8 +32,8 @@ type Outlook = ReturnType<typeof developmentOutlook>;
 
 const FOCUSES: readonly [TrainingFocus, string][] = [
   ['balanced', '균형'],
-  ['youth', '유망주 집중'],
-  ['recovery', '회복 집중'],
+  ['recovery', '회복'],
+  ['hard', '하드 트레이닝'],
 ];
 const focusName = (focus: TrainingFocus) => FOCUSES.find(([id]) => id === focus)![1];
 /** A multiplier as ×1.12: two decimals at most, trailing zeros dropped. */
@@ -186,13 +188,6 @@ const homeName: Record<DevelopmentHome, string> = {
   'people/coaches': '코치진',
   'business/facility': '증축',
 };
-const skillName = {
-  attack: '공격',
-  passing: '패스',
-  defense: '수비',
-  keeper: '골키핑',
-  stamina: '체력',
-} as const;
 const toneOf = (value: number) => (value > 1 ? 'up' : value < 1 ? 'down' : 'flat');
 /** Terms that change something; a row whose terms all multiply by 1 shows its first one. */
 const shownTerms = (terms: DevelopmentFactor[]) => {
@@ -230,9 +225,9 @@ function DevelopmentDrivers({ outlook: { factors, skills } }: { outlook: Outlook
     factors
       .filter((factor) => young || factor.applies === 'all')
       .reduce((product, factor) => product * factor.value, 1);
-  const coaching = (Object.keys(skillName) as (keyof typeof skillName)[])
-    .filter((skill) => skills[skill] !== 1)
-    .map((skill) => `${skillName[skill]} ${times(skills[skill])}`);
+  const coaching = ATTRIBUTES.filter((skill) => skills[skill] !== 1).map(
+    (skill) => `${ATTRIBUTE_LABEL[skill]} ${times(skills[skill])}`,
+  );
   return (
     <section className={s.card} aria-label="성장 배수">
       <header className={s.head}>
@@ -296,7 +291,7 @@ function GrowingPlayers({ outlook: { growing } }: { outlook: Outlook }) {
         <ol className={s.growing}>
           {growing.map(({ player, age, ability, potential, gap, developed }) => (
             <li key={player.id}>
-              <OvrBadge value={ability} role={player.role} potential={potential} />
+              <OvrBadge value={ability} role={player.position} potential={potential} />
               <span className={s.growingName}>
                 <PlayerLink id={player.id} name={player.name} />
                 <small>

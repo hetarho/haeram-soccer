@@ -1,3 +1,5 @@
+import { lineOf } from './player';
+import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
 import { decode, encode } from '../../../apps/web/src/adapters/persistence';
@@ -13,7 +15,7 @@ import {
   operate,
   operatingCost,
   recruitmentPreview,
-  recruitmentRoleNeed,
+  recruitmentLineNeed,
   simulateMatch,
   startingSquad,
   tacticalProfile,
@@ -26,17 +28,12 @@ function world(strong = false) {
     name: 'Scouting United',
     color: '#224433',
     seed: 'recruitment-preview',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   w.cash = '999999999999';
   w.tactic = 'possession';
   for (const player of w.players) {
-    player.attack =
-      player.passing =
-      player.defense =
-      player.keeper =
-      player.stamina =
-        strong ? 95 : 25;
+    for (const a of ATTRIBUTES) player.attrs[a] = strong ? 95 : 25;
     player.fatigue = 0;
   }
   return w;
@@ -59,7 +56,7 @@ describe('recruitment build and budget previews', () => {
       opponent = w.clubs.find(
         (club) => club.id === (fixture.home === w.playerClub ? fixture.away : fixture.home),
       )!;
-    expect(lineupSummary(starters).strength).toBe(preview.afterStrength);
+    expect(lineupSummary(starters, w.tactic).strength).toBe(preview.afterStrength);
     expect(tacticalProfile(starters, w.tactic, npcTactic(opponent)).fit).toBe(preview.afterFit);
     const match = simulateMatch(w, fixture, false, true);
     expect(
@@ -78,7 +75,7 @@ describe('recruitment build and budget previews', () => {
       ids = lineupPreset(w, 'strongest');
     operate(w, { type: 'lineup', ids });
     const weak = w.players.find((player) => player.id === ids[6])!;
-    weak.attack = weak.passing = weak.defense = weak.stamina = 10;
+    for (const a of ATTRIBUTES) weak.attrs[a] = 10;
     weak.fatigue = 80;
     const offer = transferOffers(w)[2],
       before = canonical(w),
@@ -94,7 +91,9 @@ describe('recruitment build and budget previews', () => {
     const optional = [...ids];
     optional[6] = offer.player.id;
     operate(w, { type: 'lineup', ids: optional });
-    expect(lineupSummary(startingSquad(w, clubOf(w))).strength).toBe(preview.afterStrength);
+    expect(lineupSummary(startingSquad(w, clubOf(w)), w.tactic).strength).toBe(
+      preview.afterStrength,
+    );
   });
 
   it('discloses wages for a free bench transfer even with zero cash', () => {
@@ -155,7 +154,7 @@ describe('recruitment build and budget previews', () => {
     const w = world(),
       offer = transferOffers(w)[2];
     for (let index = 0; index < 8; index++)
-      w.players.push(makePlayer('ENG', w.seed, `full-roster:${index}`, w.year, 40, 'DEF'));
+      w.players.push(makePlayer('ENG', w.seed, `full-roster:${index}`, w.year, 40, 'CB'));
     expect(activePlayers(w)).toHaveLength(26);
     const before = canonical(w),
       full = recruitmentPreview(w, offer);
@@ -188,14 +187,15 @@ describe('recruitment build and budget previews', () => {
 
   it('keeps seeded identities and candidate indices stable during pure role-need previews', () => {
     const w = world(true);
-    for (const player of w.players.filter((player) => player.role === 'GK')) player.keeper = 10;
+    for (const player of w.players.filter((player) => player.position === 'GK'))
+      for (const a of ATTRIBUTES) player.attrs[a] = 10;
     const before = canonical(w),
       offers = transferOffers(w),
       original = canonical(offers);
-    expect(recruitmentRoleNeed(w)).toBe('GK');
+    expect(recruitmentLineNeed(w)).toBe('GK');
     const mids = offers
       .map((offer, candidate) => ({ offer, candidate }))
-      .filter(({ offer }) => offer.player.role === 'MID')
+      .filter(({ offer }) => lineOf(offer.player.position) === 'MF')
       .sort(
         (a, b) => b.offer.player.potential - a.offer.player.potential || a.candidate - b.candidate,
       );

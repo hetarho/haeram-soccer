@@ -1,3 +1,4 @@
+import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { currency, footballIndex, priceIndex } from '../../catalogs/src/index';
 import type {
@@ -9,7 +10,6 @@ import type {
   World,
 } from '../../contracts/src/types';
 import {
-  activateAgents,
   activePlayers,
   advanceRound,
   agentOf,
@@ -70,23 +70,16 @@ const founding = {
   name: 'Market Wages',
   color: '#224433',
   seed: 'market-wages',
-  difficulty: 1,
+  level: 'normal' as const,
 };
 function world(country: 'ENG' | 'ESP' = 'ENG') {
   return createWorld({ ...founding, country });
 }
 /** A midfielder rated `ability` everywhere, aged `age` in the world's year. */
 function rated(w: World, ability: number, age = 26, potential = ability): Player {
-  return {
-    ...structuredClone(activePlayers(w)[0]),
-    role: 'MID',
-    attack: ability,
-    passing: ability,
-    defense: ability,
-    stamina: ability,
-    born: w.year - age,
-    potential,
-  };
+  const player = structuredClone(activePlayers(w)[0]);
+  for (const a of ATTRIBUTES) player.attrs[a] = ability;
+  return { ...player, position: 'CM', positions: { CM: 3 }, born: w.year - age, potential };
 }
 const amount = (value: string) => Number(BigInt(value));
 /** Money in whole currency units, comparable across the 1971 decimalisation. */
@@ -155,7 +148,7 @@ describe('market wages (→CLUB-25)', () => {
       expect(offer.player.wage).toBe(marketWage(w, offer.player));
     const top = w.clubs.find((c) => c.country === 'ENG' && c.tier === 0)!;
     for (const p of npcSquad(w.seed, w.year, top)) expect(p.wage).toBe(marketWage(w, p, 0));
-    const prospect = makePlayer('ENG', w.seed, 'academy:test', w.year, 45, 'MID', 17);
+    const prospect = makePlayer('ENG', w.seed, 'academy:test', w.year, 45, 'CM', 17);
     prospect.wage = '0';
     w.academy = { players: [prospect] };
     operate(w, { type: 'promote-youth', id: prospect.id });
@@ -214,7 +207,10 @@ function talking(ability = 80, age = 26) {
   w.cash = '999999999999';
   w.round = 23;
   w.income = '999999999999';
-  const p = Object.assign(activePlayers(w)[0], rated(w, ability, age), { until: w.year + 1 });
+  const p = Object.assign(activePlayers(w)[0], rated(w, ability, age), {
+    until: w.year + 1,
+    agent: 1 as Player['agent'],
+  });
   return { w, p };
 }
 /** 1 January, when the winter window opens and players in their final season ask to renew. */
@@ -400,7 +396,7 @@ describe('contract talks (→CLUB-26)', () => {
     expect(frugal.item.detail).toContain('재계약 기조 짠물');
     // 핵심만 붙잡기 keeps a starter and lets a squad player go.
     expect(answer('coreOnly').item.title).toContain('받아들였어요');
-    const squad = answer('coreOnly', 30);
+    const squad = answer('coreOnly', 15);
     expect(squad.item.title).toContain('거절했어요');
     expect(squad.item.detail).toContain('주전이 아니라');
     // 젊은 선수 우선 lets a player of 30 or more go and keeps a younger one.
@@ -861,7 +857,7 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
       Array.from(
         { length: 1500 },
         (_, i) =>
-          makePlayer('ENG', w.seed, `agent:${rating}:${i}`, w.year, rating, 'MID', 26).agent!,
+          makePlayer('ENG', w.seed, `agent:${rating}:${i}`, w.year, rating, 'CM', 26).agent!,
       );
     const mean = (values: number[]) => values.reduce((sum, v) => sum + v, 0) / values.length;
     const weak = agents(30),
@@ -877,7 +873,7 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
     for (const p of activePlayers(w)) expect(p.agent).toBeDefined();
     for (const offer of transferOffers(w)) expect(offer.player.agent).toBeDefined();
     // The same player is the same whatever else is drawn: the agent is his stream's last draw.
-    const again = makePlayer('ENG', w.seed, 'agent:30:0', w.year, 30, 'MID', 26);
+    const again = makePlayer('ENG', w.seed, 'agent:30:0', w.year, 30, 'CM', 26);
     expect(again.agent).toBe(weak[0]);
   });
 
@@ -966,7 +962,7 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
       loaned = w.players.find((p) => p.id === offers[1].player.id)!;
     expect(free.clauses).toEqual(settleClauses(w.seed, free, free.agent!, w.year, currentDay(w)));
     expect(loaned.clauses).toBeUndefined();
-    const prospect = makePlayer('ENG', w.seed, 'academy:clauses', w.year, 45, 'MID', 17);
+    const prospect = makePlayer('ENG', w.seed, 'academy:clauses', w.year, 45, 'CM', 17);
     w.academy = { players: [prospect] };
     operate(w, { type: 'promote-youth', id: prospect.id });
     const promoted = w.players.find((p) => p.id === prospect.id)!;
@@ -1047,26 +1043,5 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
     expect(clubOf(w).tier).toBe(tier + 1);
     expect([cut.wage, kept.wage]).toEqual(['6000', '10000']);
     expect(w.inbox!.some((item) => item.title.startsWith('강등 조항'))).toBe(true);
-  });
-
-  it('activates a 1.15 world: every player gets the agent drawn from his id, no clauses', () => {
-    const w = world();
-    w.academy = { players: [makePlayer('ENG', w.seed, 'academy:old', w.year, 40, 'DEF', 16)] };
-    for (const p of [...w.players, ...w.academy.players]) {
-      delete p.agent;
-      delete p.clauses;
-    }
-    const before = structuredClone(w),
-      activated = activateAgents(w);
-    expect(w).toEqual(before);
-    for (const p of [...activated.players, ...activated.academy!.players]) {
-      const old = [...before.players, ...before.academy!.players].find((x) => x.id === p.id)!;
-      expect(p.agent).toBe(agentOf(before, old));
-      expect(p.clauses).toBeUndefined();
-      expect(p).toEqual({ ...old, agent: p.agent });
-    }
-    // Deterministic from the seed and his id, and done once.
-    expect(activateAgents(structuredClone(before))).toEqual(activated);
-    expect(activateAgents(activated)).toBe(activated);
   });
 });

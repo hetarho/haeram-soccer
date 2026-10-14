@@ -26,7 +26,7 @@ test('selects by keyboard, exposes selection and dismisses without committing pr
   await country.press('ArrowDown');
   await country.press('Tab');
   await expect(country).toHaveAttribute('aria-expanded', 'false');
-  await expect(page.getByRole('button', { name: '넉넉한 출발' })).toBeFocused();
+  await expect(page.getByRole('button', { name: '쉬움' })).toBeFocused();
   await country.click();
   await page.getByRole('heading', { name: '작은 클럽의, 큰 내일.' }).click();
   await expect(country).toHaveAttribute('aria-expanded', 'false');

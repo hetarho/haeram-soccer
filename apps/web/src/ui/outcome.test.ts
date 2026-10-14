@@ -1,3 +1,4 @@
+import { lineOf } from '../../../../packages/engine/src/player';
 import { describe, expect, it } from 'vitest';
 import type { World } from '../../../../packages/contracts/src/types';
 import {
@@ -15,7 +16,7 @@ const world = () =>
     name: 'Outcome',
     color: '#24664f',
     seed: 'outcome',
-    difficulty: 2,
+    level: 'easy' as const,
   });
 const after = (w: World, apply: (copy: World) => void) => {
   const copy = structuredClone(w);
@@ -78,7 +79,7 @@ describe('action outcome summaries', () => {
 
   it('lists only facts that changed and the squad size after a sale', () => {
     const before = world();
-    const id = before.players.find((p) => p.role === 'MID' && p.status === 'active')!.id;
+    const id = before.players.find((p) => lineOf(p.position) === 'MF' && p.status === 'active')!.id;
     const next = after(before, (w) => sellPlayer(w, id));
     const outcome = describeOutcome(
       { type: 'transfer-stance', id, stance: 'listed' },

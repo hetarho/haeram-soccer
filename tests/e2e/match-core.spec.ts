@@ -92,7 +92,7 @@ for (const viewport of [
       name: 'Haeram Athletic',
       color: '#bf7956',
       seed: `match-core-${viewport.width}`,
-      difficulty: 2,
+      level: 'easy' as const,
     };
     const reference = createWorld(founding);
     const first = advanceToNextMatch(reference)!;
@@ -155,7 +155,7 @@ for (const viewport of [
       `유효 슛 ${first.record.metrics[side][5]}–${first.record.metrics[1 - side][5]}`,
     );
     await expect(page.getByTestId('match-readiness')).toContainText(
-      `${tacticLabel[reference.tactic]} · 피로 ${lineupSummary(startingSquad(reference, clubOf(reference))).fatigue}/100`,
+      `${tacticLabel[reference.tactic]} · 피로 ${lineupSummary(startingSquad(reference, clubOf(reference)), reference.tactic).fatigue}/100`,
     );
     await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('다음 경기 관전');
     const settled = await savedRaw(page);

@@ -21,7 +21,7 @@ function founded(country: CountryCode, year?: number) {
     name: 'Bracket Rovers',
     color: '#2a4d3a',
     seed: `bracket-tree-${country}`,
-    difficulty: 1,
+    level: 'normal' as const,
   });
   if (!year) return w;
   w.year = year;

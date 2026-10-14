@@ -16,7 +16,7 @@ const career = () => {
     name: 'Compact Athletic',
     color: '#126044',
     seed: 'compact-streams',
-    difficulty: 1,
+    level: 'normal' as const,
   });
   advanceRound(w, undefined, false);
   advanceRound(w, undefined, false);
@@ -156,7 +156,7 @@ describe('lossless career stream compaction', () => {
         name: 'Bracket Athletic',
         color: '#126044',
         seed: 'compact-brackets',
-        difficulty: 1,
+        level: 'normal' as const,
       }),
     );
     const rounds = w.history[0].brackets!.flatMap((b) => b.rounds);

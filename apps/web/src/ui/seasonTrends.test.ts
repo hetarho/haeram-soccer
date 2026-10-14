@@ -8,7 +8,7 @@ it('uses the own perspective, weighted denominators and the season built up in p
     name: 'Season',
     color: '#24664f',
     seed: 'season-analysis',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   const record = simulateMatch(w, nextOwnFixture(w)!, false, true).record;
   const home = {

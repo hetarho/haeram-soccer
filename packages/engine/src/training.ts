@@ -1,4 +1,6 @@
-import type { Player, Role, TrainingFocus, World } from '../../contracts/src/types';
+import type { Player, TrainingFocus, World } from '../../contracts/src/types';
+import { ATTRIBUTES, type Attribute } from '../../contracts/src/player';
+import { mainOvr, weightsFor } from './player';
 import { BUILD_SLOTS } from '../../contracts/src/build';
 import { activePlayers, addEvent, overall } from './world';
 import { clamp, compareIds, random } from './primitives';
@@ -28,37 +30,65 @@ export const trainingFocusInfo: Record<
     recovery: 11,
     developmentMultiplier: 1,
   },
-  youth: {
-    label: '유망주 집중',
-    description: '27세 미만 선수 성장 1.8배 · 피로 회복은 7',
-    recovery: 7,
-    developmentMultiplier: 1.8,
-  },
   recovery: {
-    label: '회복 집중',
-    description: '피로 16 회복 · 라운드 훈련 성장은 쉬어갑니다',
+    label: '회복 훈련',
+    description: '피로 16 회복 · 성장은 0.4배로 쉬어갑니다',
     recovery: 16,
-    developmentMultiplier: 0,
+    developmentMultiplier: 0.4,
+  },
+  hard: {
+    label: '하드 트레이닝',
+    description: '성장 1.6배 · 피로 회복은 6',
+    recovery: 6,
+    developmentMultiplier: 1.6,
   },
 };
 
-type Skill = 'attack' | 'passing' | 'defense' | 'keeper' | 'stamina';
-/** Skills each role trains; the academy grows prospects the same way. */
-export const roleSkills: Record<Role, readonly Skill[]> = {
-  GK: ['keeper'],
-  DEF: ['defense', 'stamina'],
-  MID: ['passing', 'stamina'],
-  FWD: ['attack', 'stamina'],
-};
 const hundredths = (value: number) => Math.round(value * 100) / 100;
+/**
+ * A round's or a season's growth reaches the main OVR at this share: the rest of a player's
+ * attributes keep it from running away, as the two trained skills of four did before.
+ */
+const GROWTH_SHARE = 0.5;
+/** Attributes top out at 99 (→PLAYER-2). */
+const TOP = 99;
 
-export function skillAfter(player: Player, skill: Skill, change: number) {
-  const current = player[skill];
-  if (change === 0) return current;
-  const next = hundredths(current + hundredths(change));
-  return change >= 0
-    ? Math.max(current, Math.min(Math.max(current, player.potential), next))
-    : clamp(next, 5, 100);
+/**
+ * Spreads `gain` main-OVR points of growth over his attributes by his main position's weights, so
+ * primary attributes grow fastest (→PLAYER-15); each attribute × its department's factor; growth
+ * stops at potential. Returns the main OVR's actual rise.
+ */
+export function growAttributes(
+  player: Player,
+  gain: number,
+  factor: (attribute: Attribute) => number = () => 1,
+) {
+  if (gain <= 0) return 0;
+  const before = mainOvr(player);
+  const room = player.potential - before;
+  if (room <= 0) return 0;
+  const weights = weightsFor(player.position);
+  let total = 0,
+    squares = 0;
+  for (const a of ATTRIBUTES) {
+    total += weights[a];
+    squares += weights[a] ** 2;
+  }
+  // Each attribute's step ∝ its weight, scaled so the main OVR rises by the share of `gain`.
+  const scale = (Math.min(gain * GROWTH_SHARE, room) * total) / squares;
+  for (const a of ATTRIBUTES) {
+    if (!weights[a]) continue;
+    const step = hundredths(scale * weights[a] * factor(a));
+    player.attrs[a] = hundredths(Math.min(TOP, Math.max(player.attrs[a], player.attrs[a] + step)));
+  }
+  return Math.max(0, hundredths(mainOvr(player) - before));
+}
+/** A season's change to every attribute: growth through `growAttributes`, decline as it falls. */
+function changeAttributes(player: Player, change: number, noise: () => number, young: boolean) {
+  if (young) return growAttributes(player, Math.max(0, change + noise()));
+  for (const a of ATTRIBUTES)
+    player.attrs[a] = hundredths(clamp(player.attrs[a] + change + noise(), 5, TOP));
+  return 0;
 }
 
 export function recordDevelopment(player: Player, gain: number) {
@@ -89,7 +119,7 @@ function roundGain(
 ) {
   const age = w.year - player.born;
   if (age >= 27 || player.status !== 'active') return 0;
-  const gap = Math.max(0, player.potential - overall(player));
+  const gap = Math.max(0, player.potential - mainOvr(player));
   const ageWeight = age < 21 ? 1 : age < 24 ? 0.85 : 0.65;
   const base = Math.min(0.12, (gap / 400) * developmentBase(w) * ageWeight);
   const style = managerStyleEffects(w);
@@ -101,22 +131,12 @@ function roundGain(
       (age <= 21 ? staff.youthDevelopment * style.youthGrowth * buildEffects(w).youthGrowth : 1),
   );
 }
-/** Each coach scales growth of the skills they own. */
-function skillGain(gain: number, skill: Skill, staff: ReturnType<typeof staffEffects>) {
-  return staff.development[skill] === 1 ? gain : hundredths(gain * staff.development[skill]);
-}
-
+/** The main-OVR rise a round would bring him, read without changing him. */
 function actualRoundGain(w: World, player: Player) {
   const staff = staffEffects(w),
-    gain = roundGain(w, player, undefined, staff),
-    skills = roleSkills[player.role];
-  return hundredths(
-    skills.reduce(
-      (sum, skill) =>
-        sum + skillAfter(player, skill, skillGain(gain, skill, staff)) - player[skill],
-      0,
-    ) / skills.length,
-  );
+    gain = roundGain(w, player, undefined, staff);
+  const copy = { ...player, attrs: { ...player.attrs } };
+  return growAttributes(copy, gain, (a) => staff.development[a]);
 }
 
 /** A domestic boundary settles growth and recovery once, even after changing focus or reloading. */
@@ -131,15 +151,11 @@ export function settleTraining(w: World) {
     staff = staffEffects(w),
     recovery = Math.max(0, info.recovery + policy.recoveryBonus + staff.recoveryBonus);
   for (const player of activePlayers(w)) {
-    const gain = roundGain(w, player, policy, staff, focus),
-      skills = roleSkills[player.role];
-    let actual = 0;
-    for (const skill of skills) {
-      const next = skillAfter(player, skill, skillGain(gain, skill, staff));
-      actual += next - player[skill];
-      player[skill] = next;
-    }
-    recordDevelopment(player, actual / skills.length);
+    const gain = roundGain(w, player, policy, staff, focus);
+    recordDevelopment(
+      player,
+      growAttributes(player, gain, (a) => staff.development[a]),
+    );
     player.fatigue = Math.max(0, player.fatigue - recovery);
   }
   countDownOrder(w, 'assistant');
@@ -151,7 +167,7 @@ export function settleTraining(w: World) {
 /** Annual progression retains seeded variation/aging but uses the player's own potential gap. */
 export function developAnnually(w: World, player: Player) {
   const age = w.year - player.born,
-    gap = Math.max(0, player.potential - overall(player)),
+    gap = Math.max(0, player.potential - mainOvr(player)),
     variation = random(`${w.seed}:growth:${player.id}:${w.year}`);
   const growth =
     age < 27
@@ -159,14 +175,9 @@ export function developAnnually(w: World, player: Player) {
       : age > 30
         ? -1.5
         : 0.3;
-  let actual = 0;
-  for (const skill of ['attack', 'passing', 'defense', 'keeper', 'stamina'] as const) {
-    const change = growth + variation() - 0.5;
-    const next = skillAfter(player, skill, age < 27 ? Math.max(0, change) : change);
-    if (roleSkills[player.role].includes(skill)) actual += Math.max(0, next - player[skill]);
-    player[skill] = next;
-  }
-  recordDevelopment(player, actual / roleSkills[player.role].length);
+  // One draw of noise per season, as the five skills each had one before.
+  const noise = () => variation() - 0.5;
+  recordDevelopment(player, changeAttributes(player, growth, noise, growth > 0));
   revisePotential(w, player);
 }
 
@@ -211,10 +222,7 @@ export function trainingSummary(w: World) {
   const active = activePlayers(w),
     focus = activeTrainingFocus(w);
   const promising = active.filter(
-    (player) =>
-      w.year - player.born < 27 &&
-      player.potential > overall(player) &&
-      roleSkills[player.role].some((skill) => player[skill] < player.potential),
+    (player) => w.year - player.born < 27 && player.potential > mainOvr(player),
   );
   return {
     focus,

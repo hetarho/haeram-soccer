@@ -16,7 +16,7 @@ const w = createWorld({
   name: 'Calibration Guard',
   color: '#335577',
   seed: 'calibration-guard',
-  difficulty: 1,
+  level: 'normal' as const,
 });
 let serial = 0;
 /** Eight clubs per strength, so tactics and generated squads vary across the sample. */

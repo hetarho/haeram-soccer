@@ -11,7 +11,7 @@ function season(tactic: Tactic, seed: string) {
     name: 'Detail Athletic',
     color: '#24664f',
     seed,
-    difficulty: 1,
+    level: 'normal' as const,
   });
   professionalStart(w);
   w.tactic = tactic;

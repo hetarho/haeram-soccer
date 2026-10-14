@@ -1,3 +1,4 @@
+import { ATTRIBUTES } from '../../../../packages/contracts/src/player';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import type { CsvCell } from '../adapters/csv';
 import type { PlayerScope } from './playerAnalysis';
@@ -74,7 +75,7 @@ export function analysisDataset(
         'player_id',
         'player_name',
         'status',
-        'role',
+        'position',
         'birth_year',
         'minutes',
         'goals',
@@ -87,11 +88,7 @@ export function analysisDataset(
         'interceptions',
         'dribbles',
         'saves',
-        'attack',
-        'passing',
-        'defense',
-        'keeper',
-        'stamina',
+        ...ATTRIBUTES,
         'potential',
         'fatigue',
       ],
@@ -106,7 +103,7 @@ export function analysisDataset(
             p.id,
             p.name,
             p.status,
-            p.role,
+            p.position,
             p.born,
             m[10],
             m[0],
@@ -119,11 +116,7 @@ export function analysisDataset(
             m[7],
             m[8],
             m[9],
-            p.attack,
-            p.passing,
-            p.defense,
-            p.keeper,
-            p.stamina,
+            ...ATTRIBUTES.map((attribute) => Math.round(p.attrs[attribute])),
             p.potential,
             p.fatigue,
           ];

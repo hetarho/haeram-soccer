@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
-import type { Player, Role, World } from '../../contracts/src/types';
+import type { Line, Player, Position, World } from '../../contracts/src/types';
+import { ATTRIBUTES } from '../../contracts/src/player';
+import { lineOf } from './player';
 import {
   ACADEMY_LIMIT,
   ACADEMY_READINESS_LABEL,
@@ -34,7 +36,7 @@ function world(seed = 'youth-academy') {
     name: 'Nursery End',
     color: '#556b2f',
     seed,
-    difficulty: 2,
+    level: 'easy' as const,
   });
   w.cash = '999999999';
   return w;
@@ -56,7 +58,7 @@ function director(w: World, ability: number, trait?: 'developer' | 'spotter') {
 
 let serial = 0;
 /** A hand-made prospect whose overall equals `skill`. */
-function prospect(w: World, role: Role, age: number, skill: number): Player {
+function prospect(w: World, role: Position, age: number, skill: number): Player {
   const player = makePlayer(
     'ENG',
     w.seed,
@@ -66,8 +68,7 @@ function prospect(w: World, role: Role, age: number, skill: number): Player {
     role,
     age,
   );
-  player.attack = player.passing = player.defense = player.stamina = skill;
-  player.keeper = role === 'GK' ? skill : 10;
+  for (const a of ATTRIBUTES) player.attrs[a] = skill;
   player.potential = Math.max(skill, 80);
   player.wage = '0';
   w.academy = { ...w.academy, players: [...academyPlayers(w), player] };
@@ -91,7 +92,7 @@ describe('youth academy intake', () => {
       expect(player.potential).toBeLessThanOrEqual(99);
       expect(overall(player)).toBeLessThan(60);
     });
-    expect(new Set(players.map((player) => player.role)).size).toBe(3);
+    expect(new Set(players.map((player) => player.position)).size).toBe(3);
     expect(w.academy!.intakeYear).toBe(w.year);
     const before = canonical(w.academy),
       inbox = w.inbox!.length;
@@ -129,7 +130,7 @@ describe('youth academy intake', () => {
     expect(intake(old)).toHaveLength(3);
     expect(old.academy!.intakeYear).toBe(old.year);
     const full = world();
-    for (let i = 0; i < ACADEMY_LIMIT; i++) prospect(full, 'MID', 16, 30);
+    for (let i = 0; i < ACADEMY_LIMIT; i++) prospect(full, 'CM', 16, 30);
     expect(intake(full)).toHaveLength(ACADEMY_LIMIT);
     expect(full.academy!.intakeYear).toBe(full.year);
     expect(full.events.at(-1)!.title).toContain('보류');
@@ -151,22 +152,22 @@ describe('youth academy intake', () => {
 });
 
 describe('academy development', () => {
-  it('grows role skills toward potential each settled round and records it', () => {
+  it("grows his position's attributes toward potential each settled round and records it", () => {
     const w = world(),
-      forward = prospect(w, 'FWD', 16, 30),
+      forward = prospect(w, 'ST', 16, 30),
       keeper = prospect(w, 'GK', 16, 30);
     developAcademy(w);
-    expect(forward.attack).toBeGreaterThan(30);
-    expect(forward.stamina).toBeGreaterThan(30);
-    expect(forward.passing).toBe(30);
-    expect(forward.defense).toBe(30);
-    expect(forward.developed).toBeCloseTo(forward.attack - 30, 8);
-    expect(keeper.keeper).toBeGreaterThan(30);
-    expect(keeper.attack).toBe(30);
-    const capped = prospect(w, 'MID', 16, 50);
+    expect(forward.attrs.finishing).toBeGreaterThan(forward.attrs.pace);
+    expect(forward.attrs.pace).toBeGreaterThan(30);
+    expect(forward.attrs.passing).toBe(30);
+    expect(forward.attrs.tackling).toBe(30);
+    expect(forward.developed).toBeCloseTo(overall(forward) - 30, 0);
+    expect(keeper.attrs.reflexes).toBeGreaterThan(30);
+    expect(keeper.attrs.finishing).toBe(30);
+    const capped = prospect(w, 'CM', 16, 50);
     capped.potential = 50;
     developAcademy(w);
-    expect(capped.passing).toBe(50);
+    expect(capped.attrs.passing).toBe(50);
     expect(capped.developed).toBeUndefined();
   });
 
@@ -174,9 +175,9 @@ describe('academy development', () => {
     const gain = (setup: (w: World) => void) => {
       const w = world();
       setup(w);
-      const player = prospect(w, 'DEF', 16, 30);
+      const player = prospect(w, 'CB', 16, 30);
       for (let round = 0; round < 10; round++) developAcademy(w);
-      return player.defense - 30;
+      return player.attrs.tackling - 30;
     };
     const base = gain(() => undefined);
     expect(base).toBeGreaterThan(0);
@@ -187,15 +188,15 @@ describe('academy development', () => {
 
   it('settles academy growth once per round boundary with first-team training', () => {
     const w = world(),
-      player = prospect(w, 'MID', 16, 30);
+      player = prospect(w, 'CM', 16, 30);
     w.round = 1;
     settleTraining(w);
-    const once = player.passing;
+    const once = player.attrs.passing;
     expect(once).toBeGreaterThan(30);
     settleTraining(w);
-    expect(player.passing).toBe(once);
+    expect(player.attrs.passing).toBe(once);
     advanceRound(w, undefined, false);
-    expect(player.passing).toBeGreaterThan(once);
+    expect(player.attrs.passing).toBeGreaterThan(once);
   });
 });
 
@@ -203,7 +204,7 @@ describe('promotion and release', () => {
   it('promotes into the first team with a small wage and a three-year contract', () => {
     // An amateur squad earns the minimum wage, so the prospect is a little weaker than it.
     const w = world(),
-      player = prospect(w, 'MID', 17, 34),
+      player = prospect(w, 'CM', 17, 25),
       squad = activePlayers(w).length;
     operate(w, { type: 'promote-youth', id: player.id });
     expect(academyPlayers(w)).toHaveLength(0);
@@ -224,10 +225,10 @@ describe('promotion and release', () => {
 
   it('refuses promotion into a full 26-player squad without changing anything', () => {
     const w = world(),
-      player = prospect(w, 'DEF', 18, 60);
+      player = prospect(w, 'CB', 18, 60);
     let i = 0;
     while (activePlayers(w).length < 26)
-      w.players.push(makePlayer('ENG', w.seed, `filler:${i++}`, w.year, 40, 'MID', 25));
+      w.players.push(makePlayer('ENG', w.seed, `filler:${i++}`, w.year, 40, 'CM', 25));
     const before = canonical(w);
     expect(() => promoteYouth(w, player.id)).toThrow('26명');
     expect(canonical(w)).toBe(before);
@@ -235,7 +236,7 @@ describe('promotion and release', () => {
 
   it('releases a prospect on request', () => {
     const w = world(),
-      player = prospect(w, 'FWD', 16, 30);
+      player = prospect(w, 'ST', 16, 30);
     operate(w, { type: 'release-youth', id: player.id });
     expect(academyPlayers(w)).toEqual([]);
     expect(w.players.some((other) => other.id === player.id)).toBe(false);
@@ -247,11 +248,11 @@ describe('promotion and release', () => {
 describe('season boundary', () => {
   function cohort() {
     const w = world();
-    const ready = prospect(w, 'DEF', 17, 90),
-      growing = prospect(w, 'MID', 17, 10),
-      young = prospect(w, 'FWD', 15, 90),
-      review = prospect(w, 'FWD', 19, 10),
-      aged = prospect(w, 'MID', 22, 90);
+    const ready = prospect(w, 'CB', 17, 90),
+      growing = prospect(w, 'CM', 17, 10),
+      young = prospect(w, 'ST', 15, 90),
+      review = prospect(w, 'ST', 19, 10),
+      aged = prospect(w, 'CM', 22, 90);
     // At 19 a prospect whose potential cannot reach the first team is up for release (→STAFF-13).
     review.potential = 15;
     return { w, ready, growing, young, review, aged };
@@ -319,7 +320,7 @@ describe('season boundary', () => {
     expect(report.detail).toContain(review.name);
     const quiet = world();
     quiet.intervention = 1;
-    prospect(quiet, 'MID', 16, 10);
+    prospect(quiet, 'CM', 16, 10);
     seasonAcademy(quiet);
     expect(quiet.inbox).toEqual([]);
   });
@@ -328,8 +329,8 @@ describe('season boundary', () => {
     const full = world();
     let i = 0;
     while (activePlayers(full).length < 26)
-      full.players.push(makePlayer('ENG', full.seed, `filler:${i++}`, full.year, 40, 'MID', 25));
-    const blocked = prospect(full, 'DEF', 18, 90);
+      full.players.push(makePlayer('ENG', full.seed, `filler:${i++}`, full.year, 40, 'CM', 25));
+    const blocked = prospect(full, 'CB', 18, 90);
     seasonAcademy(full);
     expect(academyPlayers(full).map((player) => player.id)).toEqual([blocked.id]);
     const keepers = world();
@@ -361,13 +362,13 @@ describe('season boundary', () => {
 });
 
 describe('육성 목표 and 데뷔 시점 (→CLUB-32)', () => {
-  /** The weakest first-teamer of the role and the starters' average, as the director measures. */
-  const levels = (w: World, role: Role) => {
+  /** The weakest first-teamer of the line and the starters' average, as the director measures. */
+  const levels = (w: World, role: Line) => {
     const peers = activePlayers(w)
-      .filter((player) => player.role === role)
+      .filter((player) => lineOf(player.position) === role)
       .map(overall);
     const starters = ownStarters(w)
-      .filter((player) => player.role === role)
+      .filter((player) => lineOf(player.position) === role)
       .map(overall);
     return {
       weakest: Math.min(...peers),
@@ -381,32 +382,32 @@ describe('육성 목표 and 데뷔 시점 (→CLUB-32)', () => {
 
   it("데뷔 시점 sets readiness and the coaches' focus rules", () => {
     const w = world('debut-rows');
-    const { weakest, starters } = levels(w, 'DEF');
+    const { weakest, starters } = levels(w, 'DF');
     // Below both of 표준's bars, within 빠른 데뷔's.
-    const near = prospect(w, 'DEF', 18, Math.floor(Math.min(weakest - 2, starters - 11)));
+    const near = prospect(w, 'CB', 18, Math.floor(Math.min(weakest - 2, starters - 11)));
     expect(state(w, near)).not.toBe('ready');
     row(w, 'debut', 'early');
     expect(state(w, near)).toBe('ready');
     row(w, 'debut', 'ready');
     expect(state(w, near)).not.toBe('ready');
-    const level = prospect(w, 'DEF', 18, Math.ceil(starters));
+    const level = prospect(w, 'CB', 18, Math.ceil(starters));
     expect(state(w, level)).toBe('ready');
     // 늦게: nobody before 19, whatever his rating.
     row(w, 'debut', 'late');
     expect(state(w, level)).not.toBe('ready');
-    const nineteen = prospect(w, 'DEF', 19, Math.ceil(starters));
+    const nineteen = prospect(w, 'CB', 19, Math.ceil(starters));
     expect(state(w, nineteen)).toBe('ready');
 
     // The youth director readies a U-19 within 10 under 빠른 데뷔, and only U-21 under 늦게.
     const focus = world('debut-focus');
-    const bars = levels(focus, 'MID');
-    prospect(focus, 'MID', 17, Math.floor(Math.min(bars.weakest, bars.starters - 10)) - 8);
+    const bars = levels(focus, 'MF');
+    prospect(focus, 'CM', 17, Math.floor(Math.min(bars.weakest, bars.starters - 10)) - 8);
     expect(youthAdvice(focus).focus).not.toBe('firstTeam');
     row(focus, 'debut', 'early');
     expect(youthAdvice(focus).focus).toBe('firstTeam');
     const late = world('debut-late');
-    const lateBars = levels(late, 'MID');
-    prospect(late, 'MID', 17, Math.ceil(lateBars.starters));
+    const lateBars = levels(late, 'MF');
+    prospect(late, 'CM', 17, Math.ceil(lateBars.starters));
     expect(youthAdvice(late).focus).toBe('firstTeam');
     row(late, 'debut', 'late');
     expect(youthAdvice(late).focus).not.toBe('firstTeam');
@@ -417,20 +418,20 @@ describe('육성 목표 and 데뷔 시점 (→CLUB-32)', () => {
     for (const player of ownStarters(first).slice(0, 2)) player.born = first.year - 20;
     expect(autoTrainingAdvice(first).focus).toBe('balanced');
     row(first, 'debut', 'early');
-    expect(autoTrainingAdvice(first).focus).toBe('youth');
+    expect(autoTrainingAdvice(first).focus).toBe('hard');
   });
 
   it('육성 목표 sets release', () => {
     const w = world('goal-rows');
-    const { weakest, starters } = levels(w, 'DEF');
+    const { weakest, starters } = levels(w, 'DF');
     // 19 and short of the weakest first-teamer's level for good: released at 표준.
-    const stalled = prospect(w, 'DEF', 19, 5);
+    const stalled = prospect(w, 'CB', 19, 5);
     stalled.potential = weakest - 5;
     expect(state(w, stalled)).toBe('review');
     row(w, 'youthGoal', 'firstTeam');
     expect(state(w, stalled)).toBe('growing');
     // 18 and short of the starters' level, though above the weakest: only 최소 운영 lets him go.
-    const middling = prospect(w, 'DEF', 18, 5);
+    const middling = prospect(w, 'CB', 18, 5);
     middling.potential = Math.max(weakest + 1, Math.floor(starters) - 1);
     row(w, 'youthGoal', 'standard');
     expect(state(w, middling)).toBe('growing');

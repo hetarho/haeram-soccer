@@ -258,7 +258,7 @@ test('filters player samples and shows scoped per-90 evidence on a mobile profil
   const sheet = page.getByRole('dialog', { name: '선수 보기 설정' });
   await sheet
     .getByRole('radiogroup', { name: '포지션' })
-    .getByRole('radio', { name: 'FWD' })
+    .getByRole('radio', { name: 'FW' })
     .click();
   await sheet
     .getByRole('radiogroup', { name: '정렬' })
@@ -271,7 +271,7 @@ test('filters player samples and shows scoped per-90 evidence on a mobile profil
   await page.keyboard.press('Escape');
   await expect(sheet).toHaveCount(0);
   await expect(settings).toHaveAccessibleName('선수 보기 설정 · 3개 적용');
-  await expect(page.getByTestId('roster-view-summary')).toHaveText('FWD · 90분당 득점 · 90분+');
+  await expect(page.getByTestId('roster-view-summary')).toHaveText('FW · 90분당 득점 · 90분+');
   const detailTable = page.locator('details[class*="rosterDetails"]');
   await expect(detailTable.locator('table')).toHaveCount(0);
   await detailTable.getByText('전체 선수 지표 표 보기', { exact: true }).click();

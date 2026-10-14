@@ -18,7 +18,7 @@ const world = (seed = 'facility-parts') => {
     name: 'Stand Town',
     color: '#445533',
     seed,
-    difficulty: 1,
+    level: 'normal' as const,
   });
   w.cash = '999999999999';
   return w;

@@ -1,8 +1,24 @@
 import type { ClubBuild } from './build';
+import type { Attributes, Line, Personality, PlayTrait, Position, Positions } from './player';
 export type { ClubBuild, BuildSlot } from './build';
+export type {
+  Attribute,
+  Attributes,
+  Grade,
+  Line,
+  Personality,
+  PlayTrait,
+  Position,
+  PositionLevel,
+  Positions,
+  RoleId,
+} from './player';
 export type CountryCode = 'ENG' | 'ESP' | 'GER' | 'ITA' | 'FRA' | 'POR' | 'NED' | 'BEL';
 export type Tactic = 'balanced' | 'possession' | 'counter' | 'press';
-export type TrainingFocus = 'balanced' | 'youth' | 'recovery';
+/** The first team's training focus (→CLUB-11): 균형, 회복 or 하드 트레이닝. */
+export type TrainingFocus = 'balanced' | 'recovery' | 'hard';
+/** The four difficulty levels; each sets only the starting cash and squad (→WEB-3). */
+export type DifficultyLevel = 'easy' | 'normal' | 'hard' | 'extreme';
 /** The facility parts the owner builds separately (→ECON-32). */
 export type FacilityPart = 'stadium' | 'training' | 'academy';
 /** The academy's training focus, set by the youth director (→CLUB-31). */
@@ -35,7 +51,6 @@ export type ClubPolicy = Record<PolicyKey, PolicyLevel>;
 /** Saved policy: keys added later may be absent and resolve to their defaults. */
 export type SavedPolicy = Pick<ClubPolicy, 'support' | 'recruitment'> &
   Partial<Omit<ClubPolicy, 'support' | 'recruitment'>>;
-export type Role = 'GK' | 'DEF' | 'MID' | 'FWD';
 /**
  * Backroom roles: the 단장 (`director`, →STAFF-20) beside the manager and the coaching
  * departments below him, following a professional club's staff.
@@ -168,7 +183,7 @@ export interface ContractClauses {
   relegation?: number;
 }
 /** Why a player turned unhappy (→CLUB-27): the club declined his renewal or improved contract. */
-export type UnhappyReason = 'renewal-declined' | 'improve-declined';
+export type UnhappyReason = 'renewal-declined' | 'improve-declined' | 'ambition';
 /**
  * Ledger kinds of competition money (→ECON-28), sponsor contracts (→ECON-8), expiring contracts
  * (→CLUB-28) and operating expenses (→ECON-30); `Event.kind` stays a string, so older entries keep
@@ -210,11 +225,17 @@ export type InboxKind =
   | 'transfer-request'
   | 'sponsor-ending';
 export type Metrics = number[];
-/** A role the manager asks the club to sign for (→CLUB-33): short of the minimum, or an upgrade. */
+/**
+ * A line the manager asks the club to sign for (→CLUB-33): short of the minimum, or an upgrade;
+ * an upgrade may name the formation slot and its position.
+ */
 export interface SigningRequest {
-  role: Role;
+  line: Line;
   kind: 'short' | 'upgrade';
-  /** The manager's pick among the shortlisted of the role, by player id. */
+  /** The formation slot (index) and its position an upgrade asks for. */
+  slot?: number;
+  position?: Position;
+  /** The manager's pick among the shortlisted who fit the request, by player id. */
   pick?: string;
 }
 /**
@@ -225,15 +246,21 @@ export interface Shortlist {
   /** The season and season day of the draw. */
   year: number;
   day: number;
-  /** Up to three market candidates per role, best first; one no longer available drops on reading. */
-  entries: { playerId: string; role: Role }[];
-  /** At most three: every short role, then the role a candidate upgrades most (→CLUB-33). */
+  /** Up to three market candidates per line, best first; one no longer available drops on reading. */
+  entries: { playerId: string; line: Line }[];
+  /** At most three: every short line, then the upgrade a candidate makes most (→CLUB-33). */
   requests: SigningRequest[];
   /**
    * The requests at the open window's opening, judged at its close: the manager who made them
-   * and whether a player of a requested role joined since (→CLUB-33).
+   * and whether a player who fits one joined since (→CLUB-33).
    */
-  window?: { year: number; opening: number; manager: string; roles: Role[]; met?: true };
+  window?: {
+    year: number;
+    opening: number;
+    manager: string;
+    requests: SigningRequest[];
+    met?: true;
+  };
 }
 export interface Club {
   id: string;
@@ -249,26 +276,39 @@ export interface Club {
   representative?: boolean;
   /** Club Elo from every settled result (→HIST-12); absent in older saves, derived from strength. */
   elo?: number;
+  /** How settled a club nobody owns is under its manager (조직력, →LEAGUE-12); absent is 0.80. */
+  cohesion?: number;
   /** Level a rare project (new owner, golden generation) adds, fading each summer (→LEAGUE-10). */
   project?: number;
 }
 export interface Player {
   id: string;
   name: string;
-  role: Role;
+  /** His main position (→PLAYER-3); his line is its line. */
+  position: Position;
+  /** Every position he plays with its level, the main one at 3 (→PLAYER-4). */
+  positions: Positions;
   born: number;
-  attack: number;
-  passing: number;
-  defense: number;
-  keeper: number;
-  stamina: number;
+  /** The 14 attributes (→PLAYER-2). */
+  attrs: Attributes;
+  personality: Personality;
+  traits: PlayTrait[];
+  /** How well he fits the club under its manager, 0.3–1.0 (→PLAYER-10). */
+  adaptation: number;
+  /** Settled league rounds at the club, for 적응 실패 (→PLAYER-14). */
+  clubRounds?: number;
+  /** The season 적응 실패 was reported for this stay (→PLAYER-14). */
+  unsettled?: number;
+  /** Starts at each position since its level last changed (→PLAYER-4). */
+  positionStarts?: Partial<Record<Position, number>>;
+  /** The OVR at his main position he grows toward (→PLAYER-15). */
   potential: number;
   reputation: number;
   wage: string;
   until: number;
   status: 'active' | 'sold' | 'retired';
   fatigue: number;
-  /** Cumulative actual positive mean development of role skills, in hundredths. */
+  /** Cumulative actual positive mean development of his attributes, in hundredths. */
   developed?: number;
   career: Metrics;
   season: Metrics;
@@ -449,7 +489,7 @@ export interface GoalScorer {
   id: string;
   name: string;
   club: string;
-  role: Role;
+  position: Position;
   goals: number;
   appearances: number;
 }
@@ -645,7 +685,13 @@ export interface SeasonArchive {
   /** How far the own club went in each cup this season. */
   runs?: CupRun[];
   /** The own league's ten leading scorers (goals, then fewer appearances); club indexes `clubs`. */
-  scorers?: { name: string; club: number; role: Role; goals: number; appearances: number }[];
+  scorers?: {
+    name: string;
+    club: number;
+    position: Position;
+    goals: number;
+    appearances: number;
+  }[];
   /** The own league position after each league round, first round first. */
   ranks?: number[];
   /** Club Elo at the close, rounded: world lowest, world highest, own league lowest, highest. */
@@ -749,10 +795,11 @@ export interface World {
   /** Actual league goals and appearances with round snapshots, for the current season. */
   scorerSeason?: GoalScorerSeason;
   playerClub: string;
-  difficulty: number;
+  /** The difficulty level the club was founded at (→WEB-3). */
+  level: DifficultyLevel;
   clubs: Club[];
   players: Player[];
-  /** Preferred starting XI in goalkeeper, four defenders, three midfielders, three forwards order. */
+  /** Preferred starting XI, one player per slot of the applied tactic's formation (→STAFF-22). */
   lineup?: string[];
   /**
    * Focuses the owner had the coaches take (→STAFF-19); without one the coaches set it by rule
@@ -761,6 +808,12 @@ export interface World {
   trainingOrders?: {
     assistant?: TrainingOrder<TrainingFocus>;
     youth?: TrainingOrder<YouthFocus>;
+    /** A first-team player's own focus, by player id (→CLUB-11). */
+    players?: Record<string, TrainingOrder<TrainingFocus>>;
+    /** The settled round of the owner's last suggestion for each player (→STAFF-19). */
+    asked?: Record<string, { year: number; round: number }>;
+    /** The squad's settled rounds in a row under 하드 (→CLUB-19). */
+    hardStreak?: number;
   };
   /** Last settled training boundary, preventing repeated development/recovery. */
   trainingAt?: string;
@@ -851,7 +904,7 @@ export interface Founding {
   name: string;
   color: string;
   seed: string;
-  difficulty: number;
+  level: DifficultyLevel;
   /** The direction preset chosen at founding (→WEB-15); absent is 기본 방향. */
   preset?: string;
 }

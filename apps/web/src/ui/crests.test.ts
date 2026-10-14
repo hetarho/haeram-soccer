@@ -12,7 +12,7 @@ import {
 } from './crests';
 
 const world = (color = '#24664f', seed = 'crests') =>
-  createWorld({ country: 'ENG', name: 'Crest Club', color, seed, difficulty: 1 });
+  createWorld({ country: 'ENG', name: 'Crest Club', color, seed, level: 'normal' as const });
 
 describe('club crests', () => {
   it('offers hundreds of thousands of readable combinations', () => {

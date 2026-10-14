@@ -1,15 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
-import type { ClubPolicy, World } from '../../contracts/src/types';
+import type { ClubPolicy } from '../../contracts/src/types';
 import {
   academyIntakeSize,
   academyPotentialBonus,
-  activateBases,
   activePlayers,
   advanceRound,
   BASE_CONFIG,
   baseEffects,
-  clubOf,
   createWorld,
   gateProjection,
   POLICY_DEFAULTS,
@@ -28,7 +26,7 @@ function world(policy?: Partial<ClubPolicy>) {
     name: 'Bases Albion',
     color: '#2a4d3c',
     seed: 'club-bases',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   w.cash = '999999999';
   if (policy) w.policy = { ...POLICY_DEFAULTS, ...policy };
@@ -142,17 +140,5 @@ describe('지역 기반 and 글로벌 인지도 (→ECON-34)', () => {
     expect(home.events.some((event) => event.kind === 'tour')).toBe(false);
     expect(activePlayers(home).every((player) => player.fatigue === 0)).toBe(true);
     validateWorld(w);
-  });
-
-  it('names the move once for a world from before rules 1.19', () => {
-    const w: World = { ...world(), policy: { support: 3, recruitment: 3, globalMarketing: 4 } };
-    const inbox = w.inbox!.length;
-    expect(activateBases(w, '1.19.0')).toBe(w);
-    const next = activateBases(w, '1.18.0');
-    expect(next.inbox).toHaveLength(inbox + 1);
-    expect(next.inbox!.at(-1)).toMatchObject({ title: '마케팅이 지역·글로벌 부문으로 옮겨졌어요' });
-    expect(next.inbox!.at(-1)!.detail).toContain('해외 마케팅 글로벌 캠페인');
-    expect(w.inbox).toHaveLength(inbox);
-    expect(clubOf(next).fans).toBe(clubOf(w).fans);
   });
 });

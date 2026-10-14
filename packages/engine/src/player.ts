@@ -84,6 +84,8 @@ const LINE_OF: Record<Position, Line> = {
   ST: 'FW',
 };
 export const lineOf = (position: Position): Line => LINE_OF[position];
+/** What a squad holds of each line at least: 18 players, the 단장's needs too (→CLUB-1, →CLUB-33). */
+export const LINE_MINIMUM: Readonly<Record<Line, number>> = { GK: 2, DF: 6, MF: 6, FW: 4 };
 const MIRROR: Partial<Record<Position, Position>> = {
   LB: 'RB',
   RB: 'LB',

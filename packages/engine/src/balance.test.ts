@@ -21,7 +21,7 @@ describe('a fair start', () => {
         name: 'Fair Start',
         color: '#335577',
         seed: `fair-${code}`,
-        difficulty: 1,
+        level: 'normal' as const,
       });
       const own = clubOf(w);
       const peers = w.clubs.filter(
@@ -41,7 +41,7 @@ describe('a fair start', () => {
       name: 'Fitness',
       color: '#335577',
       seed: 'fitness',
-      difficulty: 1,
+      level: 'normal' as const,
     });
     const fresh = rating(w, clubOf(w));
     for (const player of activePlayers(w)) player.fatigue = FRESH_FATIGUE;
@@ -56,7 +56,7 @@ describe('a fair start', () => {
       name: 'Press Load',
       color: '#335577',
       seed: 'press-load',
-      difficulty: 1,
+      level: 'normal' as const,
     });
     const pressing = w.clubs.find((c) => c.id !== w.playerClub && npcTactic(c) === 'press')!;
     const calm = w.clubs.find((c) => c.id !== w.playerClub && npcTactic(c) !== 'press')!;

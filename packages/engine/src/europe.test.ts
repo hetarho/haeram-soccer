@@ -22,7 +22,7 @@ const world = () =>
     name: 'Century Forge',
     seed: 'eras',
     color: '#223344',
-    difficulty: 1,
+    level: 'normal' as const,
   });
 describe('historical evolution', () => {
   it('activates actual competition milestones and lineages', () => {

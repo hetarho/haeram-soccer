@@ -1,28 +1,28 @@
-import type { Role, World } from '../../contracts/src/types';
+import type { Line, World } from '../../contracts/src/types';
+import { LINES } from '../../contracts/src/player';
 import { SEASON_ROUNDS, nextOwnFixture } from './calendar';
 import { operatingCost, transferOffers } from './operations';
-import { activePlayers, clubOf, fatigueLoad, overall, startingSquad } from './world';
+import { activePlayers, clubOf, fatigueLoad, lineOfPlayer, overall, startingSquad } from './world';
 import { compareIds } from './primitives';
+import { adaptationStart } from './player';
+import { isForeignCandidate } from './ops-squad';
 import { lineupSummary, npcTactic, tacticalProfile } from './strategy';
 
 export type TransferOffer = ReturnType<typeof transferOffers>[number];
 
-/** A simple current-XI need, without claiming the role guarantees better match results. */
-export function recruitmentRoleNeed(w: World): Role {
+/** A simple current-XI need, without claiming the line guarantees better match results. */
+export function recruitmentLineNeed(w: World): Line {
   const starters = startingSquad(w, clubOf(w));
-  const roles: Role[] = ['GK', 'DEF', 'MID', 'FWD'];
-  return roles
-    .map((role, index) => {
-      const players = starters.filter((player) => player.role === role);
-      const quality = players.length
-        ? players.reduce(
-            (sum, player) => sum + overall(player) - fatigueLoad(player.fatigue) / 6,
-            0,
-          ) / players.length
-        : 0;
-      return { role, index, quality };
-    })
-    .sort((a, b) => a.quality - b.quality || a.index - b.index)[0].role;
+  return LINES.map((role, index) => {
+    const players = starters.filter((player) => lineOfPlayer(player) === role);
+    const quality = players.length
+      ? players.reduce(
+          (sum, player) => sum + overall(player) - fatigueLoad(player.fatigue) / 6,
+          0,
+        ) / players.length
+      : 0;
+    return { role, index, quality };
+  }).sort((a, b) => a.quality - b.quality || a.index - b.index)[0].role;
 }
 
 /** Pure hypothetical preview. Recruitment never changes a saved manual XI on its own. */
@@ -32,12 +32,20 @@ export function recruitmentPreview(w: World, offer: TransferOffer, loan = false)
     manual = !!w.lineup,
     alreadyOwned = w.players.some((player) => player.id === offer.player.id),
     full = activePlayers(w).length >= 26;
+  // He arrives at the adaptation his signing starts him at (→PLAYER-11), not settled.
+  const arriving = {
+    ...offer.player,
+    adaptation: adaptationStart(
+      offer.player.personality.adaptability,
+      isForeignCandidate(offer.player.id) ? 'abroad' : 'domestic',
+    ),
+  };
   let after = before;
   if (!alreadyOwned) {
     if (manual) {
       const replacement = before
         .map((player, index) => ({ player, index }))
-        .filter(({ player }) => player.role === offer.player.role)
+        .filter(({ player }) => lineOfPlayer(player) === lineOfPlayer(offer.player))
         .sort(
           (a, b) =>
             overall(a.player) - a.player.fatigue / 5 - (overall(b.player) - b.player.fatigue / 5) ||
@@ -45,18 +53,18 @@ export function recruitmentPreview(w: World, offer: TransferOffer, loan = false)
         )[0];
       if (replacement) {
         after = [...before];
-        after[replacement.index] = offer.player;
+        after[replacement.index] = arriving;
       }
     } else {
-      after = startingSquad({ ...w, players: [...w.players, offer.player] }, own);
+      after = startingSquad({ ...w, players: [...w.players, arriving] }, own);
     }
   }
   const fixture = nextOwnFixture(w),
     opponentId = fixture?.home === w.playerClub ? fixture.away : fixture?.home,
     opponent = w.clubs.find((club) => club.id === opponentId),
     opponentTactic = opponent ? npcTactic(opponent) : 'balanced';
-  const beforeStrength = lineupSummary(before).strength,
-    afterStrength = lineupSummary(after).strength,
+  const beforeStrength = lineupSummary(before, w.tactic).strength,
+    afterStrength = lineupSummary(after, w.tactic).strength,
     beforeFit = tacticalProfile(before, w.tactic, opponentTactic).fit,
     afterFit = tacticalProfile(after, w.tactic, opponentTactic).fit;
   const fee = loan ? offer.loanFee : offer.fee,

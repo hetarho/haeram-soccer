@@ -1,3 +1,4 @@
+import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import {
@@ -40,11 +41,11 @@ import {
   effectLines,
   NEUTRAL_BUILD,
 } from './index';
-import { BUILD_OPTIONS, BUILD_SLOTS, LEGACY_VISION_BUILDS } from '../../contracts/src/build';
+import { BUILD_OPTIONS, BUILD_SLOTS } from '../../contracts/src/build';
 import { clubBuildSchema } from '../../contracts/src/schema';
 
 const world = (seed = 'build-cards') =>
-  createWorld({ country: 'ENG', name: 'Build FC', color: '#2a4d3c', seed, difficulty: 2 });
+  createWorld({ country: 'ENG', name: 'Build FC', color: '#2a4d3c', seed, level: 'easy' as const });
 
 describe('manager styles', () => {
   it('offers four different schools a season, each a stable seeded order of all eight', () => {
@@ -101,7 +102,7 @@ describe('manager styles', () => {
   it('lets a developer field youngsters like the youth trait', () => {
     const w = world();
     const young = activePlayers(w).filter((p) => w.year - p.born <= 21);
-    for (const player of young) player.attack = player.passing = player.defense = 50;
+    for (const player of young) for (const a of ATTRIBUTES) player.attrs[a] = 50;
     w.manager.style = 'developer';
     expect(managerStyleEffects(w).youthSelection).toBe(true);
     expect(managerStyleEffects(w).youthGrowth).toBe(1.3);
@@ -258,7 +259,7 @@ describe('club builds', () => {
       name: 'Build FC',
       color: '#2a4d3c',
       seed: 'founding-direction',
-      difficulty: 2,
+      level: 'easy' as const,
       preset: 'youth-academy',
     });
     expect(matchingPreset(founded)?.id).toBe('youth-academy');
@@ -275,7 +276,7 @@ describe('club builds', () => {
         name: 'Build FC',
         color: '#2a4d3c',
         seed: 'founding-direction',
-        difficulty: 2,
+        level: 'easy' as const,
         preset: 'galacticos',
       }),
     ).toThrow('구단 방향');
@@ -316,19 +317,6 @@ describe('club builds', () => {
     );
     expect(transferOffers(network).length).toBe(transferOffers(plain).length + 3);
     expect(buildEffects(plain)).toMatchObject({ sponsor: 1, saleFee: 1, gateDemand: 0 });
-  });
-
-  it('loads a rules 1.6–1.7 vision as the cards it stood for', () => {
-    const w = world();
-    const legacy = { ...structuredClone(w), vision: 'trading', visionYear: w.year };
-    const loaded = validateWorld(legacy);
-    expect(loaded.build).toEqual(LEGACY_VISION_BUILDS.trading);
-    // Its yearly lock is gone with the yearly change (→SAVE-10).
-    expect('buildYear' in loaded).toBe(false);
-    expect('vision' in loaded).toBe(false);
-    expect(validateWorld({ ...structuredClone(w), vision: 'balanced' }).build).toBeUndefined();
-    // Like any unknown field, an unrecognised vision is dropped: the club stays standard.
-    expect(validateWorld({ ...structuredClone(w), vision: 'galacticos' }).build).toBeUndefined();
   });
 });
 

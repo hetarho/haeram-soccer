@@ -28,12 +28,12 @@ export const LEADER_BOARDS = [
   { key: 'apps', title: '역대 최다 출전', short: '출전', index: 10 },
   { key: 'goals', title: '역대 최다 득점', short: '득점', index: 0 },
   { key: 'assists', title: '역대 최다 도움', short: '도움', index: 1 },
-  { key: 'saves', title: '역대 골키퍼 최다 선방', short: '선방', index: 9, role: 'GK' },
+  { key: 'saves', title: '역대 골키퍼 최다 선방', short: '선방', index: 9, position: 'GK' },
 ] as const;
 export type LeaderBoard = (typeof LEADER_BOARDS)[number];
 
 const onBoard = (board: LeaderBoard, p: Player) =>
-  p.career[board.index] > 0 && (!('role' in board) || p.role === board.role);
+  p.career[board.index] > 0 && (!('position' in board) || p.position === board.position);
 
 /** A board's top `limit`; equal records list the lower player ID first, as in the record book. */
 export function clubLeaders(players: readonly Player[], board: LeaderBoard, limit = 10) {

@@ -7,7 +7,7 @@ const input = {
   name: 'Scouting',
   color: '#24664f',
   seed: 'scout',
-  difficulty: 2,
+  level: 'easy' as const,
 };
 describe('opponent scouting', () => {
   it('shows no invented form before kickoff and never changes the world', () => {

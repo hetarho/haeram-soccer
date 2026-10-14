@@ -31,7 +31,13 @@ import {
 import { ratio } from './primitives';
 
 const world = (seed = 'market') =>
-  createWorld({ country: 'ENG', name: 'Market FC', color: '#334455', seed, difficulty: 2 });
+  createWorld({
+    country: 'ENG',
+    name: 'Market FC',
+    color: '#334455',
+    seed,
+    level: 'easy' as const,
+  });
 
 describe('manager market (STAFF-17)', () => {
   it('opens with the season four and drops the man the owner hires', () => {

@@ -24,7 +24,7 @@ async function talking() {
     name: 'Contract Talks',
     color: '#2a5d8f',
     seed: 'contract-talks-journey',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   // The owner answers contract talks himself only at intervention level 1 (→WEB-45).
   operate(w, { type: 'intervention', level: 1 });
@@ -147,7 +147,7 @@ test('the talk rule shows under 선수 and applies', async ({ page, browserName 
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('talk-rule-journey');
-  await page.getByRole('button', { name: '넉넉한 출발' }).click();
+  await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await page.getByRole('button', { name: '선수·스태프', exact: true }).click();

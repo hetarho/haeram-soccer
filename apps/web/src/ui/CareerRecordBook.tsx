@@ -38,7 +38,7 @@ function Leader({ player, index, label }: { player?: Player; index: number; labe
             <PlayerLink id={player.id} name={player.name} /> · {player.career[index]}회
           </b>
           <p className={a.note}>
-            {player.role} · {playerStatus(player)} · {appearances(player.career)}경기 ·{' '}
+            {player.position} · {playerStatus(player)} · {appearances(player.career)}경기 ·{' '}
             {number(player.career[10])}분 출전
           </p>
         </>
@@ -238,7 +238,7 @@ function LeaderTable({ w, board }: { w: World; board: LeaderBoard }) {
                       </i>
                     </span>
                   </td>
-                  <td>{p.role}</td>
+                  <td>{p.position}</td>
                   <td>{appearances(p.career)}</td>
                   <td>{apps ? `${number(p.career[10])}분` : number(p.career[board.index])}</td>
                   {!apps && <td>{per90(p.career, board.index)?.toFixed(2) ?? '—'}</td>}

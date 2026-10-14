@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
-import type { Player, Role, World } from '../../contracts/src/types';
+import type { Player, Position, World } from '../../contracts/src/types';
+import { ATTRIBUTES } from '../../contracts/src/player';
+import { lineOf } from './player';
 import {
   academyPlayers,
   academySummary,
@@ -25,12 +27,25 @@ import {
 } from './index';
 
 const world = (seed = 'coach-orders', country: 'ENG' | 'GER' = 'ENG') =>
-  createWorld({ country, name: 'Order Town', color: '#334455', seed, difficulty: 1 });
+  createWorld({ country, name: 'Order Town', color: '#334455', seed, level: 'normal' as const });
 let serial = 0;
-function prospect(w: World, role: Role, age: number, skill: number, potential = 80): Player {
-  const player = makePlayer('ENG', w.seed, `${w.playerClub}:p:${serial++}`, w.year, 30, role, age);
-  player.attack = player.passing = player.defense = player.stamina = skill;
-  player.keeper = role === 'GK' ? skill : 10;
+function prospect(
+  w: World,
+  position: Position,
+  age: number,
+  skill: number,
+  potential = 80,
+): Player {
+  const player = makePlayer(
+    'ENG',
+    w.seed,
+    `${w.playerClub}:p:${serial++}`,
+    w.year,
+    30,
+    position,
+    age,
+  );
+  for (const a of ATTRIBUTES) player.attrs[a] = skill;
   player.potential = Math.max(skill, potential);
   player.wage = '0';
   w.academy = { ...w.academy, players: [...academyPlayers(w), player] };
@@ -52,7 +67,7 @@ describe('the coaches set training; the owner suggests or forces (→CLUB-13, CL
     expect(trainingCall(w, 'assistant')).toMatchObject({ focus: rule.focus, by: 'rule' });
     // A volunteer (ability 50) accepts what his rule picks 85% of the time, anything else 55%.
     expect(suggestionChance(w, 'assistant', rule.focus)).toBe(0.85);
-    const other = rule.focus === 'youth' ? 'balanced' : 'youth';
+    const other = rule.focus === 'hard' ? 'balanced' : 'hard';
     expect(suggestionChance(w, 'assistant', other)).toBe(rule.focus === 'recovery' ? 0.3 : 0.55);
     // Find a round whose draw accepts: the outcome is the world's own, the chance as stated.
     let accepted = false;
@@ -87,8 +102,8 @@ describe('the coaches set training; the owner suggests or forces (→CLUB-13, CL
     const risks: number[] = [];
     for (let order = 0; order < 8 && staffMember(w, 'assistant'); order++) {
       risks.push(forceRisk(w, 'assistant'));
-      operate(w, { type: 'coach-training', coach: 'assistant', focus: 'youth', force: true });
-      expect(trainingCall(w, 'assistant')).toMatchObject({ focus: 'youth', by: 'order' });
+      operate(w, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
+      expect(trainingCall(w, 'assistant')).toMatchObject({ focus: 'hard', by: 'order' });
       if (staffMember(w, 'assistant')) expect(strainOf(w, 'assistant')).toBe(order + 1);
     }
     expect(risks).toEqual([0.15, 0.3, 0.45, 0.6, 0.6, 0.6, 0.6, 0.6].slice(0, risks.length));
@@ -111,7 +126,7 @@ describe('the coaches set training; the owner suggests or forces (→CLUB-13, CL
     expect(staffMember(w, 'assistant')).toBeDefined();
     expect(strainOf(w, 'assistant')).toBe(0);
     const paid = withPaidAssistant('coach-season');
-    operate(paid, { type: 'coach-training', coach: 'assistant', focus: 'youth', force: true });
+    operate(paid, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
     if (staffMember(paid, 'assistant')) {
       expect(strainOf(paid, 'assistant')).toBe(1);
       paid.year++;
@@ -137,9 +152,9 @@ describe('the coaches set training; the owner suggests or forces (→CLUB-13, CL
 describe('the academy by age group (→CLUB-16, CLUB-31)', () => {
   it('groups prospects U-17, U-19 and U-21 and grows the younger faster', () => {
     const w = world('academy-groups');
-    const young = prospect(w, 'MID', 15, 40),
-      middle = prospect(w, 'MID', 17, 40),
-      old = prospect(w, 'MID', 19, 40);
+    const young = prospect(w, 'CM', 15, 40),
+      middle = prospect(w, 'CM', 17, 40),
+      old = prospect(w, 'CM', 19, 40);
     expect([young, middle, old].map((player) => ageGroupOf(w, player))).toEqual([
       'u17',
       'u19',
@@ -161,14 +176,16 @@ describe('the academy by age group (→CLUB-16, CLUB-31)', () => {
 
   it("the director's rule: first-team work near readiness, fundamentals for a young academy", () => {
     const w = world('youth-rule');
-    for (let i = 0; i < 3; i++) prospect(w, 'DEF', 15, 30);
+    for (let i = 0; i < 3; i++) prospect(w, 'CB', 15, 30);
     expect(youthAdvice(w).focus).toBe('fundamentals');
     expect(youthFocus(w)).toBe('fundamentals');
     // A U-19 defender within 5 of the weakest first-team defender turns the work to readiness.
     const weakest = Math.min(
-      ...w.players.filter((player) => player.role === 'DEF').map((player) => overall(player)),
+      ...w.players
+        .filter((player) => lineOf(player.position) === 'DF')
+        .map((player) => overall(player)),
     );
-    prospect(w, 'DEF', 18, Math.round(weakest) - 3);
+    prospect(w, 'CB', 18, Math.round(weakest) - 3);
     expect(youthAdvice(w).focus).toBe('firstTeam');
     expect(youthAdvice(w).reason).toContain('1군');
   });
@@ -178,8 +195,8 @@ describe('the academy by age group (→CLUB-16, CLUB-31)', () => {
       ger = world('promotion-ger', 'GER');
     expect(promotionAge(eng)).toBe(17);
     expect(promotionAge(ger)).toBe(16);
-    const english = prospect(eng, 'FWD', 16, 70),
-      german = prospect(ger, 'FWD', 16, 70);
+    const english = prospect(eng, 'ST', 16, 70),
+      german = prospect(ger, 'ST', 16, 70);
     expect(() => operate(eng, { type: 'promote-youth', id: english.id })).toThrow('17세');
     operate(ger, { type: 'promote-youth', id: german.id });
     expect(ger.players.some((player) => player.id === german.id)).toBe(true);

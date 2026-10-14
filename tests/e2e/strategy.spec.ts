@@ -87,10 +87,10 @@ test('applies a preset at once, changes it again at once, and saves its own stra
 
   // A preset drafts every row it fills (→ECON-25) and a dial step joins the same draft; the
   // pinned bar states what it lights and costs.
-  await board.getByRole('button', { name: /동네의 자부심/ }).click();
+  await board.getByRole('button', { name: /유스 순혈주의/ }).click();
   const draft = board.getByTestId('strategy-draft');
   await expect(draft).toContainText('적용하면');
-  await expect(draft).toContainText('동네의 자부심');
+  await expect(draft).toContainText('유스 순혈주의');
   await expect(draft).toContainText('시너지 우리 동네 아이들 발동');
   await expect(board.getByTestId('synergy-local-heroes')).toContainText('적용하면 발동');
   const squad = board.getByRole('region', { name: '선수단·계약', exact: true });
@@ -116,7 +116,7 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   // 적용 acts at once: the strategy and the dial are in force, and no card is locked (→ECON-22).
   await draft.getByRole('button', { name: '적용', exact: true }).click();
   await expect(draft).toHaveCount(0);
-  await expect(board.getByTestId('current-strategy')).toHaveText('동네의 자부심');
+  await expect(board.getByTestId('current-strategy')).toHaveText('유스 순혈주의');
   await expect(generous).toHaveAttribute('aria-checked', 'true');
   await expect(board.getByTestId('synergy-local-heroes')).toContainText('발동 중');
   const youth = board.getByRole('region', { name: '유소년', exact: true });
@@ -137,10 +137,10 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await expect(board.getByTestId('current-strategy')).toHaveText('트레이딩 머신');
   // And back again: a preset returns every row it does not name to its default, so the squad
   // investment set by hand goes back to 표준.
-  await board.getByRole('button', { name: /동네의 자부심/ }).click();
+  await board.getByRole('button', { name: /유스 순혈주의/ }).click();
   await draft.getByRole('button', { name: '적용', exact: true }).click();
   await expect(draft).toHaveCount(0);
-  await expect(board.getByTestId('current-strategy')).toHaveText('동네의 자부심');
+  await expect(board.getByTestId('current-strategy')).toHaveText('유스 순혈주의');
   await expect(generous).toHaveAttribute('aria-checked', 'false');
 
   // The strategy in force is saved to the device library under the owner's name.
@@ -199,7 +199,7 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   // The library belongs to the device: it survives a reload and edits keep its ID.
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
-  await expect(board.getByTestId('current-strategy')).toHaveText('동네의 자부심');
+  await expect(board.getByTestId('current-strategy')).toHaveText('유스 순혈주의');
   await squad.locator('button[aria-controls^="board-area-body-"]').click();
   await expect(squad.getByRole('radio', { name: '선수단 투자 표준', exact: true })).toHaveAttribute(
     'aria-checked',
@@ -219,5 +219,5 @@ test('applies a preset at once, changes it again at once, and saves its own stra
     .click();
   await expect(mine).not.toContainText('동네 축구 2');
   await expect(mine).toContainText('젊은 피');
-  await expect(board.getByTestId('current-strategy')).toHaveText('동네의 자부심');
+  await expect(board.getByTestId('current-strategy')).toHaveText('유스 순혈주의');
 });

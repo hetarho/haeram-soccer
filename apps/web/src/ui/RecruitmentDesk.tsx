@@ -1,12 +1,14 @@
 import { Select } from './Select';
 import { useState } from 'react';
-import type { Role, TransferBid, World } from '../../../../packages/contracts/src/types';
+import type { Line, TransferBid, World } from '../../../../packages/contracts/src/types';
+import { ATTRIBUTES } from '../../../../packages/contracts/src/player';
+import { ATTRIBUTE_LABEL, lineOf, POSITION_LABEL } from '../../../../packages/engine/src/player';
 import { bidBoard, bidOutlook, transferWindow } from '../../../../packages/engine/src/transfers';
 import { bidKind } from './bids';
 import { clubOf, overall } from '../../../../packages/engine/src/world';
 import {
   recruitmentPreview,
-  recruitmentRoleNeed,
+  recruitmentLineNeed,
   type TransferOffer,
 } from '../../../../packages/engine/src/recruitment';
 import type { ClientState, GameClient } from '../runtime/client';
@@ -24,11 +26,11 @@ import s from './RecruitmentDesk.module.css';
 type Preview = ReturnType<typeof recruitmentPreview>;
 type Candidate = { index: number; offer: TransferOffer; buy: Preview; loan: Preview };
 type Order = 'impact' | 'potential' | 'fee';
-const roleNames: Record<Role, string> = {
+const lineNames: Record<Line, string> = {
   GK: '골키퍼',
-  DEF: '수비수',
-  MID: '미드필더',
-  FWD: '공격수',
+  DF: '수비수',
+  MF: '미드필더',
+  FW: '공격수',
 };
 const BID_STATUS: Record<TransferBid['status'], string> = {
   pending: '응답 대기',
@@ -70,14 +72,14 @@ function CandidateCard({
       className={s.card}
       data-testid={`candidate-${player.id}`}
       data-candidate-id={player.id}
-      data-role={player.role}
+      data-line={lineOf(player.position)}
     >
       <header className={s.cardHead}>
-        <OvrBadge value={overall(player)} role={player.role} large />
+        <OvrBadge value={overall(player)} role={player.position} large />
         <div>
           <h3>{player.name}</h3>
           <span>
-            {player.role} · {roleNames[player.role]} · {w.year - player.born}세
+            {player.position} · {POSITION_LABEL[player.position]} · {w.year - player.born}세
           </span>
         </div>
         <button aria-pressed={selected} onClick={onCompare}>
@@ -210,12 +212,8 @@ function CandidateCard({
         <summary>능력 자세히</summary>
         <div className={s.attributes}>
           {[
-            ['공격', player.attack],
-            ['패스', player.passing],
-            ['수비', player.defense],
-            ['골키핑', player.keeper],
-            ['체력', player.stamina],
-            ['잠재력', player.potential],
+            ...ATTRIBUTES.map((a) => [ATTRIBUTE_LABEL[a], Math.round(player.attrs[a])] as const),
+            ['잠재력', Math.round(player.potential)] as const,
           ].map(([label, value]) => (
             <span key={label}>
               <span>{label}</span>
@@ -231,7 +229,7 @@ function CandidateCard({
 export function RecruitmentDesk({ state, client }: { state: ClientState; client: GameClient }) {
   const w = state.view!.world,
     club = clubOf(w);
-  const [role, setRole] = useState<Role | 'all'>('all');
+  const [role, setRole] = useState<Line | 'all'>('all');
   const [order, setOrder] = useState<Order>('impact');
   const [boostOnly, setBoostOnly] = useState(false);
   const [comparison, setComparison] = useState<string[]>([]);
@@ -246,7 +244,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   const readonly = useGameState((current) => current.readonly);
   const error = useGameState((current) => current.error);
   const blocked = acting || readonly || !!error;
-  const recommended = recruitmentRoleNeed(w);
+  const recommended = recruitmentLineNeed(w);
   const candidates: Candidate[] = state.view!.transfers.map((offer, index) => ({
     index,
     offer,
@@ -256,7 +254,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   const ordered = candidates
     .filter(
       ({ offer, buy }) =>
-        (role === 'all' || offer.player.role === role) &&
+        (role === 'all' || lineOf(offer.player.position) === role) &&
         (!boostOnly || buy.strengthDelta > 0 || buy.fitDelta > 0),
     )
     .sort((a, b) => {
@@ -420,7 +418,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
         </p>
       )}
       <div className={s.roles} role="group" aria-label="영입 포지션 선택">
-        {(['all', 'GK', 'DEF', 'MID', 'FWD'] as const).map((value) => (
+        {(['all', 'GK', 'DF', 'MF', 'FW'] as const).map((value) => (
           <button key={value} aria-pressed={role === value} onClick={() => setRole(value)}>
             {value === 'all' ? '전체' : value}
           </button>
@@ -428,7 +426,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       </div>
       <div className={s.filters}>
         <button className={s.recommendation} onClick={() => setRole(recommended)}>
-          추천 포지션: {roleNames[recommended]} · {recommended}
+          추천 포지션: {lineNames[recommended]} · {recommended}
         </button>
         <label>
           후보 정렬{' '}

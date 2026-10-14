@@ -1,3 +1,4 @@
+import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import {
   canonical,
@@ -36,7 +37,7 @@ function founded(year?: number) {
     name: 'Archive Rovers',
     color: '#2a4d3a',
     seed: 'season-archive',
-    difficulty: 1,
+    level: 'normal' as const,
   });
   if (!year) return w;
   w.year = year;
@@ -239,8 +240,7 @@ describe('closed season archive', () => {
     // An XI far above the amateur league and the division it goes up to.
     for (const p of w.players) {
       p.until = w.year + 1;
-      if (p.role === 'GK') p.keeper = 90;
-      else Object.assign(p, { attack: 90, passing: 90, defense: 90, stamina: 90 });
+      for (const a of ATTRIBUTES) p.attrs[a] = 90;
     }
     const { live } = closedSeason(w);
     const own = clubOf(w),
@@ -289,7 +289,7 @@ function lastRound(code: CountryCode, start = (w: World) => w) {
       name: 'Archive Rovers',
       color: '#2a4d3a',
       seed: 'amateur-exchange',
-      difficulty: 1,
+      level: 'normal' as const,
     }),
   );
   // A round step stays put once the club is bankrupt: fail here rather than loop to the timeout.

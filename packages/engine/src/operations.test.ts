@@ -17,7 +17,7 @@ const world = () =>
     name: 'Owners Athletic',
     color: '#125544',
     seed: 'ops',
-    difficulty: 2,
+    level: 'easy' as const,
   });
 describe('club decisions', () => {
   it('refuses or conditions incompatible requests without applying them and resigns under proud conflict', () => {

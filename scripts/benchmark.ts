@@ -145,7 +145,7 @@ for (const variant of ['baseline', 'active-management']) {
     name: variant === 'baseline' ? 'Century Athletic' : 'Century Cooperative',
     color: '#284e35',
     seed: 'release-century-' + variant,
-    difficulty: 2,
+    level: 'easy',
   });
   await measure(w, variant + ' founding');
   for (let n = 0; n < 100; n++) {
@@ -172,7 +172,7 @@ for (const variant of ['baseline', 'active-management']) {
         const candidate = managerCandidates(w).find((offer) => offer.source === 'free');
         if (candidate) operate(w, { type: 'hire', id: candidate.id });
       }
-      operate(w, { type: 'coach-training', coach: 'assistant', focus: 'youth', force: true });
+      operate(w, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
       trainingSelections++;
       for (let round = 0; round < 23; round++) advanceRound(w, undefined, false);
       operate(w, { type: 'coach-training', coach: 'assistant', focus: 'recovery', force: true });
@@ -184,7 +184,7 @@ for (const variant of ['baseline', 'active-management']) {
     if (n === 49) {
       const mid = structuredClone(w);
       if (variant === 'active-management')
-        operate(mid, { type: 'coach-training', coach: 'assistant', focus: 'youth', force: true });
+        operate(mid, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
       for (let i = 0; i < 23; i++) advanceRound(mid, undefined, false);
       const { restored } = await measure(mid, variant + ' mid-career active round');
       simulateSeason(mid);
@@ -217,7 +217,7 @@ for (const variant of ['baseline', 'active-management']) {
     throw new Error('Century own-club/global archival coverage failed');
   if (variant === 'active-management') {
     const before = retainedFacts(w);
-    operate(w, { type: 'coach-training', coach: 'assistant', focus: 'youth', force: true });
+    operate(w, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
     for (let round = 0; round < 12; round++) advanceRound(w, undefined, false);
     operate(w, { type: 'coach-training', coach: 'assistant', focus: 'recovery', force: true });
     for (let round = 12; round < 23; round++) advanceRound(w, undefined, false);
@@ -256,7 +256,7 @@ const era = createWorld({
   name: 'Era Laboratory',
   color: '#3f5566',
   seed: 'era-probe',
-  difficulty: 2,
+  level: 'easy',
 });
 for (let year = FOUNDING_YEAR; year < 2025; year++) simulateSeason(era);
 validateWorld(era, LOAD_CATALOG);

@@ -2,7 +2,8 @@ import { z } from 'zod';
 z.config({ jitless: true });
 import type { SponsorSlot, World } from './types';
 import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from './detail';
-import { BUILD_OPTIONS, LEGACY_VISION_BUILDS, STRATEGY_NAME_LIMIT } from './build';
+import { BUILD_OPTIONS, STRATEGY_NAME_LIMIT } from './build';
+import { ATTRIBUTES, PLAY_TRAITS, POSITIONS } from './player';
 const money = z.string().regex(/^-?\d{1,80}$/);
 /** Money that is never negative: wages asked, contract amounts. */
 const amount = z.string().regex(/^\d{1,80}$/);
@@ -17,6 +18,18 @@ const metrics = z.array(z.number().int().nonnegative()).length(12);
 const teamDetail = z.array(z.number().int().nonnegative()).length(TEAM_DETAIL_SIZE);
 const playerDetail = z.array(z.number().int().nonnegative()).length(PLAYER_DETAIL_SIZE);
 const tactic = z.enum(['balanced', 'possession', 'counter', 'press']);
+const position = z.enum(POSITIONS);
+const line = z.enum(['GK', 'DF', 'MF', 'FW']);
+const grade = z.literal([1, 2, 3, 4, 5]);
+/** The 14 attributes (→PLAYER-2). */
+const attributes = z.strictObject(
+  Object.fromEntries(ATTRIBUTES.map((a) => [a, rating])) as Record<
+    (typeof ATTRIBUTES)[number],
+    typeof rating
+  >,
+);
+/** Every position he plays with its level, the main one among them (→PLAYER-4). */
+const positions = z.partialRecord(position, z.literal([1, 2, 3]));
 /** One card per build slot (→ECON-22); shared by saves and the build command. */
 export const clubBuildSchema = z.strictObject({
   youth: z.enum(BUILD_OPTIONS.youth).optional(),
@@ -41,63 +54,72 @@ const club = z.object({
   representative: z.boolean().optional(),
   elo: z.number().finite().min(0).max(4000).optional(),
   project: z.number().finite().min(0).max(60).optional(),
+  cohesion: z.number().finite().min(0.3).max(1).optional(),
 });
 /** Whole percent of the wage (→CLUB-29): a promotion rise, a relegation cut. */
 const clauses = z.strictObject({
   promotion: z.number().int().min(1).max(100).optional(),
   relegation: z.number().int().min(-99).max(-1).optional(),
 });
-const player = z.object({
-  id,
-  name: text,
-  role: z.enum(['GK', 'DEF', 'MID', 'FWD']),
-  born: z.number().int(),
-  attack: rating,
-  passing: rating,
-  defense: rating,
-  keeper: rating,
-  stamina: rating,
-  potential: rating,
-  reputation: rating,
-  wage: money,
-  until: z.number().int(),
-  status: z.enum(['active', 'sold', 'retired']),
-  fatigue: rating,
-  developed: z.number().finite().min(0).max(500).optional(),
-  career: metrics,
-  season: metrics,
-  loanUntil: z.number().int().optional(),
-  injury: z
-    .strictObject({
-      year: z.number().int(),
-      day: z.number().int().min(0).max(800),
-      label: text,
-    })
-    .optional(),
-  stance: z.enum(['listed', 'untouchable']).optional(),
-  retiring: z.number().int().optional(),
-  talk: z
-    .strictObject({
-      kind: z.enum(['renew', 'improve']),
-      demand: amount,
-      floor: amount,
-      year: season,
-      day: seasonDay,
-      clauses: clauses.optional(),
-    })
-    .optional(),
-  improveAsked: season.optional(),
-  unhappy: z
-    .strictObject({
-      reason: z.enum(['renewal-declined', 'improve-declined']),
-      year: season,
-      day: seasonDay,
-    })
-    .optional(),
-  transferRequest: z.strictObject({ year: season, day: seasonDay }).optional(),
-  agent: z.literal([1, 2, 3, 4, 5]).optional(),
-  clauses: clauses.optional(),
-});
+const player = z
+  .object({
+    id,
+    name: text,
+    position,
+    positions,
+    born: z.number().int(),
+    attrs: attributes,
+    personality: z.strictObject({ professionalism: grade, adaptability: grade, ambition: grade }),
+    traits: z.array(z.enum(PLAY_TRAITS)).max(3),
+    adaptation: z.number().finite().min(0.3).max(1),
+    clubRounds: z.number().int().nonnegative().optional(),
+    unsettled: season.optional(),
+    positionStarts: z.partialRecord(position, z.number().int().nonnegative()).optional(),
+    potential: rating,
+    reputation: rating,
+    wage: money,
+    until: z.number().int(),
+    status: z.enum(['active', 'sold', 'retired']),
+    fatigue: rating,
+    developed: z.number().finite().min(0).max(500).optional(),
+    career: metrics,
+    season: metrics,
+    loanUntil: z.number().int().optional(),
+    injury: z
+      .strictObject({
+        year: z.number().int(),
+        day: z.number().int().min(0).max(800),
+        label: text,
+      })
+      .optional(),
+    stance: z.enum(['listed', 'untouchable']).optional(),
+    retiring: z.number().int().optional(),
+    talk: z
+      .strictObject({
+        kind: z.enum(['renew', 'improve']),
+        demand: amount,
+        floor: amount,
+        year: season,
+        day: seasonDay,
+        clauses: clauses.optional(),
+      })
+      .optional(),
+    improveAsked: season.optional(),
+    unhappy: z
+      .strictObject({
+        reason: z.enum(['renewal-declined', 'improve-declined', 'ambition']),
+        year: season,
+        day: seasonDay,
+      })
+      .optional(),
+    transferRequest: z.strictObject({ year: season, day: seasonDay }).optional(),
+    agent: z.literal([1, 2, 3, 4, 5]).optional(),
+    clauses: clauses.optional(),
+  })
+  .refine(
+    (p) => p.positions[p.position] === 3 && new Set(p.traits).size === p.traits.length,
+    '선수 포지션 또는 특성 손상',
+  );
 const manager = z.object({
   id,
   name: text,
@@ -196,7 +218,7 @@ const scorerSeason = z.object({
         id,
         name: text,
         club: id,
-        role: z.enum(['GK', 'DEF', 'MID', 'FWD']),
+        position,
         goals: z.number().int().nonnegative(),
         appearances: z.number().int().min(1).max(46),
       }),
@@ -332,7 +354,7 @@ const archive = z.object({
       z.strictObject({
         name: text,
         club: clubIndex,
-        role: z.enum(['GK', 'DEF', 'MID', 'FWD']),
+        position,
         goals: z.number().int().positive(),
         appearances: z.number().int().min(1).max(46),
       }),
@@ -480,23 +502,25 @@ const bid = z.strictObject({
   counterFee: money.optional(),
   staff: z.enum(['short', 'upgrade']).optional(),
 });
-const playerRole = z.enum(['GK', 'DEF', 'MID', 'FWD']);
+const request = z.strictObject({
+  line,
+  kind: z.enum(['short', 'upgrade']),
+  slot: z.number().int().min(0).max(10).optional(),
+  position: position.optional(),
+  pick: id.optional(),
+});
 /** The chief scout's shortlist and the manager's requests (→CLUB-33). */
 const shortlist = z.strictObject({
   year: season,
   day: z.number().int().min(0).max(400),
-  entries: z.array(z.strictObject({ playerId: id, role: playerRole })).max(12),
-  requests: z
-    .array(
-      z.strictObject({ role: playerRole, kind: z.enum(['short', 'upgrade']), pick: id.optional() }),
-    )
-    .max(3),
+  entries: z.array(z.strictObject({ playerId: id, line })).max(12),
+  requests: z.array(request).max(3),
   window: z
     .strictObject({
       year: season,
       opening: z.number().int().min(0).max(400),
       manager: id,
-      roles: z.array(playerRole).max(3),
+      requests: z.array(request).max(3),
       met: z.literal(true).optional(),
     })
     .optional(),
@@ -556,7 +580,7 @@ export const worldSchema: z.ZodType<World> = z.object({
   rankHistory: z.array(snapshot).max(470).optional(),
   scorerSeason: scorerSeason.optional(),
   playerClub: id,
-  difficulty: z.number().min(0.1).max(10),
+  level: z.enum(['easy', 'normal', 'hard', 'extreme']),
   clubs: z.array(club).min(10).max(1000),
   players: z.array(player).max(20000),
   lineup: z.array(id).length(11).optional(),
@@ -564,11 +588,25 @@ export const worldSchema: z.ZodType<World> = z.object({
     .strictObject({
       assistant: z
         .strictObject({
-          focus: z.enum(['balanced', 'youth', 'recovery']),
+          focus: z.enum(['balanced', 'recovery', 'hard']),
           rounds: z.number().int().min(1).max(4),
           forced: z.literal(true).optional(),
         })
         .optional(),
+      players: z
+        .record(
+          id,
+          z.strictObject({
+            focus: z.enum(['balanced', 'recovery', 'hard']),
+            rounds: z.number().int().min(1).max(4),
+            forced: z.literal(true).optional(),
+          }),
+        )
+        .optional(),
+      asked: z
+        .record(id, z.strictObject({ year: season, round: z.number().int().min(0).max(100) }))
+        .optional(),
+      hardStreak: z.number().int().nonnegative().optional(),
       youth: z
         .strictObject({
           focus: z.enum(['balanced', 'fundamentals', 'firstTeam']),
@@ -741,274 +779,6 @@ function detailConsistent(m: World['ownMatches'][number], side: 0 | 1) {
   }
   return m.players.length !== 11 || keyPasses === m.detail[side][TD.keyPasses];
 }
-/** Rules 1.6–1.7 kept one of six visions; it loads as the build preset of the same name. */
-/** Rules 1.9 saved one coaching level for every department and listed players at an ask. */
-function legacyMarket(input: unknown): unknown {
-  if (!input || typeof input !== 'object') return input;
-  const w = input as Record<string, unknown>;
-  const flat = typeof w.coaching === 'number';
-  const listed =
-    Array.isArray(w.players) && w.players.some((p) => p && typeof p === 'object' && 'listed' in p);
-  if (!flat && !listed) return input;
-  return {
-    ...w,
-    ...(flat
-      ? {
-          coaching: Object.fromEntries(coachingDepartments.map((role) => [role, w.coaching])),
-        }
-      : {}),
-    ...(listed
-      ? {
-          players: (w.players as Record<string, unknown>[]).map((p) => {
-            if (!p || typeof p !== 'object' || !('listed' in p)) return p;
-            const { listed, ...rest } = p;
-            return listed ? { ...rest, stance: 'listed' } : rest;
-          }),
-        }
-      : {}),
-  };
-}
-function legacyVision(input: unknown): unknown {
-  if (!input || typeof input !== 'object' || !('vision' in input || 'visionYear' in input))
-    return input;
-  const { vision, visionYear, ...rest } = input as Record<string, unknown>;
-  const build =
-    typeof vision === 'string' && Object.hasOwn(LEGACY_VISION_BUILDS, vision)
-      ? LEGACY_VISION_BUILDS[vision]
-      : {};
-  // Its yearly lock went with the yearly strategy change (→SAVE-10): every slot is free.
-  void visionYear;
-  return { ...rest, ...(Object.keys(build).length ? { build: { ...build } } : {}) };
-}
-/**
- * Coaching investment levels of rules 1.10–1.15 as coach criteria (→SAVE-10), each over the
- * defaults the engine keeps in hiring.ts (ability 55, cheapest first, two seasons): 절약 keeps a
- * volunteer, 균형 is the defaults and so stores nothing, 최고 asks ability 65, the ablest first.
- */
-const LEGACY_COACHING: Readonly<Record<number, z.input<typeof coachCriteriaSchema> | undefined>> = {
-  1: { volunteer: true, minAbility: 55, priority: 'wage', term: 2 },
-  3: { volunteer: false, minAbility: 65, priority: 'ability', term: 2 },
-};
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  !!value && typeof value === 'object' && !Array.isArray(value);
-/**
- * The hiring criteria with a pre-1.16 `coaching` record's levels added as coach criteria; an
- * existing `hiring` entry wins. A level outside 1–3 stays as saved, so validation refuses it.
- */
-function legacyCoaching(levels: Record<string, unknown>, hiring: unknown) {
-  const kept = hiring === undefined ? {} : hiring;
-  // A malformed `hiring` stays as saved, so validation refuses it.
-  if (!isRecord(kept) || (kept.coaches !== undefined && !isRecord(kept.coaches))) return hiring;
-  const coaches: Record<string, unknown> = {};
-  for (const [role, level] of Object.entries(levels))
-    if (level !== 2) coaches[role] = LEGACY_COACHING[level as number] ?? level;
-  const merged = { ...coaches, ...kept.coaches };
-  return Object.keys(merged).length ? { ...kept, coaches: merged } : hiring;
-}
-/**
- * Rules before 1.16 (→SAVE-10): coaching investment levels (`coaching`) become coach criteria,
- * the strategy locks (the yearly `buildYear`, the per-slot `buildChanged`) go, so every card is
- * free, the owner's own training focus (`training`) goes, since the coaches set it, and so does the
- * manager rule (`managerRule`), which no released rules wrote.
- */
-function legacyLevers(input: unknown): unknown {
-  if (!isRecord(input)) return input;
-  const { buildYear, buildChanged, managerRule, coaching, training, ...rest } = input;
-  if (
-    [buildYear, buildChanged, managerRule, coaching, training].every((value) => value === undefined)
-  )
-    return input;
-  const out: Record<string, unknown> = rest;
-  // Rules 1.9's club-wide level is already a record here (legacyMarket).
-  if (isRecord(coaching)) {
-    const hiring = legacyCoaching(coaching, rest.hiring);
-    if (hiring !== undefined) out.hiring = hiring;
-  }
-  return out;
-}
-/** The hiring criteria rules 1.16 kept (→STAFF-15, STAFF-18), read only to load them as rows. */
-const legacyHiring = z.strictObject({
-  manager: managerCriteriaSchema.optional(),
-  coaches: z.partialRecord(staffRole, coachCriteriaSchema).optional(),
-});
-/** 코치 기조 a department's criteria stood for (→SAVE-10). */
-function coachStance(c: z.infer<typeof coachCriteriaSchema>) {
-  if (c.volunteer) return 'volunteer';
-  if (c.minAbility >= 65 || c.priority === 'ability') return 'elite';
-  if (c.minAbility <= 45) return 'cheap';
-  return 'standard';
-}
-/**
- * Rules before 1.17 (→SAVE-10): the talk rule (`talkRule`), the hiring criteria (`hiring`) and
- * the manager criteria in it load as the nearest direction rows (`direction`); malformed criteria
- * are refused. 코치 기조 takes the departments' most common stance, ties going to 표준; 재정 기조
- * stays at 표준.
- */
-function legacyDirection(input: unknown): unknown {
-  if (!isRecord(input) || (!('talkRule' in input) && !('hiring' in input))) return input;
-  const { talkRule, hiring, ...rest } = input;
-  const direction: Record<string, unknown> = isRecord(rest.direction) ? { ...rest.direction } : {};
-  if (talkRule !== undefined) {
-    const rule = talkRuleSchema.parse(talkRule);
-    const renewal =
-      rule.maxPay <= 1
-        ? 'frugal'
-        : rule.maxAge !== undefined && rule.maxAge <= 30
-          ? 'youngFirst'
-          : rule.maxPay >= 1.4
-            ? 'keepAll'
-            : undefined;
-    if (renewal) direction.renewal ??= renewal;
-  }
-  if (hiring !== undefined) {
-    const { manager, coaches } = legacyHiring.parse(hiring);
-    if (manager) {
-      if (manager.schools.length === 1) direction.school ??= manager.schools[0];
-      const stance =
-        manager.minYouth >= 50
-          ? 'developer'
-          : manager.poach
-            ? 'proven'
-            : manager.priority === 'potential'
-              ? 'young'
-              : manager.priority === 'wage'
-                ? 'cheap'
-                : undefined;
-      if (stance) direction.manager ??= stance;
-    }
-    const counts = new Map<string, number>([['standard', coachingDepartments.length]]);
-    for (const criteria of Object.values(coaches ?? {})) {
-      if (!criteria) continue;
-      const stance = coachStance(criteria);
-      counts.set('standard', counts.get('standard')! - 1);
-      counts.set(stance, (counts.get(stance) ?? 0) + 1);
-    }
-    const [top] = [...counts].reduce((best, entry) => (entry[1] > best[1] ? entry : best));
-    if (top !== 'standard') direction.coaches ??= top;
-  }
-  return Object.keys(direction).length ? { ...rest, direction } : rest;
-}
-/**
- * Rules before 1.18 (→SAVE-10): the 1군 직행 경로 card (`youth: 'pathway'`) went to 데뷔 시점 빠른
- * 데뷔, so a build holding it loads without it and with that row; a strategy reserved by rules
- * 1.13–1.15 (`buildNext`) only drops it, since activation drops the reservation itself.
- */
-function legacyPathway(input: unknown): unknown {
-  if (!isRecord(input)) return input;
-  const build = isRecord(input.build) ? input.build : undefined,
-    next = isRecord(input.buildNext) ? input.buildNext : undefined,
-    nextBuild = next && isRecord(next.build) ? next.build : undefined;
-  if (build?.youth !== 'pathway' && nextBuild?.youth !== 'pathway') return input;
-  const out: Record<string, unknown> = { ...input };
-  if (build?.youth === 'pathway') {
-    const { youth: _youth, ...rest } = build;
-    void _youth;
-    if (Object.keys(rest).length) out.build = rest;
-    else delete out.build;
-    const direction = isRecord(input.direction) ? { ...input.direction } : {};
-    direction.debut ??= 'early';
-    out.direction = direction;
-  }
-  if (nextBuild?.youth === 'pathway') {
-    const { youth: _youth, ...rest } = nextBuild;
-    void _youth;
-    out.buildNext = { ...next, build: rest };
-  }
-  return out;
-}
-/**
- * Rules before 1.19 (→SAVE-10): the marketing dial loads as the same 해외 마케팅 level, and a build
- * holding the 글로벌 브랜드 card (`fans: 'global'`) loads without it.
- */
-function legacyMarketing(input: unknown): unknown {
-  if (!isRecord(input)) return input;
-  const policy = isRecord(input.policy) ? input.policy : undefined,
-    build = isRecord(input.build) ? input.build : undefined,
-    next = isRecord(input.buildNext) ? input.buildNext : undefined,
-    nextBuild = next && isRecord(next.build) ? next.build : undefined;
-  if (
-    !(policy && 'marketing' in policy) &&
-    build?.fans !== 'global' &&
-    nextBuild?.fans !== 'global'
-  )
-    return input;
-  const out: Record<string, unknown> = { ...input };
-  if (policy && 'marketing' in policy) {
-    const { marketing, ...rest } = policy;
-    if (marketing !== 1 && rest.globalMarketing === undefined) rest.globalMarketing = marketing;
-    out.policy = rest;
-  }
-  if (build?.fans === 'global') {
-    const { fans: _fans, ...rest } = build;
-    void _fans;
-    if (Object.keys(rest).length) out.build = rest;
-    else delete out.build;
-  }
-  if (nextBuild?.fans === 'global') {
-    const { fans: _fans, ...rest } = nextBuild;
-    void _fans;
-    out.buildNext = { ...next, build: rest };
-  }
-  return out;
-}
-/** Capacity of each stadium step (→ECON-32), for loading a single facility level. */
-const STADIUM_CAPACITY = [2500, 5000, 10000, 15000, 30000, 40000, 60000, 75000, 90000];
-/**
- * One facility level F (`facilities`, up to 30 before rules 1.11) loads as the parts (→ECON-32):
- * the highest stadium step holding at most 2,500 + 5,000F, and a training ground and academy of
- * F/4 rounded, at most 5.
- */
-function legacyFacilities(input: unknown): unknown {
-  if (!isRecord(input) || !('facilities' in input)) return input;
-  const { facilities, ...rest } = input;
-  if (typeof facilities !== 'number' || !Number.isInteger(facilities) || facilities < 0)
-    return input;
-  const seats = 2500 + 5000 * facilities,
-    level = Math.min(5, Math.round(facilities / 4));
-  rest.stadium ??= STADIUM_CAPACITY.filter((capacity) => capacity <= seats).length - 1;
-  rest.trainingGround ??= level;
-  rest.academyFacility ??= level;
-  return rest;
-}
-/** The staff switches saves kept before the intervention level (→SAVE-10). */
-const legacySwitches = z.strictObject({
-  training: z.boolean().optional(),
-  academy: z.boolean().optional(),
-  transfers: z.boolean().optional(),
-  business: z.boolean().optional(),
-  contracts: z.boolean().optional(),
-  manager: z.boolean().optional(),
-  // Rules before 1.16: one coach-hiring switch for every department.
-  staff: z.boolean().optional(),
-  ...Object.fromEntries(
-    coachingDepartments.map((role) => [`coach:${role}`, z.boolean().optional()] as const),
-  ),
-});
-/** Switches only level 4 turned on (→WEB-45). */
-const LEVEL_FOUR_SWITCHES = ['transfers', 'business', 'manager', 'staff'];
-/**
- * Staff switches (`delegation`) become the intervention level (→SAVE-10): 4 when offers,
- * sponsors, a coaching department or the manager post were delegated, else 2 when any decision
- * was, else 1. A saved level wins; malformed switches are refused.
- */
-function legacyIntervention(input: unknown): unknown {
-  if (!isRecord(input) || !('delegation' in input)) return input;
-  const { delegation, ...rest } = input;
-  if (delegation === undefined) return rest;
-  const on = Object.entries(legacySwitches.parse(delegation))
-    .filter(([, value]) => value)
-    .map(([key]) => key);
-  if (rest.intervention === undefined)
-    rest.intervention = on.some(
-      (key) => LEVEL_FOUR_SWITCHES.includes(key) || key.startsWith('coach:'),
-    )
-      ? 4
-      : on.length
-        ? 2
-        : 1;
-  return rest;
-}
-
 /** Catalog facts a load needs to bring older rules forward; contracts never import catalogs (→ARCH-4). */
 export interface LoadCatalog {
   /** Season year a sponsor slot opens in a country (→ECON-8). */
@@ -1041,15 +811,7 @@ function legacySponsor(w: World, country: string, catalog: LoadCatalog | undefin
 
 /** `catalog` is needed only for a world from rules before 1.16 that has a sponsor. */
 export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
-  const w = worldSchema.parse(
-    legacyMarketing(
-      legacyPathway(
-        legacyDirection(
-          legacyFacilities(legacyIntervention(legacyLevers(legacyMarket(legacyVision(input))))),
-        ),
-      ),
-    ),
-  );
+  const w = worldSchema.parse(input);
   const ids = new Set(w.clubs.map((c) => c.id));
   if (ids.size !== w.clubs.length || !ids.has(w.playerClub))
     throw new Error('저장된 클럽 식별자가 올바르지 않습니다.');
@@ -1074,14 +836,9 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   }
   const playerIds = new Set(w.players.map((p) => p.id));
   if (playerIds.size !== w.players.length) throw new Error('중복 선수 식별자');
-  if (w.lineup) {
-    const roles = ['GK', 'DEF', 'DEF', 'DEF', 'DEF', 'MID', 'MID', 'MID', 'FWD', 'FWD', 'FWD'];
-    if (
-      new Set(w.lineup).size !== 11 ||
-      w.lineup.some((id, i) => w.players.find((player) => player.id === id)?.role !== roles[i])
-    )
-      throw new Error('선발 명단의 선수나 포지션이 올바르지 않습니다.');
-  }
+  // Anyone may play any slot (→CLUB-6): the XI needs eleven distinct players of the club.
+  if (w.lineup && (new Set(w.lineup).size !== 11 || w.lineup.some((id) => !playerIds.has(id))))
+    throw new Error('선발 명단의 선수가 올바르지 않습니다.');
   for (const f of [...w.fixtures, ...w.ownMatches, ...w.europe.flatMap((t) => t.fixtures)])
     if (!ids.has(f.home) || !ids.has(f.away) || f.home === f.away)
       throw new Error('경기 참가 클럽을 찾을 수 없습니다.');
@@ -1218,7 +975,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       throw new Error('유럽대회 참조 손상');
   if (w.players.some((p) => BigInt(p.wage) < 0) || BigInt(w.manager.wage) < 0)
     throw new Error('급여 범위 손상');
-  if (!w.players.some((p) => p.status === 'active' && p.role === 'GK'))
+  if (!w.players.some((p) => p.status === 'active' && p.position === 'GK'))
     throw new Error('골키퍼 부족');
   if (w.priceIndex <= 0 || BigInt(w.income) < 0 || BigInt(w.expense) < 0)
     throw new Error('재무 지표 손상');

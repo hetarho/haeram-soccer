@@ -8,7 +8,7 @@ const w = createWorld({
   name: 'Chart Club',
   color: '#0b1f44',
   seed: 'charts',
-  difficulty: 1,
+  level: 'normal' as const,
 });
 const playback = simulateMatch(
   w,

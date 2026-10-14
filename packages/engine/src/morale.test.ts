@@ -12,7 +12,13 @@ import {
 } from './morale';
 
 const world = () =>
-  createWorld({ country: 'ENG', name: 'Morale', color: '#24664f', seed: 'morale', difficulty: 2 });
+  createWorld({
+    country: 'ENG',
+    name: 'Morale',
+    color: '#24664f',
+    seed: 'morale',
+    level: 'easy' as const,
+  });
 
 describe('squad morale', () => {
   it('starts neutral for new clubs and is exactly neutral when absent', () => {

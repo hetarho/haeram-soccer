@@ -1,5 +1,7 @@
+import { ATTRIBUTES } from '../../contracts/src/player';
+import { lineOf } from './player';
 import { describe, expect, it } from 'vitest';
-import type { Direction, Player, Role, TransferBid, World } from '../../contracts/src/types';
+import type { Direction, Line, Player, TransferBid, World } from '../../contracts/src/types';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import {
   activePlayers,
@@ -20,7 +22,7 @@ import {
   SEASON_ROUNDS,
   seasonDayOf,
   shortlistOffers,
-  shortRole,
+  shortLine,
   signingRequests,
   signingVerdict,
   staffSignings,
@@ -38,7 +40,7 @@ function club(finance?: Direction['finance'], seed = 'staff-signings') {
     name: 'Scout Town',
     color: '#224433',
     seed,
-    difficulty: 2,
+    level: 'easy' as const,
   });
   w.intervention = 4;
   w.cash = '999999999999';
@@ -53,10 +55,10 @@ const reports = (w: World) =>
   (w.inbox || []).filter(
     (item) => item.kind === 'staff-report' && item.title.startsWith('단장 영입'),
   );
-/** Leaves `count` active players of `role`, the others sold. */
-function keep(w: World, role: Role, count: number) {
+/** Leaves `count` active players of `line`, the others sold. */
+function keep(w: World, role: Line, count: number) {
   for (const p of activePlayers(w)
-    .filter((one) => one.role === role)
+    .filter((one) => lineOf(one.position) === role)
     .slice(count))
     p.status = 'sold';
 }
@@ -81,8 +83,12 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     const w = club('careful');
     const free = transferOffers(w)[0];
     expect(free.freeAgent).toBe(true);
-    keep(w, free.player.role, 1);
-    expect(shortRole(w)).toMatchObject({ kind: 'short', role: free.player.role, count: 1 });
+    keep(w, lineOf(free.player.position), 1);
+    expect(shortLine(w)).toMatchObject({
+      kind: 'short',
+      line: lineOf(free.player.position),
+      count: 1,
+    });
     const cash = w.cash;
     staffSignings(w);
     const signed = w.players.find((p) => p.id === free.player.id)!;
@@ -96,7 +102,7 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
 
   it('bids the asking fee for an upgrade at 표준, none at 신중', () => {
     const w = club();
-    expect(shortRole(w)).toBeUndefined();
+    expect(shortLine(w)).toBeUndefined();
     // The free agent is passed by, so the upgrade goes to a fee-bearing player.
     tried(w, transferOffers(w)[0].player.id);
     staffSignings(w);
@@ -106,7 +112,7 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     expect(bid.fee).toBe(offer.fee);
     const starter = Math.min(
       ...activePlayers(w)
-        .filter((p) => p.role === offer.player.role)
+        .filter((p) => lineOf(p.position) === lineOf(offer.player.position))
         .map((p) => overall(p)),
     );
     expect(overall(offer.player)).toBeGreaterThanOrEqual(starter + 5);
@@ -217,10 +223,12 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     // with the short role requested, and the 단장 moves for the manager's pick first.
     const daily = club();
     const free = transferOffers(daily)[0];
-    keep(daily, free.player.role, 1);
+    keep(daily, lineOf(free.player.position), 1);
     daily.calendar = { day: seasonDayOf(daily.year, 12, 31) };
     advanceDays(daily, 2);
-    const request = daily.shortlist!.requests.find((one) => one.role === free.player.role)!;
+    const request = daily.shortlist!.requests.find(
+      (one) => one.line === lineOf(free.player.position),
+    )!;
     expect(request).toMatchObject({ kind: 'short' });
     expect(
       daily.players.some((p) => p.id === request.pick) ||
@@ -230,10 +238,10 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
 });
 
 describe("the shortlist and the manager's requests (→CLUB-33)", () => {
-  const ROLES: Role[] = ['GK', 'DEF', 'MID', 'FWD'];
+  const ROLES: Line[] = ['GK', 'DF', 'MF', 'FW'];
   /** Sets every skill of a player, so his overall is `level` in any role. */
   const rate = (p: Player, level: number) => {
-    p.attack = p.passing = p.defense = p.keeper = p.stamina = level;
+    for (const a of ATTRIBUTES) p.attrs[a] = level;
   };
   /** An owner-run club (level 2) on the winter window's opening day. */
   function owned(seed = 'shortlist') {
@@ -248,9 +256,9 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
     expect(w.shortlist).toMatchObject({ year: w.year, day: currentDay(w) });
     const market = transferOffers(w).filter((offer) => offer.available);
     for (const role of ROLES) {
-      const listed = w.shortlist!.entries.filter((entry) => entry.role === role);
+      const listed = w.shortlist!.entries.filter((entry) => entry.line === role);
       const expected = market
-        .filter((offer) => offer.player.role === role)
+        .filter((offer) => lineOf(offer.player.position) === role)
         .sort(
           (a, b) =>
             Number(b.freeAgent) - Number(a.freeAgent) ||
@@ -278,7 +286,7 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
       name: 'Scout Town',
       color: '#224433',
       seed: 'shortlist',
-      difficulty: 2,
+      level: 'easy' as const,
     });
     expect(founded.shortlist).toMatchObject({ year: founded.year, day: 0 });
     expect(founded.shortlist!.entries.length).toBeGreaterThan(0);
@@ -310,62 +318,69 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
   it('asks for every short role, then the role a candidate upgrades most, at most three', () => {
     const w = owned();
     keep(w, 'GK', 1);
-    keep(w, 'MID', 4);
+    keep(w, 'MF', 4);
     drawShortlist(w);
     expect(w.shortlist!.requests.slice(0, 2)).toMatchObject([
-      { role: 'GK', kind: 'short' },
-      { role: 'MID', kind: 'short' },
+      { line: 'GK', kind: 'short' },
+      { line: 'MF', kind: 'short' },
     ]);
     // Four short roles: three requests.
     const short = owned();
     for (const role of ROLES) keep(short, role, 1);
     drawShortlist(short);
-    expect(short.shortlist!.requests.map((request) => request.role)).toEqual(['GK', 'DEF', 'MID']);
+    expect(short.shortlist!.requests.map((request) => request.line)).toEqual(['GK', 'DF', 'MF']);
     // A full squad of 99s needs nothing; weak defenders call for a defender.
     const strong = owned();
     for (const p of activePlayers(strong)) rate(p, 99);
     drawShortlist(strong);
     expect(strong.shortlist!.requests).toEqual([]);
-    for (const p of activePlayers(strong).filter((one) => one.role === 'DEF')) rate(p, 10);
+    for (const p of activePlayers(strong).filter((one) => lineOf(one.position) === 'DF'))
+      rate(p, 10);
     drawShortlist(strong);
     expect(strong.shortlist!.requests).toHaveLength(1);
-    expect(strong.shortlist!.requests[0]).toMatchObject({ role: 'DEF', kind: 'upgrade' });
+    expect(strong.shortlist!.requests[0]).toMatchObject({ line: 'DF', kind: 'upgrade' });
     // Under the margin of 5 he asks for nothing.
     const best = Math.max(
       ...shortlistOffers(strong)
-        .filter(({ offer }) => offer.player.role === 'DEF')
+        .filter(({ offer }) => lineOf(offer.player.position) === 'DF')
         .map(({ offer }) => overall(offer.player)),
     );
-    for (const p of activePlayers(strong).filter((one) => one.role === 'DEF')) rate(p, best - 4);
+    for (const p of activePlayers(strong).filter((one) => lineOf(one.position) === 'DF'))
+      rate(p, best - 4);
     drawShortlist(strong);
     expect(strong.shortlist!.requests).toEqual([]);
   });
 
   it('names the ablest as his pick; a 육성형 or youth-trait manager the best young prospect', () => {
     // 젊은 선수 위주 lists players aged 18–25, so young and older forwards meet on the list.
-    const pick = (setup?: (w: World) => void) => {
-      const w = owned('staff-signings');
+    const pick = (setup?: (w: World) => void, seed = 'staff-signings') => {
+      const w = owned(seed);
       operate(w, { type: 'policy', key: 'recruitment', level: 2 });
-      keep(w, 'FWD', 2);
+      keep(w, 'FW', 2);
       setup?.(w);
       drawShortlist(w);
       const listed = shortlistOffers(w)
         .map(({ offer }) => offer.player)
-        .filter((p) => p.role === 'FWD');
+        .filter((p) => lineOf(p.position) === 'FW');
       return { w, listed, pick: w.shortlist!.requests[0].pick };
     };
-    const plain = pick();
-    const ablest = [...plain.listed].sort(
-      (a, b) => overall(b) - overall(a) || b.potential - a.potential,
-    )[0];
-    expect(plain.w.shortlist!.requests[0]).toEqual({ role: 'FWD', kind: 'short', pick: ablest.id });
-    const young = plain.listed
-      .filter((p) => plain.w.year - p.born <= 23)
-      .sort((a, b) => b.potential - a.potential)[0];
-    expect(young).toBeDefined();
+    const ablestOf = (listed: Player[]) =>
+      [...listed].sort((a, b) => overall(b) - overall(a) || b.potential - a.potential)[0]!;
+    const youngOf = (w: World, listed: Player[]) =>
+      listed.filter((p) => w.year - p.born <= 23).sort((a, b) => b.potential - a.potential)[0];
+    // A market where the best young prospect is not also the ablest forward.
+    const seed = Array.from({ length: 40 }, (_, i) => `staff-signings-${i}`).find((one) => {
+      const { w, listed } = pick(undefined, one);
+      const young = youngOf(w, listed);
+      return !!young && young.id !== ablestOf(listed).id;
+    })!;
+    const plain = pick(undefined, seed);
+    const ablest = ablestOf(plain.listed);
+    expect(plain.w.shortlist!.requests[0]).toEqual({ line: 'FW', kind: 'short', pick: ablest.id });
+    const young = youngOf(plain.w, plain.listed)!;
     expect(young.id).not.toBe(ablest.id);
-    expect(pick((w) => (w.manager.style = 'developer')).pick).toBe(young.id);
-    expect(pick((w) => (w.manager.trait = 'youth')).pick).toBe(young.id);
+    expect(pick((w) => (w.manager.style = 'developer'), seed).pick).toBe(young.id);
+    expect(pick((w) => (w.manager.trait = 'youth'), seed).pick).toBe(young.id);
   });
 
   it('an interim asks for nothing', () => {
@@ -379,10 +394,10 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
 
   it("the 단장 moves for the manager's pick before any other candidate", () => {
     const w = club();
-    const role = transferOffers(w)[0].player.role;
+    const role = lineOf(transferOffers(w)[0].player.position);
     keep(w, role, 1);
     openShortlistWindow(w);
-    const request = w.shortlist!.requests.find((one) => one.role === role)!;
+    const request = w.shortlist!.requests.find((one) => one.line === role)!;
     expect(request.pick).toBeDefined();
     staffSignings(w);
     const moved =
@@ -402,7 +417,10 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
       for (const p of activePlayers(w)) rate(p, 99);
       keep(w, 'GK', 1);
       openShortlistWindow(w);
-      expect(w.shortlist!.window).toMatchObject({ roles: ['GK'], manager: w.manager.id });
+      expect(w.shortlist!.window).toMatchObject({
+        requests: [{ line: 'GK' }],
+        manager: w.manager.id,
+      });
       during?.(w);
       const trust = w.manager.trust;
       w.calendar = { day: transferWindowDays(w.year).winterClose + 1 };
@@ -418,10 +436,12 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
     expect(unmet.w.inbox!.at(-1)!.detail).toContain('골키퍼');
     // The owner signing a goalkeeper meets it; a defender does not.
     const keeper = (w: World) =>
-      transferOffers(w).findIndex((offer) => offer.available && offer.player.role === 'GK');
+      transferOffers(w).findIndex((offer) => offer.available && offer.player.position === 'GK');
     expect(window((w) => operate(w, { type: 'recruit', candidate: keeper(w) })).lost).toBe(0);
     const defender = (w: World) =>
-      transferOffers(w).findIndex((offer) => offer.available && offer.player.role === 'DEF');
+      transferOffers(w).findIndex(
+        (offer) => offer.available && lineOf(offer.player.position) === 'DF',
+      );
     expect(window((w) => operate(w, { type: 'recruit', candidate: defender(w) })).lost).toBe(3);
     // The 단장 signing for him at level 4 meets it too.
     expect(
@@ -446,7 +466,7 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
     w.calendar = { day: seasonDayOf(w.year, 12, 31) };
     advanceDays(w, 1);
     expect(w.shortlist).toMatchObject({ day: seasonDayOf(w.year, 1, 1) });
-    expect(w.shortlist!.window).toMatchObject({ roles: ['GK'] });
+    expect(w.shortlist!.window).toMatchObject({ requests: [{ line: 'GK' }] });
     const trust = w.manager.trust;
     w.calendar = { day: transferWindowDays(w.year).winterClose };
     advanceDays(w, 1);

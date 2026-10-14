@@ -21,7 +21,13 @@ import {
 import { DIRECTION_AREAS, type AreaKey } from './areas';
 
 const world = () =>
-  createWorld({ country: 'ENG', name: 'Board', color: '#24664f', seed: 'board', difficulty: 2 });
+  createWorld({
+    country: 'ENG',
+    name: 'Board',
+    color: '#24664f',
+    seed: 'board',
+    level: 'easy' as const,
+  });
 /** The board sends only operations commands. */
 const send = (w: ReturnType<typeof world>, command: unknown) =>
   operate(w, command as Parameters<typeof operate>[1]);
@@ -45,7 +51,7 @@ describe('operating board draft', () => {
     ]);
     const commands = draftCommands(w, draft);
     expect(commands).toEqual([
-      { type: 'build', build: localPride.build, name: '동네의 자부심' },
+      { type: 'build', build: localPride.build, name: '유스 순혈주의' },
       { type: 'policy', key: 'support', level: 4 },
       { type: 'policy', key: 'globalMarketing', level: 3 },
       { type: 'ticket', price: 0.12 },

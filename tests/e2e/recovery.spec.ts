@@ -241,7 +241,7 @@ test('founding beside a parked game shows none of its club, cash or bands', asyn
     name: 'Parked Crisis',
     color: '#bf7956',
     seed: 'parked-crisis',
-    difficulty: 0.5,
+    level: 'hard' as const,
   });
   // In debt and without a manager: the red band and the manager notice sit under the HUD.
   fixture.cash = '-1';

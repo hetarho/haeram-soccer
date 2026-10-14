@@ -9,7 +9,7 @@ const input = {
   name: 'Synthetic Archives',
   color: '#234a31',
   seed: 'portable-release-1',
-  difficulty: 2,
+  level: 'easy' as const,
 };
 const definitions: FixtureDefinition[] = [
   {

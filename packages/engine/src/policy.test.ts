@@ -1,3 +1,4 @@
+import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { ClubPolicy, PolicyKey, PolicyLevel, World } from '../../contracts/src/types';
@@ -36,7 +37,7 @@ function world(policy?: Partial<ClubPolicy>) {
     name: 'Policy Athletic',
     color: '#2a4d3c',
     seed: 'club-policy',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   w.cash = '999999999';
   if (policy) w.policy = { ...POLICY_DEFAULTS, ...policy };
@@ -52,7 +53,7 @@ function academy(policy?: Partial<ClubPolicy>) {
   for (const player of w.players) {
     player.born = w.year - 20;
     player.potential = 85;
-    player.attack = player.passing = player.defense = player.keeper = player.stamina = 40;
+    for (const a of ATTRIBUTES) player.attrs[a] = 40;
     player.fatigue = 50;
     // Paid as the market rates them now, so nobody asks for a raise (→CLUB-26).
     player.wage = marketWage(w, player);
@@ -259,9 +260,18 @@ describe('club operating policy', () => {
     const offer = transferOffers(prospects)[2];
     operate(prospects, { type: 'recruit', candidate: 2 });
     const signed = prospects.players.find((player) => player.id === offer.player.id)!;
-    // He signs as offered, with the clauses his signing settles (→CLUB-29).
+    // He signs as offered, with the clauses his signing settles (→CLUB-29), starting to settle
+    // at his 적응력's start (→PLAYER-11).
     expect(signed.clauses).toBeDefined();
-    expect(canonical(signed)).toBe(canonical({ ...offer.player, clauses: signed.clauses }));
+    expect(canonical(signed)).toBe(
+      canonical({
+        ...offer.player,
+        clauses: signed.clauses,
+        adaptation: signed.adaptation,
+        clubRounds: 0,
+      }),
+    );
+    expect(signed.adaptation).toBeLessThan(0.8);
     expect(prospects.year - signed.born).toBeLessThanOrEqual(21);
     validateWorld(prospects);
   });

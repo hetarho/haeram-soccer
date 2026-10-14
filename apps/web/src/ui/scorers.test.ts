@@ -11,7 +11,7 @@ const player = (id: string, goals: number, appearances: number): GoalScorer => (
   id,
   name: `선수 ${id}`,
   club: `클럽 ${id}`,
-  role: 'FWD',
+  position: 'ST',
   goals,
   appearances,
 });
@@ -85,7 +85,7 @@ describe('scoring race facts', () => {
       name: '득점 경쟁',
       color: '#28654b',
       seed: 'scoring-race-ui',
-      difficulty: 1,
+      level: 'normal' as const,
     });
     advanceRound(w);
     const season = w.scorerSeason!;

@@ -7,7 +7,7 @@ it('orders recorded goals, keeps penalty decisions distinct and maps actual samp
     name: 'Moments',
     color: '#24664f',
     seed: 'moments',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   const { record, frames } = simulateMatch(w, nextOwnFixture(w)!, true, true);
   record.highlights = [

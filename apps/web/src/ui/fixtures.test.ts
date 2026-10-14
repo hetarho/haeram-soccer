@@ -8,7 +8,7 @@ it('merges settled records once, excludes other clubs/seasons and keeps real cal
     name: 'Fixtures',
     color: '#24664f',
     seed: 'fixtures',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   const next = nextOwnFixture(w)!;
   const record = simulateMatch(w, next, false, true).record;

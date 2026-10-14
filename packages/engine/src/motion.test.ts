@@ -4,7 +4,7 @@ import { createWorld, simulateMatch } from './index';
 import {
   MATCH_MOTION_CONFIG,
   MatchMotion,
-  playerTraits,
+  motionTraits,
   teamMotionProfile,
   type BallTraceStep,
 } from './motion';
@@ -14,7 +14,7 @@ const world = createWorld({
   name: 'Independent Athletic',
   color: '#24664f',
   seed: 'motion-regression',
-  difficulty: 1,
+  level: 'normal' as const,
 });
 const fixture = world.fixtures.find((f) => f.home === world.playerClub)!;
 const playback = simulateMatch(world, fixture, true, true);
@@ -135,15 +135,14 @@ describe('independent match movement', () => {
 
   it('derives stable personalities from identity and skills, and blends coach philosophy with applied tactics', () => {
     const player = playback.squads[0][5];
-    const traits = playerTraits(player);
-    expect(playerTraits({ ...player })).toEqual(traits);
+    const traits = motionTraits(player);
+    expect(motionTraits({ ...player })).toEqual(traits);
     expect(Object.values(traits).every((n) => n >= 0 && n <= 1)).toBe(true);
-    const improved = playerTraits({
+    const improved = motionTraits({
       ...player,
-      stamina: 100,
-      attack: 100,
-      passing: 100,
-      defense: 100,
+      attrs: Object.fromEntries(
+        Object.keys(player.attrs).map((a) => [a, 100]),
+      ) as typeof player.attrs,
     });
     expect(improved.pace).toBeGreaterThan(traits.pace);
     expect(improved.anticipation).toBeGreaterThan(traits.anticipation);

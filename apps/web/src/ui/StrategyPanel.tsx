@@ -4,18 +4,20 @@ import type { Player, Tactic, World } from '../../../../packages/contracts/src/t
 import {
   activePlayers,
   clubOf,
-  LINEUP_ROLES,
+  formationOf,
   lineupPreset,
   lineupSummary,
   nextOwnFixture,
   npcTactic,
   tacticalProfile,
-  overall,
+  ownMultiplier,
   quote,
+  slotOvr,
   startingSquad,
   tacticLabel,
   tacticRequestOutlook,
 } from '../../../../packages/engine/src/index';
+import { ROLE_LABEL } from '../../../../packages/engine/src/player';
 import type { GameClient } from '../runtime/client';
 import { gameStore, useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
@@ -50,16 +52,17 @@ const styles: Record<Tactic, { advantage: string; tradeoff: string }> = {
     tradeoff: '피로 비용이 커요. 지친 선수단은 압박 효과가 떨어져요.',
   },
 };
-const roleNames: Record<Player['role'], string> = {
-  GK: '골키퍼',
-  DEF: '수비수',
-  MID: '미드필더',
-  FWD: '공격수',
-};
-
-function Preview({ players, baseline }: { players: Player[]; baseline: Player[] }) {
-  const current = lineupSummary(players),
-    before = lineupSummary(baseline);
+function Preview({
+  players,
+  baseline,
+  tactic,
+}: {
+  players: Player[];
+  baseline: Player[];
+  tactic: Tactic;
+}) {
+  const current = lineupSummary(players, tactic),
+    before = lineupSummary(baseline, tactic);
   const values: { key: keyof typeof current; label: string }[] = [
     { key: 'strength', label: '선발 전력' },
     { key: 'fatigue', label: '평균 피로' },
@@ -137,10 +140,10 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose }:
   const players = activePlayers(w);
   const byId = new Map(players.map((player) => [player.id, player]));
   const selected = draft.flatMap((id) => (byId.get(id) ? [byId.get(id)!] : []));
+  // Anyone may play any slot, at his level there (→CLUB-6).
   const valid =
-    draft.length === 11 &&
-    new Set(draft).size === 11 &&
-    draft.every((id, i) => byId.get(id)?.role === LINEUP_ROLES[i]);
+    draft.length === 11 && new Set(draft).size === 11 && draft.every((id) => byId.has(id));
+  const slots = formationOf(w.tactic);
   const next = nextOwnFixture(w);
   const opponentId = next && (next.home === w.playerClub ? next.away : next.home);
   const opponent = w.clubs.find((club) => club.id === opponentId);
@@ -412,25 +415,24 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose }:
                   피로 회복 우선으로 선택
                 </button>
               </div>
-              <Preview players={selected} baseline={baseline} />
+              <Preview players={selected} baseline={baseline} tactic={w.tactic} />
               {replaced > 0 && (
                 <p className={s.hint}>이탈한 선발 {replaced}명은 활동 중인 선수로 대체합니다.</p>
               )}
               <p className={s.hint}>
-                능력과 피로를 함께 비교해요. 직접 정한 선발은 변경할 때까지 유지합니다.
+                자리마다 실효 능력과 피로를 비교해요. 직접 정한 선발은 변경할 때까지 유지합니다.
               </p>
               <details className={s.slots}>
                 <summary>선수별 교체</summary>
                 <div className={s.lineup}>
-                  {LINEUP_ROLES.map((role, slot) => (
+                  {slots.map((place, slot) => (
                     <label key={slot}>
                       <span>
-                        {roleNames[role]}{' '}
-                        {role === 'GK' ? '' : slot - (role === 'DEF' ? 0 : role === 'MID' ? 4 : 7)}
+                        {place.position} · {ROLE_LABEL[place.role]}
                       </span>
                       <Select
                         disabled={blocked}
-                        aria-label={`선발 ${slot + 1} ${roleNames[role]}`}
+                        aria-label={`선발 ${slot + 1} ${place.position}`}
                         value={draft[slot] || ''}
                         onValueChange={(value) => {
                           setPreset('manual');
@@ -448,11 +450,16 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose }:
                           선수를 선택하세요
                         </option>
                         {players
-                          .filter((player) => player.role === role)
-                          .sort((a, b) => overall(b) - overall(a) || a.id.localeCompare(b.id))
-                          .map((player) => (
+                          .map((player) => ({
+                            player,
+                            value: slotOvr(player, place, ownMultiplier(player)),
+                          }))
+                          .sort(
+                            (a, b) => b.value - a.value || a.player.id.localeCompare(b.player.id),
+                          )
+                          .map(({ player, value }) => (
                             <option key={player.id} value={player.id}>
-                              {player.name} · 능력 {overall(player)} · 피로{' '}
+                              {player.name} · {player.position} · 실효 {Math.round(value)} · 피로{' '}
                               {Math.round(player.fatigue)}
                             </option>
                           ))}
@@ -463,8 +470,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose }:
               </details>
               {!valid && (
                 <p className={s.warning}>
-                  포지션에 맞는 활동 중인 선수 11명이 필요합니다. 부족한 포지션은 선수단에서
-                  보강하세요.
+                  활동 중인 선수 11명이 필요합니다. 비어 있는 자리를 채우세요.
                 </p>
               )}
             </section>

@@ -80,8 +80,8 @@ const notes: Partial<Record<Command['type'], string>> = {
 };
 const trainingLabel: Record<TrainingFocus, string> = {
   balanced: '균형 훈련',
-  youth: '유망주 집중',
-  recovery: '회복 집중',
+  recovery: '회복 훈련',
+  hard: '하드 트레이닝',
 };
 /** Routine ledger records carry raw minor units and fixture IDs; the cash change summarizes them. */
 export const ROUTINE_EVENTS = new Set([
@@ -226,8 +226,8 @@ export function describeOutcome(
     compare(
       changes,
       '선발 평균 피로',
-      lineupSummary(startingSquad(before, clubOf(before))).fatigue,
-      lineupSummary(startingSquad(after, clubOf(after))).fatigue,
+      lineupSummary(startingSquad(before, clubOf(before)), before.tactic).fatigue,
+      lineupSummary(startingSquad(after, clubOf(after)), after.tactic).fatigue,
     );
   compare(changes, '티켓 기본가', before.ticket, after.ticket, (n) => `${n} (1901년 기준)`);
   const records = newEvents(before, after).filter((event) => !ROUTINE_EVENTS.has(event.kind));

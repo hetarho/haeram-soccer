@@ -1,3 +1,5 @@
+import { lineOf } from './player';
+import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import { decode, encode } from '../../../apps/web/src/adapters/persistence';
@@ -21,14 +23,14 @@ function world(strong = false) {
     name: 'Milestone United',
     color: '#224433',
     seed: 'milestone-career',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   w.cash = '999999999999';
   if (strong) {
     w.manager.ability = 100;
     w.tactic = 'balanced';
     for (const player of w.players) {
-      player.attack = player.passing = player.defense = player.keeper = player.stamina = 95;
+      for (const a of ATTRIBUTES) player.attrs[a] = 95;
       player.potential = 100;
       player.born = w.year - 20;
     }
@@ -88,19 +90,20 @@ describe('milestones from retained club facts', () => {
 
   it('requires earned growth instead of a focus change and retains it after a player leaves', () => {
     const w = world(),
-      prospect = w.players.find((player) => player.role === 'MID')!;
+      prospect = w.players.find((player) => lineOf(player.position) === 'MF')!;
     for (const player of w.players) {
       player.born = w.year - 32;
-      player.attack = player.passing = player.defense = player.keeper = player.stamina = 40;
+      for (const a of ATTRIBUTES) player.attrs[a] = 40;
       player.potential = 85;
     }
     prospect.born = w.year - 20;
+    // A round of 회복 grows him a little (×0.4), short of the milestone's whole point.
     operate(w, { type: 'coach-training', coach: 'assistant', focus: 'recovery', force: true });
     advanceRound(w, undefined, false);
-    expect(byId(w, 'player-growth').current).toBe(0);
-    operate(w, { type: 'coach-training', coach: 'assistant', focus: 'youth', force: true });
+    expect(byId(w, 'player-growth').current).toBeLessThan(1);
+    operate(w, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
     expect(byId(w, 'player-growth').done).toBe(false);
-    for (let round = 0; round < 6; round++) advanceRound(w, undefined, false);
+    for (let round = 0; round < 20; round++) advanceRound(w, undefined, false);
     expect(prospect.developed).toBeGreaterThanOrEqual(1);
     expect(byId(w, 'player-growth').done).toBe(true);
     // A fee-bearing sale needs an open transfer window: move the clock into the winter window.
@@ -138,7 +141,7 @@ describe('milestones from retained club facts', () => {
     expect(canonical(restored)).toBe(canonical(w));
     // Force a losing roster, then let the real league close and archive its relegation.
     for (const player of restored.players) {
-      player.attack = player.passing = player.defense = player.keeper = player.stamina = 5;
+      for (const a of ATTRIBUTES) player.attrs[a] = 5;
       player.potential = 5;
     }
     for (const club of restored.clubs) if (club.id !== restored.playerClub) club.strength = 95;

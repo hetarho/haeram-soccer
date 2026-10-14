@@ -25,7 +25,7 @@ describe('cup stages from fixture IDs', () => {
         name: 'Stage Rovers',
         seed: `stages-${code}`,
         color: '#224433',
-        difficulty: 1,
+        level: 'normal' as const,
       });
       const seen = new Set<string>();
       for (const year of YEARS) {

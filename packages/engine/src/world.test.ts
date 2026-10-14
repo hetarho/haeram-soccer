@@ -13,13 +13,24 @@ import {
   recordMatch,
   operate,
   FOUNDING_YEAR,
+  activePlayers,
+  clubStyle,
+  DIFFICULTY_LEVELS,
+  formationOf,
+  LEVEL_CASH,
+  LEVEL_OFFSET,
+  npcSquad,
+  rating,
 } from './index';
+import type { World } from '../../contracts/src/types';
+import { LINES } from '../../contracts/src/player';
+import { LINE_MINIMUM, lineOf, ovrAt } from './player';
 const input = {
   country: 'ENG' as const,
   name: 'Haeram Forge',
   color: '#24664f',
   seed: 'portable-world-1',
-  difficulty: 1,
+  level: 'normal' as const,
 };
 function assertCapacities(w: ReturnType<typeof createWorld>) {
   for (const cp of COUNTRIES)
@@ -35,14 +46,60 @@ function assertCapacities(w: ReturnType<typeof createWorld>) {
     );
 }
 describe('world progression', () => {
-  it('uses capital alone for difficulty and reserves the player slot', () => {
-    const a = createWorld(input),
-      b = createWorld({ ...input, difficulty: 2 });
-    assertCapacities(a);
-    expect(b.clubs).toEqual(a.clubs);
-    expect(b.players).toEqual(a.players);
-    expect(BigInt(b.cash)).toBe(BigInt(a.cash) * 2n);
-    expect(validateWorld(a).id).toBe(a.id);
+  it('level offsets the founding XI and scales only the cash', () => {
+    const at = (level: 'easy' | 'normal' | 'hard' | 'extreme') => createWorld({ ...input, level });
+    const normal = at('normal');
+    assertCapacities(normal);
+    expect(validateWorld(normal).id).toBe(normal.id);
+    const others = (w: World) => w.clubs.filter((club) => club.id !== w.playerClub);
+    const own = (w: World) => rating(w, clubOf(w));
+    const league = (w: World) => {
+      const peers = w.clubs.filter(
+        (club) =>
+          club.country === clubOf(w).country && club.representative && club.tier === clubOf(w).tier,
+      );
+      return peers.reduce((sum, club) => sum + rating(w, club), 0) / peers.length;
+    };
+    for (const level of DIFFICULTY_LEVELS) {
+      const w = at(level);
+      expect(w.level).toBe(level);
+      // Every rule and every other club stay as they are; only cash and the XI move (→WEB-3).
+      expect(others(w)).toEqual(others(normal));
+      expect(Math.abs(own(w) - (league(w) + LEVEL_OFFSET[level]))).toBeLessThanOrEqual(1.5);
+    }
+    // Cash is the founding budget times the level's multiple (2/1/0.5/0.25).
+    expect(LEVEL_CASH).toEqual({ easy: 2, normal: 1, hard: 0.5, extreme: 0.25 });
+    expect(BigInt(at('easy').cash)).toBeGreaterThan(BigInt(normal.cash));
+    expect(BigInt(at('extreme').cash)).toBeLessThan(BigInt(at('hard').cash));
+  });
+  it('founding squad covers the formation', () => {
+    for (const seed of ['cover-1', 'cover-2', 'cover-3', 'cover-4', 'cover-5']) {
+      const w = createWorld({ ...input, seed });
+      const active = activePlayers(w);
+      expect(active).toHaveLength(18);
+      for (const line of LINES)
+        expect(active.filter((p) => lineOf(p.position) === line)).toHaveLength(LINE_MINIMUM[line]);
+      for (const slot of formationOf(w.tactic))
+        expect(active.some((p) => (p.positions[slot.position] ?? 0) >= 2)).toBe(true);
+      expect(active.every((p) => p.adaptation === 0.8)).toBe(true);
+    }
+  });
+  it('npc squad fills the formation', () => {
+    const w = createWorld(input);
+    for (const club of w.clubs.filter((c) => c.id !== w.playerClub).slice(0, 40)) {
+      const squad = npcSquad(w.seed, w.year, club),
+        slots = formationOf(clubStyle(club));
+      expect(squad).toHaveLength(18);
+      slots.forEach((slot, i) => {
+        expect(squad[i]!.position).toBe(slot.position);
+        expect(squad[i]!.positions[slot.position]).toBe(3);
+        expect(
+          Math.abs(ovrAt(squad[i]!.attrs, slot.position, slot.role) - club.strength),
+        ).toBeLessThanOrEqual(1.5);
+      });
+      for (const line of LINES)
+        expect(squad.filter((p) => lineOf(p.position) === line)).toHaveLength(LINE_MINIMUM[line]);
+    }
   });
   it('schedules every ordered home/away pair once including odd groups', () =>
     fc.assert(
@@ -109,12 +166,12 @@ describe('world progression', () => {
   it('replaces retiring goalkeepers even when the remaining squad exceeds 18 players', () => {
     const w = createWorld(input);
     w.cash = '999999999';
-    for (const p of w.players) p.born = w.year - (p.role === 'GK' ? 35 : 21);
+    for (const p of w.players) p.born = w.year - (p.position === 'GK' ? 35 : 21);
     for (const candidate of [1, 2, 3, 5, 6, 7]) operate(w, { type: 'recruit', candidate });
     simulateSeason(w);
     const active = w.players.filter((p) => p.status === 'active');
     expect(active.length).toBeGreaterThan(18);
-    expect(active.some((p) => p.role === 'GK')).toBe(true);
+    expect(active.some((p) => p.position === 'GK')).toBe(true);
     expect(validateWorld(w).id).toBe(w.id);
   });
   it('settles an owned fixture once and lets supporters grow past any ceiling', () => {

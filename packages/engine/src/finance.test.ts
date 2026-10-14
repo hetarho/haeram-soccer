@@ -60,7 +60,7 @@ function world() {
     name: 'Budget Athletic',
     color: '#335544',
     seed: 'finance',
-    difficulty: 2,
+    level: 'easy' as const,
   });
 }
 
@@ -231,7 +231,7 @@ describe('earned, auditable club finances', () => {
     w.facilityWorks!.training!.day -= 90;
     progressFacilityWorks(w);
     expect(BigInt(operatingCost(w))).toBeGreaterThan(BigInt(annual));
-    const player = w.players.find((p) => p.status === 'active' && p.role !== 'GK')!;
+    const player = w.players.find((p) => p.status === 'active' && p.position !== 'GK')!;
     const beforeSale = operatingCost(w);
     sellPlayer(w, player.id);
     expect(BigInt(operatingCost(w))).toBe(BigInt(beforeSale) - BigInt(player.wage));
@@ -349,7 +349,7 @@ describe('earned, auditable club finances', () => {
       name: 'Notation CF',
       color: '#335544',
       seed: 'notation',
-      difficulty: 2,
+      level: 'easy' as const,
     });
     const euro = { ...spain, year: 2001 },
       sterling = { ...world(), year: 1950 };

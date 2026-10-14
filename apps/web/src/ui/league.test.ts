@@ -20,7 +20,7 @@ const input = {
   name: 'Haeram League',
   color: '#24664f',
   seed: 'league-insights',
-  difficulty: 1,
+  level: 'normal' as const,
 };
 
 describe('league choice (WEB-65)', () => {

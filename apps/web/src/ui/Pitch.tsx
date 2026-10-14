@@ -19,7 +19,7 @@ import type {
 } from '../../../../packages/contracts/src/types';
 import {
   MATCH_MOTION_CONFIG,
-  playerTraits,
+  motionTraits,
   visibleEvents as shownEvents,
 } from '../../../../packages/engine/src/match';
 import { tacticLabel } from '../../../../packages/engine/src/world';
@@ -189,7 +189,7 @@ export function Pitch({
   const [homeKit, awayKit] = kits(homeCrest, awayCrest);
   const selectedPlayer = p?.squads[selectedSide]?.[selectedIndex];
   const selectedMotion = sample?.players?.[selectedSide]?.[selectedIndex];
-  const traits = selectedPlayer ? playerTraits(selectedPlayer) : undefined;
+  const traits = selectedPlayer ? motionTraits(selectedPlayer) : undefined;
   const latestGoal = p?.record.highlights
     .filter((event) => event.minute <= (frame?.minute ?? 0))
     .at(-1);
@@ -586,7 +586,7 @@ export function Pitch({
                   <optgroup key={side} label={side === 0 ? home?.name : away?.name}>
                     {squad.map((player, i) => (
                       <option key={player.id} value={`${side}:${i}`}>
-                        {i + 1}. {player.name} · {player.role}
+                        {i + 1}. {player.name} · {player.position}
                       </option>
                     ))}
                   </optgroup>
@@ -596,7 +596,7 @@ export function Pitch({
             <p>
               <b>{stateLabels[selectedMotion.state]}</b> · 점선은 이 선수가 선택한 이동 목표입니다.
             </p>
-            <div className={s.playerTraits}>
+            <div className={s.motionTraits}>
               {(
                 [
                   ['자유도', traits.freedom],

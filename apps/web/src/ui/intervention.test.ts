@@ -16,7 +16,7 @@ const world = () =>
     name: 'Intervention Town',
     color: '#225588',
     seed: 'intervention',
-    difficulty: 1,
+    level: 'normal' as const,
   });
 
 describe('intervention levels (→WEB-45)', () => {

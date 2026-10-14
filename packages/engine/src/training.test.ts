@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
-import type { TrainingFocus } from '../../contracts/src/types';
+import type { Player, TrainingFocus } from '../../contracts/src/types';
+import { ATTRIBUTES } from '../../contracts/src/player';
+import { mainOvr, weightsFor } from './player';
 import { decode, encode } from '../../../apps/web/src/adapters/persistence';
 import { requestSchema } from '../../../apps/web/src/runtime/protocol';
 import {
@@ -14,7 +16,6 @@ import {
   operate,
   overall,
   policyOf,
-  roleSkills,
   settleTraining,
   trainingFocusInfo,
   trainingSummary,
@@ -27,7 +28,7 @@ function world(focus: TrainingFocus = 'balanced') {
     name: 'Academy United',
     color: '#224433',
     seed: 'training-progress',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   w.cash = '999999999';
   w.manager.youth = 60;
@@ -35,7 +36,7 @@ function world(focus: TrainingFocus = 'balanced') {
   for (const player of w.players) {
     player.born = w.year - 20;
     player.potential = 85;
-    player.attack = player.passing = player.defense = player.keeper = player.stamina = 40;
+    for (const a of ATTRIBUTES) player.attrs[a] = 40;
     player.fatigue = 50;
     // Paid as the market rates them now, so nobody asks for a raise (→CLUB-26).
     player.wage = marketWage(w, player);
@@ -47,13 +48,20 @@ function world(focus: TrainingFocus = 'balanced') {
 
 const development = (w: ReturnType<typeof world>) =>
   w.players.reduce((sum, player) => sum + (player.developed || 0), 0);
+const ovr = (player: Player) => mainOvr(player);
 const fatigue = (w: ReturnType<typeof world>) =>
   w.players.reduce((sum, player) => sum + player.fatigue, 0);
 
 describe('earned player growth and training choices', () => {
-  it('settles faster youth development against stronger recovery on the same seeded rounds', () => {
+  it('hard focus numbers', () => {
+    expect(trainingFocusInfo.balanced).toMatchObject({ recovery: 11, developmentMultiplier: 1 });
+    expect(trainingFocusInfo.recovery).toMatchObject({ recovery: 16, developmentMultiplier: 0.4 });
+    expect(trainingFocusInfo.hard).toMatchObject({ recovery: 6, developmentMultiplier: 1.6 });
+  });
+
+  it('settles faster hard development against stronger recovery on the same seeded rounds', () => {
     const balanced = world(),
-      youth = world('youth'),
+      youth = world('hard'),
       recovery = world('recovery');
     for (let round = 0; round < 6; round++)
       for (const w of [balanced, youth, recovery]) {
@@ -63,12 +71,10 @@ describe('earned player growth and training choices', () => {
       }
     expect(development(youth)).toBeGreaterThan(development(balanced));
     expect(development(balanced)).toBeGreaterThan(0);
-    expect(development(recovery)).toBe(0);
+    expect(development(recovery)).toBeGreaterThan(0);
+    expect(development(balanced)).toBeGreaterThan(development(recovery));
     expect(fatigue(youth)).toBeGreaterThan(fatigue(balanced));
     expect(fatigue(balanced)).toBeGreaterThan(fatigue(recovery));
-    expect(trainingFocusInfo.balanced.recovery).toBe(11);
-    expect(trainingFocusInfo.youth.recovery).toBe(7);
-    expect(trainingFocusInfo.recovery.recovery).toBe(16);
     for (const w of [balanced, youth, recovery]) validateWorld(w);
   });
 
@@ -79,7 +85,7 @@ describe('earned player growth and training choices', () => {
     expect(trainingSummary(w).focus).toBe('balanced');
     expect(trainingSummary(w).players[0].nextGain).toBeGreaterThan(0);
     expect(canonical(w)).toBe(readBefore);
-    for (const focus of ['youth', 'recovery', 'balanced', 'youth'] as const) {
+    for (const focus of ['hard', 'recovery', 'balanced', 'hard'] as const) {
       operate(w, { type: 'coach-training', coach: 'assistant', focus, force: true });
       settleTraining(w);
     }
@@ -91,7 +97,7 @@ describe('earned player growth and training choices', () => {
   });
 
   it('prevents a focus change or duplicate boundary from awarding extra growth or recovery', () => {
-    const w = world('youth');
+    const w = world('hard');
     advanceRound(w, undefined, false);
     const before = canonical(w.players);
     settleTraining(w);
@@ -102,7 +108,8 @@ describe('earned player growth and training choices', () => {
     expect(w.trainingAt).toBe(`${FOUNDING_YEAR}:1`);
     advanceRound(w, undefined, false);
     expect(development(w)).toBeGreaterThan(0);
-    expect(development(w)).toBe(
+    // The forced 회복 round still grows a little (×0.4, →CLUB-11).
+    expect(development(w)).toBeGreaterThan(
       JSON.parse(before).reduce(
         (sum: number, player: { developed?: number }) => sum + (player.developed || 0),
         0,
@@ -112,7 +119,7 @@ describe('earned player growth and training choices', () => {
   });
 
   it('preserves focus, actual development and the boundary guard across export/import', async () => {
-    const w = world('youth');
+    const w = world('hard');
     advanceRound(w, undefined, false);
     const restored = (await decode(await encode(w, 1, 0))).world;
     expect(canonical(restored)).toBe(canonical(w));
@@ -133,58 +140,69 @@ describe('earned player growth and training choices', () => {
     expect(old.trainingAt).toBeUndefined();
     expect(old.players.every((player) => player.developed === undefined)).toBe(true);
     const restored = (await decode(await encode(old, 1, 0))).world;
-    // A squad of 20-year-olds: the assistant trains the young.
-    expect(trainingSummary(restored).focus).toBe('youth');
+    // A fresh squad of 20-year-olds in good spirits: the assistant trains them hard (→CLUB-13).
+    expect(trainingSummary(restored).focus).toBe('hard');
     advanceRound(restored, undefined, false);
     expect(restored.trainingAt).toBe(`${FOUNDING_YEAR}:1`);
     expect(development(restored)).toBeGreaterThan(0);
     validateWorld(restored);
   });
 
-  it('caps primary skills, preserves above-potential values and records only actual gains', () => {
-    const w = world('youth'),
-      player = w.players.find((candidate) => candidate.role === 'MID')!;
-    player.potential = 70;
-    player.passing = 95;
-    player.stamina = 69.99;
+  it('growth spreads by position weights', () => {
+    const w = world('hard'),
+      player = w.players.find((candidate) => candidate.position === 'CM')!;
+    for (const a of ATTRIBUTES) player.attrs[a] = 40;
+    const weights = weightsFor('CM');
     w.round = 1;
     settleTraining(w);
-    expect(player.passing).toBe(95);
-    expect(player.stamina).toBe(70);
-    expect(player.developed).toBeCloseTo(0.01, 8);
+    const gained = (a: (typeof ATTRIBUTES)[number]) => player.attrs[a] - 40;
+    expect(gained('passing')).toBeGreaterThan(gained('vision'));
+    expect(gained('vision')).toBeGreaterThan(gained('dribbling'));
+    expect(gained('dribbling')).toBeGreaterThan(0);
+    for (const a of ATTRIBUTES) if (!weights[a]) expect(gained(a)).toBe(0);
+    expect(player.developed).toBeCloseTo(ovr(player) - 40, 1);
+  });
+
+  it('stops growth at potential and records only actual gains', () => {
+    const w = world('hard'),
+      player = w.players.find((candidate) => candidate.position === 'CM')!;
+    for (const a of ATTRIBUTES) player.attrs[a] = 60;
+    player.potential = 60.05;
+    w.round = 1;
+    settleTraining(w);
+    expect(ovr(player)).toBeLessThanOrEqual(60.05 + 1e-9);
     const earned = player.developed;
+    const before = { ...player.attrs };
     w.round++;
     settleTraining(w);
     expect(player.developed).toBe(earned);
-    expect(player.stamina).toBe(70);
-    expect(player.passing).toBe(95);
+    expect(player.attrs).toEqual(before);
   });
 
-  it('leaves fractional old-save attributes untouched during recovery training', () => {
-    const w = world('recovery'),
-      player = w.players[0];
-    player.keeper = 45.123456;
-    w.round = 1;
-    settleTraining(w);
-    expect(player.keeper).toBe(45.123456);
-    expect(player.developed).toBeUndefined();
-    expect(trainingSummary(w).players.every((prospect) => prospect.nextGain === 0)).toBe(true);
+  it('recovery still grows a little', () => {
+    const rested = world('recovery'),
+      worked = world();
+    for (const w of [rested, worked]) {
+      w.round = 1;
+      settleTraining(w);
+    }
+    expect(development(rested)).toBeGreaterThan(0);
+    expect(development(rested)).toBeLessThan(development(worked) * 0.5);
   });
 
   it('uses each player potential rather than team strength for annual development', () => {
     const weak = world(),
       strong = world();
-    for (let index = 1; index < weak.players.length; index++) {
-      for (const skill of ['attack', 'passing', 'defense', 'keeper', 'stamina'] as const) {
-        weak.players[index][skill] = 20;
-        strong.players[index][skill] = 95;
+    for (let index = 1; index < weak.players.length; index++)
+      for (const a of ATTRIBUTES) {
+        weak.players[index].attrs[a] = 20;
+        strong.players[index].attrs[a] = 95;
       }
-    }
     developAnnually(weak, weak.players[0]);
     developAnnually(strong, strong.players[0]);
     expect(canonical(weak.players[0])).toBe(canonical(strong.players[0]));
-    expect(weak.players[0].keeper).toBeGreaterThan(40);
-    expect(weak.players[0].developed).toBeCloseTo(weak.players[0].keeper - 40, 8);
+    expect(ovr(weak.players[0])).toBeGreaterThan(40);
+    expect(weak.players[0].developed).toBeCloseTo(ovr(weak.players[0]) - 40, 1);
   });
 
   it('makes manager youth skill, the training ground and younger age help uncapped development', () => {
@@ -194,11 +212,11 @@ describe('earned player growth and training choices', () => {
       w.manager.youth = youth;
       w.trainingGround = ground;
       player.born = w.year - age;
-      player.keeper = 60;
+      for (const a of ATTRIBUTES) player.attrs[a] = 60;
       player.potential = 70;
       w.round = 1;
       settleTraining(w);
-      return player.keeper - 60;
+      return ovr(player) - 60;
     };
     expect(gain(100, 0)).toBeGreaterThan(gain(0, 0));
     expect(gain(60, 5)).toBeGreaterThan(gain(60, 0));
@@ -210,34 +228,27 @@ describe('earned player growth and training choices', () => {
       young = w.players[0],
       older = w.players[1];
     young.potential = 70;
-    young.keeper = 95;
+    for (const a of ATTRIBUTES) young.attrs[a] = 95;
     developAnnually(w, young);
-    expect(young.keeper).toBe(95);
+    expect(ovr(young)).toBe(95);
     expect(young.developed).toBeUndefined();
     older.born = w.year - 32;
-    older.keeper = 80;
+    for (const a of ATTRIBUTES) older.attrs[a] = 80;
     older.developed = 4.25;
     developAnnually(w, older);
-    expect(older.keeper).toBeLessThan(80);
-    expect(older.keeper).toBeGreaterThan(78);
+    expect(ovr(older)).toBeLessThan(80);
+    expect(ovr(older)).toBeGreaterThan(78);
     expect(older.developed).toBe(4.25);
   });
 
   it('quantizes new gains and caps compact accumulated development', () => {
-    const w = world('youth');
+    const w = world('hard');
     w.round = 1;
     w.players[0].developed = 499.99;
     settleTraining(w);
     expect(w.players[0].developed).toBe(500);
     for (const player of activePlayers(w)) {
-      for (const value of [
-        player.attack,
-        player.passing,
-        player.defense,
-        player.keeper,
-        player.stamina,
-        player.developed || 0,
-      ])
+      for (const value of [...ATTRIBUTES.map((a) => player.attrs[a]), player.developed || 0])
         expect(value * 100).toBeCloseTo(Math.round(value * 100), 8);
     }
     expect(
@@ -247,7 +258,7 @@ describe('earned player growth and training choices', () => {
 
   it('developmentOutlook multiplies the same terms a settled round uses', () => {
     for (const style of ['developer', 'firefighter'] as const) {
-      const w = world('youth');
+      const w = world('hard');
       w.policy = { ...policyOf(w), support: 4 };
       w.trainingGround = 3;
       w.manager.youth = 70;
@@ -268,14 +279,14 @@ describe('earned player growth and training choices', () => {
         outlook = developmentOutlook(w);
       expect(canonical(w)).toBe(read);
       const value = (key: string) => outlook.factors.find((factor) => factor.key === key)!.value;
-      expect(value('focus')).toBe(trainingFocusInfo.youth.developmentMultiplier);
+      expect(value('focus')).toBe(trainingFocusInfo.hard.developmentMultiplier);
       expect(value('investment')).toBe(1.12);
       expect(value('build-youth')).toBe(1.2);
       expect(value('coaches-youth')).toBe(1.3);
       expect(value(style === 'developer' ? 'style-youth' : 'style')).toBe(
         style === 'developer' ? 1.3 : 0.85,
       );
-      expect(outlook.skills.defense).toBeLessThan(1);
+      expect(outlook.skills.tackling).toBeLessThan(1);
       const before = structuredClone(w.players);
       w.round = 1;
       settleTraining(w);
@@ -292,10 +303,16 @@ describe('earned player growth and training choices', () => {
           .reduce((all, factor) => all * factor.value, 1);
         const gain = Math.round((gap / 400) * ageWeight * product * 100) / 100,
           now = w.players.find((player) => player.id === was.id)!;
-        for (const skill of roleSkills[was.role]) {
-          const multiplier = outlook.skills[skill],
-            expected = multiplier === 1 ? gain : Math.round(gain * multiplier * 100) / 100;
-          expect(Math.abs(now[skill] - was[skill] - expected)).toBeLessThanOrEqual(0.0100001);
+        // The round's gain spreads by the main position's weights at half its size (→PLAYER-15).
+        const weights = weightsFor(was.position);
+        const total = ATTRIBUTES.reduce((sum, a) => sum + weights[a], 0),
+          squares = ATTRIBUTES.reduce((sum, a) => sum + weights[a] ** 2, 0);
+        const scale = (Math.min(gain * 0.5, was.potential - mainOvr(was)) * total) / squares;
+        for (const a of ATTRIBUTES) {
+          const expected = weights[a]
+            ? Math.round(scale * weights[a] * outlook.skills[a] * 100) / 100
+            : 0;
+          expect(Math.abs(now.attrs[a] - was.attrs[a] - expected)).toBeLessThanOrEqual(0.0100001);
         }
         checked++;
         if (age <= 21) young++;
@@ -347,7 +364,7 @@ describe('earned player growth and training choices', () => {
       parentGeneration: 0,
       body: {
         type: 'command',
-        command: { type: 'coach-training', coach: 'assistant', focus: 'youth', force: true },
+        command: { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true },
       },
     };
     expect(requestSchema.parse(input).body).toEqual(input.body);

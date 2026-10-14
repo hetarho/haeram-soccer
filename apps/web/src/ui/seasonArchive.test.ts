@@ -8,7 +8,7 @@ const input = {
   name: 'Haeram Archive',
   color: '#24664f',
   seed: 'season-archive',
-  difficulty: 1,
+  level: 'normal' as const,
 };
 
 describe('closed season tables', () => {

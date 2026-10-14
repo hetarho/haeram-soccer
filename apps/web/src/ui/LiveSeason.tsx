@@ -135,7 +135,7 @@ function MatchFeedback({ finished }: { finished: boolean }) {
   const opponent = w.clubs.find(
     (club) => club.id === (next?.home === w.playerClub ? next.away : next?.home),
   );
-  const readiness = lineupSummary(startingSquad(w, clubOf(w)));
+  const readiness = lineupSummary(startingSquad(w, clubOf(w)), w.tactic);
   const record = playback?.record;
   const side = record?.home === w.playerClub ? 0 : 1;
   const ownGoals = side === 0 ? record?.score.home : record?.score.away;

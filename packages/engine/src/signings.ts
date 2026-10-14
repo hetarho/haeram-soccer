@@ -1,15 +1,27 @@
-import type { Player, Role, SigningRequest, TransferBid, World } from '../../contracts/src/types';
+import type { Line, Player, SigningRequest, TransferBid, World } from '../../contracts/src/types';
+import { LINES } from '../../contracts/src/player';
+import { LINE_MINIMUM, lineOf } from './player';
 import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS } from './calendar';
 import { MARKET_REFRESH_ROUNDS } from './managerMarket';
 import { clamp, compareIds, ratio } from './primitives';
-import { activePlayers, addEvent, overall, ownStarters } from './world';
+import {
+  activePlayers,
+  addEvent,
+  joinClub,
+  lineOfPlayer,
+  overall,
+  formationOf,
+  ownStarters,
+  slotOvr,
+  unhappyPenalty,
+} from './world';
 import { directionOption, financeStance } from './direction';
 import { moneyLabel, operatingCosts, recentRevenue, wageBill } from './finance';
 import { financeProjection } from './projection';
 import { signingClauses } from './contracts';
 import { pushInbox } from './inbox';
 import { delegated } from './intervention';
-import { transferOffers } from './ops-squad';
+import { isForeignCandidate, transferOffers } from './ops-squad';
 import { POLICY_INFO, policyOf } from './policy';
 import { placeBid, transferWindow, transferWindowDays } from './transfers';
 
@@ -19,24 +31,23 @@ import { placeBid, transferWindow, transferWindowDays } from './transfers';
  */
 export const SIGNING_CONFIG = {
   lookDays: 7,
-  roleMinimum: { GK: 2, DEF: 6, MID: 6, FWD: 4 } as Readonly<Record<Role, number>>,
+  lineMinimum: LINE_MINIMUM,
   squadMinimum: 18,
   /** He looks for upgrades only while the squad has at most this many players. */
   upgradeSquad: 24,
-  /** Candidates the chief scout lists per role. */
-  shortlistPerRole: 3,
-  /** A shortlisted candidate must beat a role's weakest starter by this much to be requested. */
+  /** Candidates the chief scout lists per line. */
+  shortlistPerLine: 3,
+  /** A shortlisted candidate must beat a line's weakest starter by this much to be requested. */
   requestMargin: 5,
   requestLimit: 3,
   /** Trust a manager loses when a window closes with none of his requests met. */
   unmetTrust: 3,
 };
-const ROLES: readonly Role[] = ['GK', 'DEF', 'MID', 'FWD'];
-const ROLE_NAME: Readonly<Record<Role, string>> = {
+const LINE_NAME: Readonly<Record<Line, string>> = {
   GK: '골키퍼',
-  DEF: '수비수',
-  MID: '미드필더',
-  FWD: '공격수',
+  DF: '수비수',
+  MF: '미드필더',
+  FW: '공격수',
 };
 
 type Offer = ReturnType<typeof transferOffers>[number];
@@ -45,8 +56,8 @@ type Offer = ReturnType<typeof transferOffers>[number];
  * manager asked for the role (→CLUB-33).
  */
 export type SigningNeed = (
-  | { kind: 'short'; role: Role; count: number; minimum: number; squad: number }
-  | { kind: 'upgrade'; role: Role; starter: Player; margin: number }
+  | { kind: 'short'; line: Line; count: number; minimum: number; squad: number }
+  | { kind: 'upgrade'; line: Line; starter: Player; level: number; margin: number }
 ) & { requested?: SigningRequest };
 
 const isOpen = (bid: TransferBid) => bid.status === 'pending' || bid.status === 'countered';
@@ -68,31 +79,31 @@ type ShortNeed = Extract<SigningNeed, { kind: 'short' }>;
  * Every short role in role order: fewer than its minimum, or, with the squad under 18 and every
  * role at its minimum, the role furthest below its share of an 18-player squad.
  */
-export function shortRoles(w: World): ShortNeed[] {
+export function shortLines(w: World): ShortNeed[] {
   const squad = activePlayers(w),
-    count = (role: Role) => squad.filter((p) => p.role === role).length,
-    need = (role: Role): ShortNeed => ({
+    count = (line: Line) => squad.filter((p) => lineOfPlayer(p) === line).length,
+    need = (line: Line): ShortNeed => ({
       kind: 'short',
-      role,
-      count: count(role),
-      minimum: SIGNING_CONFIG.roleMinimum[role],
+      line,
+      count: count(line),
+      minimum: SIGNING_CONFIG.lineMinimum[line],
       squad: squad.length,
     });
-  const short = ROLES.filter((role) => count(role) < SIGNING_CONFIG.roleMinimum[role]);
+  const short = LINES.filter((line) => count(line) < SIGNING_CONFIG.lineMinimum[line]);
   if (short.length) return short.map(need);
   if (squad.length >= SIGNING_CONFIG.squadMinimum) return [];
   return [
     need(
-      [...ROLES].sort(
+      [...LINES].sort(
         (a, b) =>
-          count(a) - SIGNING_CONFIG.roleMinimum[a] - (count(b) - SIGNING_CONFIG.roleMinimum[b]),
-      )[0],
+          count(a) - SIGNING_CONFIG.lineMinimum[a] - (count(b) - SIGNING_CONFIG.lineMinimum[b]),
+      )[0]!,
     ),
   ];
 }
-/** The first short role, if any. */
-export function shortRole(w: World): ShortNeed | undefined {
-  return shortRoles(w)[0];
+/** The first short line, if any. */
+export function shortLine(w: World): ShortNeed | undefined {
+  return shortLines(w)[0];
 }
 
 /**
@@ -145,15 +156,15 @@ export function signingVerdict(w: World, player: Player, fee: string) {
 
 /** The need in words, with the row behind it and the manager's request when it is one. */
 export function needLine(w: World, need: SigningNeed) {
-  const asked = need.requested ? `감독 요청 ${ROLE_NAME[need.role]} · ` : '';
+  const asked = need.requested ? `감독 요청 ${LINE_NAME[need.line]} · ` : '';
   if (need.kind === 'short')
     return (
       asked +
       (need.count < need.minimum
-        ? `${ROLE_NAME[need.role]}가 ${need.count}명뿐이라 ${need.minimum}명을 채워요`
+        ? `${LINE_NAME[need.line]}가 ${need.count}명뿐이라 ${need.minimum}명을 채워요`
         : `선수단이 ${need.squad}명뿐이라 ${SIGNING_CONFIG.squadMinimum}명을 채워요`)
     );
-  return `${asked}주전 ${need.starter.name}(OVR ${overall(need.starter)})보다 ${need.margin} 이상 나은 ${ROLE_NAME[need.role]}를 찾아요(재정 기조 ${directionOption(w, 'finance').name})`;
+  return `${asked}주전 ${need.starter.name}(그 자리 OVR ${Math.round(need.level)})보다 ${need.margin} 이상 나은 ${LINE_NAME[need.line]}를 찾아요(재정 기조 ${directionOption(w, 'finance').name})`;
 }
 /** " · 감독이 고른 선수" when the 단장 moves for the manager's pick. */
 const pickNote = (need: SigningNeed, player: Player) =>
@@ -181,9 +192,9 @@ function candidates(w: World, offers: Offer[], need: SigningNeed, tried: Set<str
       ({ offer }) =>
         offer.available &&
         !offer.player.loanUntil &&
-        offer.player.role === need.role &&
+        lineOfPlayer(offer.player) === need.line &&
         !tried.has(offer.player.id) &&
-        (need.kind === 'short' || overall(offer.player) >= overall(need.starter) + need.margin),
+        (need.kind === 'short' || overall(offer.player) >= need.level + need.margin),
     )
     .sort((a, b) => rank(a.offer) - rank(b.offer) || byCandidate(a.offer, b.offer));
 }
@@ -219,8 +230,8 @@ export function signingRequests(w: World): SigningRequest[] {
  * The manager's pick among the shortlisted of a role (→CLUB-33): the ablest, then potential; a
  * 육성형 manager or one with the youth trait the highest potential aged 23 or under first.
  */
-function managerPick(w: World, listed: Offer[], role: Role) {
-  const pool = listed.filter((offer) => offer.player.role === role);
+function managerPick(w: World, listed: Offer[], line: Line) {
+  const pool = listed.filter((offer) => lineOfPlayer(offer.player) === line);
   const youngFirst = w.manager.style === 'developer' || w.manager.trait === 'youth';
   const young = youngFirst
     ? pool
@@ -249,27 +260,29 @@ function managerPick(w: World, listed: Offer[], role: Role) {
  */
 function managerRequests(w: World, listed: Offer[]): SigningRequest[] {
   if (w.manager.interim) return [];
-  const requests: Omit<SigningRequest, 'pick'>[] = shortRoles(w).map(({ role }) => ({
-    role,
+  const requests: Omit<SigningRequest, 'pick'>[] = shortLines(w).map(({ line }) => ({
+    line,
     kind: 'short',
   }));
-  const starters = ownStarters(w);
-  let upgrade: { role: Role; by: number } | undefined;
-  for (const role of ROLES) {
-    if (requests.some((request) => request.role === role)) continue;
+  const starters = lineStarters(w);
+  let upgrade: { line: Line; by: number } | undefined;
+  for (const line of LINES) {
+    if (requests.some((request) => request.line === line)) continue;
     const weakest = starters
-      .filter((p) => p.role === role)
-      .sort((a, b) => overall(a) - overall(b) || compareIds(a.id, b.id))[0];
+      .filter((starter) => starter.line === line)
+      .sort((a, b) => a.value - b.value || compareIds(a.p.id, b.p.id))[0];
     const best = Math.max(
-      ...listed.filter((offer) => offer.player.role === role).map((offer) => overall(offer.player)),
+      ...listed
+        .filter((offer) => lineOfPlayer(offer.player) === line)
+        .map((offer) => overall(offer.player)),
     );
     if (!weakest || !Number.isFinite(best)) continue;
-    const by = best - overall(weakest);
-    if (by >= SIGNING_CONFIG.requestMargin && (!upgrade || by > upgrade.by)) upgrade = { role, by };
+    const by = best - weakest.value;
+    if (by >= SIGNING_CONFIG.requestMargin && (!upgrade || by > upgrade.by)) upgrade = { line, by };
   }
-  if (upgrade) requests.push({ role: upgrade.role, kind: 'upgrade' });
+  if (upgrade) requests.push({ line: upgrade.line, kind: 'upgrade' });
   return requests.slice(0, SIGNING_CONFIG.requestLimit).map((request) => {
-    const pick = managerPick(w, listed, request.role);
+    const pick = managerPick(w, listed, request.line);
     return pick ? { ...request, pick } : request;
   });
 }
@@ -281,17 +294,20 @@ function managerRequests(w: World, listed: Offer[]): SigningRequest[] {
  */
 export function drawShortlist(w: World) {
   const offers = listable(w).map(({ offer }) => offer);
-  const listed = ROLES.flatMap((role) =>
+  const listed = LINES.flatMap((line) =>
     offers
-      .filter((offer) => offer.player.role === role)
+      .filter((offer) => lineOfPlayer(offer.player) === line)
       .sort(byCandidate)
-      .slice(0, SIGNING_CONFIG.shortlistPerRole),
+      .slice(0, SIGNING_CONFIG.shortlistPerLine),
   );
   const window = w.shortlist?.window;
   w.shortlist = {
     year: w.year,
     day: currentDay(w),
-    entries: listed.map((offer) => ({ playerId: offer.player.id, role: offer.player.role })),
+    entries: listed.map((offer) => ({
+      playerId: offer.player.id,
+      line: lineOfPlayer(offer.player),
+    })),
     requests: managerRequests(w, listed),
     ...(window ? { window } : {}),
   };
@@ -319,13 +335,27 @@ export function openShortlistWindow(w: World) {
       year: w.year,
       opening: s.day,
       manager: w.manager.id,
-      roles: s.requests.map((request) => request.role),
+      // The window keeps what was asked, not the picks.
+      requests: s.requests.map((request) => {
+        const asked = { ...request };
+        delete asked.pick;
+        return asked;
+      }),
     };
 }
-/** A player joined the squad: a request of his role is met for the window (→CLUB-33). */
-export function noteSigning(w: World, player: Pick<Player, 'role'>) {
+/**
+ * A player joined the squad: he starts to settle (→PLAYER-11), and a request of his line is met for
+ * the window (→CLUB-33).
+ */
+export function noteSigning(w: World, player: Player) {
+  joinClub(player, isForeignCandidate(player.id) ? 'abroad' : 'domestic');
   const window = w.shortlist?.window;
-  if (window && window.year === w.year && window.roles.includes(player.role)) window.met = true;
+  if (
+    window &&
+    window.year === w.year &&
+    window.requests.some((request) => request.line === lineOfPlayer(player))
+  )
+    window.met = true;
 }
 /**
  * The day after a window closes (→CLUB-33, →STAFF-5): the manager whose requests saw no player of
@@ -338,27 +368,45 @@ export function judgeRequests(w: World) {
   if (!s || !window) return;
   delete s.window;
   const m = w.manager;
-  if (window.year !== w.year || window.met || !window.roles.length || window.manager !== m.id)
+  if (window.year !== w.year || window.met || !window.requests.length || window.manager !== m.id)
     return;
   m.trust = clamp(m.trust - SIGNING_CONFIG.unmetTrust);
   pushInbox(w, {
     kind: 'staff-report',
     title: `${m.name} 감독의 영입 요청이 채워지지 않았어요`,
-    detail: `이적시장이 열릴 때 요청한 ${window.roles.map((role) => ROLE_NAME[role]).join('·')} 자리에 아무도 오지 않았어요 · 감독 신뢰 −${SIGNING_CONFIG.unmetTrust}(지금 ${m.trust})`,
+    detail: `이적시장이 열릴 때 요청한 ${window.requests.map((request) => LINE_NAME[request.line]).join('·')} 자리에 아무도 오지 않았어요 · 감독 신뢰 −${SIGNING_CONFIG.unmetTrust}(지금 ${m.trust})`,
     attention: false,
   });
 }
 
-/** The upgrade needs: each role's weakest starter, the weakest of them first. */
+/**
+ * The XI with each starter's line and his OVR where he plays: the formation slot's position and
+ * role, at his level there (→CLUB-33).
+ */
+function lineStarters(w: World) {
+  const slots = formationOf(w.tactic);
+  return ownStarters(w).map((p, i) => ({
+    p,
+    line: lineOf(slots[i]!.position),
+    value: slotOvr(p, slots[i]!) + unhappyPenalty(p),
+  }));
+}
+/** The upgrade needs: each line's weakest starter where he plays, the weakest of them first. */
 function upgradeNeeds(w: World, margin: number): SigningNeed[] {
-  const starters = ownStarters(w),
-    weakest = ROLES.flatMap((role) => {
+  const starters = lineStarters(w),
+    weakest = LINES.flatMap((line) => {
       const starter = starters
-        .filter((p) => p.role === role)
-        .sort((a, b) => overall(a) - overall(b) || compareIds(a.id, b.id))[0];
-      return starter ? [{ role, starter }] : [];
-    }).sort((a, b) => overall(a.starter) - overall(b.starter));
-  return weakest.map(({ role, starter }) => ({ kind: 'upgrade', role, starter, margin }));
+        .filter((one) => one.line === line)
+        .sort((a, b) => a.value - b.value || compareIds(a.p.id, b.p.id))[0];
+      return starter ? [{ line, starter }] : [];
+    }).sort((a, b) => a.starter.value - b.starter.value);
+  return weakest.map(({ line, starter }) => ({
+    kind: 'upgrade',
+    line,
+    starter: starter.p,
+    level: starter.value,
+    margin,
+  }));
 }
 
 /** A free agent joins at once on the market's terms, with his signing's clauses (→CLUB-29). */
@@ -388,14 +436,14 @@ function signFreeAgent(w: World, offer: Offer, need: SigningNeed, why: string) {
     w,
     'transfer-in',
     `${p.name} 영입`,
-    `${p.role} · ${w.year - p.born}세 · 연봉 ${moneyLabel(w, p.wage)} · 계약 ${p.until}년 · 단장 영입`,
+    `${p.position} · ${w.year - p.born}세 · 연봉 ${moneyLabel(w, p.wage)} · 계약 ${p.until}년 · 단장 영입`,
     '0',
   );
   pushInbox(w, {
     kind: 'staff-report',
     title: `단장 영입 · 자유계약 ${p.name}`,
     detail:
-      `${needLine(w, need)}${pickNote(need, offer.player)} · ${p.role} · ${w.year - p.born}세 · OVR ${overall(p)} · 연봉 ${moneyLabel(w, p.wage)} · ${recruitmentLine(w)} · ${why}`.slice(
+      `${needLine(w, need)}${pickNote(need, offer.player)} · ${p.position} · ${w.year - p.born}세 · OVR ${overall(p)} · 연봉 ${moneyLabel(w, p.wage)} · ${recruitmentLine(w)} · ${why}`.slice(
         0,
         400,
       ),
@@ -425,7 +473,7 @@ export function staffSignings(w: World) {
     tried = new Set(bids.map((bid) => bid.playerId)),
     offers = transferOffers(w);
   const requests = signingRequests(w),
-    short = shortRoles(w),
+    short = shortLines(w),
     found: SigningNeed[] = short.length
       ? short
       : stance.signing.margin !== undefined &&
@@ -435,7 +483,7 @@ export function staffSignings(w: World) {
         : [];
   const needs = found
     .map((need) => {
-      const requested = requests.find((request) => request.role === need.role);
+      const requested = requests.find((request) => request.line === need.line);
       return requested ? { ...need, requested } : need;
     })
     .map((need, order) => ({ need, order }))
@@ -456,7 +504,7 @@ export function staffSignings(w: World) {
           kind: 'staff-report',
           title: `단장 영입 제안 · ${offer.player.name}`,
           detail:
-            `${needLine(w, need)}${pickNote(need, offer.player)} · ${offer.player.role} · ${w.year - offer.player.born}세 · OVR ${overall(offer.player)} · 제안 ${moneyLabel(w, fee)} (요구액 ${moneyLabel(w, offer.fee)}) · ${recruitmentLine(w)} · ${verdict.reason}`.slice(
+            `${needLine(w, need)}${pickNote(need, offer.player)} · ${offer.player.position} · ${w.year - offer.player.born}세 · OVR ${overall(offer.player)} · 제안 ${moneyLabel(w, fee)} (요구액 ${moneyLabel(w, offer.fee)}) · ${recruitmentLine(w)} · ${verdict.reason}`.slice(
               0,
               400,
             ),

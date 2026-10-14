@@ -15,12 +15,12 @@ function club(seed = 'shortlist-ui') {
     name: 'Scout Town',
     color: '#224433',
     seed,
-    difficulty: 2,
+    level: 'easy' as const,
   });
 }
 /** Leaves `count` active goalkeepers, the others sold. */
 function oneKeeper(w: World) {
-  for (const p of w.players.filter((one) => one.role === 'GK').slice(1)) p.status = 'sold';
+  for (const p of w.players.filter((one) => one.position === 'GK').slice(1)) p.status = 'sold';
 }
 
 describe('스카우트 명단 and 감독 요청 on 이적시장 (→WEB-43, CLUB-33)', () => {
@@ -30,14 +30,14 @@ describe('스카우트 명단 and 감독 요청 on 이적시장 (→WEB-43, CLUB
     openShortlistWindow(w);
     const offers = transferOffers(w),
       rows = shortlistRows(w, offers);
-    expect(rows.map((row) => row.role)).toEqual(['GK', 'DEF', 'MID', 'FWD']);
+    expect(rows.map((row) => row.line)).toEqual(['GK', 'DF', 'MF', 'FW']);
     expect(rows.flatMap((row) => row.entries.map(({ offer }) => offer.player.id))).toEqual(
       w.shortlist!.entries.map((entry) => entry.playerId),
     );
     for (const row of rows)
       for (const { index, offer } of row.entries) expect(offers[index]).toBe(offer);
     const keepers = rows[0];
-    expect(keepers.request).toMatchObject({ role: 'GK', kind: 'short' });
+    expect(keepers.request).toMatchObject({ line: 'GK', kind: 'short' });
     expect(
       keepers.entries.filter((entry) => entry.pick).map(({ offer }) => offer.player.id),
     ).toEqual([keepers.request!.pick]);
@@ -59,8 +59,8 @@ describe('스카우트 명단 and 감독 요청 on 이적시장 (→WEB-43, CLUB
     const w = club();
     oneKeeper(w);
     openShortlistWindow(w);
-    const roles = w.shortlist!.window!.roles.map(
-      (role) => ({ GK: '골키퍼', DEF: '수비수', MID: '미드필더', FWD: '공격수' })[role],
+    const roles = w.shortlist!.window!.requests.map(
+      (request) => ({ GK: '골키퍼', DF: '수비수', MF: '미드필더', FW: '공격수' })[request.line],
     );
     expect(roles[0]).toBe('골키퍼');
     expect(requestStakes(w)).toBe(

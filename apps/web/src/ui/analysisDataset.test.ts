@@ -12,7 +12,7 @@ it('exports only explicit owned periods and keeps original source identity and i
     name: 'CSV',
     color: '#24664f',
     seed: 'csv',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   const record = simulateMatch(w, nextOwnFixture(w)!, false, true).record;
   const dataset = analysisDataset(

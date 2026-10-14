@@ -11,6 +11,8 @@
  *   options: --matches N (gap sample per path), --tier N (sample per tier), --seasons N,
  *            --only curves|tiers|seasons|own
  */
+import { ATTRIBUTES } from '../packages/contracts/src/player';
+import { weightsFor } from '../packages/engine/src/player';
 import type { Club, Fixture, Player, Tactic } from '../packages/contracts/src/types';
 import {
   activePlayers,
@@ -72,7 +74,7 @@ const w = createWorld({
   name: 'Calibration',
   color: '#335577',
   seed: 'calibration',
-  difficulty: 1,
+  level: 'normal',
 });
 let serial = 0;
 function makeClub(strength: number): Club {
@@ -398,16 +400,15 @@ function seasonTable() {
 }
 
 // ---- Own club --------------------------------------------------------------------------------
-/** Role-shaped skills whose role rating (overall) is `level`, like generated squads. */
+/** Attributes whose OVR at his main position is `level`, in every role there. */
 function shape(player: Player, level: number) {
-  const bonus = { GK: 0, DEF: 10, MID: 8, FWD: 9 }[player.role];
-  const base = level - bonus / 4;
-  player.attack = Math.min(100, base + (player.role === 'FWD' ? bonus : 0));
-  player.passing = Math.min(100, base + (player.role === 'MID' ? bonus : 0));
-  player.defense = Math.min(100, base + (player.role === 'DEF' ? bonus : 0));
-  player.stamina = Math.min(100, base);
-  player.keeper = player.role === 'GK' ? level : 15;
-  if (player.role === 'GK') player.attack = level - 20;
+  const weights = weightsFor(player.position);
+  for (const a of ATTRIBUTES)
+    player.attrs[a] = weights[a]
+      ? level
+      : player.position !== 'GK' && ['reflexes', 'handling', 'distribution'].includes(a)
+        ? 15
+        : level - 10;
   player.fatigue = 0;
 }
 
@@ -422,7 +423,7 @@ function ownSeasons(level: number, ability: number, morale: number, tactic: Tact
     name: 'Calibration Owners',
     color: '#335577',
     seed: 'calibration-own',
-    difficulty: 1,
+    level: 'normal',
   });
   for (const player of activePlayers(own)) shape(player, level);
   own.manager.ability = ability;

@@ -71,7 +71,7 @@ export function PlayerSheet({
   return (
     <Dialog label={player.name} onClose={onClose}>
       <p>
-        {player.role} · {active ? `${w.year - player.born}세` : `${player.born}년생`} · 에이전트{' '}
+        {player.position} · {active ? `${w.year - player.born}세` : `${player.born}년생`} · 에이전트{' '}
         {agentOf(w, player)}등급
       </p>
       {active && !player.loanUntil && <p>계약 조항: {clausesLabel(player.clauses)}</p>}
@@ -79,7 +79,7 @@ export function PlayerSheet({
         <h3>우리 클럽 통산</h3>
         <p className={a.careerLine}>
           출전 {appearances(career)}경기 · {career[0]}골 · {career[1]}도움
-          {player.role === 'GK' ? ` · ${career[9]}선방` : ''}
+          {player.position === 'GK' ? ` · ${career[9]}선방` : ''}
         </p>
         <div className={a.chips}>
           <span className={a.status} data-status={player.status}>

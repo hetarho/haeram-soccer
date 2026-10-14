@@ -1,3 +1,4 @@
+import { lineOf } from '../../../../packages/engine/src/player';
 import { expect, it } from 'vitest';
 import { createWorld } from '../../../../packages/engine/src/index';
 import { explorePlayers, per90 } from './playerAnalysis';
@@ -7,9 +8,9 @@ it('uses minutes, scopes and role filters before sorting, without deleting inact
     name: 'Rates',
     color: '#24664f',
     seed: 'rates',
-    difficulty: 2,
+    level: 'easy' as const,
   });
-  const [a, b, c] = w.players.filter((p) => p.role === 'FWD');
+  const [a, b, c] = w.players.filter((p) => lineOf(p.position) === 'FW');
   a.season[0] = 2;
   a.season[10] = 180;
   b.season[0] = 3;
@@ -21,7 +22,7 @@ it('uses minutes, scopes and role filters before sorting, without deleting inact
   expect(per90(c.season, 0)).toBeUndefined();
   const options = {
     scope: 'season' as const,
-    role: 'FWD' as const,
+    role: 'FW' as const,
     query: '',
     minutes: 90,
     order: 'goals90' as const,

@@ -8,7 +8,7 @@ describe('clubs nobody owns', () => {
       name: 'Watcher',
       color: '#224433',
       seed: 'superclub-probe',
-      difficulty: 2,
+      level: 'easy' as const,
     });
     let highest = 0,
       projects = 0;

@@ -44,7 +44,6 @@ export * from './direction';
 export * from './presets';
 export * from './bases';
 export * from './signings';
-export * from './activation';
 export * from './intervention';
 export * from './orders';
 export * from './coach-training';

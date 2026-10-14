@@ -8,7 +8,7 @@ it('keeps previews pure, uses the applied baseline and exposes pressing fatigue 
     name: 'Lab',
     color: '#24664f',
     seed: 'lab',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   const players = startingSquad(w, clubOf(w));
   const before = JSON.stringify(w);

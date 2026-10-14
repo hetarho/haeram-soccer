@@ -8,7 +8,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('ui-management');
-  await page.getByRole('button', { name: '넉넉한 출발' }).click();
+  await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
   await expect(page.getByRole('heading', { name: '선수·스태프', level: 2 })).toBeVisible();

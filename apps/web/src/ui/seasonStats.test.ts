@@ -18,7 +18,7 @@ describe('season analytics', () => {
       name: 'Review Club',
       color: '#3a6b4f',
       seed: 'season-review',
-      difficulty: 2,
+      level: 'easy' as const,
     });
     for (let round = 0; round < 6; round++) advanceRound(w, undefined, false);
     const league = w.ownMatches.filter((m) => ['league', 'lower'].includes(m.kind));
@@ -46,7 +46,7 @@ describe('season analytics', () => {
       name: 'Old Rules',
       color: '#3a6b4f',
       seed: 'old-rules',
-      difficulty: 2,
+      level: 'easy' as const,
     });
     for (let round = 0; round < 3; round++) advanceRound(w, undefined, false);
     for (const match of w.ownMatches) delete match.xg;

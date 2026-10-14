@@ -1,3 +1,4 @@
+import { lineOf } from './player';
 import type { ManagerStyle, Player, World } from '../../contracts/src/types';
 import { ownStarters } from './world';
 import { policyOf } from './policy';
@@ -81,7 +82,7 @@ const RULES: readonly SynergyRule[] = [
         label: '피지컬 코치 능력 65+ 또는 회복 전문',
         met: (coach(w, 'fitness')?.ability ?? 0) >= 65 || coach(w, 'fitness')?.trait === 'recovery',
       },
-      { label: '주전 평균 체력 60+', met: average(starters, (p) => p.stamina) >= 60 },
+      { label: '주전 평균 체력 60+', met: average(starters, (p) => p.attrs.stamina) >= 60 },
     ],
   },
   {
@@ -106,8 +107,8 @@ const RULES: readonly SynergyRule[] = [
         label: '주전 미드필더 평균 패스 62+',
         met:
           average(
-            starters.filter((p) => p.role === 'MID'),
-            (p) => p.passing,
+            starters.filter((p) => lineOf(p.position) === 'MF'),
+            (p) => p.attrs.passing,
           ) >= 62,
       },
     ],
@@ -130,11 +131,11 @@ const RULES: readonly SynergyRule[] = [
           (coach(w, 'defense')?.ability ?? 0) >= 65 || coach(w, 'defense')?.trait === 'specialist',
       },
       {
-        label: '주전 수비수 평균 수비 62+',
+        label: '주전 수비수 평균 태클·위치선정 62+',
         met:
           average(
-            starters.filter((p) => p.role === 'DEF'),
-            (p) => p.defense,
+            starters.filter((p) => lineOf(p.position) === 'DF'),
+            (p) => (p.attrs.tackling + p.attrs.positioning) / 2,
           ) >= 62,
       },
     ],

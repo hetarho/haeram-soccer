@@ -24,7 +24,13 @@ import {
 import { professionalStart } from './testing';
 
 function world(country: 'ENG' | 'BEL' = 'ENG', seed = 'business') {
-  return createWorld({ country, name: 'Ledger Town', color: '#335544', seed, difficulty: 2 });
+  return createWorld({
+    country,
+    name: 'Ledger Town',
+    color: '#335544',
+    seed,
+    level: 'easy' as const,
+  });
 }
 const finance = (w: World) => (w.inbox || []).filter((item) => item.kind === 'finance');
 

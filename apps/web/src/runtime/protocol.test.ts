@@ -40,7 +40,7 @@ describe('the worker protocol (→ECON-25, WEB-15)', () => {
             name: 'Club',
             color: '#224466',
             seed: 'seed',
-            difficulty: 2,
+            level: 'easy' as const,
             ...(preset !== undefined ? { preset } : {}),
           },
         }),

@@ -20,7 +20,7 @@ function world() {
     name: 'Scoring United',
     color: '#223344',
     seed: 'goal-race',
-    difficulty: 2,
+    level: 'easy' as const,
   });
   w.cash = '999999999999';
   return w;

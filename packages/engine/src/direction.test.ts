@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { InterventionLevel } from '../../contracts/src/types';
 import {
-  activateDirection,
   activePlayers,
   affordable,
   COACH_CRITERIA_DEFAULT,
@@ -37,7 +36,13 @@ import {
 } from './index';
 
 const world = (seed = 'direction') =>
-  createWorld({ country: 'ENG', name: 'Direction Town', color: '#335577', seed, difficulty: 1 });
+  createWorld({
+    country: 'ENG',
+    name: 'Direction Town',
+    color: '#335577',
+    seed,
+    level: 'normal' as const,
+  });
 /** Cash covering `rounds` rounds of the club's fixed costs. */
 const cashFor = (w: ReturnType<typeof world>, rounds: number) =>
   ((BigInt(operatingCosts(w).annual) * BigInt(rounds)) / 46n).toString();
@@ -253,56 +258,6 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     }
     expect(owner.staff!.some((member) => member.role === 'attack')).toBe(false);
     expect(staffRun.staff!.some((member) => member.role === 'attack')).toBe(true);
-  });
-
-  it('loads rules-1.16 criteria as the nearest rows and names them on activation', () => {
-    const base = JSON.parse(canonical(world('direction-load')));
-    const load = (extra: Record<string, unknown>) =>
-      validateWorld({ ...base, engine: '1.16.0', ...extra });
-    const manager = { ...MANAGER_CRITERIA_DEFAULT };
-    expect(load({}).direction).toBeUndefined();
-    expect(load({ talkRule: { maxPay: 1, minOvr: 0 } }).direction).toEqual({ renewal: 'frugal' });
-    expect(load({ talkRule: { maxPay: 1.1, minOvr: 0, maxAge: 30 } }).direction).toEqual({
-      renewal: 'youngFirst',
-    });
-    expect(load({ talkRule: { maxPay: 1.4, minOvr: 0 } }).direction).toEqual({
-      renewal: 'keepAll',
-    });
-    expect(load({ talkRule: { maxPay: 1.25, minOvr: 60 } }).direction).toBeUndefined();
-    expect(
-      load({ hiring: { manager: { ...manager, schools: ['counter'], minYouth: 55 } } }).direction,
-    ).toEqual({ school: 'counter', manager: 'developer' });
-    expect(load({ hiring: { manager: { ...manager, poach: true } } }).direction).toEqual({
-      manager: 'proven',
-    });
-    expect(load({ hiring: { manager: { ...manager, priority: 'wage' } } }).direction).toEqual({
-      manager: 'cheap',
-    });
-    const elite = { ...COACH_CRITERIA_DEFAULT, minAbility: 65, priority: 'ability' as const };
-    const volunteer = { ...COACH_CRITERIA_DEFAULT, volunteer: true };
-    // The departments' most common stance wins; a tie with the defaults stays 표준.
-    expect(
-      load({
-        hiring: {
-          coaches: Object.fromEntries(STAFF_ROLES.map((role) => [role, volunteer])),
-        },
-      }).direction,
-    ).toEqual({ coaches: 'volunteer' });
-    expect(load({ hiring: { coaches: { attack: elite } } }).direction).toBeUndefined();
-    const loaded = load({ talkRule: { maxPay: 1, minOvr: 0 } });
-    expect(loaded).not.toHaveProperty('talkRule');
-    expect(loaded).not.toHaveProperty('hiring');
-    // Malformed criteria are refused, not guessed.
-    expect(() => load({ talkRule: { maxPay: 2, minOvr: 0 } })).toThrow();
-
-    const activated = activateDirection(loaded, '1.16.0');
-    expect(activated.inbox!.at(-1)).toMatchObject({
-      kind: 'staff-report',
-      title: '직원 기준이 방향의 줄로 바뀌었어요',
-    });
-    expect(activated.inbox!.at(-1)!.detail).toContain('재계약 기조 짠물');
-    expect(activated.inbox!.at(-1)!.detail).toContain('재정 기조 표준');
-    expect(activateDirection(loaded, '1.17.0')).toBe(loaded);
   });
 
   it('the staff set stances at window openings by the direction', () => {

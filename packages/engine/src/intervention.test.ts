@@ -13,7 +13,13 @@ import {
 } from './index';
 
 const world = (seed = 'intervention') =>
-  createWorld({ country: 'ENG', name: 'Level Town', color: '#224466', seed, difficulty: 1 });
+  createWorld({
+    country: 'ENG',
+    name: 'Level Town',
+    color: '#224466',
+    seed,
+    level: 'normal' as const,
+  });
 
 describe('the intervention level decides who takes each decision (→WEB-45, STAFF-13)', () => {
   it('hands the staff more decisions level by level', () => {

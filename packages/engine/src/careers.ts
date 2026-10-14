@@ -27,7 +27,7 @@ export function retirementAnnounceDay(year: number) {
 
 /** Chance that `p` announces his retirement this spring. */
 export function retirementChance(w: World, p: Player, starters?: Set<string>) {
-  const age = w.year + 1 - p.born - (p.role === 'GK' ? 1 : 0);
+  const age = w.year + 1 - p.born - (p.position === 'GK' ? 1 : 0);
   if (age >= RETIREMENT.lastAge) return 1;
   if (age < RETIREMENT.firstAge) return 0;
   const base = RETIREMENT.byAge[Math.min(age - RETIREMENT.firstAge, RETIREMENT.byAge.length - 1)];
@@ -61,7 +61,7 @@ export function announceRetirements(w: World) {
     pushInbox(w, {
       kind: 'staff-report',
       title: `${p.name}, 이번 시즌 끝으로 은퇴`,
-      detail: `${p.role} · ${age}세 · ${careerLine(w, p)}. 시즌이 끝날 때까지 뛰고 떠나요. 이적시장에서 대체 선수를 준비하세요.`,
+      detail: `${p.position} · ${age}세 · ${careerLine(w, p)}. 시즌이 끝날 때까지 뛰고 떠나요. 이적시장에서 대체 선수를 준비하세요.`,
       attention: false,
       ref: p.id,
     });
@@ -108,7 +108,7 @@ export function injuryChance(p: Player, pressing: boolean) {
   return (
     INJURY.perStarter *
     (1 + fatigueLoad(p.fatigue) * INJURY.fatigue) *
-    (1 + Math.max(0, 55 - p.stamina) / 150) *
+    (1 + Math.max(0, 55 - p.attrs.stamina) / 150) *
     (pressing ? INJURY.pressing : 1)
   );
 }
@@ -144,7 +144,7 @@ export function injuriesAfterMatch(w: World, m: MatchRecord) {
     pushInbox(w, {
       kind: 'staff-report',
       title: `의료팀 보고: ${p.name} ${label}`,
-      detail: `${p.role} · 약 ${Math.max(1, Math.round(days / 7))}주 결장 예상(${back} 복귀). 감독이 다른 선수로 선발을 짜요.`,
+      detail: `${p.position} · 약 ${Math.max(1, Math.round(days / 7))}주 결장 예상(${back} 복귀). 감독이 다른 선수로 선발을 짜요.`,
       attention: false,
       ref: p.id,
     });

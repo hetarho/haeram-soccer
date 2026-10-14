@@ -6,7 +6,7 @@ import { clubOf, overall } from '../../../../packages/engine/src/world';
 import type { TransferOffer } from '../../../../packages/engine/src/recruitment';
 import { Money } from './Money';
 import { OvrBadge } from './OvrBadge';
-import { REQUEST_WHY, requestStakes, ROLE_NAMES, shortlistRows } from './shortlist';
+import { REQUEST_WHY, requestStakes, LINE_NAMES, shortlistRows } from './shortlist';
 import s from './ScoutShortlist.module.css';
 
 /**
@@ -51,11 +51,11 @@ export function ScoutShortlist({
         <b>감독 요청</b>
         {requests.length ? (
           <ul>
-            {requests.map(({ role, request }) => (
-              <li key={role} data-kind={request.kind}>
+            {requests.map(({ line, request }) => (
+              <li key={line} data-kind={request.kind}>
                 <span className={s.why}>{REQUEST_WHY[request.kind]}</span>
                 <span>
-                  {ROLE_NAMES[role]}
+                  {LINE_NAMES[line]}
                   {request.pick && <small> · 감독 지목 {pickName(request.pick)}</small>}
                 </span>
               </li>
@@ -78,9 +78,9 @@ export function ScoutShortlist({
         rows.map(
           (row) =>
             row.entries.length > 0 && (
-              <div key={row.role} className={s.role} role="group" aria-label={ROLE_NAMES[row.role]}>
+              <div key={row.line} className={s.role} role="group" aria-label={LINE_NAMES[row.line]}>
                 <h4>
-                  {ROLE_NAMES[row.role]}
+                  {LINE_NAMES[row.line]}
                   {row.request && <em>감독 요청 · {REQUEST_WHY[row.request.kind]}</em>}
                 </h4>
                 {row.entries.map(({ index, offer, pick }) => (
@@ -92,7 +92,7 @@ export function ScoutShortlist({
                     data-testid={`shortlist-${offer.player.id}`}
                     onClick={() => onOpen(index)}
                   >
-                    <OvrBadge value={overall(offer.player)} role={offer.player.role} />
+                    <OvrBadge value={overall(offer.player)} role={offer.player.position} />
                     <span className={s.who}>
                       <b>
                         {offer.player.name}

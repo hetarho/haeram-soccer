@@ -23,7 +23,7 @@ const input = {
   name: 'Worker Athletic',
   color: '#223344',
   seed: 'worker',
-  difficulty: 1 as const,
+  level: 'normal' as const,
 };
 const req = (id: string, revision: number, body: Body) => ({
   protocol: 1,
