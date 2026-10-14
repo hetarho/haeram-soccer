@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T02:23Z | T088 |
+| v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T02:37Z | - |
 
 ## inbox
 - 261014 parked -: the owner's dev server (pnpm dev, port 19500, in the main checkout) was found stopped during T087 — not restarted, since vite's client reloads the open game tab when its server returns; restart it yourself once the game is saved
@@ -46,7 +46,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T088 | One row kind on the 방향 board | WEB ECON | T087 | doing@261014.v7dq |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -55,7 +54,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- implement-task T086 → T087 → T088 (club-direction slice 1, standalone); slices 2–6 in spec/ideation/club-direction.md shape.
+- club-direction slice 1 (T086–T088) on work/direction, waiting for CI in every browser before main; then slice 2 (directions replace the staff criteria) via update-ssot — see spec/ideation/club-direction.md shape.
 - owner's requests 261013 are on main (caa5e83, CI 38448231873 green in every browser): T080 level only, T081 no strategy locks, T082/T083 coaches set training with suggestions and orders and the academy by U-17/U-19/U-21, T084/T085 facilities as stadium steps, training ground and academy facilities.
 - wage bill / revenue sits at 44.3% on the facility parts (ECON-29 band 45–70%, 45.3% before them): base wage 925 and a 25% youth promise did not move it; try the contract-talk floor next (agent premium per level, as T079 did: 0% gave 47.7%, 1% 46.1%) and re-measure 40 careers.
 - three levers and the economy port are on main (fast-forward to 2de95c6, 261013): T070–T079 done — T077 d303c5e, T078 fe7b209/8c52745, T079 merged from work/econ-port at 11c9c5c/66ce736 (unit 658, contract 11, build pass; goldens equal work/econ-port's). CI run 38382526028 on 2de95c6 passed every job (checks, the benchmark, e2e in Chromium, Firefox and both WebKit shards); the run before it on 66ce736 failed only Firefox e2e, which passed in full locally (102 passed, 2 skipped) and on the rerun — a flake. work/levers and work/econ-port are merged and can be deleted. Next: pick from the follow-ups below.
@@ -67,6 +66,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 T088 done (c3f8106): one row kind for cards and dials, areas folded behind headers; full Chromium e2e 106, unit 671
 - 261014 T087 done (d0f53b9): 방향 tab with 방향·증축·재정·후원, campaigns under 재정, 방향 wording; T088 doing
 - 261014 T086 done (6f4ade0): engine names 방향, old 운영 전략 titles read the same
 - 261014 T086 doing standalone on work/direction (worktree ../haeram-soccor-direction; the owner's dev server runs from the main checkout)
@@ -86,4 +86,3 @@
 - 261013 update-ssot ECON r21 WEB r56 SAVE r26 (strategy cards change at any time, no 90-day lock) → T081, doing standalone on work/intervention
 - 261013 T080 done (41213cb): one intervention level saved with the game sets stops and delegation; homes show who decides; Chromium e2e 104, unit 661, contract 11
 - 261013 T080 doing standalone on work/intervention (139916a)
-- 261013 create-task WEB r55 STAFF r14 CLUB r24 SAVE r25 → T080 (one task: engine level, save mapping, web homes and clock); next implement-task T080
