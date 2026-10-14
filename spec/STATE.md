@@ -14,6 +14,7 @@
 | id | st |
 |---|---|
 | club-history-reboot | converted@261007 |
+| club-direction | ready@261014 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
@@ -41,6 +42,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
+- ideation club-direction ready (261014): next update-ssot slice 1 — WEB (the 방향 tab with page tabs 방향·증축·재정·후원, one row component and draft → 적용 for every card and dial, the wording 방향) and ECON-25 (today's cards and dials regrouped as rows), no rule or balance change; then create-task. Slices 2–6 are in that doc's shape.
 - owner's requests 261013 are on main (caa5e83, CI 38448231873 green in every browser): T080 level only, T081 no strategy locks, T082/T083 coaches set training with suggestions and orders and the academy by U-17/U-19/U-21, T084/T085 facilities as stadium steps, training ground and academy facilities.
 - wage bill / revenue sits at 44.3% on the facility parts (ECON-29 band 45–70%, 45.3% before them): base wage 925 and a 25% youth promise did not move it; try the contract-talk floor next (agent premium per level, as T079 did: 0% gave 47.7%, 1% 46.1%) and re-measure 40 careers.
 - three levers and the economy port are on main (fast-forward to 2de95c6, 261013): T070–T079 done — T077 d303c5e, T078 fe7b209/8c52745, T079 merged from work/econ-port at 11c9c5c/66ce736 (unit 658, contract 11, build pass; goldens equal work/econ-port's). CI run 38382526028 on 2de95c6 passed every job (checks, the benchmark, e2e in Chromium, Firefox and both WebKit shards); the run before it on 66ce736 failed only Firefox e2e, which passed in full locally (102 passed, 2 skipped) and on the rerun — a flake. work/levers and work/econ-port are merged and can be deleted. Next: pick from the follow-ups below.
@@ -52,6 +54,8 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 ideation club-direction ready: eight areas of direction rows replace cards, dials and staff criteria; 재정 기조, 지역 기반·글로벌 인지도, delegated signings, a level ladder; six slices, the first unifying UI and entities
+- 261014 ideation club-direction start: one direction tab, delegated staff decide by it, one card shape and behaviour
 - 261014 work/intervention (T080–T085) merged with main's start-screen fix and pushed to main at caa5e83 after CI passed every job
 - 261014 T084 T085 done (e5d8276): facility parts; 40-career calibration — none bankrupt, every band but the wage bill (44.3%); ECON r23
 - 261014 T084/T085 code on work/intervention (e5d8276, CI green in every browser); recalibrated: 0 of 24 bankrupt, every band but the wage bill (44.3% vs 45–70%); measuring the pre-facility commit to find the cause
@@ -70,5 +74,3 @@
 - 261013 work/levers (T070–T079) merged into main by fast-forward to 2de95c6 after CI run 38382526028 passed every job
 - 261013 merged work/econ-port (T079) into work/levers: FINANCES.md keeps the levers talk rule plus the 65% wage-bill check and the ported expense amounts with the investment factor; goldens regenerated; unit 658, contract 11, build pass
 - 261013 T078 done: 1.15 level-2 upgrade journey, benchmark on the new navigation, goldens unchanged, ENG/GER calibration without bankruptcy, FINANCES.md; CI 38378931078 green on fe7b209
-- 261013 T079 done: calibration ported and retuned (agent premium 3%→1%), every ECON-29 band on 24 careers, checks pass (unit 657, contract 11 with goldens, build, Chromium e2e 101); ECON r20 CLUB r23
-- 261013 T078 doing standalone on levers (ea4d413)
