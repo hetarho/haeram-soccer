@@ -28,11 +28,14 @@ describe('team state', () => {
     w.trainingOrders = { assistant: { focus: 'hard', rounds: 4, forced: true } };
     const fatigue = teamStates(w).find((state) => state.key === 'fatigue')!;
     expect(fatigue.tone).toBe('warn');
-    // Recovery training is the assistant's call: the remedy opens his card in 코치진 with 회복
-    // ready to suggest and changes nothing itself (→WEB-44, STAFF-19). Everyone is equally tired,
-    // so a rest selection would change nothing: a rest day comes next.
+    // Recovery training is the assistant's call: the remedy routes to 훈련 with his sheet open on
+    // 회복 and changes nothing itself (→WEB-44, STAFF-19). Everyone is equally tired, so a rest
+    // selection would change nothing: a rest day comes next.
     const [recovery, rest] = fatigue.advice!.actions;
-    expect(recovery).toMatchObject({ coach: { coach: 'assistant', focus: 'recovery' } });
+    expect(recovery).toMatchObject({
+      coach: { coach: 'assistant', focus: 'recovery' },
+      page: 'training',
+    });
     expect(recovery.command).toBeUndefined();
     expect(rest.command).toEqual({ type: 'care', kind: 'rest-day' });
     // Left to his rule the assistant already rests them, so the quick choices are requests.

@@ -175,17 +175,23 @@ export const useTrainingView = oneShot<TrainingTab>();
 /** A 방향 tab asked for while 방향 is showing; from elsewhere the address carries it. */
 export const useBusinessView = oneShot<BusinessView>();
 /**
- * A coach's training sheet asked for from elsewhere (훈련's lines, a fatigue remedy →WEB-44), for
- * 코치진 to open with the focus ready to suggest (→STAFF-19).
+ * A coach's training sheet asked for from elsewhere (a fatigue remedy →WEB-44, 훈련's own rows),
+ * for 훈련 to open with the focus ready to suggest (→STAFF-19): the squad's, the academy's or one
+ * player's.
  */
 export const useCoachRequest = oneShot<{
   coach: TrainingCoach;
   focus?: TrainingFocus | YouthFocus;
+  player?: string;
 }>();
-/** Opens 사람's 코치진 on a coach's training sheet. */
-export function openCoachSheet(coach: TrainingCoach, focus?: TrainingFocus | YouthFocus) {
-  useCoachRequest.getState().open({ coach, focus });
-  openPeople('coaches');
+/** Opens 훈련 (유소년 for the youth director) on a coach's training sheet (→WEB-70). */
+export function openCoachSheet(
+  coach: TrainingCoach,
+  focus?: TrainingFocus | YouthFocus,
+  player?: string,
+) {
+  useCoachRequest.getState().open({ coach, focus, player });
+  openTraining(coach === 'youth' ? 'academy' : 'training');
 }
 /**
  * A dial change suggested from elsewhere (a cash remedy, →WEB-44), for the operating board to

@@ -38,7 +38,7 @@ export interface StateAction {
   tab?: PeopleRequest | TrainingTab;
   /** Opens the tactic and lineup preparation sheet. */
   prepare?: boolean;
-  /** Opens 코치진 on this coach's training sheet with the focus ready to suggest (→WEB-44). */
+  /** Opens 훈련 on this coach's training sheet with the focus ready to suggest (→WEB-44). */
   coach?: { coach: 'assistant'; focus: TrainingFocus };
   /**
    * Opens 방향 with this dial change as the board's draft, ready to apply there; the remedy
@@ -151,6 +151,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           cost: '무료',
           unavailable: activeTrainingFocus(w) === 'recovery' ? '이미 회복 훈련 중' : undefined,
           coach: { coach: 'assistant', focus: 'recovery' },
+          page: 'training',
         },
         {
           id: 'rest-lineup',

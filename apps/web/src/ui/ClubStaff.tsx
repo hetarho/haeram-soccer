@@ -1,13 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type {
   ContractTerm,
   Manager,
   Staff,
   StaffRole,
   TrainingCoach,
-  TrainingFocus,
   World,
-  YouthFocus,
 } from '../../../../packages/contracts/src/types';
 import {
   coachPickPreview,
@@ -34,11 +32,11 @@ import { managerTerm, STYLE_INFO } from '../../../../packages/engine/src/styles'
 import { clubOf } from '../../../../packages/engine/src/world';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
-import { useCoachRequest } from './state';
+import { openTraining } from './state';
 import { DirectionLines } from './DirectionLines';
 import { Dialog } from './Dialog';
 import { DecisionOwner } from './DecisionOwner';
-import { callLine, TrainingOrderSheet } from './TrainingOrderSheet';
+import { callLine } from './TrainingOrderSheet';
 import { OvrBadge } from './OvrBadge';
 import { compactMoney, contractLine } from './format';
 import { directorDecisions } from './shortlist';
@@ -286,17 +284,6 @@ const TRAINING_COACHES: readonly StaffRole[] = ['assistant', 'youth'];
 export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
   const acting = useActing();
   const [role, setRole] = useState<StaffRole>();
-  // A coach's training sheet asked for from 훈련 or a remedy opens once (→STAFF-19).
-  const coachRequest = useCoachRequest((state) => state.request);
-  const [sheet, setSheet] = useState<{
-    coach: TrainingCoach;
-    focus?: TrainingFocus | YouthFocus;
-  }>();
-  useEffect(() => {
-    if (!coachRequest) return;
-    setSheet(coachRequest);
-    useCoachRequest.getState().take();
-  }, [coachRequest]);
   const [pick, setPick] = useState<number>();
   // Hiring and renewing both start from the two seasons the staff would sign (→STAFF-15).
   const [term, setTerm] = useState<ContractTerm>(DELEGATED_TERM);
@@ -400,14 +387,9 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                   </button>
                 )}
                 {member && TRAINING_COACHES.includes(id) && (
-                  <button
-                    disabled={acting}
-                    onClick={(event) => {
-                      event.currentTarget.focus();
-                      setSheet({ coach: id as TrainingCoach });
-                    }}
-                  >
-                    훈련 제안
+                  // The focus is set in 훈련; the card only names it (→WEB-43, STAFF-19).
+                  <button onClick={() => openTraining(id === 'youth' ? 'academy' : 'training')}>
+                    훈련에서 보기
                   </button>
                 )}
                 <button
@@ -430,15 +412,6 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
           );
         })}
       </ul>
-      {sheet && (
-        <TrainingOrderSheet
-          w={w}
-          client={client}
-          coach={sheet.coach}
-          ready={sheet.focus}
-          onClose={() => setSheet(undefined)}
-        />
-      )}
       {role && (
         <Dialog
           label={`${STAFF_INFO[role].label} 선임`}

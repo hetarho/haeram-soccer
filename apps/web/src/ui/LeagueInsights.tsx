@@ -15,7 +15,7 @@ import {
   sameMembers,
 } from './league';
 import { ClubLink } from './ClubLink';
-import { clubOvr, ovrTier } from './OvrBadge';
+import { clubOvr, cohesionLine, ovrTier } from './OvrBadge';
 import s from './LeagueInsights.module.css';
 
 function Movement({ change }: { change?: number }) {
@@ -92,7 +92,9 @@ export function Standings({
           <tr>
             <th scope="col">순위</th>
             <th scope="col">클럽</th>
-            <th scope="col">OVR</th>
+            <th scope="col" title="상대 클럽은 조직력을 반영한 선발 전력">
+              OVR
+            </th>
             <th scope="col">승점</th>
             <th scope="col">경기</th>
             <th scope="col">승</th>
@@ -140,7 +142,11 @@ export function Standings({
                   </ClubLink>
                 </th>
                 <td>
-                  <span className={s.teamOvr} data-tier={ovrTier(clubOvr(w, club))}>
+                  <span
+                    className={s.teamOvr}
+                    data-tier={ovrTier(clubOvr(w, club))}
+                    title={id === w.playerClub ? undefined : cohesionLine(club)}
+                  >
                     {clubOvr(w, club)}
                   </span>
                 </td>

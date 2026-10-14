@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type {
+  Player,
   TrainingCoach,
   TrainingFocus,
   World,
@@ -9,6 +10,8 @@ import {
   coachFocuses,
   focusLabel,
   forceRisk,
+  playerSuggestionWait,
+  playerTrainingCall,
   strainOf,
   suggestionChance,
   suggestionWait,
@@ -27,6 +30,7 @@ type Focus = TrainingFocus | YouthFocus;
 const percent = (chance: number) => `${Math.round(chance * 100)}%`;
 const BY_LABEL = {
   rule: '코치 판단',
+  squad: '팀 훈련',
   suggestion: '구단주 제안 수락',
   order: '구단주 지시',
 } as const;
@@ -51,15 +55,28 @@ export function callLine(w: World, coach: TrainingCoach) {
   };
 }
 
+/** Who sets one player's focus now and why (→CLUB-11, CLUB-13). */
+export function playerCallLine(w: World, player: Player) {
+  const call = playerTrainingCall(w, player);
+  return {
+    focus: focusLabel('assistant', call.focus),
+    by: BY_LABEL[call.by],
+    reason: call.reason,
+    rounds: call.rounds,
+  };
+}
+
 /**
- * 훈련 제안 (→STAFF-19): the coach's focus in force and why, then each focus he can set with the
- * chance he takes a suggestion of it and the chance he resigns after an order, stated before.
+ * 훈련 제안 (→STAFF-19): the coach's focus in force and why — for his group or, with the assistant,
+ * one first-team player — then each focus he can set with the chance he takes a suggestion of it
+ * and the chance he resigns after an order, stated before.
  */
 export function TrainingOrderSheet({
   w,
   client,
   coach,
   ready,
+  player,
   onClose,
 }: {
   w: World;
@@ -67,14 +84,16 @@ export function TrainingOrderSheet({
   coach: TrainingCoach;
   /** A focus asked for from elsewhere, shown first. */
   ready?: Focus;
+  /** One first-team player's own focus instead of the squad's (→CLUB-11). */
+  player?: Player;
   onClose: () => void;
 }) {
   const acting = useGameState((state) => !!state.pendingActions || state.readonly);
   const [sending, setSending] = useState(false);
   const member = staffMember(w, coach),
-    title = STAFF_INFO[coach].label,
-    call = callLine(w, coach),
-    wait = suggestionWait(w, coach),
+    title = player ? `${player.name} 개별 훈련` : `${STAFF_INFO[coach].label} 훈련 제안`,
+    call = player ? playerCallLine(w, player) : callLine(w, coach),
+    wait = player ? playerSuggestionWait(w, player.id) : suggestionWait(w, coach),
     risk = forceRisk(w, coach),
     strain = strainOf(w, coach);
   const focuses = coachFocuses(coach);
@@ -82,7 +101,13 @@ export function TrainingOrderSheet({
   const send = (focus: Focus, force: boolean) => {
     setSending(true);
     void client
-      .command({ type: 'coach-training', coach, focus, force })
+      .command({
+        type: 'coach-training',
+        coach,
+        focus,
+        force,
+        ...(player ? { player: player.id } : {}),
+      })
       .then((reply) => {
         if (reply?.ok) onClose();
       })
@@ -90,19 +115,24 @@ export function TrainingOrderSheet({
   };
   const blocked = acting || sending || !member;
   return (
-    <Dialog label={`${title} 훈련 제안`} onClose={onClose}>
-      <p className={s.now} data-testid={`training-call-${coach}`}>
+    <Dialog label={title} onClose={onClose}>
+      <p className={s.now} data-testid={player ? 'training-call-player' : `training-call-${coach}`}>
         <span>
           <b>지금 {call.focus}</b> · {call.by}
         </span>
         <small>{call.reason}</small>
       </p>
       {!member ? (
-        <p className={s.note}>{title} 자리가 비어 있어요. 코치를 선임하면 제안할 수 있어요.</p>
+        <p className={s.note}>
+          {STAFF_INFO[coach].label} 자리가 비어 있어요. 코치를 선임하면 제안할 수 있어요.
+        </p>
       ) : (
         <p className={s.note}>
-          받아들이거나 지시하면 다음 {ORDER_ROUNDS}라운드 동안 그 방향으로 훈련해요.
-          {wait > 0 && ` 제안은 ${wait}라운드 뒤에 다시 할 수 있어요.`}
+          받아들이거나 지시하면 다음 {ORDER_ROUNDS}라운드 동안 {player ? `${player.name}만 ` : ''}그
+          방향으로 훈련해요.
+          {wait > 0
+            ? ` ${player ? '이 선수에 대한 ' : ''}제안은 ${wait}라운드 뒤에 다시 할 수 있어요.`
+            : ` 제안은 ${player ? '선수마다 ' : ''}2라운드에 한 번 할 수 있어요.`}
           {BigInt(member.wage) > 0n
             ? ` 이번 시즌 강행 ${strain}번 · 강행할 때마다 사임 확률이 15%p씩 올라요(최대 60%).`
             : ' 무급 자원봉사 코치는 강행해도 떠나지 않아요.'}
@@ -110,7 +140,7 @@ export function TrainingOrderSheet({
       )}
       <ul className={s.focuses}>
         {ordered.map((focus) => {
-          const chance = suggestionChance(w, coach, focus);
+          const chance = suggestionChance(w, coach, focus, player);
           return (
             <li key={focus} data-ready={focus === ready || undefined}>
               <span className={s.focusText}>

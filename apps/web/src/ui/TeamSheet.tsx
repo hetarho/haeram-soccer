@@ -10,7 +10,7 @@ import { worldSelector } from './liveState';
 import { ClubCrest } from './ClubCrest';
 import { ClubLink } from './ClubLink';
 import { Dialog } from './Dialog';
-import { clubOvr, OvrBadge } from './OvrBadge';
+import { clubOvr, cohesionLine, OvrBadge } from './OvrBadge';
 import { competitionLabel, kindLabel, number, seasonName } from './format';
 import { useNavigation, useTeamSheet } from './state';
 import s from './LeagueInsights.module.css';
@@ -185,6 +185,7 @@ export function TeamSheet({
             {id === w.playerClub ? ' · 우리 팀' : ''}
             {club.project ? ' · 대형 투자 진행 중' : ''}
           </small>
+          {id !== w.playerClub && <small data-testid="team-cohesion">{cohesionLine(club)}</small>}
         </div>
         <OvrBadge value={clubOvr(w, club)} role="OVR" large />
       </div>

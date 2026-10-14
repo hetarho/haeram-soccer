@@ -197,16 +197,16 @@ test("the fatigue remedy opens the assistant's training sheet with 회복 ready,
     .filter({ hasText: '수석코치에게 회복 훈련 제안' })
     .getByRole('button', { name: '열기', exact: true })
     .click();
-  // The sheet closes and the assistant's card in 코치진 opens with 회복 first; nothing has changed
-  // yet (→WEB-44, STAFF-19).
+  // The sheet closes and 훈련 opens the assistant's sheet with 회복 first; nothing has changed yet
+  // (→WEB-44, STAFF-19).
   await expect(sheet).toBeHidden();
-  await expect(page).toHaveURL(/\/people\?view=coaches$/);
+  await expect(page).toHaveURL(/\/training$/);
   const training = page.getByRole('dialog', { name: '수석코치 훈련 제안' });
   await expect(training.getByRole('listitem').first()).toContainText('회복 훈련');
   await expect(training.getByTestId('training-call-assistant')).toContainText('하드 트레이닝');
   await training.getByRole('button', { name: /^회복 훈련 강행/ }).click();
   await expect(training).toBeHidden();
-  await expect(page.getByTestId('coach-call-assistant')).toContainText('회복 훈련 · 구단주 지시');
+  await expect(page.getByTestId('training-focus')).toContainText('지금 회복 · 구단주 지시');
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   expect((await exportWorld(page)).trainingOrders?.assistant?.focus).toBe('recovery');
 });

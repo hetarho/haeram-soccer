@@ -4,6 +4,7 @@ import { tacticLabel } from '../../../../packages/engine/src/world';
 import { competitionLabel, kindLabel, seasonName } from './format';
 import { resultFor, scoutOpponent } from './scouting';
 import { ClubLink } from './ClubLink';
+import { clubOvr, cohesionLine } from './OvrBadge';
 import s from './Analysis.module.css';
 
 export function OpponentDossier({ w }: { w: World }) {
@@ -23,7 +24,9 @@ export function OpponentDossier({ w }: { w: World }) {
         <dl className={s.facts}>
           <div>
             <dt>상대 전력</dt>
-            <dd>{scout.opponent.strength}/100</dd>
+            <dd data-testid="opponent-strength">
+              {clubOvr(w, scout.opponent)}/100 · {cohesionLine(scout.opponent)}
+            </dd>
           </div>
           <div>
             <dt>상대 전술</dt>

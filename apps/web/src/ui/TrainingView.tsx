@@ -1,27 +1,50 @@
 import { useEffect, useState } from 'react';
-import type { TrainingFocus, World } from '../../../../packages/contracts/src/types';
+import type {
+  TrainingCoach,
+  TrainingFocus,
+  World,
+  YouthFocus,
+} from '../../../../packages/contracts/src/types';
 import {
   developmentOutlook,
+  focusFor,
   trainingFocusInfo,
+  trainingSummary,
   type DevelopmentFactor,
   type DevelopmentHome,
 } from '../../../../packages/engine/src/training';
-import { AUTO_RECOVERY_FATIGUE } from '../../../../packages/engine/src/staff';
+import {
+  AUTO_HARD_FATIGUE,
+  AUTO_HARD_MORALE,
+  AUTO_PLAYER_RECOVERY,
+  AUTO_RECOVERY_FATIGUE,
+} from '../../../../packages/engine/src/staff';
+import { playerSuggestionWait } from '../../../../packages/engine/src/coach-training';
+import { settleRate } from '../../../../packages/engine/src/adaptation';
+import { TRAINING_INJURY } from '../../../../packages/engine/src/careers';
+import { HARD_STREAK } from '../../../../packages/engine/src/morale';
+import { activePlayers, ownMultiplier } from '../../../../packages/engine/src/world';
+import {
+  ADAPTATION_NEUTRAL,
+  MATCH_GAIN,
+  TRAINING_GAIN,
+} from '../../../../packages/engine/src/player';
 import type { ClientState, GameClient } from '../runtime/client';
 import { AcademyPanel } from './AcademyPanel';
 import { OvrBadge } from './OvrBadge';
 import { PageTabs, TabPanel } from './PageTabs';
 import { PlayerLink } from './PlayerSheet';
 import {
-  openCoachSheet,
   openHome,
   routeOf,
   TRAINING_TABS,
+  useCoachRequest,
   useTrainingView,
   type Home,
   type TrainingTab,
 } from './state';
-import { callLine } from './TrainingOrderSheet';
+import { callLine, playerCallLine, TrainingOrderSheet } from './TrainingOrderSheet';
+import { multiplierLabel } from './PlayerProfile';
 import { ATTRIBUTES } from '../../../../packages/contracts/src/player';
 import { ATTRIBUTE_LABEL } from '../../../../packages/engine/src/player';
 import a from './App.module.css';
@@ -56,11 +79,14 @@ function trainingStart(request: TrainingTab | undefined): TrainingTab {
   return TRAINING_TABS.find(([id]) => id === route.view)?.[0] ?? 'training';
 }
 
+/** A coach's training sheet: for the squad, the academy, or one first-team player. */
+type Sheet = { coach: TrainingCoach; focus?: TrainingFocus | YouthFocus; player?: string };
+
 /**
- * 훈련 (→WEB-70): how the club develops its players, as one tab bar — the focus the coaches set,
- * what drives growth and who is still growing, then the academy. It changes nothing itself: the
- * owner reaches training through the coaches' cards in 코치진 (→STAFF-19). A tab asked for from
- * elsewhere is taken once; otherwise the tab comes from the address.
+ * 훈련 (→WEB-70): how the club develops its players, as one tab bar — the focus the coaches set and
+ * the owner's suggestions and orders to them (→STAFF-19), each player's own focus and adaptation,
+ * what drives growth and who is still growing, then the academy. A tab asked for from elsewhere is
+ * taken once; otherwise the tab comes from the address.
  */
 export function TrainingView({ state, client }: Props) {
   const w = state.view!.world;
@@ -71,6 +97,17 @@ export function TrainingView({ state, client }: Props) {
     setTab(request);
     useTrainingView.getState().take();
   }, [request]);
+  // A coach's sheet asked for from a remedy or the academy's line opens once (→WEB-44).
+  const coachRequest = useCoachRequest((view) => view.request);
+  const [sheet, setSheet] = useState<Sheet>();
+  useEffect(() => {
+    if (!coachRequest) return;
+    setSheet(coachRequest);
+    useCoachRequest.getState().take();
+  }, [coachRequest]);
+  const sheetPlayer = sheet?.player
+    ? activePlayers(w).find((player) => player.id === sheet.player)
+    : undefined;
   const outlook = developmentOutlook(w);
   return (
     <>
@@ -94,7 +131,9 @@ export function TrainingView({ state, client }: Props) {
       <TabPanel idPrefix="training" value={tab}>
         {tab === 'training' ? (
           <div className={`${s.stack} ${s.pair}`}>
-            <TrainingFocusPanel w={w} outlook={outlook} />
+            <TrainingFocusPanel w={w} outlook={outlook} onSheet={setSheet} />
+            <PlayerTraining w={w} onSheet={setSheet} />
+            <AdaptationPanel w={w} />
             <DevelopmentDrivers outlook={outlook} />
             <GrowingPlayers outlook={outlook} />
           </div>
@@ -102,16 +141,38 @@ export function TrainingView({ state, client }: Props) {
           <AcademyPanel w={w} client={client} />
         )}
       </TabPanel>
+      {sheet && (!sheet.player || sheetPlayer) && (
+        <TrainingOrderSheet
+          w={w}
+          client={client}
+          coach={sheet.coach}
+          ready={sheet.focus}
+          player={sheetPlayer}
+          onClose={() => setSheet(undefined)}
+        />
+      )}
     </>
   );
 }
 
+/** A focus's settling per round, before 적응력 and the school (→PLAYER-12). */
+const adaptationGain = (focus: TrainingFocus) => `적응 +${TRAINING_GAIN[focus].toFixed(3)}`;
+const injuryChance = `부상 ${(TRAINING_INJURY * 100).toFixed(1)}%~/라운드`;
+
 /**
  * The first team's focus in force (→CLUB-13): who set it — the assistant's rule, a suggestion he
- * accepted or the owner's order, with the rounds left — and why, each focus's effect read only,
- * and a line opening the assistant's card to suggest or force (→STAFF-19).
+ * accepted or the owner's order, with the rounds left — and why; each focus's growth, recovery,
+ * adaptation and costs; the assistant's rules; and the sheet to suggest or force (→STAFF-19).
  */
-function TrainingFocusPanel({ w, outlook: { focus } }: { w: World; outlook: Outlook }) {
+function TrainingFocusPanel({
+  w,
+  outlook: { focus },
+  onSheet,
+}: {
+  w: World;
+  outlook: Outlook;
+  onSheet: (sheet: Sheet) => void;
+}) {
   const call = callLine(w, 'assistant');
   return (
     <section className={s.card} id="training-focus" aria-label="훈련 방향">
@@ -134,13 +195,20 @@ function TrainingFocusPanel({ w, outlook: { focus } }: { w: World; outlook: Outl
               <span>
                 <small>{effect.recovery}</small>
                 <small>{effect.growth}</small>
+                <small>{adaptationGain(id)}</small>
+                {id === 'hard' && (
+                  <small className={s.cost}>
+                    {injuryChance} · {HARD_STREAK.from}라운드 연속부터 분위기 −{HARD_STREAK.cost}
+                  </small>
+                )}
               </span>
             </li>
           );
         })}
       </ul>
       <p className={s.note}>
-        라운드마다 한 번 적용돼요. 성장 배수는 27세 미만에게만 붙어요.
+        라운드마다 한 번 적용돼요. 성장 배수는 27세 미만에게만 붙고, 훈련만으로는 적응도가{' '}
+        {ADAPTATION_NEUTRAL.toFixed(2)}까지만 올라요.
         {focus.recoveryBonus !== 0 &&
           ` 피로 회복에는 선수단 투자와 피지컬 코치의 ${focus.recoveryBonus > 0 ? '+' : ''}${focus.recoveryBonus}이 들어 있어요.`}
       </p>
@@ -148,20 +216,27 @@ function TrainingFocusPanel({ w, outlook: { focus } }: { w: World; outlook: Outl
         <p>수석코치는 라운드마다 이 기준으로 골라요.</p>
         <ul className={s.rule}>
           <li>
-            <b>회복 집중</b>
+            <b>회복</b>
             <span>선발 평균 피로 {AUTO_RECOVERY_FATIGUE} 이상</span>
           </li>
           <li>
-            <b>유망주 집중</b>
-            <span>육성형 수석코치, 또는 21세 이하 선발 3명 이상</span>
+            <b>하드 트레이닝</b>
+            <span>
+              선발 평균 피로 {AUTO_HARD_FATIGUE} 미만 · 분위기 {AUTO_HARD_MORALE} 이상 · 육성형
+              수석코치, 또는 21세 이하 선발 3명 이상
+            </span>
           </li>
           <li>
             <b>균형</b>
             <span>그 밖에</span>
           </li>
+          <li>
+            <b>개별 회복</b>
+            <span>피로 {AUTO_PLAYER_RECOVERY} 이상인 선수는 팀과 따로 회복</span>
+          </li>
         </ul>
       </div>
-      <button type="button" className={s.homeLine} onClick={() => openCoachSheet('assistant')}>
+      <button type="button" className={s.homeLine} onClick={() => onSheet({ coach: 'assistant' })}>
         <span>
           <b>수석코치에게 훈련 제안·강행</b>
           <small>받아들이면 4라운드 · 강행하면 사임 위험이 있어요</small>
@@ -170,6 +245,99 @@ function TrainingFocusPanel({ w, outlook: { focus } }: { w: World; outlook: Outl
           ›
         </span>
       </button>
+    </section>
+  );
+}
+
+/**
+ * 개별 훈련 (→CLUB-11, STAFF-19): who trains on a focus of his own and who set it, then every
+ * first-team player with his focus this round and the sheet to suggest or force one for him.
+ */
+function PlayerTraining({ w, onSheet }: { w: World; onSheet: (sheet: Sheet) => void }) {
+  const own = trainingSummary(w).own;
+  const squad = [...activePlayers(w)].sort((a, b) => b.fatigue - a.fatigue);
+  return (
+    <section className={s.card} aria-label="개별 훈련">
+      <header className={s.head}>
+        <h3>개별 훈련</h3>
+        <span data-testid="own-focus-count">따로 훈련 {own.length}명</span>
+      </header>
+      <p className={s.note}>
+        선수마다 팀과 다른 훈련을 제안하거나 강행할 수 있어요. 제안은 선수마다 2라운드에 한 번이고,
+        강행은 수석코치의 사임 위험을 올려요.
+      </p>
+      <ul className={s.players}>
+        {squad.map((player) => {
+          const call = playerCallLine(w, player),
+            wait = playerSuggestionWait(w, player.id),
+            own = call.by !== '팀 훈련';
+          return (
+            <li key={player.id} data-own={own || undefined}>
+              <span className={s.playerName}>
+                <PlayerLink id={player.id} name={player.name} />
+                <small>
+                  {player.position} · 피로 {Math.round(player.fatigue)}
+                </small>
+              </span>
+              <span className={s.playerFocus} data-testid={`player-focus-${player.id}`}>
+                <b>{focusName(focusFor(w, player))}</b>
+                <small>
+                  {call.by}
+                  {call.rounds ? ` · ${call.rounds}라운드 남음` : ''}
+                  {wait > 0 ? ` · 제안 ${wait}라운드 뒤` : ''}
+                </small>
+              </span>
+              <button
+                type="button"
+                aria-label={`${player.name} 개별 훈련`}
+                onClick={() => onSheet({ coach: 'assistant', player: player.id })}
+              >
+                개별 훈련
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+/**
+ * 적응 (→PLAYER-10, PLAYER-12, PLAYER-14): every first-team player's adaptation, the multiplier it
+ * puts on his ability, an 적응 실패 flag, and how fast he settles under this manager.
+ */
+function AdaptationPanel({ w }: { w: World }) {
+  const squad = [...activePlayers(w)].sort((a, b) => a.adaptation - b.adaptation);
+  return (
+    <section className={s.card} aria-label="적응">
+      <header className={s.head}>
+        <h3>적응</h3>
+        <span>낮은 순</span>
+      </header>
+      <p className={s.note}>
+        적응도 {ADAPTATION_NEUTRAL.toFixed(2)}에서 능력 그대로 뛰고, 높으면 조금 더, 낮으면 크게 덜
+        뛰어요. 선발 출전이 가장 크게 올려요(경기당 +{MATCH_GAIN.start.toFixed(3)} × 그 자리 숙련도:
+        최상 1 · 준수 0.8 · 어색 0.5 · 미숙 0.2). 훈련은 라운드마다 +
+        {TRAINING_GAIN.recovery.toFixed(3)}–{TRAINING_GAIN.hard.toFixed(3)}. 적응 속도는 선수의
+        적응력과 감독 학파가 좋아하는 유형인지에 따라 달라요.
+      </p>
+      <ul className={s.players} data-testid="adaptation-list">
+        {squad.map((player) => (
+          <li key={player.id}>
+            <span className={s.playerName}>
+              <PlayerLink id={player.id} name={player.name} />
+              <small>{player.position}</small>
+            </span>
+            <span className={s.playerFocus}>
+              <b>
+                {player.adaptation.toFixed(2)} · {multiplierLabel(ownMultiplier(player))}
+              </b>
+              <small>적응 속도 ×{Number(settleRate(w, player).toFixed(2))}</small>
+            </span>
+            {player.unsettled !== undefined && <em className={s.flag}>적응 실패</em>}
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
