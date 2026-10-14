@@ -186,9 +186,11 @@ test('mobile intervention levels set clock stops and who decides, saved with the
   await expect(level(2)).toHaveAttribute('aria-checked', 'true');
   await expect(level(2)).toContainText('경기 전날과 이적 협상·제안');
   await expect(level(2)).toContainText(
-    '유소년 승격·방출, 선수 재계약·계약 개선 협상은 스태프가 맡아요',
+    '유소년 승격·방출은 유스 디렉터가, 선수 재계약·계약 개선 협상은 단장이 맡아요',
   );
   // Level 4 hands everything to the staff, including offers and sponsors; only cash warnings stop.
+  // The 단장 answers offers and signs from the shortlist and the manager's requests (→STAFF-20).
+  await expect(level(4)).toContainText('영입까지 단장이 맡아요');
   await level(4).click();
   await expect(level(4)).toHaveAttribute('aria-checked', 'true');
   await dialog.getByRole('button', { name: '설정 완료', exact: true }).click();
@@ -285,8 +287,8 @@ test('the phone clock picks the intervention level from a popover without stoppi
   await expect(popover.getByRole('button')).toHaveCount(0);
   await expect(popover.getByRole('region', { name: '스태프가 맡는 결정' })).toHaveCount(0);
   await expect(level(4)).toContainText('자금 경고에서만 멈춰요');
-  // Level 4 also hands signings to the chief scout (→CLUB-33).
-  await expect(level(4)).toContainText('이적 제안과 영입까지 모두 스태프');
+  // Level 4 also hands offers and signings to the 단장 (→CLUB-33, →STAFF-20).
+  await expect(level(4)).toContainText('이적 제안 응답과 영입까지 단장');
   // Focus starts on the level in force and the arrow keys move between levels.
   await expect(level(2)).toBeFocused();
   await page.keyboard.press('ArrowDown');

@@ -41,6 +41,7 @@ import { DecisionOwner } from './DecisionOwner';
 import { callLine, TrainingOrderSheet } from './TrainingOrderSheet';
 import { OvrBadge } from './OvrBadge';
 import { compactMoney, contractLine } from './format';
+import { directorDecisions } from './shortlist';
 import { Money } from './Money';
 import s from './ClubStaff.module.css';
 
@@ -264,6 +265,20 @@ export function CoachingPlan({ w }: { w: World }) {
   );
 }
 
+/** What the 단장 decides at the current level (→STAFF-20, →WEB-43), each 맡김 or 직접. */
+function DirectorDecides({ w }: { w: World }) {
+  return (
+    <small className={s.decides} data-testid="director-decides">
+      {directorDecisions(w).map(({ label, auto }, i) => (
+        <span key={label} data-auto={auto}>
+          {i > 0 && ' · '}
+          {label} <b>{auto ? '맡김' : '직접'}</b>
+        </span>
+      ))}
+    </small>
+  );
+}
+
 /** The departments whose head sets a training focus the owner can suggest or force (→STAFF-19). */
 const TRAINING_COACHES: readonly StaffRole[] = ['assistant', 'youth'];
 
@@ -346,7 +361,9 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                       ' · 무급 자원봉사'
                     )}
                   </small>
+                  <small>{contractLine(member.until, w.year)}</small>
                   <small className={s.impact}>{staffImpact(w, id)}</small>
+                  {id === 'director' && <DirectorDecides w={w} />}
                   {TRAINING_COACHES.includes(id) && (
                     <small data-testid={`coach-call-${id}`}>
                       훈련: {callLine(w, id as TrainingCoach).focus} ·{' '}
@@ -364,6 +381,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                 <div className={s.member}>
                   <span className={s.vacant}>공석</span>
                   <small className={s.impact}>{staffImpact(w, id)}</small>
+                  {id === 'director' && <DirectorDecides w={w} />}
                 </div>
               )}
               <div className={s.rowActions}>
@@ -573,7 +591,7 @@ export function ManagerPost({ w }: { w: World; client?: GameClient }) {
         w={w}
         decision="manager"
         criteria
-        auto="감독이 떠나면 스태프가 선호 학파와 감독 기조에 맞는 감독을 바로 뽑고, 4월 1일 계약이 끝나는 감독은 감독 기조로 재계약하거나 교체해요. 소식함에 보고해요."
+        auto="감독이 떠나면 단장이 선호 학파와 감독 기조에 맞는 감독을 바로 뽑고, 4월 1일 계약이 끝나는 감독은 감독 기조로 재계약하거나 교체해요. 소식함에 보고해요."
         owner="구단주가 감독을 뽑고 재계약해요."
       />
       <DirectionLines w={w} rows={['school', 'manager', 'finance']} />
@@ -662,7 +680,7 @@ export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
         w={w}
         decision="contracts"
         criteria
-        auto="이적시장이 열릴 때 재계약·계약 개선을 요구하는 선수에게 스태프가 재계약 기조와 재정 기조에 따라 하한을 제시하거나 거절하고 소식함에 보고해요."
+        auto="이적시장이 열릴 때 재계약·계약 개선을 요구하는 선수에게 단장이 재계약 기조와 재정 기조에 따라 하한을 제시하거나 거절하고 소식함에 보고해요."
         owner="구단주가 협상마다 제시하거나 거절해요."
       />
       <DirectionLines w={w} rows={['renewal', 'finance']} />
@@ -698,7 +716,7 @@ export function OfferAnswers({ w }: { w: World }) {
         w={w}
         decision="transfers"
         criteria
-        auto="다른 구단의 제안에 스태프가 매각 기조와 재정 기조에 따라 답하고, 수석 스카우트가 영입 줄과 재정 기조에 따라 선수를 영입해요. 모두 소식함에 보고해요."
+        auto="다른 구단의 제안에 단장이 매각 기조와 재정 기조에 따라 답하고, 수석 스카우트의 명단과 감독의 요청을 보고 영입 줄과 재정 기조에 따라 선수를 영입해요. 모두 소식함에 보고해요."
         owner="구단주가 제안마다 수락·거절하고, 영입도 직접 해요."
       />
       <DirectionLines w={w} rows={['market', 'finance']} />
@@ -720,7 +738,8 @@ export function OfferAnswers({ w }: { w: World }) {
           이적 불가 선수의 거액 제안은 감독과 상의해 매각 기조 <b>{card}</b>와 자금 사정으로 정해요.
         </li>
         <li>
-          개입 4단계에서는 수석 스카우트가 이적시장이 열린 날과 그 뒤 7일마다 빈 자리를 먼저 채우고,{' '}
+          개입 4단계에서는 단장이 이적시장이 열린 날과 그 뒤 7일마다 감독이 요청한 자리와 빈 자리를
+          먼저 채우고,{' '}
           {signing.margin === undefined
             ? '재정 기조가 신중·안정적이라 주전 보강은 하지 않아요.'
             : `주전보다 능력이 ${signing.margin} 이상 나은 선수를 이적시장마다 ${signing.upgrades}명까지 데려와요.`}{' '}

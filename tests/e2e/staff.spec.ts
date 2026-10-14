@@ -281,3 +281,36 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   await expect(page.getByText(/1950년 부임 · 계약 1951\/52 시즌 끝까지/)).toBeVisible();
   await expect(page.getByTestId('manager-renewal')).toHaveCount(0);
 });
+
+test('코치진 leads with the 단장 and 이적시장 ends with the scout shortlist at 360x740', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 360, height: 740 });
+  await found(page, 'director-shortlist');
+  await openPeople(page);
+  // The 단장's card comes first, with what he decides at the new club's level 2 (→STAFF-20).
+  await tab(page, '코치진').click();
+  const cards = page.getByRole('region', { name: '코치진', exact: true }).getByRole('listitem');
+  await expect(cards.first()).toContainText('단장');
+  await expect(cards.first()).toContainText('이적·계약 협상과 감독 선임');
+  await expect(page.getByTestId('director-decides')).toHaveText(
+    '재계약 협상 맡김 · 감독 선임 직접 · 이적 직접',
+  );
+  expect(await horizontalOverflow(page)).toBe(0);
+  // 이적시장 ends with the chief scout's shortlist and the manager's requests (→CLUB-33).
+  await tab(page, '이적시장').click();
+  const shortlist = page.getByRole('region', { name: '스카우트 명단', exact: true });
+  await shortlist.scrollIntoViewIfNeeded();
+  await expect(shortlist).toContainText('수석 스카우트');
+  await expect(shortlist).toContainText('1950년 8월 1일 작성');
+  await expect(shortlist.getByRole('group', { name: '감독 요청' })).toBeVisible();
+  const entries = shortlist.locator('[data-testid^="shortlist-"]');
+  expect(await entries.count()).toBeGreaterThan(0);
+  expect(await horizontalOverflow(page)).toBe(0);
+  // A listed player opens as the market list would: the bid sheet or his card.
+  await entries.first().click();
+  const sheet = page.getByRole('dialog', { name: /^(이적 제안|스카우트 명단 후보)$/ });
+  await expect(sheet).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(sheet).toHaveCount(0);
+});

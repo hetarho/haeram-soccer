@@ -1,5 +1,6 @@
 import type { Player, Role, SigningRequest, TransferBid, World } from '../../contracts/src/types';
-import { currentDay, SEASON_ROUNDS } from './calendar';
+import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS } from './calendar';
+import { MARKET_REFRESH_ROUNDS } from './managerMarket';
 import { clamp, compareIds, ratio } from './primitives';
 import { activePlayers, addEvent, overall, ownStarters } from './world';
 import { directionOption, financeStance } from './direction';
@@ -294,6 +295,19 @@ export function drawShortlist(w: World) {
     requests: managerRequests(w, listed),
     ...(window ? { window } : {}),
   };
+}
+/**
+ * When the chief scout draws next (→CLUB-33): the winter window's opening or the next 4th league
+ * round, whichever comes first, else the next season's first day.
+ */
+export function nextShortlistDraw(w: World): { year: number; day: number } {
+  const day = currentDay(w),
+    round = (Math.floor(w.round / MARKET_REFRESH_ROUNDS) + 1) * MARKET_REFRESH_ROUNDS,
+    days = [
+      transferWindowDays(w.year).winterOpen,
+      ...(round <= SEASON_ROUNDS ? [round * ROUND_INTERVAL_DAYS] : []),
+    ].filter((next) => next > day);
+  return days.length ? { year: w.year, day: Math.min(...days) } : { year: w.year + 1, day: 0 };
 }
 /** A window opens: the chief scout draws, and the requests become the window's (→CLUB-33). */
 export function openShortlistWindow(w: World) {

@@ -16,6 +16,7 @@ import { compactMoney } from './format';
 import { Money } from './Money';
 import { OvrBadge } from './OvrBadge';
 import { OfferAnswers } from './ClubStaff';
+import { ScoutShortlist } from './ScoutShortlist';
 import { openBusiness } from './state';
 import { policyOf, POLICY_INFO } from '../../../../packages/engine/src/policy';
 import s from './RecruitmentDesk.module.css';
@@ -237,6 +238,8 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   const [comparing, setComparing] = useState(false);
   const [message, setMessage] = useState('');
   const [bidding, setBidding] = useState<Candidate>();
+  // A shortlisted candidate opened from 스카우트 명단 without a bid to make (→CLUB-33).
+  const [viewing, setViewing] = useState<Candidate>();
   const [step, setStep] = useState(1);
   const active = w.players.filter((player) => player.status === 'active').length;
   const acting = useGameState((current) => !!current.pendingActions);
@@ -315,8 +318,12 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       blocked={blocked}
       selected={comparison.includes(candidate.offer.player.id)}
       onCompare={() => toggle(candidate.offer.player.id)}
-      onRecruit={(loan) => void recruit(candidate, loan)}
+      onRecruit={(loan) => {
+        setViewing(undefined);
+        void recruit(candidate, loan);
+      }}
       onBid={() => {
+        setViewing(undefined);
         setStep(1);
         setBidding(candidate);
       }}
@@ -379,7 +386,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                   )}{' '}
                   · {BID_STATUS[bid.status]}
                   {(bid.status === 'pending' || bid.status === 'countered') && ` · ${dueLabel}까지`}
-                  {bid.staff && bid.status === 'countered' && ' · 스태프가 답해요'}
+                  {bid.staff && bid.status === 'countered' && ' · 단장이 답해요'}
                 </small>
               </span>
               {actionable && (
@@ -545,6 +552,39 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
         </Dialog>
       )}
       <OfferAnswers w={w} />
+      <ScoutShortlist
+        w={w}
+        offers={state.view!.transfers}
+        disabled={blocked}
+        onOpen={(index) => {
+          const candidate = candidates[index];
+          if (!candidate) return;
+          // A fee-bearing player in an open window opens the bid sheet, as his card's 이적 제안 does.
+          if (
+            window.open &&
+            !candidate.offer.freeAgent &&
+            candidate.offer.available &&
+            candidate.buy.eligible &&
+            !pendingFor(candidate.offer.player.id)
+          ) {
+            setStep(1);
+            setBidding(candidate);
+          } else setViewing(candidate);
+        }}
+      />
+      {viewing && (
+        <Dialog
+          label="스카우트 명단 후보"
+          onClose={() => setViewing(undefined)}
+          actions={
+            <div className={s.close}>
+              <button onClick={() => setViewing(undefined)}>닫기</button>
+            </div>
+          }
+        >
+          {render(viewing)}
+        </Dialog>
+      )}
     </section>
   );
 }

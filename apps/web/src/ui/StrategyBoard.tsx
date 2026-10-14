@@ -457,7 +457,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
                 <div id={`board-area-body-${key}`} className={s.areaBody}>
                   {key === 'scouting' && delegated(w, 'transfers') && (
                     <p className={s.areaNote}>
-                      개입 4단계라 수석 스카우트가 이 부문의 줄과 재정 기조에 따라 선수를 영입해요.
+                      개입 4단계라 단장이 이 부문의 줄과 재정 기조에 따라 선수를 영입해요.
                     </p>
                   )}
                   {slot && card && (

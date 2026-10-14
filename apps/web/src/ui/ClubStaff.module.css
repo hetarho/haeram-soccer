@@ -212,6 +212,14 @@
 .impact {
   color: var(--accent-text) !important;
 }
+/* What the 단장 decides at the current level: 맡김 lit, 직접 quiet (→STAFF-20). */
+.decides b {
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.decides [data-auto='true'] b {
+  color: var(--gold);
+}
 
 @keyframes rise {
   from {

@@ -10,6 +10,7 @@ import {
   drawShortlist,
   financeStance,
   judgeRequests,
+  nextShortlistDraw,
   openShortlistWindow,
   operate,
   operatingCosts,
@@ -451,5 +452,22 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
     advanceDays(w, 1);
     expect(w.shortlist!.window).toBeUndefined();
     expect(w.manager.trust).toBeLessThanOrEqual(trust - 3);
+  });
+
+  it('names the next draw: the winter opening, the next 4th round or the next season', () => {
+    const w = owned('next-draw');
+    const d = transferWindowDays(w.year);
+    w.round = 0;
+    w.calendar = { day: 0 };
+    expect(nextShortlistDraw(w)).toEqual({ year: w.year, day: 28 });
+    w.round = 17;
+    w.calendar = { day: 120 };
+    expect(nextShortlistDraw(w)).toEqual({ year: w.year, day: Math.min(d.winterOpen, 140) });
+    w.round = 22;
+    w.calendar = { day: d.winterOpen };
+    expect(nextShortlistDraw(w)).toEqual({ year: w.year, day: 24 * 7 });
+    w.round = 44;
+    w.calendar = { day: 44 * 7 };
+    expect(nextShortlistDraw(w)).toEqual({ year: w.year + 1, day: 0 });
   });
 });
