@@ -2,6 +2,7 @@ import { Select } from './Select';
 import { useState } from 'react';
 import type { Role, TransferBid, World } from '../../../../packages/contracts/src/types';
 import { bidBoard, bidOutlook, transferWindow } from '../../../../packages/engine/src/transfers';
+import { bidKind } from './bids';
 import { clubOf, overall } from '../../../../packages/engine/src/world';
 import {
   recruitmentPreview,
@@ -365,7 +366,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             <div key={bid.id} className={s.negotiation} data-status={bid.status}>
               <span>
                 <b>
-                  {bid.direction === 'in' ? '받은 제안' : '보낸 제안'} · {player?.name || '선수'}
+                  {bidKind(bid)} · {player?.name || '선수'}
                   {/* A player who asked to leave (→CLUB-27) is the one the owner may want to sell. */}
                   {bid.direction === 'in' && player?.transferRequest ? ' · 이적 요청' : ''}
                 </b>
@@ -378,6 +379,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                   )}{' '}
                   · {BID_STATUS[bid.status]}
                   {(bid.status === 'pending' || bid.status === 'countered') && ` · ${dueLabel}까지`}
+                  {bid.staff && bid.status === 'countered' && ' · 스태프가 답해요'}
                 </small>
               </span>
               {actionable && (

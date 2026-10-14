@@ -686,6 +686,7 @@ export function OfferAnswers({ w }: { w: World }) {
   const card = cardOf(buildOf(w), 'market').label,
     [bar, prospect] = SALE_BARS[w.build?.market ?? 'standard'],
     [first, second] = financeStance(w).sellSteps,
+    signing = financeStance(w).signing,
     hold = w.build?.market === 'hold';
   return (
     <section className={s.decision} aria-label="이적 제안 위임">
@@ -696,8 +697,8 @@ export function OfferAnswers({ w }: { w: World }) {
         w={w}
         decision="transfers"
         criteria
-        auto="다른 구단의 제안에 스태프가 매각 기조와 재정 기조에 따라 답하고 소식함에 보고해요."
-        owner="구단주가 제안마다 수락·거절해요."
+        auto="다른 구단의 제안에 스태프가 매각 기조와 재정 기조에 따라 답하고, 수석 스카우트가 영입 줄과 재정 기조에 따라 선수를 영입해요. 모두 소식함에 보고해요."
+        owner="구단주가 제안마다 수락·거절하고, 영입도 직접 해요."
       />
       <DirectionLines w={w} rows={['market', 'finance']} />
       <ul className={s.fixed}>
@@ -716,6 +717,13 @@ export function OfferAnswers({ w }: { w: World }) {
         </li>
         <li>
           이적 불가 선수의 거액 제안은 감독과 상의해 매각 기조 <b>{card}</b>와 자금 사정으로 정해요.
+        </li>
+        <li>
+          개입 4단계에서는 수석 스카우트가 이적시장이 열린 날과 그 뒤 7일마다 빈 자리를 먼저 채우고,{' '}
+          {signing.margin === undefined
+            ? '재정 기조가 신중·안정적이라 주전 보강은 하지 않아요.'
+            : `주전보다 능력이 ${signing.margin} 이상 나은 선수를 이적시장마다 ${signing.upgrades}명까지 데려와요.`}{' '}
+          이적료는 자금 여력을 넘는 현금의 {Math.round(signing.feeShare * 100)}%까지만 써요.
         </li>
       </ul>
     </section>

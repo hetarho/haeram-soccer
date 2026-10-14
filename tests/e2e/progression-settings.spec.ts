@@ -285,6 +285,8 @@ test('the phone clock picks the intervention level from a popover without stoppi
   await expect(popover.getByRole('button')).toHaveCount(0);
   await expect(popover.getByRole('region', { name: '스태프가 맡는 결정' })).toHaveCount(0);
   await expect(level(4)).toContainText('자금 경고에서만 멈춰요');
+  // Level 4 also hands signings to the chief scout (→CLUB-33).
+  await expect(level(4)).toContainText('이적 제안과 영입까지 모두 스태프');
   // Focus starts on the level in force and the arrow keys move between levels.
   await expect(level(2)).toBeFocused();
   await page.keyboard.press('ArrowDown');

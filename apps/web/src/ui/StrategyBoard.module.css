@@ -229,6 +229,13 @@
   padding: 0 12px 12px;
   min-width: 0;
 }
+/* What the staff do with an area at the current intervention level. */
+.areaNote {
+  margin: 0;
+  color: var(--accent-text);
+  font-size: 12px;
+  line-height: 1.45;
+}
 /* Two rows of one area sit apart. */
 .areaBody > * + * {
   padding-top: 12px;

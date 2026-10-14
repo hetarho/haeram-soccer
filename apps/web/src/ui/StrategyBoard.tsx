@@ -19,6 +19,7 @@ import {
   sameBuild,
   type BuildCard,
 } from '../../../../packages/engine/src/build';
+import { delegated } from '../../../../packages/engine/src/intervention';
 import { synergyStates } from '../../../../packages/engine/src/synergy';
 import { academyIntakeOutlook } from '../../../../packages/engine/src/academy';
 import { careOffer } from '../../../../packages/engine/src/care';
@@ -432,6 +433,11 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
               </button>
               {open && (
                 <div id={`board-area-body-${key}`} className={s.areaBody}>
+                  {key === 'scouting' && delegated(w, 'transfers') && (
+                    <p className={s.areaNote}>
+                      개입 4단계라 수석 스카우트가 이 부문의 줄과 재정 기조에 따라 선수를 영입해요.
+                    </p>
+                  )}
                   {slot && card && (
                     <DirectionRow
                       row={slot}
