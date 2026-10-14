@@ -17,6 +17,7 @@ import {
   setLineup,
   simulateMatch,
   startingSquad,
+  tacticalProfile,
 } from './index';
 
 const input = {
@@ -152,5 +153,44 @@ describe('pre-match decisions', () => {
     expect(startingSquad(restored, clubOf(restored)).map((player) => player.id)).toEqual(ids);
     delete w.lineup;
     expect(validateWorld(w).lineup).toBeUndefined();
+  });
+});
+
+describe('the tactical profile reads the named attributes (→MATCH-8, MATCH-9)', () => {
+  it('fit reads attributes', () => {
+    const w = createWorld(input);
+    const lines = (tactic: Parameters<typeof formationOf>[0]) => {
+      const xi = startingSquad(w, clubOf(w)).map((p) => structuredClone(p));
+      return {
+        xi,
+        line: (name: string) =>
+          xi.filter((_, i) => lineOf(formationOf(tactic)[i]!.position) === name),
+      };
+    };
+    const fit = (
+      tactic: Parameters<typeof formationOf>[0],
+      change: (l: ReturnType<typeof lines>) => void,
+    ) => {
+      const plain = lines(tactic),
+        changed = lines(tactic);
+      change(changed);
+      return [tacticalProfile(plain.xi, tactic), tacticalProfile(changed.xi, tactic)] as const;
+    };
+    // Possession plays through the midfielders' 시야; balanced does not read it.
+    const [before, after] = fit('possession', (l) =>
+      l.line('MF').forEach((p) => (p.attrs.vision = 95)));
+    expect(after.fit).toBeGreaterThan(before.fit);
+    expect(after.possession).toBeGreaterThan(before.possession);
+    const [steady, same] = fit('balanced', (l) =>
+      l.line('MF').forEach((p) => (p.attrs.vision = 95)));
+    expect(same.fit).toBe(steady.fit);
+    // A counter runs on the forwards' 속도 and sits on the defenders' 위치선정.
+    const [slow, quick] = fit('counter', (l) => l.line('FW').forEach((p) => (p.attrs.pace = 95)));
+    expect(quick.fit).toBeGreaterThan(slow.fit);
+    expect(quick.shot).toBeGreaterThan(slow.shot);
+    // Defenders' 공중볼 suppresses the opponent's chances.
+    const [low, high] = fit('balanced', (l) => l.line('DF').forEach((p) => (p.attrs.heading = 95)));
+    expect(high.defenseQuality).toBeGreaterThan(low.defenseQuality);
+    expect(high.defense).toBeGreaterThan(low.defense);
   });
 });

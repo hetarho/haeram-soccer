@@ -567,6 +567,10 @@ export interface MatchEvent {
   lost?: boolean;
   outcome?: 'goal' | 'save' | 'block' | 'miss';
   xg?: number;
+  /** The pass was a cross from a flank (→MATCH-11). */
+  cross?: boolean;
+  /** The shot was a header off a cross. */
+  header?: boolean;
   /** Zone the ball reaches: 0 build-up, 1 midfield, 2 final third (attacking direction). */
   zone: 0 | 1 | 2;
 }

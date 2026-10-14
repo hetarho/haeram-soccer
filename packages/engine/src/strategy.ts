@@ -15,8 +15,15 @@ import { synergyEffects } from './synergy';
 
 export interface TacticalProfile {
   fit: number;
+  /** Midfielders' 패스. */
   passing: number;
+  /** Midfielders' 패스 and 시야: what possession plays through (→MATCH-8). */
+  playmaking: number;
+  /** Defenders' 태클, 위치선정 and 공중볼 (→MATCH-9). */
   defenseQuality: number;
+  /** Defenders' 위치선정 and forwards' 속도: what a counter sits and runs on (→MATCH-8). */
+  compactness: number;
+  pace: number;
   stamina: number;
   fatigue: number;
   /** All modifiers below are percentage points, never a win probability. */
@@ -42,8 +49,9 @@ const tacticTradeoffs: Record<Tactic, string> = {
 
 /**
  * The XI's line quality at its formation's slots and the opposing preset determine the same
- * tradeoffs shown before a match (→MATCH-8, →MATCH-9): midfielders' passing, defenders' tackling
- * and positioning, forwards' finishing, everyone's stamina.
+ * tradeoffs shown before a match (→MATCH-8, →MATCH-9): midfielders' 패스 (and 시야 for possession),
+ * defenders' 태클, 위치선정 and 공중볼 (위치선정 for a counter), forwards' 슈팅 (속도 for a counter),
+ * everyone's 체력.
  */
 export function tacticalProfile(
   players: readonly Player[],
@@ -55,19 +63,14 @@ export function tacticalProfile(
       ? selected.reduce((sum, player) => sum + value(player), 0) / selected.length
       : 50;
   const inLine = (line: string) => players.filter((_, i) => slotLine(tactic, i) === line);
-  const passing = clamp(
-    average(inLine('MF'), (player) => player.attrs.passing - fatigueLoad(player.fatigue) / 8),
-  );
-  const defenseQuality = clamp(
-    average(
-      inLine('DF'),
-      (player) =>
-        (player.attrs.tackling + player.attrs.positioning) / 2 - fatigueLoad(player.fatigue) / 8,
-    ),
-  );
-  const attack = clamp(
-    average(inLine('FW'), (player) => player.attrs.finishing - fatigueLoad(player.fatigue) / 8),
-  );
+  const fresh = (line: string, value: (attrs: Player['attrs']) => number) =>
+    clamp(average(inLine(line), (player) => value(player.attrs) - fatigueLoad(player.fatigue) / 8));
+  const passing = fresh('MF', (a) => a.passing),
+    playmaking = fresh('MF', (a) => a.passing * 0.6 + a.vision * 0.4),
+    defenseQuality = fresh('DF', (a) => (a.tackling + a.positioning + a.heading) / 3),
+    compactness = fresh('DF', (a) => a.positioning),
+    attack = fresh('FW', (a) => a.finishing),
+    pace = fresh('FW', (a) => a.pace);
   const stamina = average(players, (player) => player.attrs.stamina);
   const fatigue = average(players, (player) => player.fatigue);
   const endurance = clamp(
@@ -76,7 +79,10 @@ export function tacticalProfile(
   const profile: TacticalProfile = {
     fit: 0,
     passing,
+    playmaking,
     defenseQuality,
+    compactness,
+    pace,
     stamina,
     fatigue,
     possession: (passing - 55) * 0.12,
@@ -93,16 +99,16 @@ export function tacticalProfile(
       profile.shot -= 0.4;
       break;
     case 'possession':
-      profile.fit = passing * 0.65 + endurance * 0.2 + defenseQuality * 0.15;
-      profile.possession += 2 + (passing - 50) * 0.18;
-      profile.pass += 4.5 + (passing - 50) * 0.09;
-      profile.shot -= 2.6 - (passing - 50) * 0.035;
+      profile.fit = playmaking * 0.65 + endurance * 0.2 + defenseQuality * 0.15;
+      profile.possession += 2 + (playmaking - 50) * 0.18;
+      profile.pass += 4.5 + (playmaking - 50) * 0.09;
+      profile.shot -= 2.6 - (playmaking - 50) * 0.035;
       break;
     case 'counter':
-      profile.fit = defenseQuality * 0.55 + attack * 0.45;
+      profile.fit = compactness * 0.55 + pace * 0.45;
       profile.possession -= 5.5;
       profile.pass -= 2.5;
-      profile.shot += -1.6 + (defenseQuality + attack - 100) * 0.055;
+      profile.shot += -1.6 + (compactness + pace - 100) * 0.055;
       profile.shot += opponentTactic === 'press' ? 4.5 : opponentTactic === 'possession' ? 1.5 : -1;
       profile.defense += 0.6;
       break;

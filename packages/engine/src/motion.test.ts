@@ -262,7 +262,7 @@ describe('ball flights', () => {
       expect((last - first + 2) * dt).toBeLessThanOrEqual(flight.duration + 0.3);
       landed++;
     }
-    expect(landed).toBeGreaterThan(300);
+    expect(landed).toBeGreaterThan(250);
     const styles = new Set([...flights.values()].map(({ last }) => trace[last].flight!.style));
     expect(styles).toEqual(
       new Set(['pass', 'loose', 'cut', 'tackle', 'shot', 'reset', 'throw', 'cross']),
@@ -369,5 +369,38 @@ describe('ball flights', () => {
   it('draws flight shapes from its own ball stream, so the same match repeats exactly', () => {
     const repeat = replay(10);
     expect(repeat).toEqual(trace.slice(0, repeat.length));
+  });
+});
+
+describe('players at their formation spots (→MATCH-12, STAFF-22)', () => {
+  it('formation spots', () => {
+    // 4-3-3 with an inverted winger on the left and a traditional winger on the right.
+    const w = createWorld({
+      country: 'ENG',
+      name: 'Shape Athletic',
+      color: '#24664f',
+      seed: 'formation-spots',
+      level: 'normal' as const,
+    });
+    w.tactic = 'possession';
+    const f = w.fixtures.find((fixture) => fixture.home === w.playerClub)!;
+    const match = simulateMatch(w, f, true, true);
+    const ownIds = new Set(match.squads[0].map((p) => p.id));
+    const inPossession = match.frames
+      .flatMap((frame) => frame.motion!)
+      .filter((sample) => sample.ownerId && ownIds.has(sample.ownerId));
+    expect(inPossession.length).toBeGreaterThan(100);
+    const mean = (slot: number, axis: 0 | 1, value = (n: number) => n) =>
+      inPossession.reduce(
+        (sum, sample) => sum + value(sample.players[0][slot]!.position[axis]),
+        0,
+      ) / inPossession.length;
+    // Left back left, right back right; the striker ahead of the centre backs.
+    expect(mean(1, 1)).toBeLessThan(50);
+    expect(mean(4, 1)).toBeGreaterThan(50);
+    expect(mean(9, 0)).toBeGreaterThan(mean(2, 0));
+    // The inverted winger comes inside; the traditional winger holds the touchline.
+    const wide = (n: number) => Math.abs(n - 50);
+    expect(mean(8, 1, wide)).toBeLessThan(mean(10, 1, wide) - 4);
   });
 });

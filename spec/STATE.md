@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| p7ad | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T15:45Z | 2026-10-14T18:49Z | T110 |
+| p7ad | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T15:45Z | 2026-10-14T19:15Z | - |
 
 ## inbox
 - 261015 decided PLAYER-16: what "the rate below potential" is when growth shrinks with the gap to it (zero at potential) → the rate 2 under potential, a floor for a settled (0.90+) player's round growth near and past it (alt: a flat rate past potential | the season's growth term only) — without a floor PLAYER-16 had nothing to scale
@@ -69,7 +69,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T110 | The match reads every attribute, role and play trait | MATCH PLAYER | T107 | doing@261015.p7ad |
 | T111 | Requests by formation slot, cover by slot, ambition and the arrival preview | CLUB PLAYER | T107 | todo |
 | T112 | Player profile, positions and the formation in the web game | WEB CLUB PLAYER | T107 | todo |
 | T113 | Earlier-rules careers are listed, never opened, and the century still fits | SAVE | T107 | todo |
@@ -100,6 +99,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 T110 done: the duels read every attribute, roles and play traits pick who acts within the team rates, crosses and headers, the sweeper keeper, the tactical profile on MATCH-8/9's attributes, roles move players in playback; calibration MAE duel 1.7 / summary 1.6
 - 261015 CI fix: CI 38618399787 failed only WebKit 2/2 — progression-settings' hidden-tab pause read the date while a day was still being played; the spec now waits for the clock to come to rest (one in-flight day may land) and then holds it still
 - 261015 CI fix (91c26cb): CI 38610433686 failed only WebKit 2/2 — native-touch's tap on 전술·선발 준비 stalled in Playwright's WebKit scroll/click step; a probe on wip/p7ad (run 38616628989, green) opened the sheet in 0.15–0.29 s and the page idles after the stop, so the spec now measures and settles the button before the tap
 - 261015 T109 done: training per player (assistant's 회복 rule at 40+, suggestions and orders for one player), 하드's injuries and morale streak, 리더 morale, training settles adaptation to 0.80, growth × 프로의식, past potential at 0.90+, ageing by attribute group; PLAYER r3 (PLAYER-16 rate below potential)
@@ -119,4 +119,3 @@
 - 261014 T101 done (d825700): 방향 at /direction, older /business addresses open their tab there; unit 700, Chromium e2e 31 of the touched specs; T102 doing
 - 261014 create-task T101 (/direction), T102 (the 단장 post), T103 (shortlist and requests), T104 (screens), T105 (explore 1h: calibration)
 - 261014 update-ssot WEB r65 CLUB r32 STAFF r19 ECON r33 SAVE r34 (the owner's inbox review): the 방향 tab at /direction; the 단장 (STAFF-20) takes contract talks, the manager post and transfers when delegated and carries the transfer negotiation; signings from the chief scout's all-season shortlist and the manager's requests, −3 trust for none met at a window's close
-- 261014 inbox: the owner confirmed 21 of the 23 decisions one by one; changed WEB-39 (the 방향 tab moves to /direction) and CLUB-33 (a 단장 decides signings from the chief scout's all-season shortlist and the manager's requests) — update-ssot follows

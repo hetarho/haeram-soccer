@@ -10,6 +10,7 @@ import type {
 } from '../../contracts/src/types';
 import { clamp, integer, random, zeroMetrics } from './primitives';
 import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../contracts/src/detail';
+import type { PlayTrait, RoleId } from '../../contracts/src/player';
 import {
   cohesionMultiplier,
   fatigueLoad,
@@ -19,7 +20,7 @@ import {
   startingSquad,
   unhappyPenalty,
 } from './world';
-import { FORMATIONS, levelFactor as positionLevelFactor, lineOf } from './player';
+import { FORMATIONS, isWide, levelFactor as positionLevelFactor, lineOf } from './player';
 import { moraleStrength } from './morale';
 import { npcTactic, ownTacticalProfile, tacticalProfile, type TacticalProfile } from './strategy';
 import { managerStyleEffects } from './styles';
@@ -55,7 +56,108 @@ const FINISH = 0,
   POSITION = 6,
   KEEP = 7,
   STAMINA = 8,
-  KEYS = 9;
+  CROSS = 9,
+  HEAD = 10,
+  HANDLE = 11,
+  DISTRIBUTE = 12,
+  KEYS = 13;
+
+/**
+ * What a slot's role and a player's play traits make him attempt more (or less) often (→PLAYER-5,
+ * PLAYER-9, MATCH-11). The weights only pick who does it: how many shots, passes and duels a side
+ * plays stays as its tactical profile sets them.
+ */
+export type MatchAction =
+  'shot' | 'box' | 'long' | 'dribble' | 'cross' | 'key' | 'press' | 'aerial' | 'run' | 'hold';
+const MATCH_ACTIONS: readonly MatchAction[] = [
+  'shot',
+  'box',
+  'long',
+  'dribble',
+  'cross',
+  'key',
+  'press',
+  'aerial',
+  'run',
+  'hold',
+];
+export const ROLE_ACTION: Partial<Record<RoleId, Partial<Record<MatchAction, number>>>> = {
+  stopper: { press: 1.2, aerial: 1.1 },
+  ballPlayingDefender: { key: 1.1 },
+  defensiveFullBack: { cross: 0.8 },
+  overlappingFullBack: { cross: 1.3, run: 1.1 },
+  invertedFullBack: { cross: 0.6, key: 1.1 },
+  defensiveWingBack: { cross: 0.9 },
+  attackingWingBack: { cross: 1.4, dribble: 1.1 },
+  anchor: { press: 1.1 },
+  ballWinner: { press: 1.5 },
+  regista: { key: 1.4 },
+  boxToBox: { run: 1.2, press: 1.2 },
+  mezzala: { run: 1.2, key: 1.1 },
+  deepLyingPlaymaker: { key: 1.3 },
+  wideMidfielder: { cross: 1.3 },
+  widePlaymaker: { key: 1.3, cross: 0.8 },
+  attackingMidfielder: { key: 1.2, long: 1.2 },
+  shadowStriker: { shot: 1.3, run: 1.3 },
+  trequartista: { key: 1.4, dribble: 1.2 },
+  traditionalWinger: { cross: 1.5, dribble: 1.2, shot: 0.8 },
+  invertedWinger: { shot: 1.4, cross: 0.7, dribble: 1.2 },
+  targetMan: { aerial: 1.6, hold: 1.4, shot: 1.1 },
+  poacher: { box: 1.4, shot: 1.3 },
+  falseNine: { key: 1.3, dribble: 1.2, shot: 0.8 },
+  completeForward: { shot: 1.1, key: 1.1, aerial: 1.1 },
+};
+export const TRAIT_ACTION: Partial<Record<PlayTrait, Partial<Record<MatchAction, number>>>> = {
+  workrate: { press: 1.2 },
+  technician: { dribble: 1.4 },
+  playmaker: { key: 1.4 },
+  speedster: { run: 1.4 },
+  linebreaker: { run: 1.3, shot: 1.1 },
+  targetman: { aerial: 1.6, hold: 1.3 },
+  longshot: { long: 1.5 },
+  crosser: { cross: 1.5 },
+  aerial: { aerial: 1.4 },
+  tackler: { press: 1.2 },
+  buildup: { key: 1.1 },
+};
+const SHOT = 0,
+  BOX = 1,
+  LONG = 2,
+  DRIBBLES = 3,
+  CROSSES = 4,
+  KEY_PASS = 5,
+  PRESS = 6,
+  AERIAL = 7,
+  RUN = 8,
+  HOLD = 9,
+  ACTIONS = 10;
+const ROLE_VECTORS = new Map<RoleId, Float64Array>();
+/** A role's multiplier for every action, in MATCH_ACTIONS order. */
+function roleVector(role: RoleId) {
+  let vector = ROLE_VECTORS.get(role);
+  if (!vector) {
+    vector = Float64Array.from(MATCH_ACTIONS, (action) => ROLE_ACTION[role]?.[action] ?? 1);
+    ROLE_VECTORS.set(role, vector);
+  }
+  return vector;
+}
+const TRAIT_VECTORS = new WeakMap<readonly PlayTrait[], Float64Array>();
+/** A player's traits' product for every action; traits are replaced, never edited in place. */
+function traitVector(traits: readonly PlayTrait[]) {
+  let vector = TRAIT_VECTORS.get(traits);
+  if (!vector) {
+    vector = Float64Array.from(MATCH_ACTIONS, (action) =>
+      traits.reduce((product, trait) => product * (TRAIT_ACTION[trait]?.[action] ?? 1), 1),
+    );
+    TRAIT_VECTORS.set(traits, vector);
+  }
+  return vector;
+}
+/** A player's weight for an action at a slot: his role's times his traits', within 0.5–2. */
+export function actionWeight(role: RoleId, traits: readonly PlayTrait[], action: MatchAction) {
+  const i = MATCH_ACTIONS.indexOf(action);
+  return clamp(roleVector(role)[i]! * traitVector(traits)[i]!, 0.5, 2);
+}
 
 /**
  * Named tuning surface for the duel chain. Starting XI slots: 0 GK, 1–4 DEF, 5–7 MID, 8–10 FWD.
@@ -84,6 +186,22 @@ export const MATCH_DUEL_CONFIG = {
   interceptShare: 0.5,
   /** Share of midfield/final-third actions by a midfielder or forward that are dribbles. */
   dribbleShare: 0.08,
+  /**
+   * A flank player's final-third pass is a cross this often before his weight (about a dozen a
+   * side a match); its completion between equal players is `crossSuccess`, the crosser's 크로스
+   * against the defender's 공중볼 and the keeper's 공중볼 처리.
+   */
+  crossShare: 0.36,
+  crossSuccess: 0.24,
+  /** A chance made by a flank player is a cross this often before his weight: then a header. */
+  crossChance: 0.35,
+  /**
+   * A 스위퍼 키퍼 reads a ball in behind or a run through on goal this often between equal
+   * players, on his 속도 and 발밑 against the runner's 속도 (→PLAYER-5).
+   */
+  sweep: 0.05,
+  /** How much more often a runner (speedster, line breaker, shadow striker) takes a chance himself. */
+  runShare: 0.5,
   /** Key-duel success between equal players. */
   keySuccess: 0.62,
   /** Chance attempts are the team chance rate divided by this realized key-duel success. */
@@ -159,7 +277,8 @@ export const MATCH_DUEL_CONFIG = {
 
 /**
  * Who carries the ball in each zone and who marks there, from a side's formation lines: defenders
- * build up, midfielders carry through the middle, forwards and the central midfielder attack;
+ * build up, midfielders carry through the middle, forwards, the central midfielder and the flank
+ * players who attack (wide midfielders, wing-backs, overlapping full-backs) reach the final third;
  * forwards mark the build-up, midfielders the middle, defenders the final third.
  */
 interface SideLines {
@@ -167,22 +286,37 @@ interface SideLines {
   markers: readonly (readonly number[])[];
   kickoff: number;
   line: readonly string[];
+  /** Flank slots, whose final-third passes may be crosses. */
+  wide: readonly boolean[];
+  roles: readonly RoleId[];
 }
+const ATTACKING_FLANK: ReadonlySet<RoleId> = new Set([
+  'overlappingFullBack',
+  'attackingWingBack',
+  'defensiveWingBack',
+]);
 const sideLinesCache = new Map<Tactic, SideLines>();
 function sideLines(tactic: Tactic): SideLines {
   let lines = sideLinesCache.get(tactic);
   if (!lines) {
-    const line = FORMATIONS[tactic].slots.map((slot) => lineOf(slot.position));
+    const slots = FORMATIONS[tactic].slots;
+    const line = slots.map((slot) => lineOf(slot.position));
+    const wide = slots.map((slot) => isWide(slot.position));
     const of = (name: string) => line.flatMap((l, i) => (l === name ? [i] : []));
     const df = of('DF'),
       mf = of('MF'),
       fw = of('FW');
     const central = mf[Math.floor(mf.length / 2)]!;
+    const flank = slots.flatMap((slot, i) =>
+      wide[i] && (line[i] === 'MF' || ATTACKING_FLANK.has(slot.role)) ? [i] : [],
+    );
     lines = {
-      carriers: [df, mf, [...fw, central]],
+      carriers: [df, mf, [...fw, central, ...flank]],
       markers: [fw, mf, df],
       kickoff: central,
       line,
+      wide,
+      roles: slots.map((slot) => slot.role),
     };
     sideLinesCache.set(tactic, lines);
   }
@@ -190,6 +324,30 @@ function sideLines(tactic: Tactic): SideLines {
 }
 const pick = (pool: readonly number[], u: number) =>
   pool[Math.min(pool.length - 1, Math.floor(u * pool.length))];
+/**
+ * One draw `u` picks a slot of `pool` in proportion to its entry in `weights` (a side's per-slot
+ * table, `stride` entries a slot from `offset`); `except` is never picked.
+ */
+function weighted(
+  pool: readonly number[],
+  u: number,
+  weights: ArrayLike<number>,
+  stride = 1,
+  offset = 0,
+  except = -1,
+) {
+  let total = 0;
+  for (const slot of pool) if (slot !== except) total += weights[slot * stride + offset]!;
+  let target = u * total;
+  for (const slot of pool) {
+    if (slot === except) continue;
+    target -= weights[slot * stride + offset]!;
+    if (target <= 0) return slot;
+  }
+  for (let i = pool.length - 1; i >= 0; i--) if (pool[i] !== except) return pool[i]!;
+  return pool[0]!;
+}
+const OUTFIELD: readonly number[] = Array.from({ length: 10 }, (_, i) => i + 1);
 
 /** Seconds of the minute for event `index` of `count`, spaced evenly inside the minute. */
 const eventTime = (index: number, count: number) =>
@@ -228,14 +386,30 @@ const attemptChance = (chanceRate: number, transition: boolean, lead: number) =>
   );
 /** The final ball or solo run beats the defender facing it. */
 const keyChance = (margin: number) => clamp(C.keySuccess + bend(margin) / C.keyScale, 0.25, 0.92);
-/** One draw `u` sets the chance type and its quality; a wider duel margin makes better chances. */
-function chanceQuality(u: number, margin: number, transition: boolean) {
+/**
+ * One draw `u` sets the chance type and its quality; a wider duel margin makes better chances. The
+ * shooter's weights move his other chances between the box and long range (a poacher's, a long
+ * shooter's); a header is always a box chance.
+ */
+function chanceQuality(
+  u: number,
+  margin: number,
+  transition: boolean,
+  shape: { box: number; long: number; header?: boolean } = { box: 1, long: 1 },
+) {
+  if (shape.header) {
+    const band = C.chances.box;
+    return { xg: band[0] + (band[1] - band[0]) * u, big: false, box: true };
+  }
   const big = transition
-      ? clamp(C.bigShare + C.transition.big + bend(margin) / C.bigScale, 0.05, 0.5)
-      : clamp(C.bigShare + bend(margin) / C.bigScale, 0.05, 0.3),
-    box = big + C.boxShare;
+    ? clamp(C.bigShare + C.transition.big + bend(margin) / C.bigScale, 0.05, 0.5)
+    : clamp(C.bigShare + bend(margin) / C.bigScale, 0.05, 0.3);
+  const inBox = C.boxShare * shape.box,
+    outside = (1 - big - C.boxShare) * shape.long,
+    boxShare = ((1 - big) * inBox) / (inBox + outside),
+    box = big + boxShare;
   const band = u < big ? C.chances.big : u < box ? C.chances.box : C.chances.long;
-  const within = u < big ? u / big : u < box ? (u - big) / C.boxShare : (u - box) / (1 - box);
+  const within = u < big ? u / big : u < box ? (u - big) / boxShare : (u - box) / (1 - box);
   return { xg: band[0] + (band[1] - band[0]) * within, big: u < big, box: u < box };
 }
 /** How much better than a chance's quality this shooter finishes against this keeper. */
@@ -411,9 +585,55 @@ function matchSkills({ squads, tactics, multiplier, drain: drains, shift }: Matc
       at(POSITION, a.positioning);
       at(KEEP, a.reflexes, true);
       at(STAMINA, a.stamina);
+      at(CROSS, a.crossing);
+      at(HEAD, a.heading);
+      at(HANDLE, a.handling, true);
+      at(DISTRIBUTE, a.distribution);
     }
     return table;
   });
+  // Each slot's weight for each action: its role's times its player's traits (→MATCH-11).
+  const actions = squads.map((ps, side) => {
+    const roles = sideLines(tactics[side]).roles;
+    const table = new Float64Array(11 * ACTIONS);
+    for (let slot = 0; slot < 11; slot++) {
+      const role = roleVector(roles[slot]!),
+        traits = traitVector(ps[Math.min(slot, ps.length - 1)].traits);
+      for (let i = 0; i < ACTIONS; i++)
+        table[slot * ACTIONS + i] = Math.min(2, Math.max(0.5, role[i]! * traits[i]!));
+    }
+    return table;
+  });
+  const weight = (side: Side, slot: number, action: number) =>
+    actions[side][slot * ACTIONS + action]!;
+  /**
+   * Each slot's share of an action a side attempts, its weight over the mean of the slots that
+   * may attempt it, so the side's total stays where it was (built when first needed).
+   */
+  const shares = (action: number, eligible: (line: string, wide: boolean) => boolean) => {
+    const built: (Float64Array | undefined)[] = [undefined, undefined];
+    return (side: Side) => {
+      let share = built[side];
+      if (!share) {
+        const { line, wide } = sideLines(tactics[side]);
+        share = new Float64Array(11);
+        let total = 0,
+          count = 0;
+        for (let slot = 0; slot < 11; slot++)
+          if (eligible(line[slot]!, wide[slot]!)) {
+            total += weight(side, slot, action);
+            count++;
+          }
+        for (let slot = 0; slot < 11; slot++)
+          if (eligible(line[slot]!, wide[slot]!))
+            share[slot] = (weight(side, slot, action) * count) / total;
+        built[side] = share;
+      }
+      return share;
+    };
+  };
+  const dribbles = shares(DRIBBLES, (line) => line === 'MF' || line === 'FW'),
+    crosses = shares(CROSSES, (line, wide) => wide && line !== 'GK');
   const drain = squads.map((ps, side) => {
     const rate = new Float64Array(11);
     for (let slot = 0; slot < 11; slot++)
@@ -425,28 +645,118 @@ function matchSkills({ squads, tactics, multiplier, drain: drains, shift }: Matc
         90;
     return rate;
   });
-  // Forwards take most shots, midfielders some, defenders the occasional set piece.
+  // Forwards take most shots, midfielders some, defenders the occasional set piece; roles and
+  // traits tilt who among them (→MATCH-11). Headers go to whoever attacks the cross best.
   const lineWeight: Record<string, number> = { FW: 3, MF: 1.1, DF: 0.2, GK: 0 };
-  const shooterWeights = base.map((table, side) => {
-    const line = sideLines(tactics[side]).line;
-    return Array.from(
-      { length: 11 },
-      (_, slot) => Math.max(1, table[slot * KEYS + FINISH]) * lineWeight[line[slot]!]!,
-    );
+  const aerialWeight: Record<string, number> = { FW: 3, MF: 1, DF: 0.6, GK: 0 };
+  const byLine = (side: number, key: number, action: number, lines: Record<string, number>) => {
+    const line = sideLines(tactics[side]).line,
+      table = base[side],
+      out = new Float64Array(11);
+    for (let slot = 1; slot < 11; slot++)
+      out[slot] =
+        Math.max(1, table[slot * KEYS + key]!) *
+        lines[line[slot]!]! *
+        actions[side][slot * ACTIONS + action]!;
+    return out;
+  };
+  const shooterWeights = [0, 1].map((side) => byLine(side, FINISH, SHOT, lineWeight));
+  const headerWeights: (Float64Array | undefined)[] = [undefined, undefined];
+  const headers = (side: Side) =>
+    (headerWeights[side] ||= byLine(side, HEAD, AERIAL, aerialWeight));
+  const skill = (side: Side, slot: number, key: number, minute: number) =>
+    base[side][slot * KEYS + key] + shift[side] - drain[side][slot] * minute;
+  const chooseShooter = (side: Side, u: number) => weighted(OUTFIELD, u, shooterWeights[side]!);
+  /** The box target for a cross from `from`, never the crosser himself. */
+  const chooseHeader = (side: Side, u: number, from: number) =>
+    weighted(OUTFIELD, u, headers(side), 1, 0, from);
+  /** The marker who closes a carrier down in `zone`: whoever presses hardest most often. */
+  const chooseMarker = (side: Side, zone: Zone, u: number) =>
+    weighted(sideLines(tactics[side]).markers[zone]!, u, actions[side], ACTIONS, PRESS);
+  // How often a final-third pass finds each slot: playmakers and target men most (→MATCH-11).
+  const receive = actions.map((table) => {
+    const out = new Float64Array(11);
+    for (let slot = 0; slot < 11; slot++)
+      out[slot] = table[slot * ACTIONS + KEY_PASS]! * table[slot * ACTIONS + HOLD]!;
+    return out;
   });
-  const shooterTotals = shooterWeights.map((weights) => weights.reduce((sum, n) => sum + n, 0));
   return {
     base,
-    skill: (side: Side, slot: number, key: number, minute: number) =>
-      base[side][slot * KEYS + key] + shift[side] - drain[side][slot] * minute,
-    chooseShooter: (side: Side, u: number) => {
-      let target = u * shooterTotals[side];
-      const weights = shooterWeights[side];
-      for (let slot = 1; slot < 11; slot++) {
-        target -= weights[slot];
-        if (target <= 0) return slot;
+    skill,
+    chooseHeader,
+    chooseMarker,
+    /** The defender who attacks a cross: the best in the air most often. */
+    chooseAerial: (side: Side, u: number) =>
+      weighted(sideLines(tactics[side]).markers[2]!, u, actions[side], ACTIONS, AERIAL),
+    /** The final-third receiver of a pass from `from` among `pool`. */
+    chooseReceiver: (side: Side, pool: readonly number[], u: number, from: number) =>
+      weighted(pool, u, receive[side]!, 1, 0, from),
+    /** A carrier's chance of a dribble, of a cross from the final third. */
+    dribbleShare: (side: Side, slot: number) => C.dribbleShare * dribbles(side)[slot]!,
+    crossShare: (side: Side, slot: number) => C.crossShare * crosses(side)[slot]!,
+    /**
+     * How a chance is made from the ball `carrier` holds (→MATCH-11): a flank player crosses as
+     * often as his weight says and the best header attacks it; otherwise the shooter is drawn by
+     * weight, and a runner takes it himself more often. The key duel's margin is the final ball
+     * (or the run, or the cross and the header) against the defender facing it; a 스위퍼 키퍼 may
+     * read a ball in behind first.
+     */
+    shapeChance: (side: Side, carrier: number, minute: number, r: () => number) => {
+      const other: Side = side === 0 ? 1 : 0;
+      const lines = sideLines(tactics[side]);
+      const cross =
+        lines.wide[carrier]! && r() < Math.min(0.9, C.crossChance * crosses(side)[carrier]!);
+      let shooter = cross ? chooseHeader(side, r(), carrier) : chooseShooter(side, r());
+      const runner = lines.line[carrier] === 'MF' || lines.line[carrier] === 'FW';
+      if (!cross && runner && shooter !== carrier) {
+        const run = weight(side, carrier, RUN) - 1;
+        if (run > 0 && r() < run * C.runShare) shooter = carrier;
       }
-      return sideLines(tactics[side]).carriers[2][0]!;
+      const creator = shooter === carrier ? undefined : carrier;
+      const markers = sideLines(tactics[other]).markers[2]!;
+      // A cross is met by the best in the air; anything else by whoever faces it.
+      const defender = cross
+        ? weighted(markers, r(), actions[other], ACTIONS, AERIAL)
+        : pick(markers, r())!;
+      const at = (s: Side, slot: number, key: number) => skill(s, slot, key, minute);
+      const attackValue =
+        creator === undefined
+          ? at(side, shooter, DRIBBLE) * 0.7 + at(side, shooter, PACE) * 0.3
+          : cross
+            ? at(side, creator, CROSS) * 0.5 + at(side, shooter, HEAD) * 0.5
+            : at(side, creator, VISION) * 0.5 + at(side, shooter, FINISH) * 0.5;
+      const defenceValue = cross
+        ? at(other, defender, HEAD) * 0.7 + at(other, 0, HANDLE) * 0.3
+        : (at(other, defender, TACKLE) + at(other, defender, POSITION)) / 2;
+      // A sweeper keeper reads the through ball or the run in behind (never a cross).
+      const keeper = sideLines(tactics[other]).roles[0] === 'sweeperKeeper';
+      const swept =
+        keeper &&
+        !cross &&
+        r() <
+          clamp(
+            C.sweep +
+              (at(other, 0, PACE) * 0.5 +
+                at(other, 0, DISTRIBUTE) * 0.5 -
+                at(side, shooter, PACE)) /
+                400,
+            0.01,
+            0.12,
+          );
+      return {
+        shooter,
+        creator,
+        defender,
+        cross,
+        swept,
+        margin: attackValue - defenceValue,
+        shooting: at(side, shooter, cross ? HEAD : FINISH),
+        shape: {
+          box: weight(side, shooter, BOX),
+          long: weight(side, shooter, LONG),
+          header: cross,
+        },
+      };
     },
   };
 }
@@ -457,7 +767,7 @@ function matchSkills({ squads, tactics, multiplier, drain: drains, shift }: Matc
  */
 function summaryMatch(setup: MatchSetup) {
   const { f, r, squads, strength, tactics, profiles, possessionChance } = setup;
-  const { skill, chooseShooter } = matchSkills(setup);
+  const { skill, shapeChance, chooseReceiver } = matchSkills(setup);
   const metrics: [number[], number[]] = [zeroMetrics(), zeroMetrics()];
   const highlights: MatchRecord['highlights'] = [];
   for (let minute = 1; minute <= 90; minute++) {
@@ -482,23 +792,22 @@ function summaryMatch(setup: MatchSetup) {
       }
       continue;
     }
-    // The final ball comes from whoever carries it into the final third; alone it is a solo run.
-    const shooter = chooseShooter(side, r()),
-      creator = pick(sideLines(tactics[side]).carriers[2], r()),
-      defender = pick(sideLines(tactics[other]).markers[2], r());
-    const solo = creator === shooter;
-    const attackValue = solo
-      ? skill(side, shooter, DRIBBLE, minute) * 0.7 + skill(side, shooter, PACE, minute) * 0.3
-      : skill(side, creator, VISION, minute) * 0.5 + skill(side, shooter, FINISH, minute) * 0.5;
-    const margin =
-      attackValue -
-      (skill(other, defender, TACKLE, minute) + skill(other, defender, POSITION, minute)) / 2;
-    if (r() >= keyChance(margin)) {
+    // The final ball comes from whoever carries it into the final third, the playmakers most
+    // often; the duel chain's chance model decides the rest (a cross, a run, the shooter).
+    const carrier = chooseReceiver(side, sideLines(tactics[side]).carriers[2]!, r(), -1);
+    const made = shapeChance(side, carrier, minute, r);
+    const shooter = made.shooter,
+      solo = made.creator === undefined;
+    if (made.swept) {
+      metrics[other][7]++;
+      continue;
+    }
+    if (r() >= keyChance(made.margin)) {
       metrics[other][solo ? 6 : 7]++;
       continue;
     }
-    const { xg } = chanceQuality(r(), margin, false);
-    const shooting = skill(side, shooter, FINISH, minute);
+    const { xg } = chanceQuality(r(), made.margin, false, made.shape);
+    const shooting = made.shooting;
     const goal = goalChance(xg, shooting, skill(other, 0, KEEP, minute));
     const shot = r();
     metrics[side][4]++;
@@ -548,8 +857,7 @@ function duelMatch(
   const highlights: MatchRecord['highlights'] = [];
   const xg: [number, number] = [0, 0];
   const skills = matchSkills(setup),
-    base = skills.base,
-    chooseShooter = skills.chooseShooter;
+    base = skills.base;
   let minute = 0;
   const skill = (side: Side, slot: number, key: number) => skills.skill(side, slot, key, minute);
   const credit = (side: Side, slot: number, metric: number) => {
@@ -645,8 +953,10 @@ function duelMatch(
       const u = r();
       const ownLine = sideLines(tactics[side]).line[slot];
       const canDribble = !chance && zone >= 1 && (ownLine === 'MF' || ownLine === 'FW');
-      if (canDribble && u < c.dribbleShare) {
-        const defender = pick(sideLines(tactics[other]).markers[zone], u / c.dribbleShare);
+      // A technician or a winger takes his man on more often than the side's other carriers.
+      const dribbleShare = canDribble ? Math.min(0.5, skills.dribbleShare(side, slot)) : 0;
+      if (canDribble && u < dribbleShare) {
+        const defender = skills.chooseMarker(other, zone, u / dribbleShare);
         const beat = clamp(
           0.55 +
             (skill(side, slot, DRIBBLE) * 0.7 +
@@ -686,23 +996,87 @@ function duelMatch(
         });
         continue;
       }
+      // A flank player in the final third crosses: the best header attacks it, a defender heads
+      // it clear (→MATCH-11).
+      const crossShare = !chance && zone === 2 ? Math.min(0.9, skills.crossShare(side, slot)) : 0;
+      if (crossShare > 0 && r() < crossShare) {
+        const target = skills.chooseHeader(side, r(), slot);
+        const marker = skills.chooseAerial(other, r());
+        const delivered = clamp(
+          c.crossSuccess +
+            (skill(side, slot, CROSS) -
+              (skill(other, marker, HEAD) * 0.7 + skill(other, 0, HANDLE) * 0.3)) /
+              150,
+          0.1,
+          0.6,
+        );
+        metrics[side][2]++;
+        credit(side, slot, 2);
+        team[side][TD.finalThirdPasses]++;
+        note(side, slot, PD.finalThirdPasses);
+        if (r() < delivered) {
+          metrics[side][3]++;
+          credit(side, slot, 3);
+          team[side][TD.finalThirdCompleted]++;
+          note(side, slot, PD.finalThirdCompleted);
+          events?.push({
+            t: 0,
+            kind: 'pass',
+            side,
+            actor: slot,
+            receiver: target,
+            opponent: marker,
+            ok: true,
+            cross: true,
+            zone: 2,
+          });
+          lastPasser = slot;
+          slot = target;
+          action = '크로스';
+          actor = slot;
+        } else {
+          metrics[other][7]++;
+          credit(other, marker, 7);
+          regain(side, zone, marker);
+          events?.push({
+            t: 0,
+            kind: 'pass',
+            side,
+            actor: slot,
+            receiver: target,
+            opponent: marker,
+            ok: false,
+            lost: true,
+            cross: true,
+            zone: 2,
+          });
+          carrier = { side: other, slot: marker, zone: 0, won: true };
+          action = '인터셉트';
+          actor = marker;
+          ended = true;
+        }
+        continue;
+      }
       // One draw picks the direction (forward, square, back) and who receives it.
-      const v = canDribble ? (u - c.dribbleShare) / (1 - c.dribbleShare) : u;
+      const v = canDribble ? (u - dribbleShare) / (1 - dribbleShare) : u;
       const low = zone < 2 ? progressive : 0,
         high = zone > 0 ? 1 - c.backward : 1;
       const forward = v < low,
         back = v >= high;
       const target = (forward ? zone + 1 : back ? zone - 1 : zone) as Zone;
       const pool = sideLines(tactics[side]).carriers[target];
-      let receiver = pick(
-        pool,
-        forward ? v / low : back ? (v - high) / c.backward : (v - low) / (high - low),
-      );
+      const within = forward ? v / low : back ? (v - high) / c.backward : (v - low) / (high - low);
+      // Into the final third the ball finds playmakers and target men most often.
+      let receiver =
+        target === 2 ? skills.chooseReceiver(side, pool, within, slot) : pick(pool, within)!;
       if (receiver === slot) receiver = pool[(pool.indexOf(receiver) + 1) % pool.length];
-      const marker = pick(sideLines(tactics[other]).markers[zone], r());
+      // Whoever presses hardest closes the passer down most often.
+      const marker = skills.chooseMarker(other, zone, r());
+      // A forward pass reads 시야, a keeper's pass 발밑, any other pass 패스 (→MATCH-11).
+      const passing = slot === 0 ? DISTRIBUTE : forward ? VISION : PASS;
       const success = clamp(
         accuracy +
-          (skill(side, slot, PASS) - 55) * c.passerWeight -
+          (skill(side, slot, passing) - 55) * c.passerWeight -
           (skill(other, marker, POSITION) - 55) * c.markerWeight +
           (forward ? -c.progressivePenalty : c.recyclingBonus) -
           (zone <= 1 ? lines[other].high : lines[other].low),
@@ -781,15 +1155,9 @@ function duelMatch(
       }
     }
     if (chance && !ended) {
-      const shooter = chooseShooter(side, r());
-      const creator = shooter === slot ? undefined : slot;
-      const defender = pick(sideLines(tactics[other]).markers[2], r());
-      const attackValue =
-        creator === undefined
-          ? skill(side, shooter, DRIBBLE) * 0.7 + skill(side, shooter, PACE) * 0.3
-          : skill(side, creator, VISION) * 0.5 + skill(side, shooter, FINISH) * 0.5;
-      const margin =
-        attackValue - (skill(other, defender, TACKLE) + skill(other, defender, POSITION)) / 2;
+      const made = skills.shapeChance(side, slot, minute, r);
+      const { shooter, creator, defender, margin } = made;
+      const flags = made.cross ? { cross: true } : {};
       const key = keyChance(margin);
       // The final ball is an attacking-third pass; a solo run is a take-on.
       if (creator !== undefined) {
@@ -801,15 +1169,17 @@ function duelMatch(
         team[side][TD.takeOns]++;
         note(side, shooter, PD.takeOns);
       }
-      if (r() >= key) {
-        // The marker reads the final ball or stops the run: the chance never becomes a shot.
-        if (creator !== undefined) {
+      if (made.swept || r() >= key) {
+        // The marker reads the final ball or stops the run, or the sweeper keeper comes off his
+        // line for it: the chance never becomes a shot.
+        const stopper = made.swept ? 0 : defender;
+        if (creator !== undefined || made.swept) {
           metrics[other][7]++;
-          credit(other, defender, 7);
+          credit(other, stopper, 7);
           action = '인터셉트';
         } else {
           metrics[other][6]++;
-          credit(other, defender, 6);
+          credit(other, stopper, 6);
           action = '태클';
         }
         events?.push({
@@ -818,13 +1188,14 @@ function duelMatch(
           side,
           actor: creator ?? shooter,
           receiver: creator === undefined ? undefined : shooter,
-          opponent: defender,
+          opponent: stopper,
           ok: false,
           lost: true,
+          ...flags,
           zone: 2,
         });
-        carrier = { side: other, slot: defender, zone: 0 };
-        actor = defender;
+        carrier = { side: other, slot: stopper, zone: 0 };
+        actor = stopper;
       } else {
         if (creator !== undefined) {
           metrics[side][3]++;
@@ -844,6 +1215,7 @@ function duelMatch(
             receiver: shooter,
             opponent: defender,
             ok: true,
+            ...flags,
             zone: 2,
           });
         } else {
@@ -861,9 +1233,9 @@ function duelMatch(
             zone: 2,
           });
         }
-        const quality = chanceQuality(r(), margin, transition),
+        const quality = chanceQuality(r(), margin, transition, made.shape),
           chanceXg = quality.xg;
-        const shooting = skill(side, shooter, FINISH);
+        const shooting = made.shooting;
         const goal = goalChance(chanceXg, shooting, skill(other, 0, KEEP)),
           onTarget = targetChance(goal, shooting);
         const blockChance = clamp(
@@ -932,6 +1304,7 @@ function duelMatch(
           actor: shooter,
           opponent: outcome === 'save' || outcome === 'goal' ? 0 : defender,
           outcome,
+          ...(made.cross ? { header: true } : {}),
           xg: Math.round(shotXg * 100) / 100,
           zone: 2,
         });

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import type { Fixture } from '../../contracts/src/types';
-import { createWorld, simulateMatch } from './index';
+import type { Fixture, MatchEvent, Player, Tactic, World } from '../../contracts/src/types';
+import { ATTRIBUTES } from '../../contracts/src/player';
+import { PD, TD } from '../../contracts/src/detail';
+import { actionWeight, createWorld, ownStarters, simulateMatch } from './index';
 import { MATCH_MOTION_CONFIG } from './motion';
 
 const w = createWorld({
@@ -141,5 +143,120 @@ describe('player duel chain', () => {
       summary = goals(false);
     expect(duel).toBeGreaterThan(summary * 0.8);
     expect(duel).toBeLessThan(summary * 1.25);
+  });
+});
+
+/** An own XI kept in its slots, its fixture, and its matches' recorded duels. */
+function lab(seed: string, tactic: Tactic) {
+  const world = createWorld({
+    country: 'ENG',
+    name: 'Role Laboratory',
+    color: '#2a5d8f',
+    seed,
+    level: 'normal' as const,
+  });
+  world.tactic = tactic;
+  const xi = ownStarters(world);
+  world.lineup = xi.map((p) => p.id);
+  const fixture = world.fixtures.find((f) => f.home === world.playerClub)!;
+  return { world, xi, fixture };
+}
+const observed = (world: World, fixture: Fixture, count: number) =>
+  Array.from({ length: count }, (_, i) =>
+    simulateMatch(world, { ...fixture, id: `${fixture.id}:${i}` }, true, true),
+  );
+const ownEvents = (matches: ReturnType<typeof observed>) =>
+  matches.flatMap((m) => m.frames.flatMap((f) => f.events ?? [])).filter((e) => e.side === 0);
+/** Two players made the same but for what the test changes. */
+function twins(a: Player, b: Player) {
+  for (const attr of ATTRIBUTES) b.attrs[attr] = a.attrs[attr] = 70;
+  a.traits = [];
+  b.traits = [];
+  a.positions = b.positions = { LW: 3, RW: 3, LM: 3, RM: 3, CM: 3 };
+  a.fatigue = b.fatigue = 0;
+}
+
+describe('roles, play traits and attributes in the duels (→MATCH-11, PLAYER-5, PLAYER-9)', () => {
+  it('weights multiply within bounds', () => {
+    expect(actionWeight('invertedWinger', [], 'shot')).toBe(1.4);
+    expect(actionWeight('invertedWinger', ['crosser'], 'cross')).toBeCloseTo(0.7 * 1.5, 9);
+    expect(actionWeight('targetMan', ['targetman', 'aerial'], 'aerial')).toBe(2);
+    expect(actionWeight('coverDefender', ['leader'], 'shot')).toBe(1);
+  });
+
+  it('crossers cross and headers score', () => {
+    // 4-4-2: the two wide midfielders are the same player but for one's 크로서 trait.
+    const { world, xi, fixture } = lab('crossing', 'counter');
+    twins(xi[5]!, xi[8]!);
+    xi[5]!.traits = ['crosser'];
+    const matches = observed(world, fixture, 20);
+    const events = matches.flatMap((m) => m.frames.flatMap((f) => f.events ?? []));
+    const crosses = (slot: number) =>
+      ownEvents(matches).filter((e) => e.kind === 'pass' && e.cross && e.actor === slot).length;
+    expect(crosses(5)).toBeGreaterThan(crosses(8) * 1.2);
+    // About a dozen crosses a side a match, a minority of them reaching a team-mate.
+    const all = events.filter((e) => e.kind === 'pass' && e.cross);
+    expect(all.length / matches.length / 2).toBeGreaterThan(6);
+    expect(all.length / matches.length / 2).toBeLessThan(20);
+    expect(all.filter((e) => e.ok).length / all.length).toBeLessThan(0.5);
+    // A header follows the cross that found him in the same minute.
+    const headers = events.filter((e) => e.kind === 'shot' && e.header);
+    expect(headers.length).toBeGreaterThan(10);
+    expect(headers.some((e) => e.outcome === 'goal')).toBe(true);
+    for (const m of matches)
+      for (const frame of m.frames) {
+        const list = frame.events ?? [];
+        list.forEach((e: MatchEvent, i) => {
+          if (e.kind !== 'shot' || !e.header) return;
+          const cross = list[i - 1]!;
+          expect(cross).toMatchObject({ kind: 'pass', cross: true, ok: true, receiver: e.actor });
+        });
+      }
+  });
+
+  it('vision sets up key passes', () => {
+    const progressive = (vision: number) => {
+      const { world, xi, fixture } = lab('vision', 'balanced');
+      for (const p of xi) p.attrs.vision = vision;
+      return Array.from({ length: 30 }, (_, i) =>
+        simulateMatch(world, { ...fixture, id: `vision:${i}` }, false, true),
+      ).reduce((sum, m) => sum + m.record.detail![0][TD.progressivePasses]!, 0);
+    };
+    expect(progressive(90)).toBeGreaterThan(progressive(30) * 1.03);
+  });
+
+  it('traits shift shares', () => {
+    // The same central midfielder with and without 테크니션: he takes on more, the side not.
+    const takeOns = (traits: Player['traits']) => {
+      const { world, xi, fixture } = lab('technician', 'counter');
+      twins(xi[6]!, xi[7]!);
+      xi[6]!.traits = traits;
+      const matches = Array.from({ length: 30 }, (_, i) =>
+        simulateMatch(world, { ...fixture, id: `technician:${i}` }, false, true),
+      );
+      const own = (m: (typeof matches)[number]) => m.record.players.slice(0, 11);
+      return {
+        his: matches.reduce((sum, m) => sum + own(m)[6]!.detail![PD.takeOns]!, 0),
+        side: matches.reduce((sum, m) => sum + m.record.detail![0][TD.takeOns]!, 0),
+      };
+    };
+    const plain = takeOns([]),
+      technician = takeOns(['technician']);
+    expect(technician.his).toBeGreaterThan(plain.his * 1.15);
+    expect(technician.side).toBeGreaterThan(plain.side * 0.8);
+    expect(technician.side).toBeLessThan(plain.side * 1.25);
+  });
+
+  it('roles shift shares', () => {
+    // 4-3-3: an inverted winger on the left, a traditional one on the right, the same player.
+    const { world, xi, fixture } = lab('wingers', 'possession');
+    twins(xi[8]!, xi[10]!);
+    const matches = observed(world, fixture, 20);
+    const shots = (slot: number) =>
+      matches.reduce((sum, m) => sum + m.record.players[slot]!.metrics[4]!, 0);
+    const crosses = (slot: number) =>
+      ownEvents(matches).filter((e) => e.kind === 'pass' && e.cross && e.actor === slot).length;
+    expect(shots(8)).toBeGreaterThan(shots(10));
+    expect(crosses(10)).toBeGreaterThan(crosses(8) * 1.3);
   });
 });

@@ -49,7 +49,15 @@ export const tacticLabel: Record<Tactic, string> = {
   counter: '역습',
   press: '전방 압박',
 };
-export const clubOf = (w: World) => w.clubs.find((c) => c.id === w.playerClub)!;
+const ownIndex = new WeakMap<readonly Club[], number>();
+/** The owner's club: its place in the clubs array is remembered and checked on every call. */
+export const clubOf = (w: World) => {
+  const known = ownIndex.get(w.clubs);
+  if (known !== undefined && w.clubs[known]?.id === w.playerClub) return w.clubs[known]!;
+  const index = w.clubs.findIndex((c) => c.id === w.playerClub);
+  ownIndex.set(w.clubs, index);
+  return w.clubs[index]!;
+};
 export const activePlayers = (w: World) => w.players.filter((p) => p.status === 'active');
 /** His OVR at his main position in his best role there (→PLAYER-6). */
 export const overall = (p: Player) => Math.round(mainOvr(p));

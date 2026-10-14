@@ -9,7 +9,8 @@ import type {
   Tactic,
 } from '../../contracts/src/types';
 import { clamp, random } from './primitives';
-import { slotLine } from './player';
+import type { RoleId } from '../../contracts/src/player';
+import { FORMATIONS, slotLine } from './player';
 
 type Point = [number, number];
 type Side = 0 | 1;
@@ -176,7 +177,7 @@ export const MATCH_MOTION_CONFIG = {
   },
   tactics: {
     balanced: {
-      formation: '4-3-3',
+      formation: FORMATIONS.balanced.name,
       cohesion: 0.65,
       freedom: 0.5,
       pressing: 0.5,
@@ -184,7 +185,7 @@ export const MATCH_MOTION_CONFIG = {
       line: 0,
     },
     possession: {
-      formation: '4-3-3',
+      formation: FORMATIONS.possession.name,
       cohesion: 0.76,
       freedom: 0.56,
       pressing: 0.46,
@@ -192,7 +193,7 @@ export const MATCH_MOTION_CONFIG = {
       line: 4,
     },
     counter: {
-      formation: '4-1-4-1',
+      formation: FORMATIONS.counter.name,
       cohesion: 0.84,
       freedom: 0.36,
       pressing: 0.23,
@@ -200,7 +201,7 @@ export const MATCH_MOTION_CONFIG = {
       line: -8,
     },
     press: {
-      formation: '4-2-3-1',
+      formation: FORMATIONS.press.name,
       cohesion: 0.61,
       freedom: 0.66,
       pressing: 0.95,
@@ -208,6 +209,33 @@ export const MATCH_MOTION_CONFIG = {
       line: 7,
     },
   },
+  /**
+   * Where a slot's role takes its player while his side has the ball (→MATCH-12): units forward
+   * and units inward from a flank spot (negative: out to the touchline). An inverted winger cuts in,
+   * a false nine drops, full-backs and wing-backs overlap, an inverted full-back steps into
+   * midfield, a sweeper keeper stands off his line.
+   */
+  roleShift: {
+    sweeperKeeper: [6, 0],
+    ballPlayingDefender: [3, 0],
+    overlappingFullBack: [12, -2],
+    invertedFullBack: [6, 16],
+    defensiveWingBack: [6, 0],
+    attackingWingBack: [14, -2],
+    regista: [-4, 0],
+    boxToBox: [4, 0],
+    mezzala: [6, -6],
+    deepLyingPlaymaker: [-4, 0],
+    widePlaymaker: [0, 10],
+    attackingMidfielder: [4, 0],
+    shadowStriker: [8, 0],
+    trequartista: [3, 0],
+    traditionalWinger: [2, -4],
+    invertedWinger: [2, 14],
+    targetMan: [2, 0],
+    poacher: [3, 0],
+    falseNine: [-10, 0],
+  } as Partial<Record<RoleId, readonly [number, number]>>,
   // Each tactic's formation (→STAFF-22), one spot per slot in slot order: GK, DF, MF, FW lines.
   formations: {
     balanced: [
@@ -1247,15 +1275,22 @@ export class MatchMotion {
   private anchor(agent: Agent, side: Side): Point {
     const profile = this.profiles[agent.side];
     const direction = agent.side === 0 ? 1 : -1;
-    const base = MATCH_MOTION_CONFIG.formations[this.tactics[agent.side]][agent.slot] ?? [50, 50];
+    const tactic = this.tactics[agent.side];
+    const base = MATCH_MOTION_CONFIG.formations[tactic][agent.slot] ?? [50, 50];
     const c = MATCH_MOTION_CONFIG.steering;
     const possession = side === agent.side;
     const line =
       agent.slot === 0 ? 0 : profile.line + (possession ? c.possessionAdvance : -c.defenseRetreat);
+    // His role moves him from the spot while his side has the ball.
+    const role = FORMATIONS[tactic].slots[agent.slot]?.role;
+    const [forward, inward] =
+      (possession && role && MATCH_MOTION_CONFIG.roleShift[role]) || ([0, 0] as const);
     const pull = agent.slot === 0 ? 0.025 : c.ballHorizontalPull * (0.6 + profile.cohesion * 0.4);
     return bounded([
-      (agent.side === 0 ? base[0] : 100 - base[0]) + direction * line + (this.ball[0] - 50) * pull,
-      base[1] + (this.ball[1] - 50) * c.ballLateralPull,
+      (agent.side === 0 ? base[0] : 100 - base[0]) +
+        direction * (line + forward) +
+        (this.ball[0] - 50) * pull,
+      base[1] + Math.sign(50 - base[1]) * inward + (this.ball[1] - 50) * c.ballLateralPull,
     ]);
   }
 

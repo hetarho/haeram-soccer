@@ -564,6 +564,8 @@ const NEIGHBORS: Record<Position, readonly Position[]> = {
   ST: ['AM', 'LW', 'RW'],
 };
 const WIDE: readonly Position[] = ['LB', 'RB', 'LWB', 'RWB', 'LM', 'RM', 'LW', 'RW'];
+/** A flank position: full-backs, wing-backs, wide midfielders and wingers. */
+export const isWide = (position: Position) => WIDE.includes(position);
 function pick<T>(rng: Rng, entries: readonly (readonly [T, number])[]): T {
   const total = entries.reduce((sum, [, weight]) => sum + weight, 0);
   let u = rng() * total;
