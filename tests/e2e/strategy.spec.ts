@@ -29,7 +29,7 @@ test('applies a preset at once, changes it again at once, and saves its own stra
     ['선수단·계약', '라커룸 문화', ['선수단 투자', '재계약 기조']],
     ['영입', '스카우팅', ['영입 기조']],
     ['매각', '매각 기조', []],
-    ['유소년', '유스 정책', ['유소년 투자']],
+    ['유소년', '유입 방식', ['육성 목표', '데뷔 시점', '유소년 투자']],
     ['스태프', undefined, ['선호 학파', '감독 기조', '코치 기조']],
     ['재정', '수익 모델', ['마케팅', '재정 기조']],
     ['홈·팬', '홈·팬', ['티켓 가격']],
@@ -113,11 +113,11 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await expect(board.getByTestId('synergy-local-heroes')).toContainText('발동 중');
   const youth = board.getByRole('region', { name: '유소년', exact: true });
   await expect(page.getByText(/에 변경 가능/)).toHaveCount(0);
-  await expect(youth.getByRole('radio', { name: '유스 정책 성골 유스' })).toHaveAttribute(
+  await expect(youth.getByRole('radio', { name: '유입 방식 성골 유스' })).toHaveAttribute(
     'aria-checked',
     'true',
   );
-  await expect(youth.getByRole('radio', { name: '유스 정책 1군 직행 경로' })).toBeEnabled();
+  await expect(youth.getByRole('radio', { name: '데뷔 시점 빠른 데뷔' })).toBeEnabled();
   await expect(youth.getByRole('radio', { name: '유소년 투자 집중 투자' })).toBeEnabled();
 
   // A second preset applies at once too, the same day; there is no reservation.
@@ -136,7 +136,7 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   // The strategy in force is saved to the device library under the owner's name.
   await board.getByRole('button', { name: '지금 방향 저장' }).click();
   const saving = page.getByRole('dialog', { name: '지금 방향 저장' });
-  await expect(saving.getByRole('radio', { name: '유스 정책 성골 유스' })).toHaveAttribute(
+  await expect(saving.getByRole('radio', { name: '유입 방식 성골 유스' })).toHaveAttribute(
     'aria-checked',
     'true',
   );
@@ -161,7 +161,7 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await expect(composer.locator('[data-slot]')).toHaveCount(6);
   for (const slot of await composer.locator('[data-slot]').all())
     await expect(slot.getByRole('radio')).toHaveCount(5);
-  await composer.getByRole('radio', { name: '유스 정책 1군 직행 경로' }).click();
+  await composer.getByRole('radio', { name: '유입 방식 엘리트 선발' }).click();
   await composer.getByLabel('방향 이름').fill('젊은 피');
   await composer.getByRole('button', { name: '이 방향으로 적용' }).click();
   await expect(composer).toHaveCount(0);

@@ -313,9 +313,11 @@ test('promotes a prospect from 유소년', async ({ page }) => {
   const delegation = page.getByRole('region', { name: '유소년 위임' });
   await expect(delegation.getByRole('checkbox')).toHaveCount(0);
   await expect(delegation.getByTestId('decision-owner-academy')).toContainText('자동 결정');
+  // The director follows 육성 목표 and 데뷔 시점, named as lines to the 방향 board (→CLUB-32).
   await expect(delegation).toContainText(
-    '19세에 잠재력이 같은 포지션 1군 최하위에 못 미치는 유망주',
+    '19세에 잠재력이 같은 포지션 1군 최하위에 못 미치는 아이를 내보내요',
   );
+  await expect(delegation.getByRole('button', { name: /^육성 목표 · 표준/ })).toBeVisible();
   const academy = page.getByRole('region', { name: '유소년 아카데미' });
   await expect(page.getByTestId('academy-intake')).toContainText('3월 15일');
   await expect(academy.getByRole('listitem')).toHaveCount(1);
@@ -330,6 +332,8 @@ test('promotes a prospect from 유소년', async ({ page }) => {
   // Academy investment and youth policy are only named here; the line opens 방향.
   await nav.getByRole('button', { name: '훈련·육성', exact: true }).click();
   await page.getByRole('tab', { name: '유소년', exact: true }).click();
-  await page.getByRole('button', { name: /^유소년 투자 · 유스 정책은 방향에서/ }).click();
+  await expect(page.getByRole('button', { name: /^육성 목표 · 표준/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^데뷔 시점 · 표준/ })).toBeVisible();
+  await page.getByRole('button', { name: /^유소년 투자 · 유입 방식은 방향에서/ }).click();
   await expect(page).toHaveURL(/\/business$/);
 });

@@ -100,7 +100,7 @@ describe('direction areas', () => {
   it('area summary names the options in force', () => {
     const w = world();
     const area = (key: AreaKey) => DIRECTION_AREAS.find((item) => item.key === key)!;
-    expect(areaSummary(w, area('youth'))).toBe('표준 · 기본 운영');
+    expect(areaSummary(w, area('youth'))).toBe('표준 · 표준 · 표준 · 기본 운영');
     expect(areaSummary(w, area('market'))).toBe('표준');
     // The staff area has no card: its rows only.
     expect(areaSummary(w, area('staff'))).toBe('상관없음 · 표준 · 표준');

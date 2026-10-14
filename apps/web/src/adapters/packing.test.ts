@@ -46,8 +46,10 @@ describe('lossless career stream compaction', () => {
       manager: 'cheap',
       coaches: 'elite',
       finance: 'careful',
+      youthGoal: 'sell',
+      debut: 'early',
     };
-    w.build = { youth: 'pathway' };
+    w.build = { youth: 'elite' };
     w.intervention = 4;
     expect(w.managerMarket?.free.length).toBeGreaterThan(0);
     const restored = validateWorld(unpack(JSON.parse(JSON.stringify(pack(w)))));

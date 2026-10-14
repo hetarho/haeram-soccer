@@ -66,10 +66,21 @@ export interface SavedStrategy {
   createdAt: string;
   updatedAt: string;
 }
+/**
+ * 1군 직행 경로 left the cards for 데뷔 시점 in rules 1.18 (→ECON-22): a saved direction holding it
+ * loads without it instead of being skipped.
+ */
+function withoutPathway(build: unknown) {
+  if (!build || typeof build !== 'object' || (build as { youth?: unknown }).youth !== 'pathway')
+    return build;
+  const { youth: _youth, ...rest } = build as Record<string, unknown>;
+  void _youth;
+  return rest;
+}
 function strategyOf(value: unknown): SavedStrategy | undefined {
   const item = value as Partial<SavedStrategy> | null;
   if (!item || typeof item !== 'object') return undefined;
-  const build = strategyBuild(item.build);
+  const build = strategyBuild(withoutPathway(item.build));
   return build &&
     text(item.id, 100) &&
     text(item.name, STRATEGY_NAME_LIMIT) &&
@@ -107,7 +118,7 @@ export class StrategyLibrary {
     try {
       this.storage.setItem(STRATEGIES_KEY, JSON.stringify({ v: 1, owner, items }));
     } catch {
-      throw new Error('브라우저 저장 공간이 부족해 전략을 저장하지 못했어요.');
+      throw new Error('브라우저 저장 공간이 부족해 방향을 저장하지 못했어요.');
     }
   }
   /** Most recently changed first. */
@@ -117,18 +128,18 @@ export class StrategyLibrary {
   /** Adds a strategy, or replaces the one with `id`; names stay unique on this device. */
   save(input: { id?: string; name: string; build: ClubBuild }): SavedStrategy {
     const name = input.name.trim();
-    if (!name) throw new Error('전략 이름을 적어 주세요.');
+    if (!name) throw new Error('방향 이름을 적어 주세요.');
     if (name.length > STRATEGY_NAME_LIMIT)
-      throw new Error(`전략 이름은 ${STRATEGY_NAME_LIMIT}자까지예요.`);
+      throw new Error(`방향 이름은 ${STRATEGY_NAME_LIMIT}자까지예요.`);
     const build = strategyBuild(input.build);
-    if (!build) throw new Error('알 수 없는 전략 카드가 있어요.');
+    if (!build) throw new Error('알 수 없는 방향 카드가 있어요.');
     const { owner, items } = this.read();
     const existing = input.id ? items.find((item) => item.id === input.id) : undefined;
     if (items.some((item) => item.id !== existing?.id && item.name === name))
-      throw new Error('같은 이름의 전략이 이미 있어요.');
+      throw new Error('같은 이름의 방향이 이미 있어요.');
     if (!existing && items.length >= STRATEGY_LIMIT)
       throw new Error(
-        `전략은 ${STRATEGY_LIMIT}개까지 저장할 수 있어요. 안 쓰는 전략을 지워 주세요.`,
+        `방향은 ${STRATEGY_LIMIT}개까지 저장할 수 있어요. 안 쓰는 방향을 지워 주세요.`,
       );
     const time = this.now();
     const saved: SavedStrategy = {

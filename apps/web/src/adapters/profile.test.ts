@@ -23,7 +23,7 @@ describe('device strategy library', () => {
     const owner = deviceOwner(storage);
     expect(owner.kind).toBe('device');
     expect(deviceOwner(storage)).toEqual(owner);
-    new StrategyLibrary(storage).save({ name: '우리 방식', build: { youth: 'pathway' } });
+    new StrategyLibrary(storage).save({ name: '우리 방식', build: { youth: 'elite' } });
     const stored = JSON.parse(storage.data.get(STRATEGIES_KEY)!);
     expect(stored).toMatchObject({ v: 1, owner, items: [{ name: '우리 방식' }] });
     expect(storage.data.get(DEVICE_KEY)).toBe(owner.id);
@@ -59,5 +59,29 @@ describe('device strategy library', () => {
     expect(library.list()).toHaveLength(STRATEGY_LIMIT);
     storage.setItem(STRATEGIES_KEY, '{not json');
     expect(library.list()).toEqual([]);
+  });
+
+  it('loads a saved direction holding 1군 직행 경로 without it', () => {
+    const storage = memory();
+    const owner = deviceOwner(storage);
+    storage.setItem(
+      STRATEGIES_KEY,
+      JSON.stringify({
+        v: 1,
+        owner,
+        items: [
+          {
+            id: 'old',
+            name: '옛 방식',
+            build: { youth: 'pathway', fans: 'community' },
+            createdAt: '2026-10-12T00:00:00Z',
+            updatedAt: '2026-10-12T00:00:00Z',
+          },
+        ],
+      }),
+    );
+    expect(new StrategyLibrary(storage).list()).toMatchObject([
+      { id: 'old', name: '옛 방식', build: { fans: 'community' } },
+    ]);
   });
 });

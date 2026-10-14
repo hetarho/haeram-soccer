@@ -22,7 +22,9 @@ export const isDirectionRow = (key: RowKey): key is DirectionKey =>
   key === 'school' ||
   key === 'manager' ||
   key === 'coaches' ||
-  key === 'finance';
+  key === 'finance' ||
+  key === 'youthGoal' ||
+  key === 'debut';
 
 /**
  * The club's direction by the decisions it steers (→ECON-25): each area's card says how the club
@@ -58,9 +60,9 @@ export const DIRECTION_AREAS: readonly DirectionArea[] = [
     key: 'youth',
     label: '유소년',
     icon: '✿',
-    question: '아카데미 아이들을 어떻게 키울까',
+    question: '아카데미 아이들을 어디서 데려와 무엇을 위해, 언제 올릴까',
     card: 'youth',
-    rows: ['academy'],
+    rows: ['youthGoal', 'debut', 'academy'],
   },
   {
     key: 'staff',

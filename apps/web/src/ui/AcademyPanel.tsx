@@ -2,7 +2,6 @@ import type { World } from '../../../../packages/contracts/src/types';
 import {
   academySummary,
   ACADEMY_LEAVE_AGE,
-  RELEASE_AGE,
   YOUTH_FOCUS_INFO,
 } from '../../../../packages/engine/src/academy';
 import { buildOf, cardOf } from '../../../../packages/engine/src/build';
@@ -11,6 +10,8 @@ import { POLICY_DEFAULTS, POLICY_INFO, policyOf } from '../../../../packages/eng
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { DecisionOwner } from './DecisionOwner';
+import { DirectionLines } from './DirectionLines';
+import { directionOption } from '../../../../packages/engine/src/direction';
 import { OvrBadge } from './OvrBadge';
 import { openBusiness, openCoachSheet } from './state';
 import { callLine } from './TrainingOrderSheet';
@@ -32,7 +33,7 @@ function Meter({ value }: { value: number }) {
  * 유소년 (→WEB-70): the academy's prospects by age group — U-17, U-19, U-21 — grow here until
  * promoted or released (→CLUB-16), by the owner or, when the level delegates it, by the youth
  * director's rule (→STAFF-13); the director sets the academy's training focus (→CLUB-31). The
- * academy investment and youth policy are set in 방향 and only named here (→WEB-71).
+ * academy investment and 유입 방식 are set in 방향 and only named here (→WEB-71).
  */
 export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
   const acting = useActing();
@@ -134,24 +135,25 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
             auto="시즌이 끝날 때 유스 디렉터가 이 기준으로 승격과 방출을 정하고 소식함에 보고해요."
             owner="시즌이 끝날 때 유스 디렉터가 이 기준으로 승격 추천과 방출 검토를 보고하고, 결정은 직접 해요."
           />
+          <DirectionLines w={w} rows={['youthGoal', 'debut', 'finance']} />
           <ul className={s.rule}>
             <li>
               <b>승격</b>
               <span>
-                {summary.promotionAge}세(첫 프로 계약 나이) 이상이고 같은 포지션 1군 최하위나 주전
-                평균 −10에 이르면, 1군과 그 포지션에 자리가 있을 때
+                {summary.promotionAge}세(첫 프로 계약 나이) 이상이고 데뷔 시점이 정한 기준에 이르면,
+                1군과 그 포지션에 자리가 있을 때 · {directionOption(w, 'debut').summary}
               </span>
             </li>
             <li>
               <b>방출</b>
               <span>
-                {RELEASE_AGE}세에 잠재력이 같은 포지션 1군 최하위에 못 미치는 유망주 · 나머지는{' '}
-                {ACADEMY_LEAVE_AGE}세가 되면 아카데미를 떠나요
+                {directionOption(w, 'youthGoal').summary} · 나머지는 {ACADEMY_LEAVE_AGE}세가 되면
+                아카데미를 떠나요
               </span>
             </li>
             <li>
               <b>보류</b>
-              <span>운영자금이 1년 운영비보다 적으면 승격을 미루고 보고</span>
+              <span>운영자금이 재정 기조가 정한 운영비보다 적으면 승격을 미루고 보고</span>
             </li>
           </ul>
         </div>
@@ -159,9 +161,9 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
       <YouthTraining w={w} />
       <button type="button" className={s.homeLine} onClick={() => openBusiness('strategy')}>
         <span>
-          <b>유소년 투자 · 유스 정책은 방향에서</b>
+          <b>유소년 투자 · 유입 방식은 방향에서</b>
           <small>
-            유소년 투자 {investment} · 유스 정책 {cardOf(buildOf(w), 'youth').label}
+            유소년 투자 {investment} · 유입 방식 {cardOf(buildOf(w), 'youth').label}
           </small>
         </span>
         <span className={s.chevron} aria-hidden="true">
