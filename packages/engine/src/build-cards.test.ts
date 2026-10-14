@@ -30,6 +30,11 @@ import {
   BUILD_CARDS,
   BUILD_COMBINATIONS,
   BUILD_PRESETS,
+  applyBoard,
+  matchingPreset,
+  POLICY_DEFAULTS,
+  POLICY_KEYS,
+  presetBoard,
   cardLines,
   composeBuild,
   effectLines,
@@ -136,7 +141,7 @@ describe('club builds', () => {
       }
     for (const preset of BUILD_PRESETS)
       expect(clubBuildSchema.parse(preset.build)).toEqual(preset.build);
-    expect(new Set(BUILD_PRESETS.map((preset) => JSON.stringify(preset.build))).size).toBe(5);
+    expect(new Set(BUILD_PRESETS.map((preset) => JSON.stringify(preset.build))).size).toBe(7);
   });
 
   it('names the strategy in the history: a saved name, a preset, the standard club or a mix', () => {
@@ -189,6 +194,91 @@ describe('club builds', () => {
     const shoestring = composeBuild(BUILD_PRESETS.find((p) => p.id === 'shoestring')!.build);
     expect(shoestring.moraleBaseline).toBe(0);
     expect(shoestring.wage).toBeCloseTo(0.97 * 0.94);
+  });
+
+  it('fills every row with a preset: the rows it names, every other row at its default', () => {
+    expect(BUILD_PRESETS.map((preset) => preset.id)).toEqual([
+      'local-pride',
+      'youth-academy',
+      'trading',
+      'commercial',
+      'global',
+      'ambition',
+      'shoestring',
+    ]);
+    for (const preset of BUILD_PRESETS) {
+      const board = presetBoard(preset);
+      expect(clubBuildSchema.parse(board.build)).toEqual(preset.build);
+      for (const key of POLICY_KEYS)
+        expect(board.policy[key], `${preset.id}:${key}`).toBe(
+          preset.rows.policy?.[key] ?? POLICY_DEFAULTS[key],
+        );
+      expect(board.ticket).toBe(preset.rows.ticket ?? 0.05);
+      // A world holding the board validates and reads back as the preset.
+      const w = world(`preset-${preset.id}`);
+      applyBoard(w, board, preset.label);
+      validateWorld(w);
+      expect(matchingPreset(w)?.id).toBe(preset.id);
+    }
+    const youth = presetBoard(BUILD_PRESETS.find((preset) => preset.id === 'youth-academy')!);
+    expect(youth.policy.academy).toBe(4);
+    expect(youth.direction).toMatchObject({
+      debut: 'early',
+      manager: 'developer',
+      coaches: 'elite',
+    });
+    // A world off any preset's board matches none.
+    const w = world('preset-none');
+    expect(matchingPreset(w)).toBeUndefined();
+    operate(w, { type: 'build', build: BUILD_PRESETS[2].build });
+    expect(matchingPreset(w)).toBeUndefined();
+  });
+
+  it('lights 글로벌 스카우팅 with all three conditions and not with two', () => {
+    const w = world('global-scouting');
+    const state = () => synergyStates(w).find((s) => s.id === 'global-scouting')!;
+    w.build = { youth: 'worldwide' };
+    w.policy = { ...POLICY_DEFAULTS, globalScouting: 3 };
+    w.staff = w.staff!.map((member) =>
+      member.role === 'scout' ? { ...member, ability: 64, trait: undefined } : member,
+    );
+    expect(state().active).toBe(false);
+    expect(state().conditions.filter((condition) => condition.met)).toHaveLength(2);
+    w.staff = w.staff!.map((member) =>
+      member.role === 'scout' ? { ...member, ability: 65 } : member,
+    );
+    expect(state().active).toBe(true);
+    expect(synergyEffects(w)).toMatchObject({ academyPotential: 2, marketPotential: 2 });
+  });
+
+  it('founds with a preset as its direction; absent stays 기본 방향, unknown is refused', () => {
+    const plain = world('founding-direction');
+    const founded = createWorld({
+      country: 'ENG',
+      name: 'Build FC',
+      color: '#2a4d3c',
+      seed: 'founding-direction',
+      difficulty: 2,
+      preset: 'youth-academy',
+    });
+    expect(matchingPreset(founded)?.id).toBe('youth-academy');
+    // One direction event after the founding facts, none for the rows it implies.
+    const added = founded.events.slice(plain.events.length);
+    expect(added.map((event) => event.kind)).toEqual(['build']);
+    expect(added[0].title).toBe('방향 · 유스 명가');
+    validateWorld(founded);
+    expect(plain.build).toBeUndefined();
+    expect(plain.direction).toBeUndefined();
+    expect(() =>
+      createWorld({
+        country: 'ENG',
+        name: 'Build FC',
+        color: '#2a4d3c',
+        seed: 'founding-direction',
+        difficulty: 2,
+        preset: 'galacticos',
+      }),
+    ).toThrow('구단 방향');
   });
 
   it('adds additions and multiplies multipliers across slots, neutral when empty', () => {

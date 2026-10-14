@@ -822,6 +822,8 @@ export interface Founding {
   color: string;
   seed: string;
   difficulty: number;
+  /** The direction preset chosen at founding (→WEB-15); absent is 기본 방향. */
+  preset?: string;
 }
 export type Command =
   | { type: 'advance'; rounds: number }

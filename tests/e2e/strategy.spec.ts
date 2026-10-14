@@ -21,7 +21,7 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await expect(board).not.toContainText(/빌드(?!업)/);
   await expect(board.getByTestId('current-strategy')).toHaveText('기본 방향');
   const presets = board.getByRole('region', { name: '추천 방향' }).getByRole('button');
-  await expect(presets).toHaveCount(5);
+  await expect(presets).toHaveCount(7);
   // One board: eight areas by the decisions they steer, each its card row beside the dials and the
   // direction rows of the same area (→ECON-25); 스태프 and 글로벌 have rows only. No separate dial
   // list, no training dial (훈련 owns the focus).

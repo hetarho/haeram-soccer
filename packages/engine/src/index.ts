@@ -4,6 +4,7 @@ import { prepareSeason, advanceRound, closeSeason } from './season';
 import { basicStaff } from './staff';
 import { MORALE_START } from './morale';
 import { NEW_CLUB_INTERVENTION } from './intervention';
+import { foundWithPreset } from './presets';
 export * from './world';
 export * from './season';
 export * from './match';
@@ -39,6 +40,7 @@ export * from './careers';
 export * from './contracts';
 export * from './hiring';
 export * from './direction';
+export * from './presets';
 export * from './bases';
 export * from './signings';
 export * from './activation';
@@ -56,6 +58,8 @@ export function createWorld(input: Founding) {
   w.bids = [];
   w.inbox = [];
   w.morale = MORALE_START;
+  // The direction chosen at founding (→WEB-15); absent is 기본 방향.
+  foundWithPreset(w, input.preset);
   return w;
 }
 export function simulateSeason(w: World) {

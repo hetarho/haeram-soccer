@@ -234,6 +234,21 @@ const RULES: readonly SynergyRule[] = [
       ];
     },
   },
+  {
+    id: 'global-scouting',
+    label: '글로벌 스카우팅',
+    idea: '해외 유스 스카우트 · 넓은 해외 스카우트망 · 숨은 재능을 알아보는 수석 스카우트',
+    bonus: '유스 입단 잠재력 +2 · 영입 후보 잠재력 +2',
+    effects: { academyPotential: 2, marketPotential: 2 },
+    conditions: (w) => [
+      { label: '유입 방식 · 해외 유스 스카우트', met: buildOf(w).youth === 'worldwide' },
+      { label: '해외 스카우트망 3단계 이상', met: policyOf(w).globalScouting >= 3 },
+      {
+        label: '수석 스카우트 발굴가 또는 능력 65+',
+        met: coach(w, 'scout')?.trait === 'spotter' || (coach(w, 'scout')?.ability ?? 0) >= 65,
+      },
+    ],
+  },
 ];
 
 export function synergyStates(w: World): SynergyState[] {
