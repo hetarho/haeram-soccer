@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r30 | Define the implemented browser-demo behavior for historical club economy.
+> r31 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -92,14 +92,17 @@
 
 - ECON-22 [o] The club build — shown to the owner as the club's direction (방향, →WEB-60) — is six slots — 유입 방식, 스카우팅, 매각 기조, 수익 모델, 지역 관계 방식, 라커룸 문화 — each holding one card: the standard card or one of four others, so 5^6 = 15,625 strategies before policy, staff or manager. ← combining levers is the fun: owners build their own club instead of picking one of a few presets Every card has at least one gain and one cost; additions add and multipliers multiply across slots. The owner drafts freely, sees combined effects, synergies (→CLUB-21) and odds, and applies a draft at once (recorded as a build event titled 방향 with the direction's name: the preset's, the saved direction's (→WEB-61), else 기본 방향 or 맞춤 방향; a name recorded as 기본 전략 or 맞춤 전략 reads 기본 방향 or 맞춤 방향); every rule that reads a card uses the new one from then on.
   - cards change at any time, like the dials: a draft, preset or saved strategy applies at once whatever changed before, with no lock and no reservation for a later season. ← owners change course when the club needs it; each card's costs are the price of switching
-  - presets fill the slots in one tap; each has one identity and lights or aims at a synergy:
-    | preset | cards (others standard) | aim |
-    |---|---|---|
-    | 동네의 자부심 | 성골 유스, 지역 인재 우선, 핵심 지키기, 회원제 운영, 지역 밀착, 가족 같은 클럽 | lights 우리 동네 아이들 |
-    | 트레이딩 머신 | 데이터 스카우팅, 셀링 클럽, 철저한 경쟁 | 트레이딩 머신 with 데뷔 시점 빠른 데뷔; 머니볼 with a spotter or negotiator scout and recruitment ≤ 2 |
-    | 상업 제국 | 광역 네트워크, 상업 확장, 스타 대우 | 상업 제국 with 해외 마케팅 4+ and a stadium of 30,000+ |
-    | 승격 올인 | 즉시 전력, 핵심 지키기, 구단주 투자, 홈 요새, 베테랑 리더십 | owner money and home strength now, youth growth given up |
-    | 알뜰 생존 | 유소년 클럽 제휴, 지역 인재 우선, 강경 협상, 긴축 재정, 가족 관중, 베테랑 리더십 | player wages ×0.91 with morale held level, for small starts |
+  - presets fill every row of the board in one tap (→ECON-25), the cards and the other rows alike; a row a preset does not name returns to its default; each has one identity and lights or aims at a synergy:
+    | preset | cards (others standard) | other rows (others at their default) | aim |
+    |---|---|---|---|
+    | 동네의 자부심 | 성골 유스, 지역 인재 우선, 핵심 지키기, 회원제 운영, 지역 밀착, 가족 같은 클럽 | 주변 투자 지역 상권 투자, 풀뿌리 유망주 투자 지역 리그 후원, 티켓 가격 저렴, 재계약 기조 모두 붙잡기, 육성 목표 1군 공급, 재정 기조 신중 | lights 우리 동네 아이들 |
+    | 유스 명가 | 엘리트 선발, 철저한 경쟁 | 유소년 투자 엘리트 아카데미, 육성 목표 1군 공급, 데뷔 시점 빠른 데뷔, 영입 기조 유망주 발굴, 재계약 기조 젊은 선수 우선, 선호 학파 육성형, 감독 기조 육성가, 코치 기조 최고 수준 | 유스 파이프라인 with a developer or 70+ youth director |
+    | 트레이딩 머신 | 데이터 스카우팅, 셀링 클럽, 철저한 경쟁 | 영입 기조 젊은 선수 위주, 육성 목표 판매용 육성, 데뷔 시점 빠른 데뷔, 재계약 기조 젊은 선수 우선 | lights 트레이딩 머신; 머니볼 with a spotter or negotiator scout |
+    | 상업 제국 | 광역 네트워크, 상업 확장, 스타 대우 | 해외 마케팅 해외 광고, 해외 투어 짧은 투어, 티켓 가격 비싸게, 재정 기조 적극 | 상업 제국 with 해외 마케팅 4+ and a stadium of 30,000+ |
+    | 세계로 | 해외 유스 스카우트, 광역 네트워크, 쇼케이스 | 해외 스카우트망 지역 스카우트, 해외 마케팅 해외 홍보, 해외 투어 짧은 투어, 영입 기조 젊은 선수 위주 | 글로벌 스카우팅 with a spotter or 65+ chief scout |
+    | 승격 올인 | 즉시 전력, 핵심 지키기, 구단주 투자, 홈 요새, 베테랑 리더십 | 선수단 투자 후한 지원, 영입 기조 즉시 전력, 재계약 기조 핵심만 붙잡기, 감독 기조 검증된 승부사, 육성 목표 최소 운영, 재정 기조 공격적 | owner money and home strength now, youth growth given up |
+    | 알뜰 생존 | 유소년 클럽 제휴, 지역 인재 우선, 강경 협상, 긴축 재정, 가족 관중, 베테랑 리더십 | 선수단 투자 절약, 재계약 기조 짠물, 감독 기조 저비용, 코치 기조 저비용, 재정 기조 안정적 | player wages ×0.91 with morale held level, for small starts |
+  - a new club starts with the direction chosen at founding (→WEB-15): 기본 방향 (every row at its default) or a preset.
   | slot | card | effects |
   |---|---|---|
   | 유입 방식 | 성골 유스 | intake +1, intake potential +3; market candidates −1 |
@@ -147,7 +150,7 @@
   | 재정 | 수익 모델 | 재정 기조 (→ECON-33) | sponsors (→ECON-21); 재정 기조 bounds every delegated spend |
   | 지역 | 지역 관계 방식 | 주변 투자, 풀뿌리 유망주 투자, 티켓 가격 | - (builds 지역 기반 →ECON-34) |
   | 글로벌 | - | 해외 마케팅, 해외 스카우트망, 해외 투어 | - (builds 글로벌 인지도 →ECON-34) |
-  - a card row says how the club goes about an area, a dial how much it puts in, a staff row how the staff choose; presets and saved directions fill only the six cards and leave every other row as set; every row changes at any time, and its default (표준, or a dial's default step) keeps the club as it was before the row existed.
+  - a card row says how the club goes about an area, a dial how much it puts in, a staff row how the staff choose; presets and saved directions fill every row (→ECON-22, →WEB-61), a row they do not name returning to its default, and a saved direction kept before they did fills only its cards; every row changes at any time, and its default (표준, or a dial's default step) keeps the club as it was before the row existed.
   - the market slot is named 매각 기조 so it never reads like the 영입 기조 dial; the training focus is no row of the board: it belongs to 훈련 (→WEB-70).
 - ECON-26 [o] A football index per country and year scales what football pays and charges beyond prices: sponsor values, ticket presets, player and staff market wages and transfer values, the division amounts of clubs' operating expenses (→ECON-30) and facility building and upkeep (→ECON-12); league distributions and cup and continental prizes follow the broadcasting index instead (→ECON-31). It grows with prices and, from commercialisation, much faster. ← income and wages must grow together, as they did in real football
   - the index is a source-attributed catalog per country and year, marked estimated where it is (→ECON-3), projected after its coverage like prices (→ECON-2).
@@ -198,6 +201,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r31 261014 ECON-22✎ five presets of cards→seven presets (+유스 명가, +세계로) filling every row, a new club starting with the founding direction; ECON-25✎ presets and saved directions fill only the six cards→every row, older saved directions their cards
 - r30 261014 ECON-33✎ +signings, +a signing's fee at most a share of the cash above the runway (공격적 100%…안정적 25%); ECON-25✎ 영입 staff decide -→signings
 - r29 261014 ECON-14✎ ECON-8✎ exclusive contract: blocks merchandise campaigns→halves 해외 마케팅's fan growth
 - r28 261014 ECON-34+ 지역 기반 and 글로벌 인지도 (0–100) built by the 지역 and 글로벌 rows; ECON-16✎ marketing dial→주변 투자, 풀뿌리 유망주 투자, 해외 마케팅, 해외 스카우트망, 해외 투어; ECON-7✎ four campaigns→none to start, older ones settle; ECON-22✎ 홈·팬 slot→지역 관계 방식, 글로벌 브랜드→지역 상생, 상업 제국 preset without it, marketing/campaign effects→해외 마케팅; ECON-25✎ +지역, 글로벌 areas, 마케팅 out of 재정; ECON-8✎ ECON-9✎ ECON-23✎ read the bases

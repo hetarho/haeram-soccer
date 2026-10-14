@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r30 | Define the implemented browser-demo behavior for squad and growth.
+> r31 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating equals its league's average club XI (±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -73,6 +73,7 @@
   | 원 팀 | motivator manager · squad investment 4+ · morale 65+ | morale baseline +3 |
   | 우리 동네 아이들 | 성골 유스 or 유소년 클럽 제휴 · 지역 밀착 · 가족 같은 클럽 | morale baseline +2, intake potential +2 |
   | 트레이딩 머신 | 데이터 스카우팅 · 데뷔 시점 빠른 데뷔 · 셀링 클럽 or 쇼케이스 | candidate potential +2, academy growth ×1.1 |
+  | 글로벌 스카우팅 | 해외 유스 스카우트 card · 해외 스카우트망 3+ · chief scout spotter or 65+ | intake potential +2, candidate potential +2 |
 
 - CLUB-22 [o] Every player has a transfer stance the owner switches any time; offers come only while a window is open and only from real clubs (→CLUB-18), and a sale happens only when one is accepted. ← one tap says how the club treats offers for him, instead of an asking price per listing
   - 이적 명단 (listed, 적극 매도): draws its own offers at 10% a window day × appeal, fee 85–105% of value × build sale fee; delegated staff accept them
@@ -162,6 +163,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r31 261014 CLUB-21+ 글로벌 스카우팅 synergy (해외 유스 스카우트 · 해외 스카우트망 3+ · spotter or 65+ chief scout → intake and candidate potential +2)
 - r30 261014 CLUB-33+ delegated signings at level 4: weekly looks in a window, short roles then upgrades by 재정 기조, free agents first, bids at the asking fee, within 재정 기조's money checks
 - r29 261014 CLUB-21✎ 상업 제국 marketing 4+→해외 마케팅 4+; CLUB-16✎ +풀뿌리 유망주 투자 and the bases add prospects and potential
 - r28 261014 CLUB-32+ 육성 목표 (표준, 1군 공급, 판매용 육성, 최소 운영) and 데뷔 시점 (표준, 빠른 데뷔, 준비된 뒤, 늦게) set the youth director's promotion, release and listing; CLUB-22✎ +staff set stances at window openings by 매각 기조 and 육성 목표; CLUB-21✎ 트레이딩 머신 1군 직행 경로→데뷔 시점 빠른 데뷔; CLUB-13✎ CLUB-31✎ focus rules read 데뷔 시점

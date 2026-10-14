@@ -16,6 +16,10 @@
 | v7dq | hq-dev1-pve2-vm2 | autopilot | 2026-10-14T01:57Z | 2026-10-14T05:14Z | - |
 
 ## inbox
+- 261014 decided ECON-22 ideation/club-direction: the preset set → seven presets filling every row: the five redesigned with rows, plus 유스 명가 (aims 유스 파이프라인) and 세계로 (aims 글로벌 스카우팅) (alt: keep five presets of cards only | eight with a commercial-global split)
+- 261014 decided CLUB-21: a synergy for the global preset → 글로벌 스카우팅 (해외 유스 스카우트 · 해외 스카우트망 3+ · spotter or 65+ chief scout → intake and candidate potential +2) (alt: no new synergy, 세계로 aiming 머니볼)
+- 261014 decided WEB-15: must the owner pick a direction at founding → 기본 방향 shown selected, the presets beside it, changeable later (alt: no preselection, 창단 blocked until a pick)
+- 261014 decided WEB-61 SAVE-15: saved directions → keep every row like presets, older entries their cards (alt: saved directions stay cards only)
 - 261014 decided WEB-39: the 방향 tab's address → keep /business?view= with build, finance and sponsor, older values opening their tab (alt: a new /direction route | the old view values)
 - 261014 decided WEB-60: how the six areas show on one screen → folded behind headers naming the options in force, a drafted or remedy-opened area unfolded (alt: all unfolded | only the first unfolded)
 - 261014 decided WEB-60 ECON-25 ideation/club-direction: area names in slice 1 → today's six (선수단, 영입, 매각, 유소년, 수익, 홈·팬) until their rows change in slices 2–4, and campaigns under 재정 until slice 4 (alt: rename to 선수단·계약, 재정, 지역 now)
@@ -45,20 +49,23 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 63 | 63 | - | 0 |
+| WEB | 64 | 64 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
-| CLUB | 30 | 30 | - | 0 |
+| CLUB | 31 | 31 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
 | STAFF | 18 | 18 | - | 0 |
-| ECON | 30 | 30 | - | 0 |
+| ECON | 31 | 31 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 8 | 8 | - | 0 |
-| SAVE | 32 | 32 | - | 0 |
+| SAVE | 33 | 33 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T098 | Presets over every row, 글로벌 스카우팅 and the founding direction | ECON CLUB SAVE | - | todo |
+| T099 | Presets and saved directions over every row, and the founding direction | WEB ECON SAVE | T098 | todo |
+| T100 | Calibrate the economy after the whole direction plan | ECON CLUB | T098 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -67,7 +74,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- slice 5 (T096–T097) on work/direction waits for CI before main; then slice 6 (founding preset, presets, synergies) and the calibration after slice 6.
+- slice 5 (T096–T097) on work/direction waits for CI before main; slice 6: T098 → T099, T100 (final calibration).
 - owner's requests 261013 are on main (caa5e83, CI 38448231873 green in every browser): T080 level only, T081 no strategy locks, T082/T083 coaches set training with suggestions and orders and the academy by U-17/U-19/U-21, T084/T085 facilities as stadium steps, training ground and academy facilities.
 - wage bill / revenue sits at 44.3% on the facility parts (ECON-29 band 45–70%, 45.3% before them): base wage 925 and a 25% youth promise did not move it; try the contract-talk floor next (agent premium per level, as T079 did: 0% gave 47.7%, 1% 46.1%) and re-measure 40 careers.
 - three levers and the economy port are on main (fast-forward to 2de95c6, 261013): T070–T079 done — T077 d303c5e, T078 fe7b209/8c52745, T079 merged from work/econ-port at 11c9c5c/66ce736 (unit 658, contract 11, build pass; goldens equal work/econ-port's). CI run 38382526028 on 2de95c6 passed every job (checks, the benchmark, e2e in Chromium, Firefox and both WebKit shards); the run before it on 66ce736 failed only Firefox e2e, which passed in full locally (102 passed, 2 skipped) and on the rerun — a flake. work/levers and work/econ-port are merged and can be deleted. Next: pick from the follow-ups below.
@@ -79,6 +86,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 update-ssot ECON r31 CLUB r31 WEB r64 SAVE r33 (club-direction slice 6): seven presets over every row, 글로벌 스카우팅, the founding direction, saved directions over every row; create-task T098 (engine), T099 (screens), T100 (explore 1h: final calibration)
 - 261014 T097 done (8a2a121): level 4 names signings, 스태프 제안 in the market; full Chromium e2e 106
 - 261014 T096 done (90bc773): the chief scout's signings at level 4, rules 1.20.0; unit 691, contract 13, Chromium e2e 106; WebKit gets two CI retries; T097 doing (session haeram-soccor-6f took over after the first session exited)
 - 261014 slices 3–4 on main: fast-forward to 5ae503c after CI 38513354367 passed every job
@@ -98,4 +106,3 @@
 - 261014 update-ssot ECON r25 CLUB r27 STAFF r16 WEB r60 SAVE r29 (club-direction slice 2): 재정 기조, 재계약 기조, the 스태프 area replace the talk rule and the hiring and manager criteria; 매각 기조 sets the sale bar; the level ladder; 자금 page tab
 - 261014 T088 done (c3f8106): one row kind for cards and dials, areas folded behind headers; full Chromium e2e 106, unit 671
 - 261014 T087 done (d0f53b9): 방향 tab with 방향·증축·재정·후원, campaigns under 재정, 방향 wording; T088 doing
-- 261014 T086 done (6f4ade0): engine names 방향, old 운영 전략 titles read the same
