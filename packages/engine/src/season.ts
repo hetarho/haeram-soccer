@@ -44,6 +44,7 @@ import { lineOf } from './player';
 import {
   applyClauses,
   contractTalks,
+  endAmbition,
   expireContracts,
   signingClauses,
   transferRequests,
@@ -571,6 +572,8 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   const table = w.tables[own.id],
     order = ranked(w, ownLeagueClubs(w));
   settleLeagueMerit(w, order.findIndex((c) => c.id === own.id) + 1, order.length);
+  // An ambitious player's resentment ends with the season (→CLUB-27).
+  endAmbition(w);
   const champions = COUNTRIES.map((c) => {
     const cup = w.cups?.find((entry) => entry.country === c.code);
     const cupFinal = cup && finalOf(w, cupKey(c.code), cup.rounds, cup.fixtures);

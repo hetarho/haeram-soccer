@@ -24,6 +24,7 @@ import {
   currentDay,
   delegated,
   divisionFor,
+  endAmbition,
   expireContracts,
   makePlayer,
   MARKET_CONFIG,
@@ -1043,5 +1044,31 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
     expect(clubOf(w).tier).toBe(tier + 1);
     expect([cut.wage, kept.wage]).toEqual(['6000', '10000']);
     expect(w.inbox!.some((item) => item.title.startsWith('강등 조항'))).toBe(true);
+  });
+});
+
+describe('ambition unhappiness (→CLUB-27)', () => {
+  it('ambition unhappiness ends at the close', () => {
+    const w = world();
+    const [ambitious, declined] = activePlayers(w);
+    ambitious!.unhappy = { reason: 'ambition', year: w.year, day: 30 };
+    ambitious!.transferRequest = { year: w.year, day: 72 };
+    ambitious!.stance = 'listed';
+    declined!.unhappy = { reason: 'renewal-declined', year: w.year, day: 30 };
+    endAmbition(w);
+    expect(ambitious!.unhappy).toBeUndefined();
+    expect(ambitious!.transferRequest).toBeUndefined();
+    expect(ambitious!.stance).toBeUndefined();
+    expect(w.events.at(-1)!.title).toBe(`${ambitious!.name} 언해피 해소`);
+    // Only meeting his floor or a sale ends the other kind.
+    expect(declined!.unhappy).toMatchObject({ reason: 'renewal-declined' });
+    // The season's close runs it.
+    const season = world();
+    operate(season, { type: 'intervention', level: 1 });
+    const p = activePlayers(season)[0]!;
+    while (season.round < 46) advanceRound(season, undefined, false);
+    p.unhappy = { reason: 'ambition', year: season.year, day: 30 };
+    closeSeason(season);
+    expect(p.unhappy).toBeUndefined();
   });
 });

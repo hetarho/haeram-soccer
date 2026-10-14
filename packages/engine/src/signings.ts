@@ -1,6 +1,13 @@
-import type { Line, Player, SigningRequest, TransferBid, World } from '../../contracts/src/types';
+import type {
+  Line,
+  Player,
+  Position,
+  SigningRequest,
+  TransferBid,
+  World,
+} from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
-import { LINE_MINIMUM, lineOf } from './player';
+import { LINE_MINIMUM, lineOf, POSITION_LABEL } from './player';
 import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS } from './calendar';
 import { MARKET_REFRESH_ROUNDS } from './managerMarket';
 import { clamp, compareIds, ratio } from './primitives';
@@ -37,8 +44,10 @@ export const SIGNING_CONFIG = {
   upgradeSquad: 24,
   /** Candidates the chief scout lists per line. */
   shortlistPerLine: 3,
-  /** A shortlisted candidate must beat a line's weakest starter by this much to be requested. */
+  /** A shortlisted candidate must beat a slot's starter there by this much to be requested. */
   requestMargin: 5,
+  /** The level a candidate must play a slot's position at to fit it: 준수 (→PLAYER-4). */
+  fitLevel: 2,
   requestLimit: 3,
   /** Trust a manager loses when a window closes with none of his requests met. */
   unmetTrust: 3,
@@ -57,8 +66,27 @@ type Offer = ReturnType<typeof transferOffers>[number];
  */
 export type SigningNeed = (
   | { kind: 'short'; line: Line; count: number; minimum: number; squad: number }
-  | { kind: 'upgrade'; line: Line; starter: Player; level: number; margin: number }
+  | {
+      kind: 'upgrade';
+      line: Line;
+      slot: number;
+      position: Position;
+      starter: Player;
+      level: number;
+      margin: number;
+    }
 ) & { requested?: SigningRequest };
+/** A request in words: the line it asks for, or the formation slot's position. */
+export const requestLabel = (request: Pick<SigningRequest, 'line' | 'position'>) =>
+  request.position ? `${POSITION_LABEL[request.position]} 자리` : LINE_NAME[request.line];
+/** Whether a player fits a slot request: he plays its position at 준수 or better (→CLUB-33). */
+const playsAt = (p: Player, position: Position) =>
+  (p.positions[position] ?? 0) >= SIGNING_CONFIG.fitLevel;
+/** What a player would be worth at a formation slot: OVR there × his level, adaptation left out. */
+const atSlot = (w: World, p: Player, slot: number) => slotOvr(p, formationOf(w.tactic)[slot]!);
+/** Whether a joining player meets a request (→CLUB-33): his line for a short one, else the slot's position. */
+export const meetsRequest = (request: SigningRequest, p: Player) =>
+  request.position ? playsAt(p, request.position) : request.line === lineOfPlayer(p);
 
 const isOpen = (bid: TransferBid) => bid.status === 'pending' || bid.status === 'countered';
 /** The opening day of the window open on `day`. */
@@ -156,7 +184,7 @@ export function signingVerdict(w: World, player: Player, fee: string) {
 
 /** The need in words, with the row behind it and the manager's request when it is one. */
 export function needLine(w: World, need: SigningNeed) {
-  const asked = need.requested ? `감독 요청 ${LINE_NAME[need.line]} · ` : '';
+  const asked = need.requested ? `감독 요청 ${requestLabel(need.requested)} · ` : '';
   if (need.kind === 'short')
     return (
       asked +
@@ -164,7 +192,7 @@ export function needLine(w: World, need: SigningNeed) {
         ? `${LINE_NAME[need.line]}가 ${need.count}명뿐이라 ${need.minimum}명을 채워요`
         : `선수단이 ${need.squad}명뿐이라 ${SIGNING_CONFIG.squadMinimum}명을 채워요`)
     );
-  return `${asked}주전 ${need.starter.name}(그 자리 OVR ${Math.round(need.level)})보다 ${need.margin} 이상 나은 ${LINE_NAME[need.line]}를 찾아요(재정 기조 ${directionOption(w, 'finance').name})`;
+  return `${asked}${POSITION_LABEL[need.position]} 자리 주전 ${need.starter.name}(그 자리 OVR ${Math.round(need.level)})보다 그 자리에서 ${need.margin} 이상 나은 선수를 찾아요(재정 기조 ${directionOption(w, 'finance').name})`;
 }
 /** " · 감독이 고른 선수" when the 단장 moves for the manager's pick. */
 const pickNote = (need: SigningNeed, player: Player) =>
@@ -192,9 +220,11 @@ function candidates(w: World, offers: Offer[], need: SigningNeed, tried: Set<str
       ({ offer }) =>
         offer.available &&
         !offer.player.loanUntil &&
-        lineOfPlayer(offer.player) === need.line &&
         !tried.has(offer.player.id) &&
-        (need.kind === 'short' || overall(offer.player) >= need.level + need.margin),
+        (need.kind === 'short'
+          ? lineOfPlayer(offer.player) === need.line
+          : playsAt(offer.player, need.position) &&
+            atSlot(w, offer.player, need.slot) >= need.level + need.margin),
     )
     .sort((a, b) => rank(a.offer) - rank(b.offer) || byCandidate(a.offer, b.offer));
 }
@@ -227,11 +257,14 @@ export function signingRequests(w: World): SigningRequest[] {
   );
 }
 /**
- * The manager's pick among the shortlisted of a role (→CLUB-33): the ablest, then potential; a
- * 육성형 manager or one with the youth trait the highest potential aged 23 or under first.
+ * The manager's pick among the shortlisted who fit a request (→CLUB-33): the ablest (at the slot,
+ * for a slot request), then potential; a 육성형 manager or one with the youth trait the highest
+ * potential aged 23 or under first.
  */
-function managerPick(w: World, listed: Offer[], line: Line) {
-  const pool = listed.filter((offer) => lineOfPlayer(offer.player) === line);
+function managerPick(w: World, listed: Offer[], request: Omit<SigningRequest, 'pick'>) {
+  const pool = listed.filter((offer) => meetsRequest(request, offer.player));
+  const ability = (p: Player) =>
+    request.slot === undefined ? overall(p) : Math.round(atSlot(w, p, request.slot));
   const youngFirst = w.manager.style === 'developer' || w.manager.trait === 'youth';
   const young = youngFirst
     ? pool
@@ -239,7 +272,7 @@ function managerPick(w: World, listed: Offer[], line: Line) {
         .sort(
           (a, b) =>
             b.player.potential - a.player.potential ||
-            overall(b.player) - overall(a.player) ||
+            ability(b.player) - ability(a.player) ||
             compareIds(a.player.id, b.player.id),
         )[0]
     : undefined;
@@ -247,15 +280,16 @@ function managerPick(w: World, listed: Offer[], line: Line) {
     young ??
     [...pool].sort(
       (a, b) =>
-        overall(b.player) - overall(a.player) ||
+        ability(b.player) - ability(a.player) ||
         b.player.potential - a.player.potential ||
         compareIds(a.player.id, b.player.id),
     )[0]
   )?.player.id;
 }
 /**
- * The manager's requests (→CLUB-33): every short role, then the role whose weakest starter a
- * shortlisted candidate beats by the most, when by 5 or more; at most three, each with his pick.
+ * The manager's requests (→CLUB-33): every short line, then the slot of his formation whose starter
+ * a shortlisted candidate who plays its position at 준수 or better beats by the most there (OVR at
+ * the slot × level, adaptation left out), when by 5 or more; at most three, each with his pick.
  * An interim asks for nothing.
  */
 function managerRequests(w: World, listed: Offer[]): SigningRequest[] {
@@ -264,25 +298,24 @@ function managerRequests(w: World, listed: Offer[]): SigningRequest[] {
     line,
     kind: 'short',
   }));
-  const starters = lineStarters(w);
-  let upgrade: { line: Line; by: number } | undefined;
-  for (const line of LINES) {
-    if (requests.some((request) => request.line === line)) continue;
-    const weakest = starters
-      .filter((starter) => starter.line === line)
-      .sort((a, b) => a.value - b.value || compareIds(a.p.id, b.p.id))[0];
-    const best = Math.max(
-      ...listed
-        .filter((offer) => lineOfPlayer(offer.player) === line)
-        .map((offer) => overall(offer.player)),
-    );
-    if (!weakest || !Number.isFinite(best)) continue;
-    const by = best - weakest.value;
-    if (by >= SIGNING_CONFIG.requestMargin && (!upgrade || by > upgrade.by)) upgrade = { line, by };
+  const slots = formationOf(w.tactic);
+  let upgrade: { slot: number; by: number } | undefined;
+  for (const starter of lineStarters(w)) {
+    const position = slots[starter.slot]!.position;
+    if (requests.some((request) => request.line === starter.line)) continue;
+    for (const offer of listed) {
+      if (!playsAt(offer.player, position)) continue;
+      const by = atSlot(w, offer.player, starter.slot) - starter.value;
+      if (by >= SIGNING_CONFIG.requestMargin && (!upgrade || by > upgrade.by))
+        upgrade = { slot: starter.slot, by };
+    }
   }
-  if (upgrade) requests.push({ line: upgrade.line, kind: 'upgrade' });
+  if (upgrade) {
+    const position = slots[upgrade.slot]!.position;
+    requests.push({ line: lineOf(position), kind: 'upgrade', slot: upgrade.slot, position });
+  }
   return requests.slice(0, SIGNING_CONFIG.requestLimit).map((request) => {
-    const pick = managerPick(w, listed, request.line);
+    const pick = managerPick(w, listed, request);
     return pick ? { ...request, pick } : request;
   });
 }
@@ -344,8 +377,8 @@ export function openShortlistWindow(w: World) {
     };
 }
 /**
- * A player joined the squad: he starts to settle (→PLAYER-11), and a request of his line is met for
- * the window (→CLUB-33).
+ * A player joined the squad: he starts to settle (→PLAYER-11), and a request he fits is met for the
+ * window (→CLUB-33): a short line's, or a slot's whose position he plays at 준수 or better.
  */
 export function noteSigning(w: World, player: Player) {
   joinClub(player, isForeignCandidate(player.id) ? 'abroad' : 'domestic');
@@ -353,7 +386,7 @@ export function noteSigning(w: World, player: Player) {
   if (
     window &&
     window.year === w.year &&
-    window.requests.some((request) => request.line === lineOfPlayer(player))
+    window.requests.some((request) => meetsRequest(request, player))
   )
     window.met = true;
 }
@@ -374,39 +407,38 @@ export function judgeRequests(w: World) {
   pushInbox(w, {
     kind: 'staff-report',
     title: `${m.name} 감독의 영입 요청이 채워지지 않았어요`,
-    detail: `이적시장이 열릴 때 요청한 ${window.requests.map((request) => LINE_NAME[request.line]).join('·')} 자리에 아무도 오지 않았어요 · 감독 신뢰 −${SIGNING_CONFIG.unmetTrust}(지금 ${m.trust})`,
+    detail: `이적시장이 열릴 때 요청한 ${window.requests.map(requestLabel).join('·')}에 맞는 선수가 아무도 오지 않았어요 · 감독 신뢰 −${SIGNING_CONFIG.unmetTrust}(지금 ${m.trust})`,
     attention: false,
   });
 }
 
 /**
- * The XI with each starter's line and his OVR where he plays: the formation slot's position and
- * role, at his level there (→CLUB-33).
+ * The XI with each starter's slot, line and OVR where he plays: the formation slot's position and
+ * role, at his level there, adaptation left out (→CLUB-33).
  */
 function lineStarters(w: World) {
   const slots = formationOf(w.tactic);
   return ownStarters(w).map((p, i) => ({
     p,
+    slot: i,
     line: lineOf(slots[i]!.position),
     value: slotOvr(p, slots[i]!) + unhappyPenalty(p),
   }));
 }
-/** The upgrade needs: each line's weakest starter where he plays, the weakest of them first. */
+/** The upgrade needs (→CLUB-33): every outfield and keeper slot, the weakest starter there first. */
 function upgradeNeeds(w: World, margin: number): SigningNeed[] {
-  const starters = lineStarters(w),
-    weakest = LINES.flatMap((line) => {
-      const starter = starters
-        .filter((one) => one.line === line)
-        .sort((a, b) => a.value - b.value || compareIds(a.p.id, b.p.id))[0];
-      return starter ? [{ line, starter }] : [];
-    }).sort((a, b) => a.starter.value - b.starter.value);
-  return weakest.map(({ line, starter }) => ({
-    kind: 'upgrade',
-    line,
-    starter: starter.p,
-    level: starter.value,
-    margin,
-  }));
+  const slots = formationOf(w.tactic);
+  return lineStarters(w)
+    .sort((a, b) => a.value - b.value || a.slot - b.slot)
+    .map((starter) => ({
+      kind: 'upgrade',
+      line: starter.line,
+      slot: starter.slot,
+      position: slots[starter.slot]!.position,
+      starter: starter.p,
+      level: starter.value,
+      margin,
+    }));
 }
 
 /** A free agent joins at once on the market's terms, with his signing's clauses (→CLUB-29). */
@@ -483,7 +515,11 @@ export function staffSignings(w: World) {
         : [];
   const needs = found
     .map((need) => {
-      const requested = requests.find((request) => request.line === need.line);
+      const requested = requests.find((request) =>
+        need.kind === 'short'
+          ? request.kind === 'short' && request.line === need.line
+          : request.slot === need.slot,
+      );
       return requested ? { ...need, requested } : need;
     })
     .map((need, order) => ({ need, order }))

@@ -33,6 +33,7 @@ import { credit } from './operations';
 import { suitorFor, transferWindowDays } from './transfers';
 import { financeProjection } from './projection';
 import { delegated } from './intervention';
+import { AMBITION_UNHAPPY, GRADE_LABEL } from './player';
 
 /**
  * Market wages and transfer values (→CLUB-25), in 1901 price units that the football index
@@ -467,7 +468,9 @@ const percentLabel = (chance: number) => `${Math.round(chance * 100)}%`;
  */
 export function talkFor(w: World, p: Player): ContractTalk | undefined {
   if (p.talk) return p.talk;
-  if (!p.unhappy || p.loanUntil || p.retiring !== undefined) return undefined;
+  // Nothing he is paid ends an ambitious player's resentment (→CLUB-27).
+  if (!p.unhappy || p.unhappy.reason === 'ambition' || p.loanUntil || p.retiring !== undefined)
+    return undefined;
   const terms = talkTerms(w, p);
   return {
     kind: p.unhappy.reason === 'improve-declined' ? 'improve' : 'renew',
@@ -490,6 +493,55 @@ function endUnhappiness(w: World, p: Player) {
   if (requested && p.stance === 'listed') delete p.stance;
   settleTalkItems(w, p.id, PLAYER_KINDS);
   return requested ? '언해피 해소 · 이적 요청 철회' : '언해피 해소';
+}
+/**
+ * A bigger club's offer of at least his value was declined (→CLUB-27, PLAYER-8): a player of 야망
+ * 높음 turns unhappy 25% of the time and 매우 높음 50%, from his own stream for that offer, unless
+ * the manager talks him round; either way the inbox says so. It ends with his sale or at the
+ * next season's close.
+ */
+export function ambitionAfterDecline(w: World, p: Player, bidId: string, club: string) {
+  const chance = AMBITION_UNHAPPY[p.personality.ambition - 1]!;
+  if (!chance || p.unhappy || p.loanUntil || p.retiring !== undefined) return;
+  const r = random(`${w.seed}:ambition:${bidId}`);
+  if (r() >= chance) return;
+  const talk = talkRoundChance(w),
+    kept = r() < talk;
+  const outcome = kept
+    ? `감독이 설득해 마음을 돌렸어요(설득 확률 ${percentLabel(talk)})`
+    : `감독의 설득이 실패해 언해피가 됐어요(설득 확률 ${percentLabel(talk)})`;
+  if (kept) {
+    pushInbox(w, {
+      kind: 'staff-report',
+      title: `${p.name}, ${club} 이적 무산에 실망`,
+      detail: `${playerLine(w, p)} · 야망 ${GRADE_LABEL[p.personality.ambition]} · ${outcome}.`,
+      attention: false,
+      ref: p.id,
+    });
+    return;
+  }
+  p.unhappy = { reason: 'ambition', year: w.year, day: currentDay(w) };
+  const weeks = UNHAPPY_CONFIG.requestDays / 7;
+  pushInbox(w, {
+    kind: 'unhappy',
+    title: `${p.name} 언해피 · ${UNHAPPY_REASON.ambition}`,
+    detail: `${playerLine(w, p)} · 야망 ${GRADE_LABEL[p.personality.ambition]} · ${club}의 제안이 거절됐어요 · ${outcome}. 능력보다 ${UNHAPPY_PENALTY} 낮게 뛰고, 선발로 뛴 라운드마다 선수단 분위기 −${UNHAPPY_MORALE}, 재계약을 거부하며 ${weeks}주 뒤 이적을 요청해요. 매각하거나 시즌이 끝나면 풀려요.`,
+    attention: true,
+    ref: p.id,
+  });
+}
+/** The season's close ends every ambitious player's resentment (→CLUB-27). */
+export function endAmbition(w: World) {
+  for (const p of w.players) {
+    if (p.unhappy?.reason !== 'ambition') continue;
+    const ended = endUnhappiness(w, p);
+    addEvent(
+      w,
+      'contract',
+      `${p.name} 언해피 해소`,
+      `시즌이 끝나 빅클럽 이적 무산의 실망이 풀렸어요 · ${ended}`,
+    );
+  }
 }
 /** A player leaving the club takes his talk, unhappiness and transfer request with him. */
 export function leaveContract(w: World, p: Player) {

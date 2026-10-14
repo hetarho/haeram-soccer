@@ -1,5 +1,5 @@
 import { ATTRIBUTES } from '../../contracts/src/player';
-import { lineOf } from './player';
+import { lineOf, POSITION_LABEL } from './player';
 import { describe, expect, it } from 'vitest';
 import type { Direction, Line, Player, TransferBid, World } from '../../contracts/src/types';
 import { canonical, validateWorld } from '../../contracts/src/index';
@@ -11,6 +11,9 @@ import {
   currentDay,
   drawShortlist,
   financeStance,
+  formationOf,
+  noteSigning,
+  ownStarters,
   judgeRequests,
   nextShortlistDraw,
   openShortlistWindow,
@@ -489,5 +492,69 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
     w.round = 44;
     w.calendar = { day: 44 * 7 };
     expect(nextShortlistDraw(w)).toEqual({ year: w.year + 1, day: 0 });
+  });
+});
+
+describe('requests by formation slot (→CLUB-33)', () => {
+  const rate = (p: Player, level: number) => {
+    for (const a of ATTRIBUTES) p.attrs[a] = level;
+  };
+  function owned(seed = 'slot-requests') {
+    const w = club(undefined, seed);
+    w.intervention = 2;
+    return w;
+  }
+
+  it('slot request names the weakest slot', () => {
+    const w = owned();
+    for (const p of activePlayers(w)) rate(p, 99);
+    // The XI is kept in its slots, so the weakened starter stays where he plays.
+    w.lineup = ownStarters(w).map((p) => p.id);
+    drawShortlist(w);
+    expect(w.shortlist!.requests).toEqual([]);
+    const listed = shortlistOffers(w).map(({ offer }) => offer.player);
+    const slots = formationOf(w.tactic);
+    const k = slots.findIndex(
+      (place, i) => i > 0 && listed.some((p) => (p.positions[place.position] ?? 0) >= 2),
+    );
+    expect(k).toBeGreaterThan(0);
+    rate(ownStarters(w)[k]!, 10);
+    drawShortlist(w);
+    const position = slots[k]!.position;
+    expect(w.shortlist!.requests).toEqual([
+      expect.objectContaining({ kind: 'upgrade', slot: k, position, line: lineOf(position) }),
+    ]);
+    // His pick plays that position at 준수 or better.
+    const pick = listed.find((p) => p.id === w.shortlist!.requests[0]!.pick)!;
+    expect(pick.positions[position]).toBeGreaterThanOrEqual(2);
+  });
+
+  it('request met by a player of the position', () => {
+    const w = owned('slot-met');
+    drawShortlist(w);
+    w.shortlist!.window = {
+      year: w.year,
+      opening: currentDay(w),
+      manager: w.manager.id,
+      requests: [{ line: 'DF', kind: 'upgrade', slot: 2, position: 'CB' }],
+    };
+    const base = transferOffers(w).find((offer) => offer.available)!.player;
+    const joining = (positions: Player['positions'], id: string): Player => ({
+      ...structuredClone(base),
+      id,
+      position: 'LB',
+      positions,
+    });
+    // A left back who plays centre back only at 어색 does not meet it.
+    noteSigning(w, joining({ LB: 3, CB: 1 }, 'lb-joins'));
+    expect(w.shortlist!.window!.met).toBeUndefined();
+    // One who plays it at 준수 does, whatever his main position.
+    noteSigning(w, joining({ LB: 3, CB: 2 }, 'cb-joins'));
+    expect(w.shortlist!.window!.met).toBe(true);
+    // An unmet slot request is named by its position when the window closes.
+    delete w.shortlist!.window!.met;
+    w.calendar = { day: transferWindowDays(w.year).winterClose + 1 };
+    judgeRequests(w);
+    expect(w.inbox!.at(-1)!.detail).toContain(`${POSITION_LABEL.CB} 자리`);
   });
 });

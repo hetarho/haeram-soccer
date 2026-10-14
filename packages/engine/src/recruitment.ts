@@ -2,9 +2,18 @@ import type { Line, World } from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
 import { SEASON_ROUNDS, nextOwnFixture } from './calendar';
 import { operatingCost, transferOffers } from './operations';
-import { activePlayers, clubOf, fatigueLoad, lineOfPlayer, overall, startingSquad } from './world';
+import {
+  activePlayers,
+  clubOf,
+  fatigueLoad,
+  formationOf,
+  lineOfPlayer,
+  overall,
+  slotOvr,
+  startingSquad,
+} from './world';
 import { compareIds } from './primitives';
-import { adaptationStart } from './player';
+import { adaptationMultiplier, adaptationStart, ADAPTATION_NEUTRAL } from './player';
 import { isForeignCandidate } from './ops-squad';
 import { lineupSummary, npcTactic, tacticalProfile } from './strategy';
 
@@ -59,6 +68,26 @@ export function recruitmentPreview(w: World, offer: TransferOffer, loan = false)
       after = startingSquad({ ...w, players: [...w.players, arriving] }, own);
     }
   }
+  // The slot he would take (→CLUB-14): where he beats the starter by most at the slot, else the
+  // weakest of his main position's; his 실효 OVR there on arrival and once settled (→PLAYER-11).
+  const slots = formationOf(w.tactic);
+  const scored = slots.map((place, index) => ({
+    index,
+    place,
+    gain: slotOvr(arriving, place) - slotOvr(before[index]!, place),
+  }));
+  const best = [...scored].sort((a, b) => b.gain - a.gain || a.index - b.index)[0]!;
+  const home = scored
+    .filter(({ place }) => place.position === offer.player.position)
+    .sort((a, b) => b.gain - a.gain || a.index - b.index)[0];
+  const taken = best.gain > 0 || !home ? best : home;
+  const slot = {
+    index: taken.index,
+    position: taken.place.position,
+    role: taken.place.role,
+    arrival: Math.round(slotOvr(arriving, taken.place, adaptationMultiplier(arriving.adaptation))),
+    settled: Math.round(slotOvr(arriving, taken.place, adaptationMultiplier(ADAPTATION_NEUTRAL))),
+  };
   const fixture = nextOwnFixture(w),
     opponentId = fixture?.home === w.playerClub ? fixture.away : fixture?.home,
     opponent = w.clubs.find((club) => club.id === opponentId),
@@ -89,6 +118,7 @@ export function recruitmentPreview(w: World, offer: TransferOffer, loan = false)
               ? '현재 능력과 피로 기준으로 자동 선발 후보입니다.'
               : '현재 자동 선발은 유지됩니다. 로테이션 후보로 비교하세요.';
   return {
+    slot,
     beforeStrength,
     afterStrength,
     strengthDelta: afterStrength - beforeStrength,

@@ -309,6 +309,8 @@ const MULTIPLIER_POINTS: readonly (readonly [number, number])[] = [
   [0.9, 1.025],
   [1, 1.05],
 ];
+/** The adaptation at which a player plays at exactly his ability: settled (→PLAYER-10). */
+export const ADAPTATION_NEUTRAL = 0.8;
 /** Adaptation 0.3–1.0 to a multiplier on his ability: gentle above 0.8, steep below (→PLAYER-10). */
 export function adaptationMultiplier(adaptation: number) {
   const a = Math.min(1, Math.max(0.3, adaptation));

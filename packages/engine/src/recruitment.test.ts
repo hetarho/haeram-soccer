@@ -7,7 +7,9 @@ import {
   activePlayers,
   clubOf,
   createWorld,
+  formationOf,
   lineupPreset,
+  slotOvr,
   lineupSummary,
   makePlayer,
   nextOwnFixture,
@@ -205,5 +207,32 @@ describe('recruitment build and budget previews', () => {
     }
     expect(canonical(offers)).toBe(original);
     expect(canonical(w)).toBe(before);
+  });
+});
+
+describe('the slot he would take (→CLUB-14, PLAYER-11)', () => {
+  it('arrival and settled at the slot', () => {
+    const w = world();
+    const offer = transferOffers(w).find((one) => one.available)!;
+    const preview = recruitmentPreview(w, offer);
+    const slots = formationOf(w.tactic);
+    const before = startingSquad(w, clubOf(w));
+    // Where he beats the starter by most at the slot (this weak squad: somewhere he beats him).
+    const gains = slots.map(
+      (place, i) => slotOvr(offer.player, place) - slotOvr(before[i]!, place),
+    );
+    const best = gains.indexOf(Math.max(...gains));
+    expect(preview.slot).toMatchObject({
+      index: best,
+      position: slots[best]!.position,
+      role: slots[best]!.role,
+    });
+    // Settled is his OVR there; on arrival he plays at the multiplier his start gives him.
+    expect(preview.slot.settled).toBe(Math.round(slotOvr(offer.player, slots[best]!)));
+    expect(preview.slot.arrival).toBeLessThanOrEqual(preview.slot.settled);
+    // In a squad far better than him he takes a slot of his main position.
+    const strong = world(true);
+    const theirs = transferOffers(strong).find((one) => one.available)!;
+    expect(recruitmentPreview(strong, theirs).slot.position).toBe(theirs.player.position);
   });
 });

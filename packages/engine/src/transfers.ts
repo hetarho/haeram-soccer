@@ -2,8 +2,17 @@ import type { Club, Player, TransferBid, TransferStance, World } from '../../con
 import { currency } from '../../catalogs/src/index';
 import { currentDay, SEASON_END_DAY, seasonDayLabel, seasonDayOf } from './calendar';
 import { clamp, compareIds, hash, integer, random, ratio } from './primitives';
-import { activePlayers, addEvent, clubOf, lineOfPlayer, overall, ownStarters } from './world';
-import { leaveContract, marketValue, signingClauses } from './contracts';
+import {
+  activePlayers,
+  addEvent,
+  clubOf,
+  formationOf,
+  overall,
+  ownMultiplier,
+  ownStarters,
+  slotOvr,
+} from './world';
+import { ambitionAfterDecline, leaveContract, marketValue, signingClauses } from './contracts';
 import { credit, debit } from './operations';
 import { transferOffers } from './ops-squad';
 import { financeStance } from './direction';
@@ -266,13 +275,16 @@ export function respondBid(w: World, id: string, accept: boolean): void {
       completeSigning(w, bid, offer!, fee);
     } else bid.status = 'rejected';
   } else if (bid.direction === 'in' && bid.status === 'pending') {
+    const p = w.players.find((x) => x.id === bid.playerId);
     if (accept) {
       assertTransferWindow(w);
-      const p = w.players.find((x) => x.id === bid.playerId),
-        blocker = saleBlocker(w, p);
+      const blocker = saleBlocker(w, p);
       if (blocker) throw new Error(blocker);
       completeSale(w, bid, p!);
-    } else bid.status = 'rejected';
+    } else {
+      bid.status = 'rejected';
+      resent(w, bid, p);
+    }
   } else throw new Error('응답할 수 있는 이적 제안이 아닙니다.');
   markRelatedRead(w, id);
 }
@@ -503,8 +515,11 @@ function settleBids(w: World, open: boolean) {
       const p = w.players.find((x) => x.id === bid.playerId);
       if (!p || p.status !== 'active')
         expire(w, bid, p?.name || '선수', '선수가 이미 팀을 떠나 제안이 끝났어요.');
-      else if (!open || today > bid.due)
+      else if (!open || today > bid.due) {
         expire(w, bid, p.name, '답변 기한이 지나 제안이 만료됐어요.');
+        // An offer left to lapse is declined as surely as one turned down (→CLUB-27).
+        resent(w, bid, p);
+      }
     }
   }
 }
@@ -824,6 +839,7 @@ function incomingBid(w: World, day: number, until: number) {
       attention: false,
       ref: bid.id,
     });
+    if (!accept) resent(w, bid, player);
   };
   if (untouchable && offered < UNTOUCHABLE_BAR) {
     // Whoever decides, an untouchable player is not discussed below the bar.
@@ -835,15 +851,8 @@ function incomingBid(w: World, day: number, until: number) {
   }
   if (delegated(w, 'transfers')) {
     const starters = new Set(ownStarters(w).map((p) => p.id));
-    // A starter leaves only when an ageing player has a ready bench replacement in his line.
-    const covered = activePlayers(w).some(
-      (other) =>
-        other.id !== player.id &&
-        lineOfPlayer(other) === lineOfPlayer(player) &&
-        !starters.has(other.id) &&
-        !other.loanUntil &&
-        overall(other) >= overall(player) - 3,
-    );
+    // A starter leaves only with a bench player ready to play his slot (→CLUB-24).
+    const covered = slotCovered(w, player);
     const starter = starters.has(player.id),
       blocker = saleBlocker(w, player);
     if (untouchable) {
@@ -882,6 +891,41 @@ function incomingBid(w: World, day: number, until: number) {
     attention: true,
     ref: bid.id,
   });
+}
+/**
+ * Whether a starter has cover (→CLUB-24): a bench player who plays his formation slot within 3 of
+ * the starter's 실효 OVR there. A player outside the XI always has.
+ */
+export function slotCovered(w: World, player: Player) {
+  const xi = ownStarters(w),
+    slot = xi.findIndex((p) => p.id === player.id);
+  if (slot < 0) return true;
+  const place = formationOf(w.tactic)[slot]!,
+    level = slotOvr(player, place, ownMultiplier(player)),
+    starters = new Set(xi.map((p) => p.id));
+  return activePlayers(w).some(
+    (other) =>
+      !starters.has(other.id) &&
+      !other.loanUntil &&
+      slotOvr(other, place, ownMultiplier(other)) >= level - COVER_MARGIN,
+  );
+}
+/** How far below a starter's 실효 OVR at his slot a bench player may be and still cover it. */
+export const COVER_MARGIN = 3;
+/**
+ * An offer for one of our players was declined — by the owner, the 단장, his stance or by lapse
+ * (→CLUB-27): from a bigger club (a higher division, or the same division and a higher
+ * reputation) and of at least his value, an ambitious player may resent it.
+ */
+function resent(w: World, bid: TransferBid, p: Player | undefined) {
+  if (!p || p.status !== 'active' || !bid.club) return;
+  const club = w.clubs.find((c) => c.id === bid.club),
+    own = clubOf(w);
+  if (!club) return;
+  const bigger =
+    club.tier < own.tier || (club.tier === own.tier && club.reputation > own.reputation);
+  if (bigger && BigInt(bid.fee) >= BigInt(playerValue(w, p)))
+    ambitionAfterDecline(w, p, bid.id, club.name);
 }
 function pruneBids(w: World) {
   const bids = w.bids;
