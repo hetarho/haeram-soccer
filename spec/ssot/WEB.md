@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r61 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r62 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -26,7 +26,7 @@
 
 - WEB-13 [x] Any open game dialog suspends automatic progression until all dialogs are closed. Each dialog owns a separate suspension source; closing one or changing another control cannot release another open dialog. Closing a dialog leaves progression stopped until the owner resumes.
 
-- WEB-14 [o] The business view groups facilities, sponsors and campaigns into compact selectable panels with current cash/fixed-cost context; the ticket price and the marketing level are rows of the 방향 board (→WEB-60). The complete actual ledger remains an explicit detail sheet; budget alerts and bounded local-support recovery stay actionable.
+- WEB-14 [o] The business view groups facilities, sponsors and campaigns into compact selectable panels with current cash/fixed-cost context; the ticket price and the investment rows are rows of the 방향 board (→WEB-60). The complete actual ledger remains an explicit detail sheet; budget alerts and bounded local-support recovery stay actionable.
 
 - WEB-15 [o] Founding is a compact mobile screen with club name, country and capital choice, a recommended generous start, and one create action. The basic screen, including recovery/import tools and footer, fits 360x740 and390x844 without document scrolling across supported browser/platform font metrics. Text remains readable and primary touch targets stay at least44CSSpx; no overflow masking is allowed. Colors and reproducible seed are explicit advanced settings; opened, they scroll within the content region so every control stays reachable (→WEB-63). The screen names the slot it fills and, when another slot holds a game, returns to the slot screen. Existing save hydration shows loading instead of a new-club form; invalid existing saves retain recovery/export paths.
 
@@ -87,7 +87,7 @@
 - WEB-38 [o] Visual language is a dark night-stadium game theme from shared colour tokens: HUD, pressable 3D buttons, card frames and gold/green accents across every view.
 - WEB-39 [o] 방향 holds where the club is going and its money as one page-tab bar (→WEB-69) — 방향 (the direction board →WEB-60), 증축, 자금, 후원 — kept in /business?view= (방향 left out; build, finance, sponsor; the older strategy, facility and marketing values open 방향, 증축 and 자금). The page tab of cash is 자금 so it never reads like the 재정 area of the board (→ECON-25). Tapping a step or card previews its effect; only an explicit apply or commit sends the command.
   - 증축: the three facility parts (→ECON-32) — the stadium's ladder with its steps, capacity against demand, the next expansion or rebuild with cost, time, upkeep and what the works do to capacity, then the training ground and the academy facilities with each level's effect, and any work in progress with its days left.
-  - 자금: the cash projection, fixed costs and runway, the ledger, currency notes, the owner contribution and the marketing campaigns (→ECON-7).
+  - 자금: the cash projection, fixed costs and runway, the ledger, currency notes, the owner contribution and any campaign started before rules 1.19 until it settles (→ECON-7).
   - 후원: every open sponsor slot with its contract, end and offers (→ECON-8), ending with who signs sponsors at the current intervention level and the commercial staff's rule (→ECON-21, →WEB-45).
 - WEB-40 [o] The roster, the transfer market and the staff are tabs of 사람 (→WEB-43). The cups view (route /europe) has one tab for the domestic cup, one per continental competition this season and one for history: each competition shows our status in a line (next tie, the round reached, out or champions), the knockout as a tree (대진표: from the first non-qualifying round whose field, 2 × ties + byes, is 32 or fewer to the final, each tie between the two it came from, undrawn rounds as empty slots; it opens first once such a round is drawn) or as rounds (라운드별: both legs, aggregates and shoot-outs, latest round first, long early rounds folded behind our tie), and league-phase or group tables with qualification zones (league phase 1–8 direct, 9–24 playoff); history steps through closed seasons per competition (이전/다음 컵 시즌 and a season list): the season's winner and final, our run, its archived bracket as tree or rounds (→HIST-13; earlier seasons say only the final was kept), our road through it as tie cards (stage, opponent with division or nation, legs and aggregate, xG, our scorers, shoot-out or away-goals result, a match report per leg) and 역대 기록 — titles by club and by nation, the longest run of titles, doubles and trebles, finals season by season with title-run badges and our runs (→EURO-8, →LEAGUE-5). Upcoming fixtures name their competition and stage ("잉글랜드 컵 8강", "Champions League 16강 2차전"). The match view opens only from a watch action (home next-match card or match-eve card), has no league tabs and opens preparation as a sheet; opening its address without a live playback returns home. For the season in progress, league views own overview, standings, round results, rank trend, scorers and scorer trend as tabs on every viewport, never a dropdown. Sheets never link to another destination.
   - overview is the own-league dashboard (race position, gaps, form, next rival) with the fixture notebook (→WEB-26).
@@ -106,10 +106,10 @@
 
 - WEB-44 [o] Home separates statistics from state. The team-state card shows starters' fatigue, squad morale (shown as 분위기), the manager's standing (trust as 굳건/안정/흔들림/위기, or 대행 체제) and squad size with the injured count, with good/ok/warning/critical tones. Cash is not a tile: it stays in the HUD and joins as the urgent advice when it runs short, winning ties because a club out of money cannot play on. The most urgent warning explains its effect, offers two one-tap remedies and a "more" entry.
   - tapping any state, or the HUD cash, opens its remedy sheet with 3–6 choices, each stating cost, effect and cooldown before commit; owner requests (→CLUB-20) also name who carries them out and list each result with its chance; unavailable choices say why (cooldown, cash, already applied, or the staff deciding it at the current intervention level →WEB-45).
-  - fatigue: suggesting recovery training to the assistant, rest selection, rest days, recovery support, training camp, preparation sheet. morale: squad meeting, team-building day, win bonus, owner's visit, training camp, rest days. manager: public vote of confidence, manager office, candidates. cash: less marketing, lower squad investment, higher ticket price, friendly match, owner capital, the market. squad: market, academy, promote the best prospect.
+  - fatigue: suggesting recovery training to the assistant, rest selection, rest days, recovery support, training camp, preparation sheet. morale: squad meeting, team-building day, win bonus, owner's visit, training camp, rest days. manager: public vote of confidence, manager office, candidates. cash: less 해외 마케팅 or 주변 투자, lower squad investment, higher ticket price, friendly match, owner capital, the market. squad: market, academy, promote the best prospect.
   - cash runway reads in weeks below 13 rounds and in months above, never in rounds.
   - choices act through engine commands; navigation choices close the sheet and open their view.
-  - a choice that changes a standing setting (less marketing, lower squad investment, higher ticket price) opens that setting's home with the choice ready to apply (→WEB-71), and suggesting recovery opens the assistant's card with 회복 집중 ready to suggest; the sheet never changes either itself.
+  - a choice that changes a standing setting (less investment abroad or in the town, lower squad investment, higher ticket price) opens that setting's home with the choice ready to apply (→WEB-71), and suggesting recovery opens the assistant's card with 회복 집중 ready to suggest; the sheet never changes either itself.
 
 - WEB-45 [o] The intervention level answers one question — which decisions the owner takes himself — and is the only control over it: the level alone sets the clock stops and which decisions the staff take (→STAFF-13), never a choice of direction; no home has a staff switch and no event kind has a stop of its own. ← one control says what the owner decides himself; switches spread over the homes left him unsure which one counts
   | level | stops | the staff decide |
@@ -176,7 +176,7 @@
 - WEB-60 [o] The 방향 page tab is one board of the club's direction: every strategy card (→ECON-22) and every dial (→ECON-16, →ECON-17) is a row of named options by area (→ECON-25), drawn and drafted the same way and applied at once, never called a build (빌드), a card row or a dial. ← a card row and a dial drawn and behaving differently in one area read as two kinds of control for one plan
   - the direction in force: its name (a preset's, a saved direction's, 기본 방향 when every card is standard, else 맞춤 방향) and combined gains and costs.
   - 추천 방향 and 내 방향: the presets and the owner's saved directions (→WEB-61) as cards with their idea, key gains and costs and the synergy they light or aim at; 방향 만들기 and saving the direction in force.
-  - the seven areas (→ECON-25) on one screen, each folded behind a header naming the options in force in its rows; tapping a header unfolds it, and every option is open at any time.
+  - the eight areas (→ECON-25) on one screen, each folded behind a header naming the options in force in its rows, 지역 and 글로벌 also their base (→ECON-34); tapping a header unfolds it, and every option is open at any time.
   - every row looks and acts the same: its name and question, the option in force at the right, its options as equal chips in their order (a card's standard option reads 표준; a dial's steps keep their names, with no meter fill), and one detail below for the option in force or drafted — its idea or summary, gains and costs, and for a row that spends, its cost per round.
   - the synergies with met and missing conditions (→CLUB-21), lit and nearly lit first and the rest behind one disclosure; the odds the direction sets (golden prospect at the next intake, a squad meeting working, an offer arriving in a window month).
   - tapping an option, a preset or a saved direction adds it to a draft and keeps its area unfolded: a summary pinned while it is open with combined gains and costs, each spending row's cost per round and projection, synergies lighting or dropping and odds moving, 되돌리기 and 적용. 적용 applies the whole draft at once; tapping a drafted option again, or the option in force, takes the row out of the draft.
@@ -222,10 +222,10 @@
   | bids and offers | 사람 › 이적시장 |
   | the manager and his renewal | 사람 › 감독 |
   | each coach and his renewal | 사람 › 코치진 |
-  | every direction row (→ECON-25) — the cards, squad investment, 재계약 기조, recruitment, 육성 목표, 데뷔 시점, academy investment, the staff rows, marketing, 재정 기조, ticket price — presets, saved directions | 방향 › 방향 |
+  | every direction row (→ECON-25) — the cards, squad investment, 재계약 기조, recruitment, 육성 목표, 데뷔 시점, academy investment, the staff rows, 재정 기조, the 지역 and 글로벌 rows, ticket price — presets, saved directions | 방향 › 방향 |
   | sponsor contracts | 방향 › 후원 |
   | facilities | 방향 › 증축 |
-  | campaigns, owner capital | 방향 › 자금 |
+  | owner capital, campaigns started before rules 1.19 | 방향 › 자금 |
   | the intervention level (who decides, and the stops), background play | the intervention dialog (HUD menu); the level also in the clock's popover |
   - event cards (→WEB-42) decide their event or open a home; remedies (→WEB-44) act or open a home with the choice ready; who takes a decision is set only by the intervention level; a home names it and opens the dialog (→WEB-45).
 ## flow
@@ -235,6 +235,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r62 261014 WEB-60✎ seven→eight areas, 지역 and 글로벌 headers show their base; WEB-39✎ 자금 campaigns→only those started before 1.19; WEB-44✎ cash remedy less marketing→less 해외 마케팅 or 주변 투자; WEB-14✎ WEB-71✎ marketing→the 지역 and 글로벌 rows
 - r61 261014 WEB-70✎ 유소년's director's rule→lines naming 육성 목표 and 데뷔 시점; WEB-71✎ the youth rows' home→방향
 - r60 261014 WEB-45✎ level 3 staff = level 2's→+sponsors, coaches, manager (stops window opening, bids, cash); level 4→+offers (stops cash); criteria editable at any level→direction rows on the board; WEB-43✎ criteria editors→lines naming the rows; WEB-71✎ criteria homes→방향; WEB-39✎ 재정 tab→자금; WEB-60✎ six→seven areas; WEB-61✎ composer card rows by area
 - r59 261014 WEB-39✎ 운영 tabs 운영 전략·재정·시설·후원·캠페인→방향 tabs 방향·증축·재정·후원; WEB-60✎ operating board, card rows and dials drawn apart→방향 board of one row kind, areas folded; WEB-61✎ 나만의 전략 만들기→방향 만들기; WEB-10✎ WEB-14✎ WEB-43✎ WEB-69✎ WEB-70✎ WEB-71✎ 운영→방향

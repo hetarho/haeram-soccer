@@ -27,6 +27,9 @@
 - 261014 decided ECON-22: 유입 방식 → the 유스 정책 slot renamed, 1군 직행 경로 moved to 데뷔 시점 빠른 데뷔, 엘리트 선발 added (potential +8, intake −2); 트레이딩 머신 keeps its other cards until presets fill rows in slice 6 (alt: keep 1군 직행 경로 as a card too)
 - 261014 decided CLUB-22: staff stances → at window openings with transfers delegated, only players at 협상 가능: 셀링 클럽 lists non-starters 30+, 판매용 육성 non-starters ≤ 21, 핵심 지키기 marks the three best starters 이적 불가 (alt: staff never touch stances)
 - 261014 decided ECON-29 ideation/club-direction: calibration → measured once for slice 2 (T091) and once more after slice 6, not after every slice (alt: 40 careers after each slice)
+- 261014 decided ECON-34 ECON-16 ideation/club-direction: the bases → one 지역 기반 fed by 주변 투자 and 풀뿌리 (targets add up), one 글로벌 인지도 fed by 해외 마케팅 and 해외 스카우트망, rising 2% of the gap a round and falling 1%; each row also works while paid (gate, intake potential, fans, candidates); 해외 투어 none/short/long once a summer (alt: one stock per row | effects only while paid)
+- 261014 decided ECON-22: 글로벌 브랜드 → replaced in 지역 관계 방식 by 지역 상생 (지역 기반 ×1.5 faster, sponsor offers ×0.95); 회원제 stays a 수익 모델 card (alt: move 회원제 into the slot)
+- 261014 decided ECON-7 SAVE-10: campaigns and marketing → no new campaigns, running ones settle; a marketing level loads as the same 해외 마케팅 level, its gate part dropped (alt: split it into both rows)
 
 ## ideation
 | id | st |
@@ -38,20 +41,22 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 61 | 61 | - | 0 |
+| WEB | 62 | 62 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
-| CLUB | 28 | 28 | - | 0 |
+| CLUB | 29 | 29 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
 | STAFF | 17 | 17 | - | 0 |
-| ECON | 27 | 27 | - | 0 |
+| ECON | 28 | 28 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 8 | 8 | - | 0 |
-| SAVE | 30 | 30 | - | 0 |
+| SAVE | 31 | 31 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T094 | Local and global bases in the engine | ECON CLUB SAVE | T092 | todo |
+| T095 | 지역 and 글로벌 on the board | WEB ECON | T094 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -72,6 +77,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 update-ssot ECON r28 CLUB r29 WEB r62 SAVE r31 (club-direction slice 4): 지역 기반 and 글로벌 인지도, the 지역 and 글로벌 rows, marketing and new campaigns gone; create-task T094, T095
 - 261014 T092 done (cb6d2d8), T093 done (bbb99ff): youth rows, 엘리트 선발, staff stances, rules 1.18.0 on work/direction
 - 261014 T091 done: 40 careers on slice 2, none bankrupt, wage bill 44.8% (band 45–70%), operating +3.5%; ECON r27; T092 doing
 - 261014 create-task slice 3 → T092 (engine youth rows, stances, rules 1.18.0), T093 (board and 유소년)
@@ -91,4 +97,3 @@
 - 261014 update-ssot WEB ECON start: club-direction slice 1
 - 261014 ideation club-direction ready: eight areas of direction rows replace cards, dials and staff criteria; 재정 기조, 지역 기반·글로벌 인지도, delegated signings, a level ladder; six slices, the first unifying UI and entities
 - 261014 ideation club-direction start: one direction tab, delegated staff decide by it, one card shape and behaviour
-- 261014 work/intervention (T080–T085) merged with main's start-screen fix and pushed to main at caa5e83 after CI passed every job

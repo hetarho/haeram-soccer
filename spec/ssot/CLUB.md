@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r28 | Define the implemented browser-demo behavior for squad and growth.
+> r29 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating equals its league's average club XI (±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -38,7 +38,7 @@
   - younger age groups are not tracked as players: academy investment (→ECON-16), the youth director and the academy facilities (→ECON-32) stand for them through the intake's size and potential.
   - growth per settled round: min(0.3, gap to potential / 150) × the youth director, academy facilities, academy investment, build and synergy factors × the age group's (U-17 ×1.2, U-19 ×1.0, U-21 ×0.8) × the youth focus (→CLUB-31).
   - promotion signs a first professional contract, from 16 (17 in England); a prospect must still be ready to be promoted by the staff (→STAFF-13), so debuts at 16–17 stay rare in strong divisions and commoner in weak ones. ← measured: about 0.3 under-18 debutants per big-five club a season, 2009–2023 (CIES); weaker leagues field more debutants
-  - academy investment (→ECON-16), the club build (→ECON-22) and the pipeline synergy (→CLUB-21) add prospects, potential and growth.
+  - academy investment and 풀뿌리 유망주 투자 (→ECON-16), the bases with the 성골 유스 or 해외 유스 스카우트 card (→ECON-34), the club build (→ECON-22) and the pipeline synergy (→CLUB-21) add prospects, potential and growth.
   - the 방향 board (→WEB-60) shows the exact chance that the next intake brings a prospect of potential 80+, from the same uniform draws the intake uses.
 - CLUB-17 [o] Fee-bearing purchases, loans and sales happen only in transfer windows: summer from the day the season closes (→LEAGUE-9) to 1 September and winter 1 January–1 February. ← the market opens as the season's review ends, not during its final rounds Free agents sign at any time. The market shows the window state and deadline.
 - CLUB-18 [o] Bids are answered 2–4 days later with accept, reject or a counter; acceptance chance rises with the offered fee against the asking value and the chief scout. The fee is paid on completion; unanswered bids lapse at the deadline. During windows other clubs bid for our players (answered by the owner, or by the staff when delegated) and lapse after 5 days; squad minimums still apply. The bidder is a real club whose strength suits the player (4 below to 12 above his ability, stronger clubs more often, any country). Delegated staff accept an offer at or above their sale bar for a non-starter, or for a starter aged 30+ with a bench player of the same role within 3 ability (never a starter under 핵심 지키기). The report names the bar and each step.
@@ -69,7 +69,7 @@
   | 철의 장막 | organizer or counter manager · defence coach 65+ or specialist · starting defenders' defence 62+ | opponent chances −1 point |
   | 유스 파이프라인 | academy investment 3+ · youth director developer or 70+ · developer manager or youth trait | academy growth ×1.15, intake potential +3 |
   | 머니볼 | 데이터 스카우팅 card · scout spotter or negotiator · recruitment level ≤ 2 | candidate potential +3, fees ×0.92 |
-  | 상업 제국 | 상업 확장 revenue card · marketing 4+ · a stadium of 30,000+ | new sponsor offers ×1.1 |
+  | 상업 제국 | 상업 확장 revenue card · 해외 마케팅 4+ · a stadium of 30,000+ | new sponsor offers ×1.1 |
   | 원 팀 | motivator manager · squad investment 4+ · morale 65+ | morale baseline +3 |
   | 우리 동네 아이들 | 성골 유스 or 유소년 클럽 제휴 · 지역 밀착 · 가족 같은 클럽 | morale baseline +2, intake potential +2 |
   | 트레이딩 머신 | 데이터 스카우팅 · 데뷔 시점 빠른 데뷔 · 셀링 클럽 or 쇼케이스 | candidate potential +2, academy growth ×1.1 |
@@ -153,6 +153,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r29 261014 CLUB-21✎ 상업 제국 marketing 4+→해외 마케팅 4+; CLUB-16✎ +풀뿌리 유망주 투자 and the bases add prospects and potential
 - r28 261014 CLUB-32+ 육성 목표 (표준, 1군 공급, 판매용 육성, 최소 운영) and 데뷔 시점 (표준, 빠른 데뷔, 준비된 뒤, 늦게) set the youth director's promotion, release and listing; CLUB-22✎ +staff set stances at window openings by 매각 기조 and 육성 목표; CLUB-21✎ 트레이딩 머신 1군 직행 경로→데뷔 시점 빠른 데뷔; CLUB-13✎ CLUB-31✎ focus rules read 데뷔 시점
 - r27 261014 CLUB-18✎ sale bar 130%/200% of value→by 매각 기조 (셀링 클럽 110/160 … 핵심 지키기 150/250, never a starter), runway steps 13/30 rounds→the 재정 기조 steps; CLUB-24✎ runway 30 weeks / 13-week warning→the 재정 기조 steps; CLUB-26✎ the owner's talk rule (wage cap 90–140%, minimum OVR, maximum age)→재계약 기조 (표준 110%, 모두 붙잡기 140%, 핵심만 붙잡기 starters 140%, 짠물 100%, 젊은 선수 우선 under 30), cash checks 13 rounds and 65%→재정 기조
 - r26 261013 CLUB-12✎ facilities→the training ground; CLUB-16✎ facilities→academy facilities; CLUB-21✎ 상업 제국 facilities 6+→stadium 30,000+

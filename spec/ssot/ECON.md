@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r27 | Define the implemented browser-demo behavior for historical club economy.
+> r28 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -10,7 +10,7 @@
 - ECON-6 [o] A currency change converts every live amount exactly once, keeps original historical transaction units, and applies explicit rounding.
   - live amounts: cash and the season's running totals; every running contract — players, manager, coaches, sponsor, campaigns; pending bids and offers; prices on offer — market candidates and free-agent managers and coaches.
   - completed ledger entries keep the currency they were made in.
-- ECON-7 [o] Marketing options: local outreach, ticket campaign, merchandise, player promotion. Show cost/expected range and later realized income/net result; diminishing returns and demand constrain outcomes.
+- ECON-7 [o] There are no marketing campaigns to start: local outreach and ticket campaigns became 주변 투자 and the ticket price, merchandise and player promotion 해외 마케팅 (→ECON-16, →ECON-34). A campaign started before rules 1.19 settles as before, with its realized income and net result (→ECON-15). ← two ways to grow the following, not three
 - ECON-8 [o] Commercial income comes from sponsor contracts, one per slot, each signed for 2–5 seasons at an annual amount fixed for its term plus the slot's bonus; offers are valued at signing from the division, reputation, last season's finish, the following (with diminishing returns) and the football index (→ECON-26), so commercial income grows only when a contract is renewed or replaced. ← a sponsor paying more every round as supporters grew had no ceiling
   | slot | opens (ENG; other countries in the catalog) | share of the club's commercial value | bonus |
   |---|---|---|---|
@@ -22,10 +22,12 @@
   - each offer keeps one of the existing kinds: guaranteed, performance-linked (lower base, larger bonus), exclusive (blocks merchandise campaigns) or inflation-linked; one contract per slot, no repeated grant.
   - a relegation lowers every running contract's remaining seasons by 30%; a promotion raises nothing before renewal.
   - slots open by year and country from a source-attributed catalog, marked estimated where it is (→ECON-3).
+  - the 지역 후원 slot's offers grow with 지역 기반, every other slot's with 글로벌 인지도 (→ECON-34).
 - ECON-9 [o] Match attendance comes from the club's local supporters, its division, form, the opponent and the ticket price, within the stadium's capacity; receipts are attendance × price; no duplicate season-ticket or sponsor revenue. ← a global following of millions filling any stadium made the gate limitless
   - local supporters are bounded by the club's catchment: its city, its division and its stature (giants and big clubs larger, →LEAGUE-10); the global following (→ECON-23) feeds sponsor values, not the gate.
   - targets (ENG; other countries by their football index →ECON-26) for a club established in its division, its reputation at the division's usual level, calibrated with →ECON-29 and then recorded as measured: average league attendance 20–45k in the top flight by era, 8–20k in the second tier, 4–10k in the third, 0.3–2k in the amateur league; a club that rose faster than its following draws less, and the reference club's own crowds are recorded beside the targets.
   - measured 261013 (England-equivalent): established clubs 34,500 / 13,800 / 5,300 / 970; the reference club in at least its third straight season 25,000 / 7,100 / 3,200 / 890.
+  - 주변 투자 adds its gate demand while paid, and 지역 기반 up to +10% (→ECON-16, →ECON-34).
 - ECON-10 [o] Cash, income, expense, recurring wages, annual profit, budget runway and CPI-adjusted comparison are separate statistics.
   - the season ledger names every kind of income and expense, owner requests (→CLUB-20) and win bonuses included; a catch-all line holds only entries no current rule produces.
 - ECON-11 [o] If operations produce negative cash, play continues with an explicit budget warning and the bankruptcy countdown (→ECON-24); optional local-support recovery is a bounded game action, not a real-money payment.
@@ -63,13 +65,17 @@
 
 - ECON-15 [o] An active marketing campaign shows its paid cost, actual current cash and remaining settlement rounds. A hypothetical second debit is never labelled as its current or post-start cash; new-campaign forecasts remain separate from already committed spend.
 
-- ECON-16 [o] Club operating policy has four ordered five-level settings; absent saves and absent keys resolve to the defaults, which reproduce pre-policy settlement exactly. ← ongoing choices stay easy while still changing the simulation
+- ECON-16 [o] Club operating policy has ordered settings, the dials of the 방향 board (→ECON-25); absent saves and absent keys resolve to the defaults, which reproduce pre-policy settlement exactly. ← ongoing choices stay easy while still changing the simulation
   | key | default | effect by level 1→5 |
   |---|---|---|
   | support | 3 | contract talks: goodwill −5/0/+5/+10/+15% (→CLUB-26) · round development ×0.8/0.9/1/1.12/1.25 · round fatigue recovery −2/−1/0/+1/+2 · operating expenses ×0.9/0.95/1/1.1/1.2 (→ECON-30) |
   | recruitment | 3 | market offers age 17–21/18–25/18–30/23–31/26–33 · ability 35–65/38–75/40–85/50–88/60–92 · potential +12/+6/0/0/0 · transfer fee ×0.85/0.95/1/1.15/1.3 |
-  | marketing | 1 | per-round spend 0/1/2.5/4.5/7 units (1901 prices, billed with operating costs) · fans +0/0.4/0.8/1.3/2% per settled round with the campaign saturation · gate demand +0/2/4/6/8% |
   | academy | 1 | per-round spend 0/1/2.5/4.5/7 units · intake +0/0/1/1/2 prospects · intake potential +0/3/5/8/11 · academy growth ×1/1.1/1.2/1.3/1.45 |
+  | localInvest (주변 투자) | 1 | per-round spend 0/1/2.5/4.5/7 units (1901 prices, billed with operating costs) · gate demand +0/2/4/6/8% · 지역 기반 aims at 0/20/40/65/100 (→ECON-34) |
+  | grassroots (풀뿌리 유망주 투자) | 1 | per-round spend 0/1/2.5/4.5/7 units · intake potential +0/1/2/3/4 · 지역 기반 aims at +0/10/20/30/45 |
+  | globalMarketing (해외 마케팅) | 1 | per-round spend 0/1/2.5/4.5/7 units · fans +0/0.4/0.8/1.3/2% per settled round · 글로벌 인지도 aims at 0/20/40/65/100 |
+  | globalScouting (해외 스카우트망) | 1 | per-round spend 0/1/2.5/4.5/7 units · market candidates +0/1/2/3/4 · candidate potential +0/0/1/1/2 · 글로벌 인지도 aims at +0/10/20/30/45 |
+  | tour (해외 투어) | 1 | none / a short tour / a long tour each summer: income 20 + 2 × reputation / 40 + 4 × reputation units when the season starts, 글로벌 인지도 +5 / +10 at once, every player's fatigue +10 / +20 |
   - the support setting is shown as squad investment (선수단 투자): the training and medical environment and how the club treats its players in talks, paid for through the operating expenses it scales. ← with no cost every club would run it at the top
   - each combination of settings draws its own market list under its own IDs; a pending bid keeps its player and terms (→CLUB-14).
   - changing a level records a `policy` event and takes effect from the next settlement; reselecting the current level records nothing.
@@ -84,14 +90,14 @@
 - ECON-20 [o] When cash after a round's costs is non-negative but covers fewer than 13 rounds of fixed costs, a cash warning inbox item (→WEB-42) appears once per season with its weeks left and remedies. It is a status, never a stop: the HUD cash and a red band show it (→WEB-56).
 - ECON-21 [o] Sponsors with business delegated (→STAFF-13): whenever an open sponsor slot (→ECON-8) is empty the commercial staff sign its best guaranteed offer at once and report it. Without delegation a slot left empty at a season's start, or a contract in its final season on 1 April, posts a sponsor reminder (→WEB-42).
 
-- ECON-22 [o] The club build — shown to the owner as the club's direction (방향, →WEB-60) — is six slots — 유입 방식, 스카우팅, 매각 기조, 수익 모델, 홈·팬, 라커룸 문화 — each holding one card: the standard card or one of four others, so 5^6 = 15,625 strategies before policy, staff or manager. ← combining levers is the fun: owners build their own club instead of picking one of a few presets Every card has at least one gain and one cost; additions add and multipliers multiply across slots. The owner drafts freely, sees combined effects, synergies (→CLUB-21) and odds, and applies a draft at once (recorded as a build event titled 방향 with the direction's name: the preset's, the saved direction's (→WEB-61), else 기본 방향 or 맞춤 방향; a name recorded as 기본 전략 or 맞춤 전략 reads 기본 방향 or 맞춤 방향); every rule that reads a card uses the new one from then on.
+- ECON-22 [o] The club build — shown to the owner as the club's direction (방향, →WEB-60) — is six slots — 유입 방식, 스카우팅, 매각 기조, 수익 모델, 지역 관계 방식, 라커룸 문화 — each holding one card: the standard card or one of four others, so 5^6 = 15,625 strategies before policy, staff or manager. ← combining levers is the fun: owners build their own club instead of picking one of a few presets Every card has at least one gain and one cost; additions add and multipliers multiply across slots. The owner drafts freely, sees combined effects, synergies (→CLUB-21) and odds, and applies a draft at once (recorded as a build event titled 방향 with the direction's name: the preset's, the saved direction's (→WEB-61), else 기본 방향 or 맞춤 방향; a name recorded as 기본 전략 or 맞춤 전략 reads 기본 방향 or 맞춤 방향); every rule that reads a card uses the new one from then on.
   - cards change at any time, like the dials: a draft, preset or saved strategy applies at once whatever changed before, with no lock and no reservation for a later season. ← owners change course when the club needs it; each card's costs are the price of switching
   - presets fill the slots in one tap; each has one identity and lights or aims at a synergy:
     | preset | cards (others standard) | aim |
     |---|---|---|
     | 동네의 자부심 | 성골 유스, 지역 인재 우선, 핵심 지키기, 회원제 운영, 지역 밀착, 가족 같은 클럽 | lights 우리 동네 아이들 |
     | 트레이딩 머신 | 데이터 스카우팅, 셀링 클럽, 철저한 경쟁 | 트레이딩 머신 with 데뷔 시점 빠른 데뷔; 머니볼 with a spotter or negotiator scout and recruitment ≤ 2 |
-    | 상업 제국 | 광역 네트워크, 상업 확장, 글로벌 브랜드, 스타 대우 | 상업 제국 with marketing 4+ and a stadium of 30,000+ |
+    | 상업 제국 | 광역 네트워크, 상업 확장, 스타 대우 | 상업 제국 with 해외 마케팅 4+ and a stadium of 30,000+ |
     | 승격 올인 | 즉시 전력, 핵심 지키기, 구단주 투자, 홈 요새, 베테랑 리더십 | owner money and home strength now, youth growth given up |
     | 알뜰 생존 | 유소년 클럽 제휴, 지역 인재 우선, 강경 협상, 긴축 재정, 가족 관중, 베테랑 리더십 | player wages ×0.91 with morale held level, for small starts |
   | slot | card | effects |
@@ -108,23 +114,24 @@
   | 매각 기조 | 쇼케이스 | offers ×1.3, sale fees ×1.1; morale baseline −1 |
   | 매각 기조 | 핵심 지키기 | morale baseline +2; offers ×0.5 |
   | 매각 기조 | 강경 협상 | sale fees ×1.15; offers ×0.8 |
-  | 수익 모델 | 상업 확장 | new sponsor offers ×1.2, campaign income ×1.25, marketing fan growth ×1.2; home gate demand −3% |
+  | 수익 모델 | 상업 확장 | new sponsor offers ×1.2, 해외 마케팅 fan growth ×1.2; home gate demand −3% |
   | 수익 모델 | 구단주 투자 | owner capital +2 a season (5); player wages ×1.05 |
   | 수익 모델 | 긴축 재정 | player wages ×0.94; morale baseline −2, candidate ability −2 |
   | 수익 모델 | 회원제 운영 | home gate demand +5%, supporters a win brings ×1.2; new sponsor offers ×0.9, owner capital −1 (2) |
-  | 홈·팬 | 지역 밀착 | home gate demand +6%, supporters a win brings ×1.4; campaign income ×0.9 |
-  | 홈·팬 | 홈 요새 | home strength +1.5, supporters a win brings ×1.1; marketing fan growth ×0.85 |
-  | 홈·팬 | 글로벌 브랜드 | marketing fan growth ×1.3, new sponsor offers ×1.1; home gate demand −4%, home strength −0.5 |
-  | 홈·팬 | 가족 관중 | home gate demand +4%, marketing fan growth ×1.1; home strength −0.5 |
+  | 지역 관계 방식 | 지역 밀착 | home gate demand +6%, supporters a win brings ×1.4; 해외 마케팅 fan growth ×0.9 |
+  | 지역 관계 방식 | 홈 요새 | home strength +1.5, supporters a win brings ×1.1; 해외 마케팅 fan growth ×0.85 |
+  | 지역 관계 방식 | 지역 상생 | 지역 기반 moves ×1.5 faster (→ECON-34); new sponsor offers ×0.95 |
+  | 지역 관계 방식 | 가족 관중 | home gate demand +4%, 해외 마케팅 fan growth ×1.1; home strength −0.5 |
   | 라커룸 문화 | 가족 같은 클럽 | morale baseline +3; player wages ×1.03 |
   | 라커룸 문화 | 철저한 경쟁 | growth of players ≤ 21 ×1.1; morale baseline −1 |
   | 라커룸 문화 | 스타 대우 | candidate ability +2, morale baseline +1; player wages ×1.1 |
   | 라커룸 문화 | 베테랑 리더십 | morale baseline +2; growth of players ≤ 21 ×0.9 |
   - signed sponsor contracts keep their amounts; a build changes new offers only.
+  - a build holding 글로벌 브랜드 (rules before 1.19) loads without it: the global area took its place (→ECON-25).
   - a build holding 1군 직행 경로 (rules before 1.18) loads without it and with 데뷔 시점 빠른 데뷔, which took its effects (→CLUB-32); a saved direction holding it loads the same way.
   - a club vision stored by rules 1.6–1.7 loads as the cards its vision stood for at 1.8 (균형 운영 all standard, 유스 명가, 셀링 클럽, 상업 확장, 지역 밀착, 승격 올인 as then defined); it reads as a current preset only when the cards match one.
 
-- ECON-23 [o] Supporters follow reputation, not the stadium: each league round they move 3% toward the following the reputation commands (800 × 1.085^reputation: about 2,000 at 12, 47,000 at 50, 1.2 million at 90), a win adds 0.4% × the build's win-fans effect, a defeat costs 0.1%, marketing and campaigns add theirs; there is no ceiling, never below 200. ← a fixed cap and compounding wins both broke the long game
+- ECON-23 [o] Supporters follow reputation, not the stadium: each league round they move 3% toward the following the reputation commands (800 × 1.085^reputation: about 2,000 at 12, 47,000 at 50, 1.2 million at 90), a win adds 0.4% × the build's win-fans effect, a defeat costs 0.1%, 해외 마케팅 and a campaign started before rules 1.19 add theirs, and 글로벌 인지도 multiplies the following the reputation commands (→ECON-34); there is no ceiling, never below 200. ← a fixed cap and compounding wins both broke the long game
   - the following itself pays nothing: local supporters and the stadium decide the gate (→ECON-9), and the following raises sponsor offers with diminishing returns (→ECON-8).
 - ECON-24 [o] Bankruptcy ends a career: each league round settled with negative cash counts one, getting back to zero or above resets the count; at 8 in a row, or at once when the debt passes half a season's fixed costs, the club goes bankrupt. ← debt used to freeze play behind an alert instead of ending it
   - the first round in debt posts a "파산 위기" inbox item (a status, not a stop); the HUD cash and a red band count the rounds left (→WEB-56)
@@ -137,8 +144,9 @@
   | 매각 | 매각 기조 | - | answers to offers (→CLUB-18, →CLUB-24) |
   | 유소년 | 유입 방식 | 육성 목표, 데뷔 시점 (→CLUB-32), 유소년 투자 | academy promotion, release and listing; the youth director's focus (→CLUB-31) |
   | 스태프 | - | 선호 학파, 감독 기조 (→STAFF-18), 코치 기조 (→STAFF-15) | the manager post, the coaching departments |
-  | 재정 | 수익 모델 | 마케팅, 재정 기조 (→ECON-33) | sponsors (→ECON-21); 재정 기조 bounds every delegated spend |
-  | 홈·팬 | 홈·팬 | 티켓 가격 | - |
+  | 재정 | 수익 모델 | 재정 기조 (→ECON-33) | sponsors (→ECON-21); 재정 기조 bounds every delegated spend |
+  | 지역 | 지역 관계 방식 | 주변 투자, 풀뿌리 유망주 투자, 티켓 가격 | - (builds 지역 기반 →ECON-34) |
+  | 글로벌 | - | 해외 마케팅, 해외 스카우트망, 해외 투어 | - (builds 글로벌 인지도 →ECON-34) |
   - a card row says how the club goes about an area, a dial how much it puts in, a staff row how the staff choose; presets and saved directions fill only the six cards and leave every other row as set; every row changes at any time, and its default (표준, or a dial's default step) keeps the club as it was before the row existed.
   - the market slot is named 매각 기조 so it never reads like the 영입 기조 dial; the training focus is no row of the board: it belongs to 훈련 (→WEB-70).
 - ECON-26 [o] A football index per country and year scales what football pays and charges beyond prices: sponsor values, ticket presets, player and staff market wages and transfer values, the division amounts of clubs' operating expenses (→ECON-30) and facility building and upkeep (→ECON-12); league distributions and cup and continental prizes follow the broadcasting index instead (→ECON-31). It grows with prices and, from commercialisation, much faster. ← income and wages must grow together, as they did in real football
@@ -177,6 +185,12 @@
   - runway kept: cash after the spend covers that many rounds of fixed costs with the new wage in place of the old (→ECON-20), and the season's cash projection with it (→ECON-18) still ends the season covering them.
   - wage bill ceiling: the yearly wage bill after a raise, staff included, against the club's revenue over the last 12 months (→CLUB-26).
 
+- ECON-34 [o] Two bases, 지역 기반 and 글로벌 인지도 (0–100, new clubs 0), grow while the club invests in its town or abroad and fade when it stops; results build reputation, investment builds the bases, and no base raises reputation. ← a club's ties to its town and its name abroad take years to build and to lose
+  - each settled league round a base moves toward the target its area's investment rows set (→ECON-16; the two rows' targets add up, at most 100): 2% of the gap while rising (3% with the 지역 상생 card for 지역 기반), 1% while falling; a 해외 투어 adds its 글로벌 인지도 at once.
+  - 지역 기반 S: home gate demand +S/10 % (→ECON-9); the 지역 후원 slot's offers ×(1 + S/200) (→ECON-8); with the 성골 유스 card, intake potential +S/25 and one more prospect from 50 (→CLUB-16).
+  - 글로벌 인지도 S: the following reputation commands ×(1 + S/100) (→ECON-23); every other sponsor slot's offers ×(1 + S/250); with the 해외 유스 스카우트 card, intake potential +S/33.
+  - both are shown in their areas' headers on the 방향 board (→WEB-60).
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -184,6 +198,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r28 261014 ECON-34+ 지역 기반 and 글로벌 인지도 (0–100) built by the 지역 and 글로벌 rows; ECON-16✎ marketing dial→주변 투자, 풀뿌리 유망주 투자, 해외 마케팅, 해외 스카우트망, 해외 투어; ECON-7✎ four campaigns→none to start, older ones settle; ECON-22✎ 홈·팬 slot→지역 관계 방식, 글로벌 브랜드→지역 상생, 상업 제국 preset without it, marketing/campaign effects→해외 마케팅; ECON-25✎ +지역, 글로벌 areas, 마케팅 out of 재정; ECON-8✎ ECON-9✎ ECON-23✎ read the bases
 - r27 261014 ECON-29✎ measured under rules 1.16→1.17 (direction rows, 셀링 클럽 bar 110%): wage bill 44.3%→44.8% (still below 45%), operating result +4.8%→+3.5%, sales 12.3%→13.2%, 2000s mix 43.7/32.8/23.5→43.6/32.9/23.5, 1950s 88.8→88.5%, ladder 95.2→93.9, none bankrupt
 - r26 261014 ECON-22✎ slot 유스 정책→유입 방식, 1군 직행 경로→moved to 데뷔 시점 빠른 데뷔, +엘리트 선발 (intake potential +8, intake −2), 트레이딩 머신 preset without 1군 직행 경로; ECON-25✎ 유소년 area +육성 목표, 데뷔 시점
 - r25 261014 ECON-25✎ six areas of a card and its dials→seven areas by the decisions they steer: 선수단·계약 +재계약 기조, 스태프 (선호 학파, 감독 기조, 코치 기조), 수익→재정 +재정 기조; ECON-33+ 재정 기조: runway kept, wage-bill ceiling, promotion floor and sell-harder steps by option (표준 = 13 rounds, 65%, a year, 13/30)
