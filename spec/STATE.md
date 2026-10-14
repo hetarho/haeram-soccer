@@ -14,9 +14,16 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| q7m2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T10:10Z | 2026-10-14T10:33Z | T103 |
+| q7m2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T10:10Z | 2026-10-14T10:51Z | T104 |
 
 ## inbox
+- 261014 decided T102: an offer refused unseen under 이적 불가 while the owner holds transfers names who → 구단이 (alt: keep 스태프가 | 단장이) — the 단장 takes no decision the level keeps with the owner (STAFF-20)
+- 261014 decided T102: activation of rules 1.22 tells the owner → one inbox item naming the new 단장 (alt: silent) — as the 1.17 and 1.19 activations do
+- 261014 decided CLUB-33: when a window's requests are judged → the day after its last day, so a deadline-day signing counts (alt: on the close day before the owner acts)
+- 261014 decided CLUB-33: whose requests are judged after a manager change → only the manager who made them; a successor is not judged (alt: judge whoever is in post)
+- 261014 decided CLUB-33: does a loan meet a request → yes, a player of the role joined (alt: transfers only)
+- 261014 decided CLUB-33: a new club's first window → founding is its opening: the shortlist, the requests and the window start at founding (alt: wait for the 4th round)
+- 261014 decided CLUB-33: the 단장's order within a requested role → the manager's pick first even when he costs a fee and a free agent of the role is listed (alt: free agents first over the pick) — the rule names the pick first
 - 261014 suggest -: club-direction added 15 tasks (T086–T100) in one day — run review-code on apps/web/src/ui and packages/engine/src before the next feature
 
 ## ideation
@@ -31,7 +38,7 @@
 | ARCH | 9 | 9 | - | 2 |
 | WEB | 65 | 65 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
-| CLUB | 32 | 32 | - | 0 |
+| CLUB | 33 | 33 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
 | STAFF | 19 | 19 | - | 0 |
@@ -43,8 +50,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T103 | The shortlist, the manager's requests and the 단장's signings | CLUB STAFF SAVE | T102 | doing@261014.q7m2 |
-| T104 | The 단장's card, the shortlist and the requests on screen | WEB STAFF CLUB | T102 T103 | todo |
+| T104 | The 단장's card, the shortlist and the requests on screen | WEB STAFF CLUB | T102 T103 | doing@261014.q7m2 |
 | T105 | Re-measure the economy with the 단장 | ECON | T102 T103 | todo |
 
 ## work
@@ -67,6 +73,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 T103 done (69e0808): shortlist, requests with the manager's pick, −3 trust at an unmet window's close, the 단장 signing from them; goldens regenerated; update-ssot CLUB r33 (CLUB-33 judged the day after the close, loans count, a new manager is not judged); T102 on main after CI 38550303926; T104 doing
 - 261014 T102 done (5583688): the 단장 post, negotiation moved from the chief scout, delegated reports name him, rules 1.22.0 with activation; unit 705, Chromium e2e 107; T101 on main after CI 38548269434; T103 doing
 - 261014 T101 done (d825700): 방향 at /direction, older /business addresses open their tab there; unit 700, Chromium e2e 31 of the touched specs; T102 doing
 - 261014 create-task T101 (/direction), T102 (the 단장 post), T103 (shortlist and requests), T104 (screens), T105 (explore 1h: calibration)
@@ -86,6 +93,3 @@
 - 261014 T094 done (89887ea): 지역 기반 and 글로벌 인지도, the five investment rows, 지역 상생, no new campaigns, rules 1.19.0; ECON r29 exclusive sponsor halves 해외 마케팅's fans; T095 doing
 - 261014 update-ssot ECON r28 CLUB r29 WEB r62 SAVE r31 (club-direction slice 4): 지역 기반 and 글로벌 인지도, the 지역 and 글로벌 rows, marketing and new campaigns gone; create-task T094, T095
 - 261014 T092 done (cb6d2d8), T093 done (bbb99ff): youth rows, 엘리트 선발, staff stances, rules 1.18.0 on work/direction
-- 261014 T091 done: 40 careers on slice 2, none bankrupt, wage bill 44.8% (band 45–70%), operating +3.5%; ECON r27; T092 doing
-- 261014 create-task slice 3 → T092 (engine youth rows, stances, rules 1.18.0), T093 (board and 유소년)
-- 261014 update-ssot ECON r26 CLUB r28 STAFF r17 WEB r61 SAVE r30 (club-direction slice 3): 육성 목표 and 데뷔 시점 drive the academy and the coaches' focus, 엘리트 선발 replaces 1군 직행 경로, staff stances by direction

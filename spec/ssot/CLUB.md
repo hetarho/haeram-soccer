@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r32 | Define the implemented browser-demo behavior for squad and growth.
+> r33 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating equals its league's average club XI (±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -151,6 +151,7 @@
   - shortlist (스카우트 명단): on a season's first day, on each window's opening day and after every 4th league round, the chief scout lists up to three candidates per role from the market as 영입's rows shape it (→CLUB-14): free agents first, then by ability, potential and id. A listed player who joins us or leaves the market list drops off; 사람's 이적시장 shows the list, the day it was drawn and the next draw (→WEB-43).
   - requests (감독 요청), drawn with the shortlist: every short role (fewer than 2 GK, 6 DEF, 6 MID or 4 FWD, or under 18 players), then the role whose weakest starter a shortlisted candidate beats by the most, when by 5 or more; at most three. For each the manager names a pick among the shortlisted of that role: the ablest, then potential; a 육성형 manager (→STAFF-14) or one with the youth trait (→STAFF-12) the highest potential among those aged 23 or under first. An interim asks for nothing.
   - at a window's close, a manager whose requests at its opening saw no player of a requested role join in the window loses 3 trust (→STAFF-5), whoever held transfers; a met request gains nothing.
+  - the close is judged the day after the window's last day, so a deadline-day signing counts; a loan joining counts as joining; a manager appointed after the opening is not judged on his predecessor's requests; a club's founding day is its first summer window's opening.
   - with transfers delegated the 단장 looks on the window's opening day and every 7th day after it; a look makes at most one move, and none while one of his bids is pending.
   - needs, first met first: a short role, then an upgrade: a candidate whose ability beats the weakest starter of his role by the margin of 재정 기조 (표준 5, 적극 3, 공격적 2), while the squad has 24 players or fewer; 안정적 and 신중 never upgrade. Requested roles come before the others.
   - upgrades per window: 표준 1, 적극 2, 공격적 3; a short role has no cap.
@@ -166,6 +167,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r33 261014 CLUB-33✎ the window's close→judged the day after its last day; +a loan counts as joining, a manager appointed since is not judged, founding opens the first window
 - r32 261014 CLUB-33✎ the chief scout signs→the scout's all-season shortlist, the manager's requests with his pick and −3 trust when none is met at a window's close, the 단장 decides when delegated; CLUB-14✎ CLUB-18✎ the chief scout's negotiation→the 단장's; CLUB-18✎ CLUB-22✎ CLUB-26✎ delegated staff→the 단장; CLUB-21✎ 머니볼 negotiator scout→negotiator 단장
 - r31 261014 CLUB-21+ 글로벌 스카우팅 synergy (해외 유스 스카우트 · 해외 스카우트망 3+ · spotter or 65+ chief scout → intake and candidate potential +2)
 - r30 261014 CLUB-33+ delegated signings at level 4: weekly looks in a window, short roles then upgrades by 재정 기조, free agents first, bids at the asking fee, within 재정 기조's money checks
