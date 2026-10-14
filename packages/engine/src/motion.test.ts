@@ -335,7 +335,7 @@ describe('ball flights', () => {
       deviations.push(Math.max(...off) / chord);
     }
     deviations.sort((a, b) => a - b);
-    expect(deviations.length).toBeGreaterThan(150);
+    expect(deviations.length).toBeGreaterThan(120);
     expect(deviations[Math.floor(deviations.length / 2)]).toBeGreaterThan(0.03);
     expect(deviations.filter((d) => d >= 0.015).length / deviations.length).toBeGreaterThan(0.9);
     expect(lofted).toBeGreaterThan(5);

@@ -702,14 +702,31 @@ export const tacticOf = (w: World, c: Club) => (c.id === w.playerClub ? w.tactic
  * it plays are measured on one scale, each paying for fatigue beyond ordinary match fitness and
  * for unhappy players.
  */
+/**
+ * Another club's XI at its slots before its 조직력: its squad is fixed for the season and carries
+ * no unhappiness, so it is summed once per cached lineup.
+ */
+const npcBase = new WeakMap<Player[], { ovr: number; load: number }>();
 export function rating(w: World, c: Club) {
   const own = c.id === w.playerClub;
-  const xi = own ? ownStarters(w) : startingSquad(w, c);
   const slots = formationOf(tacticOf(w, c));
-  const club = own ? undefined : cohesionMultiplier(c);
+  if (!own) {
+    const xi = startingSquad(w, c);
+    let base = npcBase.get(xi);
+    if (!base) {
+      base = { ovr: 0, load: 0 };
+      xi.forEach((p, i) => {
+        base!.ovr += slotOvr(p, slots[i]!);
+        base!.load += fatigueLoad(p.fatigue) / 6;
+      });
+      npcBase.set(xi, base);
+    }
+    return Math.round((base.ovr * cohesionMultiplier(c) - base.load) / 11);
+  }
+  const xi = ownStarters(w);
   return Math.round(
     xi.reduce(
-      (s, p, i) => s + slotOvr(p, slots[i]!, club ?? ownMultiplier(p)) - fatigueLoad(p.fatigue) / 6,
+      (s, p, i) => s + slotOvr(p, slots[i]!, ownMultiplier(p)) - fatigueLoad(p.fatigue) / 6,
       0,
     ) / 11,
   );
@@ -731,7 +748,8 @@ export function startingSquad(w: World, c: Club) {
   const ps = squad(w, c);
   let cached = npcLineups.get(ps);
   if (!cached) {
-    cached = lineup(ps, clubStyle(c));
+    // Its squad is made one player per formation slot first (→WORLD-6): those eleven start.
+    cached = ps.slice(0, formationOf(clubStyle(c)).length);
     npcLineups.set(ps, cached);
   }
   return cached;

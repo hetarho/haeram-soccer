@@ -229,32 +229,52 @@ export const ROLES: Record<
 export const ROLE_LABEL = Object.fromEntries(
   Object.entries(ROLES).map(([id, role]) => [id, role.label]),
 ) as Record<RoleId, string>;
+const rolesByPosition = new Map<Position, RoleId[]>();
 /** The roles of a position, in the table's order. */
-export const rolesAt = (position: Position) =>
-  (Object.keys(ROLES) as RoleId[]).filter((id) => ROLES[id].positions.includes(position));
+export function rolesAt(position: Position): readonly RoleId[] {
+  let roles = rolesByPosition.get(position);
+  if (!roles) {
+    roles = (Object.keys(ROLES) as RoleId[]).filter((id) => ROLES[id].positions.includes(position));
+    rolesByPosition.set(position, roles);
+  }
+  return roles;
+}
 
 export type Weight = 0 | 1 | 2 | 3;
+/** Each (position, role)'s weights, built once: OVR is read for every slot of every match. */
+const weightCache = new Map<
+  string,
+  { record: Readonly<Record<Attribute, Weight>>; total: number }
+>();
+function weightEntry(position: Position, role?: RoleId) {
+  const key = role ? `${position}|${role}` : position;
+  let entry = weightCache.get(key);
+  if (!entry) {
+    const tiers = POSITION_WEIGHTS[position];
+    const weights = Object.fromEntries(ATTRIBUTES.map((a) => [a, 0])) as Record<Attribute, Weight>;
+    for (const a of tiers.tertiary) weights[a] = 1;
+    for (const a of tiers.secondary) weights[a] = 2;
+    for (const a of tiers.primary) weights[a] = 3;
+    for (const a of role ? ROLES[role].promotes : [])
+      weights[a] = Math.min(3, weights[a] + 1) as Weight;
+    entry = {
+      record: Object.freeze(weights),
+      total: ATTRIBUTES.reduce((sum, a) => sum + weights[a], 0),
+    };
+    weightCache.set(key, entry);
+  }
+  return entry;
+}
 /** Each attribute's weight at a position, after the role moves its attributes up a tier. */
-export function weightsFor(position: Position, role?: RoleId): Record<Attribute, Weight> {
-  const tiers = POSITION_WEIGHTS[position];
-  const weights = Object.fromEntries(ATTRIBUTES.map((a) => [a, 0])) as Record<Attribute, Weight>;
-  for (const a of tiers.tertiary) weights[a] = 1;
-  for (const a of tiers.secondary) weights[a] = 2;
-  for (const a of tiers.primary) weights[a] = 3;
-  for (const a of role ? ROLES[role].promotes : [])
-    weights[a] = Math.min(3, weights[a] + 1) as Weight;
-  return weights;
+export function weightsFor(position: Position, role?: RoleId): Readonly<Record<Attribute, Weight>> {
+  return weightEntry(position, role).record;
 }
 
 /** OVR at a position in a role: the weighted average of its attributes, one 1–99 scale (→PLAYER-6). */
 export function ovrAt(attrs: Attributes, position: Position, role?: RoleId) {
-  const weights = weightsFor(position, role);
-  let sum = 0,
-    total = 0;
-  for (const a of ATTRIBUTES) {
-    sum += weights[a] * attrs[a];
-    total += weights[a];
-  }
+  const { record, total } = weightEntry(position, role);
+  let sum = 0;
+  for (const a of ATTRIBUTES) sum += record[a] * attrs[a];
   return sum / total;
 }
 export function bestRoleAt(attrs: Attributes, position: Position): RoleId {

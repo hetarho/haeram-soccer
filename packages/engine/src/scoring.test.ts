@@ -47,10 +47,14 @@ describe('actual league scorer standings', () => {
       );
     }
     for (const player of season.players.filter((p) => p.club === w.playerClub)) {
-      const goals = w.ownMatches.reduce(
-        (total, match) => total + (match.players.find((p) => p.id === player.id)?.metrics[0] || 0),
-        0,
-      );
+      // League goals only: cup ties count for the club, not for the league's scorers.
+      const goals = w.ownMatches
+        .filter((match) => match.kind === 'league' || match.kind === 'lower')
+        .reduce(
+          (total, match) =>
+            total + (match.players.find((p) => p.id === player.id)?.metrics[0] || 0),
+          0,
+        );
       expect(player.goals).toBe(goals);
     }
     // Opponent-only fixtures use the very same deterministic goal/contribution stream.

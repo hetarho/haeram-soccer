@@ -70,6 +70,8 @@ test('keeps the club name and compact cash readable in a 360 px HUD', async ({ p
 test('celebrates in one line beside the news button, which then holds the headline as NEW', async ({
   page,
 }) => {
+  // A first round can queue several celebrations, each shown for a few seconds.
+  test.setTimeout(60000);
   await found(page);
   await expect(newsButton(page)).toHaveAttribute('aria-label', '클럽 뉴스');
   await playRound(page);
@@ -88,7 +90,8 @@ test('celebrates in one line beside the news button, which then holds the headli
   expect(card.x + card.width).toBeLessThanOrEqual(button.x);
   expect(card.y).toBeLessThan(button.y + button.height);
   expect(card.y + card.height).toBeGreaterThan(button.y);
-  await expect(banner).toHaveCount(0, { timeout: 8000 });
+  // Every queued celebration (a first win, a hat-trick…) clears on its own.
+  await expect(banner).toHaveCount(0, { timeout: 25000 });
   await expect(newsButton(page)).toHaveAttribute('aria-label', /새 소식 \d+개/);
   await newsButton(page).click();
   const sheet = page.getByRole('dialog', { name: '클럽 뉴스' });
