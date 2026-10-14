@@ -26,7 +26,7 @@ import { Money } from './Money';
 import s from './BusinessWorkbench.module.css';
 
 /** The operations page's money views: the ledger and fixed costs, or one kind of deal. */
-export type WorkbenchPart = 'finance' | 'facility' | 'sponsor' | 'marketing';
+export type WorkbenchPart = 'finance' | 'build' | 'sponsor' | 'marketing';
 const bonusRule: Record<SponsorBonus, string> = {
   none: '없음',
   promotion: '승격·우승',
@@ -178,7 +178,9 @@ export function BusinessWorkbench({
   return (
     <section
       className={s.workbench}
-      aria-label={part === 'finance' ? '클럽 재정' : '클럽 투자 계획'}
+      aria-label={
+        part === 'finance' ? '클럽 재정' : part === 'marketing' ? '캠페인' : '클럽 투자 계획'
+      }
     >
       {part === 'finance' ? (
         <>
@@ -234,7 +236,7 @@ export function BusinessWorkbench({
         </>
       ) : (
         <div className={s.panel}>
-          {tab === 'facility' ? (
+          {tab === 'build' ? (
             <FacilityParts w={w} blocked={blocked} act={act} format={format} />
           ) : tab === 'sponsor' ? (
             <>

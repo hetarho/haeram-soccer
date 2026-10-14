@@ -10,17 +10,17 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '구단 운영', exact: true })
+    .getByRole('button', { name: '구단 방향', exact: true })
     .click();
-  await expect(page.getByRole('tab', { name: '운영 전략' })).toHaveAttribute(
+  await expect(page.getByRole('tab', { name: '방향', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
   );
   const board = page.getByTestId('strategy-board');
   // The owner reads a strategy, never a "build" (빌드업 is the football phase of play).
   await expect(board).not.toContainText(/빌드(?!업)/);
-  await expect(board.getByTestId('current-strategy')).toHaveText('기본 전략');
-  const presets = board.getByRole('region', { name: '추천 전략' }).getByRole('button');
+  await expect(board.getByTestId('current-strategy')).toHaveText('기본 방향');
+  const presets = board.getByRole('region', { name: '추천 방향' }).getByRole('button');
   await expect(presets).toHaveCount(5);
   // One board: six area rows, each its card row beside the dials that spend on it (→ECON-25).
   // No separate dial list, no training dial (훈련 owns the focus) and no manager-style card.
@@ -62,7 +62,7 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await expect(draft).toContainText('7건 변경');
   // A draft is not in force until 적용.
   await expect(generous).toHaveAttribute('aria-checked', 'false');
-  await expect(board.getByTestId('current-strategy')).toHaveText('기본 전략');
+  await expect(board.getByTestId('current-strategy')).toHaveText('기본 방향');
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
   // 적용 acts at once: the strategy and the dial are in force, and no card is locked (→ECON-22).
@@ -94,8 +94,8 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await expect(board.getByTestId('current-strategy')).toHaveText('동네의 자부심');
 
   // The strategy in force is saved to the device library under the owner's name.
-  await board.getByRole('button', { name: '지금 전략 저장' }).click();
-  const saving = page.getByRole('dialog', { name: '지금 전략 저장' });
+  await board.getByRole('button', { name: '지금 방향 저장' }).click();
+  const saving = page.getByRole('dialog', { name: '지금 방향 저장' });
   await expect(saving.getByRole('radio', { name: '유스 정책 성골 유스' })).toHaveAttribute(
     'aria-checked',
     'true',
@@ -103,27 +103,27 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   // A name is required; the last control stays reachable inside the sheet.
   await saving.getByRole('button', { name: '저장', exact: true }).click();
   await expect(saving).toBeVisible();
-  await saving.getByLabel('전략 이름').fill('우리 동네 축구');
+  await saving.getByLabel('방향 이름').fill('우리 동네 축구');
   await saving.getByRole('button', { name: '저장', exact: true }).click();
   await expect(saving).toHaveCount(0);
-  const mine = board.getByRole('region', { name: '내 전략' });
+  const mine = board.getByRole('region', { name: '내 방향' });
   await expect(mine).toContainText('우리 동네 축구');
   await expect(mine).toContainText(
     '성골 유스 · 지역 인재 우선 · 핵심 지키기 · 회원제 운영 · 지역 밀착 · 가족 같은 클럽',
   );
-  await expect(board.getByRole('button', { name: '지금 전략 저장' })).toHaveCount(0);
+  await expect(board.getByRole('button', { name: '지금 방향 저장' })).toHaveCount(0);
   await expect(draft).toHaveCount(0);
 
   // The composer saves a strategy of its own and puts it on the board as a draft, ready to apply
   // at once like any other.
-  await board.getByRole('button', { name: '＋ 나만의 전략 만들기' }).click();
-  const composer = page.getByRole('dialog', { name: '나만의 전략 만들기' });
+  await board.getByRole('button', { name: '＋ 방향 만들기' }).click();
+  const composer = page.getByRole('dialog', { name: '방향 만들기' });
   await expect(composer.locator('[data-slot]')).toHaveCount(6);
   for (const slot of await composer.locator('[data-slot]').all())
     await expect(slot.getByRole('radio')).toHaveCount(5);
   await composer.getByRole('radio', { name: '유스 정책 1군 직행 경로' }).click();
-  await composer.getByLabel('전략 이름').fill('젊은 피');
-  await composer.getByRole('button', { name: '이 전략으로 적용' }).click();
+  await composer.getByLabel('방향 이름').fill('젊은 피');
+  await composer.getByRole('button', { name: '이 방향으로 적용' }).click();
   await expect(composer).toHaveCount(0);
   await expect(mine).toContainText('젊은 피');
   await expect(draft).toContainText('젊은 피');
@@ -137,15 +137,15 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await expect(board.getByTestId('current-strategy')).toHaveText('동네의 자부심');
   await expect(generous).toHaveAttribute('aria-checked', 'true');
   await mine.getByRole('button', { name: '우리 동네 축구 편집' }).click();
-  const editor = page.getByRole('dialog', { name: '전략 편집' });
-  await editor.getByLabel('전략 이름').fill('동네 축구 2');
+  const editor = page.getByRole('dialog', { name: '방향 편집' });
+  await editor.getByLabel('방향 이름').fill('동네 축구 2');
   await editor.getByRole('button', { name: '저장', exact: true }).click();
   await expect(editor).toHaveCount(0);
   await expect(mine.getByRole('button', { name: /동네 축구 2/ }).first()).toBeVisible();
   // Deleting a saved strategy never changes the one in force.
   await mine.getByRole('button', { name: '동네 축구 2 삭제' }).click();
   await page
-    .getByRole('dialog', { name: '전략 삭제' })
+    .getByRole('dialog', { name: '방향 삭제' })
     .getByRole('button', { name: '삭제' })
     .click();
   await expect(mine).not.toContainText('동네 축구 2');

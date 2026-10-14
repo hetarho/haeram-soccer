@@ -41,13 +41,13 @@ async function found(page: Page, seed: string) {
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
 
-/** Operations open on the operating board; `tab` picks 재정, 시설, 후원 or 캠페인 (→WEB-39). */
+/** 방향 opens on the direction board; `tab` picks 증축, 재정 or 후원 (→WEB-39). */
 async function openBusiness(page: Page, tab?: string) {
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '구단 운영', exact: true })
+    .getByRole('button', { name: '구단 방향', exact: true })
     .click();
-  await expect(page.getByRole('tablist', { name: '구단 운영 보기' })).toBeVisible();
+  await expect(page.getByRole('tablist', { name: '구단 방향 보기' })).toBeVisible();
   if (tab) await page.getByRole('tab', { name: tab, exact: true }).click();
 }
 
@@ -60,6 +60,35 @@ async function playNext(page: Page) {
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await expect(page.getByText(/90′ ·.*경기 종료/)).toBeVisible();
 }
+
+test('older operations addresses open their tab', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await found(page, 'direction-addresses');
+  await openBusiness(page);
+  // 방향 is the first page tab and keeps no ?view= (→WEB-39, →WEB-69); there is no 캠페인 tab.
+  await expect(page.getByRole('tab', { name: '방향', exact: true })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await expect(page).toHaveURL(/\/business$/);
+  await expect(page.getByRole('tab', { name: '캠페인', exact: true })).toHaveCount(0);
+  for (const [view, tab, now] of [
+    ['facility', '증축', /\/business\?view=build$/],
+    ['marketing', '재정', /\/business\?view=finance$/],
+    ['strategy', '방향', /\/business$/],
+    ['sponsor', '후원', /\/business\?view=sponsor$/],
+  ] as const) {
+    await page.goto(`/business?view=${view}`);
+    await expect(page.getByRole('tab', { name: tab, exact: true })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    await expect(page).toHaveURL(now);
+  }
+  await expect(page.getByRole('region', { name: '캠페인', exact: true })).toHaveCount(0);
+  await page.getByRole('tab', { name: '재정', exact: true }).click();
+  await expect(page.getByRole('region', { name: '캠페인', exact: true })).toBeVisible();
+});
 
 for (const viewport of [
   { width: 360, height: 740 },
@@ -74,8 +103,8 @@ for (const viewport of [
     const preview = facilityInvestmentPreview(before, 'stadium');
     // Every amount reads in the one notation (→WEB-67); the exact value opens on tap or hover.
     const format = (value: string) => compactMoney(value, clubOf(before).country, before.year);
-    await openBusiness(page, '시설');
-    await expect(page.getByRole('tab', { name: '시설', exact: true })).toHaveAttribute(
+    await openBusiness(page, '증축');
+    await expect(page.getByRole('tab', { name: '증축', exact: true })).toHaveAttribute(
       'aria-selected',
       'true',
     );
@@ -231,8 +260,9 @@ test('separates campaign recovery and net ranges and settles after four real rou
   const before = await exportWorld(page);
   const offer = campaignOffers(before).find((candidate) => candidate.kind === 'outreach')!;
   const format = (value: string) => compactMoney(value, clubOf(before).country, before.year);
-  await openBusiness(page);
-  await page.getByRole('tab', { name: '캠페인', exact: true }).click();
+  // Campaigns sit under 재정 (→WEB-39).
+  await openBusiness(page, '재정');
+  await expect(page.getByRole('region', { name: '캠페인', exact: true })).toBeVisible();
   const card = page.getByTestId('campaign-outreach');
   await expect(card).toContainText(`예상 총 회수${format(offer.min)}–${format(offer.max)}`);
   await expect(card).toContainText(

@@ -1093,9 +1093,9 @@ function Business({ state, client }: Props) {
   return (
     <>
       <Header
-        eyebrow="CLUB OPERATIONS"
-        title="구단 운영"
-        description="운영 전략으로 방향과 씀씀이를 정하고, 재정에서 장부를, 시설·후원·캠페인에서 한 번 지출하고 오래 남는 결정을 해요."
+        eyebrow="CLUB DIRECTION"
+        title="구단 방향"
+        description="방향에서 구단이 나아갈 길과 씀씀이를 정하고, 증축에서 시설을, 재정에서 장부와 캠페인을, 후원에서 계약을 다뤄요."
       />
       <OperationsView
         key={opened}

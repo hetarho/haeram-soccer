@@ -31,7 +31,7 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   expect(moreBounds!.y).toBeGreaterThanOrEqual(0);
   await expect(more).toBeEnabled();
   // Pages scroll inside the view scroller; open a long page and scroll it before the modal.
-  await nav.getByRole('button', { name: '구단 운영', exact: true }).click();
+  await nav.getByRole('button', { name: '구단 방향', exact: true }).click();
   const scroller = page.getByTestId('view-scroller');
   await expect(page.getByTestId('strategy-board')).toBeVisible();
   await scroller.evaluate((element) => element.scrollTo(0, 240));

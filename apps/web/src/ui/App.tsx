@@ -368,12 +368,12 @@ const NAV: [Page, string][] = [
   ['history', '클럽 기록실'],
   ['people', '선수·스태프'],
   ['training', '훈련·육성'],
-  ['business', '구단 운영'],
+  ['business', '구단 방향'],
 ];
 /**
  * Home sits in the raised centre; competition destinations fan out to the left and the owner's
- * three levers to the right: 사람 (who joins and stays), 훈련 (how players develop) and 운영 (how
- * the club earns and spends, →WEB-10). The transfer market and the staff are tabs of 사람.
+ * three levers to the right: 사람 (who joins and stays), 훈련 (how players develop) and 방향 (where
+ * the club is going and how it earns and spends, →WEB-10). The transfer market and the staff are tabs of 사람.
  */
 const TABS: [Page, string, string, Page[]][] = [
   ['league', '리그', '리그', ['league']],
@@ -382,7 +382,7 @@ const TABS: [Page, string, string, Page[]][] = [
   ['dashboard', '홈', '클럽 홈', ['dashboard']],
   ['people', '사람', '선수·스태프', ['people']],
   ['training', '훈련', '훈련·육성', ['training']],
-  ['business', '운영', '구단 운영', ['business']],
+  ['business', '방향', '구단 방향', ['business']],
 ];
 /** The HUD menu lists only destinations the tab bar does not already show. */
 const MENU_PAGES = NAV.filter(([id]) => !TABS.some(([tab]) => tab === id));

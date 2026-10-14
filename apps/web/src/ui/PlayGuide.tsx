@@ -14,7 +14,7 @@ export function PlayGuide({ goals, onClose }: { goals: ClubGoal[]; onClose: () =
       }
     >
       <div className={s.intro}>
-        <span>한 경기씩, 우리만의 운영 전략.</span>
+        <span>한 경기씩, 우리만의 방향.</span>
         <h2>쉬운 조작, 깊어지는 선택.</h2>
         <p>
           감독에게 맡겨 바로 출발해도 좋아요. 더 높은 성과에는 선수·전술·피로·자금의 조합이
@@ -48,8 +48,8 @@ export function PlayGuide({ goals, onClose }: { goals: ClubGoal[]; onClose: () =
             <h3>내일의 전력을 키워요 {done('player-growth') && <span>완료 ✓</span>}</h3>
             <p>
               구단주의 손잡이는 셋이에요. 사람에서 누구를 데려오고 지킬지, 훈련에서 선수가 어떻게
-              자랄지, 운영에서 무엇에 벌고 쓸지 정해요. 운영 전략의 단계를 누르면 비용과 효과를 먼저
-              보여주고, 적용해야 반영돼요.
+              자랄지, 방향에서 구단이 어디로 가고 무엇에 벌고 쓸지 정해요. 방향의 줄을 누르면 비용과
+              효과를 먼저 보여주고, 적용해야 반영돼요.
             </p>
           </div>
         </li>

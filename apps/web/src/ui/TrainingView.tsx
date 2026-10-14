@@ -181,10 +181,10 @@ interface DriverRow {
 }
 const homeName: Record<DevelopmentHome, string> = {
   'training/training': '훈련 방향',
-  'business/strategy': '운영 전략',
+  'business/strategy': '방향',
   'people/manager': '감독',
   'people/coaches': '코치진',
-  'business/facility': '시설',
+  'business/facility': '증축',
 };
 const skillName = {
   attack: '공격',

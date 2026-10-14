@@ -70,7 +70,7 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   await expect(page.getByTestId('hub-preparation')).toContainText('감독 자동 선발');
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '구단 운영' })
+    .getByRole('button', { name: '구단 방향' })
     .click();
   await page.getByRole('tab', { name: '재정', exact: true }).click();
   await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
@@ -126,8 +126,8 @@ for (const viewport of [
     await expect(page).toHaveURL(contextUrl);
     await expect(country).toHaveAttribute('data-value', 'FRA');
 
-    await nav.getByRole('button', { name: '구단 운영', exact: true }).click();
-    await page.getByRole('tab', { name: '시설', exact: true }).click();
+    await nav.getByRole('button', { name: '구단 방향', exact: true }).click();
+    await page.getByRole('tab', { name: '증축', exact: true }).click();
     const review = page.getByRole('button', { name: '경기장 공사 검토', exact: true });
     await review.click();
     const plan = page.getByRole('dialog', { name: '경기장 공사 확인' });

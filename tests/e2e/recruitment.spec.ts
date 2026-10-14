@@ -323,7 +323,7 @@ test('the market ends with who answers offers and names the recruitment level, o
   await dialog.getByRole('button', { name: '설정 완료', exact: true }).click();
   await expect(dialog).toBeHidden();
   expect(await horizontalOverflow(page)).toBe(0);
-  // The recruitment level is a line that opens its home on the operating board (→WEB-71).
+  // The recruitment level is a line that opens its home on the 방향 board (→WEB-71).
   await page.getByRole('button', { name: /^영입 기조 · 균형/ }).click();
-  await expect(page).toHaveURL(/\/business\?view=strategy$/);
+  await expect(page).toHaveURL(/\/business$/);
 });

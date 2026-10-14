@@ -41,7 +41,7 @@ export interface StateAction {
   /** Opens 코치진 on this coach's training sheet with the focus ready to suggest (→WEB-44). */
   coach?: { coach: 'assistant'; focus: TrainingFocus };
   /**
-   * Opens 운영 전략 with this dial change as the board's draft, ready to apply there; the remedy
+   * Opens 방향 with this dial change as the board's draft, ready to apply there; the remedy
    * itself changes nothing (→WEB-44, WEB-71).
    */
   board?: { policy?: { key: PolicyKey; level: PolicyLevel }; ticket?: number };
@@ -219,7 +219,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           id: 'marketing-down',
           label: '마케팅 줄이기',
           effect: marketing
-            ? `운영 전략에서 ${toward(marketing.name)} 낮춰 적용해요 · ${marketing.summary}`
+            ? `방향에서 ${toward(marketing.name)} 낮춰 적용해요 · ${marketing.summary}`
             : '이미 추가 지출이 없어요',
           unavailable: marketing ? undefined : '이미 입소문',
           page: 'business',
@@ -231,7 +231,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
               {
                 id: 'support-down',
                 label: '선수단 투자 낮추기',
-                effect: `운영 전략에서 ${toward(support.name)} 낮춰 적용해요 · 운영 경비 연 ${format(saving)} 절감 · 라운드 성장과 피로 회복이 줄어요`,
+                effect: `방향에서 ${toward(support.name)} 낮춰 적용해요 · 운영 경비 연 ${format(saving)} 절감 · 라운드 성장과 피로 회복이 줄어요`,
                 page: 'business' as const,
                 board: { policy: { key: 'support' as const, level: support.level } },
               },
@@ -241,7 +241,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           id: 'ticket-up',
           label: '티켓 가격 올리기',
           effect: ticket
-            ? `운영 전략에서 ${toward(ticket.name)} 올려 적용해요 · 홈 경기 입장 수입이 늘고 관중 수요는 줄어요`
+            ? `방향에서 ${toward(ticket.name)} 올려 적용해요 · 홈 경기 입장 수입이 늘고 관중 수요는 줄어요`
             : '이미 가장 비싼 가격이에요',
           unavailable: ticket ? undefined : '티켓 가격 상한',
           page: 'business',

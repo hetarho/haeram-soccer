@@ -1,5 +1,6 @@
 import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
+import { readBuildTitle } from '../../../../packages/engine/src/build';
 import { tacticLabel } from '../../../../packages/engine/src/world';
 import type { ClientState, GameClient } from '../runtime/client';
 import type { ClubRecords, RecordMatch, Run } from '../runtime/clubRecords';
@@ -533,7 +534,7 @@ function SeasonRecords({
                         {e.year} · ROUND {e.round}{' '}
                         {e.amount && `· ${e.amount} ${e.currency} (원래 최소 단위)`}
                       </small>
-                      <b>{e.title}</b>
+                      <b>{e.kind === 'build' ? readBuildTitle(e.title) : e.title}</b>
                       <p>{e.detail}</p>
                     </li>
                   ))}

@@ -207,7 +207,7 @@ try {
   // competitions and records, as the desktop navigation names them (→WEB-10).
   const desktopNav = desktop.page.getByRole('navigation', { name: '게임 메뉴', exact: true });
   for (let i = 0; i < 5; i++)
-    for (const name of ['선수·스태프', '훈련·육성', '구단 운영', '리그', '컵 대회', '클럽 기록실'])
+    for (const name of ['선수·스태프', '훈련·육성', '구단 방향', '리그', '컵 대회', '클럽 기록실'])
       await desktopNav.getByRole('button', { name, exact: true }).click();
   await desktop.page.evaluate(
     () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),

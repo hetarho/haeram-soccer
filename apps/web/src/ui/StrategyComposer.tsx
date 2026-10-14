@@ -100,8 +100,8 @@ export function Lines({ pros, cons, limit }: { pros: string[]; cons: string[]; l
 }
 
 /**
- * 나만의 전략 만들기 (→WEB-61): six areas of cards, the combined effects and the synergies they
- * light, a name, and save to this device's library. 이 전략으로 적용 saves it too and puts it on
+ * 방향 만들기 (→WEB-61): six areas of cards, the combined effects and the synergies they
+ * light, a name, and save to this device's library. 이 방향으로 적용 saves it too and puts it on
  * the board as a draft; only the board's 적용 changes the club.
  */
 export function StrategyComposer({
@@ -114,7 +114,7 @@ export function StrategyComposer({
 }: {
   w: World;
   initial: { id?: string; name: string; build: ClubBuild };
-  /** The sheet's name; an edit reads 전략 편집 and a new one 나만의 전략 만들기. */
+  /** The sheet's name; an edit reads 방향 편집 and a new one 방향 만들기. */
   title?: string;
   onClose: () => void;
   onSaved: (strategy: SavedStrategy) => void;
@@ -145,7 +145,7 @@ export function StrategyComposer({
   };
   return (
     <Dialog
-      label={title ?? (initial.id ? '전략 편집' : '나만의 전략 만들기')}
+      label={title ?? (initial.id ? '방향 편집' : '방향 만들기')}
       onClose={onClose}
       actions={
         <div className={s.composerActions}>
@@ -161,14 +161,14 @@ export function StrategyComposer({
             className={a.primary}
             onClick={() => (apply.current = true)}
           >
-            이 전략으로 적용
+            이 방향으로 적용
           </button>
         </div>
       }
     >
       <form id="strategy-composer" className={s.composer} onSubmit={submit}>
         <label className={s.nameField}>
-          전략 이름
+          방향 이름
           <input
             value={name}
             maxLength={STRATEGY_NAME_LIMIT}
@@ -182,8 +182,8 @@ export function StrategyComposer({
           />
         </label>
         <p className={s.neutral}>
-          저장한 전략은 이 기기의 모든 게임에서 고를 수 있어요. 이 전략으로 적용을 누르면 운영 전략
-          보드에 올라가고, 보드에서 적용하면 바로 반영돼요. 다이얼은 보드에서 따로 정해요.
+          저장한 방향은 이 기기의 모든 게임에서 고를 수 있어요. 이 방향으로 적용을 누르면 방향
+          보드의 초안에 올라가고, 보드에서 적용하면 바로 반영돼요. 투자 줄은 보드에서 따로 정해요.
         </p>
         {STRATEGY_AREAS.map((area) => {
           const slot = area.slot,
@@ -231,7 +231,7 @@ export function StrategyComposer({
         })}
         <article className={s.current} aria-live="polite">
           <div className={s.summaryHead}>
-            <span>이 전략의 효과</span>
+            <span>이 방향의 효과</span>
             <b>
               {lit.length
                 ? `시너지 ${lit.map((synergy) => synergy.label).join(' · ')}`

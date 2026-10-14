@@ -47,7 +47,7 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   const mobileMenu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(mobileMenu).toBeVisible();
   // The match view has no tab: it opens only from a watch action. The owner's three levers sit
-  // right of home: 사람 (players, market and staff), 훈련 and 운영.
+  // right of home: 사람 (players, market and staff), 훈련 and 방향.
   const tabs = [
     '리그',
     '컵 대회',
@@ -55,7 +55,7 @@ test('observes event-backed metrics, historical locks and responsive navigation'
     '클럽 홈',
     '선수·스태프',
     '훈련·육성',
-    '구단 운영',
+    '구단 방향',
   ];
   await expect(mobileMenu.getByRole('button')).toHaveCount(tabs.length);
   expect(
@@ -82,7 +82,7 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   const allMenu = page.getByRole('dialog', { name: '전체 메뉴' });
   await expect(allMenu).toBeVisible();
   // Tab destinations live in the tab bar; the menu lists none of them.
-  for (const label of ['선수·스태프', '훈련·육성', '구단 운영'])
+  for (const label of ['선수·스태프', '훈련·육성', '구단 방향'])
     await expect(allMenu.getByRole('button', { name: label, exact: true })).toHaveCount(0);
   await allMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(allMenu).toHaveCount(0);

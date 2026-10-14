@@ -185,9 +185,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
     for (const command of draftCommands(w, draft)) {
       const reply = await client.command(command, { background: true });
       if (!reply?.ok) {
-        setFailure(
-          (client.state.error || '운영 전략을 적용하지 못했어요.').replace(/^Error: /, ''),
-        );
+        setFailure((client.state.error || '방향을 적용하지 못했어요.').replace(/^Error: /, ''));
         return;
       }
     }
@@ -209,27 +207,25 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
   };
 
   return (
-    <section className={s.board} aria-label="운영 전략" data-testid="strategy-board">
+    <section className={s.board} aria-label="방향" data-testid="strategy-board">
       <header className={s.head}>
-        <h2>운영 전략</h2>
         <p>
-          카드는 구단이 어떻게 할지, 다이얼은 얼마나 쓸지예요. 누른 것은 화면 아래에 모이고,
-          적용하면 한 번에 바로 반영돼요. 바꾼 카드는 90일 동안 다시 바꿀 수 없고, 다이얼은 언제든
-          바꿀 수 있어요.
+          줄마다 하나씩 골라요. 카드 줄은 구단이 어떻게 할지, 투자 줄은 얼마나 쓸지예요. 누른 것은
+          화면 아래 초안에 모이고, 적용하면 한 번에 반영돼요. 언제든 다시 바꿀 수 있어요.
         </p>
       </header>
 
-      <article className={s.current} aria-label="지금 전략">
+      <article className={s.current} aria-label="지금 방향">
         <div className={s.summaryHead}>
-          <span>지금 전략</span>
+          <span>지금 방향</span>
           <b data-testid="current-strategy">{currentName}</b>
         </div>
         <small className={s.cards}>{cardSummary(current)}</small>
         <Lines {...effectLines(composeBuild(current))} />
       </article>
 
-      <section className={s.group} aria-label="추천 전략">
-        <h3>추천 전략</h3>
+      <section className={s.group} aria-label="추천 방향">
+        <h3>추천 방향</h3>
         <div className={s.presets}>
           {BUILD_PRESETS.map((preset) => {
             const lines = effectLines(composeBuild(preset.build));
@@ -251,7 +247,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
               >
                 <span className={s.presetHead}>
                   <b>{preset.label}</b>
-                  {sameBuild(preset.build, current) && <em>지금 전략</em>}
+                  {sameBuild(preset.build, current) && <em>지금 방향</em>}
                 </span>
                 <small>{preset.model}</small>
                 <Lines {...lines} limit={2} />
@@ -262,9 +258,9 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
         </div>
       </section>
 
-      <section className={s.group} aria-label="내 전략">
+      <section className={s.group} aria-label="내 방향">
         <h3>
-          내 전략 <small>이 기기의 모든 게임에서 쓸 수 있어요</small>
+          내 방향 <small>이 기기의 모든 게임에서 쓸 수 있어요</small>
         </h3>
         {saved.length ? (
           <ul className={s.saved}>
@@ -287,7 +283,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
                   >
                     <span className={s.presetHead}>
                       <b>{item.name}</b>
-                      {sameBuild(item.build, current) && <em>지금 전략</em>}
+                      {sameBuild(item.build, current) && <em>지금 방향</em>}
                     </span>
                     <small>{cardSummary(item.build)}</small>
                   </button>
@@ -315,7 +311,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
           </ul>
         ) : (
           <p className={s.neutral}>
-            아직 저장한 전략이 없어요. 여섯 부문의 카드를 골라 우리 구단만의 전략을 만들어 보세요.
+            아직 저장한 방향이 없어요. 여섯 부문의 카드를 골라 우리 구단만의 방향을 만들어 보세요.
           </p>
         )}
         <div className={s.makeRow}>
@@ -324,7 +320,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
             className={s.make}
             onClick={() => setComposer({ name: '', build: draftBuild })}
           >
-            ＋ 나만의 전략 만들기
+            ＋ 방향 만들기
           </button>
           {savable && (
             <button
@@ -332,13 +328,13 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
               className={s.make}
               onClick={() =>
                 setComposer({
-                  name: buildPreset(current) || currentName === '맞춤 전략' ? '' : currentName,
+                  name: buildPreset(current) || currentName === '맞춤 방향' ? '' : currentName,
                   build: current,
-                  title: '지금 전략 저장',
+                  title: '지금 방향 저장',
                 })
               }
             >
-              지금 전략 저장
+              지금 방향 저장
             </button>
           )}
         </div>
@@ -440,7 +436,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
         })}
       </section>
 
-      <section className={s.synergies} aria-label="전략 시너지">
+      <section className={s.synergies} aria-label="방향 시너지">
         <h3>
           시너지{' '}
           <small>
@@ -454,8 +450,8 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
         </details>
       </section>
 
-      <section className={s.odds} aria-label="전략 확률">
-        <h3>{changed ? '적용하면 바뀌는 확률' : '지금 전략의 확률'}</h3>
+      <section className={s.odds} aria-label="방향 확률">
+        <h3>{changed ? '적용하면 바뀌는 확률' : '지금 방향의 확률'}</h3>
         <ul>
           {oddsDraft.map((odd, index) => (
             <li key={odd.label}>
@@ -558,9 +554,9 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
         />
       )}
       {removing && (
-        <Dialog label="전략 삭제" onClose={() => setRemoving(undefined)}>
+        <Dialog label="방향 삭제" onClose={() => setRemoving(undefined)}>
           <p>
-            ‘{removing.name}’ 전략을 이 기기에서 지울까요? 이미 적용해 쓰고 있는 전략은 그대로
+            ‘{removing.name}’ 방향을 이 기기에서 지울까요? 이미 적용해 쓰고 있는 방향은 그대로
             유지돼요.
           </p>
           <div className={a.actions}>

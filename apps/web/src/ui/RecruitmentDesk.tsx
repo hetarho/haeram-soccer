@@ -348,7 +348,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
         <span>
           영입 기조 · <b>{POLICY_INFO.recruitment.levels[policyOf(w).recruitment - 1].name}</b>
         </span>
-        <small>운영 전략에서 바꿔요</small>
+        <small>방향에서 바꿔요</small>
       </button>
       <div className={s.summary}>
         <span>

@@ -49,7 +49,7 @@ export function ClubFounding({
           )}
         </div>
         <h2>작은 클럽의, 큰 내일.</h2>
-        <p>선수와 구장을 키우고, 나만의 운영 전략으로 더 높은 무대에 도전해요.</p>
+        <p>선수와 구장을 키우고, 우리만의 방향으로 더 높은 무대에 도전해요.</p>
       </header>
       <div className={s.loop} aria-label="클럽 성장 흐름">
         <span>

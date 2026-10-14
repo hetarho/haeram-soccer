@@ -32,7 +32,7 @@ function Meter({ value }: { value: number }) {
  * 유소년 (→WEB-70): the academy's prospects by age group — U-17, U-19, U-21 — grow here until
  * promoted or released (→CLUB-16), by the owner or, when the level delegates it, by the youth
  * director's rule (→STAFF-13); the director sets the academy's training focus (→CLUB-31). The
- * academy investment and youth policy are set in 운영 전략 and only named here (→WEB-71).
+ * academy investment and youth policy are set in 방향 and only named here (→WEB-71).
  */
 export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
   const acting = useActing();
@@ -159,7 +159,7 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
       <YouthTraining w={w} />
       <button type="button" className={s.homeLine} onClick={() => openBusiness('strategy')}>
         <span>
-          <b>유소년 투자 · 유스 정책은 운영 전략에서</b>
+          <b>유소년 투자 · 유스 정책은 방향에서</b>
           <small>
             유소년 투자 {investment} · 유스 정책 {cardOf(buildOf(w), 'youth').label}
           </small>

@@ -147,14 +147,14 @@ test('a 1.15 career at intervention level 2 with a reserved strategy upgrades to
   expect(Object.hasOwn(upgraded, 'buildYear')).toBe(false);
   await page.getByRole('button', { name: /^소식함/ }).click();
   await expect(page.getByRole('dialog', { name: '소식함' })).toContainText(
-    `예약했던 운영 전략 ‘${reserved.label}’ 취소`,
+    `예약했던 방향 ‘${reserved.label}’ 취소`,
   );
   await page
     .getByRole('dialog', { name: '소식함' })
     .getByRole('button', { name: '닫기', exact: true })
     .click();
-  await page.getByRole('button', { name: '구단 운영', exact: true }).first().click();
-  await expect(page.getByRole('tab', { name: '운영 전략', exact: true })).toHaveAttribute(
+  await page.getByRole('button', { name: '구단 방향', exact: true }).first().click();
+  await expect(page.getByRole('tab', { name: '방향', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
   );

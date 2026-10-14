@@ -327,9 +327,9 @@ test('promotes a prospect from 유소년', async ({ page }) => {
   const roster = page.locator('[class*="rosterCards"] article');
   await expect(roster).toHaveCount(squad + 1);
   await expect(roster.filter({ hasText: prospect.name })).toHaveCount(1);
-  // Academy investment and youth policy are only named here; the line opens 운영 전략.
+  // Academy investment and youth policy are only named here; the line opens 방향.
   await nav.getByRole('button', { name: '훈련·육성', exact: true }).click();
   await page.getByRole('tab', { name: '유소년', exact: true }).click();
-  await page.getByRole('button', { name: /^유소년 투자 · 유스 정책은 운영 전략에서/ }).click();
-  await expect(page).toHaveURL(/\/business\?view=strategy$/);
+  await page.getByRole('button', { name: /^유소년 투자 · 유스 정책은 방향에서/ }).click();
+  await expect(page).toHaveURL(/\/business$/);
 });
