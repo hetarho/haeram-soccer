@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r15 | Define the implemented browser-demo behavior for manager demands and personality.
+> r16 | Define the implemented browser-demo behavior for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -18,11 +18,11 @@
 - STAFF-11 [o] Seven coaching departments sit below the manager: assistant (passing growth, training choice), attack, defense, goalkeeping, fitness (stamina, recovery), youth director (academy intake and growth) and chief scout (market size, potential, negotiation). ← real club structure; each department owns a visible effect
   - effect multiplier 1 + (ability − 50)/200 within 0.85–1.25; traits: developer (age ≤ 21 growth), specialist (department skill ×1.15), recovery (+2 fatigue recovery), spotter (higher potential found), negotiator (lower fees, better acceptance)
   - absent staff (older saves) and ability-50 trait-less members are exactly neutral; a vacant department is worse than neutral
-  - new clubs start with unpaid ability-50 volunteers; hired coaches cost a wage fixed for a term of 1–5 seasons the owner chooses (delegated staff: the department's criteria, →STAFF-15) plus a signing fee; replacing or releasing a paid coach or manager pays 25% of the annual wage for each season left on his contract
+  - new clubs start with unpaid ability-50 volunteers; hired coaches cost a wage fixed for a term of 1–5 seasons the owner chooses (delegated staff: 코치 기조's term, →STAFF-15) plus a signing fee; replacing or releasing a paid coach or manager pays 25% of the annual wage for each season left on his contract
 - STAFF-12 [o] Hired managers may carry a selection trait: youth (+4 selection value for age ≤ 21), rotation (fatigue weighs double) or stable (fatigue weighs half). The founding manager has none; a developer style (→STAFF-14) selects like the youth trait, so a developer never draws it, a firefighter's youth draw becomes stable and a gegenpress coach's stable draw becomes rotation.
-- STAFF-13 [o] The staff take these decisions for the owner exactly when the intervention level delegates them (→WEB-45), never by a switch of their own: academy promotion and release, contract talks (→CLUB-26), answers to other clubs' offers (→CLUB-18), sponsors (→ECON-21), the coaching departments' hiring and renewal (→STAFF-15) and the manager post (→STAFF-18). New clubs start at level 2: the staff take the academy and contract talks, the owner the rest. Delegated decisions are reported in the inbox. The training focus of the first team and the academy is never among them: the coaches always set it (→CLUB-13, →CLUB-31).
-  - only the level changes who decides. At any level the owner may still promote or release a prospect, offer or decline in a pending contract talk, answer a bid, sign a sponsor, and hire, renew or release staff himself; none of these changes delegation, so a delegated department fills a post the owner empties by its criteria.
-  - a delegated youth director promotes a prospect of promotion age (→CLUB-16) who matches the weakest first-teamer of his role or its starters minus 10 while the squad and the role have room, and releases a prospect turning 19 unpromoted whose potential is below the weakest first-teamer of his role, keeping the rest in U-21 until they are ready or turn 21; he promotes nobody while cash is below one year of operating costs and reports the deferral. ← every promotion adds a first-team wage
+- STAFF-13 [o] The staff take these decisions for the owner exactly when the intervention level delegates them (→WEB-45), never by a switch of their own: academy promotion and release, contract talks (→CLUB-26), answers to other clubs' offers (→CLUB-18), sponsors (→ECON-21), the coaching departments' hiring and renewal (→STAFF-15) and the manager post (→STAFF-18), by the direction rows of the decision's area (→ECON-25) and within 재정 기조 (→ECON-33). New clubs start at level 2: the staff take the academy and contract talks, the owner the rest. Delegated decisions are reported in the inbox. The training focus of the first team and the academy is never among them: the coaches always set it (→CLUB-13, →CLUB-31).
+  - only the level changes who decides. At any level the owner may still promote or release a prospect, offer or decline in a pending contract talk, answer a bid, sign a sponsor, and hire, renew or release staff himself; none of these changes delegation, so a delegated department fills a post the owner empties by 코치 기조.
+  - a delegated youth director promotes a prospect of promotion age (→CLUB-16) who matches the weakest first-teamer of his role or its starters minus 10 while the squad and the role have room, and releases a prospect turning 19 unpromoted whose potential is below the weakest first-teamer of his role, keeping the rest in U-21 until they are ready or turn 21; he promotes nobody while cash is below the 재정 기조 promotion floor (→ECON-33; a year of operating costs at 표준) and reports the deferral. ← every promotion adds a first-team wage
 
 - STAFF-14 [o] Every hire candidate belongs to a school of football; new free agents (→STAFF-17) take their schools in turn from a seeded order of all eight per season, drawn from their own stream so the other attributes stay put. ← choosing a manager is choosing how the club plays and grows, with a clear price
   | style | tactic | effects |
@@ -40,21 +40,19 @@
   - no manager renews himself: on 1 April the owner is reminded of a contract ending at the close (연봉 · 계약금 · term) and may renew while the manager is not interim, at quote(120 + ability) a year with a 10% fee, for 1–5 seasons (the firefighter 1); with the manager post delegated the staff decide (→STAFF-18); an unrenewed manager leaves at the close (interim, departure choice). The reminder settles when he renews, leaves or is replaced.
   - the founding manager and an interim have no style and are exactly neutral; effects apply to the own club only, in the same profile the pre-match laboratory reads (→MATCH-9).
 
-- STAFF-15 [o] The coaching departments are run by the owner or, when the intervention level delegates them (level 4 →WEB-45), by the staff under each department's hiring criteria, which the owner sets at any level. ← the owner decides what a good hire is, not every contract
-  | criterion | values | default |
-  |---|---|---|
-  | 자원봉사로 운영 | on: an unpaid ability-50 volunteer holds the post | off |
-  | 최소 능력 | 0–99 | 55 |
-  | 특성 | any, or one of the department's traits (→STAFF-11) | any |
-  | 연봉 상한 | none, or the going wage of a coach of ability 50–90 in steps of 5, shown in today's money | none |
-  | 우선 | 능력 높은 순, 연봉 낮은 순 | 연봉 낮은 순 |
-  | 계약 기간 | 1–5 seasons | 2 |
-  - a candidate (→STAFF-11, the season's three per department) matches when he meets every criterion and the club can afford him: cash after his fee still covers 13 rounds (the cash warning) of costs with his wage in place of the one he replaces.
-  - delegated, a vacancy or a volunteer's post is filled at once by the first match in the chosen order, unless 자원봉사로 운영; with no match a volunteer holds it, the staff report it once and look again daily and when the season's candidates change.
-  - delegated, at the season boundary an expiring paid coach who meets the criteria and is affordable is renewed (going wage, 10% fee, the criteria's term) unless a match beats him clearly: 3+ ability (능력 높은 순) or a wage 10%+ lower (연봉 낮은 순). One who no longer meets them is replaced by the first match, renewed when there is none and he is affordable, else a volunteer takes the post; with 자원봉사로 운영 a volunteer takes it.
-  - changed criteria act at once only on a vacancy or a volunteer's post; a contracted coach is judged at his contract's end.
-  - not delegated: on 1 April a renewal-season inbox item (kind staff-renewal; stops the clock at intervention levels 1–3 →WEB-45) lists coaches whose contracts end at the close; the owner renews (going wage fixed for a term of 1–5 seasons, 10% fee) or replaces. Unrenewed coaches leave at the close with a staff-renewal vacancy item.
-  - the delegated staff report one summary of renewals and hires; each department shows whom its criteria would hire today.
+- STAFF-15 [o] The coaching departments are run by the owner or, when the intervention level delegates them (level 3 and up →WEB-45), by the staff under 코치 기조, a row of the 스태프 area (→ECON-25) the owner sets at any level. ← the owner decides what a good hire is, not every contract
+  | 코치 기조 | the staff hire |
+  |---|---|
+  | 자원봉사 | an unpaid ability-50 volunteer in every post |
+  | 저비용 | ability 45+, the cheapest first, for 2 seasons |
+  | 표준 (default) | ability 55+, the cheapest first, for 2 seasons |
+  | 최고 수준 | ability 65+, the ablest first, for 3 seasons |
+  - a candidate (→STAFF-11, the season's three per department) matches when he meets the option and the club can afford him: cash after his fee keeps the 재정 기조 runway (→ECON-33) with his wage in place of the one he replaces.
+  - delegated, a vacancy or a volunteer's post is filled at once by the first match in the option's order, unless 자원봉사; with no match a volunteer holds it, the staff report it once and look again daily and when the season's candidates change.
+  - delegated, at the season boundary an expiring paid coach who meets the option and is affordable is renewed (going wage, 10% fee, the option's term) unless a match beats him clearly: 3+ ability (the ablest first) or a wage 10%+ lower (the cheapest first). One who no longer meets it is replaced by the first match, renewed when there is none and he is affordable, else a volunteer takes the post; under 자원봉사 a volunteer takes it.
+  - a changed 코치 기조 acts at once only on a vacancy or a volunteer's post; a contracted coach is judged at his contract's end.
+  - not delegated: on 1 April a renewal-season inbox item (kind staff-renewal; stops the clock at intervention levels 1–2 →WEB-45) lists coaches whose contracts end at the close; the owner renews (going wage fixed for a term of 1–5 seasons, 10% fee) or replaces. Unrenewed coaches leave at the close with a staff-renewal vacancy item.
+  - the delegated staff report one summary of renewals and hires; 코치진 shows whom 코치 기조 would hire today in each department.
 
 - STAFF-16 [o] Managers and coaches have an age and a ceiling (potential): one younger than his prime starts 0.7 a year below the level drawn for him and can reach up to 1.1 a year above it; each season he closes 15–40% of the gap; from 60 he loses 0–2 a season with his ceiling. ← trusting a young manager or coach should be a real bet on growth
   | | hired at | prime | other |
@@ -69,24 +67,20 @@
   - hiring a free agent costs his signing fee; hiring another club's manager also pays compensation (웃돈) of 1.5 × his annual wage, and that club names its next manager. Candidates from other clubs are the managers of our league and the division above, the eight best by level.
   - the manager the owner hires leaves the pool; the manager he replaces (not an interim) joins it; a hired candidate never shows as a candidate again while he is in charge.
   - the manager's 교체 action opens the market (→WEB-40): free agents first, then other clubs' managers with club, OVR/POT, school, wage, compensation and total, and says when the list next changes.
-- STAFF-18 [o] With the manager post delegated the staff appoint and renew managers by the manager criteria the owner sets, and report every appointment, renewal and search that found nobody. ← owners who leave the club to run itself still need a manager in charge, of the kind they chose
-  | criterion | values | default |
-  |---|---|---|
-  | 최소 OVR | 0–99 | 0 |
-  | 학파 | any, or one or more of the eight schools (→STAFF-14) | any |
-  | 최소 유연성 | 0–100 | 0 |
-  | 최대 자존심 | 0–100 | 100 |
-  | 최소 육성 | 0–100 | 0 |
-  | 선발 성향 | any, or one or more of none, youth, rotation, stable (→STAFF-12) | any |
-  | 연봉 상한 | none, or the going wage of a manager of OVR 50–90 in steps of 5, shown in today's money | none |
-  | 우선 | OVR 높은 순, 잠재력 높은 순, 연봉 낮은 순 | OVR 높은 순 |
-  | 계약 기간 | 1–5 seasons (the firefighter 1, never past his 70th year →STAFF-14) | 2 |
-  | 다른 구단 감독 | free agents only, or other clubs' managers too, with compensation (→STAFF-17) | free agents only |
-  | 맞는 후보가 없으면 | 기다림, or 가장 나은 후보: the best affordable free agent in the chosen order | 기다림 |
-  - a candidate matches when he meets every criterion and the club can afford him: cash after his fee and any compensation still covers 13 rounds of costs with his wage in place of the current one (as →STAFF-15).
-  - a vacancy (resignation, retirement, an unrenewed contract, the firefighter leaving) is filled at once by the first match; with none, 기다림 keeps the interim in charge without stopping the clock while the staff look again daily (the market moves every 4 league rounds →STAFF-17).
-  - on 1 April an expiring manager who meets the criteria is renewed unless a match beats him clearly in the chosen order: 3+ OVR, 3+ potential or a wage 10%+ lower. One who does not meet them leaves at the close when a match exists and is renewed when none does.
-  - 사람's 감독 tab shows who appoints at the current level, the criteria (editable at any level) and whom the staff would appoint today (→WEB-43); intervention level 4 delegates the post (→WEB-45).
+- STAFF-18 [o] With the manager post delegated (level 3 and up →WEB-45) the staff appoint and renew managers by two rows of the 스태프 area (→ECON-25), and report every appointment, renewal and search that found nobody. ← owners who leave the club to run itself still need a manager in charge, of the kind they chose
+  - 선호 학파: any (default) or one of the eight schools (→STAFF-14); a candidate of another school never matches.
+  | 감독 기조 | the staff look for | order | term | other clubs' managers | with no match |
+  |---|---|---|---|---|---|
+  | 표준 (default) | anyone | OVR first | 2 seasons | no | wait |
+  | 육성가 | 육성 60+ | 육성 first | 3 seasons | no | the best affordable free agent |
+  | 검증된 승부사 | anyone | OVR first | 3 seasons | yes, with compensation (→STAFF-17) | the best affordable free agent |
+  | 젊은 감독 | anyone | potential first | 3 seasons | no | the best affordable free agent |
+  | 저비용 | anyone | the lowest wage first | 2 seasons | no | the best affordable free agent |
+  - a term never runs past the manager's 70th year, and the firefighter signs for 1 (→STAFF-14).
+  - a candidate matches when he meets both rows and the club can afford him: cash after his fee and any compensation keeps the 재정 기조 runway (→ECON-33) with his wage in place of the current one (as →STAFF-15).
+  - a vacancy (resignation, retirement, an unrenewed contract, the firefighter leaving) is filled at once by the first match; with none, 표준 waits — the interim stays in charge without stopping the clock while the staff look again daily (the market moves every 4 league rounds →STAFF-17) — and the other options take the best affordable free agent in their order.
+  - on 1 April an expiring manager who meets both rows is renewed unless a match beats him clearly in the option's order: 3+ OVR, 3+ 육성, 3+ potential or a wage 10%+ lower. One who does not meet them leaves at the close when a match exists and is renewed when none does.
+  - 사람's 감독 tab shows who appoints at the current level, the two rows (each a line opening the 방향 board) and whom the staff would appoint today (→WEB-43).
 - STAFF-19 [o] The owner reaches training only through its coaches, from their cards in 사람's 코치진 (→WEB-43): the assistant for the first team (→CLUB-13), the youth director for the academy (→CLUB-31). ← owners in real clubs interfere through people, and interference costs them coaches
   - 제안 (suggest) a focus for the next 4 settled rounds: the coach accepts with a chance stated before, 0.55, +0.3 when his rule picks it now, −0.25 when his rule calls for recovery (or 1군 준비) and the suggestion is something else, −(ability − 50)/200, within 0.1–0.95, drawn from the world's stream for that coach and round. Accepted, the focus holds 4 rounds; refused, nothing changes. One suggestion per coach every 2 settled rounds.
   - 강행 (force) a focus: it holds 4 settled rounds without asking, and the coach's strain this season rises by one; he then resigns with 15% × his strain (15%, 30%, 45%, at most 60%), stated before. A resignation leaves the post vacant like a release without compensation (→STAFF-11, →STAFF-15) and is reported; strain clears when a season starts. A volunteer never resigns.
@@ -98,6 +92,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r16 261014 STAFF-13✎ +decide by the area's direction rows within 재정 기조, promotion floor a year of costs→the 재정 기조 floor; STAFF-15✎ six hiring criteria per department at level 4→one 코치 기조 row (자원봉사, 저비용 45+, 표준 55+, 최고 수준 65+) at level 3+, 13 rounds→the 재정 기조 runway; STAFF-18✎ eleven manager criteria at level 4→선호 학파 and 감독 기조 (표준, 육성가, 검증된 승부사, 젊은 감독, 저비용) at level 3+, 기다림 by default→표준 waits, the others take the best affordable
 - r15 261013 STAFF-13✎ the training focus among delegated decisions→never delegated, the coaches always set it; staff release at 19→at 19 only below the first team, else kept until 21; STAFF-19+ owner suggestions and forced orders to the assistant and the youth director
 - r14 261013 STAFF-13✎ a switch per decision in its home, owner choices taking a decision back (focus, talk answer, coach release)→the intervention level alone, owner actions never change delegation, the focus only the assistant's while delegated; STAFF-15✎ a switch per department→the level (4) for every department, criteria set at any level; STAFF-18✎ the 감독 tab's switch→who appoints at the level
 - r13 261013 STAFF-11✎ delegated term 2→the criteria's; STAFF-13✎ one coach switch→one per department, +which owner choices take back, +the youth director's rule; STAFF-15✎ investment dial 절약/균형/최고→hiring criteria per department; STAFF-18✎ rule school/best/strategy→manager criteria (OVR, schools, flexibility, pride, youth work, trait, wage cap, order, term, poaching, no match)

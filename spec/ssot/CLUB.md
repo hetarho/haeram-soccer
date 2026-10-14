@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r26 | Define the implemented browser-demo behavior for squad and growth.
+> r27 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating equals its league's average club XI (±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -41,10 +41,10 @@
   - academy investment (→ECON-16), the club build (→ECON-22) and the pipeline synergy (→CLUB-21) add prospects, potential and growth.
   - the 방향 board (→WEB-60) shows the exact chance that the next intake brings a prospect of potential 80+, from the same uniform draws the intake uses.
 - CLUB-17 [o] Fee-bearing purchases, loans and sales happen only in transfer windows: summer from the day the season closes (→LEAGUE-9) to 1 September and winter 1 January–1 February. ← the market opens as the season's review ends, not during its final rounds Free agents sign at any time. The market shows the window state and deadline.
-- CLUB-18 [o] Bids are answered 2–4 days later with accept, reject or a counter; acceptance chance rises with the offered fee against the asking value and the chief scout. The fee is paid on completion; unanswered bids lapse at the deadline. During windows other clubs bid for our players (answered by the owner, or by the staff when delegated) and lapse after 5 days; squad minimums still apply. The bidder is a real club whose strength suits the player (4 below to 12 above his ability, stronger clubs more often, any country). Delegated staff accept an offer at or above their sale bar for a non-starter, or for a starter aged 30+ with a bench player of the same role within 3 ability. The report names the bar and each step.
-  - bar: 130% of value, or 200% for a prospect (aged 22 or under with potential at least 8 above ability)
+- CLUB-18 [o] Bids are answered 2–4 days later with accept, reject or a counter; acceptance chance rises with the offered fee against the asking value and the chief scout. The fee is paid on completion; unanswered bids lapse at the deadline. During windows other clubs bid for our players (answered by the owner, or by the staff when delegated) and lapse after 5 days; squad minimums still apply. The bidder is a real club whose strength suits the player (4 below to 12 above his ability, stronger clubs more often, any country). Delegated staff accept an offer at or above their sale bar for a non-starter, or for a starter aged 30+ with a bench player of the same role within 3 ability (never a starter under 핵심 지키기). The report names the bar and each step.
+  - bar by the 매각 기조 card (→ECON-22), of value and for a prospect (aged 22 or under with potential at least 8 above ability): 셀링 클럽 110%/160%, 쇼케이스 120%/180%, standard 130%/200%, 강경 협상 150%/230%, 핵심 지키기 150%/250%
   - age 30–32 −15 points, 33+ −30; contract in its final season −20, one season after this −10
-  - fixed-cost runway under 13 rounds (the cash warning) −20, under 30 rounds −10; never below 80%
+  - fixed-cost runway under the first 재정 기조 step (→ECON-33; 13 rounds at 표준) −20, under the second (30 rounds at 표준) −10; never below 80%
 
 - CLUB-19 [o] Squad morale (0–100, new clubs 60) moves +6/+1/−6 after own wins/draws/defeats (±2 more for a two-goal margin; a motivator manager takes 2 off a defeat), drifts 15% per settled round toward a baseline of 58 + 4 per squad-investment level above standard + (manager trust − 50)/10 + the manager style, build and synergy terms, within 30–80, and falls 2 more per round while starters average fatigue ≥ 40. Match strength adds (morale − 60)/10; older saves without morale stay exactly unchanged.
 
@@ -90,7 +90,7 @@
   | 12% | 36–90 | 발목 인대, 중족골 골절 |
   | 3% | 120–240 | 전방 십자인대 파열, 아킬레스건 |
   - injured players are left out of the automatic and saved XI while eleven fit players exist; the medical report is an inbox item and an event; healed injuries clear.
-- CLUB-24 [o] With transfers delegated, a bid of 150%+ for an untouchable player is decided by the staff with the manager: the build's market card sets the price (셀링 클럽 150%, 쇼케이스 175%, standard 200%, 강경 협상 225%, 핵심 지키기 never), a runway under 30 weeks lowers it 25 points, a starter without a bench player of his role within 3 ability raises it 25, and a runway under the 13-week warning sells. The report states the price and each step. ← the owner's club identity and cash, not a fixed number, decide when a star is let go
+- CLUB-24 [o] With transfers delegated, a bid of 150%+ for an untouchable player is decided by the staff with the manager: the build's market card sets the price (셀링 클럽 150%, 쇼케이스 175%, standard 200%, 강경 협상 225%, 핵심 지키기 never), a runway under the second 재정 기조 step (→ECON-33; 30 rounds at 표준) lowers it 25 points, a starter without a bench player of his role within 3 ability raises it 25, and a runway under its first step (13 rounds at 표준) sells. The report states the price and each step. ← the owner's club identity and cash, not a fixed number, decide when a star is let go
 
 - CLUB-25 [o] Every player has a market wage from his ability, age and potential, his club's division and the football index (→ECON-26); it rises steeply with ability, so a star earns many times a squad player. ← players are paid what the market says they are worth
   - targets, calibrated with →ECON-29: in a top flight a player rated 80 earns 6–10× one rated 60; a second-tier squad earns 35–50% of a top-flight squad of the same ability. Measured 261013: 7.4× and 40%.
@@ -98,9 +98,16 @@
 - CLUB-26 [o] Players negotiate contracts when a transfer window opens (summer as the season starts, winter on 1 January, →CLUB-17): one in the final season of his contract asks to renew, and one with at most three seasons left, this one included, who is paid 25% or more below his market wage asks for an improved contract, at most once a season. He names a demand (market wage × the build's player-wage effects →ECON-22 × his agent's premium →CLUB-30) and accepts any offer at or above his floor, demand × (1 − goodwill). ← a player is paid what he is worth when his contract comes up, as in real football, and how a club treats its players decides what he settles for
   - goodwill: squad investment (→ECON-16) −5/0/+5/+10/+15%; the 라커룸 문화 card: 가족 같은 클럽 +5, 스타 대우 +10 for players rated 70+, 철저한 경쟁 −5; 긴축 재정 −5; (morale − 60)/4 %; within −10 to +30%.
   - the owner offers the floor or more with a term, or declines; the talk shows demand, floor, the contract's clauses (→CLUB-29), yearly cost and runway before the choice (→WEB-68).
-  - delegated (→STAFF-13): the staff offer the floor for 2 seasons past this one (1 from age 32), never ending before the running contract, when the talk rule allows the player, cash after the raise still covers 13 rounds of costs, the yearly wage bill after the raise, staff included, stays at or below 65% of the club's revenue over the last 12 months, and the season's cash projection with the raise (→ECON-18) still ends the season covering 13 rounds of costs; otherwise they decline and say why (→CLUB-27). ← the cash checks alone let a promoted club's staff agree raises its income could not carry
+  - delegated (→STAFF-13): the staff offer the floor for 2 seasons past this one (1 from age 32), never ending before the running contract, when 재계약 기조 keeps the player at that floor and 재정 기조 allows the raise (→ECON-33): cash after it keeps the runway, the wage bill after it stays at or below the ceiling of the club's revenue over the last 12 months, and the season's cash projection with it still ends the season keeping the runway; otherwise they decline and say why (→CLUB-27). ← the cash checks alone let a promoted club's staff agree raises its income could not carry
   - revenue over the last 12 months: this season's turnover so far (competition, matchday and commercial income; player trading and owner capital excluded, →ECON-30) plus last season's for the league rounds not yet played; a club without a completed season counts its season so far at its pace over a whole season.
-  - the talk rule, set by the owner in 사람's 선수 tab (→WEB-43): 연봉 상한, the floor at most 90/100/110/125/140% of his market wage (default 110%); 최소 OVR 0–99, players rated below are not kept (default 0); 최대 나이 none or 28–40, players that old or older are not kept (default none).
+  - 재계약 기조, a row of the 선수단·계약 area (→ECON-25), says whom the staff keep and how far they go:
+    | option | keeps | floor at most |
+    |---|---|---|
+    | 표준 (default) | everyone | 110% of his market wage |
+    | 모두 붙잡기 | everyone | 140% |
+    | 핵심만 붙잡기 | the starting XI as home shows it (→WEB-58); the rest are declined | 140% |
+    | 짠물 | everyone | 100% |
+    | 젊은 선수 우선 | players under 30 | 110% |
   - terms: a contract signed in the summer window runs 1–5 seasons, this one included; one signed in the winter window runs the rest of this season and 0–4 more (½ to 4½ years); every contract ends at a season's close (→CLUB-28). A talk answered after its opening, or an unhappy player's floor met later, takes the summer terms before 1 January and the winter terms from it.
   - an agreed wage is fixed for its term apart from its clauses (→CLUB-29); new terms run from the agreement and are never backdated; no player asks outside a window opening, and no contract renews itself.
 - CLUB-27 [o] A declined player becomes unhappy (언해피) unless the manager talks him round. Unhappy, he plays 3 below his ability, costs squad morale 1 each settled round he starts, refuses to renew, and after 6 weeks hands in a transfer request: his stance becomes 이적 명단 and cannot be set to 이적 불가 (→CLUB-22). Meeting his floor later, or his sale, ends it. ← refusing a player what he is worth has a price, as in real football
@@ -115,7 +122,7 @@
   - the shares and sizes are calibrated with the economy (→ECON-29) within these ranges; a clause applies once per move and changes nothing else in the contract.
   - the contract talk (→WEB-68) and the player sheet show his clauses.
 - CLUB-30 [o] Every player has an agent rated 1–5, set when the player is created and never changing; better players more often have stronger agents. A stronger agent raises his client's demand by 1% per level above 1 (→CLUB-26) and tilts his contract clauses his way (→CLUB-29); the player sheet and the contract talk show the rating. Agent fees and agents steering transfers are not modelled. ← how well a player is represented decides his terms as much as his ability
-  - the premium stays small so the default talk rule's 110% cap still renews a delegated squad at its market wage (measured 261013: 3% a level left ECON-29's wage bill at 43% of revenue, below its band).
+  - the premium stays small so 재계약 기조 표준's 110% cap still renews a delegated squad at its market wage (measured 261013: 3% a level left ECON-29's wage bill at 43% of revenue, below its band).
 - CLUB-31 [o] The youth director sets the academy's training focus each settled round by his rule, unless a suggestion he accepted or an order the owner forced holds that round (→STAFF-19). ← each age group needs different work: fundamentals early, first-team readiness late
   | focus | U-17 | U-19 | U-21 |
   |---|---|---|---|
@@ -130,6 +137,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r27 261014 CLUB-18✎ sale bar 130%/200% of value→by 매각 기조 (셀링 클럽 110/160 … 핵심 지키기 150/250, never a starter), runway steps 13/30 rounds→the 재정 기조 steps; CLUB-24✎ runway 30 weeks / 13-week warning→the 재정 기조 steps; CLUB-26✎ the owner's talk rule (wage cap 90–140%, minimum OVR, maximum age)→재계약 기조 (표준 110%, 모두 붙잡기 140%, 핵심만 붙잡기 starters 140%, 짠물 100%, 젊은 선수 우선 under 30), cash checks 13 rounds and 65%→재정 기조
 - r26 261013 CLUB-12✎ facilities→the training ground; CLUB-16✎ facilities→academy facilities; CLUB-21✎ 상업 제국 facilities 6+→stadium 30,000+
 - r25 261013 CLUB-13✎ the owner's focus at intervention level 1, the assistant's otherwise→always the assistant's, owner suggestions or forced orders (→STAFF-19); CLUB-16✎ one academy→U-17/U-19/U-21 by age, growth ×1.2/1.0/0.8, leave at 21 (was 22, staff release at 19), promotion from 16 (17 in England); CLUB-31+ youth training focus by the youth director
 - r24 261013 CLUB-13✎ choosing a focus took the decision back from the assistant→refused while the level delegates it

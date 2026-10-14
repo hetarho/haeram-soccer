@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r24 | Define the implemented browser-demo behavior for historical club economy.
+> r25 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -128,17 +128,18 @@
 - ECON-24 [o] Bankruptcy ends a career: each league round settled with negative cash counts one, getting back to zero or above resets the count; at 8 in a row, or at once when the debt passes half a season's fixed costs, the club goes bankrupt. ← debt used to freeze play behind an alert instead of ending it
   - the first round in debt posts a "파산 위기" inbox item (a status, not a stop); the HUD cash and a red band count the rounds left (→WEB-56)
   - a bankrupt club advances nothing and refuses every command but reading the inbox; the app shows the game-over page (→WEB-56)
-- ECON-25 [o] Direction areas pair each strategy card with the ongoing dials that spend on the same area (→ECON-22, →ECON-16, →ECON-17), and both are rows of named options of one kind: the 방향 board (→WEB-60) draws and drafts an area's card row and dial rows alike, and the composer (→WEB-61) shows the cards by the same areas, so cards and dials read as one plan:
-  | area | card row (any time) | dial rows (any time) |
-  |---|---|---|
-  | 선수단 | 라커룸 문화 | 선수단 투자 |
-  | 영입 | 스카우팅 | 영입 기조 |
-  | 매각 | 매각 기조 | — |
-  | 유소년 | 유스 정책 | 유소년 투자 |
-  | 수익 | 수익 모델 | 마케팅 |
-  | 홈·팬 | 홈·팬 | 티켓 가격 |
-  - the card says how the club goes about an area, the dial how much it puts in; presets and saved strategies only fill the six cards and leave the dials as set; the market slot is named 매각 기조 so it never reads like the 영입 기조 dial ← the build arrived after the policy board and duplicated its areas in a second, unstructured list
-  - the training focus is no dial of the board: it belongs to 훈련 (→WEB-70).
+- ECON-25 [o] Direction areas group the club's direction rows by the decisions they steer (→ECON-22, →ECON-16, →ECON-17, →ECON-33): every row is a choice of named options of one kind, drawn and drafted alike on the 방향 board (→WEB-60), and the composer (→WEB-61) shows the cards by the same areas, so the owner sees in one place what moves each decision:
+  | area | card row | other rows | the delegated staff decide by them |
+  |---|---|---|---|
+  | 선수단·계약 | 라커룸 문화 | 선수단 투자, 재계약 기조 (→CLUB-26) | contract talks |
+  | 영입 | 스카우팅 | 영입 기조 | - |
+  | 매각 | 매각 기조 | - | answers to offers (→CLUB-18, →CLUB-24) |
+  | 유소년 | 유스 정책 | 유소년 투자 | - |
+  | 스태프 | - | 선호 학파, 감독 기조 (→STAFF-18), 코치 기조 (→STAFF-15) | the manager post, the coaching departments |
+  | 재정 | 수익 모델 | 마케팅, 재정 기조 (→ECON-33) | sponsors (→ECON-21); 재정 기조 bounds every delegated spend |
+  | 홈·팬 | 홈·팬 | 티켓 가격 | - |
+  - a card row says how the club goes about an area, a dial how much it puts in, a staff row how the staff choose; presets and saved directions fill only the six cards and leave every other row as set; every row changes at any time, and its default (표준, or a dial's default step) keeps the club as it was before the row existed.
+  - the market slot is named 매각 기조 so it never reads like the 영입 기조 dial; the training focus is no row of the board: it belongs to 훈련 (→WEB-70).
 - ECON-26 [o] A football index per country and year scales what football pays and charges beyond prices: sponsor values, ticket presets, player and staff market wages and transfer values, the division amounts of clubs' operating expenses (→ECON-30) and facility building and upkeep (→ECON-12); league distributions and cup and continental prizes follow the broadcasting index instead (→ECON-31). It grows with prices and, from commercialisation, much faster. ← income and wages must grow together, as they did in real football
   - the index is a source-attributed catalog per country and year, marked estimated where it is (→ECON-3), projected after its coverage like prices (→ECON-2).
 - ECON-27 [o] A club earns as real clubs do, simplified: competition money (league distribution →ECON-28, cup prizes →LEAGUE-5, continental prizes →EURO-7), matchday tickets (→ECON-9), sponsor contracts (→ECON-8) and player sales; owner capital and marketing campaigns stay bounded actions (→ECON-11, →ECON-7). No income grows with supporters alone. ← an income without a ceiling made every club rich by mid-career (measured 261012: £197m by 2004 from a 1950 founding with no owner action)
@@ -164,6 +165,17 @@
   - each round's payment is multiplied by the squad investment's factor in force that round (→ECON-16); the default level's ×1 leaves ECON-29's reference club as calibrated.
 - ECON-31 [o] A broadcasting index per country and year scales league distributions (→ECON-28) and cup and continental prizes with their result bonuses (→LEAGUE-5, →EURO-7): flat with prices until television paid the league, growing with each country's rights deals and, through the broadcasting boom of the 1990s–2010s, far faster than the football index. ← the 1950s game lived on the gate and the 2000s game on television; one index for distributions and tickets could not give both income mixes (measured 261013: 1950s matchday 21–35% whenever the 2000s top-flight mix held)
   - the index is a source-attributed catalog per country and year, marked estimated where it is (→ECON-3), projected after its coverage like prices (→ECON-2).
+- ECON-33 [o] 재정 기조, a row of the 재정 area (→ECON-25), is the one money rule of every delegated spend — contract talks (→CLUB-26), academy promotions (→STAFF-13), coach and manager hires and renewals (→STAFF-15, →STAFF-18) — and sets the runway at which the staff sell harder (→CLUB-18, →CLUB-24); the owner's own decisions are never bounded by it. ← fixed checks spread over each staff rule could not say how boldly the owner wants the club run
+  | option | runway kept after a spend | wage bill ceiling | promotions wait below | sell harder below |
+  |---|---|---|---|---|
+  | 공격적 | 6 rounds | 75% | a quarter of a year's operating costs | 6 rounds (−20), 14 rounds (−10) |
+  | 적극 | 9 rounds | 70% | half a year's | 9, 20 |
+  | 표준 (default) | 13 rounds (the cash warning) | 65% | a year's | 13, 30 |
+  | 신중 | 20 rounds | 60% | one and a half years' | 20, 45 |
+  | 안정적 | 30 rounds | 55% | two years' | 30, 65 |
+  - runway kept: cash after the spend covers that many rounds of fixed costs with the new wage in place of the old (→ECON-20), and the season's cash projection with it (→ECON-18) still ends the season covering them.
+  - wage bill ceiling: the yearly wage bill after a raise, staff included, against the club's revenue over the last 12 months (→CLUB-26).
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -171,6 +183,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r25 261014 ECON-25✎ six areas of a card and its dials→seven areas by the decisions they steer: 선수단·계약 +재계약 기조, 스태프 (선호 학파, 감독 기조, 코치 기조), 수익→재정 +재정 기조; ECON-33+ 재정 기조: runway kept, wage-bill ceiling, promotion floor and sell-harder steps by option (표준 = 13 rounds, 65%, a year, 13/30)
 - r24 261014 ECON-22✎ shown as the operating strategy (운영 전략), events titled 운영 전략 with 기본 전략/맞춤 전략→the club's direction (방향), titled 방향 with 기본 방향/맞춤 방향, older names read so; ECON-25✎ strategy areas, the operating board's card rows and dials→direction areas whose cards and dials are rows of named options drawn and drafted alike on the 방향 board
 - r23 261014 ECON-29✎ measured on 24 careers of one facility level→40 careers on the facility parts: wage bill 46.1%→44.3% (below the band), operating result +3.4%→+4.8%, none bankrupt
 - r22 261013 ECON-12✎ 20 facility levels of 5,000 seats→ECON-32+ three parts: stadium in 8 expansion/rebuild steps (2,500→90,000), training ground and academy facilities 1–5; ECON-8✎ naming facilities 10+→stadium 30,000+; ECON-22✎ 상업 제국 facilities 6+→stadium 30,000+; ECON-29✎ reference club builds a level→the cheapest next work of the three parts
