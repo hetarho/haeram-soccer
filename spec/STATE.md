@@ -68,7 +68,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T106 | The player model as a pure module | PLAYER STAFF | - | doing@261015.p7ad |
 | T107 | Swap the world onto the new player model (rules 2.0.0) | PLAYER MATCH STAFF CLUB WORLD LEAGUE WEB SAVE HIST | T106 | todo |
 | T108 | Adaptation and 조직력 move with matches, managers and change | PLAYER LEAGUE STAFF | T107 | todo |
 | T109 | Training per player, its costs, and growth by 프로의식, past potential and by age | CLUB STAFF PLAYER | T107 | todo |
@@ -103,6 +102,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 T106 done (5ce3792): the player model as a pure module
 - 261015 create-task T106–T115 from PLAYER r2 MATCH r9 STAFF r20 CLUB r34 LEAGUE r6 WORLD r3 ECON r35 HIST r9 SAVE r35 WEB r66 (ECON r35 and HIST r9 folded into T107)
 - 261015 update-ssot PLAYER r2 MATCH r9 STAFF r20 CLUB r34 LEAGUE r6 WORLD r3 ECON r35 HIST r9 SAVE r35 WEB r66 from ideation/difficulty-and-adaptation (converted)
 - 261015 create-ssot PLAYER r1: the player model from ideation/difficulty-and-adaptation (20 decisions, 1 open)
@@ -122,4 +122,3 @@
 - 261014 T098 done (6aed2e3): seven presets over every row, 글로벌 스카우팅, founding preset, rules 1.21.0; unit 695, contract 13; T099 doing
 - 261014 slice 5 on main: fast-forward to 2535320 after CI 38515600980 passed every job
 - 261014 update-ssot ECON r31 CLUB r31 WEB r64 SAVE r33 (club-direction slice 6): seven presets over every row, 글로벌 스카우팅, the founding direction, saved directions over every row; create-task T098 (engine), T099 (screens), T100 (explore 1h: final calibration)
-- 261014 T097 done (8a2a121): level 4 names signings, 스태프 제안 in the market; full Chromium e2e 106
