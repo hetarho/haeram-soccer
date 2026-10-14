@@ -89,10 +89,16 @@ for (const viewport of [
     // The toggle was measured above as '자동 진행 시작'; stop the run straight away.
     await progress.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
     await expect(paces[1]).toHaveAttribute('aria-pressed', 'true');
-    await page
+    await expect(
+      progress.getByRole('button', { name: '자동 진행 시작', exact: true }),
+    ).toBeVisible();
+    // Measured first: scrolled into place and settled, the tap below starts from a still page
+    // (CI WebKit could stall in its own scroll step while the stop's feedback still moved).
+    const prepare = page
       .getByTestId('club-hub')
-      .getByRole('button', { name: '전술·선발 준비', exact: true })
-      .click();
+      .getByRole('button', { name: '전술·선발 준비', exact: true });
+    await expectTouchControl(prepare, viewport);
+    await prepare.click();
     const preparation = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
     const tone = preparation.getByRole('combobox', { name: '전술 요청 방식', exact: true });
     await expectTouchControl(tone, viewport);
