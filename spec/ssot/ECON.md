@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r31 | Define the implemented browser-demo behavior for historical club economy.
+> r32 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -160,15 +160,15 @@
   - a club relegated keeps 50% of the share it lost for one season (parachute); a promotion pays the new division's share from its first round.
   - the season prize line (최종 순위 상금) becomes the merit payment.
 - ECON-29 [o] The economy is calibrated against real football on 50-season runs of a reference club, and the measured results are recorded here. ← balance is judged on whole careers, not single seasons
-  - revenue is competition money, matchday and commercial income; player trading is reported beside the bands, because the delegated staff sell but never buy, so the reference club is a one-way seller with a youth-heavy wage bill. ← net results including those sales measured 10–17% on every constant set that kept every career solvent
+  - revenue is competition money, matchday and commercial income; player trading is reported beside the bands: the delegated staff sell, and sign only to fill short roles or upgrade by 재정 기조 (→CLUB-33), so the reference club stays a net seller with a youth-heavy wage bill. ← net results including those sales measured 10–17% on every constant set that kept every career solvent
   - the reference club has every delegation on, no owner capital, and starts the cheapest next facility work of the three parts (→ECON-32) whenever cash after it still covers 13 rounds of fixed costs; its operating result counts that construction, since building is how it spends a surplus, and the result before construction is reported beside; the wage targets (→CLUB-25) are measured on it too, the attendance targets on clubs established in their division (→ECON-9), with the reference club's crowds in at least its third straight season in a division beside.
-  | target | band | measured 261014 (rules 1.17.0 with the direction rows at their defaults and 트레이딩 머신 selling at 셀링 클럽's 110% bar, 40 careers: ENG ESP FRA GER × default and 트레이딩 머신 × 5 seeds, 1950–2009) |
+  | target | band | measured 261014 (rules 1.21.0 after the whole direction plan: the default careers at 기본 방향, the 트레이딩 머신 careers founded with that preset's whole board, the chief scout signing at level 4; 40 careers: ENG ESP FRA GER × default and 트레이딩 머신 × 5 seeds, 1950–2009) |
   |---|---|---|
-  | wage bill / revenue for a club keeping a squad at its division's level | 45–70% | 44.8%, below the band (44.3% under rules 1.16; 45.3% on one facility level): the stadium's steps lift mid-career gates while market wages do not follow revenue |
-  | operating result / revenue before player trading, career average without owner spending | −5% to +10% | +3.5% (player sales 13.2% of revenue beside it; before construction +22.6%; net result with sales +16.7%) |
-  | income mix, top flight, 2000s | distribution 40–55%, commercial 25–40%, matchday 15–25% | 43.6%, 32.9%, 23.5% |
-  | income mix, any division, 1950s | matchday 60% or more | 88.5% |
-  | every facility part to its top (4,045,150 units), in seasons of a top-flight club's average net result before construction | 25 or more | 93.9 |
+  | wage bill / revenue for a club keeping a squad at its division's level | 45–70% | 41.4%, below the band (44.8% with the rows at their defaults, 44.3% under rules 1.16): the 트레이딩 머신 careers, now raising to sell, letting 30+ go and buying young, run 25–48% while the default careers sit near 44%; the stadium's steps lift mid-career gates while market wages do not follow revenue |
+  | operating result / revenue before player trading, career average without owner spending | −5% to +10% | +2.4% (player sales 15.3% of revenue beside it; before construction +22.5%; net result with sales +17.7%) |
+  | income mix, top flight, 2000s | distribution 40–55%, commercial 25–40%, matchday 15–25% | 45.4%, 31.7%, 22.9% |
+  | income mix, any division, 1950s | matchday 60% or more | 84.8% |
+  | every facility part to its top (4,045,150 units), in seasons of a top-flight club's average net result before construction | 25 or more | 94.1 |
   | reference careers that go bankrupt | none | none of 40 |
 - ECON-30 [o] Beyond wages, hosting costs and facility upkeep (→ECON-32), every club pays operating expenses (운영 경비) — matchday operations, travel, administration, medical care, kit and its staff's yearly pay — each league round: the larger of an amount per country and division on the football index (→ECON-26) and a share of its turnover over its last completed season (income without player sales or owner capital), spread over this season's league rounds. Share and division amounts are sized so that ECON-29's reference club ends its career near break-even; the amateur level's amount is the lowest. ← other costs must grow with the club's own football money, from a newly promoted club to the dominant one it becomes (measured 261013: net result 47% of income with costs on prices; one amount per division bankrupted 5–7 of 8 reference careers)
   - it is a fixed cost: fixed costs and runway (→ECON-12), the cash projection (→ECON-18), the cash warning (→ECON-20) and the bankruptcy threshold (→ECON-24) count it, and the season ledger names it (→ECON-10).
@@ -201,6 +201,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r32 261014 ECON-29✎ measured on rules 1.17.0 with default rows→rules 1.21.0 after the whole direction plan: wage bill 44.8%→41.4% (below the band), operating result +3.5%→+2.4%, 2000s mix 43.6/32.9/23.5→45.4/31.7/22.9%, 1950s matchday 88.5→84.8%, ladder 93.9→94.1, none of 40 bankrupt; delegated staff never buy→sign by CLUB-33
 - r31 261014 ECON-22✎ five presets of cards→seven presets (+유스 명가, +세계로) filling every row, a new club starting with the founding direction; ECON-25✎ presets and saved directions fill only the six cards→every row, older saved directions their cards
 - r30 261014 ECON-33✎ +signings, +a signing's fee at most a share of the cash above the runway (공격적 100%…안정적 25%); ECON-25✎ 영입 staff decide -→signings
 - r29 261014 ECON-14✎ ECON-8✎ exclusive contract: blocks merchandise campaigns→halves 해외 마케팅's fan growth

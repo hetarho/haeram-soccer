@@ -1,5 +1,5 @@
 # IDEATION club-direction
-> st:ready@261014 | One place where the owner sets the club's direction, the delegated staff decide by it, and every choice of one kind looks and behaves the same.
+> st:converted@261014 | One place where the owner sets the club's direction, the delegated staff decide by it, and every choice of one kind looks and behaves the same.
 
 ## vision
 - Core value (owner): simple controls that branch into trillions of different clubs — few, uniform choices whose combinations decide the outcome.
@@ -126,11 +126,11 @@
 - v1 (slice 1): the 방향 tab and one row component over today's cards and dials / not: new rows, staff rules, stocks, delegated signings, founding presets (slices 2–6)
 
 ## domains
-- WEB: the 방향 tab and its page tabs, one row component and draft behaviour, founding preset row, homes table (→WEB-10, →WEB-39, →WEB-43, →WEB-45, →WEB-60, →WEB-61, →WEB-70, →WEB-71)
-- ECON: cards and dials as rows by area, 재정 기조, 지역 기반 and 글로벌 인지도, marketing and campaigns removed (→ECON-7, →ECON-16, →ECON-17, →ECON-22, →ECON-23, →ECON-25)
-- STAFF: delegated decisions by direction, the level ladder, coach rules reading the direction (→STAFF-13, →STAFF-15, →STAFF-18, →STAFF-19)
-- CLUB: renewals, the sale bar, stances, academy rules, delegated signings and synergies by direction (→CLUB-16, →CLUB-18, →CLUB-21, →CLUB-22, →CLUB-24, →CLUB-26, →CLUB-31)
-- SAVE: today's cards, dials, criteria and campaigns loaded as rows
+- WEB: the 방향 tab and its page tabs, one row component and draft behaviour, founding preset row, homes table (→WEB-10, →WEB-39, →WEB-43, →WEB-45, →WEB-60, →WEB-61, →WEB-70, →WEB-71) →WEB
+- ECON: cards and dials as rows by area, 재정 기조, 지역 기반 and 글로벌 인지도, marketing and campaigns removed (→ECON-7, →ECON-16, →ECON-17, →ECON-22, →ECON-23, →ECON-25) →ECON
+- STAFF: delegated decisions by direction, the level ladder, coach rules reading the direction (→STAFF-13, →STAFF-15, →STAFF-18, →STAFF-19) →STAFF
+- CLUB: renewals, the sale bar, stances, academy rules, delegated signings and synergies by direction (→CLUB-16, →CLUB-18, →CLUB-21, →CLUB-22, →CLUB-24, →CLUB-26, →CLUB-31) →CLUB
+- SAVE: today's cards, dials, criteria and campaigns loaded as rows →SAVE
 
 ## open
 - Every new row's option effects and amounts, calibrated on the ECON-29 bands (slices 2–5).

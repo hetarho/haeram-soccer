@@ -29,7 +29,6 @@ import type { Club, CountryCode, World } from '../packages/contracts/src/types';
 import {
   activePlayers,
   advanceRound,
-  BUILD_PRESETS,
   CASH_WARNING_ROUNDS,
   catchment,
   CATCHMENT_CONFIG,
@@ -252,10 +251,10 @@ function playCareer(code: CountryCode, build: string, greedy: boolean, seed: str
     color: '#335577',
     seed,
     difficulty: 1,
+    // A preset is founded as the club's whole direction (→ECON-22, →WEB-15).
+    ...(build !== 'default' ? { preset: build } : {}),
   });
   delegateAll(w);
-  if (build !== 'default')
-    operate(w, { type: 'build', build: BUILD_PRESETS.find((p) => p.id === build)!.build });
   const career: Career = { code, build, greedy, seed, seasons: [] };
   const depth = country(code).groups.length;
   for (let n = 0; n < SEASONS && !w.bankrupt; n++) {
