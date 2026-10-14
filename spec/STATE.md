@@ -10,31 +10,13 @@
 - docs: en  # doc language
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
+## active
+| tag | host | mode | since | at | doing |
+|---|---|---|---|---|---|
+| d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
+
 ## inbox
-- 261014 decided WEB-15 T099: where the founding 구단 방향 goes → beside the club name, each option's idea and rows as a second line in the list, since a line under it overflowed 360x740 by 99 px (alt: a line under the picker with the founding loop removed | the picker inside 고급 설정)
 - 261014 suggest -: club-direction added 15 tasks (T086–T100) in one day — run review-code on apps/web/src/ui and packages/engine/src before the next feature
-- 261014 decided ECON-22 ideation/club-direction: the preset set → seven presets filling every row: the five redesigned with rows, plus 유스 명가 (aims 유스 파이프라인) and 세계로 (aims 글로벌 스카우팅) (alt: keep five presets of cards only | eight with a commercial-global split)
-- 261014 decided CLUB-21: a synergy for the global preset → 글로벌 스카우팅 (해외 유스 스카우트 · 해외 스카우트망 3+ · spotter or 65+ chief scout → intake and candidate potential +2) (alt: no new synergy, 세계로 aiming 머니볼)
-- 261014 decided WEB-15: must the owner pick a direction at founding → 기본 방향 shown selected, the presets beside it, changeable later (alt: no preselection, 창단 blocked until a pick)
-- 261014 decided WEB-61 SAVE-15: saved directions → keep every row like presets, older entries their cards (alt: saved directions stay cards only)
-- 261014 decided WEB-39: the 방향 tab's address → keep /business?view= with build, finance and sponsor, older values opening their tab (alt: a new /direction route | the old view values)
-- 261014 decided WEB-60: how the six areas show on one screen → folded behind headers naming the options in force, a drafted or remedy-opened area unfolded (alt: all unfolded | only the first unfolded)
-- 261014 decided WEB-60 ECON-25 ideation/club-direction: area names in slice 1 → today's six (선수단, 영입, 매각, 유소년, 수익, 홈·팬) until their rows change in slices 2–4, and campaigns under 재정 until slice 4 (alt: rename to 선수단·계약, 재정, 지역 now)
-- 261014 decided WEB-60: the standard card option's label → 표준, as every row will have (alt: keep 기본)
-- 261014 decided WEB-39: the cash page tab → 자금, so it never reads like the 재정 area (alt: rename the area instead)
-- 261014 decided CLUB-18 ideation/club-direction: slice 2's scope → 매각 기조 sets the sale bar now; staff changing stances and the youth rows driving promotion move to slice 3 with 육성 목표 (alt: all in slice 2)
-- 261014 decided SAVE-10: older criteria → the nearest rows with an inbox item naming them, 재정 기조 표준 (alt: every row 표준)
-- 261014 decided CLUB-32 ideation/club-direction: the youth rows → 육성 목표 (표준, 1군 공급 never releases before 21, 판매용 육성 lists non-starters ≤ 21, 최소 운영 releases at 18 below the starters' level) and 데뷔 시점 (표준, 빠른 데뷔 −3/−15 with 1군 직행 경로's growth and morale, 준비된 뒤 at the starters' level, 늦게 from 19 with U-21 growth ×1.15) (alt: one combined row)
-- 261014 decided ECON-22: 유입 방식 → the 유스 정책 slot renamed, 1군 직행 경로 moved to 데뷔 시점 빠른 데뷔, 엘리트 선발 added (potential +8, intake −2); 트레이딩 머신 keeps its other cards until presets fill rows in slice 6 (alt: keep 1군 직행 경로 as a card too)
-- 261014 decided CLUB-22: staff stances → at window openings with transfers delegated, only players at 협상 가능: 셀링 클럽 lists non-starters 30+, 판매용 육성 non-starters ≤ 21, 핵심 지키기 marks the three best starters 이적 불가 (alt: staff never touch stances)
-- 261014 decided ECON-29 ideation/club-direction: calibration → measured once for slice 2 (T091) and once more after slice 6, not after every slice (alt: 40 careers after each slice)
-- 261014 decided ECON-34 ECON-16 ideation/club-direction: the bases → one 지역 기반 fed by 주변 투자 and 풀뿌리 (targets add up), one 글로벌 인지도 fed by 해외 마케팅 and 해외 스카우트망, rising 2% of the gap a round and falling 1%; each row also works while paid (gate, intake potential, fans, candidates); 해외 투어 none/short/long once a summer (alt: one stock per row | effects only while paid)
-- 261014 decided ECON-22: 글로벌 브랜드 → replaced in 지역 관계 방식 by 지역 상생 (지역 기반 ×1.5 faster, sponsor offers ×0.95); 회원제 stays a 수익 모델 card (alt: move 회원제 into the slot)
-- 261014 decided CLUB-33 ideation/club-direction: delegated signings in detail → the chief scout looks at a window's opening and every 7th day, one move a look; short roles (2 GK, 6 DEF, 6 MID, 4 FWD, 18 players) first, then upgrades over the weakest starter by 5/3/2 at 표준/적극/공격적 (1/2/3 a window, none at 신중·안정적, squad ≤ 24); free agents first, never loans; bids at the asking fee (공격적 110%), counters answered by the money checks (alt: one look per window | loans for short roles | bids below asking)
-- 261014 decided ECON-33: a staff signing's fee cap → a share of the cash above the runway: 100/75/50/35/25% from 공격적 to 안정적 (alt: a window budget | no cap beyond the runway)
-- 261014 decided WEB-44: the cash remedy → one step less on whichever of the four 지역·글로벌 investment rows spends most (alt: only 해외 마케팅 or 주변 투자)
-- 261014 decided ECON-14 ECON-8: the exclusive sponsor's downside once campaigns are gone → it holds the merchandise rights and halves 해외 마케팅's fan growth while it runs (alt: it blocks 해외 투어 | no downside, a lower premium)
-- 261014 decided ECON-7 SAVE-10: campaigns and marketing → no new campaigns, running ones settle; a marketing level loads as the same 해외 마케팅 level, its gate part dropped (alt: split it into both rows)
 
 ## ideation
 | id | st |
@@ -46,20 +28,25 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 64 | 64 | - | 0 |
+| WEB | 65 | 65 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
-| CLUB | 31 | 31 | - | 0 |
+| CLUB | 32 | 32 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
-| STAFF | 18 | 18 | - | 0 |
-| ECON | 32 | 32 | - | 0 |
+| STAFF | 19 | 19 | - | 0 |
+| ECON | 33 | 33 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 8 | 8 | - | 0 |
-| SAVE | 33 | 33 | - | 0 |
+| SAVE | 34 | 34 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T101 | The 방향 page at /direction | WEB | - | todo |
+| T102 | The 단장 post | STAFF CLUB ECON SAVE | - | todo |
+| T103 | The shortlist, the manager's requests and the 단장's signings | CLUB STAFF SAVE | T102 | todo |
+| T104 | The 단장's card, the shortlist and the requests on screen | WEB STAFF CLUB | T102 T103 | todo |
+| T105 | Re-measure the economy with the 단장 | ECON | T102 T103 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -81,6 +68,9 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 create-task T101 (/direction), T102 (the 단장 post), T103 (shortlist and requests), T104 (screens), T105 (explore 1h: calibration)
+- 261014 update-ssot WEB r65 CLUB r32 STAFF r19 ECON r33 SAVE r34 (the owner's inbox review): the 방향 tab at /direction; the 단장 (STAFF-20) takes contract talks, the manager post and transfers when delegated and carries the transfer negotiation; signings from the chief scout's all-season shortlist and the manager's requests, −3 trust for none met at a window's close
+- 261014 inbox: the owner confirmed 21 of the 23 decisions one by one; changed WEB-39 (the 방향 tab moves to /direction) and CLUB-33 (a 단장 decides signings from the chief scout's all-season shortlist and the manager's requests) — update-ssot follows
 - 261014 slice 6 on main after CI 38519213867 passed every job on 4806bc4; autopilot run v7dq closed (report reports/261014-v7dq.md)
 - 261014 T100 done: 40 careers on rules 1.21.0 — wage bill 41.4% (below 45–70%), operating +2.4%, none bankrupt; ECON r32; club-direction converted (all six slices in the SSOTs)
 - 261014 T099 done (58d4711): presets and saved directions over every row, founding 구단 방향, the protocol accepts 육성 목표/데뷔 시점 (refused since slice 3); unit 699, Chromium e2e 107, entry 245,897 B; T100 doing (measured 05:26–05:5x on 6aed2e3)
@@ -98,6 +88,3 @@
 - 261014 T091 done: 40 careers on slice 2, none bankrupt, wage bill 44.8% (band 45–70%), operating +3.5%; ECON r27; T092 doing
 - 261014 create-task slice 3 → T092 (engine youth rows, stances, rules 1.18.0), T093 (board and 유소년)
 - 261014 update-ssot ECON r26 CLUB r28 STAFF r17 WEB r61 SAVE r30 (club-direction slice 3): 육성 목표 and 데뷔 시점 drive the academy and the coaches' focus, 엘리트 선발 replaces 1군 직행 경로, staff stances by direction
-- 261014 T090 done (aaf2aeb): seven areas with direction rows on the board, lines in 사람, 자금 tab, ladder texts; T091 doing
-- 261014 owner confirmed (relayed by session haeram-soccor-6f): ECON-33 재정 기조 options, CLUB-26 재계약 기조 options, STAFF-15/STAFF-18 staff rows, WEB-45 ladder; dev-server note dropped (stopped on purpose)
-- 261014 T089 done (63a6c7d): engine rows, 재정 기조, ladder, rules 1.17.0; unit 451, contract 11; T090 doing

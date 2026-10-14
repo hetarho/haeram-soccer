@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r64 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r65 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -86,7 +86,7 @@
   - reading inbox items never produces a card.
 - WEB-37 [o] Actions state their consequence before commit. Watch actions show the days advanced before kickoff; bulk progression names what it settles; manager hiring and player sale confirm spend, departures, tactic and squad-size changes.
 - WEB-38 [o] Visual language is a dark night-stadium game theme from shared colour tokens: HUD, pressable 3D buttons, card frames and gold/green accents across every view.
-- WEB-39 [o] 방향 holds where the club is going and its money as one page-tab bar (→WEB-69) — 방향 (the direction board →WEB-60), 증축, 자금, 후원 — kept in /business?view= (방향 left out; build, finance, sponsor; the older strategy, facility and marketing values open 방향, 증축 and 자금). The page tab of cash is 자금 so it never reads like the 재정 area of the board (→ECON-25). Tapping a step or card previews its effect; only an explicit apply or commit sends the command.
+- WEB-39 [o] 방향 holds where the club is going and its money as one page-tab bar (→WEB-69) — 방향 (the direction board →WEB-60), 증축, 자금, 후원 — kept in /direction?view= (방향 left out; build, finance, sponsor); an older /business address opens the same tab under /direction, its older strategy, facility and marketing values 방향, 증축 and 자금. The page tab of cash is 자금 so it never reads like the 재정 area of the board (→ECON-25). Tapping a step or card previews its effect; only an explicit apply or commit sends the command.
   - 증축: the three facility parts (→ECON-32) — the stadium's ladder with its steps, capacity against demand, the next expansion or rebuild with cost, time, upkeep and what the works do to capacity, then the training ground and the academy facilities with each level's effect, and any work in progress with its days left.
   - 자금: the cash projection, fixed costs and runway, the ledger, currency notes, the owner contribution and any campaign started before rules 1.19 until it settles (→ECON-7).
   - 후원: every open sponsor slot with its contract, end and offers (→ECON-8), ending with who signs sponsors at the current intervention level and the commercial staff's rule (→ECON-21, →WEB-45).
@@ -100,9 +100,9 @@
   - a card decides its event or opens a setting's home; it never changes a standing setting itself (→WEB-71).
 - WEB-43 [o] 사람 holds who is in the club and who joins or stays: page tabs (→WEB-69) 선수, 이적시장, 감독 and 코치진, kept in /people?view= (선수 left out; market, manager, coaches). Each tab ends with its decisions' panel: who takes them at the current intervention level (직접 결정 or 자동 결정, a line opening the intervention dialog →WEB-45), then the direction rows the staff follow, each a line naming its option that opens its area on the 방향 board (→WEB-71), and what they would do today (→STAFF-13); no criteria are edited here.
   - 선수: roster cards lead with the player's overall rating (OVR) as a rating-card chip, flag injuries (with weeks out) and announced retirements, show wage against market wage, contract end and 언해피 (→WEB-68), and carry a tappable stance badge (이적 명단 · 협상 가능 · 이적 불가) that opens a three-choice sheet stating each stance's offers and who answers them, applied on tap, instead of a sale (→CLUB-22); then the roster settings and the full table (→WEB-55); then 계약 협상: who answers, 재계약 기조 and 재정 기조 (→CLUB-26).
-  - 이적시장: the window and deadline, bids in progress with counters, incoming offers and candidates, with the 영입 기조 row as a line that opens the 방향 board (→WEB-60); then 제안 응답: who answers and the sale bar the staff apply, from 매각 기조 and 재정 기조 (→CLUB-18).
+  - 이적시장: the window and deadline, bids in progress with counters, incoming offers and candidates, with the 영입 기조 row as a line that opens the 방향 board (→WEB-60); then 제안 응답: who answers and the sale bar the 단장 applies, from 매각 기조 and 재정 기조 (→CLUB-18); then 스카우트 명단: the chief scout's shortlist by role with the day it was drawn and the next draw, the manager's requests with his picks, and what an unmet request costs at the window's close (→CLUB-33).
   - 감독: the manager with OVR/POT, style card, contract in seasons with a renew action choosing a term of 1–5 seasons while he can renew, request shortcuts and the tactic conversation, and 교체, which opens the manager market as a list the way a coach's 교체 does (→STAFF-17): free agents, then other clubs' managers with compensation, as style cards with effects, trait and costs; hiring chooses the term and confirms the style it brings, any compensation and, for one-season schools, that he stays only if renewed each April. Then 감독 선임: who appoints, 선호 학파 and 감독 기조 (→STAFF-18).
-  - 코치진: one card per department with its coach, trait and effect, contract end with a renew action and 교체 with candidates and costs, and whom 코치 기조 would hire, under one line saying who hires and a line naming 코치 기조 (→STAFF-15). The assistant's and the youth director's cards also carry 훈련 제안 and 강행: the focus in force and why, a suggestion or order holding with its rounds left, each focus with its acceptance chance and the resignation chance an order brings (→STAFF-19).
+  - 코치진: the 단장's card first, with what he decides at the current level (→STAFF-20), then one card per department with its coach, trait and effect, contract end with a renew action and 교체 with candidates and costs, and whom 코치 기조 would hire, under one line saying who hires and a line naming 코치 기조 (→STAFF-15). The assistant's and the youth director's cards also carry 훈련 제안 and 강행: the focus in force and why, a suggestion or order holding with its rounds left, each focus with its acceptance chance and the resignation chance an order brings (→STAFF-19).
   - older addresses open their tab: /squad 선수, /transfers 이적시장, /manager 감독, /manager?view=coaches 코치진, /manager?view=delegation 감독; ?view=candidates opens 감독 with the market open, as do the manager-departure alert and the candidate remedies.
 
 - WEB-44 [o] Home separates statistics from state. The team-state card shows starters' fatigue, squad morale (shown as 분위기), the manager's standing (trust as 굳건/안정/흔들림/위기, or 대행 체제) and squad size with the injured count, with good/ok/warning/critical tones. Cash is not a tile: it stays in the HUD and joins as the urgent advice when it runs short, winning ties because a club out of money cannot play on. The most urgent warning explains its effect, offers two one-tap remedies and a "more" entry.
@@ -116,11 +116,11 @@
   | level | stops | the staff decide |
   |---|---|---|
   | 1 every decision | all | nothing |
-  | 2 important decisions (new-club default) | match eve, window opening, bids, youth intake, coach renewals, cash/sponsor | the academy, contract talks |
-  | 3 transfers only | window opening, bids, cash | the academy, contract talks, sponsors, every coaching department, the manager post |
-  | 4 leave it to the staff | cash only | all of level 3's, offers and signings (→CLUB-33) |
+  | 2 important decisions (new-club default) | match eve, window opening, bids, youth intake, coach renewals, cash/sponsor | the academy, contract talks (the 단장 →STAFF-20) |
+  | 3 transfers only | window opening, bids, cash | the academy, contract talks, sponsors, every coaching department and the 단장's post, the manager post |
+  | 4 leave it to the staff | cash only | all of level 3's, offers and signings (the 단장 →CLUB-33) |
   - the training focus is no level's: the coaches always set it (→CLUB-13, →CLUB-31).
-  - the market's bid list marks the chief scout's bids 스태프 제안; the owner sees their answers but answers none of them.
+  - the market's bid list marks the 단장's bids 단장 제안; the owner sees their answers but answers none of them.
   - each level hands over one more group: the academy and contract talks, then sponsors and the staff posts, then transfers.
   - the level is saved with the game, so each game keeps its own; choosing one applies at once and leaves every direction row as set.
   - the direction rows the staff follow (→ECON-25) are set on the 방향 board at any level; the staff apply them only while the level delegates the decision, and its home says which is the case (→WEB-43).
@@ -237,6 +237,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r65 261014 WEB-39✎ /business?view=→/direction?view=, older /business addresses open their tab; WEB-43✎ 이적시장 +스카우트 명단 with the manager's requests, 코치진 +the 단장's card first; WEB-45✎ the ladder names the 단장, 스태프 제안→단장 제안
 - r64 261014 WEB-15+ the founding 구단 방향 row (기본 방향 selected, the presets with idea and rows); WEB-2✎ founding choices +the club's direction; WEB-60✎ presets and saved directions draft every row; WEB-61✎ composer of the six card rows→every area's rows from the direction in force
 - r63 261014 WEB-45✎ level 4 offers→offers and signings, the market marks the staff's bids; WEB-44✎ cash remedy less 해외 마케팅 or 주변 투자→the costliest 지역 or 글로벌 investment row
 - r62 261014 WEB-60✎ seven→eight areas, 지역 and 글로벌 headers show their base; WEB-39✎ 자금 campaigns→only those started before 1.19; WEB-44✎ cash remedy less marketing→less 해외 마케팅 or 주변 투자; WEB-14✎ WEB-71✎ marketing→the 지역 and 글로벌 rows
