@@ -1,3 +1,4 @@
+import { cohesionAfterManager } from './adaptation';
 import type {
   Club,
   Manager,
@@ -340,8 +341,12 @@ export function takeManager(w: World, candidate: ManagerCandidate, replaced: Man
   const m = market(w);
   m.free = m.free.filter((free) => free.id !== candidate.id);
   if (candidate.club) {
+    const club = w.clubs.find((one) => one.id === candidate.club);
+    const before = club && clubManager(w, club);
     const [count] = m.clubs[candidate.club] ?? [0, FOUNDING_YEAR];
     m.clubs[candidate.club] = [count + 1, w.year];
+    // The club he left names its next manager, and its squad starts to learn him (→LEAGUE-12).
+    if (club && before) cohesionAfterManager(club, before.style === clubManager(w, club).style);
   }
   // An interim or the founding all-rounder has no school to offer the market.
   if (!replaced.interim && replaced.style && age(w, replaced) < RETIREMENT_AGE) {
@@ -426,6 +431,8 @@ export function refreshManagerMarket(w: World, relegated?: Set<string>) {
     if (!sacked && age(w, manager) < RETIREMENT_AGE) continue;
     const [count] = m.clubs[club.id] ?? [0, FOUNDING_YEAR];
     m.clubs[club.id] = [count + 1, w.year];
+    // The squad starts to learn its next manager (→LEAGUE-12).
+    cohesionAfterManager(club, manager.style === clubManager(w, club).style);
     if (!sacked) continue;
     m.free.push({ ...manager, until: w.year + STYLE_INFO[manager.style].term });
     addEvent(

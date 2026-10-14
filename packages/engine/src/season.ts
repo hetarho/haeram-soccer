@@ -1,3 +1,4 @@
+import { settleClubRounds, settleCohesion, settleStarts } from './adaptation';
 import { seasonTour } from './bases';
 import { advanceEconomy } from './economy';
 import {
@@ -249,6 +250,9 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     const saved = { ...m, players: m.players.filter((p) => ownIds.has(p.id)) };
     w.ownMatches.push(saved);
     gate(w, m);
+    // Every starter settles a little by the slot he played (→PLAYER-12).
+    const ownSide = m.home === w.playerClub ? 0 : 1;
+    settleStarts(w, playback.squads[ownSide], m.tactics[ownSide]);
     // A pressing manager adds load; a synergy built for pressing takes some of it off.
     const extraLoad = managerStyleEffects(w).fatigueCost - synergyEffects(w).fatigueRelief;
     for (const line of saved.players) {
@@ -747,6 +751,8 @@ function playRound(w: World, capture: Settlement, observe: boolean) {
     if (own) capture(w, p);
   }
   settleTraining(w);
+  settleClubRounds(w);
+  settleCohesion(w);
   advanceEurope(w, capture, undefined, observe);
   advanceCups(w, capture, undefined, observe);
   settleRound(w);

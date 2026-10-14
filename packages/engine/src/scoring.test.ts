@@ -29,7 +29,10 @@ function world() {
 describe('actual league scorer standings', () => {
   it('accounts for every real goal and starting appearance of every league club', () => {
     const w = world();
-    for (let round = 0; round < 8; round++) advanceRound(w, undefined, false);
+    for (let round = 0; round < 7; round++) advanceRound(w, undefined, false);
+    // 조직력 moves with every settled round (→LEAGUE-12); the replay below needs the round's own.
+    const cohesion = new Map(w.clubs.map((club) => [club.id, club.cohesion]));
+    advanceRound(w, undefined, false);
     const season = w.scorerSeason!;
     expect(season.trackedSinceRound).toBe(1);
     const fixtureClubs = new Set(
@@ -53,9 +56,16 @@ describe('actual league scorer standings', () => {
     // Opponent-only fixtures use the very same deterministic goal/contribution stream.
     const fixture = w.fixtures.find(
       (f) =>
-        isScoringFixture(w, f) && f.score && f.home !== w.playerClub && f.away !== w.playerClub,
+        isScoringFixture(w, f) &&
+        f.score &&
+        f.round === w.round &&
+        f.home !== w.playerClub &&
+        f.away !== w.playerClub,
     )!;
+    const settled = new Map(w.clubs.map((club) => [club.id, club.cohesion]));
+    for (const club of w.clubs) club.cohesion = cohesion.get(club.id);
     const replay = simulateMatch(w, fixture, false, true);
+    for (const club of w.clubs) club.cohesion = settled.get(club.id);
     expect(replay.record.score).toEqual(fixture.score);
     expect(replay.record.highlights.filter((h) => h.action === '골').length).toBe(
       fixture.score!.home + fixture.score!.away,

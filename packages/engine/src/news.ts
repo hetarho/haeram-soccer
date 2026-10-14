@@ -1249,6 +1249,15 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
         detail: event.detail.split(' · ')[1],
       };
     }
+    case 'unsettled':
+      return {
+        ...base,
+        tag: '선수',
+        tone: 'bad',
+        weight: 'notable',
+        title: event.title,
+        detail: event.detail,
+      };
     case 'potential-breakthrough':
     case 'potential-stall':
       return {

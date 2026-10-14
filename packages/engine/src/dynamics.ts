@@ -1,3 +1,4 @@
+import { cohesionAfterSummer } from './adaptation';
 import type { Club, World } from '../../contracts/src/types';
 import { country } from '../../catalogs/src/index';
 import { clamp, random } from './primitives';
@@ -72,7 +73,8 @@ export function evolveClubs(w: World, tiers: ReadonlyMap<string, number>) {
       if (c.project < 1) delete c.project;
     }
     const p = random(`${w.seed}:project:${w.year}:${c.id}`);
-    if (p() < e.project.chance) {
+    const project = p() < e.project.chance;
+    if (project) {
       c.project = Math.round(
         (c.project ?? 0) + e.project.min + p() * (e.project.max - e.project.min),
       );
@@ -86,10 +88,13 @@ export function evolveClubs(w: World, tiers: ReadonlyMap<string, number>) {
     if (c.tier < before) next += Math.max(0, gap) * e.promoted;
     else if (c.tier > before) next += Math.min(0, gap) * e.relegated;
     const event = r();
-    if (event < e.takeover.chance) next += e.takeover.min + r() * (e.takeover.max - e.takeover.min);
+    const takeover = event < e.takeover.chance;
+    if (takeover) next += e.takeover.min + r() * (e.takeover.max - e.takeover.min);
     else if (event < e.takeover.chance + e.crisis.chance)
       next -= e.crisis.min + r() * (e.crisis.max - e.crisis.min);
     c.strength = Math.round(clamp(next, 15, e.ceiling));
+    // New money buys players, not a team: the squad's 조직력 starts again (→LEAGUE-12).
+    cohesionAfterSummer(c, { investment: project || takeover, move: c.tier !== before });
     if (!c.id.startsWith('euro:')) {
       const depth = country(c.country).groups.length;
       const reputation = c.tier >= depth ? 8 : Math.max(8, 75 - c.tier * 15);

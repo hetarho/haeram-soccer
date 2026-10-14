@@ -1,3 +1,4 @@
+import { onManagerChange } from './adaptation';
 import type { Command, ContractTerm, Manager, Tactic, World } from '../../contracts/src/types';
 import { addEvent, clubOf, makeManager, quote, tacticLabel, TACTICS } from './world';
 import { clamp, random, ratio } from './primitives';
@@ -138,10 +139,13 @@ function installManager(
   void _compensation;
   readRelated(w, w.manager.id);
   takeManager(w, candidate, w.manager);
+  const before = w.manager;
   w.manager = withTerm(
     { ...manager, trust: 65, conflicts: 0, since: w.year, until: w.year + term },
     chosen,
   );
+  // The squad starts to learn its new manager (→PLAYER-13).
+  onManagerChange(w, before, w.manager);
   w.tactic = manager.philosophy;
   delete w.requested;
   delete w.critical;
@@ -253,6 +257,7 @@ function resign(w: World, reason: string) {
   interim.wage = staffQuote(w, 40);
   interim.interim = true;
   w.manager = interim;
+  onManagerChange(w, old, interim);
   if (!delegated(w, 'manager')) {
     w.critical = MANAGER_GONE;
     return;
