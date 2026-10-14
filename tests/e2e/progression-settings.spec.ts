@@ -363,12 +363,22 @@ test('a hidden tab plays on like an idle game, names the date in its title, and 
   await background.getByLabel('다른 탭을 보거나 창을 내려도 계속 진행').uncheck();
   await settings.getByRole('button', { name: '설정 완료', exact: true }).click();
   await setHidden(true);
-  const paused = await date.textContent();
-  await page.waitForTimeout(1200);
-  await expect(date).toHaveText(paused!);
+  // A day already being played when the tab hid still lands; after it the clock stays still.
+  let paused = '';
+  await expect
+    .poll(
+      async () => {
+        const before = await date.textContent();
+        await page.waitForTimeout(1200);
+        paused = (await date.textContent())!;
+        return paused === before;
+      },
+      { timeout: 15000 },
+    )
+    .toBe(true);
   await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
   await setHidden(false);
-  await expect(date).not.toHaveText(paused!);
+  await expect(date).not.toHaveText(paused);
   await page.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
   await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
 });
