@@ -2,8 +2,9 @@
  * Economy calibration harness (ECON-29, ECON-9, CLUB-25; docs/FINANCES.md).
  *
  * Plays whole careers of ECON-29's reference club from the 1950 founding: every delegation on —
- * the staff run training, the academy, sales, sponsors, coaches, contract talks and the manager
- * post — no owner capital, and the stadium grown a level whenever the cash after the build still
+ * the staff run training, the academy, sponsors and every staff post, the 단장's among them, and
+ * the 단장 contract talks, the manager post, sales and signings from the shortlist and the
+ * manager's requests (→STAFF-20, →CLUB-33) — no owner capital, and the stadium grown a level whenever the cash after the build still
  * covers 13 rounds of fixed costs, operating expenses included. A run that never builds is kept
  * for comparison. It prints the measured economy next to the real-football bands of ECON-29: wage
  * bill and net result against income, the income mix of the 1950s and of a top flight in the

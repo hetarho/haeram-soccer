@@ -14,9 +14,9 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| q7m2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T10:10Z | 2026-10-14T11:00Z | T105 |
 
 ## inbox
+- 261014 decided T105: a reference career went bankrupt on rules 1.22.0 (ESP 기본 방향 seed 4, 1971) → recorded with its cause and left as a follow-up, nothing tuned (alt: keep the 단장's post a volunteer below the professional divisions | tighten 재정 기조 for amateur clubs now) — the explore task's exit records, and no single 1.22 rule breaks the career
 - 261014 decided T102: an offer refused unseen under 이적 불가 while the owner holds transfers names who → 구단이 (alt: keep 스태프가 | 단장이) — the 단장 takes no decision the level keeps with the owner (STAFF-20)
 - 261014 decided T102: activation of rules 1.22 tells the owner → one inbox item naming the new 단장 (alt: silent) — as the 1.17 and 1.19 activations do
 - 261014 decided CLUB-33: when a window's requests are judged → the day after its last day, so a deadline-day signing counts (alt: on the close day before the owner acts)
@@ -42,7 +42,7 @@
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
 | STAFF | 19 | 19 | - | 0 |
-| ECON | 33 | 33 | - | 0 |
+| ECON | 34 | 34 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 8 | 8 | - | 0 |
 | SAVE | 34 | 34 | - | 0 |
@@ -50,7 +50,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T105 | Re-measure the economy with the 단장 | ECON | T102 T103 | doing@261014.q7m2 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -59,7 +58,8 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- club-direction is done and on main (all six slices, T086–T100); review the inbox decisions, then the wage-bill follow-up below.
+- the 단장 plan is done and on main (T101–T105, autopilot run q7m2, report reports/261014-q7m2.md): 방향 at /direction, the 단장 post (rules 1.22.0), the scout shortlist and the manager's requests, their screens, ECON r34; review the inbox decisions.
+- follow-up (T105): 1 of 40 reference careers went bankrupt on rules 1.22.0 (ESP 기본 방향 seed 4, 1971, after 19 amateur seasons; none on 1.21) — the same career survives with the 단장's post kept a volunteer or without the −3 trust, so decide by update-ssot whether the delegated staff hire a paid 단장 only from a division up, or whether an amateur club's money checks (ECON-33) are tighter; then re-measure the 40 careers.
 - follow-up: the wage bill is 41.4% of revenue (ECON-29 band 45–70%) after the presets filled rows — the 트레이딩 머신 careers run 25–48%; decide by update-ssot whether the band judges a selling club or the contract-talk floor rises.
 - owner's requests 261013 are on main (caa5e83, CI 38448231873 green in every browser): T080 level only, T081 no strategy locks, T082/T083 coaches set training with suggestions and orders and the academy by U-17/U-19/U-21, T084/T085 facilities as stadium steps, training ground and academy facilities.
 - wage bill / revenue sits at 44.3% on the facility parts (ECON-29 band 45–70%, 45.3% before them): base wage 925 and a 25% youth promise did not move it; try the contract-talk floor next (agent premium per level, as T079 did: 0% gave 47.7%, 1% 46.1%) and re-measure 40 careers.
@@ -72,6 +72,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 T105 done: 40 careers on rules 1.22.0 — wage bill 41.3%, operating +1.3%, 1 of 40 bankrupt (ESP 기본 방향 seed 4); ECON r34; T104 on main after CI 38553541092; run q7m2 closed
 - 261014 T104 done (a9438a7): the 단장's card first in 코치진, 스카우트 명단 and 감독 요청 in 이적시장, the ladder and bid list name the 단장; unit 717, Chromium e2e 108; T103 on main after CI 38552319126; T105 doing (explore 1h from 11:00Z)
 - 261014 T103 done (69e0808): shortlist, requests with the manager's pick, −3 trust at an unmet window's close, the 단장 signing from them; goldens regenerated; update-ssot CLUB r33 (CLUB-33 judged the day after the close, loans count, a new manager is not judged); T102 on main after CI 38550303926; T104 doing
 - 261014 T102 done (5583688): the 단장 post, negotiation moved from the chief scout, delegated reports name him, rules 1.22.0 with activation; unit 705, Chromium e2e 107; T101 on main after CI 38548269434; T103 doing
@@ -91,4 +92,3 @@
 - 261014 update-ssot CLUB r30 ECON r30 STAFF r18 WEB r63 SAVE r32 (club-direction slice 5): the chief scout's signings at level 4 within 재정 기조; create-task T096 (engine), T097 (screens)
 - 261014 T095 done (a785074): eight areas with 지역 and 글로벌 and their bases, campaigns read-only, investment remedy; full Chromium e2e 106
 - 261014 T094 done (89887ea): 지역 기반 and 글로벌 인지도, the five investment rows, 지역 상생, no new campaigns, rules 1.19.0; ECON r29 exclusive sponsor halves 해외 마케팅's fans; T095 doing
-- 261014 update-ssot ECON r28 CLUB r29 WEB r62 SAVE r31 (club-direction slice 4): 지역 기반 and 글로벌 인지도, the 지역 and 글로벌 rows, marketing and new campaigns gone; create-task T094, T095
