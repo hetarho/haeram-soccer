@@ -418,3 +418,26 @@ describe('rules 1.19 contracts (→SAVE-10)', () => {
       expect(() => validateWorld(saved({ engine: '1.19.0', ...fields }))).toThrow();
   });
 });
+
+describe('rules 1.20 contracts (→SAVE-10)', () => {
+  it("keeps the chief scout's marker on a bid and refuses any other", () => {
+    const w = world();
+    const bid = {
+      id: 'out:1950:0:staff:p1',
+      direction: 'out' as const,
+      playerId: 'p1',
+      fee: '0',
+      year: w.year,
+      day: 0,
+      due: 0,
+      status: 'completed' as const,
+      staff: 'short' as const,
+    };
+    const saved = { ...structuredClone(w), engine: '1.20.0', bids: [bid] };
+    expect(validateWorld(structuredClone(saved)).bids).toEqual([bid]);
+    expect(() => validateWorld({ ...saved, bids: [{ ...bid, staff: 'owner' }] })).toThrow();
+    // A 1.19 checkpoint loads as it was.
+    const older = { ...structuredClone(w), engine: '1.19.0' };
+    expect(canonical(validateWorld(structuredClone(older)))).toBe(canonical(older));
+  });
+});

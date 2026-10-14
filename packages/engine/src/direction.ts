@@ -37,26 +37,60 @@ export const DIRECTION_DEFAULT: Readonly<Record<DirectionKey, string>> = {
 /**
  * 재정 기조 (→ECON-33): the runway the staff keep after a delegated spend (rounds of fixed costs),
  * the wage bill's ceiling against 12 months' revenue, the operating costs (in years) below which
- * academy promotions wait, and the two runways below which the staff sell harder.
+ * academy promotions wait, the two runways below which the staff sell harder, and the chief
+ * scout's signings (→CLUB-33): the margin an upgrade needs over a starter (none: no upgrades),
+ * upgrades a window, the share of the cash above the runway a fee may take and the bid against
+ * the asking fee.
  */
 export interface FinanceStance {
   runway: number;
   wageShare: number;
   promotionYears: number;
   sellSteps: readonly [number, number];
+  signing: { margin?: number; upgrades: number; feeShare: number; bid: number };
 }
 export const FINANCE_STANCES: Readonly<Record<string, FinanceStance>> = {
-  aggressive: { runway: 6, wageShare: 0.75, promotionYears: 0.25, sellSteps: [6, 14] },
-  bold: { runway: 9, wageShare: 0.7, promotionYears: 0.5, sellSteps: [9, 20] },
-  standard: { runway: 13, wageShare: 0.65, promotionYears: 1, sellSteps: [13, 30] },
-  careful: { runway: 20, wageShare: 0.6, promotionYears: 1.5, sellSteps: [20, 45] },
-  stable: { runway: 30, wageShare: 0.55, promotionYears: 2, sellSteps: [30, 65] },
+  aggressive: {
+    runway: 6,
+    wageShare: 0.75,
+    promotionYears: 0.25,
+    sellSteps: [6, 14],
+    signing: { margin: 2, upgrades: 3, feeShare: 1, bid: 1.1 },
+  },
+  bold: {
+    runway: 9,
+    wageShare: 0.7,
+    promotionYears: 0.5,
+    sellSteps: [9, 20],
+    signing: { margin: 3, upgrades: 2, feeShare: 0.75, bid: 1 },
+  },
+  standard: {
+    runway: 13,
+    wageShare: 0.65,
+    promotionYears: 1,
+    sellSteps: [13, 30],
+    signing: { margin: 5, upgrades: 1, feeShare: 0.5, bid: 1 },
+  },
+  careful: {
+    runway: 20,
+    wageShare: 0.6,
+    promotionYears: 1.5,
+    sellSteps: [20, 45],
+    signing: { upgrades: 0, feeShare: 0.35, bid: 1 },
+  },
+  stable: {
+    runway: 30,
+    wageShare: 0.55,
+    promotionYears: 2,
+    sellSteps: [30, 65],
+    signing: { upgrades: 0, feeShare: 0.25, bid: 1 },
+  },
 };
 const years = (value: number) =>
   value < 1 ? `${Math.round(value * 12)}개월분` : value === 1 ? '1년분' : `${value}년분`;
 const financeSummary = (id: string) => {
   const stance = FINANCE_STANCES[id];
-  return `지출 뒤 고정비 ${stance.runway}라운드분을 남기고, 임금 총액은 수입의 ${Math.round(stance.wageShare * 100)}%까지, 현금이 운영비 ${years(stance.promotionYears)}보다 적으면 승격을 미뤄요`;
+  return `지출 뒤 고정비 ${stance.runway}라운드분을 남기고, 임금 총액은 수입의 ${Math.round(stance.wageShare * 100)}%까지, 현금이 운영비 ${years(stance.promotionYears)}보다 적으면 승격을 미뤄요 · 스카우트는 여유 자금의 ${Math.round(stance.signing.feeShare * 100)}%까지 쓰고 ${stance.signing.margin === undefined ? '빈 자리만 채워요' : `주전보다 ${stance.signing.margin} 이상 나은 선수를 이적시장마다 ${stance.signing.upgrades}명까지 데려와요`}`;
 };
 
 export const DIRECTION_INFO: Readonly<

@@ -368,6 +368,8 @@ export interface TransferBid {
   due: number;
   status: 'pending' | 'accepted' | 'rejected' | 'countered' | 'expired' | 'completed';
   counterFee?: string;
+  /** The chief scout's bid or free-agent signing with transfers delegated (→CLUB-33), by its need. */
+  staff?: 'short' | 'upgrade';
 }
 export interface InboxItem {
   id: string;

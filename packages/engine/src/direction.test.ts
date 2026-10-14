@@ -54,6 +54,7 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
       wageShare: 0.65,
       promotionYears: 1,
       sellSteps: [13, 30],
+      signing: { margin: 5, upgrades: 1, feeShare: 0.5, bid: 1 },
     });
     expect(DIRECTION_KEYS.map((key) => DIRECTION_INFO[key].label)).toEqual([
       '재계약 기조',

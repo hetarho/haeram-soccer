@@ -14,6 +14,7 @@ import { managerStyleEffects } from './styles';
 import { buildEffects, buildOf, cardOf } from './build';
 import { pushInbox } from './inbox';
 import { delegated } from './intervention';
+import { signingVerdict, staffSignings } from './signings';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 /** Daily chance that another club bids for one of our players while a window is open. */
@@ -193,7 +194,13 @@ const clip = (text: string, max: number) =>
   text.length > max ? `${text.slice(0, max - 1)}…` : text;
 
 /** Our offer for a market player; the selling club answers in two to four days. */
-export function placeBid(w: World, candidate: number, fee: string, loan = false): void {
+export function placeBid(
+  w: World,
+  candidate: number,
+  fee: string,
+  loan = false,
+  staff?: TransferBid['staff'],
+): void {
   const offer = transferOffers(w)[candidate];
   if (!offer?.available) throw new Error('이미 계약했거나 없는 선수입니다.');
   if (offer.freeAgent) throw new Error('자유계약 선수는 이적료 협상 없이 바로 영입할 수 있어요.');
@@ -225,6 +232,7 @@ export function placeBid(w: World, candidate: number, fee: string, loan = false)
     day,
     due: Math.min(day + wait, window.until ?? day + wait),
     status: 'pending',
+    ...(staff ? { staff } : {}),
   };
   w.bids = [...(w.bids || []), bid];
   addEvent(
@@ -240,6 +248,7 @@ export function placeBid(w: World, candidate: number, fee: string, loan = false)
 export function respondBid(w: World, id: string, accept: boolean): void {
   const bid = (w.bids || []).find((b) => b.id === id);
   if (!bid) throw new Error('없는 이적 제안입니다.');
+  if (bid.staff) throw new Error('스카우트의 제안은 스카우트가 답해요.');
   if (bid.direction === 'out' && bid.status === 'countered') {
     if (accept) {
       assertTransferWindow(w);
@@ -323,7 +332,10 @@ export function bidBoard(w: World): BidDetails[] {
           asking: offer ? askingFee(offer, bid.loan) : undefined,
           actionable:
             open &&
-            ((bid.direction === 'out' && bid.status === 'countered' && !!offer?.available) ||
+            ((bid.direction === 'out' &&
+              bid.status === 'countered' &&
+              !bid.staff &&
+              !!offer?.available) ||
               (bid.direction === 'in' && bid.status === 'pending' && player?.status === 'active')),
           dueLabel: seasonDayLabel(bid.year, bid.due),
         },
@@ -386,13 +398,15 @@ function decideOutgoing(w: World, bid: TransferBid) {
     feeShare = feeRatio(bid.fee, asking);
   if (roll < chance) {
     const blocker = signingBlocker(w, offer, bid.fee);
+    // The chief scout's bids are his to follow up; their answers only report (→CLUB-33).
+    const attention = !bid.staff;
     if (blocker) {
       bid.status = 'rejected';
       pushInbox(w, {
         kind: 'bid-response',
         title: clip(`${p.name} ${move} 무산`, 160),
         detail: `상대 구단은 ${moneyLabel(w, bid.fee)} 제안을 받아들였지만 마무리하지 못했어요. ${blocker}`,
-        attention: true,
+        attention,
         ref: bid.id,
       });
       return;
@@ -401,13 +415,17 @@ function decideOutgoing(w: World, bid: TransferBid) {
     pushInbox(w, {
       kind: 'bid-response',
       title: clip(`${p.name} ${move} 완료`, 160),
-      detail: `${p.role} · ${w.year - p.born}세 · ${moneyLabel(w, bid.fee)} 제안이 받아들여졌어요.`,
-      attention: true,
+      detail: `${p.role} · ${w.year - p.born}세 · ${moneyLabel(w, bid.fee)} 제안이 받아들여졌어요.${bid.staff ? ' 스카우트의 제안이에요.' : ''}`,
+      attention,
       ref: bid.id,
     });
   } else if (feeShare >= 0.7 && feeShare <= 1 && roll < chance + (1 - chance) * 0.7) {
     bid.status = 'countered';
     bid.counterFee = ratio(asking, BigInt(integer(r, 110, 125)), 100n);
+    if (bid.staff) {
+      answerStaffCounter(w, bid, offer, asking);
+      return;
+    }
     pushInbox(w, {
       kind: 'bid-response',
       title: clip(`${p.name} 측 역제안 ${moneyLabel(w, bid.counterFee)}`, 160),
@@ -420,11 +438,36 @@ function decideOutgoing(w: World, bid: TransferBid) {
     pushInbox(w, {
       kind: 'bid-response',
       title: clip(`${p.name} ${move} 제안 거절`, 160),
-      detail: `우리 제안 ${moneyLabel(w, bid.fee)} · 요구액 ${moneyLabel(w, asking)}. 더 높은 금액으로 다시 제안할 수 있어요.`,
-      attention: true,
+      detail: bid.staff
+        ? `스카우트의 제안 ${moneyLabel(w, bid.fee)} · 요구액 ${moneyLabel(w, asking)}. 다음에 다른 선수를 찾아요.`
+        : `우리 제안 ${moneyLabel(w, bid.fee)} · 요구액 ${moneyLabel(w, asking)}. 더 높은 금액으로 다시 제안할 수 있어요.`,
+      attention: !bid.staff,
       ref: bid.id,
     });
   }
+}
+/**
+ * The chief scout answers a counter to his own bid at once (→CLUB-33): he accepts while it still
+ * passes 재정 기조's money checks, else declines; the report says which and why.
+ */
+function answerStaffCounter(w: World, bid: TransferBid, offer: MarketOffer, asking: string) {
+  const p = offer.player,
+    fee = bid.counterFee!,
+    verdict = signingVerdict(w, p, fee),
+    blocker = signingBlocker(w, offer, fee),
+    accept = verdict.ok && !blocker;
+  if (accept) completeSigning(w, bid, offer, fee);
+  else bid.status = 'rejected';
+  pushInbox(w, {
+    kind: 'bid-response',
+    title: clip(
+      `${p.name} 측 역제안 ${moneyLabel(w, fee)} · 스카우트가 ${accept ? '수락' : '거절'}`,
+      160,
+    ),
+    detail: `스카우트의 제안 ${moneyLabel(w, bid.fee)} · 요구액 ${moneyLabel(w, asking)} · ${accept ? verdict.reason : (blocker ?? verdict.reason)}`,
+    attention: false,
+    ref: bid.id,
+  });
 }
 function settleBids(w: World, open: boolean) {
   const code = clubOf(w).country;
@@ -841,6 +884,8 @@ export function dailyMarket(w: World): void {
   if (window.open) {
     incomingBid(w, day, window.until!);
     listedOffers(w, day, window.until!);
+    // With transfers delegated the chief scout looks for players (→CLUB-33).
+    staffSignings(w);
   }
   pruneBids(w);
 }

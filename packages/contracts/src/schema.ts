@@ -475,6 +475,7 @@ const bid = z.strictObject({
   due: z.number().int().min(0).max(800),
   status: z.enum(['pending', 'accepted', 'rejected', 'countered', 'expired', 'completed']),
   counterFee: money.optional(),
+  staff: z.enum(['short', 'upgrade']).optional(),
 });
 const inboxItem = z.strictObject({
   id,

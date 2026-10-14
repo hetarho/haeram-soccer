@@ -1,6 +1,6 @@
 import type { World } from './types';
 
-export const CURRENT_ENGINE_VERSION = '1.19.0';
+export const CURRENT_ENGINE_VERSION = '1.20.0';
 /**
  * 1.1.0 added club policy; 1.2.0 staff, academy, transfer windows and the inbox; 1.3.0 closes
  * the season after its final round, opens the summer window there, normalizes league match
@@ -54,7 +54,8 @@ export const CURRENT_ENGINE_VERSION = '1.19.0';
  * 선발 (a build holding it loads with 데뷔 시점 빠른 데뷔) and lets delegated staff set stances;
  * 1.19.0 adds 지역 기반 and 글로벌 인지도 (`localBase`, `globalReach`) built by the 지역 and
  * 글로벌 dials in place of marketing (a marketing level loads as 해외 마케팅), starts no campaign
- * and replaces the 글로벌 브랜드 card with 지역 상생.
+ * and replaces the 글로벌 브랜드 card with 지역 상생; 1.20.0 lets the chief scout sign players with
+ * transfers delegated, marking his bids `staff`.
  */
 export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.0.0',
@@ -76,6 +77,7 @@ export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   '1.16.0',
   '1.17.0',
   '1.18.0',
+  '1.19.0',
   CURRENT_ENGINE_VERSION,
 ];
 /** A world pins its catalog ID and the fingerprint recorded with it (→ARCH-10). */
