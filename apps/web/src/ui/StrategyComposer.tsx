@@ -7,7 +7,6 @@ import {
   type ClubBuild,
 } from '../../../../packages/contracts/src/build';
 import {
-  BUILD_CARDS,
   BUILD_SLOT_INFO,
   cardLines,
   cardOf,
@@ -18,6 +17,7 @@ import {
 import { synergyStates } from '../../../../packages/engine/src/synergy';
 import type { SavedStrategy } from '../adapters/profile';
 import { Dialog } from './Dialog';
+import { DirectionRow } from './DirectionRow';
 import type { DialKey } from './PolicyBoard';
 import { useStrategies } from './strategies';
 import s from './StrategyBoard.module.css';
@@ -81,7 +81,7 @@ export const STRATEGY_AREAS: {
 
 /** Strategy lines in the owner's terms: ▲ what it helps, ▼ what it costs. */
 export function Lines({ pros, cons, limit }: { pros: string[]; cons: string[]; limit?: number }) {
-  if (!pros.length && !cons.length) return <p className={s.neutral}>효과 없음 · 기본값</p>;
+  if (!pros.length && !cons.length) return <p className={s.neutral}>효과 없음 · 표준</p>;
   const shown = (lines: string[]) => (limit ? lines.slice(0, limit) : lines);
   return (
     <ul className={s.lines}>
@@ -198,34 +198,24 @@ export function StrategyComposer({
                   {area.icon}
                 </span>
                 <span>
-                  <b>
-                    {area.label} · {info.label}
-                  </b>
+                  <b>{area.label}</b>
                   <small>{area.question}</small>
                 </span>
               </legend>
-              <div className={s.options} role="radiogroup" aria-label={info.label}>
-                {options.map((option) => {
-                  const label = option
-                    ? (BUILD_CARDS[slot] as Record<string, BuildCard>)[option].label
-                    : '기본';
-                  return (
-                    <button
-                      key={option ?? 'standard'}
-                      type="button"
-                      role="radio"
-                      aria-checked={option === chosen}
-                      aria-label={`${info.label} ${label}`}
-                      className={option === chosen ? s.picked : undefined}
-                      onClick={() => pick(slot, option)}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
-              <p className={s.model}>{card.model}</p>
-              <Lines {...cardLines(card)} />
+              <DirectionRow
+                row={slot}
+                label={info.label}
+                question={info.question === area.question ? undefined : info.question}
+                options={options.map((option) => cardOf({ [slot]: option }, slot).label)}
+                inForce={options.indexOf(chosen)}
+                detail={
+                  <>
+                    <p className={s.model}>{card.model}</p>
+                    <Lines {...cardLines(card)} />
+                  </>
+                }
+                onPick={(index) => pick(slot, options[index])}
+              />
             </fieldset>
           );
         })}

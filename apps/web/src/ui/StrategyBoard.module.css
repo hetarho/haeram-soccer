@@ -167,24 +167,23 @@
   min-width: 0;
   scroll-margin-top: 8px;
 }
-.areaCard,
-.areaDials {
-  display: grid;
-  align-content: start;
-  gap: 10px;
-  padding: 12px;
-  min-width: 0;
-}
-.areaDials {
-  border-top: 1px solid var(--line);
-}
-.areaHead {
+.area > .areaHead {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
+  min-height: 56px;
+  padding: 12px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--text);
+  text-align: left;
 }
-.areaHead > span:last-child {
+.areaHead > span:nth-child(2) {
   display: grid;
+  flex: 1;
   gap: 1px;
   min-width: 0;
 }
@@ -195,6 +194,39 @@
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.35;
+}
+.areaHead > i {
+  flex: none;
+  color: var(--text-faint);
+  font-style: normal;
+}
+/* The options in force, as the folded header names them. */
+.areaSummary {
+  color: var(--accent-text);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.areaDraft {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px dashed var(--gold);
+  color: var(--gold);
+  font-size: 11px;
+  font-style: normal;
+  vertical-align: middle;
+}
+.areaBody {
+  display: grid;
+  gap: 12px;
+  padding: 0 12px 12px;
+  min-width: 0;
+}
+/* Two rows of one area sit apart. */
+.areaBody > * + * {
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
 }
 .domainIcon {
   flex: none;
@@ -207,57 +239,6 @@
   border: 1px solid var(--line-strong);
   color: var(--gold);
   font-weight: 900;
-}
-.options {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
-  gap: 5px;
-}
-.options button {
-  min-height: 44px;
-  padding: 4px 6px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.25;
-  word-break: keep-all;
-  color: var(--text-muted);
-  background: var(--surface-deep);
-  border-color: var(--line);
-  box-shadow: none;
-}
-/* The card in force reads green; a drafted one gold and dashed, as on the dials. */
-.options button[aria-checked='true'] {
-  color: var(--text);
-  border-color: var(--accent);
-  background: #173a2c;
-}
-.options .drafted,
-.options .drafted[aria-checked='true'] {
-  color: var(--gold);
-  border: 1px dashed var(--gold);
-  background: #2c2914;
-}
-.options button:disabled {
-  opacity: 0.55;
-}
-.options button[aria-checked='true']:disabled {
-  opacity: 0.85;
-}
-.cardNote {
-  display: grid;
-  gap: 4px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 1px solid transparent;
-  background: rgba(0, 0, 0, 0.22);
-}
-.cardDrafted {
-  border-color: var(--gold);
-  background: #241f0f;
-}
-.cardDrafted .model b {
-  color: var(--gold);
 }
 .model {
   margin: 0;
@@ -578,32 +559,14 @@ legend.domainHead {
 legend.domainHead + * {
   clear: both;
 }
-/* Green marks the card being composed. */
-.options button.picked {
-  color: var(--on-accent);
-  border-color: var(--accent-edge);
-  background: var(--accent-fill);
-  box-shadow: 0 2px 0 var(--accent-edge);
-}
-
-/* Wide screens: an area's cards beside its dials, five cards in a row like the five steps. */
+/* Wide screens: an open area's rows sit side by side. */
 @media (min-width: 900px) {
-  .area {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  .areaBody {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   }
-  .area .options {
-    grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
-  }
-  .area.cardOnly {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .areaCard,
-  .areaDials {
-    padding: 14px;
-  }
-  .areaDials {
+  .areaBody > * + * {
+    padding-top: 0;
     border-top: 0;
-    border-left: 1px solid var(--line);
   }
 }
 /* Phones: presets slide sideways so the board reaches its areas sooner. */
@@ -636,9 +599,6 @@ legend.domainHead + * {
   }
 }
 @media (max-width: 420px) {
-  .options {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
   .composerActions {
     grid-template-columns: 1fr 1fr;
   }

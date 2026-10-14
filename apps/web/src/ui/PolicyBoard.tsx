@@ -26,7 +26,7 @@ export { TICKET_LEVELS };
 export type DialKey = PolicyKey | 'ticket';
 
 /** A dial's steps and the one in force (−1 for a custom ticket price from an older save). */
-function dialInfo(w: World, key: DialKey) {
+export function dialInfo(w: World, key: DialKey) {
   if (key === 'ticket')
     return {
       label: '티켓 가격',
@@ -83,7 +83,7 @@ function amounts(w: World) {
  * The lines under a dial for the step shown: its running cost and what it buys; a drafted step
  * adds the change in yearly costs and the cash at season end (→ECON-18).
  */
-function DialLines({ w, dialKey, index }: { w: World; dialKey: DialKey; index: number }) {
+export function DialLines({ w, dialKey, index }: { w: World; dialKey: DialKey; index: number }) {
   const { money, signed, range } = amounts(w);
   const policy = policyOf(w),
     current = dialInfo(w, dialKey).current,
@@ -147,72 +147,6 @@ function DialLines({ w, dialKey, index }: { w: World; dialKey: DialKey; index: n
         <li key={i}>{line}</li>
       ))}
     </ul>
-  );
-}
-
-/**
- * One dial of an area row (→WEB-60): its steps, the step in force and, for a drafted step, what it
- * would do. Tapping a step only drafts it; the board's 적용 sends it.
- */
-export function DialRow({
-  w,
-  dialKey,
-  drafted,
-  disabled,
-  onPick,
-}: {
-  w: World;
-  dialKey: DialKey;
-  /** The drafted step, when the draft moves this dial. */
-  drafted?: number;
-  disabled: boolean;
-  onPick: (index: number) => void;
-}) {
-  const dial = dialInfo(w, dialKey),
-    shown = drafted ?? dial.current;
-  return (
-    <div className={s.dial} data-policy={dialKey}>
-      <div className={s.dialHead}>
-        <div>
-          <h4>{dial.label}</h4>
-          <small>{dial.question}</small>
-        </div>
-        <b className={s.current}>
-          {dial.current >= 0 ? dial.levels[dial.current].name : '사용자 지정'}
-        </b>
-      </div>
-      <div
-        className={s.steps}
-        role="radiogroup"
-        aria-label={dial.label}
-        style={{ gridTemplateColumns: `repeat(${dial.levels.length}, minmax(0, 1fr))` }}
-      >
-        {dial.levels.map((level, index) => (
-          <button
-            key={level.name}
-            type="button"
-            role="radio"
-            aria-checked={index === dial.current}
-            aria-label={`${dial.label} ${level.name}`}
-            className={`${index <= shown ? s.filled : ''} ${index === drafted ? s.drafted : ''}`}
-            disabled={disabled}
-            onClick={() => onPick(index)}
-          >
-            <i aria-hidden="true" />
-            <span>{level.name}</span>
-          </button>
-        ))}
-      </div>
-      {shown >= 0 && (
-        <div className={`${s.effect} ${drafted !== undefined ? s.previewing : ''}`}>
-          <p>
-            {drafted !== undefined && <b>적용하면 · </b>}
-            {dial.levels[shown].summary}
-          </p>
-          <DialLines w={w} dialKey={dialKey} index={shown} />
-        </div>
-      )}
-    </div>
   );
 }
 

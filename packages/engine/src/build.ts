@@ -105,8 +105,8 @@ export const BUILD_SLOT_INFO: Record<BuildSlot, { label: string; question: strin
   culture: { label: '라커룸 문화', question: '선수단은 어떤 분위기로 뭉칠까' },
 };
 const STANDARD: BuildCard = {
-  label: '기본',
-  model: '특별한 방향 없이 기본값으로 운영',
+  label: '표준',
+  model: '특별한 방향 없이 표준으로 운영',
   effects: {},
 };
 export const BUILD_CARDS: {

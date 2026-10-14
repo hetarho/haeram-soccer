@@ -303,18 +303,18 @@ test('keeps ticket drafts out of the save and applies their price to an actual h
   const preview = ticketInvestmentPreview(before, price);
   const format = (value: string) => compactMoney(value, clubOf(before).country, before.year);
   await openBusiness(page);
-  // The ticket dial sits in the 홈·팬 row of the operating board, beside its card row.
+  // The ticket price is a row of the 홈·팬 area on the 방향 board, beside its card row.
   const board = page.getByTestId('strategy-board');
-  const dial = board
-    .getByRole('region', { name: '홈·팬', exact: true })
-    .getByRole('radiogroup', { name: '티켓 가격', exact: true });
+  const fans = board.getByRole('region', { name: '홈·팬', exact: true });
+  await fans.locator('button[aria-controls^="board-area-body-"]').click();
+  const dial = fans.getByRole('radiogroup', { name: '티켓 가격', exact: true });
   const premium = dial.getByRole('radio', { name: '티켓 가격 프리미엄', exact: true });
   await expect(dial.getByRole('radio', { name: '티켓 가격 보통', exact: true })).toHaveAttribute(
     'aria-checked',
     'true',
   );
   await premium.click();
-  const ticket = page.locator('[data-policy="ticket"]');
+  const ticket = page.locator('[data-row="ticket"]');
   await expect(ticket).toContainText(
     `홈 관중 ${number(preview.after.attendanceLow)}–${number(preview.after.attendanceHigh)}명`,
   );
@@ -339,6 +339,7 @@ test('keeps ticket drafts out of the save and applies their price to an actual h
   expect(applied.cash).toBe(before.cash);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
+  await fans.locator('button[aria-controls^="board-area-body-"]').click();
   await expect(premium).toHaveAttribute('aria-checked', 'true');
   await playNext(page);
   const settled = await exportWorld(page);

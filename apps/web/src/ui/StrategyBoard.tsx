@@ -3,10 +3,10 @@ import type { PolicyLevel, World } from '../../../../packages/contracts/src/type
 import {
   BUILD_OPTIONS,
   BUILD_SLOTS,
+  type BuildSlot,
   type ClubBuild,
 } from '../../../../packages/contracts/src/build';
 import {
-  BUILD_CARDS,
   BUILD_PRESETS,
   BUILD_SLOT_INFO,
   buildEffects,
@@ -29,6 +29,7 @@ import type { SavedStrategy } from '../adapters/profile';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import {
+  areaSummary,
   draftChanges,
   draftCommands,
   draftFromRequest,
@@ -41,7 +42,8 @@ import {
   type CardChange,
 } from './board';
 import { Dialog } from './Dialog';
-import { DialChange, DialRow, stepIndex, stepValue, type DialKey } from './PolicyBoard';
+import { DialChange, dialInfo, DialLines, stepIndex, stepValue, type DialKey } from './PolicyBoard';
+import { DirectionRow } from './DirectionRow';
 import { useBoardRequest } from './state';
 import { Lines, StrategyComposer, STRATEGY_AREAS } from './StrategyComposer';
 import { strategyName, useStrategies } from './strategies';
@@ -65,15 +67,15 @@ function strategyOdds(w: World) {
 /** The cards a strategy changes from standard, in the owner's words. */
 export function cardSummary(build: ClubBuild) {
   const cards = BUILD_SLOTS.filter((slot) => build[slot]).map((slot) => cardOf(build, slot).label);
-  return cards.join(' · ') || '모든 부문 기본';
+  return cards.join(' · ') || '모든 부문 표준';
 }
 const cardLabel = (change: CardChange) => cardOf({ [change.slot]: change.to }, change.slot).label;
 
 /**
- * The 운영 전략 tab as one operating board (→WEB-60, →ECON-25): the strategy in force, presets and
- * the owner's saved strategies (→WEB-61), six area rows each pairing its card row with its dials,
- * then the synergies and odds. Every tap adds to one draft; the pinned bar's 적용 sends it at once,
- * cards and dials alike changing at any time (→ECON-22).
+ * The 방향 page tab as one board (→WEB-60, →ECON-25): the direction in force, presets and the
+ * owner's saved directions (→WEB-61), six areas folded behind headers whose cards and dials are
+ * rows of one kind (→DirectionRow), then the synergies and odds. Every tap adds to one draft; the
+ * pinned bar's 적용 sends it at once, cards and dials alike changing at any time (→ECON-22).
  */
 export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
   const acting = useGameState((state) => !!state.pendingActions);
@@ -96,6 +98,16 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
     title?: string;
   }>();
   const [removing, setRemoving] = useState<SavedStrategy>();
+  // Areas start folded behind headers naming their options in force; the owner opens the ones he
+  // works on, and a request from elsewhere opens its own (→WEB-60).
+  const [opened, setOpened] = useState<ReadonlySet<BuildSlot>>(() => new Set());
+  const toggle = (slot: BuildSlot) =>
+    setOpened((open) => {
+      const next = new Set(open);
+      if (next.has(slot)) next.delete(slot);
+      else next.add(slot);
+      return next;
+    });
 
   // A dial change asked for elsewhere (a cash remedy) opens as the draft, its area in view.
   const request = useBoardRequest((store) => store.request);
@@ -105,6 +117,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
     setDraft(draftFromRequest(w, request));
     const key: DialKey = request.policy?.key ?? 'ticket';
     const area = STRATEGY_AREAS.find((item) => item.dials.includes(key));
+    if (area) setOpened((open) => new Set(open).add(area.slot));
     requestAnimationFrame(() =>
       document
         .getElementById(`board-area-${area?.slot}`)
@@ -127,7 +140,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
       : strategyName(current, saved);
   const draftName = cards.length
     ? (draft.name ?? strategyName(draftBuild, saved))
-    : `다이얼 ${dials.length}개`;
+    : `줄 ${dials.length}개`;
   // The strategy in force can join the library unless it is standard or already there.
   const savable =
     BUILD_SLOTS.some((slot) => current[slot]) &&
@@ -340,91 +353,114 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
         </div>
       </section>
 
-      <section className={s.areas} aria-label="부문별 카드와 다이얼">
+      <section className={s.areas} aria-label="부문별 방향">
         <h3>
-          여섯 부문 <small>카드는 어떻게 · 다이얼은 얼마나</small>
+          여섯 부문 <small>부문을 열어 줄마다 하나씩 골라요</small>
         </h3>
         {STRATEGY_AREAS.map((area) => {
           const slot = area.slot,
             info = BUILD_SLOT_INFO[slot],
-            chosen = draftBuild[slot],
-            moved = cards.some((change) => change.slot === slot),
+            open = opened.has(slot),
+            cardMoved = cards.some((change) => change.slot === slot),
+            dialMoved = dials.some((change) =>
+              area.dials.includes(change.kind === 'ticket' ? 'ticket' : change.key),
+            ),
             card: BuildCard = cardOf(draftBuild, slot),
-            options: (string | undefined)[] = [undefined, ...BUILD_OPTIONS[slot]];
+            options: (string | undefined)[] = [undefined, ...BUILD_OPTIONS[slot]],
+            drafted = cardMoved ? options.indexOf(draftBuild[slot]) : undefined;
           return (
             <section
               key={slot}
               id={`board-area-${slot}`}
-              className={`${s.area} ${area.dials.length ? '' : s.cardOnly}`}
+              className={s.area}
               aria-label={area.label}
               data-area={slot}
             >
-              <div className={s.areaCard}>
-                <header className={s.areaHead}>
-                  <span className={s.domainIcon} aria-hidden="true">
-                    {area.icon}
+              <button
+                type="button"
+                className={s.areaHead}
+                aria-expanded={open}
+                aria-controls={`board-area-body-${slot}`}
+                onClick={() => toggle(slot)}
+              >
+                <span className={s.domainIcon} aria-hidden="true">
+                  {area.icon}
+                </span>
+                <span>
+                  <b>
+                    {area.label}
+                    {(cardMoved || dialMoved) && <em className={s.areaDraft}>초안</em>}
+                  </b>
+                  <small>{area.question}</small>
+                  <span className={s.areaSummary} data-testid={`area-summary-${slot}`}>
+                    {areaSummary(w, slot, area.dials)}
                   </span>
-                  <span>
-                    <b>{area.label}</b>
-                    <small>
-                      {info.label} 카드 · {area.question}
-                    </small>
-                  </span>
-                </header>
-                <div className={s.options} role="radiogroup" aria-label={info.label}>
-                  {options.map((option) => {
-                    const label = option
-                      ? (BUILD_CARDS[slot] as Record<string, BuildCard>)[option].label
-                      : '기본';
+                </span>
+                <i aria-hidden="true">{open ? '▴' : '▾'}</i>
+              </button>
+              {open && (
+                <div id={`board-area-body-${slot}`} className={s.areaBody}>
+                  <DirectionRow
+                    row={slot}
+                    label={info.label}
+                    // The header already asks the area's question; a card row asks only its own.
+                    question={info.question === area.question ? undefined : info.question}
+                    options={options.map((option) => cardOf({ [slot]: option }, slot).label)}
+                    inForce={options.indexOf(current[slot])}
+                    drafted={drafted}
+                    disabled={blocked}
+                    detail={
+                      <>
+                        <p className={s.model}>
+                          <b>
+                            {cardMoved ? '적용하면 · ' : ''}
+                            {card.label}
+                          </b>{' '}
+                          {card.model}
+                        </p>
+                        <Lines {...cardLines(card)} />
+                      </>
+                    }
+                    onPick={(index) =>
+                      setDraft(
+                        withCard(
+                          w,
+                          draft,
+                          slot,
+                          // Tapping the drafted card again takes the row out of the draft.
+                          index === drafted ? current[slot] : options[index],
+                        ),
+                      )
+                    }
+                  />
+                  {area.dials.map((key) => {
+                    const dial = dialInfo(w, key),
+                      change = dials.find((item) =>
+                        item.kind === 'ticket' ? key === 'ticket' : item.key === key,
+                      ),
+                      step = change ? stepIndex(key, change.to) : undefined,
+                      shown = step ?? dial.current;
                     return (
-                      <button
-                        key={option ?? 'standard'}
-                        type="button"
-                        role="radio"
-                        aria-checked={option === current[slot]}
-                        aria-label={`${info.label} ${label}`}
-                        className={moved && option === chosen ? s.drafted : undefined}
+                      <DirectionRow
+                        key={key}
+                        row={key}
+                        label={dial.label}
+                        question={dial.question}
+                        options={dial.levels.map((level) => level.name)}
+                        inForce={dial.current}
+                        drafted={step}
                         disabled={blocked}
-                        onClick={() =>
-                          setDraft(
-                            withCard(
-                              w,
-                              draft,
-                              slot,
-                              moved && option === chosen ? current[slot] : option,
-                            ),
+                        detail={
+                          shown >= 0 && (
+                            <>
+                              <p>
+                                {step !== undefined && <b>적용하면 · </b>}
+                                {dial.levels[shown].summary}
+                              </p>
+                              <DialLines w={w} dialKey={key} index={shown} />
+                            </>
                           )
                         }
-                      >
-                        {label}
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className={`${s.cardNote} ${moved ? s.cardDrafted : ''}`}>
-                  <p className={s.model}>
-                    <b>
-                      {moved ? '적용하면 · ' : ''}
-                      {card.label}
-                    </b>{' '}
-                    {card.model}
-                  </p>
-                  <Lines {...cardLines(card)} />
-                </div>
-              </div>
-              {area.dials.length > 0 && (
-                <div className={s.areaDials}>
-                  {area.dials.map((key) => {
-                    const drafted = dials.find((change) =>
-                      change.kind === 'ticket' ? key === 'ticket' : change.key === key,
-                    );
-                    return (
-                      <DialRow
-                        key={key}
-                        w={w}
-                        dialKey={key}
-                        drafted={drafted ? stepIndex(key, drafted.to) : undefined}
-                        disabled={blocked}
                         onPick={(index) => pickDial(key, index)}
                       />
                     );

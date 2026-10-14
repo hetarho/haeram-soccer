@@ -4,6 +4,7 @@ import { BUILD_PRESETS } from '../../../../packages/engine/src/build';
 import { financeProjection } from '../../../../packages/engine/src/projection';
 import { policyOf } from '../../../../packages/engine/src/policy';
 import {
+  areaSummary,
   dialPreview,
   draftChanges,
   draftCommands,
@@ -90,5 +91,19 @@ describe('operating board draft', () => {
     // A level already in force drafts nothing.
     expect(draftFromRequest(w, { policy: { key: 'support', level: 3 } })).toEqual({});
     expect(draftCommands(w, draftFromRequest(w, { ticket: w.ticket }))).toEqual([]);
+  });
+});
+
+describe('direction areas', () => {
+  it('area summary names the options in force', () => {
+    const w = world();
+    expect(areaSummary(w, 'youth', ['academy'])).toBe('표준 · 기본 운영');
+    expect(areaSummary(w, 'market', [])).toBe('표준');
+    send(w, { type: 'build', build: { scouting: 'data' } });
+    send(w, { type: 'policy', key: 'recruitment', level: 2 });
+    expect(areaSummary(w, 'scouting', ['recruitment'])).toBe('데이터 스카우팅 · 젊은 선수 위주');
+    expect(areaSummary(w, 'fans', ['ticket'])).toBe('표준 · 보통');
+    w.ticket = 0.06;
+    expect(areaSummary(w, 'fans', ['ticket'])).toBe('표준 · 사용자 지정');
   });
 });

@@ -10,11 +10,17 @@ import {
   type BuildSlot,
   type ClubBuild,
 } from '../../../../packages/contracts/src/build';
-import { buildOf, sameBuild } from '../../../../packages/engine/src/build';
-import { POLICY_KEYS, policyOf, policyPreview } from '../../../../packages/engine/src/policy';
+import { buildOf, cardOf, sameBuild } from '../../../../packages/engine/src/build';
+import {
+  POLICY_INFO,
+  POLICY_KEYS,
+  policyOf,
+  policyPreview,
+} from '../../../../packages/engine/src/policy';
 import { gateProjection, operatingCosts } from '../../../../packages/engine/src/finance';
 import { financeProjection } from '../../../../packages/engine/src/projection';
 import { SEASON_ROUNDS } from '../../../../packages/engine/src/calendar';
+import { TICKET_LEVELS } from './ticketLevels';
 
 /**
  * The operating board's draft (→WEB-60): the strategy cards and the dials the owner tapped, kept
@@ -156,4 +162,18 @@ export function dialPreview(w: World, change: PolicyChange | TicketChange) {
     seasonEndNow: financeProjection(w).seasonEnd,
     ...(change.kind === 'ticket' ? { gate: gateProjection(next), gateNow: gateProjection(w) } : {}),
   };
+}
+
+/**
+ * The options in force in an area's rows — its card, then each dial's step — as the folded area's
+ * header names them (→WEB-60): 데이터 스카우팅 · 균형. A custom ticket price reads 사용자 지정.
+ */
+export function areaSummary(w: World, slot: BuildSlot, dials: readonly (PolicyKey | 'ticket')[]) {
+  const policy = policyOf(w);
+  const steps = dials.map((key) =>
+    key === 'ticket'
+      ? (TICKET_LEVELS.find((level) => level.price === w.ticket)?.name ?? '사용자 지정')
+      : POLICY_INFO[key].levels[policy[key] - 1].name,
+  );
+  return [cardOf(buildOf(w), slot).label, ...steps].join(' · ');
 }

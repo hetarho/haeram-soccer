@@ -33,14 +33,33 @@ test('applies a preset at once, changes it again at once, and saves its own stra
     ['홈·팬', '홈·팬', ['티켓 가격']],
   ];
   await expect(board.locator('[data-area]')).toHaveCount(6);
+  // Areas start folded behind headers naming the options in force (→WEB-60).
+  await expect(board.getByRole('radiogroup')).toHaveCount(0);
+  await expect(board.getByTestId('area-summary-scouting')).toHaveText('표준 · 균형');
+  await expect(board.getByTestId('area-summary-market')).toHaveText('표준');
   for (const [area, slot, dials] of areas) {
     const row = board.getByRole('region', { name: area, exact: true });
+    const head = row.locator('button[aria-controls^="board-area-body-"]');
+    await expect(head).toHaveAttribute('aria-expanded', 'false');
+    await head.click();
+    await expect(head).toHaveAttribute('aria-expanded', 'true');
+    // A card row and a dial row are one kind of row: a radiogroup of equal options, the option
+    // in force named at the right, one detail below; a card's standard option reads 표준.
+    await expect(row.locator('[data-row]')).toHaveCount(1 + dials.length);
     await expect(
       row.getByRole('radiogroup', { name: slot, exact: true }).getByRole('radio'),
     ).toHaveCount(5);
+    await expect(row.getByRole('radio', { name: `${slot} 표준`, exact: true })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
     await expect(row.getByRole('radiogroup')).toHaveCount(1 + dials.length);
     for (const dial of dials)
       await expect(row.getByRole('radiogroup', { name: dial, exact: true })).toBeVisible();
+    for (const one of await row.locator('[data-row]').all()) {
+      await expect(one.getByRole('heading', { level: 4 })).toHaveCount(1);
+      await expect(one.getByRole('radiogroup')).toHaveCount(1);
+    }
   }
   await expect(board.getByRole('region', { name: '운영 다이얼' })).toHaveCount(0);
   await expect(board.getByRole('radiogroup', { name: '훈련 방향' })).toHaveCount(0);
@@ -56,6 +75,12 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   const squad = board.getByRole('region', { name: '선수단', exact: true });
   const generous = squad.getByRole('radio', { name: '선수단 투자 후한 지원', exact: true });
   await generous.click();
+  // The area of a drafted row stays open and says it holds a draft.
+  await expect(squad.locator('button[aria-controls^="board-area-body-"]')).toHaveAttribute(
+    'aria-expanded',
+    'true',
+  );
+  await expect(squad.locator('button[aria-controls^="board-area-body-"]')).toContainText('초안');
   await expect(draft).toContainText('선수단 투자 표준 → 후한 지원');
   await expect(draft).toContainText('라운드마다');
   await expect(draft).toContainText('시즌 말 예상 자금');
@@ -135,6 +160,7 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   await expect(board.getByTestId('current-strategy')).toHaveText('동네의 자부심');
+  await squad.locator('button[aria-controls^="board-area-body-"]').click();
   await expect(generous).toHaveAttribute('aria-checked', 'true');
   await mine.getByRole('button', { name: '우리 동네 축구 편집' }).click();
   const editor = page.getByRole('dialog', { name: '방향 편집' });
