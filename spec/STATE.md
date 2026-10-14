@@ -31,6 +31,7 @@
 |---|---|
 | club-history-reboot | converted@261007 |
 | club-direction | converted@261014 |
+| difficulty-and-adaptation | ready@261015 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
@@ -58,6 +59,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
+- ideation difficulty-and-adaptation is ready (261015): four levels by the start only, 14 attributes, ~12 sided positions with football-named roles, personality and play traits, adaptation (0.8 = ×1.0) and other clubs' 조직력, per-player growth rates past potential, training 균형/회복/하드 per team and player, 동네의 자부심 → 유스 순혈주의, balance bands per level; sugar daddies dropped. Next: create-ssot PLAYER, then update-ssot MATCH STAFF CLUB LEAGUE WORLD ECON WEB SAVE, then create-task as parallel bundles.
 - the 단장 plan is done and on main (T101–T105, autopilot run q7m2, report reports/261014-q7m2.md): 방향 at /direction, the 단장 post (rules 1.22.0), the scout shortlist and the manager's requests, their screens, ECON r34; review the inbox decisions.
 - follow-up (T105): 1 of 40 reference careers went bankrupt on rules 1.22.0 (ESP 기본 방향 seed 4, 1971, after 19 amateur seasons; none on 1.21) — the same career survives with the 단장's post kept a volunteer or without the −3 trust, so decide by update-ssot whether the delegated staff hire a paid 단장 only from a division up, or whether an amateur club's money checks (ECON-33) are tighter; then re-measure the 40 careers.
 - follow-up: the wage bill is 41.4% of revenue (ECON-29 band 45–70%) after the presets filled rows — the 트레이딩 머신 careers run 25–48%; decide by update-ssot whether the band judges a selling club or the contract-talk floor rises.
@@ -72,6 +74,8 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 ideation difficulty-and-adaptation ready: difficulty by the start only, the new player model (attributes, sided positions, roles, traits, adaptation, growth rates), training 균형/회복/하드; sugar daddies dropped; next create-ssot PLAYER
+- 261014 ideation difficulty-and-adaptation start
 - 261014 T105 done: 40 careers on rules 1.22.0 — wage bill 41.3%, operating +1.3%, 1 of 40 bankrupt (ESP 기본 방향 seed 4); ECON r34; T104 on main after CI 38553541092; run q7m2 closed
 - 261014 T104 done (a9438a7): the 단장's card first in 코치진, 스카우트 명단 and 감독 요청 in 이적시장, the ladder and bid list name the 단장; unit 717, Chromium e2e 108; T103 on main after CI 38552319126; T105 doing (explore 1h from 11:00Z)
 - 261014 T103 done (69e0808): shortlist, requests with the manager's pick, −3 trust at an unmet window's close, the 단장 signing from them; goldens regenerated; update-ssot CLUB r33 (CLUB-33 judged the day after the close, loans count, a new manager is not judged); T102 on main after CI 38550303926; T104 doing
@@ -90,5 +94,3 @@
 - 261014 T096 done (90bc773): the chief scout's signings at level 4, rules 1.20.0; unit 691, contract 13, Chromium e2e 106; WebKit gets two CI retries; T097 doing (session haeram-soccor-6f took over after the first session exited)
 - 261014 slices 3–4 on main: fast-forward to 5ae503c after CI 38513354367 passed every job
 - 261014 update-ssot CLUB r30 ECON r30 STAFF r18 WEB r63 SAVE r32 (club-direction slice 5): the chief scout's signings at level 4 within 재정 기조; create-task T096 (engine), T097 (screens)
-- 261014 T095 done (a785074): eight areas with 지역 and 글로벌 and their bases, campaigns read-only, investment remedy; full Chromium e2e 106
-- 261014 T094 done (89887ea): 지역 기반 and 글로벌 인지도, the five investment rows, 지역 상생, no new campaigns, rules 1.19.0; ECON r29 exclusive sponsor halves 해외 마케팅's fans; T095 doing
