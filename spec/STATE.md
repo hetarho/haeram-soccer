@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| p7ad | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T15:45Z | 2026-10-14T20:00Z | - |
+| p7ad | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T15:45Z | 2026-10-14T20:01Z | T115 |
 
 ## inbox
 - 261015 decided CLUB-27: does an incoming offer left to lapse count as declined for 야망 → yes, like the owner's reject (alt: only an explicit reject) — silence must not dodge an ambitious player's resentment
@@ -70,7 +70,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T115 | Measure the balance bands on the new model | LEAGUE ECON | T108 T109 T110 T111 | todo |
+| T115 | Measure the balance bands on the new model | LEAGUE ECON | T108 T109 T110 T111 | doing@261015.p7ad |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -96,6 +96,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 T115 doing (explore 2h from 20:01Z)
 - 261015 T114 done: 훈련 hosts the coaches' sheets — squad focus with adaptation and 하드's costs, 개별 훈련 per player, the 적응 list; the remedy routes to 훈련; rivals shown at their 조직력
 - 261015 T113 done: earlier-rules careers listed as 이전 규칙 with export and delete only, imports name the rules they need, the century fits on 2.0.0 (post-century checkpoint 1.25 MB of 1.5 MiB)
 - 261015 T112 done: the player profile (attributes, positions by level, roles, personality, traits, adaptation, 실효 OVR), adaptation on the roster, position filters by 준수+, candidates with the scout's range and arrival/settled 실효 OVR, the formation on a pitch in the lineup tab
