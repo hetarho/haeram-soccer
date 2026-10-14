@@ -96,6 +96,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 CI fix: the benchmark failed the entry budget after T114 (256,910 B gzip > 256,000); the player sheet's dialog and the match report now load on demand (entry 251,264 B measured locally)
 - 261015 CI fix: CI 38627339966 failed save-upgrade's earlier-rules test in Chromium and Firefox — the slot screen read the slots before the active load had failed; it now reads them again when the load settles (5× repeats pass in both)
 - 261015 T115 doing (explore 2h from 20:01Z)
 - 261015 T114 done: 훈련 hosts the coaches' sheets — squad focus with adaptation and 하드's costs, 개별 훈련 per player, the 적응 list; the remedy routes to 훈련; rivals shown at their 조직력
@@ -115,4 +116,3 @@
 - 261015 create-ssot PLAYER r1: the player model from ideation/difficulty-and-adaptation (20 decisions, 1 open)
 - 261015 ideation difficulty-and-adaptation ready: difficulty by the start only, the new player model (attributes, sided positions, roles, traits, adaptation, growth rates), training 균형/회복/하드; sugar daddies dropped; next create-ssot PLAYER
 - 261014 ideation difficulty-and-adaptation start
-- 261014 T105 done: 40 careers on rules 1.22.0 — wage bill 41.3%, operating +1.3%, 1 of 40 bankrupt (ESP 기본 방향 seed 4); ECON r34; T104 on main after CI 38553541092; run q7m2 closed

@@ -1,5 +1,7 @@
 import { Select } from './Select';
 import {
+  lazy,
+  Suspense,
   useEffect,
   useId,
   useLayoutEffect,
@@ -24,7 +26,10 @@ import {
 } from '../../../../packages/engine/src/match';
 import { tacticLabel } from '../../../../packages/engine/src/world';
 import { percent } from './format';
-import { MatchReport } from './MatchReport';
+// The report only shows once a match is over: it loads then, keeping it out of the entry (→ARCH-28).
+const MatchReport = lazy(() =>
+  import('./MatchReport').then((module) => ({ default: module.MatchReport })),
+);
 import { MatchMoments } from './MatchMoments';
 import { MatchCharts } from './MatchCharts';
 import { CrestMark } from './ClubCrest';
@@ -546,7 +551,11 @@ export function Pitch({
             }}
           />
         )}
-        {p && (summary || finished) && <MatchReport record={p.record} w={world} />}
+        {p && (summary || finished) && (
+          <Suspense fallback={null}>
+            <MatchReport record={p.record} w={world} />
+          </Suspense>
+        )}
         {p && (
           <label className={s.replayScrubber}>
             경기 시간
