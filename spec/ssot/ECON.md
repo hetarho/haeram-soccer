@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r28 | Define the implemented browser-demo behavior for historical club economy.
+> r29 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -19,7 +19,7 @@
   | 메인 스폰서 (shirt front) | 1979 | 45% | league wins and draws (→ECON-14) |
   | 경기장 명명권 (stadium naming) | 1997, a stadium of 30,000+ (→ECON-32) | 15% | - |
   | 소매 스폰서 (sleeve) | 2017 | 10% | - |
-  - each offer keeps one of the existing kinds: guaranteed, performance-linked (lower base, larger bonus), exclusive (blocks merchandise campaigns) or inflation-linked; one contract per slot, no repeated grant.
+  - each offer keeps one of the existing kinds: guaranteed, performance-linked (lower base, larger bonus), exclusive (holds the merchandise rights: 해외 마케팅 adds half its fans while it runs) or inflation-linked; one contract per slot, no repeated grant.
   - a relegation lowers every running contract's remaining seasons by 30%; a promotion raises nothing before renewal.
   - slots open by year and country from a source-attributed catalog, marked estimated where it is (→ECON-3).
   - the 지역 후원 slot's offers grow with 지역 기반, every other slot's with 글로벌 인지도 (→ECON-34).
@@ -61,7 +61,7 @@
 
 - ECON-13 [o] Marketing ranges separate total recovery from net profit and identify the four-round delay and uncertainty. Ticket drafts compare gate demand, income and hosting costs through the same gateProjection used by settlement; changing a draft has no game effect until applied.
 
-- ECON-14 [o] Each sponsor contract (→ECON-8) pays and describes itself by actual league payments: base installments use the total scheduled owned league fixtures and credit only post-contract games, without retroactive grants, performance bonus rewards league/lower wins and draws at home or away, exclusive contracts block new merchandise campaigns, and indexed amounts display their current effective value.
+- ECON-14 [o] Each sponsor contract (→ECON-8) pays and describes itself by actual league payments: base installments use the total scheduled owned league fixtures and credit only post-contract games, without retroactive grants, performance bonus rewards league/lower wins and draws at home or away, an exclusive contract halves 해외 마케팅's fan growth while it runs, and indexed amounts display their current effective value.
 
 - ECON-15 [o] An active marketing campaign shows its paid cost, actual current cash and remaining settlement rounds. A hypothetical second debit is never labelled as its current or post-start cash; new-campaign forecasts remain separate from already committed spend.
 
@@ -198,6 +198,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r29 261014 ECON-14✎ ECON-8✎ exclusive contract: blocks merchandise campaigns→halves 해외 마케팅's fan growth
 - r28 261014 ECON-34+ 지역 기반 and 글로벌 인지도 (0–100) built by the 지역 and 글로벌 rows; ECON-16✎ marketing dial→주변 투자, 풀뿌리 유망주 투자, 해외 마케팅, 해외 스카우트망, 해외 투어; ECON-7✎ four campaigns→none to start, older ones settle; ECON-22✎ 홈·팬 slot→지역 관계 방식, 글로벌 브랜드→지역 상생, 상업 제국 preset without it, marketing/campaign effects→해외 마케팅; ECON-25✎ +지역, 글로벌 areas, 마케팅 out of 재정; ECON-8✎ ECON-9✎ ECON-23✎ read the bases
 - r27 261014 ECON-29✎ measured under rules 1.16→1.17 (direction rows, 셀링 클럽 bar 110%): wage bill 44.3%→44.8% (still below 45%), operating result +4.8%→+3.5%, sales 12.3%→13.2%, 2000s mix 43.7/32.8/23.5→43.6/32.9/23.5, 1950s 88.8→88.5%, ladder 95.2→93.9, none bankrupt
 - r26 261014 ECON-22✎ slot 유스 정책→유입 방식, 1군 직행 경로→moved to 데뷔 시점 빠른 데뷔, +엘리트 선발 (intake potential +8, intake −2), 트레이딩 머신 preset without 1군 직행 경로; ECON-25✎ 유소년 area +육성 목표, 데뷔 시점
