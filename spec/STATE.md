@@ -63,8 +63,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T099 | Presets and saved directions over every row, and the founding direction | WEB ECON SAVE | T098 | doing@261014.v7dq |
-| T100 | Calibrate the economy after the whole direction plan | ECON CLUB | T098 | todo |
+| T100 | Calibrate the economy after the whole direction plan | ECON CLUB | T098 | doing@261014.v7dq |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -85,6 +84,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 T099 done (58d4711): presets and saved directions over every row, founding 구단 방향, the protocol accepts 육성 목표/데뷔 시점 (refused since slice 3); unit 699, Chromium e2e 107, entry 245,897 B; T100 doing (measured 05:26–05:5x on 6aed2e3)
 - 261014 T098 done (6aed2e3): seven presets over every row, 글로벌 스카우팅, founding preset, rules 1.21.0; unit 695, contract 13; T099 doing
 - 261014 slice 5 on main: fast-forward to 2535320 after CI 38515600980 passed every job
 - 261014 update-ssot ECON r31 CLUB r31 WEB r64 SAVE r33 (club-direction slice 6): seven presets over every row, 글로벌 스카우팅, the founding direction, saved directions over every row; create-task T098 (engine), T099 (screens), T100 (explore 1h: final calibration)
@@ -104,4 +104,3 @@
 - 261014 T089 done (63a6c7d): engine rows, 재정 기조, ladder, rules 1.17.0; unit 451, contract 11; T090 doing
 - 261014 slice 1 on main: fast-forward to 84a3a97 after CI 38502027150 passed every job on b2ed331; T089 doing on work/direction
 - 261014 create-task slice 2 → T089 (engine rows, 재정 기조, ladder, load mapping), T090 (board rows, 사람 lines, 자금), T091 (explore 1h: ECON-29 on 40 careers)
-- 261014 update-ssot ECON r25 CLUB r27 STAFF r16 WEB r60 SAVE r29 (club-direction slice 2): 재정 기조, 재계약 기조, the 스태프 area replace the talk rule and the hiring and manager criteria; 매각 기조 sets the sale bar; the level ladder; 자금 page tab
