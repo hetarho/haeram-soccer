@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r8 | Define the implemented browser-demo behavior for durable metrics and history.
+> r9 | Define the implemented browser-demo behavior for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -25,7 +25,7 @@
   - each season archive keeps the own club's Elo and its rank among all clubs, the squad value (sum of player values), the club value (squad value + half the build cost of the facility parts (→ECON-32) + a brand of one unit per 20 supporters × (1 + reputation/100) + cash) and how far it went in each cup.
   - views convert past money to today's prices and currency; the league position chart counts every club in the divisions above plus the rank.
 - HIST-13 [o] A closed season keeps what its pages need to stay readable. ← a fan rereads old seasons, scorer races and draws, not only the final table
-  - our league's top 10 scorers (name, club, role, goals, appearances; ties as the live table), our rank after every league round, and the Club Elo spread at the close (world lowest/highest, our league lowest/highest).
+  - our league's top 10 scorers (name, club, position, goals, appearances; ties as the live table), our rank after every league round, and the Club Elo spread at the close (world lowest/highest, our league lowest/highest).
   - our country's cup and every continental competition except the Super Cup as a bracket from the first round of 32 or fewer clubs (qualifiers skipped) to the final: each tie its two clubs, both legs and how it was decided (penalties, away goals).
   - a field is written only when the season was tracked whole; seasons closed before rules 1.12.0 keep finals only. Scorers and brackets reach the screen through the season archive request, not every update.
   - derived on read, never stored: a cup run's stages from match ids and calendar slots, titles by club and nation, doubles, trebles and runs of titles from the archived champions and finals, the head-to-head with any club from every own match, and appearances as minutes / 90 (every starter plays the full match; there are no substitutions).
@@ -37,6 +37,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r9 261015 HIST-13✎ scorers' role→position
 - r8 261013 HIST-10✎ facilities→facility work; HIST-12✎ club value: half the facility build cost→of the three parts
 - r7 261012 HIST-13✎ none→derived cup stages, honours, head-to-head and appearances
 - r6 261012 HIST-13+ closed seasons keep top scorers, per-round rank, Elo spread and cup brackets from the last 32

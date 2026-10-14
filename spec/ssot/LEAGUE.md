@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r5 | Define the implemented browser-demo behavior for domestic seasons and relegation.
+> r6 | Define the implemented browser-demo behavior for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -32,6 +32,19 @@
   - a league match day plays the round's matches first, then the round's settlement (training, wages, supporters), then that day's club business — academy intake, market, delegated business, staff, retirement announcements, healed injuries — so a player healed or signed that day plays from his next match.
   - any other day plays its ties first, then its club business.
   - the season closes on the day after its final round (→LEAGUE-9).
+- LEAGUE-12 [o] Every club nobody owns has a 조직력 (0.3–1.0) that its players play at, on the adaptation multipliers (→PLAYER-10); it is how settled its squad is under its manager. ← a club that changed its manager or its squad is not at full strength at once, and the owner's club pays for change by the same measure (→MATCH-2)
+  - every club starts at 0.80 when the world is made.
+  - each settled league round it rises 0.010 below 0.80 and 0.005 above, up to 1.0.
+  - a new manager (→STAFF-17) takes 30% of the distance to 0.50 when his school differs from his predecessor's, 10% when it is the same.
+  - between seasons a takeover or a project (→LEAGUE-10) takes 0.15, a promotion or a relegation 0.10, never below 0.30.
+  - a rival's dossier and its league-table OVR show it (→WEB-58).
+- LEAGUE-13 [o] Balance is measured on reference careers at intervention level 4 and 기본 방향 (→ECON-29's runs: 1950–2009, four countries × difficulty level × 5 seeds), and holds these bands; tuning changes the rules and constants for every level alike, never one level's own. ← reaching the top should take long and holding it stay hard, with room for a lucky career
+  | level | first top-flight title | share of top-flight titles after the first | bankrupt |
+  |---|---|---|---|
+  | 쉬움 | most careers; median 35–50 seasons, the fastest within about 25 | 20–35% | none |
+  | 보통 | about a third of careers | 20% or less | none |
+  | 어려움 | 1 in 5 careers or fewer | - | 1 in 20 or fewer |
+  | 최상 | half the careers reach the top flight or fewer | - | 1 in 5 or fewer |
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -39,6 +52,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r6 261015 LEAGUE-12+ 조직력 of clubs nobody owns (start 0.80, +0.010/+0.005 a round, new manager −30%/−10% of the distance to 0.50, takeover or project −0.15, promotion or relegation −0.10); LEAGUE-13+ balance bands per difficulty level on reference careers
 - r5 261012 LEAGUE-6✎ worst last-division club dropped to make room for a promoted own club→one exchange: the bottom two of each last-division group for as many amateur clubs, chosen by the amateur table (playoff for the last place) while the own club plays in it; LEAGUE-11+ one day order for every progression mode
 - r4 261012 LEAGUE-10✎ strength cap 92→99, +rare club projects adding 8–18 to a level and fading 15% a summer
 - r3 261011 LEAGUE-5✎ season-close cup→midweek rounds with seeded byes, open draws, prizes and archived finals; LEAGUE-6✎ 8-club 14-game lower section with 2nd–4th playoff→16-club 30-game amateur league with 2nd–5th playoff; LEAGUE-7✎ separate cup and European midweeks; LEAGUE-10+ clubs nobody owns evolve between seasons

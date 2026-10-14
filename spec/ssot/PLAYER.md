@@ -1,5 +1,5 @@
 # PLAYER Player model
-> r1 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
+> r2 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
 
 ## decisions
 - PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 14 attributes, positions with levels, personality and play traits, potential. Other clubs' squads are generated from their club's strength each season and do not develop (→WORLD-6, →LEAGUE-10); development, adaptation and ageing below apply to the own club's players and academy. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
@@ -21,6 +21,7 @@
   | GK | 공중볼 처리 | claiming crosses and set pieces |
   | GK | 발밑 | a keeper's passing and sweeping |
 - PLAYER-3 [o] Positions are 14, left and right apart: GK, CB, LB, RB, LWB, RWB, DM, CM, LM, RM, AM, LW, RW, ST. ← sides are real for players: a left winger may play the right as well, a little worse or not at all
+  - they group into four lines: GK; DF (CB, LB, RB, LWB, RWB); MF (DM, CM, LM, RM, AM); FW (LW, RW, ST). A player's line is his main position's; rules that count a squad by line (needs, limits, filters, synergies) use it.
 - PLAYER-4 [o] A player plays 1–6 positions, each at a level; any other position is 미숙. ← versatile players (a full back who also plays centre back, defensive midfield and the wing) exist and are worth more to a manager
   | level | plays at | e.g. |
   |---|---|---|
@@ -92,8 +93,8 @@
   |---|---|---|---|---|---|---|
   | 프로의식 | ×0.70 | ×0.85 | ×1.00 | ×1.15 | ×1.30 | his development rate (→PLAYER-15) |
   | 적응력 | ×0.60 | ×0.80 | ×1.00 | ×1.20 | ×1.40 | his adaptation rate (→PLAYER-12) and his start after a transfer (→PLAYER-11) |
-  | 야망 | - | - | - | - | - | how strongly a bigger club's offer pulls him (→PLAYER-8) |
-- PLAYER-8 [?] How 야망 pulls a player toward a bigger club's offer and what refusing him costs, beside CLUB-27's unhappiness — decided with the CLUB update.
+  | 야망 | never | never | never | 25% | 50% | unhappiness when a bigger club's offer is declined (→PLAYER-8) |
+- PLAYER-8 [o] 야망 decides whether a declined offer from a bigger club makes him unhappy (→CLUB-27).
 - PLAYER-9 [o] Play traits, 0–3 per player (most have 1–2, stars up to 3, some none), make him attempt their action more often in a match (→MATCH) and are what schools of football prefer (→STAFF): ← the way he plays, not only how well
   | trait | does |
   |---|---|
@@ -154,4 +155,5 @@
 - in a match: slot position and role → OVR (PLAYER-6) × level (PLAYER-4) × adaptation multiplier (PLAYER-10) = 실효 OVR; each action reads its attributes (PLAYER-2)
 
 ## chg
+- r2 261015 PLAYER-3✎ +four lines (GK, DF, MF, FW) for rules that count by line; PLAYER-8✎ [?]→[o] 야망: a declined bigger club's offer makes 높음 25% and 매우 높음 50% unhappy (→CLUB-27)
 - r1 261015 initial

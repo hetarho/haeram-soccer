@@ -1,10 +1,10 @@
 # MATCH Observable match simulation
-> r8 | Define the implemented browser-demo behavior for observable match simulation.
+> r9 | Define the implemented browser-demo behavior for observable match simulation.
 
 ## decisions
 - MATCH-1 [o] A match is 90 discrete simulated minutes; each minute's possession plays as a chain of duels between named players (→MATCH-11). Events and team/player counts share one seeded engine. Pitch playback does not change outcomes.
-- MATCH-2 [o] Outcome factors include role attributes, club/manager quality, fatigue, home advantage, and the actually applied tactical preset. ← the own club must play on the same terms as the clubs it meets
-  - every club's strength is its actual starting XI: average role rating minus (fatigue − 20)/6 for fatigue above 20; clubs nobody owns add 4 for their unmodelled manager, the own club (manager ability − 50)/4, morale, its manager style's strength (→STAFF-14) and at home its build's home strength (→ECON-22).
+- MATCH-2 [o] Outcome factors include the players' attributes at their slots, club/manager quality, fatigue, home advantage, and the actually applied tactical preset. ← the own club must play on the same terms as the clubs it meets
+  - every club's strength is its actual starting XI in its formation (→STAFF-22): the average 실효 OVR at the slots (→PLAYER-6) minus (fatigue − 20)/6 for fatigue above 20; an own player's 실효 OVR carries his adaptation multiplier (→PLAYER-10), a player of a club nobody owns his club's 조직력 multiplier (→LEAGUE-12); clubs nobody owns add 4 for their unmodelled manager, the own club (manager ability − 50)/4, morale, its manager style's strength (→STAFF-14) and at home its build's home strength (→ECON-22).
   - fatigue up to 20 is ordinary match fitness and costs nothing in ratings, duels or tactic fit; only the excess weakens a player.
   - clubs nobody owns do not track fatigue match by match, so a pressing club's squad carries fatigue 32.
   - a strength gap counts with diminishing returns (gap / ⁴√(1 + (gap/24)⁴): 20→18.1, 30→22.0, 40→23.3); each side then adds its match-day form, a seeded fat-tailed draw (sd 7, within ±21) from a stream of its own, so watched and unwatched runs agree. ← even a far stronger side has bad days; a +20 favourite wins about 79%, draws 14% and loses 7%, as in real league data
@@ -16,24 +16,26 @@
 - MATCH-6 [o] Cup ties resolve draws with an explicit extra-time/penalty outcome; all scores are settled once.
 - MATCH-7 [o] Fast and observed processing use the same match seed and football result path; animation speed, selected view and browser clock cannot reroll results.
 
-- MATCH-8 [o] The four tactics have roster and opponent tradeoffs: possession uses midfield passing but fewer direct shots; counter uses defense/forwards and gains against press but sacrifices possession; press uses stamina and freshness to force chances at higher fatigue cost; balanced retains defensive stability. Shared engine profiles expose fit rather than guaranteed win probabilities.
+- MATCH-8 [o] The four tactics have roster and opponent tradeoffs: possession uses the midfielders' 패스 and 시야 but fewer direct shots; counter uses the defenders' 위치선정 and the forwards' 속도 and gains against press but sacrifices possession; press uses 체력 and freshness to force chances at higher fatigue cost; balanced retains defensive stability. Shared engine profiles expose fit rather than guaranteed win probabilities.
 
-- MATCH-9 [o] Midfield passing affects possession and pass completion; defender quality suppresses opposing shot creation; stamina and fatigue limit press effectiveness. The same profile and opponent tactic calculation serves simulation and pre-match UI.
+- MATCH-9 [o] The midfielders' 패스 affects possession and pass completion; the defenders' 태클, 위치선정 and 공중볼 suppress opposing shot creation; 체력 and fatigue limit press effectiveness. The same profile and opponent tactic calculation serves simulation and pre-match UI.
 
 - MATCH-10 [o] Mobile observation keeps score, pitch, latest event, pause/speed, live charts and the primary action visible together, including empty, live, finished, replay and new-match states. Stats, timeline, player inspection and full post-match league context open explicitly; presentation choices never reroll settled facts.
 
 - MATCH-11 [o] Player duels decide every action; team rates stay anchored to the tactical profile so MATCH-8/9 hold. ← individual players matter without losing the calibrated tactic tradeoffs
   - the minute's possession side and its pass volume, base pass accuracy and chance rate keep the team formula (strength, home, manager, morale, profile modifiers).
-  - pass: passer passing vs the marker from the opposing line facing that zone (FWD in build-up, MID in midfield, DEF in the final third), with in-match fatigue; a failed pass is intercepted by that marker or recovered as a loose ball.
-  - dribble: carrier attack and pace vs marker defense; failure is a tackle by the marker.
-  - shot: shooter weighted by role and attack; chance type (big chance, box, long range) sets its quality; blocker defense, shooter attack and keeper skill split goal, save, block and miss; the last completed pass before the shot is the key pass and earns the assist, unless the shooter beat his marker alone (then the shot is unassisted).
+  - every attribute a duel reads is the player's own (→PLAYER-2) × his level at the slot (→PLAYER-4) × his adaptation or his club's 조직력 multiplier; the slot's role and his play traits shift which actions he attempts (→PLAYER-5, →PLAYER-9) within the team rates, so MATCH-8/9 still hold.
+  - pass: passer 패스 (시야 for a key or progressive pass) vs the marker from the opposing line facing that zone (FW in build-up, MF in midfield, DF in the final third, →PLAYER-3) on 위치선정, with in-match fatigue; a failed pass is intercepted by that marker or recovered as a loose ball.
+  - cross: crosser 크로스 vs the defenders' 공중볼 and the keeper's 공중볼 처리; a won header is a shot on the header's 공중볼.
+  - dribble: carrier 드리블 and 속도 vs marker 태클 and 속도; failure is a tackle by the marker.
+  - shot: shooter weighted by slot, role and 슈팅; chance type (big chance, box, long range) sets its quality; blocker 위치선정, shooter 슈팅 and keeper 선방 split goal, save, block and miss; a keeper's 발밑 decides his passes; the last completed pass before the shot is the key pass and earns the assist, unless the shooter beat his marker alone (then the shot is unassisted).
   - each tactic defends a line: pass success taken off the opponent in its own two thirds / in our final third: balanced 0/0, possession 2/0, counter −3/3.5, press 7/0 percentage points. ← pressing must show as a lower PPDA and more high turnovers, a low block as the opposite
   - a minute that starts with the ball just won in the opponent's third (a transition) has 1.25× the chance rate and 15 points more big-chance share.
   - key duels, big-chance share and finishing against the keeper use margins that flatten past about 15 points (30 × tanh(margin/30)); chances come at 1.7× the team rate (at most 0.75 a minute), about 12 shots a side at 0.12 xG each.
   - score effects: per goal of lead (up to two) the leading side gives up 5 points of possession and creates 20% less from what it keeps.
   - the team-level path uses the same chance model (shooter, creator, defender, key duel, finishing) and skips only the pass-by-pass build-up.
   - recorded xG is that chance's goal probability for the match level's average forward and keeper, so goals minus xG measures finishing and xGA minus goals against measures keeping.
-  - player contributions record the actual passer, receiver, marker, shooter and keeper; in-match fatigue grows with minutes, faster for low stamina.
+  - player contributions record the actual passer, receiver, marker, shooter and keeper; in-match fatigue grows with minutes, faster for low 체력.
   - own-club fixtures and fixtures whose players are recorded (own-league scorers) play the duel chain; every other fixture resolves with the same team formula without named players. ← a world season simulates about 10,000 fixtures; duels everywhere cost about five times the time
   - both paths keep goals per match within 20% of each other at every tier, and a fixture always takes the same path whether observed or not.
 - MATCH-12 [o] Observed playback follows the recorded duel chain: passes fly to the recorded receiver, interceptions and tackles go to the recorded marker, shots leave at their recorded moment. ← a ball that stops in open space and then jumps to an opponent reads as a bug, not football
@@ -43,6 +45,7 @@
   - the ball never passes to the other side without a duel: when a minute's possession goes to the side that did not end the last one with the ball, the chain opens with a restart — the ball went out off the last holder: after a shot behind off the keeper or a defender (corner), from the final third over the byline (goal kick), anywhere else over a touchline (throw-in); about 27 throw-ins, 7 goal kicks (plus those after shots wide) and 12 corners a match. ← a ball that leaves our forward for an opponent with no tackle reads as a pass to them
   - restarts are chosen from where the ball was, never drawn: results, counts and archives stay as they were.
   - on the pitch the ball runs out over the line, the keeper (goal kick) or the nearest teammate (throw-in, corner) walks to it for at most 0.9 s, and it is thrown (36 u/s, a low arc), crossed or kicked to the recorded player; a minute that opens with a restart shows it and its last three duels.
+  - players take the positions of their side's applied formation (→STAFF-22).
   - the next recorded duel waits until the ball has been received; the track records ground position and height every 0.1 motion seconds and the renderer draws the ball above its shadow, up to 35% larger when high.
 
 - MATCH-13 [o] Every own-club match records advanced counters for both sides and every own player (rules 1.6.0); older matches stay without them and are labelled as such, never zero-filled. ← xG, xA, key passes and final-third passing are what football fans compare
@@ -67,6 +70,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r9 261015 MATCH-2✎ average role rating→average 실효 OVR at the formation's slots, own players by adaptation, others by their club's 조직력; MATCH-8✎ MATCH-9✎ passing/defense/stamina→the named attributes (패스, 시야, 태클, 위치선정, 공중볼, 속도, 체력); MATCH-11✎ +attributes × slot level × adaptation in every duel, roles and play traits shift actions, +crosses and headers, FWD/MID/DEF→FW/MF/DF lines; MATCH-12✎ +players at their formation's positions
 - r8 261012 MATCH-12✎ none→restart (throw-in, goal kick, corner) whenever possession changes sides between minutes without a duel, played on the pitch with the ball out of play and a taker; outcomes unchanged
 - r7 261011 MATCH-2✎ +gap with diminishing returns, match-day form, context points on player skills; MATCH-11✎ +flattened duel margins, shot volume 1×→1.7× (cap 0.6→0.75), score effects, summary path on the shared chance model; MATCH-12✎ ball 32/55→48/84 u/s on curved, lofted flights that always land at a player, track every 0.2→0.1 s
 - r6 261010 MATCH-2✎ +own manager style and vision home strength; MATCH-11✎ last passer always assists→solo runs unassisted, +tactic defensive lines, +high-regain transitions; MATCH-13+ advanced counters (key passes, xA, big chances, box shots, final-third passes, progressive passes, take-ons, high turnovers, PPDA, field tilt)

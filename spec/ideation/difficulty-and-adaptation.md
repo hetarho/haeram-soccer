@@ -1,5 +1,5 @@
 # IDEATION difficulty-and-adaptation
-> st:ready@261015 | Difficulty set by the start alone, training the owner can act on, and players with real positions and attributes who adapt to their manager and grow at their own pace.
+> st:converted@261015 | Difficulty set by the start alone, training the owner can act on, and players with real positions and attributes who adapt to their manager and grow at their own pace.
 
 ## vision
 - Problem (owner, 261014): a delegated level-4 career at 기본 방향 takes about 40 years to win the top flight, then wins about half of the titles after that. Holding the top is too easy, not reaching it.
@@ -78,14 +78,14 @@
 
 ## domains
 - PLAYER (new) →PLAYER: 14 attributes, sided positions with per-player levels, roles, personality and play traits, OVR per position, adaptation (multiplier, starts, resets, growth by starts and training), growth and adaptation rates, growth past potential, what is shown and what the scout estimates — takes over CLUB-2 and CLUB-12
-- MATCH: each attribute feeds the actions it names (MATCH-11 duels), the formation and the slot roles, the adaptation multiplier and the other club's 조직력 in match strength (MATCH-2)
-- STAFF: each school's formation, slot roles, preferred attributes and traits (STAFF-14); a manager change costs adaptation; STAFF-19's training controls move to the 훈련 tab and to single players
-- CLUB: training 균형/회복/하드 and its costs (CLUB-11, CLUB-13), per-player training, lineups by positions (CLUB-6); the starting XI per level (CLUB-1); 야망 and other clubs' offers (CLUB-18, CLUB-22)
-- LEAGUE: other clubs' 조직력 beside LEAGUE-10's rise and fall, the balance bands per level
-- WORLD: other clubs' squads generated with positions, roles and traits (WORLD-6)
-- ECON: ECON-22 preset 동네의 자부심 → 유스 순혈주의
-- WEB: founding with four levels (WEB-2, WEB-3, WEB-15), the 훈련 tab, the player card
-- SAVE: the new model starts new careers; older saves do not open in it
+- MATCH →MATCH: each attribute feeds the actions it names (MATCH-11 duels), the formation and the slot roles, the adaptation multiplier and the other club's 조직력 in match strength (MATCH-2)
+- STAFF →STAFF: each school's formation, slot roles, preferred attributes and traits (STAFF-14); a manager change costs adaptation; STAFF-19's training controls move to the 훈련 tab and to single players
+- CLUB →CLUB: training 균형/회복/하드 and its costs (CLUB-11, CLUB-13), per-player training, lineups by positions (CLUB-6); the starting XI per level (CLUB-1); 야망 and other clubs' offers (CLUB-18, CLUB-22)
+- LEAGUE →LEAGUE: other clubs' 조직력 beside LEAGUE-10's rise and fall, the balance bands per level
+- WORLD →WORLD: other clubs' squads generated with positions, roles and traits (WORLD-6)
+- ECON →ECON: ECON-22 preset 동네의 자부심 → 유스 순혈주의
+- WEB →WEB: founding with four levels (WEB-2, WEB-3, WEB-15), the 훈련 tab, the player card
+- SAVE →SAVE: the new model starts new careers; older saves do not open in it
 
 ## open
 - If the bands are not met without sugar daddies, which lever comes next (the dropped sugar-daddy idea stays recorded above)

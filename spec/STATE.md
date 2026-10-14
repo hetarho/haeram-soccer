@@ -17,6 +17,21 @@
 | p7ad | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T15:45Z | 2026-10-14T15:45Z | - |
 
 ## inbox
+- 261015 decided PLAYER-3 CLUB-32 CLUB-33: how rules that counted GK/DEF/MID/FWD read with 14 positions → four lines (GK, DF, MF, FW) by main position (alt: every listed position counts | each rule rewritten by formation slot) — squad needs stay readable; requests still name formation slots
+- 261015 decided STAFF-22: what formation a manager plays → the applied tactic's: possession 4-3-3, press 4-2-3-1, counter 4-4-2, balanced 3-5-2, each slot with a role (alt: one formation per school | the owner picks a formation) — the tactic already exists and changes through the manager; a back three gives wing-backs a home
+- 261015 decided STAFF-21: what each school prefers and how much it speeds adaptation → two attributes and two or three play traits per school; factor 0.8 + 0.1 per preferred attribute at 65+ and per preferred trait (+0.1 aged ≤21 under 육성형), at most 1.3, 1.0 under the founding manager or an interim (alt: attributes only | a flat ±0.2) — readable and reaches the 0.8–1.3 range the owner saw
+- 261015 decided CLUB-13: when the assistant picks 하드 himself → starters' fatigue under 15, morale 50+, and a developer assistant or 3+ starters aged ≤21 (alt: never on his own | whenever fatigue is low) — keeps 유망주 집중's trigger, and 하드's own fatigue ends it
+- 261015 decided CLUB-23 CLUB-19: 하드's injury and morale costs → 0.5% × (1 + excess fatigue/25) a round per player, morale −1 a round from the third 하드 round in a row (alt: 1% a round | morale from the first round) — about one training injury in eight rounds of a full squad on 하드, short spells cost nothing
+- 261015 decided STAFF-19: limits on per-player training instructions → one suggestion per target every 2 rounds, every order raises the coach's strain (alt: players share the squad's limit | player orders cost no strain) — single-player work stays possible without free orders
+- 261015 decided CLUB-19: what 리더 does → morale baseline +1 per 리더 in the last starting XI, at most +3 (alt: a defeat costs 1 less per 리더)
+- 261015 decided CLUB-27 PLAYER-8: what 야망 does → a declined offer of at least his value from a bigger club (higher division, or same division and higher reputation) makes 높음 unhappy 25% and 매우 높음 50%, talked round as a declined talk, ending at his sale or the next season close (alt: 야망 raises wage demands | no effect yet) — the owner's pick of the trait needed a visible cost
+- 261015 decided LEAGUE-12: other clubs' 조직력 numbers → start 0.80, +0.010 a round below 0.80 and +0.005 above, a new manager −30%/−10% of the distance to 0.50 as PLAYER-13, takeover or project −0.15, promotion or relegation −0.10 (alt: fixed 0.80) — the same measure as the owner's adaptation
+- 261015 decided CLUB-1: how the founding 18 are drawn → they cover the founding manager's formation, 최상 or 준수 in every slot, two goalkeepers (alt: positions at random)
+- 261015 decided CLUB-6: who may play in a manual slot → anyone, at his level there (미숙 60%), shown before saving (alt: only listed positions)
+- 261015 decided LEAGUE-13: where the balance bands live → LEAGUE (alt: ECON-29) — titles and dominance are competitive balance, not money
+- 261015 decided CLUB-21: the synergy 우리 동네 아이들 lit by the renamed preset → kept (alt: renamed with it) — local boys in the side is real football
+- 261015 decided WEB-15: the level selected first at founding → 쉬움 (alt: 보통) — the founding default was already the generous start
+- 261015 decided SAVE-16: what a career of earlier rules shows → listed as 이전 규칙 with export and delete only, imports refused with the rules they need (alt: hidden | deleted) — nothing is lost and nothing converts
 - 261014 decided T105: a reference career went bankrupt on rules 1.22.0 (ESP 기본 방향 seed 4, 1971) → recorded with its cause and left as a follow-up, nothing tuned (alt: keep the 단장's post a volunteer below the professional divisions | tighten 재정 기조 for amateur clubs now) — the explore task's exit records, and no single 1.22 rule breaks the career
 - 261014 decided T102: an offer refused unseen under 이적 불가 while the owner holds transfers names who → 구단이 (alt: keep 스태프가 | 단장이) — the 단장 takes no decision the level keeps with the owner (STAFF-20)
 - 261014 decided T102: activation of rules 1.22 tells the owner → one inbox item naming the new 단장 (alt: silent) — as the 1.17 and 1.19 activations do
@@ -32,23 +47,23 @@
 |---|---|
 | club-history-reboot | converted@261007 |
 | club-direction | converted@261014 |
-| difficulty-and-adaptation | ready@261015 |
+| difficulty-and-adaptation | converted@261015 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 65 | 65 | - | 0 |
-| WORLD | 2 | 2 | - | 0 |
-| CLUB | 33 | 33 | - | 0 |
-| MATCH | 8 | 8 | - | 0 |
-| LEAGUE | 5 | 5 | - | 0 |
-| STAFF | 19 | 19 | - | 0 |
-| ECON | 34 | 34 | - | 0 |
+| WEB | 66 | 65 | WEB-2✎ WEB-3✎ WEB-15✎ WEB-21✎ WEB-24✎ WEB-25✎ WEB-43✎ WEB-55✎ WEB-58✎ WEB-59✎ WEB-70✎ WEB-71✎ | 0 |
+| WORLD | 3 | 2 | WORLD-6✎ | 0 |
+| CLUB | 34 | 33 | CLUB-1✎ CLUB-2✎ CLUB-3✎ CLUB-6✎ CLUB-9✎ CLUB-10✎ CLUB-11✎ CLUB-12✎ CLUB-13✎ CLUB-14✎ CLUB-16✎ CLUB-19✎ CLUB-21✎ CLUB-23✎ CLUB-24✎ CLUB-25✎ CLUB-27✎ CLUB-32✎ CLUB-33✎ | 0 |
+| MATCH | 9 | 8 | MATCH-2✎ MATCH-8✎ MATCH-9✎ MATCH-11✎ MATCH-12✎ | 0 |
+| LEAGUE | 6 | 5 | LEAGUE-12+ LEAGUE-13+ | 0 |
+| STAFF | 20 | 19 | STAFF-11✎ STAFF-13✎ STAFF-19✎ STAFF-21+ STAFF-22+ | 0 |
+| ECON | 35 | 34 | ECON-22✎ | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 8 | 8 | - | 0 |
-| SAVE | 34 | 34 | - | 0 |
-| PLAYER | 1 | 0 | all | 1 |
+| HIST | 9 | 8 | HIST-13✎ | 0 |
+| SAVE | 35 | 34 | SAVE-10✎ SAVE-16+ | 0 |
+| PLAYER | 2 | 0 | all | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -77,6 +92,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 update-ssot PLAYER r2 MATCH r9 STAFF r20 CLUB r34 LEAGUE r6 WORLD r3 ECON r35 HIST r9 SAVE r35 WEB r66 from ideation/difficulty-and-adaptation (converted)
 - 261015 create-ssot PLAYER r1: the player model from ideation/difficulty-and-adaptation (20 decisions, 1 open)
 - 261015 ideation difficulty-and-adaptation ready: difficulty by the start only, the new player model (attributes, sided positions, roles, traits, adaptation, growth rates), training 균형/회복/하드; sugar daddies dropped; next create-ssot PLAYER
 - 261014 ideation difficulty-and-adaptation start
@@ -96,4 +112,3 @@
 - 261014 update-ssot ECON r31 CLUB r31 WEB r64 SAVE r33 (club-direction slice 6): seven presets over every row, 글로벌 스카우팅, the founding direction, saved directions over every row; create-task T098 (engine), T099 (screens), T100 (explore 1h: final calibration)
 - 261014 T097 done (8a2a121): level 4 names signings, 스태프 제안 in the market; full Chromium e2e 106
 - 261014 T096 done (90bc773): the chief scout's signings at level 4, rules 1.20.0; unit 691, contract 13, Chromium e2e 106; WebKit gets two CI retries; T097 doing (session haeram-soccor-6f took over after the first session exited)
-- 261014 slices 3–4 on main: fast-forward to 5ae503c after CI 38513354367 passed every job

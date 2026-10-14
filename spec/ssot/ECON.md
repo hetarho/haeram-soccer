@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r34 | Define the implemented browser-demo behavior for historical club economy.
+> r35 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -95,7 +95,7 @@
   - presets fill every row of the board in one tap (→ECON-25), the cards and the other rows alike; a row a preset does not name returns to its default; each has one identity and lights or aims at a synergy:
     | preset | cards (others standard) | other rows (others at their default) | aim |
     |---|---|---|---|
-    | 동네의 자부심 | 성골 유스, 지역 인재 우선, 핵심 지키기, 회원제 운영, 지역 밀착, 가족 같은 클럽 | 주변 투자 지역 상권 투자, 풀뿌리 유망주 투자 지역 리그 후원, 티켓 가격 저렴, 재계약 기조 모두 붙잡기, 육성 목표 1군 공급, 재정 기조 신중 | lights 우리 동네 아이들 |
+    | 유스 순혈주의 | 성골 유스, 지역 인재 우선, 핵심 지키기, 회원제 운영, 지역 밀착, 가족 같은 클럽 | 주변 투자 지역 상권 투자, 풀뿌리 유망주 투자 지역 리그 후원, 티켓 가격 저렴, 재계약 기조 모두 붙잡기, 육성 목표 1군 공급, 재정 기조 신중 | lights 우리 동네 아이들 |
     | 유스 명가 | 엘리트 선발, 철저한 경쟁 | 유소년 투자 엘리트 아카데미, 육성 목표 1군 공급, 데뷔 시점 빠른 데뷔, 영입 기조 유망주 발굴, 재계약 기조 젊은 선수 우선, 선호 학파 육성형, 감독 기조 육성가, 코치 기조 최고 수준 | 유스 파이프라인 with a developer or 70+ youth director |
     | 트레이딩 머신 | 데이터 스카우팅, 셀링 클럽, 철저한 경쟁 | 영입 기조 젊은 선수 위주, 육성 목표 판매용 육성, 데뷔 시점 빠른 데뷔, 재계약 기조 젊은 선수 우선 | lights 트레이딩 머신; 머니볼 with a spotter chief scout or a negotiator 단장 |
     | 상업 제국 | 광역 네트워크, 상업 확장, 스타 대우 | 해외 마케팅 해외 광고, 해외 투어 짧은 투어, 티켓 가격 비싸게, 재정 기조 적극 | 상업 제국 with 해외 마케팅 4+ and a stadium of 30,000+ |
@@ -201,6 +201,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r35 261015 ECON-22✎ preset 동네의 자부심→유스 순혈주의
 - r34 261014 ECON-29✎ measured on rules 1.21.0→1.22.0 (the 단장, the shortlist and the manager's requests): wage bill 41.4→41.3%, operating result +2.4→+1.3%, 2000s mix 45.4/31.7/22.9→45.4/32.0/22.6%, 1950s matchday 84.8→83.2%, ladder 94.1→91.4, bankrupt none→1 of 40 (ESP 기본 방향 seed 4, 1971)
 - r33 261014 ECON-22✎ 트레이딩 머신 lights 머니볼 with a negotiator scout→a negotiator 단장 (→STAFF-20)
 - r32 261014 ECON-29✎ measured on rules 1.17.0 with default rows→rules 1.21.0 after the whole direction plan: wage bill 44.8%→41.4% (below the band), operating result +3.5%→+2.4%, 2000s mix 43.6/32.9/23.5→45.4/31.7/22.9%, 1950s matchday 88.5→84.8%, ladder 93.9→94.1, none of 40 bankrupt; delegated staff never buy→sign by CLUB-33
