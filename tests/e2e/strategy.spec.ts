@@ -85,7 +85,8 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await expect(board.getByRole('region', { name: '운영 다이얼' })).toHaveCount(0);
   await expect(board.getByRole('radiogroup', { name: '훈련 방향' })).toHaveCount(0);
 
-  // A preset and a dial step make one draft; the pinned bar states what it lights and costs.
+  // A preset drafts every row it fills (→ECON-25) and a dial step joins the same draft; the
+  // pinned bar states what it lights and costs.
   await board.getByRole('button', { name: /동네의 자부심/ }).click();
   const draft = board.getByTestId('strategy-draft');
   await expect(draft).toContainText('적용하면');
@@ -104,7 +105,9 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await expect(draft).toContainText('선수단 투자 표준 → 후한 지원');
   await expect(draft).toContainText('라운드마다');
   await expect(draft).toContainText('시즌 말 예상 자금');
-  await expect(draft).toContainText('7건 변경');
+  // Six cards, two investment rows, the ticket, three direction rows, and the dial.
+  await expect(draft).toContainText('13건 변경');
+  await expect(draft).toContainText('재계약 기조 표준 → 모두 붙잡기');
   // A draft is not in force until 적용.
   await expect(generous).toHaveAttribute('aria-checked', 'false');
   await expect(board.getByTestId('current-strategy')).toHaveText('기본 방향');
@@ -132,11 +135,13 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await draft.getByRole('button', { name: '적용', exact: true }).click();
   await expect(draft).toHaveCount(0);
   await expect(board.getByTestId('current-strategy')).toHaveText('트레이딩 머신');
-  // And back again.
+  // And back again: a preset returns every row it does not name to its default, so the squad
+  // investment set by hand goes back to 표준.
   await board.getByRole('button', { name: /동네의 자부심/ }).click();
   await draft.getByRole('button', { name: '적용', exact: true }).click();
   await expect(draft).toHaveCount(0);
   await expect(board.getByTestId('current-strategy')).toHaveText('동네의 자부심');
+  await expect(generous).toHaveAttribute('aria-checked', 'false');
 
   // The strategy in force is saved to the device library under the owner's name.
   await board.getByRole('button', { name: '지금 방향 저장' }).click();
@@ -163,9 +168,24 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   // at once like any other.
   await board.getByRole('button', { name: '＋ 방향 만들기' }).click();
   const composer = page.getByRole('dialog', { name: '방향 만들기' });
-  await expect(composer.locator('[data-slot]')).toHaveCount(6);
-  for (const slot of await composer.locator('[data-slot]').all())
-    await expect(slot.getByRole('radio')).toHaveCount(5);
+  // Every area with all its rows (→WEB-61), starting from the direction in force.
+  await expect(composer.locator('fieldset[data-area]')).toHaveCount(8);
+  for (const slot of [
+    '유입 방식',
+    '스카우팅',
+    '매각 기조',
+    '수익 모델',
+    '지역 관계 방식',
+    '라커룸 문화',
+  ])
+    await expect(
+      composer.getByRole('radiogroup', { name: slot, exact: true }).getByRole('radio'),
+    ).toHaveCount(5);
+  await expect(composer.getByRole('radio', { name: '재계약 기조 모두 붙잡기' })).toHaveAttribute(
+    'aria-checked',
+    'true',
+  );
+  await expect(composer.getByRole('radiogroup', { name: '재정 기조', exact: true })).toBeVisible();
   await composer.getByRole('radio', { name: '유입 방식 엘리트 선발' }).click();
   await composer.getByLabel('방향 이름').fill('젊은 피');
   await composer.getByRole('button', { name: '이 방향으로 적용' }).click();
@@ -181,7 +201,10 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await page.reload();
   await expect(board.getByTestId('current-strategy')).toHaveText('동네의 자부심');
   await squad.locator('button[aria-controls^="board-area-body-"]').click();
-  await expect(generous).toHaveAttribute('aria-checked', 'true');
+  await expect(squad.getByRole('radio', { name: '선수단 투자 표준', exact: true })).toHaveAttribute(
+    'aria-checked',
+    'true',
+  );
   await mine.getByRole('button', { name: '우리 동네 축구 편집' }).click();
   const editor = page.getByRole('dialog', { name: '방향 편집' });
   await editor.getByLabel('방향 이름').fill('동네 축구 2');

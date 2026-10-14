@@ -92,4 +92,46 @@ describe('device strategy library', () => {
       { id: 'brand', name: '해외 브랜드', build: { revenue: 'commercial' } },
     ]);
   });
+
+  it('keeps every row of a saved direction and loads older entries with cards only', () => {
+    const storage = memory();
+    const library = new StrategyLibrary(storage, () => '2026-10-14T00:00:00Z');
+    const rows = {
+      policy: { academy: 4, recruitment: 1 },
+      ticket: 0.035,
+      direction: { debut: 'early', coaches: 'elite' },
+    };
+    const saved = library.save({ name: '유스 방식', build: { youth: 'elite' }, rows });
+    expect(saved.rows).toEqual(rows);
+    expect(new StrategyLibrary(storage).list()[0].rows).toEqual(rows);
+    // Malformed rows are refused on save and dropped (cards kept) on load.
+    expect(() =>
+      library.save({ name: '이상한 방식', build: {}, rows: { policy: { academy: 9 } } }),
+    ).toThrow('방향 줄');
+    const raw = JSON.parse(storage.getItem(STRATEGIES_KEY)!);
+    raw.items.push(
+      {
+        id: 'old',
+        name: '옛 방식',
+        build: { culture: 'family' },
+        createdAt: '2026-10-12T00:00:00Z',
+        updatedAt: '2026-10-12T00:00:00Z',
+      },
+      {
+        id: 'broken',
+        name: '깨진 줄',
+        build: { culture: 'stars' },
+        rows: { ticket: 9 },
+        createdAt: '2026-10-12T00:00:00Z',
+        updatedAt: '2026-10-12T00:00:00Z',
+      },
+    );
+    storage.setItem(STRATEGIES_KEY, JSON.stringify(raw));
+    const items = new StrategyLibrary(storage).list();
+    expect(items.find((item) => item.id === 'old')).not.toHaveProperty('rows');
+    expect(items.find((item) => item.id === 'broken')).toMatchObject({
+      build: { culture: 'stars' },
+    });
+    expect(items.find((item) => item.id === 'broken')).not.toHaveProperty('rows');
+  });
 });

@@ -10,13 +10,11 @@ import {
   BUILD_SLOT_INFO,
   buildEffects,
   buildOf,
-  buildPreset,
   buildTitleName,
   cardLines,
   cardOf,
   composeBuild,
   effectLines,
-  sameBuild,
   type BuildCard,
 } from '../../../../packages/engine/src/build';
 import { delegated } from '../../../../packages/engine/src/intervention';
@@ -25,7 +23,7 @@ import { academyIntakeOutlook } from '../../../../packages/engine/src/academy';
 import { careOffer } from '../../../../packages/engine/src/care';
 import { INCOMING_BID_CHANCE } from '../../../../packages/engine/src/transfers';
 import { policyOf } from '../../../../packages/engine/src/policy';
-import type { SavedStrategy } from '../adapters/profile';
+import type { SavedRows, SavedStrategy } from '../adapters/profile';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import {
@@ -61,7 +59,8 @@ import { useBoardRequest } from './state';
 import { Lines, StrategyComposer } from './StrategyComposer';
 import { areaOf, DIRECTION_AREAS, isDirectionRow, type AreaKey } from './areas';
 import { DIRECTION_INFO, directionOf } from '../../../../packages/engine/src/direction';
-import { strategyName, useStrategies } from './strategies';
+import { boardRows, savedMatches, savedRows, strategyName, useStrategies } from './strategies';
+import { presetBoard, sameBoard, worldBoard } from '../../../../packages/engine/src/presets';
 import s from './StrategyBoard.module.css';
 import a from './App.module.css';
 
@@ -110,6 +109,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
     id?: string;
     name: string;
     build: ClubBuild;
+    rows?: SavedRows;
     title?: string;
   }>();
   const [removing, setRemoving] = useState<SavedStrategy>();
@@ -155,17 +155,21 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
   // The history names what was applied; a preset or saved match reads better when there is one.
   const last = w.events.findLast((event) => event.kind === 'build'),
     applied = last && buildTitleName(last.title);
+  // Names read whole boards (→ECON-25): a preset or a saved direction is in force only when every
+  // row it fills is.
+  const currentBoard = worldBoard(w),
+    draftBoard = worldBoard(draftWorld(w, draft));
   const currentName =
-    strategyName(current, saved) === '맞춤 방향' && applied
+    strategyName(currentBoard, saved) === '맞춤 방향' && applied
       ? applied
-      : strategyName(current, saved);
+      : strategyName(currentBoard, saved);
   const draftName = cards.length
-    ? (draft.name ?? strategyName(draftBuild, saved))
+    ? (draft.name ?? strategyName(draftBoard, saved))
     : `줄 ${dials.length + rows.length}개`;
-  // The strategy in force can join the library unless it is standard or already there.
+  // The direction in force can join the library unless it is 기본 방향 or already there.
   const savable =
-    BUILD_SLOTS.some((slot) => current[slot]) &&
-    !saved.some((item) => sameBuild(item.build, current));
+    !sameBoard(currentBoard, presetBoard({ build: {}, rows: {} })) &&
+    !saved.some((item) => savedMatches(item, currentBoard));
 
   // Synergies and odds follow the draft, so the owner sees what it would do before it counts.
   const preview = changed ? draftWorld(w, draft) : w;
@@ -270,7 +274,8 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
         <div className={s.presets}>
           {BUILD_PRESETS.map((preset) => {
             const lines = effectLines(composeBuild(preset.build));
-            const drafted = cards.length > 0 && sameBuild(preset.build, draftBuild);
+            const board = presetBoard(preset),
+              drafted = changed && sameBoard(board, draftBoard);
             return (
               <button
                 key={preset.id}
@@ -280,15 +285,14 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
                 disabled={blocked}
                 onClick={() =>
                   setDraft(
-                    drafted
-                      ? withStrategy(w, draft, current)
-                      : withStrategy(w, draft, preset.build, preset.label),
+                    // Tapping the drafted preset again clears the draft.
+                    drafted ? {} : withStrategy(w, draft, preset.build, preset.label, preset.rows),
                   )
                 }
               >
                 <span className={s.presetHead}>
                   <b>{preset.label}</b>
-                  {sameBuild(preset.build, current) && <em>지금 방향</em>}
+                  {sameBoard(board, currentBoard) && <em>지금 방향</em>}
                 </span>
                 <small>{preset.model}</small>
                 <Lines {...lines} limit={2} />
@@ -306,7 +310,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
         {saved.length ? (
           <ul className={s.saved}>
             {saved.map((item) => {
-              const drafted = cards.length > 0 && sameBuild(item.build, draftBuild);
+              const drafted = changed && savedMatches(item, draftBoard);
               return (
                 <li key={item.id} className={drafted ? s.presetOn : ''}>
                   <button
@@ -317,14 +321,20 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
                     onClick={() =>
                       setDraft(
                         drafted
-                          ? withStrategy(w, draft, current)
-                          : withStrategy(w, draft, item.build, item.name),
+                          ? {}
+                          : withStrategy(
+                              w,
+                              draft,
+                              item.build,
+                              item.name,
+                              item.rows && savedRows(item.rows),
+                            ),
                       )
                     }
                   >
                     <span className={s.presetHead}>
                       <b>{item.name}</b>
-                      {sameBuild(item.build, current) && <em>지금 방향</em>}
+                      {savedMatches(item, currentBoard) && <em>지금 방향</em>}
                     </span>
                     <small>{cardSummary(item.build)}</small>
                   </button>
@@ -333,7 +343,12 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
                       type="button"
                       aria-label={`${item.name} 편집`}
                       onClick={() =>
-                        setComposer({ id: item.id, name: item.name, build: item.build })
+                        setComposer({
+                          id: item.id,
+                          name: item.name,
+                          build: item.build,
+                          rows: item.rows,
+                        })
                       }
                     >
                       편집
@@ -359,7 +374,9 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
           <button
             type="button"
             className={s.make}
-            onClick={() => setComposer({ name: '', build: draftBuild })}
+            onClick={() =>
+              setComposer({ name: '', build: draftBuild, rows: boardRows(draftBoard) })
+            }
           >
             ＋ 방향 만들기
           </button>
@@ -369,8 +386,13 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
               className={s.make}
               onClick={() =>
                 setComposer({
-                  name: buildPreset(current) || currentName === '맞춤 방향' ? '' : currentName,
+                  name:
+                    BUILD_PRESETS.some((preset) => sameBoard(presetBoard(preset), currentBoard)) ||
+                    currentName === '맞춤 방향'
+                      ? ''
+                      : currentName,
                   build: current,
+                  rows: boardRows(currentBoard),
                   title: '지금 방향 저장',
                 })
               }
@@ -662,7 +684,9 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
           onSaved={() => setComposer(undefined)}
           onApply={(item) => {
             setComposer(undefined);
-            setDraft(withStrategy(w, draft, item.build, item.name));
+            setDraft(
+              withStrategy(w, draft, item.build, item.name, item.rows && savedRows(item.rows)),
+            );
           }}
         />
       )}

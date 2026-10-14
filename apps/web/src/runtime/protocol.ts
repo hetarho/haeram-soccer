@@ -133,7 +133,7 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('renew-manager'), term: term.optional() }),
   z.object({
     type: z.literal('direction'),
-    key: z.enum(['renewal', 'school', 'manager', 'coaches', 'finance']),
+    key: z.enum(['renewal', 'school', 'manager', 'coaches', 'finance', 'youthGoal', 'debut']),
     option: z.string().min(1).max(40),
   }),
   z.object({
@@ -186,6 +186,7 @@ export const requestSchema = z.object({
         color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
         seed: z.string().max(80),
         difficulty: z.union([z.literal(0.5), z.literal(1), z.literal(2)]),
+        preset: z.string().min(1).max(40).optional(),
       }),
     }),
     z.object({ type: z.literal('command'), command }),

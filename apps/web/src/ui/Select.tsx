@@ -18,8 +18,17 @@ type Declaration = {
   children?: ReactNode;
   disabled?: boolean;
   label?: string;
+  /** A second line shown under the option in the list only, never in the trigger. */
+  'data-hint'?: string;
 };
-type Choice = { value: string; label: ReactNode; text: string; disabled?: boolean; group?: string };
+type Choice = {
+  value: string;
+  label: ReactNode;
+  text: string;
+  disabled?: boolean;
+  group?: string;
+  hint?: string;
+};
 function textOf(children: ReactNode): string {
   return Children.toArray(children)
     .map((child) =>
@@ -38,6 +47,7 @@ function choicesOf(children: ReactNode, group?: string): Choice[] {
           text: textOf(child.props.children),
           disabled: child.props.disabled,
           group,
+          hint: child.props['data-hint'],
         },
       ];
     return choicesOf(child.props.children, child.type === 'optgroup' ? child.props.label : group);
@@ -308,7 +318,10 @@ export function Select({
                   choose(choice);
                 }}
               >
-                <span>{choice.label}</span>
+                <span className={choice.hint ? s.hinted : undefined}>
+                  {choice.label}
+                  {choice.hint && <small>{choice.hint}</small>}
+                </span>
                 {choice.value === String(value) && (
                   <span className={s.check}>
                     <svg

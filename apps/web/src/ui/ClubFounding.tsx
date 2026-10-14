@@ -1,4 +1,5 @@
 import { FOUNDING_YEAR } from '../../../../packages/engine/src/world';
+import { BUILD_PRESETS } from '../../../../packages/engine/src/preset-data';
 import { Select } from './Select';
 import { useState, type FormEvent } from 'react';
 import type { CountryCode } from '../../../../packages/contracts/src/types';
@@ -27,12 +28,24 @@ export function ClubFounding({
     [name, setName] = useState('Haeram Athletic'),
     [difficulty, setDifficulty] = useState(2),
     [color, setColor] = useState('#bf7956'),
-    [seed, setSeed] = useState(() => crypto.randomUUID().slice(0, 18));
+    [seed, setSeed] = useState(() => crypto.randomUUID().slice(0, 18)),
+    // 기본 방향 shows selected; a preset founds the club with its whole direction (→WEB-15).
+    [preset, setPreset] = useState('default');
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (!name.trim()) return;
     void client
-      .found({ country: code, name: name.trim(), difficulty, color, seed }, replace)
+      .found(
+        {
+          country: code,
+          name: name.trim(),
+          difficulty,
+          color,
+          seed,
+          ...(preset !== 'default' ? { preset } : {}),
+        },
+        replace,
+      )
       .then((reply) => {
         if (reply?.ok) onDone?.();
       });
@@ -65,16 +78,38 @@ export function ClubFounding({
         </span>
       </div>
       <form onSubmit={submit}>
-        <label>
-          클럽 이름
-          <input
-            required
-            maxLength={60}
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            autoComplete="off"
-          />
-        </label>
+        <div className={s.pair}>
+          <label>
+            클럽 이름
+            <input
+              required
+              maxLength={60}
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              autoComplete="off"
+            />
+          </label>
+          <label>
+            구단 방향
+            <Select
+              aria-label="구단 방향"
+              value={preset}
+              onValueChange={(value) => setPreset(value)}
+            >
+              <option
+                value="default"
+                data-hint="모든 줄이 표준 · 창단 뒤 방향 탭에서 언제든 바꿔요"
+              >
+                기본 방향
+              </option>
+              {BUILD_PRESETS.map((item) => (
+                <option key={item.id} value={item.id} data-hint={`${item.model} · ${item.summary}`}>
+                  {item.label}
+                </option>
+              ))}
+            </Select>
+          </label>
+        </div>
         <label>
           창단 국가
           <Select

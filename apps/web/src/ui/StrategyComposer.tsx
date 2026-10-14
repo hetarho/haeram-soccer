@@ -1,5 +1,5 @@
 import { useRef, useState, type FormEvent } from 'react';
-import type { World } from '../../../../packages/contracts/src/types';
+import type { PolicyLevel, World } from '../../../../packages/contracts/src/types';
 import {
   BUILD_OPTIONS,
   STRATEGY_NAME_LIMIT,
@@ -15,11 +15,19 @@ import {
   type BuildCard,
 } from '../../../../packages/engine/src/build';
 import { synergyStates } from '../../../../packages/engine/src/synergy';
-import type { SavedStrategy } from '../adapters/profile';
+import type { SavedRows, SavedStrategy } from '../adapters/profile';
 import { Dialog } from './Dialog';
 import { DirectionRow } from './DirectionRow';
-import { DIRECTION_AREAS } from './areas';
-import { useStrategies } from './strategies';
+import { DIRECTION_AREAS, isDirectionRow, type RowKey } from './areas';
+import { DIRECTION_DEFAULT, DIRECTION_INFO } from '../../../../packages/engine/src/direction';
+import {
+  presetBoard,
+  worldBoard,
+  type DirectionBoard,
+} from '../../../../packages/engine/src/presets';
+import { dialInfo } from './PolicyBoard';
+import { TICKET_LEVELS } from './ticketLevels';
+import { boardRows, savedRows, useStrategies } from './strategies';
 import s from './StrategyBoard.module.css';
 import a from './App.module.css';
 
@@ -44,9 +52,10 @@ export function Lines({ pros, cons, limit }: { pros: string[]; cons: string[]; l
 }
 
 /**
- * 방향 만들기 (→WEB-61): six areas of cards, the combined effects and the synergies they
- * light, a name, and save to this device's library. 이 방향으로 적용 saves it too and puts it on
- * the board as a draft; only the board's 적용 changes the club.
+ * 방향 만들기 (→WEB-61): every area with its rows, starting from the direction in force or the
+ * entry being edited, the combined effects and the synergies they light, a name, and save to this
+ * device's library. 이 방향으로 적용 saves it too and puts it on the board as a draft; only the
+ * board's 적용 changes the club.
  */
 export function StrategyComposer({
   w,
@@ -57,7 +66,7 @@ export function StrategyComposer({
   onApply,
 }: {
   w: World;
-  initial: { id?: string; name: string; build: ClubBuild };
+  initial: { id?: string; name: string; build: ClubBuild; rows?: SavedRows };
   /** The sheet's name; an edit reads 방향 편집 and a new one 방향 만들기. */
   title?: string;
   onClose: () => void;
@@ -66,21 +75,36 @@ export function StrategyComposer({
 }) {
   const save = useStrategies((state) => state.save);
   const [name, setName] = useState(initial.name);
-  const [build, setBuild] = useState<ClubBuild>(initial.build);
+  // An entry saved before directions kept rows starts from the rows in force.
+  const [board, setBoard] = useState<DirectionBoard>(() =>
+    initial.rows
+      ? presetBoard({ build: initial.build, rows: savedRows(initial.rows) })
+      : { ...worldBoard(w), build: initial.build },
+  );
   const [error, setError] = useState('');
   const pick = (slot: BuildSlot, option?: string) => {
-    const next: ClubBuild = { ...build };
-    if (option) (next as Record<string, string>)[slot] = option;
-    else delete next[slot];
-    setBuild(next);
+    const build: ClubBuild = { ...board.build };
+    if (option) (build as Record<string, string>)[slot] = option;
+    else delete build[slot];
+    setBoard({ ...board, build });
   };
-  const lit = synergyStates({ ...w, build }).filter((synergy) => synergy.active);
+  const pickRow = (row: RowKey, index: number) => {
+    if (isDirectionRow(row)) {
+      const option = DIRECTION_INFO[row].options[index].id,
+        direction = { ...board.direction };
+      if (option === DIRECTION_DEFAULT[row]) delete direction[row];
+      else (direction as Record<string, string>)[row] = option;
+      setBoard({ ...board, direction });
+    } else if (row === 'ticket') setBoard({ ...board, ticket: TICKET_LEVELS[index].price });
+    else setBoard({ ...board, policy: { ...board.policy, [row]: (index + 1) as PolicyLevel } });
+  };
+  const lit = synergyStates({ ...w, ...board }).filter((synergy) => synergy.active);
   // Both actions save to the library first; a name is required either way.
   const apply = useRef(false);
   const submit = (event?: FormEvent) => {
     event?.preventDefault();
     try {
-      const saved = save({ id: initial.id, name, build });
+      const saved = save({ id: initial.id, name, build: board.build, rows: boardRows(board) });
       if (apply.current) onApply(saved);
       else onSaved(saved);
     } catch (failure) {
@@ -127,17 +151,12 @@ export function StrategyComposer({
         </label>
         <p className={s.neutral}>
           저장한 방향은 이 기기의 모든 게임에서 고를 수 있어요. 이 방향으로 적용을 누르면 방향
-          보드의 초안에 올라가고, 보드에서 적용하면 바로 반영돼요. 투자 줄은 보드에서 따로 정해요.
+          보드의 초안에 올라가고, 보드에서 적용하면 바로 반영돼요.
         </p>
         {DIRECTION_AREAS.map((area) => {
-          if (!area.card) return null;
-          const slot = area.card,
-            info = BUILD_SLOT_INFO[slot],
-            chosen = build[slot],
-            card: BuildCard = cardOf(build, slot),
-            options: (string | undefined)[] = [undefined, ...BUILD_OPTIONS[slot]];
+          const slot = area.card;
           return (
-            <fieldset key={slot} className={s.domain} data-slot={slot}>
+            <fieldset key={area.key} className={s.domain} data-area={area.key}>
               <legend className={s.domainHead}>
                 <span className={s.domainIcon} aria-hidden="true">
                   {area.icon}
@@ -147,20 +166,10 @@ export function StrategyComposer({
                   <small>{area.question}</small>
                 </span>
               </legend>
-              <DirectionRow
-                row={slot}
-                label={info.label}
-                question={info.question === area.question ? undefined : info.question}
-                options={options.map((option) => cardOf({ [slot]: option }, slot).label)}
-                inForce={options.indexOf(chosen)}
-                detail={
-                  <>
-                    <p className={s.model}>{card.model}</p>
-                    <Lines {...cardLines(card)} />
-                  </>
-                }
-                onPick={(index) => pick(slot, options[index])}
-              />
+              {slot && <CardRow slot={slot} area={area.question} build={board.build} pick={pick} />}
+              {area.rows.map((row) => (
+                <RowChoice key={row} w={w} row={row} board={board} onPick={pickRow} />
+              ))}
             </fieldset>
           );
         })}
@@ -173,7 +182,7 @@ export function StrategyComposer({
                 : '발동 시너지 없음'}
             </b>
           </div>
-          <Lines {...effectLines(composeBuild(build))} />
+          <Lines {...effectLines(composeBuild(board.build))} />
         </article>
         {error && (
           <p className={s.error} role="alert">
@@ -182,5 +191,80 @@ export function StrategyComposer({
         )}
       </form>
     </Dialog>
+  );
+}
+
+/** One card row of the composer (→WEB-61), drawn like the board's. */
+function CardRow({
+  slot,
+  area,
+  build,
+  pick,
+}: {
+  slot: BuildSlot;
+  area: string;
+  build: ClubBuild;
+  pick: (slot: BuildSlot, option?: string) => void;
+}) {
+  const info = BUILD_SLOT_INFO[slot],
+    card: BuildCard = cardOf(build, slot),
+    options: (string | undefined)[] = [undefined, ...BUILD_OPTIONS[slot]];
+  return (
+    <DirectionRow
+      row={slot}
+      label={info.label}
+      question={info.question === area ? undefined : info.question}
+      options={options.map((option) => cardOf({ [slot]: option }, slot).label)}
+      inForce={options.indexOf(build[slot])}
+      detail={
+        <>
+          <p className={s.model}>{card.model}</p>
+          <Lines {...cardLines(card)} />
+        </>
+      }
+      onPick={(index) => pick(slot, options[index])}
+    />
+  );
+}
+
+/** One dial or direction row of the composer, its option in the board being composed. */
+function RowChoice({
+  w,
+  row,
+  board,
+  onPick,
+}: {
+  w: World;
+  row: RowKey;
+  board: DirectionBoard;
+  onPick: (row: RowKey, index: number) => void;
+}) {
+  if (isDirectionRow(row)) {
+    const info = DIRECTION_INFO[row],
+      chosen = board.direction[row] ?? DIRECTION_DEFAULT[row],
+      inForce = info.options.findIndex((option) => option.id === chosen);
+    return (
+      <DirectionRow
+        row={row}
+        label={info.label}
+        question={info.question}
+        options={info.options.map((option) => option.name)}
+        inForce={inForce}
+        detail={<p>{info.options[inForce].summary}</p>}
+        onPick={(index) => onPick(row, index)}
+      />
+    );
+  }
+  const dial = dialInfo({ ...w, policy: board.policy, ticket: board.ticket }, row);
+  return (
+    <DirectionRow
+      row={row}
+      label={dial.label}
+      question={dial.question}
+      options={dial.levels.map((level) => level.name)}
+      inForce={dial.current}
+      detail={dial.current >= 0 && <p>{dial.levels[dial.current].summary}</p>}
+      onPick={(index) => onPick(row, index)}
+    />
   );
 }

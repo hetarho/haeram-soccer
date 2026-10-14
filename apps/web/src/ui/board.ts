@@ -13,7 +13,8 @@ import {
   type BuildSlot,
   type ClubBuild,
 } from '../../../../packages/contracts/src/build';
-import { buildOf, cardOf, sameBuild } from '../../../../packages/engine/src/build';
+import { buildOf, cardOf, sameBuild, type PresetRows } from '../../../../packages/engine/src/build';
+import { presetBoard } from '../../../../packages/engine/src/presets';
 import {
   POLICY_INFO,
   POLICY_KEYS,
@@ -165,9 +166,26 @@ export function withCard(w: World, d: BoardDraft, slot: BuildSlot, card?: string
   else delete build[slot];
   return tidy(w, { ...d, build, name: undefined });
 }
-/** A preset or saved strategy tapped: all six cards at once, with its name. */
-export function withStrategy(w: World, d: BoardDraft, build: ClubBuild, name?: string) {
-  return tidy(w, { ...d, build, name: sameBuild(build, buildOf(w)) ? undefined : name });
+/**
+ * A preset or saved direction tapped, with its name: its cards, and with `rows` its whole board
+ * (→ECON-25); an entry saved before it kept rows drafts its cards only.
+ */
+export function withStrategy(
+  w: World,
+  d: BoardDraft,
+  build: ClubBuild,
+  name?: string,
+  rows?: PresetRows,
+) {
+  const cards = { ...d, build, name: sameBuild(build, buildOf(w)) ? undefined : name };
+  if (!rows) return tidy(w, cards);
+  // A preset or a saved direction with rows fills every row (→ECON-25): the rows it names, and
+  // every other row at its default.
+  const board = presetBoard({ build, rows });
+  const direction = Object.fromEntries(
+    DIRECTION_KEYS.map((key) => [key, board.direction[key] ?? DIRECTION_DEFAULT[key]]),
+  );
+  return tidy(w, { ...cards, policy: board.policy, ticket: board.ticket, direction });
 }
 /** A dial step tapped; the level in force takes the dial out of the draft. */
 export function withPolicy(w: World, d: BoardDraft, key: PolicyKey, level: PolicyLevel) {

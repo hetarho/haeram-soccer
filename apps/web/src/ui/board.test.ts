@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createWorld, operate } from '../../../../packages/engine/src/index';
 import { BUILD_PRESETS } from '../../../../packages/engine/src/build';
+import { matchingPreset } from '../../../../packages/engine/src/presets';
 import { financeProjection } from '../../../../packages/engine/src/projection';
 import { policyOf } from '../../../../packages/engine/src/policy';
 import {
@@ -73,6 +74,35 @@ describe('operating board draft', () => {
     expect(w.build).toEqual(BUILD_PRESETS.find((p) => p.id === 'trading')!.build);
     for (const command of draftCommands(w, withCard(w, {}, 'youth', undefined))) send(w, command);
     expect(w.build?.youth).toBeUndefined();
+  });
+
+  it('a preset drafts its whole board; a saved entry without rows drafts only its cards', () => {
+    const w = world();
+    const youth = BUILD_PRESETS.find((p) => p.id === 'youth-academy')!;
+    const draft = withStrategy(w, {}, youth.build, youth.label, youth.rows);
+    // Two cards, the academy and recruitment dials and six direction rows differ from a new club.
+    expect(draftChanges(w, draft).map((change) => change.kind)).toEqual([
+      'card',
+      'card',
+      'policy',
+      'policy',
+      ...Array(6).fill('direction'),
+    ]);
+    for (const command of draftCommands(w, draft)) send(w, command);
+    expect(matchingPreset(w)?.id).toBe('youth-academy');
+    // Another preset returns every row it does not name to its default.
+    const trading = BUILD_PRESETS.find((p) => p.id === 'trading')!;
+    for (const command of draftCommands(
+      w,
+      withStrategy(w, {}, trading.build, trading.label, trading.rows),
+    ))
+      send(w, command);
+    expect(matchingPreset(w)?.id).toBe('trading');
+    expect(policyOf(w).academy).toBe(1);
+    expect(w.direction?.coaches).toBeUndefined();
+    // Cards only: the rows in force stay.
+    const cardsOnly = withStrategy(w, {}, localPride.build, '옛 방향');
+    expect(draftChanges(w, cardsOnly).every((change) => change.kind === 'card')).toBe(true);
   });
 
   it('a remedy request becomes a one-dial draft', () => {

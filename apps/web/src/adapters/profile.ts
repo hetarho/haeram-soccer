@@ -59,12 +59,47 @@ export function deviceOwner(storage: StoragePort): Owner {
   return { kind: 'device', id };
 }
 
+/**
+ * The rows a saved direction keeps beyond its cards (→SAVE-15): dials, the ticket price and the
+ * direction rows. Entries saved before directions kept rows have none and apply their cards only.
+ */
+export interface SavedRows {
+  policy?: Partial<Record<string, number>>;
+  ticket?: number;
+  direction?: Partial<Record<string, string>>;
+}
 export interface SavedStrategy {
   id: string;
   name: string;
   build: ClubBuild;
+  rows?: SavedRows;
   createdAt: string;
   updatedAt: string;
+}
+/**
+ * Rows of a known shape, or undefined: dials as whole levels 1–5, a ticket price of 0.01–0.5 and
+ * direction options as short names; the engine refuses an option it does not know when applied.
+ */
+export function strategyRows(value: unknown): SavedRows | undefined {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+  const { policy, ticket, direction, ...rest } = value as Record<string, unknown>;
+  if (Object.keys(rest).length) return undefined;
+  const record = (input: unknown, fits: (item: unknown) => boolean) =>
+    input === undefined ||
+    (!!input &&
+      typeof input === 'object' &&
+      !Array.isArray(input) &&
+      Object.entries(input).every(([key, item]) => key.length <= 30 && fits(item)));
+  const level = (item: unknown) =>
+    Number.isInteger(item) && (item as number) >= 1 && (item as number) <= 5;
+  if (!record(policy, level) || !record(direction, (item) => text(item, 30))) return undefined;
+  if (ticket !== undefined && (typeof ticket !== 'number' || ticket < 0.01 || ticket > 0.5))
+    return undefined;
+  return {
+    ...(policy ? { policy: policy as SavedRows['policy'] } : {}),
+    ...(ticket !== undefined ? { ticket } : {}),
+    ...(direction ? { direction: direction as SavedRows['direction'] } : {}),
+  };
 }
 /**
  * Cards that left (→ECON-22): a saved direction holding one loads without it instead of being
@@ -82,13 +117,22 @@ function strategyOf(value: unknown): SavedStrategy | undefined {
   const item = value as Partial<SavedStrategy> | null;
   if (!item || typeof item !== 'object') return undefined;
   const build = strategyBuild(withoutLeftCards(item.build));
+  // Malformed rows drop the rows and keep the cards.
+  const rows = item.rows === undefined ? undefined : strategyRows(item.rows);
   return build &&
     text(item.id, 100) &&
     text(item.name, STRATEGY_NAME_LIMIT) &&
     item.name.trim() === item.name &&
     text(item.createdAt, 40) &&
     text(item.updatedAt, 40)
-    ? { id: item.id, name: item.name, build, createdAt: item.createdAt, updatedAt: item.updatedAt }
+    ? {
+        id: item.id,
+        name: item.name,
+        build,
+        ...(rows ? { rows } : {}),
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+      }
     : undefined;
 }
 
@@ -127,13 +171,15 @@ export class StrategyLibrary {
     return this.read().items.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   }
   /** Adds a strategy, or replaces the one with `id`; names stay unique on this device. */
-  save(input: { id?: string; name: string; build: ClubBuild }): SavedStrategy {
+  save(input: { id?: string; name: string; build: ClubBuild; rows?: SavedRows }): SavedStrategy {
     const name = input.name.trim();
     if (!name) throw new Error('방향 이름을 적어 주세요.');
     if (name.length > STRATEGY_NAME_LIMIT)
       throw new Error(`방향 이름은 ${STRATEGY_NAME_LIMIT}자까지예요.`);
     const build = strategyBuild(input.build);
     if (!build) throw new Error('알 수 없는 방향 카드가 있어요.');
+    const rows = input.rows === undefined ? undefined : strategyRows(input.rows);
+    if (input.rows !== undefined && !rows) throw new Error('알 수 없는 방향 줄이 있어요.');
     const { owner, items } = this.read();
     const existing = input.id ? items.find((item) => item.id === input.id) : undefined;
     if (items.some((item) => item.id !== existing?.id && item.name === name))
@@ -147,6 +193,7 @@ export class StrategyLibrary {
       id: existing?.id ?? crypto.randomUUID(),
       name,
       build,
+      ...(rows ? { rows } : {}),
       createdAt: existing?.createdAt ?? time,
       updatedAt: time,
     };

@@ -5,8 +5,9 @@ import {
   type BuildSlot,
   type ClubBuild,
 } from '../../contracts/src/build';
-import type { ClubPolicy, Direction, World } from '../../contracts/src/types';
+import type { World } from '../../contracts/src/types';
 import { addEvent } from './world';
+import { BUILD_PRESETS } from './preset-data';
 
 /** Everything the club build changes, as additions or multipliers (→ECON-22). */
 export interface BuildEffects {
@@ -251,137 +252,8 @@ export const BUILD_CARDS: {
   },
 };
 
-/**
- * The rows a preset sets beyond its cards (→ECON-22): policy levels, the ticket price and direction
- * rows; every row it does not name returns to its default when the preset is applied (→ECON-25).
- */
-export interface PresetRows {
-  policy?: Partial<ClubPolicy>;
-  ticket?: number;
-  direction?: Direction;
-}
-/**
- * Ready-made directions (→ECON-22), one tap to fill every row of the board. Each has one identity
- * and lights or aims at a synergy (→CLUB-21); the owner can still compose any other mix.
- */
-export const BUILD_PRESETS: {
-  id: string;
-  label: string;
-  model: string;
-  /** The synergy the preset lights at once or points toward, in the owner's terms. */
-  aim: string;
-  build: ClubBuild;
-  rows: PresetRows;
-}[] = [
-  {
-    id: 'local-pride',
-    label: '동네의 자부심',
-    model: '동네 아이들과 동네 관중으로 버티는 구단',
-    aim: '시너지 우리 동네 아이들 바로 발동',
-    build: {
-      youth: 'homegrown',
-      scouting: 'local',
-      market: 'hold',
-      revenue: 'members',
-      fans: 'community',
-      culture: 'family',
-    },
-    rows: {
-      policy: { localInvest: 3, grassroots: 3 },
-      ticket: 0.035,
-      direction: { renewal: 'keepAll', youthGoal: 'firstTeam', finance: 'careful' },
-    },
-  },
-  {
-    id: 'youth-academy',
-    label: '유스 명가',
-    model: '아카데미에 쏟아붓고 키운 아이들로 1군을 채워요',
-    aim: '육성형 또는 능력 70+ 유스 디렉터가 있으면 시너지 유스 파이프라인',
-    build: { youth: 'elite', culture: 'meritocracy' },
-    rows: {
-      policy: { academy: 4, recruitment: 1 },
-      direction: {
-        youthGoal: 'firstTeam',
-        debut: 'early',
-        renewal: 'youngFirst',
-        school: 'developer',
-        manager: 'developer',
-        coaches: 'elite',
-      },
-    },
-  },
-  {
-    id: 'trading',
-    label: '트레이딩 머신',
-    model: '지표로 찾고 1군에서 키워 비싸게 팔아요',
-    aim: '시너지 트레이딩 머신 바로 발동 · 발굴형 스카우트를 쓰면 머니볼까지',
-    build: { scouting: 'data', market: 'selling', culture: 'meritocracy' },
-    rows: {
-      policy: { recruitment: 2 },
-      direction: { youthGoal: 'sell', debut: 'early', renewal: 'youngFirst' },
-    },
-  },
-  {
-    id: 'commercial',
-    label: '상업 제국',
-    model: '브랜드로 벌어 스타를 데려와요',
-    aim: '해외 마케팅 4단계 · 3만 석 경기장을 채우면 시너지 상업 제국',
-    build: { scouting: 'network', revenue: 'commercial', culture: 'stars' },
-    rows: {
-      policy: { globalMarketing: 3, tour: 2 },
-      ticket: 0.08,
-      direction: { finance: 'bold' },
-    },
-  },
-  {
-    id: 'global',
-    label: '세계로',
-    model: '세계를 뒤져 숨은 재능을 찾고 보여 줘서 팔아요',
-    aim: '발굴가 또는 능력 65+ 수석 스카우트가 있으면 시너지 글로벌 스카우팅',
-    build: { youth: 'worldwide', scouting: 'network', market: 'showcase' },
-    rows: { policy: { globalScouting: 3, globalMarketing: 2, tour: 2, recruitment: 2 } },
-  },
-  {
-    id: 'ambition',
-    label: '승격 올인',
-    model: '구단주 돈과 홈 요새로 지금 올라가요',
-    aim: '유스 성장을 내주고 당장의 전력을 사요',
-    build: {
-      scouting: 'proven',
-      market: 'hold',
-      revenue: 'owner',
-      fans: 'fortress',
-      culture: 'veterans',
-    },
-    rows: {
-      policy: { support: 4, recruitment: 5 },
-      direction: {
-        renewal: 'coreOnly',
-        manager: 'proven',
-        youthGoal: 'minimal',
-        finance: 'aggressive',
-      },
-    },
-  },
-  {
-    id: 'shoestring',
-    label: '알뜰 생존',
-    model: '적은 돈으로 오래 버티는 작은 구단',
-    aim: '분위기를 지키며 선수 급여 ×0.91 · 작은 출발에 맞춰요',
-    build: {
-      youth: 'partnership',
-      scouting: 'local',
-      market: 'hardball',
-      revenue: 'frugal',
-      fans: 'families',
-      culture: 'veterans',
-    },
-    rows: {
-      policy: { support: 2 },
-      direction: { renewal: 'frugal', manager: 'cheap', coaches: 'cheap', finance: 'stable' },
-    },
-  },
-];
+export { BUILD_PRESETS, type PresetRows } from './preset-data';
+
 /** Every distinct build: each slot's cards plus its standard card. */
 export const BUILD_COMBINATIONS = BUILD_SLOTS.reduce(
   (count, slot) => count * (BUILD_OPTIONS[slot].length + 1),
