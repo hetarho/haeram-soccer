@@ -163,3 +163,12 @@
     font-size: 26px;
   }
 }
+
+/* A career of earlier rules: kept, exportable, never opened (→SAVE-16). */
+.earlier {
+  border-style: dashed;
+  opacity: 0.92;
+}
+.earlier em {
+  color: var(--warm);
+}

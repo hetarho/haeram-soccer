@@ -8,6 +8,8 @@ import { canonical, validateWorld, type World } from '../../../../packages/contr
 import { unbase64, pack, unpack } from './packing';
 import { denseBytes, denseText } from './dense';
 import {
+  earlierRulesMessage,
+  isEarlierEngine,
   PRIOR_CATALOG_HASHES,
   SUPPORTED_ENGINE_VERSIONS,
   SaveCompatibilityError,
@@ -79,7 +81,12 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
     );
   if (typeof e.engine !== 'string') throw new Error('저장 엔진 헤더가 올바르지 않습니다.');
   if (!SUPPORTED_ENGINE_VERSIONS.includes(e.engine))
-    throw new SaveCompatibilityError('지원하지 않는 저장 엔진 버전입니다. 원본 파일을 보관하세요.');
+    throw new SaveCompatibilityError(
+      isEarlierEngine(e.engine)
+        ? earlierRulesMessage(e.engine)
+        : '지원하지 않는 저장 엔진 버전입니다. 원본 파일을 보관하세요.',
+      e.engine,
+    );
   if (typeof e.catalog !== 'string') throw new Error('저장 카탈로그 헤더가 올바르지 않습니다.');
   // An older catalog is accepted by the fingerprint recorded with it (→SAVE-10); the pin moves to
   // the current catalog on writer activation, never while reading.

@@ -2,6 +2,8 @@ import type { Command, Founding, World } from '../../../../packages/contracts/sr
 import { SaveRepository } from '../adapters/repository';
 import { ACTIVE_SAVE_KEYS } from '../adapters/games';
 import {
+  envelopeEngine,
+  isEarlierEngine,
   SaveCompatibilityError,
   isSaveCompatibilityError,
   type SAVE_COMPATIBILITY_CODE,
@@ -546,6 +548,16 @@ export class GameClient {
       localStorage.getItem('haeram-soccor:slot:b') ||
       undefined
     );
+  }
+  /**
+   * The rules version of an active checkpoint that cannot open because it is an earlier-rules
+   * career (→SAVE-16), read from its header; undefined otherwise.
+   */
+  earlierRules() {
+    if (!this.saves.incompatibleCheckpoint) return undefined;
+    const raw = this.rawBackup(),
+      engine = raw ? envelopeEngine(raw) : undefined;
+    return engine && isEarlierEngine(engine) ? engine : undefined;
   }
   exportFile() {
     return this.enqueue(async () => {

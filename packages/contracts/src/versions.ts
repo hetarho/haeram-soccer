@@ -82,10 +82,31 @@ export class SaveCompatibilityError extends Error {
   readonly code = SAVE_COMPATIBILITY_CODE;
   constructor(
     message = '지원하지 않는 저장 버전 또는 카탈로그입니다. 원본 파일을 내보내 보관하세요.',
+    /** The rules version the save was written under, when that is why it cannot open. */
+    readonly engine?: string,
   ) {
     super(message);
     this.name = 'SaveCompatibilityError';
   }
+}
+/** Whether rules `engine` came before the current ones: an earlier-rules career (→SAVE-16). */
+export function isEarlierEngine(engine: string) {
+  const parts = (version: string) => version.split('.').map((part) => Number(part));
+  const [found, current] = [parts(engine), parts(CURRENT_ENGINE_VERSION)];
+  for (let i = 0; i < 3; i++) {
+    const a = found[i] ?? 0,
+      b = current[i] ?? 0;
+    if (!Number.isFinite(a) || !Number.isFinite(b)) return false;
+    if (a !== b) return a < b;
+  }
+  return false;
+}
+/** What an earlier-rules save says when it is asked to open (→SAVE-16). */
+export const earlierRulesMessage = (engine: string) =>
+  `이 저장은 규칙 ${engine} 커리어입니다 — 규칙 ${CURRENT_ENGINE_VERSION} 커리어만 열 수 있습니다. 새 커리어를 시작하세요`;
+/** The rules version an envelope names in its header, read without decoding its payload. */
+export function envelopeEngine(raw: string) {
+  return /"engine"\s*:\s*"([^"]{1,20})"/.exec(raw.slice(0, 400))?.[1];
 }
 
 export function isSaveCompatibilityError(error: unknown): error is SaveCompatibilityError {

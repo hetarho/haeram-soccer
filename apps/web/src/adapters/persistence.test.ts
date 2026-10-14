@@ -6,6 +6,8 @@ import { base64, pack, unpack } from './packing';
 import { denseBytes } from './dense';
 import {
   CURRENT_ENGINE_VERSION,
+  envelopeEngine,
+  isEarlierEngine,
   PRIOR_CATALOG_HASHES,
   SaveCompatibilityError,
   upgradeWorldRules,
@@ -347,6 +349,25 @@ describe('compatible rule upgrades', () => {
     expect(() => upgradeWorldRules(legacy, CURRENT_CATALOG)).toThrow(SaveCompatibilityError);
     const current = world();
     expect(upgradeWorldRules(current, CURRENT_CATALOG)).toBe(current);
+  });
+
+  it('names the rules an earlier save needs, read from its header alone', async () => {
+    const legacy = world();
+    legacy.engine = '1.22.0';
+    const raw = await encode(legacy);
+    expect(envelopeEngine(raw)).toBe('1.22.0');
+    const failure = await decode(raw).catch((error: unknown) => error);
+    expect(failure).toBeInstanceOf(SaveCompatibilityError);
+    expect((failure as SaveCompatibilityError).engine).toBe('1.22.0');
+    expect((failure as Error).message).toBe(
+      `이 저장은 규칙 1.22.0 커리어입니다 — 규칙 ${CURRENT_ENGINE_VERSION} 커리어만 열 수 있습니다. 새 커리어를 시작하세요`,
+    );
+    // Earlier, never later or malformed.
+    expect(isEarlierEngine('1.22.0')).toBe(true);
+    expect(isEarlierEngine('1.9.9')).toBe(true);
+    expect(isEarlierEngine(CURRENT_ENGINE_VERSION)).toBe(false);
+    expect(isEarlierEngine('9.0.0')).toBe(false);
+    expect(isEarlierEngine('x.y.z')).toBe(false);
   });
 
   it('loads a 2026-demo-1 save, moves its catalog pin on activation and round-trips', async () => {

@@ -1055,8 +1055,10 @@ export function App() {
   useEffect(() => {
     if (!client || launched.current || !settled) return;
     launched.current = true;
-    if (loadFailed) setScreen('game');
-  }, [client, settled, loadFailed]);
+    // An earlier-rules career stays on the slot screen, which offers its export and delete
+    // (→SAVE-16); any other failure opens the recovery path.
+    if (loadFailed) setScreen(client.earlierRules() && slots ? 'slots' : 'game');
+  }, [client, settled, loadFailed, slots]);
   const openSlots = () => {
     controller?.pause();
     slots?.sync(gameStore.getSnapshot().view?.world, true);

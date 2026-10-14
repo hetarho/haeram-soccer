@@ -1,12 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { advanceRound, createWorld, simulateSeason } from '../../../../packages/engine/src/index';
 import { canonical } from '../../../../packages/contracts/src/index';
+import { CURRENT_ENGINE_VERSION } from '../../../../packages/contracts/src/versions';
 import { decode, encode, type StoragePort } from '../adapters/persistence';
 import { AUTOSAVE_MS, GameClient, type ClientState } from './client';
 import { Host } from './host';
 import { serve } from './codec';
 import type { CodecResult, Reply, Request } from './protocol';
-import { GameSlots } from './slots';
+import { earlierRules, GameSlots } from './slots';
 import { ACTIVE_SAVE_KEYS, GameIndexStore, type ParkedStore } from '../adapters/games';
 import { NOTIFICATIONS_KEY, type SystemNotification } from './store';
 
@@ -682,5 +683,31 @@ describe('game slots', () => {
     );
     await expect(slots.continue(1)).rejects.toThrow('찾지 못했어요');
     expect(client.state.view!.world.id).toBe(index.slots[0]!.worldId);
+  });
+
+  it('keeps the rules of each slot: an earlier-rules game is listed as such and never continues', async () => {
+    const client = await start();
+    const parked = new MemoryParked();
+    const slots = new GameSlots(client, new GameIndexStore(storage), parked);
+    const index = slots.sync(client.state.view!.world);
+    expect(index.slots[0]!.engine).toBe(CURRENT_ENGINE_VERSION);
+    // A game parked before slots kept their rules, saved under rules 1.22.0.
+    const earlier = JSON.stringify({
+      ...JSON.parse((await client.exportFile())!),
+      engine: '1.22.0',
+    });
+    const unversioned = { ...index.slots[0]!, id: 'old', worldId: 'old' };
+    delete unversioned.engine;
+    storage.setItem(
+      'haeram-soccor:games',
+      JSON.stringify({ ...index, slots: [index.slots[0], unversioned, null] }),
+    );
+    await parked.put('old', earlier);
+    expect(earlierRules(slots.read().slots[1]!)).toBeUndefined();
+    expect(await slots.resolveEngines()).toBe(true);
+    expect(earlierRules(slots.read().slots[1]!)).toBe('1.22.0');
+    await expect(slots.continue(1)).rejects.toThrow('규칙 1.22.0 커리어');
+    // Its file is still there to keep, exactly as parked.
+    expect(await slots.exportRaw(1)).toBe(earlier);
   });
 });

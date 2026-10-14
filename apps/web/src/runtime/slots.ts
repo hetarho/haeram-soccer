@@ -1,10 +1,17 @@
 import type { World } from '../../../../packages/contracts/src/types';
+import {
+  CURRENT_ENGINE_VERSION,
+  earlierRulesMessage,
+  envelopeEngine,
+  SUPPORTED_ENGINE_VERSIONS,
+} from '../../../../packages/contracts/src/versions';
 import { country } from '../../../../packages/catalogs/src/index';
 import { seasonDate } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/world';
 import {
   GameIndexStore,
   IndexedDbParkedStore,
+  type GameEntry,
   type GameIndex,
   type ParkedStore,
   type SlotSummary,
@@ -31,6 +38,27 @@ export function summarize(w: World): SlotSummary {
     crest: crestOf(w, w.playerClub),
   };
 }
+
+/** The rules version of a slot's game when it is a career of earlier rules (→SAVE-16). */
+export const earlierRules = (entry: Pick<GameEntry, 'engine'>) =>
+  entry.engine !== undefined && !SUPPORTED_ENGINE_VERSIONS.includes(entry.engine)
+    ? entry.engine
+    : undefined;
+/** A slot card for an earlier-rules checkpoint the index never listed: nothing of it is decoded. */
+const unreadSummary = (): SlotSummary => ({
+  club: '이전 규칙 커리어',
+  country: '',
+  division: '',
+  date: '',
+  seasons: 0,
+  crest: {
+    shape: 'shield',
+    pattern: 'plain',
+    primary: '#3a6352',
+    secondary: '#12261f',
+    emblem: 'ball',
+  },
+});
 
 /**
  * Three game slots over one game in play (→WEB-62, →SAVE-14). Switching parks the game in play in
@@ -61,6 +89,23 @@ export class GameSlots {
    */
   display(w: World | undefined): GameIndex {
     const index = this.index.read();
+    // An earlier-rules checkpoint in play never loads: its slot says so (→SAVE-16).
+    const earlier = w ? undefined : this.client.earlierRules();
+    if (earlier) {
+      const slot = this.home(index);
+      const entry = index.slots[slot];
+      index.slots[slot] = entry
+        ? { ...entry, engine: earlier }
+        : {
+            id: 'earlier',
+            worldId: 'earlier',
+            summary: unreadSummary(),
+            playedAt: '',
+            engine: earlier,
+          };
+      index.active = slot;
+      return index;
+    }
     if (!w || index.slots.some((entry) => entry?.worldId === w.id)) return index;
     const slot = this.home(index);
     index.slots[slot] = { id: 'in-play', worldId: w.id, summary: summarize(w), playedAt: '' };
@@ -69,6 +114,25 @@ export class GameSlots {
   }
   get canPark() {
     return !!this.parked;
+  }
+  /**
+   * Fills in the rules version of parked games listed before slots kept it, from each envelope's
+   * header (never its payload); true when any was found.
+   */
+  async resolveEngines() {
+    if (!this.parked || this.client.state.readonly) return false;
+    const index = this.index.read();
+    let found = false;
+    for (const [slot, entry] of index.slots.entries()) {
+      if (!entry || entry.engine) continue;
+      const raw = await this.parked.get(entry.id).catch(() => undefined);
+      const engine = raw ? envelopeEngine(raw) : undefined;
+      if (!engine) continue;
+      index.slots[slot] = { ...entry, engine };
+      found = true;
+    }
+    if (found) this.index.write(index);
+    return found;
   }
   private writable() {
     if (this.client.state.readonly)
@@ -93,6 +157,7 @@ export class GameSlots {
         worldId: w.id,
         summary: summarize(w),
         playedAt: now,
+        engine: CURRENT_ENGINE_VERSION,
       };
     } else {
       const entry = index.slots[slot]!;
@@ -100,6 +165,7 @@ export class GameSlots {
         ...entry,
         summary: summarize(w),
         playedAt: played ? now : entry.playedAt,
+        engine: CURRENT_ENGINE_VERSION,
       };
     }
     index.active = slot;
@@ -129,6 +195,8 @@ export class GameSlots {
     const inPlay = this.client.state.view?.world;
     const entry = this.display(inPlay).slots[slot];
     if (!entry) throw new Error('빈 슬롯이에요.');
+    const earlier = earlierRules(entry);
+    if (earlier) throw new Error(earlierRulesMessage(earlier));
     if (inPlay?.id === entry.worldId) {
       this.sync(inPlay, true);
       return;
@@ -172,18 +240,26 @@ export class GameSlots {
   }
   /** A slot's checkpoint envelope for export: the game in play's, or its parked copy. */
   async exportRaw(slot: number) {
-    const entry = this.index.read().slots[slot];
+    const index = this.display(this.client.state.view?.world);
+    const entry = index.slots[slot];
     if (!entry) return undefined;
-    if (this.client.state.view?.world.id === entry.worldId) return this.client.exportFile();
+    // The game in play, or an earlier-rules checkpoint kept raw in its place.
+    if (
+      this.client.state.view?.world.id === entry.worldId ||
+      (index.active === slot && this.client.earlierRules())
+    )
+      return this.client.exportFile();
     return this.parked?.get(entry.id);
   }
   /** Deletes a slot's game; true when it was the game in play, which the app then reloads away. */
   async remove(slot: number) {
     this.writable();
     const index = this.index.read();
-    const entry = index.slots[slot];
+    // An earlier-rules checkpoint the index never listed is still the game in play's slot.
+    const shown = this.display(this.client.state.view?.world);
+    const entry = index.slots[slot] ?? (shown.active === slot ? shown.slots[slot] : null);
     if (!entry) return false;
-    const inPlay = index.active === slot;
+    const inPlay = index.active === slot || shown.active === slot;
     if (inPlay) await this.client.forget();
     await this.parked?.remove(entry.id).catch(() => {});
     index.slots[slot] = null;

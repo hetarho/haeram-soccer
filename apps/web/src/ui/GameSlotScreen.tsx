@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { GameEntry } from '../adapters/games';
-import { summarize, type GameSlots } from '../runtime/slots';
+import { earlierRules, summarize, type GameSlots } from '../runtime/slots';
 import { gameStore, useGameState } from '../runtime/store';
 import { CrestMark } from './ClubCrest';
 import type { Crest } from './crests';
@@ -47,6 +47,16 @@ export function GameSlotScreen({
     slots.sync(gameStoreWorld());
     setIndex(slots.display(gameStoreWorld()));
   }, [slots, worldId]);
+  // Games parked before slots kept their rules version learn it from their header (→SAVE-16).
+  useEffect(() => {
+    let live = true;
+    void slots.resolveEngines().then((found) => {
+      if (found && live) setIndex(slots.display(gameStoreWorld()));
+    });
+    return () => {
+      live = false;
+    };
+  }, [slots]);
   const [working, setWorking] = useState('');
   const [error, setError] = useState('');
   const [confirm, setConfirm] = useState<{ kind: 'delete' | 'overwrite'; slot: number }>();
@@ -147,6 +157,49 @@ export function GameSlotScreen({
             );
           const summary = live(entry),
             inPlay = index.active === slot && !!world && world.id === entry.worldId;
+          const earlier = earlierRules(entry);
+          if (earlier)
+            // A career of earlier rules never opens: it can be kept as a file or deleted (→SAVE-16).
+            return (
+              <li
+                key={entry.id}
+                className={`${s.slot} ${s.earlier}`}
+                aria-label={`${label} · 이전 규칙`}
+                data-testid={`slot-earlier-${slot}`}
+              >
+                <div className={s.slotHead}>
+                  <span className={s.number}>{label}</span>
+                  <em>이전 규칙 ({earlier})</em>
+                </div>
+                <div className={s.club}>
+                  <CrestMark crest={entry.summary.crest as Crest} size={40} />
+                  <div>
+                    <b>{entry.summary.club}</b>
+                    {entry.summary.country && (
+                      <small>
+                        {entry.summary.country} · {entry.summary.division}
+                      </small>
+                    )}
+                    {entry.summary.seasons > 0 && (
+                      <small>
+                        {entry.summary.seasons}번째 시즌 · {entry.summary.date}
+                      </small>
+                    )}
+                    <small className={s.played}>
+                      규칙 {earlier} 커리어라 이 버전에서는 열 수 없어요. 파일로 내보내 보관하세요.
+                    </small>
+                  </div>
+                </div>
+                <div className={s.actions}>
+                  <button disabled={busy} onClick={() => void exportSlot(slot)}>
+                    내보내기
+                  </button>
+                  <button disabled={locked} onClick={() => setConfirm({ kind: 'delete', slot })}>
+                    삭제
+                  </button>
+                </div>
+              </li>
+            );
           return (
             <li key={entry.id} className={`${s.slot} ${inPlay ? s.inPlay : ''}`} aria-label={label}>
               <div className={s.slotHead}>

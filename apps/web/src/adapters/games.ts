@@ -30,6 +30,8 @@ export interface GameEntry {
   worldId: string;
   summary: SlotSummary;
   playedAt: string;
+  /** The rules version its checkpoint was written under (→SAVE-16); absent before it was kept. */
+  engine?: string;
 }
 // Plain guards keep a validator library out of the entry bundle (→ARCH-28).
 const text = (value: unknown, max: number, min = 1): value is string =>
@@ -47,6 +49,7 @@ function entryOf(value: unknown): GameEntry | null {
     text(entry.id, 100) &&
     text(entry.worldId, 100) &&
     text(entry.playedAt, 40, 0) &&
+    (entry.engine === undefined || text(entry.engine, 20)) &&
     text(summary.club, 80) &&
     text(summary.country, 40) &&
     text(summary.division, 40) &&
