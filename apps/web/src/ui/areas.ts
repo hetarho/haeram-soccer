@@ -5,7 +5,8 @@ import type { BuildSlot } from '../../../../packages/contracts/src/build';
 export type DialKey = PolicyKey | 'ticket';
 /** Any row of the board that is not a card: a dial or a direction row (→ECON-25). */
 export type RowKey = DialKey | DirectionKey;
-export type AreaKey = 'squad' | 'scouting' | 'market' | 'youth' | 'staff' | 'finance' | 'fans';
+export type AreaKey =
+  'squad' | 'scouting' | 'market' | 'youth' | 'staff' | 'finance' | 'local' | 'global';
 export interface DirectionArea {
   key: AreaKey;
   label: string;
@@ -15,6 +16,8 @@ export interface DirectionArea {
   card?: BuildSlot;
   /** Dials and direction rows after the card, in their order on the board. */
   rows: readonly RowKey[];
+  /** The base the area's rows build, named in its header (→ECON-34). */
+  base?: 'local' | 'global';
 }
 /** Whether a row is a direction row rather than a dial. */
 export const isDirectionRow = (key: RowKey): key is DirectionKey =>
@@ -77,15 +80,24 @@ export const DIRECTION_AREAS: readonly DirectionArea[] = [
     icon: '₤',
     question: '어디서 벌고, 맡긴 돈은 얼마나 과감하게 쓸까',
     card: 'revenue',
-    rows: ['marketing', 'finance'],
+    rows: ['finance'],
   },
   {
-    key: 'fans',
-    label: '홈·팬',
+    key: 'local',
+    label: '지역',
     icon: '◎',
-    question: '어떤 경기장과 팬층을 만들까',
+    question: '연고지와 어떻게 지내고, 동네에 얼마나 투자할까',
     card: 'fans',
-    rows: ['ticket'],
+    rows: ['localInvest', 'grassroots', 'ticket'],
+    base: 'local',
+  },
+  {
+    key: 'global',
+    label: '글로벌',
+    icon: '◍',
+    question: '구단 이름을 해외에 얼마나 알리고 넓힐까',
+    rows: ['globalMarketing', 'globalScouting', 'tour'],
+    base: 'global',
   },
 ];
 /** The area holding a row or a card slot. */

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  activateBases,
   activateDirection,
   advanceRound,
   agentOf,
@@ -512,8 +513,11 @@ describe('legacy activation and compatibility recovery', () => {
     expect(canonical(upgraded)).toBe(
       // Activation also names, in the inbox, the direction rows older staff criteria became.
       canonical(
-        activateDirection(
-          { ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 18 },
+        activateBases(
+          activateDirection(
+            { ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 18 },
+            legacy.engine,
+          ),
           legacy.engine,
         ),
       ),
@@ -546,13 +550,16 @@ describe('legacy activation and compatibility recovery', () => {
     expect(upgraded.players.every((p) => p.clauses === undefined)).toBe(true);
     expect(canonical(upgraded)).toBe(
       canonical(
-        activateDirection(
-          {
-            ...legacy,
-            engine: CURRENT_ENGINE_VERSION,
-            revision: legacy.revision + 1,
-            players: legacy.players.map((p) => ({ ...p, agent: agentOf(legacy, p) })),
-          },
+        activateBases(
+          activateDirection(
+            {
+              ...legacy,
+              engine: CURRENT_ENGINE_VERSION,
+              revision: legacy.revision + 1,
+              players: legacy.players.map((p) => ({ ...p, agent: agentOf(legacy, p) })),
+            },
+            '1.15.0',
+          ),
           '1.15.0',
         ),
       ),
@@ -633,8 +640,11 @@ describe('legacy activation and compatibility recovery', () => {
       expect(canonical(exported)).toBe(
         // Activation also names, in the inbox, the direction rows older staff criteria became.
         canonical(
-          activateDirection(
-            { ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 18 },
+          activateBases(
+            activateDirection(
+              { ...legacy, engine: CURRENT_ENGINE_VERSION, revision: 18 },
+              legacy.engine,
+            ),
             legacy.engine,
           ),
         ),

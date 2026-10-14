@@ -239,7 +239,7 @@ function ClubJournal({
                 연간 운영비 <Money value={v.annualCost} code={c.country} year={w.year} />
               </>,
             ],
-            ['우리의 서포터', number(c.fans), '경기·마케팅 결과에 따라 변화'],
+            ['우리의 서포터', number(c.fans), '경기 결과·해외 마케팅·글로벌 인지도에 따라 변화'],
             [
               '이번 시즌',
               `${t.points} pts`,
@@ -441,7 +441,6 @@ function useContentState(): ClientState {
   const managers = useGameState((state) => state.view?.managers);
   const transfers = useGameState((state) => state.view?.transfers);
   const sponsors = useGameState((state) => state.view?.sponsors);
-  const campaigns = useGameState((state) => state.view?.campaigns);
   const state = gameStore.getSnapshot();
   return {
     ...state,
@@ -458,7 +457,6 @@ function useContentState(): ClientState {
             managers: managers!,
             transfers: transfers!,
             sponsors: sponsors!,
-            campaigns: campaigns!,
           }
         : undefined,
   };

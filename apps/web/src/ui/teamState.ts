@@ -18,7 +18,7 @@ import { activeTrainingFocus } from '../../../../packages/engine/src/training';
 import { suggestionChance } from '../../../../packages/engine/src/coach-training';
 import { ORDER_ROUNDS } from '../../../../packages/engine/src/orders';
 import { MORALE_LABEL, moraleOf, moraleState } from '../../../../packages/engine/src/morale';
-import { POLICY_INFO, policyOf } from '../../../../packages/engine/src/policy';
+import { INVESTMENT_ROWS, POLICY_INFO, policyOf } from '../../../../packages/engine/src/policy';
 import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import { operatingCosts } from '../../../../packages/engine/src/finance';
 import { careOffer, effectText, outcomeText } from '../../../../packages/engine/src/care';
@@ -200,7 +200,11 @@ export function remedies(w: World, key: StateKey): Remedy[] {
       ];
     case 'cash': {
       // Setting remedies open the operating board with the change as its draft (→WEB-71).
-      const marketing = POLICY_INFO.marketing.levels[policy.marketing - 2];
+      // The 지역 or 글로벌 row that spends most, one step lower (→ECON-16, →ECON-34).
+      const invest = INVESTMENT_ROWS.reduce((most, key) =>
+          policy[key] > policy[most] ? key : most,
+        ),
+        investStep = POLICY_INFO[invest].levels[policy[invest] - 2];
       const support = POLICY_INFO.support.levels[policy.support - 2];
       const ticket = nextTicketLevel(w.ticket);
       const seasonSupport = w.events.filter(
@@ -216,14 +220,14 @@ export function remedies(w: World, key: StateKey): Remedy[] {
         : '0';
       return [
         {
-          id: 'marketing-down',
-          label: '마케팅 줄이기',
-          effect: marketing
-            ? `방향에서 ${toward(marketing.name)} 낮춰 적용해요 · ${marketing.summary}`
+          id: 'investment-down',
+          label: '지역·글로벌 투자 줄이기',
+          effect: investStep
+            ? `방향에서 ${POLICY_INFO[invest].label} 단계를 ${toward(investStep.name)} 낮춰 적용해요 · ${investStep.summary}`
             : '이미 추가 지출이 없어요',
-          unavailable: marketing ? undefined : '이미 입소문',
+          unavailable: investStep ? undefined : '투자하는 줄이 없어요',
           page: 'business',
-          board: marketing ? { policy: { key: 'marketing', level: marketing.level } } : undefined,
+          board: investStep ? { policy: { key: invest, level: investStep.level } } : undefined,
         },
         // Squad investment scales operating expenses (→ECON-16); offered while it can go down.
         ...(support

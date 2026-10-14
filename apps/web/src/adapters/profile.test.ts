@@ -61,7 +61,7 @@ describe('device strategy library', () => {
     expect(library.list()).toEqual([]);
   });
 
-  it('loads a saved direction holding 1군 직행 경로 without it', () => {
+  it('loads a saved direction holding 1군 직행 경로 or 글로벌 브랜드 without it', () => {
     const storage = memory();
     const owner = deviceOwner(storage);
     storage.setItem(
@@ -77,11 +77,19 @@ describe('device strategy library', () => {
             createdAt: '2026-10-12T00:00:00Z',
             updatedAt: '2026-10-12T00:00:00Z',
           },
+          {
+            id: 'brand',
+            name: '해외 브랜드',
+            build: { fans: 'global', revenue: 'commercial' },
+            createdAt: '2026-10-12T00:00:00Z',
+            updatedAt: '2026-10-12T00:00:00Z',
+          },
         ],
       }),
     );
     expect(new StrategyLibrary(storage).list()).toMatchObject([
       { id: 'old', name: '옛 방식', build: { fans: 'community' } },
+      { id: 'brand', name: '해외 브랜드', build: { revenue: 'commercial' } },
     ]);
   });
 });

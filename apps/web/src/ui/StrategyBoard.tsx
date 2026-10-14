@@ -28,6 +28,7 @@ import type { SavedStrategy } from '../adapters/profile';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import {
+  areaBase,
   areaSummary,
   draftChanges,
   draftCommands,
@@ -421,6 +422,11 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
                   <span className={s.areaSummary} data-testid={`area-summary-${key}`}>
                     {areaSummary(w, area)}
                   </span>
+                  {area.base && (
+                    <span className={s.areaBase} data-testid={`area-base-${key}`}>
+                      {areaBase(w, area)}
+                    </span>
+                  )}
                 </span>
                 <i aria-hidden="true">{open ? '▴' : '▾'}</i>
               </button>

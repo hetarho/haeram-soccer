@@ -18,11 +18,7 @@ import type { NewsItem } from '../../../../packages/engine/src/news';
 import type { ClubRecords } from './clubRecords';
 import type { HeadToHead } from './headToHead';
 import type { managerCandidates } from '../../../../packages/engine/src/managerMarket';
-import {
-  transferOffers,
-  sponsorSlots,
-  campaignOffers,
-} from '../../../../packages/engine/src/operations';
+import { transferOffers, sponsorSlots } from '../../../../packages/engine/src/operations';
 const index = z.number().int().min(0).max(15);
 const staffRole = z.enum([
   'assistant',
@@ -159,10 +155,6 @@ const command = z.discriminatedUnion('type', [
     stance: z.enum(['listed', 'open', 'untouchable']),
   }),
   z.object({
-    type: z.literal('campaign'),
-    kind: z.enum(['outreach', 'tickets', 'merchandise', 'player']),
-  }),
-  z.object({
     type: z.literal('sponsor'),
     kind: z.enum(['stable', 'performance', 'exclusive', 'indexed']),
   }),
@@ -223,7 +215,6 @@ export interface View {
   transfers: ReturnType<typeof transferOffers>;
   /** Every sponsor slot with its contract or offers (→WEB-39). */
   sponsors: ReturnType<typeof sponsorSlots>;
-  campaigns: ReturnType<typeof campaignOffers>;
   annualCost: string;
   coefficient: number;
   finance?: ReturnType<typeof financialBreakdown>;

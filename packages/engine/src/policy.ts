@@ -14,6 +14,14 @@ export const POLICY_KEYS: readonly PolicyKey[] = [
   'tour',
 ];
 
+/** The 지역 and 글로벌 rows that spend each round, in board order (→ECON-16). */
+export const INVESTMENT_ROWS = [
+  'localInvest',
+  'grassroots',
+  'globalMarketing',
+  'globalScouting',
+] as const satisfies readonly PolicyKey[];
+
 /** Absent or partial policies resolve to these values, which reproduce the pre-policy club. */
 export const POLICY_DEFAULTS: ClubPolicy = Object.freeze({
   support: 3,

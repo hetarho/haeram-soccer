@@ -1,3 +1,4 @@
+import { globalReachOf, localBaseOf } from '../../../../packages/engine/src/bases';
 import type {
   ClubPolicy,
   Command,
@@ -206,6 +207,13 @@ export function dialPreview(w: World, change: PolicyChange | TicketChange) {
     seasonEndNow: financeProjection(w).seasonEnd,
     ...(change.kind === 'ticket' ? { gate: gateProjection(next), gateNow: gateProjection(w) } : {}),
   };
+}
+
+/** The base an area's rows build, as its header names it (→ECON-34): 지역 기반 12. */
+export function areaBase(w: World, area: DirectionArea) {
+  if (area.base === 'local') return `지역 기반 ${Math.round(localBaseOf(w))}`;
+  if (area.base === 'global') return `글로벌 인지도 ${Math.round(globalReachOf(w))}`;
+  return undefined;
 }
 
 /**

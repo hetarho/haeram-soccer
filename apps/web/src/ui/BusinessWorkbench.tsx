@@ -7,12 +7,12 @@ import type {
 import { clubOf, quote } from '../../../../packages/engine/src/world';
 import { financialBreakdown, roundShare } from '../../../../packages/engine/src/finance';
 import {
-  exclusiveSponsor,
   SPONSOR_KIND_LABELS,
   sponsorAnnual,
   type SponsorBonus,
 } from '../../../../packages/engine/src/sponsors';
 import { ratio } from '../../../../packages/engine/src/primitives';
+import { CAMPAIGNS } from '../../../../packages/engine/src/ops-commercial';
 import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import type { ClientState, GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
@@ -40,7 +40,7 @@ const bonusNote: Record<SponsorBonus, string> = {
 const kindNote: Record<SponsorKind, string> = {
   stable: '기본금의 명목 금액을 유지해요.',
   performance: '기본금이 낮은 대신 보너스가 커요.',
-  exclusive: '새 상품 캠페인이 제한돼요. 진행 중인 캠페인은 이어가요.',
+  exclusive: '구단 상품 권리를 가져가서 해외 마케팅으로 느는 팬이 절반이 돼요.',
   indexed: '계약 이후 물가에 따라 기본금이 조정돼요.',
 };
 const runway = (rounds: number) => (rounds >= 999 ? '999라운드 이상' : `${rounds}라운드`);
@@ -203,8 +203,8 @@ export function BusinessWorkbench({
             </div>
           </div>
           <p className={s.note}>
-            자금 여유는 급여·시설 유지비·마케팅비·운영 경비 기준이에요. 미래 수입과 경기 개최비는
-            별도로 봐요.
+            자금 여유는 급여·시설 유지비·지역·글로벌 투자·운영 경비 기준이에요. 미래 수입과 경기
+            개최비는 별도로 봐요.
           </p>
           {BigInt(w.cash) < 0n && contribution}
           <div className={s.detailActions}>
@@ -349,81 +349,36 @@ export function BusinessWorkbench({
             </>
           ) : tab === 'marketing' ? (
             <>
+              {/* Campaigns are no more (→ECON-7): one started before settles here, read-only. */}
               <div className={s.panelHeading}>
-                <h3>동네와 함께 성장하기</h3>
-                <span>정산까지 4라운드</span>
+                <h3>진행 중인 캠페인</h3>
+                <span>새 캠페인은 없어요 · 방향의 지역·글로벌에서 투자해요</span>
               </div>
               <div className={s.cards}>
-                {state.view!.campaigns.map((offer) => {
-                  const pending = w.campaigns.find((campaign) => campaign.kind === offer.kind);
-                  const exclusive =
-                    !!exclusiveSponsor(w) && offer.kind === 'merchandise' && !pending;
-                  const affordable = BigInt(w.cash) >= BigInt(offer.cost);
-                  return (
-                    <article
-                      className={s.card}
-                      key={offer.kind}
-                      data-testid={`campaign-${offer.kind}`}
-                    >
-                      <h3>{offer.label}</h3>
-                      <div className={s.metrics}>
-                        <div>
-                          <span>{pending ? '지급한 비용' : '시작 비용'}</span>
-                          <b>{format(pending?.cost || offer.cost)}</b>
-                        </div>
-                        <div>
-                          <span>{pending ? '현재 운영 자금' : '시작 후 자금'}</span>
-                          <b>
-                            {format(
-                              pending ? w.cash : (BigInt(w.cash) - BigInt(offer.cost)).toString(),
-                            )}
-                          </b>
-                        </div>
-                        {!pending && (
-                          <>
-                            <div>
-                              <span>예상 총 회수</span>
-                              <b>
-                                {format(offer.min)}–{format(offer.max)}
-                              </b>
-                            </div>
-                            <div>
-                              <span>예상 순수익</span>
-                              <b>
-                                {format((BigInt(offer.min) - BigInt(offer.cost)).toString())}–
-                                {format((BigInt(offer.max) - BigInt(offer.cost)).toString())}
-                              </b>
-                            </div>
-                          </>
-                        )}
+                {w.campaigns.map((campaign) => (
+                  <article
+                    className={s.card}
+                    key={campaign.id}
+                    data-testid={`campaign-${campaign.kind}`}
+                  >
+                    <h3>
+                      {CAMPAIGNS.find((offer) => offer.kind === campaign.kind)?.label ?? '캠페인'}
+                    </h3>
+                    <div className={s.metrics}>
+                      <div>
+                        <span>지급한 비용</span>
+                        <b>{format(campaign.cost)}</b>
                       </div>
-                      <p className={s.note}>
-                        {pending
-                          ? `이미 시작 비용을 지급했어요. ${pending.remaining}라운드 뒤 실제 수입과 팬을 정산해요.`
-                          : '4라운드 후 수입과 팬을 정산해요. 현재 수요 기준의 범위이며 순수익은 달라질 수 있어요.'}
-                      </p>
-                      <button
-                        disabled={blocked || !!pending || exclusive || !affordable}
-                        onClick={() =>
-                          void act(
-                            { type: 'campaign', kind: offer.kind },
-                            '캠페인을 시작했어요. 4라운드 후 실제 결과를 확인하세요.',
-                          )
-                        }
-                      >
-                        {pending ? `${pending.remaining}라운드 남음` : '캠페인 시작'}
-                      </button>
-                      {exclusive && (
-                        <p className={s.warning}>
-                          독점 후원 중에는 새 상품 캠페인을 시작할 수 없어요.
-                        </p>
-                      )}
-                      {!affordable && !pending && (
-                        <p className={s.warning}>시작 비용에 쓸 자금이 부족해요.</p>
-                      )}
-                    </article>
-                  );
-                })}
+                      <div>
+                        <span>현재 운영 자금</span>
+                        <b>{format(w.cash)}</b>
+                      </div>
+                    </div>
+                    <p className={s.note}>
+                      {campaign.remaining}라운드 뒤 실제 수입과 팬을 정산해요.
+                    </p>
+                  </article>
+                ))}
               </div>
               {w.events
                 .filter((event) => event.kind === 'campaign-result')

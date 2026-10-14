@@ -207,6 +207,12 @@
   font-weight: 700;
   line-height: 1.35;
 }
+.areaBase {
+  display: block;
+  color: var(--cool);
+  font-size: 12px;
+  font-weight: 600;
+}
 .areaDraft {
   margin-left: 6px;
   padding: 1px 6px;

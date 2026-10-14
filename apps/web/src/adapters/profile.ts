@@ -67,20 +67,21 @@ export interface SavedStrategy {
   updatedAt: string;
 }
 /**
- * 1군 직행 경로 left the cards for 데뷔 시점 in rules 1.18 (→ECON-22): a saved direction holding it
- * loads without it instead of being skipped.
+ * Cards that left (→ECON-22): a saved direction holding one loads without it instead of being
+ * skipped.
  */
-function withoutPathway(build: unknown) {
-  if (!build || typeof build !== 'object' || (build as { youth?: unknown }).youth !== 'pathway')
-    return build;
-  const { youth: _youth, ...rest } = build as Record<string, unknown>;
-  void _youth;
+function withoutLeftCards(build: unknown) {
+  if (!build || typeof build !== 'object') return build;
+  const rest = { ...(build as Record<string, unknown>) };
+  // 1군 직행 경로 left with rules 1.18, 글로벌 브랜드 with rules 1.19 (→SAVE-10).
+  if (rest.youth === 'pathway') delete rest.youth;
+  if (rest.fans === 'global') delete rest.fans;
   return rest;
 }
 function strategyOf(value: unknown): SavedStrategy | undefined {
   const item = value as Partial<SavedStrategy> | null;
   if (!item || typeof item !== 'object') return undefined;
-  const build = strategyBuild(withoutPathway(item.build));
+  const build = strategyBuild(withoutLeftCards(item.build));
   return build &&
     text(item.id, 100) &&
     text(item.name, STRATEGY_NAME_LIMIT) &&

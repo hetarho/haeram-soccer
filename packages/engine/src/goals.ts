@@ -95,7 +95,7 @@ export function clubMilestones(w: World) {
       'supporters',
       '천 명의 목소리',
       '현재 또는 시즌 기록에서 서포터 1,000명을 모아요.',
-      '캠페인과 경기로 서포터 늘리기',
+      '경기와 해외 마케팅으로 서포터 늘리기',
       Math.max(own.fans, ...archived.map((season) => season.fans)),
       1000,
     ),

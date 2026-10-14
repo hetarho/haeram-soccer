@@ -7,7 +7,7 @@ import s from './App.module.css';
 
 /**
  * 방향 as one page-tab bar (→WEB-39, →WEB-69): the direction board first (→WEB-60), then
- * building, money with the campaigns, and sponsors.
+ * building, money with any campaign started before rules 1.19, and sponsors.
  */
 /** The direction board and its composer load on first visit, outside the entry (→ARCH-28). */
 const StrategyBoard = lazy(() =>
@@ -66,7 +66,9 @@ export function OperationsView({
           <>
             <FinanceOutlook w={w} />
             <BusinessWorkbench state={state} client={client} part="finance" legacy={legacy} />
-            <BusinessWorkbench state={state} client={client} part="marketing" legacy={legacy} />
+            {w.campaigns.length > 0 && (
+              <BusinessWorkbench state={state} client={client} part="marketing" legacy={legacy} />
+            )}
           </>
         ) : (
           <BusinessWorkbench state={state} client={client} part={tab} legacy={legacy} />

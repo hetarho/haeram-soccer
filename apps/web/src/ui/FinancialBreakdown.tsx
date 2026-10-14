@@ -91,7 +91,7 @@ export const FinancialBreakdown = memo(
                   ['감독 급여', costs.managerWage],
                   ['코치진 급여', costs.staffWages],
                   ['시설 유지', costs.maintenance],
-                  ['마케팅', costs.marketing],
+                  ['지역·글로벌 투자', costs.investment],
                   ['유소년 투자', costs.academy],
                   ['운영 경비', costs.expenses],
                 ] as const
@@ -127,9 +127,9 @@ export const FinancialBreakdown = memo(
             </p>
           </div>
           <p>
-            지역 서포터 중 최근 성적, 가격, 진행 중인 마케팅에 따라 경기장을 찾는 범위로, 비슷한
-            상대를 기준으로 합니다. 전 세계 팬은 관중이 아니라 후원 가치를 올립니다. 리그 분배금은
-            라운드마다, 후원은 실제 리그 경기마다 나누어 받고, 순위 배분금은 시즌 종료 때
+            지역 서포터 중 최근 성적, 가격, 주변 투자와 지역 기반에 따라 경기장을 찾는 범위로,
+            비슷한 상대를 기준으로 합니다. 전 세계 팬은 관중이 아니라 후원 가치를 올립니다. 리그
+            분배금은 라운드마다, 후원은 실제 리그 경기마다 나누어 받고, 순위 배분금은 시즌 종료 때
             정산합니다.
           </p>
         </div>

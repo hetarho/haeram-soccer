@@ -5,6 +5,9 @@ export default defineConfig({
   testDir: 'tests/e2e',
   timeout: 30000,
   workers: 3,
+  // On CI each failing journey also becomes a check annotation, readable on the run page
+  // without the job log.
+  reporter: process.env.CI ? [['github'], ['dot']] : 'list',
   use: { baseURL, trace: 'retain-on-failure' },
   webServer: {
     command: process.env.PREVIEW_BUILD ? 'pnpm run preview' : `pnpm run dev --port ${port}`,

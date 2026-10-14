@@ -31,9 +31,15 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await localSponsor.getByRole('button', { name: '지역 후원 계약', exact: true }).first().click();
   await expect(localSponsor.getByTestId('sponsor-contract-local')).toBeVisible();
   await expect(page.getByRole('button', { name: '지역 후원 계약', exact: true })).toHaveCount(0);
-  await page.getByRole('tab', { name: '자금', exact: true }).click();
-  await page.getByRole('button', { name: '캠페인 시작', exact: true }).first().click();
-  await expect(page.getByRole('button', { name: '4라운드 남음' })).toBeVisible();
+  // Campaigns are no more: the owner spends on the town or abroad through the board's rows.
+  await page.getByRole('tab', { name: '방향', exact: true }).click();
+  const global = page.getByRole('region', { name: '글로벌', exact: true });
+  await global.locator('button[aria-controls^="board-area-body-"]').click();
+  await global.getByRole('radio', { name: '해외 마케팅 해외 홍보', exact: true }).click();
+  const draft = page.getByTestId('strategy-draft');
+  await draft.getByRole('button', { name: '적용', exact: true }).click();
+  await expect(draft).toHaveCount(0);
+  await expect(page.getByTestId('area-summary-global')).toHaveText('해외 홍보 · 없음 · 안 함');
   // The market is a tab of 사람.
   await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
   await peopleTab('이적시장').click();

@@ -98,14 +98,14 @@ describe('team state', () => {
     const states = teamStates(w);
     expect(cashState(w).tone).toBe('bad');
     expect(urgentState(states, cashState(w))!.key).toBe('cash');
-    // Marketing, squad investment and the ticket price are board settings: each remedy asks the
-    // operating board for one step and changes nothing by itself (→WEB-44, WEB-71).
-    w.policy = { ...policyOf(w), marketing: 3, support: 3 };
+    // The costliest investment row, squad investment and the ticket price are board settings: each
+    // remedy asks the operating board for one step and changes nothing by itself (→WEB-44, WEB-71).
+    w.policy = { ...policyOf(w), localInvest: 2, globalMarketing: 3, support: 3 };
     w.ticket = 0.05;
     const cash = remedies(w, 'cash');
     const settings = cash.filter((choice) => choice.board);
     expect(settings.map((choice) => choice.id)).toEqual([
-      'marketing-down',
+      'investment-down',
       'support-down',
       'ticket-up',
     ]);
@@ -114,7 +114,7 @@ describe('team state', () => {
       expect(choice.command, choice.id).toBeUndefined();
     }
     expect(settings.map((choice) => choice.board)).toEqual([
-      { policy: { key: 'marketing', level: 2 } },
+      { policy: { key: 'globalMarketing', level: 2 } },
       { policy: { key: 'support', level: 2 } },
       { ticket: 0.08 },
     ]);

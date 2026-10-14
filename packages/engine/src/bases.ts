@@ -70,6 +70,22 @@ export function baseEffects(w: Pick<World, 'localBase' | 'globalReach' | 'build'
   };
 }
 
+/** What a tour at `tour` (0 none, 1 short, 2 long) pays and does as a season starts (→ECON-16). */
+export function tourTerms(w: World, tour: number) {
+  const club = clubOf(w);
+  return {
+    income: tour
+      ? footballQuote(
+          club.country,
+          w.year,
+          BASE_CONFIG.tourFee[tour] + BASE_CONFIG.tourPerReputation[tour] * club.reputation,
+        )
+      : '0',
+    reach: BASE_CONFIG.tourReach[tour],
+    fatigue: BASE_CONFIG.tourFatigue[tour],
+  };
+}
+
 /**
  * The summer tour (→ECON-16) as a season starts: its income, the reach it adds at once and the
  * fatigue it leaves on every player. Nothing without a tour.
@@ -77,24 +93,19 @@ export function baseEffects(w: Pick<World, 'localBase' | 'globalReach' | 'build'
 export function seasonTour(w: World) {
   const tour = policyEffects(policyOf(w)).tour;
   if (!tour) return;
-  const club = clubOf(w),
-    amount = footballQuote(
-      club.country,
-      w.year,
-      BASE_CONFIG.tourFee[tour] + BASE_CONFIG.tourPerReputation[tour] * club.reputation,
-    );
-  credit(w, amount);
-  const reach = clampBase(globalReachOf(w) + BASE_CONFIG.tourReach[tour]);
+  const terms = tourTerms(w, tour);
+  credit(w, terms.income);
+  const reach = clampBase(globalReachOf(w) + terms.reach);
   if (reach) w.globalReach = reach;
   const tired = (p: Player) => {
-    p.fatigue = Math.min(100, p.fatigue + BASE_CONFIG.tourFatigue[tour]);
+    p.fatigue = Math.min(100, p.fatigue + terms.fatigue);
   };
   activePlayers(w).forEach(tired);
   addEvent(
     w,
     'tour',
     tour === 2 ? '긴 해외 투어' : '짧은 해외 투어',
-    `글로벌 인지도 +${BASE_CONFIG.tourReach[tour]} · 모든 선수 피로 +${BASE_CONFIG.tourFatigue[tour]}`,
-    amount,
+    `글로벌 인지도 +${terms.reach} · 모든 선수 피로 +${terms.fatigue}`,
+    terms.income,
   );
 }

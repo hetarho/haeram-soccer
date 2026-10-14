@@ -21,7 +21,6 @@ function view(): View {
     managers: [],
     transfers: [],
     sponsors: [],
-    campaigns: [],
     annualCost: '0',
     coefficient: 0,
     news: [],

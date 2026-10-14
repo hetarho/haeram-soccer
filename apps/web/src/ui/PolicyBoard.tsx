@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import type { PolicyKey, PolicyLevel, World } from '../../../../packages/contracts/src/types';
 import {
+  INVESTMENT_ROWS,
   POLICY_INFO,
   policyEffects,
   policyOf,
@@ -11,6 +12,7 @@ import { gateProjection, operatingCosts } from '../../../../packages/engine/src/
 import { clubOf } from '../../../../packages/engine/src/world';
 import { financeProjection } from '../../../../packages/engine/src/projection';
 import { academyIntakeOutlook } from '../../../../packages/engine/src/academy';
+import { globalReachOf, localBaseOf, tourTerms } from '../../../../packages/engine/src/bases';
 import { dialPreview, type DirectionChange, type PolicyChange, type TicketChange } from './board';
 import { DIRECTION_INFO } from '../../../../packages/engine/src/direction';
 import { number } from './format';
@@ -40,6 +42,8 @@ export function dialInfo(w: World, key: DialKey) {
     current: policyOf(w)[key] - 1,
   };
 }
+const isInvestment = (key: DialKey): key is (typeof INVESTMENT_ROWS)[number] =>
+  (INVESTMENT_ROWS as readonly DialKey[]).includes(key);
 export const dialLabel = (key: DialKey) =>
   key === 'ticket' ? '티켓 가격' : POLICY_INFO[key].label;
 /** The draft value a step stands for: a policy level, or a ticket price. */
@@ -104,15 +108,40 @@ export function DialLines({ w, dialKey, index }: { w: World; dialKey: DialKey; i
     );
   else if (dialKey === 'recruitment') {
     if (drafted) lines.push('적용하면 이적 시장 후보가 바로 바뀌어요');
-  } else if (dialKey === 'marketing')
+  } else if (dialKey === 'tour') {
+    const terms = tourTerms(w, effects.tour);
+    if (effects.tour)
+      lines.push(
+        <>
+          시즌 시작에 투어 수입 약 {money(terms.income)} · 글로벌 인지도 +{terms.reach} · 모든 선수
+          피로 +{terms.fatigue}
+        </>,
+      );
+  } else if (isInvestment(dialKey)) {
+    // Each investment row's own spend: the line's total less the line without this row.
+    const without: World = { ...next, policy: { ...nextPolicy, [dialKey]: 1 } },
+      spend = (
+        BigInt(operatingCosts(next).investment) - BigInt(operatingCosts(without).investment)
+      ).toString(),
+      local = dialKey === 'localInvest' || dialKey === 'grassroots',
+      target = local ? effects.baseTargets.local : effects.baseTargets.global,
+      base = `${local ? '지역 기반' : '글로벌 인지도'} 목표 ${target} (지금 ${Math.round(
+        local ? localBaseOf(w) : globalReachOf(w),
+      )})`;
     lines.push(
       <>
-        마케팅비 연 {money(operatingCosts(next).marketing)}
-        {change('marketing')}
+        투자비 연 {money(spend)}
+        {change(dialKey)}
       </>,
-      `팬 약 +${number(marketingFanGain(clubOf(w).fans, effects.fanGrowth))}명/라운드 · 관중 수요 +${Math.round(effects.gateBoost * 100)}%`,
+      dialKey === 'localInvest'
+        ? `관중 수요 +${Math.round(effects.gateBoost * 100)}% · ${base}`
+        : dialKey === 'grassroots'
+          ? `유스 입단 잠재력 +${effects.grassrootsPotential} · ${base}`
+          : dialKey === 'globalMarketing'
+            ? `팬 약 +${number(marketingFanGain(clubOf(w).fans, effects.fanGrowth))}명/라운드 · ${base}`
+            : `이적 시장 후보 +${effects.scoutCandidates}명 · 후보 잠재력 +${effects.scoutPotential} · ${base}`,
     );
-  else if (dialKey === 'academy') {
+  } else if (dialKey === 'academy') {
     const intake = academyIntakeOutlook(next),
       now = academyIntakeOutlook(w);
     lines.push(
@@ -136,7 +165,7 @@ export function DialLines({ w, dialKey, index }: { w: World; dialKey: DialKey; i
       </>,
     );
   }
-  if (drafted && dialKey !== 'recruitment')
+  if (drafted && dialKey !== 'recruitment' && dialKey !== 'tour')
     lines.push(<>시즌 말 예상 자금 {range(financeProjection(next).seasonEnd)}</>);
   if (!lines.length) return null;
   return (
@@ -170,14 +199,32 @@ export function DialChange({ w, change }: { w: World; change: PolicyChange | Tic
           </>
         ) : key === 'recruitment' ? (
           '비용 변화 없음 · 이적 시장 후보가 바로 바뀌어요'
+        ) : key === 'tour' ? (
+          <TourChange w={w} level={change.to} />
         ) : (
           <>
             라운드마다 {signed(preview.perRound)} · 연 {signed(preview.annual)}
           </>
         )}
-        {key !== 'recruitment' && <> · 시즌 말 예상 자금 {range(preview.seasonEnd)}</>}
+        {key !== 'recruitment' && key !== 'tour' && (
+          <> · 시즌 말 예상 자금 {range(preview.seasonEnd)}</>
+        )}
       </span>
     </li>
+  );
+}
+
+/** A drafted tour's terms: what it pays and does as the next season starts. */
+function TourChange({ w, level }: { w: World; level: number }) {
+  const { money } = amounts(w);
+  const terms = tourTerms(w, level - 1);
+  return level > 1 ? (
+    <>
+      다음 시즌 시작에 투어 수입 약 {money(terms.income)} · 글로벌 인지도 +{terms.reach} · 모든 선수
+      피로 +{terms.fatigue}
+    </>
+  ) : (
+    '다음 시즌부터 투어 없음'
   );
 }
 

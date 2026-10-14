@@ -160,7 +160,7 @@ function cashWarning(w: World, perRound: string) {
   pushInbox(w, {
     kind: 'finance',
     title: `운영자금이 약 ${weeks}주분 남았어요`,
-    detail: `라운드마다 급여·시설 유지·운영 경비 ${moneyLabel(w, perRound)}가 나가요. 후원 계약, 선수 매각, 선수단·마케팅·유소년 투자 축소나 구단주 출자로 버틸 시간을 늘리세요. 잔고가 바닥난 채 ${BANKRUPTCY_ROUNDS}라운드가 지나면 구단이 파산해요.`,
+    detail: `라운드마다 급여·시설 유지·운영 경비 ${moneyLabel(w, perRound)}가 나가요. 후원 계약, 선수 매각, 선수단·지역·글로벌·유소년 투자 축소나 구단주 출자로 버틸 시간을 늘리세요. 잔고가 바닥난 채 ${BANKRUPTCY_ROUNDS}라운드가 지나면 구단이 파산해요.`,
     // A status, not a stop: the HUD and the warning band show it in red (→ECON-24).
     attention: false,
   });
@@ -200,7 +200,7 @@ export function settleRound(w: World) {
     w,
     'operating-cost',
     '급여와 시설 유지비',
-    `선수 ${money(cost.payments.playerWages)} · 감독 ${money(cost.payments.managerWage)} · 시설 ${money(cost.payments.maintenance)}${cost.payments.investment ? ` · 지역·글로벌 투자 ${money(cost.payments.investment)}` : ''}${cost.payments.academy ? ` · 유소년 ${money(cost.payments.academy)}` : ''}${fansGained ? ` · 마케팅 팬 +${fansGained}명` : ''}`,
+    `선수 ${money(cost.payments.playerWages)} · 감독 ${money(cost.payments.managerWage)} · 시설 ${money(cost.payments.maintenance)}${cost.payments.investment ? ` · 지역·글로벌 투자 ${money(cost.payments.investment)}` : ''}${cost.payments.academy ? ` · 유소년 ${money(cost.payments.academy)}` : ''}${fansGained ? ` · 해외 마케팅 팬 +${fansGained}명` : ''}`,
     (BigInt(cost.nextRound) - BigInt(cost.payments.expenses)).toString(),
   );
   // Operating expenses keep one ledger line a season, grown each round (→ECON-30, ECON-10); the

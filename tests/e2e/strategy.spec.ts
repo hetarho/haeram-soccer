@@ -22,24 +22,29 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await expect(board.getByTestId('current-strategy')).toHaveText('기본 방향');
   const presets = board.getByRole('region', { name: '추천 방향' }).getByRole('button');
   await expect(presets).toHaveCount(5);
-  // One board: seven areas by the decisions they steer, each its card row beside the dials and the
-  // direction rows of the same area (→ECON-25); 스태프 has rows only. No separate dial list, no
-  // training dial (훈련 owns the focus).
+  // One board: eight areas by the decisions they steer, each its card row beside the dials and the
+  // direction rows of the same area (→ECON-25); 스태프 and 글로벌 have rows only. No separate dial
+  // list, no training dial (훈련 owns the focus).
   const areas: [string, string | undefined, string[]][] = [
     ['선수단·계약', '라커룸 문화', ['선수단 투자', '재계약 기조']],
     ['영입', '스카우팅', ['영입 기조']],
     ['매각', '매각 기조', []],
     ['유소년', '유입 방식', ['육성 목표', '데뷔 시점', '유소년 투자']],
     ['스태프', undefined, ['선호 학파', '감독 기조', '코치 기조']],
-    ['재정', '수익 모델', ['마케팅', '재정 기조']],
-    ['홈·팬', '홈·팬', ['티켓 가격']],
+    ['재정', '수익 모델', ['재정 기조']],
+    ['지역', '지역 관계 방식', ['주변 투자', '풀뿌리 유망주 투자', '티켓 가격']],
+    ['글로벌', undefined, ['해외 마케팅', '해외 스카우트망', '해외 투어']],
   ];
-  await expect(board.locator('[data-area]')).toHaveCount(7);
+  await expect(board.locator('[data-area]')).toHaveCount(8);
   // Areas start folded behind headers naming the options in force (→WEB-60).
   await expect(board.getByRole('radiogroup')).toHaveCount(0);
   await expect(board.getByTestId('area-summary-scouting')).toHaveText('표준 · 균형');
   await expect(board.getByTestId('area-summary-market')).toHaveText('표준');
   await expect(board.getByTestId('area-summary-staff')).toHaveText('상관없음 · 표준 · 표준');
+  // 지역 and 글로벌 name the base their rows build; a new club has neither yet (→ECON-34).
+  await expect(board.getByTestId('area-base-local')).toHaveText('지역 기반 0');
+  await expect(board.getByTestId('area-base-global')).toHaveText('글로벌 인지도 0');
+  await expect(board.locator('[data-testid^="area-base-"]')).toHaveCount(2);
   for (const [area, slot, rows] of areas) {
     const row = board.getByRole('region', { name: area, exact: true });
     const head = row.locator('button[aria-controls^="board-area-body-"]');

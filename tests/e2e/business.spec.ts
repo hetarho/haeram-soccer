@@ -6,7 +6,7 @@ import {
   facilityInvestmentPreview,
   ticketInvestmentPreview,
 } from '../../packages/engine/src/investment';
-import { campaignOffers, sponsorOffers, sponsorAnnual } from '../../packages/engine/src/operations';
+import { sponsorOffers, sponsorAnnual } from '../../packages/engine/src/operations';
 import {
   operatingCosts,
   roundShare,
@@ -86,8 +86,11 @@ test('older operations addresses open their tab', async ({ page }) => {
     await expect(page).toHaveURL(now);
   }
   await expect(page.getByRole('region', { name: '캠페인', exact: true })).toHaveCount(0);
+  // Campaigns are no more (→ECON-7): 자금 shows none to start.
   await page.getByRole('tab', { name: '자금', exact: true }).click();
-  await expect(page.getByRole('region', { name: '캠페인', exact: true })).toBeVisible();
+  await expect(page.getByRole('region', { name: '클럽 재정', exact: true })).toBeVisible();
+  await expect(page.getByRole('region', { name: '캠페인', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '캠페인 시작' })).toHaveCount(0);
 });
 
 for (const viewport of [
@@ -252,45 +255,41 @@ test("at level 4 the commercial staff sign an empty slot's best offer", async ({
   await expect(page.getByTestId('decision-owner-business')).toContainText('자동 결정');
 });
 
-test('separates campaign recovery and net ranges and settles after four real rounds', async ({
+test('drafts a 지역 investment row with its spend and builds 지역 기반 over real rounds', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await found(page, 'campaign-range-ui');
-  const before = await exportWorld(page);
-  const offer = campaignOffers(before).find((candidate) => candidate.kind === 'outreach')!;
-  const format = (value: string) => compactMoney(value, clubOf(before).country, before.year);
-  // Campaigns sit under 자금 (→WEB-39).
-  await openBusiness(page, '자금');
-  await expect(page.getByRole('region', { name: '캠페인', exact: true })).toBeVisible();
-  const card = page.getByTestId('campaign-outreach');
-  await expect(card).toContainText(`예상 총 회수${format(offer.min)}–${format(offer.max)}`);
-  await expect(card).toContainText(
-    `예상 순수익${format((BigInt(offer.min) - BigInt(offer.cost)).toString())}–${format((BigInt(offer.max) - BigInt(offer.cost)).toString())}`,
-  );
-  await card.getByRole('button', { name: '캠페인 시작', exact: true }).click();
-  await expect(card.getByRole('button', { name: '4라운드 남음', exact: true })).toBeDisabled();
-  const started = await exportWorld(page);
-  expect(BigInt(started.cash)).toBe(BigInt(before.cash) - BigInt(offer.cost));
-  expect(started.campaigns.find((campaign) => campaign.kind === 'outreach')?.remaining).toBe(4);
-  await expect(card).toContainText(`지급한 비용${format(offer.cost)}`);
-  await expect(card).toContainText(`현재 운영 자금${format(started.cash)}`);
-  // Campaigns settle after four league rounds; the amateur league leaves some rounds without
-  // our match, so count rounds rather than matches.
-  for (let passed = 0; passed < 4;) {
+  await found(page, 'local-base-ui');
+  await openBusiness(page);
+  // 주변 투자 is a row of the 지역 area, whose header names 지역 기반 (→ECON-34, →WEB-60).
+  const board = page.getByTestId('strategy-board');
+  const local = board.getByRole('region', { name: '지역', exact: true });
+  await expect(local.getByTestId('area-base-local')).toHaveText('지역 기반 0');
+  await local.locator('button[aria-controls^="board-area-body-"]').click();
+  await local.getByRole('radio', { name: '주변 투자 지역 상권 투자', exact: true }).click();
+  const row = page.locator('[data-row="localInvest"]');
+  await expect(row).toContainText('관중 수요 +4% · 지역 기반 목표 40 (지금 0)');
+  await expect(row).toContainText('투자비 연');
+  const draft = board.getByTestId('strategy-draft');
+  await expect(draft).toContainText('주변 투자 없음 → 지역 상권 투자');
+  await expect(draft).toContainText('라운드마다 +');
+  await draft.getByRole('button', { name: '적용', exact: true }).click();
+  await expect(draft).toHaveCount(0);
+  const applied = await exportWorld(page);
+  expect(applied.policy?.localInvest).toBe(3);
+  expect(BigInt(operatingCosts(applied).investment)).toBeGreaterThan(0n);
+  // The base grows each settled league round toward the target the row sets.
+  for (let passed = 0; passed < 2;) {
     await playNext(page);
-    const world = await exportWorld(page);
-    passed = world.round - started.round;
-    if (passed < 4) {
-      expect(world.events.filter((event) => event.kind === 'campaign-result')).toHaveLength(0);
-      expect(world.campaigns.find((campaign) => campaign.kind === 'outreach')?.remaining).toBe(
-        4 - passed,
-      );
-    } else {
-      expect(world.campaigns.find((campaign) => campaign.kind === 'outreach')).toBeUndefined();
-      expect(world.events.filter((event) => event.kind === 'campaign-result')).toHaveLength(1);
-    }
+    passed = (await exportWorld(page)).round - applied.round;
   }
+  const grown = await exportWorld(page);
+  expect(grown.localBase).toBeGreaterThan(0);
+  expect(grown.localBase).toBeLessThan(40);
+  await openBusiness(page);
+  await expect(page.getByTestId('area-base-local')).toHaveText(
+    `지역 기반 ${Math.round(grown.localBase!)}`,
+  );
 });
 
 test('keeps ticket drafts out of the save and applies their price to an actual home gate', async ({
@@ -303,9 +302,9 @@ test('keeps ticket drafts out of the save and applies their price to an actual h
   const preview = ticketInvestmentPreview(before, price);
   const format = (value: string) => compactMoney(value, clubOf(before).country, before.year);
   await openBusiness(page);
-  // The ticket price is a row of the 홈·팬 area on the 방향 board, beside its card row.
+  // The ticket price is a row of the 지역 area on the 방향 board, beside its card row.
   const board = page.getByTestId('strategy-board');
-  const fans = board.getByRole('region', { name: '홈·팬', exact: true });
+  const fans = board.getByRole('region', { name: '지역', exact: true });
   await fans.locator('button[aria-controls^="board-area-body-"]').click();
   const dial = fans.getByRole('radiogroup', { name: '티켓 가격', exact: true });
   const premium = dial.getByRole('radio', { name: '티켓 가격 프리미엄', exact: true });
