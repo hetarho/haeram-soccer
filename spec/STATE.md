@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| p7ad | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T15:45Z | 2026-10-14T16:24Z | T107 |
+| p7ad | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T15:45Z | 2026-10-14T17:31Z | T108 |
 
 ## inbox
 - 261015 decided PLAYER-3 CLUB-32 CLUB-33: how rules that counted GK/DEF/MID/FWD read with 14 positions → four lines (GK, DF, MF, FW) by main position (alt: every listed position counts | each rule rewritten by formation slot) — squad needs stay readable; requests still name formation slots
@@ -68,7 +68,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T108 | Adaptation and 조직력 move with matches, managers and change | PLAYER LEAGUE STAFF | T107 | todo |
+| T108 | Adaptation and 조직력 move with matches, managers and change | PLAYER LEAGUE STAFF | T107 | doing@261015.p7ad |
 | T109 | Training per player, its costs, and growth by 프로의식, past potential and by age | CLUB STAFF PLAYER | T107 | todo |
 | T110 | The match reads every attribute, role and play trait | MATCH PLAYER | T107 | todo |
 | T111 | Requests by formation slot, cover by slot, ambition and the arrival preview | CLUB PLAYER | T107 | todo |
