@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r60 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r61 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -211,18 +211,18 @@
   - 훈련 has no control of its own (→CLUB-13): the focus in force — 균형, 유망주 집중 or 회복 집중 with its recovery and development (→CLUB-11) — with who set it (the assistant's rule, a suggestion he accepted or the owner's order, with the rounds left) and why, and a line opening the assistant's card in 사람's 코치진 to suggest or force (→STAFF-19).
   - then 성장 배수: the growth factor in force for a player aged 21 or under as one number, then each term — the focus, squad investment (→ECON-16), the manager's youth work and style, facilities, the coaches, strategy cards and synergies — with its factor, each opening its home.
   - then the players still growing (aged 23 or under): OVR, POT and the growth they earned.
-  - 유소년: the academy (→CLUB-16) by age group — U-17, U-19, U-21, each with its growth factor and its prospects' OVR, potential, age and readiness — the youth director's focus in force with who set it and why and a line opening his card (→CLUB-31, →STAFF-19), the next intake date, promote and release, and who decides them at the current level, with the director's rule (→STAFF-13).
+  - 유소년: the academy (→CLUB-16) by age group — U-17, U-19, U-21, each with its growth factor and its prospects' OVR, potential, age and readiness — the youth director's focus in force with who set it and why and a line opening his card (→CLUB-31, →STAFF-19), the next intake date, promote and release, and who decides them at the current level, with lines naming 육성 목표 and 데뷔 시점 that open the 유소년 area on the 방향 board (→STAFF-13, →CLUB-32).
 - WEB-71 [o] Every setting has one home where it is shown and changed; anywhere else it appears only as a line naming its value that opens its home. ← a value controlled from several screens leaves owners unsure which one counts
   | setting | home |
   |---|---|
   | the training focus in force and the growth factors (read only) | 훈련 › 훈련, 유소년 |
   | training suggestions and orders to the assistant and the youth director | 사람 › 코치진 |
-  | academy promotion and release; the youth director's rule | 훈련 › 유소년 |
+  | academy promotion and release | 훈련 › 유소년 |
   | transfer stances, contract talks | 사람 › 선수 |
   | bids and offers | 사람 › 이적시장 |
   | the manager and his renewal | 사람 › 감독 |
   | each coach and his renewal | 사람 › 코치진 |
-  | every direction row (→ECON-25) — the cards, squad investment, 재계약 기조, recruitment, academy investment, the staff rows, marketing, 재정 기조, ticket price — presets, saved directions | 방향 › 방향 |
+  | every direction row (→ECON-25) — the cards, squad investment, 재계약 기조, recruitment, 육성 목표, 데뷔 시점, academy investment, the staff rows, marketing, 재정 기조, ticket price — presets, saved directions | 방향 › 방향 |
   | sponsor contracts | 방향 › 후원 |
   | facilities | 방향 › 증축 |
   | campaigns, owner capital | 방향 › 자금 |
@@ -235,6 +235,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r61 261014 WEB-70✎ 유소년's director's rule→lines naming 육성 목표 and 데뷔 시점; WEB-71✎ the youth rows' home→방향
 - r60 261014 WEB-45✎ level 3 staff = level 2's→+sponsors, coaches, manager (stops window opening, bids, cash); level 4→+offers (stops cash); criteria editable at any level→direction rows on the board; WEB-43✎ criteria editors→lines naming the rows; WEB-71✎ criteria homes→방향; WEB-39✎ 재정 tab→자금; WEB-60✎ six→seven areas; WEB-61✎ composer card rows by area
 - r59 261014 WEB-39✎ 운영 tabs 운영 전략·재정·시설·후원·캠페인→방향 tabs 방향·증축·재정·후원; WEB-60✎ operating board, card rows and dials drawn apart→방향 board of one row kind, areas folded; WEB-61✎ 나만의 전략 만들기→방향 만들기; WEB-10✎ WEB-14✎ WEB-43✎ WEB-69✎ WEB-70✎ WEB-71✎ 운영→방향
 - r58 261013 WEB-39✎ 시설 one facility level→three parts with the stadium's ladder and works in progress; WEB-11✎ facility scene→by the stadium's step; WEB-36✎ facilities→stadium capacity and facility levels

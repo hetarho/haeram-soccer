@@ -23,6 +23,10 @@
 - 261014 decided WEB-39: the cash page tab → 자금, so it never reads like the 재정 area (alt: rename the area instead)
 - 261014 decided CLUB-18 ideation/club-direction: slice 2's scope → 매각 기조 sets the sale bar now; staff changing stances and the youth rows driving promotion move to slice 3 with 육성 목표 (alt: all in slice 2)
 - 261014 decided SAVE-10: older criteria → the nearest rows with an inbox item naming them, 재정 기조 표준 (alt: every row 표준)
+- 261014 decided CLUB-32 ideation/club-direction: the youth rows → 육성 목표 (표준, 1군 공급 never releases before 21, 판매용 육성 lists non-starters ≤ 21, 최소 운영 releases at 18 below the starters' level) and 데뷔 시점 (표준, 빠른 데뷔 −3/−15 with 1군 직행 경로's growth and morale, 준비된 뒤 at the starters' level, 늦게 from 19 with U-21 growth ×1.15) (alt: one combined row)
+- 261014 decided ECON-22: 유입 방식 → the 유스 정책 slot renamed, 1군 직행 경로 moved to 데뷔 시점 빠른 데뷔, 엘리트 선발 added (potential +8, intake −2); 트레이딩 머신 keeps its other cards until presets fill rows in slice 6 (alt: keep 1군 직행 경로 as a card too)
+- 261014 decided CLUB-22: staff stances → at window openings with transfers delegated, only players at 협상 가능: 셀링 클럽 lists non-starters 30+, 판매용 육성 non-starters ≤ 21, 핵심 지키기 marks the three best starters 이적 불가 (alt: staff never touch stances)
+- 261014 decided ECON-29 ideation/club-direction: calibration → measured once for slice 2 (T091) and once more after slice 6, not after every slice (alt: 40 careers after each slice)
 
 ## ideation
 | id | st |
@@ -34,21 +38,23 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 60 | 60 | - | 0 |
+| WEB | 61 | 61 | - | 0 |
 | WORLD | 2 | 2 | - | 0 |
-| CLUB | 27 | 27 | - | 0 |
+| CLUB | 28 | 28 | - | 0 |
 | MATCH | 8 | 8 | - | 0 |
 | LEAGUE | 5 | 5 | - | 0 |
-| STAFF | 16 | 16 | - | 0 |
-| ECON | 25 | 25 | - | 0 |
+| STAFF | 17 | 17 | - | 0 |
+| ECON | 26 | 26 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 8 | 8 | - | 0 |
-| SAVE | 29 | 29 | - | 0 |
+| SAVE | 30 | 30 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T091 | Calibrate the economy with the direction rows | ECON CLUB | T089 | doing@261014.v7dq |
+| T092 | Youth rows and staff stances in the engine | CLUB ECON STAFF SAVE | T089 | todo |
+| T093 | Youth rows on the board and in 유소년 | ECON WEB | T092 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -69,6 +75,8 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261014 create-task slice 3 → T092 (engine youth rows, stances, rules 1.18.0), T093 (board and 유소년)
+- 261014 update-ssot ECON r26 CLUB r28 STAFF r17 WEB r61 SAVE r30 (club-direction slice 3): 육성 목표 and 데뷔 시점 drive the academy and the coaches' focus, 엘리트 선발 replaces 1군 직행 경로, staff stances by direction
 - 261014 T090 done (aaf2aeb): seven areas with direction rows on the board, lines in 사람, 자금 tab, ladder texts; T091 doing
 - 261014 owner confirmed (relayed by session haeram-soccor-6f): ECON-33 재정 기조 options, CLUB-26 재계약 기조 options, STAFF-15/STAFF-18 staff rows, WEB-45 ladder; dev-server note dropped (stopped on purpose)
 - 261014 T089 done (63a6c7d): engine rows, 재정 기조, ladder, rules 1.17.0; unit 451, contract 11; T090 doing
@@ -87,5 +95,3 @@
 - 261014 work/intervention (T080–T085) merged with main's start-screen fix and pushed to main at caa5e83 after CI passed every job
 - 261014 T084 T085 done (e5d8276): facility parts; 40-career calibration — none bankrupt, every band but the wage bill (44.3%); ECON r23
 - 261014 T084/T085 code on work/intervention (e5d8276, CI green in every browser); recalibrated: 0 of 24 bankrupt, every band but the wage bill (44.3% vs 45–70%); measuring the pre-facility commit to find the cause
-- 261013 update-ssot ECON r22 CLUB r26 HIST r8 WEB r58 SAVE r28: facilities as three parts (stadium 8 expansion/rebuild steps to 90,000, training ground and academy 1–5) → T084 (doing), T085
-- 261013 T082 T083 done (094fa13): coaches set training, owner suggests or forces, academy U-17/U-19/U-21; Chromium e2e 104, unit 666, contract 11, benchmark pass

@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r27 | Define the implemented browser-demo behavior for squad and growth.
+> r28 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating equals its league's average club XI (±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -26,7 +26,7 @@
   - generated attributes top out at 99.
 
 - CLUB-13 [o] The training focus is always the coaches' call: each settled round the assistant (수석코치) sets the first team's by his rule, unless a suggestion he accepted or an order the owner forced holds that round (→STAFF-19). Nobody else chooses it and no intervention level hands it over (→WEB-45). ← how a squad trains is the staff's job; an owner reaches it through them, at a cost
-  - his rule: 회복 집중 when the starters' average fatigue is 30 or more, else 유망주 집중 with a developer assistant or three or more starters aged 21 or under, else 균형; the 훈련 tab (→WEB-70) states the focus in force, who set it and why.
+  - his rule: 회복 집중 when the starters' average fatigue is 30 or more, else 유망주 집중 with a developer assistant or three or more starters aged 21 or under (two under 데뷔 시점 빠른 데뷔 →CLUB-32), else 균형; the 훈련 tab (→WEB-70) states the focus in force, who set it and why.
 - CLUB-14 [o] The market supports role and roster-fit filters with stable seeded candidates. Each candidate shows current ability, potential, effect on the proposed XI/tactic fit, upfront transfer or loan fee, recurring annual wage and contract term before acceptance.
   - the list is drawn per season and per the settings that shape it (recruitment level →ECON-16, chief scout →STAFF-11, strategy cards →ECON-22): the same settings always show the same candidates, so switching a setting away and back draws nothing new. ← a setting must not become a free reroll
   - one ID names one player: lists of different settings never share a candidate ID.
@@ -72,7 +72,7 @@
   | 상업 제국 | 상업 확장 revenue card · marketing 4+ · a stadium of 30,000+ | new sponsor offers ×1.1 |
   | 원 팀 | motivator manager · squad investment 4+ · morale 65+ | morale baseline +3 |
   | 우리 동네 아이들 | 성골 유스 or 유소년 클럽 제휴 · 지역 밀착 · 가족 같은 클럽 | morale baseline +2, intake potential +2 |
-  | 트레이딩 머신 | 데이터 스카우팅 · 1군 직행 경로 · 셀링 클럽 or 쇼케이스 | candidate potential +2, academy growth ×1.1 |
+  | 트레이딩 머신 | 데이터 스카우팅 · 데뷔 시점 빠른 데뷔 · 셀링 클럽 or 쇼케이스 | candidate potential +2, academy growth ×1.1 |
 
 - CLUB-22 [o] Every player has a transfer stance the owner switches any time; offers come only while a window is open and only from real clubs (→CLUB-18), and a sale happens only when one is accepted. ← one tap says how the club treats offers for him, instead of an asking price per listing
   - 이적 명단 (listed, 적극 매도): draws its own offers at 10% a window day × appeal, fee 85–105% of value × build sale fee; delegated staff accept them
@@ -82,6 +82,8 @@
   - a 1.9 listing at an ask loads as listed
   - appeal is 0.6 + (ability − 35)/60, +0.25 aged ≤ 23, −0.2 aged 31+, within 0.35–1.5; the stance sheet shows the average days to a first offer.
   - each listed player has at most one open offer; listed players are not targets of unsolicited bids.
+  - with transfers delegated (→WEB-45) the staff set stances at each window opening, by the direction, only for players at 협상 가능: 셀링 클럽 lists non-starters aged 30+, 판매용 육성 (→CLUB-32) lists non-starters aged 21 or under, and 핵심 지키기 marks the three best starters 이적 불가; each change is reported, and the owner may switch any stance back.
+
 - CLUB-23 [o] Own players can be injured in a match: each player who played has 1.8% × (1 + excess fatigue/25) × (1 + max(0, 55 − stamina)/150) × 1.15 when pressing, from the match's own stream (about one injury every five matches).
   | share | days out | examples |
   |---|---|---|
@@ -129,7 +131,21 @@
   | 균형 | ×1.0 | ×1.0 | ×1.0 |
   | 기본기 집중 | ×1.3 | ×0.9 | ×0.9 |
   | 1군 준비 | ×0.9 | ×1.15 | ×1.25 |
-  - his rule: 1군 준비 when a U-19 or U-21 prospect is within 5 OVR of being ready (→STAFF-13); else 기본기 집중 when U-17 holds more prospects than U-19 and U-21 together; else 균형.
+  - his rule: 1군 준비 when a U-19 or U-21 prospect is within 5 OVR of being ready (→STAFF-13; within 10 under 데뷔 시점 빠른 데뷔, and only U-21 under 늦게 →CLUB-32); else 기본기 집중 when U-17 holds more prospects than U-19 and U-21 together; else 균형.
+- CLUB-32 [o] Two rows of the 유소년 area (→ECON-25) say what the academy is for and how early its prospects go up; the delegated youth director promotes, releases and the staff list by them (→STAFF-13, →CLUB-22), and 데뷔 시점 also sets the coaches' focus rules (→CLUB-13, →CLUB-31). ← the owner's idea of his academy, not a fixed rule, decides what becomes of its boys
+  | 육성 목표 | the youth director |
+  |---|---|
+  | 표준 (default) | releases a prospect of 19+ whose potential is below the weakest first-teamer of his role |
+  | 1군 공급 | releases nobody before 21: every prospect stays until he is ready or leaves |
+  | 판매용 육성 | as 표준; with transfers delegated the staff list non-starters aged 21 or under (→CLUB-22) |
+  | 최소 운영 | releases a prospect of 18+ whose potential is below the starters' level of his role |
+  | 데뷔 시점 | ready to be promoted (from the promotion age →CLUB-16) | also |
+  |---|---|---|
+  | 표준 (default) | at the weakest first-teamer of his role, or its starters' level minus 10 | - |
+  | 빠른 데뷔 | at the weakest first-teamer minus 3, or the starters' level minus 15 | growth of players ≤ 21 ×1.2, morale baseline −1 |
+  | 준비된 뒤 | at the starters' level of his role | - |
+  | 늦게 | as 표준, but not before 19 | U-21 growth ×1.15 |
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -137,6 +153,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r28 261014 CLUB-32+ 육성 목표 (표준, 1군 공급, 판매용 육성, 최소 운영) and 데뷔 시점 (표준, 빠른 데뷔, 준비된 뒤, 늦게) set the youth director's promotion, release and listing; CLUB-22✎ +staff set stances at window openings by 매각 기조 and 육성 목표; CLUB-21✎ 트레이딩 머신 1군 직행 경로→데뷔 시점 빠른 데뷔; CLUB-13✎ CLUB-31✎ focus rules read 데뷔 시점
 - r27 261014 CLUB-18✎ sale bar 130%/200% of value→by 매각 기조 (셀링 클럽 110/160 … 핵심 지키기 150/250, never a starter), runway steps 13/30 rounds→the 재정 기조 steps; CLUB-24✎ runway 30 weeks / 13-week warning→the 재정 기조 steps; CLUB-26✎ the owner's talk rule (wage cap 90–140%, minimum OVR, maximum age)→재계약 기조 (표준 110%, 모두 붙잡기 140%, 핵심만 붙잡기 starters 140%, 짠물 100%, 젊은 선수 우선 under 30), cash checks 13 rounds and 65%→재정 기조
 - r26 261013 CLUB-12✎ facilities→the training ground; CLUB-16✎ facilities→academy facilities; CLUB-21✎ 상업 제국 facilities 6+→stadium 30,000+
 - r25 261013 CLUB-13✎ the owner's focus at intervention level 1, the assistant's otherwise→always the assistant's, owner suggestions or forced orders (→STAFF-19); CLUB-16✎ one academy→U-17/U-19/U-21 by age, growth ×1.2/1.0/0.8, leave at 21 (was 22, staff release at 19), promotion from 16 (17 in England); CLUB-31+ youth training focus by the youth director

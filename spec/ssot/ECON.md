@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r25 | Define the implemented browser-demo behavior for historical club economy.
+> r26 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -84,22 +84,22 @@
 - ECON-20 [o] When cash after a round's costs is non-negative but covers fewer than 13 rounds of fixed costs, a cash warning inbox item (→WEB-42) appears once per season with its weeks left and remedies. It is a status, never a stop: the HUD cash and a red band show it (→WEB-56).
 - ECON-21 [o] Sponsors with business delegated (→STAFF-13): whenever an open sponsor slot (→ECON-8) is empty the commercial staff sign its best guaranteed offer at once and report it. Without delegation a slot left empty at a season's start, or a contract in its final season on 1 April, posts a sponsor reminder (→WEB-42).
 
-- ECON-22 [o] The club build — shown to the owner as the club's direction (방향, →WEB-60) — is six slots — 유스 정책, 스카우팅, 매각 기조, 수익 모델, 홈·팬, 라커룸 문화 — each holding one card: the standard card or one of four others, so 5^6 = 15,625 strategies before policy, staff or manager. ← combining levers is the fun: owners build their own club instead of picking one of a few presets Every card has at least one gain and one cost; additions add and multipliers multiply across slots. The owner drafts freely, sees combined effects, synergies (→CLUB-21) and odds, and applies a draft at once (recorded as a build event titled 방향 with the direction's name: the preset's, the saved direction's (→WEB-61), else 기본 방향 or 맞춤 방향; a name recorded as 기본 전략 or 맞춤 전략 reads 기본 방향 or 맞춤 방향); every rule that reads a card uses the new one from then on.
+- ECON-22 [o] The club build — shown to the owner as the club's direction (방향, →WEB-60) — is six slots — 유입 방식, 스카우팅, 매각 기조, 수익 모델, 홈·팬, 라커룸 문화 — each holding one card: the standard card or one of four others, so 5^6 = 15,625 strategies before policy, staff or manager. ← combining levers is the fun: owners build their own club instead of picking one of a few presets Every card has at least one gain and one cost; additions add and multipliers multiply across slots. The owner drafts freely, sees combined effects, synergies (→CLUB-21) and odds, and applies a draft at once (recorded as a build event titled 방향 with the direction's name: the preset's, the saved direction's (→WEB-61), else 기본 방향 or 맞춤 방향; a name recorded as 기본 전략 or 맞춤 전략 reads 기본 방향 or 맞춤 방향); every rule that reads a card uses the new one from then on.
   - cards change at any time, like the dials: a draft, preset or saved strategy applies at once whatever changed before, with no lock and no reservation for a later season. ← owners change course when the club needs it; each card's costs are the price of switching
   - presets fill the slots in one tap; each has one identity and lights or aims at a synergy:
     | preset | cards (others standard) | aim |
     |---|---|---|
     | 동네의 자부심 | 성골 유스, 지역 인재 우선, 핵심 지키기, 회원제 운영, 지역 밀착, 가족 같은 클럽 | lights 우리 동네 아이들 |
-    | 트레이딩 머신 | 1군 직행 경로, 데이터 스카우팅, 셀링 클럽, 철저한 경쟁 | lights 트레이딩 머신; 머니볼 with a spotter or negotiator scout and recruitment ≤ 2 |
+    | 트레이딩 머신 | 데이터 스카우팅, 셀링 클럽, 철저한 경쟁 | 트레이딩 머신 with 데뷔 시점 빠른 데뷔; 머니볼 with a spotter or negotiator scout and recruitment ≤ 2 |
     | 상업 제국 | 광역 네트워크, 상업 확장, 글로벌 브랜드, 스타 대우 | 상업 제국 with marketing 4+ and a stadium of 30,000+ |
     | 승격 올인 | 즉시 전력, 핵심 지키기, 구단주 투자, 홈 요새, 베테랑 리더십 | owner money and home strength now, youth growth given up |
     | 알뜰 생존 | 유소년 클럽 제휴, 지역 인재 우선, 강경 협상, 긴축 재정, 가족 관중, 베테랑 리더십 | player wages ×0.91 with morale held level, for small starts |
   | slot | card | effects |
   |---|---|---|
-  | 유스 정책 | 성골 유스 | intake +1, intake potential +3; market candidates −1 |
-  | 유스 정책 | 1군 직행 경로 | growth of players ≤ 21 ×1.2; morale baseline −1 |
-  | 유스 정책 | 유소년 클럽 제휴 | intake +2; intake potential −2 |
-  | 유스 정책 | 해외 유스 스카우트 | intake potential +5; intake −1 |
+  | 유입 방식 | 성골 유스 | intake +1, intake potential +3; market candidates −1 |
+  | 유입 방식 | 유소년 클럽 제휴 | intake +2; intake potential −2 |
+  | 유입 방식 | 해외 유스 스카우트 | intake potential +5; intake −1 |
+  | 유입 방식 | 엘리트 선발 | intake potential +8; intake −2 |
   | 스카우팅 | 데이터 스카우팅 | candidate potential +3, candidates +1; candidate ability −2 |
   | 스카우팅 | 즉시 전력 | candidate ability +4; player wages ×1.05 |
   | 스카우팅 | 광역 네트워크 | candidates +3; candidate potential −1 |
@@ -121,6 +121,7 @@
   | 라커룸 문화 | 스타 대우 | candidate ability +2, morale baseline +1; player wages ×1.1 |
   | 라커룸 문화 | 베테랑 리더십 | morale baseline +2; growth of players ≤ 21 ×0.9 |
   - signed sponsor contracts keep their amounts; a build changes new offers only.
+  - a build holding 1군 직행 경로 (rules before 1.18) loads without it and with 데뷔 시점 빠른 데뷔, which took its effects (→CLUB-32); a saved direction holding it loads the same way.
   - a club vision stored by rules 1.6–1.7 loads as the cards its vision stood for at 1.8 (균형 운영 all standard, 유스 명가, 셀링 클럽, 상업 확장, 지역 밀착, 승격 올인 as then defined); it reads as a current preset only when the cards match one.
 
 - ECON-23 [o] Supporters follow reputation, not the stadium: each league round they move 3% toward the following the reputation commands (800 × 1.085^reputation: about 2,000 at 12, 47,000 at 50, 1.2 million at 90), a win adds 0.4% × the build's win-fans effect, a defeat costs 0.1%, marketing and campaigns add theirs; there is no ceiling, never below 200. ← a fixed cap and compounding wins both broke the long game
@@ -134,7 +135,7 @@
   | 선수단·계약 | 라커룸 문화 | 선수단 투자, 재계약 기조 (→CLUB-26) | contract talks |
   | 영입 | 스카우팅 | 영입 기조 | - |
   | 매각 | 매각 기조 | - | answers to offers (→CLUB-18, →CLUB-24) |
-  | 유소년 | 유스 정책 | 유소년 투자 | - |
+  | 유소년 | 유입 방식 | 육성 목표, 데뷔 시점 (→CLUB-32), 유소년 투자 | academy promotion, release and listing; the youth director's focus (→CLUB-31) |
   | 스태프 | - | 선호 학파, 감독 기조 (→STAFF-18), 코치 기조 (→STAFF-15) | the manager post, the coaching departments |
   | 재정 | 수익 모델 | 마케팅, 재정 기조 (→ECON-33) | sponsors (→ECON-21); 재정 기조 bounds every delegated spend |
   | 홈·팬 | 홈·팬 | 티켓 가격 | - |
@@ -183,6 +184,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r26 261014 ECON-22✎ slot 유스 정책→유입 방식, 1군 직행 경로→moved to 데뷔 시점 빠른 데뷔, +엘리트 선발 (intake potential +8, intake −2), 트레이딩 머신 preset without 1군 직행 경로; ECON-25✎ 유소년 area +육성 목표, 데뷔 시점
 - r25 261014 ECON-25✎ six areas of a card and its dials→seven areas by the decisions they steer: 선수단·계약 +재계약 기조, 스태프 (선호 학파, 감독 기조, 코치 기조), 수익→재정 +재정 기조; ECON-33+ 재정 기조: runway kept, wage-bill ceiling, promotion floor and sell-harder steps by option (표준 = 13 rounds, 65%, a year, 13/30)
 - r24 261014 ECON-22✎ shown as the operating strategy (운영 전략), events titled 운영 전략 with 기본 전략/맞춤 전략→the club's direction (방향), titled 방향 with 기본 방향/맞춤 방향, older names read so; ECON-25✎ strategy areas, the operating board's card rows and dials→direction areas whose cards and dials are rows of named options drawn and drafted alike on the 방향 board
 - r23 261014 ECON-29✎ measured on 24 careers of one facility level→40 careers on the facility parts: wage bill 46.1%→44.3% (below the band), operating result +3.4%→+4.8%, none bankrupt
