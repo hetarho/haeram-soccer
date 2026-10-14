@@ -1,6 +1,6 @@
-import type { Player, Role, TransferBid, World } from '../../contracts/src/types';
+import type { Player, Role, SigningRequest, TransferBid, World } from '../../contracts/src/types';
 import { currentDay, SEASON_ROUNDS } from './calendar';
-import { compareIds, ratio } from './primitives';
+import { clamp, compareIds, ratio } from './primitives';
 import { activePlayers, addEvent, overall, ownStarters } from './world';
 import { directionOption, financeStance } from './direction';
 import { moneyLabel, operatingCosts, recentRevenue, wageBill } from './finance';
@@ -22,6 +22,13 @@ export const SIGNING_CONFIG = {
   squadMinimum: 18,
   /** He looks for upgrades only while the squad has at most this many players. */
   upgradeSquad: 24,
+  /** Candidates the chief scout lists per role. */
+  shortlistPerRole: 3,
+  /** A shortlisted candidate must beat a role's weakest starter by this much to be requested. */
+  requestMargin: 5,
+  requestLimit: 3,
+  /** Trust a manager loses when a window closes with none of his requests met. */
+  unmetTrust: 3,
 };
 const ROLES: readonly Role[] = ['GK', 'DEF', 'MID', 'FWD'];
 const ROLE_NAME: Readonly<Record<Role, string>> = {
@@ -32,10 +39,14 @@ const ROLE_NAME: Readonly<Record<Role, string>> = {
 };
 
 type Offer = ReturnType<typeof transferOffers>[number];
-/** Why the 단장 wants a player: a short role, or an upgrade over a starter. */
-export type SigningNeed =
+/**
+ * Why the 단장 wants a player: a short role, or an upgrade over a starter; `requested` when the
+ * manager asked for the role (→CLUB-33).
+ */
+export type SigningNeed = (
   | { kind: 'short'; role: Role; count: number; minimum: number; squad: number }
-  | { kind: 'upgrade'; role: Role; starter: Player; margin: number };
+  | { kind: 'upgrade'; role: Role; starter: Player; margin: number }
+) & { requested?: SigningRequest };
 
 const isOpen = (bid: TransferBid) => bid.status === 'pending' || bid.status === 'countered';
 /** The opening day of the window open on `day`. */
@@ -51,28 +62,36 @@ function windowBids(w: World, day: number) {
   );
 }
 
-/** The first short role, or the role furthest below its share of an 18-player squad. */
-export function shortRole(w: World): Extract<SigningNeed, { kind: 'short' }> | undefined {
+type ShortNeed = Extract<SigningNeed, { kind: 'short' }>;
+/**
+ * Every short role in role order: fewer than its minimum, or, with the squad under 18 and every
+ * role at its minimum, the role furthest below its share of an 18-player squad.
+ */
+export function shortRoles(w: World): ShortNeed[] {
   const squad = activePlayers(w),
-    count = (role: Role) => squad.filter((p) => p.role === role).length;
-  const short = ROLES.find((role) => count(role) < SIGNING_CONFIG.roleMinimum[role]);
-  const role =
-    short ??
-    (squad.length < SIGNING_CONFIG.squadMinimum
-      ? [...ROLES].sort(
-          (a, b) =>
-            count(a) - SIGNING_CONFIG.roleMinimum[a] - (count(b) - SIGNING_CONFIG.roleMinimum[b]),
-        )[0]
-      : undefined);
-  return role
-    ? {
-        kind: 'short',
-        role,
-        count: count(role),
-        minimum: SIGNING_CONFIG.roleMinimum[role],
-        squad: squad.length,
-      }
-    : undefined;
+    count = (role: Role) => squad.filter((p) => p.role === role).length,
+    need = (role: Role): ShortNeed => ({
+      kind: 'short',
+      role,
+      count: count(role),
+      minimum: SIGNING_CONFIG.roleMinimum[role],
+      squad: squad.length,
+    });
+  const short = ROLES.filter((role) => count(role) < SIGNING_CONFIG.roleMinimum[role]);
+  if (short.length) return short.map(need);
+  if (squad.length >= SIGNING_CONFIG.squadMinimum) return [];
+  return [
+    need(
+      [...ROLES].sort(
+        (a, b) =>
+          count(a) - SIGNING_CONFIG.roleMinimum[a] - (count(b) - SIGNING_CONFIG.roleMinimum[b]),
+      )[0],
+    ),
+  ];
+}
+/** The first short role, if any. */
+export function shortRole(w: World): ShortNeed | undefined {
+  return shortRoles(w)[0];
 }
 
 /**
@@ -123,35 +142,197 @@ export function signingVerdict(w: World, player: Player, fee: string) {
   };
 }
 
-/** The need in words, with the row behind it. */
+/** The need in words, with the row behind it and the manager's request when it is one. */
 export function needLine(w: World, need: SigningNeed) {
+  const asked = need.requested ? `감독 요청 ${ROLE_NAME[need.role]} · ` : '';
   if (need.kind === 'short')
-    return need.count < need.minimum
-      ? `${ROLE_NAME[need.role]}가 ${need.count}명뿐이라 ${need.minimum}명을 채워요`
-      : `선수단이 ${need.squad}명뿐이라 ${SIGNING_CONFIG.squadMinimum}명을 채워요`;
-  return `주전 ${need.starter.name}(OVR ${overall(need.starter)})보다 ${need.margin} 이상 나은 ${ROLE_NAME[need.role]}를 찾아요(재정 기조 ${directionOption(w, 'finance').name})`;
+    return (
+      asked +
+      (need.count < need.minimum
+        ? `${ROLE_NAME[need.role]}가 ${need.count}명뿐이라 ${need.minimum}명을 채워요`
+        : `선수단이 ${need.squad}명뿐이라 ${SIGNING_CONFIG.squadMinimum}명을 채워요`)
+    );
+  return `${asked}주전 ${need.starter.name}(OVR ${overall(need.starter)})보다 ${need.margin} 이상 나은 ${ROLE_NAME[need.role]}를 찾아요(재정 기조 ${directionOption(w, 'finance').name})`;
 }
+/** " · 감독이 고른 선수" when the 단장 moves for the manager's pick. */
+const pickNote = (need: SigningNeed, player: Player) =>
+  need.requested?.pick === player.id ? ' · 감독이 고른 선수' : '';
 const recruitmentLine = (w: World) =>
   `영입 기조 ${POLICY_INFO.recruitment.levels[policyOf(w).recruitment - 1].name}`;
 
-/** The candidates for a need, free agents first, then by ability, potential and id. */
+/** Free agents first, then by ability, potential and id. */
+const byCandidate = (a: Offer, b: Offer) =>
+  Number(b.freeAgent) - Number(a.freeAgent) ||
+  overall(b.player) - overall(a.player) ||
+  b.player.potential - a.player.potential ||
+  compareIds(a.player.id, b.player.id);
+/**
+ * The candidates for a need (→CLUB-33): the manager's pick, then the rest of the shortlist, then
+ * the market list, each free agents first, then by ability, potential and id.
+ */
 function candidates(w: World, offers: Offer[], need: SigningNeed, tried: Set<string>) {
+  const listed = new Set(shortlistOffers(w).map(({ offer }) => offer.player.id)),
+    pick = need.requested?.pick,
+    rank = (offer: Offer) => (offer.player.id === pick ? 0 : listed.has(offer.player.id) ? 1 : 2);
   return offers
     .map((offer, index) => ({ offer, index }))
     .filter(
       ({ offer }) =>
         offer.available &&
+        !offer.player.loanUntil &&
         offer.player.role === need.role &&
         !tried.has(offer.player.id) &&
         (need.kind === 'short' || overall(offer.player) >= overall(need.starter) + need.margin),
     )
-    .sort(
+    .sort((a, b) => rank(a.offer) - rank(b.offer) || byCandidate(a.offer, b.offer));
+}
+
+/** The market list's candidates that are still on it and free to join, best first per role. */
+function listable(w: World) {
+  return transferOffers(w)
+    .map((offer, index) => ({ offer, index }))
+    .filter(({ offer }) => offer.available && !offer.player.loanUntil);
+}
+/**
+ * The shortlist as it stands (→CLUB-33): this season's entries still on the market list and free
+ * to join, in their order, with their index in the list.
+ */
+export function shortlistOffers(w: World) {
+  const s = w.shortlist;
+  if (!s || s.year !== w.year) return [];
+  const offers = listable(w);
+  return s.entries.flatMap((entry) =>
+    offers.filter(({ offer }) => offer.player.id === entry.playerId),
+  );
+}
+/** This season's requests, each pick kept only while that player is still shortlisted. */
+export function signingRequests(w: World): SigningRequest[] {
+  const s = w.shortlist;
+  if (!s || s.year !== w.year) return [];
+  const listed = new Set(shortlistOffers(w).map(({ offer }) => offer.player.id));
+  return s.requests.map(({ pick, ...request }) =>
+    pick && listed.has(pick) ? { ...request, pick } : request,
+  );
+}
+/**
+ * The manager's pick among the shortlisted of a role (→CLUB-33): the ablest, then potential; a
+ * 육성형 manager or one with the youth trait the highest potential aged 23 or under first.
+ */
+function managerPick(w: World, listed: Offer[], role: Role) {
+  const pool = listed.filter((offer) => offer.player.role === role);
+  const youngFirst = w.manager.style === 'developer' || w.manager.trait === 'youth';
+  const young = youngFirst
+    ? pool
+        .filter((offer) => w.year - offer.player.born <= 23)
+        .sort(
+          (a, b) =>
+            b.player.potential - a.player.potential ||
+            overall(b.player) - overall(a.player) ||
+            compareIds(a.player.id, b.player.id),
+        )[0]
+    : undefined;
+  return (
+    young ??
+    [...pool].sort(
       (a, b) =>
-        Number(b.offer.freeAgent) - Number(a.offer.freeAgent) ||
-        overall(b.offer.player) - overall(a.offer.player) ||
-        b.offer.player.potential - a.offer.player.potential ||
-        compareIds(a.offer.player.id, b.offer.player.id),
+        overall(b.player) - overall(a.player) ||
+        b.player.potential - a.player.potential ||
+        compareIds(a.player.id, b.player.id),
+    )[0]
+  )?.player.id;
+}
+/**
+ * The manager's requests (→CLUB-33): every short role, then the role whose weakest starter a
+ * shortlisted candidate beats by the most, when by 5 or more; at most three, each with his pick.
+ * An interim asks for nothing.
+ */
+function managerRequests(w: World, listed: Offer[]): SigningRequest[] {
+  if (w.manager.interim) return [];
+  const requests: Omit<SigningRequest, 'pick'>[] = shortRoles(w).map(({ role }) => ({
+    role,
+    kind: 'short',
+  }));
+  const starters = ownStarters(w);
+  let upgrade: { role: Role; by: number } | undefined;
+  for (const role of ROLES) {
+    if (requests.some((request) => request.role === role)) continue;
+    const weakest = starters
+      .filter((p) => p.role === role)
+      .sort((a, b) => overall(a) - overall(b) || compareIds(a.id, b.id))[0];
+    const best = Math.max(
+      ...listed.filter((offer) => offer.player.role === role).map((offer) => overall(offer.player)),
     );
+    if (!weakest || !Number.isFinite(best)) continue;
+    const by = best - overall(weakest);
+    if (by >= SIGNING_CONFIG.requestMargin && (!upgrade || by > upgrade.by)) upgrade = { role, by };
+  }
+  if (upgrade) requests.push({ role: upgrade.role, kind: 'upgrade' });
+  return requests.slice(0, SIGNING_CONFIG.requestLimit).map((request) => {
+    const pick = managerPick(w, listed, request.role);
+    return pick ? { ...request, pick } : request;
+  });
+}
+/**
+ * The chief scout's draw (→CLUB-33), on a window's opening day and after every 4th league round:
+ * up to three candidates per role from the market list as 영입's rows shape it, free agents first,
+ * then by ability, potential and id, with the manager's requests. A window's requests stay as
+ * they were at its opening.
+ */
+export function drawShortlist(w: World) {
+  const offers = listable(w).map(({ offer }) => offer);
+  const listed = ROLES.flatMap((role) =>
+    offers
+      .filter((offer) => offer.player.role === role)
+      .sort(byCandidate)
+      .slice(0, SIGNING_CONFIG.shortlistPerRole),
+  );
+  const window = w.shortlist?.window;
+  w.shortlist = {
+    year: w.year,
+    day: currentDay(w),
+    entries: listed.map((offer) => ({ playerId: offer.player.id, role: offer.player.role })),
+    requests: managerRequests(w, listed),
+    ...(window ? { window } : {}),
+  };
+}
+/** A window opens: the chief scout draws, and the requests become the window's (→CLUB-33). */
+export function openShortlistWindow(w: World) {
+  drawShortlist(w);
+  const s = w.shortlist!;
+  delete s.window;
+  if (s.requests.length)
+    s.window = {
+      year: w.year,
+      opening: s.day,
+      manager: w.manager.id,
+      roles: s.requests.map((request) => request.role),
+    };
+}
+/** A player joined the squad: a request of his role is met for the window (→CLUB-33). */
+export function noteSigning(w: World, player: Pick<Player, 'role'>) {
+  const window = w.shortlist?.window;
+  if (window && window.year === w.year && window.roles.includes(player.role)) window.met = true;
+}
+/**
+ * The day after a window closes (→CLUB-33, →STAFF-5): the manager whose requests saw no player of
+ * a requested role join in the window loses 3 trust, whoever held transfers, and the inbox says
+ * so; a met request gains nothing.
+ */
+export function judgeRequests(w: World) {
+  const s = w.shortlist,
+    window = s?.window;
+  if (!s || !window) return;
+  delete s.window;
+  const m = w.manager;
+  if (window.year !== w.year || window.met || !window.roles.length || window.manager !== m.id)
+    return;
+  m.trust = clamp(m.trust - SIGNING_CONFIG.unmetTrust);
+  pushInbox(w, {
+    kind: 'staff-report',
+    title: `${m.name} 감독의 영입 요청이 채워지지 않았어요`,
+    detail: `이적시장이 열릴 때 요청한 ${window.roles.map((role) => ROLE_NAME[role]).join('·')} 자리에 아무도 오지 않았어요 · 감독 신뢰 −${SIGNING_CONFIG.unmetTrust}(지금 ${m.trust})`,
+    attention: false,
+  });
 }
 
 /** The upgrade needs: each role's weakest starter, the weakest of them first. */
@@ -172,6 +353,7 @@ function signFreeAgent(w: World, offer: Offer, need: SigningNeed, why: string) {
     day = currentDay(w);
   p.clauses = signingClauses(w, p);
   w.players.push(p);
+  noteSigning(w, p);
   // The signing is kept as a completed staff bid, so the window's count sees it.
   w.bids = [
     ...(w.bids || []),
@@ -199,7 +381,7 @@ function signFreeAgent(w: World, offer: Offer, need: SigningNeed, why: string) {
     kind: 'staff-report',
     title: `단장 영입 · 자유계약 ${p.name}`,
     detail:
-      `${needLine(w, need)} · ${p.role} · ${w.year - p.born}세 · OVR ${overall(p)} · 연봉 ${moneyLabel(w, p.wage)} · ${recruitmentLine(w)} · ${why}`.slice(
+      `${needLine(w, need)}${pickNote(need, offer.player)} · ${p.role} · ${w.year - p.born}세 · OVR ${overall(p)} · 연봉 ${moneyLabel(w, p.wage)} · ${recruitmentLine(w)} · ${why}`.slice(
         0,
         400,
       ),
@@ -211,6 +393,7 @@ function signFreeAgent(w: World, offer: Offer, need: SigningNeed, why: string) {
  * The 단장's look (→CLUB-33): with transfers delegated and a window open, on its opening
  * day and every 7th day after it, at most one move — a free agent signed or a bid at the asking
  * fee — for the first need a candidate meets within 재정 기조; none while one of his bids is open.
+ * Short roles come before upgrades, and the manager's requested roles before the others.
  */
 export function staffSignings(w: World) {
   const day = currentDay(w),
@@ -227,14 +410,23 @@ export function staffSignings(w: World) {
     ).length,
     tried = new Set(bids.map((bid) => bid.playerId)),
     offers = transferOffers(w);
-  const short = shortRole(w),
-    needs: SigningNeed[] = short
-      ? [short]
+  const requests = signingRequests(w),
+    short = shortRoles(w),
+    found: SigningNeed[] = short.length
+      ? short
       : stance.signing.margin !== undefined &&
           upgrades < stance.signing.upgrades &&
           squad <= SIGNING_CONFIG.upgradeSquad
         ? upgradeNeeds(w, stance.signing.margin)
         : [];
+  const needs = found
+    .map((need) => {
+      const requested = requests.find((request) => request.role === need.role);
+      return requested ? { ...need, requested } : need;
+    })
+    .map((need, order) => ({ need, order }))
+    .sort((a, b) => Number(!a.need.requested) - Number(!b.need.requested) || a.order - b.order)
+    .map(({ need }) => need);
   for (const need of needs)
     for (const { offer, index } of candidates(w, offers, need, tried)) {
       const fee = offer.freeAgent
@@ -250,7 +442,7 @@ export function staffSignings(w: World) {
           kind: 'staff-report',
           title: `단장 영입 제안 · ${offer.player.name}`,
           detail:
-            `${needLine(w, need)} · ${offer.player.role} · ${w.year - offer.player.born}세 · OVR ${overall(offer.player)} · 제안 ${moneyLabel(w, fee)} (요구액 ${moneyLabel(w, offer.fee)}) · ${recruitmentLine(w)} · ${verdict.reason}`.slice(
+            `${needLine(w, need)}${pickNote(need, offer.player)} · ${offer.player.role} · ${w.year - offer.player.born}세 · OVR ${overall(offer.player)} · 제안 ${moneyLabel(w, fee)} (요구액 ${moneyLabel(w, offer.fee)}) · ${recruitmentLine(w)} · ${verdict.reason}`.slice(
               0,
               400,
             ),

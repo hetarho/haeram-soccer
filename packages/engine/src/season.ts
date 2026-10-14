@@ -46,6 +46,7 @@ import { managerStyleEffects } from './styles';
 import { synergyEffects } from './synergy';
 import { buildEffects } from './build';
 import { MARKET_REFRESH_ROUNDS, refreshManagerMarket } from './managerMarket';
+import { drawShortlist } from './signings';
 import { dailyStaff, seasonStaff } from './staff';
 import { fansAfterMatch } from './fans';
 import {
@@ -745,7 +746,11 @@ function playRound(w: World, capture: Settlement, observe: boolean) {
   settleRound(w);
   snapshotStandings(w);
   snapshotScorers(w);
-  if (w.round % MARKET_REFRESH_ROUNDS === 0) refreshManagerMarket(w);
+  if (w.round % MARKET_REFRESH_ROUNDS === 0) {
+    refreshManagerMarket(w);
+    // The chief scout redraws his shortlist with the managers' market (→CLUB-33).
+    drawShortlist(w);
+  }
   w.revision++;
 }
 /** Records an older save may lack, set up before its first day is lived. */

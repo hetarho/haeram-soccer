@@ -210,6 +210,31 @@ export type InboxKind =
   | 'transfer-request'
   | 'sponsor-ending';
 export type Metrics = number[];
+/** A role the manager asks the club to sign for (→CLUB-33): short of the minimum, or an upgrade. */
+export interface SigningRequest {
+  role: Role;
+  kind: 'short' | 'upgrade';
+  /** The manager's pick among the shortlisted of the role, by player id. */
+  pick?: string;
+}
+/**
+ * The chief scout's shortlist (스카우트 명단, →CLUB-33), drawn on a window's opening day (the
+ * season's first day among them) and after every 4th league round, with the manager's requests.
+ */
+export interface Shortlist {
+  /** The season and season day of the draw. */
+  year: number;
+  day: number;
+  /** Up to three market candidates per role, best first; one no longer available drops on reading. */
+  entries: { playerId: string; role: Role }[];
+  /** At most three: every short role, then the role a candidate upgrades most (→CLUB-33). */
+  requests: SigningRequest[];
+  /**
+   * The requests at the open window's opening, judged at its close: the manager who made them
+   * and whether a player of a requested role joined since (→CLUB-33).
+   */
+  window?: { year: number; opening: number; manager: string; roles: Role[]; met?: true };
+}
 export interface Club {
   id: string;
   name: string;
@@ -762,6 +787,8 @@ export interface World {
   buildNext?: { build: ClubBuild; name?: string };
   /** The manager market (→STAFF-17); absent until it first moves, when the season's four seed it. */
   managerMarket?: ManagerMarket;
+  /** The chief scout's shortlist and the manager's requests (→CLUB-33); absent until first drawn. */
+  shortlist?: Shortlist;
   /** Win bonus promised for the next own matches: pays per win until `matches` run out. */
   winBonus?: { matches: number };
   manager: Manager;

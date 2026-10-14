@@ -646,7 +646,8 @@ describe('incoming bids', () => {
   });
 
   it('lets delegated staff answer quietly: only generous offers for non-essential players', () => {
-    const w = world();
+    // A season whose offers include both answers once the 단장 has signed from the shortlist.
+    const w = world('market-2');
     // New clubs answer offers themselves; this scenario hands transfers to the staff.
     expect(delegated(w, 'transfers')).toBe(false);
     w.intervention = 4;

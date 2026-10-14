@@ -14,7 +14,13 @@ import { managerStyleEffects } from './styles';
 import { buildEffects, buildOf, cardOf } from './build';
 import { pushInbox } from './inbox';
 import { delegated } from './intervention';
-import { signingVerdict, staffSignings } from './signings';
+import {
+  judgeRequests,
+  noteSigning,
+  openShortlistWindow,
+  signingVerdict,
+  staffSignings,
+} from './signings';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 /** Daily chance that another club bids for one of our players while a window is open. */
@@ -151,6 +157,7 @@ function completeSigning(w: World, bid: TransferBid, offer: MarketOffer, fee: st
   if (bid.loan) p.loanUntil = w.year + 1;
   else p.clauses = signingClauses(w, p);
   w.players.push(p);
+  noteSigning(w, p);
   addEvent(
     w,
     'transfer-in',
@@ -359,8 +366,13 @@ function announceWindows(w: World, day: number) {
       detail: `${WINDOW_INFO[opening].deadline}까지 이적료가 있는 영입·임대·매각과 협상을 진행할 수 있어요. 다른 구단의 제안도 들어옵니다.`,
       attention: true,
     });
+    // The chief scout lists candidates and the manager asks before the window's first day of
+    // business (→CLUB-33).
+    openShortlistWindow(w);
     if (delegated(w, 'transfers')) staffStances(w);
   }
+  // The day after a window closes the manager's requests at its opening are judged (→CLUB-33).
+  if (day === d.summerClose + 1 || day === d.winterClose + 1) judgeRequests(w);
   const closing = day === d.summerClose ? 'summer' : day === d.winterClose ? 'winter' : undefined;
   if (closing && !already('window-close'))
     pushInbox(w, {

@@ -20,6 +20,7 @@ import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
 import { credit, debit } from './operations';
+import { noteSigning } from './signings';
 
 /** Bids, offers, stances, lineup, training, the academy, owner requests and contract talks. */
 export type SquadCommand = Extract<
@@ -164,6 +165,7 @@ export function squadCommand(w: World, cmd: SquadCommand) {
       if (cmd.loan) o.player.loanUntil = w.year + 1;
       else o.player.clauses = signingClauses(w, o.player);
       w.players.push(o.player);
+      noteSigning(w, o.player);
       addEvent(
         w,
         'transfer-in',

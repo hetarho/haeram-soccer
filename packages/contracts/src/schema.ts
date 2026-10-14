@@ -480,6 +480,27 @@ const bid = z.strictObject({
   counterFee: money.optional(),
   staff: z.enum(['short', 'upgrade']).optional(),
 });
+const playerRole = z.enum(['GK', 'DEF', 'MID', 'FWD']);
+/** The chief scout's shortlist and the manager's requests (→CLUB-33). */
+const shortlist = z.strictObject({
+  year: season,
+  day: z.number().int().min(0).max(400),
+  entries: z.array(z.strictObject({ playerId: id, role: playerRole })).max(12),
+  requests: z
+    .array(
+      z.strictObject({ role: playerRole, kind: z.enum(['short', 'upgrade']), pick: id.optional() }),
+    )
+    .max(3),
+  window: z
+    .strictObject({
+      year: season,
+      opening: z.number().int().min(0).max(400),
+      manager: id,
+      roles: z.array(playerRole).max(3),
+      met: z.literal(true).optional(),
+    })
+    .optional(),
+});
 const inboxItem = z.strictObject({
   id,
   year: z.number().int(),
@@ -581,6 +602,7 @@ export const worldSchema: z.ZodType<World> = z.object({
     .optional(),
   intervention: z.literal([1, 2, 3, 4]).optional(),
   bids: z.array(bid).max(200).optional(),
+  shortlist: shortlist.optional(),
   morale: z.number().finite().min(0).max(100).optional(),
   build: clubBuildSchema.optional(),
   // Written only by rules 1.13–1.15; writer activation drops it (→SAVE-10).

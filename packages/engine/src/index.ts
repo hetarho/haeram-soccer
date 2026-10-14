@@ -5,6 +5,7 @@ import { basicStaff } from './staff';
 import { MORALE_START } from './morale';
 import { NEW_CLUB_INTERVENTION } from './intervention';
 import { foundWithPreset } from './presets';
+import { openShortlistWindow } from './signings';
 export * from './world';
 export * from './season';
 export * from './match';
@@ -60,6 +61,8 @@ export function createWorld(input: Founding) {
   w.morale = MORALE_START;
   // The direction chosen at founding (→WEB-15); absent is 기본 방향.
   foundWithPreset(w, input.preset);
+  // A club is founded on the summer window's opening day (→CLUB-33).
+  openShortlistWindow(w);
   return w;
 }
 export function simulateSeason(w: World) {
