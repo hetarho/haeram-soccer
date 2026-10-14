@@ -374,3 +374,47 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
     expect('training' in owned).toBe(false);
   });
 });
+
+describe('rules 1.19 contracts (→SAVE-10)', () => {
+  const saved = (fields: Record<string, unknown>) => ({
+    ...structuredClone(world()),
+    engine: '1.18.0',
+    ...fields,
+  });
+
+  it('loads the marketing dial as 해외 마케팅 and drops the 글로벌 브랜드 card', () => {
+    const loud = validateWorld(
+      saved({ policy: { support: 4, recruitment: 3, marketing: 4, academy: 2 } }),
+    );
+    expect(loud.policy).toEqual({ support: 4, recruitment: 3, academy: 2, globalMarketing: 4 });
+    // The default level carries nothing over.
+    const quiet = validateWorld(saved({ policy: { support: 3, recruitment: 3, marketing: 1 } }));
+    expect(quiet.policy).toEqual({ support: 3, recruitment: 3 });
+    // A build or a reservation holding 글로벌 브랜드 loads without it.
+    const branded = validateWorld(
+      saved({
+        build: { fans: 'global', revenue: 'commercial' },
+        buildNext: { build: { fans: 'global' }, name: '다음 계획' },
+      }),
+    );
+    expect(branded.build).toEqual({ revenue: 'commercial' });
+    expect(branded.buildNext).toEqual({ build: {}, name: '다음 계획' });
+    expect('build' in validateWorld(saved({ build: { fans: 'global' } }))).toBe(false);
+    // A save already on 1.19 loads unchanged; the bases stay within 0–100.
+    const current = saved({
+      engine: '1.19.0',
+      policy: { support: 3, recruitment: 3, localInvest: 5, tour: 3 },
+      localBase: 42.5,
+      globalReach: 7,
+    });
+    expect(canonical(validateWorld(structuredClone(current)))).toBe(canonical(current));
+    for (const fields of [
+      { localBase: 101 },
+      { globalReach: -1 },
+      { policy: { support: 3, recruitment: 3, tour: 4 } },
+      { policy: { support: 3, recruitment: 3, grassroots: 6 } },
+      { build: { fans: 'nowhere' } },
+    ])
+      expect(() => validateWorld(saved({ engine: '1.19.0', ...fields }))).toThrow();
+  });
+});

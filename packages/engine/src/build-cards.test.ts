@@ -193,10 +193,12 @@ describe('club builds', () => {
 
   it('adds additions and multiplies multipliers across slots, neutral when empty', () => {
     expect(composeBuild({})).toEqual(NEUTRAL_BUILD);
-    const stacked = composeBuild({ revenue: 'commercial', fans: 'global', scouting: 'local' });
-    expect(stacked.sponsor).toBeCloseTo(1.2 * 1.1);
-    expect(stacked.marketingFans).toBeCloseTo(1.2 * 1.3);
-    expect(stacked.gateDemand).toBeCloseTo(-0.03 - 0.04 + 0.02);
+    const stacked = composeBuild({ revenue: 'commercial', fans: 'families', scouting: 'local' });
+    expect(stacked.sponsor).toBeCloseTo(1.2);
+    expect(stacked.marketingFans).toBeCloseTo(1.2 * 1.1);
+    expect(stacked.gateDemand).toBeCloseTo(-0.03 + 0.04 + 0.02);
+    // 지역 상생 speeds the 지역 기반 the rows build (→ECON-34) at a small sponsor cost.
+    expect(composeBuild({ fans: 'mutual' })).toMatchObject({ localBaseRate: 1.5, sponsor: 0.95 });
     expect(stacked.wage).toBeCloseTo(0.97);
     // Opposite cards that cancel out are not listed as a change.
     const lines = effectLines(composeBuild({ scouting: 'local', culture: 'family' }));
@@ -246,7 +248,7 @@ describe('build synergies and odds', () => {
     expect(synergyStates(w).every((synergy) => !synergy.active)).toBe(true);
     expect(synergyEffects(w)).toMatchObject({ pass: 0, sponsor: 1, academyGrowth: 1 });
     w.build = { revenue: 'commercial' };
-    w.policy = { support: 3, recruitment: 3, marketing: 4, academy: 1 };
+    w.policy = { support: 3, recruitment: 3, globalMarketing: 4 };
     w.stadium = 4;
     const commercial = synergyStates(w).find((synergy) => synergy.id === 'commercial')!;
     expect(commercial.active).toBe(true);
@@ -277,7 +279,7 @@ describe('build synergies and odds', () => {
     const base = academyIntakeOutlook(w);
     expect(base.golden).toBeGreaterThanOrEqual(0);
     expect(base.golden).toBeLessThanOrEqual(1);
-    w.policy = { support: 3, recruitment: 3, marketing: 1, academy: 5 };
+    w.policy = { support: 3, recruitment: 3, academy: 5 };
     const elite = academyIntakeOutlook(w);
     expect(elite.size).toBe(base.size + 2);
     expect(elite.golden).toBeGreaterThan(base.golden);

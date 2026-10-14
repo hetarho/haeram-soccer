@@ -1,3 +1,4 @@
+import { baseEffects, settleBases } from './bases';
 import type { MatchRecord, World } from '../../contracts/src/types';
 import { addEvent, clubOf, footballQuote, quote } from './world';
 import { random, ratio } from './primitives';
@@ -26,7 +27,7 @@ import { marketingFanGain, policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { credit, debit } from './operations';
 import { CAMPAIGNS } from './ops-commercial';
-import { sponsorAnnual } from './sponsors';
+import { EXCLUSIVE_MARKETING, exclusiveSponsor, sponsorAnnual } from './sponsors';
 
 export function gate(w: World, m: MatchRecord) {
   if (m.home !== w.playerClub && m.away !== w.playerClub) return;
@@ -182,19 +183,24 @@ export function settleRound(w: World) {
   const cost = operatingCosts(w, w.round);
   debit(w, cost.nextRound, true);
   const club = clubOf(w),
+    // An exclusive sponsor holds the merchandise rights and halves 해외 마케팅's fans (→ECON-14).
     fansGained = marketingFanGain(
       club.fans,
-      policyEffects(policyOf(w)).fanGrowth * buildEffects(w).marketingFans,
+      policyEffects(policyOf(w)).fanGrowth *
+        buildEffects(w).marketingFans *
+        (exclusiveSponsor(w) ? EXCLUSIVE_MARKETING : 1),
     );
-  // Supporters drift toward the following the club's reputation commands, without a ceiling.
-  club.fans = driftFans(club.fans + fansGained, club.reputation);
+  // The bases move first (→ECON-34); supporters drift toward the following the club's
+  // reputation commands, scaled by 글로벌 인지도, without a ceiling.
+  settleBases(w);
+  club.fans = driftFans(club.fans + fansGained, club.reputation, baseEffects(w).following);
   settleDistribution(w);
   const money = (amount: string) => moneyLabel(w, amount);
   addEvent(
     w,
     'operating-cost',
     '급여와 시설 유지비',
-    `선수 ${money(cost.payments.playerWages)} · 감독 ${money(cost.payments.managerWage)} · 시설 ${money(cost.payments.maintenance)}${cost.payments.marketing ? ` · 마케팅 ${money(cost.payments.marketing)}` : ''}${cost.payments.academy ? ` · 유소년 ${money(cost.payments.academy)}` : ''}${fansGained ? ` · 마케팅 팬 +${fansGained}명` : ''}`,
+    `선수 ${money(cost.payments.playerWages)} · 감독 ${money(cost.payments.managerWage)} · 시설 ${money(cost.payments.maintenance)}${cost.payments.investment ? ` · 지역·글로벌 투자 ${money(cost.payments.investment)}` : ''}${cost.payments.academy ? ` · 유소년 ${money(cost.payments.academy)}` : ''}${fansGained ? ` · 마케팅 팬 +${fansGained}명` : ''}`,
     (BigInt(cost.nextRound) - BigInt(cost.payments.expenses)).toString(),
   );
   // Operating expenses keep one ledger line a season, grown each round (→ECON-30, ECON-10); the

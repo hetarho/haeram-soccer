@@ -118,7 +118,8 @@ describe('milestones from retained club facts', () => {
     const w = world(true);
     operate(w, { type: 'lineup', ids: lineupPreset(w, 'strongest') });
     operate(w, { type: 'facility', part: 'stadium' });
-    for (const kind of ['outreach', 'tickets', 'player']) operate(w, { type: 'campaign', kind });
+    for (const key of ['localInvest', 'globalMarketing'] as const)
+      operate(w, { type: 'policy', key, level: 5 });
     simulateSeason(w);
     const milestones = clubMilestones(w),
       promotedTier = clubOf(w).tier;

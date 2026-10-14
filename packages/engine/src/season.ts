@@ -1,3 +1,4 @@
+import { seasonTour } from './bases';
 import { advanceEconomy } from './economy';
 import {
   prepareEurope,
@@ -691,6 +692,9 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   }
   own.reputation = clamp(own.reputation + Math.max(-1, table.points / 25 - 1));
   own.strength = rating(w, own);
+  // A summer tour pays, spreads the name and tires the rested squad as the season starts
+  // (→ECON-16).
+  seasonTour(w);
   w.europe = [];
   prepareSeason(w);
   // Relegated clubs may sack their managers into the market (→STAFF-17).

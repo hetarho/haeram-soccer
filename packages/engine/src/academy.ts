@@ -1,3 +1,4 @@
+import { baseEffects } from './bases';
 import type { Player, Role, World, YouthFocus } from '../../contracts/src/types';
 import { currentDay, seasonDayOf } from './calendar';
 import { activePlayers, addEvent, clubOf, makePlayer, overall, ownStarters } from './world';
@@ -95,15 +96,18 @@ export function academyIntakeSize(w: World) {
     (director && director.ability >= 70 ? 1 : 0) +
     academyFacilityTerms(w).intake +
     policyEffects(policyOf(w)).academyIntake +
-    buildEffects(w).academyIntake
+    buildEffects(w).academyIntake +
+    baseEffects(w).intake
   );
 }
 /** Potential added to every prospect by academy investment, the club build and synergies. */
 export function academyPotentialBonus(w: World) {
   return (
     policyEffects(policyOf(w)).academyPotential +
+    policyEffects(policyOf(w)).grassrootsPotential +
     buildEffects(w).academyPotential +
-    synergyEffects(w).academyPotential
+    synergyEffects(w).academyPotential +
+    baseEffects(w).intakePotential
   );
 }
 /** Potential a prospect needs to be called a golden prospect. */

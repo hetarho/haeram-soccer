@@ -27,6 +27,7 @@ import {
   trainingSummary,
   transferOffers,
   driftFans,
+  baseEffects,
 } from './index';
 
 function world(policy?: Partial<ClubPolicy>) {
@@ -73,10 +74,19 @@ describe('club operating policy', () => {
     const absent = world(),
       explicit = world({});
     expect(absent.policy).toBeUndefined();
-    expect(explicit.policy).toEqual({ support: 3, recruitment: 3, marketing: 1, academy: 1 });
+    expect(explicit.policy).toEqual({
+      support: 3,
+      recruitment: 3,
+      academy: 1,
+      localInvest: 1,
+      grassroots: 1,
+      globalMarketing: 1,
+      globalScouting: 1,
+      tour: 1,
+    });
     expect(policyOf(absent)).toEqual(POLICY_DEFAULTS);
     expect(canonical(operatingCosts(explicit))).toBe(canonical(operatingCosts(absent)));
-    expect(operatingCosts(absent).marketing).toBe('0');
+    expect(operatingCosts(absent).investment).toBe('0');
     // Operating expenses are paid at every level (→ECON-30); policy spending appears only when set.
     expect(Object.keys(operatingCosts(absent).payments)).toEqual([
       'playerWages',
@@ -103,12 +113,23 @@ describe('club operating policy', () => {
     expect(absent.events.some((event) => event.detail.includes('마케팅'))).toBe(false);
   });
 
-  it('describes four ordered decisions with five levels each and their real effects', () => {
-    expect(POLICY_KEYS).toEqual(['support', 'recruitment', 'marketing', 'academy']);
+  it('describes eight ordered decisions with five levels each (the tour three) and their real effects', () => {
+    expect(POLICY_KEYS).toEqual([
+      'support',
+      'recruitment',
+      'academy',
+      'localInvest',
+      'grassroots',
+      'globalMarketing',
+      'globalScouting',
+      'tour',
+    ]);
     for (const key of POLICY_KEYS) {
       expect(POLICY_INFO[key].label).toBeTruthy();
       expect(POLICY_INFO[key].question).toBeTruthy();
-      expect(POLICY_INFO[key].levels.map((level) => level.level)).toEqual([1, 2, 3, 4, 5]);
+      expect(POLICY_INFO[key].levels.map((level) => level.level)).toEqual(
+        key === 'tour' ? [1, 2, 3] : [1, 2, 3, 4, 5],
+      );
       for (const level of POLICY_INFO[key].levels) expect(level.summary).toBeTruthy();
     }
     const effects = policyEffects(POLICY_DEFAULTS);
@@ -117,9 +138,14 @@ describe('club operating policy', () => {
       developmentMultiplier: 1,
       recoveryBonus: 0,
       operatingFactor: 1,
-      marketingUnits: 0,
+      investUnits: 0,
       fanGrowth: 0,
       gateBoost: 0,
+      grassrootsPotential: 0,
+      scoutCandidates: 0,
+      scoutPotential: 0,
+      baseTargets: { local: 0, global: 0 },
+      tour: 0,
       academyUnits: 0,
       academyIntake: 0,
       academyPotential: 0,
@@ -148,8 +174,8 @@ describe('club operating policy', () => {
       expect(summary).toContain(factor === 1 ? '운영 경비 기본' : `운영 경비 ×${factor}`);
     }
     // Only squad investment moves the factor.
-    for (const key of ['recruitment', 'marketing', 'academy'] as const)
-      for (const level of [1, 5] as const)
+    for (const key of POLICY_KEYS.filter((key) => key !== 'support'))
+      for (const level of [1, key === 'tour' ? 3 : 5] as const)
         expect(policyEffects({ ...POLICY_DEFAULTS, [key]: level }).operatingFactor).toBe(1);
   });
 
@@ -240,20 +266,21 @@ describe('club operating policy', () => {
     validateWorld(prospects);
   });
 
-  it('spends on marketing every round to grow fans and gate demand without randomness', () => {
-    const loud = world({ marketing: 5 }),
+  it('spends on 해외 마케팅 every round to grow fans without randomness', () => {
+    const loud = world({ globalMarketing: 5 }),
       quiet = world();
-    expect(operatingCosts(quiet).marketing).toBe('0');
-    expect(BigInt(operatingCosts(loud).marketing)).toBeGreaterThan(0n);
-    expect(BigInt(operatingCosts(loud).payments.marketing!)).toBeGreaterThan(0n);
+    expect(operatingCosts(quiet).investment).toBe('0');
+    expect(BigInt(operatingCosts(loud).investment)).toBeGreaterThan(0n);
+    expect(BigInt(operatingCosts(loud).payments.investment!)).toBeGreaterThan(0n);
     expect(BigInt(operatingCosts(loud).annual)).toBe(
-      BigInt(operatingCosts(quiet).annual) + BigInt(operatingCosts(loud).marketing),
+      BigInt(operatingCosts(quiet).annual) + BigInt(operatingCosts(loud).investment),
     );
-    expect(gateProjection(loud).attendanceHigh).toBeGreaterThan(
+    // 주변 투자 is the row that lifts home demand (→ECON-34); 해외 마케팅 does not.
+    expect(gateProjection(world({ localInvest: 5 })).attendanceHigh).toBeGreaterThan(
       gateProjection(quiet).attendanceHigh,
     );
 
-    const direct = world({ marketing: 5 });
+    const direct = world({ globalMarketing: 5 });
     direct.round = 1;
     const fans = clubOf(direct).fans,
       bill = operatingCosts(direct, 1),
@@ -262,14 +289,20 @@ describe('club operating policy', () => {
     settleRound(direct);
     const online = BigInt(direct.income) - income;
     expect(online).toBeGreaterThan(0n);
-    // Marketing adds supporters before they drift toward the club's following (→ECON-23).
+    // Marketing adds supporters before they drift toward the club's following (→ECON-23),
+    // scaled by the 글로벌 인지도 the round has just built (→ECON-34).
+    expect(direct.globalReach).toBeGreaterThan(0);
     expect(clubOf(direct).fans).toBe(
-      driftFans(fans + marketingFanGain(fans, 0.02), clubOf(direct).reputation),
+      driftFans(
+        fans + marketingFanGain(fans, 0.02),
+        clubOf(direct).reputation,
+        baseEffects(direct).following,
+      ),
     );
     expect(marketingFanGain(fans, 0.02)).toBeGreaterThan(0);
     expect(BigInt(direct.cash)).toBe(cash - BigInt(bill.nextRound) + online);
     expect(direct.events.findLast((event) => event.kind === 'operating-cost')!.detail).toContain(
-      `마케팅 ${moneyLabel(direct, bill.payments.marketing!)}`,
+      `지역·글로벌 투자 ${moneyLabel(direct, bill.payments.investment!)}`,
     );
 
     for (let round = 0; round < 6; round++) {
@@ -288,13 +321,14 @@ describe('club operating policy', () => {
       revision = w.revision;
     expect(() => setPolicy(w, 'scouting' as PolicyKey, 3)).toThrow('운영 방침');
     for (const level of [0, 6, 2.5, Number.NaN])
-      expect(() => setPolicy(w, 'support', level as PolicyLevel)).toThrow('1–5');
+      expect(() => setPolicy(w, 'support', level as PolicyLevel)).toThrow('단계를 확인');
+    expect(() => setPolicy(w, 'tour', 4)).toThrow('해외 투어 단계를 확인');
     setPolicy(w, 'support', 3);
     expect(w.policy).toBeUndefined();
     expect(w.events).toHaveLength(events);
 
     operate(w, { type: 'policy', key: 'support', level: 5 });
-    expect(w.policy).toEqual({ support: 5, recruitment: 3, marketing: 1, academy: 1 });
+    expect(w.policy).toEqual({ ...POLICY_DEFAULTS, support: 5 });
     expect(w.revision).toBe(revision + 1);
     expect(w.events.at(-1)).toMatchObject({
       kind: 'policy',
@@ -304,8 +338,8 @@ describe('club operating policy', () => {
     expect(w.events.at(-1)!.amount).toBeUndefined();
     setPolicy(w, 'support', 5);
     expect(w.events).toHaveLength(events + 1);
-    setPolicy(w, 'marketing', 4);
-    expect(w.policy).toEqual({ support: 5, recruitment: 3, marketing: 4, academy: 1 });
+    setPolicy(w, 'globalMarketing', 4);
+    expect(w.policy).toEqual({ ...POLICY_DEFAULTS, support: 5, globalMarketing: 4 });
     expect(w.events).toHaveLength(events + 2);
   });
 
@@ -339,33 +373,41 @@ describe('club operating policy', () => {
       recoveryBonus: 2,
       fansPerRound: 0,
     });
-    const loud = policyPreview(w, 'marketing', 5);
+    const loud = policyPreview(w, 'globalMarketing', 5);
     expect(loud.fansPerRound).toBe(marketingFanGain(clubOf(w).fans, 0.02));
     expect(canonical(w)).toBe(before);
 
     const annual = BigInt(operatingCosts(w).annual);
-    operate(w, { type: 'policy', key: 'marketing', level: 5 });
+    operate(w, { type: 'policy', key: 'globalMarketing', level: 5 });
     expect(BigInt(operatingCosts(w).annual) - annual).toBe(BigInt(loud.annualCostChange));
-    expect(BigInt(policyPreview(w, 'marketing', 1).annualCostChange)).toBe(
+    expect(BigInt(policyPreview(w, 'globalMarketing', 1).annualCostChange)).toBe(
       -BigInt(loud.annualCostChange),
     );
-    expect(() => policyPreview(w, 'marketing', 9 as PolicyLevel)).toThrow('1–5');
+    expect(() => policyPreview(w, 'globalMarketing', 9 as PolicyLevel)).toThrow('단계를 확인');
   });
 
   it('validates, saves and transports the policy while older saves still load', async () => {
-    const w = world({ support: 4, recruitment: 2, marketing: 3 });
+    const w = world({ support: 4, recruitment: 2, globalMarketing: 3, tour: 2 });
     validateWorld(w);
     const restored = (await decode(await encode(w, 1, 0))).world;
-    expect(restored.policy).toEqual({ support: 4, recruitment: 2, marketing: 3, academy: 1 });
+    expect(restored.policy).toEqual({
+      ...POLICY_DEFAULTS,
+      support: 4,
+      recruitment: 2,
+      globalMarketing: 3,
+      tour: 2,
+    });
     expect(canonical(restored)).toBe(canonical(w));
     const legacy = world();
     expect(Object.hasOwn((await decode(await encode(legacy, 1, 0))).world, 'policy')).toBe(false);
     for (const policy of [
-      { support: 6, recruitment: 3, marketing: 1 },
-      { support: 3, recruitment: 3 },
-      { support: 3, recruitment: 3, marketing: 1, scouting: 2 },
-      { support: 2.5, recruitment: 3, marketing: 1 },
-      { support: 3, recruitment: 3, marketing: 1, academy: 6 },
+      { support: 6, recruitment: 3 },
+      { support: 3 },
+      { support: 3, recruitment: 3, scouting: 2 },
+      { support: 2.5, recruitment: 3 },
+      { support: 3, recruitment: 3, academy: 6 },
+      { support: 3, recruitment: 3, tour: 4 },
+      { support: 3, recruitment: 3, globalScouting: 0 },
     ])
       expect(() => validateWorld({ ...w, policy })).toThrow();
     const request = (command: unknown) =>
@@ -378,8 +420,9 @@ describe('club operating policy', () => {
         parentGeneration: 0,
         body: { type: 'command', command },
       }).success;
-    expect(request({ type: 'policy', key: 'marketing', level: 5 })).toBe(true);
-    expect(request({ type: 'policy', key: 'marketing', level: 6 })).toBe(false);
+    expect(request({ type: 'policy', key: 'globalMarketing', level: 5 })).toBe(true);
+    expect(request({ type: 'policy', key: 'globalMarketing', level: 6 })).toBe(false);
+    expect(request({ type: 'policy', key: 'marketing', level: 2 })).toBe(false);
     expect(request({ type: 'policy', key: 'scouting', level: 2 })).toBe(false);
     expect(request({ type: 'policy', key: 'academy', level: 4 })).toBe(true);
   });

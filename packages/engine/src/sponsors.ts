@@ -1,3 +1,4 @@
+import { baseEffects } from './bases';
 import type { SponsorContract, SponsorKind, SponsorSlot, World } from '../../contracts/src/types';
 import { SPONSOR_SLOTS, sponsorSlotOpens, type Observation } from '../../catalogs/src/index';
 import { addEvent, clubOf, footballQuote } from './world';
@@ -110,7 +111,12 @@ export function sponsorSlotOpen(w: World, slot: SponsorSlot) {
     (slot !== 'stadium' || STADIUM_STEPS[w.stadium].capacity >= SPONSOR_CONFIG.stadiumCapacity)
   );
 }
-/** An exclusive contract in any slot blocks new merchandise campaigns (→ECON-14). */
+/**
+ * An exclusive contract in any slot holds the club's merchandise rights: 해외 마케팅 adds this share
+ * of its fans while it runs (→ECON-14).
+ */
+export const EXCLUSIVE_MARKETING = 0.5;
+/** The running exclusive contract, if any. */
 export function exclusiveSponsor(w: World) {
   return w.sponsors?.find((contract) => contract.kind === 'exclusive');
 }
@@ -160,7 +166,10 @@ export function commercialValue(w: World) {
 export function sponsorOffers(w: World, slot: SponsorSlot): SponsorOffer[] {
   const c = clubOf(w),
     { share, bonus } = SPONSOR_CONFIG.slots[slot],
-    value = commercialValue(w) * share,
+    bases = baseEffects(w),
+    // The 지역 후원 slot grows with 지역 기반, every other with 글로벌 인지도 (→ECON-34).
+    value =
+      commercialValue(w) * share * (slot === 'local' ? bases.localSponsor : bases.globalSponsor),
     town = c.name.split(' ')[0];
   return SPONSOR_KINDS.flatMap((kind, i) => {
     if (kind === 'performance' && bonus === 'none') return [];

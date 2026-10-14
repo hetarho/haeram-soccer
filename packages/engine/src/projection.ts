@@ -81,7 +81,7 @@ export function financeProjection(w: World): FinanceProjection {
       costs.playerWages,
       costs.managerWage,
       costs.maintenance,
-      costs.marketing,
+      costs.investment,
       costs.academy,
       costs.staffWages,
     ].map(unpaid),

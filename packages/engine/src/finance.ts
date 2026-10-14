@@ -1,3 +1,4 @@
+import { baseEffects } from './bases';
 import type { Event, MatchRecord, SponsorSlot, World } from '../../contracts/src/types';
 import { country, currency } from '../../catalogs/src/index';
 import { activePlayers, broadcastQuote, clubOf, footballQuote, quote } from './world';
@@ -222,8 +223,9 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     .toString();
   const managerWage = w.manager.wage;
   const maintenance = facilityUpkeep(w);
-  const marketing = effects.marketingUnits
-    ? quote(clubOf(w).country, w.year, effects.marketingUnits * 46)
+  // The 지역 and 글로벌 rows' spend, billed with operating costs as the marketing dial was.
+  const investment = effects.investUnits
+    ? quote(clubOf(w).country, w.year, effects.investUnits * 46)
     : '0';
   const academy = effects.academyUnits
     ? quote(clubOf(w).country, w.year, effects.academyUnits * 46)
@@ -237,17 +239,17 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     BigInt(playerWages) +
     BigInt(managerWage) +
     BigInt(maintenance) +
-    BigInt(marketing) +
+    BigInt(investment) +
     BigInt(academy) +
     BigInt(staffWages) +
     BigInt(expenses)
   ).toString();
-  /** The marketing share appears only while the policy actually spends. */
+  /** The investment share appears only while the rows actually spend. */
   const payments: {
     playerWages: string;
     managerWage: string;
     maintenance: string;
-    marketing?: string;
+    investment?: string;
     academy?: string;
     staffWages?: string;
     expenses: string;
@@ -255,7 +257,7 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     playerWages: roundShare(playerWages, round),
     managerWage: roundShare(managerWage, round),
     maintenance: roundShare(maintenance, round),
-    ...(marketing !== '0' ? { marketing: roundShare(marketing, round) } : {}),
+    ...(investment !== '0' ? { investment: roundShare(investment, round) } : {}),
     ...(academy !== '0' ? { academy: roundShare(academy, round) } : {}),
     ...(staffWages !== '0' ? { staffWages: roundShare(staffWages, round) } : {}),
     expenses: roundShare(expenses, round),
@@ -267,7 +269,7 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     playerWages,
     managerWage,
     maintenance,
-    marketing,
+    investment,
     academy,
     staffWages,
     /**
@@ -350,7 +352,8 @@ export function gateProjection(w: World, excluding?: string, opponent?: string) 
   const form = recentForm(w, excluding);
   const supporters = localSupporters(w);
   const draw = opponentDraw(w, opponent);
-  const { gateBoost } = policyEffects(policyOf(w));
+  // 주변 투자 while paid and 지역 기반 lift home demand (→ECON-9, →ECON-34).
+  const gateBoost = policyEffects(policyOf(w)).gateBoost + baseEffects(w).gate;
   const marketing = Math.min(
     gateBoost > 0 ? 1.35 : 1.25,
     1 +
@@ -447,6 +450,7 @@ const incomeKinds: Record<string, string> = {
     Object.entries(SPONSOR_SLOT_LABELS).map(([slot, label]) => [`sponsor:${slot}`, label]),
   ),
   'match-bonus': '컵·대륙 경기 성과 보너스',
+  tour: '해외 투어',
   'campaign-result': '마케팅 회수금',
   'transfer-out': '선수 매각',
   'free-transfer-compensation': '계약 만료 보상금',

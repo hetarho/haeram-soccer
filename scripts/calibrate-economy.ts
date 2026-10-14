@@ -109,7 +109,8 @@ function sourceOf(kind: string): Source {
   )
     return 'competition';
   if (kind === 'gate') return 'matchday';
-  if (kind.startsWith('sponsor:') || kind === 'campaign-result') return 'commercial';
+  if (kind.startsWith('sponsor:') || kind === 'campaign-result' || kind === 'tour')
+    return 'commercial';
   if (kind === 'transfer-out' || kind === 'free-transfer-compensation') return 'sales';
   if (kind === 'support') return 'owner';
   return 'other';
@@ -125,6 +126,7 @@ const INCOME_KINDS = new Set([
   'match-bonus',
   'gate',
   'campaign-result',
+  'tour',
   'transfer-out',
   'free-transfer-compensation',
   'support',

@@ -70,7 +70,6 @@ describe('earned, auditable club finances', () => {
     const managed = world();
     operate(managed, { type: 'sign-sponsor', slot: 'local', offer: 0 });
     operate(managed, { type: 'ticket', price: 0.12 });
-    operate(managed, { type: 'campaign', kind: 'outreach' });
     simulateSeason(unmanaged);
     simulateSeason(managed);
     const before = unmanaged.history[0];
@@ -194,9 +193,10 @@ describe('earned, auditable club finances', () => {
     expensive.ticket = 0.5;
     expect(gateProjection(expensive).attendanceHigh).toBeLessThan(initial.attendanceLow);
     expect(BigInt(gateProjection(expensive).incomeHigh)).toBeLessThan(BigInt(initial.incomeLow));
-    operate(w, { type: 'campaign', kind: 'tickets' });
+    // 주변 투자 lifts home demand while it is paid with the operating costs (→ECON-34).
+    operate(w, { type: 'policy', key: 'localInvest', level: 3 });
     expect(gateProjection(w).attendanceLow).toBeGreaterThan(initial.attendanceLow);
-    expect(BigInt(w.expense)).toBeGreaterThan(0n);
+    expect(BigInt(operatingCosts(w).investment)).toBeGreaterThan(0n);
     // More local supporters fill more seats, up to the catchment.
     const followed = structuredClone(w);
     clubOf(followed).fans = Math.min(catchment(w), clubOf(w).fans * 2);
@@ -256,7 +256,7 @@ describe('earned, auditable club finances', () => {
   it('logs every receipt and expense, sums to the season books, and pays the merit once', () => {
     const w = world();
     operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
-    operate(w, { type: 'campaign', kind: 'outreach' });
+    operate(w, { type: 'policy', key: 'localInvest', level: 2 });
     for (let round = 0; round < 8; round++) advanceRound(w, undefined, false);
     settleLeagueMerit(w, 1, 24);
     const snapshot = canonical(w);
@@ -533,7 +533,7 @@ describe('operating expenses (→ECON-30)', () => {
         costs.playerWages,
         costs.managerWage,
         costs.maintenance,
-        costs.marketing,
+        costs.investment,
         costs.academy,
         costs.staffWages,
         costs.expenses,

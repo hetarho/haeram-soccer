@@ -176,12 +176,12 @@ const RULES: readonly SynergyRule[] = [
   {
     id: 'commercial',
     label: '상업 제국',
-    idea: '상업 확장 수익 모델 · 적극적인 마케팅 · 큰 경기장이 만드는 수익 구조',
+    idea: '상업 확장 수익 모델 · 적극적인 해외 마케팅 · 큰 경기장이 만드는 수익 구조',
     bonus: '새 후원 계약 금액 ×1.1 추가',
     effects: { sponsor: 1.1 },
     conditions: (w) => [
       { label: '수익 모델 · 상업 확장', met: buildOf(w).revenue === 'commercial' },
-      { label: '마케팅 4단계 이상', met: policyOf(w).marketing >= 4 },
+      { label: '해외 마케팅 4단계 이상', met: policyOf(w).globalMarketing >= 4 },
       { label: '경기장 3만 석 이상', met: STADIUM_STEPS[w.stadium].capacity >= 30000 },
     ],
   },

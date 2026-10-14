@@ -207,12 +207,17 @@ describe('sponsor contracts by slot', () => {
     expect(ending(delegated)).toEqual([]);
   });
 
-  it('names each slot’s ledger line and lets an exclusive contract block merchandise campaigns', () => {
+  it('names each slot’s ledger line and lets an exclusive contract halve 해외 마케팅’s fans', () => {
     const w = club();
+    w.policy = { support: 3, recruitment: 3, globalMarketing: 5 };
+    const plain = structuredClone(w);
     operate(w, { type: 'sign-sponsor', slot: 'local', offer: 1 });
     expect(w.sponsors![0].kind).toBe('exclusive');
-    expect(() => operate(w, { type: 'campaign', kind: 'merchandise' })).toThrow('독점');
+    operate(plain, { type: 'sign-sponsor', slot: 'local', offer: 0 });
+    expect(plain.sponsors![0].kind).not.toBe('exclusive');
     advanceDays(w, 30, undefined, false);
+    advanceDays(plain, 30, undefined, false);
+    expect(clubOf(w).fans).toBeLessThan(clubOf(plain).fans);
     const books = financialBreakdown(w);
     expect(books.income.find((row) => row.key === 'sponsor:local')).toMatchObject({
       label: '지역 후원',

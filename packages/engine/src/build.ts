@@ -26,6 +26,8 @@ export interface BuildEffects {
   sponsor: number;
   campaignIncome: number;
   marketingFans: number;
+  /** How fast 지역 기반 moves (→ECON-34). */
+  localBaseRate: number;
   /** Added to home gate demand (0.08 = +8%). */
   gateDemand: number;
   /** Multiplier on the supporters a win brings. */
@@ -51,6 +53,7 @@ export const NEUTRAL_BUILD: Readonly<BuildEffects> = Object.freeze({
   sponsor: 1,
   campaignIncome: 1,
   marketingFans: 1,
+  localBaseRate: 1,
   gateDemand: 0,
   winFans: 1,
   homeStrength: 0,
@@ -66,6 +69,7 @@ const MULTIPLIED = new Set<keyof BuildEffects>([
   'sponsor',
   'campaignIncome',
   'marketingFans',
+  'localBaseRate',
   'winFans',
   'wage',
 ]);
@@ -81,7 +85,8 @@ const EFFECT_TEXT: Record<keyof BuildEffects, { label: string; unit?: string; go
   saleFee: { label: '매각 이적료', good: 1 },
   sponsor: { label: '새 후원 계약 금액', good: 1 },
   campaignIncome: { label: '캠페인 수입', good: 1 },
-  marketingFans: { label: '마케팅 팬 증가', good: 1 },
+  marketingFans: { label: '해외 마케팅 팬 증가', good: 1 },
+  localBaseRate: { label: '지역 기반 성장 속도', good: 1 },
   gateDemand: { label: '홈 관중 수요', good: 1 },
   winFans: { label: '승리 시 팬 증가', good: 1 },
   homeStrength: { label: '홈 경기 전력', good: 1 },
@@ -101,7 +106,7 @@ export const BUILD_SLOT_INFO: Record<BuildSlot, { label: string; question: strin
   scouting: { label: '스카우팅', question: '어떤 선수를 찾아 데려올까' },
   market: { label: '매각 기조', question: '우리 선수를 원하는 구단에 어떻게 응할까' },
   revenue: { label: '수익 모델', question: '구단 살림은 어디서 벌고 아낄까' },
-  fans: { label: '홈·팬', question: '어떤 경기장과 팬층을 만들까' },
+  fans: { label: '지역 관계 방식', question: '연고지와 어떻게 지낼까' },
   culture: { label: '라커룸 문화', question: '선수단은 어떤 분위기로 뭉칠까' },
 };
 const STANDARD: BuildCard = {
@@ -181,8 +186,8 @@ export const BUILD_CARDS: {
   revenue: {
     commercial: {
       label: '상업 확장',
-      model: '스폰서와 캠페인으로 수익을 키우는 상업 구단',
-      effects: { sponsor: 1.2, campaignIncome: 1.25, marketingFans: 1.2, gateDemand: -0.03 },
+      model: '스폰서와 해외 마케팅으로 수익을 키우는 상업 구단',
+      effects: { sponsor: 1.2, marketingFans: 1.2, gateDemand: -0.03 },
     },
     owner: {
       label: '구단주 투자',
@@ -204,17 +209,17 @@ export const BUILD_CARDS: {
     community: {
       label: '지역 밀착',
       model: '지역 공동체와 함께 홈 경기장을 채우는 구단',
-      effects: { gateDemand: 0.06, winFans: 1.4, campaignIncome: 0.9 },
+      effects: { gateDemand: 0.06, winFans: 1.4, marketingFans: 0.9 },
     },
     fortress: {
       label: '홈 요새',
       model: '원정팀이 두려워하는 홈 분위기',
       effects: { homeStrength: 1.5, winFans: 1.1, marketingFans: 0.85 },
     },
-    global: {
-      label: '글로벌 브랜드',
-      model: '해외 팬과 스폰서를 겨냥한 브랜드 구단',
-      effects: { marketingFans: 1.3, sponsor: 1.1, gateDemand: -0.04, homeStrength: -0.5 },
+    mutual: {
+      label: '지역 상생',
+      model: '연고지와 함께 자라 지역의 뿌리가 빨리 깊어지는 구단',
+      effects: { localBaseRate: 1.5, sponsor: 0.95 },
     },
     families: {
       label: '가족 관중',
@@ -283,8 +288,8 @@ export const BUILD_PRESETS: {
     id: 'commercial',
     label: '상업 제국',
     model: '브랜드로 벌어 스타를 데려와요',
-    aim: '마케팅 4단계 · 시설 6단계를 채우면 시너지 상업 제국',
-    build: { scouting: 'network', revenue: 'commercial', fans: 'global', culture: 'stars' },
+    aim: '해외 마케팅 4단계 · 3만 석 경기장을 채우면 시너지 상업 제국',
+    build: { scouting: 'network', revenue: 'commercial', culture: 'stars' },
   },
   {
     id: 'ambition',

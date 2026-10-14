@@ -16,11 +16,25 @@ export interface TrainingOrder<F> {
   rounds: number;
   forced?: true;
 }
-export type PolicyKey = 'support' | 'recruitment' | 'marketing' | 'academy';
+/**
+ * The board's dials (→ECON-16): squad investment, recruitment, academy investment and, from rules
+ * 1.19, the 지역 and 글로벌 rows (주변 투자, 풀뿌리 유망주 투자, 해외 마케팅, 해외 스카우트망 and
+ * 해외 투어, which has three levels) in place of the marketing dial.
+ */
+export type PolicyKey =
+  | 'support'
+  | 'recruitment'
+  | 'academy'
+  | 'localInvest'
+  | 'grassroots'
+  | 'globalMarketing'
+  | 'globalScouting'
+  | 'tour';
 export type PolicyLevel = 1 | 2 | 3 | 4 | 5;
 export type ClubPolicy = Record<PolicyKey, PolicyLevel>;
-/** Saved policy: keys added later (academy) may be absent and resolve to their defaults. */
-export type SavedPolicy = Omit<ClubPolicy, 'academy'> & { academy?: PolicyLevel };
+/** Saved policy: keys added later may be absent and resolve to their defaults. */
+export type SavedPolicy = Pick<ClubPolicy, 'support' | 'recruitment'> &
+  Partial<Omit<ClubPolicy, 'support' | 'recruitment'>>;
 export type Role = 'GK' | 'DEF' | 'MID' | 'FWD';
 /** Backroom roles below the manager, following a professional club's coaching staff. */
 export type StaffRole =
@@ -784,6 +798,9 @@ export interface World {
   sponsors?: SponsorContract[];
   /** The direction rows the delegated staff follow (→ECON-25); absent rows are at their default. */
   direction?: Direction;
+  /** 지역 기반 and 글로벌 인지도, 0–100 (→ECON-34); absent is 0. */
+  localBase?: number;
+  globalReach?: number;
   cupWinners: Record<string, string>;
   /** This season's domestic cups, one per country (→LEAGUE-5); absent in older saves. */
   cups?: DomesticCup[];

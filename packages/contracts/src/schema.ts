@@ -561,10 +561,16 @@ export const worldSchema: z.ZodType<World> = z.object({
     .strictObject({
       support: policyLevel,
       recruitment: policyLevel,
-      marketing: policyLevel,
       academy: policyLevel.optional(),
+      localInvest: policyLevel.optional(),
+      grassroots: policyLevel.optional(),
+      globalMarketing: policyLevel.optional(),
+      globalScouting: policyLevel.optional(),
+      tour: z.literal([1, 2, 3]).optional(),
     })
     .optional(),
+  localBase: z.number().finite().min(0).max(100).optional(),
+  globalReach: z.number().finite().min(0).max(100).optional(),
   staff: z.array(staff).max(20).optional(),
   academy: z
     .strictObject({ players: z.array(player).max(60), intakeYear: z.number().int().optional() })
@@ -884,6 +890,41 @@ function legacyPathway(input: unknown): unknown {
   }
   return out;
 }
+/**
+ * Rules before 1.19 (→SAVE-10): the marketing dial loads as the same 해외 마케팅 level, and a build
+ * holding the 글로벌 브랜드 card (`fans: 'global'`) loads without it.
+ */
+function legacyMarketing(input: unknown): unknown {
+  if (!isRecord(input)) return input;
+  const policy = isRecord(input.policy) ? input.policy : undefined,
+    build = isRecord(input.build) ? input.build : undefined,
+    next = isRecord(input.buildNext) ? input.buildNext : undefined,
+    nextBuild = next && isRecord(next.build) ? next.build : undefined;
+  if (
+    !(policy && 'marketing' in policy) &&
+    build?.fans !== 'global' &&
+    nextBuild?.fans !== 'global'
+  )
+    return input;
+  const out: Record<string, unknown> = { ...input };
+  if (policy && 'marketing' in policy) {
+    const { marketing, ...rest } = policy;
+    if (marketing !== 1 && rest.globalMarketing === undefined) rest.globalMarketing = marketing;
+    out.policy = rest;
+  }
+  if (build?.fans === 'global') {
+    const { fans: _fans, ...rest } = build;
+    void _fans;
+    if (Object.keys(rest).length) out.build = rest;
+    else delete out.build;
+  }
+  if (nextBuild?.fans === 'global') {
+    const { fans: _fans, ...rest } = nextBuild;
+    void _fans;
+    out.buildNext = { ...next, build: rest };
+  }
+  return out;
+}
 /** Capacity of each stadium step (→ECON-32), for loading a single facility level. */
 const STADIUM_CAPACITY = [2500, 5000, 10000, 15000, 30000, 40000, 60000, 75000, 90000];
 /**
@@ -975,9 +1016,11 @@ function legacySponsor(w: World, country: string, catalog: LoadCatalog | undefin
 /** `catalog` is needed only for a world from rules before 1.16 that has a sponsor. */
 export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   const w = worldSchema.parse(
-    legacyPathway(
-      legacyDirection(
-        legacyFacilities(legacyIntervention(legacyLevers(legacyMarket(legacyVision(input))))),
+    legacyMarketing(
+      legacyPathway(
+        legacyDirection(
+          legacyFacilities(legacyIntervention(legacyLevers(legacyMarket(legacyVision(input))))),
+        ),
       ),
     ),
   );

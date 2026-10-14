@@ -3,14 +3,27 @@ import { operatingCosts } from './finance';
 import { addEvent, clubOf } from './world';
 
 /** Display and decision order. */
-export const POLICY_KEYS: readonly PolicyKey[] = ['support', 'recruitment', 'marketing', 'academy'];
+export const POLICY_KEYS: readonly PolicyKey[] = [
+  'support',
+  'recruitment',
+  'academy',
+  'localInvest',
+  'grassroots',
+  'globalMarketing',
+  'globalScouting',
+  'tour',
+];
 
 /** Absent or partial policies resolve to these values, which reproduce the pre-policy club. */
 export const POLICY_DEFAULTS: ClubPolicy = Object.freeze({
   support: 3,
   recruitment: 3,
-  marketing: 1,
   academy: 1,
+  localInvest: 1,
+  grassroots: 1,
+  globalMarketing: 1,
+  globalScouting: 1,
+  tour: 1,
 });
 
 export const POLICY_INFO: Record<
@@ -71,33 +84,6 @@ export const POLICY_INFO: Record<
       { level: 5, name: '즉시 전력', summary: '26–33세 · 능력 60–92 · 이적료 +30%' },
     ],
   },
-  marketing: {
-    label: '마케팅',
-    question: '구단을 얼마나 알릴까요?',
-    levels: [
-      { level: 1, name: '입소문', summary: '추가 비용 없음 · 팬과 관중 변화 없음' },
-      {
-        level: 2,
-        name: '지역 홍보',
-        summary: '라운드마다 소액 지출 · 팬 +0.4%/라운드 · 관중 수요 +2%',
-      },
-      {
-        level: 3,
-        name: '꾸준한 광고',
-        summary: '라운드마다 지출 · 팬 +0.8%/라운드 · 관중 수요 +4%',
-      },
-      {
-        level: 4,
-        name: '적극 홍보',
-        summary: '라운드마다 큰 지출 · 팬 +1.3%/라운드 · 관중 수요 +6%',
-      },
-      {
-        level: 5,
-        name: '대대적 캠페인',
-        summary: '라운드마다 최대 지출 · 팬 +2%/라운드 · 관중 수요 +8%',
-      },
-    ],
-  },
   academy: {
     label: '유소년 투자',
     question: '아카데미 코치·스카우트·시설에 얼마나 쓸까요?',
@@ -125,6 +111,131 @@ export const POLICY_INFO: Record<
       },
     ],
   },
+  localInvest: {
+    label: '주변 투자',
+    question: '연고지 경제와 동네에 얼마나 투자할까요?',
+    levels: [
+      { level: 1, name: '없음', summary: '추가 비용 없음 · 지역 기반 그대로' },
+      {
+        level: 2,
+        name: '지역 행사 후원',
+        summary: '라운드마다 소액 지출 · 관중 수요 +2% · 지역 기반 목표 20',
+      },
+      {
+        level: 3,
+        name: '지역 상권 투자',
+        summary: '라운드마다 지출 · 관중 수요 +4% · 지역 기반 목표 40',
+      },
+      {
+        level: 4,
+        name: '지역 인프라 투자',
+        summary: '라운드마다 큰 지출 · 관중 수요 +6% · 지역 기반 목표 65',
+      },
+      {
+        level: 5,
+        name: '도시 재생 사업',
+        summary: '라운드마다 최대 지출 · 관중 수요 +8% · 지역 기반 목표 100',
+      },
+    ],
+  },
+  grassroots: {
+    label: '풀뿌리 유망주 투자',
+    question: '동네 유소년 축구를 얼마나 키울까요?',
+    levels: [
+      { level: 1, name: '없음', summary: '추가 비용 없음' },
+      {
+        level: 2,
+        name: '동네 축구교실',
+        summary: '라운드마다 소액 지출 · 입단 잠재력 +1 · 지역 기반 목표 +10',
+      },
+      {
+        level: 3,
+        name: '지역 리그 후원',
+        summary: '라운드마다 지출 · 입단 잠재력 +2 · 지역 기반 목표 +20',
+      },
+      {
+        level: 4,
+        name: '학교 축구 지원',
+        summary: '라운드마다 큰 지출 · 입단 잠재력 +3 · 지역 기반 목표 +30',
+      },
+      {
+        level: 5,
+        name: '지역 유소년 네트워크',
+        summary: '라운드마다 최대 지출 · 입단 잠재력 +4 · 지역 기반 목표 +45',
+      },
+    ],
+  },
+  globalMarketing: {
+    label: '해외 마케팅',
+    question: '구단 이름을 해외에 얼마나 알릴까요?',
+    levels: [
+      { level: 1, name: '입소문', summary: '추가 비용 없음 · 팬 변화 없음' },
+      {
+        level: 2,
+        name: '해외 홍보',
+        summary: '라운드마다 소액 지출 · 팬 +0.4%/라운드 · 글로벌 인지도 목표 20',
+      },
+      {
+        level: 3,
+        name: '해외 광고',
+        summary: '라운드마다 지출 · 팬 +0.8%/라운드 · 글로벌 인지도 목표 40',
+      },
+      {
+        level: 4,
+        name: '글로벌 캠페인',
+        summary: '라운드마다 큰 지출 · 팬 +1.3%/라운드 · 글로벌 인지도 목표 65',
+      },
+      {
+        level: 5,
+        name: '세계적 브랜딩',
+        summary: '라운드마다 최대 지출 · 팬 +2%/라운드 · 글로벌 인지도 목표 100',
+      },
+    ],
+  },
+  globalScouting: {
+    label: '해외 스카우트망',
+    question: '해외 선수와 유망주를 얼마나 넓게 찾을까요?',
+    levels: [
+      { level: 1, name: '없음', summary: '추가 비용 없음' },
+      {
+        level: 2,
+        name: '해외 정보원',
+        summary: '라운드마다 소액 지출 · 영입 후보 +1명 · 글로벌 인지도 목표 +10',
+      },
+      {
+        level: 3,
+        name: '지역 스카우트',
+        summary: '라운드마다 지출 · 영입 후보 +2명 · 잠재력 +1 · 글로벌 인지도 목표 +20',
+      },
+      {
+        level: 4,
+        name: '대륙 스카우트망',
+        summary: '라운드마다 큰 지출 · 영입 후보 +3명 · 잠재력 +1 · 글로벌 인지도 목표 +30',
+      },
+      {
+        level: 5,
+        name: '세계 스카우트망',
+        summary: '라운드마다 최대 지출 · 영입 후보 +4명 · 잠재력 +2 · 글로벌 인지도 목표 +45',
+      },
+    ],
+  },
+  tour: {
+    label: '해외 투어',
+    question: '여름마다 해외 투어를 갈까요?',
+    levels: [
+      { level: 1, name: '안 함', summary: '투어 없음' },
+      {
+        level: 2,
+        name: '짧은 투어',
+        summary: '시즌 시작에 투어 수입 · 글로벌 인지도 +5 · 모든 선수 피로 +10',
+      },
+      {
+        level: 3,
+        name: '긴 투어',
+        summary: '시즌 시작에 큰 투어 수입 · 글로벌 인지도 +10 · 모든 선수 피로 +20',
+      },
+    ],
+  },
 };
 
 export interface PolicyEffects {
@@ -135,10 +246,19 @@ export interface PolicyEffects {
   recoveryBonus: number;
   /** Multiplies each round's operating expenses (운영 경비, →ECON-30); the default level's is 1. */
   operatingFactor: number;
-  /** Per-round marketing spend in 1901 price units. */
-  marketingUnits: number;
+  /** Per-round spend of the 지역 and 글로벌 investment rows in 1901 price units (→ECON-16). */
+  investUnits: number;
+  /** 해외 마케팅's fan growth per settled round and 주변 투자's gate demand. */
   fanGrowth: number;
   gateBoost: number;
+  /** 풀뿌리 유망주 투자's intake potential; 해외 스카우트망's extra candidates and potential. */
+  grassrootsPotential: number;
+  scoutCandidates: number;
+  scoutPotential: number;
+  /** The targets the rows set for 지역 기반 and 글로벌 인지도 (→ECON-34), each at most 100. */
+  baseTargets: { local: number; global: number };
+  /** 해외 투어: 0 none, 1 short, 2 long. */
+  tour: number;
   /** Per-round academy spend in 1901 price units, and what it buys at the next intake. */
   academyUnits: number;
   academyIntake: number;
@@ -157,10 +277,16 @@ const SUPPORT_DEVELOPMENT = [0.8, 0.9, 1, 1.12, 1.25];
 const SUPPORT_RECOVERY = [-2, -1, 0, 1, 2];
 /** Squad investment is paid through the operating expenses it scales (→ECON-16). */
 export const SUPPORT_EXPENSES = [0.9, 0.95, 1, 1.1, 1.2];
-/** Spend per fan rises with each level, so loud campaigns trade efficiency for reach. */
-const MARKETING_UNITS = [0, 1, 2.5, 4.5, 7];
-const MARKETING_FANS = [0, 0.004, 0.008, 0.013, 0.02];
-const MARKETING_GATE = [0, 0.02, 0.04, 0.06, 0.08];
+/** Each investment row's spend per round; spend per effect rises with each level. */
+const INVEST_UNITS = [0, 1, 2.5, 4.5, 7];
+const GLOBAL_FANS = [0, 0.004, 0.008, 0.013, 0.02];
+const LOCAL_GATE = [0, 0.02, 0.04, 0.06, 0.08];
+const GRASSROOTS_POTENTIAL = [0, 1, 2, 3, 4];
+const SCOUT_CANDIDATES = [0, 1, 2, 3, 4];
+const SCOUT_POTENTIAL = [0, 0, 1, 1, 2];
+/** The base a main row aims at, and what its second row adds (→ECON-34). */
+const MAIN_TARGET = [0, 20, 40, 65, 100];
+const SIDE_TARGET = [0, 10, 20, 30, 45];
 /** Level 1 is exactly the pre-policy academy, at no cost. */
 const ACADEMY_UNITS = [0, 1, 2.5, 4.5, 7];
 const ACADEMY_INTAKE = [0, 0, 1, 1, 2];
@@ -178,8 +304,8 @@ const OFFERS: PolicyEffects['offer'][] = [
 function validate(key: PolicyKey, level: PolicyLevel) {
   if (typeof key !== 'string' || !Object.hasOwn(POLICY_INFO, key))
     throw new Error('운영 방침 항목을 확인하세요.');
-  if (!Number.isInteger(level) || level < 1 || level > 5)
-    throw new Error('운영 방침 단계는 1–5 사이여야 합니다.');
+  if (!Number.isInteger(level) || level < 1 || level > (key === 'tour' ? 3 : 5))
+    throw new Error(`${POLICY_INFO[key].label} 단계를 확인하세요.`);
 }
 
 export function policyOf(w: World): ClubPolicy {
@@ -187,18 +313,31 @@ export function policyOf(w: World): ClubPolicy {
 }
 
 export function policyEffects(policy: ClubPolicy): PolicyEffects {
+  const level = (key: PolicyKey) => (policy[key] ?? POLICY_DEFAULTS[key]) - 1;
   const support = policy.support - 1,
-    marketing = policy.marketing - 1,
-    academy = (policy.academy ?? POLICY_DEFAULTS.academy) - 1,
+    academy = level('academy'),
+    local = level('localInvest'),
+    grass = level('grassroots'),
+    global = level('globalMarketing'),
+    scout = level('globalScouting'),
     offer = OFFERS[policy.recruitment - 1];
   return {
     goodwill: SUPPORT_GOODWILL[support],
     developmentMultiplier: SUPPORT_DEVELOPMENT[support],
     recoveryBonus: SUPPORT_RECOVERY[support],
     operatingFactor: SUPPORT_EXPENSES[support],
-    marketingUnits: MARKETING_UNITS[marketing],
-    fanGrowth: MARKETING_FANS[marketing],
-    gateBoost: MARKETING_GATE[marketing],
+    investUnits:
+      INVEST_UNITS[local] + INVEST_UNITS[grass] + INVEST_UNITS[global] + INVEST_UNITS[scout],
+    fanGrowth: GLOBAL_FANS[global],
+    gateBoost: LOCAL_GATE[local],
+    grassrootsPotential: GRASSROOTS_POTENTIAL[grass],
+    scoutCandidates: SCOUT_CANDIDATES[scout],
+    scoutPotential: SCOUT_POTENTIAL[scout],
+    baseTargets: {
+      local: Math.min(100, MAIN_TARGET[local] + SIDE_TARGET[grass]),
+      global: Math.min(100, MAIN_TARGET[global] + SIDE_TARGET[scout]),
+    },
+    tour: level('tour'),
     academyUnits: ACADEMY_UNITS[academy],
     academyIntake: ACADEMY_INTAKE[academy],
     academyPotential: ACADEMY_POTENTIAL[academy],
@@ -212,7 +351,7 @@ export function policyEffects(policy: ClubPolicy): PolicyEffects {
   };
 }
 
-/** Deterministic fans gained in one settled round from the marketing policy alone. */
+/** Deterministic fans gained in one settled round from 해외 마케팅 alone. */
 export function marketingFanGain(fans: number, fanGrowth: number) {
   if (fanGrowth <= 0) return 0;
   return Math.round(fans * fanGrowth * Math.max(0.2, 1 - fans / 1000000));
@@ -231,7 +370,7 @@ export function setPolicy(w: World, key: PolicyKey, level: PolicyLevel) {
 /**
  * Pure read model of choosing `level` for `key`; nothing is spent or changed. Cost changes are the
  * fixed costs at that level against today's (→ECON-12): squad investment's through the operating
- * expenses it scales, marketing's and the academy's through their spend.
+ * expenses it scales, the academy's and the investment rows' through their spend.
  */
 export function policyPreview(w: World, key: PolicyKey, level: PolicyLevel) {
   validate(key, level);
@@ -244,7 +383,8 @@ export function policyPreview(w: World, key: PolicyKey, level: PolicyLevel) {
     annualCostChange: (BigInt(after.annual) - BigInt(before.annual)).toString(),
     /** The next round's bill at this level minus today's (zero once the season's rounds are paid). */
     nextRoundChange: (BigInt(after.nextRound) - BigInt(before.nextRound)).toString(),
-    fansPerRound: key === 'marketing' ? marketingFanGain(clubOf(w).fans, effects.fanGrowth) : 0,
+    fansPerRound:
+      key === 'globalMarketing' ? marketingFanGain(clubOf(w).fans, effects.fanGrowth) : 0,
     goodwill: effects.goodwill,
     developmentMultiplier: effects.developmentMultiplier,
     recoveryBonus: effects.recoveryBonus,

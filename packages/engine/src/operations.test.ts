@@ -97,17 +97,30 @@ describe('club decisions', () => {
     simulateSeason(w);
     expect(w.players.find((p) => p.id === offer.player.id)?.status).toBe('retired');
   });
-  it('resolves campaigns with measured effects and bounds support', () => {
+  /** A campaign started before rules 1.19, as an older save holds it (→ECON-7). */
+  const olderCampaign = (w: ReturnType<typeof world>) =>
+    w.campaigns.push({
+      id: `${w.year}:${w.round}:outreach`,
+      kind: 'outreach',
+      cost: '100000',
+      started: w.round,
+      remaining: 4,
+      income: '0',
+      fans: 0,
+    });
+  it('refuses new campaigns, settles one started before and bounds support', () => {
     const w = world();
-    operate(w, { type: 'campaign', kind: 'outreach' });
-    expect(() => operate(w, { type: 'campaign', kind: 'outreach' })).toThrow('진행');
+    expect(() => operate(w, { type: 'campaign', kind: 'outreach' })).toThrow(
+      '캠페인은 이제 없어요',
+    );
+    olderCampaign(w);
     for (let i = 0; i < 4; i++) advanceRound(w);
     expect(w.campaigns).toHaveLength(0);
     expect(w.events.some((e) => e.kind === 'campaign-result')).toBe(true);
     for (let i = 0; i < 3; i++) operate(w, { type: 'support' });
     expect(() => operate(w, { type: 'support' })).toThrow('3회');
   });
-  it('names a campaign by its round and kind, so earlier commands do not change its result', () => {
+  it('settles an older campaign by its round and kind, so earlier commands do not change its result', () => {
     const plain = world(),
       busy = world();
     operate(busy, { type: 'read-inbox' });
@@ -115,8 +128,7 @@ describe('club decisions', () => {
     operate(busy, { type: 'read-inbox' });
     expect(busy.revision).toBe(plain.revision + 3);
     for (const w of [plain, busy]) {
-      operate(w, { type: 'campaign', kind: 'outreach' });
-      expect(w.campaigns[0].id).toBe(`${w.year}:${w.round}:outreach`);
+      olderCampaign(w);
       for (let i = 0; i < 4; i++) advanceRound(w);
     }
     const result = (w: ReturnType<typeof world>) =>

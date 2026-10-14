@@ -54,10 +54,11 @@ describe('supporters follow reputation, not the stadium', () => {
     const club = clubOf(w);
     club.tier = 2;
     club.fans = 2_000_000;
-    // A stadium for 90,000, the cheapest tickets and every marketing push.
+    // A stadium for 90,000, the cheapest tickets and every push on the town.
     w.stadium = 8;
     w.ticket = 0.02;
-    operate(w, { type: 'campaign', kind: 'tickets' });
+    operate(w, { type: 'policy', key: 'localInvest', level: 5 });
+    w.localBase = 100;
     const limit = catchment(w);
     expect(limit).toBeLessThan(20_000);
     expect(localSupporters(w)).toBe(limit);

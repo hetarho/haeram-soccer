@@ -17,7 +17,7 @@ const definitions: FixtureDefinition[] = [
     input,
     commands: [
       { type: 'sign-sponsor', slot: 'local', offer: 0 },
-      { type: 'campaign', kind: 'outreach' },
+      { type: 'policy', key: 'localInvest', level: 3 },
       { type: 'recruit', candidate: 0, loan: true },
       { type: 'tactics', tactic: 'counter', tone: 'evidence' },
       { type: 'advance', rounds: 5 },

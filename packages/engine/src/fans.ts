@@ -6,7 +6,7 @@ import { clubOf, stature } from './world';
  * Supporters follow a club's standing, not its stadium (→ECON-23). Every league round they move
  * 3% of the way toward the following its reputation commands (about 2,000 at reputation 12,
  * 47,000 at 50, 360,000 at 75 and 1.2 million at 90); a win adds 0.4% on top, a defeat costs
- * 0.1%, and marketing and campaigns add their own. There is no ceiling, and the following itself
+ * 0.1%, and 해외 마케팅 and campaigns started before rules 1.19 add their own. There is no ceiling, and the following itself
  * pays nothing: only the local supporters within the club's catchment come to the gate.
  */
 export const FAN_CONFIG = {
@@ -21,11 +21,13 @@ export const MIN_FANS = 200;
 export function fanFollowing(reputation: number) {
   return Math.round(FAN_CONFIG.base * FAN_CONFIG.growth ** reputation);
 }
-/** One league round of supporters drifting toward the following. */
-export function driftFans(fans: number, reputation: number) {
+/**
+ * One league round of supporters drifting toward the following; 글로벌 인지도 scales it (→ECON-34).
+ */
+export function driftFans(fans: number, reputation: number, scale = 1) {
   return Math.max(
     MIN_FANS,
-    Math.round(fans + (fanFollowing(reputation) - fans) * FAN_CONFIG.drift),
+    Math.round(fans + (fanFollowing(reputation) * scale - fans) * FAN_CONFIG.drift),
   );
 }
 /** Supporters after one of our matches: a win draws a few more, a defeat loses a few. */

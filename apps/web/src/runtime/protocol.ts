@@ -80,7 +80,16 @@ const command = z.discriminatedUnion('type', [
   }),
   z.object({
     type: z.literal('policy'),
-    key: z.enum(['support', 'recruitment', 'marketing', 'academy']),
+    key: z.enum([
+      'support',
+      'recruitment',
+      'academy',
+      'localInvest',
+      'grassroots',
+      'globalMarketing',
+      'globalScouting',
+      'tour',
+    ]),
     level: z.literal([1, 2, 3, 4, 5]),
   }),
   z.object({

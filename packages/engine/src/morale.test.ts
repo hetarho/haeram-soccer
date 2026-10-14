@@ -49,7 +49,7 @@ describe('squad morale', () => {
     const before = moraleBaseline(w);
     settleMorale(w);
     expect(w.morale).toBeGreaterThan(20);
-    w.policy = { support: 5, recruitment: 3, marketing: 1 };
+    w.policy = { support: 5, recruitment: 3 };
     expect(moraleBaseline(w)).toBeGreaterThan(before);
   });
 

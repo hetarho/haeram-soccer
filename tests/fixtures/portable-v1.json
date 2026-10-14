@@ -1,6 +1,6 @@
 {
   "synthetic": true,
-  "engine": "1.16.0",
+  "engine": "1.19.0",
   "catalog": "2026-demo-2",
   "definitions": [
     {
@@ -19,8 +19,9 @@
           "offer": 0
         },
         {
-          "type": "campaign",
-          "kind": "outreach"
+          "type": "policy",
+          "key": "localInvest",
+          "level": 3
         },
         {
           "type": "recruit",
@@ -41,10 +42,10 @@
         "year": 1950,
         "round": 5,
         "revision": 39,
-        "cash": "712997",
+        "cash": "715253",
         "currency": "GBP-LSD",
-        "income": "118304",
-        "expense": "79923",
+        "income": "109785",
+        "expense": "69148",
         "tactic": "counter",
         "manager": {
           "id": "coach:1950:0:1198314408",
@@ -57,7 +58,7 @@
         "club": {
           "id": "ENG:club",
           "tier": 4,
-          "fans": 1031,
+          "fans": 991,
           "lower": true
         },
         "players": [
@@ -618,9 +619,9 @@
             "amount": null
           },
           {
-            "kind": "campaign",
-            "title": "동네와 함께 시작",
-            "amount": "21522"
+            "kind": "policy",
+            "title": "주변 투자 · 지역 상권 투자",
+            "amount": null
           },
           {
             "kind": "transfer-in",
@@ -640,12 +641,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "32718"
+            "amount": "32419"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "5918"
+            "amount": "5911"
           },
           {
             "kind": "league-share",
@@ -655,7 +656,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "6543"
+            "amount": "8695"
           },
           {
             "kind": "operating-expenses",
@@ -665,32 +666,27 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "6542"
+            "amount": "8694"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "6543"
+            "amount": "8696"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "41778"
+            "amount": "41478"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "6126"
+            "amount": "6119"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "6544"
-          },
-          {
-            "kind": "campaign-result",
-            "title": "동네와 함께 결과",
-            "amount": "7920"
+            "amount": "8696"
           },
           {
             "kind": "rival-sacking",
@@ -720,7 +716,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "6542"
+            "amount": "8694"
           }
         ],
         "euro": []

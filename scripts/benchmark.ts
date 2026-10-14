@@ -161,7 +161,8 @@ for (const variant of ['baseline', 'active-management']) {
             slot: view.slot,
             offer: n % 4 === 0 ? view.offers.length - 1 : 0,
           });
-      if (available(quote(code, w.year, 25))) operate(w, { type: 'campaign', kind: 'outreach' });
+      // The town's investment row in place of the outreach campaigns (→ECON-7).
+      if (n === 0) operate(w, { type: 'policy', key: 'localInvest', level: 2 });
       if (n % 10 === 0 && w.players.filter((p) => p.status === 'active').length < 26)
         operate(w, { type: 'recruit', candidate: 0, loan: true });
       const stand = nextWork(w, 'stadium');

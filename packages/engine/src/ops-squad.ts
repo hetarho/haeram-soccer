@@ -47,11 +47,16 @@ export type SquadCommand = Extract<
  */
 export function transferOffers(w: World, year = w.year, legacy = false) {
   const roles = ['GK', 'DEF', 'MID', 'FWD'] as const;
-  const profile = policyEffects(policyOf(w)).offer,
+  const policy = policyEffects(policyOf(w)),
+    profile = policy.offer,
     scouting = staffEffects(w),
     build = buildEffects(w),
     synergy = synergyEffects(w);
-  const count = Math.max(4, scouting.scoutCandidates + build.marketCandidates);
+  // 해외 스카우트망 widens the list and lifts its ceilings (→ECON-16).
+  const count = Math.max(
+    4,
+    scouting.scoutCandidates + build.marketCandidates + policy.scoutCandidates,
+  );
   const sig = hash(
     [
       ...profile.ability,
@@ -66,6 +71,7 @@ export function transferOffers(w: World, year = w.year, legacy = false) {
       build.marketPotential,
       synergy.marketPotential,
       synergy.feeMultiplier,
+      ...(policy.scoutCandidates ? [policy.scoutCandidates, policy.scoutPotential] : []),
     ].join(','),
   )
     .toString(36)
@@ -89,7 +95,8 @@ export function transferOffers(w: World, year = w.year, legacy = false) {
       profile.potentialBonus +
       scouting.scoutPotential +
       build.marketPotential +
-      synergy.marketPotential;
+      synergy.marketPotential +
+      policy.scoutPotential;
     // A ceiling is never below what the player already shows.
     p.potential = Math.max(overall(p), Math.min(99, p.potential + potentialBonus));
     // He would join on our division's market wage; his club sells at the market of the division

@@ -16,6 +16,7 @@ import {
   clubNews,
   BANKRUPT_MESSAGE,
   activateAgents,
+  activateBases,
   activateDirection,
   activateLevers,
 } from '../../../../packages/engine/src/index';
@@ -212,9 +213,12 @@ export class Host {
         // and drops their reserved strategy now that strategies apply at once; from before 1.17 it
         // names the direction rows the old staff criteria became.
         const activated = r.body.upgrade
-          ? activateDirection(
-              activateLevers(
-                activateAgents(upgradeWorldRules(result.world, CURRENT_CATALOG)),
+          ? activateBases(
+              activateDirection(
+                activateLevers(
+                  activateAgents(upgradeWorldRules(result.world, CURRENT_CATALOG)),
+                  result.world.engine,
+                ),
                 result.world.engine,
               ),
               result.world.engine,

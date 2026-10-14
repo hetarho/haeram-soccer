@@ -6,7 +6,7 @@ import { setPolicy } from './policy';
 import { buildEffects, setBuild } from './build';
 import { startFacilityWork } from './facilities';
 import { credit, debit } from './operations';
-import { delegatedSponsors, exclusiveSponsor, signSponsor, sponsorEnding } from './sponsors';
+import { delegatedSponsors, signSponsor, sponsorEnding } from './sponsors';
 
 export {
   commercialValue,
@@ -94,32 +94,9 @@ export function commercialCommand(w: World, cmd: CommercialCommand) {
     case 'build':
       setBuild(w, cmd.build, cmd.name);
       break;
-    case 'campaign': {
-      const o = campaignOffers(w).find((c) => c.kind === cmd.kind);
-      if (!o || w.campaigns.some((c) => c.kind === cmd.kind))
-        throw new Error('이미 진행 중이거나 없는 캠페인입니다.');
-      if (exclusiveSponsor(w) && cmd.kind === 'merchandise')
-        throw new Error('독점 후원 계약 중에는 자체 상품 캠페인을 진행할 수 없습니다.');
-      debit(w, o.cost);
-      w.campaigns.push({
-        // One campaign of a kind runs at a time, so its round names it.
-        id: `${w.year}:${w.round}:${o.kind}`,
-        kind: o.kind,
-        cost: o.cost,
-        started: w.round,
-        remaining: 4,
-        income: '0',
-        fans: 0,
-      });
-      addEvent(
-        w,
-        'campaign',
-        `${o.label} 시작`,
-        '4라운드 후 수입과 신규 팬을 확인합니다. 수익은 보장되지 않습니다.',
-        o.cost,
-      );
-      break;
-    }
+    case 'campaign':
+      // Campaigns became the 지역 and 글로벌 rows (→ECON-7); one started before still settles.
+      throw new Error('캠페인은 이제 없어요. 방향의 지역·글로벌 부문에서 투자해 주세요.');
     case 'facility':
       startFacilityWork(w, cmd.part, (fee) => debit(w, fee));
       break;

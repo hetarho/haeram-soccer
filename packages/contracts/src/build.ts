@@ -7,7 +7,7 @@ export const BUILD_OPTIONS = {
   scouting: ['data', 'proven', 'network', 'local'],
   market: ['selling', 'showcase', 'hold', 'hardball'],
   revenue: ['commercial', 'owner', 'frugal', 'members'],
-  fans: ['community', 'fortress', 'global', 'families'],
+  fans: ['community', 'fortress', 'mutual', 'families'],
   culture: ['family', 'meritocracy', 'stars', 'veterans'],
 } as const;
 export type BuildSlot = keyof typeof BUILD_OPTIONS;
@@ -22,7 +22,7 @@ export const LEGACY_VISION_BUILDS: Record<string, ClubBuild> = {
   balanced: {},
   academy: { youth: 'homegrown', scouting: 'local', culture: 'meritocracy' },
   trading: { market: 'selling', scouting: 'data' },
-  commercial: { revenue: 'commercial', fans: 'global' },
+  commercial: { revenue: 'commercial' },
   community: { fans: 'community', revenue: 'members', scouting: 'local' },
   ambition: { revenue: 'owner', scouting: 'proven', culture: 'stars' },
 };

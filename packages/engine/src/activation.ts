@@ -2,12 +2,15 @@ import type { World } from '../../contracts/src/types';
 import { BUILD_SLOTS } from '../../contracts/src/build';
 import { buildPreset, cardOf } from './build';
 import { pushInbox } from './inbox';
+import { POLICY_INFO, policyOf } from './policy';
 import { DIRECTION_INFO, DIRECTION_KEYS, directionOption } from './direction';
 
 /** The first rules with the three levers' settings (→SAVE-10). */
 const LEVERS_RULES = [1, 16, 0] as const;
 /** The first rules with the direction rows in place of the staff criteria (→SAVE-10). */
 const DIRECTION_RULES = [1, 17, 0] as const;
+/** The first rules with the 지역 and 글로벌 rows in place of marketing (→SAVE-10). */
+const BASES_RULES = [1, 19, 0] as const;
 /** Whether engine version `version` (major.minor.patch) comes before `than`. */
 function older(version: string, than: readonly number[]) {
   const parts = version.split('.').map(Number);
@@ -57,6 +60,24 @@ export function activateDirection(w: World, before: string): World {
     kind: 'staff-report',
     title: '직원 기준이 방향의 줄로 바뀌었어요',
     detail: `${DIRECTION_KEYS.map((key) => `${DIRECTION_INFO[key].label} ${directionOption(w, key).name}`).join(' · ')} · 방향 탭에서 바꿀 수 있어요. 개입 3단계부터 후원·감독·코치진도 스태프가 맡아요.`,
+    attention: false,
+  });
+  return next;
+}
+
+/**
+ * Activation of rules 1.19 (→SAVE-10): a world from before them loaded its marketing level as
+ * 해외 마케팅 and lost the 글로벌 브랜드 card; one inbox item names the move and that campaigns are
+ * no more. Pure on its input; returns `w` itself when nothing changes.
+ */
+export function activateBases(w: World, before: string): World {
+  if (!older(before, BASES_RULES)) return w;
+  const next: World = { ...w };
+  const level = policyOf(w).globalMarketing;
+  pushInbox(next, {
+    kind: 'staff-report',
+    title: '마케팅이 지역·글로벌 부문으로 옮겨졌어요',
+    detail: `해외 마케팅 ${POLICY_INFO.globalMarketing.levels[level - 1].name} · 주변 투자와 풀뿌리 유망주 투자로 지역 기반을, 해외 마케팅과 해외 스카우트망으로 글로벌 인지도를 키워요. 캠페인은 더 이상 시작하지 않아요. 방향 탭에서 바꿀 수 있어요.`,
     attention: false,
   });
   return next;
