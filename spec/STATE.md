@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| p7ad | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T15:45Z | 2026-10-14T19:15Z | - |
+| p7ad | ihaelam-ui-MacBookPro | autopilot | 2026-10-14T15:45Z | 2026-10-14T19:15Z | T111 |
 
 ## inbox
 - 261015 decided PLAYER-16: what "the rate below potential" is when growth shrinks with the gap to it (zero at potential) → the rate 2 under potential, a floor for a settled (0.90+) player's round growth near and past it (alt: a flat rate past potential | the season's growth term only) — without a floor PLAYER-16 had nothing to scale
@@ -69,7 +69,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T111 | Requests by formation slot, cover by slot, ambition and the arrival preview | CLUB PLAYER | T107 | todo |
+| T111 | Requests by formation slot, cover by slot, ambition and the arrival preview | CLUB PLAYER | T107 | doing@261015.p7ad |
 | T112 | Player profile, positions and the formation in the web game | WEB CLUB PLAYER | T107 | todo |
 | T113 | Earlier-rules careers are listed, never opened, and the century still fits | SAVE | T107 | todo |
 | T114 | Instruct training from 훈련, see adaptation, read rivals' 조직력 | WEB STAFF CLUB PLAYER LEAGUE | T108 T109 T112 | todo |
