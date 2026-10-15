@@ -52,12 +52,12 @@ describe('action outcome summaries', () => {
     expect(outcome.note).toContain('유지비');
   });
 
-  it('names 사람 › 코치진 as the home of a coach change', () => {
+  it('names 선수단 › 스태프 as the home of a coach change', () => {
     const before = world();
     const next = structuredClone(before);
     const role = before.staff![0].role;
     expect(describeOutcome({ type: 'renew-staff', role }, before, next)!.note).toContain(
-      '사람 › 코치진',
+      '선수단 › 스태프',
     );
     expect(
       describeOutcome({ type: 'direction', key: 'manager', option: 'young' }, before, next)!.note,

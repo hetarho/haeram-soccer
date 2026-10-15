@@ -199,7 +199,7 @@ function CandidateCard({
       {pending ? (
         <p className={s.pending} data-testid="pending-bid">
           {pending.status === 'countered' ? (
-            <>역제안 {cash(pending.counterFee || pending.fee)} · 소식함에서 답해 주세요</>
+            <>역제안 {cash(pending.counterFee || pending.fee)} · 알림·결정에서 답해 주세요</>
           ) : (
             <>
               협상 중 · 제안 {cash(pending.fee)} ·{' '}
@@ -392,7 +392,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
         <span>
           영입 기조 · <b>{POLICY_INFO.recruitment.levels[policyOf(w).recruitment - 1].name}</b>
         </span>
-        <small>방향에서 바꿔요</small>
+        <small>운영 방침에서 바꿔요</small>
       </button>
       <div className={s.summary}>
         <span>

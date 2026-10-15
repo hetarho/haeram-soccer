@@ -19,7 +19,7 @@ const sideways = (dialog: Locator) =>
     ),
   );
 async function people(page: Page) {
-  await page.getByRole('button', { name: '선수·스태프', exact: true }).first().click();
+  await page.getByRole('button', { name: '선수단·스태프', exact: true }).first().click();
 }
 
 for (const viewport of [
@@ -69,7 +69,7 @@ for (const viewport of [
     // A market candidate: positions with levels, the scout's range on his personality, and his
     // 실효 OVR at the slot he would take on arrival and settled.
     await page
-      .getByRole('tablist', { name: '선수·스태프 보기' })
+      .getByRole('tablist', { name: '선수단·스태프 보기' })
       .getByRole('tab', { name: '이적시장', exact: true })
       .click();
     const desk = page.getByRole('region', { name: '선수 영입 데스크' });

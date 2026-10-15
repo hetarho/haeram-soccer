@@ -585,7 +585,7 @@ export function ManagerPost({ w }: { w: World; client?: GameClient }) {
         w={w}
         decision="manager"
         criteria
-        auto="감독이 떠나면 단장이 선호 학파와 감독 기조에 맞는 감독을 바로 뽑고, 4월 1일 계약이 끝나는 감독은 감독 기조로 재계약하거나 교체해요. 소식함에 보고해요."
+        auto="감독이 떠나면 단장이 선호 학파와 감독 기조에 맞는 감독을 바로 뽑고, 4월 1일 계약이 끝나는 감독은 감독 기조로 재계약하거나 교체해요. 알림·결정에 보고해요."
         owner="구단주가 감독을 뽑고 재계약해요."
       />
       <DirectionLines w={w} rows={['school', 'manager', 'finance']} />
@@ -674,7 +674,7 @@ export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
         w={w}
         decision="contracts"
         criteria
-        auto="이적시장이 열릴 때 재계약·계약 개선을 요구하는 선수에게 단장이 재계약 기조와 재정 기조에 따라 하한을 제시하거나 거절하고 소식함에 보고해요."
+        auto="이적시장이 열릴 때 재계약·계약 개선을 요구하는 선수에게 단장이 재계약 기조와 재정 기조에 따라 하한을 제시하거나 거절하고 알림·결정에 보고해요."
         owner="구단주가 협상마다 제시하거나 거절해요."
       />
       <DirectionLines w={w} rows={['renewal', 'finance']} />
@@ -710,7 +710,7 @@ export function OfferAnswers({ w }: { w: World }) {
         w={w}
         decision="transfers"
         criteria
-        auto="다른 구단의 제안에 단장이 매각 기조와 재정 기조에 따라 답하고, 수석 스카우트의 명단과 감독의 요청을 보고 영입 줄과 재정 기조에 따라 선수를 영입해요. 모두 소식함에 보고해요."
+        auto="다른 구단의 제안에 단장이 매각 기조와 재정 기조에 따라 답하고, 수석 스카우트의 명단과 감독의 요청을 보고 영입 줄과 재정 기조에 따라 선수를 영입해요. 모두 알림·결정에 보고해요."
         owner="구단주가 제안마다 수락·거절하고, 영입도 직접 해요."
       />
       <DirectionLines w={w} rows={['market', 'finance']} />

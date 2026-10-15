@@ -10,9 +10,9 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '구단 방향', exact: true })
+    .getByRole('button', { name: '구단 운영', exact: true })
     .click();
-  await expect(page.getByRole('tab', { name: '방향', exact: true })).toHaveAttribute(
+  await expect(page.getByRole('tab', { name: '운영 방침', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
   );

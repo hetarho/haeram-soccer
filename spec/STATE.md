@@ -95,6 +95,7 @@
 - Unrelated balance/economy/storage follow-ups and existing WEB document-quality hints remain outside this task; see prior inbox/report entries.
 
 ## log
+- 261016 T137 implementation: one competition/period selector, explicit home progression tools, consistent operation/news labels and readable phone season facts; full CI/performance gates pending
 - 261016 T136 done: season-first club records, explicit competition detours and four scoped league lenses; 120 affected browser scenarios verified, full integration in T137
 - 261015 T138 done: observe at least one settled x10 round and stop before inspection; 9 repeated supported-browser cases pass, production timing unchanged
 - 261015 T135 done: actionable training/player/academy/staff workflows and request-first recruitment; 69 browser cases and static/build/spec checks pass, actual phone captures inspected
@@ -114,4 +115,3 @@
 - 261015 T129 done: 72 era/stage pixel scenes, 9 unit tests and 45 affected browser journeys passed, final affected 18/18, entry 250087 B gzip; CI-gated delivery by session
 - 261015 T128 done: all CI 38706479608 jobs passed; main fast-forwarded to fa69909; T129 continues
 - 261015 WEB r75: use the displayed calendar year for era changes; T129 doing@e8ar on locally verified T128 checkpoint fa69909, CI 38706479608 pending
-- 261015 create-task WEB r74: T128 subdued image presentation, T129 three-era/all-stage pixel scene library; T128 doing@e8ar

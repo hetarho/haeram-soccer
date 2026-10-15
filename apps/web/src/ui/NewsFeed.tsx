@@ -98,7 +98,7 @@ export function NewsButton() {
     <button
       className={s.fab}
       data-testid="news-button"
-      aria-label={`클럽 뉴스${fresh ? ` · 새 소식 ${fresh}개` : ''}`}
+      aria-label={`구단 뉴스${fresh ? ` · 새 소식 ${fresh}개` : ''}`}
       onClick={(event) => {
         event.currentTarget.focus();
         show();
@@ -146,12 +146,12 @@ export function NewsHeadlines({ w }: { w: World }) {
   useNewsSheet((state) => state.open);
   const fresh = freshCount(news, readSeen(w.id));
   return (
-    <section className={s.card} aria-label="클럽 뉴스 헤드라인" data-testid="news-headlines">
+    <section className={s.card} aria-label="구단 뉴스 헤드라인" data-testid="news-headlines">
       <header>
         <h3>헤드라인</h3>
         <button
           onClick={show}
-          aria-label={`클럽 뉴스 전체 보기${fresh ? ` · 새 소식 ${fresh}개` : ''}`}
+          aria-label={`구단 뉴스 전체 보기${fresh ? ` · 새 소식 ${fresh}개` : ''}`}
         >
           전체 뉴스{fresh ? <i>{fresh > 99 ? '99+' : fresh}</i> : null}
         </button>
@@ -190,7 +190,7 @@ function NewsList({ w }: { w: World }) {
     hide();
   };
   return (
-    <Dialog label="클럽 뉴스" onClose={close} wide>
+    <Dialog label="구단 뉴스" onClose={close} wide>
       <div className={s.filters} role="group" aria-label="뉴스 분류">
         {TAGS.map((value) => (
           <button

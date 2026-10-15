@@ -224,7 +224,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           id: 'investment-down',
           label: '지역·글로벌 투자 줄이기',
           effect: investStep
-            ? `방향에서 ${POLICY_INFO[invest].label} 단계를 ${toward(investStep.name)} 낮춰 적용해요 · ${investStep.summary}`
+            ? `운영 방침에서 ${POLICY_INFO[invest].label} 단계를 ${toward(investStep.name)} 낮춰 적용해요 · ${investStep.summary}`
             : '이미 추가 지출이 없어요',
           unavailable: investStep ? undefined : '투자하는 줄이 없어요',
           page: 'business',
@@ -236,7 +236,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
               {
                 id: 'support-down',
                 label: '선수단 투자 낮추기',
-                effect: `방향에서 ${toward(support.name)} 낮춰 적용해요 · 운영 경비 연 ${format(saving)} 절감 · 라운드 성장과 피로 회복이 줄어요`,
+                effect: `운영 방침에서 ${toward(support.name)} 낮춰 적용해요 · 운영 경비 연 ${format(saving)} 절감 · 라운드 성장과 피로 회복이 줄어요`,
                 page: 'business' as const,
                 board: { policy: { key: 'support' as const, level: support.level } },
               },
@@ -246,7 +246,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           id: 'ticket-up',
           label: '티켓 가격 올리기',
           effect: ticket
-            ? `방향에서 ${toward(ticket.name)} 올려 적용해요 · 홈 경기 입장 수입이 늘고 관중 수요는 줄어요`
+            ? `운영 방침에서 ${toward(ticket.name)} 올려 적용해요 · 홈 경기 입장 수입이 늘고 관중 수요는 줄어요`
             : '이미 가장 비싼 가격이에요',
           unavailable: ticket ? undefined : '티켓 가격 상한',
           page: 'business',

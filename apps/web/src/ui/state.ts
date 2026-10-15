@@ -39,7 +39,7 @@ export type PeopleTab = (typeof PEOPLE_TABS)[number][0];
 export type PeopleRequest = PeopleTab | 'candidates';
 /** 훈련's tabs (→WEB-70), in tab-bar order; the first one keeps no ?view= in the address. */
 export const TRAINING_TABS = [
-  ['training', '훈련'],
+  ['training', '1군 훈련'],
   ['academy', '유소년'],
 ] as const;
 export type TrainingTab = (typeof TRAINING_TABS)[number][0];
@@ -47,9 +47,9 @@ const tabOf = <T extends string>(tabs: readonly (readonly [T, string])[], id: st
   tabs.find(([tab]) => tab === id)?.[0];
 /** 방향's tabs (→WEB-39), in tab-bar order; the first one keeps no ?view= in the address. */
 export const BUSINESS_TABS = [
-  ['strategy', '방향'],
-  ['build', '증축'],
-  ['finance', '자금'],
+  ['strategy', '운영 방침'],
+  ['build', '시설'],
+  ['finance', '재정'],
   ['sponsor', '후원'],
 ] as const;
 export type BusinessView = (typeof BUSINESS_TABS)[number][0];
@@ -376,7 +376,9 @@ export function beginTaskDetour(target: Page) {
           ? '클럽 시즌 기록'
           : page === 'league'
             ? '리그'
-            : '클럽 홈';
+            : page === 'europe'
+              ? '컵 대회'
+              : '클럽 홈';
   useTaskMemory.setState({
     parents: prior.returning?.target === page ? [...prior.parents, prior.returning] : [],
     returning: { page, address: taskAddress(), label, target },

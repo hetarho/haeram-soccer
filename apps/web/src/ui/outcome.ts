@@ -240,9 +240,9 @@ export function describeOutcome(
     const seasons = after.manager.until - before.manager.until;
     note = `계약이 ${seasons === 1 ? '한 시즌' : `${seasons}시즌`} 늘었어요. 새 연봉은 다음 라운드 정산부터 나가요.`;
   }
-  // Coaches are hired, renewed and delegated per department in 사람 › 코치진 (→WEB-43, WEB-71).
+  // Coaches are hired, renewed and delegated per department in 선수단 › 스태프 (→WEB-43, WEB-71).
   if (command.type === 'hire-staff' || command.type === 'renew-staff')
-    note = '다음 라운드부터 반영돼요. 계약과 자동 결정은 사람 › 코치진에서 관리해요.';
+    note = '다음 라운드부터 반영돼요. 계약과 자동 결정은 선수단 › 스태프에서 관리해요.';
   if (command.type === 'direction')
     note = '스태프가 맡은 결정에서 이 방향으로 골라요. 개입 수준이 그 결정을 맡길 때만 쓰여요.';
   if (command.type === 'tactics')

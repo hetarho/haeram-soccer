@@ -34,7 +34,7 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   expect(moreBounds!.y).toBeGreaterThanOrEqual(0);
   await expect(more).toBeEnabled();
   // Pages scroll inside the view scroller; open a long page and scroll it before the modal.
-  await nav.getByRole('button', { name: '구단 방향', exact: true }).click();
+  await nav.getByRole('button', { name: '구단 운영', exact: true }).click();
   const scroller = page.getByTestId('view-scroller');
   await expect(page.getByTestId('strategy-board')).toBeVisible();
   await scroller.evaluate((element) => element.scrollTo(0, 240));
@@ -67,10 +67,10 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   expect(await page.evaluate(() => scrollY)).toBe(0);
 
   await more.click();
-  await expect(dialog.getByRole('button', { name: '선수·스태프', exact: true })).toHaveCount(0);
+  await expect(dialog.getByRole('button', { name: '선수단·스태프', exact: true })).toHaveCount(0);
   await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(dialog).toHaveCount(0);
-  await nav.getByRole('button', { name: '선수·스태프', exact: true }).click();
+  await nav.getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await expect(page.getByText(/^선수단 \d+\/26$/)).toBeVisible();
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   await nav.getByRole('button', { name: '리그', exact: true }).click();

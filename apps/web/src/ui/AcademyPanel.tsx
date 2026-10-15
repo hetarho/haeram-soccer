@@ -170,7 +170,7 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
         </header>
         <button type="button" className={s.homeLine} onClick={() => openDirection('youth')}>
           <span>
-            <b>유소년 투자 · 유입 방식은 방향에서</b>
+            <b>유소년 투자 · 유입 방식은 운영 방침에서</b>
             <small>
               지금 {investment} · {cardOf(buildOf(w), 'youth').label} · 반복 운영비와 다음 입단에
               반영
@@ -205,7 +205,7 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
             w={w}
             decision="academy"
             plain
-            auto="시즌이 끝날 때 유스 디렉터가 이 기준으로 승격과 방출을 정하고 소식함에 보고해요."
+            auto="시즌이 끝날 때 유스 디렉터가 이 기준으로 승격과 방출을 정하고 알림·결정에 보고해요."
             owner="시즌이 끝날 때 유스 디렉터가 이 기준으로 승격 추천과 방출 검토를 보고하고, 결정은 직접 해요."
           />
           <DirectionLines w={w} rows={['youthGoal', 'debut', 'finance']} />

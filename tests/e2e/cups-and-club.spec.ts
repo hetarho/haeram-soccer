@@ -29,7 +29,10 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(cup.getByText('우리 팀')).toBeVisible();
     await expect(cup).toContainText('다음');
     await expect(page.getByText(/유러피언컵은 5년 후\(1955\/56\) 창설돼요/)).toBeVisible();
-    await page.getByRole('tab', { name: '역사', exact: true }).click();
+    await page
+      .getByRole('group', { name: '컵 대회 기간' })
+      .getByRole('button', { name: '지난 시즌·역사', exact: true })
+      .click();
     await expect(page.getByRole('region', { name: '컵 대회 역사' })).toContainText(
       '아직 기록된 대회가 없어요',
     );
@@ -40,7 +43,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     page,
   }) => {
     await found(page, 'listing-journey');
-    await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
+    await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
     const open = page.getByRole('button', { name: /이적 상태 · 협상 가능 · 바꾸기$/ });
     await expect(open.first()).toBeVisible();
     const total = await open.count();
@@ -75,7 +78,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     // follow and each department shows whom it would hire (→STAFF-15). The coaches are a tab of 사람.
     const tab = (name: string) =>
       page
-        .getByRole('tablist', { name: '선수·스태프 보기' })
+        .getByRole('tablist', { name: '선수단·스태프 보기' })
         .getByRole('tab', { name, exact: true });
     await tab('스태프').click();
     await expect(page.getByTestId('coaching-mode')).toContainText('직접');
@@ -99,7 +102,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(draft).toContainText('코치 기조 표준 → 최고 수준');
     await draft.getByRole('button', { name: '적용', exact: true }).click();
     await expect(draft).toHaveCount(0);
-    await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
+    await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
     await tab('스태프').click();
     await expect(page.getByRole('button', { name: /^코치 기조 · 최고 수준/ })).toBeVisible();
     // Level 3 hands every department to the staff at once.
@@ -196,8 +199,8 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
   test('keeps the transfer market as a 사람 tab with its own address', async ({ page }) => {
     await found(page, 'market-segment-journey');
     const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
-    await nav.getByRole('button', { name: '선수·스태프', exact: true }).click();
-    const tabs = page.getByRole('tablist', { name: '선수·스태프 보기' });
+    await nav.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+    const tabs = page.getByRole('tablist', { name: '선수단·스태프 보기' });
     await expect(tabs.getByRole('tab')).toHaveText(['선수', '이적시장', '감독', '스태프']);
     await tabs.getByRole('tab', { name: '이적시장', exact: true }).click();
     await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
@@ -205,7 +208,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
       'aria-selected',
       'true',
     );
-    await expect(nav.getByRole('button', { name: '선수·스태프', exact: true })).toHaveAttribute(
+    await expect(nav.getByRole('button', { name: '선수단·스태프', exact: true })).toHaveAttribute(
       'aria-current',
       'page',
     );
@@ -239,17 +242,20 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await found(page, 'cup-history-journey');
     await page
       .getByTestId('club-hub')
-      .getByRole('button', { name: '시즌 상세', exact: true })
+      .getByRole('button', { name: '시즌 진행 도구', exact: true })
       .click();
     await page.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
     await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
     await page.keyboard.press('Escape');
-    await expect(page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' })).toHaveCount(0);
+    await expect(page.getByRole('dialog', { name: '시즌 진행 도구' })).toHaveCount(0);
     await page
       .getByRole('navigation', { name: '모바일 게임 메뉴' })
       .getByRole('button', { name: '컵 대회', exact: true })
       .click();
-    await page.getByRole('tab', { name: '역사', exact: true }).click();
+    await page
+      .getByRole('group', { name: '컵 대회 기간' })
+      .getByRole('button', { name: '지난 시즌·역사', exact: true })
+      .click();
     const history = page.getByRole('region', { name: '컵 대회 역사' });
     const picker = history.getByRole('group', { name: '컵 시즌 선택' });
     await expect(picker.getByRole('combobox', { name: '대진표 시즌' })).toHaveText(/1950\/51/);

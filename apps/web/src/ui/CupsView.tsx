@@ -1,6 +1,8 @@
-import { useCupRequest } from './state';
-import { useTaskState } from './taskMemory';
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { LINEAGES, lineageName } from './cupCompetitions';
+import { Segments } from './Segments';
+import { useCupRequest, useNavigation } from './state';
+import { useTaskMemory, useTaskState } from './taskMemory';
+import { lazy, Suspense, useEffect, useState, type KeyboardEvent } from 'react';
 import type {
   EuropeTournament,
   Fixture,
@@ -274,26 +276,80 @@ export function CupsView({
   coefficient: number;
   client: GameClient;
 }) {
+  const activePage = useNavigation((state) => state.page === 'europe');
   const tabs = [
     { id: 'cup', label: domesticCupName(clubOf(w).country) },
-    ...w.europe.filter((t) => t.key !== 'super').map((t) => ({ id: t.key, label: t.name })),
-    { id: 'history', label: '역사' },
+    ...LINEAGES.map((lineage) => ({ id: lineage.key, label: lineageName(w, lineage) })),
   ];
-  const [tab, setTab] = useTaskState(w.id, 'cups-tab', 'cup');
-  const [requested, setRequested] = useTaskState<{ year: number; competition: string } | undefined>(
-    w.id,
-    'cups-requested-season',
-    undefined,
+  const [tab, setTab] = useTaskState(w.id, 'cups-tab', () => {
+    const saved = new URLSearchParams(location.search).get('competition');
+    return tabs.some((entry) => entry.id === saved) ? saved! : 'cup';
+  });
+  const [period, setPeriod] = useTaskState<'current' | 'history'>(w.id, 'cups-period', () =>
+    new URLSearchParams(location.search).get('period') === 'history' ? 'history' : 'current',
   );
+  const [year, setYear] = useTaskState<number | undefined>(w.id, `cups-year-${tab}`, () => {
+    const saved = Number(new URLSearchParams(location.search).get('season'));
+    return Number.isInteger(saved) && saved > 0 ? saved : undefined;
+  });
   const request = useCupRequest((store) => store.request);
   useEffect(() => {
     if (!request) return;
+    // Set the requested competition's retained year directly before switching the key.
+    useTaskMemory.getState().activate(w.id);
+    const state = useTaskMemory.getState();
+    useTaskMemory.setState({
+      values: {
+        ...state.values,
+        [`cups-year-${request.competition}`]: request.year === w.year ? undefined : request.year,
+      },
+    });
     useCupRequest.getState().take();
-    setRequested(request);
-    setTab(request.year === w.year ? request.competition : 'history');
-  }, [request, w.year, setRequested, setTab]);
+    setTab(request.competition);
+    setPeriod(request.year === w.year ? 'current' : 'history');
+  }, [request, w.id, w.year, setTab, setPeriod]);
+  useEffect(() => {
+    if (!activePage) return;
+    const params = new URLSearchParams({ competition: tab, period });
+    if (period === 'history' && year !== undefined) params.set('season', String(year));
+    history.replaceState(null, '', `/europe?${params}`);
+  }, [tab, period, year, activePage]);
+  useEffect(() => {
+    const restore = () => {
+      if (!location.pathname.startsWith('/europe')) return;
+      const params = new URLSearchParams(location.search),
+        saved = params.get('competition'),
+        picked = Number(params.get('season'));
+      setTab(tabs.some((entry) => entry.id === saved) ? saved! : 'cup');
+      setPeriod(params.get('period') === 'history' ? 'history' : 'current');
+      if (saved) {
+        const state = useTaskMemory.getState();
+        useTaskMemory.setState({
+          values: {
+            ...state.values,
+            [`cups-year-${saved}`]: Number.isInteger(picked) && picked > 0 ? picked : undefined,
+          },
+        });
+      }
+    };
+    window.addEventListener('popstate', restore);
+    return () => window.removeEventListener('popstate', restore);
+  }, [w.id, setTab, setPeriod]);
   const active = tabs.some((entry) => entry.id === tab) ? tab : 'cup';
   const tournament = w.europe.find((t) => t.key === active);
+  const lineage = LINEAGES.find((entry) => entry.key === active);
+  const keyboard = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const next =
+      event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? tabs.length - 1
+          : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+    setTab(tabs[next].id);
+    document.getElementById(`cup-competition-${tabs[next].id}`)?.focus();
+  };
   const nextEurope = w.year < 1955 ? 1955 - w.year : 0;
   return (
     <>
@@ -309,10 +365,14 @@ export function CupsView({
         <span className={s.pill}>최근 5시즌 구단 계수 · {number(coefficient)}점</span>
       </div>
       <div className={`${s.seasonTabs} ${c.tabs}`} role="tablist" aria-label="컵 대회">
-        {tabs.map((entry) => (
+        {tabs.map((entry, index) => (
           <button
             key={entry.id}
+            id={`cup-competition-${entry.id}`}
             role="tab"
+            tabIndex={active === entry.id ? 0 : -1}
+            aria-controls="cup-competition-panel"
+            onKeyDown={(event) => keyboard(event, index)}
             aria-selected={active === entry.id}
             onClick={() => setTab(entry.id)}
           >
@@ -320,25 +380,54 @@ export function CupsView({
           </button>
         ))}
       </div>
-      {active === 'cup' && <DomesticCup w={w} />}
-      {tournament && <Continental key={tournament.key} w={w} t={tournament} />}
-      {active === 'history' && (
-        <Suspense
-          fallback={
-            <p className={s.muted} role="status">
-              컵 대회 역사를 펼치는 중…
-            </p>
-          }
-        >
-          <CupHistory
-            key={requested ? `${requested.year}:${requested.competition}` : 'browse'}
-            w={w}
-            client={client}
-            initialYear={requested?.year}
-            initialCompetition={requested?.competition}
+      <div id="cup-competition-panel" role="tabpanel" aria-labelledby={`cup-competition-${active}`}>
+        <div className={s.recordControls}>
+          <b>
+            {tabs.find((entry) => entry.id === active)?.label} ·{' '}
+            {period === 'current' ? seasonName(w.year) : '지난 시즌·역사'}
+          </b>
+          <Segments
+            label="컵 대회 기간"
+            options={
+              [
+                ['current', '현재 시즌'],
+                ['history', '지난 시즌·역사'],
+              ] as const
+            }
+            value={period}
+            onChange={setPeriod}
           />
-        </Suspense>
-      )}
+        </div>
+        {period === 'current' && active === 'cup' && <DomesticCup w={w} />}
+        {period === 'current' && tournament && (
+          <Continental key={tournament.key} w={w} t={tournament} />
+        )}
+        {period === 'current' && active !== 'cup' && !tournament && (
+          <p className={s.panelBody}>
+            {lineage && w.year < lineage.founded
+              ? `${seasonName(lineage.founded)} 시즌에 창설돼요.`
+              : '이번 시즌에는 열리지 않는 대회예요. 지난 시즌·역사에서 보관된 기록을 볼 수 있어요.'}
+          </p>
+        )}
+        {period === 'history' && (
+          <Suspense
+            fallback={
+              <p className={s.muted} role="status">
+                컵 대회 역사를 펼치는 중…
+              </p>
+            }
+          >
+            <CupHistory
+              key={active}
+              w={w}
+              client={client}
+              competition={active}
+              picked={year}
+              onYear={setYear}
+            />
+          </Suspense>
+        )}
+      </div>
       <p className={s.muted}>
         국가별 참가권, 시드와 추첨은 데모에 맞게 단순화했습니다. 클럽대항전은 9–1월 리그·조별 단계,
         2월부터(조별 단계가 없던 시대는 9월부터) 홈앤드어웨이 토너먼트, 5월 단판 결승으로 치릅니다.

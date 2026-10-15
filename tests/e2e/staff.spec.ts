@@ -14,10 +14,10 @@ async function found(page: Page, seed = 'short-contract') {
 }
 
 const tab = (page: Page, name: string) =>
-  page.getByRole('tablist', { name: '선수·스태프 보기' }).getByRole('tab', { name, exact: true });
+  page.getByRole('tablist', { name: '선수단·스태프 보기' }).getByRole('tab', { name, exact: true });
 /** 사람 from the tab bar or the sidebar; it opens on 선수. */
 const openPeople = (page: Page) =>
-  page.getByRole('button', { name: '선수·스태프', exact: true }).click();
+  page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
 
 /** Reads a decision's result card and closes it, so it no longer covers the tab bar. */
 async function closeOutcome(page: Page, text: string) {
@@ -75,9 +75,9 @@ test.describe('사람 at 360x740', () => {
     await found(page);
     await page
       .getByRole('navigation', { name: '모바일 게임 메뉴' })
-      .getByRole('button', { name: '선수·스태프', exact: true })
+      .getByRole('button', { name: '선수단·스태프', exact: true })
       .click();
-    const tabs = page.getByRole('tablist', { name: '선수·스태프 보기' }).getByRole('tab');
+    const tabs = page.getByRole('tablist', { name: '선수단·스태프 보기' }).getByRole('tab');
     // The manager market sits behind the manager's 교체, not in a tab of its own (→WEB-43).
     await expect(tabs).toHaveText(['선수', '이적시장', '감독', '스태프']);
     await expect(tab(page, '선수')).toHaveAttribute('aria-selected', 'true');
@@ -181,16 +181,16 @@ test('an unrenewed firefighter leaves at the close and the alert opens the marke
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await page
     .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 상세', exact: true })
+    .getByRole('button', { name: '시즌 진행 도구', exact: true })
     .click();
   await page.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
   await page.keyboard.press('Escape');
-  await expect(page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' })).toHaveCount(0);
+  await expect(page.getByRole('dialog', { name: '시즌 진행 도구' })).toHaveCount(0);
   const alert = page.getByRole('status').filter({ hasText: '감독이 떠났어요' });
   await expect(alert).toContainText('임시 감독이 팀을 맡고 있어요');
   await alert.getByRole('button', { name: '감독 선임하러 가기', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '선수·스태프', level: 2 })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '선수단·스태프', level: 2 })).toBeVisible();
   await expect(tab(page, '감독')).toHaveAttribute('aria-selected', 'true');
   await expect(page).toHaveURL(/\/people\?view=manager$/);
   // The interim's market is open; it keeps at least four free agents (→STAFF-17).

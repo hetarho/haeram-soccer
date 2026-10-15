@@ -1,5 +1,7 @@
+import { LINEAGES, lineageName } from './cupCompetitions';
+import { openClubSeason } from './state';
 import { PixelIcon } from './PixelIcon';
-import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type {
   CupFinal,
   MatchRecord,
@@ -7,7 +9,6 @@ import type {
   World,
 } from '../../../../packages/contracts/src/types';
 import { domesticCupName } from '../../../../packages/engine/src/cups';
-import { europeanEras } from '../../../../packages/engine/src/europe';
 import { clubOf } from '../../../../packages/engine/src/world';
 import type { GameClient } from '../runtime/client';
 import { Bracket, Club } from './Bracket';
@@ -23,23 +24,6 @@ import s from './App.module.css';
 import c from './CupsView.module.css';
 import ch from './CupHistory.module.css';
 
-/** Continental lineages under one key whatever the competition was called that season. */
-const LINEAGES = [
-  { key: 'ucl', first: 'European Cup', founded: 1955 },
-  { key: 'uel', first: 'UEFA Cup', founded: 1971 },
-  { key: 'uecl', first: 'Europa Conference League', founded: 2021 },
-  { key: 'cwc', first: 'Cup Winners Cup', founded: 1960 },
-];
-/** A lineage as it is called now: this season's name, else the last one played, else its first. */
-function lineageName(w: World, { key, first }: (typeof LINEAGES)[number]) {
-  return (
-    europeanEras(w.year).find((era) => era.key === key)?.name ??
-    w.history
-      .findLast((h) => h.europe.some((e) => e.kind === key))
-      ?.europe.find((e) => e.kind === key)?.name ??
-    first
-  );
-}
 /** Our runs listed before 모두 보기, latest first. */
 const RUNS_SHOWN = 12;
 /** Clubs in the honours table before its full list. */
@@ -345,21 +329,17 @@ function Honours({
 export function CupHistory({
   w,
   client,
-  initialYear,
-  initialCompetition,
+  competition: key,
+  picked,
+  onYear: setPicked,
 }: {
   w: World;
   client: GameClient;
-  initialYear?: number;
-  initialCompetition?: string;
+  competition: string;
+  picked?: number;
+  onYear: (year: number) => void;
 }) {
   const own = clubOf(w);
-  const competitions = [
-    { key: 'cup', name: domesticCupName(own.country) },
-    ...LINEAGES.map((lineage) => ({ key: lineage.key, name: lineageName(w, lineage) })),
-  ];
-  const [key, setKey] = useState(initialCompetition ?? 'cup');
-  const [picked, setPicked] = useState<number | undefined>(initialYear);
   const [report, setReport] = useState<MatchRecord>();
   const [allRuns, setAllRuns] = useState(false),
     [allFinals, setAllFinals] = useState(false);
@@ -382,7 +362,7 @@ export function CupHistory({
   );
   // Oldest first; a season chosen for another competition stays when this one was played then.
   const years = honours.finals.map((row) => row.year).reverse();
-  const year = picked !== undefined && years.includes(picked) ? picked : years.at(-1);
+  const year = picked ?? years.at(-1);
   const final = honours.finals.find((row) => row.year === year);
   const season = w.history.find((h) => h.year === year);
   const archive = useSeasonRecords(client, w.id, year);
@@ -396,21 +376,14 @@ export function CupHistory({
     () => (records && year !== undefined ? cupRoute(w, year, key, records) : undefined),
     [records, year, key],
   );
-  const chip = competitions.find((entry) => entry.key === key)!.name,
+  const chip =
+      key === 'cup'
+        ? domesticCupName(own.country)
+        : lineageName(
+            w,
+            LINEAGES.find((entry) => entry.key === key)!,
+          ),
     name = key === 'cup' ? chip : (final?.name ?? chip);
-  const keyboard = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
-    if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
-    event.preventDefault();
-    const next =
-      event.key === 'Home'
-        ? 0
-        : event.key === 'End'
-          ? competitions.length - 1
-          : (index + (event.key === 'ArrowRight' ? 1 : -1) + competitions.length) %
-            competitions.length;
-    setKey(competitions[next].key);
-    document.getElementById(`cup-history-${competitions[next].key}`)?.focus();
-  };
   const reveal = (target: HTMLElement | null) =>
     target?.scrollIntoView({ block: 'start', behavior: reducedMotion() ? 'auto' : 'smooth' });
   const showBracket = (next: number) => {
@@ -428,30 +401,17 @@ export function CupHistory({
   const lineage = LINEAGES.find((entry) => entry.key === key);
   return (
     <section className={c.card} aria-label="컵 대회 역사">
-      <div className={s.filters} role="tablist" aria-label="역사를 볼 대회">
-        {competitions.map((entry, index) => (
-          <button
-            key={entry.key}
-            id={`cup-history-${entry.key}`}
-            role="tab"
-            aria-selected={key === entry.key}
-            aria-controls="cup-history-panel"
-            tabIndex={key === entry.key ? 0 : -1}
-            className={key === entry.key ? s.selected : undefined}
-            onKeyDown={(event) => keyboard(event, index)}
-            onClick={() => setKey(entry.key)}
-          >
-            {entry.name}
-          </button>
-        ))}
-      </div>
-      <div
-        id="cup-history-panel"
-        role="tabpanel"
-        aria-labelledby={`cup-history-${key}`}
-        className={ch.historyPanel}
-      >
-        {year === undefined || !final ? (
+      <div className={ch.historyPanel}>
+        {year !== undefined && !final && honours.finals.length > 0 ? (
+          <div className={s.panelBody}>
+            <p>
+              {seasonName(year)} · {chip}의 대회 기록이 없어요.
+            </p>
+            <button type="button" onClick={() => setPicked(years.at(-1)!)}>
+              최근 기록된 시즌 보기
+            </button>
+          </div>
+        ) : year === undefined || !final ? (
           <p className={s.muted}>
             아직 기록된 대회가 없어요.{' '}
             {!lineage
@@ -467,6 +427,9 @@ export function CupHistory({
               <div ref={stepper} className={ch.seasonPicker} role="group" aria-label="컵 시즌 선택">
                 <CupSeasonPicker years={years} year={year} onChange={setPicked} />
               </div>
+              <button type="button" onClick={() => openClubSeason(year)}>
+                이 시즌 구단 기록
+              </button>
               <p className={ch.seasonFinal}>
                 <b>
                   {seasonName(year)}

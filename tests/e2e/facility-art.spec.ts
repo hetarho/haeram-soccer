@@ -62,6 +62,8 @@ async function expectArt(page: Page, kind: string, era: string, stage: number) {
   await expect(img).toBeVisible();
   await expect(img).toHaveAttribute('src', `/art/scenes/${era}/${kind}-${stage}.webp`);
   await expect(img).toHaveAttribute('alt', /픽셀아트$/);
+  // Training actions lead on phones; its lazy illustration loads when the owner reveals it.
+  await img.scrollIntoViewIfNeeded();
   await expect
     .poll(() =>
       img.evaluate(

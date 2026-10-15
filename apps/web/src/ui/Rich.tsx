@@ -198,14 +198,14 @@ function People({ state, client }: Props) {
     <>
       <Header
         eyebrow="PEOPLE"
-        title="선수·스태프"
-        description="누가 뛰고, 누가 오고, 누가 남을지 정해요. 선수와 이적시장, 감독과 코치진을 한곳에서 다뤄요. 젊은 감독과 코치는 잠재력까지 성장해요."
+        title="선수단·스태프"
+        description="누가 뛰고, 누가 오고, 누가 남을지 정해요. 선수 명단과 영입, 감독과 스태프의 선임·계약을 다뤄요. 젊은 감독과 코치는 잠재력까지 성장해요."
       />
       <PageTabs
         tabs={PEOPLE_TABS}
         value={tab}
         onChange={setTab}
-        label="선수·스태프 보기"
+        label="선수단·스태프 보기"
         idPrefix="people"
       />
       <TabPanel idPrefix="people" value={tab}>
@@ -1092,8 +1092,8 @@ function Business({ state, client }: Props) {
     <>
       <Header
         eyebrow="CLUB DIRECTION"
-        title="구단 방향"
-        description="방향에서 구단이 나아갈 길과 씀씀이를 정하고, 증축에서 시설을, 자금에서 장부를, 후원에서 계약을 다뤄요."
+        title="구단 운영"
+        description="운영 방침에서 부서별 기준과 투자를 정하고, 시설에서 증축을, 재정에서 장부와 전망을, 후원에서 계약을 다뤄요."
       />
       <OperationsView
         key={opened}

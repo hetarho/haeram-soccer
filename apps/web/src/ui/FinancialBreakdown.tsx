@@ -89,7 +89,7 @@ export const FinancialBreakdown = memo(
                 [
                   ['선수 급여', costs.playerWages],
                   ['감독 급여', costs.managerWage],
-                  ['코치진 급여', costs.staffWages],
+                  ['스태프 급여', costs.staffWages],
                   ['시설 유지', costs.maintenance],
                   ['지역·글로벌 투자', costs.investment],
                   ['유소년 투자', costs.academy],

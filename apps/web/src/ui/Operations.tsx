@@ -34,7 +34,7 @@ export function OperationsView({
         tabs={BUSINESS_TABS}
         value={tab}
         onChange={setTab}
-        label="구단 방향 보기"
+        label="구단 운영 보기"
         idPrefix="operations"
       />
       <TabPanel idPrefix="operations" value={tab}>

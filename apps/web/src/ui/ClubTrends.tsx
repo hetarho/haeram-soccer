@@ -19,6 +19,7 @@ import {
 } from './recordTrends';
 import { Segments } from './Segments';
 import s from './App.module.css';
+import t from './ClubTrends.module.css';
 
 /** A past amount in today's money, in minor units: price index and currency change applied. */
 function inToday(w: World, amount: string, year: number) {
@@ -346,7 +347,7 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
   return (
     <Panel title="시즌별 기록" note={`${seasons.length}시즌`}>
       <div className={s.tableWrap}>
-        <table aria-label="시즌별 기록">
+        <table className={t.seasonHistory} role="table" aria-label="시즌별 기록">
           <thead>
             <tr>
               <th scope="col">시즌</th>
@@ -375,11 +376,11 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                   {seasonName(w.year)} · 진행 중
                 </button>
               </td>
-              <td>{divisionName(code, clubOf(w).tier, clubOf(w).group)}</td>
-              <td>{w.tables[w.playerClub]?.points ?? 0}</td>
-              <td>진행 중</td>
-              <td>{clubOf(w).elo?.toFixed(0) ?? '—'}</td>
-              <td>—</td>
+              <td data-label="리그">{divisionName(code, clubOf(w).tier, clubOf(w).group)}</td>
+              <td data-label="승점">{w.tables[w.playerClub]?.points ?? 0}</td>
+              <td data-label="컵 대회">진행 중</td>
+              <td data-label="Elo">{clubOf(w).elo?.toFixed(0) ?? '—'}</td>
+              <td data-label="선수단 가치 · 현재 물가">—</td>
             </tr>
             {[...seasons]
               .reverse()
@@ -407,13 +408,13 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                       seasonName(h.year)
                     )}
                   </td>
-                  <td>
+                  <td data-label="리그">
                     {divisionName(code, h.tier, h.group)} {h.rank}위
                   </td>
-                  <td>
+                  <td data-label="승점">
                     {h.points} ({h.won}-{h.drawn}-{h.lost})
                   </td>
-                  <td>
+                  <td data-label="컵 대회">
                     {h.runs?.length
                       ? h.runs
                           .map(
@@ -423,12 +424,12 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                           .join(' · ')
                       : '—'}
                   </td>
-                  <td>
+                  <td data-label="Elo">
                     {h.elo !== undefined
                       ? `${Math.round(h.elo)}${h.eloRank ? ` (${h.eloRank}위)` : ''}`
                       : '—'}
                   </td>
-                  <td>
+                  <td data-label="선수단 가치 · 현재 물가">
                     {h.squadValue ? (
                       <Money value={inToday(w, h.squadValue, h.year)} code={code} year={w.year} />
                     ) : (

@@ -113,7 +113,7 @@ for (const { seed: worldSeed, ...viewport } of [
     const roster = page.locator('[class*="rosterCards"] article');
     // Delegated staff may sell a fringe player for a premium while the window is open.
     const openSquad = async (w: World) => {
-      await nav.getByRole('button', { name: '선수·스태프', exact: true }).click();
+      await nav.getByRole('button', { name: '선수단·스태프', exact: true }).click();
       await expect(roster).toHaveCount(w.players.filter((p) => p.status === 'active').length);
     };
     const openTraining = () => nav.getByRole('button', { name: '훈련·육성', exact: true }).click();
@@ -174,7 +174,7 @@ for (const { seed: worldSeed, ...viewport } of [
     await mini.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
     await expect(date).not.toHaveText(paused);
     // The match-eve stop keeps it short of round 1.
-    await nav.getByRole('button', { name: '선수·스태프', exact: true }).click();
+    await nav.getByRole('button', { name: '선수단·스태프', exact: true }).click();
     await expect(roster.first()).toBeVisible();
     for (const player of await roster.all()) await expect(player).toContainText('성장 +0.00');
     // A clock left running resumes after a reload (→WEB-64); stop the run so the reload starts
@@ -278,7 +278,7 @@ test("shows an owner's order with the assistant's rule, and a suggestion's odds"
   // What drives development reads the focus in force: no round growth while resting.
   await page.getByText('성장 요인·투자·스태프 자세히', { exact: true }).click();
   await expect(
-    page.getByRole('button', { name: /^훈련 방향 ×0.4 · 훈련 방향에서 보기$/ }),
+    page.getByRole('button', { name: /^훈련 방향 ×0.4 · 1군 훈련에서 보기$/ }),
   ).toBeVisible();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
@@ -332,7 +332,7 @@ test('promotes a prospect from 유소년', async ({ page }) => {
   await expect(academy).toContainText('아직 아카데미 선수가 없어요');
   await expect(page.getByRole('region', { name: '승격한 선수 관리' })).toContainText(prospect.name);
   await expect(page.getByRole('button', { name: '이 선수 훈련 보기', exact: true })).toBeVisible();
-  await nav.getByRole('button', { name: '선수·스태프', exact: true }).click();
+  await nav.getByRole('button', { name: '선수단·스태프', exact: true }).click();
   const roster = page.locator('[class*="rosterCards"] article');
   await expect(roster).toHaveCount(squad + 1);
   await expect(roster.filter({ hasText: prospect.name })).toHaveCount(1);
@@ -341,7 +341,7 @@ test('promotes a prospect from 유소년', async ({ page }) => {
   await page.getByRole('tab', { name: '유소년', exact: true }).click();
   await expect(page.getByRole('button', { name: /^육성 목표 · 표준/ })).toBeVisible();
   await expect(page.getByRole('button', { name: /^데뷔 시점 · 표준/ })).toBeVisible();
-  await page.getByRole('button', { name: /^유소년 투자 · 유입 방식은 방향에서/ }).click();
+  await page.getByRole('button', { name: /^유소년 투자 · 유입 방식은 운영 방침에서/ }).click();
   await expect(page).toHaveURL(/\/direction$/);
 });
 

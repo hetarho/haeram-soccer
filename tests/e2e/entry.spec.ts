@@ -12,9 +12,9 @@ test('creates, computes and reloads through the bundled worker', async ({ page }
   await expect(page.getByText('Haeram Athletic', { exact: true }).first()).toBeVisible();
   await page
     .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 상세', exact: true })
+    .getByRole('button', { name: '시즌 진행 도구', exact: true })
     .click();
-  const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
+  const journal = page.getByRole('dialog', { name: '시즌 진행 도구' });
   await journal.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toHaveText(/1950\/51 · 라운드 1$/);
   // A round is lived one day at a time, one revision each (→LEAGUE-11): the page names the
@@ -53,9 +53,9 @@ test('observes event-backed metrics, historical locks and responsive navigation'
     '컵 대회',
     '클럽 기록실',
     '클럽 홈',
-    '선수·스태프',
+    '선수단·스태프',
     '훈련·육성',
-    '구단 방향',
+    '구단 운영',
   ];
   await expect(mobileMenu.getByRole('button')).toHaveCount(tabs.length);
   expect(
@@ -82,17 +82,17 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   const allMenu = page.getByRole('dialog', { name: '전체 메뉴' });
   await expect(allMenu).toBeVisible();
   // Tab destinations live in the tab bar; the menu lists none of them.
-  for (const label of ['선수·스태프', '훈련·육성', '구단 방향'])
+  for (const label of ['선수단·스태프', '훈련·육성', '구단 운영'])
     await expect(allMenu.getByRole('button', { name: label, exact: true })).toHaveCount(0);
   await allMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(allMenu).toHaveCount(0);
   // The phone tab reads 사람; its page opens on 선수 with the squad count.
-  await expect(mobileMenu.getByRole('button', { name: '선수·스태프', exact: true })).toHaveText(
-    '사람',
+  await expect(mobileMenu.getByRole('button', { name: '선수단·스태프', exact: true })).toHaveText(
+    '선수단',
   );
-  await mobileMenu.getByRole('button', { name: '선수·스태프', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '선수·스태프', level: 2 })).toBeVisible();
-  const peopleTabs = page.getByRole('tablist', { name: '선수·스태프 보기' }).getByRole('tab');
+  await mobileMenu.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '선수단·스태프', level: 2 })).toBeVisible();
+  const peopleTabs = page.getByRole('tablist', { name: '선수단·스태프 보기' }).getByRole('tab');
   await expect(peopleTabs).toHaveText(['선수', '이적시장', '감독', '스태프']);
   await expect(peopleTabs.first()).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByText('선수단 18/26', { exact: true })).toBeVisible();
@@ -100,7 +100,7 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await mobileMenu.getByRole('button', { name: '훈련·육성', exact: true }).click();
   await expect(page.getByRole('heading', { name: '훈련·육성', level: 2 })).toBeVisible();
   await expect(page.getByRole('tablist', { name: '훈련·육성 보기' }).getByRole('tab')).toHaveText([
-    '훈련',
+    '1군 훈련',
     '유소년',
   ]);
   await expect(page).toHaveURL(/\/training$/);

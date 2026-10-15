@@ -37,12 +37,12 @@ async function foundMarket(page: Page, seed: string, difficulty: '쉬움' | '어
 /** The market is 사람's second tab. */
 const marketTab = (page: Page) =>
   page
-    .getByRole('tablist', { name: '선수·스태프 보기' })
+    .getByRole('tablist', { name: '선수단·스태프 보기' })
     .getByRole('tab', { name: '이적시장', exact: true });
 async function openMarket(page: Page) {
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '선수·스태프', exact: true })
+    .getByRole('button', { name: '선수단·스태프', exact: true })
     .click();
   await marketTab(page).click();
   await expect(marketTab(page)).toHaveAttribute('aria-selected', 'true');

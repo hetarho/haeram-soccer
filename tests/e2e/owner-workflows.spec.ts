@@ -13,7 +13,7 @@ async function found(page: Page) {
 }
 const nav = (page: Page) => page.getByRole('navigation', { name: '모바일 게임 메뉴' });
 async function openOperations(page: Page) {
-  await nav(page).getByRole('button', { name: '구단 방향', exact: true }).click();
+  await nav(page).getByRole('button', { name: '구단 운영', exact: true }).click();
   await expect(page.getByTestId('strategy-board')).toBeVisible();
 }
 
@@ -21,7 +21,7 @@ test('keeps selected candidates and returns from the exact recruitment policy', 
   page,
 }) => {
   await found(page);
-  await nav(page).getByRole('button', { name: '선수·스태프', exact: true }).click();
+  await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
   const desk = page.getByRole('region', { name: '선수 영입 데스크' });
   const roles = desk.getByRole('group', { name: '영입 포지션 선택' });
@@ -131,7 +131,7 @@ test('a player profile leads to that player training and keeps the squad search'
   page,
 }) => {
   await found(page);
-  await nav(page).getByRole('button', { name: '선수·스태프', exact: true }).click();
+  await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
   const playerLink = page
     .locator('[class*="rosterCards"] article')
     .first()
@@ -154,7 +154,7 @@ test('recruitment needs precede the candidate catalogue and academy operations o
   page,
 }) => {
   await found(page);
-  await nav(page).getByRole('button', { name: '선수·스태프', exact: true }).click();
+  await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
   const needs = page.getByRole('region', { name: '감독 영입 요청', exact: true });
   const candidate = page
@@ -167,7 +167,7 @@ test('recruitment needs precede the candidate catalogue and academy operations o
   await page.getByRole('tab', { name: '유소년', exact: true }).click();
   await page.getByRole('button', { name: /유소년 시설 .*공사 보기/ }).click();
   await expect(page.getByTestId('facility-academy')).toBeVisible();
-  await expect(page.getByRole('tab', { name: '증축', exact: true })).toHaveAttribute(
+  await expect(page.getByRole('tab', { name: '시설', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
   );
@@ -253,4 +253,86 @@ test('keeps a foreign league selected across all competition lenses without subs
   await page.getByRole('button', { name: '우리 리그 기록 보기', exact: true }).click();
   await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
   await expect(page).not.toHaveURL(/league=/);
+});
+
+test('separates the home briefing from explicit progression tools and links the current club record', async ({
+  page,
+}) => {
+  await found(page);
+  const hub = page.getByTestId('club-hub');
+  await expect(hub.getByRole('button', { name: '시즌 진행 도구', exact: true })).toBeInViewport();
+  await hub.getByRole('button', { name: '시즌 상세', exact: true }).click();
+  const briefing = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
+  await expect(briefing.getByRole('button', { name: '한 라운드 진행', exact: true })).toHaveCount(
+    0,
+  );
+  await expect(
+    briefing.getByRole('heading', { name: '우리 팀의 순위 경쟁', exact: true }),
+  ).toBeVisible();
+  await briefing.getByRole('button', { name: '이번 시즌 구단 기록 →', exact: true }).click();
+  await expect(briefing).toHaveCount(0);
+  await expect(page).toHaveURL(/\/history\?season=1950/);
+  await nav(page).getByRole('button', { name: '클럽 홈', exact: true }).click();
+  await hub.getByRole('button', { name: '시즌 진행 도구', exact: true }).click();
+  const tools = page.getByRole('dialog', { name: '시즌 진행 도구', exact: true });
+  await expect(tools).toContainText('승강·상금을 정산');
+  await tools.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
+  await expect(page.getByTestId('calendar')).toContainText('라운드 1');
+  await page.keyboard.press('Escape');
+  await expect(tools).toHaveCount(0);
+});
+
+test('chooses a cup once and keeps its archived season through competition and club-record visits', async ({
+  page,
+}) => {
+  await found(page);
+  await page
+    .getByTestId('club-hub')
+    .getByRole('button', { name: '시즌 진행 도구', exact: true })
+    .click();
+  const tools = page.getByRole('dialog', { name: '시즌 진행 도구', exact: true });
+  for (const year of [1951, 1952]) {
+    await tools.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
+    await expect(page.getByTestId('calendar')).toContainText(
+      `${year}/${String(year + 1).slice(-2)} · 라운드 0`,
+    );
+  }
+  await page.keyboard.press('Escape');
+  await nav(page).getByRole('button', { name: '컵 대회', exact: true }).click();
+  const competition = page.getByRole('tablist', { name: '컵 대회', exact: true });
+  const period = page.getByRole('group', { name: '컵 대회 기간', exact: true });
+  await period.getByRole('button', { name: '지난 시즌·역사', exact: true }).click();
+  await chooseOption(page.getByRole('combobox', { name: '대진표 시즌', exact: true }), '1950');
+  await competition.getByRole('tab', { name: 'European Cup', exact: true }).click();
+  await expect(period.getByRole('button', { name: '지난 시즌·역사', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await expect(page.getByRole('region', { name: '컵 대회 역사', exact: true })).toContainText(
+    '1955/56',
+  );
+  await expect(page.getByRole('tablist', { name: '역사를 볼 대회' })).toHaveCount(0);
+  await competition.getByRole('tab', { name: '잉글랜드 컵', exact: true }).click();
+  await expect(page.getByRole('combobox', { name: '대진표 시즌', exact: true })).toHaveAttribute(
+    'data-value',
+    '1950',
+  );
+  await page.getByRole('button', { name: '이 시즌 구단 기록', exact: true }).click();
+  await expect(page).toHaveURL(/\/history\?season=1950/);
+  await page.getByRole('button', { name: '← 돌아가기 · 컵 대회', exact: true }).click();
+  await expect(page).toHaveURL(/competition=cup&period=history&season=1950/);
+  await expect(page.getByRole('combobox', { name: '대진표 시즌', exact: true })).toHaveAttribute(
+    'data-value',
+    '1950',
+  );
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  await page.goto('/europe?competition=cup&period=history&season=1940');
+  await expect(page.getByRole('region', { name: '컵 대회 역사', exact: true })).toContainText(
+    '1940/41 · 잉글랜드 컵의 대회 기록이 없어요.',
+  );
+  await page.getByRole('button', { name: '최근 기록된 시즌 보기', exact: true }).click();
+  await expect(page.getByRole('combobox', { name: '대진표 시즌', exact: true })).toHaveAttribute(
+    'data-value',
+    '1951',
+  );
 });

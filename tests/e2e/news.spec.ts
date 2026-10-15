@@ -37,9 +37,9 @@ async function found(page: Page) {
 async function playRound(page: Page) {
   await page
     .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 상세', exact: true })
+    .getByRole('button', { name: '시즌 진행 도구', exact: true })
     .click();
-  const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
+  const journal = page.getByRole('dialog', { name: '시즌 진행 도구' });
   await journal.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toHaveText(/라운드 1$/);
   await journal.getByRole('button', { name: '창 닫기', exact: true }).click();
@@ -73,7 +73,7 @@ test('celebrates in one line beside the news button, which then holds the headli
   // A first round can queue several celebrations, each shown for a few seconds.
   test.setTimeout(60000);
   await found(page);
-  await expect(newsButton(page)).toHaveAttribute('aria-label', '클럽 뉴스');
+  await expect(newsButton(page)).toHaveAttribute('aria-label', '구단 뉴스');
   await playRound(page);
   const banner = page.getByTestId('celebration');
   await expect(banner).toContainText('축하합니다');
@@ -94,18 +94,18 @@ test('celebrates in one line beside the news button, which then holds the headli
   await expect(banner).toHaveCount(0, { timeout: 25000 });
   await expect(newsButton(page)).toHaveAttribute('aria-label', /새 소식 \d+개/);
   await newsButton(page).click();
-  const sheet = page.getByRole('dialog', { name: '클럽 뉴스' });
+  const sheet = page.getByRole('dialog', { name: '구단 뉴스' });
   await expect(sheet).toContainText('창단 첫 공식전 승리');
   await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
-  await expect(newsButton(page)).toHaveAttribute('aria-label', '클럽 뉴스');
+  await expect(newsButton(page)).toHaveAttribute('aria-label', '구단 뉴스');
 });
 
 test('"뉴스 표시 안 함" files achievements behind the news button without a banner', async ({
   page,
 }) => {
   await found(page);
-  await page.getByRole('button', { name: /^소식함/ }).click();
-  const inbox = page.getByRole('dialog', { name: '소식함' });
+  await page.getByRole('button', { name: /^알림·결정/ }).click();
+  const inbox = page.getByRole('dialog', { name: '알림·결정' });
   await inbox.getByLabel(/뉴스 표시 안 함/).check();
   await inbox.getByRole('button', { name: '닫기', exact: true }).click();
   await playRound(page);
@@ -116,6 +116,6 @@ test('"뉴스 표시 안 함" files achievements behind the news button without 
   await page.reload();
   await newsButton(page).click();
   await expect(
-    page.getByRole('dialog', { name: '클럽 뉴스' }).getByLabel(/뉴스 표시 안 함/),
+    page.getByRole('dialog', { name: '구단 뉴스' }).getByLabel(/뉴스 표시 안 함/),
   ).toBeChecked();
 });

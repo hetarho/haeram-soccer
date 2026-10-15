@@ -54,14 +54,14 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page
     .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 상세', exact: true })
+    .getByRole('button', { name: '시즌 진행 도구', exact: true })
     .click();
-  const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
+  const journal = page.getByRole('dialog', { name: '시즌 진행 도구' });
   await journal.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
   // A closed season no longer interrupts: its review waits in the league's season list.
   await page.keyboard.press('Escape');
-  await expect(page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' })).toHaveCount(0);
+  await expect(page.getByRole('dialog', { name: '시즌 진행 도구' })).toHaveCount(0);
   await page.getByRole('button', { name: '리그', exact: true }).first().click();
   await chooseOption(page.getByRole('combobox', { name: '리그 시즌', exact: true }), '1950');
   await openSeasonReview(page);
@@ -228,7 +228,7 @@ test('compares distinct own players with a shared scope and returns focus withou
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
-  await page.getByRole('button', { name: '선수·스태프', exact: true }).first().click();
+  await page.getByRole('button', { name: '선수단·스태프', exact: true }).first().click();
   const opener = page.getByRole('button', { name: '우리 선수 비교', exact: true });
   await opener.click();
   const sheet = page.getByRole('dialog', { name: '우리 선수 비교', exact: true });
@@ -263,7 +263,7 @@ test('filters player samples and shows scoped per-90 evidence on a mobile profil
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
-  await page.getByRole('button', { name: '선수·스태프', exact: true }).first().click();
+  await page.getByRole('button', { name: '선수단·스태프', exact: true }).first().click();
   // Position, order and sample sit behind the panel's view-settings button (a sheet on phones).
   const settings = page.getByRole('button', { name: /^선수 보기 설정/ });
   await settings.click();

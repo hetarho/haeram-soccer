@@ -45,9 +45,9 @@ async function found(page: Page, seed: string) {
 async function openBusiness(page: Page, tab?: string) {
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '구단 방향', exact: true })
+    .getByRole('button', { name: '구단 운영', exact: true })
     .click();
-  await expect(page.getByRole('tablist', { name: '구단 방향 보기' })).toBeVisible();
+  await expect(page.getByRole('tablist', { name: '구단 운영 보기' })).toBeVisible();
   if (tab) await page.getByRole('tab', { name: tab, exact: true }).click();
 }
 
@@ -66,7 +66,7 @@ test('older operations addresses open their tab', async ({ page }) => {
   await found(page, 'direction-addresses');
   await openBusiness(page);
   // 방향 is the first page tab and keeps no ?view= (→WEB-39, →WEB-69); there is no 캠페인 tab.
-  await expect(page.getByRole('tab', { name: '방향', exact: true })).toHaveAttribute(
+  await expect(page.getByRole('tab', { name: '운영 방침', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
   );
@@ -74,14 +74,14 @@ test('older operations addresses open their tab', async ({ page }) => {
   await expect(page.getByRole('tab', { name: '캠페인', exact: true })).toHaveCount(0);
   // Every older /business address opens its tab under /direction.
   for (const [asked, tab, now] of [
-    ['/business', '방향', /\/direction$/],
-    ['/business?view=facility', '증축', /\/direction\?view=build$/],
-    ['/business?view=marketing', '자금', /\/direction\?view=finance$/],
-    ['/business?view=strategy', '방향', /\/direction$/],
-    ['/business?view=build', '증축', /\/direction\?view=build$/],
-    ['/business?view=finance', '자금', /\/direction\?view=finance$/],
+    ['/business', '운영 방침', /\/direction$/],
+    ['/business?view=facility', '시설', /\/direction\?view=build$/],
+    ['/business?view=marketing', '재정', /\/direction\?view=finance$/],
+    ['/business?view=strategy', '운영 방침', /\/direction$/],
+    ['/business?view=build', '시설', /\/direction\?view=build$/],
+    ['/business?view=finance', '재정', /\/direction\?view=finance$/],
     ['/business?view=sponsor', '후원', /\/direction\?view=sponsor$/],
-    ['/direction?view=build', '증축', /\/direction\?view=build$/],
+    ['/direction?view=build', '시설', /\/direction\?view=build$/],
   ] as const) {
     await page.goto(asked);
     await expect(page.getByRole('tab', { name: tab, exact: true })).toHaveAttribute(
@@ -92,7 +92,7 @@ test('older operations addresses open their tab', async ({ page }) => {
   }
   await expect(page.getByRole('region', { name: '캠페인', exact: true })).toHaveCount(0);
   // Campaigns are no more (→ECON-7): 자금 shows none to start.
-  await page.getByRole('tab', { name: '자금', exact: true }).click();
+  await page.getByRole('tab', { name: '재정', exact: true }).click();
   await expect(page.getByRole('region', { name: '클럽 재정', exact: true })).toBeVisible();
   await expect(page.getByRole('region', { name: '캠페인', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '캠페인 시작' })).toHaveCount(0);
@@ -111,8 +111,8 @@ for (const viewport of [
     const preview = facilityInvestmentPreview(before, 'stadium');
     // Every amount reads in the one notation (→WEB-67); the exact value opens on tap or hover.
     const format = (value: string) => compactMoney(value, clubOf(before).country, before.year);
-    await openBusiness(page, '증축');
-    await expect(page.getByRole('tab', { name: '증축', exact: true })).toHaveAttribute(
+    await openBusiness(page, '시설');
+    await expect(page.getByRole('tab', { name: '시설', exact: true })).toHaveAttribute(
       'aria-selected',
       'true',
     );
@@ -164,7 +164,7 @@ for (const viewport of [
     await expect(
       page.getByRole('button', { name: '경기장 공사 검토', exact: true }),
     ).toBeDisabled();
-    await page.getByRole('tab', { name: '자금', exact: true }).click();
+    await page.getByRole('tab', { name: '재정', exact: true }).click();
     await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
     await expect(page.getByRole('region', { name: '수입과 지출 장부' })).toContainText('시설 공사');
     await page.getByRole('button', { name: '장부 확인 마치기', exact: true }).click();
@@ -397,7 +397,7 @@ test('recovers a genuine negative operating balance and enforces the three-contr
   await expect(page.getByTestId('club-hub')).toBeVisible();
   // The imported mid-season career carries unread attention events (e.g. the winter window).
   await acknowledgeEvents(page);
-  await openBusiness(page, '자금');
+  await openBusiness(page, '재정');
   const support = page.getByRole('button', { name: '추가 출자', exact: true });
   await expect(support).toBeEnabled();
   await support.click();

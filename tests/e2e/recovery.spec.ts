@@ -18,9 +18,9 @@ const shownRevision = async (page: import('@playwright/test').Page) =>
 const advanceRound = async (page: import('@playwright/test').Page) => {
   await page
     .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 상세', exact: true })
+    .getByRole('button', { name: '시즌 진행 도구', exact: true })
     .click();
-  const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
+  const journal = page.getByRole('dialog', { name: '시즌 진행 도구' });
   const before = await shownRevision(page);
   await journal.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
   await expect.poll(() => shownRevision(page)).toBeGreaterThan(before);
@@ -71,8 +71,8 @@ test('recovers prior checkpoint after active corruption without clearing another
   });
   await page.reload();
   // The recovery is an unread system notification in the HUD inbox, never a banner (→WEB-66).
-  await page.getByRole('button', { name: /^소식함 · 읽지 않은 소식/ }).click();
-  const inbox = page.getByRole('dialog', { name: '소식함' });
+  await page.getByRole('button', { name: /^알림·결정 · 읽지 않은 소식/ }).click();
+  const inbox = page.getByRole('dialog', { name: '알림·결정' });
   await expect(inbox.getByRole('listitem').filter({ hasText: '시스템' })).toContainText(
     '체크포인트로 복구',
   );
@@ -185,9 +185,9 @@ test('a new game goes into another slot, both careers survive switching and back
   page,
 }) => {
   await found(page);
-  await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
+  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await expect(page).toHaveURL(/\/people$/);
-  await expect(page.getByRole('heading', { name: '선수·스태프', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '선수단·스태프', exact: true })).toBeVisible();
   await page.goBack();
   await expect(page.getByRole('button', { name: '다음 경기 관전' })).toBeVisible();
   // Whichever tab a game was left on, a game entered from the slot screen opens on home.
@@ -216,11 +216,11 @@ test('a new game goes into another slot, both careers survive switching and back
   await page.reload();
   await expect(page.getByText('New Fictional Club', { exact: true }).first()).toBeVisible();
   // The first career waited in its slot and comes back intact.
-  await page.getByRole('button', { name: '구단 방향', exact: true }).click();
+  await page.getByRole('button', { name: '구단 운영', exact: true }).click();
   await expect(page).toHaveURL(/\/direction$/);
   // The URL updates before the deferred page commits. Wait for the intended departure page
   // before scrolling to its footer, which moves when that page replaces the previous one.
-  await expect(page.getByRole('heading', { name: '구단 방향', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '구단 운영', exact: true })).toBeVisible();
   await page.getByRole('button', { name: '게임 슬롯' }).click();
   await expect(slotScreen.getByRole('listitem', { name: '슬롯 2' })).toContainText('진행 중');
   await slotScreen

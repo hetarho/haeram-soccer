@@ -183,28 +183,32 @@ export function ClubHub({
   client,
   controller,
   journal,
+  tools,
   milestoneFacts,
 }: {
   w: World;
   client: GameClient;
   controller: ProgressionController;
   journal: ReactNode;
+  tools: ReactNode;
   milestoneFacts: ReturnType<typeof clubMilestones>;
 }) {
   // Home stays mounted while hidden: only leaving it matters, not moves between other pages.
   const away = useNavigation((state) => state.page !== 'dashboard');
   const setPage = useNavigation((state) => state.setPage);
+  const [toolsOpen, setToolsOpen] = useState(false);
   const [journalOpen, setJournalOpen] = useState(false);
   const [goalsOpen, setGoalsOpen] = useState(false);
   const [preparing, setPreparing] = useState(false);
   const milestones = milestoneFacts;
   useEffect(() => {
-    if (away && (journalOpen || goalsOpen || preparing)) {
+    if (away && (journalOpen || toolsOpen || goalsOpen || preparing)) {
       setJournalOpen(false);
+      setToolsOpen(false);
       setGoalsOpen(false);
       setPreparing(false);
     }
-  }, [away, journalOpen, goalsOpen, preparing]);
+  }, [away, journalOpen, toolsOpen, goalsOpen, preparing]);
   const club = clubOf(w);
   const next = nextOwnFixture(w);
   const opponent = w.clubs.find(
@@ -233,10 +237,15 @@ export function ClubHub({
           </span>
           <h2>{club.name}</h2>
         </div>
-        <b>
-          {w.lower ? '아마추어 리그' : `${club.tier + 1}부 리그`}
-          <small>시즌 운영실</small>
-        </b>
+        <div className={s.headerActions}>
+          <b>
+            {w.lower ? '아마추어 리그' : `${club.tier + 1}부 리그`}
+            <small>시즌 운영실</small>
+          </b>
+          <button type="button" onClick={open(setToolsOpen)}>
+            시즌 진행 도구
+          </button>
+        </div>
       </header>
       {/* The season numbers ride the bottom of the club's stage instead of taking a row. */}
       <div className={s.stage}>
@@ -251,7 +260,7 @@ export function ClubHub({
           }}
         >
           <span id="hub-stats-hint" className={s.srOnly}>
-            리그 순위·팀 전력·시즌 전적과 라운드 진행을 자세히 봐요
+            리그 순위·팀 전력·시즌 전적과 현재 구단 브리핑을 자세히 봐요
           </span>
           <div>
             <span>리그 순위</span>
@@ -363,6 +372,11 @@ export function ClubHub({
       {preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />}
       {goalsOpen && (
         <MilestoneCollection w={w} milestones={milestones} onClose={() => setGoalsOpen(false)} />
+      )}
+      {toolsOpen && (
+        <Dialog label="시즌 진행 도구" onClose={() => setToolsOpen(false)}>
+          {tools}
+        </Dialog>
       )}
       {journalOpen && (
         <Dialog label="시즌 상세와 클럽 소식" onClose={() => setJournalOpen(false)} wide>

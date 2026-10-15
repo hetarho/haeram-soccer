@@ -90,15 +90,15 @@ export function ClubFounding({
             />
           </label>
           <label>
-            구단 방향
+            구단 운영
             <Select
-              aria-label="구단 방향"
+              aria-label="구단 운영"
               value={preset}
               onValueChange={(value) => setPreset(value)}
             >
               <option
                 value="default"
-                data-hint="모든 줄이 표준 · 창단 뒤 방향 탭에서 언제든 바꿔요"
+                data-hint="모든 줄이 표준 · 창단 뒤 운영 방침에서 언제든 바꿔요"
               >
                 기본 방향
               </option>

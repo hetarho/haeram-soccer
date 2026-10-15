@@ -120,9 +120,9 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   // Six weeks later he hands in a transfer request.
   await page
     .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 상세', exact: true })
+    .getByRole('button', { name: '시즌 진행 도구', exact: true })
     .click();
-  const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
+  const journal = page.getByRole('dialog', { name: '시즌 진행 도구' });
   for (let next = round + 1; next <= due; next++) {
     await journal.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
     await expect(page.getByTestId('calendar')).toHaveText(new RegExp(`라운드 ${next}$`));
@@ -133,7 +133,7 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   await card.getByRole('button', { name: '확인', exact: true }).click();
 
   // 사람 opens on 선수, the roster.
-  await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
+  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await expect(page).toHaveURL(/\/people$/);
   await expect(roster.getByText('이적 요청', { exact: true })).toBeVisible();
   await expect(
@@ -150,7 +150,7 @@ test('the talk rule shows under 선수 and applies', async ({ page, browserName 
   await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
-  await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
+  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
   // New clubs leave contract talks to the staff (→STAFF-13), by 재계약 기조 and 재정 기조.
   const talks = page.getByRole('region', { name: '계약 협상 위임' });
   await expect(talks.getByRole('checkbox')).toHaveCount(0);
@@ -172,7 +172,7 @@ test('the talk rule shows under 선수 and applies', async ({ page, browserName 
   await expect(draft).toHaveCount(0);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
-  await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
+  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await expect(
     page
       .getByRole('region', { name: '계약 협상 위임' })

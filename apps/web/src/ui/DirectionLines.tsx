@@ -33,7 +33,7 @@ export function DirectionLines({
             <span>
               {label} · <b>{value}</b>
             </span>
-            <small>방향에서 바꿔요</small>
+            <small>운영 방침에서 바꿔요</small>
           </button>
         );
       })}

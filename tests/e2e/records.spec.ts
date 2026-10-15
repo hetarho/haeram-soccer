@@ -10,9 +10,9 @@ async function closeFirstSeason(page: Page, seed: string) {
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page
     .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 상세', exact: true })
+    .getByRole('button', { name: '시즌 진행 도구', exact: true })
     .click();
-  const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
+  const journal = page.getByRole('dialog', { name: '시즌 진행 도구' });
   await journal.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
   await page.keyboard.press('Escape');

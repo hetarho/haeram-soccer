@@ -165,7 +165,7 @@ for (const viewport of [
     await found(page, `native-exploration-${viewport.width}`);
     await page
       .getByRole('navigation', { name: '모바일 게임 메뉴' })
-      .getByRole('button', { name: '선수·스태프', exact: true })
+      .getByRole('button', { name: '선수단·스태프', exact: true })
       .click();
     const settings = page.getByRole('button', { name: /^선수 보기 설정/ });
     await expectTouchControl(settings, viewport);
@@ -178,7 +178,7 @@ for (const viewport of [
     await expect(career).toHaveAttribute('aria-checked', 'true');
     await page.keyboard.press('Escape');
     const marketTab = page
-      .getByRole('tablist', { name: '선수·스태프 보기' })
+      .getByRole('tablist', { name: '선수단·스태프 보기' })
       .getByRole('tab', { name: '이적시장', exact: true });
     await expectTouchControl(marketTab, viewport);
     await marketTab.click();

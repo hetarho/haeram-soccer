@@ -11,11 +11,13 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByLabel('세계 생성 시드').fill('ui-management');
   await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '선수·스태프', level: 2 })).toBeVisible();
+  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '선수단·스태프', level: 2 })).toBeVisible();
   // 사람 opens on 선수; the market, the manager's office and the coaches are tabs beside it.
   const peopleTab = (name: string) =>
-    page.getByRole('tablist', { name: '선수·스태프 보기' }).getByRole('tab', { name, exact: true });
+    page
+      .getByRole('tablist', { name: '선수단·스태프 보기' })
+      .getByRole('tab', { name, exact: true });
   await expect(peopleTab('선수')).toHaveAttribute('aria-selected', 'true');
   await peopleTab('스태프').click();
   await expect(page.getByRole('region', { name: '스태프', exact: true })).toBeVisible();
@@ -25,7 +27,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await chooseOption(page.getByRole('combobox', { name: '요청 말투', exact: true }), 'evidence');
   await page.getByRole('button', { name: '감독에게 제안하기' }).click();
   await expect(page.locator('blockquote').getByText(/역습 요청 ·/)).toBeVisible();
-  await page.getByRole('button', { name: '구단 방향', exact: true }).click();
+  await page.getByRole('button', { name: '구단 운영', exact: true }).click();
   await page.getByRole('tab', { name: '후원', exact: true }).click();
   // A 1950 club has only the local slot open; signing it replaces the offers with the contract.
   const localSponsor = page.getByTestId('sponsor-slot-local');
@@ -33,7 +35,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await expect(localSponsor.getByTestId('sponsor-contract-local')).toBeVisible();
   await expect(page.getByRole('button', { name: '지역 후원 계약', exact: true })).toHaveCount(0);
   // Campaigns are no more: the owner spends on the town or abroad through the board's rows.
-  await page.getByRole('tab', { name: '방향', exact: true }).click();
+  await page.getByRole('tab', { name: '운영 방침', exact: true }).click();
   const global = page.getByRole('region', { name: '글로벌', exact: true });
   await global.locator('button[aria-controls^="board-area-body-"]').click();
   await global.getByRole('radio', { name: '해외 마케팅 해외 홍보', exact: true }).click();
@@ -42,7 +44,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await expect(draft).toHaveCount(0);
   await expect(page.getByTestId('area-summary-global')).toHaveText('해외 홍보 · 없음 · 안 함');
   // The market is a tab of 사람.
-  await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
+  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await peopleTab('이적시장').click();
   await expect(peopleTab('이적시장')).toHaveAttribute('aria-selected', 'true');
   await expect(page).toHaveURL(/\/people\?view=market$/);
@@ -55,14 +57,14 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await page
     .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 상세', exact: true })
+    .getByRole('button', { name: '시즌 진행 도구', exact: true })
     .click();
   await page.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   // A closed season no longer interrupts: its review waits in the league's season list.
   await page.keyboard.press('Escape');
-  await expect(page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' })).toHaveCount(0);
+  await expect(page.getByRole('dialog', { name: '시즌 진행 도구' })).toHaveCount(0);
   await page.getByRole('button', { name: '리그', exact: true }).first().click();
   await chooseOption(page.getByRole('combobox', { name: '리그 시즌', exact: true }), '1950');
   await openSeasonReview(page);
@@ -106,12 +108,12 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await page
     .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 상세', exact: true })
+    .getByRole('button', { name: '시즌 진행 도구', exact: true })
     .click();
   await page.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toContainText('라운드 1');
   await page
-    .getByRole('dialog', { name: '시즌 상세와 클럽 소식' })
+    .getByRole('dialog', { name: '시즌 진행 도구' })
     .getByRole('button', { name: '창 닫기' })
     .click();
   await page
@@ -132,7 +134,7 @@ test('browses every historical regional group and resets filters on country chan
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page
     .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 상세', exact: true })
+    .getByRole('button', { name: '시즌 진행 도구', exact: true })
     .click();
   await page.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);

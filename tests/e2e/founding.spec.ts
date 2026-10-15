@@ -219,7 +219,7 @@ test('founds with a preset as its direction', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   const founding = page.getByTestId('club-founding');
-  const direction = founding.getByRole('combobox', { name: '구단 방향' });
+  const direction = founding.getByRole('combobox', { name: '구단 운영' });
   // 기본 방향 shows selected; each choice states its idea and the rows it fills (→WEB-15).
   await expect(direction).toContainText('기본 방향');
   const options = await selectOptions(direction);
@@ -245,7 +245,7 @@ test('founds with a preset as its direction', async ({ page }) => {
   expect(w.direction).toMatchObject({ debut: 'early', coaches: 'elite' });
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '구단 방향', exact: true })
+    .getByRole('button', { name: '구단 운영', exact: true })
     .click();
   await expect(page.getByTestId('current-strategy')).toHaveText('유스 명가');
 });

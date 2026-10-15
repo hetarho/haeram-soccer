@@ -1,3 +1,4 @@
+import { openClubSeason } from './state';
 import { PixelIcon, type PixelIconName } from './PixelIcon';
 import {
   lazy,
@@ -175,6 +176,37 @@ export function Panel({
 export function Table({ w, ids, limit }: { w: World; ids: string[]; limit?: number }) {
   return <Standings w={w} ids={ids} limit={limit} />;
 }
+function SeasonProgressionTools({ state, client }: { state: ClientState; client: GameClient }) {
+  return (
+    <section aria-label="시즌 진행 도구">
+      <p>관전 없이 경기 결과와 구단 운영을 한 번에 처리해요. 진행할 범위를 선택해 주세요.</p>
+      <div className={s.heroActions}>
+        <button
+          disabled={state.busy || state.readonly}
+          aria-describedby="journal-round-hint"
+          onClick={() => void client.command({ type: 'advance', rounds: 1 })}
+        >
+          한 라운드 진행
+        </button>
+        <button
+          className={s.primary}
+          disabled={state.busy || state.readonly}
+          aria-describedby="journal-season-hint"
+          onClick={() => void client.command({ type: 'season', count: 1 })}
+        >
+          시즌 끝까지 진행
+        </button>
+        <small id="journal-round-hint">
+          한 라운드 진행: 관전 없이 이번 라운드 경기와 급여·훈련을 정산해요.
+        </small>
+        <small id="journal-season-hint">
+          시즌 끝까지 진행: 남은 경기를 모두 결과로 처리하고 승강·상금을 정산해요.
+        </small>
+      </div>
+    </section>
+  );
+}
+
 function ClubJournal({
   state,
   client,
@@ -213,29 +245,9 @@ function ClubJournal({
             {Math.max(0, remaining)}개
           </p>
         </div>
-        <div className={s.heroActions}>
-          <button
-            disabled={state.busy || state.readonly}
-            aria-describedby="journal-round-hint"
-            onClick={() => void client.command({ type: 'advance', rounds: 1 })}
-          >
-            한 라운드 진행
-          </button>
-          <button
-            className={s.primary}
-            disabled={state.busy || state.readonly}
-            aria-describedby="journal-season-hint"
-            onClick={() => void client.command({ type: 'season', count: 1 })}
-          >
-            시즌 끝까지 진행
-          </button>
-          <small id="journal-round-hint">
-            한 라운드 진행: 관전 없이 이번 라운드 경기와 급여·훈련을 정산해요.
-          </small>
-          <small id="journal-season-hint">
-            시즌 끝까지 진행: 남은 경기를 모두 결과로 처리하고 승강·상금을 정산해요.
-          </small>
-        </div>
+        <button type="button" onClick={() => openClubSeason(w.year)}>
+          이번 시즌 구단 기록 →
+        </button>
       </div>
       <LeagueOverview w={w} onOpenLeague={() => setPage('league')} />
       <div className={s.stats}>
@@ -375,9 +387,9 @@ const NAV: [Page, string][] = [
   ['league', '리그'],
   ['europe', '컵 대회'],
   ['history', '클럽 기록실'],
-  ['people', '선수·스태프'],
+  ['people', '선수단·스태프'],
   ['training', '훈련·육성'],
-  ['business', '구단 방향'],
+  ['business', '구단 운영'],
 ];
 /**
  * Home sits in the raised centre; competition destinations fan out to the left and the owner's
@@ -389,9 +401,9 @@ const TABS: [Page, string, string, Page[]][] = [
   ['europe', '컵', '컵 대회', ['europe']],
   ['history', '기록', '클럽 기록실', ['history']],
   ['dashboard', '홈', '클럽 홈', ['dashboard']],
-  ['people', '사람', '선수·스태프', ['people']],
+  ['people', '선수단', '선수단·스태프', ['people']],
   ['training', '훈련', '훈련·육성', ['training']],
-  ['business', '방향', '구단 방향', ['business']],
+  ['business', '구단', '구단 운영', ['business']],
 ];
 /** The HUD menu lists only destinations the tab bar does not already show. */
 const MENU_PAGES = NAV.filter(([id]) => !TABS.some(([tab]) => tab === id));
@@ -516,6 +528,7 @@ const ConnectedDashboard = memo(function ConnectedDashboard({
       client={client}
       controller={controller}
       journal={<ClubJournal client={client} state={state} controller={controller} />}
+      tools={<SeasonProgressionTools client={client} state={state} />}
     />
   );
 });
@@ -1351,7 +1364,7 @@ export function App() {
               showNews();
             }}
           >
-            클럽 뉴스
+            구단 뉴스
           </button>
           <button
             className={s.guideOpen}

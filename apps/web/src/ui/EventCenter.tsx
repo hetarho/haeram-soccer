@@ -298,7 +298,7 @@ export const EventCenter = memo(function EventCenter({
                 openPeople('coaches');
               }}
             >
-              코치진 보기
+              스태프 보기
             </button>
             {/* Each department's switch and criteria live in 사람's 코치진 (→WEB-43). */}
             <button
@@ -421,7 +421,7 @@ export function InboxButton({ client }: { client: GameClient }) {
     <>
       <button
         className={s.bell}
-        aria-label={`소식함${unread ? ` · 읽지 않은 소식 ${unread}개` : ''}`}
+        aria-label={`알림·결정${unread ? ` · 읽지 않은 소식 ${unread}개` : ''}`}
         onClick={(event) => {
           event.currentTarget.focus();
           setOpen(true);
@@ -432,7 +432,7 @@ export function InboxButton({ client }: { client: GameClient }) {
       </button>
       {open && (
         <Dialog
-          label="소식함"
+          label="알림·결정"
           onClose={close}
           actions={
             <div className={s.inboxActions}>

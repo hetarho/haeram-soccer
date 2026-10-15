@@ -396,11 +396,11 @@ interface DriverRow {
   terms: DevelopmentFactor[];
 }
 const homeName: Record<DevelopmentHome, string> = {
-  'training/training': '훈련 방향',
-  'business/strategy': '방향',
+  'training/training': '1군 훈련',
+  'business/strategy': '운영 방침',
   'people/manager': '감독',
   'people/coaches': '스태프',
-  'business/facility': '증축',
+  'business/facility': '시설',
 };
 const toneOf = (value: number) => (value > 1 ? 'up' : value < 1 ? 'down' : 'flat');
 /** Terms that change something; a row whose terms all multiply by 1 shows its first one. */
