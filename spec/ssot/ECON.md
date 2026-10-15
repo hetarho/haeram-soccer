@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r36 | Define the implemented browser-demo behavior for historical club economy.
+> r37 | Define the implemented browser-demo behavior for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -33,28 +33,28 @@
 - ECON-11 [o] If operations produce negative cash, play continues with an explicit budget warning and the bankruptcy countdown (→ECON-24); optional local-support recovery is a bounded game action, not a real-money payment.
 
 - ECON-12 [o] Business decisions present immediate spend, post-decision cash, recurring fixed-cost changes and fixed-cost runway excluding future revenue before commitment. Facility decisions also compare capacity, current demand and maintenance; costly facility work requires an in-app review of these real effects.
-- ECON-32 [o] Facilities are three parts built separately: the stadium (경기장), the training ground (훈련장) and the academy facilities (유소년 시설). Costs are units on the football index (→ECON-26), paid when the work starts; the ladders together cost about what one 20-level facility once did, so the whole takes a career in every era. ← real grounds grow stand by stand and by moving to new stadiums, and a training complex is a decision of its own, not a by-product of seats
+- ECON-32 [o] Facilities are three parts built separately: the stadium (경기장), the training ground (훈련장) and the academy facilities (유소년 시설). Costs are units on the football index (→ECON-26), paid when the work starts; each step costs a fixed multiple of the one before — the stadium ×2.5 from 600, the training ground ×4 from 1,500, the academy 0.8× the training ground — so no step is a bargain early or a wall later, and the whole still takes a career in every era (→ECON-29). ← real grounds grow stand by stand and by moving to new stadiums, and a training complex is a decision of its own, not a by-product of seats
   - the stadium climbs eight steps, each an expansion (증축: a new or second-tier stand, 180 days, the ground holding 10% fewer while it is built) or a rebuild (재건축: a new stadium, 540 days, the old ground in full use until the new one opens):
     | step | becomes | capacity | work | cost |
     |---|---|---|---|---|
     | founding | 동네 구장 | 2,500 | - | - |
-    | 1 | 관중석 증축 | 5,000 | 증축 | 250 |
-    | 2 | 새 구장 | 10,000 | 재건축 | 400 |
-    | 3 | 스탠드 증축 | 15,000 | 증축 | 600 |
-    | 4 | 현대식 구장 | 30,000 | 재건축 | 4,000 |
-    | 5 | 2층 스탠드 | 40,000 | 증축 | 8,000 |
-    | 6 | 대형 경기장 | 60,000 | 재건축 | 70,000 |
-    | 7 | 코너 증축 | 75,000 | 증축 | 245,000 |
-    | 8 | 명문 구장 | 90,000 | 증축 | 965,000 |
+    | 1 | 관중석 증축 | 5,000 | 증축 | 600 |
+    | 2 | 새 구장 | 10,000 | 재건축 | 1,500 |
+    | 3 | 스탠드 증축 | 15,000 | 증축 | 3,750 |
+    | 4 | 현대식 구장 | 30,000 | 재건축 | 9,400 |
+    | 5 | 2층 스탠드 | 40,000 | 증축 | 23,400 |
+    | 6 | 대형 경기장 | 60,000 | 재건축 | 58,600 |
+    | 7 | 코너 증축 | 75,000 | 증축 | 146,500 |
+    | 8 | 명문 구장 | 90,000 | 증축 | 366,000 |
   - the training ground and the academy facilities have levels 1–5, each 90 days of work:
     | level | training ground cost | development base | academy cost | intake | intake potential | academy growth |
     |---|---|---|---|---|---|---|
     | 0 | - | +0 | - | +0 | +0 | ×1.0 |
-    | 1 | 500 | +0.06 | 400 | +0 | +1 | ×1.05 |
-    | 2 | 5,000 | +0.2 | 4,000 | +1 | +2 | ×1.12 |
-    | 3 | 40,000 | +0.37 | 32,000 | +1 | +3 | ×1.22 |
-    | 4 | 300,000 | +0.53 | 240,000 | +1 | +4 | ×1.35 |
-    | 5 | 1,150,000 | +0.75 | 980,000 | +1 | +4 | ×1.5 |
+    | 1 | 1,500 | +0.06 | 1,200 | +0 | +1 | ×1.05 |
+    | 2 | 6,000 | +0.2 | 4,800 | +1 | +2 | ×1.12 |
+    | 3 | 24,000 | +0.37 | 19,200 | +1 | +3 | ×1.22 |
+    | 4 | 96,000 | +0.53 | 76,800 | +1 | +4 | ×1.35 |
+    | 5 | 384,000 | +0.75 | 307,200 | +1 | +4 | ×1.5 |
   - the development base adds to each round's growth base (→CLUB-12) and, ×27/4, to the summer development of players under 27; the academy's terms add to the intake and its growth (→CLUB-16).
   - upkeep a year: the stadium 180 + 40L + 5L² units with L = (capacity − 2,500) / 5,000, the training ground and the academy 0, 40, 120, 300, 600 and 1,000 units by level; a part's upkeep and effect change when its work ends. One work at a time per part.
   - a save with the single facility level F loads as the highest stadium step whose capacity is at most 2,500 + 5,000F, and a training ground and academy level of F/4 rounded, at most 5.
@@ -168,8 +168,9 @@
   | operating result / revenue before player trading, career average without owner spending | −5% to +10% | +9.7% (player sales 7.3% of revenue beside it; before construction +24.6%; net result with sales +17.0%) |
   | income mix, top flight, 2000s | distribution 40–55%, commercial 25–40%, matchday 15–25% | 46.5%, 30.5%, 23.0% |
   | income mix, any division, 1950s | matchday 60% or more | 89.6% |
-  | every facility part to its top (4,045,150 units), in seasons of a top-flight club's average net result before construction | 25 or more | 98.4 |
+  | every facility part to its top (1,530,450 units), in seasons of a top-flight club's average net result before construction | 25 or more | 40.4 on ECON-32's fixed-multiple costs (16 careers below); 98.4 on the earlier 4,045,150 units |
   | reference careers that go bankrupt | none | 3 of 160, outside the band (none of the 40 at 보통): ESP careers that never left the amateur league (21, 39 and 47 seasons, at 어려움, 최상 and 쉬움) |
+  - ECON-32's fixed-multiple facility costs, measured 261015 on 16 careers (ENG ESP FRA GER × 보통·최상 seed 0 and 쉬움·어려움 seed 1): operating result +6.0%, wage bill 41.8%, 2000s mix 46.3/28.7/25.0%, 1950s matchday 87.5%, ladder 40.4 seasons, bankrupt 1 of 16 — the ESP 최상 amateur career above, which builds nothing on either cost table; facility parts built by the 2000s 14.4 on average (11.4 on the earlier costs, the same 8 보통·최상 careers: 0.8 against 1.5 in the 1950s).
 - ECON-30 [o] Beyond wages, hosting costs and facility upkeep (→ECON-32), every club pays operating expenses (운영 경비) — matchday operations, travel, administration, medical care, kit and its staff's yearly pay — each league round: the larger of an amount per country and division on the football index (→ECON-26) and a share of its turnover over its last completed season (income without player sales or owner capital), spread over this season's league rounds. Share and division amounts are sized so that ECON-29's reference club ends its career near break-even; the amateur level's amount is the lowest. ← other costs must grow with the club's own football money, from a newly promoted club to the dominant one it becomes (measured 261013: net result 47% of income with costs on prices; one amount per division bankrupted 5–7 of 8 reference careers)
   - it is a fixed cost: fixed costs and runway (→ECON-12), the cash projection (→ECON-18), the cash warning (→ECON-20) and the bankruptcy threshold (→ECON-24) count it, and the season ledger names it (→ECON-10).
   - the amount is set when a season starts; the division amount follows the division the club plays in this season, so a promotion or relegation changes it from the first round.
@@ -201,6 +202,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r37 261015 ECON-32✎ stadium 250/400/600/4,000/8,000/70,000/245,000/965,000→×2.5 from 600 (600…366,000), training ground 500/5,000/40,000/300,000/1,150,000→×4 from 1,500 (1,500…384,000), academy 400/4,000/32,000/240,000/980,000→0.8× the training ground, the whole 4,045,150→1,530,450; ECON-29✎ ladder 98.4→40.4 seasons, +the 16-career measurement on the new costs
 - r36 261015 ECON-29✎ measured 261014 (rules 1.22, 40 careers)→measured 261015 (rules 2.0.0, 160 careers at four levels): wage bill 41.3%→40.0%, operating +1.3%→+9.7%, mix 45.4/32.0/22.6→46.5/30.5/23.0, 1950s matchday 83.2%→89.6%, ladder 91.4→98.4, bankrupt 1 of 40→3 of 160 (ESP amateur careers)
 - r35 261015 ECON-22✎ preset 동네의 자부심→유스 순혈주의
 - r34 261014 ECON-29✎ measured on rules 1.21.0→1.22.0 (the 단장, the shortlist and the manager's requests): wage bill 41.4→41.3%, operating result +2.4→+1.3%, 2000s mix 45.4/31.7/22.9→45.4/32.0/22.6%, 1950s matchday 84.8→83.2%, ladder 94.1→91.4, bankrupt none→1 of 40 (ESP 기본 방향 seed 4, 1971)

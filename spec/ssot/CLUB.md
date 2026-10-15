@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r34 | Define the implemented browser-demo behavior for squad and growth.
+> r35 | Define the implemented browser-demo behavior for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating sits at its league's average club XI plus its difficulty level's offset (→WEB-3: 쉬움 0, 보통 −2, 어려움 −4, 최상 −6; ±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -50,6 +50,7 @@
   - the 방향 board (→WEB-60) shows the exact chance that the next intake brings a prospect of potential 80+, from the same uniform draws the intake uses.
 - CLUB-17 [o] Fee-bearing purchases, loans and sales happen only in transfer windows: summer from the day the season closes (→LEAGUE-9) to 1 September and winter 1 January–1 February. ← the market opens as the season's review ends, not during its final rounds Free agents sign at any time. The market shows the window state and deadline.
 - CLUB-18 [o] Bids are answered 2–4 days later with accept, reject or a counter; acceptance chance rises with the offered fee against the asking value and the 단장 (→STAFF-20). The fee is paid on completion; unanswered bids lapse at the deadline. During windows other clubs bid for our players (answered by the owner, or by the staff when delegated) and lapse after 5 days; squad minimums still apply. The bidder is a real club whose strength suits the player (4 below to 12 above his ability, stronger clubs more often, any country). A delegated 단장 accepts an offer at or above his sale bar for a non-starter, or for a starter aged 30+ with a bench player of the same role within 3 ability (never a starter under 핵심 지키기). The report names the bar and each step.
+  - another club's offer is at least one whole currency unit, so no offer reads 0 (→WEB-67).
   - bar by the 매각 기조 card (→ECON-22), of value and for a prospect (aged 22 or under with potential at least 8 above ability): 셀링 클럽 110%/160%, 쇼케이스 120%/180%, standard 130%/200%, 강경 협상 150%/230%, 핵심 지키기 150%/250%
   - age 30–32 −15 points, 33+ −30; contract in its final season −20, one season after this −10
   - fixed-cost runway under the first 재정 기조 step (→ECON-33; 13 rounds at 표준) −20, under the second (30 rounds at 표준) −10; never below 80%
@@ -177,6 +178,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r35 261015 CLUB-18✎ an offer's fee from value alone (could round below one currency unit)→at least one whole currency unit
 - r34 261015 CLUB-1✎ XI at the league average→plus the level's offset (0/−2/−4/−6), +the founding 18 cover the formation; CLUB-2✎ attack/passing/defense/keeper/stamina and overall by role→the player model (→PLAYER); CLUB-3✎ decline after 30→by attribute, refill by the line the formation lacks; CLUB-6✎ role fit→the formation slot by slot by 실효 OVR, +any player in a manual slot; CLUB-9✎ role-safe→slots kept, replacement by 실효 OVR; CLUB-10✎ +the formation with level, adaptation and 실효 OVR; CLUB-11✎ balanced/youth/recovery→균형/회복/하드 with growth ×1/×0.4/×1.6 and recovery 11/16/6, +per-player focus; CLUB-12✎ development and potential revisions→PLAYER-15–17; CLUB-13✎ 유망주 집중→하드 under 15 fatigue and morale 50+, +player rule 회복 at fatigue 40+; CLUB-14✎ role filters→position and line, +positions, traits, arrival and settled 실효 OVR; CLUB-16✎ +prospects carry the model; CLUB-19✎ +1 per 리더 (≤3), −1 per round from the third 하드 round; CLUB-21✎ stamina/passing/defence→체력/패스/태클 and 위치선정; CLUB-23✎ stamina→체력, +하드 training injuries 0.5%; CLUB-25✎ ability→OVR; CLUB-27✎ +야망 unhappiness after a declined bigger club's offer (25%/50%); CLUB-24✎ a bench player of his role within 3 ability→one who plays his slot within 3 실효 OVR; CLUB-32✎ CLUB-33✎ role→line and formation slot
 - r33 261014 CLUB-33✎ the window's close→judged the day after its last day; +a loan counts as joining, a manager appointed since is not judged, founding opens the first window
 - r32 261014 CLUB-33✎ the chief scout signs→the scout's all-season shortlist, the manager's requests with his pick and −3 trust when none is met at a window's close, the 단장 decides when delegated; CLUB-14✎ CLUB-18✎ the chief scout's negotiation→the 단장's; CLUB-18✎ CLUB-22✎ CLUB-26✎ delegated staff→the 단장; CLUB-21✎ 머니볼 negotiator scout→negotiator 단장
