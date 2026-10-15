@@ -1,4 +1,7 @@
 import { expect, test } from '@playwright/test';
+import { encode } from '../../apps/web/src/adapters/persistence';
+import { createWorld } from '../../packages/engine/src/index';
+import { MANAGER_GONE } from '../../packages/engine/src/operations';
 import { horizontalOverflow, settle } from './layout';
 
 test.use({ viewport: { width: 390, height: 844 } });
@@ -105,4 +108,45 @@ test('keeps confirmation actions and its close control inside a small mobile vie
   await close.click();
   await expect(dialog).toHaveCount(0);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+});
+
+test('the HUD stays at the top when warning bands make the column taller than a low screen', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 844, height: 390 });
+  const fixture = createWorld({
+    country: 'ENG',
+    name: 'Low Screen',
+    color: '#24543b',
+    seed: 'low-screen-hud',
+    level: 'normal' as const,
+  });
+  // In debt and without a manager: two bands sit under the HUD on every view.
+  fixture.cash = '-1';
+  fixture.critical = MANAGER_GONE;
+  await page.goto('/');
+  await page
+    .locator('input[type=file]')
+    .last()
+    .setInputFiles({
+      name: 'low-screen.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(await encode(fixture)),
+    });
+  await expect(page.getByTestId('cash-alarm')).toBeVisible();
+  await settle(page);
+  const shell = () =>
+    page.evaluate(() => ({
+      main: document.querySelector('main')!.scrollTop,
+      hud: Math.round(document.querySelector('header')!.getBoundingClientRect().top),
+    }));
+  // Scrolling a view's element into place, as moving to a board row does, and walking the focus
+  // move only the view scroller: the shell around it never scrolls (→WEB-10).
+  await page.evaluate(() => {
+    const scroller = document.querySelector('[data-testid="view-scroller"]')!;
+    scroller.lastElementChild?.scrollIntoView({ block: 'start' });
+  });
+  expect(await shell()).toEqual({ main: 0, hud: 0 });
+  for (let i = 0; i < 25; i++) await page.keyboard.press('Tab');
+  expect(await shell()).toEqual({ main: 0, hud: 0 });
 });

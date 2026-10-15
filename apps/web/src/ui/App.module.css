@@ -2109,10 +2109,15 @@
 :global(#root) {
   height: 100%;
 }
+/*
+ * The shell clips rather than hides: a hidden box still scrolls by code (scrollIntoView, focus),
+ * which pushed the HUD off the top whenever warning bands made the column taller than the screen.
+ */
 .layout {
   height: 100dvh;
   min-height: 0;
   overflow: hidden;
+  overflow: clip;
 }
 .sidebar {
   height: 100dvh;
@@ -2125,6 +2130,7 @@
   height: 100dvh;
   min-height: 0;
   overflow: hidden;
+  overflow: clip;
   padding: 0 var(--gutter);
 }
 .main > :not(.scroller) {
