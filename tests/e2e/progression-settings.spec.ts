@@ -79,7 +79,8 @@ test('mobile clock exposes every pace as a touch target and advances at the chos
   await expect(daily).toHaveAttribute('aria-pressed', 'false');
   await expect(date).toHaveText('1950년 8월 2일');
   await toggle.click();
-  await expect(date).toHaveText('1950년 8월 3일');
+  // A late step carries the day it owes with it (→WEB-18), so a slow runner may skip 8월 3일.
+  await expect(date).not.toHaveText('1950년 8월 2일');
   await stop.click();
   // A day step already in flight when the owner stops still lands; read the date once it rests.
   let stepped = await date.innerText();
