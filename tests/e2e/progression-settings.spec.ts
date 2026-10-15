@@ -225,10 +225,17 @@ test('mobile intervention levels set clock stops and who decides, saved with the
   // Without match stops, x10 plays straight through the first match day.
   await page.getByRole('button', { name: '0.1초에 하루 속도 선택', exact: true }).click();
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-  await expect(page.getByTestId('calendar')).toContainText('라운드 1');
-  await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
+  // At x10 the calendar may already show a later round when the browser paints. The intended
+  // observation is crossing the first match without an automatic stop, not catching round 1.
+  await expect
+    .poll(async () =>
+      Number((await page.getByTestId('calendar').innerText()).match(/라운드\s+(\d+)/)?.[1] ?? 0),
+    )
+    .toBeGreaterThanOrEqual(1);
+  const stop = page.getByRole('button', { name: '자동 진행 정지', exact: true });
+  await expect(stop).toBeVisible();
+  await stop.click();
   await expect(page.getByTestId('event-card')).toHaveCount(0);
-  await page.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
 });
 
 test('the phone clock picks the intervention level from a popover without stopping', async ({
