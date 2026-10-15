@@ -14,8 +14,10 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
+| m8q4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-15T14:20Z | 2026-10-15T14:20Z | - |
 
 ## inbox
+- 261015 decided WEB: start-vibe m8q4 scope → implement navigation-and-records with current game rules and the approved pixel readability baseline in an isolated checkout (alt: analysis only | revise game mechanics)
 - 261015 decided ideation/navigation-and-records: management structure → need, responsible person, focused action, effect timing and contextual return before full rules/catalogues (alt: rename three menus only | merge every control into one screen); independent hands-on follow-up adds M1–M13
 - 261015 decided ideation/navigation-and-records: policy detours → focused relevant settings, retained task tab/filter/comparison/scroll and unapplied drafts (alt: send to board root and reset | silently apply on exit); one applied policy remains authoritative
 - 261015 decided ideation/navigation-and-records: authority explanation → show who uses a setting and when, retain global intervention levels and coach-led four-round training (alt: add per-department switches | imply criteria replace current staff immediately); no game-rule change inferred
@@ -111,6 +113,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 start-vibe m8q4 autopilot start: navigation-and-records to WEB then sequential implementation; isolated workspace, owner checkout and port 19500 preserved
 - 261015 ideation navigation-and-records ready: exercised training, free signing, staff hire, policy/preset drafts and youth promotion over two isolated seasons; M1–M13 and task-based redesign replace the earlier split assumption; no runtime changes
 - 261015 ideation navigation-and-records reopen: independently exercise people, training and direction workflows; revise earlier unvalidated split assumption
 - 261015 ideation navigation-and-records ready: 12 source-backed structural findings, two browser journeys confirmed, records/league reorganisation recommended; no runtime changes
