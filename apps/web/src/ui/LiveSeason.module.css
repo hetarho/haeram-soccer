@@ -178,6 +178,7 @@
     min-height: 44px;
     padding: 5px 6px;
     font-size: 12px;
+    font-family: var(--display);
   }
   .heading {
     gap: 8px;
@@ -198,6 +199,7 @@
     padding: 5px 9px;
     font-size: 12px;
     line-height: 1.5;
+    font-family: var(--display);
   }
   .result {
     gap: 8px;
@@ -233,9 +235,10 @@
   font-weight: 700;
 }
 .watch small {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--on-accent);
+  font-family: var(--display);
 }
 @media (max-width: 760px) {
   .nextActions button {
@@ -257,10 +260,11 @@
     min-width: 0;
     min-height: 48px;
     padding: 4px 1px;
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.2;
     white-space: normal;
     word-break: keep-all;
+    font-family: var(--display);
   }
 }
 

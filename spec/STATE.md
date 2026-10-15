@@ -67,7 +67,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 75 | 75 | - | 0 |
+| WEB | 77 | 77 | - | 0 |
 | WORLD | 3 | 3 | - | 0 |
 | CLUB | 35 | 35 | - | 0 |
 | MATCH | 9 | 9 | - | 0 |
@@ -113,6 +113,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 T133 carried into m8q4: approved Galmuri14/Galmuri11 readability baseline; T132 remains the superseded font trial, no changes to owner checkout
 - 261015 start-vibe m8q4 autopilot start: navigation-and-records to WEB then sequential implementation; isolated workspace, owner checkout and port 19500 preserved
 - 261015 ideation navigation-and-records ready: exercised training, free signing, staff hire, policy/preset drafts and youth promotion over two isolated seasons; M1–M13 and task-based redesign replace the earlier split assumption; no runtime changes
 - 261015 ideation navigation-and-records reopen: independently exercise people, training and direction workflows; revise earlier unvalidated split assumption

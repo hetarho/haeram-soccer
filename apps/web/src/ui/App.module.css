@@ -1,17 +1,10 @@
 /* Night broadcast: flat charcoal surfaces, paper-white type and natural football-grass green. */
 @font-face {
-  font-family: 'Monogram';
+  font-family: 'Galmuri14';
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 400;
   font-display: swap;
-  src: url('/fonts/monogram-extended.ttf') format('truetype');
-  /* Other punctuation and symbols use Galmuri's complete game UI coverage. */
-  unicode-range: U+0020-024F, U+0370-052F;
-  /* Monogram's em is tall: match its cap height to the Korean bitmap face. */
-  size-adjust: 200%;
-  ascent-override: 50%;
-  descent-override: 12.5%;
-  line-gap-override: 0%;
+  src: url('/fonts/galmuri14.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Galmuri11';
@@ -36,9 +29,9 @@
   --surface-3: #2a3233;
   --line: #333b3c;
   --line-strong: #4b5556;
-  --text: #f1f0e8;
-  --text-muted: #bac1be;
-  --text-faint: #929e99;
+  --text: #f3f2e8;
+  --text-muted: #c3ccc5;
+  --text-faint: #adb9b0;
   --accent: #4b9656;
   --accent-fill: #2e713d;
   --accent-edge: #62a66c;
@@ -58,7 +51,8 @@
   --hud: #111415;
   --radius: 3px;
   --shadow: 0 12px 32px #0006;
-  --display: 'Monogram', 'Galmuri11', monospace;
+  --body: 'Galmuri14', 'Galmuri11', sans-serif;
+  --display: 'Galmuri11', sans-serif;
   --score: var(--display);
 }
 :global(*) {
@@ -70,16 +64,34 @@
   background: var(--bg);
   font-variant-numeric: tabular-nums;
   color: var(--text);
-  font-family: var(--display);
-  font-size: 14px;
-  line-height: 1.55;
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.7;
   font-synthesis: none;
-  -webkit-font-smoothing: none;
+  -webkit-font-smoothing: antialiased;
 }
 :global(button),
 :global(input),
 :global([data-select-trigger]) {
   font: inherit;
+}
+:global(h1),
+:global(h2),
+:global(h3),
+:global(h4),
+:global(b),
+:global(strong),
+:global(small),
+:global(button),
+:global(th),
+:global([data-select-trigger]) {
+  font-family: var(--display);
+}
+:global(h1),
+:global(h2),
+:global(h3),
+:global(h4) {
+  letter-spacing: 0;
 }
 :global(button) {
   cursor: pointer;
@@ -137,7 +149,7 @@
 :global(h2) {
   font-size: 23px;
   font-weight: 700;
-  letter-spacing: -0.6px;
+  letter-spacing: 0;
 }
 :global(h3) {
   font-size: 16px;
@@ -153,13 +165,14 @@
   font-variant-numeric: tabular-nums;
 }
 :global(th) {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-faint);
   font-weight: 700;
   letter-spacing: 0.3px;
   text-align: right;
   padding: 10px 12px;
   border-bottom: 1px solid var(--line);
+  font-family: var(--display);
 }
 :global(td) {
   padding: 10px 12px;
@@ -177,6 +190,8 @@
 }
 :global(small) {
   color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.6;
 }
 :global(progress) {
   accent-color: var(--accent);
@@ -195,6 +210,7 @@
   background: var(--surface);
   color: var(--text);
   font-size: 12px;
+  font-family: var(--display);
 }
 .layout {
   display: grid;
@@ -222,14 +238,15 @@
   font-size: 25px;
   font-weight: 700;
   line-height: 1.1;
-  letter-spacing: -0.8px;
+  letter-spacing: 0;
 }
 .brand span {
-  font-size: 10px;
+  font-size: 12px;
   display: block;
   letter-spacing: 2px;
   margin-top: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .crest {
   display: inline-block;
@@ -270,8 +287,9 @@
 }
 .sideFoot {
   margin-top: auto;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-faint);
+  font-family: var(--display);
 }
 .sideFoot button {
   background: transparent;
@@ -293,21 +311,25 @@
   margin-bottom: 28px;
 }
 .eyebrow {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 2px;
   color: var(--text-muted);
   text-transform: uppercase;
   margin-bottom: 12px;
+  font-family: var(--display);
 }
 .hero h2 {
-  font-size: 39px;
-  line-height: 1.35;
+  font-size: 24px;
+  line-height: 1.5;
   font-weight: 500;
-  letter-spacing: -1.5px;
+  letter-spacing: 0;
 }
 .hero p {
   margin-top: 12px;
-  color: var(--text-faint);
+  color: var(--text-muted);
+  font-size: 15px;
+  font-family: var(--body);
+  line-height: 1.8;
 }
 
 .heroActions {
@@ -340,9 +362,10 @@
   min-width: 0;
 }
 .stat .label {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-faint);
   margin-bottom: 10px;
+  font-family: var(--display);
 }
 .stat strong {
   display: block;
@@ -352,9 +375,10 @@
   overflow-wrap: anywhere;
 }
 .stat small {
-  font-size: 10px;
+  font-size: 12px;
   display: block;
   margin-top: 10px;
+  font-family: var(--display);
 }
 .grid {
   display: grid;
@@ -378,18 +402,21 @@
   border-bottom: 1px solid var(--line);
 }
 .panelHead span {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-faint);
+  font-family: var(--display);
+  line-height: 1.6;
 }
 .panelBody {
   padding: 20px 22px;
 }
 .panelFoot {
   padding: 14px 22px;
-  font-size: 11px;
+  font-size: 12px;
   background: var(--surface-2);
   border-top: 1px solid var(--line);
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .stack {
   display: grid;
@@ -420,7 +447,8 @@
   color: var(--text-faint);
 }
 .fixture small {
-  font-size: 10px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .fixture > button {
   margin-top: 12px;
@@ -450,12 +478,14 @@
   padding-bottom: 0;
 }
 .timeline p {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-faint);
   margin-top: 4px;
+  font-family: var(--display);
 }
 .timeline small {
-  font-size: 10px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .tableWrap {
   overflow: auto;
@@ -478,6 +508,7 @@
   text-align: center;
   color: var(--text-faint);
   font-size: 12px;
+  font-family: var(--display);
 }
 .chart {
   margin: 12px 0 0;
@@ -488,13 +519,15 @@
   max-height: 200px;
 }
 .chart text {
-  font-size: 11px;
+  font-size: 12px;
   fill: var(--text-faint);
+  font-family: var(--display);
 }
 .notice {
   padding: 7px 12px !important;
   margin-bottom: 8px !important;
   font-size: 12px;
+  font-family: var(--display);
 }
 .notice,
 .error,
@@ -550,13 +583,14 @@
 
 .footer {
   margin-top: 30px;
-  font-size: 10px;
+  font-size: 12px;
   display: flex;
   justify-content: space-between;
   color: var(--text-faint);
   border-top: 1px solid var(--line);
   padding-top: 18px;
   gap: 20px;
+  font-family: var(--display);
 }
 .pitch {
   background: var(--surface);
@@ -572,6 +606,7 @@
 .scoreboard span {
   width: 38%;
   font-size: 12px;
+  font-family: var(--display);
 }
 .scoreboard strong {
   font: 700 36px var(--score);
@@ -583,9 +618,10 @@
   justify-content: space-between;
   gap: 10px;
   padding: 10px 20px;
-  font-size: 9px;
+  font-size: 12px;
   background: var(--surface-deep);
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .live {
   color: var(--text-muted);
@@ -604,10 +640,12 @@
   flex-wrap: wrap;
 }
 .playControls button {
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .playControls label {
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .playControls :global([data-select-trigger]) {
   padding: 7px;
@@ -621,6 +659,7 @@
   border-bottom: 1px solid var(--line);
   padding: 10px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .matchStats span {
   color: var(--text-faint);
@@ -631,6 +670,7 @@
   list-style: none;
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .highlights li {
   padding: 6px 0;
@@ -660,8 +700,9 @@
 }
 .competition p {
   color: var(--text-faint);
-  font-size: 11px;
+  font-size: 12px;
   margin-top: 10px;
+  font-family: var(--display);
 }
 .locked {
   opacity: 0.72;
@@ -681,10 +722,11 @@
 .fileButton {
   cursor: pointer;
   display: inline-block;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   text-decoration: underline;
   margin-top: 8px;
+  font-family: var(--display);
 }
 .loading {
   padding: 80px;
@@ -698,14 +740,16 @@
 .muted {
   color: var(--text-muted);
   font-size: 12px;
+  font-family: var(--display);
 }
 .pill {
   display: inline-block;
   padding: 3px 8px;
   border: 1px solid var(--line-strong);
   border-radius: 2px;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .actions {
   display: flex;
@@ -728,16 +772,18 @@
   margin-bottom: 8px;
 }
 .card p {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   margin-top: 8px;
+  font-family: var(--display);
 }
 .attributes {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  font-size: 11px;
+  font-size: 12px;
   margin: 18px 0;
+  font-family: var(--display);
 }
 .attribute {
   display: flex;
@@ -782,7 +828,8 @@
     margin: auto;
   }
   .hero h2 {
-    font-size: 44px;
+    font-size: 24px;
+    line-height: 1.5;
   }
 }
 @media (max-width: 1100px) {
@@ -808,7 +855,8 @@
     grid-template-columns: 1fr;
   }
   .hero h2 {
-    font-size: 32px;
+    font-size: 24px;
+    line-height: 1.5;
   }
 
   .competitionGrid {
@@ -841,7 +889,8 @@
   }
   .brand span {
     margin: 0;
-    font-size: 8px;
+    font-size: 12px;
+    font-family: var(--display);
   }
 
   .nav {
@@ -855,6 +904,7 @@
     padding: 6px 12px;
     font-size: 12px;
     gap: 6px;
+    font-family: var(--display);
   }
   .navIcon {
     font-size: 13px;
@@ -870,7 +920,8 @@
     display: block;
   }
   .hero h2 {
-    font-size: 30px;
+    font-size: 24px;
+    line-height: 1.5;
   }
   .heroActions {
     margin-top: 22px;
@@ -900,7 +951,8 @@
     margin-bottom: 0;
   }
   .footer {
-    font-size: 9px;
+    font-size: 12px;
+    font-family: var(--display);
   }
   .scoreboard {
     padding: 18px 12px;
@@ -909,8 +961,9 @@
     font-size: 26px;
   }
   .pitchMeta {
-    font-size: 8px;
+    font-size: 12px;
     padding: 9px 12px;
+    font-family: var(--display);
   }
   .panelHead {
     padding: 16px;
@@ -922,7 +975,8 @@
     flex: 1;
   }
   .fileButton {
-    font-size: 11px;
+    font-size: 12px;
+    font-family: var(--display);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -988,17 +1042,20 @@
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  font-family: var(--display);
 }
 .playerInspector p {
   margin-top: 10px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .playerTraits {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   margin-top: 12px;
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .playerTraits > span {
   display: grid;
@@ -1017,7 +1074,8 @@
   align-items: center;
   gap: 12px;
   padding: 0 18px 16px;
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .replayScrubber input {
   flex: 1;
@@ -1031,7 +1089,8 @@
   }
   .pitchMeta {
     flex-wrap: wrap;
-    font-size: 10px;
+    font-size: 12px;
+    font-family: var(--display);
   }
 }
 
@@ -1161,7 +1220,7 @@
 .modalHead h2 {
   margin: 0;
   font-size: 17px;
-  letter-spacing: -0.3px;
+  letter-spacing: 0;
 }
 .modalClose {
   flex: 0 0 44px;
@@ -1222,6 +1281,7 @@
   .layout .main :global(small),
   .modal :global(small) {
     font-size: 12px;
+    font-family: var(--display);
   }
   .sidebar {
     padding: calc(12px + env(safe-area-inset-top)) 16px 12px;
@@ -1253,7 +1313,8 @@
     margin-bottom: 20px;
   }
   .hero h2 {
-    font-size: 28px;
+    font-size: 24px;
+    line-height: 1.5;
   }
   .hero > button {
     width: 100%;
@@ -1328,6 +1389,7 @@
     display: grid;
     gap: 8px;
     font-size: 12px;
+    font-family: var(--display);
   }
   .loading {
     padding: 48px 16px;
@@ -1412,6 +1474,7 @@
   max-width: 100%;
   font-size: 12px;
   font-weight: 700;
+  font-family: var(--display);
 }
 .rosterCards .cardLink::after {
   inset: 0;
@@ -1435,21 +1498,24 @@
 /* Active roster view choices, under the search while the settings are closed. */
 .rosterViewSummary {
   margin: -4px 16px 4px;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--gold);
+  font-family: var(--display);
 }
 .rosterCards b {
   font-size: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-family: var(--display);
 }
 .rosterCards small {
-  font-size: 10px;
+  font-size: 12px;
   display: block;
   color: var(--text-muted);
   white-space: normal;
+  font-family: var(--display);
 }
 .rosterCards article > div {
   flex-shrink: 0;
@@ -1457,12 +1523,14 @@
 }
 .rosterCards article > button:last-child:not(:first-child) {
   padding: 5px 8px;
-  font-size: 11px;
+  font-size: 12px;
   min-height: 44px;
+  font-family: var(--display);
 }
 .rosterDetails {
   padding: 12px 16px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .rosterDetails summary {
   cursor: pointer;
@@ -1480,7 +1548,8 @@
     font-size: 13px;
   }
   .rosterCards small {
-    font-size: 11px;
+    font-size: 12px;
+    font-family: var(--display);
   }
 }
 
@@ -1490,6 +1559,7 @@
   gap: 10px;
   font-size: 12px;
   padding: 10px 16px;
+  font-family: var(--display);
 }
 .rosterSearch input {
   width: 100%;
@@ -1502,6 +1572,7 @@
   gap: 10px;
   font-size: 12px;
   padding: 10px;
+  font-family: var(--display);
 }
 .rosterPages button {
   min-height: 44px;
@@ -1531,10 +1602,11 @@
   }
 
   .startLayout .footer {
-    font-size: 10px;
+    font-size: 12px;
     margin: 0;
     margin-top: auto;
     padding: 8px 0;
+    font-family: var(--display);
   }
 }
 
@@ -1545,6 +1617,7 @@
   gap: 14px;
   font-size: 12px;
   margin-top: 6px;
+  font-family: var(--display);
 }
 .startTools .fileButton {
   margin: 0;
@@ -1616,10 +1689,10 @@
   margin-bottom: 6px;
 }
 .hero h2 {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
-  letter-spacing: -0.8px;
-  line-height: 1.2;
+  letter-spacing: 0;
+  line-height: 1.5;
 }
 .stat strong {
   font-family: var(--display);
@@ -1690,13 +1763,14 @@
   min-height: 32px;
   padding: 2px 9px;
   border-radius: 2px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--gold);
   border-color: var(--gold-edge);
   background: rgba(196, 175, 125, 0.08);
   box-shadow: none;
   white-space: nowrap;
+  font-family: var(--display);
 }
 .readonlyDetail {
   position: absolute;
@@ -1712,6 +1786,7 @@
   font-size: 12px;
   line-height: 1.45;
   color: var(--text);
+  font-family: var(--display);
 }
 .hudClub b {
   font-size: 15px;
@@ -1722,11 +1797,13 @@
   white-space: nowrap;
 }
 .hudClub small {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-faint);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-family: var(--display);
+  line-height: 1.5;
 }
 .hudCash {
   flex-shrink: 0;
@@ -1747,9 +1824,10 @@
   line-height: 1.15;
 }
 .hudCash small {
-  font-size: 9px;
+  font-size: 12px;
   color: var(--text-faint);
   letter-spacing: 0.4px;
+  font-family: var(--display);
 }
 .hudCash b {
   font-size: 14px;
@@ -1810,11 +1888,12 @@
 }
 .autoStatus {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-family: var(--display);
 }
 .clockRunning .autoStatus {
   color: var(--accent-text);
@@ -1838,6 +1917,7 @@
   border-radius: 2px;
   font-size: 12px;
   font-weight: 700;
+  font-family: var(--display);
 }
 .clockButtons .clockToggle {
   width: 50px;
@@ -1875,13 +1955,14 @@
   margin-bottom: 16px;
 }
 .pageHead h2 {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 700;
   line-height: 1.2;
 }
 .pageHead p {
   margin-top: 4px;
-  font-size: 13px;
+  font-size: 15px;
+  line-height: 1.8;
   color: var(--text-muted);
 }
 .segments {
@@ -1954,6 +2035,7 @@
   font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .rosterSearch {
   white-space: nowrap;
@@ -1962,6 +2044,7 @@
   margin: 14px 0 6px;
   font-size: 12px;
   color: var(--text-faint);
+  font-family: var(--display);
 }
 .moreMenu button[aria-current='page'] {
   border-color: var(--accent);
@@ -2034,9 +2117,10 @@
     background: transparent;
     box-shadow: none;
     color: var(--text-faint);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     line-height: 1.2;
+    font-family: var(--display);
   }
   .mobileNav button .navIcon {
     color: inherit;
@@ -2054,6 +2138,7 @@
     border: 0;
     border-radius: 0;
     box-shadow: none;
+    font-size: 12px;
   }
   .mobileNav .homeTab[aria-current='page'] {
     color: var(--text);
@@ -2203,6 +2288,7 @@
   font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .filters > button,
 .filters :global([data-select-trigger]),
@@ -2329,14 +2415,15 @@
   }
   .calendarSummary strong {
     font-size: 13px;
-    font-family: 'Galmuri11', monospace;
+    font-family: var(--display);
     line-height: 1.15;
     white-space: normal;
     word-break: keep-all;
     text-wrap: balance;
   }
   .calendarSummary .autoStatus {
-    font-size: 10.5px;
+    font-size: 12px;
+    font-family: var(--display);
   }
   .clockButtons {
     flex: none;
@@ -2360,7 +2447,8 @@
   }
   .seasonControls .calendarSummary strong {
     font-size: 12px;
-    letter-spacing: -0.2px;
+    letter-spacing: 0;
+    font-family: var(--display);
   }
 }
 @media (max-width: 359px) {
@@ -2391,12 +2479,14 @@
     padding-right: max(4px, env(safe-area-inset-right));
   }
   .mobileNav button {
-    font-size: 10px;
-    letter-spacing: -0.2px;
+    font-size: 12px;
+    letter-spacing: 0;
+    font-family: var(--display);
   }
   .mobileNav .homeTab {
     margin: 0 2px;
-    font-size: 11px;
+    font-size: 12px;
+    font-family: var(--display);
   }
 }
 
@@ -2561,6 +2651,7 @@
   font-size: 12px;
   font-weight: 500;
   line-height: 1.4;
+  font-family: var(--display);
 }
 .levelOn {
   border-color: var(--gold) !important;
@@ -2592,12 +2683,13 @@
 }
 .playerFlags i {
   font-style: normal;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   padding: 1px 6px;
   border-radius: 2px;
   color: var(--warm);
   background: var(--warm-soft);
+  font-family: var(--display);
 }
 /* Market stance: a tappable badge on each roster card and the three choices of its sheet. */
 .rosterCards .stanceBadge.stanceBadge,
@@ -2613,9 +2705,10 @@
   background: var(--tone-soft, var(--surface-2));
   box-shadow: none;
   color: var(--tone, var(--accent-text));
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
+  font-family: var(--display);
 }
 .tableWrap .stanceBadge.stanceBadge {
   min-height: 32px;
@@ -2667,8 +2760,9 @@
   font-size: 13px;
 }
 .stanceChoices small {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 /* A contract that ends at this season's close, with the terms to keep the manager. */
 .renewal {
@@ -2692,6 +2786,7 @@
 .renewal small {
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .renewal button {
   justify-self: start;
@@ -2718,6 +2813,7 @@
 .personHead small {
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .personHead h3 {
   margin: 0;
@@ -2790,8 +2886,9 @@
   background: var(--surface-deep);
 }
 .gameOver li span {
-  font-size: 11.5px;
+  font-size: 12px;
   color: var(--text-faint);
+  font-family: var(--display);
 }
 .gameOver li b {
   font-size: 18px;
@@ -2870,6 +2967,7 @@
   word-break: keep-all;
   overflow-wrap: anywhere;
   pointer-events: none;
+  font-family: var(--display);
 }
 .chartBubble::after {
   content: '';
@@ -2895,8 +2993,9 @@
   flex-wrap: wrap;
   gap: 4px 14px;
   margin-top: 6px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .chartLegend span {
   display: inline-flex;
@@ -2944,8 +3043,9 @@
   background: var(--surface-2);
 }
 .eloFigures small {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .eloFigures strong {
   font-size: 20px;
@@ -2981,9 +3081,10 @@
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-faint);
   font-variant-numeric: tabular-nums;
+  font-family: var(--display);
 }
 .eloClubs {
   display: grid;
@@ -2997,8 +3098,9 @@
   border-bottom: 1px solid var(--line);
 }
 .eloClubs dt {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .eloClubs dd {
   display: flex;
@@ -3074,6 +3176,7 @@
   font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .trophies li[data-tone='gold'] > span {
   color: var(--gold);
@@ -3084,9 +3187,10 @@
   line-height: 1.2;
 }
 .trophies small {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   overflow-wrap: anywhere;
+  font-family: var(--display);
 }
 @media (max-width: 760px) {
   .trophies {
@@ -3105,8 +3209,9 @@
     font-size: 18px;
   }
   .trophies li > span {
-    font-size: 11px;
+    font-size: 12px;
     word-break: keep-all;
+    font-family: var(--display);
   }
 }
 
@@ -3128,17 +3233,19 @@
     font-size: 13px;
   }
   .leaderTable th {
-    font-size: 11px;
+    font-size: 12px;
+    font-family: var(--display);
   }
 }
 .statusChip {
   padding: 1px 7px;
   border: 1px solid var(--line-strong);
   border-radius: 2px;
-  font-size: 10.5px;
+  font-size: 12px;
   font-style: normal;
   font-weight: 700;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .statusChip[data-status='active'] {
   border-color: var(--accent-edge);
@@ -3197,13 +3304,15 @@
 }
 .brand > span {
   margin-top: 8px;
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 1.4px;
+  font-family: var(--display);
 }
 .brand > small {
   display: block;
   margin-top: 7px;
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 1.2px;
   color: var(--text-faint);
+  font-family: var(--display);
 }

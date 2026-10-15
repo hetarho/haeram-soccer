@@ -28,11 +28,12 @@
   border-radius: 2px;
   background: var(--gold-fill);
   color: var(--on-accent);
-  font-size: 11px;
+  font-size: 12px;
   font-style: normal;
   font-weight: 700;
   line-height: 18px;
   text-align: center;
+  font-family: var(--display);
 }
 .groups {
   display: grid;
@@ -44,6 +45,7 @@
   font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .chips {
   display: flex;

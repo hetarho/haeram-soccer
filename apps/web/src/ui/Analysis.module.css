@@ -35,6 +35,7 @@
   color: var(--text-muted);
   line-height: 1.6;
   margin: 8px 0;
+  font-family: var(--display);
 }
 .book {
   min-width: 0;
@@ -88,8 +89,9 @@
   min-width: 0;
 }
 .facts dt {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .facts dd {
   font-size: 14px;
@@ -99,11 +101,12 @@
 }
 .facts dd small {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.6;
   font-weight: 400;
   margin-top: 4px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .chips {
   display: flex;
@@ -115,6 +118,7 @@
   border: 1px solid var(--line);
   border-radius: 2px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .list {
   list-style: none;
@@ -126,6 +130,7 @@
   border-bottom: 1px solid var(--line);
   font-size: 12px;
   line-height: 1.6;
+  font-family: var(--display);
 }
 .cards {
   display: grid;
@@ -152,15 +157,17 @@
 .matchTeams small,
 .metricRows small {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   font-weight: 400;
   line-height: 1.6;
+  font-family: var(--display);
 }
 .metricRows > div {
   border-top: 1px solid var(--line);
   padding: 10px 0;
   font-size: 12px;
+  font-family: var(--display);
 }
 .metricRows strong {
   font-size: 15px;
@@ -175,6 +182,7 @@
   min-width: 44px;
   min-height: 48px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .controls label {
   display: grid;
@@ -182,6 +190,7 @@
   font-size: 12px;
   min-width: 0;
   flex: 1 1 200px;
+  font-family: var(--display);
 }
 .controls :global([data-select-trigger]),
 .controls input {
@@ -212,10 +221,12 @@
   text-align: left;
   font-size: 12px;
   overflow-wrap: anywhere;
+  font-family: var(--display);
 }
 .momentList span {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .cards article {
   min-width: 0;
@@ -266,6 +277,7 @@
   border-top: 1px solid var(--line);
   text-align: center;
   font-size: 12px;
+  font-family: var(--display);
 }
 .compare li > b {
   min-width: 0;
@@ -281,6 +293,7 @@
 .compare li > span {
   color: var(--text-faint);
   font-size: 12px;
+  font-family: var(--display);
 }
 .compare li > i {
   grid-column: 1 / -1;
@@ -321,9 +334,10 @@
   color: var(--text-muted);
 }
 .advanced thead th {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-faint);
   font-weight: 700;
+  font-family: var(--display);
 }
 /* A season's record overall, at home and away: one compact table of results and goals. */
 .split {
@@ -340,9 +354,10 @@
   border-bottom: 1px solid var(--line);
 }
 .split thead th {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .split tbody th {
   text-align: left;

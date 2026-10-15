@@ -15,7 +15,8 @@
 }
 .heading > span {
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .summary {
   display: grid;
@@ -33,7 +34,8 @@
 }
 .summary span {
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .summary b {
   font-size: 15px;
@@ -43,8 +45,9 @@
 .note {
   margin: 8px 0;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
+  font-family: var(--display);
 }
 .panel {
   border: 1px solid var(--line);
@@ -65,9 +68,10 @@
 }
 .panelHeading span,
 .panelHeading p {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   margin: 4px 0 0;
+  font-family: var(--display);
 }
 .metrics {
   display: grid;
@@ -81,7 +85,8 @@
 }
 .metrics span {
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .metrics b {
   color: var(--text);
@@ -116,15 +121,17 @@
 }
 .card p {
   margin: 7px 0;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .card .metrics {
   margin: 10px 0;
 }
 .card .metrics b {
   font-size: 12px;
+  font-family: var(--display);
 }
 .card button {
   width: 100%;
@@ -154,7 +161,8 @@
 }
 .slotHeading span {
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .slot > .note {
   margin: 0;
@@ -178,6 +186,7 @@
   min-height: 48px;
   padding: 8px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .detailActions > button:only-child,
 .close button {
@@ -198,6 +207,7 @@
   cursor: pointer;
   color: var(--text-muted);
   font-size: 12px;
+  font-family: var(--display);
 }
 .recovery summary:focus-visible {
   outline: 3px solid var(--focus);
@@ -216,15 +226,17 @@
   font-size: 13px;
 }
 .contribution p {
-  font-size: 11px;
+  font-size: 12px;
   margin: 4px 0 0;
   color: var(--gold);
   line-height: 1.5;
+  font-family: var(--display);
 }
 .contribution button {
   min-height: 44px;
   flex-shrink: 0;
   font-size: 12px;
+  font-family: var(--display);
 }
 .warning,
 .message {
@@ -234,6 +246,7 @@
   border-radius: 2px;
   background: var(--warm-soft);
   color: var(--gold);
+  font-family: var(--display);
 }
 .message {
   color: var(--text);
@@ -247,6 +260,7 @@
   border-top: 1px solid var(--line);
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 @media (max-width: 760px) {
   .heading h2 {
@@ -260,9 +274,11 @@
   }
   .summary b {
     font-size: 12px;
+    font-family: var(--display);
   }
   .summary span {
-    font-size: 10px;
+    font-size: 12px;
+    font-family: var(--display);
   }
   .panel {
     padding: 8px 12px;
@@ -272,6 +288,7 @@
   }
   .metrics b {
     font-size: 12px;
+    font-family: var(--display);
   }
   .cards {
     grid-template-columns: 1fr;

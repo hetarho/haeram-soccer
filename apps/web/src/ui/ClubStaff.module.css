@@ -20,11 +20,13 @@
 .academy header span {
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .managerTrait {
   margin-top: 6px;
   font-size: 12px;
   color: var(--gold);
+  font-family: var(--display);
 }
 .staff ul,
 .academy ul {
@@ -62,8 +64,9 @@
   border-radius: 2px;
   border: 1px dashed var(--warm);
   color: var(--warm);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
+  font-family: var(--display);
 }
 .candidateHead {
   display: flex;
@@ -80,9 +83,10 @@
 }
 .role small,
 .member small {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-faint);
   line-height: 1.35;
+  font-family: var(--display);
 }
 .member {
   display: grid;
@@ -95,6 +99,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-family: var(--display);
 }
 .vacant {
   color: var(--warm);
@@ -104,6 +109,7 @@
   min-height: 44px;
   padding: 4px 10px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .meter {
   display: block;
@@ -122,6 +128,7 @@
   margin-top: 6px;
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .candidates {
   display: grid;
@@ -141,6 +148,7 @@
 .candidates button small {
   font-size: 12px;
   font-weight: 500;
+  font-family: var(--display);
 }
 .candidates .picked {
   border-color: var(--gold);
@@ -179,8 +187,9 @@
   font-size: 13px;
 }
 .academy li small {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-faint);
+  font-family: var(--display);
 }
 .academy .ready {
   color: var(--positive);
@@ -194,6 +203,7 @@
   min-height: 44px;
   padding: 4px 10px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .empty {
   margin-top: 10px;
@@ -319,6 +329,7 @@
 .plan header span {
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .planOn {
   border-color: var(--gold);
@@ -330,7 +341,8 @@
 .expiring {
   font-style: normal;
   color: var(--warm);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .rowActions {
   display: grid;
@@ -341,6 +353,7 @@
   min-height: 44px;
   padding: 4px 10px;
   font-size: 12px;
+  font-family: var(--display);
 }
 /* A contract's length in seasons, chosen before hiring or renewing. */
 .termDial {
@@ -358,6 +371,7 @@
 .termDial .termStep b {
   font-size: 12px;
   white-space: nowrap;
+  font-family: var(--display);
 }
 .termDial .termStep:disabled {
   opacity: 0.45;
@@ -373,6 +387,7 @@
   font-size: 12px;
   font-weight: 500;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 /* A decision's who-decides line and its criteria, at the end of its 사람 tab (→WEB-43). */
 .decision header h3 {
@@ -404,6 +419,7 @@
   font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .fieldControl {
   display: grid;
@@ -411,8 +427,9 @@
   min-width: 0;
 }
 .fieldControl > small {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-faint);
+  font-family: var(--display);
 }
 /* Long choices wrap inside their segment instead of overflowing a phone. */
 .criteria .choice button {
@@ -430,6 +447,7 @@
   padding: 6px 12px;
   border-radius: 2px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .chips button[aria-pressed='true'] {
   color: var(--on-accent);
@@ -455,10 +473,12 @@
 .preview > b {
   font-size: 12px;
   color: var(--gold);
+  font-family: var(--display);
 }
 .preview p {
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .pick {
   display: flex;
@@ -478,6 +498,7 @@
 .pick small {
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .fixed {
   display: grid;
@@ -487,6 +508,7 @@
   font-size: 12px;
   color: var(--text-muted);
   line-height: 1.45;
+  font-family: var(--display);
 }
 .inlineCheck {
   display: flex;
@@ -494,6 +516,7 @@
   gap: 10px;
   min-height: 44px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .inlineCheck input {
   flex: 0 0 20px;
@@ -524,12 +547,13 @@
 .disclosure small {
   flex: 1;
   min-width: 0;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-family: var(--display);
 }
 .disclosure svg {
   flex: none;

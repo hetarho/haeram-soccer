@@ -114,7 +114,8 @@
 .routeOpponent small {
   flex: none;
   color: var(--text-faint);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .routeScore {
   font-size: 13px;
@@ -125,6 +126,7 @@
   font-size: 12px;
   color: var(--text-muted);
   overflow-wrap: anywhere;
+  font-family: var(--display);
 }
 .routeActions {
   display: flex;
@@ -136,6 +138,7 @@
   min-height: 44px;
   padding: 4px 12px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .chip {
   display: inline-flex;
@@ -143,9 +146,10 @@
   padding: 2px 8px;
   border: 1px solid var(--line-strong);
   border-radius: 2px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .chipWin {
   color: var(--positive);
@@ -187,6 +191,7 @@
 .runButton > span {
   color: var(--text-faint);
   font-size: 12px;
+  font-family: var(--display);
 }
 .runButton[aria-current='true'] {
   background: rgba(155, 178, 161, 0.12);
@@ -198,6 +203,7 @@
   border-collapse: collapse;
   table-layout: fixed;
   font-size: 12px;
+  font-family: var(--display);
 }
 .honoursTable th,
 .honoursTable td {
@@ -207,9 +213,10 @@
   font-variant-numeric: tabular-nums;
 }
 .honoursTable th {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--text-faint);
+  font-family: var(--display);
 }
 .honoursTable th:first-child,
 .honoursTable td:first-child {
@@ -231,12 +238,13 @@
   margin-left: 4px;
   padding: 0 6px;
   border-radius: 2px;
-  font-size: 9px;
+  font-size: 12px;
   font-style: normal;
   font-weight: 700;
   color: var(--on-accent);
   background: var(--accent);
   vertical-align: middle;
+  font-family: var(--display);
 }
 .feats {
   display: grid;
@@ -259,6 +267,7 @@
   font-size: 12px;
   font-weight: 700;
   color: var(--gold);
+  font-family: var(--display);
 }
 .feats p {
   margin: 0;
@@ -300,11 +309,13 @@
   text-align: left;
   text-decoration: underline dotted color-mix(in srgb, currentColor 45%, transparent);
   text-underline-offset: 3px;
+  font-family: var(--display);
 }
 .finalSeason small {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
   overflow-wrap: anywhere;
+  font-family: var(--display);
 }
 .finalSeason[aria-current='true'] {
   color: var(--accent-text);
@@ -315,9 +326,10 @@
   right: 6px;
   padding: 1px 6px;
   border-radius: 2px;
-  font-size: 9px;
+  font-size: 12px;
   font-style: normal;
   font-weight: 700;
   color: var(--surface-deep);
   background: var(--gold);
+  font-family: var(--display);
 }

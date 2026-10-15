@@ -10,6 +10,7 @@
   gap: 8px;
   color: var(--text-muted);
   font-size: 12px;
+  font-family: var(--display);
 }
 .summary {
   padding: 12px;
@@ -31,6 +32,7 @@
   min-height: 44px;
   padding: 7px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .roles button[aria-pressed='true'],
 .filters button[aria-pressed='true'] {
@@ -50,13 +52,15 @@
   min-height: 48px;
   font-size: 12px;
   padding: 7px 10px;
+  font-family: var(--display);
 }
 .filters label {
   display: flex;
   gap: 7px;
   align-items: center;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .recommendation {
   background: var(--surface-2);
@@ -68,12 +72,14 @@
   min-height: 44px;
   padding: 7px 10px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .note {
   margin: 9px 0;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
+  font-family: var(--display);
 }
 .cards {
   display: grid;
@@ -102,14 +108,16 @@
   overflow-wrap: anywhere;
 }
 .cardHead span {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .cardHead button {
   flex: 0 0 auto;
   min-height: 44px;
   padding: 7px 10px;
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .cardHead button[aria-pressed='true'] {
   border-color: var(--accent);
@@ -121,6 +129,7 @@
   margin: 9px 0;
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .ability b {
   color: var(--text);
@@ -144,7 +153,8 @@
 .budget span,
 .budget small {
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .build b {
   font-size: 14px;
@@ -153,14 +163,16 @@
 }
 .build small {
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: normal;
+  font-family: var(--display);
 }
 .context {
   margin: 7px 0;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .costs {
   display: grid;
@@ -172,14 +184,16 @@
   min-width: 0;
 }
 .costs dt {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .costs dd {
   margin: 2px 0 0;
   font-size: 12px;
   overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums;
+  font-family: var(--display);
 }
 .budget > div {
   display: grid;
@@ -193,11 +207,13 @@
   font-size: 12px;
   overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums;
+  font-family: var(--display);
 }
 .card .free {
   margin: 6px 0 10px;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .transactions {
   display: grid;
@@ -210,12 +226,14 @@
   width: 100%;
   padding: 8px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .transactions small {
   display: block;
   color: var(--danger);
-  font-size: 10px;
+  font-size: 12px;
   margin-top: 4px;
+  font-family: var(--display);
 }
 .primary {
   background: var(--accent-fill);
@@ -232,6 +250,7 @@
   color: var(--text-muted);
   font-size: 12px;
   cursor: pointer;
+  font-family: var(--display);
 }
 .details summary:focus-visible {
   outline: 3px solid var(--focus);
@@ -245,6 +264,7 @@
   background: var(--surface-2);
   color: var(--text);
   font-size: 12px;
+  font-family: var(--display);
 }
 .warning {
   background: var(--warm-soft);
@@ -299,6 +319,7 @@
 .window small {
   font-size: 12px;
   color: var(--text-faint);
+  font-family: var(--display);
 }
 .windowOpen {
   border-color: var(--accent);
@@ -335,6 +356,7 @@
 .negotiation small {
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .negotiationActions {
   display: flex;
@@ -365,8 +387,9 @@
   padding: 6px 4px;
 }
 .bidSteps small {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
+  font-family: var(--display);
 }
 .bidPicked {
   border-color: var(--gold) !important;
@@ -463,20 +486,23 @@
   font-size: 13px;
 }
 .policyLine small {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 
 /* Positions with levels, traits and the scout's read of his personality. */
 .positions {
   display: block;
   color: var(--text-faint);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .traits,
 .personality {
   margin: 4px 0 0;
   color: var(--text-muted);
   font-size: 12px;
+  font-family: var(--display);
 }

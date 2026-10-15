@@ -8,9 +8,10 @@
   color: var(--text);
 }
 .head > span {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   letter-spacing: 1.6px;
+  font-family: var(--display);
 }
 .head h2 {
   margin: 8px 0 6px;
@@ -70,9 +71,10 @@
 }
 .number {
   color: var(--text-faint);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
+  font-family: var(--display);
 }
 .slotHead b {
   flex: 1;
@@ -82,8 +84,9 @@
 .slotHead em {
   font-style: normal;
   color: var(--gold);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
+  font-family: var(--display);
 }
 .club {
   display: flex;
@@ -103,10 +106,12 @@
 .club small {
   color: var(--text-muted);
   font-size: 12px;
+  font-family: var(--display);
 }
 .club .played {
   color: var(--text-faint);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .actions {
   display: grid;

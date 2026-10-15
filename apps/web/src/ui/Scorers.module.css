@@ -17,15 +17,17 @@
 .head p {
   margin-top: 3px;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .tag {
   padding: 4px 10px;
   border: 1px solid var(--line);
   border-radius: 2px;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
   white-space: nowrap;
+  font-family: var(--display);
 }
 .tableWrap {
   max-width: 100%;
@@ -34,6 +36,7 @@
 .standings {
   min-width: 570px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .standings th,
 .standings td {
@@ -45,6 +48,7 @@
   color: inherit;
   font-size: 12px;
   font-weight: normal;
+  font-family: var(--display);
 }
 .standings .club {
   text-align: left;
@@ -59,8 +63,9 @@
 .ownBadge {
   margin-left: 9px;
   color: var(--text-muted);
-  font-size: 9px;
+  font-size: 12px;
   white-space: nowrap;
+  font-family: var(--display);
 }
 .goals {
   color: var(--text);
@@ -71,7 +76,8 @@
 .ownSummary {
   padding: 12px 22px;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .ownSummary {
   background: var(--surface-2);
@@ -82,6 +88,7 @@
   color: var(--text-muted);
   font-size: 12px;
   text-align: center;
+  font-family: var(--display);
 }
 .metric {
   display: flex;
@@ -95,7 +102,8 @@
   border-color: transparent;
   background: transparent;
   padding: 6px 10px;
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .metric button[aria-pressed='true'] {
   border-color: var(--line-strong);
@@ -113,13 +121,15 @@
   align-items: center;
   gap: 8px;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .filters :global([data-select-trigger]) {
   max-width: 245px;
   min-height: 36px;
   padding: 6px 8px;
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .chart {
   margin: 0;
@@ -132,7 +142,8 @@
 }
 .chart text {
   fill: var(--text-muted);
-  font-size: 10px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .chart figcaption {
   display: flex;
@@ -140,7 +151,8 @@
   gap: 6px 18px;
   padding: 10px 5px 0;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .chart figcaption span {
   display: inline-flex;
@@ -160,7 +172,8 @@
 }
 .details {
   border-top: 1px solid var(--line);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .details summary {
   padding: 13px 22px;
@@ -174,7 +187,8 @@
 .details th,
 .details td {
   padding: 8px 12px;
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .details th:first-child {
   min-width: 65px;

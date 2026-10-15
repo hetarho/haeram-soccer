@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r75 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r77 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -90,7 +90,7 @@
   - Apply it to founding, game slots, the HUD and clock, home, match observation, league and cups, people and profiles, training, direction and finances, records, dialogs, dropdowns and notifications.
   - Buttons and panels have restrained corners and no decorative bevel, glow, fog or gradient; navigation stays recognizable as underlined text (→WEB-69). Status colours and club kits remain semantically distinct.
   - Match scores, time, team identity and the pitch lead the observation view. Home uses a broadcast-style club header, the stadium's actual stage (→WEB-11), season figures and the next fixture.
-  - Typography uses compact indie-game bitmap faces for Latin, Korean and numbers, with aligned figures, complete Korean fallback coverage and legible controls at supported viewport sizes. Bundle font terms and attribution with the self-hosted files.
+  - Typography uses Galmuri pixel faces throughout: Galmuri14 for reading text at 15 CSS px with at least 1.7 line height, Galmuri11 Regular/Bold for compact labels, controls, headings and aligned numbers. Compact supporting text is at least 12 CSS px, with no negative tracking for Korean reading text. Primary and supporting copy meet 4.5:1 contrast on their own surfaces; inactive but readable options remain at full text opacity. Preserve complete Korean fallback coverage and legible controls at supported viewport sizes. Bundle font terms and attribution with the self-hosted files.
   - The playable app replaces design-comparison galleries; retired mockups, generated exploration assets and their bundled fonts are not shipped.
 - WEB-39 [o] 방향 holds where the club is going and its money as one page-tab bar (→WEB-69) — 방향 (the direction board →WEB-60), 증축, 자금, 후원 — kept in /direction?view= (방향 left out; build, finance, sponsor); an older /business address opens the same tab under /direction, its older strategy, facility and marketing values 방향, 증축 and 자금. The page tab of cash is 자금 so it never reads like the 재정 area of the board (→ECON-25). Tapping a step or card previews its effect; only an explicit apply or commit sends the command.
   - 증축: the three facility parts (→ECON-32) — the stadium's ladder with its steps, capacity against demand, the next expansion or rebuild with cost, time, upkeep and what the works do to capacity, then the training ground and the academy facilities with each level's effect, and any work in progress with its days left.
@@ -251,7 +251,7 @@
   - Architecture, kit and equipment fit each era, from modest heritage facilities to larger professional grounds. Avoid real club brands, embedded interface text and fabricated data. The live pitch remains the engine-driven Canvas view.
   - Self-host optimized image assets, keep text and controls as accessible HTML, and preserve the fixed shell, touch targets and readable phone layouts (→WEB-10).
 
-- WEB-73 [o] UI icons use one solid pixel-grid family with stepped edges and consistent optical weight, matching the bitmap type and painted pixel environments.
+- WEB-73 [o] UI icons use one solid pixel-grid family with stepped edges and consistent optical weight, matching the painted pixel environments.
   - Apply the family to primary navigation, HUD menu and inbox, club news, dialog close controls, dropdown arrows/checks and trophy-cabinet symbols. Keep their established meanings distinct at small sizes.
   - Icons inherit the interface colour and remain decorative when an accessible label already names the control. Preserve focus, selection, target sizes and keyboard behaviour; club identity and analytical charts keep their own data-driven graphics.
 
@@ -262,6 +262,8 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r77 261015 WEB-38✎ Pretendard throughout→Galmuri14 reading text with Galmuri11 compact/emphasis type; unconstrained small copy→12px minimum, 15px reading text, stronger contrast and clear spacing
+- r76 261015 WEB-38✎ Monogram/Galmuri bitmap typography→Pretendard throughout the playable interface; WEB-73✎ icons match bitmap type and environments→match pixel environments
 - r75 261015 WEB-72✎ season-start world year→displayed calendar year for era selection, including 1 January within a season
 - r74 261015 WEB-72✎ three fixed painterly scenes→distinct pixel backgrounds for three eras and every completed facility stage, locker room follows stadium, all art lightly dimmed
 - r73 261015 WEB-72✎ separate realistic paintings→matched painterly pixel environments; WEB-73+ shared solid pixel-grid UI icons

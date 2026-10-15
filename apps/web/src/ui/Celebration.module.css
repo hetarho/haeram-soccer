@@ -65,8 +65,9 @@
   }
   .card small {
     flex: none;
-    font-size: 10px;
+    font-size: 12px;
     letter-spacing: 1px;
+    font-family: var(--display);
   }
   .card strong {
     flex: 1;
@@ -92,9 +93,10 @@
 }
 .card small {
   color: var(--gold);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 3px;
+  font-family: var(--display);
 }
 .card strong {
   font-size: 17px;

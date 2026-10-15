@@ -25,17 +25,19 @@
 .overviewTitle button {
   padding: 5px 10px;
   min-height: 36px;
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .lastResult {
   display: flex;
   flex-wrap: wrap;
   gap: 6px 18px;
   padding: 12px 22px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   background: var(--surface);
   border-bottom: 1px solid var(--line);
+  font-family: var(--display);
 }
 .lastResult b {
   color: var(--text);
@@ -43,8 +45,9 @@
 .panelHead span {
   display: block;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
   margin-top: 3px;
+  font-family: var(--display);
 }
 .panelHead .roundTag {
   border: 1px solid var(--line);
@@ -68,7 +71,8 @@
 .stats small {
   display: block;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .stats strong {
   display: block;
@@ -97,8 +101,9 @@
   align-items: center;
   width: 23px;
   height: 24px;
-  font-size: 10px;
+  font-size: 12px;
   border-radius: 4px;
+  font-family: var(--display);
 }
 .win {
   color: var(--text);
@@ -133,8 +138,9 @@
 .rival > div > span,
 .rival p,
 .seasonEnd {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .rival h4 {
   margin: 5px 0;
@@ -161,20 +167,24 @@
   margin: 0;
   font-size: 12px;
   color: var(--accent-text);
+  font-family: var(--display);
 }
 .projection span {
   display: grid;
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .projection span small {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--accent-text);
+  font-family: var(--display);
 }
 .projection > small {
   grid-column: 1 / -1;
-  font-size: 10px;
+  font-size: 12px;
   white-space: normal;
+  font-family: var(--display);
 }
 .seasonEnd {
   padding: 15px 22px;
@@ -186,6 +196,7 @@
 .standings {
   min-width: 760px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .coverage {
   display: flex;
@@ -195,6 +206,7 @@
   padding: 12px;
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .coverage button {
   min-height: 48px;
@@ -205,6 +217,7 @@
   color: inherit;
   font-weight: normal;
   min-width: 155px;
+  font-family: var(--display);
 }
 .standings td,
 .standings th {
@@ -222,10 +235,11 @@
   margin-left: 7px;
   padding: 1px 6px;
   border-radius: 2px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--on-accent);
   background: var(--accent);
+  font-family: var(--display);
 }
 .standings .own {
   box-shadow: none;
@@ -248,9 +262,10 @@
   flex-wrap: wrap;
   gap: 8px 18px;
   padding: 14px 22px;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-muted);
   border-top: 1px solid var(--line);
+  font-family: var(--display);
 }
 .legend span,
 .chart figcaption span {
@@ -279,9 +294,10 @@
   background: var(--warm);
 }
 .compare {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   white-space: nowrap;
+  font-family: var(--display);
 }
 .graphFilters {
   display: flex;
@@ -290,9 +306,10 @@
 }
 .compare :global([data-select-trigger]) {
   padding: 6px 8px;
-  font-size: 11px;
+  font-size: 12px;
   max-width: 180px;
   margin-left: 5px;
+  font-family: var(--display);
 }
 .chart {
   padding: 20px 20px 12px;
@@ -304,19 +321,22 @@
   max-height: 260px;
 }
 .chart text {
-  font-size: 10px;
+  font-size: 12px;
   fill: var(--text-muted);
+  font-family: var(--display);
 }
 .chart figcaption {
   display: flex;
   gap: 16px;
   padding: 10px 5px 0;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .details {
   border-top: 1px solid var(--line);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .details summary {
   padding: 13px 22px;
@@ -329,8 +349,9 @@
 }
 .details th,
 .details td {
-  font-size: 11px;
+  font-size: 12px;
   padding: 8px 12px;
+  font-family: var(--display);
 }
 .details th:first-child {
   min-width: 65px;
@@ -340,6 +361,7 @@
   color: var(--text-muted);
   text-align: center;
   font-size: 12px;
+  font-family: var(--display);
 }
 .results {
   display: grid;
@@ -356,8 +378,9 @@
   align-items: center;
   border-bottom: 1px solid var(--line);
   padding: 12px 8px;
-  font-size: 11px;
+  font-size: 12px;
   border-radius: 4px;
+  font-family: var(--display);
 }
 .results li {
   position: relative;
@@ -394,11 +417,12 @@
   left: 8px;
   padding: 0 6px;
   border-radius: 2px;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
   line-height: 15px;
   color: var(--on-accent);
   background: var(--accent);
+  font-family: var(--display);
 }
 @media (max-width: 1100px) {
   .stats > div {
@@ -465,7 +489,8 @@
   .standings td,
   .standings th {
     padding: 9px 3px;
-    font-size: 11px;
+    font-size: 12px;
+    font-family: var(--display);
   }
   .standings .club {
     min-width: 0;
@@ -534,8 +559,9 @@
     margin: 2px 0;
   }
   .stats small {
-    font-size: 10.5px;
+    font-size: 12px;
     line-height: 1.35;
+    font-family: var(--display);
   }
   .stats .formStrong {
     margin: 4px 0;
@@ -599,8 +625,9 @@
   background: var(--surface-deep);
 }
 .teamFacts dt {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-faint);
+  font-family: var(--display);
 }
 .teamFacts dd {
   margin: 2px 0 0;
@@ -635,6 +662,7 @@
 .teamNote {
   color: var(--text-muted);
   font-size: 12px;
+  font-family: var(--display);
 }
 @media (max-width: 420px) {
   .teamFacts {
@@ -654,7 +682,8 @@
 }
 .teamWhen {
   display: block;
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-muted);
+  font-family: var(--display);
 }

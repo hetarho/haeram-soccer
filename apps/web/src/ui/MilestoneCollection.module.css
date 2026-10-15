@@ -5,9 +5,10 @@
   gap: 16px;
 }
 .intro > div > span {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 1px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .intro h2 {
   margin: 5px 0 8px;
@@ -19,6 +20,7 @@
   font-size: 12px;
   line-height: 1.5;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .intro > strong {
   flex-shrink: 0;
@@ -31,8 +33,9 @@
 }
 .intro > strong > small {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .next {
   display: grid;
@@ -45,8 +48,9 @@
 }
 .next > span,
 .next > small {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .next > b {
   font-size: 14px;
@@ -86,9 +90,10 @@
   flex: 0 0 28px;
   height: 28px;
   border-radius: 50%;
-  font-size: 11px;
+  font-size: 12px;
   background: var(--surface-2);
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .complete .symbol {
   background: var(--accent-fill);
@@ -100,8 +105,9 @@
   padding: 3px 6px;
   border: 1px solid var(--line-strong);
   border-radius: 2px;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .complete .badge {
   background: var(--surface-3);
@@ -112,6 +118,7 @@
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.5;
+  font-family: var(--display);
 }
 .progressText {
   display: flex;
@@ -120,10 +127,12 @@
   align-items: center;
   font-size: 12px;
   font-variant-numeric: tabular-nums;
+  font-family: var(--display);
 }
 .progressText > span {
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .collection progress {
   display: block;
@@ -139,14 +148,16 @@
   border-top: 1px solid var(--line);
 }
 .action > span {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .action > b {
   font-size: 12px;
   font-weight: normal;
   color: var(--text);
   line-height: 1.5;
+  font-family: var(--display);
 }
 .actions > button {
   width: 100%;

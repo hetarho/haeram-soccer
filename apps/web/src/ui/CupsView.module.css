@@ -35,6 +35,7 @@
   margin-top: 2px;
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .winnerPill {
   display: inline-flex;
@@ -47,6 +48,7 @@
   color: var(--gold);
   border: 1px solid var(--gold);
   background: rgba(196, 175, 125, 0.08);
+  font-family: var(--display);
 }
 .status {
   margin: 0;
@@ -60,9 +62,10 @@
 .note,
 .legend {
   margin: 0;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-faint);
   line-height: 1.45;
+  font-family: var(--display);
 }
 .legend {
   display: flex;
@@ -102,8 +105,9 @@
   font-size: 14px;
 }
 .round header span {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-faint);
+  font-family: var(--display);
 }
 .ties,
 .finals {
@@ -134,12 +138,14 @@
   font-variant-numeric: tabular-nums;
   text-align: center;
   font-size: 12px;
+  font-family: var(--display);
 }
 .ties em small {
   display: block;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--gold);
+  font-family: var(--display);
 }
 .ownTie {
   background: rgba(155, 178, 161, 0.1);
@@ -151,12 +157,13 @@
   top: -6px;
   right: 6px;
   font-style: normal;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
   padding: 1px 6px;
   border-radius: 2px;
   color: var(--on-accent);
   background: var(--accent);
+  font-family: var(--display);
 }
 .club > span {
   overflow: hidden;
@@ -175,6 +182,7 @@
   min-height: 44px;
   padding: 4px 12px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .phase {
   display: grid;
@@ -191,6 +199,7 @@
   border-collapse: collapse;
   font-size: 12px;
   table-layout: fixed;
+  font-family: var(--display);
 }
 .table th,
 .table td {
@@ -199,9 +208,10 @@
   text-align: right;
 }
 .table th {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-faint);
   font-weight: 700;
+  font-family: var(--display);
 }
 .table th:nth-child(1),
 .table td:nth-child(1) {
@@ -259,6 +269,7 @@
 .leaders li > span {
   color: var(--text-faint);
   font-size: 12px;
+  font-family: var(--display);
 }
 .finals li {
   position: relative;
@@ -284,6 +295,7 @@
   .ties li {
     gap: 4px;
     font-size: 12px;
+    font-family: var(--display);
   }
   .finals li {
     grid-template-columns: 58px minmax(0, 1fr);
@@ -299,6 +311,7 @@
   min-height: 44px;
   padding: 0 12px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .viewSwitch button[aria-pressed='true'] {
   color: var(--on-accent);
@@ -323,6 +336,7 @@
   font-size: 12px;
   color: var(--text-muted);
   text-align: center;
+  font-family: var(--display);
 }
 .treeColumn ul {
   flex: 1;
@@ -344,6 +358,7 @@
   border: 1px solid var(--line);
   background: var(--surface-deep);
   font-size: 12px;
+  font-family: var(--display);
 }
 .treeTie > span {
   display: flex;
@@ -359,7 +374,8 @@
 }
 .treeTie small {
   color: var(--gold);
-  font-size: 10px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .treeEmpty {
   min-height: 52px;
@@ -370,4 +386,5 @@
 .treeNote {
   color: var(--text-muted);
   font-size: 12px;
+  font-family: var(--display);
 }

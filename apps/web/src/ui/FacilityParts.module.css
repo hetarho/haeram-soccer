@@ -32,12 +32,14 @@
   min-width: 0;
 }
 .ladder li b {
-  font-size: 10px;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
+  font-family: var(--display);
 }
 .ladder li small {
-  font-size: 9px;
+  font-size: 12px;
   color: var(--text-faint);
+  font-family: var(--display);
 }
 .ladder li[data-state='built'] {
   background: var(--surface-2);
@@ -64,6 +66,7 @@
   gap: 8px;
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .levels li b {
   display: grid;
@@ -72,7 +75,8 @@
   height: 22px;
   border-radius: 50%;
   border: 1px solid var(--line-strong);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .levels li[data-built] {
   color: var(--text);
@@ -90,4 +94,5 @@
   color: var(--gold);
   font-size: 12px;
   font-weight: 700;
+  font-family: var(--display);
 }

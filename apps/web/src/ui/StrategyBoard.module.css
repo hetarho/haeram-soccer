@@ -33,9 +33,10 @@
 .presetHead em,
 .draftHead span {
   color: var(--text-faint);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.06em;
+  font-family: var(--display);
 }
 .summaryHead b {
   font-size: 17px;
@@ -57,11 +58,13 @@
   color: var(--text-faint);
   font-size: 12px;
   font-weight: 700;
+  font-family: var(--display);
 }
 .cards {
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.45;
+  font-family: var(--display);
 }
 /* Presets: one tap drafts a whole strategy; each states its idea, trade-off and synergy aim. */
 .presets {
@@ -98,12 +101,14 @@
   font-size: 12px;
   font-weight: 600;
   line-height: 1.4;
+  font-family: var(--display);
 }
 .aim {
   color: var(--gold);
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 700;
   line-height: 1.4;
+  font-family: var(--display);
 }
 /* Drafted strategies and cards read gold, like a drafted dial step; the one in force green. */
 .presetOn {
@@ -141,6 +146,7 @@
   min-height: 44px;
   padding: 4px 10px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .makeRow {
   display: flex;
@@ -194,6 +200,7 @@
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.35;
+  font-family: var(--display);
 }
 .areaHead > i {
   flex: none;
@@ -206,12 +213,14 @@
   font-size: 12px;
   font-weight: 700;
   line-height: 1.35;
+  font-family: var(--display);
 }
 .areaBase {
   display: block;
   color: var(--cool);
   font-size: 12px;
   font-weight: 600;
+  font-family: var(--display);
 }
 .areaDraft {
   margin-left: 6px;
@@ -219,9 +228,10 @@
   border-radius: 2px;
   border: 1px dashed var(--gold);
   color: var(--gold);
-  font-size: 11px;
+  font-size: 12px;
   font-style: normal;
   vertical-align: middle;
+  font-family: var(--display);
 }
 .areaBody {
   display: grid;
@@ -235,6 +245,7 @@
   color: var(--accent-text);
   font-size: 12px;
   line-height: 1.45;
+  font-family: var(--display);
 }
 /* Two rows of one area sit apart. */
 .areaBody > * + * {
@@ -258,6 +269,7 @@
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.45;
+  font-family: var(--display);
 }
 .model b {
   color: var(--text);
@@ -271,11 +283,13 @@
   list-style: none;
   font-size: 12px;
   line-height: 1.45;
+  font-family: var(--display);
 }
 .neutral {
   margin: 0;
   color: var(--text-faint);
   font-size: 12px;
+  font-family: var(--display);
 }
 .pro {
   color: var(--positive);
@@ -288,12 +302,14 @@
   color: var(--gold);
   font-size: 12px;
   font-weight: 700;
+  font-family: var(--display);
 }
 .moving {
   margin: 0;
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.45;
+  font-family: var(--display);
 }
 
 /* Synergies and odds, as the strategy in force or the draft sets them. */
@@ -305,6 +321,7 @@
 .synergies h3 small {
   color: var(--text-faint);
   font-size: 12px;
+  font-family: var(--display);
 }
 .synergies > ul,
 .more > ul {
@@ -338,9 +355,10 @@
 }
 .synergyHead em {
   font-style: normal;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--text-faint);
+  font-family: var(--display);
 }
 .on .synergyHead em {
   color: var(--gold);
@@ -349,6 +367,7 @@
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.45;
+  font-family: var(--display);
 }
 .synergies li ul {
   display: grid;
@@ -357,6 +376,7 @@
   padding: 0;
   list-style: none;
   font-size: 12px;
+  font-family: var(--display);
 }
 .met {
   color: var(--positive);
@@ -369,6 +389,7 @@
   font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .on p {
   color: var(--gold);
@@ -457,6 +478,7 @@
   background: transparent;
   border-color: var(--gold-edge);
   box-shadow: none;
+  font-family: var(--display);
 }
 .fold i {
   font-style: normal;
@@ -478,6 +500,7 @@
   font-size: 12px;
   font-weight: 700;
   line-height: 1.45;
+  font-family: var(--display);
 }
 .draftDials {
   display: grid;
@@ -560,6 +583,7 @@
 .domainHead small {
   color: var(--text-muted);
   font-size: 12px;
+  font-family: var(--display);
 }
 /* A legend stays one row with its icon instead of floating over the fieldset border. */
 legend.domainHead {

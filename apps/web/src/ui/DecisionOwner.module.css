@@ -28,6 +28,7 @@
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
+  font-family: var(--display);
 }
 .owner[data-auto] .mode {
   background: var(--accent-fill);
@@ -48,6 +49,7 @@
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
+  font-family: var(--display);
 }
 .level svg {
   flex: none;
@@ -63,4 +65,5 @@
   font-size: 12px;
   line-height: 1.45;
   color: var(--text-muted);
+  font-family: var(--display);
 }

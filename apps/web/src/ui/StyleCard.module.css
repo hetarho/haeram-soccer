@@ -20,13 +20,15 @@
   border-radius: 2px;
   background: var(--surface-3);
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
+  font-family: var(--display);
 }
 .card > small {
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.5;
+  font-family: var(--display);
 }
 .card ul {
   display: grid;
@@ -36,6 +38,7 @@
   list-style: none;
   font-size: 12px;
   line-height: 1.45;
+  font-family: var(--display);
 }
 .pro {
   color: var(--positive);

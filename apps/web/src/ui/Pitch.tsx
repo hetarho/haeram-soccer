@@ -240,7 +240,7 @@ export function Pitch({
     last.current = 0;
     const pitchFont = canvas.current
       ? getComputedStyle(canvas.current).fontFamily
-      : 'Monogram, Galmuri11, monospace';
+      : 'Galmuri11, sans-serif';
     const draw = (time: number) => {
       const elapsed = last.current ? Math.min(60, time - last.current) : 0;
       last.current = time;

@@ -34,9 +34,10 @@
 .ovr.ovr small {
   margin-top: 3px;
   color: var(--text-muted);
-  font-size: 9.5px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.4px;
+  font-family: var(--display);
 }
 /* Read as "OVR 62" by screen readers; the chip itself shows only the number. */
 .label {

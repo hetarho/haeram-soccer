@@ -21,6 +21,7 @@
 .shortlist header small {
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .requests {
   display: grid;
@@ -37,6 +38,7 @@
 .requests > small {
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .requests ul {
   display: flex;
@@ -60,14 +62,16 @@
 .requests li small {
   color: var(--text-muted);
   font-size: 12px;
+  font-family: var(--display);
 }
 .why {
   padding: 2px 8px;
   border-radius: 2px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--surface-deep);
   background: var(--gold);
+  font-family: var(--display);
 }
 .requests li[data-kind='upgrade'] .why {
   background: var(--accent);
@@ -76,6 +80,7 @@
   margin: 0;
   font-size: 12px;
   color: var(--text);
+  font-family: var(--display);
 }
 .role {
   display: grid;
@@ -92,8 +97,9 @@
 }
 .role h4 em {
   font-style: normal;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--gold);
+  font-family: var(--display);
 }
 .role button {
   display: grid;
@@ -125,9 +131,10 @@
 }
 .who small,
 .money small {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .money {
   justify-items: end;
@@ -140,15 +147,17 @@
   padding: 1px 6px;
   border-radius: 2px;
   font-style: normal;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--surface-deep);
   background: var(--gold);
+  font-family: var(--display);
 }
 .empty {
   margin: 0;
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 
 @keyframes rise {

@@ -51,6 +51,7 @@
   align-items: center;
   color: var(--text-muted);
   font-size: 12px;
+  font-family: var(--display);
 }
 /* Speed chips replace the old controls row. */
 .speeds {
@@ -68,6 +69,7 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   box-shadow: none;
+  font-family: var(--display);
 }
 .speeds .speedOn {
   color: var(--on-accent);
@@ -141,10 +143,11 @@
   bottom: 8px;
   padding: 3px 8px;
   border-radius: 2px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   background: rgba(16, 19, 20, 0.66);
   pointer-events: none;
+  font-family: var(--display);
 }
 .latestEvent {
   display: flex;
@@ -163,6 +166,7 @@
   font-size: 12px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+  font-family: var(--display);
 }
 .latestEvent p {
   min-width: 0;
@@ -195,6 +199,7 @@
   font-size: 12px;
   font-weight: 700;
   box-shadow: none;
+  font-family: var(--display);
 }
 .charts .chartOn {
   color: var(--text);
@@ -208,6 +213,7 @@
   font-size: 12px;
   font-weight: 700;
   box-shadow: none;
+  font-family: var(--display);
 }
 .legend {
   display: flex;
@@ -221,6 +227,7 @@
   list-style: none;
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .legend li {
   display: inline-flex;
@@ -259,8 +266,9 @@
 }
 .tick {
   fill: var(--text-faint);
-  font-size: 8px;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
+  font-family: var(--display);
 }
 .crosshair {
   stroke: var(--text-muted);
@@ -321,6 +329,7 @@
     padding: 2px 6px 2px 10px;
     font-size: 12px;
     line-height: 1.4;
+    font-family: var(--display);
   }
   .speeds {
     gap: 2px;
@@ -328,7 +337,8 @@
   .speeds button {
     min-width: 44px;
     padding: 2px;
-    font-size: 11px;
+    font-size: 12px;
+    font-family: var(--display);
   }
   .liveText {
     min-width: 0;
@@ -336,10 +346,10 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  /* The pitch takes whatever height the other rows leave on the phone screen. */
+  /* Leave room for readable 12px labels and the two-line action before sizing the pitch. */
   .stage .canvas {
     aspect-ratio: auto;
-    height: clamp(150px, calc(100dvh - 560px), 320px);
+    height: clamp(150px, calc(100dvh - 580px), 320px);
   }
   .stage .tactics {
     display: none;
@@ -349,6 +359,7 @@
     gap: 7px;
     padding: 5px 10px;
     font-size: 12px;
+    font-family: var(--display);
   }
   .charts {
     padding: 6px 8px 2px;

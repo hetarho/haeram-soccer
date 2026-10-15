@@ -1,6 +1,7 @@
 .intro > span {
   color: var(--text-muted);
   font-size: 12px;
+  font-family: var(--display);
 }
 .intro h2 {
   font-size: 25px;
@@ -39,9 +40,10 @@
   margin: 0 0 6px;
 }
 .steps h3 span {
-  font-size: 11px;
+  font-size: 12px;
   margin-left: 5px;
   color: var(--accent-text);
+  font-family: var(--display);
 }
 .steps p {
   font-size: 13px;

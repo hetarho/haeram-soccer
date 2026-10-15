@@ -30,6 +30,7 @@
   border-top: 0;
   color: var(--text-muted);
   font-size: 12px;
+  font-family: var(--display);
 }
 .up {
   color: var(--positive);

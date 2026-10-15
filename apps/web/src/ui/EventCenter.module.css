@@ -20,14 +20,16 @@
   gap: 8px;
 }
 .kind {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.8px;
   color: var(--gold);
+  font-family: var(--display);
 }
 .card header small {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .card h3 {
   display: flex;
@@ -61,8 +63,9 @@
   background: rgba(0, 0, 0, 0.25);
 }
 .bid dt {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-faint);
+  font-family: var(--display);
 }
 .bid dd {
   margin: 0;
@@ -110,11 +113,12 @@
   height: 20px;
   padding: 0 5px;
   border-radius: 2px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 20px;
   color: var(--on-accent);
   background: var(--warm);
   box-shadow: none;
+  font-family: var(--display);
 }
 .inbox {
   list-style: none;
@@ -135,8 +139,9 @@
   border-color: var(--gold-edge);
 }
 .inbox small {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-faint);
+  font-family: var(--display);
 }
 .inbox span {
   font-size: 13px;

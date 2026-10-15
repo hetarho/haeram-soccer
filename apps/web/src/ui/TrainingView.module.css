@@ -1,7 +1,7 @@
 /* 훈련·육성 (→WEB-70): the focus, what drives growth, who is growing, and the academy. */
 .stack {
   display: grid;
-  gap: 14px;
+  gap: 20px;
   min-width: 0;
 }
 /* Wide screens set the focus beside what drives growth, the growing players below both. */
@@ -16,7 +16,7 @@
 }
 .card {
   min-width: 0;
-  padding: 14px;
+  padding: 18px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
   background: var(--surface-2);
@@ -27,22 +27,29 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  align-items: baseline;
-  gap: 2px 12px;
+  align-items: center;
+  gap: 8px 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
 }
 .head h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
+  line-height: 1.5;
 }
 .head span {
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 .note {
-  margin: 8px 0 0;
-  font-size: 12px;
+  margin: 12px 0 0;
+  font-size: 15px;
   color: var(--text-muted);
+  font-family: var(--body);
+  line-height: 1.8;
+  word-break: keep-all;
 }
 .primary {
   color: var(--on-accent);
@@ -54,8 +61,8 @@
 /* The three focuses: rows on phones, three cards side by side when they fit. */
 .focuses {
   display: grid;
-  gap: 6px;
-  margin: 12px 0 0;
+  gap: 10px;
+  margin: 16px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -64,13 +71,13 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 2px 10px;
-  min-height: 48px;
-  padding: 8px 12px;
+  gap: 8px 14px;
+  min-height: 84px;
+  padding: 14px;
   border-radius: 2px;
   border: 1px solid var(--line);
   background: rgba(0, 0, 0, 0.22);
-  opacity: 0.7;
+  opacity: 1;
 }
 .focuses li b {
   font-size: 15px;
@@ -80,18 +87,21 @@
 .focuses li span {
   display: grid;
   justify-items: end;
-  gap: 1px;
+  gap: 5px;
 }
 .focuses li small {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--text-muted);
   white-space: nowrap;
+  font-family: var(--display);
+  line-height: 1.6;
 }
 .focuses li[aria-current] {
-  border-color: var(--accent);
-  background: var(--surface-2);
+  border-color: var(--accent-edge);
+  background: #26382b;
   opacity: 1;
+  box-shadow: inset 3px 0 var(--accent-edge);
 }
 .focuses li[aria-current] small {
   color: var(--text);
@@ -99,13 +109,20 @@
 @media (min-width: 640px) {
   .focuses {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 16px 0 0;
   }
   .focuses li {
     grid-template-columns: minmax(0, 1fr);
     align-content: start;
+    gap: 8px 14px;
+    min-height: 84px;
+    padding: 14px;
+    opacity: 1;
   }
   .focuses li span {
     justify-items: start;
+    gap: 5px;
   }
 }
 /* The growth factor in force as one number (→WEB-70). */
@@ -113,61 +130,71 @@
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 4px 10px;
-  margin: 8px 0 4px;
+  gap: 8px 14px;
+  margin: 16px 0 8px;
 }
 .total b {
   font-family: var(--display);
-  font-size: 34px;
-  line-height: 1;
+  font-size: 36px;
+  line-height: 1.2;
   color: var(--accent-text);
+  font-weight: 700;
 }
 .total small {
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 
 /* A decision the staff can take: who decides at the current level and his rule (→STAFF-13). */
 .delegate {
-  margin-top: 14px;
-  padding: 12px;
+  margin-top: 18px;
+  padding: 16px;
   border-radius: 2px;
   border: 1px solid var(--line);
   background: rgba(0, 0, 0, 0.2);
 }
 .delegate > p {
-  margin: 4px 0 0;
-  font-size: 12px;
+  margin: 10px 0 0;
+  font-size: 15px;
   color: var(--text-muted);
+  font-family: var(--body);
+  line-height: 1.8;
+  word-break: keep-all;
 }
 .rule {
   list-style: none;
   display: grid;
-  gap: 4px;
-  margin: 8px 0 0;
+  gap: 12px;
+  margin: 14px 0 0;
   padding: 0;
 }
 .rule li {
   display: grid;
-  grid-template-columns: 74px minmax(0, 1fr);
+  grid-template-columns: 92px minmax(0, 1fr);
   gap: 8px;
-  font-size: 12px;
-  line-height: 1.45;
+  font-size: 15px;
+  line-height: 1.8;
+  font-family: var(--display);
 }
 .rule b {
   color: var(--text);
+  word-break: keep-all;
 }
 .rule span {
   color: var(--text-muted);
 }
 .advice {
-  margin: 10px 0 0;
-  padding: 8px 10px;
+  margin: 16px 0 0;
+  padding: 12px 14px;
   border-radius: 2px;
   background: var(--cool-soft);
   color: var(--cool);
-  font-size: 12.5px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 400;
+  font-family: var(--body);
+  line-height: 1.8;
+  word-break: keep-all;
 }
 
 /* What drives development: one row per term, opening where it is set. */
@@ -185,9 +212,9 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 10px;
-  min-height: 56px;
-  padding: 8px 10px 8px 12px;
+  gap: 14px;
+  min-height: 76px;
+  padding: 14px;
   text-align: left;
   font-weight: inherit;
   border-color: var(--line);
@@ -196,22 +223,25 @@
 }
 .driverText {
   display: grid;
-  gap: 1px;
+  gap: 6px;
   min-width: 0;
 }
 .driverText b {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
+  line-height: 1.6;
 }
 .driverText small {
-  font-size: 11.5px;
-  color: var(--text-faint);
+  font-size: 12px;
+  color: var(--text-muted);
   overflow-wrap: anywhere;
+  font-family: var(--display);
+  line-height: 1.8;
 }
 .driverValues {
   display: grid;
   justify-items: end;
-  gap: 1px;
+  gap: 6px;
 }
 .driverValues span {
   font-size: 15px;
@@ -240,27 +270,28 @@
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
+  gap: 12px;
+  padding: 14px;
   border-radius: 2px;
   background: rgba(0, 0, 0, 0.2);
 }
 .growingName,
 .prospectText {
   display: grid;
-  gap: 2px;
+  gap: 6px;
   min-width: 0;
 }
 .growingName > button,
 .prospectText b {
   justify-self: start;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
 }
 .growingName small,
 .prospectText small {
-  font-size: 11.5px;
+  font-size: 12px;
   color: var(--text-faint);
+  font-family: var(--display);
 }
 .earned {
   display: grid;
@@ -272,8 +303,9 @@
   font-variant-numeric: tabular-nums;
 }
 .earned small {
-  font-size: 10.5px;
+  font-size: 12px;
   color: var(--text-faint);
+  font-family: var(--display);
 }
 @media (min-width: 960px) {
   .growing,
@@ -320,6 +352,7 @@
   min-height: 44px;
   padding: 4px 10px;
   font-size: 12px;
+  font-family: var(--display);
 }
 @media (max-width: 479px) {
   .prospects li {
@@ -335,8 +368,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 10px 14px;
+  gap: 14px;
+  padding: 14px;
   text-align: left;
   font-weight: inherit;
   border-style: dashed;
@@ -345,16 +378,17 @@
 }
 .homeLine > span:first-child {
   display: grid;
-  gap: 1px;
+  gap: 6px;
   min-width: 0;
 }
 .homeLine b {
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 700;
 }
 .homeLine small {
-  font-size: 11.5px;
+  font-size: 12px;
   color: var(--text-faint);
+  font-family: var(--display);
 }
 
 @keyframes rise {
@@ -387,6 +421,7 @@
 .ageGroup > header small {
   font-size: 12px;
   color: var(--text-muted);
+  font-family: var(--display);
 }
 
 /* 하드 트레이닝's costs under its effects, wrapping rather than squeezing the focus's name. */
@@ -398,8 +433,8 @@
 /* 개별 훈련 and 적응: one row per first-team player. */
 .players {
   display: grid;
-  gap: 4px;
-  margin: 10px 0 0;
+  gap: 10px;
+  margin: 16px 0 0;
   padding: 0;
   list-style: none;
   max-height: 420px;
@@ -408,12 +443,13 @@
 .players li {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 8px;
+  gap: 10px;
+  padding: 12px;
   border-radius: 2px;
   border: 1px solid var(--line);
   background: var(--surface-deep);
   min-width: 0;
+  flex-wrap: wrap;
 }
 .players li[data-own] {
   border-color: var(--accent-edge);
@@ -422,24 +458,30 @@
   display: grid;
   flex: 1 1 auto;
   min-width: 0;
+  gap: 5px;
 }
 .playerName small,
 .playerFocus small {
   color: var(--text-faint);
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .playerFocus {
   display: grid;
   justify-items: end;
   text-align: right;
-  font-size: 12px;
-  white-space: nowrap;
+  font-size: 14px;
+  white-space: normal;
+  font-family: var(--display);
+  min-width: 0;
+  gap: 5px;
 }
 .players button {
   flex: none;
-  min-height: 36px;
-  padding: 4px 10px;
+  min-height: 44px;
+  padding: 8px 12px;
   font-size: 12px;
+  font-family: var(--display);
 }
 .flag {
   flex: none;
@@ -449,12 +491,13 @@
   color: var(--warm);
   font-style: normal;
   font-weight: 700;
-  font-size: 11px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 
 .trainingScene {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
   margin: 0;
   overflow: hidden;
   border: 1px solid var(--line);
@@ -468,37 +511,43 @@
 .trainingScene figcaption {
   display: grid;
   align-content: center;
-  gap: 4px;
+  gap: 8px;
   min-width: 0;
   padding: 12px 18px;
 }
 .trainingScene span {
   color: var(--text-faint);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 1px;
+  font-family: var(--display);
 }
 .trainingScene strong {
   font-size: 18px;
+  line-height: 1.5;
 }
 .trainingScene small {
   color: var(--text-muted);
   font-size: 12px;
+  font-family: var(--display);
 }
 @media (max-width: 760px) {
   .trainingScene {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
   }
   .trainingArt {
     height: 104px;
   }
   .trainingScene figcaption {
     padding: 10px 12px;
+    gap: 8px;
   }
   .trainingScene span {
-    font-size: 10px;
+    font-size: 12px;
     letter-spacing: 0;
+    font-family: var(--display);
   }
   .trainingScene strong {
-    font-size: 15px;
+    font-size: 18px;
+    line-height: 1.5;
   }
 }
