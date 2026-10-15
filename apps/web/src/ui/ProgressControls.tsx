@@ -74,7 +74,8 @@ export const ProgressControls = memo(function ProgressControls({
   // click landing just after that was aimed at the old label, so it must not start the clock.
   const userStop = useRef(false);
   const wasRunning = useRef(running);
-  const autoStoppedAt = useRef(0);
+  // Never stopped yet: a play right after the page opens counts (performance.now() starts at 0).
+  const autoStoppedAt = useRef(-Infinity);
   useEffect(() => {
     if (wasRunning.current && !running && !userStop.current)
       autoStoppedAt.current = performance.now();
