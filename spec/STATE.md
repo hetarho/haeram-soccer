@@ -56,13 +56,13 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 67 | 67 | - | 0 |
+| WEB | 68 | 68 | - | 0 |
 | WORLD | 3 | 3 | - | 0 |
-| CLUB | 34 | 34 | - | 0 |
+| CLUB | 35 | 35 | - | 0 |
 | MATCH | 9 | 9 | - | 0 |
 | LEAGUE | 7 | 7 | - | 0 |
 | STAFF | 20 | 20 | - | 0 |
-| ECON | 36 | 36 | - | 0 |
+| ECON | 37 | 37 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 9 | 9 | - | 0 |
 | SAVE | 35 | 35 | - | 0 |
@@ -79,6 +79,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
+- owner's reports 261015 fixed (T117–T121, pair k5r8): deleting the game in play stays on the slot screen, a decided event card plays the clock on, the HUD never scrolls away under warning bands, no offer reads 0, facility costs climb ×2.5 (stadium) and ×4 (training ground, academy) a step; re-measure ECON-29's 160 careers on the new facility costs with the next economy change (16 measured: 2000s matchday 25.0%, at the band's edge).
 - run p7ad (autopilot) closed 261015: the player model is on main (T106–T115: 14 attributes, sided positions with levels, roles and traits, adaptation and 조직력, per-player training, slot requests, the profile UI, earlier-rules saves, the balance measured); report reports/261015-p7ad.md, 17 inbox decisions to review.
 - follow-up (T115): difficulty levels do not separate (every level ≈60% titles near season 50; LEAGUE-13 measured) — decide a lasting level rule or new bands (update-ssot LEAGUE-13/WEB-3); ESP/FRA reference careers often stay 33–50 seasons in the amateur league (3 of 160 bankrupt there); ECON-29's wage bill 40.0% below 45–70%.
 - next: review-code over the player model (inbox suggest), then the follow-ups above.
@@ -96,6 +97,13 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 T121 done: `.layout` and `.main` clip instead of hiding overflow; the HUD stayed at −31 px under two bands at 844×390 before
+- 261015 T120 done: facility costs ×2.5 / ×4 a step (1,530,450 units in all); 16 careers measured, no new bankruptcy, ECON r37
+- 261015 T119 done: other clubs' offers at least one currency unit; the 단장's free signing lists as 단장 영입, not an offer of 0
+- 261015 T118 done: deciding the card of the event that stopped a running clock plays it on once nothing else waits
+- 261015 T117 done: deleting the game in play reloads onto the slot screen; the deleted world no longer returns to the index on leaving
+- 261015 create-task T117–T121 from WEB r68 CLUB r35 ECON r37 (owner's reports: slot delete, header, 0 offers, facility costs, event resume)
+- 261015 update-ssot WEB r68 CLUB r35 ECON r37: slot delete stays on the slots, a decided event plays the clock on, the shell never scrolls, no offer below one currency unit, facility costs by a fixed multiple
 - 261015 T116 done: pace chips set the pace only, play starts the clock (owner's request 261014, carried from work/direction's T106, which never reached main)
 - 261015 update-ssot WEB r67 (a pace chip no longer starts the clock); create-task T116
 - 261015 T115 done (explore 2h, 20:01–20:35Z): 160 careers at four levels — every level ≈60% titles near season 50, ≈21% after the first; 보통·어려움·최상 outside LEAGUE-13; LEAGUE r7, ECON r36 measured, docs/BALANCE.md; no tuning
