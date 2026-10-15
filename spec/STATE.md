@@ -16,6 +16,10 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 
 ## inbox
+- 261015 decided ideation/navigation-and-records: management structure → need, responsible person, focused action, effect timing and contextual return before full rules/catalogues (alt: rename three menus only | merge every control into one screen); independent hands-on follow-up adds M1–M13
+- 261015 decided ideation/navigation-and-records: policy detours → focused relevant settings, retained task tab/filter/comparison/scroll and unapplied drafts (alt: send to board root and reset | silently apply on exit); one applied policy remains authoritative
+- 261015 decided ideation/navigation-and-records: authority explanation → show who uses a setting and when, retain global intervention levels and coach-led four-round training (alt: add per-department switches | imply criteria replace current staff immediately); no game-rule change inferred
+- 261015 decided ideation/navigation-and-records: earlier people/training split assessment → reopen and replace with task-continuity criteria; working labels 선수단 / 훈련·육성 / 구단 운영 plus 스태프; preserve proven cost/risk/outcome previews
 - 261015 decided ideation/navigation-and-records: records and league entry views → season-by-season club history and competition standings (alt: trophies/overview first | remember the current nested menus); autonomous planning recommendation only
 - 261015 decided ideation/navigation-and-records: where summaries belong → live club briefing on home, archived club-season review in records, competition tables/results in leagues (alt: move every overview into records | retain the current split)
 - 261015 decided ideation/navigation-and-records: season-row journey → own club season detail with explicit league/cup links and a contextual return (alt: whole row opens league table | add a second competing season list)
@@ -84,7 +88,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- Autonomous ideation ready: navigation-and-records. Prioritise season-first club records and standings-first league, then context-preserving season journeys; use update-ssot WEB when implementation is requested. Runtime and typography changes remain separate.
+- Autonomous ideation ready: navigation-and-records now includes 13 independently audited management findings plus the 12 records/competition findings. Prioritise actionable training/recruitment, focused policy access and retained task/draft context, then season-first records and standings-first league. Use update-ssot WEB when implementation is requested; game rules and the local typography work remain separate.
 - T129 is on main as 3257ea2 under the owner's instruction to push first and patch any later CI failure. T130 closes the intermittent Firefox slot journey's URL/content readiness gap found in CI 38709122636; nine corrected cross-browser repeats pass. Inspect post-push CI and patch failures without another approval.
 - T128 is on main as fa69909 after every CI 38706479608 job passed. T129's finished implementation adds 72 era/stage pixel scenes, calendar-year transitions and completed-facility selection; the session delivers it through the same CI-gated main sequence. Current app captures and all three scene catalogs are in docs/night-broadcast/era-scenes.
 - T122–T127 are on main as 1d0f097 after all jobs passed in CI 38699118229: grass-green night-broadcast UI, self-hosted Monogram/Galmuri, illustration-only stadium, matched environments and 24 pixel UI icons. Earlier visual evidence remains in docs/night-broadcast.
@@ -107,6 +111,8 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 ideation navigation-and-records ready: exercised training, free signing, staff hire, policy/preset drafts and youth promotion over two isolated seasons; M1–M13 and task-based redesign replace the earlier split assumption; no runtime changes
+- 261015 ideation navigation-and-records reopen: independently exercise people, training and direction workflows; revise earlier unvalidated split assumption
 - 261015 ideation navigation-and-records ready: 12 source-backed structural findings, two browser journeys confirmed, records/league reorganisation recommended; no runtime changes
 - 261015 T130 done: slot journey awaits destination headings; 9 corrected repeats passed in Chromium/Firefox/WebKit, type/lint/format passed; push-first follow-up for CI 38709122636
 - 261015 main advanced to 3257ea2 before CI on the owner's explicit instruction; T130 doing@e8ar for the intermittent Firefox slot journey failure in CI 38709122636
@@ -125,5 +131,3 @@
 - 261015 T125 done: illustration-only home stadium; 6/6 affected browser journeys, all 9 stages retain facts without SVG, 12 captures, entry 249698 B gzip
 - 261015 WEB r72: home stadium schematic→full illustration and real-stage labels; T125 doing@s5ar
 - 261015 T124 done: grass-green primary across the UI; 15/15 affected browser journeys, 21 captures, contrast checked, entry 250961 B gzip
-- 261015 WEB r71: broadcast-red primary→natural grass green; T124 doing@g4rs
-- 261015 T123 done: Monogram/Galmuri, original stadium/locker/training art, mobile date/founding fixes; 332 browser cases passed with separate reruns, 4 existing skips, final affected 72/72; entry 250943 B gzip

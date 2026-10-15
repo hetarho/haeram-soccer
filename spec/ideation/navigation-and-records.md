@@ -1,12 +1,13 @@
 # IDEATION navigation-and-records
-> st:ready@261015 | Put club seasons first in records, standings first in leagues, and give each destination a clear subject and time scope.
+> st:ready@261015 | Make owner decisions actionable across squad, development and operations; put club seasons first in records and standings first in leagues.
 
 ## vision
-- Problem: the owner regularly wants records → season-by-season history, cannot explain the four choices inside summary, seldom opens the separately named season-record tab, and expects the league table before a league overview.
-- Target: owners alternating between the present competition and their club's accumulated story over a long career.
-- Core value: a destination first answers the question its name promises; subject, season, competition scope and the way back remain recognisable across views.
+- Problem: the owner cannot tell where to act in people, training and direction, in addition to the reported records/league confusion. The independent follow-up must examine complete management tasks rather than assume that separating topics creates a usable workflow.
+- Target: owners preparing the next match, improving players and shaping their club, while alternating between the present competition and their accumulated career.
+- Core value: recognise a need → understand the choices and decision-maker → act → see when it takes effect → inspect the result. Preserve the player, task, period and return context throughout.
 - Evidence: source inspection plus fresh synthetic browser careers at 390×844 and 1440×1000, including one completed season. Current gameplay/navigation code is at cc3039f; the local typography work changes presentation, not these destinations. Observed journeys establish what the interface does; no usage telemetry establishes what every player prefers.
 - Mode: autonomous ideation. Adopted items below are recommended planning choices, recorded in STATE inbox; the current WEB/HIST rules and runtime remain unchanged.
+- Follow-up evidence, 261015: an isolated browser career at `localhost:19503`, seed `owner-action-audit-261015`, Chromium at 390×844 and 1440×1000. Actually forced four rounds of first-team training, signed a free agent, drafted/discarded/applied youth investment, previewed and discarded a ten-change preset, hired an assistant, completed two seasons, switched to level 1 and promoted a 17-year-old. Existing careers were not used. Geometry below describes the local pixel typography and this career, not every viewport or a measured usability improvement.
 
 ## explored
 - [o] Diagnose the taxonomy before rearranging tabs: the current records menu mixes time ranges, object types, chart types and containers at the same level.
@@ -39,12 +40,39 @@
   - Manager history: the appointment/departure story, linked from the relevant seasons.
 - [o] Preserve context through cross-links: subject, season, competition filter and the destination to return to. A default first visit and a return to an inspected season are different journeys.
 - [o] Treat the user's rarely opened season-record tab as a discovery problem to investigate, not evidence that its useful analysis should be deleted.
-- [o] Keep the current people/training split and policy-versus-execution distinction. These already answer different owner questions; several secondary labels need work rather than another wholesale merger.
+- [x] Treat the people/training split as validated because its topics sound distinct ← the follow-up tasks show that the same player, coach and decision are spread across pages without a continuous workflow. The earlier conclusion was premature. Keep recognisable responsibilities, but evaluate their entry points and handoffs by task completion.
 - [x] Move the entire live league overview into records ← current rank gaps, form and next opponent belong to the current-club briefing; only the archived club-season review belongs to records.
 - [x] Keep the four-part summary and only remember its last selection ← that reduces repeated clicks but leaves the misleading category, duplicated season labels and cross-destination season journey intact.
 - [x] Remove trophies, Elo, season analysis or old records because their current placement is confusing ← the problem is where facts are presented, not their value or retention.
 - [x] Merge league, cups and records into one universal archive tab ← it would hide the distinction between a competition's field and the owner's club career.
 - [?] Confirm lower-priority naming with the owner before applying it: `구단 운영`, `명예·최고기록`, `감독 이력`, and `알림·결정` are working labels.
+
+- [o] Independent management audit: prioritise the broken decision loop, not just menu names. Facts in the next table come from the exercised journeys or the linked source; the difficulty and proposed response are product judgements.
+
+  | ID / priority | Observed behaviour | Consequence and recommended response |
+  |---|---|---|
+  | M1 / High | The training header says to suggest/order in `코치진`, while the working button is in training. Coaching staff now links back with `훈련에서 보기`. [TrainingView](../../apps/web/src/ui/TrainingView.tsx#L120), [CoachingStaff](../../apps/web/src/ui/ClubStaff.tsx#L389) | Following the instruction creates a needless round trip. Put the actual action beside current training and identify its responsible coach there; make the guidance agree with that location. |
+  | M2 / High | On the 390px first-team view, the suggest/order button starts at content y=1,331; the scroller is 637px high. Focus comparisons and every automatic selection rule precede it. `성장 중인 선수` starts at y=3,679 after the separate player-training and adaptation lists. [TrainingView](../../apps/web/src/ui/TrainingView.tsx#L145) | A rules reference leads the page while the action and evidence of progress trail it. Lead with current focus, reason, expiry and change action; show development exceptions/results next, and disclose the full rules separately. |
+  | M3 / High | The first-team players appear again in individual training, adaptation and young-player growth; opening their name produces a record/profile sheet with record-range controls and close buttons, but no training or preparation action. [PlayerTraining](../../apps/web/src/ui/TrainingView.tsx#L275), [AdaptationPanel](../../apps/web/src/ui/TrainingView.tsx#L324), [PlayerSheet](../../apps/web/src/ui/PlayerSheetDialog.tsx#L23) | Inspecting a player does not lead naturally to helping him. Provide a player-centred development detail with relevant actions and a contextual return. Use one useful list with task filters rather than requiring three passes through the squad. Former-player profiles remain historical. |
+  | M4 / High | At founding, `스카우트 명단` starts at y=7,381, after eight large candidate cards and the `제안 응답` rule panel. It contains a real goalkeeper request, a named pick and a window-close trust penalty. At desktop width it still follows all candidate cards. [RecruitmentDesk](../../apps/web/src/ui/RecruitmentDesk.tsx#L494), [ScoutShortlist](../../apps/web/src/ui/ScoutShortlist.tsx#L57) | The reason to recruit and its deadline are below the catalogue. Lead recruitment with outstanding needs, the deadline and actionable negotiations, then relevant candidates. Keep the full shortlist and rule explanations available without making them the gate to a decision. |
+  | M5 / High | Academy `유소년 투자 · 유입 방식은 방향에서` and market `영입 기조` open the board at its top with every area folded. Other policy lines use `openDirection(area)` and can open the relevant area. [AcademyPanel](../../apps/web/src/ui/AcademyPanel.tsx#L164), [RecruitmentDesk](../../apps/web/src/ui/RecruitmentDesk.tsx#L375), [DirectionLines](../../apps/web/src/ui/DirectionLines.tsx#L35) | A useful contextual link unexpectedly becomes a second search task. Every such entry must name and open the relevant setting/section, keeping the original player or task as the return destination. Reuse the more precise existing behaviour consistently. |
+  | M6 / High | Select GK and two comparison candidates, follow recruitment policy, then return via people: the selected tab is `선수`; reopen market and the filter is `전체`, comparison count 0. Returning from an academy policy through training likewise selects `훈련`. [state](../../apps/web/src/ui/state.ts#L127), [People](../../apps/web/src/ui/Rich.tsx#L183), [PageTabs](../../apps/web/src/ui/PageTabs.tsx#L26) | Consulting a dependency erases the unfinished task. Context includes the subtab, filter, candidate/player, selection and scroll position, not just the main destination. Give policy visits an explicit contextual way back and retain the working view. |
+  | M7 / High | Draft `유소년 투자 → 육성 강화`, visit training and return: the draft is gone, the youth area is folded and `기본 운영` is still in force. Repeating the selection and pressing apply correctly changes the setting. [StrategyBoard](../../apps/web/src/ui/StrategyBoard.tsx#L100) | Checking the squad or training while deciding can silently lose preparation. Retain an unapplied draft across this ordinary detour and clearly distinguish it from the applied policy; an explicit discard remains available. Do not silently apply on exit. |
+  | M8 / High | One board presents strategy cards, recurring spending, preferred schools and automatic appointment/promotion criteria as similar rows. At level 2, coach hiring is direct and academy decisions are automatic. The staff panel explains this, but the corresponding board rows lack the same decision-owner context; training itself remains coach-controlled at every level. [StrategyBoard](../../apps/web/src/ui/StrategyBoard.tsx#L517), [CoachingPlan](../../apps/web/src/ui/ClubStaff.tsx#L238), [intervention](../../packages/engine/src/intervention.ts#L41) | Changing a hiring preference can be mistaken for improving the present coach. Show who uses a setting, whether it governs the current mode, and its next execution point. Separate ongoing investment, future staff criteria and present training interventions in the owner's explanation. |
+  | M9 / Medium | A local `개입 수준 바꾸기` entry opens the global four-level setting. A level combines clock stopping with delegation across academy, contracts, transfers, business and staffing; level 1 still does not make training a permanent owner choice. [DecisionOwner](../../apps/web/src/ui/DecisionOwner.tsx#L41), [InterventionSettings](../../apps/web/src/ui/ProgressControls.tsx#L397) | An owner trying to take over one task must reason about several unrelated consequences. Retain the current global rule in v1, but call the control a whole-club setting and show a compact before/after responsibility and clock-stop summary. Independent department switches would require a separate game-rule decision. |
+  | M10 / Medium | Board order is current direction → seven preset choices → a device-wide saved-direction library → folded operational areas → synergies/odds. Choosing `유스 명가` in this career drafts ten changes including recruitment, spending, renewal, manager and coach criteria. Its change list and cost preview already disclose the bundle after selection. [StrategyBoard](../../apps/web/src/ui/StrategyBoard.tsx#L272) | Reaching a specific everyday setting requires passing a library of whole-club identities. Lead with named departments and their applied settings; place preset loading/saving in a clearly marked whole-club configuration flow. Preserve its explicit review/apply step and make the breadth of the bundle recognisable before selection. |
+  | M11 / Medium | Academy controls are split between its roster/promotion buttons, youth-director rules, youth-training section, board investment/intake/promotion preferences, staff hiring and a separately built academy facility. Investment descriptions also refer broadly to coaches/scouts/facilities. [AcademyPanel](../../apps/web/src/ui/AcademyPanel.tsx#L126), [areas](../../apps/web/src/ui/areas.ts#L73), [FacilityParts](../../apps/web/src/ui/FacilityParts.tsx#L138) | “Develop our youth” is a workflow across people, time and money. Make the academy the task entry: ready prospects, current training, next intake and operational links with applied values. Distinguish recurring development spend from a construction project, and show the next intake/settlement/completion timing where relevant. |
+  | M12 / Medium | `코치진` contains all eight staff posts, including the sporting director and chief scout, in one long list. The market names its chief scout but has no hiring entry there; the training page's coach is also managed through this list. [CoachingStaff](../../apps/web/src/ui/ClubStaff.tsx#L316), [ScoutShortlist](../../apps/web/src/ui/ScoutShortlist.tsx#L43) | Looking for the person responsible for recruitment or youth requires learning that administrators/scouts live under coaches. Use `스태프`, distinguish football coaching from recruitment/administration, and link each operational task to its named responsible person and replacement screen. |
+  | M13 / Medium | Actual free signing and promotion give a saved/result message and change squad counts. The promoted youth leaves the academy list; the owner must separately find him in people to inspect or prepare him. The player sheet still offers records only. [RecruitmentDesk](../../apps/web/src/ui/RecruitmentDesk.tsx#L309), [AcademyPanel](../../apps/web/src/ui/AcademyPanel.tsx#L102), [PlayerSheet](../../apps/web/src/ui/PlayerSheetDialog.tsx#L23) | Completion should suggest the relevant continuation: inspect this new first-team player, review training or open next-match preparation. Keep it optional and preserve the game's automatic lineup behaviour; do not make acquisition require manual selection. |
+
+- [o] Four root causes explain these findings: topic containers override task continuity; complete rule explanations precede decisions; decision-maker and time of effect are detached from controls; navigation forgets an unfinished operation. Enlarging type alone cannot repair those relationships.
+- [o] Preserve the parts that worked in the browser: the training outcome names the coach, chosen focus, resignation risk and four-round timing; the training header updates to the active order; staff candidates compare actual growth effects and disclose contract costs; the investment draft previews recurring cost and season-end cash; explicit apply does not spend merely by inspecting a preset. Improve entry, context and later review around these existing capabilities.
+- [o] Treat training as coach-led work with an owner intervention, not a free assignment of fourteen attribute drills. The existing individual choices are balanced/recovery/hard; label their purpose and four-round duration clearly. A lasting training programme or attribute-targeted drills would be new game design and are outside this audit's first pass.
+- [o] Adopt task-local access to the relevant policy while retaining a single applied policy and a whole-club overview. A focused setting view can be reached from recruitment or academy without navigating an unrelated preset library. The planning requirement is continuity and clear effect, not a prescribed component or routing implementation.
+- [x] Fix management discovery only by renaming `사람` or `방향` ← it leaves the buried action, lost selections, global authority effects and disconnected player detail unchanged.
+- [x] Put every policy editor and formula permanently on each work screen ← this recreates the same long reference wall. Show the current relevant value, responsible person and focused action; let detailed explanations expand when needed.
+- [x] Remove staff autonomy or make all policy selections immediate commands ← coach judgement and owner/staff tension are part of the game. Clarify the distinction between instruction, recurring investment and delegated decision criteria.
+- [?] Verify the proposed information order with an unfamiliar owner using the scenarios below. Task completion is the criterion; the walkthrough is evidence of the current structure, not proof that a proposed layout is already usable.
 
 ## shape
 - Destination responsibilities:
@@ -55,9 +83,9 @@
   | League | Where does each club stand in this competition? | Standings | Schedule/results, table-derived team records and available player records for the chosen league/season |
   | Cups | What is the state of this competition and our tie? | Chosen competition's current bracket/phase | Season-specific results, brackets and competition honours |
   | Club records | How has our club progressed, and what happened in a particular season? | Season-by-season career list | Our season review, matches, decisions, growth, honours and all-time club/player/manager records |
-  | People | Who plays, joins and stays? | Current squad | Market, manager and coaching staff |
-  | Training | How are the players developing? | Team/player training | Academy development, growth and adaptation |
-  | Club operations, working label | What are our policies, resources and facilities? | Direction board | Construction, cash, ledger and sponsors |
+  | Squad, working label `선수단` | Who is available, who do we need, and what needs a decision? | Current squad and actionable needs | Player management, recruitment/sales, manager and named staff; preparation links for the same player |
+  | Development, working label `훈련·육성` | Who needs help, what are we doing, and is it working? | Current training, change action and development exceptions | First-team/player detail, academy, adaptation and growth; relevant staff/investment links with a return |
+  | Club operations, working label `구단 운영` | What resources and policies support our plans? | Named operational areas and applied settings | `운영 방침 / 시설 / 재정 / 후원`; presets/saved configurations secondary to specific work |
 
 - Recommended records map:
 
@@ -76,15 +104,54 @@
   └─ Manager history
   ```
 
-- Priority order:
-  1. Records entry and season-list/detail continuity; remove the generic summary gate without losing its contents.
-  2. Standings-first league entry; keep league/season scope visible and honest across every lens.
-  3. Relocate the own-club season review and current briefing; align archived/live competition navigation.
-  4. Cups' competition/season pattern and secondary labels after the first journeys are evaluated.
+- Management interaction order: relevant state and exceptions → named decision-maker → primary action → choices with cost/risk/timing → applied/pending confirmation → later outcome. Full rules and complete lists support this flow rather than leading it. A quiet situation can explicitly say that the coach is handling it; do not invent a compulsory task.
+- Working management map, preserving three recognisable destinations rather than adding more top-level hubs:
+
+  ```text
+  선수단
+  ├─ 선수 — availability, contracts and player actions
+  ├─ 이적시장 — outstanding needs/deadlines → negotiations → candidates
+  ├─ 감독 — present manager, requests and replacement
+  └─ 스태프 — coaching / recruitment and administration
+  훈련·육성
+  ├─ 1군 훈련 — current focus + intervention → player development
+  └─ 유소년 — prospects/next intake + training → youth operations
+  구단 운영
+  ├─ 운영 방침 — departments first; whole-club presets/library secondary
+  ├─ 시설
+  ├─ 재정
+  └─ 후원
+  ```
+
+- Task continuity examples:
+
+  | Owner task | Continuous journey | What confirms completion |
+  |---|---|---|
+  | Help a tired player | Player/fitness concern → this player's training or next-match preparation → suggestion/order with duration and risk | Active assignment for this player, next settlement timing, and a later fatigue/adaptation reading |
+  | Meet a manager's recruitment need | Market need and deadline → suitable candidates → fee/wage/role impact → signing or dated negotiation | Request progress and the acquired player's next step; inspect a policy and return to the same candidates |
+  | Improve youth development | Academy → current training and intake outlook → relevant investment, youth-director or facility choice | Applied value, recurring/project cost, next effect date; return to the same prospect/academy view |
+  | Bring a youth into the first team | Academy readiness → promotion → inspect promoted player → optional training/preparation | Updated squad place and the actual player, with no requirement to choose a manual lineup |
+  | Improve coaching | Development factor → named responsible staff post → candidate effect and contract review → appointment | Actual changed effect and a return to development; hiring criteria clearly describe a future automatic appointment |
+  | Set a club-wide philosophy | Deliberately open preset/library → inspect all affected settings and cost → apply | Applied board, active/delegated criteria and execution timing; no claim that a new preference instantly replaces current staff |
+
+- Priority order after the independent follow-up:
+  1. Core management continuity: truthful entry copy, visible training action, outstanding recruitment needs, focused settings and preserved return/draft context (M1–M8). Validate the tired-player and recruitment journeys end to end before broader visual work.
+  2. Season-first records and standings-first league, including club-season detail continuity and honest competition scope. These remain the owner's concrete archive requirements.
+  3. Reshape the development/player detail and academy workflow; clarify whole-club delegation and policy timing (M3, M8–M13), then move preset/library work out of everyday settings discovery.
+  4. Align live/archived competition navigation, cup journeys and secondary naming. Group by task in the later SSOT; these are product priorities, not implementation tasks or dependencies.
 - flow: records → career season list → chosen club season → analysis/matches/decisions → optional explicit competition link → return to the same club season.
 - flow: league → selected competition and season → standings → fixtures or competition records, with the subject and period still visible.
-- v1: presentation ownership, defaults, discoverable season navigation, labels, context-preserving cross-links and explicit data-availability messages / not: new game rules, new historical collection, archive pruning, removal of analysis, a new universal hub or immediate code changes.
+- flow: management need → same-player/task detail → focused action or relevant policy → clear applied/pending state and next effect → return to the working task → inspect the result after the appropriate match/round/intake.
+- v1: task ordering, contextual player actions, visible responsible staff, focused policy access, retained drafts/working context, clear costs/timing; presentation ownership, defaults, discoverable season navigation and explicit data availability / not: new training mechanics, independent department delegation, permanent owner control over coaches, new historical collection, archive pruning, removal of analysis, a universal mega-screen or immediate code changes.
 - Validation scenarios for the later specification:
+  - Starting on people, find a tired player, inspect him and suggest recovery without searching a second full squad list. Identify who decides, how long the assignment lasts and when fatigue can change.
+  - Enter training and find the team intervention before opening the rules. State why the coach chose the present focus and find growth/adaptation exceptions without reading every player's details twice.
+  - See a manager's requested position and deadline before browsing candidates. Select two candidates, inspect the related recruitment policy and return with the market tab, filter and comparison preserved.
+  - Draft youth investment, inspect the academy and return to the same unapplied draft. Clearly distinguish draft from applied spend; explicitly discard or apply it.
+  - From academy, locate recurring youth investment, the youth director and academy construction; explain which is an ongoing bill, a personnel decision or a project, and when each has an effect.
+  - At intervention levels 1, 2 and 4, identify which decisions are delegated and which direction criteria are presently used. Changing a global level makes its other responsibility/clock effects visible. Training remains coach-led at every level.
+  - Hire a coach using the disclosed growth effect and costs, then return to the development factor. Promote an eligible youth and find his first-team/training/preparation context without another name search.
+  - At 390px and desktop width, review a club-wide preset's entire change bundle before apply; verify that looking at a preset never applies it. Test an owner who has not learned the current menu taxonomy.
   - Enter records, identify the latest closed season and open its club review without passing through league tables.
   - Open a season's league table deliberately, then return to the club season and its prior list context.
   - Enter league and see standings first; changing season preserves the competition and the chosen lens where data exists.
@@ -93,10 +160,14 @@
   - Inspect an early career and a long career, including promotions and seasons lacking older detailed archives. Do not claim player-wide preference or improved completion times without testing them.
 
 ## domains
-- WEB: revise WEB-40/47/54 for league defaults, club-season ownership and records structure; WEB-10/11 for home briefing and progression-tool discovery; WEB-65/69 for consistent competition scope and view categories. Evaluate WEB-39/43/51/66 labels in a separate lower-priority pass. Existing SSOTs require update-ssot rather than a new domain.
+- WEB: revise WEB-40/47/54 for league defaults, club-season ownership and records structure; WEB-10/11 for home briefing and progression-tool discovery; WEB-65/69 for consistent competition scope and view categories. Extend WEB-39/43/44/45/59/60/61/68/69/70/71 for management ordering, player actions, visible responsibility/timing, contextual policy access, retained drafts and return state. The current single-home policy rule needs explicit revision if focused editing is allowed from a work context. Existing SSOTs require update-ssot rather than a new domain.
 - HIST: preserve HIST-1/2/4/6/8/12/13. The first pass relocates existing facts and labels their scope; any new historical statistics need their own planning decision and must not be implied by a new tab name.
+- CLUB / STAFF / ECON / PLAYER: retain the existing training duration and settlement, coach judgement, intervention-level delegation, recruitment requests, academy eligibility, investment and construction rules. Use these domains to verify explanation and outcome timing; reopen them only for an explicitly chosen rule change. A reorganisation must not silently create new owner powers or new drills.
 
 ## open
+- How much first-team player detail should be on the list versus the player detail? Recommended first pass: concise status/action rows, focused filters for attention/growth/adaptation, and full explanation in detail. Validate with a tired-player task before finalising the layout.
+- Should contextual policy changes use a focused setting view or an in-context sheet? Either must retain one applied setting, show authority/cost/timing, keep the unfinished task and preserve unapplied drafts. This is a presentation decision for WEB, not a requirement to change game rules.
+- Which development observation window is retained and can be shown honestly? Reuse existing accumulated growth and current fatigue/adaptation first; do not imply a recent-round trend that the game does not store.
 - Which depth of the combined club season review should lead: results/leaders first, with financial and detailed analytical sections below, or another ordering? Recommended default is football results and the season's story, then finance and advanced detail.
 - Should `명예·최고기록` stay one destination with clear subviews, or separate if its contents remain too long? Preserve the existing one-view-at-a-time benefit.
 - Exact fallback when another league lacks player/round detail: unavailable view with explanation or an explicitly named own-league lens. Do not silently change the subject.
