@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FacilityArt } from './FacilityArt';
 import type {
   TrainingCoach,
   TrainingFocus,
@@ -132,14 +133,7 @@ export function TrainingView({ state, client }: Props) {
         {tab === 'training' ? (
           <div className={`${s.stack} ${s.pair}`}>
             <figure className={`${s.trainingScene} ${s.wide}`}>
-              <img
-                src="/art/training-ground.webp"
-                width="1440"
-                height="480"
-                loading="lazy"
-                decoding="async"
-                alt="이른 아침 훈련장의 잔디와 가죽 축구공, 장비 가방 삽화"
-              />
+              <FacilityArt kind="training" className={s.trainingArt} />
               <figcaption>
                 <span>TRAINING GROUND</span>
                 <strong>

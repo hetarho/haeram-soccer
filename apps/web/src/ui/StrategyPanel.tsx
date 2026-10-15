@@ -1,4 +1,5 @@
 import { Select } from './Select';
+import { FacilityArt } from './FacilityArt';
 import { memo, useCallback, useEffect, useId, useRef, useState } from 'react';
 import type { Player, Tactic, World } from '../../../../packages/contracts/src/types';
 import {
@@ -249,14 +250,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose }:
             </p>
           )}
           <figure className={s.preparationScene}>
-            <img
-              src="/art/locker-room.webp"
-              width="1440"
-              height="480"
-              loading="lazy"
-              decoding="async"
-              alt="나무 벤치와 유니폼, 축구화가 놓인 경기 전 라커룸 삽화"
-            />
+            <FacilityArt kind="locker" className={s.preparationArt} />
             <figcaption className={s.opponent}>
               <span>다음 상대</span>
               <strong>{opponent?.name || '다음 시즌 일정 준비 중'}</strong>

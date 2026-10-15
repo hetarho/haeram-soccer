@@ -14,6 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
+| e8ar | hq-dev1-pve2-vm2 | pair | 2026-10-15T08:27Z | 2026-10-15T08:27Z | T128 |
 
 ## inbox
 - 261015 suggest LEAGUE-13 WEB-3: difficulty levels do not separate on 60-season careers (every level ≈60% titles near season 50, T115) because a level sets only the start → decide whether a level keeps a lasting effect (its offset on later signings and youth, or rivals' strength by level) or the bands move; update-ssot either way
@@ -56,7 +57,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 73 | 73 | - | 0 |
+| WEB | 74 | 74 | - | 0 |
 | WORLD | 3 | 3 | - | 0 |
 | CLUB | 35 | 35 | - | 0 |
 | MATCH | 9 | 9 | - | 0 |
@@ -71,6 +72,8 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T128 | Subdued facility backgrounds | WEB ARCH | - | doing@261015.e8ar |
+| T129 | Era and facility stage pixel scenes | WEB ARCH | T128 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -79,6 +82,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
+- T128 reduces background prominence; T129 adds all era/facility-stage scenes. Keep the owner's running 19500 server and storage intact, deliver verified checkpoints through CI to main.
 - T122–T126 are on main: grass-green night-broadcast UI, self-hosted Monogram/Galmuri, illustration-only stadium and three matched pixel paintings. Baseline 5d14752 passed every job in CI 38696842874; art 737742e passed every job in CI 38698103429. T127 supplies 24 matched pixel icons; its checkpoint follows the same CI-gated main delivery sequence. Current app captures and the icon catalog are in docs/night-broadcast/pixel-icons.
 - doc-review WEB: spec lint has 38 existing document-quality hints; split long decision lines while preserving meaning in a separate documentation pass.
 - owner's reports 261015 fixed (T117–T121, pair k5r8): deleting the game in play stays on the slot screen, a decided event card plays the clock on, the HUD never scrolls away under warning bands, no offer reads 0, facility costs climb ×2.5 (stadium) and ×4 (training ground, academy) a step; re-measure ECON-29's 160 careers on the new facility costs with the next economy change (16 measured: 2000s matchday 25.0%, at the band's edge). On main after CI 38678748201 (every job green).
@@ -99,6 +103,9 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 create-task WEB r74: T128 subdued image presentation, T129 three-era/all-stage pixel scene library; T128 doing@e8ar
+- 261015 WEB r74: dimmed pixel backgrounds selected by three eras, nine stadium/locker stages and six training levels
+- 261015 update-ssot WEB start: era- and facility-stage-specific pixel backgrounds with restrained dimming
 - 261015 T127 done: 24 original pixel UI icons, 45 affected browser cases passed, 22 visual captures, entry 249635 B gzip; session CI-gated main delivery
 - 261015 main advanced to 737742e after all jobs passed in CI 38698103429
 - 261015 T126 done: three matched pixel paintings, 33 affected browser cases passed; T127 doing@a6rt; checkpoint/main delivery remains with this session
@@ -115,7 +122,4 @@
 - 261015 T122 done: night-broadcast UI throughout the real app; retired galleries removed; WebKit pace animation fixed; final affected browser cases 18/18, long-name cases 6/6, docs/night-broadcast proof
 - 261015 create-task T122 from WEB r69; T122 doing@n8bc: real-app redesign and retirement of all comparison mockups
 - 261015 update-ssot WEB r69: night-broadcast design across the playable app, flat surfaces and navigation; create-task WEB next
-- 261015 update-ssot WEB start: replace the design explorations and the green/gold game skin with the selected night-broadcast visual language
-- 261015 CI fix: CI 38676250842/38677335586 failed Firefox and Chromium clock journeys — a 2x play may carry two days on a slow runner (specs now wait for the date to move), and play within 500 ms of a page load was ignored (the auto-stop guard started at 0); CI 38678748201 green in every job
-- 261015 T121 done: `.layout` and `.main` clip instead of hiding overflow; the HUD stayed at −31 px under two bands at 844×390 before
 - 261015 T120 done: facility costs ×2.5 / ×4 a step (1,530,450 units in all); 16 careers measured, no new bankruptcy, ECON r37

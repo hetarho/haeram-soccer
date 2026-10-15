@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r73 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r74 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -241,11 +241,14 @@
   | owner capital, campaigns started before rules 1.19 | 방향 › 자금 |
   | the intervention level (who decides, and the stops), background play | the intervention dialog (HUD menu); the level also in the clock's popover |
   - event cards (→WEB-42) decide their event or open a home; remedies (→WEB-44) act or open a home with the choice ready; who takes a decision is set only by the intervention level; a home names it and opens the dialog (→WEB-45).
-- WEB-72 [o] Cohesive, lived-in painterly pixel-art football illustrations appear in the home stadium scene, match-preparation locker room and training-ground overview.
-  - All environments share a restricted grass-green, charcoal, warm-ivory and aged-wood palette, visible pixel brushwork and quiet evening/practical lighting. Preserve believable perspective, material wear and period equipment.
+- WEB-72 [o] Cohesive, lived-in pixel-art football backgrounds appear in the home stadium scene, match-preparation locker room and training-ground overview.
+  - All environments share a restricted grass-green, charcoal, warm-ivory and aged-wood palette, clearly stepped pixels and quiet evening/practical lighting. Preserve believable perspective, material wear and period equipment.
+  - Backgrounds stay subordinate to the interface through a light charcoal dim and reduced saturation. Apply these treatments only to the image, preserving the clarity of HTML text and controls.
+  - Select distinct artwork by the current world's year and completed facility stage: 1950–1969, 1970–1999 and 2000 onward; all nine stadium stages and all six training-ground levels have their own image in each era.
+  - The locker room follows the completed stadium stage in each era; it is a visual part of that facility, without an independent upgrade stat or cost. Construction keeps the completed-stage image until the world applies the upgrade.
   - Home presents the stadium as one full illustration, with readable HTML labels for the current stage, venue name, capacity and supporter count.
-  - Atmospheric artwork adds place and texture; the authoritative stadium-stage label, capacity, club identity, fixture and training figures continue to come from the current world. The art does not claim a fixed stadium size or a real player's appearance.
-  - Heritage architecture and equipment fit a career beginning in 1950 and can remain in later seasons; avoid real club brands, embedded interface text and fabricated data. The live pitch remains the engine-driven Canvas view.
+  - Atmospheric artwork conveys the facility's relative scale and quality; authoritative stadium-stage labels, capacity, club identity, fixture and training figures come from the current world rather than baked-in numbers.
+  - Architecture, kit and equipment fit each era, from modest heritage facilities to larger professional grounds. Avoid real club brands, embedded interface text and fabricated data. The live pitch remains the engine-driven Canvas view.
   - Self-host optimized image assets, keep text and controls as accessible HTML, and preserve the fixed shell, touch targets and readable phone layouts (→WEB-10).
 
 - WEB-73 [o] UI icons use one solid pixel-grid family with stepped edges and consistent optical weight, matching the bitmap type and painted pixel environments.
@@ -259,6 +262,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r74 261015 WEB-72✎ three fixed painterly scenes→distinct pixel backgrounds for three eras and every completed facility stage, locker room follows stadium, all art lightly dimmed
 - r73 261015 WEB-72✎ separate realistic paintings→matched painterly pixel environments; WEB-73+ shared solid pixel-grid UI icons
 - r72 261015 WEB-11✎ stage-drawn stadium scene→full stadium illustration with current-stage HTML labels; WEB-72✎ schematic stage inset→illustration-only home venue
 - r71 261015 WEB-38✎ broadcast-red primary accents→natural grass-green actions and selection; semantic warning/danger colours stay distinct

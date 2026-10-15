@@ -29,13 +29,10 @@
   border: 1px solid var(--line);
   background: var(--surface-2);
 }
-.preparationScene img {
-  image-rendering: pixelated;
+.preparationArt {
   display: block;
   width: 100%;
   height: 128px;
-  object-fit: cover;
-  object-position: center;
 }
 .opponent {
   display: flex;
@@ -393,7 +390,7 @@
   .preparationScene {
     grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
   }
-  .preparationScene img {
+  .preparationArt {
     height: 112px;
   }
   .opponent {

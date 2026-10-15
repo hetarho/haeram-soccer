@@ -19,6 +19,7 @@ import { MilestoneCollection } from './MilestoneCollection';
 import { clubMilestones } from '../../../../packages/engine/src/goals';
 import s from './ClubHub.module.css';
 import { STADIUM_STEPS } from '../../../../packages/engine/src/facilities';
+import { FacilityArt } from './FacilityArt';
 
 function MatchAction({
   critical,
@@ -160,14 +161,7 @@ function ClubScene({ w }: { w: World }) {
       className={s.scene}
       aria-label={`우리 구장 · ${STADIUM_STEPS[w.stadium].name} ${STADIUM_STEPS[w.stadium].capacity}석 · 팬 ${club.fans}명`}
     >
-      <img
-        className={s.sceneArt}
-        src="/art/stadium-tunnel.webp"
-        width="1440"
-        height="480"
-        decoding="async"
-        alt="벽돌 선수 터널 너머로 보이는 야간 축구장의 잔디와 터치라인 삽화"
-      />
+      <FacilityArt kind="stadium" className={s.sceneArt} />
       <div className={s.sceneCaption}>
         <span className={s.badge}>
           <i aria-hidden="true">♥</i>
