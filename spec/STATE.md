@@ -67,7 +67,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 78 | 77 | WEB-10✎ WEB-11✎ WEB-39✎ WEB-40✎ WEB-43✎ WEB-45✎ WEB-47✎ WEB-54✎ WEB-59✎ WEB-60✎ WEB-65✎ WEB-70✎ WEB-71✎ WEB-74+ WEB-75+ | 0 |
+| WEB | 78 | 78 | - | 0 |
 | WORLD | 3 | 3 | - | 0 |
 | CLUB | 35 | 35 | - | 0 |
 | MATCH | 9 | 9 | - | 0 |
@@ -82,6 +82,10 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T134 | Preserve management tasks and policy drafts across navigation | WEB ARCH | - | todo |
+| T135 | Make recruitment, training and academy decisions discoverable | WEB ARCH | T134 | todo |
+| T136 | Join club season history and start competitions with standings | WEB ARCH | T134 | todo |
+| T137 | Complete competition history, home briefing and navigation wayfinding | WEB ARCH | T135 T136 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -90,29 +94,11 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- Autonomous ideation ready: navigation-and-records now includes 13 independently audited management findings plus the 12 records/competition findings. Prioritise actionable training/recruitment, focused policy access and retained task/draft context, then season-first records and standings-first league. Use update-ssot WEB when implementation is requested; game rules and the local typography work remain separate.
-- T129 is on main as 3257ea2 under the owner's instruction to push first and patch any later CI failure. T130 closes the intermittent Firefox slot journey's URL/content readiness gap found in CI 38709122636; nine corrected cross-browser repeats pass. Inspect post-push CI and patch failures without another approval.
-- T128 is on main as fa69909 after every CI 38706479608 job passed. T129's finished implementation adds 72 era/stage pixel scenes, calendar-year transitions and completed-facility selection; the session delivers it through the same CI-gated main sequence. Current app captures and all three scene catalogs are in docs/night-broadcast/era-scenes.
-- T122–T127 are on main as 1d0f097 after all jobs passed in CI 38699118229: grass-green night-broadcast UI, self-hosted Monogram/Galmuri, illustration-only stadium, matched environments and 24 pixel UI icons. Earlier visual evidence remains in docs/night-broadcast.
-- doc-review WEB: spec lint has 38 existing document-quality hints; split long decision lines while preserving meaning in a separate documentation pass.
-- owner's reports 261015 fixed (T117–T121, pair k5r8): deleting the game in play stays on the slot screen, a decided event card plays the clock on, the HUD never scrolls away under warning bands, no offer reads 0, facility costs climb ×2.5 (stadium) and ×4 (training ground, academy) a step; re-measure ECON-29's 160 careers on the new facility costs with the next economy change (16 measured: 2000s matchday 25.0%, at the band's edge). On main after CI 38678748201 (every job green).
-- run p7ad (autopilot) closed 261015: the player model is on main (T106–T115: 14 attributes, sided positions with levels, roles and traits, adaptation and 조직력, per-player training, slot requests, the profile UI, earlier-rules saves, the balance measured); report reports/261015-p7ad.md, 17 inbox decisions to review.
-- follow-up (T115): difficulty levels do not separate (every level ≈60% titles near season 50; LEAGUE-13 measured) — decide a lasting level rule or new bands (update-ssot LEAGUE-13/WEB-3); ESP/FRA reference careers often stay 33–50 seasons in the amateur league (3 of 160 bankrupt there); ECON-29's wage bill 40.0% below 45–70%.
-- next: review-code over the player model (inbox suggest), then the follow-ups above.
-- the 단장 plan is done and on main (T101–T105, autopilot run q7m2, report reports/261014-q7m2.md): 방향 at /direction, the 단장 post (rules 1.22.0), the scout shortlist and the manager's requests, their screens, ECON r34; review the inbox decisions.
-- follow-up (T105): 1 of 40 reference careers went bankrupt on rules 1.22.0 (ESP 기본 방향 seed 4, 1971, after 19 amateur seasons; none on 1.21) — the same career survives with the 단장's post kept a volunteer or without the −3 trust, so decide by update-ssot whether the delegated staff hire a paid 단장 only from a division up, or whether an amateur club's money checks (ECON-33) are tighter; then re-measure the 40 careers.
-- follow-up: the wage bill is 41.4% of revenue (ECON-29 band 45–70%) after the presets filled rows — the 트레이딩 머신 careers run 25–48%; decide by update-ssot whether the band judges a selling club or the contract-talk floor rises.
-- owner's requests 261013 are on main (caa5e83, CI 38448231873 green in every browser): T080 level only, T081 no strategy locks, T082/T083 coaches set training with suggestions and orders and the academy by U-17/U-19/U-21, T084/T085 facilities as stadium steps, training ground and academy facilities.
-- wage bill / revenue sits at 44.3% on the facility parts (ECON-29 band 45–70%, 45.3% before them): base wage 925 and a 25% youth promise did not move it; try the contract-talk floor next (agent premium per level, as T079 did: 0% gave 47.7%, 1% 46.1%) and re-measure 40 careers.
-- three levers and the economy port are on main (fast-forward to 2de95c6, 261013): T070–T079 done — T077 d303c5e, T078 fe7b209/8c52745, T079 merged from work/econ-port at 11c9c5c/66ce736 (unit 658, contract 11, build pass; goldens equal work/econ-port's). CI run 38382526028 on 2de95c6 passed every job (checks, the benchmark, e2e in Chromium, Firefox and both WebKit shards); the run before it on 66ce736 failed only Firefox e2e, which passed in full locally (102 passed, 2 skipped) and on the rerun — a flake. work/levers and work/econ-port are merged and can be deleted. Next: pick from the follow-ups below.
-- benchmark (ARCH-28 p95 < 100 ms, entry ≤ 250 KiB) is flaky on CI since the three levers: run 38386097171 on main a25a5ec (a docs-only commit) failed "Verify browser performance against the production build", while the same code passed on 2de95c6 in runs 38382526028 and 38386061266. scripts/first-play.mjs clicks the new navigation (선수·스태프, 훈련·육성, 구단 운영, 리그, 컵 대회, 클럽 기록실 in 게임 메뉴); locally (host load 11–22) the entry was 239,264 B gzip, mobile p95 39–69 ms and desktop p95 118–149 ms, so the desktop gate has no headroom. Next (first): profile the desktop clicks' first render of 사람 and 훈련 (lazy management chunk) and the records room, cut the slow frame below 100 ms with margin, then let CI pass twice in a row. Rerunning the job is the stopgap.
-- economy calibration ported (T079 done on work/econ-port, merged into work/levers): the other machine's calibration from origin/alt/club-realism-local plus this line's later rules holds every ECON-29 band on 24 careers — wage bill 46.1% of revenue, operating result +3.4% before player trading, 2000s mix 43.2/33.7/23.1%, 1950s matchday 89.5%, ladder 95.5 seasons, none bankrupt, established-club crowds in band (ECON r20, CLUB r23, SAVE r24; agent premium 3%→1% was the only retune). T078 measured ENG/GER on the code before this port (wage bill 33.2%, net 21.6%, none bankrupt); the T079 table above, on the merged code, supersedes it.
-- saves past 100 seasons (owner's report 261013: a career in 2066, 116 seasons, failed to save with "저장 용량 한도에 도달했습니다"): SAVE-4 caps an encoded checkpoint at 1.5 MiB (CHECKPOINT_LIMIT, TOTAL_LIMIT 3.5 MiB in apps/web/src/adapters/repository.ts) and SAVE-13 guarantees only 100 seasons. Plan with update-ssot: keep the active save in IndexedDB (no 5 MiB localStorage ceiling) and raise the checkpoint and import caps, or compact closed seasons further; the player can export the career to a file meanwhile.
-- goalkeepers (owner's report 261013: academy GKs show 93 while outfielders show 60s): `overall` is keeping alone for a GK (world.ts) but the mean of four skills for others, a generated GK gets keeping +12, and academy growth all goes into that one skill, so GK numbers sit far above outfield ones; delegated staff never promote into a full role (ROLE_LIMIT GK 3, academy.ts), so a ready GK prospect keeps growing toward potential until release at 19 (22 when the owner decides). Check whether CLUB-25 market wages and values, which read the overall, overpay keepers; plan a common OVR scale or a GK-specific wage/value curve (update-ssot), and let delegated staff list or sell surplus ready prospects.
-- owner's standing decisions (261013): decide without asking him; record gaps that do not change the game much and move on; push verified work (branch → CI in every browser → main); never touch his local checkout or its dev server on port 19500 while he may hold unsaved progress.
-- planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
+- implement-task T134 then T135/T136 then T137 sequentially in /Users/ihaelam/project/haeram-soccer-owner-workflows, autopilot m8q4. Preserve the owner's checkout and port 19500.
+- Unrelated balance/economy/storage follow-ups and existing WEB document-quality hints remain outside this task; see prior inbox/report entries.
 
 ## log
+- 261015 create-task WEB r78: T134 task/draft continuity, T135 actionable development/recruitment, T136 season-first records/league, T137 competition/home integration; sequential, no lanes
 - 261015 update-ssot WEB r78: task-first management, contextual returns/drafts, season-first club records and standings-first competition scope; create-task next
 - 261015 T133 carried into m8q4: approved Galmuri14/Galmuri11 readability baseline; T132 remains the superseded font trial, no changes to owner checkout
 - 261015 start-vibe m8q4 autopilot start: navigation-and-records to WEB then sequential implementation; isolated workspace, owner checkout and port 19500 preserved
@@ -132,4 +118,3 @@
 - 261015 T126 done: three matched pixel paintings, 33 affected browser cases passed; T127 doing@a6rt; checkpoint/main delivery remains with this session
 - 261015 main advanced to 5d14752 after CI 38696842874 passed every job
 - 261015 T122–T125 checkpoint committed as 5d14752 and pushed to work/night-broadcast-polish-261015; CI before main
-- 261015 WEB r73: coherent painted pixel environments and solid pixel UI icons; T126 doing@a6rt, T127 next; owner authorizes incremental main pushes
