@@ -32,6 +32,7 @@ type Props = {
   w: World;
   client: GameClient;
   onClose?: () => void;
+  playerId?: string;
 };
 type Tone = 'evidence' | 'respect' | 'support' | 'demand';
 type PreparationTab = 'tactic' | 'lineup';
@@ -88,7 +89,7 @@ function Preview({
   );
 }
 
-export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose }: Props) {
+export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, playerId }: Props) {
   const acting = useGameState((state) => !!state.pendingActions);
   const readonly = useGameState((state) => state.readonly);
   const error = useGameState((state) => state.error);
@@ -122,7 +123,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose }:
     setDraft([]);
     setTactic(gameStore.getSnapshot().view?.world.tactic || 'balanced');
     setPreset('current');
-    setTab('tactic');
+    setTab(playerId ? 'lineup' : 'tactic');
     setMessage('');
     setOpen(true);
     void client.whenIdle().then(() => {
@@ -134,7 +135,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose }:
       }
       setPreparing(false);
     });
-  }, [client]);
+  }, [client, playerId]);
   useEffect(() => {
     openPreparation();
   }, [openPreparation]);
@@ -264,6 +265,12 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose }:
             </figcaption>
           </figure>
           <OpponentDossier w={w} />
+          {playerId && (
+            <p className={s.message}>
+              {w.players.find((person) => person.id === playerId)?.name}의 다음 경기 준비를
+              확인해요. 선발을 직접 저장하기 전까지 감독의 현재 선택을 유지해요.
+            </p>
+          )}
           <div className={s.tabs} role="tablist" aria-label="경기 준비 선택">
             {(
               [

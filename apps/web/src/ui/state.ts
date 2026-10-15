@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import type { BoardRequest } from './board';
 import type { AreaKey } from './areas';
 import type {
+  StaffRole,
   TrainingCoach,
   TrainingFocus,
   YouthFocus,
@@ -31,7 +32,7 @@ export const PEOPLE_TABS = [
   ['players', '선수'],
   ['market', '이적시장'],
   ['manager', '감독'],
-  ['coaches', '코치진'],
+  ['coaches', '스태프'],
 ] as const;
 export type PeopleTab = (typeof PEOPLE_TABS)[number][0];
 /** A 사람 tab, or `candidates`: 감독 with the manager market open (→WEB-43, WEB-57). */
@@ -193,6 +194,7 @@ export function openCoachSheet(
   focus?: TrainingFocus | YouthFocus,
   player?: string,
 ) {
+  beginTaskDetour('training');
   useCoachRequest.getState().open({ coach, focus, player });
   openTraining(coach === 'youth' ? 'academy' : 'training');
 }
@@ -395,4 +397,29 @@ export function returnToTask() {
   if (route.page === 'business')
     useBusinessView.getState().open((route.view as BusinessView) ?? 'strategy');
   useNavigation.setState({ page: task.page });
+}
+
+/** A specific responsible staff post, opened from its operational work. */
+export const useStaffRequest = oneShot<StaffRole>();
+export function openStaff(role: StaffRole) {
+  beginTaskDetour('people');
+  useStaffRequest.getState().open(role);
+  openPeople('coaches');
+}
+/** Player preparation opens the existing sheet without assigning a lineup. */
+export const usePlayerPreparation = create<{
+  world?: string;
+  id?: string;
+  open: (id: string) => void;
+  close: () => void;
+}>((set) => ({
+  open: (id) => set({ id, world: useTaskMemory.getState().world }),
+  close: () => set({ id: undefined, world: undefined }),
+}));
+
+export const useFacilityRequest = oneShot<'stadium' | 'training' | 'academy'>();
+export function openFacility(part: 'stadium' | 'training' | 'academy') {
+  beginTaskDetour('business');
+  useFacilityRequest.getState().open(part);
+  openBusiness('build');
 }

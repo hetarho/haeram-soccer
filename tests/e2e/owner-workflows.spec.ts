@@ -107,3 +107,71 @@ test('a different game never inherits the first career policy draft', async ({ p
   await expect(page.getByTestId('area-summary-youth')).toContainText('기본 운영');
   await expect(page.getByRole('button', { name: /^← 돌아가기/ })).toHaveCount(0);
 });
+
+test('training exposes the team action first and opens its named responsible coach', async ({
+  page,
+}) => {
+  await found(page);
+  await nav(page).getByRole('button', { name: '훈련·육성', exact: true }).click();
+  const focus = page.getByRole('region', { name: '훈련 방향', exact: true });
+  const action = focus.getByRole('button', { name: /^수석코치에게 훈련 제안·강행/ });
+  await expect(action).toBeInViewport();
+  await expect(page.getByRole('list', { name: '훈련 방향별 효과' })).toHaveCount(0);
+  await focus.getByRole('button', { name: / · 보기$/ }).click();
+  const staff = page.getByRole('dialog', { name: '수석코치 선임', exact: true });
+  await expect(staff).toBeVisible();
+  await staff.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await page.getByRole('button', { name: '← 돌아가기 · 1군 훈련', exact: true }).click();
+  await expect(page.getByTestId('training-focus')).toBeVisible();
+});
+
+test('a player profile leads to that player training and keeps the squad search', async ({
+  page,
+}) => {
+  await found(page);
+  await nav(page).getByRole('button', { name: '선수·스태프', exact: true }).click();
+  const playerLink = page
+    .locator('[class*="rosterCards"] article')
+    .first()
+    .getByRole('button', { name: / 선수 기록$/ });
+  const name = (await playerLink.getAttribute('aria-label'))!.replace(/ 선수 기록$/, '');
+  await page.getByRole('textbox', { name: '선수 찾기' }).fill(name);
+  await playerLink.click();
+  await page
+    .getByRole('dialog', { name, exact: true })
+    .getByRole('button', { name: '이 선수 훈련 변경', exact: true })
+    .click();
+  const sheet = page.getByRole('dialog', { name: `${name} 개별 훈련`, exact: true });
+  await expect(sheet).toBeVisible();
+  await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await page.getByRole('button', { name: '← 돌아가기 · 선수', exact: true }).click();
+  await expect(page.getByRole('textbox', { name: '선수 찾기' })).toHaveValue(name);
+});
+
+test('recruitment needs precede the candidate catalogue and academy operations open their exact work', async ({
+  page,
+}) => {
+  await found(page);
+  await nav(page).getByRole('button', { name: '선수·스태프', exact: true }).click();
+  await page.getByRole('tab', { name: '이적시장', exact: true }).click();
+  const needs = page.getByRole('region', { name: '감독 영입 요청', exact: true });
+  const candidate = page
+    .getByRole('region', { name: '선수 영입 데스크' })
+    .getByRole('article')
+    .first();
+  await settle(page);
+  expect((await needs.boundingBox())!.y).toBeLessThan((await candidate.boundingBox())!.y);
+  await nav(page).getByRole('button', { name: '훈련·육성', exact: true }).click();
+  await page.getByRole('tab', { name: '유소년', exact: true }).click();
+  await page.getByRole('button', { name: /유소년 시설 .*공사 보기/ }).click();
+  await expect(page.getByTestId('facility-academy')).toBeVisible();
+  await expect(page.getByRole('tab', { name: '증축', exact: true })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await page.getByRole('button', { name: '← 돌아가기 · 유소년', exact: true }).click();
+  await expect(page.getByRole('tab', { name: '유소년', exact: true })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+});

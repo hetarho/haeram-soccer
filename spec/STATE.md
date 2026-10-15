@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| m8q4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-15T14:20Z | 2026-10-15T14:34Z | T135 |
+| m8q4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-15T14:20Z | 2026-10-15T14:44Z | - |
 
 ## inbox
 - 261015 decided WEB-74: start-vibe m8q4 scope → implement navigation-and-records with current game rules and the approved pixel readability baseline in an isolated checkout (alt: analysis only | revise game mechanics)
@@ -82,7 +82,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T135 | Make recruitment, training and academy decisions discoverable | WEB ARCH | T134 | doing@261015.m8q4 |
+| T138 | Observe automatic match progress without an exact transient round | WEB ARCH | - | todo |
 | T136 | Join club season history and start competitions with standings | WEB ARCH | T134 | todo |
 | T137 | Complete competition history, home briefing and navigation wayfinding | WEB ARCH | T135 T136 | todo |
 
@@ -93,10 +93,12 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- implement-task T135 then T136 then T137 sequentially in /Users/ihaelam/project/haeram-soccer-owner-workflows, autopilot m8q4. Preserve the owner's checkout and port 19500.
+- implement-task T138 then T136 then T137 sequentially in /Users/ihaelam/project/haeram-soccer-owner-workflows, autopilot m8q4. Preserve the owner's checkout and port 19500.
 - Unrelated balance/economy/storage follow-ups and existing WEB document-quality hints remain outside this task; see prior inbox/report entries.
 
 ## log
+- 261015 T135 done: actionable training/player/academy/staff workflows and request-first recruitment; 69 browser cases and static/build/spec checks pass, actual phone captures inspected
+- 261015 create-task T138: CI 38751332516 Firefox observed x10 at round 6 after missing transient round 1; fix test observation after T135, no game-rule change
 - 261015 T135 doing@m8q4: actionable training, player context, recruitment needs and academy/staff handoffs
 - 261015 T134 done: contextual returns, retained task/draft state and department-first policy context; 36 browser cases and static/build checks pass, branch CI before main
 - 261015 T134 doing@m8q4: session task state and focused policy returns; verified source is promoted to main after branch CI
@@ -115,5 +117,3 @@
 - 261015 create-task WEB r74: T128 subdued image presentation, T129 three-era/all-stage pixel scene library; T128 doing@e8ar
 - 261015 WEB r74: dimmed pixel backgrounds selected by three eras, nine stadium/locker stages and six training levels
 - 261015 update-ssot WEB start: era- and facility-stage-specific pixel backgrounds with restrained dimming
-- 261015 T127 done: 24 original pixel UI icons, 45 affected browser cases passed, 22 visual captures, entry 249635 B gzip; session CI-gated main delivery
-- 261015 main advanced to 737742e after all jobs passed in CI 38698103429

@@ -3349,3 +3349,14 @@
   text-align: left;
   border-bottom: 1px solid var(--line);
 }
+
+.playerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.playerActions button {
+  min-height: 44px;
+  color: var(--accent-text);
+}

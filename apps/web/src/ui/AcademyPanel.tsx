@@ -1,3 +1,5 @@
+import { useTaskState } from './taskMemory';
+import { PlayerLink } from './PlayerSheet';
 import type { World } from '../../../../packages/contracts/src/types';
 import {
   academySummary,
@@ -14,7 +16,13 @@ import { DecisionOwner } from './DecisionOwner';
 import { DirectionLines } from './DirectionLines';
 import { directionOption } from '../../../../packages/engine/src/direction';
 import { OvrBadge } from './OvrBadge';
-import { openDirection, openCoachSheet } from './state';
+import {
+  openDirection,
+  openCoachSheet,
+  openStaff,
+  openFacility,
+  usePlayerPreparation,
+} from './state';
 import { callLine } from './TrainingOrderSheet';
 import s from './TrainingView.module.css';
 
@@ -38,6 +46,12 @@ function Meter({ value }: { value: number }) {
  */
 export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
   const acting = useActing();
+  const [promoted, setPromoted] = useTaskState<string | undefined>(
+    w.id,
+    'academy-promoted',
+    undefined,
+  );
+  const arrived = w.players.find((person) => person.id === promoted && person.status === 'active');
   const summary = academySummary(w);
   const today = currentDay(w);
   const director = w.staff?.find((member) => member.role === 'youth');
@@ -49,6 +63,26 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
     POLICY_INFO.academy.levels[(policyOf(w).academy ?? POLICY_DEFAULTS.academy) - 1].name;
   return (
     <div className={s.stack}>
+      {arrived && (
+        <section className={s.card} aria-label="승격한 선수 관리">
+          <h3>1군에 합류했어요</h3>
+          <PlayerLink id={arrived.id} name={arrived.name} />
+          <div className={s.filters}>
+            <button
+              type="button"
+              onClick={() => openCoachSheet('assistant', undefined, arrived.id)}
+            >
+              이 선수 훈련 보기
+            </button>
+            <button type="button" onClick={() => usePlayerPreparation.getState().open(arrived.id)}>
+              다음 경기 선발·전술 준비
+            </button>
+          </div>
+          <p className={s.timing}>
+            감독이 능력과 피로를 보고 선발해요. 직접 선발을 정하는 것은 선택이에요.
+          </p>
+        </section>
+      )}
       <section className={s.card} aria-label="유소년 아카데미">
         <header className={s.head}>
           <h3>유소년 아카데미</h3>
@@ -99,7 +133,13 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
                               ? `첫 프로 계약은 ${summary.promotionAge}세부터`
                               : undefined
                           }
-                          onClick={() => void client.command({ type: 'promote-youth', id: p.id })}
+                          onClick={() => {
+                            void client
+                              .command({ type: 'promote-youth', id: p.id })
+                              .then((reply) => {
+                                if (reply?.ok) setPromoted(p.id);
+                              });
+                          }}
                         >
                           1군 승격
                         </button>
@@ -122,6 +162,36 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
           <p className={s.note}>아직 아카데미 선수가 없어요. 매년 3월 15일에 유소년이 입단해요.</p>
         )}
         {summary.room === 0 && <p className={s.note}>1군이 26명으로 가득 차 승격할 수 없어요.</p>}
+      </section>
+      <YouthTraining w={w} />
+      <section className={s.card} aria-label="유소년 운영">
+        <header className={s.head}>
+          <h3>아카데미 운영</h3>
+        </header>
+        <button type="button" className={s.homeLine} onClick={() => openDirection('youth')}>
+          <span>
+            <b>유소년 투자 · 유입 방식은 방향에서</b>
+            <small>
+              지금 {investment} · {cardOf(buildOf(w), 'youth').label} · 반복 운영비와 다음 입단에
+              반영
+            </small>
+          </span>
+          <span aria-hidden="true">›</span>
+        </button>
+        <button type="button" className={s.homeLine} onClick={() => openStaff('youth')}>
+          <span>
+            <b>유스 디렉터 {director?.name ?? '공석'}</b>
+            <small>담당자의 효과와 계약 · 선임·교체</small>
+          </span>
+          <span aria-hidden="true">›</span>
+        </button>
+        <button type="button" className={s.homeLine} onClick={() => openFacility('academy')}>
+          <span>
+            <b>유소년 시설 {w.academyFacility}단계 · 공사 보기</b>
+            <small>투자 운영비와 별도로 공사비를 내고 완공 후 효과를 받아요</small>
+          </span>
+          <span aria-hidden="true">›</span>
+        </button>
       </section>
       <section className={s.card} aria-label="유소년 위임">
         <header className={s.head}>
@@ -161,18 +231,6 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
           </ul>
         </div>
       </section>
-      <YouthTraining w={w} />
-      <button type="button" className={s.homeLine} onClick={() => openDirection('youth')}>
-        <span>
-          <b>유소년 투자 · 유입 방식은 방향에서</b>
-          <small>
-            유소년 투자 {investment} · 유입 방식 {cardOf(buildOf(w), 'youth').label}
-          </small>
-        </span>
-        <span className={s.chevron} aria-hidden="true">
-          ›
-        </span>
-      </button>
     </div>
   );
 }
@@ -194,27 +252,11 @@ function YouthTraining({ w }: { w: World }) {
         </span>
       </header>
       <p className={s.advice}>{call.reason}</p>
-      <ul className={s.focuses} aria-label="유소년 훈련 방향별 효과">
-        {(Object.keys(YOUTH_FOCUS_INFO) as (keyof typeof YOUTH_FOCUS_INFO)[]).map((id) => {
-          const info = YOUTH_FOCUS_INFO[id];
-          return (
-            <li key={id} aria-current={focus === id || undefined}>
-              <b>{info.label}</b>
-              <span>
-                <small>
-                  U-17 ×{info.growth.u17} · U-19 ×{info.growth.u19}
-                </small>
-                <small>U-21 ×{info.growth.u21}</small>
-              </span>
-            </li>
-          );
-        })}
-      </ul>
-      <p className={s.note}>
-        유스 디렉터는 U-19·U-21 유망주가 1군 수준까지 OVR 5 안쪽이면 1군 준비, U-17이 위 연령대보다
-        많으면 기본기 집중, 그 밖에는 균형으로 훈련해요.
-      </p>
-      <button type="button" className={s.homeLine} onClick={() => openCoachSheet('youth')}>
+      <button
+        type="button"
+        className={`${s.homeLine} ${s.primary}`}
+        onClick={() => openCoachSheet('youth')}
+      >
         <span>
           <b>유스 디렉터에게 훈련 제안·강행</b>
           <small>받아들이면 4라운드 · 강행하면 사임 위험이 있어요</small>
@@ -223,6 +265,32 @@ function YouthTraining({ w }: { w: World }) {
           ›
         </span>
       </button>
+      <p className={s.timing}>
+        다음 라운드 정산부터 반영해요. 입단 예정일과 유입 방침은 아카데미 운영에서 확인하세요.
+      </p>
+      <details className={s.reference}>
+        <summary>유소년 훈련 효과·판단 기준</summary>
+        <ul className={s.focuses} aria-label="유소년 훈련 방향별 효과">
+          {(Object.keys(YOUTH_FOCUS_INFO) as (keyof typeof YOUTH_FOCUS_INFO)[]).map((id) => {
+            const info = YOUTH_FOCUS_INFO[id];
+            return (
+              <li key={id} aria-current={focus === id || undefined}>
+                <b>{info.label}</b>
+                <span>
+                  <small>
+                    U-17 ×{info.growth.u17} · U-19 ×{info.growth.u19}
+                  </small>
+                  <small>U-21 ×{info.growth.u21}</small>
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+        <p className={s.note}>
+          유스 디렉터는 U-19·U-21 유망주가 1군 수준까지 OVR 5 안쪽이면 1군 준비, U-17이 위
+          연령대보다 많으면 기본기 집중, 그 밖에는 균형으로 훈련해요.
+        </p>
+      </details>
     </section>
   );
 }

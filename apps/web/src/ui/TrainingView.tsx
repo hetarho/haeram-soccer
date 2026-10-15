@@ -1,3 +1,4 @@
+import { useTaskState } from './taskMemory';
 import { useEffect, useState } from 'react';
 import { FacilityArt } from './FacilityArt';
 import type {
@@ -24,7 +25,7 @@ import { playerSuggestionWait } from '../../../../packages/engine/src/coach-trai
 import { settleRate } from '../../../../packages/engine/src/adaptation';
 import { TRAINING_INJURY } from '../../../../packages/engine/src/careers';
 import { HARD_STREAK } from '../../../../packages/engine/src/morale';
-import { activePlayers, ownMultiplier } from '../../../../packages/engine/src/world';
+import { activePlayers, ownMultiplier, overall } from '../../../../packages/engine/src/world';
 import {
   ADAPTATION_NEUTRAL,
   MATCH_GAIN,
@@ -32,11 +33,11 @@ import {
 } from '../../../../packages/engine/src/player';
 import type { ClientState, GameClient } from '../runtime/client';
 import { AcademyPanel } from './AcademyPanel';
-import { OvrBadge } from './OvrBadge';
 import { PageTabs, TabPanel } from './PageTabs';
 import { PlayerLink } from './PlayerSheet';
 import {
   openHome,
+  openStaff,
   openDirection,
   routeOf,
   TRAINING_TABS,
@@ -118,8 +119,8 @@ export function TrainingView({ state, client }: Props) {
           <div className={a.eyebrow}>TRAINING</div>
           <h2>훈련·육성</h2>
           <p>
-            선수들이 어떻게 자라고 있는지 봐요. 훈련 방향은 코치들이 정하고, 구단주는 코치진에서
-            제안하거나 강행할 수 있어요.
+            코치가 정한 훈련과 선수의 성장 상태를 확인해요. 이 화면에서 팀이나 선수의 훈련 변경을
+            제안할 수 있어요.
           </p>
         </div>
       </div>
@@ -132,7 +133,8 @@ export function TrainingView({ state, client }: Props) {
       />
       <TabPanel idPrefix="training" value={tab}>
         {tab === 'training' ? (
-          <div className={`${s.stack} ${s.pair}`}>
+          <div className={s.stack}>
+            <TrainingFocusPanel w={w} outlook={outlook} onSheet={setSheet} />
             <figure className={`${s.trainingScene} ${s.wide}`}>
               <FacilityArt kind="training" world={w} className={s.trainingArt} />
               <figcaption>
@@ -143,11 +145,8 @@ export function TrainingView({ state, client }: Props) {
                 <small>지금 {focusName(outlook.focus.focus)}</small>
               </figcaption>
             </figure>
-            <TrainingFocusPanel w={w} outlook={outlook} onSheet={setSheet} />
             <PlayerTraining w={w} onSheet={setSheet} />
-            <AdaptationPanel w={w} />
             <DevelopmentDrivers outlook={outlook} />
-            <GrowingPlayers outlook={outlook} />
           </div>
         ) : (
           <AcademyPanel w={w} client={client} />
@@ -198,57 +197,17 @@ function TrainingFocusPanel({
       <p className={s.advice} data-testid="training-advice">
         {call.reason}
       </p>
-      <ul className={s.focuses} aria-label="훈련 방향별 효과">
-        {FOCUSES.map(([id, label]) => {
-          const effect = focusEffect(id, focus.recoveryBonus);
-          return (
-            <li key={id} aria-current={focus.focus === id || undefined}>
-              <b>{label}</b>
-              <span>
-                <small>{effect.recovery}</small>
-                <small>{effect.growth}</small>
-                <small>{adaptationGain(id)}</small>
-                {id === 'hard' && (
-                  <small className={s.cost}>
-                    {injuryChance} · {HARD_STREAK.from}라운드 연속부터 분위기 −{HARD_STREAK.cost}
-                  </small>
-                )}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
-      <p className={s.note}>
-        라운드마다 한 번 적용돼요. 성장 배수는 27세 미만에게만 붙고, 훈련만으로는 적응도가{' '}
-        {ADAPTATION_NEUTRAL.toFixed(2)}까지만 올라요.
-        {focus.recoveryBonus !== 0 &&
-          ` 피로 회복에는 선수단 투자와 피지컬 코치의 ${focus.recoveryBonus > 0 ? '+' : ''}${focus.recoveryBonus}이 들어 있어요.`}
+      <p className={s.actor}>
+        담당 수석코치{' '}
+        <button type="button" onClick={() => openStaff('assistant')}>
+          {w.staff?.find((person) => person.role === 'assistant')?.name ?? '공석'} · 보기
+        </button>
       </p>
-      <div className={s.delegate}>
-        <p>수석코치는 라운드마다 이 기준으로 골라요.</p>
-        <ul className={s.rule}>
-          <li>
-            <b>회복</b>
-            <span>선발 평균 피로 {AUTO_RECOVERY_FATIGUE} 이상</span>
-          </li>
-          <li>
-            <b>하드 트레이닝</b>
-            <span>
-              선발 평균 피로 {AUTO_HARD_FATIGUE} 미만 · 분위기 {AUTO_HARD_MORALE} 이상 · 육성형
-              수석코치, 또는 21세 이하 선발 3명 이상
-            </span>
-          </li>
-          <li>
-            <b>균형</b>
-            <span>그 밖에</span>
-          </li>
-          <li>
-            <b>개별 회복</b>
-            <span>피로 {AUTO_PLAYER_RECOVERY} 이상인 선수는 팀과 따로 회복</span>
-          </li>
-        </ul>
-      </div>
-      <button type="button" className={s.homeLine} onClick={() => onSheet({ coach: 'assistant' })}>
+      <button
+        type="button"
+        className={`${s.homeLine} ${s.primary}`}
+        onClick={() => onSheet({ coach: 'assistant' })}
+      >
         <span>
           <b>수석코치에게 훈련 제안·강행</b>
           <small>받아들이면 4라운드 · 강행하면 사임 위험이 있어요</small>
@@ -257,6 +216,62 @@ function TrainingFocusPanel({
           ›
         </span>
       </button>
+      <p className={s.timing}>
+        변경을 받아들이면 다음 라운드 정산부터 반영해요. 지금 능력이나 피로가 즉시 바뀌지는 않아요.
+      </p>
+      <details className={s.reference}>
+        <summary>훈련 효과·자동 판단 기준</summary>
+        <ul className={s.focuses} aria-label="훈련 방향별 효과">
+          {FOCUSES.map(([id, label]) => {
+            const effect = focusEffect(id, focus.recoveryBonus);
+            return (
+              <li key={id} aria-current={focus.focus === id || undefined}>
+                <b>{label}</b>
+                <span>
+                  <small>{effect.recovery}</small>
+                  <small>{effect.growth}</small>
+                  <small>{adaptationGain(id)}</small>
+                  {id === 'hard' && (
+                    <small className={s.cost}>
+                      {injuryChance} · {HARD_STREAK.from}라운드 연속부터 분위기 −{HARD_STREAK.cost}
+                    </small>
+                  )}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+        <p className={s.note}>
+          라운드마다 한 번 적용돼요. 성장 배수는 27세 미만에게만 붙고, 훈련만으로는 적응도가{' '}
+          {ADAPTATION_NEUTRAL.toFixed(2)}까지만 올라요.
+          {focus.recoveryBonus !== 0 &&
+            ` 피로 회복에는 선수단 투자와 피지컬 코치의 ${focus.recoveryBonus > 0 ? '+' : ''}${focus.recoveryBonus}이 들어 있어요.`}
+        </p>
+        <div className={s.delegate}>
+          <p>수석코치는 라운드마다 이 기준으로 골라요.</p>
+          <ul className={s.rule}>
+            <li>
+              <b>회복</b>
+              <span>선발 평균 피로 {AUTO_RECOVERY_FATIGUE} 이상</span>
+            </li>
+            <li>
+              <b>하드 트레이닝</b>
+              <span>
+                선발 평균 피로 {AUTO_HARD_FATIGUE} 미만 · 분위기 {AUTO_HARD_MORALE} 이상 · 육성형
+                수석코치, 또는 21세 이하 선발 3명 이상
+              </span>
+            </li>
+            <li>
+              <b>균형</b>
+              <span>그 밖에</span>
+            </li>
+            <li>
+              <b>개별 회복</b>
+              <span>피로 {AUTO_PLAYER_RECOVERY} 이상인 선수는 팀과 따로 회복</span>
+            </li>
+          </ul>
+        </div>
+      </details>
     </section>
   );
 }
@@ -266,32 +281,61 @@ function TrainingFocusPanel({
  * first-team player with his focus this round and the sheet to suggest or force one for him.
  */
 function PlayerTraining({ w, onSheet }: { w: World; onSheet: (sheet: Sheet) => void }) {
-  // The squad's focus is read once: each row only adds his own order or rule to it.
+  const [filter, setFilter] = useTaskState<'all' | 'attention' | 'growth'>(
+    w.id,
+    'development-filter',
+    'all',
+  );
   const squadFocus = activeTrainingFocus(w);
-  const squad = [...activePlayers(w)]
-    .sort((a, b) => b.fatigue - a.fatigue)
-    .map((player) => ({ player, call: playerCallLine(w, player, squadFocus) }));
-  const own = squad.filter(({ call }) => call.by !== '팀 훈련').length;
+  const all = [...activePlayers(w)].sort(
+    (a, b) => b.fatigue - a.fatigue || a.adaptation - b.adaptation,
+  );
+  const squad = all.filter((player) =>
+    filter === 'attention'
+      ? player.fatigue >= AUTO_PLAYER_RECOVERY ||
+        player.adaptation < ADAPTATION_NEUTRAL ||
+        player.unsettled !== undefined
+      : filter === 'growth'
+        ? w.year - player.born < 27 && player.potential > overall(player)
+        : true,
+  );
+  const own = all.filter((player) => playerCallLine(w, player, squadFocus).by !== '팀 훈련').length;
   return (
-    <section className={s.card} aria-label="개별 훈련">
+    <section className={`${s.card} ${s.wide}`} aria-label="개별 훈련">
       <header className={s.head}>
-        <h3>개별 훈련</h3>
+        <h3>선수별 육성</h3>
         <span data-testid="own-focus-count">따로 훈련 {own}명</span>
       </header>
-      <p className={s.note}>
-        선수마다 팀과 다른 훈련을 제안하거나 강행할 수 있어요. 제안은 선수마다 2라운드에 한 번이고,
-        강행은 수석코치의 사임 위험을 올려요.
+      <div className={s.filters} role="group" aria-label="선수 육성 보기">
+        {(
+          [
+            ['all', '전체'],
+            ['attention', '관리 필요'],
+            ['growth', '성장 중'],
+          ] as const
+        ).map(([id, label]) => (
+          <button type="button" key={id} aria-pressed={filter === id} onClick={() => setFilter(id)}>
+            {label}
+          </button>
+        ))}
+      </div>
+      <p className={s.timing}>
+        한 선수의 훈련·피로·적응·성장을 함께 봐요. 개별 훈련은 팀과 다른 강도로 훈련하는 선택이에요.
       </p>
-      <ul className={s.players}>
-        {squad.map(({ player, call }) => {
-          const wait = playerSuggestionWait(w, player.id),
-            own = call.by !== '팀 훈련';
+      <ul className={s.players} data-testid="adaptation-list">
+        {squad.map((player) => {
+          const call = playerCallLine(w, player, squadFocus),
+            wait = playerSuggestionWait(w, player.id);
           return (
-            <li key={player.id} data-own={own || undefined}>
+            <li key={player.id} data-own={call.by !== '팀 훈련' || undefined}>
               <span className={s.playerName}>
                 <PlayerLink id={player.id} name={player.name} />
                 <small>
-                  {player.position} · 피로 {Math.round(player.fatigue)}
+                  {player.position} · {w.year - player.born}세 · 피로 {Math.round(player.fatigue)}
+                </small>
+                <small>
+                  OVR {overall(player)} · POT {Math.round(player.potential)} · 성장 +
+                  {(player.developed || 0).toFixed(2)}
                 </small>
               </span>
               <span className={s.playerFocus} data-testid={`player-focus-${player.id}`}>
@@ -300,6 +344,13 @@ function PlayerTraining({ w, onSheet }: { w: World; onSheet: (sheet: Sheet) => v
                   {call.by}
                   {call.rounds ? ` · ${call.rounds}라운드 남음` : ''}
                   {wait > 0 ? ` · 제안 ${wait}라운드 뒤` : ''}
+                </small>
+                <small>
+                  적응 {player.adaptation.toFixed(2)} · {multiplierLabel(ownMultiplier(player))}
+                </small>
+                <small>
+                  적응 속도 ×{Number(settleRate(w, player).toFixed(2))}
+                  {player.unsettled !== undefined && ' · 적응 실패'}
                 </small>
               </span>
               <button
@@ -313,46 +364,26 @@ function PlayerTraining({ w, onSheet }: { w: World; onSheet: (sheet: Sheet) => v
           );
         })}
       </ul>
-    </section>
-  );
-}
-
-/**
- * 적응 (→PLAYER-10, PLAYER-12, PLAYER-14): every first-team player's adaptation, the multiplier it
- * puts on his ability, an 적응 실패 flag, and how fast he settles under this manager.
- */
-function AdaptationPanel({ w }: { w: World }) {
-  const squad = [...activePlayers(w)].sort((a, b) => a.adaptation - b.adaptation);
-  return (
-    <section className={s.card} aria-label="적응">
-      <header className={s.head}>
-        <h3>적응</h3>
-        <span>낮은 순</span>
-      </header>
-      <p className={s.note}>
-        적응도 {ADAPTATION_NEUTRAL.toFixed(2)}에서 능력 그대로 뛰고, 높으면 조금 더, 낮으면 크게 덜
-        뛰어요. 선발 출전이 가장 크게 올려요(경기당 +{MATCH_GAIN.start.toFixed(3)} × 그 자리 숙련도:
-        최상 1 · 준수 0.8 · 어색 0.5 · 미숙 0.2). 훈련은 라운드마다 +
-        {TRAINING_GAIN.recovery.toFixed(3)}–{TRAINING_GAIN.hard.toFixed(3)}. 적응 속도는 선수의
-        적응력과 감독 학파가 좋아하는 유형인지에 따라 달라요.
-      </p>
-      <ul className={s.players} data-testid="adaptation-list">
-        {squad.map((player) => (
-          <li key={player.id}>
-            <span className={s.playerName}>
-              <PlayerLink id={player.id} name={player.name} />
-              <small>{player.position}</small>
-            </span>
-            <span className={s.playerFocus}>
-              <b>
-                {player.adaptation.toFixed(2)} · {multiplierLabel(ownMultiplier(player))}
-              </b>
-              <small>적응 속도 ×{Number(settleRate(w, player).toFixed(2))}</small>
-            </span>
-            {player.unsettled !== undefined && <em className={s.flag}>적응 실패</em>}
-          </li>
-        ))}
-      </ul>
+      {!squad.length && (
+        <p className={s.note}>
+          {filter === 'attention'
+            ? '지금은 피로·적응 문제로 따로 관리할 선수가 없어요. 코치가 현재 훈련을 맡고 있어요.'
+            : '이 조건에 맞는 선수가 없어요.'}
+        </p>
+      )}
+      <details className={s.reference}>
+        <summary>개별 훈련·적응·성장 설명</summary>
+        <p className={s.note}>
+          제안은 선수마다 2라운드에 한 번이고, 강행은 수석코치의 사임 위험을 올려요. 받아들인 변경은
+          4라운드 동안 적용해요.
+        </p>
+        <p className={s.note}>
+          적응도 {ADAPTATION_NEUTRAL.toFixed(2)}에서 능력 그대로 뛰어요. 선발 출전은 경기당 +
+          {MATCH_GAIN.start.toFixed(3)} × 그 자리 숙련도, 훈련은 라운드마다 +
+          {TRAINING_GAIN.recovery.toFixed(3)}–{TRAINING_GAIN.hard.toFixed(3)}예요. 적응력과 감독
+          학파에 따라 달라져요. 성장 값은 이 선수가 쌓은 성장이고 최근 한 경기의 변화가 아니에요.
+        </p>
+      </details>
     </section>
   );
 }
@@ -368,7 +399,7 @@ const homeName: Record<DevelopmentHome, string> = {
   'training/training': '훈련 방향',
   'business/strategy': '방향',
   'people/manager': '감독',
-  'people/coaches': '코치진',
+  'people/coaches': '스태프',
   'business/facility': '증축',
 };
 const toneOf = (value: number) => (value > 1 ? 'up' : value < 1 ? 'down' : 'flat');
@@ -425,76 +456,46 @@ function DevelopmentDrivers({ outlook: { factors, skills } }: { outlook: Outlook
         <b>{times(total(true))}</b>
         <small>21세 이하 · 22–26세 {times(total(false))}</small>
       </p>
-      <p className={s.note}>
-        27세 미만 선수는 라운드마다 잠재력까지 남은 차이에 이 배수를 모두 곱한 만큼 자라요. 어릴수록
-        더 빨리 자라요. 아래 항목을 누르면 정하는 곳으로 가요.
-      </p>
-      <ul className={s.drivers}>
-        {rows.map((row) => {
-          const shown = shownTerms(row.terms);
-          return (
-            <li key={row.label}>
-              <button
-                type="button"
-                aria-label={`${row.label} ${shown.map(termText).join(' · ')} · ${homeName[row.home]}에서 보기`}
-                onClick={() => openDriver(row.home, row.label)}
-              >
-                <span className={s.driverText}>
-                  <b>{row.label}</b>
-                  <small>
-                    {row.detail}
-                    {row.home === 'people/coaches' &&
-                      ` · ${coaching.length ? coaching.join(' · ') : '담당 능력 성장 ×1'}`}
-                  </small>
-                </span>
-                <span className={s.driverValues}>
-                  {shown.map((term) => (
-                    <span key={term.key} data-tone={toneOf(term.value)}>
-                      {termText(term)}
-                    </span>
-                  ))}
-                </span>
-                <span className={s.chevron} aria-hidden="true">
-                  ›
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
-  );
-}
-
-/** Players aged 23 or under with room left, largest gap first, with the growth they earned. */
-function GrowingPlayers({ outlook: { growing } }: { outlook: Outlook }) {
-  return (
-    <section className={`${s.card} ${s.wide}`} aria-label="성장 중인 선수">
-      <header className={s.head}>
-        <h3>성장 중인 선수</h3>
-        <span>23세 이하 · {growing.length}명</span>
-      </header>
-      {growing.length ? (
-        <ol className={s.growing}>
-          {growing.map(({ player, age, ability, potential, gap, developed }) => (
-            <li key={player.id}>
-              <OvrBadge value={ability} role={player.position} potential={potential} />
-              <span className={s.growingName}>
-                <PlayerLink id={player.id} name={player.name} />
-                <small>
-                  {age}세 · 잠재력까지 {gap}
-                </small>
-              </span>
-              <span className={s.earned}>
-                <b>+{developed.toFixed(2)}</b>
-                <small>쌓은 성장</small>
-              </span>
-            </li>
-          ))}
-        </ol>
-      ) : (
-        <p className={s.note}>23세 이하에 더 자랄 여지가 있는 선수가 없어요.</p>
-      )}
+      <details className={s.reference}>
+        <summary>성장 요인·투자·스태프 자세히</summary>
+        <p className={s.note}>
+          27세 미만 선수는 라운드마다 잠재력까지 남은 차이에 이 배수를 모두 곱한 만큼 자라요.
+          어릴수록 더 빨리 자라요. 아래 항목을 누르면 정하는 곳으로 가요.
+        </p>
+        <ul className={s.drivers}>
+          {rows.map((row) => {
+            const shown = shownTerms(row.terms);
+            return (
+              <li key={row.label}>
+                <button
+                  type="button"
+                  aria-label={`${row.label} ${shown.map(termText).join(' · ')} · ${homeName[row.home]}에서 보기`}
+                  onClick={() => openDriver(row.home, row.label)}
+                >
+                  <span className={s.driverText}>
+                    <b>{row.label}</b>
+                    <small>
+                      {row.detail}
+                      {row.home === 'people/coaches' &&
+                        ` · ${coaching.length ? coaching.join(' · ') : '담당 능력 성장 ×1'}`}
+                    </small>
+                  </span>
+                  <span className={s.driverValues}>
+                    {shown.map((term) => (
+                      <span key={term.key} data-tone={toneOf(term.value)}>
+                        {termText(term)}
+                      </span>
+                    ))}
+                  </span>
+                  <span className={s.chevron} aria-hidden="true">
+                    ›
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </details>
     </section>
   );
 }

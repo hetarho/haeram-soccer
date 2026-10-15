@@ -1,3 +1,4 @@
+import { PlayerLink } from './PlayerSheet';
 import { useTaskState } from './taskMemory';
 import { Select } from './Select';
 import { useState } from 'react';
@@ -28,8 +29,8 @@ import { compactMoney } from './format';
 import { Money } from './Money';
 import { OvrBadge } from './OvrBadge';
 import { OfferAnswers } from './ClubStaff';
-import { ScoutShortlist } from './ScoutShortlist';
-import { openDirection } from './state';
+import { RecruitmentNeeds, ScoutShortlist } from './ScoutShortlist';
+import { openCoachSheet, openDirection } from './state';
 import { policyOf, POLICY_INFO } from '../../../../packages/engine/src/policy';
 import s from './RecruitmentDesk.module.css';
 
@@ -243,6 +244,14 @@ function CandidateCard({
           </div>
         </div>
       )}
+      {w.players.some((person) => person.id === player.id && person.status === 'active') && (
+        <div className={s.transactions} aria-label="합류한 선수 관리">
+          <PlayerLink id={player.id} name={player.name} />
+          <button type="button" onClick={() => openCoachSheet('assistant', undefined, player.id)}>
+            합류 선수 훈련 보기
+          </button>
+        </div>
+      )}
       <details className={s.details}>
         <summary>능력 자세히</summary>
         <PlayerProfile w={w} player={player} own={false} compact />
@@ -301,6 +310,9 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
         a.offer.player.id.localeCompare(b.offer.player.id)
       );
     });
+  const selectedComparison = comparison.filter((id) =>
+    candidates.some((candidate) => candidate.offer.player.id === id),
+  );
   const toggle = (id: string) =>
     setComparison((current) =>
       current.includes(id)
@@ -374,6 +386,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             : '지금은 자유계약 선수만 영입할 수 있어요. 이적 제안은 시장이 열리면 보내세요.'}
         </small>
       </div>
+      <RecruitmentNeeds w={w} offers={state.view!.transfers} onRole={setRole} />
       {/* The recruitment level lives on the operating board (→WEB-71); here it is a line to it. */}
       <button type="button" className={s.policyLine} onClick={() => openDirection('scouting')}>
         <span>
@@ -474,13 +487,13 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       <div className={s.comparisonBar}>
         <span>최근 선택한 두 명을 비교해요</span>
         <button
-          disabled={comparison.length !== 2}
+          disabled={selectedComparison.length !== 2}
           onClick={(event) => {
             event.currentTarget.focus();
             setComparing(true);
           }}
         >
-          선택한 {comparison.length}명 비교
+          선택한 {selectedComparison.length}명 비교
         </button>
       </div>
       <p className={s.note}>

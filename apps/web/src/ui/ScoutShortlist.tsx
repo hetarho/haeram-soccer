@@ -1,3 +1,5 @@
+import { openStaff } from './state';
+import type { Line } from '../../../../packages/contracts/src/types';
 import type { World } from '../../../../packages/contracts/src/types';
 import { nextShortlistDraw } from '../../../../packages/engine/src/signings';
 import { seasonDayLabel } from '../../../../packages/engine/src/calendar';
@@ -30,9 +32,7 @@ export function ScoutShortlist({
     club = clubOf(w),
     scout = staffMember(w, 'scout'),
     next = nextShortlistDraw(w),
-    stakes = requestStakes(w),
-    requests = rows.flatMap((row) => (row.request ? [{ ...row, request: row.request }] : [])),
-    pickName = (id?: string) => offers.find((offer) => offer.player.id === id)?.player.name;
+    nextYear = next.year === w.year;
   const cash = (value: string) => <Money value={value} code={club.country} year={w.year} plain />;
   return (
     <section className={s.shortlist} aria-label="스카우트 명단">
@@ -44,36 +44,9 @@ export function ScoutShortlist({
             ? ` · ${seasonDayLabel(w.shortlist.year, w.shortlist.day)} 작성`
             : ''}
           {' · 다음 '}
-          {next.year === w.year ? seasonDayLabel(next.year, next.day) : '다음 시즌 개막일'}
+          {nextYear ? seasonDayLabel(next.year, next.day) : '다음 시즌 개막일'}
         </small>
       </header>
-      <div className={s.requests} aria-label="감독 요청" role="group">
-        <b>감독 요청</b>
-        {requests.length ? (
-          <ul>
-            {requests.map(({ line, request }) => (
-              <li key={line} data-kind={request.kind}>
-                <span className={s.why}>{REQUEST_WHY[request.kind]}</span>
-                <span>
-                  {request.position ? `${requestName(request)} 자리` : LINE_NAMES[line]}
-                  {request.pick && <small> · 감독 지목 {pickName(request.pick)}</small>}
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <small>
-            {w.manager.interim
-              ? '임시 감독은 영입을 요청하지 않아요.'
-              : '지금은 감독이 요청한 자리가 없어요.'}
-          </small>
-        )}
-        {stakes && (
-          <p className={s.stakes} data-testid="request-stakes">
-            {stakes}
-          </p>
-        )}
-      </div>
       {rows.some((row) => row.entries.length) ? (
         rows.map(
           (row) =>
@@ -115,6 +88,61 @@ export function ScoutShortlist({
       ) : (
         <p className={s.empty}>명단에 남은 후보가 없어요. 다음 작성 때 다시 채워요.</p>
       )}
+    </section>
+  );
+}
+
+export function RecruitmentNeeds({
+  w,
+  offers,
+  onRole,
+}: {
+  w: World;
+  offers: readonly TransferOffer[];
+  onRole: (line: Line) => void;
+}) {
+  const rows = shortlistRows(w, offers),
+    requests = rows.flatMap((row) => (row.request ? [{ ...row, request: row.request }] : [])),
+    stakes = requestStakes(w),
+    scout = staffMember(w, 'scout'),
+    pickName = (id?: string) => offers.find((offer) => offer.player.id === id)?.player.name;
+  return (
+    <section className={s.shortlist} aria-label="감독 영입 요청">
+      <header>
+        <h3>지금 필요한 영입</h3>
+        <button type="button" onClick={() => openStaff('scout')}>
+          수석 스카우트 {scout?.name ?? '공석'} · 보기
+        </button>
+      </header>
+      <div className={s.requests} aria-label="감독 요청" role="group">
+        <b>감독 요청</b>
+        {requests.length ? (
+          <ul>
+            {requests.map(({ line, request }) => (
+              <li key={line} data-kind={request.kind}>
+                <button type="button" onClick={() => onRole(line)}>
+                  {REQUEST_WHY[request.kind]} 후보 보기
+                </button>
+                <span>
+                  {request.position ? `${requestName(request)} 자리` : LINE_NAMES[line]}
+                  {request.pick && <small> · 감독 지목 {pickName(request.pick)}</small>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <small>
+            {w.manager.interim
+              ? '임시 감독은 영입을 요청하지 않아요.'
+              : '지금은 감독이 요청한 자리가 없어요.'}
+          </small>
+        )}
+        {stakes && (
+          <p className={s.stakes} data-testid="request-stakes">
+            {stakes}
+          </p>
+        )}
+      </div>
     </section>
   );
 }

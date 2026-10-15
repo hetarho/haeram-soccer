@@ -311,7 +311,7 @@ test('the market ends with who answers offers and names the recruitment level, o
   await expect(owner).toContainText('자동 결정');
   await expect(owner).toContainText('개입 4 · 운영진에 모두 맡기기');
   // The line opens the one place the level is chosen.
-  await owner.getByRole('button', { name: /^개입 수준 바꾸기/ }).click();
+  await owner.getByRole('button', { name: /^전체 구단 개입 설정/ }).click();
   const dialog = page.getByRole('dialog', { name: '개입 수준', exact: true });
   await expect(dialog.getByRole('radio', { name: /^4\. 운영진에 모두 맡기기/ })).toHaveAttribute(
     'aria-checked',

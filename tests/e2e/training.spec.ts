@@ -135,6 +135,7 @@ for (const { seed: worldSeed, ...viewport } of [
     // 훈련 shows the focus in force and changes nothing itself (→WEB-70): each focus states its
     // round's recovery and growth, the assistant's pick is marked, and why.
     await expect(page.getByRole('radiogroup', { name: '훈련 방향' })).toHaveCount(0);
+    await page.getByText('훈련 효과·자동 판단 기준', { exact: true }).click();
     const effects = page.getByRole('list', { name: '훈련 방향별 효과' }).getByRole('listitem');
     await expect(effects).toHaveCount(3);
     for (const [index, id] of (['balanced', 'recovery', 'hard'] as const).entries())
@@ -222,11 +223,16 @@ for (const { seed: worldSeed, ...viewport } of [
     }
     await openTraining();
     // The players still growing show the growth they earned in that round.
-    const growing = page.getByRole('region', { name: '성장 중인 선수' }).getByRole('listitem');
+    await page
+      .getByRole('group', { name: '선수 육성 보기' })
+      .getByRole('button', { name: '성장 중', exact: true })
+      .click();
     const outlook = developmentOutlook(settled);
-    await expect(growing).toHaveCount(outlook.growing.length);
-    await expect(growing.first()).toContainText(outlook.growing[0].player.name);
-    await expect(growing.first()).toContainText(`+${outlook.growing[0].developed.toFixed(2)}`);
+    for (const entry of outlook.growing) {
+      const row = page.getByTestId(`player-focus-${entry.player.id}`).locator('..');
+      await expect(row).toContainText(entry.player.name);
+      await expect(row).toContainText(`성장 +${entry.developed.toFixed(2)}`);
+    }
     // The order counts down with each settled round.
     await expect(page.getByTestId('training-focus')).toHaveText(
       '지금 하드 트레이닝 · 구단주 지시 · 3라운드 남음',
@@ -270,6 +276,7 @@ test("shows an owner's order with the assistant's rule, and a suggestion's odds"
     '지금 회복 · 구단주 지시 · 4라운드 남음',
   );
   // What drives development reads the focus in force: no round growth while resting.
+  await page.getByText('성장 요인·투자·스태프 자세히', { exact: true }).click();
   await expect(
     page.getByRole('button', { name: /^훈련 방향 ×0.4 · 훈련 방향에서 보기$/ }),
   ).toBeVisible();
@@ -323,6 +330,8 @@ test('promotes a prospect from 유소년', async ({ page }) => {
   await academy.getByRole('button', { name: `${prospect.name} 1군 승격`, exact: true }).click();
   await expect(academy.getByRole('listitem')).toHaveCount(0);
   await expect(academy).toContainText('아직 아카데미 선수가 없어요');
+  await expect(page.getByRole('region', { name: '승격한 선수 관리' })).toContainText(prospect.name);
+  await expect(page.getByRole('button', { name: '이 선수 훈련 보기', exact: true })).toBeVisible();
   await nav.getByRole('button', { name: '선수·스태프', exact: true }).click();
   const roster = page.locator('[class*="rosterCards"] article');
   await expect(roster).toHaveCount(squad + 1);

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Player, World } from '../../../../packages/contracts/src/types';
-import { agentOf, clausesLabel } from '../../../../packages/engine/src/contracts';
+import { agentOf, clausesLabel, talkFor } from '../../../../packages/engine/src/contracts';
 import { useGameState } from '../runtime/store';
 import { Attributes } from './Attributes';
 import { clubRanks } from './careerRecords';
@@ -11,7 +11,7 @@ import { PlayerAdvancedStats } from './PlayerAdvancedStats';
 import { appearances, playerStatus, type PlayerScope } from './playerAnalysis';
 import { PlayerPerformance } from './PlayerPerformance';
 import { PlayerProfile } from './PlayerProfile';
-import { usePlayerSheet } from './state';
+import { openCoachSheet, openContractTalk, usePlayerPreparation, usePlayerSheet } from './state';
 import a from './Analysis.module.css';
 import s from './App.module.css';
 
@@ -39,6 +39,39 @@ export function PlayerSheet({
     ranks = clubRanks(w.players, player.id);
   return (
     <Dialog label={player.name} onClose={onClose}>
+      {active && (
+        <div className={s.playerActions} aria-label="이 선수 관리">
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              openCoachSheet('assistant', undefined, player.id);
+            }}
+          >
+            이 선수 훈련 변경
+          </button>
+          {talkFor(w, player) && (
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                openContractTalk(player.id);
+              }}
+            >
+              계약 협상
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              usePlayerPreparation.getState().open(player.id);
+            }}
+          >
+            다음 경기 선발·전술 준비
+          </button>
+        </div>
+      )}
       <p>
         {player.position} · {active ? `${w.year - player.born}세` : `${player.born}년생`} · 에이전트{' '}
         {agentOf(w, player)}등급

@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from 'react';
+import { useFacilityRequest } from './state';
+import { useEffect, useState, type ReactNode } from 'react';
 import type { Command, FacilityPart, World } from '../../../../packages/contracts/src/types';
 import {
   ACADEMY_FACILITY,
@@ -44,6 +45,17 @@ export function FacilityParts({
   format: (value: string) => ReactNode;
 }) {
   const [review, setReview] = useState<FacilityPart>();
+  const request = useFacilityRequest((store) => store.request);
+  useEffect(() => {
+    if (!request) return;
+    useFacilityRequest.getState().take();
+    const frame = requestAnimationFrame(() =>
+      document
+        .querySelector(`[data-testid="facility-${request}"]`)
+        ?.scrollIntoView({ block: 'start', behavior: 'smooth' }),
+    );
+    return () => cancelAnimationFrame(frame);
+  }, [request]);
   const gate = gateProjection(w);
   const preview = (part: FacilityPart) => facilityInvestmentPreview(w, part);
   const work = (part: FacilityPart) => {

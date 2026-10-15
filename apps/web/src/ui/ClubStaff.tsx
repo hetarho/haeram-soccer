@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type {
   ContractTerm,
   Manager,
@@ -32,7 +32,7 @@ import { managerTerm, STYLE_INFO } from '../../../../packages/engine/src/styles'
 import { clubOf } from '../../../../packages/engine/src/world';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
-import { openTraining } from './state';
+import { openTraining, useStaffRequest } from './state';
 import { DirectionLines } from './DirectionLines';
 import { Dialog } from './Dialog';
 import { DecisionOwner } from './DecisionOwner';
@@ -241,9 +241,9 @@ export function CoachingPlan({ w }: { w: World }) {
     auto = coachDelegated(w, 'assistant');
   const expiring = (w.staff || []).filter((member) => isExpiring(w, member));
   return (
-    <section className={s.plan} aria-label="코치진 운영">
+    <section className={s.plan} aria-label="스태프 선임·계약">
       <header>
-        <h3>코치진 운영</h3>
+        <h3>스태프 선임·계약</h3>
         <span data-testid="coaching-mode">
           {auto ? '자동 · 스태프가 코치 기조로 고용·재계약' : '직접 · 구단주가 고용·재계약'}
         </span>
@@ -283,7 +283,17 @@ const TRAINING_COACHES: readonly StaffRole[] = ['assistant', 'youth'];
 /** Coaching departments, their effect on the squad and replacements. */
 export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
   const acting = useActing();
+  const request = useStaffRequest((store) => store.request);
   const [role, setRole] = useState<StaffRole>();
+  useEffect(() => {
+    if (request) {
+      setRole(request);
+      setPick(undefined);
+      setTerm(DELEGATED_TERM);
+      setRenewing(undefined);
+      useStaffRequest.getState().take();
+    }
+  }, [request]);
   const [pick, setPick] = useState<number>();
   // Hiring and renewing both start from the two seasons the staff would sign (→STAFF-15).
   const [term, setTerm] = useState<ContractTerm>(DELEGATED_TERM);
@@ -301,9 +311,9 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
   const renewal = renewing ? members.get(renewing) : undefined;
   const renewed = renewal && isExpiring(w, renewal) ? renewalTerms(w, renewal, term) : undefined;
   return (
-    <section className={s.staff} aria-label="코치진">
+    <section className={s.staff} aria-label="스태프">
       <header>
-        <h3>코치진</h3>
+        <h3>스태프</h3>
         <span>
           감독 {w.manager.name}
           {w.manager.trait && ` · ${MANAGER_TRAIT_INFO[w.manager.trait].label}`}
@@ -313,10 +323,21 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
         <p className={s.managerTrait}>{MANAGER_TRAIT_INFO[w.manager.trait].effect}</p>
       )}
       <ul>
-        {STAFF_ROLES.map((id) => {
+        {(
+          [
+            'director',
+            'scout',
+            ...STAFF_ROLES.filter((id) => id !== 'director' && id !== 'scout'),
+          ] as StaffRole[]
+        ).map((id) => {
           const member = members.get(id);
           return (
-            <li key={id}>
+            <li key={id} id={`staff-post-${id}`} data-role={id}>
+              {(id === 'director' || id === 'assistant') && (
+                <h4 className={s.departmentTitle}>
+                  {id === 'director' ? '영입·운영' : '코칭·육성'}
+                </h4>
+              )}
               <div className={s.role}>
                 {member ? (
                   <OvrBadge
