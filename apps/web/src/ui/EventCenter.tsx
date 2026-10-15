@@ -1,3 +1,4 @@
+import { PixelIcon } from './PixelIcon';
 import { memo, useState } from 'react';
 import type {
   InboxItem,
@@ -426,23 +427,7 @@ export function InboxButton({ client }: { client: GameClient }) {
           setOpen(true);
         }}
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            d="M6 10a6 6 0 0 1 12 0c0 4.5 1.6 6.2 2.5 7H3.5c.9-.8 2.5-2.5 2.5-7z"
-            fill="currentColor"
-            fillOpacity="0.18"
-            stroke="currentColor"
-            strokeWidth="1.9"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M10 20a2.2 2.2 0 0 0 4 0"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.9"
-            strokeLinecap="round"
-          />
-        </svg>
+        <PixelIcon name="bell" />
         {unread > 0 && <b aria-hidden="true">{unread > 9 ? '9+' : unread}</b>}
       </button>
       {open && (

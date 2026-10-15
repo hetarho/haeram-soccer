@@ -1,3 +1,4 @@
+import { PixelIcon } from './PixelIcon';
 import { Select } from './Select';
 import {
   lazy,
@@ -387,9 +388,7 @@ function SeasonPicker({
         disabled={at === 0}
         onClick={() => go(at - 1)}
       >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="m15 6-6 6 6 6" />
-        </svg>
+        <PixelIcon name="chevronLeft" size={20} />
       </button>
       <Select
         aria-label="리그 시즌"
@@ -410,9 +409,7 @@ function SeasonPicker({
         disabled={at === years.length - 1}
         onClick={() => go(at + 1)}
       >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="m9 6 6 6-6 6" />
-        </svg>
+        <PixelIcon name="chevronRight" size={20} />
       </button>
     </div>
   );

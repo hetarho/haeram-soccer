@@ -1,3 +1,4 @@
+import { PixelIcon } from './PixelIcon';
 import { Select } from './Select';
 import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import type {
@@ -589,9 +590,7 @@ function StanceBadge({
     >
       <i aria-hidden="true" />
       {STANCE_INFO[stance].label}
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="m6 9 6 6 6-6" />
-      </svg>
+      <PixelIcon name="chevronDown" size={16} />
     </button>
   );
 }

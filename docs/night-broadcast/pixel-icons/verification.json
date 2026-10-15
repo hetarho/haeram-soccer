@@ -1,0 +1,152 @@
+{
+  "task": "T127",
+  "checkedAt": "2026-10-15T07:28:45.577Z",
+  "icons": {
+    "source": "apps/web/src/ui/PixelIcon.tsx",
+    "originalGlyphs": 24,
+    "grid": "16 × 16",
+    "catalog": "icon-family.html",
+    "placements": [
+      "navigation",
+      "HUD menu and inbox",
+      "news",
+      "dialog close",
+      "dropdowns and filters",
+      "season navigation",
+      "trophy cabinet"
+    ],
+    "retained": [
+      "club identities",
+      "data charts"
+    ]
+  },
+  "checks": {
+    "typecheck": "passed",
+    "eslint": "passed",
+    "prettier": "passed",
+    "productionBuild": "passed",
+    "browser": {
+      "passed": 45,
+      "projects": [
+        "chromium",
+        "firefox",
+        "webkit"
+      ],
+      "specs": [
+        "mobile",
+        "native-touch",
+        "styled-select",
+        "news",
+        "records"
+      ],
+      "note": "Final changes after the browser run only refine two decorative trophy paths and remove obsolete inherited stroke CSS; the updated glyphs are inspected in the family catalog."
+    },
+    "manualReview": {
+      "screenshots": [
+        "01-founding-desktop.png",
+        "02-home-desktop.png",
+        "03-people-desktop.png",
+        "04-league-desktop.png",
+        "05-training-desktop.png",
+        "06-direction-desktop.png",
+        "07-records-desktop.png",
+        "08-cups-desktop.png",
+        "09-match-desktop.png",
+        "10-match-mobile.png",
+        "11-home-mobile.png",
+        "12-people-mobile.png",
+        "13-league-mobile.png",
+        "14-training-mobile.png",
+        "15-direction-mobile.png",
+        "16-records-mobile.png",
+        "17-player-profile-mobile.png",
+        "18-locker-room-desktop.png",
+        "19-locker-room-mobile.png",
+        "20-founding-360.png",
+        "21-home-360.png",
+        "icon-family.png"
+      ],
+      "viewports": [
+        [
+          1440,
+          960
+        ],
+        [
+          360,
+          740
+        ],
+        [
+          390,
+          844
+        ]
+      ],
+      "pageErrors": [],
+      "horizontalOverflow": false
+    },
+    "artBrowserCoverage": "../cohesive-art/verification.json"
+  },
+  "entryBudget": {
+    "gzipBytes": 249635,
+    "limit": 256000,
+    "passed": true,
+    "files": [
+      {
+        "file": "/assets/index-DIE0gIzd.js",
+        "gzipBytes": 140251
+      },
+      {
+        "file": "/assets/rolldown-runtime-hePW80VL.js",
+        "gzipBytes": 428
+      },
+      {
+        "file": "/assets/Dialog-C5gpCPey.js",
+        "gzipBytes": 65055
+      },
+      {
+        "file": "/assets/profile-EGuMHbza.js",
+        "gzipBytes": 1478
+      },
+      {
+        "file": "/assets/league-CeNizeIm.js",
+        "gzipBytes": 5117
+      },
+      {
+        "file": "/assets/slots-C248-Sae.js",
+        "gzipBytes": 3006
+      },
+      {
+        "file": "/assets/state-BWejw2tp.js",
+        "gzipBytes": 1662
+      },
+      {
+        "file": "/assets/Glossary-O-9JXi8s.js",
+        "gzipBytes": 5800
+      },
+      {
+        "file": "/assets/Dialog-BbqDokwb.css",
+        "gzipBytes": 10584
+      },
+      {
+        "file": "/assets/league-2liMRO71.css",
+        "gzipBytes": 156
+      },
+      {
+        "file": "/assets/Glossary-YltZYkJS.css",
+        "gzipBytes": 1775
+      },
+      {
+        "file": "/assets/index-BWyW90f-.css",
+        "gzipBytes": 14323
+      }
+    ]
+  },
+  "delivery": {
+    "policy": "Work branch → every CI job passes → fast-forward main, with incremental checkpoints.",
+    "baseline": {
+      "commit": "5d14752ca1b3800f07cdb507d366f933448a1614",
+      "ci": "https://github.com/hetarho/haeram-soccer/actions/runs/38696842874",
+      "result": "passed every job; on main"
+    },
+    "note": "This record captures local implementation verification. Subsequent CI and main promotion are recorded by the GitHub workflow and branch refs."
+  }
+}

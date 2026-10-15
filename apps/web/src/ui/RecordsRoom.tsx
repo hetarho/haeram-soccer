@@ -1,3 +1,4 @@
+import { PixelIcon } from './PixelIcon';
 import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import { readBuildTitle } from '../../../../packages/engine/src/build';
@@ -400,9 +401,7 @@ function SeasonRecords({
               disabled={at === 0}
               onClick={() => onYear(years[at - 1])}
             >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="m15 6-6 6 6 6" />
-              </svg>
+              <PixelIcon name="chevronLeft" size={20} />
             </button>
             <Select
               aria-label="기록 시즌"
@@ -424,9 +423,7 @@ function SeasonRecords({
               disabled={at === years.length - 1}
               onClick={() => onYear(years[at + 1])}
             >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="m9 6 6 6-6 6" />
-              </svg>
+              <PixelIcon name="chevronRight" size={20} />
             </button>
           </div>
           <label>

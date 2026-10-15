@@ -53,9 +53,6 @@
   flex: none;
   width: 16px;
   height: 16px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
 }
 .level:focus-visible {
   outline: 2px solid var(--focus);

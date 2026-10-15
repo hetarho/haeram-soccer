@@ -1,3 +1,4 @@
+import { PixelIcon } from './PixelIcon';
 import {
   currentDay,
   daysUntilNextMatch,
@@ -190,9 +191,7 @@ export const ProgressControls = memo(function ProgressControls({
         <span className={p.triggerName} aria-hidden="true">
           {name}
         </span>
-        <svg className={p.chevron} viewBox="0 0 24 24" aria-hidden="true">
-          <path d="m6 9 6 6 6-6" />
-        </svg>
+        <PixelIcon name="chevronDown" size={14} className={p.chevron} />
       </button>
       {levelsOpen && (
         <InterventionPopover

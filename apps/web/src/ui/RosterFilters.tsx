@@ -1,3 +1,4 @@
+import { PixelIcon } from './PixelIcon';
 import { useId, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { POSITIONS } from '../../../../packages/contracts/src/player';
 import type { PlayerOrder, PlayerScope, PositionFilter } from './playerAnalysis';
@@ -138,9 +139,7 @@ export function RosterFilters({
         data-active={active || undefined}
         onClick={() => setOpen(open ? undefined : phone() ? 'sheet' : 'popover')}
       >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4 6h16 M7 12h10 M10 18h4" />
-        </svg>
+        <PixelIcon name="filter" />
         {active > 0 && <i aria-hidden="true">{active}</i>}
       </button>
       {open === 'sheet' && (

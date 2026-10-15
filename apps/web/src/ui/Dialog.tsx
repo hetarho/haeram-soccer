@@ -1,3 +1,4 @@
+import { PixelIcon } from './PixelIcon';
 import { Children, isValidElement, useEffect, useId, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import s from './App.module.css';
@@ -226,7 +227,7 @@ export function Dialog({
         <header className={s.modalHead}>
           <h2 id={labelId}>{label}</h2>
           <button className={s.modalClose} aria-label="창 닫기" onClick={requestClose}>
-            <span aria-hidden="true">×</span>
+            <PixelIcon name="close" size={20} />
           </button>
         </header>
         <div className={s.modalBody}>{content}</div>

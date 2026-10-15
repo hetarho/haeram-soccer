@@ -1,3 +1,4 @@
+import { PixelIcon } from './PixelIcon';
 import { useState } from 'react';
 import { create } from 'zustand';
 import type { World } from '../../../../packages/contracts/src/types';
@@ -103,29 +104,7 @@ export function NewsButton() {
         show();
       }}
     >
-      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-        <path
-          d="M4 6a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v12a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2z"
-          fill="currentColor"
-          fillOpacity="0.18"
-          stroke="currentColor"
-          strokeWidth="1.9"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M17 9h2a1 1 0 0 1 1 1v8a2 2 0 0 1-2 2"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.9"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M7.5 9h6M7.5 12.5h6M7.5 16h4"
-          stroke="currentColor"
-          strokeWidth="1.9"
-          strokeLinecap="round"
-        />
-      </svg>
+      <PixelIcon name="news" />
       {fresh > 0 && (
         <b key={fresh} aria-hidden="true">
           {fresh > 99 ? '99+' : fresh}

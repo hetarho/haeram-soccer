@@ -1,3 +1,4 @@
+import { PixelIcon } from './PixelIcon';
 import type { DelegationKey, World } from '../../../../packages/contracts/src/types';
 import { decisionOwner } from './intervention';
 import { useInterventionDialog } from './state';
@@ -44,9 +45,7 @@ export function DecisionOwner({
           onClick={useInterventionDialog.getState().show}
         >
           개입 {level} · {name}
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m9 6 6 6-6 6" />
-          </svg>
+          <PixelIcon name="chevronRight" size={14} />
         </button>
       </div>
       <p>

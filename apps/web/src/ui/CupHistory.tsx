@@ -1,3 +1,4 @@
+import { PixelIcon } from './PixelIcon';
 import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import type {
   CupFinal,
@@ -118,9 +119,7 @@ function CupSeasonPicker({
         disabled={at <= 0}
         onClick={() => onChange(years[at - 1])}
       >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="m15 6-6 6 6 6" />
-        </svg>
+        <PixelIcon name="chevronLeft" size={20} />
       </button>
       <Select
         aria-label="대진표 시즌"
@@ -141,9 +140,7 @@ function CupSeasonPicker({
         disabled={at === years.length - 1}
         onClick={() => onChange(years[at + 1])}
       >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="m9 6 6 6-6 6" />
-        </svg>
+        <PixelIcon name="chevronRight" size={20} />
       </button>
     </>
   );

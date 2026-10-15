@@ -14,7 +14,6 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| a6rt | hq-dev1-pve2-vm2 | pair | 2026-10-15T07:10Z | 2026-10-15T07:10Z | T127 |
 
 ## inbox
 - 261015 suggest LEAGUE-13 WEB-3: difficulty levels do not separate on 60-season careers (every level ≈60% titles near season 50, T115) because a level sets only the start → decide whether a level keeps a lasting effect (its offset on later signings and youth, or rivals' strength by level) or the bands move; update-ssot either way
@@ -72,7 +71,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T127 | Solid pixel UI icon family | WEB ARCH | T126 | doing@261015.a6rt |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -81,10 +79,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- Baseline 5d14752 is on main after every job passed in CI 38696842874. T126 supplies the matched pixel paintings; the session will deliver this and T127 as further CI-verified main checkpoints.
-- T125: the home stadium schematic is removed; the original painting fills the scene and current-stage facts remain in HTML (WEB r72). Current proof: docs/night-broadcast/illustrated-stadium; 6/6 affected browser journeys and all 9 stadium stages passed. Uncommitted, no deployment.
-- T124: primary colour corrected to football-grass green (WEB r71); current screenshots and proof are in docs/night-broadcast/grass-green. Build and 15 affected browser journeys passed; uncommitted, no deployment.
-- T122–T123: night-broadcast UI with self-hosted Monogram/Galmuri and three original football illustrations is complete in the working tree (WEB r70). Review the real app and docs/night-broadcast/indie-art/verification.json: 332 browser cases passed, 4 existing skips; final affected journeys 72/72. No commit or deployment was made in these pair tasks.
+- T122–T126 are on main: grass-green night-broadcast UI, self-hosted Monogram/Galmuri, illustration-only stadium and three matched pixel paintings. Baseline 5d14752 passed every job in CI 38696842874; art 737742e passed every job in CI 38698103429. T127 supplies 24 matched pixel icons; its checkpoint follows the same CI-gated main delivery sequence. Current app captures and the icon catalog are in docs/night-broadcast/pixel-icons.
 - doc-review WEB: spec lint has 38 existing document-quality hints; split long decision lines while preserving meaning in a separate documentation pass.
 - owner's reports 261015 fixed (T117–T121, pair k5r8): deleting the game in play stays on the slot screen, a decided event card plays the clock on, the HUD never scrolls away under warning bands, no offer reads 0, facility costs climb ×2.5 (stadium) and ×4 (training ground, academy) a step; re-measure ECON-29's 160 careers on the new facility costs with the next economy change (16 measured: 2000s matchday 25.0%, at the band's edge). On main after CI 38678748201 (every job green).
 - run p7ad (autopilot) closed 261015: the player model is on main (T106–T115: 14 attributes, sided positions with levels, roles and traits, adaptation and 조직력, per-player training, slot requests, the profile UI, earlier-rules saves, the balance measured); report reports/261015-p7ad.md, 17 inbox decisions to review.
@@ -104,6 +99,8 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 T127 done: 24 original pixel UI icons, 45 affected browser cases passed, 22 visual captures, entry 249635 B gzip; session CI-gated main delivery
+- 261015 main advanced to 737742e after all jobs passed in CI 38698103429
 - 261015 T126 done: three matched pixel paintings, 33 affected browser cases passed; T127 doing@a6rt; checkpoint/main delivery remains with this session
 - 261015 main advanced to 5d14752 after CI 38696842874 passed every job
 - 261015 T122–T125 checkpoint committed as 5d14752 and pushed to work/night-broadcast-polish-261015; CI before main
@@ -122,5 +119,3 @@
 - 261015 CI fix: CI 38676250842/38677335586 failed Firefox and Chromium clock journeys — a 2x play may carry two days on a slow runner (specs now wait for the date to move), and play within 500 ms of a page load was ignored (the auto-stop guard started at 0); CI 38678748201 green in every job
 - 261015 T121 done: `.layout` and `.main` clip instead of hiding overflow; the HUD stayed at −31 px under two bands at 844×390 before
 - 261015 T120 done: facility costs ×2.5 / ×4 a step (1,530,450 units in all); 16 careers measured, no new bankruptcy, ECON r37
-- 261015 T119 done: other clubs' offers at least one currency unit; the 단장's free signing lists as 단장 영입, not an offer of 0
-- 261015 T118 done: deciding the card of the event that stopped a running clock plays it on once nothing else waits

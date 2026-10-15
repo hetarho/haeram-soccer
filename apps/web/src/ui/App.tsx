@@ -1,3 +1,4 @@
+import { PixelIcon, type PixelIconName } from './PixelIcon';
 import {
   lazy,
   memo,
@@ -127,34 +128,17 @@ function rememberInGame(inGame: boolean) {
   }
 }
 function NavIcon({ page }: { page: Page }) {
-  const paths: Record<Page, string> = {
-    dashboard: 'M3 11l9-8 9 8 M5 9.5V20h14V9.5 M10 20v-6h4v6',
-    match: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z M12 8l4 3-2 5h-4l-2-5z',
-    league: 'M4 5h16 M4 12h16 M4 19h16',
-    europe:
-      'M7 3h10v7a5 5 0 0 1-10 0z M7 5H3v4a4 4 0 0 0 4 4 M17 5h4v4a4 4 0 0 1-4 4 M12 15v5 M8 21h8',
-    people:
-      'M12 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6z M5 21v-5a7 7 0 0 1 14 0v5 M4 5a2 2 0 0 0 0 4 M20 5a2 2 0 0 1 0 4',
-    training: 'M3 10v4 M6 7v10 M18 7v10 M21 10v4 M6 12h12',
-    business: 'M3 18l6-6 4 3 8-11 M15 4h6v6',
-    history: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z M12 7v5l4 3',
+  const names: Record<Page, PixelIconName> = {
+    dashboard: 'home',
+    match: 'ball',
+    league: 'table',
+    europe: 'cup',
+    people: 'people',
+    training: 'training',
+    business: 'trend',
+    history: 'history',
   };
-  return (
-    <svg
-      className={s.navIcon}
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.4"
-      strokeLinejoin="round"
-      strokeLinecap="round"
-    >
-      <path d={paths[page]} />
-    </svg>
-  );
+  return <PixelIcon name={names[page]} size={20} className={s.navIcon} />;
 }
 export function Crest({ color = '#b4c399' }: { color?: string }) {
   return <span className={s.crest} style={{ backgroundColor: color }} aria-hidden="true" />;
@@ -631,7 +615,7 @@ const GameHud = memo(function GameHud({
             onMenu();
           }}
         >
-          <span aria-hidden="true" />
+          <PixelIcon name="menu" size={20} />
         </button>
       )}
       <div className={s.hudClub}>
@@ -670,14 +654,7 @@ function ReadonlyBadge() {
   return (
     <span className={s.readonlyBadge} role="status">
       <button aria-expanded={open} title={text} onClick={() => setOpen(!open)}>
-        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-        </svg>
+        <PixelIcon name="eye" size={14} />
         읽기 전용
       </button>
       <span className={open ? s.readonlyDetail : s.srOnly}>{text}</span>
