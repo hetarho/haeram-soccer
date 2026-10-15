@@ -17,7 +17,7 @@
 | m8q4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-15T14:20Z | 2026-10-15T14:20Z | - |
 
 ## inbox
-- 261015 decided WEB: start-vibe m8q4 scope → implement navigation-and-records with current game rules and the approved pixel readability baseline in an isolated checkout (alt: analysis only | revise game mechanics)
+- 261015 decided WEB-74: start-vibe m8q4 scope → implement navigation-and-records with current game rules and the approved pixel readability baseline in an isolated checkout (alt: analysis only | revise game mechanics)
 - 261015 decided ideation/navigation-and-records: management structure → need, responsible person, focused action, effect timing and contextual return before full rules/catalogues (alt: rename three menus only | merge every control into one screen); independent hands-on follow-up adds M1–M13
 - 261015 decided ideation/navigation-and-records: policy detours → focused relevant settings, retained task tab/filter/comparison/scroll and unapplied drafts (alt: send to board root and reset | silently apply on exit); one applied policy remains authoritative
 - 261015 decided ideation/navigation-and-records: authority explanation → show who uses a setting and when, retain global intervention levels and coach-led four-round training (alt: add per-department switches | imply criteria replace current staff immediately); no game-rule change inferred
@@ -61,13 +61,13 @@
 | club-history-reboot | converted@261007 |
 | club-direction | converted@261014 |
 | difficulty-and-adaptation | converted@261015 |
-| navigation-and-records | ready@261015 |
+| navigation-and-records | converted@261015 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 77 | 77 | - | 0 |
+| WEB | 78 | 77 | WEB-10✎ WEB-11✎ WEB-39✎ WEB-40✎ WEB-43✎ WEB-45✎ WEB-47✎ WEB-54✎ WEB-59✎ WEB-60✎ WEB-65✎ WEB-70✎ WEB-71✎ WEB-74+ WEB-75+ | 0 |
 | WORLD | 3 | 3 | - | 0 |
 | CLUB | 35 | 35 | - | 0 |
 | MATCH | 9 | 9 | - | 0 |
@@ -113,6 +113,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 update-ssot WEB r78: task-first management, contextual returns/drafts, season-first club records and standings-first competition scope; create-task next
 - 261015 T133 carried into m8q4: approved Galmuri14/Galmuri11 readability baseline; T132 remains the superseded font trial, no changes to owner checkout
 - 261015 start-vibe m8q4 autopilot start: navigation-and-records to WEB then sequential implementation; isolated workspace, owner checkout and port 19500 preserved
 - 261015 ideation navigation-and-records ready: exercised training, free signing, staff hire, policy/preset drafts and youth promotion over two isolated seasons; M1–M13 and task-based redesign replace the earlier split assumption; no runtime changes
@@ -132,6 +133,3 @@
 - 261015 main advanced to 5d14752 after CI 38696842874 passed every job
 - 261015 T122–T125 checkpoint committed as 5d14752 and pushed to work/night-broadcast-polish-261015; CI before main
 - 261015 WEB r73: coherent painted pixel environments and solid pixel UI icons; T126 doing@a6rt, T127 next; owner authorizes incremental main pushes
-- 261015 T125 done: illustration-only home stadium; 6/6 affected browser journeys, all 9 stages retain facts without SVG, 12 captures, entry 249698 B gzip
-- 261015 WEB r72: home stadium schematic→full illustration and real-stage labels; T125 doing@s5ar
-- 261015 T124 done: grass-green primary across the UI; 15/15 affected browser journeys, 21 captures, contrast checked, entry 250961 B gzip

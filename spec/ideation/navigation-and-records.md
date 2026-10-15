@@ -1,5 +1,5 @@
 # IDEATION navigation-and-records
-> st:ready@261015 | Make owner decisions actionable across squad, development and operations; put club seasons first in records and standings first in leagues.
+> st:converted@261015 | Make owner decisions actionable across squad, development and operations; put club seasons first in records and standings first in leagues.
 
 ## vision
 - Problem: the owner cannot tell where to act in people, training and direction, in addition to the reported records/league confusion. The independent follow-up must examine complete management tasks rather than assume that separating topics creates a usable workflow.
@@ -160,9 +160,9 @@
   - Inspect an early career and a long career, including promotions and seasons lacking older detailed archives. Do not claim player-wide preference or improved completion times without testing them.
 
 ## domains
-- WEB: revise WEB-40/47/54 for league defaults, club-season ownership and records structure; WEB-10/11 for home briefing and progression-tool discovery; WEB-65/69 for consistent competition scope and view categories. Extend WEB-39/43/44/45/59/60/61/68/69/70/71 for management ordering, player actions, visible responsibility/timing, contextual policy access, retained drafts and return state. The current single-home policy rule needs explicit revision if focused editing is allowed from a work context. Existing SSOTs require update-ssot rather than a new domain.
-- HIST: preserve HIST-1/2/4/6/8/12/13. The first pass relocates existing facts and labels their scope; any new historical statistics need their own planning decision and must not be implied by a new tab name.
-- CLUB / STAFF / ECON / PLAYER: retain the existing training duration and settlement, coach judgement, intervention-level delegation, recruitment requests, academy eligibility, investment and construction rules. Use these domains to verify explanation and outcome timing; reopen them only for an explicitly chosen rule change. A reorganisation must not silently create new owner powers or new drills.
+- WEB →WEB: revise WEB-40/47/54 for league defaults, club-season ownership and records structure; WEB-10/11 for home briefing and progression-tool discovery; WEB-65/69 for consistent competition scope and view categories. Extend WEB-39/43/44/45/59/60/61/68/69/70/71 for management ordering, player actions, visible responsibility/timing, contextual policy access, retained drafts and return state. The current single-home policy rule needs explicit revision if focused editing is allowed from a work context. Existing SSOTs require update-ssot rather than a new domain.
+- HIST →HIST: preserve HIST-1/2/4/6/8/12/13. The first pass relocates existing facts and labels their scope; any new historical statistics need their own planning decision and must not be implied by a new tab name.
+- CLUB / STAFF / ECON / PLAYER →CLUB →STAFF →ECON →PLAYER: retain the existing training duration and settlement, coach judgement, intervention-level delegation, recruitment requests, academy eligibility, investment and construction rules. Use these domains to verify explanation and outcome timing; reopen them only for an explicitly chosen rule change. A reorganisation must not silently create new owner powers or new drills.
 
 ## open
 - How much first-team player detail should be on the list versus the player detail? Recommended first pass: concise status/action rows, focused filters for attention/growth/adaptation, and full explanation in detail. Validate with a tired-player task before finalising the layout.
