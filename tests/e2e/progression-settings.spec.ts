@@ -429,3 +429,37 @@ test('a page that closed with the clock running plays the time away on return an
   await expect(summary).toHaveCount(0);
   await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
 });
+
+test('deciding the event that stopped a running clock plays on (→WEB-42)', async ({ page }) => {
+  await foundQuiet(page);
+  // Level 1 stops for every event kind, so the first one the clock meets stops it.
+  await chooseLevel(page, 1);
+  const clock = page.getByRole('region', { name: '시즌 진행', exact: true });
+  await clock.getByRole('button', { name: '0.1초에 하루 속도 선택', exact: true }).click();
+  const play = clock.getByRole('button', { name: '자동 진행 시작', exact: true }),
+    stop = clock.getByRole('button', { name: '자동 진행 정지', exact: true }),
+    card = page.getByTestId('event-card');
+  await play.click();
+  for (let i = 0; i < 10; i++) {
+    await expect(card).toBeVisible({ timeout: 20000 });
+    await expect(play).toBeVisible();
+    const text = await card.innerText();
+    if (text.includes('내일 경기')) {
+      await card.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
+      await expect(stop).toBeVisible();
+      continue;
+    }
+    // The last event waiting is decided (확인, or 거절 for an offer): the clock runs again
+    // without play.
+    const others = Number(/남은 이벤트 (\d+)개/.exec(text)?.[1] ?? 1);
+    const read = card.getByRole('button', { name: '확인', exact: true });
+    await (
+      (await read.count()) ? read : card.getByRole('button', { name: '거절', exact: true })
+    ).click();
+    if (others > 1) continue;
+    await expect(stop).toBeVisible();
+    await stop.click();
+    return;
+  }
+  throw new Error('No event other than a match eve stopped the clock');
+});

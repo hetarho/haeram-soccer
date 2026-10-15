@@ -244,6 +244,47 @@ describe('the global progression clock', () => {
     await vi.advanceTimersByTimeAsync(1000);
     expect(controller.store.getState().running).toBe(true);
   });
+  it('plays on once the owner decides the last event that stopped a running clock (→WEB-42)', async () => {
+    const s = setup();
+    controller = s.controller;
+    const item = (id: string) => ({
+      id,
+      year: w.year,
+      day: 1,
+      kind: 'window-open' as const,
+      title: `소식 ${id}`,
+      detail: '-',
+      attention: true,
+    });
+    const notified = structuredClone(w);
+    notified.inbox = [item('a'), item('b')];
+    s.command.mockImplementation(async () => ({
+      ok: true,
+      requestId: 'test',
+      view: { world: notified } as View,
+    }));
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(controller.store.getState().running).toBe(false);
+    const read = (...ids: string[]) => {
+      const world = structuredClone(notified);
+      world.inbox = world.inbox!.map((one) =>
+        ids.includes(one.id) ? { ...one, read: true } : one,
+      );
+      gameStore.publish({ ...gameStore.getSnapshot(), view: { world } as View });
+    };
+    // One of two decided: the other still waits, so the clock stays stopped.
+    read('a');
+    controller.eventDecided();
+    expect(controller.store.getState().running).toBe(false);
+    read('a', 'b');
+    controller.eventDecided();
+    expect(controller.store.getState().running).toBe(true);
+    // A clock the owner stopped himself never restarts on a decision.
+    controller.pause();
+    controller.eventDecided();
+    expect(controller.store.getState().running).toBe(false);
+  });
   it('stops only where the intervention level does, with no stop setting of its own (→WEB-45)', async () => {
     expect(STOP_KINDS.filter((kind) => stopsOf({ intervention: 1 })[kind])).toEqual(STOP_KINDS);
     expect(STOP_KINDS.filter((kind) => stopsOf(w)[kind])).toEqual(LEVEL_STOPS[2]);

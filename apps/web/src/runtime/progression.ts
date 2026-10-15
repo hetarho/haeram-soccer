@@ -193,6 +193,8 @@ export class ProgressionController {
   private passedMatch?: string;
   /** Watching stopped a running clock (or answered a match eve); leaving the match resumes it. */
   private resumeAfterWatch = false;
+  /** An event stopped a running clock; deciding the last one waiting plays on (→WEB-42). */
+  private resumeAfterEvents = false;
   private timer: ReturnType<typeof setInterval>;
   private unsubscribe: () => void;
   private inFlight = false;
@@ -392,6 +394,16 @@ export class ProgressionController {
     this.resumeAfterWatch = false;
     this.start();
   }
+  /**
+   * The owner decided an event card: a clock an event stopped plays on once no stopping event is
+   * left to decide (→WEB-42).
+   */
+  eventDecided() {
+    if (!this.resumeAfterEvents || this.store.getState().running) return;
+    const w = gameStore.getSnapshot().view?.world;
+    if (!w || stoppingEvents(w).length) return;
+    this.start();
+  }
   /** The owner's own stop: nothing resumes it until the owner starts it again. */
   pause() {
     this.resumeAfterWatch = false;
@@ -421,6 +433,7 @@ export class ProgressionController {
     const eve = this.store.getState().matchEve;
     if (eve) this.passedMatch = eve;
     this.resumeAfterWatch = false;
+    this.resumeAfterEvents = false;
     this.stepAt = undefined;
     this.store.setState({ running: true, reason: '', matchEve: undefined });
     this.writeClock(true);
@@ -429,6 +442,7 @@ export class ProgressionController {
   }
   stop(reason = '자동 진행을 멈췄습니다.') {
     const was = this.store.getState().running;
+    this.resumeAfterEvents = false;
     this.store.setState({ running: false, reason });
     if (this.inFlight) this.client.cancel();
     if (!was) return;
@@ -525,6 +539,7 @@ export class ProgressionController {
         const fresh = stoppingEvents(reply.view.world).find((item) => !seen.has(item.id));
         if (fresh) {
           this.stop(fresh.title);
+          this.resumeAfterEvents = true;
           break;
         }
         const next = reply.view.world;

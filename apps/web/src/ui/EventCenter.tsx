@@ -64,8 +64,9 @@ function playerName(
 
 /**
  * The clock stops for events; this card says why and offers the decisions that event needs.
- * Reading or answering an event lets the owner resume. A card decides its event or opens a
- * setting's home; it never changes a standing setting itself (→WEB-42, WEB-71).
+ * Deciding the last waiting event plays on a clock an event stopped; a choice that opens another
+ * view leaves it stopped for the owner to act there. A card decides its event or opens a setting's
+ * home; it never changes a standing setting itself (→WEB-42, WEB-71).
  */
 export const EventCenter = memo(function EventCenter({
   client,
@@ -80,6 +81,12 @@ export const EventCenter = memo(function EventCenter({
   const w = useGameState((state) => state.view?.world);
   const market = useGameState((state) => state.view?.transfers) || [];
   const read = (item: InboxItem) => client.command({ type: 'read-inbox', id: item.id });
+  /** The card's decision, after any command it takes: the event is read and the clock plays on. */
+  const decide = async (item: InboxItem, action?: () => Promise<unknown>) => {
+    await action?.();
+    await read(item);
+    controller.eventDecided();
+  };
   const acting = useGameState((state) => !!state.pendingActions || state.readonly);
   const { matchEve, running } = useProgression(controller, (state) => state);
   const showLevels = useInterventionDialog((state) => state.show);
@@ -156,10 +163,9 @@ export const EventCenter = memo(function EventCenter({
   const expiring = (w.staff || []).filter((member) => isExpiring(w, member));
   // A firefighter's season-long deal can still be extended while it runs.
   const keepManager = managerTerm(w.manager) === 1 && !!managerRenewal(w);
-  const answer = async (accept: boolean) => {
+  const answer = (accept: boolean) => {
     if (!bid) return;
-    await client.command({ type: 'respond-bid', id: bid.id, accept });
-    await read(item);
+    return decide(item, () => client.command({ type: 'respond-bid', id: bid.id, accept }));
   };
   // A window opening is routine club business: read it and go to the market, no ceremony.
   const showMarket = () => {
@@ -222,7 +228,7 @@ export const EventCenter = memo(function EventCenter({
             <button className={s.primary} disabled={acting} onClick={showMarket}>
               이적시장 보기
             </button>
-            <button disabled={acting} onClick={() => void read(item)}>
+            <button disabled={acting} onClick={() => void decide(item)}>
               확인
             </button>
           </>
@@ -238,7 +244,7 @@ export const EventCenter = memo(function EventCenter({
             >
               {sponsorItem(item) ? '후원 보기' : '재정 보기'}
             </button>
-            <button disabled={acting} onClick={() => void read(item)}>
+            <button disabled={acting} onClick={() => void decide(item)}>
               확인
             </button>
           </>
@@ -248,12 +254,7 @@ export const EventCenter = memo(function EventCenter({
               <button
                 className={s.primary}
                 disabled={acting}
-                onClick={() => {
-                  void (async () => {
-                    await client.command({ type: 'renew-manager' });
-                    await read(item);
-                  })();
-                }}
+                onClick={() => void decide(item, () => client.command({ type: 'renew-manager' }))}
               >
                 감독 재계약
               </button>
@@ -268,7 +269,7 @@ export const EventCenter = memo(function EventCenter({
             >
               감독 보기
             </button>
-            <button disabled={acting} onClick={() => void read(item)}>
+            <button disabled={acting} onClick={() => void decide(item)}>
               확인
             </button>
           </>
@@ -278,13 +279,12 @@ export const EventCenter = memo(function EventCenter({
               <button
                 className={s.primary}
                 disabled={acting}
-                onClick={() => {
-                  void (async () => {
+                onClick={() =>
+                  void decide(item, async () => {
                     for (const member of expiring)
                       await client.command({ type: 'renew-staff', role: member.role });
-                    await read(item);
-                  })();
-                }}
+                  })
+                }
               >
                 모두 재계약
               </button>
@@ -322,7 +322,7 @@ export const EventCenter = memo(function EventCenter({
             >
               대진표 보기
             </button>
-            <button disabled={acting} onClick={() => void read(item)}>
+            <button disabled={acting} onClick={() => void decide(item)}>
               확인
             </button>
           </>
@@ -338,7 +338,7 @@ export const EventCenter = memo(function EventCenter({
             >
               {talker.talk ? '협상하기' : '하한 제시하기'}
             </button>
-            <button disabled={acting} onClick={() => void read(item)}>
+            <button disabled={acting} onClick={() => void decide(item)}>
               확인
             </button>
           </>
@@ -354,12 +354,12 @@ export const EventCenter = memo(function EventCenter({
             >
               유소년 보기
             </button>
-            <button disabled={acting} onClick={() => void read(item)}>
+            <button disabled={acting} onClick={() => void decide(item)}>
               확인
             </button>
           </>
         ) : (
-          <button className={s.primary} disabled={acting} onClick={() => void read(item)}>
+          <button className={s.primary} disabled={acting} onClick={() => void decide(item)}>
             확인
           </button>
         )}
