@@ -226,6 +226,7 @@ describe('earned, auditable club finances', () => {
     );
     const annual = operatingCost(w);
     // A training ground level adds upkeep once its work is done (→ECON-32).
+    w.cash = '100000000';
     operate(w, { type: 'facility', part: 'training' });
     expect(operatingCost(w)).toBe(annual);
     w.facilityWorks!.training!.day -= 90;

@@ -27,6 +27,8 @@ const after = (w: World, apply: (copy: World) => void) => {
 describe('action outcome summaries', () => {
   it('explains an investment with its recorded cost, level and engine record', () => {
     const before = world();
+    // The first training ground level costs more than a founding club's cash (→ECON-32).
+    before.cash = '100000000';
     const command = { type: 'facility', part: 'training' } as const;
     // Started, then opened 90 days later: the level moves once the work is done (→ECON-32).
     const next = after(before, (w) => {

@@ -6,18 +6,19 @@ import { addEvent, clubOf, footballQuote } from './world';
  * The facility parts (→ECON-32): a stadium of eight steps, each an expansion or a rebuild, and a
  * training ground and academy facilities of five levels. Costs and upkeep are units on the
  * football index (→ECON-26), so the ladders keep their weight against football's income in every
- * era; together they cost about what one 20-level facility once did, so the whole takes a career.
+ * era; each step costs a fixed multiple of the one before (stadium ×2.5, training ground and
+ * academy ×4), so no step is a bargain early or a sudden wall later, and the whole takes a career.
  */
 export const STADIUM_STEPS = [
   { name: '동네 구장', capacity: 2500, work: undefined, cost: 0 },
-  { name: '관중석 증축', capacity: 5000, work: 'expansion', cost: 250 },
-  { name: '새 구장', capacity: 10000, work: 'rebuild', cost: 400 },
-  { name: '스탠드 증축', capacity: 15000, work: 'expansion', cost: 600 },
-  { name: '현대식 구장', capacity: 30000, work: 'rebuild', cost: 4000 },
-  { name: '2층 스탠드', capacity: 40000, work: 'expansion', cost: 8000 },
-  { name: '대형 경기장', capacity: 60000, work: 'rebuild', cost: 70000 },
-  { name: '코너 증축', capacity: 75000, work: 'expansion', cost: 245000 },
-  { name: '명문 구장', capacity: 90000, work: 'expansion', cost: 965000 },
+  { name: '관중석 증축', capacity: 5000, work: 'expansion', cost: 600 },
+  { name: '새 구장', capacity: 10000, work: 'rebuild', cost: 1500 },
+  { name: '스탠드 증축', capacity: 15000, work: 'expansion', cost: 3750 },
+  { name: '현대식 구장', capacity: 30000, work: 'rebuild', cost: 9400 },
+  { name: '2층 스탠드', capacity: 40000, work: 'expansion', cost: 23400 },
+  { name: '대형 경기장', capacity: 60000, work: 'rebuild', cost: 58600 },
+  { name: '코너 증축', capacity: 75000, work: 'expansion', cost: 146500 },
+  { name: '명문 구장', capacity: 90000, work: 'expansion', cost: 366000 },
 ] as const;
 export type StadiumWork = 'expansion' | 'rebuild';
 export const WORK_INFO: Record<StadiumWork | 'level', { label: string; days: number }> = {
@@ -31,20 +32,20 @@ export const MAX_LEVEL = 5;
 /** The training ground by level: unit cost and the development base it adds (→CLUB-12). */
 export const TRAINING_GROUND = [
   { cost: 0, base: 0 },
-  { cost: 500, base: 0.06 },
-  { cost: 5000, base: 0.2 },
-  { cost: 40000, base: 0.37 },
-  { cost: 300000, base: 0.53 },
-  { cost: 1150000, base: 0.75 },
+  { cost: 1500, base: 0.06 },
+  { cost: 6000, base: 0.2 },
+  { cost: 24000, base: 0.37 },
+  { cost: 96000, base: 0.53 },
+  { cost: 384000, base: 0.75 },
 ] as const;
 /** The academy facilities by level: unit cost, intake, intake potential and growth (→CLUB-16). */
 export const ACADEMY_FACILITY = [
   { cost: 0, intake: 0, potential: 0, growth: 1 },
-  { cost: 400, intake: 0, potential: 1, growth: 1.05 },
-  { cost: 4000, intake: 1, potential: 2, growth: 1.12 },
-  { cost: 32000, intake: 1, potential: 3, growth: 1.22 },
-  { cost: 240000, intake: 1, potential: 4, growth: 1.35 },
-  { cost: 980000, intake: 1, potential: 4, growth: 1.5 },
+  { cost: 1200, intake: 0, potential: 1, growth: 1.05 },
+  { cost: 4800, intake: 1, potential: 2, growth: 1.12 },
+  { cost: 19200, intake: 1, potential: 3, growth: 1.22 },
+  { cost: 76800, intake: 1, potential: 4, growth: 1.35 },
+  { cost: 307200, intake: 1, potential: 4, growth: 1.5 },
 ] as const;
 /** A year's upkeep of a training ground or academy facilities, in units by level. */
 const LEVEL_UPKEEP = [0, 40, 120, 300, 600, 1000];
