@@ -133,7 +133,7 @@ export function TrainingView({ state, client }: Props) {
         {tab === 'training' ? (
           <div className={`${s.stack} ${s.pair}`}>
             <figure className={`${s.trainingScene} ${s.wide}`}>
-              <FacilityArt kind="training" className={s.trainingArt} />
+              <FacilityArt kind="training" world={w} className={s.trainingArt} />
               <figcaption>
                 <span>TRAINING GROUND</span>
                 <strong>

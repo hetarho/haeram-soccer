@@ -250,7 +250,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose }:
             </p>
           )}
           <figure className={s.preparationScene}>
-            <FacilityArt kind="locker" className={s.preparationArt} />
+            <FacilityArt kind="locker" world={w} className={s.preparationArt} />
             <figcaption className={s.opponent}>
               <span>다음 상대</span>
               <strong>{opponent?.name || '다음 시즌 일정 준비 중'}</strong>

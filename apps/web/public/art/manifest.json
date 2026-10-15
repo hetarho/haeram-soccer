@@ -1,30 +1,1400 @@
 {
+  "version": 3,
   "tool": "built-in image_gen",
-  "generatedAt": "2026-10-15T07:16:46.575302+00:00",
-  "style": "Cohesive painterly pixel-art heritage football; grass-green, charcoal, warm ivory, aged wood and quiet evening lighting",
-  "assets": [
+  "generatedAt": "2026-10-15T08:40:53.688234+00:00",
+  "style": "Coarse grass-green / charcoal 16-bit football pixel environments, quiet evening, current era and completed facility stage",
+  "eras": [
     {
-      "id": "stadium-tunnel",
-      "file": "/art/stadium-tunnel.webp",
-      "sourceFile": "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-7692beee-0269-4557-8259-061fe9ea9cf6.png",
-      "prompt": "Use case: illustration-story.\nAsset type: a finished panoramic environment bitmap used directly in a playable indie football management game, NOT a mockup.\nPrimary request: redraw the supplied football-tunnel reference as premium PAINTERLY PIXEL ART for a cohesive three-environment game-art set.\nInput image role: composition reference only, not a photograph to preserve. Keep the recognisable low eye-level brick players' entrance, open iron gate, near touchline and modest floodlit grass opening, but genuinely redraw every material in the new medium.\nStyle/medium: detailed hand-placed pixel painting, believable proportions and perspective, atmospheric but restrained, like a carefully art-directed classic PC management game. Visible square pixel clusters, clean stepped edges, controlled dither and deliberate large shadow shapes. Logical pixel grid about 384 by 128, presented as a crisp enlarged panoramic image. It must read as authored game background art, never as a photographic image with a pixel filter.\nColor palette across the entire set: charcoal #111415, deep pine shadows #18261e, natural football-grass greens #2e713d and #4b9656, desaturated moss #6c8255, warm ivory #d8d0b5, aged tobacco wood #65513c, tiny muted amber #b99864 practical lights. About 24 to 32 related colours, no mint, neon, candy hues, bright red emphasis or glossy surfaces.\nLighting/mood: quiet late evening, low ordinary floodlights, small warm practical lamps, a cool dark sky, balanced readable midtones, no glowing fog or dramatic sunbeams.\nMaterials: scuffed brown brick, old iron, damp worn paving, chalk and closely cut grass; plausible at a club founded in 1950 and still used later.\nComposition: panoramic landscape 3:1, important detail in the central horizontal strip so it survives a shallow in-game crop. The tunnel opens onto grass and a sliver of empty pitch; do not show a full grandstand or fixed stadium bowl, and make no claim about capacity. No people.\nText: none. No lettering, logos, numbers, signs, UI, watermark or split panels.\nOutput: one finished illustration, not a comparison sheet.",
-      "usage": "Club home; full stadium illustration with current-world stage, capacity and supporter labels"
+      "id": "heritage",
+      "from": 1950,
+      "through": 1969
     },
     {
-      "id": "locker-room",
-      "file": "/art/locker-room.webp",
-      "sourceFile": "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-4c1e85f7-01e8-489a-bc04-8b061fb85462.png",
-      "prompt": "Use case: illustration-story. Asset type: a finished panoramic environment bitmap for the same playable indie football management game, NOT an app mockup. Image 1 is the APPROVED STYLE REFERENCE: match its actual painterly pixel clusters, crisp stepped silhouettes, detailed but controlled dithering, realistic perspective, restrained materials and shadow values. Image 2 is the SUBJECT/COMPOSITION reference to redraw in that style, not a photo to preserve. The set uses about 24 to 32 related charcoal #111415, pine #18261e, football-grass #2e713d and #4b9656, muted moss #6c8255, warm ivory #d8d0b5, tobacco wood #65513c and tiny amber #b99864 colours. Logical grid about 384 by 128 enlarged crisply: genuinely authored hand-placed pixel painting, not photo pixelation, not smooth digital painting, not vector art. Quiet late-evening / practical-light atmosphere, believable heritage football materials and equipment plausible in 1950 and retained later. Panoramic 3:1; key details in the central horizontal band for shallow in-app crops. No people, logos, brands, words, letters, numbers, UI, watermarks or split panels. Avoid neon, mint, bright-red accents, glossy 3D, fog and dramatic light rays. Produce one finished illustration. Primary request: the empty dressing room from image 2. Worn timber benches and hooks, plain off-white cotton jerseys, leather boots, folded towels, one old leather football, chipped cream tile and plaster. Use warm ivory practical lamps in a charcoal-green shadowed room to harmonise with image 1. Frosted high windows show dark evening. Keep the bench and hanging jerseys as a calm central horizontal rhythm; the small chalkboard may show only an unlabeled pitch sketch, never writing. Believable cared-for club room, neither luxurious nor derelict.",
-      "usage": "Match preparation; next-opponent panel"
+      "id": "terraces",
+      "from": 1970,
+      "through": 1999
     },
     {
-      "id": "training-ground",
-      "file": "/art/training-ground.webp",
-      "sourceFile": "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-e9f7720e-95e2-4384-aaa3-34db726370dd.png",
-      "prompt": "Use case: illustration-story. Asset type: a finished panoramic environment bitmap for the same playable indie football management game, NOT an app mockup. Image 1 is the APPROVED STYLE REFERENCE: match its actual painterly pixel clusters, crisp stepped silhouettes, detailed but controlled dithering, realistic perspective, restrained materials and shadow values. Image 2 is the SUBJECT/COMPOSITION reference to redraw in that style, not a photo to preserve. The set uses about 24 to 32 related charcoal #111415, pine #18261e, football-grass #2e713d and #4b9656, muted moss #6c8255, warm ivory #d8d0b5, tobacco wood #65513c and tiny amber #b99864 colours. Logical grid about 384 by 128 enlarged crisply: genuinely authored hand-placed pixel painting, not photo pixelation, not smooth digital painting, not vector art. Quiet late-evening / practical-light atmosphere, believable heritage football materials and equipment plausible in 1950 and retained later. Panoramic 3:1; key details in the central horizontal band for shallow in-app crops. No people, logos, brands, words, letters, numbers, UI, watermarks or split panels. Avoid neon, mint, bright-red accents, glossy 3D, fog and dramatic light rays. Produce one finished illustration. Primary request: the touchline training ground from image 2, but at quiet late evening under ordinary modest floodlights so it belongs with image 1. Worn close-cut green grass and chalk marks, foreground stitched leather football and old canvas equipment bag beside a simple timber bench and rail fence, one plain goal in the distance and a few dark tree silhouettes. The near ball, bag, timber and grass have the same tactile square-pixel rendering as image 1's brick and iron. Keep the foreground equipment left of centre and clearly readable in the shallow crop, with open grass across the middle. No grandstands, crowds, modern plastic cones or bright advertising.",
-      "usage": "Training; actual training-ground level and current focus"
+      "id": "contemporary",
+      "from": 2000,
+      "through": null
     }
   ],
-  "version": 2,
-  "replaces": "Realistic painted environment set from commit 5d14752"
+  "treatment": {
+    "charcoalOpacity": 0.24,
+    "saturation": 0.7,
+    "contrast": 0.92,
+    "appliedIn": "FacilityArt.module.css, image only"
+  },
+  "processing": "Deterministic equal-grid crop with 2px cell-edge trim, nearest-neighbour resize to 240x80, lossless WebP; no creative post-editing.",
+  "atlases": [
+    {
+      "id": "stadium-heritage",
+      "kind": "stadium",
+      "era": "heritage",
+      "columns": 3,
+      "rows": 3,
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE game background sprite ATLAS, 3 columns by 3 rows of EXACTLY NINE equal panoramic cells, edge-to-edge aligned, NO gutters, NO borders, NO labels. Entire image 3:1 landscape, preferably 2304x768 pixels; each cell is a separate 3:1 landscape scene. This is a production asset to slice by exact grid coordinates, not a UI or a poster.\nPrimary request: NINE distinct football stadium upgrade stages in 1950–1969 Europe, read left-to-right then top-to-bottom. Every tile uses the same low near-touchline three-quarter camera, shows the green pitch across the lower third and clearly reveals the grandstands beyond, with empty seats. Nine progressively larger grounds:\nrow1 left: tiny 2500-capacity village ground, timber rail and low earth terrace, small brick hut; middle: 5000 ground, one modest timber covered stand, low opposite terrace; right: newly built 10000 ground, two brick/concrete terraces, narrow steel roof.\nrow2 left: 15000 ground, longer concrete stands on both sides; middle: 30000 grand ground, broad concrete stand with a large corrugated roof; right: 40000, a clear two-tier stand opposite.\nrow3 left: 60000, large two-tier stadium with several stands; middle: 75000, corners filled with terracing; right: 90000, imposing continuous concrete bowl and sweeping vintage steel roofs, a grand 1950s European national-scale venue.\nStyle: unmistakable COARSE 16-bit pixel art, like original classic PC football game background sprites; flat chunky square pixel clusters, sharp stair-step silhouettes, limited 20–28-colour palette, minimal dither, no smooth painterly texture. Each scene has a logical pixel grid about 192x64 enlarged crisply. Keep the grid visibly coarse even in tiny scenes, highly legible architecture and deliberate shapes rather than noisy texture.\nShared colours: charcoal #111415, dark pine #18261e, muted grass #2e713d/#4b9656, moss #6c8255, cream #d8d0b5, aged brown wood #65513c and tiny amber lamps #b99864. Quiet evening, deep blue-grey sky, ordinary early floodlights; controlled midtones and no spectacular glowing light. Dark low-contrast atmosphere to sit behind game data.\nPeriod: 1950s/1960s brick, timber, concrete, riveted steel roof trusses, simple terracing and ordinary floodlight poles. No contemporary plastic seating, glass curtain walls, giant video screens, LED ribbons, futuristic roofs, cars or advertising.\nConstraints: All nine cells must be genuinely different scenes with visible progression, never repeated recolours. Same consistent game art direction. No people, text, letters, numbers, logos, watermarks, diagrams, UI, split-screen captions or labels.",
+      "sourceFile": "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-54bdc7bf-fef6-4cff-8d92-5a2d90e1eddb.png",
+      "sourceDimensions": [
+        2172,
+        724
+      ],
+      "referenceImages": []
+    },
+    {
+      "id": "stadium-terraces",
+      "kind": "stadium",
+      "era": "terraces",
+      "columns": 3,
+      "rows": 3,
+      "prompt": "Use case: stylized-concept. Asset type: ONE production game background sprite ATLAS, 3 columns by 3 rows of EXACTLY 9 equal panoramic 3:1 cells, edge-to-edge regular grid. NO gutters, borders, captions or labels. Entire canvas 3:1 landscape. This atlas will be sliced into individual 3:1 backgrounds.\nInput image 1 is STYLE REFERENCE ONLY: match its pixel shapes, quiet grass-green / charcoal / cream / brown palette, evening atmosphere and believable perspective. Subject and era are defined below.\nStyle: distinctly COARSE 16-bit PIXEL ART, logical 192x64 pixels per cell, square pixel clusters, sharp staircase edges, flat restrained shading, limited 20–28 related colours, minimal dither. Make it more obviously pixelled than the reference, never smooth painting or noisy photo texture. Each cell must be a complete independently framed landscape scene, never spill across a cell boundary.\nLighting: quiet evening with restrained ordinary practical lights and a blue-grey sky. Muted medium-low contrast; no dramatic glow, neon, beams, or bright candy colours.\nPeriod: 1970–1999 Europe. Weathered aggregate concrete, painted steel roof trusses, moss-green or warm ivory plastic seating mixed with terraces, simple fluorescent lighting, plain unbranded polyester kits, black-and-white panel footballs. No giant LED screens, digital tablets or glassy contemporary sport campuses.\nSubjects, in EXACT grid order: NINE STADIUM stages, same low near-touchline three-quarter viewpoint and empty stands beyond grass:\nrow1: [1] tiny 2500 village ground, rail fence and low bank, hut; [2] 5000, one small covered stand and opposite terrace; [3] 10000 newly built ground, two stands and narrow roof.\nrow2: [4] 15000, longer stands both sides; [5] 30000, deep grandstand with broad roof; [6] 40000 with an unmistakable two-tier stand.\nrow3: [7] 60000 large multi-stand bowl; [8] 75000 expanded corners; [9] 90000 grand continuous two-tier arena. Huge stages use period-correct construction, never the style of a later era. Convey progressively greater scale through stand height/depth/coverage, not written capacities.\nConstraints: genuinely different drawing in EVERY cell, every successive facility stage visibly grows or improves; never the same image recoloured. Same art direction across the set. No text of any kind, letters, digits, logos, signs, watermarks, diagrams, UI, spectators or people.",
+      "sourceFile": "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-62e52afc-eda4-4a76-a4b0-350d26d58c26.png",
+      "sourceDimensions": [
+        2172,
+        724
+      ],
+      "referenceImages": [
+        "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-54bdc7bf-fef6-4cff-8d92-5a2d90e1eddb.png"
+      ]
+    },
+    {
+      "id": "stadium-contemporary",
+      "kind": "stadium",
+      "era": "contemporary",
+      "columns": 3,
+      "rows": 3,
+      "prompt": "Use case: stylized-concept. Asset type: ONE production game background sprite ATLAS, 3 columns by 3 rows of EXACTLY 9 equal panoramic 3:1 cells, edge-to-edge regular grid. NO gutters, borders, captions or labels. Entire canvas 3:1 landscape. This atlas will be sliced into individual 3:1 backgrounds.\nInput image 1 is STYLE REFERENCE ONLY: match its pixel shapes, quiet grass-green / charcoal / cream / brown palette, evening atmosphere and believable perspective. Subject and era are defined below.\nStyle: distinctly COARSE 16-bit PIXEL ART, logical 192x64 pixels per cell, square pixel clusters, sharp staircase edges, flat restrained shading, limited 20–28 related colours, minimal dither. Make it more obviously pixelled than the reference, never smooth painting or noisy photo texture. Each cell must be a complete independently framed landscape scene, never spill across a cell boundary.\nLighting: quiet evening with restrained ordinary practical lights and a blue-grey sky. Muted medium-low contrast; no dramatic glow, neon, beams, or bright candy colours.\nPeriod: 2000 onward Europe. Restrained steel and concrete, dark glass and green plastic seating, modern functional LED floodlights, synthetic white footballs with dark plain panels, plain unbranded technical kits. Expensive facilities can use glazed rooms, clean pale timber and steel; modest stages still remain small and utilitarian. No futuristic sci-fi, branding or advertising.\nSubjects, in EXACT grid order: NINE STADIUM stages, same low near-touchline three-quarter viewpoint and empty stands beyond grass:\nrow1: [1] tiny 2500 village ground, rail fence and low bank, hut; [2] 5000, one small covered stand and opposite terrace; [3] 10000 newly built ground, two stands and narrow roof.\nrow2: [4] 15000, longer stands both sides; [5] 30000, deep grandstand with broad roof; [6] 40000 with an unmistakable two-tier stand.\nrow3: [7] 60000 large multi-stand bowl; [8] 75000 expanded corners; [9] 90000 grand continuous two-tier arena. Huge stages use period-correct construction, never the style of a later era. Convey progressively greater scale through stand height/depth/coverage, not written capacities.\nConstraints: genuinely different drawing in EVERY cell, every successive facility stage visibly grows or improves; never the same image recoloured. Same art direction across the set. No text of any kind, letters, digits, logos, signs, watermarks, diagrams, UI, spectators or people.",
+      "sourceFile": "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-f664f52e-f790-4f84-bf69-ac556816679a.png",
+      "sourceDimensions": [
+        2172,
+        724
+      ],
+      "referenceImages": [
+        "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-54bdc7bf-fef6-4cff-8d92-5a2d90e1eddb.png"
+      ]
+    },
+    {
+      "id": "locker-heritage",
+      "kind": "locker",
+      "era": "heritage",
+      "columns": 3,
+      "rows": 3,
+      "prompt": "Use case: stylized-concept. Asset type: ONE production game background sprite ATLAS, 3 columns by 3 rows of EXACTLY 9 equal panoramic 3:1 cells, edge-to-edge regular grid. NO gutters, borders, captions or labels. Entire canvas 3:1 landscape. This atlas will be sliced into individual 3:1 backgrounds.\nInput image 1 is STYLE REFERENCE ONLY: match its pixel shapes, quiet grass-green / charcoal / cream / brown palette, evening atmosphere and believable perspective. Subject and era are defined below.\nStyle: distinctly COARSE 16-bit PIXEL ART, logical 192x64 pixels per cell, square pixel clusters, sharp staircase edges, flat restrained shading, limited 20–28 related colours, minimal dither. Make it more obviously pixelled than the reference, never smooth painting or noisy photo texture. Each cell must be a complete independently framed landscape scene, never spill across a cell boundary.\nLighting: quiet evening with restrained ordinary practical lights and a blue-grey sky. Muted medium-low contrast; no dramatic glow, neon, beams, or bright candy colours.\nPeriod: 1950–1969 Europe. Brick, timber, aged concrete and riveted steel, cotton jerseys and stitched brown leather footballs. Ordinary tungsten practical lamps and early floodlights. No plastic moulded seats, synthetic equipment, giant video screens or modern glass façades.\nSubjects, in EXACT grid order: NINE LOCKER ROOM stages, inside the same club as its stadium upgrades, eye-level wide interiors with empty benches, hanging plain jerseys and a pitch sketch with NO writing:\nrow1: [1] very small brick changing shed, rough bench, five hooks, simple kit bag; [2] longer wooden bench, neat row of hooks, tiled wash basin; [3] properly fitted dedicated room, long benches and open kit cubbies.\nrow2: [4] larger changing room, separate wall sections and practical storage; [5] professional team room with individual wooden bays and a central kit table; [6] larger two-wall room, generous bays and proper physio corner.\nrow3: [7] spacious professional room, curved seating layout and dedicated treatment alcove; [8] high-quality complete suite, deeper individual bays and additional warm-up space; [9] grand elite club team room, broad horseshoe seating and separate treatment/warm-up areas.\nKeep room scale and fit-out growing visibly at every stage. Even the best room respects its historical era; no screens in old eras. No players.\nConstraints: genuinely different drawing in EVERY cell, every successive facility stage visibly grows or improves; never the same image recoloured. Same art direction across the set. No text of any kind, letters, digits, logos, signs, watermarks, diagrams, UI, spectators or people.",
+      "sourceFile": "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-fc152824-984b-4b9a-af69-50a667a86bd2.png",
+      "sourceDimensions": [
+        2172,
+        724
+      ],
+      "referenceImages": [
+        "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-54bdc7bf-fef6-4cff-8d92-5a2d90e1eddb.png"
+      ]
+    },
+    {
+      "id": "locker-terraces",
+      "kind": "locker",
+      "era": "terraces",
+      "columns": 3,
+      "rows": 3,
+      "prompt": "Use case: stylized-concept. Asset type: ONE production game background sprite ATLAS, 3 columns by 3 rows of EXACTLY 9 equal panoramic 3:1 cells, edge-to-edge regular grid. NO gutters, borders, captions or labels. Entire canvas 3:1 landscape. This atlas will be sliced into individual 3:1 backgrounds.\nInput image 1 is STYLE REFERENCE ONLY: match its pixel shapes, quiet grass-green / charcoal / cream / brown palette, evening atmosphere and believable perspective. Subject and era are defined below.\nStyle: distinctly COARSE 16-bit PIXEL ART, logical 192x64 pixels per cell, square pixel clusters, sharp staircase edges, flat restrained shading, limited 20–28 related colours, minimal dither. Make it more obviously pixelled than the reference, never smooth painting or noisy photo texture. Each cell must be a complete independently framed landscape scene, never spill across a cell boundary.\nLighting: quiet evening with restrained ordinary practical lights and a blue-grey sky. Muted medium-low contrast; no dramatic glow, neon, beams, or bright candy colours.\nPeriod: 1970–1999 Europe. Weathered aggregate concrete, painted steel roof trusses, moss-green or warm ivory plastic seating mixed with terraces, simple fluorescent lighting, plain unbranded polyester kits, black-and-white panel footballs. No giant LED screens, digital tablets or glassy contemporary sport campuses.\nSubjects, in EXACT grid order: NINE LOCKER ROOM stages, inside the same club as its stadium upgrades, eye-level wide interiors with empty benches, hanging plain jerseys and a pitch sketch with NO writing:\nrow1: [1] very small brick changing shed, rough bench, five hooks, simple kit bag; [2] longer wooden bench, neat row of hooks, tiled wash basin; [3] properly fitted dedicated room, long benches and open kit cubbies.\nrow2: [4] larger changing room, separate wall sections and practical storage; [5] professional team room with individual wooden bays and a central kit table; [6] larger two-wall room, generous bays and proper physio corner.\nrow3: [7] spacious professional room, curved seating layout and dedicated treatment alcove; [8] high-quality complete suite, deeper individual bays and additional warm-up space; [9] grand elite club team room, broad horseshoe seating and separate treatment/warm-up areas.\nKeep room scale and fit-out growing visibly at every stage. Even the best room respects its historical era; no screens in old eras. No players.\nConstraints: genuinely different drawing in EVERY cell, every successive facility stage visibly grows or improves; never the same image recoloured. Same art direction across the set. No text of any kind, letters, digits, logos, signs, watermarks, diagrams, UI, spectators or people.",
+      "sourceFile": "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-e7423a91-704f-4edb-9f78-88833268fcad.png",
+      "sourceDimensions": [
+        2172,
+        724
+      ],
+      "referenceImages": [
+        "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-54bdc7bf-fef6-4cff-8d92-5a2d90e1eddb.png"
+      ]
+    },
+    {
+      "id": "locker-contemporary",
+      "kind": "locker",
+      "era": "contemporary",
+      "columns": 3,
+      "rows": 3,
+      "prompt": "Use case: stylized-concept. Asset type: ONE production game background sprite ATLAS, 3 columns by 3 rows of EXACTLY 9 equal panoramic 3:1 cells, edge-to-edge regular grid. NO gutters, borders, captions or labels. Entire canvas 3:1 landscape. This atlas will be sliced into individual 3:1 backgrounds.\nInput image 1 is STYLE REFERENCE ONLY: match its pixel shapes, quiet grass-green / charcoal / cream / brown palette, evening atmosphere and believable perspective. Subject and era are defined below.\nStyle: distinctly COARSE 16-bit PIXEL ART, logical 192x64 pixels per cell, square pixel clusters, sharp staircase edges, flat restrained shading, limited 20–28 related colours, minimal dither. Make it more obviously pixelled than the reference, never smooth painting or noisy photo texture. Each cell must be a complete independently framed landscape scene, never spill across a cell boundary.\nLighting: quiet evening with restrained ordinary practical lights and a blue-grey sky. Muted medium-low contrast; no dramatic glow, neon, beams, or bright candy colours.\nPeriod: 2000 onward Europe. Restrained steel and concrete, dark glass and green plastic seating, modern functional LED floodlights, synthetic white footballs with dark plain panels, plain unbranded technical kits. Expensive facilities can use glazed rooms, clean pale timber and steel; modest stages still remain small and utilitarian. No futuristic sci-fi, branding or advertising.\nSubjects, in EXACT grid order: NINE LOCKER ROOM stages, inside the same club as its stadium upgrades, eye-level wide interiors with empty benches, hanging plain jerseys and a pitch sketch with NO writing:\nrow1: [1] very small brick changing shed, rough bench, five hooks, simple kit bag; [2] longer wooden bench, neat row of hooks, tiled wash basin; [3] properly fitted dedicated room, long benches and open kit cubbies.\nrow2: [4] larger changing room, separate wall sections and practical storage; [5] professional team room with individual wooden bays and a central kit table; [6] larger two-wall room, generous bays and proper physio corner.\nrow3: [7] spacious professional room, curved seating layout and dedicated treatment alcove; [8] high-quality complete suite, deeper individual bays and additional warm-up space; [9] grand elite club team room, broad horseshoe seating and separate treatment/warm-up areas.\nKeep room scale and fit-out growing visibly at every stage. Even the best room respects its historical era; no screens in old eras. No players.\nConstraints: genuinely different drawing in EVERY cell, every successive facility stage visibly grows or improves; never the same image recoloured. Same art direction across the set. No text of any kind, letters, digits, logos, signs, watermarks, diagrams, UI, spectators or people.",
+      "sourceFile": "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-3158e1d1-cde6-481a-a7b8-ac6a3159820d.png",
+      "sourceDimensions": [
+        2172,
+        724
+      ],
+      "referenceImages": [
+        "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-54bdc7bf-fef6-4cff-8d92-5a2d90e1eddb.png"
+      ]
+    },
+    {
+      "id": "training-heritage",
+      "kind": "training",
+      "era": "heritage",
+      "columns": 2,
+      "rows": 3,
+      "prompt": "Use case: stylized-concept. Asset type: ONE production game background sprite ATLAS, 2 columns by 3 rows of EXACTLY 6 equal panoramic 3:1 cells, edge-to-edge regular grid. NO gutters, borders, captions or labels. Entire canvas 2:1 landscape. This atlas will be sliced into individual 3:1 backgrounds.\nInput image 1 is STYLE REFERENCE ONLY: match its pixel shapes, quiet grass-green / charcoal / cream / brown palette, evening atmosphere and believable perspective. Subject and era are defined below.\nStyle: distinctly COARSE 16-bit PIXEL ART, logical 192x64 pixels per cell, square pixel clusters, sharp staircase edges, flat restrained shading, limited 20–28 related colours, minimal dither. Make it more obviously pixelled than the reference, never smooth painting or noisy photo texture. Each cell must be a complete independently framed landscape scene, never spill across a cell boundary.\nLighting: quiet evening with restrained ordinary practical lights and a blue-grey sky. Muted medium-low contrast; no dramatic glow, neon, beams, or bright candy colours.\nPeriod: 1950–1969 Europe. Brick, timber, aged concrete and riveted steel, cotton jerseys and stitched brown leather footballs. Ordinary tungsten practical lamps and early floodlights. No plastic moulded seats, synthetic equipment, giant video screens or modern glass façades.\nSubjects, in EXACT grid order: SIX TRAINING GROUND levels, ordered left-to-right then top-to-bottom, same sideline camera, green pitches with equipment and buildings:\nrow1: [0] rough shared grass, timber rail, one worn ball and plain portable goal, no dedicated building; [1] tidied dedicated grass pitch, basic goal, equipment shed and bench.\nrow2: [2] drained/marked training pitch, better fencing, useful equipment storage; [3] two well-kept pitches and a modest dedicated coaching pavilion.\nrow3: [4] professional multiple-pitch training site, purposeful gym/physio pavilion and covered warm-up lane; [5] elite comprehensive training campus, multiple excellent pitches and large period-correct coaching and treatment buildings.\nForeground equipment is modest, practical and from the correct era. No stadium grandstands; facilities for training, not spectators. No people.\nConstraints: genuinely different drawing in EVERY cell, every successive facility stage visibly grows or improves; never the same image recoloured. Same art direction across the set. No text of any kind, letters, digits, logos, signs, watermarks, diagrams, UI, spectators or people.",
+      "sourceFile": "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-6f1ec333-1843-4b1f-b8fa-78c83a301623.png",
+      "sourceDimensions": [
+        1774,
+        887
+      ],
+      "referenceImages": [
+        "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-54bdc7bf-fef6-4cff-8d92-5a2d90e1eddb.png"
+      ]
+    },
+    {
+      "id": "training-terraces",
+      "kind": "training",
+      "era": "terraces",
+      "columns": 2,
+      "rows": 3,
+      "prompt": "Use case: stylized-concept. Asset type: ONE production game background sprite ATLAS, 2 columns by 3 rows of EXACTLY 6 equal panoramic 3:1 cells, edge-to-edge regular grid. NO gutters, borders, captions or labels. Entire canvas 2:1 landscape. This atlas will be sliced into individual 3:1 backgrounds.\nInput image 1 is STYLE REFERENCE ONLY: match its pixel shapes, quiet grass-green / charcoal / cream / brown palette, evening atmosphere and believable perspective. Subject and era are defined below.\nStyle: distinctly COARSE 16-bit PIXEL ART, logical 192x64 pixels per cell, square pixel clusters, sharp staircase edges, flat restrained shading, limited 20–28 related colours, minimal dither. Make it more obviously pixelled than the reference, never smooth painting or noisy photo texture. Each cell must be a complete independently framed landscape scene, never spill across a cell boundary.\nLighting: quiet evening with restrained ordinary practical lights and a blue-grey sky. Muted medium-low contrast; no dramatic glow, neon, beams, or bright candy colours.\nPeriod: 1970–1999 Europe. Weathered aggregate concrete, painted steel roof trusses, moss-green or warm ivory plastic seating mixed with terraces, simple fluorescent lighting, plain unbranded polyester kits, black-and-white panel footballs. No giant LED screens, digital tablets or glassy contemporary sport campuses.\nSubjects, in EXACT grid order: SIX TRAINING GROUND levels, ordered left-to-right then top-to-bottom, same sideline camera, green pitches with equipment and buildings:\nrow1: [0] rough shared grass, timber rail, one worn ball and plain portable goal, no dedicated building; [1] tidied dedicated grass pitch, basic goal, equipment shed and bench.\nrow2: [2] drained/marked training pitch, better fencing, useful equipment storage; [3] two well-kept pitches and a modest dedicated coaching pavilion.\nrow3: [4] professional multiple-pitch training site, purposeful gym/physio pavilion and covered warm-up lane; [5] elite comprehensive training campus, multiple excellent pitches and large period-correct coaching and treatment buildings.\nForeground equipment is modest, practical and from the correct era. No stadium grandstands; facilities for training, not spectators. No people.\nConstraints: genuinely different drawing in EVERY cell, every successive facility stage visibly grows or improves; never the same image recoloured. Same art direction across the set. No text of any kind, letters, digits, logos, signs, watermarks, diagrams, UI, spectators or people.",
+      "sourceFile": "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-1650c52e-2859-404d-b5fb-120c7c22b9b4.png",
+      "sourceDimensions": [
+        1774,
+        887
+      ],
+      "referenceImages": [
+        "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-54bdc7bf-fef6-4cff-8d92-5a2d90e1eddb.png"
+      ]
+    },
+    {
+      "id": "training-contemporary",
+      "kind": "training",
+      "era": "contemporary",
+      "columns": 2,
+      "rows": 3,
+      "prompt": "Use case: stylized-concept. Asset type: ONE production game background sprite ATLAS, 2 columns by 3 rows of EXACTLY 6 equal panoramic 3:1 cells, edge-to-edge regular grid. NO gutters, borders, captions or labels. Entire canvas 2:1 landscape. This atlas will be sliced into individual 3:1 backgrounds.\nInput image 1 is STYLE REFERENCE ONLY: match its pixel shapes, quiet grass-green / charcoal / cream / brown palette, evening atmosphere and believable perspective. Subject and era are defined below.\nStyle: distinctly COARSE 16-bit PIXEL ART, logical 192x64 pixels per cell, square pixel clusters, sharp staircase edges, flat restrained shading, limited 20–28 related colours, minimal dither. Make it more obviously pixelled than the reference, never smooth painting or noisy photo texture. Each cell must be a complete independently framed landscape scene, never spill across a cell boundary.\nLighting: quiet evening with restrained ordinary practical lights and a blue-grey sky. Muted medium-low contrast; no dramatic glow, neon, beams, or bright candy colours.\nPeriod: 2000 onward Europe. Restrained steel and concrete, dark glass and green plastic seating, modern functional LED floodlights, synthetic white footballs with dark plain panels, plain unbranded technical kits. Expensive facilities can use glazed rooms, clean pale timber and steel; modest stages still remain small and utilitarian. No futuristic sci-fi, branding or advertising.\nSubjects, in EXACT grid order: SIX TRAINING GROUND levels, ordered left-to-right then top-to-bottom, same sideline camera, green pitches with equipment and buildings:\nrow1: [0] rough shared grass, timber rail, one worn ball and plain portable goal, no dedicated building; [1] tidied dedicated grass pitch, basic goal, equipment shed and bench.\nrow2: [2] drained/marked training pitch, better fencing, useful equipment storage; [3] two well-kept pitches and a modest dedicated coaching pavilion.\nrow3: [4] professional multiple-pitch training site, purposeful gym/physio pavilion and covered warm-up lane; [5] elite comprehensive training campus, multiple excellent pitches and large period-correct coaching and treatment buildings.\nForeground equipment is modest, practical and from the correct era. No stadium grandstands; facilities for training, not spectators. No people.\nConstraints: genuinely different drawing in EVERY cell, every successive facility stage visibly grows or improves; never the same image recoloured. Same art direction across the set. No text of any kind, letters, digits, logos, signs, watermarks, diagrams, UI, spectators or people.",
+      "sourceFile": "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-9ed88197-b266-458d-a179-8838a2b490c3.png",
+      "sourceDimensions": [
+        1774,
+        887
+      ],
+      "referenceImages": [
+        "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-54bdc7bf-fef6-4cff-8d92-5a2d90e1eddb.png"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "era": "heritage",
+      "kind": "stadium",
+      "stage": 0,
+      "file": "/art/scenes/heritage/stadium-0.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 30236,
+      "sha256": "8ae0bc3228526814c263b0f716da3d04e69d2a40c766a6685603130c58d34f12",
+      "atlas": "stadium-heritage",
+      "crop": [
+        2,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "stadium",
+      "stage": 1,
+      "file": "/art/scenes/heritage/stadium-1.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 27172,
+      "sha256": "dc207c3f1de3c3adc144ddff8428748f0315e616c190ec673ed5daf4ce63208c",
+      "atlas": "stadium-heritage",
+      "crop": [
+        726,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "stadium",
+      "stage": 2,
+      "file": "/art/scenes/heritage/stadium-2.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 27744,
+      "sha256": "c7d55f6d4c46a75cb4d63a4ef83c0235c97b8557161f8adb7753a0547137d4c7",
+      "atlas": "stadium-heritage",
+      "crop": [
+        1450,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "stadium",
+      "stage": 3,
+      "file": "/art/scenes/heritage/stadium-3.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 27694,
+      "sha256": "fff577fe9c893529fabc3dc502ee012d8625e044bc0c7cc740fb51b6aee18146",
+      "atlas": "stadium-heritage",
+      "crop": [
+        2,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "stadium",
+      "stage": 4,
+      "file": "/art/scenes/heritage/stadium-4.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 29306,
+      "sha256": "92d9e1bdef22a58984abc2852a347337f7e6a8e4ed604d39255a43ef0e94beec",
+      "atlas": "stadium-heritage",
+      "crop": [
+        726,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "stadium",
+      "stage": 5,
+      "file": "/art/scenes/heritage/stadium-5.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 29536,
+      "sha256": "fd899a56c44abad9c9e747901c085ba7ad26026f61ed4ac2c9639f5c4297d51c",
+      "atlas": "stadium-heritage",
+      "crop": [
+        1450,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "stadium",
+      "stage": 6,
+      "file": "/art/scenes/heritage/stadium-6.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 29370,
+      "sha256": "cad089621e75e252a57d0c797d8ed3daea2b95db4c28bd9cf435751edadf928b",
+      "atlas": "stadium-heritage",
+      "crop": [
+        2,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "stadium",
+      "stage": 7,
+      "file": "/art/scenes/heritage/stadium-7.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 28936,
+      "sha256": "a6339ef8efba62c8adc8169906f472ea3693cedaf83e67ac5054855faa3b1f84",
+      "atlas": "stadium-heritage",
+      "crop": [
+        726,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "stadium",
+      "stage": 8,
+      "file": "/art/scenes/heritage/stadium-8.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 29378,
+      "sha256": "a97747fcf6a51a2b97d6fcbfee3398484427d89f08ce1d790abb49b1027a813f",
+      "atlas": "stadium-heritage",
+      "crop": [
+        1450,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "stadium",
+      "stage": 0,
+      "file": "/art/scenes/terraces/stadium-0.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 32490,
+      "sha256": "5637675d6cd2d0b5715452f0eef5c3635b81d09fdd9c7c9a25b7fb5bbb3a724c",
+      "atlas": "stadium-terraces",
+      "crop": [
+        2,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "stadium",
+      "stage": 1,
+      "file": "/art/scenes/terraces/stadium-1.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 30578,
+      "sha256": "a00f1ccd8e81773998f1c68065684478febe7b90debdbb908cc469fe855f0a63",
+      "atlas": "stadium-terraces",
+      "crop": [
+        726,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "stadium",
+      "stage": 2,
+      "file": "/art/scenes/terraces/stadium-2.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 30266,
+      "sha256": "2a5d2a5d73debf359911d09554c0eeeea577db19e37fcb3160e6cc6b256f8f30",
+      "atlas": "stadium-terraces",
+      "crop": [
+        1450,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "stadium",
+      "stage": 3,
+      "file": "/art/scenes/terraces/stadium-3.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 31204,
+      "sha256": "fab3a74bc9d4ba8cd6a02e6526c5aeba62c852a852dcebc418cdc3699af875b4",
+      "atlas": "stadium-terraces",
+      "crop": [
+        2,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "stadium",
+      "stage": 4,
+      "file": "/art/scenes/terraces/stadium-4.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 32512,
+      "sha256": "ca2d69714631cbd45014529319f9f442bf4ca479cb9c05e6951b3e94253655c6",
+      "atlas": "stadium-terraces",
+      "crop": [
+        726,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "stadium",
+      "stage": 5,
+      "file": "/art/scenes/terraces/stadium-5.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 32692,
+      "sha256": "cda43388ab749eb02a5fe53139be501bac8da052e9d1642c2038fa2020f49e21",
+      "atlas": "stadium-terraces",
+      "crop": [
+        1450,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "stadium",
+      "stage": 6,
+      "file": "/art/scenes/terraces/stadium-6.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 33014,
+      "sha256": "4b24288a0a6048a67bd5b6b22a46057c59b36e2d74647104737706590ac18baa",
+      "atlas": "stadium-terraces",
+      "crop": [
+        2,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "stadium",
+      "stage": 7,
+      "file": "/art/scenes/terraces/stadium-7.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 32852,
+      "sha256": "277318ca39c1d6a01c8c0cfdfff0dfc385b40ecfa21d7b5164d09cf29a5c522a",
+      "atlas": "stadium-terraces",
+      "crop": [
+        726,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "stadium",
+      "stage": 8,
+      "file": "/art/scenes/terraces/stadium-8.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 33794,
+      "sha256": "5c9260988b9a379cc7dde6dcf7d169c20d26ba32513d70617452948615560341",
+      "atlas": "stadium-terraces",
+      "crop": [
+        1450,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "stadium",
+      "stage": 0,
+      "file": "/art/scenes/contemporary/stadium-0.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 31668,
+      "sha256": "fafe89b3583ce7be152c5ea00d2e909a3c9b503b55bf28601a47616361def191",
+      "atlas": "stadium-contemporary",
+      "crop": [
+        2,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "stadium",
+      "stage": 1,
+      "file": "/art/scenes/contemporary/stadium-1.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 30116,
+      "sha256": "0aac16e892212c79bfa9832c2b89bfb30b887cfc6b3b15aedc75099955b5358c",
+      "atlas": "stadium-contemporary",
+      "crop": [
+        726,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "stadium",
+      "stage": 2,
+      "file": "/art/scenes/contemporary/stadium-2.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 30056,
+      "sha256": "8c4a845e2f385a6f8d9978fbdbd1c381134784f040c287a28038a93f1f6a0bbc",
+      "atlas": "stadium-contemporary",
+      "crop": [
+        1450,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "stadium",
+      "stage": 3,
+      "file": "/art/scenes/contemporary/stadium-3.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 30152,
+      "sha256": "795bff5788844dbaa6254e0aeb34b0a85e0ec62ecc5081f09f1184beee0f12e7",
+      "atlas": "stadium-contemporary",
+      "crop": [
+        2,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "stadium",
+      "stage": 4,
+      "file": "/art/scenes/contemporary/stadium-4.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 32120,
+      "sha256": "067fb7c4c55da7241479d1401e5646cb9bba277d7fe739cca9fcbd21c57782e3",
+      "atlas": "stadium-contemporary",
+      "crop": [
+        726,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "stadium",
+      "stage": 5,
+      "file": "/art/scenes/contemporary/stadium-5.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 32024,
+      "sha256": "3f41c7626ca3c253880205f5caa40b4a45c194674dc6a6ef5417c1d7e98d34eb",
+      "atlas": "stadium-contemporary",
+      "crop": [
+        1450,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "stadium",
+      "stage": 6,
+      "file": "/art/scenes/contemporary/stadium-6.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 33130,
+      "sha256": "d9de8210fc10a6bf07b206f4d59ea3ce5dbd0f6c61c31ceabc865095acc7ab6c",
+      "atlas": "stadium-contemporary",
+      "crop": [
+        2,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "stadium",
+      "stage": 7,
+      "file": "/art/scenes/contemporary/stadium-7.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 33070,
+      "sha256": "bab9c5d037a2d2b4177d459e7350a288ed8dc7c78ceec5527e009ec24229310c",
+      "atlas": "stadium-contemporary",
+      "crop": [
+        726,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "stadium",
+      "stage": 8,
+      "file": "/art/scenes/contemporary/stadium-8.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 33362,
+      "sha256": "8eb9f3b2fea540f68a2ac398faedfaf25a2a4dd1a286a2667a8de29cdd87a625",
+      "atlas": "stadium-contemporary",
+      "crop": [
+        1450,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "locker",
+      "stage": 0,
+      "file": "/art/scenes/heritage/locker-0.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 31540,
+      "sha256": "c699196602d2694bb9a65c6563f1d06f69a7d98ca8c9506226123d9a304e2d03",
+      "atlas": "locker-heritage",
+      "crop": [
+        2,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "locker",
+      "stage": 1,
+      "file": "/art/scenes/heritage/locker-1.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 28728,
+      "sha256": "bbac958c19aaf84c23d0a6754bc1b34b164d3f946c30fe16d869b3ea9af0aadc",
+      "atlas": "locker-heritage",
+      "crop": [
+        726,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "locker",
+      "stage": 2,
+      "file": "/art/scenes/heritage/locker-2.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 30106,
+      "sha256": "b48b196cd7cce22dcf0359e808cb7a6bebc5358cc8f238725e49c025b8039141",
+      "atlas": "locker-heritage",
+      "crop": [
+        1450,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "locker",
+      "stage": 3,
+      "file": "/art/scenes/heritage/locker-3.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 28068,
+      "sha256": "e8111cc8d39e5b94440db0da314243fd43053f68d90b016f759f19102b04046f",
+      "atlas": "locker-heritage",
+      "crop": [
+        2,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "locker",
+      "stage": 4,
+      "file": "/art/scenes/heritage/locker-4.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 27534,
+      "sha256": "c709ae6fb4d026cddcc6d252179dab3074cd8efec72d71c4186c94b9aad64497",
+      "atlas": "locker-heritage",
+      "crop": [
+        726,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "locker",
+      "stage": 5,
+      "file": "/art/scenes/heritage/locker-5.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 28908,
+      "sha256": "ba4567b4b73aa655bb39b23b80fcf651f842efea8183ae97b269768220f6b754",
+      "atlas": "locker-heritage",
+      "crop": [
+        1450,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "locker",
+      "stage": 6,
+      "file": "/art/scenes/heritage/locker-6.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 28450,
+      "sha256": "3cfb174f91aab89dc70326c09ffa35899570dfd5556ada5c680c29c1c56f7e87",
+      "atlas": "locker-heritage",
+      "crop": [
+        2,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "locker",
+      "stage": 7,
+      "file": "/art/scenes/heritage/locker-7.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 29550,
+      "sha256": "5d2a8dc203f734fb8daddae2e1615fdd1b356b86979e490da752d2a32ed9397f",
+      "atlas": "locker-heritage",
+      "crop": [
+        726,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "locker",
+      "stage": 8,
+      "file": "/art/scenes/heritage/locker-8.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 31602,
+      "sha256": "a1346084bc60acfedd169d3b7ae681d0451afdf7e237f551f2583afd49455869",
+      "atlas": "locker-heritage",
+      "crop": [
+        1450,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "locker",
+      "stage": 0,
+      "file": "/art/scenes/terraces/locker-0.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 31866,
+      "sha256": "869cb257fffb6bd7877196fddcd889797ec151c8536b15a6330a1ef30d72326e",
+      "atlas": "locker-terraces",
+      "crop": [
+        2,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "locker",
+      "stage": 1,
+      "file": "/art/scenes/terraces/locker-1.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 29156,
+      "sha256": "5410cb39c4d7c53fea9725972b644e8f3931310d7bbe88b88fc3427c9eebbc89",
+      "atlas": "locker-terraces",
+      "crop": [
+        726,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "locker",
+      "stage": 2,
+      "file": "/art/scenes/terraces/locker-2.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 27774,
+      "sha256": "a78f97b34805bc432901368b4a4ee0ab5d477f1a655424f7aa688a4b4cf855f0",
+      "atlas": "locker-terraces",
+      "crop": [
+        1450,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "locker",
+      "stage": 3,
+      "file": "/art/scenes/terraces/locker-3.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 29566,
+      "sha256": "7430b454319fda5ac1359512526b9d1a73480c2bed68ab342033b3b875a8ed4c",
+      "atlas": "locker-terraces",
+      "crop": [
+        2,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "locker",
+      "stage": 4,
+      "file": "/art/scenes/terraces/locker-4.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 27996,
+      "sha256": "e48780ec03c30f6de818abd0de0396a364880b8b045334ff0d98011afb7aef36",
+      "atlas": "locker-terraces",
+      "crop": [
+        726,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "locker",
+      "stage": 5,
+      "file": "/art/scenes/terraces/locker-5.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 30388,
+      "sha256": "37a026d02942a9b6ab98fc61cefbc971197db36557af30d39057d5698e7f0cb3",
+      "atlas": "locker-terraces",
+      "crop": [
+        1450,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "locker",
+      "stage": 6,
+      "file": "/art/scenes/terraces/locker-6.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 30594,
+      "sha256": "0f8ca5ca43f4075e9a2774c512c98978ce70e532abd8d48e6f176ddab2884efe",
+      "atlas": "locker-terraces",
+      "crop": [
+        2,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "locker",
+      "stage": 7,
+      "file": "/art/scenes/terraces/locker-7.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 31296,
+      "sha256": "66e92bda2e8a601c70497f310f2047ca20c991460f15343b4869aec716172acf",
+      "atlas": "locker-terraces",
+      "crop": [
+        726,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "locker",
+      "stage": 8,
+      "file": "/art/scenes/terraces/locker-8.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 30756,
+      "sha256": "eb72c5955945a3e9993760eae7b21447706d649862c888070455f9fdf0bc408c",
+      "atlas": "locker-terraces",
+      "crop": [
+        1450,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "locker",
+      "stage": 0,
+      "file": "/art/scenes/contemporary/locker-0.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 29854,
+      "sha256": "8318c736e9032814c5dc1cb9b5a4e789be7845208aa344c0d7651e1595e4b6a4",
+      "atlas": "locker-contemporary",
+      "crop": [
+        2,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "locker",
+      "stage": 1,
+      "file": "/art/scenes/contemporary/locker-1.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 26640,
+      "sha256": "e71c8fb9a99ddb898a217781df3e33765d8b5ad8c1b94d9c7893c13fe9ab1e35",
+      "atlas": "locker-contemporary",
+      "crop": [
+        726,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "locker",
+      "stage": 2,
+      "file": "/art/scenes/contemporary/locker-2.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 26382,
+      "sha256": "b9244b3f5ff1203023eff9956bd5a2f1a5823b632d6ce5f3c19b429ee46c2cf2",
+      "atlas": "locker-contemporary",
+      "crop": [
+        1450,
+        2,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "locker",
+      "stage": 3,
+      "file": "/art/scenes/contemporary/locker-3.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 28442,
+      "sha256": "8e20141d9a99c6525c9d9f3ddcb58c3f4d752ddde227da862208740fbeac0095",
+      "atlas": "locker-contemporary",
+      "crop": [
+        2,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "locker",
+      "stage": 4,
+      "file": "/art/scenes/contemporary/locker-4.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 27992,
+      "sha256": "c72faaa22d795f8aba484567a76854015d464b9fe7b44933297db744168779c9",
+      "atlas": "locker-contemporary",
+      "crop": [
+        726,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "locker",
+      "stage": 5,
+      "file": "/art/scenes/contemporary/locker-5.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 28218,
+      "sha256": "ccf57d5b77dfac57228f384fb8ed60611d7ae547902d9f5b5ab7fbf1c370dfda",
+      "atlas": "locker-contemporary",
+      "crop": [
+        1450,
+        243,
+        720,
+        238
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "locker",
+      "stage": 6,
+      "file": "/art/scenes/contemporary/locker-6.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 27848,
+      "sha256": "6e9124c52072164cc89a9cbc306adb798b3c02201057950681a25ece5caa74ac",
+      "atlas": "locker-contemporary",
+      "crop": [
+        2,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "locker",
+      "stage": 7,
+      "file": "/art/scenes/contemporary/locker-7.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 27580,
+      "sha256": "72cd9e06b4f165d0be2cb02da1bec309835b9239dbd9579e988929f78ffccfb4",
+      "atlas": "locker-contemporary",
+      "crop": [
+        726,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "locker",
+      "stage": 8,
+      "file": "/art/scenes/contemporary/locker-8.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 29372,
+      "sha256": "21d5593da1acf6081d76536d42d6b5211d5052b46e39ccd0a23886efe116d444",
+      "atlas": "locker-contemporary",
+      "crop": [
+        1450,
+        485,
+        720,
+        237
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "training",
+      "stage": 0,
+      "file": "/art/scenes/heritage/training-0.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 35910,
+      "sha256": "9c6c0d0541d08998e5176c4b868115e732a27abc41fbb4667fd423edd9a6a93e",
+      "atlas": "training-heritage",
+      "crop": [
+        2,
+        2,
+        883,
+        292
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "training",
+      "stage": 1,
+      "file": "/art/scenes/heritage/training-1.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 31554,
+      "sha256": "bda4da790e74ac28642c0da713519c1f8d1c3fe692657a9232f1d6a739cbda6e",
+      "atlas": "training-heritage",
+      "crop": [
+        889,
+        2,
+        883,
+        292
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "training",
+      "stage": 2,
+      "file": "/art/scenes/heritage/training-2.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 31850,
+      "sha256": "4e265b62c4f123e45b45e26f18d741c4bcba433712dc163ef46f33353aee6e36",
+      "atlas": "training-heritage",
+      "crop": [
+        2,
+        298,
+        883,
+        291
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "training",
+      "stage": 3,
+      "file": "/art/scenes/heritage/training-3.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 32112,
+      "sha256": "97c6bc66eabc5baadc79f296962945488023aaa4f48772e84105b626b1a75960",
+      "atlas": "training-heritage",
+      "crop": [
+        889,
+        298,
+        883,
+        291
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "training",
+      "stage": 4,
+      "file": "/art/scenes/heritage/training-4.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 32274,
+      "sha256": "096b3e8fd49585825a3d96dc56b6f4a4b8fce95631cd4888850d3d62009a0271",
+      "atlas": "training-heritage",
+      "crop": [
+        2,
+        593,
+        883,
+        292
+      ]
+    },
+    {
+      "era": "heritage",
+      "kind": "training",
+      "stage": 5,
+      "file": "/art/scenes/heritage/training-5.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 35476,
+      "sha256": "e1d6e8d1dc1926bd8a03d4a9655bfda69b1b1f951857c9a027172d1965005510",
+      "atlas": "training-heritage",
+      "crop": [
+        889,
+        593,
+        883,
+        292
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "training",
+      "stage": 0,
+      "file": "/art/scenes/terraces/training-0.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 36142,
+      "sha256": "7aef863473f57aba457e838901b1fa180d915d2460f97ac4d57d304b47f174df",
+      "atlas": "training-terraces",
+      "crop": [
+        2,
+        2,
+        883,
+        292
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "training",
+      "stage": 1,
+      "file": "/art/scenes/terraces/training-1.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 30730,
+      "sha256": "711200906776ff254d7be1a7c1ca974f6a206feb0b08c7c03d39ca220c7e10e3",
+      "atlas": "training-terraces",
+      "crop": [
+        889,
+        2,
+        883,
+        292
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "training",
+      "stage": 2,
+      "file": "/art/scenes/terraces/training-2.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 30868,
+      "sha256": "d7d964e4aa9b1586feb6c1f63c9c4921bcfee05485c45472c0433624bebeb111",
+      "atlas": "training-terraces",
+      "crop": [
+        2,
+        298,
+        883,
+        291
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "training",
+      "stage": 3,
+      "file": "/art/scenes/terraces/training-3.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 32760,
+      "sha256": "2ed612c1436575b5521f7dfb69fe92aedda882dd0b0f67d4a8c2b0ff7af08644",
+      "atlas": "training-terraces",
+      "crop": [
+        889,
+        298,
+        883,
+        291
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "training",
+      "stage": 4,
+      "file": "/art/scenes/terraces/training-4.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 32836,
+      "sha256": "64b098ac8b267d21d29b55eef90b0338fa2e3e4fdc38ffd09f5a5d0546928851",
+      "atlas": "training-terraces",
+      "crop": [
+        2,
+        593,
+        883,
+        292
+      ]
+    },
+    {
+      "era": "terraces",
+      "kind": "training",
+      "stage": 5,
+      "file": "/art/scenes/terraces/training-5.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 35082,
+      "sha256": "8b75a2f5da41cb2dafd70792054434f66bae4790beb64941525b419932136d08",
+      "atlas": "training-terraces",
+      "crop": [
+        889,
+        593,
+        883,
+        292
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "training",
+      "stage": 0,
+      "file": "/art/scenes/contemporary/training-0.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 35350,
+      "sha256": "df918405a7b2c662f237a845a574f680e9e7f93e70dc0dc3eab826cf9e5f289a",
+      "atlas": "training-contemporary",
+      "crop": [
+        2,
+        2,
+        883,
+        292
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "training",
+      "stage": 1,
+      "file": "/art/scenes/contemporary/training-1.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 30098,
+      "sha256": "66e937cce989e8d96e513491a7e979761d167b0f132bdcc6de7d271462205a85",
+      "atlas": "training-contemporary",
+      "crop": [
+        889,
+        2,
+        883,
+        292
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "training",
+      "stage": 2,
+      "file": "/art/scenes/contemporary/training-2.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 32202,
+      "sha256": "d0021c3c3bf254ed1a542da5c591a13c41d2a720a62f014d047b06e6eea52063",
+      "atlas": "training-contemporary",
+      "crop": [
+        2,
+        298,
+        883,
+        291
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "training",
+      "stage": 3,
+      "file": "/art/scenes/contemporary/training-3.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 30364,
+      "sha256": "58db994d68745520ca00661d43fc6a246bd0b712a241489b644a716cb4e62f11",
+      "atlas": "training-contemporary",
+      "crop": [
+        889,
+        298,
+        883,
+        291
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "training",
+      "stage": 4,
+      "file": "/art/scenes/contemporary/training-4.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 32208,
+      "sha256": "32ec0eee6ab8dce9e98db6d7154c91948dd034bd58ed193269c50a6aad119ce0",
+      "atlas": "training-contemporary",
+      "crop": [
+        2,
+        593,
+        883,
+        292
+      ]
+    },
+    {
+      "era": "contemporary",
+      "kind": "training",
+      "stage": 5,
+      "file": "/art/scenes/contemporary/training-5.webp",
+      "width": 240,
+      "height": 80,
+      "bytes": 32036,
+      "sha256": "275aa9bbe8fa5ec0fdbb5ddfab70cbdaaee3c8dc19e3f1a65ed2a314c85099b9",
+      "atlas": "training-contemporary",
+      "crop": [
+        889,
+        593,
+        883,
+        292
+      ]
+    }
+  ]
 }

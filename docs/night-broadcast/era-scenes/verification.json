@@ -1,0 +1,429 @@
+{
+  "task": "T129",
+  "checkedAt": "2026-10-15T08:53:18.993Z",
+  "art": {
+    "tool": "built-in image_gen",
+    "manifest": "apps/web/public/art/manifest.json",
+    "assets": 72,
+    "bytes": 2210530,
+    "dimensions": [
+      240,
+      80
+    ],
+    "eras": [
+      {
+        "id": "heritage",
+        "from": 1950,
+        "through": 1969
+      },
+      {
+        "id": "terraces",
+        "from": 1970,
+        "through": 1999
+      },
+      {
+        "id": "contemporary",
+        "from": 2000,
+        "through": null
+      }
+    ],
+    "stadiumStages": 9,
+    "lockerStages": 9,
+    "trainingLevels": 6,
+    "lockerFollows": "completed stadium stage",
+    "selectedBy": "displayed calendar year, with 1 January transitions; completed facility stage, never construction target",
+    "style": "coarse pixel sprites, shared grass-green / charcoal palette and evening lighting",
+    "treatment": {
+      "charcoalOpacity": 0.24,
+      "saturation": 0.7,
+      "contrast": 0.92,
+      "appliedIn": "FacilityArt.module.css, image only"
+    }
+  },
+  "checks": {
+    "unit": {
+      "passed": 9,
+      "spec": "apps/web/src/ui/facilityScene.test.ts"
+    },
+    "browser": {
+      "projects": [
+        "chromium",
+        "firefox",
+        "webkit"
+      ],
+      "uniqueAffectedJourneys": 45,
+      "sharedJourneys": {
+        "passed": 33,
+        "specs": [
+          "growth-core",
+          "training",
+          "native-touch"
+        ]
+      },
+      "finalBuild": {
+        "passed": 18,
+        "passesInMainRun": 15,
+        "passesInTransitionRecheck": 3,
+        "specs": [
+          "facility-art",
+          "growth-core"
+        ],
+        "note": "The transition/reload test initially waited for a slot screen after reloading the active game URL, which correctly resumes directly. The three corrected test-only reruns pass on the same production build."
+      },
+      "fixtureCorrections": "Synthetic later-era worlds now use their catalog currency and pass the production checkpoint validation before browser loading."
+    },
+    "typecheck": "passed",
+    "eslint": "passed",
+    "format": "passed",
+    "productionBuild": "passed",
+    "specLint": "passed; no warnings, 38 existing document-quality hints",
+    "assetDecode": {
+      "count": 72,
+      "passed": true
+    },
+    "manualReview": {
+      "screenshots": [
+        {
+          "year": 1950,
+          "era": "heritage",
+          "stadium": 0,
+          "training": 0,
+          "kind": "stadium",
+          "size": "desktop",
+          "screenshot": "app-heritage-stadium-desktop.png",
+          "geometry": {
+            "document": 1440,
+            "viewport": 1440,
+            "content": 1210,
+            "available": 1210
+          }
+        },
+        {
+          "year": 1950,
+          "era": "heritage",
+          "stadium": 0,
+          "training": 0,
+          "kind": "locker",
+          "size": "desktop",
+          "screenshot": "app-heritage-locker-desktop.png",
+          "geometry": {
+            "document": 1440,
+            "viewport": 1440,
+            "content": 1210,
+            "available": 1210
+          }
+        },
+        {
+          "year": 1950,
+          "era": "heritage",
+          "stadium": 0,
+          "training": 0,
+          "kind": "locker",
+          "size": "mobile",
+          "screenshot": "app-heritage-locker-mobile.png",
+          "geometry": {
+            "document": 360,
+            "viewport": 360,
+            "content": 360,
+            "available": 360
+          }
+        },
+        {
+          "year": 1950,
+          "era": "heritage",
+          "stadium": 0,
+          "training": 0,
+          "kind": "stadium",
+          "size": "mobile",
+          "screenshot": "app-heritage-stadium-mobile.png",
+          "geometry": {
+            "document": 360,
+            "viewport": 360,
+            "content": 360,
+            "available": 360
+          }
+        },
+        {
+          "year": 1950,
+          "era": "heritage",
+          "stadium": 0,
+          "training": 0,
+          "kind": "training",
+          "size": "mobile",
+          "screenshot": "app-heritage-training-mobile.png",
+          "geometry": {
+            "document": 360,
+            "viewport": 360,
+            "content": 360,
+            "available": 360
+          }
+        },
+        {
+          "year": 1950,
+          "era": "heritage",
+          "stadium": 0,
+          "training": 0,
+          "kind": "training",
+          "size": "desktop",
+          "screenshot": "app-heritage-training-desktop.png",
+          "geometry": {
+            "document": 1440,
+            "viewport": 1440,
+            "content": 1210,
+            "available": 1210
+          }
+        },
+        {
+          "year": 1980,
+          "era": "terraces",
+          "stadium": 4,
+          "training": 3,
+          "kind": "stadium",
+          "size": "desktop",
+          "screenshot": "app-terraces-stadium-desktop.png",
+          "geometry": {
+            "document": 1440,
+            "viewport": 1440,
+            "content": 1210,
+            "available": 1210
+          }
+        },
+        {
+          "year": 1980,
+          "era": "terraces",
+          "stadium": 4,
+          "training": 3,
+          "kind": "locker",
+          "size": "desktop",
+          "screenshot": "app-terraces-locker-desktop.png",
+          "geometry": {
+            "document": 1440,
+            "viewport": 1440,
+            "content": 1210,
+            "available": 1210
+          }
+        },
+        {
+          "year": 1980,
+          "era": "terraces",
+          "stadium": 4,
+          "training": 3,
+          "kind": "locker",
+          "size": "mobile",
+          "screenshot": "app-terraces-locker-mobile.png",
+          "geometry": {
+            "document": 390,
+            "viewport": 390,
+            "content": 390,
+            "available": 390
+          }
+        },
+        {
+          "year": 1980,
+          "era": "terraces",
+          "stadium": 4,
+          "training": 3,
+          "kind": "stadium",
+          "size": "mobile",
+          "screenshot": "app-terraces-stadium-mobile.png",
+          "geometry": {
+            "document": 390,
+            "viewport": 390,
+            "content": 390,
+            "available": 390
+          }
+        },
+        {
+          "year": 1980,
+          "era": "terraces",
+          "stadium": 4,
+          "training": 3,
+          "kind": "training",
+          "size": "mobile",
+          "screenshot": "app-terraces-training-mobile.png",
+          "geometry": {
+            "document": 390,
+            "viewport": 390,
+            "content": 390,
+            "available": 390
+          }
+        },
+        {
+          "year": 1980,
+          "era": "terraces",
+          "stadium": 4,
+          "training": 3,
+          "kind": "training",
+          "size": "desktop",
+          "screenshot": "app-terraces-training-desktop.png",
+          "geometry": {
+            "document": 1440,
+            "viewport": 1440,
+            "content": 1210,
+            "available": 1210
+          }
+        },
+        {
+          "year": 2020,
+          "era": "contemporary",
+          "stadium": 8,
+          "training": 5,
+          "kind": "stadium",
+          "size": "desktop",
+          "screenshot": "app-contemporary-stadium-desktop.png",
+          "geometry": {
+            "document": 1440,
+            "viewport": 1440,
+            "content": 1210,
+            "available": 1210
+          }
+        },
+        {
+          "year": 2020,
+          "era": "contemporary",
+          "stadium": 8,
+          "training": 5,
+          "kind": "locker",
+          "size": "desktop",
+          "screenshot": "app-contemporary-locker-desktop.png",
+          "geometry": {
+            "document": 1440,
+            "viewport": 1440,
+            "content": 1210,
+            "available": 1210
+          }
+        },
+        {
+          "year": 2020,
+          "era": "contemporary",
+          "stadium": 8,
+          "training": 5,
+          "kind": "locker",
+          "size": "mobile",
+          "screenshot": "app-contemporary-locker-mobile.png",
+          "geometry": {
+            "document": 390,
+            "viewport": 390,
+            "content": 390,
+            "available": 390
+          }
+        },
+        {
+          "year": 2020,
+          "era": "contemporary",
+          "stadium": 8,
+          "training": 5,
+          "kind": "stadium",
+          "size": "mobile",
+          "screenshot": "app-contemporary-stadium-mobile.png",
+          "geometry": {
+            "document": 390,
+            "viewport": 390,
+            "content": 390,
+            "available": 390
+          }
+        },
+        {
+          "year": 2020,
+          "era": "contemporary",
+          "stadium": 8,
+          "training": 5,
+          "kind": "training",
+          "size": "mobile",
+          "screenshot": "app-contemporary-training-mobile.png",
+          "geometry": {
+            "document": 390,
+            "viewport": 390,
+            "content": 390,
+            "available": 390
+          }
+        },
+        {
+          "year": 2020,
+          "era": "contemporary",
+          "stadium": 8,
+          "training": 5,
+          "kind": "training",
+          "size": "desktop",
+          "screenshot": "app-contemporary-training-desktop.png",
+          "geometry": {
+            "document": 1440,
+            "viewport": 1440,
+            "content": 1210,
+            "available": 1210
+          }
+        }
+      ],
+      "pageErrors": [],
+      "horizontalOverflow": false,
+      "catalogs": [
+        "catalog-heritage.png",
+        "catalog-terraces.png",
+        "catalog-contemporary.png"
+      ],
+      "gallery": "index.html",
+      "all72ScenesInspected": true
+    },
+    "baselineCI": "https://github.com/hetarho/haeram-soccer/actions/runs/38706479608"
+  },
+  "entryBudget": {
+    "gzipBytes": 250087,
+    "limit": 256000,
+    "passed": true,
+    "files": [
+      {
+        "file": "/assets/index-DUwX2Hx0.js",
+        "gzipBytes": 140597
+      },
+      {
+        "file": "/assets/rolldown-runtime-hePW80VL.js",
+        "gzipBytes": 428
+      },
+      {
+        "file": "/assets/Dialog-C5gpCPey.js",
+        "gzipBytes": 65055
+      },
+      {
+        "file": "/assets/profile-EGuMHbza.js",
+        "gzipBytes": 1478
+      },
+      {
+        "file": "/assets/league-CeNizeIm.js",
+        "gzipBytes": 5117
+      },
+      {
+        "file": "/assets/slots-C248-Sae.js",
+        "gzipBytes": 3006
+      },
+      {
+        "file": "/assets/state-BWejw2tp.js",
+        "gzipBytes": 1662
+      },
+      {
+        "file": "/assets/Glossary-O-9JXi8s.js",
+        "gzipBytes": 5800
+      },
+      {
+        "file": "/assets/Dialog-BbqDokwb.css",
+        "gzipBytes": 10584
+      },
+      {
+        "file": "/assets/league-2liMRO71.css",
+        "gzipBytes": 156
+      },
+      {
+        "file": "/assets/Glossary-YltZYkJS.css",
+        "gzipBytes": 1775
+      },
+      {
+        "file": "/assets/index-J-s6Iw_x.css",
+        "gzipBytes": 14429
+      }
+    ]
+  },
+  "delivery": {
+    "baselineCommit": "fa6990920edf2742154b61875d028e9c29e6067c",
+    "baselineOnMain": true,
+    "policy": "Implementation checkpoint → all CI jobs pass → fast-forward main; the subsequent CI/main refs record final promotion."
+  }
+}

@@ -161,7 +161,7 @@ function ClubScene({ w }: { w: World }) {
       className={s.scene}
       aria-label={`우리 구장 · ${STADIUM_STEPS[w.stadium].name} ${STADIUM_STEPS[w.stadium].capacity}석 · 팬 ${club.fans}명`}
     >
-      <FacilityArt kind="stadium" className={s.sceneArt} />
+      <FacilityArt kind="stadium" world={w} className={s.sceneArt} />
       <div className={s.sceneCaption}>
         <span className={s.badge}>
           <i aria-hidden="true">♥</i>
