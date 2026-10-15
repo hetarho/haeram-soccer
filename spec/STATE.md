@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| m8q4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-15T14:20Z | 2026-10-15T14:20Z | - |
+| m8q4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-15T14:20Z | 2026-10-15T14:25Z | T134 |
 
 ## inbox
 - 261015 decided WEB-74: start-vibe m8q4 scope → implement navigation-and-records with current game rules and the approved pixel readability baseline in an isolated checkout (alt: analysis only | revise game mechanics)
@@ -82,7 +82,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T134 | Preserve management tasks and policy drafts across navigation | WEB ARCH | - | todo |
+| T134 | Preserve management tasks and policy drafts across navigation | WEB ARCH | - | doing@261015.m8q4 |
 | T135 | Make recruitment, training and academy decisions discoverable | WEB ARCH | T134 | todo |
 | T136 | Join club season history and start competitions with standings | WEB ARCH | T134 | todo |
 | T137 | Complete competition history, home briefing and navigation wayfinding | WEB ARCH | T135 T136 | todo |
@@ -98,6 +98,7 @@
 - Unrelated balance/economy/storage follow-ups and existing WEB document-quality hints remain outside this task; see prior inbox/report entries.
 
 ## log
+- 261015 T134 doing@m8q4: session task state and focused policy returns; verified source is promoted to main after branch CI
 - 261015 create-task WEB r78: T134 task/draft continuity, T135 actionable development/recruitment, T136 season-first records/league, T137 competition/home integration; sequential, no lanes
 - 261015 update-ssot WEB r78: task-first management, contextual returns/drafts, season-first club records and standings-first competition scope; create-task next
 - 261015 T133 carried into m8q4: approved Galmuri14/Galmuri11 readability baseline; T132 remains the superseded font trial, no changes to owner checkout
@@ -117,4 +118,3 @@
 - 261015 main advanced to 737742e after all jobs passed in CI 38698103429
 - 261015 T126 done: three matched pixel paintings, 33 affected browser cases passed; T127 doing@a6rt; checkpoint/main delivery remains with this session
 - 261015 main advanced to 5d14752 after CI 38696842874 passed every job
-- 261015 T122–T125 checkpoint committed as 5d14752 and pushed to work/night-broadcast-polish-261015; CI before main
