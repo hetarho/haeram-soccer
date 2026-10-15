@@ -615,6 +615,10 @@ export class GameClient {
       this.autosaveTimer = undefined;
       await this.whenSaved();
       for (const key of ACTIVE_SAVE_KEYS) localStorage.removeItem(key);
+      // Nothing left in this page — the slot index on leaving, a save — may bring it back either.
+      this.state.view = undefined;
+      this.state.playback = undefined;
+      this.emit();
     });
   }
   retrySave() {

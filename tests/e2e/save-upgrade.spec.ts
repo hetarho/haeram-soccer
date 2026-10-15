@@ -67,11 +67,16 @@ test('earlier rules listed with export and delete', async ({ page }) => {
   await card.getByRole('button', { name: '내보내기', exact: true }).click();
   expect(await readFile((await (await event).path())!, 'utf8')).toBe(earlier);
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBe(earlier);
-  // Deleting it is the explicit way to found a new career there.
+  // Deleting it is the explicit way to found a new career there: the slot screen stays, empty.
   await card.getByRole('button', { name: '삭제', exact: true }).click();
   await page
     .getByRole('dialog', { name: '게임 삭제 확인' })
     .getByRole('button', { name: '삭제', exact: true })
+    .click();
+  await page
+    .getByTestId('game-slots')
+    .getByRole('listitem', { name: '슬롯 1 · 빈 슬롯' })
+    .getByRole('button', { name: '새 게임' })
     .click();
   await expect(page.getByRole('button', { name: '클럽 창단' })).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBeNull();

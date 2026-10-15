@@ -27,12 +27,15 @@ export function GameSlotScreen({
   onEnter,
   onNew,
   onExport,
+  onRemovedInPlay,
 }: {
   slots: GameSlots;
   onEnter: () => void;
   /** Readies the slot (parking the game in play) and opens founding for it. */
   onNew: (slot: number) => Promise<void>;
   onExport: (raw: string, label: string) => void;
+  /** The game in play was deleted: a fresh page reads what remains, on this screen. */
+  onRemovedInPlay: () => void;
 }) {
   const world = useGameState((state) => state.view?.world);
   const readonly = useGameState((state) => state.readonly);
@@ -282,8 +285,8 @@ export function GameSlotScreen({
                   kind === 'delete' ? '기록을 지우는 중…' : '새 게임을 준비하는 중…',
                   async () => {
                     if (kind === 'overwrite') return onNew(slot);
-                    // The game in play leaves with its checkpoints; a fresh page reads what remains.
-                    if (await slots.remove(slot)) location.reload();
+                    // The game in play leaves with its checkpoints; the slot screen stays.
+                    if (await slots.remove(slot)) onRemovedInPlay();
                   },
                 );
               }}

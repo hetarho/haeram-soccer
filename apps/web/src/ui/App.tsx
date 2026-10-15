@@ -84,12 +84,34 @@ const GameSlotScreen = lazy(() =>
 
 /** Set while this tab is in a game, so a reload continues it instead of showing the slots. */
 const IN_GAME = 'haeram-soccor:in-game';
+/** Set by deleting the game in play: the page reloads onto the slot screen, even all empty. */
+const BACK_TO_SLOTS = 'haeram-soccor:back-to-slots';
+/** Read once per page load: a state initializer may run twice. */
+const backToSlots = (() => {
+  try {
+    const set = sessionStorage.getItem(BACK_TO_SLOTS) === '1';
+    sessionStorage.removeItem(BACK_TO_SLOTS);
+    return set;
+  } catch {
+    return false;
+  }
+})();
+/** Reloads the page away from a deleted game in play, back onto the slot screen (→WEB-62). */
+function reloadToSlots() {
+  try {
+    sessionStorage.setItem(BACK_TO_SLOTS, '1');
+  } catch {
+    /* without session storage the reload opens as the start address would */
+  }
+  location.reload();
+}
 /**
  * The start address opens on the slot screen whenever a slot holds a game (→WEB-62); an in-game
  * address or a reload of a tab already in a game continues the game in play.
  */
 function initialScreen(): 'slots' | 'game' {
   try {
+    if (backToSlots) return 'slots';
     if (location.pathname !== '/' || sessionStorage.getItem(IN_GAME) === '1') return 'game';
     return new GameIndexStore(localStorage).hasGames() ? 'slots' : 'game';
   } catch {
@@ -1222,6 +1244,7 @@ export function App() {
                   onEnter={enterGame}
                   onNew={startNew}
                   onExport={saveFile}
+                  onRemovedInPlay={reloadToSlots}
                 />
               </Suspense>
             ) : !w || replacing ? (

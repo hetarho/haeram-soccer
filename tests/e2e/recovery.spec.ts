@@ -235,6 +235,29 @@ test('a new game goes into another slot, both careers survive switching and back
   );
   await second.close();
 });
+test('deleting the game in play stays on the slot screen, even with every slot empty', async ({
+  page,
+}) => {
+  await found(page);
+  await page.getByRole('button', { name: '게임 슬롯' }).click();
+  const slotScreen = page.getByTestId('game-slots');
+  const slot = slotScreen.getByRole('listitem', { name: '슬롯 1' });
+  await expect(slot).toContainText('진행 중');
+  await slot.getByText('관리', { exact: true }).click();
+  await slot.getByRole('button', { name: '삭제', exact: true }).click();
+  // The page reloads without the game, back on the slots (→WEB-62).
+  const reloaded = page.waitForEvent('load');
+  await page
+    .getByRole('dialog', { name: '게임 삭제 확인' })
+    .getByRole('button', { name: '삭제', exact: true })
+    .click();
+  await reloaded;
+  const empty = slotScreen.getByRole('listitem', { name: '슬롯 1 · 빈 슬롯' });
+  await expect(empty).toBeVisible();
+  await expect(page.getByTestId('club-founding')).toHaveCount(0);
+  await empty.getByRole('button', { name: '새 게임' }).click();
+  await expect(page.getByTestId('club-founding')).toContainText('슬롯 1 · 새 게임');
+});
 test('founding beside a parked game shows none of its club, cash or bands', async ({ page }) => {
   const fixture = createWorld({
     country: 'ENG',
