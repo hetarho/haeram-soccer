@@ -13,7 +13,7 @@ import { staffMember } from '../../../../packages/engine/src/staff';
 import { positionsLabel } from './FormationPitch';
 import { gradeLabel, PlayerProfile } from './PlayerProfile';
 import { bidBoard, bidOutlook, transferWindow } from '../../../../packages/engine/src/transfers';
-import { bidKind } from './bids';
+import { bidKind, freeSigning } from './bids';
 import { clubOf, overall } from '../../../../packages/engine/src/world';
 import {
   recruitmentPreview,
@@ -401,7 +401,9 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                 </b>
                 <small>
                   {bid.direction === 'in' && other ? `${other.name} · ` : ''}
-                  {bid.status === 'countered' ? (
+                  {freeSigning(bid) ? (
+                    '자유계약 · 이적료 없음'
+                  ) : bid.status === 'countered' ? (
                     <>역제안 {format(bid.counterFee || bid.fee)}</>
                   ) : (
                     format(bid.fee)

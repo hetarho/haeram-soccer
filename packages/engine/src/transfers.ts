@@ -117,6 +117,11 @@ function bidId(prefix: string, w: World, day: number, playerId: string, extra = 
   const id = `${prefix}:${w.year}:${day}:${extra}${playerId}`;
   return id.length <= 100 ? id : `${prefix}:${w.year}:${day}:${extra}${hash(playerId)}`;
 }
+/** Another club offers at least one whole currency unit for a player, so no offer reads 0. */
+function offerFee(w: World, fee: string) {
+  const unit = BigInt(currency(clubOf(w).country, w.year).units);
+  return BigInt(fee) < unit ? unit.toString() : fee;
+}
 function feeRatio(fee: string, asking: string) {
   const a = BigInt(asking);
   return a <= 0n ? 2 : Number((BigInt(fee) * 10000n) / a) / 10000;
@@ -741,7 +746,7 @@ function listedOffers(w: World, day: number, until: number) {
     const value = playerValue(w, p),
       share =
         (LISTED_OFFER.low + r() * (LISTED_OFFER.high - LISTED_OFFER.low)) * buildEffects(w).saleFee;
-    const fee = ratio(value, BigInt(Math.round(share * 1000)), 1000n);
+    const fee = offerFee(w, ratio(value, BigInt(Math.round(share * 1000)), 1000n));
     const bid: TransferBid = {
       id: bidId('in', w, day, p.id, 'list:'),
       direction: 'in',
@@ -805,7 +810,7 @@ function incomingBid(w: World, day: number, until: number) {
   const club = suitorFor(w, player, r);
   if (!club) return;
   const value = playerValue(w, player),
-    fee = ratio(value, BigInt(Math.round(integer(r, 90, 160) * build.saleFee)), 100n);
+    fee = offerFee(w, ratio(value, BigInt(Math.round(integer(r, 90, 160) * build.saleFee)), 100n));
   const bid: TransferBid = {
     id: bidId('in', w, day, player.id),
     direction: 'in',
