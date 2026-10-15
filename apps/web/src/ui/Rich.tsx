@@ -1,3 +1,4 @@
+import { useTaskState } from './taskMemory';
 import { PixelIcon } from './PixelIcon';
 import { Select } from './Select';
 import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
@@ -806,11 +807,11 @@ function Roster({ state, client }: Props) {
   const v = state.view!,
     w = v.world,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
-    [view, setView] = useState<RosterView>(DEFAULT_ROSTER_VIEW),
+    [view, setView] = useTaskState<RosterView>(w.id, 'roster-view', DEFAULT_ROSTER_VIEW),
     [comparing, setComparing] = useState(false),
     [fullTable, setFullTable] = useState(false),
-    [playerQuery, setPlayerQuery] = useState(''),
-    [playerPage, setPlayerPage] = useState(0),
+    [playerQuery, setPlayerQuery] = useTaskState(w.id, 'roster-query', ''),
+    [playerPage, setPlayerPage] = useTaskState(w.id, 'roster-page', 0),
     [stanceId, setStanceId] = useState<string>();
   const talkId = useContractTalk((state) => state.id),
     { open: openTalk, close: closeTalk } = useContractTalk.getState();

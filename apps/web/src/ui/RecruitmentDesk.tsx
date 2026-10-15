@@ -1,3 +1,4 @@
+import { useTaskState } from './taskMemory';
 import { Select } from './Select';
 import { useState } from 'react';
 import type { Line, TransferBid, World } from '../../../../packages/contracts/src/types';
@@ -28,7 +29,7 @@ import { Money } from './Money';
 import { OvrBadge } from './OvrBadge';
 import { OfferAnswers } from './ClubStaff';
 import { ScoutShortlist } from './ScoutShortlist';
-import { openBusiness } from './state';
+import { openDirection } from './state';
 import { policyOf, POLICY_INFO } from '../../../../packages/engine/src/policy';
 import s from './RecruitmentDesk.module.css';
 
@@ -253,10 +254,10 @@ function CandidateCard({
 export function RecruitmentDesk({ state, client }: { state: ClientState; client: GameClient }) {
   const w = state.view!.world,
     club = clubOf(w);
-  const [role, setRole] = useState<Line | 'all'>('all');
-  const [order, setOrder] = useState<Order>('impact');
-  const [boostOnly, setBoostOnly] = useState(false);
-  const [comparison, setComparison] = useState<string[]>([]);
+  const [role, setRole] = useTaskState<Line | 'all'>(w.id, 'market-role', 'all');
+  const [order, setOrder] = useTaskState<Order>(w.id, 'market-order', 'impact');
+  const [boostOnly, setBoostOnly] = useTaskState(w.id, 'market-boost', false);
+  const [comparison, setComparison] = useTaskState<string[]>(w.id, 'market-comparison', []);
   const [comparing, setComparing] = useState(false);
   const [message, setMessage] = useState('');
   const [bidding, setBidding] = useState<Candidate>();
@@ -374,7 +375,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
         </small>
       </div>
       {/* The recruitment level lives on the operating board (→WEB-71); here it is a line to it. */}
-      <button type="button" className={s.policyLine} onClick={() => openBusiness('strategy')}>
+      <button type="button" className={s.policyLine} onClick={() => openDirection('scouting')}>
         <span>
           영입 기조 · <b>{POLICY_INFO.recruitment.levels[policyOf(w).recruitment - 1].name}</b>
         </span>

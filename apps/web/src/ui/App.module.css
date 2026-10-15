@@ -3316,3 +3316,36 @@
   color: var(--text-faint);
   font-family: var(--display);
 }
+
+.taskReturn {
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 8px 0 14px;
+}
+.taskReturn button {
+  min-height: 44px;
+  color: var(--accent-text);
+}
+.taskReturn small {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.responsibilities {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+.responsibilities th,
+.responsibilities td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}

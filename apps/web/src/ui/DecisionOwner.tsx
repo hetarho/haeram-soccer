@@ -41,10 +41,10 @@ export function DecisionOwner({
         <button
           type="button"
           className={s.level}
-          aria-label={`개입 수준 바꾸기 · 지금 ${level}단계 ${name}`}
+          aria-label={`전체 구단 개입 설정 · 지금 ${level}단계 ${name}`}
           onClick={useInterventionDialog.getState().show}
         >
-          개입 {level} · {name}
+          전체 구단 개입 {level} · {name}
           <PixelIcon name="chevronRight" size={14} />
         </button>
       </div>

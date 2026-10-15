@@ -14,6 +14,8 @@ import type { World } from '../../../../packages/contracts/src/types';
 import { country, priceIndex } from '../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../runtime/client';
 import { openPeople, useInterventionDialog, useNavigation, type Page } from './state';
+import { TaskReturn } from './TaskReturn';
+import { taskAddress, useTaskMemory } from './taskMemory';
 import { ClubCrest } from './ClubCrest';
 import { ClubLink } from './ClubLink';
 import { watchNextMatch } from './watch';
@@ -1117,8 +1119,23 @@ export function App() {
     );
   }, [contentPage]);
   useEffect(() => {
-    scroller.current?.scrollTo(0, 0);
-  }, [page, worldId, replacing, screen]);
+    if (worldId) useTaskMemory.getState().activate(worldId);
+  }, [worldId]);
+  useEffect(() => {
+    const root = scroller.current;
+    if (!root) return;
+    const desired = useTaskMemory.getState().scrolls[taskAddress()] ?? 0;
+    root.scrollTo(0, desired);
+    // Lazy screens may not have their final height at the navigation boundary.
+    const resize = new ResizeObserver(() => root.scrollTo(0, desired));
+    const body = root.firstElementChild;
+    if (desired && body) resize.observe(body);
+    const timer = window.setTimeout(() => resize.disconnect(), 500);
+    return () => {
+      resize.disconnect();
+      window.clearTimeout(timer);
+    };
+  }, [page, contentPage, worldId, replacing, screen]);
   const saveFile = (raw: string, name: string) => {
     const url = URL.createObjectURL(new Blob([raw], { type: 'application/json' })),
       a = document.createElement('a');
@@ -1248,6 +1265,7 @@ export function App() {
                   </div>
                 )}
                 <div className={s.views} inert={changingView} aria-busy={changingView}>
+                  <TaskReturn />
                   <div className={s.coreContent} hidden={contentPage !== 'dashboard'}>
                     <ConnectedDashboard client={client} controller={controller} />
                   </div>

@@ -17,7 +17,7 @@ import {
   type RefObject,
 } from 'react';
 import type { InterventionLevel } from '../../../../packages/contracts/src/types';
-import { interventionOf } from '../../../../packages/engine/src/intervention';
+import { delegated, interventionOf } from '../../../../packages/engine/src/intervention';
 import { transferWindow } from '../../../../packages/engine/src/transfers';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
@@ -396,8 +396,34 @@ export function InterventionSettings({
   return (
     <Dialog label="개입 수준" onClose={onClose}>
       <p className={s.muted}>
-        구단주가 얼마나 직접 결정할지 골라요. 아래로 갈수록 감독과 스태프가 더 많이 맡아요.
+        구단 전체의 결정 권한과 자동 진행이 멈추는 조건을 함께 바꿔요. 훈련 방향은 어느 단계에서나
+        코치가 정하고, 구단주는 제안하거나 강행할 수 있어요.
       </p>
+      <table className={s.responsibilities} aria-label="현재 구단 결정 담당">
+        <thead>
+          <tr>
+            <th>업무</th>
+            <th>현재 담당</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(
+            [
+              ['academy', '유소년 승격·방출'],
+              ['contracts', '선수 계약 협상'],
+              ['transfers', '이적·영입'],
+              ['manager', '감독 선임'],
+              ['coach:assistant', '스태프 선임'],
+              ['business', '후원'],
+            ] as const
+          ).map(([key, label]) => (
+            <tr key={key}>
+              <td>{label}</td>
+              <td>{delegated(w, key) ? '운영진 자동 결정' : '구단주 직접 결정'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <div className={s.levels} role="radiogroup" aria-label="개입 수준">
         {INTERVENTION_LEVELS.map(({ level, name, summary }) => (
           <button

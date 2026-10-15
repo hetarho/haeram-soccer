@@ -1,3 +1,4 @@
+import { rememberTask, taskAddress, useTaskMemory } from './taskMemory';
 import { create } from 'zustand';
 import type { BoardRequest } from './board';
 import type { AreaKey } from './areas';
@@ -122,10 +123,12 @@ export const useNavigation = create<{
   setPage: (page: Page) => void;
   /** Redirects without a history entry (e.g. a match address without a live match). */
   replacePage: (page: Page) => void;
-}>((set) => ({
+}>((set, get) => ({
   page: arrival?.page ?? 'dashboard',
   setPage: (page) => {
-    if (location.pathname !== paths[page]) history.pushState(null, '', paths[page]);
+    rememberTask(get().page);
+    const address = useTaskMemory.getState().addresses[page] ?? paths[page];
+    if (taskAddress() !== address) history.pushState(null, '', address);
     set({ page });
   },
   replacePage: (page) => {
@@ -200,6 +203,7 @@ export function openCoachSheet(
 export const useBoardRequest = oneShot<BoardRequest>();
 /** Opens 방향 with an area unfolded, from a line naming one of its rows (→WEB-43, →WEB-71). */
 export function openDirection(area: AreaKey) {
+  beginTaskDetour('business');
   useBoardRequest.getState().open({ area });
   openBusiness('strategy');
 }
@@ -230,10 +234,12 @@ export function openTraining(tab: TrainingTab) {
 }
 /** Opens 방향 on a tab: from elsewhere through its address, while it shows through a request. */
 export function openBusiness(view: BusinessView) {
+  if (view === 'strategy') beginTaskDetour('business');
   if (useNavigation.getState().page === 'business') {
     useBusinessView.getState().open(view);
     return;
   }
+  rememberTask(useNavigation.getState().page);
   history.pushState(
     null,
     '',
@@ -269,7 +275,14 @@ if (typeof window !== 'undefined')
   window.addEventListener('popstate', () => {
     // Back and forward follow the address; an older one is replaced by where it lands.
     const route = arrive();
-    if (route.market) usePeopleView.getState().open('candidates');
+    if (route.page === 'people')
+      usePeopleView
+        .getState()
+        .open(route.market ? 'candidates' : ((route.view as PeopleTab) ?? 'players'));
+    if (route.page === 'training')
+      useTrainingView.getState().open((route.view as TrainingTab) ?? 'training');
+    if (route.page === 'business')
+      useBusinessView.getState().open((route.view as BusinessView) ?? 'strategy');
     useNavigation.setState({ page: route.page });
   });
 
@@ -341,3 +354,45 @@ export const RECORD_TABS = [
   ['managers', '감독'],
 ] as const;
 export type RecordTab = (typeof RECORD_TABS)[number][0];
+
+/** A focused policy/competition visit keeps the working task it was opened from. */
+export function beginTaskDetour(target: Page) {
+  const page = useNavigation.getState().page;
+  if (page === target) return;
+  const prior = useTaskMemory.getState();
+  if (prior.returning?.target === target && prior.returning.address === taskAddress()) return;
+  rememberTask(page);
+  const view = new URLSearchParams(location.search).get('view');
+  const label =
+    page === 'people'
+      ? (PEOPLE_TABS.find(([id]) => id === (view ?? 'players'))?.[1] ?? '선수단')
+      : page === 'training'
+        ? view === 'academy'
+          ? '유소년'
+          : '1군 훈련'
+        : page === 'history'
+          ? '클럽 시즌 기록'
+          : page === 'league'
+            ? '리그'
+            : '클럽 홈';
+  useTaskMemory.setState({
+    parents: prior.returning?.target === page ? [...prior.parents, prior.returning] : [],
+    returning: { page, address: taskAddress(), label, target },
+  });
+}
+export function returnToTask() {
+  const task = useTaskMemory.getState().returning;
+  if (!task) return;
+  rememberTask(useNavigation.getState().page);
+  const parents = useTaskMemory.getState().parents;
+  useTaskMemory.setState({ returning: parents.at(-1), parents: parents.slice(0, -1) });
+  history.pushState(null, '', task.address);
+  const route = routeOf(location.pathname, location.search);
+  if (route.page === 'people')
+    usePeopleView.getState().open((route.view as PeopleTab) ?? 'players');
+  if (route.page === 'training')
+    useTrainingView.getState().open((route.view as TrainingTab) ?? 'training');
+  if (route.page === 'business')
+    useBusinessView.getState().open((route.view as BusinessView) ?? 'strategy');
+  useNavigation.setState({ page: task.page });
+}

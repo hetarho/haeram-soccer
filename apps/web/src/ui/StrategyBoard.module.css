@@ -641,3 +641,23 @@ legend.domainHead + * {
     grid-column: 1 / -1;
   }
 }
+
+.library {
+  padding: 16px;
+  border: 1px solid var(--line);
+}
+.library > summary {
+  cursor: pointer;
+  min-height: 44px;
+  font-family: var(--display);
+}
+.library > p {
+  margin: 8px 0 20px;
+}
+
+.context {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 0 0 8px;
+}

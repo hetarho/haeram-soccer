@@ -14,7 +14,7 @@ import { DecisionOwner } from './DecisionOwner';
 import { DirectionLines } from './DirectionLines';
 import { directionOption } from '../../../../packages/engine/src/direction';
 import { OvrBadge } from './OvrBadge';
-import { openBusiness, openCoachSheet } from './state';
+import { openDirection, openCoachSheet } from './state';
 import { callLine } from './TrainingOrderSheet';
 import s from './TrainingView.module.css';
 
@@ -162,7 +162,7 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
         </div>
       </section>
       <YouthTraining w={w} />
-      <button type="button" className={s.homeLine} onClick={() => openBusiness('strategy')}>
+      <button type="button" className={s.homeLine} onClick={() => openDirection('youth')}>
         <span>
           <b>유소년 투자 · 유입 방식은 방향에서</b>
           <small>

@@ -17,6 +17,7 @@ test('applies a preset at once, changes it again at once, and saves its own stra
     'true',
   );
   const board = page.getByTestId('strategy-board');
+  await board.getByText('구단 전체 방침 불러오기·저장', { exact: true }).click();
   // The owner reads a strategy, never a "build" (빌드업 is the football phase of play).
   await expect(board).not.toContainText(/빌드(?!업)/);
   await expect(board.getByTestId('current-strategy')).toHaveText('기본 방향');
@@ -205,6 +206,7 @@ test('applies a preset at once, changes it again at once, and saves its own stra
     'aria-checked',
     'true',
   );
+  await board.getByText('구단 전체 방침 불러오기·저장', { exact: true }).click();
   await mine.getByRole('button', { name: '우리 동네 축구 편집' }).click();
   const editor = page.getByRole('dialog', { name: '방향 편집' });
   await editor.getByLabel('방향 이름').fill('동네 축구 2');

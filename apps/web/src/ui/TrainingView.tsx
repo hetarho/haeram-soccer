@@ -37,6 +37,7 @@ import { PageTabs, TabPanel } from './PageTabs';
 import { PlayerLink } from './PlayerSheet';
 import {
   openHome,
+  openDirection,
   routeOf,
   TRAINING_TABS,
   useCoachRequest,
@@ -380,11 +381,15 @@ const termText = (term: DevelopmentFactor) =>
   `${term.applies === 'u21' ? '21세 이하 ' : ''}${times(term.value)}`;
 
 /** Opens where a term is set (→WEB-71); the focus is shown above, on this tab. */
-function openDriver(home: DevelopmentHome) {
+function openDriver(home: DevelopmentHome, label: string) {
   if (home === 'training/training') {
     document
       .getElementById('training-focus')
       ?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    return;
+  }
+  if (home === 'business/strategy') {
+    openDirection(label === '선수단 투자' ? 'squad' : 'youth');
     return;
   }
   const [page, view] = home.split('/');
@@ -432,7 +437,7 @@ function DevelopmentDrivers({ outlook: { factors, skills } }: { outlook: Outlook
               <button
                 type="button"
                 aria-label={`${row.label} ${shown.map(termText).join(' · ')} · ${homeName[row.home]}에서 보기`}
-                onClick={() => openDriver(row.home)}
+                onClick={() => openDriver(row.home, row.label)}
               >
                 <span className={s.driverText}>
                   <b>{row.label}</b>

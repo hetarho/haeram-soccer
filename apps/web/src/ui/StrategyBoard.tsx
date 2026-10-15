@@ -1,3 +1,5 @@
+import { PolicyContext } from './PolicyContext';
+import { useTaskState } from './taskMemory';
 import { useEffect, useState } from 'react';
 import type { DirectionKey, PolicyLevel, World } from '../../../../packages/contracts/src/types';
 import {
@@ -97,7 +99,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
   const blocked = acting || readonly || !!w.critical;
   const saved = useStrategies((state) => state.items);
   const removeSaved = useStrategies((state) => state.remove);
-  const [draft, setDraftState] = useState<BoardDraft>({});
+  const [draft, setDraftState] = useTaskState<BoardDraft>(w.id, 'board-draft', {});
   const [failure, setFailure] = useState('');
   // The bar's details fold away on a small screen; the head and 적용 stay.
   const [folded, setFolded] = useState(false);
@@ -115,7 +117,11 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
   const [removing, setRemoving] = useState<SavedStrategy>();
   // Areas start folded behind headers naming their options in force; the owner opens the ones he
   // works on, and a request from elsewhere opens its own (→WEB-60).
-  const [opened, setOpened] = useState<ReadonlySet<AreaKey>>(() => new Set());
+  const [opened, setOpened] = useTaskState<ReadonlySet<AreaKey>>(
+    w.id,
+    'board-opened',
+    () => new Set(),
+  );
   const toggle = (key: AreaKey) =>
     setOpened((open) => {
       const next = new Set(open);
@@ -269,143 +275,9 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
         <Lines {...effectLines(composeBuild(current))} />
       </article>
 
-      <section className={s.group} aria-label="추천 방향">
-        <h3>추천 방향</h3>
-        <div className={s.presets}>
-          {BUILD_PRESETS.map((preset) => {
-            const lines = effectLines(composeBuild(preset.build));
-            const board = presetBoard(preset),
-              drafted = changed && sameBoard(board, draftBoard);
-            return (
-              <button
-                key={preset.id}
-                type="button"
-                aria-pressed={drafted}
-                className={`${s.preset} ${drafted ? s.presetOn : ''}`}
-                disabled={blocked}
-                onClick={() =>
-                  setDraft(
-                    // Tapping the drafted preset again clears the draft.
-                    drafted ? {} : withStrategy(w, draft, preset.build, preset.label, preset.rows),
-                  )
-                }
-              >
-                <span className={s.presetHead}>
-                  <b>{preset.label}</b>
-                  {sameBoard(board, currentBoard) && <em>지금 방향</em>}
-                </span>
-                <small>{preset.model}</small>
-                <Lines {...lines} limit={2} />
-                <span className={s.aim}>{preset.aim}</span>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className={s.group} aria-label="내 방향">
-        <h3>
-          내 방향 <small>이 기기의 모든 게임에서 쓸 수 있어요</small>
-        </h3>
-        {saved.length ? (
-          <ul className={s.saved}>
-            {saved.map((item) => {
-              const drafted = changed && savedMatches(item, draftBoard);
-              return (
-                <li key={item.id} className={drafted ? s.presetOn : ''}>
-                  <button
-                    type="button"
-                    className={s.savedPick}
-                    aria-pressed={drafted}
-                    disabled={blocked}
-                    onClick={() =>
-                      setDraft(
-                        drafted
-                          ? {}
-                          : withStrategy(
-                              w,
-                              draft,
-                              item.build,
-                              item.name,
-                              item.rows && savedRows(item.rows),
-                            ),
-                      )
-                    }
-                  >
-                    <span className={s.presetHead}>
-                      <b>{item.name}</b>
-                      {savedMatches(item, currentBoard) && <em>지금 방향</em>}
-                    </span>
-                    <small>{cardSummary(item.build)}</small>
-                  </button>
-                  <div className={s.savedTools}>
-                    <button
-                      type="button"
-                      aria-label={`${item.name} 편집`}
-                      onClick={() =>
-                        setComposer({
-                          id: item.id,
-                          name: item.name,
-                          build: item.build,
-                          rows: item.rows,
-                        })
-                      }
-                    >
-                      편집
-                    </button>
-                    <button
-                      type="button"
-                      aria-label={`${item.name} 삭제`}
-                      onClick={() => setRemoving(item)}
-                    >
-                      삭제
-                    </button>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        ) : (
-          <p className={s.neutral}>
-            아직 저장한 방향이 없어요. 여섯 부문의 카드를 골라 우리 구단만의 방향을 만들어 보세요.
-          </p>
-        )}
-        <div className={s.makeRow}>
-          <button
-            type="button"
-            className={s.make}
-            onClick={() =>
-              setComposer({ name: '', build: draftBuild, rows: boardRows(draftBoard) })
-            }
-          >
-            ＋ 방향 만들기
-          </button>
-          {savable && (
-            <button
-              type="button"
-              className={s.make}
-              onClick={() =>
-                setComposer({
-                  name:
-                    BUILD_PRESETS.some((preset) => sameBoard(presetBoard(preset), currentBoard)) ||
-                    currentName === '맞춤 방향'
-                      ? ''
-                      : currentName,
-                  build: current,
-                  rows: boardRows(currentBoard),
-                  title: '지금 방향 저장',
-                })
-              }
-            >
-              지금 방향 저장
-            </button>
-          )}
-        </div>
-      </section>
-
       <section className={s.areas} aria-label="부문별 방향">
         <h3>
-          일곱 부문 <small>부문을 열어 줄마다 하나씩 골라요</small>
+          부문별 운영 방침 <small>필요한 부문을 열어 현재 설정을 바꿔요</small>
         </h3>
         {DIRECTION_AREAS.map((area) => {
           const key = area.key,
@@ -476,6 +348,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
                       disabled={blocked}
                       detail={
                         <>
+                          <PolicyContext w={w} row={slot} />
                           <p className={s.model}>
                             <b>
                               {cardMoved ? '적용하면 · ' : ''}
@@ -521,10 +394,13 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
                           drafted={step}
                           disabled={blocked}
                           detail={
-                            <p>
-                              {step !== undefined && <b>적용하면 · </b>}
-                              {shown.summary}
-                            </p>
+                            <>
+                              <PolicyContext w={w} row={row} />
+                              <p>
+                                {step !== undefined && <b>적용하면 · </b>}
+                                {shown.summary}
+                              </p>
+                            </>
                           }
                           onPick={(index) => pickDirection(row, index)}
                         />
@@ -549,6 +425,7 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
                         detail={
                           shown >= 0 && (
                             <>
+                              <PolicyContext w={w} row={row} />
                               <p>
                                 {step !== undefined && <b>적용하면 · </b>}
                                 {dial.levels[shown].summary}
@@ -567,6 +444,147 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
           );
         })}
       </section>
+
+      <details className={s.library}>
+        <summary>구단 전체 방침 불러오기·저장</summary>
+        <p>여러 부문의 방침과 투자 금액을 함께 준비해요. 변경 내역을 확인하고 적용하세요.</p>
+        <section className={s.group} aria-label="추천 방향">
+          <h3>추천 방향</h3>
+          <div className={s.presets}>
+            {BUILD_PRESETS.map((preset) => {
+              const lines = effectLines(composeBuild(preset.build));
+              const board = presetBoard(preset),
+                drafted = changed && sameBoard(board, draftBoard);
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  aria-pressed={drafted}
+                  className={`${s.preset} ${drafted ? s.presetOn : ''}`}
+                  disabled={blocked}
+                  onClick={() =>
+                    setDraft(
+                      // Tapping the drafted preset again clears the draft.
+                      drafted
+                        ? {}
+                        : withStrategy(w, draft, preset.build, preset.label, preset.rows),
+                    )
+                  }
+                >
+                  <span className={s.presetHead}>
+                    <b>{preset.label}</b>
+                    {sameBoard(board, currentBoard) && <em>지금 방향</em>}
+                  </span>
+                  <small>{preset.model}</small>
+                  <Lines {...lines} limit={2} />
+                  <span className={s.aim}>{preset.aim}</span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className={s.group} aria-label="내 방향">
+          <h3>
+            내 방향 <small>이 기기의 모든 게임에서 쓸 수 있어요</small>
+          </h3>
+          {saved.length ? (
+            <ul className={s.saved}>
+              {saved.map((item) => {
+                const drafted = changed && savedMatches(item, draftBoard);
+                return (
+                  <li key={item.id} className={drafted ? s.presetOn : ''}>
+                    <button
+                      type="button"
+                      className={s.savedPick}
+                      aria-pressed={drafted}
+                      disabled={blocked}
+                      onClick={() =>
+                        setDraft(
+                          drafted
+                            ? {}
+                            : withStrategy(
+                                w,
+                                draft,
+                                item.build,
+                                item.name,
+                                item.rows && savedRows(item.rows),
+                              ),
+                        )
+                      }
+                    >
+                      <span className={s.presetHead}>
+                        <b>{item.name}</b>
+                        {savedMatches(item, currentBoard) && <em>지금 방향</em>}
+                      </span>
+                      <small>{cardSummary(item.build)}</small>
+                    </button>
+                    <div className={s.savedTools}>
+                      <button
+                        type="button"
+                        aria-label={`${item.name} 편집`}
+                        onClick={() =>
+                          setComposer({
+                            id: item.id,
+                            name: item.name,
+                            build: item.build,
+                            rows: item.rows,
+                          })
+                        }
+                      >
+                        편집
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`${item.name} 삭제`}
+                        onClick={() => setRemoving(item)}
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className={s.neutral}>
+              아직 저장한 방향이 없어요. 여섯 부문의 카드를 골라 우리 구단만의 방향을 만들어 보세요.
+            </p>
+          )}
+          <div className={s.makeRow}>
+            <button
+              type="button"
+              className={s.make}
+              onClick={() =>
+                setComposer({ name: '', build: draftBuild, rows: boardRows(draftBoard) })
+              }
+            >
+              ＋ 방향 만들기
+            </button>
+            {savable && (
+              <button
+                type="button"
+                className={s.make}
+                onClick={() =>
+                  setComposer({
+                    name:
+                      BUILD_PRESETS.some((preset) =>
+                        sameBoard(presetBoard(preset), currentBoard),
+                      ) || currentName === '맞춤 방향'
+                        ? ''
+                        : currentName,
+                    build: current,
+                    rows: boardRows(currentBoard),
+                    title: '지금 방향 저장',
+                  })
+                }
+              >
+                지금 방향 저장
+              </button>
+            )}
+          </div>
+        </section>
+      </details>
 
       <section className={s.synergies} aria-label="방향 시너지">
         <h3>
