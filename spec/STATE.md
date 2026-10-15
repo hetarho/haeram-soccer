@@ -14,9 +14,10 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| m8q4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-15T14:20Z | 2026-10-15T15:09Z | T137 |
 
 ## inbox
+- 261016 suggest WEB-74: owner-workflow tasks T134–T138 completed → review-code taskMemory/state, RecordsRoom/LiveSeason/CupsView and their browser journeys before the next UI feature; no refactoring is included in this completed scope
+- 261016 suggest -: spec lint has 36 existing document-quality hints → doc-review WEB/ARCH before expanding the navigation specification; no policy changes implied
 - 261015 decided WEB-74: start-vibe m8q4 scope → implement navigation-and-records with current game rules and the approved pixel readability baseline in an isolated checkout (alt: analysis only | revise game mechanics)
 - 261015 decided ideation/navigation-and-records: management structure → need, responsible person, focused action, effect timing and contextual return before full rules/catalogues (alt: rename three menus only | merge every control into one screen); independent hands-on follow-up adds M1–M13
 - 261015 decided ideation/navigation-and-records: policy detours → focused relevant settings, retained task tab/filter/comparison/scroll and unapplied drafts (alt: send to board root and reset | silently apply on exit); one applied policy remains authoritative
@@ -82,7 +83,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T137 | Complete competition history, home briefing and navigation wayfinding | WEB ARCH | T135 T136 | doing@261015.m8q4 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -91,10 +91,11 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- implement-task T137 sequentially in /Users/ihaelam/project/haeram-soccer-owner-workflows, autopilot m8q4. Preserve the owner's checkout and port 19500.
-- Unrelated balance/economy/storage follow-ups and existing WEB document-quality hints remain outside this task; see prior inbox/report entries.
+- Owner-workflow implementation is complete. Optional follow-up: review-code the navigation/task-memory UI and doc-review the existing WEB/ARCH quality hints.
+- Existing balance/economy follow-ups remain parked in inbox; the owner's checkout and port 19500 were preserved. Preview: http://localhost:19504.
 
 ## log
+- 261016 T137 done: full source CI 38759743656 passes all six jobs, storage/first-play gates pass and settled phone/desktop captures are inspected; owner-workflow todo exhausted
 - 261016 T137 implementation: one competition/period selector, explicit home progression tools, consistent operation/news labels and readable phone season facts; full CI/performance gates pending
 - 261016 T136 done: season-first club records, explicit competition detours and four scoped league lenses; 120 affected browser scenarios verified, full integration in T137
 - 261015 T138 done: observe at least one settled x10 round and stop before inspection; 9 repeated supported-browser cases pass, production timing unchanged
@@ -114,4 +115,3 @@
 - 261015 main advanced to 3257ea2 before CI on the owner's explicit instruction; T130 doing@e8ar for the intermittent Firefox slot journey failure in CI 38709122636
 - 261015 T129 done: 72 era/stage pixel scenes, 9 unit tests and 45 affected browser journeys passed, final affected 18/18, entry 250087 B gzip; CI-gated delivery by session
 - 261015 T128 done: all CI 38706479608 jobs passed; main fast-forwarded to fa69909; T129 continues
-- 261015 WEB r75: use the displayed calendar year for era changes; T129 doing@e8ar on locally verified T128 checkpoint fa69909, CI 38706479608 pending

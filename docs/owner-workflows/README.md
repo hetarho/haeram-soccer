@@ -14,3 +14,5 @@ Synthetic Chromium career, 390×844 and 1440×1000, seed `owner-workflow-preview
 - 10-cup-period-390: one competition choice followed by its current/history period and season.
 - 11-operations-desktop: department policy before the optional whole-club preset library.
 - 12-record-seasons-desktop: the same season history remains a comparative table on wide screens.
+
+Local source `2cc4e1e` also passed the storage and first-play gates: 255,115 B entry gzip (250 KiB ceiling), 50/28 ms desktop/mobile input p95, 60/61 fps and 1,866 ms century restore. Full methodology and host/reference limits are recorded in [first-play](../benchmarks/T010-first-play.json) and [storage](../benchmarks/T010-storage.json).
