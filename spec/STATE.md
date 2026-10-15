@@ -79,7 +79,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- owner's reports 261015 fixed (T117–T121, pair k5r8): deleting the game in play stays on the slot screen, a decided event card plays the clock on, the HUD never scrolls away under warning bands, no offer reads 0, facility costs climb ×2.5 (stadium) and ×4 (training ground, academy) a step; re-measure ECON-29's 160 careers on the new facility costs with the next economy change (16 measured: 2000s matchday 25.0%, at the band's edge).
+- owner's reports 261015 fixed (T117–T121, pair k5r8): deleting the game in play stays on the slot screen, a decided event card plays the clock on, the HUD never scrolls away under warning bands, no offer reads 0, facility costs climb ×2.5 (stadium) and ×4 (training ground, academy) a step; re-measure ECON-29's 160 careers on the new facility costs with the next economy change (16 measured: 2000s matchday 25.0%, at the band's edge). On main after CI 38678748201 (every job green).
 - run p7ad (autopilot) closed 261015: the player model is on main (T106–T115: 14 attributes, sided positions with levels, roles and traits, adaptation and 조직력, per-player training, slot requests, the profile UI, earlier-rules saves, the balance measured); report reports/261015-p7ad.md, 17 inbox decisions to review.
 - follow-up (T115): difficulty levels do not separate (every level ≈60% titles near season 50; LEAGUE-13 measured) — decide a lasting level rule or new bands (update-ssot LEAGUE-13/WEB-3); ESP/FRA reference careers often stay 33–50 seasons in the amateur league (3 of 160 bankrupt there); ECON-29's wage bill 40.0% below 45–70%.
 - next: review-code over the player model (inbox suggest), then the follow-ups above.
@@ -97,6 +97,7 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 CI fix: CI 38676250842/38677335586 failed Firefox and Chromium clock journeys — a 2x play may carry two days on a slow runner (specs now wait for the date to move), and play within 500 ms of a page load was ignored (the auto-stop guard started at 0); CI 38678748201 green in every job
 - 261015 T121 done: `.layout` and `.main` clip instead of hiding overflow; the HUD stayed at −31 px under two bands at 844×390 before
 - 261015 T120 done: facility costs ×2.5 / ×4 a step (1,530,450 units in all); 16 careers measured, no new bankruptcy, ECON r37
 - 261015 T119 done: other clubs' offers at least one currency unit; the 단장's free signing lists as 단장 영입, not an offer of 0
