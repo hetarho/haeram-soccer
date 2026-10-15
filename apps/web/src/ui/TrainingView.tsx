@@ -131,6 +131,23 @@ export function TrainingView({ state, client }: Props) {
       <TabPanel idPrefix="training" value={tab}>
         {tab === 'training' ? (
           <div className={`${s.stack} ${s.pair}`}>
+            <figure className={`${s.trainingScene} ${s.wide}`}>
+              <img
+                src="/art/training-ground.webp"
+                width="1440"
+                height="480"
+                loading="lazy"
+                decoding="async"
+                alt="이른 아침 훈련장의 잔디와 가죽 축구공, 장비 가방 삽화"
+              />
+              <figcaption>
+                <span>TRAINING GROUND</span>
+                <strong>
+                  {w.trainingGround ? `${w.trainingGround}단계 훈련장` : '기본 훈련장'}
+                </strong>
+                <small>지금 {focusName(outlook.focus.focus)}</small>
+              </figcaption>
+            </figure>
             <TrainingFocusPanel w={w} outlook={outlook} onSheet={setSheet} />
             <PlayerTraining w={w} onSheet={setSheet} />
             <AdaptationPanel w={w} />

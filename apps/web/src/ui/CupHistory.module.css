@@ -27,7 +27,7 @@
 .seasonPicker .seasonSelect.seasonSelect {
   flex: 0 1 200px;
   min-width: 0;
-  font-weight: 800;
+  font-weight: 700;
 }
 .seasonSelect > span:first-child {
   flex: 1;
@@ -42,7 +42,7 @@
   height: 44px;
   min-height: 44px;
   padding: 0;
-  border-radius: 12px;
+  border-radius: 2px;
 }
 .seasonStep svg {
   width: 20px;
@@ -85,7 +85,7 @@
   min-width: 0;
   padding: 10px 12px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 2px;
   background: var(--surface-deep);
 }
 .routeTitle {
@@ -142,17 +142,17 @@
   align-items: center;
   padding: 2px 8px;
   border: 1px solid var(--line-strong);
-  border-radius: 999px;
+  border-radius: 2px;
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text-muted);
 }
 .chipWin {
-  color: var(--accent-text);
-  border-color: var(--accent);
+  color: var(--positive);
+  border-color: var(--positive);
 }
 .chipTitle {
-  color: #1d1400;
+  color: var(--surface-deep);
   border-color: var(--gold-edge);
   background: var(--gold-fill);
 }
@@ -177,7 +177,7 @@
   min-height: 44px;
   padding: 6px 10px;
   border: 0;
-  border-radius: 10px;
+  border-radius: 2px;
   background: transparent;
   box-shadow: none;
   font-size: 13px;
@@ -189,8 +189,8 @@
   font-size: 12px;
 }
 .runButton[aria-current='true'] {
-  background: rgba(47, 194, 116, 0.12);
-  box-shadow: inset 3px 0 0 var(--accent);
+  background: rgba(155, 178, 161, 0.12);
+  box-shadow: none;
 }
 /* Honours tables: the club column takes what the counts leave. */
 .honoursTable {
@@ -230,10 +230,10 @@
   display: inline-block;
   margin-left: 4px;
   padding: 0 6px;
-  border-radius: 999px;
+  border-radius: 2px;
   font-size: 9px;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--on-accent);
   background: var(--accent);
   vertical-align: middle;
@@ -251,13 +251,13 @@
   min-width: 0;
   padding: 8px 10px;
   border-left: 3px solid var(--gold);
-  border-radius: 10px;
+  border-radius: 2px;
   background: rgba(0, 0, 0, 0.18);
   font-size: 13px;
 }
 .feats > li > span {
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--gold);
 }
 .feats p {
@@ -291,7 +291,7 @@
   min-height: 44px;
   padding: 4px 6px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 2px;
   background: transparent;
   box-shadow: none;
   font-size: 12px;
@@ -314,10 +314,10 @@
   top: -6px;
   right: 6px;
   padding: 1px 6px;
-  border-radius: 999px;
+  border-radius: 2px;
   font-size: 9px;
   font-style: normal;
-  font-weight: 800;
-  color: #1d1400;
+  font-weight: 700;
+  color: var(--surface-deep);
   background: var(--gold);
 }

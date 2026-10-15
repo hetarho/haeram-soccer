@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r68 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r72 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -13,14 +13,14 @@
 
 - WEB-9 [o] Casual growth play follows docs/IMPROVEMENT-GUIDE.md: one-action matches, roster/tactic/fatigue tradeoffs, evidence-backed growth, and no guaranteed win claims.
 
-- WEB-10 [o] Play uses a game HUD (menu, club crest, division/date, inbox, cash pinned top right) and, on mobile, a seven-tab safe-area bar with home raised: league, cups (컵) and records (클럽 기록실) on the left; 사람, 훈련 and 방향 on the right, the owner's three levers — who joins and stays (→WEB-43), how players develop (→WEB-70) and where the club is going with how it earns and spends (→WEB-39). The match view has no tab (→WEB-40). The HUD menu lists only what the tab bar does not show plus guide, intervention, club news (→WEB-51), the metrics glossary (→WEB-53), save tools and 게임 슬롯 (→WEB-62). Tapping the HUD cash opens the cash sheet (→WEB-44); the HUD shows cash in the money notation (→WEB-67), and on phones the club name wraps to two lines before it truncates. The document never scrolls: HUD, clock and tab bar stay fixed and one content region scrolls between them, and the shell around that region never scrolls, by code (focus, an element scrolled into view) either, so warning bands taller than a low screen never push the HUD off its top; the match theatre fits that region at 360x740 and 390x844 CSS pixels and home may scroll vertically. Content never overflows the viewport or clips inside a panel; controls sharing a row share height and edges.
+- WEB-10 [o] Play uses a game HUD (menu, club crest, division/date, inbox, cash pinned top right) and, on mobile, a seven-tab safe-area bar with home centered and selected navigation marked by a persistent underline: league, cups (컵) and records (클럽 기록실) on the left; 사람, 훈련 and 방향 on the right, the owner's three levers — who joins and stays (→WEB-43), how players develop (→WEB-70) and where the club is going with how it earns and spends (→WEB-39). The match view has no tab (→WEB-40). The HUD menu lists only what the tab bar does not show plus guide, intervention, club news (→WEB-51), the metrics glossary (→WEB-53), save tools and 게임 슬롯 (→WEB-62). Tapping the HUD cash opens the cash sheet (→WEB-44); the HUD shows cash in the money notation (→WEB-67), and on phones the club name wraps to two lines before it truncates. The document never scrolls: HUD, clock and tab bar stay fixed and one content region scrolls between them, and the shell around that region never scrolls, by code (focus, an element scrolled into view) either, so warning bands taller than a low screen never push the HUD off its top; the match theatre fits that region at 360x740 and 390x844 CSS pixels and home may scroll vertically. Content never overflows the viewport or clips inside a panel; controls sharing a row share height and edges.
   - wider screens name the right tabs 사람 (선수·스태프), 훈련 (훈련·육성) and 방향 (구단 방향).
   - read-only ownership shows as a compact HUD badge that explains itself on tap, never a content banner.
-  - the page background is a soft floodlit gradient without bands; sticky bars are translucent so no flat rectangle shows over it.
+  - the page background and fixed bars are flat charcoal surfaces with fine neutral dividers (→WEB-38).
   - phones pack rows: no view repeats its tab's name as a title, and panels keep tight padding.
   - wording follows Korean football media: continental competitions are 클럽대항전 (never 대륙컵, which reads as a national-team tournament), morale is 분위기 (a bare 사기 also reads as fraud), money runway is 자금 여력 in weeks or months, and the squad-support policy is 선수단 투자. ← football fans read the game in the words of their own media
 
-- WEB-11 [o] The core home shows season statistics (rank, squad strength, record; tapping them opens season detail with bulk actions), the stadium/supporter scene, drawn by the stadium's step (→ECON-32) (at least 180 CSS px tall so the club's stage stays readable) with the season statistics laid over its lower edge, a team-state card (→WEB-44), the next milestone, a next-match card with preparation and one watch action, and a headline card with the three newest news items (→WEB-51). Cash lives in the HUD; club business needing a decision lives in the inbox.
+- WEB-11 [o] The core home shows season statistics (rank, squad strength, record; tapping them opens season detail with bulk actions), the illustrated stadium/supporter scene with the current stadium step and capacity in HTML labels (→ECON-32; at least 180 CSS px tall so the club's stage stays readable) with the season statistics laid over its lower edge, a team-state card (→WEB-44), the next milestone, a next-match card with preparation and one watch action, and a headline card with the three newest news items (→WEB-51). Cash lives in the HUD; club business needing a decision lives in the inbox.
 
 - WEB-12 [o] Home presents the next achievable club milestone and its real progress, with an explicit collection of completed and upcoming milestones. Milestones cover debut, preparation, first win, earned player growth, facility investment, supporter reach, completed seasons and promotion.
 
@@ -86,7 +86,12 @@
   - decisions made inside sheets are summarized together after every dialog closes, against the world each decision published.
   - reading inbox items never produces a card.
 - WEB-37 [o] Actions state their consequence before commit. Watch actions show the days advanced before kickoff; bulk progression names what it settles; manager hiring and player sale confirm spend, departures, tactic and squad-size changes.
-- WEB-38 [o] Visual language is a dark night-stadium game theme from shared colour tokens: HUD, pressable 3D buttons, card frames and gold/green accents across every view.
+- WEB-38 [o] Every playable screen uses the night-broadcast visual language: charcoal and off-white, natural grass-green primary accents, flat surfaces, fine dividers and clear numeric hierarchy.
+  - Apply it to founding, game slots, the HUD and clock, home, match observation, league and cups, people and profiles, training, direction and finances, records, dialogs, dropdowns and notifications.
+  - Buttons and panels have restrained corners and no decorative bevel, glow, fog or gradient; navigation stays recognizable as underlined text (→WEB-69). Status colours and club kits remain semantically distinct.
+  - Match scores, time, team identity and the pitch lead the observation view. Home uses a broadcast-style club header, the stadium's actual stage (→WEB-11), season figures and the next fixture.
+  - Typography uses compact indie-game bitmap faces for Latin, Korean and numbers, with aligned figures, complete Korean fallback coverage and legible controls at supported viewport sizes. Bundle font terms and attribution with the self-hosted files.
+  - The playable app replaces design-comparison galleries; retired mockups, generated exploration assets and their bundled fonts are not shipped.
 - WEB-39 [o] 방향 holds where the club is going and its money as one page-tab bar (→WEB-69) — 방향 (the direction board →WEB-60), 증축, 자금, 후원 — kept in /direction?view= (방향 left out; build, finance, sponsor); an older /business address opens the same tab under /direction, its older strategy, facility and marketing values 방향, 증축 and 자금. The page tab of cash is 자금 so it never reads like the 재정 area of the board (→ECON-25). Tapping a step or card previews its effect; only an explicit apply or commit sends the command.
   - 증축: the three facility parts (→ECON-32) — the stadium's ladder with its steps, capacity against demand, the next expansion or rebuild with cost, time, upkeep and what the works do to capacity, then the training ground and the academy facilities with each level's effect, and any work in progress with its days left.
   - 자금: the cash projection, fixed costs and runway, the ledger, currency notes, the owner contribution and any campaign started before rules 1.19 until it settles (→ECON-7).
@@ -236,6 +241,12 @@
   | owner capital, campaigns started before rules 1.19 | 방향 › 자금 |
   | the intervention level (who decides, and the stops), background play | the intervention dialog (HUD menu); the level also in the clock's popover |
   - event cards (→WEB-42) decide their event or open a home; remedies (→WEB-44) act or open a home with the choice ready; who takes a decision is set only by the intervention level; a home names it and opens the dialog (→WEB-45).
+- WEB-72 [o] Lived-in, realistic painted football illustrations appear in the home stadium scene, match-preparation locker room and training-ground overview.
+  - Home presents the stadium as one full illustration, with readable HTML labels for the current stage, venue name, capacity and supporter count.
+  - Atmospheric artwork adds place and texture; the authoritative stadium-stage label, capacity, club identity, fixture and training figures continue to come from the current world. The art does not claim a fixed stadium size or a real player's appearance.
+  - Heritage architecture and equipment fit a career beginning in 1950 and can remain in later seasons; avoid real club brands, embedded interface text and fabricated data. The live pitch remains the engine-driven Canvas view.
+  - Self-host optimized image assets, keep text and controls as accessible HTML, and preserve the fixed shell, touch targets and readable phone layouts (→WEB-10).
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -243,6 +254,10 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r72 261015 WEB-11✎ stage-drawn stadium scene→full stadium illustration with current-stage HTML labels; WEB-72✎ schematic stage inset→illustration-only home venue
+- r71 261015 WEB-38✎ broadcast-red primary accents→natural grass-green actions and selection; semantic warning/danger colours stay distinct
+- r70 261015 WEB-38✎ Korean sans/condensed display→matched indie bitmap typography; WEB-72+ painted stadium, locker-room and training-ground ambience with authoritative world facts retained
+- r69 261015 WEB-10✎ raised home and translucent floodlit gradient→centered underlined navigation and flat charcoal bars; WEB-38✎ green/gold night-stadium skin with 3D buttons→night-broadcast visual system across the playable app, no shipped comparison galleries
 - r68 261015 WEB-10✎ +the shell never scrolls by code either (the HUD stays on top under warning bands); WEB-42✎ deciding a card left the clock stopped→plays on once no stopping event waits, a choice opening a view leaves it stopped; WEB-45✎ +the 단장's free-agent signing lists as 단장 영입 · 자유계약, not an offer of 0; WEB-62✎ deleting the game in play reloaded into founding→onto the slot screen, even all empty
 - r67 261015 WEB-18✎ a pace chip starts a stopped clock→sets the pace only, play starts it
 - r66 261015 WEB-2✎ WEB-3✎ capital presets 2/1/0.5→four difficulty levels setting cash 2/1/0.5/0.25× and the starting XI 0/−2/−4/−6, rules identical; WEB-15✎ capital choice→difficulty level (쉬움 first); WEB-21✎ +each tactic's formation; WEB-24✎ WEB-25✎ role→position; WEB-43✎ +main position and adaptation on cards, shortlist by line, coaches' cards carry no training controls (→훈련); WEB-55✎ +main position on one scale, position filter by 14 positions or line; WEB-58✎ +rival XI at its 조직력; WEB-59✎ +the player profile; WEB-70✎ no control of its own→제안 and 강행 for the squad and single players, 개별 훈련, 적응, 균형/회복/하드; WEB-71✎ training row adds suggestions and orders

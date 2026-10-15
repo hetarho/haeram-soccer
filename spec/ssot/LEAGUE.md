@@ -53,7 +53,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
-- r7 261015 LEAGUE-13✎ +measured 261015 column (rules 2.0.0, 160 careers): every level ≈60% titles near season 50, ≈21% after the first; 보통·어려움·최상 outside their bands
+- r7 261015 LEAGUE-13✎ unmeasured→measured 261015 column (rules 2.0.0, 160 careers): every level ≈60% titles near season 50, ≈21% after the first; 보통·어려움·최상 outside their bands
 - r6 261015 LEAGUE-12+ 조직력 of clubs nobody owns (start 0.80, +0.010/+0.005 a round, new manager −30%/−10% of the distance to 0.50, takeover or project −0.15, promotion or relegation −0.10); LEAGUE-13+ balance bands per difficulty level on reference careers
 - r5 261012 LEAGUE-6✎ worst last-division club dropped to make room for a promoted own club→one exchange: the bottom two of each last-division group for as many amateur clubs, chosen by the amateur table (playoff for the last place) while the own club plays in it; LEAGUE-11+ one day order for every progression mode
 - r4 261012 LEAGUE-10✎ strength cap 92→99, +rare club projects adding 8–18 to a level and fading 15% a summer

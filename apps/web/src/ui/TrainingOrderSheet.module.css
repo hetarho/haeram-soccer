@@ -3,7 +3,7 @@
   gap: 2px;
   margin: 0 0 8px;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: 2px;
   border: 1px solid var(--line);
   background: rgba(0, 0, 0, 0.2);
   font-size: 14px;
@@ -32,7 +32,7 @@
   justify-content: space-between;
   gap: 8px 12px;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: 2px;
   border: 1px solid var(--line);
   background: var(--surface-2);
 }
@@ -58,7 +58,7 @@
   min-width: 76px;
   min-height: 44px;
   padding: 4px 10px;
-  font-weight: 800;
+  font-weight: 700;
 }
 .focusActions small {
   font-size: 11px;

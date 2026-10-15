@@ -15,8 +15,8 @@
   padding: 14px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
-  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
-  box-shadow: var(--shadow);
+  background: var(--surface-2);
+  box-shadow: none;
   min-width: 0;
 }
 .cardHead {
@@ -41,19 +41,19 @@
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: 2px;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--gold);
   border: 1px solid var(--gold);
-  background: rgba(255, 203, 71, 0.08);
+  background: rgba(196, 175, 125, 0.08);
 }
 .status {
   margin: 0;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: 2px;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 700;
   background: rgba(0, 0, 0, 0.22);
   border-left: 3px solid var(--accent);
 }
@@ -130,7 +130,7 @@
 .ties em,
 .finals em {
   font-style: normal;
-  font-weight: 800;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
   text-align: center;
   font-size: 12px;
@@ -142,9 +142,9 @@
   color: var(--gold);
 }
 .ownTie {
-  background: rgba(47, 194, 116, 0.1);
-  border-radius: 10px;
-  box-shadow: inset 3px 0 0 var(--accent);
+  background: rgba(155, 178, 161, 0.1);
+  border-radius: 2px;
+  box-shadow: none;
 }
 .ownBadge {
   position: absolute;
@@ -152,9 +152,9 @@
   right: 6px;
   font-style: normal;
   font-size: 9px;
-  font-weight: 800;
+  font-weight: 700;
   padding: 1px 6px;
-  border-radius: 999px;
+  border-radius: 2px;
   color: var(--on-accent);
   background: var(--accent);
 }
@@ -164,7 +164,7 @@
   white-space: nowrap;
 }
 .club.strong {
-  font-weight: 800;
+  font-weight: 700;
 }
 .ownName > span {
   color: var(--accent-text);
@@ -221,10 +221,10 @@
   overflow: hidden;
 }
 .direct {
-  box-shadow: inset 3px 0 0 var(--accent);
+  box-shadow: none;
 }
 .playoff {
-  box-shadow: inset 3px 0 0 var(--gold);
+  box-shadow: none;
 }
 .out {
   opacity: 0.8;
@@ -238,7 +238,7 @@
   box-shadow: none;
 }
 .ownRow {
-  background: rgba(47, 194, 116, 0.12);
+  background: rgba(155, 178, 161, 0.12);
 }
 .leaders ol {
   display: grid;
@@ -340,7 +340,7 @@
   display: grid;
   gap: 2px;
   padding: 6px 8px;
-  border-radius: 10px;
+  border-radius: 2px;
   border: 1px solid var(--line);
   background: var(--surface-deep);
   font-size: 12px;
@@ -354,7 +354,7 @@
 }
 .treeTie em {
   font-style: normal;
-  font-weight: 800;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 .treeTie small {

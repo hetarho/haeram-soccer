@@ -12,7 +12,7 @@
   /* Near-opaque like the HUD: a backdrop blur or mask over the fixed page background re-rasters
      the whole band on every league visit, about 20 times the cost of any other tab. */
   background: var(--hud);
-  box-shadow: 0 8px 12px -10px rgba(0, 0, 0, 0.6);
+  box-shadow: none;
 }
 .tabs {
   margin-bottom: 0;
@@ -28,7 +28,7 @@
 .seasonPicker .seasonSelect.seasonSelect {
   flex: 0 1 200px;
   min-width: 0;
-  font-weight: 800;
+  font-weight: 700;
 }
 .seasonSelect > span:first-child {
   flex: 1;
@@ -43,7 +43,7 @@
   height: 44px;
   min-height: 44px;
   padding: 0;
-  border-radius: 12px;
+  border-radius: 2px;
 }
 .seasonStep svg {
   width: 20px;
@@ -90,11 +90,13 @@
   min-height: 44px;
   padding: 0;
   font-size: 22px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1;
 }
 .matchPane {
-  max-width: 900px;
+  width: 100%;
+  max-width: 1000px;
+  margin-inline: auto;
 }
 .feedback {
   display: flex;
@@ -103,7 +105,7 @@
   margin: 10px 0;
   padding: 8px 12px;
   background: var(--surface-2);
-  border-radius: 8px;
+  border-radius: 2px;
   font-size: 13px;
   color: var(--text);
   white-space: nowrap;
@@ -224,18 +226,16 @@
   color: var(--on-accent);
   background: var(--accent-fill);
   border-color: var(--accent-edge);
-  box-shadow:
-    0 4px 0 var(--accent-edge),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  box-shadow: none;
 }
 .watch b {
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 700;
 }
 .watch small {
   font-size: 11px;
   font-weight: 700;
-  color: #0b4425;
+  color: var(--on-accent);
 }
 @media (max-width: 760px) {
   .nextActions button {

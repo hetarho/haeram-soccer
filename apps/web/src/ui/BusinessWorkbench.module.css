@@ -28,7 +28,7 @@
   min-width: 0;
   padding: 10px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 2px;
   background: var(--surface);
 }
 .summary span {
@@ -48,7 +48,7 @@
 }
 .panel {
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 2px;
   padding: 16px;
   background: var(--surface);
 }
@@ -108,7 +108,7 @@
   min-width: 0;
   padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 2px;
   background: var(--surface);
 }
 .card h3 {
@@ -189,7 +189,7 @@
 }
 .recovery {
   border: 1px solid var(--line);
-  border-radius: 9px;
+  border-radius: 2px;
   background: var(--surface);
 }
 .recovery summary {
@@ -209,7 +209,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px;
-  border-radius: 9px;
+  border-radius: 2px;
   background: var(--warm-soft);
 }
 .contribution b {
@@ -231,7 +231,7 @@
   font-size: 12px;
   margin: 9px 0;
   padding: 9px 11px;
-  border-radius: 9px;
+  border-radius: 2px;
   background: var(--warm-soft);
   color: var(--gold);
 }

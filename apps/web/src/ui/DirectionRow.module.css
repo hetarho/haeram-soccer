@@ -30,10 +30,10 @@
   max-width: 50%;
   font-size: 12px;
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: 2px;
   color: var(--on-accent);
   background: var(--gold-fill);
-  box-shadow: 0 2px 0 var(--gold-edge);
+  box-shadow: none;
   overflow-wrap: anywhere;
 }
 .options {
@@ -44,7 +44,7 @@
   min-width: 0;
   min-height: 44px;
   padding: 4px 3px;
-  border-radius: 10px;
+  border-radius: 2px;
   font-size: 11px;
   font-weight: 700;
   line-height: 1.2;
@@ -58,14 +58,14 @@
 .options button[aria-checked='true'] {
   color: var(--text);
   border-color: var(--accent);
-  background: #173a2c;
+  background: var(--surface-2);
 }
 /* A drafted option reads gold and dashed until the board's 적용 sends it. */
 .options .drafted,
 .options .drafted[aria-checked='true'] {
   color: var(--gold);
   border: 1px dashed var(--gold);
-  background: #2c2914;
+  background: var(--surface-2);
 }
 .options button:disabled {
   opacity: 0.55;
@@ -77,7 +77,7 @@
   display: grid;
   gap: 4px;
   padding: 8px 10px;
-  border-radius: 10px;
+  border-radius: 2px;
   border: 1px solid transparent;
   background: rgba(0, 0, 0, 0.22);
   font-size: 12px;
@@ -100,7 +100,7 @@
 }
 .previewing {
   border-color: var(--gold);
-  background: #241f0f;
+  background: var(--surface-deep);
 }
 .previewing p b {
   color: var(--gold);

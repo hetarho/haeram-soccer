@@ -3,10 +3,10 @@
   gap: 6px;
   margin: 8px 0;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: 2px;
   border: 1px solid var(--line-strong);
   border-left-width: 4px;
-  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  background: var(--surface-2);
   min-width: 0;
 }
 .card > b {
@@ -17,11 +17,11 @@
 }
 .card > b span {
   padding: 1px 7px;
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--surface-3);
   color: var(--text-muted);
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
 }
 .card > small {
   color: var(--text-muted);
@@ -38,7 +38,7 @@
   line-height: 1.45;
 }
 .pro {
-  color: var(--accent-text);
+  color: var(--positive);
 }
 .con {
   color: var(--warm);

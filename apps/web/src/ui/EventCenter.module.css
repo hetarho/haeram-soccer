@@ -7,14 +7,10 @@
   max-height: min(60dvh, 420px);
   overflow-y: auto;
   padding: 14px;
-  border-radius: 18px;
+  border-radius: 2px;
   border: 1px solid var(--gold-edge);
-  background:
-    radial-gradient(360px 120px at 100% 0%, rgba(255, 203, 71, 0.18), transparent 70%),
-    linear-gradient(180deg, #2a2512 0%, var(--surface) 100%);
-  box-shadow:
-    0 16px 44px rgba(0, 0, 0, 0.55),
-    0 0 0 3px rgba(255, 203, 71, 0.15);
+  background: var(--surface-2);
+  box-shadow: none;
   animation: event-in 240ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
 }
 .card header {
@@ -25,7 +21,7 @@
 }
 .kind {
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: 0.8px;
   color: var(--gold);
 }
@@ -61,7 +57,7 @@
 }
 .bid div {
   padding: 6px 10px;
-  border-radius: 10px;
+  border-radius: 2px;
   background: rgba(0, 0, 0, 0.25);
 }
 .bid dt {
@@ -70,7 +66,7 @@
 }
 .bid dd {
   margin: 0;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
@@ -89,7 +85,7 @@
   color: var(--on-accent);
   background: var(--gold-fill);
   border-color: var(--gold-edge);
-  box-shadow: 0 3px 0 var(--gold-edge);
+  box-shadow: none;
 }
 .bell {
   position: relative;
@@ -113,12 +109,12 @@
   min-width: 20px;
   height: 20px;
   padding: 0 5px;
-  border-radius: 10px;
+  border-radius: 2px;
   font-size: 11px;
   line-height: 20px;
-  color: #2a0f02;
+  color: var(--on-accent);
   background: var(--warm);
-  box-shadow: 0 0 0 2px var(--bg);
+  box-shadow: none;
 }
 .inbox {
   list-style: none;
@@ -131,7 +127,7 @@
   display: grid;
   gap: 2px;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: 2px;
   background: var(--surface-2);
   border: 1px solid var(--line);
 }
@@ -175,14 +171,12 @@
   gap: 8px;
   min-height: 44px;
   padding: 4px 14px 4px 6px;
-  border-radius: 999px;
+  border-radius: 2px;
   border-color: var(--gold-edge);
-  background: linear-gradient(180deg, #2a2512 0%, var(--surface) 100%);
-  box-shadow:
-    0 10px 28px rgba(0, 0, 0, 0.5),
-    0 0 0 3px rgba(255, 203, 71, 0.15);
+  background: var(--surface-2);
+  box-shadow: none;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
   animation: event-in 240ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
 }
 .pill i {
@@ -192,7 +186,7 @@
   height: 30px;
   border-radius: 50%;
   font-style: normal;
-  color: #2a1c02;
+  color: var(--on-accent);
   background: var(--gold-fill);
 }
 @media (max-width: 760px) {

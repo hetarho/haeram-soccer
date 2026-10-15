@@ -28,7 +28,7 @@ test('selects by keyboard, exposes selection and dismisses without committing pr
   await expect(country).toHaveAttribute('aria-expanded', 'false');
   await expect(page.getByRole('button', { name: '쉬움' })).toBeFocused();
   await country.click();
-  await page.getByRole('heading', { name: '작은 클럽의, 큰 내일.' }).click();
+  await page.getByRole('heading', { name: '당신의 클럽, 첫 시즌.' }).click();
   await expect(country).toHaveAttribute('aria-expanded', 'false');
   await expect(country).toHaveAttribute('data-value', 'POR');
   await expect(page.getByTestId('club-founding')).toBeVisible();

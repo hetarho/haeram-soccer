@@ -238,6 +238,9 @@ export function Pitch({
   useEffect(() => {
     let raf = 0;
     last.current = 0;
+    const pitchFont = canvas.current
+      ? getComputedStyle(canvas.current).fontFamily
+      : 'Monogram, Galmuri11, monospace';
     const draw = (time: number) => {
       const elapsed = last.current ? Math.min(60, time - last.current) : 0;
       last.current = time;
@@ -279,7 +282,7 @@ export function Pitch({
           element.height = Math.round(height * dpr);
         }
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        ctx.fillStyle = '#174d38';
+        ctx.fillStyle = '#253b31';
         ctx.fillRect(0, 0, width, height);
         const pad = width * 0.065;
         const fw = width - pad * 2;
@@ -288,10 +291,10 @@ export function Pitch({
         const y = (v: number) => pad + (fh * v) / 100;
         // Mown stripes.
         for (let stripe = 0; stripe < 10; stripe++) {
-          ctx.fillStyle = stripe % 2 ? '#1a523c' : '#1d5841';
+          ctx.fillStyle = stripe % 2 ? '#2b4538' : '#304b3d';
           ctx.fillRect(pad + (fw * stripe) / 10, pad, fw / 10 + 0.5, fh);
         }
-        ctx.strokeStyle = '#a9c6b08c';
+        ctx.strokeStyle = '#d7dcc598';
         ctx.lineWidth = 1.4;
         ctx.strokeRect(pad, pad, fw, fh);
         ctx.beginPath();
@@ -321,7 +324,7 @@ export function Pitch({
               const py = position[1] * (1 - mix) + (target?.position[1] ?? position[1]) * mix;
               const selected = inspect && selectedSide === side && selectedIndex === i;
               if (selected && motion) {
-                ctx.strokeStyle = '#f2d39b';
+                ctx.strokeStyle = '#f1f0e8';
                 ctx.lineWidth = 1.5;
                 ctx.setLineDash([4, 4]);
                 ctx.beginPath();
@@ -336,7 +339,7 @@ export function Pitch({
               if (selected) {
                 ctx.beginPath();
                 ctx.arc(x(px), y(py), radius + 4, 0, Math.PI * 2);
-                ctx.strokeStyle = '#f2d39b';
+                ctx.strokeStyle = '#f1f0e8';
                 ctx.lineWidth = 2;
                 ctx.stroke();
               }
@@ -349,7 +352,7 @@ export function Pitch({
               ctx.lineWidth = 1.2;
               ctx.stroke();
               ctx.fillStyle = inkOn(i === 0 ? (side === 0 ? '#f2c94c' : '#56ccf2') : kit);
-              ctx.font = `bold ${Math.max(8, width * 0.012)}px sans-serif`;
+              ctx.font = `${Math.max(8, width * 0.012)}px ${pitchFont}`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
               ctx.fillText(String(i + 1), x(px), y(py));
@@ -385,7 +388,7 @@ export function Pitch({
           ctx.stroke();
         } else {
           ctx.fillStyle = '#d8e4d6';
-          ctx.font = '14px sans-serif';
+          ctx.font = `14px ${pitchFont}`;
           ctx.textAlign = 'center';
           ctx.fillText('킥오프를 기다립니다', width / 2, height / 2);
         }

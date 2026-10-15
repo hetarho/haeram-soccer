@@ -8,7 +8,7 @@
   height: 44px;
   min-height: 44px;
   padding: 0;
-  border-radius: 12px;
+  border-radius: 2px;
 }
 .trigger svg {
   width: 20px;
@@ -29,12 +29,12 @@
   min-width: 18px;
   height: 18px;
   padding: 0 4px;
-  border-radius: 999px;
+  border-radius: 2px;
   background: var(--gold-fill);
-  color: #2a1a00;
+  color: var(--on-accent);
   font-size: 11px;
   font-style: normal;
-  font-weight: 900;
+  font-weight: 700;
   line-height: 18px;
   text-align: center;
 }
@@ -46,7 +46,7 @@
   display: block;
   margin-bottom: 6px;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text-muted);
 }
 .chips {
@@ -57,7 +57,7 @@
 .chip.chip {
   min-height: 40px;
   padding: 0 12px;
-  border-radius: 999px;
+  border-radius: 2px;
   font-size: 12.5px;
   font-weight: 700;
 }
@@ -65,7 +65,7 @@
   color: var(--on-accent);
   border-color: var(--accent-edge);
   background: var(--accent-fill);
-  box-shadow: 0 2px 0 var(--accent-edge);
+  box-shadow: none;
 }
 .footer {
   display: flex;
@@ -87,12 +87,10 @@
   padding: 0;
   overflow: visible;
   border: 1px solid var(--line-strong);
-  border-radius: 16px;
-  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  border-radius: 2px;
+  background: var(--surface-2);
   color: var(--text);
-  box-shadow:
-    var(--shadow),
-    0 0 0 1px rgba(0, 0, 0, 0.35);
+  box-shadow: none;
   transform-origin: calc(100% - var(--caret, 20px)) top;
 }
 .popover::before {
@@ -118,5 +116,5 @@
   display: block;
   margin-bottom: 12px;
   font-size: 15px;
-  font-weight: 900;
+  font-weight: 700;
 }

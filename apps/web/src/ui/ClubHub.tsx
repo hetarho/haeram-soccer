@@ -3,7 +3,7 @@ import type { World } from '../../../../packages/contracts/src/types';
 import { clubOf, rating, tacticLabel } from '../../../../packages/engine/src/world';
 import { nextOwnFixture, daysUntilNextMatch } from '../../../../packages/engine/src/calendar';
 import { orderIds, ownLeagueIds } from './league';
-import { competitionLabel, number } from './format';
+import { competitionLabel, number, seasonName } from './format';
 import { cashState, teamStates, urgentState, type StateKey } from './teamState';
 import { RemedySheet, useRemedyRunner } from './RemedySheet';
 import { NewsHeadlines } from './NewsFeed';
@@ -12,7 +12,6 @@ import type { ProgressionController } from '../runtime/progression';
 import { useMatchView, useNavigation } from './state';
 import { useGameState } from '../runtime/store';
 import { ClubLink } from './ClubLink';
-import { crestOf } from './crests';
 import { watchNextMatch } from './watch';
 import { StrategyPanel } from './StrategyPanel';
 import { Dialog } from './Dialog';
@@ -156,89 +155,31 @@ function TeamState({
 
 function ClubScene({ w }: { w: World }) {
   const club = clubOf(w);
-  const crest = crestOf(w, club.id);
-  const crowds = Math.min(36, Math.max(6, Math.round(club.fans / 200)));
   return (
     <figure
       className={s.scene}
       aria-label={`우리 구장 · ${STADIUM_STEPS[w.stadium].name} ${STADIUM_STEPS[w.stadium].capacity}석 · 팬 ${club.fans}명`}
     >
+      <img
+        className={s.sceneArt}
+        src="/art/stadium-tunnel.webp"
+        width="1440"
+        height="480"
+        decoding="async"
+        alt="벽돌 선수 터널 너머로 보이는 야간 축구장의 잔디와 터치라인 삽화"
+      />
       <div className={s.sceneCaption}>
         <span className={s.badge}>
           <i aria-hidden="true">♥</i>
           {number(club.fans)}명의 서포터
         </span>
-        <b>
-          {w.stadium < 2
-            ? '동네의 작은 구장'
-            : w.stadium < 5
-              ? '우리만의 홈 그라운드'
-              : '도시의 자부심'}
-        </b>
+        <b>{STADIUM_STEPS[w.stadium].name}</b>
         <span className={s.badge}>
           <i aria-hidden="true">▲</i>
           {number(STADIUM_STEPS[w.stadium].capacity)}석
         </span>
       </div>
-      <svg
-        viewBox="0 0 360 150"
-        preserveAspectRatio="xMidYMid slice"
-        role="img"
-        aria-label="경기장과 서포터에 따라 성장하는 클럽 구장"
-      >
-        <defs>
-          <linearGradient id="club-sky" x2="0" y2="1">
-            <stop stopColor="#dfeddd" />
-            <stop offset="1" stopColor="#fbf1d8" />
-          </linearGradient>
-        </defs>
-        <rect width="360" height="150" fill="url(#club-sky)" />
-        <circle cx="302" cy="27" r="15" fill="#efd599" />
-        <path d="M0 74Q60 36 120 68T250 62T360 66V150H0Z" fill="#9cbb93" />
-        <path d="M0 106L180 61L360 106L180 164Z" fill="#527d58" />
-        <path d="M55 100L178 70L302 100L180 138Z" fill="#72a16b" stroke="#f4f0dc" strokeWidth="2" />
-        <path
-          d="M180 70V138M111 87L233 122M55 100L180 138M178 70L302 100"
-          fill="none"
-          stroke="#a2c297"
-        />
-        <ellipse cx="180" cy="103" rx="20" ry="9" fill="none" stroke="#f4f0dc" strokeWidth="1.5" />
-        <path
-          d="M53 98V87L72 83V94M302 98V87L284 83V94"
-          fill="none"
-          stroke="#fff9e6"
-          strokeWidth="2"
-        />
-        <path d="M44 82L147 56L149 69L46 95Z" fill="#cdb88f" />
-        {w.stadium >= 1 && <path d="M213 57L317 81L315 94L211 70Z" fill="#cdb88f" />}
-        {w.stadium >= 3 && <path d="M36 73L149 44L157 51L44 82Z" fill={crest.primary} />}
-        {w.stadium >= 5 && <path d="M207 44L325 73L317 81L201 51Z" fill={crest.primary} />}
-        {Array.from({ length: crowds }, (_, i) => (
-          <circle
-            key={i}
-            cx={51 + (i % 18) * 5.3}
-            cy={84 - (i % 18) * 1.35 - Math.floor(i / 18) * 4}
-            r="1.7"
-            fill={i % 3 === 0 ? crest.primary : i % 3 === 1 ? crest.secondary : '#334d3b'}
-          />
-        ))}
-        <path d="M25 110V62M335 110V62" stroke="#485b43" strokeWidth="2" />
-        <path d="M25 62L41 68L25 73M335 62L319 68L335 73" fill={crest.primary} />
-        <path d="M25 66L33 68L25 70M335 66L327 68L335 70" fill={crest.secondary} />
-        {[
-          [100, 104],
-          [140, 99],
-          [191, 113],
-          [216, 100],
-          [253, 98],
-        ].map(([x, y], i) => (
-          <g key={i}>
-            <ellipse cx={x} cy={y + 3} rx="5" ry="2" fill="#274c3240" />
-            <circle cx={x} cy={y} r="3.5" fill={crest.primary} stroke={crest.secondary} />
-          </g>
-        ))}
-        <circle cx="207" cy="105" r="2.4" fill="white" />
-      </svg>
+      <span className={s.stageLabel}>구장 {w.stadium + 1}단계</span>
     </figure>
   );
 }
@@ -291,7 +232,18 @@ export function ClubHub({
   };
   return (
     <section className={s.hub} data-testid="club-hub" aria-label="클럽 키우기">
-      <h2 className={s.srOnly}>{club.name} 클럽 홈</h2>
+      <header className={s.broadcastHeader}>
+        <div>
+          <span>
+            CLUB CENTRE <i aria-hidden="true">/</i> {seasonName(w.year)}
+          </span>
+          <h2>{club.name}</h2>
+        </div>
+        <b>
+          {w.lower ? '아마추어 리그' : `${club.tier + 1}부 리그`}
+          <small>시즌 운영실</small>
+        </b>
+      </header>
       {/* The season numbers ride the bottom of the club's stage instead of taking a row. */}
       <div className={s.stage}>
         <ClubScene w={w} />
@@ -410,7 +362,9 @@ export function ClubHub({
         </div>
       </section>
 
-      <NewsHeadlines w={w} />
+      <div className={s.headlines}>
+        <NewsHeadlines w={w} />
+      </div>
 
       {preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />}
       {goalsOpen && (

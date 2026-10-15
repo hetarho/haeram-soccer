@@ -1,7 +1,7 @@
 .disclosure {
   margin: 12px 0;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 2px;
   background: var(--surface);
   min-width: 0;
 }
@@ -53,8 +53,8 @@
   margin: 0 0 14px;
   padding: 12px 14px;
   border: 1px solid var(--line-strong);
-  border-radius: 12px;
-  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  border-radius: 2px;
+  background: var(--surface-2);
 }
 .clubCareer h3 {
   margin: 0 0 4px;
@@ -65,7 +65,7 @@
   margin: 0 0 8px;
   color: var(--text);
   font-size: 17px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.4;
 }
 .clubCareer .note {
@@ -84,7 +84,7 @@
 .facts > div {
   padding: 10px;
   background: var(--surface-2);
-  border-radius: 8px;
+  border-radius: 2px;
   min-width: 0;
 }
 .facts dt {
@@ -113,7 +113,7 @@
 .chips span {
   padding: 6px 9px;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 2px;
   font-size: 12px;
 }
 .list {
@@ -221,7 +221,7 @@
   min-width: 0;
   padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 2px;
   background: var(--surface);
 }
 .cards button {
@@ -346,12 +346,12 @@
 }
 .split tbody th {
   text-align: left;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text);
 }
 .split tbody tr:first-child {
   background: var(--surface-2);
 }
 .split td:last-child {
-  font-weight: 800;
+  font-weight: 700;
 }

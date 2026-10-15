@@ -52,7 +52,7 @@
 .note {
   padding: 12px;
   background: var(--surface-2);
-  border-radius: 8px;
+  border-radius: 2px;
 }
 .close {
   min-height: 48px;

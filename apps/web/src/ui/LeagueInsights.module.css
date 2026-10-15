@@ -6,7 +6,7 @@
 .overview {
   border: 1px solid var(--line);
   background: var(--surface);
-  border-radius: 8px;
+  border-radius: 2px;
   min-width: 0;
   overflow: hidden;
 }
@@ -48,7 +48,7 @@
 }
 .panelHead .roundTag {
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: 2px;
   padding: 4px 10px;
   white-space: nowrap;
 }
@@ -221,27 +221,27 @@
   display: inline-block;
   margin-left: 7px;
   padding: 1px 6px;
-  border-radius: 999px;
+  border-radius: 2px;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--on-accent);
   background: var(--accent);
 }
 .standings .own {
-  box-shadow: inset 3px 0 0 var(--accent);
+  box-shadow: none;
 }
 .points {
   font-weight: bold;
   color: var(--text);
 }
 .automatic > td:first-child {
-  box-shadow: inset 3px 0 var(--accent);
+  box-shadow: none;
 }
 .playoff > td:first-child {
-  box-shadow: inset 3px 0 var(--gold);
+  box-shadow: none;
 }
 .relegation > td:first-child {
-  box-shadow: inset 3px 0 var(--warm);
+  box-shadow: none;
 }
 .legend {
   display: flex;
@@ -381,11 +381,11 @@
 }
 .ownResult {
   padding-top: 20px !important;
-  background: rgba(47, 194, 116, 0.12);
-  box-shadow: inset 3px 0 0 var(--accent);
+  background: rgba(155, 178, 161, 0.12);
+  box-shadow: none;
 }
 .ourName {
-  font-weight: 900;
+  font-weight: 700;
   color: var(--accent-text);
 }
 .ownBadge {
@@ -393,9 +393,9 @@
   top: 2px;
   left: 8px;
   padding: 0 6px;
-  border-radius: 999px;
+  border-radius: 2px;
   font-size: 9px;
-  font-weight: 900;
+  font-weight: 700;
   line-height: 15px;
   color: var(--on-accent);
   background: var(--accent);
@@ -554,10 +554,10 @@
   display: inline-block;
   min-width: 28px;
   padding: 1px 6px;
-  border-radius: 6px;
+  border-radius: 2px;
   border: 1px solid #d99a6266;
   color: #d99a62;
-  font-weight: 900;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
   text-align: center;
 }
@@ -595,7 +595,7 @@
 }
 .teamFacts div {
   padding: 8px 10px;
-  border-radius: 10px;
+  border-radius: 2px;
   background: var(--surface-deep);
 }
 .teamFacts dt {
@@ -604,7 +604,7 @@
 }
 .teamFacts dd {
   margin: 2px 0 0;
-  font-weight: 800;
+  font-weight: 700;
 }
 .teamSub {
   margin: 12px 0 6px;
@@ -623,13 +623,13 @@
   align-items: center;
   gap: 8px;
   padding: 6px 8px;
-  border-radius: 8px;
+  border-radius: 2px;
   background: var(--surface-deep);
   font-size: 13px;
 }
 .teamList em {
   font-style: normal;
-  font-weight: 800;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 .teamNote {

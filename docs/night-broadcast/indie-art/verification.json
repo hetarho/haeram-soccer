@@ -1,0 +1,697 @@
+{
+  "task": "T123",
+  "checkedAt": "2026-10-15T06:58:21.470Z",
+  "source": {
+    "gitHead": "b429044ee6d9ba2a8d8e0961a6d52636d5f4ce57",
+    "verifiedSource": "uncommitted working tree",
+    "sha256": "50e617d604d34a860a7209a05de21b4bdd4b2a56384e6b40058772361bc819df",
+    "files": 407
+  },
+  "fonts": {
+    "latin": "Monogram Extended 1.1.0",
+    "korean": "Galmuri11 Regular/Bold 2.40.3",
+    "terms": "apps/web/public/fonts/README.txt",
+    "selfHosted": true
+  },
+  "illustrations": {
+    "tool": "built-in image_gen",
+    "manifest": "apps/web/public/art/manifest.json",
+    "files": [
+      {
+        "file": "apps/web/public/art/locker-room.webp",
+        "bytes": 106778
+      },
+      {
+        "file": "apps/web/public/art/stadium-tunnel.webp",
+        "bytes": 112356
+      },
+      {
+        "file": "apps/web/public/art/training-ground.webp",
+        "bytes": 192792
+      }
+    ]
+  },
+  "checks": {
+    "typecheck": "passed",
+    "eslint": "passed",
+    "prettier": "passed",
+    "catalogs": "passed",
+    "productionBuild": "passed",
+    "specLint": "passed; no warnings; 38 existing document-quality hints",
+    "unit": {
+      "status": "passed, reused",
+      "tests": 758,
+      "source": "../verification.json",
+      "reason": "The engine, contracts and unit-tested UI calculations have not changed since T122."
+    },
+    "contract": {
+      "status": "passed, reused",
+      "tests": 11,
+      "source": "../verification.json"
+    },
+    "browser": {
+      "projects": [
+        "chromium",
+        "firefox",
+        "webkit"
+      ],
+      "combinedCoverage": {
+        "total": 336,
+        "passed": 332,
+        "skipped": 4,
+        "failed": 0
+      },
+      "initialBatch": {
+        "completed": 233,
+        "passed": 226,
+        "failed": 5,
+        "skipped": 2,
+        "status": "Runner terminated at the execution tool 10-minute limit before completing all 336 cases. Remaining and affected cases continue on the final build."
+      },
+      "finalBuildContinuation": {
+        "passed": 149,
+        "failed": 2,
+        "skipped": 2
+      },
+      "cupRecheck": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "cupRecheckNote": "The WebKit full-season cup journey stalled at an Escape key event in the parallel run; its separate serial production-build rerun passes with no code changes.",
+      "clockRecheck": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "clockRecheckNote": "The Firefox x10 journey expected round 1 but observed round 2 through 7 under parallel load. The same production-build journey passes on a separate one-worker rerun with no code changes.",
+      "initialFocused": {
+        "passed": 22,
+        "failed": 0,
+        "skipped": 0
+      },
+      "finalAffectedJourneys": {
+        "total": 72,
+        "passed": 72
+      },
+      "dateFix": "Use the matching compact Korean bitmap face for mobile dates and allow a balanced two-line date within the same clock row.",
+      "note": "The first all-browser attempt was terminated at the execution tool 10-minute limit after 233 cases. The final build continues every remaining case and repeats all 72 affected founding, clock, home, shell, preparation and match journeys. All 336 unique cases are accounted for across the two batches and separate reruns. Initial failures were date clipping, a 3px Firefox founding overflow, and a fractional 44px touch width; all are resolved in the final run."
+    },
+    "longNames": {
+      "length": 32,
+      "cases": [
+        {
+          "browser": "chromium",
+          "width": 360,
+          "heading": {
+            "x": 12,
+            "y": 162.84375,
+            "width": 250,
+            "height": 54.59375
+          },
+          "passed": true
+        },
+        {
+          "browser": "chromium",
+          "width": 390,
+          "heading": {
+            "x": 12,
+            "y": 162.84375,
+            "width": 280,
+            "height": 54.59375
+          },
+          "passed": true
+        },
+        {
+          "browser": "firefox",
+          "width": 360,
+          "heading": {
+            "x": 12,
+            "y": 162.85000610351562,
+            "width": 249.75,
+            "height": 54.600006103515625
+          },
+          "passed": true
+        },
+        {
+          "browser": "firefox",
+          "width": 390,
+          "heading": {
+            "x": 12,
+            "y": 162.85000610351562,
+            "width": 279.75,
+            "height": 54.600006103515625
+          },
+          "passed": true
+        },
+        {
+          "browser": "webkit",
+          "width": 360,
+          "heading": {
+            "x": 12,
+            "y": 162.84375,
+            "width": 249.75,
+            "height": 54.59375
+          },
+          "passed": true
+        },
+        {
+          "browser": "webkit",
+          "width": 390,
+          "heading": {
+            "x": 12,
+            "y": 162.84375,
+            "width": 279.75,
+            "height": 54.59375
+          },
+          "passed": true
+        }
+      ]
+    },
+    "mobileDates": [
+      {
+        "browser": "chromium",
+        "width": 360,
+        "date": {
+          "text": "1950년 8월 1일",
+          "width": 76,
+          "scroll": 76,
+          "bounds": {
+            "x": 21,
+            "y": 77,
+            "width": 75.78125,
+            "height": 27.59375,
+            "top": 77,
+            "right": 96.78125,
+            "bottom": 104.59375,
+            "left": 21
+          }
+        },
+        "passed": true
+      },
+      {
+        "browser": "chromium",
+        "width": 360,
+        "date": {
+          "text": "2025년 11월 28일",
+          "width": 76,
+          "scroll": 76,
+          "bounds": {
+            "x": 21,
+            "y": 77,
+            "width": 75.78125,
+            "height": 27.59375,
+            "top": 77,
+            "right": 96.78125,
+            "bottom": 104.59375,
+            "left": 21
+          }
+        },
+        "passed": true
+      },
+      {
+        "browser": "chromium",
+        "width": 390,
+        "date": {
+          "text": "1950년 8월 1일",
+          "width": 104,
+          "scroll": 104,
+          "bounds": {
+            "x": 23,
+            "y": 83.328125,
+            "width": 103.78125,
+            "height": 14.9375,
+            "top": 83.328125,
+            "right": 126.78125,
+            "bottom": 98.265625,
+            "left": 23
+          }
+        },
+        "passed": true
+      },
+      {
+        "browser": "chromium",
+        "width": 390,
+        "date": {
+          "text": "2025년 11월 28일",
+          "width": 104,
+          "scroll": 104,
+          "bounds": {
+            "x": 23,
+            "y": 76.59375,
+            "width": 103.78125,
+            "height": 29.875,
+            "top": 76.59375,
+            "right": 126.78125,
+            "bottom": 106.46875,
+            "left": 23
+          }
+        },
+        "passed": true
+      },
+      {
+        "browser": "firefox",
+        "width": 360,
+        "date": {
+          "text": "1950년 8월 1일",
+          "width": 77,
+          "scroll": 77,
+          "bounds": {
+            "x": 21,
+            "y": 77,
+            "width": 77.03334045410156,
+            "height": 27.600006103515625,
+            "top": 77,
+            "right": 98.03334045410156,
+            "bottom": 104.60000610351562,
+            "left": 21
+          }
+        },
+        "passed": true
+      },
+      {
+        "browser": "firefox",
+        "width": 360,
+        "date": {
+          "text": "2025년 11월 28일",
+          "width": 77,
+          "scroll": 77,
+          "bounds": {
+            "x": 21,
+            "y": 77,
+            "width": 77.03334045410156,
+            "height": 27.600006103515625,
+            "top": 77,
+            "right": 98.03334045410156,
+            "bottom": 104.60000610351562,
+            "left": 21
+          }
+        },
+        "passed": true
+      },
+      {
+        "browser": "firefox",
+        "width": 390,
+        "date": {
+          "text": "1950년 8월 1일",
+          "width": 105,
+          "scroll": 105,
+          "bounds": {
+            "x": 23,
+            "y": 82.71665954589844,
+            "width": 105.03334045410156,
+            "height": 14.95001220703125,
+            "top": 82.71665954589844,
+            "right": 128.03334045410156,
+            "bottom": 97.66667175292969,
+            "left": 23
+          }
+        },
+        "passed": true
+      },
+      {
+        "browser": "firefox",
+        "width": 390,
+        "date": {
+          "text": "2025년 11월 28일",
+          "width": 105,
+          "scroll": 105,
+          "bounds": {
+            "x": 23,
+            "y": 76,
+            "width": 105.03334045410156,
+            "height": 29.899993896484375,
+            "top": 76,
+            "right": 128.03334045410156,
+            "bottom": 105.89999389648438,
+            "left": 23
+          }
+        },
+        "passed": true
+      },
+      {
+        "browser": "webkit",
+        "width": 360,
+        "date": {
+          "text": "1950년 8월 1일",
+          "width": 77,
+          "scroll": 77,
+          "bounds": {
+            "x": 21,
+            "y": 77,
+            "width": 77.03125,
+            "height": 27.59375,
+            "top": 77,
+            "right": 98.03125,
+            "bottom": 104.59375,
+            "left": 21
+          }
+        },
+        "passed": true
+      },
+      {
+        "browser": "webkit",
+        "width": 360,
+        "date": {
+          "text": "2025년 11월 28일",
+          "width": 77,
+          "scroll": 77,
+          "bounds": {
+            "x": 21,
+            "y": 77,
+            "width": 77.03125,
+            "height": 27.59375,
+            "top": 77,
+            "right": 98.03125,
+            "bottom": 104.59375,
+            "left": 21
+          }
+        },
+        "passed": true
+      },
+      {
+        "browser": "webkit",
+        "width": 390,
+        "date": {
+          "text": "1950년 8월 1일",
+          "width": 105,
+          "scroll": 105,
+          "bounds": {
+            "x": 23,
+            "y": 82.734375,
+            "width": 105.03125,
+            "height": 14.9375,
+            "top": 82.734375,
+            "right": 128.03125,
+            "bottom": 97.671875,
+            "left": 23
+          }
+        },
+        "passed": true
+      },
+      {
+        "browser": "webkit",
+        "width": 390,
+        "date": {
+          "text": "2025년 11월 28일",
+          "width": 105,
+          "scroll": 105,
+          "bounds": {
+            "x": 23,
+            "y": 76,
+            "width": 105.03125,
+            "height": 29.875,
+            "top": 76,
+            "right": 128.03125,
+            "bottom": 105.875,
+            "left": 23
+          }
+        },
+        "passed": true
+      }
+    ],
+    "stadiumStages": [
+      {
+        "stage": 1,
+        "label": "우리 구장 · 동네 구장 2500석 · 팬 800명",
+        "stageLabel": "STAGE 1 / 9",
+        "svgPaths": 15,
+        "bounds": {
+          "x": 12,
+          "y": 207.140625,
+          "width": 366,
+          "height": 210
+        },
+        "screenshot": "stadium-stage-1.png",
+        "passed": true
+      },
+      {
+        "stage": 2,
+        "label": "우리 구장 · 관중석 증축 5000석 · 팬 800명",
+        "stageLabel": "STAGE 2 / 9",
+        "svgPaths": 16,
+        "bounds": {
+          "x": 12,
+          "y": 207.140625,
+          "width": 366,
+          "height": 210
+        },
+        "screenshot": "stadium-stage-2.png",
+        "passed": true
+      },
+      {
+        "stage": 3,
+        "label": "우리 구장 · 새 구장 10000석 · 팬 800명",
+        "stageLabel": "STAGE 3 / 9",
+        "svgPaths": 17,
+        "bounds": {
+          "x": 12,
+          "y": 207.140625,
+          "width": 366,
+          "height": 210
+        },
+        "screenshot": "stadium-stage-3.png",
+        "passed": true
+      },
+      {
+        "stage": 4,
+        "label": "우리 구장 · 스탠드 증축 15000석 · 팬 800명",
+        "stageLabel": "STAGE 4 / 9",
+        "svgPaths": 20,
+        "bounds": {
+          "x": 12,
+          "y": 207.140625,
+          "width": 366,
+          "height": 210
+        },
+        "screenshot": "stadium-stage-4.png",
+        "passed": true
+      },
+      {
+        "stage": 5,
+        "label": "우리 구장 · 현대식 구장 30000석 · 팬 800명",
+        "stageLabel": "STAGE 5 / 9",
+        "svgPaths": 21,
+        "bounds": {
+          "x": 12,
+          "y": 207.140625,
+          "width": 366,
+          "height": 210
+        },
+        "screenshot": "stadium-stage-5.png",
+        "passed": true
+      },
+      {
+        "stage": 6,
+        "label": "우리 구장 · 2층 스탠드 40000석 · 팬 800명",
+        "stageLabel": "STAGE 6 / 9",
+        "svgPaths": 22,
+        "bounds": {
+          "x": 12,
+          "y": 207.140625,
+          "width": 366,
+          "height": 210
+        },
+        "screenshot": "stadium-stage-6.png",
+        "passed": true
+      },
+      {
+        "stage": 7,
+        "label": "우리 구장 · 대형 경기장 60000석 · 팬 800명",
+        "stageLabel": "STAGE 7 / 9",
+        "svgPaths": 23,
+        "bounds": {
+          "x": 12,
+          "y": 207.140625,
+          "width": 366,
+          "height": 210
+        },
+        "screenshot": "stadium-stage-7.png",
+        "passed": true
+      },
+      {
+        "stage": 8,
+        "label": "우리 구장 · 코너 증축 75000석 · 팬 800명",
+        "stageLabel": "STAGE 8 / 9",
+        "svgPaths": 24,
+        "bounds": {
+          "x": 12,
+          "y": 207.140625,
+          "width": 366,
+          "height": 210
+        },
+        "screenshot": "stadium-stage-8.png",
+        "passed": true
+      },
+      {
+        "stage": 9,
+        "label": "우리 구장 · 명문 구장 90000석 · 팬 800명",
+        "stageLabel": "STAGE 9 / 9",
+        "svgPaths": 25,
+        "bounds": {
+          "x": 12,
+          "y": 207.140625,
+          "width": 366,
+          "height": 210
+        },
+        "screenshot": "stadium-stage-9.png",
+        "passed": true
+      }
+    ],
+    "assetLoading": {
+      "errors": [],
+      "fonts": [
+        {
+          "family": "Monogram",
+          "weight": "100 900",
+          "status": "loaded"
+        },
+        {
+          "family": "Galmuri11",
+          "weight": "400",
+          "status": "loaded"
+        },
+        {
+          "family": "Galmuri11",
+          "weight": "600 900",
+          "status": "loaded"
+        }
+      ],
+      "resources": [
+        "http://127.0.0.1:4175/fonts/monogram-extended.ttf",
+        "http://127.0.0.1:4175/fonts/galmuri11.woff2",
+        "http://127.0.0.1:4175/fonts/galmuri11-bold.woff2",
+        "http://127.0.0.1:4175/art/stadium-tunnel.webp",
+        "http://127.0.0.1:4175/art/locker-room.webp",
+        "http://127.0.0.1:4175/art/training-ground.webp"
+      ],
+      "externalResources": []
+    },
+    "manualReview": {
+      "viewports": [
+        [
+          1440,
+          960
+        ],
+        [
+          360,
+          740
+        ],
+        [
+          390,
+          844
+        ]
+      ],
+      "screenshots": [
+        "01-founding-desktop.png",
+        "02-home-desktop.png",
+        "03-people-desktop.png",
+        "04-league-desktop.png",
+        "05-training-desktop.png",
+        "06-direction-desktop.png",
+        "07-records-desktop.png",
+        "08-cups-desktop.png",
+        "09-match-desktop.png",
+        "10-match-mobile.png",
+        "11-home-mobile.png",
+        "12-people-mobile.png",
+        "13-league-mobile.png",
+        "14-training-mobile.png",
+        "15-direction-mobile.png",
+        "16-records-mobile.png",
+        "17-player-profile-mobile.png",
+        "18-locker-room-desktop.png",
+        "19-locker-room-mobile.png",
+        "20-founding-mobile-firefox.png",
+        "21-home-360-firefox.png",
+        "clock-360-long-date.png",
+        "clock-390-long-date.png",
+        "stadium-stage-1.png",
+        "stadium-stage-2.png",
+        "stadium-stage-3.png",
+        "stadium-stage-4.png",
+        "stadium-stage-5.png",
+        "stadium-stage-6.png",
+        "stadium-stage-7.png",
+        "stadium-stage-8.png",
+        "stadium-stage-9.png"
+      ],
+      "pageErrors": [],
+      "horizontalOverflow": false
+    }
+  },
+  "entryBudget": {
+    "gzipBytes": 250943,
+    "limit": 256000,
+    "passed": true,
+    "files": [
+      {
+        "file": "/assets/index-CXdsTJUg.js",
+        "gzipBytes": 142292
+      },
+      {
+        "file": "/assets/rolldown-runtime-hePW80VL.js",
+        "gzipBytes": 428
+      },
+      {
+        "file": "/assets/Dialog-DxZs_mXp.js",
+        "gzipBytes": 64215
+      },
+      {
+        "file": "/assets/profile-lHvQyq83.js",
+        "gzipBytes": 1479
+      },
+      {
+        "file": "/assets/league-DeVB3K3J.js",
+        "gzipBytes": 5115
+      },
+      {
+        "file": "/assets/slots-DAUmywwn.js",
+        "gzipBytes": 3010
+      },
+      {
+        "file": "/assets/state-DS30qhzA.js",
+        "gzipBytes": 1662
+      },
+      {
+        "file": "/assets/Glossary-CpwvGMa7.js",
+        "gzipBytes": 5807
+      },
+      {
+        "file": "/assets/Dialog-BIvsuvdb.css",
+        "gzipBytes": 10637
+      },
+      {
+        "file": "/assets/league-2liMRO71.css",
+        "gzipBytes": 156
+      },
+      {
+        "file": "/assets/Glossary-YltZYkJS.css",
+        "gzipBytes": 1775
+      },
+      {
+        "file": "/assets/index-Llv6NNH4.css",
+        "gzipBytes": 14367
+      }
+    ],
+    "fontFiles": [
+      {
+        "file": "apps/web/public/fonts/galmuri11-bold.woff2",
+        "bytes": 166632
+      },
+      {
+        "file": "apps/web/public/fonts/galmuri11.woff2",
+        "bytes": 504736
+      },
+      {
+        "file": "apps/web/public/fonts/monogram-extended.ttf",
+        "bytes": 55372
+      }
+    ],
+    "note": "Font and image file bytes are recorded separately from the entry JS/CSS budget."
+  },
+  "runtimePerformance": {
+    "status": "not remeasured",
+    "reason": "The storage benchmark source fingerprint predates the redesign; no new first-play/FPS/input-latency claim."
+  }
+}

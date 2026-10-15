@@ -26,7 +26,7 @@
   justify-items: center;
   gap: 2px;
   padding: 6px 0;
-  border-radius: 8px;
+  border-radius: 2px;
   background: rgba(0, 0, 0, 0.22);
   border: 1px solid var(--line);
   min-width: 0;
@@ -40,11 +40,11 @@
   color: var(--text-faint);
 }
 .ladder li[data-state='built'] {
-  background: #173a2a;
+  background: var(--surface-2);
 }
 .ladder li[data-state='current'] {
   border-color: var(--accent);
-  background: linear-gradient(180deg, #1c4a34 0%, #133526 100%);
+  background: var(--surface-2);
 }
 .ladder li[data-state='building'] {
   border-color: var(--gold);
@@ -85,7 +85,7 @@
 .work {
   margin: 0;
   padding: 8px 10px;
-  border-radius: 10px;
+  border-radius: 2px;
   border: 1px dashed var(--gold);
   color: var(--gold);
   font-size: 12px;

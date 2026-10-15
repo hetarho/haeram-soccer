@@ -3,7 +3,7 @@ import { horizontalOverflow, settle } from './layout';
 test('serves a real static application entry', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('club-founding')).toBeVisible();
-  await expect(page.getByRole('heading', { name: '작은 클럽의, 큰 내일.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '당신의 클럽, 첫 시즌.' })).toBeVisible();
   await expect(page.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
 });
 test('creates, computes and reloads through the bundled worker', async ({ page }) => {

@@ -1,0 +1,28 @@
+{
+  "tool": "built-in image_gen",
+  "generatedAt": "2026-10-15T06:28:46.001Z",
+  "style": "Realistic painted heritage-football environments for the playable night-broadcast game",
+  "assets": [
+    {
+      "id": "stadium-tunnel",
+      "file": "/art/stadium-tunnel.webp",
+      "sourceFile": "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-09e05fb6-ddb8-423c-8afd-63cbfaba5048.png",
+      "prompt": "Use case: illustration-story. Asset type: a finished environment illustration embedded inside a playable indie football management game, NOT an app mockup. Style: realistic hand-painted editorial gouache/oil, grounded human-scale football culture, convincing perspective and material wear, restrained visible brushwork and fine paper grain. Palette: charcoal, weathered warm stone, muted olive grass, small natural amber lighting accents, matching a quiet night-broadcast interface. No people, no lettering, no numbers, no logos, no UI, no watermarks, no split panels. No neon, glowing fog, dramatic god rays, chrome, fantasy architecture or plastic 3D rendering. Panoramic landscape, about 3:1. Keep the important subject readable in a shallow horizontal crop. Heritage materials should plausibly exist in 1950 and remain in use through a long club career. Primary request: the intimate moment of entering a football ground from a short worn brick players' tunnel at evening. Low eye-level view, scuffed dark red-brown brick sides framing the near touchline, green grass, clear chalk boundary and a sliver of the empty pitch under ordinary floodlights. Damp stone and turf feel tactile, a plain old metal gate open near the edge. Background deliberately reveals no full grandstands or roof bowl, so the image makes no claim about stadium capacity. The pitch opening is the central visual anchor. Balanced midtones with enough detail to remain readable inside a dark game panel; documentary rather than theatrical.",
+      "usage": "Club home; full stadium illustration with current-world stage, capacity and supporter labels"
+    },
+    {
+      "id": "locker-room",
+      "file": "/art/locker-room.webp",
+      "sourceFile": "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-3cfefa1f-773f-4f56-bd13-f1cf45cde04b.png",
+      "prompt": "Use case: illustration-story. Asset type: a finished environment illustration embedded inside a playable indie football management game, NOT an app mockup. Style: realistic hand-painted editorial gouache/oil, grounded human-scale football culture, convincing perspective and material wear, restrained visible brushwork and fine paper grain. Palette: charcoal, weathered warm stone, muted olive grass, small natural amber lighting accents, matching a quiet night-broadcast interface. No people, no lettering, no numbers, no logos, no UI, no watermarks, no split panels. No neon, glowing fog, dramatic god rays, chrome, fantasy architecture or plastic 3D rendering. Panoramic landscape, about 3:1. Keep the important subject readable in a shallow horizontal crop. Heritage materials should plausibly exist in 1950 and remain in use through a long club career. Primary request: an empty, lived-in football dressing room before a match. Wide level view across worn wooden benches, iron coat hooks, a few plain off-white cotton jerseys, leather football boots, folded towels and a leather football on a tiled floor. A small chalkboard bears only a simple football pitch outline with unlabelled dots, absolutely no writing. Frosted high windows and modest practical lights illuminate warm wood grain and chipped cream paint. The room is functional, believable and quiet, not luxurious, derelict or cluttered. Arrange the bench, hanging shirts and boots as the central horizontal band so they survive a wide crop.",
+      "usage": "Match preparation; next-opponent panel"
+    },
+    {
+      "id": "training-ground",
+      "file": "/art/training-ground.webp",
+      "sourceFile": "/home/deep/.codex/generated_images/01a13dd4-5a3b-7eb2-9176-ff8af140701e/exec-8284292b-6b72-4ed3-a145-a3fce7550838.png",
+      "prompt": "Use case: illustration-story. Asset type: a finished environment illustration embedded inside a playable indie football management game, NOT an app mockup. Style: realistic hand-painted editorial gouache/oil, grounded human-scale football culture, convincing perspective and material wear, restrained visible brushwork and fine paper grain. Palette: charcoal, weathered warm stone, muted olive grass, small natural amber lighting accents, matching a quiet night-broadcast interface. No people, no lettering, no numbers, no logos, no UI, no watermarks, no split panels. No neon, glowing fog, dramatic god rays, chrome, fantasy architecture or plastic 3D rendering. Panoramic landscape, about 3:1. Keep the important subject readable in a shallow horizontal crop. Heritage materials should plausibly exist in 1950 and remain in use through a long club career. Primary request: a real football training ground at early morning, seen from beside the near touchline. Worn but cared-for grass, chalk training markings, one old leather football with stitched seams, a canvas equipment bag near a simple wooden bench and a modest timber rail fence. A plain goal is visible farther away against a few dark trees; no stadium tiers or spectators. Quiet cool daylight with a little natural warmth on the timber. No modern plastic cones, electronic screens or fashionable branding. The ball, bag and close grass textures carry the foreground; keep the middle strip legible when cropped into a game-card banner.",
+      "usage": "Training; actual training-ground level and current focus"
+    }
+  ]
+}

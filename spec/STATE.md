@@ -56,7 +56,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 68 | 68 | - | 0 |
+| WEB | 72 | 72 | - | 0 |
 | WORLD | 3 | 3 | - | 0 |
 | CLUB | 35 | 35 | - | 0 |
 | MATCH | 9 | 9 | - | 0 |
@@ -79,6 +79,10 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
+- T125: the home stadium schematic is removed; the original painting fills the scene and current-stage facts remain in HTML (WEB r72). Current proof: docs/night-broadcast/illustrated-stadium; 6/6 affected browser journeys and all 9 stadium stages passed. Uncommitted, no deployment.
+- T124: primary colour corrected to football-grass green (WEB r71); current screenshots and proof are in docs/night-broadcast/grass-green. Build and 15 affected browser journeys passed; uncommitted, no deployment.
+- T122–T123: night-broadcast UI with self-hosted Monogram/Galmuri and three original football illustrations is complete in the working tree (WEB r70). Review the real app and docs/night-broadcast/indie-art/verification.json: 332 browser cases passed, 4 existing skips; final affected journeys 72/72. No commit or deployment was made in these pair tasks.
+- doc-review WEB: spec lint has 38 existing document-quality hints; split long decision lines while preserving meaning in a separate documentation pass.
 - owner's reports 261015 fixed (T117–T121, pair k5r8): deleting the game in play stays on the slot screen, a decided event card plays the clock on, the HUD never scrolls away under warning bands, no offer reads 0, facility costs climb ×2.5 (stadium) and ×4 (training ground, academy) a step; re-measure ECON-29's 160 careers on the new facility costs with the next economy change (16 measured: 2000s matchday 25.0%, at the band's edge). On main after CI 38678748201 (every job green).
 - run p7ad (autopilot) closed 261015: the player model is on main (T106–T115: 14 attributes, sided positions with levels, roles and traits, adaptation and 조직력, per-player training, slot requests, the profile UI, earlier-rules saves, the balance measured); report reports/261015-p7ad.md, 17 inbox decisions to review.
 - follow-up (T115): difficulty levels do not separate (every level ≈60% titles near season 50; LEAGUE-13 measured) — decide a lasting level rule or new bands (update-ssot LEAGUE-13/WEB-3); ESP/FRA reference careers often stay 33–50 seasons in the amateur league (3 of 160 bankrupt there); ECON-29's wage bill 40.0% below 45–70%.
@@ -97,6 +101,17 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 T125 done: illustration-only home stadium; 6/6 affected browser journeys, all 9 stages retain facts without SVG, 12 captures, entry 249698 B gzip
+- 261015 WEB r72: home stadium schematic→full illustration and real-stage labels; T125 doing@s5ar
+- 261015 T124 done: grass-green primary across the UI; 15/15 affected browser journeys, 21 captures, contrast checked, entry 250961 B gzip
+- 261015 WEB r71: broadcast-red primary→natural grass green; T124 doing@g4rs
+- 261015 T123 done: Monogram/Galmuri, original stadium/locker/training art, mobile date/founding fixes; 332 browser cases passed with separate reruns, 4 existing skips, final affected 72/72; entry 250943 B gzip
+- 261015 spec lint: normalized existing LEAGUE/PLAYER change-history notation; no policy changes, no warnings
+- 261015 WEB r70: matched indie-game typography and painted football ambience; T123 created and doing@i7ar
+- 261015 T122 done: night-broadcast UI throughout the real app; retired galleries removed; WebKit pace animation fixed; final affected browser cases 18/18, long-name cases 6/6, docs/night-broadcast proof
+- 261015 create-task T122 from WEB r69; T122 doing@n8bc: real-app redesign and retirement of all comparison mockups
+- 261015 update-ssot WEB r69: night-broadcast design across the playable app, flat surfaces and navigation; create-task WEB next
+- 261015 update-ssot WEB start: replace the design explorations and the green/gold game skin with the selected night-broadcast visual language
 - 261015 CI fix: CI 38676250842/38677335586 failed Firefox and Chromium clock journeys — a 2x play may carry two days on a slow runner (specs now wait for the date to move), and play within 500 ms of a page load was ignored (the auto-stop guard started at 0); CI 38678748201 green in every job
 - 261015 T121 done: `.layout` and `.main` clip instead of hiding overflow; the HUD stayed at −31 px under two bands at 844×390 before
 - 261015 T120 done: facility costs ×2.5 / ×4 a step (1,530,450 units in all); 16 careers measured, no new bankruptcy, ECON r37
@@ -106,24 +121,3 @@
 - 261015 create-task T117–T121 from WEB r68 CLUB r35 ECON r37 (owner's reports: slot delete, header, 0 offers, facility costs, event resume)
 - 261015 update-ssot WEB r68 CLUB r35 ECON r37: slot delete stays on the slots, a decided event plays the clock on, the shell never scrolls, no offer below one currency unit, facility costs by a fixed multiple
 - 261015 T116 done: pace chips set the pace only, play starts the clock (owner's request 261014, carried from work/direction's T106, which never reached main)
-- 261015 update-ssot WEB r67 (a pace chip no longer starts the clock); create-task T116
-- 261015 T115 done (explore 2h, 20:01–20:35Z): 160 careers at four levels — every level ≈60% titles near season 50, ≈21% after the first; 보통·어려움·최상 outside LEAGUE-13; LEAGUE r7, ECON r36 measured, docs/BALANCE.md; no tuning
-- 261015 CI fix: the benchmark failed the entry budget after T114 (256,910 B gzip > 256,000); the player sheet's dialog and the match report now load on demand (entry 251,264 B measured locally)
-- 261015 CI fix: CI 38627339966 failed save-upgrade's earlier-rules test in Chromium and Firefox — the slot screen read the slots before the active load had failed; it now reads them again when the load settles (5× repeats pass in both)
-- 261015 T115 doing (explore 2h from 20:01Z)
-- 261015 T114 done: 훈련 hosts the coaches' sheets — squad focus with adaptation and 하드's costs, 개별 훈련 per player, the 적응 list; the remedy routes to 훈련; rivals shown at their 조직력
-- 261015 T113 done: earlier-rules careers listed as 이전 규칙 with export and delete only, imports name the rules they need, the century fits on 2.0.0 (post-century checkpoint 1.25 MB of 1.5 MiB)
-- 261015 T112 done: the player profile (attributes, positions by level, roles, personality, traits, adaptation, 실효 OVR), adaptation on the roster, position filters by 준수+, candidates with the scout's range and arrival/settled 실효 OVR, the formation on a pitch in the lineup tab
-- 261015 T111 done: requests by formation slot (준수+ at its position), the 단장's upgrades by slot, slot cover in the untouchable price, 야망 unhappiness after a declined bigger offer (ends at the close), the preview's arrival and settled slot
-- 261015 T110 done: the duels read every attribute, roles and play traits pick who acts within the team rates, crosses and headers, the sweeper keeper, the tactical profile on MATCH-8/9's attributes, roles move players in playback; calibration MAE duel 1.7 / summary 1.6
-- 261015 CI fix: CI 38618399787 failed only WebKit 2/2 — progression-settings' hidden-tab pause read the date while a day was still being played; the spec now waits for the clock to come to rest (one in-flight day may land) and then holds it still
-- 261015 CI fix (91c26cb): CI 38610433686 failed only WebKit 2/2 — native-touch's tap on 전술·선발 준비 stalled in Playwright's WebKit scroll/click step; a probe on wip/p7ad (run 38616628989, green) opened the sheet in 0.15–0.29 s and the page idles after the stop, so the spec now measures and settles the button before the tap
-- 261015 T109 done: training per player (assistant's 회복 rule at 40+, suggestions and orders for one player), 하드's injuries and morale streak, 리더 morale, training settles adaptation to 0.80, growth × 프로의식, past potential at 0.90+, ageing by attribute group; PLAYER r3 (PLAYER-16 rate below potential)
-- 261015 CI fix (33ecd43): founding 360×740 overflow and the 3× season slowdown of T107 (CI 38607253495 failed in Chromium and WebKit)
-- 261015 T108 done (0ce14ed): adaptation and 조직력 move with starts, managers and change
-- 261015 T107 done (cc1d610): the world on the player model, rules 2.0.0; unit 718, contract 11, Chromium e2e 108
-- 261015 T106 done (5ce3792): the player model as a pure module
-- 261015 create-task T106–T115 from PLAYER r2 MATCH r9 STAFF r20 CLUB r34 LEAGUE r6 WORLD r3 ECON r35 HIST r9 SAVE r35 WEB r66 (ECON r35 and HIST r9 folded into T107)
-- 261015 update-ssot PLAYER r2 MATCH r9 STAFF r20 CLUB r34 LEAGUE r6 WORLD r3 ECON r35 HIST r9 SAVE r35 WEB r66 from ideation/difficulty-and-adaptation (converted)
-- 261015 create-ssot PLAYER r1: the player model from ideation/difficulty-and-adaptation (20 decisions, 1 open)
-- 261015 ideation difficulty-and-adaptation ready: difficulty by the start only, the new player model (attributes, sided positions, roles, traits, adaptation, growth rates), training 균형/회복/하드; sugar daddies dropped; next create-ssot PLAYER

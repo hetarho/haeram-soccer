@@ -5,8 +5,8 @@
   padding: 14px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
-  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
-  box-shadow: var(--shadow);
+  background: var(--surface-2);
+  box-shadow: none;
 }
 .staff header,
 .academy header {
@@ -40,7 +40,7 @@
   align-items: center;
   gap: 10px;
   padding: 8px 10px;
-  border-radius: 12px;
+  border-radius: 2px;
   background: rgba(0, 0, 0, 0.2);
 }
 .role {
@@ -59,11 +59,11 @@
   place-items: center;
   min-width: 44px;
   min-height: 46px;
-  border-radius: 10px;
+  border-radius: 2px;
   border: 1px dashed var(--warm);
   color: var(--warm);
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
 }
 .candidateHead {
   display: flex;
@@ -144,7 +144,7 @@
 }
 .candidates .picked {
   border-color: var(--gold);
-  background: linear-gradient(180deg, #33300f 0%, #1f2810 100%);
+  background: var(--surface-2);
 }
 .sheetActions {
   display: grid;
@@ -159,7 +159,7 @@
   color: var(--on-accent);
   background: var(--accent-fill);
   border-color: var(--accent-edge);
-  box-shadow: 0 3px 0 var(--accent-edge);
+  box-shadow: none;
 }
 .academy li {
   display: grid;
@@ -167,7 +167,7 @@
   align-items: center;
   gap: 10px;
   padding: 8px 10px;
-  border-radius: 12px;
+  border-radius: 2px;
   background: rgba(0, 0, 0, 0.2);
 }
 .academy li > div:nth-child(2) {
@@ -183,7 +183,7 @@
   color: var(--text-faint);
 }
 .academy .ready {
-  color: var(--accent-text);
+  color: var(--positive);
   font-weight: 700;
 }
 .youthActions {
@@ -210,7 +210,7 @@
   }
 }
 .impact {
-  color: var(--accent-text) !important;
+  color: var(--positive) !important;
 }
 /* What the 단장 decides at the current level: 맡김 lit, 직접 quiet (→STAFF-20). */
 .decides b {
@@ -306,8 +306,8 @@
   padding: 14px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
-  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
-  box-shadow: var(--shadow);
+  background: var(--surface-2);
+  box-shadow: none;
 }
 .plan header {
   display: flex;
@@ -322,7 +322,7 @@
 }
 .planOn {
   border-color: var(--gold);
-  background: linear-gradient(180deg, #33300f 0%, #1f2810 100%);
+  background: var(--surface-2);
 }
 .planOn b {
   color: var(--gold);
@@ -428,7 +428,7 @@
 .chips button {
   min-height: 40px;
   padding: 6px 12px;
-  border-radius: 999px;
+  border-radius: 2px;
   font-size: 12px;
 }
 .chips button[aria-pressed='true'] {
@@ -448,7 +448,7 @@
   display: grid;
   gap: 6px;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: 2px;
   border: 1px solid var(--line);
   background: var(--surface-deep);
 }

@@ -156,6 +156,6 @@
 - in a match: slot position and role → OVR (PLAYER-6) × level (PLAYER-4) × adaptation multiplier (PLAYER-10) = 실효 OVR; each action reads its attributes (PLAYER-2)
 
 ## chg
-- r3 261015 PLAYER-16✎ +the rate below potential is the rate 2 under it, a settled player's floor
+- r3 261015 PLAYER-16✎ unspecified rate below potential→the rate 2 under it, a settled player's floor
 - r2 261015 PLAYER-3✎ +four lines (GK, DF, MF, FW) for rules that count by line; PLAYER-8✎ [?]→[o] 야망: a declined bigger club's offer makes 높음 25% and 매우 높음 50% unhappy (→CLUB-27)
 - r1 261015 initial

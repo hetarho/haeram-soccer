@@ -248,17 +248,27 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose }:
               진행 중인 처리를 마치고 현재 선발을 불러오는 중…
             </p>
           )}
-          <div className={s.opponent}>
-            <span>다음 상대</span>
-            <strong>{opponent?.name || '다음 시즌 일정 준비 중'}</strong>
-            {opponent && (
-              <p>
-                전력 {opponent.strength} ·{' '}
-                {next?.home === w.playerClub ? '우리 홈 경기' : '원정 경기'} · 상대 성향{' '}
-                {opponentTactic && tacticLabel[opponentTactic]}
-              </p>
-            )}
-          </div>
+          <figure className={s.preparationScene}>
+            <img
+              src="/art/locker-room.webp"
+              width="1440"
+              height="480"
+              loading="lazy"
+              decoding="async"
+              alt="나무 벤치와 유니폼, 축구화가 놓인 경기 전 라커룸 삽화"
+            />
+            <figcaption className={s.opponent}>
+              <span>다음 상대</span>
+              <strong>{opponent?.name || '다음 시즌 일정 준비 중'}</strong>
+              {opponent && (
+                <p>
+                  전력 {opponent.strength} ·{' '}
+                  {next?.home === w.playerClub ? '우리 홈 경기' : '원정 경기'} · 상대 성향{' '}
+                  {opponentTactic && tacticLabel[opponentTactic]}
+                </p>
+              )}
+            </figcaption>
+          </figure>
           <OpponentDossier w={w} />
           <div className={s.tabs} role="tablist" aria-label="경기 준비 선택">
             {(

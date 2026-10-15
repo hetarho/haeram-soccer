@@ -3,7 +3,7 @@
   gap: 6px;
   margin-top: 8px;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: 2px;
   border: 1px solid var(--line);
   background: rgba(0, 0, 0, 0.2);
 }
@@ -22,11 +22,11 @@
 }
 .mode {
   padding: 3px 9px;
-  border-radius: 999px;
+  border-radius: 2px;
   background: var(--surface-3);
   color: var(--text-muted);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   white-space: nowrap;
 }
 .owner[data-auto] .mode {
@@ -41,7 +41,7 @@
   min-width: 0;
   padding: 0 8px 0 12px;
   border: 1px solid var(--line-strong);
-  border-radius: 10px;
+  border-radius: 2px;
   background: var(--surface-2);
   color: var(--text);
   font: inherit;

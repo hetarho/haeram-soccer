@@ -2,7 +2,7 @@
   min-width: 0;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 2px;
   background: var(--surface);
 }
 .head {
@@ -22,7 +22,7 @@
 .tag {
   padding: 4px 10px;
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: 2px;
   color: var(--text-muted);
   font-size: 11px;
   white-space: nowrap;
@@ -87,7 +87,7 @@
   display: flex;
   gap: 4px;
   padding: 3px;
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--surface-2);
 }
 .metric button {

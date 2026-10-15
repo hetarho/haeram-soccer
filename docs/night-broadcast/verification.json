@@ -1,0 +1,239 @@
+{
+  "task": "T122",
+  "checkedAt": "2026-10-15T06:16:52.926Z",
+  "source": {
+    "gitHead": "b429044ee6d9ba2a8d8e0961a6d52636d5f4ce57",
+    "verifiedSource": "uncommitted working tree",
+    "sha256": "3f1aa6b9406f64c99140026926f81ed2f7d7ea1623316a026dc3ec9da47eb9a3",
+    "files": 403
+  },
+  "checks": {
+    "typecheck": "passed",
+    "eslint": "passed",
+    "prettier": "passed",
+    "unit": {
+      "files": 92,
+      "tests": 758,
+      "status": "passed"
+    },
+    "contract": {
+      "files": 2,
+      "tests": 11,
+      "status": "passed"
+    },
+    "catalogs": "passed",
+    "productionBuild": "passed",
+    "browser": {
+      "projects": [
+        "chromium",
+        "firefox",
+        "webkit"
+      ],
+      "fullBatch": {
+        "total": 336,
+        "passed": 323,
+        "failed": 9,
+        "skipped": 4
+      },
+      "initialFailureCauses": [
+        "One selector still expected the former founding title.",
+        "A concurrent test invocation cleared trace files belonging to three active Firefox tests.",
+        "Two headless WebKit page-process crashes.",
+        "Three WebKit clock tests stalled while the pace button scaled and changed colour."
+      ],
+      "fixes": [
+        "Updated the existing title selector.",
+        "Used separate artifact paths for subsequent invocations.",
+        "Reran page-process failures serially.",
+        "Removed scaling and colour transitions from pace buttons; simulation and save logic unchanged."
+      ],
+      "isolatedRecheck": {
+        "total": 9,
+        "passed": 6,
+        "remaining": 3
+      },
+      "paceFixRecheck": {
+        "total": 3,
+        "passed": 3
+      },
+      "finalAffectedJourneys": {
+        "total": 18,
+        "passed": 18,
+        "workers": 1,
+        "scope": "Both phone home sizes, clock pace and match-eve/level behaviour, and keyboard selection in all three browsers."
+      },
+      "status": "all executed journeys passed after fixes and isolated reruns; four existing skips",
+      "note": "The entire 336-case batch was not restarted after the final focused CSS fixes; the affected cases were rerun against the final production build."
+    },
+    "longClubNames": {
+      "length": 32,
+      "cases": [
+        {
+          "browser": "chromium",
+          "width": 360,
+          "heading": {
+            "x": 12,
+            "y": 162.84375,
+            "width": 261,
+            "height": 54.59375
+          },
+          "passed": true
+        },
+        {
+          "browser": "chromium",
+          "width": 390,
+          "heading": {
+            "x": 12,
+            "y": 162.84375,
+            "width": 291,
+            "height": 54.59375
+          },
+          "passed": true
+        },
+        {
+          "browser": "firefox",
+          "width": 360,
+          "heading": {
+            "x": 12,
+            "y": 162.85000610351562,
+            "width": 264.4666748046875,
+            "height": 54.600006103515625
+          },
+          "passed": true
+        },
+        {
+          "browser": "firefox",
+          "width": 390,
+          "heading": {
+            "x": 12,
+            "y": 162.85000610351562,
+            "width": 294.4666748046875,
+            "height": 54.600006103515625
+          },
+          "passed": true
+        },
+        {
+          "browser": "webkit",
+          "width": 360,
+          "heading": {
+            "x": 12,
+            "y": 162.84375,
+            "width": 264.421875,
+            "height": 54.59375
+          },
+          "passed": true
+        },
+        {
+          "browser": "webkit",
+          "width": 390,
+          "heading": {
+            "x": 12,
+            "y": 162.84375,
+            "width": 294.421875,
+            "height": 54.59375
+          },
+          "passed": true
+        }
+      ],
+      "status": "passed"
+    },
+    "manualReview": {
+      "viewports": [
+        [
+          1440,
+          960
+        ],
+        [
+          390,
+          844
+        ]
+      ],
+      "screenshots": [
+        "01-founding-desktop.png",
+        "02-home-desktop.png",
+        "03-people-desktop.png",
+        "04-league-desktop.png",
+        "05-training-desktop.png",
+        "06-direction-desktop.png",
+        "07-records-desktop.png",
+        "08-cups-desktop.png",
+        "09-match-desktop.png",
+        "10-match-mobile.png",
+        "11-home-mobile.png",
+        "12-people-mobile.png",
+        "13-league-mobile.png",
+        "14-training-mobile.png",
+        "15-direction-mobile.png",
+        "16-records-mobile.png",
+        "17-player-profile-mobile.png"
+      ],
+      "pageErrors": [],
+      "horizontalOverflow": false
+    }
+  },
+  "entryBudget": {
+    "gzipBytes": 250224,
+    "limit": 256000,
+    "passed": true,
+    "files": [
+      {
+        "file": "/assets/index-kos5S0oQ.js",
+        "gzipBytes": 141860
+      },
+      {
+        "file": "/assets/rolldown-runtime-hePW80VL.js",
+        "gzipBytes": 428
+      },
+      {
+        "file": "/assets/Dialog-DtiSdVh8.js",
+        "gzipBytes": 64214
+      },
+      {
+        "file": "/assets/profile--olix8eN.js",
+        "gzipBytes": 1478
+      },
+      {
+        "file": "/assets/league-H74TuyQ0.js",
+        "gzipBytes": 5114
+      },
+      {
+        "file": "/assets/slots-C8qO3t72.js",
+        "gzipBytes": 3008
+      },
+      {
+        "file": "/assets/state-EYT8afZe.js",
+        "gzipBytes": 1662
+      },
+      {
+        "file": "/assets/Glossary-DiI306Zn.js",
+        "gzipBytes": 5807
+      },
+      {
+        "file": "/assets/Dialog-BNZltJE1.css",
+        "gzipBytes": 10578
+      },
+      {
+        "file": "/assets/league-2liMRO71.css",
+        "gzipBytes": 156
+      },
+      {
+        "file": "/assets/Glossary-YltZYkJS.css",
+        "gzipBytes": 1775
+      },
+      {
+        "file": "/assets/index-grZx0ao_.css",
+        "gzipBytes": 14144
+      }
+    ],
+    "fontBytes": 560324,
+    "fontNote": "Font bytes reported separately from the entry JS/CSS budget."
+  },
+  "retiredExplorations": {
+    "publicDirectoryPresent": false,
+    "documentationDirectoryPresent": false
+  },
+  "runtimePerformance": {
+    "status": "not measured",
+    "reason": "benchmark:browser preflight refused the older storage report because its source fingerprint differs from this working tree. No fresh first-play/FPS/input-latency claim; the entry size budget above was checked directly."
+  }
+}

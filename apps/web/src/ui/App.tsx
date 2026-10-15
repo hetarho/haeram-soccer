@@ -586,7 +586,6 @@ function HudCash({ client }: { client?: GameClient }) {
           setOpen(true);
         }}
       >
-        <i aria-hidden="true" />
         <span>
           <small>운영 자금</small>
           {/* The money notation on every viewport (→WEB-67); the exact amount is the title. */}
@@ -1185,13 +1184,10 @@ export function App() {
     >
       <aside className={s.sidebar}>
         <div className={s.brand}>
-          <Crest />
-          <h1>
-            Haeram
-            <br />
-            Football Manager
-          </h1>
-          <span>A CLUB. A CENTURY.</span>
+          <i className={s.brandSignal} aria-hidden="true" />
+          <h1>HAERAM</h1>
+          <span>FOOTBALL MANAGER</span>
+          <small>A CLUB. A CENTURY.</small>
         </div>
         <nav className={s.nav} aria-label="게임 메뉴">
           {NAV.map(([id, label]) => (

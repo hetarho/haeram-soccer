@@ -19,10 +19,10 @@
   display: grid;
   gap: 6px;
   padding: 12px 14px;
-  border-radius: 14px;
+  border-radius: 2px;
   border: 1px solid var(--line-strong);
-  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
-  box-shadow: var(--shadow);
+  background: var(--surface-2);
+  box-shadow: none;
   min-width: 0;
 }
 .summaryHead {
@@ -34,7 +34,7 @@
 .draftHead span {
   color: var(--text-faint);
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.06em;
 }
 .summaryHead b {
@@ -108,7 +108,7 @@
 /* Drafted strategies and cards read gold, like a drafted dial step; the one in force green. */
 .presetOn {
   border-color: var(--gold) !important;
-  box-shadow: 0 0 0 1px var(--gold);
+  box-shadow: none;
 }
 .saved {
   display: grid;
@@ -123,7 +123,7 @@
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: stretch;
   border: 1px solid var(--line-strong);
-  border-radius: 12px;
+  border-radius: 2px;
   background: var(--surface-deep);
   min-width: 0;
 }
@@ -149,7 +149,7 @@
 }
 .make {
   min-height: 44px;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 /* Six areas (→ECON-25): each pairs its card row with the dials that spend on the same thing. */
@@ -160,10 +160,10 @@
 }
 .area {
   display: grid;
-  border-radius: 14px;
+  border-radius: 2px;
   border: 1px solid var(--line-strong);
-  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
-  box-shadow: var(--shadow);
+  background: var(--surface-2);
+  box-shadow: none;
   min-width: 0;
   scroll-margin-top: 8px;
 }
@@ -175,7 +175,7 @@
   min-height: 56px;
   padding: 12px;
   border: 0;
-  border-radius: 14px;
+  border-radius: 2px;
   background: transparent;
   box-shadow: none;
   color: var(--text);
@@ -216,7 +216,7 @@
 .areaDraft {
   margin-left: 6px;
   padding: 1px 6px;
-  border-radius: 999px;
+  border-radius: 2px;
   border: 1px dashed var(--gold);
   color: var(--gold);
   font-size: 11px;
@@ -247,11 +247,11 @@
   place-items: center;
   width: 36px;
   height: 36px;
-  border-radius: 10px;
+  border-radius: 2px;
   background: var(--surface-deep);
   border: 1px solid var(--line-strong);
   color: var(--gold);
-  font-weight: 900;
+  font-weight: 700;
 }
 .model {
   margin: 0;
@@ -278,7 +278,7 @@
   font-size: 12px;
 }
 .pro {
-  color: var(--accent-text);
+  color: var(--positive);
 }
 .con {
   color: var(--warm);
@@ -287,7 +287,7 @@
   margin: 0;
   color: var(--gold);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
 }
 .moving {
   margin: 0;
@@ -320,7 +320,7 @@
   display: grid;
   gap: 4px;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: 2px;
   border: 1px solid var(--line);
   background: var(--surface-deep);
   min-width: 0;
@@ -328,7 +328,7 @@
 .synergies > ul > li.on,
 .more > ul > li.on {
   border-color: var(--gold-edge);
-  box-shadow: 0 0 0 1px rgba(255, 203, 71, 0.25);
+  box-shadow: none;
 }
 .synergyHead {
   display: flex;
@@ -339,7 +339,7 @@
 .synergyHead em {
   font-style: normal;
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 700;
   color: var(--text-faint);
 }
 .on .synergyHead em {
@@ -359,7 +359,7 @@
   font-size: 12px;
 }
 .met {
-  color: var(--accent-text);
+  color: var(--positive);
 }
 .unmet {
   color: var(--text-faint);
@@ -423,12 +423,10 @@
   display: grid;
   gap: 8px;
   padding: 12px;
-  border-radius: 14px;
+  border-radius: 2px;
   border: 1px solid var(--accent);
   background: var(--surface);
-  box-shadow:
-    0 -8px 28px rgba(0, 0, 0, 0.5),
-    var(--shadow);
+  box-shadow: none;
   min-width: 0;
 }
 .draftHead {
@@ -452,10 +450,10 @@
   gap: 4px;
   min-height: 36px;
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: 2px;
   color: var(--gold);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   background: transparent;
   border-color: var(--gold-edge);
   box-shadow: none;
@@ -506,7 +504,7 @@
   border-color: var(--accent-edge) !important;
   background: var(--accent-fill) !important;
   color: var(--on-accent) !important;
-  font-weight: 900;
+  font-weight: 700;
 }
 .apply:disabled {
   opacity: 0.5;
@@ -545,7 +543,7 @@
   gap: 10px;
   margin: 0;
   padding: 12px;
-  border-radius: 14px;
+  border-radius: 2px;
   border: 1px solid var(--line-strong);
   background: var(--surface-deep);
   min-width: 0;

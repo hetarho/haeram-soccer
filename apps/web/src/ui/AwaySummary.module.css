@@ -32,7 +32,7 @@
   font-size: 12px;
 }
 .up {
-  color: var(--accent-text);
+  color: var(--positive);
 }
 .down {
   color: var(--warm);
