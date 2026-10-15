@@ -79,6 +79,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
+- T129 is on main as 3257ea2 under the owner's instruction to push first and patch any later CI failure. T130 closes the intermittent Firefox slot journey's URL/content readiness gap found in CI 38709122636; nine corrected cross-browser repeats pass. Inspect post-push CI and patch failures without another approval.
 - T128 is on main as fa69909 after every CI 38706479608 job passed. T129's finished implementation adds 72 era/stage pixel scenes, calendar-year transitions and completed-facility selection; the session delivers it through the same CI-gated main sequence. Current app captures and all three scene catalogs are in docs/night-broadcast/era-scenes.
 - T122–T127 are on main as 1d0f097 after all jobs passed in CI 38699118229: grass-green night-broadcast UI, self-hosted Monogram/Galmuri, illustration-only stadium, matched environments and 24 pixel UI icons. Earlier visual evidence remains in docs/night-broadcast.
 - doc-review WEB: spec lint has 38 existing document-quality hints; split long decision lines while preserving meaning in a separate documentation pass.
@@ -100,6 +101,8 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 T130 done: slot journey awaits destination headings; 9 corrected repeats passed in Chromium/Firefox/WebKit, type/lint/format passed; push-first follow-up for CI 38709122636
+- 261015 main advanced to 3257ea2 before CI on the owner's explicit instruction; T130 doing@e8ar for the intermittent Firefox slot journey failure in CI 38709122636
 - 261015 T129 done: 72 era/stage pixel scenes, 9 unit tests and 45 affected browser journeys passed, final affected 18/18, entry 250087 B gzip; CI-gated delivery by session
 - 261015 T128 done: all CI 38706479608 jobs passed; main fast-forwarded to fa69909; T129 continues
 - 261015 WEB r75: use the displayed calendar year for era changes; T129 doing@e8ar on locally verified T128 checkpoint fa69909, CI 38706479608 pending
@@ -118,5 +121,3 @@
 - 261015 WEB r71: broadcast-red primary→natural grass green; T124 doing@g4rs
 - 261015 T123 done: Monogram/Galmuri, original stadium/locker/training art, mobile date/founding fixes; 332 browser cases passed with separate reruns, 4 existing skips, final affected 72/72; entry 250943 B gzip
 - 261015 spec lint: normalized existing LEAGUE/PLAYER change-history notation; no policy changes, no warnings
-- 261015 WEB r70: matched indie-game typography and painted football ambience; T123 created and doing@i7ar
-- 261015 T122 done: night-broadcast UI throughout the real app; retired galleries removed; WebKit pace animation fixed; final affected browser cases 18/18, long-name cases 6/6, docs/night-broadcast proof

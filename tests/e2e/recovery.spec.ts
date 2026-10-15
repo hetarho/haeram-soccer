@@ -187,11 +187,13 @@ test('a new game goes into another slot, both careers survive switching and back
   await found(page);
   await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
   await expect(page).toHaveURL(/\/people$/);
+  await expect(page.getByRole('heading', { name: '선수·스태프', exact: true })).toBeVisible();
   await page.goBack();
   await expect(page.getByRole('button', { name: '다음 경기 관전' })).toBeVisible();
   // Whichever tab a game was left on, a game entered from the slot screen opens on home.
   await page.getByRole('button', { name: '훈련·육성', exact: true }).click();
   await expect(page).toHaveURL(/\/training$/);
+  await expect(page.getByRole('heading', { name: '훈련·육성', exact: true })).toBeVisible();
   await page.getByRole('button', { name: '게임 슬롯' }).click();
   const slotScreen = page.getByTestId('game-slots');
   await expect(slotScreen.getByRole('listitem', { name: '슬롯 1' })).toContainText('진행 중');
@@ -216,6 +218,9 @@ test('a new game goes into another slot, both careers survive switching and back
   // The first career waited in its slot and comes back intact.
   await page.getByRole('button', { name: '구단 방향', exact: true }).click();
   await expect(page).toHaveURL(/\/direction$/);
+  // The URL updates before the deferred page commits. Wait for the intended departure page
+  // before scrolling to its footer, which moves when that page replaces the previous one.
+  await expect(page.getByRole('heading', { name: '구단 방향', exact: true })).toBeVisible();
   await page.getByRole('button', { name: '게임 슬롯' }).click();
   await expect(slotScreen.getByRole('listitem', { name: '슬롯 2' })).toContainText('진행 중');
   await slotScreen
