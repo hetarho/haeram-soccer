@@ -342,14 +342,24 @@ function Honours({
  * Cup history (→WEB-40): every closed season's bracket and our road through it, the
  * competition's honours and its finals season by season.
  */
-export function CupHistory({ w, client }: { w: World; client: GameClient }) {
+export function CupHistory({
+  w,
+  client,
+  initialYear,
+  initialCompetition,
+}: {
+  w: World;
+  client: GameClient;
+  initialYear?: number;
+  initialCompetition?: string;
+}) {
   const own = clubOf(w);
   const competitions = [
     { key: 'cup', name: domesticCupName(own.country) },
     ...LINEAGES.map((lineage) => ({ key: lineage.key, name: lineageName(w, lineage) })),
   ];
-  const [key, setKey] = useState('cup');
-  const [picked, setPicked] = useState<number>();
+  const [key, setKey] = useState(initialCompetition ?? 'cup');
+  const [picked, setPicked] = useState<number | undefined>(initialYear);
   const [report, setReport] = useState<MatchRecord>();
   const [allRuns, setAllRuns] = useState(false),
     [allFinals, setAllFinals] = useState(false);

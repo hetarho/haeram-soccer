@@ -1,3 +1,5 @@
+import { useTaskMemory, useTaskState } from './taskMemory';
+import { SeasonReview } from './SeasonReview';
 import { PixelIcon } from './PixelIcon';
 import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
@@ -11,7 +13,7 @@ import { AnalysisExport } from './AnalysisExport';
 import { CareerRecordBook, ClubLeaders, TrophyCabinet } from './CareerRecordBook';
 import { divisionName } from './careerRecords';
 import { ClubLink } from './ClubLink';
-import { ClubTrends, EloStanding, SeasonTable, useEloStanding } from './ClubTrends';
+import { ClubTrends, SeasonTable } from './ClubTrends';
 import { Dialog } from './Dialog';
 import { kindLabel, number, seasonName } from './format';
 import { Money } from './Money';
@@ -21,7 +23,13 @@ import { archivePlayback } from './replay';
 import { SeasonAnalysis } from './SeasonAnalysis';
 import { Segments } from './Segments';
 import { Select } from './Select';
-import { openLeagueSeason, RECORD_TABS, type RecordTab } from './state';
+import {
+  openLeagueSeason,
+  openCupSeason,
+  useRecordRequest,
+  RECORD_TABS,
+  type RecordTab,
+} from './state';
 import a from './Analysis.module.css';
 import s from './App.module.css';
 import t from './LiveSeason.module.css';
@@ -31,9 +39,28 @@ type Archive = NonNullable<Reply['archive']>;
 type ArchiveResult = { world: string; year: number; data?: Archive; error?: string };
 
 /** The records tab in the page's address, so a reload keeps it. */
-function savedRecordTab() {
-  const saved = new URLSearchParams(location.search).get('view');
-  return RECORD_TABS.find(([id]) => id === saved)?.[0];
+function savedRecordTab(): RecordTab {
+  const params = new URLSearchParams(location.search),
+    saved = params.get('view');
+  if (saved === 'summary')
+    return params.get('part') === 'elo'
+      ? 'trends'
+      : params.get('part') === 'seasons'
+        ? 'seasons'
+        : 'honours';
+  if (saved === 'season') return 'seasons';
+  return RECORD_TABS.find(([id]) => id === saved)?.[0] ?? 'seasons';
+}
+function savedRecordYear(w: World) {
+  const params = new URLSearchParams(location.search),
+    raw = params.get('season');
+  const year = raw ? Number(raw) : params.get('view') === 'season' ? w.year : undefined;
+  return year === w.year || w.history.some((season) => season.year === year) ? year : undefined;
+}
+function recordScroll(value: number) {
+  requestAnimationFrame(() =>
+    document.querySelector<HTMLElement>('[data-testid="view-scroller"]')?.scrollTo(0, value),
+  );
 }
 
 /**
@@ -66,29 +93,64 @@ function useSeasonArchive(client: GameClient, w: World, year: number, enabled: b
   return result?.world === w.id && result.year === year ? result : undefined;
 }
 
-/**
- * The club records room (→WEB-54): only our club's records, one view at a time under a pinned tab
- * bar — honours, Elo and the record book; one trend chart and the season table; one all-time
- * board; one season of ours; the managers. The tab stays in the address (?view=, left out for the
- * first tab). A season row opens that season on the league page.
- */
+/** Club seasons lead to their own analysis; competition tables are explicit contextual visits. */
 export function RecordsRoom({ state, client }: Props) {
   const w = state.view!.world;
-  const [tab, setTab] = useState<RecordTab>(() => savedRecordTab() ?? 'summary');
-  const [year, setYear] = useState(w.year);
+  const [tab, setTab] = useTaskState<RecordTab>(w.id, 'records-tab', savedRecordTab);
+  const [year, setYear] = useTaskState<number | undefined>(w.id, 'records-year', () =>
+    savedRecordYear(w),
+  );
+  const request = useRecordRequest((store) => store.request);
+  const openSeason = (picked: number) => {
+    const root = document.querySelector<HTMLElement>('[data-testid="view-scroller"]');
+    if (year === undefined)
+      useTaskMemory.setState((memory) => ({
+        scrolls: { ...memory.scrolls, 'record-list': root?.scrollTop ?? 0 },
+      }));
+    setTab('seasons');
+    setYear(picked);
+    history.pushState(null, '', `/history?season=${picked}`);
+    recordScroll(0);
+  };
+  useEffect(() => {
+    if (!request) return;
+    useRecordRequest.getState().take();
+    setTab('seasons');
+    setYear(request.year);
+    recordScroll(0);
+  }, [request, setTab, setYear]);
+  useEffect(() => {
+    const restore = () => {
+      setTab(savedRecordTab());
+      setYear(savedRecordYear(w));
+    };
+    window.addEventListener('popstate', restore);
+    return () => window.removeEventListener('popstate', restore);
+  }, [w.id, w.year, setTab, setYear]);
   // The managers read every manager event, which only the season in progress keeps current.
   const archive = useSeasonArchive(
     client,
     w,
-    tab === 'managers' ? w.year : year,
-    tab === 'season' || tab === 'managers',
+    tab === 'managers' ? w.year : (year ?? w.year),
+    (tab === 'seasons' && year !== undefined) || tab === 'managers',
   );
   useEffect(() => {
     const url = new URL(location.href);
-    if (tab === 'summary') url.searchParams.delete('view');
+    if (tab === 'seasons') url.searchParams.delete('view');
     else url.searchParams.set('view', tab);
+    if (tab === 'seasons' && year !== undefined) url.searchParams.set('season', String(year));
+    else {
+      url.searchParams.delete('season');
+      url.searchParams.delete('part');
+      url.searchParams.delete('competition');
+    }
     history.replaceState(history.state, '', `${url.pathname}${url.search}${url.hash}`);
-  }, [tab]);
+  }, [tab, year]);
+  const selectTab = (next: RecordTab) => {
+    setTab(next);
+    if (next === 'seasons') setYear(undefined);
+    recordScroll(0);
+  };
   const keyboard = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
     event.preventDefault();
@@ -99,7 +161,7 @@ export function RecordsRoom({ state, client }: Props) {
           ? RECORD_TABS.length - 1
           : (index + (event.key === 'ArrowRight' ? 1 : -1) + RECORD_TABS.length) %
             RECORD_TABS.length;
-    setTab(RECORD_TABS[next][0]);
+    selectTab(RECORD_TABS[next][0]);
     document.getElementById(`records-tab-${RECORD_TABS[next][0]}`)?.focus();
   };
   return (
@@ -126,7 +188,7 @@ export function RecordsRoom({ state, client }: Props) {
               aria-controls="records-panel"
               tabIndex={tab === id ? 0 : -1}
               onKeyDown={(event) => keyboard(event, index)}
-              onClick={() => setTab(id)}
+              onClick={() => selectTab(id)}
             >
               {label}
             </button>
@@ -139,20 +201,50 @@ export function RecordsRoom({ state, client }: Props) {
         role="tabpanel"
         aria-labelledby={`records-tab-${tab}`}
       >
-        {tab === 'summary' ? (
+        {tab === 'seasons' ? (
+          year === undefined ? (
+            <SeasonTable w={w} onSeason={openSeason} />
+          ) : (
+            <>
+              <div className={s.recordControls}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setYear(undefined);
+                    history.pushState(null, '', '/history');
+                    recordScroll(useTaskMemory.getState().scrolls['record-list'] ?? 0);
+                  }}
+                >
+                  ← 시즌 목록으로
+                </button>
+                <h3>
+                  {seasonName(year)} · 구단 시즌 기록{year === w.year ? ' · 진행 중' : ''}
+                </h3>
+                <div className={s.playerActions}>
+                  <button type="button" onClick={() => openLeagueSeason(year)}>
+                    이 시즌 리그 순위표
+                  </button>
+                  <button type="button" onClick={() => openCupSeason(year)}>
+                    이 시즌 컵 대회 기록
+                  </button>
+                </div>
+              </div>
+              <SeasonRecords
+                key={year}
+                state={state}
+                year={year}
+                onYear={setYear}
+                archive={archive?.data}
+                error={archive?.error}
+              />
+            </>
+          )
+        ) : tab === 'honours' ? (
           <Summary w={w} client={client} totalMatches={state.view!.totalMatches} />
         ) : tab === 'trends' ? (
           <ClubTrends w={w} />
         ) : tab === 'players' ? (
           <ClubLeaders w={w} />
-        ) : tab === 'season' ? (
-          <SeasonRecords
-            state={state}
-            year={year}
-            onYear={setYear}
-            archive={archive?.data}
-            error={archive?.error}
-          />
         ) : (
           <ManagerSeasons w={w} archive={archive?.data} error={archive?.error} />
         )}
@@ -161,19 +253,14 @@ export function RecordsRoom({ state, client }: Props) {
   );
 }
 
-/** The front of the records room: honours beside where our Elo stands, then the record book. */
+/** Honours and career records remain separate from season history and growth. */
 const SUMMARY_PARTS = [
   ['trophies', '트로피'],
-  ['elo', 'Elo'],
-  ['seasons', '시즌별 기록'],
   ['records', '기타 기록'],
 ] as const;
 type SummaryPart = (typeof SUMMARY_PARTS)[number][0];
 
-/**
- * The front of the records room (→WEB-54), one part at a time: the trophy cabinet, where our Elo
- * stands, the season table (a row opens that season on the league page) and the other records.
- */
+/** Honours first, with all-time match records and the record book in a second view. */
 function Summary({
   w,
   client,
@@ -183,18 +270,21 @@ function Summary({
   client: GameClient;
   totalMatches: number;
 }) {
-  const [part, setPart] = useState<SummaryPart>('trophies');
+  const [part, setPart] = useTaskState<SummaryPart>(w.id, 'honours-part', () =>
+    new URLSearchParams(location.search).get('part') === 'records' ? 'records' : 'trophies',
+  );
   return (
     <>
       <div className={s.recordControls}>
-        <Segments label="요약 보기" options={SUMMARY_PARTS} value={part} onChange={setPart} />
+        <Segments
+          label="명예·최고기록 보기"
+          options={SUMMARY_PARTS}
+          value={part}
+          onChange={setPart}
+        />
       </div>
       {part === 'trophies' ? (
         <TrophyCabinet w={w} />
-      ) : part === 'elo' ? (
-        <EloPanel w={w} />
-      ) : part === 'seasons' ? (
-        <SeasonTable w={w} onSeason={openLeagueSeason} />
       ) : (
         <>
           <MatchRecords w={w} client={client} totalMatches={totalMatches} />
@@ -202,17 +292,6 @@ function Summary({
         </>
       )}
     </>
-  );
-}
-
-function EloPanel({ w }: { w: World }) {
-  const standing = useEloStanding(w);
-  return (
-    <Panel title="클럽 Elo 위치" note={`${number(standing.total)}개 클럽 기준 · 지금`}>
-      <div className={s.panelBody}>
-        <EloStanding w={w} standing={standing} />
-      </div>
-    </Panel>
   );
 }
 
@@ -344,7 +423,7 @@ function ManagerSeasons({ w, archive, error }: { w: World; archive?: Archive; er
 }
 
 const SEASON_PARTS = [
-  ['overview', '개요'],
+  ['overview', '분석'],
   ['matches', '경기'],
   ['decisions', '결정'],
 ] as const;
@@ -355,6 +434,10 @@ type SeasonPart = (typeof SEASON_PARTS)[number][0];
  * one part at a time — the season's figures, analysis and export; our matches; the club's
  * decisions. Other clubs' tables live on the league page and in the cups history.
  */
+function recordCompetition(value: string | null) {
+  return value && Object.hasOwn(kindLabel, value) ? value : 'all';
+}
+
 function SeasonRecords({
   state,
   year,
@@ -371,8 +454,30 @@ function SeasonRecords({
   const w = state.view!.world,
     c = w.clubs.find((club) => club.id === w.playerClub)!,
     [match, setMatch] = useState<MatchRecord>(),
-    [filter, setFilter] = useState('all'),
-    [part, setPart] = useState<SeasonPart>('overview');
+    [filter, setFilter] = useTaskState(w.id, `record-filter-${year}`, () =>
+      recordCompetition(new URLSearchParams(location.search).get('competition')),
+    ),
+    [part, setPart] = useTaskState<SeasonPart>(w.id, `record-part-${year}`, () => {
+      const saved = new URLSearchParams(location.search).get('part');
+      return SEASON_PARTS.find(([id]) => id === saved)?.[0] ?? 'overview';
+    });
+  useEffect(() => {
+    const url = new URL(location.href);
+    if (part === 'overview') url.searchParams.delete('part');
+    else url.searchParams.set('part', part);
+    if (filter === 'all') url.searchParams.delete('competition');
+    else url.searchParams.set('competition', filter);
+    history.replaceState(null, '', url.pathname + url.search + url.hash);
+  }, [part, filter, year]);
+  useEffect(() => {
+    const restore = () => {
+      const params = new URLSearchParams(location.search);
+      setPart(SEASON_PARTS.find(([id]) => id === params.get('part'))?.[0] ?? 'overview');
+      setFilter(recordCompetition(params.get('competition')));
+    };
+    window.addEventListener('popstate', restore);
+    return () => window.removeEventListener('popstate', restore);
+  }, [setPart, setFilter]);
   const matches = archive?.matches.filter((m) => filter === 'all' || m.kind === filter) || [],
     h = archive?.season;
   // Oldest first; the season in progress is the last stop.
@@ -470,6 +575,16 @@ function SeasonRecords({
             </div>
           )}
           {archive ? <SeasonAnalysis w={w} records={matches} year={year} scope={scope} /> : pending}
+          {h && archive && (
+            <details className={s.seasonDeepDive}>
+              <summary>리그 심층 분석·구단 재정 결산</summary>
+              <p className={a.note}>
+                리그 경기의 xG·기대 승점·선수 기록과 구단의 시즌 결산이에요. 위 대회 범위별 분석과
+                집계 범위가 달라요.
+              </p>
+              <SeasonReview w={w} year={year} files={archive} />
+            </details>
+          )}
           <AnalysisExport w={w} records={matches} year={year} scope={scope} ready={!!archive} />
         </>
       ) : part === 'matches' ? (

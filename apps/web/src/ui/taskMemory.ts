@@ -43,15 +43,19 @@ export function rememberTask(page: Page) {
     },
   });
 }
+const ABSENT = Symbol('absent-task-value');
+
 export function useTaskState<T>(world: string, key: string, initial: T | (() => T)) {
   const [fallback] = useState(initial);
-  const stored = useTaskMemory((state) => (state.world === world ? state.values[key] : undefined));
-  const value = (stored === undefined ? fallback : stored) as T;
+  const stored = useTaskMemory((state) =>
+    state.world === world && Object.hasOwn(state.values, key) ? state.values[key] : ABSENT,
+  );
+  const value = (stored === ABSENT ? fallback : stored) as T;
   const setValue = useCallback(
     (update: SetStateAction<T>) => {
       useTaskMemory.getState().activate(world);
       const state = useTaskMemory.getState();
-      const previous = (state.values[key] === undefined ? fallback : state.values[key]) as T;
+      const previous = (Object.hasOwn(state.values, key) ? state.values[key] : fallback) as T;
       const next = typeof update === 'function' ? (update as (value: T) => T)(previous) : update;
       useTaskMemory.setState({ values: { ...state.values, [key]: next } });
     },

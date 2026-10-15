@@ -1,3 +1,5 @@
+import { CompetitionRecords, UnavailableLeagueRecord } from './CompetitionRecords';
+import { Segments } from './Segments';
 import { memo, useMemo, useState, type KeyboardEvent } from 'react';
 import type { MatchRecord, SeasonArchive, World } from '../../../../packages/contracts/src/types';
 import { clubOf } from '../../../../packages/engine/src/world';
@@ -8,7 +10,6 @@ import { ClubLink } from './ClubLink';
 import { Dialog } from './Dialog';
 import { MatchReport } from './MatchReport';
 import { RankChart, RankHistoryGraph, rankAxis } from './LeagueInsights';
-import { SeasonReview } from './SeasonReview';
 import { seasonName, signed } from './format';
 import { divisionName, sameLeague, type LeagueChoice } from './league';
 import { LeaguePicker } from './LeaguePicker';
@@ -27,7 +28,7 @@ import l from './LeagueInsights.module.css';
 import r from './SeasonReview.module.css';
 import c from './Scorers.module.css';
 
-import { PAST_TABS, type PastTab } from './state';
+import { openClubSeason, PAST_TABS, type PastTab } from './state';
 export { PAST_TABS, type PastTab };
 
 type Read = ReturnType<typeof useSeasonFiles>;
@@ -412,6 +413,10 @@ export const ClosedSeason = memo(function ClosedSeason({
   onTab,
   league,
   onLeague,
+  teamPart,
+  onTeamPart,
+  playerPart,
+  onPlayerPart,
 }: {
   client: GameClient;
   year: number;
@@ -419,6 +424,10 @@ export const ClosedSeason = memo(function ClosedSeason({
   onTab: (tab: PastTab) => void;
   league?: LeagueChoice;
   onLeague: (league?: LeagueChoice) => void;
+  teamPart: 'table' | 'rank';
+  onTeamPart: (value: 'table' | 'rank') => void;
+  playerPart: 'scorers' | 'trend';
+  onPlayerPart: (value: 'scorers' | 'trend') => void;
 }) {
   const w = useGameState(selectReviewWorld)!;
   const season = w.history.find((h) => h.year === year);
@@ -434,7 +443,7 @@ export const ClosedSeason = memo(function ClosedSeason({
   if (!season)
     return (
       <section className={`${s.seasonPane} ${t.pane}`} aria-label="시즌 결산">
-        <SeasonReview w={w} year={year} />
+        <p>선택한 시즌의 기록이 없어요.</p>
       </section>
     );
   const keyboard = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
@@ -451,6 +460,20 @@ export const ClosedSeason = memo(function ClosedSeason({
   };
   return (
     <>
+      <div className={s.competitionScope} aria-label="선택한 리그와 시즌">
+        <b>
+          {seasonName(year)} ·{' '}
+          {divisionName(
+            (league ?? ownThen!).code,
+            (league ?? ownThen!).tier,
+            (league ?? ownThen!).group,
+          )}
+        </b>
+        <LeaguePicker league={league} onLeague={onLeague} own={ownThen} />
+        <button type="button" onClick={() => openClubSeason(year)}>
+          우리 구단의 이 시즌 기록
+        </button>
+      </div>
       {/* Pinned like the live tabs; the season list above them scrolls away. */}
       <div className={t.navigation}>
         <div className={`${s.seasonTabs} ${t.tabs}`} role="tablist" aria-label="지난 시즌 보기">
@@ -477,25 +500,83 @@ export const ClosedSeason = memo(function ClosedSeason({
         aria-labelledby={`past-tab-${tab}`}
         className={`${s.seasonPane} ${t.pane}`}
       >
-        {tab === 'review' ? (
-          <SeasonReview
-            w={w}
-            year={year}
-            files={read?.files}
-            failed={read?.failed}
-            clubs={rows?.length}
-          />
-        ) : tab === 'table' ? (
-          <>
-            <LeaguePicker league={league} onLeague={onLeague} own={ownThen} />
-            <FinalTable w={w} season={season} rows={tableRows} read={read} league={other} />
-          </>
+        {tab === 'table' ? (
+          <FinalTable w={w} season={season} rows={tableRows} read={read} league={other} />
         ) : tab === 'matches' ? (
-          <OwnMatches w={w} season={season} read={read} />
+          other ? (
+            <UnavailableLeagueRecord
+              league={other}
+              label="이전 라운드 경기 결과"
+              onOwn={() => onLeague(undefined)}
+            />
+          ) : (
+            <OwnMatches w={w} season={season} read={read} />
+          )
         ) : tab === 'rank' ? (
-          <SeasonRanks w={w} season={season} clubs={rows?.length} read={read} />
+          <>
+            <Segments
+              label="팀 기록 보기"
+              options={
+                [
+                  ['table', '팀 성적'],
+                  ['rank', '순위 추이'],
+                ] as const
+              }
+              value={teamPart}
+              onChange={onTeamPart}
+            />
+            {teamPart === 'table' ? (
+              tableRows ? (
+                <CompetitionRecords
+                  w={w}
+                  rows={tableRows.map(([index, points, gf, ga]) => ({
+                    id: w.clubs[index]?.id ?? `missing-${index}`,
+                    points,
+                    gf,
+                    ga,
+                  }))}
+                />
+              ) : (
+                <Pending read={read} />
+              )
+            ) : other ? (
+              <UnavailableLeagueRecord
+                league={other}
+                label="라운드별 순위 추이"
+                onOwn={() => onLeague(undefined)}
+              />
+            ) : (
+              <SeasonRanks w={w} season={season} clubs={rows?.length} read={read} />
+            )}
+          </>
         ) : (
-          <SeasonScorers w={w} season={season} read={read} />
+          <>
+            <Segments
+              label="선수 기록 보기"
+              options={
+                [
+                  ['scorers', '득점 순위'],
+                  ['trend', '득점왕 추이'],
+                ] as const
+              }
+              value={playerPart}
+              onChange={onPlayerPart}
+            />
+            {other ? (
+              <UnavailableLeagueRecord
+                league={other}
+                label="선수별 득점 기록"
+                onOwn={() => onLeague(undefined)}
+              />
+            ) : playerPart === 'trend' ? (
+              <p>
+                이 시즌의 선수별 라운드 추이는 보관되어 있지 않아요. 득점 순위에서 보관된 최종 상위
+                기록을 확인하세요.
+              </p>
+            ) : (
+              <SeasonScorers w={w} season={season} read={read} />
+            )}
+          </>
         )}
       </section>
     </>

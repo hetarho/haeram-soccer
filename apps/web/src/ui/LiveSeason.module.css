@@ -6,7 +6,7 @@
 .navigation {
   margin-bottom: 14px;
   position: sticky;
-  top: -2px;
+  top: var(--task-offset, -2px);
   z-index: 6;
   padding: 4px 0 6px;
   /* Near-opaque like the HUD: a backdrop blur or mask over the fixed page background re-rasters

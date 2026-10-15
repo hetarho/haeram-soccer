@@ -333,27 +333,27 @@ export const useLeagueSeason = create<{ request?: number; take: () => void }>((s
 }));
 /** Opens the league page on a season (→WEB-54). */
 export function openLeagueSeason(year: number) {
+  beginTaskDetour('league');
   useLeagueSeason.setState({ request: year });
   useNavigation.getState().setPage('league');
 }
 
 /** A closed season's tabs on the league page, in tab-bar order; the review comes first. */
 export const PAST_TABS = [
-  ['review', '결산'],
   ['table', '순위표'],
-  ['matches', '우리 경기'],
-  ['rank', '순위 추이'],
-  ['scorers', '득점 순위'],
+  ['matches', '일정·결과'],
+  ['rank', '팀 기록'],
+  ['scorers', '선수 기록'],
 ] as const;
 export type PastTab = (typeof PAST_TABS)[number][0];
 
 /** The records room's tabs, in tab-bar order; the first one keeps no ?view= in the address. */
 export const RECORD_TABS = [
-  ['summary', '요약'],
-  ['trends', '추이'],
-  ['players', '선수'],
-  ['season', '시즌 기록'],
-  ['managers', '감독'],
+  ['seasons', '시즌별 기록'],
+  ['trends', '구단 성장'],
+  ['honours', '명예·최고기록'],
+  ['players', '선수 통산'],
+  ['managers', '감독 이력'],
 ] as const;
 export type RecordTab = (typeof RECORD_TABS)[number][0];
 
@@ -422,4 +422,17 @@ export function openFacility(part: 'stadium' | 'training' | 'academy') {
   beginTaskDetour('business');
   useFacilityRequest.getState().open(part);
   openBusiness('build');
+}
+
+export const useRecordRequest = oneShot<{ year: number }>();
+export function openClubSeason(year: number) {
+  beginTaskDetour('history');
+  useRecordRequest.getState().open({ year });
+  useNavigation.getState().setPage('history');
+}
+export const useCupRequest = oneShot<{ year: number; competition: string }>();
+export function openCupSeason(year: number, competition = 'cup') {
+  beginTaskDetour('europe');
+  useCupRequest.getState().open({ year, competition });
+  useNavigation.getState().setPage('europe');
 }

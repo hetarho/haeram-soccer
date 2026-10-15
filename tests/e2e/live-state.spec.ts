@@ -22,15 +22,19 @@ test('keeps league views and nodes across silent progression from home and updat
   const menu = page.getByRole('navigation', { name: '게임 메뉴', exact: true });
   const date = page.getByTestId('game-date');
   await menu.getByRole('button', { name: '리그', exact: true }).click();
-  const rankTab = page.getByRole('tab', { name: '순위 추이', exact: true });
+  const rankTab = page.getByRole('tab', { name: '팀 기록', exact: true });
   await rankTab.click();
+  await page
+    .getByRole('group', { name: '팀 기록 보기' })
+    .getByRole('button', { name: '순위 추이', exact: true })
+    .click();
   await page.evaluate(() => {
     const state = window as typeof window & {
       liveProbe?: { panel: Element | null; canvas: Element | null; flashes: number };
     };
     state.liveProbe = {
       // The tab bar belongs to the league page; the statistics panels stay mounted across pages.
-      panel: document.getElementById('season-panel-rank'),
+      panel: document.getElementById('season-panel-teams'),
       canvas: document.querySelector('canvas'),
       flashes: 0,
     };
@@ -52,7 +56,11 @@ test('keeps league views and nodes across silent progression from home and updat
   await menu.getByRole('button', { name: '리그', exact: true }).click();
   await expect(mini.getByRole('button', { name: '자동 진행 정지' })).toBeVisible();
   await expect(rankTab).toHaveAttribute('aria-selected', 'true');
-  await page.getByRole('tab', { name: '득점왕 추이', exact: true }).click();
+  await page.getByRole('tab', { name: '선수 기록', exact: true }).click();
+  await page
+    .getByRole('group', { name: '선수 기록 보기' })
+    .getByRole('button', { name: '득점왕 추이', exact: true })
+    .click();
   // It stops by itself on the eve of our match, whichever view is open; away from home the
   // event waits as a small pill until it is opened.
   const pill = page.getByTestId('event-pill');
@@ -64,11 +72,15 @@ test('keeps league views and nodes across silent progression from home and updat
   await eve.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
   await expect(page.getByTestId('calendar')).toContainText('라운드 1');
   await mini.getByRole('button', { name: '자동 진행 정지' }).click();
-  await expect(page.getByRole('tab', { name: '득점왕 추이', exact: true })).toHaveAttribute(
+  await expect(page.getByRole('tab', { name: '선수 기록', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
   );
-  await page.getByRole('tab', { name: '득점 순위', exact: true }).click();
+  await page.getByRole('tab', { name: '선수 기록', exact: true }).click();
+  await page
+    .getByRole('group', { name: '선수 기록 보기' })
+    .getByRole('button', { name: '득점 순위', exact: true })
+    .click();
   await expect(page.getByRole('table', { name: '리그 득점 순위표' })).toBeVisible();
   await expect(
     page.getByRole('table', { name: '리그 득점 순위표' }).getByRole('row'),
@@ -78,7 +90,7 @@ test('keeps league views and nodes across silent progression from home and updat
       liveProbe: { panel: Element | null; canvas: Element | null; flashes: number };
     };
     return {
-      samePanel: liveProbe.panel === document.getElementById('season-panel-rank'),
+      samePanel: liveProbe.panel === document.getElementById('season-panel-teams'),
       sameCanvas: liveProbe.canvas === document.querySelector('canvas'),
       flashes: liveProbe.flashes,
     };
@@ -121,7 +133,7 @@ test('watching a match pauses the calendar and retains playback across page swit
   });
   const menu = page.getByRole('navigation', { name: '게임 메뉴', exact: true });
   await menu.getByRole('button', { name: '리그', exact: true }).click();
-  await expect(page.getByRole('tab', { name: '개요', exact: true })).toHaveAttribute(
+  await expect(page.getByRole('tab', { name: '순위표', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
   );

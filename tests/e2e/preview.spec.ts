@@ -1,3 +1,4 @@
+import { openCurrentClubSeason } from './record-navigation';
 import { test, expect } from '@playwright/test';
 test('built deep links, module worker, cache/CSP and missing assets', async ({ page, request }) => {
   test.skip(!process.env.PREVIEW_BUILD, 'Production preview gate');
@@ -7,8 +8,8 @@ test('built deep links, module worker, cache/CSP and missing assets', async ({ p
   await page.goto('/history');
   await expect(page.getByRole('heading', { name: '클럽 기록실', exact: true })).toBeVisible();
   // A records tab keeps its own address, so a reload reopens it.
-  await page.getByRole('tab', { name: '시즌 기록', exact: true }).click();
-  await expect(page).toHaveURL(/\/history\?view=season$/);
+  await openCurrentClubSeason(page);
+  await expect(page).toHaveURL(/\/history\?season=1950$/);
   await page.reload();
   await expect(page.getByRole('combobox', { name: '기록 시즌', exact: true })).toBeVisible();
   const html = await request.get('/history');

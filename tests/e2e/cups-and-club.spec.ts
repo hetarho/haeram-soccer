@@ -77,9 +77,9 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
       page
         .getByRole('tablist', { name: '선수·스태프 보기' })
         .getByRole('tab', { name, exact: true });
-    await tab('코치진').click();
+    await tab('스태프').click();
     await expect(page.getByTestId('coaching-mode')).toContainText('직접');
-    const staff = page.getByRole('region', { name: '코치진', exact: true });
+    const staff = page.getByRole('region', { name: '스태프', exact: true });
     await expect(staff.getByRole('checkbox')).toHaveCount(0);
     await expect(page.getByTestId('decision-owner-coach:assistant')).toContainText(
       '아래 방향은 개입 수준이 이 결정을 스태프에게 맡길 때만 쓰여요',
@@ -100,7 +100,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await draft.getByRole('button', { name: '적용', exact: true }).click();
     await expect(draft).toHaveCount(0);
     await page.getByRole('button', { name: '선수·스태프', exact: true }).click();
-    await tab('코치진').click();
+    await tab('스태프').click();
     await expect(page.getByRole('button', { name: /^코치 기조 · 최고 수준/ })).toBeVisible();
     // Level 3 hands every department to the staff at once.
     await chooseLevel(page, 3);
@@ -198,7 +198,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
     await nav.getByRole('button', { name: '선수·스태프', exact: true }).click();
     const tabs = page.getByRole('tablist', { name: '선수·스태프 보기' });
-    await expect(tabs.getByRole('tab')).toHaveText(['선수', '이적시장', '감독', '코치진']);
+    await expect(tabs.getByRole('tab')).toHaveText(['선수', '이적시장', '감독', '스태프']);
     await tabs.getByRole('tab', { name: '이적시장', exact: true }).click();
     await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
     await expect(tabs.getByRole('tab', { name: '이적시장' })).toHaveAttribute(
@@ -282,12 +282,9 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await found(page, 'trends-journey');
     await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
     // The season table is a part of 요약; the charts show one at a time on 추이.
-    await page
-      .getByRole('group', { name: '요약 보기' })
-      .getByRole('button', { name: '시즌별 기록', exact: true })
-      .click();
+    await page.getByRole('tab', { name: '시즌별 기록', exact: true }).click();
     await expect(page.getByRole('table', { name: '시즌별 기록' })).toBeVisible();
-    await page.getByRole('tab', { name: '추이', exact: true }).click();
+    await page.getByRole('tab', { name: '구단 성장', exact: true }).click();
     const metrics = page.getByRole('group', { name: '추이 지표' });
     for (const [metric, heading] of [
       ['리그 위치', '리그 위치'],

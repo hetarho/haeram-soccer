@@ -1,3 +1,5 @@
+import { chooseOption } from './select';
+
 import { expect, test, type Page } from '@playwright/test';
 import { settle } from './layout';
 
@@ -174,4 +176,81 @@ test('recruitment needs precede the candidate catalogue and academy operations o
     'aria-selected',
     'true',
   );
+});
+
+test('opens club seasons in records and retains the detail scope through league and cup visits', async ({
+  page,
+}) => {
+  await found(page);
+  await nav(page).getByRole('button', { name: '클럽 기록실', exact: true }).click();
+  const list = page.getByRole('table', { name: '시즌별 기록' });
+  await expect(list).toContainText('진행 중');
+  await list.getByRole('button').first().click();
+  await page
+    .getByRole('group', { name: '시즌 기록 보기' })
+    .getByRole('button', { name: '경기', exact: true })
+    .click();
+  await chooseOption(page.getByRole('combobox', { name: '기록 대회 범위', exact: true }), 'cup');
+  await page.getByRole('button', { name: '이 시즌 리그 순위표', exact: true }).click();
+  await expect(page.getByRole('tab', { name: '순위표', exact: true })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await page.getByRole('button', { name: '← 돌아가기 · 클럽 시즌 기록', exact: true }).click();
+  await expect(page.getByRole('combobox', { name: '기록 대회 범위', exact: true })).toHaveAttribute(
+    'data-value',
+    'cup',
+  );
+  await expect(
+    page
+      .getByRole('group', { name: '시즌 기록 보기' })
+      .getByRole('button', { name: '경기', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: '이 시즌 컵 대회 기록', exact: true }).click();
+  await expect(
+    page
+      .getByRole('tablist', { name: '컵 대회', exact: true })
+      .getByRole('tab', { name: '잉글랜드 컵', exact: true }),
+  ).toHaveAttribute('aria-selected', 'true');
+  await page.getByRole('button', { name: '← 돌아가기 · 클럽 시즌 기록', exact: true }).click();
+  await expect(page).toHaveURL(/season=1950.*part=matches.*competition=cup/);
+  await page.getByRole('button', { name: '← 시즌 목록으로', exact: true }).click();
+  await expect(list).toBeVisible();
+  await expect(page).toHaveURL(/\/history$/);
+  // Explicit undefined must clear a deep-linked initial year as well as an in-session pick.
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  await page.goto('/history?season=1950');
+  await expect(page.getByRole('combobox', { name: '기록 시즌', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: '← 시즌 목록으로', exact: true }).click();
+  await expect(list).toBeVisible();
+  await expect(page).toHaveURL(/\/history$/);
+});
+
+test('keeps a foreign league selected across all competition lenses without substituting our players', async ({
+  page,
+}) => {
+  await found(page);
+  await nav(page).getByRole('button', { name: '리그', exact: true }).click();
+  await chooseOption(page.getByRole('combobox', { name: '국가', exact: true }), 'GER');
+  const table = page.getByRole('table', { name: '리그 순위표' });
+  const firstClub = await table
+    .getByRole('button', { name: / 팀 정보$/ })
+    .first()
+    .getAttribute('aria-label');
+  await page.getByRole('tab', { name: '선수 기록', exact: true }).click();
+  await expect(page.getByRole('region', { name: '선택 리그 기록 안내' })).toContainText('독일 1부');
+  await expect(page.getByRole('table', { name: '리그 득점 순위표' })).toHaveCount(0);
+  await expect(page).toHaveURL(/league=GER\.0\.0/);
+  await page.getByRole('tab', { name: '팀 기록', exact: true }).click();
+  const teams = page.getByRole('table', { name: '리그 팀 기록표' });
+  await expect(teams.getByRole('button', { name: firstClub!, exact: true })).toBeVisible();
+  await expect(teams).not.toContainText('Haeram');
+  await page
+    .getByRole('group', { name: '팀 기록 보기' })
+    .getByRole('button', { name: '순위 추이', exact: true })
+    .click();
+  await expect(page.getByRole('region', { name: '선택 리그 기록 안내' })).toContainText('독일 1부');
+  await page.getByRole('button', { name: '우리 리그 기록 보기', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
+  await expect(page).not.toHaveURL(/league=/);
 });

@@ -1,3 +1,4 @@
+import { openCurrentClubSeason, openSeasonReview } from './record-navigation';
 import { chooseOption, selectOptions } from './select';
 import { expect, test } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -14,7 +15,7 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
-  await page.getByRole('tab', { name: '시즌 기록', exact: true }).click();
+  await openCurrentClubSeason(page);
   await page.getByText('분석 데이터 내보내기', { exact: true }).click();
   const panel = page.getByRole('region', { name: '분석 데이터 내보내기', exact: true }),
     button = panel.getByRole('button', { name: 'CSV 내려받기', exact: true });
@@ -63,13 +64,14 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   await expect(page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' })).toHaveCount(0);
   await page.getByRole('button', { name: '리그', exact: true }).first().click();
   await chooseOption(page.getByRole('combobox', { name: '리그 시즌', exact: true }), '1950');
-  await expect(page.getByTestId('season-review')).toBeVisible();
+  await openSeasonReview(page);
   await expect(page.getByTestId('season-move')).toBeVisible();
+  await page.getByRole('button', { name: '← 돌아가기 · 리그', exact: true }).click();
   // The live tabs belong to the season in progress; a closed season keeps its pages in its own.
   await expect(page.getByRole('tablist', { name: '리그 보기' })).toHaveCount(0);
   const past = page.getByRole('tablist', { name: '지난 시즌 보기' }),
     pastTab = (name: string) => past.getByRole('tab', { name, exact: true });
-  await expect(pastTab('결산')).toHaveAttribute('aria-selected', 'true');
+  await expect(pastTab('순위표')).toHaveAttribute('aria-selected', 'true');
   await pastTab('순위표').click();
   const table = page.getByRole('region', { name: '최종 순위표' });
   await expect(table).toContainText('Haeram');
@@ -86,7 +88,7 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   ).toContainText(/\d+전 \d+승 \d+무 \d+패 · 득실 \d+:\d+/);
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toHaveCount(0);
-  await pastTab('우리 경기').click();
+  await pastTab('일정·결과').click();
   const games = page.getByRole('region', { name: '우리 리그 경기' });
   await expect(games.getByRole('listitem')).toHaveCount(30);
   await games
@@ -96,12 +98,16 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   await expect(page.getByRole('dialog', { name: '경기 리포트' })).toContainText('경기 분석 리포트');
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toHaveCount(0);
-  await pastTab('순위 추이').click();
+  await pastTab('팀 기록').click();
+  await page
+    .getByRole('group', { name: '팀 기록 보기' })
+    .getByRole('button', { name: '순위 추이', exact: true })
+    .click();
   await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
   // The bar takes the live bar's keys.
-  await pastTab('순위 추이').press('ArrowRight');
-  await expect(pastTab('득점 순위')).toBeFocused();
-  await expect(pastTab('득점 순위')).toHaveAttribute('aria-selected', 'true');
+  await pastTab('팀 기록').press('ArrowRight');
+  await expect(pastTab('선수 기록')).toBeFocused();
+  await expect(pastTab('선수 기록')).toHaveAttribute('aria-selected', 'true');
   const scorers = page.getByRole('table', { name: '지난 시즌 득점 순위' });
   await expect(scorers).toBeVisible();
   const scorerRows = await scorers.locator('tbody tr').count();
@@ -115,13 +121,14 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   await expect(past).toHaveCount(0);
   await expect(page.getByRole('button', { name: '다음 시즌', exact: true })).toBeDisabled();
   await page.getByRole('button', { name: '이전 시즌', exact: true }).click();
-  await expect(pastTab('득점 순위')).toHaveAttribute('aria-selected', 'true');
+  await expect(pastTab('선수 기록')).toHaveAttribute('aria-selected', 'true');
   await expect(scorers).toBeVisible();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   // The record book is on the records room's first tab, under 기타 기록.
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
+  await page.getByRole('tab', { name: '명예·최고기록', exact: true }).click();
   await page
-    .getByRole('group', { name: '요약 보기' })
+    .getByRole('group', { name: '명예·최고기록 보기' })
     .getByRole('button', { name: '기타 기록', exact: true })
     .click();
   const book = page.getByRole('region', { name: '우리 클럽 기록집', exact: true });
@@ -137,8 +144,9 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   const fresh = await context.newPage();
   await fresh.goto('/history');
   await expect(fresh.getByTestId('save-status')).toContainText('저장 완료');
+  await fresh.getByRole('tab', { name: '명예·최고기록', exact: true }).click();
   await fresh
-    .getByRole('group', { name: '요약 보기' })
+    .getByRole('group', { name: '명예·최고기록 보기' })
     .getByRole('button', { name: '기타 기록', exact: true })
     .click();
   await expect(fresh.getByRole('region', { name: '우리 클럽 기록집', exact: true })).toHaveText(
@@ -157,7 +165,7 @@ test('uses matching archive samples for season splits and competition filters', 
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
-  await page.getByRole('tab', { name: '시즌 기록', exact: true }).click();
+  await openCurrentClubSeason(page);
   // The analysis is open from the start, so a competition filter shows at once.
   const analysis = page.getByRole('region', { name: '선택 시즌 분석', exact: true });
   const overall = analysis.getByRole('row', { name: /^전체/ });
@@ -187,8 +195,12 @@ test('filters the own-club fixture notebook and reads a settled full-season reco
   await expect(expand).toBeVisible();
   await expand.click();
   await expect(expand).toHaveCount(0);
-  // The fixture notebook belongs to the league overview.
-  await page.getByRole('tab', { name: '개요', exact: true }).click();
+  // The fixture notebook is the own-club lens under schedule/results.
+  await page.getByRole('tab', { name: '일정·결과', exact: true }).click();
+  await page
+    .getByRole('group', { name: '일정·결과 보기' })
+    .getByRole('button', { name: '우리 경기', exact: true })
+    .click();
   await page.getByText('우리 팀 일정 노트', { exact: true }).click();
   const notebook = page.getByRole('region', { name: '우리 팀 일정 노트', exact: true });
   await chooseOption(notebook.getByRole('combobox', { name: '일정 홈 원정', exact: true }), 'away');

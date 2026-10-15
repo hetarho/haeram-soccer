@@ -1,4 +1,6 @@
-import { lazy, Suspense, useState } from 'react';
+import { useCupRequest } from './state';
+import { useTaskState } from './taskMemory';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import type {
   EuropeTournament,
   Fixture,
@@ -277,7 +279,19 @@ export function CupsView({
     ...w.europe.filter((t) => t.key !== 'super').map((t) => ({ id: t.key, label: t.name })),
     { id: 'history', label: '역사' },
   ];
-  const [tab, setTab] = useState('cup');
+  const [tab, setTab] = useTaskState(w.id, 'cups-tab', 'cup');
+  const [requested, setRequested] = useTaskState<{ year: number; competition: string } | undefined>(
+    w.id,
+    'cups-requested-season',
+    undefined,
+  );
+  const request = useCupRequest((store) => store.request);
+  useEffect(() => {
+    if (!request) return;
+    useCupRequest.getState().take();
+    setRequested(request);
+    setTab(request.year === w.year ? request.competition : 'history');
+  }, [request, w.year, setRequested, setTab]);
   const active = tabs.some((entry) => entry.id === tab) ? tab : 'cup';
   const tournament = w.europe.find((t) => t.key === active);
   const nextEurope = w.year < 1955 ? 1955 - w.year : 0;
@@ -316,7 +330,13 @@ export function CupsView({
             </p>
           }
         >
-          <CupHistory w={w} client={client} />
+          <CupHistory
+            key={requested ? `${requested.year}:${requested.competition}` : 'browse'}
+            w={w}
+            client={client}
+            initialYear={requested?.year}
+            initialCompetition={requested?.competition}
+          />
         </Suspense>
       )}
       <p className={s.muted}>

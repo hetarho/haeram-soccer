@@ -3360,3 +3360,37 @@
   min-height: 44px;
   color: var(--accent-text);
 }
+
+.seasonDeepDive {
+  border: 1px solid var(--line);
+  padding: 14px;
+  margin: 16px 0;
+}
+.seasonDeepDive > summary {
+  min-height: 44px;
+  cursor: pointer;
+  font-family: var(--display);
+  font-size: 15px;
+}
+.scroller:has(.taskReturn) {
+  --task-offset: 66px;
+}
+.recordsNav {
+  top: var(--task-offset, 0px);
+}
+@media (max-width: 760px) {
+  .taskReturn small {
+    display: none;
+  }
+}
+
+.competitionScope {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0;
+  font-size: 12px;
+}
+.competitionScope > b {
+  color: var(--text-muted);
+  line-height: 1.7;
+}

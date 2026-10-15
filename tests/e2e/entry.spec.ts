@@ -93,7 +93,7 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await mobileMenu.getByRole('button', { name: '선수·스태프', exact: true }).click();
   await expect(page.getByRole('heading', { name: '선수·스태프', level: 2 })).toBeVisible();
   const peopleTabs = page.getByRole('tablist', { name: '선수·스태프 보기' }).getByRole('tab');
-  await expect(peopleTabs).toHaveText(['선수', '이적시장', '감독', '코치진']);
+  await expect(peopleTabs).toHaveText(['선수', '이적시장', '감독', '스태프']);
   await expect(peopleTabs.first()).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByText('선수단 18/26', { exact: true })).toBeVisible();
   await expect(page).toHaveURL(/\/people$/);
@@ -105,7 +105,7 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   ]);
   await expect(page).toHaveURL(/\/training$/);
   await mobileMenu.getByRole('button', { name: '리그', exact: true }).click();
-  await expect(page.getByRole('tab', { name: '개요', exact: true })).toHaveAttribute(
+  await expect(page.getByRole('tab', { name: '순위표', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
   );

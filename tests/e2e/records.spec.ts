@@ -1,3 +1,4 @@
+import { openCurrentClubSeason } from './record-navigation';
 import { expect, test, type Page } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
 
@@ -35,27 +36,33 @@ for (const [label, viewport] of [
       await closeFirstSeason(page, 'records-room-journey');
       const tabs = page.getByRole('tablist', { name: '기록실 보기' });
       const tab = (name: string) => tabs.getByRole('tab', { name, exact: true });
-      await expect(tabs.getByRole('tab')).toHaveText(['요약', '추이', '선수', '시즌 기록', '감독']);
-      await expect(tab('요약')).toHaveAttribute('aria-selected', 'true');
+      await expect(tabs.getByRole('tab')).toHaveText([
+        '시즌별 기록',
+        '구단 성장',
+        '명예·최고기록',
+        '선수 통산',
+        '감독 이력',
+      ]);
+      await expect(tab('시즌별 기록')).toHaveAttribute('aria-selected', 'true');
       await expect(page).toHaveURL(/\/history$/);
 
       // 요약: one part at a time, the trophy cabinet first, then where our Elo stands among every
       // club, the season table and the other records.
-      const parts = page.getByRole('group', { name: '요약 보기' });
+      await tab('명예·최고기록').click();
+      const parts = page.getByRole('group', { name: '명예·최고기록 보기' });
       const part = (name: string) => parts.getByRole('button', { name, exact: true });
-      await expect(parts.getByRole('button')).toHaveText([
-        '트로피',
-        'Elo',
-        '시즌별 기록',
-        '기타 기록',
-      ]);
+      await expect(parts.getByRole('button')).toHaveText(['트로피', '기타 기록']);
       await expect(part('트로피')).toHaveAttribute('aria-pressed', 'true');
       const cabinet = page.getByRole('list', { name: '트로피 진열장' });
       await expect(cabinet).toContainText('승격');
       await expect(cabinet).toContainText('최고 성적');
       await expect(cabinet).toContainText('(1950/51)');
       await expect(cabinet.locator('svg')).not.toHaveCount(0);
-      await part('Elo').click();
+      await tab('구단 성장').click();
+      await page
+        .getByRole('group', { name: '추이 지표' })
+        .getByRole('button', { name: 'Elo', exact: true })
+        .click();
       await expect(cabinet).toHaveCount(0);
       const elo = page.getByRole('region', { name: '클럽 Elo 위치' });
       await expect(elo).toContainText('세계 최고');
@@ -71,6 +78,7 @@ for (const [label, viewport] of [
       await expect(page.getByRole('dialog')).toHaveCount(0);
 
       // 기타 기록: match records over every own match, then the record book.
+      await tab('명예·최고기록').click();
       await part('기타 기록').click();
       const matches = page.getByRole('region', { name: '경기 기록' });
       await expect(matches.getByRole('article', { name: '최다 골차 승리' })).toContainText(
@@ -84,30 +92,33 @@ for (const [label, viewport] of [
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
       // 시즌별 기록: a season's row opens that season on the league page, on its final table.
-      await part('시즌별 기록').click();
+      await tab('시즌별 기록').click();
       await expect(page.getByRole('table', { name: '시즌별 기록' })).toContainText('1950/51');
-      const row = page.getByRole('button', { name: '1950/51 리그 보기', exact: true });
+      const row = page.getByRole('button', { name: '1950/51 구단 시즌 기록 보기', exact: true });
       // Centred, so the floating news button and the tab bar stay clear of the row.
       await row.evaluate((element) => element.scrollIntoView({ block: 'center' }));
       await row.click();
+      await expect(page).toHaveURL(/\/history\?season=1950/);
+      await page.getByRole('button', { name: '이 시즌 리그 순위표', exact: true }).click();
       await expect(page).toHaveURL(/\/leagues\?.*season=1950&tab=table/);
       await expect(
         page.getByRole('tablist', { name: '지난 시즌 보기' }).getByRole('tab', { name: '순위표' }),
       ).toHaveAttribute('aria-selected', 'true');
       await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('1950/51');
       await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('Haeram');
-      await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
-      await expect(tab('요약')).toHaveAttribute('aria-selected', 'true');
+      await page.getByRole('button', { name: '← 돌아가기 · 클럽 시즌 기록', exact: true }).click();
+      await expect(tab('시즌별 기록')).toHaveAttribute('aria-selected', 'true');
+      await page.getByRole('button', { name: '← 시즌 목록으로', exact: true }).click();
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
       // The arrow keys move between the tabs, and the tab goes into the address.
-      await tab('요약').focus();
+      await tab('시즌별 기록').focus();
       await page.keyboard.press('ArrowRight');
-      await expect(tab('추이')).toBeFocused();
-      await expect(tab('추이')).toHaveAttribute('aria-selected', 'true');
+      await expect(tab('구단 성장')).toBeFocused();
+      await expect(tab('구단 성장')).toHaveAttribute('aria-selected', 'true');
       await expect(page).toHaveURL(/\/history\?view=trends$/);
 
-      // 추이: one chart at a time, the league position first; the keyboard steps through the
+      // Growth: one chart at a time, the league position first; the keyboard steps through the
       // seasons and End reads the latest in the bubble.
       const metrics = page.getByRole('group', { name: '추이 지표' });
       await expect(metrics.getByRole('button')).toHaveText([
@@ -118,6 +129,7 @@ for (const [label, viewport] of [
         '서포터',
         '자금',
       ]);
+      await metrics.getByRole('button', { name: '리그 위치', exact: true }).click();
       const position = page.getByRole('slider', { name: '피라미드 전체 순위' });
       const plot = position.locator('xpath=..');
       await position.focus();
@@ -186,7 +198,7 @@ for (const [label, viewport] of [
       await expect(page.getByRole('table', { name: '시즌별 기록' })).toHaveCount(0);
 
       // 선수: one all-time board at a time; a name opens the player's sheet.
-      await tab('선수').click();
+      await tab('선수 통산').click();
       const boards = page.getByRole('group', { name: '통산 기록 종류' });
       await expect(boards.getByRole('button')).toHaveText(['출전', '득점', '도움', '선방']);
       const apps = page.getByRole('table', { name: '역대 최다 출전' });
@@ -207,7 +219,7 @@ for (const [label, viewport] of [
 
       // 시즌 기록 holds one season of ours at a time: the arrows step through the seasons and the
       // segments show its overview, matches and decisions, never other clubs' tables.
-      await tab('시즌 기록').click();
+      await openCurrentClubSeason(page);
       const season = page.getByRole('combobox', { name: '기록 시즌', exact: true });
       await expect(season).toHaveAttribute('data-value', '1951');
       await page.getByRole('button', { name: '이전 기록 시즌', exact: true }).click();
@@ -227,9 +239,9 @@ for (const [label, viewport] of [
       await expect(page.getByRole('heading', { name: '그해의 각국 리그' })).toHaveCount(0);
       await expect(page.getByRole('heading', { name: '클럽대항전 우승과 순위' })).toHaveCount(0);
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
-      await tab('시즌 기록').focus();
+      await tab('시즌별 기록').focus();
       await page.keyboard.press('End');
-      await expect(tab('감독')).toHaveAttribute('aria-selected', 'true');
+      await expect(tab('감독 이력')).toHaveAttribute('aria-selected', 'true');
       await expect(page).toHaveURL(/\/history\?view=managers$/);
       await expect(page.getByRole('heading', { name: '감독들이 남긴 계절' })).toBeVisible();
       await expect(page.getByText(/ · 현재$/)).toBeVisible();
@@ -243,13 +255,13 @@ for (const [label, viewport] of [
       const fresh = await context.newPage();
       await fresh.goto('/history?view=managers');
       const freshTabs = fresh.getByRole('tablist', { name: '기록실 보기' });
-      await expect(freshTabs.getByRole('tab', { name: '감독' })).toHaveAttribute(
+      await expect(freshTabs.getByRole('tab', { name: '감독 이력' })).toHaveAttribute(
         'aria-selected',
         'true',
       );
       await expect(fresh.getByText(/ · 현재$/)).toBeVisible();
       await expect(fresh.getByText('감독 기록을 펼치는 중…')).toHaveCount(0);
-      await freshTabs.getByRole('tab', { name: '요약' }).click();
+      await freshTabs.getByRole('tab', { name: '시즌별 기록' }).click();
       await expect(fresh).toHaveURL(/\/history$/);
       expect(await horizontalOverflow(fresh)).toBeLessThanOrEqual(0);
     });

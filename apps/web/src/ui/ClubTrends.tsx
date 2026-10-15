@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useTaskState } from './taskMemory';
+import { useMemo } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { country, currency } from '../../../../packages/catalogs/src/index';
 import { clubOf, quote } from '../../../../packages/engine/src/world';
@@ -205,7 +206,9 @@ export function ClubTrends({ w }: { w: World }) {
     code = club.country;
   const series = useMemo(() => trendSeries(w), [w.history, w.year, club.tier]);
   const standing = useEloStanding(w);
-  const [metric, setMetric] = useState<TrendMetric>('league');
+  const [metric, setMetric] = useTaskState<TrendMetric>(w.id, 'growth-metric', () =>
+    new URLSearchParams(location.search).get('part') === 'elo' ? 'elo' : 'league',
+  );
   return (
     <>
       <div className={s.recordControls}>
@@ -339,6 +342,7 @@ export function ClubTrends({ w }: { w: World }) {
 export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: number) => void }) {
   const code = clubOf(w).country,
     seasons = w.history;
+  const [limit, setLimit] = useTaskState(w.id, 'record-season-limit', 49);
   return (
     <Panel title="시즌별 기록" note={`${seasons.length}시즌`}>
       <div className={s.tableWrap}>
@@ -350,65 +354,96 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
               <th scope="col">승점</th>
               <th scope="col">컵 대회</th>
               <th scope="col">Elo</th>
-              <th scope="col">선수단 가치</th>
+              <th scope="col">선수단 가치 · 현재 물가</th>
             </tr>
           </thead>
           <tbody>
-            {[...seasons].reverse().map((h) => (
-              <tr
-                key={h.year}
-                className={onSeason ? s.seasonRow : undefined}
-                onClick={onSeason && (() => onSeason(h.year))}
-              >
-                <td>
-                  {onSeason ? (
-                    <button
-                      type="button"
-                      className={s.seasonRowLink}
-                      aria-label={`${seasonName(h.year)} 리그 보기`}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        onSeason(h.year);
-                      }}
-                    >
-                      {seasonName(h.year)}
-                    </button>
-                  ) : (
-                    seasonName(h.year)
-                  )}
-                </td>
-                <td>
-                  {divisionName(code, h.tier, h.group)} {h.rank}위
-                </td>
-                <td>
-                  {h.points} ({h.won}-{h.drawn}-{h.lost})
-                </td>
-                <td>
-                  {h.runs?.length
-                    ? h.runs
-                        .map(
-                          (run) =>
-                            `${run.key === 'cup' ? '컵' : run.name} ${run.champion ? '우승' : run.reached}`,
-                        )
-                        .join(' · ')
-                    : '—'}
-                </td>
-                <td>
-                  {h.elo !== undefined
-                    ? `${Math.round(h.elo)}${h.eloRank ? ` (${h.eloRank}위)` : ''}`
-                    : '—'}
-                </td>
-                <td>
-                  {h.squadValue ? (
-                    <Money value={inToday(w, h.squadValue, h.year)} code={code} year={w.year} />
-                  ) : (
-                    '—'
-                  )}
-                </td>
-              </tr>
-            ))}
+            <tr
+              className={onSeason ? s.seasonRow : undefined}
+              onClick={onSeason && (() => onSeason(w.year))}
+            >
+              <td>
+                <button
+                  type="button"
+                  className={s.seasonRowLink}
+                  aria-label={`${seasonName(w.year)} 구단 시즌 기록 보기`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onSeason?.(w.year);
+                  }}
+                >
+                  {seasonName(w.year)} · 진행 중
+                </button>
+              </td>
+              <td>{divisionName(code, clubOf(w).tier, clubOf(w).group)}</td>
+              <td>{w.tables[w.playerClub]?.points ?? 0}</td>
+              <td>진행 중</td>
+              <td>{clubOf(w).elo?.toFixed(0) ?? '—'}</td>
+              <td>—</td>
+            </tr>
+            {[...seasons]
+              .reverse()
+              .slice(0, limit)
+              .map((h) => (
+                <tr
+                  key={h.year}
+                  className={onSeason ? s.seasonRow : undefined}
+                  onClick={onSeason && (() => onSeason(h.year))}
+                >
+                  <td>
+                    {onSeason ? (
+                      <button
+                        type="button"
+                        className={s.seasonRowLink}
+                        aria-label={`${seasonName(h.year)} 구단 시즌 기록 보기`}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onSeason(h.year);
+                        }}
+                      >
+                        {seasonName(h.year)}
+                      </button>
+                    ) : (
+                      seasonName(h.year)
+                    )}
+                  </td>
+                  <td>
+                    {divisionName(code, h.tier, h.group)} {h.rank}위
+                  </td>
+                  <td>
+                    {h.points} ({h.won}-{h.drawn}-{h.lost})
+                  </td>
+                  <td>
+                    {h.runs?.length
+                      ? h.runs
+                          .map(
+                            (run) =>
+                              `${run.key === 'cup' ? '컵' : run.name} ${run.champion ? '우승' : run.reached}`,
+                          )
+                          .join(' · ')
+                      : '—'}
+                  </td>
+                  <td>
+                    {h.elo !== undefined
+                      ? `${Math.round(h.elo)}${h.eloRank ? ` (${h.eloRank}위)` : ''}`
+                      : '—'}
+                  </td>
+                  <td>
+                    {h.squadValue ? (
+                      <Money value={inToday(w, h.squadValue, h.year)} code={code} year={w.year} />
+                    ) : (
+                      '—'
+                    )}
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
+        {seasons.length > limit && (
+          <button type="button" onClick={() => setLimit(limit + 50)}>
+            이전 시즌 더 보기 · {seasons.length - limit}시즌
+          </button>
+        )}
         {!seasons.length && <div className={s.empty}>첫 시즌이 끝나면 기록이 쌓여요.</div>}
       </div>
     </Panel>

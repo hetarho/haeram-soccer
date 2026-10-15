@@ -1,3 +1,5 @@
+import { CompetitionRecords, UnavailableLeagueRecord } from './CompetitionRecords';
+import { Segments } from './Segments';
 import { PixelIcon } from './PixelIcon';
 import { Select } from './Select';
 import {
@@ -17,14 +19,7 @@ import { lineupSummary } from '../../../../packages/engine/src/strategy';
 import type { GameClient } from '../runtime/client';
 import { gameStore, useGameState } from '../runtime/store';
 import { useProgression, type ProgressionController } from '../runtime/progression';
-import {
-  PAST_TABS,
-  useLeagueSeason,
-  useMatchView,
-  useNavigation,
-  type Page,
-  type PastTab,
-} from './state';
+import { useLeagueSeason, useMatchView, useNavigation, type Page, type PastTab } from './state';
 import { Pitch, type PitchControls } from './Pitch';
 import { ProgressControls } from './ProgressControls';
 import { watchNextMatch } from './watch';
@@ -58,16 +53,30 @@ import t from './LiveSeason.module.css';
 
 const TABS = [
   ['match', '경기'],
-  ['overview', '개요'],
   ['table', '순위표'],
-  ['results', '라운드 결과'],
-  ['rank', '순위 추이'],
-  ['scorers', '득점 순위'],
-  ['scorer-trend', '득점왕 추이'],
+  ['results', '일정·결과'],
+  ['teams', '팀 기록'],
+  ['players', '선수 기록'],
 ] as const;
 type Tab = (typeof TABS)[number][0];
-/** The match theatre has no tabs; every league view is a tab of one bar. */
 const LEAGUE_TABS = TABS.filter(([id]) => id !== 'match');
+function savedLeagueTab(): Tab {
+  const params = new URLSearchParams(location.search),
+    saved = params.get('view'),
+    past = params.get('tab');
+  if (saved === 'rank' || past === 'rank') return 'teams';
+  if (saved === 'scorers' || saved === 'scorer-trend' || past === 'scorers') return 'players';
+  if (saved === 'results' || past === 'matches') return 'results';
+  return LEAGUE_TABS.find(([id]) => id === saved)?.[0] ?? 'table';
+}
+const pastOf = (tab: Tab): PastTab =>
+  tab === 'results'
+    ? 'matches'
+    : tab === 'teams'
+      ? 'rank'
+      : tab === 'players'
+        ? 'scorers'
+        : 'table';
 
 /**
  * The primary match action: while the match plays it reveals the result; after the final whistle
@@ -268,72 +277,120 @@ const MatchPane = memo(function MatchPane({
 const TablePane = memo(function TablePane({
   client,
   league,
-  onLeague,
 }: {
   client: GameClient;
   league?: LeagueChoice;
-  onLeague: (league?: LeagueChoice) => void;
 }) {
   const w = useGameState(selectLeagueWorld)!;
   const fixtures = useLeagueFixtures(client, w, league);
   return (
     <>
       <h2 className={s.seasonPaneTitle}>리그 순위표</h2>
-      <LeaguePicker league={league} onLeague={onLeague} />
       <section className={s.panel}>
         <Standings w={w} ids={leagueIds(w, league)} fixtures={fixtures} />
       </section>
     </>
   );
 });
-/**
- * The own league at a glance: race position, gaps, form, next rival and the fixture notebook.
- * Another league shows its table and its latest round instead.
- */
-const OverviewPane = memo(function OverviewPane({
-  client,
+const TeamPane = memo(function TeamPane({
+  league,
+  onLeague,
+  part,
+  onPart,
+}: {
+  league?: LeagueChoice;
+  onLeague: (league?: LeagueChoice) => void;
+  part: 'table' | 'rank';
+  onPart: (value: 'table' | 'rank') => void;
+}) {
+  const w = useGameState(selectLeagueWorld)!,
+    other = league && !sameLeague(league, ownLeague(w));
+  const rows = leagueIds(w, league).flatMap((id) =>
+    w.tables[id] ? [{ id, ...w.tables[id] }] : [],
+  );
+  return (
+    <>
+      <Segments
+        label="팀 기록 보기"
+        options={
+          [
+            ['table', '팀 성적'],
+            ['rank', '순위 추이'],
+          ] as const
+        }
+        value={part}
+        onChange={onPart}
+      />
+      {part === 'table' ? (
+        <CompetitionRecords w={w} rows={rows} />
+      ) : other ? (
+        <UnavailableLeagueRecord
+          league={league!}
+          label="라운드별 순위 추이"
+          onOwn={() => onLeague(undefined)}
+        />
+      ) : (
+        <RankHistoryGraph w={w} year={w.year} />
+      )}
+    </>
+  );
+});
+const PlayerPane = memo(function PlayerPane({
+  league,
+  onLeague,
+  part,
+  onPart,
+}: {
+  league?: LeagueChoice;
+  onLeague: (league?: LeagueChoice) => void;
+  part: 'scorers' | 'trend';
+  onPart: (value: 'scorers' | 'trend') => void;
+}) {
+  const w = useGameState(selectScorerWorld)!,
+    other = league && !sameLeague(league, ownLeague(w));
+  return (
+    <>
+      <Segments
+        label="선수 기록 보기"
+        options={
+          [
+            ['scorers', '득점 순위'],
+            ['trend', '득점왕 추이'],
+          ] as const
+        }
+        value={part}
+        onChange={onPart}
+      />
+      {other ? (
+        <UnavailableLeagueRecord
+          league={league!}
+          label="선수별 득점 기록"
+          onOwn={() => onLeague(undefined)}
+        />
+      ) : part === 'trend' ? (
+        <ScorerHistory w={w} />
+      ) : (
+        <ScorerStandings w={w} />
+      )}
+    </>
+  );
+});
+const LeagueScope = memo(function LeagueScope({
   league,
   onLeague,
 }: {
-  client: GameClient;
   league?: LeagueChoice;
   onLeague: (league?: LeagueChoice) => void;
 }) {
   const w = useGameState(selectLeagueWorld)!;
-  const fixtures = useLeagueFixtures(client, w, league);
-  if (league && !sameLeague(league, ownLeague(w))) {
-    const ids = leagueIds(w, league);
-    return (
-      <>
-        <h2 className={s.seasonPaneTitle}>{leagueName(league)} 개요</h2>
-        <LeaguePicker league={league} onLeague={onLeague} />
-        <section className={s.panel}>
-          <Standings w={w} ids={ids} fixtures={fixtures} />
-        </section>
-        {fixtures && <RoundResults w={w} ids={ids} fixtures={fixtures} />}
-      </>
-    );
-  }
   return (
-    <>
-      <h2 className={s.seasonPaneTitle}>우리 리그 개요</h2>
+    <div className={s.competitionScope} aria-label="선택한 리그와 시즌">
+      <b>
+        {leagueName(league ?? ownLeague(w))} · {seasonName(w.year)}
+      </b>
       <LeaguePicker league={league} onLeague={onLeague} />
-      <LeagueOverview w={w} />
-      <FixtureNotebook w={w} client={client} />
-    </>
+    </div>
   );
-});
-const RankPane = memo(function RankPane() {
-  const w = useGameState(selectLeagueWorld)!;
-  return <RankHistoryGraph w={w} />;
-});
-const ScorersPane = memo(function ScorersPane() {
-  const w = useGameState(selectScorerWorld)!;
-  return <ScorerStandings w={w} />;
-});
-const ScorerTrendPane = memo(function ScorerTrendPane() {
-  const w = useGameState(selectScorerWorld)!;
-  return <ScorerHistory w={w} />;
 });
 const ResultsPane = memo(function ResultsPane({
   client,
@@ -344,15 +401,36 @@ const ResultsPane = memo(function ResultsPane({
   league?: LeagueChoice;
   onLeague: (league?: LeagueChoice) => void;
 }) {
-  const w = useGameState(selectLeagueWorld)!;
-  const fixtures = useLeagueFixtures(client, w, league),
+  const w = useGameState(selectLeagueWorld)!,
+    fixtures = useLeagueFixtures(client, w, league),
     other = league && !sameLeague(league, ownLeague(w));
+  const [part, setPart] = useState<'rounds' | 'ours'>('rounds');
   return (
     <>
-      <LeaguePicker league={league} onLeague={onLeague} />
-      {other && !fixtures ? (
+      <Segments
+        label="일정·결과 보기"
+        options={
+          [
+            ['rounds', '라운드 결과'],
+            ['ours', '우리 경기'],
+          ] as const
+        }
+        value={part}
+        onChange={setPart}
+      />
+      {part === 'ours' ? (
+        other ? (
+          <UnavailableLeagueRecord
+            league={league!}
+            label="우리 구단 경기"
+            onOwn={() => onLeague(undefined)}
+          />
+        ) : (
+          <FixtureNotebook w={w} client={client} />
+        )
+      ) : other && !fixtures ? (
         <p className={s.muted} role="status">
-          {leagueName(league)} 경기를 불러오는 중…
+          {leagueName(league!)} 경기를 불러오는 중…
         </p>
       ) : (
         <RoundResults w={w} ids={leagueIds(w, league)} fixtures={fixtures} />
@@ -432,9 +510,14 @@ export const LiveSeason = memo(function LiveSeason({
   const settled = useNavigation((state) => state.page === page);
   const [preparing, setPreparing] = useState(false);
   const visibleTabs = LEAGUE_TABS;
-  const [leagueTab, setLeagueTab] = useState<Tab>(() => {
-    const saved = new URLSearchParams(location.search).get('view');
-    return LEAGUE_TABS.find(([id]) => id === saved)?.[0] || 'overview';
+  const [leagueTab, setLeagueTab] = useState<Tab>(savedLeagueTab);
+  const [teamPart, setTeamPart] = useState<'table' | 'rank'>(() => {
+    const p = new URLSearchParams(location.search);
+    return p.get('view') === 'rank' || p.get('detail') === 'rank' ? 'rank' : 'table';
+  });
+  const [playerPart, setPlayerPart] = useState<'scorers' | 'trend'>(() => {
+    const p = new URLSearchParams(location.search);
+    return p.get('view') === 'scorer-trend' || p.get('detail') === 'trend' ? 'trend' : 'scorers';
   });
   const [reviewYear, setReviewYear] = useState<number | undefined>(() => {
     const saved = Number(new URLSearchParams(location.search).get('season'));
@@ -445,10 +528,17 @@ export const LiveSeason = memo(function LiveSeason({
     parseLeague(new URLSearchParams(location.search).get('league')),
   );
   // A closed season's tab stays while the list steps between closed seasons.
-  const [pastTab, setPastTab] = useState<PastTab>(() => {
-    const saved = new URLSearchParams(location.search).get('tab');
-    return PAST_TABS.find(([id]) => id === saved)?.[0] || 'review';
-  });
+  const pastTab = pastOf(leagueTab);
+  const setPastTab = (value: PastTab) =>
+    setLeagueTab(
+      value === 'matches'
+        ? 'results'
+        : value === 'rank'
+          ? 'teams'
+          : value === 'scorers'
+            ? 'players'
+            : 'table',
+    );
   const tab: Tab = page === 'match' ? 'match' : leagueTab;
   // A season asked for from elsewhere (a records-room season row) opens in our league that season.
   const requestedSeason = useLeagueSeason((state) => state.request);
@@ -457,16 +547,40 @@ export const LiveSeason = memo(function LiveSeason({
     if (requestedSeason === undefined || currentYear === undefined) return;
     useLeagueSeason.getState().take();
     setLeague(undefined);
+    setLeagueTab('table');
     if (requestedSeason === currentYear) setReviewYear(undefined);
     else {
       setReviewYear(requestedSeason);
-      setPastTab('table');
     }
   }, [requestedSeason, currentYear]);
+  useEffect(() => {
+    const restore = () => {
+      if (!location.pathname.startsWith('/leagues')) return;
+      const params = new URLSearchParams(location.search),
+        year = Number(params.get('season'));
+      setLeagueTab(savedLeagueTab());
+      setLeague(parseLeague(params.get('league')));
+      setReviewYear(Number.isInteger(year) && year > 0 ? year : undefined);
+      setTeamPart(
+        params.get('detail') === 'rank' || params.get('view') === 'rank' ? 'rank' : 'table',
+      );
+      setPlayerPart(
+        params.get('detail') === 'trend' || params.get('view') === 'scorer-trend'
+          ? 'trend'
+          : 'scorers',
+      );
+    };
+    window.addEventListener('popstate', restore);
+    return () => window.removeEventListener('popstate', restore);
+  }, []);
   useEffect(() => {
     if (page !== 'league') return;
     const url = new URL(location.href);
     url.searchParams.set('view', leagueTab);
+    if (leagueTab === 'teams' && teamPart === 'rank') url.searchParams.set('detail', 'rank');
+    else if (leagueTab === 'players' && playerPart === 'trend')
+      url.searchParams.set('detail', 'trend');
+    else url.searchParams.delete('detail');
     const chosen = leagueParam(league);
     if (chosen) url.searchParams.set('league', chosen);
     else url.searchParams.delete('league');
@@ -478,7 +592,7 @@ export const LiveSeason = memo(function LiveSeason({
       url.searchParams.set('tab', pastTab);
     }
     history.replaceState(history.state, '', `${url.pathname}${url.search}${url.hash}`);
-  }, [page, leagueTab, reviewYear, pastTab, league]);
+  }, [page, leagueTab, reviewYear, pastTab, league, teamPart, playerPart]);
   const reviewing = page === 'league' && reviewYear !== undefined;
   // A league tab mounts the first time it is shown and stays mounted after, so it keeps what was
   // chosen in it; a tab never opened renders nothing while hidden.
@@ -509,6 +623,7 @@ export const LiveSeason = memo(function LiveSeason({
   return (
     <div hidden={!active} data-testid="live-season" className={t.liveSeason}>
       {page === 'league' && <SeasonPicker value={reviewYear} onChange={setReviewYear} />}
+      {page === 'league' && !reviewing && <LeagueScope league={league} onLeague={setLeague} />}
       {/* Only the tabs stay pinned: a taller pinned band would hide what scrolls up under it. */}
       {page === 'league' && !reviewing && (
         <div className={t.navigation}>
@@ -547,16 +662,17 @@ export const LiveSeason = memo(function LiveSeason({
               onPrepare={onPrepare}
               clock={page === 'match'}
             />
-          ) : !opened.includes(id) ? null : id === 'overview' ? (
-            <OverviewPane client={client} league={league} onLeague={setLeague} />
-          ) : id === 'table' ? (
-            <TablePane client={client} league={league} onLeague={setLeague} />
-          ) : id === 'rank' ? (
-            <RankPane />
-          ) : id === 'scorers' ? (
-            <ScorersPane />
-          ) : id === 'scorer-trend' ? (
-            <ScorerTrendPane />
+          ) : !opened.includes(id) ? null : id === 'table' ? (
+            <TablePane client={client} league={league} />
+          ) : id === 'teams' ? (
+            <TeamPane league={league} onLeague={setLeague} part={teamPart} onPart={setTeamPart} />
+          ) : id === 'players' ? (
+            <PlayerPane
+              league={league}
+              onLeague={setLeague}
+              part={playerPart}
+              onPart={setPlayerPart}
+            />
           ) : (
             <ResultsPane client={client} league={league} onLeague={setLeague} />
           )}
@@ -577,6 +693,10 @@ export const LiveSeason = memo(function LiveSeason({
             onTab={setPastTab}
             league={league}
             onLeague={setLeague}
+            teamPart={teamPart}
+            onTeamPart={setTeamPart}
+            playerPart={playerPart}
+            onPlayerPart={setPlayerPart}
           />
         </Suspense>
       )}

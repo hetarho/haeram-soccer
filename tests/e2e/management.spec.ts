@@ -1,3 +1,4 @@
+import { openCurrentClubSeason, openSeasonReview } from './record-navigation';
 import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
@@ -16,8 +17,8 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   const peopleTab = (name: string) =>
     page.getByRole('tablist', { name: '선수·스태프 보기' }).getByRole('tab', { name, exact: true });
   await expect(peopleTab('선수')).toHaveAttribute('aria-selected', 'true');
-  await peopleTab('코치진').click();
-  await expect(page.getByRole('region', { name: '코치진', exact: true })).toBeVisible();
+  await peopleTab('스태프').click();
+  await expect(page.getByRole('region', { name: '스태프', exact: true })).toBeVisible();
   await expect(page).toHaveURL(/\/people\?view=coaches$/);
   await peopleTab('감독').click();
   await chooseOption(page.getByRole('combobox', { name: '요청 전술', exact: true }), 'counter');
@@ -64,8 +65,9 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await expect(page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' })).toHaveCount(0);
   await page.getByRole('button', { name: '리그', exact: true }).first().click();
   await chooseOption(page.getByRole('combobox', { name: '리그 시즌', exact: true }), '1950');
-  await expect(page.getByTestId('season-review')).toBeVisible();
+  await openSeasonReview(page);
   await expect(page.getByTestId('season-move')).toBeVisible();
+  await page.getByRole('button', { name: '← 돌아가기 · 리그', exact: true }).click();
   // The review opens first; the final table is the closed season's next tab.
   await page
     .getByRole('tablist', { name: '지난 시즌 보기' })
@@ -83,7 +85,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('button', { name: '우리 리그로', exact: true }).click();
   await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('Haeram');
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
-  await page.getByRole('tab', { name: '시즌 기록', exact: true }).click();
+  await openCurrentClubSeason(page);
   await chooseOption(page.getByRole('combobox', { name: '기록 시즌', exact: true }), '1950');
   await page
     .getByRole('group', { name: '시즌 기록 보기' })

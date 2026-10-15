@@ -180,26 +180,23 @@ for (const viewport of [
     await expectCompactMatch(page, viewport);
     await nav.getByRole('button', { name: '리그', exact: true }).click();
     const leagueTabs = page.getByRole('tablist', { name: '리그 보기' }).getByRole('tab');
-    await expect(leagueTabs).toHaveText([
-      '개요',
-      '순위표',
-      '라운드 결과',
-      '순위 추이',
-      '득점 순위',
-      '득점왕 추이',
-    ]);
+    await expect(leagueTabs).toHaveText(['순위표', '일정·결과', '팀 기록', '선수 기록']);
     for (const tab of await leagueTabs.all()) {
       const bounds = await tab.boundingBox();
       expect(bounds!.width, await tab.innerText()).toBeGreaterThanOrEqual(44);
       expect(bounds!.height, await tab.innerText()).toBeGreaterThanOrEqual(44);
     }
-    const overviewTab = page.getByRole('tab', { name: '개요', exact: true });
+    const overviewTab = page.getByRole('tab', { name: '순위표', exact: true });
     await overviewTab.focus();
     await page.keyboard.press('End');
-    await expect(page.getByRole('tab', { name: '득점왕 추이', exact: true })).toBeFocused();
+    await expect(page.getByRole('tab', { name: '선수 기록', exact: true })).toBeFocused();
     await page.keyboard.press('ArrowRight');
     await expect(overviewTab).toBeFocused();
-    await page.getByRole('tab', { name: '순위 추이', exact: true }).click();
+    await page.getByRole('tab', { name: '팀 기록', exact: true }).click();
+    await page
+      .getByRole('group', { name: '팀 기록 보기' })
+      .getByRole('button', { name: '순위 추이', exact: true })
+      .click();
     await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
     // Going back returns to the theatre while its playback lasts.
     await page.goBack();

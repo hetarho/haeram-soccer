@@ -64,12 +64,16 @@ test('advances real days at each speed, stops and restores the saved calendar', 
   await page.getByRole('tab', { name: '순위표', exact: true }).click();
   await expect(page.getByRole('table', { name: '리그 순위표' })).toBeVisible();
   await expect(page.getByRole('table', { name: '리그 순위표' })).toContainText('우리 팀');
-  await page.getByRole('tab', { name: '순위 추이', exact: true }).click();
+  await page.getByRole('tab', { name: '팀 기록', exact: true }).click();
+  await page
+    .getByRole('group', { name: '팀 기록 보기' })
+    .getByRole('button', { name: '순위 추이', exact: true })
+    .click();
   await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
-  await expect(page.getByRole('tabpanel', { name: '순위 추이', exact: true })).toContainText(
+  await expect(page.getByRole('tabpanel', { name: '팀 기록', exact: true })).toContainText(
     'Haeram Athletic',
   );
-  await page.getByRole('tab', { name: '라운드 결과', exact: true }).click();
+  await page.getByRole('tab', { name: '일정·결과', exact: true }).click();
   await expect(page.getByRole('heading', { name: '같은 라운드, 다른 경기' })).toBeVisible();
   await chooseOption(page.getByRole('combobox', { name: '리그 라운드 선택', exact: true }), {
     index: 0,
@@ -88,17 +92,25 @@ test('advances real days at each speed, stops and restores the saved calendar', 
     page.getByRole('region', { name: '리그 라운드 결과' }).getByRole('listitem'),
   ).toHaveCount(9);
   await expect(page).toHaveURL(/league=GER\.0\.0/);
-  await page.getByRole('tab', { name: '개요', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '독일 1부 개요' })).toBeVisible();
+  await page.getByRole('tab', { name: '순위표', exact: true }).click();
+  await expect(page.getByLabel('선택한 리그와 시즌')).toContainText('독일 1부');
   await page.getByRole('tab', { name: '순위표', exact: true }).click();
   await expect(page.getByRole('table', { name: '리그 순위표' })).not.toContainText('우리 팀');
   await page.getByRole('button', { name: '우리 리그로', exact: true }).click();
   await expect(page.getByRole('table', { name: '리그 순위표' })).toContainText('우리 팀');
   await expect(page).not.toHaveURL(/league=/);
-  await page.getByRole('tab', { name: '득점 순위', exact: true }).click();
+  await page.getByRole('tab', { name: '선수 기록', exact: true }).click();
+  await page
+    .getByRole('group', { name: '선수 기록 보기' })
+    .getByRole('button', { name: '득점 순위', exact: true })
+    .click();
   await expect(page.getByRole('heading', { name: '득점왕 경쟁' })).toBeVisible();
   await expect(page.getByRole('table', { name: '리그 득점 순위표' })).toBeVisible();
-  await page.getByRole('tab', { name: '득점왕 추이', exact: true }).click();
+  await page.getByRole('tab', { name: '선수 기록', exact: true }).click();
+  await page
+    .getByRole('group', { name: '선수 기록 보기' })
+    .getByRole('button', { name: '득점왕 추이', exact: true })
+    .click();
   await expect(page.getByRole('heading', { name: '득점왕 추이' })).toBeVisible();
   await expect(
     page.getByRole('combobox', { name: '득점 추이 선수 선택', exact: true }),
