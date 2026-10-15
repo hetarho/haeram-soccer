@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| m8q4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-15T14:20Z | 2026-10-15T15:01Z | T136 |
+| m8q4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-15T14:20Z | 2026-10-15T15:09Z | T137 |
 
 ## inbox
 - 261015 decided WEB-74: start-vibe m8q4 scope → implement navigation-and-records with current game rules and the approved pixel readability baseline in an isolated checkout (alt: analysis only | revise game mechanics)
@@ -82,7 +82,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T137 | Complete competition history, home briefing and navigation wayfinding | WEB ARCH | T135 T136 | todo |
+| T137 | Complete competition history, home briefing and navigation wayfinding | WEB ARCH | T135 T136 | doing@261015.m8q4 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
