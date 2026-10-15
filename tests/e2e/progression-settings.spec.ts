@@ -24,7 +24,7 @@ test('mobile clock exposes every pace as a touch target and advances at the chos
   await expect(date).toHaveText('1950년 8월 1일');
   const controls = page.getByRole('region', { name: '시즌 진행', exact: true });
   const pace = (label: string) =>
-    controls.getByRole('button', { name: `${label} 속도로 자동 진행`, exact: true });
+    controls.getByRole('button', { name: `${label} 속도 선택`, exact: true });
   const daily = pace('1초에 하루'),
     double = pace('0.5초에 하루'),
     five = pace('0.2초에 하루'),
@@ -64,8 +64,12 @@ test('mobile clock exposes every pace as a touch target and advances at the chos
     expect(edge).toEqual([true, true]);
   }
   await expect(daily).toHaveAttribute('aria-pressed', 'true');
-  // A pace tap starts the clock; stopping after the first tick advances exactly one day.
+  // A pace tap only sets the pace (→WEB-18): the date stays until play.
   await daily.click();
+  await page.waitForTimeout(1500);
+  await expect(date).toHaveText('1950년 8월 1일');
+  // Play starts the clock; stopping after the first tick advances exactly one day.
+  await toggle.click();
   await expect(date).toHaveText('1950년 8월 2일');
   await stop.click();
   await expect(date).toHaveText('1950년 8월 2일');
@@ -73,6 +77,8 @@ test('mobile clock exposes every pace as a touch target and advances at the chos
   await double.click();
   await expect(double).toHaveAttribute('aria-pressed', 'true');
   await expect(daily).toHaveAttribute('aria-pressed', 'false');
+  await expect(date).toHaveText('1950년 8월 2일');
+  await toggle.click();
   await expect(date).toHaveText('1950년 8월 3일');
   await stop.click();
   // A day step already in flight when the owner stops still lands; read the date once it rests.
@@ -91,6 +97,7 @@ test('mobile clock exposes every pace as a touch target and advances at the chos
   // x10 runs on to the eve of our first match and the clock stops there.
   await ten.click();
   await expect(ten).toHaveAttribute('aria-pressed', 'true');
+  await toggle.click();
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
   await expect(date).toHaveText('1950년 8월 7일');
@@ -118,10 +125,9 @@ test("the match-eve card's 개입 수준 opens the level dialog, which has no pe
   await page.setViewportSize({ width: 360, height: 740 });
   await foundQuiet(page);
   await settle(page);
-  await page
-    .getByRole('region', { name: '시즌 진행', exact: true })
-    .getByRole('button', { name: '0.1초에 하루 속도로 자동 진행', exact: true })
-    .click();
+  const progress = page.getByRole('region', { name: '시즌 진행', exact: true });
+  await progress.getByRole('button', { name: '0.1초에 하루 속도 선택', exact: true }).click();
+  await progress.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
   const link = eve.getByRole('button', { name: '개입 수준', exact: true });
@@ -216,7 +222,8 @@ test('mobile intervention levels set clock stops and who decides, saved with the
   await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await expect(date).toHaveText('1950년 8월 1일');
   // Without match stops, x10 plays straight through the first match day.
-  await page.getByRole('button', { name: '0.1초에 하루 속도로 자동 진행', exact: true }).click();
+  await page.getByRole('button', { name: '0.1초에 하루 속도 선택', exact: true }).click();
+  await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
   await expect(page.getByTestId('calendar')).toContainText('라운드 1');
   await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
   await expect(page.getByTestId('event-card')).toHaveCount(0);

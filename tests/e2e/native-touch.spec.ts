@@ -69,12 +69,12 @@ for (const viewport of [
     await page.getByRole('button', { name: '클럽 창단' }).click();
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await expectHomeBounds(page);
-    // A pace tap below runs the clock briefly in the open window; an offer card must not cover
+    // Play below runs the clock briefly in the open window; an offer card must not cover
     // the preparation controls this test measures, so offers go to the staff (level 4).
     await chooseLevel(page, 4);
     const progress = page.getByRole('region', { name: '시즌 진행', exact: true });
     const paces = ['1초에 하루', '0.5초에 하루', '0.2초에 하루', '0.1초에 하루'].map((pace) =>
-      progress.getByRole('button', { name: `${pace} 속도로 자동 진행`, exact: true }),
+      progress.getByRole('button', { name: `${pace} 속도 선택`, exact: true }),
     );
     // The pace chips are secondary to play and the intervention level, but still tappable.
     for (const pace of paces) await expectTouchControl(pace, viewport, 32);
@@ -86,7 +86,8 @@ for (const viewport of [
     await paces[1].click();
     await expect(paces[1]).toHaveAttribute('aria-pressed', 'true');
     await expect(paces[0]).toHaveAttribute('aria-pressed', 'false');
-    // The toggle was measured above as '자동 진행 시작'; stop the run straight away.
+    // A chip only sets the pace (→WEB-18): play starts the run, which stops straight away.
+    await progress.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
     await progress.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
     await expect(paces[1]).toHaveAttribute('aria-pressed', 'true');
     await expect(

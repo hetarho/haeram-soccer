@@ -14,15 +14,19 @@ test('advances real days at each speed, stops and restores the saved calendar', 
   const date = page.getByTestId('game-date');
   await expect(date).toHaveText('1950년 8월 1일');
   const pace = (label: string) =>
-    page.getByRole('button', { name: `${label} 속도로 자동 진행`, exact: true });
-  // The daily pace starts the clock; stopping after the first tick advances exactly one real day.
+    page.getByRole('button', { name: `${label} 속도 선택`, exact: true });
+  const play = () => page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
+  // The daily pace is chosen, play starts the clock; stopping after the first tick advances
+  // exactly one real day.
   await pace('1초에 하루').click();
+  await play();
   await expect(date).toHaveText('1950년 8월 2일');
   await page.getByRole('button', { name: '자동 진행 정지' }).click();
   await expect(date).toHaveText('1950년 8월 2일');
   await expect(page.getByTestId('calendar')).toContainText('라운드 0');
   await pace('0.5초에 하루').click();
   await expect(pace('0.5초에 하루')).toHaveAttribute('aria-pressed', 'true');
+  await play();
   await expect(date).toHaveText('1950년 8월 3일');
   await page.getByRole('button', { name: '자동 진행 정지' }).click();
   // A day step already in flight when the owner stops still lands; read the date once it rests.
@@ -43,6 +47,7 @@ test('advances real days at each speed, stops and restores the saved calendar', 
   await expect(page.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
   // x10 runs on to the eve of our first match and the clock stops there.
   await pace('0.1초에 하루').click();
+  await play();
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
   await expect(date).toHaveText('1950년 8월 7일');

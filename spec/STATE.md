@@ -56,7 +56,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 66 | 66 | - | 0 |
+| WEB | 67 | 67 | - | 0 |
 | WORLD | 3 | 3 | - | 0 |
 | CLUB | 34 | 34 | - | 0 |
 | MATCH | 9 | 9 | - | 0 |
@@ -96,6 +96,8 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 T116 done: pace chips set the pace only, play starts the clock (owner's request 261014, carried from work/direction's T106, which never reached main)
+- 261015 update-ssot WEB r67 (a pace chip no longer starts the clock); create-task T116
 - 261015 T115 done (explore 2h, 20:01–20:35Z): 160 careers at four levels — every level ≈60% titles near season 50, ≈21% after the first; 보통·어려움·최상 outside LEAGUE-13; LEAGUE r7, ECON r36 measured, docs/BALANCE.md; no tuning
 - 261015 CI fix: the benchmark failed the entry budget after T114 (256,910 B gzip > 256,000); the player sheet's dialog and the match report now load on demand (entry 251,264 B measured locally)
 - 261015 CI fix: CI 38627339966 failed save-upgrade's earlier-rules test in Chromium and Firefox — the slot screen read the slots before the active load had failed; it now reads them again when the load settles (5× repeats pass in both)

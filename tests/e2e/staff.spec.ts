@@ -241,15 +241,17 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   await openPeople(page);
   await hireFirefighter(page);
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
-  const fastest = page
-    .getByRole('region', { name: '시즌 진행', exact: true })
-    .getByRole('button', { name: '0.1초에 하루 속도로 자동 진행', exact: true });
+  const progress = page.getByRole('region', { name: '시즌 진행', exact: true });
+  const fastest = progress.getByRole('button', { name: '0.1초에 하루 속도 선택', exact: true });
+  const play = progress.getByRole('button', { name: '자동 진행 시작', exact: true }),
+    pause = progress.getByRole('button', { name: '자동 진행 정지', exact: true });
   const card = page.getByTestId('event-card');
   const renewal = '감독 계약이 이번 시즌 끝에 끝나요';
   // Read without auto-waiting: a card may leave between a count and a text query.
   const cardText = () =>
     card.evaluateAll((cards) => (cards[0] as HTMLElement | undefined)?.innerText ?? '');
   await fastest.click();
+  await play.click();
   for (let stops = 0; ; stops++) {
     expect(stops).toBeLessThan(80);
     await expect(card).toBeVisible({ timeout: 75000 });
@@ -266,7 +268,13 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
           : card.getByRole('button', { name: '확인', exact: true })
     ).click();
     await expect.poll(cardText, { timeout: 10000 }).not.toBe(text);
-    if (!(await cardText())) await fastest.click();
+    // A chip only sets the pace (→WEB-18): play starts the clock again when it rests. Play
+    // ignores a tap in the first half second after the clock stops itself, so retry until it runs.
+    await expect(async () => {
+      if (await cardText()) return;
+      if (await play.isVisible()) await play.click();
+      await expect(pause.or(card).first()).toBeVisible({ timeout: 1000 });
+    }).toPass({ timeout: 15000 });
   }
   await expect(card).toContainText(renewal);
   await expect(page.getByTestId('game-date')).toHaveText('1951년 4월 1일');

@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r66 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r67 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -35,6 +35,7 @@
 
 - WEB-17 [o] The match theatre passes 360x740 and390x844 viewport bounds without masking essential overflow; home has no horizontal overflow and scrolls vertically when needed. Supporter count and small text remain readable; all primary buttons and selection controls, including match preparation, recruitment and league exploration, have touch targets of at least44 CSS pixels across Chromium, Firefox and Safari; the clock's secondary pace chips are at least 32 px inside a 44 px track. Expanded records/settings may scroll; short screens or accessibility magnification can use necessary vertical scrolling.
 - WEB-18 [o] One clock runs on every view as a single packed row: date and status on the left, a prominent play/pause plus smaller x1, x2, x5 and x10 pace chips (one day per 1, 0.5, 0.2 and 0.1 s; a step never waits for saving (→SAVE-8); when a step itself runs late, the next carries the days owed, at most 5, and time stopped is never owed) and the intervention trigger on the right, the season's progress along its lower edge. The trigger (a level meter and "개입 N", the level's name on desktop) opens a popover with the four levels (→WEB-45) that applies a choice at once and closes with focus back on the trigger, never pauses the clock and holds nothing but the levels; the HUD menu keeps the full dialog. The match theatre carries its buttons in the scoreboard row. ← a fixed pace keeps cash and dates moving visibly; no step jumps to an arbitrary next event; changing views is not a reason to stop
+  - a pace chip only sets the pace: a stopped clock stays stopped until play, a running one runs on at the new pace. ← choosing a speed is not a decision to let time pass
   - stops only for the event kinds the intervention level stops for (→WEB-45, →WEB-42) and on the eve of an own match when the level stops for match eves (resuming there plays the match through as a result). A season close never stops it: the closed season joins the league's season list (→WEB-47), so a clock left running plays on season after season. ← records stay without forcing a page on an unattended run
   - a day step plays our match through as a result without building movement frames (same duel chain and facts, →MATCH-7); only watching builds them.
   - a multi-day step ends on the day any club news arrives or our match is played, so the date lands on that day, and never runs past a match eve when the level stops for match eves; only the level's kinds stop the clock.
@@ -241,6 +242,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r67 261015 WEB-18✎ a pace chip starts a stopped clock→sets the pace only, play starts it
 - r66 261015 WEB-2✎ WEB-3✎ capital presets 2/1/0.5→four difficulty levels setting cash 2/1/0.5/0.25× and the starting XI 0/−2/−4/−6, rules identical; WEB-15✎ capital choice→difficulty level (쉬움 first); WEB-21✎ +each tactic's formation; WEB-24✎ WEB-25✎ role→position; WEB-43✎ +main position and adaptation on cards, shortlist by line, coaches' cards carry no training controls (→훈련); WEB-55✎ +main position on one scale, position filter by 14 positions or line; WEB-58✎ +rival XI at its 조직력; WEB-59✎ +the player profile; WEB-70✎ no control of its own→제안 and 강행 for the squad and single players, 개별 훈련, 적응, 균형/회복/하드; WEB-71✎ training row adds suggestions and orders
 - r65 261014 WEB-39✎ /business?view=→/direction?view=, older /business addresses open their tab; WEB-43✎ 이적시장 +스카우트 명단 with the manager's requests, 코치진 +the 단장's card first; WEB-45✎ the ladder names the 단장, 스태프 제안→단장 제안
 - r64 261014 WEB-15+ the founding 구단 방향 row (기본 방향 selected, the presets with idea and rows); WEB-2✎ founding choices +the club's direction; WEB-60✎ presets and saved directions draft every row; WEB-61✎ composer of the six card rows→every area's rows from the direction in force

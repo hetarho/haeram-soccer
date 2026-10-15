@@ -40,7 +40,7 @@ const PACES: [Pace, string, string][] = [
   ['x10', 'x10', '0.1초에 하루'],
 ];
 
-/** Game-speed controls: tapping a speed starts the shared clock at that pace. */
+/** Game-speed controls: play starts the shared clock; a speed chip only sets its pace (→WEB-18). */
 export const ProgressControls = memo(function ProgressControls({
   client,
   controller,
@@ -116,14 +116,11 @@ export const ProgressControls = memo(function ProgressControls({
           {PACES.map(([value, label, description]) => (
             <button
               key={value}
-              aria-label={`${description} 속도로 자동 진행`}
+              aria-label={`${description} 속도 선택`}
               aria-pressed={pace === value}
               className={p.pace}
               disabled={blocked || (!running && state.processing)}
-              onClick={() => {
-                controller.setPace(value);
-                if (!running) controller.start();
-              }}
+              onClick={() => controller.setPace(value)}
             >
               {label}
             </button>
