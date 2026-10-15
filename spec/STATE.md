@@ -14,6 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
+| a6rt | hq-dev1-pve2-vm2 | pair | 2026-10-15T07:10Z | 2026-10-15T07:10Z | T127 |
 
 ## inbox
 - 261015 suggest LEAGUE-13 WEB-3: difficulty levels do not separate on 60-season careers (every level ≈60% titles near season 50, T115) because a level sets only the start → decide whether a level keeps a lasting effect (its offset on later signings and youth, or rivals' strength by level) or the bands move; update-ssot either way
@@ -56,7 +57,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 72 | 72 | - | 0 |
+| WEB | 73 | 73 | - | 0 |
 | WORLD | 3 | 3 | - | 0 |
 | CLUB | 35 | 35 | - | 0 |
 | MATCH | 9 | 9 | - | 0 |
@@ -71,6 +72,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T127 | Solid pixel UI icon family | WEB ARCH | T126 | doing@261015.a6rt |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -79,6 +81,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
+- Baseline 5d14752 is on main after every job passed in CI 38696842874. T126 supplies the matched pixel paintings; the session will deliver this and T127 as further CI-verified main checkpoints.
 - T125: the home stadium schematic is removed; the original painting fills the scene and current-stage facts remain in HTML (WEB r72). Current proof: docs/night-broadcast/illustrated-stadium; 6/6 affected browser journeys and all 9 stadium stages passed. Uncommitted, no deployment.
 - T124: primary colour corrected to football-grass green (WEB r71); current screenshots and proof are in docs/night-broadcast/grass-green. Build and 15 affected browser journeys passed; uncommitted, no deployment.
 - T122–T123: night-broadcast UI with self-hosted Monogram/Galmuri and three original football illustrations is complete in the working tree (WEB r70). Review the real app and docs/night-broadcast/indie-art/verification.json: 332 browser cases passed, 4 existing skips; final affected journeys 72/72. No commit or deployment was made in these pair tasks.
@@ -101,6 +104,10 @@
 - planner questions from the reviews: CLUB-27/28 gaps — an unhappy player's floor (today's or the declined talk's), whether meeting it lifts the listing his request made, expiry valuation; a migrated performance sponsor's result bonus outside the shirt slot (SAVE-10). Earlier: transparent player ratings, set-piece coaching, ticket-price fan mood.
 
 ## log
+- 261015 T126 done: three matched pixel paintings, 33 affected browser cases passed; T127 doing@a6rt; checkpoint/main delivery remains with this session
+- 261015 main advanced to 5d14752 after CI 38696842874 passed every job
+- 261015 T122–T125 checkpoint committed as 5d14752 and pushed to work/night-broadcast-polish-261015; CI before main
+- 261015 WEB r73: coherent painted pixel environments and solid pixel UI icons; T126 doing@a6rt, T127 next; owner authorizes incremental main pushes
 - 261015 T125 done: illustration-only home stadium; 6/6 affected browser journeys, all 9 stages retain facts without SVG, 12 captures, entry 249698 B gzip
 - 261015 WEB r72: home stadium schematic→full illustration and real-stage labels; T125 doing@s5ar
 - 261015 T124 done: grass-green primary across the UI; 15/15 affected browser journeys, 21 captures, contrast checked, entry 250961 B gzip
@@ -117,7 +124,3 @@
 - 261015 T120 done: facility costs ×2.5 / ×4 a step (1,530,450 units in all); 16 careers measured, no new bankruptcy, ECON r37
 - 261015 T119 done: other clubs' offers at least one currency unit; the 단장's free signing lists as 단장 영입, not an offer of 0
 - 261015 T118 done: deciding the card of the event that stopped a running clock plays it on once nothing else waits
-- 261015 T117 done: deleting the game in play reloads onto the slot screen; the deleted world no longer returns to the index on leaving
-- 261015 create-task T117–T121 from WEB r68 CLUB r35 ECON r37 (owner's reports: slot delete, header, 0 offers, facility costs, event resume)
-- 261015 update-ssot WEB r68 CLUB r35 ECON r37: slot delete stays on the slots, a decided event plays the clock on, the shell never scrolls, no offer below one currency unit, facility costs by a fixed multiple
-- 261015 T116 done: pace chips set the pace only, play starts the clock (owner's request 261014, carried from work/direction's T106, which never reached main)

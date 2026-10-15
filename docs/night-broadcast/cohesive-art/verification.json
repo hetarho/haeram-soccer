@@ -1,0 +1,53 @@
+{
+  "task": "T126",
+  "checkedAt": "2026-10-15T07:20:32.713Z",
+  "art": {
+    "tool": "built-in image_gen",
+    "manifest": "apps/web/public/art/manifest.json",
+    "files": [
+      {
+        "file": "locker-room.webp",
+        "bytes": 186720
+      },
+      {
+        "file": "stadium-tunnel.webp",
+        "bytes": 135246
+      },
+      {
+        "file": "training-ground.webp",
+        "bytes": 173650
+      }
+    ]
+  },
+  "checks": {
+    "browser": {
+      "passed": 33,
+      "projects": [
+        "chromium",
+        "firefox",
+        "webkit"
+      ]
+    },
+    "build": "passed",
+    "format": "passed",
+    "manual": {
+      "screenshots": [
+        "01-founding-desktop.png",
+        "02-home-desktop.png",
+        "05-training-desktop.png",
+        "11-home-mobile.png",
+        "14-training-mobile.png",
+        "18-locker-room-desktop.png",
+        "19-locker-room-mobile.png"
+      ],
+      "pageErrors": [],
+      "horizontalOverflow": false
+    },
+    "baselineCI": "https://github.com/hetarho/haeram-soccer/actions/runs/38696842874"
+  },
+  "entryBudget": {
+    "gzipBytes": 249713,
+    "limit": 256000,
+    "passed": true
+  }
+}

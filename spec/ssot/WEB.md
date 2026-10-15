@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r72 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r73 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -241,11 +241,16 @@
   | owner capital, campaigns started before rules 1.19 | 방향 › 자금 |
   | the intervention level (who decides, and the stops), background play | the intervention dialog (HUD menu); the level also in the clock's popover |
   - event cards (→WEB-42) decide their event or open a home; remedies (→WEB-44) act or open a home with the choice ready; who takes a decision is set only by the intervention level; a home names it and opens the dialog (→WEB-45).
-- WEB-72 [o] Lived-in, realistic painted football illustrations appear in the home stadium scene, match-preparation locker room and training-ground overview.
+- WEB-72 [o] Cohesive, lived-in painterly pixel-art football illustrations appear in the home stadium scene, match-preparation locker room and training-ground overview.
+  - All environments share a restricted grass-green, charcoal, warm-ivory and aged-wood palette, visible pixel brushwork and quiet evening/practical lighting. Preserve believable perspective, material wear and period equipment.
   - Home presents the stadium as one full illustration, with readable HTML labels for the current stage, venue name, capacity and supporter count.
   - Atmospheric artwork adds place and texture; the authoritative stadium-stage label, capacity, club identity, fixture and training figures continue to come from the current world. The art does not claim a fixed stadium size or a real player's appearance.
   - Heritage architecture and equipment fit a career beginning in 1950 and can remain in later seasons; avoid real club brands, embedded interface text and fabricated data. The live pitch remains the engine-driven Canvas view.
   - Self-host optimized image assets, keep text and controls as accessible HTML, and preserve the fixed shell, touch targets and readable phone layouts (→WEB-10).
+
+- WEB-73 [o] UI icons use one solid pixel-grid family with stepped edges and consistent optical weight, matching the bitmap type and painted pixel environments.
+  - Apply the family to primary navigation, HUD menu and inbox, club news, dialog close controls, dropdown arrows/checks and trophy-cabinet symbols. Keep their established meanings distinct at small sizes.
+  - Icons inherit the interface colour and remain decorative when an accessible label already names the control. Preserve focus, selection, target sizes and keyboard behaviour; club identity and analytical charts keep their own data-driven graphics.
 
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
@@ -254,6 +259,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r73 261015 WEB-72✎ separate realistic paintings→matched painterly pixel environments; WEB-73+ shared solid pixel-grid UI icons
 - r72 261015 WEB-11✎ stage-drawn stadium scene→full stadium illustration with current-stage HTML labels; WEB-72✎ schematic stage inset→illustration-only home venue
 - r71 261015 WEB-38✎ broadcast-red primary accents→natural grass-green actions and selection; semantic warning/danger colours stay distinct
 - r70 261015 WEB-38✎ Korean sans/condensed display→matched indie bitmap typography; WEB-72+ painted stadium, locker-room and training-ground ambience with authoritative world facts retained

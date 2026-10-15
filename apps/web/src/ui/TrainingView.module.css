@@ -461,6 +461,7 @@
   background: var(--surface);
 }
 .trainingScene img {
+  image-rendering: pixelated;
   display: block;
   width: 100%;
   height: 144px;

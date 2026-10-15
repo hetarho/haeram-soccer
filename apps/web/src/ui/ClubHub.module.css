@@ -74,6 +74,7 @@
   background: var(--surface-deep);
 }
 .sceneArt {
+  image-rendering: pixelated;
   position: absolute;
   inset: 0;
   display: block;
