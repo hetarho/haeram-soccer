@@ -811,6 +811,10 @@ export interface CareerDate {
 }
 export type CareerRole = 'player' | 'manager' | StaffRole;
 export interface CareerEmployment {
+  contractUntil?: CareerDate;
+  wage?: string;
+  currency?: string;
+  grownThrough?: number;
   role: CareerRole;
   club: string;
   from: CareerDate;
@@ -899,6 +903,7 @@ export interface World {
   clubs: Club[];
   people?: Record<string, PersonCareer>;
   playingCoachProposals?: Record<string, PlayingCoachProposal>;
+  coachingMarketAt?: CareerDate;
   players: Player[];
   /** Preferred starting XI, one player per slot of the applied tactic's formation (→STAFF-22). */
   lineup?: string[];

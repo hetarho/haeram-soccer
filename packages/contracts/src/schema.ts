@@ -593,6 +593,10 @@ const sponsorContract = z
 const careerDate = z.strictObject({ year: season, day: seasonDay });
 const qualities = z.strictObject({ understanding: grade, teaching: grade, judgement: grade });
 const careerEmployment = z.strictObject({
+  contractUntil: careerDate.optional(),
+  wage: amount.optional(),
+  currency: z.string().min(1).max(16).optional(),
+  grownThrough: season.optional(),
   role: z.enum([
     'player',
     'manager',
@@ -669,6 +673,7 @@ export const worldSchema: z.ZodType<World> = z.object({
   calendar: z.object({ day: z.number().int().min(0).max(365) }).optional(),
   rankHistory: z.array(snapshot).max(470).optional(),
   scorerSeason: scorerSeason.optional(),
+  coachingMarketAt: careerDate.optional(),
   people: z.record(id, personCareer).optional(),
   playingCoachProposals: z
     .record(
@@ -957,7 +962,11 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       throw new Error('인물 참조 손상');
     const roles = new Set<string>();
     for (const job of person.employment) {
-      if (!ids.has(job.club) || (job.to && dateNumber(job.to) < dateNumber(job.from)))
+      if (
+        !ids.has(job.club) ||
+        (job.to && dateNumber(job.to) < dateNumber(job.from)) ||
+        (job.contractUntil && dateNumber(job.contractUntil) < dateNumber(job.from))
+      )
         throw new Error('인물 재직 기간 손상');
       if (!job.to) {
         if (

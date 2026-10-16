@@ -28,6 +28,12 @@ export function advanceEconomy(w: World, previousYear: number) {
     for (const p of w.academy?.players ?? []) p.wage = convert(p.wage);
     w.manager.wage = convert(w.manager.wage);
     for (const member of w.staff ?? []) member.wage = convert(member.wage);
+    for (const person of Object.values(w.people || {}))
+      for (const job of person.employment) {
+        if (job.to || !job.wage || job.currency !== before.code) continue;
+        job.wage = convert(job.wage);
+        job.currency = after.code;
+      }
     // Free agents' asking wages are prices on offer; managers at other clubs are derived each read.
     for (const m of w.managerMarket?.free ?? []) m.wage = convert(m.wage);
     // Open negotiations carry on in the new money; settled bids keep the units they closed in.

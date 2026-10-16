@@ -84,7 +84,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T163 | Move retained coaching candidates into real NPC employment | STAFF WORLD HIST | T159 T162 | doing@261017.n7r4 |
 | T164 | Qualify managers and assign separate ability and inherited school | STAFF PLAYER HIST | T162 T163 | todo |
 | T165 | Appoint qualified free and employed coaches as managers | STAFF WORLD HIST | T144 T163 T164 | todo |
 | T166 | Project qualitative aptitude and truthful career availability | WEB PLAYER STAFF HIST | T154 T155 T164 | todo |
@@ -122,6 +121,7 @@
 - Do not activate rules 3.0.0 or reset career data before T174's prerequisites are complete.
 
 ## log
+- 261017 T163 done n7r4: Retained coaches take unique dated NPC jobs, retain growth and return after real expiry.
 - 261017 implement-task T163 start n7r4.
 - 261017 T162 done n7r4: Unioned actual coaching intervals qualify at a virtual third calendar anniversary; dated actual mentors split on appointments, cumulative tenure wins and recency breaks ties without tactical or pre-start fabrication.
 - 261017 implement-task T162 start n7r4.
@@ -141,4 +141,3 @@
 - 261017 implement-task T155 start n7r4.
 - 261017 T154 done n7r4: Fixed independent off-pitch components and pure coaching/manager grade helpers preserve all 42 baseline player profiles.
 - 261016 implement-task T154 start n7r4; continue all remaining tasks autonomously. SAVE r38–39 activation scope is unrelated to fixed aptitude generation.
-- 261016 start-vibe v6k2 end: two authorized units complete through f57a32f; clean main pushed, final code CI 38915783586 queued. Local validation and handoff are in reports/261016-v6k2.md.

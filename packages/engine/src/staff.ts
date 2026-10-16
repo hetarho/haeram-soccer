@@ -323,7 +323,7 @@ export function releaseCost(w: World, person: Pick<Staff, 'wage' | 'until'> | un
  * wage for an ability of 50–90 (→STAFF-15).
  */
 export function coachWage(w: World, ability: number) {
-  return staffQuote(w, (ability - 30) * 1.5);
+  return staffQuote(w, Math.max(0, (ability - 30) * 1.5));
 }
 type StaffCandidate = Staff & { fee: string };
 /** The season's draws per club and department; delegated staff look at them every day. */

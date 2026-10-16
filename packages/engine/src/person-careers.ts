@@ -115,6 +115,7 @@ export function openEmployment(
     throw new Error('재직 날짜를 확인하세요.');
   const job = { role, club, from: { ...from } };
   person.employment.push(job);
+  employmentVersions.set(w, (employmentVersions.get(w) ?? 0) + 1);
   syncMentorExposure(w, person, from);
   person.club = club;
   if (role === 'player') {
@@ -128,6 +129,7 @@ export function closeEmployment(w: World, id: string, role: CareerRole, to = car
   if (!job) return;
   if (compareCareerDates(to, job.from) < 0) throw new Error('재직 날짜를 확인하세요.');
   job.to = { ...to };
+  employmentVersions.set(w, (employmentVersions.get(w) ?? 0) + 1);
   const remaining = person.employment.find((job) => !job.to);
   if (remaining) person.club = remaining.club;
   else delete person.club;
@@ -265,4 +267,35 @@ export function longestMentor(person: PersonCareer, at: CareerDate) {
         b.start - a.start ||
         (a.manager < b.manager ? -1 : a.manager > b.manager ? 1 : 0),
     )[0];
+}
+
+const employmentVersions = new WeakMap<World, number>();
+const coachingIndexes = new WeakMap<
+  World,
+  {
+    people: World['people'];
+    version: number;
+    active: { person: PersonCareer; job: CareerEmployment }[];
+  }
+>();
+/** Derived runtime index; canonical employment remains the single authority. */
+export function activeCoachingEmployment(w: World) {
+  const version = employmentVersions.get(w) ?? 0,
+    hit = coachingIndexes.get(w);
+  if (hit && hit.people === w.people && hit.version === version) return hit.active;
+  const active = Object.values(w.people || {}).flatMap((person) =>
+    person.employment
+      .filter((job) => !job.to && isCoachingRole(job.role))
+      .map((job) => ({ person, job })),
+  );
+  coachingIndexes.set(w, { people: w.people, version, active });
+  return active;
+}
+export function addCareerYears(date: CareerDate, years: number): CareerDate {
+  const from = new Date(careerOrdinal(date) * DAY_MS);
+  return careerDateFromOrdinal(
+    Math.floor(
+      Date.UTC(from.getUTCFullYear() + years, from.getUTCMonth(), from.getUTCDate()) / DAY_MS,
+    ),
+  );
 }

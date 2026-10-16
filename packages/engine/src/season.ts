@@ -1,3 +1,4 @@
+import { refreshCoachingMarket, settleNpcCoaching } from './coaching-market';
 import { atCareerDate } from './person-careers';
 import { materializePeople, movePerson, returnLoan } from './npc-continuity';
 import { settleClubRounds, settleCohesion, settleStarts } from './adaptation';
@@ -715,6 +716,8 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     // A summer tour pays, spreads the name and tires the rested squad as the season starts
     // (→ECON-16).
     seasonTour(w);
+    settleNpcCoaching(w, true);
+    refreshCoachingMarket(w);
   });
   w.europe = [];
   prepareSeason(w);
@@ -770,6 +773,7 @@ function playRound(w: World, capture: Settlement, observe: boolean) {
   snapshotScorers(w);
   if (w.round % MARKET_REFRESH_ROUNDS === 0) {
     refreshManagerMarket(w);
+    refreshCoachingMarket(w);
     // The chief scout redraws his shortlist with the managers' market (→CLUB-33).
     drawShortlist(w);
   }
@@ -809,6 +813,7 @@ function stepDay(w: World, capture: Settlement, observe: boolean) {
  * spring retirement announcements, contract talks, transfer requests and healed injuries.
  */
 export function clubDay(w: World) {
+  settleNpcCoaching(w);
   progressFacilityWorks(w);
   runAcademyIntake(w);
   dailyMarket(w);
