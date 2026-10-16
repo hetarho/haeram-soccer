@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:44Z | - |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:44Z | T167 |
 
 ## inbox
 - 261017 suggest T154 T155 T156 T157 T158: five person-career foundation tasks completed → review-code aptitude/person-careers/npc-continuity/careers/coaching-entry before the next unrelated feature; remaining planned second-career tasks continue.
@@ -84,7 +84,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T167 | Show aptitude, encouragement and combined playing-coach review | WEB STAFF | T149 T161 T166 | todo |
+| T167 | Show aptitude, encouragement and combined playing-coach review | WEB STAFF | T149 T161 T166 | doing@261017.n7r4 |
 | T168 | Read and display linked playing, coaching and manager careers | WEB HIST STAFF SAVE ARCH | T165 T166 | todo |
 | T169 | Record and deduplicate actual director–manager financial conflicts | CLUB WEB HIST SAVE | T143 T145 T146 T153 | todo |
 | T170 | Resolve mediation under standing or case-specific support | CLUB STAFF ECON HIST | T169 | todo |
@@ -118,6 +118,7 @@
 - Do not activate rules 3.0.0 or reset career data before T174's prerequisites are complete.
 
 ## log
+- 261017 implement-task T167 start n7r4.
 - 261017 T166 done n7r4: Pure qualitative career assessments use existing scout ranges; explicit projected DTOs omit lifetime registry while retaining actionable coach candidates and complete export/inspect state. Fixture reconstruction no longer enrolls people.
 - 261017 implement-task T166 start n7r4.
 - 261017 T165 done n7r4: Free, internal and employed retained coaches join the ordinary manager market with current coaching compensation, linked role transition and full contract cost disclosure.
@@ -137,4 +138,3 @@
 - 261017 T158 done n7r4: One retained intention draw at announcement and once-only owner encouragement enforce true aptitude, strict thresholds and actual-retirement entry readiness.
 - 261017 implement-task T158 start n7r4.
 - 261017 T157 done n7r4: Retained NPCs announce on 1 April and retire once at actual close/age cap, preserving unknown playing minutes and fixed identity.
-- 261017 implement-task T157 start n7r4.
