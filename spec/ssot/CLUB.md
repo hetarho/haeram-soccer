@@ -1,11 +1,11 @@
 # CLUB Squad and growth
-> r36 | Define the browser-demo rules for squad and growth.
+> r37 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating sits at its league's average club XI plus its difficulty level's offset (→WEB-3: 쉬움 0, 보통 −2, 어려움 −4, 최상 −6; ±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
   - the 18 cover the founding manager's formation (→STAFF-22): every slot has a player at 최상 or 준수 there, with two goalkeepers.
 - CLUB-2 [o] Every player carries his birth year, wage, contract term and reputation beside the player model (→PLAYER-1).
-- CLUB-3 [o] Players age using the game calendar, develop and decline by attribute (→PLAYER-15, →PLAYER-17) and are replaced by generated youth. On 1 April each veteran decides from his own stream whether the season is his last; announced players play on and retire at the close, and at 41 everyone stops.
+- CLUB-3 [o] Players age using the game calendar, develop and decline by attribute (→PLAYER-15, →PLAYER-17) and are replaced by generated youth. On 1 April each veteran decides from his own stream whether the season is his last; announced players play on and retire at the close unless an accepted playing-coach deferral applies (→STAFF-34). At 41 everyone stops playing, including playing coaches.
   - chance by age at the season's end: 33 8%, 34 18%, 35 35%, 36 60%, 37 80%, 38+ 95%; keepers count a year younger; ×0.6 for a starter rated 60+, ×1.4 under 900 season minutes.
   - the announcement is an inbox item, an event and news; an announced player cannot be listed. Retiring from play does not erase the person: coaching and later management are →STAFF-23/24, linked by →HIST-14.
   - at the close the squad is topped up to 18 players with a goalkeeper by generated 18-year-olds of the line the formation lacks most rated five below the average strength of the division the club will play in, on that division's market wage (→CLUB-25). ← youths rated against an XI that had outgrown its division arrived on star wages and were sold on as unhappy players
@@ -196,6 +196,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r37 261016 CLUB-3✎ every announced player retires at the close→accepted playing-coach deferral under STAFF-34; age-41 limit and all retirement chances unchanged
 - r36 261016 CLUB-3✎ player retirement only→linked later staff career; CLUB-13/18/22/24/32/33✎ intervention/combined transfers→separate responsibilities; CLUB-34/35+ recruitment-owned mediation and tracked promises; CLUB-36/37+ open mediation and promise-fulfilment/reaction rules
 - r35 261015 CLUB-18✎ an offer's fee from value alone (could round below one currency unit)→at least one whole currency unit
 - r34 261015 CLUB-1✎ XI at the league average→plus the level's offset (0/−2/−4/−6), +the founding 18 cover the formation; CLUB-2✎ attack/passing/defense/keeper/stamina and overall by role→the player model (→PLAYER); CLUB-3✎ decline after 30→by attribute, refill by the line the formation lacks; CLUB-6✎ role fit→the formation slot by slot by 실효 OVR, +any player in a manual slot; CLUB-9✎ role-safe→slots kept, replacement by 실효 OVR; CLUB-10✎ +the formation with level, adaptation and 실효 OVR; CLUB-11✎ balanced/youth/recovery→균형/회복/하드 with growth ×1/×0.4/×1.6 and recovery 11/16/6, +per-player focus; CLUB-12✎ development and potential revisions→PLAYER-15–17; CLUB-13✎ 유망주 집중→하드 under 15 fatigue and morale 50+, +player rule 회복 at fatigue 40+; CLUB-14✎ role filters→position and line, +positions, traits, arrival and settled 실효 OVR; CLUB-16✎ +prospects carry the model; CLUB-19✎ +1 per 리더 (≤3), −1 per round from the third 하드 round; CLUB-21✎ stamina/passing/defence→체력/패스/태클 and 위치선정; CLUB-23✎ stamina→체력, +하드 training injuries 0.5%; CLUB-25✎ ability→OVR; CLUB-27✎ +야망 unhappiness after a declined bigger club's offer (25%/50%); CLUB-24✎ a bench player of his role within 3 ability→one who plays his slot within 3 실효 OVR; CLUB-32✎ CLUB-33✎ role→line and formation slot

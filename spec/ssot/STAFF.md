@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r23 | Define the browser-demo rules for manager demands and personality.
+> r24 | Define the browser-demo rules for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -132,7 +132,7 @@
   - candidacy does not appoint him. Hiring/renewal follows the manager responsibility, not his former-player status, and preserves existing contract and affordability rules.
   - the linked person history survives the change of role (→HIST-14). Exact qualification and school/ability assignment are →STAFF-28.
 
-- STAFF-25 [?] Specify natural coaching entry timing/chance and aptitude qualification, and how a player's wishes answer encouragement or affect entry. Encouragement timing/frequency are →STAFF-29. Define playing-coach eligibility, retirement scheduling and contract/role transitions (→STAFF-31); conversion authority is →STAFF-32 and salary is →STAFF-33. No fixed training-course price or automatic entry/employment guarantee is established.
+- STAFF-25 [?] Specify natural coaching entry timing/chance and aptitude qualification, how a player's wishes answer encouragement or affect entry, eligible playing-coach posts and early termination of either role. Encouragement is →STAFF-29; playing-coach conversion/pay and scheduled retirement/continuation are →STAFF-31–35. No fixed training-course price or automatic entry/employment guarantee is established.
 
 - STAFF-26 [o] The recruitment department has a standing director/manager support policy: 단장 우선, 균형 or 감독 우선, with 균형 selected for a new game.
   - automatic mediation follows that policy; direct mediation can choose differently for the current case without silently changing the standing policy.
@@ -154,7 +154,7 @@
 - STAFF-31 [o] A player approaching retirement may spend one or two years as a playing coach, retaining active-player identity while holding one existing coaching post.
   - the person occupies that post in place of its coach, with the post's ordinary effects (→STAFF-11); no extra coaching slot or stacked second coach is created. Playing OVR does not determine coaching ability (→STAFF-27).
   - player and coach profiles link the same person, actual age and overlapping career periods (→WORLD-10, →HIST-14). Existing playing ageing, injury and ability rules remain in force.
-  - the whole actual coaching period contributes to →STAFF-30, even when the person does not play matches. Conversion approval and salary are →STAFF-32/33; remaining eligibility, terms and retirement transitions require →STAFF-25.
+  - the whole actual coaching period contributes to →STAFF-30, even when the person does not play matches. Conversion approval and salary are →STAFF-32/33; scheduled retirement and continued coaching are →STAFF-34/35. Remaining eligibility and early role termination require →STAFF-25.
 
 - STAFF-32 [o] A playing-coach conversion belongs jointly to player contracts and staff appointments (→WEB-45).
   - if either responsibility is direct, stop progression and let the owner review/approve the combined proposal once, including both roles and their terms/costs. Do not auto-commit one half while waiting for the other.
@@ -163,6 +163,14 @@
 - STAFF-33 [o] A playing coach receives his player-contract salary plus the ordinary coaching salary for the post he holds.
   - disclose the player amount, coaching amount and combined total before contract approval; use the existing player and coach pay rules without an additional playing-coach bonus.
   - being near retirement or becoming a playing coach does not itself cut the player salary; the existing contract/renewal rules determine it. Account for each component once.
+
+- STAFF-34 [o] An accepted playing-coach arrangement defers the announced playing-retirement date by the selected one or two years, within the existing age-41 playing-retirement limit (→CLUB-3).
+  - offer only a duration that fits the limit; if neither fits, no playing-coach extension is available. Do not extend past 41 or reset the person's age.
+  - the player retires from playing at the agreed deferred date. The arrangement changes the announced retirement date, not the existing playing ageing, ability or injury coefficients.
+
+- STAFF-35 [o] Playing retirement ends the player role and its salary; an unexpired coaching contract continues in the same post on its existing coaching salary and terms.
+  - the person becomes a full-time coach without a new appointment or a reset of actual coaching service (→STAFF-30). Preserve the linked playing history and age.
+  - if the coaching contract also expires, renewal or replacement follows the ordinary staff-appointment responsibility and contract rules (→STAFF-15). Do not silently guarantee a new coaching contract.
 
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
@@ -173,6 +181,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r24 261016 STAFF-25/31✎ retirement/continuation open→STAFF-34/35, remaining entry/eligibility/early separation open; STAFF-34/35+ one/two-year deferral capped at 41 and unexpired coach contract continues after playing retirement
 - r23 261016 STAFF-25/31✎ authority/pay open→STAFF-32/33; STAFF-32/33+ one combined approval if either category is direct, both delegated for automatic conversion, player salary plus ordinary coach salary
 - r22 261016 STAFF-23/24✎ retirement-only entry/unspecified service→playing-coach route and three-year service; STAFF-25/28✎ encouragement/service timing open→remaining entry/contract/aptitude rules; STAFF-29/30/31+ once after retirement notice, three-year cross-club service and existing-post playing coaches with full service credit
 - r21 261016 STAFF-13/15/18/20✎ levels→independent responsibilities; STAFF-16/17✎ generated-only careers→former-player continuity; STAFF-19✎ coach-only effects→explicit no manager penalty; STAFF-23/24+ second careers; STAFF-25/27/28+ open entry/qualification; STAFF-26+ support policy (균형)
