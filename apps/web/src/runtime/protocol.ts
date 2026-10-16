@@ -140,6 +140,11 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('read-inbox'), id: ref.optional() }),
   z.object({ type: z.literal('encourage-coaching'), player: ref }),
   z.object({
+    type: z.literal('resolve-mediation'),
+    id: ref,
+    support: z.enum(['director', 'balanced', 'manager']),
+  }),
+  z.object({
     type: z.literal('propose-playing-coach'),
     player: ref,
     years: z.literal([1, 2]),

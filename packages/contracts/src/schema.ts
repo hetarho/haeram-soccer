@@ -676,6 +676,24 @@ export const worldSchema: z.ZodType<World> = z.object({
   recruitmentArrivals: z
     .array(z.strictObject({ player: id, name: text, position, positions, at: careerDate }))
     .optional(),
+  promises: z
+    .array(
+      z.strictObject({
+        id,
+        mediation: id,
+        manager: z.strictObject({ id, name: text }),
+        director: z.strictObject({ id, name: text }),
+        target: request,
+        created: careerDate,
+        deadline: careerDate,
+        status: z.enum(['pending', 'fulfilled', 'unfulfilled', 'cancelled']),
+        resolved: careerDate.optional(),
+        arrival: z.strictObject({ player: id, at: careerDate }).optional(),
+        reason: z.string().max(1000).optional(),
+        reaction: z.string().max(1000).optional(),
+      }),
+    )
+    .optional(),
   mediations: z
     .array(
       z.strictObject({
@@ -1006,6 +1024,21 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
     mediationIds.add(mediation.id);
     mediationKeys.add(mediation.key);
   }
+  const promiseIds = new Set<string>();
+  for (const promise of w.promises ?? []) {
+    if (
+      promiseIds.has(promise.id) ||
+      !mediationIds.has(promise.mediation) ||
+      dateNumber(promise.deadline) < dateNumber(promise.created) ||
+      (promise.resolved && dateNumber(promise.resolved) < dateNumber(promise.created)) ||
+      (promise.status !== 'pending') !== !!promise.resolved
+    )
+      throw new Error('보강 약속 참조 또는 기간 손상');
+    promiseIds.add(promise.id);
+  }
+  for (const mediation of w.mediations ?? [])
+    if (mediation.resolution?.promise && !promiseIds.has(mediation.resolution.promise))
+      throw new Error('중재 약속 참조 손상');
   for (const arrival of w.recruitmentArrivals ?? [])
     if (
       dateNumber(arrival.at) > w.year * 366 + (w.calendar?.day ?? w.round * 7) ||

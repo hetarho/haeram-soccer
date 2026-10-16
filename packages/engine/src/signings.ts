@@ -1,4 +1,4 @@
-import { detectMediations } from './mediation';
+import { detectMediations, resolveDelegatedMediations } from './mediation';
 import { careerDate } from './person-careers';
 import { movePerson } from './npc-continuity';
 import type {
@@ -31,7 +31,7 @@ import { financeProjection } from './projection';
 import { signingClauses } from './contracts';
 import { pushInbox } from './inbox';
 import { isDelegated } from './responsibilities';
-import { isForeignCandidate, transferOffers } from './ops-squad';
+import { isForeignCandidate, transferOffers, squadCommand } from './ops-squad';
 import { POLICY_INFO, policyOf } from './policy';
 import { placeBid, transferWindow, transferWindowDays } from './transfers';
 
@@ -533,9 +533,10 @@ export function staffSignings(w: World) {
     window = transferWindow(w, day);
   if (!window.open || (day - windowOpening(w, day)) % SIGNING_CONFIG.lookDays !== 0) return;
   detectMediations(w);
+  if (resolveDelegatedMediations(w)) return;
   if (!isDelegated(w, 'recruitment')) return;
   const bids = windowBids(w, day);
-  if (bids.some((bid) => bid.staff && isOpen(bid))) return;
+  if (bids.some((bid) => bid.staff && (isOpen(bid) || bid.day === day))) return;
   const squad = activePlayers(w).length;
   if (squad >= 26) return;
   const stance = financeStance(w),
@@ -590,4 +591,61 @@ export function staffSignings(w: World) {
       }
       return;
     }
+}
+
+/** Start one real ordinary move for a mediated request; owner decisions retain owner spending permissions. */
+export function pursueRequest(
+  w: World,
+  request: SigningRequest,
+  person: string,
+  actor: 'owner' | 'delegated',
+) {
+  const picked = requestCandidates(w, request).find(({ offer }) => offer.player.id === person);
+  if (!picked || activePlayers(w).length >= 26 || !transferWindow(w).open)
+    return '현재 후보·이적시장·선수단 조건으로 진행할 수 없어요.';
+  const day = currentDay(w),
+    { offer, index } = picked;
+  const fee = offer.freeAgent
+    ? '0'
+    : actor === 'owner'
+      ? offer.fee
+      : ratio(offer.fee, BigInt(Math.round(financeStance(w).signing.bid * 100)), 100n);
+  if (actor === 'delegated') {
+    if (
+      (day - windowOpening(w, day)) % SIGNING_CONFIG.lookDays !== 0 ||
+      windowBids(w, day).some((b) => b.staff && (isOpen(b) || b.day === day))
+    )
+      return '이번 주 영입 검토 또는 진행 중인 협상을 먼저 마쳐야 해요.';
+    const verdict = signingVerdict(w, offer.player, fee);
+    if (!verdict.ok) return verdict.reason;
+    if (offer.freeAgent) {
+      const starter = request.slot === undefined ? undefined : ownStarters(w)[request.slot];
+      const need: SigningNeed =
+        request.kind === 'upgrade' && starter && request.slot !== undefined && request.position
+          ? {
+              kind: 'upgrade',
+              line: request.line,
+              slot: request.slot,
+              position: request.position,
+              starter,
+              level: atSlot(w, starter, request.slot),
+              margin: SIGNING_CONFIG.requestMargin,
+              requested: request,
+            }
+          : {
+              kind: 'short',
+              line: request.line,
+              count: 0,
+              minimum: SIGNING_CONFIG.lineMinimum[request.line],
+              squad: activePlayers(w).length,
+              requested: request,
+            };
+      signFreeAgent(w, offer, need, verdict.reason);
+    } else placeBid(w, index, fee, false, request.kind);
+  } else {
+    if (BigInt(w.cash) < BigInt(fee)) return '보유 자금이 부족해요.';
+    if (offer.freeAgent) squadCommand(w, { type: 'recruit', candidate: index });
+    else placeBid(w, index, fee);
+  }
+  return undefined;
 }

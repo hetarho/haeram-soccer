@@ -1,3 +1,4 @@
+import { resolveDelegatedMediations } from './mediation';
 import { handoverPlayingCoaches } from './playing-coach';
 import type { ResponsibilityKey, World } from '../../contracts/src/types';
 import { isDelegated } from './responsibilities';
@@ -18,6 +19,7 @@ export function handoverPendingWork(w: World, changed: readonly ResponsibilityKe
     const delegated = isDelegated(w, key);
     if (key === 'recruitment') {
       handoverRecruitment(w, delegated);
+      if (delegated) resolveDelegatedMediations(w);
       continue;
     }
     if (!delegated) continue;

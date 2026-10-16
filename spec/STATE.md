@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:53Z | T170 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:56Z | - |
 
 ## inbox
 - 261017 suggest T154 T155 T156 T157 T158: five person-career foundation tasks completed → review-code aptitude/person-careers/npc-continuity/careers/coaching-entry before the next unrelated feature; remaining planned second-career tasks continue.
@@ -84,7 +84,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T170 | Resolve mediation under standing or case-specific support | CLUB STAFF ECON HIST | T169 | doing@261017.n7r4 |
 | T171 | Judge, cancel and retain fixed-deadline reinforcement promises | CLUB HIST SAVE | T170 T165 | todo |
 | T172 | Present direct mediation and durable commitment status | WEB CLUB STAFF HIST | T150 T171 T153 | todo |
 | T173 | Round-trip settings, person careers and commitments losslessly | SAVE HIST WORLD ARCH | T148 T161 T163 T165 T171 | todo |
@@ -115,6 +114,7 @@
 - Do not activate rules 3.0.0 or reset career data before T174's prerequisites are complete.
 
 ## log
+- 261017 T170 done n7r4: Standing or case-specific support resolves actual mediation through ordinary owner/delegated move rules; cheaper alternatives and named bids are real, blocked pursuit records one fixed next-window promise without numerical bonuses.
 - 261017 implement-task T170 start n7r4.
 - 261017 T169 done n7r4: Actual suitable-candidate financial opposition creates one durable manager/target/window mediation with participant snapshots and retained arrival facts; owner stops and delegated resolver queue survive refresh/reload.
 - 261017 implement-task T169 start n7r4.
@@ -134,4 +134,3 @@
 - 261017 implement-task T162 start n7r4.
 - 261017 T161 done n7r4: Player and coach pay/effects end independently; actual retirement keeps unexpired coaching, sales settle both roles and ordinary costs once, mixed authority waits, and rollover employment uses the real closing date.
 - 261017 implement-task T161 start n7r4.
-- 261017 T160 done n7r4: Joint playing-coach quotes atomically approve both roles, preserve additive wages and ordinary costs, enforce stale/funds/age guards and deduplicate mixed-authority stopping/handover.

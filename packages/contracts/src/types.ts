@@ -305,6 +305,20 @@ export interface RecruitmentMediation {
   status: 'pending' | 'resolved';
   resolution?: { at: CareerDate; support: MediationSupport; result: string; promise?: string };
 }
+export interface ReinforcementPromise {
+  id: string;
+  mediation: string;
+  manager: { id: string; name: string };
+  director: { id: string; name: string };
+  target: SigningRequest;
+  created: CareerDate;
+  deadline: CareerDate;
+  status: 'pending' | 'fulfilled' | 'unfulfilled' | 'cancelled';
+  resolved?: CareerDate;
+  arrival?: { player: string; at: CareerDate };
+  reason?: string;
+  reaction?: string;
+}
 export interface Club {
   id: string;
   name: string;
@@ -930,6 +944,7 @@ export interface World {
   coachingMarketAt?: CareerDate;
   recruitmentArrivals?: RecruitmentArrival[];
   mediations?: RecruitmentMediation[];
+  promises?: ReinforcementPromise[];
   players: Player[];
   /** Preferred starting XI, one player per slot of the applied tactic's formation (→STAFF-22). */
   lineup?: string[];
@@ -1083,6 +1098,7 @@ export type Command =
   | { type: 'respond-bid'; id: string; accept: boolean }
   | { type: 'read-inbox'; id?: string }
   | { type: 'encourage-coaching'; player: string }
+  | { type: 'resolve-mediation'; id: string; support: MediationSupport }
   | { type: 'propose-playing-coach'; player: string; years: 1 | 2; term: ContractTerm }
   | { type: 'answer-playing-coach'; player: string; accept: boolean }
   /**

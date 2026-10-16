@@ -1,3 +1,4 @@
+import { resolveMediation } from './mediation';
 import { proposePlayingCoach, answerPlayingCoach } from './playing-coach';
 import { encourageCoaching } from './coaching-entry';
 import type { World, Command } from '../../contracts/src/types';
@@ -32,6 +33,9 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       break;
     case 'answer-playing-coach':
       answerPlayingCoach(w, cmd.player, cmd.accept);
+      break;
+    case 'resolve-mediation':
+      resolveMediation(w, cmd.id, cmd.support);
       break;
     case 'encourage-coaching':
       encourageCoaching(w, cmd.player);

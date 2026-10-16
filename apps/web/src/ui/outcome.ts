@@ -64,6 +64,7 @@ const titles: Record<Command['type'], string> = {
   'respond-bid': '이적 제안에 답했어요',
   'propose-playing-coach': '플레잉 코치 계약안을 준비했어요',
   'answer-playing-coach': '플레잉 코치 계약안에 답했어요',
+  'resolve-mediation': '영입 중재 방침을 결정했어요',
   'encourage-coaching': '지도자 진로를 권유했어요',
   'read-inbox': '소식을 확인했어요',
   care: '구단주 요청을 전했어요',

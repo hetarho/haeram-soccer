@@ -1,13 +1,21 @@
 import type { RecruitmentMediation, SigningRequest, World } from '../../contracts/src/types';
-import { careerDate, careerOrdinal } from './person-careers';
+import { careerDate, careerOrdinal, atCareerDate } from './person-careers';
 import { transferWindow, transferWindowDays } from './transfers';
 import { directionOption, financeStance } from './direction';
-import { requestCandidates, signingRequests, signingVerdict, requestLabel } from './signings';
+import {
+  requestCandidates,
+  signingRequests,
+  signingVerdict,
+  requestLabel,
+  pursueRequest,
+} from './signings';
 import { staffMember } from './staff';
 import { isDelegated } from './responsibilities';
 import { pushInbox } from './inbox';
 import { lineOf } from './player';
-import { ratio } from './primitives';
+import { compareIds, ratio } from './primitives';
+import { overall } from './world';
+import { transferOffers } from './ops-squad';
 export const requestTargetKey = (request: SigningRequest) =>
   request.kind === 'short' ? `line:${request.line}` : `slot:${request.slot}:${request.position}`;
 export function requestMet(w: World, request: SigningRequest, from: { year: number; day: number }) {
@@ -90,4 +98,137 @@ export function detectMediations(w: World): RecruitmentMediation[] {
     });
   }
   return created;
+}
+
+/** One fixed next-window commitment, never a moved deadline or an invented arrival. */
+export function promiseForMediation(w: World, mediation: RecruitmentMediation) {
+  const existing = w.promises?.find(
+    (p) =>
+      p.status === 'pending' &&
+      p.manager.id === mediation.manager.id &&
+      requestTargetKey(p.target) === requestTargetKey(mediation.target),
+  );
+  if (existing) return existing;
+  const year = mediation.created.year + (mediation.window === 'winter' ? 1 : 0);
+  const deadline = {
+    year,
+    day:
+      mediation.window === 'summer'
+        ? transferWindowDays(year).winterClose
+        : transferWindowDays(year).summerClose,
+  };
+  const promise: NonNullable<World['promises']>[number] = {
+    id: `promise:${w.year}:${w.promises?.length ?? 0}`,
+    mediation: mediation.id,
+    manager: { ...mediation.manager },
+    director: { ...mediation.director },
+    target: { ...mediation.target },
+    created: careerDate(w),
+    deadline,
+    status: 'pending',
+  };
+  (w.promises ??= []).push(promise);
+  return promise;
+}
+export function resolveMediation(
+  w: World,
+  id: string,
+  support: RecruitmentMediation['support'],
+  actor: 'owner' | 'delegated' = 'owner',
+) {
+  const current = w.mediations?.find((m) => m.id === id);
+  if (!current) throw new Error('영입 중재를 찾을 수 없어요.');
+  if (current.status === 'resolved') return current;
+  if (!['director', 'balanced', 'manager'].includes(support))
+    throw new Error('중재 지원 방침을 확인하세요.');
+  const trial = structuredClone(w),
+    mediation = trial.mediations!.find((m) => m.id === id)!;
+  return atCareerDate(trial, careerDate(w), () => {
+    let result = '재정 판단을 존중해 이번 보강을 미뤘어요.',
+      promise: string | undefined;
+    if (trial.manager.id !== mediation.manager.id)
+      result = '요청한 감독이 떠나 이번 영입 요청을 마감했어요.';
+    else if (support !== 'director') {
+      const pool = requestCandidates(trial, mediation.target),
+        named = pool.find(({ offer }) => offer.player.id === mediation.candidate.id);
+      const fee = (offer: ReturnType<typeof requestCandidates>[number]['offer']) =>
+        BigInt(
+          offer.freeAgent
+            ? '0'
+            : actor === 'owner'
+              ? offer.fee
+              : ratio(offer.fee, BigInt(Math.round(financeStance(trial).signing.bid * 100)), 100n),
+        );
+      const namedOffer = transferOffers(trial).find(
+        (offer) => offer.player.id === mediation.candidate.id,
+      );
+      const alternatives = pool
+        .filter(
+          ({ offer }) =>
+            offer.player.id !== mediation.candidate.id &&
+            namedOffer &&
+            (fee(offer) < fee(namedOffer) ||
+              (fee(offer) === fee(namedOffer) &&
+                BigInt(offer.player.wage) < BigInt(namedOffer.player.wage))),
+        )
+        .sort((a, b) =>
+          fee(a.offer) < fee(b.offer)
+            ? -1
+            : fee(a.offer) > fee(b.offer)
+              ? 1
+              : BigInt(a.offer.player.wage) < BigInt(b.offer.player.wage)
+                ? -1
+                : BigInt(a.offer.player.wage) > BigInt(b.offer.player.wage)
+                  ? 1
+                  : overall(b.offer.player) - overall(a.offer.player) ||
+                    b.offer.player.potential - a.offer.player.potential ||
+                    compareIds(a.offer.player.id, b.offer.player.id),
+        );
+      const choices = support === 'manager' ? (named ? [named] : []) : alternatives;
+      let failure = '진행 가능한 적합 후보가 없어요.',
+        started = false;
+      for (const { offer } of choices) {
+        const blocked = pursueRequest(trial, mediation.target, offer.player.id, actor);
+        if (blocked) {
+          failure = blocked;
+          continue;
+        }
+        result = `${offer.player.name} ${offer.freeAgent ? '자유계약 영입을 완료했어요.' : '선수에게 실제 영입 제안을 보냈어요. 협상 결과를 기다려요.'}`;
+        started = true;
+        break;
+      }
+      if (!started) {
+        const commitment = promiseForMediation(trial, mediation);
+        promise = commitment.id;
+        result = `${failure} 다음 이적시장 마감까지의 보강 약속을 기록했어요.`;
+      }
+    }
+    mediation.status = 'resolved';
+    mediation.resolution = {
+      at: careerDate(trial),
+      support,
+      result,
+      ...(promise ? { promise } : {}),
+    };
+    pushInbox(trial, {
+      kind: 'staff-report',
+      title: `${mediation.manager.name} 감독 영입 중재 결과`,
+      detail: result,
+      attention: false,
+      ref: id,
+    });
+    Object.assign(w, trial);
+    return mediation;
+  });
+}
+export function resolveDelegatedMediations(w: World) {
+  const pending = delegatedMediations(w);
+  for (const mediation of pending)
+    resolveMediation(
+      w,
+      mediation.id,
+      directionOption(w, 'recruitmentSupport').id as RecruitmentMediation['support'],
+      'delegated',
+    );
+  return pending.length;
 }
