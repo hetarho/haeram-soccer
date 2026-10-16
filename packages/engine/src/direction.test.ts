@@ -1,3 +1,6 @@
+import { applyBoard, presetBoard, worldBoard, sameBoard } from './presets';
+import { BUILD_PRESETS } from './build';
+import { DIRECTION_DEFAULT, directionOf } from './direction';
 import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
@@ -63,6 +66,7 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
       signing: { margin: 5, upgrades: 1, feeShare: 0.5, bid: 1 },
     });
     expect(DIRECTION_KEYS.map((key) => DIRECTION_INFO[key].label)).toEqual([
+      '단장·감독 지원',
       '재계약 기조',
       '선호 학파',
       '감독 기조',
@@ -112,7 +116,7 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
 
     // Back to the defaults: the rows, then `direction` itself, go.
     for (const key of DIRECTION_KEYS)
-      operate(w, { type: 'direction', key, option: key === 'school' ? 'any' : 'standard' });
+      operate(w, { type: 'direction', key, option: DIRECTION_DEFAULT[key] });
     expect(w.direction).toBeUndefined();
   });
 
@@ -308,5 +312,38 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     expect(new Set(marked.map((player) => player.id))).toEqual(
       new Set(best.map((player) => player.id)),
     );
+  });
+});
+
+describe('recruitment support policy', () => {
+  it('defaults to balanced, validates choices and preserves financial limits without creating conflicts', () => {
+    const w = world('support-row');
+    const financial = financeStance(w);
+    const responsibilities = structuredClone(w.settings);
+    expect(directionOf(w, 'recruitmentSupport')).toBe('balanced');
+    for (const option of ['director', 'manager', 'balanced']) {
+      operate(w, { type: 'direction', key: 'recruitmentSupport', option });
+      expect(directionOf(w, 'recruitmentSupport')).toBe(option);
+      expect(financeStance(w)).toEqual(financial);
+      expect(w.settings).toEqual(responsibilities);
+      expect(validateWorld(JSON.parse(canonical(w))).direction).toEqual(w.direction);
+      expect(w.events.at(-1)?.kind).toBe('policy');
+    }
+    expect(w.direction).toBeUndefined();
+    expect(() =>
+      operate(w, { type: 'direction', key: 'recruitmentSupport', option: 'always-spend' }),
+    ).toThrow('단장·감독 지원');
+  });
+  it('retains support in a complete configuration and resets an omitted preset row to balanced', () => {
+    const w = world('support-config');
+    operate(w, { type: 'direction', key: 'recruitmentSupport', option: 'manager' });
+    operate(w, { type: 'direction', key: 'finance', option: 'careful' });
+    const saved = worldBoard(w);
+    applyBoard(w, presetBoard(BUILD_PRESETS[0]));
+    expect(directionOf(w, 'recruitmentSupport')).toBe('balanced');
+    applyBoard(w, saved);
+    expect(directionOf(w, 'recruitmentSupport')).toBe('manager');
+    expect(directionOf(w, 'finance')).toBe('careful');
+    expect(sameBoard(worldBoard(w), saved)).toBe(true);
   });
 });

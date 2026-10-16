@@ -7,7 +7,9 @@ import s from './StrategyBoard.module.css';
 /** Explain the existing policy's actor and execution point, without changing its rule. */
 export function PolicyContext({ w, row }: { w: World; row: RowKey | BuildSlot }) {
   let text: string;
-  if (row === 'manager' || row === 'school' || row === 'coaches') {
+  if (row === 'recruitmentSupport') {
+    text = `${isDelegated(w, 'recruitment') ? '단장이 자동 영입 중' : '지금은 직접 영입 · 자동 중재 시 사용'} · 실제 영입 갈등을 중재할 때 쓰는 지원 방침이에요. 선택만으로 약속이나 계약은 생기지 않고, 재정 한도는 바뀌지 않아요.`;
+  } else if (row === 'manager' || row === 'school' || row === 'coaches') {
     const auto = isDelegated(w, row === 'coaches' ? 'staff' : 'manager');
     text = `${auto ? '스태프 자동 선임 기준' : '지금은 직접 선임 · 자동 위임 시 쓰는 기준'} · 다음 선임·재계약 때 판단해요. 현재 담당자는 바뀌지 않아요.`;
   } else if (row === 'renewal') {

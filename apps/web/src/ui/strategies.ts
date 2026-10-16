@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import type { ClubBuild } from '../../../../packages/contracts/src/build';
+import { BUILD_SLOTS, type ClubBuild } from '../../../../packages/contracts/src/build';
 import type { ClubPolicy, Direction } from '../../../../packages/contracts/src/types';
-import { BUILD_PRESETS, buildLabel, sameBuild } from '../../../../packages/engine/src/build';
+import { BUILD_PRESETS, sameBuild } from '../../../../packages/engine/src/build';
 import {
   presetBoard,
   sameBoard,
@@ -74,7 +74,7 @@ export function strategyName(board: DirectionBoard, saved: SavedStrategy[]) {
   return (
     BUILD_PRESETS.find((preset) => sameBoard(presetBoard(preset), board))?.label ??
     saved.find((item) => savedMatches(item, board))?.name ??
-    buildLabel(board.build)
+    (BUILD_SLOTS.some((slot) => board.build[slot]) ? '맞춤 방향' : '기본 방향')
   );
 }
 /** A board's rows as a saved direction keeps them (→SAVE-15): every dial, the ticket, the rows set. */

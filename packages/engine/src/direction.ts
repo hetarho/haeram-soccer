@@ -15,6 +15,7 @@ export interface DirectionOption {
   summary: string;
 }
 export const DIRECTION_KEYS: readonly DirectionKey[] = [
+  'recruitmentSupport',
   'renewal',
   'school',
   'manager',
@@ -25,6 +26,7 @@ export const DIRECTION_KEYS: readonly DirectionKey[] = [
 ];
 /** Each row's default option: 표준, or any school. */
 export const DIRECTION_DEFAULT: Readonly<Record<DirectionKey, string>> = {
+  recruitmentSupport: 'balanced',
   renewal: 'standard',
   school: 'any',
   manager: 'standard',
@@ -96,6 +98,28 @@ const financeSummary = (id: string) => {
 export const DIRECTION_INFO: Readonly<
   Record<DirectionKey, { label: string; question: string; options: readonly DirectionOption[] }>
 > = {
+  recruitmentSupport: {
+    label: '단장·감독 지원',
+    question: '영입 의견이 갈리면 누구의 판단에 더 무게를 둘까',
+    options: [
+      {
+        id: 'director',
+        name: '단장 우선',
+        summary: '자동 중재 때 단장의 설명에 더 무게를 둬요. 기존 재정 한도는 그대로예요.',
+      },
+      {
+        id: 'balanced',
+        name: '균형',
+        summary:
+          '자동 중재 때 단장과 감독의 설명을 균형 있게 고려해요. 기존 재정 한도는 그대로예요.',
+      },
+      {
+        id: 'manager',
+        name: '감독 우선',
+        summary: '자동 중재 때 감독의 설명에 더 무게를 둬요. 기존 재정 한도는 그대로예요.',
+      },
+    ],
+  },
   renewal: {
     label: '재계약 기조',
     question: '계약이 끝나 가는 선수를 누구까지, 얼마까지 붙잡을까요?',

@@ -408,3 +408,48 @@ test('department sheet is readonly in a second tab and restores its task', async
     await viewer.close();
   }
 });
+
+test('recruitment support round-trips between department sheet and full board', async ({
+  page,
+}) => {
+  await found(page);
+  await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  await page.getByRole('tab', { name: '이적시장', exact: true }).click();
+  const trigger = page.getByRole('button', { name: /^영입 기조/ });
+  const sheet = page.getByRole('dialog', { name: '영입 운영 방침', exact: true });
+  await trigger.click();
+  await expect(
+    sheet.getByRole('radio', { name: '단장·감독 지원 균형', exact: true }),
+  ).toHaveAttribute('aria-checked', 'true');
+  await sheet.getByRole('radio', { name: '단장·감독 지원 단장 우선', exact: true }).click();
+  await sheet
+    .getByTestId('strategy-draft')
+    .getByRole('button', { name: '적용', exact: true })
+    .click();
+  await expect(sheet).toHaveCount(0);
+  await trigger.click();
+  await expect(
+    sheet.getByRole('radio', { name: '단장·감독 지원 단장 우선', exact: true }),
+  ).toHaveAttribute('aria-checked', 'true');
+  await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await openOperations(page);
+  const board = page.getByTestId('view-scroller').getByTestId('strategy-board');
+  await expect(
+    board.getByRole('radio', { name: '단장·감독 지원 단장 우선', exact: true }),
+  ).toHaveAttribute('aria-checked', 'true');
+  await board.getByRole('radio', { name: '단장·감독 지원 감독 우선', exact: true }).click();
+  await board
+    .getByTestId('strategy-draft')
+    .getByRole('button', { name: '적용', exact: true })
+    .click();
+  await expect(board.getByTestId('strategy-draft')).toHaveCount(0);
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  await page.reload();
+  await page
+    .getByRole('region', { name: '영입', exact: true })
+    .getByRole('button', { name: /어떤 선수를/ })
+    .click();
+  await expect(
+    page.getByRole('radio', { name: '단장·감독 지원 감독 우선', exact: true }),
+  ).toHaveAttribute('aria-checked', 'true');
+});

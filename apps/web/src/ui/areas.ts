@@ -21,6 +21,7 @@ export interface DirectionArea {
 }
 /** Whether a row is a direction row rather than a dial. */
 export const isDirectionRow = (key: RowKey): key is DirectionKey =>
+  key === 'recruitmentSupport' ||
   key === 'renewal' ||
   key === 'school' ||
   key === 'manager' ||
@@ -49,7 +50,7 @@ export const DIRECTION_AREAS: readonly DirectionArea[] = [
     icon: '⇄',
     question: '어떤 선수를 어떻게 찾아 데려올까',
     card: 'scouting',
-    rows: ['recruitment'],
+    rows: ['recruitment', 'recruitmentSupport'],
   },
   {
     key: 'market',

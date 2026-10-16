@@ -148,7 +148,7 @@ describe('direction areas', () => {
     expect(areaSummary(w, area('staff'))).toBe('상관없음 · 표준 · 표준');
     send(w, { type: 'build', build: { scouting: 'data' } });
     send(w, { type: 'policy', key: 'recruitment', level: 2 });
-    expect(areaSummary(w, area('scouting'))).toBe('데이터 스카우팅 · 젊은 선수 위주');
+    expect(areaSummary(w, area('scouting'))).toBe('데이터 스카우팅 · 젊은 선수 위주 · 균형');
     expect(areaSummary(w, area('local'))).toBe('표준 · 없음 · 없음 · 보통');
     w.ticket = 0.06;
     expect(areaSummary(w, area('local'))).toBe('표준 · 없음 · 없음 · 사용자 지정');
@@ -283,4 +283,26 @@ describe('department editor shared draft', () => {
     expect(departmentDraft(w, combined, 'scouting')).toEqual(scoped);
     expect(replaceDepartment(w, combined, 'scouting', {})).toEqual(full);
   });
+});
+
+it('applies recruitment support only with its own department and retains it across finance apply', () => {
+  const w = world();
+  const d = withDirection(
+    w,
+    withDirection(w, {}, 'finance', 'careful'),
+    'recruitmentSupport',
+    'director',
+  );
+  expect(draftCommands(w, departmentDraft(w, d, 'scouting'))).toEqual([
+    { type: 'direction', key: 'recruitmentSupport', option: 'director' },
+  ]);
+  const commands = draftCommands(w, departmentDraft(w, d, 'finance'));
+  expect(commands).toEqual([{ type: 'direction', key: 'finance', option: 'careful' }]);
+  const before = structuredClone(w);
+  for (const command of commands) send(w, command);
+  const rest = reconcileDraft(before, w, d, commands);
+  expect(rest.direction).toEqual({ recruitmentSupport: 'director' });
+  expect(draftCommands(w, rest)).toEqual([
+    { type: 'direction', key: 'recruitmentSupport', option: 'director' },
+  ]);
 });

@@ -745,6 +745,7 @@ export const worldSchema: z.ZodType<World> = z.object({
   sponsors: z.array(sponsorContract).max(5).optional(),
   direction: z
     .strictObject({
+      recruitmentSupport: z.enum(['director', 'manager']).optional(),
       renewal: z.enum(['keepAll', 'coreOnly', 'frugal', 'youngFirst']).optional(),
       school: managerStyle.optional(),
       manager: z.enum(['developer', 'proven', 'young', 'cheap']).optional(),

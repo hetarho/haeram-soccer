@@ -137,7 +137,16 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('renew-manager'), term: term.optional() }),
   z.object({
     type: z.literal('direction'),
-    key: z.enum(['renewal', 'school', 'manager', 'coaches', 'finance', 'youthGoal', 'debut']),
+    key: z.enum([
+      'recruitmentSupport',
+      'renewal',
+      'school',
+      'manager',
+      'coaches',
+      'finance',
+      'youthGoal',
+      'debut',
+    ]),
     option: z.string().min(1).max(40),
   }),
   z.object({

@@ -135,3 +135,26 @@ describe('device strategy library', () => {
     expect(items.find((item) => item.id === 'broken')).not.toHaveProperty('rows');
   });
 });
+
+it('round-trips recruitment support without changing old library rows', () => {
+  const storage = memory();
+  const library = new StrategyLibrary(storage);
+  const first = library.save({
+    name: 'Manager support',
+    build: {},
+    rows: { direction: { recruitmentSupport: 'manager', finance: 'careful' } },
+  });
+  const old = library.save({
+    name: 'Old direction',
+    build: {},
+    rows: { direction: { finance: 'stable' } },
+  });
+  const reloaded = new StrategyLibrary(storage).list();
+  expect(reloaded.find((item) => item.id === first.id)?.rows?.direction).toEqual({
+    recruitmentSupport: 'manager',
+    finance: 'careful',
+  });
+  expect(reloaded.find((item) => item.id === old.id)?.rows?.direction).toEqual({
+    finance: 'stable',
+  });
+});

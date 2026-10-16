@@ -149,6 +149,8 @@ export interface TalkRule {
  * 재정 기조 (→ECON-33), 육성 목표 and 데뷔 시점 (→CLUB-32).
  */
 export interface Direction {
+  /** Standing recruitment mediation support; absent means balanced (→STAFF-26). */
+  recruitmentSupport?: 'director' | 'manager';
   renewal?: 'keepAll' | 'coreOnly' | 'frugal' | 'youngFirst';
   school?: ManagerStyle;
   manager?: 'developer' | 'proven' | 'young' | 'cheap';
