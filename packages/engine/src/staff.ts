@@ -448,7 +448,7 @@ export function hireStaff(
     total,
   );
 }
-function departStaff(w: World, member?: Staff) {
+export function departStaff(w: World, member?: Staff) {
   if (!member?.person) return;
   const person = w.people?.[member.person];
   if (person?.coaching) {

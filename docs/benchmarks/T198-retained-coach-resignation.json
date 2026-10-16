@@ -1,0 +1,39 @@
+{
+  "scope": "Focused retained resignation fix; old-source century evidence is diagnostic and final T178/T179 must rerun.",
+  "node": "v24.12.0",
+  "reproduction": {
+    "seed": "release-century-active-management",
+    "year": 1952,
+    "day": 1,
+    "orphanedPerson": "ITA:2:1:10:p:9:108",
+    "role": "assistant",
+    "warmAndClonedStatesBothFailed": true,
+    "message": "\uc774\ubbf8 \ub2f4\ub2f9\uc790\uac00 \uc788\uc5b4\uc694."
+  },
+  "repair": "Invoke the existing staff departure lifecycle before removing a resigned training coach. It retains learned values and closes only the coaching employment/mentor period.",
+  "checks": {
+    "regressionCases": 109,
+    "testFiles": 10,
+    "originalFocusedCasesFailed": 2,
+    "fixedFocusedCasesPassed": 2,
+    "sameCommandsValidatedSeasons": 10,
+    "typecheck": true,
+    "lint": true,
+    "format": true,
+    "trainingOrderConstantsUnchanged": {
+      "SUGGESTION_ROUNDS": "2",
+      "STRAIN_RISK": "0.15",
+      "MAX_STRAIN_RISK": "0.6"
+    }
+  },
+  "files": {
+    "packages/engine/src/coach-training.ts": "4fe57b4667e021904ef2cf6835229782062311e682f879a1e30263c982cc126b",
+    "packages/engine/src/staff.ts": "09557c8e965e25970b1833cecbd59c9ade3d9e652b7d8b799de562efedaea2ab",
+    "packages/engine/src/coach-training.test.ts": "a74c62665a77978d8f3d9758e42dbc16ab4e27901d851122b9f16f093ca290ff",
+    "packages/engine/src/playing-coach.test.ts": "de457f7cd410db2551a2e5ff77efaf8e5e032f96520ff66a3345f617a5f511ec"
+  },
+  "limits": [
+    "No new manager-trust fallout or resignation/balance retuning.",
+    "The prior full local verify passed at b98e2ae before this engine repair; a final full verify and both century profiles must run again."
+  ]
+}

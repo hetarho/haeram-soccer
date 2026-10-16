@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
+import { careerDate, retainPerson, openEmployment } from './person-careers';
+import { initializeCoaching } from './coaching-entry';
+import { dailyStaff } from './staff';
 import type { Player, Position, World } from '../../contracts/src/types';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { lineOf } from './player';
@@ -269,4 +272,48 @@ describe('the academy by age group (→CLUB-16, CLUB-31)', () => {
     operate(ger, { type: 'promote-youth', id: german.id });
     expect(ger.players.some((player) => player.id === german.id)).toBe(true);
   });
+});
+
+it('closes retained coach employment and mentor exposure on resignation before a delegated replacement', () => {
+  const w = withPaidAssistant('coach-force'),
+    member = staffMember(w, 'assistant')!;
+  const source = makePlayer('ENG', w.seed, 'synthetic:retained-resignation', w.year, 55, 'CM', 50);
+  source.status = 'retired';
+  source.personality.professionalism = 5;
+  source.qualities = { understanding: 5, teaching: 4, judgement: 5 };
+  const person = retainPerson(w, source),
+    at = careerDate(w);
+  person.intention = { at, draw: 0, willing: true };
+  const coaching = initializeCoaching(w, person)!;
+  Object.assign(member, {
+    id: person.id,
+    person: person.id,
+    name: person.name,
+    born: person.born,
+    ability: coaching.ability + 0.25,
+    potential: coaching.potential,
+  });
+  const job = openEmployment(w, person.id, 'assistant', w.playerClub),
+    learned = member.ability,
+    potential = member.potential;
+  const cash = w.cash,
+    trust = w.manager.trust;
+  for (let i = 0; i < 8 && staffMember(w, 'assistant'); i++)
+    operate(w, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
+  expect(staffMember(w, 'assistant')).toBeUndefined();
+  expect(job.to).toEqual(at);
+  expect(person.mentors.at(-1)!.to).toEqual(at);
+  expect(person.coaching).toMatchObject({ ability: learned, potential });
+  expect(w.cash).toBe(cash);
+  expect(w.manager.trust).toBe(trust);
+  validateWorld(w);
+  w.settings!.responsibilities.staff = 'delegated';
+  expect(() => dailyStaff(w)).not.toThrow();
+  expect(staffMember(w, 'assistant')).toBeDefined();
+  expect(
+    Object.values(w.people!).flatMap((p) =>
+      p.employment.filter((j) => !j.to && j.club === w.playerClub && j.role === 'assistant'),
+    ).length,
+  ).toBeLessThanOrEqual(1);
+  validateWorld(w);
 });

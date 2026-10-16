@@ -9,7 +9,7 @@ import type {
 import { clamp, random } from './primitives';
 import { addEvent } from './world';
 import { pushInbox } from './inbox';
-import { autoPlayerFocus, autoTrainingAdvice, STAFF_INFO, staffMember } from './staff';
+import { autoPlayerFocus, autoTrainingAdvice, departStaff, STAFF_INFO, staffMember } from './staff';
 import { activeTrainingFocus, trainingFocusInfo } from './training';
 import { YOUTH_FOCUS_INFO, youthAdvice } from './academy';
 import { ORDER_ROUNDS, tidyOrders } from './orders';
@@ -214,6 +214,7 @@ export function orderTraining(
   );
   if (risk <= 0 || random(`${w.seed}:coach-force:${coach}:${w.year}:${w.round}:${count}`)() >= risk)
     return;
+  departStaff(w, member);
   w.staff = (w.staff || []).filter((other) => other.role !== coach);
   const detail = `구단주의 훈련 지시가 이번 시즌 ${count}번째였어요 · 보상금 없음 · 새 코치를 선임할 때까지 공석입니다.`;
   addEvent(w, 'staff-release', `${name} 사임`, detail);

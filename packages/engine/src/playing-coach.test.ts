@@ -8,25 +8,29 @@ import {
   proposePlayingCoach,
 } from './playing-coach';
 import { careerDate } from './person-careers';
+import { canonical, validateWorld } from '../../contracts/src/index';
+import { encode, decode } from '../../../apps/web/src/adapters/persistence';
 import { recordRetirementAnnouncement } from './careers';
 import { pendingDecisions } from './stopping';
 import { pendingWorkPreview } from './pending-work-preview';
 import { initializeCoaching } from './coaching-entry';
 import { coachWage, coachMatches, staffMember } from './staff';
 import { ratio } from './primitives';
-function world() {
+function world({ seed = 'playing-coach', fieldPlayer = false, atFounding = false } = {}) {
   const w = createWorld({
     country: 'ENG',
     name: 'Joint Contract',
     color: '#224466',
-    seed: 'playing-coach',
+    seed,
     level: 'easy',
   });
   w.cash = w.income = '999999999999';
-  w.round = 35;
-  w.calendar = { day: 245 };
-  const p = w.players[0],
-    person = w.people![p.id];
+  if (!atFounding) {
+    w.round = 35;
+    w.calendar = { day: 245 };
+  }
+  const p = fieldPlayer ? w.players.find((p) => p.position !== 'GK')! : w.players[0];
+  const person = w.people![p.id];
   p.born = w.year - 36;
   p.retiring = w.year;
   p.personality.professionalism = 5;
@@ -159,4 +163,34 @@ it('offers a playing coach only in ordinary hiring order and never automatically
   member.until = w.year + 2;
   const paid = proposePlayingCoach(w, id, 1, 2);
   expect(automaticPlayingCoachFits(w, paid)).toBe(false);
+});
+
+it('preserves the player contract and complete saved career when a playing coach resigns', async () => {
+  const { w, id } = world({ seed: 'coach-force', fieldPlayer: true, atFounding: true });
+  w.settings!.responsibilities.contracts = w.settings!.responsibilities.staff = 'direct';
+  const proposal = proposePlayingCoach(w, id, 1, 2);
+  expect(proposal.role).toBe('youth');
+  answerPlayingCoach(w, id, true);
+  const person = w.people![id],
+    member = staffMember(w, 'youth')!;
+  member.ability += 0.125;
+  const player = structuredClone(w.players.find((p) => p.id === id)!),
+    playing = structuredClone(person.employment.find((j) => j.role === 'player' && !j.to)!),
+    totals = structuredClone(person.ownCareer);
+  const learned = member.ability,
+    at = careerDate(w),
+    cash = w.cash,
+    trust = w.manager.trust;
+  for (let i = 0; i < 8 && staffMember(w, 'youth'); i++)
+    operate(w, { type: 'coach-training', coach: 'youth', focus: 'balanced', force: true });
+  expect(staffMember(w, 'youth')).toBeUndefined();
+  expect(person.employment.find((j) => j.role === 'youth')!.to).toEqual(at);
+  expect(person.employment.find((j) => j.role === 'player' && !j.to)).toEqual(playing);
+  expect(w.players.find((p) => p.id === id)).toEqual(player);
+  expect(person.ownCareer).toEqual(totals);
+  expect(person.coaching!.ability).toBe(learned);
+  expect(w.cash).toBe(cash);
+  expect(w.manager.trust).toBe(trust);
+  validateWorld(w);
+  expect(canonical((await decode(await encode(w))).world)).toBe(canonical(w));
 });
