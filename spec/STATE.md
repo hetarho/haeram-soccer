@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:52Z | T185 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:54Z | T186 |
 
 ## inbox
 - 261017 decided SAVE-10: align recognized older catalog pin text with approved T181 2026-demo-3; no historical price/index changes and no legacy reset before T174.
@@ -91,7 +91,7 @@
 | T177 | Verify delegation handover and promise outcomes through the browser | WEB CLUB HIST SAVE | T172 T174 | todo |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 | todo |
-| T186 | Call up from the academy when a window closes | CLUB STAFF | T185 | todo |
+| T186 | Call up from the academy when a window closes | CLUB STAFF | T185 | doing@261017.n7r4 |
 | T187 | Show squad counts against the rule and the 20/16 tones | WEB CLUB STAFF | T182 T183 T184 | todo |
 
 ## work
@@ -106,6 +106,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 implement-task T186 start n7r4.
 - 261017 T185 done n7r4: Starter departures and thin-squad sales open dated replacement needs; delegated recruitment pursues them daily after opening, actual same-line signings close oldest needs, and closing starters open summer needs after top-up.
 - 261017 implement-task T185 start n7r4.
 - 261017 T184 done n7r4: Director traits price every delegated bid and preview, negotiators raise on answer-day plus one through their ceiling and switch near deadline, and all acceptance paths recheck spending.
@@ -125,4 +126,3 @@
 - 261017 implement-task T181 start n7r4.
 - 261017 create-task SAVE r40: catalog-pin metadata delta assigned to existing todo T181; no new task.
 - 261017 update-ssot SAVE-10 r40: align approved T181 catalog pin, preserve compatibility policy.
-- 261017 T180 done n7r4: Every native club now settles decimal reputation from its old group finish and next division, with symmetric cup/continental honours; owner capital and supporter rules remain unchanged.
