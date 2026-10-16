@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| p6k2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T23:52Z | 2026-10-16T23:54Z | T178 |
+| p6k2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T23:52Z | 2026-10-16T23:54Z | - |
 
 ## inbox
 - 261017 decided SAVE-13: career compression order → group stored rows with a complete validated permutation restoring original registry order (alt: reorder live people | increase checkpoint limit); v1/v2 readers remain.
@@ -93,7 +93,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 T196 T197 T198 T199 | doing@261017.p6k2 |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
 
 ## work
@@ -103,10 +102,11 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- Complete T178 lossless century/storage/replay evidence, then T179 full release verification and final CI.
+- Finish T179 local integration verification and archive final CI/performance evidence.
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 T178 done p6k2: both complete century profiles, active23, retained cross-season commitments, canonical replay and era probe pass at unchanged 6df81fa source; max checkpoint1564446/total3129404.
 - 261017 implement-task T178 start p6k2: reconcile successful fixed-source full-century CI artifacts.
 - 261017 T199 done p6k2: final-source CI 38970812465 passes complete careers and production codecs; active round23 checkpoint 1564446 bytes within unchanged limits.
 - 261017 implement-task T199 resumed p6k2; owner authorized remaining tasks in autopilot and main pushes.
@@ -126,4 +126,3 @@
 - 261017 refresh T178/T179 final-gate inputs after T195/T196; current rule/codec/UI deltas are implemented prerequisites, not new release scope.
 - 261017 T196 done n7r4: Read-only refresh drains newer notifications across successive validated loads; unchanged bogus hints cannot spin and malformed generations are ignored.
 - 261017 implement-task T196 start n7r4.
-- 261017 T195 done n7r4: Adaptive bounded pure-JavaScript Brotli/BMP compression preserves historical gzip readers and all facts; the actual century checkpoint fits 1527324 bytes, with metadata-only validated inspection and exact-source activation reuse.
