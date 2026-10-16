@@ -1,0 +1,48 @@
+{
+  "scope": "Browser-only deadline/measurement repair; application and benchmark source fingerprint unchanged.",
+  "node": "v24.12.0",
+  "applicationFingerprint": {
+    "sha256": "39b27cc192deb17fda7a6ef22a57a37d9a932df6691910252caa67923debf290",
+    "files": 531
+  },
+  "priorCi": {
+    "run": 38957458986,
+    "job": 117164412183,
+    "failure": "180000ms fixture timer expired; production deadline is 600000ms; 182 other Chromium cases passed."
+  },
+  "metrics": {
+    "firefox": {
+      "codecElapsedMs": 86871,
+      "codecDeadlineMs": 600000,
+      "retainedPeople": 14093,
+      "syntheticRetiredPeople": 12000,
+      "codec": "brotli-bmp127",
+      "checkpointUtf16Bytes": 1532572
+    },
+    "chromium": {
+      "codecElapsedMs": 65337,
+      "codecDeadlineMs": 600000,
+      "retainedPeople": 14093,
+      "syntheticRetiredPeople": 12000,
+      "codec": "brotli-bmp127",
+      "checkpointUtf16Bytes": 1532572
+    },
+    "webkit": {
+      "codecElapsedMs": 41041,
+      "codecDeadlineMs": 600000,
+      "retainedPeople": 14093,
+      "syntheticRetiredPeople": 12000,
+      "codec": "brotli-bmp127",
+      "checkpointUtf16Bytes": 1532572
+    }
+  },
+  "checks": [
+    "Original 12000 synthetic people plus complete native registry retained",
+    "Three production-preview browsers passed complete bundled write/decode, CSP, reload and export assertions",
+    "typecheck, target lint, formatting and spec checks passed"
+  ],
+  "limits": [
+    "Local full verify at b98e2ae passed 1006 unit, 15 contract and 545 browser cases with 4 existing skips before this harness-only change. Final remote integration still required.",
+    "T178 baseline century passed 1504412-byte checkpoint; active-management later failed retained staff resignation/appointment and remains incomplete."
+  ]
+}
