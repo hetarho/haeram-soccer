@@ -1,4 +1,5 @@
-import { materializePeople, returnLoan } from './npc-continuity';
+import { atCareerDate } from './person-careers';
+import { materializePeople, movePerson, returnLoan } from './npc-continuity';
 import { settleClubRounds, settleCohesion, settleStarts } from './adaptation';
 import { seasonTour } from './bases';
 import { advanceEconomy } from './economy';
@@ -147,7 +148,6 @@ export function divisionStrength(w: World) {
     : rating(w, own);
 }
 export function prepareSeason(w: World, continental = true) {
-  materializePeople(w);
   w.fixtures = [];
   w.tables = {};
   for (const c of w.clubs) w.tables[c.id] = emptyTable();
@@ -169,6 +169,7 @@ export function prepareSeason(w: World, continental = true) {
   }
   w.round = 0;
   w.calendar = { day: 0 };
+  materializePeople(w);
   prepareScorers(w);
   w.rankHistory = (w.rankHistory || []).filter((s) => s.year >= w.year - 9 && s.year < w.year);
   w.cupWinners = {};
@@ -659,58 +660,62 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     `${w.year}/${String(w.year + 1).slice(2)} · ${table.points}점`,
   );
   w.year++;
-  // The new season's books open before the close pays anything, so its renewals and hires are
-  // booked where their events are (→ECON-10).
-  w.income = '0';
-  w.expense = '0';
-  advanceEconomy(w, w.year - 1);
-  // The new season's operating expenses, in its money and on the division it plays (→ECON-30),
-  // before anything this rollover weighs fixed costs.
-  w.operatingExpenses = assessOperatingExpenses(w);
-  yearlySponsor(w);
-  yearlyStaff(w);
-  seasonStaff(w);
-  seasonAcademy(w);
-  // Youth come in five below the division the club will play in, on its market wage: rated
-  // against an XI that had outgrown its division they arrived on star wages (→CLUB-3).
-  const youthLevel = Math.max(20, Math.round(divisionStrength(w)) - 5);
-  // Unrenewed contracts end: those players leave, before 1996 for a compensation (→CLUB-28).
-  expireContracts(w, oldTier);
-  // The running contracts' promotion or relegation clauses apply from the first round (→CLUB-29).
-  if (own.tier !== oldTier) applyClauses(w, own.tier < oldTier ? 'promotion' : 'relegation');
-  for (const p of activePlayers(w)) {
-    if (p.loanUntil && p.loanUntil <= w.year) {
-      returnLoan(w, p);
-      addEvent(w, 'loan-return', `${p.name}의 다음 장`, '임대 기간이 끝났습니다.');
-      continue;
+  w.calendar = { day: 0 };
+  atCareerDate(w, { year: w.year - 1, day: SEASON_END_DAY + 1 }, () => {
+    // The new season's books open before the close pays anything, so its renewals and hires are
+    // booked where their events are (→ECON-10).
+    w.income = '0';
+    w.expense = '0';
+    advanceEconomy(w, w.year - 1);
+    // The new season's operating expenses, in its money and on the division it plays (→ECON-30),
+    // before anything this rollover weighs fixed costs.
+    w.operatingExpenses = assessOperatingExpenses(w);
+    yearlySponsor(w);
+    yearlyStaff(w);
+    seasonStaff(w);
+    seasonAcademy(w);
+    // Youth come in five below the division the club will play in, on its market wage: rated
+    // against an XI that had outgrown its division they arrived on star wages (→CLUB-3).
+    const youthLevel = Math.max(20, Math.round(divisionStrength(w)) - 5);
+    // Unrenewed contracts end: those players leave, before 1996 for a compensation (→CLUB-28).
+    expireContracts(w, oldTier);
+    // The running contracts' promotion or relegation clauses apply from the first round (→CLUB-29).
+    if (own.tier !== oldTier) applyClauses(w, own.tier < oldTier ? 'promotion' : 'relegation');
+    for (const p of activePlayers(w)) {
+      if (p.loanUntil && p.loanUntil <= w.year) {
+        returnLoan(w, p);
+        addEvent(w, 'loan-return', `${p.name}의 다음 장`, '임대 기간이 끝났습니다.');
+        continue;
+      }
+      developAnnually(w, p);
+      p.fatigue = 0;
+      p.season = zeroMetrics();
     }
-    developAnnually(w, p);
-    p.fatigue = 0;
-    p.season = zeroMetrics();
-  }
-  let i = 0;
-  while (activePlayers(w).length < 18 || !activePlayers(w).some((p) => p.position === 'GK')) {
-    const position = refillPosition(w);
-    const youth = makePlayer(
-      own.country,
-      w.seed,
-      `${own.id}:youth:${w.year}:${i++}`,
-      w.year,
-      youthLevel,
-      position,
-      18,
-      own.tier,
-    );
-    // A refill signs at the close with his contract's clauses (→CLUB-29).
-    youth.clauses = signingClauses(w, youth);
-    joinClub(youth, 'domestic');
-    w.players.push(youth);
-  }
-  own.reputation = clamp(own.reputation + Math.max(-1, table.points / 25 - 1));
-  own.strength = rating(w, own);
-  // A summer tour pays, spreads the name and tires the rested squad as the season starts
-  // (→ECON-16).
-  seasonTour(w);
+    let i = 0;
+    while (activePlayers(w).length < 18 || !activePlayers(w).some((p) => p.position === 'GK')) {
+      const position = refillPosition(w);
+      const youth = makePlayer(
+        own.country,
+        w.seed,
+        `${own.id}:youth:${w.year}:${i++}`,
+        w.year,
+        youthLevel,
+        position,
+        18,
+        own.tier,
+      );
+      // A refill signs at the close with his contract's clauses (→CLUB-29).
+      youth.clauses = signingClauses(w, youth);
+      joinClub(youth, 'domestic');
+      w.players.push(youth);
+      movePerson(w, youth, w.playerClub, true);
+    }
+    own.reputation = clamp(own.reputation + Math.max(-1, table.points / 25 - 1));
+    own.strength = rating(w, own);
+    // A summer tour pays, spreads the name and tires the rested squad as the season starts
+    // (→ECON-16).
+    seasonTour(w);
+  });
   w.europe = [];
   prepareSeason(w);
   // Relegated clubs may sack their managers into the market (→STAFF-17).

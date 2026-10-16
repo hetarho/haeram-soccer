@@ -1,3 +1,4 @@
+import { endPlayingCoachForDeparture, playingCoachDepartureCost } from './playing-coach';
 import { movePerson } from './npc-continuity';
 import type { Club, Player, TransferBid, TransferStance, World } from '../../contracts/src/types';
 import { currency } from '../../catalogs/src/index';
@@ -194,12 +195,15 @@ function saleBlocker(w: World, p: Player | undefined) {
 }
 function completeSale(w: World, bid: TransferBid, p: Player) {
   const club = w.clubs.find((c) => c.id === bid.club);
+  if (BigInt(w.cash) + BigInt(bid.fee) < BigInt(playingCoachDepartureCost(w, p.id)))
+    throw new Error('코치 계약 종료 비용을 지급할 자금이 부족해요.');
+  credit(w, bid.fee);
+  endPlayingCoachForDeparture(w, p.id);
   p.status = 'sold';
   delete p.stance;
   // His sale ends his talk, his unhappiness and his transfer request (→CLUB-27).
   leaveContract(w, p);
   movePerson(w, p, club?.id, true);
-  credit(w, bid.fee);
   addEvent(
     w,
     'transfer-out',
@@ -825,6 +829,20 @@ function answerIncoming(
   value: string,
   fee: string,
 ) {
+  if (
+    isDelegated(w, 'sales') &&
+    !isDelegated(w, 'staff') &&
+    w.staff?.some((member) => member.person === player.id)
+  ) {
+    pushInbox(w, {
+      kind: 'incoming-bid',
+      title: `${player.name} 선수·코치 계약 종료 검토`,
+      detail: '매각하면 코치 계약도 끝나요. 두 역할과 기존 계약 종료 비용을 함께 확인하세요.',
+      attention: true,
+      ref: bid.id,
+    });
+    return;
+  }
   const age = w.year - player.born,
     offered = Number((BigInt(fee) * 100n) / BigInt(value)),
     untouchable = player.stance === 'untouchable',
@@ -834,6 +852,13 @@ function answerIncoming(
     detail: string,
     who = isDelegated(w, 'sales') ? '단장이' : '구단이',
   ) => {
+    if (
+      accept &&
+      BigInt(w.cash) + BigInt(bid.fee) < BigInt(playingCoachDepartureCost(w, player.id))
+    ) {
+      accept = false;
+      detail = '코치 계약 종료 비용을 지급할 자금이 부족해 거절했어요.';
+    }
     if (accept) completeSale(w, bid, player);
     else bid.status = 'rejected';
     pushInbox(w, {

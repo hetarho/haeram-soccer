@@ -9,7 +9,7 @@ import type {
 import { seasonDate, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/world';
 import { talkFor } from '../../../../packages/engine/src/contracts';
-import { isExpiring } from '../../../../packages/engine/src/staff';
+import { isExpiring, releaseCost } from '../../../../packages/engine/src/staff';
 import { managerRenewal } from '../../../../packages/engine/src/ops-staff';
 import { managerTerm } from '../../../../packages/engine/src/styles';
 import type { GameClient } from '../runtime/client';
@@ -232,6 +232,20 @@ const EventCard = memo(function EventCard({
             <dt>{bid.status === 'countered' ? '역제안 이적료' : '제안 이적료'}</dt>
             <dd>{format(bid.counterFee || bid.fee)}</dd>
           </div>
+          {w.staff?.some((member) => member.person === bid.playerId) && (
+            <div>
+              <dt>코치 계약도 함께 종료</dt>
+              <dd>
+                기존 계약 종료 비용{' '}
+                {format(
+                  releaseCost(
+                    w,
+                    w.staff.find((member) => member.person === bid.playerId),
+                  ),
+                )}
+              </dd>
+            </div>
+          )}
           {bid.club && (
             <div>
               <dt>상대 구단</dt>

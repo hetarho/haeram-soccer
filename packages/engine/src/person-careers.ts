@@ -7,7 +7,21 @@ import type {
   World,
 } from '../../contracts/src/types';
 import { currentDay } from './calendar';
-export const careerDate = (w: World): CareerDate => ({ year: w.year, day: currentDay(w) });
+const settlementDates = new WeakMap<World, CareerDate>();
+/** Rollover skips summer in the live clock; contracts settled at the close keep their actual date. */
+export function atCareerDate<T>(w: World, date: CareerDate, settle: () => T): T {
+  const previous = settlementDates.get(w);
+  settlementDates.set(w, { ...date });
+  try {
+    return settle();
+  } finally {
+    if (previous) settlementDates.set(w, previous);
+    else settlementDates.delete(w);
+  }
+}
+export const careerDate = (w: World): CareerDate => ({
+  ...(settlementDates.get(w) ?? { year: w.year, day: currentDay(w) }),
+});
 export const compareCareerDates = (a: CareerDate, b: CareerDate) =>
   a.year - b.year || a.day - b.day;
 export function resolvePerson(w: World, id: string) {

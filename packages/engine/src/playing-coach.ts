@@ -24,6 +24,7 @@ export function playingCoachDurations(w: World, id: string): (1 | 2)[] {
   if (
     !p ||
     p.retiring === undefined ||
+    !!p.loanUntil ||
     !person?.intention?.willing ||
     (personCoachingGrade(person) ?? 0) < 4 ||
     person.playing !== 'active' ||
@@ -250,4 +251,34 @@ export function considerPlayingCoach(w: World, role: Staff['role']) {
     return false;
   proposePlayingCoach(w, selected.person, selected.years, selected.term);
   return true;
+}
+
+export function playingCoachDepartureCost(w: World, id: string) {
+  return releaseCost(
+    w,
+    w.staff?.find((member) => member.person === id),
+  );
+}
+/** Leaving the club ends the occupied post once; dismissing the post alone never calls this. */
+export function endPlayingCoachForDeparture(w: World, id: string, mandatory = false) {
+  const member = w.staff?.find((member) => member.person === id);
+  if (member) releaseStaff(w, member.role, mandatory);
+}
+/** Unaccepted proposals cannot freeze a post after a player's actual retirement/departure. */
+export function expirePlayingCoachProposals(w: World) {
+  for (const proposal of Object.values(w.playingCoachProposals || {})) {
+    if (
+      proposal.status !== 'pending' ||
+      playingCoachDurations(w, proposal.person).includes(proposal.years)
+    )
+      continue;
+    proposal.status = 'declined';
+    proposal.settled = careerDate(w);
+    addEvent(
+      w,
+      'playing-coach-expire',
+      '플레잉 코치 계약 검토 종료',
+      '선수의 은퇴·소속·가능 기간이 바뀌어 계약안이 종료됐어요. 두 계약을 새로 체결하지 않았어요.',
+    );
+  }
 }

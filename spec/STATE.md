@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:21Z | T161 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:26Z | - |
 
 ## inbox
 - 261017 suggest T154 T155 T156 T157 T158: five person-career foundation tasks completed → review-code aptitude/person-careers/npc-continuity/careers/coaching-entry before the next unrelated feature; remaining planned second-career tasks continue.
@@ -84,7 +84,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T161 | Settle playing-coach payroll, retirement and departures | STAFF CLUB HIST WORLD | T160 | doing@261017.n7r4 |
 | T162 | Accumulate actual coaching service and mentor exposure | STAFF HIST WORLD SAVE | T161 | todo |
 | T163 | Move retained coaching candidates into real NPC employment | STAFF WORLD HIST | T159 T162 | todo |
 | T164 | Qualify managers and assign separate ability and inherited school | STAFF PLAYER HIST | T162 T163 | todo |
@@ -124,6 +123,7 @@
 - Do not activate rules 3.0.0 or reset career data before T174's prerequisites are complete.
 
 ## log
+- 261017 T161 done n7r4: Player and coach pay/effects end independently; actual retirement keeps unexpired coaching, sales settle both roles and ordinary costs once, mixed authority waits, and rollover employment uses the real closing date.
 - 261017 implement-task T161 start n7r4.
 - 261017 T160 done n7r4: Joint playing-coach quotes atomically approve both roles, preserve additive wages and ordinary costs, enforce stale/funds/age guards and deduplicate mixed-authority stopping/handover.
 - 261017 implement-task T160 start n7r4.
@@ -143,4 +143,3 @@
 - 261016 T153 done v6k2: balanced recruitment support across schema/protocol/rows/presets/library and reload; 833 unit, 11 contract and 27 cross-browser core cases passed. Authorized two-unit scope complete; remote CI remains in progress.
 - 261016 implement-task T153 start v6k2; STAFF r33 traits/call-ups, SAVE r38–39 activation scope and WEB r87 squad tones do not alter the support row contract.
 - 261016 T152 done v6k2: shared scoped policy sheet, per-command acknowledgement and retained candidate comparison; 8 Chromium and 15 board/navigation cases passed.
-- 261016 implement-task T152 start v6k2; WEB r87 squad tone delta is unrelated to policy sheets.

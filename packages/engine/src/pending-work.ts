@@ -12,6 +12,8 @@ import { delegatedSponsors } from './sponsors';
 export { pendingWorkPreview } from './pending-work-preview';
 export function handoverPendingWork(w: World, changed: readonly ResponsibilityKey[]) {
   if (changed.includes('contracts') || changed.includes('staff')) handoverPlayingCoaches(w);
+  if (changed.includes('staff') && isDelegated(w, 'staff') && isDelegated(w, 'sales'))
+    handoverSales(w);
   for (const key of changed) {
     const delegated = isDelegated(w, key);
     if (key === 'recruitment') {

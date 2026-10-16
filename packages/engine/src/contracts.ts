@@ -1,3 +1,4 @@
+import { endPlayingCoachForDeparture } from './playing-coach';
 import { movePerson } from './npc-continuity';
 import type {
   AgentRating,
@@ -779,6 +780,7 @@ export function expireContracts(w: World, division = clubOf(w).tier) {
     if (p.loanUntil || p.until > w.year) continue;
     const club = suitorFor(w, p, random(`${w.seed}:expiry:${p.id}:${w.year}`)),
       where = club ? `${club.name} 입단` : '새 팀을 찾아 떠남';
+    endPlayingCoachForDeparture(w, p.id, true);
     p.status = 'sold';
     delete p.stance;
     leaveContract(w, p);

@@ -1,4 +1,8 @@
-import { considerPlayingCoach, handoverPlayingCoaches } from './playing-coach';
+import {
+  considerPlayingCoach,
+  handoverPlayingCoaches,
+  expirePlayingCoachProposals,
+} from './playing-coach';
 import { coachingEntryReady } from './coaching-entry';
 import { closeEmployment, openEmployment } from './person-careers';
 import { ATTRIBUTES, type Attribute } from '../../contracts/src/player';
@@ -452,12 +456,12 @@ function departStaff(w: World, member?: Staff) {
   }
   closeEmployment(w, member.person, member.role);
 }
-export function releaseStaff(w: World, role: StaffRole): void {
+export function releaseStaff(w: World, role: StaffRole, mandatory = false): void {
   const staff = w.staff || basicStaff(w),
     member = staff.find((other) => other.role === role);
   if (!member) throw new Error('이미 비어 있는 자리입니다.');
   const owed = releaseCost(w, member);
-  if (owed !== '0') debit(w, owed);
+  if (owed !== '0') debit(w, owed, mandatory);
   departStaff(w, member);
   w.staff = staff.filter((other) => other.role !== role);
   addEvent(
@@ -785,6 +789,7 @@ function delegatedSeason(w: World, role: StaffRole, member: Staff | undefined) {
  * and the owner is told, and volunteers stay another season.
  */
 export function seasonStaff(w: World): void {
+  expirePlayingCoachProposals(w);
   if (!w.staff) return;
   developStaff(w);
   const report: string[] = [];
@@ -942,6 +947,7 @@ export function managerRenewalReminder(w: World) {
  * departments the renewal season is announced on 1 April when contracts end at the close.
  */
 export function dailyStaff(w: World) {
+  expirePlayingCoachProposals(w);
   handoverPlayingCoaches(w);
   if (currentDay(w) === renewalDay(w.year)) managerRenewalReminder(w);
   if (w.manager.interim && isDelegated(w, 'manager')) appointDelegatedManager(w);

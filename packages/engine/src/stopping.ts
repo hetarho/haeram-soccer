@@ -76,8 +76,28 @@ export function pendingDecisions(w: World, includeDelegated = false): StopReason
       bid.year === year &&
       bid.due >= day &&
       activePlayers(w).some((p) => p.id === bid.playerId)
-    )
-      add('sales', bid.id, 'incoming-bid', '선수 매각 제안에 답변해 주세요');
+    ) {
+      const coach = w.staff?.find((member) => member.person === bid.playerId);
+      if (!coach) add('sales', bid.id, 'incoming-bid', '선수 매각 제안에 답변해 주세요');
+      else {
+        const keys: ResponsibilityKey[] = ['sales', 'staff'],
+          direct = keys.find((key) => !isDelegated(w, key));
+        if (includeDelegated || direct)
+          reasons.push({
+            id: `decision:playing-coach-sale:${bid.id}`,
+            year,
+            day,
+            kind: 'incoming-bid',
+            ref: bid.id,
+            title: `${coach.name} 선수·코치 계약 종료 검토`,
+            detail:
+              '매각하면 선수와 코치 계약이 함께 끝나요. 기존 코치 계약 종료 비용을 확인하세요.',
+            attention: true,
+            responsibility: direct ?? 'sales',
+            responsibilities: keys,
+          });
+      }
+    }
   }
   if (w.manager.interim)
     add(
@@ -100,6 +120,17 @@ export function pendingDecisions(w: World, includeDelegated = false): StopReason
   if (w.staff)
     for (const role of STAFF_ROLES) {
       if (combined.some((proposal) => proposal.role === role)) continue;
+      if (
+        (w.bids || []).some(
+          (bid) =>
+            bid.direction === 'in' &&
+            bid.status === 'pending' &&
+            bid.year === year &&
+            bid.due >= day &&
+            w.staff?.some((member) => member.role === role && member.person === bid.playerId),
+        )
+      )
+        continue;
       const member = staffMember(w, role);
       if (!member)
         add(

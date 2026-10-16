@@ -1,3 +1,4 @@
+import { endPlayingCoachForDeparture } from './playing-coach';
 import { COUNTRIES } from '../../catalogs/src/index';
 import type { Club, PersonCareer, Player, World } from '../../contracts/src/types';
 import { coachingGrade } from './aptitude';
@@ -117,6 +118,7 @@ export function movePerson(w: World, p: Player, club?: string, own = false, loan
   return person;
 }
 export function returnLoan(w: World, p: Player) {
+  endPlayingCoachForDeparture(w, p.id, true);
   const person = retainPerson(w, p, undefined, true);
   const parent = person.loan?.club;
   movePerson(w, p, parent);
