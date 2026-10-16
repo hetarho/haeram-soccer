@@ -90,8 +90,9 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 | doing@261017.n7r4 |
-| T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 | todo |
+| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 | todo |
+| T192 | Repair rules-three full-suite regression journeys | WEB SAVE ARCH | T174 T191 | todo |
+| T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -104,6 +105,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 create-task T192: repair concrete full-suite CI regressions before final verification; T178 remains incomplete after the measured storage failure.
 - 261017 implement-task T178 start n7r4.
 - 261017 T191 done n7r4: Prepared the rules 3 integration candidate: deferred optional views meet the entry budget, the clock uses domain-owned business stops, strict synthetic identities and reset protection are verified, historic portable facts remain unchanged, and cross-feature/combined-departure journeys are covered.
 - 261017 implement-task T191 start n7r4.
