@@ -1,3 +1,4 @@
+import { openNeed } from './replacements';
 import { bidCeiling, haggling } from './director-bidding';
 import { registrationRoom } from './registration';
 import { endPlayingCoachForDeparture, playingCoachDepartureCost } from './playing-coach';
@@ -203,6 +204,7 @@ function completeSale(w: World, bid: TransferBid, p: Player) {
   const club = w.clubs.find((c) => c.id === bid.club);
   if (BigInt(w.cash) + BigInt(bid.fee) < BigInt(playingCoachDepartureCost(w, p.id)))
     throw new Error('코치 계약 종료 비용을 지급할 자금이 부족해요.');
+  const wasStarter = ownStarters(w).some((starter) => starter.id === p.id);
   credit(w, bid.fee);
   endPlayingCoachForDeparture(w, p.id);
   p.status = 'sold';
@@ -210,6 +212,7 @@ function completeSale(w: World, bid: TransferBid, p: Player) {
   // His sale ends his talk, his unhappiness and his transfer request (→CLUB-27).
   leaveContract(w, p);
   movePerson(w, p, club?.id, true);
+  if (wasStarter || activePlayers(w).length < 20) openNeed(w, p);
   addEvent(
     w,
     'transfer-out',

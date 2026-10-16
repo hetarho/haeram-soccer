@@ -533,7 +533,7 @@ const bid = z.strictObject({
   due: z.number().int().min(0).max(800),
   status: z.enum(['pending', 'accepted', 'rejected', 'countered', 'expired', 'completed']),
   counterFee: money.optional(),
-  staff: z.enum(['short', 'upgrade']).optional(),
+  staff: z.enum(['short', 'replacement', 'upgrade']).optional(),
 });
 const request = z.strictObject({
   line,
@@ -683,6 +683,18 @@ const worldSchema: z.ZodType<World> = z.object({
   calendar: z.object({ day: z.number().int().min(0).max(365) }).optional(),
   rankHistory: z.array(snapshot).max(470).optional(),
   scorerSeason: scorerSeason.optional(),
+  replacementNeeds: z
+    .array(
+      z.strictObject({
+        line,
+        playerId: id,
+        year: z.number().int().min(1901).max(4000),
+        window: z.enum(['summer', 'winter']),
+        day: z.number().int().min(0).max(365),
+      }),
+    )
+    .max(200)
+    .optional(),
   recruitmentArrivals: z
     .array(z.strictObject({ player: id, name: text, position, positions, at: careerDate }))
     .optional(),

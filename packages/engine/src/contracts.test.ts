@@ -215,6 +215,8 @@ function talking(ability = 80, age = 26) {
     until: w.year + 1,
     agent: 1 as Player['agent'],
   });
+  // This fixture deliberately changes a founder's identity attributes.
+  Object.assign(w.people![p.id], { born: p.born, position: p.position });
   return { w, p };
 }
 /** 1 January, when the winter window opens and players in their final season ask to renew. */
@@ -847,6 +849,8 @@ describe('unhappy players and expiring contracts (→CLUB-27, CLUB-28)', () => {
     for (const p of activePlayers(unsigned)) p.until = 1992;
     const nobody = Object.assign(activePlayers(unsigned)[0], rated(unsigned, 1), { until: 1990 }),
       cash = unsigned.cash;
+    Object.assign(unsigned.people![nobody.id], { born: nobody.born, position: nobody.position });
+    nobody.joined = unsigned.year;
     expect(suitorFor(unsigned, nobody, () => 0)).toBeUndefined();
     expireContracts(unsigned);
     expect(nobody.status).toBe('sold');

@@ -1,3 +1,4 @@
+import { openNeed } from './replacements';
 import { callUpFor } from './squad-target';
 import { SQUAD_TARGET } from './squad-size';
 import { isDelegated } from './responsibilities';
@@ -44,6 +45,7 @@ import {
   clubOf,
   joinClub,
   makePlayer,
+  ownStarters,
   refillPosition,
   rating,
 } from './world';
@@ -663,6 +665,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     ...seasonRecords(w, order, oldTier, oldGroup),
   });
   w.lastChampions = champions.map(({ country, club, cup }) => ({ country, club, cup }));
+  const startersBeforeDepartures = [...ownStarters(w)];
   retireAtClose(w);
   const tiers = new Map(w.clubs.map((c) => [c.id, c.tier]));
   const finishes = leagueFinishes(w);
@@ -744,6 +747,9 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
       w.players.push(youth);
       movePerson(w, youth, w.playerClub, true);
     }
+    for (const player of startersBeforeDepartures)
+      if (player.status === 'retired' || (player.status === 'sold' && !player.loanUntil))
+        openNeed(w, player, currentDay(w));
     own.strength = rating(w, own);
     // A summer tour pays, spreads the name and tires the rested squad as the season starts
     // (→ECON-16).

@@ -501,7 +501,7 @@ export interface TransferBid {
   status: 'pending' | 'accepted' | 'rejected' | 'countered' | 'expired' | 'completed';
   counterFee?: string;
   /** The 단장's bid or free-agent signing with transfers delegated (→CLUB-33), by its need. */
-  staff?: 'short' | 'upgrade';
+  staff?: 'short' | 'replacement' | 'upgrade';
 }
 export interface InboxItem {
   id: string;
@@ -947,6 +947,13 @@ export interface World {
   playingCoachProposals?: Record<string, PlayingCoachProposal>;
   coachingMarketAt?: CareerDate;
   recruitmentArrivals?: RecruitmentArrival[];
+  replacementNeeds?: {
+    line: Line;
+    playerId: string;
+    year: number;
+    window: 'summer' | 'winter';
+    day: number;
+  }[];
   mediations?: RecruitmentMediation[];
   promises?: ReinforcementPromise[];
   players: Player[];

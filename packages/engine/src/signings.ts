@@ -1,3 +1,4 @@
+import { closeNeedFor, openNeeds } from './replacements';
 import { bidCeiling, directorTrait, staffBidShare } from './director-bidding';
 import { SQUAD_TARGET } from './squad-size';
 import { registration, registrationRoom } from './registration';
@@ -72,6 +73,7 @@ type Offer = ReturnType<typeof transferOffers>[number];
  */
 export type SigningNeed = (
   | { kind: 'short'; line: Line; count: number; minimum: number; squad: number }
+  | { kind: 'replacement'; line: Line; playerId: string }
   | {
       kind: 'upgrade';
       line: Line;
@@ -191,6 +193,7 @@ export function signingVerdict(w: World, player: Player, fee: string) {
 /** The need in words, with the row behind it and the manager's request when it is one. */
 export function needLine(w: World, need: SigningNeed) {
   const asked = need.requested ? `감독 요청 ${requestLabel(need.requested)} · ` : '';
+  if (need.kind === 'replacement') return `대체 영입 필요 · ${LINE_NAME[need.line]}`;
   if (need.kind === 'short')
     return (
       asked +
@@ -228,7 +231,7 @@ function candidates(w: World, offers: Offer[], need: SigningNeed, tried: Set<str
         !registrationRoom(w, { ...offer.player, joined: w.year }) &&
         !offer.player.loanUntil &&
         !tried.has(offer.player.id) &&
-        (need.kind === 'short'
+        (need.kind !== 'upgrade'
           ? lineOfPlayer(offer.player) === need.line
           : playsAt(offer.player, need.position) &&
             atSlot(w, offer.player, need.slot) >= need.level + need.margin),
@@ -416,6 +419,7 @@ export function openShortlistWindow(w: World) {
  * window (→CLUB-33): a short line's, or a slot's whose position he plays at 준수 or better.
  */
 export function noteSigning(w: World, player: Player) {
+  closeNeedFor(w, player);
   movePerson(w, player, w.playerClub, true, player.loanUntil);
   (w.recruitmentArrivals ??= []).push({
     player: player.id,
@@ -593,7 +597,10 @@ export function staffSignings(w: World) {
       });
     } else retry.status = 'expired';
   }
-  if (!regular && !retry) return;
+  const replacements: SigningNeed[] = openNeeds(w)
+    .filter((need) => need.day < day)
+    .map((need) => ({ kind: 'replacement', line: need.line, playerId: need.playerId }));
+  if (!regular && !retry && !replacements.length) return;
   const squad = activePlayers(w).length;
   if (squad >= registration(w).ceiling) return;
   const stance = financeStance(w),
@@ -603,24 +610,32 @@ export function staffSignings(w: World) {
     tried = new Set(bids.map((bid) => bid.playerId));
   const requests = signingRequests(w),
     short = shortLines(w),
-    found: SigningNeed[] = short.length
-      ? short
-      : stance.signing.margin !== undefined &&
-          upgrades < stance.signing.upgrades &&
-          squad <= SIGNING_CONFIG.upgradeSquad
+    found: SigningNeed[] = [
+      ...short,
+      ...replacements,
+      ...(stance.signing.margin !== undefined &&
+      upgrades < stance.signing.upgrades &&
+      squad <= SIGNING_CONFIG.upgradeSquad
         ? upgradeNeeds(w, stance.signing.margin)
-        : [];
+        : []),
+    ];
   const needs = found
     .map((need) => {
       const requested = requests.find((request) =>
-        need.kind === 'short'
+        need.kind !== 'upgrade'
           ? request.kind === 'short' && request.line === need.line
           : request.slot === need.slot,
       );
       return requested ? { ...need, requested } : need;
     })
     .map((need, order) => ({ need, order }))
-    .sort((a, b) => Number(!a.need.requested) - Number(!b.need.requested) || a.order - b.order)
+    .sort(
+      (a, b) =>
+        ({ short: 0, replacement: 1, upgrade: 2 })[a.need.kind] -
+          { short: 0, replacement: 1, upgrade: 2 }[b.need.kind] ||
+        Number(!a.need.requested) - Number(!b.need.requested) ||
+        a.order - b.order,
+    )
     .map(({ need }) => need);
   for (const need of needs)
     for (const { offer, index } of candidates(w, offers, need, tried)) {
