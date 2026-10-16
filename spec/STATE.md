@@ -73,12 +73,12 @@
 | CLUB | 37 | 35 | CLUB-3✎ CLUB-13✎ CLUB-18✎ CLUB-22✎ CLUB-24✎ CLUB-32✎ CLUB-33✎ CLUB-34+ CLUB-35+ CLUB-36+ CLUB-37+ | 2 |
 | MATCH | 9 | 9 | - | 0 |
 | LEAGUE | 8 | 7 | LEAGUE-11✎ LEAGUE-13✎ | 0 |
-| STAFF | 25 | 20 | STAFF-13✎ STAFF-15✎ STAFF-16✎ STAFF-17✎ STAFF-18✎ STAFF-19✎ STAFF-20✎ STAFF-23+ STAFF-24+ STAFF-25+ STAFF-26+ STAFF-27+ STAFF-28+ STAFF-29+ STAFF-30+ STAFF-31+ STAFF-32+ STAFF-33+ STAFF-34+ STAFF-35+ STAFF-36+ STAFF-37+ | 3 |
+| STAFF | 26 | 20 | STAFF-13✎ STAFF-15✎ STAFF-16✎ STAFF-17✎ STAFF-18✎ STAFF-19✎ STAFF-20✎ STAFF-23+ STAFF-24+ STAFF-25+ STAFF-26+ STAFF-27+ STAFF-28+ STAFF-29+ STAFF-30+ STAFF-31+ STAFF-32+ STAFF-33+ STAFF-34+ STAFF-35+ STAFF-36+ STAFF-37+ STAFF-38+ STAFF-39+ | 3 |
 | ECON | 38 | 37 | ECON-25✎ | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 11 | 9 | HIST-14+ HIST-15+ | 0 |
 | SAVE | 37 | 35 | SAVE-17+ SAVE-18+ SAVE-5✎ SAVE-11✎ SAVE-14✎ SAVE-16✎ | 0 |
-| PLAYER | 5 | 3 | PLAYER-1✎ PLAYER-19✎ PLAYER-21+ PLAYER-22+ | 1 |
+| PLAYER | 6 | 3 | PLAYER-1✎ PLAYER-19✎ PLAYER-21+ PLAYER-22+ PLAYER-23+ PLAYER-24+ | 1 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -96,6 +96,8 @@
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 update-ssot STAFF r26 PLAYER r6: high/very-high coaching and separate managerial aptitude gates, five-grade evaluation, exact own-player grades and existing chief-scout accuracy for other players; calculation/entry/ability remain open
+- 261016 update-ssot STAFF PLAYER start: require high coaching/managerial aptitude and adopt five-grade own-player/scouted-other-player evaluations
 - 261016 update-ssot STAFF r25: playing coaches use one of six suitable training posts; coach-only dismissal/resignation preserves player contract, transfer/release out of the club ends both roles with ordinary costs and affected responsibility checks
 - 261016 update-ssot STAFF start: settle six eligible playing-coach posts and asymmetric coach-only versus player-departure termination
 - 261016 update-ssot STAFF r24 CLUB r37: playing-coach deferral stays within age 41; playing retirement ends only player salary/role, remaining coach contract continues, expiries follow normal staff decisions
@@ -114,5 +116,3 @@
 - 261016 update-ssot WEB r84: match events required for every manual configuration, not only all-delegated play; other events off means next-match-eve progression, no season-end fallback
 - 261016 update-ssot WEB start: correct manual-mode eligibility to require match events regardless of delegated responsibilities; remove the no-event season-end fallback question
 - 261016 update-ssot WEB r83: manual play moves directly to the next event date without a paced progress/cancel journey; choice-free reports notify only; central entry/apply rules consolidated
-- 261016 update-ssot WEB r82: pending work transfers after disclosure and explicit apply; manual stops group same-date events; remaining policy interview continues
-- 261016 update-ssot WEB STAFF PLAYER WORLD CLUB SAVE start: settle remaining policies together, beginning with pending decisions and manual progression; balance remains parked
