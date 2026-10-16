@@ -1,0 +1,31 @@
+{
+  "scope": "Working-tree read-only notification regression evidence; final full-source integration and CI remain T179.",
+  "node": "v24.12.0",
+  "failureRuns": [
+    38951044726,
+    38954552929
+  ],
+  "failure": "Firefox reader remained at round 0 after the writer committed round 1.",
+  "regression": {
+    "originalExit": 1,
+    "fixedExit": 0,
+    "workload": "Four validated settings commits arrive during successive held reader activations; a duplicate bogus high-generation notice remains bounded, two later real notices still drain, and malformed notices do nothing."
+  },
+  "checks": {
+    "unitRuntimeHostProtocol": 50,
+    "threeBrowserRecovery": 24,
+    "firefoxRaceRepeats": 10,
+    "finalInputFilterFirefoxRepeats": 5,
+    "typecheck": true,
+    "lint": true,
+    "format": true,
+    "build": true
+  },
+  "files": {
+    "apps/web/src/runtime/client.ts": "3c3553af440c05c07d698ea14728da3a84a02afe57571005a13bbec9bc6fd67b",
+    "apps/web/src/runtime/client.test.ts": "19492960504706fc03d22d53b1733f88ea8b6f592c43ed8b73fe66463f9ac61b"
+  },
+  "limits": [
+    "The 24 recovery/10-repeat browser pass preceded the malformed-message filter adjustment; the final filter has 50 unit and five further Firefox passes. T179 repeats the whole suite at the frozen final source."
+  ]
+}

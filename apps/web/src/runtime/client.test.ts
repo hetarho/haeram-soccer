@@ -91,6 +91,10 @@ function FakeWorker(url: URL) {
 }
 
 class ChannelPort {
+  static instances: ChannelPort[] = [];
+  constructor() {
+    ChannelPort.instances.push(this);
+  }
   onmessage?: (event: MessageEvent<{ generation: number }>) => void;
   postMessage() {}
   close() {}
@@ -133,6 +137,7 @@ beforeEach(() => {
   storage = new MemoryStorage();
   WorkerPort.instances = [];
   CodecPort.instances = [];
+  ChannelPort.instances = [];
   vi.stubGlobal('Worker', FakeWorker);
   vi.stubGlobal('BroadcastChannel', ChannelPort);
   vi.stubGlobal('localStorage', storage);
@@ -793,5 +798,92 @@ it('exports verified current bytes after storage corruption and never reuses ano
   } finally {
     release();
     await client.whenSaved();
+  }
+});
+
+it('drains newer notices across more than two read-only loads without spinning on an unchanged hint', async () => {
+  const writer = await start();
+  vi.stubGlobal('navigator', {
+    locks: {
+      request: (_name: string, _options: unknown, callback: (lock: null) => Promise<void>) =>
+        callback(null),
+    },
+  });
+  const reader = new GameClient(() => {});
+  clients.push(reader);
+  await reader.start();
+  const worker = WorkerPort.instances[1],
+    channel = ChannelPort.instances[1];
+  const original = worker.postMessage.bind(worker),
+    held: (() => void)[] = [];
+  const post = vi.spyOn(worker, 'postMessage').mockImplementation((input) => {
+    if ('body' in input && input.body.type === 'inspect' && input.body.activate)
+      held.push(() => original(input));
+    else original(input);
+  });
+  const notice = (generation: number) =>
+    channel.onmessage?.({ data: { generation } } as MessageEvent<{ generation: number }>);
+  try {
+    for (let i = 1; i <= 4; i++) {
+      const previous = writer.state.savedRevision;
+      await writer.command(
+        {
+          type: 'settings',
+          settings: { ...writer.state.view!.world.settings!, mode: i % 2 ? 'manual' : 'automatic' },
+        },
+        { background: true },
+      );
+      await writer.whenSaved();
+      expect(writer.state.savedRevision).toBeGreaterThan(previous);
+      notice(JSON.parse(storage.getItem('haeram-soccor:manifest')!).generation);
+      if (i > 1) held.shift()!();
+      await vi.waitFor(() =>
+        expect(
+          held,
+          `generation ${i}; channels ${ChannelPort.instances.length}; readonly ${reader.state.readonly}; requests ${worker.requests.map((r) => r.body.type).join(',')}`,
+        ).toHaveLength(1),
+      );
+    }
+    held.shift()!();
+    await reader.whenIdle();
+    expect(reader.state.view!.world.revision).toBe(writer.state.savedRevision);
+    expect(reader.state.readonly).toBe(true);
+    expect(worker.requests.some((request) => request.body.type === 'command')).toBe(false);
+    const before = worker.requests.filter((request) => request.body.type === 'inspect').length;
+    notice(999999);
+    notice(999999);
+    await vi.waitFor(() => expect(held).toHaveLength(1));
+    held.shift()!();
+    await reader.whenIdle();
+    expect(
+      worker.requests.filter((request) => request.body.type === 'inspect').length - before,
+    ).toBeLessThanOrEqual(2);
+    expect(reader.state.view!.world.revision).toBe(writer.state.savedRevision);
+    // A bogus high generation must not mask real newer notices arriving during later loads.
+    for (let i = 5; i <= 6; i++) {
+      const previous = writer.state.savedRevision;
+      await writer.command(
+        {
+          type: 'settings',
+          settings: { ...writer.state.view!.world.settings!, mode: i % 2 ? 'manual' : 'automatic' },
+        },
+        { background: true },
+      );
+      await writer.whenSaved();
+      expect(writer.state.savedRevision).toBeGreaterThan(previous);
+      notice(JSON.parse(storage.getItem('haeram-soccor:manifest')!).generation);
+      if (i > 5) held.shift()!();
+      await vi.waitFor(() => expect(held).toHaveLength(1));
+    }
+    held.shift()!();
+    await reader.whenIdle();
+    expect(reader.state.view!.world.revision).toBe(writer.state.savedRevision);
+    const inspected = worker.requests.length;
+    for (const invalid of [NaN, -1, 0.5]) notice(invalid);
+    await reader.whenIdle();
+    expect(worker.requests).toHaveLength(inspected);
+  } finally {
+    post.mockRestore();
+    for (const release of held) release();
   }
 });

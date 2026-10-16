@@ -84,6 +84,7 @@ export class GameClient {
   private replacingIncompatible = false;
   private refreshPending = false;
   private refreshGeneration = 0;
+  private refreshSerial = 0;
   private storageListener = (event: StorageEvent) => {
     if (event.key === NOTIFICATIONS_KEY) notificationStore.sync();
     if (event.key === 'haeram-soccor:manifest' && event.newValue) {
@@ -135,20 +136,28 @@ export class GameClient {
       for (const id of [...this.builds.keys()])
         this.built({ id, ok: false, error: '저장 Worker가 종료되었습니다.' });
     };
-    this.channel.onmessage = (event) => this.refresh(event.data?.generation || 0);
+    this.channel.onmessage = (event) => this.refresh(event.data?.generation);
     window.addEventListener('storage', this.storageListener);
     notificationStore.sync();
   }
   private refresh(generation: number) {
     if (!this.state.readonly || !Number.isSafeInteger(generation) || generation < 0) return;
     this.refreshGeneration = Math.max(this.refreshGeneration, generation);
+    this.refreshSerial++;
     if (this.refreshPending) return;
     this.refreshPending = true;
     void this.enqueue(
       async () => {
-        for (let n = 0; n < 2; n++) {
+        while (true) {
+          const observed = this.refreshSerial;
           await this.load();
-          if (this.saves.generationInfo.parentGeneration >= this.refreshGeneration) break;
+          // Drain notices that arrived during this load. An unchanged, unsatisfied hint
+          // never spins; another actual notification is required for another attempt.
+          if (
+            this.saves.generationInfo.parentGeneration >= this.refreshGeneration ||
+            this.refreshSerial === observed
+          )
+            break;
         }
       },
       { background: !!this.state.view },

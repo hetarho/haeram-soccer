@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T19:39Z | T196 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T19:39Z | - |
 
 ## inbox
 - 261017 decided SAVE-2 ARCH-12: large century checkpoint codec → bounded pure-JavaScript Brotli plus denser BMP blocks; keep small saves gzip, old readers, CSP and all limits (alt: LZMA with slower loading | relax CSP for WASM | increase capacity).
@@ -91,7 +91,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T196 | Keep read-only tabs current through coalesced checkpoint notifications | ARCH SAVE WEB | T195 | doing@261017.n7r4 |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 T196 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
 
@@ -106,6 +105,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 T196 done n7r4: Read-only refresh drains newer notifications across successive validated loads; unchanged bogus hints cannot spin and malformed generations are ignored.
 - 261017 implement-task T196 start n7r4.
 - 261017 T195 done n7r4: Adaptive bounded pure-JavaScript Brotli/BMP compression preserves historical gzip readers and all facts; the actual century checkpoint fits 1527324 bytes, with metadata-only validated inspection and exact-source activation reuse.
 - 261017 create-task T196: repeated CI Firefox reader stays at round 0; diagnose notification/load coalescing before final-source gates.
@@ -125,4 +125,3 @@
 - 261017 T191 done n7r4: Prepared the rules 3 integration candidate: deferred optional views meet the entry budget, the clock uses domain-owned business stops, strict synthetic identities and reset protection are verified, historic portable facts remain unchanged, and cross-feature/combined-departure journeys are covered.
 - 261017 implement-task T191 start n7r4.
 - 261017 create-task T191: split implementation preparation from todo T179 before the T178 source freeze; no gameplay-policy change.
-- 261017 T178 released to todo for integration preparation; replay/lifecycle checks pass, century gate remains incomplete and interrupted measurements are not evidence.
