@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| p6k2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T23:52Z | 2026-10-16T23:54Z | - |
+| p6k2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T23:52Z | 2026-10-16T23:55Z | T179 |
 
 ## inbox
 - 261017 decided SAVE-13: career compression order → group stored rows with a complete validated permutation restoring original registry order (alt: reorder live people | increase checkpoint limit); v1/v2 readers remain.
@@ -93,7 +93,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
+| T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | doing@261017.p6k2 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -106,6 +106,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 implement-task T179 start p6k2; full local verification running against the unchanged successful CI source.
 - 261017 T178 done p6k2: both complete century profiles, active23, retained cross-season commitments, canonical replay and era probe pass at unchanged 6df81fa source; max checkpoint1564446/total3129404.
 - 261017 implement-task T178 start p6k2: reconcile successful fixed-source full-century CI artifacts.
 - 261017 T199 done p6k2: final-source CI 38970812465 passes complete careers and production codecs; active round23 checkpoint 1564446 bytes within unchanged limits.
@@ -125,4 +126,3 @@
 - 261017 implement-task T178 start n7r4.
 - 261017 refresh T178/T179 final-gate inputs after T195/T196; current rule/codec/UI deltas are implemented prerequisites, not new release scope.
 - 261017 T196 done n7r4: Read-only refresh drains newer notifications across successive validated loads; unchanged bogus hints cannot spin and malformed generations are ignored.
-- 261017 implement-task T196 start n7r4.
