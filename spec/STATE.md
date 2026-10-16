@@ -70,7 +70,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 87 | 87 | - | 0 |
+| WEB | 88 | 87 | WEB-50✎ | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | CLUB | 41 | 41 | - | 0 |
 | MATCH | 9 | 9 | - | 0 |
@@ -109,6 +109,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 update-ssot WEB r88: fixed pitch ratio requested; T183 engine scope unaffected.
 - 261017 implement-task T183 start n7r4.
 - 261017 T182 done n7r4: One season-specific registration model now guards every signing, loan, promotion, delegated purchase and generated refill; first-team tenure/graduation survive schema roundtrip and over-limit squads keep their players.
 - 261017 implement-task T182 start n7r4.

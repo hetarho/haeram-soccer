@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r87 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r88 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -192,7 +192,7 @@
   - 432,000 combinations; clubs are assigned in stable ID order with probing so no two clubs share colour pair and pattern while the world holds fewer than 3,600 clubs. ← low-contrast pairs hide the pattern and make crests look alike
   - the player club keeps its founding colour as primary.
   - crests and colours appear wherever clubs are named: HUD, home fixture, event cards, standings, round results, fixture notebook, match scoreboard and pitch kits (the away kit switches to its secondary colour when the primaries clash).
-- WEB-50 [o] The match theatre stacks one row with the back-home control, the scoreboard with crests (short names on phones) and the clock buttons; minute/latest action with speed chips (1x–16x); the pitch, which takes the height the other rows leave on a phone (tap or the corner button pauses); the latest event; live charts; and two actions.
+- WEB-50 [o] The match theatre stacks one row with the back-home control, the scoreboard with crests (short names on phones) and the clock buttons; minute/latest action with speed chips (1x–16x); the pitch, which keeps a 1.9:1 width-to-height ratio on every screen (tap or the corner button pauses); the latest event; live charts; and two actions.
   - charts switch between rolling 10-minute possession share, cumulative xG with goal marks and cumulative shots; they reveal data only up to the presented minute.
   - actions: preparation and the primary action, which reads "결과 보기" while the match plays and "다음 경기 관전" after it ends.
   - details (moments, report, scrubber, player inspector, stats) open from the chart header.
@@ -356,6 +356,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r88 261017 WEB-50✎ phone pitch fills remaining height→fixed 1.9:1 pitch on every screen
 - r87 261016 WEB-44✎ squad tone thresholds unspecified (warning under 16, critical under 15)→warning under 20 players or 3+ injured, critical under 16 or fewer than 14 fit
 - r86 261016 WEB-45✎ playing-coach authority unspecified→combined player/staff approval if either is direct, both-delegated automation and split/total salary preview
 - r85 261016 WEB-5/11/80✎ one-round tools retained/mode interaction open→exclusive manual next-event or automatic paced controls, season tools removed; WEB-62✎ all old slots retained/exportable→legacy release reset permitted by SAVE-18
