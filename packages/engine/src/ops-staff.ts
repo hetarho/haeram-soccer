@@ -29,7 +29,7 @@ import {
 import { MORALE_START } from './morale';
 import { coachDelegated, managerCriteriaOf } from './hiring';
 import { directionLine, setDirection } from './direction';
-import { debit } from './operations';
+import { debit } from './transactions';
 import { moneyLabel } from './finance';
 import { INTERVENTION_LEVELS } from './intervention';
 import { isDelegated } from './responsibilities';

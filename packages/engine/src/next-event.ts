@@ -1,7 +1,8 @@
 import type { World } from '../../contracts/src/types';
 import { advanceDays } from './season';
 import { pendingDecisions, stoppingReasons } from './stopping';
-import { settingsOf, validateSettings } from './responsibilities';
+import { settingsOf } from './responsibilities';
+import { validateSettings } from './settings';
 
 export function assertNextEvent(w: World) {
   const settings = validateSettings(settingsOf(w));

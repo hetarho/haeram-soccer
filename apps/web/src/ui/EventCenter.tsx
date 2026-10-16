@@ -10,7 +10,7 @@ import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/world';
 import { talkFor } from '../../../../packages/engine/src/contracts';
 import { isExpiring } from '../../../../packages/engine/src/staff';
-import { managerRenewal } from '../../../../packages/engine/src/operations';
+import { managerRenewal } from '../../../../packages/engine/src/ops-staff';
 import { managerTerm } from '../../../../packages/engine/src/styles';
 import type { GameClient } from '../runtime/client';
 import {

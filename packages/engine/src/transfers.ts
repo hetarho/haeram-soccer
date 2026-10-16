@@ -13,7 +13,7 @@ import {
   slotOvr,
 } from './world';
 import { ambitionAfterDecline, leaveContract, marketValue, signingClauses } from './contracts';
-import { credit, debit } from './operations';
+import { credit, debit } from './transactions';
 import { transferOffers } from './ops-squad';
 import { financeStance } from './direction';
 import { moneyLabel, operatingCosts } from './finance';

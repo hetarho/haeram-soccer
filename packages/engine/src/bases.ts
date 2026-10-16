@@ -1,7 +1,7 @@
 import type { Player, World } from '../../contracts/src/types';
 import { buildEffects, buildOf } from './build';
 import { policyEffects, policyOf } from './policy';
-import { credit } from './operations';
+import { credit } from './transactions';
 import { activePlayers, addEvent, clubOf, footballQuote } from './world';
 
 /**

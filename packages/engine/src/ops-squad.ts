@@ -20,7 +20,7 @@ import { careOffer, outcomeText, resolveCare } from './care';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
-import { credit, debit } from './operations';
+import { credit, debit } from './transactions';
 import { noteSigning } from './signings';
 
 /** Bids, offers, stances, lineup, training, the academy, owner requests and contract talks. */

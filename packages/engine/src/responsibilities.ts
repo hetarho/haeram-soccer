@@ -4,8 +4,6 @@ import type {
   ResponsibilityKey,
   World,
 } from '../../contracts/src/types';
-import { handoverPendingWork } from './pending-work';
-import { gameSettingsSchema } from '../../contracts/src/schema';
 
 export const RESPONSIBILITY_KEYS: readonly ResponsibilityKey[] = [
   'manager',
@@ -54,15 +52,4 @@ export function changedResponsibilities(w: World, settings: GameSettings) {
   return RESPONSIBILITY_KEYS.filter(
     (key) => settingsOf(w).responsibilities[key] !== settings.responsibilities[key],
   );
-}
-export function validateSettings(settings: GameSettings): GameSettings {
-  const result = gameSettingsSchema.safeParse(settings);
-  if (!result.success) throw new Error(result.error.issues.map((i) => i.message).join(' · '));
-  return result.data;
-}
-export function applySettings(w: World, settings: GameSettings) {
-  const validated = validateSettings(settings);
-  const changed = changedResponsibilities(w, validated);
-  w.settings = validated;
-  handoverPendingWork(w, changed);
 }

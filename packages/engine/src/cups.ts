@@ -2,7 +2,7 @@ import type { DomesticCup, KnockoutRound, World } from '../../contracts/src/type
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import { compareIds } from './primitives';
 import { addEvent, broadcastQuote, clubOf, findClub } from './world';
-import { credit } from './operations';
+import { credit } from './transactions';
 import { pushInbox } from './inbox';
 import { seasonDayLabel } from './calendar';
 import {

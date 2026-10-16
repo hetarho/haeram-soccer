@@ -1,5 +1,5 @@
-import type { GameSettings, ResponsibilityKey, World } from '../../contracts/src/types';
-import { changedResponsibilities, isDelegated } from './responsibilities';
+import type { ResponsibilityKey, World } from '../../contracts/src/types';
+import { isDelegated } from './responsibilities';
 import { pendingDecisions } from './stopping';
 import { answerPendingContracts } from './contracts';
 import { handoverRecruitment, handoverSales } from './transfers';
@@ -8,18 +8,7 @@ import { appointDelegatedManager } from './ops-staff';
 import { seasonAcademy } from './academy';
 import { delegatedSponsors } from './sponsors';
 
-/** A pure snapshot for disclosure; applying always queries the live world again. */
-export function pendingWorkPreview(w: World, settings: GameSettings) {
-  const pending = pendingDecisions(w, true);
-  return changedResponsibilities(w, settings).map((key) => {
-    const refs = new Set(pending.filter((p) => p.responsibility === key).map((p) => p.ref!));
-    if (key === 'recruitment')
-      for (const bid of w.bids || [])
-        if (bid.direction === 'out' && (bid.status === 'pending' || bid.status === 'countered'))
-          refs.add(bid.id);
-    return { key, to: settings.responsibilities[key], count: refs.size, refs: [...refs] };
-  });
-}
+export { pendingWorkPreview } from './pending-work-preview';
 export function handoverPendingWork(w: World, changed: readonly ResponsibilityKey[]) {
   for (const key of changed) {
     const delegated = isDelegated(w, key);

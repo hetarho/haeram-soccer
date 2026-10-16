@@ -5,7 +5,7 @@ import { campaignEffectiveness } from './finance';
 import { setPolicy } from './policy';
 import { buildEffects, setBuild } from './build';
 import { startFacilityWork } from './facilities';
-import { credit, debit } from './operations';
+import { credit, debit } from './transactions';
 import { delegatedSponsors, signSponsor, sponsorEnding } from './sponsors';
 
 export {

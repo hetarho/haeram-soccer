@@ -29,7 +29,7 @@ import { moneyLabel, operatingCosts, recentRevenue, wageBill } from './finance';
 import { directionOption, financeStance } from './direction';
 import { contractSeason } from './ops-staff';
 import { currentDay, dayCountedFrom, SEASON_ROUNDS } from './calendar';
-import { credit } from './operations';
+import { credit } from './transactions';
 import { suitorFor, transferWindowDays } from './transfers';
 import { financeProjection } from './projection';
 import { isDelegated } from './responsibilities';

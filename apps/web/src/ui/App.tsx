@@ -53,11 +53,8 @@ import { CupsView } from './CupsView';
 import { TeamSheetHost } from './TeamSheet';
 import { PlayerSheetHost } from './PlayerSheet';
 import { cashState } from './teamState';
-import {
-  BANKRUPTCY_ROUNDS,
-  CASH_WARNING_ROUNDS,
-  MANAGER_GONE,
-} from '../../../../packages/engine/src/operations';
+import { BANKRUPTCY_ROUNDS, CASH_WARNING_ROUNDS } from '../../../../packages/engine/src/settlement';
+import { MANAGER_GONE } from '../../../../packages/engine/src/ops-staff';
 import { operatingCosts } from '../../../../packages/engine/src/finance';
 import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import { GameSlots } from '../runtime/slots';

@@ -25,7 +25,7 @@ import { driftFans, MIN_FANS } from './fans';
 import { pushInbox } from './inbox';
 import { marketingFanGain, policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
-import { credit, debit } from './operations';
+import { credit, debit } from './transactions';
 import { CAMPAIGNS } from './ops-commercial';
 import { EXCLUSIVE_MARKETING, exclusiveSponsor, sponsorAnnual } from './sponsors';
 

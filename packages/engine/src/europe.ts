@@ -3,7 +3,7 @@ import { COUNTRIES } from '../../catalogs/src/index';
 import { random, integer, compareIds, clamp } from './primitives';
 import { addEvent, broadcastQuote, clubOf, findClub, initialElo } from './world';
 import { emptyTable } from './season';
-import { credit } from './operations';
+import { credit } from './transactions';
 import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS } from './calendar';
 import {
   decideTie,

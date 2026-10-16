@@ -8,7 +8,7 @@ import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
 import { pushInbox } from './inbox';
 import { currentDay, seasonDayOf } from './calendar';
-import { credit } from './operations';
+import { credit } from './transactions';
 import { isDelegated } from './responsibilities';
 import { STADIUM_STEPS } from './facilities';
 

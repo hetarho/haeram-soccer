@@ -16,7 +16,7 @@ import type {
 import { footballIndex } from '../../catalogs/src/index';
 import { addEvent, clubOf, ownStarters, personName, quote } from './world';
 import { clamp, integer, random, ratio } from './primitives';
-import { debit } from './operations';
+import { debit } from './transactions';
 import { appointDelegatedManager, contractSeason, managerRenewal, renewManager } from './ops-staff';
 import { managerBeats, managerFits, managerLine, managerMatches } from './managerMarket';
 import { directionLine, financeStance } from './direction';

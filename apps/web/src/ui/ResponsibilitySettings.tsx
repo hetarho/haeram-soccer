@@ -1,8 +1,7 @@
 import { useEffect, useId, useState } from 'react';
 import type { GameSettings, ResponsibilityKey } from '../../../../packages/contracts/src/types';
 import { RESPONSIBILITY_KEYS, settingsOf } from '../../../../packages/engine/src/responsibilities';
-import { pendingWorkPreview } from '../../../../packages/engine/src/pending-work';
-import { gameSettingsSchema } from '../../../../packages/contracts/src/schema';
+import { pendingWorkPreview } from '../../../../packages/engine/src/pending-work-preview';
 import type { GameClient } from '../runtime/client';
 import { gameStore, useGameState } from '../runtime/store';
 import {
@@ -84,7 +83,7 @@ export function ResponsibilitySettings({
     JSON.stringify(draft.background) !== JSON.stringify(background);
   const pending = pendingWorkPreview(w, draft.game).filter((item) => item.count > 0);
   const apply = async () => {
-    if (blocked || !gameSettingsSchema.safeParse(draft.game).success) return;
+    if (blocked) return;
     setMessage('');
     const reply = await applyResponsibilitySettings(client, draft.game);
     if (!reply?.ok) {

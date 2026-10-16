@@ -8,6 +8,7 @@ import { foundWithPreset } from './presets';
 import { openShortlistWindow } from './signings';
 import { defaultSettings } from './responsibilities';
 export * from './responsibilities';
+export * from './settings';
 export * from './world';
 export * from './season';
 export * from './match';

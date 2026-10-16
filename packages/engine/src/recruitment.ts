@@ -1,7 +1,8 @@
 import type { Line, World } from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
 import { SEASON_ROUNDS, nextOwnFixture } from './calendar';
-import { operatingCost, transferOffers } from './operations';
+import { operatingCost } from './transactions';
+import { transferOffers } from './ops-squad';
 import {
   activePlayers,
   clubOf,

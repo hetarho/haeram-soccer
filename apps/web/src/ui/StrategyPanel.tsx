@@ -6,18 +6,20 @@ import {
   activePlayers,
   clubOf,
   formationOf,
-  lineupPreset,
-  lineupSummary,
-  nextOwnFixture,
-  npcTactic,
-  tacticalProfile,
   ownMultiplier,
   quote,
   slotOvr,
   startingSquad,
   tacticLabel,
-  tacticRequestOutlook,
-} from '../../../../packages/engine/src/index';
+} from '../../../../packages/engine/src/world';
+import {
+  lineupPreset,
+  lineupSummary,
+  npcTactic,
+  tacticalProfile,
+} from '../../../../packages/engine/src/strategy';
+import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
+import { tacticRequestOutlook } from '../../../../packages/engine/src/ops-staff';
 import { FORMATIONS, lineOf, ROLE_LABEL } from '../../../../packages/engine/src/player';
 import { FormationPitch, LEVEL_LABEL } from './FormationPitch';
 import type { GameClient } from '../runtime/client';

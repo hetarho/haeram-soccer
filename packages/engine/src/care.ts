@@ -3,7 +3,7 @@ import { activePlayers, addEvent, clubOf, quote } from './world';
 import { MORALE_START } from './morale';
 import { clamp, random } from './primitives';
 import { managerStyleEffects } from './styles';
-import { debit } from './operations';
+import { debit } from './transactions';
 
 /**
  * Owner requests (→CLUB-20). The owner does not run the dressing room: most requests go through
