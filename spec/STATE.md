@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:03Z | - |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:03Z | T173 |
 
 ## inbox
 - 261017 suggest T154 T155 T156 T157 T158: five person-career foundation tasks completed → review-code aptitude/person-careers/npc-continuity/careers/coaching-entry before the next unrelated feature; remaining planned second-career tasks continue.
@@ -84,7 +84,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T173 | Round-trip settings, person careers and commitments losslessly | SAVE HIST WORLD ARCH | T148 T161 T163 T165 T171 | todo |
+| T173 | Round-trip settings, person careers and commitments losslessly | SAVE HIST WORLD ARCH | T148 T161 T163 T165 T171 | doing@261017.n7r4 |
 | T174 | Activate rules 3.0.0 with bounded recognized-legacy gameplay reset | SAVE WEB ARCH | T150 T152 T167 T168 T172 T173 T180 T186 T187 | todo |
 | T175 | Migrate old browser helpers to the approved public progression flow | WEB LEAGUE | T150 T174 | todo |
 | T176 | Verify second careers across contracts, reloads and market transitions | WEB STAFF WORLD HIST SAVE | T167 T168 T174 | todo |
@@ -112,6 +112,7 @@
 - Do not activate rules 3.0.0 or reset career data before T174's prerequisites are complete.
 
 ## log
+- 261017 implement-task T173 start n7r4.
 - 261017 T172 done n7r4: Actual mediation explanations, case-only support and canonical readonly outcome previews are visible in recruitment/event workflows; complete promise outcomes remain readable beyond bounded daily history.
 - 261017 implement-task T172 start n7r4.
 - 261017 T171 done n7r4: Fixed-deadline promises judge retained actual arrivals only after the deadline, preserve original targets, cancel on actual manager departures and retain factual reactions without extra trust or morale effects.
@@ -131,4 +132,3 @@
 - 261017 T164 done n7r4: Actual three-year service and independent managerial aptitude initialize retained manager values and mentor school once from dated processing.
 - 261017 implement-task T164 start n7r4.
 - 261017 T163 done n7r4: Retained coaches take unique dated NPC jobs, retain growth and return after real expiry.
-- 261017 implement-task T163 start n7r4.
