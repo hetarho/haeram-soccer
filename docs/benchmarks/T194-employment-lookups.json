@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-16T18:53:13.466164+00:00",
+  "node": "v24.12.0",
+  "referenceEngineSource": "d605078",
+  "candidate": "T194 working tree",
+  "input": {
+    "seed": "release-century-baseline",
+    "year": 2000,
+    "round": 23,
+    "sha256": "f819864b4f2b421c99818d67d8638dd644dfbeb3efcff4cc3f32ac901a5e159b",
+    "people": 11383,
+    "jobs": 58767,
+    "mentors": 49933
+  },
+  "result": {
+    "year": 2001,
+    "round": 0,
+    "canonicalBytes": 31087908,
+    "sha256": "3da08edc36d22be939094608677c2917b437dfc036ac4d36cbf90f77491fcd41",
+    "canonicalEqual": true,
+    "people": 11577
+  },
+  "observations": {
+    "referenceElapsedMs": 14022,
+    "candidateElapsedMs": 7342
+  },
+  "scope": "One complete validated continuation from the actual T178 fifty-season active-round checkpoint. Timings are observations under concurrent host load, not a controlled universal speed claim. No century storage approval; T178 and T179 remain mandatory.",
+  "candidateSource": {
+    "files": [
+      "packages/engine/src/coaching-market.ts",
+      "packages/engine/src/person-careers.ts"
+    ],
+    "sha256": "a950ff2e8384c072f25090ab38baef35af081222d6d8570cb8d1e7833731da4b"
+  },
+  "referenceSourceSha256": "4d7284dad8f6c1e2452e67ba09f479746b7ecc92017a20dea766936f3434258d"
+}

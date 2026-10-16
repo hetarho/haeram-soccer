@@ -47,12 +47,21 @@ export function refreshCoachingMarket(
     .filter((club) => club.id !== w.playerClub)
     .sort((a, b) => compareIds(a.id, b.id));
   const occupied = new Set(activeCoachingEmployment(w).map(({ job }) => `${job.club}:${job.role}`));
+  const vacancies = new Map<string, { clubs: typeof clubs; next: number }>();
   for (const person of Object.values(w.people || {})
     .filter((person) => coachingEntryReady(person) && person.coaching)
     .sort((a, b) => compareIds(a.id, b.id))) {
     if (!coachingMarketPass(draw(person, at))) continue;
-    const coaching = person.coaching!,
-      club = clubs.find((club) => !occupied.has(`${club.id}:${coaching.role}`));
+    const coaching = person.coaching!;
+    let available = vacancies.get(coaching.role);
+    if (!available) {
+      available = {
+        clubs: clubs.filter((club) => !occupied.has(`${club.id}:${coaching.role}`)),
+        next: 0,
+      };
+      vacancies.set(coaching.role, available);
+    }
+    const club = available.clubs[available.next];
     if (!club) continue;
     const job = openEmployment(w, person.id, coaching.role, club.id, at);
     job.contractUntil = addCareerYears(at, 2);
@@ -60,5 +69,6 @@ export function refreshCoachingMarket(
     job.currency = w.currency;
     job.grownThrough = w.year;
     occupied.add(`${club.id}:${coaching.role}`);
+    available.next++;
   }
 }

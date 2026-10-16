@@ -99,14 +99,7 @@ export function openEmployment(
     )
   )
     throw new Error('중복 재직은 불가능해요.');
-  if (
-    role !== 'player' &&
-    Object.values(w.people || {}).some(
-      (other) =>
-        other.id !== id &&
-        other.employment.some((job) => !job.to && job.role === role && job.club === club),
-    )
-  )
+  if (role !== 'player' && occupiedPostByOther(w, role, club, id))
     throw new Error('이미 담당자가 있어요.');
   if (
     person.employment.some(
@@ -116,7 +109,7 @@ export function openEmployment(
     throw new Error('재직 날짜를 확인하세요.');
   const job = { role, club, from: { ...from } };
   person.employment.push(job);
-  employmentVersions.set(w, (employmentVersions.get(w) ?? 0) + 1);
+  employmentChanged(w, person, job, true);
   syncMentorExposure(w, person, from);
   person.club = club;
   if (role === 'player') {
@@ -130,7 +123,7 @@ export function closeEmployment(w: World, id: string, role: CareerRole, to = car
   if (!job) return;
   if (compareCareerDates(to, job.from) < 0) throw new Error('재직 날짜를 확인하세요.');
   job.to = { ...to };
-  employmentVersions.set(w, (employmentVersions.get(w) ?? 0) + 1);
+  employmentChanged(w, person, job, false);
   const remaining = person.employment.find((job) => !job.to);
   if (remaining) person.club = remaining.club;
   else delete person.club;
@@ -271,6 +264,48 @@ export function longestMentor(person: PersonCareer, at: CareerDate) {
 }
 
 const employmentVersions = new WeakMap<World, number>();
+type Posts = Map<CareerRole, Map<string, Set<string>>>;
+const postIndexes = new WeakMap<
+  World,
+  { people: World['people']; version: number; posts: Posts }
+>();
+function occupiedPostByOther(w: World, role: CareerRole, club: string, person: string) {
+  const version = employmentVersions.get(w) ?? 0;
+  let hit = postIndexes.get(w);
+  if (!hit || hit.people !== w.people || hit.version !== version) {
+    const posts: Posts = new Map();
+    for (const person of Object.values(w.people ?? {}))
+      for (const job of person.employment)
+        if (!job.to && job.role !== 'player') {
+          let clubs = posts.get(job.role);
+          if (!clubs) posts.set(job.role, (clubs = new Map()));
+          let occupants = clubs.get(job.club);
+          if (!occupants) clubs.set(job.club, (occupants = new Set()));
+          occupants.add(person.id);
+        }
+    hit = { people: w.people, version, posts };
+    postIndexes.set(w, hit);
+  }
+  const occupants = hit.posts.get(role)?.get(club);
+  return !!occupants && (occupants.size > 1 || !occupants.has(person));
+}
+/** Update only an already-valid derived index, after the canonical mutation has succeeded. */
+function employmentChanged(w: World, person: PersonCareer, job: CareerEmployment, active: boolean) {
+  const previous = employmentVersions.get(w) ?? 0;
+  employmentVersions.set(w, previous + 1);
+  const hit = postIndexes.get(w);
+  if (!hit || hit.people !== w.people || hit.version !== previous) return;
+  if (job.role !== 'player') {
+    let clubs = hit.posts.get(job.role);
+    if (!clubs) hit.posts.set(job.role, (clubs = new Map()));
+    let occupants = clubs.get(job.club);
+    if (!occupants) clubs.set(job.club, (occupants = new Set()));
+    if (active) occupants.add(person.id);
+    else occupants.delete(person.id);
+    if (!occupants.size) clubs.delete(job.club);
+  }
+  hit.version = previous + 1;
+}
 const coachingIndexes = new WeakMap<
   World,
   {

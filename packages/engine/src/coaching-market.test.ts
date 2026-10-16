@@ -38,6 +38,57 @@ function candidate(w: ReturnType<typeof createWorld>, index = 0): PersonCareer {
   return person;
 }
 describe('retained NPC coaching market', () => {
+  it('keeps sorted per-role vacancy allocation and still draws for candidates after a role fills', () => {
+    const w = createWorld({
+      country: 'ENG',
+      name: 'Ordered posts',
+      color: '#224466',
+      seed: 'ordered-posts',
+      level: 'easy',
+    });
+    const others = w.clubs
+      .filter((club) => club.id !== w.playerClub)
+      .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+      .slice(0, 3);
+    w.clubs = w.clubs.filter((club) => club.id === w.playerClub || others.includes(club));
+    w.people = Object.fromEntries(Object.entries(w.people!).filter(([, p]) => p.formerOwn));
+    const candidates = Array.from({ length: 6 }, (_, i) => candidate(w, i));
+    candidates[2].coaching!.role = 'attack';
+    candidates[4].coaching!.role = 'attack';
+    const blocker = candidates[5];
+    openEmployment(w, blocker.id, 'assistant', others[0].id);
+    const checks: string[] = [];
+    refreshCoachingMarket(w, (person) => {
+      checks.push(person.id);
+      return 0;
+    });
+    expect(checks).toEqual(
+      candidates
+        .slice(0, 5)
+        .map((p) => p.id)
+        .sort(),
+    );
+    for (const role of ['assistant', 'attack'] as const) {
+      const pool = candidates
+        .slice(0, 5)
+        .filter((p) => p.coaching!.role === role)
+        .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+      const available = role === 'assistant' ? others.slice(1) : others;
+      pool.forEach((person, i) => {
+        expect(person.employment.find((job) => !job.to)?.club).toBe(available[i]?.id);
+      });
+    }
+    closeEmployment(w, blocker.id, 'assistant');
+    w.calendar = { day: 1 };
+    const free = candidates
+      .filter((person) => !person.employment.some((job) => !job.to))
+      .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+    refreshCoachingMarket(w, () => 0);
+    expect(free[0].employment.find((job) => !job.to)).toMatchObject({
+      club: others[0].id,
+      from: { year: w.year, day: 1 },
+    });
+  });
   it('uses one strict 25-percent draw per person/date, not one per club', () => {
     expect(coachingMarketPass(0.249999)).toBe(true);
     expect(coachingMarketPass(0.25)).toBe(false);
