@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T19:22Z | T193 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T19:24Z | T195 |
 
 ## inbox
 - 261017 decided SAVE-2 ARCH-12: large century checkpoint codec → bounded pure-JavaScript Brotli plus denser BMP blocks; keep small saves gzip, old readers, CSP and all limits (alt: LZMA with slower loading | relax CSP for WASM | increase capacity).
@@ -91,7 +91,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T195 | Bound adaptive century compression without changing retained facts | SAVE ARCH | T193 T194 | todo |
+| T195 | Bound adaptive century compression without changing retained facts | SAVE ARCH | T193 T194 | doing@261017.n7r4 |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
 
@@ -106,6 +106,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 implement-task T195 start n7r4.
 - 261017 create-task T195: bounded adaptive codec before T178 source freeze; BMP alphabet count corrected to exclude all noncharacters.
 - 261017 SAVE r42/ARCH r10: adaptive bounded codec for retained century state; no gameplay or security-policy changes.
 - 261017 T193 done n7r4: Career representation v2 losslessly shares relationship dates, string templates, scalar codebooks and explicit fallbacks while retaining the v1 reader; the actual failed 50-season checkpoint now uses 1132058 bytes.
@@ -125,6 +126,3 @@
 - 261017 implement-task T178 start n7r4.
 - 261017 T177 done n7r4: Financial-conflict journeys retain pending direct work after notification reads, disclose and settle handover once, and preserve fixed-deadline promise outcomes and personnel effects through actual arrivals, day progression, export/import and committed reloads.
 - 261017 implement-task T177 start n7r4.
-- 261017 T176 done n7r4: Second-career browser journeys preserve person identity, aptitude, atomic joint-contract terms and costs across reload/import, verify exact service qualification, and exercise independent dismissal, retirement and combined departure.
-- 261017 implement-task T176 start n7r4.
-- 261017 T174 done n7r4: Rules 3.0.0 start clean careers; writer activation independently clears only integrity-checked recognized legacy gameplay, journals interrupted parked cleanup, and preserves protected versions and device-owned data.
