@@ -92,10 +92,11 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- ideation expert-proposal-review: mediation, configurable director/manager support and tracked promises adopted; clarify its event/delegation handling and standing support policy, then remaining UX; balance parked.
+- ideation expert-proposal-review: mediation follows recruitment delegation with three standing support policies and direct case overrides; discuss focused policy sheets, coach fallout and event entry next; balance parked.
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 ideation expert-proposal-review: owner assigns mediation to recruitment delegation and adopts director-first/balanced/manager-first policy with direct case overrides
 - 261016 ideation expert-proposal-review: owner adopts classified/automatable mediation, director-vs-manager support choices and tracked promises; automatic-mode versus delegation meaning needs clarification
 - 261016 ideation expert-proposal-review: owner adopts active-player aptitude grades/evaluations and requires coaching experience plus managerial aptitude for manager candidacy
 - 261016 ideation expert-proposal-review: owner selects automatic progression as the new-game default; manual next-event mode remains switchable
@@ -115,4 +116,3 @@
 - 261016 T140 local checks pass: 57 browser cases after one WebKit retry, static/build/spec checks; commit/push and full remote CI next
 - 261016 T140 doing@u9c2: collapse draft details, reclaim launcher space, verify and publish authorized changes
 - 261016 create-task T140: WEB r80 compact policy draft and conditional notification launcher
-- 261016 update-ssot WEB start: compact policy draft panel and conditional notification launcher
