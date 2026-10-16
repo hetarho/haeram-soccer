@@ -87,14 +87,14 @@
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 13 | 13 | - | 0 |
-| SAVE | 43 | 42 | SAVE-13✎ | 0 |
+| SAVE | 43 | 43 | - | 0 |
 | PLAYER | 8 | 8 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T199 | Fit actual retained active-century storage | SAVE ARCH | T195 T198 | doing@261017.n7r4 |
-| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 T196 T197 T198 | doing@261017.n7r4 |
+| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 T196 T197 T198 T199 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
 
 ## work
@@ -108,6 +108,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 create-task refresh T199/T178/T179 for SAVE r43 exact permutation contract; T178 released pending T199 and full fixed-source rerun.
 - 261017 SAVE r43: grouped career representation must restore exact original registry order; T199/T178/T179 affected, no gameplay or capacity change.
 - 261017 implement-task T199 start n7r4.
 - 261017 create-task T199: active-management century round-trips but checkpoint1629982 exceeds1572864; preserve all facts/budgets and repair representation before rerunning T178.
@@ -127,4 +128,3 @@
 - 261017 implement-task T195 start n7r4.
 - 261017 create-task T195: bounded adaptive codec before T178 source freeze; BMP alphabet count corrected to exclude all noncharacters.
 - 261017 SAVE r42/ARCH r10: adaptive bounded codec for retained century state; no gameplay or security-policy changes.
-- 261017 T193 done n7r4: Career representation v2 losslessly shares relationship dates, string templates, scalar codebooks and explicit fallbacks while retaining the v1 reader; the actual failed 50-season checkpoint now uses 1132058 bytes.
