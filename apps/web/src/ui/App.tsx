@@ -1382,7 +1382,7 @@ export function App() {
       )}
       <GlossaryHost />
       {client && playing && <TeamSheetHost client={client} />}
-      {playing && <PlayerSheetHost />}
+      {playing && client && <PlayerSheetHost client={client} />}
       {playing && client && <PlayerPreparationHost client={client} />}
       {playing && client && <DepartmentPolicySheet client={client} />}
       {playing && <CelebrationHost />}

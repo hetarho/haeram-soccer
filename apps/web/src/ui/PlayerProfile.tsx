@@ -1,3 +1,5 @@
+import { careerAssessment } from '../../../../packages/engine/src/career-assessment';
+import { STAFF_INFO } from '../../../../packages/engine/src/staff';
 import type { Grade, Personality } from '../../../../packages/contracts/src/player';
 import type { Player, World } from '../../../../packages/contracts/src/types';
 import {
@@ -67,6 +69,7 @@ export function PlayerProfile({
   own: boolean;
   compact?: boolean;
 }) {
+  const assessment = careerAssessment(w, player, own);
   const ovr = overall(player);
   const slot = own ? startingSlot(w, player) : undefined;
   const multiplier = own ? ownMultiplier(player) : 1;
@@ -115,6 +118,26 @@ export function PlayerProfile({
             ))}
           </dl>
           {!own && <small className={s.note}>성격은 수석 스카우트가 본 범위예요.</small>}
+          <h4>지도자 자질</h4>
+          <dl className={s.personality} data-testid="profile-aptitude">
+            <div>
+              <dt>코치 자질</dt>
+              <dd>{assessment.coaching ?? '평가 없음'}</dd>
+            </div>
+            <div>
+              <dt>감독 자질</dt>
+              <dd>{assessment.managerial ?? '평가 없음'}</dd>
+            </div>
+            {assessment.specialty && (
+              <div>
+                <dt>코칭 전문 분야</dt>
+                <dd>{STAFF_INFO[assessment.specialty].label}</dd>
+              </div>
+            )}
+          </dl>
+          <small className={s.note}>
+            선수 OVR과 별개의 자질 평가예요.{!own && ' 수석 스카우트가 본 범위예요.'}
+          </small>
           <h4>플레이 특성</h4>
           <p className={s.traits}>
             {player.traits.length

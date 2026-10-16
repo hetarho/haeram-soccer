@@ -25,6 +25,7 @@ import {
   openContractTalk,
   openMarket,
   openPeople,
+  usePlayerSheet,
   openTraining,
   useInterventionDialog,
   useNavigation,
@@ -298,6 +299,10 @@ const EventCard = memo(function EventCard({
               확인
             </button>
           </>
+        ) : item.ref && w.playingCoachProposals?.[item.ref]?.status === 'pending' ? (
+          <button onClick={() => usePlayerSheet.getState().open(item.ref!)}>
+            선수·코치 계약 검토
+          </button>
         ) : item.kind === 'staff-renewal' && item.ref === w.manager.id ? (
           <>
             {keepManager && (

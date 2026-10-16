@@ -153,3 +153,27 @@
     justify-self: center;
   }
 }
+
+.career {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+}
+.career p {
+  overflow-wrap: anywhere;
+}
+.career select {
+  max-width: 100%;
+}
+.career dl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 8px;
+}
+.career dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}

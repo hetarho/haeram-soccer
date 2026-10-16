@@ -1,3 +1,4 @@
+import type { GameClient } from '../runtime/client';
 import { lazy, Suspense, useEffect } from 'react';
 import { useGameState } from '../runtime/store';
 import type { PlayerScope } from './playerAnalysis';
@@ -41,7 +42,7 @@ export function PlayerLink({
 }
 
 /** The one place player sheets open, over any view or dialog. */
-export function PlayerSheetHost() {
+export function PlayerSheetHost({ client }: { client: GameClient }) {
   const id = usePlayerSheet((state) => state.id);
   const page = useNavigation((state) => state.page);
   const worldId = useGameState((state) => state.view?.world.id);
@@ -49,7 +50,7 @@ export function PlayerSheetHost() {
   useEffect(() => () => usePlayerSheet.getState().close(), [page, worldId]);
   return id ? (
     <Suspense fallback={null}>
-      <OpenPlayerSheet id={id} />
+      <OpenPlayerSheet id={id} client={client} />
     </Suspense>
   ) : null;
 }

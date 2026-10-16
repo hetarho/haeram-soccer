@@ -1,3 +1,5 @@
+import type { GameClient } from '../runtime/client';
+import { PlayingCoachReview } from './PlayingCoachReview';
 import { useState } from 'react';
 import type { Player, World } from '../../../../packages/contracts/src/types';
 import { agentOf, clausesLabel, talkFor } from '../../../../packages/engine/src/contracts';
@@ -25,11 +27,13 @@ export function PlayerSheet({
   player,
   scope: initial,
   onClose,
+  client,
 }: {
   w: World;
   player: Player;
   scope: PlayerScope;
   onClose: () => void;
+  client: GameClient;
 }) {
   const active = player.status === 'active';
   const [chosen, setChosen] = useState<PlayerScope>(initial);
@@ -78,6 +82,7 @@ export function PlayerSheet({
       </p>
       {active && !player.loanUntil && <p>계약 조항: {clausesLabel(player.clauses)}</p>}
       <PlayerProfile w={w} player={player} own={active} />
+      {active && <PlayingCoachReview w={w} player={player} client={client} />}
       <section className={a.clubCareer} aria-label="우리 클럽 통산">
         <h3>우리 클럽 통산</h3>
         <p className={a.careerLine}>
@@ -147,6 +152,10 @@ export function PlayerSheet({
 
 const selectPlayerWorld = worldSelector([
   'players',
+  'settings',
+  'calendar',
+  'cash',
+  'playingCoachProposals',
   'ownMatches',
   'year',
   'playerClub',
@@ -156,11 +165,13 @@ const selectPlayerWorld = worldSelector([
   'staff',
 ]);
 /** The sheet of the player asked for, over the world in play (loaded when a sheet opens). */
-export function OpenPlayerSheet({ id }: { id: string }) {
+export function OpenPlayerSheet({ id, client }: { id: string; client: GameClient }) {
   const w = useGameState(selectPlayerWorld);
   const scope = usePlayerSheet((state) => state.scope);
   const close = usePlayerSheet((state) => state.close);
   const player = w?.players.find((p) => p.id === id);
   if (!w || !player) return null;
-  return <PlayerSheet key={id} w={w} player={player} scope={scope} onClose={close} />;
+  return (
+    <PlayerSheet key={id} w={w} player={player} scope={scope} onClose={close} client={client} />
+  );
 }
