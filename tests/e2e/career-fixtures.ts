@@ -40,3 +40,45 @@ export async function importSecondCareer(page: Page) {
     .click();
   return fixture;
 }
+
+export async function qualifiedCoachFixture(kind: 'internal' | 'club') {
+  const { closeEmployment, openEmployment } =
+    await import('../../packages/engine/src/person-careers');
+  const { initializeCoaching } = await import('../../packages/engine/src/coaching-entry');
+  const { qualifyManagers } = await import('../../packages/engine/src/manager-entry');
+  const { prepareSeason } = await import('../../packages/engine/src/season');
+  const { w, player } = secondCareerFixture(),
+    person = w.people![player.id];
+  player.status = 'retired';
+  person.intention!.willing = true;
+  closeEmployment(w, player.id, 'player');
+  person.playing = 'retired';
+  person.retirement!.at = careerDate(w);
+  initializeCoaching(w, person);
+  const club = kind === 'internal' ? w.playerClub : w.clubs.find((c) => c.id !== w.playerClub)!.id;
+  const job = openEmployment(w, player.id, person.coaching!.role, club);
+  job.wage = '101';
+  job.currency = w.currency;
+  job.contractUntil = { year: w.year + 5, day: 0 };
+  if (kind === 'internal')
+    w.staff = [
+      ...(w.staff ?? []).filter((s) => s.role !== person.coaching!.role),
+      {
+        id: player.id,
+        person: player.id,
+        role: person.coaching!.role,
+        name: player.name,
+        born: player.born,
+        ability: person.coaching!.ability,
+        potential: person.coaching!.potential,
+        wage: '101',
+        since: w.year,
+        until: w.year + 5,
+      },
+    ];
+  w.year += 3;
+  w.manager.until = w.year + 3;
+  prepareSeason(w);
+  qualifyManagers(w);
+  return { w, player, person };
+}

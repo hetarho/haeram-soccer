@@ -1,3 +1,4 @@
+import { PersonCareerLink } from './PersonCareer';
 import { useEffect, useState } from 'react';
 import type {
   ContractTerm,
@@ -360,6 +361,9 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                 <div className={s.member}>
                   <span>
                     {member.name}
+                    {member.person && (
+                      <PersonCareerLink id={member.person} name={member.name} client={client} />
+                    )}
                     {coachAge(w, member)}
                     {isExpiring(w, member) && <em className={s.expiring}> 계약 만료 예정</em>}
                   </span>
@@ -523,6 +527,9 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
             </div>
           ) : (
             <p className={s.note}>이번 시즌 이 자리에 맞는 후보가 없어요.</p>
+          )}
+          {chosen?.person && (
+            <PersonCareerLink id={chosen.person} name={chosen.name} client={client} />
           )}
           {candidates.length > 0 && (
             <TermDial label="코치 계약 기간" value={term} disabled={acting} onChange={setTerm} />

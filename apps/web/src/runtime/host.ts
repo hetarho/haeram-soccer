@@ -1,3 +1,4 @@
+import { personCareer } from './personCareer';
 import { STAFF_ROLES, staffCandidates } from '../../../../packages/engine/src/staff';
 import { careerAssessment } from '../../../../packages/engine/src/career-assessment';
 import { nextEventDays } from '../../../../packages/engine/src/next-event';
@@ -51,6 +52,7 @@ export class Host {
     const type = (input as { body?: { type?: unknown } } | null)?.body?.type;
     if (
       type === 'head-to-head' ||
+      type === 'person-career' ||
       type === 'league-fixtures' ||
       type === 'club-records' ||
       type === 'archive'
@@ -150,6 +152,11 @@ export class Host {
       if (this.session && this.session !== request.session)
         throw new Error('이전 세션의 요청입니다.');
       if (!w) throw new Error('먼저 클럽을 창단하세요.');
+      if (body.type === 'person-career') {
+        const detail = personCareer(w, body.person);
+        if (!detail) throw new Error('기록된 인물 경력이 없습니다.');
+        return { requestId: request.requestId, ok: true, personCareer: detail };
+      }
       if (body.type === 'archive')
         return {
           requestId: request.requestId,

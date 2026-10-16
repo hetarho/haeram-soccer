@@ -514,6 +514,11 @@ export class GameClient {
    * Our all-time record against a club from every own match the worker keeps; the view holds only
    * the recent ones. A read skips the command queue, so it never sets busy or holds the clock.
    */
+  async personCareer(person: string) {
+    const reply = await this.rpc({ type: 'person-career', person });
+    if (!reply.personCareer) throw new Error(reply.error ?? '인물 경력 응답이 없습니다.');
+    return reply.personCareer;
+  }
   async headToHead(club: string) {
     const reply = await this.rpc({ type: 'head-to-head', club });
     if (!reply.headToHead) throw new Error('맞대결 기록 응답이 없습니다.');

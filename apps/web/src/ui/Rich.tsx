@@ -1,3 +1,4 @@
+import { PersonCareerLink } from './PersonCareer';
 import { useTaskState } from './taskMemory';
 import { PixelIcon } from './PixelIcon';
 import { Select } from './Select';
@@ -251,6 +252,7 @@ function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => 
               <OvrBadge value={m.ability} role="감독" potential={m.potential} large />
               <div>
                 <b>{personAge(w, m.born)}</b>
+                {m.person && <PersonCareerLink id={m.person} name={m.name} client={client} />}
                 <small>
                   {m.since}년 부임 ·{' '}
                   {m.interim ? '새 감독을 뽑을 때까지 대행' : contractLine(m.until, w.year)}
@@ -409,6 +411,9 @@ function ManagerMarket({ state, client, onClose }: Props & { onClose: () => void
         <OvrBadge value={candidate.ability} role="감독" potential={candidate.potential} large />
         <div>
           <h3>{candidate.name}</h3>
+          {candidate.person && (
+            <PersonCareerLink id={candidate.person} name={candidate.name} client={client} />
+          )}
           <small>
             {personAge(w, candidate.born)}
             {growthNote(w, candidate)}
@@ -445,6 +450,7 @@ function ManagerMarket({ state, client, onClose }: Props & { onClose: () => void
           <> · 코치 계약 종료 보상 {format(candidate.coachingRelease)}</>
         )}
         {candidate.source === 'internal' && <> · 내부 승진</>}
+        {candidate.person && candidate.source === 'club' && <> · 타 구단 코치 재직 중</>}
       </p>
       <button
         disabled={disabled}

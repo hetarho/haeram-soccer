@@ -1,3 +1,4 @@
+import { PersonCareerLink } from './PersonCareer';
 import type { GameClient } from '../runtime/client';
 import { PlayingCoachReview } from './PlayingCoachReview';
 import { useState } from 'react';
@@ -82,6 +83,7 @@ export function PlayerSheet({
       </p>
       {active && !player.loanUntil && <p>계약 조항: {clausesLabel(player.clauses)}</p>}
       <PlayerProfile w={w} player={player} own={active} />
+      <PersonCareerLink id={player.id} name={player.name} client={client} />
       {active && <PlayingCoachReview w={w} player={player} client={client} />}
       <section className={a.clubCareer} aria-label="우리 클럽 통산">
         <h3>우리 클럽 통산</h3>
