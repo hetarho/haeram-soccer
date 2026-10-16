@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T17:09Z | T175 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T17:11Z | T187 |
 
 ## inbox
 - 261017 decided HIST-13: scoring continuity after an in-league transfer → one player total plus actual per-club contributions (alt: split the same person into multiple leaders | reset his earlier goals); fixes strict conservation without inventing NPC history.
@@ -93,7 +93,7 @@
 | T177 | Verify delegation handover and promise outcomes through the browser | WEB CLUB HIST SAVE | T172 T174 | todo |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 | todo |
-| T187 | Show squad counts against the rule and the 20/16 tones | WEB CLUB STAFF | T182 T183 T184 T175 | todo |
+| T187 | Show squad counts against the rule and the 20/16 tones | WEB CLUB STAFF | T182 T183 T184 T175 | doing@261017.n7r4 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -107,6 +107,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 implement-task T187 start n7r4.
 - 261017 T175 done n7r4: Browser journeys use central seven-category settings and public manual event/match actions; season helpers stop by observed season/fixture progress, with old tool invocations removed and genuine legacy compatibility tests retained.
 - 261017 T190 done n7r4: One retained scorer keeps aggregate league totals and exact per-club contributions across real in-league transfers; strict conservation, archived breakdowns, UI labels and the lossless save codec preserve those facts.
 - 261017 create-task/implement-task T190: correct scorer conservation before resuming T175; existing browser changes preserved.
@@ -126,4 +127,3 @@
 - 261017 WEB r89 assigned to T188: responsive clock reflow prevents date overlap from the shared selector; T183 unaffected.
 - 261017 implement-task T188 start n7r4.
 - 261017 create-task T188: WEB r88 and reported selector/exit regressions; prioritize before T183.
-- 261017 update-ssot WEB r88: fixed pitch ratio requested; T183 engine scope unaffected.
