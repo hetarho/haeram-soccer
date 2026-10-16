@@ -1,3 +1,4 @@
+import { useTaskMemory } from './taskMemory';
 import { describe, expect, it } from 'vitest';
 import { createWorld, operate } from '../../../../packages/engine/src/index';
 import { BUILD_PRESETS } from '../../../../packages/engine/src/build';
@@ -5,6 +6,9 @@ import { matchingPreset } from '../../../../packages/engine/src/presets';
 import { financeProjection } from '../../../../packages/engine/src/projection';
 import { policyOf } from '../../../../packages/engine/src/policy';
 import {
+  departmentDraft,
+  discardDepartment,
+  reconcileDraft,
   areaSummary,
   dialPreview,
   draftChanges,
@@ -213,5 +217,57 @@ describe('direction areas', () => {
     expect(withDirection(w, d, 'finance', 'standard')).toEqual({ policy: { localInvest: 2 } });
     for (const command of draftCommands(w, d)) send(w, command);
     expect(w.direction).toEqual({ finance: 'stable' });
+  });
+});
+
+describe('department draft boundaries', () => {
+  it('scopes cards and rows, merges the live build and leaves other departments drafted', () => {
+    const w = world();
+    let d = withStrategy(w, {}, localPride.build, localPride.label);
+    d = withPolicy(w, d, 'recruitment', 2);
+    d = withDirection(w, d, 'finance', 'careful');
+    const scouting = departmentDraft(w, d, 'scouting');
+    expect(draftChanges(w, scouting).map((c) => c.kind)).toEqual(['card', 'policy']);
+    expect(scouting.name).toBeUndefined();
+    expect(scouting.build).toEqual({ scouting: localPride.build.scouting });
+    // Applied changes made elsewhere are retained at command generation time.
+    send(w, { type: 'build', build: { revenue: 'commercial' } });
+    const live = departmentDraft(w, d, 'scouting');
+    expect(live.build?.revenue).toBe('commercial');
+    const before = structuredClone(w);
+    const commands = draftCommands(w, live);
+    for (const command of commands) send(w, command);
+    const rest = reconcileDraft(before, w, d, commands);
+    expect(draftChanges(w, rest).some((c) => c.kind === 'direction' && c.key === 'finance')).toBe(
+      true,
+    );
+    expect(draftChanges(w, departmentDraft(w, rest, 'scouting'))).toEqual([]);
+    expect(draftChanges(w, rest).some((c) => c.kind === 'card' && c.slot === 'youth')).toBe(true);
+    expect(
+      draftChanges(w, discardDepartment(w, rest, 'finance')).some(
+        (c) => c.kind === 'direction' && c.key === 'finance',
+      ),
+    ).toBe(false);
+  });
+  it('a partial refusal retains only unapplied commands for retry', () => {
+    const w = world();
+    let d = withCard(w, {}, 'scouting', 'data');
+    d = withPolicy(w, d, 'recruitment', 2);
+    d = withDirection(w, d, 'finance', 'careful');
+    const before = structuredClone(w);
+    const commands = draftCommands(w, departmentDraft(w, d, 'scouting'));
+    send(w, commands[0]);
+    const remaining = reconcileDraft(before, w, d, commands.slice(0, 1));
+    expect(draftCommands(w, departmentDraft(w, remaining, 'scouting'))).toEqual([commands[1]]);
+    expect(remaining.direction).toEqual({ finance: 'careful' });
+    expect(reconcileDraft(w, w, remaining, [])).toEqual(remaining);
+    for (const command of draftCommands(w, remaining)) send(w, command);
+    expect(draftCommands(w, remaining)).toEqual([]);
+  });
+  it('another world never inherits board work', () => {
+    useTaskMemory.getState().activate('first');
+    useTaskMemory.setState({ values: { 'board-draft': { direction: { finance: 'careful' } } } });
+    useTaskMemory.getState().activate('second');
+    expect(useTaskMemory.getState().values).toEqual({});
   });
 });

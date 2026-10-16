@@ -83,7 +83,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T151 | Isolate policy drafts and apply commands by department | WEB | T142 | doing@261016.v6k2 |
 | T152 | Open the authoritative department editor over its task | WEB | T149 T151 | todo |
 | T153 | Add the recruitment support policy to every authoritative row workflow | STAFF ECON WEB SAVE | T152 | todo |
 | T154 | Generate fixed off-pitch qualities without disturbing playing draws | PLAYER SAVE | - | todo |
@@ -132,6 +131,7 @@
 - Remaining planned tasks retain their scope and status; do not activate rules 3.0.0 or delete career data in this checkpoint.
 
 ## log
+- 261016 T151 done v6k2: department draft extraction/discard, live card merge and successful-command reconciliation; 14 board/navigation cases passed.
 - 261016 implement-task T151 start v6k2; WEB r87 changes squad tones only, unrelated to department draft mechanics.
 - 261016 T150 done v6k2: exclusive progression controls, removed round tools and grouped same-date actions; 14 Chromium and 26 unit cases passed.
 - 261016 implement-task T150 start v6k2; authorized two push units T150 then T151–T153.

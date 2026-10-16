@@ -31,7 +31,7 @@ import {
   directionOption,
 } from '../../../../packages/engine/src/direction';
 import { TICKET_LEVELS } from './ticketLevels';
-import { isDirectionRow, type AreaKey, type DirectionArea } from './areas';
+import { DIRECTION_AREAS, isDirectionRow, type AreaKey, type DirectionArea } from './areas';
 
 /**
  * The operating board's draft (→WEB-60): the strategy cards and the dials the owner tapped, kept
@@ -107,6 +107,72 @@ export function draftCommands(w: World, d: BoardDraft): Command[] {
     else if (change.kind === 'direction')
       commands.push({ type: 'direction', key: change.key, option: change.to });
   return commands;
+}
+
+/** Rebuild only explicit changed fields on the latest applied world. */
+function changesDraft(w: World, changes: DraftChange[]): BoardDraft {
+  const result: BoardDraft = {};
+  for (const change of changes) {
+    if (change.kind === 'card') {
+      result.build ??= { ...buildOf(w) };
+      if (change.to) (result.build as Record<string, string>)[change.slot] = change.to;
+      else delete result.build[change.slot];
+    } else if (change.kind === 'policy') {
+      result.policy = { ...result.policy, [change.key]: change.to };
+    } else if (change.kind === 'direction') {
+      result.direction = { ...result.direction, [change.key]: change.to };
+    } else result.ticket = change.to;
+  }
+  return tidy(w, result);
+}
+function belongs(change: DraftChange, area: AreaKey) {
+  const definition = DIRECTION_AREAS.find((item) => item.key === area)!;
+  return change.kind === 'card'
+    ? definition.card === change.slot
+    : definition.rows.includes(change.kind === 'ticket' ? 'ticket' : change.key);
+}
+/** Extract one department; all other build slots come from the live world, never a preset. */
+export function departmentDraft(w: World, draft: BoardDraft, area: AreaKey): BoardDraft {
+  return changesDraft(
+    w,
+    draftChanges(w, draft).filter((change) => belongs(change, area)),
+  );
+}
+export function discardDepartment(w: World, draft: BoardDraft, area: AreaKey): BoardDraft {
+  return changesDraft(
+    w,
+    draftChanges(w, draft).filter((change) => !belongs(change, area)),
+  );
+}
+/** Only successful command acknowledgements spend draft changes. Rebase the rest on live facts. */
+export function reconcileDraft(
+  before: World,
+  after: World,
+  draft: BoardDraft,
+  acknowledged: readonly Command[],
+): BoardDraft {
+  const remaining = draftChanges(before, draft).filter(
+    (change) =>
+      !acknowledged.some((command) => {
+        if (change.kind === 'card')
+          return command.type === 'build' && command.build[change.slot] === change.to;
+        if (change.kind === 'policy')
+          return (
+            command.type === 'policy' && command.key === change.key && command.level === change.to
+          );
+        if (change.kind === 'direction')
+          return (
+            command.type === 'direction' &&
+            command.key === change.key &&
+            command.option === change.to
+          );
+        return command.type === 'ticket' && command.price === change.to;
+      }),
+  );
+  const result = changesDraft(after, remaining);
+  // A partial application cannot claim the full preset's name.
+  if (!acknowledged.length && result.build && draft.name) result.name = draft.name;
+  return result;
 }
 
 /** A request from elsewhere as a draft of that one dial; a level already in force drafts nothing. */
