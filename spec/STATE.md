@@ -63,6 +63,7 @@
 | club-direction | converted@261014 |
 | difficulty-and-adaptation | converted@261015 |
 | navigation-and-records | converted@261015 |
+| expert-proposal-review | open@261016 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
@@ -92,10 +93,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
+- ideation expert-proposal-review: discuss lasting difficulty, owner decision boundaries and retired-player careers; proposal items remain unadopted.
 - implement-task T141: remove the home launcher spacer and verify mobile/desktop content bounds.
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 ideation expert-proposal-review open: checked current rules, selected code and a synthetic phone policy return; recorded recommendations without adopting policies
+- 261016 ideation expert-proposal-review start: compare the external r79 proposal with current policy and implementation; adoption remains open
 - 261016 T141 local checks pass: 36 affected browser cases, static/build/spec checks and phone geometry; publish and inspect full source CI next
 - 261016 T141 doing@u9c2: remove the reserved home notification space; the launcher floats over content
 - 261016 T140 done: compact draft panel and conditional launcher; T139/T140 published at 81108b2, full source CI 38846465288 passes all six jobs
@@ -114,5 +118,3 @@
 - 261015 T135 done: actionable training/player/academy/staff workflows and request-first recruitment; 69 browser cases and static/build/spec checks pass, actual phone captures inspected
 - 261015 create-task T138: CI 38751332516 Firefox observed x10 at round 6 after missing transient round 1; fix test observation after T135, no game-rule change
 - 261015 T135 doing@m8q4: actionable training, player context, recruitment needs and academy/staff handoffs
-- 261015 T134 done: contextual returns, retained task/draft state and department-first policy context; 36 browser cases and static/build checks pass, branch CI before main
-- 261015 T134 doing@m8q4: session task state and focused policy returns; verified source is promoted to main after branch CI
