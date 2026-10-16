@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r9 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r10 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -77,9 +77,10 @@
   - Namespace application keys; do not clear unrelated origin storage.
   - UI-thread adapters own localStorage reads/writes; workers handle serialization, compression, checksum calculation, and validation.
   - localStorage is synchronous; its documented typical allowance is 5 MiB per origin, not a guaranteed amount available to the application. [Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API), [storage quotas](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria)
-- ARCH-12 [o] Save format: versioned JSON envelope with gzip-compressed, base64-encoded canonical state and a SHA-256 integrity checksum.
+- ARCH-12 [o] Save format: versioned JSON envelope with losslessly compressed canonical state and a SHA-256 integrity checksum (→SAVE-2).
   - Envelope: schema version, engine version, catalog/rule references, world ID, generation, parent generation, codec, checksum, and payload.
   - Use browser Compression/Decompression Streams in a worker; support is checked at startup. [CompressionStream](https://developer.mozilla.org/en-US/docs/Web/API/CompressionStream)
+  - Large checkpoints use a pinned pure-JavaScript Brotli codec in the background codec worker; lazy-load it only when needed. Bound decoder output and window allocation before growth; preserve the existing content-security policy.
   - Checksum detects accidental corruption; it is not proof that a client-authored result is honest.
   - Export the envelope as a portable `.haeram-save.json` file; Flutter can decode the same format.
 - ARCH-13 [o] Checkpoint writes use two slots and a last-step manifest update.
@@ -202,6 +203,7 @@
 - Current product material: `spec/ideation/club-history-reboot.md`; human PRD: `docs/PRD.md` (repository-relative paths).
 
 ## chg
+- r10 261017 ARCH-12✎ gzip/base64-only description→SAVE-2 adaptive gzip/Brotli with bounded pure-JavaScript worker codec; security policy unchanged
 - r9 261012 ARCH-13✎ candidate built and validated before the slot→in a background codec worker nobody waits for; autosave at settled fixture/period boundaries→decisions at once, automatic progression at a bounded interval (→SAVE-8)
 - r8 261012 ARCH-23✎ one serial `pnpm run verify` job→parallel jobs (checks, browser tests per browser with WebKit in two shards, benchmarks)
 - r7 261012 ARCH-5✎ inputs simulation time→the game day each command applies at; +the same facts however time is advanced; +draws named by what they settle, never by a count of commands

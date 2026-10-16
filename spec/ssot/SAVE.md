@@ -1,10 +1,12 @@
 # SAVE Browser persistence and protocol
-> r41 | Define the browser-demo rules for browser persistence and protocol.
+> r42 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
-- SAVE-2 [o] Envelope contains schema/engine/catalog/world ID/generation/parentGeneration/codec/checksum/payload. Codec is gzip-cjk14: gzip bytes written as 14-bit groups in U+4E00–U+8DFF after a padding header (docs/SAVE-FORMAT.md); checksum is SHA-256 of uncompressed canonical JSON. ← storage is budgeted per UTF-16 code unit, where Base64 carries 6 bits and these characters 14
-  - gzip-base64 checkpoints and files are still read, never written.
+- SAVE-2 [o] Envelope contains schema/engine/catalog/world ID/generation/parentGeneration/codec/checksum/payload; checksum is SHA-256 of uncompressed canonical compact JSON.
+  - Write gzip-cjk14 for compressed payloads at most 1,200,000 bytes; otherwise write brotli-bmp127, quality 11/window 24, using a pinned pure-JavaScript worker implementation.
+  - brotli-bmp127 uses fixed 64-character base-63230 blocks per 127 bytes, excluding controls/ASCII/surrogates/noncharacters, with an explicit final-byte-count header (docs/SAVE-FORMAT.md). Payload is opaque verbatim text; padding/range/length checks precede decompression.
+  - Continue reading gzip-cjk14 and gzip-base64; never rewrite a file while reading. Existing checkpoint, total, import and decompressed limits remain →SAVE-4.
 - SAVE-3 [o] One active world and previous checkpoint use keys haeram-soccor:slot:a/b and haeram-soccor:manifest; manifest switches only after validated candidate write/readback.
 - SAVE-4 [o] Maximum encoded checkpoint is 1.5 MiB conservative UTF-16; total namespaced use <=3.5 MiB. Imports cap file at 4 MiB and decompressed JSON at 16 MiB.
 - SAVE-5 [o] Validate DTO schema and world references before load/import; unsupported versions, wrong checksum, corrupted slots and missing catalogs are actionable errors and cannot overwrite a good save.
@@ -57,6 +59,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r42 261017 SAVE-2✎ gzip-cjk14 writer→adaptive gzip-cjk14/brotli-bmp127; existing readers, checksum, facts and limits unchanged
 - r41 261017 SAVE-10/18✎ active rules 2.0.0→3.0.0; only current-rule loads, approved bounded legacy reset on writer activation
 - r40 261017 SAVE-10✎ recognized catalog writer pin 2026-demo-1→2026-demo-2 to 2026-demo-1/2→2026-demo-3; historical prices/index and recorded facts unchanged
 - r39 261016 SAVE-18✎ squad rules CLUB-40–43→CLUB-40–44 (+registration limits)
