@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r26 | Define the browser-demo rules for manager demands and personality.
+> r27 | Define the browser-demo rules for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -132,7 +132,14 @@
   - candidacy does not appoint him. Hiring/renewal follows the manager responsibility, not his former-player status, and preserves existing contract and affordability rules.
   - the linked person history survives the change of role (→HIST-14). Exact qualification and school/ability assignment are →STAFF-28.
 
-- STAFF-25 [?] Specify natural coaching entry timing/chance and how a player's wishes answer encouragement or affect entry. Aptitude qualification is →STAFF-38; encouragement is →STAFF-29; playing-coach conversion, pay, retirement, eligible posts and role termination are →STAFF-31–37. No fixed training-course price or automatic entry/employment guarantee is established.
+- STAFF-25 [o] At a coaching-qualified player's retirement announcement (→STAFF-38), decide his coaching-career intention once using a retained person-specific career draw.
+  | true coaching aptitude | natural intention | with the once-only owner encouragement |
+  |---|---|---|
+  | 높음 | 50% | 65% |
+  | 매우 높음 | 80% | 95% |
+  - encouragement (→STAFF-29) compares the same retained draw with the higher threshold; do not reroll it. A player already intending to coach remains willing; otherwise show whether the encouragement changes his intention. Retain the response so reloads, settings changes and repeated visits cannot retry it.
+  - a willing qualified player becomes a coaching candidate at actual playing retirement unless already employed as a coach; a playing coach keeps his existing coaching contract under →STAFF-35. Market admission is →STAFF-27. Neither intention nor encouragement appoints him or guarantees a job.
+  - playing-coach employment requires its separate accepted contract (→STAFF-31/32). No separate mandatory coaching-course purchase is part of this entry path; ordinary employment costs remain in force.
 
 - STAFF-26 [o] The recruitment department has a standing director/manager support policy: 단장 우선, 균형 or 감독 우선, with 균형 selected for a new game.
   - automatic mediation follows that policy; direct mediation can choose differently for the current case without silently changing the standing policy.
@@ -196,6 +203,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r27 261016 STAFF-25✎ entry timing/chance/encouragement response open→once at retirement announcement, natural 50/80% and encouraged 65/95%, retained draw and retirement candidacy without guaranteed employment
 - r26 261016 STAFF-25/28/31✎ aptitude qualification open→STAFF-38/39, remaining entry/ability/market rules open; STAFF-38/39+ high-or-very-high coaching entry and separate managerial aptitude plus three-year service
 - r25 261016 STAFF-25/31✎ playing-coach post/early-exit rules open→STAFF-36/37, entry intentions remain open; STAFF-36/37+ six suitable training posts, coach-only exit preserves player contract, player departure ends both roles under ordinary contract costs
 - r24 261016 STAFF-25/31✎ retirement/continuation open→STAFF-34/35, remaining entry/eligibility/early separation open; STAFF-34/35+ one/two-year deferral capped at 41 and unexpired coach contract continues after playing retirement
