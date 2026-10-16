@@ -92,11 +92,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- update-ssot WEB STAFF PLAYER WORLD CLUB SAVE: settle the recorded open policy units before their dependent implementation; no balance tuning.
-- create-task WEB STAFF CLUB PLAYER WORLD HIST SAVE ECON LEAGUE: consume the agreed pending deltas after required planning gaps are resolved; these deltas await implementation.
+- update-ssot WEB STAFF PLAYER WORLD CLUB SAVE: settle all remaining proposal policies together before creating any implementation tasks; no balance tuning.
+- create-task WEB STAFF CLUB PLAYER WORLD HIST SAVE ECON LEAGUE: decompose the complete agreed scope in one batch only after all proposal policy gaps are resolved; do not create a partial task batch.
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 planning sequence confirmed: finish all proposal policy decisions together, then create the complete implementation task batch; no partial task creation
+- 261016 implement-task start: compact the season records list to at most two mobile lines per season, with single-line short values and retained season-detail navigation.
 - 261016 update-ssot WEB r84: match events required for every manual configuration, not only all-delegated play; other events off means next-match-eve progression, no season-end fallback
 - 261016 update-ssot WEB start: correct manual-mode eligibility to require match events regardless of delegated responsibilities; remove the no-event season-end fallback question
 - 261016 update-ssot WEB r83: manual play moves directly to the next event date without a paced progress/cancel journey; choice-free reports notify only; central entry/apply rules consolidated
@@ -116,4 +118,3 @@
 - 261016 ideation expert-proposal-review: owner adopts mixed new-game delegation defaults and independent observation stops, default match eve on/window opening off
 - 261016 ideation expert-proposal-review: owner adopts seven responsibilities and direct-only business-decision stops; delegated outcomes are reports
 - 261016 ideation expert-proposal-review: owner selects central direct/delegated choices per responsibility; granularity, defaults and clock stops remain open
-- 261016 T141 home journey updated: actual clickability and navigation-edge bounds replace the reserved-row assumption; all 9 corrected cases pass, full CI rerun next
