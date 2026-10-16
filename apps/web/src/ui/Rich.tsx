@@ -394,9 +394,14 @@ function ManagerMarket({ state, client, onClose }: Props & { onClose: () => void
   // freely.
   const payoff = BigInt(managerPayoff(w));
   const outlay = (candidate: (typeof v.managers)[number]) =>
-    BigInt(candidate.fee) + BigInt(candidate.compensation ?? '0') + payoff;
+    BigInt(candidate.fee) +
+    BigInt(candidate.compensation ?? '0') +
+    BigInt(candidate.coachingRelease ?? '0') +
+    payoff;
   const chosen = v.managers.find((candidate) => candidate.id === hiring);
-  const free = v.managers.filter((candidate) => candidate.source === 'free'),
+  const free = v.managers.filter(
+      (candidate) => candidate.source === 'free' || candidate.source === 'internal',
+    ),
     others = v.managers.filter((candidate) => candidate.source === 'club');
   const card = (candidate: (typeof v.managers)[number]) => (
     <article className={s.card} key={candidate.id}>
@@ -436,6 +441,10 @@ function ManagerMarket({ state, client, onClose }: Props & { onClose: () => void
           : `계약 1–${managerTermLimit(candidate, w.year)}시즌 선택`}{' '}
         · 계약금 {format(candidate.fee)}
         {candidate.compensation && <> · 보상금(웃돈) {format(candidate.compensation)}</>}
+        {candidate.coachingRelease && (
+          <> · 코치 계약 종료 보상 {format(candidate.coachingRelease)}</>
+        )}
+        {candidate.source === 'internal' && <> · 내부 승진</>}
       </p>
       <button
         disabled={disabled}
@@ -488,9 +497,17 @@ function ManagerMarket({ state, client, onClose }: Props & { onClose: () => void
             <li>
               즉시 지출 <b>{format(outlay(chosen))}</b> · 계약금 {format(chosen.fee)}
               {chosen.compensation && <> · 보상금 {format(chosen.compensation)}</>}
+              {chosen.coachingRelease && (
+                <> · 코치 계약 종료 보상 {format(chosen.coachingRelease)}</>
+              )}
               {payoff > 0n && <> · 이전 감독 보상 {format(payoff)}</>}
             </li>
-            {chosen.club && (
+            {chosen.person && (
+              <li>
+                코치로 재직 중이면 해당 코치 자리와 연봉은 끝나고 같은 인물이 감독으로 부임해요.
+              </li>
+            )}
+            {chosen.club && !chosen.person && (
               <li>
                 <ClubLink w={w} id={chosen.club} />은 새 감독을 찾아요.
               </li>

@@ -1,4 +1,4 @@
-import { syncMentorExposures } from './person-careers';
+import { closeEmployment, syncMentorExposures } from './person-careers';
 import { onManagerChange } from './adaptation';
 import type { Command, ContractTerm, Manager, Tactic, World } from '../../contracts/src/types';
 import { addEvent, clubOf, makeManager, quote, tacticLabel, TACTICS } from './world';
@@ -22,6 +22,7 @@ import { FIREFIGHTER_ARRIVAL_MORALE, managerStyleEffects, managerTerm, STYLE_INF
 import {
   bestFreeAgent,
   managerCandidates,
+  managerHireCost,
   managerMatches,
   managerSearchReason,
   takeManager,
@@ -134,12 +135,14 @@ function installManager(
     source: _source,
     club: _club,
     compensation: _compensation,
+    coachingRelease: _coachingRelease,
     ...manager
   } = candidate;
   void _fee;
   void _source;
   void _club;
   void _compensation;
+  void _coachingRelease;
   readRelated(w, w.manager.id);
   takeManager(w, candidate, w.manager);
   const before = w.manager;
@@ -177,7 +180,7 @@ export function appointDelegatedManager(w: World) {
     return undefined;
   }
   const term = Math.min(c.term, managerTermLimit(pick, w.year)) as ContractTerm,
-    cost = (BigInt(pick.fee) + BigInt(pick.compensation ?? '0')).toString(),
+    cost = managerHireCost(pick).toString(),
     club = pick.club ? w.clubs.find((other) => other.id === pick.club)?.name : undefined;
   debit(w, cost, true);
   const manager = installManager(w, pick, term),
@@ -238,6 +241,7 @@ export const MANAGER_GONE = '감독이 떠났습니다. 새 감독을 선임하�
  */
 function resign(w: World, reason: string) {
   const old = w.manager;
+  if (old.person) closeEmployment(w, old.person, 'manager');
   // His renewal reminder is moot once he has gone.
   readRelated(w, old.id);
   addEvent(
@@ -359,6 +363,8 @@ export function yearlyStaff(w: World) {
       );
     m.ability = next.ability;
     m.potential = next.potential;
+    if (m.person && w.people?.[m.person]?.management)
+      Object.assign(w.people[m.person].management!, next);
   }
   if (!m.interim && (age !== undefined ? age >= MANAGER_CAREER.retire : m.since + 25 <= w.year))
     resign(w, '긴 지도자 생활을 마치고 은퇴했습니다.');
@@ -477,8 +483,7 @@ export function staffCommand(w: World, cmd: StaffCommand) {
         throw new Error(termRefusal(candidate));
       const term = cmd.term ?? defaultManagerTerm(candidate, w.year);
       // Another club also takes compensation for its manager (→STAFF-17).
-      const fee =
-        BigInt(candidate.fee) + BigInt(candidate.compensation ?? '0') + BigInt(managerPayoff(w));
+      const fee = managerHireCost(candidate) + BigInt(managerPayoff(w));
       debit(w, fee.toString());
       addEvent(
         w,

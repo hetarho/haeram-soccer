@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:37Z | T165 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:40Z | - |
 
 ## inbox
 - 261017 suggest T154 T155 T156 T157 T158: five person-career foundation tasks completed → review-code aptitude/person-careers/npc-continuity/careers/coaching-entry before the next unrelated feature; remaining planned second-career tasks continue.
@@ -84,7 +84,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T165 | Appoint qualified free and employed coaches as managers | STAFF WORLD HIST | T144 T163 T164 | doing@261017.n7r4 |
 | T166 | Project qualitative aptitude and truthful career availability | WEB PLAYER STAFF HIST | T154 T155 T164 | todo |
 | T167 | Show aptitude, encouragement and combined playing-coach review | WEB STAFF | T149 T161 T166 | todo |
 | T168 | Read and display linked playing, coaching and manager careers | WEB HIST STAFF SAVE ARCH | T165 T166 | todo |
@@ -120,6 +119,7 @@
 - Do not activate rules 3.0.0 or reset career data before T174's prerequisites are complete.
 
 ## log
+- 261017 T165 done n7r4: Free, internal and employed retained coaches join the ordinary manager market with current coaching compensation, linked role transition and full contract cost disclosure.
 - 261017 implement-task T165 start n7r4.
 - 261017 T164 done n7r4: Actual three-year service and independent managerial aptitude initialize retained manager values and mentor school once from dated processing.
 - 261017 implement-task T164 start n7r4.
@@ -139,4 +139,3 @@
 - 261017 implement-task T157 start n7r4.
 - 261017 T156 done n7r4: Retained prospects and all former own/academy players keep identity across cohorts and moves; pure cached rosters exclude moved/retired people and own match metrics use actual own participants.
 - 261017 implement-task T156 start n7r4.
-- 261017 T155 done n7r4: One retained identity links fixed qualities, true own totals, dated employment and mentor facts; role helpers and schema reject identity/post/date/reference conflicts.

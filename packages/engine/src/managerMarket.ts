@@ -1,5 +1,5 @@
 import { COUNTRIES } from '../../catalogs/src/index';
-import { syncMentorExposures } from './person-careers';
+import { closeEmployment, openEmployment, syncMentorExposures } from './person-careers';
 import { cohesionAfterManager } from './adaptation';
 import type {
   Club,
@@ -19,6 +19,7 @@ import {
   MANAGER_TRAIT_INFO,
   managerTrait,
   staffQuote,
+  releaseCost,
 } from './staff';
 import { addEvent, clubOf, FOUNDING_YEAR, makeManager } from './world';
 import { ownLeagueClubs } from './season';
@@ -40,7 +41,8 @@ const RETIREMENT_AGE = 70;
 
 export type MarketManager = Manager & { style: ManagerStyle };
 export interface ManagerCandidate extends MarketManager {
-  source: 'free' | 'club';
+  source: 'free' | 'club' | 'internal';
+  coachingRelease?: string;
   /** Signing fee paid to the manager. */
   fee: string;
   /** For another club's manager: his club and the compensation it receives. */
@@ -189,12 +191,65 @@ function clubCandidates(w: World): ManagerCandidate[] {
       compensation: ((BigInt(manager.wage) * COMPENSATION[0]) / COMPENSATION[1]).toString(),
     }));
 }
+/** Retained career profiles add places without replacing the ordinary market. */
+function careerCandidates(w: World): ManagerCandidate[] {
+  return Object.values(w.people ?? {}).flatMap((person) => {
+    const profile = person.management;
+    if (
+      !profile ||
+      person.employment.some(
+        (job) => !job.to && (job.role === 'manager' || job.role === 'player'),
+      ) ||
+      w.year - person.born >= RETIREMENT_AGE
+    )
+      return [];
+    const job = person.employment.find((job) => !job.to),
+      internal = job?.club === w.playerClub,
+      member = internal ? w.staff?.find((member) => member.person === person.id) : undefined;
+    if (job && !internal && job.wage === undefined) return [];
+    const style = profile.school,
+      info = STYLE_INFO[style],
+      drawn = makeManager(
+        clubOf(w).country,
+        `${w.seed}:career-manager:${person.id}`,
+        profile.at.year,
+        1,
+        style,
+      );
+    const manager = {
+      ...drawn,
+      id: person.id,
+      person: person.id,
+      name: person.name,
+      born: person.born,
+      ability: profile.ability,
+      potential: profile.potential,
+      style,
+      philosophy: info.tactic ?? drawn.philosophy,
+      wage: staffQuote(w, 120 + profile.ability),
+      since: w.year,
+      until: w.year + Math.min(info.term, person.born + RETIREMENT_AGE - w.year),
+    };
+    return [
+      {
+        ...manager,
+        source: internal ? ('internal' as const) : job ? ('club' as const) : ('free' as const),
+        fee: signingFee(w, manager),
+        ...(job ? { club: job.club } : {}),
+        ...(member ? { coachingRelease: releaseCost(w, member) } : {}),
+        ...(job && !internal
+          ? { compensation: ((BigInt(job.wage!) * COMPENSATION[0]) / COMPENSATION[1]).toString() }
+          : {}),
+      },
+    ];
+  });
+}
 /**
  * Who the owner may hire now (→STAFF-17): free agents first, then the best managers of our league
  * and the division above, who cost compensation on top of the signing fee.
  */
 export function managerCandidates(w: World): ManagerCandidate[] {
-  return [...freeCandidates(w), ...clubCandidates(w)];
+  return [...freeCandidates(w), ...clubCandidates(w), ...careerCandidates(w)];
 }
 
 /** The going wage of a manager of this OVR: what a manager wage cap names (→STAFF-18). */
@@ -255,16 +310,24 @@ function byPriority(priority: ManagerCriteria['priority']) {
               : 0;
 }
 /** The signing fee plus any compensation to his club. */
-const hireCost = (m: ManagerCandidate) => BigInt(m.fee) + BigInt(m.compensation ?? '0');
+export const managerHireCost = (m: ManagerCandidate) =>
+  BigInt(m.fee) + BigInt(m.compensation ?? '0') + BigInt(m.coachingRelease ?? '0');
 /**
  * Cash after his fee and any compensation still keeps 재정 기조's runway with his wage in place of
  * the current manager's (→STAFF-18, as →STAFF-15, →ECON-33).
  */
 function affordableManager(w: World, m: ManagerCandidate) {
-  return affordable(w, hireCost(m), BigInt(m.wage) - BigInt(w.manager.wage));
+  return affordable(
+    w,
+    managerHireCost(m),
+    BigInt(m.wage) -
+      BigInt(w.manager.wage) -
+      BigInt((m.person && w.staff?.find((member) => member.person === m.person)?.wage) || '0'),
+  );
 }
 /** Free agents, and other clubs' managers too when the criteria allow poaching. */
-const pool = (w: World, c: ManagerCriteria) => (c.poach ? managerCandidates(w) : freeCandidates(w));
+const pool = (w: World, c: ManagerCriteria) =>
+  managerCandidates(w).filter((m) => c.poach || m.source !== 'club');
 /**
  * The candidates who meet every manager criterion and whom the club can afford, in the criteria's
  * order (→STAFF-18): the delegated staff appoint the first.
@@ -278,7 +341,8 @@ export function managerMatches(w: World): ManagerCandidate[] {
 }
 /** 가장 나은 후보 (→STAFF-18): the best affordable free agent in the criteria's order. */
 export function bestFreeAgent(w: World): ManagerCandidate | undefined {
-  return freeCandidates(w)
+  return managerCandidates(w)
+    .filter((m) => m.source !== 'club')
     .filter((m) => affordableManager(w, m))
     .sort(byPriority(managerCriteriaOf(w).priority))[0];
 }
@@ -348,7 +412,7 @@ export function managerSearchReason(w: World) {
 export function takeManager(w: World, candidate: ManagerCandidate, replaced: Manager) {
   const m = market(w);
   m.free = m.free.filter((free) => free.id !== candidate.id);
-  if (candidate.club) {
+  if (candidate.club && !candidate.person) {
     const club = w.clubs.find((one) => one.id === candidate.club);
     const before = club && clubManager(w, club);
     const [count] = m.clubs[candidate.club] ?? [0, FOUNDING_YEAR];
@@ -357,7 +421,12 @@ export function takeManager(w: World, candidate: ManagerCandidate, replaced: Man
     if (club && before) cohesionAfterManager(club, before.style === clubManager(w, club).style);
   }
   // An interim or the founding all-rounder has no school to offer the market.
-  if (!replaced.interim && replaced.style && age(w, replaced) < RETIREMENT_AGE) {
+  if (
+    !replaced.person &&
+    !replaced.interim &&
+    replaced.style &&
+    age(w, replaced) < RETIREMENT_AGE
+  ) {
     // The term he signed with us goes with his contract; his next club chooses its own.
     const { lastRequest: _l, requestHistory: _h, pending: _p, term: _t, ...rest } = replaced;
     void _l;
@@ -373,6 +442,28 @@ export function takeManager(w: World, candidate: ManagerCandidate, replaced: Man
         wage: staffQuote(w, 120 + rest.ability),
       },
     ].slice(-FREE_AGENTS.max);
+  }
+  if (replaced.person) {
+    const person = w.people?.[replaced.person];
+    if (person?.management)
+      Object.assign(person.management, {
+        ability: replaced.ability,
+        potential: replaced.potential ?? replaced.ability,
+      });
+    closeEmployment(w, replaced.person, 'manager');
+  }
+  if (candidate.person) {
+    const person = w.people![candidate.person];
+    const member = w.staff?.find((member) => member.person === person.id);
+    if (member && person.coaching)
+      Object.assign(person.coaching, {
+        ability: member.ability,
+        potential: member.potential ?? person.coaching.potential,
+      });
+    for (const job of person.employment.filter((job) => !job.to))
+      closeEmployment(w, person.id, job.role);
+    w.staff = w.staff?.filter((member) => member.person !== person.id);
+    openEmployment(w, person.id, 'manager', w.playerClub);
   }
   syncMentorExposures(w);
 }
