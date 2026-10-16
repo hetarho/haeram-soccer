@@ -113,3 +113,171 @@ test('retained-promise-status', async ({ page }) => {
   await expect(history).toContainText('마감');
   await expect(history).not.toContainText('신뢰 +');
 });
+
+for (const mode of ['manual', 'automatic'] as const)
+  test(`direct mediation stops ${mode} and survives reading notifications`, async ({ page }) => {
+    const { exportedCareer } = await import('./career-fixtures');
+    const w = fixture();
+    ask(w, 'GK');
+    w.settings!.mode = mode;
+    await importResponsibilityCareer(page, w);
+    const before = await exportedCareer(page);
+    if (mode === 'manual')
+      await expect(page.getByRole('button', { name: '다음 이벤트', exact: true })).toBeDisabled();
+    else await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
+    await page.getByTestId('communications-button').click();
+    const sheet = page.getByRole('dialog', { name: '알림·뉴스', exact: true });
+    await sheet.getByRole('button', { name: '모두 읽음', exact: true }).click();
+    await sheet.getByRole('button', { name: '닫기', exact: true }).click();
+    const after = await exportedCareer(page);
+    expect(after.calendar).toEqual(before.calendar);
+    expect(after.mediations![0].status).toBe('pending');
+    expect(after.promises ?? []).toHaveLength(0);
+    await expect(
+      page.getByTestId('event-card').getByRole('button', { name: '영입 중재 검토', exact: true }),
+    ).toHaveCount(2);
+  });
+
+test('mediation-handover-on-apply discloses work and never replays its recorded policy', async ({
+  page,
+}) => {
+  const { exportedCareer } = await import('./career-fixtures');
+  const { configureResponsibilities } = await import('./events');
+  const w = fixture();
+  await importResponsibilityCareer(page, w);
+  await page.getByTestId('intervention-trigger').click();
+  const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
+  await dialog.getByRole('combobox', { name: '선수 영입', exact: true }).selectOption('delegated');
+  await expect(dialog.getByRole('region', { name: '대기 업무 이관 미리보기' })).toContainText(
+    '선수 영입 1건',
+  );
+  await dialog.getByRole('button', { name: '적용', exact: true }).click();
+  await page
+    .getByTestId('action-outcome')
+    .getByRole('button', { name: '확인', exact: true })
+    .click();
+  const after = await exportedCareer(page);
+  expect(after.mediations![0].status).toBe('resolved');
+  expect(after.mediations![0].resolution!.support).toBe('balanced');
+  expect(after.mediations![0].support).toBe('balanced');
+  const recorded = structuredClone(after.mediations),
+    promises = structuredClone(after.promises),
+    cash = after.cash;
+  await configureResponsibilities(page, { responsibilities: { recruitment: 'direct' } });
+  await page.reload();
+  const again = await exportedCareer(page);
+  expect(again.mediations).toEqual(recorded);
+  expect(again.promises).toEqual(promises);
+  expect(again.cash).toBe(cash);
+});
+
+for (const arrival of ['none', 'loan', 'free'] as const)
+  test(`promise-reload-and-deadline with ${arrival} retains the original commitment`, async ({
+    page,
+    browser,
+  }) => {
+    const { exportedCareer } = await import('./career-fixtures');
+    const { advanceToNextEvent } = await import('../../packages/engine/src/next-event');
+    const w = fixture();
+    if (arrival === 'free') {
+      w.mediations = [];
+      ask(w, 'GK');
+    }
+    resolveMediation(w, w.mediations![0].id, 'manager', 'delegated');
+    const promise = w.promises![0];
+    w.cash = '999999999999';
+    const { advanceDays } = await import('../../packages/engine/src/index');
+    w.settings!.responsibilities.contracts = 'delegated';
+    w.settings!.responsibilities.sales = 'delegated';
+    advanceDays(w, promise.deadline.day, undefined, false);
+    // Other real winter-window conflicts are explicitly postponed; the original promise stays.
+    for (const record of w.mediations!.filter((m) => m.status === 'pending'))
+      operate(w, { type: 'resolve-mediation', id: record.id, support: 'director' });
+    await market(page, w);
+    if (arrival !== 'none') {
+      const offer = transferOffers(w).find(
+        (o) =>
+          o.available &&
+          lineOf(o.player.position) === promise.target.line &&
+          o.player.id !== promise.target.pick &&
+          (arrival === 'free' ? o.freeAgent : !o.freeAgent),
+      )!;
+      expect(offer).toBeDefined();
+      await page
+        .getByTestId(`candidate-${offer.player.id}`)
+        .getByRole('button', {
+          name: arrival === 'free' ? '자유계약 영입' : '1시즌 임대',
+          exact: true,
+        })
+        .click();
+    }
+    const before = await exportedCareer(page);
+    expect(before.promises![0].deadline).toEqual(promise.deadline);
+    expect(before.promises![0].status).toBe('pending');
+    await page.reload();
+    expect((await exportedCareer(page)).promises).toEqual(before.promises);
+    // Portable import uses a new browser profile and the exact same retained commitment.
+    const context = await browser.newContext();
+    try {
+      const imported = await context.newPage();
+      await importResponsibilityCareer(imported, before);
+      const restored = await exportedCareer(imported);
+      expect(restored.promises).toEqual(before.promises);
+      const expected = structuredClone(restored);
+      advanceToNextEvent(expected);
+      await imported.getByRole('button', { name: '다음 이벤트', exact: true }).click();
+      await expect(imported.getByTestId('game-date')).not.toHaveText(
+        await page.getByTestId('game-date').innerText(),
+      );
+      const judged = await exportedCareer(imported);
+      expect(judged.promises![0].status).toBe(arrival === 'none' ? 'unfulfilled' : 'fulfilled');
+      expect(judged.promises![0]).toEqual(expected.promises![0]);
+      expect(judged.manager.trust).toBe(expected.manager.trust);
+      expect(judged.promises![0].deadline).toEqual(promise.deadline);
+      await imported.reload();
+      const reloaded = await exportedCareer(imported);
+      expect(reloaded.promises).toEqual(judged.promises);
+      expect(reloaded.manager.trust).toBe(judged.manager.trust);
+    } finally {
+      await context.close();
+    }
+  });
+
+test('promise-personnel-changes preserves director-independent promises and cancels on manager replacement', async ({
+  page,
+}) => {
+  const { exportedCareer } = await import('./career-fixtures');
+  const w = fixture();
+  resolveMediation(w, w.mediations![0].id, 'manager', 'owner');
+  w.cash = '999999999999';
+  w.settings!.responsibilities.staff = 'direct';
+  const director = w.staff!.find((s) => s.role === 'director')!;
+  await importResponsibilityCareer(page, w);
+  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  const tabs = page.getByRole('tablist', { name: '선수단·스태프 보기' });
+  await tabs.getByRole('tab', { name: '스태프', exact: true }).click();
+  const post = page.locator('#staff-post-director');
+  await expect(post).toContainText(director.name);
+  await post.getByRole('button', { name: '교체', exact: true }).click();
+  await page
+    .getByRole('dialog', { name: '단장 선임', exact: true })
+    .getByRole('button', { name: /^계약 해지/ })
+    .click();
+  expect((await exportedCareer(page)).promises![0].status).toBe('pending');
+  await tabs.getByRole('tab', { name: '감독', exact: true }).click();
+  await page.getByRole('button', { name: '교체', exact: true }).click();
+  const card = page
+    .getByRole('article')
+    .filter({ has: page.getByRole('button', { name: /^감독 선임 ·/ }) })
+    .first();
+  await card.getByRole('button', { name: /^감독 선임 ·/ }).click();
+  await page
+    .getByRole('dialog', { name: '감독 선임 확인' })
+    .getByRole('button', { name: '선임 확정', exact: true })
+    .click();
+  const after = await exportedCareer(page);
+  expect(after.promises![0].status).toBe('cancelled');
+  expect(after.promises![0].deadline).toEqual(w.promises![0].deadline);
+  await page.reload();
+  expect((await exportedCareer(page)).promises).toEqual(after.promises);
+});

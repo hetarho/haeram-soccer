@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 import { createWorld } from '../../packages/engine/src/index';
 import { careerDate } from '../../packages/engine/src/person-careers';
 import { importResponsibilityCareer } from './responsibility-fixtures';
@@ -93,6 +93,7 @@ export async function exportedCareer(page: Page) {
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const file = await event;
   await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   return (await decode(await readFile((await file.path())!, 'utf8'))).world;
 }
 

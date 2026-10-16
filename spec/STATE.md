@@ -14,9 +14,10 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T17:30Z | T177 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T17:33Z | T177 |
 
 ## inbox
+- 261017 suggest review-code: review the new scorer conservation, legacy-reset ownership and career-browser helpers after the final integration gate; five more implementation units are complete.
 - 261017 decided HIST-13: scoring continuity after an in-league transfer → one player total plus actual per-club contributions (alt: split the same person into multiple leaders | reset his earlier goals); fixes strict conservation without inventing NPC history.
 - 261017 decided T175 T187: dependency order for legacy browser helpers → migrate T175 before T187, using already shipped T150 controls (alt: make UI verification depend on removed controls); T174 activation retains its own save tests and final T179 gate.
 - 261017 suggest T183 T184 T185 T186 T189: five units completed → review-code registration/squad-target/director-bidding/replacements and CI triggers after planned release integration; no extra refactor adopted.
@@ -88,7 +89,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T177 | Verify delegation handover and promise outcomes through the browser | WEB CLUB HIST SAVE | T172 T174 | doing@261017.n7r4 |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 | todo |
 
@@ -99,11 +99,11 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- Resume preserved T183 engine work, then T184–T187 and T174–T179 in dependency order. T188 mobile corrections are complete. Current report: reports/261016-n7r4.md.
-- T154–T173 implemented and pushed in this session; final browser migration, century budget evidence and complete CI integration remain T175–T179.
-- Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
+- Complete T178 lossless century/storage/replay evidence, then T179 full release verification and final CI.
+- Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 T177 done n7r4: Financial-conflict journeys retain pending direct work after notification reads, disclose and settle handover once, and preserve fixed-deadline promise outcomes and personnel effects through actual arrivals, day progression, export/import and committed reloads.
 - 261017 implement-task T177 start n7r4.
 - 261017 T176 done n7r4: Second-career browser journeys preserve person identity, aptitude, atomic joint-contract terms and costs across reload/import, verify exact service qualification, and exercise independent dismissal, retirement and combined departure.
 - 261017 implement-task T176 start n7r4.
@@ -123,4 +123,3 @@
 - 261017 implement-task T186 start n7r4.
 - 261017 T185 done n7r4: Starter departures and thin-squad sales open dated replacement needs; delegated recruitment pursues them daily after opening, actual same-line signings close oldest needs, and closing starters open summer needs after top-up.
 - 261017 implement-task T185 start n7r4.
-- 261017 T184 done n7r4: Director traits price every delegated bid and preview, negotiators raise on answer-day plus one through their ceiling and switch near deadline, and all acceptance paths recheck spending.
