@@ -90,8 +90,9 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 | todo |
+| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 | todo |
 | T192 | Repair rules-three full-suite regression journeys | WEB SAVE ARCH | T174 T191 | doing@261017.n7r4 |
+| T193 | Compact retained career relationships without dropping facts | SAVE ARCH | T173 T192 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
 
 ## work
@@ -105,6 +106,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 create-task T193: lossless career relationship compaction after the measured T178 budget failure; original save limits and final century gate remain mandatory.
 - 261017 implement-task T192 start n7r4.
 - 261017 create-task T192: repair concrete full-suite CI regressions before final verification; T178 remains incomplete after the measured storage failure.
 - 261017 implement-task T178 start n7r4.
@@ -124,4 +126,3 @@
 - 261017 T187 done n7r4: Squad summaries show historical registration counts, explicit estimated fallback, and twenty/sixteen readiness tones; recruitment and save validation enforce the forty-player global boundary.
 - 261017 implement-task T187 start n7r4.
 - 261017 T175 done n7r4: Browser journeys use central seven-category settings and public manual event/match actions; season helpers stop by observed season/fixture progress, with old tool invocations removed and genuine legacy compatibility tests retained.
-- 261017 T190 done n7r4: One retained scorer keeps aggregate league totals and exact per-club contributions across real in-league transfers; strict conservation, archived breakdowns, UI labels and the lossless save codec preserve those facts.
