@@ -157,7 +157,7 @@
   | 스폰서 계약 | sponsor contracts | 위임 |
   - staff departments share one setting; appointment/renewal share their category. Recruitment and sales are independent. The staff follow the owning-domain decision rules (→STAFF-13).
   - an owner-held decision stops both progression modes for the owner; a delegated one is resolved and reported without a business-decision stop. Automatic time progression never overrides a direct responsibility.
-  - playing-coach conversion uses both player contracts and staff appointments: if either is direct, show one combined owner decision; only both delegated permits automatic conversion (→STAFF-32). The review shows player pay, coach pay and the combined total (→STAFF-33), without adding an eighth responsibility.
+  - playing-coach conversion uses both player contracts and staff appointments: if either is direct, request one combined approval from the owner; only both delegated permits automatic conversion (→STAFF-32). The review shows player pay, coach pay and the combined total (→STAFF-33), without adding an eighth responsibility.
   - match-eve and transfer-window-opening stops are independent observation choices in the central settings: a new game enables match eve and disables window opening. Their notices remain readable either way. No extra per-business-event stop toggle exists.
   - the configuration belongs to the game (→SAVE-17). Local who-decides entries open this same screen; they never create a competing departmental switch. Time mode, automatic play/pause and business responsibility have distinct meanings.
   - coaches always choose training; their owner's suggestion/order actions remain →STAFF-19, outside these seven categories.
