@@ -294,7 +294,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
       useStaffRequest.getState().take();
     }
   }, [request]);
-  const [pick, setPick] = useState<number>();
+  const [pick, setPick] = useState<string>();
   // Hiring and renewing both start from the two seasons the staff would sign (→STAFF-15).
   const [term, setTerm] = useState<ContractTerm>(DELEGATED_TERM);
   const [renewing, setRenewing] = useState<StaffRole>();
@@ -305,7 +305,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
     text = (value: string) => compactMoney(value, club.country, w.year);
   const members = new Map((w.staff || []).map((member) => [member.role, member]));
   const candidates = role ? staffCandidates(w, role) : [];
-  const chosen = pick !== undefined ? candidates[pick] : undefined;
+  const chosen = candidates.find((candidate) => candidate.id === pick);
   const current = role ? members.get(role) : undefined;
   const owed = releaseCost(w, current);
   const renewal = renewing ? members.get(renewing) : undefined;
@@ -452,10 +452,16 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
               )}
               <button
                 className={s.primary}
-                disabled={acting || pick === undefined}
+                disabled={acting || !chosen}
                 onClick={() => {
-                  if (pick === undefined) return;
-                  void client.command({ type: 'hire-staff', role, candidate: pick, term });
+                  if (!chosen) return;
+                  void client.command({
+                    type: 'hire-staff',
+                    role,
+                    candidate: candidates.findIndex((candidate) => candidate.id === chosen.id),
+                    candidateId: chosen.id,
+                    term,
+                  });
                   setRole(undefined);
                 }}
               >
@@ -470,13 +476,13 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
           </p>
           {candidates.length ? (
             <div className={s.candidates} role="radiogroup" aria-label="코치 후보">
-              {candidates.map((candidate, i) => (
+              {candidates.map((candidate) => (
                 <button
                   key={candidate.id}
                   role="radio"
-                  aria-checked={pick === i}
-                  className={pick === i ? s.picked : undefined}
-                  onClick={() => setPick(i)}
+                  aria-checked={pick === candidate.id}
+                  className={pick === candidate.id ? s.picked : undefined}
+                  onClick={() => setPick(candidate.id)}
                 >
                   <div className={s.candidateHead}>
                     <OvrBadge

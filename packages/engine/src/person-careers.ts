@@ -109,10 +109,8 @@ export function closeEmployment(w: World, id: string, role: CareerRole, to = car
   if (!job) return;
   if (compareCareerDates(to, job.from) < 0) throw new Error('재직 날짜를 확인하세요.');
   job.to = { ...to };
-  if (role === 'player') {
-    const remaining = person.employment.find((job) => !job.to);
-    if (remaining) person.club = remaining.club;
-    else delete person.club;
-    person.playing = 'released';
-  }
+  const remaining = person.employment.find((job) => !job.to);
+  if (remaining) person.club = remaining.club;
+  else delete person.club;
+  if (role === 'player') person.playing = 'released';
 }

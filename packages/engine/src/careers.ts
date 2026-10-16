@@ -1,4 +1,4 @@
-import { decideCoachingIntention } from './coaching-entry';
+import { decideCoachingIntention, initializeCoaching } from './coaching-entry';
 import { careerDate, closeEmployment, retainPerson } from './person-careers';
 import { invalidateNpcSquads } from './world';
 import type { MatchRecord, PersonCareer, Player, Position, World } from '../../contracts/src/types';
@@ -63,6 +63,7 @@ export function retirePerson(w: World, person: PersonCareer) {
   closeEmployment(w, person.id, 'player');
   person.playing = 'retired';
   person.retirement!.at = careerDate(w);
+  initializeCoaching(w, person);
   invalidateNpcSquads(w);
 }
 function announceNpcRetirements(w: World) {

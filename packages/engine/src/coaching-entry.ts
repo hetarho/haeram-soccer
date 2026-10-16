@@ -1,7 +1,7 @@
 import type { CareerDate, PersonCareer, World } from '../../contracts/src/types';
 import { coachingGrade } from './aptitude';
 import { careerDate, retainPerson } from './person-careers';
-import { random } from './primitives';
+import { integer, random } from './primitives';
 import { addEvent } from './world';
 
 export function personCoachingGrade(person: PersonCareer) {
@@ -70,4 +70,36 @@ export function encourageCoaching(w: World, id: string) {
     `${response} 채용이나 플레잉 코치 계약이 보장되지는 않아요.`,
   );
   return intention;
+}
+
+export function coachingSpecialty(
+  person: Pick<PersonCareer, 'position' | 'professionalism' | 'qualities'>,
+): NonNullable<PersonCareer['coaching']>['role'] {
+  if (person.position === 'GK') return 'goalkeeping';
+  if (person.qualities.teaching === 5) return 'youth';
+  if (person.qualities.understanding >= 4 && person.qualities.judgement >= 4) return 'assistant';
+  if (person.professionalism === 5) return 'fitness';
+  if (['LB', 'CB', 'RB', 'LWB', 'RWB', 'DM'].includes(person.position)) return 'defense';
+  return 'attack';
+}
+/** Draw actual initial ability once; a candidate read must never call this mutator. */
+export function initializeCoaching(w: World, person: PersonCareer) {
+  if (person.coaching) return person.coaching;
+  const grade = personCoachingGrade(person);
+  if (!person.intention?.willing || !grade || grade < 4) return undefined;
+  const rng = random(`${w.seed}:coaching-entry:${person.id}`);
+  return (person.coaching = coachingProfile(person, careerDate(w), rng));
+}
+export function coachingProfile(
+  person: PersonCareer,
+  at: CareerDate,
+  rng: () => number,
+): NonNullable<PersonCareer['coaching']> {
+  const high = personCoachingGrade(person) === 5;
+  return {
+    role: coachingSpecialty(person),
+    ability: integer(rng, high ? 55 : 50, high ? 65 : 60),
+    potential: integer(rng, high ? 80 : 70, high ? 90 : 80),
+    at: { ...at },
+  };
 }

@@ -50,3 +50,17 @@ describe('the worker protocol (→ECON-25, WEB-15)', () => {
     expect(found('')).toBe(false);
   });
 });
+
+it('preserves stable retained-coach identities beyond the original candidate slots', () => {
+  const body = {
+    type: 'command',
+    command: {
+      type: 'hire-staff',
+      role: 'assistant',
+      candidate: 42,
+      candidateId: 'person:retained',
+      term: 2,
+    },
+  };
+  expect(requestSchema.parse(request(body)).body).toEqual(body);
+});

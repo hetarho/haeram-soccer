@@ -42,7 +42,7 @@ describe('retained person career registry', () => {
   });
   it('keeps missing NPC stats unknown and supports re-employment without duplicate posts', () => {
     const w = world(),
-      p = w.players[0],
+      p = { ...w.players[0], id: 'unknown:person' },
       other = w.players[1];
     const person = retainPerson(w, p, w.playerClub);
     expect(person.ownCareer).toBeUndefined();

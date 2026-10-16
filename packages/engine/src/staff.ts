@@ -1,3 +1,5 @@
+import { coachingEntryReady } from './coaching-entry';
+import { closeEmployment, openEmployment } from './person-careers';
 import { ATTRIBUTES, type Attribute } from '../../contracts/src/player';
 import { ATTRIBUTE_LABEL } from './player';
 import { moraleOf } from './morale';
@@ -15,7 +17,7 @@ import type {
 } from '../../contracts/src/types';
 import { footballIndex } from '../../catalogs/src/index';
 import { addEvent, clubOf, ownStarters, personName, quote } from './world';
-import { clamp, integer, random, ratio } from './primitives';
+import { clamp, compareIds, integer, random, ratio } from './primitives';
 import { debit } from './transactions';
 import { appointDelegatedManager, contractSeason, managerRenewal, renewManager } from './ops-staff';
 import { managerBeats, managerFits, managerLine, managerMatches } from './managerMarket';
@@ -333,9 +335,32 @@ export function staffCandidates(w: World, role: StaffRole): StaffCandidate[] {
     if (candidateCache.size > 512) candidateCache.clear();
     candidateCache.set(key, drawn);
   }
-  return drawn
-    .filter((candidate) => !employed.has(candidate.id))
-    .map((candidate) => ({ ...candidate }));
+  const retained: StaffCandidate[] = Object.values(w.people || {})
+    .filter((person) => coachingEntryReady(person) && person.coaching?.role === role)
+    .sort((a, b) => compareIds(a.id, b.id))
+    .map((person) => {
+      const coaching = person.coaching!;
+      const wage = coachWage(w, coaching.ability);
+      return {
+        id: person.id,
+        person: person.id,
+        name: person.name,
+        born: person.born,
+        role,
+        ability: coaching.ability,
+        potential: coaching.potential,
+        wage,
+        since: w.year,
+        until: w.year + 3,
+        fee: ratio(wage, 1n, 4n),
+      };
+    });
+  return [
+    ...drawn
+      .filter((candidate) => !employed.has(candidate.id))
+      .map((candidate) => ({ ...candidate })),
+    ...retained,
+  ];
 }
 function drawCandidates(w: World, role: StaffRole, code: string): StaffCandidate[] {
   return CANDIDATE_ABILITY.map(([min, max], i) => {
@@ -376,9 +401,20 @@ const roleOrder = (a: Staff, b: Staff) => STAFF_ROLES.indexOf(a.role) - STAFF_RO
  * Hires a candidate for `term` seasons at the wage he asks now, fixed for the term; without a term
  * he signs for the length he was offered with.
  */
-export function hireStaff(w: World, role: StaffRole, candidate: number, term?: ContractTerm): void {
+export function hireStaff(
+  w: World,
+  role: StaffRole,
+  candidate: number,
+  term?: ContractTerm,
+  candidateId?: string,
+): void {
   checkTerm(term);
-  const offer = Number.isInteger(candidate) ? staffCandidates(w, role)[candidate] : undefined;
+  const pool = staffCandidates(w, role);
+  const offer = candidateId
+    ? pool.find((person) => person.id === candidateId)
+    : Number.isInteger(candidate)
+      ? pool[candidate]
+      : undefined;
   if (!offer) throw new Error('유효하지 않은 스태프 후보입니다.');
   // Older saves without staff start from the neutral volunteers.
   const staff = w.staff || basicStaff(w),
@@ -388,6 +424,8 @@ export function hireStaff(w: World, role: StaffRole, candidate: number, term?: C
   debit(w, total);
   const { fee, ...offered } = offer;
   const member = withTerm(term ? { ...offered, until: w.year + term } : offered, term);
+  departStaff(w, current);
+  if (member.person) openEmployment(w, member.person, member.role, w.playerClub);
   w.staff = [...staff.filter((other) => other.role !== role), member].sort(roleOrder);
   addEvent(
     w,
@@ -404,12 +442,22 @@ export function hireStaff(w: World, role: StaffRole, candidate: number, term?: C
     total,
   );
 }
+function departStaff(w: World, member?: Staff) {
+  if (!member?.person) return;
+  const person = w.people?.[member.person];
+  if (person?.coaching) {
+    person.coaching.ability = member.ability;
+    person.coaching.potential = member.potential ?? person.coaching.potential;
+  }
+  closeEmployment(w, member.person, member.role);
+}
 export function releaseStaff(w: World, role: StaffRole): void {
   const staff = w.staff || basicStaff(w),
     member = staff.find((other) => other.role === role);
   if (!member) throw new Error('이미 비어 있는 자리입니다.');
   const owed = releaseCost(w, member);
   if (owed !== '0') debit(w, owed);
+  departStaff(w, member);
   w.staff = staff.filter((other) => other.role !== role);
   addEvent(
     w,
@@ -652,6 +700,8 @@ export function renewStaff(w: World, role: StaffRole, term?: ContractTerm) {
 function appoint(w: World, member: Staff & { fee?: string }) {
   const { fee, ...staff } = member;
   if (fee && BigInt(fee) > 0n) debit(w, fee, true);
+  departStaff(w, staffMember(w, staff.role));
+  if (staff.person) openEmployment(w, staff.person, staff.role, w.playerClub);
   w.staff = [...(w.staff || []).filter((other) => other.role !== staff.role), staff].sort(
     roleOrder,
   );
@@ -714,6 +764,7 @@ function delegatedSeason(w: World, role: StaffRole, member: Staff | undefined) {
     );
     return `${label} ${member.name} 재계약(${c.term}시즌)`;
   }
+  departStaff(w, member);
   w.staff = w.staff!.filter((other) => other.role !== role);
   addEvent(w, 'staff-leave', `${label} ${member.name} 계약 만료`, `${member.since}–${w.year}`);
   return first
@@ -745,6 +796,7 @@ export function seasonStaff(w: World): void {
       continue;
     }
     const label = STAFF_INFO[role].label;
+    departStaff(w, member);
     w.staff = w.staff.filter((other) => other.role !== role);
     addEvent(
       w,
@@ -790,6 +842,13 @@ function developStaff(w: World) {
       );
     return { ...member, ability: next.ability, potential: next.potential };
   });
+  for (const member of w.staff || []) {
+    const coaching = member.person && w.people?.[member.person]?.coaching;
+    if (coaching) {
+      coaching.ability = member.ability;
+      coaching.potential = member.potential ?? coaching.potential;
+    }
+  }
   if (changes.length)
     addEvent(
       w,

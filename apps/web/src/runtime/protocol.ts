@@ -95,7 +95,8 @@ const command = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('hire-staff'),
     role: staffRole,
-    candidate: index,
+    candidate: z.number().int().nonnegative().max(100000),
+    candidateId: ref.optional(),
     term: term.optional(),
   }),
   z.object({ type: z.literal('release-staff'), role: staffRole }),

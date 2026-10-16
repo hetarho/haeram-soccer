@@ -375,7 +375,7 @@ export function yearlyStaff(w: World) {
 export function staffCommand(w: World, cmd: StaffCommand) {
   switch (cmd.type) {
     case 'hire-staff':
-      hireStaff(w, cmd.role, cmd.candidate, cmd.term);
+      hireStaff(w, cmd.role, cmd.candidate, cmd.term, cmd.candidateId);
       break;
     case 'release-staff':
       // Delegation stays as the level sets it: a delegated department refills the post by 코치

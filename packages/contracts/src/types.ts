@@ -1014,7 +1014,13 @@ export type Command =
     }
   | { type: 'policy'; key: PolicyKey; level: PolicyLevel }
   /** `term`: the seasons the owner chooses (→STAFF-15); absent keeps the earlier rule. */
-  | { type: 'hire-staff'; role: StaffRole; candidate: number; term?: ContractTerm }
+  | {
+      type: 'hire-staff';
+      role: StaffRole;
+      candidate: number;
+      term?: ContractTerm;
+      candidateId?: string;
+    }
   | { type: 'release-staff'; role: StaffRole }
   | { type: 'renew-staff'; role: StaffRole; term?: ContractTerm }
   | { type: 'promote-youth'; id: string }
