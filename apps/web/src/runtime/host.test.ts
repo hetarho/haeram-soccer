@@ -87,7 +87,7 @@ describe('worker command protocol', () => {
   });
   it('validates commands before applying money or revisions and keeps complete archives behind projections', async () => {
     const h = new Host();
-    await h.handle(req('create', -1, { type: 'found', input }));
+    const founded = await h.handle(req('create', -1, { type: 'found', input }));
     const cash = h.world!.cash;
     expect(
       (await h.handle(req('bad', 0, { type: 'command', command: { type: 'ticket', price: -1 } })))
@@ -97,7 +97,8 @@ describe('worker command protocol', () => {
     expect(h.world!.revision).toBe(0);
     const r = await h.handle(req('read', 0, { type: 'archive', year: 1901 }));
     expect(r.archive?.matches).toEqual([]);
-    expect(r.view?.world.fixtures.length).toBeLessThan(h.world!.fixtures.length);
+    expect(r.view).toBeUndefined();
+    expect(founded.view?.world.fixtures.length).toBeLessThan(h.world!.fixtures.length);
   });
   it('projects closed seasons without brackets and scorer tables and returns them in the archive', async () => {
     const h = new Host();
@@ -109,13 +110,50 @@ describe('worker command protocol', () => {
     const r = await h.handle(
       req('closed', h.world!.revision, { type: 'archive', year: season.year }),
     );
-    const projected = r.view!.world.history[0];
+    const projection = await h.handle(
+      req('projection', h.world!.revision, { type: 'command', command: { type: 'read-inbox' } }),
+    );
+    const projected = projection.view!.world.history[0];
     expect(projected).not.toHaveProperty('brackets');
     expect(projected).not.toHaveProperty('scorers');
     expect(projected.ranks).toEqual(season.ranks);
     expect(projected.eloRange).toEqual(season.eloRange);
     expect(r.archive?.season).toEqual(season);
     expect(h.world!.history[0].brackets).toBe(season.brackets);
+  });
+  it('reads archives between queued simulation steps without revisions, receipts or a projection', async () => {
+    const h = new Host();
+    await h.handle(req('create', -1, { type: 'found', input }));
+    const w = h.world!,
+      before = canonical(w),
+      expected = {
+        season: undefined,
+        matches: w.ownMatches.filter((m) => m.year === w.year),
+        events: w.events.filter((e) => e.year === w.year),
+        managers: w.events.filter((e) => e.kind.startsWith('manager-')),
+      };
+    const stale = {
+      ...req('old-archive', -1, { type: 'archive', year: w.year }),
+      session: 'expired',
+    };
+    expect((await h.handle(stale)).ok).toBe(false);
+    expect(canonical(w)).toBe(before);
+    let advanced = false;
+    const step = h
+      .handle(
+        req('step', w.revision, { type: 'command', command: { type: 'advance-days', days: 3 } }),
+      )
+      .then((reply) => {
+        advanced = true;
+        return reply;
+      });
+    const read = await h.handle(req('archive', -1, { type: 'archive', year: w.year }));
+    expect(advanced).toBe(false);
+    expect(read.ok).toBe(true);
+    expect(read.view).toBeUndefined();
+    expect(read.archive).toEqual(expected);
+    expect((await step).ok).toBe(true);
+    expect(w.receiptIds).not.toContain('archive');
   });
   it('reads the all-time head-to-head from every own match without queueing or projecting', async () => {
     const h = new Host();

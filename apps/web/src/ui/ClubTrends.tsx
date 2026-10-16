@@ -355,7 +355,10 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
               <th scope="col">승점</th>
               <th scope="col">컵 대회</th>
               <th scope="col">Elo</th>
-              <th scope="col">선수단 가치 · 현재 물가</th>
+              <th scope="col">
+                <span className={t.valueScope}>선수단 </span>가치
+                <span className={t.valueBasis}>현재 물가</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -373,10 +376,14 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                     onSeason?.(w.year);
                   }}
                 >
-                  {seasonName(w.year)} · 진행 중
+                  <span className={t.cellText}>{seasonName(w.year)} · 진행 중</span>
                 </button>
               </td>
-              <td data-label="리그">{divisionName(code, clubOf(w).tier, clubOf(w).group)}</td>
+              <td data-label="리그">
+                <span className={t.cellText}>
+                  {divisionName(code, clubOf(w).tier, clubOf(w).group)}
+                </span>
+              </td>
               <td data-label="승점">{w.tables[w.playerClub]?.points ?? 0}</td>
               <td data-label="컵 대회">진행 중</td>
               <td data-label="Elo">{clubOf(w).elo?.toFixed(0) ?? '—'}</td>
@@ -402,32 +409,43 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                           onSeason(h.year);
                         }}
                       >
-                        {seasonName(h.year)}
+                        <span className={t.cellText}>{seasonName(h.year)}</span>
                       </button>
                     ) : (
                       seasonName(h.year)
                     )}
                   </td>
                   <td data-label="리그">
-                    {divisionName(code, h.tier, h.group)} {h.rank}위
+                    <span className={t.cellText}>
+                      {divisionName(code, h.tier, h.group)} {h.rank}위
+                    </span>
                   </td>
                   <td data-label="승점">
-                    {h.points} ({h.won}-{h.drawn}-{h.lost})
+                    <span
+                      className={t.cellText}
+                      title={`${h.points} (${h.won}-${h.drawn}-${h.lost})`}
+                    >
+                      {h.points} ({h.won}-{h.drawn}-{h.lost})
+                    </span>
                   </td>
                   <td data-label="컵 대회">
-                    {h.runs?.length
-                      ? h.runs
-                          .map(
-                            (run) =>
-                              `${run.key === 'cup' ? '컵' : run.name} ${run.champion ? '우승' : run.reached}`,
-                          )
-                          .join(' · ')
-                      : '—'}
+                    <span className={t.cellText}>
+                      {h.runs?.length
+                        ? h.runs
+                            .map(
+                              (run) =>
+                                `${run.key === 'cup' ? '컵' : run.name} ${run.champion ? '우승' : run.reached}`,
+                            )
+                            .join(' · ')
+                        : '—'}
+                    </span>
                   </td>
                   <td data-label="Elo">
-                    {h.elo !== undefined
-                      ? `${Math.round(h.elo)}${h.eloRank ? ` (${h.eloRank}위)` : ''}`
-                      : '—'}
+                    <span className={t.cellText}>
+                      {h.elo !== undefined
+                        ? `${Math.round(h.elo)}${h.eloRank ? ` (${h.eloRank}위)` : ''}`
+                        : '—'}
+                    </span>
                   </td>
                   <td data-label="선수단 가치 · 현재 물가">
                     {h.squadValue ? (

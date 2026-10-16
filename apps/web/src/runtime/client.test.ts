@@ -413,6 +413,29 @@ describe('background worker publication', () => {
     expect(posted.map(([notice]) => notice.revision)).toEqual([0, 2, 3]);
   });
 
+  it('refreshes season and manager archives without publishing or interrupting automatic work', async () => {
+    const publications: ClientState[] = [],
+      client = await start((state) => publications.push(state)),
+      year = client.state.view!.world.year;
+    publications.length = 0;
+    const archive = await client.archive(year);
+    expect(archive?.managers).toEqual(
+      client.state.view!.world.events.filter((event) => event.kind.startsWith('manager-')),
+    );
+    expect(publications).toHaveLength(0);
+    for (let day = 0; day < 3; day++) {
+      const tick = client.command({ type: 'advance-days', days: 1 }, { background: true });
+      const record = await client.archive(year);
+      expect(record?.managers).toEqual(archive!.managers);
+      await tick;
+    }
+    expect(publications.every((state) => !state.busy && state.activity !== 'foreground')).toBe(
+      true,
+    );
+    expect(client.state.error).toBeUndefined();
+    await client.whenSaved();
+  });
+
   it('reads the all-time head-to-head without publishing a state or waiting for a tick', async () => {
     const publications: ClientState[] = [],
       client = await start((state) => publications.push(state));

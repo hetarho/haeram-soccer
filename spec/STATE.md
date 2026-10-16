@@ -96,6 +96,9 @@
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 records fixes done: compact season rows and quiet archive reads; 45 targeted unit tests and all 12 browser scenarios pass (one Chromium startup ERR_NETWORK_CHANGED passed on retry); type/lint/format/build and spec lint pass.
+- 261016 update-ssot STAFF WORLD HIST start: record retirement-window encouragement, three-year coaching minimum and adopted playing-coach tenure/post rules; preserve existing balance
+- 261016 implement-task start: read season archives without foreground command activity so the manager history tab does not flash the progress/cancel box during automatic play.
 - 261016 update-ssot WEB r85 SAVE r37 PLAYER r5: exclusive mode controls, season tools removed and new-career-only activation with recognized legacy gameplay reset permitted; seven career/mediation units remain open
 - 261016 update-ssot WEB SAVE PLAYER start: separate progression controls by mode, remove season tools and adopt new-career-only activation with legacy gameplay reset permitted
 - 261016 season-records layout: replace stacked mobile cards with compact table rows; clamp long fields to two lines and keep short fields on one line; retain season-detail links.
@@ -113,6 +116,3 @@
 - 261016 ideation expert-proposal-review: owner assigns mediation to recruitment delegation and adopts director-first/balanced/manager-first policy with direct case overrides
 - 261016 ideation expert-proposal-review: owner adopts classified/automatable mediation, director-vs-manager support choices and tracked promises; automatic-mode versus delegation meaning needs clarification
 - 261016 ideation expert-proposal-review: owner adopts active-player aptitude grades/evaluations and requires coaching experience plus managerial aptitude for manager candidacy
-- 261016 ideation expert-proposal-review: owner selects automatic progression as the new-game default; manual next-event mode remains switchable
-- 261016 ideation expert-proposal-review: owner adds automatic/manual next-event modes with shared triggers and matches required for all-delegated manual play; adopts separate coaching aptitude and natural entry plus own-player encouragement
-- 261016 ideation expert-proposal-review: owner adopts coach-to-manager careers and aptitude-based entry across clubs; own-club 150-match/five-season gate dropped

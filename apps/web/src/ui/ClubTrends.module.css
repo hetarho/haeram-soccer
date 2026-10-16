@@ -1,48 +1,73 @@
+.seasonHistory {
+  width: 100%;
+  table-layout: fixed;
+}
+.seasonHistory th,
+.seasonHistory td {
+  padding: 8px 10px;
+  white-space: normal;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+.seasonHistory th:nth-child(1) {
+  width: 20%;
+}
+.seasonHistory th:nth-child(2) {
+  width: 18%;
+}
+.seasonHistory th:nth-child(3) {
+  width: 14%;
+}
+.seasonHistory th:nth-child(4) {
+  width: 17%;
+}
+.seasonHistory th:nth-child(5) {
+  width: 13%;
+}
+.seasonHistory th:nth-child(6) {
+  width: 18%;
+}
+.cellText {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  line-height: 1.4;
+}
+.seasonHistory td:first-child button {
+  max-width: 100%;
+  font-size: inherit;
+}
+.valueBasis::before {
+  content: ' · ';
+}
+
 @media (max-width: 760px) {
-  .seasonHistory {
-    display: block;
-    width: 100%;
+  .seasonHistory th,
+  .seasonHistory td {
+    padding: 8px 4px;
+    font: 12px/1.4 var(--display);
   }
-  .seasonHistory thead {
+  .seasonHistory th:first-child,
+  .seasonHistory td:first-child {
+    padding-left: 8px;
+  }
+  .seasonHistory th:last-child,
+  .seasonHistory td:last-child {
+    padding-right: 8px;
+  }
+  .valueBasis {
+    display: block;
+    white-space: nowrap;
+  }
+  .valueBasis::before {
+    content: none;
+  }
+  .valueScope {
     position: absolute;
     width: 1px;
     height: 1px;
     overflow: hidden;
     clip-path: inset(50%);
-  }
-  .seasonHistory tbody {
-    display: grid;
-    width: 100%;
-  }
-  .seasonHistory tr {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    padding: 10px 0;
-    border-bottom: 1px solid var(--line-strong);
-  }
-  .seasonHistory td {
-    display: block;
-    min-width: 0;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    padding: 7px 12px;
-    border: 0;
-    text-align: left;
-  }
-  .seasonHistory td:first-child,
-  .seasonHistory td:nth-child(4) {
-    grid-column: 1 / -1;
-  }
-  .seasonHistory td[data-label]::before {
-    content: attr(data-label);
-    display: block;
-    margin-bottom: 4px;
-    font: 12px/1.4 var(--display);
-    color: var(--text-muted);
-  }
-  .seasonHistory td:first-child {
-    width: auto;
-    text-align: left;
-    font-size: 17px;
   }
 }

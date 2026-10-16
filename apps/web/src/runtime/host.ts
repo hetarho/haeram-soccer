@@ -46,7 +46,12 @@ export class Host {
     // A read is answered at once, between a command's simulation steps: queued behind a long
     // command, its watchdog would run out while only the command reports progress.
     const type = (input as { body?: { type?: unknown } } | null)?.body?.type;
-    if (type === 'head-to-head' || type === 'league-fixtures' || type === 'club-records')
+    if (
+      type === 'head-to-head' ||
+      type === 'league-fixtures' ||
+      type === 'club-records' ||
+      type === 'archive'
+    )
       return Promise.resolve(this.read(input));
     const task = this.queue.then(() => this.execute(input));
     this.queue = task.then(
@@ -134,6 +139,17 @@ export class Host {
       if (this.session && this.session !== request.session)
         throw new Error('이전 세션의 요청입니다.');
       if (!w) throw new Error('먼저 클럽을 창단하세요.');
+      if (body.type === 'archive')
+        return {
+          requestId: request.requestId,
+          ok: true,
+          archive: {
+            season: w.history.find((h) => h.year === body.year),
+            matches: w.ownMatches.filter((m) => m.year === body.year),
+            events: w.events.filter((e) => e.year === body.year),
+            managers: w.events.filter((e) => e.kind.startsWith('manager-')),
+          },
+        };
       if (body.type === 'league-fixtures') {
         const key = `${body.country}:${body.tier}:${body.group}`;
         return {
@@ -194,7 +210,6 @@ export class Host {
       let playback: MatchPlayback | undefined,
         raw: string | undefined,
         envelope: Reply['envelope'],
-        archive: Reply['archive'],
         candidate: World | undefined,
         upgraded = false;
       let changed = false;
@@ -295,15 +310,6 @@ export class Host {
           changed = true;
         } else if (r.body.type === 'export')
           raw = await encode(w, r.generation, r.parentGeneration);
-        if (r.body.type === 'archive') {
-          const year = r.body.year;
-          archive = {
-            season: w.history.find((h) => h.year === year),
-            matches: w.ownMatches.filter((m) => m.year === year),
-            events: w.events.filter((e) => e.year === year),
-            managers: w.events.filter((e) => e.kind.startsWith('manager-')),
-          };
-        }
       }
       if (changed && this.world)
         this.world.receiptIds = [...this.world.receiptIds.slice(-199), r.requestId];
@@ -315,7 +321,6 @@ export class Host {
         raw,
         envelope,
         candidate,
-        archive,
         cancelled: this.cancelled,
         upgraded: upgraded || undefined,
       };

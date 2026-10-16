@@ -29,6 +29,47 @@ for (const [label, viewport] of [
   test.describe(`records room at ${label}`, () => {
     test.use({ viewport });
 
+    test('refreshes manager history during automatic play without flashing progress or cancel', async ({
+      page,
+    }) => {
+      await page.goto('/');
+      await page.getByText('고급 설정', { exact: true }).click();
+      await page.getByLabel('세계 생성 시드').fill('live-tabs-quiet');
+      await page.getByRole('button', { name: '클럽 창단' }).click();
+      await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
+      await page.evaluate(() => {
+        const probe = { flashes: 0 };
+        (window as typeof window & { archiveProbe?: typeof probe }).archiveProbe = probe;
+        new MutationObserver((events) => {
+          for (const event of events)
+            for (const node of event.addedNodes)
+              if (
+                node instanceof Element &&
+                (node.matches('[aria-label="세계 처리 진행"]') ||
+                  node.querySelector('[aria-label="세계 처리 진행"]'))
+              )
+                probe.flashes++;
+        }).observe(document.getElementById('root')!, { childList: true, subtree: true });
+      });
+      await page.getByRole('tab', { name: '감독 이력', exact: true }).click();
+      await expect(page.getByText('감독 기록을 펼치는 중…')).toHaveCount(0);
+      await expect(page.getByText(/ · 현재$/)).toBeVisible();
+      await page.getByRole('button', { name: '1초에 하루 속도 선택', exact: true }).click();
+      await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
+      await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 4일', {
+        timeout: 10000,
+      });
+      await page.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
+      await expect(page.getByText('감독 기록을 펼치는 중…')).toHaveCount(0);
+      await expect(page.getByRole('button', { name: '진행 중단', exact: true })).toHaveCount(0);
+      expect(
+        await page.evaluate(
+          () =>
+            (window as typeof window & { archiveProbe: { flashes: number } }).archiveProbe.flashes,
+        ),
+      ).toBe(0);
+    });
+
     test('reads the records room in five tabs with Elo context, chart bubbles and player sheets', async ({
       page,
     }) => {

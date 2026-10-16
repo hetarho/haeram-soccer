@@ -506,8 +506,9 @@ export class GameClient {
       return reply;
     });
   }
-  archive(year: number) {
-    return this.enqueue(async () => (await this.rpc({ type: 'archive', year })).archive);
+  /** Season and manager records are reads; refreshing them never holds the clock or sets busy. */
+  async archive(year: number) {
+    return (await this.rpc({ type: 'archive', year })).archive;
   }
   /**
    * Our all-time record against a club from every own match the worker keeps; the view holds only
