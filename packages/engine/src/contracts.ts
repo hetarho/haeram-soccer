@@ -726,6 +726,7 @@ export function talksOpen(w: World, day = currentDay(w)) {
 export function contractTalks(w: World) {
   const opening = talksOpen(w);
   for (const p of activePlayers(w)) {
+    if (w.playingCoachProposals?.[p.id]?.status === 'pending') continue;
     if (p.loanUntil) continue;
     if (p.retiring !== undefined) {
       if (p.talk) {
@@ -841,5 +842,6 @@ export function declineContract(w: World, id: string) {
 
 /** Resolve only existing talks; changing authority must not open unrelated negotiations. */
 export function answerPendingContracts(w: World) {
-  for (const p of activePlayers(w)) if (p.talk) staffAnswer(w, p);
+  for (const p of activePlayers(w))
+    if (p.talk && w.playingCoachProposals?.[p.id]?.status !== 'pending') staffAnswer(w, p);
 }

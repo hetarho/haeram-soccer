@@ -81,7 +81,9 @@ export function ResponsibilitySettings({
   const changed =
     JSON.stringify(draft.game) !== JSON.stringify(settingsOf(w)) ||
     JSON.stringify(draft.background) !== JSON.stringify(background);
-  const pending = pendingWorkPreview(w, draft.game).filter((item) => item.count > 0);
+  const pending = pendingWorkPreview(w, draft.game).filter(
+    (item) => item.count > 0 || (item.held ?? 0) > 0,
+  );
   const apply = async () => {
     if (blocked) return;
     setMessage('');
@@ -222,8 +224,15 @@ export function ResponsibilitySettings({
           <ul>
             {pending.map((item) => (
               <li key={item.key}>
-                대기 중인 {RESPONSIBILITY_LABELS[item.key]} {item.count}건도{' '}
-                {item.to === 'delegated' ? '위임됩니다' : '직접 결정으로 가져옵니다'}.
+                {item.count > 0 && (
+                  <>
+                    대기 중인 {RESPONSIBILITY_LABELS[item.key]} {item.count}건도{' '}
+                    {item.to === 'delegated' ? '위임됩니다' : '직접 결정으로 가져옵니다'}.
+                  </>
+                )}
+                {(item.held ?? 0) > 0 && (
+                  <> 공동 승인 {item.held}건은 다른 직접 결정이 남아 대기해요.</>
+                )}
               </li>
             ))}
           </ul>

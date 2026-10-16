@@ -135,6 +135,13 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('respond-bid'), id: ref, accept: z.boolean() }),
   z.object({ type: z.literal('read-inbox'), id: ref.optional() }),
   z.object({ type: z.literal('encourage-coaching'), player: ref }),
+  z.object({
+    type: z.literal('propose-playing-coach'),
+    player: ref,
+    years: z.literal([1, 2]),
+    term,
+  }),
+  z.object({ type: z.literal('answer-playing-coach'), player: ref, accept: z.boolean() }),
   z.object({ type: z.literal('hire'), id: z.string().min(1).max(100), term: term.optional() }),
   z.object({ type: z.literal('renew-manager'), term: term.optional() }),
   z.object({

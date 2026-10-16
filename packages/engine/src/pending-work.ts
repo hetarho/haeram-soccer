@@ -1,3 +1,4 @@
+import { handoverPlayingCoaches } from './playing-coach';
 import type { ResponsibilityKey, World } from '../../contracts/src/types';
 import { isDelegated } from './responsibilities';
 import { pendingDecisions } from './stopping';
@@ -10,6 +11,7 @@ import { delegatedSponsors } from './sponsors';
 
 export { pendingWorkPreview } from './pending-work-preview';
 export function handoverPendingWork(w: World, changed: readonly ResponsibilityKey[]) {
+  if (changed.includes('contracts') || changed.includes('staff')) handoverPlayingCoaches(w);
   for (const key of changed) {
     const delegated = isDelegated(w, key);
     if (key === 'recruitment') {

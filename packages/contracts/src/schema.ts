@@ -670,6 +670,31 @@ export const worldSchema: z.ZodType<World> = z.object({
   rankHistory: z.array(snapshot).max(470).optional(),
   scorerSeason: scorerSeason.optional(),
   people: z.record(id, personCareer).optional(),
+  playingCoachProposals: z
+    .record(
+      id,
+      z.strictObject({
+        person: id,
+        role: z.enum(['assistant', 'attack', 'defense', 'goalkeeping', 'fitness', 'youth']),
+        years: z.literal([1, 2]),
+        term,
+        created: careerDate,
+        playingEnd: season,
+        playerUntil: season,
+        coachUntil: season,
+        playerWage: amount,
+        coachWage: amount,
+        totalWage: amount,
+        fee: amount,
+        replacement: amount,
+        upfront: amount,
+        replacing: id.optional(),
+        stamp: z.string().max(8000),
+        status: z.enum(['pending', 'accepted', 'declined']),
+        settled: careerDate.optional(),
+      }),
+    )
+    .optional(),
   playerClub: id,
   level: z.enum(['easy', 'normal', 'hard', 'extreme']),
   clubs: z.array(club).min(10).max(1000),
@@ -917,6 +942,14 @@ function legacySponsor(w: World, country: string, catalog: LoadCatalog | undefin
 export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   const w = worldSchema.parse(input);
   const ids = new Set(w.clubs.map((c) => c.id));
+  for (const [key, proposal] of Object.entries(w.playingCoachProposals || {})) {
+    if (key !== proposal.person || !w.people?.[key]) throw new Error('플레잉 코치 인물 참조 손상');
+    if (
+      BigInt(proposal.totalWage) !== BigInt(proposal.playerWage) + BigInt(proposal.coachWage) ||
+      BigInt(proposal.upfront) !== BigInt(proposal.fee) + BigInt(proposal.replacement)
+    )
+      throw new Error('플레잉 코치 견적 손상');
+  }
   const occupied = new Set<string>();
   const dateNumber = (date: { year: number; day: number }) => date.year * 366 + date.day;
   for (const [key, person] of Object.entries(w.people || {})) {

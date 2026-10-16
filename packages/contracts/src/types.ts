@@ -824,6 +824,27 @@ export interface MentorExposure {
   from: CareerDate;
   to?: CareerDate;
 }
+/** One joint player/staff proposal with immutable reviewed quote inputs. */
+export interface PlayingCoachProposal {
+  person: string;
+  role: Exclude<StaffRole, 'director' | 'scout'>;
+  years: 1 | 2;
+  term: ContractTerm;
+  created: CareerDate;
+  playingEnd: number;
+  playerUntil: number;
+  coachUntil: number;
+  playerWage: string;
+  coachWage: string;
+  totalWage: string;
+  fee: string;
+  replacement: string;
+  upfront: string;
+  replacing?: string;
+  stamp: string;
+  status: 'pending' | 'accepted' | 'declined';
+  settled?: CareerDate;
+}
 /** Retained identities and actual facts only; unknown playing totals stay absent. */
 export interface PersonCareer {
   id: string;
@@ -877,6 +898,7 @@ export interface World {
   level: DifficultyLevel;
   clubs: Club[];
   people?: Record<string, PersonCareer>;
+  playingCoachProposals?: Record<string, PlayingCoachProposal>;
   players: Player[];
   /** Preferred starting XI, one player per slot of the applied tactic's formation (→STAFF-22). */
   lineup?: string[];
@@ -1030,6 +1052,8 @@ export type Command =
   | { type: 'respond-bid'; id: string; accept: boolean }
   | { type: 'read-inbox'; id?: string }
   | { type: 'encourage-coaching'; player: string }
+  | { type: 'propose-playing-coach'; player: string; years: 1 | 2; term: ContractTerm }
+  | { type: 'answer-playing-coach'; player: string; accept: boolean }
   /**
    * Hires a manager from the market (→STAFF-17), by id: a free agent or another club's manager.
    * `term`: the seasons the owner chooses (→STAFF-14); absent keeps the earlier rule.

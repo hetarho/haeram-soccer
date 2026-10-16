@@ -8,6 +8,7 @@ import { sponsorSlots } from './sponsors';
 
 export interface StopReason extends InboxItem {
   responsibility?: ResponsibilityKey;
+  responsibilities?: ResponsibilityKey[];
   /** Optional business choices require an explicit decision, never notification read state. */
   alternative?: string;
 }
@@ -42,8 +43,30 @@ export function pendingDecisions(w: World, includeDelegated = false): StopReason
       ...(alternative ? { alternative } : {}),
     });
   };
+  const combined = Object.values(w.playingCoachProposals || {}).filter(
+    (p) => p.status === 'pending',
+  );
+  for (const proposal of combined) {
+    const keys: ResponsibilityKey[] = ['contracts', 'staff'];
+    const direct = keys.find((key) => !isDelegated(w, key));
+    if (!includeDelegated && !direct) continue;
+    const key = direct ?? 'contracts';
+    reasons.push({
+      id: `decision:playing-coach:${proposal.person}`,
+      year,
+      day,
+      kind: 'staff-renewal',
+      ref: proposal.person,
+      title: `${w.people?.[proposal.person]?.name ?? '선수'} 플레잉 코치 계약 검토`,
+      detail: '선수와 코치 계약을 함께 승인해 주세요.',
+      attention: true,
+      responsibility: key,
+      responsibilities: keys,
+    });
+  }
   for (const p of activePlayers(w))
-    if (p.talk) add('contracts', p.id, 'contract-talk', `${p.name} 선수 계약에 답변해 주세요`);
+    if (p.talk && !combined.some((proposal) => proposal.person === p.id))
+      add('contracts', p.id, 'contract-talk', `${p.name} 선수 계약에 답변해 주세요`);
   for (const bid of w.bids || []) {
     if (bid.direction === 'out' && bid.status === 'countered')
       add('recruitment', bid.id, 'bid-response', '선수 영입 역제안에 답변해 주세요');
@@ -76,6 +99,7 @@ export function pendingDecisions(w: World, includeDelegated = false): StopReason
     );
   if (w.staff)
     for (const role of STAFF_ROLES) {
+      if (combined.some((proposal) => proposal.role === role)) continue;
       const member = staffMember(w, role);
       if (!member)
         add(

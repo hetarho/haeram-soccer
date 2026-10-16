@@ -1,3 +1,4 @@
+import { proposePlayingCoach, answerPlayingCoach } from './playing-coach';
 import { encourageCoaching } from './coaching-entry';
 import type { World, Command } from '../../contracts/src/types';
 import { readInbox } from './inbox';
@@ -25,6 +26,12 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       break;
     case 'settings':
       applySettings(w, cmd.settings);
+      break;
+    case 'propose-playing-coach':
+      proposePlayingCoach(w, cmd.player, cmd.years, cmd.term);
+      break;
+    case 'answer-playing-coach':
+      answerPlayingCoach(w, cmd.player, cmd.accept);
       break;
     case 'encourage-coaching':
       encourageCoaching(w, cmd.player);

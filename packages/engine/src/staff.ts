@@ -1,3 +1,4 @@
+import { considerPlayingCoach, handoverPlayingCoaches } from './playing-coach';
 import { coachingEntryReady } from './coaching-entry';
 import { closeEmployment, openEmployment } from './person-careers';
 import { ATTRIBUTES, type Attribute } from '../../contracts/src/player';
@@ -564,7 +565,11 @@ function coachChecks(w: World, role: StaffRole, c: CoachCriteria): CoachCheck[] 
   ];
 }
 /** Whether a coach meets the department's criteria, affordability aside (→STAFF-15). */
-function coachFits(w: World, role: StaffRole, coach: Pick<Staff, 'ability' | 'trait' | 'wage'>) {
+export function coachFits(
+  w: World,
+  role: StaffRole,
+  coach: Pick<Staff, 'ability' | 'trait' | 'wage'>,
+) {
   return coachChecks(w, role, coachCriteriaOf(w)).every(([, fits]) => fits(coach));
 }
 const byWage = (a: { wage: string }, b: { wage: string }) =>
@@ -654,6 +659,7 @@ export function fillDelegatedPost(w: World, role: StaffRole) {
   if (!w.staff) return;
   const member = staffMember(w, role);
   if (member && BigInt(member.wage) > 0n) return;
+  if (considerPlayingCoach(w, role)) return;
   const c = coachCriteriaOf(w),
     hire = c.volunteer ? undefined : coachMatches(w, role, member)[0];
   if (hire) {
@@ -734,6 +740,7 @@ function delegatedSeason(w: World, role: StaffRole, member: Staff | undefined) {
     first = c.volunteer ? undefined : coachMatches(w, role, member)[0],
     hired = (offer: Staff & { fee: string }) => appoint(w, { ...offer, until: w.year + c.term });
   if (!member || BigInt(member.wage) === 0n) {
+    if (considerPlayingCoach(w, role)) return `${label} 플레잉 코치 계약 검토`;
     if (first) return `${label} ${hired(first).name} 선임(능력 ${first.ability})`;
     if (!member) return `${label} 자원봉사 ${appoint(w, volunteer(w, role)).name}`;
     w.staff = w.staff!.map((other) =>
@@ -764,6 +771,7 @@ function delegatedSeason(w: World, role: StaffRole, member: Staff | undefined) {
     );
     return `${label} ${member.name} 재계약(${c.term}시즌)`;
   }
+  if (considerPlayingCoach(w, role)) return `${label} 플레잉 코치 계약 검토`;
   departStaff(w, member);
   w.staff = w.staff!.filter((other) => other.role !== role);
   addEvent(w, 'staff-leave', `${label} ${member.name} 계약 만료`, `${member.since}–${w.year}`);
@@ -934,6 +942,7 @@ export function managerRenewalReminder(w: World) {
  * departments the renewal season is announced on 1 April when contracts end at the close.
  */
 export function dailyStaff(w: World) {
+  handoverPlayingCoaches(w);
   if (currentDay(w) === renewalDay(w.year)) managerRenewalReminder(w);
   if (w.manager.interim && isDelegated(w, 'manager')) appointDelegatedManager(w);
   if (!w.staff) return;
