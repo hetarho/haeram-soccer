@@ -8,6 +8,7 @@ import { canonical, validateWorld, type World } from '../../../../packages/contr
 import { unbase64, pack, unpack } from './packing';
 import { denseBytes, denseText } from './dense';
 import {
+  LEGACY_ENGINE_VERSIONS,
   earlierRulesMessage,
   isEarlierEngine,
   PRIOR_CATALOG_HASHES,
@@ -70,7 +71,7 @@ export async function encode(w: World, generation = 1, parentGeneration = 0): Pr
   };
   return JSON.stringify(e);
 }
-export async function decode(raw: string): Promise<{ world: World; envelope: Envelope }> {
+async function readCheckpoint(raw: string, supported: readonly string[]) {
   if (raw.length > 4 * 1024 * 1024) throw new Error('저장 파일이 너무 큽니다.');
   const e = JSON.parse(raw) as Envelope;
   if (!e || typeof e !== 'object' || typeof e.schema !== 'number')
@@ -80,7 +81,7 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
       '지원하지 않는 저장 스키마 버전입니다. 원본 파일을 보관하세요.',
     );
   if (typeof e.engine !== 'string') throw new Error('저장 엔진 헤더가 올바르지 않습니다.');
-  if (!SUPPORTED_ENGINE_VERSIONS.includes(e.engine))
+  if (!supported.includes(e.engine))
     throw new SaveCompatibilityError(
       isEarlierEngine(e.engine)
         ? earlierRulesMessage(e.engine)
@@ -120,10 +121,32 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
     false,
   );
   if ((await digest(bytes)) !== e.checksum) throw new Error('체크섬이 일치하지 않습니다.');
-  const world = validateWorld(
-    unpack(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes))),
-    LOAD_CATALOG,
-  );
+  return {
+    value: unpack(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes))),
+    envelope: e,
+  };
+}
+/** Integrity and known historical metadata, independently of the new world schema. */
+export async function recognizedLegacy(raw: string): Promise<boolean> {
+  try {
+    const { value, envelope } = await readCheckpoint(raw, LEGACY_ENGINE_VERSIONS);
+    if (!value || typeof value !== 'object') return false;
+    const world = value as Partial<World>;
+    return (
+      world.id === envelope.worldId &&
+      world.engine === envelope.engine &&
+      world.catalog === envelope.catalog &&
+      world.catalogHash === envelope.catalogHash &&
+      Number.isSafeInteger(world.year) &&
+      Array.isArray(world.clubs)
+    );
+  } catch {
+    return false;
+  }
+}
+export async function decode(raw: string): Promise<{ world: World; envelope: Envelope }> {
+  const { value, envelope: e } = await readCheckpoint(raw, SUPPORTED_ENGINE_VERSIONS);
+  const world = validateWorld(value, LOAD_CATALOG);
   if (
     world.id !== e.worldId ||
     world.engine !== e.engine ||

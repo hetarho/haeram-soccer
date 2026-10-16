@@ -47,39 +47,31 @@ async function exportRaw(page: Page, recovery = false) {
   return await readFile((await file.path())!, 'utf8');
 }
 
-test('earlier rules listed with export and delete', async ({ page }) => {
-  const { raw } = await current();
-  // The same career saved under rules 1.22.0: the player model of 2.0.0 cannot read it.
-  const earlier = JSON.stringify({ ...JSON.parse(raw), engine: '1.22.0' });
+test('recognized legacy gameplay resets on writer activation and new careers reload', async ({
+  page,
+}) => {
+  const { world } = await current();
+  world.engine = '2.0.0';
+  const earlier = await encode(world);
   await seed(page, earlier);
+  await page.addInitScript(() => {
+    localStorage.setItem('unrelated-preference', 'keep');
+    localStorage.setItem('haeram-soccor:strategies', '[]');
+  });
   await page.goto('/');
-  // Its slot says what it is and offers only export and delete (→SAVE-16).
-  const card = page.getByTestId('slot-earlier-0');
-  await expect(card).toContainText('이전 규칙 (1.22.0)');
-  await expect(card.getByRole('button', { name: '이어하기' })).toHaveCount(0);
-  await expect(card.getByRole('button', { name: '새 게임으로 덮어쓰기' })).toHaveCount(0);
-  await expect(page.getByRole('alert')).toContainText(
-    '이 저장은 규칙 1.22.0 커리어입니다 — 규칙 2.0.0 커리어만 열 수 있습니다',
-  );
-  await expect(page.getByTestId('club-hub')).toHaveCount(0);
-  // Its export is the stored checkpoint exactly; the raw slot is kept.
-  const event = page.waitForEvent('download');
-  await card.getByRole('button', { name: '내보내기', exact: true }).click();
-  expect(await readFile((await (await event).path())!, 'utf8')).toBe(earlier);
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBe(earlier);
-  // Deleting it is the explicit way to found a new career there: the slot screen stays, empty.
-  await card.getByRole('button', { name: '삭제', exact: true }).click();
   await page
-    .getByRole('dialog', { name: '게임 삭제 확인' })
-    .getByRole('button', { name: '삭제', exact: true })
-    .click();
-  await page
-    .getByTestId('game-slots')
     .getByRole('listitem', { name: '슬롯 1 · 빈 슬롯' })
-    .getByRole('button', { name: '새 게임' })
+    .getByRole('button', { name: '새 게임', exact: true })
     .click();
   await expect(page.getByRole('button', { name: '클럽 창단' })).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBeNull();
+  expect(await page.evaluate(() => localStorage.getItem('unrelated-preference'))).toBe('keep');
+  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  await page.reload();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  expect(JSON.parse(await exportRaw(page)).engine).toBe('3.0.0');
 });
 
 test('earlier rules import refused', async ({ page }) => {
@@ -93,7 +85,7 @@ test('earlier rules import refused', async ({ page }) => {
     buffer: Buffer.from(earlier),
   });
   await expect(page.getByRole('alert')).toContainText(
-    '이 저장은 규칙 1.22.0 커리어입니다 — 규칙 2.0.0 커리어만 열 수 있습니다. 새 커리어를 시작하세요',
+    '이 저장은 규칙 1.22.0 커리어입니다 — 규칙 3.0.0 커리어만 열 수 있습니다. 새 커리어를 시작하세요',
   );
   // Nothing changed: no career opened and nothing was stored.
   await expect(page.getByTestId('club-hub')).toHaveCount(0);
@@ -120,4 +112,24 @@ test('future selected save stays protected and exports exactly instead of downgr
       () => JSON.parse(localStorage.getItem('haeram-soccor:manifest')!).generation,
     ),
   ).toBe(2);
+});
+
+test('readonly legacy stays intact until writer handoff', async ({ page, context }) => {
+  const holder = await context.newPage();
+  await holder.goto('/');
+  await expect(holder.getByRole('button', { name: '클럽 창단' })).toBeVisible();
+  const { world } = await current();
+  world.engine = '2.0.0';
+  const raw = await encode(world);
+  await seed(page, raw);
+  await page.goto('/');
+  await expect(page.getByRole('alert')).toContainText('규칙 2.0.0');
+  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBe(raw);
+  await holder.close();
+  await page
+    .getByRole('listitem', { name: '슬롯 1 · 빈 슬롯' })
+    .getByRole('button', { name: '새 게임', exact: true })
+    .click();
+  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBeNull();
 });

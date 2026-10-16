@@ -1,6 +1,6 @@
 import type { World } from './types';
 
-export const CURRENT_ENGINE_VERSION = '2.0.0';
+export const CURRENT_ENGINE_VERSION = '3.0.0';
 /**
  * 1.1.0 added club policy; 1.2.0 staff, academy, transfer windows and the inbox; 1.3.0 closes
  * the season after its final round, opens the summer window there, normalizes league match
@@ -64,7 +64,7 @@ export const CURRENT_ENGINE_VERSION = '2.0.0';
  * positions with levels, roles, traits, adaptation and other clubs' 조직력, formations, four
  * difficulty levels; it starts new careers, and earlier versions are no longer read (→SAVE-16).
  */
-/** Only rules 2.0.0: an earlier career is never converted into the player model (→SAVE-16). */
+/** Only rules 3.0.0: an earlier career is never converted into the player model (→SAVE-16). */
 export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [CURRENT_ENGINE_VERSION];
 /** A world pins its catalog ID and the fingerprint recorded with it (→ARCH-10). */
 export type CatalogPin = Pick<World, 'catalog' | 'catalogHash'>;
@@ -78,6 +78,11 @@ export const PRIOR_CATALOG_HASHES: Readonly<Record<string, string>> = {
   '2026-demo-2': 'f51d581ce05db0e27e25216615b1cce5c67e00bf6bb5da6118407f63167284ae',
   '2026-demo-1': '94375c9a798cba789f2d6b319171bf7b45d52090ab0b83ca56b14626d196f679',
 };
+/** Explicitly released historical rules; an arbitrary older semver is not reset permission. */
+export const LEGACY_ENGINE_VERSIONS: readonly string[] = [
+  ...Array.from({ length: 23 }, (_, minor) => `1.${minor}.0`),
+  '2.0.0',
+];
 export const SAVE_COMPATIBILITY_CODE = 'save-compatibility' as const;
 
 export class SaveCompatibilityError extends Error {

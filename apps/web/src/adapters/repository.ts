@@ -138,6 +138,11 @@ export class SaveRepository {
       throw new Error(
         '유효한 저장을 찾지 못했습니다. 파일 가져오기로 복구하세요. ' + errors.join(' '),
       );
+    // A writer reset or confirmed deletion may have removed the previously protected career.
+    this.incompatible = undefined;
+    this.protectedRaw = undefined;
+    this.active = undefined;
+    this.generation = 0;
     return null;
   }
   /**

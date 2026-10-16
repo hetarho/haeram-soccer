@@ -227,6 +227,17 @@ export class GameClient {
   }
   private async load() {
     await this.whenSaved();
+    if (!this.state.readonly) {
+      const [{ resetLegacy }, { IndexedDbParkedStore }] = await Promise.all([
+        import('../adapters/legacyReset'),
+        import('../adapters/games'),
+      ]);
+      await resetLegacy(
+        localStorage,
+        IndexedDbParkedStore.available() ? new IndexedDbParkedStore() : undefined,
+        () => !this.state.readonly && !this.failed,
+      );
+    }
     const result = await this.saves.load();
     if (result) {
       const reply = await this.rpc({

@@ -88,7 +88,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T174 | Activate rules 3.0.0 with bounded recognized-legacy gameplay reset | SAVE WEB ARCH | T150 T152 T167 T168 T172 T173 T180 T186 T187 | doing@261017.n7r4 |
 | T176 | Verify second careers across contracts, reloads and market transitions | WEB STAFF WORLD HIST SAVE | T167 T168 T174 | todo |
 | T177 | Verify delegation handover and promise outcomes through the browser | WEB CLUB HIST SAVE | T172 T174 | todo |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 | todo |
@@ -106,6 +105,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 T174 done n7r4: Rules 3.0.0 start clean careers; writer activation independently clears only integrity-checked recognized legacy gameplay, journals interrupted parked cleanup, and preserves protected versions and device-owned data.
 - 261017 implement-task T174 start n7r4.
 - 261017 create-task SAVE r41: assign activation metadata to existing T174.
 - 261017 update-ssot SAVE r41: synchronize approved 3.0.0 activation metadata for T174.
@@ -125,4 +125,3 @@
 - 261017 implement-task T184 start n7r4.
 - 261017 T183 done n7r4: New clubs and close top-ups target twenty while NPC cohorts stay eighteen; delegated top-ups prefer eligible academy prospects and stop at registration limits.
 - 261017 T189 done n7r4: Code verification jobs remain intact; documentation-only pushes are skipped and branch/PR runs supersede obsolete executions, with manual dispatch retained.
-- 261017 create-task/implement-task T189: owner approved CI queue control before remaining implementation.
