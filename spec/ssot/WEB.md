@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r85 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r86 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -157,6 +157,7 @@
   | 스폰서 계약 | sponsor contracts | 위임 |
   - staff departments share one setting; appointment/renewal share their category. Recruitment and sales are independent. The staff follow the owning-domain decision rules (→STAFF-13).
   - an owner-held decision stops both progression modes for the owner; a delegated one is resolved and reported without a business-decision stop. Automatic time progression never overrides a direct responsibility.
+  - playing-coach conversion uses both player contracts and staff appointments: if either is direct, show one combined owner decision; only both delegated permits automatic conversion (→STAFF-32). The review shows player pay, coach pay and the combined total (→STAFF-33), without adding an eighth responsibility.
   - match-eve and transfer-window-opening stops are independent observation choices in the central settings: a new game enables match eve and disables window opening. Their notices remain readable either way. No extra per-business-event stop toggle exists.
   - the configuration belongs to the game (→SAVE-17). Local who-decides entries open this same screen; they never create a competing departmental switch. Time mode, automatic play/pause and business responsibility have distinct meanings.
   - coaches always choose training; their owner's suggestion/order actions remain →STAFF-19, outside these seven categories.
@@ -354,6 +355,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r86 261016 WEB-45✎ playing-coach authority unspecified→combined player/staff approval if either is direct, both-delegated automation and split/total salary preview
 - r85 261016 WEB-5/11/80✎ one-round tools retained/mode interaction open→exclusive manual next-event or automatic paced controls, season tools removed; WEB-62✎ all old slots retained/exportable→legacy release reset permitted by SAVE-18
 - r84 261016 WEB-5/18/76✎ match required only when all delegated→required for every manual configuration, otherwise manual unavailable; WEB-80✎ no-stop behaviour open→next-match-eve arrival, no season-end fallback; one-round-tool interaction remains open
 - r83 261016 WEB-18✎ unpaced days→direct event-date presentation; WEB-42✎ general report stops unspecified→notification-only; WEB-45/79✎ settings workflow open→shared central entry and explicit apply; WEB-80✎ long-advance UI open→no-stop/round-tool questions only
