@@ -1,3 +1,4 @@
+import { cancelPromises } from './promises';
 import { COUNTRIES } from '../../catalogs/src/index';
 import { closeEmployment, openEmployment, syncMentorExposures } from './person-careers';
 import { cohesionAfterManager } from './adaptation';
@@ -410,6 +411,7 @@ export function managerSearchReason(w: World) {
 
 /** The candidate leaves the market for our club; the manager he replaces becomes a free agent. */
 export function takeManager(w: World, candidate: ManagerCandidate, replaced: Manager) {
+  cancelPromises(w, replaced.id, '구단이 새 감독을 선임해 요청한 감독이 떠났어요.');
   const m = market(w);
   m.free = m.free.filter((free) => free.id !== candidate.id);
   if (candidate.club && !candidate.person) {

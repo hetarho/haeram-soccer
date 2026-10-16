@@ -1,3 +1,4 @@
+import { judgePromises } from './promises';
 import { qualifyManagers } from './manager-entry';
 import { refreshCoachingMarket, settleNpcCoaching } from './coaching-market';
 import { atCareerDate } from './person-careers';
@@ -823,6 +824,7 @@ export function clubDay(w: World) {
   dailyMarket(w);
   delegatedBusiness(w);
   dailyStaff(w);
+  judgePromises(w);
   announceRetirements(w);
   contractTalks(w);
   transferRequests(w);

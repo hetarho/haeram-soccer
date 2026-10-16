@@ -1,3 +1,4 @@
+import { cancelPromises } from './promises';
 import { closeEmployment, syncMentorExposures } from './person-careers';
 import { onManagerChange } from './adaptation';
 import type { Command, ContractTerm, Manager, Tactic, World } from '../../contracts/src/types';
@@ -241,6 +242,7 @@ export const MANAGER_GONE = '감독이 떠났습니다. 새 감독을 선임하�
  */
 function resign(w: World, reason: string) {
   const old = w.manager;
+  cancelPromises(w, old.id, reason);
   if (old.person) closeEmployment(w, old.person, 'manager');
   // His renewal reminder is moot once he has gone.
   readRelated(w, old.id);
