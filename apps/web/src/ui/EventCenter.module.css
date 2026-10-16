@@ -243,3 +243,30 @@
 .inbox li:nth-child(8) {
   animation-delay: 210ms;
 }
+
+.eventGroup {
+  position: fixed;
+  z-index: 85;
+  right: 12px;
+  bottom: 88px;
+  width: min(420px, calc(100vw - 24px));
+  max-height: 60dvh;
+  overflow-y: auto;
+  background: var(--surface-2);
+  border: 1px solid var(--gold-edge);
+}
+.group {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+}
+.group > h2 {
+  font-size: 14px;
+  margin: 0;
+}
+.group .card {
+  position: static;
+  width: auto;
+  max-height: none;
+  overflow: visible;
+}

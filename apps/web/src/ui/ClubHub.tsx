@@ -185,27 +185,23 @@ export function ClubHub({
   client,
   controller,
   journal,
-  tools,
 }: {
   w: World;
   client: GameClient;
   controller: ProgressionController;
   journal: ReactNode;
-  tools: ReactNode;
 }) {
   // Home stays mounted while hidden: only leaving it matters, not moves between other pages.
   const away = useNavigation((state) => state.page !== 'dashboard');
   const setPage = useNavigation((state) => state.setPage);
-  const [toolsOpen, setToolsOpen] = useState(false);
   const [journalOpen, setJournalOpen] = useState(false);
   const [preparing, setPreparing] = useState(false);
   useEffect(() => {
-    if (away && (journalOpen || toolsOpen || preparing)) {
+    if (away && (journalOpen || preparing)) {
       setJournalOpen(false);
-      setToolsOpen(false);
       setPreparing(false);
     }
-  }, [away, journalOpen, toolsOpen, preparing]);
+  }, [away, journalOpen, preparing]);
   const club = clubOf(w);
   const next = nextOwnFixture(w);
   const opponent = w.clubs.find(
@@ -225,10 +221,6 @@ export function ClubHub({
     last.home === w.playerClub ? last.score.home : last.score.away,
     last.home === w.playerClub ? last.score.away : last.score.home,
   ];
-  const open = (set: (value: boolean) => void) => (event: { currentTarget: HTMLElement }) => {
-    event.currentTarget.focus();
-    set(true);
-  };
   return (
     <section className={s.hub} data-testid="club-hub" aria-label="클럽 키우기">
       <div className={s.seasonOverview}>
@@ -238,9 +230,6 @@ export function ClubHub({
           </span>
           <progress aria-label="시즌 진행률" value={progress} max={100} />
         </div>
-        <button type="button" onClick={open(setToolsOpen)}>
-          시즌 진행 도구
-        </button>
       </div>
       {/* The season numbers ride the bottom of the club's stage instead of taking a row. */}
       <div className={s.stage}>
@@ -334,11 +323,6 @@ export function ClubHub({
       </section>
 
       {preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />}
-      {toolsOpen && (
-        <Dialog label="시즌 진행 도구" onClose={() => setToolsOpen(false)}>
-          {tools}
-        </Dialog>
-      )}
       {journalOpen && (
         <Dialog label="시즌 상세와 클럽 소식" onClose={() => setJournalOpen(false)} wide>
           {journal}

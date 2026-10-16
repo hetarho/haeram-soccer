@@ -173,26 +173,6 @@ export function Panel({
 export function Table({ w, ids, limit }: { w: World; ids: string[]; limit?: number }) {
   return <Standings w={w} ids={ids} limit={limit} />;
 }
-function SeasonProgressionTools({ state, client }: { state: ClientState; client: GameClient }) {
-  return (
-    <section aria-label="시즌 진행 도구">
-      <p>관전 없이 한 라운드의 경기 결과와 구단 운영을 처리해요.</p>
-      <div className={s.heroActions}>
-        <button
-          disabled={state.busy || state.readonly}
-          aria-describedby="journal-round-hint"
-          onClick={() => void client.command({ type: 'advance', rounds: 1 })}
-        >
-          한 라운드 진행
-        </button>
-        <small id="journal-round-hint">
-          한 라운드 진행: 관전 없이 이번 라운드 경기와 급여·훈련을 정산해요.
-        </small>
-      </div>
-    </section>
-  );
-}
-
 function ClubJournal({
   state,
   client,
@@ -516,7 +496,6 @@ const ConnectedDashboard = memo(function ConnectedDashboard({
       client={client}
       controller={controller}
       journal={<ClubJournal client={client} state={state} controller={controller} />}
-      tools={<SeasonProgressionTools client={client} state={state} />}
     />
   );
 });

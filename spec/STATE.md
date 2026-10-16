@@ -83,7 +83,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T150 | Expose exclusive time controls and remove season tools | WEB | T148 T149 | doing@261016.v6k2 |
 | T151 | Isolate policy drafts and apply commands by department | WEB | T142 | todo |
 | T152 | Open the authoritative department editor over its task | WEB | T149 T151 | todo |
 | T153 | Add the recruitment support policy to every authoritative row workflow | STAFF ECON WEB SAVE | T152 | todo |
@@ -133,6 +132,7 @@
 - Remaining planned tasks retain their scope and status; do not activate rules 3.0.0 or delete career data in this checkpoint.
 
 ## log
+- 261016 T150 done v6k2: exclusive progression controls, removed round tools and grouped same-date actions; 14 Chromium and 26 unit cases passed.
 - 261016 implement-task T150 start v6k2; authorized two push units T150 then T151–T153.
 - 261016 checkpoint p150 complete: T142–T149 committed individually; 825 unit and 11 contract tests, full CI browser matrix and storage/performance gates passed on 34beea9. T150+ remain unstarted; docs/verification/T149-checkpoint.md records evidence.
 - 261016 T149 done p150: Shared explicit-apply seven-category dialog with retained drafts, live handover previews, manual match-event invariant, local ownership labels and responsive readonly controls.

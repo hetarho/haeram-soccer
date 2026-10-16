@@ -311,3 +311,9 @@
   border-color: var(--accent-edge);
   background: var(--accent-fill);
 }
+
+.mode select {
+  min-height: 44px;
+  padding: 0 4px;
+  font-size: 12px;
+}

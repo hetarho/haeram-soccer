@@ -6,7 +6,7 @@ import type {
   TransferBid,
   World,
 } from '../../../../packages/contracts/src/types';
-import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
+import { seasonDate, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/world';
 import { talkFor } from '../../../../packages/engine/src/contracts';
 import { isExpiring } from '../../../../packages/engine/src/staff';
@@ -86,48 +86,71 @@ export const EventCenter = memo(function EventCenter({
 }: {
   client: GameClient;
   controller: ProgressionController;
-  /** Away from home the card folds into a small pill until the owner opens it. */
   compact?: boolean;
 }) {
   const w = useGameState((state) => state.view?.world);
+  const running = useProgression(controller, (state) => state.running);
+  const [opened, setOpened] = useState<string>();
+  if (!w || running) return null;
+  const events = stoppingEvents(w);
+  if (!events.length) return null;
+  const key = seasonDate(w);
+  if (compact && opened !== key)
+    return (
+      <button
+        className={s.pill}
+        data-testid="event-pill"
+        aria-label={`이벤트 ${events.length}개 · ${key} · 열기`}
+        onClick={() => setOpened(key)}
+      >
+        <i aria-hidden="true">{events.length}</i>
+        <span>{key} 이벤트</span>
+      </button>
+    );
+  const content = (
+    <div className={s.group} data-testid="event-group">
+      <h2>
+        {key} · 이벤트 {events.length}개
+      </h2>
+      {events.map((item) => (
+        <EventCard key={item.id} client={client} controller={controller} item={item} />
+      ))}
+    </div>
+  );
+  return compact ? (
+    <Dialog label={`${key} 이벤트`} onClose={() => setOpened(undefined)}>
+      {content}
+    </Dialog>
+  ) : (
+    <section className={s.eventGroup} aria-label={`${key} 이벤트`}>
+      {content}
+    </section>
+  );
+});
+
+const EventCard = memo(function EventCard({
+  client,
+  controller,
+  item,
+}: {
+  client: GameClient;
+  controller: ProgressionController;
+  item: InboxItem;
+}) {
+  const w = useGameState((state) => state.view!.world);
   const market = useGameState((state) => state.view?.transfers) || [];
   const read = (item: InboxItem) => client.command({ type: 'read-inbox', id: item.id });
-  /** The card's decision, after any command it takes: the event is read and the clock plays on. */
   const decide = async (item: InboxItem, action?: () => Promise<unknown>) => {
-    await action?.();
+    const reply = await action?.();
+    if (reply && typeof reply === 'object' && 'ok' in reply && !reply.ok) return;
     await read(item);
     controller.eventDecided();
   };
   const acting = useGameState((state) => !!state.pendingActions || state.readonly);
-  const { running } = useProgression(controller, (state) => state);
   const showLevels = useInterventionDialog((state) => state.show);
   const setPage = useNavigation((state) => state.setPage);
-  const [opened, setOpened] = useState<string>();
-  if (!w || running) return null;
-  const reasons = stoppingEvents(w);
   const next = nextOwnFixture(w);
-  // Reloaded careers have no remembered controller stop; the dated observation is authoritative.
-  const eve =
-    next && reasons.some((item) => item.kind === 'match' && item.ref === next.id)
-      ? next
-      : undefined;
-  const events = reasons.filter((item) => item.kind !== 'match');
-  if (!eve && !events.length) return null;
-  const total = events.length + (eve ? 1 : 0);
-  const key = eve?.id || events[0].id;
-  if (compact && opened !== key)
-    return (
-      <button
-        key={key}
-        className={s.pill}
-        data-testid="event-pill"
-        aria-label={`이벤트 ${total}개 · ${eve ? '내일 경기' : events[0].title} · 열기`}
-        onClick={() => setOpened(key)}
-      >
-        <i aria-hidden="true">{total}</i>
-        <span>{eve ? '내일 경기' : KIND_LABEL[events[0].kind]}</span>
-      </button>
-    );
+  const eve = item.kind === 'match' && next?.id === item.ref ? next : undefined;
   const club = clubOf(w);
   const format = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   if (eve) {
@@ -147,7 +170,6 @@ export const EventCenter = memo(function EventCenter({
       >
         <header>
           <span className={s.kind}>MATCH · 내일 경기</span>
-          {total > 1 && <small>이벤트 {total}개</small>}
         </header>
         <h3>
           {opponent && <ClubCrest w={w} id={opponent.id} size={22} />}
@@ -170,7 +192,6 @@ export const EventCenter = memo(function EventCenter({
       </aside>
     );
   }
-  const item = events[0];
   const bid = bidFor(w, item);
   // A talk still open, or an unhappy player's floor still to meet (→WEB-68).
   const talker = PLAYER_KINDS.includes(item.kind)
@@ -198,7 +219,6 @@ export const EventCenter = memo(function EventCenter({
     >
       <header>
         <span className={s.kind}>{KIND_LABEL[item.kind]}</span>
-        {total > 1 && <small>남은 이벤트 {total}개</small>}
       </header>
       <h3>{item.title}</h3>
       <p>{item.detail}</p>

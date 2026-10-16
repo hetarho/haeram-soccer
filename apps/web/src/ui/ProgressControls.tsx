@@ -1,3 +1,5 @@
+import { settingsOf } from '../../../../packages/engine/src/responsibilities';
+import { pendingDecisions } from '../../../../packages/engine/src/stopping';
 import { PixelIcon } from './PixelIcon';
 import {
   currentDay,
@@ -25,6 +27,7 @@ const PACES: [Pace, string, string][] = [
 
 /** Game-speed controls: play starts the shared clock; a speed chip only sets its pace (→WEB-18). */
 export const ProgressControls = memo(function ProgressControls({
+  client,
   controller,
   compact = false,
   bare = false,
@@ -53,6 +56,9 @@ export const ProgressControls = memo(function ProgressControls({
     wasRunning.current = running;
   }, [running]);
   const w = state.view!.world;
+  const mode = settingsOf(w).mode;
+  const manual = mode === 'manual';
+  const pending = pendingDecisions(w).length > 0;
   const next = nextOwnFixture(w);
   const days = daysUntilNextMatch(w);
   const blocked = !!(state.readonly || state.error || w.critical || w.bankrupt);
@@ -65,8 +71,43 @@ export const ProgressControls = memo(function ProgressControls({
       (next
         ? `${days ? `다음 경기 D-${days}` : '오늘 경기'} · ${transferWindow(w).label}`
         : '시즌 정산을 기다려요');
-  const buttons = (
+  const modeControl = (
+    <label className={p.mode}>
+      <span className={s.srOnly}>진행 모드</span>
+      <select
+        aria-label="진행 모드"
+        value={mode}
+        disabled={blocked || state.processing}
+        onChange={(event) => {
+          const settings = settingsOf(w);
+          const progression = event.target.value as 'automatic' | 'manual';
+          if (progression === 'manual' && !settings.observations.matchEve) {
+            useInterventionDialog.getState().show();
+            return;
+          }
+          void client.command({ type: 'settings', settings: { ...settings, mode: progression } });
+        }}
+      >
+        <option value="automatic">자동</option>
+        <option value="manual" disabled={!settingsOf(w).observations.matchEve}>
+          수동
+        </option>
+      </select>
+    </label>
+  );
+  const buttons = manual ? (
+    <div className={s.clockButtons} role="group" aria-label="수동 진행">
+      {modeControl}
+      <button
+        disabled={blocked || state.processing || pending}
+        onClick={() => void controller.nextEvent()}
+      >
+        다음 이벤트
+      </button>
+    </div>
+  ) : (
     <div className={s.clockButtons} role="group" aria-label="자동 진행 속도">
+      {modeControl}
       <button
         className={`${s.clockToggle} ${running ? s.clockPause : ''}`}
         aria-label={running ? '자동 진행 정지' : '자동 진행 시작'}
