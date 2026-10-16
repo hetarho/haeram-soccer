@@ -34,7 +34,9 @@
   - Existing delegated untouchable offers can be decided by staff and manager (CLUB-24); 150% is not a universal owner-approval threshold.
 - [o] Player second-career scope: retirement → coaching candidacy → coaching experience → possible manager candidacy. Preserve the person's actual age, identity and retained playing history through the career; an appointment follows the adopted staff/manager responsibility. Candidate qualification and career progression do not guarantee an appointment.
 - [o] Second-career opportunity is not restricted to the owner's club, its retirees or its legends: suitable players from other clubs can enter coaching and rise toward management too. Eligibility follows coaching aptitude; work ethic/professionalism and football intelligence are desired positive factors, with their representation and exact conditions still open.
-- [o] Coaching aptitude is a separate assessment from playing ability, informed by professionalism/work ethic, football understanding and ability to teach. A player of ordinary playing ability can have strong coaching aptitude. Representation, visibility and precise eligibility/progression conditions remain open; no existing match attribute or coefficient is changed by this ideation choice.
+- [o] Coaching aptitude is a separate assessment from playing ability, informed by professionalism/work ethic, football understanding and ability to teach. A player of ordinary playing ability can have strong coaching aptitude. Precise eligibility/progression conditions remain open; no existing match attribute or coefficient is changed by this ideation choice.
+- [o] Show coaching aptitude on the active player's profile as qualitative grades and evaluations, such as strong coaching promise or teaching ability; do not expose an exact aptitude number. The owner can anticipate a second career before retirement. Detailed grade bands and other-club scouting uncertainty remain to specify.
+- [o] Manager candidacy requires coaching experience and aptitude for team management/tactical judgement together. Coaching service alone never automatically makes every coach a manager candidate; a person can remain a specialist coach. Exact experience and aptitude thresholds remain to specify.
 - [o] Players across clubs can naturally choose coaching and enter the coaching market. The owner may also encourage one of our own players toward coaching; encouragement guarantees neither entry nor employment. Actual appointments follow the staff/manager responsibility choices.
 - [x] Own-club 150 appearances or five seasons as the qualifying gate for coaching opportunities ← the owner wants aptitude-based opportunities across clubs; club service can be career context but must not exclude suitable outsiders.
 - [?] Second-career detail: preserve a recognisable person and assess coaching aptitude across clubs.
@@ -44,6 +46,7 @@
   - Feasibility concern: other clubs' squads are generated each season without the own-club development/ageing lifecycle (PLAYER-1). Cross-club second careers need an explicit continuity scope and genuine retained identity; do not invent historical appearances or claim every NPC player already has a tracked lifetime.
   - Existing retained player careers and manager tenures are useful material (WEB-54/59, HIST-1), but a cross-role career and its continuity require explicit new product rules. “No complex new schema” is not evidenced.
 - [?] Director–manager mediation: good owner decision when finance and football needs conflict; it must describe the actual reason an acquisition did not happen.
+  - Current discussion candidates: add owner mediation when actual football and financial priorities conflict, or retain the existing report. If mediation is included, decide whether a next-window reinforcement promise creates a tracked commitment with a deadline and an actual fulfilment judgement. Neither addition is adopted yet.
   - Current CLUB-33 deducts 3 trust when none of the opening requests was met by a qualifying arrival; it does not deduct 3 for every missed first-choice pick or every unfilled line. A qualifying alternative or loan can meet the window.
   - `packages/engine/src/signings.ts` judges the window and reports unmet requests; that alone does not establish a budget-blocked director versus manager conflict. Failed bids, unavailable candidates and an owner's own refusal need distinct accounts.
   - A promise for the next window needs its target, deadline, fulfilment and cancellation rules, including manager replacement and lack of eligible candidates; 0 now / −8 later is untested. Dismissing a card cannot erase its commitment.
@@ -81,8 +84,7 @@
 - Observation preferences: match-eve and window-opening stops separately selectable, with notices retained either way; defaults are match-eve stop on and window-opening stop off.
 - Progression flow: choose automatic paced play or manual next-event play → the same configured trigger determines where play stops → decide/read/watch as appropriate → automatic behaviour follows its mode; manual play waits for the next explicit advance. With all responsibilities delegated, match events must remain enabled for manual mode.
 - Match-event arrival follows the selected match-eve trigger, before the result; preparation/watch/play-through remain relevant. Automatic is the new-game mode. Preventing an invalid all-delegated/manual/no-match combination still needs a visible product rule.
-- Second-career flow: a player at our club or another → separate coaching aptitude and a natural career choice, optionally encouraged for our player → retirement and coaching candidacy → appointment/experience → possible management candidacy → appointments and a linked career record. Aptitude display and promotion conditions remain open.
-- Next second-career proposals to discuss: show aptitude on the player profile as a qualitative assessment rather than an exact number; require coaching experience plus suitability for management before manager candidacy, allowing a person to remain a specialist coach. Neither detail is adopted yet.
+- Second-career flow: a player at our club or another with profile aptitude grades/evaluation → a natural career choice, optionally encouraged for our player → retirement and coaching candidacy → appointment/coaching experience → management candidacy only with suitable team-management/tactical aptitude → appointments and a linked career record. Specialist coaching remains a valid continuing career; exact promotion thresholds remain open.
 - Review boundary: assess and retain proposal material. No SSOT policy changes, coefficient changes, implementation tasks or code changes are authorized by selecting an idea for discussion.
 
 ## domains
@@ -98,8 +100,8 @@
 ## open
 - How do changes apply to pending decisions and existing careers, and what shortcuts belong in the clock/settings entry?
 - How are invalid manual/no-match settings prevented?
-- How should separate coaching aptitude and football intelligence be shown, and when can the owner encourage a coaching career?
-- What experience makes a coach a manager candidate, and how are his specialty and school established?
-- Should mediation with an accountable future promise be developed after the retired-player discussion?
+- When can the owner encourage a coaching career, and what scouting uncertainty applies to other clubs' aptitude evaluations?
+- What experience threshold makes a suitable coach a manager candidate, and how are his specialty and school established?
+- Should director–manager mediation be added, and should it include a tracked next-window promise?
 - Does the current focused-policy round trip interrupt a real recurring task enough to justify another presentation, and what improvement would demonstrate it?
 - Parked for a later balance discussion: should difficulty describe the founding disadvantage or a challenge that still differs in season 60?
