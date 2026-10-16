@@ -28,6 +28,22 @@ Rules `1.16.0` add, among others, three optional fields inline in the world JSON
 
 Archived movement frames are not save facts. Historical goal playback uses preserved goal minutes; only the final recorded counters are displayed in that summary playback.
 
+## Second-career feature state
+
+The rules 3.0 feature payload keeps settings (seven responsibilities, progression mode and observations), the recruitment support row, player qualities, staff/manager person links, joint playing-coach proposals, coaching-market refresh dates, actual recruitment arrivals, mediations and promises as canonical fields. The envelope, checksum, two-slot protocol and size limits are unchanged. Release activation and bounded legacy classification are separate from this encoding.
+
+`compact1.careers` is optional and versioned independently as `{ version: 1, people: [...] }`. When present it is the only encoded person-registry source; `world.people` is absent. Each person is one strict 20-column tuple:
+
+1. Shared-dictionary indexes for ID/name; birth year; position index; professionalism; understanding/teaching/judgement grades; playing-status index.
+2. Optional club index, optional former-own boolean, optional origin `[club, slot]`, optional loan `[parent club, until]`, and genuinely retained own-career metrics.
+3. Employment rows `[role, club, from year, from day, to year, to day, contract-end year, contract-end day, wage, currency, grown-through year]`.
+4. Mentor rows `[manager, name, school, club, from year, from day, to year, to day]`.
+5. Optional intention `[year, day, retained draw, willing, encouragement year, encouragement day, changed]`, retirement `[announcement year, announcement day, scheduled year, actual year, actual day]`, coaching `[role, actual ability, potential, entry year, entry day]`, and management `[actual ability, potential, school, entry year, entry day]`.
+
+Identity, club, role, school, name and exact decimal-money strings use the existing shared dictionary. Null means absent, preserving false/zero values; dates require both columns together. Learned ability/potential retain finite numeric precision. Player/staff arrays and their stable person links remain inline, preserving qualities and role-specific facts without a second complete person object. All employment and mentor periods survive; missing playing totals stay absent.
+
+The decoder accepts prior `compact1` worlds with an inline registry and no `careers` section. It rejects simultaneous inline/row registries, unknown career-row versions, malformed dimensions or dictionaries, duplicate identities and invalid expanded references/intervals/deadlines. Schedule reconstruction never enrolls people, draws career facts or changes the saved registry. Full canonical save/export/inspect state stays complete; daily UI projections omit lifetime people and bound resolved decisions, with on-demand reads for full details. Drafts and derived display models are not canonical save fields.
+
 ## Commit and recovery
 
 Application keys: `haeram-soccor:slot:a`, `haeram-soccor:slot:b`, `haeram-soccor:manifest`. The manifest selects the current slot/world/generation and parent generation. Write/readback-verify the inactive slot, switch/readback-verify the manifest, then acknowledge. The old active slot remains available on quota/write failure.

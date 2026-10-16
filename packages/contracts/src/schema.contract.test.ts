@@ -268,3 +268,54 @@ describe('rules 1.20 contracts (→SAVE-10)', () => {
     expect(canonical(validateWorld(structuredClone(older)))).toBe(canonical(older));
   });
 });
+
+it('rejects dangling career/arrival/post references, overlapping jobs and changed fixed promise deadlines', async () => {
+  const { featureState } = await import('../../../tests/fixtures/feature-state');
+  const w = featureState();
+  validateWorld(w);
+  for (const mutate of [
+    (copy: World) => {
+      copy.staff!.find((s) => s.person)!.person = 'missing-person';
+    },
+    (copy: World) => {
+      copy.staff = copy.staff!.filter((s) => !s.person);
+    },
+    (copy: World) => {
+      delete copy.people![copy.players.find((p) => p.status === 'active')!.id];
+    },
+    (copy: World) => {
+      Object.values(copy.people!)[0].employment[0].club = 'missing-club';
+    },
+    (copy: World) => {
+      copy.recruitmentArrivals![0].player = 'missing-arrival';
+    },
+    (copy: World) => {
+      copy.promises![0].arrival!.player = 'missing-arrival';
+    },
+    (copy: World) => {
+      copy.promises![0].deadline.day++;
+    },
+    (copy: World) => {
+      copy.settings!.observations.matchEve = false;
+    },
+    (copy: World) => {
+      Object.values(copy.people!)[0].qualities.teaching = 6 as never;
+    },
+    (copy: World) => {
+      const p = Object.values(copy.people!).find((p) => p.management)!;
+      p.employment.push({
+        role: 'attack',
+        club: copy.playerClub,
+        from: { year: 1951, day: 0 },
+        to: { year: 1952, day: 0 },
+      });
+    },
+    (copy: World) => {
+      Object.values(copy.people!)[0].origin = { club: 'missing-origin', slot: 0 };
+    },
+  ]) {
+    const copy = structuredClone(w);
+    mutate(copy);
+    expect(() => validateWorld(copy)).toThrow();
+  }
+});

@@ -38,6 +38,13 @@ describe('retained person career registry', () => {
       ownCareer: p.career,
       qualities: p.qualities,
     });
+    // Complete the synthetic live role transition before validating a whole-world checkpoint.
+    w.calendar = { day: 7 };
+    w.round = 1;
+    delete w.scorerSeason;
+    p.status = 'retired';
+    person.playing = 'retired';
+    w.manager = { ...w.manager, id: p.id, person: p.id, name: p.name, born: p.born };
     expect(canonical(validateWorld(JSON.parse(canonical(w))))).toBe(canonical(w));
   });
   it('keeps missing NPC stats unknown and supports re-employment without duplicate posts', () => {

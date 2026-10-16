@@ -93,8 +93,9 @@ export function openEmployment(
       (job) =>
         job.role === role ||
         job.club !== club ||
-        (role === 'manager' && job.role !== 'player') ||
-        (role !== 'player' && role !== 'manager' && job.role === 'manager'),
+        (role !== 'player' && job.role !== 'player') ||
+        (role === 'player' && ['manager', 'director', 'scout'].includes(job.role)) ||
+        (job.role === 'player' && ['manager', 'director', 'scout'].includes(role)),
     )
   )
     throw new Error('중복 재직은 불가능해요.');

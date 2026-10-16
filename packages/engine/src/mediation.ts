@@ -82,7 +82,10 @@ export function detectMediations(w: World): RecruitmentMediation[] {
       director: { id: director.id, name: director.name },
       target: { ...request },
       candidate: { id: offer.player.id, name: offer.player.name, fee, wage: offer.player.wage },
-      managerReason: `${requestLabel(request)} 보강을 위해 ${offer.player.name} 선수를 요청했어요.`,
+      managerReason:
+        request.pick === offer.player.id
+          ? `${requestLabel(request)} 보강을 위해 ${offer.player.name} 선수를 요청했어요.`
+          : `${requestLabel(request)} 보강을 요청했어요. 현재 적합 후보는 ${offer.player.name} 선수예요.`,
       directorReason: verdict.reason,
       support: directionOption(w, 'recruitmentSupport').id as RecruitmentMediation['support'],
       status: 'pending',
@@ -150,7 +153,7 @@ export function resolveMediation(
       result = '요청한 감독이 떠나 이번 영입 요청을 마감했어요.';
     else if (support !== 'director') {
       const pool = requestCandidates(trial, mediation.target),
-        named = pool.find(({ offer }) => offer.player.id === mediation.candidate.id);
+        named = pool.find(({ offer }) => offer.player.id === mediation.target.pick);
       const fee = (offer: ReturnType<typeof requestCandidates>[number]['offer']) =>
         BigInt(
           offer.freeAgent

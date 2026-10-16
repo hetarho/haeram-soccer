@@ -660,7 +660,8 @@ const personCareer = z.strictObject({
     .strictObject({ ability: rating, potential: rating, school: managerStyle, at: careerDate })
     .optional(),
 });
-export const worldSchema: z.ZodType<World> = z.object({
+export const personCareerSchema = personCareer;
+const worldSchema: z.ZodType<World> = z.object({
   schema: z.literal(1),
   engine: text,
   catalog: text,
@@ -1017,7 +1018,8 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       (mediation.target.kind === 'upgrade' &&
         (mediation.target.slot === undefined || !mediation.target.position)) ||
       (mediation.resolution &&
-        dateNumber(mediation.resolution.at) < dateNumber(mediation.created)) ||
+        (dateNumber(mediation.resolution.at) < dateNumber(mediation.created) ||
+          dateNumber(mediation.resolution.at) > w.year * 366 + (w.calendar?.day ?? w.round * 7))) ||
       (mediation.status === 'resolved') !== !!mediation.resolution
     )
       throw new Error('중재 기록 참조 또는 날짜 손상');
@@ -1045,19 +1047,98 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       !arrival.positions[arrival.position]
     )
       throw new Error('실제 영입 기록 손상');
+  const today = { year: w.year, day: w.calendar?.day ?? w.round * 7 };
+  const beforeToday = (at: { year: number; day: number }) => dateNumber(at) <= dateNumber(today);
+  const isCoach = (role: string) => !['player', 'manager', 'director', 'scout'].includes(role);
+  const arrivalKeys = new Set<string>();
+  for (const arrival of w.recruitmentArrivals ?? []) {
+    const key = `${arrival.player}:${arrival.at.year}:${arrival.at.day}`;
+    if (
+      !w.people?.[arrival.player] ||
+      w.people[arrival.player].name !== arrival.name ||
+      arrivalKeys.has(key)
+    )
+      throw new Error('실제 영입 인물 참조 손상');
+    arrivalKeys.add(key);
+  }
+  const outstanding = new Set<string>();
+  const targetKey = (target: { kind: string; line: string; slot?: number; position?: string }) =>
+    target.kind === 'short' ? `line:${target.line}` : `slot:${target.slot}:${target.position}`;
+  for (const promise of w.promises ?? []) {
+    const mediation = w.mediations!.find((m) => m.id === promise.mediation)!;
+    const year = mediation.created.year + (mediation.window === 'winter' ? 1 : 0);
+    const day =
+      mediation.window === 'summer'
+        ? Math.round((Date.UTC(year + 1, 1, 1) - Date.UTC(year, 7, 1)) / 86400000)
+        : 31;
+    if (
+      !beforeToday(promise.created) ||
+      (promise.resolved && !beforeToday(promise.resolved)) ||
+      promise.deadline.year !== year ||
+      promise.deadline.day !== day ||
+      promise.manager.id !== mediation.manager.id ||
+      promise.director.id !== mediation.director.id ||
+      targetKey(promise.target) !== targetKey(mediation.target) ||
+      dateNumber(promise.created) < dateNumber(mediation.created)
+    )
+      throw new Error('약속 대상 또는 고정 마감일 손상');
+    const key = `${promise.manager.id}:${targetKey(promise.target)}`;
+    if (promise.status === 'pending') {
+      if (outstanding.has(key)) throw new Error('중복 보강 약속');
+      outstanding.add(key);
+    }
+    if (promise.status === 'fulfilled') {
+      const arrival = (w.recruitmentArrivals ?? []).find(
+        (a) =>
+          a.player === promise.arrival?.player &&
+          dateNumber(a.at) === dateNumber(promise.arrival!.at),
+      );
+      if (
+        !arrival ||
+        dateNumber(arrival.at) < dateNumber(promise.created) ||
+        dateNumber(arrival.at) > dateNumber(promise.deadline) ||
+        (promise.target.position
+          ? (arrival.positions[promise.target.position] ?? 0) < 2
+          : !(
+              (promise.target.line === 'GK' && arrival.position === 'GK') ||
+              (promise.target.line === 'DF' &&
+                ['CB', 'LB', 'RB', 'LWB', 'RWB'].includes(arrival.position)) ||
+              (promise.target.line === 'MF' &&
+                ['DM', 'CM', 'AM', 'LM', 'RM'].includes(arrival.position)) ||
+              (promise.target.line === 'FW' && ['LW', 'RW', 'ST'].includes(arrival.position))
+            ))
+      )
+        throw new Error('약속 이행 영입 참조 손상');
+    } else if (promise.arrival) throw new Error('미이행 약속의 영입 참조 손상');
+  }
   for (const [key, person] of Object.entries(w.people || {})) {
-    if (key !== person.id || person.born > w.year || (person.club && !ids.has(person.club)))
+    if (
+      key !== person.id ||
+      person.born > w.year ||
+      (person.club && !ids.has(person.club)) ||
+      (person.origin && !ids.has(person.origin.club)) ||
+      (person.loan?.club && !ids.has(person.loan.club))
+    )
       throw new Error('인물 참조 손상');
     const roles = new Set<string>();
     for (const job of person.employment) {
       if (
         !ids.has(job.club) ||
+        !beforeToday(job.from) ||
+        (job.to && !beforeToday(job.to)) ||
+        job.from.year < person.born ||
+        (job.wage === undefined) !== (job.currency === undefined) ||
         (job.to && dateNumber(job.to) < dateNumber(job.from)) ||
-        (job.contractUntil && dateNumber(job.contractUntil) < dateNumber(job.from))
+        (job.contractUntil && dateNumber(job.contractUntil) < dateNumber(job.from)) ||
+        (job.to && job.contractUntil && dateNumber(job.to) > dateNumber(job.contractUntil))
       )
         throw new Error('인물 재직 기간 손상');
       if (!job.to) {
         if (
+          job.club !== person.club ||
+          (job.role !== 'player' && [...roles].some((role) => role !== 'player')) ||
+          (job.role === 'player' && [...roles].some((role) => !isCoach(role))) ||
+          (job.role !== 'player' && !isCoach(job.role) && roles.has('player')) ||
           roles.has(job.role) ||
           (job.role === 'manager' && [...roles].some((role) => role !== 'player')) ||
           (job.role !== 'player' && job.role !== 'manager' && roles.has('manager'))
@@ -1066,20 +1147,68 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
         roles.add(job.role);
         if (job.role !== 'player') {
           const post = `${job.club}:${job.role}`;
+          if (
+            job.club === w.playerClub &&
+            (job.role === 'manager'
+              ? w.manager.person !== person.id
+              : !w.staff?.some((member) => member.person === person.id && member.role === job.role))
+          )
+            throw new Error('인물의 현재 담당 자리 참조 손상');
           if (occupied.has(post)) throw new Error('중복 담당자');
           occupied.add(post);
         }
       }
     }
+    for (let a = 0; a < person.employment.length; a++)
+      for (let b = a + 1; b < person.employment.length; b++) {
+        const left = person.employment[a],
+          right = person.employment[b];
+        const overlap =
+          Math.max(dateNumber(left.from), dateNumber(right.from)) <
+          Math.min(dateNumber(left.to ?? today), dateNumber(right.to ?? today));
+        const playingCoach =
+          left.club === right.club &&
+          ((left.role === 'player' && isCoach(right.role)) ||
+            (right.role === 'player' && isCoach(left.role)));
+        if (overlap && !playingCoach) throw new Error('인물 재직 중복 기간 손상');
+      }
+    if (
+      (person.intention?.encouraged &&
+        dateNumber(person.intention.encouraged.at) < dateNumber(person.intention.at)) ||
+      (person.retirement?.at &&
+        dateNumber(person.retirement.at) < dateNumber(person.retirement.announced)) ||
+      (person.retirement && person.retirement.year < person.retirement.announced.year)
+    )
+      throw new Error('인물 경력 순서 손상');
+    for (const at of [
+      person.intention?.at,
+      person.intention?.encouraged?.at,
+      person.retirement?.announced,
+      person.retirement?.at,
+      person.coaching?.at,
+      person.management?.at,
+    ])
+      if (at && (!beforeToday(at) || at.year < person.born)) throw new Error('인물 경력 날짜 손상');
     for (const exposure of person.mentors)
       if (
         !ids.has(exposure.club) ||
+        !beforeToday(exposure.from) ||
+        (exposure.to && !beforeToday(exposure.to)) ||
         (exposure.to && dateNumber(exposure.to) < dateNumber(exposure.from))
       )
         throw new Error('멘토 기간 손상');
   }
   for (const player of [...w.players, ...(w.academy?.players || [])]) {
     const person = w.people?.[player.id];
+    if (w.people && player.qualities && !person) throw new Error('선수 인물 레지스트리 참조 손상');
+    if (
+      person &&
+      player.status === 'active' &&
+      !person.employment.some(
+        (job) => job.role === 'player' && !job.to && job.club === w.playerClub,
+      )
+    )
+      throw new Error('현역 선수 재직 참조 손상');
     if (
       person &&
       (person.name !== player.name ||
@@ -1101,6 +1230,16 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       throw new Error('직원 인물 참조 손상');
   }
 
+  for (const member of [w.manager, ...(w.staff ?? [])]) {
+    if (!member.person) continue;
+    const role = 'role' in member ? member.role : 'manager';
+    if (
+      !w.people?.[member.person]?.employment.some(
+        (job) => !job.to && job.club === w.playerClub && job.role === role,
+      )
+    )
+      throw new Error('직원 재직 참조 손상');
+  }
   if (ids.size !== w.clubs.length || !ids.has(w.playerClub))
     throw new Error('저장된 클럽 식별자가 올바르지 않습니다.');
   const seasonDays = (Date.UTC(w.year + 1, 7, 1) - Date.UTC(w.year, 7, 1)) / 86400000;

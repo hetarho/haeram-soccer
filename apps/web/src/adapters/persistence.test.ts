@@ -516,3 +516,35 @@ describe('incompatible checkpoint protection', () => {
     expect(recovery?.recovered).toBe(true);
   });
 });
+
+it('feature-state-lossless-roundtrip and continued-career-parity preserve roles, money, draws and promise judgements', async () => {
+  const { featureState } = await import('../../../../tests/fixtures/feature-state');
+  const { advanceDays, operate } = await import('../../../../packages/engine/src/index');
+  const { judgePromises } = await import('../../../../packages/engine/src/promises');
+  const { encourageCoaching } = await import('../../../../packages/engine/src/coaching-entry');
+  const original = featureState(),
+    restored = (await decode(await encode(original))).world;
+  expect(canonical(restored)).toBe(canonical(original));
+  const player = Object.values(original.playingCoachProposals!)[0].person;
+  for (const w of [original, restored]) {
+    const cash = w.cash;
+    operate(w, { type: 'answer-playing-coach', player, accept: true });
+    expect(w.cash).toBe(cash);
+    expect(() => encourageCoaching(w, player)).toThrow();
+    advanceDays(w, 2, undefined, false);
+  }
+  expect(canonical(restored)).toBe(canonical(original));
+  for (const w of [original, restored]) {
+    const promise = w.promises!.find((p) => p.status === 'pending')!;
+    w.year = promise.deadline.year;
+    w.calendar = { day: promise.deadline.day + 1 };
+    w.round = Math.floor(w.calendar.day / 7);
+    delete w.scorerSeason;
+    judgePromises(w);
+    const after = canonical(w);
+    judgePromises(w);
+    expect(canonical(w)).toBe(after);
+  }
+  expect(canonical(restored)).toBe(canonical(original));
+  expect(canonical((await decode(await encode(restored))).world)).toBe(canonical(original));
+});

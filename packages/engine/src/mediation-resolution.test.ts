@@ -138,6 +138,18 @@ describe('financial mediation resolution', () => {
     expect(w.direction.recruitmentSupport).toBe('director');
     expect(w.cash).toBe((BigInt(named.fee) + 1n).toString());
   });
+  it('does not invent a named manager request from an unpicked suitable candidate', () => {
+    const { w } = fixture();
+    w.mediations = [];
+    delete w.shortlist!.requests[0].pick;
+    detectMediations(w);
+    const record = w.mediations![0];
+    expect(record.managerReason).toContain('현재 적합 후보');
+    rich(w);
+    resolveMediation(w, record.id, 'manager', 'owner');
+    expect(w.promises).toHaveLength(1);
+    expect(w.bids).toEqual([]);
+  });
   it('retains weekly exclusivity, squad caps and financial limits instead of spending twice', () => {
     const { w, id } = fixture();
     rich(w);

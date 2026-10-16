@@ -1,3 +1,4 @@
+import { packCareers, unpackCareers, type PackedCareers } from './careerPacking';
 import { prepareSeason } from '../../../../packages/engine/src/season';
 import { packBitColumns, readBitColumns, type BitColumns } from './bitpacking';
 import { PLAYER_DETAIL_SIZE, TEAM_DETAIL_SIZE } from '../../../../packages/contracts/src/detail';
@@ -104,6 +105,7 @@ function readDeltaColumns(source: ReturnType<typeof reader>, width: number) {
 type Tuple = (number | number[] | number[][])[];
 interface Packed {
   format: 'compact1';
+  careers?: PackedCareers;
   world: World;
   dict: string[];
   fixtures: Tuple[];
@@ -285,10 +287,13 @@ export function pack(w: World): Packed {
   const bracketRounds = w.history.map((h) => (h.brackets || []).flatMap((b) => b.rounds));
   const bracketRows = bracketRounds.flat().flatMap((round) => round.ties);
   if (bracketRows.some((row) => row.length !== 7)) throw new Error('대진 기록 압축 차원 손상');
+  const careers = w.people === undefined ? undefined : packCareers(w.people, id);
   return {
+    ...(careers ? { careers } : {}),
     format: 'compact1',
     world: {
       ...w,
+      ...(careers ? { people: undefined } : {}),
       fixtures: [],
       ownMatches: [],
       events: [],
@@ -476,6 +481,9 @@ export function unpack(p: Packed): World {
     if (typeof p.dict[n] !== 'string') throw new Error('사전 참조 손상');
     return p.dict[n];
   };
+  if (p.careers !== undefined && p.world.people !== undefined)
+    throw new Error('중복 인물 압축 원본');
+  const people = p.careers === undefined ? undefined : unpackCareers(p.careers, str);
   const f = (t: Tuple): Fixture => {
     const score = t[8] as number[];
     return {
@@ -774,6 +782,7 @@ export function unpack(p: Packed): World {
   }
   return {
     ...p.world,
+    ...(people === undefined ? {} : { people }),
     fixtures: copy.fixtures,
     ownMatches: matches,
     history,

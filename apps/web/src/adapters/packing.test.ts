@@ -229,3 +229,42 @@ describe('lossless career stream compaction', () => {
     expect(() => unpack(overflow)).toThrow('차분 범위');
   });
 });
+
+it('feature-state-lossless-roundtrip uses one strict career row source with exact optional facts', async () => {
+  const { featureState } = await import('../../../../tests/fixtures/feature-state');
+  const w = featureState(),
+    packed = pack(w);
+  expect(packed.careers!.version).toBe(1);
+  expect(packed.world.people).toBeUndefined();
+  expect(packed.careers!.people).toHaveLength(Object.keys(w.people!).length);
+  expect(canonical(validateWorld(unpack(JSON.parse(canonical(packed)))))).toBe(canonical(w));
+  for (const mutate of [
+    (p: typeof packed) => {
+      p.careers!.people[0].pop();
+    },
+    (p: typeof packed) => {
+      p.careers!.people.push(p.careers!.people[0]);
+    },
+    (p: typeof packed) => {
+      p.careers!.people[0][0] = 999999;
+    },
+    (p: typeof packed) => {
+      p.careers!.people[0][5] = 6;
+    },
+    (p: typeof packed) => {
+      p.careers!.people[0][14][0][4] = 1950;
+      p.careers!.people[0][14][0][5] = null;
+    },
+    (p: typeof packed) => {
+      p.world.people = w.people;
+    },
+  ]) {
+    const broken = structuredClone(packed);
+    mutate(broken);
+    expect(() => unpack(broken)).toThrow();
+  }
+  expect(() => unpack({ ...packed, careers: null } as unknown as typeof packed)).toThrow();
+  expect(() =>
+    unpack({ ...packed, careers: { ...packed.careers, version: 2 } } as unknown as typeof packed),
+  ).toThrow();
+});
