@@ -87,7 +87,7 @@
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 13 | 13 | - | 0 |
-| SAVE | 43 | 43 | - | 0 |
+| SAVE | 44 | 44 | - | 0 |
 | PLAYER | 8 | 8 | - | 0 |
 
 ## tasks
@@ -108,6 +108,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 SAVE r44/create-task: T199 v3 profiles use sparse scalar columns and bounded presence runs to cover century-active23; T178/T179 final source gates remain required.
 - 261017 create-task refresh T199/T178/T179 for SAVE r43 exact permutation contract; T178 released pending T199 and full fixed-source rerun.
 - 261017 SAVE r43: grouped career representation must restore exact original registry order; T199/T178/T179 affected, no gameplay or capacity change.
 - 261017 implement-task T199 start n7r4.
@@ -127,4 +128,3 @@
 - 261017 create-task T196: repeated CI Firefox reader stays at round 0; diagnose notification/load coalescing before final-source gates.
 - 261017 implement-task T195 start n7r4.
 - 261017 create-task T195: bounded adaptive codec before T178 source freeze; BMP alphabet count corrected to exclude all noncharacters.
-- 261017 SAVE r42/ARCH r10: adaptive bounded codec for retained century state; no gameplay or security-policy changes.

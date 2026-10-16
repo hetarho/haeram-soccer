@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r43 | Define the browser-demo rules for browser persistence and protocol.
+> r44 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -28,7 +28,7 @@
 
 - SAVE-13 [o] Lossless compact encoding must retain the complete canonical career and support existing compact checkpoints. The baseline and active-management 100-season profiles, including a settled active round after the century, must remain within →SAVE-4 without pruning records or raising budgets. Invalid compact metadata fails before activation.
 
-  - Career representation version 3 may group people for compression only with a validated complete permutation restoring the exact original registry order before activation; version 1/2 readers and all literal/reference semantics remain supported. Invalid or future representation metadata cannot activate.
+  - Career representation version 3 may group people for compression only with a validated complete permutation restoring the exact original registry order before activation; version 1/2 readers and all literal/reference semantics remain supported. Version-three optional career profiles use bounded sparse scalar columns and exact presence runs; every stored scalar and nested career array survives, while invalid dimensions, presence runs or future metadata cannot activate.
 
 - SAVE-14 [o] Three game slots (→WEB-62) are listed in a slot index (localStorage haeram-soccor:games): per slot its game ID, world ID, display summary and last-played time, plus the active slot. The game in play keeps the active two-slot checkpoint (→SAVE-3); every other occupied slot keeps its latest validated checkpoint envelope, unchanged, in IndexedDB (database haeram-soccor, store games, keyed by game ID). ← only the game in play needs the synchronous two-slot store; parked games are export envelopes the browser keeps
   - switching parks the game in play first: its committed checkpoint is written to IndexedDB and read back equal before the next game is activated through the import path (→SAVE-5, →SAVE-10), so a failed switch leaves the game in play untouched.
@@ -61,6 +61,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r44 261017 SAVE-13✎ v3 profile rows→bounded sparse scalar columns/presence runs; exact facts, original registry order and v1/v2 readers unchanged
 - r43 261017 SAVE-13✎ career v2 rows→v3 grouped rows with exact registry-order restoration; v1/v2 readers, facts and budgets unchanged
 - r42 261017 SAVE-2✎ gzip-cjk14 writer→adaptive gzip-cjk14/brotli-bmp127; existing readers, checksum, facts and limits unchanged
 - r41 261017 SAVE-10/18✎ active rules 2.0.0→3.0.0; only current-rule loads, approved bounded legacy reset on writer activation
