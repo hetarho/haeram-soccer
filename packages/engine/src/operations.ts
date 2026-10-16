@@ -1,3 +1,4 @@
+import { encourageCoaching } from './coaching-entry';
 import type { World, Command } from '../../contracts/src/types';
 import { readInbox } from './inbox';
 import { commercialCommand } from './ops-commercial';
@@ -24,6 +25,9 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       break;
     case 'settings':
       applySettings(w, cmd.settings);
+      break;
+    case 'encourage-coaching':
+      encourageCoaching(w, cmd.player);
       break;
     case 'read-inbox':
       readInbox(w, cmd.id);

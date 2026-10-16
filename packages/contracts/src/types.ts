@@ -1023,6 +1023,7 @@ export type Command =
   | { type: 'bid'; candidate: number; fee: string; loan?: boolean }
   | { type: 'respond-bid'; id: string; accept: boolean }
   | { type: 'read-inbox'; id?: string }
+  | { type: 'encourage-coaching'; player: string }
   /**
    * Hires a manager from the market (→STAFF-17), by id: a free agent or another club's manager.
    * `term`: the seasons the owner chooses (→STAFF-14); absent keeps the earlier rule.

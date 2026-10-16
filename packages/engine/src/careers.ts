@@ -1,3 +1,4 @@
+import { decideCoachingIntention } from './coaching-entry';
 import { careerDate, closeEmployment, retainPerson } from './person-careers';
 import { invalidateNpcSquads } from './world';
 import type { MatchRecord, PersonCareer, Player, Position, World } from '../../contracts/src/types';
@@ -54,6 +55,7 @@ export function retirementChance(w: World, p: Player, starters?: Set<string>) {
 }
 export function recordRetirementAnnouncement(w: World, person: PersonCareer, year = w.year) {
   if (!person.retirement) person.retirement = { announced: careerDate(w), year };
+  decideCoachingIntention(w, person);
 }
 export function retirePerson(w: World, person: PersonCareer) {
   if (person.playing === 'retired') return;
