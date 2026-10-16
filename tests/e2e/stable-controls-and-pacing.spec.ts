@@ -1,3 +1,4 @@
+import { delegateSales } from './events';
 import { expect, test } from '@playwright/test';
 import { chooseLevel } from './events';
 test.use({ viewport: { width: 390, height: 844 } });
@@ -7,6 +8,8 @@ test('keeps both home controls stable over real automatic ticks and keeps runnin
 }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await delegateSales(page);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   // Keep daily progress uninterrupted: level 4 stops for no match eve or offer.
   await chooseLevel(page, 4);
@@ -65,6 +68,8 @@ test('defaults to one minute per four seconds and provides five replay speeds', 
 }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await delegateSales(page);
   await page.getByTestId('hub-play').click();
   const speeds = page.getByRole('radiogroup', { name: '관전 속도', exact: true });
   await expect(speeds.getByRole('radio', { name: '1×', exact: true })).toHaveAttribute(

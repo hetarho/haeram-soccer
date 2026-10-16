@@ -15,7 +15,7 @@ import {
 import { encode } from '../../apps/web/src/adapters/persistence';
 import type { TrainingFocus, World } from '../../packages/contracts/src/types';
 import { expectHomeBounds } from './layout';
-import { acknowledgeEvents } from './events';
+import { acknowledgeEvents, setResponsibility } from './events';
 import { continueSlot } from './slots';
 
 /** The focuses as 훈련 names them. */
@@ -103,6 +103,7 @@ for (const { seed: worldSeed, ...viewport } of [
     await page.getByRole('button', { name: '클럽 창단' }).click();
     const hub = page.getByTestId('club-hub');
     await expect(hub).toBeVisible();
+    await setResponsibility(page, '스태프 인사', 'direct');
     await expectHomeBounds(page);
     const before = await exportWorld(page);
     // The coaches set training: a new club carries no order of the owner's (→CLUB-13).
@@ -317,7 +318,7 @@ test('promotes a prospect from 유소년', async ({ page }) => {
   // Who decides and the director's rule live here (→STAFF-13); level 2 hands him the academy.
   const delegation = page.getByRole('region', { name: '유소년 위임' });
   await expect(delegation.getByRole('checkbox')).toHaveCount(0);
-  await expect(delegation.getByTestId('decision-owner-academy')).toContainText('자동 결정');
+  await expect(delegation.getByTestId('decision-owner-academy')).toContainText('위임');
   // The director follows 육성 목표 and 데뷔 시점, named as lines to the 방향 board (→CLUB-32).
   await expect(delegation).toContainText(
     '19세에 잠재력이 같은 포지션 1군 최하위에 못 미치는 아이를 내보내요',

@@ -1,3 +1,4 @@
+import { delegateSales } from './events';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode } from '../../apps/web/src/adapters/persistence';
@@ -37,6 +38,7 @@ for (const viewport of [
     await page.getByRole('button', { name: '클럽 창단' }).click();
     const hub = page.getByTestId('club-hub');
     await expect(hub).toBeVisible();
+    await delegateSales(page);
     await expectCompactHome(page);
     // The launcher overlays home without reserving a bottom row; the primary action stays usable.
     const watch = hub.getByTestId('hub-play');

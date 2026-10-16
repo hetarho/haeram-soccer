@@ -82,7 +82,10 @@ for (const viewport of [
       progress.getByRole('button', { name: '자동 진행 시작', exact: true }),
       viewport,
     );
-    await expectTouchControl(progress.getByRole('button', { name: /^개입 수준/ }), viewport);
+    await expectTouchControl(
+      progress.getByRole('button', { name: '위임·진행 설정', exact: true }),
+      viewport,
+    );
     await paces[1].click();
     await expect(paces[1]).toHaveAttribute('aria-pressed', 'true');
     await expect(paces[0]).toHaveAttribute('aria-pressed', 'false');

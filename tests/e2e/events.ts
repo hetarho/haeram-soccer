@@ -1,27 +1,41 @@
 import { expect, type Page } from '@playwright/test';
 
-const LEVEL_NAMES = ['모든 결정 확인', '중요한 결정만', '이적만 직접', '운영진에 모두 맡기기'];
-
-/**
- * Picks the intervention level from the clock's popover (→WEB-45) once the game is shown. Level 4
- * stops only for money, so a test that is not about events is not interrupted by, e.g., another
- * club's offer arriving in the open window; new clubs start at level 2, which also stops on match
- * eves and offers.
- */
+/** Compatibility presets for older journeys, expressed only through the shared public dialog.
+ * New responsibility tests select each category independently. */
 export async function chooseLevel(page: Page, level: 1 | 2 | 3 | 4) {
-  const trigger = page.getByTestId('intervention-trigger');
-  await trigger.click();
-  await page
-    .getByTestId('intervention-popover')
-    .getByRole('radio', { name: new RegExp(`^${level}\\. `) })
-    .click();
-  await expect(trigger).toHaveAccessibleName(`개입 수준 · ${LEVEL_NAMES[level - 1]}`);
-  // The level is saved with the game: its outcome card says the worker applied it, and closing
-  // it keeps the card from covering the controls a test uses next.
-  const outcome = page.getByTestId('action-outcome');
-  await expect(outcome).toContainText('개입 수준을 바꿨어요');
-  await outcome.getByRole('button', { name: '확인', exact: true }).click();
-  await expect(outcome).toHaveCount(0);
+  await page.getByTestId('intervention-trigger').click();
+  const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
+  const labels = [
+    '감독 인사',
+    '스태프 인사',
+    '선수 계약',
+    '선수 영입',
+    '선수 매각',
+    '유소년 승격·방출',
+    '스폰서 계약',
+  ];
+  for (let i = 0; i < labels.length; i++) {
+    const delegated =
+      level === 4 || (level >= 3 && i !== 3 && i !== 4) || (level === 2 && (i === 2 || i === 5));
+    await dialog
+      .getByRole('combobox', { name: labels[i], exact: true })
+      .selectOption(delegated ? 'delegated' : 'direct');
+  }
+  await dialog.getByRole('combobox', { name: '진행 모드', exact: true }).selectOption('automatic');
+  await dialog
+    .getByRole('checkbox', { name: '경기 전날 이벤트', exact: true })
+    .setChecked(level <= 2);
+  await dialog
+    .getByRole('checkbox', { name: '이적시장 개장 이벤트', exact: true })
+    .setChecked(level <= 3);
+  const apply = dialog.getByRole('button', { name: '적용', exact: true });
+  if (await apply.isEnabled()) {
+    await apply.click();
+    const outcome = page.getByTestId('action-outcome');
+    await expect(outcome).toBeVisible();
+    await outcome.getByRole('button', { name: '확인', exact: true }).click();
+  } else await dialog.getByRole('button', { name: '닫기', exact: true }).click();
+  await expect(dialog).toHaveCount(0);
 }
 
 /** The card shown when the clock stops for a match eve or an attention event. */
@@ -39,7 +53,8 @@ export async function acknowledgeEvents(page: Page) {
     card.evaluateAll((cards) => (cards[0] as HTMLElement | undefined)?.innerText ?? '');
   for (let i = 0; i < 20; i++) {
     const current = await title();
-    if (!current) return;
+    // An observation is not a dismissible report; the caller can prepare or watch the match.
+    if (!current || current.includes('내일 경기')) return;
     const read = card.getByRole('button', { name: '확인', exact: true });
     await (
       (await read.count()) ? read : card.getByRole('button', { name: '거절', exact: true })
@@ -47,4 +62,22 @@ export async function acknowledgeEvents(page: Page) {
     await expect.poll(title, { timeout: 10000 }).not.toBe(current);
   }
   throw new Error('Too many pending events to acknowledge');
+}
+
+/** Keep unrelated match/navigation journeys from stopping on random incoming offers. */
+export async function setResponsibility(page: Page, label: string, value: 'direct' | 'delegated') {
+  await page.getByTestId('intervention-trigger').click();
+  const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
+  await dialog.getByRole('combobox', { name: label, exact: true }).selectOption(value);
+  const apply = dialog.getByRole('button', { name: '적용', exact: true });
+  if (await apply.isEnabled()) {
+    await apply.click();
+    const outcome = page.getByTestId('action-outcome');
+    await expect(outcome).toBeVisible();
+    await outcome.getByRole('button', { name: '확인', exact: true }).click();
+  } else await dialog.getByRole('button', { name: '닫기', exact: true }).click();
+}
+
+export async function delegateSales(page: Page) {
+  await setResponsibility(page, '선수 매각', 'delegated');
 }

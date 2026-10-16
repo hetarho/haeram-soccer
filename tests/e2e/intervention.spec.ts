@@ -1,5 +1,5 @@
 import { chooseOption, selectOptions } from './select';
-import { chooseLevel } from './events';
+import { chooseLevel, delegateSales } from './events';
 import { test, expect } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
 
@@ -12,6 +12,8 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   await page.getByLabel('세계 생성 시드').fill('lineup-ui-regression');
   await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await delegateSales(page);
   // Before the first match the preparation sheet opens from home's next-match card.
   const hub = page.getByTestId('club-hub');
   const prepare = hub.getByRole('button', { name: '전술·선발 준비', exact: true });
@@ -94,6 +96,8 @@ for (const viewport of [
     await page.goto('/');
     await page.getByRole('button', { name: '클럽 창단' }).click();
     await expect(page.getByTestId('club-hub')).toBeVisible();
+    await delegateSales(page);
+    await expect(page.getByTestId('club-hub')).toBeVisible();
     // Level 4 stops only for money, so an incoming offer cannot interrupt the clock here.
     await chooseLevel(page, 4);
     const nav = page.getByRole('navigation', {
@@ -158,6 +162,8 @@ test('prepares a subsequent match from the theatre while keeping the recorded sc
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await delegateSales(page);
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '일시정지', exact: true }).click();

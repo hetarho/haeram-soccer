@@ -1,3 +1,4 @@
+import { delegateSales } from './events';
 import { expect, test, type Page } from '@playwright/test';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import {
@@ -95,12 +96,15 @@ for (const viewport of [
       level: 'easy' as const,
     };
     const reference = createWorld(founding);
+    reference.settings!.responsibilities.sales = 'delegated';
     const first = advanceToNextMatch(reference)!;
     await page.setViewportSize(viewport);
     await page.goto('/');
     await page.getByText('고급 설정', { exact: true }).click();
     await page.getByLabel('세계 생성 시드').fill(founding.seed);
     await page.getByRole('button', { name: '클럽 창단' }).click();
+    await expect(page.getByTestId('club-hub')).toBeVisible();
+    await delegateSales(page);
     const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
     // The match has no tab and its address alone leads home: only a watch action opens it.
     await expect(nav.getByRole('button', { name: '경기', exact: true })).toHaveCount(0);

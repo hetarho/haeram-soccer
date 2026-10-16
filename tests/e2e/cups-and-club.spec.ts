@@ -1,6 +1,6 @@
 import { finishSeason } from './season-progression';
 import { test, expect } from '@playwright/test';
-import { chooseLevel } from './events';
+import { chooseLevel, setResponsibility } from './events';
 import { horizontalOverflow } from './layout';
 
 async function found(page: import('@playwright/test').Page, seed: string) {
@@ -44,6 +44,8 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     page,
   }) => {
     await found(page, 'listing-journey');
+    await chooseLevel(page, 2);
+    await setResponsibility(page, '스폰서 계약', 'delegated');
     await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
     const open = page.getByRole('button', { name: /이적 상태 · 협상 가능 · 바꾸기$/ });
     await expect(open.first()).toBeVisible();
@@ -85,8 +87,8 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(page.getByTestId('coaching-mode')).toContainText('직접');
     const staff = page.getByRole('region', { name: '스태프', exact: true });
     await expect(staff.getByRole('checkbox')).toHaveCount(0);
-    await expect(page.getByTestId('decision-owner-coach:assistant')).toContainText(
-      '아래 방향은 개입 수준이 이 결정을 스태프에게 맡길 때만 쓰여요',
+    await expect(page.getByTestId('decision-owner-staff')).toContainText(
+      '아래 방침은 이 업무를 위임할 때 사용해요.',
     );
     await expect(page.getByTestId('coach-pick-attack')).toContainText('코치 기조로 뽑는다면');
     // The 코치 기조 line opens its area on the 방향 board, where it is chosen like any row.
@@ -109,7 +111,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     // Level 3 hands every department to the staff at once.
     await chooseLevel(page, 3);
     await expect(page.getByTestId('coaching-mode')).toContainText('자동');
-    await expect(page.getByTestId('decision-owner-coach:assistant')).toContainText('자동 결정');
+    await expect(page.getByTestId('decision-owner-staff')).toContainText('위임');
     expect(await horizontalOverflow(page)).toBe(0);
   });
 

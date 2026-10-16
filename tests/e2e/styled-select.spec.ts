@@ -1,3 +1,4 @@
+import { delegateSales } from './events';
 import { expect, test } from '@playwright/test';
 import { chooseOption, optionList } from './select';
 import { horizontalOverflow, settle } from './layout';
@@ -44,6 +45,8 @@ for (const viewport of [
     await page.setViewportSize(viewport);
     await page.goto('/');
     await page.getByRole('button', { name: '클럽 창단' }).click();
+    await expect(page.getByTestId('club-hub')).toBeVisible();
+    await delegateSales(page);
     await page.getByTestId('club-hub').getByRole('button', { name: '전술·선발 준비' }).click();
     const sheet = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
     const tone = sheet.getByRole('combobox', { name: '전술 요청 방식', exact: true });

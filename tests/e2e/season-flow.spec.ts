@@ -20,15 +20,25 @@ test('advances real days at each speed, stops and restores the saved calendar', 
   // exactly one real day.
   await pace('1초에 하루').click();
   await play();
-  await expect(date).toHaveText('1950년 8월 2일');
+  await expect(date).not.toHaveText('1950년 8월 1일');
   await page.getByRole('button', { name: '자동 진행 정지' }).click();
-  await expect(date).toHaveText('1950년 8월 2일');
+  // A slow browser may paint after more than one tick. Exact tick counts are covered by
+  // the controller's fake-clock tests; capture the settled date for this real-browser run.
+  let firstStopped = await date.innerText();
+  await expect
+    .poll(async () => {
+      const before = firstStopped;
+      await page.waitForTimeout(400);
+      firstStopped = await date.innerText();
+      return firstStopped === before;
+    })
+    .toBe(true);
   await expect(page.getByTestId('calendar')).toContainText('라운드 0');
   await pace('0.5초에 하루').click();
   await expect(pace('0.5초에 하루')).toHaveAttribute('aria-pressed', 'true');
   await play();
   // A late step carries the day it owes with it (→WEB-18), so a slow runner may skip 8월 3일.
-  await expect(date).not.toHaveText('1950년 8월 2일');
+  await expect(date).not.toHaveText(firstStopped);
   await page.getByRole('button', { name: '자동 진행 정지' }).click();
   // A day step already in flight when the owner stops still lands; read the date once it rests.
   let stopped = await date.innerText();

@@ -1,3 +1,4 @@
+import { delegateSales } from './events';
 import { expect, test } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
 test('serves a real static application entry', async ({ page }) => {
@@ -33,6 +34,8 @@ test('observes event-backed metrics, historical locks and responsive navigation'
 }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await delegateSales(page);
   await page.getByRole('button', { name: '다음 경기 관전' }).click();
   await expect(
     page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
@@ -95,7 +98,11 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   const peopleTabs = page.getByRole('tablist', { name: '선수단·스태프 보기' }).getByRole('tab');
   await expect(peopleTabs).toHaveText(['선수', '이적시장', '감독', '스태프']);
   await expect(peopleTabs.first()).toHaveAttribute('aria-selected', 'true');
-  await expect(page.getByText('선수단 18/26', { exact: true })).toBeVisible();
+  // A delegated premium sale can change the squad before kickoff; the heading must match
+  // the actual cards rather than the founding count.
+  const rosterCount = await page.locator('[class*="rosterCards"] article').count();
+  expect(rosterCount).toBeGreaterThanOrEqual(14);
+  await expect(page.getByText(`선수단 ${rosterCount}/26`, { exact: true })).toBeVisible();
   await expect(page).toHaveURL(/\/people$/);
   await mobileMenu.getByRole('button', { name: '훈련·육성', exact: true }).click();
   await expect(page.getByRole('heading', { name: '훈련·육성', level: 2 })).toBeVisible();

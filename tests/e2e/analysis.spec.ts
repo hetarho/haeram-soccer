@@ -1,3 +1,4 @@
+import { delegateSales } from './events';
 import { finishSeason } from './season-progression';
 import { openCurrentClubSeason, openSeasonReview } from './record-navigation';
 import { chooseOption, selectOptions } from './select';
@@ -12,6 +13,8 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
 }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await delegateSales(page);
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
@@ -53,6 +56,8 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('record-book-cycle');
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await delegateSales(page);
   await page
     .getByTestId('club-hub')
     .getByRole('button', { name: '시즌 진행 도구', exact: true })
@@ -161,6 +166,8 @@ test('uses matching archive samples for season splits and competition filters', 
 }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await delegateSales(page);
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
@@ -183,6 +190,8 @@ test('filters the own-club fixture notebook and reads a settled full-season reco
 }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await delegateSales(page);
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await page
@@ -227,6 +236,8 @@ test('compares distinct own players with a shared scope and returns focus withou
 }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await delegateSales(page);
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   await page.getByRole('button', { name: '선수단·스태프', exact: true }).first().click();
   const opener = page.getByRole('button', { name: '우리 선수 비교', exact: true });
@@ -260,6 +271,8 @@ test('filters player samples and shows scoped per-90 evidence on a mobile profil
 }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await delegateSales(page);
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
@@ -317,6 +330,8 @@ test('jumps between recorded periods without changing the final result or calend
 }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await delegateSales(page);
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   const date = await page.getByTestId('game-date').innerText();
@@ -337,6 +352,8 @@ test('jumps between recorded periods without changing the final result or calend
 test('reveals the recorded match report only after choosing the final result', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await delegateSales(page);
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '일시정지', exact: true }).click();
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
@@ -355,6 +372,8 @@ test('compares tactical rules as previews while the applied tactic and date stay
 }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await delegateSales(page);
   await expect(page.getByTestId('club-hub')).toBeVisible();
   const appliedText = await page.getByTestId('hub-preparation').innerText();
   await page.getByRole('button', { name: '전술·선발 준비', exact: true }).click();
@@ -375,6 +394,8 @@ test('compares tactical rules as previews while the applied tactic and date stay
 test('opens evidence-based opponent scouting without progressing the world', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await delegateSales(page);
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await page.getByRole('button', { name: '전술·선발 준비', exact: true }).click();
   const sheet = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });

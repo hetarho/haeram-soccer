@@ -1,6 +1,13 @@
-import { finishSeason } from './season-progression';
+import {
+  createWorld,
+  managerOffers,
+  operate,
+  simulateSeason,
+} from '../../packages/engine/src/index';
+import { legacySettings } from '../../packages/engine/src/responsibilities';
+import { importResponsibilityCareer } from './responsibility-fixtures';
 import { test, expect, type Locator, type Page } from '@playwright/test';
-import { chooseLevel } from './events';
+import { chooseLevel, setResponsibility } from './events';
 import { horizontalOverflow } from './layout';
 import { chooseOption } from './select';
 
@@ -74,6 +81,8 @@ test.describe('사람 at 360x740', () => {
     page,
   }) => {
     await found(page);
+    await chooseLevel(page, 2);
+    await setResponsibility(page, '스폰서 계약', 'delegated');
     await page
       .getByRole('navigation', { name: '모바일 게임 메뉴' })
       .getByRole('button', { name: '선수단·스태프', exact: true })
@@ -128,7 +137,7 @@ test.describe('사람 at 360x740', () => {
     await expect(post.getByRole('checkbox')).toHaveCount(0);
     await expect(post.getByTestId('decision-owner-manager')).toContainText('직접 결정');
     await expect(post.getByTestId('decision-owner-manager')).toContainText(
-      '아래 방향은 개입 수준이 이 결정을 스태프에게 맡길 때만 쓰여요',
+      '아래 방침은 이 업무를 위임할 때 사용해요.',
     );
     await expect(post.getByRole('button', { name: /^선호 학파 · 상관없음/ })).toBeVisible();
     const pick = post.getByTestId('manager-pick');
@@ -176,18 +185,21 @@ test('an unrenewed firefighter leaves at the close and the alert opens the marke
 }) => {
   // Plays a whole season; slow CI browsers need longer.
   test.slow();
-  await found(page);
-  await openPeople(page);
-  await hireFirefighter(page);
-  await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
-  await page
-    .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 진행 도구', exact: true })
-    .click();
-  await finishSeason(page);
+  // Build an actual closed-season direct-manager career. Its unanswered renewal is a real
+  // decision; archive-only helpers must not delegate it or acknowledge it away.
+  const w = createWorld({
+    country: 'ENG',
+    name: 'Haeram Athletic',
+    color: '#bf7956',
+    seed: 'short-contract',
+    level: 'easy',
+  });
+  w.settings = legacySettings(2);
+  const offer = managerOffers(w).find((offer) => offer.style === 'firefighter')!;
+  operate(w, { type: 'hire', id: offer.id });
+  simulateSeason(w);
+  await importResponsibilityCareer(page, w);
   await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
-  await page.keyboard.press('Escape');
-  await expect(page.getByRole('dialog', { name: '시즌 진행 도구' })).toHaveCount(0);
   const alert = page.getByRole('status').filter({ hasText: '감독이 떠났어요' });
   await expect(alert).toContainText('임시 감독이 팀을 맡고 있어요');
   await alert.getByRole('button', { name: '감독 선임하러 가기', exact: true }).click();
@@ -213,7 +225,7 @@ test('with the manager post delegated a resignation is filled at once and the cl
   await chooseLevel(page, 4);
   await openPeople(page);
   await tab(page, '감독').click();
-  await expect(page.getByTestId('decision-owner-manager')).toContainText('자동 결정');
+  await expect(page.getByTestId('decision-owner-manager')).toContainText('위임');
   const founding = page.getByRole('heading', { name: 'William Hawkins', exact: true });
   await expect(founding).toBeVisible();
   for (const tactic of ['counter', 'press']) {
@@ -238,7 +250,9 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   // window stop it on the way.
   test.slow();
   await found(page);
-  await chooseLevel(page, 2);
+  await chooseLevel(page, 4);
+  await setResponsibility(page, '감독 인사', 'direct');
+  await setResponsibility(page, '선수 영입', 'direct');
   await openPeople(page);
   await hireFirefighter(page);
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
@@ -247,7 +261,7 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   const play = progress.getByRole('button', { name: '자동 진행 시작', exact: true }),
     pause = progress.getByRole('button', { name: '자동 진행 정지', exact: true });
   const card = page.getByTestId('event-card');
-  const renewal = '감독 계약이 이번 시즌 끝에 끝나요';
+  const renewal = '감독 재계약';
   // Read without auto-waiting: a card may leave between a count and a text query.
   const cardText = () =>
     card.evaluateAll((cards) => (cards[0] as HTMLElement | undefined)?.innerText ?? '');
@@ -280,9 +294,7 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   await expect(card).toContainText(renewal);
   await expect(page.getByTestId('game-date')).toHaveText('1951년 4월 1일');
   await expect(card).toContainText('스태프 재계약');
-  await expect(card).toContainText(
-    '재계약하지 않으면 시즌이 끝날 때 떠나고 임시 감독이 팀을 맡아요',
-  );
+  await expect(card.getByRole('button', { name: '감독 재계약', exact: true })).toBeEnabled();
   await card.getByRole('button', { name: '감독 재계약', exact: true }).click();
   await expect(card).toHaveCount(0);
   await openPeople(page);
@@ -303,7 +315,7 @@ test('스태프 leads with the 단장 and 이적시장 ends with the scout short
   await expect(cards.first()).toContainText('단장');
   await expect(cards.first()).toContainText('이적·계약 협상과 감독 선임');
   await expect(page.getByTestId('director-decides')).toHaveText(
-    '재계약 협상 맡김 · 감독 선임 직접 · 이적 직접',
+    '재계약 협상 직접 · 감독 선임 직접 · 선수 영입 직접 · 선수 매각 직접',
   );
   expect(await horizontalOverflow(page)).toBe(0);
   // 이적시장 ends with the chief scout's shortlist and the manager's requests (→CLUB-33).

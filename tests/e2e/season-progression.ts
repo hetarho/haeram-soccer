@@ -1,9 +1,19 @@
+import { chooseLevel } from './events';
 import { expect, test, type Page } from '@playwright/test';
 
 /** Finish via the public round control, then let the clock settle the final season-close day. */
 export async function finishSeason(page: Page) {
-  test.setTimeout(Math.max(test.info().timeout, 180000));
+  // A journey can close multiple seasons; reserve another season budget on each call.
+  test.setTimeout(Math.max(test.info().timeout, 180000) + 90000);
   const tools = page.getByRole('dialog', { name: '시즌 진행 도구', exact: true });
+  // Archive journeys delegate real business before time moves. Reading notices cannot dismiss
+  // an unanswered renewal or an interim appointment at the season boundary.
+  await tools.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await chooseLevel(page, 4);
+  await page
+    .getByTestId('club-hub')
+    .getByRole('button', { name: '시즌 진행 도구', exact: true })
+    .click();
   const calendar = page.getByTestId('calendar');
   const text = (await calendar.textContent())!;
   const year = Number(/(\d{4})\//.exec(text)![1]);

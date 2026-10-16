@@ -1,3 +1,4 @@
+import { delegateSales } from './events';
 import { chooseOption, selectOptions } from './select';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -284,6 +285,7 @@ test('starts with generous capital and shows a fact-aware guide without changing
   await close.click();
   const afterGuide = await exportWorld(page);
   expect(afterGuide).toEqual(before);
+  await delegateSales(page);
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await page

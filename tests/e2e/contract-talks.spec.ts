@@ -26,8 +26,20 @@ async function talking() {
     seed: 'contract-talks-journey',
     level: 'easy' as const,
   });
-  // The owner answers contract talks himself only at intervention level 1 (→WEB-45).
-  operate(w, { type: 'intervention', level: 1 });
+  // Isolate contract decisions; ordinary unhappiness and transfer-request reports do not stop time.
+  operate(w, {
+    type: 'settings',
+    settings: {
+      ...w.settings!,
+      responsibilities: {
+        ...w.settings!.responsibilities,
+        contracts: 'direct',
+        sales: 'delegated',
+        recruitment: 'delegated',
+      },
+      observations: { matchEve: false, windowOpen: false },
+    },
+  });
   const newYear = seasonDayOf(w.year, 1, 1);
   advanceDays(w, newYear - 1 - currentDay(w), undefined, false);
   // The journey finds his roster card by name, so it must be the only one with that name.
@@ -80,7 +92,7 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   await page.goto('/');
   await continueSlot(page);
   const card = eventCard(page);
-  await expect(card).toContainText(`${name}, 재계약 협상 요청`);
+  await expect(card).toContainText(`${name} 선수 계약에 답변해 주세요`);
   await card.getByRole('button', { name: '협상하기', exact: true }).click();
 
   // The sheet states the demand, the floor, the term, the cost, the runway and the risk.
@@ -113,8 +125,6 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   await expect(roster).toContainText('시장');
 
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
-  await expect(card).toContainText(`${name} 언해피 · 재계약 거절`);
-  await card.getByRole('button', { name: '확인', exact: true }).click();
   await expect(card).toHaveCount(0);
 
   // Six weeks later he hands in a transfer request.
@@ -129,8 +139,11 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   }
   await page.keyboard.press('Escape');
   await expect(journal).toHaveCount(0);
-  await expect(card).toContainText(`${name}, 이적 요청서 제출`);
-  await card.getByRole('button', { name: '확인', exact: true }).click();
+  await expect(card).toHaveCount(0);
+  await page.getByTestId('communications-button').click();
+  const news = page.getByRole('dialog', { name: '알림·뉴스', exact: true });
+  await expect(news).toContainText(`${name}, 이적 요청서 제출`);
+  await news.getByRole('button', { name: '닫기', exact: true }).click();
 
   // 사람 opens on 선수, the roster.
   await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
@@ -154,7 +167,7 @@ test('the talk rule shows under 선수 and applies', async ({ page, browserName 
   // New clubs leave contract talks to the staff (→STAFF-13), by 재계약 기조 and 재정 기조.
   const talks = page.getByRole('region', { name: '계약 협상 위임' });
   await expect(talks.getByRole('checkbox')).toHaveCount(0);
-  await expect(talks.getByTestId('decision-owner-contracts')).toContainText('자동 결정');
+  await expect(talks.getByTestId('decision-owner-contracts')).toContainText('직접 결정');
   await expect(talks.getByRole('button', { name: /^재정 기조 · 표준/ })).toBeVisible();
   await expect(talks).toContainText('시장가의 110%까지');
   await expect(talks).toContainText('32세부터 1시즌');

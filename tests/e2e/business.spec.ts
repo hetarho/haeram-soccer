@@ -177,7 +177,6 @@ test('pays sponsor installments only for league games after the actual contract'
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await found(page, 'sponsor-installment-ui');
-  await playNext(page);
   const before = await exportWorld(page);
   // A 1950 club in England has only the local slot open (→ECON-8).
   const offer = sponsorOffers(before, 'local').find((candidate) => candidate.kind === 'stable')!;
@@ -226,25 +225,23 @@ test('pays sponsor installments only for league games after the actual contract'
 test("at level 4 the commercial staff sign an empty slot's best offer", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await found(page, 'sponsor-switch-ui');
+  await chooseLevel(page, 2);
   await openBusiness(page, '후원');
   // 후원 ends with who signs sponsors at the current level, never a switch (→ECON-21, WEB-45).
   const delegation = page.getByRole('region', { name: '후원 위임' });
-  const owner = delegation.getByTestId('decision-owner-business');
+  const owner = delegation.getByTestId('decision-owner-sponsors');
   await expect(delegation.getByRole('checkbox')).toHaveCount(0);
   await expect(owner).toContainText('직접 결정');
   await expect(owner).toContainText('후원 계약은 직접 골라요');
   await expect(page.getByTestId('sponsor-local-stable')).toBeVisible();
-  await chooseLevel(page, 4);
-  await expect(owner).toContainText('자동 결정');
-  await expect(owner).toContainText('안정형 제안 중 보장 금액이 가장 큰');
   const delegated = await exportWorld(page);
-  expect(delegated.intervention).toBe(4);
-  expect(delegated.sponsors ?? []).toEqual([]);
   const best = sponsorOffers(delegated, 'local')
     .filter((offer) => offer.kind === 'stable')
     .reduce((top, offer) => (BigInt(offer.annual) > BigInt(top.annual) ? offer : top));
-  // The commercial staff sign it on the next day the game plays.
-  await playNext(page);
+  // Applying sponsor delegation hands over the already pending empty slot immediately.
+  await chooseLevel(page, 4);
+  await expect(owner).toContainText('위임');
+  await expect(owner).toContainText('안정형 제안 중 보장 금액이 가장 큰');
   const signed = await exportWorld(page);
   expect(signed.sponsors).toEqual([
     expect.objectContaining({
@@ -257,7 +254,7 @@ test("at level 4 the commercial staff sign an empty slot's best offer", async ({
   await openBusiness(page, '후원');
   await expect(page.getByTestId('sponsor-contract-local')).toContainText(best.name);
   await expect(page.getByRole('button', { name: '지역 후원 계약', exact: true })).toHaveCount(0);
-  await expect(page.getByTestId('decision-owner-business')).toContainText('자동 결정');
+  await expect(page.getByTestId('decision-owner-sponsors')).toContainText('위임');
 });
 
 test('drafts a 지역 investment row with its spend and builds 지역 기반 over real rounds', async ({

@@ -6,12 +6,12 @@ import { decode } from '../../apps/web/src/adapters/persistence';
 import { recruitmentPreview } from '../../packages/engine/src/recruitment';
 import { transferOffers, operatingCost } from '../../packages/engine/src/operations';
 import { clubOf, startingSquad } from '../../packages/engine/src/world';
-import { daysUntilNextMatch } from '../../packages/engine/src/calendar';
+import { currentDay, daysUntilNextMatch } from '../../packages/engine/src/calendar';
 import { lineupSummary } from '../../packages/engine/src/strategy';
 import { compactMoney, money } from '../../apps/web/src/ui/format';
 import type { World } from '../../packages/contracts/src/types';
 import { horizontalOverflow } from './layout';
-import { chooseLevel } from './events';
+import { chooseLevel, setResponsibility } from './events';
 
 async function exportWorld(page: Page): Promise<World> {
   await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
@@ -257,6 +257,9 @@ test('keeps the clock running while comparing candidates away from home until th
   await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
+  // This journey exercises an uninterrupted clock, independently of browser speed.
+  await chooseLevel(page, 4);
+  await setResponsibility(page, '선수 영입', 'direct');
   const before = await exportWorld(page);
   // The clock runs for a few days below; it must not reach the first match day.
   expect(daysUntilNextMatch(before)).toBeGreaterThan(4);
@@ -289,9 +292,11 @@ test('keeps the clock running while comparing candidates away from home until th
   await page.waitForTimeout(1200);
   await expect(date).toHaveText(stopped);
   const after = await exportWorld(page);
-  expect(after.round).toBe(0);
-  expect(after.ownMatches).toHaveLength(0);
-  expect(after.players.filter((player) => player.status === 'active')).toHaveLength(18);
+  expect(currentDay(after)).toBeGreaterThan(currentDay(before));
+  // Staff may sell while time runs, but comparison never recruits a new player.
+  expect(after.players.every((player) => before.players.some((old) => old.id === player.id))).toBe(
+    true,
+  );
 });
 
 test('the market ends with who answers offers and names the recruitment level, opening the board', async ({
@@ -300,24 +305,26 @@ test('the market ends with who answers offers and names the recruitment level, o
   await foundMarket(page, 'offer-switch-journey');
   // Who answers is the intervention level's alone: no switch of its own (→WEB-45, CLUB-18).
   const offers = page.getByRole('region', { name: '이적 제안 위임' });
-  const owner = offers.getByTestId('decision-owner-transfers');
+  const owner = offers.getByTestId('decision-owner-sales');
   await expect(offers.getByRole('checkbox')).toHaveCount(0);
   await expect(owner).toContainText('직접 결정');
-  await expect(owner).toContainText('개입 2 · 중요한 결정만');
+
   // The sale bar the staff apply shows at every level.
   await expect(offers).toContainText('130%');
   await expect(offers).toContainText('80% 밑으로는 내리지 않아요');
   await chooseLevel(page, 4);
-  await expect(owner).toContainText('자동 결정');
-  await expect(owner).toContainText('개입 4 · 운영진에 모두 맡기기');
-  // The line opens the one place the level is chosen.
-  await owner.getByRole('button', { name: /^전체 구단 개입 설정/ }).click();
-  const dialog = page.getByRole('dialog', { name: '개입 수준', exact: true });
-  await expect(dialog.getByRole('radio', { name: /^4\. 운영진에 모두 맡기기/ })).toHaveAttribute(
-    'aria-checked',
-    'true',
+  await expect(owner).toContainText('위임');
+
+  // The local ownership link opens the shared explicit-apply screen.
+  await owner.getByRole('button', { name: /위임·진행 설정 열기$/ }).click();
+  const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
+  await expect(dialog.getByRole('combobox', { name: '선수 매각', exact: true })).toHaveValue(
+    'delegated',
   );
-  await dialog.getByRole('button', { name: '설정 완료', exact: true }).click();
+  await expect(dialog.getByRole('combobox', { name: '선수 영입', exact: true })).toHaveValue(
+    'delegated',
+  );
+  await dialog.getByRole('button', { name: '닫기', exact: true }).click();
   await expect(dialog).toBeHidden();
   expect(await horizontalOverflow(page)).toBe(0);
   // The recruitment level is a line that opens its home on the 방향 board (→WEB-71).
