@@ -5,7 +5,7 @@
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
 - SAVE-2 [o] Envelope contains schema/engine/catalog/world ID/generation/parentGeneration/codec/checksum/payload; checksum is SHA-256 of uncompressed canonical compact JSON.
   - Write gzip-cjk14 for compressed payloads at most 1,200,000 bytes; otherwise write brotli-bmp127, quality 11/window 24, using a pinned pure-JavaScript worker implementation.
-  - brotli-bmp127 uses fixed 64-character base-63230 blocks per 127 bytes, excluding controls/ASCII/surrogates/noncharacters, with an explicit final-byte-count header (docs/SAVE-FORMAT.md). Payload is opaque verbatim text; padding/range/length checks precede decompression.
+  - brotli-bmp127 uses fixed 64-character base-63198 blocks per 127 bytes, excluding controls/ASCII/surrogates/noncharacters, with an explicit final-byte-count header (docs/SAVE-FORMAT.md). Payload is opaque verbatim text; padding/range/length checks precede decompression.
   - Continue reading gzip-cjk14 and gzip-base64; never rewrite a file while reading. Existing checkpoint, total, import and decompressed limits remain →SAVE-4.
 - SAVE-3 [o] One active world and previous checkpoint use keys haeram-soccor:slot:a/b and haeram-soccor:manifest; manifest switches only after validated candidate write/readback.
 - SAVE-4 [o] Maximum encoded checkpoint is 1.5 MiB conservative UTF-16; total namespaced use <=3.5 MiB. Imports cap file at 4 MiB and decompressed JSON at 16 MiB.

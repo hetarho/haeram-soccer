@@ -75,7 +75,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 10 | 9 | ARCH-12✎ | 2 |
+| ARCH | 10 | 10 | - | 2 |
 | WEB | 89 | 89 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | CLUB | 41 | 41 | - | 0 |
@@ -85,13 +85,14 @@
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 13 | 13 | - | 0 |
-| SAVE | 42 | 41 | SAVE-2✎ | 0 |
+| SAVE | 42 | 42 | - | 0 |
 | PLAYER | 8 | 8 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 | todo |
+| T195 | Bound adaptive century compression without changing retained facts | SAVE ARCH | T193 T194 | todo |
+| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
 
 ## work
@@ -105,6 +106,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 create-task T195: bounded adaptive codec before T178 source freeze; BMP alphabet count corrected to exclude all noncharacters.
 - 261017 SAVE r42/ARCH r10: adaptive bounded codec for retained century state; no gameplay or security-policy changes.
 - 261017 T193 done n7r4: Career representation v2 losslessly shares relationship dates, string templates, scalar codebooks and explicit fallbacks while retaining the v1 reader; the actual failed 50-season checkpoint now uses 1132058 bytes.
 - 261017 implement-task T193 start n7r4.
