@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:24Z | - |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:24Z | T182 |
 
 ## inbox
 - 261017 decided SAVE-10: align recognized older catalog pin text with approved T181 2026-demo-3; no historical price/index changes and no legacy reset before T174.
@@ -91,7 +91,7 @@
 | T177 | Verify delegation handover and promise outcomes through the browser | WEB CLUB HIST SAVE | T172 T174 | todo |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 | todo |
-| T182 | Count the squad against the season's registration rule | CLUB | T181 T143 T144 | todo |
+| T182 | Count the squad against the season's registration rule | CLUB | T181 T143 T144 | doing@261017.n7r4 |
 | T183 | Aim the first team at 20 players | CLUB STAFF | T182 | todo |
 | T184 | Bid by the director's trait | CLUB STAFF | T143 T144 | todo |
 | T185 | Open and pursue replacement needs | CLUB | T183 T184 | todo |
@@ -110,6 +110,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 implement-task T182 start n7r4.
 - 261017 T181 done n7r4: Catalog 2026-demo-3 contains exactly the twelve approved sourced registration eras and forty-player ceiling, with validated provenance/ranges and recognized older pins preserved until release activation.
 - 261017 implement-task T181 start n7r4.
 - 261017 create-task SAVE r40: catalog-pin metadata delta assigned to existing todo T181; no new task.
@@ -129,4 +130,3 @@
 - 261017 T168 done n7r4: Selected-person readonly career details link player, coaching and manager views with actual dates, service, mentor facts and honest missing-stat notices; manager offers disclose real employment and costs.
 - 261017 implement-task T168 start n7r4.
 - 261017 T167 done n7r4: Player profiles show separate qualitative aptitude and once-only career encouragement; a single combined contract review quotes both roles, costs, authority and eligible terms.
-- 261017 implement-task T167 start n7r4.
