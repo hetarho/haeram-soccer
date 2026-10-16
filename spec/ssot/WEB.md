@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r84 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r85 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -7,10 +7,10 @@
 - WEB-3 [o] Four difficulty levels set only the start: 쉬움 2×, 보통 1×, 어려움 0.5× and 최상 0.25× the founding annual operating budget in cash, and a starting XI at the league average plus 0, −2, −4 or −6 (→CLUB-1). Every rule, coefficient and chance is the same at every level (→LEAGUE-13), and a shared seed makes the same world. ← the start decides how hard a career is; the dice never change
 - WEB-4 [o] Dashboard, match observation, league/Europe, people (squad, market, manager and coaches), training, operations and history are playable views, with progress and actionable errors.
 - WEB-5 [o] Time progression has automatic and manual modes, with automatic selected for a new game. The owner can switch modes, subject to →WEB-76.
-  - automatic: paced day-by-day play at x1/x2/x5/x10 (→WEB-18), stopping for the configured events.
+  - automatic: paced day-by-day play at x1/x2/x5/x10 (→WEB-18), stopping for the configured events. 다음 이벤트 is unavailable in this mode.
   - manual: enabled only while the match-eve event is enabled, regardless of business delegation (→WEB-76). Automatic play is off; 다음 이벤트 advances to the next configured stopping event and waits there. Resolving it never starts unattended play; another explicit progression action is needed.
   - both modes use the same business responsibilities and observation triggers (→WEB-45), live the same ordered days and retain the same facts (→LEAGUE-11). Mode selection is distinct from automatic play/pause.
-  - preparation, watching and explicit one-round tools remain available; there is no public finish-season or multi-season jump. Saving/worker failures, critical blockers and read-only ownership retain their existing protections.
+  - preparation, watching and playing a match through remain available. Separate season-progression tools, including 한 라운드 진행, finish-season and multi-season jumps, are not public controls in either mode (→WEB-80). Saving/worker failures, critical blockers and read-only ownership retain their existing protections.
 
 - WEB-6 [o] Free local play has no real-money purchases, identity collection, analytics upload, sign-in, or automatic cloud submission.
 - WEB-7 [o] A new game goes into an empty game slot (→WEB-62); starting one over an occupied slot's game requires an explicit in-app replacement choice and offers export first.
@@ -27,7 +27,7 @@
 
 - WEB-11 [o] Home leads with the current club: season rank, strength and record over the illustrated stadium scene (→WEB-72), team state (→WEB-44) and next-match preparation/watch. A compact season-progress strip shows elapsed calendar days as a percentage and a progress bar; club name, year and league identity stay in the HUD without a repeated home title.
   - The current competitive briefing names rank gaps, form and next rival; detailed fixtures/results remain in the league and the club season record.
-  - 시즌 상세 opens the current club briefing and links to the selected club season in records. The compact strip includes 시즌 진행 도구 for one-round advancement with its consequences and existing busy-state rules; there is no finish-season action.
+  - 시즌 상세 opens the current club briefing and links to the selected club season in records. The compact progress strip is informational; there is no 시즌 진행 도구 entry or dialog (→WEB-80).
   - Cash lives in the HUD; pending business decisions live in the inbox. The scene keeps its current stadium step/capacity in HTML and at least 180px height.
 
 - WEB-12 [o] Home has no milestone card or collection launcher. Existing milestone facts and first-session guide completion remain intact; no separate collection entry is exposed.
@@ -239,6 +239,7 @@
   - an occupied slot shows crest, club, country and division, season date and when it was last played, with 이어하기 and, behind its menu, 내보내기 and 삭제; an empty slot offers 새 게임 and 파일 가져오기.
   - the HUD menu's 게임 슬롯 returns to the screen and stops the clock; switching games saves the game in play first.
   - deleting a game, or starting a new one over an occupied slot, needs an explicit confirmation that offers export first; deleting the game in play reloads the page onto the slot screen, even with every slot empty.
+  - the new-career feature boundary may reset legacy gameplay slots under →SAVE-18; this release reset does not require retaining earlier-rule slots or offering their export first. Ordinary deletion/replacement of new-rule games keeps the preceding confirmation rule.
   - a read-only tab (→SAVE-6) can only continue the game in play, read-only.
   - wording is 새 게임, never 새로운 세계 or 새 세계.
 - WEB-64 [o] Automatic mode can play on while the owner does something else; manual mode never progresses unattended or catches up time away. ← owners leave the club running in a background window
@@ -326,7 +327,11 @@
   - changes remain unapplied until explicit apply, with affected pending work disclosed before committing (→WEB-82). Opening or closing the screen never applies a choice.
   - apply validates the resulting manual-mode configuration (→WEB-76) and transfers only unresolved work under →WEB-82. Reports follow →WEB-42 without additional per-business-event stop switches.
 
-- WEB-80 [?] Define interaction between manual next-event progression and explicit one-round tools. Match events are always required in manual mode (→WEB-76), and no earlier configured event means arrival at the next own match's eve (→WEB-18); a separate no-event season-end stop is not used. Same-date stopping events follow →WEB-83. Preserve ordered settlement, pending owner decisions, existing critical/error blockers and manual mode's absence of unattended progress.
+- WEB-80 [o] General progression controls are exclusive to the selected mode.
+  - manual: 다음 이벤트 is the only general time-advance action, subject to mandatory match events (→WEB-76). With no earlier event, it reaches the next own match's eve; no season-end substitute stop is added.
+  - automatic: play/pause and the existing pace choices (→WEB-18); no 다음 이벤트 action is exposed or enabled.
+  - remove 시즌 진행 도구 and its 한 라운드 진행 action in both modes. No other public round/season/multi-season jump substitutes for the removed tools.
+  - ordinary match preparation, observation and playing through the forthcoming match remain available. These actions retain their normal decision/blocker protections and do not switch progression mode or start unattended manual play. Same-date stops follow →WEB-83.
 
 - WEB-81 [o] Mediation shows each person's actual explanation, the standing support policy, a case-specific support choice when owner-held, and any promise's target, deadline and recorded status (→CLUB-34/35, →STAFF-26). Delegated mediation reports the policy and result without an extra owner-only stop. Promise outcomes remain available through retained decisions (→HIST-15).
 
@@ -349,6 +354,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r85 261016 WEB-5/11/80✎ one-round tools retained/mode interaction open→exclusive manual next-event or automatic paced controls, season tools removed; WEB-62✎ all old slots retained/exportable→legacy release reset permitted by SAVE-18
 - r84 261016 WEB-5/18/76✎ match required only when all delegated→required for every manual configuration, otherwise manual unavailable; WEB-80✎ no-stop behaviour open→next-match-eve arrival, no season-end fallback; one-round-tool interaction remains open
 - r83 261016 WEB-18✎ unpaced days→direct event-date presentation; WEB-42✎ general report stops unspecified→notification-only; WEB-45/79✎ settings workflow open→shared central entry and explicit apply; WEB-80✎ long-advance UI open→no-stop/round-tool questions only
 - r82 261016 WEB-45✎ pending handling open→WEB-82; WEB-79/80✎ transition/simultaneous-event questions→remaining settings/report/advance questions; WEB-82/83+ explicit pending-work transfer and same-date manual event grouping

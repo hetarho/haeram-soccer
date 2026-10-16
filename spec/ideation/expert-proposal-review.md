@@ -20,12 +20,14 @@
 - [o] Delegation model: choose direct owner decision or staff delegation separately for each responsibility in one central settings screen, enabling combinations such as delegated sponsors/coaches with owner-appointed managers. Any shortcuts remain open. Formal delegation rules are →WEB-45 and →STAFF-13.
 - [o] Delegation granularity: seven responsibilities — manager appointments/renewals; staff appointments/renewals including director, scout and coaching departments; player renewals/improved contracts; player recruitment; player sale responses; academy promotion/release; sponsor contracts. Appointment and renewal share their responsibility; staff departments share one choice and academy promotion/release share one choice for this scope.
 - [o] Business-decision clock stops follow responsibility: a direct owner decision stops for an answer; a delegated decision is processed by the responsible staff and reported without a decision-related stop. No independent stop toggle for each business decision. Observation notifications have their separate adopted choices below; critical/error handling and timing when responsibility changes remain to specify.
-- [o] New-game responsibility defaults: the owner handles manager appointments/renewals, player renewals/improved contracts, recruitment and sales; staff handle their appointments/renewals, academy promotion/release and sponsor contracts. Every responsibility remains individually changeable in the central screen. Existing-career conversion remains open.
+- [o] New-game responsibility defaults: the owner handles manager appointments/renewals, player renewals/improved contracts, recruitment and sales; staff handle their appointments/renewals, academy promotion/release and sponsor contracts. Every responsibility remains individually changeable in the central screen. These features start new careers; legacy gameplay need not be converted or retained (→SAVE-18).
 - [o] Observation notifications: match-eve and transfer-window-opening stops are independent of delegation. Match eve is mandatory in manual mode; automatic mode permits it to be disabled. New-game defaults: match-eve stop on, window-opening stop off. Keep both notifications readable whether or not they stop the clock.
 - [o] Two progression modes: automatic mode retains day-by-day paced play; manual mode has automatic play off and an explicit next-event action advances to the next event selected by the owner's trigger settings. Both modes use the same responsibility/observation trigger choices, rather than a second manual event list.
 - [o] A new game starts in automatic progression mode. The owner can switch between automatic and manual modes during play, subject to manual-mode trigger validity.
 - [o] Manual-mode validity: every manual configuration requires match events enabled, regardless of direct/delegated responsibilities, using the already chosen match-eve trigger. Manual mode is unavailable with match eve off, and match eve cannot be disabled while manual mode is selected. Explain the condition and offer an explicit enable-match-eve action; never silently enable it. With all other events off/delegated, next event means the next own match's eve, without a season-end fallback stop.
 - [o] Manual progression is owner-driven: arriving at an event and resolving a decision do not start unattended automatic play; the next advance requires an explicit progression action. Manual mode has no unattended wall-clock or away catch-up progression.
+- [o] Progression controls are exclusive: manual uses next event; automatic uses play/pause and pace choices without next event. Remove season-progression tools, including the one-round action, in both modes; retain normal match preparation, observation and playing through the next match (→WEB-80).
+- [o] Feature activation starts new careers; recognized legacy gameplay may be cleared, without conversion, retained old slots or an export-first requirement (→SAVE-18). New-rule save validation and recovery remain in force.
 - [x] A mandatory four-level ladder, whether reordered or supplemented only by core-approval pins, as the delegation model ← the owner chose individual responsibility selection to express the desired combination directly. Optional bulk presets remain undecided.
 - [?] Delegation details: “automate sponsors/coaches but appoint my manager” is impossible under the current ladder, although manual actions remain available while delegated (WEB-45, STAFF-13).
   - The proposal usefully separates routine work from appointments with greater owner interest. Its claim that staff handle the core player's renewal at level 2 matches the current default.
@@ -93,7 +95,7 @@
 - Contextual policy flow: task view → relevant-department sheet → explicitly apply only that department → close back onto the task. Other departments' drafts remain unapplied. The full policy board remains reachable; one applied policy stays authoritative.
 - Scope boundaries: balance changes and additional manager fallout from coach resignation are parked. Stopping-event notifications stay separate from time controls.
 - v1 scope: seven central responsibilities; automatic/manual progression with shared triggers; cross-club aptitude-based player-to-coach-to-manager careers; recruitment-owned mediation with a standing support policy and tracked promises; department-scoped contextual policy sheets.
-- SSOT transition: agreed scope converted into the existing domains below. Numerical thresholds, compatibility and unresolved exceptions remain explicit open decisions there; see STATE pending for task decomposition.
+- SSOT transition: agreed scope converted into the existing domains below. Numerical thresholds and unresolved career/mediation exceptions remain explicit open decisions there; compatibility is new-career-only with legacy gameplay reset permitted. Resolve all proposal policies before task decomposition.
 - Scope boundary: formalize the adopted planning rules; code implementation and task decomposition are subsequent work. Balance coefficients and measured bands remain untouched.
 
 ## domains
@@ -103,15 +105,14 @@
 - PLAYER: separate off-pitch aptitude and qualitative evaluation; assessment/scouting parameters remain open (PLAYER-1/19/21/22). →PLAYER
 - WORLD: cross-club person continuity without fabricated history; seasonal NPC lifecycle scope remains open (WORLD-6/10/11). →WORLD
 - HIST: linked player/coach/manager careers and retained mediation/promise facts (HIST-14/15). →HIST
-- SAVE: retain adopted settings, person careers and commitments; existing-career compatibility remains open, with released rules still 2.0.0 (SAVE-17/18). →SAVE
+- SAVE: retain adopted settings, person careers and commitments in new-rule careers; activation at the planned 3.0.0 boundary permits legacy gameplay reset without conversion. Released rules remain 2.0.0 until implemented (SAVE-17/18). →SAVE
 - ECON: the recruitment department exposes the support policy; economic coefficients, financial bands and measured results are unchanged (ECON-25). →ECON
 - LEAGUE: reference the manual next-event mode and the equivalent all-delegated reference regimen; competitive coefficients, balance bands and measurements are unchanged (LEAGUE-11/13). →LEAGUE
 
 ## open
-- How do the new rules apply to existing careers, and how do explicit one-round tools interact with manual next-event progression?
 - When can the owner encourage a coaching career, and what scouting uncertainty applies to other clubs' aptitude evaluations?
 - What experience threshold makes a suitable coach a manager candidate, and how are his specialty and school established?
 - What are the detailed director-first/balanced/manager-first mediation criteria, especially when a promise is unaffordable?
 - What fulfils or cancels a reinforcement promise when personnel, affordability or candidate availability change?
-- Formal open-policy units: WEB-80, STAFF-25/27/28, PLAYER-22, WORLD-11, CLUB-36/37 and SAVE-18. Do not fill them with unapproved coefficients or compatibility assumptions.
+- Formal open-policy units: STAFF-25/27/28, PLAYER-22, WORLD-11 and CLUB-36/37. Do not fill them with unapproved coefficients or career/mediation assumptions.
 - Parked for a later balance discussion: should difficulty describe the founding disadvantage or a challenge that still differs in season 60?

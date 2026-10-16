@@ -16,7 +16,7 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 
 ## inbox
-- 261016 parked WEB-80 STAFF-25 STAFF-27 STAFF-28 PLAYER-22 WORLD-11 CLUB-36 CLUB-37 SAVE-18: clarify manual round-tool behaviour, career thresholds/candidate entry, NPC continuity, mediation/promise criteria and existing-career compatibility before dependent implementation
+- 261016 parked STAFF-25 STAFF-27 STAFF-28 PLAYER-22 WORLD-11 CLUB-36 CLUB-37: clarify career thresholds/candidate entry, NPC continuity and mediation/promise criteria before creating the complete proposal task batch
 - 261016 suggest WEB-74: owner-workflow tasks T134–T138 completed → review-code taskMemory/state, RecordsRoom/LiveSeason/CupsView and their browser journeys before the next UI feature; no refactoring is included in this completed scope
 - 261016 suggest -: spec lint has 33 existing document-quality hints → doc-review WEB/ARCH before expanding the navigation specification; no policy changes implied
 - 261015 decided WEB-74: start-vibe m8q4 scope → implement navigation-and-records with current game rules and the approved pixel readability baseline in an isolated checkout (alt: analysis only | revise game mechanics)
@@ -45,7 +45,6 @@
 - 261015 decided LEAGUE-13: where the balance bands live → LEAGUE (alt: ECON-29) — titles and dominance are competitive balance, not money
 - 261015 decided CLUB-21: the synergy 우리 동네 아이들 lit by the renamed preset → kept (alt: renamed with it) — local boys in the side is real football
 - 261015 decided WEB-15: the level selected first at founding → 쉬움 (alt: 보통) — the founding default was already the generous start
-- 261015 decided SAVE-16: what a career of earlier rules shows → listed as 이전 규칙 with export and delete only, imports refused with the rules they need (alt: hidden | deleted) — nothing is lost and nothing converts
 - 261014 decided T105: a reference career went bankrupt on rules 1.22.0 (ESP 기본 방향 seed 4, 1971) → recorded with its cause and left as a follow-up, nothing tuned (alt: keep the 단장's post a volunteer below the professional divisions | tighten 재정 기조 for amateur clubs now) — the explore task's exit records, and no single 1.22 rule breaks the career
 - 261014 decided T102: an offer refused unseen under 이적 불가 while the owner holds transfers names who → 구단이 (alt: keep 스태프가 | 단장이) — the 단장 takes no decision the level keeps with the owner (STAFF-20)
 - 261014 decided T102: activation of rules 1.22 tells the owner → one inbox item naming the new 단장 (alt: silent) — as the 1.17 and 1.19 activations do
@@ -69,7 +68,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 84 | 80 | WEB-5✎ WEB-18✎ WEB-39✎ WEB-42✎ WEB-43✎ WEB-44✎ WEB-45✎ WEB-60✎ WEB-64✎ WEB-71✎ WEB-76+ WEB-77+ WEB-78+ WEB-79+ WEB-80+ WEB-81+ WEB-82+ WEB-83+ | 1 |
+| WEB | 85 | 80 | WEB-5✎ WEB-18✎ WEB-39✎ WEB-42✎ WEB-43✎ WEB-44✎ WEB-45✎ WEB-60✎ WEB-64✎ WEB-71✎ WEB-76+ WEB-77+ WEB-78+ WEB-79+ WEB-80+ WEB-81+ WEB-82+ WEB-83+ WEB-11✎ WEB-62✎ | 0 |
 | WORLD | 4 | 3 | WORLD-6✎ WORLD-10+ WORLD-11+ | 1 |
 | CLUB | 36 | 35 | CLUB-3✎ CLUB-13✎ CLUB-18✎ CLUB-22✎ CLUB-24✎ CLUB-32✎ CLUB-33✎ CLUB-34+ CLUB-35+ CLUB-36+ CLUB-37+ | 2 |
 | MATCH | 9 | 9 | - | 0 |
@@ -78,8 +77,8 @@
 | ECON | 38 | 37 | ECON-25✎ | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 10 | 9 | HIST-14+ HIST-15+ | 0 |
-| SAVE | 36 | 35 | SAVE-17+ SAVE-18+ | 1 |
-| PLAYER | 4 | 3 | PLAYER-1✎ PLAYER-19✎ PLAYER-21+ PLAYER-22+ | 1 |
+| SAVE | 37 | 35 | SAVE-17+ SAVE-18+ SAVE-5✎ SAVE-11✎ SAVE-14✎ SAVE-16✎ | 0 |
+| PLAYER | 5 | 3 | PLAYER-1✎ PLAYER-19✎ PLAYER-21+ PLAYER-22+ | 1 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -92,11 +91,14 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- update-ssot WEB STAFF PLAYER WORLD CLUB SAVE: settle all remaining proposal policies together before creating any implementation tasks; no balance tuning.
+- update-ssot STAFF PLAYER WORLD CLUB: settle all remaining proposal career/mediation policies together before creating any implementation tasks; no balance tuning.
 - create-task WEB STAFF CLUB PLAYER WORLD HIST SAVE ECON LEAGUE: decompose the complete agreed scope in one batch only after all proposal policy gaps are resolved; do not create a partial task batch.
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 update-ssot WEB r85 SAVE r37 PLAYER r5: exclusive mode controls, season tools removed and new-career-only activation with recognized legacy gameplay reset permitted; seven career/mediation units remain open
+- 261016 update-ssot WEB SAVE PLAYER start: separate progression controls by mode, remove season tools and adopt new-career-only activation with legacy gameplay reset permitted
+- 261016 season-records layout: replace stacked mobile cards with compact table rows; clamp long fields to two lines and keep short fields on one line; retain season-detail links.
 - 261016 planning sequence confirmed: finish all proposal policy decisions together, then create the complete implementation task batch; no partial task creation
 - 261016 implement-task start: compact the season records list to at most two mobile lines per season, with single-line short values and retained season-detail navigation.
 - 261016 update-ssot WEB r84: match events required for every manual configuration, not only all-delegated play; other events off means next-match-eve progression, no season-end fallback
@@ -114,7 +116,3 @@
 - 261016 ideation expert-proposal-review: owner selects automatic progression as the new-game default; manual next-event mode remains switchable
 - 261016 ideation expert-proposal-review: owner adds automatic/manual next-event modes with shared triggers and matches required for all-delegated manual play; adopts separate coaching aptitude and natural entry plus own-player encouragement
 - 261016 ideation expert-proposal-review: owner adopts coach-to-manager careers and aptitude-based entry across clubs; own-club 150-match/five-season gate dropped
-- 261016 T141 done: home uses the launcher space, 45 affected browser cases pass; published at bccf136 with full source CI 38854278380 passing all six jobs
-- 261016 ideation expert-proposal-review: owner adopts mixed new-game delegation defaults and independent observation stops, default match eve on/window opening off
-- 261016 ideation expert-proposal-review: owner adopts seven responsibilities and direct-only business-decision stops; delegated outcomes are reports
-- 261016 ideation expert-proposal-review: owner selects central direct/delegated choices per responsibility; granularity, defaults and clock stops remain open
