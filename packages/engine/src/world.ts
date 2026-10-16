@@ -1,3 +1,4 @@
+import { generateQualities } from './aptitude';
 import {
   COUNTRIES,
   CATALOG_VERSION,
@@ -201,6 +202,7 @@ export function makePlayer(
     born: year - age,
     attrs: profile.attrs,
     personality: profile.personality,
+    qualities: generateQualities(seed, id),
     traits: profile.traits,
     adaptation: 0.8,
     potential: clamp(rating + integer(r, 10, 35), 50, 95),

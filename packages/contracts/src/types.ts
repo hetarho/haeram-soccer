@@ -1,5 +1,13 @@
 import type { ClubBuild } from './build';
-import type { Attributes, Line, Personality, PlayTrait, Position, Positions } from './player';
+import type {
+  Attributes,
+  Line,
+  OffPitchQualities,
+  Personality,
+  PlayTrait,
+  Position,
+  Positions,
+} from './player';
 export type { ClubBuild, BuildSlot } from './build';
 export type {
   Attribute,
@@ -303,6 +311,7 @@ export interface Player {
   /** The 14 attributes (→PLAYER-2). */
   attrs: Attributes;
   personality: Personality;
+  qualities?: OffPitchQualities;
   traits: PlayTrait[];
   /** How well he fits the club under its manager, 0.3–1.0 (→PLAYER-10). */
   adaptation: number;

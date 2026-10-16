@@ -646,7 +646,7 @@ function generatePositions(rng: Rng, position: Position): Positions {
   return positions;
 }
 
-const gradeOf = (rng: Rng) =>
+export const gradeOf = (rng: Rng) =>
   pick<Grade>(rng, [
     [1, 8],
     [2, 22],

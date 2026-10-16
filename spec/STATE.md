@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T14:58Z | T154 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:00Z | - |
 
 ## inbox
 - 261016 suggest WEB-74: owner-workflow tasks T134–T138 completed → review-code taskMemory/state, RecordsRoom/LiveSeason/CupsView and their browser journeys before the next UI feature; no refactoring is included in this completed scope
@@ -83,7 +83,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T154 | Generate fixed off-pitch qualities without disturbing playing draws | PLAYER SAVE | - | doing@261016.n7r4 |
 | T155 | Represent one person across playing, coaching and management | WORLD HIST SAVE ARCH | T154 | todo |
 | T156 | Retain coaching prospects and former own players in NPC squads | WORLD PLAYER HIST | T155 | todo |
 | T157 | Apply actual age and retirement to retained other-club players | WORLD CLUB STAFF HIST PLAYER | T156 | todo |
@@ -130,6 +129,7 @@
 - Do not activate rules 3.0.0 or reset career data before T174's prerequisites are complete.
 
 ## log
+- 261017 T154 done n7r4: Fixed independent off-pitch components and pure coaching/manager grade helpers preserve all 42 baseline player profiles.
 - 261016 implement-task T154 start n7r4; continue all remaining tasks autonomously. SAVE r38–39 activation scope is unrelated to fixed aptitude generation.
 - 261016 start-vibe v6k2 end: two authorized units complete through f57a32f; clean main pushed, final code CI 38915783586 queued. Local validation and handoff are in reports/261016-v6k2.md.
 - 261016 T153 done v6k2: balanced recruitment support across schema/protocol/rows/presets/library and reload; 833 unit, 11 contract and 27 cross-browser core cases passed. Authorized two-unit scope complete; remote CI remains in progress.
@@ -149,14 +149,3 @@
 - 261016 user checkpoint request: T142 ae9f3e3, T143 e04d0c7, T144 bcb887e, T145 9aff0e8 and T146 5ad2c46 committed individually after isolated snapshot verification. Continue one verified task per commit.
 - 261016 T147 done p150: Manual next-event sole-writer command settles ordered days to the earliest complete stopping date, including cup fixtures, leap days and season rollover, with no intermediate progress publications.
 - 261016 implement-task T147 start p150
-- 261016 T146 done p150: Pure per-category pending-work disclosure and single-command handover through existing contract, counteroffer, sale and appointment resolvers; unresolved external terms preserved and completed work not replayed.
-- 261016 create-task complete: T180–T187 — reputation by standing, registration catalog and counting, squad target 20 with close call-ups, trait bidding, replacement needs, window-close call-ups, squad display; T174 now waits for T180 T186 T187 (base SAVE@39); T143/T144 assumed as specified
-- 261016 create-task CLUB LEAGUE STAFF WEB SAVE start: squad/reputation delta CLUB r40–41, LEAGUE r9, STAFF r33, WEB r87, SAVE r38–39
-- 261016 implement-task T146 start p150
-- 261016 T145 done p150: Shared dated live-domain stopping query, independent observations and durable academy review references; unread reports no longer confer decision authority.
-- 261016 implement-task T145 start p150
-- 261016 T144 done p150: Independent manager, shared staff, academy and sponsor authority without training or trust changes; authored task scope retained by user override.
-- 261016 T143 done p150: Independent contract, recruitment and sale authority; existing business rules preserved under the explicit user scope override.
-- 261016 user override p150: implement T143/T144 exactly as their authored task contracts; the other session will reconcile later planning deltas. Continue dependency-ready tasks beyond T150 until 2026-10-17 06:00 KST (2026-10-16 21:00 UTC), preserving incomplete task status and verification evidence.
-- 261016 implement-task T144 start p150
-- 261016 implement-task T143 start p150

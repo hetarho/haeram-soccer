@@ -89,6 +89,9 @@ const player = z
     born: z.number().int(),
     attrs: attributes,
     personality: z.strictObject({ professionalism: grade, adaptability: grade, ambition: grade }),
+    qualities: z
+      .strictObject({ understanding: grade, teaching: grade, judgement: grade })
+      .optional(),
     traits: z.array(z.enum(PLAY_TRAITS)).max(3),
     adaptation: z.number().finite().min(0.3).max(1),
     clubRounds: z.number().int().nonnegative().optional(),

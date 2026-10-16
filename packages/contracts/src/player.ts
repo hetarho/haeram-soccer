@@ -52,6 +52,13 @@ export interface Personality {
   ambition: Grade;
 }
 
+/** Fixed off-pitch components, generated independently of playing ability (→PLAYER-22/25). */
+export interface OffPitchQualities {
+  understanding: Grade;
+  teaching: Grade;
+  judgement: Grade;
+}
+
 /** Play traits (→PLAYER-9). */
 export const PLAY_TRAITS = [
   'workrate',
