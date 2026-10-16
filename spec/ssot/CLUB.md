@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r37 | Define the browser-demo rules for squad and growth.
+> r38 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating sits at its league's average club XI plus its difficulty level's offset (→WEB-3: 쉬움 0, 보통 −2, 어려움 −4, 최상 −6; ±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -169,11 +169,12 @@
   - needs, first met first: a short line, then an upgrade: a candidate who beats a slot's starter at that slot (as a request does) by the margin of 재정 기조 (표준 5, 적극 3, 공격적 2), while the squad has 24 players or fewer; 안정적 and 신중 never upgrade. Requests come before the others.
   - upgrades per window: 표준 1, 적극 2, 공격적 3; a short line has no cap.
   - the candidate who fits the need: the manager's pick, then the rest of the shortlist, then the market list; free agents before fee-bearing players, each by ability, then potential; never a player he bid for in this window before, never on loan.
+  - for a request with an actual mediation decision, its support outcome in →CLUB-39 governs whether to defer or prioritize a qualifying alternative/the manager's pick. Ordinary recruitment timing, suitability, limits and money checks still apply.
   - he signs a free agent at once and bids the asking fee for anyone else (공격적 110%); a counter he accepts when it still passes the money checks, else he declines.
   - money: the fee is at most the 재정 기조 share of the cash above its runway, and with his wage the runway, the wage bill ceiling and the season's cash projection still hold, as for a raise (→ECON-33).
   - each move and each answer reaches the inbox as a 단장 report naming the need, the manager's request when it is one, the row behind it and the money check.
 
-- CLUB-34 [o] Genuine conflict between the director's financial/administrative judgement and the manager's reinforcement needs produces a mediation event, with each person's actual explanation.
+- CLUB-34 [o] Actual financial opposition by the director to an unmet manager reinforcement request produces a mediation event under →CLUB-38, with each person's actual explanation.
   - mediation belongs to player recruitment (→WEB-45): owner-held recruitment stops for mediation in either progression mode; delegated recruitment resolves it under →STAFF-26 and reports the result.
   - the owner can support the director, support the manager or use the standing balanced approach, and may make a recorded reinforcement promise (→CLUB-35).
   - a missed first-choice pick does not by itself prove a conflict; distinguish budget restrictions, failed bids, unavailable candidates and the owner's own decision. Current window-request evaluation remains →CLUB-33; mediation's interaction with it is →CLUB-36.
@@ -183,9 +184,23 @@
   - dismissal, a menu detour or saving/reloading never silently clears the commitment. Record the promise and its resolution in →HIST-15.
   - a post-window free signing cannot silently rewrite the completed window's request evaluation. Detailed qualifying arrivals, reconciliation and cancellation conditions remain →CLUB-37.
 
-- CLUB-36 [?] Define mediation eligibility/timing and duplication prevention; the concrete director-first/balanced/manager-first resolution rules, permitted promise choices and affordability checks; the interaction with CLUB-33's existing trust loss. Specify numerical responses before implementing the new mediation outcomes.
+- CLUB-36 [?] Specify mediation/promise numerical reactions and their interaction with CLUB-33's existing trust loss. Eligibility/deduplication and standing support outcomes are →CLUB-38/39; promise fulfilment and lifecycle remain →CLUB-37. Do not apply unapproved trust rewards or overlapping penalties.
 
 - CLUB-37 [?] Specify promise deadlines, qualifying positions/roles, loans/free agents, manager/director replacement, unavailable/unaffordable recruitment, cancellation, repeated promises and exact reactions to keeping or breaking a commitment. A cancelled promise and a fulfilled one must remain distinct recorded outcomes.
+
+- CLUB-38 [o] During an open transfer window, mediation requires a manager request with a suitable available candidate, actual director opposition because existing financial criteria block the recruitment, and no qualifying arrival yet meeting that request (→CLUB-33).
+  - emit at most once for the same manager, reinforcement request and transfer window. Retain that fact across daily checks, shortlist refreshes, screen changes and reloads; a different candidate for the same request does not renew the allowance.
+  - a failed negotiation, no available suitable candidate or an owner refusal alone produces an ordinary factual report, not a financial-conflict mediation. The report must state the actual cause (→STAFF-8).
+  - ownership and stopping behaviour remain →CLUB-34: recruitment direct stops in either mode; recruitment delegated resolves/reports under →CLUB-39.
+
+- CLUB-39 [o] Delegated mediation follows the standing support policy (→STAFF-26); direct mediation can choose another outcome for that case (→CLUB-34).
+  | support policy | resolution of the disputed request |
+  |---|---|
+  | 단장 우선 | defer the opposed reinforcement without making a next-window promise |
+  | 균형 | first seek a cheaper alternative meeting the existing reinforcement criteria; if none is available within those criteria, make a next-window reinforcement promise |
+  | 감독 우선 | first pursue the manager's named player; if that cannot proceed, make a next-window reinforcement promise |
+  - no support outcome authorizes delegated spending beyond the existing financial checks (→CLUB-33, →ECON-33), creates funding or guarantees a signing. Prioritizing a player still follows ordinary availability, bidding and contract rules.
+  - promises retain their actual target and deadline (→CLUB-35); detailed fulfilment, duplicate-commitment and cancellation rules remain →CLUB-37. A support choice does not itself count as a fulfilled recruitment request.
 
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
@@ -196,6 +211,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r38 261016 CLUB-33/34/36✎ broad conflict/open timing and resolution→financial-only mediation with scoped support priority, numerical reactions remain open; CLUB-38/39+ once per manager/request/window, director defers, balanced seeks cheaper fit, manager prioritizes pick, next-window promises without bypassing delegated financial limits
 - r37 261016 CLUB-3✎ every announced player retires at the close→accepted playing-coach deferral under STAFF-34; age-41 limit and all retirement chances unchanged
 - r36 261016 CLUB-3✎ player retirement only→linked later staff career; CLUB-13/18/22/24/32/33✎ intervention/combined transfers→separate responsibilities; CLUB-34/35+ recruitment-owned mediation and tracked promises; CLUB-36/37+ open mediation and promise-fulfilment/reaction rules
 - r35 261015 CLUB-18✎ an offer's fee from value alone (could round below one currency unit)→at least one whole currency unit
