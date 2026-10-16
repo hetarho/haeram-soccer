@@ -1,4 +1,4 @@
-import { openNeed } from './replacements';
+import { openNeed, windowCallUps } from './replacements';
 import { bidCeiling, haggling } from './director-bidding';
 import { registrationRoom } from './registration';
 import { endPlayingCoachForDeparture, playingCoachDepartureCost } from './playing-coach';
@@ -409,7 +409,10 @@ function announceWindows(w: World, day: number) {
     if (isDelegated(w, 'sales')) staffStances(w);
   }
   // The day after a window closes the manager's requests at its opening are judged (→CLUB-33).
-  if (day === d.summerClose + 1 || day === d.winterClose + 1) judgeRequests(w);
+  if (day === d.summerClose + 1 || day === d.winterClose + 1) {
+    judgeRequests(w);
+    windowCallUps(w);
+  }
   const closing = day === d.summerClose ? 'summer' : day === d.winterClose ? 'winter' : undefined;
   if (closing && !already('window-close'))
     pushInbox(w, {

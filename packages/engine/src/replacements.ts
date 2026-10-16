@@ -1,3 +1,6 @@
+import { callUpFor, SQUAD_TARGET } from './squad-target';
+import { activePlayers, refillPosition } from './world';
+import { POSITION_LABEL } from './player';
 import type { Player, World } from '../../contracts/src/types';
 import { currentDay } from './calendar';
 import { transferWindow, transferWindowDays } from './transfers';
@@ -46,4 +49,44 @@ export function takeWindowNeeds(w: World) {
     .sort((a, b) => a.day - b.day || a.playerId.localeCompare(b.playerId));
   w.replacementNeeds = (w.replacementNeeds ?? []).filter((n) => !needs.includes(n));
   return needs;
+}
+
+/** Judge-day academy cover follows replacement order, then the ordinary squad deficit. */
+export function windowCallUps(w: World) {
+  const needs = takeWindowNeeds(w);
+  const direct = !isDelegated(w, 'academy');
+  const ref = `callups:${w.year}:${currentDay(w)}`;
+  if (direct && w.inbox?.some((item) => item.ref === ref)) return;
+  const target = direct ? structuredClone(w) : w;
+  const existing = new Set(w.academy?.players.map((p) => p.id));
+  const recommendations: string[] = [];
+  const add = (line: import('../../contracts/src/types').Line, source: 'replacement' | 'short') => {
+    const player = callUpFor(target, line, source);
+    if (!player) return false;
+    recommendations.push(
+      existing.has(player.id)
+        ? `${player.name}(${POSITION_LABEL[player.position]})`
+        : `${POSITION_LABEL[player.position]} 승격 후보 없음`,
+    );
+    return true;
+  };
+  let room = true;
+  for (const need of needs)
+    if (!add(need.line, 'replacement')) {
+      room = false;
+      break;
+    }
+  while (room && activePlayers(target).length < SQUAD_TARGET)
+    room = add(lineOf(refillPosition(target)), 'short');
+  if (direct && recommendations.length)
+    pushInbox(w, {
+      kind: 'staff-report',
+      title: '유스 디렉터 보고 · 이적시장 마감 보충 추천',
+      detail: `${recommendations.join(' → ')} · 승격은 아카데미에서 직접 결정해 주세요.`.slice(
+        0,
+        400,
+      ),
+      attention: true,
+      ref,
+    });
 }

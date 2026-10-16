@@ -17,6 +17,7 @@
 | n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:54Z | T186 |
 
 ## inbox
+- 261017 suggest T183 T184 T185 T186 T189: five units completed → review-code registration/squad-target/director-bidding/replacements and CI triggers after planned release integration; no extra refactor adopted.
 - 261017 decided SAVE-10: align recognized older catalog pin text with approved T181 2026-demo-3; no historical price/index changes and no legacy reset before T174.
 - 261017 suggest T154 T155 T156 T157 T158: five person-career foundation tasks completed → review-code aptitude/person-careers/npc-continuity/careers/coaching-entry before the next unrelated feature; remaining planned second-career tasks continue.
 - 261016 suggest WEB-74: owner-workflow tasks T134–T138 completed → review-code taskMemory/state, RecordsRoom/LiveSeason/CupsView and their browser journeys before the next UI feature; no refactoring is included in this completed scope
@@ -91,7 +92,6 @@
 | T177 | Verify delegation handover and promise outcomes through the browser | WEB CLUB HIST SAVE | T172 T174 | todo |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 | todo |
-| T186 | Call up from the academy when a window closes | CLUB STAFF | T185 | doing@261017.n7r4 |
 | T187 | Show squad counts against the rule and the 20/16 tones | WEB CLUB STAFF | T182 T183 T184 | todo |
 
 ## work
@@ -106,6 +106,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 T186 done n7r4: Window judge days fill unmet replacements then the twenty-player deficit from eligible academy prospects or named graduates; direct authority gets one ordered recommendation and no mutation, and closed-window needs clear.
 - 261017 implement-task T186 start n7r4.
 - 261017 T185 done n7r4: Starter departures and thin-squad sales open dated replacement needs; delegated recruitment pursues them daily after opening, actual same-line signings close oldest needs, and closing starters open summer needs after top-up.
 - 261017 implement-task T185 start n7r4.
@@ -125,4 +126,3 @@
 - 261017 T181 done n7r4: Catalog 2026-demo-3 contains exactly the twelve approved sourced registration eras and forty-player ceiling, with validated provenance/ranges and recognized older pins preserved until release activation.
 - 261017 implement-task T181 start n7r4.
 - 261017 create-task SAVE r40: catalog-pin metadata delta assigned to existing todo T181; no new task.
-- 261017 update-ssot SAVE-10 r40: align approved T181 catalog pin, preserve compatibility policy.
