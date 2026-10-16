@@ -82,3 +82,30 @@ export async function qualifiedCoachFixture(kind: 'internal' | 'club') {
   qualifyManagers(w);
   return { w, player, person };
 }
+
+/** Inspect only the normal download; no private browser mutation or debug bridge. */
+export async function exportedCareer(page: Page) {
+  const { readFile } = await import('node:fs/promises');
+  const { decode } = await import('../../apps/web/src/adapters/persistence');
+  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+  const menu = page.getByRole('dialog', { name: '전체 메뉴', exact: true });
+  const event = page.waitForEvent('download');
+  await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
+  const file = await event;
+  await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
+  return (await decode(await readFile((await file.path())!, 'utf8'))).world;
+}
+
+/** Synthetic accepted agreement is made by the same real commands used by the UI. */
+export async function combinedCareerFixture() {
+  const { operate } = await import('../../packages/engine/src/index');
+  const { w, player } = secondCareerFixture();
+  operate(w, { type: 'encourage-coaching', player: player.id });
+  operate(w, { type: 'propose-playing-coach', player: player.id, years: 2, term: 5 });
+  operate(w, { type: 'answer-playing-coach', player: player.id, accept: true });
+  return {
+    w,
+    player: w.players.find((p) => p.id === player.id)!,
+    proposal: w.playingCoachProposals![player.id],
+  };
+}
