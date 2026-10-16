@@ -1,3 +1,5 @@
+import { COUNTRIES } from '../../catalogs/src/index';
+import { syncMentorExposures } from './person-careers';
 import { cohesionAfterManager } from './adaptation';
 import type {
   Club,
@@ -103,7 +105,13 @@ export function clubManager(w: World, club: Club): MarketManager {
   const r = random(key);
   const style = MANAGER_STYLES[integer(r, 0, MANAGER_STYLES.length - 1)],
     info = STYLE_INFO[style],
-    drawn = makeManager(club.country, key, since, 1, style);
+    drawn = makeManager(
+      COUNTRIES.some((c) => c.code === club.country) ? club.country : 'ENG',
+      key,
+      since,
+      1,
+      style,
+    );
   const level = clamp(Math.round(club.strength + integer(r, -8, 8)), 30, 95),
     potential = clamp(
       Math.max(level, (drawn.potential ?? level) + level - drawn.ability),
@@ -366,6 +374,7 @@ export function takeManager(w: World, candidate: ManagerCandidate, replaced: Man
       },
     ].slice(-FREE_AGENTS.max);
   }
+  syncMentorExposures(w);
 }
 
 /** Each club's last five league results, newest first, from one pass over the fixtures. */
@@ -447,6 +456,7 @@ export function refreshManagerMarket(w: World, relegated?: Set<string>) {
   m.free = m.free.slice(-FREE_AGENTS.max);
   m.year = w.year;
   m.round = w.round;
+  syncMentorExposures(w);
 }
 
 /** Rounds until the market next moves, for the candidates tab. */

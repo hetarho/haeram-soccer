@@ -1,3 +1,4 @@
+import { syncMentorExposures } from './person-careers';
 import { onManagerChange } from './adaptation';
 import type { Command, ContractTerm, Manager, Tactic, World } from '../../contracts/src/types';
 import { addEvent, clubOf, makeManager, quote, tacticLabel, TACTICS } from './world';
@@ -148,6 +149,7 @@ function installManager(
   );
   // The squad starts to learn its new manager (→PLAYER-13).
   onManagerChange(w, before, w.manager);
+  syncMentorExposures(w);
   w.tactic = manager.philosophy;
   delete w.requested;
   delete w.critical;
@@ -260,6 +262,7 @@ function resign(w: World, reason: string) {
   interim.interim = true;
   w.manager = interim;
   onManagerChange(w, old, interim);
+  syncMentorExposures(w);
   if (!isDelegated(w, 'manager')) {
     w.critical = MANAGER_GONE;
     return;

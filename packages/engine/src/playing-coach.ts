@@ -1,6 +1,6 @@
 import type { ContractTerm, PlayingCoachProposal, Staff, World } from '../../contracts/src/types';
 import { initializeCoaching, personCoachingGrade } from './coaching-entry';
-import { careerDate, openEmployment } from './person-careers';
+import { atCareerDate, careerDate, openEmployment } from './person-careers';
 import {
   coachWage,
   releaseCost,
@@ -122,49 +122,52 @@ export function answerPlayingCoach(w: World, id: string, accept: boolean) {
   const trial = structuredClone(w),
     p = trial.players.find((p) => p.id === id)!,
     person = trial.people![id];
-  const previous = staffMember(trial, proposal.role);
-  if (previous) releaseStaff(trial, proposal.role);
-  debit(trial, proposal.fee);
-  if (talkFor(trial, p)) {
-    const term = (proposal.playerUntil - trial.year - (talkWindow(trial) === 'winter' ? 1 : 0)) as
-      0 | ContractTerm;
-    offerContract(trial, id, proposal.playerWage, term);
-  } else {
-    p.wage = proposal.playerWage;
-    p.until = proposal.playerUntil;
-  }
-  p.retiring = proposal.playingEnd;
-  if (person.retirement) person.retirement.year = proposal.playingEnd;
-  const coaching = person.coaching!;
-  const member: Staff = {
-    id,
-    person: id,
-    name: person.name,
-    born: person.born,
-    role: proposal.role,
-    ability: coaching.ability,
-    potential: coaching.potential,
-    wage: proposal.coachWage,
-    since: trial.year,
-    until: proposal.coachUntil,
-    term: proposal.term,
-  };
-  // Existing playing employment remains; the new coach role overlaps it exactly once.
-  openEmployment(trial, id, proposal.role, trial.playerClub);
-  trial.staff = [
-    ...(trial.staff || []).filter((other) => other.role !== proposal.role),
-    member,
-  ].sort((a, b) => STAFF_ROLES.indexOf(a.role) - STAFF_ROLES.indexOf(b.role));
-  trial.playingCoachProposals![id].status = 'accepted';
-  trial.playingCoachProposals![id].settled = careerDate(trial);
-  addEvent(
-    trial,
-    'playing-coach-accept',
-    `${person.name} 플레잉 코치 합의`,
-    `선수 연봉 ${proposal.playerWage} + 코치 연봉 ${proposal.coachWage} · 은퇴 ${proposal.playingEnd + 1}년 시즌 종료`,
-    proposal.upfront,
-  );
-  Object.assign(w, trial);
+  atCareerDate(trial, careerDate(w), () => {
+    const previous = staffMember(trial, proposal.role);
+    if (previous) releaseStaff(trial, proposal.role);
+    debit(trial, proposal.fee);
+    if (talkFor(trial, p)) {
+      const term = (proposal.playerUntil -
+        trial.year -
+        (talkWindow(trial) === 'winter' ? 1 : 0)) as 0 | ContractTerm;
+      offerContract(trial, id, proposal.playerWage, term);
+    } else {
+      p.wage = proposal.playerWage;
+      p.until = proposal.playerUntil;
+    }
+    p.retiring = proposal.playingEnd;
+    if (person.retirement) person.retirement.year = proposal.playingEnd;
+    const coaching = person.coaching!;
+    const member: Staff = {
+      id,
+      person: id,
+      name: person.name,
+      born: person.born,
+      role: proposal.role,
+      ability: coaching.ability,
+      potential: coaching.potential,
+      wage: proposal.coachWage,
+      since: trial.year,
+      until: proposal.coachUntil,
+      term: proposal.term,
+    };
+    // Existing playing employment remains; the new coach role overlaps it exactly once.
+    openEmployment(trial, id, proposal.role, trial.playerClub);
+    trial.staff = [
+      ...(trial.staff || []).filter((other) => other.role !== proposal.role),
+      member,
+    ].sort((a, b) => STAFF_ROLES.indexOf(a.role) - STAFF_ROLES.indexOf(b.role));
+    trial.playingCoachProposals![id].status = 'accepted';
+    trial.playingCoachProposals![id].settled = careerDate(trial);
+    addEvent(
+      trial,
+      'playing-coach-accept',
+      `${person.name} 플레잉 코치 합의`,
+      `선수 연봉 ${proposal.playerWage} + 코치 연봉 ${proposal.coachWage} · 은퇴 ${proposal.playingEnd + 1}년 시즌 종료`,
+      proposal.upfront,
+    );
+    Object.assign(w, trial);
+  });
 }
 export function automaticPlayingCoachFits(w: World, proposal: PlayingCoachProposal) {
   const p = w.players.find((p) => p.id === proposal.person)!;

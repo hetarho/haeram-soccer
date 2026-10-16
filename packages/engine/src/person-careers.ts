@@ -1,3 +1,4 @@
+import { clubManager } from './managerMarket';
 import type {
   CareerDate,
   CareerEmployment,
@@ -83,7 +84,10 @@ export function openEmployment(
   if (!w.clubs.some((c) => c.id === club)) throw new Error('구단을 확인하세요.');
   const active = person.employment.filter((job) => !job.to);
   const same = active.find((job) => job.role === role && job.club === club);
-  if (same) return same;
+  if (same) {
+    syncMentorExposure(w, person, from);
+    return same;
+  }
   if (
     active.some(
       (job) =>
@@ -111,6 +115,7 @@ export function openEmployment(
     throw new Error('재직 날짜를 확인하세요.');
   const job = { role, club, from: { ...from } };
   person.employment.push(job);
+  syncMentorExposure(w, person, from);
   person.club = club;
   if (role === 'player') {
     person.playing = 'active';
@@ -127,4 +132,137 @@ export function closeEmployment(w: World, id: string, role: CareerRole, to = car
   if (remaining) person.club = remaining.club;
   else delete person.club;
   if (role === 'player') person.playing = 'released';
+  syncMentorExposure(w, person, to);
+}
+
+export const isCoachingRole = (role: CareerRole) =>
+  ['assistant', 'attack', 'defense', 'goalkeeping', 'fitness', 'youth'].includes(role);
+const DAY_MS = 86400000;
+export const careerOrdinal = (date: CareerDate) =>
+  Math.floor(Date.UTC(date.year, 7, 1) / DAY_MS) + date.day;
+export function careerDateFromOrdinal(day: number): CareerDate {
+  const date = new Date(day * DAY_MS),
+    year = date.getUTCMonth() >= 7 ? date.getUTCFullYear() : date.getUTCFullYear() - 1;
+  return { year, day: day - Math.floor(Date.UTC(year, 7, 1) / DAY_MS) };
+}
+type Interval = [number, number];
+function union(intervals: Interval[]): Interval[] {
+  const result: Interval[] = [];
+  for (const [from, to] of intervals
+    .filter(([a, b]) => b >= a)
+    .sort((a, b) => a[0] - b[0] || a[1] - b[1])) {
+    const previous = result.at(-1);
+    if (previous && from <= previous[1]) previous[1] = Math.max(previous[1], to);
+    else result.push([from, to]);
+  }
+  return result;
+}
+function coachingIntervals(person: PersonCareer, at: CareerDate): Interval[] {
+  const end = careerOrdinal(at);
+  return union(
+    person.employment
+      .filter((job) => isCoachingRole(job.role) && careerOrdinal(job.from) <= end)
+      .map((job) => [careerOrdinal(job.from), Math.min(end, careerOrdinal(job.to ?? at))]),
+  );
+}
+/** A virtual anniversary advances only by the union of actually employed calendar days. */
+export function coachingService(person: PersonCareer, at: CareerDate) {
+  const intervals = coachingIntervals(person, at),
+    days = intervals.reduce((sum, [a, b]) => sum + b - a, 0),
+    first = intervals[0]?.[0];
+  if (first === undefined) return { days, qualified: false };
+  const start = new Date(first * DAY_MS),
+    anniversary = Math.floor(
+      Date.UTC(start.getUTCFullYear() + 3, start.getUTCMonth(), start.getUTCDate()) / DAY_MS,
+    );
+  return {
+    days,
+    first: careerDateFromOrdinal(first),
+    virtual: careerDateFromOrdinal(first + days),
+    qualified: first + days >= anniversary,
+  };
+}
+/** A mutation records the currently shared manager; profiles only read these facts. */
+export function syncMentorExposure(w: World, person: PersonCareer, at = careerDate(w)) {
+  const job = person.employment.find((job) => !job.to && isCoachingRole(job.role));
+  const active = person.mentors.filter((mentor) => !mentor.to);
+  if (!job) {
+    for (const mentor of active) mentor.to = { ...at };
+    return;
+  }
+  const club = w.clubs.find((club) => club.id === job.club);
+  if (!club) return;
+  const manager = job.club === w.playerClub ? w.manager : clubManager(w, club);
+  if (
+    active.length === 1 &&
+    active[0].manager === manager.id &&
+    active[0].club === job.club &&
+    active[0].school === manager.style
+  )
+    return;
+  for (const mentor of active) mentor.to = { ...at };
+  person.mentors.push({
+    manager: manager.id,
+    name: manager.name,
+    ...(manager.style ? { school: manager.style } : {}),
+    club: job.club,
+    from: { ...at },
+  });
+}
+export function syncMentorExposures(w: World) {
+  for (const person of Object.values(w.people || {}))
+    if (
+      person.mentors.some((m) => !m.to) ||
+      person.employment.some((job) => !job.to && isCoachingRole(job.role))
+    )
+      syncMentorExposure(w, person);
+}
+export function longestMentor(person: PersonCareer, at: CareerDate) {
+  const employed = coachingIntervals(person, at),
+    end = careerOrdinal(at);
+  const grouped = new Map<
+    string,
+    {
+      manager: string;
+      name: string;
+      school: NonNullable<PersonCareer['mentors'][number]['school']>;
+      spells: Interval[];
+      recent: number;
+      start: number;
+    }
+  >();
+  for (const mentor of person.mentors) {
+    if (!mentor.school) continue;
+    const from = careerOrdinal(mentor.from),
+      to = Math.min(end, careerOrdinal(mentor.to ?? at));
+    if (from > to) continue;
+    const actual = employed
+      .map(([a, b]) => [Math.max(a, from), Math.min(b, to)] as Interval)
+      .filter(([a, b]) => b > a);
+    if (!actual.length) continue;
+    const entry = grouped.get(mentor.manager) ?? {
+      manager: mentor.manager,
+      name: mentor.name,
+      school: mentor.school,
+      spells: [],
+      recent: -Infinity,
+      start: -Infinity,
+    };
+    entry.spells.push(...actual);
+    entry.recent = Math.max(entry.recent, ...actual.map((i) => i[1]));
+    entry.start = Math.max(entry.start, from);
+    grouped.set(mentor.manager, entry);
+  }
+  return [...grouped.values()]
+    .map(({ spells, ...mentor }) => ({
+      ...mentor,
+      days: union(spells).reduce((sum, [a, b]) => sum + b - a, 0),
+    }))
+    .sort(
+      (a, b) =>
+        b.days - a.days ||
+        b.recent - a.recent ||
+        b.start - a.start ||
+        (a.manager < b.manager ? -1 : a.manager > b.manager ? 1 : 0),
+    )[0];
 }
