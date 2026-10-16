@@ -93,11 +93,12 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- ideation expert-proposal-review: seven central direct/delegated responsibilities and direct-only business stops adopted; settle new-game defaults and observation notifications next; balance parked.
+- ideation expert-proposal-review: delegation groups, defaults and observation stops adopted; discuss retired-player career scope and eligibility next; balance parked.
 - implement-task T141: remove the home launcher spacer and verify mobile/desktop content bounds.
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 ideation expert-proposal-review: owner adopts mixed new-game delegation defaults and independent observation stops, default match eve on/window opening off
 - 261016 ideation expert-proposal-review: owner adopts seven responsibilities and direct-only business-decision stops; delegated outcomes are reports
 - 261016 ideation expert-proposal-review: owner selects central direct/delegated choices per responsibility; granularity, defaults and clock stops remain open
 - 261016 T141 home journey updated: actual clickability and navigation-edge bounds replace the reserved-row assumption; all 9 corrected cases pass, full CI rerun next
@@ -117,4 +118,3 @@
 - 261016 update-ssot WEB start: compact home, round-only tools and unified notifications/news
 - 261016 T137 done: full source CI 38759743656 passes all six jobs, storage/first-play gates pass and settled phone/desktop captures are inspected; owner-workflow todo exhausted
 - 261016 T137 implementation: one competition/period selector, explicit home progression tools, consistent operation/news labels and readable phone season facts; full CI/performance gates pending
-- 261016 T136 done: season-first club records, explicit competition detours and four scoped league lenses; 120 affected browser scenarios verified, full integration in T137
