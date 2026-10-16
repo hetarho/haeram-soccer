@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:30Z | - |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:32Z | T163 |
 
 ## inbox
 - 261017 suggest T154 T155 T156 T157 T158: five person-career foundation tasks completed → review-code aptitude/person-careers/npc-continuity/careers/coaching-entry before the next unrelated feature; remaining planned second-career tasks continue.
@@ -84,7 +84,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T163 | Move retained coaching candidates into real NPC employment | STAFF WORLD HIST | T159 T162 | todo |
+| T163 | Move retained coaching candidates into real NPC employment | STAFF WORLD HIST | T159 T162 | doing@261017.n7r4 |
 | T164 | Qualify managers and assign separate ability and inherited school | STAFF PLAYER HIST | T162 T163 | todo |
 | T165 | Appoint qualified free and employed coaches as managers | STAFF WORLD HIST | T144 T163 T164 | todo |
 | T166 | Project qualitative aptitude and truthful career availability | WEB PLAYER STAFF HIST | T154 T155 T164 | todo |
@@ -122,6 +122,7 @@
 - Do not activate rules 3.0.0 or reset career data before T174's prerequisites are complete.
 
 ## log
+- 261017 implement-task T163 start n7r4.
 - 261017 T162 done n7r4: Unioned actual coaching intervals qualify at a virtual third calendar anniversary; dated actual mentors split on appointments, cumulative tenure wins and recency breaks ties without tactical or pre-start fabrication.
 - 261017 implement-task T162 start n7r4.
 - 261017 T161 done n7r4: Player and coach pay/effects end independently; actual retirement keeps unexpired coaching, sales settle both roles and ordinary costs once, mixed authority waits, and rollover employment uses the real closing date.
@@ -141,4 +142,3 @@
 - 261017 T154 done n7r4: Fixed independent off-pitch components and pure coaching/manager grade helpers preserve all 42 baseline player profiles.
 - 261016 implement-task T154 start n7r4; continue all remaining tasks autonomously. SAVE r38–39 activation scope is unrelated to fixed aptitude generation.
 - 261016 start-vibe v6k2 end: two authorized units complete through f57a32f; clean main pushed, final code CI 38915783586 queued. Local validation and handoff are in reports/261016-v6k2.md.
-- 261016 T153 done v6k2: balanced recruitment support across schema/protocol/rows/presets/library and reload; 833 unit, 11 contract and 27 cross-browser core cases passed. Authorized two-unit scope complete; remote CI remains in progress.
