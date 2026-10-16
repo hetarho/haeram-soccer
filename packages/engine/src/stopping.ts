@@ -43,6 +43,14 @@ export function pendingDecisions(w: World, includeDelegated = false): StopReason
       ...(alternative ? { alternative } : {}),
     });
   };
+  for (const mediation of w.mediations ?? [])
+    if (mediation.status === 'pending')
+      add(
+        'recruitment',
+        mediation.id,
+        'staff-report',
+        `${mediation.manager.name} 감독·${mediation.director.name} 단장 영입 중재`,
+      );
   const combined = Object.values(w.playingCoachProposals || {}).filter(
     (p) => p.status === 'pending',
   );

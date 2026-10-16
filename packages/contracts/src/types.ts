@@ -281,6 +281,30 @@ export interface Shortlist {
     met?: true;
   };
 }
+/** Actual external arrival facts support request/promise judgement after bid history eviction. */
+export interface RecruitmentArrival {
+  player: string;
+  name: string;
+  position: Position;
+  positions: Player['positions'];
+  at: CareerDate;
+}
+export type MediationSupport = 'director' | 'balanced' | 'manager';
+export interface RecruitmentMediation {
+  id: string;
+  key: string;
+  created: CareerDate;
+  window: 'summer' | 'winter';
+  manager: { id: string; name: string };
+  director: { id: string; name: string };
+  target: SigningRequest;
+  candidate: { id: string; name: string; fee: string; wage: string };
+  managerReason: string;
+  directorReason: string;
+  support: MediationSupport;
+  status: 'pending' | 'resolved';
+  resolution?: { at: CareerDate; support: MediationSupport; result: string; promise?: string };
+}
 export interface Club {
   id: string;
   name: string;
@@ -904,6 +928,8 @@ export interface World {
   people?: Record<string, PersonCareer>;
   playingCoachProposals?: Record<string, PlayingCoachProposal>;
   coachingMarketAt?: CareerDate;
+  recruitmentArrivals?: RecruitmentArrival[];
+  mediations?: RecruitmentMediation[];
   players: Player[];
   /** Preferred starting XI, one player per slot of the applied tactic's formation (→STAFF-22). */
   lineup?: string[];

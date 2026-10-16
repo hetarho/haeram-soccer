@@ -1,3 +1,5 @@
+import { detectMediations } from './mediation';
+import { careerDate } from './person-careers';
 import { movePerson } from './npc-continuity';
 import type {
   Line,
@@ -230,6 +232,34 @@ function candidates(w: World, offers: Offer[], need: SigningNeed, tried: Set<str
     .sort((a, b) => rank(a.offer) - rank(b.offer) || byCandidate(a.offer, b.offer));
 }
 
+/** Existing suitability/availability ordering for a logical manager request. */
+export function requestCandidates(w: World, request: SigningRequest) {
+  const day = currentDay(w),
+    tried = new Set(windowBids(w, day).map((bid) => bid.playerId));
+  const starter = request.slot === undefined ? undefined : ownStarters(w)[request.slot];
+  const need: SigningNeed =
+    request.kind === 'upgrade' && starter && request.slot !== undefined && request.position
+      ? {
+          kind: 'upgrade',
+          line: request.line,
+          slot: request.slot,
+          position: request.position,
+          starter,
+          level: atSlot(w, starter, request.slot),
+          margin: SIGNING_CONFIG.requestMargin,
+          requested: request,
+        }
+      : {
+          kind: 'short',
+          line: request.line,
+          count: 0,
+          minimum: SIGNING_CONFIG.lineMinimum[request.line],
+          squad: activePlayers(w).length,
+          requested: request,
+        };
+  if (request.kind === 'upgrade' && need.kind !== 'upgrade') return [];
+  return candidates(w, transferOffers(w), need, tried);
+}
 /** The market list's candidates that are still on it and free to join, best first per role. */
 function listable(w: World) {
   return transferOffers(w)
@@ -383,6 +413,13 @@ export function openShortlistWindow(w: World) {
  */
 export function noteSigning(w: World, player: Player) {
   movePerson(w, player, w.playerClub, true, player.loanUntil);
+  (w.recruitmentArrivals ??= []).push({
+    player: player.id,
+    name: player.name,
+    position: player.position,
+    positions: { ...player.positions },
+    at: careerDate(w),
+  });
   joinClub(player, isForeignCandidate(player.id) ? 'abroad' : 'domestic');
   const window = w.shortlist?.window;
   if (
@@ -494,8 +531,9 @@ function signFreeAgent(w: World, offer: Offer, need: SigningNeed, why: string) {
 export function staffSignings(w: World) {
   const day = currentDay(w),
     window = transferWindow(w, day);
-  if (!window.open || !isDelegated(w, 'recruitment')) return;
-  if ((day - windowOpening(w, day)) % SIGNING_CONFIG.lookDays !== 0) return;
+  if (!window.open || (day - windowOpening(w, day)) % SIGNING_CONFIG.lookDays !== 0) return;
+  detectMediations(w);
+  if (!isDelegated(w, 'recruitment')) return;
   const bids = windowBids(w, day);
   if (bids.some((bid) => bid.staff && isOpen(bid))) return;
   const squad = activePlayers(w).length;

@@ -673,6 +673,35 @@ export const worldSchema: z.ZodType<World> = z.object({
   calendar: z.object({ day: z.number().int().min(0).max(365) }).optional(),
   rankHistory: z.array(snapshot).max(470).optional(),
   scorerSeason: scorerSeason.optional(),
+  recruitmentArrivals: z
+    .array(z.strictObject({ player: id, name: text, position, positions, at: careerDate }))
+    .optional(),
+  mediations: z
+    .array(
+      z.strictObject({
+        id,
+        key: text,
+        created: careerDate,
+        window: z.enum(['summer', 'winter']),
+        manager: z.strictObject({ id, name: text }),
+        director: z.strictObject({ id, name: text }),
+        target: request,
+        candidate: z.strictObject({ id, name: text, fee: amount, wage: amount }),
+        managerReason: z.string().min(1).max(1000),
+        directorReason: z.string().min(1).max(1000),
+        support: z.enum(['director', 'balanced', 'manager']),
+        status: z.enum(['pending', 'resolved']),
+        resolution: z
+          .strictObject({
+            at: careerDate,
+            support: z.enum(['director', 'balanced', 'manager']),
+            result: text,
+            promise: id.optional(),
+          })
+          .optional(),
+      }),
+    )
+    .optional(),
   coachingMarketAt: careerDate.optional(),
   people: z.record(id, personCareer).optional(),
   playingCoachProposals: z
@@ -957,6 +986,32 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   }
   const occupied = new Set<string>();
   const dateNumber = (date: { year: number; day: number }) => date.year * 366 + date.day;
+  const mediationIds = new Set<string>(),
+    mediationKeys = new Set<string>();
+  for (const mediation of w.mediations ?? []) {
+    if (
+      mediationIds.has(mediation.id) ||
+      mediationKeys.has(mediation.key) ||
+      dateNumber(mediation.created) > w.year * 366 + (w.calendar?.day ?? w.round * 7) ||
+      !mediation.manager.name ||
+      !mediation.director.name ||
+      mediation.manager.id === mediation.director.id ||
+      (mediation.target.kind === 'upgrade' &&
+        (mediation.target.slot === undefined || !mediation.target.position)) ||
+      (mediation.resolution &&
+        dateNumber(mediation.resolution.at) < dateNumber(mediation.created)) ||
+      (mediation.status === 'resolved') !== !!mediation.resolution
+    )
+      throw new Error('중재 기록 참조 또는 날짜 손상');
+    mediationIds.add(mediation.id);
+    mediationKeys.add(mediation.key);
+  }
+  for (const arrival of w.recruitmentArrivals ?? [])
+    if (
+      dateNumber(arrival.at) > w.year * 366 + (w.calendar?.day ?? w.round * 7) ||
+      !arrival.positions[arrival.position]
+    )
+      throw new Error('실제 영입 기록 손상');
   for (const [key, person] of Object.entries(w.people || {})) {
     if (key !== person.id || person.born > w.year || (person.club && !ids.has(person.club)))
       throw new Error('인물 참조 손상');

@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:49Z | T169 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:53Z | - |
 
 ## inbox
 - 261017 suggest T154 T155 T156 T157 T158: five person-career foundation tasks completed → review-code aptitude/person-careers/npc-continuity/careers/coaching-entry before the next unrelated feature; remaining planned second-career tasks continue.
@@ -84,7 +84,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T169 | Record and deduplicate actual director–manager financial conflicts | CLUB WEB HIST SAVE | T143 T145 T146 T153 | doing@261017.n7r4 |
 | T170 | Resolve mediation under standing or case-specific support | CLUB STAFF ECON HIST | T169 | todo |
 | T171 | Judge, cancel and retain fixed-deadline reinforcement promises | CLUB HIST SAVE | T170 T165 | todo |
 | T172 | Present direct mediation and durable commitment status | WEB CLUB STAFF HIST | T150 T171 T153 | todo |
@@ -116,6 +115,7 @@
 - Do not activate rules 3.0.0 or reset career data before T174's prerequisites are complete.
 
 ## log
+- 261017 T169 done n7r4: Actual suitable-candidate financial opposition creates one durable manager/target/window mediation with participant snapshots and retained arrival facts; owner stops and delegated resolver queue survive refresh/reload.
 - 261017 implement-task T169 start n7r4.
 - 261017 T168 done n7r4: Selected-person readonly career details link player, coaching and manager views with actual dates, service, mentor facts and honest missing-stat notices; manager offers disclose real employment and costs.
 - 261017 implement-task T168 start n7r4.
@@ -135,4 +135,3 @@
 - 261017 implement-task T161 start n7r4.
 - 261017 T160 done n7r4: Joint playing-coach quotes atomically approve both roles, preserve additive wages and ordinary costs, enforce stale/funds/age guards and deduplicate mixed-authority stopping/handover.
 - 261017 implement-task T160 start n7r4.
-- 261017 T159 done n7r4: Former players receive one specialty and actual coaching ability; pure candidate lists append retained people, stable hiring IDs survive index changes and employment preserves learned values.
