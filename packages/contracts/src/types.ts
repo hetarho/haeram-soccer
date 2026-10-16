@@ -374,6 +374,7 @@ export interface ContractTalk {
 }
 export interface Manager {
   id: string;
+  person?: string;
   name: string;
   philosophy: Tactic;
   ability: number;
@@ -413,6 +414,7 @@ export interface ManagerMarket {
 }
 export interface Staff {
   id: string;
+  person?: string;
   role: StaffRole;
   name: string;
   ability: number;
@@ -802,6 +804,56 @@ export interface EuropeTournament {
   /** Knockout rounds drawn so far (→EURO-10). */
   rounds?: KnockoutRound[];
 }
+/** Dates are season year and day from August 1, never device time. */
+export interface CareerDate {
+  year: number;
+  day: number;
+}
+export type CareerRole = 'player' | 'manager' | StaffRole;
+export interface CareerEmployment {
+  role: CareerRole;
+  club: string;
+  from: CareerDate;
+  to?: CareerDate;
+}
+export interface MentorExposure {
+  manager: string;
+  name: string;
+  school?: ManagerStyle;
+  club: string;
+  from: CareerDate;
+  to?: CareerDate;
+}
+/** Retained identities and actual facts only; unknown playing totals stay absent. */
+export interface PersonCareer {
+  id: string;
+  name: string;
+  born: number;
+  position: Position;
+  professionalism: Personality['professionalism'];
+  qualities: OffPitchQualities;
+  formerOwn?: boolean;
+  ownCareer?: number[];
+  playing: 'active' | 'released' | 'retired';
+  club?: string;
+  employment: CareerEmployment[];
+  mentors: MentorExposure[];
+  intention?: {
+    at: CareerDate;
+    draw: number;
+    willing: boolean;
+    encouraged?: { at: CareerDate; changed: boolean };
+  };
+  retirement?: { announced: CareerDate; year: number; at?: CareerDate };
+  coaching?: {
+    role: Exclude<StaffRole, 'director' | 'scout'>;
+    ability: number;
+    potential: number;
+    at: CareerDate;
+  };
+  management?: { ability: number; potential: number; school: ManagerStyle; at: CareerDate };
+}
+
 export interface World {
   schema: 1;
   engine: string;
@@ -822,6 +874,7 @@ export interface World {
   /** The difficulty level the club was founded at (→WEB-3). */
   level: DifficultyLevel;
   clubs: Club[];
+  people?: Record<string, PersonCareer>;
   players: Player[];
   /** Preferred starting XI, one player per slot of the applied tactic's formation (→STAFF-22). */
   lineup?: string[];

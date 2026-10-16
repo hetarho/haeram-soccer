@@ -144,6 +144,7 @@ const player = z
   );
 const manager = z.object({
   id,
+  person: id.optional(),
   name: text,
   philosophy: tactic,
   ability: rating,
@@ -496,6 +497,7 @@ export const talkRuleSchema = z.strictObject({
 });
 const staff = z.strictObject({
   id,
+  person: id.optional(),
   role: staffRole,
   name: text,
   ability: rating,
@@ -588,6 +590,70 @@ const sponsorContract = z
     index: z.number().finite().positive(),
   })
   .refine((contract) => contract.from <= contract.until);
+const careerDate = z.strictObject({ year: season, day: seasonDay });
+const qualities = z.strictObject({ understanding: grade, teaching: grade, judgement: grade });
+const careerEmployment = z.strictObject({
+  role: z.enum([
+    'player',
+    'manager',
+    'director',
+    'assistant',
+    'attack',
+    'defense',
+    'goalkeeping',
+    'fitness',
+    'youth',
+    'scout',
+  ]),
+  club: id,
+  from: careerDate,
+  to: careerDate.optional(),
+});
+const personCareer = z.strictObject({
+  id,
+  name: text,
+  born: z.number().int(),
+  position,
+  professionalism: grade,
+  qualities,
+  formerOwn: z.boolean().optional(),
+  ownCareer: metrics.optional(),
+  playing: z.enum(['active', 'released', 'retired']),
+  club: id.optional(),
+  employment: z.array(careerEmployment),
+  mentors: z.array(
+    z.strictObject({
+      manager: id,
+      name: text,
+      school: managerStyle.optional(),
+      club: id,
+      from: careerDate,
+      to: careerDate.optional(),
+    }),
+  ),
+  intention: z
+    .strictObject({
+      at: careerDate,
+      draw: z.number().finite().min(0).lt(1),
+      willing: z.boolean(),
+      encouraged: z.strictObject({ at: careerDate, changed: z.boolean() }).optional(),
+    })
+    .optional(),
+  retirement: z
+    .strictObject({ announced: careerDate, year: season, at: careerDate.optional() })
+    .optional(),
+  coaching: z
+    .strictObject({
+      role: z.enum(['assistant', 'attack', 'defense', 'goalkeeping', 'fitness', 'youth']),
+      ability: rating,
+      potential: rating,
+      at: careerDate,
+    })
+    .optional(),
+  management: z
+    .strictObject({ ability: rating, potential: rating, school: managerStyle, at: careerDate })
+    .optional(),
+});
 export const worldSchema: z.ZodType<World> = z.object({
   schema: z.literal(1),
   engine: text,
@@ -601,6 +667,7 @@ export const worldSchema: z.ZodType<World> = z.object({
   calendar: z.object({ day: z.number().int().min(0).max(365) }).optional(),
   rankHistory: z.array(snapshot).max(470).optional(),
   scorerSeason: scorerSeason.optional(),
+  people: z.record(id, personCareer).optional(),
   playerClub: id,
   level: z.enum(['easy', 'normal', 'hard', 'extreme']),
   clubs: z.array(club).min(10).max(1000),
@@ -848,6 +915,60 @@ function legacySponsor(w: World, country: string, catalog: LoadCatalog | undefin
 export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   const w = worldSchema.parse(input);
   const ids = new Set(w.clubs.map((c) => c.id));
+  const occupied = new Set<string>();
+  const dateNumber = (date: { year: number; day: number }) => date.year * 366 + date.day;
+  for (const [key, person] of Object.entries(w.people || {})) {
+    if (key !== person.id || person.born > w.year || (person.club && !ids.has(person.club)))
+      throw new Error('인물 참조 손상');
+    const roles = new Set<string>();
+    for (const job of person.employment) {
+      if (!ids.has(job.club) || (job.to && dateNumber(job.to) < dateNumber(job.from)))
+        throw new Error('인물 재직 기간 손상');
+      if (!job.to) {
+        if (
+          roles.has(job.role) ||
+          (job.role === 'manager' && [...roles].some((role) => role !== 'player')) ||
+          (job.role !== 'player' && job.role !== 'manager' && roles.has('manager'))
+        )
+          throw new Error('인물 중복 재직');
+        roles.add(job.role);
+        if (job.role !== 'player') {
+          const post = `${job.club}:${job.role}`;
+          if (occupied.has(post)) throw new Error('중복 담당자');
+          occupied.add(post);
+        }
+      }
+    }
+    for (const exposure of person.mentors)
+      if (
+        !ids.has(exposure.club) ||
+        (exposure.to && dateNumber(exposure.to) < dateNumber(exposure.from))
+      )
+        throw new Error('멘토 기간 손상');
+  }
+  for (const player of [...w.players, ...(w.academy?.players || [])]) {
+    const person = w.people?.[player.id];
+    if (
+      person &&
+      (person.name !== player.name ||
+        person.born !== player.born ||
+        person.professionalism !== player.personality.professionalism ||
+        JSON.stringify(person.qualities) !== JSON.stringify(player.qualities))
+    )
+      throw new Error('선수 인물 참조 손상');
+  }
+  for (const member of [w.manager, ...(w.staff || []), ...(w.managerMarket?.free || [])]) {
+    if (!member.person) continue;
+    const person = w.people?.[member.person];
+    if (
+      !person ||
+      person.id !== member.id ||
+      person.name !== member.name ||
+      person.born !== member.born
+    )
+      throw new Error('직원 인물 참조 손상');
+  }
+
   if (ids.size !== w.clubs.length || !ids.has(w.playerClub))
     throw new Error('저장된 클럽 식별자가 올바르지 않습니다.');
   const seasonDays = (Date.UTC(w.year + 1, 7, 1) - Date.UTC(w.year, 7, 1)) / 86400000;
