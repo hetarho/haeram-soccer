@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r81 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r82 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -160,7 +160,7 @@
   - coaches always choose training; their owner's suggestion/order actions remain →STAFF-19, outside these seven categories.
   - direction criteria remain editable through →WEB-60/77 regardless of responsibility; delegated staff use the relevant rows, and each task states whether they are active and when.
   - the market marks director bids 단장 제안. The owner sees their answers without answering director-owned bids; a director-signed free agent reads 단장 영입 · 자유계약 · 이적료 없음, never an offer of 0.
-  - mode and settings changes must preserve the manual-mode validity rule (→WEB-76). In-flight decision handling and remaining event classification are →WEB-79.
+  - mode and settings changes must preserve the manual-mode validity rule (→WEB-76). Pending decisions follow →WEB-82; remaining event classification is →WEB-79.
 
 - WEB-47 [o] League uses a visible competition and season selector and starts on standings for the season in progress or a closed season. The stable lenses of →WEB-40 keep their purpose across periods; a closed season never forces a club-review tab.
   - Final tables retain their historical division zones, with W-D-L only where recorded. Other competition details follow retained scope (→WEB-65). A season close opens no screen automatically.
@@ -319,11 +319,20 @@
   - player, coach and manager career views link the same retained person and actual career stages (→HIST-14). Never reset his age or fabricate missing other-club career statistics.
   - manager candidacy is shown only when coaching experience and managerial aptitude qualify him (→STAFF-24/28); specialist coaching remains a continuing career.
 
-- WEB-79 [?] Define responsibility changes for pending/unanswered bids, contracts, appointments and mediation, including same-day changes and already-resolved events; define the complete stop/acknowledgement classification of existing non-business reports without adding per-business-event stop switches. Define any clock shortcut to the central screen and its commit timing. No pending outcome or authority may be silently rewritten.
+- WEB-79 [?] Define the complete stop/acknowledgement classification of existing non-business reports without adding per-business-event stop switches. Define the central responsibility screen's clock shortcut and editing/commit workflow consistent with explicit application and pending-work disclosure (→WEB-82). No pending outcome or authority may be silently rewritten.
 
-- WEB-80 [?] Define next-event behaviour when no configured stop is reachable, interruption/cancellation of a long advance, simultaneous stopping events and interaction with explicit one-round tools. Preserve ordered settlement, pending owner decisions, existing critical/error blockers and manual mode's absence of unattended progress.
+- WEB-80 [?] Define next-event behaviour when no configured stop is reachable, interruption/cancellation of a long advance and interaction with explicit one-round tools. Same-date stopping events follow →WEB-83. Preserve ordered settlement, pending owner decisions, existing critical/error blockers and manual mode's absence of unattended progress.
 
 - WEB-81 [o] Mediation shows each person's actual explanation, the standing support policy, a case-specific support choice when owner-held, and any promise's target, deadline and recorded status (→CLUB-34/35, →STAFF-26). Delegated mediation reports the policy and result without an extra owner-only stop. Promise outcomes remain available through retained decisions (→HIST-15).
+
+- WEB-82 [o] Explicitly applying a responsibility change transfers that category's unresolved work to its newly selected decision-maker, including decisions already waiting on the current date.
+  - before apply, disclose the affected pending work and its count, such as 대기 중인 영입 2건도 위임됩니다. Merely selecting or reading a setting does not transfer authority.
+  - direct to delegated includes pending bids, contracts, appointments and mediation belonging to that category; the responsible staff process them under their ordinary rules and report the outcomes (→STAFF-13, →WEB-45).
+  - delegated to direct brings back only work still unresolved when the change is applied. Completed decisions and their recorded outcomes remain unchanged; changing responsibility never replays them.
+
+- WEB-83 [o] Manual next-event progression groups stopping events reached on the same game date in one dated view, retaining each event and its own action.
+  - show all stopping events produced by that date's ordered settlement, including a match-eve observation alongside business decisions; do not advance another date to collect more items.
+  - every owner-held decision in the group must be resolved before the next advance. Resolving the group leaves manual progression stopped until another explicit progression action (→WEB-5/42).
 
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
@@ -335,6 +344,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r82 261016 WEB-45✎ pending handling open→WEB-82; WEB-79/80✎ transition/simultaneous-event questions→remaining settings/report/advance questions; WEB-82/83+ explicit pending-work transfer and same-date manual event grouping
 - r81 261016 WEB-5/18✎ paced-only→two modes; WEB-42/45✎ ladder→seven responsibilities/observation triggers; WEB-39/43/44/60/64/71✎ level/page access→responsibility/scoped sheets; WEB-76/77/78/81+ match guard, department apply and career/mediation UI; WEB-79/80+ open transition/advance rules
 - r80 261016 WEB-60✎ expanded draft summary with a bottom gap→collapsed by default and aligned to the content bottom; WEB-51✎ always-visible floating launcher→hidden while the draft panel is rendered, with its reserved space released
 - r79 261016 WEB-5/10/11/12/38/42/51/66✎ repeated home title, milestone/headlines and finish-season action→compact calendar-progress strip and round-only tools; separate HUD inbox/news sheets→one floating tabbed notifications/news dialog
