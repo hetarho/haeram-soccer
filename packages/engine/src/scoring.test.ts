@@ -161,3 +161,48 @@ describe('actual league scorer standings', () => {
     validateWorld(w);
   });
 });
+
+describe('retained scorer transfers', () => {
+  it('keeps one identity and exact per-club contributions through a real in-league sale', async () => {
+    const { transferredScorerWorld } = await import('../../../tests/fixtures/transferred-scorer');
+    const { w, playerId, buyer } = transferredScorerWorld();
+    const rows = w.scorerSeason!.players.filter((p) => p.id === playerId);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].club).toBe(buyer);
+    expect(rows[0].clubs).toHaveLength(2);
+    const ownAppearances = w.ownMatches.filter(
+      (match) =>
+        ['league', 'lower'].includes(match.kind) &&
+        match.round <= 3 &&
+        match.players.some((p) => p.id === playerId && p.metrics[10] > 0),
+    ).length;
+    expect(rows[0].clubs!.map((p) => p.appearances)).toEqual([ownAppearances, 1]);
+    expect(rows[0].clubs!.reduce((sum, p) => sum + p.goals, 0)).toBe(rows[0].goals);
+    validateWorld(w);
+    for (const corrupt of [
+      (copy: typeof w) => {
+        copy.scorerSeason!.players.find((p) => p.id === playerId)!.clubs![0].goals++;
+      },
+      (copy: typeof w) => {
+        const p = copy.scorerSeason!.players.find((p) => p.id === playerId)!;
+        p.clubs![1].club = p.clubs![0].club;
+      },
+      (copy: typeof w) => {
+        copy.scorerSeason!.players.find((p) => p.id === playerId)!.clubs![0].club = 'missing-club';
+      },
+    ]) {
+      const copy = structuredClone(w);
+      corrupt(copy);
+      expect(() => validateWorld(copy)).toThrow();
+    }
+    simulateSeason(w);
+    const archived = w.history.at(-1)!.scorers!.find((p) => p.name === rows[0].name)!;
+    expect(archived).toBeDefined();
+    expect(archived.clubs!.map((p) => w.clubs[p.club].id)).toEqual([w.playerClub, buyer]);
+    expect(archived.clubs!.reduce((sum, p) => sum + p.goals, 0)).toBe(archived.goals);
+    validateWorld(w);
+    const malformed = structuredClone(w);
+    malformed.history.at(-1)!.scorers!.find((p) => p.name === archived.name)!.clubs![0].goals++;
+    expect(() => validateWorld(malformed)).toThrow('시즌 득점 기록');
+  });
+});

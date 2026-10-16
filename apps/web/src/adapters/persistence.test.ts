@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../../../packages/contracts/src/index';
-import { createWorld, advanceRound } from '../../../../packages/engine/src/index';
+import { createWorld, advanceRound, simulateSeason } from '../../../../packages/engine/src/index';
 import { checkpoint, encode, decode, Saves, type StoragePort } from './persistence';
 import { base64, pack, unpack } from './packing';
 import { denseBytes } from './dense';
@@ -551,4 +551,17 @@ it('feature-state-lossless-roundtrip and continued-career-parity preserve roles,
   }
   expect(canonical(restored)).toBe(canonical(original));
   expect(canonical((await decode(await encode(restored))).world)).toBe(canonical(original));
+});
+
+it('roundtrips one transferred league scorer with both real club contributions', async () => {
+  const { transferredScorerWorld } = await import('../../../../tests/fixtures/transferred-scorer');
+  const { w, playerId } = transferredScorerWorld();
+  const raw = await encode(w, 1, 0),
+    loaded = await decode(raw);
+  expect(canonical(loaded.world)).toBe(canonical(w));
+  expect(loaded.world.scorerSeason!.players.find((p) => p.id === playerId)!.clubs).toHaveLength(2);
+  simulateSeason(w);
+  const archived = await decode(await encode(w, 2, 1));
+  expect(canonical(archived.world)).toBe(canonical(w));
+  expect(archived.world.history.at(-1)!.scorers!.some((p) => p.clubs?.length === 2)).toBe(true);
 });

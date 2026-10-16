@@ -550,6 +550,8 @@ export interface StandingSnapshot {
   rows: [number, number, number, number][];
 }
 export interface GoalScorer {
+  /** Actual contributions by club, present after an in-league move. */
+  clubs?: { club: string; goals: number; appearances: number }[];
   id: string;
   name: string;
   club: string;
@@ -754,6 +756,7 @@ export interface SeasonArchive {
   runs?: CupRun[];
   /** The own league's ten leading scorers (goals, then fewer appearances); club indexes `clubs`. */
   scorers?: {
+    clubs?: { club: number; goals: number; appearances: number }[];
     name: string;
     club: number;
     position: Position;

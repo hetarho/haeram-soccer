@@ -243,6 +243,17 @@ const scorerSeason = z.object({
         id,
         name: text,
         club: id,
+        clubs: z
+          .array(
+            z.strictObject({
+              club: id,
+              goals: z.number().int().nonnegative(),
+              appearances: z.number().int().min(1).max(46),
+            }),
+          )
+          .min(2)
+          .max(46)
+          .optional(),
         position,
         goals: z.number().int().nonnegative(),
         appearances: z.number().int().min(1).max(46),
@@ -379,6 +390,17 @@ const archive = z.object({
       z.strictObject({
         name: text,
         club: clubIndex,
+        clubs: z
+          .array(
+            z.strictObject({
+              club: clubIndex,
+              goals: z.number().int().nonnegative(),
+              appearances: z.number().int().min(1).max(46),
+            }),
+          )
+          .min(2)
+          .max(46)
+          .optional(),
         position,
         goals: z.number().int().positive(),
         appearances: z.number().int().min(1).max(46),
@@ -1013,6 +1035,26 @@ function legacySponsor(w: World, country: string, catalog: LoadCatalog | undefin
 }
 
 /** `catalog` is needed only for a world from rules before 1.16 that has a sponsor. */
+function scorerClubsValid<C extends string | number>(
+  scorer: {
+    club: C;
+    goals: number;
+    appearances: number;
+    clubs?: { club: C; goals: number; appearances: number }[];
+  },
+  exists: (club: C) => boolean,
+) {
+  const parts = scorer.clubs;
+  return (
+    !parts ||
+    (new Set(parts.map((p) => p.club)).size === parts.length &&
+      parts.some((p) => p.club === scorer.club) &&
+      parts.every((p) => exists(p.club)) &&
+      parts.reduce((sum, p) => sum + p.goals, 0) === scorer.goals &&
+      parts.reduce((sum, p) => sum + p.appearances, 0) === scorer.appearances)
+  );
+}
+
 export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   const w = worldSchema.parse(input);
   const ids = new Set(w.clubs.map((c) => c.id));
@@ -1324,8 +1366,12 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       }
     }
     for (const scorer of season.players) {
-      goals.set(scorer.club, (goals.get(scorer.club) || 0) - scorer.goals);
-      appearances.set(scorer.club, (appearances.get(scorer.club) || 0) - scorer.appearances);
+      if (!scorerClubsValid(scorer, (club) => ids.has(club)))
+        throw new Error('득점 순위 구단별 기여 손상');
+      for (const part of scorer.clubs ?? [scorer]) {
+        goals.set(part.club, (goals.get(part.club) || 0) - part.goals);
+        appearances.set(part.club, (appearances.get(part.club) || 0) - part.appearances);
+      }
     }
     if ([...goals.values(), ...appearances.values()].some((value) => value !== 0))
       throw new Error('득점 순위와 실제 경기 지표가 일치하지 않습니다.');
@@ -1403,7 +1449,13 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       )
         throw new Error('시즌 순위 참조 손상');
   for (const h of w.history) {
-    if (h.scorers?.some((scorer) => scorer.club >= w.clubs.length))
+    if (
+      h.scorers?.some(
+        (scorer) =>
+          scorer.club >= w.clubs.length ||
+          !scorerClubsValid(scorer, (club) => club < w.clubs.length),
+      )
+    )
       throw new Error('시즌 득점 기록 참조 손상');
     for (const round of (h.brackets || []).flatMap((b) => b.rounds))
       if (

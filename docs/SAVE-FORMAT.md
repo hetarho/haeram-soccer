@@ -28,6 +28,8 @@ Rules `1.16.0` add, among others, three optional fields inline in the world JSON
 
 Archived movement frames are not save facts. Historical goal playback uses preserved goal minutes; only the final recorded counters are displayed in that summary playback.
 
+Scorer records keep one stable player identity through transfers within the tracked league. An optional `clubs` array retains actual `{club, goals, appearances}` contributions once more than one club contributes; live records use club IDs and archived top-ten records use stable club indexes. Aggregate totals must equal those contributions, each club occurs once, and the displayed club is the latest contributing one. Older single-club records remain valid without an invented split.
+
 ## Second-career feature state
 
 The rules 3.0 feature payload keeps settings (seven responsibilities, progression mode and observations), the recruitment support row, player qualities, staff/manager person links, joint playing-coach proposals, coaching-market refresh dates, actual recruitment arrivals, mediations and promises as canonical fields. The envelope, checksum, two-slot protocol and size limits are unchanged. Release activation and bounded legacy classification are separate from this encoding.

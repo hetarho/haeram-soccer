@@ -88,7 +88,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T190 | Preserve scorer club contributions through transfers | HIST SAVE | T155 | doing@261017.n7r4 |
 | T174 | Activate rules 3.0.0 with bounded recognized-legacy gameplay reset | SAVE WEB ARCH | T150 T152 T167 T168 T172 T173 T180 T186 T187 | todo |
 | T175 | Migrate old browser helpers to the approved public progression flow | WEB LEAGUE | T150 | doing@261017.n7r4 |
 | T176 | Verify second careers across contracts, reloads and market transitions | WEB STAFF WORLD HIST SAVE | T167 T168 T174 | todo |
@@ -109,6 +108,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 T190 done n7r4: One retained scorer keeps aggregate league totals and exact per-club contributions across real in-league transfers; strict conservation, archived breakdowns, UI labels and the lossless save codec preserve those facts.
 - 261017 create-task/implement-task T190: correct scorer conservation before resuming T175; existing browser changes preserved.
 - 261017 update-ssot HIST r13: preserve player and club scoring facts across retained-player transfers; T175 browser regression exposed save validation failure.
 - 261017 implement-task T175 start n7r4.
@@ -128,6 +128,3 @@
 - 261017 create-task T188: WEB r88 and reported selector/exit regressions; prioritize before T183.
 - 261017 update-ssot WEB r88: fixed pitch ratio requested; T183 engine scope unaffected.
 - 261017 implement-task T183 start n7r4.
-- 261017 T182 done n7r4: One season-specific registration model now guards every signing, loan, promotion, delegated purchase and generated refill; first-team tenure/graduation survive schema roundtrip and over-limit squads keep their players.
-- 261017 implement-task T182 start n7r4.
-- 261017 T181 done n7r4: Catalog 2026-demo-3 contains exactly the twelve approved sourced registration eras and forty-player ceiling, with validated provenance/ranges and recognized older pins preserved until release activation.

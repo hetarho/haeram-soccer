@@ -30,7 +30,7 @@ function TrackingNote({ w }: Props) {
 }
 
 const playerLabel = (w: World, player: GoalScorer) =>
-  `${player.name} · ${w.clubs.find((club) => club.id === player.club)?.short || player.club}`;
+  `${player.name} · ${(player.clubs?.map((part) => part.club) ?? [player.club]).map((id) => w.clubs.find((club) => club.id === id)?.short || id).join(' → ')}`;
 const roundLabel = (round: number) => (round === 0 ? '개막 전' : `${round}라운드`);
 
 export const ScorerStandings = memo(function ScorerStandings({ w }: Props) {
@@ -83,7 +83,17 @@ export const ScorerStandings = memo(function ScorerStandings({ w }: Props) {
                       {player.club === w.playerClub && <span className={s.ownBadge}>우리 팀</span>}
                     </th>
                     <td className={s.club}>
-                      <ClubLink w={w} id={player.club} crest={14} />
+                      {player.clubs ? (
+                        player.clubs.map((part) => (
+                          <span key={part.club}>
+                            <ClubLink w={w} id={part.club} crest={14} /> {part.goals}골 ·{' '}
+                            {part.appearances}경기
+                            <br />
+                          </span>
+                        ))
+                      ) : (
+                        <ClubLink w={w} id={player.club} crest={14} />
+                      )}
                     </td>
                     <td>{player.position}</td>
                     <td>{player.appearances}</td>

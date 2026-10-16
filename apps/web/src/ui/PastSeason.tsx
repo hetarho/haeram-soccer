@@ -379,7 +379,23 @@ function SeasonScorers({ w, season, read }: { w: World; season: SeasonArchive; r
                         )}
                       </th>
                       <td className={c.club}>
-                        {club ? <ClubLink w={w} id={club.id} crest={14} /> : '—'}
+                        {player.clubs ? (
+                          player.clubs.map((part) => (
+                            <span key={part.club}>
+                              {w.clubs[part.club] ? (
+                                <ClubLink w={w} id={w.clubs[part.club].id} crest={14} />
+                              ) : (
+                                '—'
+                              )}{' '}
+                              {part.goals}골 · {part.appearances}경기
+                              <br />
+                            </span>
+                          ))
+                        ) : club ? (
+                          <ClubLink w={w} id={club.id} crest={14} />
+                        ) : (
+                          '—'
+                        )}
                       </td>
                       <td className={c.goals}>{player.goals}</td>
                       <td>{player.appearances}</td>

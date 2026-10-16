@@ -74,6 +74,9 @@ export function archivedScorers(w: World): SeasonArchive['scorers'] {
     .map(({ player }) => ({
       name: player.name,
       club: index.get(player.club)!,
+      ...(player.clubs
+        ? { clubs: player.clubs.map((part) => ({ ...part, club: index.get(part.club)! })) }
+        : {}),
       position: player.position,
       goals: player.goals,
       appearances: player.appearances,
@@ -107,6 +110,21 @@ export function recordScorers(w: World, playback: MatchPlayback) {
         });
       }
       const scorer = season.players[index];
+      if (scorer.club !== club) {
+        scorer.clubs ??= [
+          { club: scorer.club, goals: scorer.goals, appearances: scorer.appearances },
+        ];
+        scorer.club = club;
+      }
+      if (scorer.clubs) {
+        let contribution = scorer.clubs.find((part) => part.club === club);
+        if (!contribution) {
+          contribution = { club, goals: 0, appearances: 0 };
+          scorer.clubs.push(contribution);
+        }
+        contribution.goals += metrics[0];
+        contribution.appearances++;
+      }
       scorer.goals += metrics[0];
       scorer.appearances++;
     }
