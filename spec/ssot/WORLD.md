@@ -1,5 +1,5 @@
 # WORLD Fictional world and catalogs
-> r4 | Define the browser-demo rules for fictional world and catalogs.
+> r5 | Define the browser-demo rules for fictional world and catalogs.
 
 ## decisions
 - WORLD-1 [o] Playable associations: ENG ESP GER ITA FRA POR NED BEL. Other UEFA associations appear as representative clubs only.
@@ -17,6 +17,7 @@
 
 - WORLD-10 [o] Second-career opportunities apply across clubs, not only to the owner's retirees (→STAFF-23/24).
   - a player who enters coaching and later management stays the same recognisable person, retaining his actual birth year, name and genuinely retained playing history (→HIST-14).
+  - a playing coach (→STAFF-31) holds concurrent player/coach roles as one person; the two profiles and employment history must not create separate identities or duplicate the same period of coaching service.
   - seasonal squad generation must not rename, rejuvenate or duplicate that person as a new staff member. Missing other-club appearances or honours remain unavailable, never invented.
   - the scope and lifecycle of other-club player continuity are →WORLD-11.
 
@@ -31,6 +32,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r5 261016 WORLD-10✎ sequential role continuity→also one shared identity for concurrent player/coach roles
 - r4 261016 WORLD-6✎ seasonal squad identities→cross-role continuity reference; WORLD-10+ cross-club second-career person continuity; WORLD-11+ open NPC continuity/retirement scope
 - r3 261015 WORLD-6✎ NPC squads of four roles→the player model filling their tactic's formation
 - r2 261011 WORLD-5✎ reserved lowest-tier slot→player club founded in the amateur league; WORLD-9+ 15 amateur clubs per country and tier strength ranges

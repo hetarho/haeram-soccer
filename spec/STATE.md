@@ -16,7 +16,7 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 
 ## inbox
-- 261016 parked STAFF-25 STAFF-27 STAFF-28 PLAYER-22 WORLD-11 CLUB-36 CLUB-37: clarify career thresholds/candidate entry, NPC continuity and mediation/promise criteria before creating the complete proposal task batch
+- 261016 parked STAFF-25 STAFF-27 STAFF-28 PLAYER-22 WORLD-11 CLUB-36 CLUB-37: clarify coaching entry/aptitude, playing-coach contracts/authority, NPC continuity and mediation/promise criteria before creating the complete proposal task batch
 - 261016 suggest WEB-74: owner-workflow tasks T134–T138 completed → review-code taskMemory/state, RecordsRoom/LiveSeason/CupsView and their browser journeys before the next UI feature; no refactoring is included in this completed scope
 - 261016 suggest -: spec lint has 33 existing document-quality hints → doc-review WEB/ARCH before expanding the navigation specification; no policy changes implied
 - 261015 decided WEB-74: start-vibe m8q4 scope → implement navigation-and-records with current game rules and the approved pixel readability baseline in an isolated checkout (alt: analysis only | revise game mechanics)
@@ -69,14 +69,14 @@
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
 | WEB | 85 | 80 | WEB-5✎ WEB-18✎ WEB-39✎ WEB-42✎ WEB-43✎ WEB-44✎ WEB-45✎ WEB-60✎ WEB-64✎ WEB-71✎ WEB-76+ WEB-77+ WEB-78+ WEB-79+ WEB-80+ WEB-81+ WEB-82+ WEB-83+ WEB-11✎ WEB-62✎ | 0 |
-| WORLD | 4 | 3 | WORLD-6✎ WORLD-10+ WORLD-11+ | 1 |
+| WORLD | 5 | 3 | WORLD-6✎ WORLD-10+ WORLD-11+ | 1 |
 | CLUB | 36 | 35 | CLUB-3✎ CLUB-13✎ CLUB-18✎ CLUB-22✎ CLUB-24✎ CLUB-32✎ CLUB-33✎ CLUB-34+ CLUB-35+ CLUB-36+ CLUB-37+ | 2 |
 | MATCH | 9 | 9 | - | 0 |
 | LEAGUE | 8 | 7 | LEAGUE-11✎ LEAGUE-13✎ | 0 |
-| STAFF | 21 | 20 | STAFF-13✎ STAFF-15✎ STAFF-16✎ STAFF-17✎ STAFF-18✎ STAFF-19✎ STAFF-20✎ STAFF-23+ STAFF-24+ STAFF-25+ STAFF-26+ STAFF-27+ STAFF-28+ | 3 |
+| STAFF | 22 | 20 | STAFF-13✎ STAFF-15✎ STAFF-16✎ STAFF-17✎ STAFF-18✎ STAFF-19✎ STAFF-20✎ STAFF-23+ STAFF-24+ STAFF-25+ STAFF-26+ STAFF-27+ STAFF-28+ STAFF-29+ STAFF-30+ STAFF-31+ | 3 |
 | ECON | 38 | 37 | ECON-25✎ | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 10 | 9 | HIST-14+ HIST-15+ | 0 |
+| HIST | 11 | 9 | HIST-14+ HIST-15+ | 0 |
 | SAVE | 37 | 35 | SAVE-17+ SAVE-18+ SAVE-5✎ SAVE-11✎ SAVE-14✎ SAVE-16✎ | 0 |
 | PLAYER | 5 | 3 | PLAYER-1✎ PLAYER-19✎ PLAYER-21+ PLAYER-22+ | 1 |
 
@@ -96,6 +96,7 @@
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 update-ssot STAFF r22 WORLD r5 HIST r11: once-only post-announcement encouragement, three-year actual coaching service and one/two-year existing-post playing coaches with full service credit and one identity; contract/entry details remain open
 - 261016 records fixes done: compact season rows and quiet archive reads; 45 targeted unit tests and all 12 browser scenarios pass (one Chromium startup ERR_NETWORK_CHANGED passed on retry); type/lint/format/build and spec lint pass.
 - 261016 update-ssot STAFF WORLD HIST start: record retirement-window encouragement, three-year coaching minimum and adopted playing-coach tenure/post rules; preserve existing balance
 - 261016 implement-task start: read season archives without foreground command activity so the manager history tab does not flash the progress/cancel box during automatic play.
@@ -115,4 +116,3 @@
 - 261016 ideation expert-proposal-review: owner adopts contextual department sheets, parks additional coach-to-manager fallout and retains event access separate from the clock
 - 261016 ideation expert-proposal-review: owner assigns mediation to recruitment delegation and adopts director-first/balanced/manager-first policy with direct case overrides
 - 261016 ideation expert-proposal-review: owner adopts classified/automatable mediation, director-vs-manager support choices and tracked promises; automatic-mode versus delegation meaning needs clarification
-- 261016 ideation expert-proposal-review: owner adopts active-player aptitude grades/evaluations and requires coaching experience plus managerial aptitude for manager candidacy

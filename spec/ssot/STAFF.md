@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r21 | Define the browser-demo rules for manager demands and personality.
+> r22 | Define the browser-demo rules for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -121,17 +121,18 @@
   | counter | 4-4-2 | GK 슈팅 스토퍼; LB 수비형 풀백, CB 스토퍼, CB 커버형 센터백, RB 수비형 풀백; LM 와이드 미드필더, CM 박스투박스, CM 딥라잉 플레이메이커, RM 와이드 미드필더; ST 타겟맨, ST 포처 |
   | balanced | 3-5-2 | GK 슈팅 스토퍼; CB 스토퍼, CB 커버형 센터백, CB 볼 플레잉 디펜더; LWB 수비형 윙백, DM 앵커, CM 박스투박스, CM 메짤라, RWB 공격형 윙백; ST 타겟맨, ST 포처 |
   - a tactic change changes the formation at once and costs no adaptation; only a new manager does (→PLAYER-13).
-- STAFF-23 [o] Suitable players from any club can naturally choose a coaching career after retirement, based on coaching aptitude (→PLAYER-21), without an own-club service threshold.
-  - the owner may encourage an own player toward coaching. Encouragement does not guarantee career entry, an aptitude increase or employment.
+- STAFF-23 [o] Suitable players from any club can naturally choose a coaching career after retirement, based on coaching aptitude (→PLAYER-21), without an own-club service threshold. A playing-coach route can start before playing retirement (→STAFF-31).
+  - the owner may encourage an own player toward coaching during →STAFF-29's retirement window. Encouragement does not guarantee career entry, an aptitude increase or employment.
   - an entrant becomes a coaching candidate as the same person, retaining actual age and playing history (→HIST-14, →WORLD-10); playing fame and OVR do not guarantee coaching ability.
   - employing or renewing a former player follows the ordinary staff appointment responsibility and existing disclosed contract/cost rules. Entry parameters are →STAFF-25; coaching ability/specialty and pool admission are →STAFF-27.
 
 - STAFF-24 [o] A coach becomes a manager candidate only after coaching experience and aptitude for team management/tactical judgement qualify him together.
+  - the experience minimum is three cumulative years of actual coaching employment, including full playing-coach service (→STAFF-30/31).
   - service alone never promotes every coach into management; remaining a specialist coach is a valid career.
   - candidacy does not appoint him. Hiring/renewal follows the manager responsibility, not his former-player status, and preserves existing contract and affordability rules.
   - the linked person history survives the change of role (→HIST-14). Exact qualification and school/ability assignment are →STAFF-28.
 
-- STAFF-25 [?] Specify natural coaching entry timing/chance and the aptitude qualification; owner-encouragement timing, eligibility, response and frequency. No fixed training-course price or automatic career-entry guarantee is established.
+- STAFF-25 [?] Specify natural coaching entry timing/chance and aptitude qualification, and how a player's wishes answer encouragement or affect entry. Encouragement timing/frequency are →STAFF-29. Define playing-coach eligibility, retirement scheduling, terms/pay and direct/delegated appointment handling across the player-contract and staff-appointment responsibilities (→STAFF-31). No fixed training-course price or automatic entry/employment guarantee is established.
 
 - STAFF-26 [o] The recruitment department has a standing director/manager support policy: 단장 우선, 균형 or 감독 우선, with 균형 selected for a new game.
   - automatic mediation follows that policy; direct mediation can choose differently for the current case without silently changing the standing policy.
@@ -140,17 +141,31 @@
 
 - STAFF-27 [?] Specify a former player's coaching specialty, initial ability/potential and admission to department candidate pools. Preserve actual age and ordinary disclosed employment costs; playing OVR or legend status grants no fixed coaching-potential bonus.
 
-- STAFF-28 [?] Specify qualifying coaching experience and managerial aptitude thresholds, manager ability/potential and school assignment, and admission to the existing manager market. Qualification is candidacy, not automatic employment.
+- STAFF-28 [?] Specify managerial aptitude thresholds, manager ability/potential and school assignment, and admission to the existing manager market. The coaching-service minimum is →STAFF-30; qualification is candidacy, not automatic employment.
+
+- STAFF-29 [o] The owner may encourage an own active player toward a coaching career once, after his retirement announcement and before his actual playing retirement.
+  - show the player's actual response; an encouragement alone does not guarantee entry, an aptitude increase, a playing-coach contract or employment (→STAFF-23/25/31).
+  - retain the attempt and response with the same person; reloading or changing screens cannot restore the once-per-player opportunity (→SAVE-17, →HIST-14).
+
+- STAFF-30 [o] The former-player coaching-to-manager path requires at least three cumulative in-game years of actual coaching employment, as well as managerial aptitude (→STAFF-24/28).
+  - add actual coaching service across clubs; unemployment and time merely listed as a candidate do not count. Preserve retained employment periods across role changes and reloads (→HIST-14, →SAVE-17).
+  - playing-coach service counts in full, independently of player appearances: two years as a playing coach plus one year as a full-time coach meets the three-year minimum. Concurrent roles never count the same elapsed time twice.
+
+- STAFF-31 [o] A player approaching retirement may spend one or two years as a playing coach, retaining active-player identity while holding one existing coaching post.
+  - the person occupies that post in place of its coach, with the post's ordinary effects (→STAFF-11); no extra coaching slot or stacked second coach is created. Playing OVR does not determine coaching ability (→STAFF-27).
+  - player and coach profiles link the same person, actual age and overlapping career periods (→WORLD-10, →HIST-14). Existing playing ageing, injury and ability rules remain in force.
+  - the whole actual coaching period contributes to →STAFF-30, even when the person does not play matches. Eligibility, terms/pay, retirement timing and appointment authority require →STAFF-25.
 
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
-- Second career: active-player aptitude evaluation → natural/encouraged coaching choice → retirement and coaching candidacy → appointment/experience → management candidacy only with managerial aptitude → direct/delegated appointment.
+- Second career: active-player aptitude evaluation → retirement announcement and optional one-time encouragement → playing-coach appointment or retirement/coaching candidacy → actual coaching employment for at least three cumulative years → management candidacy only with managerial aptitude → direct/delegated appointment.
 
 ## constraints
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r22 261016 STAFF-23/24✎ retirement-only entry/unspecified service→playing-coach route and three-year service; STAFF-25/28✎ encouragement/service timing open→remaining entry/contract/aptitude rules; STAFF-29/30/31+ once after retirement notice, three-year cross-club service and existing-post playing coaches with full service credit
 - r21 261016 STAFF-13/15/18/20✎ levels→independent responsibilities; STAFF-16/17✎ generated-only careers→former-player continuity; STAFF-19✎ coach-only effects→explicit no manager penalty; STAFF-23/24+ second careers; STAFF-25/27/28+ open entry/qualification; STAFF-26+ support policy (균형)
 - r20 261015 STAFF-11✎ assistant passing growth and fitness stamina→each department scales the growth of the attributes it owns (→PLAYER-15); STAFF-13✎ the role has room→his line; STAFF-19✎ the coaches' cards in 사람's 코치진→훈련, +a single player as a target, one suggestion per coach→per target every 2 rounds; STAFF-21+ each school's preferred attributes and play traits and the school factor 0.8–1.3; STAFF-22+ a formation and slot roles per applied tactic
 - r19 261014 STAFF-20+ the 단장: contract talks, the manager post and transfers when delegated, hired like a coach, the transfer negotiation; STAFF-11✎ the chief scout's negotiation→the 단장's; STAFF-13✎ +who takes each delegated decision; STAFF-18✎ the staff→the 단장 appoint managers
