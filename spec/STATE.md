@@ -92,10 +92,11 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- ideation expert-proposal-review: focused department sheets adopted, coach-to-manager fallout parked and separate event entry retained; settle support default, sheet apply scope and invalid manual-setting UX next.
+- ideation expert-proposal-review: scope/defaults settled; propose SSOT transition starting with WEB/STAFF delegation and progression, then second careers, mediation and sheets. Remains open pending transition agreement; balance parked.
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 ideation expert-proposal-review: owner selects balanced support default, department-only sheet apply and explicit manual-match guidance; scope converged, SSOT transition proposed
 - 261016 ideation expert-proposal-review: owner adopts contextual department sheets, parks additional coach-to-manager fallout and retains event access separate from the clock
 - 261016 ideation expert-proposal-review: owner assigns mediation to recruitment delegation and adopts director-first/balanced/manager-first policy with direct case overrides
 - 261016 ideation expert-proposal-review: owner adopts classified/automatable mediation, director-vs-manager support choices and tracked promises; automatic-mode versus delegation meaning needs clarification
@@ -115,4 +116,3 @@
 - 261016 T141 doing@u9c2: remove the reserved home notification space; the launcher floats over content
 - 261016 T140 done: compact draft panel and conditional launcher; T139/T140 published at 81108b2, full source CI 38846465288 passes all six jobs
 - 261016 T140 local checks pass: 57 browser cases after one WebKit retry, static/build/spec checks; commit/push and full remote CI next
-- 261016 T140 doing@u9c2: collapse draft details, reclaim launcher space, verify and publish authorized changes
