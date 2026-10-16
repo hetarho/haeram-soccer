@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:32Z | T163 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:36Z | T164 |
 
 ## inbox
 - 261017 suggest T154 T155 T156 T157 T158: five person-career foundation tasks completed → review-code aptitude/person-careers/npc-continuity/careers/coaching-entry before the next unrelated feature; remaining planned second-career tasks continue.
@@ -84,7 +84,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T164 | Qualify managers and assign separate ability and inherited school | STAFF PLAYER HIST | T162 T163 | todo |
+| T164 | Qualify managers and assign separate ability and inherited school | STAFF PLAYER HIST | T162 T163 | doing@261017.n7r4 |
 | T165 | Appoint qualified free and employed coaches as managers | STAFF WORLD HIST | T144 T163 T164 | todo |
 | T166 | Project qualitative aptitude and truthful career availability | WEB PLAYER STAFF HIST | T154 T155 T164 | todo |
 | T167 | Show aptitude, encouragement and combined playing-coach review | WEB STAFF | T149 T161 T166 | todo |
@@ -121,6 +121,7 @@
 - Do not activate rules 3.0.0 or reset career data before T174's prerequisites are complete.
 
 ## log
+- 261017 implement-task T164 start n7r4.
 - 261017 T163 done n7r4: Retained coaches take unique dated NPC jobs, retain growth and return after real expiry.
 - 261017 implement-task T163 start n7r4.
 - 261017 T162 done n7r4: Unioned actual coaching intervals qualify at a virtual third calendar anniversary; dated actual mentors split on appointments, cumulative tenure wins and recency breaks ties without tactical or pre-start fabrication.
@@ -140,4 +141,3 @@
 - 261017 T155 done n7r4: One retained identity links fixed qualities, true own totals, dated employment and mentor facts; role helpers and schema reject identity/post/date/reference conflicts.
 - 261017 implement-task T155 start n7r4.
 - 261017 T154 done n7r4: Fixed independent off-pitch components and pure coaching/manager grade helpers preserve all 42 baseline player profiles.
-- 261016 implement-task T154 start n7r4; continue all remaining tasks autonomously. SAVE r38–39 activation scope is unrelated to fixed aptitude generation.
