@@ -43,6 +43,7 @@ function founded(year?: number) {
   w.settings = legacySettings(2);
   if (!year) return w;
   w.year = year;
+  delete w.people;
   w.currency = currency('ENG', year).code;
   w.priceIndex = priceIndex('ENG', year).value;
   w.manager.since = year;

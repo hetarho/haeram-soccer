@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:06Z | T157 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:08Z | - |
 
 ## inbox
 - 261016 suggest WEB-74: owner-workflow tasks T134–T138 completed → review-code taskMemory/state, RecordsRoom/LiveSeason/CupsView and their browser journeys before the next UI feature; no refactoring is included in this completed scope
@@ -83,7 +83,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T157 | Apply actual age and retirement to retained other-club players | WORLD CLUB STAFF HIST PLAYER | T156 | doing@261017.n7r4 |
 | T158 | Retain one career intention and one eligible owner encouragement | STAFF PLAYER HIST WORLD SAVE | T155 T157 | todo |
 | T159 | Assign coaching specialty and initial ability once | STAFF PLAYER WORLD | T158 | todo |
 | T160 | Quote and atomically approve a playing-coach appointment | STAFF WEB SAVE | T146 T159 | todo |
@@ -127,6 +126,7 @@
 - Do not activate rules 3.0.0 or reset career data before T174's prerequisites are complete.
 
 ## log
+- 261017 T157 done n7r4: Retained NPCs announce on 1 April and retire once at actual close/age cap, preserving unknown playing minutes and fixed identity.
 - 261017 implement-task T157 start n7r4.
 - 261017 T156 done n7r4: Retained prospects and all former own/academy players keep identity across cohorts and moves; pure cached rosters exclude moved/retired people and own match metrics use actual own participants.
 - 261017 implement-task T156 start n7r4.
@@ -146,4 +146,3 @@
 - 261016 checkpoint p150 complete: T142–T149 committed individually; 825 unit and 11 contract tests, full CI browser matrix and storage/performance gates passed on 34beea9. T150+ remain unstarted; docs/verification/T149-checkpoint.md records evidence.
 - 261016 T149 done p150: Shared explicit-apply seven-category dialog with retained drafts, live handover previews, manual match-event invariant, local ownership labels and responsive readonly controls.
 - 261016 user checkpoint p150: finish T149, run and repair full verification, then push main; stop new task implementation.
-- 261016 implement-task T149 start p150

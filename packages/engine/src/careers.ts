@@ -1,5 +1,6 @@
-import { movePerson } from './npc-continuity';
-import type { MatchRecord, Player, World } from '../../contracts/src/types';
+import { careerDate, closeEmployment, retainPerson } from './person-careers';
+import { invalidateNpcSquads } from './world';
+import type { MatchRecord, PersonCareer, Player, Position, World } from '../../contracts/src/types';
 import { currentDay, dayCountedFrom, seasonDayLabel, seasonDayOf } from './calendar';
 import { clamp, integer, random } from './primitives';
 import { activePlayers, addEvent, fatigueLoad, isInjured, overall, ownStarters } from './world';
@@ -26,15 +27,53 @@ export function retirementAnnounceDay(year: number) {
   return seasonDayOf(year, 4, 1);
 }
 
-/** Chance that `p` announces his retirement this spring. */
-export function retirementChance(w: World, p: Player, starters?: Set<string>) {
-  const age = w.year + 1 - p.born - (p.position === 'GK' ? 1 : 0);
+/** Unknown NPC minutes are absent, never interpreted as a fringe player's zero. */
+export function retirementChanceWithContext(
+  year: number,
+  born: number,
+  position: Position,
+  context: { minutes?: number; strongStarter?: boolean } = {},
+) {
+  const age = year + 1 - born - (position === 'GK' ? 1 : 0);
   if (age >= RETIREMENT.lastAge) return 1;
   if (age < RETIREMENT.firstAge) return 0;
   const base = RETIREMENT.byAge[Math.min(age - RETIREMENT.firstAge, RETIREMENT.byAge.length - 1)];
-  const starter = starters?.has(p.id) && overall(p) >= 60;
-  const fringe = p.season[10] < RETIREMENT.fringeMinutes;
-  return clamp(base * (starter ? RETIREMENT.starter : fringe ? RETIREMENT.fringe : 1), 0, 1);
+  const fringe = context.minutes !== undefined && context.minutes < RETIREMENT.fringeMinutes;
+  return clamp(
+    base * (context.strongStarter ? RETIREMENT.starter : fringe ? RETIREMENT.fringe : 1),
+    0,
+    1,
+  );
+}
+/** Own-player context and probabilities retain their existing rules. */
+export function retirementChance(w: World, p: Player, starters?: Set<string>) {
+  return retirementChanceWithContext(w.year, p.born, p.position, {
+    minutes: p.season[10],
+    strongStarter: starters?.has(p.id) && overall(p) >= 60,
+  });
+}
+export function recordRetirementAnnouncement(w: World, person: PersonCareer, year = w.year) {
+  if (!person.retirement) person.retirement = { announced: careerDate(w), year };
+}
+export function retirePerson(w: World, person: PersonCareer) {
+  if (person.playing === 'retired') return;
+  recordRetirementAnnouncement(w, person);
+  closeEmployment(w, person.id, 'player');
+  person.playing = 'retired';
+  person.retirement!.at = careerDate(w);
+  invalidateNpcSquads(w);
+}
+function announceNpcRetirements(w: World) {
+  for (const person of Object.values(w.people || {})) {
+    if (person.playing === 'retired' || person.club === w.playerClub || person.retirement) continue;
+    const age = w.year + 1 - person.born;
+    const chance =
+      age >= RETIREMENT.lastAge
+        ? 1
+        : retirementChanceWithContext(w.year, person.born, person.position);
+    if (random(`${w.seed}:retire:${person.id}:${w.year}`)() < chance)
+      recordRetirementAnnouncement(w, person);
+  }
 }
 
 function careerLine(w: World, p: Player) {
@@ -45,12 +84,14 @@ function careerLine(w: World, p: Player) {
 /** 1 April: each veteran decides, from his own stream, whether to stop at the season's end. */
 export function announceRetirements(w: World) {
   if (currentDay(w) !== retirementAnnounceDay(w.year)) return;
+  announceNpcRetirements(w);
   const starters = new Set(ownStarters(w).map((p) => p.id));
   for (const p of activePlayers(w)) {
     if (p.loanUntil || p.retiring !== undefined) continue;
     const chance = retirementChance(w, p, starters);
     if (!chance || random(`${w.seed}:retire:${p.id}:${w.year}`)() >= chance) continue;
     p.retiring = w.year;
+    recordRetirementAnnouncement(w, retainPerson(w, p, w.playerClub, true));
     delete p.stance;
     const age = w.year + 1 - p.born;
     addEvent(
@@ -78,10 +119,19 @@ export function retireAtClose(w: World) {
     const age = w.year + 1 - p.born;
     if (p.retiring !== w.year && age < RETIREMENT.lastAge) continue;
     p.status = 'retired';
-    movePerson(w, p, undefined, true).playing = 'retired';
+    const person = retainPerson(w, p, w.playerClub, true);
+    retirePerson(w, person);
     delete p.stance;
     leaveContract(w, p);
     addEvent(w, 'retirement', `${p.name}의 다음 장`, `${age}세 은퇴 · ${careerLine(w, p)}`);
+  }
+  for (const person of Object.values(w.people || {})) {
+    if (person.playing === 'retired' || person.club === w.playerClub) continue;
+    if (
+      (person.retirement && person.retirement.year <= w.year) ||
+      w.year + 1 - person.born >= RETIREMENT.lastAge
+    )
+      retirePerson(w, person);
   }
 }
 

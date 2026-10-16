@@ -1,3 +1,4 @@
+import { COUNTRIES } from '../../catalogs/src/index';
 import type { Club, PersonCareer, Player, World } from '../../contracts/src/types';
 import { coachingGrade } from './aptitude';
 import { careerDate, closeEmployment, openEmployment, retainPerson } from './person-careers';
@@ -37,7 +38,7 @@ function replacement(w: World, c: Club, p: Player, slot: number) {
   let id = `${c.id}:vacancy:${slot}:${w.year}`;
   while (w.people?.[id]) id = `${c.id}:vacancy:${slot}:${w.year}:${++serial}`;
   return makePlayer(
-    c.country,
+    COUNTRIES.some((country) => country.code === c.country) ? c.country : 'ENG',
     w.seed,
     id,
     w.year,
