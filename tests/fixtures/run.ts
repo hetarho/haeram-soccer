@@ -32,6 +32,7 @@ export function runFixture(definition: FixtureDefinition) {
     w.manager.until = w.year + 3;
     for (const p of w.players) {
       p.born = w.year - 24;
+      p.joined = w.year;
       p.until = w.year + 2;
     }
   }

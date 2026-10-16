@@ -1,3 +1,4 @@
+import { registrationRoom } from '../../../../packages/engine/src/registration';
 import { useTaskState } from './taskMemory';
 import { PlayerLink } from './PlayerSheet';
 import type { World } from '../../../../packages/contracts/src/types';
@@ -87,7 +88,7 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
         <header className={s.head}>
           <h3>유소년 아카데미</h3>
           <span>
-            {summary.players.length}/{summary.capacity}명 · 1군 자리 {summary.room}
+            {summary.players.length}/{summary.capacity}명 · 1군 자리 {summary.room.total}
           </span>
         </header>
         <p className={s.intake} data-testid="academy-intake">
@@ -127,7 +128,11 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
                           type="button"
                           className={readiness === 'ready' ? s.primary : undefined}
                           aria-label={`${p.name} 1군 승격`}
-                          disabled={acting || summary.room === 0 || age < summary.promotionAge}
+                          disabled={
+                            acting ||
+                            !!registrationRoom(w, { ...p, graduate: true, joined: w.year }) ||
+                            age < summary.promotionAge
+                          }
                           title={
                             age < summary.promotionAge
                               ? `첫 프로 계약은 ${summary.promotionAge}세부터`
@@ -161,7 +166,9 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
         ) : (
           <p className={s.note}>아직 아카데미 선수가 없어요. 매년 3월 15일에 유소년이 입단해요.</p>
         )}
-        {summary.room === 0 && <p className={s.note}>1군이 26명으로 가득 차 승격할 수 없어요.</p>}
+        {summary.room.total === 0 && (
+          <p className={s.note}>선수단의 전체 등록 한도가 가득 차 승격할 수 없어요.</p>
+        )}
       </section>
       <YouthTraining w={w} />
       <section className={s.card} aria-label="유소년 운영">

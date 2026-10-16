@@ -1,3 +1,4 @@
+import { registration, registrationRoom } from './registration';
 import { detectMediations, resolveDelegatedMediations } from './mediation';
 import { careerDate } from './person-careers';
 import { movePerson } from './npc-continuity';
@@ -222,6 +223,7 @@ function candidates(w: World, offers: Offer[], need: SigningNeed, tried: Set<str
     .filter(
       ({ offer }) =>
         offer.available &&
+        !registrationRoom(w, { ...offer.player, joined: w.year }) &&
         !offer.player.loanUntil &&
         !tried.has(offer.player.id) &&
         (need.kind === 'short'
@@ -420,7 +422,7 @@ export function noteSigning(w: World, player: Player) {
     positions: { ...player.positions },
     at: careerDate(w),
   });
-  joinClub(player, isForeignCandidate(player.id) ? 'abroad' : 'domestic');
+  joinClub(player, isForeignCandidate(player.id) ? 'abroad' : 'domestic', w.year);
   const window = w.shortlist?.window;
   if (
     window &&
@@ -538,7 +540,7 @@ export function staffSignings(w: World) {
   const bids = windowBids(w, day);
   if (bids.some((bid) => bid.staff && (isOpen(bid) || bid.day === day))) return;
   const squad = activePlayers(w).length;
-  if (squad >= 26) return;
+  if (squad >= registration(w).ceiling) return;
   const stance = financeStance(w),
     upgrades = bids.filter(
       (bid) => bid.staff === 'upgrade' && (bid.status === 'completed' || isOpen(bid)),
@@ -601,10 +603,12 @@ export function pursueRequest(
   actor: 'owner' | 'delegated',
 ) {
   const picked = requestCandidates(w, request).find(({ offer }) => offer.player.id === person);
-  if (!picked || activePlayers(w).length >= 26 || !transferWindow(w).open)
+  if (!picked || !transferWindow(w).open)
     return '현재 후보·이적시장·선수단 조건으로 진행할 수 없어요.';
   const day = currentDay(w),
     { offer, index } = picked;
+  const room = registrationRoom(w, { ...offer.player, joined: w.year });
+  if (room) return room;
   const fee = offer.freeAgent
     ? '0'
     : actor === 'owner'

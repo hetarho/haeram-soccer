@@ -87,6 +87,8 @@ const player = z
     position,
     positions,
     born: z.number().int(),
+    joined: season.optional(),
+    graduate: z.literal(true).optional(),
     attrs: attributes,
     personality: z.strictObject({ professionalism: grade, adaptability: grade, ambition: grade }),
     qualities: z
@@ -1200,6 +1202,8 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   }
   for (const player of [...w.players, ...(w.academy?.players || [])]) {
     const person = w.people?.[player.id];
+    if (player.joined !== undefined && (player.joined < player.born || player.joined > w.year))
+      throw new Error('1군 합류 시즌 손상');
     if (w.people && player.qualities && !person) throw new Error('선수 인물 레지스트리 참조 손상');
     if (
       person &&

@@ -1,3 +1,4 @@
+import { registration, registrationRoom } from './registration';
 import { movePerson } from './npc-continuity';
 import { baseEffects } from './bases';
 import type { Line, Player, Position, World, YouthFocus } from '../../contracts/src/types';
@@ -28,7 +29,6 @@ import { countDownOrder } from './orders';
 import { academyFacilityTerms } from './facilities';
 
 /** First-team squad limit shared with signings. */
-const SQUAD_LIMIT = 26;
 /** Prospects held at once; intakes stop while the academy is full. */
 export const ACADEMY_LIMIT = 24;
 /**
@@ -357,7 +357,8 @@ export function promoteYouth(w: World, id: string): void {
   if (!prospect) throw new Error('아카데미에 없는 선수입니다.');
   if (w.year - prospect.born < promotionAge(w))
     throw new Error(`첫 프로 계약은 ${promotionAge(w)}세부터 맺을 수 있어요.`);
-  if (activePlayers(w).length >= SQUAD_LIMIT) throw new Error('선수단 정원은 26명입니다.');
+  const room = registrationRoom(w, { ...prospect, graduate: true, joined: w.year });
+  if (room) throw new Error(room);
   const player = takeProspect(w, id);
   // A first professional contract for three seasons, at his market wage (→CLUB-25), with its own
   // clauses (→CLUB-29).
@@ -366,7 +367,8 @@ export function promoteYouth(w: World, id: string): void {
   player.clauses = signingClauses(w, player);
   player.status = 'active';
   player.fatigue = 0;
-  joinClub(player, 'academy');
+  player.graduate = true;
+  joinClub(player, 'academy', w.year);
   w.players.push(player);
   movePerson(w, player, w.playerClub, true);
   addEvent(
@@ -449,7 +451,7 @@ export function seasonAcademy(w: World): void {
       `운영자금이 재정 기조 ${directionOption(w, 'finance').name}의 기준(운영비 ${years < 1 ? `${Math.round(years * 12)}개월분` : `${years}년분`})보다 적어 1군 급여를 늘리지 않았어요. 자금이 회복되면 다음 시즌에 다시 검토해요. 직접 올리려면 아카데미에서 승격하세요.`,
     );
   for (const player of affordable ? ready : []) {
-    if (activePlayers(w).length >= SQUAD_LIMIT) break;
+    if (registrationRoom(w, { ...player, graduate: true, joined: w.year })) continue;
     if (!lineRoom(w, lineOfPlayer(player))) continue;
     promoteYouth(w, player.id);
     promoted.add(player.id);
@@ -500,7 +502,8 @@ export function academySummary(w: World) {
     };
   });
   const base = academyGrowth(w),
-    focus = youthFocus(w);
+    focus = youthFocus(w),
+    registrationState = registration(w);
   return {
     players,
     /**
@@ -518,7 +521,10 @@ export function academySummary(w: World) {
     focus,
     promotionAge: promotionAge(w),
     /** First-team places left for promotions. */
-    room: Math.max(0, SQUAD_LIMIT - activePlayers(w).length),
+    room: {
+      total: Math.max(0, registrationState.ceiling - registrationState.total),
+      counted: Math.max(0, registrationState.allowed - registrationState.counted),
+    },
     capacity: ACADEMY_LIMIT,
     intakeDay: academyIntakeDay(w),
     intakeDone: w.academy?.intakeYear === w.year,

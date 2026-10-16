@@ -1,6 +1,7 @@
+import { registrationRoom } from './registration';
 import type { Position } from '../../contracts/src/types';
 import type { Command, World } from '../../contracts/src/types';
-import { activePlayers, addEvent, clubOf, makePlayer, overall } from './world';
+import { addEvent, clubOf, makePlayer, overall } from './world';
 import { hash, integer, random, ratio } from './primitives';
 import {
   declineContract,
@@ -178,7 +179,12 @@ export function squadCommand(w: World, cmd: SquadCommand) {
     case 'recruit': {
       const o = transferOffers(w)[cmd.candidate];
       if (!o?.available) throw new Error('이미 계약했거나 없는 선수입니다.');
-      if (activePlayers(w).length >= 26) throw new Error('선수단 정원은 26명입니다.');
+      const room = registrationRoom(w, {
+        ...o.player,
+        joined: w.year,
+        ...(cmd.loan ? { loanUntil: w.year + 1 } : {}),
+      });
+      if (room) throw new Error(room);
       assertTransferWindow(w, o.freeAgent && !cmd.loan);
       const cost = cmd.loan ? o.loanFee : o.fee;
       debit(w, cost);

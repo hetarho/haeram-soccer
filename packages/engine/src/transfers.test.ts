@@ -241,9 +241,9 @@ describe('outgoing bids', () => {
     expect(w.events.at(-1)?.kind).toBe('transfer-bid');
     expect(() => placeBid(w, 2, offers[2].fee)).toThrow('협상 중');
     const full = world();
-    for (let i = 0; full.players.filter((p) => p.status === 'active').length < 26; i++)
+    for (let i = 0; full.players.filter((p) => p.status === 'active').length < 40; i++)
       full.players.push({ ...structuredClone(full.players[4]), id: `extra:${i}` });
-    expect(() => placeBid(full, 2, offers[2].fee)).toThrow('26');
+    expect(() => placeBid(full, 2, offers[2].fee)).toThrow('40');
     expect(validateWorld(w).id).toBe(w.id);
   });
 

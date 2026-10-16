@@ -1,10 +1,10 @@
+import { registrationRoom } from './registration';
 import type { Line, World } from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
 import { SEASON_ROUNDS, nextOwnFixture } from './calendar';
 import { operatingCost } from './transactions';
 import { transferOffers } from './ops-squad';
 import {
-  activePlayers,
   clubOf,
   fatigueLoad,
   formationOf,
@@ -41,7 +41,12 @@ export function recruitmentPreview(w: World, offer: TransferOffer, loan = false)
     before = startingSquad(w, own),
     manual = !!w.lineup,
     alreadyOwned = w.players.some((player) => player.id === offer.player.id),
-    full = activePlayers(w).length >= 26;
+    registrationReason = registrationRoom(w, {
+      ...offer.player,
+      joined: w.year,
+      ...(loan ? { loanUntil: w.year + 1 } : {}),
+    }),
+    full = !!registrationReason;
   // He arrives at the adaptation his signing starts him at (→PLAYER-11), not settled.
   const arriving = {
     ...offer.player,
@@ -110,7 +115,7 @@ export function recruitmentPreview(w: World, offer: TransferOffer, loan = false)
     !offer.available || alreadyOwned
       ? '이미 계약한 선수입니다.'
       : full
-        ? '선수단 정원 26명입니다.'
+        ? registrationReason!
         : !affordable
           ? '보유 자금이 부족합니다.'
           : manual

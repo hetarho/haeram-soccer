@@ -1,3 +1,4 @@
+import { registrationRoom } from './registration';
 import { endPlayingCoachForDeparture, playingCoachDepartureCost } from './playing-coach';
 import { movePerson } from './npc-continuity';
 import type { Club, Player, TransferBid, TransferStance, World } from '../../contracts/src/types';
@@ -38,7 +39,6 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 export const INCOMING_BID_CHANCE = 0.06;
 const MAX_PENDING_INCOMING = 3;
 const INCOMING_RESPONSE_DAYS = 5;
-const SQUAD_LIMIT = 26;
 const SQUAD_MINIMUM = 14;
 /** Resolved bids kept for the record; open negotiations are never pruned. */
 const CLOSED_BID_HISTORY = 60;
@@ -159,9 +159,14 @@ function marketOffer(w: World, bid: TransferBid): MarketOffer | undefined {
 function askingFee(offer: MarketOffer, loan?: boolean) {
   return loan ? offer.loanFee : offer.fee;
 }
-function signingBlocker(w: World, offer: MarketOffer | undefined, fee: string) {
+function signingBlocker(w: World, offer: MarketOffer | undefined, fee: string, loan = false) {
   if (!offer?.available) return '이미 계약했거나 없는 선수입니다.';
-  if (activePlayers(w).length >= SQUAD_LIMIT) return '선수단 정원은 26명입니다.';
+  const room = registrationRoom(w, {
+    ...offer.player,
+    joined: w.year,
+    ...(loan ? { loanUntil: w.year + 1 } : {}),
+  });
+  if (room) return room;
   if (BigInt(w.cash) < BigInt(fee)) return '보유 자금이 부족합니다.';
   return undefined;
 }
@@ -236,7 +241,12 @@ export function placeBid(
   )
     throw new Error('이 선수와는 이미 협상 중이에요. 기존 제안의 답을 먼저 확인하세요.');
   assertTransferWindow(w);
-  if (activePlayers(w).length >= SQUAD_LIMIT) throw new Error('선수단 정원은 26명입니다.');
+  const room = registrationRoom(w, {
+    ...offer.player,
+    joined: w.year,
+    ...(loan ? { loanUntil: w.year + 1 } : {}),
+  });
+  if (room) throw new Error(room);
   if (typeof fee !== 'string' || !/^\d{1,80}$/.test(fee) || BigInt(fee) < 1n)
     throw new Error('제안 금액을 확인하세요.');
   if (BigInt(w.cash) < BigInt(fee)) throw new Error('보유 자금이 부족합니다.');
@@ -281,7 +291,7 @@ export function respondBid(w: World, id: string, accept: boolean): void {
       assertTransferWindow(w);
       const offer = marketOffer(w, bid),
         fee = bid.counterFee || bid.fee,
-        blocker = signingBlocker(w, offer, fee);
+        blocker = signingBlocker(w, offer, fee, bid.loan);
       if (blocker) throw new Error(blocker);
       completeSigning(w, bid, offer!, fee);
     } else bid.status = 'rejected';
@@ -432,7 +442,7 @@ function decideOutgoing(w: World, bid: TransferBid) {
     chance = acceptanceChance(w, bid.fee, asking),
     feeShare = feeRatio(bid.fee, asking);
   if (roll < chance) {
-    const blocker = signingBlocker(w, offer, bid.fee);
+    const blocker = signingBlocker(w, offer, bid.fee, bid.loan);
     // The 단장's bids are his to follow up; their answers only report (→CLUB-33).
     const attention = !bid.staff;
     if (blocker) {
@@ -489,7 +499,7 @@ function answerStaffCounter(w: World, bid: TransferBid, offer: MarketOffer, aski
   const p = offer.player,
     fee = bid.counterFee!,
     verdict = signingVerdict(w, p, fee),
-    blocker = signingBlocker(w, offer, fee),
+    blocker = signingBlocker(w, offer, fee, bid.loan),
     accept = verdict.ok && !blocker;
   if (accept) completeSigning(w, bid, offer, fee);
   else bid.status = 'rejected';

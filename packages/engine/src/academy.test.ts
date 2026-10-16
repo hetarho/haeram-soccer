@@ -1,3 +1,4 @@
+import { movePerson } from './npc-continuity';
 import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
@@ -73,6 +74,7 @@ function prospect(w: World, role: Position, age: number, skill: number): Player 
   player.potential = Math.max(skill, 80);
   player.wage = '0';
   w.academy = { ...w.academy, players: [...academyPlayers(w), player] };
+  movePerson(w, player, w.playerClub, true);
   return player;
 }
 
@@ -224,14 +226,14 @@ describe('promotion and release', () => {
     validateWorld(w);
   });
 
-  it('refuses promotion into a full 26-player squad without changing anything', () => {
+  it('refuses promotion into a full 40-player squad without changing anything', () => {
     const w = world(),
       player = prospect(w, 'CB', 18, 60);
     let i = 0;
-    while (activePlayers(w).length < 26)
+    while (activePlayers(w).length < 40)
       w.players.push(makePlayer('ENG', w.seed, `filler:${i++}`, w.year, 40, 'CM', 25));
     const before = canonical(w);
-    expect(() => promoteYouth(w, player.id)).toThrow('26명');
+    expect(() => promoteYouth(w, player.id)).toThrow('40명');
     expect(canonical(w)).toBe(before);
   });
 
@@ -273,7 +275,10 @@ describe('season boundary', () => {
     expect(label(review)).toBe('방출 검토');
     expect(label(aged)).toBe('1군 준비 완료');
     expect(summary.players[0]).toMatchObject({ overall: 90, age: 17 });
-    expect(summary.room).toBe(26 - activePlayers(w).length);
+    expect(summary.room).toEqual({
+      total: 40 - activePlayers(w).length,
+      counted: 40 - activePlayers(w).length,
+    });
     expect(summary.delegated).toBe(true);
   });
 
@@ -331,7 +336,7 @@ describe('season boundary', () => {
   it('keeps delegated promotions within the squad and position limits', () => {
     const full = world();
     let i = 0;
-    while (activePlayers(full).length < 26)
+    while (activePlayers(full).length < 40)
       full.players.push(makePlayer('ENG', full.seed, `filler:${i++}`, full.year, 40, 'CM', 25));
     const blocked = prospect(full, 'CB', 18, 90);
     seasonAcademy(full);

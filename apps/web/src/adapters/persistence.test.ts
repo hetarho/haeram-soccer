@@ -282,7 +282,10 @@ it('preserves first and second European phases and global standings in a histori
   w.currency = 'GBP';
   w.manager.since = 1997;
   w.manager.until = 2003;
-  for (const p of w.players) p.born = 1978;
+  for (const p of w.players) {
+    p.born = 1978;
+    p.joined = w.year;
+  }
   // This synthetic career starts in 2000, so enroll its actual identities at that epoch.
   delete w.people;
   prepareSeason(w);

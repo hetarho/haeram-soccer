@@ -88,7 +88,8 @@ export function slotOvr(p: Player, slot: Slot, multiplier = 1) {
 }
 export const formationOf = (tactic: Tactic) => FORMATIONS[tactic].slots;
 /** Where a player joining the club starts to settle (→PLAYER-11). */
-export function joinClub(p: Player, joined: Joined) {
+export function joinClub(p: Player, joined: Joined, year: number) {
+  p.joined = year;
   p.adaptation = adaptationStart(p.personality.adaptability, joined);
   p.clubRounds = 0;
   delete p.unsettled;
@@ -465,7 +466,7 @@ export function createBase(input: Founding): World {
   // The founders sign on the founding day, each with his contract's clauses (→CLUB-29).
   for (const p of players) {
     p.clauses = settleClauses(input.seed, p, p.agent!, year, 0);
-    joinClub(p, 'founding');
+    joinClub(p, 'founding', year);
   }
   // A club's first season pays the amateur level's floor of operating expenses (→ECON-30).
   const operatingExpenses = operatingExpensesAt(input.country, year, club.tier);

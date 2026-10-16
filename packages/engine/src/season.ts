@@ -1,3 +1,4 @@
+import { registrationRoom } from './registration';
 import { finishTerm, settleReputation } from './reputation';
 import { judgePromises } from './promises';
 import { qualifyManagers } from './manager-entry';
@@ -728,7 +729,9 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
       );
       // A refill signs at the close with his contract's clauses (→CLUB-29).
       youth.clauses = signingClauses(w, youth);
-      joinClub(youth, 'domestic');
+      youth.graduate = true;
+      if (registrationRoom(w, { ...youth, joined: w.year })) break;
+      joinClub(youth, 'domestic', w.year);
       w.players.push(youth);
       movePerson(w, youth, w.playerClub, true);
     }

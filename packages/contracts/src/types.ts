@@ -350,6 +350,9 @@ export interface Player {
   attrs: Attributes;
   personality: Personality;
   qualities?: OffPitchQualities;
+  /** Season of joining our first team; absent history never grants bandiera places. */
+  joined?: number;
+  graduate?: true;
   traits: PlayTrait[];
   /** How well he fits the club under its manager, 0.3–1.0 (→PLAYER-10). */
   adaptation: number;

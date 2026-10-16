@@ -1,3 +1,4 @@
+import { registrationRoom } from '../../../../packages/engine/src/registration';
 import type {
   CareKind,
   Command,
@@ -284,7 +285,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
         {
           id: 'academy',
           label: '유소년 보기',
-          effect: `훈련 › 유소년 · 아카데미 ${academy.players.length}명 · 1군 자리 ${academy.room}개`,
+          effect: `훈련 › 유소년 · 아카데미 ${academy.players.length}명 · 1군 자리 ${academy.room.total}개`,
           page: 'training',
           tab: 'academy',
         },
@@ -296,9 +297,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
             : '3월 15일 유소년 입단을 기다려요',
           unavailable: !best
             ? '아카데미가 비어 있어요'
-            : academy.room
-              ? undefined
-              : '1군 정원 26명',
+            : registrationRoom(w, { ...best.player, graduate: true, joined: w.year }),
           command: best ? { type: 'promote-youth', id: best.player.id } : undefined,
         },
       ];
