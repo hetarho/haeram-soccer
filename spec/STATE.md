@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:54Z | T186 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:56Z | T175 |
 
 ## inbox
 - 261017 decided T175 T187: dependency order for legacy browser helpers → migrate T175 before T187, using already shipped T150 controls (alt: make UI verification depend on removed controls); T174 activation retains its own save tests and final T179 gate.
@@ -88,7 +88,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T174 | Activate rules 3.0.0 with bounded recognized-legacy gameplay reset | SAVE WEB ARCH | T150 T152 T167 T168 T172 T173 T180 T186 T187 | todo |
-| T175 | Migrate old browser helpers to the approved public progression flow | WEB LEAGUE | T150 | todo |
+| T175 | Migrate old browser helpers to the approved public progression flow | WEB LEAGUE | T150 | doing@261017.n7r4 |
 | T176 | Verify second careers across contracts, reloads and market transitions | WEB STAFF WORLD HIST SAVE | T167 T168 T174 | todo |
 | T177 | Verify delegation handover and promise outcomes through the browser | WEB CLUB HIST SAVE | T172 T174 | todo |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 | todo |
@@ -107,6 +107,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 implement-task T175 start n7r4.
 - 261017 create-task T175/T187: migrate public-flow helpers before UI verification; activation does not supply those controls.
 - 261017 T186 done n7r4: Window judge days fill unmet replacements then the twenty-player deficit from eligible academy prospects or named graduates; direct authority gets one ordered recommendation and no mutation, and closed-window needs clear.
 - 261017 implement-task T186 start n7r4.
@@ -126,5 +127,3 @@
 - 261017 T182 done n7r4: One season-specific registration model now guards every signing, loan, promotion, delegated purchase and generated refill; first-team tenure/graduation survive schema roundtrip and over-limit squads keep their players.
 - 261017 implement-task T182 start n7r4.
 - 261017 T181 done n7r4: Catalog 2026-demo-3 contains exactly the twelve approved sourced registration eras and forty-player ceiling, with validated provenance/ranges and recognized older pins preserved until release activation.
-- 261017 implement-task T181 start n7r4.
-- 261017 create-task SAVE r40: catalog-pin metadata delta assigned to existing todo T181; no new task.
