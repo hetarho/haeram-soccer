@@ -82,7 +82,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T146 | Transfer unresolved work on explicit settings apply | WEB SAVE STAFF | T143 T144 T145 | todo |
 | T147 | Advance directly to the first stopping date in the worker | WEB LEAGUE ARCH | T145 T146 | todo |
 | T148 | Make runtime clock behaviour obey automatic versus manual mode | WEB SAVE | T147 | todo |
 | T149 | Build one explicit-apply responsibility and observation screen | WEB | T146 T148 | todo |
@@ -137,6 +136,7 @@
 - Final integration T179 follows the full browser/continuity gates and measured century-save gate T178; do not activate/deploy incomplete rule metadata early.
 
 ## log
+- 261016 T146 complete and checkpointed by task under the user’s authored-contract scope override.
 - 261016 T145 complete and checkpointed by task under the user’s authored-contract scope override.
 - 261016 T144 complete and checkpointed by task under the user’s authored-contract scope override.
 - 261016 T143 complete and checkpointed by task under the user’s authored-contract scope override.

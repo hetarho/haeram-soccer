@@ -4,6 +4,7 @@ import type {
   ResponsibilityKey,
   World,
 } from '../../contracts/src/types';
+import { handoverPendingWork } from './pending-work';
 import { gameSettingsSchema } from '../../contracts/src/schema';
 
 export const RESPONSIBILITY_KEYS: readonly ResponsibilityKey[] = [
@@ -60,5 +61,8 @@ export function validateSettings(settings: GameSettings): GameSettings {
   return result.data;
 }
 export function applySettings(w: World, settings: GameSettings) {
-  w.settings = validateSettings(settings);
+  const validated = validateSettings(settings);
+  const changed = changedResponsibilities(w, validated);
+  w.settings = validated;
+  handoverPendingWork(w, changed);
 }

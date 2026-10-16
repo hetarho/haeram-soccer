@@ -1,3 +1,4 @@
+import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import {
   advanceRound,
@@ -11,14 +12,17 @@ import {
   staffCandidates,
   transferOffers,
 } from './index';
-const world = () =>
-  createWorld({
+const world = () => {
+  const w = createWorld({
     country: 'ENG',
     name: 'Owners Athletic',
     color: '#125544',
     seed: 'ops',
     level: 'easy' as const,
   });
+  w.settings = legacySettings(2);
+  return w;
+};
 describe('club decisions', () => {
   it('refuses or conditions incompatible requests without applying them and resigns under proud conflict', () => {
     const w = world();
@@ -46,7 +50,7 @@ describe('club decisions', () => {
   });
   it('refuses contract answers without a talk and the old single sponsor', () => {
     const w = world();
-    // New clubs leave contract talks to the staff (→STAFF-13); level 4 hands over the manager post.
+    // This compatibility fixture delegates contracts; the legacy command also hands over managers.
     expect(delegated(w, 'contracts')).toBe(true);
     operate(w, { type: 'intervention', level: 4 });
     expect(delegated(w, 'manager')).toBe(true);

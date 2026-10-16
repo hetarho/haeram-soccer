@@ -761,18 +761,7 @@ function listedOffers(w: World, day: number, until: number) {
     w.bids = [...(w.bids || []), bid];
     const summary = `${p.position} · ${w.year - p.born}세 · 능력 ${overall(p)} · 평가 가치 ${moneyLabel(w, value)}`;
     if (isDelegated(w, 'sales')) {
-      // The owner listed him to sell: the staff take the offer.
-      completeSale(w, bid, p);
-      pushInbox(w, {
-        kind: 'staff-report',
-        title: clip(
-          `단장이 ${club.name}의 ${p.name} 제안(${moneyLabel(w, fee)})을 수락했어요`,
-          160,
-        ),
-        detail: `${summary} · 이적 명단에 오른 선수라 매각했어요.`,
-        attention: false,
-        ref: bid.id,
-      });
+      answerIncoming(w, bid, p, club, value, fee);
       continue;
     }
     pushInbox(w, {
@@ -823,6 +812,17 @@ function incomingBid(w: World, day: number, until: number) {
     status: 'pending',
   };
   w.bids = [...(w.bids || []), bid];
+  answerIncoming(w, bid, player, club, value, fee);
+}
+
+function answerIncoming(
+  w: World,
+  bid: TransferBid,
+  player: Player,
+  club: Club,
+  value: string,
+  fee: string,
+) {
   const age = w.year - player.born,
     offered = Number((BigInt(fee) * 100n) / BigInt(value)),
     untouchable = player.stance === 'untouchable',
@@ -855,6 +855,11 @@ function incomingBid(w: World, day: number, until: number) {
     return;
   }
   if (isDelegated(w, 'sales')) {
+    if (player.stance === 'listed') {
+      const blocker = saleBlocker(w, player);
+      report(!blocker, blocker || '이적 명단에 오른 선수라 매각했어요.');
+      return;
+    }
     const starters = new Set(ownStarters(w).map((p) => p.id));
     // A starter leaves only with a bench player ready to play his slot (→CLUB-24).
     const covered = slotCovered(w, player);
@@ -953,4 +958,39 @@ export function dailyMarket(w: World): void {
     staffSignings(w);
   }
   pruneBids(w);
+}
+
+/** Preserve live external negotiations and their original terms/due dates on handover. */
+export function handoverRecruitment(w: World, delegated: boolean) {
+  for (const bid of w.bids || []) {
+    if (bid.direction !== 'out' || !isOpen(bid)) continue;
+    if (!delegated) {
+      delete bid.staff;
+      continue;
+    }
+    bid.staff ??= 'short';
+    if (bid.status !== 'countered') continue;
+    const offer = marketOffer(w, bid);
+    if (!offer?.available || !transferWindow(w).open || !bid.counterFee) {
+      expire(w, bid, offer?.player.name || '영입 대상', '현재 완료할 수 없는 협상이에요.');
+      continue;
+    }
+    answerStaffCounter(w, bid, offer, askingFee(offer, bid.loan));
+  }
+}
+export function handoverSales(w: World) {
+  for (const bid of w.bids || []) {
+    if (bid.direction !== 'in' || bid.status !== 'pending') continue;
+    const player = activePlayers(w).find((p) => p.id === bid.playerId),
+      club = w.clubs.find((c) => c.id === bid.club);
+    if (
+      !player ||
+      !club ||
+      bid.year !== w.year ||
+      bid.due < currentDay(w) ||
+      !transferWindow(w).open
+    )
+      continue;
+    answerIncoming(w, bid, player, club, playerValue(w, player), bid.fee);
+  }
 }

@@ -739,7 +739,7 @@ export function contractTalks(w: World) {
     else if (left <= TALK_CONFIG.improveSeasons && p.improveAsked !== w.year && underpaid(w, p))
       openTalk(w, p, 'improve');
   }
-  if (isDelegated(w, 'contracts')) for (const p of activePlayers(w)) if (p.talk) staffAnswer(w, p);
+  if (isDelegated(w, 'contracts')) answerPendingContracts(w);
 }
 /**
  * Each day: a player unhappy for six weeks hands in a transfer request (→CLUB-27). He goes on the
@@ -835,4 +835,9 @@ export function declineContract(w: World, id: string) {
       attention: false,
       ref: p.id,
     });
+}
+
+/** Resolve only existing talks; changing authority must not open unrelated negotiations. */
+export function answerPendingContracts(w: World) {
+  for (const p of activePlayers(w)) if (p.talk) staffAnswer(w, p);
 }

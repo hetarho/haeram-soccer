@@ -32,6 +32,7 @@ import {
   managerCriteriaOf,
 } from './hiring';
 import { isDelegated } from './responsibilities';
+import { decisionId } from './stopping';
 
 /** The 단장 beside the manager, then the coaching departments below him, in display order. */
 export const STAFF_ROLES: readonly StaffRole[] = [
@@ -847,13 +848,17 @@ function delegatedManagerRenewal(w: World, school: string, limit: number) {
  * it; else, or when the club cannot afford the renewal, the owner hears that he leaves unless
  * renewed. Coaching staff (absent in older saves) play no part.
  */
-function managerRenewalReminder(w: World) {
+export function managerRenewalReminder(w: World) {
   const m = w.manager,
     terms = managerRenewal(w);
   if (!terms) return;
   const school = m.style ? `${STYLE_INFO[m.style].label} ` : '',
     managerDelegated = isDelegated(w, 'manager');
-  if (managerDelegated && delegatedManagerRenewal(w, school, terms.limit)) return;
+  if (managerDelegated && delegatedManagerRenewal(w, school, terms.limit)) {
+    const id = decisionId('manager', m.id, `${m.until}`);
+    if (!w.decisionChoices?.includes(id)) (w.decisionChoices ||= []).push(id);
+    return;
+  }
   const seasons = terms.limit === 1 ? '1시즌' : `1–${terms.limit}시즌`;
   pushInbox(w, {
     kind: 'staff-renewal',
