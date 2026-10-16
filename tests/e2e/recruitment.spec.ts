@@ -1,3 +1,6 @@
+import { createWorld, makePlayer, joinClub } from '../../packages/engine/src/index';
+import { movePerson } from '../../packages/engine/src/npc-continuity';
+import { importResponsibilityCareer } from './responsibility-fixtures';
 import { lineOf } from '../../packages/engine/src/player';
 import { chooseOption } from './select';
 import { expect, test, type Page } from '@playwright/test';
@@ -134,7 +137,7 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   await freeCard.getByRole('button', { name: '자유계약 영입', exact: true }).click();
   await expect(freeCard.getByRole('button', { name: '계약 완료', exact: true })).toBeDisabled();
   await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toContainText(
-    '선수단 정원 19/26',
+    '선수단 정원 21/40',
   );
   const recruited = await exportWorld(page);
   expect(recruited.cash).toBe(before.cash);
@@ -154,7 +157,7 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   await loanCard.getByRole('button', { name: '1시즌 임대', exact: true }).click();
   await expect(loanCard.getByRole('button', { name: '계약 완료', exact: true })).toBeDisabled();
   await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toContainText(
-    '선수단 정원 20/26',
+    '선수단 정원 22/40',
   );
   const borrowed = await exportWorld(page);
   expect(BigInt(borrowed.cash)).toBe(BigInt(recruited.cash) - BigInt(loan.loanFee));
@@ -177,10 +180,34 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 
-test('reaches the real squad capacity with eight loans and prevents any further contract', async ({
+test('reaches the forty-player ceiling with eight loans and prevents any further contract', async ({
   page,
 }) => {
-  await foundMarket(page, 'recruitment-full-ui');
+  await page.setViewportSize({ width: 390, height: 844 });
+  // Marked synthetic 32-player career; all eight subsequent loans use real public commands.
+  const setup = createWorld({
+    country: 'ENG',
+    name: 'Synthetic Capacity',
+    color: '#224433',
+    seed: 'recruitment-full-ui',
+    level: 'easy',
+  });
+  while (setup.players.length < 32) {
+    const player = makePlayer(
+      'ENG',
+      setup.seed,
+      `capacity:bench:${setup.players.length}`,
+      setup.year,
+      20,
+      'CM',
+      20,
+    );
+    joinClub(player, 'domestic', setup.year);
+    setup.players.push(player);
+    movePerson(setup, player, setup.playerClub, true);
+  }
+  await importResponsibilityCareer(page, setup);
+  await openMarket(page);
   const before = await exportWorld(page);
   const offers = transferOffers(before);
   const totalFees = offers.reduce((sum, offer) => sum + BigInt(offer.loanFee), 0n);
@@ -192,14 +219,14 @@ test('reaches the real squad capacity with eight loans and prevents any further 
     await expect(card.getByRole('button', { name: '계약 완료', exact: true })).toBeDisabled();
   }
   await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toContainText(
-    '선수단 정원 26/26',
+    '선수단 정원 40/40',
   );
-  await expect(desk).toContainText('선수단 정원 26/26 · 자리가 가득 찼어요.');
+  await expect(desk).toContainText('선수단 정원 40/40 · 자리가 가득 찼어요.');
   await expect(desk.getByRole('button', { name: '계약 완료', exact: true })).toHaveCount(8);
   for (const button of await desk.getByRole('button', { name: '1시즌 임대', exact: true }).all())
     await expect(button).toBeDisabled();
   const full = await exportWorld(page);
-  expect(full.players.filter((player) => player.status === 'active')).toHaveLength(26);
+  expect(full.players.filter((player) => player.status === 'active')).toHaveLength(40);
   expect(BigInt(full.cash)).toBe(BigInt(before.cash) - totalFees);
   for (const offer of offers)
     expect(full.players.find((player) => player.id === offer.player.id)?.loanUntil).toBe(
@@ -329,5 +356,11 @@ test('the market ends with who answers offers and names the recruitment level, o
   expect(await horizontalOverflow(page)).toBe(0);
   // The recruitment level is a line that opens its home on the 방향 board (→WEB-71).
   await page.getByRole('button', { name: /^영입 기조 · 균형/ }).click();
-  await expect(page).toHaveURL(/\/direction$/);
+  await expect(page.getByRole('dialog', { name: '영입 운영 방침', exact: true })).toBeVisible();
+  await expect(
+    page
+      .getByRole('dialog', { name: '영입 운영 방침', exact: true })
+      .getByRole('radio', { name: '영입 기조 균형', exact: true }),
+  ).toHaveAttribute('aria-checked', 'true');
+  await expect(page).toHaveURL(/\/people\?view=market$/);
 });

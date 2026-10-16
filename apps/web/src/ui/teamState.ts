@@ -1,3 +1,4 @@
+import { squadRegistration } from './squadRegistration';
 import { registrationRoom } from '../../../../packages/engine/src/registration';
 import type {
   CareKind,
@@ -278,7 +279,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
         {
           id: 'market',
           label: '이적시장',
-          effect: '자유계약 선수는 언제든, 이적료 선수는 이적시장 기간에 영입해요',
+          effect: `자유계약 선수는 언제든, 이적료 선수는 이적시장 기간에 영입해요 · ${squadRegistration(w).detail}`,
           page: 'people',
           tab: 'market',
         },
@@ -352,6 +353,7 @@ export function teamStates(w: World): TeamStateItem[] {
   const squad = activePlayers(w).length;
   const injured = activePlayers(w).filter((p) => isInjured(w, p)).length;
   const fit = squad - injured;
+  const registered = squadRegistration(w);
   return [
     {
       key: 'fatigue',
@@ -427,13 +429,13 @@ export function teamStates(w: World): TeamStateItem[] {
     {
       key: 'squad',
       label: '선수단',
-      value: `${squad}/26`,
-      status: injured ? `부상 ${injured}` : squad < 16 ? '부족' : squad >= 26 ? '가득' : '여유',
-      tone: fit < 14 || squad < 15 ? 'bad' : squad < 16 || injured >= 3 ? 'warn' : 'good',
+      value: registered.value,
+      status: squad < 20 ? '부족' : registered.full ? '가득' : injured ? `부상 ${injured}` : '여유',
+      tone: fit < 14 || squad < 16 ? 'bad' : squad < 20 || injured >= 3 ? 'warn' : 'good',
       advice:
-        squad < 16 || fit < 14
+        squad < 20 || fit < 14 || injured >= 3
           ? {
-              text: `선수 ${squad}명${injured ? ` · 부상 ${injured}명` : ''} · 부상이나 피로가 겹치면 선발을 채우기 어려워요.`,
+              text: `선수 ${squad}명${injured ? ` · 부상 ${injured}명` : ''} · ${registered.detail} · 부상이나 피로가 겹치면 선발을 채우기 어려워요.`,
               actions: quick(w, 'squad'),
             }
           : undefined,

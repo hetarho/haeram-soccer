@@ -51,10 +51,10 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await expect(page).toHaveURL(/\/people\?view=market$/);
   await page.getByRole('button', { name: '자유계약 영입', exact: true }).click();
   await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toContainText(
-    '선수단 정원 19/26',
+    '선수단 정원 21/40',
   );
   await peopleTab('선수').click();
-  await expect(page.getByText('선수단 19/26', { exact: true })).toBeVisible();
+  await expect(page.getByText('선수단 21/40', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await finishSeason(page);
   await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);

@@ -71,7 +71,7 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(dialog).toHaveCount(0);
   await nav.getByRole('button', { name: '선수단·스태프', exact: true }).click();
-  await expect(page.getByText(/^선수단 \d+\/26$/)).toBeVisible();
+  await expect(page.getByText(/^선수단 \d+\/40$/)).toBeVisible();
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   await nav.getByRole('button', { name: '리그', exact: true }).click();
   await page.getByRole('tab', { name: '순위표', exact: true }).click();

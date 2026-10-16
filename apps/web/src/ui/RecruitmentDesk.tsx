@@ -1,3 +1,4 @@
+import { squadRegistration } from './squadRegistration';
 import { RecruitmentCommitments } from './MediationReview';
 import { PlayerLink } from './PlayerSheet';
 import { useTaskState } from './taskMemory';
@@ -279,7 +280,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   // A shortlisted candidate opened from 스카우트 명단 without a bid to make (→CLUB-33).
   const [viewing, setViewing] = useState<Candidate>();
   const [step, setStep] = useState(1);
-  const active = w.players.filter((player) => player.status === 'active').length;
+  const registered = squadRegistration(w);
   const acting = useGameState((current) => !!current.pendingActions);
   const readonly = useGameState((current) => current.readonly);
   const error = useGameState((current) => current.error);
@@ -418,7 +419,8 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       </button>
       <div className={s.summary}>
         <span>
-          선수단 정원 <b>{active}/26</b>
+          선수단 정원 <b>{registered.value}</b>
+          <small>{registered.detail}</small>
         </span>
         <span>
           협상 중 <b>{outgoing.length}건</b>
@@ -474,9 +476,9 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           ))}
         </section>
       )}
-      {active >= 26 && (
+      {registered.full && (
         <p className={s.warning}>
-          선수단 정원 26/26 · 자리가 가득 찼어요. 선수를 정리한 뒤 영입하세요.
+          선수단 정원 {registered.value} · 자리가 가득 찼어요. 선수를 정리한 뒤 영입하세요.
         </p>
       )}
       <div className={s.roles} role="group" aria-label="영입 포지션 선택">

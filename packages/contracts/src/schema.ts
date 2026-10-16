@@ -1422,7 +1422,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   if (w.players.filter((p) => p.status === 'active').length < 14)
     throw new Error('최소 선수단 부족');
   if (w.players.some((p) => p.born > w.year)) throw new Error('선수 생년 손상');
-  if (w.players.filter((p) => p.status === 'active').length > 26)
+  if (w.players.filter((p) => p.status === 'active').length > 40)
     throw new Error('선수단 정원 초과');
   for (const [clubId, row] of Object.entries(w.tables)) {
     if (

@@ -1,3 +1,4 @@
+import { squadRegistration } from './squadRegistration';
 import { PersonCareerLink } from './PersonCareer';
 import { useTaskState } from './taskMemory';
 import { PixelIcon } from './PixelIcon';
@@ -841,6 +842,7 @@ function Roster({ state, client }: Props) {
   const acting = useGameState((state) => !!state.pendingActions);
   const disabled = state.busy || state.readonly || acting;
   const active = w.players.filter((p) => p.status === 'active');
+  const registered = squadRegistration(w);
   const window = transferWindow(w);
   const stancePlayer = w.players.find((p) => p.id === stanceId && canSetStance(p));
   const talkPlayer = active.find((p) => p.id === talkId),
@@ -858,7 +860,13 @@ function Roster({ state, client }: Props) {
       </div>
       <Panel
         title="우리 클럽의 선수들"
-        note={`선수단 ${active.length}/26`}
+        note={
+          <>
+            <span>선수단 {registered.value}</span>
+            <br />
+            <small>{registered.detail}</small>
+          </>
+        }
         action={
           <RosterFilters
             view={view}

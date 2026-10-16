@@ -97,7 +97,7 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   // the actual cards rather than the founding count.
   const rosterCount = await page.locator('[class*="rosterCards"] article').count();
   expect(rosterCount).toBeGreaterThanOrEqual(14);
-  await expect(page.getByText(`선수단 ${rosterCount}/26`, { exact: true })).toBeVisible();
+  await expect(page.getByText(`선수단 ${rosterCount}/40`, { exact: true })).toBeVisible();
   await expect(page).toHaveURL(/\/people$/);
   await mobileMenu.getByRole('button', { name: '훈련·육성', exact: true }).click();
   await expect(page.getByRole('heading', { name: '훈련·육성', level: 2 })).toBeVisible();

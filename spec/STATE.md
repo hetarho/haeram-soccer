@@ -93,7 +93,6 @@
 | T177 | Verify delegation handover and promise outcomes through the browser | WEB CLUB HIST SAVE | T172 T174 | todo |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 | todo |
-| T187 | Show squad counts against the rule and the 20/16 tones | WEB CLUB STAFF | T182 T183 T184 T175 | doing@261017.n7r4 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -107,6 +106,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 T187 done n7r4: Squad summaries show historical registration counts, explicit estimated fallback, and twenty/sixteen readiness tones; recruitment and save validation enforce the forty-player global boundary.
 - 261017 implement-task T187 start n7r4.
 - 261017 T175 done n7r4: Browser journeys use central seven-category settings and public manual event/match actions; season helpers stop by observed season/fixture progress, with old tool invocations removed and genuine legacy compatibility tests retained.
 - 261017 T190 done n7r4: One retained scorer keeps aggregate league totals and exact per-club contributions across real in-league transfers; strict conservation, archived breakdowns, UI labels and the lossless save codec preserve those facts.
@@ -126,4 +126,3 @@
 - 261017 T188 done n7r4: The pitch keeps 1.9:1 at mobile sizes, the mode selector uses the shared design system with readable phone clock rows, and exiting grouped events retain their viewport position.
 - 261017 WEB r89 assigned to T188: responsive clock reflow prevents date overlap from the shared selector; T183 unaffected.
 - 261017 implement-task T188 start n7r4.
-- 261017 create-task T188: WEB r88 and reported selector/exit regressions; prioritize before T183.

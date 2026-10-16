@@ -149,3 +149,41 @@ describe('team state', () => {
     expect(runwayText(999)).toBe('1년 이상');
   });
 });
+
+describe('registration-aware squad state', () => {
+  it.each([
+    [20, 'good', '여유'],
+    [19, 'warn', '부족'],
+    [16, 'warn', '부족'],
+    [15, 'bad', '부족'],
+  ] as const)('shows %s players with %s tone', (count, tone, status) => {
+    const w = world();
+    for (const p of w.players.slice(count)) p.status = 'sold';
+    expect(teamStates(w).find((s) => s.key === 'squad')).toMatchObject({
+      value: `${count}/40`,
+      tone,
+      status,
+    });
+  });
+  it('warns for three injuries and becomes critical with fewer than fourteen fit', () => {
+    const w = world();
+    for (const p of w.players.slice(0, 3))
+      p.injury = { year: w.year, day: 100, label: 'synthetic injury' };
+    expect(teamStates(w).find((s) => s.key === 'squad')!.tone).toBe('warn');
+    for (const p of w.players.slice(16)) p.status = 'sold';
+    expect(teamStates(w).find((s) => s.key === 'squad')!.tone).toBe('bad');
+  });
+  it('uses counted and exempt players for an observed modern rule and discloses fallback estimation', () => {
+    const w = world();
+    expect(remedies(w, 'squad').find((r) => r.id === 'market')!.effect).toContain(
+      '등록 한도 40명 · 추정',
+    );
+    w.year = 2011;
+    w.clubs.find((c) => c.id === w.playerClub)!.tier = 0;
+    for (const p of w.players) p.born = 1980;
+    for (const p of w.players.slice(0, 4)) p.born = 1991;
+    expect(teamStates(w).find((s) => s.key === 'squad')!.value).toBe('16/25 · 제외 4');
+    expect(remedies(w, 'squad').find((r) => r.id === 'market')!.effect).toContain('21세 이하 제외');
+    expect(remedies(w, 'squad').find((r) => r.id === 'market')!.effect).not.toContain('추정');
+  });
+});

@@ -54,6 +54,15 @@ function candidate(w: ReturnType<typeof fixture>, age = 24, position: Player['po
   );
 }
 describe('season-specific squad registration', () => {
+  it('accepts forty serialized players, retains counted over-limit squads and rejects forty-one', () => {
+    const full = fixture('ENG', 1950, country('ENG').groups.length, 40);
+    expect(validateWorld(JSON.parse(canonical(full))).players).toHaveLength(40);
+    full.players.push(candidate(full));
+    movePerson(full, full.players.at(-1)!, full.playerClub, true);
+    expect(() => validateWorld(full)).toThrow('선수단 정원 초과');
+    const over = fixture('ENG', 2021, 0, 27);
+    expect(validateWorld(over).players).toHaveLength(27);
+  });
   it('uses the forty-player ceiling before the first rule, with no forced releases', () => {
     const w = fixture('ENG', 2009, 0, 39),
       p = candidate(w);

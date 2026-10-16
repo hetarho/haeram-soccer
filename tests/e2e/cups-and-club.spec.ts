@@ -94,9 +94,9 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     // The 코치 기조 line opens its area on the 방향 board, where it is chosen like any row.
     await page.getByRole('button', { name: /^코치 기조 · 표준/ }).click();
     const staffArea = page
-      .getByTestId('strategy-board')
+      .getByRole('dialog', { name: '스태프 운영 방침', exact: true })
       .getByRole('region', { name: '스태프', exact: true });
-    await expect(staffArea.locator('button[aria-controls^="board-area-body-"]')).toHaveAttribute(
+    await expect(staffArea.locator('button[aria-controls^="sheet-area-body-"]')).toHaveAttribute(
       'aria-expanded',
       'true',
     );
@@ -105,6 +105,9 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(draft).toContainText('코치 기조 표준 → 최고 수준');
     await draft.getByRole('button', { name: '적용', exact: true }).click();
     await expect(draft).toHaveCount(0);
+    await expect(page.getByRole('dialog', { name: '스태프 운영 방침', exact: true })).toHaveCount(
+      0,
+    );
     await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
     await tab('스태프').click();
     await expect(page.getByRole('button', { name: /^코치 기조 · 최고 수준/ })).toBeVisible();
@@ -226,7 +229,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     );
     await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
     await tabs.getByRole('tab', { name: '선수', exact: true }).click();
-    await expect(page.getByText('선수단 18/26', { exact: true })).toBeVisible();
+    await expect(page.getByText('선수단 20/40', { exact: true })).toBeVisible();
     await expect(page).toHaveURL(/\/people$/);
     // The older market address lands there too, replaced in the address bar.
     await page.goto('/transfers');
