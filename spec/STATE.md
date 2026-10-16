@@ -16,7 +16,7 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 
 ## inbox
-- 261016 parked STAFF-27 STAFF-28 WORLD-11 CLUB-36 CLUB-37: clarify coaching-specialty mapping and candidate abilities/markets, NPC continuity and mediation/promise criteria before creating the complete proposal task batch
+- 261016 parked STAFF-27 STAFF-28 CLUB-36 CLUB-37: clarify coaching-specialty mapping, manager abilities/school, actual candidate-market employment and mediation/promise criteria before creating the complete proposal task batch
 - 261016 suggest WEB-74: owner-workflow tasks T134–T138 completed → review-code taskMemory/state, RecordsRoom/LiveSeason/CupsView and their browser journeys before the next UI feature; no refactoring is included in this completed scope
 - 261016 suggest -: spec lint has 33 existing document-quality hints → doc-review WEB/ARCH before expanding the navigation specification; no policy changes implied
 - 261015 decided WEB-74: start-vibe m8q4 scope → implement navigation-and-records with current game rules and the approved pixel readability baseline in an isolated checkout (alt: analysis only | revise game mechanics)
@@ -69,11 +69,11 @@
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
 | WEB | 86 | 80 | WEB-5✎ WEB-18✎ WEB-39✎ WEB-42✎ WEB-43✎ WEB-44✎ WEB-45✎ WEB-60✎ WEB-64✎ WEB-71✎ WEB-76+ WEB-77+ WEB-78+ WEB-79+ WEB-80+ WEB-81+ WEB-82+ WEB-83+ WEB-11✎ WEB-62✎ | 0 |
-| WORLD | 5 | 3 | WORLD-6✎ WORLD-10+ WORLD-11+ | 1 |
+| WORLD | 6 | 3 | WORLD-6✎ WORLD-10+ WORLD-11+ | 0 |
 | CLUB | 37 | 35 | CLUB-3✎ CLUB-13✎ CLUB-18✎ CLUB-22✎ CLUB-24✎ CLUB-32✎ CLUB-33✎ CLUB-34+ CLUB-35+ CLUB-36+ CLUB-37+ | 2 |
 | MATCH | 9 | 9 | - | 0 |
 | LEAGUE | 8 | 7 | LEAGUE-11✎ LEAGUE-13✎ | 0 |
-| STAFF | 28 | 20 | STAFF-13✎ STAFF-15✎ STAFF-16✎ STAFF-17✎ STAFF-18✎ STAFF-19✎ STAFF-20✎ STAFF-23+ STAFF-24+ STAFF-25+ STAFF-26+ STAFF-27+ STAFF-28+ STAFF-29+ STAFF-30+ STAFF-31+ STAFF-32+ STAFF-33+ STAFF-34+ STAFF-35+ STAFF-36+ STAFF-37+ STAFF-38+ STAFF-39+ STAFF-40+ | 2 |
+| STAFF | 29 | 20 | STAFF-13✎ STAFF-15✎ STAFF-16✎ STAFF-17✎ STAFF-18✎ STAFF-19✎ STAFF-20✎ STAFF-23+ STAFF-24+ STAFF-25+ STAFF-26+ STAFF-27+ STAFF-28+ STAFF-29+ STAFF-30+ STAFF-31+ STAFF-32+ STAFF-33+ STAFF-34+ STAFF-35+ STAFF-36+ STAFF-37+ STAFF-38+ STAFF-39+ STAFF-40+ STAFF-41+ | 2 |
 | ECON | 38 | 37 | ECON-25✎ | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 11 | 9 | HIST-14+ HIST-15+ | 0 |
@@ -91,11 +91,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- update-ssot STAFF PLAYER WORLD CLUB: settle all remaining proposal career/mediation policies together before creating any implementation tasks; no balance tuning.
+- update-ssot STAFF CLUB: settle remaining specialty/manager-market and mediation/promise policies together before creating any implementation tasks; no balance tuning.
 - create-task WEB STAFF CLUB PLAYER WORLD HIST SAVE ECON LEAGUE: decompose the complete agreed scope in one batch only after all proposal policy gaps are resolved; do not create a partial task batch.
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 update-ssot STAFF r29 WORLD r6: approved novice coaching OVR/POT ranges, selective continuity for coaching prospects/former own players, actual age/retirement and unique affiliation/role history; four policy units remain open
+- 261016 update-ssot STAFF WORLD start: record approved novice coaching OVR/POT ranges and selective cross-club person continuity
 - 261016 update-ssot PLAYER r8 STAFF r28: equal-weight aptitude calculation and existing grade distribution, automatically assigned coaching specialty from career/qualities; five policy units remain open
 - 261016 update-ssot PLAYER STAFF start: record equal-weight aptitude calculation and automatically assigned career/quality-based coaching specialty
 - 261016 update-ssot STAFF r27 PLAYER r7: one retained career-intention draw at retirement notice (natural 50/80%, encouraged 65/95%), actual-retirement candidacy and fixed generation-time aptitude with existing learned staff growth; six policy units remain open
@@ -114,5 +116,3 @@
 - 261016 implement-task start: read season archives without foreground command activity so the manager history tab does not flash the progress/cancel box during automatic play.
 - 261016 update-ssot WEB r85 SAVE r37 PLAYER r5: exclusive mode controls, season tools removed and new-career-only activation with recognized legacy gameplay reset permitted; seven career/mediation units remain open
 - 261016 update-ssot WEB SAVE PLAYER start: separate progression controls by mode, remove season tools and adopt new-career-only activation with legacy gameplay reset permitted
-- 261016 season-records layout: replace stacked mobile cards with compact table rows; clamp long fields to two lines and keep short fields on one line; retain season-detail links.
-- 261016 planning sequence confirmed: finish all proposal policy decisions together, then create the complete implementation task batch; no partial task creation

@@ -1,5 +1,5 @@
 # WORLD Fictional world and catalogs
-> r5 | Define the browser-demo rules for fictional world and catalogs.
+> r6 | Define the browser-demo rules for fictional world and catalogs.
 
 ## decisions
 - WORLD-1 [o] Playable associations: ENG ESP GER ITA FRA POR NED BEL. Other UEFA associations appear as representative clubs only.
@@ -21,7 +21,12 @@
   - seasonal squad generation must not rename, rejuvenate or duplicate that person as a new staff member. Missing other-club appearances or honours remain unavailable, never invented.
   - the scope and lifecycle of other-club player continuity are →WORLD-11.
 
-- WORLD-11 [?] Specify which other-club players retain continuing identities between seasonal rosters and how their retirement/coaching eligibility is determined. Resolve movement between our club and other clubs, rediscovery and cross-role uniqueness without claiming untracked full NPC lifetimes or fabricating past careers. Preserve →LEAGUE-10's existing club-strength evolution.
+- WORLD-11 [o] Across other clubs' seasonal rosters, retain continuing person identity for players whose true coaching aptitude is 높음 or 매우 높음, and for every player who has belonged to the owner's club, regardless of aptitude.
+  - retain name, birth year, fixed qualities, current club/career status and actual recorded career events across seasons; the same person can retire, enter coaching and later qualify for management (→STAFF-25/30/38/39). A low-aptitude former own player remains recognisable without gaining coaching eligibility.
+  - track age and retirement using →CLUB-3's existing age/chance rules and →STAFF-34's accepted playing-coach deferral. Use genuinely available playing context; missing appearances/minutes are unknown, not fabricated zeros or a reason to apply an unsupported low-minutes modifier.
+  - a recorded signing, sale, release, loan or return updates that person's actual affiliation/status, not his identity, age or history. Reappearance in a squad, candidate pool or staff role resolves the retained person; never create a duplicate across clubs or roles (→WORLD-10).
+  - the scope does not require persistent individual lifetimes, own-player training/development or invented match archives for every other NPC. Other-club strength evolution and seasonal match-attribute generation remain →LEAGUE-10 and →PLAYER-1; retained identities do not grant a club-strength bonus.
+  - actual playing retirement ends active-player availability while retaining real career facts (→HIST-14); a playing coach remains active only until his deferred retirement date (→STAFF-34). Keep existing lossless career/storage requirements (→SAVE-13/17).
 
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
@@ -32,6 +37,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r6 261016 WORLD-11✎ NPC continuity scope open→retain high/very-high coaching prospects and all former own players, actual age/retirement/affiliation and unique cross-role identity; ordinary club-strength model unchanged
 - r5 261016 WORLD-10✎ sequential role continuity→also one shared identity for concurrent player/coach roles
 - r4 261016 WORLD-6✎ seasonal squad identities→cross-role continuity reference; WORLD-10+ cross-club second-career person continuity; WORLD-11+ open NPC continuity/retirement scope
 - r3 261015 WORLD-6✎ NPC squads of four roles→the player model filling their tactic's formation

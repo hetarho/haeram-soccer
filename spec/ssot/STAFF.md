@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r28 | Define the browser-demo rules for manager demands and personality.
+> r29 | Define the browser-demo rules for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -146,7 +146,7 @@
   - the policy decides whose reasoning receives greater weight; financial permissions and spending checks remain owned by →ECON-33.
   - the policy is edited through the recruitment department's authoritative policy workflow (→ECON-25, →WEB-77). Detailed resolution rules are →CLUB-36.
 
-- STAFF-27 [?] Specify the detailed specialty-selection mapping under →STAFF-40, initial coaching ability/potential and admission to department candidate pools. Preserve actual age and ordinary disclosed employment costs; playing OVR or legend status grants no fixed coaching-potential bonus.
+- STAFF-27 [?] Specify the detailed specialty-selection mapping under →STAFF-40 and admission/employment through department candidate pools, including actual jobs at other clubs. Initial coaching ability/potential is →STAFF-41. Preserve actual age and ordinary disclosed employment costs; playing OVR or legend status grants no fixed coaching-potential bonus.
 
 - STAFF-28 [?] Specify manager ability/potential and school assignment, and admission to the existing manager market. Coaching-service and managerial-aptitude requirements are →STAFF-30/39; qualification is candidacy, not automatic employment.
 
@@ -196,7 +196,15 @@
 
 - STAFF-40 [o] A former player's coaching specialty is assigned automatically from his actual playing background and coaching qualities, shown on his profile, and determines the department in which he becomes a candidate.
   - choose one suitable training specialty from →STAFF-36's six posts; the owner decides whether to appoint him to that post, rather than assigning any department at will.
-  - goalkeeping background supports goalkeeping coaching, and strong teaching supports youth coaching. The detailed selection mapping and initial coaching ability/potential are →STAFF-27; a playing coach uses the same suitability rules.
+  - goalkeeping background supports goalkeeping coaching, and strong teaching supports youth coaching. Detailed selection and pool rules are →STAFF-27; initial coaching ability/potential is →STAFF-41. A playing coach uses the same suitability rules.
+
+- STAFF-41 [o] At first entry into a coaching path, assign a former player's actual initial coaching OVR and potential from his true coaching-aptitude grade (→STAFF-38).
+  | true coaching aptitude | initial coaching OVR | coaching POT |
+  |---|---|---|
+  | 높음 | 50–60 | 70–80 |
+  | 매우 높음 | 55–65 | 80–90 |
+  - draw once per person within the inclusive ranges, including for a playing-coach proposal, and retain the values across declined offers, reloads and subsequent employment. Playing OVR, fame and club tenure do not add a bonus or determine these values.
+  - these are actual initial values, not a second age-adjusted candidate baseline. Preserve real age, then use existing staff growth/ageing and ordinary salary/contract rules (→STAFF-16/11). Do not apply an additional generated-candidate age offset on entry.
 
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
@@ -207,6 +215,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r29 261016 STAFF-27/40✎ initial coaching values open→STAFF-41, mapping/market remain open; STAFF-41+ high OVR 50–60/POT 70–80, very high OVR 55–65/POT 80–90, actual age and existing growth/pay
 - r28 261016 STAFF-27✎ owner/automatic specialty choice open→automatic under STAFF-40, detailed mapping/ability/market remain open; STAFF-40+ profile-visible specialty from playing background and coaching qualities
 - r27 261016 STAFF-25✎ entry timing/chance/encouragement response open→once at retirement announcement, natural 50/80% and encouraged 65/95%, retained draw and retirement candidacy without guaranteed employment
 - r26 261016 STAFF-25/28/31✎ aptitude qualification open→STAFF-38/39, remaining entry/ability/market rules open; STAFF-38/39+ high-or-very-high coaching entry and separate managerial aptitude plus three-year service
