@@ -83,7 +83,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T140 | Compact policy draft panel | WEB ARCH | - | doing@261016.u9c2 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -92,10 +91,11 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- implement-task T140: compact draft panel; commit and push T139/T140 after verification.
+- No implementation tasks remain. T139/T140 are published on main and full source CI passes.
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 T140 done: compact draft panel and conditional launcher; T139/T140 published at 81108b2, full source CI 38846465288 passes all six jobs
 - 261016 T140 local checks pass: 57 browser cases after one WebKit retry, static/build/spec checks; commit/push and full remote CI next
 - 261016 T140 doing@u9c2: collapse draft details, reclaim launcher space, verify and publish authorized changes
 - 261016 create-task T140: WEB r80 compact policy draft and conditional notification launcher
@@ -115,4 +115,3 @@
 - 261015 T134 doing@m8q4: session task state and focused policy returns; verified source is promoted to main after branch CI
 - 261015 create-task WEB r78: T134 task/draft continuity, T135 actionable development/recruitment, T136 season-first records/league, T137 competition/home integration; sequential, no lanes
 - 261015 update-ssot WEB r78: task-first management, contextual returns/drafts, season-first club records and standings-first competition scope; create-task next
-- 261015 T133 carried into m8q4: approved Galmuri14/Galmuri11 readability baseline; T132 remains the superseded font trial, no changes to owner checkout
