@@ -14,7 +14,6 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| v6k2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:14Z | 2026-10-16T14:26Z | - |
 
 ## inbox
 - 261016 suggest WEB-74: owner-workflow tasks T134–T138 completed → review-code taskMemory/state, RecordsRoom/LiveSeason/CupsView and their browser journeys before the next UI feature; no refactoring is included in this completed scope
@@ -130,6 +129,7 @@
 - Do not activate rules 3.0.0 or reset career data before T174's prerequisites are complete.
 
 ## log
+- 261016 start-vibe v6k2 end: two authorized units complete through f57a32f; clean main pushed, final code CI 38915783586 queued. Local validation and handoff are in reports/261016-v6k2.md.
 - 261016 T153 done v6k2: balanced recruitment support across schema/protocol/rows/presets/library and reload; 833 unit, 11 contract and 27 cross-browser core cases passed. Authorized two-unit scope complete; remote CI remains in progress.
 - 261016 implement-task T153 start v6k2; STAFF r33 traits/call-ups, SAVE r38–39 activation scope and WEB r87 squad tones do not alter the support row contract.
 - 261016 T152 done v6k2: shared scoped policy sheet, per-command acknowledgement and retained candidate comparison; 8 Chromium and 15 board/navigation cases passed.
