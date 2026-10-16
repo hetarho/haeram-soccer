@@ -50,6 +50,7 @@ function founded(year?: number) {
   w.manager.until = year + 3;
   for (const p of w.players) {
     p.born = year - 24;
+    p.joined = year;
     p.until = year + 2;
   }
   prepareSeason(w);
@@ -235,7 +236,7 @@ describe('closed season archive', () => {
       (e) => e.year === year + 1 && e.kind === 'free-transfer-compensation',
     );
     expect(paid).toHaveLength(left.length);
-    expect(w.players.filter((p) => p.status === 'active')).toHaveLength(18);
+    expect(w.players.filter((p) => p.status === 'active')).toHaveLength(20);
   });
 
   it('refills a squad its expiring contracts emptied at its division’s level and wage (→CLUB-3, CLUB-25, CLUB-28)', () => {

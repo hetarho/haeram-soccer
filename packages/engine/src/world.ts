@@ -1,3 +1,4 @@
+import { SQUAD_TARGET } from './squad-size';
 import { continuousSquad } from './npc-continuity';
 import { generateQualities } from './aptitude';
 import {
@@ -429,6 +430,7 @@ export function createBase(input: Founding): World {
   // The founders cover the founding manager's formation: one per slot, then the bench (→CLUB-1).
   const tactic = manager.philosophy;
   const places = squadPlaces(tactic);
+  while (places.length < SQUAD_TARGET) places.push({ position: refillPlace(tactic, places) });
   // A new club starts at its league's average club plus its level's offset (→CLUB-1, →WEB-3).
   const peers = clubs
     .filter((c) => c.country === club.country && c.representative && c.tier === club.tier)
@@ -572,6 +574,20 @@ export function squadPlaces(tactic: Tactic): { position: Position; role?: RoleId
   });
   return [...slots.map((s) => ({ position: s.position, role: s.role })), ...bench];
 }
+/** First cover two keepers, then the line furthest below its minimum, in formation order. */
+export function refillPlace(
+  tactic: Tactic,
+  players: readonly Pick<Player, 'position'>[],
+): Position {
+  const held = (line: Line) => players.filter((p) => lineOf(p.position) === line).length;
+  if (held('GK') < LINE_MINIMUM.GK) return 'GK';
+  const line = (['DF', 'MF', 'FW'] as const)
+    .map((line, order) => ({ line, order, short: held(line) - LINE_MINIMUM[line] }))
+    .sort((a, b) => a.short - b.short || a.order - b.order)[0].line;
+  const options = formationOf(tactic).filter((slot) => lineOf(slot.position) === line);
+  return options[held(line) % options.length].position;
+}
+export const refillPosition = (w: World) => refillPlace(w.tactic, activePlayers(w));
 /** The 18 generated players of a club nobody owns, renewed by cohort each year (→WORLD-6). */
 export function npcSquad(seed: string, year: number, c: Club): Player[] {
   const code = COUNTRIES.some((p) => p.code === c.country) ? c.country : 'ENG';

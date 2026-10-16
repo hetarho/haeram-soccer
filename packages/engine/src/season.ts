@@ -1,3 +1,6 @@
+import { callUpFor } from './squad-target';
+import { SQUAD_TARGET } from './squad-size';
+import { isDelegated } from './responsibilities';
 import { registrationRoom } from './registration';
 import { finishTerm, settleReputation } from './reputation';
 import { judgePromises } from './promises';
@@ -28,9 +31,7 @@ import type {
   Club,
   CupRun,
   Fixture,
-  Line,
   MatchPlayback,
-  Position,
   TableRow,
   World,
 } from '../../contracts/src/types';
@@ -41,10 +42,9 @@ import {
   addEvent,
   AMATEUR_CLUBS,
   clubOf,
-  formationOf,
   joinClub,
-  LINE_MINIMUM,
   makePlayer,
+  refillPosition,
   rating,
 } from './world';
 import { lineOf } from './player';
@@ -715,8 +715,17 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
       p.season = zeroMetrics();
     }
     let i = 0;
-    while (activePlayers(w).length < 18 || !activePlayers(w).some((p) => p.position === 'GK')) {
-      const position = refillPosition(w);
+    while (
+      activePlayers(w).length < SQUAD_TARGET ||
+      !activePlayers(w).some((p) => p.position === 'GK')
+    ) {
+      const position = !activePlayers(w).some((p) => p.position === 'GK')
+        ? 'GK'
+        : refillPosition(w);
+      if (isDelegated(w, 'academy')) {
+        if (!callUpFor(w, lineOf(position), 'close')) break;
+        continue;
+      }
       const youth = makePlayer(
         own.country,
         w.seed,
@@ -888,18 +897,4 @@ export function advanceToNextMatch(
     if (w.ownMatches.length > matchCount) break;
   }
   return playback;
-}
-/**
- * The position a close-of-season refill plays (→CLUB-3): a goalkeeper while fewer than two, else
- * the line furthest below its minimum (→CLUB-33), at that line's formation positions in turn.
- */
-function refillPosition(w: World): Position {
-  const active = activePlayers(w);
-  const held = (line: Line) => active.filter((p) => lineOf(p.position) === line).length;
-  if (held('GK') < LINE_MINIMUM.GK) return 'GK';
-  const line = (['DF', 'MF', 'FW'] as const)
-    .map((line, order) => ({ line, order, short: held(line) - LINE_MINIMUM[line] }))
-    .sort((a, b) => a.short - b.short || a.order - b.order)[0]!.line;
-  const options = formationOf(w.tactic).filter((s) => lineOf(s.position) === line);
-  return options[held(line) % options.length]!.position;
 }

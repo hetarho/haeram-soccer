@@ -1,3 +1,4 @@
+import { SQUAD_TARGET } from './squad-size';
 import { registration, registrationRoom } from './registration';
 import { detectMediations, resolveDelegatedMediations } from './mediation';
 import { careerDate } from './person-careers';
@@ -43,7 +44,7 @@ import { placeBid, transferWindow, transferWindowDays } from './transfers';
 export const SIGNING_CONFIG = {
   lookDays: 7,
   lineMinimum: LINE_MINIMUM,
-  squadMinimum: 18,
+  squadMinimum: SQUAD_TARGET,
   /** He looks for upgrades only while the squad has at most this many players. */
   upgradeSquad: 24,
   /** Candidates the chief scout lists per line. */
@@ -108,8 +109,8 @@ function windowBids(w: World, day: number) {
 
 type ShortNeed = Extract<SigningNeed, { kind: 'short' }>;
 /**
- * Every short role in role order: fewer than its minimum, or, with the squad under 18 and every
- * role at its minimum, the role furthest below its share of an 18-player squad.
+ * Every short role in role order: fewer than its minimum, or, with the squad under 20 and every
+ * role at its minimum, the role furthest below its share of a 20-player squad.
  */
 export function shortLines(w: World): ShortNeed[] {
   const squad = activePlayers(w),

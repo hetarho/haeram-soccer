@@ -76,9 +76,11 @@ describe('world progression', () => {
     for (const seed of ['cover-1', 'cover-2', 'cover-3', 'cover-4', 'cover-5']) {
       const w = createWorld({ ...input, seed });
       const active = activePlayers(w);
-      expect(active).toHaveLength(18);
+      expect(active).toHaveLength(20);
       for (const line of LINES)
-        expect(active.filter((p) => lineOf(p.position) === line)).toHaveLength(LINE_MINIMUM[line]);
+        expect(active.filter((p) => lineOf(p.position) === line).length).toBeGreaterThanOrEqual(
+          LINE_MINIMUM[line],
+        );
       for (const slot of formationOf(w.tactic))
         expect(active.some((p) => (p.positions[slot.position] ?? 0) >= 2)).toBe(true);
       expect(active.every((p) => p.adaptation === 0.8)).toBe(true);
