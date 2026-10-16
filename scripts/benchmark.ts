@@ -66,7 +66,14 @@ let worstCheckpointBytes = 0;
 /** The world as a load reads it (→SAVE-10); these rules sign by slot, so a load changes nothing. */
 const loadedCanonical = (w: World) => canonical(validateWorld(w, LOAD_CATALOG));
 async function measure(w: World, label: string) {
-  const worldCanonical = loadedCanonical(w);
+  let worldCanonical: string;
+  try {
+    worldCanonical = loadedCanonical(w);
+  } catch (error) {
+    writeFileSync('.tmp/release-validation-failure-world.json', canonical(w));
+    console.error(`Checkpoint validation failed: ${label}, year ${w.year}, round ${w.round}`);
+    throw error;
+  }
   for (const cp of COUNTRIES)
     cp.groups.forEach((groups, tier) =>
       groups.forEach((count, group) => {
@@ -122,6 +129,9 @@ async function measure(w: World, label: string) {
     passed: checkpointBytes <= CHECKPOINT_LIMIT && totalBytes <= TOTAL_LIMIT,
   };
   measurements.push(result);
+  console.error(
+    `${label}: ${checkpointBytes} checkpoint bytes, ${result.retainedPeople} people, ${result.promises} promises`,
+  );
   if (checkpointBytes > worstCheckpointBytes) {
     worstCheckpointBytes = checkpointBytes;
     writeFileSync('.tmp/release-storage-worst-world.json', worldCanonical);
@@ -216,6 +226,10 @@ for (const variant of ['baseline', 'active-management']) {
     simulateSeason(w);
     assertRetained(w, before);
     if (w.history.length !== n + 1) throw new Error('Missing completed season archive');
+    if ((n + 1) % 10 === 0)
+      console.error(
+        `${variant}: ${n + 1}/100 seasons, ${Object.keys(w.people ?? {}).length} retained people`,
+      );
     if (n === 49) {
       const mid = structuredClone(w);
       if (variant === 'active-management')

@@ -17,7 +17,7 @@
 | n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T17:35Z | T178 |
 
 ## inbox
-- 261017 suggest review-code: review the new scorer conservation, legacy-reset ownership and career-browser helpers after the final integration gate; five more implementation units are complete.
+- 261017 suggest -: review-code review the new scorer conservation, legacy-reset ownership and career-browser helpers after the final integration gate; five more implementation units are complete.
 - 261017 decided HIST-13: scoring continuity after an in-league transfer → one player total plus actual per-club contributions (alt: split the same person into multiple leaders | reset his earlier goals); fixes strict conservation without inventing NPC history.
 - 261017 decided T175 T187: dependency order for legacy browser helpers → migrate T175 before T187, using already shipped T150 controls (alt: make UI verification depend on removed controls); T174 activation retains its own save tests and final T179 gate.
 - 261017 suggest T183 T184 T185 T186 T189: five units completed → review-code registration/squad-target/director-bidding/replacements and CI triggers after planned release integration; no extra refactor adopted.

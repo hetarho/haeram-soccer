@@ -149,3 +149,40 @@ describe('actual coaching service and mentors', () => {
     expect(longestMentor(tie, date(1954))).toMatchObject({ manager: 'C', days: 365 });
   });
 });
+
+it('ends a foreign coaching contract in skipped summer before recording the next manager mentor', async () => {
+  const { advanceRound, closeSeason } = await import('./index');
+  const { retirePerson } = await import('./careers');
+  const { validateWorld } = await import('../../contracts/src/index');
+  const w = world(),
+    player = w.players[0],
+    person = w.people![player.id];
+  // Marked synthetic retiring candidate and foreign contract; all dates settle through real rounds.
+  player.born = 1910;
+  player.status = 'retired';
+  player.qualities = { understanding: 5, teaching: 5, judgement: 5 };
+  player.personality.professionalism = 5;
+  Object.assign(person, {
+    born: 1910,
+    qualities: { ...player.qualities },
+    professionalism: 5,
+    intention: { at: careerDate(w), draw: 0, willing: true },
+  });
+  retirePerson(w, person);
+  const club = w.clubs.find((c) => c.id !== w.playerClub)!.id;
+  const job = openEmployment(w, person.id, person.coaching!.role, club);
+  job.contractUntil = { year: 1950, day: 324 };
+  job.wage = '101';
+  job.currency = w.currency;
+  for (let round = 0; round < 46; round++) advanceRound(w, undefined, false);
+  // An old incumbent is replaced at the season boundary, after the last played day.
+  w.managerMarket!.clubs[club] = [0, 1900];
+  closeSeason(w);
+  expect(w.year).toBe(1951);
+  expect(job.to).toEqual({ year: 1950, day: 324 });
+  expect(person.mentors.every((m) => !m.to || careerOrdinal(m.from) <= careerOrdinal(m.to))).toBe(
+    true,
+  );
+  expect(person.mentors.at(-1)?.to).toEqual(job.to);
+  expect(() => validateWorld(w)).not.toThrow();
+});

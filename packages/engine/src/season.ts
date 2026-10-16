@@ -759,6 +759,9 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     qualifyManagers(w);
   });
   w.europe = [];
+  // Contracts may end in the skipped summer. Settle their exact end before any new-season
+  // manager refresh opens mentor exposure; otherwise an expiry can close a future exposure.
+  settleNpcCoaching(w);
   prepareSeason(w);
   // Relegated clubs may sack their managers into the market (→STAFF-17).
   refreshManagerMarket(
