@@ -590,19 +590,20 @@ it('rejects malformed compact optional shapes and expanded person facts on the f
     envelope = JSON.parse(await encode(w));
   for (const corrupt of [
     (p: ReturnType<typeof pack>) => {
-      if (p.careers?.version === 2) p.careers.people[4][0] = 'bad-grade';
+      if (p.careers?.version === 2 || p.careers?.version === 3)
+        p.careers.people[4][0] = 'bad-grade';
     },
     (p: ReturnType<typeof pack>) => {
-      if (p.careers?.version === 2) p.careers.people[13][0] = false;
+      if (p.careers?.version === 2 || p.careers?.version === 3) p.careers.people[13][0] = false;
     },
     (p: ReturnType<typeof pack>) => {
-      if (p.careers?.version === 2) p.careers.people[14][0] = 0;
+      if (p.careers?.version === 2 || p.careers?.version === 3) p.careers.people[14][0] = 0;
     },
     (p: ReturnType<typeof pack>) => {
-      if (p.careers?.version === 2) p.careers.people[17][0] = [];
+      if (p.careers?.version === 2 || p.careers?.version === 3) p.careers.people[17][0] = [];
     },
     (p: ReturnType<typeof pack>) => {
-      if (p.careers?.version === 2) p.careers.people[2][0] = 0.5;
+      if (p.careers?.version === 2 || p.careers?.version === 3) p.careers.people[2][0] = 0.5;
     },
   ]) {
     const packed = pack(w);

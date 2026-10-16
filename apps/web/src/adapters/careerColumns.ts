@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { readCareerOrder } from './careerOrder';
+import { readCareerProfiles } from './careerProfiles';
 import type { CareerRows } from './careerPacking';
 type Job = CareerRows['people'][number][14][number];
 export type CareerContext = { clubs: readonly string[]; playerClub: string; seed: string };
@@ -13,7 +15,11 @@ const reference = z.union([
   z.tuple([z.null(), index, index, integer, integer, optional, optional]),
 ]);
 const schema = z.strictObject({
-  version: z.literal(2),
+  version: z.union([z.literal(2), z.literal(3)]),
+  order: z
+    .string()
+    .max(MAX_ROWS * 4)
+    .optional(),
   seed: z.string().max(160),
   calendar: z.array(integer.min(1901 * 366).max(4000 * 366 + 365)).max(MAX_ROWS),
   dictionary: z.array(z.string().max(160)).max(MAX_CELLS),
@@ -512,9 +518,11 @@ export function unpackCareerColumns(input: unknown, context: Context) {
   const data = schema.parse(input),
     count = data.jobCounts.length,
     total = data.jobCounts.reduce((n, v) => n + v, 0);
+  if (count * 20 > MAX_CELLS || total * 11 > MAX_CELLS) throw failure();
+  if (data.version === 2 ? data.order !== undefined : data.order === undefined) throw failure();
+  const order = data.order === undefined ? undefined : readCareerOrder(data.order, count);
+  if (data.version === 3) data.people = readCareerProfiles(data.people, count);
   if (
-    count * 20 > MAX_CELLS ||
-    total * 11 > MAX_CELLS ||
     data.mentors.length !== count ||
     data.people.some((c) => c.length !== count) ||
     data.jobs.some((c) => c.length !== total) ||
@@ -697,5 +705,7 @@ export function unpackCareerColumns(input: unknown, context: Context) {
     });
     return [...main.slice(0, 14), jobs, mentors, ...main.slice(14)];
   });
-  return { data: { version: 1, people }, read };
+  const ordered = order ? Array.from({ length: count }, () => people[0]) : people;
+  if (order) order.forEach((original, stored) => (ordered[original] = people[stored]));
+  return { data: { version: 1, people: ordered }, read };
 }

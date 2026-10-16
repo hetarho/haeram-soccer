@@ -4,6 +4,8 @@ import { SaveCompatibilityError } from '../../../../packages/contracts/src/versi
 import { featureState } from '../../../../tests/fixtures/feature-state';
 import { createWorld } from '../../../../packages/engine/src/index';
 import { packCareers, unpackCareers } from './careerPacking';
+import { readCareerOrder } from './careerOrder';
+import { readCareerProfiles } from './careerProfiles';
 const fixture = () => {
   const world = featureState();
   const coach = Object.values(world.people!).find((person) =>
@@ -52,7 +54,7 @@ describe('versioned lossless career relationships', () => {
   });
   it('restores every optional fact using its private dictionary and explicit relationship references', () => {
     const { world, context, data } = fixture();
-    expect(data.version).toBe(2);
+    expect(data.version).toBe(3);
     expect(data.mentors.flat().some((mentor) => mentor[0] !== null)).toBe(true);
     const before = canonical(data);
     expect(canonical(unpackCareers(data, noGlobalDictionary, context))).toBe(
@@ -168,9 +170,68 @@ describe('versioned lossless career relationships', () => {
       expect(() => unpackCareers(broken, noGlobalDictionary, context)).toThrow();
     }
     expect(() => unpackCareers(data, noGlobalDictionary)).toThrow();
-    expect(() => unpackCareers({ ...data, version: 3 }, noGlobalDictionary, context)).toThrow(
+    expect(() => unpackCareers({ ...data, version: 4 }, noGlobalDictionary, context)).toThrow(
       SaveCompatibilityError,
     );
+  });
+  it('groups only stored rows and restores the exact original registry and nested array order', () => {
+    const { world, context } = fixture();
+    const people = Object.fromEntries(Object.entries(world.people!).reverse());
+    const originalKeys = Object.keys(people),
+      before = canonical(people);
+    const data = packCareers(people, context);
+    expect(
+      readCareerOrder(data.order!, data.jobCounts.length).some(
+        (original, stored) => original !== stored,
+      ),
+    ).toBe(true);
+    for (const deferred of [false, true]) {
+      const restored = unpackCareers(data, noGlobalDictionary, context, deferred);
+      expect(Object.keys(restored)).toEqual(originalKeys);
+      expect(canonical(restored)).toBe(before);
+    }
+    expect(Object.keys(people)).toEqual(originalKeys);
+    expect(canonical(people)).toBe(before);
+  });
+  it('continues reading version-two rows in their stored order without permutation metadata', () => {
+    const { world, context, data } = fixture();
+    const { order, ...columns } = data;
+    const legacy = {
+      ...columns,
+      version: 2,
+      people: readCareerProfiles(data.people, data.jobCounts.length),
+    };
+    const restored = unpackCareers(legacy, noGlobalDictionary, context);
+    expect(canonical(restored)).toBe(canonical(world.people));
+    expect(Object.keys(restored)).toEqual(
+      readCareerOrder(order!, data.jobCounts.length).map((i) => Object.keys(world.people!)[i]),
+    );
+  });
+  it('rejects missing, duplicate, out-of-range and mis-versioned registry permutations', () => {
+    const { context, data } = fixture();
+    for (const order of [
+      undefined,
+      [],
+      [0],
+      '',
+      data.order!.slice(1),
+      data.order! + 'AAAA',
+      btoa('\0'.repeat(data.jobCounts.length)),
+    ]) {
+      for (const deferred of [false, true])
+        expect(() =>
+          unpackCareers({ ...data, order }, noGlobalDictionary, context, deferred),
+        ).toThrow();
+    }
+    expect(() => unpackCareers({ ...data, version: 2 }, noGlobalDictionary, context)).toThrow();
+  });
+  it('validates restored profile scalars on both standalone and deferred world paths', () => {
+    const { context, data } = fixture();
+    const columns = data.people[16][0] as unknown[][];
+    expect(columns[1].length).toBeGreaterThan(0);
+    columns[1][0] = 'invalid-ability';
+    for (const deferred of [false, true])
+      expect(() => unpackCareers(data, noGlobalDictionary, context, deferred)).toThrow();
   });
   it('reads the frozen version-one row contract independently of the current writer', () => {
     const dictionary = [

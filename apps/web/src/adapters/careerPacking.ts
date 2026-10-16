@@ -2,6 +2,8 @@ import { z } from 'zod';
 import type { PersonCareer } from '../../../../packages/contracts/src/types';
 import { personCareerSchema } from '../../../../packages/contracts/src/schema';
 import { SaveCompatibilityError } from '../../../../packages/contracts/src/versions';
+import { packCareerOrder } from './careerOrder';
+import { packCareerProfiles } from './careerProfiles';
 import {
   packCareerColumns,
   unpackCareerColumns,
@@ -83,7 +85,27 @@ export function packCareers(
     return index;
   };
   const rows = packCareerRows(people, id);
-  return packCareerColumns(rows, id, (index) => dictionary[index], context, dictionary);
+  const grouped = rows.people.map((row, original) => ({ row, original }));
+  grouped.sort((a, b) => {
+    const count = b.row[14].length - a.row[14].length;
+    const year = (a.row[18]?.[3] ?? a.row[2] + 1000) - (b.row[18]?.[3] ?? b.row[2] + 1000);
+    const left = dictionary[a.row[0]],
+      right = dictionary[b.row[0]];
+    return count || year || (left < right ? -1 : left > right ? 1 : 0);
+  });
+  const packed = packCareerColumns(
+    { version: 1, people: grouped.map(({ row }) => row) },
+    id,
+    (index) => dictionary[index],
+    context,
+    dictionary,
+  );
+  return {
+    ...packed,
+    people: packCareerProfiles(packed.people),
+    version: 3,
+    order: packCareerOrder(grouped.map(({ original }) => original)),
+  };
 }
 /** Validated row representation; version-1 checkpoints retain this immutable interpretation. */
 export function packCareerRows(
@@ -186,11 +208,11 @@ export function unpackCareers(
   validateExpandedWorld = false,
 ): Record<string, PersonCareer> {
   const header = z.object({ version: z.number().int() }).safeParse(input);
-  if (header.success && header.data.version > 2)
+  if (header.success && header.data.version > 3)
     throw new SaveCompatibilityError(
       '지원하지 않는 인물 이력 압축 버전입니다. 원본 파일을 보관하세요.',
     );
-  if (header.success && header.data.version === 2) {
+  if (header.success && (header.data.version === 2 || header.data.version === 3)) {
     if (!context) throw new Error('인물 이력 압축 구단 정보 손상');
     const restored = unpackCareerColumns(input, context);
     input = restored.data;
@@ -198,7 +220,10 @@ export function unpackCareers(
   }
   // Only the private load path defers duplicate row/person parsing to validateWorld.
   // Standalone readers remain strict; compact dimensions/references are always checked above.
-  const deferred = validateExpandedWorld && header.success && header.data.version === 2;
+  const deferred =
+    validateExpandedWorld &&
+    header.success &&
+    (header.data.version === 2 || header.data.version === 3);
   const data = deferred ? (input as CareerRows) : schema.parse(input);
   const people: Record<string, PersonCareer> = Object.create(null);
   for (const r of data.people) {
