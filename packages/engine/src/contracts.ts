@@ -1,3 +1,4 @@
+import { movePerson } from './npc-continuity';
 import type {
   AgentRating,
   ContractClauses,
@@ -780,6 +781,7 @@ export function expireContracts(w: World, division = clubOf(w).tier) {
     p.status = 'sold';
     delete p.stance;
     leaveContract(w, p);
+    movePerson(w, p, club?.id, true);
     if (w.year >= BOSMAN_YEAR || !club) {
       addEvent(
         w,

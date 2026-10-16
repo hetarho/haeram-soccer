@@ -166,7 +166,10 @@ describe('world progression', () => {
   it('replaces retiring goalkeepers even when the remaining squad exceeds 18 players', () => {
     const w = createWorld(input);
     w.cash = '999999999';
-    for (const p of w.players) p.born = w.year - (p.position === 'GK' ? 35 : 21);
+    for (const p of w.players) {
+      p.born = w.year - (p.position === 'GK' ? 35 : 21);
+      w.people![p.id].born = p.born;
+    }
     for (const candidate of [1, 2, 3, 5, 6, 7]) operate(w, { type: 'recruit', candidate });
     simulateSeason(w);
     const active = w.players.filter((p) => p.status === 'active');

@@ -1,3 +1,4 @@
+import { materializePeople, returnLoan } from './npc-continuity';
 import { settleClubRounds, settleCohesion, settleStarts } from './adaptation';
 import { seasonTour } from './bases';
 import { advanceEconomy } from './economy';
@@ -146,6 +147,7 @@ export function divisionStrength(w: World) {
     : rating(w, own);
 }
 export function prepareSeason(w: World, continental = true) {
+  materializePeople(w);
   w.fixtures = [];
   w.tables = {};
   for (const c of w.clubs) w.tables[c.id] = emptyTable();
@@ -247,7 +249,7 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     recordScorers(w, playback);
   }
   if (own) {
-    const ownIds = new Set(w.players.map((p) => p.id));
+    const ownIds = new Set(playback.squads[m.home === w.playerClub ? 0 : 1].map((p) => p.id));
     const saved = { ...m, players: m.players.filter((p) => ownIds.has(p.id)) };
     w.ownMatches.push(saved);
     gate(w, m);
@@ -678,8 +680,8 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   if (own.tier !== oldTier) applyClauses(w, own.tier < oldTier ? 'promotion' : 'relegation');
   for (const p of activePlayers(w)) {
     if (p.loanUntil && p.loanUntil <= w.year) {
-      p.status = 'retired';
-      addEvent(w, 'retirement', `${p.name}의 다음 장`, '임대 기간이 끝났습니다.');
+      returnLoan(w, p);
+      addEvent(w, 'loan-return', `${p.name}의 다음 장`, '임대 기간이 끝났습니다.');
       continue;
     }
     developAnnually(w, p);

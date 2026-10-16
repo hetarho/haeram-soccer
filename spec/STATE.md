@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:02Z | T156 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:06Z | - |
 
 ## inbox
 - 261016 suggest WEB-74: owner-workflow tasks T134–T138 completed → review-code taskMemory/state, RecordsRoom/LiveSeason/CupsView and their browser journeys before the next UI feature; no refactoring is included in this completed scope
@@ -83,7 +83,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T156 | Retain coaching prospects and former own players in NPC squads | WORLD PLAYER HIST | T155 | doing@261017.n7r4 |
 | T157 | Apply actual age and retirement to retained other-club players | WORLD CLUB STAFF HIST PLAYER | T156 | todo |
 | T158 | Retain one career intention and one eligible owner encouragement | STAFF PLAYER HIST WORLD SAVE | T155 T157 | todo |
 | T159 | Assign coaching specialty and initial ability once | STAFF PLAYER WORLD | T158 | todo |
@@ -128,6 +127,7 @@
 - Do not activate rules 3.0.0 or reset career data before T174's prerequisites are complete.
 
 ## log
+- 261017 T156 done n7r4: Retained prospects and all former own/academy players keep identity across cohorts and moves; pure cached rosters exclude moved/retired people and own match metrics use actual own participants.
 - 261017 implement-task T156 start n7r4.
 - 261017 T155 done n7r4: One retained identity links fixed qualities, true own totals, dated employment and mentor facts; role helpers and schema reject identity/post/date/reference conflicts.
 - 261017 implement-task T155 start n7r4.
@@ -147,4 +147,3 @@
 - 261016 user checkpoint p150: finish T149, run and repair full verification, then push main; stop new task implementation.
 - 261016 implement-task T149 start p150
 - 261016 T148 done p150: Mode-owned progression controller isolates automatic pacing/debt/resume from single-flight manual event and match requests, guards old-world replies, and records mode transitions stopped.
-- 261016 implement-task T148 start p150

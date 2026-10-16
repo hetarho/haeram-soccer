@@ -616,6 +616,8 @@ const personCareer = z.strictObject({
   position,
   professionalism: grade,
   qualities,
+  origin: z.strictObject({ club: id, slot: z.number().int().min(0).max(25) }).optional(),
+  loan: z.strictObject({ club: id.optional(), until: season }).optional(),
   formerOwn: z.boolean().optional(),
   ownCareer: metrics.optional(),
   playing: z.enum(['active', 'released', 'retired']),

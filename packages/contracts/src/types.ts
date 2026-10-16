@@ -832,6 +832,8 @@ export interface PersonCareer {
   position: Position;
   professionalism: Personality['professionalism'];
   qualities: OffPitchQualities;
+  origin?: { club: string; slot: number };
+  loan?: { club?: string; until: number };
   formerOwn?: boolean;
   ownCareer?: number[];
   playing: 'active' | 'released' | 'retired';

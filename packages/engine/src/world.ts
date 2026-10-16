@@ -1,3 +1,4 @@
+import { continuousSquad } from './npc-continuity';
 import { generateQualities } from './aptitude';
 import {
   COUNTRIES,
@@ -535,10 +536,14 @@ export function squad(w: World, c: Club): Player[] {
   }
   let players = cache.clubs.get(c.id);
   if (!players) {
-    players = npcSquad(w.seed, w.year, c);
+    players = continuousSquad(w, c);
     cache.clubs.set(c.id, players);
   }
   return players;
+}
+/** Any recorded move/retirement invalidates derived rosters immediately. */
+export function invalidateNpcSquads(w: World) {
+  npcCaches.delete(w);
 }
 /** Stable playing style of a club nobody owns, shared by simulation and scouting. */
 export function clubStyle(club: Pick<Club, 'id'>): Tactic {

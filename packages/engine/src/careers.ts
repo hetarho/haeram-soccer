@@ -1,3 +1,4 @@
+import { movePerson } from './npc-continuity';
 import type { MatchRecord, Player, World } from '../../contracts/src/types';
 import { currentDay, dayCountedFrom, seasonDayLabel, seasonDayOf } from './calendar';
 import { clamp, integer, random } from './primitives';
@@ -77,6 +78,7 @@ export function retireAtClose(w: World) {
     const age = w.year + 1 - p.born;
     if (p.retiring !== w.year && age < RETIREMENT.lastAge) continue;
     p.status = 'retired';
+    movePerson(w, p, undefined, true).playing = 'retired';
     delete p.stance;
     leaveContract(w, p);
     addEvent(w, 'retirement', `${p.name}의 다음 장`, `${age}세 은퇴 · ${careerLine(w, p)}`);

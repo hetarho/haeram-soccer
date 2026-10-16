@@ -1,3 +1,4 @@
+import { movePerson } from './npc-continuity';
 import type { Club, Player, TransferBid, TransferStance, World } from '../../contracts/src/types';
 import { currency } from '../../catalogs/src/index';
 import { currentDay, SEASON_END_DAY, seasonDayLabel, seasonDayOf } from './calendar';
@@ -197,6 +198,7 @@ function completeSale(w: World, bid: TransferBid, p: Player) {
   delete p.stance;
   // His sale ends his talk, his unhappiness and his transfer request (→CLUB-27).
   leaveContract(w, p);
+  movePerson(w, p, club?.id, true);
   credit(w, bid.fee);
   addEvent(
     w,

@@ -1,3 +1,4 @@
+import { movePerson } from './npc-continuity';
 import type {
   Line,
   Player,
@@ -381,6 +382,7 @@ export function openShortlistWindow(w: World) {
  * window (→CLUB-33): a short line's, or a slot's whose position he plays at 준수 or better.
  */
 export function noteSigning(w: World, player: Player) {
+  movePerson(w, player, w.playerClub, true, player.loanUntil);
   joinClub(player, isForeignCandidate(player.id) ? 'abroad' : 'domestic');
   const window = w.shortlist?.window;
   if (

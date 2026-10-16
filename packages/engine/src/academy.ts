@@ -1,3 +1,4 @@
+import { movePerson } from './npc-continuity';
 import { baseEffects } from './bases';
 import type { Line, Player, Position, World, YouthFocus } from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
@@ -198,6 +199,7 @@ export function runAcademyIntake(w: World): void {
     prospects.push(player);
   }
   academy.players.push(...prospects);
+  for (const player of prospects) movePerson(w, player, w.playerClub, true);
   const best = [...prospects].sort(
     (a, b) => b.potential - a.potential || overall(b) - overall(a) || compareIds(a.id, b.id),
   )[0];
@@ -366,6 +368,7 @@ export function promoteYouth(w: World, id: string): void {
   player.fatigue = 0;
   joinClub(player, 'academy');
   w.players.push(player);
+  movePerson(w, player, w.playerClub, true);
   addEvent(
     w,
     'youth-promotion',
@@ -375,6 +378,7 @@ export function promoteYouth(w: World, id: string): void {
 }
 export function releaseYouth(w: World, id: string): void {
   const player = takeProspect(w, id);
+  movePerson(w, player, undefined, true);
   addEvent(
     w,
     'youth-release',
