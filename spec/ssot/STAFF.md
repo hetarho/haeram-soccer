@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r31 | Define the browser-demo rules for manager demands and personality.
+> r32 | Define the browser-demo rules for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -71,7 +71,7 @@
   - free agents (자유계약 감독): a pool of 4–8 kept in the world. Every 4 league rounds and at the season close, from a stream of its own so matches and other draws stay put: each free agent signs elsewhere with 25% and leaves; managers sacked in our league join; new free agents fill the pool to at least 4 (school order →STAFF-14, school bands →STAFF-14, levels 45–85).
   - every club has a named manager derived from the seed, the club and its count of managers; his level follows the club's strength (±8) inside his school's bands. A club in the bottom quarter of our league that lost 3 of its last 5 sacks its manager with 40% at a refresh, a relegated club at the close with 60%; the sacked manager joins the free agents, the club names its next one and the news reports it.
   - hiring a free agent costs his signing fee; hiring another club's manager also pays compensation (웃돈) of 1.5 × his annual wage, and that club names its next manager. Candidates from other clubs are the managers of our league and the division above, the eight best by level.
-  - former-player coaches who qualify for management (→STAFF-24) can enter the manager market; their admission and pool integration require →STAFF-28.
+  - qualified former-player coaches are additional manager candidates under →STAFF-28, including while employed as coaches. The ordinary 4–8 free-agent pool and eight other-club manager places do not remove these retained career candidates.
   - the manager the owner hires leaves the pool; the manager he replaces (not an interim) joins it; a hired candidate never shows as a candidate again while he is in charge.
   - the manager's 교체 action opens the market (→WEB-40): free agents first, then other clubs' managers with club, OVR/POT, school, wage, compensation and total, and says when the list next changes.
 
@@ -146,9 +146,18 @@
   - the policy decides whose reasoning receives greater weight; financial permissions and spending checks remain owned by →ECON-33.
   - the policy is edited through the recruitment department's authoritative policy workflow (→ECON-25, →WEB-77). Detailed resolution rules are →CLUB-36.
 
-- STAFF-27 [?] Specify admission through department candidate pools and contract-end handling for other-club coaching employment. Specialty mapping, initial coaching ability/potential and other-club hire timing/terms are →STAFF-40/41/43. Preserve actual age and ordinary disclosed employment costs; playing OVR or legend status grants no fixed coaching-potential bonus.
+- STAFF-27 [o] Qualified/willing former-player coaching candidates join their assigned department's market in addition to its ordinary three generated candidates (→STAFF-15/25/38/40).
+  - unemployed candidates remain available as the same retained people across seasonal candidate refreshes; do not replace generated places or reroll their identity, actual age, specialty, learned ability or coaching service. Initial coaching values remain →STAFF-41.
+  - hiring follows the ordinary staff-appointment responsibility, selection, contract, pay and affordability rules (→STAFF-11/15). Playing OVR, fame and club service grant no fixed coaching-potential bonus.
+  - an employed coach is absent from the free-coach list (→STAFF-43). At the end of his other-club two-year coaching contract, end that employment and return him to the free-candidate market with his retained career and ability; further employment follows →STAFF-43's job-search checks rather than automatic renewal.
+  - own-club coaching contracts continue to follow →STAFF-15's existing renewal/replacement rules, including former players and playing coaches (→STAFF-35).
 
-- STAFF-28 [?] Specify admission/appointments through the existing manager market, including candidates currently employed as coaches. Initial manager ability/potential and school are →STAFF-42/44; coaching-service and managerial-aptitude requirements are →STAFF-30/39. Qualification is candidacy, not automatic employment.
+- STAFF-28 [o] Former-player coaches who meet the actual service and managerial-aptitude requirements (→STAFF-30/39) appear as additional manager candidates, including while employed as coaches.
+  - show actual employment status and club. Unemployed candidates are free agents; own-club coaches can be promoted internally; other-club coaches can be recruited as managers without first becoming unemployed. Keep the ordinary manager candidates available (→STAFF-17).
+  - a manager appointment ends the person's coaching post and salary when the manager role begins; retain his identity, actual age, learned coaching ability and career/service record. Candidacy alone does not end employment or guarantee an appointment.
+  - recruiting an employed other-club coach as manager pays compensation of 1.5 times his current annual coaching wage, in addition to the ordinary manager hiring costs. Disclose wage, signing fee, compensation and total before appointment; internal promotion has no other-club compensation.
+  - manager selection, appointment responsibility, terms and affordability remain →STAFF-14/18/24; coaching-contract costs remain →STAFF-11. Delegated selection respects whether the chosen manager policy permits compensated recruitment from other clubs (→STAFF-18).
+  - initial manager ability/potential and school remain →STAFF-42/44. An appointed manager leaves the candidate lists while in charge (→STAFF-17); never retain a concurrent coaching post or list an employed coach as unemployed.
 
 - STAFF-29 [o] The owner may encourage an own active player toward a coaching career once, after his retirement announcement and before his actual playing retirement.
   - show the player's actual response; an encouragement alone does not guarantee entry, an aptitude increase, a playing-coach contract or employment (→STAFF-23/25/31).
@@ -242,6 +251,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r32 261016 STAFF-17/27/28✎ candidate admission/contract transitions open→additional retained coaching/manager candidates, expired NPC coaches return to job search, employed coaches eligible for promotion/recruitment with 1.5× current coach wage compensation
 - r31 261016 STAFF-27/28/40/42✎ specialty mapping/school open→ordered GK/youth/assistant/fitness/defense/attack and STAFF-44, market transitions remain open; STAFF-44+ longest actual mentor school, recent mentor breaks ties, ordinary generation only without recorded school
 - r30 261016 STAFF-27/28✎ initial manager values/NPC hire rules open→STAFF-42/43, mapping/school/market transitions remain open; STAFF-42/43+ high manager OVR 55–65/POT 75–85, very high 60–70/85–95, NPC coaching hires 25% every four rounds/close for two years
 - r29 261016 STAFF-27/40✎ initial coaching values open→STAFF-41, mapping/market remain open; STAFF-41+ high OVR 50–60/POT 70–80, very high OVR 55–65/POT 80–90, actual age and existing growth/pay

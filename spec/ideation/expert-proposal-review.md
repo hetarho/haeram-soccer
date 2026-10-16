@@ -47,11 +47,13 @@
 - [o] Playing-coach conversion needs one combined owner approval if player contracts or staff appointments are direct; both must be delegated for automatic conversion. Pay adds the ordinary coaching salary to the player-contract salary, with each component and the total disclosed (→STAFF-32/33).
 - [o] Playing-coach deferral offers only one/two-year terms fitting the existing age-41 retirement limit. At the agreed playing-retirement date, player salary ends; the same coaching post/contract continues if unexpired, otherwise ordinary staff renewal rules apply (→STAFF-34/35, →CLUB-3).
 - [o] Playing coaches qualify for suitable assistant, attack, defense, goalkeeping, fitness or youth-director posts, excluding director/scout roles (→STAFF-36). Losing only the coaching post preserves the player contract; a player transfer/release out of the club ends the coaching post too. Ordinary contract termination costs are disclosed and affected direct responsibilities are respected (→STAFF-37).
-- [o] Coaching specialty uses first-match priority: GK background → goalkeeping; very high teaching → youth; high understanding and team judgement → assistant; very high professionalism → fitness; defender/DM → defense; otherwise attack. Show the assigned specialty in the profile and hire for that department (→STAFF-40); market rules remain →STAFF-27 and initial ability is →STAFF-41.
+- [o] Coaching specialty uses first-match priority: GK background → goalkeeping; very high teaching → youth; high understanding and team judgement → assistant; very high professionalism → fitness; defender/DM → defense; otherwise attack. Show the assigned specialty in the profile and hire for that department (→STAFF-40); market rules are →STAFF-27 and initial ability is →STAFF-41.
 - [o] Initial coaching ability/potential: high aptitude OVR 50–60/POT 70–80; very high OVR 55–65/POT 80–90. Values are assigned once independently of playing OVR, retain actual age and subsequently use existing staff growth/pay rules (→STAFF-41).
 - [o] First manager ability/potential is separate from coaching: high managerial aptitude OVR 55–65/POT 75–85; very high OVR 60–70/POT 85–95. Preserve actual age/coaching history and existing subsequent manager growth rules (→STAFF-42).
 - [o] Managerial school follows the longest actual coaching service under a recorded manager with a known school, with the most recent mentor breaking ties. Without recorded school exposure, use ordinary new-manager generation; never fabricate pre-start mentors (→STAFF-44, →HIST-14).
-- [o] Unemployed coaching candidates have a 25% other-club hire chance every four rounds and at season close, once per refresh date, into one suitable vacant post on a two-year contract. Actual employment grants service and removes them from the free-coach list; contract-end/pool rules remain →STAFF-27 (→STAFF-43).
+- [o] Unemployed coaching candidates have a 25% other-club hire chance every four rounds and at season close, once per refresh date, into one suitable vacant post on a two-year contract. Actual employment grants service and removes them from the free-coach list; contract-end/pool rules are →STAFF-27 (→STAFF-43).
+- [o] Former-player coaches are additional department candidates alongside the ordinary generated candidates. Other-club two-year coaching contracts end with return to job search as the same person; own-club renewal rules remain unchanged (→STAFF-27).
+- [o] Qualified coaches appear as additional manager candidates even while employed, with actual employment status. Internal promotion and recruitment from another club are allowed; appointment ends the coaching post. Other-club compensation is 1.5 times current annual coaching wage, disclosed with ordinary hiring costs (→STAFF-28).
 - [o] Other-club continuity retains high/very-high coaching prospects and every former own player across seasons, with the same name, age, fixed qualities and actual career/affiliation events (→WORLD-11). No full individual development/lifetime simulation or fabricated match history is required for every NPC.
 - [x] Own-club 150 appearances or five seasons as the qualifying gate for coaching opportunities ← the owner wants aptitude-based opportunities across clubs; club service can be career context but must not exclude suitable outsiders.
 - [?] Second-career detail: preserve a recognisable person and assess coaching aptitude across clubs.
@@ -113,7 +115,7 @@
 
 ## domains
 - WEB: seven responsibilities, defaults/observation triggers, two progression modes, manual-match guard, scoped policy sheets, aptitude/career and mediation presentation, pending-work transfer and same-date event grouping (WEB-5/18/42/45/76–83). →WEB
-- STAFF: independent responsibilities, natural/encouraged entry, manager qualification, support policy, three-year minimum, high aptitude, ordered coaching specialty, mentor-derived school, separate coach/manager OVR/POT, other-club hires and playing-coach rules; market-transition parameters remain open (STAFF-13/15–20/23–44). →STAFF
+- STAFF: independent responsibilities, natural/encouraged entry, manager qualification, support policy, three-year minimum, high aptitude, ordered coaching specialty, mentor-derived school, separate coach/manager OVR/POT, other-club hires, retained candidate-market entry/contract transitions and playing-coach rules (STAFF-13/15–20/23–44). →STAFF
 - CLUB: retirement continuity, separate acquisition/sale responsibilities, recruitment-owned mediation and tracked reinforcement promises; resolution/fulfilment criteria remain open (CLUB-3/13/18/22/24/32–37). →CLUB
 - PLAYER: fixed off-pitch qualities, equally weighted coaching/managerial aptitude, five-grade qualitative evaluation and chief-scout accuracy (PLAYER-1/19/21–25). →PLAYER
 - WORLD: cross-club continuity for coaching prospects/former own players, actual age/retirement and unique role/affiliation links without fabricated history or a full persistent NPC-playing model (WORLD-6/10/11). →WORLD
@@ -123,8 +125,7 @@
 - LEAGUE: reference the manual next-event mode and the equivalent all-delegated reference regimen; competitive coefficients, balance bands and measurements are unchanged (LEAGUE-11/13). →LEAGUE
 
 ## open
-- How are coaching/manager candidate-market admission and employment/contract-end transitions established?
 - What are the detailed director-first/balanced/manager-first mediation criteria, especially when a promise is unaffordable?
 - What fulfils or cancels a reinforcement promise when personnel, affordability or candidate availability change?
-- Formal open-policy units: STAFF-27/28 and CLUB-36/37. Do not fill them with unapproved coefficients or career/mediation assumptions.
+- Formal open-policy units: CLUB-36/37. Do not fill them with unapproved coefficients or career/mediation assumptions.
 - Parked for a later balance discussion: should difficulty describe the founding disadvantage or a challenge that still differs in season 60?
