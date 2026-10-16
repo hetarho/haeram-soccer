@@ -82,7 +82,7 @@
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 13 | 13 | - | 0 |
-| SAVE | 40 | 40 | - | 0 |
+| SAVE | 41 | 40 | SAVE-10✎ SAVE-18✎ | 0 |
 | PLAYER | 8 | 8 | - | 0 |
 
 ## tasks
@@ -106,6 +106,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 update-ssot SAVE r41: synchronize approved 3.0.0 activation metadata for T174.
 - 261017 T187 done n7r4: Squad summaries show historical registration counts, explicit estimated fallback, and twenty/sixteen readiness tones; recruitment and save validation enforce the forty-player global boundary.
 - 261017 implement-task T187 start n7r4.
 - 261017 T175 done n7r4: Browser journeys use central seven-category settings and public manual event/match actions; season helpers stop by observed season/fixture progress, with old tool invocations removed and genuine legacy compatibility tests retained.
