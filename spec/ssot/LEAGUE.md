@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r7 | Define the implemented browser-demo behavior for domestic seasons and relegation.
+> r8 | Define the browser-demo rules for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -27,18 +27,19 @@
   - strengths stay within 15–99, the very best an owner can build ← a cap below the owner's best would leave one club unbeatable
   - a normal summer's luck (sum of three uniforms, sd ≈ 1.5) and, each year, a 1.5% takeover (+4 to +8) or a 1.5% crisis (−4 to −8); reputation drifts 30% toward its division's.
   - measured 261011 (30 seasons, eight countries): 5–9 different champions per country, the most successful club 8–15 titles, champions average 2.15 points per game.
-- LEAGUE-11 [o] The world season is lived one day at a time in one order, whatever advances it — a day step, one round or the rest of the season (→WEB-5) — so every mode records the same facts (→ARCH-5). ← the control that advanced time must not change results
+- LEAGUE-11 [o] The world season is lived one day at a time in one order, whatever advances it — an automatic day step, manual next-event advance, explicit round or an internal season simulation (public controls →WEB-5) — so every mode records the same facts (→ARCH-5). ← the control that advanced time must not change results
   - a midweek cup or continental tie plays on its own day, league round × 7 − 3 (→LEAGUE-5, →EURO-10), before that round's league matches.
   - a league match day plays the round's matches first, then the round's settlement (training, wages, supporters), then that day's club business — academy intake, market, delegated business, staff, retirement announcements, healed injuries — so a player healed or signed that day plays from his next match.
   - any other day plays its ties first, then its club business.
   - the season closes on the day after its final round (→LEAGUE-9).
+
 - LEAGUE-12 [o] Every club nobody owns has a 조직력 (0.3–1.0) that its players play at, on the adaptation multipliers (→PLAYER-10); it is how settled its squad is under its manager. ← a club that changed its manager or its squad is not at full strength at once, and the owner's club pays for change by the same measure (→MATCH-2)
   - every club starts at 0.80 when the world is made.
   - each settled league round it rises 0.010 below 0.80 and 0.005 above, up to 1.0.
   - a new manager (→STAFF-17) takes 30% of the distance to 0.50 when his school differs from his predecessor's, 10% when it is the same.
   - between seasons a takeover or a project (→LEAGUE-10) takes 0.15, a promotion or a relegation 0.10, never below 0.30.
   - a rival's dossier and its league-table OVR show it (→WEB-58).
-- LEAGUE-13 [o] Balance is measured on reference careers at intervention level 4 and 기본 방향 (→ECON-29's runs: 1950–2009, four countries × difficulty level × 5 seeds), and holds these bands; tuning changes the rules and constants for every level alike, never one level's own. ← reaching the top should take long and holding it stay hard, with room for a lucky career
+- LEAGUE-13 [o] Balance is measured on reference careers with all business responsibilities delegated (the historical intervention level 4) and 기본 방향 (→ECON-29's runs: 1950–2009, four countries × difficulty level × 5 seeds), and holds these bands; tuning changes the rules and constants for every level alike, never one level's own. ← reaching the top should take long and holding it stay hard, with room for a lucky career
   | level | first top-flight title | share of top-flight titles after the first | bankrupt | measured 261015 (rules 2.0.0, 40 careers a level: ENG ESP FRA GER × 10 seeds, default direction, 1950–2009) |
   |---|---|---|---|---|
   | 쉬움 | most careers; median 35–50 seasons, the fastest within about 25 | 20–35% | none | 60% win; median 51.5, fastest 27; 21.2% after; 1 bankrupt (ESP, 47 amateur seasons) |
@@ -46,6 +47,7 @@
   | 어려움 | 1 in 5 careers or fewer | - | 1 in 20 or fewer | 57.5% win, outside the band; median 49, fastest 24; 20.7% after; 1 bankrupt |
   | 최상 | half the careers reach the top flight or fewer | - | 1 in 5 or fewer | 37 of 40 reach the top flight and 70% win, outside the band; 1 bankrupt |
   - the levels do not separate: a level sets only the start (→WEB-3, CLUB-1), and over 60 seasons from the amateur league the start's cash and XI wash out, so every level wins about 60% of careers near season 50; a global constant moves every level alike, so meeting 보통·어려움·최상 needs a lasting level rule.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -53,6 +55,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r8 261016 LEAGUE-11✎ progression examples→+manual next-event advance with identical daily order; LEAGUE-13✎ level 4 reference→equivalent all-delegated reference; balance bands, constants and measurements unchanged
 - r7 261015 LEAGUE-13✎ unmeasured→measured 261015 column (rules 2.0.0, 160 careers): every level ≈60% titles near season 50, ≈21% after the first; 보통·어려움·최상 outside their bands
 - r6 261015 LEAGUE-12+ 조직력 of clubs nobody owns (start 0.80, +0.010/+0.005 a round, new manager −30%/−10% of the distance to 0.50, takeover or project −0.15, promotion or relegation −0.10); LEAGUE-13+ balance bands per difficulty level on reference careers
 - r5 261012 LEAGUE-6✎ worst last-division club dropped to make room for a promoted own club→one exchange: the bottom two of each last-division group for as many amateur clubs, chosen by the amateur table (playoff for the last place) while the own club plays in it; LEAGUE-11+ one day order for every progression mode

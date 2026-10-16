@@ -1,12 +1,17 @@
 # WEB Browser game delivery
-> r80 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r81 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
 - WEB-2 [o] Play a fictional club founded in 1950, five seasons before the 1955 European Cup, in its country's amateur league below the professional pyramid (→WORLD-5); choose country, name, colors, seed, difficulty level (→WEB-3) and the club's direction (→WEB-15). ← clubs were founded at all times; starting close to the continental era keeps the road to Europe within reach
 - WEB-3 [o] Four difficulty levels set only the start: 쉬움 2×, 보통 1×, 어려움 0.5× and 최상 0.25× the founding annual operating budget in cash, and a starting XI at the league average plus 0, −2, −4 or −6 (→CLUB-1). Every rule, coefficient and chance is the same at every level (→LEAGUE-13), and a shared seed makes the same world. ← the start decides how hard a career is; the dice never change
 - WEB-4 [o] Dashboard, match observation, league/Europe, people (squad, market, manager and coaches), training, operations and history are playable views, with progress and actionable errors.
-- WEB-5 [o] Advance one round or follow automatic x1/x2/x5/x10 pacing; the public interface has no whole-season or multi-season jump. Every mode lives through the same days and records the same facts (→LEAGUE-11). Manager resignation and saving failure interrupt unattended progress.
+- WEB-5 [o] Time progression has automatic and manual modes, with automatic selected for a new game. The owner can switch modes, subject to →WEB-76.
+  - automatic: paced day-by-day play at x1/x2/x5/x10 (→WEB-18), stopping for the configured events.
+  - manual: automatic play is off; 다음 이벤트 advances to the next configured stopping event and waits there. Resolving it never starts unattended play; another explicit progression action is needed.
+  - both modes use the same business responsibilities and observation triggers (→WEB-45), live the same ordered days and retain the same facts (→LEAGUE-11). Mode selection is distinct from automatic play/pause.
+  - preparation, watching and explicit one-round tools remain available; there is no public finish-season or multi-season jump. Saving/worker failures, critical blockers and read-only ownership retain their existing protections.
+
 - WEB-6 [o] Free local play has no real-money purchases, identity collection, analytics upload, sign-in, or automatic cloud submission.
 - WEB-7 [o] A new game goes into an empty game slot (→WEB-62); starting one over an occupied slot's game requires an explicit in-app replacement choice and offers export first.
 - WEB-8 [o] A runtime error preserves a recoverable save and offers retry/export; do not replace failed loading with a new world.
@@ -37,13 +42,16 @@
 - WEB-16 [o] First-session help explains optional match preparation, one-action observation, earned player growth and cost-bearing club investment. It derives completion from actual milestones, does not require a tutorial gate, and can be reopened from the menu.
 
 - WEB-17 [o] The match theatre passes 360x740 and390x844 viewport bounds without masking essential overflow; home has no horizontal overflow and scrolls vertically when needed. Supporter count and small text remain readable; all primary buttons and selection controls, including match preparation, recruitment and league exploration, have touch targets of at least44 CSS pixels across Chromium, Firefox and Safari; the clock's secondary pace chips are at least 32 px inside a 44 px track. Expanded records/settings may scroll; short screens or accessibility magnification can use necessary vertical scrolling.
-- WEB-18 [o] One clock runs on every view as a single packed row: date and status on the left, a prominent play/pause plus smaller x1, x2, x5 and x10 pace chips (one day per 1, 0.5, 0.2 and 0.1 s; a step never waits for saving (→SAVE-8); when a step itself runs late, the next carries the days owed, at most 5, and time stopped is never owed) and the intervention trigger on the right, the season's progress along its lower edge. The trigger (a level meter and "개입 N", the level's name on desktop) opens a popover with the four levels (→WEB-45) that applies a choice at once and closes with focus back on the trigger, never pauses the clock and holds nothing but the levels; the HUD menu keeps the full dialog. The match theatre carries its buttons in the scoreboard row. ← a fixed pace keeps cash and dates moving visibly; no step jumps to an arbitrary next event; changing views is not a reason to stop
-  - a pace chip only sets the pace: a stopped clock stays stopped until play, a running one runs on at the new pace. ← choosing a speed is not a decision to let time pass
-  - stops only for the event kinds the intervention level stops for (→WEB-45, →WEB-42) and on the eve of an own match when the level stops for match eves (resuming there plays the match through as a result). A season close never stops it: the closed season joins the league's season list (→WEB-47), so a clock left running plays on season after season. ← records stay without forcing a page on an unattended run
-  - a day step plays our match through as a result without building movement frames (same duel chain and facts, →MATCH-7); only watching builds them.
-  - a multi-day step ends on the day any club news arrives or our match is played, so the date lands on that day, and never runs past a match eve when the level stops for match eves; only the level's kinds stop the clock.
-  - otherwise only the owner's stop, watching, critical alerts, save/worker errors, read-only ownership and world replacement stop it; views, dialogs and a hidden tab never pause it (→WEB-64).
-  - watching a match stops it; leaving the match view resumes it when it was running before the watch or the watch came from a match-eve card.
+- WEB-18 [o] One clock on every view shows date/status, the selected progression mode, its progression action and access to the central responsibility settings (→WEB-45); season progress runs along its lower edge. The match theatre keeps its time controls in the scoreboard row.
+  - automatic mode keeps play/pause and x1/x2/x5/x10: one day per 1/0.5/0.2/0.1 seconds. Steps never wait for saving (→SAVE-8); a late step carries days owed, at most 5 per step, and stopped time is never owed.
+  - pace selection changes pace only. A stopped automatic clock stays stopped until play; an event stop does not change the selected progression mode.
+  - manual mode offers 다음 이벤트 with automatic play off (→WEB-5). It advances through intervening days to the first configured stop, without waiting out the automatic pacing intervals; it never skips the daily settlement order.
+  - both modes stop for owner-held business decisions and enabled observation events (→WEB-45/42). A match event lands on the eve of an own match, before its result; preparation, watching or playing it through remain available.
+  - a season close opens no screen and adds its record to the season list (→WEB-47); it is not a stop of its own.
+  - a day step plays our match as a result without movement frames (same duel chain and facts, →MATCH-7); only watching builds them. An automatic multi-day step still ends on news or own-match days without turning every report into a stopping event.
+  - the owner's stop, watching, critical alerts, save/worker errors, read-only ownership and world replacement remain blockers. Views and dialogs do not themselves pause automatic play; background behaviour follows →WEB-64.
+  - watching stops progression. Leaving a match may resume a previously running automatic clock under its existing watch/match-eve rules; it never starts unattended play in manual mode.
+  - stopping-event access remains a separate event notification (→WEB-42), never a replacement action inside the clock status.
 
 - WEB-19 [o] Browser responsiveness and storage verification claims under →ARCH-14 and →ARCH-28 identify the actual checked source and build. Include application entry/public inputs; the measured preview must serve the same entry and assets as the recorded build. A changed source, changed asset inventory or mismatched served build invalidates the run.
 
@@ -96,10 +104,10 @@
   - Typography uses Galmuri pixel faces throughout: Galmuri14 for reading text at 15 CSS px with at least 1.7 line height, Galmuri11 Regular/Bold for compact labels, controls, headings and aligned numbers. Compact supporting text is at least 12 CSS px, with no negative tracking for Korean reading text. Primary and supporting copy meet 4.5:1 contrast on their own surfaces; inactive but readable options remain at full text opacity. Preserve complete Korean fallback coverage and legible controls at supported viewport sizes. Bundle font terms and attribution with the self-hosted files.
   - The playable app replaces design-comparison galleries; retired mockups, generated exploration assets and their bundled fonts are not shipped.
 - WEB-39 [o] 구단 운영 holds the club's resources and applied policies in page tabs 운영 방침, 시설, 재정, 후원, kept at /direction?view= with the existing strategy/build/finance/sponsor identifiers; strategy is omitted. Older /business addresses and facility/marketing values still reach the corresponding view.
-  - 운영 방침 is the department-first board (→WEB-60); a contextual entry opens its relevant department and keeps a way back (→WEB-74).
+  - 운영 방침 is the department-first board (→WEB-60); a contextual policy entry opens the relevant department in a sheet over its task (→WEB-77), while direct board navigation remains available.
   - 시설 presents the three existing facility parts (→ECON-32): stadium steps/capacity/demand, expansion or rebuild cost, days, upkeep and capacity impact; training ground and academy levels/effects; active works and completion timing.
   - 재정 presents cash projections, fixed costs/runway, ledger/currency notes, owner contributions and unsettled campaigns from before rules 1.19 (→ECON-7).
-  - 후원 presents every sponsor slot, contract/end/offers and who signs under the current intervention level (→ECON-8/21, →WEB-45).
+  - 후원 presents every sponsor slot, contract/end/offers and who signs under the sponsor-contract responsibility (→ECON-8/21, →WEB-45).
   - Inspecting a choice never commits it; explicit apply or the named commit submits the engine command.
 
 - WEB-40 [o] Squad, recruitment, manager and staff belong to 선수단 (→WEB-43). League and cups are competition destinations, while our club's season review belongs to records (→WEB-54).
@@ -112,38 +120,48 @@
 
 - WEB-41 [o] Standings columns read rank, club, points, played, won, drawn, lost, goals for, goals against, goal difference, then movement and recent form. Mobile hides movement and recent form so points stay visible at 360 CSS pixels.
 
-- WEB-42 [o] Club events (match eve, window opening/closing, bid answers, offers for our players, youth intake, staff reports, coach renewals and vacancies, our cup draws, cash and sponsor warnings, contract talks, unhappy players and transfer requests, sponsor contracts ending) are inbox items. The kinds the intervention level stops for (→WEB-45) stop the clock and show an event card with the decision it needs (watch or play through, accept or reject, open the market with its ceremony →WEB-48, open 훈련's academy or 운영, renew all expiring coaches or open 사람's 코치진, open the cup bracket). Every item stays readable in the notifications tab of the shared notifications/news dialog (→WEB-51). Which kinds stop follows the level of the game in play; no event kind has a stop setting of its own. Home shows the event card; other views fold it into a small pill that opens the card, so a pending event never covers the view.
-  - a card decides its event or opens a setting's home; it never changes a standing setting itself (→WEB-71).
-  - deciding a card whose event stopped a running clock (an answer, 확인, a renewal) plays the clock on once no stopping event is left to decide; a choice that opens another view (…보기, 협상하기, 하한 제시하기, 자동 결정 설정) leaves it stopped until play. ← the owner stopped to decide, not to stop playing; a view opened to act there needs time to stand
+- WEB-42 [o] Club events remain inbox items: match eve, window opening/closing, bid answers, offers, youth intake, staff reports/renewals/vacancies, cup draws, financial and sponsor notices, player contracts/unhappiness/transfer requests, and director–manager mediation (→CLUB-34).
+  - an owner-held business decision stops progression and presents the action it needs; a delegated decision is processed and reported under its responsibility (→WEB-45, →STAFF-13). Mediation belongs to player recruitment.
+  - match-eve and window-opening stops use their separate observation choices. Reading ordinary news, a staff report or a system notice does not itself create a decision stop. Money-warning status retains →WEB-56.
+  - every item remains readable in 알림·결정 (→WEB-51). Home shows the stopping-event card; other views keep a distinct small event notification that opens it without covering the task or replacing clock controls.
+  - a card decides its event or opens the authoritative task/policy sheet (→WEB-71/77); it never silently changes a standing setting.
+  - in automatic mode, deciding an event that stopped a running clock resumes it once no stopping decision remains; a choice that opens a task/settings view leaves it stopped until play.
+  - in manual mode, deciding an event leaves progression stopped until the next explicit progression action. Both modes use the same event trigger configuration.
+
 - WEB-43 [o] 선수단·스태프 holds 선수, 이적시장, 감독 and 스태프 as page tabs, retaining /people?view= with players omitted and market/manager/coaches unchanged.
   - 선수 shows the current roster with OVR/position/adaptation, injuries/retirement, wage versus market wage, contract and unhappy reason, stance/talk actions, view settings/full metrics and current contract responsibility (→WEB-55/59/68). Current-player detail offers contextual training, contract where available and next-match preparation actions; former players remain historical.
-  - 이적시장 leads with the window/deadline, manager's outstanding slot requests and consequences, and actionable negotiations. Candidate filters/comparison and relevant candidates follow. The full scout shortlist retains draw/next-draw dates and named picks; full delegation/sale rules are disclosed below the operational content. Recruitment policy opens its exact department with a contextual return.
+  - 이적시장 leads with the window/deadline, manager's outstanding slot requests and consequences, and actionable negotiations. Candidate filters/comparison and relevant candidates follow. The full scout shortlist retains draw/next-draw dates and named picks; full delegation/sale rules are disclosed below the operational content. Recruitment policy opens its exact department as a contextual sheet (→WEB-77).
   - 감독 keeps present OVR/POT, school, contract/renewal terms, owner requests/tactics and replacement. Hiring candidates keep their effects, compensation, terms and explicit confirmation (→STAFF-17/18). Future appointment criteria are distinguished from replacing the present manager.
   - 스태프 distinguishes recruitment/administration (sporting director and chief scout) from football coaching departments. Each post keeps its actual member, trait/effect, contract/renewal, replacement candidates/costs and delegated hiring preview. Operational screens identify their responsible post and can open that post directly; the assistant and youth director link to actual training.
-  - Decision responsibility names direct/automatic operation at the whole-club intervention level; relevant criteria show whether they are currently used and when (→WEB-45/75). Detailed rules do not precede the main action.
+  - Decision responsibility names direct/automatic operation for the relevant central responsibility; relevant criteria show whether they are currently used and when (→WEB-45/75). Detailed rules do not precede the main action.
   - Existing /squad, /transfers, /manager and their older view values still open the corresponding tab; candidates still opens the manager market.
 
 - WEB-44 [o] Home separates statistics from state. The team-state card shows starters' fatigue, squad morale (shown as 분위기), the manager's standing (trust as 굳건/안정/흔들림/위기, or 대행 체제) and squad size with the injured count, with good/ok/warning/critical tones. Cash is not a tile: it stays in the HUD and joins as the urgent advice when it runs short, winning ties because a club out of money cannot play on. The most urgent warning explains its effect, offers two one-tap remedies and a "more" entry.
-  - tapping any state, or the HUD cash, opens its remedy sheet with 3–6 choices, each stating cost, effect and cooldown before commit; owner requests (→CLUB-20) also name who carries them out and list each result with its chance; unavailable choices say why (cooldown, cash, already applied, or the staff deciding it at the current intervention level →WEB-45).
+  - tapping any state, or the HUD cash, opens its remedy sheet with 3–6 choices, each stating cost, effect and cooldown before commit; owner requests (→CLUB-20) also name who carries them out and list each result with its chance; unavailable choices say why (cooldown, cash, already applied, or the staff deciding it under the relevant responsibility →WEB-45).
   - fatigue: suggesting recovery training to the assistant, rest selection, rest days, recovery support, training camp, preparation sheet. morale: squad meeting, team-building day, win bonus, owner's visit, training camp, rest days. manager: public vote of confidence, manager office, candidates. cash: one step less on the costliest 지역 or 글로벌 investment row, lower squad investment, higher ticket price, friendly match, owner capital, the market. squad: market, academy, promote the best prospect.
   - cash runway reads in weeks below 13 rounds and in months above, never in rounds.
   - choices act through engine commands; navigation choices close the sheet and open their view.
-  - a choice that changes a standing setting (less investment abroad or in the town, lower squad investment, higher ticket price) opens that setting's home with the choice ready to apply (→WEB-71), and suggesting recovery opens the assistant's card with 회복 집중 ready to suggest; the sheet never changes either itself.
+  - a choice that changes a standing setting (less investment abroad or in the town, lower squad investment, higher ticket price) opens the relevant authoritative department sheet with the choice drafted for explicit apply (→WEB-77), and suggesting recovery opens the assistant's card with 회복 집중 ready to suggest; the sheet never changes either itself.
 
-- WEB-45 [o] The intervention level answers one question — which decisions the owner takes himself — and is the only control over it: the level alone sets the clock stops and which decisions the staff take (→STAFF-13), never a choice of direction; no home has a staff switch and no event kind has a stop of its own. ← one control says what the owner decides himself; switches spread over the homes left him unsure which one counts
-  | level | stops | the staff decide |
+- WEB-45 [o] One central responsibility screen chooses 직접 결정 or 위임 independently for seven business categories. A mandatory four-level ladder is not used. ← owners choose their own combination while keeping one authoritative place to see who decides
+  | responsibility | includes | new-game default |
   |---|---|---|
-  | 1 every decision | all | nothing |
-  | 2 important decisions (new-club default) | match eve, window opening, bids, youth intake, coach renewals, cash/sponsor | the academy, contract talks (the 단장 →STAFF-20) |
-  | 3 transfers only | window opening, bids, cash | the academy, contract talks, sponsors, every coaching department and the 단장's post, the manager post |
-  | 4 leave it to the staff | cash only | all of level 3's, offers and signings (the 단장 →CLUB-33) |
-  - the training focus is no level's: the coaches always set it (→CLUB-13, →CLUB-31).
-  - the market's bid list marks the 단장's bids 단장 제안; the owner sees their answers but answers none of them. A free agent the 단장 signed lists as 단장 영입 · 자유계약 · 이적료 없음, never as an offer of 0.
-  - each level hands over one more group: the academy and contract talks, then sponsors and the staff posts, then transfers.
-  - the level is saved with the game, so each game keeps its own; choosing one applies at once and leaves every direction row as set.
-  - the direction rows the staff follow (→ECON-25) are set on the 방향 board at any level; the staff apply them only while the level delegates the decision, and its home says which is the case (→WEB-43).
-  - local entries name the control 전체 구단 개입 설정: it changes the whole club, not that department alone. The dialog shows current responsibilities and clock stopping together, with each level's consequences before selection.
-  - the clock's popover holds only the four levels, each with one line naming what it stops and what the staff take; the intervention dialog (HUD menu, and each home's who-decides line) holds the levels with their full summaries and background play (→WEB-64).
+  | 감독 인사 | manager appointment and renewal | 직접 결정 |
+  | 스태프 인사 | director, scout and all coaching departments' appointments and renewals | 위임 |
+  | 선수 계약 | renewals and improved contracts | 직접 결정 |
+  | 선수 영입 | signings, acquisition bids and director–manager mediation | 직접 결정 |
+  | 선수 매각 | responses to offers for our players and delegated sale stances | 직접 결정 |
+  | 유소년 승격·방출 | academy promotion and release together | 위임 |
+  | 스폰서 계약 | sponsor contracts | 위임 |
+  - staff departments share one setting; appointment/renewal share their category. Recruitment and sales are independent. The staff follow the owning-domain decision rules (→STAFF-13).
+  - an owner-held decision stops both progression modes for the owner; a delegated one is resolved and reported without a business-decision stop. Automatic time progression never overrides a direct responsibility.
+  - match-eve and transfer-window-opening stops are independent observation choices in the central settings: a new game enables match eve and disables window opening. Their notices remain readable either way. No extra per-business-event stop toggle exists.
+  - the configuration belongs to the game (→SAVE-17). Local who-decides entries open this same screen; they never create a competing departmental switch. Time mode, automatic play/pause and business responsibility have distinct meanings.
+  - coaches always choose training; their owner's suggestion/order actions remain →STAFF-19, outside these seven categories.
+  - direction criteria remain editable through →WEB-60/77 regardless of responsibility; delegated staff use the relevant rows, and each task states whether they are active and when.
+  - the market marks director bids 단장 제안. The owner sees their answers without answering director-owned bids; a director-signed free agent reads 단장 영입 · 자유계약 · 이적료 없음, never an offer of 0.
+  - mode and settings changes must preserve the manual-mode validity rule (→WEB-76). In-flight decision handling and remaining event classification are →WEB-79.
+
 - WEB-47 [o] League uses a visible competition and season selector and starts on standings for the season in progress or a closed season. The stable lenses of →WEB-40 keep their purpose across periods; a closed season never forces a club-review tab.
   - Final tables retain their historical division zones, with W-D-L only where recorded. Other competition details follow retained scope (→WEB-65). A season close opens no screen automatically.
   - Our archived club-season analytical review is reached through records, alongside our matches and decisions (→WEB-54); an explicitly named link opens that season's league table and preserves the way back.
@@ -210,8 +228,9 @@
   - the synergies with met and missing conditions (→CLUB-21), lit and nearly lit first and the rest behind one disclosure; the odds the direction sets (golden prospect at the next intake, a squad meeting working, an offer arriving in a window month).
   - tapping an option, a preset or a saved direction adds it to a draft and keeps its area unfolded. The summary stays pinned to the content viewport’s lower edge with its change count, 되돌리기 and 적용 visible. A fresh draft or a board visit starts with the details collapsed; explicit expansion remains during continued edits.
   - expanding the draft reveals combined gains and costs, each spending row's cost per round and projection, synergies lighting or dropping and odds moving. Details scroll independently of the actions. 적용 applies the whole draft at once; tapping a drafted option again, or the option in force, takes the row out of the draft.
-  - a change asked for elsewhere opens the exact department/setting, optionally as a proposed draft, with its task return. Unapplied drafts and open departments survive ordinary menu detours within the current game session, stay distinct from applied values and clear only on explicit discard or successful apply; a different game never inherits them (→WEB-74).
+  - a contextual change opens the exact department/setting in a sheet over the originating task (→WEB-77), optionally as a proposed draft; the full board remains independently reachable. Unapplied drafts and open departments survive ordinary menu detours within the current game session, stay distinct from applied values and clear only on explicit discard or successful apply of those changes; a department sheet's apply leaves every other department's draft intact; a different game never inherits them (→WEB-74).
   - rows disclose responsibility and effect timing (→WEB-75); investments, automatic decision criteria and current interventions retain their different meanings.
+
 - WEB-61 [o] 방향 만들기 opens a composer: every area with its rows, drawn as the board's rows (→WEB-60) and starting from the direction in force, the combined effects and the synergies they light, a name of 1–20 characters, and save; a saved direction (내 방향) can be edited, deleted or applied as a draft. Saved directions (at most 12) belong to the device, not to a game: every slot on that browser lists them, they outlive new and deleted games (→SAVE-15), and editing or deleting one never changes a direction already applied in a world. Applying a saved direction records its name in the club's history. ← owners reuse the club identity they designed across careers; an account carries the same library later (→ARCH-29)
 - WEB-62 [o] The game keeps three game slots (게임 슬롯, →SAVE-14).
   - opening the start address (/) in a new tab or window shows the slot screen whenever a slot holds a game; an in-game address, or reloading a tab that is already in a game, continues the game in play; with every slot empty the app opens 새 게임 for slot 1; a game in play that fails to load opens its recovery path (→WEB-8) instead.
@@ -220,12 +239,13 @@
   - deleting a game, or starting a new one over an occupied slot, needs an explicit confirmation that offers export first; deleting the game in play reloads the page onto the slot screen, even with every slot empty.
   - a read-only tab (→SAVE-6) can only continue the game in play, read-only.
   - wording is 새 게임, never 새로운 세계 or 새 세계.
-- WEB-64 [o] The game plays on while the owner does something else, like an idle game. ← owners leave the club running in a background window
-  - a hidden tab keeps the clock running at its wall-clock pace: when the browser throttles timers, the next tick plays every owed day in consecutive steps, each still ending on news and match days and stopping for the level's kinds (→WEB-18). A per-browser setting (백그라운드 진행) can pause it while hidden instead.
-  - a page the browser froze, discarded or closed with the clock running plays the time it was away on return, as the game in play is shown again, up to the away limit — 끄기, 30일 or 한 시즌 (default), kept per browser — with the same stops; parked slots never progress.
+- WEB-64 [o] Automatic mode can play on while the owner does something else; manual mode never progresses unattended or catches up time away. ← owners leave the club running in a background window
+  - in automatic mode a hidden tab keeps a running clock going at its wall-clock pace: when the browser throttles timers, the next tick plays every owed day in consecutive steps, each still ending on news and match days and stopping for the configured responsibility/observation events (→WEB-18). A per-browser setting (백그라운드 진행) can pause it while hidden instead.
+  - a page the browser froze, discarded or closed with automatic mode running plays the time it was away on return, as the game in play is shown again, up to the away limit — 끄기, 30일 or 한 시즌 (default), kept per browser — with the same stops; parked slots never progress.
   - after the tab was hidden for at least a minute, or after such a return, a "자리를 비운 동안" card summarizes when the run started and ended, own results (W-D-L and the latest scores), the league rank and cash before and after, and the stop that ended it, when a match was played or at least seven days passed.
   - while hidden the tab title shows the game date and whether the clock runs or why it stopped.
-  - the settings say plainly that a browser may still suspend a background tab (power saving, phones) and that the time is then played on return; intervention level 4 is the idle mode that stops only for money.
+  - the settings say plainly that a browser may still suspend a background tab (power saving, phones) and that the time is then played on return; unattended operation follows the actual responsibility and observation settings, with critical/error protections preserved. Manual mode has no away-day debt.
+
 - WEB-65 [o] Every league lens keeps the chosen country, division/group and season visible, with 우리 리그로 once another is selected; ?league=CODE.tier.group keeps existing meaning. Our league follows our club in the season in progress and our historical division/group in a closed season.
   - Standings and available current fixtures/results cover any selected league; other-league fixtures are read on demand. Historical tables use their retained archive.
   - Own-league round snapshots, scorers and scorer history never silently appear under another league. An unavailable lens clearly names the selected competition and the missing retained detail, with an explicit optional own-league link.
@@ -248,7 +268,7 @@
   - Academy operations provide focused links to investment/intake/promotion criteria, the named youth director and academy construction, showing applied values and distinguishing recurring spend from a project. After promotion offer optional inspection/training/preparation of that actual player.
   - Detailed rules and formulas are disclosed behind the action. No new attribute-specific drills or delegation powers are implied.
 
-- WEB-71 [o] A setting has one applied value and one authoritative editing workflow. Contextual access may open its focused setting view with a task return; it never creates a competing copy of that policy.
+- WEB-71 [o] A setting has one applied value and one authoritative editing workflow. Contextual policy access opens its authoritative department sheet over the task (→WEB-77); it never creates a competing copy of that policy.
   | setting | authoritative workflow |
   |---|---|
   | first-team/player or youth training suggestions/orders | 훈련·육성 › 1군 훈련 / 유소년 |
@@ -256,10 +276,11 @@
   | transfer stances and contract talks | 선수단 › 선수 |
   | bids, offers and signings | 선수단 › 이적시장 |
   | manager/staff appointment and renewal | 선수단 › 감독 / 스태프 |
-  | every direction/investment row, presets and saved configurations | 구단 운영 › 운영 방침, with relevant department/setting opened |
+  | every direction/investment row, presets and saved configurations | 구단 운영 › 운영 방침; contextual access to its department editor through →WEB-77 |
   | facilities, sponsor contracts and finance actions | 구단 운영 › 시설 / 후원 / 재정 |
-  | whole-club intervention and background play | the intervention dialog; level also in the clock popover |
-  - Event/remedy/player actions close their originating sheet and open the correct task or focused setting, optionally with a proposed value; only explicit commit changes facts. Training owner actions are never described as residing in the staff directory.
+  | business responsibility and observation stops | the central responsibility screen (→WEB-45) |
+  | progression mode and background play | clock controls (→WEB-5/18) and background settings (→WEB-64) |
+  - Event/remedy/player actions close their originating sheet and open the correct task or authoritative department sheet, optionally with a proposed value; only explicit commit changes facts. Training owner actions are never described as residing in the staff directory.
 
 - WEB-72 [o] Cohesive, lived-in pixel-art football backgrounds appear in the home stadium scene, match-preparation locker room and training-ground overview.
   - All environments share a restricted grass-green, charcoal, warm-ivory and aged-wood palette, clearly stepped pixels and quiet evening/practical lighting. Preserve believable perspective, material wear and period equipment.
@@ -282,13 +303,39 @@
   - Show the responsible person/direct-or-delegated status and the next effect point: immediate candidate refresh, next round, intake, contract/appointment, season end or project completion, according to the existing owning-domain rule.
   - A preference does not claim to replace current staff, and an unused delegated criterion is labelled as such. Existing cost, risk, duration and outcome previews remain; reading a policy never changes facts.
 
+- WEB-76 [o] Manual next-event play with all seven business categories delegated requires the match-eve observation trigger enabled.
+  - reject entering manual mode or changing any responsibility/trigger if the result would be all-delegated manual play without match events.
+  - explain 수동 모드에는 경기 이벤트가 필요해요 and offer 경기 전날 이벤트 켜기 as an explicit action. Other observation triggers do not satisfy the condition.
+  - do not silently enable the trigger, change a responsibility or switch mode; preserve the last valid configuration.
+
+- WEB-77 [o] A contextual policy link opens only its relevant department in a sheet over the current task, using the authoritative policy workflow (→WEB-60/71).
+  - retain the underlying task, candidate/player, filters, comparison and scroll (→WEB-74). The complete operating-policy board remains reachable.
+  - choices are drafts until explicit apply. Show the applied value, proposed changes, responsibility, effect timing and existing cost/risk previews.
+  - apply commits only this department's draft and closes the sheet onto the task. Preserve every other department's unapplied draft; never silently apply the complete board draft from a focused sheet.
+  - unapplied work remains governed by →WEB-60/74: no silent application, clearing only on explicit discard or successful apply of those changes, and no transfer to another game. Reading or closing a sheet does not settle a business decision.
+
+- WEB-78 [o] Player profiles show coaching aptitude as qualitative grades and evaluations during the playing career (→PLAYER-21/22), separate from OVR and without an exact aptitude number.
+  - an own-player profile can offer coaching-career encouragement when eligible (→STAFF-23/25); disclose that it guarantees neither entry nor employment.
+  - player, coach and manager career views link the same retained person and actual career stages (→HIST-14). Never reset his age or fabricate missing other-club career statistics.
+  - manager candidacy is shown only when coaching experience and managerial aptitude qualify him (→STAFF-24/28); specialist coaching remains a continuing career.
+
+- WEB-79 [?] Define responsibility changes for pending/unanswered bids, contracts, appointments and mediation, including same-day changes and already-resolved events; define the complete stop/acknowledgement classification of existing non-business reports without adding per-business-event stop switches. Define any clock shortcut to the central screen and its commit timing. No pending outcome or authority may be silently rewritten.
+
+- WEB-80 [?] Define next-event behaviour when no configured stop is reachable, interruption/cancellation of a long advance, simultaneous stopping events and interaction with explicit one-round tools. Preserve ordered settlement, pending owner decisions, existing critical/error blockers and manual mode's absence of unattended progress.
+
+- WEB-81 [o] Mediation shows each person's actual explanation, the standing support policy, a case-specific support choice when owner-held, and any promise's target, deadline and recorded status (→CLUB-34/35, →STAFF-26). Delegated mediation reports the policy and result without an extra owner-only stop. Promise outcomes remain available through retained decisions (→HIST-15).
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
+
+- Progression: automatic paced days or explicit manual next-event → shared responsibility/observation trigger → direct decision or delegated report → resume only as the selected mode permits.
+- Policy: task → authoritative department sheet → review/apply that department → retained task; other departments' drafts remain unapplied.
 
 ## constraints
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r81 261016 WEB-5/18✎ paced-only→two modes; WEB-42/45✎ ladder→seven responsibilities/observation triggers; WEB-39/43/44/60/64/71✎ level/page access→responsibility/scoped sheets; WEB-76/77/78/81+ match guard, department apply and career/mediation UI; WEB-79/80+ open transition/advance rules
 - r80 261016 WEB-60✎ expanded draft summary with a bottom gap→collapsed by default and aligned to the content bottom; WEB-51✎ always-visible floating launcher→hidden while the draft panel is rendered, with its reserved space released
 - r79 261016 WEB-5/10/11/12/38/42/51/66✎ repeated home title, milestone/headlines and finish-season action→compact calendar-progress strip and round-only tools; separate HUD inbox/news sheets→one floating tabbed notifications/news dialog
 - r78 261015 WEB-10/11/39/40/43/45/47/54/59/60/65/70/71✎ topic-first management and summary-first records/league→task-first management with focused settings and season-first records/standings-first competition lenses; WEB-74+ session task/draft continuity; WEB-75+ responsibility/effect timing

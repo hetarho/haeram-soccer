@@ -1,5 +1,5 @@
 # IDEATION expert-proposal-review
-> st:open@261016 | Shape agreed delegation, progression, second-career and mediation changes from the external proposal; balance stays parked.
+> st:converted@261016 | Shape agreed delegation, progression, second-career and mediation changes from the external proposal; balance stays parked.
 
 ## vision
 - Review material: the owner's supplied Korean proposal, titled “SSOT(r79 / Rules 2.0.0) based scenario, balance and UX improvement design”; its author read documents without playing the app. Its `[cite: n]` markers have no attached source map, so verify claims against repository evidence.
@@ -10,14 +10,14 @@
 ## explored
 - [o] Discussion scope: park balance changes for now, including difficulty, operating-cost and wage coefficients and their target bands. Settle the remaining delegation, narrative and UX candidates through conversation with the owner; no non-balance feature is adopted by this scope choice.
 - [?] Overall assessment: useful problem discovery and promising owner stories; the coefficient tables, precise predicted outcomes and original implementation phases remain hypotheses. Adopted scope is recorded below; detailed rules still need SSOT planning.
-- [o] Contextual policy editing opens only the relevant department in a sheet over the current task view. Explicit apply commits that department's reviewed changes and closes the sheet back onto the task; before apply, the actual policy does not change. Retain the complete operating-policy screen and a single authoritative applied value/workflow. Preserve other departments' unapplied drafts; the focused sheet never commits them. Dismissing unapplied sheet edits remains to specify.
+- [o] Contextual policy editing opens only the relevant department in a sheet over the current task view. Explicit apply commits that department's reviewed changes and closes the sheet back onto the task; before apply, the actual policy does not change. Retain the complete operating-policy screen and a single authoritative applied value/workflow. Preserve other departments' unapplied drafts; the focused sheet never commits them. Unapplied work follows the existing session-retention and explicit-discard rules (WEB-77/74).
 - [?] Focused policy sheet details: retain one applied policy and the same review/apply meaning.
   - Already present: exact department entry, named return, retained task filters/comparisons/scroll and unapplied drafts (WEB-60/71/74; `apps/web/src/ui/taskMemory.ts`, `DirectionLines.tsx`, `StrategyBoard.tsx`; `tests/e2e/owner-workflows.spec.ts`).
   - Observed on the local preview: market → GK filter → recruitment policy → named return restores `/people?view=market` and the selected GK filter. Settled phone captures are `.tmp/proposal-review-home.png` and `.tmp/proposal-review-policy.png`.
   - Remaining hypothesis: less visual displacement helps people change a policy while thinking about a candidate. A phone sheet can obscure that candidate and still require scrolling; “zero context-switch cost” is unsupported.
-  - Unresolved: dismiss versus discard, back navigation and live changes while editing. Unapplied academy criteria cannot claim a completed promotion or changed world state (WEB-75).
+  - Preserve back navigation and session draft retention; account for live changes while editing. Unapplied academy criteria cannot claim a completed promotion or changed world state (WEB-75).
   - The proposed remedy-sheet inline “apply immediately” changes the current product workflow (WEB-42/44/71); it is not established merely by reusing an editor.
-- [o] Delegation model: choose direct owner decision or staff delegation separately for each responsibility in one central settings screen, enabling combinations such as delegated sponsors/coaches with owner-appointed managers. Any shortcuts remain open. This changes the ideation direction; current WEB-45 and STAFF-13 remain in force until a later SSOT update.
+- [o] Delegation model: choose direct owner decision or staff delegation separately for each responsibility in one central settings screen, enabling combinations such as delegated sponsors/coaches with owner-appointed managers. Any shortcuts remain open. Formal delegation rules are →WEB-45 and →STAFF-13.
 - [o] Delegation granularity: seven responsibilities — manager appointments/renewals; staff appointments/renewals including director, scout and coaching departments; player renewals/improved contracts; player recruitment; player sale responses; academy promotion/release; sponsor contracts. Appointment and renewal share their responsibility; staff departments share one choice and academy promotion/release share one choice for this scope.
 - [o] Business-decision clock stops follow responsibility: a direct owner decision stops for an answer; a delegated decision is processed by the responsible staff and reported without a decision-related stop. No independent stop toggle for each business decision. Observation notifications have their separate adopted choices below; critical/error handling and timing when responsibility changes remain to specify.
 - [o] New-game responsibility defaults: the owner handles manager appointments/renewals, player renewals/improved contracts, recruitment and sales; staff handle their appointments/renewals, academy promotion/release and sponsor contracts. Every responsibility remains individually changeable in the central screen. Existing-career conversion remains open.
@@ -42,7 +42,7 @@
 - [?] Second-career detail: preserve a recognisable person and assess coaching aptitude across clubs.
   - Preserve the person's actual identity, age and playing record through later roles; distinguish a training invitation, qualification, a vacancy and an appointment. A legend's playing quality need not guarantee coaching quality.
   - The supplied mandatory leader/professionalism gate, 20-unit course, age 33–38 and potential +10 are not adopted. Retirement can occur through 41 (CLUB-3), so setting a retiree's age to 33–38 would contradict his history.
-  - Current PLAYER-7 provides professionalism; PLAYER-2 has vision and positioning, but PLAYER-19 explicitly has no other mental attributes. Do not equate a midfielder's vision or physical work rate with intelligence or work ethic. The adopted separate coaching assessment needs an explicit later PLAYER policy update.
+  - Current PLAYER-7 provides professionalism; PLAYER-2 has vision and positioning, but PLAYER-19 explicitly has no other mental attributes. Do not equate a midfielder's vision or physical work rate with intelligence or work ethic. The separate assessment is specified in PLAYER-21; its parameters remain PLAYER-22.
   - Feasibility concern: other clubs' squads are generated each season without the own-club development/ageing lifecycle (PLAYER-1). Cross-club second careers need an explicit continuity scope and genuine retained identity; do not invent historical appearances or claim every NPC player already has a tracked lifetime.
   - Existing retained player careers and manager tenures are useful material (WEB-54/59, HIST-1), but a cross-role career and its continuity require explicit new product rules. “No complex new schema” is not evidenced.
 - [o] Director–manager mediation: add an event for genuine conflict between football needs and financial/administrative judgement, showing each person's actual explanation. It belongs to player recruitment: delegated recruitment resolves it automatically and reports the outcome; owner-held recruitment stops for the owner's mediation. Automatic time progression never overrides that responsibility, and manual next-event progression follows the same trigger.
@@ -93,19 +93,19 @@
 - Contextual policy flow: task view → relevant-department sheet → explicitly apply only that department → close back onto the task. Other departments' drafts remain unapplied. The full policy board remains reachable; one applied policy stays authoritative.
 - Scope boundaries: balance changes and additional manager fallout from coach resignation are parked. Stopping-event notifications stay separate from time controls.
 - v1 scope: seven central responsibilities; automatic/manual progression with shared triggers; cross-club aptitude-based player-to-coach-to-manager careers; recruitment-owned mediation with a standing support policy and tracked promises; department-scoped contextual policy sheets.
-- SSOT transition recommendation: the vision, scope and domain map are sufficient for formal specification; start with WEB/STAFF delegation and progression, then player/person continuity, second careers, mediation/promises and policy sheets. Transition has not yet been agreed, so this document stays open.
-- Review boundary: assess and retain proposal material. No SSOT policy changes, coefficient changes, implementation tasks or code changes are authorized by selecting an idea for discussion.
+- SSOT transition: agreed scope converted into the existing domains below. Numerical thresholds, compatibility and unresolved exceptions remain explicit open decisions there; see STATE pending for task decomposition.
+- Scope boundary: formalize the adopted planning rules; code implementation and task decomposition are subsequent work. Balance coefficients and measured bands remain untouched.
 
 ## domains
-- WEB: automatic versus manual next-event play with shared triggers, focused policy access, effective delegation responsibilities, event visibility and phone navigation; relate any future choice to WEB-5/18/45/60/64/71/74/75.
-- LEAGUE: parked; difficulty's intended duration, reference-career outcomes and persistent challenge candidates.
-- ECON: parked; wage share, operating result, insolvency and facility-growth tradeoffs measured on comparable samples.
-- CLUB: renewal consequences, unmet requests and potential future promises; veteran eligibility for a second career.
-- PLAYER: represent coaching aptitude, professionalism and football intelligence without assuming nonexistent mental attributes; define cross-club person continuity if the feature is specified.
-- WORLD: continuity and retirement eligibility for other-club players whose current rosters are generated seasonally; retain genuine people without inventing their unrecorded past.
-- STAFF: owner versus director authority, relevant reactions and retired-player coaching/management candidacy.
-- HIST: verifiable person continuity across playing and staff careers and fact-backed story presentation.
-- SAVE: retained commitments and cross-role identities if adopted; compatibility and long-career retention must be assessed for the chosen scope.
+- WEB: seven responsibilities, defaults/observation triggers, two progression modes, manual-match guard, scoped policy sheets, aptitude/career and mediation presentation (WEB-5/18/42/45/76–81). →WEB
+- STAFF: independent responsibility execution, coaching entry, manager qualification and standing support policy; career parameters remain open (STAFF-13/15–20/23–28). →STAFF
+- CLUB: retirement continuity, separate acquisition/sale responsibilities, recruitment-owned mediation and tracked reinforcement promises; resolution/fulfilment criteria remain open (CLUB-3/13/18/22/24/32–37). →CLUB
+- PLAYER: separate off-pitch aptitude and qualitative evaluation; assessment/scouting parameters remain open (PLAYER-1/19/21/22). →PLAYER
+- WORLD: cross-club person continuity without fabricated history; seasonal NPC lifecycle scope remains open (WORLD-6/10/11). →WORLD
+- HIST: linked player/coach/manager careers and retained mediation/promise facts (HIST-14/15). →HIST
+- SAVE: retain adopted settings, person careers and commitments; existing-career compatibility remains open, with released rules still 2.0.0 (SAVE-17/18). →SAVE
+- ECON: the recruitment department exposes the support policy; economic coefficients, financial bands and measured results are unchanged (ECON-25). →ECON
+- LEAGUE: reference the manual next-event mode and the equivalent all-delegated reference regimen; competitive coefficients, balance bands and measurements are unchanged (LEAGUE-11/13). →LEAGUE
 
 ## open
 - How do changes apply to pending decisions and existing careers, and what shortcuts belong in the clock/settings entry?
@@ -113,6 +113,5 @@
 - What experience threshold makes a suitable coach a manager candidate, and how are his specialty and school established?
 - What are the detailed director-first/balanced/manager-first mediation criteria, especially when a promise is unaffordable?
 - What fulfils or cancels a reinforcement promise when personnel, affordability or candidate availability change?
-- How are unapplied sheet edits retained or discarded on dismissal while other departments' drafts remain untouched?
-- Does the owner want to move into SSOT changes now or continue ideation? Numerical thresholds, promise cancellation and existing-save compatibility still need explicit decisions during specification.
+- Formal open-policy units: WEB-79/80, STAFF-25/27/28, PLAYER-22, WORLD-11, CLUB-36/37 and SAVE-18. Do not fill them with unapproved coefficients or compatibility assumptions.
 - Parked for a later balance discussion: should difficulty describe the founding disadvantage or a challenge that still differs in season 60?

@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r9 | Define the implemented browser-demo behavior for durable metrics and history.
+> r10 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -30,13 +30,25 @@
   - a field is written only when the season was tracked whole; seasons closed before rules 1.12.0 keep finals only. Scorers and brackets reach the screen through the season archive request, not every update.
   - derived on read, never stored: a cup run's stages from match ids and calendar slots, titles by club and nation, doubles, trebles and runs of titles from the archived champions and finals, the head-to-head with any club from every own match, and appearances as minutes / 90 (every starter plays the full match; there are no substitutions).
 
+- HIST-14 [o] Retain a person's linked playing, coaching and management career across role changes and clubs.
+  - retirement from playing does not delete his playing totals or reset his age/name. Actual staff/manager appointments and coaching experience extend the same person's record.
+  - player profiles and subsequent candidate/staff/manager views can follow those links (→WEB-78); existing own-player totals and own-manager tenures remain available in records.
+  - retain actual identity, dates, roles and observed facts; missing historical other-club statistics remain explicitly unavailable. Do not fabricate full NPC match archives or pre-start honours (→HIST-2/3, →WORLD-8).
+
+- HIST-15 [o] Retain mediation facts and reinforcement commitments: participants, each actual explanation, applied support policy, direct case choice or delegated outcome, promise target/deadline, and later fulfilment/cancellation result (→CLUB-34/35/37).
+  - prior decisions are not rewritten by later policy or personnel changes. A promise remains linked to the event that created it.
+  - news about a second career or mediation derives only from these recorded facts (→HIST-11); no fabricated interviews, allegations or unperformed signings.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
+
+- Career/mediation outcomes → retained person links and commitments → fact-backed profiles, decisions and derived news.
 
 ## constraints
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r10 261016 HIST-14/15+ linked player/coach/manager careers and retained mediation/promise facts; no fabricated missing NPC statistics
 - r9 261015 HIST-13✎ scorers' role→position
 - r8 261013 HIST-10✎ facilities→facility work; HIST-12✎ club value: half the facility build cost→of the three parts
 - r7 261012 HIST-13✎ none→derived cup stages, honours, head-to-head and appearances

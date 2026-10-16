@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r35 | Define the implemented browser-demo behavior for browser persistence and protocol.
+> r36 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -35,6 +35,13 @@
 
 - SAVE-16 [o] Rules 2.0.0 start new careers: a checkpoint, a parked game or an import of an earlier rules version is never converted. It is a compatibility failure (→SAVE-11): the slot lists it as a game of earlier rules (이전 규칙) with export and delete only, an import names the rules it needs, and nothing overwrites it. ← a clean player model beats converting five attributes into fourteen guesses
   - the 100-season profiles of SAVE-13 are measured again on the new model and must still fit SAVE-4.
+- SAVE-17 [o] A game's persisted career includes its seven business responsibilities, progression mode and observation triggers; its standing director/manager support policy; aptitude/person continuity and staff-career facts; and outstanding/resolved mediation promises (→WEB-45/5, →STAFF-26, →HIST-14/15).
+  - save/export/import preserve outstanding commitments and the linked person's actual age/history, without duplicate fulfilment, appointments or payments on reload.
+  - unapplied policy drafts remain session UI work (→WEB-74), not applied policy or portable game-save facts.
+  - retain existing corruption/compatibility protection and 100-season lossless budgets (→SAVE-4/11/13). Feature activation and compatibility for existing careers require →SAVE-18.
+
+- SAVE-18 [?] Decide whether current 2.0.0 careers can adopt these changes or require new careers under an explicitly versioned compatibility policy. Specify legacy intervention-level mapping, mode/trigger initialization, aptitude assignment, person continuity and already-pending decisions; preserve all existing saves, retained facts and export/recovery paths. Do not silently choose conversion, discard careers or relabel old facts as newly tracked history.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -42,6 +49,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r36 261016 SAVE-17+ retain responsibility/mode/triggers, support policy, person careers and promises; SAVE-18+ open feature-version and existing-career compatibility policy; current released rules remain 2.0.0
 - r35 261015 SAVE-10✎ rules 1.22.0→2.0.0 (the player model); SAVE-16+ earlier-rules careers are not converted: listed with export and delete only, imports refused, the 100-season profiles re-measured
 - r34 261014 SAVE-10✎ rules 1.21.0→1.22.0: the 단장 post, a negotiator chief scout moving to it, the shortlist and requests
 - r33 261014 SAVE-10✎ rules 1.20.0→1.21.0: the 글로벌 스카우팅 synergy and a founding direction; SAVE-15✎ library entries hold cards→cards and every other row, older entries cards only

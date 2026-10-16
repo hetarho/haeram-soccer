@@ -1,8 +1,9 @@
 # PLAYER Player model
-> r3 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
+> r4 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
 
 ## decisions
-- PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 14 attributes, positions with levels, personality and play traits, potential. Other clubs' squads are generated from their club's strength each season and do not develop (→WORLD-6, →LEAGUE-10); development, adaptation and ageing below apply to the own club's players and academy. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
+- PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 14 attributes, positions with levels, personality and play traits, potential. Other clubs' match squads use seasonal generation from club strength (→WORLD-6, →LEAGUE-10); cross-role person continuity and retirement eligibility are →WORLD-10/11. Development, adaptation and attribute ageing below continue to apply to the own club's players and academy; this does not apply own-club development to every NPC squad. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
+
 - PLAYER-2 [o] A player has 14 attributes, 1–99, each feeding the match actions it names (→MATCH-11); every player has all 14, an outfielder's goalkeeping three sit at 8–20. Generated attributes top out at 99. ← maps one-to-one onto the stats the game reports, and fits one card
   | group | attribute | what it decides |
   |---|---|---|
@@ -148,14 +149,24 @@
   | 선방, 공중볼 처리, 발밑 | 30 | 33 | −1 |
   - between growth and decline an attribute holds; every seasonal change carries noise of ±0.5.
 - PLAYER-18 [o] The owner sees his own players' attributes, positions and levels, traits, adaptation, multiplier and 실효 OVR exactly; for any other player attributes, positions and play traits are exact and personality grades show as a range by the chief scout's ability (→STAFF-11): 80+ exact, 60–79 ±1 grade, below 60 or no chief scout ±2. ← the scout earns his place, and a signing's settling is a stated gamble
-- PLAYER-19 [o] There are no mental attributes beyond the personality traits, and nothing here changes with the difficulty level (→WEB-3). ← personality carries the mental side; a level sets only the start
+- PLAYER-19 [o] Match attributes remain the 14 of →PLAYER-2; mental effects on the existing playing model remain the personality traits. Separate coaching aptitude and football understanding (→PLAYER-21) concern the later staff career, not an added match modifier. Nothing here changes by difficulty level (→WEB-3).
+
 - PLAYER-20 [o] This model starts with new careers; a save made before it does not open in it, and its export file is kept (→SAVE). ← a clean model beats converting five attributes into fourteen guesses
+
+- PLAYER-21 [o] Players across clubs have a separate coaching-aptitude assessment, informed by professionalism/work ethic, football understanding and ability to teach.
+  - aptitude is independent of playing OVR: an ordinary player can have strong coaching promise. Do not equate physical work rate or a position-weighted playing attribute with work ethic or intelligence.
+  - eligibility is not restricted by service at the owner's club; playing fame does not guarantee suitability or a fixed coaching-potential bonus.
+  - the active-player profile shows qualitative grades/evaluations, never an exact aptitude number (→WEB-78), before retirement. Coaching/managerial entry follows →STAFF-23/24.
+  - assessment details and visibility limits are →PLAYER-22; existing match/development coefficients remain as specified.
+
+- PLAYER-22 [?] Define the aptitude components, generation/evolution and grade boundaries, how professionalism contributes, the meaning of football understanding/teaching and managerial suitability, and scouting uncertainty for other-club evaluations. Existing-career assignment depends on →SAVE-18; missing historical aptitude must not be represented as a previously observed fact.
 
 ## flow
 - a player's season: joins (start by PLAYER-11) → starts and training raise adaptation (PLAYER-12) and attributes (PLAYER-15) → a manager change costs adaptation (PLAYER-13) → still below 0.50 after 23 rounds: 적응 실패 (PLAYER-14) → past potential only at 0.90+ (PLAYER-16) → ageing by group (PLAYER-17)
 - in a match: slot position and role → OVR (PLAYER-6) × level (PLAYER-4) × adaptation multiplier (PLAYER-10) = 실효 OVR; each action reads its attributes (PLAYER-2)
 
 ## chg
+- r4 261016 PLAYER-1✎ seasonal NPC roster only→cross-role continuity reference; PLAYER-19✎ no other mental attributes→separate off-pitch coaching aptitude, playing model unchanged; PLAYER-21+ cross-club aptitude and qualitative profile evaluation; PLAYER-22+ open assessment/scouting rules
 - r3 261015 PLAYER-16✎ unspecified rate below potential→the rate 2 under it, a settled player's floor
 - r2 261015 PLAYER-3✎ +four lines (GK, DF, MF, FW) for rules that count by line; PLAYER-8✎ [?]→[o] 야망: a declined bigger club's offer makes 높음 25% and 매우 높음 50% unhappy (→CLUB-27)
 - r1 261015 initial

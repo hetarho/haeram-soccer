@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r37 | Define the implemented browser-demo behavior for historical club economy.
+> r38 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -143,15 +143,16 @@
   | area | card row | other rows | the delegated staff decide by them |
   |---|---|---|---|
   | 선수단·계약 | 라커룸 문화 | 선수단 투자, 재계약 기조 (→CLUB-26) | contract talks |
-  | 영입 | 스카우팅 | 영입 기조 | signings (→CLUB-33) |
+  | 영입 | 스카우팅 | 영입 기조, director/manager support (→STAFF-26) | signings and mediation (→CLUB-33/34) |
   | 매각 | 매각 기조 | - | answers to offers (→CLUB-18, →CLUB-24) |
   | 유소년 | 유입 방식 | 육성 목표, 데뷔 시점 (→CLUB-32), 유소년 투자 | academy promotion, release and listing; the youth director's focus (→CLUB-31) |
   | 스태프 | - | 선호 학파, 감독 기조 (→STAFF-18), 코치 기조 (→STAFF-15) | the manager post, the coaching departments |
   | 재정 | 수익 모델 | 재정 기조 (→ECON-33) | sponsors (→ECON-21); 재정 기조 bounds every delegated spend |
   | 지역 | 지역 관계 방식 | 주변 투자, 풀뿌리 유망주 투자, 티켓 가격 | - (builds 지역 기반 →ECON-34) |
   | 글로벌 | - | 해외 마케팅, 해외 스카우트망, 해외 투어 | - (builds 글로벌 인지도 →ECON-34) |
-  - a card row says how the club goes about an area, a dial how much it puts in, a staff row how the staff choose; presets and saved directions fill every row (→ECON-22, →WEB-61), a row they do not name returning to its default, and a saved direction kept before they did fills only its cards; every row changes at any time, and its default (표준, or a dial's default step) keeps the club as it was before the row existed.
+  - a card row says how the club goes about an area, a dial how much it puts in, a staff row how the staff choose; presets and saved directions fill every row (→ECON-22, →WEB-61), a row they do not name returning to its default, and a saved direction kept before they did fills only its cards; every row changes at any time, and existing rows keep their baseline defaults. Director/manager support defaults to 균형 (→STAFF-26).
   - the market slot is named 매각 기조 so it never reads like the 영입 기조 dial; the training focus is no row of the board: it belongs to 훈련 (→WEB-70).
+
 - ECON-26 [o] A football index per country and year scales what football pays and charges beyond prices: sponsor values, ticket presets, player and staff market wages and transfer values, the division amounts of clubs' operating expenses (→ECON-30) and facility building and upkeep (→ECON-12); league distributions and cup and continental prizes follow the broadcasting index instead (→ECON-31). It grows with prices and, from commercialisation, much faster. ← income and wages must grow together, as they did in real football
   - the index is a source-attributed catalog per country and year, marked estimated where it is (→ECON-3), projected after its coverage like prices (→ECON-2).
 - ECON-27 [o] A club earns as real clubs do, simplified: competition money (league distribution →ECON-28, cup prizes →LEAGUE-5, continental prizes →EURO-7), matchday tickets (→ECON-9), sponsor contracts (→ECON-8) and player sales; owner capital and marketing campaigns stay bounded actions (→ECON-11, →ECON-7). No income grows with supporters alone. ← an income without a ceiling made every club rich by mid-career (measured 261012: £197m by 2004 from a 1950 founding with no owner action)
@@ -202,6 +203,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r38 261016 ECON-25✎ recruitment rows 영입 기조 only→+director/manager support (균형 default), signings only→signings and mediation; economic coefficients and measurements unchanged
 - r37 261015 ECON-32✎ stadium 250/400/600/4,000/8,000/70,000/245,000/965,000→×2.5 from 600 (600…366,000), training ground 500/5,000/40,000/300,000/1,150,000→×4 from 1,500 (1,500…384,000), academy 400/4,000/32,000/240,000/980,000→0.8× the training ground, the whole 4,045,150→1,530,450; ECON-29✎ ladder 98.4→40.4 seasons, +the 16-career measurement on the new costs
 - r36 261015 ECON-29✎ measured 261014 (rules 1.22, 40 careers)→measured 261015 (rules 2.0.0, 160 careers at four levels): wage bill 41.3%→40.0%, operating +1.3%→+9.7%, mix 45.4/32.0/22.6→46.5/30.5/23.0, 1950s matchday 83.2%→89.6%, ladder 91.4→98.4, bankrupt 1 of 40→3 of 160 (ESP amateur careers)
 - r35 261015 ECON-22✎ preset 동네의 자부심→유스 순혈주의

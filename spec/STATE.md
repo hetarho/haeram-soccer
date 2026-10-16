@@ -16,12 +16,12 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 
 ## inbox
+- 261016 parked WEB-79 WEB-80 STAFF-25 STAFF-27 STAFF-28 PLAYER-22 WORLD-11 CLUB-36 CLUB-37 SAVE-18: clarify pending-decision transitions, long manual advances, career thresholds/candidate entry, NPC continuity, mediation/promise criteria and existing-career compatibility before dependent implementation
 - 261016 suggest WEB-74: owner-workflow tasks T134–T138 completed → review-code taskMemory/state, RecordsRoom/LiveSeason/CupsView and their browser journeys before the next UI feature; no refactoring is included in this completed scope
-- 261016 suggest -: spec lint has 36 existing document-quality hints → doc-review WEB/ARCH before expanding the navigation specification; no policy changes implied
+- 261016 suggest -: spec lint has 33 existing document-quality hints → doc-review WEB/ARCH before expanding the navigation specification; no policy changes implied
 - 261015 decided WEB-74: start-vibe m8q4 scope → implement navigation-and-records with current game rules and the approved pixel readability baseline in an isolated checkout (alt: analysis only | revise game mechanics)
 - 261015 decided ideation/navigation-and-records: management structure → need, responsible person, focused action, effect timing and contextual return before full rules/catalogues (alt: rename three menus only | merge every control into one screen); independent hands-on follow-up adds M1–M13
 - 261015 decided ideation/navigation-and-records: policy detours → focused relevant settings, retained task tab/filter/comparison/scroll and unapplied drafts (alt: send to board root and reset | silently apply on exit); one applied policy remains authoritative
-- 261015 decided ideation/navigation-and-records: authority explanation → show who uses a setting and when, retain global intervention levels and coach-led four-round training (alt: add per-department switches | imply criteria replace current staff immediately); no game-rule change inferred
 - 261015 decided ideation/navigation-and-records: earlier people/training split assessment → reopen and replace with task-continuity criteria; working labels 선수단 / 훈련·육성 / 구단 운영 plus 스태프; preserve proven cost/risk/outcome previews
 - 261015 decided ideation/navigation-and-records: records and league entry views → season-by-season club history and competition standings (alt: trophies/overview first | remember the current nested menus); autonomous planning recommendation only
 - 261015 decided ideation/navigation-and-records: where summaries belong → live club briefing on home, archived club-season review in records, competition tables/results in leagues (alt: move every overview into records | retain the current split)
@@ -63,23 +63,23 @@
 | club-direction | converted@261014 |
 | difficulty-and-adaptation | converted@261015 |
 | navigation-and-records | converted@261015 |
-| expert-proposal-review | open@261016 |
+| expert-proposal-review | converted@261016 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 80 | 80 | - | 0 |
-| WORLD | 3 | 3 | - | 0 |
-| CLUB | 35 | 35 | - | 0 |
+| WEB | 81 | 80 | WEB-5✎ WEB-18✎ WEB-39✎ WEB-42✎ WEB-43✎ WEB-44✎ WEB-45✎ WEB-60✎ WEB-64✎ WEB-71✎ WEB-76+ WEB-77+ WEB-78+ WEB-79+ WEB-80+ WEB-81+ | 2 |
+| WORLD | 4 | 3 | WORLD-6✎ WORLD-10+ WORLD-11+ | 1 |
+| CLUB | 36 | 35 | CLUB-3✎ CLUB-13✎ CLUB-18✎ CLUB-22✎ CLUB-24✎ CLUB-32✎ CLUB-33✎ CLUB-34+ CLUB-35+ CLUB-36+ CLUB-37+ | 2 |
 | MATCH | 9 | 9 | - | 0 |
-| LEAGUE | 7 | 7 | - | 0 |
-| STAFF | 20 | 20 | - | 0 |
-| ECON | 37 | 37 | - | 0 |
+| LEAGUE | 8 | 7 | LEAGUE-11✎ LEAGUE-13✎ | 0 |
+| STAFF | 21 | 20 | STAFF-13✎ STAFF-15✎ STAFF-16✎ STAFF-17✎ STAFF-18✎ STAFF-19✎ STAFF-20✎ STAFF-23+ STAFF-24+ STAFF-25+ STAFF-26+ STAFF-27+ STAFF-28+ | 3 |
+| ECON | 38 | 37 | ECON-25✎ | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 9 | 9 | - | 0 |
-| SAVE | 35 | 35 | - | 0 |
-| PLAYER | 3 | 3 | - | 0 |
+| HIST | 10 | 9 | HIST-14+ HIST-15+ | 0 |
+| SAVE | 36 | 35 | SAVE-17+ SAVE-18+ | 1 |
+| PLAYER | 4 | 3 | PLAYER-1✎ PLAYER-19✎ PLAYER-21+ PLAYER-22+ | 1 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -92,10 +92,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- ideation expert-proposal-review: scope/defaults settled; propose SSOT transition starting with WEB/STAFF delegation and progression, then second careers, mediation and sheets. Remains open pending transition agreement; balance parked.
+- update-ssot WEB STAFF PLAYER WORLD CLUB SAVE: settle the recorded open policy units before their dependent implementation; no balance tuning.
+- create-task WEB STAFF CLUB PLAYER WORLD HIST SAVE ECON LEAGUE: consume the agreed pending deltas after required planning gaps are resolved; these deltas await implementation.
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 update-ssot proposal scope recorded in nine domains: independent responsibilities, two progression modes, coaching careers, mediation/promises and scoped policy sheets; ten open units retained, ideation converted
+- 261016 update-ssot WEB STAFF CLUB PLAYER WORLD HIST SAVE ECON LEAGUE start: convert the agreed proposal scope; preserve balance and mark unresolved rules explicitly
 - 261016 ideation expert-proposal-review: owner selects balanced support default, department-only sheet apply and explicit manual-match guidance; scope converged, SSOT transition proposed
 - 261016 ideation expert-proposal-review: owner adopts contextual department sheets, parks additional coach-to-manager fallout and retains event access separate from the clock
 - 261016 ideation expert-proposal-review: owner assigns mediation to recruitment delegation and adopts director-first/balanced/manager-first policy with direct case overrides
@@ -114,5 +117,3 @@
 - 261016 ideation expert-proposal-review start: compare the external r79 proposal with current policy and implementation; adoption remains open
 - 261016 T141 local checks pass: 36 affected browser cases, static/build/spec checks and phone geometry; publish and inspect full source CI next
 - 261016 T141 doing@u9c2: remove the reserved home notification space; the launcher floats over content
-- 261016 T140 done: compact draft panel and conditional launcher; T139/T140 published at 81108b2, full source CI 38846465288 passes all six jobs
-- 261016 T140 local checks pass: 57 browser cases after one WebKit retry, static/build/spec checks; commit/push and full remote CI next
