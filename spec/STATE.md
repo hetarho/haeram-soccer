@@ -18,6 +18,7 @@
 | - |
 
 ## inbox
+- 261017 decided SAVE-13: career compression order → group stored rows with a complete validated permutation restoring original registry order (alt: reorder live people | increase checkpoint limit); v1/v2 readers remain.
 - 261017 decided SAVE-2 ARCH-12: large century checkpoint codec → bounded pure-JavaScript Brotli plus denser BMP blocks; keep small saves gzip, old readers, CSP and all limits (alt: LZMA with slower loading | relax CSP for WASM | increase capacity).
 - 261017 decided T191: prepare lazy entry, stale fixtures and cross-feature/portable coverage before freezing century source (alt: repeat the whole century after predictable integration edits); final T178/T179 gates and budgets remain mandatory.
 - 261017 suggest -: review-code review the new scorer conservation, legacy-reset ownership and career-browser helpers after the final integration gate; five more implementation units are complete.
@@ -86,7 +87,7 @@
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 13 | 13 | - | 0 |
-| SAVE | 42 | 42 | - | 0 |
+| SAVE | 43 | 42 | SAVE-13✎ | 0 |
 | PLAYER | 8 | 8 | - | 0 |
 
 ## tasks
@@ -107,6 +108,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 SAVE r43: grouped career representation must restore exact original registry order; T199/T178/T179 affected, no gameplay or capacity change.
 - 261017 implement-task T199 start n7r4.
 - 261017 create-task T199: active-management century round-trips but checkpoint1629982 exceeds1572864; preserve all facts/budgets and repair representation before rerunning T178.
 - 261017 implement-task T178 start n7r4.
@@ -126,4 +128,3 @@
 - 261017 create-task T195: bounded adaptive codec before T178 source freeze; BMP alphabet count corrected to exclude all noncharacters.
 - 261017 SAVE r42/ARCH r10: adaptive bounded codec for retained century state; no gameplay or security-policy changes.
 - 261017 T193 done n7r4: Career representation v2 losslessly shares relationship dates, string templates, scalar codebooks and explicit fallbacks while retaining the v1 reader; the actual failed 50-season checkpoint now uses 1132058 bytes.
-- 261017 implement-task T193 start n7r4.
