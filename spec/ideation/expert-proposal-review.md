@@ -97,7 +97,7 @@
 - Scope boundary: formalize the adopted planning rules; code implementation and task decomposition are subsequent work. Balance coefficients and measured bands remain untouched.
 
 ## domains
-- WEB: seven responsibilities, defaults/observation triggers, two progression modes, manual-match guard, scoped policy sheets, aptitude/career and mediation presentation (WEB-5/18/42/45/76–81). →WEB
+- WEB: seven responsibilities, defaults/observation triggers, two progression modes, manual-match guard, scoped policy sheets, aptitude/career and mediation presentation, pending-work transfer and same-date event grouping (WEB-5/18/42/45/76–83). →WEB
 - STAFF: independent responsibility execution, coaching entry, manager qualification and standing support policy; career parameters remain open (STAFF-13/15–20/23–28). →STAFF
 - CLUB: retirement continuity, separate acquisition/sale responsibilities, recruitment-owned mediation and tracked reinforcement promises; resolution/fulfilment criteria remain open (CLUB-3/13/18/22/24/32–37). →CLUB
 - PLAYER: separate off-pitch aptitude and qualitative evaluation; assessment/scouting parameters remain open (PLAYER-1/19/21/22). →PLAYER
@@ -108,10 +108,10 @@
 - LEAGUE: reference the manual next-event mode and the equivalent all-delegated reference regimen; competitive coefficients, balance bands and measurements are unchanged (LEAGUE-11/13). →LEAGUE
 
 ## open
-- How do changes apply to pending decisions and existing careers, and what shortcuts belong in the clock/settings entry?
+- How do the new rules apply to existing careers, and what should manual progression do when no stopping event is reached or a one-round tool is used?
 - When can the owner encourage a coaching career, and what scouting uncertainty applies to other clubs' aptitude evaluations?
 - What experience threshold makes a suitable coach a manager candidate, and how are his specialty and school established?
 - What are the detailed director-first/balanced/manager-first mediation criteria, especially when a promise is unaffordable?
 - What fulfils or cancels a reinforcement promise when personnel, affordability or candidate availability change?
-- Formal open-policy units: WEB-79/80, STAFF-25/27/28, PLAYER-22, WORLD-11, CLUB-36/37 and SAVE-18. Do not fill them with unapproved coefficients or compatibility assumptions.
+- Formal open-policy units: WEB-80, STAFF-25/27/28, PLAYER-22, WORLD-11, CLUB-36/37 and SAVE-18. Do not fill them with unapproved coefficients or compatibility assumptions.
 - Parked for a later balance discussion: should difficulty describe the founding disadvantage or a challenge that still differs in season 60?

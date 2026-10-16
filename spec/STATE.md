@@ -16,7 +16,7 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 
 ## inbox
-- 261016 parked WEB-79 WEB-80 STAFF-25 STAFF-27 STAFF-28 PLAYER-22 WORLD-11 CLUB-36 CLUB-37 SAVE-18: clarify remaining settings/report rules, long manual advances, career thresholds/candidate entry, NPC continuity, mediation/promise criteria and existing-career compatibility before dependent implementation
+- 261016 parked WEB-80 STAFF-25 STAFF-27 STAFF-28 PLAYER-22 WORLD-11 CLUB-36 CLUB-37 SAVE-18: clarify manual no-stop/round-tool behaviour, career thresholds/candidate entry, NPC continuity, mediation/promise criteria and existing-career compatibility before dependent implementation
 - 261016 suggest WEB-74: owner-workflow tasks T134–T138 completed → review-code taskMemory/state, RecordsRoom/LiveSeason/CupsView and their browser journeys before the next UI feature; no refactoring is included in this completed scope
 - 261016 suggest -: spec lint has 33 existing document-quality hints → doc-review WEB/ARCH before expanding the navigation specification; no policy changes implied
 - 261015 decided WEB-74: start-vibe m8q4 scope → implement navigation-and-records with current game rules and the approved pixel readability baseline in an isolated checkout (alt: analysis only | revise game mechanics)
@@ -69,7 +69,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 82 | 80 | WEB-5✎ WEB-18✎ WEB-39✎ WEB-42✎ WEB-43✎ WEB-44✎ WEB-45✎ WEB-60✎ WEB-64✎ WEB-71✎ WEB-76+ WEB-77+ WEB-78+ WEB-79+ WEB-80+ WEB-81+ WEB-82+ WEB-83+ | 2 |
+| WEB | 83 | 80 | WEB-5✎ WEB-18✎ WEB-39✎ WEB-42✎ WEB-43✎ WEB-44✎ WEB-45✎ WEB-60✎ WEB-64✎ WEB-71✎ WEB-76+ WEB-77+ WEB-78+ WEB-79+ WEB-80+ WEB-81+ WEB-82+ WEB-83+ | 1 |
 | WORLD | 4 | 3 | WORLD-6✎ WORLD-10+ WORLD-11+ | 1 |
 | CLUB | 36 | 35 | CLUB-3✎ CLUB-13✎ CLUB-18✎ CLUB-22✎ CLUB-24✎ CLUB-32✎ CLUB-33✎ CLUB-34+ CLUB-35+ CLUB-36+ CLUB-37+ | 2 |
 | MATCH | 9 | 9 | - | 0 |
@@ -97,6 +97,7 @@
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 update-ssot WEB r83: manual play moves directly to the next event date without a paced progress/cancel journey; choice-free reports notify only; central entry/apply rules consolidated
 - 261016 update-ssot WEB r82: pending work transfers after disclosure and explicit apply; manual stops group same-date events; remaining policy interview continues
 - 261016 update-ssot WEB STAFF PLAYER WORLD CLUB SAVE start: settle remaining policies together, beginning with pending decisions and manual progression; balance remains parked
 - 261016 update-ssot proposal scope recorded in nine domains: independent responsibilities, two progression modes, coaching careers, mediation/promises and scoped policy sheets; ten open units retained, ideation converted
@@ -116,4 +117,3 @@
 - 261016 T141 home journey updated: actual clickability and navigation-edge bounds replace the reserved-row assumption; all 9 corrected cases pass, full CI rerun next
 - 261016 ideation expert-proposal-review continue: owner parks balance changes; settle delegation, narrative and UX through conversation
 - 261016 ideation expert-proposal-review open: checked current rules, selected code and a synthetic phone policy return; recorded recommendations without adopting policies
-- 261016 ideation expert-proposal-review start: compare the external r79 proposal with current policy and implementation; adoption remains open

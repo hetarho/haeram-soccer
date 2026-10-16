@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r82 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r83 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -45,7 +45,8 @@
 - WEB-18 [o] One clock on every view shows date/status, the selected progression mode, its progression action and access to the central responsibility settings (→WEB-45); season progress runs along its lower edge. The match theatre keeps its time controls in the scoreboard row.
   - automatic mode keeps play/pause and x1/x2/x5/x10: one day per 1/0.5/0.2/0.1 seconds. Steps never wait for saving (→SAVE-8); a late step carries days owed, at most 5 per step, and stopped time is never owed.
   - pace selection changes pace only. A stopped automatic clock stays stopped until play; an event stop does not change the selected progression mode.
-  - manual mode offers 다음 이벤트 with automatic play off (→WEB-5). It advances through intervening days to the first configured stop, without waiting out the automatic pacing intervals; it never skips the daily settlement order.
+  - manual mode offers 다음 이벤트 with automatic play off (→WEB-5). Present one direct move to the next configured event's date, without a paced date-by-date animation or an intervening progress/cancel journey. Do not add an artificial wait.
+  - the manual move still settles intervening days in order (→LEAGUE-11), retains their facts and stops at the first configured event. Its presentation never bypasses pending owner decisions, critical blockers or save/worker errors.
   - both modes stop for owner-held business decisions and enabled observation events (→WEB-45/42). A match event lands on the eve of an own match, before its result; preparation, watching or playing it through remain available.
   - a season close opens no screen and adds its record to the season list (→WEB-47); it is not a stop of its own.
   - a day step plays our match as a result without movement frames (same duel chain and facts, →MATCH-7); only watching builds them. An automatic multi-day step still ends on news or own-match days without turning every report into a stopping event.
@@ -122,7 +123,7 @@
 
 - WEB-42 [o] Club events remain inbox items: match eve, window opening/closing, bid answers, offers, youth intake, staff reports/renewals/vacancies, cup draws, financial and sponsor notices, player contracts/unhappiness/transfer requests, and director–manager mediation (→CLUB-34).
   - an owner-held business decision stops progression and presents the action it needs; a delegated decision is processed and reported under its responsibility (→WEB-45, →STAFF-13). Mediation belongs to player recruitment.
-  - match-eve and window-opening stops use their separate observation choices. Reading ordinary news, a staff report or a system notice does not itself create a decision stop. Money-warning status retains →WEB-56.
+  - match-eve and window-opening stops use their separate observation choices. General reports requiring no choice, including injuries, youth intake, cup draws, match results, staff reports and system notices, are notification-only; no acknowledgement is required to continue. An owner-held business decision arising from a report still stops under its responsibility. Money-warning status retains →WEB-56; bankruptcy, progression errors and other mandatory blockers retain their protections.
   - every item remains readable in 알림·결정 (→WEB-51). Home shows the stopping-event card; other views keep a distinct small event notification that opens it without covering the task or replacing clock controls.
   - a card decides its event or opens the authoritative task/policy sheet (→WEB-71/77); it never silently changes a standing setting.
   - in automatic mode, deciding an event that stopped a running clock resumes it once no stopping decision remains; a choice that opens a task/settings view leaves it stopped until play.
@@ -160,7 +161,7 @@
   - coaches always choose training; their owner's suggestion/order actions remain →STAFF-19, outside these seven categories.
   - direction criteria remain editable through →WEB-60/77 regardless of responsibility; delegated staff use the relevant rows, and each task states whether they are active and when.
   - the market marks director bids 단장 제안. The owner sees their answers without answering director-owned bids; a director-signed free agent reads 단장 영입 · 자유계약 · 이적료 없음, never an offer of 0.
-  - mode and settings changes must preserve the manual-mode validity rule (→WEB-76). Pending decisions follow →WEB-82; remaining event classification is →WEB-79.
+  - mode and settings changes must preserve the manual-mode validity rule (→WEB-76). Pending decisions follow →WEB-82; settings entry/application follows →WEB-79.
 
 - WEB-47 [o] League uses a visible competition and season selector and starts on standings for the season in progress or a closed season. The stable lenses of →WEB-40 keep their purpose across periods; a closed season never forces a club-review tab.
   - Final tables retain their historical division zones, with W-D-L only where recorded. Other competition details follow retained scope (→WEB-65). A season close opens no screen automatically.
@@ -319,9 +320,11 @@
   - player, coach and manager career views link the same retained person and actual career stages (→HIST-14). Never reset his age or fabricate missing other-club career statistics.
   - manager candidacy is shown only when coaching experience and managerial aptitude qualify him (→STAFF-24/28); specialist coaching remains a continuing career.
 
-- WEB-79 [?] Define the complete stop/acknowledgement classification of existing non-business reports without adding per-business-event stop switches. Define the central responsibility screen's clock shortcut and editing/commit workflow consistent with explicit application and pending-work disclosure (→WEB-82). No pending outcome or authority may be silently rewritten.
+- WEB-79 [o] The clock's responsibility-settings entry opens the same central screen as other responsibility links (→WEB-18/45).
+  - changes remain unapplied until explicit apply, with affected pending work disclosed before committing (→WEB-82). Opening or closing the screen never applies a choice.
+  - apply validates the resulting manual-mode configuration (→WEB-76) and transfers only unresolved work under →WEB-82. Reports follow →WEB-42 without additional per-business-event stop switches.
 
-- WEB-80 [?] Define next-event behaviour when no configured stop is reachable, interruption/cancellation of a long advance and interaction with explicit one-round tools. Same-date stopping events follow →WEB-83. Preserve ordered settlement, pending owner decisions, existing critical/error blockers and manual mode's absence of unattended progress.
+- WEB-80 [?] Define next-event behaviour when no configured stop is reachable and interaction with explicit one-round tools. Direct event-date presentation follows →WEB-18; same-date stopping events follow →WEB-83. Preserve ordered settlement, pending owner decisions, existing critical/error blockers and manual mode's absence of unattended progress.
 
 - WEB-81 [o] Mediation shows each person's actual explanation, the standing support policy, a case-specific support choice when owner-held, and any promise's target, deadline and recorded status (→CLUB-34/35, →STAFF-26). Delegated mediation reports the policy and result without an extra owner-only stop. Promise outcomes remain available through retained decisions (→HIST-15).
 
@@ -344,6 +347,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r83 261016 WEB-18✎ unpaced days→direct event-date presentation; WEB-42✎ general report stops unspecified→notification-only; WEB-45/79✎ settings workflow open→shared central entry and explicit apply; WEB-80✎ long-advance UI open→no-stop/round-tool questions only
 - r82 261016 WEB-45✎ pending handling open→WEB-82; WEB-79/80✎ transition/simultaneous-event questions→remaining settings/report/advance questions; WEB-82/83+ explicit pending-work transfer and same-date manual event grouping
 - r81 261016 WEB-5/18✎ paced-only→two modes; WEB-42/45✎ ladder→seven responsibilities/observation triggers; WEB-39/43/44/60/64/71✎ level/page access→responsibility/scoped sheets; WEB-76/77/78/81+ match guard, department apply and career/mediation UI; WEB-79/80+ open transition/advance rules
 - r80 261016 WEB-60✎ expanded draft summary with a bottom gap→collapsed by default and aligned to the content bottom; WEB-51✎ always-visible floating launcher→hidden while the draft panel is rendered, with its reserved space released
