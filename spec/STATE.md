@@ -16,7 +16,6 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 
 ## inbox
-- 261016 parked CLUB-36 CLUB-37: clarify promise lifecycle/fulfilment and numerical reactions before creating the complete proposal task batch
 - 261016 suggest WEB-74: owner-workflow tasks T134–T138 completed → review-code taskMemory/state, RecordsRoom/LiveSeason/CupsView and their browser journeys before the next UI feature; no refactoring is included in this completed scope
 - 261016 suggest -: spec lint has 33 existing document-quality hints → doc-review WEB/ARCH before expanding the navigation specification; no policy changes implied
 - 261015 decided WEB-74: start-vibe m8q4 scope → implement navigation-and-records with current game rules and the approved pixel readability baseline in an isolated checkout (alt: analysis only | revise game mechanics)
@@ -70,7 +69,7 @@
 | ARCH | 9 | 9 | - | 2 |
 | WEB | 86 | 80 | WEB-5✎ WEB-18✎ WEB-39✎ WEB-42✎ WEB-43✎ WEB-44✎ WEB-45✎ WEB-60✎ WEB-64✎ WEB-71✎ WEB-76+ WEB-77+ WEB-78+ WEB-79+ WEB-80+ WEB-81+ WEB-82+ WEB-83+ WEB-11✎ WEB-62✎ | 0 |
 | WORLD | 6 | 3 | WORLD-6✎ WORLD-10+ WORLD-11+ | 0 |
-| CLUB | 38 | 35 | CLUB-3✎ CLUB-13✎ CLUB-18✎ CLUB-22✎ CLUB-24✎ CLUB-32✎ CLUB-33✎ CLUB-34+ CLUB-35+ CLUB-36+ CLUB-37+ CLUB-38+ CLUB-39+ | 2 |
+| CLUB | 39 | 35 | CLUB-3✎ CLUB-13✎ CLUB-18✎ CLUB-22✎ CLUB-24✎ CLUB-32✎ CLUB-33✎ CLUB-34+ CLUB-35+ CLUB-36+ CLUB-37+ CLUB-38+ CLUB-39+ | 0 |
 | MATCH | 9 | 9 | - | 0 |
 | LEAGUE | 8 | 7 | LEAGUE-11✎ LEAGUE-13✎ | 0 |
 | STAFF | 32 | 20 | STAFF-13✎ STAFF-15✎ STAFF-16✎ STAFF-17✎ STAFF-18✎ STAFF-19✎ STAFF-20✎ STAFF-23+ STAFF-24+ STAFF-25+ STAFF-26+ STAFF-27+ STAFF-28+ STAFF-29+ STAFF-30+ STAFF-31+ STAFF-32+ STAFF-33+ STAFF-34+ STAFF-35+ STAFF-36+ STAFF-37+ STAFF-38+ STAFF-39+ STAFF-40+ STAFF-41+ STAFF-42+ STAFF-43+ STAFF-44+ | 0 |
@@ -91,11 +90,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- update-ssot CLUB: settle remaining promise lifecycle/fulfilment and numerical reactions together before creating any implementation tasks; no balance tuning.
-- create-task WEB STAFF CLUB PLAYER WORLD HIST SAVE ECON LEAGUE: decompose the complete agreed scope in one batch only after all proposal policy gaps are resolved; do not create a partial task batch.
-- Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
+- create-task WEB STAFF CLUB PLAYER WORLD HIST SAVE ECON LEAGUE: all adopted proposal policies are settled; decompose the complete scope from pending in one batch, without balance tuning. No partial task batch.
+- Planning is complete; no proposal implementation tasks or code changes have been created. Existing optional reviews and balance follow-ups remain parked in inbox.
+- Owner preview: http://localhost:19500.
 
 ## log
+- 261016 update-ssot CLUB r39: qualifying external arrivals through next-window deadline, next-day judgement, manager-linked cancellation, retained director-change commitments, no duplicates/extensions and no additional trust effects; all adopted proposal policy gaps resolved before task decomposition
+- 261016 update-ssot CLUB start: settle promise deadline/qualifying arrivals, manager-linked cancellation, duplicate prevention and unchanged numerical trust evaluation
 - 261016 update-ssot CLUB r38: financial-conflict mediation once per manager/request/window, three support outcomes preserving delegated financial checks; promise lifecycle and numerical reactions remain open
 - 261016 update-ssot CLUB start: restrict mediation to actual financial opposition, deduplicate per manager/request/window and settle three standing support policies
 - 261016 update-ssot STAFF r32: additional former-player coach/manager candidates, expired other-club contracts return to job search, employed coaches eligible for management with 1.5x current coaching wage compensation; only mediation/promise units remain open
@@ -114,5 +115,3 @@
 - 261016 update-ssot STAFF PLAYER start: require high coaching/managerial aptitude and adopt five-grade own-player/scouted-other-player evaluations
 - 261016 update-ssot STAFF r25: playing coaches use one of six suitable training posts; coach-only dismissal/resignation preserves player contract, transfer/release out of the club ends both roles with ordinary costs and affected responsibility checks
 - 261016 update-ssot STAFF start: settle six eligible playing-coach posts and asymmetric coach-only versus player-departure termination
-- 261016 update-ssot STAFF r24 CLUB r37: playing-coach deferral stays within age 41; playing retirement ends only player salary/role, remaining coach contract continues, expiries follow normal staff decisions
-- 261016 update-ssot STAFF CLUB start: preserve age-41 cap for one/two-year playing-coach extensions and carry remaining coach contracts through playing retirement

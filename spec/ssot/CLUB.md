@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r38 | Define the browser-demo rules for squad and growth.
+> r39 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 18 players, a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating sits at its league's average club XI plus its difficulty level's offset (→WEB-3: 쉬움 0, 보통 −2, 어려움 −4, 최상 −6; ±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -181,12 +181,24 @@
 
 - CLUB-35 [o] A next-window reinforcement promise is a retained commitment with its player-position/role target, deadline and fulfilment result, linked to the mediation and relevant people.
   - judge whether the promised recruitment occurred by its deadline; keeping or breaking it changes the manager's response according to the rules specified under →CLUB-37.
-  - dismissal, a menu detour or saving/reloading never silently clears the commitment. Record the promise and its resolution in →HIST-15.
-  - a post-window free signing cannot silently rewrite the completed window's request evaluation. Detailed qualifying arrivals, reconciliation and cancellation conditions remain →CLUB-37.
+  - dismissing an event, a menu detour or saving/reloading never silently clears the commitment. Record the promise and its resolution in →HIST-15.
+  - a post-window free signing cannot silently rewrite the completed window's request evaluation; it can meet an outstanding promise within that promise's own interval (→CLUB-37). Numerical reactions are →CLUB-36.
 
-- CLUB-36 [?] Specify mediation/promise numerical reactions and their interaction with CLUB-33's existing trust loss. Eligibility/deduplication and standing support outcomes are →CLUB-38/39; promise fulfilment and lifecycle remain →CLUB-37. Do not apply unapproved trust rewards or overlapping penalties.
+- CLUB-36 [o] Mediation choices and promise creation, fulfilment, non-fulfilment or cancellation add zero numerical trust change.
+  - retain →CLUB-33's existing window-request evaluation unchanged: when none of the opening requests was met by a qualifying arrival, the requesting manager loses 3 trust once for that window; a met request gains none. Do not add a per-promise penalty or defer/waive this evaluation because a promise exists.
+  - show distinct factual manager reactions and retained outcomes for a kept, unfulfilled or cancelled promise (→CLUB-37, →HIST-15), without additional morale, trust or relationship bonuses/penalties. A later arrival never retroactively changes the completed window evaluation.
 
-- CLUB-37 [?] Specify promise deadlines, qualifying positions/roles, loans/free agents, manager/director replacement, unavailable/unaffordable recruitment, cancellation, repeated promises and exact reactions to keeping or breaking a commitment. A cancelled promise and a fulfilled one must remain distinct recorded outcomes.
+- CLUB-37 [o] A reinforcement promise targets the original request's position/slot or short line, not a mandatory named player, and has a fixed deadline at the end of the next transfer window after the one in which it was made (→CLUB-17).
+  - retain the target and absolute deadline at creation. From the promise date through that deadline inclusive, one actual external arrival fitting the target under →CLUB-33's request-fit criteria meets it; permanent recruitment, an incoming loan or a free-agent signing can qualify. A bid, preliminary agreement, existing squad member or academy promotion is not an external arrival.
+  - judge the promise on the day after the deadline so deadline-day arrivals count. Fulfilment uses retained actual arrival facts; a qualifying alternative can meet it without the original named pick. Arrival before the next window can qualify, including a free agent, but never rewrites an earlier window's settled request evaluation (→CLUB-36).
+  - if the requesting manager leaves while the promise is outstanding, resolve it as cancelled and retain the reason; never transfer its judgement to his successor. A director change alone keeps the promise, target and deadline in force.
+  - an outstanding promise for the same manager and target cannot be duplicated or have its deadline moved by making it again. A refreshed shortlist, support-policy change, menu action or reload does not reset it.
+  | final status | condition and manager reaction |
+  |---|---|
+  | fulfilled | a qualifying arrival occurred in the interval; acknowledge that the promised reinforcement arrived |
+  | unfulfilled | no qualifying arrival by the deadline; acknowledge the missed commitment and recorded cause, including lack of funds or suitable candidates |
+  | cancelled | the requesting manager departed before resolution; record departure as the cancellation reason, separately from success or failure |
+  - lack of funds or suitable candidates does not automatically cancel or extend the promise. A promise neither creates money nor bypasses recruitment constraints (→CLUB-39). Keep its final result available; numerical effects are →CLUB-36.
 
 - CLUB-38 [o] During an open transfer window, mediation requires a manager request with a suitable available candidate, actual director opposition because existing financial criteria block the recruitment, and no qualifying arrival yet meeting that request (→CLUB-33).
   - emit at most once for the same manager, reinforcement request and transfer window. Retain that fact across daily checks, shortlist refreshes, screen changes and reloads; a different candidate for the same request does not renew the allowance.
@@ -200,7 +212,7 @@
   | 균형 | first seek a cheaper alternative meeting the existing reinforcement criteria; if none is available within those criteria, make a next-window reinforcement promise |
   | 감독 우선 | first pursue the manager's named player; if that cannot proceed, make a next-window reinforcement promise |
   - no support outcome authorizes delegated spending beyond the existing financial checks (→CLUB-33, →ECON-33), creates funding or guarantees a signing. Prioritizing a player still follows ordinary availability, bidding and contract rules.
-  - promises retain their actual target and deadline (→CLUB-35); detailed fulfilment, duplicate-commitment and cancellation rules remain →CLUB-37. A support choice does not itself count as a fulfilled recruitment request.
+  - promises retain their actual target and deadline (→CLUB-35); fulfilment, duplicate-commitment and cancellation rules are →CLUB-37. A support choice does not itself count as a fulfilled recruitment request.
 
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
@@ -211,6 +223,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r39 261016 CLUB-35/36/37/39✎ promise lifecycle/reactions open→target-fit external arrivals through next-window deadline, next-day judgement, manager departure cancels/director change retains, no duplicate or postponed commitments, zero additional numerical effects and unchanged window trust evaluation
 - r38 261016 CLUB-33/34/36✎ broad conflict/open timing and resolution→financial-only mediation with scoped support priority, numerical reactions remain open; CLUB-38/39+ once per manager/request/window, director defers, balanced seeks cheaper fit, manager prioritizes pick, next-window promises without bypassing delegated financial limits
 - r37 261016 CLUB-3✎ every announced player retires at the close→accepted playing-coach deferral under STAFF-34; age-41 limit and all retirement chances unchanged
 - r36 261016 CLUB-3✎ player retirement only→linked later staff career; CLUB-13/18/22/24/32/33✎ intervention/combined transfers→separate responsibilities; CLUB-34/35+ recruitment-owned mediation and tracked promises; CLUB-36/37+ open mediation and promise-fulfilment/reaction rules
