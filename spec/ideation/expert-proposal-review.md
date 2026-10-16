@@ -16,7 +16,9 @@
   - Remaining hypothesis: less visual displacement helps people change a policy while thinking about a candidate. A phone sheet can obscure that candidate and still require scrolling; “zero context-switch cost” is unsupported.
   - Unresolved: an existing multi-department draft, apply breadth, dismiss versus discard, back navigation and live changes while editing. Unapplied academy criteria cannot claim a completed promotion or changed world state (WEB-75).
   - The proposed remedy-sheet inline “apply immediately” changes the current product workflow (WEB-42/44/71); it is not established merely by reusing an editor.
-- [o] Delegation model: choose direct owner decision or staff delegation separately for each responsibility in one central settings screen, enabling combinations such as delegated sponsors/coaches with owner-appointed managers. Responsibility granularity, defaults, clock stops and any shortcuts remain open. This changes the ideation direction; current WEB-45 and STAFF-13 remain in force until a later SSOT update.
+- [o] Delegation model: choose direct owner decision or staff delegation separately for each responsibility in one central settings screen, enabling combinations such as delegated sponsors/coaches with owner-appointed managers. Defaults and any shortcuts remain open. This changes the ideation direction; current WEB-45 and STAFF-13 remain in force until a later SSOT update.
+- [o] Delegation granularity: seven responsibilities — manager appointments/renewals; staff appointments/renewals including director, scout and coaching departments; player renewals/improved contracts; player recruitment; player sale responses; academy promotion/release; sponsor contracts. Appointment and renewal share their responsibility; staff departments share one choice and academy promotion/release share one choice for this scope.
+- [o] Business-decision clock stops follow responsibility: a direct owner decision stops for an answer; a delegated decision is processed by the responsible staff and reported without a decision-related stop. No independent stop toggle for each business decision. Match-eve and window-opening notifications are not settled by this choice; critical/error handling and timing when responsibility changes remain to specify.
 - [x] A mandatory four-level ladder, whether reordered or supplemented only by core-approval pins, as the delegation model ← the owner chose individual responsibility selection to express the desired combination directly. Optional bulk presets remain undecided.
 - [?] Delegation details: “automate sponsors/coaches but appoint my manager” is impossible under the current ladder, although manual actions remain available while delegated (WEB-45, STAFF-13).
   - The proposal usefully separates routine work from appointments with greater owner interest. Its claim that staff handle the core player's renewal at level 2 matches the current default.
@@ -61,8 +63,10 @@
 ## shape
 - Discussion scope: delegation, narrative and UX; balance is parked. Discuss delegation first, then narrative and policy access; the remaining order is adjustable by the owner.
 - Delegation flow: open the central responsibility settings → choose direct or delegated for each responsibility → inspect who decides. Application timing, defaults and any bulk preset shortcuts remain open.
-- Candidate first responsibility list: manager appointment/renewal; staff appointment/renewal including director and scout; player contract talks; player recruitment; player sale responses; academy promotion/release; sponsor contracts. Splitting departments or academy decisions further remains open.
-- Candidate clock relationship: an owner-held business decision stops for an answer, while a delegated one is resolved and reported. Independent notification preferences, match-eve/window-opening stops and unresolved-decision timing remain open.
+- Responsibility settings: seven direct/delegated choices in one central screen, with appointment/renewal and academy promotion/release grouped as adopted above.
+- Business flow: owner-held decision → stop for the owner's answer; delegated decision → staff resolution and report. Match-eve/window-opening behaviour and unresolved-decision timing remain open.
+- Candidate new-game defaults for discussion: owner handles manager appointments, player contracts, recruitment and sales; staff handle their appointments, the academy and sponsors. The player can change each responsibility; this default has not been selected.
+- Candidate observation preferences for discussion: match-eve and window-opening stops separately selectable, with notices retained either way; proposed defaults are match-eve stop on and window-opening stop off. Neither the preferences nor their defaults have been adopted.
 - Candidate story flow: know a player through his club career → retirement invitation → inspect his coaching candidacy and history → independently choose whether to employ him → revisit his combined career.
 - Review boundary: assess and retain proposal material. No SSOT policy changes, coefficient changes, implementation tasks or code changes are authorized by selecting an idea for discussion.
 
@@ -76,9 +80,9 @@
 - SAVE: retained commitments and cross-role identities if adopted; compatibility and long-career retention must be assessed for the chosen scope.
 
 ## open
-- Are the seven candidate responsibilities sufficient, or should staff departments and academy promotion/release be separately selectable?
-- Should business-decision stops follow direct/delegated responsibility, or be separately configurable?
-- Which decisions should remain the owner's when routine administration is automated: manager appointments, key-player retention, major sales, or another set?
+- Which responsibilities start direct/delegated in a new game?
+- Should match eve and window opening stop the clock, and should those observation notifications have their own preferences?
+- How do changes apply to pending decisions and existing careers, and what shortcuts belong in the clock/settings entry?
 - Which narrative should be developed first: a former player's second career or mediation with an accountable future promise?
 - Does the current focused-policy round trip interrupt a real recurring task enough to justify another presentation, and what improvement would demonstrate it?
 - Parked for a later balance discussion: should difficulty describe the founding disadvantage or a challenge that still differs in season 60?
