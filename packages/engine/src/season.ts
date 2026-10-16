@@ -1,3 +1,4 @@
+import { qualifyManagers } from './manager-entry';
 import { refreshCoachingMarket, settleNpcCoaching } from './coaching-market';
 import { atCareerDate } from './person-careers';
 import { materializePeople, movePerson, returnLoan } from './npc-continuity';
@@ -718,6 +719,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     seasonTour(w);
     settleNpcCoaching(w, true);
     refreshCoachingMarket(w);
+    qualifyManagers(w);
   });
   w.europe = [];
   prepareSeason(w);
@@ -774,6 +776,7 @@ function playRound(w: World, capture: Settlement, observe: boolean) {
   if (w.round % MARKET_REFRESH_ROUNDS === 0) {
     refreshManagerMarket(w);
     refreshCoachingMarket(w);
+    qualifyManagers(w);
     // The chief scout redraws his shortlist with the managers' market (→CLUB-33).
     drawShortlist(w);
   }
@@ -814,6 +817,7 @@ function stepDay(w: World, capture: Settlement, observe: boolean) {
  */
 export function clubDay(w: World) {
   settleNpcCoaching(w);
+  qualifyManagers(w);
   progressFacilityWorks(w);
   runAcademyIntake(w);
   dailyMarket(w);
