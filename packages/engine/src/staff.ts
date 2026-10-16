@@ -31,7 +31,7 @@ import {
   MANAGER_PRIORITY_INFO,
   managerCriteriaOf,
 } from './hiring';
-import { delegated } from './intervention';
+import { isDelegated } from './responsibilities';
 
 /** The 단장 beside the manager, then the coaching departments below him, in display order. */
 export const STAFF_ROLES: readonly StaffRole[] = [
@@ -852,13 +852,13 @@ function managerRenewalReminder(w: World) {
     terms = managerRenewal(w);
   if (!terms) return;
   const school = m.style ? `${STYLE_INFO[m.style].label} ` : '',
-    isDelegated = delegated(w, 'manager');
-  if (isDelegated && delegatedManagerRenewal(w, school, terms.limit)) return;
+    managerDelegated = isDelegated(w, 'manager');
+  if (managerDelegated && delegatedManagerRenewal(w, school, terms.limit)) return;
   const seasons = terms.limit === 1 ? '1시즌' : `1–${terms.limit}시즌`;
   pushInbox(w, {
     kind: 'staff-renewal',
     title: `${school}${m.name} 감독 계약이 이번 시즌 끝에 끝나요`,
-    detail: `재계약하지 않으면 시즌이 끝날 때 떠나고 임시 감독이 팀을 맡아요 (연봉 ${moneyLabel(w, terms.wage)} · 계약금 ${moneyLabel(w, terms.fee)} · ${seasons})${isDelegated ? ' · 자금 여력이 부족해 단장이 재계약하지 않았어요' : ''}`,
+    detail: `재계약하지 않으면 시즌이 끝날 때 떠나고 임시 감독이 팀을 맡아요 (연봉 ${moneyLabel(w, terms.wage)} · 계약금 ${moneyLabel(w, terms.fee)} · ${seasons})${managerDelegated ? ' · 자금 여력이 부족해 단장이 재계약하지 않았어요' : ''}`,
     attention: true,
     ref: m.id,
   });
@@ -871,7 +871,7 @@ function managerRenewalReminder(w: World) {
  */
 export function dailyStaff(w: World) {
   if (currentDay(w) === renewalDay(w.year)) managerRenewalReminder(w);
-  if (w.manager.interim && delegated(w, 'manager')) appointDelegatedManager(w);
+  if (w.manager.interim && isDelegated(w, 'manager')) appointDelegatedManager(w);
   if (!w.staff) return;
   for (const role of STAFF_ROLES) if (coachDelegated(w, role)) fillDelegatedPost(w, role);
   if (currentDay(w) !== renewalDay(w.year)) return;

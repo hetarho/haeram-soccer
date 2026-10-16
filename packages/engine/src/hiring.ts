@@ -10,7 +10,7 @@ import type {
   World,
 } from '../../contracts/src/types';
 import { directionOf, preferredSchool } from './direction';
-import { delegated } from './intervention';
+import { isDelegated } from './responsibilities';
 import { MANAGER_TRAIT_INFO, STAFF_INFO, STAFF_TRAIT_INFO } from './staff';
 import { STYLE_INFO } from './styles';
 
@@ -61,8 +61,8 @@ export function coachKey(role: StaffRole): CoachDelegationKey {
   return `coach:${role}`;
 }
 /** Whether the staff hire and renew this department's coaches (→STAFF-15). */
-export function coachDelegated(w: Pick<World, 'intervention'>, role: StaffRole) {
-  return delegated(w, coachKey(role));
+export function coachDelegated(w: Pick<World, 'intervention' | 'settings'>, role: StaffRole) {
+  return role in STAFF_INFO && isDelegated(w, 'staff');
 }
 
 /** 감독 기조's search over the default criteria (→STAFF-18); 표준 is the defaults. */

@@ -31,8 +31,10 @@ import { coachDelegated, managerCriteriaOf } from './hiring';
 import { directionLine, setDirection } from './direction';
 import { debit } from './operations';
 import { moneyLabel } from './finance';
-import { delegated, INTERVENTION_LEVELS } from './intervention';
+import { INTERVENTION_LEVELS } from './intervention';
+import { isDelegated } from './responsibilities';
 import { orderTraining } from './coach-training';
+import { legacySettings } from './responsibilities';
 
 /** Managers and their tactical requests, coaches, delegation and the staff's criteria. */
 export type StaffCommand = Extract<
@@ -258,7 +260,7 @@ function resign(w: World, reason: string) {
   interim.interim = true;
   w.manager = interim;
   onManagerChange(w, old, interim);
-  if (!delegated(w, 'manager')) {
+  if (!isDelegated(w, 'manager')) {
     w.critical = MANAGER_GONE;
     return;
   }
@@ -398,6 +400,7 @@ export function staffCommand(w: World, cmd: StaffCommand) {
     case 'intervention':
       if (!INTERVENTION_LEVELS.includes(cmd.level)) throw new Error('개입 수준을 확인하세요.');
       w.intervention = cmd.level;
+      w.settings = legacySettings(cmd.level);
       // A department handed to the staff has its vacancy or volunteer's post filled at once.
       for (const role of STAFF_ROLES) if (coachDelegated(w, role)) fillDelegatedPost(w, role);
       break;

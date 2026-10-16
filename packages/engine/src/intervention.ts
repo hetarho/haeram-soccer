@@ -1,3 +1,4 @@
+import { isDelegated } from './responsibilities';
 import type {
   CoachDelegationKey,
   DelegationKey,
@@ -46,6 +47,13 @@ export function interventionOf(w: Pick<World, 'intervention'>): InterventionLeve
   return w.intervention ?? 1;
 }
 /** Whether the staff take this decision now: the level alone decides (→STAFF-13). */
-export function delegated(w: Pick<World, 'intervention'>, key: DelegationKey) {
-  return INTERVENTION_DELEGATES[interventionOf(w)].includes(key);
+export function delegated(w: Pick<World, 'intervention' | 'settings'>, key: DelegationKey) {
+  const category = key.startsWith('coach:')
+    ? 'staff'
+    : key === 'transfers'
+      ? 'sales'
+      : key === 'business'
+        ? 'sponsors'
+        : key;
+  return isDelegated(w, category as import('../../contracts/src/types').ResponsibilityKey);
 }

@@ -1,3 +1,4 @@
+import { legacySettings } from './responsibilities';
 import { ATTRIBUTES, type Attribute } from '../../contracts/src/player';
 import { lineOf } from './player';
 import { describe, expect, it } from 'vitest';
@@ -86,6 +87,7 @@ function world(seed = 'coaching-staff') {
     seed,
     level: 'easy' as const,
   });
+  w.settings = legacySettings(2);
   w.cash = '999999999';
   return w;
 }
@@ -557,6 +559,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
     };
     w.staff = w.staff!.map((member) => (member.role === 'attack' ? veteran : member));
     w.intervention = 3;
+    w.settings = legacySettings(3);
     if (option !== 'standard') w.direction = { coaches: option as never };
     return { w, veteran };
   }
@@ -711,6 +714,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
   it("a new 코치 기조 fills a volunteer post at once while a contracted coach waits for his contract's end", () => {
     const w = world(seedWhere('criteria-change', (abilities) => abilities.every((a) => a < 65)));
     w.intervention = 3;
+    w.settings = legacySettings(3);
     w.direction = { coaches: 'elite' };
     operate(w, { type: 'hire-staff', role: 'defense', candidate: 0, term: 2 });
     const contracted = coachOf(w, 'defense')!;
@@ -983,6 +987,7 @@ describe('delegated manager appointment (STAFF-7, STAFF-18)', () => {
   function seeded(seed: string) {
     const w = world(seed);
     w.intervention = 4;
+    w.settings = legacySettings(4);
     const market = structuredClone(marketOf(w));
     const levels: [ManagerStyle, number][] = [
       ['developer', 70],
@@ -1041,6 +1046,7 @@ describe('delegated manager appointment (STAFF-7, STAFF-18)', () => {
     // Without delegation the departure stops the clock for the owner.
     const owner = seeded('owner-resign').w;
     owner.intervention = 2;
+    owner.settings = legacySettings(2);
     resignOverDemand(owner);
     expect(owner.manager.interim).toBe(true);
     expect(owner.critical).toBe(MANAGER_GONE);

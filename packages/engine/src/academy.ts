@@ -21,7 +21,7 @@ import { moneyLabel, operatingCosts } from './finance';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
-import { delegated } from './intervention';
+import { isDelegated } from './responsibilities';
 import { debutRule, directionOf, directionOption, financeStance, releaseRule } from './direction';
 import { countDownOrder } from './orders';
 import { academyFacilityTerms } from './facilities';
@@ -415,7 +415,7 @@ export function seasonAcademy(w: World): void {
     prospects = [...w.academy.players].sort(byStrength),
     ready = prospects.filter((player) => readiness(player) === 'ready'),
     review = prospects.filter((player) => readiness(player) === 'review');
-  if (!delegated(w, 'academy')) {
+  if (!isDelegated(w, 'academy')) {
     if (!ready.length && !review.length) return;
     const lines = [
       ...(ready.length ? [`1군 준비 완료: ${listed(w, ready)}`] : []),
@@ -513,6 +513,6 @@ export function academySummary(w: World) {
     intakeDay: academyIntakeDay(w),
     intakeDone: w.academy?.intakeYear === w.year,
     nextIntakeSize: academyIntakeSize(w),
-    delegated: delegated(w, 'academy'),
+    delegated: isDelegated(w, 'academy'),
   };
 }

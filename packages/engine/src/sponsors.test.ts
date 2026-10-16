@@ -1,3 +1,4 @@
+import { legacySettings } from './responsibilities';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
@@ -30,6 +31,7 @@ function club({ year, professional = false }: { year?: number; professional?: bo
     seed: 'sponsors',
     level: 'easy' as const,
   });
+  w.settings = legacySettings(2);
   // The squad stays as founded, so results follow only what a test sets.
   if (year) {
     w.year = year;
@@ -167,6 +169,7 @@ describe('sponsor contracts by slot', () => {
   it('has delegated staff fill every open slot at once, and pays the kit bonus for promotion', () => {
     const w = club({ year: 1979 });
     w.intervention = 4;
+    w.settings = legacySettings(4);
     advanceDays(w, 1, undefined, false);
     expect(w.sponsors?.map((contract) => [contract.slot, contract.kind])).toEqual([
       ['local', 'stable'],
@@ -191,6 +194,7 @@ describe('sponsor contracts by slot', () => {
     owner.sponsors![0].until = owner.year + 1;
     const delegated = structuredClone(owner);
     delegated.intervention = 4;
+    delegated.settings = legacySettings(4);
     const april = seasonDayOf(owner.year, 4, 1);
     for (const w of [owner, delegated]) {
       while (currentDay(w) < april)

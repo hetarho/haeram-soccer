@@ -9,7 +9,7 @@ import { synergyEffects } from './synergy';
 import { pushInbox } from './inbox';
 import { currentDay, seasonDayOf } from './calendar';
 import { credit } from './operations';
-import { delegated } from './intervention';
+import { isDelegated } from './responsibilities';
 import { STADIUM_STEPS } from './facilities';
 
 /**
@@ -248,7 +248,7 @@ export function signSponsor(w: World, slot: SponsorSlot, index: number) {
  * guaranteed offer at once and report it.
  */
 export function delegatedSponsors(w: World) {
-  if (!delegated(w, 'business')) return;
+  if (!isDelegated(w, 'sponsors')) return;
   const signed = SPONSOR_SLOTS.filter(
     (slot) => sponsorSlotOpen(w, slot) && !contractOf(w, slot),
   ).map((slot) =>
@@ -277,7 +277,7 @@ export function delegatedSponsors(w: World) {
 }
 /** Season start (→ECON-21): the owner is told once of every empty open slot, unless delegated. */
 export function sponsorReminder(w: World) {
-  if (delegated(w, 'business')) return;
+  if (isDelegated(w, 'sponsors')) return;
   const empty = SPONSOR_SLOTS.filter((slot) => sponsorSlotOpen(w, slot) && !contractOf(w, slot));
   if (!empty.length) return;
   pushInbox(w, {
@@ -292,7 +292,7 @@ export function sponsorReminder(w: World) {
  * business that its slot empties at the close.
  */
 export function sponsorEnding(w: World) {
-  if (delegated(w, 'business') || currentDay(w) !== seasonDayOf(w.year, 4, 1)) return;
+  if (isDelegated(w, 'sponsors') || currentDay(w) !== seasonDayOf(w.year, 4, 1)) return;
   for (const contract of w.sponsors ?? []) {
     const ref = `sponsor:${contract.slot}:${contract.until}`;
     if (contract.until !== w.year + 1 || w.inbox?.some((item) => item.ref === ref)) continue;
