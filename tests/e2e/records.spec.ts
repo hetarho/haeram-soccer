@@ -1,3 +1,4 @@
+import { finishSeason } from './season-progression';
 import { openCurrentClubSeason } from './record-navigation';
 import { expect, test, type Page } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
@@ -13,7 +14,7 @@ async function closeFirstSeason(page: Page, seed: string) {
     .getByRole('button', { name: '시즌 진행 도구', exact: true })
     .click();
   const journal = page.getByRole('dialog', { name: '시즌 진행 도구' });
-  await journal.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
+  await finishSeason(page);
   await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
   await page.keyboard.press('Escape');
   await expect(journal).toHaveCount(0);

@@ -1,12 +1,16 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { clubOf, rating, tacticLabel } from '../../../../packages/engine/src/world';
-import { nextOwnFixture, daysUntilNextMatch } from '../../../../packages/engine/src/calendar';
+import {
+  nextOwnFixture,
+  daysUntilNextMatch,
+  currentDay,
+  seasonLength,
+} from '../../../../packages/engine/src/calendar';
 import { orderIds, ownLeagueIds } from './league';
-import { competitionLabel, number, seasonName } from './format';
+import { competitionLabel, number } from './format';
 import { cashState, teamStates, urgentState, type StateKey } from './teamState';
 import { RemedySheet, useRemedyRunner } from './RemedySheet';
-import { NewsHeadlines } from './NewsFeed';
 import type { GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
 import { useMatchView, useNavigation } from './state';
@@ -15,8 +19,6 @@ import { ClubLink } from './ClubLink';
 import { watchNextMatch } from './watch';
 import { StrategyPanel } from './StrategyPanel';
 import { Dialog } from './Dialog';
-import { MilestoneCollection } from './MilestoneCollection';
-import { clubMilestones } from '../../../../packages/engine/src/goals';
 import s from './ClubHub.module.css';
 import { STADIUM_STEPS } from '../../../../packages/engine/src/facilities';
 import { FacilityArt } from './FacilityArt';
@@ -184,31 +186,26 @@ export function ClubHub({
   controller,
   journal,
   tools,
-  milestoneFacts,
 }: {
   w: World;
   client: GameClient;
   controller: ProgressionController;
   journal: ReactNode;
   tools: ReactNode;
-  milestoneFacts: ReturnType<typeof clubMilestones>;
 }) {
   // Home stays mounted while hidden: only leaving it matters, not moves between other pages.
   const away = useNavigation((state) => state.page !== 'dashboard');
   const setPage = useNavigation((state) => state.setPage);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [journalOpen, setJournalOpen] = useState(false);
-  const [goalsOpen, setGoalsOpen] = useState(false);
   const [preparing, setPreparing] = useState(false);
-  const milestones = milestoneFacts;
   useEffect(() => {
-    if (away && (journalOpen || toolsOpen || goalsOpen || preparing)) {
+    if (away && (journalOpen || toolsOpen || preparing)) {
       setJournalOpen(false);
       setToolsOpen(false);
-      setGoalsOpen(false);
       setPreparing(false);
     }
-  }, [away, journalOpen, toolsOpen, goalsOpen, preparing]);
+  }, [away, journalOpen, toolsOpen, preparing]);
   const club = clubOf(w);
   const next = nextOwnFixture(w);
   const opponent = w.clubs.find(
@@ -219,6 +216,10 @@ export function ClubHub({
     played = !!w.tables[w.playerClub]?.played,
     rank = ids.indexOf(w.playerClub) + 1;
   const watch = () => watchNextMatch(client, controller, () => setPage('match'));
+  const progress = Math.min(
+    100,
+    Math.max(0, Math.round((currentDay(w) / Math.max(1, seasonLength(w))) * 100)),
+  );
   const last = w.ownMatches.at(-1);
   const lastScore = last && [
     last.home === w.playerClub ? last.score.home : last.score.away,
@@ -230,23 +231,17 @@ export function ClubHub({
   };
   return (
     <section className={s.hub} data-testid="club-hub" aria-label="클럽 키우기">
-      <header className={s.broadcastHeader}>
-        <div>
+      <div className={s.seasonOverview}>
+        <div className={s.seasonMeter}>
           <span>
-            CLUB CENTRE <i aria-hidden="true">/</i> {seasonName(w.year)}
+            시즌 진행률 <b>{progress}%</b>
           </span>
-          <h2>{club.name}</h2>
+          <progress aria-label="시즌 진행률" value={progress} max={100} />
         </div>
-        <div className={s.headerActions}>
-          <b>
-            {w.lower ? '아마추어 리그' : `${club.tier + 1}부 리그`}
-            <small>시즌 운영실</small>
-          </b>
-          <button type="button" onClick={open(setToolsOpen)}>
-            시즌 진행 도구
-          </button>
-        </div>
-      </header>
+        <button type="button" onClick={open(setToolsOpen)}>
+          시즌 진행 도구
+        </button>
+      </div>
       {/* The season numbers ride the bottom of the club's stage instead of taking a row. */}
       <div className={s.stage}>
         <ClubScene w={w} />
@@ -297,33 +292,6 @@ export function ClubHub({
         </button>
       </div>
       <TeamState w={w} client={client} onPrepare={() => setPreparing(true)} />
-      <button
-        className={s.goal}
-        aria-label="성장 목표 보기"
-        aria-describedby="club-goal-progress"
-        onClick={open(setGoalsOpen)}
-      >
-        <span>
-          이번 도전{' '}
-          <strong>
-            {milestones.completed}/{milestones.total} 달성
-          </strong>
-        </span>
-        <b>
-          {milestones.next?.title || '우리 클럽의 첫 목표들을 모두 이뤘어요'}{' '}
-          <span aria-hidden="true">›</span>
-        </b>
-        <small id="club-goal-progress">
-          {milestones.next
-            ? `${milestones.next.current}/${milestones.next.target} · ${milestones.next.action}`
-            : '기록은 계속됩니다. 더 높은 무대를 향해!'}
-        </small>
-        <progress
-          aria-label="현재 성장 목표 달성도"
-          value={milestones.next?.progress ?? 100}
-          max={100}
-        />
-      </button>
       <section className={s.fixture} aria-label="다음 경기">
         <div className={s.fixtureInfo}>
           <small>
@@ -365,14 +333,7 @@ export function ClubHub({
         </div>
       </section>
 
-      <div className={s.headlines}>
-        <NewsHeadlines w={w} />
-      </div>
-
       {preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />}
-      {goalsOpen && (
-        <MilestoneCollection w={w} milestones={milestones} onClose={() => setGoalsOpen(false)} />
-      )}
       {toolsOpen && (
         <Dialog label="시즌 진행 도구" onClose={() => setToolsOpen(false)}>
           {tools}

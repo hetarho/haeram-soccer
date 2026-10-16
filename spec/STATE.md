@@ -68,7 +68,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 78 | 78 | - | 0 |
+| WEB | 80 | 80 | - | 0 |
 | WORLD | 3 | 3 | - | 0 |
 | CLUB | 35 | 35 | - | 0 |
 | MATCH | 9 | 9 | - | 0 |
@@ -83,6 +83,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T140 | Compact policy draft panel | WEB ARCH | - | doing@261016.u9c2 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -91,10 +92,18 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- Owner-workflow implementation is complete. Optional follow-up: review-code the navigation/task-memory UI and doc-review the existing WEB/ARCH quality hints.
-- Existing balance/economy follow-ups remain parked in inbox; the owner's checkout and port 19500 were preserved. Preview: http://localhost:19504.
+- implement-task T140: compact draft panel; commit and push T139/T140 after verification.
+- Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 T140 local checks pass: 57 browser cases after one WebKit retry, static/build/spec checks; commit/push and full remote CI next
+- 261016 T140 doing@u9c2: collapse draft details, reclaim launcher space, verify and publish authorized changes
+- 261016 create-task T140: WEB r80 compact policy draft and conditional notification launcher
+- 261016 update-ssot WEB start: compact policy draft panel and conditional notification launcher
+- 261016 T139 done: compact home and unified notifications/news; 383 distinct browser cases, static/unit/contract/catalog checks and storage/first-play gates pass after targeted reruns
+- 261016 T139 doing@u9c2: implement WEB r79 and verify affected browser journeys
+- 261016 create-task T139: WEB r79 compact home, calendar progress and shared notifications/news dialog
+- 261016 update-ssot WEB start: compact home, round-only tools and unified notifications/news
 - 261016 T137 done: full source CI 38759743656 passes all six jobs, storage/first-play gates pass and settled phone/desktop captures are inspected; owner-workflow todo exhausted
 - 261016 T137 implementation: one competition/period selector, explicit home progression tools, consistent operation/news labels and readable phone season facts; full CI/performance gates pending
 - 261016 T136 done: season-first club records, explicit competition detours and four scoped league lenses; 120 affected browser scenarios verified, full integration in T137
@@ -107,11 +116,3 @@
 - 261015 create-task WEB r78: T134 task/draft continuity, T135 actionable development/recruitment, T136 season-first records/league, T137 competition/home integration; sequential, no lanes
 - 261015 update-ssot WEB r78: task-first management, contextual returns/drafts, season-first club records and standings-first competition scope; create-task next
 - 261015 T133 carried into m8q4: approved Galmuri14/Galmuri11 readability baseline; T132 remains the superseded font trial, no changes to owner checkout
-- 261015 start-vibe m8q4 autopilot start: navigation-and-records to WEB then sequential implementation; isolated workspace, owner checkout and port 19500 preserved
-- 261015 ideation navigation-and-records ready: exercised training, free signing, staff hire, policy/preset drafts and youth promotion over two isolated seasons; M1–M13 and task-based redesign replace the earlier split assumption; no runtime changes
-- 261015 ideation navigation-and-records reopen: independently exercise people, training and direction workflows; revise earlier unvalidated split assumption
-- 261015 ideation navigation-and-records ready: 12 source-backed structural findings, two browser journeys confirmed, records/league reorganisation recommended; no runtime changes
-- 261015 T130 done: slot journey awaits destination headings; 9 corrected repeats passed in Chromium/Firefox/WebKit, type/lint/format passed; push-first follow-up for CI 38709122636
-- 261015 main advanced to 3257ea2 before CI on the owner's explicit instruction; T130 doing@e8ar for the intermittent Firefox slot journey failure in CI 38709122636
-- 261015 T129 done: 72 era/stage pixel scenes, 9 unit tests and 45 affected browser journeys passed, final affected 18/18, entry 250087 B gzip; CI-gated delivery by session
-- 261015 T128 done: all CI 38706479608 jobs passed; main fast-forwarded to fa69909; T129 continues

@@ -2350,10 +2350,10 @@
   }
   /* Home scrolls inside its own column, so the room goes there. */
   .newsLayout.coreLayout .scroller {
-    padding-bottom: 26px;
+    padding-bottom: 84px;
   }
   .newsLayout .coreContent {
-    padding-bottom: 50px;
+    padding-bottom: 0;
   }
   /* A stretched hub would overflow past that padding; at its own height the padding counts. */
   .newsLayout .coreContent > * {
@@ -3393,4 +3393,12 @@
 .competitionScope > b {
   color: var(--text-muted);
   line-height: 1.7;
+}
+
+/* The mounted policy draft owns the bottom edge; retained drafts on other pages do not. */
+.layout:has([data-testid='strategy-draft']) [data-testid='communications-button'] {
+  display: none;
+}
+.newsLayout:has([data-testid='strategy-draft']) .scroller {
+  padding-bottom: 0;
 }

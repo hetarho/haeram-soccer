@@ -1,5 +1,5 @@
 import { PixelIcon } from './PixelIcon';
-import { memo, useState } from 'react';
+import { memo, useEffect, useId, useState } from 'react';
 import type {
   InboxItem,
   InboxKind,
@@ -36,7 +36,17 @@ import s from './EventCenter.module.css';
 import { fadeOutOnRemove } from './motion';
 import { ClubCrest } from './ClubCrest';
 import { watchNextMatch } from './watch';
-import { NewsQuietToggle } from './NewsFeed';
+import {
+  NewsQuietToggle,
+  NewsList,
+  useClubNews,
+  useNewsSheet,
+  useUnreadNewsCount,
+  markNewsSeen,
+  type NewsTab,
+} from './NewsFeed';
+import newsStyle from './NewsFeed.module.css';
+import appStyle from './App.module.css';
 
 const cardExit = fadeOutOnRemove([
   { opacity: 1, transform: 'none' },
@@ -395,22 +405,45 @@ const arrived = (at: number) =>
     minute: '2-digit',
   });
 
-/**
- * HUD bell: every club event, newest first, readable at any time. The app's own notices join as
- * 시스템 (→WEB-66): unread ones lead, and seeing them in the opened inbox reads them.
- */
-export function InboxButton({ client }: { client: GameClient }) {
-  const inbox = useGameState((state) => state.view?.world.inbox);
+/** One launcher for club decisions, system notifications and full-career club news. */
+export function CommunicationsCenter({
+  client,
+  floating,
+}: {
+  client: GameClient;
+  floating: boolean;
+}) {
+  const w = useGameState((state) => state.view?.world);
+  const inbox = w?.inbox;
+  const { open, tab, show, hide } = useNewsSheet();
+  const news = useClubNews();
+  const fresh = useUnreadNewsCount();
+  const id = useId();
+  useEffect(() => () => hide(), [hide]);
   const notices = useNotifications((items) => items);
-  const [open, setOpen] = useState(false);
   const items = [...(inbox || [])].reverse();
   const system = [...notices].reverse();
   const worldUnread = items.filter((item) => !item.read).length;
   const unread = worldUnread + system.filter((notice) => !notice.read).length;
-  const close = () => {
-    setOpen(false);
-    notificationStore.read();
+  if (!w) return null;
+  const leaveTab = () => {
+    if (tab === 'news') markNewsSeen(w.id, news);
+    else notificationStore.read();
   };
+  const close = () => {
+    leaveTab();
+    hide();
+  };
+  const selectTab = (next: NewsTab) => {
+    if (next === tab) return;
+    leaveTab();
+    show(next);
+  };
+  const total = unread + fresh;
+  const tabs = [
+    ['notifications', '알림·결정', unread],
+    ['news', '뉴스', fresh],
+  ] as const;
   const systemRow = (item: SystemNotification) => (
     <li key={item.id} className={item.read ? undefined : s.unread}>
       <small>시스템 · {arrived(item.at)}</small>
@@ -419,55 +452,100 @@ export function InboxButton({ client }: { client: GameClient }) {
   );
   return (
     <>
-      <button
-        className={s.bell}
-        aria-label={`알림·결정${unread ? ` · 읽지 않은 소식 ${unread}개` : ''}`}
-        onClick={(event) => {
-          event.currentTarget.focus();
-          setOpen(true);
-        }}
-      >
-        <PixelIcon name="bell" />
-        {unread > 0 && <b aria-hidden="true">{unread > 9 ? '9+' : unread}</b>}
-      </button>
+      {floating && (
+        <button
+          className={newsStyle.fab}
+          data-testid="communications-button"
+          aria-label={`알림·뉴스${total ? ` · 새 소식 ${total}개` : ''}`}
+          onClick={(event) => {
+            event.currentTarget.focus();
+            show('notifications');
+          }}
+        >
+          <PixelIcon name="bell" />
+          {total > 0 && <b aria-hidden="true">{total > 99 ? '99+' : total}</b>}
+        </button>
+      )}
       {open && (
         <Dialog
-          label="알림·결정"
+          label="알림·뉴스"
+          wide
           onClose={close}
           actions={
             <div className={s.inboxActions}>
-              <button
-                disabled={!unread}
-                onClick={() => {
-                  notificationStore.read();
-                  if (worldUnread) void client.command({ type: 'read-inbox' });
-                }}
-              >
-                모두 읽음
-              </button>
+              {tab === 'notifications' && (
+                <button
+                  disabled={!unread}
+                  onClick={() => {
+                    notificationStore.read();
+                    if (worldUnread) void client.command({ type: 'read-inbox' });
+                  }}
+                >
+                  모두 읽음
+                </button>
+              )}
               <button onClick={close}>닫기</button>
             </div>
           }
         >
-          <NewsQuietToggle />
-          {items.length || system.length ? (
-            <ul className={s.inbox}>
-              {system.filter((item) => !item.read).map(systemRow)}
-              {items.map((item) => (
-                <li key={item.id} className={item.read ? undefined : s.unread}>
-                  <small>
-                    {KIND_LABEL[item.kind]} · {item.year}/{String(item.year + 1).slice(2)} ·{' '}
-                    {item.day}일차
-                  </small>
-                  <b>{item.title}</b>
-                  <span>{item.detail}</span>
-                </li>
-              ))}
-              {system.filter((item) => item.read).map(systemRow)}
-            </ul>
-          ) : (
-            <p className={s.empty}>아직 소식이 없어요.</p>
-          )}
+          <div
+            className={`${appStyle.seasonTabs} ${appStyle.operationsTabs}`}
+            role="tablist"
+            aria-label="알림·뉴스 분류"
+          >
+            {tabs.map(([value, label, count], index) => (
+              <button
+                key={value}
+                id={`${id}-${value}`}
+                role="tab"
+                aria-selected={tab === value}
+                aria-controls={`${id}-panel`}
+                tabIndex={tab === value ? 0 : -1}
+                onClick={() => selectTab(value)}
+                onKeyDown={(event) => {
+                  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+                  event.preventDefault();
+                  const next = event.key === 'Home' ? 0 : event.key === 'End' ? 1 : 1 - index;
+                  selectTab(tabs[next][0]);
+                  event.currentTarget.parentElement
+                    ?.querySelectorAll<HTMLButtonElement>('[role=tab]')
+                    [next]?.focus();
+                }}
+              >
+                {label}
+                {count > 0 && (
+                  <span className={newsStyle.tabCount}>{count > 99 ? '99+' : count}</span>
+                )}
+              </button>
+            ))}
+          </div>
+          <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-${tab}`}>
+            {tab === 'news' ? (
+              <NewsList w={w} />
+            ) : (
+              <>
+                <NewsQuietToggle />
+                {items.length || system.length ? (
+                  <ul className={s.inbox}>
+                    {system.filter((item) => !item.read).map(systemRow)}
+                    {items.map((item) => (
+                      <li key={item.id} className={item.read ? undefined : s.unread}>
+                        <small>
+                          {KIND_LABEL[item.kind]} · {item.year}/{String(item.year + 1).slice(2)} ·{' '}
+                          {item.day}일차
+                        </small>
+                        <b>{item.title}</b>
+                        <span>{item.detail}</span>
+                      </li>
+                    ))}
+                    {system.filter((item) => item.read).map(systemRow)}
+                  </ul>
+                ) : (
+                  <p className={s.empty}>아직 소식이 없어요.</p>
+                )}
+              </>
+            )}
+          </div>
         </Dialog>
       )}
     </>

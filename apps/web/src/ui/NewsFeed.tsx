@@ -1,10 +1,8 @@
-import { PixelIcon } from './PixelIcon';
 import { useState } from 'react';
 import { create } from 'zustand';
 import type { World } from '../../../../packages/contracts/src/types';
 import type { NewsItem, NewsTag } from '../../../../packages/engine/src/news';
 import { seasonName } from './format';
-import { Dialog } from './Dialog';
 import { useGameState } from '../runtime/store';
 import s from './NewsFeed.module.css';
 
@@ -40,13 +38,30 @@ function freshCount(news: NewsItem[], seen?: string) {
   return seen ? (at < 0 ? news.length : at) : news.length;
 }
 
-export const useNewsSheet = create<{ open: boolean; show: () => void; hide: () => void }>(
-  (set) => ({
-    open: false,
-    show: () => set({ open: true }),
-    hide: () => set({ open: false }),
-  }),
-);
+export type NewsTab = 'notifications' | 'news';
+export const useNewsSheet = create<{
+  open: boolean;
+  tab: NewsTab;
+  show: (tab?: NewsTab) => void;
+  hide: () => void;
+}>((set) => ({
+  open: false,
+  tab: 'notifications',
+  show: (tab = 'news') => set({ open: true, tab }),
+  hide: () => set({ open: false }),
+}));
+
+export function markNewsSeen(worldId: string, news: NewsItem[]) {
+  if (news[0]) writeSeen(worldId, news[0].id);
+}
+
+export function useUnreadNewsCount() {
+  const news = useClubNews();
+  const worldId = useGameState((state) => state.view?.world.id);
+  useNewsSheet((state) => state.open);
+  useNewsSheet((state) => state.tab);
+  return worldId ? freshCount(news, readSeen(worldId)) : 0;
+}
 
 const QUIET_KEY = 'haeram-soccor:news-quiet';
 function readQuiet() {
@@ -79,38 +94,9 @@ export function NewsQuietToggle() {
       <input type="checkbox" checked={quiet} onChange={(event) => setQuiet(event.target.checked)} />
       <span>
         <b>뉴스 표시 안 함</b>
-        <small>축하 배너를 띄우지 않고 오른쪽 아래 뉴스 버튼에만 쌓아요</small>
+        <small>축하 배너를 띄우지 않고 오른쪽 아래 알림·뉴스의 뉴스 탭에만 쌓아요</small>
       </span>
     </label>
-  );
-}
-
-/** The bottom-right news button: every headline waits here with its NEW count (→WEB-51). */
-export function NewsButton() {
-  const news = useClubNews();
-  const show = useNewsSheet((state) => state.show);
-  // Closing the sheet moves the seen marker, so the count is re-read when it closes.
-  useNewsSheet((state) => state.open);
-  const worldId = useGameState((state) => state.view?.world.id);
-  if (!worldId) return null;
-  const fresh = freshCount(news, readSeen(worldId));
-  return (
-    <button
-      className={s.fab}
-      data-testid="news-button"
-      aria-label={`구단 뉴스${fresh ? ` · 새 소식 ${fresh}개` : ''}`}
-      onClick={(event) => {
-        event.currentTarget.focus();
-        show();
-      }}
-    >
-      <PixelIcon name="news" />
-      {fresh > 0 && (
-        <b key={fresh} aria-hidden="true">
-          {fresh > 99 ? '99+' : fresh}
-        </b>
-      )}
-    </button>
   );
 }
 
@@ -139,58 +125,15 @@ function Headline({ item, fresh }: { item: NewsItem; fresh?: boolean }) {
   );
 }
 
-/** The home card: the three newest headlines and a way into the full feed (→WEB-51). */
-export function NewsHeadlines({ w }: { w: World }) {
-  const news = useClubNews();
-  const show = useNewsSheet((state) => state.show);
-  useNewsSheet((state) => state.open);
-  const fresh = freshCount(news, readSeen(w.id));
-  return (
-    <section className={s.card} aria-label="구단 뉴스 헤드라인" data-testid="news-headlines">
-      <header>
-        <h3>헤드라인</h3>
-        <button
-          onClick={show}
-          aria-label={`구단 뉴스 전체 보기${fresh ? ` · 새 소식 ${fresh}개` : ''}`}
-        >
-          전체 뉴스{fresh ? <i>{fresh > 99 ? '99+' : fresh}</i> : null}
-        </button>
-      </header>
-      {news.length ? (
-        <ul>
-          {news.slice(0, 3).map((item, index) => (
-            <Headline key={item.id} item={item} fresh={index < fresh} />
-          ))}
-        </ul>
-      ) : (
-        <p className={s.empty}>첫 경기가 끝나면 이곳에 경기와 기록 소식이 쌓여요.</p>
-      )}
-    </section>
-  );
-}
-
-/** The sheet follows the live world; it is mounted once at the app root. */
-export function NewsSheet() {
-  const open = useNewsSheet((state) => state.open);
-  const w = useGameState((state) => state.view?.world);
-  if (!open || !w) return null;
-  return <NewsList key={w.id} w={w} />;
-}
-
 /** Every headline of the season with tag filters; closing it marks the feed as read. */
-function NewsList({ w }: { w: World }) {
-  const hide = useNewsSheet((state) => state.hide);
+export function NewsList({ w }: { w: World }) {
   const news = useClubNews();
   const [tag, setTag] = useState<(typeof TAGS)[number]>('전체');
   const [seenAtOpen] = useState(() => readSeen(w.id));
   const fresh = freshCount(news, seenAtOpen);
   const shown = tag === '전체' ? news : news.filter((item) => item.tag === tag);
-  const close = () => {
-    if (news[0]) writeSeen(w.id, news[0].id);
-    hide();
-  };
   return (
-    <Dialog label="구단 뉴스" onClose={close} wide>
+    <>
       <div className={s.filters} role="group" aria-label="뉴스 분류">
         {TAGS.map((value) => (
           <button
@@ -217,6 +160,6 @@ function NewsList({ w }: { w: World }) {
         뉴스는 기록된 경기와 구단 결정에서만 만들어요. 연속 기록·점유율·xG 같은 수치는 사실이고,
         원인을 단정하지 않아요.
       </p>
-    </Dialog>
+    </>
   );
 }

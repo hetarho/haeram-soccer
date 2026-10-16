@@ -1,3 +1,4 @@
+import { finishSeason } from './season-progression';
 import { test, expect } from '@playwright/test';
 import { chooseLevel } from './events';
 import { horizontalOverflow } from './layout';
@@ -244,7 +245,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
       .getByTestId('club-hub')
       .getByRole('button', { name: '시즌 진행 도구', exact: true })
       .click();
-    await page.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
+    await finishSeason(page);
     await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog', { name: '시즌 진행 도구' })).toHaveCount(0);

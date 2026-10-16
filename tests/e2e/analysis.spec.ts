@@ -1,3 +1,4 @@
+import { finishSeason } from './season-progression';
 import { openCurrentClubSeason, openSeasonReview } from './record-navigation';
 import { chooseOption, selectOptions } from './select';
 import { expect, test } from '@playwright/test';
@@ -56,8 +57,7 @@ test('reproduces earned season records after reload on mobile', async ({ page })
     .getByTestId('club-hub')
     .getByRole('button', { name: '시즌 진행 도구', exact: true })
     .click();
-  const journal = page.getByRole('dialog', { name: '시즌 진행 도구' });
-  await journal.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
+  await finishSeason(page);
   await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
   // A closed season no longer interrupts: its review waits in the league's season list.
   await page.keyboard.press('Escape');

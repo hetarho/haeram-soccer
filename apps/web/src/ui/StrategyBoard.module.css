@@ -439,7 +439,7 @@
  */
 .draft {
   position: sticky;
-  bottom: 8px;
+  bottom: 0;
   z-index: 90;
   display: grid;
   gap: 8px;

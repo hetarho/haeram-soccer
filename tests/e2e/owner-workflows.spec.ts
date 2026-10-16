@@ -1,3 +1,4 @@
+import { finishSeason } from './season-progression';
 import { chooseOption } from './select';
 
 import { expect, test, type Page } from '@playwright/test';
@@ -100,7 +101,7 @@ test('a different game never inherits the first career policy draft', async ({ p
     .click();
   await page.getByLabel('클럽 이름').fill('Second Workflow Club');
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toContainText('Second Workflow Club', {
+  await expect(page.getByTestId('calendar').locator('..')).toContainText('Second Workflow Club', {
     timeout: 30000,
   });
   await openOperations(page);
@@ -275,7 +276,8 @@ test('separates the home briefing from explicit progression tools and links the 
   await nav(page).getByRole('button', { name: '클럽 홈', exact: true }).click();
   await hub.getByRole('button', { name: '시즌 진행 도구', exact: true }).click();
   const tools = page.getByRole('dialog', { name: '시즌 진행 도구', exact: true });
-  await expect(tools).toContainText('승강·상금을 정산');
+  await expect(tools).toContainText('이번 라운드 경기와 급여·훈련을 정산');
+  await expect(tools.getByRole('button', { name: '시즌 끝까지 진행', exact: true })).toHaveCount(0);
   await tools.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
   await expect(page.getByTestId('calendar')).toContainText('라운드 1');
   await page.keyboard.press('Escape');
@@ -290,9 +292,8 @@ test('chooses a cup once and keeps its archived season through competition and c
     .getByTestId('club-hub')
     .getByRole('button', { name: '시즌 진행 도구', exact: true })
     .click();
-  const tools = page.getByRole('dialog', { name: '시즌 진행 도구', exact: true });
   for (const year of [1951, 1952]) {
-    await tools.getByRole('button', { name: '시즌 끝까지 진행', exact: true }).click();
+    await finishSeason(page);
     await expect(page.getByTestId('calendar')).toContainText(
       `${year}/${String(year + 1).slice(-2)} · 라운드 0`,
     );

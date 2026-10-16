@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { advanceRound, clubNews, createWorld, operate } from '../../packages/engine/src/index';
 import { chooseLevel } from './events';
-import { horizontalOverflow } from './layout';
+import { horizontalOverflow, settle } from './layout';
 
 const founding = (seed: string) => ({
   country: 'ENG' as const,
@@ -44,7 +44,7 @@ async function playRound(page: Page) {
   await expect(page.getByTestId('calendar')).toHaveText(/라운드 1$/);
   await journal.getByRole('button', { name: '창 닫기', exact: true }).click();
 }
-const newsButton = (page: Page) => page.getByTestId('news-button');
+const newsButton = (page: Page) => page.getByTestId('communications-button');
 
 test('keeps the club name and compact cash readable in a 360 px HUD', async ({ page }) => {
   await found(page);
@@ -73,7 +73,7 @@ test('celebrates in one line beside the news button, which then holds the headli
   // A first round can queue several celebrations, each shown for a few seconds.
   test.setTimeout(60000);
   await found(page);
-  await expect(newsButton(page)).toHaveAttribute('aria-label', '구단 뉴스');
+  await expect(newsButton(page)).toHaveAttribute('aria-label', /^알림·뉴스/);
   await playRound(page);
   const banner = page.getByTestId('celebration');
   await expect(banner).toContainText('축하합니다');
@@ -94,28 +94,92 @@ test('celebrates in one line beside the news button, which then holds the headli
   await expect(banner).toHaveCount(0, { timeout: 25000 });
   await expect(newsButton(page)).toHaveAttribute('aria-label', /새 소식 \d+개/);
   await newsButton(page).click();
-  const sheet = page.getByRole('dialog', { name: '구단 뉴스' });
+  const sheet = page.getByRole('dialog', { name: '알림·뉴스', exact: true });
+  await sheet.getByRole('tab', { name: /^뉴스/ }).click();
   await expect(sheet).toContainText('창단 첫 공식전 승리');
   await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
-  await expect(newsButton(page)).toHaveAttribute('aria-label', '구단 뉴스');
+  await expect(newsButton(page)).toHaveAttribute('aria-label', /^알림·뉴스/);
 });
 
 test('"뉴스 표시 안 함" files achievements behind the news button without a banner', async ({
   page,
 }) => {
   await found(page);
-  await page.getByRole('button', { name: /^알림·결정/ }).click();
-  const inbox = page.getByRole('dialog', { name: '알림·결정' });
+  await page.getByRole('button', { name: /^알림·뉴스/ }).click();
+  const inbox = page.getByRole('dialog', { name: '알림·뉴스', exact: true });
   await inbox.getByLabel(/뉴스 표시 안 함/).check();
   await inbox.getByRole('button', { name: '닫기', exact: true }).click();
   await playRound(page);
   await expect(newsButton(page)).toHaveAttribute('aria-label', /새 소식 \d+개/);
   await expect(page.getByTestId('celebration')).toHaveCount(0);
-  // The choice is per browser and shared with the news sheet.
+  // The choice is per browser and shared with the news tab.
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   await newsButton(page).click();
+  await page
+    .getByRole('dialog', { name: '알림·뉴스', exact: true })
+    .getByRole('tab', { name: /^뉴스/ })
+    .click();
   await expect(
-    page.getByRole('dialog', { name: '구단 뉴스' }).getByLabel(/뉴스 표시 안 함/),
+    page.getByRole('dialog', { name: '알림·뉴스', exact: true }).getByLabel(/뉴스 표시 안 함/),
   ).toBeChecked();
 });
+
+for (const width of [390, 1280]) {
+  test(`shares one notification/news dialog with independent read counts and keyboard tabs at ${width}px`, async ({
+    page,
+  }) => {
+    await found(page);
+    await page.setViewportSize({ width, height: 844 });
+    await playRound(page);
+    const trigger = newsButton(page);
+    await expect(trigger).toHaveCount(1);
+    await expect(page.getByRole('button', { name: /^알림·결정/ })).toHaveCount(0);
+    const address = page.url();
+    await trigger.click();
+    const sheet = page.getByRole('dialog', { name: '알림·뉴스', exact: true });
+    const notifications = sheet.getByRole('tab', { name: /^알림·결정/ });
+    const news = sheet.getByRole('tab', { name: /^뉴스/ });
+    await expect(notifications).toHaveAttribute('aria-selected', 'true');
+    const fresh = await news.textContent();
+    expect(fresh).toMatch(/뉴스\d+/);
+    const unread = await notifications.textContent();
+    expect(unread).toMatch(/알림·결정\d+/);
+    await sheet.getByRole('button', { name: '닫기', exact: true }).click();
+    await trigger.click();
+    await expect(news).toHaveText(fresh!);
+    await notifications.focus();
+    await notifications.press('ArrowRight');
+    await expect(news).toBeFocused();
+    await expect(news).toHaveAttribute('aria-selected', 'true');
+    await expect(sheet.getByTestId('news-item').first()).toBeVisible();
+    await expect(sheet.getByRole('button', { name: '모두 읽음' })).toHaveCount(0);
+    await sheet.getByRole('button', { name: '기록', exact: true }).click();
+    for (const item of await sheet.getByTestId('news-item').all())
+      await expect(item).toContainText('기록');
+    await news.focus();
+    await news.press('Home');
+    await expect(notifications).toBeFocused();
+    await expect(notifications).toHaveText(unread!);
+    await expect(news).toHaveText('뉴스');
+    await sheet.getByRole('button', { name: '모두 읽음', exact: true }).click();
+    await expect(notifications).toHaveText('알림·결정');
+    await sheet.getByRole('button', { name: '닫기', exact: true }).click();
+    await expect(trigger).toHaveAccessibleName('알림·뉴스');
+    await expect(trigger).toBeFocused();
+    await expect(page).toHaveURL(address);
+    await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+    await page
+      .getByRole('dialog', { name: '전체 메뉴' })
+      .getByRole('button', { name: '알림·뉴스', exact: true })
+      .click();
+    await expect(sheet).toHaveCount(1);
+    await expect(page.getByRole('dialog')).toHaveCount(1);
+    await sheet.getByRole('tab', { name: /^뉴스/ }).click();
+    await settle(page);
+    await page.screenshot({ path: test.info().outputPath(`news-dialog-${width}.png`) });
+    await page.keyboard.press('Escape');
+    await expect(sheet).toHaveCount(0);
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+  });
+}

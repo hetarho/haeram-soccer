@@ -71,8 +71,8 @@ test('recovers prior checkpoint after active corruption without clearing another
   });
   await page.reload();
   // The recovery is an unread system notification in the HUD inbox, never a banner (→WEB-66).
-  await page.getByRole('button', { name: /^알림·결정 · 읽지 않은 소식/ }).click();
-  const inbox = page.getByRole('dialog', { name: '알림·결정' });
+  await page.getByRole('button', { name: /^알림·뉴스 · 새 소식/ }).click();
+  const inbox = page.getByRole('dialog', { name: '알림·뉴스', exact: true });
   await expect(inbox.getByRole('listitem').filter({ hasText: '시스템' })).toContainText(
     '체크포인트로 복구',
   );

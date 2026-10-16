@@ -146,7 +146,7 @@ for (const viewport of [
       .click();
     const journal = page.getByRole('dialog', { name: '시즌 진행 도구' });
     await expect(
-      journal.getByRole('button', { name: '시즌 끝까지 진행', exact: true }),
+      journal.getByRole('button', { name: '한 라운드 진행', exact: true }),
     ).toBeVisible();
     await expect(page.getByRole('button', { name: /^\d+시즌 진행$/ })).toHaveCount(0);
   });

@@ -43,11 +43,11 @@ import { Dialog } from './Dialog';
 import { ActionOutcome } from './ActionOutcome';
 import { AnimatedMoney } from './AnimatedMoney';
 import { play } from './motion';
-import { EventCenter, InboxButton } from './EventCenter';
+import { EventCenter, CommunicationsCenter } from './EventCenter';
 import { RemedySheet } from './RemedySheet';
 import { GlossaryHost } from './Glossary';
 import { useGlossary } from './metricGlossary';
-import { NewsButton, NewsSheet, useNewsSheet } from './NewsFeed';
+import { useNewsSheet } from './NewsFeed';
 import { CelebrationHost } from './Celebration';
 import { CupsView } from './CupsView';
 import { TeamSheetHost } from './TeamSheet';
@@ -179,7 +179,7 @@ export function Table({ w, ids, limit }: { w: World; ids: string[]; limit?: numb
 function SeasonProgressionTools({ state, client }: { state: ClientState; client: GameClient }) {
   return (
     <section aria-label="시즌 진행 도구">
-      <p>관전 없이 경기 결과와 구단 운영을 한 번에 처리해요. 진행할 범위를 선택해 주세요.</p>
+      <p>관전 없이 한 라운드의 경기 결과와 구단 운영을 처리해요.</p>
       <div className={s.heroActions}>
         <button
           disabled={state.busy || state.readonly}
@@ -188,19 +188,8 @@ function SeasonProgressionTools({ state, client }: { state: ClientState; client:
         >
           한 라운드 진행
         </button>
-        <button
-          className={s.primary}
-          disabled={state.busy || state.readonly}
-          aria-describedby="journal-season-hint"
-          onClick={() => void client.command({ type: 'season', count: 1 })}
-        >
-          시즌 끝까지 진행
-        </button>
         <small id="journal-round-hint">
           한 라운드 진행: 관전 없이 이번 라운드 경기와 급여·훈련을 정산해요.
-        </small>
-        <small id="journal-season-hint">
-          시즌 끝까지 진행: 남은 경기를 모두 결과로 처리하고 승강·상금을 정산해요.
         </small>
       </div>
     </section>
@@ -524,7 +513,6 @@ const ConnectedDashboard = memo(function ConnectedDashboard({
   return (
     <ClubHub
       w={state.view!.world}
-      milestoneFacts={state.view!.milestones}
       client={client}
       controller={controller}
       journal={<ClubJournal client={client} state={state} controller={controller} />}
@@ -655,7 +643,6 @@ const GameHud = memo(function GameHud({
         </div>
       </div>
       <ReadonlyBadge />
-      {client && playing && <InboxButton client={client} />}
       {playing && <HudCash client={client} />}
     </header>
   );
@@ -1333,7 +1320,9 @@ export function App() {
       </nav>
       {client && playing && <ActionOutcome />}
       {/* The match theatre keeps its own controls clear; news waits until the owner returns. */}
-      {playing && page !== 'match' && <NewsButton />}
+      {client && playing && (
+        <CommunicationsCenter key={w.id} client={client} floating={page !== 'match'} />
+      )}
       {client && controller && playing && !w.bankrupt && page !== 'match' && (
         <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />
       )}
@@ -1361,10 +1350,10 @@ export function App() {
             className={s.guideOpen}
             onClick={() => {
               setMoreOpen(false);
-              showNews();
+              showNews('notifications');
             }}
           >
-            구단 뉴스
+            알림·뉴스
           </button>
           <button
             className={s.guideOpen}
@@ -1412,7 +1401,6 @@ export function App() {
         <PlayGuide goals={state.view!.milestones.goals} onClose={() => setGuideOpen(false)} />
       )}
       <GlossaryHost />
-      {playing && <NewsSheet />}
       {client && playing && <TeamSheetHost client={client} />}
       {playing && <PlayerSheetHost />}
       {playing && client && <PlayerPreparationHost client={client} />}

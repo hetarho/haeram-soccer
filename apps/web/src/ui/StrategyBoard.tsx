@@ -101,9 +101,10 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
   const removeSaved = useStrategies((state) => state.remove);
   const [draft, setDraftState] = useTaskState<BoardDraft>(w.id, 'board-draft', {});
   const [failure, setFailure] = useState('');
-  // The bar's details fold away on a small screen; the head and 적용 stay.
-  const [folded, setFolded] = useState(false);
+  // Every fresh draft starts compact; an explicit expansion survives further edits.
+  const [folded, setFolded] = useState(true);
   const setDraft = (next: BoardDraft) => {
+    if (!draftChanges(w, draft).length) setFolded(true);
     setDraftState(next);
     setFailure('');
   };

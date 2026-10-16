@@ -4,6 +4,7 @@ import { decode } from '../../apps/web/src/adapters/persistence';
 import { clubMilestones } from '../../packages/engine/src/goals';
 import type { World } from '../../packages/contracts/src/types';
 import { expectHomeBounds, settle } from './layout';
+import { currentDay, seasonLength } from '../../packages/engine/src/calendar';
 
 async function exportWorld(page: Page): Promise<World> {
   await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
@@ -23,8 +24,9 @@ async function expectCompactHome(page: Page) {
 for (const viewport of [
   { width: 360, height: 740 },
   { width: 390, height: 844 },
+  { width: 1280, height: 800 },
 ]) {
-  test(`recognizes earned club milestones without changing the save at ${viewport.width}x${viewport.height}`, async ({
+  test(`keeps a compact home with calendar progress and retained milestone facts at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
@@ -36,6 +38,16 @@ for (const viewport of [
     const hub = page.getByTestId('club-hub');
     await expect(hub).toBeVisible();
     await expectCompactHome(page);
+    // Even when home needs vertical scrolling, its primary action clears the floating launcher.
+    const watch = hub.getByTestId('hub-play');
+    await watch.scrollIntoViewIfNeeded();
+    await settle(page);
+    const watchBox = (await watch.boundingBox())!;
+    const floatingBox = (await page.getByTestId('communications-button').boundingBox())!;
+    expect(watchBox.y + watchBox.height).toBeLessThanOrEqual(floatingBox.y);
+    await page
+      .locator('[class*="coreContent"]')
+      .evaluateAll((elements) => elements.forEach((element) => (element.scrollTop = 0)));
     const before = await exportWorld(page);
     const initial = clubMilestones(before);
     expect(initial.total).toBe(8);
@@ -43,43 +55,24 @@ for (const viewport of [
     expect(initial.next).toBeDefined();
     expect(before.ownMatches).toHaveLength(0);
     const first = initial.next!;
-    await expect(hub).toContainText(first.title);
-    const opener = hub.getByRole('button', { name: '성장 목표 보기', exact: true });
-    await opener.click();
-    const collection = page.getByRole('dialog', { name: '클럽 성장 목표' });
-    await expect(collection).toBeVisible();
-    const goals = collection
-      .getByRole('list', { name: '클럽 성장 목표 목록' })
-      .getByRole('listitem');
-    await expect(goals).toHaveCount(8);
-    await expect(collection.getByLabel('달성한 성장 목표')).toContainText('0 / 8 달성');
-    const debut = collection.getByTestId(`milestone-${first.id}`);
-    await expect(debut.getByText('진행 중', { exact: true })).toBeVisible();
-    await expect(debut).toContainText(first.action);
-    await expect(debut.getByRole('progressbar')).toHaveAttribute('value', '0');
-    const progress = await goals.locator('progress').evaluateAll((bars) =>
-      bars.map((bar) => ({
-        value: Number(bar.getAttribute('value')),
-        max: Number(bar.getAttribute('max')),
-      })),
-    );
-    expect(progress).toHaveLength(8);
-    for (const bar of progress) {
-      expect(bar.value).toBeGreaterThanOrEqual(0);
-      expect(bar.value).toBeLessThanOrEqual(100);
-      expect(bar.max).toBe(100);
-    }
-    const close = collection.getByRole('button', { name: '목표 확인 마치기', exact: true });
+    await expect(hub.getByRole('button', { name: '성장 목표 보기', exact: true })).toHaveCount(0);
+    await expect(hub.getByTestId('news-headlines')).toHaveCount(0);
+    await expect(
+      hub.getByRole('heading', {
+        name: before.clubs.find((club) => club.id === before.playerClub)!.name,
+      }),
+    ).toHaveCount(0);
+    await expect(hub).not.toContainText('시즌 운영실');
+    const progress = hub.getByRole('progressbar', { name: '시즌 진행률', exact: true });
+    await expect(progress).toHaveAttribute('value', '0');
+    await expect(hub).toContainText('시즌 진행률 0%');
     await settle(page);
-    const beforeScroll = await close.boundingBox();
-    expect(beforeScroll!.height).toBeGreaterThanOrEqual(44);
-    expect(beforeScroll!.y + beforeScroll!.height).toBeLessThanOrEqual(viewport.height);
-    await collection.locator('[class*="modalBody"]').evaluate((element) => {
-      element.scrollTop = element.scrollHeight;
-    });
-    const afterScroll = await close.boundingBox();
-    expect(afterScroll!.y).toBe(beforeScroll!.y);
-    await close.click();
+    await page.screenshot({ path: test.info().outputPath(`home-${viewport.width}.png`) });
+    const opener = page.getByTestId('communications-button');
+    await opener.click();
+    const sheet = page.getByRole('dialog', { name: '알림·뉴스', exact: true });
+    await sheet.getByRole('tab', { name: /^뉴스/ }).click();
+    await sheet.getByRole('button', { name: '닫기', exact: true }).click();
     await expect(opener).toBeFocused();
     const afterBrowsing = await exportWorld(page);
     expect(afterBrowsing.revision).toBe(before.revision);
@@ -90,7 +83,7 @@ for (const viewport of [
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90′ ·.*경기 종료/)).toBeVisible();
     await page
-      .getByRole('navigation', { name: '모바일 게임 메뉴' })
+      .getByRole('navigation', { name: viewport.width < 760 ? '모바일 게임 메뉴' : '게임 메뉴' })
       .getByRole('button', { name: '클럽 홈', exact: true })
       .click();
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
@@ -104,13 +97,9 @@ for (const viewport of [
     expect(earned.goals.find((goal) => goal.id === first.id)?.done).toBe(true);
     expect(earned.completed).toBeGreaterThan(initial.completed);
     expect(earned.next?.id).not.toBe(first.id);
-    if (earned.next) await expect(hub).toContainText(earned.next.title);
-    await opener.click();
-    await expect(debut.getByText('달성', { exact: true })).toBeVisible();
-    await expect(debut.getByRole('progressbar')).toHaveAttribute('value', '100');
-    await expect(collection.getByLabel('달성한 성장 목표')).toContainText(
-      `${earned.completed} / 8 달성`,
-    );
-    await close.click();
+    const percent = Math.round((currentDay(settled) / seasonLength(settled)) * 100);
+    expect(percent).toBeGreaterThan(0);
+    await expect(progress).toHaveAttribute('value', String(percent));
+    await expect(hub).toContainText(`시즌 진행률 ${percent}%`);
   });
 }
