@@ -1,5 +1,15 @@
 name: Verify web game
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - 'spec/**'
+      - 'docs/**'
+      - '**.md'
+  pull_request:
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 # The checks, each browser's journeys and the benchmarks run as parallel jobs: the run takes as
 # long as its slowest job (WebKit, split in two) instead of the sum of every step.
 jobs:

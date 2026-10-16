@@ -85,7 +85,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T189 | Avoid redundant verification runs | ARCH | - | doing@261017.n7r4 |
 | T174 | Activate rules 3.0.0 with bounded recognized-legacy gameplay reset | SAVE WEB ARCH | T150 T152 T167 T168 T172 T173 T180 T186 T187 | todo |
 | T175 | Migrate old browser helpers to the approved public progression flow | WEB LEAGUE | T150 T174 | todo |
 | T176 | Verify second careers across contracts, reloads and market transitions | WEB STAFF WORLD HIST SAVE | T167 T168 T174 | todo |
@@ -110,6 +109,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 T189 done n7r4: Code verification jobs remain intact; documentation-only pushes are skipped and branch/PR runs supersede obsolete executions, with manual dispatch retained.
 - 261017 create-task/implement-task T189: owner approved CI queue control before remaining implementation.
 - 261017 T188 done n7r4: The pitch keeps 1.9:1 at mobile sizes, the mode selector uses the shared design system with readable phone clock rows, and exiting grouped events retain their viewport position.
 - 261017 WEB r89 assigned to T188: responsive clock reflow prevents date overlap from the shared selector; T183 unaffected.
@@ -129,5 +129,3 @@
 - 261017 implement-task T173 start n7r4.
 - 261017 T172 done n7r4: Actual mediation explanations, case-only support and canonical readonly outcome previews are visible in recruitment/event workflows; complete promise outcomes remain readable beyond bounded daily history.
 - 261017 implement-task T172 start n7r4.
-- 261017 T171 done n7r4: Fixed-deadline promises judge retained actual arrivals only after the deadline, preserve original targets, cancel on actual manager departures and retain factual reactions without extra trust or morale effects.
-- 261017 implement-task T171 start n7r4.
