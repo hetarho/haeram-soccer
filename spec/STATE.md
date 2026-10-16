@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T19:24Z | T195 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T19:29Z | T195 |
 
 ## inbox
 - 261017 decided SAVE-2 ARCH-12: large century checkpoint codec → bounded pure-JavaScript Brotli plus denser BMP blocks; keep small saves gzip, old readers, CSP and all limits (alt: LZMA with slower loading | relax CSP for WASM | increase capacity).
@@ -92,7 +92,8 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T195 | Bound adaptive century compression without changing retained facts | SAVE ARCH | T193 T194 | doing@261017.n7r4 |
-| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 | todo |
+| T196 | Keep read-only tabs current through coalesced checkpoint notifications | ARCH SAVE WEB | T195 | todo |
+| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 T196 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
 
 ## work
@@ -106,6 +107,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 create-task T196: repeated CI Firefox reader stays at round 0; diagnose notification/load coalescing before final-source gates.
 - 261017 implement-task T195 start n7r4.
 - 261017 create-task T195: bounded adaptive codec before T178 source freeze; BMP alphabet count corrected to exclude all noncharacters.
 - 261017 SAVE r42/ARCH r10: adaptive bounded codec for retained century state; no gameplay or security-policy changes.
