@@ -2340,24 +2340,17 @@
     display: none;
   }
 }
-/* Room to scroll the last card clear of the floating news button. */
+/* Ordinary pages can scroll their last card clear of the floating news button. */
 .newsLayout .scroller {
   padding-bottom: 92px;
+}
+/* Home uses the full content viewport; the launcher overlays it without reserving a row. */
+.newsLayout.coreLayout .scroller {
+  padding-bottom: 0;
 }
 @media (max-width: 760px) {
   .newsLayout .scroller {
     padding-bottom: 76px;
-  }
-  /* Home scrolls inside its own column, so the room goes there. */
-  .newsLayout.coreLayout .scroller {
-    padding-bottom: 84px;
-  }
-  .newsLayout .coreContent {
-    padding-bottom: 0;
-  }
-  /* A stretched hub would overflow past that padding; at its own height the padding counts. */
-  .newsLayout .coreContent > * {
-    align-self: flex-start;
   }
 }
 /* Phones: tight gaps leave the club name room for up to two lines beside the cash. */

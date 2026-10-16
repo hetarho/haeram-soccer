@@ -83,6 +83,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T141 | Remove home launcher spacer | WEB ARCH | - | doing@261016.u9c2 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -91,10 +92,12 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- No implementation tasks remain. T139/T140 are published on main and full source CI passes.
+- implement-task T141: remove the home launcher spacer and verify mobile/desktop content bounds.
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 T141 local checks pass: 36 affected browser cases, static/build/spec checks and phone geometry; publish and inspect full source CI next
+- 261016 T141 doing@u9c2: remove the reserved home notification space; the launcher floats over content
 - 261016 T140 done: compact draft panel and conditional launcher; T139/T140 published at 81108b2, full source CI 38846465288 passes all six jobs
 - 261016 T140 local checks pass: 57 browser cases after one WebKit retry, static/build/spec checks; commit/push and full remote CI next
 - 261016 T140 doing@u9c2: collapse draft details, reclaim launcher space, verify and publish authorized changes
@@ -113,5 +116,3 @@
 - 261015 T135 doing@m8q4: actionable training, player context, recruitment needs and academy/staff handoffs
 - 261015 T134 done: contextual returns, retained task/draft state and department-first policy context; 36 browser cases and static/build checks pass, branch CI before main
 - 261015 T134 doing@m8q4: session task state and focused policy returns; verified source is promoted to main after branch CI
-- 261015 create-task WEB r78: T134 task/draft continuity, T135 actionable development/recruitment, T136 season-first records/league, T137 competition/home integration; sequential, no lanes
-- 261015 update-ssot WEB r78: task-first management, contextual returns/drafts, season-first club records and standings-first competition scope; create-task next
