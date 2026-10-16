@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r37 | Define the browser-demo rules for browser persistence and protocol.
+> r38 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -44,7 +44,7 @@
   - unapplied policy drafts remain session UI work (→WEB-74), not applied policy or portable game-save facts.
   - retain existing corruption/compatibility protection and 100-season lossless budgets (→SAVE-4/11/13). Feature activation and compatibility for existing careers require →SAVE-18.
 
-- SAVE-18 [o] The responsibility/progression/second-career/mediation feature set starts new careers at an incompatible rules 3.0.0 boundary; released rules remain 2.0.0 until that activation is implemented.
+- SAVE-18 [o] The responsibility/progression/second-career/mediation feature set, with the squad rules (→CLUB-40–43, the 단장's closer trait →STAFF-20) and club reputation (→LEAGUE-14), starts new careers at an incompatible rules 3.0.0 boundary; released rules remain 2.0.0 until that activation is implemented.
   - legacy gameplay data from recognized rules through 2.0.0 may be cleared on writer activation: active/previous checkpoints, parked career envelopes, game-slot entries and their career records. No conversion, archive retention or export-first requirement is imposed for this boundary. Reset cannot depend on a read-only tab performing writes (→SAVE-6).
   - a legacy file import is refused with its required rules; do not import or convert it into a new-rule career. Future or unrecognized incompatible files/slots still follow →SAVE-5/11 rather than the legacy-reset exception.
   - new careers initialize all seven responsibilities, automatic mode, match eve on/window opening off and balanced director/manager support under their owning rules (→WEB-45/5, →STAFF-26). Aptitude and person careers begin from new-career generation; legacy pending decisions and promises are not carried over.
@@ -57,6 +57,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r38 261016 SAVE-18✎ rules 3.0.0 feature set +squad target/replacement/call-up (CLUB-40–43), the closer trait and LEAGUE-14 reputation
 - r37 261016 SAVE-5/11/14/16✎ every legacy slot preserved/exportable→bounded legacy-gameplay reset exception; SAVE-18✎ compatibility open→new careers at rules 3.0.0, recognized older gameplay may be cleared, no conversion
 - r36 261016 SAVE-17+ retain responsibility/mode/triggers, support policy, person careers and promises; SAVE-18+ open feature-version and existing-career compatibility policy; current released rules remain 2.0.0
 - r35 261015 SAVE-10✎ rules 1.22.0→2.0.0 (the player model); SAVE-16+ earlier-rules careers are not converted: listed with export and delete only, imports refused, the 100-season profiles re-measured

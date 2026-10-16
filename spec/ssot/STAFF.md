@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r32 | Define the browser-demo rules for manager demands and personality.
+> r33 | Define the browser-demo rules for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -16,7 +16,7 @@
 - STAFF-10 [o] Before requesting tactics, show the manager philosophy, trust, likely response range and strong-demand trust cost. A forecast is not a guarantee; display the actual response and applied tactic separately.
 
 - STAFF-11 [o] Seven coaching departments sit below the manager: assistant (training choice), attack, defense, goalkeeping, fitness (recovery), each scaling the growth of the attributes it owns (→PLAYER-15), youth director (academy intake and growth) and chief scout (market size and potential, the shortlist →CLUB-33); the 단장 sits beside them (→STAFF-20). ← real club structure; each department owns a visible effect
-  - effect multiplier 1 + (ability − 50)/200 within 0.85–1.25; traits: developer (age ≤ 21 growth), specialist (department skill ×1.15), recovery (+2 fatigue recovery), spotter (higher potential found), negotiator (the 단장's: lower fees, better acceptance)
+  - effect multiplier 1 + (ability − 50)/200 within 0.85–1.25; traits: developer (age ≤ 21 growth), specialist (department skill ×1.15), recovery (+2 fatigue recovery), spotter (higher potential found), negotiator (the 단장's: lower fees, better acceptance, haggling bids →CLUB-41), closer (속전속결, the 단장's: bids over the asking fee and takes counters →CLUB-41)
   - absent staff (older saves) and ability-50 trait-less members are exactly neutral; a vacant department is worse than neutral
   - new clubs start with unpaid ability-50 volunteers; hired coaches cost a wage fixed for a term of 1–5 seasons the owner chooses (delegated staff: 코치 기조's term, →STAFF-15) plus a signing fee; replacing or releasing a paid coach or manager pays 25% of the annual wage for each season left on his contract
 - STAFF-12 [o] Hired managers may carry a selection trait: youth (+4 selection value for age ≤ 21), rotation (fatigue weighs double) or stable (fatigue weighs half). The founding manager has none; a developer style (→STAFF-14) selects like the youth trait, so a developer never draws it, a firefighter's youth draw becomes stable and a gegenpress coach's stable draw becomes rotation.
@@ -27,6 +27,7 @@
   - the owner may still promote/release a prospect, answer an available contract talk or bid, sign a sponsor, and hire/renew/release staff. Such an action never silently changes the category's responsibility; a delegated staff post can be refilled under 코치 기조.
   - a delegated youth director promotes a prospect of promotion age (→CLUB-16) who is ready by 데뷔 시점 (→CLUB-32), while the squad and line have room (→PLAYER-3), and releases by 육성 목표. Keep the rest in U-21 until ready or 21.
   - he promotes nobody below the 재정 기조 promotion floor (→ECON-33; a year of operating costs at 표준), and reports a deferral. ← every promotion adds a first-team wage
+  - a window-close call-up (→CLUB-43) is the exception: it skips 데뷔 시점 readiness and the promotion floor.
 
 - STAFF-14 [o] Every hire candidate belongs to a school of football; new free agents (→STAFF-17) take their schools in turn from a seeded order of all eight per season, drawn from their own stream so the other attributes stay put. ← choosing a manager is choosing how the club plays and grows, with a clear price
   | style | tactic | effects |
@@ -97,7 +98,7 @@
 
 - STAFF-20 [o] The 단장 runs the club's player and manager business between the owner and the manager: when their separate responsibilities are delegated (→WEB-45) he takes contract talks (→CLUB-26), the manager post (→STAFF-18) and transfers — offers (→CLUB-18), stances (→CLUB-22) and signings (→CLUB-33) — and his reports name him. ← as at clubs with a sporting director, the head coach asks for players and the director decides; our manager picks and trains the team and never buys
   - he is hired, renewed and released like a coach (→STAFF-11, →STAFF-15, →STAFF-16), from three candidates a season; a new club starts with an unpaid ability-50 volunteer, and with the coaching departments delegated the staff fill his post by 코치 기조.
-  - he carries the transfer negotiation the chief scout carried before: a selling club's acceptance (→CLUB-18) + (ability − 50)/250, and as a negotiator, his only trait, +0.1 more and asking fees ×0.9; a vacant post −0.05.
+  - he carries the transfer negotiation the chief scout carried before: a selling club's acceptance (→CLUB-18) + (ability − 50)/250, and as a negotiator +0.1 more and asking fees ×0.9; a vacant post −0.05. His trait is negotiator, closer or none, and it sets how he bids (→CLUB-41).
   - a decision its responsibility keeps with the owner is never his; he sets no direction row.
   - 사람's 코치진 shows his card first, with the responsibilities currently delegated to him (→WEB-43).
 
@@ -251,6 +252,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r33 261016 STAFF-11✎ traits +closer (속전속결, the 단장's); STAFF-13✎ +window-close call-ups skip readiness and the promotion floor; STAFF-20✎ negotiator his only trait→negotiator, closer or none, setting how he bids (→CLUB-41)
 - r32 261016 STAFF-17/27/28✎ candidate admission/contract transitions open→additional retained coaching/manager candidates, expired NPC coaches return to job search, employed coaches eligible for promotion/recruitment with 1.5× current coach wage compensation
 - r31 261016 STAFF-27/28/40/42✎ specialty mapping/school open→ordered GK/youth/assistant/fitness/defense/attack and STAFF-44, market transitions remain open; STAFF-44+ longest actual mentor school, recent mentor breaks ties, ordinary generation only without recorded school
 - r30 261016 STAFF-27/28✎ initial manager values/NPC hire rules open→STAFF-42/43, mapping/school/market transitions remain open; STAFF-42/43+ high manager OVR 55–65/POT 75–85, very high 60–70/85–95, NPC coaching hires 25% every four rounds/close for two years

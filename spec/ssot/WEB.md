@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r86 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r87 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -141,6 +141,7 @@
 - WEB-44 [o] Home separates statistics from state. The team-state card shows starters' fatigue, squad morale (shown as 분위기), the manager's standing (trust as 굳건/안정/흔들림/위기, or 대행 체제) and squad size with the injured count, with good/ok/warning/critical tones. Cash is not a tile: it stays in the HUD and joins as the urgent advice when it runs short, winning ties because a club out of money cannot play on. The most urgent warning explains its effect, offers two one-tap remedies and a "more" entry.
   - tapping any state, or the HUD cash, opens its remedy sheet with 3–6 choices, each stating cost, effect and cooldown before commit; owner requests (→CLUB-20) also name who carries them out and list each result with its chance; unavailable choices say why (cooldown, cash, already applied, or the staff deciding it under the relevant responsibility →WEB-45).
   - fatigue: suggesting recovery training to the assistant, rest selection, rest days, recovery support, training camp, preparation sheet. morale: squad meeting, team-building day, win bonus, owner's visit, training camp, rest days. manager: public vote of confidence, manager office, candidates. cash: one step less on the costliest 지역 or 글로벌 investment row, lower squad investment, higher ticket price, friendly match, owner capital, the market. squad: market, academy, promote the best prospect.
+  - squad size: warning under 20 players (→CLUB-40) or with 3+ injured, critical under 16 or with fewer than 14 fit.
   - cash runway reads in weeks below 13 rounds and in months above, never in rounds.
   - choices act through engine commands; navigation choices close the sheet and open their view.
   - a choice that changes a standing setting (less investment abroad or in the town, lower squad investment, higher ticket price) opens the relevant authoritative department sheet with the choice drafted for explicit apply (→WEB-77), and suggesting recovery opens the assistant's card with 회복 집중 ready to suggest; the sheet never changes either itself.
@@ -355,6 +356,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r87 261016 WEB-44✎ squad tone thresholds unspecified (warning under 16, critical under 15)→warning under 20 players or 3+ injured, critical under 16 or fewer than 14 fit
 - r86 261016 WEB-45✎ playing-coach authority unspecified→combined player/staff approval if either is direct, both-delegated automation and split/total salary preview
 - r85 261016 WEB-5/11/80✎ one-round tools retained/mode interaction open→exclusive manual next-event or automatic paced controls, season tools removed; WEB-62✎ all old slots retained/exportable→legacy release reset permitted by SAVE-18
 - r84 261016 WEB-5/18/76✎ match required only when all delegated→required for every manual configuration, otherwise manual unavailable; WEB-80✎ no-stop behaviour open→next-match-eve arrival, no season-end fallback; one-round-tool interaction remains open

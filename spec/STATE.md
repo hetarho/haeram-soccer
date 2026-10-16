@@ -67,16 +67,16 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 86 | 86 | - | 0 |
+| WEB | 87 | 86 | WEB-44✎ | 0 |
 | WORLD | 6 | 6 | - | 0 |
-| CLUB | 39 | 39 | - | 0 |
+| CLUB | 40 | 39 | CLUB-1✎ CLUB-3✎ CLUB-33✎ CLUB-40+ CLUB-41+ CLUB-42+ CLUB-43+ | 0 |
 | MATCH | 9 | 9 | - | 0 |
-| LEAGUE | 8 | 8 | - | 0 |
-| STAFF | 32 | 32 | - | 0 |
+| LEAGUE | 9 | 8 | LEAGUE-10✎ LEAGUE-14+ | 0 |
+| STAFF | 33 | 32 | STAFF-11✎ STAFF-13✎ STAFF-20✎ | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 12 | 12 | - | 0 |
-| SAVE | 37 | 37 | - | 0 |
+| SAVE | 38 | 37 | SAVE-18✎ | 0 |
 | PLAYER | 8 | 8 | - | 0 |
 
 ## tasks
@@ -129,10 +129,12 @@
 
 ## next
 - implement-task T142: start the complete proposal batch from validated responsibility/settings foundations; T154 is the independent aptitude foundation. All task files specify dependencies and focused verification.
-- Implement T142–T179 as explicit small units; preserve accepted policy and parked balance constants. No implementation or new-rule save deletion has run in this planning unit.
+- Implement T142–T179 as explicit small units; preserve accepted policy and parked balance constants. Then create-task CLUB LEAGUE STAFF WEB SAVE for the squad/reputation delta (CLUB-40–43, LEAGUE-14) before T174/T179 so it ships inside rules 3.0.0. No implementation or new-rule save deletion has run in this planning unit.
 - Final integration T179 follows the full browser/continuity gates and measured century-save gate T178; do not activate/deploy incomplete rule metadata early.
 
 ## log
+- 261016 update-ssot CLUB r40 LEAGUE r9 STAFF r33 WEB r87 SAVE r38: squad target 20 with delegated academy call-ups at the close and at a window's close, replacement needs after a starter's departure or under 20, the 단장's trait bidding (협상가 80%→100%, none 100%, 속전속결 110%), every club's reputation by standing (20% to its next division's level, finish ±3, cup +2, continental), all inside rules 3.0.0; per-league registration limits (CLUB-5) follow after research
+- 261016 update-ssot CLUB LEAGUE STAFF WEB SAVE start: realistic squad replenishment (replace, cheaper candidate, academy call-up) and reputation by standing
 - 261016 create-task complete: T142–T179 (38 small explicit contracts), all 83 pending decisions covered across nine domains; prerequisites, concrete code anchors, boundary/failure cases and targeted tests recorded; implementation and balance tuning not run
 - 261016 create-task WEB WORLD CLUB STAFF ECON LEAGUE HIST SAVE PLAYER start: decompose the complete approved proposal into small explicit implementation contracts for lower-capability models; preserve parked balance rules
 - 261016 update-ssot CLUB r39: qualifying external arrivals through next-window deadline, next-day judgement, manager-linked cancellation, retained director-change commitments, no duplicates/extensions and no additional trust effects; all adopted proposal policy gaps resolved before task decomposition
@@ -151,5 +153,3 @@
 - 261016 update-ssot PLAYER STAFF start: record equal-weight aptitude calculation and automatically assigned career/quality-based coaching specialty
 - 261016 update-ssot STAFF r27 PLAYER r7: one retained career-intention draw at retirement notice (natural 50/80%, encouraged 65/95%), actual-retirement candidacy and fixed generation-time aptitude with existing learned staff growth; six policy units remain open
 - 261016 update-ssot STAFF PLAYER start: settle one-time career intentions at 50/80 percent or 65/95 with encouragement, and fixed aptitude with existing learned staff growth
-- 261016 update-ssot STAFF r26 PLAYER r6: high/very-high coaching and separate managerial aptitude gates, five-grade evaluation, exact own-player grades and existing chief-scout accuracy for other players; calculation/entry/ability remain open
-- 261016 update-ssot STAFF PLAYER start: require high coaching/managerial aptitude and adopt five-grade own-player/scouted-other-player evaluations

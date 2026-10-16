@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r8 | Define the browser-demo rules for domestic seasons and relegation.
+> r9 | Define the browser-demo rules for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -25,7 +25,7 @@
   - success: last season's top-flight champion +3, the rest of the top four +1.5, a continental winner +2.
   - a rare project (a new owner, a golden generation; 0.4% a club a summer, from its own stream) adds 8–18 to its level, fading 15% a summer; a project in the owner's country within one division is reported. ← any club can become as strong as the owner's, by chance
   - strengths stay within 15–99, the very best an owner can build ← a cap below the owner's best would leave one club unbeatable
-  - a normal summer's luck (sum of three uniforms, sd ≈ 1.5) and, each year, a 1.5% takeover (+4 to +8) or a 1.5% crisis (−4 to −8); reputation drifts 30% toward its division's.
+  - a normal summer's luck (sum of three uniforms, sd ≈ 1.5) and, each year, a 1.5% takeover (+4 to +8) or a 1.5% crisis (−4 to −8); reputation follows →LEAGUE-14.
   - measured 261011 (30 seasons, eight countries): 5–9 different champions per country, the most successful club 8–15 titles, champions average 2.15 points per game.
 - LEAGUE-11 [o] The world season is lived one day at a time in one order, whatever advances it — an automatic day step, manual next-event advance, explicit round or an internal season simulation (public controls →WEB-5) — so every mode records the same facts (→ARCH-5). ← the control that advanced time must not change results
   - a midweek cup or continental tie plays on its own day, league round × 7 − 3 (→LEAGUE-5, →EURO-10), before that round's league matches.
@@ -48,6 +48,14 @@
   | 최상 | half the careers reach the top flight or fewer | - | 1 in 5 or fewer | 37 of 40 reach the top flight and 70% win, outside the band; 1 bankrupt |
   - the levels do not separate: a level sets only the start (→WEB-3, CLUB-1), and over 60 seasons from the amateur league the start's cash and XI wash out, so every level wins about 60% of careers near season 50; a global constant moves every level alike, so meeting 보통·어려움·최상 needs a lasting level rule.
 
+- LEAGUE-14 [o] Every club's reputation (0–100; a new club 12) follows its standing, the owner's club and clubs nobody owns alike: at each season close it closes 20% of the gap to the level of the division it will play in next, plus its league finish; honours add at once. ← standing is relative: decades in a lower division never make a giant, and a fallen giant's name fades over seasons, not at once
+  - division level: top flight 75, then 15 less per tier (second 60, third 45, fourth 30), at least 8; the amateur league 8.
+  - league finish: 3 × (1 − 2 × (rank − 1) / (clubs − 1)) in the club's own league or group: champion +3, middle 0, last −3; a club that played no league season adds nothing.
+  - honours: a domestic cup won +2 (→LEAGUE-5); each continental match played +0.2, a continental title +8.
+  - the same results season after season settle it 5 × the finish term from its level, within ±15 of it (top-flight champion 90, middle 76; third-division middle 46); continental honours lift a top club toward 100.
+  - continental opponents from countries not played keep their reputation.
+  - measured 261016 for the owner's club (domestic cup term not included; ENG, 보통, all business delegated, 3 seeds): mostly third-division careers stand at 44–50 with 30–33k supporters in 2000, and a club relegated from the second division fell from 49 to 43 and from 59k to 30k supporters over eleven seasons.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -55,6 +63,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r9 261016 LEAGUE-10✎ reputation of clubs nobody owns drifts 30% toward its division's→follows LEAGUE-14; LEAGUE-14+ every club's reputation: 20% of the gap to its next division's level (75/60/45/30, amateur 8) + league finish ±3, domestic cup +2, continental match +0.2 and title +8
 - r8 261016 LEAGUE-11✎ progression examples→+manual next-event advance with identical daily order; LEAGUE-13✎ level 4 reference→equivalent all-delegated reference; balance bands, constants and measurements unchanged
 - r7 261015 LEAGUE-13✎ unmeasured→measured 261015 column (rules 2.0.0, 160 careers): every level ≈60% titles near season 50, ≈21% after the first; 보통·어려움·최상 outside their bands
 - r6 261015 LEAGUE-12+ 조직력 of clubs nobody owns (start 0.80, +0.010/+0.005 a round, new manager −30%/−10% of the distance to 0.50, takeover or project −0.15, promotion or relegation −0.10); LEAGUE-13+ balance bands per difficulty level on reference careers
