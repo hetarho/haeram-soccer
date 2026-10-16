@@ -17,6 +17,7 @@
 | n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:56Z | T175 |
 
 ## inbox
+- 261017 decided HIST-13: scoring continuity after an in-league transfer → one player total plus actual per-club contributions (alt: split the same person into multiple leaders | reset his earlier goals); fixes strict conservation without inventing NPC history.
 - 261017 decided T175 T187: dependency order for legacy browser helpers → migrate T175 before T187, using already shipped T150 controls (alt: make UI verification depend on removed controls); T174 activation retains its own save tests and final T179 gate.
 - 261017 suggest T183 T184 T185 T186 T189: five units completed → review-code registration/squad-target/director-bidding/replacements and CI triggers after planned release integration; no extra refactor adopted.
 - 261017 decided SAVE-10: align recognized older catalog pin text with approved T181 2026-demo-3; no historical price/index changes and no legacy reset before T174.
@@ -80,7 +81,7 @@
 | STAFF | 33 | 33 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 12 | 12 | - | 0 |
+| HIST | 13 | 12 | HIST-13✎ | 0 |
 | SAVE | 40 | 40 | - | 0 |
 | PLAYER | 8 | 8 | - | 0 |
 
@@ -107,6 +108,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 update-ssot HIST r13: preserve player and club scoring facts across retained-player transfers; T175 browser regression exposed save validation failure.
 - 261017 implement-task T175 start n7r4.
 - 261017 create-task T175/T187: migrate public-flow helpers before UI verification; activation does not supply those controls.
 - 261017 T186 done n7r4: Window judge days fill unmet replacements then the twenty-player deficit from eligible academy prospects or named graduates; direct authority gets one ordered recommendation and no mutation, and closed-window needs clear.
