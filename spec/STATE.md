@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:29Z | T183 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:34Z | T188 |
 
 ## inbox
 - 261017 decided SAVE-10: align recognized older catalog pin text with approved T181 2026-demo-3; no historical price/index changes and no legacy reset before T174.
@@ -70,7 +70,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 88 | 87 | WEB-50✎ | 0 |
+| WEB | 88 | 88 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | CLUB | 41 | 41 | - | 0 |
 | MATCH | 9 | 9 | - | 0 |
@@ -85,6 +85,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T188 | Fix mobile match presentation and progression controls | WEB | - | doing@261017.n7r4 |
 | T174 | Activate rules 3.0.0 with bounded recognized-legacy gameplay reset | SAVE WEB ARCH | T150 T152 T167 T168 T172 T173 T180 T186 T187 | todo |
 | T175 | Migrate old browser helpers to the approved public progression flow | WEB LEAGUE | T150 T174 | todo |
 | T176 | Verify second careers across contracts, reloads and market transitions | WEB STAFF WORLD HIST SAVE | T167 T168 T174 | todo |
@@ -109,6 +110,8 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 implement-task T188 start n7r4.
+- 261017 create-task T188: WEB r88 and reported selector/exit regressions; prioritize before T183.
 - 261017 update-ssot WEB r88: fixed pitch ratio requested; T183 engine scope unaffected.
 - 261017 implement-task T183 start n7r4.
 - 261017 T182 done n7r4: One season-specific registration model now guards every signing, loan, promotion, delegated purchase and generated refill; first-team tenure/graduation survive schema roundtrip and over-limit squads keep their players.
@@ -127,6 +130,3 @@
 - 261017 implement-task T171 start n7r4.
 - 261017 T170 done n7r4: Standing or case-specific support resolves actual mediation through ordinary owner/delegated move rules; cheaper alternatives and named bids are real, blocked pursuit records one fixed next-window promise without numerical bonuses.
 - 261017 implement-task T170 start n7r4.
-- 261017 T169 done n7r4: Actual suitable-candidate financial opposition creates one durable manager/target/window mediation with participant snapshots and retained arrival facts; owner stops and delegated resolver queue survive refresh/reload.
-- 261017 implement-task T169 start n7r4.
-- 261017 T168 done n7r4: Selected-person readonly career details link player, coaching and manager views with actual dates, service, mentor facts and honest missing-stat notices; manager offers disclose real employment and costs.
