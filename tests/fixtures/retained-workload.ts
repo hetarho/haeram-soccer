@@ -6,6 +6,7 @@ import {
   transferOffers,
   transferWindowDays,
   managerCandidates,
+  clubManager,
 } from '../../packages/engine/src/index';
 import { careerDate, openEmployment } from '../../packages/engine/src/person-careers';
 import { retirePerson } from '../../packages/engine/src/careers';
@@ -49,7 +50,10 @@ export function retainedWorkload() {
   person.intention!.willing = true;
   w.players.find((p) => p.id === former.id)!.status = 'retired';
   retirePerson(w, person);
-  const other = w.clubs.find((c) => c.id !== w.playerClub)!.id;
+  // Select an actual developer mentor so the cross-season case has a multi-year manager term.
+  const other = w.clubs.find(
+    (c) => c.id !== w.playerClub && clubManager(w, c).style === 'developer',
+  )!.id;
   const job = openEmployment(w, person.id, person.coaching!.role, other);
   job.contractUntil = { year: w.year + 6, day: 0 };
   job.wage = '101';
@@ -59,7 +63,7 @@ export function retainedWorkload() {
   advanceDays(w, 1, undefined, false);
   const candidate = managerCandidates(w).find((candidate) => candidate.person === former.id);
   if (!candidate) throw Error('Missing qualified retained manager candidate');
-  operate(w, { type: 'hire', id: candidate.id });
+  operate(w, { type: 'hire', id: candidate.id, term: 3 });
   w.settings!.responsibilities.recruitment = 'direct';
   advanceDays(w, transferWindowDays(w.year).winterOpen - w.calendar!.day, undefined, false);
   const offer = transferOffers(w).find((o) => o.available && lineOf(o.player.position) === 'MF')!;
