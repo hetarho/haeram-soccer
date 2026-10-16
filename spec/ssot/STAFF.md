@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r29 | Define the browser-demo rules for manager demands and personality.
+> r30 | Define the browser-demo rules for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -146,9 +146,9 @@
   - the policy decides whose reasoning receives greater weight; financial permissions and spending checks remain owned by →ECON-33.
   - the policy is edited through the recruitment department's authoritative policy workflow (→ECON-25, →WEB-77). Detailed resolution rules are →CLUB-36.
 
-- STAFF-27 [?] Specify the detailed specialty-selection mapping under →STAFF-40 and admission/employment through department candidate pools, including actual jobs at other clubs. Initial coaching ability/potential is →STAFF-41. Preserve actual age and ordinary disclosed employment costs; playing OVR or legend status grants no fixed coaching-potential bonus.
+- STAFF-27 [?] Specify the detailed specialty-selection mapping under →STAFF-40, admission through department candidate pools and contract-end handling for other-club coaching employment. Initial coaching ability/potential and other-club hire timing/terms are →STAFF-41/43. Preserve actual age and ordinary disclosed employment costs; playing OVR or legend status grants no fixed coaching-potential bonus.
 
-- STAFF-28 [?] Specify manager ability/potential and school assignment, and admission to the existing manager market. Coaching-service and managerial-aptitude requirements are →STAFF-30/39; qualification is candidacy, not automatic employment.
+- STAFF-28 [?] Specify managerial school assignment and admission/appointments through the existing manager market, including candidates currently employed as coaches. Initial manager ability/potential is →STAFF-42; coaching-service and managerial-aptitude requirements are →STAFF-30/39. Qualification is candidacy, not automatic employment.
 
 - STAFF-29 [o] The owner may encourage an own active player toward a coaching career once, after his retirement announcement and before his actual playing retirement.
   - show the player's actual response; an encouragement alone does not guarantee entry, an aptitude increase, a playing-coach contract or employment (→STAFF-23/25/31).
@@ -206,6 +206,19 @@
   - draw once per person within the inclusive ranges, including for a playing-coach proposal, and retain the values across declined offers, reloads and subsequent employment. Playing OVR, fame and club tenure do not add a bonus or determine these values.
   - these are actual initial values, not a second age-adjusted candidate baseline. Preserve real age, then use existing staff growth/ageing and ordinary salary/contract rules (→STAFF-16/11). Do not apply an additional generated-candidate age offset on entry.
 
+- STAFF-42 [o] A former player's first managerial path has its own actual initial manager OVR and potential, separate from his coaching ability, assigned once from his true managerial-aptitude grade (→STAFF-39).
+  | true managerial aptitude | initial manager OVR | manager POT |
+  |---|---|---|
+  | 높음 | 55–65 | 75–85 |
+  | 매우 높음 | 60–70 | 85–95 |
+  - retain the same person, actual age and coaching employment/history. Do not replace the new manager values with his coach OVR or erase his retained coaching ability/history; declined offers and re-entry do not reroll either career's values.
+  - these are actual initial values. Generic candidate age/ability bands do not redraw them; future managerial growth/ageing, actual-age contract limits and salary follow the existing rules (→STAFF-16/14). School selection is →STAFF-28.
+
+- STAFF-43 [o] Other-club coaching hires are checked every four league rounds and at season close, once per distinct refresh date, for unemployed qualified/willing coaching candidates (→STAFF-25/38).
+  - each candidate has a 25% hire chance per refresh, using the career-market stream. A successful check can place him in one suitable vacant training post at another club for a two-year coaching contract; no vacancy means no hire. Do not apply a separate 25% draw for every club or fill one post twice.
+  - record the actual club, post, contract dates and ordinary coaching pay. While employed he leaves the free-coach list and accrues actual service (→STAFF-30); an unemployment spell grants no coaching service.
+  - preserve person/role uniqueness and learned coaching values (→WORLD-10/11). Candidate-pool admission and contract-end handling are →STAFF-27; these events do not guarantee employment or appointment as manager.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -215,6 +228,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r30 261016 STAFF-27/28✎ initial manager values/NPC hire rules open→STAFF-42/43, mapping/school/market transitions remain open; STAFF-42/43+ high manager OVR 55–65/POT 75–85, very high 60–70/85–95, NPC coaching hires 25% every four rounds/close for two years
 - r29 261016 STAFF-27/40✎ initial coaching values open→STAFF-41, mapping/market remain open; STAFF-41+ high OVR 50–60/POT 70–80, very high OVR 55–65/POT 80–90, actual age and existing growth/pay
 - r28 261016 STAFF-27✎ owner/automatic specialty choice open→automatic under STAFF-40, detailed mapping/ability/market remain open; STAFF-40+ profile-visible specialty from playing background and coaching qualities
 - r27 261016 STAFF-25✎ entry timing/chance/encouragement response open→once at retirement announcement, natural 50/80% and encouraged 65/95%, retained draw and retirement candidacy without guaranteed employment
