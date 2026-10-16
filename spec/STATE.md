@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T17:33Z | T177 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T17:35Z | T178 |
 
 ## inbox
 - 261017 suggest review-code: review the new scorer conservation, legacy-reset ownership and career-browser helpers after the final integration gate; five more implementation units are complete.
@@ -89,7 +89,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 | todo |
+| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 | doing@261017.n7r4 |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 | todo |
 
 ## work
@@ -103,6 +103,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 implement-task T178 start n7r4.
 - 261017 T177 done n7r4: Financial-conflict journeys retain pending direct work after notification reads, disclose and settle handover once, and preserve fixed-deadline promise outcomes and personnel effects through actual arrivals, day progression, export/import and committed reloads.
 - 261017 implement-task T177 start n7r4.
 - 261017 T176 done n7r4: Second-career browser journeys preserve person identity, aptitude, atomic joint-contract terms and costs across reload/import, verify exact service qualification, and exercise independent dismissal, retirement and combined departure.
@@ -122,4 +123,3 @@
 - 261017 T186 done n7r4: Window judge days fill unmet replacements then the twenty-player deficit from eligible academy prospects or named graduates; direct authority gets one ordered recommendation and no mutation, and closed-window needs clear.
 - 261017 implement-task T186 start n7r4.
 - 261017 T185 done n7r4: Starter departures and thin-squad sales open dated replacement needs; delegated recruitment pursues them daily after opening, actual same-line signings close oldest needs, and closing starters open summer needs after top-up.
-- 261017 implement-task T185 start n7r4.
