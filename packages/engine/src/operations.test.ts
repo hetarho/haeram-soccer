@@ -99,7 +99,7 @@ describe('club decisions', () => {
     expect(paid()).toBeGreaterThan(first);
     expect(first).toBeLessThan(BigInt(w.sponsors![0].annual));
     simulateSeason(w);
-    expect(w.players.find((p) => p.id === offer.player.id)?.status).toBe('retired');
+    expect(w.players.find((p) => p.id === offer.player.id)?.status).toBe('sold');
   });
   /** A campaign started before rules 1.19, as an older save holds it (→ECON-7). */
   const olderCampaign = (w: ReturnType<typeof world>) =>

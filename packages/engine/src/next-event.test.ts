@@ -130,6 +130,8 @@ describe('ordered manual next-event settlement', () => {
     const year = 1963,
       shift = year - w.year;
     w.year = year;
+    // Fresh synthetic founding epoch; no played career is being moved.
+    delete w.people;
     w.currency = currency('ENG', year).code;
     w.priceIndex = priceIndex('ENG', year).value;
     w.manager.since = year;
@@ -137,6 +139,7 @@ describe('ordered manual next-event settlement', () => {
     if (w.manager.born !== undefined) w.manager.born += shift;
     for (const p of w.players) {
       p.born += shift;
+      if (p.joined !== undefined) p.joined += shift;
       p.until += shift;
     }
     for (const member of w.staff || []) {

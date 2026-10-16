@@ -3,7 +3,7 @@ import { createWorld } from '../../../../packages/engine/src/index';
 import type { MatchPlayback } from '../../../../packages/contracts/src/types';
 import type { GameClient } from './client';
 import { gameStore, initialClientState } from './store';
-import { ProgressionController, stopsOf, STOP_KINDS } from './progression';
+import { ProgressionController } from './progression';
 import type { View } from './protocol';
 
 const w = createWorld({
@@ -289,16 +289,17 @@ describe('the global progression clock', () => {
     controller.eventDecided();
     expect(controller.store.getState().running).toBe(false);
   });
-  it('derives independent observation and business hints from game settings', () => {
-    const direct = structuredClone(w);
-    expect(stopsOf(direct).match).toBe(true);
-    expect(stopsOf(direct)['window-open']).toBe(false);
-    expect(stopsOf(direct)['bid-response']).toBe(true);
-    direct.settings!.responsibilities.recruitment = 'delegated';
-    direct.settings!.observations.windowOpen = true;
-    expect(stopsOf(direct)['bid-response']).toBe(false);
-    expect(stopsOf(direct)['incoming-bid']).toBe(true);
-    expect(stopsOf(direct)['window-open']).toBe(true);
+  it('sends only observation hints while business decisions come from domain queries', async () => {
+    const current = structuredClone(w);
+    current.settings!.observations.windowOpen = true;
+    const setupState = setup(undefined, current);
+    controller = setupState.controller;
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(setupState.command).toHaveBeenCalledWith(
+      { type: 'advance-days', days: 1, stop: ['match', 'window-open'] },
+      { background: true, automatic: true },
+    );
   });
   it('stops on the eve of an own match and plays it through on resume', async () => {
     const eve = structuredClone(w);
@@ -334,7 +335,7 @@ describe('the global progression clock', () => {
     controller.start();
     await vi.advanceTimersByTimeAsync(100);
     expect(s.command).toHaveBeenLastCalledWith(
-      { type: 'advance-days', days: 1, stop: STOP_KINDS.filter((kind) => stopsOf(w)[kind]) },
+      { type: 'advance-days', days: 1, stop: ['match'] },
       { background: true, automatic: true },
     );
     await vi.advanceTimersByTimeAsync(500);

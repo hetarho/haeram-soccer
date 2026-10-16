@@ -121,9 +121,10 @@ async function start(notify: (state: ClientState) => void = () => {}) {
 }
 
 /** Quiet transport/save fixtures still use the real settings command and its save boundary. */
-async function delegateSales(client: GameClient) {
+async function delegateMarket(client: GameClient) {
   const settings = structuredClone(client.state.view!.world.settings!);
   settings.responsibilities.sales = 'delegated';
+  settings.responsibilities.recruitment = 'delegated';
   await client.command({ type: 'settings', settings }, { background: true });
   await client.whenSaved();
 }
@@ -407,7 +408,7 @@ describe('background worker publication', () => {
       worker = WorkerPort.instances[0],
       codec = CodecPort.instances[0],
       saves = () => worker.requests.filter((request) => request.body.type === 'save').length;
-    await delegateSales(client);
+    await delegateMarket(client);
     const baseRevision = client.state.view!.world.revision,
       baseSaves = saves();
     // Clock ticks are not saved per step: one autosave waits for the whole unsaved run.
@@ -449,7 +450,7 @@ describe('background worker publication', () => {
     const publications: ClientState[] = [],
       client = await start((state) => publications.push(state)),
       year = client.state.view!.world.year;
-    await delegateSales(client);
+    await delegateMarket(client);
     publications.length = 0;
     const archive = await client.archive(year);
     expect(archive?.managers).toEqual(
@@ -472,7 +473,7 @@ describe('background worker publication', () => {
   it('reads the all-time head-to-head without publishing a state or waiting for a tick', async () => {
     const publications: ClientState[] = [],
       client = await start((state) => publications.push(state));
-    await delegateSales(client);
+    await delegateMarket(client);
     await client.command({ type: 'next-match' });
     const w = client.state.view!.world,
       met = w.ownMatches.at(-1)!,
@@ -539,16 +540,16 @@ async function legacyCheckpoint(withHistory = false) {
 }
 
 describe('earlier-rules and future saves: compatibility recovery', () => {
-  it('refuses an earlier-rules career and keeps its slot (→SAVE-16)', async () => {
-    const { raw } = await legacyCheckpoint();
-    const before = new Map(storage.data);
+  it('resets recognized earlier gameplay on writer activation (→SAVE-18)', async () => {
+    await legacyCheckpoint();
     const client = new GameClient(() => {});
     clients.push(client);
     await client.start();
-    expect(client.state.errorCode).toBe('save-compatibility');
+    expect(client.state.errorCode).toBeUndefined();
     expect(client.state.view).toBeUndefined();
-    expect(storage.data).toEqual(before);
-    expect(await client.exportFile()).toBe(raw);
+    expect(storage.getItem('haeram-soccor:slot:a')).toBeNull();
+    expect(storage.getItem('haeram-soccor:manifest')).toBeNull();
+    expect(storage.getItem('haeram-soccor:device')).toBeNull();
   });
 
   it.each([true, false])(
@@ -570,6 +571,8 @@ describe('earlier-rules and future saves: compatibility recovery', () => {
         );
       else storage.removeItem('haeram-soccor:manifest');
       const before = new Map(storage.data);
+      // The independently recognized old predecessor may reset; the future bytes stay exact.
+      before.delete('haeram-soccor:slot:a');
       const client = new GameClient(() => {});
       clients.push(client);
       await client.start();

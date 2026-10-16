@@ -45,6 +45,49 @@ const definitions: FixtureDefinition[] = [
     cupQualification: true,
     commands: [{ type: 'season', count: 1 }],
   },
+  {
+    name: 'current-responsibilities-and-manual-events',
+    input,
+    currentRules: true,
+    commands: [
+      {
+        type: 'settings',
+        settings: {
+          responsibilities: {
+            manager: 'delegated',
+            staff: 'delegated',
+            contracts: 'delegated',
+            recruitment: 'delegated',
+            sales: 'delegated',
+            academy: 'delegated',
+            sponsors: 'delegated',
+          },
+          mode: 'manual',
+          observations: { matchEve: true, windowOpen: false },
+        },
+      },
+      { type: 'next-event' },
+      { type: 'next-event' },
+    ],
+  },
+  {
+    name: 'once-only-encouragement-and-combined-contract',
+    input,
+    currentRules: true,
+    setup: 'announced-player',
+    commands: [
+      { type: 'encourage-coaching', player: 'ENG:club:founder:6' },
+      { type: 'propose-playing-coach', player: 'ENG:club:founder:6', years: 2, term: 5 },
+      { type: 'answer-playing-coach', player: 'ENG:club:founder:6', accept: true },
+    ],
+  },
+  {
+    name: 'financial-mediation-fixed-reinforcement-promise',
+    input,
+    currentRules: true,
+    setup: 'financial-conflict',
+    commands: [{ type: 'resolve-mediation', id: 'mediation:1950:0', support: 'manager' }],
+  },
 ];
 for (const definition of definitions) definition.expected = runFixture(definition);
 writeFileSync(
@@ -55,4 +98,6 @@ writeFileSync(
     2,
   ) + '\n',
 );
-console.log('Wrote four reviewed portable scenarios; CI only reads these expected facts.');
+console.log(
+  `Wrote ${definitions.length} reviewed portable scenarios; CI only reads these expected facts.`,
+);

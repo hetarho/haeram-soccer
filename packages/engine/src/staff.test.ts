@@ -159,8 +159,9 @@ describe('coaching staff', () => {
   });
 
   it('scales each department monotonically with ability and lifts it further with traits', () => {
+    const baseline = world();
     const at = (role: StaffRole, ability: number, trait?: StaffTrait) =>
-      staffEffects(coach(world(), role, ability, trait));
+      staffEffects(coach(structuredClone(baseline), role, ability, trait));
     expect(departmentMultiplier(50)).toBe(1);
     expect(departmentMultiplier(70)).toBeCloseTo(1.1, 10);
     expect(departmentMultiplier(100)).toBe(1.25);

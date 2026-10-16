@@ -106,7 +106,7 @@ export const eventCard = (page: Page) => page.getByTestId('event-card');
  * offer that waits for an answer instead (another club's bid) is declined.
  */
 export async function acknowledgeEvents(page: Page) {
-  const card = eventCard(page);
+  const card = eventCard(page).first();
   // The whole card text, so two events that share a title still count as a change.
   // Read without auto-waiting: the card may leave between a count and a text query.
   const title = () =>
@@ -115,10 +115,18 @@ export async function acknowledgeEvents(page: Page) {
     const current = await title();
     // An observation is not a dismissible report; the caller can prepare or watch the match.
     if (!current || current.includes('내일 경기')) return;
-    const read = card.getByRole('button', { name: '확인', exact: true });
-    await (
-      (await read.count()) ? read : card.getByRole('button', { name: '거절', exact: true })
-    ).click();
+    const mediation = card.getByRole('button', { name: '영입 중재 검토', exact: true });
+    if (await mediation.count()) {
+      await mediation.click();
+      const review = page.getByRole('dialog', { name: '영입 중재 검토', exact: true });
+      await review.getByRole('radio', { name: '단장 우선', exact: true }).check();
+      await review.getByRole('button', { name: '이번 중재 결정 확정', exact: true }).click();
+    } else {
+      const read = card.getByRole('button', { name: '확인', exact: true });
+      await (
+        (await read.count()) ? read : card.getByRole('button', { name: '거절', exact: true })
+      ).click();
+    }
     await expect.poll(title, { timeout: 10000 }).not.toBe(current);
   }
   throw new Error('Too many pending events to acknowledge');

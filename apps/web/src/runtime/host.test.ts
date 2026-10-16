@@ -19,7 +19,6 @@ import {
 import { FOUNDING_YEAR } from '../../../../packages/engine/src/world';
 import { professionalStart } from '../../../../packages/engine/src/testing';
 import { headToHead } from './headToHead';
-import { STOP_KINDS } from './progression';
 const input = {
   country: 'ENG' as const,
   name: 'Worker Athletic',
@@ -74,7 +73,7 @@ describe('worker command protocol', () => {
     const step = await h.handle(
       req('step', 1, {
         type: 'command',
-        command: { type: 'advance-days', days: 1, stop: [...STOP_KINDS] },
+        command: { type: 'advance-days', days: 1, stop: ['match', 'window-open'] },
       }),
     );
     expect(step.ok).toBe(true);

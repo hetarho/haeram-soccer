@@ -20,7 +20,7 @@ describe('cup stages from fixture IDs', () => {
   it.each(['ENG', 'GER', 'BEL'] as CountryCode[])(
     'names every %s-founded season knockout and phase match as its live round did',
     (code) => {
-      const w = createWorld({
+      const baseline = createWorld({
         country: code,
         name: 'Stage Rovers',
         seed: `stages-${code}`,
@@ -29,7 +29,17 @@ describe('cup stages from fixture IDs', () => {
       });
       const seen = new Set<string>();
       for (const year of YEARS) {
+        // Each is a fresh synthetic epoch, not thirteen jumps through one retained career.
+        const w = structuredClone(baseline);
+        delete w.people;
         w.year = year;
+        w.manager.since = year;
+        w.manager.until = year + 3;
+        for (const player of w.players) {
+          player.born = year - 24;
+          player.joined = year;
+          player.until = year + 2;
+        }
         w.currency = currency(code, year).code;
         w.priceIndex = priceIndex(code, year).value;
         prepareSeason(w);

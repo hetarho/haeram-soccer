@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { TransferBid } from '../../contracts/src/types';
-import { createWorld, operate, transferOffers, contractTalks, activePlayers } from './index';
+import {
+  createWorld,
+  operate,
+  transferOffers,
+  contractTalks,
+  activePlayers,
+  advanceRound,
+} from './index';
 import { pendingWorkPreview } from './pending-work';
 import { Host } from '../../../apps/web/src/runtime/host';
 const input = {
@@ -29,8 +36,8 @@ function offers(w: ReturnType<typeof world>) {
     fee: o.fee,
     counterFee: o.fee,
     year: w.year,
-    day: 0,
-    due: 5,
+    day: w.calendar!.day,
+    due: w.calendar!.day + 5,
     status: 'countered',
   }));
   const p = activePlayers(w)[0];
@@ -41,14 +48,16 @@ function offers(w: ReturnType<typeof world>) {
     club: w.clubs.find((c) => c.id !== w.playerClub)!.id,
     fee: '100',
     year: w.year,
-    day: 0,
-    due: 5,
+    day: w.calendar!.day,
+    due: w.calendar!.day + 5,
     status: 'pending',
   });
 }
 describe('explicit responsibility handover', () => {
   it('purely previews two pending acquisitions and resolves only that changed category once', () => {
     const w = world();
+    advanceRound(w, undefined, false);
+    w.income = '999999999999';
     offers(w);
     const settings = structuredClone(w.settings!);
     settings.responsibilities.recruitment = 'delegated';

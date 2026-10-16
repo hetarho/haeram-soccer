@@ -33,6 +33,7 @@ function world(strong = false) {
       for (const a of ATTRIBUTES) player.attrs[a] = 95;
       player.potential = 100;
       player.born = w.year - 20;
+      w.people![player.id].born = player.born;
     }
     for (const club of w.clubs) if (club.id !== w.playerClub) club.strength = 5;
   }
@@ -93,10 +94,12 @@ describe('milestones from retained club facts', () => {
       prospect = w.players.find((player) => lineOf(player.position) === 'MF')!;
     for (const player of w.players) {
       player.born = w.year - 32;
+      w.people![player.id].born = player.born;
       for (const a of ATTRIBUTES) player.attrs[a] = 40;
       player.potential = 85;
     }
     prospect.born = w.year - 20;
+    w.people![prospect.id].born = prospect.born;
     // A round of 회복 grows him a little (×0.4), short of the milestone's whole point.
     operate(w, { type: 'coach-training', coach: 'assistant', focus: 'recovery', force: true });
     advanceRound(w, undefined, false);

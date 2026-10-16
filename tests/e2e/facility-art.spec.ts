@@ -18,9 +18,12 @@ function artWorld(year: number, stadium = 0, trainingGround = 0) {
   });
   const shift = year - w.year;
   w.year = year;
+  // Fresh synthetic founding epoch; no played career is being moved.
+  delete w.people;
   w.currency = currency('ENG', year).code;
   for (const p of w.players) {
     p.born += shift;
+    if (p.joined !== undefined) p.joined += shift;
     p.until += shift;
   }
   if (w.manager.born !== undefined) w.manager.born += shift;

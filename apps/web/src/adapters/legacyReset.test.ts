@@ -184,3 +184,19 @@ describe('bounded writer legacy reset', () => {
     expect(storage.getItem(ACTIVE_SAVE_KEYS[0])).toBe(JSON.stringify({ slot: 1 }));
   });
 });
+
+it('does not create device metadata while preserving current, future or unclassified corrupt data', async () => {
+  for (const raw of [
+    await saved('3.0.0'),
+    await saved('9.0.0'),
+    JSON.stringify({ ...JSON.parse(await saved('2.0.0')), checksum: '0'.repeat(64) }),
+  ]) {
+    const storage = new Memory();
+    storage.setItem(ACTIVE_SAVE_KEYS[1], raw);
+    storage.setItem(ACTIVE_SAVE_KEYS[0], JSON.stringify({ slot: 0 }));
+    storage.setItem('haeram-soccor:games', '{unclassified index');
+    const before = new Map(storage.data);
+    await resetLegacy(storage, undefined, () => true);
+    expect(storage.data).toEqual(before);
+  }
+});

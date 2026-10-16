@@ -13,7 +13,7 @@ import {
   ROLE_LABEL,
   TRAIT_LABEL,
 } from '../../../../packages/engine/src/player';
-import { staffMember } from '../../../../packages/engine/src/staff';
+import { releaseCost, staffMember } from '../../../../packages/engine/src/staff';
 import { positionsLabel } from './FormationPitch';
 import { gradeLabel, PlayerProfile } from './PlayerProfile';
 import { bidBoard, bidOutlook, transferWindow } from '../../../../packages/engine/src/transfers';
@@ -449,6 +449,19 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                   · {BID_STATUS[bid.status]}
                   {(bid.status === 'pending' || bid.status === 'countered') && ` · ${dueLabel}까지`}
                   {bid.staff && bid.status === 'countered' && ' · 단장이 답해요'}
+                  {bid.direction === 'in' &&
+                    w.staff?.some((member) => member.person === bid.playerId) && (
+                      <>
+                        {' '}
+                        · 선수·코치 계약 함께 종료 · 코치 계약 종료 보상{' '}
+                        {format(
+                          releaseCost(
+                            w,
+                            w.staff.find((member) => member.person === bid.playerId),
+                          ),
+                        )}
+                      </>
+                    )}
                 </small>
               </span>
               {actionable && (

@@ -1,6 +1,6 @@
 {
   "synthetic": true,
-  "engine": "2.0.0",
+  "engine": "3.0.0",
   "catalog": "2026-demo-3",
   "definitions": [
     {
@@ -12630,6 +12630,2625 @@
             ]
           }
         ]
+      }
+    },
+    {
+      "name": "current-responsibilities-and-manual-events",
+      "input": {
+        "country": "ENG",
+        "name": "Synthetic Archives",
+        "color": "#234a31",
+        "seed": "portable-release-1",
+        "level": "easy"
+      },
+      "currentRules": true,
+      "commands": [
+        {
+          "type": "settings",
+          "settings": {
+            "responsibilities": {
+              "manager": "delegated",
+              "staff": "delegated",
+              "contracts": "delegated",
+              "recruitment": "delegated",
+              "sales": "delegated",
+              "academy": "delegated",
+              "sponsors": "delegated"
+            },
+            "mode": "manual",
+            "observations": {
+              "matchEve": true,
+              "windowOpen": false
+            }
+          }
+        },
+        {
+          "type": "next-event"
+        },
+        {
+          "type": "next-event"
+        }
+      ],
+      "expected": {
+        "settings": {
+          "responsibilities": {
+            "manager": "delegated",
+            "staff": "delegated",
+            "contracts": "delegated",
+            "recruitment": "delegated",
+            "sales": "delegated",
+            "academy": "delegated",
+            "sponsors": "delegated"
+          },
+          "mode": "manual",
+          "observations": {
+            "matchEve": true,
+            "windowOpen": false
+          }
+        },
+        "direction": {},
+        "careers": [
+          {
+            "id": "ENG:club:founder:0",
+            "name": "Albert Brooks",
+            "born": 1928,
+            "position": "GK",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 2,
+              "teaching": 3,
+              "judgement": 5
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:1",
+            "name": "Walter Brooks",
+            "born": 1919,
+            "position": "LB",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 4,
+              "teaching": 5,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:2",
+            "name": "William Hawkins",
+            "born": 1919,
+            "position": "CB",
+            "professionalism": 1,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:3",
+            "name": "Thomas Brooks",
+            "born": 1924,
+            "position": "CB",
+            "professionalism": 3,
+            "qualities": {
+              "understanding": 2,
+              "teaching": 3,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:4",
+            "name": "George Foster",
+            "born": 1923,
+            "position": "RB",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 1,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:5",
+            "name": "Edward Hawkins",
+            "born": 1926,
+            "position": "DM",
+            "professionalism": 5,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 5
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:6",
+            "name": "Walter Watson",
+            "born": 1927,
+            "position": "CM",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 4,
+              "teaching": 1,
+              "judgement": 4
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:7",
+            "name": "Arthur Brooks",
+            "born": 1930,
+            "position": "CM",
+            "professionalism": 3,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:8",
+            "name": "Henry Brooks",
+            "born": 1931,
+            "position": "LW",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 2,
+              "judgement": 2
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:9",
+            "name": "Thomas Brooks",
+            "born": 1918,
+            "position": "ST",
+            "professionalism": 3,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:10",
+            "name": "William Watson",
+            "born": 1927,
+            "position": "RW",
+            "professionalism": 3,
+            "qualities": {
+              "understanding": 2,
+              "teaching": 2,
+              "judgement": 2
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:11",
+            "name": "Edward Watson",
+            "born": 1926,
+            "position": "GK",
+            "professionalism": 5,
+            "qualities": {
+              "understanding": 2,
+              "teaching": 4,
+              "judgement": 4
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:12",
+            "name": "Thomas Brooks",
+            "born": 1926,
+            "position": "LB",
+            "professionalism": 4,
+            "qualities": {
+              "understanding": 4,
+              "teaching": 3,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:13",
+            "name": "Albert Bennett",
+            "born": 1928,
+            "position": "CB",
+            "professionalism": 1,
+            "qualities": {
+              "understanding": 5,
+              "teaching": 4,
+              "judgement": 5
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:14",
+            "name": "Henry Brooks",
+            "born": 1922,
+            "position": "DM",
+            "professionalism": 3,
+            "qualities": {
+              "understanding": 4,
+              "teaching": 3,
+              "judgement": 4
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:15",
+            "name": "Walter Brooks",
+            "born": 1924,
+            "position": "CM",
+            "professionalism": 4,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 4
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:16",
+            "name": "Arthur Hawkins",
+            "born": 1927,
+            "position": "CM",
+            "professionalism": 4,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 2,
+              "judgement": 2
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:17",
+            "name": "George Brooks",
+            "born": 1928,
+            "position": "LW",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 2,
+              "teaching": 3,
+              "judgement": 5
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:18",
+            "name": "Thomas Brooks",
+            "born": 1924,
+            "position": "CB",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 2
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:19",
+            "name": "Albert Brooks",
+            "born": 1921,
+            "position": "DM",
+            "professionalism": 4,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 4,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          }
+        ],
+        "playingCoachProposals": {},
+        "mediations": [
+          {
+            "id": "mediation:1950:0",
+            "key": "coach:1950:0:1198314408:1950:summer:slot:9:ST",
+            "created": {
+              "year": 1950,
+              "day": 7
+            },
+            "window": "summer",
+            "manager": {
+              "id": "coach:1950:0:1198314408",
+              "name": "Henry Hawkins"
+            },
+            "director": {
+              "id": "ENG:club:staff:director:1950:2",
+              "name": "George Foster"
+            },
+            "target": {
+              "line": "FW",
+              "kind": "upgrade",
+              "slot": 9,
+              "position": "ST"
+            },
+            "candidate": {
+              "id": "market:1950:0qys3cr:6",
+              "name": "Walter Turner",
+              "fee": "1875108",
+              "wage": "36793"
+            },
+            "managerReason": "스트라이커 자리 보강을 요청했어요. 현재 적합 후보는 Walter Turner 선수예요.",
+            "directorReason": "이적료를 내면 운영자금이 13라운드 운영비에 못 미쳐요(재정 기조 표준)",
+            "support": "balanced",
+            "status": "resolved",
+            "resolution": {
+              "at": {
+                "year": 1950,
+                "day": 7
+              },
+              "support": "balanced",
+              "result": "George Bennett 선수에게 실제 영입 제안을 보냈어요. 협상 결과를 기다려요."
+            }
+          }
+        ],
+        "promises": [],
+        "recruitmentArrivals": [],
+        "year": 1950,
+        "round": 1,
+        "revision": 16,
+        "cash": "590661",
+        "currency": "GBP-LSD",
+        "income": "32383",
+        "expense": "108574",
+        "tactic": "possession",
+        "manager": {
+          "id": "coach:1950:0:1198314408",
+          "name": "Henry Hawkins",
+          "trust": 65,
+          "conflicts": 0,
+          "interim": false,
+          "pending": null
+        },
+        "club": {
+          "id": "ENG:club",
+          "tier": 4,
+          "fans": 839,
+          "lower": true
+        },
+        "players": [
+          {
+            "id": "ENG:club:founder:0",
+            "status": "active",
+            "wage": "276",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 0]
+          },
+          {
+            "id": "ENG:club:founder:1",
+            "status": "active",
+            "wage": "473",
+            "career": [1, 0, 26, 15, 1, 1, 1, 2, 0, 0, 90, 0]
+          },
+          {
+            "id": "ENG:club:founder:2",
+            "status": "active",
+            "wage": "428",
+            "career": [0, 0, 10, 6, 1, 0, 0, 1, 0, 0, 90, 0]
+          },
+          {
+            "id": "ENG:club:founder:3",
+            "status": "active",
+            "wage": "317",
+            "career": [0, 0, 7, 4, 0, 0, 1, 4, 0, 0, 90, 0]
+          },
+          {
+            "id": "ENG:club:founder:4",
+            "status": "active",
+            "wage": "351",
+            "career": [0, 0, 7, 4, 0, 0, 1, 1, 0, 0, 90, 0]
+          },
+          {
+            "id": "ENG:club:founder:5",
+            "status": "active",
+            "wage": "287",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:6",
+            "status": "active",
+            "wage": "256",
+            "career": [0, 0, 51, 35, 1, 0, 2, 4, 0, 0, 90, 0]
+          },
+          {
+            "id": "ENG:club:founder:7",
+            "status": "active",
+            "wage": "234",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:8",
+            "status": "active",
+            "wage": "302",
+            "career": [0, 0, 17, 13, 5, 2, 3, 3, 0, 0, 90, 0]
+          },
+          {
+            "id": "ENG:club:founder:9",
+            "status": "active",
+            "wage": "388",
+            "career": [0, 1, 25, 18, 1, 0, 2, 0, 1, 0, 90, 0]
+          },
+          {
+            "id": "ENG:club:founder:10",
+            "status": "active",
+            "wage": "251",
+            "career": [0, 0, 17, 7, 2, 0, 2, 0, 0, 0, 90, 0]
+          },
+          {
+            "id": "ENG:club:founder:11",
+            "status": "active",
+            "wage": "260",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:12",
+            "status": "active",
+            "wage": "260",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:13",
+            "status": "active",
+            "wage": "245",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:14",
+            "status": "active",
+            "wage": "388",
+            "career": [0, 0, 22, 12, 2, 1, 2, 3, 1, 0, 90, 0]
+          },
+          {
+            "id": "ENG:club:founder:15",
+            "status": "active",
+            "wage": "317",
+            "career": [0, 0, 18, 11, 0, 0, 0, 3, 1, 0, 90, 0]
+          },
+          {
+            "id": "ENG:club:founder:16",
+            "status": "active",
+            "wage": "259",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:17",
+            "status": "active",
+            "wage": "258",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:18",
+            "status": "active",
+            "wage": "317",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:19",
+            "status": "active",
+            "wage": "428",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          }
+        ],
+        "matches": [
+          {
+            "id": "1950:ENG:4:0:0:0",
+            "score": {
+              "home": 1,
+              "away": 1
+            },
+            "metrics": [
+              [1, 1, 200, 125, 13, 4, 14, 21, 3, 0, 90, 48],
+              [1, 1, 188, 123, 5, 1, 6, 29, 2, 3, 90, 42]
+            ],
+            "players": [
+              {
+                "id": "ENG:club:founder:0",
+                "metrics": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 0],
+                "detail": [0, 0, 0, 0, 0, 0, 0, 0, 0]
+              },
+              {
+                "id": "ENG:club:founder:4",
+                "metrics": [0, 0, 7, 4, 0, 0, 1, 1, 0, 0, 90, 0],
+                "detail": [0, 0, 0, 0, 0, 0, 1, 0, 0]
+              },
+              {
+                "id": "ENG:club:founder:2",
+                "metrics": [0, 0, 10, 6, 1, 0, 0, 1, 0, 0, 90, 0],
+                "detail": [14, 23, 2, 0, 2, 2, 3, 0, 0]
+              },
+              {
+                "id": "ENG:club:founder:3",
+                "metrics": [0, 0, 7, 4, 0, 0, 1, 4, 0, 0, 90, 0],
+                "detail": [0, 0, 0, 0, 0, 0, 0, 0, 0]
+              },
+              {
+                "id": "ENG:club:founder:1",
+                "metrics": [1, 0, 26, 15, 1, 1, 1, 2, 0, 0, 90, 0],
+                "detail": [8, 50, 5, 0, 19, 10, 1, 0, 0]
+              },
+              {
+                "id": "ENG:club:founder:14",
+                "metrics": [0, 0, 22, 12, 2, 1, 2, 3, 1, 0, 90, 0],
+                "detail": [8, 0, 0, 0, 4, 1, 2, 3, 0]
+              },
+              {
+                "id": "ENG:club:founder:6",
+                "metrics": [0, 0, 51, 35, 1, 0, 2, 4, 0, 0, 90, 0],
+                "detail": [13, 36, 1, 1, 25, 16, 7, 0, 0]
+              },
+              {
+                "id": "ENG:club:founder:15",
+                "metrics": [0, 0, 18, 11, 0, 0, 0, 3, 1, 0, 90, 0],
+                "detail": [0, 29, 2, 1, 5, 3, 4, 1, 0]
+              },
+              {
+                "id": "ENG:club:founder:8",
+                "metrics": [0, 0, 17, 13, 5, 2, 3, 3, 0, 0, 90, 0],
+                "detail": [86, 0, 0, 0, 16, 12, 1, 0, 6]
+              },
+              {
+                "id": "ENG:club:founder:9",
+                "metrics": [0, 1, 25, 18, 1, 0, 2, 0, 1, 0, 90, 0],
+                "detail": [13, 14, 2, 0, 24, 17, 0, 1, 2]
+              },
+              {
+                "id": "ENG:club:founder:10",
+                "metrics": [0, 0, 17, 7, 2, 0, 2, 0, 0, 0, 90, 0],
+                "detail": [24, 14, 1, 0, 17, 7, 0, 0, 2]
+              }
+            ],
+            "highlights": [
+              {
+                "minute": 29,
+                "side": 1,
+                "player": "William Hawkins",
+                "action": "골"
+              },
+              {
+                "minute": 34,
+                "side": 0,
+                "player": "Walter Brooks",
+                "action": "골"
+              }
+            ],
+            "tactics": ["possession", "press"]
+          }
+        ],
+        "history": [],
+        "events": [
+          {
+            "kind": "founding",
+            "title": "클럽의 첫 페이지",
+            "amount": "666852"
+          },
+          {
+            "kind": "sponsor-sign",
+            "title": "지역 후원 계약",
+            "amount": null
+          },
+          {
+            "kind": "staff-hire",
+            "title": "단장 George Foster 선임",
+            "amount": "13559"
+          },
+          {
+            "kind": "staff-hire",
+            "title": "수석코치 George Turner 선임",
+            "amount": "10976"
+          },
+          {
+            "kind": "staff-hire",
+            "title": "공격 코치 Edward Hawkins 선임",
+            "amount": "14204"
+          },
+          {
+            "kind": "staff-hire",
+            "title": "수비 코치 Walter Foster 선임",
+            "amount": "11299"
+          },
+          {
+            "kind": "staff-hire",
+            "title": "골키퍼 코치 Thomas Turner 선임",
+            "amount": "9039"
+          },
+          {
+            "kind": "staff-hire",
+            "title": "피지컬 코치 Edward Hawkins 선임",
+            "amount": "9039"
+          },
+          {
+            "kind": "staff-hire",
+            "title": "유스 디렉터 William Brooks 선임",
+            "amount": "10653"
+          },
+          {
+            "kind": "staff-hire",
+            "title": "수석 스카우트 Edward Clarke 선임",
+            "amount": "9039"
+          },
+          {
+            "kind": "sponsor:local",
+            "title": "지역 후원",
+            "amount": "488"
+          },
+          {
+            "kind": "gate",
+            "title": "홈 경기의 수입",
+            "amount": "31146"
+          },
+          {
+            "kind": "match-cost",
+            "title": "홈 경기 개최비",
+            "amount": "5881"
+          },
+          {
+            "kind": "league-share",
+            "title": "리그 분배금",
+            "amount": "749"
+          },
+          {
+            "kind": "operating-cost",
+            "title": "급여와 시설 유지비",
+            "amount": "13388"
+          },
+          {
+            "kind": "operating-expenses",
+            "title": "운영 경비",
+            "amount": "1497"
+          },
+          {
+            "kind": "transfer-bid",
+            "title": "George Bennett 영입 제안",
+            "amount": null
+          },
+          {
+            "kind": "transfer-bid",
+            "title": "George Bennett 영입 제안",
+            "amount": null
+          }
+        ],
+        "euro": []
+      }
+    },
+    {
+      "name": "once-only-encouragement-and-combined-contract",
+      "input": {
+        "country": "ENG",
+        "name": "Synthetic Archives",
+        "color": "#234a31",
+        "seed": "portable-release-1",
+        "level": "easy"
+      },
+      "currentRules": true,
+      "setup": "announced-player",
+      "commands": [
+        {
+          "type": "encourage-coaching",
+          "player": "ENG:club:founder:6"
+        },
+        {
+          "type": "propose-playing-coach",
+          "player": "ENG:club:founder:6",
+          "years": 2,
+          "term": 5
+        },
+        {
+          "type": "answer-playing-coach",
+          "player": "ENG:club:founder:6",
+          "accept": true
+        }
+      ],
+      "expected": {
+        "settings": {
+          "responsibilities": {
+            "manager": "direct",
+            "staff": "delegated",
+            "contracts": "direct",
+            "recruitment": "direct",
+            "sales": "direct",
+            "academy": "delegated",
+            "sponsors": "delegated"
+          },
+          "mode": "automatic",
+          "observations": {
+            "matchEve": true,
+            "windowOpen": false
+          }
+        },
+        "direction": {},
+        "careers": [
+          {
+            "id": "ENG:club:founder:0",
+            "name": "Albert Brooks",
+            "born": 1928,
+            "position": "GK",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 2,
+              "teaching": 3,
+              "judgement": 5
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:1",
+            "name": "Walter Brooks",
+            "born": 1919,
+            "position": "LB",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 4,
+              "teaching": 5,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:2",
+            "name": "William Hawkins",
+            "born": 1919,
+            "position": "CB",
+            "professionalism": 1,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:3",
+            "name": "Thomas Brooks",
+            "born": 1924,
+            "position": "CB",
+            "professionalism": 3,
+            "qualities": {
+              "understanding": 2,
+              "teaching": 3,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:4",
+            "name": "George Foster",
+            "born": 1923,
+            "position": "RB",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 1,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:5",
+            "name": "Edward Hawkins",
+            "born": 1926,
+            "position": "DM",
+            "professionalism": 5,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 5
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:6",
+            "name": "Walter Watson",
+            "born": 1915,
+            "position": "CM",
+            "professionalism": 4,
+            "qualities": {
+              "understanding": 4,
+              "teaching": 4,
+              "judgement": 4
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              },
+              {
+                "role": "assistant",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": [
+              {
+                "manager": "coach:1950:0:1198314408",
+                "name": "Henry Hawkins",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "intention": {
+              "at": {
+                "year": 1950,
+                "day": 0
+              },
+              "draw": 0.55,
+              "willing": true,
+              "encouraged": {
+                "at": {
+                  "year": 1950,
+                  "day": 0
+                },
+                "changed": true
+              }
+            },
+            "retirement": {
+              "announced": {
+                "year": 1950,
+                "day": 0
+              },
+              "year": 1952
+            },
+            "coaching": {
+              "role": "assistant",
+              "ability": 53,
+              "potential": 73,
+              "at": {
+                "year": 1950,
+                "day": 0
+              }
+            }
+          },
+          {
+            "id": "ENG:club:founder:7",
+            "name": "Arthur Brooks",
+            "born": 1930,
+            "position": "CM",
+            "professionalism": 3,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:8",
+            "name": "Henry Brooks",
+            "born": 1931,
+            "position": "LW",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 2,
+              "judgement": 2
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:9",
+            "name": "Thomas Brooks",
+            "born": 1918,
+            "position": "ST",
+            "professionalism": 3,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:10",
+            "name": "William Watson",
+            "born": 1927,
+            "position": "RW",
+            "professionalism": 3,
+            "qualities": {
+              "understanding": 2,
+              "teaching": 2,
+              "judgement": 2
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:11",
+            "name": "Edward Watson",
+            "born": 1926,
+            "position": "GK",
+            "professionalism": 5,
+            "qualities": {
+              "understanding": 2,
+              "teaching": 4,
+              "judgement": 4
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:12",
+            "name": "Thomas Brooks",
+            "born": 1926,
+            "position": "LB",
+            "professionalism": 4,
+            "qualities": {
+              "understanding": 4,
+              "teaching": 3,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:13",
+            "name": "Albert Bennett",
+            "born": 1928,
+            "position": "CB",
+            "professionalism": 1,
+            "qualities": {
+              "understanding": 5,
+              "teaching": 4,
+              "judgement": 5
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:14",
+            "name": "Henry Brooks",
+            "born": 1922,
+            "position": "DM",
+            "professionalism": 3,
+            "qualities": {
+              "understanding": 4,
+              "teaching": 3,
+              "judgement": 4
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:15",
+            "name": "Walter Brooks",
+            "born": 1924,
+            "position": "CM",
+            "professionalism": 4,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 4
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:16",
+            "name": "Arthur Hawkins",
+            "born": 1927,
+            "position": "CM",
+            "professionalism": 4,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 2,
+              "judgement": 2
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:17",
+            "name": "George Brooks",
+            "born": 1928,
+            "position": "LW",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 2,
+              "teaching": 3,
+              "judgement": 5
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:18",
+            "name": "Thomas Brooks",
+            "born": 1924,
+            "position": "CB",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 2
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:19",
+            "name": "Albert Brooks",
+            "born": 1921,
+            "position": "DM",
+            "professionalism": 4,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 4,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          }
+        ],
+        "playingCoachProposals": {
+          "ENG:club:founder:6": {
+            "person": "ENG:club:founder:6",
+            "role": "assistant",
+            "years": 2,
+            "term": 5,
+            "created": {
+              "year": 1950,
+              "day": 0
+            },
+            "playingEnd": 1952,
+            "playerUntil": 1953,
+            "coachUntil": 1955,
+            "playerWage": "256",
+            "coachWage": "29700",
+            "totalWage": "29956",
+            "fee": "7425",
+            "replacement": "0",
+            "upfront": "7425",
+            "replacing": "ENG:club:staff:basic:assistant",
+            "status": "accepted",
+            "stamp": "{\"year\":1950,\"player\":{\"born\":1915,\"wage\":\"256\",\"until\":1953,\"retiring\":1950},\"coaching\":{\"role\":\"assistant\",\"ability\":53,\"potential\":73,\"at\":{\"year\":1950,\"day\":0}},\"current\":{\"id\":\"ENG:club:staff:basic:assistant\",\"role\":\"assistant\",\"name\":\"Albert Clarke\",\"ability\":50,\"wage\":\"0\",\"since\":1950,\"until\":1951},\"quote\":{\"person\":\"ENG:club:founder:6\",\"role\":\"assistant\",\"years\":2,\"term\":5,\"playingEnd\":1952,\"playerUntil\":1953,\"coachUntil\":1955,\"playerWage\":\"256\",\"coachWage\":\"29700\",\"totalWage\":\"29956\",\"fee\":\"7425\",\"replacement\":\"0\",\"upfront\":\"7425\",\"replacing\":\"ENG:club:staff:basic:assistant\",\"status\":\"pending\"}}",
+            "settled": {
+              "year": 1950,
+              "day": 0
+            }
+          }
+        },
+        "mediations": [],
+        "promises": [],
+        "recruitmentArrivals": [],
+        "year": 1950,
+        "round": 0,
+        "revision": 3,
+        "cash": "999992574",
+        "currency": "GBP-LSD",
+        "income": "0",
+        "expense": "7425",
+        "tactic": "possession",
+        "manager": {
+          "id": "coach:1950:0:1198314408",
+          "name": "Henry Hawkins",
+          "trust": 65,
+          "conflicts": 0,
+          "interim": false,
+          "pending": null
+        },
+        "club": {
+          "id": "ENG:club",
+          "tier": 4,
+          "fans": 800,
+          "lower": true
+        },
+        "players": [
+          {
+            "id": "ENG:club:founder:0",
+            "status": "active",
+            "wage": "276",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:1",
+            "status": "active",
+            "wage": "473",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:2",
+            "status": "active",
+            "wage": "428",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:3",
+            "status": "active",
+            "wage": "317",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:4",
+            "status": "active",
+            "wage": "351",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:5",
+            "status": "active",
+            "wage": "287",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:6",
+            "status": "active",
+            "wage": "256",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:7",
+            "status": "active",
+            "wage": "234",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:8",
+            "status": "active",
+            "wage": "302",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:9",
+            "status": "active",
+            "wage": "388",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:10",
+            "status": "active",
+            "wage": "251",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:11",
+            "status": "active",
+            "wage": "260",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:12",
+            "status": "active",
+            "wage": "260",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:13",
+            "status": "active",
+            "wage": "245",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:14",
+            "status": "active",
+            "wage": "388",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:15",
+            "status": "active",
+            "wage": "317",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:16",
+            "status": "active",
+            "wage": "259",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:17",
+            "status": "active",
+            "wage": "258",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:18",
+            "status": "active",
+            "wage": "317",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:19",
+            "status": "active",
+            "wage": "428",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          }
+        ],
+        "matches": [],
+        "history": [],
+        "events": [
+          {
+            "kind": "founding",
+            "title": "클럽의 첫 페이지",
+            "amount": "666852"
+          },
+          {
+            "kind": "coaching-encouragement",
+            "title": "Walter Watson 지도자 진로 권유",
+            "amount": null
+          },
+          {
+            "kind": "playing-coach-proposal",
+            "title": "Walter Watson 플레잉 코치 제안",
+            "amount": null
+          },
+          {
+            "kind": "staff-release",
+            "title": "수석코치 Albert Clarke 계약 해지",
+            "amount": null
+          },
+          {
+            "kind": "playing-coach-accept",
+            "title": "Walter Watson 플레잉 코치 합의",
+            "amount": "7425"
+          }
+        ],
+        "euro": []
+      }
+    },
+    {
+      "name": "financial-mediation-fixed-reinforcement-promise",
+      "input": {
+        "country": "ENG",
+        "name": "Synthetic Archives",
+        "color": "#234a31",
+        "seed": "portable-release-1",
+        "level": "easy"
+      },
+      "currentRules": true,
+      "setup": "financial-conflict",
+      "commands": [
+        {
+          "type": "resolve-mediation",
+          "id": "mediation:1950:0",
+          "support": "manager"
+        }
+      ],
+      "expected": {
+        "settings": {
+          "responsibilities": {
+            "manager": "direct",
+            "staff": "delegated",
+            "contracts": "direct",
+            "recruitment": "direct",
+            "sales": "direct",
+            "academy": "delegated",
+            "sponsors": "delegated"
+          },
+          "mode": "automatic",
+          "observations": {
+            "matchEve": true,
+            "windowOpen": false
+          }
+        },
+        "direction": {},
+        "careers": [
+          {
+            "id": "ENG:club:founder:0",
+            "name": "Albert Brooks",
+            "born": 1928,
+            "position": "GK",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 2,
+              "teaching": 3,
+              "judgement": 5
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:1",
+            "name": "Walter Brooks",
+            "born": 1919,
+            "position": "LB",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 4,
+              "teaching": 5,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:2",
+            "name": "William Hawkins",
+            "born": 1919,
+            "position": "CB",
+            "professionalism": 1,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:3",
+            "name": "Thomas Brooks",
+            "born": 1924,
+            "position": "CB",
+            "professionalism": 3,
+            "qualities": {
+              "understanding": 2,
+              "teaching": 3,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:4",
+            "name": "George Foster",
+            "born": 1923,
+            "position": "RB",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 1,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:5",
+            "name": "Edward Hawkins",
+            "born": 1926,
+            "position": "DM",
+            "professionalism": 5,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 5
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:6",
+            "name": "Walter Watson",
+            "born": 1927,
+            "position": "CM",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 4,
+              "teaching": 1,
+              "judgement": 4
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:7",
+            "name": "Arthur Brooks",
+            "born": 1930,
+            "position": "CM",
+            "professionalism": 3,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:8",
+            "name": "Henry Brooks",
+            "born": 1931,
+            "position": "LW",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 2,
+              "judgement": 2
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:9",
+            "name": "Thomas Brooks",
+            "born": 1918,
+            "position": "ST",
+            "professionalism": 3,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:10",
+            "name": "William Watson",
+            "born": 1927,
+            "position": "RW",
+            "professionalism": 3,
+            "qualities": {
+              "understanding": 2,
+              "teaching": 2,
+              "judgement": 2
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:11",
+            "name": "Edward Watson",
+            "born": 1926,
+            "position": "GK",
+            "professionalism": 5,
+            "qualities": {
+              "understanding": 2,
+              "teaching": 4,
+              "judgement": 4
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:12",
+            "name": "Thomas Brooks",
+            "born": 1926,
+            "position": "LB",
+            "professionalism": 4,
+            "qualities": {
+              "understanding": 4,
+              "teaching": 3,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:13",
+            "name": "Albert Bennett",
+            "born": 1928,
+            "position": "CB",
+            "professionalism": 1,
+            "qualities": {
+              "understanding": 5,
+              "teaching": 4,
+              "judgement": 5
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:14",
+            "name": "Henry Brooks",
+            "born": 1922,
+            "position": "DM",
+            "professionalism": 3,
+            "qualities": {
+              "understanding": 4,
+              "teaching": 3,
+              "judgement": 4
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:15",
+            "name": "Walter Brooks",
+            "born": 1924,
+            "position": "CM",
+            "professionalism": 4,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 4
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:16",
+            "name": "Arthur Hawkins",
+            "born": 1927,
+            "position": "CM",
+            "professionalism": 4,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 2,
+              "judgement": 2
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:17",
+            "name": "George Brooks",
+            "born": 1928,
+            "position": "LW",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 2,
+              "teaching": 3,
+              "judgement": 5
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:18",
+            "name": "Thomas Brooks",
+            "born": 1924,
+            "position": "CB",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 3,
+              "judgement": 2
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          },
+          {
+            "id": "ENG:club:founder:19",
+            "name": "Albert Brooks",
+            "born": 1921,
+            "position": "DM",
+            "professionalism": 4,
+            "qualities": {
+              "understanding": 3,
+              "teaching": 4,
+              "judgement": 3
+            },
+            "playing": "active",
+            "club": "ENG:club",
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:club",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                }
+              }
+            ],
+            "mentors": []
+          }
+        ],
+        "playingCoachProposals": {},
+        "mediations": [
+          {
+            "id": "mediation:1950:0",
+            "key": "coach:1950:0:1198314408:1950:summer:line:MF",
+            "created": {
+              "year": 1950,
+              "day": 0
+            },
+            "window": "summer",
+            "manager": {
+              "id": "coach:1950:0:1198314408",
+              "name": "Henry Hawkins"
+            },
+            "director": {
+              "id": "ENG:club:staff:basic:director",
+              "name": "Thomas Hawkins"
+            },
+            "target": {
+              "kind": "short",
+              "line": "MF",
+              "pick": "market:1950:0war363:2"
+            },
+            "candidate": {
+              "id": "market:1950:0war363:2",
+              "name": "Arthur Turner",
+              "fee": "5566",
+              "wage": "1014"
+            },
+            "managerReason": "미드필더 보강을 위해 Arthur Turner 선수를 요청했어요.",
+            "directorReason": "이적료를 내면 운영자금이 13라운드 운영비에 못 미쳐요(재정 기조 표준)",
+            "support": "balanced",
+            "status": "resolved",
+            "resolution": {
+              "at": {
+                "year": 1950,
+                "day": 0
+              },
+              "support": "manager",
+              "result": "보유 자금이 부족해요. 다음 이적시장 마감까지의 보강 약속을 기록했어요.",
+              "promise": "promise:1950:0"
+            }
+          }
+        ],
+        "promises": [
+          {
+            "id": "promise:1950:0",
+            "mediation": "mediation:1950:0",
+            "manager": {
+              "id": "coach:1950:0:1198314408",
+              "name": "Henry Hawkins"
+            },
+            "director": {
+              "id": "ENG:club:staff:basic:director",
+              "name": "Thomas Hawkins"
+            },
+            "target": {
+              "kind": "short",
+              "line": "MF",
+              "pick": "market:1950:0war363:2"
+            },
+            "created": {
+              "year": 1950,
+              "day": 0
+            },
+            "deadline": {
+              "year": 1950,
+              "day": 184
+            },
+            "status": "pending"
+          }
+        ],
+        "recruitmentArrivals": [],
+        "year": 1950,
+        "round": 0,
+        "revision": 1,
+        "cash": "0",
+        "currency": "GBP-LSD",
+        "income": "0",
+        "expense": "0",
+        "tactic": "possession",
+        "manager": {
+          "id": "coach:1950:0:1198314408",
+          "name": "Henry Hawkins",
+          "trust": 65,
+          "conflicts": 0,
+          "interim": false,
+          "pending": null
+        },
+        "club": {
+          "id": "ENG:club",
+          "tier": 4,
+          "fans": 800,
+          "lower": true
+        },
+        "players": [
+          {
+            "id": "ENG:club:founder:0",
+            "status": "active",
+            "wage": "276",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:1",
+            "status": "active",
+            "wage": "473",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:2",
+            "status": "active",
+            "wage": "428",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:3",
+            "status": "active",
+            "wage": "317",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:4",
+            "status": "active",
+            "wage": "351",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:5",
+            "status": "active",
+            "wage": "287",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:6",
+            "status": "active",
+            "wage": "256",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:7",
+            "status": "active",
+            "wage": "234",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:8",
+            "status": "active",
+            "wage": "302",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:9",
+            "status": "active",
+            "wage": "388",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:10",
+            "status": "active",
+            "wage": "251",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:11",
+            "status": "active",
+            "wage": "260",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:12",
+            "status": "active",
+            "wage": "260",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:13",
+            "status": "active",
+            "wage": "245",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:14",
+            "status": "active",
+            "wage": "388",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:15",
+            "status": "active",
+            "wage": "317",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:16",
+            "status": "active",
+            "wage": "259",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:17",
+            "status": "active",
+            "wage": "258",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:18",
+            "status": "active",
+            "wage": "317",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "id": "ENG:club:founder:19",
+            "status": "active",
+            "wage": "428",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          }
+        ],
+        "matches": [],
+        "history": [],
+        "events": [
+          {
+            "kind": "founding",
+            "title": "클럽의 첫 페이지",
+            "amount": "666852"
+          }
+        ],
+        "euro": []
       }
     }
   ]

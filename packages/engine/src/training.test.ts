@@ -40,11 +40,13 @@ function world(focus: TrainingFocus = 'balanced') {
   w.tactic = 'balanced';
   for (const player of w.players) {
     player.born = w.year - 20;
+    w.people![player.id].born = player.born;
     player.potential = 85;
     for (const a of ATTRIBUTES) player.attrs[a] = 40;
     // Tired, but short of the 40 at which the assistant rests a player whatever the squad does.
     player.fatigue = 30;
     player.personality = { ...player.personality, professionalism: 3 };
+    w.people![player.id].professionalism = 3;
     // Paid as the market rates them now, so nobody asks for a raise (→CLUB-26).
     player.wage = marketWage(w, player);
   }
@@ -70,18 +72,25 @@ describe('earned player growth and training choices', () => {
     const balanced = world(),
       youth = world('hard'),
       recovery = world('recovery');
+    const fatigueOverRounds = new Map([
+      [balanced, 0],
+      [youth, 0],
+      [recovery, 0],
+    ]);
     for (let round = 0; round < 6; round++)
       for (const w of [balanced, youth, recovery]) {
         // An order holds four rounds; the owner renews it every round here.
         w.trainingOrders = { assistant: { ...w.trainingOrders!.assistant!, rounds: 4 } };
         advanceRound(w, undefined, false);
+        fatigueOverRounds.set(w, fatigueOverRounds.get(w)! + fatigue(w));
       }
     expect(development(youth)).toBeGreaterThan(development(balanced));
     expect(development(balanced)).toBeGreaterThan(0);
     expect(development(recovery)).toBeGreaterThan(0);
     expect(development(balanced)).toBeGreaterThan(development(recovery));
     expect(fatigue(youth)).toBeGreaterThan(fatigue(balanced));
-    expect(fatigue(balanced)).toBeGreaterThan(fatigue(recovery));
+    expect(fatigueOverRounds.get(youth)).toBeGreaterThan(fatigueOverRounds.get(balanced)!);
+    expect(fatigueOverRounds.get(balanced)).toBeGreaterThan(fatigueOverRounds.get(recovery)!);
     for (const w of [balanced, youth, recovery]) validateWorld(w);
   });
 

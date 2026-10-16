@@ -155,14 +155,14 @@ describe('recruitment build and budget previews', () => {
   it('disables full or already signed squads without changing the world', () => {
     const w = world(),
       offer = transferOffers(w)[2];
-    for (let index = 0; index < 8; index++)
+    for (let index = 0; index < 20; index++)
       w.players.push(makePlayer('ENG', w.seed, `full-roster:${index}`, w.year, 40, 'CB'));
-    expect(activePlayers(w)).toHaveLength(26);
+    expect(activePlayers(w)).toHaveLength(40);
     const before = canonical(w),
       full = recruitmentPreview(w, offer);
     expect(full.eligible).toBe(false);
-    expect(full.reason).toContain('26');
-    expect(() => operate(w, { type: 'recruit', candidate: 2 })).toThrow('26');
+    expect(full.reason).toContain('40');
+    expect(() => operate(w, { type: 'recruit', candidate: 2 })).toThrow('40');
     expect(canonical(w)).toBe(before);
     const signed = world();
     operate(signed, { type: 'recruit', candidate: 2 });

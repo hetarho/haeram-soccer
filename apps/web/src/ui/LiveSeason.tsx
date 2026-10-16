@@ -25,8 +25,8 @@ import { ProgressControls } from './ProgressControls';
 import { watchNextMatch } from './watch';
 import { LeagueOverview, RankHistoryGraph, Standings, RoundResults } from './LeagueInsights';
 import { ScorerStandings, ScorerHistory } from './ScorerPanels';
-import { StrategyPanel } from './StrategyPanel';
-import { FixtureNotebook } from './FixtureNotebook';
+import { StrategyPanel } from './LazyStrategyPanel';
+import { FixtureNotebook } from './LazyFixtureNotebook';
 /** A closed season's pages load when one is opened, outside the first-play entry (→ARCH-28). */
 const ClosedSeason = lazy(() =>
   import('./PastSeason').then((module) => ({ default: module.ClosedSeason })),

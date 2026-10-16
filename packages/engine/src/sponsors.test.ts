@@ -35,12 +35,15 @@ function club({ year, professional = false }: { year?: number; professional?: bo
   // The squad stays as founded, so results follow only what a test sets.
   if (year) {
     w.year = year;
+    // Fresh synthetic founding epoch; no played career is being moved.
+    delete w.people;
     w.currency = currency('ENG', year).code;
     w.priceIndex = priceIndex('ENG', year).value;
     w.manager.since = year;
     w.manager.until = year + 3;
     for (const p of w.players) {
       p.born = year - 24;
+      p.joined = year;
       p.until = year + 2;
     }
   }

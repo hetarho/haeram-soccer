@@ -1,6 +1,6 @@
 import { createStore } from 'zustand/vanilla';
 import { useStore } from 'zustand';
-import type { Command, InboxKind, World } from '../../../../packages/contracts/src/types';
+import type { Command, World } from '../../../../packages/contracts/src/types';
 import {
   currentDay,
   dayCountedFrom,
@@ -72,7 +72,6 @@ export function clockMark(
     rank: currentLeagueRank(w).rank,
   };
 }
-export type StopOn = Record<InboxKind, boolean>;
 export interface ProgressionState {
   running: boolean;
   pace: Pace;
@@ -84,49 +83,7 @@ export interface ProgressionState {
   /** A finished run while the owner was away, waiting to be summarized (→WEB-64). */
   away?: ClockMark;
 }
-export const STOP_LABELS: Record<InboxKind, string> = {
-  match: '경기 전날',
-  'window-open': '이적시장 개장',
-  'window-close': '이적시장 마감',
-  'bid-response': '이적 협상 응답',
-  'incoming-bid': '우리 선수 영입 제안',
-  'youth-intake': '유소년 입단',
-  'staff-report': '스태프 보고',
-  'staff-renewal': '감독·코치 재계약·공석',
-  cup: '컵 대진 발표',
-  finance: '자금·후원 경고',
-  'contract-talk': '선수 계약 협상',
-  unhappy: '언해피 선수',
-  'transfer-request': '선수 이적 요청',
-  'sponsor-ending': '후원 계약 만료',
-};
 const WATCH_REASON = '관전 중에는 자동 진행을 잠시 멈춰요.';
-/** Every event kind that can stop the clock. */
-export const STOP_KINDS = Object.keys(STOP_LABELS) as InboxKind[];
-/** Request hints only; the engine's live stopping query is authoritative. */
-export function stopsOf(w: Pick<World, 'intervention' | 'settings'>): StopOn {
-  const s = settingsOf(w);
-  return Object.fromEntries(
-    STOP_KINDS.map((kind) => [
-      kind,
-      kind === 'match'
-        ? s.observations.matchEve
-        : kind === 'window-open'
-          ? s.observations.windowOpen
-          : kind === 'contract-talk'
-            ? s.responsibilities.contracts === 'direct'
-            : kind === 'bid-response'
-              ? s.responsibilities.recruitment === 'direct'
-              : kind === 'incoming-bid'
-                ? s.responsibilities.sales === 'direct'
-                : kind === 'staff-renewal'
-                  ? s.responsibilities.manager === 'direct' || s.responsibilities.staff === 'direct'
-                  : kind === 'sponsor-ending'
-                    ? s.responsibilities.sponsors === 'direct'
-                    : false,
-    ]),
-  ) as StopOn;
-}
 /** Per-browser stops kept before the level decided them; removed once on start. */
 const STOP_KEY = 'haeram-soccor:stop-on';
 const BACKGROUND_KEY = 'haeram-soccor:background';
@@ -167,11 +124,15 @@ export function stoppingEvents(w: World) {
  */
 function command(days: number, w: World): Command {
   const until = daysUntilNextMatch(w),
-    stopOn = stopsOf(w);
+    observations = settingsOf(w).observations;
   return {
     type: 'advance-days',
-    days: stopOn.match && until !== undefined && until > 1 && until <= days ? until - 1 : days,
-    stop: (Object.keys(stopOn) as InboxKind[]).filter((kind) => stopOn[kind]),
+    days:
+      observations.matchEve && until !== undefined && until > 1 && until <= days ? until - 1 : days,
+    stop: [
+      ...(observations.matchEve ? ['match' as const] : []),
+      ...(observations.windowOpen ? ['window-open' as const] : []),
+    ],
   };
 }
 
@@ -553,7 +514,8 @@ export class ProgressionController {
   /** Stops on the eve of an own match the owner wants to decide; true when it stopped. */
   private eveStop(w: World) {
     const progress = this.store.getState();
-    if (progress.watching || !stopsOf(w).match || daysUntilNextMatch(w) !== 1) return false;
+    if (progress.watching || !settingsOf(w).observations.matchEve || daysUntilNextMatch(w) !== 1)
+      return false;
     const next = nextOwnFixture(w);
     if (!next || next.id === this.passedMatch) return false;
     this.stop('내일 경기가 있어요');

@@ -52,11 +52,13 @@ function academy(policy?: Partial<ClubPolicy>) {
   w.trainingOrders = { assistant: { focus: 'balanced', rounds: 4, forced: true } };
   for (const player of w.players) {
     player.born = w.year - 20;
+    w.people![player.id].born = player.born;
     player.potential = 85;
     for (const a of ATTRIBUTES) player.attrs[a] = 40;
     // Short of the 40 at which the assistant rests a player whatever the squad does.
     player.fatigue = 30;
     player.personality = { ...player.personality, professionalism: 3 };
+    w.people![player.id].professionalism = 3;
     // Paid as the market rates them now, so nobody asks for a raise (→CLUB-26).
     player.wage = marketWage(w, player);
   }
@@ -268,6 +270,7 @@ describe('club operating policy', () => {
     expect(canonical(signed)).toBe(
       canonical({
         ...offer.player,
+        joined: prospects.year,
         clauses: signed.clauses,
         adaptation: signed.adaptation,
         clubRounds: 0,

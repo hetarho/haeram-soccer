@@ -28,7 +28,9 @@ import { InterventionSettings, ProgressControls } from './ProgressControls';
 import { LiveSeason } from './LiveSeason';
 import { ClubHub } from './ClubHub';
 import { ClubFounding } from './ClubFounding';
-import { PlayGuide } from './PlayGuide';
+const PlayGuide = lazy(() =>
+  import('./PlayGuide').then((module) => ({ default: module.PlayGuide })),
+);
 import { gameStore, useGameState } from '../runtime/store';
 import { ProgressionController, useProgression } from '../runtime/progression';
 import { worldSelector } from './liveState';
@@ -50,7 +52,7 @@ import { GlossaryHost } from './Glossary';
 import { useGlossary } from './metricGlossary';
 import { useNewsSheet } from './NewsFeed';
 import { CelebrationHost } from './Celebration';
-import { CupsView } from './CupsView';
+const CupsView = lazy(() => import('./CupsView').then((module) => ({ default: module.CupsView })));
 import { TeamSheetHost } from './TeamSheet';
 import { PlayerSheetHost } from './PlayerSheet';
 import { cashState } from './teamState';
@@ -502,7 +504,15 @@ const ConnectedDashboard = memo(function ConnectedDashboard({
 });
 const ConnectedEurope = memo(function ConnectedEurope({ client }: { client: GameClient }) {
   const state = useContentState();
-  return <CupsView w={state.view!.world} coefficient={state.view!.coefficient} client={client} />;
+  const page = useNavigation((state) => state.page);
+  const visited = useRef(false);
+  if (page === 'europe') visited.current = true;
+  if (!visited.current) return null;
+  return (
+    <Suspense fallback={<p role="status">컵 대회를 불러오고 있어요.</p>}>
+      <CupsView w={state.view!.world} coefficient={state.view!.coefficient} client={client} />
+    </Suspense>
+  );
 });
 /** Kept apart from the shell's renders: a page change re-renders only the page shown next. */
 const ConnectedRich = memo(function ConnectedRich({
@@ -1378,7 +1388,9 @@ export function App() {
         />
       )}
       {guideOpen && w && (
-        <PlayGuide goals={state.view!.milestones.goals} onClose={() => setGuideOpen(false)} />
+        <Suspense fallback={null}>
+          <PlayGuide goals={state.view!.milestones.goals} onClose={() => setGuideOpen(false)} />
+        </Suspense>
       )}
       <GlossaryHost />
       {client && playing && <TeamSheetHost client={client} />}

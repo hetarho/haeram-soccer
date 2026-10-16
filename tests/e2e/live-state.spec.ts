@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
 import { createWorld } from '../../packages/engine/src/index';
 import type { World } from '../../packages/contracts/src/types';
+import { configureResponsibilities } from './events';
 import { continueSlot } from './slots';
 
 async function found(page: import('@playwright/test').Page) {
@@ -17,8 +18,11 @@ async function found(page: import('@playwright/test').Page) {
 test('keeps league views and nodes across silent progression from home and updates real scorers', async ({
   page,
 }) => {
-  // New clubs stop on match eves (level 2); this seed brings no offer before day 16.
+  // Exercise observation timing without unrelated direct market decisions.
   await found(page);
+  await configureResponsibilities(page, {
+    responsibilities: { recruitment: 'delegated', sales: 'delegated' },
+  });
   const menu = page.getByRole('navigation', { name: '게임 메뉴', exact: true });
   const date = page.getByTestId('game-date');
   await menu.getByRole('button', { name: '리그', exact: true }).click();
@@ -64,7 +68,7 @@ test('keeps league views and nodes across silent progression from home and updat
   // It stops by itself on the eve of our match, whichever view is open; away from home the
   // event waits as a small pill until it is opened.
   const pill = page.getByTestId('event-pill');
-  await expect(pill).toContainText('내일 경기');
+  await expect(pill).toHaveAccessibleName(/이벤트 1개 .* 열기/);
   await expect(date).toHaveText('1950년 8월 7일');
   await pill.click();
   const eve = page.getByTestId('event-card');

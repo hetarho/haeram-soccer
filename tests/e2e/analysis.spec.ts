@@ -46,7 +46,7 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
   await button.click();
   const players = await playerDownload;
   expect(players.suggestedFilename()).toBe('haeram-players-career-1950.csv');
-  expect((await readFile((await players.path())!, 'utf8')).trim().split('\r\n')).toHaveLength(19);
+  expect((await readFile((await players.path())!, 'utf8')).trim().split('\r\n')).toHaveLength(21);
   expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });

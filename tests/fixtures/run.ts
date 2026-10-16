@@ -1,3 +1,7 @@
+import { detectMediations } from '../../packages/engine/src/mediation';
+import { careerDate } from '../../packages/engine/src/person-careers';
+import { transferOffers } from '../../packages/engine/src/index';
+import { lineOf } from '../../packages/engine/src/player';
 import { legacySettings } from '../../packages/engine/src/responsibilities';
 import type { Founding, World, Command } from '../../packages/contracts/src/types';
 import {
@@ -15,13 +19,15 @@ export interface FixtureDefinition {
   year?: number;
   cupQualification?: boolean;
   managerConflict?: boolean;
+  currentRules?: boolean;
+  setup?: 'announced-player' | 'financial-conflict';
   commands: Command[];
   expected?: unknown;
 }
 export function runFixture(definition: FixtureDefinition) {
   const w = createWorld(definition.input);
   // Freeze the portable v1 scenarios to their original authority, independently of new-game defaults.
-  w.settings = legacySettings(2);
+  if (!definition.currentRules) w.settings = legacySettings(2);
   if (definition.year) {
     // A synthetic start epoch establishes identities there, rather than changing retained births.
     delete w.people;
@@ -52,15 +58,54 @@ export function runFixture(definition: FixtureDefinition) {
       },
     ];
   prepareSeason(w);
+  // Explicit synthetic setup is portable input, followed only by normal engine commands.
+  if (definition.setup === 'announced-player') {
+    const p = w.players[6],
+      person = w.people![p.id];
+    p.born = w.year - 35;
+    p.retiring = w.year;
+    p.qualities = { understanding: 4, teaching: 4, judgement: 4 };
+    p.personality.professionalism = 4;
+    Object.assign(person, {
+      born: p.born,
+      qualities: { ...p.qualities },
+      professionalism: 4,
+      intention: { at: careerDate(w), draw: 0.55, willing: false },
+      retirement: { announced: careerDate(w), year: w.year },
+    });
+    w.cash = '999999999';
+  }
+  if (definition.setup === 'financial-conflict') {
+    w.cash = '0';
+    const offer = transferOffers(w).find((o) => o.available && lineOf(o.player.position) === 'MF')!;
+    w.shortlist = {
+      year: w.year,
+      day: 0,
+      entries: [{ playerId: offer.player.id, line: 'MF' }],
+      requests: [{ kind: 'short', line: 'MF', pick: offer.player.id }],
+    };
+    detectMediations(w);
+  }
   for (const command of definition.commands) {
     if (command.type === 'advance') for (let i = 0; i < command.rounds; i++) advanceRound(w);
     else if (command.type === 'season') for (let i = 0; i < command.count; i++) simulateSeason(w);
     else operate(w, command);
   }
-  return facts(w);
+  return facts(w, definition.currentRules);
 }
-function facts(w: World) {
+function facts(w: World, currentRules = false) {
   return {
+    ...(currentRules
+      ? {
+          settings: w.settings,
+          direction: w.direction ?? {},
+          careers: Object.values(w.people ?? {}).filter((p) => p.formerOwn),
+          playingCoachProposals: w.playingCoachProposals ?? {},
+          mediations: w.mediations ?? [],
+          promises: w.promises ?? [],
+          recruitmentArrivals: w.recruitmentArrivals ?? [],
+        }
+      : {}),
     year: w.year,
     round: w.round,
     revision: w.revision,

@@ -17,7 +17,7 @@ import { useMatchView, useNavigation } from './state';
 import { useGameState } from '../runtime/store';
 import { ClubLink } from './ClubLink';
 import { watchNextMatch } from './watch';
-import { StrategyPanel } from './StrategyPanel';
+import { StrategyPanel } from './LazyStrategyPanel';
 import { Dialog } from './Dialog';
 import s from './ClubHub.module.css';
 import { STADIUM_STEPS } from '../../../../packages/engine/src/facilities';

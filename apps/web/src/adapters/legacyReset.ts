@@ -1,5 +1,6 @@
-import { ACTIVE_SAVE_KEYS, GameIndexStore, type ParkedStore } from './games';
+import { ACTIVE_SAVE_KEYS, GAMES_KEY, GameIndexStore, type ParkedStore } from './games';
 import type { StoragePort } from './repository';
+import { ownerOf } from './profile';
 import {
   envelopeEngine,
   LEGACY_ENGINE_VERSIONS,
@@ -16,6 +17,22 @@ export async function resetLegacy(
   canWrite: () => boolean,
 ) {
   if (!canWrite()) return;
+  // A protected or empty unindexed career must not incidentally create a device owner/index.
+  if (
+    !storage.getItem(GAMES_KEY) &&
+    !storage.getItem(CLEANUP) &&
+    !ACTIVE_SAVE_KEYS.slice(1).some((key) =>
+      LEGACY_ENGINE_VERSIONS.includes(envelopeEngine(storage.getItem(key) ?? '') ?? ''),
+    )
+  )
+    return;
+  let indexed = false;
+  try {
+    const record = JSON.parse(storage.getItem(GAMES_KEY) ?? 'null');
+    indexed = !!ownerOf(record?.owner) && Array.isArray(record?.slots);
+  } catch {
+    /* Unknown index data is preserved. */
+  }
   const index = new GameIndexStore(storage);
   const cleanup = async () => {
     const raw = storage.getItem(CLEANUP);
@@ -30,10 +47,10 @@ export async function resetLegacy(
     for (const id of ids as string[]) {
       const value = await parked.get(id);
       if (value && (await recognizedLegacy(value)) && canWrite()) {
-        const fresh = index.read();
-        const slot = fresh.slots.findIndex((entry) => entry?.id === id);
+        const fresh = indexed ? index.read() : undefined;
+        const slot = fresh?.slots.findIndex((entry) => entry?.id === id) ?? -1;
         // Complete a journal left before the index write. A protected active pair wins.
-        if (slot >= 0) {
+        if (fresh && slot >= 0) {
           if (fresh.active === slot) continue;
           fresh.slots[slot] = null;
           index.write(fresh);
@@ -46,7 +63,7 @@ export async function resetLegacy(
   await cleanup();
   // Clear index references before envelopes: interruption can leave harmless orphan bytes, never
   // an active index pointing at a deleted career. Retrying completes an interrupted reset.
-  for (let slot = 0; slot < 3; slot++) {
+  for (let slot = 0; slot < (indexed ? 3 : 0); slot++) {
     const current = index.read(),
       entry = current.slots[slot];
     if (!entry) continue;

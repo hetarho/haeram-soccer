@@ -42,6 +42,7 @@ function sourceFingerprint() {
       'apps/web/public',
       'packages',
       'scripts',
+      'tests/fixtures/retained-workload.ts',
       'package.json',
       'pnpm-lock.yaml',
       'pnpm-workspace.yaml',

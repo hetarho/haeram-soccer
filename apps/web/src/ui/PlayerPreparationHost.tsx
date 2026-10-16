@@ -2,7 +2,7 @@ import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { selectStrategyWorld } from './liveState';
 import { usePlayerPreparation } from './state';
-import { StrategyPanel } from './StrategyPanel';
+import { StrategyPanel } from './LazyStrategyPanel';
 
 export function PlayerPreparationHost({ client }: { client: GameClient }) {
   const id = usePlayerPreparation((state) => state.id);

@@ -25,12 +25,15 @@ function founded(country: CountryCode, year?: number) {
   });
   if (!year) return w;
   w.year = year;
+  // Fresh synthetic founding epoch; no played career is being moved.
+  delete w.people;
   w.currency = currency(country, year).code;
   w.priceIndex = priceIndex(country, year).value;
   w.manager.since = year;
   w.manager.until = year + 3;
   for (const p of w.players) {
     p.born = year - 24;
+    p.joined = year;
     p.until = year + 2;
   }
   prepareSeason(w);
