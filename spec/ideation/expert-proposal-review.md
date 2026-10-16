@@ -8,7 +8,8 @@
 - Evidence scope: current rules and selected implementation paths; an isolated synthetic Chromium career on the available local preview at 390×844. No existing user career opened. This review does not establish usability for other players or a newly measured economic balance.
 
 ## explored
-- [?] Overall assessment: useful problem discovery and promising owner stories; the coefficient tables, precise predicted outcomes and implementation phases remain hypotheses. No proposal item is adopted or rejected by this review.
+- [o] Discussion scope: park balance changes for now, including difficulty, operating-cost and wage coefficients and their target bands. Settle the remaining delegation, narrative and UX candidates through conversation with the owner; no non-balance feature is adopted by this scope choice.
+- [?] Overall assessment: useful problem discovery and promising owner stories; the coefficient tables, precise predicted outcomes and implementation phases remain hypotheses. Feature adoption remains open.
 - [?] Focused policy sheets: compare the existing focused-page journey with a sheet for a frequent narrow change, retaining one applied policy and the same review/apply meaning.
   - Already present: exact department entry, named return, retained task filters/comparisons/scroll and unapplied drafts (WEB-60/71/74; `apps/web/src/ui/taskMemory.ts`, `DirectionLines.tsx`, `StrategyBoard.tsx`; `tests/e2e/owner-workflows.spec.ts`).
   - Observed on the local preview: market → GK filter → recruitment policy → named return restores `/people?view=market` and the selected GK filter. Settled phone captures are `.tmp/proposal-review-home.png` and `.tmp/proposal-review-policy.png`.
@@ -35,12 +36,12 @@
 - [?] Coach resignation affecting manager trust: a plausible consequence when a relationship or prior warning makes it legible; currently the proposed pride ≥70, two schools and −4 trust have no supporting relationship rule or measured balance.
   - Forced training already risks resignation at 15–60% and states that risk (STAFF-19). An additional manager penalty needs an understandable reason and advance consequence preview; otherwise it can make intervention harder to learn.
   - News must derive from recorded facts (HIST-11). Avoid asserting an interview or personal allegiance that the game has never established.
-- [?] Long-term difficulty: the measured lack of separation is real, but the desired meaning of difficulty comes before selecting a permanent penalty.
+- [?] Long-term difficulty, parked outside this discussion: the measured lack of separation is real, but the desired meaning of difficulty comes before selecting a permanent penalty.
   - LEAGUE-13's 60/62.5/57.5/70% are careers with at least one top-flight title during 1950–2009, among 40 careers per level. They are not annual championship probabilities; title share after the first is about 21%. The extreme target is reaching the top flight, measured at 37/40, and is a different denominator.
   - Initial cash and XI no longer separate outcomes over long runs; it does not follow that all resulting careers become identical after 10–15 seasons. Growth, facilities, reputation and results remain path dependent.
   - WEB-3 says every rule, coefficient and chance is identical across levels and a shared seed makes the same world; LEAGUE-13 says tuning is shared. Difficulty-specific operating costs, wage demands and rival stature change that policy even when match probabilities are unchanged.
   - Owner choices remain open: retain “starting conditions” and revise the promised outcome bands, introduce a clearly disclosed lasting challenge, or examine common competitive dynamics for every level. The supplied 0.90–1.20 costs, 0.95–1.12 wage demands and +0–3 rival stature are experimental candidates, not calibrated solutions.
-- [?] Wage/revenue mismatch: ECON-29 records 40.0% below the 45–70% band on the 160-career measurement. Its newer 16-career facility-cost comparison records 41.8%; keep those samples separate.
+- [?] Wage/revenue mismatch, parked outside this discussion: ECON-29 records 40.0% below the 45–70% band on the 160-career measurement. Its newer 16-career facility-cost comparison records 41.8%; keep those samples separate.
   - Scope matters: the reference club is fully delegated at the default direction, youth-heavy and a net seller, with an explicit automatic facility-building policy. A single aggregate does not establish that every player's late game lacks financial decisions.
   - Other measured guardrails matter: operating result +9.7% after construction / +24.6% before it, net +17.0% including sales, and three bankrupt ESP amateur careers. The smaller new-cost sample has operating result +6.0% and one bankruptcy. A blanket cost increase can worsen those vulnerable careers.
   - The proposed reputation and stadium premiums can raise a renewal floor beyond 재계약 기조 표준's 110% market-wage cap, causing rejection, unhappiness and departures instead of the expected higher payroll (`packages/engine/src/contracts.ts:staffTalkVerdict`, CLUB-26/27/30). CLUB-30 already records an earlier larger agent premium producing a lower aggregate wage share.
@@ -56,21 +57,23 @@
   - Passing contract tests cannot establish enjoyable delegation, and one 100-season career with a former-player manager cannot establish correct identity retention or appropriately rare progression. Verification must match each chosen policy and actual journey.
 
 ## shape
-- Proposed discussion order: desired long-term challenge → which owner decisions deserve a stop → shortlist of narrative additions → targeted comparison of policy access. This is a review recommendation, not an approved implementation order.
+- Discussion scope: delegation, narrative and UX; balance is parked. Discuss delegation first, then narrative and policy access; the remaining order is adjustable by the owner.
+- First delegation question: preserve and reorder four levels, preserve levels with narrowly defined owner-approval exceptions, or select responsibilities individually in one central place. Recommendation to discuss: try reordered levels first, then assess unmet needs before adding exceptions. No option is selected yet.
 - Candidate story flow: know a player through his club career → retirement invitation → inspect his coaching candidacy and history → independently choose whether to employ him → revisit his combined career.
 - Review boundary: assess and retain proposal material. No SSOT policy changes, coefficient changes, implementation tasks or code changes are authorized by selecting an idea for discussion.
 
 ## domains
 - WEB: focused policy access, effective delegation responsibilities, event visibility and phone navigation; relate any future choice to WEB-45/60/71/74/75.
-- LEAGUE: difficulty's intended duration, reference-career outcomes and persistent challenge candidates.
-- ECON: wage share, operating result, insolvency and facility-growth tradeoffs measured on comparable samples.
+- LEAGUE: parked; difficulty's intended duration, reference-career outcomes and persistent challenge candidates.
+- ECON: parked; wage share, operating result, insolvency and facility-growth tradeoffs measured on comparable samples.
 - CLUB: renewal consequences, unmet requests and potential future promises; veteran eligibility for a second career.
 - STAFF: owner versus director authority, relevant reactions and retired-player coaching/management candidacy.
 - HIST: verifiable person continuity across playing and staff careers and fact-backed story presentation.
 - SAVE: retained commitments and cross-role identities if adopted; compatibility and long-career retention must be assessed for the chosen scope.
 
 ## open
-- Should difficulty describe the founding disadvantage or a challenge that still differs in season 60?
+- Which delegation model fits the owner: reordered four levels, four levels with core approvals, or centrally selected responsibilities?
 - Which decisions should remain the owner's when routine administration is automated: manager appointments, key-player retention, major sales, or another set?
 - Which narrative should be developed first: a former player's second career or mediation with an accountable future promise?
 - Does the current focused-policy round trip interrupt a real recurring task enough to justify another presentation, and what improvement would demonstrate it?
+- Parked for a later balance discussion: should difficulty describe the founding disadvantage or a challenge that still differs in season 60?

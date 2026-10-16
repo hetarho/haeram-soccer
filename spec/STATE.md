@@ -93,11 +93,12 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- ideation expert-proposal-review: discuss lasting difficulty, owner decision boundaries and retired-player careers; proposal items remain unadopted.
+- ideation expert-proposal-review: settle delegation, narrative and UX with the owner, starting with the delegation model; balance changes are parked.
 - implement-task T141: remove the home launcher spacer and verify mobile/desktop content bounds.
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 ideation expert-proposal-review continue: owner parks balance changes; settle delegation, narrative and UX through conversation
 - 261016 ideation expert-proposal-review open: checked current rules, selected code and a synthetic phone policy return; recorded recommendations without adopting policies
 - 261016 ideation expert-proposal-review start: compare the external r79 proposal with current policy and implementation; adoption remains open
 - 261016 T141 local checks pass: 36 affected browser cases, static/build/spec checks and phone geometry; publish and inspect full source CI next
@@ -117,4 +118,3 @@
 - 261015 T138 done: observe at least one settled x10 round and stop before inspection; 9 repeated supported-browser cases pass, production timing unchanged
 - 261015 T135 done: actionable training/player/academy/staff workflows and request-first recruitment; 69 browser cases and static/build/spec checks pass, actual phone captures inspected
 - 261015 create-task T138: CI 38751332516 Firefox observed x10 at round 6 after missing transient round 1; fix test observation after T135, no game-rule change
-- 261015 T135 doing@m8q4: actionable training, player context, recruitment needs and academy/staff handoffs
