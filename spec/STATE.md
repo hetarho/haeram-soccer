@@ -14,6 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
+| v6k2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:14Z | 2026-10-16T14:15Z | T150 |
 
 ## inbox
 - 261016 suggest WEB-74: owner-workflow tasks T134–T138 completed → review-code taskMemory/state, RecordsRoom/LiveSeason/CupsView and their browser journeys before the next UI feature; no refactoring is included in this completed scope
@@ -82,7 +83,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T150 | Expose exclusive time controls and remove season tools | WEB | T148 T149 | todo |
+| T150 | Expose exclusive time controls and remove season tools | WEB | T148 T149 | doing@261016.v6k2 |
 | T151 | Isolate policy drafts and apply commands by department | WEB | T142 | todo |
 | T152 | Open the authoritative department editor over its task | WEB | T149 T151 | todo |
 | T153 | Add the recruitment support policy to every authoritative row workflow | STAFF ECON WEB SAVE | T152 | todo |
@@ -132,6 +133,7 @@
 - Remaining planned tasks retain their scope and status; do not activate rules 3.0.0 or delete career data in this checkpoint.
 
 ## log
+- 261016 implement-task T150 start v6k2; authorized two push units T150 then T151–T153.
 - 261016 checkpoint p150 complete: T142–T149 committed individually; 825 unit and 11 contract tests, full CI browser matrix and storage/performance gates passed on 34beea9. T150+ remain unstarted; docs/verification/T149-checkpoint.md records evidence.
 - 261016 T149 done p150: Shared explicit-apply seven-category dialog with retained drafts, live handover previews, manual match-event invariant, local ownership labels and responsive readonly controls.
 - 261016 user checkpoint p150: finish T149, run and repair full verification, then push main; stop new task implementation.
