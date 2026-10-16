@@ -67,16 +67,16 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 87 | 86 | WEB-44✎ | 0 |
+| WEB | 87 | 87 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
-| CLUB | 41 | 39 | CLUB-1✎ CLUB-3✎ CLUB-5✎ CLUB-33✎ CLUB-40+ CLUB-41+ CLUB-42+ CLUB-43+ CLUB-44+ | 0 |
+| CLUB | 41 | 41 | - | 0 |
 | MATCH | 9 | 9 | - | 0 |
-| LEAGUE | 9 | 8 | LEAGUE-10✎ LEAGUE-14+ | 0 |
-| STAFF | 33 | 32 | STAFF-11✎ STAFF-13✎ STAFF-20✎ | 0 |
+| LEAGUE | 9 | 9 | - | 0 |
+| STAFF | 33 | 33 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 12 | 12 | - | 0 |
-| SAVE | 39 | 37 | SAVE-18✎ | 0 |
+| SAVE | 39 | 39 | - | 0 |
 | PLAYER | 8 | 8 | - | 0 |
 
 ## tasks
@@ -114,12 +114,20 @@
 | T171 | Judge, cancel and retain fixed-deadline reinforcement promises | CLUB HIST SAVE | T170 T165 | todo |
 | T172 | Present direct mediation and durable commitment status | WEB CLUB STAFF HIST | T150 T171 T153 | todo |
 | T173 | Round-trip settings, person careers and commitments losslessly | SAVE HIST WORLD ARCH | T148 T161 T163 T165 T171 | todo |
-| T174 | Activate rules 3.0.0 with bounded recognized-legacy gameplay reset | SAVE WEB ARCH | T150 T152 T167 T168 T172 T173 | todo |
+| T174 | Activate rules 3.0.0 with bounded recognized-legacy gameplay reset | SAVE WEB ARCH | T150 T152 T167 T168 T172 T173 T180 T186 T187 | todo |
 | T175 | Migrate old browser helpers to the approved public progression flow | WEB LEAGUE | T150 T174 | todo |
 | T176 | Verify second careers across contracts, reloads and market transitions | WEB STAFF WORLD HIST SAVE | T167 T168 T174 | todo |
 | T177 | Verify delegation handover and promise outcomes through the browser | WEB CLUB HIST SAVE | T172 T174 | todo |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 | todo |
+| T180 | Settle every club's reputation by its standing | LEAGUE ECON | - | todo |
+| T181 | Catalog the real squad registration rules | CLUB ECON ARCH | - | todo |
+| T182 | Count the squad against the season's registration rule | CLUB | T181 T143 T144 | todo |
+| T183 | Aim the first team at 20 players | CLUB STAFF | T182 | todo |
+| T184 | Bid by the director's trait | CLUB STAFF | T143 T144 | todo |
+| T185 | Open and pursue replacement needs | CLUB | T183 T184 | todo |
+| T186 | Call up from the academy when a window closes | CLUB STAFF | T185 | todo |
+| T187 | Show squad counts against the rule and the 20/16 tones | WEB CLUB STAFF | T182 T183 T184 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -129,10 +137,12 @@
 
 ## next
 - implement-task T142: start the complete proposal batch from validated responsibility/settings foundations; T154 is the independent aptitude foundation. All task files specify dependencies and focused verification.
-- Implement T142–T179 as explicit small units; preserve accepted policy and parked balance constants. Then create-task CLUB LEAGUE STAFF WEB SAVE for the squad/reputation delta (CLUB-40–44, LEAGUE-14) before T174/T179 so it ships inside rules 3.0.0. No implementation or new-rule save deletion has run in this planning unit.
+- Implement T142–T179 as explicit small units; preserve accepted policy and parked balance constants. Then implement T180–T187 (squad and reputation; T180/T181 need nothing, the rest follow T143/T144) before T174, which waits for them so they ship inside rules 3.0.0. No implementation or new-rule save deletion has run in this planning unit.
 - Final integration T179 follows the full browser/continuity gates and measured century-save gate T178; do not activate/deploy incomplete rule metadata early.
 
 ## log
+- 261016 create-task complete: T180–T187 — reputation by standing, registration catalog and counting, squad target 20 with close call-ups, trait bidding, replacement needs, window-close call-ups, squad display; T174 now waits for T180 T186 T187 (base SAVE@39); T143/T144 assumed as specified
+- 261016 create-task CLUB LEAGUE STAFF WEB SAVE start: squad/reputation delta CLUB r40–41, LEAGUE r9, STAFF r33, WEB r87, SAVE r38–39
 - 261016 update-ssot warning T143 (doing, base CLUB@39 LEAGUE@8): CLUB r40–41 and LEAGUE r9 add CLUB-40–44 and LEAGUE-14 and change squad numbers in CLUB-1/3/5/33; T143's responsibility routing is unchanged
 - 261016 update-ssot CLUB r41 SAVE r39: CLUB-44 real registration limits by country, division and year (none in England before 2010; GER/FRA/NED none) with a 40-player ceiling; squad and reputation planning complete
 - 261016 update-ssot CLUB r40 LEAGUE r9 STAFF r33 WEB r87 SAVE r38: squad target 20 with delegated academy call-ups at the close and at a window's close, replacement needs after a starter's departure or under 20, the 단장's trait bidding (협상가 80%→100%, none 100%, 속전속결 110%), every club's reputation by standing (20% to its next division's level, finish ±3, cup +2, continental), all inside rules 3.0.0; per-league registration limits (CLUB-5) follow after research
@@ -151,5 +161,3 @@
 - 261016 update-ssot STAFF start: record separate initial manager ability/potential and other-club coaching hires at four-round/season-end refreshes
 - 261016 update-ssot STAFF r29 WORLD r6: approved novice coaching OVR/POT ranges, selective continuity for coaching prospects/former own players, actual age/retirement and unique affiliation/role history; four policy units remain open
 - 261016 update-ssot STAFF WORLD start: record approved novice coaching OVR/POT ranges and selective cross-club person continuity
-- 261016 update-ssot PLAYER r8 STAFF r28: equal-weight aptitude calculation and existing grade distribution, automatically assigned coaching specialty from career/qualities; five policy units remain open
-- 261016 update-ssot PLAYER STAFF start: record equal-weight aptitude calculation and automatically assigned career/quality-based coaching specialty
