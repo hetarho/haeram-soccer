@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:15Z | - |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T15:15Z | T160 |
 
 ## inbox
 - 261017 suggest T154 T155 T156 T157 T158: five person-career foundation tasks completed → review-code aptitude/person-careers/npc-continuity/careers/coaching-entry before the next unrelated feature; remaining planned second-career tasks continue.
@@ -84,7 +84,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T160 | Quote and atomically approve a playing-coach appointment | STAFF WEB SAVE | T146 T159 | todo |
+| T160 | Quote and atomically approve a playing-coach appointment | STAFF WEB SAVE | T146 T159 | doing@261017.n7r4 |
 | T161 | Settle playing-coach payroll, retirement and departures | STAFF CLUB HIST WORLD | T160 | todo |
 | T162 | Accumulate actual coaching service and mentor exposure | STAFF HIST WORLD SAVE | T161 | todo |
 | T163 | Move retained coaching candidates into real NPC employment | STAFF WORLD HIST | T159 T162 | todo |
@@ -125,6 +125,7 @@
 - Do not activate rules 3.0.0 or reset career data before T174's prerequisites are complete.
 
 ## log
+- 261017 implement-task T160 start n7r4.
 - 261017 T159 done n7r4: Former players receive one specialty and actual coaching ability; pure candidate lists append retained people, stable hiring IDs survive index changes and employment preserves learned values.
 - 261017 implement-task T159 start n7r4.
 - 261017 T158 done n7r4: One retained intention draw at announcement and once-only owner encouragement enforce true aptitude, strict thresholds and actual-retirement entry readiness.
@@ -144,4 +145,3 @@
 - 261016 implement-task T152 start v6k2; WEB r87 squad tone delta is unrelated to policy sheets.
 - 261016 T151 done v6k2: department draft extraction/discard, live card merge and successful-command reconciliation; 14 board/navigation cases passed.
 - 261016 implement-task T151 start v6k2; WEB r87 changes squad tones only, unrelated to department draft mechanics.
-- 261016 T150 done v6k2: exclusive progression controls, removed round tools and grouped same-date actions; 14 Chromium and 26 unit cases passed.
