@@ -412,7 +412,10 @@ export class ProgressionController {
       }
       return;
     }
-    const id = this.store.getState().matchEve;
+    const world = gameStore.getSnapshot().view?.world;
+    const id =
+      this.store.getState().matchEve ??
+      (world && daysUntilNextMatch(world) === 1 ? nextOwnFixture(world)?.id : undefined);
     if (id) this.passedMatch = id;
     this.store.setState({ matchEve: undefined });
     this.start();

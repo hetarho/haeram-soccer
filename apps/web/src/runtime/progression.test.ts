@@ -678,3 +678,18 @@ describe('explicit automatic and manual modes', () => {
     expect(s.command).not.toHaveBeenCalled();
   });
 });
+
+it('plays through a restored match eve without needing a remembered controller stop', async () => {
+  const restored = structuredClone(w);
+  restored.calendar = { day: 6 };
+  restored.settings!.responsibilities.sales = 'delegated';
+  const s = setup(undefined, restored);
+  controller = s.controller;
+  expect(controller.store.getState().matchEve).toBeUndefined();
+  await controller.playThrough();
+  await vi.advanceTimersByTimeAsync(1000);
+  expect(s.command).toHaveBeenCalledWith(
+    expect.objectContaining({ type: 'advance-days', days: 1 }),
+    expect.anything(),
+  );
+});

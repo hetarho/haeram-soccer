@@ -90,6 +90,7 @@
 }
 .member {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 3px;
   min-width: 0;
 }
@@ -222,7 +223,11 @@
 .impact {
   color: var(--positive) !important;
 }
-/* What the 단장 decides at the current level: 맡김 lit, 직접 quiet (→STAFF-20). */
+/* Independent responsibilities must wrap within the staff card on narrow screens. */
+.decides span {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
 .decides b {
   font-weight: 700;
   color: var(--text-muted);

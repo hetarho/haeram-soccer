@@ -99,14 +99,19 @@ export const EventCenter = memo(function EventCenter({
     controller.eventDecided();
   };
   const acting = useGameState((state) => !!state.pendingActions || state.readonly);
-  const { matchEve, running } = useProgression(controller, (state) => state);
+  const { running } = useProgression(controller, (state) => state);
   const showLevels = useInterventionDialog((state) => state.show);
   const setPage = useNavigation((state) => state.setPage);
   const [opened, setOpened] = useState<string>();
   if (!w || running) return null;
-  const events = stoppingEvents(w);
+  const reasons = stoppingEvents(w);
   const next = nextOwnFixture(w);
-  const eve = matchEve && next?.id === matchEve ? next : undefined;
+  // Reloaded careers have no remembered controller stop; the dated observation is authoritative.
+  const eve =
+    next && reasons.some((item) => item.kind === 'match' && item.ref === next.id)
+      ? next
+      : undefined;
+  const events = reasons.filter((item) => item.kind !== 'match');
   if (!eve && !events.length) return null;
   const total = events.length + (eve ? 1 : 0);
   const key = eve?.id || events[0].id;
