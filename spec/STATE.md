@@ -17,6 +17,7 @@
 | n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:54Z | T186 |
 
 ## inbox
+- 261017 decided T175 T187: dependency order for legacy browser helpers → migrate T175 before T187, using already shipped T150 controls (alt: make UI verification depend on removed controls); T174 activation retains its own save tests and final T179 gate.
 - 261017 suggest T183 T184 T185 T186 T189: five units completed → review-code registration/squad-target/director-bidding/replacements and CI triggers after planned release integration; no extra refactor adopted.
 - 261017 decided SAVE-10: align recognized older catalog pin text with approved T181 2026-demo-3; no historical price/index changes and no legacy reset before T174.
 - 261017 suggest T154 T155 T156 T157 T158: five person-career foundation tasks completed → review-code aptitude/person-careers/npc-continuity/careers/coaching-entry before the next unrelated feature; remaining planned second-career tasks continue.
@@ -87,12 +88,12 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T174 | Activate rules 3.0.0 with bounded recognized-legacy gameplay reset | SAVE WEB ARCH | T150 T152 T167 T168 T172 T173 T180 T186 T187 | todo |
-| T175 | Migrate old browser helpers to the approved public progression flow | WEB LEAGUE | T150 T174 | todo |
+| T175 | Migrate old browser helpers to the approved public progression flow | WEB LEAGUE | T150 | todo |
 | T176 | Verify second careers across contracts, reloads and market transitions | WEB STAFF WORLD HIST SAVE | T167 T168 T174 | todo |
 | T177 | Verify delegation handover and promise outcomes through the browser | WEB CLUB HIST SAVE | T172 T174 | todo |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 | todo |
-| T187 | Show squad counts against the rule and the 20/16 tones | WEB CLUB STAFF | T182 T183 T184 | todo |
+| T187 | Show squad counts against the rule and the 20/16 tones | WEB CLUB STAFF | T182 T183 T184 T175 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -106,6 +107,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 create-task T175/T187: migrate public-flow helpers before UI verification; activation does not supply those controls.
 - 261017 T186 done n7r4: Window judge days fill unmet replacements then the twenty-player deficit from eligible academy prospects or named graduates; direct authority gets one ordered recommendation and no mutation, and closed-window needs clear.
 - 261017 implement-task T186 start n7r4.
 - 261017 T185 done n7r4: Starter departures and thin-squad sales open dated replacement needs; delegated recruitment pursues them daily after opening, actual same-line signings close oldest needs, and closing starters open summer needs after top-up.
