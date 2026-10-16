@@ -28,10 +28,14 @@
   - The proposed level 3 also moves ordinary sale responses into delegation while retaining owner bids and 150%+ untouchable offers. Decide those responsibilities explicitly rather than only renaming a level.
   - If pins remain candidates: define which XI determines a protected starter, appointments versus renewals versus replacement, pending approvals, switching levels and away progression. A level-4 pin adds stops to the current cash-only idle mode; its summary must state the effective responsibility.
   - Existing delegated untouchable offers can be decided by staff and manager (CLUB-24); 150% is not a universal owner-approval threshold.
-- [?] Retired player → coach → manager: strongest proposed content fit for a game about the club's accumulated history and generations.
+- [o] Player second-career scope: retirement → coaching candidacy → coaching experience → possible manager candidacy. Preserve the person's actual age, identity and retained playing history through the career; an appointment follows the adopted staff/manager responsibility. Candidate qualification and career progression do not guarantee an appointment.
+- [o] Second-career opportunity is not restricted to the owner's club, its retirees or its legends: suitable players from other clubs can enter coaching and rise toward management too. Eligibility follows coaching aptitude; work ethic/professionalism and football intelligence are desired positive factors, with their representation and exact conditions still open.
+- [x] Own-club 150 appearances or five seasons as the qualifying gate for coaching opportunities ← the owner wants aptitude-based opportunities across clubs; club service can be career context but must not exclude suitable outsiders.
+- [?] Second-career detail: preserve a recognisable person and assess coaching aptitude across clubs.
   - Preserve the person's actual identity, age and playing record through later roles; distinguish a training invitation, qualification, a vacancy and an appointment. A legend's playing quality need not guarantee coaching quality.
-  - The supplied 150 appearances or five seasons, leader/professionalism eligibility, 20-unit course, age 33–38 and potential +10 are untested choices. Retirement can occur through 41 (CLUB-3), so setting a retiree's age to 33–38 would contradict his history.
-  - A smaller candidate first scope is a qualifying retiree becoming a named coaching candidate with a visible playing-career link; later management is a separate expansion. Neither scope has been adopted.
+  - The supplied mandatory leader/professionalism gate, 20-unit course, age 33–38 and potential +10 are not adopted. Retirement can occur through 41 (CLUB-3), so setting a retiree's age to 33–38 would contradict his history.
+  - Current PLAYER-7 provides professionalism; PLAYER-2 has vision and positioning, but PLAYER-19 explicitly has no other mental attributes. Do not equate a midfielder's vision or physical work rate with intelligence or work ethic. A separate coaching-aptitude/football-understanding assessment versus using existing traits remains a product choice.
+  - Feasibility concern: other clubs' squads are generated each season without the own-club development/ageing lifecycle (PLAYER-1). Cross-club second careers need an explicit continuity scope and genuine retained identity; do not invent historical appearances or claim every NPC player already has a tracked lifetime.
   - Existing retained player careers and manager tenures are useful material (WEB-54/59, HIST-1), but a cross-role career and its continuity require explicit new product rules. “No complex new schema” is not evidenced.
 - [?] Director–manager mediation: good owner decision when finance and football needs conflict; it must describe the actual reason an acquisition did not happen.
   - Current CLUB-33 deducts 3 trust when none of the opening requests was met by a qualifying arrival; it does not deduct 3 for every missed first-choice pick or every unfilled line. A qualifying alternative or loan can meet the window.
@@ -69,8 +73,8 @@
 - Business flow: owner-held decision → stop for the owner's answer; delegated decision → staff resolution and report. Unresolved-decision timing remains open.
 - New-game defaults: owner handles manager appointments, player contracts, recruitment and sales; staff handle their appointments, the academy and sponsors. Each remains individually changeable.
 - Observation preferences: match-eve and window-opening stops separately selectable, with notices retained either way; defaults are match-eve stop on and window-opening stop off.
-- Candidate story flow: know a player through his club career → retirement invitation → inspect his coaching candidacy and history → independently choose whether to employ him → revisit his combined career.
-- Current story questions, undecided: extend the second career through coaching experience to manager candidacy, stop initially at coach candidacy, or park it. If included, consider players retiring at our club with at least 150 own-club appearances or five seasons registered; alternatives are every own-club retiree or the longevity threshold plus leader/high-professionalism eligibility. Qualification gives an opportunity, not an assumed ability bonus; appointments would follow their direct/delegated responsibility.
+- Second-career flow: a player at our club or another → aptitude and a coaching career choice → retirement and coaching candidacy → appointment/experience → possible management candidacy → appointments and a linked career record. Entry mechanism, aptitude display and promotion conditions remain open.
+- Current second-career proposals to discuss: an assessment of coaching aptitude including football understanding and ability to teach, informed by existing professionalism without altering existing match attributes; natural coaching entry across clubs, with an optional owner encouragement for our own players. Neither proposal is adopted yet.
 - Review boundary: assess and retain proposal material. No SSOT policy changes, coefficient changes, implementation tasks or code changes are authorized by selecting an idea for discussion.
 
 ## domains
@@ -78,13 +82,15 @@
 - LEAGUE: parked; difficulty's intended duration, reference-career outcomes and persistent challenge candidates.
 - ECON: parked; wage share, operating result, insolvency and facility-growth tradeoffs measured on comparable samples.
 - CLUB: renewal consequences, unmet requests and potential future promises; veteran eligibility for a second career.
+- PLAYER: represent coaching aptitude, professionalism and football intelligence without assuming nonexistent mental attributes; define cross-club person continuity if the feature is specified.
 - STAFF: owner versus director authority, relevant reactions and retired-player coaching/management candidacy.
 - HIST: verifiable person continuity across playing and staff careers and fact-backed story presentation.
 - SAVE: retained commitments and cross-role identities if adopted; compatibility and long-career retention must be assessed for the chosen scope.
 
 ## open
 - How do changes apply to pending decisions and existing careers, and what shortcuts belong in the clock/settings entry?
-- Should retired-player careers extend through coaching to management, initially stop at coaching, or stay parked? If included, which former players qualify?
+- How should coaching aptitude and football intelligence be represented and shown, and how does a player choose to enter coaching?
+- What experience makes a coach a manager candidate, and how are his specialty and school established?
 - Should mediation with an accountable future promise be developed after the retired-player discussion?
 - Does the current focused-policy round trip interrupt a real recurring task enough to justify another presentation, and what improvement would demonstrate it?
 - Parked for a later balance discussion: should difficulty describe the founding disadvantage or a challenge that still differs in season 60?

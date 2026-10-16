@@ -92,10 +92,11 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- ideation expert-proposal-review: delegation groups, defaults and observation stops adopted; discuss retired-player career scope and eligibility next; balance parked.
+- ideation expert-proposal-review: aptitude-based second careers across clubs through coaching to management adopted; discuss aptitude and career entry next; delegation settled in outline, balance parked.
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 ideation expert-proposal-review: owner adopts coach-to-manager careers and aptitude-based entry across clubs; own-club 150-match/five-season gate dropped
 - 261016 T141 done: home uses the launcher space, 45 affected browser cases pass; published at bccf136 with full source CI 38854278380 passing all six jobs
 - 261016 ideation expert-proposal-review: owner adopts mixed new-game delegation defaults and independent observation stops, default match eve on/window opening off
 - 261016 ideation expert-proposal-review: owner adopts seven responsibilities and direct-only business-decision stops; delegated outcomes are reports
@@ -115,4 +116,3 @@
 - 261016 T139 doing@u9c2: implement WEB r79 and verify affected browser journeys
 - 261016 create-task T139: WEB r79 compact home, calendar progress and shared notifications/news dialog
 - 261016 update-ssot WEB start: compact home, round-only tools and unified notifications/news
-- 261016 T137 done: full source CI 38759743656 passes all six jobs, storage/first-play gates pass and settled phone/desktop captures are inspected; owner-workflow todo exhausted
