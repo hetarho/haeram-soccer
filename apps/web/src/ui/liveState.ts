@@ -1,9 +1,9 @@
-import type { World } from '../../../../packages/contracts/src/types';
+import type { ProjectedWorld } from '../runtime/protocol';
 import type { ClientState } from '../runtime/client';
 
 /** Keep view subscriptions independent of the calendar and request/save bookkeeping. */
-export function worldSelector(keys: (keyof World)[]) {
-  let selected: World | undefined;
+export function worldSelector(keys: (keyof ProjectedWorld)[]) {
+  let selected: ProjectedWorld | undefined;
   return (state: ClientState) => {
     const world = state.view?.world;
     if (!world) return (selected = undefined);

@@ -50,3 +50,14 @@ describe('opponent scouting', () => {
     expect(resultFor(meeting, 'unrelated')).toBeUndefined();
   });
 });
+
+describe('aptitude display scouting', () => {
+  it('keeps qualitative estimates distinct from numeric playing ability', async () => {
+    const { aptitudeLabel } = await import('./scouting');
+    expect(aptitudeLabel(4, false, 59)).toBe('낮음~매우 높음');
+    expect(aptitudeLabel(4, false, 60)).toBe('보통~매우 높음');
+    expect(aptitudeLabel(4, false, 79)).toBe('보통~매우 높음');
+    expect(aptitudeLabel(4, false, 80)).toBe('높음');
+    expect(aptitudeLabel(4, true, 59)).toBe('높음');
+  });
+});

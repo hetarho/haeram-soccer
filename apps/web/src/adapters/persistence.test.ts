@@ -283,6 +283,8 @@ it('preserves first and second European phases and global standings in a histori
   w.manager.since = 1997;
   w.manager.until = 2003;
   for (const p of w.players) p.born = 1978;
+  // This synthetic career starts in 2000, so enroll its actual identities at that epoch.
+  delete w.people;
   prepareSeason(w);
   simulateSeason(w);
   expect(w.history[0].europe.find((e) => e.kind === 'ucl')?.secondStandings).toHaveLength(16);

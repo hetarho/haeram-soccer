@@ -1,3 +1,4 @@
+export { aptitudeLabel } from '../../../../packages/engine/src/career-assessment';
 import type { Fixture, World } from '../../../../packages/contracts/src/types';
 import { fixtureDay, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { npcTactic } from '../../../../packages/engine/src/strategy';

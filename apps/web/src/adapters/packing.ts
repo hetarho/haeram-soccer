@@ -765,7 +765,8 @@ export function unpack(p: Packed): World {
     };
     scorers.done();
   }
-  prepareSeason(copy, false);
+  // Rebuild derived fixtures without enrolling people or recording new career facts.
+  prepareSeason(copy, false, false);
   for (const row of p.fixtures) {
     const fixture = copy.fixtures[row[0] as number];
     if (!fixture || fixture.score) throw new Error('일정 참조 손상');

@@ -149,7 +149,7 @@ export function divisionStrength(w: World) {
     ? peers.reduce((sum, c) => sum + c.strength, 0) / peers.length
     : rating(w, own);
 }
-export function prepareSeason(w: World, continental = true) {
+export function prepareSeason(w: World, continental = true, lifecycle = true) {
   w.fixtures = [];
   w.tables = {};
   for (const c of w.clubs) w.tables[c.id] = emptyTable();
@@ -171,7 +171,7 @@ export function prepareSeason(w: World, continental = true) {
   }
   w.round = 0;
   w.calendar = { day: 0 };
-  materializePeople(w);
+  if (lifecycle) materializePeople(w);
   prepareScorers(w);
   w.rankHistory = (w.rankHistory || []).filter((s) => s.year >= w.year - 9 && s.year < w.year);
   w.cupWinners = {};

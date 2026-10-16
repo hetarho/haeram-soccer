@@ -304,7 +304,10 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
     plain = (value: string) => <Money value={value} code={club.country} year={w.year} plain />,
     text = (value: string) => compactMoney(value, club.country, w.year);
   const members = new Map((w.staff || []).map((member) => [member.role, member]));
-  const candidates = role ? staffCandidates(w, role) : [];
+  const projectedCandidates = useGameState((state) =>
+    role ? state.view?.coaches[role] : undefined,
+  );
+  const candidates = role ? (projectedCandidates ?? staffCandidates(w, role)) : [];
   const chosen = candidates.find((candidate) => candidate.id === pick);
   const current = role ? members.get(role) : undefined;
   const owed = releaseCost(w, current);

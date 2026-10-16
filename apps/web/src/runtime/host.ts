@@ -1,3 +1,5 @@
+import { STAFF_ROLES, staffCandidates } from '../../../../packages/engine/src/staff';
+import { careerAssessment } from '../../../../packages/engine/src/career-assessment';
 import { nextEventDays } from '../../../../packages/engine/src/next-event';
 import { pendingDecisions, stoppingReasons } from '../../../../packages/engine/src/stopping';
 import {
@@ -82,9 +84,17 @@ export class Host {
     if (!w) return;
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     const ownGroup = groupKey(own);
+    const { people: _people, ...projected } = w;
+    void _people;
     return {
+      coaches: Object.fromEntries(STAFF_ROLES.map((role) => [role, staffCandidates(w, role)])),
+      careers: Object.fromEntries(
+        [...w.players.filter((p) => p.status === 'active'), ...(w.academy?.players ?? [])].map(
+          (p) => [p.id, careerAssessment(w, p, true)],
+        ),
+      ),
       world: {
-        ...w,
+        ...projected,
         ownMatches: w.ownMatches.slice(-30),
         fixtures: w.fixtures.filter(
           (f) =>
@@ -223,7 +233,7 @@ export class Host {
           ? upgradeWorldRules(result.world, CURRENT_CATALOG)
           : result.world;
         upgraded = activated !== result.world;
-        candidate = this.view(activated)!.world;
+        candidate = structuredClone(activated);
         if (r.body.activate) this.world = activated;
         if (upgraded) raw = await encode(activated, r.generation, r.parentGeneration);
         envelope = result.envelope;

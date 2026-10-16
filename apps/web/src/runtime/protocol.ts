@@ -1,3 +1,6 @@
+import type { StaffRole } from '../../../../packages/contracts/src/types';
+import type { staffCandidates } from '../../../../packages/engine/src/staff';
+import type { CareerAssessment } from '../../../../packages/engine/src/career-assessment';
 import { z } from 'zod';
 z.config({ jitless: true });
 import type {
@@ -228,8 +231,12 @@ export const requestSchema = z.object({
 });
 export type Request = z.infer<typeof requestSchema>;
 export type Body = Request['body'];
+/** Daily projection deliberately excludes the canonical lifetime registry. */
+export type ProjectedWorld = Omit<World, 'people'> & { people?: never };
 export interface View {
-  world: World;
+  world: ProjectedWorld;
+  careers: Record<string, CareerAssessment>;
+  coaches: Partial<Record<StaffRole, ReturnType<typeof staffCandidates>>>;
   totalMatches: number;
   supportUsed: number;
   milestones: ReturnType<typeof clubMilestones>;

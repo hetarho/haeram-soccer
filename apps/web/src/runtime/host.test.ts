@@ -292,7 +292,13 @@ describe('worker command protocol', () => {
     expect(result.envelope).toMatchObject({ worldId: h.world!.id, generation: 4 });
     const saved = (await decode(result.raw)).world;
     expect(saved.revision).toBe(revision);
-    expect(canonical(saved)).toBe(canonical(h.world!));
+    expect(
+      Object.keys(saved).filter(
+        (key) =>
+          canonical(saved[key as keyof typeof saved]) !==
+          canonical(h.world![key as keyof typeof saved]),
+      ),
+    ).toEqual([]);
     // Nothing is posted without a world or a codec port.
     expect((await new Host().handle(req('none', -1, { type: 'save' }))).ok).toBe(false);
     const unwired = new Host();
@@ -444,5 +450,23 @@ describe('budget recovery projection', () => {
     expect(result.view!.world.events.filter((event) => event.kind === 'support')).toHaveLength(0);
     expect(result.view!.supportUsed).toBe(3);
     expect(() => operate(world, { type: 'support' })).toThrow('3회');
+  });
+});
+
+describe('career view projection', () => {
+  it('omits lifetime registry in views, preserves canonical export and leaves revision and draws unchanged', async () => {
+    const h = new Host();
+    const found = await h.handle(req('career-found', -1, { type: 'found', input }));
+    expect(found.view!.world.people).toBeUndefined();
+    expect(Object.keys(found.view!.careers).length).toBeGreaterThan(0);
+    const before = canonical(h.world!),
+      revision = h.world!.revision;
+    const exported = await h.handle(req('career-export', revision, { type: 'export' }));
+    expect(exported.view!.world.people).toBeUndefined();
+    expect(canonical(h.world!)).toBe(before);
+    const saved = await decode(exported.raw!);
+    expect(Object.keys(saved.world.people!).sort()).toEqual(Object.keys(h.world!.people!).sort());
+    expect(canonical(saved.world.people)).toBe(canonical(h.world!.people));
+    expect(h.world!.revision).toBe(revision);
   });
 });

@@ -14,7 +14,9 @@ function view(): View {
     level: 'normal' as const,
   });
   return {
-    world,
+    world: { ...world, people: undefined },
+    careers: {},
+    coaches: {},
     milestones: clubMilestones(world),
     totalMatches: 0,
     supportUsed: 0,
