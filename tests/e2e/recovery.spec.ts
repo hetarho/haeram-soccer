@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
 import { createWorld } from '../../packages/engine/src/index';
+import { currentDay } from '../../packages/engine/src/calendar';
 import { configureResponsibilities } from './events';
 import { MANAGER_GONE } from '../../packages/engine/src/operations';
 const found = async (page: import('@playwright/test').Page) => {
@@ -83,13 +84,13 @@ test('recovers prior checkpoint after active corruption without clearing another
   const download = await downloading;
   const restored = (await decode(readFileSync((await download.path())!, 'utf8'))).world;
   expect({
-    day: restored.day,
+    day: currentDay(restored),
     round: restored.round,
     cash: restored.cash,
     players: restored.players,
     matches: restored.ownMatches,
   }).toEqual({
-    day: previous.day,
+    day: currentDay(previous),
     round: previous.round,
     cash: previous.cash,
     players: previous.players,
