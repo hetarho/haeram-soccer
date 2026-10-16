@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:39Z | T183 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:43Z | T189 |
 
 ## inbox
 - 261017 decided SAVE-10: align recognized older catalog pin text with approved T181 2026-demo-3; no historical price/index changes and no legacy reset before T174.
@@ -85,6 +85,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T189 | Avoid redundant verification runs | ARCH | - | doing@261017.n7r4 |
 | T174 | Activate rules 3.0.0 with bounded recognized-legacy gameplay reset | SAVE WEB ARCH | T150 T152 T167 T168 T172 T173 T180 T186 T187 | todo |
 | T175 | Migrate old browser helpers to the approved public progression flow | WEB LEAGUE | T150 T174 | todo |
 | T176 | Verify second careers across contracts, reloads and market transitions | WEB STAFF WORLD HIST SAVE | T167 T168 T174 | todo |
@@ -109,6 +110,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 create-task/implement-task T189: owner approved CI queue control before remaining implementation.
 - 261017 T188 done n7r4: The pitch keeps 1.9:1 at mobile sizes, the mode selector uses the shared design system with readable phone clock rows, and exiting grouped events retain their viewport position.
 - 261017 WEB r89 assigned to T188: responsive clock reflow prevents date overlap from the shared selector; T183 unaffected.
 - 261017 implement-task T188 start n7r4.
