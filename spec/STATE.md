@@ -92,6 +92,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T199 | Fit actual retained active-century storage | SAVE ARCH | T195 T198 | todo |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 T196 T197 T198 | doing@261017.n7r4 |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
 
@@ -106,6 +107,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 create-task T199: active-management century round-trips but checkpoint1629982 exceeds1572864; preserve all facts/budgets and repair representation before rerunning T178.
 - 261017 implement-task T178 start n7r4.
 - 261017 T198 done n7r4: A retained training coach resignation now uses the ordinary departure lifecycle, preserving learned values and ending coaching/mentor service while keeping any player contract intact; the exact failing active-management commands validate through ten seasons.
 - 261017 implement-task T198 start n7r4.
@@ -125,4 +127,3 @@
 - 261017 T193 done n7r4: Career representation v2 losslessly shares relationship dates, string templates, scalar codebooks and explicit fallbacks while retaining the v1 reader; the actual failed 50-season checkpoint now uses 1132058 bytes.
 - 261017 implement-task T193 start n7r4.
 - 261017 T194 done n7r4: Validated appointments use a disposable occupied-post index and per-role sorted vacancy cursors; existing query order, one draw per eligible person and every canonical continuation fact remain unchanged.
-- 261017 implement-task T194 start n7r4.
