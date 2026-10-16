@@ -1,3 +1,4 @@
+import { awardReputation, REPUTATION_CONFIG } from './reputation';
 import type { DomesticCup, KnockoutRound, World } from '../../contracts/src/types';
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import { compareIds } from './primitives';
@@ -125,6 +126,7 @@ function progress(w: World, cup: DomesticCup) {
   if (left.length === 1) {
     cup.winner = left[0];
     w.cupWinners[cup.country] = cup.winner;
+    awardReputation(w, cup.winner, REPUTATION_CONFIG.cup);
     if (cup.winner === w.playerClub) {
       const prize = broadcastQuote(clubOf(w).country, w.year, CUP_PRIZE_CONFIG.honor);
       credit(w, prize);

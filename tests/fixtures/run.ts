@@ -23,6 +23,8 @@ export function runFixture(definition: FixtureDefinition) {
   // Freeze the portable v1 scenarios to their original authority, independently of new-game defaults.
   w.settings = legacySettings(2);
   if (definition.year) {
+    // A synthetic start epoch establishes identities there, rather than changing retained births.
+    delete w.people;
     w.year = definition.year;
     w.currency = currency(definition.input.country, w.year).code;
     w.priceIndex = priceIndex(definition.input.country, w.year).value;

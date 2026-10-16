@@ -1,3 +1,4 @@
+import { divisionLevel } from '../packages/engine/src/reputation';
 import { defaultSettings, RESPONSIBILITY_KEYS } from '../packages/engine/src/responsibilities';
 /**
  * Economy calibration harness (ECON-29, ECON-9, CLUB-25; docs/FINANCES.md).
@@ -215,9 +216,8 @@ function buyFacilities(w: World) {
   }
 }
 
-/** A division's usual reputation, where clubs nobody owns settle in it (dynamics.ts evolveClubs). */
-const usualReputation = (tier: number, depth: number) =>
-  tier >= depth ? 8 : Math.max(8, 75 - tier * 15);
+/** The common standing-based division reputation level (LEAGUE-14). */
+const usualReputation = divisionLevel;
 /**
  * ECON-9's measure for one division: the clubs of the country now in it, each at the division's
  * usual reputation with the following that reputation commands, at the founding ticket price,

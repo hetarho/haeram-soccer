@@ -1,5 +1,5 @@
 import { cancelPromises } from './promises';
-import { closeEmployment, syncMentorExposures } from './person-careers';
+import { careerDate, closeEmployment, syncMentorExposures } from './person-careers';
 import { onManagerChange } from './adaptation';
 import type { Command, ContractTerm, Manager, Tactic, World } from '../../contracts/src/types';
 import { addEvent, clubOf, makeManager, quote, tacticLabel, TACTICS } from './world';
@@ -17,7 +17,6 @@ import {
   withTerm,
 } from './staff';
 import { coachSeason, MANAGER_CAREER } from './coaching';
-import { currentDay } from './calendar';
 import { pushInbox, readRelated } from './inbox';
 import { FIREFIGHTER_ARRIVAL_MORALE, managerStyleEffects, managerTerm, STYLE_INFO } from './styles';
 import {
@@ -256,7 +255,7 @@ function resign(w: World, reason: string) {
   const departures = w.events.filter((event) => event.kind === 'manager-departure').length;
   const interim = makeManager(
     clubOf(w).country,
-    `${w.seed}:interim:${w.year}:${currentDay(w)}:${departures}`,
+    `${w.seed}:interim:${w.year}:${careerDate(w).day}:${departures}`,
     w.year,
     99,
   );

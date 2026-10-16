@@ -1,6 +1,7 @@
+import { awardReputation, REPUTATION_CONFIG } from './reputation';
 import type { World, EuropeTournament, Fixture, KnockoutRound } from '../../contracts/src/types';
 import { COUNTRIES } from '../../catalogs/src/index';
-import { random, integer, compareIds, clamp } from './primitives';
+import { random, integer, compareIds } from './primitives';
 import { addEvent, broadcastQuote, clubOf, findClub, initialElo } from './world';
 import { emptyTable } from './season';
 import { credit } from './transactions';
@@ -357,6 +358,8 @@ function play(w: World, t: EuropeTournament, f: Fixture, settlement?: Settlement
         row.points++;
       } else row.lost++;
     }
+  awardReputation(w, f.home, REPUTATION_CONFIG.continentalMatch);
+  awardReputation(w, f.away, REPUTATION_CONFIG.continentalMatch);
   const own = f.home === w.playerClub || f.away === w.playerClub;
   if (!own) return;
   if (!isKnockout(f.id)) {
@@ -372,7 +375,6 @@ function play(w: World, t: EuropeTournament, f: Fixture, settlement?: Settlement
     credit(w, prize);
     addEvent(w, 'europe-prize', `${t.name} 경기 수당`, `참가·결과 수당 · ${f.id}`, prize);
   }
-  clubOf(w).reputation = clamp(clubOf(w).reputation + 0.2);
   settlement?.(w, p);
 }
 /** Draws knockout round `index` of `total` from `clubs` (seeded order) and schedules its legs. */
@@ -548,10 +550,10 @@ function crown(w: World, t: EuropeTournament, winner: string) {
         }
     t.firstStandings = phaseRows(w, t, t.clubs);
   }
+  if (t.key !== 'super') awardReputation(w, winner, REPUTATION_CONFIG.continentalTitle);
   if (winner === w.playerClub && t.key !== 'super') {
     const prize = broadcastQuote(clubOf(w).country, w.year, EUROPE_PRIZE_CONFIG.honor);
     credit(w, prize);
-    clubOf(w).reputation = clamp(clubOf(w).reputation + 8);
     addEvent(
       w,
       'europe-honor',

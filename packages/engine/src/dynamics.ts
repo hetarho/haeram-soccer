@@ -95,11 +95,6 @@ export function evolveClubs(w: World, tiers: ReadonlyMap<string, number>) {
     c.strength = Math.round(clamp(next, 15, e.ceiling));
     // New money buys players, not a team: the squad's 조직력 starts again (→LEAGUE-12).
     cohesionAfterSummer(c, { investment: project || takeover, move: c.tier !== before });
-    if (!c.id.startsWith('euro:')) {
-      const depth = country(c.country).groups.length;
-      const reputation = c.tier >= depth ? 8 : Math.max(8, 75 - c.tier * 15);
-      c.reputation = Math.round(clamp(c.reputation + (reputation - c.reputation) * 0.3));
-    }
   }
 }
 /** A rival project in the owner's country and within a division of us makes the club news. */

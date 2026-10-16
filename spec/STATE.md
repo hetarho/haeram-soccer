@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:14Z | T180 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:19Z | - |
 
 ## inbox
 - 261017 suggest T154 T155 T156 T157 T158: five person-career foundation tasks completed → review-code aptitude/person-careers/npc-continuity/careers/coaching-entry before the next unrelated feature; remaining planned second-career tasks continue.
@@ -90,7 +90,6 @@
 | T177 | Verify delegation handover and promise outcomes through the browser | WEB CLUB HIST SAVE | T172 T174 | todo |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 | todo |
-| T180 | Settle every club's reputation by its standing | LEAGUE ECON | - | doing@261017.n7r4 |
 | T181 | Catalog the real squad registration rules | CLUB ECON ARCH | - | todo |
 | T182 | Count the squad against the season's registration rule | CLUB | T181 T143 T144 | todo |
 | T183 | Aim the first team at 20 players | CLUB STAFF | T182 | todo |
@@ -111,6 +110,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 T180 done n7r4: Every native club now settles decimal reputation from its old group finish and next division, with symmetric cup/continental honours; owner capital and supporter rules remain unchanged.
 - 261017 implement-task T180 start n7r4.
 - 261017 T173 done n7r4: A versioned shared-dictionary career-row codec preserves complete fixed/learned facts and continuations; strict row, reference, interval, role and fixed-promise validation rejects malformed state without changing save budgets.
 - 261017 implement-task T173 start n7r4.
@@ -130,4 +130,3 @@
 - 261017 implement-task T166 start n7r4.
 - 261017 T165 done n7r4: Free, internal and employed retained coaches join the ordinary manager market with current coaching compensation, linked role transition and full contract cost disclosure.
 - 261017 implement-task T165 start n7r4.
-- 261017 T164 done n7r4: Actual three-year service and independent managerial aptitude initialize retained manager values and mentor school once from dated processing.

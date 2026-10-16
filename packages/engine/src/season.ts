@@ -1,3 +1,4 @@
+import { finishTerm, settleReputation } from './reputation';
 import { judgePromises } from './promises';
 import { qualifyManagers } from './manager-entry';
 import { refreshCoachingMarket, settleNpcCoaching } from './coaching-market';
@@ -190,6 +191,22 @@ export function ranked(w: World, clubs: Club[]) {
       y.points - x.points || y.gf - y.ga - (x.gf - x.ga) || y.gf - x.gf || compareIds(a.id, b.id)
     );
   });
+}
+/** Each played club is ranked within its old division/group, before promotion changes tiers. */
+export function leagueFinishes(w: World) {
+  const groups = new Map<string, Club[]>();
+  for (const club of w.clubs) {
+    if (club.representative || club.id.startsWith('euro:')) continue;
+    const key = groupKey(club);
+    groups.set(key, [...(groups.get(key) ?? []), club]);
+  }
+  const finishes = new Map<string, number>();
+  for (const clubs of groups.values())
+    ranked(w, clubs).forEach((club, index) => {
+      if ((w.tables[club.id]?.played ?? 0) > 0)
+        finishes.set(club.id, finishTerm(index + 1, clubs.length));
+    });
+  return finishes;
 }
 /**
  * The own league's clubs in world order: the amateur league's are those in its fixtures, found in
@@ -647,8 +664,10 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   w.lastChampions = champions.map(({ country, club, cup }) => ({ country, club, cup }));
   retireAtClose(w);
   const tiers = new Map(w.clubs.map((c) => [c.id, c.tier]));
+  const finishes = leagueFinishes(w);
   promote(w);
   evolveClubs(w, tiers);
+  settleReputation(w, finishes);
   if (own.tier !== oldTier)
     addEvent(
       w,
@@ -713,7 +732,6 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
       w.players.push(youth);
       movePerson(w, youth, w.playerClub, true);
     }
-    own.reputation = clamp(own.reputation + Math.max(-1, table.points / 25 - 1));
     own.strength = rating(w, own);
     // A summer tour pays, spreads the name and tires the rested squad as the season starts
     // (→ECON-16).
