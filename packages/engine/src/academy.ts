@@ -415,6 +415,10 @@ export function seasonAcademy(w: World): void {
     prospects = [...w.academy.players].sort(byStrength),
     ready = prospects.filter((player) => readiness(player) === 'ready'),
     review = prospects.filter((player) => readiness(player) === 'review');
+  w.academyReviews = [
+    ...ready.map((p) => ({ id: p.id, year: w.year, kind: 'promote' as const })),
+    ...review.map((p) => ({ id: p.id, year: w.year, kind: 'release' as const })),
+  ];
   if (!isDelegated(w, 'academy')) {
     if (!ready.length && !review.length) return;
     const lines = [
@@ -470,6 +474,8 @@ export function seasonAcademy(w: World): void {
         player.id,
       );
     }
+  // Every recommendation now has an actual staff outcome, including a recorded deferral.
+  w.academyReviews = [];
 }
 export function academyPlayers(w: World): Player[] {
   return w.academy?.players || [];

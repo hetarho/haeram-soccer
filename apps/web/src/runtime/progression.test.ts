@@ -3,7 +3,7 @@ import { createWorld } from '../../../../packages/engine/src/index';
 import type { MatchPlayback } from '../../../../packages/contracts/src/types';
 import type { GameClient } from './client';
 import { gameStore, initialClientState } from './store';
-import { LEVEL_STOPS, ProgressionController, stopsOf, STOP_KINDS } from './progression';
+import { ProgressionController, stopsOf, STOP_KINDS } from './progression';
 import type { View } from './protocol';
 
 const w = createWorld({
@@ -219,6 +219,8 @@ describe('the global progression clock', () => {
     const s = setup();
     controller = s.controller;
     const notified = structuredClone(w);
+    notified.settings!.observations.windowOpen = true;
+    notified.calendar = { day: 1 };
     notified.inbox = [
       {
         id: 'window',
@@ -257,6 +259,8 @@ describe('the global progression clock', () => {
       attention: true,
     });
     const notified = structuredClone(w);
+    notified.settings!.observations.windowOpen = true;
+    notified.calendar = { day: 1 };
     notified.inbox = [item('a'), item('b')];
     s.command.mockImplementation(async () => ({
       ok: true,
@@ -285,53 +289,16 @@ describe('the global progression clock', () => {
     controller.eventDecided();
     expect(controller.store.getState().running).toBe(false);
   });
-  it('stops only where the intervention level does, with no stop setting of its own (→WEB-45)', async () => {
-    expect(STOP_KINDS.filter((kind) => stopsOf({ intervention: 1 })[kind])).toEqual(STOP_KINDS);
-    expect(STOP_KINDS.filter((kind) => stopsOf(w)[kind])).toEqual(LEVEL_STOPS[2]);
-    // From level 3 the staff sign sponsors, so only money stops level 4 (→WEB-45).
-    expect(STOP_KINDS.filter((kind) => stopsOf({ intervention: 3 })[kind])).toEqual([
-      'window-open',
-      'bid-response',
-      'incoming-bid',
-      'finance',
-    ]);
-    expect(STOP_KINDS.filter((kind) => stopsOf({ intervention: 4 })[kind])).toEqual(['finance']);
-    // An event the level does not stop for lets the clock run on.
-    const quiet = { ...structuredClone(w), intervention: 4 as const };
-    quiet.inbox = [
-      {
-        id: 'window',
-        year: w.year,
-        day: 1,
-        kind: 'window-open',
-        title: '여름 이적시장이 열렸어요',
-        detail: '9월 1일 마감',
-        attention: true,
-      },
-    ];
-    // A per-browser stop setting kept before the levels is cleared on start.
-    const stored = new Map([['haeram-soccor:stop-on', '{"match":false}']]);
-    vi.stubGlobal('localStorage', {
-      getItem: (key: string) => stored.get(key) ?? null,
-      setItem: (key: string, value: string) => void stored.set(key, value),
-      removeItem: (key: string) => void stored.delete(key),
-    });
-    const s = setup(undefined, { ...quiet, inbox: [] });
-    controller = s.controller;
-    expect(stored.has('haeram-soccor:stop-on')).toBe(false);
-    s.command.mockImplementation(async () => ({
-      ok: true,
-      requestId: 'test',
-      view: { world: quiet } as View,
-    }));
-    controller.start();
-    await vi.advanceTimersByTimeAsync(1000);
-    expect(controller.store.getState().running).toBe(true);
-    expect(s.command).toHaveBeenLastCalledWith(expect.objectContaining({ stop: ['finance'] }), {
-      background: true,
-      automatic: true,
-    });
-    vi.unstubAllGlobals();
+  it('derives independent observation and business hints from game settings', () => {
+    const direct = structuredClone(w);
+    expect(stopsOf(direct).match).toBe(true);
+    expect(stopsOf(direct)['window-open']).toBe(false);
+    expect(stopsOf(direct)['bid-response']).toBe(true);
+    direct.settings!.responsibilities.recruitment = 'delegated';
+    direct.settings!.observations.windowOpen = true;
+    expect(stopsOf(direct)['bid-response']).toBe(false);
+    expect(stopsOf(direct)['incoming-bid']).toBe(true);
+    expect(stopsOf(direct)['window-open']).toBe(true);
   });
   it('stops on the eve of an own match and plays it through on resume', async () => {
     const eve = structuredClone(w);
@@ -367,7 +334,7 @@ describe('the global progression clock', () => {
     controller.start();
     await vi.advanceTimersByTimeAsync(100);
     expect(s.command).toHaveBeenLastCalledWith(
-      { type: 'advance-days', days: 1, stop: [...LEVEL_STOPS[2]] },
+      { type: 'advance-days', days: 1, stop: STOP_KINDS.filter((kind) => stopsOf(w)[kind]) },
       { background: true, automatic: true },
     );
     await vi.advanceTimersByTimeAsync(500);
@@ -414,8 +381,10 @@ describe('the global progression clock', () => {
 });
 
 describe('background play (WEB-64)', () => {
-  /** Level 4 stops only for money, which these runs never meet. */
-  const quiet = { ...w, intervention: 4 as const };
+  /** Background pacing is isolated from observation stops. */
+  const quiet = structuredClone(w);
+  quiet.settings!.observations.matchEve = false;
+  quiet.settings!.observations.windowOpen = false;
   /** A host that really advances the calendar by the days asked. */
   function calendarHost(s: ReturnType<typeof setup>) {
     let day = 0;

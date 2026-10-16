@@ -14,7 +14,8 @@ import {
   nextOwnFixture,
   seasonDate,
 } from '../../../../packages/engine/src/calendar';
-import { interventionOf } from '../../../../packages/engine/src/intervention';
+import { stoppingReasons } from '../../../../packages/engine/src/stopping';
+import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { currentLeagueRank } from '../../../../packages/engine/src/projection';
 import type { GameClient } from './client';
 import { gameStore } from './store';
@@ -127,9 +128,28 @@ export const LEVEL_STOPS: Record<InterventionLevel, readonly InboxKind[]> = {
   4: ['finance'],
 };
 /** The kinds the world's intervention level stops for; nothing else sets them (→WEB-18). */
-export function stopsOf(w: Pick<World, 'intervention'>): StopOn {
-  const on = LEVEL_STOPS[interventionOf(w)];
-  return Object.fromEntries(STOP_KINDS.map((kind) => [kind, on.includes(kind)])) as StopOn;
+export function stopsOf(w: Pick<World, 'intervention' | 'settings'>): StopOn {
+  const s = settingsOf(w);
+  return Object.fromEntries(
+    STOP_KINDS.map((kind) => [
+      kind,
+      kind === 'match'
+        ? s.observations.matchEve
+        : kind === 'window-open'
+          ? s.observations.windowOpen
+          : kind === 'contract-talk'
+            ? s.responsibilities.contracts === 'direct'
+            : kind === 'bid-response'
+              ? s.responsibilities.recruitment === 'direct'
+              : kind === 'incoming-bid'
+                ? s.responsibilities.sales === 'direct'
+                : kind === 'staff-renewal'
+                  ? s.responsibilities.manager === 'direct' || s.responsibilities.staff === 'direct'
+                  : kind === 'sponsor-ending'
+                    ? s.responsibilities.sponsors === 'direct'
+                    : false,
+    ]),
+  ) as StopOn;
 }
 /** Per-browser stops kept before the level decided them; removed once on start. */
 const STOP_KEY = 'haeram-soccor:stop-on';
@@ -161,10 +181,9 @@ function storedClocks(): Record<string, ClockRecord> {
     return {};
   }
 }
-/** Unread attention items the intervention level stops for. */
+/** Dated live decisions and enabled observations, independent of notification read state. */
 export function stoppingEvents(w: World) {
-  const stopOn = stopsOf(w);
-  return (w.inbox || []).filter((item) => item.attention && !item.read && stopOn[item.kind]);
+  return stoppingReasons(w);
 }
 /**
  * One tick of the clock. A multi-day catch-up step lands on a match eve instead of running

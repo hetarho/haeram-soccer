@@ -659,6 +659,17 @@ export const worldSchema: z.ZodType<World> = z.object({
     .optional(),
   intervention: z.literal([1, 2, 3, 4]).optional(),
   settings: gameSettingsSchema.optional(),
+  decisionChoices: z.array(z.string().max(300)).max(10000).optional(),
+  academyReviews: z
+    .array(
+      z.strictObject({
+        id: z.string().max(300),
+        year: z.number().int(),
+        kind: z.enum(['promote', 'release']),
+      }),
+    )
+    .max(100)
+    .optional(),
   bids: z.array(bid).max(200).optional(),
   shortlist: shortlist.optional(),
   morale: z.number().finite().min(0).max(100).optional(),

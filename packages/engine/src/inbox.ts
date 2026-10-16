@@ -20,7 +20,7 @@ function bounded(inbox: InboxItem[]) {
   const kept = inbox.filter((item) => waiting(item) || excess-- <= 0);
   return kept.slice(-INBOX_LIMIT);
 }
-/** Records an event the owner should see; attention items stop automatic progression. */
+/** Records an event the owner should see; attention is a presentation hint; live business state determines progression stops. */
 export function pushInbox(
   w: World,
   item: Omit<InboxItem, 'id' | 'year' | 'day' | 'read'>,

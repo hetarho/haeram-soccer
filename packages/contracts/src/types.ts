@@ -842,6 +842,10 @@ export interface World {
   intervention?: InterventionLevel;
   /** Game-owned authority, progression mode and observation preferences (→WEB-45). */
   settings?: GameSettings;
+  /** Explicit optional business decisions; notification reads never resolve these. */
+  decisionChoices?: string[];
+  /** Season-review recommendations retained independently of the bounded notification feed. */
+  academyReviews?: { id: string; year: number; kind: 'promote' | 'release' }[];
   bids?: TransferBid[];
   inbox?: InboxItem[];
   /** Squad morale 0–100; absent in older saves, which keep pre-morale strength. */
