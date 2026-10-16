@@ -341,7 +341,7 @@ export function BusinessWorkbench({
               <section className={s.delegation} aria-label="후원 위임">
                 <DecisionOwner
                   w={w}
-                  decision="business"
+                  decision="sponsors"
                   auto="열린 후원 자리가 비면 운영팀이 그 자리의 안정형 제안 중 보장 금액이 가장 큰 계약을 바로 맺고 알려 줘요."
                   owner="후원 계약은 직접 골라요. 시즌을 빈 자리로 시작할 때와, 마지막 시즌인 계약이 남은 4월 1일에 알림으로 알려 드려요."
                 />

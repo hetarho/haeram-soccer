@@ -434,6 +434,9 @@ const selectContentWorld = worldSelector([
   'staff',
   'academy',
   'intervention',
+  'settings',
+  'decisionChoices',
+  'academyReviews',
   'bids',
   'morale',
   'inbox',
@@ -982,7 +985,7 @@ export function App() {
     [moreOpen, setMoreOpen] = useState(false),
     [guideOpen, setGuideOpen] = useState(false);
   const { page, setPage, replacePage } = useNavigation();
-  // One intervention dialog for the HUD menu, the clock's popover and the match-eve card.
+  // One responsibility dialog for the clock, local task links and the main menu.
   const stopSettings = useInterventionDialog((state) => state.open);
   const showNews = useNewsSheet((state) => state.show);
   const showGlossary = useGlossary((state) => state.show);
@@ -1344,7 +1347,7 @@ export function App() {
               useInterventionDialog.getState().show();
             }}
           >
-            개입 수준 설정
+            위임·진행 설정
           </button>
           <button
             className={s.guideOpen}

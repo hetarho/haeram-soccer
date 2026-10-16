@@ -1,11 +1,6 @@
 import { createStore } from 'zustand/vanilla';
 import { useStore } from 'zustand';
-import type {
-  Command,
-  InboxKind,
-  InterventionLevel,
-  World,
-} from '../../../../packages/contracts/src/types';
+import type { Command, InboxKind, World } from '../../../../packages/contracts/src/types';
 import {
   currentDay,
   dayCountedFrom,
@@ -108,25 +103,6 @@ export const STOP_LABELS: Record<InboxKind, string> = {
 const WATCH_REASON = '관전 중에는 자동 진행을 잠시 멈춰요.';
 /** Every event kind that can stop the clock. */
 export const STOP_KINDS = Object.keys(STOP_LABELS) as InboxKind[];
-/**
- * Where the clock stops at each intervention level (→WEB-45): the clock's half of the level; the
- * engine holds the half the staff decide.
- */
-export const LEVEL_STOPS: Record<InterventionLevel, readonly InboxKind[]> = {
-  1: STOP_KINDS,
-  2: [
-    'match',
-    'window-open',
-    'bid-response',
-    'incoming-bid',
-    'youth-intake',
-    'staff-renewal',
-    'finance',
-    'sponsor-ending',
-  ],
-  3: ['window-open', 'bid-response', 'incoming-bid', 'finance'],
-  4: ['finance'],
-};
 /** Request hints only; the engine's live stopping query is authoritative. */
 export function stopsOf(w: Pick<World, 'intervention' | 'settings'>): StopOn {
   const s = settingsOf(w);

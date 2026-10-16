@@ -23,7 +23,7 @@ import {
   staffImpact,
 } from '../../../../packages/engine/src/staff';
 import { managerRenewal, managerTermLimit } from '../../../../packages/engine/src/ops-staff';
-import { coachCriteriaOf, coachDelegated, coachKey } from '../../../../packages/engine/src/hiring';
+import { coachCriteriaOf, coachDelegated } from '../../../../packages/engine/src/hiring';
 import { directionOption, financeStance } from '../../../../packages/engine/src/direction';
 import { SALE_BARS } from '../../../../packages/engine/src/transfers';
 import { managerPickPreview } from '../../../../packages/engine/src/managerMarket';
@@ -237,7 +237,7 @@ export function ManagerHireTerm({
  */
 export function CoachingPlan({ w }: { w: World }) {
   // The 단장's post among them; every post follows the same level, so one department speaks.
-  const decision = coachKey('assistant'),
+  const decision = 'staff' as const,
     auto = coachDelegated(w, 'assistant');
   const expiring = (w.staff || []).filter((member) => isExpiring(w, member));
   return (
@@ -708,10 +708,17 @@ export function OfferAnswers({ w }: { w: World }) {
       </header>
       <DecisionOwner
         w={w}
-        decision="transfers"
+        decision="sales"
         criteria
-        auto="다른 구단의 제안에 단장이 매각 기조와 재정 기조에 따라 답하고, 수석 스카우트의 명단과 감독의 요청을 보고 영입 줄과 재정 기조에 따라 선수를 영입해요. 모두 알림·결정에 보고해요."
-        owner="구단주가 제안마다 수락·거절하고, 영입도 직접 해요."
+        auto="다른 구단의 제안에 단장이 매각 기조와 재정 기조에 따라 답해요. 결과는 알림·결정에 보고해요."
+        owner="구단주가 우리 선수에게 온 제안마다 수락·거절해요."
+      />
+      <DecisionOwner
+        w={w}
+        decision="recruitment"
+        criteria
+        auto="단장이 스카우트 명단과 감독의 요청을 보고 영입 방침과 재정 기조에 따라 영입해요."
+        owner="구단주가 영입과 영입 협상을 직접 결정해요."
       />
       <DirectionLines w={w} rows={['market', 'finance']} />
       <ul className={s.fixed}>
@@ -732,8 +739,8 @@ export function OfferAnswers({ w }: { w: World }) {
           이적 불가 선수의 거액 제안은 감독과 상의해 매각 기조 <b>{card}</b>와 자금 사정으로 정해요.
         </li>
         <li>
-          개입 4단계에서는 단장이 이적시장이 열린 날과 그 뒤 7일마다 감독이 요청한 자리와 빈 자리를
-          먼저 채우고,{' '}
+          선수 영입을 위임하면 단장이 이적시장이 열린 날과 그 뒤 7일마다 감독이 요청한 자리와 빈
+          자리를 먼저 채우고,{' '}
           {signing.margin === undefined
             ? '재정 기조가 신중·안정적이라 주전 보강은 하지 않아요.'
             : `주전보다 능력이 ${signing.margin} 이상 나은 선수를 이적시장마다 ${signing.upgrades}명까지 데려와요.`}{' '}

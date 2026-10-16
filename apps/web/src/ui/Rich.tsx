@@ -12,7 +12,7 @@ import type {
   World,
 } from '../../../../packages/contracts/src/types';
 import { priceIndex } from '../../../../packages/catalogs/src/index';
-import { delegated } from '../../../../packages/engine/src/intervention';
+import { isDelegated } from '../../../../packages/engine/src/responsibilities';
 import {
   injuryDaysLeft,
   quote,
@@ -597,7 +597,7 @@ function StanceBadge({
 }
 /** What each stance does for this player, given who answers offers (→CLUB-22). */
 function stanceConsequence(w: World, p: Player, stance: TransferStance) {
-  const staffAnswer = delegated(w, 'transfers'),
+  const staffAnswer = isDelegated(w, 'sales'),
     value = playerValue(w, p),
     c = w.clubs.find((club) => club.id === w.playerClub)!,
     // Each stance reads as a sentence inside its own radio, so amounts come as text (→WEB-67).

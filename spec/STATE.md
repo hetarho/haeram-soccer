@@ -82,7 +82,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T149 | Build one explicit-apply responsibility and observation screen | WEB | T146 T148 | todo |
 | T150 | Expose exclusive time controls and remove season tools | WEB | T148 T149 | todo |
 | T151 | Isolate policy drafts and apply commands by department | WEB | T142 | todo |
 | T152 | Open the authoritative department editor over its task | WEB | T149 T151 | todo |
@@ -129,12 +128,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- implement-task: continue the authored task contracts under the user override; defer the other session’s squad/bidding/call-up planning changes. Deadline 2026-10-17 06:00 KST.
-- T142–T147 are complete. Continue T148 and subsequent dependency-ready tasks through the authorized deadline; T154 is the independent aptitude foundation.
-- Implement T142–T179 as explicit small units; preserve accepted policy and parked balance constants. Then implement T180–T187 (squad and reputation; T180/T181 need nothing, the rest follow T143/T144) before T174, which waits for them so they ship inside rules 3.0.0. No implementation or new-rule save deletion has run in this planning unit.
-- Final integration T179 follows the full browser/continuity gates and measured century-save gate T178; do not activate/deploy incomplete rule metadata early.
+- Finish current T149 only, then repair and pass the entire verification pipeline and push the verified task commits to main, per the latest user instruction. Do not start T150 or later tasks; this supersedes the prior 06:00 KST continuation deadline.
+- Remaining planned tasks retain their scope and status; do not activate rules 3.0.0 or delete career data in this checkpoint.
 
 ## log
+- 261016 T149 done p150: Shared explicit-apply seven-category dialog with retained drafts, live handover previews, manual match-event invariant, local ownership labels and responsive readonly controls.
+- 261016 user checkpoint p150: finish T149, run and repair full verification, then push main; stop new task implementation.
+- 261016 implement-task T149 start p150
 - 261016 T148 done p150: Mode-owned progression controller isolates automatic pacing/debt/resume from single-flight manual event and match requests, guards old-world replies, and records mode transitions stopped.
 - 261016 implement-task T148 start p150
 - 261016 user checkpoint request: T142 ae9f3e3, T143 e04d0c7, T144 bcb887e, T145 9aff0e8 and T146 5ad2c46 committed individually after isolated snapshot verification. Continue one verified task per commit.
@@ -152,6 +152,3 @@
 - 261016 implement-task T144 start p150
 - 261016 implement-task T143 start p150
 - 261016 implement-task p150 freshness gate: T143/T144 returned to todo with verified changes preserved; current CLUB@41/STAFF@33 conflict with their preserve-existing business-rule scope. T145–T150 not started; T142 settings foundation remains complete.
-- 261016 update-ssot warning T143 (doing, base CLUB@39 LEAGUE@8): CLUB r40–41 and LEAGUE r9 add CLUB-40–44 and LEAGUE-14 and change squad numbers in CLUB-1/3/5/33; T143's responsibility routing is unchanged
-- 261016 update-ssot CLUB r41 SAVE r39: CLUB-44 real registration limits by country, division and year (none in England before 2010; GER/FRA/NED none) with a 40-player ceiling; squad and reputation planning complete
-- 261016 implement-task T144 start p150

@@ -248,7 +248,7 @@ export function describeOutcome(
   if (command.type === 'hire-staff' || command.type === 'renew-staff')
     note = '다음 라운드부터 반영돼요. 계약과 자동 결정은 선수단 › 스태프에서 관리해요.';
   if (command.type === 'direction')
-    note = '스태프가 맡은 결정에서 이 방향으로 골라요. 개입 수준이 그 결정을 맡길 때만 쓰여요.';
+    note = '스태프가 맡은 결정에서 이 방향으로 골라요. 해당 업무를 위임할 때 사용해요.';
   if (command.type === 'tactics')
     note = after.manager.pending
       ? '조건부 수락이에요. 훈련 지원금을 내면 전술이 바뀝니다.'

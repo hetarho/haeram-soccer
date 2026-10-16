@@ -1,3 +1,9 @@
+import { continueSlot } from './slots';
+import {
+  closeSettingsOutcome,
+  importResponsibilityCareer,
+  pendingAcquisitionCareer,
+} from './responsibility-fixtures';
 import { expect, test, type Page } from '@playwright/test';
 import { chooseLevel } from './events';
 import { horizontalOverflow, settle } from './layout';
@@ -470,4 +476,132 @@ test('deciding the event that stopped a running clock plays on (→WEB-42)', asy
     return;
   }
   throw new Error('No event other than a match eve stopped the clock');
+});
+
+for (const viewport of [
+  { width: 1280, height: 900 },
+  { width: 390, height: 844 },
+]) {
+  test(`central-responsibilities-explicit-apply ${viewport.width}`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await foundQuiet(page);
+    const date = await page.getByTestId('game-date').textContent();
+    await page.getByTestId('intervention-trigger').click();
+    const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
+    await expect(dialog).toBeVisible();
+    if (viewport.width === 390) {
+      await expect(dialog.getByRole('button', { name: '적용', exact: true })).toBeInViewport();
+      await page.screenshot({ path: '.tmp/responsibility-settings-390.png' });
+    }
+    for (const [label, value] of [
+      ['감독 인사', 'direct'],
+      ['스태프 인사', 'delegated'],
+      ['선수 계약', 'direct'],
+      ['선수 영입', 'direct'],
+      ['선수 매각', 'direct'],
+      ['유소년 승격·방출', 'delegated'],
+      ['스폰서 계약', 'delegated'],
+    ])
+      await expect(dialog.getByLabel(label, { exact: true })).toHaveValue(value);
+    await dialog.getByLabel('선수 영입', { exact: true }).selectOption('delegated');
+    await dialog.getByRole('button', { name: '닫기', exact: true }).click();
+    await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+    await page.getByRole('tab', { name: '이적시장', exact: true }).click();
+    const recruitment = page.getByTestId('decision-owner-recruitment'),
+      sale = page.getByTestId('decision-owner-sales');
+    await expect(recruitment).not.toHaveAttribute('data-auto', 'true');
+    await recruitment.getByRole('button', { name: /위임·진행 설정 열기/ }).click();
+    await expect(dialog.getByLabel('선수 영입', { exact: true })).toHaveValue('delegated');
+    await expect(dialog.getByRole('button', { name: '적용', exact: true })).toBeEnabled();
+    await settle(page);
+    const bounds = await dialog.evaluate((element) => ({
+      width: element.clientWidth,
+      scroll: element.scrollWidth,
+      left: element.getBoundingClientRect().left,
+      right: element.getBoundingClientRect().right,
+    }));
+    expect(bounds.scroll).toBeLessThanOrEqual(bounds.width + 1);
+    expect(bounds.left).toBeGreaterThanOrEqual(0);
+    expect(bounds.right).toBeLessThanOrEqual(viewport.width);
+    await dialog.getByRole('button', { name: '적용', exact: true }).click();
+    await expect(dialog).toHaveCount(0);
+    await closeSettingsOutcome(page);
+    await expect(recruitment).toHaveAttribute('data-auto', 'true');
+    await expect(sale).not.toHaveAttribute('data-auto', 'true');
+    await recruitment.getByRole('button', { name: /위임·진행 설정 열기/ }).click();
+    await dialog.getByLabel('선수 영입', { exact: true }).selectOption('direct');
+    await dialog.getByRole('button', { name: '변경 버리기', exact: true }).click();
+    await expect(dialog.getByLabel('선수 영입', { exact: true })).toHaveValue('delegated');
+    await dialog.getByRole('button', { name: '닫기', exact: true }).click();
+    await expect(page.getByTestId('game-date')).toHaveText(date!);
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
+  });
+  test(`manual-settings-invariant ${viewport.width}`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await foundQuiet(page);
+    await page.getByTestId('intervention-trigger').click();
+    const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
+    await dialog.getByLabel('경기 전날 이벤트', { exact: true }).uncheck();
+    await dialog.getByLabel('진행 모드', { exact: true }).selectOption('manual');
+    await expect(dialog).toContainText('수동 모드에는 경기 이벤트가 필요해요');
+    await expect(dialog.getByRole('button', { name: '적용', exact: true })).toBeDisabled();
+    await expect(dialog.getByLabel('경기 전날 이벤트', { exact: true })).not.toBeChecked();
+    await dialog.getByRole('button', { name: '닫기', exact: true }).click();
+    await page.getByTestId('intervention-trigger').click();
+    await expect(dialog.getByLabel('진행 모드', { exact: true })).toHaveValue('manual');
+    await expect(dialog.getByLabel('경기 전날 이벤트', { exact: true })).not.toBeChecked();
+    await dialog.getByRole('button', { name: '경기 전날 이벤트 켜기', exact: true }).click();
+    await expect(dialog.getByLabel('경기 전날 이벤트', { exact: true })).toBeChecked();
+    await dialog.getByRole('button', { name: '적용', exact: true }).click();
+    await expect(dialog).toHaveCount(0);
+    await closeSettingsOutcome(page);
+    await page.getByTestId('intervention-trigger').click();
+    await expect(dialog.getByLabel('진행 모드', { exact: true })).toHaveValue('manual');
+    await dialog.getByLabel('경기 전날 이벤트', { exact: true }).click();
+    await expect(dialog.getByLabel('경기 전날 이벤트', { exact: true })).toBeChecked();
+    await expect(dialog).toContainText('수동 모드에는 경기 이벤트가 필요해요');
+    await dialog.getByRole('button', { name: '닫기', exact: true }).click();
+  });
+  test(`central-responsibilities-explicit-apply pending handover ${viewport.width}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    await importResponsibilityCareer(page, pendingAcquisitionCareer());
+    await page.getByTestId('intervention-trigger').click();
+    const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
+    await dialog.getByLabel('선수 영입', { exact: true }).selectOption('delegated');
+    await expect(dialog.getByRole('region', { name: '대기 업무 이관 미리보기' })).toContainText(
+      '대기 중인 선수 영입 2건도 위임됩니다.',
+    );
+    await dialog.getByRole('button', { name: '적용', exact: true }).click();
+    await expect(dialog).toHaveCount(0);
+    await closeSettingsOutcome(page);
+    await expect(page.getByTestId('event-card')).toHaveCount(0);
+    await page.getByTestId('intervention-trigger').click();
+    await expect(dialog.getByLabel('선수 영입', { exact: true })).toHaveValue('delegated');
+    await expect(dialog.getByRole('region', { name: '대기 업무 이관 미리보기' })).toHaveCount(0);
+  });
+}
+
+test('central-responsibilities-explicit-apply readonly viewer', async ({ page, context }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await foundQuiet(page);
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  const viewer = await context.newPage();
+  try {
+    await viewer.setViewportSize({ width: 390, height: 844 });
+    await viewer.goto('/');
+    await continueSlot(viewer);
+    await viewer.getByTestId('intervention-trigger').click();
+    const dialog = viewer.getByRole('dialog', { name: '위임·진행 설정', exact: true });
+    await expect(dialog).toContainText('읽기 전용 상태에서는 설정을 적용할 수 없어요.');
+    await expect(dialog.getByRole('status')).toBeInViewport();
+    await viewer.screenshot({ path: '.tmp/responsibility-settings-readonly-390.png' });
+    await expect(dialog.getByLabel('선수 영입', { exact: true })).toBeDisabled();
+    await expect(dialog.getByRole('button', { name: '적용', exact: true })).toBeDisabled();
+    await expect(dialog.getByRole('button', { name: '닫기', exact: true })).toBeEnabled();
+    await dialog.getByRole('button', { name: '닫기', exact: true }).click();
+  } finally {
+    await viewer.close();
+  }
 });

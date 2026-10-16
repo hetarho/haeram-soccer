@@ -19,7 +19,7 @@ import {
   effectLines,
   type BuildCard,
 } from '../../../../packages/engine/src/build';
-import { delegated } from '../../../../packages/engine/src/intervention';
+import { isDelegated } from '../../../../packages/engine/src/responsibilities';
 import { synergyStates } from '../../../../packages/engine/src/synergy';
 import { academyIntakeOutlook } from '../../../../packages/engine/src/academy';
 import { careOffer } from '../../../../packages/engine/src/care';
@@ -328,9 +328,9 @@ export function StrategyBoard({ w, client }: { w: World; client: GameClient }) {
               </button>
               {open && (
                 <div id={`board-area-body-${key}`} className={s.areaBody}>
-                  {key === 'scouting' && delegated(w, 'transfers') && (
+                  {key === 'scouting' && isDelegated(w, 'recruitment') && (
                     <p className={s.areaNote}>
-                      개입 4단계라 단장이 이 부문의 줄과 재정 기조에 따라 선수를 영입해요.
+                      선수 영입을 위임해 단장이 이 부문의 줄과 재정 기조에 따라 선수를 영입해요.
                     </p>
                   )}
                   {slot && card && (

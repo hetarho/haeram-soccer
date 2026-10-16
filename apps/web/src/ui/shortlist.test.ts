@@ -81,10 +81,10 @@ describe('스카우트 명단 and 감독 요청 on 이적시장 (→WEB-43, CLUB
       directorDecisions({ intervention })
         .map(({ label, auto }) => `${label} ${auto ? '맡김' : '직접'}`)
         .join(' · ');
-    expect(at(1)).toBe('재계약 협상 직접 · 감독 선임 직접 · 이적 직접');
-    expect(at(2)).toBe('재계약 협상 맡김 · 감독 선임 직접 · 이적 직접');
-    expect(at(3)).toBe('재계약 협상 맡김 · 감독 선임 맡김 · 이적 직접');
-    expect(at(4)).toBe('재계약 협상 맡김 · 감독 선임 맡김 · 이적 맡김');
+    expect(at(1)).toBe('재계약 협상 직접 · 감독 선임 직접 · 선수 영입 직접 · 선수 매각 직접');
+    expect(at(2)).toBe('재계약 협상 맡김 · 감독 선임 직접 · 선수 영입 직접 · 선수 매각 직접');
+    expect(at(3)).toBe('재계약 협상 맡김 · 감독 선임 맡김 · 선수 영입 직접 · 선수 매각 직접');
+    expect(at(4)).toBe('재계약 협상 맡김 · 감독 선임 맡김 · 선수 영입 맡김 · 선수 매각 맡김');
   });
 });
 

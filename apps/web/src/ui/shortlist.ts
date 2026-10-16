@@ -2,7 +2,7 @@ import type { Line, SigningRequest, World } from '../../../../packages/contracts
 import { LINES } from '../../../../packages/contracts/src/player';
 import { lineOf, POSITION_LABEL } from '../../../../packages/engine/src/player';
 import type { TransferOffer } from '../../../../packages/engine/src/recruitment';
-import { delegated } from '../../../../packages/engine/src/intervention';
+import { isDelegated } from '../../../../packages/engine/src/responsibilities';
 import { transferWindow } from '../../../../packages/engine/src/transfers';
 
 export const LINE_NAMES: Readonly<Record<Line, string>> = {
@@ -73,12 +73,13 @@ export function requestStakes(w: World): string | undefined {
 }
 
 /** What the 단장 decides at the current level (→STAFF-20), each 맡김 or 직접. */
-export function directorDecisions(w: Pick<World, 'intervention'>) {
+export function directorDecisions(w: Pick<World, 'intervention' | 'settings'>) {
   return (
     [
       ['재계약 협상', 'contracts'],
       ['감독 선임', 'manager'],
-      ['이적', 'transfers'],
+      ['선수 영입', 'recruitment'],
+      ['선수 매각', 'sales'],
     ] as const
-  ).map(([label, key]) => ({ label, auto: delegated(w, key) }));
+  ).map(([label, key]) => ({ label, auto: isDelegated(w, key) }));
 }

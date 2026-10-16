@@ -1,5 +1,5 @@
 import { PixelIcon } from './PixelIcon';
-import type { DelegationKey, World } from '../../../../packages/contracts/src/types';
+import type { ResponsibilityKey, World } from '../../../../packages/contracts/src/types';
 import { decisionOwner } from './intervention';
 import { useInterventionDialog } from './state';
 import s from './DecisionOwner.module.css';
@@ -18,7 +18,7 @@ export function DecisionOwner({
   plain = false,
 }: {
   w: World;
-  decision: DelegationKey;
+  decision: ResponsibilityKey;
   /** What the staff do while the level hands them the decision. */
   auto: string;
   /** What the owner does while he takes it himself. */
@@ -28,7 +28,7 @@ export function DecisionOwner({
   /** Inside a panel that already frames the decision: no frame of its own. */
   plain?: boolean;
 }) {
-  const { level, name, auto: on } = decisionOwner(w, decision);
+  const { name, auto: on } = decisionOwner(w, decision);
   return (
     <div
       className={s.owner}
@@ -37,20 +37,20 @@ export function DecisionOwner({
       data-testid={`decision-owner-${decision}`}
     >
       <div className={s.row}>
-        <span className={s.mode}>{on ? '자동 결정' : '직접 결정'}</span>
+        <span className={s.mode}>{on ? '위임' : '직접 결정'}</span>
         <button
           type="button"
           className={s.level}
-          aria-label={`전체 구단 개입 설정 · 지금 ${level}단계 ${name}`}
+          aria-label={`${name} · ${on ? '위임' : '직접 결정'} · 위임·진행 설정 열기`}
           onClick={useInterventionDialog.getState().show}
         >
-          전체 구단 개입 {level} · {name}
+          위임·진행 설정
           <PixelIcon name="chevronRight" size={14} />
         </button>
       </div>
       <p>
         {on ? auto : owner}
-        {!on && criteria && ' 아래 방향은 개입 수준이 이 결정을 스태프에게 맡길 때만 쓰여요.'}
+        {!on && criteria && ' 아래 방침은 이 업무를 위임할 때 사용해요.'}
       </p>
     </div>
   );

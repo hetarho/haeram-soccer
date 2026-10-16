@@ -1,0 +1,63 @@
+.rows {
+  display: grid;
+  gap: 0;
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.row > span {
+  flex: 1;
+  min-width: 0;
+}
+.row b {
+  display: block;
+}
+.row small {
+  display: block;
+  color: var(--text-muted);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+.row select {
+  flex: none;
+  max-width: 52%;
+  min-width: 110px;
+  min-height: 44px;
+}
+.section {
+  margin-top: 20px;
+}
+.section p {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  line-height: 1.5;
+}
+.check input {
+  flex: none;
+}
+.message {
+  border-left: 3px solid var(--gold);
+  padding: 10px;
+  line-height: 1.6;
+}
+@media (max-width: 420px) {
+  .row {
+    gap: 8px;
+  }
+  .row select {
+    font-size: 13px;
+    min-width: 104px;
+  }
+}

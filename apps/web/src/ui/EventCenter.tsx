@@ -152,7 +152,7 @@ export const EventCenter = memo(function EventCenter({
           {home ? '홈' : '원정'} · {competitionLabel(w, eve)} · 선발과 전술은 스태프가 준비해요.
         </p>
         <button type="button" className={s.stops} onClick={showLevels}>
-          개입 수준
+          위임·진행 설정
         </button>
         <div className={s.actions}>
           <button className={s.primary} disabled={acting} onClick={() => void watch()}>
