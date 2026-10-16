@@ -120,6 +120,14 @@ async function start(notify: (state: ClientState) => void = () => {}) {
   return client;
 }
 
+/** Quiet transport/save fixtures still use the real settings command and its save boundary. */
+async function delegateSales(client: GameClient) {
+  const settings = structuredClone(client.state.view!.world.settings!);
+  settings.responsibilities.sales = 'delegated';
+  await client.command({ type: 'settings', settings }, { background: true });
+  await client.whenSaved();
+}
+
 beforeEach(() => {
   storage = new MemoryStorage();
   WorkerPort.instances = [];
@@ -211,15 +219,31 @@ describe('background worker publication', () => {
     expect(client.state.error).toBeUndefined();
   });
 
-  it('retains foreground progress feedback for an explicitly requested manual command', async () => {
+  it('manual next-event saves its final boundary without foreground progress feedback', async () => {
     const publications: ClientState[] = [],
       client = await start((state) => publications.push(state));
+    const settings = structuredClone(client.state.view!.world.settings!);
+    settings.mode = 'manual';
+    for (const key of Object.keys(
+      settings.responsibilities,
+    ) as (keyof typeof settings.responsibilities)[])
+      settings.responsibilities[key] = 'delegated';
+    await client.command({ type: 'settings', settings }, { background: true });
+    await client.whenSaved();
     publications.length = 0;
-    await client.command({ type: 'advance-days', days: 2 });
-    expect(publications.some((state) => state.busy && state.activity === 'foreground')).toBe(true);
-    expect(publications.some((state) => state.busy && state.progress > 0)).toBe(true);
-    expect(client.state.busy).toBe(false);
+    await client.command({ type: 'next-event' }, { background: true });
+    expect(
+      publications.some(
+        (state) =>
+          state.processing && (state.pendingActions || 0) > 0 && state.activity === 'background',
+      ),
+    ).toBe(true);
+    expect(publications.every((state) => !state.busy && state.progress === 0)).toBe(true);
+    expect(client.state.view!.world.calendar?.day).toBe(6);
+    expect(client.state.view!.world.settings!.mode).toBe('manual');
     expect(client.state.processing).toBe(false);
+    await client.whenSaved();
+    expect(client.state.savedRevision).toBe(client.state.view!.world.revision);
   });
 
   it('keeps a second tab read-only even for silent background commands', async () => {
@@ -383,40 +407,49 @@ describe('background worker publication', () => {
       worker = WorkerPort.instances[0],
       codec = CodecPort.instances[0],
       saves = () => worker.requests.filter((request) => request.body.type === 'save').length;
+    await delegateSales(client);
+    const baseRevision = client.state.view!.world.revision,
+      baseSaves = saves();
     // Clock ticks are not saved per step: one autosave waits for the whole unsaved run.
     await client.command({ type: 'advance-days', days: 1 }, { background: true, automatic: true });
     await client.command({ type: 'advance-days', days: 1 }, { background: true, automatic: true });
     await client.whenSaved();
-    expect(saves()).toBe(1);
+    expect(saves()).toBe(baseSaves);
     expect(due).toHaveLength(1);
-    expect(client.state.savedRevision).toBe(0);
+    expect(client.state.savedRevision).toBe(baseRevision);
     const foundedAt = client.state.savedAt!;
     due[0]();
     await client.whenSaved();
-    expect(saves()).toBe(2);
-    expect(client.state.savedRevision).toBe(2);
+    expect(saves()).toBe(baseSaves + 1);
+    expect(client.state.savedRevision).toBe(baseRevision + 2);
     expect(client.state.savedAt).toBeGreaterThanOrEqual(foundedAt);
     // An owner decision asks at once; its command settles while the checkpoint is still held.
     let release = () => {};
     codec.gate = new Promise<void>((resolve) => (release = resolve));
     await client.command({ type: 'advance-days', days: 1 });
-    expect(client.state.view?.world.revision).toBe(3);
-    await vi.waitFor(() => expect(saves()).toBe(3));
-    expect(client.state.savedRevision).toBe(2);
+    expect(client.state.view?.world.revision).toBe(baseRevision + 3);
+    await vi.waitFor(() => expect(saves()).toBe(baseSaves + 2));
+    expect(client.state.savedRevision).toBe(baseRevision + 2);
     expect(client.state.processing).toBe(false);
     release();
     await client.whenSaved();
-    expect(client.state.savedRevision).toBe(3);
+    expect(client.state.savedRevision).toBe(baseRevision + 3);
     expect(due).toHaveLength(1);
     // Read-only tabs hear of every commit.
     const posted = notices.mock.calls as unknown as [{ revision: number }][];
-    expect(posted.map(([notice]) => notice.revision)).toEqual([0, 2, 3]);
+    expect(posted.map(([notice]) => notice.revision)).toEqual([
+      0,
+      baseRevision,
+      baseRevision + 2,
+      baseRevision + 3,
+    ]);
   });
 
   it('refreshes season and manager archives without publishing or interrupting automatic work', async () => {
     const publications: ClientState[] = [],
       client = await start((state) => publications.push(state)),
       year = client.state.view!.world.year;
+    await delegateSales(client);
     publications.length = 0;
     const archive = await client.archive(year);
     expect(archive?.managers).toEqual(
@@ -439,6 +472,7 @@ describe('background worker publication', () => {
   it('reads the all-time head-to-head without publishing a state or waiting for a tick', async () => {
     const publications: ClientState[] = [],
       client = await start((state) => publications.push(state));
+    await delegateSales(client);
     await client.command({ type: 'next-match' });
     const w = client.state.view!.world,
       met = w.ownMatches.at(-1)!,

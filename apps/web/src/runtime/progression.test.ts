@@ -475,3 +475,206 @@ describe('background play (WEB-64)', () => {
     vi.unstubAllGlobals();
   });
 });
+
+describe('explicit automatic and manual modes', () => {
+  const manual = () => {
+    const world = structuredClone(w);
+    world.settings!.mode = 'manual';
+    return world;
+  };
+  it('manual-no-resume-after-watch: every resume entry point leaves manual stopped', async () => {
+    const world = manual(),
+      s = setup(undefined, world);
+    controller = s.controller;
+    controller.start();
+    controller.beginWatch(true);
+    controller.endWatch();
+    controller.eventDecided();
+    controller.resumeAway();
+    controller.setHidden(true);
+    await vi.advanceTimersByTimeAsync(10000);
+    controller.setHidden(false);
+    expect(controller.store.getState().running).toBe(false);
+    expect(s.command).not.toHaveBeenCalled();
+    world.calendar = { day: 6 };
+    gameStore.publish({ ...gameStore.getSnapshot(), view: { world } as View });
+    s.command.mockResolvedValue({ ok: true, requestId: 'match-result', view: { world } as View });
+    await controller.playThrough();
+    expect(s.command).toHaveBeenCalledExactlyOnceWith(
+      { type: 'advance-days', days: 1 },
+      { background: true },
+    );
+    expect(controller.store.getState().running).toBe(false);
+  });
+  it('repeated-next-event-single-flight: sends one request and never starts an unattended run', async () => {
+    const world = manual(),
+      s = setup(undefined, world);
+    controller = s.controller;
+    let finish!: (value: { ok: boolean; requestId: string; view: View }) => void;
+    s.command.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const first = controller.nextEvent(),
+      duplicate = controller.nextEvent();
+    expect(s.command).toHaveBeenCalledExactlyOnceWith({ type: 'next-event' }, { background: true });
+    world.calendar = { day: 6 };
+    finish({ ok: true, requestId: 'arrival', view: { world } as View });
+    await Promise.all([first, duplicate]);
+    await vi.advanceTimersByTimeAsync(10000);
+    expect(s.command).toHaveBeenCalledTimes(1);
+    expect(controller.store.getState().running).toBe(false);
+    expect(controller.store.getState().matchEve).toBeDefined();
+  });
+  it('automatic-resume-after-last-decision: reading a sale notice never settles the actual sale', async () => {
+    const s = setup();
+    controller = s.controller;
+    const waiting = structuredClone(w);
+    waiting.bids = [
+      {
+        id: 'held-sale',
+        direction: 'in',
+        playerId: waiting.players[0].id,
+        fee: '10',
+        year: w.year,
+        day: 0,
+        due: 10,
+        status: 'pending',
+      },
+    ];
+    s.command.mockResolvedValue({
+      ok: true,
+      requestId: 'arrival',
+      view: { world: waiting } as View,
+    });
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(controller.store.getState().running).toBe(false);
+    waiting.inbox = [];
+    gameStore.publish({ ...gameStore.getSnapshot(), view: { world: waiting } as View });
+    controller.eventDecided();
+    controller.start();
+    expect(controller.store.getState().running).toBe(false);
+    waiting.bids[0].status = 'rejected';
+    gameStore.publish({ ...gameStore.getSnapshot(), view: { world: waiting } as View });
+    controller.eventDecided();
+    expect(controller.store.getState().running).toBe(true);
+  });
+  it('mode-change-during-inflight clears automatic debt and cannot resume from an old reply', async () => {
+    const s = setup();
+    controller = s.controller;
+    let finish!: (value: { ok: boolean; requestId: string; view: View }) => void;
+    s.command.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(s.command).toHaveBeenCalledTimes(1);
+    const world = manual();
+    gameStore.publish({ ...gameStore.getSnapshot(), view: { world } as View });
+    expect(controller.store.getState().running).toBe(false);
+    expect(s.client.cancel).toHaveBeenCalled();
+    finish({ ok: true, requestId: 'old-tick', view: { world: w } as View });
+    await vi.advanceTimersByTimeAsync(10000);
+    controller.eventDecided();
+    controller.endWatch();
+    expect(s.command).toHaveBeenCalledTimes(1);
+    const automatic = structuredClone(world);
+    automatic.settings!.mode = 'automatic';
+    gameStore.publish({ ...gameStore.getSnapshot(), view: { world: automatic } as View });
+    await vi.advanceTimersByTimeAsync(10000);
+    expect(s.command).toHaveBeenCalledTimes(1);
+    s.command.mockResolvedValue({
+      ok: true,
+      requestId: 'restart',
+      view: { world: automatic } as View,
+    });
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(s.command).toHaveBeenCalledTimes(2);
+    expect(s.command).toHaveBeenLastCalledWith(
+      expect.objectContaining({ type: 'advance-days', days: 1 }),
+      { background: true, automatic: true },
+    );
+  });
+  it('manual-no-away-debt ignores a previously running browser clock record', async () => {
+    const world = manual();
+    const data = new Map([
+      [
+        'haeram-soccor:clock',
+        JSON.stringify({ [world.id]: { running: true, pace: 'x10', at: Date.now() - 3600000 } }),
+      ],
+    ]);
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => data.get(key) ?? null,
+      setItem: (key: string, value: string) => void data.set(key, value),
+      removeItem: (key: string) => void data.delete(key),
+    });
+    try {
+      const s = setup(undefined, world);
+      controller = s.controller;
+      controller.resumeAway();
+      await vi.advanceTimersByTimeAsync(10000);
+      expect(s.command).not.toHaveBeenCalled();
+      expect(controller.store.getState().running).toBe(false);
+      const automatic = structuredClone(world);
+      automatic.settings!.mode = 'automatic';
+      gameStore.publish({ ...gameStore.getSnapshot(), view: { world: automatic } as View });
+      expect(JSON.parse(data.get('haeram-soccor:clock')!)[world.id].running).toBe(false);
+      controller.resumeAway();
+      await vi.advanceTimersByTimeAsync(10000);
+      expect(s.command).not.toHaveBeenCalled();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+  it('does not publish an old manual arrival after the active world is replaced', async () => {
+    const world = manual(),
+      s = setup(undefined, world);
+    controller = s.controller;
+    let finish!: (value: { ok: boolean; requestId: string; view: View }) => void;
+    s.command.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const task = controller.nextEvent();
+    const replacement = manual();
+    replacement.id += ':replacement';
+    gameStore.publish({ ...gameStore.getSnapshot(), view: { world: replacement } as View });
+    world.calendar = { day: 6 };
+    finish({ ok: true, requestId: 'old-world', view: { world } as View });
+    await task;
+    expect(controller.store.getState().matchEve).toBeUndefined();
+    expect(controller.store.getState().running).toBe(false);
+  });
+  it('keeps manual requests blocked by ownership, worker/save errors and current business decisions', async () => {
+    const world = manual(),
+      s = setup(undefined, world);
+    controller = s.controller;
+    for (const blocked of [
+      { readonly: true },
+      { error: 'save failed' },
+      { error: 'worker failed' },
+    ]) {
+      gameStore.publish({
+        ...gameStore.getSnapshot(),
+        readonly: false,
+        error: undefined,
+        ...blocked,
+      });
+      await controller.nextEvent();
+    }
+    gameStore.publish({ ...gameStore.getSnapshot(), readonly: false, error: undefined });
+    world.settings!.responsibilities.manager = 'direct';
+    world.manager.interim = true;
+    await controller.nextEvent();
+    expect(s.command).not.toHaveBeenCalled();
+  });
+});

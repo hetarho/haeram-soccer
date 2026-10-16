@@ -14,7 +14,7 @@ import {
   nextOwnFixture,
   seasonDate,
 } from '../../../../packages/engine/src/calendar';
-import { stoppingReasons } from '../../../../packages/engine/src/stopping';
+import { pendingDecisions, stoppingReasons } from '../../../../packages/engine/src/stopping';
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { currentLeagueRank } from '../../../../packages/engine/src/projection';
 import type { GameClient } from './client';
@@ -127,7 +127,7 @@ export const LEVEL_STOPS: Record<InterventionLevel, readonly InboxKind[]> = {
   3: ['window-open', 'bid-response', 'incoming-bid', 'finance'],
   4: ['finance'],
 };
-/** The kinds the world's intervention level stops for; nothing else sets them (→WEB-18). */
+/** Request hints only; the engine's live stopping query is authoritative. */
 export function stopsOf(w: Pick<World, 'intervention' | 'settings'>): StopOn {
   const s = settingsOf(w);
   return Object.fromEntries(
@@ -221,6 +221,7 @@ export class ProgressionController {
   private get suspended() {
     return this.suspensionSources.size > 0;
   }
+  private mode?: 'automatic' | 'manual';
   private worldId?: string;
   private finishedId?: string;
   /** When the last day step was sent; unset while stopped so a restart begins with one day. */
@@ -242,11 +243,28 @@ export class ProgressionController {
       /* nothing was kept */
     }
     this.worldId = gameStore.getSnapshot().view?.world.id;
+    const initial = gameStore.getSnapshot().view?.world;
+    this.mode = initial ? settingsOf(initial).mode : undefined;
     this.armed = this.worldId ? this.recordToResume(this.worldId) : undefined;
     // A season close is recorded, not a stop: its review waits in the league's season list, so a
     // running clock plays on into the next season (→WEB-47).
     this.unsubscribe = gameStore.subscribe((state) => {
       const id = state.view?.world.id;
+      const mode = state.view ? settingsOf(state.view.world).mode : undefined;
+      if (mode !== this.mode) {
+        this.mode = mode;
+        this.stop('');
+        this.stepAt = undefined;
+        this.owing = false;
+        this.armed = undefined;
+        this.seenMark = undefined;
+        this.hiddenAt = undefined;
+        this.resumeAfterWatch = false;
+        this.resumeAfterEvents = false;
+        this.passedMatch = undefined;
+        this.store.setState({ matchEve: undefined, away: undefined });
+        this.writeClock(true);
+      }
       if (this.worldId !== id) {
         // The world leaving play records its clock stopped: parked games never progress.
         this.stop('');
@@ -285,7 +303,8 @@ export class ProgressionController {
   }
   private recordToResume(id: string) {
     const record = storedClocks()[id];
-    return record?.running &&
+    return this.mode === 'automatic' &&
+      record?.running &&
       record.pace in PACE_MS &&
       Number.isFinite(record.at) &&
       !gameStore.getSnapshot().readonly
@@ -316,6 +335,12 @@ export class ProgressionController {
   setHidden(hidden: boolean) {
     if (this.hidden === hidden) return;
     this.hidden = hidden;
+    if (this.mode === 'manual') {
+      this.hiddenAt = undefined;
+      this.seenMark = undefined;
+      this.setSuspended(hidden && !this.store.getState().background.hidden, 'visibility');
+      return;
+    }
     const w = gameStore.getSnapshot().view?.world;
     if (hidden) {
       this.hiddenAt = Date.now();
@@ -336,7 +361,7 @@ export class ProgressionController {
   resumeAway() {
     const record = this.armed;
     this.armed = undefined;
-    if (!record || this.store.getState().running) return;
+    if (this.mode !== 'automatic' || !record || this.store.getState().running) return;
     this.setPace(record.pace);
     this.start();
     if (!this.store.getState().running) return;
@@ -366,7 +391,7 @@ export class ProgressionController {
     const { running, pace } = this.store.getState();
     const w = gameStore.getSnapshot().view?.world;
     const record: ClockRecord = {
-      running,
+      running: running && this.mode === 'automatic',
       pace,
       at: this.stepAt ?? now,
       mark: this.seenMark ?? (w ? clockMark(w) : undefined),
@@ -382,7 +407,35 @@ export class ProgressionController {
     }
   }
   /** Resolve a match eve by settling the fixture as a result, then keep the clock running. */
-  playThrough() {
+  async playThrough() {
+    if (this.mode === 'manual') {
+      const state = gameStore.getSnapshot(),
+        w = state.view?.world;
+      if (
+        !w ||
+        this.inFlight ||
+        state.processing ||
+        state.readonly ||
+        state.error ||
+        w.critical ||
+        w.bankrupt ||
+        pendingDecisions(w).length ||
+        daysUntilNextMatch(w) !== 1
+      )
+        return;
+      this.inFlight = true;
+      try {
+        const reply = await this.client.command(
+          { type: 'advance-days', days: 1 },
+          { background: true },
+        );
+        if (reply?.ok && w.id === this.worldId && this.mode === 'manual')
+          this.store.setState({ matchEve: undefined });
+      } finally {
+        this.inFlight = false;
+      }
+      return;
+    }
     const id = this.store.getState().matchEve;
     if (id) this.passedMatch = id;
     this.store.setState({ matchEve: undefined });
@@ -403,13 +456,13 @@ export class ProgressionController {
    * once the owner leaves the match view. A match-eve card always resumes, as playing through would.
    */
   beginWatch(fromEve = false) {
-    this.resumeAfterWatch = fromEve || this.store.getState().running;
+    this.resumeAfterWatch = this.mode === 'automatic' && (fromEve || this.store.getState().running);
     this.stop(WATCH_REASON);
   }
   /** Leaving the match view (or a watch that produced no match) resumes a clock watching stopped. */
   endWatch() {
     if (this.store.getState().reason === WATCH_REASON) this.store.setState({ reason: '' });
-    if (!this.resumeAfterWatch) return;
+    if (this.mode !== 'automatic' || !this.resumeAfterWatch) return;
     this.resumeAfterWatch = false;
     this.start();
   }
@@ -418,10 +471,48 @@ export class ProgressionController {
    * left to decide (→WEB-42).
    */
   eventDecided() {
-    if (!this.resumeAfterEvents || this.store.getState().running) return;
+    if (this.mode !== 'automatic' || !this.resumeAfterEvents || this.store.getState().running)
+      return;
     const w = gameStore.getSnapshot().view?.world;
     if (!w || stoppingEvents(w).length) return;
     this.start();
+  }
+  /** A single explicit manual request; the client saves its final decision boundary. */
+  async nextEvent() {
+    const state = gameStore.getSnapshot(),
+      w = state.view?.world;
+    if (
+      this.mode !== 'manual' ||
+      !w ||
+      this.inFlight ||
+      state.processing ||
+      state.readonly ||
+      state.error ||
+      w.critical ||
+      w.bankrupt ||
+      pendingDecisions(w).length
+    )
+      return;
+    this.inFlight = true;
+    try {
+      const reply = await this.client.command({ type: 'next-event' }, { background: true });
+      const world = reply?.view?.world;
+      if (
+        reply?.ok &&
+        world &&
+        world.id === this.worldId &&
+        this.mode === 'manual' &&
+        settingsOf(world).mode === 'manual'
+      ) {
+        this.store.setState({
+          running: false,
+          matchEve: daysUntilNextMatch(world) === 1 ? nextOwnFixture(world)?.id : undefined,
+          reason: world.critical || (world.bankrupt ? '구단이 파산했어요.' : ''),
+        });
+      }
+    } finally {
+      this.inFlight = false;
+    }
   }
   /** The owner's own stop: nothing resumes it until the owner starts it again. */
   pause() {
@@ -441,10 +532,13 @@ export class ProgressionController {
   start() {
     const state = gameStore.getSnapshot();
     if (
+      this.mode !== 'automatic' ||
       this.suspended ||
       state.readonly ||
       state.error ||
       state.view?.world.critical ||
+      state.view?.world.bankrupt ||
+      (state.view && pendingDecisions(state.view.world).length > 0) ||
       !state.view
     )
       return;
@@ -509,7 +603,7 @@ export class ProgressionController {
   private async tick() {
     const progress = this.store.getState();
     const state = gameStore.getSnapshot();
-    if (!progress.running || this.suspended) {
+    if (this.mode !== 'automatic' || !progress.running || this.suspended) {
       // Time spent stopped or behind a sheet is not owed to the calendar.
       this.stepAt = undefined;
       return;
@@ -555,9 +649,18 @@ export class ProgressionController {
           break;
         }
         if (!reply.view) break;
+        if (
+          reply.view.world.id !== this.worldId ||
+          this.mode !== 'automatic' ||
+          settingsOf(reply.view.world).mode !== 'automatic'
+        ) {
+          this.store.setState({ running: false });
+          break;
+        }
         const fresh = stoppingEvents(reply.view.world).find((item) => !seen.has(item.id));
         if (fresh) {
           this.stop(fresh.title);
+          if (fresh.kind === 'match') this.store.setState({ matchEve: fresh.ref });
           this.resumeAfterEvents = true;
           break;
         }

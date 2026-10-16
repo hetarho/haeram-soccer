@@ -164,6 +164,7 @@ export function describeOutcome(
     before.year !== after.year ||
     command.type === 'next-match' ||
     command.type === 'next-event' ||
+    command.type === 'advance-days' ||
     command.type === 'read-inbox'
   )
     return undefined;
