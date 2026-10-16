@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T20:17Z | - |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T20:24Z | T178 |
 | - |
 
 ## inbox
@@ -92,7 +92,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 T196 T197 T198 | todo |
+| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 T196 T197 T198 | doing@261017.n7r4 |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
 
 ## work
@@ -106,6 +106,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 implement-task T178 start n7r4.
 - 261017 T198 done n7r4: A retained training coach resignation now uses the ordinary departure lifecycle, preserving learned values and ending coaching/mentor service while keeping any player contract intact; the exact failing active-management commands validate through ten seasons.
 - 261017 implement-task T198 start n7r4.
 - 261017 create-task T198: actual active-management seed leaves a retained assistant employed after forced resignation (1952/day1); warm/cold occupancy guards both reject replacement. T178 stays incomplete and must rerun at the repaired source.
@@ -125,4 +126,3 @@
 - 261017 implement-task T193 start n7r4.
 - 261017 T194 done n7r4: Validated appointments use a disposable occupied-post index and per-role sorted vacancy cursors; existing query order, one draw per eligible person and every canonical continuation fact remain unchanged.
 - 261017 implement-task T194 start n7r4.
-- 261017 T192 done n7r4: Rules-three contracts and browser regression journeys now use the active version, actual recoverable checkpoint facts, guarded quota flow, valid retained identities, scoped draft editors and native cross-platform keyboard navigation.
