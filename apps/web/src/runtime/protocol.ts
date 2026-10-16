@@ -9,7 +9,7 @@ import type {
   Event,
 } from '../../../../packages/contracts/src/types';
 import type { Envelope } from '../adapters/repository';
-import { clubBuildSchema } from '../../../../packages/contracts/src/schema';
+import { clubBuildSchema, gameSettingsSchema } from '../../../../packages/contracts/src/schema';
 import { STRATEGY_NAME_LIMIT } from '../../../../packages/contracts/src/build';
 import type { SAVE_COMPATIBILITY_CODE } from '../../../../packages/contracts/src/versions';
 import type { clubMilestones } from '../../../../packages/engine/src/goals';
@@ -51,6 +51,7 @@ const inboxKind = z.enum([
   'sponsor-ending',
 ]);
 const command = z.discriminatedUnion('type', [
+  z.strictObject({ type: z.literal('settings'), settings: gameSettingsSchema }),
   z.object({ type: z.literal('advance'), rounds: z.number().int().min(1).max(46) }),
   z.object({
     type: z.literal('advance-days'),

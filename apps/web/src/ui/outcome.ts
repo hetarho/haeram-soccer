@@ -34,6 +34,7 @@ export interface Outcome {
 }
 
 const titles: Record<Command['type'], string> = {
+  settings: '위임·진행 설정을 적용했어요',
   advance: '한 라운드를 진행했어요',
   'advance-days': '하루를 진행했어요',
   'next-match': '다음 경기까지 진행했어요',

@@ -4,6 +4,7 @@ import { readInbox } from './inbox';
 import { commercialCommand } from './ops-commercial';
 import { squadCommand } from './ops-squad';
 import { staffCommand } from './ops-staff';
+import { applySettings } from './responsibilities';
 
 // Read models and limits the app and other modules import from here.
 export { campaignOffers, sponsorAnnual, sponsorOffers, sponsorSlots } from './ops-commercial';
@@ -31,6 +32,9 @@ export const BANKRUPT_MESSAGE = '구단이 파산했어요. 기록을 내보내�
 export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'season' }>) {
   if (w.bankrupt && cmd.type !== 'read-inbox') throw new Error(BANKRUPT_MESSAGE);
   switch (cmd.type) {
+    case 'settings':
+      applySettings(w, cmd.settings);
+      break;
     case 'read-inbox':
       readInbox(w, cmd.id);
       break;

@@ -6,6 +6,8 @@ import { MORALE_START } from './morale';
 import { NEW_CLUB_INTERVENTION } from './intervention';
 import { foundWithPreset } from './presets';
 import { openShortlistWindow } from './signings';
+import { defaultSettings } from './responsibilities';
+export * from './responsibilities';
 export * from './world';
 export * from './season';
 export * from './match';
@@ -55,6 +57,7 @@ export function createWorld(input: Founding) {
   w.staff = basicStaff(w);
   w.academy = { players: [] };
   w.intervention = NEW_CLUB_INTERVENTION;
+  w.settings = defaultSettings();
   w.bids = [];
   w.inbox = [];
   w.morale = MORALE_START;

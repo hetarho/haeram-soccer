@@ -82,7 +82,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T142 | Define game-owned responsibilities and progression settings | WEB SAVE STAFF | - | todo |
 | T143 | Route player contracts, recruitment and sales independently | STAFF CLUB WEB LEAGUE | T142 | todo |
 | T144 | Route manager, staff, academy and sponsor authority | STAFF CLUB WEB | T142 | todo |
 | T145 | Classify actual decisions separately from reports and observations | WEB STAFF | T143 T144 | todo |
@@ -141,6 +140,7 @@
 - Final integration T179 follows the full browser/continuity gates and measured century-save gate T178; do not activate/deploy incomplete rule metadata early.
 
 ## log
+- 261016 T142 complete and checkpointed by task under the user’s authored-contract scope override.
 - 261016 create-task complete: T180–T187 — reputation by standing, registration catalog and counting, squad target 20 with close call-ups, trait bidding, replacement needs, window-close call-ups, squad display; T174 now waits for T180 T186 T187 (base SAVE@39); T143/T144 assumed as specified
 - 261016 create-task CLUB LEAGUE STAFF WEB SAVE start: squad/reputation delta CLUB r40–41, LEAGUE r9, STAFF r33, WEB r87, SAVE r38–39
 - 261016 update-ssot warning T143 (doing, base CLUB@39 LEAGUE@8): CLUB r40–41 and LEAGUE r9 add CLUB-40–44 and LEAGUE-14 and change squad numbers in CLUB-1/3/5/33; T143's responsibility routing is unchanged

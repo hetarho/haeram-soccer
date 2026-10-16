@@ -83,6 +83,15 @@ export type DelegationKey =
  * 3 transfers only, 4 leave it to the staff.
  */
 export type InterventionLevel = 1 | 2 | 3 | 4;
+/** Independent business authority; training always belongs to its coach. */
+export type ResponsibilityKey =
+  'manager' | 'staff' | 'contracts' | 'recruitment' | 'sales' | 'academy' | 'sponsors';
+export type ResponsibilitySettings = Record<ResponsibilityKey, 'direct' | 'delegated'>;
+export interface GameSettings {
+  responsibilities: ResponsibilitySettings;
+  mode: 'automatic' | 'manual';
+  observations: { matchEve: boolean; windowOpen: boolean };
+}
 /** A wage cap names the going wage of a manager or coach of this OVR, in today's money. */
 export type WageCapOvr = 50 | 55 | 60 | 65 | 70 | 75 | 80 | 85 | 90;
 /**
@@ -446,7 +455,7 @@ export interface InboxItem {
   kind: InboxKind;
   title: string;
   detail: string;
-  /** Attention items stop automatic progression until read. */
+  /** Presentation emphasis only; reading a notification never resolves its business action. */
   attention: boolean;
   read?: boolean;
   /** Related bid or player ID. */
@@ -831,6 +840,8 @@ export interface World {
    * behalf; absent means 1, the owner decides everything.
    */
   intervention?: InterventionLevel;
+  /** Game-owned authority, progression mode and observation preferences (→WEB-45). */
+  settings?: GameSettings;
   bids?: TransferBid[];
   inbox?: InboxItem[];
   /** Squad morale 0–100; absent in older saves, which keep pre-morale strength. */
@@ -913,6 +924,7 @@ export interface Founding {
   preset?: string;
 }
 export type Command =
+  | { type: 'settings'; settings: GameSettings }
   | { type: 'advance'; rounds: number }
   /** Stops early on the day a new unread attention item of a `stop` kind arrives. */
   | { type: 'advance-days'; days: number; stop?: InboxKind[] }

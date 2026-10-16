@@ -21,6 +21,25 @@ const tactic = z.enum(['balanced', 'possession', 'counter', 'press']);
 const position = z.enum(POSITIONS);
 const line = z.enum(['GK', 'DF', 'MF', 'FW']);
 const grade = z.literal([1, 2, 3, 4, 5]);
+const authority = z.enum(['direct', 'delegated']);
+export const gameSettingsSchema = z
+  .strictObject({
+    responsibilities: z.strictObject({
+      manager: authority,
+      staff: authority,
+      contracts: authority,
+      recruitment: authority,
+      sales: authority,
+      academy: authority,
+      sponsors: authority,
+    }),
+    mode: z.enum(['automatic', 'manual']),
+    observations: z.strictObject({ matchEve: z.boolean(), windowOpen: z.boolean() }),
+  })
+  .refine((s) => s.mode !== 'manual' || s.observations.matchEve, {
+    message: '수동 모드에는 경기 이벤트가 필요해요',
+    path: ['observations', 'matchEve'],
+  });
 /** The 14 attributes (→PLAYER-2). */
 const attributes = z.strictObject(
   Object.fromEntries(ATTRIBUTES.map((a) => [a, rating])) as Record<
@@ -639,6 +658,7 @@ export const worldSchema: z.ZodType<World> = z.object({
     .strictObject({ players: z.array(player).max(60), intakeYear: z.number().int().optional() })
     .optional(),
   intervention: z.literal([1, 2, 3, 4]).optional(),
+  settings: gameSettingsSchema.optional(),
   bids: z.array(bid).max(200).optional(),
   shortlist: shortlist.optional(),
   morale: z.number().finite().min(0).max(100).optional(),
