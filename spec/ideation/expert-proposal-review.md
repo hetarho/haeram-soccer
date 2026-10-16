@@ -41,9 +41,10 @@
 - [o] Manager candidacy requires at least three cumulative years of actual coaching employment across clubs, excluding unemployment, and aptitude for team management/tactical judgement together. Coaching service alone never automatically makes every coach a manager candidate; a person can remain a specialist coach. Aptitude thresholds remain to specify (→STAFF-30/28).
 - [o] Players across clubs can naturally choose coaching and enter the coaching market. The owner may also encourage one of our own players toward coaching; encouragement guarantees neither entry nor employment. Actual appointments follow the staff/manager responsibility choices.
 - [o] Owner encouragement is once per own player after his retirement announcement and before actual retirement, with the response retained (→STAFF-29).
-- [o] Playing coaches can continue for one or two years while holding one existing coaching post with its ordinary effect; no extra slot is added. Player and coach profiles share one person. Actual playing-coach service counts fully toward the three-year coaching minimum regardless of appearances: two years playing coach plus one full-time year qualifies on experience (→STAFF-31/30). Eligibility and early role termination remain →STAFF-25.
+- [o] Playing coaches can continue for one or two years while holding one existing coaching post with its ordinary effect; no extra slot is added. Player and coach profiles share one person. Actual playing-coach service counts fully toward the three-year coaching minimum regardless of appearances: two years playing coach plus one full-time year qualifies on experience (→STAFF-31/30). Aptitude qualification and entry intentions remain →STAFF-25.
 - [o] Playing-coach conversion needs one combined owner approval if player contracts or staff appointments are direct; both must be delegated for automatic conversion. Pay adds the ordinary coaching salary to the player-contract salary, with each component and the total disclosed (→STAFF-32/33).
 - [o] Playing-coach deferral offers only one/two-year terms fitting the existing age-41 retirement limit. At the agreed playing-retirement date, player salary ends; the same coaching post/contract continues if unexpired, otherwise ordinary staff renewal rules apply (→STAFF-34/35, →CLUB-3).
+- [o] Playing coaches qualify for suitable assistant, attack, defense, goalkeeping, fitness or youth-director posts, excluding director/scout roles (→STAFF-36). Losing only the coaching post preserves the player contract; a player transfer/release out of the club ends the coaching post too. Ordinary contract termination costs are disclosed and affected direct responsibilities are respected (→STAFF-37).
 - [x] Own-club 150 appearances or five seasons as the qualifying gate for coaching opportunities ← the owner wants aptitude-based opportunities across clubs; club service can be career context but must not exclude suitable outsiders.
 - [?] Second-career detail: preserve a recognisable person and assess coaching aptitude across clubs.
   - Preserve the person's actual identity, age and playing record through later roles; distinguish a training invitation, qualification, a vacancy and an appointment. A legend's playing quality need not guarantee coaching quality.
@@ -104,7 +105,7 @@
 
 ## domains
 - WEB: seven responsibilities, defaults/observation triggers, two progression modes, manual-match guard, scoped policy sheets, aptitude/career and mediation presentation, pending-work transfer and same-date event grouping (WEB-5/18/42/45/76–83). →WEB
-- STAFF: independent responsibility execution, coaching entry, manager qualification, standing support policy, once-only retirement-window encouragement, three-year service minimum and playing coaches with combined authority/additive pay, age-41 cap and remaining-contract continuity; entry/ability/early-separation parameters remain open (STAFF-13/15–20/23–35). →STAFF
+- STAFF: independent responsibility execution, coaching entry, manager qualification, standing support policy, once-only retirement-window encouragement, three-year service minimum and playing coaches with combined authority/additive pay, age-41 cap, contract continuity and eligible-post/termination rules; entry/ability parameters remain open (STAFF-13/15–20/23–37). →STAFF
 - CLUB: retirement continuity, separate acquisition/sale responsibilities, recruitment-owned mediation and tracked reinforcement promises; resolution/fulfilment criteria remain open (CLUB-3/13/18/22/24/32–37). →CLUB
 - PLAYER: separate off-pitch aptitude and qualitative evaluation; assessment/scouting parameters remain open (PLAYER-1/19/21/22). →PLAYER
 - WORLD: cross-club person continuity without fabricated history; seasonal NPC lifecycle scope remains open (WORLD-6/10/11). →WORLD
@@ -114,7 +115,7 @@
 - LEAGUE: reference the manual next-event mode and the equivalent all-delegated reference regimen; competitive coefficients, balance bands and measurements are unchanged (LEAGUE-11/13). →LEAGUE
 
 ## open
-- What determines coaching entry, the response to encouragement, eligible playing-coach posts and early termination of either role?
+- What determines coaching qualification, natural entry and the response to encouragement?
 - What scouting uncertainty applies to other clubs' aptitude evaluations, and how are coaching specialty/ability and manager school/ability established?
 - What are the detailed director-first/balanced/manager-first mediation criteria, especially when a promise is unaffordable?
 - What fulfils or cancels a reinforcement promise when personnel, affordability or candidate availability change?

@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r24 | Define the browser-demo rules for manager demands and personality.
+> r25 | Define the browser-demo rules for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -132,7 +132,7 @@
   - candidacy does not appoint him. Hiring/renewal follows the manager responsibility, not his former-player status, and preserves existing contract and affordability rules.
   - the linked person history survives the change of role (→HIST-14). Exact qualification and school/ability assignment are →STAFF-28.
 
-- STAFF-25 [?] Specify natural coaching entry timing/chance and aptitude qualification, how a player's wishes answer encouragement or affect entry, eligible playing-coach posts and early termination of either role. Encouragement is →STAFF-29; playing-coach conversion/pay and scheduled retirement/continuation are →STAFF-31–35. No fixed training-course price or automatic entry/employment guarantee is established.
+- STAFF-25 [?] Specify natural coaching entry timing/chance and aptitude qualification, and how a player's wishes answer encouragement or affect entry. Encouragement is →STAFF-29; playing-coach conversion, pay, retirement, eligible posts and role termination are →STAFF-31–37. No fixed training-course price or automatic entry/employment guarantee is established.
 
 - STAFF-26 [o] The recruitment department has a standing director/manager support policy: 단장 우선, 균형 or 감독 우선, with 균형 selected for a new game.
   - automatic mediation follows that policy; direct mediation can choose differently for the current case without silently changing the standing policy.
@@ -154,7 +154,7 @@
 - STAFF-31 [o] A player approaching retirement may spend one or two years as a playing coach, retaining active-player identity while holding one existing coaching post.
   - the person occupies that post in place of its coach, with the post's ordinary effects (→STAFF-11); no extra coaching slot or stacked second coach is created. Playing OVR does not determine coaching ability (→STAFF-27).
   - player and coach profiles link the same person, actual age and overlapping career periods (→WORLD-10, →HIST-14). Existing playing ageing, injury and ability rules remain in force.
-  - the whole actual coaching period contributes to →STAFF-30, even when the person does not play matches. Conversion approval and salary are →STAFF-32/33; scheduled retirement and continued coaching are →STAFF-34/35. Remaining eligibility and early role termination require →STAFF-25.
+  - the whole actual coaching period contributes to →STAFF-30, even when the person does not play matches. Conversion approval and salary are →STAFF-32/33; scheduled retirement and continued coaching are →STAFF-34/35; eligible posts and early role termination are →STAFF-36/37. Aptitude qualification and career intentions require →STAFF-25.
 
 - STAFF-32 [o] A playing-coach conversion belongs jointly to player contracts and staff appointments (→WEB-45).
   - if either responsibility is direct, stop progression and let the owner review/approve the combined proposal once, including both roles and their terms/costs. Do not auto-commit one half while waiting for the other.
@@ -172,6 +172,15 @@
   - the person becomes a full-time coach without a new appointment or a reset of actual coaching service (→STAFF-30). Preserve the linked playing history and age.
   - if the coaching contract also expires, renewal or replacement follows the ordinary staff-appointment responsibility and contract rules (→STAFF-15). Do not silently guarantee a new coaching contract.
 
+- STAFF-36 [o] Playing coaches may hold one suitable training post among assistant, attack, defense, goalkeeping, fitness and youth director (→STAFF-11).
+  - suitability follows the person's coaching specialty/aptitude (→STAFF-27); do not let a playing coach fill every department without regard to suitability.
+  - the director and chief scout are outside this playing-coach route. Existing department capacity and effects remain unchanged.
+
+- STAFF-37 [o] Ending a playing coach's coaching post by dismissal or resignation preserves his player contract; he continues as a player under that contract and loses the coaching salary/post effect.
+  - a player transfer or release that takes him out of the club also ends his coaching post there. Playing retirement instead follows the remaining-coach-contract rule in →STAFF-35.
+  - each affected contract follows its ordinary termination/resignation and compensation rules, with costs disclosed before the action; do not invent an additional playing-coach severance charge.
+  - respect every affected business responsibility (→WEB-45); ending both roles must not bypass a direct decision by automatically settling its part.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -181,6 +190,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r25 261016 STAFF-25/31✎ playing-coach post/early-exit rules open→STAFF-36/37, entry intentions remain open; STAFF-36/37+ six suitable training posts, coach-only exit preserves player contract, player departure ends both roles under ordinary contract costs
 - r24 261016 STAFF-25/31✎ retirement/continuation open→STAFF-34/35, remaining entry/eligibility/early separation open; STAFF-34/35+ one/two-year deferral capped at 41 and unexpired coach contract continues after playing retirement
 - r23 261016 STAFF-25/31✎ authority/pay open→STAFF-32/33; STAFF-32/33+ one combined approval if either category is direct, both delegated for automatic conversion, player salary plus ordinary coach salary
 - r22 261016 STAFF-23/24✎ retirement-only entry/unspecified service→playing-coach route and three-year service; STAFF-25/28✎ encouragement/service timing open→remaining entry/contract/aptitude rules; STAFF-29/30/31+ once after retirement notice, three-year cross-club service and existing-post playing coaches with full service credit

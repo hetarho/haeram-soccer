@@ -16,7 +16,7 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 
 ## inbox
-- 261016 parked STAFF-25 STAFF-27 STAFF-28 PLAYER-22 WORLD-11 CLUB-36 CLUB-37: clarify coaching entry/aptitude, playing-coach post eligibility/early separation, NPC continuity and mediation/promise criteria before creating the complete proposal task batch
+- 261016 parked STAFF-25 STAFF-27 STAFF-28 PLAYER-22 WORLD-11 CLUB-36 CLUB-37: clarify coaching entry/aptitude and candidate abilities, NPC continuity and mediation/promise criteria before creating the complete proposal task batch
 - 261016 suggest WEB-74: owner-workflow tasks T134–T138 completed → review-code taskMemory/state, RecordsRoom/LiveSeason/CupsView and their browser journeys before the next UI feature; no refactoring is included in this completed scope
 - 261016 suggest -: spec lint has 33 existing document-quality hints → doc-review WEB/ARCH before expanding the navigation specification; no policy changes implied
 - 261015 decided WEB-74: start-vibe m8q4 scope → implement navigation-and-records with current game rules and the approved pixel readability baseline in an isolated checkout (alt: analysis only | revise game mechanics)
@@ -73,7 +73,7 @@
 | CLUB | 37 | 35 | CLUB-3✎ CLUB-13✎ CLUB-18✎ CLUB-22✎ CLUB-24✎ CLUB-32✎ CLUB-33✎ CLUB-34+ CLUB-35+ CLUB-36+ CLUB-37+ | 2 |
 | MATCH | 9 | 9 | - | 0 |
 | LEAGUE | 8 | 7 | LEAGUE-11✎ LEAGUE-13✎ | 0 |
-| STAFF | 24 | 20 | STAFF-13✎ STAFF-15✎ STAFF-16✎ STAFF-17✎ STAFF-18✎ STAFF-19✎ STAFF-20✎ STAFF-23+ STAFF-24+ STAFF-25+ STAFF-26+ STAFF-27+ STAFF-28+ STAFF-29+ STAFF-30+ STAFF-31+ STAFF-32+ STAFF-33+ STAFF-34+ STAFF-35+ | 3 |
+| STAFF | 25 | 20 | STAFF-13✎ STAFF-15✎ STAFF-16✎ STAFF-17✎ STAFF-18✎ STAFF-19✎ STAFF-20✎ STAFF-23+ STAFF-24+ STAFF-25+ STAFF-26+ STAFF-27+ STAFF-28+ STAFF-29+ STAFF-30+ STAFF-31+ STAFF-32+ STAFF-33+ STAFF-34+ STAFF-35+ STAFF-36+ STAFF-37+ | 3 |
 | ECON | 38 | 37 | ECON-25✎ | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 11 | 9 | HIST-14+ HIST-15+ | 0 |
@@ -96,6 +96,8 @@
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 update-ssot STAFF r25: playing coaches use one of six suitable training posts; coach-only dismissal/resignation preserves player contract, transfer/release out of the club ends both roles with ordinary costs and affected responsibility checks
+- 261016 update-ssot STAFF start: settle six eligible playing-coach posts and asymmetric coach-only versus player-departure termination
 - 261016 update-ssot STAFF r24 CLUB r37: playing-coach deferral stays within age 41; playing retirement ends only player salary/role, remaining coach contract continues, expiries follow normal staff decisions
 - 261016 update-ssot STAFF CLUB start: preserve age-41 cap for one/two-year playing-coach extensions and carry remaining coach contracts through playing retirement
 - 261016 update-ssot STAFF r23 WEB r86: playing-coach conversion requires one owner approval when either player contracts or staff appointments are direct; ordinary coach salary adds to unchanged-by-conversion player pay, total disclosed
@@ -114,5 +116,3 @@
 - 261016 update-ssot WEB r83: manual play moves directly to the next event date without a paced progress/cancel journey; choice-free reports notify only; central entry/apply rules consolidated
 - 261016 update-ssot WEB r82: pending work transfers after disclosure and explicit apply; manual stops group same-date events; remaining policy interview continues
 - 261016 update-ssot WEB STAFF PLAYER WORLD CLUB SAVE start: settle remaining policies together, beginning with pending decisions and manual progression; balance remains parked
-- 261016 update-ssot proposal scope recorded in nine domains: independent responsibilities, two progression modes, coaching careers, mediation/promises and scoped policy sheets; ten open units retained, ideation converted
-- 261016 update-ssot WEB STAFF CLUB PLAYER WORLD HIST SAVE ECON LEAGUE start: convert the agreed proposal scope; preserve balance and mark unresolved rules explicitly
