@@ -91,7 +91,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 | todo |
-| T192 | Repair rules-three full-suite regression journeys | WEB SAVE ARCH | T174 T191 | doing@261017.n7r4 |
 | T193 | Compact retained career relationships without dropping facts | SAVE ARCH | T173 T192 | todo |
 | T194 | Bound retained employment lookup cost | STAFF HIST ARCH | T162 T163 T166 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
@@ -107,6 +106,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 T192 done n7r4: Rules-three contracts and browser regression journeys now use the active version, actual recoverable checkpoint facts, guarded quota flow, valid retained identities, scoped draft editors and native cross-platform keyboard navigation.
 - 261017 create-task T194: preserve appointment validation while removing profiled repeated full-history/club searches before the final long-run source freeze.
 - 261017 create-task T193: lossless career relationship compaction after the measured T178 budget failure; original save limits and final century gate remain mandatory.
 - 261017 implement-task T192 start n7r4.
@@ -126,4 +126,3 @@
 - 261017 create-task SAVE r41: assign activation metadata to existing T174.
 - 261017 update-ssot SAVE r41: synchronize approved 3.0.0 activation metadata for T174.
 - 261017 T187 done n7r4: Squad summaries show historical registration counts, explicit estimated fallback, and twenty/sixteen readiness tones; recruitment and save validation enforce the forty-player global boundary.
-- 261017 implement-task T187 start n7r4.
