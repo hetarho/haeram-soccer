@@ -144,6 +144,18 @@ export function discardDepartment(w: World, draft: BoardDraft, area: AreaKey): B
     draftChanges(w, draft).filter((change) => !belongs(change, area)),
   );
 }
+/** Replace one department's work while preserving the rest of the shared draft. */
+export function replaceDepartment(
+  w: World,
+  full: BoardDraft,
+  area: AreaKey,
+  scoped: BoardDraft,
+): BoardDraft {
+  return changesDraft(w, [
+    ...draftChanges(w, full).filter((change) => !belongs(change, area)),
+    ...draftChanges(w, scoped).filter((change) => belongs(change, area)),
+  ]);
+}
 /** Only successful command acknowledgements spend draft changes. Rebase the rest on live facts. */
 export function reconcileDraft(
   before: World,

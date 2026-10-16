@@ -6,6 +6,7 @@ import { matchingPreset } from '../../../../packages/engine/src/presets';
 import { financeProjection } from '../../../../packages/engine/src/projection';
 import { policyOf } from '../../../../packages/engine/src/policy';
 import {
+  replaceDepartment,
   departmentDraft,
   discardDepartment,
   reconcileDraft,
@@ -269,5 +270,17 @@ describe('department draft boundaries', () => {
     useTaskMemory.setState({ values: { 'board-draft': { direction: { finance: 'careful' } } } });
     useTaskMemory.getState().activate('second');
     expect(useTaskMemory.getState().values).toEqual({});
+  });
+});
+
+describe('department editor shared draft', () => {
+  it('replacing and discarding a scoped edit preserves unrelated cards and rows', () => {
+    const w = world();
+    const full = withCard(w, withDirection(w, {}, 'finance', 'careful'), 'revenue', 'commercial');
+    const scoped = withPolicy(w, withCard(w, {}, 'scouting', 'data'), 'recruitment', 2);
+    const combined = replaceDepartment(w, full, 'scouting', scoped);
+    expect(departmentDraft(w, combined, 'finance')).toEqual(full);
+    expect(departmentDraft(w, combined, 'scouting')).toEqual(scoped);
+    expect(replaceDepartment(w, combined, 'scouting', {})).toEqual(full);
   });
 });

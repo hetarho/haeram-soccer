@@ -203,11 +203,17 @@ export function openCoachSheet(
  * open as a draft.
  */
 export const useBoardRequest = oneShot<BoardRequest>();
-/** Opens 방향 with an area unfolded, from a line naming one of its rows (→WEB-43, →WEB-71). */
+/** A department editor overlays the task without changing its route or return stack. */
+export const useDepartmentPolicy = create<{
+  request?: BoardRequest;
+  open: (request: BoardRequest) => void;
+  close: () => void;
+}>((set) => ({
+  open: (request) => set({ request }),
+  close: () => set({ request: undefined }),
+}));
 export function openDirection(area: AreaKey) {
-  beginTaskDetour('business');
-  useBoardRequest.getState().open({ area });
-  openBusiness('strategy');
+  useDepartmentPolicy.getState().open({ area });
 }
 
 /**

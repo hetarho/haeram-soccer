@@ -15,6 +15,7 @@ import type { World } from '../../../../packages/contracts/src/types';
 import { country, priceIndex } from '../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../runtime/client';
 import { openPeople, useInterventionDialog, useNavigation, type Page } from './state';
+import { DepartmentPolicySheet } from './DepartmentPolicySheet';
 import { PlayerPreparationHost } from './PlayerPreparationHost';
 import { TaskReturn } from './TaskReturn';
 import { taskAddress, useTaskMemory } from './taskMemory';
@@ -1383,6 +1384,7 @@ export function App() {
       {client && playing && <TeamSheetHost client={client} />}
       {playing && <PlayerSheetHost />}
       {playing && client && <PlayerPreparationHost client={client} />}
+      {playing && client && <DepartmentPolicySheet client={client} />}
       {playing && <CelebrationHost />}
       {playing && controller && <AwayHost controller={controller} />}
       {pendingImport && (

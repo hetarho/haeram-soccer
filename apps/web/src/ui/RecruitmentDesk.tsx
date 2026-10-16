@@ -267,6 +267,11 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   const [order, setOrder] = useTaskState<Order>(w.id, 'market-order', 'impact');
   const [boostOnly, setBoostOnly] = useTaskState(w.id, 'market-boost', false);
   const [comparison, setComparison] = useTaskState<string[]>(w.id, 'market-comparison', []);
+  const [comparisonOffers, setComparisonOffers] = useTaskState<Record<string, TransferOffer>>(
+    w.id,
+    'market-comparison-offers',
+    {},
+  );
   const [comparing, setComparing] = useState(false);
   const [message, setMessage] = useState('');
   const [bidding, setBidding] = useState<Candidate>();
@@ -310,15 +315,31 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
         a.offer.player.id.localeCompare(b.offer.player.id)
       );
     });
-  const selectedComparison = comparison.filter((id) =>
-    candidates.some((candidate) => candidate.offer.player.id === id),
-  );
-  const toggle = (id: string) =>
+  const compared = comparison.flatMap((id) => {
+    const current = candidates.find((candidate) => candidate.offer.player.id === id);
+    if (current) return [current];
+    const offer = comparisonOffers[id];
+    return offer
+      ? [
+          {
+            index: -1,
+            offer,
+            buy: recruitmentPreview(w, offer),
+            loan: recruitmentPreview(w, offer, true),
+          },
+        ]
+      : [];
+  });
+  const selectedComparison = compared.map((candidate) => candidate.offer.player.id);
+  const toggle = (id: string) => {
+    const offer = candidates.find((candidate) => candidate.offer.player.id === id)?.offer;
+    if (offer) setComparisonOffers((current) => ({ ...current, [id]: offer }));
     setComparison((current) =>
       current.includes(id)
         ? current.filter((candidate) => candidate !== id)
         : [...current.slice(-1), id],
     );
+  };
   const recruit = async (candidate: Candidate, loan: boolean) => {
     const preview = loan ? candidate.loan : candidate.buy;
     if (blocked || !preview.eligible || !preview.affordable) return;
@@ -350,7 +371,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       key={candidate.offer.player.id}
       w={w}
       candidate={candidate}
-      blocked={blocked}
+      blocked={blocked || candidate.index < 0}
       selected={comparison.includes(candidate.offer.player.id)}
       onCompare={() => toggle(candidate.offer.player.id)}
       onRecruit={(loan) => {
@@ -523,7 +544,13 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           }
         >
           <div className={s.cards}>
-            {candidates.filter(({ offer }) => comparison.includes(offer.player.id)).map(render)}
+            {compared.some((candidate) => candidate.index < 0) && (
+              <p role="status">
+                현재 후보 목록에서 빠진 선수는 선택 당시 정보로 비교해요. 영입하려면 현재 후보
+                목록에서 다시 선택해 주세요.
+              </p>
+            )}
+            {compared.map(render)}
           </div>
         </Dialog>
       )}
