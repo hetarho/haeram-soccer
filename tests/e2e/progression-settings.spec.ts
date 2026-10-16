@@ -6,7 +6,7 @@ import {
   pendingAcquisitionCareer,
 } from './responsibility-fixtures';
 import { expect, test, type Page } from '@playwright/test';
-import { chooseLevel } from './events';
+import { chooseLevel, configureResponsibilities } from './events';
 import { horizontalOverflow, settle } from './layout';
 
 /**
@@ -27,6 +27,9 @@ test('mobile clock exposes every pace as a touch target and advances at the chos
   // The paces are measured against match eves.
   await page.setViewportSize({ width: 360, height: 740 });
   await foundQuiet(page);
+  await configureResponsibilities(page, {
+    responsibilities: { recruitment: 'delegated', sales: 'delegated' },
+  });
   const date = page.getByTestId('game-date');
   await expect(date).toHaveText('1950년 8월 1일');
   const controls = page.getByRole('region', { name: '시즌 진행', exact: true });

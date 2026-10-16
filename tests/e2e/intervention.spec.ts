@@ -144,14 +144,7 @@ for (const viewport of [
     await expect(country).toHaveAttribute('data-value', 'FRA');
 
     await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
-    await page
-      .getByTestId('club-hub')
-      .getByRole('button', { name: '시즌 진행 도구', exact: true })
-      .click();
-    const journal = page.getByRole('dialog', { name: '시즌 진행 도구' });
-    await expect(
-      journal.getByRole('button', { name: '한 라운드 진행', exact: true }),
-    ).toBeVisible();
+    await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: /^\d+시즌 진행$/ })).toHaveCount(0);
   });
 }

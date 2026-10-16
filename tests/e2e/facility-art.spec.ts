@@ -112,7 +112,22 @@ test('updates the era on 1 January and the training scene on actual completion, 
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
   const w = artWorld(1969);
-  operate(w, { type: 'intervention', level: 4 });
+  operate(w, {
+    type: 'settings',
+    settings: {
+      ...w.settings!,
+      responsibilities: {
+        manager: 'delegated',
+        staff: 'delegated',
+        contracts: 'delegated',
+        recruitment: 'delegated',
+        sales: 'delegated',
+        academy: 'delegated',
+        sponsors: 'delegated',
+      },
+      observations: { matchEve: false, windowOpen: false },
+    },
+  });
   advanceDays(w, 63, undefined, false);
   operate(w, { type: 'facility', part: 'training' });
   advanceDays(w, 89, undefined, false);

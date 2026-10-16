@@ -243,10 +243,6 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     // Plays a whole season; slow CI browsers need longer.
     test.slow();
     await found(page, 'cup-history-journey');
-    await page
-      .getByTestId('club-hub')
-      .getByRole('button', { name: '시즌 진행 도구', exact: true })
-      .click();
     await finishSeason(page);
     await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
     await page.keyboard.press('Escape');

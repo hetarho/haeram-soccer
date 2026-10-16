@@ -1,3 +1,4 @@
+import { advanceOneRound } from './season-progression';
 import { expect, test, type Page } from '@playwright/test';
 import {
   activePlayers,
@@ -43,18 +44,26 @@ async function talking() {
   const newYear = seasonDayOf(w.year, 1, 1);
   advanceDays(w, newYear - 1 - currentDay(w), undefined, false);
   // The journey finds his roster card by name, so it must be the only one with that name.
-  const player = activePlayers(w).find(
+  let player = activePlayers(w).find(
     (p) =>
       !p.talk &&
+      !p.unhappy &&
+      !p.loanUntil &&
+      p.retiring === undefined &&
       activePlayers(w).filter((q) => q.name === p.name).length === 1 &&
       !talksRound(w, p, { kind: 'renew', demand: '0', floor: '0', year: w.year, day: newYear }),
   )!;
+  // This marked synthetic fixture isolates one final-season contract from other January talks.
+  for (const other of activePlayers(w))
+    if (other.id !== player.id && !other.loanUntil) other.until = w.year + 4;
   player.until = w.year + 1;
+  const playerId = player.id;
   advanceDays(w, 1, undefined, false);
+  // Atomic delegated decisions can replace the world objects while the day settles.
+  player = w.players.find((candidate) => candidate.id === playerId)!;
   expect(player.talk).toMatchObject({ kind: 'renew', day: newYear });
   expect(talksRound(w, player, player.talk!)).toBe(false);
-  // Level 1 stops for every event: the news already in the inbox (the winter window opening) is
-  // read, so the journey starts at the talk.
+  // Routine notifications are marked read; the one canonical contract decision remains pending.
   for (const item of w.inbox ?? []) if (item.kind !== 'contract-talk') item.read = true;
   return {
     raw: await encode(w, 1, 0),
@@ -128,17 +137,11 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   await expect(card).toHaveCount(0);
 
   // Six weeks later he hands in a transfer request.
-  await page
-    .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 진행 도구', exact: true })
-    .click();
-  const journal = page.getByRole('dialog', { name: '시즌 진행 도구' });
   for (let next = round + 1; next <= due; next++) {
-    await journal.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
+    await advanceOneRound(page);
     await expect(page.getByTestId('calendar')).toHaveText(new RegExp(`라운드 ${next}$`));
   }
   await page.keyboard.press('Escape');
-  await expect(journal).toHaveCount(0);
   await expect(card).toHaveCount(0);
   await page.getByTestId('communications-button').click();
   const news = page.getByRole('dialog', { name: '알림·뉴스', exact: true });
@@ -164,7 +167,7 @@ test('the talk rule shows under 선수 and applies', async ({ page, browserName 
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
-  // New clubs leave contract talks to the staff (→STAFF-13), by 재계약 기조 and 재정 기조.
+  // The owner holds contracts; the delegated criteria remain visible for a later handover.
   const talks = page.getByRole('region', { name: '계약 협상 위임' });
   await expect(talks.getByRole('checkbox')).toHaveCount(0);
   await expect(talks.getByTestId('decision-owner-contracts')).toContainText('직접 결정');
@@ -176,7 +179,7 @@ test('the talk rule shows under 선수 and applies', async ({ page, browserName 
   // The row is chosen on the 방향 board, its area unfolded by the line.
   await talks.getByRole('button', { name: /^재계약 기조 · 표준/ }).click();
   const squad = page
-    .getByTestId('strategy-board')
+    .getByRole('dialog', { name: '선수단·계약 운영 방침', exact: true })
     .getByRole('region', { name: '선수단·계약', exact: true });
   await squad.getByRole('radio', { name: '재계약 기조 짠물', exact: true }).click();
   const draft = page.getByTestId('strategy-draft');

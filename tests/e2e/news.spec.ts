@@ -1,3 +1,4 @@
+import { advanceOneRound } from './season-progression';
 import { expect, test, type Page } from '@playwright/test';
 import { advanceRound, clubNews, createWorld, operate } from '../../packages/engine/src/index';
 import { chooseLevel } from './events';
@@ -15,7 +16,22 @@ const seed = (() => {
   for (let i = 0; i < 60; i++) {
     const w = createWorld(founding(`news-celebrate-${i}`));
     // As the test plays it: the staff run the club at level 4 (→WEB-45).
-    operate(w, { type: 'intervention', level: 4 });
+    operate(w, {
+      type: 'settings',
+      settings: {
+        ...w.settings!,
+        responsibilities: {
+          manager: 'delegated',
+          staff: 'delegated',
+          contracts: 'delegated',
+          recruitment: 'delegated',
+          sales: 'delegated',
+          academy: 'delegated',
+          sponsors: 'delegated',
+        },
+        observations: { matchEve: false, windowOpen: false },
+      },
+    });
     advanceRound(w, undefined, false);
     if (clubNews(w).some((item) => item.celebrate)) return `news-celebrate-${i}`;
   }
@@ -35,14 +51,8 @@ async function found(page: Page) {
   await chooseLevel(page, 4);
 }
 async function playRound(page: Page) {
-  await page
-    .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 진행 도구', exact: true })
-    .click();
-  const journal = page.getByRole('dialog', { name: '시즌 진행 도구' });
-  await journal.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
+  await advanceOneRound(page);
   await expect(page.getByTestId('calendar')).toHaveText(/라운드 1$/);
-  await journal.getByRole('button', { name: '창 닫기', exact: true }).click();
 }
 const newsButton = (page: Page) => page.getByTestId('communications-button');
 

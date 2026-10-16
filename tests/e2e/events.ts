@@ -1,3 +1,4 @@
+import type { GameSettings, ResponsibilityKey } from '../../packages/contracts/src/types';
 import { expect, type Page } from '@playwright/test';
 
 /** Compatibility presets for older journeys, expressed only through the shared public dialog.
@@ -37,6 +38,65 @@ export async function chooseLevel(page: Page, level: 1 | 2 | 3 | 4) {
   } else await dialog.getByRole('button', { name: '닫기', exact: true }).click();
   await expect(dialog).toHaveCount(0);
 }
+
+/** Configure the seven categories through the public dialog, preserving unspecified choices. */
+export async function configureResponsibilities(
+  page: Page,
+  options: {
+    responsibilities?: Partial<Record<ResponsibilityKey, 'direct' | 'delegated'>>;
+    mode?: GameSettings['mode'];
+    observations?: Partial<GameSettings['observations']>;
+  },
+) {
+  await page.getByTestId('intervention-trigger').click();
+  const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
+  const labels: Record<ResponsibilityKey, string> = {
+    manager: '감독 인사',
+    staff: '스태프 인사',
+    contracts: '선수 계약',
+    recruitment: '선수 영입',
+    sales: '선수 매각',
+    academy: '유소년 승격·방출',
+    sponsors: '스폰서 계약',
+  };
+  for (const [key, value] of Object.entries(options.responsibilities ?? {}))
+    await dialog
+      .getByRole('combobox', { name: labels[key as ResponsibilityKey], exact: true })
+      .selectOption(value);
+  if (options.mode === 'automatic')
+    await dialog
+      .getByRole('combobox', { name: '진행 모드', exact: true })
+      .selectOption('automatic');
+  if (options.observations?.matchEve !== undefined)
+    await dialog
+      .getByRole('checkbox', { name: '경기 전날 이벤트', exact: true })
+      .setChecked(options.observations.matchEve);
+  if (options.observations?.windowOpen !== undefined)
+    await dialog
+      .getByRole('checkbox', { name: '이적시장 개장 이벤트', exact: true })
+      .setChecked(options.observations.windowOpen);
+  if (options.mode === 'manual')
+    await dialog
+      .getByRole('combobox', { name: '진행 모드', exact: true })
+      .selectOption(options.mode);
+  const apply = dialog.getByRole('button', { name: '적용', exact: true });
+  if (await apply.isEnabled()) {
+    await apply.click();
+    const outcome = page.getByTestId('action-outcome');
+    await expect(outcome).toBeVisible();
+    await outcome.getByRole('button', { name: '확인', exact: true }).click();
+  } else await dialog.getByRole('button', { name: '닫기', exact: true }).click();
+  await expect(dialog).toHaveCount(0);
+}
+export const ALL_DELEGATED: Record<ResponsibilityKey, 'delegated'> = {
+  manager: 'delegated',
+  staff: 'delegated',
+  contracts: 'delegated',
+  recruitment: 'delegated',
+  sales: 'delegated',
+  academy: 'delegated',
+  sponsors: 'delegated',
+};
 
 /** The card shown when the clock stops for a match eve or an attention event. */
 export const eventCard = (page: Page) => page.getByTestId('event-card');

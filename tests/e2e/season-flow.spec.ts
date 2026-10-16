@@ -1,3 +1,4 @@
+import { configureResponsibilities } from './events';
 import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
 import { horizontalOverflow } from './layout';
@@ -11,6 +12,9 @@ test('advances real days at each speed, stops and restores the saved calendar', 
   await page.getByLabel('세계 생성 시드').fill('season-flow');
   await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  await configureResponsibilities(page, {
+    responsibilities: { recruitment: 'delegated', sales: 'delegated' },
+  });
   const date = page.getByTestId('game-date');
   await expect(date).toHaveText('1950년 8월 1일');
   const pace = (label: string) =>

@@ -1,3 +1,4 @@
+import { advanceOneRound } from './season-progression';
 import { delegateSales } from './events';
 import { expect, test } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
@@ -11,12 +12,7 @@ test('creates, computes and reloads through the bundled worker', async ({ page }
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByText('Haeram Athletic', { exact: true }).first()).toBeVisible();
-  await page
-    .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 진행 도구', exact: true })
-    .click();
-  const journal = page.getByRole('dialog', { name: '시즌 진행 도구' });
-  await journal.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
+  await advanceOneRound(page);
   await expect(page.getByTestId('calendar')).toHaveText(/1950\/51 · 라운드 1$/);
   // A round is lived one day at a time, one revision each (→LEAGUE-11): the page names the
   // revision it reached.
@@ -24,7 +20,6 @@ test('creates, computes and reloads through the bundled worker', async ({ page }
   const revision = Number(shown?.[1]);
   expect(revision).toBeGreaterThan(0);
   await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${revision} ·`);
-  await journal.getByRole('button', { name: '창 닫기' }).click();
   await page.reload();
   await expect(page.getByTestId('calendar')).toHaveText(/1950\/51 · 라운드 1$/);
   await expect(page.getByTestId('calendar')).toBeVisible();

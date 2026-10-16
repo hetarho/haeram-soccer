@@ -195,7 +195,7 @@ interface Career {
 /** Minor units of one 1901 price unit in this country and year. */
 const unitOf = (code: string, year: number) => Number(quote(code, year, 1_000_000)) / 1_000_000;
 
-/** Every delegation on: the owner leaves the club to the staff at level 4 (ECON-29, →WEB-45). */
+/** All seven business responsibilities delegated for the unchanged ECON-29 reference. */
 function delegateAll(w: World) {
   w.settings = defaultSettings();
   for (const key of RESPONSIBILITY_KEYS) w.settings.responsibilities[key] = 'delegated';

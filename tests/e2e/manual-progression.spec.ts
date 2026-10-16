@@ -118,3 +118,32 @@ for (const width of [1280, 390]) {
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
   });
 }
+
+for (const authority of ['direct', 'delegated'] as const) {
+  test(`mandatory match event with all business ${authority}`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const w = createWorld({
+      country: 'ENG',
+      name: `Mandatory ${authority}`,
+      color: '#224466',
+      seed: `mandatory-${authority}`,
+      level: 'easy',
+    });
+    for (const key of Object.keys(w.settings!.responsibilities) as (keyof NonNullable<
+      typeof w.settings
+    >['responsibilities'])[])
+      w.settings!.responsibilities[key] = authority;
+    w.settings!.observations.matchEve = false;
+    await importResponsibilityCareer(page, w);
+    const date = await page.getByTestId('game-date').innerText();
+    await page.getByTestId('intervention-trigger').click();
+    const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
+    await dialog.getByRole('combobox', { name: '진행 모드', exact: true }).selectOption('manual');
+    await expect(dialog).toContainText('수동 모드에는 경기 이벤트가 필요해요');
+    await expect(dialog.getByRole('button', { name: '적용', exact: true })).toBeDisabled();
+    await expect(
+      dialog.getByRole('checkbox', { name: '경기 전날 이벤트', exact: true }),
+    ).not.toBeChecked();
+    await expect(page.getByTestId('game-date')).toHaveText(date);
+  });
+}

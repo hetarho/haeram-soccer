@@ -1,3 +1,4 @@
+import { advanceOneRound } from './season-progression';
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
@@ -16,16 +17,10 @@ const shownRevision = async (page: import('@playwright/test').Page) =>
  * revision each (→LEAGUE-11), and the page receives the world once the round is over.
  */
 const advanceRound = async (page: import('@playwright/test').Page) => {
-  await page
-    .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 진행 도구', exact: true })
-    .click();
-  const journal = page.getByRole('dialog', { name: '시즌 진행 도구' });
   const before = await shownRevision(page);
-  await journal.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
+  await advanceOneRound(page);
   await expect.poll(() => shownRevision(page)).toBeGreaterThan(before);
   const revision = await shownRevision(page);
-  await journal.getByRole('button', { name: '창 닫기', exact: true }).click();
   return revision;
 };
 test('one writer, live read-only updates and ownership after reload', async ({ page, context }) => {

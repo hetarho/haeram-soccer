@@ -1,4 +1,4 @@
-import { finishSeason } from './season-progression';
+import { finishSeason, advanceOneRound } from './season-progression';
 import { openCurrentClubSeason, openSeasonReview } from './record-navigation';
 import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
@@ -56,10 +56,6 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await peopleTab('선수').click();
   await expect(page.getByText('선수단 19/26', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
-  await page
-    .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 진행 도구', exact: true })
-    .click();
   await finishSeason(page);
   await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
@@ -107,16 +103,8 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   const raw = readFileSync((await file.path())!);
   expect(JSON.parse(raw.toString()).codec).toBe('gzip-cjk14');
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
-  await page
-    .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 진행 도구', exact: true })
-    .click();
-  await page.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
+  await advanceOneRound(page);
   await expect(page.getByTestId('calendar')).toContainText('라운드 1');
-  await page
-    .getByRole('dialog', { name: '시즌 진행 도구' })
-    .getByRole('button', { name: '창 닫기' })
-    .click();
   await page
     .locator('input[type=file]')
     .last()
@@ -133,10 +121,6 @@ test('browses every historical regional group and resets filters on country chan
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('historical-regional-groups');
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  await page
-    .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 진행 도구', exact: true })
-    .click();
   await finishSeason(page);
   await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
   await page.keyboard.press('Escape');

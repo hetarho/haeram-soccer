@@ -58,10 +58,6 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
-  await page
-    .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 진행 도구', exact: true })
-    .click();
   await finishSeason(page);
   await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
   // A closed season no longer interrupts: its review waits in the league's season list.

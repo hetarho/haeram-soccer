@@ -9,15 +9,9 @@ async function closeFirstSeason(page: Page, seed: string) {
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill(seed);
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  await page
-    .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 진행 도구', exact: true })
-    .click();
-  const journal = page.getByRole('dialog', { name: '시즌 진행 도구' });
   await finishSeason(page);
   await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
   await page.keyboard.press('Escape');
-  await expect(journal).toHaveCount(0);
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
 }

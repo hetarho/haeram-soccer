@@ -1,4 +1,4 @@
-import { finishSeason } from './season-progression';
+import { finishSeason, advanceOneRound } from './season-progression';
 import { chooseOption } from './select';
 
 import { expect, test, type Page } from '@playwright/test';
@@ -299,12 +299,13 @@ test('keeps a foreign league selected across all competition lenses without subs
   await expect(page).not.toHaveURL(/league=/);
 });
 
-test('separates the home briefing from explicit progression tools and links the current club record', async ({
+test('keeps the home briefing informational alongside the public clock and links the current club record', async ({
   page,
 }) => {
   await found(page);
   const hub = page.getByTestId('club-hub');
-  await expect(hub.getByRole('button', { name: '시즌 진행 도구', exact: true })).toBeInViewport();
+  await expect(hub.getByRole('button', { name: '시즌 진행 도구', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
   await hub.getByRole('button', { name: '시즌 상세', exact: true }).click();
   const briefing = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
   await expect(briefing.getByRole('button', { name: '한 라운드 진행', exact: true })).toHaveCount(
@@ -317,24 +318,14 @@ test('separates the home briefing from explicit progression tools and links the 
   await expect(briefing).toHaveCount(0);
   await expect(page).toHaveURL(/\/history\?season=1950/);
   await nav(page).getByRole('button', { name: '클럽 홈', exact: true }).click();
-  await hub.getByRole('button', { name: '시즌 진행 도구', exact: true }).click();
-  const tools = page.getByRole('dialog', { name: '시즌 진행 도구', exact: true });
-  await expect(tools).toContainText('이번 라운드 경기와 급여·훈련을 정산');
-  await expect(tools.getByRole('button', { name: '시즌 끝까지 진행', exact: true })).toHaveCount(0);
-  await tools.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
+  await advanceOneRound(page);
   await expect(page.getByTestId('calendar')).toContainText('라운드 1');
-  await page.keyboard.press('Escape');
-  await expect(tools).toHaveCount(0);
 });
 
 test('chooses a cup once and keeps its archived season through competition and club-record visits', async ({
   page,
 }) => {
   await found(page);
-  await page
-    .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 진행 도구', exact: true })
-    .click();
   for (const year of [1951, 1952]) {
     await finishSeason(page);
     await expect(page.getByTestId('calendar')).toContainText(

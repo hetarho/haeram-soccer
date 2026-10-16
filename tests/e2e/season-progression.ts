@@ -1,46 +1,61 @@
-import { chooseLevel } from './events';
+import { ALL_DELEGATED, configureResponsibilities, acknowledgeEvents } from './events';
 import { expect, test, type Page } from '@playwright/test';
 
-/** Finish via the public round control, then let the clock settle the final season-close day. */
-export async function finishSeason(page: Page) {
-  // A journey can close multiple seasons; reserve another season budget on each call.
-  test.setTimeout(Math.max(test.info().timeout, 180000) + 90000);
-  const tools = page.getByRole('dialog', { name: '시즌 진행 도구', exact: true });
-  // Archive journeys delegate real business before time moves. Reading notices cannot dismiss
-  // an unanswered renewal or an interim appointment at the season boundary.
-  await tools.getByRole('button', { name: '창 닫기', exact: true }).click();
-  await chooseLevel(page, 4);
-  await page
-    .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 진행 도구', exact: true })
-    .click();
-  const calendar = page.getByTestId('calendar');
-  const text = (await calendar.textContent())!;
-  const year = Number(/(\d{4})\//.exec(text)![1]);
-  const firstRound = Number(/라운드 (\d+)/.exec(text)![1]);
-  for (let round = firstRound + 1; round <= 46; round++) {
-    await tools.getByRole('button', { name: '한 라운드 진행', exact: true }).click();
-    await expect(calendar).toContainText(`라운드 ${round}`);
+async function identity(page: Page) {
+  const text = await page.getByTestId('calendar').innerText();
+  const match = /(\d{4})\/.*라운드 (\d+)/.exec(text);
+  if (!match) throw new Error(`Missing season identity: ${text}`);
+  return { year: Number(match[1]), round: Number(match[2]) };
+}
+async function manual(page: Page, all = false) {
+  await page.getByRole('button', { name: '클럽 홈', exact: true }).first().click();
+  await configureResponsibilities(page, {
+    responsibilities: all ? ALL_DELEGATED : { recruitment: 'delegated', sales: 'delegated' },
+    mode: 'manual',
+    observations: { matchEve: true, windowOpen: false },
+  });
+}
+/** Resolve real observation cards and advance only through the public next-event/match actions. */
+async function step(page: Page) {
+  await acknowledgeEvents(page);
+  const match = page.getByTestId('event-card').filter({ hasText: '내일 경기' });
+  const before = await page.getByTestId('game-date').innerText();
+  if (await match.count())
+    await match.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
+  else await page.getByRole('button', { name: '다음 이벤트', exact: true }).click();
+  await expect(page.getByTestId('game-date')).not.toHaveText(before);
+}
+/** One domestic round, allowing cup fixtures and real event stops between league fixtures. */
+export async function advanceOneRound(page: Page) {
+  const previous = await page
+    .getByRole('combobox', { name: '진행 모드', exact: true })
+    .getAttribute('data-value');
+  await manual(page);
+  const initial = await identity(page);
+  for (let event = 0; event < 40; event++) {
+    const now = await identity(page);
+    if (now.year !== initial.year || now.round > initial.round) {
+      if (previous === 'automatic') await configureResponsibilities(page, { mode: 'automatic' });
+      return;
+    }
+    await step(page);
   }
-  await tools.getByRole('button', { name: '창 닫기', exact: true }).click();
-  // The batched round summary waits behind the tools and can cover the launcher on phones.
-  const outcome = page.getByTestId('action-outcome');
-  await expect(outcome).toBeVisible();
-  await outcome.getByRole('button', { name: '확인', exact: true }).click();
-  await expect(outcome).toHaveCount(0);
-  await page.getByTestId('communications-button').click();
-  const inbox = page.getByRole('dialog', { name: '알림·뉴스', exact: true });
-  const read = inbox.getByRole('button', { name: '모두 읽음', exact: true });
-  if (await read.isEnabled()) await read.click();
-  await inbox.getByRole('button', { name: '닫기', exact: true }).click();
-  await page.getByRole('button', { name: '1초에 하루 속도 선택', exact: true }).click();
-  await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-  await expect(calendar).toContainText(`${year + 1}/${String(year + 2).slice(-2)} · 라운드 0`);
-  const stop = page.getByRole('button', { name: '자동 진행 정지', exact: true });
-  if (await stop.count()) await stop.click();
-  await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
-  await page
-    .getByTestId('club-hub')
-    .getByRole('button', { name: '시즌 진행 도구', exact: true })
-    .click();
+  throw new Error('No next domestic round after forty real stopping events');
+}
+/** Finish the observed season; fixture/event identity, rather than a fixed click count, ends it. */
+export async function finishSeason(page: Page) {
+  test.setTimeout(Math.max(test.info().timeout, 180000) + 90000);
+  await manual(page, true);
+  const initial = await identity(page);
+  for (let event = 0; event < 240; event++) {
+    if ((await identity(page)).year !== initial.year) {
+      await configureResponsibilities(page, {
+        mode: 'automatic',
+        observations: { matchEve: false, windowOpen: false },
+      });
+      return;
+    }
+    await step(page);
+  }
+  throw new Error('Season did not close after 240 real stopping events');
 }
