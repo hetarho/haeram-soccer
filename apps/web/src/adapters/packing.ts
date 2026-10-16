@@ -287,7 +287,14 @@ export function pack(w: World): Packed {
   const bracketRounds = w.history.map((h) => (h.brackets || []).flatMap((b) => b.rounds));
   const bracketRows = bracketRounds.flat().flatMap((round) => round.ties);
   if (bracketRows.some((row) => row.length !== 7)) throw new Error('대진 기록 압축 차원 손상');
-  const careers = w.people === undefined ? undefined : packCareers(w.people, id);
+  const careers =
+    w.people === undefined
+      ? undefined
+      : packCareers(w.people, {
+          clubs: w.clubs.map((club) => club.id),
+          playerClub: w.playerClub,
+          seed: w.seed,
+        });
   return {
     ...(careers ? { careers } : {}),
     format: 'compact1',
@@ -483,7 +490,14 @@ export function unpack(p: Packed): World {
   };
   if (p.careers !== undefined && p.world.people !== undefined)
     throw new Error('중복 인물 압축 원본');
-  const people = p.careers === undefined ? undefined : unpackCareers(p.careers, str);
+  const people =
+    p.careers === undefined
+      ? undefined
+      : unpackCareers(p.careers, str, {
+          clubs: p.world.clubs.map((club) => club.id),
+          playerClub: p.world.playerClub,
+          seed: p.world.seed,
+        });
   const f = (t: Tuple): Fixture => {
     const score = t[8] as number[];
     return {

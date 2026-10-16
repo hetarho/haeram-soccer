@@ -9,6 +9,7 @@ import {
 } from '../../../../packages/engine/src/index';
 import { base64, pack, unbase64, unpack } from './packing';
 import { packBitColumns } from './bitpacking';
+import { packCareerRows } from './careerPacking';
 
 const career = () => {
   const w = createWorld({
@@ -230,10 +231,21 @@ describe('lossless career stream compaction', () => {
   });
 });
 
-it('feature-state-lossless-roundtrip uses one strict career row source with exact optional facts', async () => {
+it('feature-state-lossless-roundtrip retains version-one shared career rows and their strict checks', async () => {
   const { featureState } = await import('../../../../tests/fixtures/feature-state');
   const w = featureState(),
-    packed = pack(w);
+    current = pack(w);
+  const indices = new Map(current.dict.map((value, index) => [value, index]));
+  const id = (value: string) => {
+    let index = indices.get(value);
+    if (index === undefined) {
+      index = current.dict.length;
+      current.dict.push(value);
+      indices.set(value, index);
+    }
+    return index;
+  };
+  const packed = { ...current, careers: packCareerRows(w.people!, id) };
   expect(packed.careers!.version).toBe(1);
   expect(packed.world.people).toBeUndefined();
   expect(packed.careers!.people).toHaveLength(Object.keys(w.people!).length);

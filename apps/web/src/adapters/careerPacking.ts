@@ -1,6 +1,13 @@
 import { z } from 'zod';
 import type { PersonCareer } from '../../../../packages/contracts/src/types';
 import { personCareerSchema } from '../../../../packages/contracts/src/schema';
+import { SaveCompatibilityError } from '../../../../packages/contracts/src/versions';
+import {
+  packCareerColumns,
+  unpackCareerColumns,
+  type CareerContext,
+  type PackedCareerColumns,
+} from './careerColumns';
 const n = z.number().int(),
   index = n.nonnegative(),
   optionalIndex = index.nullable(),
@@ -52,12 +59,31 @@ const row = z.tuple([
   z.tuple([z.number().finite(), z.number().finite(), index, n, n]).nullable(),
 ]);
 const schema = z.strictObject({ version: z.literal(1), people: z.array(row) });
-export type PackedCareers = z.infer<typeof schema>;
-/** Shared save dictionary holds every identity, club, role, school and exact decimal money once. */
+export type CareerRows = z.infer<typeof schema>;
+export type PackedCareers = CareerRows | PackedCareerColumns;
 export function packCareers(
   people: Record<string, PersonCareer>,
+  context: CareerContext,
+): PackedCareerColumns {
+  const dictionary: string[] = [],
+    indices = new Map<string, number>();
+  const id = (value: string) => {
+    let index = indices.get(value);
+    if (index === undefined) {
+      index = dictionary.length;
+      dictionary.push(value);
+      indices.set(value, index);
+    }
+    return index;
+  };
+  const rows = packCareerRows(people, id);
+  return packCareerColumns(rows, id, (index) => dictionary[index], context, dictionary);
+}
+/** Validated row representation; version-1 checkpoints retain this immutable interpretation. */
+export function packCareerRows(
+  people: Record<string, PersonCareer>,
   id: (value: string) => number,
-): PackedCareers {
+): CareerRows {
   return {
     version: 1,
     people: Object.entries(people).map(([key, source]) => {
@@ -150,7 +176,19 @@ function date(year: number | null, day: number | null) {
 export function unpackCareers(
   input: unknown,
   read: (index: number) => string,
+  context?: CareerContext,
 ): Record<string, PersonCareer> {
+  const header = z.object({ version: z.number().int() }).safeParse(input);
+  if (header.success && header.data.version > 2)
+    throw new SaveCompatibilityError(
+      '지원하지 않는 인물 이력 압축 버전입니다. 원본 파일을 보관하세요.',
+    );
+  if (header.success && header.data.version === 2) {
+    if (!context) throw new Error('인물 이력 압축 구단 정보 손상');
+    const restored = unpackCareerColumns(input, context);
+    input = restored.data;
+    read = restored.read;
+  }
   const data = schema.parse(input),
     people: Record<string, PersonCareer> = Object.create(null);
   for (const r of data.people) {

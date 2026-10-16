@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T18:55Z | T193 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T19:22Z | T193 |
 
 ## inbox
 - 261017 decided T191: prepare lazy entry, stale fixtures and cross-feature/portable coverage before freezing century source (alt: repeat the whole century after predictable integration edits); final T178/T179 gates and budgets remain mandatory.
@@ -91,7 +91,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 | todo |
-| T193 | Compact retained career relationships without dropping facts | SAVE ARCH | T173 T192 | doing@261017.n7r4 |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
 
 ## work
@@ -105,6 +104,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 T193 done n7r4: Career representation v2 losslessly shares relationship dates, string templates, scalar codebooks and explicit fallbacks while retaining the v1 reader; the actual failed 50-season checkpoint now uses 1132058 bytes.
 - 261017 implement-task T193 start n7r4.
 - 261017 T194 done n7r4: Validated appointments use a disposable occupied-post index and per-role sorted vacancy cursors; existing query order, one draw per eligible person and every canonical continuation fact remain unchanged.
 - 261017 implement-task T194 start n7r4.
@@ -124,4 +124,3 @@
 - 261017 T176 done n7r4: Second-career browser journeys preserve person identity, aptitude, atomic joint-contract terms and costs across reload/import, verify exact service qualification, and exercise independent dismissal, retirement and combined departure.
 - 261017 implement-task T176 start n7r4.
 - 261017 T174 done n7r4: Rules 3.0.0 start clean careers; writer activation independently clears only integrity-checked recognized legacy gameplay, journals interrupted parked cleanup, and preserves protected versions and device-owned data.
-- 261017 implement-task T174 start n7r4.
