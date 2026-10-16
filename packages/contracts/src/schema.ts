@@ -449,7 +449,14 @@ const coachingDepartments = [
 ] as const;
 /** The 단장 (→STAFF-20) and the coaching departments. */
 const staffRole = z.enum(['director', ...coachingDepartments]);
-const staffTrait = z.enum(['developer', 'specialist', 'recovery', 'spotter', 'negotiator']);
+const staffTrait = z.enum([
+  'developer',
+  'specialist',
+  'recovery',
+  'spotter',
+  'negotiator',
+  'closer',
+]);
 const managerStyle = z.enum([
   'positional',
   'gegenpress',

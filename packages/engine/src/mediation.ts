@@ -1,7 +1,8 @@
 import type { RecruitmentMediation, SigningRequest, World } from '../../contracts/src/types';
 import { careerDate, careerOrdinal, atCareerDate } from './person-careers';
 import { transferWindow, transferWindowDays } from './transfers';
-import { directionOption, financeStance } from './direction';
+import { directionOption } from './direction';
+import { staffBidShare } from './director-bidding';
 import {
   requestCandidates,
   signingRequests,
@@ -68,9 +69,7 @@ export function detectMediations(w: World): RecruitmentMediation[] {
       continue;
     }
     const { offer } = picked,
-      fee = offer.freeAgent
-        ? '0'
-        : ratio(offer.fee, BigInt(Math.round(financeStance(w).signing.bid * 100)), 100n),
+      fee = offer.freeAgent ? '0' : ratio(offer.fee, BigInt(staffBidShare(w)), 100n),
       verdict = signingVerdict(w, offer.player, fee);
     if (verdict.ok) continue;
     const mediation: RecruitmentMediation = {
@@ -160,7 +159,7 @@ export function resolveMediation(
             ? '0'
             : actor === 'owner'
               ? offer.fee
-              : ratio(offer.fee, BigInt(Math.round(financeStance(trial).signing.bid * 100)), 100n),
+              : ratio(offer.fee, BigInt(staffBidShare(trial)), 100n),
         );
       const namedOffer = transferOffers(trial).find(
         (offer) => offer.player.id === mediation.candidate.id,

@@ -41,15 +41,14 @@ export const DIRECTION_DEFAULT: Readonly<Record<DirectionKey, string>> = {
  * the wage bill's ceiling against 12 months' revenue, the operating costs (in years) below which
  * academy promotions wait, the two runways below which the staff sell harder, and the chief
  * scout's signings (→CLUB-33): the margin an upgrade needs over a starter (none: no upgrades),
- * upgrades a window, the share of the cash above the runway a fee may take and the bid against
- * the asking fee.
+ * upgrades a window, the share of the cash above the runway a fee may take while director traits set bids (→CLUB-41).
  */
 export interface FinanceStance {
   runway: number;
   wageShare: number;
   promotionYears: number;
   sellSteps: readonly [number, number];
-  signing: { margin?: number; upgrades: number; feeShare: number; bid: number };
+  signing: { margin?: number; upgrades: number; feeShare: number };
 }
 export const FINANCE_STANCES: Readonly<Record<string, FinanceStance>> = {
   aggressive: {
@@ -57,35 +56,35 @@ export const FINANCE_STANCES: Readonly<Record<string, FinanceStance>> = {
     wageShare: 0.75,
     promotionYears: 0.25,
     sellSteps: [6, 14],
-    signing: { margin: 2, upgrades: 3, feeShare: 1, bid: 1.1 },
+    signing: { margin: 2, upgrades: 3, feeShare: 1 },
   },
   bold: {
     runway: 9,
     wageShare: 0.7,
     promotionYears: 0.5,
     sellSteps: [9, 20],
-    signing: { margin: 3, upgrades: 2, feeShare: 0.75, bid: 1 },
+    signing: { margin: 3, upgrades: 2, feeShare: 0.75 },
   },
   standard: {
     runway: 13,
     wageShare: 0.65,
     promotionYears: 1,
     sellSteps: [13, 30],
-    signing: { margin: 5, upgrades: 1, feeShare: 0.5, bid: 1 },
+    signing: { margin: 5, upgrades: 1, feeShare: 0.5 },
   },
   careful: {
     runway: 20,
     wageShare: 0.6,
     promotionYears: 1.5,
     sellSteps: [20, 45],
-    signing: { upgrades: 0, feeShare: 0.35, bid: 1 },
+    signing: { upgrades: 0, feeShare: 0.35 },
   },
   stable: {
     runway: 30,
     wageShare: 0.55,
     promotionYears: 2,
     sellSteps: [30, 65],
-    signing: { upgrades: 0, feeShare: 0.25, bid: 1 },
+    signing: { upgrades: 0, feeShare: 0.25 },
   },
 };
 const years = (value: number) =>

@@ -91,7 +91,6 @@
 | T177 | Verify delegation handover and promise outcomes through the browser | WEB CLUB HIST SAVE | T172 T174 | todo |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 | todo |
-| T184 | Bid by the director's trait | CLUB STAFF | T143 T144 | doing@261017.n7r4 |
 | T185 | Open and pursue replacement needs | CLUB | T183 T184 | todo |
 | T186 | Call up from the academy when a window closes | CLUB STAFF | T185 | todo |
 | T187 | Show squad counts against the rule and the 20/16 tones | WEB CLUB STAFF | T182 T183 T184 | todo |
@@ -108,6 +107,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 T184 done n7r4: Director traits price every delegated bid and preview, negotiators raise on answer-day plus one through their ceiling and switch near deadline, and all acceptance paths recheck spending.
 - 261017 implement-task T184 start n7r4.
 - 261017 T183 done n7r4: New clubs and close top-ups target twenty while NPC cohorts stay eighteen; delegated top-ups prefer eligible academy prospects and stop at registration limits.
 - 261017 T189 done n7r4: Code verification jobs remain intact; documentation-only pushes are skipped and branch/PR runs supersede obsolete executions, with manual dispatch retained.
@@ -127,4 +127,3 @@
 - 261017 T180 done n7r4: Every native club now settles decimal reputation from its old group finish and next division, with symmetric cup/continental honours; owner capital and supporter rules remain unchanged.
 - 261017 implement-task T180 start n7r4.
 - 261017 T173 done n7r4: A versioned shared-dictionary career-row codec preserves complete fixed/learned facts and continuations; strict row, reference, interval, role and fixed-promise validation rejects malformed state without changing save budgets.
-- 261017 implement-task T173 start n7r4.

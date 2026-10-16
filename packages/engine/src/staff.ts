@@ -57,7 +57,7 @@ export const STAFF_INFO: Record<StaffRole, { label: string; duty: string; traits
     director: {
       label: '단장',
       duty: '이적·계약 협상과 감독 선임',
-      traits: ['negotiator'],
+      traits: ['negotiator', 'closer'],
     },
     assistant: {
       label: '수석코치',
@@ -88,7 +88,8 @@ export const STAFF_TRAIT_INFO: Record<StaffTrait, { label: string; effect: strin
   specialist: { label: '전문가', effect: '담당 능력 성장이 더 빨라져요' },
   recovery: { label: '회복 전문', effect: '라운드마다 피로를 더 많이 풀어요' },
   spotter: { label: '발굴가', effect: '잠재력 높은 선수를 찾아와요' },
-  negotiator: { label: '협상가', effect: '이적료를 낮추고 협상 성공률을 높여요' },
+  closer: { label: '속전속결', effect: '요구액보다 더 주고 빨리 끝내요' },
+  negotiator: { label: '협상가', effect: '이적료를 낮추고 낮은 제안부터 흥정해요' },
 };
 export const MANAGER_TRAIT_INFO: Record<ManagerTrait, { label: string; effect: string }> = {
   youth: { label: '유망주 중용', effect: '자동 선발에서 21세 이하 선수를 더 자주 기용해요' },

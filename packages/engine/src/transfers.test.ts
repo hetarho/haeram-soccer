@@ -662,7 +662,13 @@ describe('incoming bids', () => {
     expect(delegated(w, 'transfers')).toBe(false);
     w.intervention = 4;
     w.settings = legacySettings(4);
-    const decisions: { bid: TransferBid; starter: boolean; age: number; value: bigint }[] = [];
+    const decisions: {
+      bid: TransferBid;
+      starter: boolean;
+      age: number;
+      value: bigint;
+      report?: NonNullable<World['inbox']>[number];
+    }[] = [];
     for (let n = 0; n < seasonLength(w) - 1; n++) {
       const known = new Set(inBids(w).map((b) => b.id));
       advanceDays(w, 1);
@@ -678,6 +684,7 @@ describe('incoming bids', () => {
         );
         decisions.push({
           bid,
+          report: w.inbox?.find((item) => item.ref === bid.id),
           starter: starters.includes(p.id),
           age: w.year - p.born,
           value: BigInt(playerValue(w, p)),
@@ -687,16 +694,22 @@ describe('incoming bids', () => {
     }
     expect(decisions.some((d) => d.bid.status === 'completed')).toBe(true);
     expect(decisions.some((d) => d.bid.status === 'rejected')).toBe(true);
-    for (const { bid, starter, age, value } of decisions) {
+    for (const { bid, starter, age, value, report } of decisions) {
       expect(['completed', 'rejected']).toContain(bid.status);
-      const item = w.inbox?.find((i) => i.ref === bid.id);
+      // Inspect the report when the decision was made; later reports may leave the bounded inbox.
+      const item = report;
+      expect(item).toBeDefined();
       if (item) expect(item).toMatchObject({ kind: 'staff-report', attention: false });
       // The 단장 answers and the report names him (→STAFF-20).
       if (item) expect(item.title).toMatch(/^(감독과 상의한 )?단장이 /);
       // The report states the bar the staff applied; the decision must agree with it.
       const bar = Number(item?.detail.match(/기준 (\d+)%/)?.[1]);
-      if (bid.status === 'completed') {
-        expect(bar).toBeGreaterThanOrEqual(80);
+      if (bid.status === 'completed' && bid.id.includes(':list:')) {
+        expect(item?.detail).toContain('이적 명단에 오른 선수라 매각했어요.');
+        expect(BigInt(bid.fee)).toBeGreaterThan(0n);
+        expect(w.players.find((p) => p.id === bid.playerId)?.status).toBe('sold');
+      } else if (bid.status === 'completed') {
+        expect(bar, `${bid.id}: ${item?.detail}`).toBeGreaterThanOrEqual(80);
         expect(BigInt(bid.fee) * 100n).toBeGreaterThanOrEqual(value * BigInt(bar));
         expect(!starter || age >= 30).toBe(true);
         expect(w.players.find((p) => p.id === bid.playerId)?.status).toBe('sold');

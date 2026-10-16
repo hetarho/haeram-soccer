@@ -1,3 +1,4 @@
+import { bidCeiling, haggling } from './director-bidding';
 import { registrationRoom } from './registration';
 import { endPlayingCoachForDeparture, playingCoachDepartureCost } from './playing-coach';
 import { movePerson } from './npc-continuity';
@@ -442,7 +443,9 @@ function decideOutgoing(w: World, bid: TransferBid) {
     chance = acceptanceChance(w, bid.fee, asking),
     feeShare = feeRatio(bid.fee, asking);
   if (roll < chance) {
-    const blocker = signingBlocker(w, offer, bid.fee, bid.loan);
+    const financial = bid.staff ? signingVerdict(w, p, bid.fee) : undefined;
+    const blocker =
+      financial && !financial.ok ? financial.reason : signingBlocker(w, offer, bid.fee, bid.loan);
     // The 단장's bids are his to follow up; their answers only report (→CLUB-33).
     const attention = !bid.staff;
     if (blocker) {
@@ -500,16 +503,18 @@ function answerStaffCounter(w: World, bid: TransferBid, offer: MarketOffer, aski
     fee = bid.counterFee!,
     verdict = signingVerdict(w, p, fee),
     blocker = signingBlocker(w, offer, fee, bid.loan),
-    accept = verdict.ok && !blocker;
+    belowCeiling = BigInt(bid.fee) < BigInt(ratio(asking, BigInt(bidCeiling(w)), 100n)),
+    bargaining = haggling(w) && belowCeiling,
+    accept = !bargaining && verdict.ok && !blocker;
   if (accept) completeSigning(w, bid, offer, fee);
-  else bid.status = 'rejected';
+  else bid.status = bargaining || (verdict.ok && !blocker) ? 'rejected' : 'expired';
   pushInbox(w, {
     kind: 'bid-response',
     title: clip(
       `${p.name} 측 역제안 ${moneyLabel(w, fee)} · 단장이 ${accept ? '수락' : '거절'}`,
       160,
     ),
-    detail: `단장의 제안 ${moneyLabel(w, bid.fee)} · 요구액 ${moneyLabel(w, asking)} · ${accept ? verdict.reason : (blocker ?? verdict.reason)}`,
+    detail: `단장의 제안 ${moneyLabel(w, bid.fee)} · 요구액 ${moneyLabel(w, asking)} · 요구액의 ${Math.round(feeRatio(bid.fee, asking) * 100)}% · ${bargaining ? '다음 날 5%p 높은 제안으로 흥정해요.' : accept ? verdict.reason : (blocker ?? verdict.reason)}`,
     attention: false,
     ref: bid.id,
   });

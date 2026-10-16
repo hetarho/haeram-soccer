@@ -1,3 +1,4 @@
+import { bidCeiling, directorTrait, staffBidShare } from './director-bidding';
 import { SQUAD_TARGET } from './squad-size';
 import { registration, registrationRoom } from './registration';
 import { detectMediations, resolveDelegatedMediations } from './mediation';
@@ -527,27 +528,79 @@ function signFreeAgent(w: World, offer: Offer, need: SigningNeed, why: string) {
 
 /**
  * The 단장's look (→CLUB-33): with transfers delegated and a window open, on its opening
- * day and every 7th day after it, at most one move — a free agent signed or a bid at the asking
- * fee — for the first need a candidate meets within 재정 기조; none while one of his bids is open.
+ * day and every 7th day after it (plus a negotiator's next-day raises), at most one move —
+ * a free agent signed or a trait-priced bid — for the first need a candidate meets within 재정 기조; none while one of his bids is open.
  * Short roles come before upgrades, and the manager's requested roles before the others.
  */
 export function staffSignings(w: World) {
   const day = currentDay(w),
     window = transferWindow(w, day);
-  if (!window.open || (day - windowOpening(w, day)) % SIGNING_CONFIG.lookDays !== 0) return;
-  detectMediations(w);
-  if (resolveDelegatedMediations(w)) return;
+  if (!window.open) return;
+  const regular = (day - windowOpening(w, day)) % SIGNING_CONFIG.lookDays === 0;
+  if (regular) {
+    detectMediations(w);
+    if (resolveDelegatedMediations(w)) return;
+  }
   if (!isDelegated(w, 'recruitment')) return;
   const bids = windowBids(w, day);
-  if (bids.some((bid) => bid.staff && (isOpen(bid) || bid.day === day))) return;
+  if (
+    bids.some(
+      (bid) =>
+        bid.staff &&
+        (isOpen(bid) || bid.day === day || (bid.status === 'completed' && bid.due === day)),
+    )
+  )
+    return;
+  // A refused negotiator bid gets its next answer-day move outside the weekly look gate.
+  const retry = [...bids]
+    .reverse()
+    .find(
+      (bid) =>
+        directorTrait(w) === 'negotiator' &&
+        bid.staff &&
+        bid.status === 'rejected' &&
+        bid.due < day &&
+        !bids.some((later) => later.playerId === bid.playerId && later.day > bid.day) &&
+        BigInt(bid.fee) < BigInt(ratio(bid.offer?.fee ?? '0', BigInt(bidCeiling(w)), 100n)),
+    );
+  const offers = transferOffers(w);
+  if (retry && directorTrait(w) === 'negotiator') {
+    const index = offers.findIndex(
+      (offer) => offer.available && offer.player.id === retry.playerId,
+    );
+    if (index >= 0) {
+      const offer = offers[index];
+      const previous = bids.filter((bid) => bid.staff && bid.playerId === retry.playerId).length;
+      const fee = ratio(offer.fee, BigInt(staffBidShare(w, previous)), 100n);
+      const verdict = signingVerdict(w, offer.player, fee);
+      const room = registrationRoom(w, { ...offer.player, joined: w.year });
+      if (verdict.ok && !room) {
+        placeBid(w, index, fee, false, retry.staff);
+        pushInbox(w, {
+          kind: 'staff-report',
+          title: `단장 흥정 · ${offer.player.name}`,
+          detail: `요구액의 ${staffBidShare(w, previous)}% · ${verdict.reason}`,
+          attention: false,
+        });
+        return;
+      }
+      retry.status = 'expired';
+      pushInbox(w, {
+        kind: 'staff-report',
+        title: `단장 흥정 종료 · ${offer.player.name}`,
+        detail: room ?? verdict.reason,
+        attention: false,
+      });
+    } else retry.status = 'expired';
+  }
+  if (!regular && !retry) return;
   const squad = activePlayers(w).length;
   if (squad >= registration(w).ceiling) return;
   const stance = financeStance(w),
     upgrades = bids.filter(
       (bid) => bid.staff === 'upgrade' && (bid.status === 'completed' || isOpen(bid)),
     ).length,
-    tried = new Set(bids.map((bid) => bid.playerId)),
-    offers = transferOffers(w);
+    tried = new Set(bids.map((bid) => bid.playerId));
   const requests = signingRequests(w),
     short = shortLines(w),
     found: SigningNeed[] = short.length
@@ -571,9 +624,7 @@ export function staffSignings(w: World) {
     .map(({ need }) => need);
   for (const need of needs)
     for (const { offer, index } of candidates(w, offers, need, tried)) {
-      const fee = offer.freeAgent
-        ? '0'
-        : ratio(offer.fee, BigInt(Math.round(stance.signing.bid * 100)), 100n);
+      const fee = offer.freeAgent ? '0' : ratio(offer.fee, BigInt(staffBidShare(w)), 100n);
       const verdict = signingVerdict(w, offer.player, fee);
       if (!verdict.ok) continue;
       if (offer.freeAgent) signFreeAgent(w, offer, need, verdict.reason);
@@ -584,7 +635,7 @@ export function staffSignings(w: World) {
           kind: 'staff-report',
           title: `단장 영입 제안 · ${offer.player.name}`,
           detail:
-            `${needLine(w, need)}${pickNote(need, offer.player)} · ${offer.player.position} · ${w.year - offer.player.born}세 · OVR ${overall(offer.player)} · 제안 ${moneyLabel(w, fee)} (요구액 ${moneyLabel(w, offer.fee)}) · ${recruitmentLine(w)} · ${verdict.reason}`.slice(
+            `${needLine(w, need)}${pickNote(need, offer.player)} · ${offer.player.position} · ${w.year - offer.player.born}세 · OVR ${overall(offer.player)} · 제안 ${moneyLabel(w, fee)} · ${staffBidShare(w)}% (요구액 ${moneyLabel(w, offer.fee)}) · ${recruitmentLine(w)} · ${verdict.reason}`.slice(
               0,
               400,
             ),
@@ -614,7 +665,7 @@ export function pursueRequest(
     ? '0'
     : actor === 'owner'
       ? offer.fee
-      : ratio(offer.fee, BigInt(Math.round(financeStance(w).signing.bid * 100)), 100n);
+      : ratio(offer.fee, BigInt(staffBidShare(w)), 100n);
   if (actor === 'delegated') {
     if (
       (day - windowOpening(w, day)) % SIGNING_CONFIG.lookDays !== 0 ||

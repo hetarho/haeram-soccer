@@ -1083,12 +1083,16 @@ describe('the 단장 (STAFF-20)', () => {
     expect(STAFF_INFO.director).toEqual({
       label: '단장',
       duty: '이적·계약 협상과 감독 선임',
-      traits: ['negotiator'],
+      traits: ['negotiator', 'closer'],
     });
     expect(STAFF_INFO.scout.traits).toEqual(['spotter']);
     const offers = staffCandidates(w, 'director');
     expect(offers).toHaveLength(3);
-    expect(offers.every((offer) => !offer.trait || offer.trait === 'negotiator')).toBe(true);
+    expect(
+      offers.every(
+        (offer) => !offer.trait || offer.trait === 'negotiator' || offer.trait === 'closer',
+      ),
+    ).toBe(true);
     expect(
       Array.from({ length: 12 }, (_, i) => staffCandidates(world(`scouts-${i}`), 'scout'))
         .flat()

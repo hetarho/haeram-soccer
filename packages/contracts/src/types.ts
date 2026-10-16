@@ -65,7 +65,8 @@ export type SavedPolicy = Pick<ClubPolicy, 'support' | 'recruitment'> &
  */
 export type StaffRole =
   'director' | 'assistant' | 'attack' | 'defense' | 'goalkeeping' | 'fitness' | 'youth' | 'scout';
-export type StaffTrait = 'developer' | 'specialist' | 'recovery' | 'spotter' | 'negotiator';
+export type StaffTrait =
+  'developer' | 'specialist' | 'recovery' | 'spotter' | 'negotiator' | 'closer';
 export type ManagerTrait = 'youth' | 'rotation' | 'stable';
 /** A manager's school of football (→STAFF-14); absent means the founding all-rounder. */
 export type ManagerStyle =
