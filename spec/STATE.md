@@ -93,11 +93,12 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- ideation expert-proposal-review: settle delegation, narrative and UX with the owner, starting with the delegation model; balance changes are parked.
+- ideation expert-proposal-review: central per-responsibility delegation selected; settle granularity and decision-related clock stops next, then narrative/UX; balance parked.
 - implement-task T141: remove the home launcher spacer and verify mobile/desktop content bounds.
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 ideation expert-proposal-review: owner selects central direct/delegated choices per responsibility; granularity, defaults and clock stops remain open
 - 261016 T141 home journey updated: actual clickability and navigation-edge bounds replace the reserved-row assumption; all 9 corrected cases pass, full CI rerun next
 - 261016 ideation expert-proposal-review continue: owner parks balance changes; settle delegation, narrative and UX through conversation
 - 261016 ideation expert-proposal-review open: checked current rules, selected code and a synthetic phone policy return; recorded recommendations without adopting policies
@@ -117,4 +118,3 @@
 - 261016 T137 implementation: one competition/period selector, explicit home progression tools, consistent operation/news labels and readable phone season facts; full CI/performance gates pending
 - 261016 T136 done: season-first club records, explicit competition detours and four scoped league lenses; 120 affected browser scenarios verified, full integration in T137
 - 261015 T138 done: observe at least one settled x10 round and stop before inspection; 9 repeated supported-browser cases pass, production timing unchanged
-- 261015 T135 done: actionable training/player/academy/staff workflows and request-first recruitment; 69 browser cases and static/build/spec checks pass, actual phone captures inspected

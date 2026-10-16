@@ -9,16 +9,18 @@
 
 ## explored
 - [o] Discussion scope: park balance changes for now, including difficulty, operating-cost and wage coefficients and their target bands. Settle the remaining delegation, narrative and UX candidates through conversation with the owner; no non-balance feature is adopted by this scope choice.
-- [?] Overall assessment: useful problem discovery and promising owner stories; the coefficient tables, precise predicted outcomes and implementation phases remain hypotheses. Feature adoption remains open.
+- [?] Overall assessment: useful problem discovery and promising owner stories; the coefficient tables, precise predicted outcomes and implementation phases remain hypotheses. Remaining feature adoption stays open.
 - [?] Focused policy sheets: compare the existing focused-page journey with a sheet for a frequent narrow change, retaining one applied policy and the same review/apply meaning.
   - Already present: exact department entry, named return, retained task filters/comparisons/scroll and unapplied drafts (WEB-60/71/74; `apps/web/src/ui/taskMemory.ts`, `DirectionLines.tsx`, `StrategyBoard.tsx`; `tests/e2e/owner-workflows.spec.ts`).
   - Observed on the local preview: market → GK filter → recruitment policy → named return restores `/people?view=market` and the selected GK filter. Settled phone captures are `.tmp/proposal-review-home.png` and `.tmp/proposal-review-policy.png`.
   - Remaining hypothesis: less visual displacement helps people change a policy while thinking about a candidate. A phone sheet can obscure that candidate and still require scrolling; “zero context-switch cost” is unsupported.
   - Unresolved: an existing multi-department draft, apply breadth, dismiss versus discard, back navigation and live changes while editing. Unapplied academy criteria cannot claim a completed promotion or changed world state (WEB-75).
   - The proposed remedy-sheet inline “apply immediately” changes the current product workflow (WEB-42/44/71); it is not established merely by reusing an editor.
-- [?] Delegation mismatch: “automate sponsors/coaches but appoint my manager” is impossible under the current ladder, although manual actions remain available while delegated (WEB-45, STAFF-13).
+- [o] Delegation model: choose direct owner decision or staff delegation separately for each responsibility in one central settings screen, enabling combinations such as delegated sponsors/coaches with owner-appointed managers. Responsibility granularity, defaults, clock stops and any shortcuts remain open. This changes the ideation direction; current WEB-45 and STAFF-13 remain in force until a later SSOT update.
+- [x] A mandatory four-level ladder, whether reordered or supplemented only by core-approval pins, as the delegation model ← the owner chose individual responsibility selection to express the desired combination directly. Optional bulk presets remain undecided.
+- [?] Delegation details: “automate sponsors/coaches but appoint my manager” is impossible under the current ladder, although manual actions remain available while delegated (WEB-45, STAFF-13).
   - The proposal usefully separates routine work from appointments with greater owner interest. Its claim that staff handle the core player's renewal at level 2 matches the current default.
-  - Candidate sequence: first assess reordering the four levels; then assess whether exceptions add enough value. The current single-control policy deliberately replaced scattered switches; centralizing new switches does not remove their exception semantics (WEB chg r55, STAFF chg r14).
+  - Existing rationale to preserve where relevant: the current single-control policy deliberately replaced scattered switches; make effective responsibilities understandable in the chosen central screen (WEB chg r55, STAFF chg r14).
   - The proposed level 3 also moves ordinary sale responses into delegation while retaining owner bids and 150%+ untouchable offers. Decide those responsibilities explicitly rather than only renaming a level.
   - If pins remain candidates: define which XI determines a protected starter, appointments versus renewals versus replacement, pending approvals, switching levels and away progression. A level-4 pin adds stops to the current cash-only idle mode; its summary must state the effective responsibility.
   - Existing delegated untouchable offers can be decided by staff and manager (CLUB-24); 150% is not a universal owner-approval threshold.
@@ -58,7 +60,9 @@
 
 ## shape
 - Discussion scope: delegation, narrative and UX; balance is parked. Discuss delegation first, then narrative and policy access; the remaining order is adjustable by the owner.
-- First delegation question: preserve and reorder four levels, preserve levels with narrowly defined owner-approval exceptions, or select responsibilities individually in one central place. Recommendation to discuss: try reordered levels first, then assess unmet needs before adding exceptions. No option is selected yet.
+- Delegation flow: open the central responsibility settings → choose direct or delegated for each responsibility → inspect who decides. Application timing, defaults and any bulk preset shortcuts remain open.
+- Candidate first responsibility list: manager appointment/renewal; staff appointment/renewal including director and scout; player contract talks; player recruitment; player sale responses; academy promotion/release; sponsor contracts. Splitting departments or academy decisions further remains open.
+- Candidate clock relationship: an owner-held business decision stops for an answer, while a delegated one is resolved and reported. Independent notification preferences, match-eve/window-opening stops and unresolved-decision timing remain open.
 - Candidate story flow: know a player through his club career → retirement invitation → inspect his coaching candidacy and history → independently choose whether to employ him → revisit his combined career.
 - Review boundary: assess and retain proposal material. No SSOT policy changes, coefficient changes, implementation tasks or code changes are authorized by selecting an idea for discussion.
 
@@ -72,7 +76,8 @@
 - SAVE: retained commitments and cross-role identities if adopted; compatibility and long-career retention must be assessed for the chosen scope.
 
 ## open
-- Which delegation model fits the owner: reordered four levels, four levels with core approvals, or centrally selected responsibilities?
+- Are the seven candidate responsibilities sufficient, or should staff departments and academy promotion/release be separately selectable?
+- Should business-decision stops follow direct/delegated responsibility, or be separately configurable?
 - Which decisions should remain the owner's when routine administration is automated: manager appointments, key-player retention, major sales, or another set?
 - Which narrative should be developed first: a former player's second career or mediation with an accountable future promise?
 - Does the current focused-policy round trip interrupt a real recurring task enough to justify another presentation, and what improvement would demonstrate it?
