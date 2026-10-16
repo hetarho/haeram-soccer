@@ -10,7 +10,8 @@
 ## explored
 - [o] Discussion scope: park balance changes for now, including difficulty, operating-cost and wage coefficients and their target bands. Settle the remaining delegation, narrative and UX candidates through conversation with the owner; no non-balance feature is adopted by this scope choice.
 - [?] Overall assessment: useful problem discovery and promising owner stories; the coefficient tables, precise predicted outcomes and implementation phases remain hypotheses. Remaining feature adoption stays open.
-- [?] Focused policy sheets: compare the existing focused-page journey with a sheet for a frequent narrow change, retaining one applied policy and the same review/apply meaning.
+- [o] Contextual policy editing opens only the relevant department in a sheet over the current task view. Explicit apply commits the reviewed changes and closes the sheet back onto the task; before apply, the actual policy does not change. Retain the complete operating-policy screen and a single authoritative applied value/workflow. Applying an existing multi-department draft and dismissing unapplied sheet edits remain to specify.
+- [?] Focused policy sheet details: retain one applied policy and the same review/apply meaning.
   - Already present: exact department entry, named return, retained task filters/comparisons/scroll and unapplied drafts (WEB-60/71/74; `apps/web/src/ui/taskMemory.ts`, `DirectionLines.tsx`, `StrategyBoard.tsx`; `tests/e2e/owner-workflows.spec.ts`).
   - Observed on the local preview: market → GK filter → recruitment policy → named return restores `/people?view=market` and the selected GK filter. Settled phone captures are `.tmp/proposal-review-home.png` and `.tmp/proposal-review-policy.png`.
   - Remaining hypothesis: less visual displacement helps people change a policy while thinking about a candidate. A phone sheet can obscure that candidate and still require scrolling; “zero context-switch cost” is unsupported.
@@ -54,7 +55,8 @@
   - A promise for the next window needs its target, deadline, fulfilment and cancellation rules, including manager replacement and lack of eligible candidates; 0 now / −8 later is untested. Dismissing a card cannot erase its commitment.
   - A free agent can sign after the deadline (CLUB-4/17), but cannot retrospectively satisfy the completed window's current rule. Decide whether it provides a new reconciliation effect. “Owner emergency money” also needs a stated source and cost.
   - Recruitment responsibility owns the event; avoid emitting conflicts for every missed pick regardless of what actually happened.
-- [?] Coach resignation affecting manager trust: a plausible consequence when a relationship or prior warning makes it legible; currently the proposed pride ≥70, two schools and −4 trust have no supporting relationship rule or measured balance.
+- [o] Park additional manager fallout from a forced coach resignation for this scope. Keep the existing coach-resignation risk; do not add the proposal's linked manager-trust penalty.
+- [?] Parked coach-resignation follow-up: a manager reaction could be plausible with an established relationship and prior warning; the proposed pride ≥70, two schools and −4 trust have no supporting relationship rule or measured balance.
   - Forced training already risks resignation at 15–60% and states that risk (STAFF-19). An additional manager penalty needs an understandable reason and advance consequence preview; otherwise it can make intervention harder to learn.
   - News must derive from recorded facts (HIST-11). Avoid asserting an interview or personal allegiance that the game has never established.
 - [?] Long-term difficulty, parked outside this discussion: the measured lack of separation is real, but the desired meaning of difficulty comes before selecting a permanent penalty.
@@ -69,7 +71,8 @@
   - Stadium capacity also opens naming-right income and changes upkeep and growth (ECON-8/9/32). Charging more solely for reaching 30,000 seats may make an earned upgrade feel like a penalty; separate the purpose of a prestige premium from filling an aggregate target.
   - “Precisely 50–58%” after +5–15% demands has no supplied experiment; the roadmap also narrows the existing 45–70% target to 45–65% without a reason. No result is guaranteed by those coefficients.
   - Candidate evaluation: segment wages, turnover, solvency, roster strength and title timing by country, division and career stage; compare a single proposed cause at a time on the same seeds, then check combinations and varied owner directions. Measure consequences of declined renewals as well as paid wages.
-- [?] Mobile navigation and event entry: optional polish after observing actual navigation difficulty.
+- [o] Keep stopping-event access as a distinct small event notification, separate from clock/time controls. Do not replace the clock status with the proposal's event-action button; automatic/manual progression controls retain their own role.
+- [?] Mobile navigation polish: evaluate only after observing actual navigation difficulty.
   - The current rendered labels are already 리그 / 컵 / 기록 / 홈 / 선수단 / 훈련 / 구단 (`apps/web/src/ui/App.tsx:TABS`); most shortening is done. Replacing 선수단 with 선수 can hide the staff destination.
   - 360/7 is not usable button width: side padding, gaps and minimum touch targets also consume the row (`App.module.css`). Dividers/group spacing require measurement at 360px and should not imply an unexplained taxonomy.
   - Combining an event trigger with the clock could reduce separate floating elements, but the existing clock row already contains date/status, play/pause, four pace choices and intervention (WEB-18). Preserve visibility of the stopped reason and stable control meanings; a status that unexpectedly turns into an action needs a clear label.
@@ -88,7 +91,9 @@
 - Match-event arrival follows the selected match-eve trigger, before the result; preparation/watch/play-through remain relevant. Automatic is the new-game mode. Preventing an invalid all-delegated/manual/no-match combination still needs a visible product rule.
 - Second-career flow: a player at our club or another with profile aptitude grades/evaluation → a natural career choice, optionally encouraged for our player → retirement and coaching candidacy → appointment/coaching experience → management candidacy only with suitable team-management/tactical aptitude → appointments and a linked career record. Specialist coaching remains a valid continuing career; exact promotion thresholds remain open.
 - Mediation flow: genuine director/manager conflict → show both explanations → recruitment owner-held: stop for direct mediation; recruitment delegated: resolve under director-first/balanced/manager-first policy and report → retain the support choice and any reinforcement commitment → judge the promise by its deadline and retain the result. Default support policy and detailed criteria remain open.
-- Remaining proposal choices to discuss: focused policy editing in a sheet over the task view; whether to add manager fallout after a forced coach resignation; whether to place the stopping-event action in the clock status or retain a distinct event entry. None is adopted yet.
+- Contextual policy flow: task view → relevant-department sheet → explicit apply → close back onto the task. The full policy board remains reachable; one applied policy stays authoritative.
+- Scope boundaries: balance changes and additional manager fallout from coach resignation are parked. Stopping-event notifications stay separate from time controls.
+- Candidate final interaction defaults to discuss: balanced director/manager support; a focused sheet applies only its department while preserving other departments' drafts; an invalid all-delegated/manual/no-match choice is blocked with an explicit action to enable match-eve events rather than silently changing another setting. These details are not adopted yet.
 - Review boundary: assess and retain proposal material. No SSOT policy changes, coefficient changes, implementation tasks or code changes are authorized by selecting an idea for discussion.
 
 ## domains
@@ -108,6 +113,5 @@
 - What experience threshold makes a suitable coach a manager candidate, and how are his specialty and school established?
 - Which director/manager support policy should be selected by default, and what are its detailed decision criteria?
 - What fulfils or cancels a reinforcement promise when personnel, affordability or candidate availability change?
-- Does the current focused-policy round trip interrupt a real recurring task enough to justify another presentation, and what improvement would demonstrate it?
-- Should manager fallout after a forced coach resignation be added or parked, and should stopping-event access move into the clock status?
+- Does applying a focused policy sheet commit only its department, and how are unapplied edits retained or discarded?
 - Parked for a later balance discussion: should difficulty describe the founding disadvantage or a challenge that still differs in season 60?
