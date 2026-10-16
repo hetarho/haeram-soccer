@@ -93,7 +93,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T199 | Fit actual retained active-century storage | SAVE ARCH | T195 T198 | doing@261017.p6k2 |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 T196 T197 T198 T199 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
 
@@ -108,6 +107,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 T199 done p6k2: final-source CI 38970812465 passes complete careers and production codecs; active round23 checkpoint 1564446 bytes within unchanged limits.
 - 261017 implement-task T199 resumed p6k2; owner authorized remaining tasks in autopilot and main pushes.
 - 261017 SAVE r44/create-task: T199 v3 profiles use sparse scalar columns and bounded presence runs to cover century-active23; T178/T179 final source gates remain required.
 - 261017 create-task refresh T199/T178/T179 for SAVE r43 exact permutation contract; T178 released pending T199 and full fixed-source rerun.

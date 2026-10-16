@@ -84,7 +84,7 @@
     }
   ],
   "repairRoundtripsPassed": true,
-  "releaseGatePassed": false,
+  "releaseGatePassed": true,
   "verification": {
     "affectedUnitFiles": 7,
     "affectedUnitTests": 73,
@@ -92,8 +92,17 @@
     "fullUnitTests": 1018,
     "contractTests": 15,
     "typeLintFormatCatalogBuild": "passed",
-    "productionBrowsers": "complete current-source run in progress"
+    "productionBrowsers": "passed: CI 38970812465 at 6df81fa, all Chromium/Firefox/WebKit jobs including unchanged large-codec production CSP cases"
   },
   "representation": "v3 groups serialized rows, preserves exact original registry order with bounded zigzag-LEB128 deltas, and transposes optional profiles with bounded absent/present runs; v1/v2 readers remain",
-  "limits": "Snapshot diagnostic only: registry ordering equals each supplied parsed canonical snapshot. The original v2 envelope ordering is diagnosed separately. T178 must pass both complete 100-season profiles, settled active round23/replay and era checks at this source; T179 retains full browser/performance/remote CI gates. No budgets, game coefficients, record retention or CSP changed; large encoding can take minutes."
+  "limits": "Focused snapshots preserve supplied original registry order. Final-source CI also passed both full century profiles, settled active round23, resumed replay, era and browser/performance gates; evidence archived by T178/T179. No budgets, game coefficients, record retention or CSP changed. Large encoding takes minutes; no universal all-seed or indefinite capacity claim.",
+  "finalSourceGate": {
+    "run": "https://github.com/hetarho/haeram-soccer/actions/runs/38970812465",
+    "commit": "6df81fa31e88c981b74212ab0ee9ad44c2789bdd",
+    "storageArtifact": "T178-rules3-storage.json",
+    "centuryCheckpointBytes": 1527838,
+    "activeRound23CheckpointBytes": 1564446,
+    "completeCanonicalRoundtrip": true,
+    "resumedSeasonReplay": true
+  }
 }
