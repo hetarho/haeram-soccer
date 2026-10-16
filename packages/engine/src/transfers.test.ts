@@ -1,3 +1,4 @@
+import { legacySettings } from './responsibilities';
 import { lineOf } from './player';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
@@ -49,6 +50,7 @@ function world(seed = 'transfer-market') {
     seed,
     level: 'easy' as const,
   });
+  w.settings = legacySettings(2);
   w.cash = '999999999999';
   return w;
 }
@@ -659,6 +661,7 @@ describe('incoming bids', () => {
     // New clubs answer offers themselves; this scenario hands transfers to the staff.
     expect(delegated(w, 'transfers')).toBe(false);
     w.intervention = 4;
+    w.settings = legacySettings(4);
     const decisions: { bid: TransferBid; starter: boolean; age: number; value: bigint }[] = [];
     for (let n = 0; n < seasonLength(w) - 1; n++) {
       const known = new Set(inBids(w).map((b) => b.id));
@@ -755,6 +758,7 @@ describe('transfer stance', () => {
   it('draws offers near value for listed players, which delegated staff accept', () => {
     const w = world('stance-listed');
     w.intervention = 4;
+    w.settings = legacySettings(4);
     const listed = activePlayers(w).filter(
       (p) => lineOf(p.position) === 'MF' || lineOf(p.position) === 'FW',
     );

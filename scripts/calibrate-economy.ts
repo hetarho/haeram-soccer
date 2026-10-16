@@ -1,3 +1,4 @@
+import { defaultSettings, RESPONSIBILITY_KEYS } from '../packages/engine/src/responsibilities';
 /**
  * Economy calibration harness (ECON-29, ECON-9, CLUB-25; docs/FINANCES.md).
  *
@@ -195,7 +196,8 @@ const unitOf = (code: string, year: number) => Number(quote(code, year, 1_000_00
 
 /** Every delegation on: the owner leaves the club to the staff at level 4 (ECON-29, →WEB-45). */
 function delegateAll(w: World) {
-  w.intervention = 4;
+  w.settings = defaultSettings();
+  for (const key of RESPONSIBILITY_KEYS) w.settings.responsibilities[key] = 'delegated';
 }
 /**
  * The reference club's facilities (ECON-29): the cheapest next work of the three parts whenever

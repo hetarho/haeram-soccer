@@ -22,7 +22,7 @@ import { staffEffects } from './staff';
 import { managerStyleEffects } from './styles';
 import { buildEffects, buildOf, cardOf } from './build';
 import { pushInbox } from './inbox';
-import { delegated } from './intervention';
+import { isDelegated } from './responsibilities';
 import {
   judgeRequests,
   noteSigning,
@@ -386,7 +386,7 @@ function announceWindows(w: World, day: number) {
     // The chief scout lists candidates and the manager asks before the window's first day of
     // business (→CLUB-33).
     openShortlistWindow(w);
-    if (delegated(w, 'transfers')) staffStances(w);
+    if (isDelegated(w, 'sales')) staffStances(w);
   }
   // The day after a window closes the manager's requests at its opening are judged (→CLUB-33).
   if (day === d.summerClose + 1 || day === d.winterClose + 1) judgeRequests(w);
@@ -760,7 +760,7 @@ function listedOffers(w: World, day: number, until: number) {
     };
     w.bids = [...(w.bids || []), bid];
     const summary = `${p.position} · ${w.year - p.born}세 · 능력 ${overall(p)} · 평가 가치 ${moneyLabel(w, value)}`;
-    if (delegated(w, 'transfers')) {
+    if (isDelegated(w, 'sales')) {
       // The owner listed him to sell: the staff take the offer.
       completeSale(w, bid, p);
       pushInbox(w, {
@@ -830,7 +830,7 @@ function incomingBid(w: World, day: number, until: number) {
   const report = (
     accept: boolean,
     detail: string,
-    who = delegated(w, 'transfers') ? '단장이' : '구단이',
+    who = isDelegated(w, 'sales') ? '단장이' : '구단이',
   ) => {
     if (accept) completeSale(w, bid, player);
     else bid.status = 'rejected';
@@ -854,7 +854,7 @@ function incomingBid(w: World, day: number, until: number) {
     );
     return;
   }
-  if (delegated(w, 'transfers')) {
+  if (isDelegated(w, 'sales')) {
     const starters = new Set(ownStarters(w).map((p) => p.id));
     // A starter leaves only with a bench player ready to play his slot (→CLUB-24).
     const covered = slotCovered(w, player);

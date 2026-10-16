@@ -1,3 +1,4 @@
+import { legacySettings } from './responsibilities';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { currency, footballIndex, priceIndex } from '../../catalogs/src/index';
@@ -74,7 +75,9 @@ const founding = {
   level: 'normal' as const,
 };
 function world(country: 'ENG' | 'ESP' = 'ENG') {
-  return createWorld({ ...founding, country });
+  const w = createWorld({ ...founding, country });
+  w.settings = legacySettings(2); // This suite explicitly exercises delegated contract policy.
+  return w;
 }
 /** A midfielder rated `ability` everywhere, aged `age` in the world's year. */
 function rated(w: World, ability: number, age = 26, potential = ability): Player {
@@ -497,9 +500,11 @@ describe('contract talks (→CLUB-26)', () => {
     expect([four.talk, fair.talk]).toEqual([undefined, undefined]);
     // The owner may still answer a pending talk; only the level changes who decides.
     w.intervention = 2;
+    w.settings = legacySettings(2);
     operate(w, { type: 'contract-decline', player: three.id });
     expect(w.intervention).toBe(2);
     w.intervention = 1;
+    w.settings = legacySettings(1);
     expect(three.talk).toBeUndefined();
     expect(w.events.at(-1)).toMatchObject({ kind: 'contract-decline' });
     expect(w.events.at(-1)!.title).toContain('계약 개선');

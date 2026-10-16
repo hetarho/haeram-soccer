@@ -27,7 +27,7 @@ import { moneyLabel, operatingCosts, recentRevenue, wageBill } from './finance';
 import { financeProjection } from './projection';
 import { signingClauses } from './contracts';
 import { pushInbox } from './inbox';
-import { delegated } from './intervention';
+import { isDelegated } from './responsibilities';
 import { isForeignCandidate, transferOffers } from './ops-squad';
 import { POLICY_INFO, policyOf } from './policy';
 import { placeBid, transferWindow, transferWindowDays } from './transfers';
@@ -492,7 +492,7 @@ function signFreeAgent(w: World, offer: Offer, need: SigningNeed, why: string) {
 export function staffSignings(w: World) {
   const day = currentDay(w),
     window = transferWindow(w, day);
-  if (!window.open || !delegated(w, 'transfers')) return;
+  if (!window.open || !isDelegated(w, 'recruitment')) return;
   if ((day - windowOpening(w, day)) % SIGNING_CONFIG.lookDays !== 0) return;
   const bids = windowBids(w, day);
   if (bids.some((bid) => bid.staff && isOpen(bid))) return;

@@ -1,3 +1,4 @@
+import { legacySettings } from './responsibilities';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { lineOf, POSITION_LABEL } from './player';
 import { describe, expect, it } from 'vitest';
@@ -46,6 +47,7 @@ function club(finance?: Direction['finance'], seed = 'staff-signings') {
     level: 'easy' as const,
   });
   w.intervention = 4;
+  w.settings = legacySettings(4);
   w.cash = '999999999999';
   w.round = 23;
   w.income = '999999999999';
@@ -184,9 +186,11 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     for (let seed = 0; seed < 40; seed++) {
       const w = club(undefined, `owner-${seed}`);
       w.intervention = 3;
+      w.settings = legacySettings(3);
       const offers = transferOffers(w);
       placeBid(w, 1, offers[1].fee);
       w.intervention = 4;
+      w.settings = legacySettings(4);
       advanceDays(w, 4);
       const own = (w.bids || []).find((bid) => !bid.staff && bid.direction === 'out')!;
       if (own.status !== 'countered') continue;
@@ -216,6 +220,7 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
   it('makes no signings below level 4 or outside windows', () => {
     const below = club();
     below.intervention = 3;
+    below.settings = legacySettings(3);
     staffSignings(below);
     expect(staffBids(below)).toEqual([]);
     const closed = club();
@@ -250,6 +255,7 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
   function owned(seed = 'shortlist') {
     const w = club(undefined, seed);
     w.intervention = 2;
+    w.settings = legacySettings(2);
     return w;
   }
 
@@ -450,8 +456,10 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
     expect(
       window((w) => {
         w.intervention = 4;
+        w.settings = legacySettings(4);
         staffSignings(w);
         w.intervention = 2;
+        w.settings = legacySettings(2);
       }).lost,
     ).toBe(0);
     // A new manager is not judged on his predecessor's requests; none asked costs nothing.
@@ -502,6 +510,7 @@ describe('requests by formation slot (→CLUB-33)', () => {
   function owned(seed = 'slot-requests') {
     const w = club(undefined, seed);
     w.intervention = 2;
+    w.settings = legacySettings(2);
     return w;
   }
 

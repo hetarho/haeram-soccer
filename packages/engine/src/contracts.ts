@@ -32,7 +32,7 @@ import { currentDay, dayCountedFrom, SEASON_ROUNDS } from './calendar';
 import { credit } from './operations';
 import { suitorFor, transferWindowDays } from './transfers';
 import { financeProjection } from './projection';
-import { delegated } from './intervention';
+import { isDelegated } from './responsibilities';
 import { AMBITION_UNHAPPY, GRADE_LABEL } from './player';
 
 /**
@@ -419,7 +419,7 @@ function openTalk(w: World, p: Player, kind: ContractTalk['kind']) {
   };
   if (kind === 'improve') p.improveAsked = w.year;
   settleTalkItems(w, p.id);
-  if (delegated(w, 'contracts')) return;
+  if (isDelegated(w, 'contracts')) return;
   const goodwill = Math.round(terms.goodwill.percent * 10) / 10;
   pushInbox(w, {
     kind: 'contract-talk',
@@ -739,7 +739,7 @@ export function contractTalks(w: World) {
     else if (left <= TALK_CONFIG.improveSeasons && p.improveAsked !== w.year && underpaid(w, p))
       openTalk(w, p, 'improve');
   }
-  if (delegated(w, 'contracts')) for (const p of activePlayers(w)) if (p.talk) staffAnswer(w, p);
+  if (isDelegated(w, 'contracts')) for (const p of activePlayers(w)) if (p.talk) staffAnswer(w, p);
 }
 /**
  * Each day: a player unhappy for six weeks hands in a transfer request (→CLUB-27). He goes on the
