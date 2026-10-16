@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r83 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r84 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -8,7 +8,7 @@
 - WEB-4 [o] Dashboard, match observation, league/Europe, people (squad, market, manager and coaches), training, operations and history are playable views, with progress and actionable errors.
 - WEB-5 [o] Time progression has automatic and manual modes, with automatic selected for a new game. The owner can switch modes, subject to →WEB-76.
   - automatic: paced day-by-day play at x1/x2/x5/x10 (→WEB-18), stopping for the configured events.
-  - manual: automatic play is off; 다음 이벤트 advances to the next configured stopping event and waits there. Resolving it never starts unattended play; another explicit progression action is needed.
+  - manual: enabled only while the match-eve event is enabled, regardless of business delegation (→WEB-76). Automatic play is off; 다음 이벤트 advances to the next configured stopping event and waits there. Resolving it never starts unattended play; another explicit progression action is needed.
   - both modes use the same business responsibilities and observation triggers (→WEB-45), live the same ordered days and retain the same facts (→LEAGUE-11). Mode selection is distinct from automatic play/pause.
   - preparation, watching and explicit one-round tools remain available; there is no public finish-season or multi-season jump. Saving/worker failures, critical blockers and read-only ownership retain their existing protections.
 
@@ -47,6 +47,7 @@
   - pace selection changes pace only. A stopped automatic clock stays stopped until play; an event stop does not change the selected progression mode.
   - manual mode offers 다음 이벤트 with automatic play off (→WEB-5). Present one direct move to the next configured event's date, without a paced date-by-date animation or an intervening progress/cancel journey. Do not add an artificial wait.
   - the manual move still settles intervening days in order (→LEAGUE-11), retains their facts and stops at the first configured event. Its presentation never bypasses pending owner decisions, critical blockers or save/worker errors.
+  - the match-eve event is mandatory in manual mode (→WEB-76). With no earlier configured event, 다음 이벤트 moves directly to the next own match's eve; with all other events disabled/delegated, it functions as next-match progression.
   - both modes stop for owner-held business decisions and enabled observation events (→WEB-45/42). A match event lands on the eve of an own match, before its result; preparation, watching or playing it through remain available.
   - a season close opens no screen and adds its record to the season list (→WEB-47); it is not a stop of its own.
   - a day step plays our match as a result without movement frames (same duel chain and facts, →MATCH-7); only watching builds them. An automatic multi-day step still ends on news or own-match days without turning every report into a stopping event.
@@ -304,8 +305,9 @@
   - Show the responsible person/direct-or-delegated status and the next effect point: immediate candidate refresh, next round, intake, contract/appointment, season end or project completion, according to the existing owning-domain rule.
   - A preference does not claim to replace current staff, and an unused delegated criterion is labelled as such. Existing cost, risk, duration and outcome previews remain; reading a policy never changes facts.
 
-- WEB-76 [o] Manual next-event play with all seven business categories delegated requires the match-eve observation trigger enabled.
-  - reject entering manual mode or changing any responsibility/trigger if the result would be all-delegated manual play without match events.
+- WEB-76 [o] Manual next-event mode is available only with the match-eve observation trigger enabled, regardless of which or how many business responsibilities are direct or delegated.
+  - with match events disabled, manual mode cannot be activated. Reject switching to manual mode until the owner explicitly enables match eve.
+  - while manual mode is selected, reject disabling match eve and preserve the enabled trigger. Turning other events off or changing business delegation never removes this requirement.
   - explain 수동 모드에는 경기 이벤트가 필요해요 and offer 경기 전날 이벤트 켜기 as an explicit action. Other observation triggers do not satisfy the condition.
   - do not silently enable the trigger, change a responsibility or switch mode; preserve the last valid configuration.
 
@@ -324,7 +326,7 @@
   - changes remain unapplied until explicit apply, with affected pending work disclosed before committing (→WEB-82). Opening or closing the screen never applies a choice.
   - apply validates the resulting manual-mode configuration (→WEB-76) and transfers only unresolved work under →WEB-82. Reports follow →WEB-42 without additional per-business-event stop switches.
 
-- WEB-80 [?] Define next-event behaviour when no configured stop is reachable and interaction with explicit one-round tools. Direct event-date presentation follows →WEB-18; same-date stopping events follow →WEB-83. Preserve ordered settlement, pending owner decisions, existing critical/error blockers and manual mode's absence of unattended progress.
+- WEB-80 [?] Define interaction between manual next-event progression and explicit one-round tools. Match events are always required in manual mode (→WEB-76), and no earlier configured event means arrival at the next own match's eve (→WEB-18); a separate no-event season-end stop is not used. Same-date stopping events follow →WEB-83. Preserve ordered settlement, pending owner decisions, existing critical/error blockers and manual mode's absence of unattended progress.
 
 - WEB-81 [o] Mediation shows each person's actual explanation, the standing support policy, a case-specific support choice when owner-held, and any promise's target, deadline and recorded status (→CLUB-34/35, →STAFF-26). Delegated mediation reports the policy and result without an extra owner-only stop. Promise outcomes remain available through retained decisions (→HIST-15).
 
@@ -347,6 +349,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r84 261016 WEB-5/18/76✎ match required only when all delegated→required for every manual configuration, otherwise manual unavailable; WEB-80✎ no-stop behaviour open→next-match-eve arrival, no season-end fallback; one-round-tool interaction remains open
 - r83 261016 WEB-18✎ unpaced days→direct event-date presentation; WEB-42✎ general report stops unspecified→notification-only; WEB-45/79✎ settings workflow open→shared central entry and explicit apply; WEB-80✎ long-advance UI open→no-stop/round-tool questions only
 - r82 261016 WEB-45✎ pending handling open→WEB-82; WEB-79/80✎ transition/simultaneous-event questions→remaining settings/report/advance questions; WEB-82/83+ explicit pending-work transfer and same-date manual event grouping
 - r81 261016 WEB-5/18✎ paced-only→two modes; WEB-42/45✎ ladder→seven responsibilities/observation triggers; WEB-39/43/44/60/64/71✎ level/page access→responsibility/scoped sheets; WEB-76/77/78/81+ match guard, department apply and career/mediation UI; WEB-79/80+ open transition/advance rules
