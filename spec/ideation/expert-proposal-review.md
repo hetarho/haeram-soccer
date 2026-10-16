@@ -21,6 +21,9 @@
 - [o] Business-decision clock stops follow responsibility: a direct owner decision stops for an answer; a delegated decision is processed by the responsible staff and reported without a decision-related stop. No independent stop toggle for each business decision. Match-eve and window-opening notifications are not settled by this choice; critical/error handling and timing when responsibility changes remain to specify.
 - [o] New-game responsibility defaults: the owner handles manager appointments/renewals, player renewals/improved contracts, recruitment and sales; staff handle their appointments/renewals, academy promotion/release and sponsor contracts. Every responsibility remains individually changeable in the central screen. Existing-career conversion remains open.
 - [o] Observation notifications: match-eve and transfer-window-opening stops can each be enabled or disabled independently of delegation. New-game defaults: match-eve stop on, window-opening stop off. Keep both notifications readable whether or not they stop the clock.
+- [o] Two progression modes: automatic mode retains day-by-day paced play; manual mode has automatic play off and an explicit next-event action advances to the next event selected by the owner's trigger settings. Both modes use the same responsibility/observation trigger choices, rather than a second manual event list.
+- [o] Manual-mode validity: when all seven business responsibilities are delegated, manual play requires at least the match-event trigger enabled, following the already chosen match-eve observation trigger. Other event selections alone do not satisfy this condition. How invalid combinations are prevented remains to specify.
+- [o] Manual progression is owner-driven: arriving at an event and resolving a decision do not start unattended automatic play; the next advance requires an explicit progression action. Manual mode has no unattended wall-clock or away catch-up progression.
 - [x] A mandatory four-level ladder, whether reordered or supplemented only by core-approval pins, as the delegation model ← the owner chose individual responsibility selection to express the desired combination directly. Optional bulk presets remain undecided.
 - [?] Delegation details: “automate sponsors/coaches but appoint my manager” is impossible under the current ladder, although manual actions remain available while delegated (WEB-45, STAFF-13).
   - The proposal usefully separates routine work from appointments with greater owner interest. Its claim that staff handle the core player's renewal at level 2 matches the current default.
@@ -30,11 +33,13 @@
   - Existing delegated untouchable offers can be decided by staff and manager (CLUB-24); 150% is not a universal owner-approval threshold.
 - [o] Player second-career scope: retirement → coaching candidacy → coaching experience → possible manager candidacy. Preserve the person's actual age, identity and retained playing history through the career; an appointment follows the adopted staff/manager responsibility. Candidate qualification and career progression do not guarantee an appointment.
 - [o] Second-career opportunity is not restricted to the owner's club, its retirees or its legends: suitable players from other clubs can enter coaching and rise toward management too. Eligibility follows coaching aptitude; work ethic/professionalism and football intelligence are desired positive factors, with their representation and exact conditions still open.
+- [o] Coaching aptitude is a separate assessment from playing ability, informed by professionalism/work ethic, football understanding and ability to teach. A player of ordinary playing ability can have strong coaching aptitude. Representation, visibility and precise eligibility/progression conditions remain open; no existing match attribute or coefficient is changed by this ideation choice.
+- [o] Players across clubs can naturally choose coaching and enter the coaching market. The owner may also encourage one of our own players toward coaching; encouragement guarantees neither entry nor employment. Actual appointments follow the staff/manager responsibility choices.
 - [x] Own-club 150 appearances or five seasons as the qualifying gate for coaching opportunities ← the owner wants aptitude-based opportunities across clubs; club service can be career context but must not exclude suitable outsiders.
 - [?] Second-career detail: preserve a recognisable person and assess coaching aptitude across clubs.
   - Preserve the person's actual identity, age and playing record through later roles; distinguish a training invitation, qualification, a vacancy and an appointment. A legend's playing quality need not guarantee coaching quality.
   - The supplied mandatory leader/professionalism gate, 20-unit course, age 33–38 and potential +10 are not adopted. Retirement can occur through 41 (CLUB-3), so setting a retiree's age to 33–38 would contradict his history.
-  - Current PLAYER-7 provides professionalism; PLAYER-2 has vision and positioning, but PLAYER-19 explicitly has no other mental attributes. Do not equate a midfielder's vision or physical work rate with intelligence or work ethic. A separate coaching-aptitude/football-understanding assessment versus using existing traits remains a product choice.
+  - Current PLAYER-7 provides professionalism; PLAYER-2 has vision and positioning, but PLAYER-19 explicitly has no other mental attributes. Do not equate a midfielder's vision or physical work rate with intelligence or work ethic. The adopted separate coaching assessment needs an explicit later PLAYER policy update.
   - Feasibility concern: other clubs' squads are generated each season without the own-club development/ageing lifecycle (PLAYER-1). Cross-club second careers need an explicit continuity scope and genuine retained identity; do not invent historical appearances or claim every NPC player already has a tracked lifetime.
   - Existing retained player careers and manager tenures are useful material (WEB-54/59, HIST-1), but a cross-role career and its continuity require explicit new product rules. “No complex new schema” is not evidenced.
 - [?] Director–manager mediation: good owner decision when finance and football needs conflict; it must describe the actual reason an acquisition did not happen.
@@ -73,12 +78,13 @@
 - Business flow: owner-held decision → stop for the owner's answer; delegated decision → staff resolution and report. Unresolved-decision timing remains open.
 - New-game defaults: owner handles manager appointments, player contracts, recruitment and sales; staff handle their appointments, the academy and sponsors. Each remains individually changeable.
 - Observation preferences: match-eve and window-opening stops separately selectable, with notices retained either way; defaults are match-eve stop on and window-opening stop off.
-- Second-career flow: a player at our club or another → aptitude and a coaching career choice → retirement and coaching candidacy → appointment/experience → possible management candidacy → appointments and a linked career record. Entry mechanism, aptitude display and promotion conditions remain open.
-- Current second-career proposals to discuss: an assessment of coaching aptitude including football understanding and ability to teach, informed by existing professionalism without altering existing match attributes; natural coaching entry across clubs, with an optional owner encouragement for our own players. Neither proposal is adopted yet.
+- Progression flow: choose automatic paced play or manual next-event play → the same configured trigger determines where play stops → decide/read/watch as appropriate → automatic behaviour follows its mode; manual play waits for the next explicit advance. With all responsibilities delegated, match events must remain enabled for manual mode.
+- Match-event arrival follows the selected match-eve trigger, before the result; preparation/watch/play-through remain relevant. Proposed new-game default for discussion: automatic mode. Preventing an invalid all-delegated/manual/no-match combination still needs a visible product rule.
+- Second-career flow: a player at our club or another → separate coaching aptitude and a natural career choice, optionally encouraged for our player → retirement and coaching candidacy → appointment/experience → possible management candidacy → appointments and a linked career record. Aptitude display and promotion conditions remain open.
 - Review boundary: assess and retain proposal material. No SSOT policy changes, coefficient changes, implementation tasks or code changes are authorized by selecting an idea for discussion.
 
 ## domains
-- WEB: focused policy access, effective delegation responsibilities, event visibility and phone navigation; relate any future choice to WEB-45/60/71/74/75.
+- WEB: automatic versus manual next-event play with shared triggers, focused policy access, effective delegation responsibilities, event visibility and phone navigation; relate any future choice to WEB-5/18/45/60/64/71/74/75.
 - LEAGUE: parked; difficulty's intended duration, reference-career outcomes and persistent challenge candidates.
 - ECON: parked; wage share, operating result, insolvency and facility-growth tradeoffs measured on comparable samples.
 - CLUB: renewal consequences, unmet requests and potential future promises; veteran eligibility for a second career.
@@ -89,7 +95,8 @@
 
 ## open
 - How do changes apply to pending decisions and existing careers, and what shortcuts belong in the clock/settings entry?
-- How should coaching aptitude and football intelligence be represented and shown, and how does a player choose to enter coaching?
+- Which progression mode should a new game use, and how are invalid manual/no-match settings prevented?
+- How should separate coaching aptitude and football intelligence be shown, and when can the owner encourage a coaching career?
 - What experience makes a coach a manager candidate, and how are his specialty and school established?
 - Should mediation with an accountable future promise be developed after the retired-player discussion?
 - Does the current focused-policy round trip interrupt a real recurring task enough to justify another presentation, and what improvement would demonstrate it?
