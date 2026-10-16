@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:34Z | T188 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:39Z | T183 |
 
 ## inbox
 - 261017 decided SAVE-10: align recognized older catalog pin text with approved T181 2026-demo-3; no historical price/index changes and no legacy reset before T174.
@@ -70,7 +70,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 88 | 88 | - | 0 |
+| WEB | 89 | 89 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | CLUB | 41 | 41 | - | 0 |
 | MATCH | 9 | 9 | - | 0 |
@@ -85,7 +85,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T188 | Fix mobile match presentation and progression controls | WEB | - | doing@261017.n7r4 |
 | T174 | Activate rules 3.0.0 with bounded recognized-legacy gameplay reset | SAVE WEB ARCH | T150 T152 T167 T168 T172 T173 T180 T186 T187 | todo |
 | T175 | Migrate old browser helpers to the approved public progression flow | WEB LEAGUE | T150 T174 | todo |
 | T176 | Verify second careers across contracts, reloads and market transitions | WEB STAFF WORLD HIST SAVE | T167 T168 T174 | todo |
@@ -105,11 +104,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- Continue dependency-ready tasks autonomously: T180, T181–T187, then T174–T179 after their prerequisites. Current report: reports/261016-n7r4.md.
+- Resume preserved T183 engine work, then T184–T187 and T174–T179 in dependency order. T188 mobile corrections are complete. Current report: reports/261016-n7r4.md.
 - T154–T173 implemented and pushed in this session; final browser migration, century budget evidence and complete CI integration remain T175–T179.
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 T188 done n7r4: The pitch keeps 1.9:1 at mobile sizes, the mode selector uses the shared design system with readable phone clock rows, and exiting grouped events retain their viewport position.
+- 261017 WEB r89 assigned to T188: responsive clock reflow prevents date overlap from the shared selector; T183 unaffected.
 - 261017 implement-task T188 start n7r4.
 - 261017 create-task T188: WEB r88 and reported selector/exit regressions; prioritize before T183.
 - 261017 update-ssot WEB r88: fixed pitch ratio requested; T183 engine scope unaffected.
@@ -128,5 +129,3 @@
 - 261017 implement-task T172 start n7r4.
 - 261017 T171 done n7r4: Fixed-deadline promises judge retained actual arrivals only after the deadline, preserve original targets, cancel on actual manager departures and retain factual reactions without extra trust or morale effects.
 - 261017 implement-task T171 start n7r4.
-- 261017 T170 done n7r4: Standing or case-specific support resolves actual mediation through ordinary owner/delegated move rules; cheaper alternatives and named bids are real, blocked pursuit records one fixed next-window promise without numerical bonuses.
-- 261017 implement-task T170 start n7r4.

@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r88 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r89 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -42,7 +42,7 @@
 - WEB-16 [o] First-session help explains optional match preparation, one-action observation, earned player growth and cost-bearing club investment. It derives completion from actual milestones, does not require a tutorial gate, and can be reopened from the menu.
 
 - WEB-17 [o] The match theatre passes 360x740 and390x844 viewport bounds without masking essential overflow; home has no horizontal overflow and scrolls vertically when needed. Supporter count and small text remain readable; all primary buttons and selection controls, including match preparation, recruitment and league exploration, have touch targets of at least44 CSS pixels across Chromium, Firefox and Safari; the clock's secondary pace chips are at least 32 px inside a 44 px track. Expanded records/settings may scroll; short screens or accessibility magnification can use necessary vertical scrolling.
-- WEB-18 [o] One clock on every view shows date/status, the selected progression mode, its progression action and access to the central responsibility settings (→WEB-45); season progress runs along its lower edge. The match theatre keeps its time controls in the scoreboard row.
+- WEB-18 [o] One clock on every view shows date/status, the selected progression mode, its progression action and access to the central responsibility settings (→WEB-45); season progress runs along its lower edge. On phones the full clock places date/status and settings above the mode and progression actions so their labels remain readable. The match theatre keeps its time controls in the scoreboard row.
   - automatic mode keeps play/pause and x1/x2/x5/x10: one day per 1/0.5/0.2/0.1 seconds. Steps never wait for saving (→SAVE-8); a late step carries days owed, at most 5 per step, and stopped time is never owed.
   - pace selection changes pace only. A stopped automatic clock stays stopped until play; an event stop does not change the selected progression mode.
   - manual mode offers 다음 이벤트 with automatic play off (→WEB-5). Present one direct move to the next configured event's date, without a paced date-by-date animation or an intervening progress/cancel journey. Do not add an artificial wait.
@@ -356,6 +356,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r89 261017 WEB-18✎ packed phone clock→date/settings above full-width mode/actions to preserve readable shared controls
 - r88 261017 WEB-50✎ phone pitch fills remaining height→fixed 1.9:1 pitch on every screen
 - r87 261016 WEB-44✎ squad tone thresholds unspecified (warning under 16, critical under 15)→warning under 20 players or 3+ injured, critical under 16 or fewer than 14 fit
 - r86 261016 WEB-45✎ playing-coach authority unspecified→combined player/staff approval if either is direct, both-delegated automation and split/total salary preview

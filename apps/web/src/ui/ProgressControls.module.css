@@ -312,8 +312,29 @@
   background: var(--accent-fill);
 }
 
-.mode select {
+.mode [data-select-trigger] {
   min-height: 44px;
-  padding: 0 4px;
+  padding: 0 6px;
+  gap: 4px;
   font-size: 12px;
+}
+
+/* Keep the date readable alongside the shared selector on narrow screens. */
+@media (max-width: 760px) {
+  .controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .controls .calendar {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .controls .trigger {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .controls .buttons {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
 }

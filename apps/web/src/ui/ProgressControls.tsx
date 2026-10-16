@@ -1,6 +1,7 @@
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { pendingDecisions } from '../../../../packages/engine/src/stopping';
 import { PixelIcon } from './PixelIcon';
+import { Select } from './Select';
 import {
   currentDay,
   daysUntilNextMatch,
@@ -74,13 +75,13 @@ export const ProgressControls = memo(function ProgressControls({
   const modeControl = (
     <label className={p.mode}>
       <span className={s.srOnly}>진행 모드</span>
-      <select
+      <Select
         aria-label="진행 모드"
         value={mode}
         disabled={blocked || state.processing}
-        onChange={(event) => {
+        onValueChange={(value) => {
           const settings = settingsOf(w);
-          const progression = event.target.value as 'automatic' | 'manual';
+          const progression = value as 'automatic' | 'manual';
           if (progression === 'manual' && !settings.observations.matchEve) {
             useInterventionDialog.getState().show();
             return;
@@ -92,11 +93,11 @@ export const ProgressControls = memo(function ProgressControls({
         <option value="manual" disabled={!settingsOf(w).observations.matchEve}>
           수동
         </option>
-      </select>
+      </Select>
     </label>
   );
   const buttons = manual ? (
-    <div className={s.clockButtons} role="group" aria-label="수동 진행">
+    <div className={`${s.clockButtons} ${p.buttons}`} role="group" aria-label="수동 진행">
       {modeControl}
       <button
         disabled={blocked || state.processing || pending}
@@ -106,7 +107,7 @@ export const ProgressControls = memo(function ProgressControls({
       </button>
     </div>
   ) : (
-    <div className={s.clockButtons} role="group" aria-label="자동 진행 속도">
+    <div className={`${s.clockButtons} ${p.buttons}`} role="group" aria-label="자동 진행 속도">
       {modeControl}
       <button
         className={`${s.clockToggle} ${running ? s.clockPause : ''}`}
@@ -158,11 +159,11 @@ export const ProgressControls = memo(function ProgressControls({
   const progress = Math.round((currentDay(w) / Math.max(1, seasonLength(w))) * 1000) / 10;
   return (
     <section
-      className={`${s.seasonControls} ${running ? s.clockRunning : ''} ${className}`}
+      className={`${s.seasonControls} ${p.controls} ${running ? s.clockRunning : ''} ${className}`}
       aria-label={compact ? `시즌 진행 · ${seasonDate(w)} · ${status}` : '시즌 진행'}
       data-testid={compact ? 'mini-clock' : undefined}
     >
-      <div className={s.calendarSummary}>
+      <div className={`${s.calendarSummary} ${p.calendar}`}>
         <strong data-testid="game-date">{seasonDate(w)}</strong>
         <small className={s.autoStatus} aria-live="polite" aria-atomic="true">
           {status}

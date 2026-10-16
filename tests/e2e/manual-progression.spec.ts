@@ -13,6 +13,7 @@ import {
   pendingAcquisitionCareer,
 } from './responsibility-fixtures';
 import { horizontalOverflow } from './layout';
+import { chooseOption } from './select';
 
 for (const width of [1280, 390]) {
   test(`exclusive-controls ${width}`, async ({ page }) => {
@@ -28,7 +29,7 @@ for (const width of [1280, 390]) {
     await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: /속도 선택$/ })).toHaveCount(4);
     await expect(page.getByRole('button', { name: '다음 이벤트', exact: true })).toHaveCount(0);
-    await page.getByRole('combobox', { name: '진행 모드', exact: true }).selectOption('manual');
+    await chooseOption(page.getByRole('combobox', { name: '진행 모드', exact: true }), 'manual');
     await closeSettingsOutcome(page);
     await expect(page.getByRole('button', { name: '다음 이벤트', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toHaveCount(0);
@@ -40,7 +41,7 @@ for (const width of [1280, 390]) {
     );
     await page.keyboard.press('Escape');
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
-    await page.getByRole('combobox', { name: '진행 모드', exact: true }).selectOption('automatic');
+    await chooseOption(page.getByRole('combobox', { name: '진행 모드', exact: true }), 'automatic');
     await closeSettingsOutcome(page);
     await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: '다음 이벤트', exact: true })).toHaveCount(0);

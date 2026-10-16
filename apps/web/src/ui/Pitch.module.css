@@ -346,11 +346,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  /* Leave room for readable 12px labels and the two-line action before sizing the pitch. */
-  .stage .canvas {
-    aspect-ratio: auto;
-    height: clamp(150px, calc(100dvh - 580px), 320px);
-  }
   .stage .tactics {
     display: none;
   }

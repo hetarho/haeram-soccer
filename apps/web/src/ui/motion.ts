@@ -63,7 +63,7 @@ export function usePresence<T>(value: T | undefined, duration = 180) {
 }
 
 /**
- * Ref callback for fixed-position overlays: when the element leaves the DOM, a detached copy
+ * Ref callback for overlays and grouped cards: when the element leaves the DOM, a detached copy
  * plays `keyframes` and is removed, so cards never vanish abruptly. Keep the returned
  * callback stable (module level) so React only runs it on real removal.
  */
@@ -72,7 +72,24 @@ export function fadeOutOnRemove(keyframes: Keyframe[], duration = 180) {
     if (!element) return;
     return () => {
       if (reducedMotion()) return;
+      // Grouped cards become fixed overlays when detached from their styling ancestor.
+      // Freeze their viewport geometry before moving the copy into the body.
+      const bounds = element.getBoundingClientRect();
+      if (!bounds.width || !bounds.height) return;
       const ghost = element.cloneNode(true) as HTMLElement;
+      Object.assign(ghost.style, {
+        position: 'fixed',
+        top: `${bounds.top}px`,
+        left: `${bounds.left}px`,
+        right: 'auto',
+        bottom: 'auto',
+        width: `${bounds.width}px`,
+        height: `${bounds.height}px`,
+        maxWidth: 'none',
+        maxHeight: 'none',
+        margin: '0',
+        boxSizing: 'border-box',
+      });
       ghost.setAttribute('aria-hidden', 'true');
       ghost.removeAttribute('data-testid');
       ghost.inert = true;
