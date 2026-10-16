@@ -1,11 +1,11 @@
 import { legacySettings } from '../../../../packages/engine/src/responsibilities';
 import { signSponsor, sponsorSlots } from '../../../../packages/engine/src/sponsors';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { Host } from './host';
 import { build } from './codec';
 import type { Body, CodecJob } from './protocol';
 import { canonical } from '../../../../packages/contracts/src/index';
-import { decode } from '../adapters/persistence';
+import { decode, encode } from '../adapters/persistence';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import {
   lineupPreset,
@@ -518,4 +518,47 @@ describe('retained recruitment decision reads', () => {
     expect(preview.mediationPreview).toBeDefined();
     expect(canonical(w)).toBe(before);
   });
+});
+
+it('consumes only an exact validated inspection without sharing a live world or reusing changed bytes', async () => {
+  const { createWorld } = await import('../../../../packages/engine/src/index');
+  const source = createWorld(input),
+    raw = await encode(source),
+    host = new Host();
+  const persistence = await import('../adapters/persistence');
+  const spy = vi.spyOn(persistence, 'decode');
+  try {
+    const inspected = await host.handle(req('inspect-once', -1, { type: 'inspect', raw }));
+    expect(inspected.ok).toBe(true);
+    inspected.candidate!.cash = '0';
+    const metadata = await host.handle(
+      req('inspect-metadata', -1, { type: 'inspect', raw, metadataOnly: true }),
+    );
+    expect(metadata.worldMetadata).toEqual({ id: source.id, revision: source.revision });
+    expect(metadata.candidate).toBeUndefined();
+    metadata.worldMetadata!.revision = 999;
+    const activated = await host.handle(
+      req('activate-inspected', -1, { type: 'inspect', raw, activate: true }),
+    );
+    expect(activated.ok).toBe(true);
+    expect(activated.candidate).toBeUndefined();
+    expect(canonical(host.world)).toBe(canonical(source));
+    expect(spy).toHaveBeenCalledTimes(1);
+    host.world!.cash = '123';
+    const fresh = await host.handle(req('inspect-original', 0, { type: 'inspect', raw }));
+    expect(fresh.candidate!.cash).toBe(source.cash);
+    expect(spy).toHaveBeenCalledTimes(2);
+    const corrupt = JSON.stringify({ ...JSON.parse(raw), checksum: '0'.repeat(64) });
+    expect(
+      (
+        await host.handle(
+          req('changed-bytes', 0, { type: 'inspect', raw: corrupt, activate: true }),
+        )
+      ).ok,
+    ).toBe(false);
+    expect(spy).toHaveBeenCalledTimes(3);
+    expect(host.world!.cash).toBe('123');
+  } finally {
+    spy.mockRestore();
+  }
 });

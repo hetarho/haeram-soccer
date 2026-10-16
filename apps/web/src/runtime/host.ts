@@ -42,6 +42,9 @@ export class Host {
   private session?: string;
   private acknowledgments = new Map<string, Reply>();
   private queue = Promise.resolve();
+  // One immutable, fully validated inspection, consumed on activation. Match the complete raw
+  // string; never reuse a live world or trust header/checksum identity alone.
+  private inspected?: { raw: string; result: Awaited<ReturnType<typeof decode>> };
   private newsCache?: { key: string; news: View['news'] };
   cancelled = false;
   /** The port to the client's codec worker, which builds every checkpoint (→ARCH-13). */
@@ -255,18 +258,22 @@ export class Host {
         raw: string | undefined,
         envelope: Reply['envelope'],
         candidate: World | undefined,
+        worldMetadata: Reply['worldMetadata'],
         upgraded = false;
       let changed = false;
       this.cancelled = false;
       if (r.body.type === 'inspect') {
         if (r.body.upgrade && !r.body.activate)
           throw new Error('규칙 업그레이드는 활성화할 때만 가능합니다.');
-        const result = await decode(r.body.raw);
+        const result =
+          this.inspected?.raw === r.body.raw ? this.inspected.result : await decode(r.body.raw);
+        this.inspected = r.body.activate ? undefined : { raw: r.body.raw, result };
         const activated = r.body.upgrade
           ? upgradeWorldRules(result.world, CURRENT_CATALOG)
           : result.world;
         upgraded = activated !== result.world;
-        candidate = structuredClone(activated);
+        if (r.body.metadataOnly) worldMetadata = { id: activated.id, revision: activated.revision };
+        else if (!r.body.activate) candidate = structuredClone(activated);
         if (r.body.activate) this.world = activated;
         if (upgraded) raw = await encode(activated, r.generation, r.parentGeneration);
         envelope = result.envelope;
@@ -374,6 +381,7 @@ export class Host {
         raw,
         envelope,
         candidate,
+        worldMetadata,
         cancelled: this.cancelled,
         upgraded: upgraded || undefined,
       };

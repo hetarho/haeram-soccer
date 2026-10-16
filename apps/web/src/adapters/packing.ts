@@ -472,7 +472,7 @@ function unpackBrackets(p: Packed) {
   ties.done();
   return result;
 }
-export function unpack(p: Packed): World {
+export function unpack(p: Packed, validateExpandedWorld = false): World {
   if (
     p.format !== 'compact1' ||
     !Array.isArray(p.dict) ||
@@ -493,11 +493,16 @@ export function unpack(p: Packed): World {
   const people =
     p.careers === undefined
       ? undefined
-      : unpackCareers(p.careers, str, {
-          clubs: p.world.clubs.map((club) => club.id),
-          playerClub: p.world.playerClub,
-          seed: p.world.seed,
-        });
+      : unpackCareers(
+          p.careers,
+          str,
+          {
+            clubs: p.world.clubs.map((club) => club.id),
+            playerClub: p.world.playerClub,
+            seed: p.world.seed,
+          },
+          validateExpandedWorld,
+        );
   const f = (t: Tuple): Fixture => {
     const score = t[8] as number[];
     return {

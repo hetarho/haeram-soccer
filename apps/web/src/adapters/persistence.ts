@@ -5,8 +5,8 @@ import {
   currency,
 } from '../../../../packages/catalogs/src/index';
 import { canonical, validateWorld, type World } from '../../../../packages/contracts/src/index';
-import { unbase64, pack, unpack } from './packing';
-import { denseBytes, denseText } from './dense';
+import { pack, unpack } from './packing';
+import { encodePayload, decodePayload } from './compression';
 import {
   LEGACY_ENGINE_VERSIONS,
   earlierRulesMessage,
@@ -30,33 +30,9 @@ async function digest(bytes: Uint8Array) {
     (b) => b.toString(16).padStart(2, '0'),
   ).join('');
 }
-async function transform(bytes: Uint8Array, compress: boolean) {
-  const stream = new Blob([new Uint8Array(bytes).buffer])
-    .stream()
-    .pipeThrough(compress ? new CompressionStream('gzip') : new DecompressionStream('gzip'));
-  const reader = stream.getReader();
-  const chunks: Uint8Array[] = [];
-  let size = 0;
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    size += value.length;
-    if (size > 16 * 1024 * 1024) {
-      await reader.cancel();
-      throw new Error('저장 파일의 압축 해제 한도를 초과했습니다.');
-    }
-    chunks.push(value);
-  }
-  const result = new Uint8Array(size);
-  let offset = 0;
-  for (const chunk of chunks) {
-    result.set(chunk, offset);
-    offset += chunk.length;
-  }
-  return result;
-}
 export async function encode(w: World, generation = 1, parentGeneration = 0): Promise<string> {
   const bytes = new TextEncoder().encode(canonical(pack(w)));
+  const payload = await encodePayload(bytes);
   const e: Envelope = {
     schema: 1,
     engine: w.engine,
@@ -65,13 +41,17 @@ export async function encode(w: World, generation = 1, parentGeneration = 0): Pr
     worldId: w.id,
     generation,
     parentGeneration,
-    codec: 'gzip-cjk14',
+    codec: payload.codec,
     checksum: await digest(bytes),
-    payload: denseText(await transform(bytes, true)),
+    payload: payload.payload,
   };
   return JSON.stringify(e);
 }
-async function readCheckpoint(raw: string, supported: readonly string[]) {
+async function readCheckpoint(
+  raw: string,
+  supported: readonly string[],
+  validateExpandedWorld = false,
+) {
   if (raw.length > 4 * 1024 * 1024) throw new Error('저장 파일이 너무 큽니다.');
   const e = JSON.parse(raw) as Envelope;
   if (!e || typeof e !== 'object' || typeof e.schema !== 'number')
@@ -116,13 +96,13 @@ async function readCheckpoint(raw: string, supported: readonly string[]) {
     !/^[a-f0-9]{64}$/.test(e.checksum)
   )
     throw new Error('저장 헤더가 올바르지 않습니다.');
-  const bytes = await transform(
-    e.codec === 'gzip-base64' ? unbase64(e.payload) : denseBytes(e.payload),
-    false,
-  );
+  const bytes = await decodePayload(e.codec, e.payload);
   if ((await digest(bytes)) !== e.checksum) throw new Error('체크섬이 일치하지 않습니다.');
   return {
-    value: unpack(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes))),
+    value: unpack(
+      JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)),
+      validateExpandedWorld,
+    ),
     envelope: e,
   };
 }
@@ -145,7 +125,7 @@ export async function recognizedLegacy(raw: string): Promise<boolean> {
   }
 }
 export async function decode(raw: string): Promise<{ world: World; envelope: Envelope }> {
-  const { value, envelope: e } = await readCheckpoint(raw, SUPPORTED_ENGINE_VERSIONS);
+  const { value, envelope: e } = await readCheckpoint(raw, SUPPORTED_ENGINE_VERSIONS, true);
   const world = validateWorld(value, LOAD_CATALOG);
   if (
     world.id !== e.worldId ||

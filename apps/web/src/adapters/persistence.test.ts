@@ -4,6 +4,8 @@ import { createWorld, advanceRound, simulateSeason } from '../../../../packages/
 import { checkpoint, encode, decode, Saves, type StoragePort } from './persistence';
 import { base64, pack, unpack } from './packing';
 import { denseBytes } from './dense';
+import { bmpText } from './bmp127';
+import { brotliCompressSync } from 'node:zlib';
 import {
   CURRENT_ENGINE_VERSION,
   envelopeEngine,
@@ -564,4 +566,57 @@ it('roundtrips one transferred league scorer with both real club contributions',
   const archived = await decode(await encode(w, 2, 1));
   expect(canonical(archived.world)).toBe(canonical(w));
   expect(archived.world.history.at(-1)!.scorers!.some((p) => p.clubs?.length === 2)).toBe(true);
+});
+
+it('validates Brotli envelope checksums, world metadata and future codecs before activation', async () => {
+  const { featureState } = await import('../../../../tests/fixtures/feature-state');
+  const w = featureState();
+  const e = JSON.parse(await encode(w));
+  e.codec = 'brotli-bmp127';
+  e.payload = bmpText(brotliCompressSync(new TextEncoder().encode(canonical(pack(w)))));
+  expect(canonical((await decode(JSON.stringify(e))).world)).toBe(canonical(w));
+  await expect(decode(JSON.stringify({ ...e, checksum: '0'.repeat(64) }))).rejects.toThrow(
+    '체크섬',
+  );
+  await expect(decode(JSON.stringify({ ...e, worldId: 'wrong-world' }))).rejects.toThrow('헤더');
+  await expect(decode(JSON.stringify({ ...e, codec: 'brotli-bmp128' }))).rejects.toBeInstanceOf(
+    SaveCompatibilityError,
+  );
+});
+
+it('rejects malformed compact optional shapes and expanded person facts on the full-world validation path', async () => {
+  const { featureState } = await import('../../../../tests/fixtures/feature-state');
+  const w = featureState(),
+    envelope = JSON.parse(await encode(w));
+  for (const corrupt of [
+    (p: ReturnType<typeof pack>) => {
+      if (p.careers?.version === 2) p.careers.people[4][0] = 'bad-grade';
+    },
+    (p: ReturnType<typeof pack>) => {
+      if (p.careers?.version === 2) p.careers.people[13][0] = false;
+    },
+    (p: ReturnType<typeof pack>) => {
+      if (p.careers?.version === 2) p.careers.people[14][0] = 0;
+    },
+    (p: ReturnType<typeof pack>) => {
+      if (p.careers?.version === 2) p.careers.people[17][0] = [];
+    },
+    (p: ReturnType<typeof pack>) => {
+      if (p.careers?.version === 2) p.careers.people[2][0] = 0.5;
+    },
+  ]) {
+    const packed = pack(w);
+    corrupt(packed);
+    const bytes = new TextEncoder().encode(canonical(packed));
+    const checksum = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), (b) =>
+      b.toString(16).padStart(2, '0'),
+    ).join('');
+    const raw = JSON.stringify({
+      ...envelope,
+      codec: 'brotli-bmp127',
+      checksum,
+      payload: bmpText(brotliCompressSync(bytes)),
+    });
+    await expect(decode(raw)).rejects.toThrow();
+  }
 });

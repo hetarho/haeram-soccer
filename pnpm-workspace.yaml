@@ -4,3 +4,5 @@ packages:
 
 onlyBuiltDependencies:
   - esbuild
+patchedDependencies:
+  brotli@2.1.0: patches/brotli@2.1.0.patch

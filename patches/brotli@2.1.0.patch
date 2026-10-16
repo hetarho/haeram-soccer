@@ -1,0 +1,80 @@
+diff --git a/compress.js b/compress.js
+index 1306d45df53a21cedd96dd6b19f46b802e81e3e7..3e0166e817a50b49cbc5f650bd20604145067fad 100644
+--- a/compress.js
++++ b/compress.js
+@@ -31,6 +31,7 @@ export async function compress(buffer, opts) {
+ 
+   // allocate input buffer and copy data to it
+   var buf = brotli._malloc(buffer.length);
++  if (!buf) throw new Error("Brotli input allocation failed");
+   brotli.HEAPU8.set(buffer, buf);
+ 
+   // allocate dictionary buffer and copy data to it
+@@ -38,6 +39,7 @@ export async function compress(buffer, opts) {
+   brotli.HEAPU8.set(dictionary, dict);
+   // allocate output buffer (same size + some padding to be sure it fits), and encode
+   var outBuf = brotli._malloc(buffer.length + 1024);
++  if (!outBuf) { brotli._free(buf); brotli._free(dict); throw new Error("Brotli output allocation failed"); }
+   var encodedSize = brotli._encodeWithDictionary(quality, lgwin, mode, buffer.length, buf, dictionary.length, dict, buffer.length + 1024, outBuf);
+ 
+   var outBuffer = null;
+@@ -49,6 +51,7 @@ export async function compress(buffer, opts) {
+ 
+   // free malloc'd buffers
+   brotli._free(buf);
++  brotli._free(dict);
+   brotli._free(outBuf);
+ 
+   return outBuffer;
+diff --git a/dec/decode.js b/dec/decode.js
+index 6a5c11aa1f01261185d2c5f125cc2b643fce2eee..0db277cd77bc999e6abf4d23bf3d06abcce3557b 100644
+--- a/dec/decode.js
++++ b/dec/decode.js
+@@ -570,15 +570,18 @@ export function BrotliDecompressedSize(buffer) {
+   return out.meta_block_length;
+ }
+ 
+-export function decompress(buffer, output_size) {
++export function decompress(buffer, output_size, max_output_size = 16 * 1024 * 1024) {
++  if (!Number.isSafeInteger(max_output_size) || max_output_size < 0 || max_output_size > 16 * 1024 * 1024) throw new Error("Brotli output limit");
+   var input = new BrotliInput(buffer);
+   
+   if (output_size == null) {
+     output_size = BrotliDecompressedSize(buffer);
+   }
+   
++  if (!Number.isSafeInteger(output_size) || output_size < 0 || output_size > max_output_size) throw new Error("Brotli output limit");
+   var output_buffer = new Uint8Array(output_size);
+   var output = new BrotliOutput(output_buffer);
++  output.limit = max_output_size;
+   
+   BrotliDecompress(input, output);
+   
+@@ -624,6 +627,7 @@ export function BrotliDecompress(input, output) {
+   window_bits = DecodeWindowBits(br);
+   max_backward_distance = (1 << window_bits) - 16;
+ 
++  if (window_bits > 24) throw new Error("Brotli window limit");
+   ringbuffer_size = 1 << window_bits;
+   ringbuffer_mask = ringbuffer_size - 1;
+   ringbuffer = new Uint8Array(ringbuffer_size + kRingBufferWriteAheadSlack + BrotliDictionary.maxDictionaryWordLength);
+@@ -673,6 +677,7 @@ export function BrotliDecompress(input, output) {
+     
+     var _out = DecodeMetaBlockLength(br);
+     meta_block_remaining_len = _out.meta_block_length;
++    if (pos + meta_block_remaining_len > output.limit) throw new Error("Brotli output limit");
+     if (pos + meta_block_remaining_len > output.buffer.length) {
+       /* We need to grow the output buffer to fit the additional data. */
+       var tmp = new Uint8Array( pos + meta_block_remaining_len );
+diff --git a/decompress.d.ts b/decompress.d.ts
+index d03ce67af8483481fbacea8e217df7f0468bb3d4..95b36dc71756efda72ce75fe218b806f9a47d6fc 100644
+--- a/decompress.d.ts
++++ b/decompress.d.ts
+@@ -1,5 +1,6 @@
+ /** Decompresses the input synchronously, computing the output size if omitted. */
+ export function decompress(
+   buffer: ArrayLike<number>,
+-  outSize?: number | null
++  outSize?: number | null,
++  maxOutputSize?: number
+ ): Uint8Array;

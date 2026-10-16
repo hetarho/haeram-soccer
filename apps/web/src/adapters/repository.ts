@@ -16,9 +16,9 @@ function checkpointGeneration(raw: string | null) {
     return 0;
   }
 }
-/** Written saves use the dense `gzip-cjk14` text; earlier `gzip-base64` checkpoints still load. */
-export const SAVE_CODECS: readonly string[] = ['gzip-cjk14', 'gzip-base64'];
-export type SaveCodec = 'gzip-cjk14' | 'gzip-base64';
+/** Codec vocabulary is shared by recovery ownership and the validating worker. */
+export const SAVE_CODECS: readonly string[] = ['gzip-cjk14', 'gzip-base64', 'brotli-bmp127'];
+export type SaveCodec = 'gzip-cjk14' | 'gzip-base64' | 'brotli-bmp127';
 export interface StoragePort {
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;
@@ -36,17 +36,20 @@ export interface Envelope {
   checksum: string;
   payload: string;
 }
-export type SaveInspector = (raw: string) => Promise<{ world: World; envelope: Envelope }>;
+export type SaveWorldMetadata = Pick<World, 'id' | 'revision'>;
+export type SaveInspector<W extends SaveWorldMetadata = World> = (
+  raw: string,
+) => Promise<{ world: W; envelope: Envelope }>;
 
 /** Browser storage only. Every checkpoint is validated by the injected worker codec. */
-export class SaveRepository {
+export class SaveRepository<W extends SaveWorldMetadata = World> {
   private active: number | undefined;
   private generation = 0;
   private incompatible?: SaveCompatibilityError;
   private protectedRaw?: string;
   constructor(
     private storage: StoragePort,
-    private inspect: SaveInspector,
+    private inspect: SaveInspector<W>,
   ) {}
   get generationInfo() {
     return { generation: this.generation + 1, parentGeneration: this.generation };

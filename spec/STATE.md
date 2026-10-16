@@ -91,7 +91,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T195 | Bound adaptive century compression without changing retained facts | SAVE ARCH | T193 T194 | doing@261017.n7r4 |
 | T196 | Keep read-only tabs current through coalesced checkpoint notifications | ARCH SAVE WEB | T195 | todo |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 T196 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
@@ -107,6 +106,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 T195 done n7r4: Adaptive bounded pure-JavaScript Brotli/BMP compression preserves historical gzip readers and all facts; the actual century checkpoint fits 1527324 bytes, with metadata-only validated inspection and exact-source activation reuse.
 - 261017 create-task T196: repeated CI Firefox reader stays at round 0; diagnose notification/load coalescing before final-source gates.
 - 261017 implement-task T195 start n7r4.
 - 261017 create-task T195: bounded adaptive codec before T178 source freeze; BMP alphabet count corrected to exclude all noncharacters.
@@ -126,5 +126,3 @@
 - 261017 create-task T191: split implementation preparation from todo T179 before the T178 source freeze; no gameplay-policy change.
 - 261017 T178 released to todo for integration preparation; replay/lifecycle checks pass, century gate remains incomplete and interrupted measurements are not evidence.
 - 261017 implement-task T178 start n7r4.
-- 261017 T177 done n7r4: Financial-conflict journeys retain pending direct work after notification reads, disclose and settle handover once, and preserve fixed-deadline promise outcomes and personnel effects through actual arrivals, day progression, export/import and committed reloads.
-- 261017 implement-task T177 start n7r4.

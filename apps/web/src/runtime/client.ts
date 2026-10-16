@@ -1,5 +1,5 @@
 import type { Command, Founding, World } from '../../../../packages/contracts/src/types';
-import { SaveRepository } from '../adapters/repository';
+import { SaveRepository, type SaveWorldMetadata } from '../adapters/repository';
 import { ACTIVE_SAVE_KEYS } from '../adapters/games';
 import {
   envelopeEngine,
@@ -10,8 +10,10 @@ import {
 } from '../../../../packages/contracts/src/versions';
 import type { Body, CodecResult, Reply, View } from './protocol';
 import { NOTIFICATIONS_KEY, notificationStore, shareView } from './store';
-/** A 100-season checkpoint takes the codec seconds; this long without an answer, the save failed. */
+/** Bound the engine snapshot RPC separately from expensive background compression. */
 const CHECKPOINT_TIMEOUT_MS = 60000;
+// Large lossless careers compress in the separate codec worker; engine RPC stays bounded below.
+const CODEC_TIMEOUT_MS = 600000;
 /** Automatic progress waits at most this long for its background save (→SAVE-8). */
 export const AUTOSAVE_MS = 30000;
 export interface ClientState {
@@ -56,6 +58,7 @@ export class GameClient {
   private builds = new Map<string, { resolve: (result: CodecResult) => void; timer: number }>();
   /** The save being built and committed, and whether a newer one was asked for meanwhile. */
   private saving?: Promise<void>;
+  private savedCheckpoint?: { raw: string; worldId: string; revision: number };
   private saveWanted = false;
   /** Saves automatic progress no later than AUTOSAVE_MS after its first unsaved day. */
   private autosaveTimer?: number;
@@ -77,7 +80,7 @@ export class GameClient {
   private lockWait?: AbortController;
   private cancelled = false;
   private channel = new BroadcastChannel('haeram-soccor:updates');
-  private saves: SaveRepository;
+  private saves: SaveRepository<SaveWorldMetadata>;
   private replacingIncompatible = false;
   private refreshPending = false;
   private refreshGeneration = 0;
@@ -93,9 +96,9 @@ export class GameClient {
   };
   constructor(private notify: (state: ClientState) => void) {
     this.saves = new SaveRepository(localStorage, async (raw) => {
-      const reply = await this.rpc({ type: 'inspect', raw });
-      if (!reply.candidate || !reply.envelope) throw new Error('저장 검증 응답 누락');
-      return { world: reply.candidate, envelope: reply.envelope };
+      const reply = await this.rpc({ type: 'inspect', raw, metadataOnly: true });
+      if (!reply.worldMetadata || !reply.envelope) throw new Error('저장 검증 응답 누락');
+      return { world: reply.worldMetadata, envelope: reply.envelope };
     });
     this.worker.onmessage = (event: MessageEvent<Reply>) => {
       const r = event.data;
@@ -248,6 +251,11 @@ export class GameClient {
       });
       this.state.playback = undefined;
       this.state.savedRevision = result.world.revision;
+      this.savedCheckpoint = {
+        raw: result.raw,
+        worldId: result.envelope.worldId,
+        revision: result.world.revision,
+      };
       this.state.savedAt = undefined;
       this.state.saveFailed = false;
       // The writer tells; read-only tabs reloading the same checkpoint would only repeat it.
@@ -257,6 +265,11 @@ export class GameClient {
         try {
           await this.saves.commit(reply.raw);
           this.state.savedRevision = this.state.view!.world.revision;
+          this.savedCheckpoint = {
+            raw: reply.raw,
+            worldId: this.state.view!.world.id,
+            revision: this.state.view!.world.revision,
+          };
           this.state.savedAt = Date.now();
           notificationStore.add('기존 기록을 보존하고 새 게임 규칙으로 저장했습니다.');
           this.channel.postMessage({
@@ -410,7 +423,7 @@ export class GameClient {
         resolve,
         timer: window.setTimeout(
           () => this.built({ id: requestId, ok: false, error: '저장 Worker가 응답하지 않습니다.' }),
-          CHECKPOINT_TIMEOUT_MS,
+          CODEC_TIMEOUT_MS,
         ),
       }),
     );
@@ -438,6 +451,11 @@ export class GameClient {
     });
     this.replacingIncompatible = false;
     this.state.savedRevision = result.revision;
+    this.savedCheckpoint = {
+      raw: result.raw,
+      worldId: result.envelope.worldId,
+      revision: result.revision,
+    };
     this.state.savedAt = Date.now();
     this.state.saveFailed = false;
     // Read-only tabs reload on every commit.
@@ -595,9 +613,13 @@ export class GameClient {
           '지원하지 않는 저장 버전의 원본을 보존하고 있습니다. 호환되는 앱으로 열거나 기록 파일을 가져오세요.';
         return this.rawBackup();
       }
-      return this.state.view && !this.failed
-        ? (await this.rpc({ type: 'export' })).raw
-        : this.rawBackup();
+      if (this.state.view && !this.failed) {
+        const saved = this.savedCheckpoint,
+          current = this.state.view.world;
+        if (saved?.worldId === current.id && saved.revision === current.revision) return saved.raw;
+        return (await this.rpc({ type: 'export' }, this.requestId(), CODEC_TIMEOUT_MS)).raw;
+      }
+      return this.rawBackup();
     });
   }
   /** Validates a checkpoint envelope, makes it the game in play and commits it (→SAVE-5). */

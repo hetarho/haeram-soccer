@@ -24,6 +24,7 @@
     "benchmark:browser": "node scripts/first-play.mjs"
   },
   "dependencies": {
+    "brotli": "2.1.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "zod": "4.6.5",

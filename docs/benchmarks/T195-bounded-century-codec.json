@@ -1,0 +1,94 @@
+{
+  "node": "v24.12.0",
+  "scope": "Working-tree focused checkpoint/codec evidence, not the final-source T178/T179 gate.",
+  "codec": {
+    "package": "brotli@2.1.0",
+    "quality": 11,
+    "window": 24,
+    "text": "brotli-bmp127",
+    "gzipThresholdBytes": 1200000,
+    "limitsUnchanged": true,
+    "cspUnchanged": true
+  },
+  "fifty": {
+    "node": "v24.12.0",
+    "input": ".tmp/release-storage-failure-world.json",
+    "inputSha256": "f819864b4f2b421c99818d67d8638dd644dfbeb3efcff4cc3f32ac901a5e159b",
+    "year": 2000,
+    "round": 23,
+    "retainedPeople": 11383,
+    "jobs": 58767,
+    "mentors": 49933,
+    "codec": "gzip-cjk14",
+    "careerVersion": 2,
+    "canonicalEqual": true,
+    "canonicalBytes": 30782756,
+    "packedBytes": 6299134,
+    "compressedBytes": 989970,
+    "checkpointBytes": 1132058,
+    "totalBytes": 2264628,
+    "checkpointLimit": 1572864,
+    "totalLimit": 3670016,
+    "capacityPassed": true,
+    "encodedMs": 1154,
+    "decodeMs": 1831,
+    "scope": "One explicitly identified checkpoint; not the complete T178 century gate."
+  },
+  "century": {
+    "node": "v24.12.0",
+    "input": ".tmp/diagnostic-baseline-century-world.json",
+    "inputSha256": "3c2568a3ba09e310f9cce340786ad0d20d9f60e3f711cacd54728a1316f00830",
+    "year": 2050,
+    "round": 0,
+    "retainedPeople": 20411,
+    "jobs": 171474,
+    "mentors": 156705,
+    "codec": "brotli-bmp127",
+    "careerVersion": 2,
+    "canonicalEqual": true,
+    "canonicalBytes": 78551165,
+    "packedBytes": 13499482,
+    "compressedBytes": 1514608,
+    "checkpointBytes": 1527324,
+    "totalBytes": 3055160,
+    "checkpointLimit": 1572864,
+    "totalLimit": 3670016,
+    "capacityPassed": true,
+    "encodedMs": 283237,
+    "decodeMs": 4899,
+    "scope": "One explicitly identified checkpoint; not the complete T178 century gate."
+  },
+  "portableCenturyCompressedSha256": "015175b53dc3ce5fe2d683b20ab54cd616b62e64e1333268830e84071c0f530e",
+  "loadDiagnostic": {
+    "loadMs": 3414.732833,
+    "errors": [],
+    "scope": "Local diagnostic only; capacity-passing quality-eleven input; not the full T178/T179 gate."
+  },
+  "canonicalExpandedLoadPhases": {
+    "payloadMs": 199.970417,
+    "jsonMs": 84.82533299999977,
+    "unpackMs": 1960.671792,
+    "validateMs": 1692.1274999999996,
+    "canonicalEqual": true,
+    "scope": "Diagnostic load timings only; capacity-passing quality 11 checkpoint; this is not the complete T178 gate."
+  },
+  "encodingAndFormatFilesAtReport": {
+    "apps/web/src/adapters/compression.ts": "7509e02399833564d32229f713f8cad52b8c207c4d4c780bae9eeb1b861c39f9",
+    "apps/web/src/adapters/bmp127.ts": "f63a927a0a9269dd6741bbc55de19b8ce4307ba0ff4f4b56f06949a4287ad78a",
+    "apps/web/src/adapters/careerColumns.ts": "0c260697d52abda3934bc4e949b88685056f791e955b1b936629795a0680d15e",
+    "patches/brotli@2.1.0.patch": "ddae258930dfed2ad16ee7624382e5bb0b73a3861797fdb9ff62509ff0fec997",
+    "package.json": "bc653ddd4975aeb438f1f84bc47f2ae3e07a54ce5ecbdcc9a0fe6d524ee9cd86",
+    "pnpm-lock.yaml": "2277272f568535e26091da72a6ae9c742df9bbd4305f201527a8c8212d76fec8"
+  },
+  "checks": [
+    "27 production-preview recovery/large-codec cases passed across Chromium, Firefox and WebKit under original CSP",
+    "53 runtime/client/host/protocol/compression/BMP cases passed",
+    "50 final persistence/career cases passed; earlier 91 related packing/schema/replay cases passed",
+    "typecheck, lint, complete format, build and spec checks passed"
+  ],
+  "limits": [
+    "Century encoding measurement preceded decode-only duplicate-validation/inspection optimizations; writer format and complete packed bytes are unchanged.",
+    "Large writes can take minutes (283237ms in this Node24 diagnostic); background codec has a bounded ten-minute deadline.",
+    "Repeated remote Firefox read-only refresh failure remains T196; full final-source two-profile century/replay and full release/CI remain T178/T179."
+  ]
+}

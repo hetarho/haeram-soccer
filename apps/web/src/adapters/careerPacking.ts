@@ -58,6 +58,12 @@ const row = z.tuple([
   z.tuple([index, z.number().finite(), z.number().finite(), n, n]).nullable(),
   z.tuple([z.number().finite(), z.number().finite(), index, n, n]).nullable(),
 ]);
+// Share the exact compact scalar/optional shapes without reparsing expanded job/mentor facts.
+const baseRow = z.tuple([
+  row.def.items[0],
+  ...row.def.items.slice(1, 14),
+  ...row.def.items.slice(16),
+]);
 const schema = z.strictObject({ version: z.literal(1), people: z.array(row) });
 export type CareerRows = z.infer<typeof schema>;
 export type PackedCareers = CareerRows | PackedCareerColumns;
@@ -177,6 +183,7 @@ export function unpackCareers(
   input: unknown,
   read: (index: number) => string,
   context?: CareerContext,
+  validateExpandedWorld = false,
 ): Record<string, PersonCareer> {
   const header = z.object({ version: z.number().int() }).safeParse(input);
   if (header.success && header.data.version > 2)
@@ -189,16 +196,20 @@ export function unpackCareers(
     input = restored.data;
     read = restored.read;
   }
-  const data = schema.parse(input),
-    people: Record<string, PersonCareer> = Object.create(null);
+  // Only the private load path defers duplicate row/person parsing to validateWorld.
+  // Standalone readers remain strict; compact dimensions/references are always checked above.
+  const deferred = validateExpandedWorld && header.success && header.data.version === 2;
+  const data = deferred ? (input as CareerRows) : schema.parse(input);
+  const people: Record<string, PersonCareer> = Object.create(null);
   for (const r of data.people) {
+    if (deferred) baseRow.parse([...r.slice(0, 14), ...r.slice(16)]);
     if (r[16] && (r[16][4] === null) !== (r[16][6] === null))
       throw new Error('진로 권유 압축 차원 손상');
     const intention = r[16],
       retirement = r[17],
       coaching = r[18],
       management = r[19];
-    const p = personCareerSchema.parse({
+    const value = {
       id: read(r[0]),
       name: read(r[1]),
       born: r[2],
@@ -274,7 +285,8 @@ export function unpackCareers(
             },
           }
         : {}),
-    });
+    };
+    const p = deferred ? (value as PersonCareer) : personCareerSchema.parse(value);
     if (people[p.id]) throw new Error('중복 압축 인물 참조');
     people[p.id] = p;
   }

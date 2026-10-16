@@ -205,6 +205,7 @@ export const requestSchema = z.object({
   body: z.discriminatedUnion('type', [
     z.object({
       type: z.literal('inspect'),
+      metadataOnly: z.boolean().optional(),
       activate: z.boolean().optional(),
       upgrade: z.boolean().optional(),
       raw: z.string().max(4 * 1024 * 1024),
@@ -276,6 +277,7 @@ export interface Reply {
   raw?: string;
   envelope?: Envelope;
   candidate?: World;
+  worldMetadata?: Pick<World, 'id' | 'revision'>;
   archive?: { season?: SeasonArchive; matches: MatchRecord[]; events: Event[]; managers: Event[] };
   headToHead?: HeadToHead;
   /** Our match records over every own match (→WEB-54); the view keeps only recent matches. */

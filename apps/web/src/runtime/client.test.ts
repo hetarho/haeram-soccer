@@ -771,3 +771,27 @@ describe('game slots', () => {
     expect(await slots.exportRaw(1)).toBe(earlier);
   });
 });
+
+it('exports verified current bytes after storage corruption and never reuses another world at the same revision', async () => {
+  const client = await start(),
+    original = (await client.exportFile())!;
+  const oldWorld = (await decode(original)).world;
+  const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
+  storage.setItem(`haeram-soccor:slot:${manifest.slot ? 'b' : 'a'}`, 'external corruption');
+  expect(await client.exportFile()).toBe(original);
+  const codec = CodecPort.instances[0];
+  let release!: () => void;
+  codec.gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  try {
+    await client.found({ ...founding, seed: 'other-world-same-revision' }, true);
+    const current = (await decode((await client.exportFile())!)).world;
+    expect(current.revision).toBe(oldWorld.revision);
+    expect(current.id).not.toBe(oldWorld.id);
+    expect(current.id).toBe(client.state.view!.world.id);
+  } finally {
+    release();
+    await client.whenSaved();
+  }
+});
