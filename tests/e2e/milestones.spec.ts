@@ -38,13 +38,23 @@ for (const viewport of [
     const hub = page.getByTestId('club-hub');
     await expect(hub).toBeVisible();
     await expectCompactHome(page);
-    // Even when home needs vertical scrolling, its primary action clears the floating launcher.
+    // The launcher overlays home without reserving a bottom row; the primary action stays usable.
     const watch = hub.getByTestId('hub-play');
     await watch.scrollIntoViewIfNeeded();
     await settle(page);
-    const watchBox = (await watch.boundingBox())!;
-    const floatingBox = (await page.getByTestId('communications-button').boundingBox())!;
-    expect(watchBox.y + watchBox.height).toBeLessThanOrEqual(floatingBox.y);
+    await watch.click({ trial: true });
+    if (viewport.width < 760) {
+      const contentBox = (await hub.locator('..').boundingBox())!;
+      const viewBox = (await page.getByTestId('view-scroller').boundingBox())!;
+      expect(
+        Math.abs(viewBox.y + viewBox.height - contentBox.y - contentBox.height),
+      ).toBeLessThanOrEqual(1);
+      const watchBox = (await watch.boundingBox())!;
+      const navBox = (await page
+        .getByRole('navigation', { name: '모바일 게임 메뉴' })
+        .boundingBox())!;
+      expect(watchBox.y + watchBox.height).toBeLessThanOrEqual(navBox.y);
+    }
     await page
       .locator('[class*="coreContent"]')
       .evaluateAll((elements) => elements.forEach((element) => (element.scrollTop = 0)));
