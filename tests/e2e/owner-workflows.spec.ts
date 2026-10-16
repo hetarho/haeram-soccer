@@ -103,17 +103,21 @@ test('retains an unapplied academy investment through a detour and discards it e
   await page.getByRole('button', { name: /^유소년 투자 · 유입 방식/ }).click();
   const youth = page.getByRole('region', { name: '유소년', exact: true });
   await youth.getByRole('radio', { name: '유소년 투자 육성 강화', exact: true }).click();
-  const draft = page.getByTestId('strategy-draft');
-  await expect(draft).toContainText('유소년 투자 기본 운영 → 육성 강화');
+  const sheet = page.getByRole('dialog', { name: '유소년 운영 방침', exact: true });
+  await expect(sheet.getByTestId('strategy-draft')).toContainText(
+    '유소년 투자 기본 운영 → 육성 강화',
+  );
   await page
     .getByRole('dialog', { name: '유소년 운영 방침', exact: true })
     .getByRole('button', { name: '창 닫기', exact: true })
     .click();
+  await expect(page.getByRole('dialog', { name: '유소년 운영 방침', exact: true })).toHaveCount(0);
   await expect(page.getByRole('tab', { name: '유소년', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
   );
   await openOperations(page);
+  const draft = page.getByTestId('strategy-board').getByTestId('strategy-draft');
   await expect(draft).toContainText('유소년 투자 기본 운영 → 육성 강화');
   await expect(
     youth.getByRole('radio', { name: '유소년 투자 기본 운영', exact: true }),

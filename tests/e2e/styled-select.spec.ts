@@ -24,10 +24,19 @@ test('selects by keyboard, exposes selection and dismisses without committing pr
   await country.press('P');
   await country.press('Enter');
   await expect(country).toHaveAttribute('data-value', 'POR');
+  // An open select must follow the same native Tab order as a closed one. macOS WebKit
+  // skips ordinary buttons, so its next target is the advanced-settings summary.
+  await country.press('Tab');
+  await expect(country).not.toBeFocused();
+  const nativeNext = await page.evaluateHandle(() => document.activeElement);
+  await country.focus();
   await country.press('ArrowDown');
   await country.press('Tab');
   await expect(country).toHaveAttribute('aria-expanded', 'false');
-  await expect(page.getByRole('button', { name: '쉬움' })).toBeFocused();
+  await expect
+    .poll(() => nativeNext.evaluate((element) => element === document.activeElement))
+    .toBe(true);
+  await nativeNext.dispose();
   await country.click();
   await page.getByRole('heading', { name: '당신의 클럽, 첫 시즌.' }).click();
   await expect(country).toHaveAttribute('aria-expanded', 'false');
