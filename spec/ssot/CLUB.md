@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r40 | Define the browser-demo rules for squad and growth.
+> r41 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 20 players (→CLUB-40), a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating sits at its league's average club XI plus its difficulty level's offset (→WEB-3: 쉬움 0, 보통 −2, 어려움 −4, 최상 −6; ±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -11,7 +11,7 @@
   - at the close the squad is topped up to 20 players (→CLUB-40) with a goalkeeper: with academy promotion delegated by call-ups in →CLUB-43's order, then by generated 18-year-olds of the line the formation lacks most rated five below the average strength of the division the club will play in, on that division's market wage (→CLUB-25). ← youths rated against an XI that had outgrown its division arrived on star wages and were sold on as unhappy players
 
 - CLUB-4 [o] Recruitment offers immediate contributors, prospects, free agents, and short-term loans. Free agents sign instantly at any time; fee-bearing transfers are negotiated bids (→CLUB-18). A player leaves only when another club's offer is accepted (→CLUB-22); there is no instant sale. ← a sale needs a buyer
-- CLUB-5 [o] Transfer price, recurring wage, and term are shown before acceptance. Keep at least 14 players and one goalkeeper; maximum squad size is 26.
+- CLUB-5 [o] Transfer price, recurring wage, and term are shown before acceptance. Keep at least 14 players and one goalkeeper; the maximum is the league's registration limit (→CLUB-44).
 - CLUB-6 [o] The automatic starting lineup fills the manager's formation (→STAFF-22) slot by slot with the available player of the highest 실효 OVR there (→PLAYER-6) less his fatigue load and the manager's selection trait (→STAFF-12), unless a saved manual XI is selected. Strongest/rest presets require at most selection plus confirmation; substitutions pick by level at the slot. ← the manager picks the man who plays that slot best, not the best name
   - a manual XI may put any player in any slot; he plays there at his level (미숙 60%), shown before it is saved.
 - CLUB-7 [o] Promotion, supporters, facilities, managers, player generations and finance measure growth; history survives transfers and retirement.
@@ -232,7 +232,29 @@
   - with academy promotion delegated the youth director (→STAFF-13) calls up the ablest prospect of the need's line from the promotion age (→CLUB-16), else the ablest prospect of any line, else a generated 18-year-old as at the close (→CLUB-3); for a player the squad lacks, the line the formation lacks most.
   - a call-up ignores 데뷔 시점 readiness (→CLUB-32) and the promotion cash floor (→ECON-33), signs the first professional contract a promotion signs, and is reported.
   - with academy promotion held by the owner, the youth director's report recommends the same prospects and the owner promotes; no generated player joins before the close's top-up.
-  - never above the squad maximum (→CLUB-5).
+  - never above the registration limit (→CLUB-44).
+
+- CLUB-44 [o] A club holds no more players than the registration rule of its league in that season allows, by country, division and year as the real leagues set them; where a league had no rule, the game's own ceiling of 40 players applies. ← real caps are recent (England's top flight from 2010) and some leagues never had one, so one fixed number fits no era
+  | country | division | seasons | counted players at most | not counted |
+  |---|---|---|---|---|
+  | ENG | top flight | 2010– | 25 | aged 21 or under |
+  | ENG | second | 2020– | 25 | aged 21 or under, except loan players |
+  | ENG | third, fourth | 2020– | 22 | aged 21 or under; goalkeepers |
+  | ESP | first, second | 2000– (start estimated) | 25 | academy graduates aged 22 or under |
+  | ITA | top flight | 2015–2018 | 25 | aged 21 or under |
+  | ITA | top flight | 2019– (switch estimated) | 25 | aged 22 or under |
+  | ITA | second | 2013–2016 (estimated) | 22 | aged 21 or under |
+  | ITA | second | 2017– | 18, plus 2 who have been at the club 4+ seasons | aged 21 or under |
+  | ITA | third | 2020– (estimated) | 24 | - |
+  | POR | first, second | 2013–2017 (estimated) | 27 | aged 22 or under |
+  | POR | first, second | 2018– (switch estimated) | 30 | aged 22 or under |
+  | BEL | first, second | 2012– (start estimated) | 25 | aged 20 or under |
+  | GER, FRA, NED; any other league before its first row | every division, the amateur league | every season | 40 in all | - |
+  - ages are by the season's start year: "aged 21 or under" is born in that year − 21 or later.
+  - the 40-player ceiling counts everyone, exempt players included, under every rule. ← about the most a club carried with its reserves: some 30 professionals at an English club in the 1950s, about 35 players at a Ligue 1 club in 2022
+  - the rule of the division the club plays in this season applies; a club over it (after a promotion, a new season's rule, or players ageing into the count) keeps its players and adds no counted player — no signing, loan, promotion or call-up — until it is under it.
+  - the catalog keeps every row with its source, and a start or switch marked estimated shows as estimated (→ECON-3).
+  - every squad count on screen shows counted players against the limit, and exempt players beside it.
 
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
@@ -243,6 +265,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r41 261016 CLUB-5✎ maximum squad size 26→the league's registration limit; CLUB-43✎ squad maximum→registration limit; CLUB-44+ real registration rules by country, division and year (ENG 25/25/22 from 2010/2020, ESP 25, ITA 25 and Serie B 18+2, POR 27/30, BEL 25, age exemptions) and a 40-player ceiling where none applied
 - r40 261016 CLUB-1✎ founding 18→20 players; CLUB-3✎ close top-up to 18 by generated youths→to 20, delegated academy call-ups first; CLUB-33✎ short squad under 18→under 20, +replacement needs before upgrades with daily looks, asking-fee bids (공격적 110%) accepting counters→bids by the 단장's trait; CLUB-40+ squad target 20; CLUB-41+ trait bidding (협상가 80% +5 a day to 100%, none 100%, 속전속결 110%); CLUB-42+ replacement need after a starter's departure or under 20; CLUB-43+ window-close academy call-ups
 - r39 261016 CLUB-35/36/37/39✎ promise lifecycle/reactions open→target-fit external arrivals through next-window deadline, next-day judgement, manager departure cancels/director change retains, no duplicate or postponed commitments, zero additional numerical effects and unchanged window trust evaluation
 - r38 261016 CLUB-33/34/36✎ broad conflict/open timing and resolution→financial-only mediation with scoped support priority, numerical reactions remain open; CLUB-38/39+ once per manager/request/window, director defers, balanced seeks cheaper fit, manager prioritizes pick, next-window promises without bypassing delegated financial limits
