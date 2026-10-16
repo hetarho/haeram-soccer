@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r27 | Define the browser-demo rules for manager demands and personality.
+> r28 | Define the browser-demo rules for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -146,7 +146,7 @@
   - the policy decides whose reasoning receives greater weight; financial permissions and spending checks remain owned by →ECON-33.
   - the policy is edited through the recruitment department's authoritative policy workflow (→ECON-25, →WEB-77). Detailed resolution rules are →CLUB-36.
 
-- STAFF-27 [?] Specify a former player's coaching specialty, initial ability/potential and admission to department candidate pools. Preserve actual age and ordinary disclosed employment costs; playing OVR or legend status grants no fixed coaching-potential bonus.
+- STAFF-27 [?] Specify the detailed specialty-selection mapping under →STAFF-40, initial coaching ability/potential and admission to department candidate pools. Preserve actual age and ordinary disclosed employment costs; playing OVR or legend status grants no fixed coaching-potential bonus.
 
 - STAFF-28 [?] Specify manager ability/potential and school assignment, and admission to the existing manager market. Coaching-service and managerial-aptitude requirements are →STAFF-30/39; qualification is candidacy, not automatic employment.
 
@@ -194,6 +194,10 @@
 - STAFF-39 [o] Former-player coaching-to-manager candidacy requires actual managerial aptitude of 높음 or 매우 높음, independently of coaching aptitude, plus the actual three-year coaching-service minimum (→STAFF-30).
   - high coaching aptitude alone does not qualify a manager, and high managerial aptitude does not bypass coaching experience. Meeting both conditions permits candidacy, not appointment (→STAFF-28).
 
+- STAFF-40 [o] A former player's coaching specialty is assigned automatically from his actual playing background and coaching qualities, shown on his profile, and determines the department in which he becomes a candidate.
+  - choose one suitable training specialty from →STAFF-36's six posts; the owner decides whether to appoint him to that post, rather than assigning any department at will.
+  - goalkeeping background supports goalkeeping coaching, and strong teaching supports youth coaching. The detailed selection mapping and initial coaching ability/potential are →STAFF-27; a playing coach uses the same suitability rules.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -203,6 +207,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r28 261016 STAFF-27✎ owner/automatic specialty choice open→automatic under STAFF-40, detailed mapping/ability/market remain open; STAFF-40+ profile-visible specialty from playing background and coaching qualities
 - r27 261016 STAFF-25✎ entry timing/chance/encouragement response open→once at retirement announcement, natural 50/80% and encouraged 65/95%, retained draw and retirement candidacy without guaranteed employment
 - r26 261016 STAFF-25/28/31✎ aptitude qualification open→STAFF-38/39, remaining entry/ability/market rules open; STAFF-38/39+ high-or-very-high coaching entry and separate managerial aptitude plus three-year service
 - r25 261016 STAFF-25/31✎ playing-coach post/early-exit rules open→STAFF-36/37, entry intentions remain open; STAFF-36/37+ six suitable training posts, coach-only exit preserves player contract, player departure ends both roles under ordinary contract costs

@@ -35,8 +35,8 @@
   - Separate purchase and sale responsibilities are adopted above; pending approvals and changing responsibility during away progression still need explicit rules. No core-player pin is adopted by the rejected ladder proposal.
   - Existing delegated untouchable offers can be decided by staff and manager (CLUB-24); 150% is not a universal owner-approval threshold.
 - [o] Player second-career scope: retirement announcement → optional playing-coach route or retirement/coaching candidacy → coaching experience → possible manager candidacy. Preserve the person's actual age, identity and retained playing history through the career; an appointment follows the adopted staff/manager responsibility. Candidate qualification and career progression do not guarantee an appointment.
-- [o] Second-career opportunity is not restricted to the owner's club, its retirees or its legends: suitable players from other clubs can enter coaching and rise toward management too. Eligibility follows coaching aptitude; work ethic/professionalism and football intelligence are desired positive factors, with their representation and exact conditions still open.
-- [o] Coaching aptitude is a separate assessment from playing ability, informed by professionalism/work ethic, football understanding and ability to teach. A player of ordinary playing ability can have strong coaching aptitude. Component calculation and candidate abilities remain open; no existing match attribute or coefficient is changed.
+- [o] Second-career opportunity is not restricted to the owner's club, its retirees or its legends: suitable players from other clubs can enter coaching and rise toward management too. Eligibility follows true coaching/managerial grades (→STAFF-38/39), without an own-club service gate.
+- [o] Coaching aptitude equally weights existing professionalism, separate football understanding and teaching; managerial aptitude equally weights football understanding and separate team-management judgement. New qualities use the existing personality-grade distribution, are fixed at generation and have no match effect (→PLAYER-22/25). Ordinary playing ability can coexist with strong coaching promise.
 - [o] Show coaching aptitude on the active player's profile as qualitative grades/evaluations, never an exact aptitude number. Coaching and managerial aptitude use five grades from very low to very high. Own-player grades are exact; other players follow the existing chief-scout personality accuracy rules (→PLAYER-23/24).
 - [o] Coaching entry requires true coaching aptitude high or very high. Manager candidacy also requires at least three cumulative years of actual coaching employment across clubs, excluding unemployment, and separately high or very high managerial aptitude. A person can remain a specialist coach; qualification does not guarantee entry/employment (→STAFF-30/38/39).
 - [o] Players across clubs can naturally choose coaching and enter the coaching market. The owner may also encourage one of our own players toward coaching; encouragement guarantees neither entry nor employment. Actual appointments follow the staff/manager responsibility choices.
@@ -47,6 +47,7 @@
 - [o] Playing-coach conversion needs one combined owner approval if player contracts or staff appointments are direct; both must be delegated for automatic conversion. Pay adds the ordinary coaching salary to the player-contract salary, with each component and the total disclosed (→STAFF-32/33).
 - [o] Playing-coach deferral offers only one/two-year terms fitting the existing age-41 retirement limit. At the agreed playing-retirement date, player salary ends; the same coaching post/contract continues if unexpired, otherwise ordinary staff renewal rules apply (→STAFF-34/35, →CLUB-3).
 - [o] Playing coaches qualify for suitable assistant, attack, defense, goalkeeping, fitness or youth-director posts, excluding director/scout roles (→STAFF-36). Losing only the coaching post preserves the player contract; a player transfer/release out of the club ends the coaching post too. Ordinary contract termination costs are disclosed and affected direct responsibilities are respected (→STAFF-37).
+- [o] Coaching specialty is automatically assigned from playing background and coaching qualities, shown in the profile, and determines the candidate's department. The owner chooses whether to hire him in that specialty (→STAFF-40); detailed mapping and ability/market rules remain →STAFF-27.
 - [x] Own-club 150 appearances or five seasons as the qualifying gate for coaching opportunities ← the owner wants aptitude-based opportunities across clubs; club service can be career context but must not exclude suitable outsiders.
 - [?] Second-career detail: preserve a recognisable person and assess coaching aptitude across clubs.
   - Preserve the person's actual identity, age and playing record through later roles; distinguish a training invitation, qualification, a vacancy and an appointment. A legend's playing quality need not guarantee coaching quality.
@@ -107,9 +108,9 @@
 
 ## domains
 - WEB: seven responsibilities, defaults/observation triggers, two progression modes, manual-match guard, scoped policy sheets, aptitude/career and mediation presentation, pending-work transfer and same-date event grouping (WEB-5/18/42/45/76–83). →WEB
-- STAFF: independent responsibility execution, natural/encouraged entry intentions, manager qualification, standing support policy, three-year service minimum, high aptitude thresholds and playing-coach rules; ability/market parameters remain open (STAFF-13/15–20/23–39). →STAFF
+- STAFF: independent responsibility execution, natural/encouraged entry intentions, manager qualification, standing support policy, three-year service minimum, high aptitude thresholds, automatic coaching specialty and playing-coach rules; mapping/ability/market parameters remain open (STAFF-13/15–20/23–40). →STAFF
 - CLUB: retirement continuity, separate acquisition/sale responsibilities, recruitment-owned mediation and tracked reinforcement promises; resolution/fulfilment criteria remain open (CLUB-3/13/18/22/24/32–37). →CLUB
-- PLAYER: separate fixed off-pitch aptitude, five-grade qualitative evaluation and chief-scout accuracy; initial assessment calculation remains open (PLAYER-1/19/21–25). →PLAYER
+- PLAYER: fixed off-pitch qualities, equally weighted coaching/managerial aptitude, five-grade qualitative evaluation and chief-scout accuracy (PLAYER-1/19/21–25). →PLAYER
 - WORLD: cross-club person continuity without fabricated history; seasonal NPC lifecycle scope remains open (WORLD-6/10/11). →WORLD
 - HIST: linked player/coach/manager careers and retained mediation/promise facts (HIST-14/15). →HIST
 - SAVE: retain adopted settings, person careers and commitments in new-rule careers; activation at the planned 3.0.0 boundary permits legacy gameplay reset without conversion. Released rules remain 2.0.0 until implemented (SAVE-17/18). →SAVE
@@ -117,8 +118,8 @@
 - LEAGUE: reference the manual next-event mode and the equivalent all-delegated reference regimen; competitive coefficients, balance bands and measurements are unchanged (LEAGUE-11/13). →LEAGUE
 
 ## open
-- How are initial aptitude calculations, coaching specialty/ability and manager school/ability established?
+- How are detailed coaching-specialty mapping, initial coach/manager ability/potential, candidate-market admission and managerial school established?
 - What are the detailed director-first/balanced/manager-first mediation criteria, especially when a promise is unaffordable?
 - What fulfils or cancels a reinforcement promise when personnel, affordability or candidate availability change?
-- Formal open-policy units: STAFF-27/28, PLAYER-22, WORLD-11 and CLUB-36/37. Do not fill them with unapproved coefficients or career/mediation assumptions.
+- Formal open-policy units: STAFF-27/28, WORLD-11 and CLUB-36/37. Do not fill them with unapproved coefficients or career/mediation assumptions.
 - Parked for a later balance discussion: should difficulty describe the founding disadvantage or a challenge that still differs in season 60?

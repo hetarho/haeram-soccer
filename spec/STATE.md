@@ -16,7 +16,7 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 
 ## inbox
-- 261016 parked STAFF-27 STAFF-28 PLAYER-22 WORLD-11 CLUB-36 CLUB-37: clarify initial aptitude calculation and candidate abilities/markets, NPC continuity and mediation/promise criteria before creating the complete proposal task batch
+- 261016 parked STAFF-27 STAFF-28 WORLD-11 CLUB-36 CLUB-37: clarify coaching-specialty mapping and candidate abilities/markets, NPC continuity and mediation/promise criteria before creating the complete proposal task batch
 - 261016 suggest WEB-74: owner-workflow tasks T134–T138 completed → review-code taskMemory/state, RecordsRoom/LiveSeason/CupsView and their browser journeys before the next UI feature; no refactoring is included in this completed scope
 - 261016 suggest -: spec lint has 33 existing document-quality hints → doc-review WEB/ARCH before expanding the navigation specification; no policy changes implied
 - 261015 decided WEB-74: start-vibe m8q4 scope → implement navigation-and-records with current game rules and the approved pixel readability baseline in an isolated checkout (alt: analysis only | revise game mechanics)
@@ -73,12 +73,12 @@
 | CLUB | 37 | 35 | CLUB-3✎ CLUB-13✎ CLUB-18✎ CLUB-22✎ CLUB-24✎ CLUB-32✎ CLUB-33✎ CLUB-34+ CLUB-35+ CLUB-36+ CLUB-37+ | 2 |
 | MATCH | 9 | 9 | - | 0 |
 | LEAGUE | 8 | 7 | LEAGUE-11✎ LEAGUE-13✎ | 0 |
-| STAFF | 27 | 20 | STAFF-13✎ STAFF-15✎ STAFF-16✎ STAFF-17✎ STAFF-18✎ STAFF-19✎ STAFF-20✎ STAFF-23+ STAFF-24+ STAFF-25+ STAFF-26+ STAFF-27+ STAFF-28+ STAFF-29+ STAFF-30+ STAFF-31+ STAFF-32+ STAFF-33+ STAFF-34+ STAFF-35+ STAFF-36+ STAFF-37+ STAFF-38+ STAFF-39+ | 2 |
+| STAFF | 28 | 20 | STAFF-13✎ STAFF-15✎ STAFF-16✎ STAFF-17✎ STAFF-18✎ STAFF-19✎ STAFF-20✎ STAFF-23+ STAFF-24+ STAFF-25+ STAFF-26+ STAFF-27+ STAFF-28+ STAFF-29+ STAFF-30+ STAFF-31+ STAFF-32+ STAFF-33+ STAFF-34+ STAFF-35+ STAFF-36+ STAFF-37+ STAFF-38+ STAFF-39+ STAFF-40+ | 2 |
 | ECON | 38 | 37 | ECON-25✎ | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 11 | 9 | HIST-14+ HIST-15+ | 0 |
 | SAVE | 37 | 35 | SAVE-17+ SAVE-18+ SAVE-5✎ SAVE-11✎ SAVE-14✎ SAVE-16✎ | 0 |
-| PLAYER | 7 | 3 | PLAYER-1✎ PLAYER-19✎ PLAYER-21+ PLAYER-22+ PLAYER-23+ PLAYER-24+ PLAYER-25+ | 1 |
+| PLAYER | 8 | 3 | PLAYER-1✎ PLAYER-19✎ PLAYER-21+ PLAYER-22+ PLAYER-23+ PLAYER-24+ PLAYER-25+ | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -96,6 +96,8 @@
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 update-ssot PLAYER r8 STAFF r28: equal-weight aptitude calculation and existing grade distribution, automatically assigned coaching specialty from career/qualities; five policy units remain open
+- 261016 update-ssot PLAYER STAFF start: record equal-weight aptitude calculation and automatically assigned career/quality-based coaching specialty
 - 261016 update-ssot STAFF r27 PLAYER r7: one retained career-intention draw at retirement notice (natural 50/80%, encouraged 65/95%), actual-retirement candidacy and fixed generation-time aptitude with existing learned staff growth; six policy units remain open
 - 261016 update-ssot STAFF PLAYER start: settle one-time career intentions at 50/80 percent or 65/95 with encouragement, and fixed aptitude with existing learned staff growth
 - 261016 update-ssot STAFF r26 PLAYER r6: high/very-high coaching and separate managerial aptitude gates, five-grade evaluation, exact own-player grades and existing chief-scout accuracy for other players; calculation/entry/ability remain open
@@ -114,5 +116,3 @@
 - 261016 update-ssot WEB SAVE PLAYER start: separate progression controls by mode, remove season tools and adopt new-career-only activation with legacy gameplay reset permitted
 - 261016 season-records layout: replace stacked mobile cards with compact table rows; clamp long fields to two lines and keep short fields on one line; retain season-detail links.
 - 261016 planning sequence confirmed: finish all proposal policy decisions together, then create the complete implementation task batch; no partial task creation
-- 261016 implement-task start: compact the season records list to at most two mobile lines per season, with single-line short values and retained season-detail navigation.
-- 261016 update-ssot WEB r84: match events required for every manual configuration, not only all-delegated play; other events off means next-match-eve progression, no season-end fallback

@@ -1,5 +1,5 @@
 # PLAYER Player model
-> r7 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
+> r8 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
 
 ## decisions
 - PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 14 attributes, positions with levels, personality and play traits, potential. Other clubs' match squads use seasonal generation from club strength (→WORLD-6, →LEAGUE-10); cross-role person continuity and retirement eligibility are →WORLD-10/11. Development, adaptation and attribute ageing below continue to apply to the own club's players and academy; this does not apply own-club development to every NPC squad. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
@@ -159,7 +159,11 @@
   - the active-player profile shows qualitative grades/evaluations, never an exact aptitude number (→WEB-78), before retirement. Coaching/managerial entry follows →STAFF-23/24.
   - assessment generation/calculation is →PLAYER-22, grades and visibility are →PLAYER-23/24, and fixed aptitude versus learned ability is →PLAYER-25; existing match/development coefficients remain as specified.
 
-- PLAYER-22 [?] Define the aptitude components, initial generation/calculation, how professionalism contributes, and the meaning of football understanding/teaching and managerial suitability. Grade labels/scouting visibility and immutability are →PLAYER-23/24/25. Aptitude begins in new careers under →SAVE-18; no assignment to legacy careers is needed, and missing historical aptitude must not be represented as a previously observed fact.
+- PLAYER-22 [o] Overall coaching aptitude equally weights existing professionalism, separate football understanding and teaching ability; managerial aptitude equally weights football understanding and separate team-management judgement.
+  - football understanding is reading football/tactical principles, teaching is explaining and developing others, and team-management judgement concerns running a team and making managerial decisions. They are off-pitch qualities, not match attributes.
+  - represent each component on the existing five-grade scale. Generate the three new qualities independently using →PLAYER-7's grade distribution and a person-specific aptitude stream, leaving existing playing/profile draws unchanged. Reuse the person's existing professionalism.
+  - each aptitude grade is its components' arithmetic mean rounded to the nearest grade, with halves rounded upward, bounded to the five-grade scale (→PLAYER-23). Coaching uses thirds and management uses halves; neither includes playing OVR, fame or physical work rate.
+  - assignment is at new-career player generation (→SAVE-18) and remains fixed (→PLAYER-25). No assignment to legacy careers or invented historical observations is required. Display/scouting follows →PLAYER-23/24.
 
 - PLAYER-23 [o] Coaching aptitude and the separate managerial aptitude use five ordered qualitative grades: 매우 낮음, 낮음, 보통, 높음, 매우 높음.
   - profiles expose the grade and evaluation, not an exact aptitude score (→WEB-78). Coaching/managerial eligibility uses the applicable true grade under →STAFF-38/39.
@@ -177,6 +181,7 @@
 - in a match: slot position and role → OVR (PLAYER-6) × level (PLAYER-4) × adaptation multiplier (PLAYER-10) = 실효 OVR; each action reads its attributes (PLAYER-2)
 
 ## chg
+- r8 261016 PLAYER-22✎ initial components/calculation open→equal professionalism/understanding/teaching mean for coaching and understanding/team-judgement mean for management, existing five-grade generation distribution, fixed person-specific qualities
 - r7 261016 PLAYER-21/22✎ aptitude evolution open→fixed under PLAYER-25, initial calculation remains open; PLAYER-25+ fixed generation-time aptitude distinct from actual staff ability growth
 - r6 261016 PLAYER-21/22✎ grade/visibility open→PLAYER-23/24, calculation/evolution remain open; PLAYER-23/24+ five aptitude grades, exact own-player grades and existing chief-scout accuracy for others
 - r5 261016 PLAYER-22✎ legacy aptitude assignment open→new-career generation only under SAVE-18; assessment/scouting parameters remain open
