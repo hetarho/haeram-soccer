@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T17:11Z | T187 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T17:19Z | T174 |
 
 ## inbox
 - 261017 decided HIST-13: scoring continuity after an in-league transfer → one player total plus actual per-club contributions (alt: split the same person into multiple leaders | reset his earlier goals); fixes strict conservation without inventing NPC history.
@@ -82,13 +82,13 @@
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 13 | 13 | - | 0 |
-| SAVE | 41 | 40 | SAVE-10✎ SAVE-18✎ | 0 |
+| SAVE | 41 | 41 | - | 0 |
 | PLAYER | 8 | 8 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T174 | Activate rules 3.0.0 with bounded recognized-legacy gameplay reset | SAVE WEB ARCH | T150 T152 T167 T168 T172 T173 T180 T186 T187 | todo |
+| T174 | Activate rules 3.0.0 with bounded recognized-legacy gameplay reset | SAVE WEB ARCH | T150 T152 T167 T168 T172 T173 T180 T186 T187 | doing@261017.n7r4 |
 | T176 | Verify second careers across contracts, reloads and market transitions | WEB STAFF WORLD HIST SAVE | T167 T168 T174 | todo |
 | T177 | Verify delegation handover and promise outcomes through the browser | WEB CLUB HIST SAVE | T172 T174 | todo |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 | todo |
@@ -106,6 +106,8 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 implement-task T174 start n7r4.
+- 261017 create-task SAVE r41: assign activation metadata to existing T174.
 - 261017 update-ssot SAVE r41: synchronize approved 3.0.0 activation metadata for T174.
 - 261017 T187 done n7r4: Squad summaries show historical registration counts, explicit estimated fallback, and twenty/sixteen readiness tones; recruitment and save validation enforce the forty-player global boundary.
 - 261017 implement-task T187 start n7r4.
@@ -124,6 +126,3 @@
 - 261017 T183 done n7r4: New clubs and close top-ups target twenty while NPC cohorts stay eighteen; delegated top-ups prefer eligible academy prospects and stop at registration limits.
 - 261017 T189 done n7r4: Code verification jobs remain intact; documentation-only pushes are skipped and branch/PR runs supersede obsolete executions, with manual dispatch retained.
 - 261017 create-task/implement-task T189: owner approved CI queue control before remaining implementation.
-- 261017 T188 done n7r4: The pitch keeps 1.9:1 at mobile sizes, the mode selector uses the shared design system with readable phone clock rows, and exiting grouped events retain their viewport position.
-- 261017 WEB r89 assigned to T188: responsive clock reflow prevents date overlap from the shared selector; T183 unaffected.
-- 261017 implement-task T188 start n7r4.
