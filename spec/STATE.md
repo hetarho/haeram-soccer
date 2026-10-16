@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T16:56Z | T175 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T17:05Z | T190 |
 
 ## inbox
 - 261017 decided HIST-13: scoring continuity after an in-league transfer → one player total plus actual per-club contributions (alt: split the same person into multiple leaders | reset his earlier goals); fixes strict conservation without inventing NPC history.
@@ -81,13 +81,14 @@
 | STAFF | 33 | 33 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 13 | 12 | HIST-13✎ | 0 |
+| HIST | 13 | 13 | - | 0 |
 | SAVE | 40 | 40 | - | 0 |
 | PLAYER | 8 | 8 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T190 | Preserve scorer club contributions through transfers | HIST SAVE | T155 | doing@261017.n7r4 |
 | T174 | Activate rules 3.0.0 with bounded recognized-legacy gameplay reset | SAVE WEB ARCH | T150 T152 T167 T168 T172 T173 T180 T186 T187 | todo |
 | T175 | Migrate old browser helpers to the approved public progression flow | WEB LEAGUE | T150 | doing@261017.n7r4 |
 | T176 | Verify second careers across contracts, reloads and market transitions | WEB STAFF WORLD HIST SAVE | T167 T168 T174 | todo |
@@ -108,6 +109,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 create-task/implement-task T190: correct scorer conservation before resuming T175; existing browser changes preserved.
 - 261017 update-ssot HIST r13: preserve player and club scoring facts across retained-player transfers; T175 browser regression exposed save validation failure.
 - 261017 implement-task T175 start n7r4.
 - 261017 create-task T175/T187: migrate public-flow helpers before UI verification; activation does not supply those controls.
