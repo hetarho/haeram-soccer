@@ -67,21 +67,59 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 9 | 9 | - | 2 |
-| WEB | 86 | 80 | WEB-5✎ WEB-18✎ WEB-39✎ WEB-42✎ WEB-43✎ WEB-44✎ WEB-45✎ WEB-60✎ WEB-64✎ WEB-71✎ WEB-76+ WEB-77+ WEB-78+ WEB-79+ WEB-80+ WEB-81+ WEB-82+ WEB-83+ WEB-11✎ WEB-62✎ | 0 |
-| WORLD | 6 | 3 | WORLD-6✎ WORLD-10+ WORLD-11+ | 0 |
-| CLUB | 39 | 35 | CLUB-3✎ CLUB-13✎ CLUB-18✎ CLUB-22✎ CLUB-24✎ CLUB-32✎ CLUB-33✎ CLUB-34+ CLUB-35+ CLUB-36+ CLUB-37+ CLUB-38+ CLUB-39+ | 0 |
+| WEB | 86 | 86 | - | 0 |
+| WORLD | 6 | 6 | - | 0 |
+| CLUB | 39 | 39 | - | 0 |
 | MATCH | 9 | 9 | - | 0 |
-| LEAGUE | 8 | 7 | LEAGUE-11✎ LEAGUE-13✎ | 0 |
-| STAFF | 32 | 20 | STAFF-13✎ STAFF-15✎ STAFF-16✎ STAFF-17✎ STAFF-18✎ STAFF-19✎ STAFF-20✎ STAFF-23+ STAFF-24+ STAFF-25+ STAFF-26+ STAFF-27+ STAFF-28+ STAFF-29+ STAFF-30+ STAFF-31+ STAFF-32+ STAFF-33+ STAFF-34+ STAFF-35+ STAFF-36+ STAFF-37+ STAFF-38+ STAFF-39+ STAFF-40+ STAFF-41+ STAFF-42+ STAFF-43+ STAFF-44+ | 0 |
-| ECON | 38 | 37 | ECON-25✎ | 0 |
+| LEAGUE | 8 | 8 | - | 0 |
+| STAFF | 32 | 32 | - | 0 |
+| ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 12 | 9 | HIST-14+ HIST-15+ | 0 |
-| SAVE | 37 | 35 | SAVE-17+ SAVE-18+ SAVE-5✎ SAVE-11✎ SAVE-14✎ SAVE-16✎ | 0 |
-| PLAYER | 8 | 3 | PLAYER-1✎ PLAYER-19✎ PLAYER-21+ PLAYER-22+ PLAYER-23+ PLAYER-24+ PLAYER-25+ | 0 |
+| HIST | 12 | 12 | - | 0 |
+| SAVE | 37 | 37 | - | 0 |
+| PLAYER | 8 | 8 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T142 | Define game-owned responsibilities and progression settings | WEB SAVE STAFF | - | todo |
+| T143 | Route player contracts, recruitment and sales independently | STAFF CLUB WEB LEAGUE | T142 | todo |
+| T144 | Route manager, staff, academy and sponsor authority | STAFF CLUB WEB | T142 | todo |
+| T145 | Classify actual decisions separately from reports and observations | WEB STAFF | T143 T144 | todo |
+| T146 | Transfer unresolved work on explicit settings apply | WEB SAVE STAFF | T143 T144 T145 | todo |
+| T147 | Advance directly to the first stopping date in the worker | WEB LEAGUE ARCH | T145 T146 | todo |
+| T148 | Make runtime clock behaviour obey automatic versus manual mode | WEB SAVE | T147 | todo |
+| T149 | Build one explicit-apply responsibility and observation screen | WEB | T146 T148 | todo |
+| T150 | Expose exclusive time controls and remove season tools | WEB | T148 T149 | todo |
+| T151 | Isolate policy drafts and apply commands by department | WEB | T142 | todo |
+| T152 | Open the authoritative department editor over its task | WEB | T149 T151 | todo |
+| T153 | Add the recruitment support policy to every authoritative row workflow | STAFF ECON WEB SAVE | T152 | todo |
+| T154 | Generate fixed off-pitch qualities without disturbing playing draws | PLAYER SAVE | - | todo |
+| T155 | Represent one person across playing, coaching and management | WORLD HIST SAVE ARCH | T154 | todo |
+| T156 | Retain coaching prospects and former own players in NPC squads | WORLD PLAYER HIST | T155 | todo |
+| T157 | Apply actual age and retirement to retained other-club players | WORLD CLUB STAFF HIST PLAYER | T156 | todo |
+| T158 | Retain one career intention and one eligible owner encouragement | STAFF PLAYER HIST WORLD SAVE | T155 T157 | todo |
+| T159 | Assign coaching specialty and initial ability once | STAFF PLAYER WORLD | T158 | todo |
+| T160 | Quote and atomically approve a playing-coach appointment | STAFF WEB SAVE | T146 T159 | todo |
+| T161 | Settle playing-coach payroll, retirement and departures | STAFF CLUB HIST WORLD | T160 | todo |
+| T162 | Accumulate actual coaching service and mentor exposure | STAFF HIST WORLD SAVE | T161 | todo |
+| T163 | Move retained coaching candidates into real NPC employment | STAFF WORLD HIST | T159 T162 | todo |
+| T164 | Qualify managers and assign separate ability and inherited school | STAFF PLAYER HIST | T162 T163 | todo |
+| T165 | Appoint qualified free and employed coaches as managers | STAFF WORLD HIST | T144 T163 T164 | todo |
+| T166 | Project qualitative aptitude and truthful career availability | WEB PLAYER STAFF HIST | T154 T155 T164 | todo |
+| T167 | Show aptitude, encouragement and combined playing-coach review | WEB STAFF | T149 T161 T166 | todo |
+| T168 | Read and display linked playing, coaching and manager careers | WEB HIST STAFF SAVE ARCH | T165 T166 | todo |
+| T169 | Record and deduplicate actual director–manager financial conflicts | CLUB WEB HIST SAVE | T143 T145 T146 T153 | todo |
+| T170 | Resolve mediation under standing or case-specific support | CLUB STAFF ECON HIST | T169 | todo |
+| T171 | Judge, cancel and retain fixed-deadline reinforcement promises | CLUB HIST SAVE | T170 T165 | todo |
+| T172 | Present direct mediation and durable commitment status | WEB CLUB STAFF HIST | T150 T171 T153 | todo |
+| T173 | Round-trip settings, person careers and commitments losslessly | SAVE HIST WORLD ARCH | T148 T161 T163 T165 T171 | todo |
+| T174 | Activate rules 3.0.0 with bounded recognized-legacy gameplay reset | SAVE WEB ARCH | T150 T152 T167 T168 T172 T173 | todo |
+| T175 | Migrate old browser helpers to the approved public progression flow | WEB LEAGUE | T150 T174 | todo |
+| T176 | Verify second careers across contracts, reloads and market transitions | WEB STAFF WORLD HIST SAVE | T167 T168 T174 | todo |
+| T177 | Verify delegation handover and promise outcomes through the browser | WEB CLUB HIST SAVE | T172 T174 | todo |
+| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 | todo |
+| T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -90,11 +128,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- create-task WEB STAFF CLUB PLAYER WORLD HIST SAVE ECON LEAGUE: all adopted proposal policies are settled; decompose the complete scope from pending in one batch, without balance tuning. No partial task batch.
-- Planning is complete; no proposal implementation tasks or code changes have been created. Existing optional reviews and balance follow-ups remain parked in inbox.
-- Owner preview: http://localhost:19500.
+- implement-task T142: start the complete proposal batch from validated responsibility/settings foundations; T154 is the independent aptitude foundation. All task files specify dependencies and focused verification.
+- Implement T142–T179 as explicit small units; preserve accepted policy and parked balance constants. No implementation or new-rule save deletion has run in this planning unit.
+- Final integration T179 follows the full browser/continuity gates and measured century-save gate T178; do not activate/deploy incomplete rule metadata early.
 
 ## log
+- 261016 create-task complete: T142–T179 (38 small explicit contracts), all 83 pending decisions covered across nine domains; prerequisites, concrete code anchors, boundary/failure cases and targeted tests recorded; implementation and balance tuning not run
+- 261016 create-task WEB WORLD CLUB STAFF ECON LEAGUE HIST SAVE PLAYER start: decompose the complete approved proposal into small explicit implementation contracts for lower-capability models; preserve parked balance rules
 - 261016 update-ssot CLUB r39: qualifying external arrivals through next-window deadline, next-day judgement, manager-linked cancellation, retained director-change commitments, no duplicates/extensions and no additional trust effects; all adopted proposal policy gaps resolved before task decomposition
 - 261016 update-ssot CLUB start: settle promise deadline/qualifying arrivals, manager-linked cancellation, duplicate prevention and unchanged numerical trust evaluation
 - 261016 update-ssot CLUB r38: financial-conflict mediation once per manager/request/window, three support outcomes preserving delegated financial checks; promise lifecycle and numerical reactions remain open
@@ -113,5 +153,3 @@
 - 261016 update-ssot STAFF PLAYER start: settle one-time career intentions at 50/80 percent or 65/95 with encouragement, and fixed aptitude with existing learned staff growth
 - 261016 update-ssot STAFF r26 PLAYER r6: high/very-high coaching and separate managerial aptitude gates, five-grade evaluation, exact own-player grades and existing chief-scout accuracy for other players; calculation/entry/ability remain open
 - 261016 update-ssot STAFF PLAYER start: require high coaching/managerial aptitude and adopt five-grade own-player/scouted-other-player evaluations
-- 261016 update-ssot STAFF r25: playing coaches use one of six suitable training posts; coach-only dismissal/resignation preserves player contract, transfer/release out of the club ends both roles with ordinary costs and affected responsibility checks
-- 261016 update-ssot STAFF start: settle six eligible playing-coach posts and asymmetric coach-only versus player-departure termination
