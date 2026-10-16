@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T17:23Z | T176 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T17:30Z | T177 |
 
 ## inbox
 - 261017 decided HIST-13: scoring continuity after an in-league transfer → one player total plus actual per-club contributions (alt: split the same person into multiple leaders | reset his earlier goals); fixes strict conservation without inventing NPC history.
@@ -88,7 +88,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T177 | Verify delegation handover and promise outcomes through the browser | WEB CLUB HIST SAVE | T172 T174 | todo |
+| T177 | Verify delegation handover and promise outcomes through the browser | WEB CLUB HIST SAVE | T172 T174 | doing@261017.n7r4 |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 | todo |
 
@@ -104,6 +104,7 @@
 - Rules 3.0.0 activation and the bounded legacy-gameplay reset wait for T174 prerequisites.
 
 ## log
+- 261017 implement-task T177 start n7r4.
 - 261017 T176 done n7r4: Second-career browser journeys preserve person identity, aptitude, atomic joint-contract terms and costs across reload/import, verify exact service qualification, and exercise independent dismissal, retirement and combined departure.
 - 261017 implement-task T176 start n7r4.
 - 261017 T174 done n7r4: Rules 3.0.0 start clean careers; writer activation independently clears only integrity-checked recognized legacy gameplay, journals interrupted parked cleanup, and preserves protected versions and device-owned data.
@@ -123,4 +124,3 @@
 - 261017 T185 done n7r4: Starter departures and thin-squad sales open dated replacement needs; delegated recruitment pursues them daily after opening, actual same-line signings close oldest needs, and closing starters open summer needs after top-up.
 - 261017 implement-task T185 start n7r4.
 - 261017 T184 done n7r4: Director traits price every delegated bid and preview, negotiators raise on answer-day plus one through their ceiling and switch near deadline, and all acceptance paths recheck spending.
-- 261017 implement-task T184 start n7r4.
