@@ -24,6 +24,7 @@ import {
   CHECKPOINT_LIMIT,
   TOTAL_LIMIT,
 } from '../apps/web/src/adapters/persistence';
+import { retainedWorkload } from '../tests/fixtures/retained-workload';
 import { denseBytes } from '../apps/web/src/adapters/dense';
 const measurements: Record<string, unknown>[] = [];
 const workloads: Record<string, unknown>[] = [];
@@ -96,6 +97,20 @@ async function measure(w: World, label: string) {
     players: w.players.length,
     events: w.events.length,
     seed: w.seed,
+    canonicalBytes: Buffer.byteLength(worldCanonical, 'utf8'),
+    canonicalUtf16Bytes: worldCanonical.length * 2,
+    retainedPeople: Object.keys(w.people ?? {}).length,
+    employmentSpells: Object.values(w.people ?? {}).reduce(
+      (sum, p) => sum + p.employment.length,
+      0,
+    ),
+    mentorSpells: Object.values(w.people ?? {}).reduce((sum, p) => sum + p.mentors.length, 0),
+    coachingProfiles: Object.values(w.people ?? {}).filter((p) => p.coaching).length,
+    managerProfiles: Object.values(w.people ?? {}).filter((p) => p.management).length,
+    playingCoachProposals: Object.keys(w.playingCoachProposals ?? {}).length,
+    mediations: w.mediations?.length ?? 0,
+    promises: w.promises?.length ?? 0,
+    pendingPromises: w.promises?.filter((p) => p.status === 'pending').length ?? 0,
     trainingFocus: activeTrainingFocus(w),
     trainingAt: w.trainingAt,
     trainingFocusEvents: w.events.filter((event) => event.kind === 'training-focus').length,
@@ -137,6 +152,26 @@ function assertRetained(w: World, before: ReturnType<typeof retainedFacts>) {
 }
 const start = performance.now();
 mkdirSync('.tmp', { recursive: true });
+const retained = retainedWorkload();
+const focused = retained.w;
+const first = await measure(focused, 'marked synthetic retained career and cross-season promise');
+for (const id of [retained.playing, retained.former])
+  if (canonical(first.restored.people![id]) !== canonical(focused.people![id]))
+    throw Error('Retained identity changed');
+if (
+  !focused.people![retained.former].management ||
+  focused.manager.person !== retained.former ||
+  focused.playingCoachProposals![retained.playing].status !== 'accepted' ||
+  !focused.promises?.some((p) => p.status === 'pending' && p.deadline.year > focused.year)
+)
+  throw Error(
+    'Feature workload did not exercise actual contracts, qualification, appointment and cross-season commitments',
+  );
+simulateSeason(focused);
+const crossed = await measure(focused, 'retained workload after actual season close');
+if (!crossed.restored.promises?.some((p) => p.status === 'pending'))
+  throw Error('Cross-season promise was lost');
+
 for (const variant of ['baseline', 'active-management']) {
   const workloadStart = performance.now();
   let trainingSelections = 0;
@@ -272,6 +307,11 @@ const report = {
   synthetic: true,
   date: new Date().toISOString(),
   node: process.version,
+  toolchain: {
+    pnpm: execFileSync('pnpm', ['--version'], { encoding: 'utf8' }).trim(),
+    typescript: JSON.parse(readFileSync('node_modules/typescript/package.json', 'utf8')).version,
+    tsx: JSON.parse(readFileSync('node_modules/tsx/package.json', 'utf8')).version,
+  },
   host: { platform: platform(), arch: arch(), cpu: cpus()[0]?.model, logicalCpus: cpus().length },
   gitHead,
   gitDirty,
@@ -300,4 +340,5 @@ const report = {
 };
 mkdirSync('docs/benchmarks', { recursive: true });
 writeFileSync('docs/benchmarks/T010-storage.json', JSON.stringify(report, null, 2) + '\n');
+writeFileSync('docs/benchmarks/T178-rules3-storage.json', JSON.stringify(report, null, 2) + '\n');
 console.log(JSON.stringify(report, null, 2));
