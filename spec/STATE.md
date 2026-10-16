@@ -14,6 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T14:58Z | T154 |
 
 ## inbox
 - 261016 suggest WEB-74: owner-workflow tasks T134–T138 completed → review-code taskMemory/state, RecordsRoom/LiveSeason/CupsView and their browser journeys before the next UI feature; no refactoring is included in this completed scope
@@ -82,7 +83,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T154 | Generate fixed off-pitch qualities without disturbing playing draws | PLAYER SAVE | - | todo |
+| T154 | Generate fixed off-pitch qualities without disturbing playing draws | PLAYER SAVE | - | doing@261016.n7r4 |
 | T155 | Represent one person across playing, coaching and management | WORLD HIST SAVE ARCH | T154 | todo |
 | T156 | Retain coaching prospects and former own players in NPC squads | WORLD PLAYER HIST | T155 | todo |
 | T157 | Apply actual age and retirement to retained other-club players | WORLD CLUB STAFF HIST PLAYER | T156 | todo |
@@ -129,6 +130,7 @@
 - Do not activate rules 3.0.0 or reset career data before T174's prerequisites are complete.
 
 ## log
+- 261016 implement-task T154 start n7r4; continue all remaining tasks autonomously. SAVE r38–39 activation scope is unrelated to fixed aptitude generation.
 - 261016 start-vibe v6k2 end: two authorized units complete through f57a32f; clean main pushed, final code CI 38915783586 queued. Local validation and handoff are in reports/261016-v6k2.md.
 - 261016 T153 done v6k2: balanced recruitment support across schema/protocol/rows/presets/library and reload; 833 unit, 11 contract and 27 cross-browser core cases passed. Authorized two-unit scope complete; remote CI remains in progress.
 - 261016 implement-task T153 start v6k2; STAFF r33 traits/call-ups, SAVE r38–39 activation scope and WEB r87 squad tones do not alter the support row contract.
