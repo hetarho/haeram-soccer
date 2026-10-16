@@ -22,6 +22,7 @@
 - [o] New-game responsibility defaults: the owner handles manager appointments/renewals, player renewals/improved contracts, recruitment and sales; staff handle their appointments/renewals, academy promotion/release and sponsor contracts. Every responsibility remains individually changeable in the central screen. Existing-career conversion remains open.
 - [o] Observation notifications: match-eve and transfer-window-opening stops can each be enabled or disabled independently of delegation. New-game defaults: match-eve stop on, window-opening stop off. Keep both notifications readable whether or not they stop the clock.
 - [o] Two progression modes: automatic mode retains day-by-day paced play; manual mode has automatic play off and an explicit next-event action advances to the next event selected by the owner's trigger settings. Both modes use the same responsibility/observation trigger choices, rather than a second manual event list.
+- [o] A new game starts in automatic progression mode. The owner can switch between automatic and manual modes during play, subject to manual-mode trigger validity.
 - [o] Manual-mode validity: when all seven business responsibilities are delegated, manual play requires at least the match-event trigger enabled, following the already chosen match-eve observation trigger. Other event selections alone do not satisfy this condition. How invalid combinations are prevented remains to specify.
 - [o] Manual progression is owner-driven: arriving at an event and resolving a decision do not start unattended automatic play; the next advance requires an explicit progression action. Manual mode has no unattended wall-clock or away catch-up progression.
 - [x] A mandatory four-level ladder, whether reordered or supplemented only by core-approval pins, as the delegation model ← the owner chose individual responsibility selection to express the desired combination directly. Optional bulk presets remain undecided.
@@ -79,8 +80,9 @@
 - New-game defaults: owner handles manager appointments, player contracts, recruitment and sales; staff handle their appointments, the academy and sponsors. Each remains individually changeable.
 - Observation preferences: match-eve and window-opening stops separately selectable, with notices retained either way; defaults are match-eve stop on and window-opening stop off.
 - Progression flow: choose automatic paced play or manual next-event play → the same configured trigger determines where play stops → decide/read/watch as appropriate → automatic behaviour follows its mode; manual play waits for the next explicit advance. With all responsibilities delegated, match events must remain enabled for manual mode.
-- Match-event arrival follows the selected match-eve trigger, before the result; preparation/watch/play-through remain relevant. Proposed new-game default for discussion: automatic mode. Preventing an invalid all-delegated/manual/no-match combination still needs a visible product rule.
+- Match-event arrival follows the selected match-eve trigger, before the result; preparation/watch/play-through remain relevant. Automatic is the new-game mode. Preventing an invalid all-delegated/manual/no-match combination still needs a visible product rule.
 - Second-career flow: a player at our club or another → separate coaching aptitude and a natural career choice, optionally encouraged for our player → retirement and coaching candidacy → appointment/experience → possible management candidacy → appointments and a linked career record. Aptitude display and promotion conditions remain open.
+- Next second-career proposals to discuss: show aptitude on the player profile as a qualitative assessment rather than an exact number; require coaching experience plus suitability for management before manager candidacy, allowing a person to remain a specialist coach. Neither detail is adopted yet.
 - Review boundary: assess and retain proposal material. No SSOT policy changes, coefficient changes, implementation tasks or code changes are authorized by selecting an idea for discussion.
 
 ## domains
@@ -95,7 +97,7 @@
 
 ## open
 - How do changes apply to pending decisions and existing careers, and what shortcuts belong in the clock/settings entry?
-- Which progression mode should a new game use, and how are invalid manual/no-match settings prevented?
+- How are invalid manual/no-match settings prevented?
 - How should separate coaching aptitude and football intelligence be shown, and when can the owner encourage a coaching career?
 - What experience makes a coach a manager candidate, and how are his specialty and school established?
 - Should mediation with an accountable future promise be developed after the retired-player discussion?

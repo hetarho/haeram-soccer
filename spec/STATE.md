@@ -92,10 +92,11 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- ideation expert-proposal-review: two progression modes share event triggers; all-delegated manual play requires match-eve events. Settle default mode, then coaching visibility/progression and remaining UX; balance parked.
+- ideation expert-proposal-review: automatic is the default of two modes sharing event triggers; all-delegated manual play requires match-eve events. Discuss coaching visibility/progression and remaining UX next; balance parked.
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 ideation expert-proposal-review: owner selects automatic progression as the new-game default; manual next-event mode remains switchable
 - 261016 ideation expert-proposal-review: owner adds automatic/manual next-event modes with shared triggers and matches required for all-delegated manual play; adopts separate coaching aptitude and natural entry plus own-player encouragement
 - 261016 ideation expert-proposal-review: owner adopts coach-to-manager careers and aptitude-based entry across clubs; own-club 150-match/five-season gate dropped
 - 261016 T141 done: home uses the launcher space, 45 affected browser cases pass; published at bccf136 with full source CI 38854278380 passing all six jobs
@@ -115,4 +116,3 @@
 - 261016 update-ssot WEB start: compact policy draft panel and conditional notification launcher
 - 261016 T139 done: compact home and unified notifications/news; 383 distinct browser cases, static/unit/contract/catalog checks and storage/first-play gates pass after targeted reruns
 - 261016 T139 doing@u9c2: implement WEB r79 and verify affected browser journeys
-- 261016 create-task T139: WEB r79 compact home, calendar progress and shared notifications/news dialog
