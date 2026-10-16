@@ -92,7 +92,8 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 T196 T197 | todo |
+| T198 | Close retained employment when a training coach resigns | STAFF HIST SAVE ARCH | T161 T194 T197 | todo |
+| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 T196 T197 T198 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
 
 ## work
@@ -106,6 +107,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 create-task T198: actual active-management seed leaves a retained assistant employed after forced resignation (1952/day1); warm/cold occupancy guards both reject replacement. T178 stays incomplete and must rerun at the repaired source.
 - 261017 T197 done n7r4: Browser codec verification now uses the existing bounded ten-minute worker deadline, preserves the 12000-person workload and all CSP/canonical/load/export assertions, and retains elapsed-time artifacts.
 - 261017 implement-task T197 start n7r4.
 - 261017 create-task T197: CI Chromium large-codec fixture exceeded its 180s harness timer, shorter than the existing 600s production deadline; preserve assertions and fixed app fingerprint. T178 measurement continues, approval remains incomplete.
