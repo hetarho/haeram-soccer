@@ -16,7 +16,7 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 
 ## inbox
-- 261016 parked STAFF-27 STAFF-28 CLUB-36 CLUB-37: clarify coaching-specialty mapping, managerial school, candidate-market admission/contract transitions and mediation/promise criteria before creating the complete proposal task batch
+- 261016 parked STAFF-27 STAFF-28 CLUB-36 CLUB-37: clarify candidate-market admission/contract transitions and mediation/promise criteria before creating the complete proposal task batch
 - 261016 suggest WEB-74: owner-workflow tasks T134–T138 completed → review-code taskMemory/state, RecordsRoom/LiveSeason/CupsView and their browser journeys before the next UI feature; no refactoring is included in this completed scope
 - 261016 suggest -: spec lint has 33 existing document-quality hints → doc-review WEB/ARCH before expanding the navigation specification; no policy changes implied
 - 261015 decided WEB-74: start-vibe m8q4 scope → implement navigation-and-records with current game rules and the approved pixel readability baseline in an isolated checkout (alt: analysis only | revise game mechanics)
@@ -73,10 +73,10 @@
 | CLUB | 37 | 35 | CLUB-3✎ CLUB-13✎ CLUB-18✎ CLUB-22✎ CLUB-24✎ CLUB-32✎ CLUB-33✎ CLUB-34+ CLUB-35+ CLUB-36+ CLUB-37+ | 2 |
 | MATCH | 9 | 9 | - | 0 |
 | LEAGUE | 8 | 7 | LEAGUE-11✎ LEAGUE-13✎ | 0 |
-| STAFF | 30 | 20 | STAFF-13✎ STAFF-15✎ STAFF-16✎ STAFF-17✎ STAFF-18✎ STAFF-19✎ STAFF-20✎ STAFF-23+ STAFF-24+ STAFF-25+ STAFF-26+ STAFF-27+ STAFF-28+ STAFF-29+ STAFF-30+ STAFF-31+ STAFF-32+ STAFF-33+ STAFF-34+ STAFF-35+ STAFF-36+ STAFF-37+ STAFF-38+ STAFF-39+ STAFF-40+ STAFF-41+ STAFF-42+ STAFF-43+ | 2 |
+| STAFF | 31 | 20 | STAFF-13✎ STAFF-15✎ STAFF-16✎ STAFF-17✎ STAFF-18✎ STAFF-19✎ STAFF-20✎ STAFF-23+ STAFF-24+ STAFF-25+ STAFF-26+ STAFF-27+ STAFF-28+ STAFF-29+ STAFF-30+ STAFF-31+ STAFF-32+ STAFF-33+ STAFF-34+ STAFF-35+ STAFF-36+ STAFF-37+ STAFF-38+ STAFF-39+ STAFF-40+ STAFF-41+ STAFF-42+ STAFF-43+ STAFF-44+ | 2 |
 | ECON | 38 | 37 | ECON-25✎ | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 11 | 9 | HIST-14+ HIST-15+ | 0 |
+| HIST | 12 | 9 | HIST-14+ HIST-15+ | 0 |
 | SAVE | 37 | 35 | SAVE-17+ SAVE-18+ SAVE-5✎ SAVE-11✎ SAVE-14✎ SAVE-16✎ | 0 |
 | PLAYER | 8 | 3 | PLAYER-1✎ PLAYER-19✎ PLAYER-21+ PLAYER-22+ PLAYER-23+ PLAYER-24+ PLAYER-25+ | 0 |
 
@@ -91,11 +91,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- update-ssot STAFF CLUB: settle remaining specialty/manager-market and mediation/promise policies together before creating any implementation tasks; no balance tuning.
+- update-ssot STAFF CLUB: settle remaining candidate-market/contract transitions and mediation/promise policies together before creating any implementation tasks; no balance tuning.
 - create-task WEB STAFF CLUB PLAYER WORLD HIST SAVE ECON LEAGUE: decompose the complete agreed scope in one batch only after all proposal policy gaps are resolved; do not create a partial task batch.
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 update-ssot STAFF r31 HIST r12: exact coaching-specialty priority, school from longest recorded mentor with recent tie-break, actual mentor exposure retained; market/contract and mediation/promise units remain open
+- 261016 update-ssot STAFF HIST start: settle coaching-specialty priority and manager school inherited from the longest actually recorded coaching mentor
 - 261016 update-ssot STAFF r30: separate first-manager OVR/POT ranges and NPC coaching hires at 25% per four-round/season-close refresh into suitable vacant posts for two years; school/mapping and market transitions remain open
 - 261016 update-ssot STAFF start: record separate initial manager ability/potential and other-club coaching hires at four-round/season-end refreshes
 - 261016 update-ssot STAFF r29 WORLD r6: approved novice coaching OVR/POT ranges, selective continuity for coaching prospects/former own players, actual age/retirement and unique affiliation/role history; four policy units remain open
@@ -114,5 +116,3 @@
 - 261016 update-ssot STAFF WEB start: record combined player/staff approval and additive ordinary coaching pay for playing coaches
 - 261016 update-ssot STAFF r22 WORLD r5 HIST r11: once-only post-announcement encouragement, three-year actual coaching service and one/two-year existing-post playing coaches with full service credit and one identity; contract/entry details remain open
 - 261016 records fixes done: compact season rows and quiet archive reads; 45 targeted unit tests and all 12 browser scenarios pass (one Chromium startup ERR_NETWORK_CHANGED passed on retry); type/lint/format/build and spec lint pass.
-- 261016 update-ssot STAFF WORLD HIST start: record retirement-window encouragement, three-year coaching minimum and adopted playing-coach tenure/post rules; preserve existing balance
-- 261016 implement-task start: read season archives without foreground command activity so the manager history tab does not flash the progress/cancel box during automatic play.

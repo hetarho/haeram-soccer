@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r11 | Define the browser-demo rules for durable metrics and history.
+> r12 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -33,6 +33,7 @@
 - HIST-14 [o] Retain a person's linked playing, coaching and management career across role changes and clubs.
   - retirement from playing does not delete his playing totals or reset his age/name. Actual staff/manager appointments and coaching experience extend the same person's record.
   - retain the once-per-player encouragement and actual response (→STAFF-29), and dated coaching employment across clubs for →STAFF-30. Mark overlapping player/coach periods (→STAFF-31) without counting one coaching period twice.
+  - during tracked coaching employment, retain the actual manager mentor, known school and dated shared service needed for →STAFF-44. Missing or pre-start mentor histories remain unavailable, never fabricated.
   - player profiles and subsequent candidate/staff/manager views can follow those links (→WEB-78); existing own-player totals and own-manager tenures remain available in records.
   - retain actual identity, dates, roles and observed facts; missing historical other-club statistics remain explicitly unavailable. Do not fabricate full NPC match archives or pre-start honours (→HIST-2/3, →WORLD-8).
 
@@ -49,6 +50,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r12 261016 HIST-14✎ dated coaching service only→also actual mentor/school exposure for managerial school inheritance
 - r11 261016 HIST-14✎ linked sequential careers→also retained encouragement/response, dated cross-club coaching service and overlapping player/coach periods
 - r10 261016 HIST-14/15+ linked player/coach/manager careers and retained mediation/promise facts; no fabricated missing NPC statistics
 - r9 261015 HIST-13✎ scorers' role→position
