@@ -128,10 +128,11 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- Finish current T149 only, then repair and pass the entire verification pipeline and push the verified task commits to main, per the latest user instruction. Do not start T150 or later tasks; this supersedes the prior 06:00 KST continuation deadline.
+- Checkpoint through T149 is complete and pushed to main. All six CI jobs passed for 34beea9; verification and benchmark evidence are in docs/verification/T149-checkpoint.md. Resume T150 or later implementation only on a new user instruction.
 - Remaining planned tasks retain their scope and status; do not activate rules 3.0.0 or delete career data in this checkpoint.
 
 ## log
+- 261016 checkpoint p150 complete: T142–T149 committed individually; 825 unit and 11 contract tests, full CI browser matrix and storage/performance gates passed on 34beea9. T150+ remain unstarted; docs/verification/T149-checkpoint.md records evidence.
 - 261016 T149 done p150: Shared explicit-apply seven-category dialog with retained drafts, live handover previews, manual match-event invariant, local ownership labels and responsive readonly controls.
 - 261016 user checkpoint p150: finish T149, run and repair full verification, then push main; stop new task implementation.
 - 261016 implement-task T149 start p150
@@ -151,4 +152,3 @@
 - 261016 user override p150: implement T143/T144 exactly as their authored task contracts; the other session will reconcile later planning deltas. Continue dependency-ready tasks beyond T150 until 2026-10-17 06:00 KST (2026-10-16 21:00 UTC), preserving incomplete task status and verification evidence.
 - 261016 implement-task T144 start p150
 - 261016 implement-task T143 start p150
-- 261016 implement-task p150 freshness gate: T143/T144 returned to todo with verified changes preserved; current CLUB@41/STAFF@33 conflict with their preserve-existing business-rule scope. T145–T150 not started; T142 settings foundation remains complete.

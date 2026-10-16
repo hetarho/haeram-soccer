@@ -1,230 +1,230 @@
 {
-  "date": "2026-10-16T03:26:45.063Z",
+  "date": "2026-10-16T10:12:16.649Z",
   "browser": "153.0.8010.12",
   "playwright": "1.63.0",
   "node": "v24.12.0",
-  "gitHead": "5a646954711971281ed4b8bf9ad24db4371d3995",
+  "gitHead": "34beea92e32a015c3b215364527afe9e4ff923e8",
   "gitDirty": true,
   "currentHeadVerified": false,
   "verifiedSource": "uncommitted working tree",
   "sourceFingerprint": {
     "algorithm": "sha256",
-    "sha256": "766fd2579863910edf574f47512e7137f8386887eb8165ad2df5b8cc6d783d95",
-    "files": 454
+    "sha256": "73e476f7f4bf7eb0b8346791506ac944a5d57eca213ed072f8b727b9894ff0c4",
+    "files": 470
   },
   "buildFingerprint": {
     "algorithm": "sha256",
-    "sha256": "01b85dff57a7ec5d3cb29876361c9ac15244fb1cf06424eb295830599e5b03dd",
+    "sha256": "ed1265a8fccb493c81fa50472604d7bd47b51a52e457c083633822ec555586c7",
     "files": 118
   },
   "servedBuildVerification": {
-    "origin": "http://127.0.0.1:19506",
+    "origin": "http://127.0.0.1:4180",
     "requestTimeoutMs": 5000,
     "requestConcurrency": 4,
     "files": [
       {
         "file": "index.html",
-        "url": "http://127.0.0.1:19506/",
+        "url": "http://127.0.0.1:4180/",
         "bytes": 1448,
-        "sha256": "8b242e8f76b080c6df1f13ebdb57c2f3dc6515015cad409f77fcdac48cf7f8fa"
-      },
-      {
-        "file": "assets/AwaySummary-Dph8EJ2j.js",
-        "url": "http://127.0.0.1:19506/assets/AwaySummary-Dph8EJ2j.js",
-        "bytes": 2426,
-        "sha256": "5aa409b657cfd9997929d5637b9f5cc700ddc39459b3f89bd5ffc78d7d2c3e81"
+        "sha256": "64d64e6e13af7fba1ef9c95540773b84bb9b3622a08c95062dddd5898774a665"
       },
       {
         "file": "assets/AwaySummary-QrYJOn2U.css",
-        "url": "http://127.0.0.1:19506/assets/AwaySummary-QrYJOn2U.css",
+        "url": "http://127.0.0.1:4180/assets/AwaySummary-QrYJOn2U.css",
         "bytes": 607,
         "sha256": "92a3fd8ff0a73fdb75f6b6ec93187061a41cb7d5c27dd3a978db7f0b5b175f56"
       },
       {
+        "file": "assets/AwaySummary-ynhEtOfs.js",
+        "url": "http://127.0.0.1:4180/assets/AwaySummary-ynhEtOfs.js",
+        "bytes": 2426,
+        "sha256": "24009f54cb26a2963704feaca72efb2e1771f1456bb4fe4ddefa26de214c14b1"
+      },
+      {
         "file": "assets/ClubCrest-2liMRO71.css",
-        "url": "http://127.0.0.1:19506/assets/ClubCrest-2liMRO71.css",
+        "url": "http://127.0.0.1:4180/assets/ClubCrest-2liMRO71.css",
         "bytes": 164,
         "sha256": "f279950dfaef5d11da4915faa4300d7ef176ebbbaa718c10b1971e9864d39df6"
       },
       {
-        "file": "assets/ClubCrest-uvDRVxyU.js",
-        "url": "http://127.0.0.1:19506/assets/ClubCrest-uvDRVxyU.js",
+        "file": "assets/ClubCrest-HD67we_v.js",
+        "url": "http://127.0.0.1:4180/assets/ClubCrest-HD67we_v.js",
         "bytes": 10557,
-        "sha256": "58e546f85e520e6b842d61fa3dbe5299769a9b85e80c0aed2a953061157a212d"
-      },
-      {
-        "file": "assets/CupHistory-B2H6GbtF.js",
-        "url": "http://127.0.0.1:19506/assets/CupHistory-B2H6GbtF.js",
-        "bytes": 19172,
-        "sha256": "bb1ebec6542abecb9867490b01e859bf3892667c9de0b51787e8f7a11677cccb"
+        "sha256": "67169a5b8094979bdfed69057cb63fc6afd13d53ee02cc541bd66ecee2156257"
       },
       {
         "file": "assets/CupHistory-DAz7nA62.css",
-        "url": "http://127.0.0.1:19506/assets/CupHistory-DAz7nA62.css",
+        "url": "http://127.0.0.1:4180/assets/CupHistory-DAz7nA62.css",
         "bytes": 5512,
         "sha256": "03f503b4199c24841307956251046a4ccffdd309e6047b8344eb25eb3a83ef08"
       },
       {
-        "file": "assets/Dialog-BFngo-wW.js",
-        "url": "http://127.0.0.1:19506/assets/Dialog-BFngo-wW.js",
-        "bytes": 170974,
-        "sha256": "10dbf70839af802c08072697d18768523f886d82f8988fbc548f02f2ea713775"
+        "file": "assets/CupHistory-DiPBmHQj.js",
+        "url": "http://127.0.0.1:4180/assets/CupHistory-DiPBmHQj.js",
+        "bytes": 19167,
+        "sha256": "ab013fc90cbb0b58e20464d93f2d59336eaef0bdd55362479dc1e5896b27ceeb"
       },
       {
-        "file": "assets/Dialog-CZH9GufB.css",
-        "url": "http://127.0.0.1:19506/assets/Dialog-CZH9GufB.css",
-        "bytes": 56457,
-        "sha256": "36a6873fab03259069ac1014a6e1fac7a0a58d56635f445b4b220524c06123eb"
+        "file": "assets/Dialog-BAEUHKT1.js",
+        "url": "http://127.0.0.1:4180/assets/Dialog-BAEUHKT1.js",
+        "bytes": 176077,
+        "sha256": "890f2e73673fa71a7e846fb0170feade2be26e654d5d36e94b8b6bb08a01af1f"
       },
       {
-        "file": "assets/GameSlotScreen-BByQFtOX.js",
-        "url": "http://127.0.0.1:19506/assets/GameSlotScreen-BByQFtOX.js",
-        "bytes": 6963,
-        "sha256": "55663e50008f11c32c651c5719a6254361123e6fb7fa9165c3b85d448efbac60"
+        "file": "assets/Dialog-DcKbNvEU.css",
+        "url": "http://127.0.0.1:4180/assets/Dialog-DcKbNvEU.css",
+        "bytes": 56514,
+        "sha256": "4f44cec6a9a06440d8e7f8ce3f7f6f34df45f2e1cad5f3e7c7a378d17d09832e"
+      },
+      {
+        "file": "assets/GameSlotScreen-CYXPaRnn.js",
+        "url": "http://127.0.0.1:4180/assets/GameSlotScreen-CYXPaRnn.js",
+        "bytes": 6968,
+        "sha256": "94af478fe18c40206e5d7afdcec83a14b21f6c90be4b45addb0f3411b4fc80aa"
       },
       {
         "file": "assets/GameSlotScreen-PiFtdgQ-.css",
-        "url": "http://127.0.0.1:19506/assets/GameSlotScreen-PiFtdgQ-.css",
+        "url": "http://127.0.0.1:4180/assets/GameSlotScreen-PiFtdgQ-.css",
         "bytes": 2736,
         "sha256": "5ca3482b59a4aeff86e06ae12be5818b644a5cec72cbc0f5cbffec5632d66131"
       },
       {
         "file": "assets/Glossary-BG-_BsDF.css",
-        "url": "http://127.0.0.1:19506/assets/Glossary-BG-_BsDF.css",
+        "url": "http://127.0.0.1:4180/assets/Glossary-BG-_BsDF.css",
         "bytes": 7857,
         "sha256": "d3ec0be3b4a8d1501e57ed428ca405a108daff8cd48c4e0266d2577dbfdd8b01"
       },
       {
-        "file": "assets/Glossary-SeqYQsax.js",
-        "url": "http://127.0.0.1:19506/assets/Glossary-SeqYQsax.js",
+        "file": "assets/Glossary-D0KPys8l.js",
+        "url": "http://127.0.0.1:4180/assets/Glossary-D0KPys8l.js",
         "bytes": 14263,
-        "sha256": "fa7c33c840305ea6d42a39af2d63f7efa0f66d108b4131f4a5c780d25926c871"
+        "sha256": "89950f4cc23fc592078f4a352599b3f357b828b942144c4a74be359bcccac5d3"
       },
       {
-        "file": "assets/PastSeason-DSTQxJPI.js",
-        "url": "http://127.0.0.1:19506/assets/PastSeason-DSTQxJPI.js",
+        "file": "assets/PastSeason-B1EmW-iH.js",
+        "url": "http://127.0.0.1:4180/assets/PastSeason-B1EmW-iH.js",
         "bytes": 13172,
-        "sha256": "3b776f7e0ec3f730734a9b892f0109db1ce15ac5dd83c6344c0a0b8ee7cb7058"
+        "sha256": "571bbe7db42015ff92cb1accdb6555612ac3d2c2f7bc25c321a1f0f5ea536b8c"
       },
       {
         "file": "assets/PlayerProfile-BpUGlKJf.css",
-        "url": "http://127.0.0.1:19506/assets/PlayerProfile-BpUGlKJf.css",
+        "url": "http://127.0.0.1:4180/assets/PlayerProfile-BpUGlKJf.css",
         "bytes": 2444,
         "sha256": "c8ba648c4766ad045332f6b2b7532279eccda2b2bee1b46e1b70c5db9897e5c8"
       },
       {
-        "file": "assets/PlayerProfile-CgjOloBL.js",
-        "url": "http://127.0.0.1:19506/assets/PlayerProfile-CgjOloBL.js",
+        "file": "assets/PlayerProfile-bjnyNcuX.js",
+        "url": "http://127.0.0.1:4180/assets/PlayerProfile-bjnyNcuX.js",
         "bytes": 5567,
-        "sha256": "804d05325914d6f539fe58a5653949e3f6ac9dee082dc7d179fe93c5477430cc"
+        "sha256": "2ba4f1989626a9aa08c0534c3e88ac932d3c7599de0c190715195d81f48db760"
       },
       {
-        "file": "assets/PlayerSheetDialog-5Qm-Blpg.js",
-        "url": "http://127.0.0.1:19506/assets/PlayerSheetDialog-5Qm-Blpg.js",
+        "file": "assets/PlayerSheetDialog-V5ABvi8D.js",
+        "url": "http://127.0.0.1:4180/assets/PlayerSheetDialog-V5ABvi8D.js",
         "bytes": 4916,
-        "sha256": "a825b91168643e90226c93ef66b58b3217925155304f6385b359fd0df35f5e83"
+        "sha256": "85baa186118a33c5a7e5d24688087726aa5d0422e5db3c0d40e878fe137dc3c4"
       },
       {
-        "file": "assets/RecordsRoom-De3aWkku.js",
-        "url": "http://127.0.0.1:19506/assets/RecordsRoom-De3aWkku.js",
-        "bytes": 62331,
-        "sha256": "b13849bf0d87e6a00c89df774b3e59a4b159bd3eacadd1a06b73470e2dc3657b"
+        "file": "assets/RecordsRoom-C7Gg3E-n.css",
+        "url": "http://127.0.0.1:4180/assets/RecordsRoom-C7Gg3E-n.css",
+        "bytes": 1239,
+        "sha256": "649f3e85680acdb507a42b5f9387b6d95df6ac3f3f824c3014ae9e6f38d16a9a"
       },
       {
-        "file": "assets/RecordsRoom-dLZBH3ub.css",
-        "url": "http://127.0.0.1:19506/assets/RecordsRoom-dLZBH3ub.css",
-        "bytes": 851,
-        "sha256": "2d2ccacf98a3c1446fe524844904f198b32668b6366f3414dbe59bcf1ccc7ba4"
+        "file": "assets/RecordsRoom-DIsOKu4t.js",
+        "url": "http://127.0.0.1:4180/assets/RecordsRoom-DIsOKu4t.js",
+        "bytes": 62943,
+        "sha256": "d45c8d683933ff98ff8b9f43f8a33eed2a3c6ae4683355017730b0b2b6c5e5f4"
       },
       {
-        "file": "assets/Rich-BN0VtDlb.css",
-        "url": "http://127.0.0.1:19506/assets/Rich-BN0VtDlb.css",
-        "bytes": 46906,
-        "sha256": "df9430ad6debcc5a85783b8a567c08f63e87451efe99c6e849158aadb2be8347"
+        "file": "assets/Rich-Ca4rZ59q.css",
+        "url": "http://127.0.0.1:4180/assets/Rich-Ca4rZ59q.css",
+        "bytes": 47009,
+        "sha256": "34e079161ff3e1a90835587482675f9044601ffb322c9e05c9c4cd7c898ee417"
       },
       {
-        "file": "assets/Rich-CZjUVZ55.js",
-        "url": "http://127.0.0.1:19506/assets/Rich-CZjUVZ55.js",
-        "bytes": 121474,
-        "sha256": "76044e7c8dd1aca8ed1b6b0ff5dc28d6bfaced0a0cd4291ed8017c29950d307f"
+        "file": "assets/Rich-CeG-Z9Ns.js",
+        "url": "http://127.0.0.1:4180/assets/Rich-CeG-Z9Ns.js",
+        "bytes": 123871,
+        "sha256": "eaf9c39c2d103fe09cc25678a4dd86b041500fe533c05567b7d960be7340aa79"
       },
       {
         "file": "assets/SeasonReview-Dll-svOb.css",
-        "url": "http://127.0.0.1:19506/assets/SeasonReview-Dll-svOb.css",
+        "url": "http://127.0.0.1:4180/assets/SeasonReview-Dll-svOb.css",
         "bytes": 10629,
         "sha256": "067d57ce6bf07c5d77cd3961f44fff813406dd31ec1afb5fad437c034d9f2956"
       },
       {
         "file": "assets/SeasonReview.module-BDD0OX8O.js",
-        "url": "http://127.0.0.1:19506/assets/SeasonReview.module-BDD0OX8O.js",
+        "url": "http://127.0.0.1:4180/assets/SeasonReview.module-BDD0OX8O.js",
         "bytes": 1105,
         "sha256": "c8eb5c507cbeead460795c3ea0d26e31b8122b7a6e988ac5174dacad8e1babd4"
       },
       {
-        "file": "assets/StrategyBoard-CEgMVrm-.js",
-        "url": "http://127.0.0.1:19506/assets/StrategyBoard-CEgMVrm-.js",
-        "bytes": 29210,
-        "sha256": "924d3e8a7bcd4375bf34fd86a7ae3033ff8fdd7ce352f2641a55732c786567ec"
+        "file": "assets/StrategyBoard-DGt8872y.js",
+        "url": "http://127.0.0.1:4180/assets/StrategyBoard-DGt8872y.js",
+        "bytes": 29628,
+        "sha256": "79aada60e1410ba80f6587bb89c7519476fb75940351af06b65c4d4174f836c5"
       },
       {
-        "file": "assets/StrategyBoard-Dp_fNv-3.css",
-        "url": "http://127.0.0.1:19506/assets/StrategyBoard-Dp_fNv-3.css",
-        "bytes": 12048,
-        "sha256": "d041345d888612c53fc9ab144e294d14a56b8b6e92ac8bcedd54ddb79e6b41e2"
+        "file": "assets/StrategyBoard-pjFg-zig.css",
+        "url": "http://127.0.0.1:4180/assets/StrategyBoard-pjFg-zig.css",
+        "bytes": 12046,
+        "sha256": "4fd2be854847512918d711f2d91d6eae7361814cf1d44c387c2cad831433e3b5"
       },
       {
-        "file": "assets/careerRecords-ju-AUiPV.js",
-        "url": "http://127.0.0.1:19506/assets/careerRecords-ju-AUiPV.js",
+        "file": "assets/careerRecords-Bk1qFnua.js",
+        "url": "http://127.0.0.1:4180/assets/careerRecords-Bk1qFnua.js",
         "bytes": 2653,
-        "sha256": "1bd646ae0b4535ef592a1787b4fe567ae32ebdea94562c119db446563352b513"
+        "sha256": "35958185480fa601df68713d28fd3fd8ae608144d3c536fcef31279d590dde40"
       },
       {
-        "file": "assets/codec-D1pfvOty.js",
-        "url": "http://127.0.0.1:19506/assets/codec-D1pfvOty.js",
-        "bytes": 197830,
-        "sha256": "b5932e58f3c1b8c604bb7c89ee1949589e76b165aaf1266c227c65b9465f7096"
+        "file": "assets/codec-CZ5nJEf3.js",
+        "url": "http://127.0.0.1:4180/assets/codec-CZ5nJEf3.js",
+        "bytes": 198375,
+        "sha256": "f13154a56f21e764fba7e50c68f73ea5f6c2038b4b62fb84bbb202e167eb65f8"
       },
       {
-        "file": "assets/index-C1Ocg9vq.css",
-        "url": "http://127.0.0.1:19506/assets/index-C1Ocg9vq.css",
-        "bytes": 78044,
-        "sha256": "35d121b33cd0903721ff9c76cebd3e7869b2fc13f8474295d321e2a297982cb9"
+        "file": "assets/index-B_LyY5-d.css",
+        "url": "http://127.0.0.1:4180/assets/index-B_LyY5-d.css",
+        "bytes": 78858,
+        "sha256": "6bc47493fb8532561f27452b6cc9a2a82bf99bf14693717bd53cdc0f462f398b"
       },
       {
-        "file": "assets/index-DtXaz_41.js",
-        "url": "http://127.0.0.1:19506/assets/index-DtXaz_41.js",
-        "bytes": 447099,
-        "sha256": "510eb464dbe15a4a152e401f36b46f8b37931000a491bc153cf40855b57f4bd0"
+        "file": "assets/index-CPC5mlAQ.js",
+        "url": "http://127.0.0.1:4180/assets/index-CPC5mlAQ.js",
+        "bytes": 444234,
+        "sha256": "95abf62619ae3dbcbc9da19fcd56931f4e5cbb85d9b62dc25a88fcaabaddd189"
       },
       {
-        "file": "assets/profile-CzSscc5o.js",
-        "url": "http://127.0.0.1:19506/assets/profile-CzSscc5o.js",
+        "file": "assets/profile-BesL7HfW.js",
+        "url": "http://127.0.0.1:4180/assets/profile-BesL7HfW.js",
         "bytes": 3043,
-        "sha256": "fa6985241314d93eb90c0cb5ee88fa71e0d4614c94d57b8f3ef9bc8baaa90b2a"
+        "sha256": "b5bf926826032832936d17577d917d3f4c8b1850b57bd86e11942787efbeb349"
       },
       {
         "file": "assets/rolldown-runtime-hePW80VL.js",
-        "url": "http://127.0.0.1:19506/assets/rolldown-runtime-hePW80VL.js",
+        "url": "http://127.0.0.1:4180/assets/rolldown-runtime-hePW80VL.js",
         "bytes": 716,
         "sha256": "580ad8c58061a4dde99bde0a56905e382f0568516ee2f5b84dbfb52085709021"
       },
       {
-        "file": "assets/slots-i7hEvcfj.js",
-        "url": "http://127.0.0.1:19506/assets/slots-i7hEvcfj.js",
+        "file": "assets/slots-CQBBC5XB.js",
+        "url": "http://127.0.0.1:4180/assets/slots-CQBBC5XB.js",
         "bytes": 7038,
-        "sha256": "c3e359db50fdb506ba2ac1058adebd23da60142fec9135313543dd746bbd97b0"
+        "sha256": "6b376893f3102751cdedbdeace82a80f6ac39a5761543cb1c1c1b78be1e298f9"
       },
       {
-        "file": "assets/state-Qun3P2fk.js",
-        "url": "http://127.0.0.1:19506/assets/state-Qun3P2fk.js",
+        "file": "assets/state-2Mhg0osP.js",
+        "url": "http://127.0.0.1:4180/assets/state-2Mhg0osP.js",
         "bytes": 6329,
-        "sha256": "757b9fdac0add17a144d20c906582a2b765267037774a5aa9ed8aeefc33a67b2"
+        "sha256": "586369119aa048fff93bb90fac64977f3054551d6a3b42390549ab65cf013df6"
       },
       {
-        "file": "assets/worker-Bx4xPXqZ.js",
-        "url": "http://127.0.0.1:19506/assets/worker-Bx4xPXqZ.js",
-        "bytes": 463016,
-        "sha256": "a63bd541de464c8b306cae31106ff07a200ad5efe53e37825dd9a566739b1856"
+        "file": "assets/worker-sR713Z7H.js",
+        "url": "http://127.0.0.1:4180/assets/worker-sR713Z7H.js",
+        "bytes": 468831,
+        "sha256": "30db75f7d97ccd16c54a458df2fddabfb81097276093570abc9517da4751cdc4"
       }
     ],
     "passed": true
@@ -243,9 +243,9 @@
       1440,
       1000
     ],
-    "coldLoadAndFoundMs": 2102,
-    "foundingCommandMs": 873,
-    "animationFps": 60
+    "coldLoadAndFoundMs": 2480,
+    "foundingCommandMs": 1266,
+    "animationFps": 61
   },
   "mobile": {
     "viewport": [
@@ -253,50 +253,50 @@
       844
     ],
     "deviceScaleFactor": 2,
-    "coldLoadAndFoundMs": 2031,
-    "foundingCommandMs": 795,
-    "animationFps": 60,
+    "coldLoadAndFoundMs": 2413,
+    "foundingCommandMs": 1191,
+    "animationFps": 61,
     "inputSamples": 12,
-    "pointerToSecondFrameP95Ms": 23
+    "pointerToSecondFrameP95Ms": 24
   },
-  "entryGzipBytes": 252563,
+  "entryGzipBytes": 252811,
   "entryGzipLimit": 256000,
   "entryFiles": [
     {
-      "file": "assets/index-DtXaz_41.js",
-      "gzipBytes": 142447
+      "file": "assets/index-CPC5mlAQ.js",
+      "gzipBytes": 140884
     },
     {
       "file": "assets/rolldown-runtime-hePW80VL.js",
       "gzipBytes": 428
     },
     {
-      "file": "assets/Dialog-BFngo-wW.js",
-      "gzipBytes": 65196
+      "file": "assets/Dialog-BAEUHKT1.js",
+      "gzipBytes": 66823
     },
     {
-      "file": "assets/state-Qun3P2fk.js",
-      "gzipBytes": 2613
+      "file": "assets/state-2Mhg0osP.js",
+      "gzipBytes": 2615
     },
     {
-      "file": "assets/profile-CzSscc5o.js",
-      "gzipBytes": 1479
+      "file": "assets/profile-BesL7HfW.js",
+      "gzipBytes": 1481
     },
     {
-      "file": "assets/ClubCrest-uvDRVxyU.js",
-      "gzipBytes": 5105
+      "file": "assets/ClubCrest-HD67we_v.js",
+      "gzipBytes": 5099
     },
     {
-      "file": "assets/slots-i7hEvcfj.js",
-      "gzipBytes": 3008
+      "file": "assets/slots-CQBBC5XB.js",
+      "gzipBytes": 3012
     },
     {
-      "file": "assets/Glossary-SeqYQsax.js",
+      "file": "assets/Glossary-D0KPys8l.js",
       "gzipBytes": 5804
     },
     {
-      "file": "assets/Dialog-CZH9GufB.css",
-      "gzipBytes": 10767
+      "file": "assets/Dialog-DcKbNvEU.css",
+      "gzipBytes": 10792
     },
     {
       "file": "assets/ClubCrest-2liMRO71.css",
@@ -307,48 +307,48 @@
       "gzipBytes": 1801
     },
     {
-      "file": "assets/index-C1Ocg9vq.css",
-      "gzipBytes": 13759
+      "file": "assets/index-B_LyY5-d.css",
+      "gzipBytes": 13916
     }
   ],
-  "buildGzipBytes": 576905,
+  "buildGzipBytes": 580506,
   "buildGzipLimit": null,
   "buildFiles": [
     {
-      "file": "AwaySummary-Dph8EJ2j.js",
-      "gzipBytes": 1287
-    },
-    {
       "file": "AwaySummary-QrYJOn2U.css",
       "gzipBytes": 313
+    },
+    {
+      "file": "AwaySummary-ynhEtOfs.js",
+      "gzipBytes": 1290
     },
     {
       "file": "ClubCrest-2liMRO71.css",
       "gzipBytes": 156
     },
     {
-      "file": "ClubCrest-uvDRVxyU.js",
-      "gzipBytes": 5105
-    },
-    {
-      "file": "CupHistory-B2H6GbtF.js",
-      "gzipBytes": 6783
+      "file": "ClubCrest-HD67we_v.js",
+      "gzipBytes": 5099
     },
     {
       "file": "CupHistory-DAz7nA62.css",
       "gzipBytes": 1480
     },
     {
-      "file": "Dialog-BFngo-wW.js",
-      "gzipBytes": 65196
+      "file": "CupHistory-DiPBmHQj.js",
+      "gzipBytes": 6783
     },
     {
-      "file": "Dialog-CZH9GufB.css",
-      "gzipBytes": 10767
+      "file": "Dialog-BAEUHKT1.js",
+      "gzipBytes": 66823
     },
     {
-      "file": "GameSlotScreen-BByQFtOX.js",
-      "gzipBytes": 2644
+      "file": "Dialog-DcKbNvEU.css",
+      "gzipBytes": 10792
+    },
+    {
+      "file": "GameSlotScreen-CYXPaRnn.js",
+      "gzipBytes": 2648
     },
     {
       "file": "GameSlotScreen-PiFtdgQ-.css",
@@ -359,40 +359,40 @@
       "gzipBytes": 1801
     },
     {
-      "file": "Glossary-SeqYQsax.js",
+      "file": "Glossary-D0KPys8l.js",
       "gzipBytes": 5804
     },
     {
-      "file": "PastSeason-DSTQxJPI.js",
-      "gzipBytes": 4663
+      "file": "PastSeason-B1EmW-iH.js",
+      "gzipBytes": 4662
     },
     {
       "file": "PlayerProfile-BpUGlKJf.css",
       "gzipBytes": 829
     },
     {
-      "file": "PlayerProfile-CgjOloBL.js",
-      "gzipBytes": 2473
+      "file": "PlayerProfile-bjnyNcuX.js",
+      "gzipBytes": 2471
     },
     {
-      "file": "PlayerSheetDialog-5Qm-Blpg.js",
+      "file": "PlayerSheetDialog-V5ABvi8D.js",
       "gzipBytes": 2235
     },
     {
-      "file": "RecordsRoom-De3aWkku.js",
-      "gzipBytes": 19656
+      "file": "RecordsRoom-C7Gg3E-n.css",
+      "gzipBytes": 466
     },
     {
-      "file": "RecordsRoom-dLZBH3ub.css",
-      "gzipBytes": 409
+      "file": "RecordsRoom-DIsOKu4t.js",
+      "gzipBytes": 19804
     },
     {
-      "file": "Rich-BN0VtDlb.css",
-      "gzipBytes": 7751
+      "file": "Rich-Ca4rZ59q.css",
+      "gzipBytes": 7759
     },
     {
-      "file": "Rich-CZjUVZ55.js",
-      "gzipBytes": 37116
+      "file": "Rich-CeG-Z9Ns.js",
+      "gzipBytes": 38055
     },
     {
       "file": "SeasonReview-Dll-svOb.css",
@@ -403,273 +403,273 @@
       "gzipBytes": 481
     },
     {
-      "file": "StrategyBoard-CEgMVrm-.js",
-      "gzipBytes": 10200
+      "file": "StrategyBoard-DGt8872y.js",
+      "gzipBytes": 10336
     },
     {
-      "file": "StrategyBoard-Dp_fNv-3.css",
+      "file": "StrategyBoard-pjFg-zig.css",
       "gzipBytes": 2644
     },
     {
-      "file": "careerRecords-ju-AUiPV.js",
-      "gzipBytes": 1332
+      "file": "careerRecords-Bk1qFnua.js",
+      "gzipBytes": 1334
     },
     {
-      "file": "codec-D1pfvOty.js",
-      "gzipBytes": 62453
+      "file": "codec-CZ5nJEf3.js",
+      "gzipBytes": 62701
     },
     {
-      "file": "index-C1Ocg9vq.css",
-      "gzipBytes": 13759
+      "file": "index-B_LyY5-d.css",
+      "gzipBytes": 13916
     },
     {
-      "file": "index-DtXaz_41.js",
-      "gzipBytes": 142447
+      "file": "index-CPC5mlAQ.js",
+      "gzipBytes": 140884
     },
     {
-      "file": "profile-CzSscc5o.js",
-      "gzipBytes": 1479
+      "file": "profile-BesL7HfW.js",
+      "gzipBytes": 1481
     },
     {
       "file": "rolldown-runtime-hePW80VL.js",
       "gzipBytes": 428
     },
     {
-      "file": "slots-i7hEvcfj.js",
-      "gzipBytes": 3008
+      "file": "slots-CQBBC5XB.js",
+      "gzipBytes": 3012
     },
     {
-      "file": "state-Qun3P2fk.js",
-      "gzipBytes": 2613
+      "file": "state-2Mhg0osP.js",
+      "gzipBytes": 2615
     },
     {
-      "file": "worker-Bx4xPXqZ.js",
-      "gzipBytes": 156459
+      "file": "worker-sR713Z7H.js",
+      "gzipBytes": 158270
     }
   ],
   "firstPlayPageTargetTransfers": [
     {
-      "url": "http://127.0.0.1:19506/",
+      "url": "http://127.0.0.1:4180/",
       "type": "Document",
-      "bytes": 1194
+      "bytes": 1195
     },
     {
-      "url": "http://127.0.0.1:19506/assets/rolldown-runtime-hePW80VL.js",
+      "url": "http://127.0.0.1:4180/assets/rolldown-runtime-hePW80VL.js",
       "type": "Script",
       "bytes": 1025
     },
     {
-      "url": "http://127.0.0.1:19506/assets/profile-CzSscc5o.js",
+      "url": "http://127.0.0.1:4180/assets/profile-BesL7HfW.js",
       "type": "Script",
-      "bytes": 2077
+      "bytes": 2079
     },
     {
-      "url": "http://127.0.0.1:19506/assets/state-Qun3P2fk.js",
+      "url": "http://127.0.0.1:4180/assets/state-2Mhg0osP.js",
       "type": "Script",
-      "bytes": 3211
+      "bytes": 3213
     },
     {
-      "url": "http://127.0.0.1:19506/assets/ClubCrest-uvDRVxyU.js",
+      "url": "http://127.0.0.1:4180/assets/ClubCrest-HD67we_v.js",
       "type": "Script",
-      "bytes": 5703
+      "bytes": 5697
     },
     {
-      "url": "http://127.0.0.1:19506/assets/Dialog-CZH9GufB.css",
+      "url": "http://127.0.0.1:4180/assets/Dialog-DcKbNvEU.css",
       "type": "Stylesheet",
-      "bytes": 11359
+      "bytes": 11384
     },
     {
-      "url": "http://127.0.0.1:19506/assets/ClubCrest-2liMRO71.css",
+      "url": "http://127.0.0.1:4180/assets/ClubCrest-2liMRO71.css",
       "type": "Stylesheet",
       "bytes": 746
     },
     {
-      "url": "http://127.0.0.1:19506/assets/Glossary-BG-_BsDF.css",
+      "url": "http://127.0.0.1:4180/assets/Glossary-BG-_BsDF.css",
       "type": "Stylesheet",
       "bytes": 2392
     },
     {
-      "url": "http://127.0.0.1:19506/assets/index-C1Ocg9vq.css",
+      "url": "http://127.0.0.1:4180/assets/index-B_LyY5-d.css",
       "type": "Stylesheet",
-      "bytes": 14351
+      "bytes": 14508
     },
     {
-      "url": "http://127.0.0.1:19506/assets/slots-i7hEvcfj.js",
+      "url": "http://127.0.0.1:4180/assets/slots-CQBBC5XB.js",
       "type": "Script",
-      "bytes": 3606
+      "bytes": 3610
     },
     {
-      "url": "http://127.0.0.1:19506/assets/Dialog-BFngo-wW.js",
-      "type": "Script",
-      "bytes": 65795
-    },
-    {
-      "url": "http://127.0.0.1:19506/assets/Glossary-SeqYQsax.js",
+      "url": "http://127.0.0.1:4180/assets/Glossary-D0KPys8l.js",
       "type": "Script",
       "bytes": 6402
     },
     {
-      "url": "http://127.0.0.1:19506/assets/index-DtXaz_41.js",
+      "url": "http://127.0.0.1:4180/assets/Dialog-BAEUHKT1.js",
       "type": "Script",
-      "bytes": 143047
+      "bytes": 67422
     },
     {
-      "url": "http://127.0.0.1:19506/fonts/galmuri11-bold.woff2",
+      "url": "http://127.0.0.1:4180/assets/index-CPC5mlAQ.js",
+      "type": "Script",
+      "bytes": 141484
+    },
+    {
+      "url": "http://127.0.0.1:4180/fonts/galmuri11-bold.woff2",
       "type": "Font",
       "bytes": 167138
     },
     {
-      "url": "http://127.0.0.1:19506/assets/PlayerProfile-BpUGlKJf.css",
+      "url": "http://127.0.0.1:4180/assets/PlayerProfile-BpUGlKJf.css",
       "type": "Stylesheet",
       "bytes": 1419
     },
     {
-      "url": "http://127.0.0.1:19506/assets/Rich-BN0VtDlb.css",
+      "url": "http://127.0.0.1:4180/assets/Rich-Ca4rZ59q.css",
       "type": "Stylesheet",
-      "bytes": 8342
+      "bytes": 8350
     },
     {
-      "url": "http://127.0.0.1:19506/art/scenes/heritage/stadium-0.webp",
+      "url": "http://127.0.0.1:4180/art/scenes/heritage/stadium-0.webp",
       "type": "Image",
       "bytes": 30755
     },
     {
-      "url": "http://127.0.0.1:19506/assets/PlayerProfile-CgjOloBL.js",
+      "url": "http://127.0.0.1:4180/assets/PlayerProfile-bjnyNcuX.js",
       "type": "Script",
-      "bytes": 3071
+      "bytes": 3069
     },
     {
-      "url": "http://127.0.0.1:19506/assets/Rich-CZjUVZ55.js",
+      "url": "http://127.0.0.1:4180/assets/Rich-CeG-Z9Ns.js",
       "type": "Script",
-      "bytes": 37715
+      "bytes": 38654
     },
     {
-      "url": "http://127.0.0.1:19506/fonts/galmuri11.woff2",
+      "url": "http://127.0.0.1:4180/fonts/galmuri11.woff2",
       "type": "Font",
       "bytes": 505242
     },
     {
-      "url": "http://127.0.0.1:19506/fonts/galmuri14.woff2",
+      "url": "http://127.0.0.1:4180/fonts/galmuri14.woff2",
       "type": "Font",
       "bytes": 565270
     }
   ],
   "mobileFirstPlayPageTargetTransfers": [
     {
-      "url": "http://127.0.0.1:19506/",
+      "url": "http://127.0.0.1:4180/",
       "type": "Document",
-      "bytes": 1194
+      "bytes": 1195
     },
     {
-      "url": "http://127.0.0.1:19506/assets/rolldown-runtime-hePW80VL.js",
+      "url": "http://127.0.0.1:4180/assets/rolldown-runtime-hePW80VL.js",
       "type": "Script",
       "bytes": 1025
     },
     {
-      "url": "http://127.0.0.1:19506/assets/profile-CzSscc5o.js",
+      "url": "http://127.0.0.1:4180/assets/profile-BesL7HfW.js",
       "type": "Script",
-      "bytes": 2077
+      "bytes": 2079
     },
     {
-      "url": "http://127.0.0.1:19506/assets/state-Qun3P2fk.js",
+      "url": "http://127.0.0.1:4180/assets/state-2Mhg0osP.js",
       "type": "Script",
-      "bytes": 3211
+      "bytes": 3213
     },
     {
-      "url": "http://127.0.0.1:19506/assets/ClubCrest-uvDRVxyU.js",
+      "url": "http://127.0.0.1:4180/assets/ClubCrest-HD67we_v.js",
       "type": "Script",
-      "bytes": 5703
+      "bytes": 5697
     },
     {
-      "url": "http://127.0.0.1:19506/assets/Dialog-CZH9GufB.css",
+      "url": "http://127.0.0.1:4180/assets/Dialog-DcKbNvEU.css",
       "type": "Stylesheet",
-      "bytes": 11359
+      "bytes": 11384
     },
     {
-      "url": "http://127.0.0.1:19506/assets/ClubCrest-2liMRO71.css",
+      "url": "http://127.0.0.1:4180/assets/ClubCrest-2liMRO71.css",
       "type": "Stylesheet",
       "bytes": 746
     },
     {
-      "url": "http://127.0.0.1:19506/assets/Glossary-BG-_BsDF.css",
+      "url": "http://127.0.0.1:4180/assets/Glossary-BG-_BsDF.css",
       "type": "Stylesheet",
       "bytes": 2392
     },
     {
-      "url": "http://127.0.0.1:19506/assets/index-C1Ocg9vq.css",
+      "url": "http://127.0.0.1:4180/assets/index-B_LyY5-d.css",
       "type": "Stylesheet",
-      "bytes": 14351
+      "bytes": 14508
     },
     {
-      "url": "http://127.0.0.1:19506/assets/slots-i7hEvcfj.js",
+      "url": "http://127.0.0.1:4180/assets/slots-CQBBC5XB.js",
       "type": "Script",
-      "bytes": 3606
+      "bytes": 3610
     },
     {
-      "url": "http://127.0.0.1:19506/assets/Glossary-SeqYQsax.js",
+      "url": "http://127.0.0.1:4180/assets/Glossary-D0KPys8l.js",
       "type": "Script",
       "bytes": 6402
     },
     {
-      "url": "http://127.0.0.1:19506/assets/Dialog-BFngo-wW.js",
+      "url": "http://127.0.0.1:4180/assets/Dialog-BAEUHKT1.js",
       "type": "Script",
-      "bytes": 65795
+      "bytes": 67422
     },
     {
-      "url": "http://127.0.0.1:19506/assets/index-DtXaz_41.js",
+      "url": "http://127.0.0.1:4180/assets/index-CPC5mlAQ.js",
       "type": "Script",
-      "bytes": 143047
+      "bytes": 141484
     },
     {
-      "url": "http://127.0.0.1:19506/fonts/galmuri11-bold.woff2",
+      "url": "http://127.0.0.1:4180/fonts/galmuri11-bold.woff2",
       "type": "Font",
       "bytes": 167138
     },
     {
-      "url": "http://127.0.0.1:19506/assets/PlayerProfile-BpUGlKJf.css",
+      "url": "http://127.0.0.1:4180/assets/PlayerProfile-BpUGlKJf.css",
       "type": "Stylesheet",
       "bytes": 1419
     },
     {
-      "url": "http://127.0.0.1:19506/assets/Rich-BN0VtDlb.css",
+      "url": "http://127.0.0.1:4180/assets/Rich-Ca4rZ59q.css",
       "type": "Stylesheet",
-      "bytes": 8342
+      "bytes": 8350
     },
     {
-      "url": "http://127.0.0.1:19506/art/scenes/heritage/stadium-0.webp",
+      "url": "http://127.0.0.1:4180/art/scenes/heritage/stadium-0.webp",
       "type": "Image",
       "bytes": 30755
     },
     {
-      "url": "http://127.0.0.1:19506/assets/PlayerProfile-CgjOloBL.js",
+      "url": "http://127.0.0.1:4180/assets/PlayerProfile-bjnyNcuX.js",
       "type": "Script",
-      "bytes": 3071
+      "bytes": 3069
     },
     {
-      "url": "http://127.0.0.1:19506/assets/Rich-CZjUVZ55.js",
+      "url": "http://127.0.0.1:4180/assets/Rich-CeG-Z9Ns.js",
       "type": "Script",
-      "bytes": 37715
+      "bytes": 38654
     },
     {
-      "url": "http://127.0.0.1:19506/fonts/galmuri11.woff2",
+      "url": "http://127.0.0.1:4180/fonts/galmuri11.woff2",
       "type": "Font",
       "bytes": 505242
     },
     {
-      "url": "http://127.0.0.1:19506/fonts/galmuri14.woff2",
+      "url": "http://127.0.0.1:4180/fonts/galmuri14.woff2",
       "type": "Font",
       "bytes": 565270
     }
   ],
-  "firstPlayPageTargetTransferBytes": 1579860,
-  "mobileFirstPlayPageTargetTransferBytes": 1579860,
+  "firstPlayPageTargetTransferBytes": 1581054,
+  "mobileFirstPlayPageTargetTransferBytes": 1581054,
   "transferNote": "Page-target CDP transfers may omit dedicated-worker target requests; build inventory additionally counts every worker/lazy JavaScript and CSS file as a conservative upper bound.",
-  "centuryLoadMs": 4079,
-  "centuryCheckpointSha256": "399fa14d654575c34b46380a4d45df793b1d35b881d045d4f67c9a32925ebab1",
+  "centuryLoadMs": 3546,
+  "centuryCheckpointSha256": "14c62c2828ad7f4439e637ca896f256e1937b494d73edac2309e5cd7a61fb767",
   "centuryRestoreReference": "Separate unthrottled 100-season initialization measurement",
   "initializationLimitMs": 5000,
   "inputSamples": 30,
-  "pointerToSecondFrameP95Ms": 86,
+  "pointerToSecondFrameP95Ms": 100,
   "inputLimitMs": 100,
   "minimumFps": 30,
   "mobileHorizontalOverflow": false,
