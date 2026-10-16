@@ -14,8 +14,8 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T21:07Z | T199 |
 | - |
+| p6k2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T23:52Z | 2026-10-16T23:52Z | T199 |
 
 ## inbox
 - 261017 decided SAVE-13: career compression order → group stored rows with a complete validated permutation restoring original registry order (alt: reorder live people | increase checkpoint limit); v1/v2 readers remain.
@@ -93,7 +93,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T199 | Fit actual retained active-century storage | SAVE ARCH | T195 T198 | doing@261017.n7r4 |
+| T199 | Fit actual retained active-century storage | SAVE ARCH | T195 T198 | doing@261017.p6k2 |
 | T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 T196 T197 T198 T199 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
 
@@ -108,6 +108,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 implement-task T199 resumed p6k2; owner authorized remaining tasks in autopilot and main pushes.
 - 261017 SAVE r44/create-task: T199 v3 profiles use sparse scalar columns and bounded presence runs to cover century-active23; T178/T179 final source gates remain required.
 - 261017 create-task refresh T199/T178/T179 for SAVE r43 exact permutation contract; T178 released pending T199 and full fixed-source rerun.
 - 261017 SAVE r43: grouped career representation must restore exact original registry order; T199/T178/T179 affected, no gameplay or capacity change.
