@@ -1,0 +1,217 @@
+{
+  "ceiling": 40,
+  "ceilingSources": [
+    "https://playupliverpool.com/1957/04/25/liverpool-f-c-retained-list",
+    "https://m.maxifoot.fr/ligue-1/les-clubs-bientot-limites-a-25-joueurs-foot-368215.htm"
+  ],
+  "rules": [
+    {
+      "country": "ENG",
+      "tiers": [
+        0
+      ],
+      "from": 2010,
+      "to": null,
+      "max": 25,
+      "status": "observed",
+      "sources": [
+        "https://www.premierleague.com/en/news/4097471",
+        "https://www.empireofthekop.com/2010/08/16/25-man-squads-home-grown-rules-explained/"
+      ],
+      "exempt": {
+        "ageAtMost": 21
+      }
+    },
+    {
+      "country": "ENG",
+      "tiers": [
+        1
+      ],
+      "from": 2020,
+      "to": null,
+      "max": 25,
+      "status": "observed",
+      "sources": [
+        "https://www.fourfourtwo.com/features/what-are-the-efl-squad-rules-for-202425-loanee-limits-home-grown-players-and-how-many-subs-are-allowed",
+        "https://www.skysports.com/football/news/11095/12269392/pfa-threatens-efl-with-arbitration-over-squad-size-limits-for-2021-22-campaign"
+      ],
+      "exempt": {
+        "ageAtMost": 21,
+        "loansCount": true
+      }
+    },
+    {
+      "country": "ENG",
+      "tiers": [
+        2,
+        3
+      ],
+      "from": 2020,
+      "to": null,
+      "max": 22,
+      "status": "observed",
+      "sources": [
+        "https://www.fourfourtwo.com/features/what-are-the-efl-squad-rules-for-202425-loanee-limits-home-grown-players-and-how-many-subs-are-allowed",
+        "https://www.skysports.com/football/news/11095/12269392/pfa-threatens-efl-with-arbitration-over-squad-size-limits-for-2021-22-campaign",
+        "https://www.twtd.co.uk/amp/news/43350/efl-publishes-squad-lists",
+        "https://www.lep.co.uk/sport/football/morecambe-publish-their-squad-list-for-the-202122-season-3376839"
+      ],
+      "exempt": {
+        "ageAtMost": 21,
+        "goalkeepers": true
+      }
+    },
+    {
+      "country": "ESP",
+      "tiers": [
+        0,
+        1
+      ],
+      "from": 2000,
+      "to": null,
+      "max": 25,
+      "status": "estimated",
+      "sources": [
+        "https://rfef.es/sites/default/files/pdf/circulares/Circular%2031%20NRBC%20Primera%20y%20Segunda%20Divisi%C3%B3n%20versi%C3%B3n%20actualizada.pdf",
+        "https://www.cope.es/programas/tiempo-de-juego/noticias/lista-jugadores-ficha-filial-inscritos-clubes-primera-division-20250826_3203781.html"
+      ],
+      "exempt": {
+        "graduatesAgeAtMost": 22
+      }
+    },
+    {
+      "country": "ITA",
+      "tiers": [
+        0
+      ],
+      "from": 2015,
+      "to": 2018,
+      "max": 25,
+      "status": "observed",
+      "sources": [
+        "https://www.ilpost.it/2015/07/22/regola-25-calciatori-serie-a/"
+      ],
+      "exempt": {
+        "ageAtMost": 21
+      }
+    },
+    {
+      "country": "ITA",
+      "tiers": [
+        0
+      ],
+      "from": 2019,
+      "to": null,
+      "max": 25,
+      "status": "estimated",
+      "sources": [
+        "https://www.fantacalcio.it/approfondimenti/12_07_2023/le-rose-da-25-delle-big-di-serie-a-la-situazione-attuale-446077"
+      ],
+      "exempt": {
+        "ageAtMost": 22
+      }
+    },
+    {
+      "country": "ITA",
+      "tiers": [
+        1
+      ],
+      "from": 2013,
+      "to": 2016,
+      "max": 22,
+      "status": "estimated",
+      "sources": [
+        "https://www.football-italia.net/32339/serie-b-introduces-salary-cap"
+      ],
+      "exempt": {
+        "ageAtMost": 21
+      }
+    },
+    {
+      "country": "ITA",
+      "tiers": [
+        1
+      ],
+      "from": 2017,
+      "to": null,
+      "max": 18,
+      "status": "observed",
+      "sources": [
+        "https://www.ilrestodelcarlino.it/archive/regolamento-serie-b-9fd44ce9"
+      ],
+      "exempt": {
+        "ageAtMost": 21
+      },
+      "bandiera": {
+        "extra": 2,
+        "seasons": 4
+      }
+    },
+    {
+      "country": "ITA",
+      "tiers": [
+        2
+      ],
+      "from": 2020,
+      "to": null,
+      "max": 24,
+      "status": "estimated",
+      "sources": [
+        "https://www.calcioefinanza.it/2020/09/22/scontro-lega-pro-aic-indetto-sciopero-prima-giornata/",
+        "https://sport.sky.it/calcio/serie-c/2020/09/25/serie-c-sciopero-revocato"
+      ]
+    },
+    {
+      "country": "POR",
+      "tiers": [
+        0,
+        1
+      ],
+      "from": 2013,
+      "to": 2017,
+      "max": 27,
+      "status": "estimated",
+      "sources": [
+        "https://www.ligaportugal.pt/backoffice/assets/rc_b78abbb4ce.pdf"
+      ],
+      "exempt": {
+        "ageAtMost": 22
+      }
+    },
+    {
+      "country": "POR",
+      "tiers": [
+        0,
+        1
+      ],
+      "from": 2018,
+      "to": null,
+      "max": 30,
+      "status": "estimated",
+      "sources": [
+        "https://www.ligaportugal.pt/backoffice/assets/rc_b78abbb4ce.pdf"
+      ],
+      "exempt": {
+        "ageAtMost": 22
+      }
+    },
+    {
+      "country": "BEL",
+      "tiers": [
+        0,
+        1
+      ],
+      "from": 2012,
+      "to": null,
+      "max": 25,
+      "status": "estimated",
+      "sources": [
+        "https://belgianfootball.s3.eu-central-1.amazonaws.com/s3fs-public/rbfa/docs/pdf/reglement/bondsreglement_reglement_federal/KBVB_bondsreglement_Boek_B.pdf",
+        "https://www.lalibre.be/sports/football/2012/07/25/les-joueurs-etrangers-sont-pour-la-premiere-majoritaires-en-d1-UH4EAHFMPNFQHERQAYDON22RYM/"
+      ],
+      "exempt": {
+        "ageAtMost": 20
+      }
+    }
+  ]
+}

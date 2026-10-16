@@ -372,32 +372,33 @@ describe('compatible rule upgrades', () => {
     expect(isEarlierEngine('x.y.z')).toBe(false);
   });
 
-  it('loads a 2026-demo-1 save, moves its catalog pin on activation and round-trips', async () => {
-    const legacy = world();
-    legacy.revision = 9;
-    legacy.catalog = '2026-demo-1';
-    legacy.catalogHash = PRIOR_CATALOG_HASHES['2026-demo-1'];
-    const before = canonical(legacy);
-    const decoded = (await decode(await encode(legacy))).world;
-    expect(canonical(decoded)).toBe(before);
-    expect(decoded.catalog).toBe('2026-demo-1');
-    expect(CATALOG_VERSION).toBe('2026-demo-2');
-    const upgraded = upgradeWorldRules(decoded, CURRENT_CATALOG);
-    expect(canonical(upgraded)).toBe(
-      canonical({
-        ...legacy,
-        engine: CURRENT_ENGINE_VERSION,
-        catalog: CATALOG_VERSION,
-        catalogHash: CATALOG_HASH,
-        revision: 10,
-      }),
-    );
-    expect(canonical(legacy)).toBe(before);
-    expect(canonical((await decode(await encode(upgraded))).world)).toBe(canonical(upgraded));
-    expect(upgradeWorldRules(upgraded, CURRENT_CATALOG)).toBe(upgraded);
-    const wrong = { ...legacy, catalogHash: 'a'.repeat(64) };
-    await expect(decode(await encode(wrong))).rejects.toThrow(SaveCompatibilityError);
-  });
+  for (const catalog of ['2026-demo-1', '2026-demo-2'])
+    it(`loads a ${catalog} save, moves its catalog pin on activation and round-trips`, async () => {
+      const legacy = world();
+      legacy.revision = 9;
+      legacy.catalog = catalog;
+      legacy.catalogHash = PRIOR_CATALOG_HASHES[catalog];
+      const before = canonical(legacy);
+      const decoded = (await decode(await encode(legacy))).world;
+      expect(canonical(decoded)).toBe(before);
+      expect(decoded.catalog).toBe(catalog);
+      expect(CATALOG_VERSION).toBe('2026-demo-3');
+      const upgraded = upgradeWorldRules(decoded, CURRENT_CATALOG);
+      expect(canonical(upgraded)).toBe(
+        canonical({
+          ...legacy,
+          engine: CURRENT_ENGINE_VERSION,
+          catalog: CATALOG_VERSION,
+          catalogHash: CATALOG_HASH,
+          revision: 10,
+        }),
+      );
+      expect(canonical(legacy)).toBe(before);
+      expect(canonical((await decode(await encode(upgraded))).world)).toBe(canonical(upgraded));
+      expect(upgradeWorldRules(upgraded, CURRENT_CATALOG)).toBe(upgraded);
+      const wrong = { ...legacy, catalogHash: 'a'.repeat(64) };
+      await expect(decode(await encode(wrong))).rejects.toThrow(SaveCompatibilityError);
+    });
 
   it('does not reinterpret future worlds or overflow a revision during a pure upgrade', () => {
     const future = { ...world(), engine: '9.0.0' };

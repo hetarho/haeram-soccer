@@ -71,9 +71,11 @@ export type CatalogPin = Pick<World, 'catalog' | 'catalogHash'>;
 /**
  * Catalogs an older checkpoint may be pinned to, each by the hash recorded then. 2026-demo-2 added
  * the football index and the sponsor-slot eras and left prices as they were, so a 2026-demo-1 save
- * changes no recorded fact and moves its pin on writer activation (→SAVE-10).
+ * changes no recorded fact and moves its pin on writer activation (→SAVE-10). Catalog 2026-demo-3
+ * adds sourced registration rules; both older pins preserve historical prices and index facts.
  */
 export const PRIOR_CATALOG_HASHES: Readonly<Record<string, string>> = {
+  '2026-demo-2': 'f51d581ce05db0e27e25216615b1cce5c67e00bf6bb5da6118407f63167284ae',
   '2026-demo-1': '94375c9a798cba789f2d6b319171bf7b45d52090ab0b83ca56b14626d196f679',
 };
 export const SAVE_COMPATIBILITY_CODE = 'save-compatibility' as const;

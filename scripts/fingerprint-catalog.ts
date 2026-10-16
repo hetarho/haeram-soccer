@@ -1,9 +1,16 @@
 import { createHash } from 'node:crypto';
 import { writeFileSync } from 'node:fs';
-import { COUNTRIES, priceData, footballData } from '../packages/catalogs/src/index';
+import { COUNTRIES, priceData, footballData, squadRulesData } from '../packages/catalogs/src/index';
 import { canonical } from '../packages/contracts/src/index';
 const hash = createHash('sha256')
-  .update(canonical({ countries: COUNTRIES, prices: priceData, football: footballData }))
+  .update(
+    canonical({
+      countries: COUNTRIES,
+      prices: priceData,
+      football: footballData,
+      registration: squadRulesData,
+    }),
+  )
   .digest('hex');
 if (process.argv.includes('--write'))
   writeFileSync(

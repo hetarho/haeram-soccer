@@ -1,9 +1,16 @@
+import { validateRegistrationCatalog } from '../packages/catalogs/src/index';
 import { createHash } from 'node:crypto';
 import { canonical } from '../packages/contracts/src/index';
-import { CATALOG_HASH, priceData, footballData } from '../packages/catalogs/src/index';
+import {
+  CATALOG_HASH,
+  priceData,
+  footballData,
+  squadRulesData,
+} from '../packages/catalogs/src/index';
 import { COUNTRIES, priceIndex, CATALOG_VERSION } from '../packages/catalogs/src/index';
 import { SPONSOR_SLOTS, footballIndex, sponsorSlotOpens } from '../packages/catalogs/src/index';
 import { broadcastingIndex } from '../packages/catalogs/src/index';
+validateRegistrationCatalog(squadRulesData);
 const sources: Record<string, string> = footballData.sources;
 const table: Record<string, { share: number; real: number[] }> = footballData.index;
 const eras = footballData.eras;
@@ -106,12 +113,19 @@ for (const c of COUNTRIES) {
   }
 }
 console.log(
-  `${CATALOG_VERSION}: ${COUNTRIES.length} sourced profiles, 1901–2030 positive price, football index (${eras.length} attributed eras) and broadcasting index (${broadcasting.eras.length} attributed eras) coverage, ${SPONSOR_SLOTS.length} sponsor slots per country; normalization and estimates explicitly recorded.`,
+  `${CATALOG_VERSION}: ${COUNTRIES.length} sourced profiles, 1901–2030 positive price, football index (${eras.length} attributed eras) and broadcasting index (${broadcasting.eras.length} attributed eras) coverage, ${SPONSOR_SLOTS.length} sponsor slots per country, ${squadRulesData.rules.length} sourced squad registration eras; normalization and estimates explicitly recorded.`,
 );
 
 if (
   createHash('sha256')
-    .update(canonical({ countries: COUNTRIES, prices: priceData, football: footballData }))
+    .update(
+      canonical({
+        countries: COUNTRIES,
+        prices: priceData,
+        football: footballData,
+        registration: squadRulesData,
+      }),
+    )
     .digest('hex') !== CATALOG_HASH
 )
   throw new Error('Catalog fingerprint is stale: run tsx scripts/fingerprint-catalog.ts --write');

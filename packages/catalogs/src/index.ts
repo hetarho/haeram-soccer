@@ -1,4 +1,5 @@
-export const CATALOG_VERSION = '2026-demo-2';
+export const CATALOG_VERSION = '2026-demo-3';
+import squadRulesData from '../data/squad-rules.json' with { type: 'json' };
 import priceData from '../data/prices.json' with { type: 'json' };
 import footballData from '../data/football-index.json' with { type: 'json' };
 import type { CountryCode } from '../../contracts/src/types';
@@ -414,7 +415,7 @@ export function currency(code: string, year: number): CurrencyPeriod {
     estimated: code === 'GER' && year < 1948,
   };
 }
-export { priceData, footballData };
+export { priceData, footballData, squadRulesData };
 
 import { CATALOG_HASH } from './fingerprint';
 export { CATALOG_HASH };
@@ -423,3 +424,109 @@ export const CURRENT_CATALOG: CatalogPin = {
   catalog: CATALOG_VERSION,
   catalogHash: CATALOG_HASH,
 };
+
+export interface RegistrationRow {
+  country: string;
+  tiers: number[];
+  from: number;
+  to: number | null;
+  max: number;
+  exempt?: {
+    ageAtMost?: number;
+    loansCount?: true;
+    goalkeepers?: true;
+    graduatesAgeAtMost?: number;
+  };
+  bandiera?: { extra: number; seasons: number };
+  status: 'observed' | 'estimated';
+  sources: string[];
+}
+export interface RegistrationCatalog {
+  ceiling: number;
+  ceilingSources: string[];
+  rules: RegistrationRow[];
+}
+export type RegistrationRule = Partial<Pick<RegistrationRow, 'country' | 'tiers' | 'from' | 'to'>> &
+  Omit<RegistrationRow, 'country' | 'tiers' | 'from' | 'to'> & { ceiling: number };
+/** Season-start years are inclusive; unspecified eras/divisions use only the game's ceiling. */
+export function registrationRule(code: string, tier: number, year: number): RegistrationRule {
+  const data = squadRulesData as RegistrationCatalog;
+  const profile = COUNTRIES.find((c) => c.code === code);
+  const row =
+    profile && tier < profile.groups.length
+      ? data.rules.find(
+          (r) =>
+            r.country === code &&
+            r.tiers.includes(tier) &&
+            year >= r.from &&
+            (r.to === null || year <= r.to),
+        )
+      : undefined;
+  return row
+    ? { ...row, ceiling: data.ceiling }
+    : {
+        max: data.ceiling,
+        ceiling: data.ceiling,
+        status: 'estimated',
+        sources: data.ceilingSources,
+      };
+}
+/** Build-time catalog validation, also exported for negative provenance/range regression cases. */
+export function validateRegistrationCatalog(input: unknown) {
+  if (!input || typeof input !== 'object') throw new Error('Missing squad registration catalog');
+  const data = input as RegistrationCatalog;
+  const sourced = (sources: unknown): sources is string[] =>
+    Array.isArray(sources) &&
+    sources.length > 0 &&
+    sources.every((s) => typeof s === 'string' && s.startsWith('https://'));
+  if (data.ceiling !== 40 || !sourced(data.ceilingSources) || !Array.isArray(data.rules))
+    throw new Error('Invalid squad ceiling or sources');
+  const ranges = new Map<string, Array<{ from: number; to: number }>>();
+  for (const row of data.rules) {
+    const profile = COUNTRIES.find((c) => c.code === row.country);
+    if (
+      !profile ||
+      !Array.isArray(row.tiers) ||
+      row.tiers.length === 0 ||
+      new Set(row.tiers).size !== row.tiers.length ||
+      row.tiers.some((t) => !Number.isInteger(t) || t < 0 || t >= profile.groups.length)
+    )
+      throw new Error('Unknown squad country or division');
+    if (
+      !Number.isInteger(row.from) ||
+      row.from < 1901 ||
+      (row.to !== null && (!Number.isInteger(row.to) || row.to < row.from)) ||
+      !Number.isInteger(row.max) ||
+      row.max < 1 ||
+      row.max > data.ceiling
+    )
+      throw new Error('Invalid squad season or maximum');
+    if (!['observed', 'estimated'].includes(row.status) || !sourced(row.sources))
+      throw new Error('Invalid squad provenance');
+    if (row.exempt) {
+      for (const age of [row.exempt.ageAtMost, row.exempt.graduatesAgeAtMost])
+        if (age !== undefined && (!Number.isInteger(age) || age < 0 || age > 99))
+          throw new Error('Invalid registration exemption age');
+      for (const flag of [row.exempt.loansCount, row.exempt.goalkeepers])
+        if (flag !== undefined && flag !== true)
+          throw new Error('Invalid registration exemption flag');
+    }
+    if (
+      row.bandiera &&
+      (!Number.isInteger(row.bandiera.extra) ||
+        row.bandiera.extra < 1 ||
+        !Number.isInteger(row.bandiera.seasons) ||
+        row.bandiera.seasons < 1)
+    )
+      throw new Error('Invalid bandiera rule');
+    for (const tier of row.tiers) {
+      const key = `${row.country}:${tier}`,
+        list = ranges.get(key) ?? [];
+      const to = row.to ?? Infinity;
+      if (list.some((old) => row.from <= old.to && to >= old.from))
+        throw new Error(`Overlapping squad eras: ${key}`);
+      list.push({ from: row.from, to });
+      ranges.set(key, list);
+    }
+  }
+}
