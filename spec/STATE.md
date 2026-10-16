@@ -84,7 +84,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T141 | Remove home launcher spacer | WEB ARCH | - | doing@261016.u9c2 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -94,10 +93,10 @@
 
 ## next
 - ideation expert-proposal-review: delegation groups, defaults and observation stops adopted; discuss retired-player career scope and eligibility next; balance parked.
-- implement-task T141: remove the home launcher spacer and verify mobile/desktop content bounds.
 - Existing optional reviews and balance follow-ups remain parked in inbox. Owner preview: http://localhost:19500.
 
 ## log
+- 261016 T141 done: home uses the launcher space, 45 affected browser cases pass; published at bccf136 with full source CI 38854278380 passing all six jobs
 - 261016 ideation expert-proposal-review: owner adopts mixed new-game delegation defaults and independent observation stops, default match eve on/window opening off
 - 261016 ideation expert-proposal-review: owner adopts seven responsibilities and direct-only business-decision stops; delegated outcomes are reports
 - 261016 ideation expert-proposal-review: owner selects central direct/delegated choices per responsibility; granularity, defaults and clock stops remain open
@@ -117,4 +116,3 @@
 - 261016 create-task T139: WEB r79 compact home, calendar progress and shared notifications/news dialog
 - 261016 update-ssot WEB start: compact home, round-only tools and unified notifications/news
 - 261016 T137 done: full source CI 38759743656 passes all six jobs, storage/first-play gates pass and settled phone/desktop captures are inspected; owner-workflow todo exhausted
-- 261016 T137 implementation: one competition/period selector, explicit home progression tools, consistent operation/news labels and readable phone season facts; full CI/performance gates pending
