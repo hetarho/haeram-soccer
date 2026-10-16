@@ -14,7 +14,8 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T19:45Z | T178 |
+| n7r4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T14:58Z | 2026-10-16T20:05Z | - |
+| - |
 
 ## inbox
 - 261017 decided SAVE-2 ARCH-12: large century checkpoint codec → bounded pure-JavaScript Brotli plus denser BMP blocks; keep small saves gzip, old readers, CSP and all limits (alt: LZMA with slower loading | relax CSP for WASM | increase capacity).
@@ -91,7 +92,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 T196 | doing@261017.n7r4 |
+| T178 | Measure lossless century careers with the new retained state | SAVE WORLD HIST LEAGUE ARCH | T173 T174 T191 T193 T194 T195 T196 T197 | todo |
 | T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | todo |
 
 ## work
@@ -105,6 +106,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 create-task T197: CI Chromium large-codec fixture exceeded its 180s harness timer, shorter than the existing 600s production deadline; preserve assertions and fixed app fingerprint. T178 measurement continues, approval remains incomplete.
 - 261017 implement-task T178 start n7r4.
 - 261017 refresh T178/T179 final-gate inputs after T195/T196; current rule/codec/UI deltas are implemented prerequisites, not new release scope.
 - 261017 T196 done n7r4: Read-only refresh drains newer notifications across successive validated loads; unchanged bogus hints cannot spin and malformed generations are ignored.
