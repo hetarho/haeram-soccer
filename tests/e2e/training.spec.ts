@@ -17,6 +17,7 @@ import type { TrainingFocus, World } from '../../packages/contracts/src/types';
 import { expectHomeBounds } from './layout';
 import { acknowledgeEvents, setResponsibility } from './events';
 import { continueSlot } from './slots';
+import { retainPerson, openEmployment } from '../../packages/engine/src/person-careers';
 
 /** The focuses as 훈련 names them. */
 const FOCUS: Record<TrainingFocus, string> = {
@@ -299,6 +300,8 @@ test('promotes a prospect from 유소년', async ({ page }) => {
   );
   prospect.potential = 74;
   w.academy = { players: [prospect] };
+  retainPerson(w, prospect, w.playerClub, true);
+  openEmployment(w, prospect.id, 'player', w.playerClub);
   const squad = activePlayers(w).length;
   // The journey finds his roster card by name, so it must be the only one with that name.
   expect(w.players.some((player) => player.name === prospect.name)).toBe(false);
@@ -337,13 +340,15 @@ test('promotes a prospect from 유소년', async ({ page }) => {
   const roster = page.locator('[class*="rosterCards"] article');
   await expect(roster).toHaveCount(squad + 1);
   await expect(roster.filter({ hasText: prospect.name })).toHaveCount(1);
-  // Academy investment and youth policy are only named here; the line opens 방향.
+  // The focused youth editor keeps this academy task and route in place.
   await nav.getByRole('button', { name: '훈련·육성', exact: true }).click();
   await page.getByRole('tab', { name: '유소년', exact: true }).click();
   await expect(page.getByRole('button', { name: /^육성 목표 · 표준/ })).toBeVisible();
   await expect(page.getByRole('button', { name: /^데뷔 시점 · 표준/ })).toBeVisible();
   await page.getByRole('button', { name: /^유소년 투자 · 유입 방식은 운영 방침에서/ }).click();
-  await expect(page).toHaveURL(/\/direction$/);
+  await expect(page.getByRole('dialog', { name: '유소년 운영 방침', exact: true })).toBeVisible();
+  await expect(page.getByTestId('department-policy-board')).toContainText('유소년 투자');
+  await expect(page).toHaveURL(/\/training\?view=academy$/);
 });
 
 test('suggests 하드 for one player, forces 회복 for the squad and lists adaptation (→CLUB-11, PLAYER-12)', async ({

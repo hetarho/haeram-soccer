@@ -7,7 +7,7 @@ import {
 import { legacySettings } from '../../packages/engine/src/responsibilities';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { test, expect, type Locator, type Page } from '@playwright/test';
-import { chooseLevel, setResponsibility } from './events';
+import { chooseLevel, setResponsibility, acknowledgeEvents } from './events';
 import { horizontalOverflow } from './layout';
 import { chooseOption } from './select';
 
@@ -145,7 +145,7 @@ test.describe('사람 at 360x740', () => {
     // The rows are chosen on the 방향 board's 스태프 area.
     await post.getByRole('button', { name: /^감독 기조 · 표준/ }).click();
     const staffArea = page
-      .getByTestId('strategy-board')
+      .getByTestId('department-policy-board')
       .getByRole('region', { name: '스태프', exact: true });
     await staffArea.getByRole('radio', { name: '선호 학파 게겐프레싱', exact: true }).click();
     await staffArea.getByRole('radio', { name: '감독 기조 젊은 감독', exact: true }).click();
@@ -273,15 +273,9 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
     const text = await cardText();
     if (text.includes(renewal)) break;
     // Another stop on the way: decline an offer, play a match through or read the news, then run on.
-    const decline = card.getByRole('button', { name: '거절', exact: true }),
-      through = card.getByRole('button', { name: '결과만 보고 계속', exact: true });
-    await (
-      (await decline.count())
-        ? decline
-        : (await through.count())
-          ? through
-          : card.getByRole('button', { name: '확인', exact: true })
-    ).click();
+    const through = card.getByRole('button', { name: '결과만 보고 계속', exact: true });
+    if (await through.count()) await through.click();
+    else await acknowledgeEvents(page);
     await expect.poll(cardText, { timeout: 10000 }).not.toBe(text);
     // A chip only sets the pace (→WEB-18): play starts the clock again when it rests. Play
     // ignores a tap in the first half second after the clock stops itself, so retry until it runs.

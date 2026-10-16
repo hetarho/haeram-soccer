@@ -1,4 +1,9 @@
-import { SaveCompatibilityError, SUPPORTED_ENGINE_VERSIONS, upgradeWorldRules } from './versions';
+import {
+  SaveCompatibilityError,
+  SUPPORTED_ENGINE_VERSIONS,
+  LEGACY_ENGINE_VERSIONS,
+  upgradeWorldRules,
+} from './versions';
 import { CURRENT_CATALOG } from '../../catalogs/src/index';
 import { describe, expect, it } from 'vitest';
 import { canonical } from './index';
@@ -225,13 +230,14 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
   });
 });
 
-describe('rules 2.0.0 (→SAVE-10, →SAVE-16)', () => {
-  it('refuses 1.22.0', () => {
+describe('rules 3.0.0 (→SAVE-10, →SAVE-16)', () => {
+  it('refuses every recognized earlier gameplay version', () => {
     const w = world();
-    expect(SUPPORTED_ENGINE_VERSIONS).toEqual(['2.0.0']);
-    expect(() => upgradeWorldRules({ ...w, engine: '1.22.0' }, CURRENT_CATALOG)).toThrow(
-      SaveCompatibilityError,
-    );
+    expect(SUPPORTED_ENGINE_VERSIONS).toEqual(['3.0.0']);
+    for (const engine of LEGACY_ENGINE_VERSIONS)
+      expect(() => upgradeWorldRules({ ...w, engine }, CURRENT_CATALOG)).toThrow(
+        SaveCompatibilityError,
+      );
   });
   it('refuses a player without his main position among his positions, or a trait twice', () => {
     const w = world();

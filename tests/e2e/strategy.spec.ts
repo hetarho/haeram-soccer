@@ -28,7 +28,7 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   // list, no training dial (훈련 owns the focus).
   const areas: [string, string | undefined, string[]][] = [
     ['선수단·계약', '라커룸 문화', ['선수단 투자', '재계약 기조']],
-    ['영입', '스카우팅', ['영입 기조']],
+    ['영입', '스카우팅', ['영입 기조', '단장·감독 지원']],
     ['매각', '매각 기조', []],
     ['유소년', '유입 방식', ['육성 목표', '데뷔 시점', '유소년 투자']],
     ['스태프', undefined, ['선호 학파', '감독 기조', '코치 기조']],
@@ -39,7 +39,7 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await expect(board.locator('[data-area]')).toHaveCount(8);
   // Areas start folded behind headers naming the options in force (→WEB-60).
   await expect(board.getByRole('radiogroup')).toHaveCount(0);
-  await expect(board.getByTestId('area-summary-scouting')).toHaveText('표준 · 균형');
+  await expect(board.getByTestId('area-summary-scouting')).toHaveText('표준 · 균형 · 균형');
   await expect(board.getByTestId('area-summary-market')).toHaveText('표준');
   await expect(board.getByTestId('area-summary-staff')).toHaveText('상관없음 · 표준 · 표준');
   // 지역 and 글로벌 name the base their rows build; a new club has neither yet (→ECON-34).
@@ -117,7 +117,9 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   // 적용 acts at once: the strategy and the dial are in force, and no card is locked (→ECON-22).
   await draft.getByRole('button', { name: '적용', exact: true }).click();
   await expect(draft).toHaveCount(0);
-  await expect(board.getByTestId('current-strategy')).toHaveText('유스 순혈주의');
+  // The extra squad investment makes this a custom direction; its youth cards and synergy
+  // remain applied. The unmodified presets below retain their actual preset names.
+  await expect(board.getByTestId('current-strategy')).toHaveText('맞춤 방향');
   await expect(generous).toHaveAttribute('aria-checked', 'true');
   await expect(board.getByTestId('synergy-local-heroes')).toContainText('발동 중');
   const youth = board.getByRole('region', { name: '유소년', exact: true });

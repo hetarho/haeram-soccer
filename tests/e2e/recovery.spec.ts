@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
 import { createWorld } from '../../packages/engine/src/index';
+import { configureResponsibilities } from './events';
 import { MANAGER_GONE } from '../../packages/engine/src/operations';
 const found = async (page: import('@playwright/test').Page) => {
   await page.goto('/');
@@ -59,11 +60,14 @@ test('recovers prior checkpoint after active corruption without clearing another
   await found(page);
   const first = await advanceRound(page);
   await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${first} ·`);
-  await page.evaluate(() => {
+  const previousRaw = await page.evaluate(() => {
     localStorage.setItem('another-app:keep', 'present');
     const m = JSON.parse(localStorage.getItem('haeram-soccor:manifest')!);
+    const previous = localStorage.getItem(`haeram-soccor:slot:${m.slot ? 'a' : 'b'}`)!;
     localStorage.setItem(`haeram-soccor:slot:${m.slot ? 'b' : 'a'}`, 'corrupt');
+    return previous;
   });
+  const previous = (await decode(previousRaw)).world;
   await page.reload();
   // The recovery is an unread system notification in the HUD inbox, never a banner (→WEB-66).
   await page.getByRole('button', { name: /^알림·뉴스 · 새 소식/ }).click();
@@ -73,12 +77,30 @@ test('recovers prior checkpoint after active corruption without clearing another
   );
   await inbox.getByRole('button', { name: '닫기', exact: true }).click();
   await expect(page.getByRole('status').filter({ hasText: '체크포인트로 복구' })).toHaveCount(0);
-  await expect(page.getByTestId('calendar')).toContainText('라운드 0');
+  await expect(page.getByTestId('calendar')).toContainText(`라운드 ${previous.round}`);
+  const downloading = page.waitForEvent('download');
+  await page.getByRole('button', { name: '기록 내보내기', exact: true }).click();
+  const download = await downloading;
+  const restored = (await decode(readFileSync((await download.path())!, 'utf8'))).world;
+  expect({
+    day: restored.day,
+    round: restored.round,
+    cash: restored.cash,
+    players: restored.players,
+    matches: restored.ownMatches,
+  }).toEqual({
+    day: previous.day,
+    round: previous.round,
+    cash: previous.cash,
+    players: previous.players,
+    matches: previous.ownMatches,
+  });
+
   expect(await page.evaluate(() => localStorage.getItem('another-app:keep'))).toBe('present');
   const again = await advanceRound(page);
   await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${again} ·`);
   await page.reload();
-  await expect(page.getByTestId('calendar')).toContainText('라운드 1');
+  await expect(page.getByTestId('calendar')).toContainText(`라운드 ${previous.round + 1}`);
 });
 test('quota failure preserves disk save, exports actual memory progress and retries', async ({
   page,
@@ -95,13 +117,23 @@ test('quota failure preserves disk save, exports actual memory progress and retr
     };
   });
   await found(page);
+  // Prepare the first match before failing storage: once a write fails, public progression
+  // correctly stops until retry. One match action then demonstrates unsaved memory progress.
+  await configureResponsibilities(page, {
+    responsibilities: { recruitment: 'delegated', sales: 'delegated' },
+    mode: 'manual',
+    observations: { matchEve: true, windowOpen: false },
+  });
+  await page.getByRole('button', { name: '다음 이벤트', exact: true }).click();
+  await expect(page.getByTestId('event-card')).toContainText('내일 경기');
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   const before = await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'));
   await page.evaluate(() => {
     (globalThis as typeof globalThis & { failWrites?: boolean }).failWrites = true;
   });
   const revision = await advanceRound(page);
   await expect(page.getByRole('alert')).toContainText('저장 실패');
-  // The status names the last save, the founding one, beside the revision this round reached.
+  // The status names the last committed save beside the revision this match reached.
   await expect(page.getByTestId('save-status')).toContainText(
     new RegExp(`(방금|초 전) 저장 · r${revision} ·`),
   );

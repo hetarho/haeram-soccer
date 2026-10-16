@@ -65,6 +65,7 @@ test('older operations addresses open their tab', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await found(page, 'direction-addresses');
   await openBusiness(page);
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   // 방향 is the first page tab and keeps no ?view= (→WEB-39, →WEB-69); there is no 캠페인 tab.
   await expect(page.getByRole('tab', { name: '운영 방침', exact: true })).toHaveAttribute(
     'aria-selected',
