@@ -1,3 +1,4 @@
+import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { Manager, ManagerStyle, ManagerTrait, World } from '../../contracts/src/types';
@@ -197,6 +198,7 @@ function delegated(seed: string, manager = 'standard', school = 'any') {
   const w = world(seed);
   w.cash = '999999999';
   w.intervention = 3;
+  w.settings = legacySettings(3);
   row(w, 'manager', manager);
   row(w, 'school', school);
   return w;
@@ -324,6 +326,7 @@ describe('선호 학파 and 감독 기조 (STAFF-18)', () => {
     // Without delegation an interim the owner kept stays.
     const kept = delegated('criteria-wait-owner');
     kept.intervention = 2;
+    kept.settings = legacySettings(2);
     resignOverDemand(kept);
     delete kept.critical;
     dailyStaff(kept);

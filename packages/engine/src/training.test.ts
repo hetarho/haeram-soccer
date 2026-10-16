@@ -1,3 +1,4 @@
+import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { Player, TrainingFocus } from '../../contracts/src/types';
@@ -33,6 +34,7 @@ function world(focus: TrainingFocus = 'balanced') {
     seed: 'training-progress',
     level: 'easy' as const,
   });
+  w.settings = legacySettings(2);
   w.cash = '999999999';
   w.manager.youth = 60;
   w.tactic = 'balanced';

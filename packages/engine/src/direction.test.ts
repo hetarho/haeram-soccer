@@ -1,3 +1,4 @@
+import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { InterventionLevel } from '../../contracts/src/types';
@@ -287,6 +288,7 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     operate(fresh, { type: 'build', build: { market: 'selling' } });
     operate(fresh, { type: 'direction', key: 'youthGoal', option: 'sell' });
     fresh.intervention = 4;
+    fresh.settings = legacySettings(4);
     staffStances(fresh);
     expect(freshBench[0].stance).toBe('listed');
     expect(freshBench[1].stance).toBe('listed');
@@ -297,6 +299,7 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     const hold = world('direction-hold');
     operate(hold, { type: 'build', build: { market: 'hold' } });
     hold.intervention = 4;
+    hold.settings = legacySettings(4);
     hold.calendar = { day: transferWindowDays(hold.year).summerOpen };
     dailyMarket(hold);
     const marked = activePlayers(hold).filter((player) => player.stance === 'untouchable');

@@ -163,6 +163,7 @@ describe('worker command protocol', () => {
   it('reads the all-time head-to-head from every own match without queueing or projecting', async () => {
     const h = new Host();
     await h.handle(req('create', -1, { type: 'found', input }));
+    h.world!.settings = legacySettings(4);
     simulateSeason(h.world!);
     const w = h.world!,
       met = w.ownMatches.find((m) => m.kind === 'lower')!,

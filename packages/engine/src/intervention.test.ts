@@ -34,10 +34,15 @@ describe('the intervention level decides who takes each decision (→WEB-45, STA
         expect(INTERVENTION_DELEGATES[level]).toContain(key);
   });
 
-  it('starts new clubs at level 2 and reads a world without a level as the owner alone', () => {
+  it('uses seven saved defaults while careers without settings retain legacy authority', () => {
     const w = world();
     expect(w.intervention).toBe(2);
-    expect(DELEGATION_KEYS.filter((key) => delegated(w, key))).toEqual(['academy', 'contracts']);
+    expect(DELEGATION_KEYS.filter((key) => delegated(w, key))).toEqual(
+      DELEGATION_KEYS.filter(
+        (key) => key === 'academy' || key === 'business' || key.startsWith('coach:'),
+      ),
+    );
+    delete w.settings;
     delete w.intervention;
     expect(interventionOf(w)).toBe(1);
     expect(DELEGATION_KEYS.some((key) => delegated(w, key))).toBe(false);

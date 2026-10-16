@@ -1,3 +1,4 @@
+import { legacySettings } from '../../packages/engine/src/responsibilities';
 import type { Founding, World, Command } from '../../packages/contracts/src/types';
 import {
   createWorld,
@@ -19,6 +20,8 @@ export interface FixtureDefinition {
 }
 export function runFixture(definition: FixtureDefinition) {
   const w = createWorld(definition.input);
+  // Freeze the portable v1 scenarios to their original authority, independently of new-game defaults.
+  w.settings = legacySettings(2);
   if (definition.year) {
     w.year = definition.year;
     w.currency = currency(definition.input.country, w.year).code;

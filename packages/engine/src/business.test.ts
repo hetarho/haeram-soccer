@@ -21,16 +21,19 @@ import {
   ownLeagueGames,
   simulateSeason,
 } from './index';
+import { legacySettings } from './responsibilities';
 import { professionalStart } from './testing';
 
 function world(country: 'ENG' | 'BEL' = 'ENG', seed = 'business') {
-  return createWorld({
+  const w = createWorld({
     country,
     name: 'Ledger Town',
     color: '#335544',
     seed,
     level: 'easy' as const,
   });
+  w.settings = legacySettings(2);
+  return w;
 }
 const finance = (w: World) => (w.inbox || []).filter((item) => item.kind === 'finance');
 
@@ -95,6 +98,7 @@ describe('business delegation and cash warnings', () => {
     expect(owner.sponsors).toBeUndefined();
     const delegated = world();
     delegated.intervention = 4;
+    delegated.settings = legacySettings(4);
     advanceDays(delegated, 1);
     // A 1950 club in England has only the local slot open (→ECON-8).
     expect(delegated.sponsors).toEqual([
@@ -115,6 +119,7 @@ describe('business delegation and cash warnings', () => {
   it('signs again once a contract has run its term, valued anew', () => {
     const w = world();
     w.intervention = 4;
+    w.settings = legacySettings(4);
     advanceDays(w, 1);
     const first = w.sponsors![0];
     for (let season = 0; season < 3; season++) simulateSeason(w);
@@ -134,6 +139,7 @@ describe('business delegation and cash warnings', () => {
     expect(finance(owner).at(-1)!.detail).toMatch(/^지역 후원 자리가 비어 있어요/);
     const delegated = world();
     delegated.intervention = 4;
+    delegated.settings = legacySettings(4);
     simulateSeason(delegated);
     expect(finance(delegated).every((item) => !item.attention)).toBe(true);
   });

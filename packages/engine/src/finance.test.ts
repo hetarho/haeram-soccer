@@ -1,3 +1,4 @@
+import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import type { PolicyLevel, World } from '../../contracts/src/types';
 import { canonical, validateWorld } from '../../contracts/src/index';
@@ -314,6 +315,7 @@ describe('earned, auditable club finances', () => {
     const w = world();
     w.cash = '999999999';
     w.intervention = 4;
+    w.settings = legacySettings(4);
     // Paid coaches whose contracts end at this close: the ablest one the staff keep (no candidate
     // is 3 better), the other no longer meets 코치 기조 최고 수준 and is replaced.
     w.direction = { coaches: 'elite' };
