@@ -105,6 +105,7 @@
 - Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
 
 ## log
+- 261017 refresh T178/T179 final-gate inputs after T195/T196; current rule/codec/UI deltas are implemented prerequisites, not new release scope.
 - 261017 T196 done n7r4: Read-only refresh drains newer notifications across successive validated loads; unchanged bogus hints cannot spin and malformed generations are ignored.
 - 261017 implement-task T196 start n7r4.
 - 261017 T195 done n7r4: Adaptive bounded pure-JavaScript Brotli/BMP compression preserves historical gzip readers and all facts; the actual century checkpoint fits 1527324 bytes, with metadata-only validated inspection and exact-source activation reuse.
