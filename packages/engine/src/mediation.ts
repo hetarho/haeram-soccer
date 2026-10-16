@@ -232,3 +232,38 @@ export function resolveDelegatedMediations(w: World) {
     );
   return pending.length;
 }
+
+/** A selected-case preview uses a private canonical copy; it cannot create real bids or promises. */
+export function mediationPreview(w: World, id: string, support: RecruitmentMediation['support']) {
+  const trial = structuredClone(w),
+    beforeBids = new Set((w.bids ?? []).map((b) => b.id)),
+    beforeArrivals = w.recruitmentArrivals?.length ?? 0;
+  const record = resolveMediation(trial, id, support, 'owner');
+  const promise = record.resolution?.promise
+    ? trial.promises?.find((p) => p.id === record.resolution!.promise)
+    : undefined;
+  const bid = trial.bids?.find((b) => !beforeBids.has(b.id)),
+    arrival = trial.recruitmentArrivals?.[beforeArrivals];
+  return {
+    id,
+    support,
+    result: record.resolution!.result,
+    promise: promise ? { target: promise.target, deadline: promise.deadline } : undefined,
+    offer: bid
+      ? {
+          player: bid.playerId,
+          fee: bid.fee,
+          wage: bid.offer?.player.wage ?? '0',
+          kind: 'bid' as const,
+        }
+      : arrival
+        ? {
+            player: arrival.player,
+            fee: '0',
+            wage: trial.players.find((p) => p.id === arrival.player)!.wage,
+            kind: 'arrival' as const,
+          }
+        : undefined,
+    immediateSpend: (BigInt(w.cash) - BigInt(trial.cash)).toString(),
+  };
+}

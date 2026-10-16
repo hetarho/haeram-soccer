@@ -470,3 +470,53 @@ describe('career view projection', () => {
     expect(h.world!.revision).toBe(revision);
   });
 });
+
+describe('retained recruitment decision reads', () => {
+  it('bounds resolved decisions in views, reads full history and previews without changing canonical state', async () => {
+    const { detectMediations, resolveMediation } =
+      await import('../../../../packages/engine/src/mediation');
+    const { transferOffers, managerCandidates } =
+      await import('../../../../packages/engine/src/index');
+    const { lineOf } = await import('../../../../packages/engine/src/player');
+    const h = new Host();
+    await h.handle(req('mediation-found', -1, { type: 'found', input }));
+    const w = h.world!;
+    w.settings!.responsibilities.recruitment = 'direct';
+    for (let i = 0; i < 23; i++) {
+      const candidate = transferOffers(w).find(
+        (o) => o.available && lineOf(o.player.position) === 'MF',
+      )!;
+      w.shortlist = {
+        year: w.year,
+        day: 0,
+        entries: [{ playerId: candidate.player.id, line: 'MF' }],
+        requests: [{ kind: 'short', line: 'MF', pick: candidate.player.id }],
+      };
+      w.cash = '0';
+      detectMediations(w);
+      resolveMediation(w, w.mediations!.at(-1)!.id, 'director');
+      w.cash = '999999999999999';
+      operate(w, { type: 'hire', id: managerCandidates(w).find((m) => m.source === 'club')!.id });
+    }
+    w.cash = '0';
+    detectMediations(w);
+    const response = await h.handle(
+      req('bounded-mediations', w.revision, { type: 'command', command: { type: 'read-inbox' } }),
+    );
+    expect(w.mediations).toHaveLength(24);
+    expect(response.view!.world.mediations).toHaveLength(21);
+    const before = canonical(w);
+    const history = await h.handle(req('all-mediations', -1, { type: 'recruitment-history' }));
+    expect(history.recruitmentHistory!.mediations).toHaveLength(24);
+    expect(history.view).toBeUndefined();
+    const preview = await h.handle(
+      req('preview-mediation', -1, {
+        type: 'mediation-preview',
+        id: w.mediations!.at(-1)!.id,
+        support: 'balanced',
+      }),
+    );
+    expect(preview.mediationPreview).toBeDefined();
+    expect(canonical(w)).toBe(before);
+  });
+});

@@ -1,3 +1,4 @@
+import type { mediationPreview } from '../../../../packages/engine/src/mediation';
 import type { PersonCareerDetail } from './personCareer';
 import type { StaffRole } from '../../../../packages/contracts/src/types';
 import type { staffCandidates } from '../../../../packages/engine/src/staff';
@@ -227,6 +228,12 @@ export const requestSchema = z.object({
     z.object({ type: z.literal('head-to-head'), club: ref }),
     z.object({ type: z.literal('club-records') }),
     z.object({ type: z.literal('person-career'), person: ref }),
+    z.object({ type: z.literal('recruitment-history') }),
+    z.object({
+      type: z.literal('mediation-preview'),
+      id: ref,
+      support: z.enum(['director', 'balanced', 'manager']),
+    }),
     z.object({
       type: z.literal('league-fixtures'),
       country: z.string().regex(/^[A-Z]{3}$/),
@@ -238,7 +245,7 @@ export const requestSchema = z.object({
 });
 export type Request = z.infer<typeof requestSchema>;
 export type Body = Request['body'];
-/** Daily projection deliberately excludes the canonical lifetime registry. */
+/** Daily projection excludes the lifetime person registry and bounds resolved recruitment history. */
 export type ProjectedWorld = Omit<World, 'people'> & { people?: never };
 export interface View {
   world: ProjectedWorld;
@@ -274,6 +281,11 @@ export interface Reply {
   /** Our match records over every own match (→WEB-54); the view keeps only recent matches. */
   clubRecords?: ClubRecords;
   personCareer?: PersonCareerDetail;
+  mediationPreview?: ReturnType<typeof mediationPreview>;
+  recruitmentHistory?: {
+    mediations: NonNullable<World['mediations']>;
+    promises: NonNullable<World['promises']>;
+  };
   /** Another league's fixtures this season; the view carries only the own league's (→WEB-65). */
   leagueFixtures?: Fixture[];
   progress?: number;

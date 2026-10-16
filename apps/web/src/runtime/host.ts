@@ -1,3 +1,4 @@
+import { mediationPreview } from '../../../../packages/engine/src/mediation';
 import { personCareer } from './personCareer';
 import { STAFF_ROLES, staffCandidates } from '../../../../packages/engine/src/staff';
 import { careerAssessment } from '../../../../packages/engine/src/career-assessment';
@@ -53,6 +54,8 @@ export class Host {
     if (
       type === 'head-to-head' ||
       type === 'person-career' ||
+      type === 'recruitment-history' ||
+      type === 'mediation-preview' ||
       type === 'league-fixtures' ||
       type === 'club-records' ||
       type === 'archive'
@@ -97,6 +100,14 @@ export class Host {
       ),
       world: {
         ...projected,
+        mediations: [
+          ...(w.mediations ?? []).filter((m) => m.status === 'pending'),
+          ...(w.mediations ?? []).filter((m) => m.status !== 'pending').slice(-20),
+        ],
+        promises: [
+          ...(w.promises ?? []).filter((p) => p.status === 'pending'),
+          ...(w.promises ?? []).filter((p) => p.status !== 'pending').slice(-20),
+        ],
         ownMatches: w.ownMatches.slice(-30),
         fixtures: w.fixtures.filter(
           (f) =>
@@ -152,6 +163,21 @@ export class Host {
       if (this.session && this.session !== request.session)
         throw new Error('이전 세션의 요청입니다.');
       if (!w) throw new Error('먼저 클럽을 창단하세요.');
+      if (body.type === 'recruitment-history')
+        return {
+          requestId: request.requestId,
+          ok: true,
+          recruitmentHistory: structuredClone({
+            mediations: w.mediations ?? [],
+            promises: w.promises ?? [],
+          }),
+        };
+      if (body.type === 'mediation-preview')
+        return {
+          requestId: request.requestId,
+          ok: true,
+          mediationPreview: mediationPreview(w, body.id, body.support),
+        };
       if (body.type === 'person-career') {
         const detail = personCareer(w, body.person);
         if (!detail) throw new Error('기록된 인물 경력이 없습니다.');

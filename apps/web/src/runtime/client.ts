@@ -514,6 +514,17 @@ export class GameClient {
    * Our all-time record against a club from every own match the worker keeps; the view holds only
    * the recent ones. A read skips the command queue, so it never sets busy or holds the clock.
    */
+  async recruitmentHistory() {
+    const reply = await this.rpc({ type: 'recruitment-history' });
+    if (!reply.recruitmentHistory)
+      throw new Error(reply.error ?? '영입 결정 기록 응답이 없습니다.');
+    return reply.recruitmentHistory;
+  }
+  async mediationPreview(id: string, support: 'director' | 'balanced' | 'manager') {
+    const reply = await this.rpc({ type: 'mediation-preview', id, support });
+    if (!reply.mediationPreview) throw new Error(reply.error ?? '중재 미리보기 응답이 없습니다.');
+    return reply.mediationPreview;
+  }
   async personCareer(person: string) {
     const reply = await this.rpc({ type: 'person-career', person });
     if (!reply.personCareer) throw new Error(reply.error ?? '인물 경력 응답이 없습니다.');

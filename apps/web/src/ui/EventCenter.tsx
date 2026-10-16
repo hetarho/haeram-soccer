@@ -1,3 +1,4 @@
+import { MediationButton } from './MediationReview';
 import { PixelIcon } from './PixelIcon';
 import { memo, useEffect, useId, useState } from 'react';
 import type {
@@ -299,6 +300,12 @@ const EventCard = memo(function EventCard({
               확인
             </button>
           </>
+        ) : item.ref && w.mediations?.some((m) => m.id === item.ref && m.status === 'pending') ? (
+          <MediationButton
+            record={w.mediations.find((m) => m.id === item.ref)!}
+            w={w}
+            client={client}
+          />
         ) : item.ref && w.playingCoachProposals?.[item.ref]?.status === 'pending' ? (
           <button onClick={() => usePlayerSheet.getState().open(item.ref!)}>
             선수·코치 계약 검토

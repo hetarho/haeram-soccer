@@ -1,0 +1,26 @@
+.review {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.review p,
+.card p {
+  overflow-wrap: anywhere;
+}
+.review fieldset {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  border: 1px solid var(--line-strong);
+}
+.review label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.card {
+  padding: 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  min-width: 0;
+}

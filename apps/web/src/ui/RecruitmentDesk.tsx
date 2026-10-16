@@ -1,3 +1,4 @@
+import { RecruitmentCommitments } from './MediationReview';
 import { PlayerLink } from './PlayerSheet';
 import { useTaskState } from './taskMemory';
 import { Select } from './Select';
@@ -616,6 +617,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           {BigInt(fee) > BigInt(w.cash) && <p className={s.warning}>자금이 부족해요.</p>}
         </Dialog>
       )}
+      <RecruitmentCommitments w={w} client={client} />
       <OfferAnswers w={w} />
       <ScoutShortlist
         w={w}
