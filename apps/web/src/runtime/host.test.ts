@@ -1,3 +1,5 @@
+import { legacySettings } from '../../../../packages/engine/src/responsibilities';
+import { signSponsor, sponsorSlots } from '../../../../packages/engine/src/sponsors';
 import { describe, it, expect } from 'vitest';
 import { Host } from './host';
 import { build } from './codec';
@@ -57,7 +59,7 @@ describe('worker command protocol', () => {
     expect(stale.ok).toBe(false);
     expect((await h.handle({ ...a, session: 'expired', requestId: 'expired' })).ok).toBe(false);
   });
-  it('takes the intervention level by command and a day step stopping for every kind (→WEB-45)', async () => {
+  it('accepts the legacy intervention command and validates clock-command boundaries', async () => {
     const h = new Host();
     await h.handle(req('create', -1, { type: 'found', input }));
     const level = await h.handle(
@@ -65,7 +67,10 @@ describe('worker command protocol', () => {
     );
     expect(level.ok).toBe(true);
     expect(h.world!.intervention).toBe(1);
-    // Level 1 stops for every event kind, so the step names all of them.
+    // Settle unrelated sponsor decisions before testing an allowed clock command.
+    for (const slot of sponsorSlots(h.world!))
+      if (slot.offers.length) signSponsor(h.world!, slot.slot, 0);
+    // Legacy stop hints remain accepted; live decisions determine actual stops.
     const step = await h.handle(
       req('step', 1, {
         type: 'command',
@@ -227,6 +232,10 @@ describe('worker command protocol', () => {
   it('persists off days and reaches the next owned fixture exactly once', async () => {
     const h = new Host();
     await h.handle(req('create', -1, { type: 'found', input }));
+    // Explicit quiet authority fixture: this tests date persistence, not automatic hiring.
+    h.world!.settings = legacySettings(2);
+    for (const slot of sponsorSlots(h.world!))
+      if (slot.offers.length) signSponsor(h.world!, slot.slot, 0);
     const dayRequest = req('days', 0, {
       type: 'command',
       command: { type: 'advance-days', days: 3 },
@@ -238,10 +247,14 @@ describe('worker command protocol', () => {
     // A command is answered without encoding: checkpoints come from the codec worker.
     expect(days.raw).toBeUndefined();
     expect(await h.handle(dayRequest)).toBe(days);
+    // A real sale offer may have arrived on that date; reading it cannot authorize travel.
+    for (const bid of h.world!.bids || [])
+      if (bid.direction === 'in' && bid.status === 'pending')
+        operate(h.world!, { type: 'respond-bid', id: bid.id, accept: false });
     const match = await h.handle(
       req('match', h.world!.revision, { type: 'command', command: { type: 'next-match' } }),
     );
-    expect(match.ok).toBe(true);
+    expect(match.ok, match.error).toBe(true);
     expect(match.view?.world.calendar?.day).toBe(7);
     expect(match.view?.world.ownMatches).toHaveLength(1);
     expect(match.playback?.record.id).toBe(match.view?.world.ownMatches[0].id);

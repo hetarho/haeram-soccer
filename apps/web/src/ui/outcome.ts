@@ -38,6 +38,7 @@ const titles: Record<Command['type'], string> = {
   advance: '한 라운드를 진행했어요',
   'advance-days': '하루를 진행했어요',
   'next-match': '다음 경기까지 진행했어요',
+  'next-event': '다음 이벤트에 도착했어요',
   season: '시즌 끝까지 진행했어요',
   tactics: '감독에게 전술을 요청했어요',
   lineup: '다음 경기 선발을 정했어요',
@@ -162,6 +163,7 @@ export function describeOutcome(
     before.id !== after.id ||
     before.year !== after.year ||
     command.type === 'next-match' ||
+    command.type === 'next-event' ||
     command.type === 'read-inbox'
   )
     return undefined;

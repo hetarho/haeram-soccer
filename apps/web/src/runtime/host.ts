@@ -1,3 +1,5 @@
+import { nextEventDays } from '../../../../packages/engine/src/next-event';
+import { pendingDecisions, stoppingReasons } from '../../../../packages/engine/src/stopping';
 import {
   createWorld,
   advanceRound,
@@ -11,7 +13,6 @@ import {
   sponsorSlots,
   operatingCost,
   europeanCoefficient,
-  unreadAttention,
   clubNews,
   BANKRUPT_MESSAGE,
 } from '../../../../packages/engine/src/index';
@@ -237,12 +238,19 @@ export class Host {
         if (r.body.type === 'command') {
           const cmd = r.body.command;
           if (w.bankrupt && cmd.type !== 'read-inbox') throw new Error(BANKRUPT_MESSAGE);
-          if (cmd.type === 'advance-days' || cmd.type === 'next-match') {
+          if (cmd.type === 'next-event') {
+            let days = 0;
+            for (const day of nextEventDays(w)) {
+              void day;
+              // No intermediate view/progress publication or public cancel journey.
+              if (++days % 14 === 0) await new Promise((resolve) => setTimeout(resolve, 0));
+            }
+          } else if (cmd.type === 'advance-days' || cmd.type === 'next-match') {
             if (w.critical) throw new Error('중요한 알림을 확인한 후 계속하세요.');
+            if (pendingDecisions(w).length) throw new Error('먼저 대기 중인 결정을 처리하세요.');
             const matchCount = w.ownMatches.length,
               year = w.year,
               stop = new Set(cmd.type === 'advance-days' ? cmd.stop : []),
-              seen = new Set(unreadAttention(w).map((item) => item.id)),
               known = new Set((w.inbox || []).map((item) => item.id));
             const limit = cmd.type === 'advance-days' ? cmd.days : 2 * seasonLength(w);
             // Only a watched match needs its movement frames; a day step plays our match through
@@ -263,7 +271,9 @@ export class Host {
               // clock itself stops only for enabled kinds (WEB-18).
               if (
                 w.year !== year ||
-                unreadAttention(w).some((item) => stop.has(item.kind) && !seen.has(item.id)) ||
+                pendingDecisions(w).length > 0 ||
+                (cmd.type === 'advance-days' &&
+                  stoppingReasons(w).some((item) => stop.has(item.kind))) ||
                 (cmd.type === 'advance-days' &&
                   n < limit - 1 &&
                   (w.ownMatches.length > matchCount ||

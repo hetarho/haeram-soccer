@@ -929,6 +929,7 @@ export interface Founding {
 }
 export type Command =
   | { type: 'settings'; settings: GameSettings }
+  | { type: 'next-event' }
   | { type: 'advance'; rounds: number }
   /** Stops early on the day a new unread attention item of a `stop` kind arrives. */
   | { type: 'advance-days'; days: number; stop?: InboxKind[] }

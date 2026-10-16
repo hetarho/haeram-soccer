@@ -82,7 +82,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T147 | Advance directly to the first stopping date in the worker | WEB LEAGUE ARCH | T145 T146 | todo |
 | T148 | Make runtime clock behaviour obey automatic versus manual mode | WEB SAVE | T147 | todo |
 | T149 | Build one explicit-apply responsibility and observation screen | WEB | T146 T148 | todo |
 | T150 | Expose exclusive time controls and remove season tools | WEB | T148 T149 | todo |
@@ -131,33 +130,30 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- implement-task T142: start the complete proposal batch from validated responsibility/settings foundations; T154 is the independent aptitude foundation. All task files specify dependencies and focused verification.
+- implement-task: continue the authored task contracts under the user override; defer the other session’s squad/bidding/call-up planning changes. Deadline 2026-10-17 06:00 KST.
+- T142–T147 are complete. Continue T148 and subsequent dependency-ready tasks through the authorized deadline; T154 is the independent aptitude foundation.
 - Implement T142–T179 as explicit small units; preserve accepted policy and parked balance constants. Then implement T180–T187 (squad and reputation; T180/T181 need nothing, the rest follow T143/T144) before T174, which waits for them so they ship inside rules 3.0.0. No implementation or new-rule save deletion has run in this planning unit.
 - Final integration T179 follows the full browser/continuity gates and measured century-save gate T178; do not activate/deploy incomplete rule metadata early.
 
 ## log
-- 261016 T146 complete and checkpointed by task under the user’s authored-contract scope override.
-- 261016 T145 complete and checkpointed by task under the user’s authored-contract scope override.
-- 261016 T144 complete and checkpointed by task under the user’s authored-contract scope override.
-- 261016 T143 complete and checkpointed by task under the user’s authored-contract scope override.
-- 261016 T142 complete and checkpointed by task under the user’s authored-contract scope override.
+- 261016 user checkpoint request: T142 ae9f3e3, T143 e04d0c7, T144 bcb887e, T145 9aff0e8 and T146 5ad2c46 committed individually after isolated snapshot verification. Continue one verified task per commit.
+- 261016 T147 done p150: Manual next-event sole-writer command settles ordered days to the earliest complete stopping date, including cup fixtures, leap days and season rollover, with no intermediate progress publications.
+- 261016 implement-task T147 start p150
+- 261016 T146 done p150: Pure per-category pending-work disclosure and single-command handover through existing contract, counteroffer, sale and appointment resolvers; unresolved external terms preserved and completed work not replayed.
 - 261016 create-task complete: T180–T187 — reputation by standing, registration catalog and counting, squad target 20 with close call-ups, trait bidding, replacement needs, window-close call-ups, squad display; T174 now waits for T180 T186 T187 (base SAVE@39); T143/T144 assumed as specified
 - 261016 create-task CLUB LEAGUE STAFF WEB SAVE start: squad/reputation delta CLUB r40–41, LEAGUE r9, STAFF r33, WEB r87, SAVE r38–39
+- 261016 implement-task T146 start p150
+- 261016 T145 done p150: Shared dated live-domain stopping query, independent observations and durable academy review references; unread reports no longer confer decision authority.
+- 261016 implement-task T145 start p150
+- 261016 T144 done p150: Independent manager, shared staff, academy and sponsor authority without training or trust changes; authored task scope retained by user override.
+- 261016 T143 done p150: Independent contract, recruitment and sale authority; existing business rules preserved under the explicit user scope override.
+- 261016 user override p150: implement T143/T144 exactly as their authored task contracts; the other session will reconcile later planning deltas. Continue dependency-ready tasks beyond T150 until 2026-10-17 06:00 KST (2026-10-16 21:00 UTC), preserving incomplete task status and verification evidence.
+- 261016 implement-task T144 start p150
+- 261016 implement-task T143 start p150
+- 261016 implement-task p150 freshness gate: T143/T144 returned to todo with verified changes preserved; current CLUB@41/STAFF@33 conflict with their preserve-existing business-rule scope. T145–T150 not started; T142 settings foundation remains complete.
 - 261016 update-ssot warning T143 (doing, base CLUB@39 LEAGUE@8): CLUB r40–41 and LEAGUE r9 add CLUB-40–44 and LEAGUE-14 and change squad numbers in CLUB-1/3/5/33; T143's responsibility routing is unchanged
 - 261016 update-ssot CLUB r41 SAVE r39: CLUB-44 real registration limits by country, division and year (none in England before 2010; GER/FRA/NED none) with a 40-player ceiling; squad and reputation planning complete
+- 261016 implement-task T144 start p150
 - 261016 update-ssot CLUB r40 LEAGUE r9 STAFF r33 WEB r87 SAVE r38: squad target 20 with delegated academy call-ups at the close and at a window's close, replacement needs after a starter's departure or under 20, the 단장's trait bidding (협상가 80%→100%, none 100%, 속전속결 110%), every club's reputation by standing (20% to its next division's level, finish ±3, cup +2, continental), all inside rules 3.0.0; per-league registration limits (CLUB-5) follow after research
 - 261016 update-ssot CLUB LEAGUE STAFF WEB SAVE start: realistic squad replenishment (replace, cheaper candidate, academy call-up) and reputation by standing
-- 261016 create-task complete: T142–T179 (38 small explicit contracts), all 83 pending decisions covered across nine domains; prerequisites, concrete code anchors, boundary/failure cases and targeted tests recorded; implementation and balance tuning not run
-- 261016 create-task WEB WORLD CLUB STAFF ECON LEAGUE HIST SAVE PLAYER start: decompose the complete approved proposal into small explicit implementation contracts for lower-capability models; preserve parked balance rules
-- 261016 update-ssot CLUB r39: qualifying external arrivals through next-window deadline, next-day judgement, manager-linked cancellation, retained director-change commitments, no duplicates/extensions and no additional trust effects; all adopted proposal policy gaps resolved before task decomposition
-- 261016 update-ssot CLUB start: settle promise deadline/qualifying arrivals, manager-linked cancellation, duplicate prevention and unchanged numerical trust evaluation
-- 261016 update-ssot CLUB r38: financial-conflict mediation once per manager/request/window, three support outcomes preserving delegated financial checks; promise lifecycle and numerical reactions remain open
-- 261016 update-ssot CLUB start: restrict mediation to actual financial opposition, deduplicate per manager/request/window and settle three standing support policies
-- 261016 update-ssot STAFF r32: additional former-player coach/manager candidates, expired other-club contracts return to job search, employed coaches eligible for management with 1.5x current coaching wage compensation; only mediation/promise units remain open
-- 261016 update-ssot STAFF start: add former-player candidates, return expired other-club coaches to job search, and allow employed coaches to enter management with disclosed poaching compensation
-- 261016 update-ssot STAFF r31 HIST r12: exact coaching-specialty priority, school from longest recorded mentor with recent tie-break, actual mentor exposure retained; market/contract and mediation/promise units remain open
-- 261016 update-ssot STAFF HIST start: settle coaching-specialty priority and manager school inherited from the longest actually recorded coaching mentor
-- 261016 update-ssot STAFF r30: separate first-manager OVR/POT ranges and NPC coaching hires at 25% per four-round/season-close refresh into suitable vacant posts for two years; school/mapping and market transitions remain open
-- 261016 update-ssot STAFF start: record separate initial manager ability/potential and other-club coaching hires at four-round/season-end refreshes
-- 261016 update-ssot STAFF r29 WORLD r6: approved novice coaching OVR/POT ranges, selective continuity for coaching prospects/former own players, actual age/retirement and unique affiliation/role history; four policy units remain open
-- 261016 update-ssot STAFF WORLD start: record approved novice coaching OVR/POT ranges and selective cross-club person continuity
+- 261016 implement-task T143 start p150

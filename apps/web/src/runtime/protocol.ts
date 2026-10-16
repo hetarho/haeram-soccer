@@ -52,6 +52,7 @@ const inboxKind = z.enum([
 ]);
 const command = z.discriminatedUnion('type', [
   z.strictObject({ type: z.literal('settings'), settings: gameSettingsSchema }),
+  z.strictObject({ type: z.literal('next-event') }),
   z.object({ type: z.literal('advance'), rounds: z.number().int().min(1).max(46) }),
   z.object({
     type: z.literal('advance-days'),

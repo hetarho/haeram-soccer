@@ -1,3 +1,4 @@
+import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld, type World } from '../../contracts/src/index';
 import {
@@ -27,6 +28,7 @@ function world(country: 'ENG' | 'BEL' = 'ENG') {
     seed: 'calendar',
     level: 'easy' as const,
   });
+  w.settings = legacySettings(2);
   w.cash = '999999999999';
   return w;
 }
