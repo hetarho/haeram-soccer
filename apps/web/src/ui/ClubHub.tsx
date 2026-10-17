@@ -22,6 +22,7 @@ import { Dialog } from './Dialog';
 import s from './ClubHub.module.css';
 import { STADIUM_STEPS } from '../../../../packages/engine/src/facilities';
 import { FacilityArt } from './FacilityArt';
+import { CashAlarm } from './CashAlarm';
 
 function MatchAction({
   critical,
@@ -175,6 +176,7 @@ function ClubScene({ w }: { w: World }) {
           {number(STADIUM_STEPS[w.stadium].capacity)}석
         </span>
       </div>
+      <CashAlarm overlay />
       <span className={s.stageLabel}>구장 {w.stadium + 1}단계</span>
     </figure>
   );

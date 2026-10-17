@@ -1,3 +1,4 @@
+import { CashAlarm } from './CashAlarm';
 import { openClubSeason } from './state';
 import { PixelIcon, type PixelIconName } from './PixelIcon';
 import {
@@ -56,10 +57,7 @@ const CupsView = lazy(() => import('./CupsView').then((module) => ({ default: mo
 import { TeamSheetHost } from './TeamSheet';
 import { PlayerSheetHost } from './PlayerSheet';
 import { cashState } from './teamState';
-import { BANKRUPTCY_ROUNDS, CASH_WARNING_ROUNDS } from '../../../../packages/engine/src/settlement';
 import { MANAGER_GONE } from '../../../../packages/engine/src/ops-staff';
-import { operatingCosts } from '../../../../packages/engine/src/finance';
-import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import { GameSlots } from '../runtime/slots';
 import { GameIndexStore } from '../adapters/games';
 import { useTabTitle } from './tabTitle';
@@ -737,30 +735,6 @@ function GameOver({
     </section>
   );
 }
-/** Debt plays on under a red band counting down to bankruptcy (→ECON-24). */
-function CashAlarm() {
-  const w = useGameState((state) => state.view?.world);
-  if (!w || w.bankrupt) return null;
-  const own = w.clubs.find((club) => club.id === w.playerClub)!;
-  const cash = BigInt(w.cash);
-  const runway = fixedCostRunway(w.cash, operatingCosts(w).annual);
-  if (cash >= 0n && runway >= CASH_WARNING_ROUNDS) return null;
-  return (
-    <div className={s.cashAlarm} role="status" data-testid="cash-alarm">
-      {cash < 0n ? (
-        <>
-          <b>파산 위기</b> 잔고 <Money value={w.cash} code={own.country} year={w.year} /> ·{' '}
-          {BANKRUPTCY_ROUNDS - (w.insolvent ?? 0)}라운드 안에 흑자로 돌아오지 못하면 파산해요
-        </>
-      ) : (
-        <>
-          <b>자금 위기</b> 운영비 약 {runway}주분 남음 · 바닥난 채 {BANKRUPTCY_ROUNDS}라운드가
-          지나면 파산해요
-        </>
-      )}
-    </div>
-  );
-}
 const RuntimeFeedback = memo(function RuntimeFeedback({
   client,
   localError,
@@ -772,6 +746,7 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
   playing: boolean;
 }) {
   const state = useGameState((state) => state);
+  const home = useNavigation((state) => state.page === 'dashboard');
   const critical = playing ? state.view?.world.critical : undefined;
   const blocked = state.busy || state.readonly;
   return (
@@ -783,7 +758,7 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
         </div>
       )}
       {/* App notices arrive as system notifications in the HUD inbox, never over the view (→WEB-66). */}
-      {playing && <CashAlarm />}
+      {playing && !home && <CashAlarm />}
       {critical === MANAGER_GONE ? (
         // The interim manager can carry on, or the owner goes straight to the candidates.
         <div className={s.critical} role="status">
