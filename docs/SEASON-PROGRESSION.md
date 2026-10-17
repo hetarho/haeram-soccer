@@ -2,6 +2,10 @@
 
 The saved world owns the calendar. A season starts on August 1 (`calendar.day = 0`) and domestic round N runs on day N × 7, so the final round 46 is on day 322. Midweek ties — domestic cup rounds and continental fixtures — run on day N × 7 − 3 of the round they belong to. The season closes on day 323, the day after its final round (`SEASON_END_DAY + 1`): it records the cup, playoff and continental conclusions, applies promotion (the amateur level swaps places with the last professional division) and player development, and creates the new schedule. Nothing happens after the final round, so the empty summer is skipped and the next season starts on August 1. Date labels include leap years.
 
+## Public controls in rules 3.0.0
+
+Automatic mode offers play/pause and x1/x2/x5/x10. Manual mode requires match eve and offers 다음 이벤트, reaching the next enabled stopping event without unattended continuation. With other observations off and all business delegated, it reaches the next own match eve. Both modes stop for owner-held business decisions; resolving a manual stop leaves progression stopped. Match preparation, watching and playing through remain available. There is no public round, season or multi-season jump tool. The seven responsibilities and two observations belong to the saved game; the progression controller asks the domain for dated pending work instead of owning another business-stop table.
+
 ## One day order
 
 Every progression mode lives the season one day at a time through the same step (`stepDay`), so the same inputs record the same facts whatever advances time (→LEAGUE-11, →ARCH-5):
@@ -12,7 +16,7 @@ Every progression mode lives the season one day at a time through the same step 
 
 Off days charge no further wages, fatigue recovery or campaigns; those settle with the round. Every lived day increments `revision` once. Draws are named by what they settle and their game date (a fixture, a player, a bid, a request, a campaign), never by `revision` or another count of commands, so reading the inbox or any other bookkeeping changes no later outcome.
 
-The controls only choose how many days to live before returning:
+The following engine/worker commands choose how many days to live before returning. They are internal APIs, not a list of public UI controls:
 
 - `advance-days` (1–31 days through the worker protocol, 1–366 for `advanceDays()`): day steps. A multi-day step also ends on the day club news arrives or the player's club plays, and the season close ends every step.
 - `next-match` / `advanceToNextMatch()`: day steps until the player's club records a match, crossing the season close when necessary.

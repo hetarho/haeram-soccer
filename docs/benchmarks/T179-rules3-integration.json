@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-17",
+  "commit": "6df81fa31e88c981b74212ab0ee9ad44c2789bdd",
+  "run": "https://github.com/hetarho/haeram-soccer/actions/runs/38970812465",
+  "artifact": {
+    "name": "web-verification",
+    "id": 12078682722
+  },
+  "sourceFingerprint": {
+    "algorithm": "sha256",
+    "sha256": "63ef01ba2666d94841b8683b890987bf44d2f929f2bfe70b4ee412e10348c1b0",
+    "files": 535
+  },
+  "sourceMatchesCurrentCheckout": true,
+  "rawArtifactsPreserved": true,
+  "firstPlayDirtyExplanation": "The storage step writes tracked docs/benchmarks/T010-storage.json before first-play collects git status. No application source changed: storage and first-play fingerprints match each other and the current checkout. The original first-play gitDirty=true/currentHeadVerified=false values are preserved.",
+  "checks": {
+    "unit": 1018,
+    "contract": 15,
+    "chromium": {
+      "passed": 183
+    },
+    "firefox": {
+      "passed": 181,
+      "skipped": 2
+    },
+    "webkit": {
+      "passed": 180,
+      "flakyPassedOnRetry": 1,
+      "skipped": 2
+    }
+  },
+  "limitations": [
+    "One WebKit mobile pace journey passed on its configured retry; no test assertion was changed.",
+    "Four existing browser skips remain.",
+    "Century profiles establish measured representative capacity only; slow codec writes take minutes."
+  ],
+  "passed": true,
+  "localVerification": {
+    "node": "v24.12.0",
+    "applicationSourceUnchanged": true,
+    "command": "CI=1 npx haeram-spec-creator vibe check --heavy -- pnpm run verify",
+    "passedStages": [
+      "typecheck",
+      "lint",
+      "format:check",
+      "test:unit (1018)",
+      "test:contract (15)",
+      "validate:catalogs",
+      "build"
+    ],
+    "initialBrowserFailure": "Existing listener on default 4173 prevented preview startup; no application/test failure occurred.",
+    "browserContinuation": "CI=1 BROWSER_TEST_PORT=4289 npx haeram-spec-creator vibe check --heavy -- pnpm run test:e2e",
+    "browserResult": {
+      "passed": 545,
+      "skipped": 4,
+      "failed": 0,
+      "elapsedMinutes": 19.2
+    }
+  },
+  "portableReview": "All seven definitions and expected facts exactly match the reviewed T191 preparation d5f2095; no golden regeneration.",
+  "audit": {
+    "legacyUiCallers": false,
+    "publicRoundSeasonTools": false,
+    "secondBusinessStopTable": false,
+    "fullLifetimeRegistryInTickViews": false,
+    "gameplayChangesDuringFinalGate": false
+  }
+}

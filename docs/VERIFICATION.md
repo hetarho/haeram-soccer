@@ -1,5 +1,22 @@
 # Local web verification
 
+## Rules 3.0.0 integration — 2026-10-17
+
+[CI 38970812465](https://github.com/hetarho/haeram-soccer/actions/runs/38970812465) passed at application commit `6df81fa31e88c981b74212ab0ee9ad44c2789bdd`, source SHA-256 `63ef01ba2666d94841b8683b890987bf44d2f929f2bfe70b4ee412e10348c1b0` (535 files). The closing documentation commits preserve that exact source.
+
+- Node 24.12.0/pnpm 10.34.6: type/lint/format, 1018 unit tests, 15 contract tests, catalog validation and production build pass.
+- Chromium 183, Firefox 181 and WebKit 180 cases pass; one further WebKit mobile pace case passes on its configured retry. Four existing browser skips remain.
+- Both complete 100-season seeds, active round 23, exact canonical round trips, resumed-season replay, retained playing-coach/manager/mentor and cross-season promise workloads, eight-country archives and the separate 1950–2025 era probe pass. Maximum checkpoint 1,564,446/1,572,864 bytes; total 3,129,404/3,670,016. The active profile retains 20,586 people/174,980 jobs/162,119 mentor spells. Peak checkpoint-sampled heap 1,743,679,856 bytes; full benchmark 2,572,420ms. Large writes take roughly two minutes on this CI host.
+- Built Chromium reference: entry 255,150/256,000 gzip bytes; desktop/mobile founding 2372/2377ms; input p95 51/27ms; pitch 61/60FPS; century restore 3445ms. Served build bytes match; no page errors or mobile overflow.
+
+Raw [storage](benchmarks/T178-rules3-storage.json) and [performance](benchmarks/T010-first-play.json) artifacts are copied unchanged from CI. [Integration provenance](benchmarks/T179-rules3-integration.json) records the artifact/run and source match. The performance artifact's dirty Git flag results from the preceding storage report writing a tracked documentation file; both source fingerprints remain identical. These measured representative seeds do not guarantee indefinite capacity for every career.
+
+The seven portable scenarios retain four historical definitions and add current responsibility/manual, combined-contract and mediation/promise facts. The final gate regenerates no golden facts. Production-call audit confirms UI uses settings/responsibilities and public mode-specific actions; only internal worker/client compatibility and historical portable scenarios retain old season/advance commands. The live host excludes lifetime `people` from per-tick projections; explicit export and selected-person requests preserve full facts. Domain queries own business stopping; no second UI business-stop table or new authority store was added. No balance coefficients, retention, storage budgets or CSP changed during final verification.
+
+Local Node 24.12.0 verification also passes type/lint/format, 1018 unit/15 contract tests, catalogs/build and 545 built-preview browser cases (four existing skips, no failures or retry passes). The initial `pnpm run verify` browser startup found port4173 occupied; rerunning only `pnpm run test:e2e` with `CI=1 BROWSER_TEST_PORT=4289` passed in19.2minutes. This is an infrastructure continuation, not a changed assertion or source. Spec lint passes with34 existing document-quality hints.
+
+Earlier results below are historical and are superseded for the current source by this section. Deployment, hall of fame, Flutter and balance experiments remain outside this batch.
+
 ## Latest integration review — 2026-10-08
 
 The save-lineage, goalkeeper-retirement, historical regional-group and European-coefficient fixes were integrated on top of `f530702`. The reviewed code was committed as `0e3d4f2` before these evidence updates; its source fingerprint is unchanged by the documentation/benchmark-record update.
@@ -22,7 +39,7 @@ Verified on 2026-10-08 KST using Node **24.12.0**, macOS arm64, Apple M1 Max, Pl
 | Executed gate | Result |
 |---|---|
 | `BROWSER_TEST_PORT=4187 npm run verify` | type/lint/format/catalog/build passed; 193 unit, 5 contract and 162 built-preview Chromium/Firefox/WebKit tests passed |
-| `npm run benchmark` | both century profiles, active round23, lossless/resumed replay, eight-country archive/capacity and 124-season era checks passed |
+| `npm run benchmark` | both century profiles, active round 23, lossless/resumed replay, eight-country archive/capacity and 124-season era checks passed |
 | `BENCHMARK_ORIGIN=http://127.0.0.1:4180 npm run benchmark:browser` | served-build hashes, page 4xCPU/Fast4G, input/FPS/initialization and compressed asset budgets passed |
 | Additional reduced-motion/keyboard probe | all three browser families start paused, accept keyboard observation/result actions and preserve the save |
 | Spec lint and installed skill synchronization | passed |

@@ -2,11 +2,9 @@
 
 The local gameplay improvement cycles and their verification are recorded in [the improvement report](IMPROVEMENT-REPORT.md) and [verification notes](VERIFICATION.md). Current policies are in `spec/ssot/`; task status is in `spec/STATE.md`.
 
-## Latest review follow-up
+## Latest verification — 2026-10-17
 
-- The review integrated on top of `f530702` passes the complete local `verify` suite: 199 unit, 5 contract and 165 built-preview browser cases. Century storage and resumed replay also pass.
-- Profile desktop navigation under the reference 4× CPU/Fast-4G workload on the Linux host. The current browser artifact records a failing input p95 of 120ms against `<100ms`; an additional diagnostic repeat reached 289ms. Mobile input, initialization, pitch FPS, compressed assets and served-build integrity pass. Keep this failed gate visible until a passing measurement is established.
-- Check the new review commit's GitHub Actions result separately; the T027 CI result below applies to its earlier tested commit.
+Rules 3.0.0 application commit `6df81fa` passes [CI 38970812465](https://github.com/hetarho/haeram-soccer/actions/runs/38970812465): type/lint/format, 1018 unit/15 contract cases, catalog/build, all three browser projects and both century profiles. The largest measured checkpoint is 1,564,446 bytes within the unchanged 1.5 MiB budget. Desktop/mobile input p95 is 51/27ms; the earlier desktop performance failure is superseded by this passing fixed-source measurement. One WebKit case passed on its configured retry; four existing skips remain. See [verification](VERIFICATION.md) and [integration provenance](benchmarks/T179-rules3-integration.json).
 
 ## GitHub and Netlify
 

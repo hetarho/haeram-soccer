@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| p6k2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T23:52Z | 2026-10-16T23:55Z | T179 |
+| p6k2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T23:52Z | 2026-10-17T00:16Z | - |
 
 ## inbox
 - 261017 decided SAVE-13: career compression order → group stored rows with a complete validated permutation restoring original registry order (alt: reorder live people | increase checkpoint limit); v1/v2 readers remain.
@@ -93,7 +93,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T179 | Verify the complete rules 3.0.0 owner workflow | WEB SAVE LEAGUE HIST ARCH | T175 T176 T177 T178 T152 T191 T192 | doing@261017.p6k2 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -102,10 +101,12 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- Finish T179 local integration verification and archive final CI/performance evidence.
-- Review autonomous decisions in reports/261016-n7r4.md after implementation; optional review-code/doc-review proposals remain in inbox.
+- No remaining implementation tasks; rules3.0.0 final-source century, browser, performance and CI gates pass.
+- Review prior autonomous decisions and optional review-code/doc-review proposals in inbox; latest report reports/261017-p6k2.md.
+- External deployment configuration, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261017 T179 done p6k2: CI38970812465 passes all jobs; local1018unit/15contract/545browser with4 existing skips; docs and raw benchmark evidence synchronized, no gameplay changes.
 - 261017 implement-task T179 start p6k2; full local verification running against the unchanged successful CI source.
 - 261017 T178 done p6k2: both complete century profiles, active23, retained cross-season commitments, canonical replay and era probe pass at unchanged 6df81fa source; max checkpoint1564446/total3129404.
 - 261017 implement-task T178 start p6k2: reconcile successful fixed-source full-century CI artifacts.
@@ -125,4 +126,3 @@
 - 261017 create-task T197: CI Chromium large-codec fixture exceeded its 180s harness timer, shorter than the existing 600s production deadline; preserve assertions and fixed app fingerprint. T178 measurement continues, approval remains incomplete.
 - 261017 implement-task T178 start n7r4.
 - 261017 refresh T178/T179 final-gate inputs after T195/T196; current rule/codec/UI deltas are implemented prerequisites, not new release scope.
-- 261017 T196 done n7r4: Read-only refresh drains newer notifications across successive validated loads; unchanged bogus hints cannot spin and malformed generations are ignored.
