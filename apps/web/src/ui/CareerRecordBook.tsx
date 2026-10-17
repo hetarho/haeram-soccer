@@ -135,7 +135,7 @@ function Trophy({
 }) {
   return (
     <li data-tone={years.length ? tone : 'empty'}>
-      <TrophyIcon kind={kind} />
+      <TrophyIcon kind={kind} earned={years.length > 0} />
       <strong>{years.length}회</strong>
       <span>{label}</span>
       {years.length > 0 && <small>{seasonsText(years)}</small>}
