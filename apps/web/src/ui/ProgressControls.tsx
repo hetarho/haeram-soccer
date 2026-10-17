@@ -77,7 +77,7 @@ export const ProgressControls = memo(function ProgressControls({
       <Select
         aria-label="진행 모드"
         value={mode}
-        disabled={blocked || state.processing}
+        disabled={blocked || !!state.pendingActions || state.busy}
         onValueChange={(value) => {
           const settings = settingsOf(w);
           const progression = value as 'automatic' | 'manual';

@@ -1,5 +1,6 @@
 .seasonHistory {
   width: 100%;
+  min-width: 820px;
   table-layout: fixed;
 }
 .seasonHistory th,
@@ -28,10 +29,7 @@
   width: 18%;
 }
 .cellText {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
+  display: block;
   line-height: 1.4;
 }
 .seasonHistory td:first-child button {
@@ -70,4 +68,9 @@
     overflow: hidden;
     clip-path: inset(50%);
   }
+}
+
+.currentSeason > td {
+  background: var(--surface-2);
+  color: var(--accent-text);
 }

@@ -363,7 +363,7 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
           </thead>
           <tbody>
             <tr
-              className={onSeason ? s.seasonRow : undefined}
+              className={`${t.currentSeason} ${onSeason ? s.seasonRow : ''}`}
               onClick={onSeason && (() => onSeason(w.year))}
             >
               <td>
@@ -376,7 +376,7 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                     onSeason?.(w.year);
                   }}
                 >
-                  <span className={t.cellText}>{seasonName(w.year)} · 진행 중</span>
+                  <span className={t.cellText}>{seasonName(w.year)}</span>
                 </button>
               </td>
               <td data-label="리그">
@@ -385,7 +385,7 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                 </span>
               </td>
               <td data-label="승점">{w.tables[w.playerClub]?.points ?? 0}</td>
-              <td data-label="컵 대회">진행 중</td>
+              <td data-label="컵 대회">—</td>
               <td data-label="Elo">{clubOf(w).elo?.toFixed(0) ?? '—'}</td>
               <td data-label="선수단 가치 · 현재 물가">—</td>
             </tr>
