@@ -1,6 +1,5 @@
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { pendingDecisions } from '../../../../packages/engine/src/stopping';
-import { PixelIcon } from './PixelIcon';
 import { Select } from './Select';
 import {
   currentDay,
@@ -188,7 +187,6 @@ export const ProgressControls = memo(function ProgressControls({
         onClick={useInterventionDialog.getState().show}
       >
         <b>설정</b>
-        <PixelIcon name="chevronDown" size={14} />
       </button>
     </section>
   );

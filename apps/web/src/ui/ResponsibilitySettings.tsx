@@ -13,6 +13,7 @@ import {
 } from '../runtime/progression';
 import { useTaskState } from './taskMemory';
 import { Dialog } from './Dialog';
+import { Select } from './Select';
 import { applyResponsibilitySettings, RESPONSIBILITY_LABELS } from './intervention';
 import s from './ResponsibilitySettings.module.css';
 
@@ -132,6 +133,22 @@ export function ResponsibilitySettings({
           {guidance}
         </p>
       )}
+      <div className={s.bulkActions} role="group" aria-label="전체 업무 위임 설정">
+        {(['delegated', 'direct'] as const).map((value) => (
+          <button
+            type="button"
+            key={value}
+            disabled={acting || state.readonly}
+            onClick={() =>
+              update((game) => {
+                for (const key of RESPONSIBILITY_KEYS) game.responsibilities[key] = value;
+              })
+            }
+          >
+            {value === 'delegated' ? '전체 위임' : '전체 수동'}
+          </button>
+        ))}
+      </div>
       <div className={s.rows}>
         {RESPONSIBILITY_KEYS.map((key) => (
           <label className={s.row} key={key}>
@@ -139,38 +156,40 @@ export function ResponsibilitySettings({
               <b>{RESPONSIBILITY_LABELS[key]}</b>
               <small>{DETAILS[key]}</small>
             </span>
-            <select
+            <Select
+              className={s.select}
               aria-label={RESPONSIBILITY_LABELS[key]}
               disabled={acting || state.readonly}
               value={draft.game.responsibilities[key]}
-              onChange={(event) =>
+              onValueChange={(value) =>
                 update((game) => {
-                  game.responsibilities[key] = event.target.value as 'direct' | 'delegated';
+                  game.responsibilities[key] = value as 'direct' | 'delegated';
                 })
               }
             >
               <option value="direct">직접 결정</option>
               <option value="delegated">위임</option>
-            </select>
+            </Select>
           </label>
         ))}
       </div>
       <section className={s.section} aria-label="시간 진행 방식">
         <label className={s.row}>
           <b>진행 모드</b>
-          <select
+          <Select
+            className={s.select}
             aria-label="진행 모드"
             disabled={acting || state.readonly}
             value={draft.game.mode}
-            onChange={(event) =>
+            onValueChange={(value) =>
               update((game) => {
-                game.mode = event.target.value as GameSettings['mode'];
+                game.mode = value as GameSettings['mode'];
               })
             }
           >
             <option value="automatic">자동 진행 모드</option>
             <option value="manual">수동 진행 모드</option>
-          </select>
+          </Select>
         </label>
         <p>
           자동은 재생·정지와 속도로, 수동은 다음 이벤트 버튼으로 진행해요. 직접 결정할 일이 있으면
@@ -256,14 +275,15 @@ export function ResponsibilitySettings({
         </label>
         <label className={s.row}>
           <span>다시 열었을 때 따라갈 시간</span>
-          <select
+          <Select
+            className={s.select}
             aria-label="자리 비운 동안 진행 한도"
             disabled={acting || state.readonly}
             value={draft.background.away}
-            onChange={(event) =>
+            onValueChange={(value) =>
               setStored({
                 ...structuredClone(draft),
-                background: { ...draft.background, away: event.target.value as AwayLimit },
+                background: { ...draft.background, away: value as AwayLimit },
               })
             }
           >
@@ -272,7 +292,7 @@ export function ResponsibilitySettings({
                 {label}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <p>수동 모드에서는 자리를 비워도 시간이 진행하지 않아요.</p>
       </section>
