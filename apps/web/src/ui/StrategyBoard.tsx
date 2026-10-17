@@ -106,7 +106,7 @@ export function StrategyBoard({
   department?: AreaKey;
   onApplied?: () => void;
 }) {
-  const acting = useGameState((state) => !!state.pendingActions || state.processing);
+  const acting = useGameState((state) => !!state.pendingActions || state.busy);
   const error = useGameState((state) => state.error);
   const readonly = useGameState((state) => state.readonly);
   const blocked = acting || readonly || !!w.critical || !!error;
