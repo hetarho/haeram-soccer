@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| p6k2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-16T23:52Z | 2026-10-17T00:16Z | - |
 
 ## inbox
 - 261017 decided SAVE-13: career compression order → group stored rows with a complete validated permutation restoring original registry order (alt: reorder live people | increase checkpoint limit); v1/v2 readers remain.
