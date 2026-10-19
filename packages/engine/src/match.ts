@@ -23,8 +23,8 @@ import {
 import { FORMATIONS, isWide, levelFactor as positionLevelFactor, lineOf } from './player';
 import { moraleStrength } from './morale';
 import { npcTactic, ownTacticalProfile, tacticalProfile, type TacticalProfile } from './strategy';
-import { managerStyleEffects } from './styles';
-import { synergyEffects } from './synergy';
+import { managerStyleEffects, type StyleEffects } from './styles';
+import { synergyEffects, type SynergyEffects } from './synergy';
 import { buildEffects } from './build';
 import { MatchMotion } from './motion';
 export { MATCH_MOTION_CONFIG, motionTraits, teamMotionProfile, visibleEvents } from './motion';
@@ -439,7 +439,7 @@ export function matchForm(w: World, f: Fixture): [number, number] {
   return [draw(), draw()];
 }
 
-interface MatchSetup {
+export interface MatchSetup {
   w: World;
   f: Fixture;
   r: () => number;
@@ -462,16 +462,16 @@ interface MatchSetup {
   drain: number[];
 }
 
-/**
- * Own-club matches and fixtures whose players are recorded (own league scorers) play the duel
- * chain; every other fixture resolves with the same team formula without naming players.
- */
-export function simulateMatch(
-  w: World,
-  f: Fixture,
-  observe = false,
-  keepPlayers = false,
-): MatchPlayback {
+/** What a fixture needs before kick-off, whichever engine plays it. */
+export interface Prepared extends MatchSetup {
+  teams: [Club, Club];
+  /** The side of the owner's club, when it plays. */
+  ownSide?: Side;
+  style?: StyleEffects;
+  synergy?: SynergyEffects;
+}
+
+export function prepareMatch(w: World, f: Fixture): Prepared {
   const home = findClub(w, f.home),
     away = findClub(w, f.away);
   const teams: [Club, Club] = [home, away];
@@ -516,7 +516,7 @@ export function simulateMatch(
       : line;
   });
   const drain = [0, 1].map((side) => (side === ownSide ? style!.drain : 1));
-  const setup: MatchSetup = {
+  return {
     w,
     f,
     r: random(`${w.seed}:match:${f.id}`),
@@ -536,7 +536,26 @@ export function simulateMatch(
         20,
         80,
       ) / 100,
+    teams,
+    ownSide,
+    style,
+    synergy,
   };
+}
+
+/**
+ * Own-club matches and fixtures whose players are recorded (own league scorers) play the duel
+ * chain; every other fixture resolves with the same team formula without naming players.
+ */
+export function simulateMatch(
+  w: World,
+  f: Fixture,
+  observe = false,
+  keepPlayers = false,
+): MatchPlayback {
+  const setup = prepareMatch(w, f);
+  const { teams, squads, tactics } = setup;
+  const [home, away] = teams;
   const own = home.id === w.playerClub || away.id === w.playerClub;
   if (!observe && !keepPlayers && !own) return summaryMatch(setup);
   const motion = observe
