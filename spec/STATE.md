@@ -82,7 +82,7 @@
 | WEB | 89 | 89 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | CLUB | 41 | 41 | - | 0 |
-| MATCH | 9 | 9 | - | 0 |
+| MATCH | 10 | 9 | MATCH-1✎ MATCH-2✎ MATCH-3✎ MATCH-5✎ MATCH-6✎ MATCH-8✎ MATCH-9✎ MATCH-11✎ MATCH-12✎ MATCH-13✎ MATCH-14+ MATCH-15+ MATCH-16+ MATCH-17+ MATCH-18+ MATCH-19+ MATCH-20+ MATCH-21+ MATCH-22+ MATCH-23+ MATCH-24+ MATCH-25+ MATCH-26+ | 1 |
 | LEAGUE | 9 | 9 | - | 0 |
 | STAFF | 33 | 33 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -102,12 +102,14 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- ideation/match-engine-rebuild ready: update-ssot MATCH first (grid decision engine, per-touch time, fouls/set pieces, cards, substitutions, injuries, era rules, new statistics), then PLAYER, STAFF, WEB, HIST/SAVE, CLUB/LEAGUE; measure the grid engine's cost early — it decides whether other clubs' own-league fixtures play it.
+- match-engine-rebuild: MATCH r10 done; next update-ssot PLAYER (판단력/침착성 in PLAYER-2/6, role habits and traits as decision tendencies), then STAFF (formation shapes, manager substitutions), CLUB/LEAGUE (in-match injuries for every club, suspensions in XI choice), WEB (commentary, post-match material, new counters), HIST/SAVE (season/career totals, new rules version); create-task across them afterwards.
 - Continue ideation club-identity-and-kits: choose crest composition and garment controls; historical appearance and existing-career adoption remain open.
 - Review prior autonomous decisions and optional review-code/doc-review proposals in inbox; latest report reports/261017-p6k2.md.
 - External deployment configuration, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 MATCH r10: grid decision engine (40 cells, tags, decision tables, off-ball movement), per-touch halves with added time, fouls/set pieces/offside, cards and suspensions, era substitutions, in-match injuries, engine paths with a 125% season budget, real-football bands, commentary and post-match material; MATCH-26 open.
+- 261019 update-ssot MATCH start (ideation/match-engine-rebuild)
 - 261019 ideation club-identity-and-kits open: home defaults to club colours, away/third allow separate palettes, kits auto-select with a pre-match override, identity stays editable through club management.
 - 261019 ideation club-identity-and-kits continue: apply owner choices for kit palettes, pre-match selection and club-management editing.
 - 261019 ideation club-identity-and-kits open: recorded selectable 1-3-colour crests, home/away/third patterns and pitch preview; palette links, kit selection and later edits remain open.
@@ -126,5 +128,3 @@
 - 261017 implement-task T199 start n7r4.
 - 261017 create-task T199: active-management century round-trips but checkpoint1629982 exceeds1572864; preserve all facts/budgets and repair representation before rerunning T178.
 - 261017 implement-task T178 start n7r4.
-- 261017 T198 done n7r4: A retained training coach resignation now uses the ordinary departure lifecycle, preserving learned values and ending coaching/mentor service while keeping any player contract intact; the exact failing active-management commands validate through ten seasons.
-- 261017 implement-task T198 start n7r4.

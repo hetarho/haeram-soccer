@@ -74,7 +74,7 @@
 - v1 not: continuous agent physics; new tactical instructions; the new engine in running careers.
 
 ## domains
-- MATCH: MATCH-1/11/12 rewritten around the grid decision engine (cells, tags, per-touch time, event-only possession changes, fouls and set pieces); MATCH-2 calibration kept and re-measured; MATCH-5/10 the view and commentary; MATCH-13 counters kept plus the new statistics; MATCH-8/9 tactics as shape, line and pressing behaviour.
+- MATCH →MATCH: MATCH-1/11/12 rewritten around the grid decision engine (cells, tags, per-touch time, event-only possession changes, fouls and set pieces); MATCH-2 calibration kept and re-measured; MATCH-5/10 the view and commentary; MATCH-13 counters kept plus the new statistics; MATCH-8/9 tactics as shape, line and pressing behaviour.
 - PLAYER: what roles (PLAYER-5) and play traits (PLAYER-9) mean as spatial habits and decision tendencies; the new 판단력/침착성 attributes (generation, growth, ratings, scouting); in-match injuries and suspensions in availability.
 - STAFF: formations and slot roles (STAFF-22) as positions per phase on the pitch.
 - WEB: live commentary, post-match shot map/heat maps/pass network and tactical report, new statistics in player, season and career views.
