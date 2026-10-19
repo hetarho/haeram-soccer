@@ -2,7 +2,6 @@ import type { ReactNode } from 'react';
 import type { PolicyKey, PolicyLevel, World } from '../../../../packages/contracts/src/types';
 import {
   INVESTMENT_ROWS,
-  POLICY_INFO,
   policyEffects,
   policyOf,
   policyPreview,
@@ -13,7 +12,17 @@ import { clubOf } from '../../../../packages/engine/src/world';
 import { financeProjection } from '../../../../packages/engine/src/projection';
 import { academyIntakeOutlook } from '../../../../packages/engine/src/academy';
 import { globalReachOf, localBaseOf, tourTerms } from '../../../../packages/engine/src/bases';
-import { dialPreview, type DirectionChange, type PolicyChange, type TicketChange } from './board';
+import {
+  dialInfo,
+  dialLabel,
+  dialPreview,
+  stepIndex,
+  stepName,
+  stepValue,
+  type DirectionChange,
+  type PolicyChange,
+  type TicketChange,
+} from './board';
 import { DIRECTION_INFO } from '../../../../packages/engine/src/direction';
 import { number } from './format';
 import { Money } from './Money';
@@ -21,41 +30,14 @@ import { TICKET_LEVELS } from './ticketLevels';
 import s from './PolicyBoard.module.css';
 
 export { TICKET_LEVELS };
+// The dial steps live in board.ts; the strategy screens still read them from here.
+export { dialInfo, dialLabel, stepIndex, stepValue };
 
 import type { DialKey } from './areas';
 export type { DialKey };
 
-/** A dial's steps and the one in force (−1 for a custom ticket price from an older save). */
-export function dialInfo(w: World, key: DialKey) {
-  if (key === 'ticket')
-    return {
-      label: '티켓 가격',
-      question: '홈 경기 입장권을 얼마에 팔까요?',
-      levels: TICKET_LEVELS.map(({ name, summary }) => ({ name, summary })),
-      current: TICKET_LEVELS.findIndex((level) => level.price === w.ticket),
-    };
-  const info = POLICY_INFO[key];
-  return {
-    label: info.label,
-    question: info.question,
-    levels: info.levels,
-    current: policyOf(w)[key] - 1,
-  };
-}
 const isInvestment = (key: DialKey): key is (typeof INVESTMENT_ROWS)[number] =>
   (INVESTMENT_ROWS as readonly DialKey[]).includes(key);
-export const dialLabel = (key: DialKey) =>
-  key === 'ticket' ? '티켓 가격' : POLICY_INFO[key].label;
-/** The draft value a step stands for: a policy level, or a ticket price. */
-export const stepValue = (key: DialKey, index: number) =>
-  key === 'ticket' ? TICKET_LEVELS[index].price : index + 1;
-/** The step a draft value stands at. */
-export const stepIndex = (key: DialKey, value: number) =>
-  key === 'ticket' ? TICKET_LEVELS.findIndex((level) => level.price === value) : value - 1;
-const stepName = (key: DialKey, value: number) =>
-  key === 'ticket'
-    ? (TICKET_LEVELS.find((level) => level.price === value)?.name ?? '사용자 지정')
-    : POLICY_INFO[key].levels[value - 1].name;
 
 /** Amounts in the one money notation, the exact value a tap away (→WEB-67). */
 function amounts(w: World) {

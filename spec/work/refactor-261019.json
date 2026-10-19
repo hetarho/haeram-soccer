@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-19T14:38:28.213Z",
-  "sourceCommit": "b477308e92336170267c6da595f7249ccdbc6255",
+  "snapshotAt": "2026-10-19T15:00:04.676Z",
+  "sourceCommit": "17ba483827399f4bd1408f2ae8654d0698b052d3",
   "group": {
     "id": "refactor-261019",
     "branch": "work/refactor-261019",
@@ -15,10 +15,10 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "b477308e92336170267c6da595f7249ccdbc6255",
+      "commit": "17ba483827399f4bd1408f2ae8654d0698b052d3",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-19T14:38:25.888Z"
+      "at": "2026-10-19T14:38:30.345Z"
     },
     "lastRun": {
       "id": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
@@ -72,11 +72,11 @@
   },
   "summary": {
     "total": 53,
-    "completed": 7,
-    "remaining": 46,
-    "running": 0,
+    "completed": 10,
+    "remaining": 43,
+    "running": 3,
     "review": 0,
-    "blocked": 6,
+    "blocked": 0,
     "unassigned": 40
   },
   "tasks": [
@@ -423,53 +423,32 @@
       "status": "todo"
     },
     {
-      "id": "T258",
-      "title": "Load the team sheet on demand and drop dead progress-control styles",
-      "dep": [],
-      "lane": "ui-entry-desk",
-      "status": "blocked"
-    },
-    {
-      "id": "T259",
-      "title": "Show every open bid on the recruitment desk",
-      "dep": [],
-      "lane": "ui-entry-desk",
-      "status": "blocked"
-    },
-    {
-      "id": "T260",
-      "title": "One tested home for the policy dial steps",
-      "dep": [],
-      "lane": "ui-entry-desk",
-      "status": "blocked"
-    },
-    {
       "id": "T261",
       "title": "One tab list and one address-synced tab hook",
       "dep": [],
       "lane": "ui-league-tabs",
-      "status": "blocked"
+      "status": "doing"
     },
     {
       "id": "T262",
       "title": "One set of league-table rules in the UI",
       "dep": [],
       "lane": "ui-league-tabs",
-      "status": "blocked"
+      "status": "doing"
     },
     {
       "id": "T263",
       "title": "Tested models behind the league overview and rank history",
       "dep": [],
       "lane": "ui-league-tabs",
-      "status": "blocked"
+      "status": "doing"
     }
   ],
   "attempts": [
     {
       "id": "7312a243-f156-4f50-9722-d28f48d41a24",
       "group": "refactor-261019",
-      "taskId": "T258",
+      "taskId": "T260",
       "tasks": [
         "T258",
         "T259",
@@ -480,10 +459,22 @@
       "contributors": [
         "7a09d4b3-b1c8-4c96-a247-b519ebf823ed/worker-1"
       ],
-      "status": "blocked",
-      "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요.",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-10-19T13:50:15.912Z",
       "startCommit": "6c75c4b94c14308b765b69c9da0efcfa7a6f0038",
+      "verifiedCommit": "13faf8b385c713e61d4db665bdfaa27bdbdc0271",
+      "submittedBase": "17ba483827399f4bd1408f2ae8654d0698b052d3",
+      "submissionId": "a59a6481-8b9d-4cc6-a377-67c3cfd80c2e",
+      "submittedAt": "2026-10-19T14:55:13.346Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "1048 changed lines (limit 300)"
+        ],
+        "lines": 1048,
+        "files": 10
+      },
       "dispatch": {
         "id": "f87a0cbe-eb5c-4a83-84ee-a7ea5a3a079c",
         "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
@@ -496,7 +487,71 @@
         "finishedAt": "2026-10-19T13:53:55.220Z",
         "error": "T258: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
         "summary": "T258 is done and the entry is under its size target, but the four required Chromium journeys were not run, so its last acceptance item stays unchecked.\n\n**Size:** the entry (JS+CSS, gzip) went from 254,413 B to 251,875 B. That is 4,125 B under the 256,000 B limit; the target was at most 252,928 B. I measured it with the same formula as `first-play.mjs`.\n\n**Changes:**\n- `TeamSheet.tsx` now holds only `TeamSheetHost`, with the same props. It lazy-loads `OpenSheets` from the new `TeamSheetDialog.tsx` inside `<Suspense fallback={null}>`, the same way PlayerSheet loads its dialog. App.tsx is not edited.\n- `TeamSheet`, `AllTimeMeetings`, `OpenSheets` and their helpers moved to `TeamSheetDialog.tsx` unchanged. A file diff shows the only differences are exporting `OpenSheets` and dropping the host and its `useNavigation` import.\n- In `ProgressControls.module.css` I deleted every class that ProgressControls.tsx doesn't use, after checking with grep that nothing else imports the file. That is the 14 listed classes plus `lit`, the `pop` animation they used, and a `.trigger[aria-expanded='true']` rule that can never match. The header comments now describe the current 설정 button.\n\n**Checks:** `pnpm run build`, `typecheck`, `lint` and `format:check` all passed. `vitest run --changed` found no unit tests for these files.\n\n**Not run:** the Chromium journeys `analysis`, `progression-settings`, `manual-progression` and `stable-controls-and-pacing`. `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium …` failed four times because port 4173 was already in use, presumably by another worktree's preview server. Running it on another port with `BROWSER_TEST_PORT=…` was blocked by the session's command permissions. The lane's integration check does not run browser tests, so these four will first run in CI.\n\nMeasurements and this gap are recorded in the task's result. Nothing was committed or submitted."
-      }
+      },
+      "review": {
+        "id": "4acc9a65-4326-4e5e-b02d-3618c0c96106",
+        "owner": "rev-a",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T258-T260 meet acceptance within declared touches. T258: TeamSheetDialog.tsx matches the old TeamSheet.tsx except for the OpenSheets export and the removed host. The host follows the lazy+Suspense pattern from PlayerSheet. Only unused ProgressControls classes were deleted (the remaining p.* classes are buttons, calendar, controls, mode, pace, paces and trigger). T259: visibleBids keeps every open bid in bidBoard order, and 모두 보기 appears only when rows are hidden. T260: the step helpers moved unchanged, PolicyBoard re-exports them and the three call sites use currentStepName. Checked on the base 17ba483 + 13faf8b merge tree: typecheck, eslint and prettier pass, apps/web unit tests 335/335 pass, and the entry is 252,162 B gzip (target <= 252,928).",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/RecruitmentDesk.tsx:493 (T259)",
+            "message": "The 모두 보기 button uses the plain global button style. CupHistory/CupsView give theirs a .more class. Optional follow-up: add a .more style in RecruitmentDesk.module.css (outside this task's touches)."
+          }
+        ],
+        "commit": "13faf8b385c713e61d4db665bdfaa27bdbdc0271",
+        "baseCommit": "17ba483827399f4bd1408f2ae8654d0698b052d3",
+        "submissionId": "a59a6481-8b9d-4cc6-a377-67c3cfd80c2e",
+        "createdAt": "2026-10-19T14:55:59.539Z",
+        "finishedAt": "2026-10-19T15:00:02.403Z"
+      },
+      "steps": [
+        {
+          "taskId": "T258",
+          "commit": "13faf8b385c713e61d4db665bdfaa27bdbdc0271",
+          "at": "2026-10-19T14:55:13.237Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-19T14:54:26.449Z",
+              "finishedAt": "2026-10-19T14:55:11.616Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T259",
+          "commit": "13faf8b385c713e61d4db665bdfaa27bdbdc0271",
+          "at": "2026-10-19T14:55:13.237Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-19T14:54:26.449Z",
+              "finishedAt": "2026-10-19T14:55:11.616Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T260",
+          "commit": "13faf8b385c713e61d4db665bdfaa27bdbdc0271",
+          "at": "2026-10-19T14:55:13.237Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-19T14:54:26.449Z",
+              "finishedAt": "2026-10-19T14:55:11.616Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-19T14:54:26.449Z",
+          "finishedAt": "2026-10-19T14:55:11.616Z"
+        }
+      ]
     },
     {
       "id": "1de2fd8c-3efa-4d81-a5f4-7901f46546a0",
@@ -512,8 +567,8 @@
       "contributors": [
         "7a09d4b3-b1c8-4c96-a247-b519ebf823ed/worker-2"
       ],
-      "status": "blocked",
-      "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요.",
+      "status": "doing",
+      "reason": null,
       "createdAt": "2026-10-19T13:50:17.524Z",
       "startCommit": "6c75c4b94c14308b765b69c9da0efcfa7a6f0038",
       "dispatch": {
@@ -3216,6 +3271,236 @@
             }
           ]
         }
+      }
+    },
+    {
+      "sequence": 401,
+      "at": "2026-10-19T14:38:30.348Z",
+      "type": "group",
+      "group": "refactor-261019",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "17ba483827399f4bd1408f2ae8654d0698b052d3",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-19T14:38:30.345Z"
+        }
+      }
+    },
+    {
+      "sequence": 402,
+      "at": "2026-10-19T14:39:59.355Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "1de2fd8c-3efa-4d81-a5f4-7901f46546a0",
+      "taskId": "T261",
+      "tasks": [
+        "T261",
+        "T262",
+        "T263"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 403,
+      "at": "2026-10-19T14:39:59.563Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "7312a243-f156-4f50-9722-d28f48d41a24",
+      "taskId": "T258",
+      "tasks": [
+        "T258",
+        "T259",
+        "T260"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 404,
+      "at": "2026-10-19T14:54:25.037Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "7312a243-f156-4f50-9722-d28f48d41a24",
+      "taskId": "T258",
+      "tasks": [
+        "T258",
+        "T259",
+        "T260"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 405,
+      "at": "2026-10-19T14:55:13.346Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "7312a243-f156-4f50-9722-d28f48d41a24",
+      "taskId": "T260",
+      "tasks": [
+        "T258",
+        "T259",
+        "T260"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "taskId": "T260",
+        "status": "ready",
+        "verifiedCommit": "13faf8b385c713e61d4db665bdfaa27bdbdc0271",
+        "submittedBase": "17ba483827399f4bd1408f2ae8654d0698b052d3",
+        "submissionId": "a59a6481-8b9d-4cc6-a377-67c3cfd80c2e",
+        "submittedAt": "2026-10-19T14:55:13.346Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "1048 changed lines (limit 300)"
+          ],
+          "lines": 1048,
+          "files": 10
+        },
+        "steps": [
+          {
+            "taskId": "T258",
+            "commit": "13faf8b385c713e61d4db665bdfaa27bdbdc0271",
+            "at": "2026-10-19T14:55:13.237Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-19T14:54:26.449Z",
+                "finishedAt": "2026-10-19T14:55:11.616Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T259",
+            "commit": "13faf8b385c713e61d4db665bdfaa27bdbdc0271",
+            "at": "2026-10-19T14:55:13.237Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-19T14:54:26.449Z",
+                "finishedAt": "2026-10-19T14:55:11.616Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T260",
+            "commit": "13faf8b385c713e61d4db665bdfaa27bdbdc0271",
+            "at": "2026-10-19T14:55:13.237Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-19T14:54:26.449Z",
+                "finishedAt": "2026-10-19T14:55:11.616Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-19T14:54:26.449Z",
+            "finishedAt": "2026-10-19T14:55:11.616Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 406,
+      "at": "2026-10-19T14:55:59.539Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "7312a243-f156-4f50-9722-d28f48d41a24",
+      "taskId": "T260",
+      "tasks": [
+        "T258",
+        "T259",
+        "T260"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "4acc9a65-4326-4e5e-b02d-3618c0c96106",
+          "owner": "rev-a",
+          "status": "reviewing",
+          "commit": "13faf8b385c713e61d4db665bdfaa27bdbdc0271",
+          "baseCommit": "17ba483827399f4bd1408f2ae8654d0698b052d3",
+          "submissionId": "a59a6481-8b9d-4cc6-a377-67c3cfd80c2e",
+          "createdAt": "2026-10-19T14:55:59.539Z"
+        }
+      }
+    },
+    {
+      "sequence": 407,
+      "at": "2026-10-19T15:00:02.403Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "7312a243-f156-4f50-9722-d28f48d41a24",
+      "taskId": "T260",
+      "tasks": [
+        "T258",
+        "T259",
+        "T260"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "4acc9a65-4326-4e5e-b02d-3618c0c96106",
+          "owner": "rev-a",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T258-T260 meet acceptance within declared touches. T258: TeamSheetDialog.tsx matches the old TeamSheet.tsx except for the OpenSheets export and the removed host. The host follows the lazy+Suspense pattern from PlayerSheet. Only unused ProgressControls classes were deleted (the remaining p.* classes are buttons, calendar, controls, mode, pace, paces and trigger). T259: visibleBids keeps every open bid in bidBoard order, and 모두 보기 appears only when rows are hidden. T260: the step helpers moved unchanged, PolicyBoard re-exports them and the three call sites use currentStepName. Checked on the base 17ba483 + 13faf8b merge tree: typecheck, eslint and prettier pass, apps/web unit tests 335/335 pass, and the entry is 252,162 B gzip (target <= 252,928).",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/RecruitmentDesk.tsx:493 (T259)",
+              "message": "The 모두 보기 button uses the plain global button style. CupHistory/CupsView give theirs a .more class. Optional follow-up: add a .more style in RecruitmentDesk.module.css (outside this task's touches)."
+            }
+          ],
+          "commit": "13faf8b385c713e61d4db665bdfaa27bdbdc0271",
+          "baseCommit": "17ba483827399f4bd1408f2ae8654d0698b052d3",
+          "submissionId": "a59a6481-8b9d-4cc6-a377-67c3cfd80c2e",
+          "createdAt": "2026-10-19T14:55:59.539Z",
+          "finishedAt": "2026-10-19T15:00:02.403Z"
+        }
+      }
+    },
+    {
+      "sequence": 408,
+      "at": "2026-10-19T15:00:02.859Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "7312a243-f156-4f50-9722-d28f48d41a24",
+      "taskId": "T260",
+      "tasks": [
+        "T258",
+        "T259",
+        "T260"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]
