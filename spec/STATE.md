@@ -18,6 +18,7 @@
 | r5c2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-19T05:11Z | 2026-10-19T05:11Z | - |
 
 ## inbox
+- 261019 decided WEB-47 T226: season PPDA when only some matches carry advanced counters → MATCH-13 PPDA over those matches with how many counted; the marked approximation only for a season with none (alt: approximation for the whole season once one match lacks counters | show both figures)
 - 261017 decided SAVE-13: career compression order → group stored rows with a complete validated permutation restoring original registry order (alt: reorder live people | increase checkpoint limit); v1/v2 readers remain.
 - 261017 decided SAVE-2 ARCH-12: large century checkpoint codec → bounded pure-JavaScript Brotli plus denser BMP blocks; keep small saves gzip, old readers, CSP and all limits (alt: LZMA with slower loading | relax CSP for WASM | increase capacity).
 - 261017 decided T191: prepare lazy entry, stale fixtures and cross-feature/portable coverage before freezing century source (alt: repeat the whole century after predictable integration edits); final T178/T179 gates and budgets remain mandatory.
@@ -80,17 +81,17 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 12 | 12 | - | 2 |
-| WEB | 92 | 91 | WEB-47✎ | 0 |
+| WEB | 92 | 92 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 12 | 11 | MATCH-18✎ | 1 |
+| MATCH | 12 | 12 | - | 1 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 34 | 34 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 15 | 14 | HIST-13✎ | 0 |
-| SAVE | 49 | 48 | SAVE-3✎ SAVE-14✎ | 0 |
+| HIST | 15 | 15 | - | 0 |
+| SAVE | 49 | 49 | - | 0 |
 | PLAYER | 9 | 9 | - | 0 |
 
 ## tasks
@@ -160,11 +161,11 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- create-task SAVE HIST WEB MATCH: reconcile pending policy corrections with T202/T210/T220/T226/T231 and downstream identity tasks before implementation; check existing bases and docs/MATCH-ENGINE-DESIGN.md without changing completed work.
-- After replanning, implement T200–T233 using docs/MATCH-ENGINE-DESIGN.md, then T234–T255 using docs/CLUB-IDENTITY-CONTRACT.md, following actual dependencies and one task per session. T200 precedes engine changes; T233 and its CI precede identity implementation.
+- implement-task T200, then T201–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 create-task SAVE HIST WEB MATCH done (r5c2): no new task; T210 offside by the target at the pass, T226 season PPDA by MATCH-13 over advanced matches, T231 refuses to overwrite without a verified previous copy, T229/T220 appearances by minutes > 0; todo bases SAVE@49 HIST@15 WEB@92 MATCH@12.
 - 261019 create-task ARCH r12 done: no new task; T218 T225 T230 T254 browser checks on Chromium only, T233 gate uses the ARCH-30 batch checks + CI instead of a local `pnpm run verify`, todo bases ARCH@12.
 - 261019 update-ssot ARCH r12 done: ARCH-30 verification tiers — task checks per task, batch checks before a code push, CI read once per push.
 - 261019 doc-review ARCH WEB WORLD CLUB MATCH LEAGUE STAFF ECON EURO HIST SAVE tidied (rev unchanged): long decisions structured, SAVE-10 retired transforms replaced by current rules/history references, stale references and copied skeleton prose removed; IDs/statuses and all chg lines preserved.
@@ -184,4 +185,3 @@
 - 261019 ideation club-identity-and-kits continue: adopt preset-first crests with optional shape, field-pattern and emblem composition.
 - 261019 WEB r90 match theatre/analysis/profile/squad/league/preparation for the grid engine; HIST r14 spatial and discipline totals, map lifetime; SAVE r45 rules 4.0.0 boundary; ideation match-engine-rebuild converted.
 - 261019 STAFF r34 styles in the grid engine and substitution habits; CLUB r42 bench/takers, in-match injuries for everyone, suspensions; LEAGUE r10 NPC injuries/suspensions and discipline table.
-- 261019 PLAYER r9: 16 attributes with 판단력/침착성 in OVR weights, roles and traits as decision tendencies, mental ageing; MATCH r11 constraint: earlier careers follow SAVE-19 (not converted).
