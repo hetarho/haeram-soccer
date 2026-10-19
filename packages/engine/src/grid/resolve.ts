@@ -14,7 +14,15 @@ import {
   toEngine,
   type Point,
 } from './pitch';
-import { onPitch, other, skill, slotOf, type GridPlayer, type GridState } from './state';
+import {
+  onPitch,
+  other,
+  skill,
+  slotOf,
+  strengthScaled,
+  type GridPlayer,
+  type GridState,
+} from './state';
 import { TAG_CONFIG, type Tags } from './tags';
 import type { Decision } from './decide';
 
@@ -105,8 +113,8 @@ export const SHOT_CONFIG = {
   /** The least a shot's pressure factor falls to, so two or more close markers never make xG negative (T215). */
   pressureFloor: 0.2,
   freeKickWall: 0.6,
-  /** The pressure a header won against a marker is taken under (T215). */
-  headerPressure: 0.8,
+  /** The pressure a header won against a marker is taken under (T215, T216). */
+  headerPressure: 1,
   onTargetSkill: 1 / 250,
   /** Share of the shared on-target model's saves the grid keeps; the rest go wide (T215). */
   saveShare: 0.5,
@@ -161,7 +169,12 @@ export function shotContext(s: GridState): ShotContext {
       }
     }
   }
-  return { levelFactor: finishing(count ? shooting / count : 55, keeping / 2) };
+  return {
+    levelFactor: finishing(
+      count ? strengthScaled(s, shooting / count) : 55,
+      strengthScaled(s, keeping / 2),
+    ),
+  };
 }
 
 /** Distance from `p` to the segment `a`→`b`, and where along it (0–1) the nearest point lies. */
