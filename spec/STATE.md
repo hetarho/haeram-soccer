@@ -79,9 +79,9 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 11 | 11 | - | 2 |
-| WEB | 91 | 90 | WEB-2✎ WEB-15✎ WEB-39✎ WEB-49✎ WEB-71✎ WEB-86+ WEB-87+ WEB-88+ | 0 |
+| WEB | 91 | 91 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
-| KIT | 2 | 0 | all | 0 |
+| KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
 | MATCH | 11 | 11 | - | 1 |
 | LEAGUE | 10 | 10 | - | 0 |
@@ -89,7 +89,7 @@
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 14 | 14 | - | 0 |
-| SAVE | 48 | 48 | SAVE-20+ SAVE-21✎ SAVE-22✎ | 0 |
+| SAVE | 48 | 48 | - | 0 |
 | PLAYER | 9 | 9 | - | 0 |
 
 ## tasks
@@ -129,6 +129,28 @@
 | T231 | One active localStorage checkpoint, previous copy in IndexedDB | SAVE ARCH | T230 | todo |
 | T232 | Century storage benchmark on rules 4.0.0 (explore 2h) | SAVE ARCH HIST | T231 | todo |
 | T233 | Grid engine rebuild: documents, golden facts, full verification | MATCH SAVE ARCH | T232 | todo |
+| T234 | Define bounded club identity and appearance DTOs | KIT SAVE ARCH | T233 | todo |
+| T235 | Version design-bearing checkpoint envelopes without changing gameplay rules | SAVE ARCH | T234 | todo |
+| T236 | Extract the existing crest generator without changing its output | KIT ARCH | T234 | todo |
+| T237 | Generate complete stable identities and previewable founding drafts | KIT WEB SAVE ARCH | T235 T236 | todo |
+| T238 | Define one normalized geometry for shirt patterns and trim | KIT WEB ARCH | T234 | todo |
+| T239 | Select readable saved shirts and automatic goalkeeper colours | KIT ARCH | T238 T237 | todo |
+| T240 | Apply own-club identity edits atomically through the existing worker command | KIT SAVE ARCH | T237 T235 | todo |
+| T241 | Persist a kit role for exactly the validated next own fixture | KIT WEB SAVE | T240 T239 | todo |
+| T242 | Freeze actual shirt and crest appearance at own-match settlement | KIT SAVE ARCH | T241 T239 | todo |
+| T243 | Preserve appearance snapshots in bounded compact checkpoint streams | SAVE KIT ARCH | T242 T235 | todo |
+| T244 | Install missing identities only through validated writer activation | KIT SAVE ARCH | T243 T237 T236 | todo |
+| T245 | Render one-to-three-colour crests consistently in club and slot views | KIT WEB SAVE | T237 T236 | todo |
+| T246 | Draw readable cached shirt sprites from the shared pattern geometry | KIT WEB ARCH | T238 | todo |
+| T247 | Make identity editing a pure isolated draft reducer | KIT WEB | T237 | todo |
+| T248 | Build accessible controlled crest and shirt editing panels | KIT WEB | T245 T246 T247 | todo |
+| T249 | Preview the actual selected shirt pairing on grass without simulating a match | KIT WEB ARCH | T239 T246 T248 | todo |
+| T250 | Found a club with exactly the previewed identity and shirts | KIT WEB SAVE | T244 T249 | todo |
+| T251 | Edit club design through a game-scoped draft and one explicit apply | KIT WEB SAVE | T240 T250 | todo |
+| T252 | Select a warned fixture-specific shirt without changing saved designs | KIT WEB SAVE | T241 T249 | todo |
+| T253 | Render actual recorded shirt patterns and stable historical crests in matches | KIT WEB SAVE ARCH | T242 T245 T246 T252 | todo |
+| T254 | Verify identity continuity across save, slots, readonly and failed writes | KIT WEB SAVE ARCH | T251 T253 T243 T244 | todo |
+| T255 | Validate the complete identity feature against release and century budgets | KIT WEB SAVE ARCH | T254 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -137,15 +159,16 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- implement-task T200 next (grid engine rebuild T200–T233, contract docs/MATCH-ENGINE-DESIGN.md); T200 must run before any engine change. Recommended: implement on a work branch and merge to main after T233's CI.
-- create-task KIT WEB SAVE for club identity and kits: policies are settled in KIT r2, WEB r91 and SAVE r47; keep the pending grid-engine changes distinct when decomposing the work.
-- Review prior autonomous decisions and optional review-code/doc-review proposals in inbox; latest report reports/261017-p6k2.md.
-- External deployment configuration, optional hall of fame and Flutter remain separate future work.
+- implement-task T200 next (grid-engine batch T200–T233, contract docs/MATCH-ENGINE-DESIGN.md); T200 must precede engine changes, and T233 must complete before identity implementation. Recommended: use a work branch and merge after T233's CI.
+- implement-task T234 after T233; continue T234–T255 for club identity and kits using docs/CLUB-IDENTITY-CONTRACT.md, following actual dependencies and one task per session.
+- Review prior autonomous decisions and optional review-code/doc-review proposals in inbox (latest report reports/261017-p6k2.md); external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 create-task KIT WEB SAVE done: T234–T255 (22 small tasks), explicit DTO/geometry/command/codec/UI contracts, cases and targeted commands; consume KIT r2, WEB r91 and SAVE r46–47 identity deltas, preserve completed grid planning through T233.
 - 261019 create-task grid engine rebuild: T200–T233 (34 tasks, 4 explore) from MATCH r11, PLAYER r9, STAFF r34, CLUB r42, LEAGUE r10, WEB r90, HIST r14, SAVE r45/r48, ARCH r11; SAVE r46–47 and WEB r91 identity deltas stay pending for the identity tasks (T240+).
 - 261019 SAVE r48 ARCH r11: previous checkpoint in IndexedDB, active localStorage checkpoint up to 3 MiB (import 8 MiB, inflate 32 MiB) for the grid engine's larger records (owner choice).
 - 261019 create-task MATCH PLAYER STAFF CLUB LEAGUE WEB HIST SAVE start (grid engine rebuild)
+- 261019 create-task KIT WEB SAVE start (club identity only); use small sequential tasks and explicit engineering contracts for a less capable implementation model.
 - 261019 KIT r2 and SAVE r47: all identity policies settled; 1-3 colours/default two, eight patterns, six crests/three kit drafts, warned manual clashes, explicit palette reuse, frozen recorded playback and supported-career preservation.
 - 261019 update-ssot KIT SAVE start: settle all club-identity-and-kits product policies.
 - 261019 club-identity-and-kits converted: KIT r1 owns identity/kit policy; WEB r91 adds shared editor, pitch preview and pre-match choice; SAVE r46 preserves applied designs, with adoption/history policies open.
@@ -161,5 +184,3 @@
 - 261019 ideation club-identity-and-kits continue: apply owner choices for kit palettes, pre-match selection and club-management editing.
 - 261019 ideation club-identity-and-kits open: recorded selectable 1-3-colour crests, home/away/third patterns and pitch preview; palette links, kit selection and later edits remain open.
 - 261019 ideation club-identity-and-kits start
-- 261019 ideation match-engine-rebuild ready: grid engine (5 lanes × 8 bands), per-touch time, real-data decision tables, fouls/set pieces/cards/subs/injuries with era rules, new statistics and maps; baselines in docs/MATCH-BASELINES.md.
-- 261019 ideation match-engine-rebuild start
