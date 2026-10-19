@@ -9,7 +9,9 @@ on:
   workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  # main keeps a started run so the 70-minute benchmark finishes while parallel sessions push;
+  # GitHub still replaces older pending runs with the newest one.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 # The checks, each browser's journeys and the benchmarks run as parallel jobs: the run takes as
 # long as its slowest job (WebKit, split in two) instead of the sum of every step.
 jobs:

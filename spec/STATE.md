@@ -208,3 +208,4 @@
 - 261019 T207 done (w6pm): per-touch tags (phase, pressure, orientation, lines, channel, overload, game state); 36 grid tests pass.
 - 261019 T206 done (w6pm): off-ball shape, pressing, marking, runs and movement with a grid test kit; 29 grid tests pass.
 - 261019 T203 done (w6pm): lossless packing of rules 4 match facts and season heat maps in four optional streams; adapters tests 105 pass.
+- 261019 fix ci: main no longer cancels a started run, so the 70-minute benchmark completes while the v7m3 loop and the refactor-261019 workers push (pending runs are still replaced by the newest)
