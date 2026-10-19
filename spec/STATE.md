@@ -78,23 +78,57 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 11 | 10 | ARCH-11✎ ARCH-13✎ ARCH-14✎ | 2 |
-| WEB | 91 | 89 | WEB-22✎ WEB-23✎ WEB-24✎ WEB-32✎ WEB-40✎ WEB-44✎ WEB-50✎ WEB-53✎ WEB-59✎ WEB-68✎ WEB-84+ WEB-85+ WEB-2✎ WEB-15✎ WEB-39✎ WEB-49✎ WEB-71✎ WEB-86+ WEB-87+ WEB-88+ | 0 |
+| ARCH | 11 | 11 | - | 2 |
+| WEB | 91 | 90 | WEB-2✎ WEB-15✎ WEB-39✎ WEB-49✎ WEB-71✎ WEB-86+ WEB-87+ WEB-88+ | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 0 | all | 0 |
-| CLUB | 42 | 41 | CLUB-6✎ CLUB-23✎ CLUB-45+ | 0 |
-| MATCH | 11 | 9 | MATCH-1✎ MATCH-2✎ MATCH-3✎ MATCH-5✎ MATCH-6✎ MATCH-8✎ MATCH-9✎ MATCH-11✎ MATCH-12✎ MATCH-13✎ MATCH-14+ MATCH-15+ MATCH-16+ MATCH-17+ MATCH-18+ MATCH-19+ MATCH-20+ MATCH-21+ MATCH-22+ MATCH-23+ MATCH-24+ MATCH-25+ MATCH-26+ | 1 |
-| LEAGUE | 10 | 9 | LEAGUE-15+ | 0 |
-| STAFF | 34 | 33 | STAFF-14✎ STAFF-21✎ STAFF-22✎ STAFF-45+ | 0 |
+| CLUB | 42 | 42 | - | 0 |
+| MATCH | 11 | 11 | - | 1 |
+| LEAGUE | 10 | 10 | - | 0 |
+| STAFF | 34 | 34 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 14 | 13 | HIST-8✎ HIST-16+ | 0 |
-| SAVE | 48 | 44 | SAVE-10✎ SAVE-18✎ SAVE-19+ SAVE-20+ SAVE-21+ SAVE-22+ SAVE-21✎ SAVE-22✎ SAVE-3✎ SAVE-4✎ SAVE-13✎ SAVE-14✎ | 0 |
-| PLAYER | 9 | 8 | PLAYER-1✎ PLAYER-2✎ PLAYER-5✎ PLAYER-6✎ PLAYER-9✎ PLAYER-15✎ PLAYER-17✎ PLAYER-19✎ PLAYER-20✎ | 0 |
+| HIST | 14 | 14 | - | 0 |
+| SAVE | 48 | 48 | SAVE-20+ SAVE-21✎ SAVE-22✎ | 0 |
+| PLAYER | 9 | 9 | - | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T200 | Freeze a real rules 3.0.0 checkpoint fixture | SAVE | - | todo |
+| T201 | Sixteen player attributes: 판단력 and 침착성 | PLAYER STAFF | T200 | todo |
+| T202 | Match, discipline and archive contracts for rules 4.0.0 | MATCH HIST LEAGUE SAVE | T201 | todo |
+| T203 | Lossless packing of the new match facts and season heat maps | SAVE HIST MATCH | T202 | todo |
+| T204 | Grid pitch: 40 named cells, geometry and baselines | MATCH | T203 | todo |
+| T205 | Grid setup and state: rosters, bench, takers, era rules, skills | MATCH CLUB STAFF | T204 | todo |
+| T206 | Off-the-ball shape, pressing, marking, runs and movement | MATCH PLAYER STAFF | T205 | todo |
+| T207 | Per-touch tags | MATCH | T206 | todo |
+| T208 | Decision tables: action mix and target choice | MATCH PLAYER STAFF | T207 | todo |
+| T209 | Duels and the xG model | MATCH PLAYER | T208 | todo |
+| T210 | Restarts, set pieces, offside and fouls | MATCH | T209 | todo |
+| T211 | The grid match loop: periods, time, records, trace | MATCH | T210 | todo |
+| T212 | Advanced and spatial counters | MATCH | T211 | todo |
+| T213 | Cards in the match | MATCH | T212 | todo |
+| T214 | Substitutions by the manager and in-match injuries | MATCH STAFF CLUB | T213 | todo |
+| T215 | Calibrate the grid engine to real-football distributions (explore 4h) | MATCH | T214 | todo |
+| T216 | Calibrate the grid engine's strength curve (explore 3h) | MATCH | T215 | todo |
+| T217 | Playback frames and Korean commentary from the grid trace | MATCH WEB | T216 | todo |
+| T218 | Switch the owner's matches to the grid engine and its playback | MATCH WEB | T217 | todo |
+| T219 | Suspensions, yellow accumulation and unavailable players | MATCH CLUB LEAGUE | T218 | todo |
+| T220 | Settle grid matches into the world | MATCH CLUB LEAGUE PLAYER | T219 | todo |
+| T221 | Probabilistic path: cards, injuries and named lines | MATCH LEAGUE | T220 | todo |
+| T222 | Extra time and penalty shoot-outs, played | MATCH | T221 | todo |
+| T223 | Post-match material and season heat maps | MATCH HIST | T222 | todo |
+| T224 | Measure the grid engine's cost and choose the own-league path (explore 1h) | MATCH ARCH | T223 | todo |
+| T225 | Match theatre: commentary, cards, added time, substitutions, pacing | WEB MATCH | T224 | todo |
+| T226 | Final analysis report, glossary and season figures | WEB MATCH | T225 | todo |
+| T227 | Shot map, heat maps, pass network and tactical report screens | WEB MATCH | T226 | todo |
+| T228 | Preparation: bench, set-piece takers, unavailable players, lab | WEB MATCH CLUB | T227 | todo |
+| T229 | Player sheet, squad, home and league views for discipline | WEB CLUB LEAGUE HIST | T228 | todo |
+| T230 | Rules 4.0.0: new careers, robust legacy reset and notice | SAVE PLAYER | T229 | todo |
+| T231 | One active localStorage checkpoint, previous copy in IndexedDB | SAVE ARCH | T230 | todo |
+| T232 | Century storage benchmark on rules 4.0.0 (explore 2h) | SAVE ARCH HIST | T231 | todo |
+| T233 | Grid engine rebuild: documents, golden facts, full verification | MATCH SAVE ARCH | T232 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -103,12 +137,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- match-engine-rebuild planned across MATCH r11, PLAYER r9, STAFF r34, CLUB r42, LEAGUE r10, WEB r90, HIST r14, SAVE r45 → create-task for all of them; measure the grid engine's cost early (it decides MATCH-22's own-league path and MATCH-26).
+- implement-task T200 next (grid engine rebuild T200–T233, contract docs/MATCH-ENGINE-DESIGN.md); T200 must run before any engine change. Recommended: implement on a work branch and merge to main after T233's CI.
 - create-task KIT WEB SAVE for club identity and kits: policies are settled in KIT r2, WEB r91 and SAVE r47; keep the pending grid-engine changes distinct when decomposing the work.
 - Review prior autonomous decisions and optional review-code/doc-review proposals in inbox; latest report reports/261017-p6k2.md.
 - External deployment configuration, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 create-task grid engine rebuild: T200–T233 (34 tasks, 4 explore) from MATCH r11, PLAYER r9, STAFF r34, CLUB r42, LEAGUE r10, WEB r90, HIST r14, SAVE r45/r48, ARCH r11; SAVE r46–47 and WEB r91 identity deltas stay pending for the identity tasks (T240+).
 - 261019 SAVE r48 ARCH r11: previous checkpoint in IndexedDB, active localStorage checkpoint up to 3 MiB (import 8 MiB, inflate 32 MiB) for the grid engine's larger records (owner choice).
 - 261019 create-task MATCH PLAYER STAFF CLUB LEAGUE WEB HIST SAVE start (grid engine rebuild)
 - 261019 KIT r2 and SAVE r47: all identity policies settled; 1-3 colours/default two, eight patterns, six crests/three kit drafts, warned manual clashes, explicit palette reuse, frozen recorded playback and supported-career preservation.
@@ -128,4 +163,3 @@
 - 261019 ideation club-identity-and-kits start
 - 261019 ideation match-engine-rebuild ready: grid engine (5 lanes × 8 bands), per-touch time, real-data decision tables, fouls/set pieces/cards/subs/injuries with era rules, new statistics and maps; baselines in docs/MATCH-BASELINES.md.
 - 261019 ideation match-engine-rebuild start
-- 261017 T179 done p6k2: CI38970812465 passes all jobs; local1018unit/15contract/545browser with4 existing skips; docs and raw benchmark evidence synchronized, no gameplay changes.
