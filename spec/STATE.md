@@ -18,6 +18,9 @@
 | w6pm | hq-dev1-pve2-vm2 | autopilot | 2026-10-19T07:33Z | 2026-10-19T07:33Z | T213 |
 
 ## inbox
+- 261019 decided T211 T212: the first uncalibrated grid engine gave about 8 goals a match → global placeholders `shotScale` 0.05 and `crossScale` 4 in `DECISION_CONFIG` so the plausibility bands hold until calibration (alt: leave the bands red until T215 | tune the cell baselines now)
+- 261019 decided T211: runtime criterion 15 ms per match is unmet (about 87 ms after caching shared shape values) → task closed with the criterion left open in its result and handed to T224 (alt: keep T211 open | cut `moveAll` frequency at the cost of movement fidelity)
+- 261019 decided - : the 18:00 stop requested by the owner → every verified batch went to main, unfinished work would go to wip/w6pm (alt: push WIP to main | push nothing)
 - 261019 decided T203 T204: owner asked for parallel work until 18:00 while the engine chain is declared serial → ran T203 (apps/web packing) and T204 (engine/grid, new files) side by side in separate worktrees since their touches are disjoint and T204 uses nothing of T203 (alt: strictly serial | also start identity tasks T234+ early)
 - 261019 suggest T203: main CI is red since the 261017 UI design commits (Run 319 at da97fe0: every browser's e2e and the browser benchmark failed; Run 314 at 6df81fa was the last pass) — locally Chromium fails the same 76 journeys at origin/main and with T200–T202, 73 of them `selectOption` on the custom Select in 위임·진행 설정 → fix the e2e helpers before T203 so CI gates the grid engine again.
 - 261019 decided ARCH-30 T201: whole-world unit tests passed the 30 s vitest limit once players carry 16 attributes (about 10% slower; two already timed out at the base under load) → testTimeout 60 s and the feature-replay case 240 s (alt: per-test limits on each slow case | speed up OVR first)
@@ -152,7 +155,7 @@
 
 ## next
 - Browser journeys set aside by the owner (261019): main e2e is red since the 261017 UI design commits (tests/e2e call `selectOption` on the custom Select); do not wait on or fix them unless asked.
-- implement-task T203, then T204–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
+- implement-task T213, then T214–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T203–T212 are done (grid pitch, setup/state, shape, tags, decisions, duels/xG, restarts, `playGrid` loop with records and counters). T224 must bring the 87 ms grid match down toward the 15 ms criterion of T211; T215/T216 retune the placeholders `DECISION_CONFIG.shotScale` 0.05 and `crossScale` 4, pass completion (66% vs about 80%) and offsides (about 12 a match). T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
