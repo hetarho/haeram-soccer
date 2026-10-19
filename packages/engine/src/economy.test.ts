@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import fc from 'fast-check';
 import type { CountryCode, TransferBid, World } from '../../contracts/src/types';
 import { canonical } from '../../contracts/src/index';
 import { currency } from '../../catalogs/src/index';
@@ -96,13 +97,17 @@ function liveAmounts(w: World) {
   };
 }
 
+const CHANGES = [
+  // 6.55957 francs to the euro; centimes to cents.
+  ['FRA', 1999, '655957', '100000'],
+  // 240 old pence to the pound became 100 new pence.
+  ['ENG', 1971, '2400', '1000'],
+] as const;
+
+const sign = (v: bigint) => (v > 0n ? 1 : v < 0n ? -1 : 0);
+
 describe('currency change', () => {
-  for (const [country, year, amount, converted] of [
-    // 6.55957 francs to the euro; centimes to cents.
-    ['FRA', 1999, '655957', '100000'],
-    // 240 old pence to the pound became 100 new pence.
-    ['ENG', 1971, '2400', '1000'],
-  ] as const)
+  for (const [country, year, amount, converted] of CHANGES)
     it(`converts coaches, free agents, prospects, open talks, open bids and their offers once in ${country} ${year}`, () => {
       const w = beforeChange(country, year, amount);
       const [num, den] = conversion(country, year);
@@ -145,5 +150,37 @@ describe('currency change', () => {
       w.year = year + 1;
       advanceEconomy(w, year);
       expect(liveAmounts(w)).toEqual(live);
+    });
+  for (const [country, year] of CHANGES)
+    it(`a currency change converts cash monotonically and keeps its sign in ${country} ${year}`, () => {
+      const base = beforeChange(country, year, '1000');
+      base.year = year;
+      const [num, den] = conversion(country, year);
+      const convert = (cash: bigint) => {
+        const w = structuredClone(base);
+        w.cash = cash.toString();
+        advanceEconomy(w, year - 1);
+        return BigInt(w.cash);
+      };
+      // Small amounts too, where a change to larger units rounds part of a new unit away.
+      const cash = fc.oneof(
+        fc.bigInt({ min: -(10n ** 15n), max: 10n ** 15n }),
+        fc.bigInt({ min: -10000n, max: 10000n }),
+      );
+      fc.assert(
+        fc.property(cash, cash, (a, b) => {
+          const ca = convert(a),
+            cb = convert(b);
+          expect(ca.toString()).toBe(ratio(a.toString(), num, den));
+          expect(cb.toString()).toBe(ratio(b.toString(), num, den));
+          if (a <= b) expect(ca <= cb).toBe(true);
+          if (b <= a) expect(cb <= ca).toBe(true);
+          // An amount under half a new unit may become zero, never the opposite sign.
+          expect([0, sign(a)]).toContain(sign(ca));
+          if (a === 0n) expect(ca).toBe(0n);
+        }),
+        // Each run converts two fresh copies of a whole world.
+        { numRuns: 50 },
+      );
     });
 });

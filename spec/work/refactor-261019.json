@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-19T14:20:01.603Z",
-  "sourceCommit": "5659b91dfbdcdf3f79ea23b649893e97ee599d0d",
+  "snapshotAt": "2026-10-19T14:35:34.090Z",
+  "sourceCommit": "712ede067e62a7fe22eb5cd93f444308aa697130",
   "group": {
     "id": "refactor-261019",
     "branch": "work/refactor-261019",
@@ -15,10 +15,10 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "5659b91dfbdcdf3f79ea23b649893e97ee599d0d",
+      "commit": "712ede067e62a7fe22eb5cd93f444308aa697130",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-19T14:06:51.339Z"
+      "at": "2026-10-19T14:22:38.824Z"
     },
     "runner": {
       "id": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
@@ -47,11 +47,11 @@
   },
   "summary": {
     "total": 53,
-    "completed": 4,
-    "remaining": 49,
-    "running": 3,
+    "completed": 7,
+    "remaining": 46,
+    "running": 6,
     "review": 0,
-    "blocked": 6,
+    "blocked": 0,
     "unassigned": 40
   },
   "tasks": [
@@ -402,62 +402,41 @@
       "title": "Load the team sheet on demand and drop dead progress-control styles",
       "dep": [],
       "lane": "ui-entry-desk",
-      "status": "blocked"
+      "status": "doing"
     },
     {
       "id": "T259",
       "title": "Show every open bid on the recruitment desk",
       "dep": [],
       "lane": "ui-entry-desk",
-      "status": "blocked"
+      "status": "doing"
     },
     {
       "id": "T260",
       "title": "One tested home for the policy dial steps",
       "dep": [],
       "lane": "ui-entry-desk",
-      "status": "blocked"
+      "status": "doing"
     },
     {
       "id": "T261",
       "title": "One tab list and one address-synced tab hook",
       "dep": [],
       "lane": "ui-league-tabs",
-      "status": "blocked"
+      "status": "doing"
     },
     {
       "id": "T262",
       "title": "One set of league-table rules in the UI",
       "dep": [],
       "lane": "ui-league-tabs",
-      "status": "blocked"
+      "status": "doing"
     },
     {
       "id": "T263",
       "title": "Tested models behind the league overview and rank history",
       "dep": [],
       "lane": "ui-league-tabs",
-      "status": "blocked"
-    },
-    {
-      "id": "T267",
-      "title": "Break same-day ties without the runtime's collation",
-      "dep": [],
-      "lane": "engine-checks",
-      "status": "doing"
-    },
-    {
-      "id": "T268",
-      "title": "Tests for valuation, cash movements and currency conversion",
-      "dep": [],
-      "lane": "engine-checks",
-      "status": "doing"
-    },
-    {
-      "id": "T269",
-      "title": "Split the club news builder and pin the texts it reads",
-      "dep": [],
-      "lane": "engine-checks",
       "status": "doing"
     }
   ],
@@ -476,8 +455,8 @@
       "contributors": [
         "7a09d4b3-b1c8-4c96-a247-b519ebf823ed/worker-1"
       ],
-      "status": "blocked",
-      "reason": "T258: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+      "status": "doing",
+      "reason": null,
       "createdAt": "2026-10-19T13:50:15.912Z",
       "startCommit": "6c75c4b94c14308b765b69c9da0efcfa7a6f0038",
       "dispatch": {
@@ -508,8 +487,8 @@
       "contributors": [
         "7a09d4b3-b1c8-4c96-a247-b519ebf823ed/worker-2"
       ],
-      "status": "blocked",
-      "reason": "T261: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+      "status": "doing",
+      "reason": null,
       "createdAt": "2026-10-19T13:50:17.524Z",
       "startCommit": "6c75c4b94c14308b765b69c9da0efcfa7a6f0038",
       "dispatch": {
@@ -548,6 +527,8 @@
       "submittedBase": "5659b91dfbdcdf3f79ea23b649893e97ee599d0d",
       "submissionId": "75282405-be29-4f6d-b265-36103b0f8506",
       "submittedAt": "2026-10-19T14:19:59.631Z",
+      "integratedCommit": "712ede067e62a7fe22eb5cd93f444308aa697130",
+      "integratedAt": "2026-10-19T14:22:36.811Z",
       "risk": {
         "risky": false,
         "reasons": [],
@@ -624,6 +605,13 @@
           "startedAt": "2026-10-19T14:17:31.868Z",
           "finishedAt": "2026-10-19T14:19:58.749Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build",
+          "startedAt": "2026-10-19T14:20:01.897Z",
+          "finishedAt": "2026-10-19T14:22:36.516Z"
+        }
       ]
     },
     {
@@ -640,19 +628,58 @@
       "contributors": [
         "7a09d4b3-b1c8-4c96-a247-b519ebf823ed/worker-4"
       ],
-      "status": "doing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-19T13:50:20.666Z",
       "startCommit": "6c75c4b94c14308b765b69c9da0efcfa7a6f0038",
+      "verifiedCommit": "d1fdb3fa2e03512789dad8a0a82a6d9de3402082",
+      "submittedBase": "712ede067e62a7fe22eb5cd93f444308aa697130",
+      "submissionId": "75c9088d-8d56-4611-add8-fba70b782d7c",
+      "submittedAt": "2026-10-19T14:30:32.806Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "2010 changed lines (limit 300)"
+        ],
+        "lines": 2010,
+        "files": 9
+      },
       "dispatch": {
-        "id": "da4d25da-10d4-4fd1-9bfc-268725befdb3",
+        "id": "941adf3c-ef5c-4e0d-beef-ab234c8d6a73",
         "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
-        "role": "worker",
-        "slot": 4,
+        "role": "reviewer",
+        "slot": 1,
         "provider": "claude",
         "model": null,
-        "status": "running",
-        "startedAt": "2026-10-19T14:11:43.634Z"
+        "status": "finished",
+        "startedAt": "2026-10-19T14:30:35.798Z",
+        "finishedAt": "2026-10-19T14:35:32.182Z",
+        "error": null,
+        "summary": "Approved: I found no P1 or P2 problems in T267, T268 or T269 (commit d1fdb3f against base 712ede0). I did not run any tests. The review checkout has no node_modules, and a read-only review can't install them, so this rests on reading the code plus the workers' own logged checks. Integration still has to run the batch verify, including test:contract and host.test.ts.\n\nThe risk flag was the size of the change (2010 lines). Almost all of it is the T269 split of news.ts, so I checked that first. I compared the old clubNews body (lines 177–906) with the new builders, both by hand and with a diff that ignores whitespace and the `ctx.` prefix.\n- **The split is faithful.** The builders run in the same order and push items in the same order, including per player line (goal items, then play items). The values each builder reads match the old code at every point. The one removed piece, the in-season bestUnbeaten/bestWins writes, was never read.\n- **Nothing else moved.** Exports are unchanged, and everything after the old line 915 is identical apart from the cup-prize lines.\n- **Size and shape.** The longest function is 120 lines, and one context object is built once per call.\n- **New tests.** news.test.ts adds the five builder cases on hand-made matches. It also adds event cases that call the real code that writes each text (injury, 새로운 도전 sale, 은퇴 retirement, a hand-scored cup run).\n\nT267: promises.ts and replacements.ts now break same-day ties with `compareIds`. No `localeCompare` is left in engine source apart from two test comments. Both named tests use the ID pair where the two sort orders disagree, and neither touched area changed in the base commit.\n\nT268: only test files changed, and every named case and fast-check property is there with bounded runs. The currency property checks its result against `ratio` using the catalog's two periods."
+      },
+      "review": {
+        "id": "526d7f33-eaa3-478e-93e5-2097b698719c",
+        "owner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Approved: I found no P1 or P2 problems in T267, T268 or T269 (commit d1fdb3f against base 712ede0). I did not run any tests. The review checkout has no node_modules, and a read-only review can't install them, so this rests on reading the code plus the workers' own logged checks. Integration still has to run the batch verify, including test:contract and host.test.ts.\n\nThe risk flag was the size of the change (2010 lines). Almost all of it is the T269 split of news.ts, so I checked that first. I compared the old clubNews body (lines 177–906) with the new builders, both by hand and with a diff that ignores whitespace and the `ctx.` prefix.\n- **The split is faithful.** The builders run in the same order and push items in the same order, including per player line (goal items, then play items). The values each builder reads match the old code at every point. The one removed piece, the in-season bestUnbeaten/bestWins writes, was never read.\n- **Nothing else moved.** Exports are unchanged, and everything after the old line 915 is identical apart from the cup-prize lines.\n- **Size and shape.** The longest function is 120 lines, and one context object is built once per call.\n- **New tests.** news.test.ts adds the five builder cases on hand-made matches. It also adds event cases that call the real code that writes each text (injury, 새로운 도전 sale, 은퇴 retirement, a hand-scored cup run).\n\nT267: promises.ts and replacements.ts now break same-day ties with `compareIds`. No `localeCompare` is left in engine source apart from two test comments. Both named tests use the ID pair where the two sort orders disagree, and neither touched area changed in the base commit.\n\nT268: only test files changed, and every named case and fast-check property is there with bounded runs. The currency property checks its result against `ratio` using the catalog's two periods.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/news.ts:1314-1323 (T269)",
+            "message": "This is a behaviour change on top of the split. The acceptance says clubNews \"keeps its output\", but the cup-prize parser now matches ' 4강 통과' / ' 8강 통과' with the leading space. A 64강 pass used to read \"6결승 진出\" with major weight and now reads \"64강 통과\" with minor weight (128강 had the same problem). The fix is correct, stays within the task's files, is recorded in the result and has a test. The seed 1–3 snapshot hashes are unchanged because those runs never hit the case. Keep it. The sibling problem the worker listed under limits is still there: cup-exit at news.ts:1331 tests /결승|4강|8강/ as a substring, so \"64강 탈락\" is weighted notable instead of minor. Fixing it would change existing snapshots, so whoever plans the work group (manage-work) should open a follow-up task. This review doesn't settle it."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/news.ts:109 (T269)",
+            "message": "The new local `type Line = MatchRecord['players'][number]` reuses the name of the contracts type `Line` ('GK' | 'DF' | 'MF' | 'FW', packages/contracts/src/player.ts:20). The engine uses that type for positional lines through `lineOf`. Nothing breaks, but a name like `PlayerLine` or `MatchLine` would avoid confusing readers. Optional."
+          }
+        ],
+        "commit": "d1fdb3fa2e03512789dad8a0a82a6d9de3402082",
+        "baseCommit": "712ede067e62a7fe22eb5cd93f444308aa697130",
+        "submissionId": "75c9088d-8d56-4611-add8-fba70b782d7c",
+        "createdAt": "2026-10-19T14:30:34.779Z",
+        "finishedAt": "2026-10-19T14:35:32.174Z"
       },
       "steps": [
         {
@@ -678,6 +705,25 @@
               "finishedAt": "2026-10-19T14:11:41.485Z"
             }
           ]
+        },
+        {
+          "taskId": "T269",
+          "commit": "d1fdb3fa2e03512789dad8a0a82a6d9de3402082",
+          "at": "2026-10-19T14:30:32.771Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-19T14:28:25.492Z",
+              "finishedAt": "2026-10-19T14:30:32.151Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-19T14:28:25.492Z",
+          "finishedAt": "2026-10-19T14:30:32.151Z"
         }
       ]
     },
@@ -2545,6 +2591,434 @@
         "T264",
         "T265",
         "T266"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 379,
+      "at": "2026-10-19T14:22:36.767Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
+      "taskId": "T266",
+      "tasks": [
+        "T264",
+        "T265",
+        "T266"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build",
+            "startedAt": "2026-10-19T14:20:01.897Z",
+            "finishedAt": "2026-10-19T14:22:36.516Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 380,
+      "at": "2026-10-19T14:22:36.811Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
+      "taskId": "T266",
+      "tasks": [
+        "T264",
+        "T265",
+        "T266"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "712ede067e62a7fe22eb5cd93f444308aa697130",
+        "integratedAt": "2026-10-19T14:22:36.811Z"
+      }
+    },
+    {
+      "sequence": 381,
+      "at": "2026-10-19T14:22:38.828Z",
+      "type": "group",
+      "group": "refactor-261019",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "712ede067e62a7fe22eb5cd93f444308aa697130",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-19T14:22:38.824Z"
+        }
+      }
+    },
+    {
+      "sequence": 382,
+      "at": "2026-10-19T14:28:23.775Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T269",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 383,
+      "at": "2026-10-19T14:28:24.885Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T269",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 384,
+      "at": "2026-10-19T14:28:24.916Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T269",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 385,
+      "at": "2026-10-19T14:30:32.806Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T269",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "steps": [
+          {
+            "taskId": "T267",
+            "commit": "bee4862be6a50b3ccd41b7f8afe94434b33ea003",
+            "at": "2026-10-19T14:03:15.309Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-19T13:59:39.812Z",
+                "finishedAt": "2026-10-19T14:03:14.478Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T268",
+            "commit": "840ea7623b74ef7118d7d40856c960f828ed10c4",
+            "at": "2026-10-19T14:11:42.289Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-19T14:11:12.291Z",
+                "finishedAt": "2026-10-19T14:11:41.485Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T269",
+            "commit": "d1fdb3fa2e03512789dad8a0a82a6d9de3402082",
+            "at": "2026-10-19T14:30:32.771Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-19T14:28:25.492Z",
+                "finishedAt": "2026-10-19T14:30:32.151Z"
+              }
+            ]
+          }
+        ],
+        "verifiedCommit": "d1fdb3fa2e03512789dad8a0a82a6d9de3402082",
+        "submittedBase": "712ede067e62a7fe22eb5cd93f444308aa697130",
+        "submissionId": "75c9088d-8d56-4611-add8-fba70b782d7c",
+        "submittedAt": "2026-10-19T14:30:32.806Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "2010 changed lines (limit 300)"
+          ],
+          "lines": 2010,
+          "files": 9
+        },
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-19T14:28:25.492Z",
+            "finishedAt": "2026-10-19T14:30:32.151Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 386,
+      "at": "2026-10-19T14:30:32.813Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T269",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "da4d25da-10d4-4fd1-9bfc-268725befdb3",
+          "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
+          "role": "worker",
+          "slot": 4,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-19T14:11:43.634Z",
+          "finishedAt": "2026-10-19T14:30:32.813Z",
+          "error": null,
+          "summary": "T269 is done. `clubNews` is split into small builders sharing one context, and its output is unchanged on all 12 snapshots I compared.\n\n**The split (news.ts):**\n- `clubNews` now builds one shared context per call and runs the match builders in the original push order: result line (with the early goal), milestones, runs, home/away, possession, xG, season highs and lows, and player lines. It then picks the kept items as before.\n- The longest builder is `runNews` at 120 lines; none is over 150.\n- The six run counters now go through one shared helper, and two in-season counters that were written but never read are gone.\n\n**Equivalence:** I hashed `canonical(clubNews(w))` for seeds 1–3 at four points: season end, after the season close, two rounds into the next season, and the next season's end. All 12 hashes are identical before the split, after it, and after the fix below. The hashes are in the task result, not in a committed test.\n\n**One behaviour change: a bug the new cup test found.**\n- **Bug:** passing the 64강 round matched \"4강 통과\" as a substring. The news then read \"잉글랜드 컵 6결승 진출\" and was weighted major.\n- **Fix:** the round label is now matched only after the space that precedes it, so a 64강 pass reads \"64강 통과\" and is weighted minor.\n- **Why no hash moved:** none of the 12 snapshots contains a 64강 pass.\n\n**Tests added (news.test.ts):**\n- Five builder cases on hand-made match records: a comeback result line with an early goal, the first win plus 3- and 5-match winning runs, away runs, a dominant home loss read through possession and xG, and a hat-trick plus a keeper's saves behind a clean sheet.\n- Four cases that call the real event producers:\n  - an injury from `trainingInjuries` shows its real week count and return day, not 0;\n  - a sale through `respondBid` names the buying club;\n  - a retirement through `retireAtClose` gives the 은퇴 news;\n  - a hand-scored domestic cup run through `advanceCups` gives the 64강, 8강 and 4강 news.\n\n**Checks run:**\n- news and adaptation tests: 21 passed.\n- `apps/web/src/runtime/host.test.ts` (it also compares news): 20 passed.\n- `pnpm run typecheck`, `pnpm run lint` and `pnpm run format:check`: clean.\n- `pnpm exec vitest run --changed 840ea76 --passWithNoTests`: 125 files, 1074 tests passed.\n\n**Left for a follow-up (recorded in limits):** the cup-exit news has the same substring problem, so \"64강 탈락\" is weighted notable instead of minor. Two of the 12 snapshots contain that case, so fixing it here would have broken the equivalence check.\n\n**Blocked commands:** two commands were denied because they used shell variables: a redirect to a log file, and a file-diff plus listing of the snapshot folders. I ran the same work as plain commands instead (reading hashes from the script output and searching the snapshots with the search tool), so nothing was skipped.\n\nNothing was committed or submitted."
+        }
+      }
+    },
+    {
+      "sequence": 387,
+      "at": "2026-10-19T14:30:34.779Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T269",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "526d7f33-eaa3-478e-93e5-2097b698719c",
+          "owner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed/reviewer-1",
+          "status": "reviewing",
+          "commit": "d1fdb3fa2e03512789dad8a0a82a6d9de3402082",
+          "baseCommit": "712ede067e62a7fe22eb5cd93f444308aa697130",
+          "submissionId": "75c9088d-8d56-4611-add8-fba70b782d7c",
+          "createdAt": "2026-10-19T14:30:34.779Z"
+        }
+      }
+    },
+    {
+      "sequence": 388,
+      "at": "2026-10-19T14:30:35.798Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T269",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "941adf3c-ef5c-4e0d-beef-ab234c8d6a73",
+          "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-19T14:30:35.798Z"
+        }
+      }
+    },
+    {
+      "sequence": 389,
+      "at": "2026-10-19T14:30:35.805Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T269",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "941adf3c-ef5c-4e0d-beef-ab234c8d6a73",
+          "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-19T14:30:35.798Z"
+        }
+      }
+    },
+    {
+      "sequence": 390,
+      "at": "2026-10-19T14:32:11.421Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "7312a243-f156-4f50-9722-d28f48d41a24",
+      "taskId": "T258",
+      "tasks": [
+        "T258",
+        "T259",
+        "T260"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 391,
+      "at": "2026-10-19T14:32:11.774Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "1de2fd8c-3efa-4d81-a5f4-7901f46546a0",
+      "taskId": "T261",
+      "tasks": [
+        "T261",
+        "T262",
+        "T263"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 392,
+      "at": "2026-10-19T14:35:32.174Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T269",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "526d7f33-eaa3-478e-93e5-2097b698719c",
+          "owner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Approved: I found no P1 or P2 problems in T267, T268 or T269 (commit d1fdb3f against base 712ede0). I did not run any tests. The review checkout has no node_modules, and a read-only review can't install them, so this rests on reading the code plus the workers' own logged checks. Integration still has to run the batch verify, including test:contract and host.test.ts.\n\nThe risk flag was the size of the change (2010 lines). Almost all of it is the T269 split of news.ts, so I checked that first. I compared the old clubNews body (lines 177–906) with the new builders, both by hand and with a diff that ignores whitespace and the `ctx.` prefix.\n- **The split is faithful.** The builders run in the same order and push items in the same order, including per player line (goal items, then play items). The values each builder reads match the old code at every point. The one removed piece, the in-season bestUnbeaten/bestWins writes, was never read.\n- **Nothing else moved.** Exports are unchanged, and everything after the old line 915 is identical apart from the cup-prize lines.\n- **Size and shape.** The longest function is 120 lines, and one context object is built once per call.\n- **New tests.** news.test.ts adds the five builder cases on hand-made matches. It also adds event cases that call the real code that writes each text (injury, 새로운 도전 sale, 은퇴 retirement, a hand-scored cup run).\n\nT267: promises.ts and replacements.ts now break same-day ties with `compareIds`. No `localeCompare` is left in engine source apart from two test comments. Both named tests use the ID pair where the two sort orders disagree, and neither touched area changed in the base commit.\n\nT268: only test files changed, and every named case and fast-check property is there with bounded runs. The currency property checks its result against `ratio` using the catalog's two periods.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/news.ts:1314-1323 (T269)",
+              "message": "This is a behaviour change on top of the split. The acceptance says clubNews \"keeps its output\", but the cup-prize parser now matches ' 4강 통과' / ' 8강 통과' with the leading space. A 64강 pass used to read \"6결승 진出\" with major weight and now reads \"64강 통과\" with minor weight (128강 had the same problem). The fix is correct, stays within the task's files, is recorded in the result and has a test. The seed 1–3 snapshot hashes are unchanged because those runs never hit the case. Keep it. The sibling problem the worker listed under limits is still there: cup-exit at news.ts:1331 tests /결승|4강|8강/ as a substring, so \"64강 탈락\" is weighted notable instead of minor. Fixing it would change existing snapshots, so whoever plans the work group (manage-work) should open a follow-up task. This review doesn't settle it."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/news.ts:109 (T269)",
+              "message": "The new local `type Line = MatchRecord['players'][number]` reuses the name of the contracts type `Line` ('GK' | 'DF' | 'MF' | 'FW', packages/contracts/src/player.ts:20). The engine uses that type for positional lines through `lineOf`. Nothing breaks, but a name like `PlayerLine` or `MatchLine` would avoid confusing readers. Optional."
+            }
+          ],
+          "commit": "d1fdb3fa2e03512789dad8a0a82a6d9de3402082",
+          "baseCommit": "712ede067e62a7fe22eb5cd93f444308aa697130",
+          "submissionId": "75c9088d-8d56-4611-add8-fba70b782d7c",
+          "createdAt": "2026-10-19T14:30:34.779Z",
+          "finishedAt": "2026-10-19T14:35:32.174Z"
+        }
+      }
+    },
+    {
+      "sequence": 393,
+      "at": "2026-10-19T14:35:32.182Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T269",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "941adf3c-ef5c-4e0d-beef-ab234c8d6a73",
+          "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-19T14:30:35.798Z",
+          "finishedAt": "2026-10-19T14:35:32.182Z",
+          "error": null,
+          "summary": "Approved: I found no P1 or P2 problems in T267, T268 or T269 (commit d1fdb3f against base 712ede0). I did not run any tests. The review checkout has no node_modules, and a read-only review can't install them, so this rests on reading the code plus the workers' own logged checks. Integration still has to run the batch verify, including test:contract and host.test.ts.\n\nThe risk flag was the size of the change (2010 lines). Almost all of it is the T269 split of news.ts, so I checked that first. I compared the old clubNews body (lines 177–906) with the new builders, both by hand and with a diff that ignores whitespace and the `ctx.` prefix.\n- **The split is faithful.** The builders run in the same order and push items in the same order, including per player line (goal items, then play items). The values each builder reads match the old code at every point. The one removed piece, the in-season bestUnbeaten/bestWins writes, was never read.\n- **Nothing else moved.** Exports are unchanged, and everything after the old line 915 is identical apart from the cup-prize lines.\n- **Size and shape.** The longest function is 120 lines, and one context object is built once per call.\n- **New tests.** news.test.ts adds the five builder cases on hand-made matches. It also adds event cases that call the real code that writes each text (injury, 새로운 도전 sale, 은퇴 retirement, a hand-scored cup run).\n\nT267: promises.ts and replacements.ts now break same-day ties with `compareIds`. No `localeCompare` is left in engine source apart from two test comments. Both named tests use the ID pair where the two sort orders disagree, and neither touched area changed in the base commit.\n\nT268: only test files changed, and every named case and fast-check property is there with bounded runs. The currency property checks its result against `ratio` using the catalog's two periods."
+        }
+      }
+    },
+    {
+      "sequence": 394,
+      "at": "2026-10-19T14:35:32.226Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T269",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
       ],
       "previousStatus": "approved",
       "status": "integrating",

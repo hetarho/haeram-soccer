@@ -169,6 +169,21 @@ describe('fixed-deadline reinforcement commitments', () => {
     expect(promise.status).toBe('fulfilled');
     expect(promise.arrival!.player).toBe(other.id);
   });
+  it('orders same-date commitments by code-unit player ID', () => {
+    const { w, offer, promise } = fixture();
+    // localeCompare puts ':2:' before ':20:'; code units put '0' (0x30) before ':' (0x3a).
+    w.recruitmentArrivals = ['ENG:1:0:2:p:3:1990', 'ENG:1:0:20:p:1:1990'].map((player) => ({
+      player,
+      name: player,
+      position: offer.player.position,
+      positions: offer.player.positions,
+      at: { ...promise.created },
+    }));
+    afterDeadline(w, promise);
+    judgePromises(w);
+    expect(promise.status).toBe('fulfilled');
+    expect(promise.arrival!.player).toBe('ENG:1:0:20:p:1:1990');
+  });
   it('cancels on replacement, expiry/retirement or explicit departure, while director changes retain the commitment', () => {
     const replacement = fixture();
     replacement.w.cash = '999999999999';

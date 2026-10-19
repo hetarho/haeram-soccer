@@ -170,21 +170,19 @@
 | T261 | One tab list and one address-synced tab hook | ARCH | - | todo |
 | T262 | One set of league-table rules in the UI | ARCH | - | todo |
 | T263 | Tested models behind the league overview and rank history | ARCH | - | todo |
-| T267 | Break same-day ties without the runtime's collation | ARCH | - | todo |
-| T268 | Tests for valuation, cash movements and currency conversion | ARCH | - | todo |
-| T269 | Split the club news builder and pin the texts it reads | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
 | one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
-| refactor-261019 | 4 | 53 | 4 | 49 | 3 | 0 | 6 | 2026-10-19T14:20:01.603Z | [history](work/refactor-261019.json) |
+| refactor-261019 | 4 | 53 | 7 | 46 | 6 | 0 | 0 | 2026-10-19T14:35:34.090Z | [history](work/refactor-261019.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261019 T267 T268 T269 integrated
 - 261019 T264 T265 T266 integrated
 - 261019 T270 integrated
 - 261019 create-task review/outside-t216-t255-261019: T258–T270, four lanes of three (ui-entry-desk, ui-league-tabs, engine-money, engine-checks) plus lane-less T270; review converted.
@@ -204,4 +202,3 @@
 - 261019 T209 done (w6pm): open-play duels and the xG model (pass, cross, cut-back, take-on, carry, hold-up, clearance, aerial, shot, penalty); 56 grid tests pass.
 - 261019 T208 done (w6pm): decision tables — action mix, pass/carry targets, keeper distribution; 47 grid tests pass. T203–T207 pushed to main (batch: 1065 unit, 19 contract, build).
 - 261019 T207 done (w6pm): per-touch tags (phase, pressure, orientation, lines, channel, overload, game state); 36 grid tests pass.
-- 261019 T206 done (w6pm): off-ball shape, pressing, marking, runs and movement with a grid test kit; 29 grid tests pass.
