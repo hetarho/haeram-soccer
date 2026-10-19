@@ -22,7 +22,14 @@ import { onPitch, other, skill, type GridPlayer, type GridState } from './state'
 import { computeTags } from './tags';
 
 export type RestartKind =
-  'kickoff' | 'throwIn' | 'goalKick' | 'corner' | 'freeKick' | 'indirectFreeKick' | 'penalty';
+  | 'kickoff'
+  | 'throwIn'
+  | 'goalKick'
+  | 'corner'
+  | 'freeKick'
+  | 'indirectFreeKick'
+  | 'penalty'
+  | 'dropBall';
 
 export interface Restart {
   kind: RestartKind;
@@ -262,8 +269,8 @@ export function playRestart(
     );
     return { taker, kind: chosen.kind, target: chosen.target, outcome };
   }
-  if (rs.kind === 'throwIn') {
-    // The nearest outfield teammate to the touchline spot throws.
+  if (rs.kind === 'throwIn' || rs.kind === 'dropBall') {
+    // The nearest outfield teammate to the spot throws in, or takes the dropped ball and plays it short.
     let thrower = lead(),
       nearest = Infinity;
     for (const gp of s.players[side]) {
@@ -280,14 +287,27 @@ export function playRestart(
       return {
         taker: thrower,
         kind: 'short',
-        outcome: { kind: 'out', at: rs.spot, lastTouch: side, over: 'touch' },
+        outcome:
+          rs.kind === 'dropBall'
+            ? { kind: 'held' }
+            : { kind: 'out', at: rs.spot, lastTouch: side, over: 'touch' },
       };
     const tags = computeTags(s, side, thrower, { setPiece: true });
     return {
       taker: thrower,
       kind: 'short',
       target,
-      outcome: resolvePass(s, side, thrower, target, tags, 'short', false, r, K.throwBonus),
+      outcome: resolvePass(
+        s,
+        side,
+        thrower,
+        target,
+        tags,
+        'short',
+        false,
+        r,
+        rs.kind === 'throwIn' ? K.throwBonus : 0,
+      ),
     };
   }
   if (rs.kind === 'corner') {

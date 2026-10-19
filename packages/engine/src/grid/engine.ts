@@ -29,7 +29,8 @@ import { Tally } from './record';
 import type { GridSetup } from './setup';
 import { moveAll, startRuns } from './shape';
 import { attackFrame, PITCH } from './pitch';
-import { createState, enterSlot, kickOff, other, type GridState } from './state';
+import { createState, kickOff, other, type GridState } from './state';
+import { applyChanges, coverGoal, drawInjury, leave, planChanges } from './changes';
 import { Tracer, type TraceEntry } from './trace';
 
 /** Seconds an action takes before the 0.85 + 0.3·r jitter (design §8.2). */
@@ -86,6 +87,12 @@ export function playGrid(setup: GridSetup): GridResult {
   let holdBias = false;
 
   const minute = () => Math.min(45, Math.floor(s.t / 60) + 1) + (s.period === 2 ? 45 : 0);
+  /** The match minute of an incident, with the added minute past the period's end. */
+  const stamp = () => {
+    const cap = s.period === 2 ? 90 : 45;
+    const base = Math.floor(s.t / 60) + 1 + (s.period === 2 ? 45 : 0);
+    return { minute: minute(), ...(base > cap ? { added: base - cap } : {}) };
+  };
 
   /** Hands the ball to `(side, idx)` at `at` (or where he stands); a change of side is a regain and a loss. */
   function setOwner(side: 0 | 1, idx: number, at?: [number, number]) {
@@ -161,11 +168,8 @@ export function playGrid(setup: GridSetup): GridResult {
     const gp = s.players[side][idx]!;
     tally.card(side, idx, card);
     credits[s.period - 1]! += ADDED_CONFIG.credits.card;
-    const cap = s.period === 2 ? 90 : 45;
-    const base = Math.floor(s.t / 60) + 1 + (s.period === 2 ? 45 : 0);
     tally.incidents.push({
-      minute: minute(),
-      ...(base > cap ? { added: base - cap } : {}),
+      ...stamp(),
       side,
       kind: card,
       player: gp.player.id,
@@ -176,14 +180,47 @@ export function playGrid(setup: GridSetup): GridResult {
       return;
     }
     gp.sentOff = true;
-    gp.onPitch = false;
-    gp.offAt = s.elapsed;
-    if (gp.slot === 0) {
-      // The outfield player with the best reflexes takes the gloves.
-      const keeper = s.players[side]
-        .filter((p) => p.onPitch && !p.sentOff && p.slot > 0)
-        .sort((a, b) => b.player.attrs.reflexes - a.player.attrs.reflexes)[0];
-      if (keeper) enterSlot(s, keeper, 0);
+    leave(s, gp);
+    s.changes[side].reds++;
+    coverGoal(s, side);
+  }
+
+  /** A player hurt in play leaves at once; play stops for a drop ball unless it is already dead (→MATCH-21). */
+  function injure(side: 0 | 1, idx: number) {
+    const gp = s.players[side][idx]!;
+    gp.injured = true;
+    leave(s, gp);
+    s.changes[side].injured.push(idx);
+    tally.incidents.push({ ...stamp(), side, kind: 'injury', player: gp.player.id });
+    credits[s.period - 1]! += ADDED_CONFIG.credits.injury;
+    if (pending) pending.dead += RESTART_CONFIG.dead.injury;
+    else
+      pending = {
+        kind: 'dropBall',
+        side: s.possession,
+        spot: [s.ball[0], s.ball[1]],
+        dead: RESTART_CONFIG.dead.injury,
+      };
+  }
+
+  /** Both managers' changes at a dead ball or at half-time (design §8.1). */
+  function stoppage(rs: Restart) {
+    const half = s.period === 2 && s.t === 0;
+    for (const side of [0, 1] as const) {
+      const plan = planChanges(s, side, r);
+      applyChanges(s, side, plan);
+      for (const ch of plan) {
+        tally.incidents.push({
+          ...stamp(),
+          side,
+          kind: 'sub',
+          player: s.players[side][ch.out]!.player.id,
+          other: s.players[side][ch.in]!.player.id,
+        });
+        if (half) continue;
+        credits[s.period - 1]! += ADDED_CONFIG.credits.sub;
+        rs.dead += RESTART_CONFIG.dead.substitution;
+      }
     }
   }
 
@@ -374,6 +411,7 @@ export function playGrid(setup: GridSetup): GridResult {
         justBeat = undefined;
         const rs = pending;
         pending = undefined;
+        stoppage(rs);
         if (rs.kind === 'kickoff') kickOff(s, rs.side);
         const res = playRestart(s, rs, r, ctx);
         actor = [rs.side, res.taker];
@@ -438,6 +476,8 @@ export function playGrid(setup: GridSetup): GridResult {
       }
       startRuns(s, s.possession, r);
       tracer.push(s, actor[0], actor[1], label, outcomeLabel, from);
+      const hurt = drawInjury(s, dt, r);
+      if (hurt) injure(hurt.side, hurt.idx);
       const [lo, hi] = ADDED_CONFIG.bounds[period - 1]!;
       const extra = Math.min(hi, Math.max(lo, Math.ceil(credits[period - 1]! / 60)));
       if (s.t >= PERIOD_SECONDS + extra * 60) {

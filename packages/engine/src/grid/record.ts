@@ -168,11 +168,6 @@ export class Tally {
     if (kind !== 'yellow') this.count(side, idx, TD.redCards, PD.redCards);
   }
 
-  /** Minutes a player was on the pitch (a sent-off player's end is set by the engine). */
-  minutesOf(side: 0 | 1, idx: number, minutes: number): void {
-    this.lines[side][idx]![M.minutes] = minutes;
-  }
-
   foul(foulerSide: 0 | 1, fouler: number, fouled: number): void {
     this.count(foulerSide, fouler, TD.fouls, PD.fouls);
     this.count((1 - foulerSide) as 0 | 1, fouled, undefined, PD.foulsWon);
@@ -248,22 +243,24 @@ export class Tally {
     'metrics' | 'players' | 'highlights' | 'xg' | 'detail' | 'lineCounts' | 'incidents'
   > {
     const { setup } = this;
-    // Starters play the whole match until substitutions and cards exist (T213, T214).
     const sides = [0, 1] as const;
-    const played = sides.map((side) =>
-      this.lines[side].map((line, idx) => {
+    // Starters, then the substitutes in the order they came on; minutes are regulation minutes on the
+    // pitch, at least 1 for anyone who played (a substitute in added time still appears).
+    const end = state.period > 2 ? 120 : 90;
+    const played = sides.map((side) => [
+      ...state.players[side].slice(0, 11).map((gp) => gp.idx),
+      ...state.changes[side].entered,
+    ]);
+    for (const side of sides)
+      for (const idx of played[side]!) {
         const gp = state.players[side][idx]!;
-        if (idx < 11)
-          line[M.minutes] =
-            gp.sentOff && gp.offAt !== undefined ? Math.min(90, Math.round(gp.offAt / 60)) : 90;
-        return idx < 11;
-      }),
-    );
+        this.lines[side][idx]![M.minutes] = Math.max(1, Math.round((gp.offMin ?? end) - gp.onMin));
+      }
     const metrics = sides.map((side) => {
       const total = zeroMetrics();
       for (const line of this.lines[side])
         for (let i = 0; i < M.minutes; i++) total[i]! += line[i]!;
-      total[M.minutes] = 90;
+      total[M.minutes] = end;
       return total;
     }) as [number[], number[]];
     const seconds = this.held[0] + this.held[1];
@@ -274,15 +271,14 @@ export class Tally {
     const lineCounts: [number, number] = [0, 0];
     if (setup.recordPlayers)
       for (const side of sides)
-        this.lines[side].forEach((line, idx) => {
-          if (!played[side]![idx]) return;
+        for (const idx of played[side]!) {
           players.push({
             id: setup.rosters[side][idx]!.id,
-            metrics: line,
+            metrics: this.lines[side][idx]!,
             detail: this.pd[side][idx]!,
           });
           lineCounts[side]++;
-        });
+        }
     return {
       metrics,
       players,

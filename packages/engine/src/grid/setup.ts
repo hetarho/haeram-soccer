@@ -3,6 +3,7 @@ import type { Club, Fixture, Player, Score, Tactic, World } from '../../../contr
 import { FORMATIONS, lineOf } from '../player';
 import { activePlayers, isInjured, ownMultiplier, slotOvr, squad } from '../world';
 import { prepareMatch } from '../match';
+import { subPolicyFor } from './changes';
 
 export interface EraRules {
   /** Substitutes a side may name. */
@@ -207,7 +208,9 @@ export function buildGridSetup(
     multiplier: [prepared.multiplier[0]!, prepared.multiplier[1]!],
     drain: [prepared.drain[0]!, prepared.drain[1]!],
     bends,
-    managers: [{ ...DEFAULT_SUB_POLICY }, { ...DEFAULT_SUB_POLICY }],
+    managers: [0, 1].map((side) =>
+      side === ownSide ? subPolicyFor(w.manager) : { ...DEFAULT_SUB_POLICY },
+    ) as [SubPolicy, SubPolicy],
     pressing: [tactics[0] === 'press', tactics[1] === 'press'],
     era,
     ...(ownSide === undefined ? {} : { own: ownSide }),

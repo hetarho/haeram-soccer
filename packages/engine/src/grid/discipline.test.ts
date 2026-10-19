@@ -148,7 +148,8 @@ describe('grid discipline (work in progress)', () => {
           ) ?? [];
         if (sent.length) {
           sawTen = true;
-          const lines = m.players.slice(side * 11, side * 11 + 11);
+          const [home, count] = [m.lineCounts![0], m.lineCounts![side]];
+          const lines = m.players.slice(side * home, side * home + count);
           for (const x of sent) expect(lines.some((p) => p.id === x.player)).toBe(true);
           expect(lines.every((p) => p.metrics[M.minutes]! <= 90)).toBe(true);
         }

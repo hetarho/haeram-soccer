@@ -36,10 +36,10 @@ describe('grid engine', () => {
   it('keeps the record consistent', () => {
     for (let i = 0; i < 60; i++) {
       const { record } = play(`consistent-${i}`);
-      expect(record.players).toHaveLength(22);
-      expect(record.lineCounts).toEqual([11, 11]);
+      const counts = record.lineCounts!;
+      expect(record.players).toHaveLength(counts[0] + counts[1]);
       for (const side of [0, 1] as const) {
-        const lines = record.players.slice(side * 11, side * 11 + 11);
+        const lines = record.players.slice(side * counts[0], side * counts[0] + counts[side]);
         const team = record.metrics[side]!;
         expect(lines.reduce((sum, p) => sum + p.metrics[M.goals]!, 0)).toBe(
           side === 0 ? record.score.home : record.score.away,
@@ -53,14 +53,12 @@ describe('grid engine', () => {
         expect(team[M.completed]!).toBeLessThanOrEqual(team[M.passes]!);
         expect(team[M.onTarget]!).toBeLessThanOrEqual(team[M.shots]!);
         expect(team[M.assists]!).toBeLessThanOrEqual(team[M.goals]!);
-        const sentOff = new Set(
-          (record.incidents ?? [])
-            .filter((x) => x.kind === 'red' || x.kind === 'secondYellow')
-            .map((x) => x.player),
+        const left = new Set(
+          (record.incidents ?? []).filter((x) => x.kind !== 'yellow').map((x) => x.player),
         );
         expect(
           lines.every((p) =>
-            sentOff.has(p.id) ? p.metrics[M.minutes]! <= 90 : p.metrics[M.minutes] === 90,
+            left.has(p.id) ? p.metrics[M.minutes]! <= 90 : p.metrics[M.minutes] === 90,
           ),
         ).toBe(true);
         expect(team[M.minutes]).toBe(90);
@@ -132,11 +130,17 @@ describe('grid engine', () => {
 
   it('traces every touch with 22 positions when observed and nothing otherwise', () => {
     expect(play('trace-0').trace).toBeUndefined();
-    const { trace } = play('trace-1', true);
+    const { trace, record } = play('trace-1', true);
     expect(trace!.length).toBeGreaterThan(300);
+    // A side left short (no substitutes before 1965) has no position for the empty slot.
+    const short = (record.incidents ?? []).filter(
+      (x) => x.kind === 'red' || x.kind === 'secondYellow' || x.kind === 'injury',
+    ).length;
     for (const e of trace!) {
       expect(e.positions).toHaveLength(44);
-      expect(e.positions.every((v) => Number.isFinite(v))).toBe(true);
+      const missing = e.positions.filter((v) => !Number.isFinite(v)).length;
+      expect(missing % 2).toBe(0);
+      expect(missing / 2).toBeLessThanOrEqual(short);
     }
     expect(trace!.every((e, i) => i === 0 || e.elapsed >= trace![i - 1]!.elapsed)).toBe(true);
   });

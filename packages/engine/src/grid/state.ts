@@ -23,6 +23,9 @@ export interface GridPlayer {
   /** Match seconds since kick-off when he came on (0 for a starter). */
   onAt: number;
   offAt?: number;
+  /** Regulation minutes (design §2.3) when he came on and when he left. */
+  onMin: number;
+  offMin?: number;
   /** Attribute values at his slot before the day's shift and in-match drain; index = `ATTRIBUTES.indexOf(a)`. */
   base: Float64Array;
   run?: { kind: 'behind' | 'overlap' | 'box'; until: number; target: [number, number] };
@@ -46,6 +49,37 @@ export interface GridState {
   lastPass?: { dx: number; dy: number };
   /** Match seconds when the possessing side got the ball. */
   possessionSince: number;
+  /** Each side's substitutions and injuries so far (→MATCH-20, §8.1). */
+  changes: [SideChanges, SideChanges];
+}
+
+/** What a side has used of its changes and what is still owed at the next stoppage. */
+export interface SideChanges {
+  /** Substitutes used. */
+  used: number;
+  /** Stoppages other than half-time in which it substituted. */
+  windows: number;
+  /** Roster indexes of the substitutes in the order they came on. */
+  entered: number[];
+  /** Players hurt in play who have left and are not yet replaced. */
+  injured: number[];
+  /** Red cards shown, and how many of them the manager has answered (§8.1 step 2). */
+  reds: number;
+  rebalanced: number;
+  /** One-off policy changes already made (STAFF-45). */
+  protectedLead: boolean;
+  chased: boolean;
+  youthGiven: boolean;
+  /** The data head coach's checkpoints passed (60′, 70′, 80′). */
+  checkpoints: number;
+}
+
+const PERIOD_OFFSET = [0, 45, 90, 105] as const;
+const PERIOD_LENGTH = [45, 45, 15, 15] as const;
+
+/** Regulation minutes since kick-off, added time not counted (design §2.3). */
+export function regMinute(s: GridState): number {
+  return PERIOD_OFFSET[s.period - 1]! + Math.min(PERIOD_LENGTH[s.period - 1]!, s.t / 60);
 }
 
 /** Whether a player is on the pitch now (not on the bench, not sent off). */
@@ -96,6 +130,19 @@ export function kickOff(s: GridState, side: 0 | 1): void {
   s.owner = first ? [side, first.idx] : undefined;
 }
 
+const noChanges = (): SideChanges => ({
+  used: 0,
+  windows: 0,
+  entered: [],
+  injured: [],
+  reds: 0,
+  rebalanced: 0,
+  protectedLead: false,
+  chased: false,
+  youthGiven: false,
+  checkpoints: 0,
+});
+
 export function createState(setup: GridSetup): GridState {
   const players = [0, 1].map((side) =>
     setup.rosters[side as 0 | 1].map((player, idx): GridPlayer => {
@@ -113,6 +160,7 @@ export function createState(setup: GridSetup): GridState {
         sentOff: false,
         injured: false,
         onAt: 0,
+        onMin: 0,
         base: new Float64Array(ATTRIBUTES.length),
       };
       fillBase(setup, gp, gp.slot);
@@ -135,6 +183,7 @@ export function createState(setup: GridSetup): GridState {
     elapsed: 0,
     score: [0, 0],
     possessionSince: 0,
+    changes: [noChanges(), noChanges()],
   };
 }
 
