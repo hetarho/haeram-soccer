@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| w6pm | hq-dev1-pve2-vm2 | autopilot | 2026-10-19T07:33Z | 2026-10-19T07:33Z | T203 |
+| w6pm | hq-dev1-pve2-vm2 | autopilot | 2026-10-19T07:33Z | 2026-10-19T07:33Z | T207 |
 
 ## inbox
 - 261019 decided T203 T204: owner asked for parallel work until 18:00 while the engine chain is declared serial → ran T203 (apps/web packing) and T204 (engine/grid, new files) side by side in separate worktrees since their touches are disjoint and T204 uses nothing of T203 (alt: strictly serial | also start identity tasks T234+ early)
@@ -100,7 +100,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T206 | Off-the-ball shape, pressing, marking, runs and movement | MATCH PLAYER STAFF | T205 | todo |
 | T207 | Per-touch tags | MATCH | T206 | todo |
 | T208 | Decision tables: action mix and target choice | MATCH PLAYER STAFF | T207 | todo |
 | T209 | Duels and the xG model | MATCH PLAYER | T208 | todo |
@@ -163,6 +162,7 @@
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 T206 done (w6pm): off-ball shape, pressing, marking, runs and movement with a grid test kit; 29 grid tests pass.
 - 261019 T203 done (w6pm): lossless packing of rules 4 match facts and season heat maps in four optional streams; adapters tests 105 pass.
 - 261019 T205 done (w6pm): `prepareMatch` extracted bit-identically; grid setup (era rules, bench, takers, bends) and state (kick-off positions, skill function) added; full unit suite 1042 pass.
 - 261019 T204 done (w6pm): grid pitch (40 cells, geometry, Korean cell names) and the 40-cell baselines module with a byte-identical JSON copy; 9 tests, typecheck and lint pass.

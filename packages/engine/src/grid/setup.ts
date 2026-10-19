@@ -164,10 +164,17 @@ const NO_BEND: StyleBend = { pass: 0, possession: 0, shot: 0, defense: 0, lineHi
 export function buildGridSetup(
   w: World,
   f: Fixture,
-  opts: { observe: boolean; recordPlayers: boolean; decide?: DecideRule },
+  opts: {
+    observe: boolean;
+    recordPlayers: boolean;
+    decide?: DecideRule;
+    /** Test-only: play these tactics instead of the clubs' own. */
+    tactics?: [Tactic, Tactic];
+  },
 ): GridSetup {
   const prepared = prepareMatch(w, f);
-  const { teams, squads, tactics, ownSide, style, synergy } = prepared;
+  const { teams, squads, ownSide, style, synergy } = prepared;
+  const tactics = opts.tactics ?? prepared.tactics;
   const era = eraRules(f.year);
   const benches = teams.map((club, side) => benchFor(w, club, squads[side], era)) as [
     Player[],
