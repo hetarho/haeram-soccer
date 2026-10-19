@@ -102,7 +102,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 12 | 12 | - | 2 |
+| ARCH | 13 | 12 | ARCH-30✎ | 2 |
 | WEB | 93 | 93 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
@@ -176,6 +176,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261020 create-architecture ARCH r13: ARCH-30✎ tasks never run browser specs (per-task e2e took too long); Chromium journeys only in the batch run right before a push to main, which confirms e2e acceptance items.
 - 261019 T261 T262 T263 integrated
 - 261019 T258 T259 T260 integrated
 - 261019 T267 T268 T269 integrated
@@ -195,4 +196,3 @@
 - 261019 T212 done (w6pm): TD/PD advanced counters wired into the grid loop; 84 grid tests pass; perf: shared shape values cached per step (about 87 ms a match, 15 ms target still open for T224).
 - 261019 T211 done (w6pm): the grid match loop `playGrid` with records and trace; 73 grid tests pass; runtime criterion (15 ms) not met — about 80–140 ms a match, left to T224; shot volume placeholder `shotScale` for T215.
 - 261019 T210 done (w6pm): restarts, offside, fouls to free kicks/penalties and every set piece with dead times; 66 grid tests pass.
-- 261019 T209 done (w6pm): open-play duels and the xG model (pass, cross, cut-back, take-on, carry, hold-up, clearance, aerial, shot, penalty); 56 grid tests pass.
