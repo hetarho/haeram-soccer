@@ -50,9 +50,9 @@ export const DECISION_CONFIG = {
   factorRange: [0.2, 3],
   shotLine: { GK: 0, DF: 1, MF: 3.8, FW: 0.9 },
   /** Global shot-volume scale; the first uncalibrated engine produced about 25 shots a side (T215 settles it). */
-  shotScale: 0.175,
+  shotScale: 0.19,
   /** Global open-play cross scale: the cells' own cross shares gave under one cross a side (T215 settles it). */
-  crossScale: 8,
+  crossScale: 7.2,
   /** Extra shot weight in the box band, so a carrier shoots there instead of carrying into the goal area (T215). */
   shotBox: 0.42,
   /** Beyond `from` metres from goal a shot's weight falls by e per `scale` metres: a cell's shots come from its near end (T215). */
@@ -67,8 +67,10 @@ export const DECISION_CONFIG = {
   backToGoal: { takeOn: 0.5, shot: 0.3 },
   inBehind: { shot: 0.8, carry: 1.3 },
   pocket: { takeOn: 1.2, shotBand5: 1.6 },
-  leading: { minute: 75, takeOn: 0.8, clearance: 1.3 },
-  trailing: { minute: 70, shot: 1.2, cross: 1.2 },
+  /** `shot`: a leading side's shot weight per goal ahead, up to `maxLead` goals, all match long (T216). */
+  leading: { minute: 75, takeOn: 0.8, clearance: 1.3, shot: 0.6, maxLead: 3 },
+  /** `push`: a trailing side's shot weight per goal behind, up to `leading.maxLead` goals, all match long (T216). */
+  trailing: { minute: 70, shot: 1.2, cross: 1.2, push: 1.4 },
   lowXg: 0.05,
   highXg: 0.12,
   pass: {
@@ -191,6 +193,8 @@ export function actionMix(
     mix.takeOn *= C.pocket.takeOn;
     if (tags.band === 5) mix.shot *= C.pocket.shotBand5;
   }
+  if (tags.lead > 0) mix.shot *= C.leading.shot ** Math.min(C.leading.maxLead, tags.lead);
+  if (tags.lead < 0) mix.shot *= C.trailing.push ** Math.min(C.leading.maxLead, -tags.lead);
   if (tags.lead > 0 && tags.minute >= C.leading.minute) {
     mix.takeOn *= C.leading.takeOn;
     if (tags.band <= 2) mix.clearance *= C.leading.clearance;
