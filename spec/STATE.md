@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
+| k3w8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-19T05:21Z | 2026-10-19T05:57Z | T201 |
 
 ## inbox
 - 261019 decided WEB-47 T226: season PPDA when only some matches carry advanced counters → MATCH-13 PPDA over those matches with how many counted; the marked approximation only for a season with none (alt: approximation for the whole season once one match lacks counters | show both figures)
@@ -96,7 +97,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T200 | Freeze a real rules 3.0.0 checkpoint fixture | SAVE | - | todo |
 | T201 | Sixteen player attributes: 판단력 and 침착성 | PLAYER STAFF | T200 | todo |
 | T202 | Match, discipline and archive contracts for rules 4.0.0 | MATCH HIST LEAGUE SAVE | T201 | todo |
 | T203 | Lossless packing of the new match facts and season heat maps | SAVE HIST MATCH | T202 | todo |
@@ -160,10 +160,11 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- implement-task T200, then T201–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
+- implement-task T201, then T202–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 T200 done
 - 261019 create-task SAVE HIST WEB MATCH done (r5c2): no new task; T210 offside by the target at the pass, T226 season PPDA by MATCH-13 over advanced matches, T231 refuses to overwrite without a verified previous copy, T229/T220 appearances by minutes > 0; todo bases SAVE@49 HIST@15 WEB@92 MATCH@12.
 - 261019 create-task ARCH r12 done: no new task; T218 T225 T230 T254 browser checks on Chromium only, T233 gate uses the ARCH-30 batch checks + CI instead of a local `pnpm run verify`, todo bases ARCH@12.
 - 261019 update-ssot ARCH r12 done: ARCH-30 verification tiers — task checks per task, batch checks before a code push, CI read once per push.

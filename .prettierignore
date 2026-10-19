@@ -7,3 +7,5 @@ dist
 playwright-report
 test-results
 packages/catalogs/data
+# frozen rules 3.0.0 envelope: the raw text written by scripts/freeze-legacy-fixture.ts
+tests/fixtures/legacy-rules3.haeram-save.json
