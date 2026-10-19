@@ -34,15 +34,17 @@ export interface Decision {
 /** Initial values (design §6); T215 and T216 tune them. The style bends `pass` and `lineHigh`/`lineLow` are applied by T209 and T206. */
 export const DECISION_CONFIG = {
   holdUp: { base: 0.03, backToGoal: 0.15 },
-  cutBackShare: 0.35,
-  takeOnPerPass: 0.045,
+  cutBackShare: 0.1,
+  takeOnPerPass: 0.07,
   crossShare: 0.025,
   factorRange: [0.2, 3],
   shotLine: { GK: 0, DF: 0.6, MF: 1, FW: 1.25 },
   /** Global shot-volume scale; the first uncalibrated engine produced about 25 shots a side (T215 settles it). */
-  shotScale: 0.05,
+  shotScale: 0.07,
   /** Global open-play cross scale: the cells' own cross shares gave under one cross a side (T215 settles it). */
-  crossScale: 4,
+  crossScale: 7,
+  /** Extra shot weight in the box band, so a carrier shoots there instead of carrying into the goal area (T215). */
+  shotBox: 4,
   tactic: {
     possession: { pass: 1.1, takeOn: 0.9, shotBand5: 0.8 },
     counter: { shotInCounter: 1.1 },
@@ -51,8 +53,8 @@ export const DECISION_CONFIG = {
   } satisfies Record<Tactic, object>,
   pressure: { carry: 0.6, takeOn: 1.3, takeOnDribbling: 65, clearance: 2 },
   backToGoal: { takeOn: 0.5, shot: 0.3 },
-  inBehind: { shot: 1.6, carry: 1.3 },
-  pocket: { takeOn: 1.2, shotBand5: 1.2 },
+  inBehind: { shot: 0.8, carry: 1.3 },
+  pocket: { takeOn: 1.2, shotBand5: 1.6 },
   leading: { minute: 75, takeOn: 0.8, clearance: 1.3 },
   trailing: { minute: 70, shot: 1.2, cross: 1.2 },
   lowXg: 0.05,
@@ -120,7 +122,7 @@ export function actionMix(
     clamp(profile.crossShare / C.crossShare, C.factorRange[0], C.factorRange[1]) * C.crossScale;
   mix.cross *= crossFactor;
   mix.cutBack *= crossFactor;
-  mix.shot *= C.shotLine[line] * C.shotScale;
+  mix.shot *= C.shotLine[line] * C.shotScale * (tags.band === 6 ? C.shotBox : 1);
   // Role and traits.
   mix.shot *= actionWeight(slot.role, traits, 'shot');
   mix.takeOn *= actionWeight(slot.role, traits, 'dribble');

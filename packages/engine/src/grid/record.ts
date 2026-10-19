@@ -28,6 +28,32 @@ export const M = {
 const FINAL_THIRD = BAND_EDGES[5];
 const PRESS_FROM = BAND_EDGES[3];
 
+/** One shot as T215's band script reads it (attack-frame metres). */
+export interface ShotDiagnostic {
+  side: 0 | 1;
+  x: number;
+  y: number;
+  xg: number;
+  header: boolean;
+  /** Within 10 s of a corner or free kick being taken (penalties apart). */
+  setPiece: boolean;
+  penalty: boolean;
+  goal: boolean;
+  /** The shooter's line at his slot. */
+  line: string;
+}
+
+/** Measurements for calibration that the record does not carry (→MATCH-23). */
+export interface GridDiagnostics {
+  /** Seconds the ball was in play. */
+  ballInPlay: number;
+  shots: ShotDiagnostic[];
+  /** Open-play pass attempts per side: forward, lateral, back (±45° in the attack frame). */
+  directions: [number[], number[]];
+  /** Each possession's pass attempts and whether it ended in a shot. */
+  possessions: { side: 0 | 1; passes: number; shot: boolean }[];
+}
+
 export class Tally {
   private readonly lines: [number[][], number[][]];
   private readonly xg: [number, number] = [0, 0];
@@ -37,6 +63,20 @@ export class Tally {
   private readonly pd: [number[][], number[][]];
   readonly highlights: MatchRecord['highlights'] = [];
   readonly incidents: Incident[] = [];
+  readonly diagnostics: GridDiagnostics = {
+    ballInPlay: 0,
+    shots: [],
+    directions: [
+      [0, 0, 0],
+      [0, 0, 0],
+    ],
+    possessions: [],
+  };
+  private spell: { side: 0 | 1; passes: number; shot: boolean } = {
+    side: 0,
+    passes: 0,
+    shot: false,
+  };
 
   constructor(private readonly setup: GridSetup) {
     this.lines = [
@@ -77,6 +117,9 @@ export class Tally {
     },
   ): void {
     this.pass(side, idx, e.ok);
+    const [dx, dy] = [e.to[0] - e.from[0], e.to[1] - e.from[1]];
+    const direction = e.kind === 'cross' || dx > Math.abs(dy) ? 0 : -dx > Math.abs(dy) ? 2 : 1;
+    this.diagnostics.directions[side][direction]!++;
     const start = bandOf(e.from[0]);
     const end = bandOf(e.to[0]);
     if (e.from[0] < FINAL_THIRD) this.count(side, undefined, TD.buildUpPasses, undefined);
@@ -183,6 +226,8 @@ export class Tally {
 
   /** A pass, cross or cut-back attempt by `idx`; `ok` when it reached a teammate. */
   pass(side: 0 | 1, idx: number, ok: boolean): void {
+    this.spellTo(side);
+    this.spell.passes++;
     this.add(side, idx, M.passes);
     if (ok) this.add(side, idx, M.completed);
   }
@@ -194,6 +239,8 @@ export class Tally {
     result: 'goal' | 'save' | 'block' | 'miss',
   ): void {
     this.add(side, idx, M.shots);
+    this.spellTo(side);
+    this.spell.shot = true;
     if (result === 'goal' || result === 'save') this.add(side, idx, M.onTarget);
     this.xg[side] += recordedXg;
   }
@@ -226,6 +273,13 @@ export class Tally {
       player: this.setup.rosters[side][idx]!.name,
       action: '골',
     });
+  }
+
+  /** Closes the current possession when `side` now has the ball, or at a period's end (`undefined`). */
+  spellTo(side: 0 | 1 | undefined): void {
+    if (side === this.spell.side) return;
+    if (this.spell.passes || this.spell.shot) this.diagnostics.possessions.push(this.spell);
+    this.spell = { side: side ?? 0, passes: 0, shot: false };
   }
 
   possession(side: 0 | 1, seconds: number): void {

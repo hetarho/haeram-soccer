@@ -49,7 +49,7 @@ describe('grid restarts', () => {
       kind: 'throwIn',
       side: 1,
       spot: [40, 0],
-      dead: 18,
+      dead: RESTART_CONFIG.dead.throwIn,
     });
     expect(classifyOut({ at: [70, 68], lastTouch: 1, over: 'touch' }).side).toBe(0);
   });
@@ -59,19 +59,19 @@ describe('grid restarts', () => {
       kind: 'goalKick',
       side: 1,
       spot: [99.5, 34],
-      dead: 30,
+      dead: RESTART_CONFIG.dead.goalKick,
     });
     expect(classifyOut({ at: [105, 20], lastTouch: 1, over: 'byline' })).toEqual({
       kind: 'corner',
       side: 0,
       spot: [105, 0.5],
-      dead: 37,
+      dead: RESTART_CONFIG.dead.corner,
     });
     expect(classifyOut({ at: [0, 50], lastTouch: 1, over: 'byline' })).toEqual({
       kind: 'goalKick',
       side: 0,
       spot: [5.5, 34],
-      dead: 30,
+      dead: RESTART_CONFIG.dead.goalKick,
     });
     expect(classifyOut({ at: [0, 50], lastTouch: 0, over: 'byline' })).toMatchObject({
       kind: 'corner',
@@ -102,19 +102,19 @@ describe('grid restarts', () => {
       kind: 'freeKick',
       side: 0,
       spot: [60, 34],
-      dead: 32,
+      dead: RESTART_CONFIG.dead.freeKick,
     });
     expect(foulRestart(s, 0, [100, 30])).toEqual({
       kind: 'penalty',
       side: 0,
       spot: [94, 34],
-      dead: 70,
+      dead: RESTART_CONFIG.dead.penalty,
     });
     expect(foulRestart(s, 1, [5, 34])).toEqual({
       kind: 'penalty',
       side: 1,
       spot: [11, 34],
-      dead: 70,
+      dead: RESTART_CONFIG.dead.penalty,
     });
     expect(foulRestart(s, 1, [100, 34]).kind).toBe('freeKick');
   });
@@ -140,8 +140,8 @@ describe('grid restarts', () => {
   it('flags offside only for a target in the opponent half beyond both the ball and the second-last opponent when the pass is played', () => {
     const s = offsideScene();
     const p = rate(s, 10);
-    expect(p).toBeGreaterThan(0.35);
-    expect(p).toBeLessThan(0.55);
+    expect(p).toBeGreaterThan(RESTART_CONFIG.offside.min);
+    expect(p).toBeLessThan(RESTART_CONFIG.offside.base + 0.1);
     // Level with the second-last defender, in his own half, behind the ball: never.
     put(s, 0, 10, [81, 34]);
     expect(rate(s, 10)).toBe(0);
@@ -184,7 +184,12 @@ describe('grid restarts', () => {
   };
   const freeKickAt = (spot: Point) => () => ({
     s: field(),
-    rs: { kind: 'freeKick', side: 0, spot: [spot[0], spot[1]], dead: 32 } as Restart,
+    rs: {
+      kind: 'freeKick',
+      side: 0,
+      spot: [spot[0], spot[1]],
+      dead: RESTART_CONFIG.dead.freeKick,
+    } as Restart,
   });
 
   it('shoots direct free kicks only within range, crosses wide free kicks and corners into the box', () => {
@@ -197,7 +202,12 @@ describe('grid restarts', () => {
     const corners = kinds(
       () => ({
         s: field(),
-        rs: { kind: 'corner', side: 0, spot: [105, 0.5], dead: 37 } as Restart,
+        rs: {
+          kind: 'corner',
+          side: 0,
+          spot: [105, 0.5],
+          dead: RESTART_CONFIG.dead.corner,
+        } as Restart,
       }),
       400,
     );

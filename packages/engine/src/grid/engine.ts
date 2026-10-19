@@ -25,11 +25,12 @@ import {
   RESTART_CONFIG,
   type Restart,
 } from './restarts';
-import { Tally } from './record';
+import { Tally, type GridDiagnostics } from './record';
 import type { GridSetup } from './setup';
 import { moveAll, startRuns } from './shape';
 import { attackFrame, PITCH } from './pitch';
-import { createState, kickOff, other, type GridState } from './state';
+import { createState, kickOff, other, slotOf, type GridState } from './state';
+import { lineOf } from '../player';
 import { applyChanges, coverGoal, drawInjury, leave, planChanges } from './changes';
 import { Tracer, type TraceEntry } from './trace';
 
@@ -64,6 +65,7 @@ export interface GridResult {
   trace?: TraceEntry[];
   /** Match seconds played, dead time included. */
   elapsed: number;
+  diagnostics: GridDiagnostics;
 }
 
 type Ref = [0 | 1, number];
@@ -85,6 +87,9 @@ export function playGrid(setup: GridSetup): GridResult {
   /** The take-on that came immediately before the current action (an assist needs a pass, not a dribble). */
   let prevBeat: Ref | undefined;
   let holdBias = false;
+  /** When the last corner or free kick was taken, and whether the current restart is a penalty. */
+  let setPieceAt: number | undefined;
+  let penalty = false;
 
   const minute = () => Math.min(45, Math.floor(s.t / 60) + 1) + (s.period === 2 ? 45 : 0);
   /** The match minute of an incident, with the added minute past the period's end. */
@@ -120,6 +125,19 @@ export function playGrid(setup: GridSetup): GridResult {
   function applyShot(side: 0 | 1, o: ShotOutcome) {
     const shooter = o.shooter ?? 0;
     tally.shot(side, shooter, o.recordedXg, o.result);
+    const gp = s.players[side][shooter]!;
+    const [x, y] = attackFrame(side, gp.pos);
+    tally.diagnostics.shots.push({
+      side,
+      x,
+      y,
+      xg: o.recordedXg,
+      header: o.header ?? false,
+      setPiece: !penalty && setPieceAt !== undefined && s.elapsed - setPieceAt <= 10,
+      penalty,
+      goal: o.result === 'goal',
+      line: lineOf(slotOf(s, gp).position),
+    });
     const passer =
       lastPasser &&
       lastPasser[0] === side &&
@@ -413,6 +431,11 @@ export function playGrid(setup: GridSetup): GridResult {
         pending = undefined;
         stoppage(rs);
         if (rs.kind === 'kickoff') kickOff(s, rs.side);
+        penalty = rs.kind === 'penalty';
+        setPieceAt =
+          rs.kind === 'corner' || rs.kind === 'freeKick' || rs.kind === 'indirectFreeKick'
+            ? s.elapsed + rs.dead
+            : undefined;
         const res = playRestart(s, rs, r, ctx);
         actor = [rs.side, res.taker];
         const kind = res.kind === 'penalty' ? 'shot' : res.kind;
@@ -432,12 +455,14 @@ export function playGrid(setup: GridSetup): GridResult {
         if (res.outcome.kind === 'shot' && res.outcome.shooter === undefined)
           res.outcome.shooter = res.taker;
         apply(rs.side, res.taker, res.outcome);
+        penalty = false;
         tally.restart(
           rs.side,
           rs.kind,
           res.kind === 'penalty' && res.outcome.kind === 'shot' && res.outcome.result === 'goal',
         );
         dt = rs.dead + secondsOf(kind);
+        tally.diagnostics.ballInPlay += secondsOf(kind);
         label = rs.kind;
         outcomeLabel = res.outcome.kind;
         s.t += dt;
@@ -472,8 +497,10 @@ export function playGrid(setup: GridSetup): GridResult {
         s.t += dt;
         s.elapsed += dt;
         tally.possession(possessing, dt);
+        tally.diagnostics.ballInPlay += dt;
         moveAll(s, dt);
       }
+      tally.spellTo(s.possession);
       startRuns(s, s.possession, r);
       tracer.push(s, actor[0], actor[1], label, outcomeLabel, from);
       const hurt = drawInjury(s, dt, r);
@@ -487,6 +514,7 @@ export function playGrid(setup: GridSetup): GridResult {
           if (d) applyCard(side, d.player, d.card, 'dissent');
         }
         added.push(extra);
+        tally.spellTo(undefined);
         break;
       }
     }
@@ -498,5 +526,10 @@ export function playGrid(setup: GridSetup): GridResult {
     tactics: setup.tactics,
     added,
   };
-  return { record, ...(setup.observe ? { trace: tracer.entries } : {}), elapsed: s.elapsed };
+  return {
+    record,
+    ...(setup.observe ? { trace: tracer.entries } : {}),
+    elapsed: s.elapsed,
+    diagnostics: tally.diagnostics,
+  };
 }

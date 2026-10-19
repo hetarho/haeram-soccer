@@ -43,10 +43,10 @@ export interface Restart {
 /** Dead time per restart (design §7.2) and the set-piece habits; initial values for T215. */
 export const RESTART_CONFIG = {
   dead: {
-    throwIn: 18,
-    goalKick: 30,
-    corner: 37,
-    freeKick: 32,
+    throwIn: 14,
+    goalKick: 22,
+    corner: 30,
+    freeKick: 26,
     penalty: 70,
     goal: 55,
     kickoff: 55,
@@ -65,12 +65,12 @@ export const RESTART_CONFIG = {
   throwFree: 3,
   kickoffBackBias: 10,
   offside: {
-    base: 0.45,
+    base: 0.08,
     decisions: 200,
     linebreaker: 0.1,
     highLine: 0.05,
     highLineFrom: 40,
-    min: 0.1,
+    min: 0.02,
     max: 0.7,
   },
 } as const;

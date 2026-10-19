@@ -3,7 +3,14 @@ import { TD } from '../../../contracts/src/detail';
 import { random } from '../primitives';
 import { resolveTakeOn } from './resolve';
 import { computeTags } from './tags';
-import { cardForFoul, dissentAt, isDogso, isTactical, type CardVerdict } from './discipline';
+import {
+  CARD_CONFIG,
+  cardForFoul,
+  dissentAt,
+  isDogso,
+  isTactical,
+  type CardVerdict,
+} from './discipline';
 import type { Point } from './pitch';
 import { gridKit } from './testkit';
 import { createWorld } from '../index';
@@ -44,8 +51,8 @@ describe('grid discipline (work in progress)', () => {
     s.ball = [55, 34];
     expect(isTactical(s, 1, 4)).toBe(true);
     const tactical = rate(6000, (r) => cardForFoul(s, 1, 4, { at, inBox: false }, r), 'yellow');
-    expect(ordinary).toBeGreaterThan(0.26);
-    expect(ordinary).toBeLessThan(0.38);
+    expect(ordinary).toBeGreaterThan(CARD_CONFIG.yellow - 0.04);
+    expect(ordinary).toBeLessThan(CARD_CONFIG.yellow + 0.06);
     expect(tactical).toBeGreaterThan(0.5);
   });
 
@@ -59,9 +66,9 @@ describe('grid discipline (work in progress)', () => {
     expect(isDogso(s, 1, 4, outside)).toBe(true);
     const red = rate(8000, (r) => cardForFoul(s, 1, 4, { at: outside, inBox: false }, r), 'red');
     const inside = rate(8000, (r) => cardForFoul(s, 1, 4, { at: [95, 34], inBox: true }, r), 'red');
-    expect(red).toBeGreaterThan(0.75);
-    expect(inside).toBeGreaterThan(0.25);
-    expect(inside).toBeLessThan(0.4);
+    expect(Math.abs(red - CARD_CONFIG.dogsoRed)).toBeLessThan(0.03);
+    expect(Math.abs(inside - CARD_CONFIG.dogsoRedInBox)).toBeLessThan(0.03);
+    expect(inside).toBeLessThan(red);
   });
 
   it('turns a second yellow into a red', () => {

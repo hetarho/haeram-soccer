@@ -36,23 +36,26 @@ export type Outcome =
       recordedXg: number;
       then?: 'corner' | 'loose' | 'hold' | 'goalKick';
       by?: number;
+      header?: boolean;
     };
 export type ShotOutcome = Extract<Outcome, { kind: 'shot' }>;
 
 /** Initial values (design §7.1); T215 and T216 tune them. */
 export const DUEL_CONFIG = {
   pass: {
+    /** Calibration offset on every cell's real completion rate (T215). */
+    base: 0.07,
     passer: 1 / 250,
     marker: 1 / 300,
-    risk: 0.08,
-    distance: 1 / 200,
-    pressure: 0.03,
+    risk: 0.03,
+    distance: 1 / 400,
+    pressure: 0.015,
     min: 0.25,
     max: 0.97,
-    lost: { intercepted: 0.55, loose: 0.3, out: 0.15 },
+    lost: { intercepted: 0.15, loose: 0.6, out: 0.25 },
   },
   cross: {
-    base: 0.24,
+    base: 0.45,
     skill: 1 / 150,
     crowd: 0.03,
     min: 0.08,
@@ -62,14 +65,16 @@ export const DUEL_CONFIG = {
   },
   cutBack: { base: 0.43, skill: 1 / 200, min: 0.2, max: 0.7 },
   takeOn: {
-    skill: 1 / 140,
+    skill: 1 / 285,
     min: 0.2,
-    max: 0.85,
-    fail: { tackle: 0.7, foul: 0.22, loose: 0.08 },
+    max: 0.75,
+    fail: { tackle: 0.35, foul: 0.55, loose: 0.1 },
     /** Metres beyond the defender a won take-on ends: always the middle of this range, no draw. */
     past: [5, 8],
   },
-  carry: { lostScale: 3, skill: 1 / 120, min: 0.01, max: 0.35, foul: 0.15 },
+  /** A defender in his own box keeps this share of his fouls; the rest become clean tackles (T215). */
+  boxFoul: 0.3,
+  carry: { lostScale: 3, skill: 1 / 120, min: 0.01, max: 0.35, foul: 0.8 },
   holdUp: { base: 0.6, skill: 1 / 150, min: 0.3, max: 0.85 },
   aerial: { skill: 1 / 150, base: 0.5, min: 0.15, max: 0.85 },
   clearance: { out: 0.3, reach: [25, 45] },
@@ -82,12 +87,14 @@ export const SHOT_CONFIG = {
   c: 1.6,
   header: 0.55,
   cutBack: 1.25,
-  pressure: 0.12,
+  pressure: 0.3,
   freeKickWall: 0.6,
   onTargetSkill: 1 / 250,
-  block: { base: 0.25, perDefender: 0.06, skill: 1 / 300, min: 0.05, max: 0.5, lane: 2 },
-  save: { hold: 0.55, corner: 0.25, loose: 0.2 },
-  blockThen: { corner: 0.35 },
+  /** Share of the shared on-target model's saves the grid keeps; the rest go wide (T215). */
+  saveShare: 0.5,
+  block: { base: 0.4, perDefender: 0.06, skill: 1 / 300, min: 0.05, max: 0.6, lane: 2 },
+  save: { hold: 0.4, corner: 0.4, loose: 0.2 },
+  blockThen: { corner: 0.5 },
   penalty: { base: 0.78, min: 0.6, max: 0.92, xg: 0.76 },
   maxXg: 0.8,
 } as const;
@@ -241,6 +248,7 @@ export function resolvePass(
   const base = CELL_BASELINES[tags.cell]!.passCompletion;
   const p = clamp(
     base +
+      P.base +
       (passer - 60) * P.passer -
       (markerSkill - 60) * P.marker -
       P.risk * laneRisk(s, side, from, to) -
@@ -310,7 +318,7 @@ export function resolveShot(
   const recordedXg = Math.min(C.maxXg, xg * ctx.levelFactor);
   const u = r();
   if (u < goal) return { kind: 'shot', shooter: idx, result: 'goal', xg, recordedXg };
-  if (u < onTarget) {
+  if (u < goal + (onTarget - goal) * C.saveShare) {
     const v = r();
     const then = v < C.save.hold ? 'hold' : v < C.save.hold + C.save.corner ? 'corner' : 'loose';
     return { kind: 'shot', shooter: idx, result: 'save', xg, recordedXg, then, by: keeper.idx };
@@ -423,7 +431,7 @@ export function resolveCross(
       return { kind: 'loose', at, winner: duel.winner };
     }
   }
-  return resolveShot(s, side, attacker.idx, tags, ctx, r, { header: true });
+  return { ...resolveShot(s, side, attacker.idx, tags, ctx, r, { header: true }), header: true };
 }
 
 /** The opponent nearest to `at` (the side's attack frame). */
@@ -499,8 +507,8 @@ export function resolveTakeOn(
   const p = clamp((CELL_BASELINES[tags.cell]!.takeOnSuccess ?? 0.5) + edge * T.skill, T.min, T.max);
   if (r() < p) return { kind: 'complete', to: toEngine(side, past), receiver: idx };
   const u = r();
-  // A booked defender is more careful: 0.6 of his foul share stays, the rest becomes a clean tackle.
-  const foulShare = T.fail.foul * (foe.yellow ? 0.6 : 1);
+  // A booked defender, or one in his own box, is more careful: part of his foul share becomes a clean tackle.
+  const foulShare = T.fail.foul * (foe.yellow ? 0.6 : 1) * (inBox(c) ? DUEL_CONFIG.boxFoul : 1);
   if (u < T.fail.tackle + (T.fail.foul - foulShare)) return { kind: 'tackled', by: foe.idx };
   if (u < T.fail.tackle + T.fail.foul)
     return { kind: 'foul', by: foe.idx, at: [me.pos[0], me.pos[1]] };
@@ -525,7 +533,12 @@ export function resolveCarry(
     const edge = skill(s, foe.gp.side, foe.gp.idx, 'tackling') - skill(s, side, idx, 'dribbling');
     const p = clamp(lost * K.lostScale * (1 + edge * K.skill), K.min, K.max);
     if (r() < p) {
-      if (r() < K.foul * (foe.gp.yellow ? 0.6 : 1))
+      if (
+        r() <
+        K.foul *
+          (foe.gp.yellow ? 0.6 : 1) *
+          (inBox(attackFrame(side, me.pos)) ? DUEL_CONFIG.boxFoul : 1)
+      )
         return { kind: 'foul', by: foe.gp.idx, at: [me.pos[0], me.pos[1]] };
       return { kind: 'tackled', by: foe.gp.idx };
     }
