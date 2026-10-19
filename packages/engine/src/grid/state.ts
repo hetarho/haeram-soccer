@@ -42,6 +42,10 @@ export interface GridState {
   score: [number, number];
   lastRegain?: { side: 0 | 1; at: number };
   lastLoss?: { side: 0 | 1; at: number };
+  /** The last completed pass, in the receiving side's attack frame; tags read the carrier's orientation from it. */
+  lastPass?: { dx: number; dy: number };
+  /** Match seconds when the possessing side got the ball. */
+  possessionSince: number;
 }
 
 const HANDS: readonly Attribute[] = ['reflexes', 'handling'];
@@ -105,6 +109,7 @@ export function createState(setup: GridSetup): GridState {
     t: 0,
     elapsed: 0,
     score: [0, 0],
+    possessionSince: 0,
   };
 }
 
