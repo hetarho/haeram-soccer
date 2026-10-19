@@ -163,11 +163,12 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- Browser journeys set aside by the owner (261019): main e2e is red since the 261017 UI design commits (tests/e2e call `selectOption` on the custom Select); do not wait on or fix them unless asked.
+- Browser journeys: every e2e job is green on 93cd68d (261019); the benchmark job's browser step failed from T256 (it still pressed the removed pause button) until the 261019 fix. The CI benchmark job takes about 70 minutes.
 - T216 (strength curve, explore 3h) next, re-running `scripts/grid-bands.ts` after it (T215 left goals 2.85 and headed goals 19.6% near the top of their bands); then T217–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T203–T214 are done (grid pitch, setup/state, shape, tags, decisions, duels/xG, restarts, `playGrid` loop with records and counters, cards, substitutions and injuries). T224 must bring the grid match (about 38 ms now) down toward the 15 ms criterion of T211; T215 holds all 37 MATCH-23 bands (docs/CALIBRATION.md `격자 엔진 분포 (T215)`). T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 fix benchmark: the mobile latency sample in scripts/first-play.mjs taps the 관전 속도 radios instead of the pause/play buttons T256 removed.
 - 261019 T215 done (r5c2): all 37 MATCH-23 bands hold over 600 and 1,200 grid matches (26/37 at the h8t4 WIP); set-piece scene, deep back line, 50/50 fouls, xG pressure floor; 1132 unit tests pass.
 - 261019 T215 doing (r5c2), taken over from the closed h8t4 WIP on wip/h8t4.
 - 261019 T215 WIP (h8t4) on wip/h8t4: band script, diagnostics, coarse guards; 26/37 MATCH-23 bands hold (7 at the start); about 1 h 30 min of the 4 h timebox used.
@@ -187,4 +188,3 @@
 - 261019 T257 doing (u6k2): release verification found the current season row missing its WEB-54 status; restore the visible marker without changing record data.
 - 261019 T256 publish start: owner requested commit/push; integrate origin/main T200–T202 before ARCH-30 batch verification.
 - 261019 T256 done: speed-only live observation, retained mediation preview and current-condition confirmation; 49 covering Chromium journeys passed across targeted runs, 4 changed unit tests, type/lint/format/build and spec lint pass. No commit/push.
-- 261019 T256 doing (u6k2), start 21a903fe721d: implement speed-only observation and stable mediation preview; WEB r93 consumed into T256, future WEB task bases reviewed; T225 preserves the speed-only controls.

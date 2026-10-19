@@ -236,9 +236,11 @@ try {
   await mobile.page.evaluate(() => {
     window.inputSamples = [];
   });
+  // Live observation offers speeds only (no pause): sample real taps on two of them.
+  const speeds = mobile.page.getByRole('radiogroup', { name: '관전 속도', exact: true });
   for (let i = 0; i < 6; i++) {
-    await mobile.page.getByRole('button', { name: '일시정지', exact: true }).click();
-    await mobile.page.getByRole('button', { name: '재생', exact: true }).click();
+    await speeds.getByRole('radio', { name: '2×', exact: true }).click();
+    await speeds.getByRole('radio', { name: '1×', exact: true }).click();
   }
   await mobile.page.evaluate(
     () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
