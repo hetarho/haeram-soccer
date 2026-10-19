@@ -72,6 +72,7 @@
 | difficulty-and-adaptation | converted@261015 |
 | navigation-and-records | converted@261015 |
 | expert-proposal-review | converted@261016 |
+| match-engine-rebuild | ready@261019 |
 | club-identity-and-kits | open@261019 |
 
 ## ssot
@@ -101,6 +102,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
+- ideation/match-engine-rebuild ready: update-ssot MATCH first (grid decision engine, per-touch time, fouls/set pieces, cards, substitutions, injuries, era rules, new statistics), then PLAYER, STAFF, WEB, HIST/SAVE, CLUB/LEAGUE; measure the grid engine's cost early — it decides whether other clubs' own-league fixtures play it.
 - Continue ideation club-identity-and-kits: choose crest composition and garment controls; historical appearance and existing-career adoption remain open.
 - Review prior autonomous decisions and optional review-code/doc-review proposals in inbox; latest report reports/261017-p6k2.md.
 - External deployment configuration, optional hall of fame and Flutter remain separate future work.
@@ -110,6 +112,8 @@
 - 261019 ideation club-identity-and-kits continue: apply owner choices for kit palettes, pre-match selection and club-management editing.
 - 261019 ideation club-identity-and-kits open: recorded selectable 1-3-colour crests, home/away/third patterns and pitch preview; palette links, kit selection and later edits remain open.
 - 261019 ideation club-identity-and-kits start
+- 261019 ideation match-engine-rebuild ready: grid engine (5 lanes × 8 bands), per-touch time, real-data decision tables, fouls/set pieces/cards/subs/injuries with era rules, new statistics and maps; baselines in docs/MATCH-BASELINES.md.
+- 261019 ideation match-engine-rebuild start
 - 261017 T179 done p6k2: CI38970812465 passes all jobs; local1018unit/15contract/545browser with4 existing skips; docs and raw benchmark evidence synchronized, no gameplay changes.
 - 261017 implement-task T179 start p6k2; full local verification running against the unchanged successful CI source.
 - 261017 T178 done p6k2: both complete century profiles, active23, retained cross-season commitments, canonical replay and era probe pass at unchanged 6df81fa source; max checkpoint1564446/total3129404.
@@ -124,4 +128,3 @@
 - 261017 implement-task T178 start n7r4.
 - 261017 T198 done n7r4: A retained training coach resignation now uses the ordinary departure lifecycle, preserving learned values and ending coaching/mentor service while keeping any player contract intact; the exact failing active-management commands validate through ten seasons.
 - 261017 implement-task T198 start n7r4.
-- 261017 create-task T198: actual active-management seed leaves a retained assistant employed after forced resignation (1952/day1); warm/cold occupancy guards both reject replacement. T178 stays incomplete and must rerun at the repaired source.
