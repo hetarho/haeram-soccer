@@ -2,7 +2,7 @@ import { LINEAGES, lineageName } from './cupCompetitions';
 import { Segments } from './Segments';
 import { useCupRequest, useNavigation } from './state';
 import { useTaskMemory, useTaskState } from './taskMemory';
-import { lazy, Suspense, useEffect, useState, type KeyboardEvent } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import type {
   EuropeTournament,
   Fixture,
@@ -20,6 +20,7 @@ import { emptyTable } from '../../../../packages/engine/src/season';
 import type { GameClient } from '../runtime/client';
 import { Bracket, Club } from './Bracket';
 import { number, seasonName } from './format';
+import { replaceQuery, TabList, TabPanel, useAddressTab } from './PageTabs';
 import s from './App.module.css';
 import c from './CupsView.module.css';
 
@@ -40,6 +41,12 @@ const CupHistory = lazy(() =>
 );
 
 const nameOf = (w: World, id?: string) => w.clubs.find((club) => club.id === id)?.name ?? '—';
+
+/** A competition's live season, or its past seasons and history. */
+const CUP_PERIODS = [
+  ['current', '현재 시즌'],
+  ['history', '지난 시즌·역사'],
+] as const;
 
 /** Clubs ranked by a competition table: points, goal difference, goals, then ID. */
 function rankIds(standings: Record<string, TableRow>, ids: string[]) {
@@ -278,16 +285,22 @@ export function CupsView({
 }) {
   const activePage = useNavigation((state) => state.page === 'europe');
   const tabs = [
-    { id: 'cup', label: domesticCupName(clubOf(w).country) },
-    ...LINEAGES.map((lineage) => ({ id: lineage.key, label: lineageName(w, lineage) })),
-  ];
-  const [tab, setTab] = useTaskState(w.id, 'cups-tab', () => {
-    const saved = new URLSearchParams(location.search).get('competition');
-    return tabs.some((entry) => entry.id === saved) ? saved! : 'cup';
+    ['cup', domesticCupName(clubOf(w).country)],
+    ...LINEAGES.map((lineage) => [lineage.key, lineageName(w, lineage)] as const),
+  ] as const;
+  // The page stays mounted while hidden; the address carries the competition and period in full.
+  const [tab, setTab] = useAddressTab('competition', tabs, 'cup', {
+    world: w.id,
+    key: 'cups-tab',
+    path: '/europe',
+    keepFirst: true,
   });
-  const [period, setPeriod] = useTaskState<'current' | 'history'>(w.id, 'cups-period', () =>
-    new URLSearchParams(location.search).get('period') === 'history' ? 'history' : 'current',
-  );
+  const [period, setPeriod] = useAddressTab('period', CUP_PERIODS, 'current', {
+    world: w.id,
+    key: 'cups-period',
+    path: '/europe',
+    keepFirst: true,
+  });
   const [year, setYear] = useTaskState<number | undefined>(w.id, `cups-year-${tab}`, () => {
     const saved = Number(new URLSearchParams(location.search).get('season'));
     return Number.isInteger(saved) && saved > 0 ? saved : undefined;
@@ -310,46 +323,34 @@ export function CupsView({
   }, [request, w.id, w.year, setTab, setPeriod]);
   useEffect(() => {
     if (!activePage) return;
-    const params = new URLSearchParams({ competition: tab, period });
-    if (period === 'history' && year !== undefined) params.set('season', String(year));
-    history.replaceState(null, '', `/europe?${params}`);
-  }, [tab, period, year, activePage]);
+    replaceQuery((params) => {
+      if (period === 'history' && year !== undefined) params.set('season', String(year));
+      else params.delete('season');
+    });
+  }, [period, year, activePage]);
   useEffect(() => {
+    // Back and forward also bring the season that competition showed.
     const restore = () => {
       if (!location.pathname.startsWith('/europe')) return;
       const params = new URLSearchParams(location.search),
         saved = params.get('competition'),
         picked = Number(params.get('season'));
-      setTab(tabs.some((entry) => entry.id === saved) ? saved! : 'cup');
-      setPeriod(params.get('period') === 'history' ? 'history' : 'current');
-      if (saved) {
-        const state = useTaskMemory.getState();
-        useTaskMemory.setState({
-          values: {
-            ...state.values,
-            [`cups-year-${saved}`]: Number.isInteger(picked) && picked > 0 ? picked : undefined,
-          },
-        });
-      }
+      if (!saved) return;
+      useTaskMemory.getState().activate(w.id);
+      const state = useTaskMemory.getState();
+      useTaskMemory.setState({
+        values: {
+          ...state.values,
+          [`cups-year-${saved}`]: Number.isInteger(picked) && picked > 0 ? picked : undefined,
+        },
+      });
     };
     window.addEventListener('popstate', restore);
     return () => window.removeEventListener('popstate', restore);
-  }, [w.id, setTab, setPeriod]);
-  const active = tabs.some((entry) => entry.id === tab) ? tab : 'cup';
+  }, [w.id]);
+  const active = tabs.some(([id]) => id === tab) ? tab : 'cup';
   const tournament = w.europe.find((t) => t.key === active);
   const lineage = LINEAGES.find((entry) => entry.key === active);
-  const keyboard = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
-    if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
-    event.preventDefault();
-    const next =
-      event.key === 'Home'
-        ? 0
-        : event.key === 'End'
-          ? tabs.length - 1
-          : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
-    setTab(tabs[next].id);
-    document.getElementById(`cup-competition-${tabs[next].id}`)?.focus();
-  };
   const nextEurope = w.year < 1955 ? 1955 - w.year : 0;
   return (
     <>
@@ -364,36 +365,23 @@ export function CupsView({
         </div>
         <span className={s.pill}>최근 5시즌 구단 계수 · {number(coefficient)}점</span>
       </div>
-      <div className={`${s.seasonTabs} ${c.tabs}`} role="tablist" aria-label="컵 대회">
-        {tabs.map((entry, index) => (
-          <button
-            key={entry.id}
-            id={`cup-competition-${entry.id}`}
-            role="tab"
-            tabIndex={active === entry.id ? 0 : -1}
-            aria-controls="cup-competition-panel"
-            onKeyDown={(event) => keyboard(event, index)}
-            aria-selected={active === entry.id}
-            onClick={() => setTab(entry.id)}
-          >
-            {entry.label}
-          </button>
-        ))}
-      </div>
-      <div id="cup-competition-panel" role="tabpanel" aria-labelledby={`cup-competition-${active}`}>
+      <TabList
+        tabs={tabs}
+        value={active}
+        onChange={setTab}
+        label="컵 대회"
+        idPrefix="cup-competition"
+        className={`${s.seasonTabs} ${c.tabs}`}
+      />
+      <TabPanel idPrefix="cup-competition" value={active}>
         <div className={s.recordControls}>
           <b>
-            {tabs.find((entry) => entry.id === active)?.label} ·{' '}
+            {tabs.find(([id]) => id === active)?.[1]} ·{' '}
             {period === 'current' ? seasonName(w.year) : '지난 시즌·역사'}
           </b>
           <Segments
             label="컵 대회 기간"
-            options={
-              [
-                ['current', '현재 시즌'],
-                ['history', '지난 시즌·역사'],
-              ] as const
-            }
+            options={CUP_PERIODS}
             value={period}
             onChange={setPeriod}
           />
@@ -427,7 +415,7 @@ export function CupsView({
             />
           </Suspense>
         )}
-      </div>
+      </TabPanel>
       <p className={s.muted}>
         국가별 참가권, 시드와 추첨은 데모에 맞게 단순화했습니다. 클럽대항전은 9–1월 리그·조별 단계,
         2월부터(조별 단계가 없던 시대는 9월부터) 홈앤드어웨이 토너먼트, 5월 단판 결승으로 치릅니다.
