@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type {
   RecruitmentMediation,
   ReinforcementPromise,
@@ -42,17 +42,30 @@ export function MediationReview({
   const [support, setSupport] = useState<MediationSupport>(
     directionOption(w, 'recruitmentSupport').id as MediationSupport,
   );
-  const [preview, setPreview] = useState<Awaited<ReturnType<GameClient['mediationPreview']>>>(),
+  const [checked, setChecked] = useState<{
+      id: string;
+      support: MediationSupport;
+      revision: number;
+      value: Awaited<ReturnType<GameClient['mediationPreview']>>;
+    }>(),
     [error, setError] = useState<string>();
   const disabled = useGameState((state) => state.busy || state.readonly || !!state.pendingActions),
     readonly = useGameState((state) => state.readonly);
+  const preview = checked?.id === record.id ? checked.value : undefined;
+  const ready =
+    checked?.id === record.id && checked.support === support && checked.revision === w.revision;
+  const previewElement = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const element = previewElement.current;
+    // Keep the occupied space when a new choice has fewer result rows.
+    if (element && preview) element.style.minHeight = getComputedStyle(element).height;
+  }, [preview]);
   useEffect(() => {
     let current = true;
-    setPreview(undefined);
     setError(undefined);
     void client.mediationPreview(record.id, support).then(
       (value) => {
-        if (current) setPreview(value);
+        if (current) setChecked({ id: record.id, support, revision: w.revision, value });
       },
       (reason) => {
         if (current) setError(String(reason));
@@ -93,34 +106,42 @@ export function MediationReview({
           ))}
         </fieldset>
         <p>이번 선택은 평소 지원 방침을 바꾸지 않아요. 실제 영입과 보강 약속은 별개의 결과예요.</p>
-        {error ? (
-          <p role="alert">조건을 확인할 수 없어요. {error} 다시 열어 최신 조건을 확인해 주세요.</p>
-        ) : !preview ? (
-          <p role="status">현재 조건을 확인하는 중이에요.</p>
-        ) : (
-          <div aria-label="이번 중재 결과 미리보기">
-            <p>{preview.result}</p>
-            {preview.offer && (
-              <p>
-                영입 제안금 {cash(preview.offer.fee)} · 선수 연봉 {cash(preview.offer.wage)} ·{' '}
-                {preview.offer.kind === 'bid' ? '협상 응답 대기' : '자유계약 영입'}
-              </p>
-            )}
-            <p>즉시 지출 {cash(preview.immediateSpend)}</p>
-            {preview.promise && (
-              <p>
-                보강 약속: {requestLabel(preview.promise.target)} · 마감{' '}
-                {date(preview.promise.deadline)}
-              </p>
-            )}
-          </div>
-        )}
+        <div ref={previewElement} aria-label="이번 중재 결과 미리보기" aria-busy={!ready && !error}>
+          {preview && (
+            <>
+              <p>{preview.result}</p>
+              {preview.offer && (
+                <p>
+                  영입 제안금 {cash(preview.offer.fee)} · 선수 연봉 {cash(preview.offer.wage)} ·{' '}
+                  {preview.offer.kind === 'bid' ? '협상 응답 대기' : '자유계약 영입'}
+                </p>
+              )}
+              <p>즉시 지출 {cash(preview.immediateSpend)}</p>
+              {preview.promise && (
+                <p>
+                  보강 약속: {requestLabel(preview.promise.target)} · 마감{' '}
+                  {date(preview.promise.deadline)}
+                </p>
+              )}
+            </>
+          )}
+        </div>
+        <p
+          role={error ? 'alert' : 'status'}
+          className={preview && !error ? s.previewStatus : undefined}
+          style={{ visibility: ready && !error ? 'hidden' : undefined }}
+        >
+          {error
+            ? `조건을 확인할 수 없어요. ${error} 다시 열어 최신 조건을 확인해 주세요.`
+            : '선택한 조건을 확인하는 중이에요.'}
+        </p>
         {disabled && (
           <p>{readonly ? '읽기 전용 기록이에요.' : '다른 처리를 마친 뒤 결정할 수 있어요.'}</p>
         )}
         <button
-          disabled={disabled || !preview || !!error || record.status !== 'pending'}
+          disabled={disabled || !ready || !!error || record.status !== 'pending'}
           onClick={async () => {
+            if (!ready || disabled || error || record.status !== 'pending') return;
             try {
               const reply = await client.command({
                 type: 'resolve-mediation',

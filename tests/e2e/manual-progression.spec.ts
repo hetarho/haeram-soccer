@@ -138,7 +138,7 @@ for (const authority of ['direct', 'delegated'] as const) {
     const date = await page.getByTestId('game-date').innerText();
     await page.getByTestId('intervention-trigger').click();
     const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
-    await dialog.getByRole('combobox', { name: '진행 모드', exact: true }).selectOption('manual');
+    await chooseOption(dialog.getByRole('combobox', { name: '진행 모드', exact: true }), 'manual');
     await expect(dialog).toContainText('수동 모드에는 경기 이벤트가 필요해요');
     await expect(dialog.getByRole('button', { name: '적용', exact: true })).toBeDisabled();
     await expect(

@@ -1,3 +1,4 @@
+import { chooseOption } from './select';
 import { createWorld, advanceDays } from '../../packages/engine/src/index';
 import { continueSlot } from './slots';
 import {
@@ -159,7 +160,8 @@ test('the central settings dialog pauses, restores focus and persists applied ow
     '유소년 승격·방출',
     '스폰서 계약',
   ])
-    await expect(dialog.getByRole('combobox', { name: label, exact: true })).toHaveValue(
+    await expect(dialog.getByRole('combobox', { name: label, exact: true })).toHaveAttribute(
+      'data-value',
       'delegated',
     );
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
@@ -199,9 +201,9 @@ test('a hidden tab plays on like an idle game, names the date in its title, and 
     .click();
   const settings = page.getByRole('dialog', { name: '위임·진행 설정' });
   const background = settings.getByRole('region', { name: '자동 모드의 백그라운드 진행' });
-  await expect(background.getByRole('combobox', { name: '자리 비운 동안 진행 한도' })).toHaveValue(
-    'season',
-  );
+  await expect(
+    background.getByRole('combobox', { name: '자리 비운 동안 진행 한도' }),
+  ).toHaveAttribute('data-value', 'season');
   await background.getByLabel('다른 탭에서도 계속 진행').uncheck();
   await settings.getByRole('button', { name: '적용', exact: true }).click();
   await closeSettingsOutcome(page);
@@ -273,7 +275,7 @@ test('deciding the event that stopped a running clock plays on (→WEB-42)', asy
   await chooseLevel(page, 4);
   await page.getByTestId('intervention-trigger').click();
   const settings = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
-  await settings.getByRole('combobox', { name: '선수 매각', exact: true }).selectOption('direct');
+  await chooseOption(settings.getByRole('combobox', { name: '선수 매각', exact: true }), 'direct');
   await settings.getByRole('button', { name: '적용', exact: true }).click();
   await closeSettingsOutcome(page);
   const clock = page.getByRole('region', { name: '시즌 진행', exact: true });
@@ -331,8 +333,14 @@ for (const viewport of [
       ['유소년 승격·방출', 'delegated'],
       ['스폰서 계약', 'delegated'],
     ])
-      await expect(dialog.getByLabel(label, { exact: true })).toHaveValue(value);
-    await dialog.getByLabel('선수 영입', { exact: true }).selectOption('delegated');
+      await expect(dialog.getByRole('combobox', { name: label, exact: true })).toHaveAttribute(
+        'data-value',
+        value,
+      );
+    await chooseOption(
+      dialog.getByRole('combobox', { name: '선수 영입', exact: true }),
+      'delegated',
+    );
     await dialog.getByRole('button', { name: '닫기', exact: true }).click();
     await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
     await page.getByRole('tab', { name: '이적시장', exact: true }).click();
@@ -340,7 +348,10 @@ for (const viewport of [
       sale = page.getByTestId('decision-owner-sales');
     await expect(recruitment).not.toHaveAttribute('data-auto', 'true');
     await recruitment.getByRole('button', { name: /위임·진행 설정 열기/ }).click();
-    await expect(dialog.getByLabel('선수 영입', { exact: true })).toHaveValue('delegated');
+    await expect(dialog.getByRole('combobox', { name: '선수 영입', exact: true })).toHaveAttribute(
+      'data-value',
+      'delegated',
+    );
     await expect(dialog.getByRole('button', { name: '적용', exact: true })).toBeEnabled();
     await settle(page);
     const bounds = await dialog.evaluate((element) => ({
@@ -358,9 +369,12 @@ for (const viewport of [
     await expect(recruitment).toHaveAttribute('data-auto', 'true');
     await expect(sale).not.toHaveAttribute('data-auto', 'true');
     await recruitment.getByRole('button', { name: /위임·진행 설정 열기/ }).click();
-    await dialog.getByLabel('선수 영입', { exact: true }).selectOption('direct');
+    await chooseOption(dialog.getByRole('combobox', { name: '선수 영입', exact: true }), 'direct');
     await dialog.getByRole('button', { name: '변경 버리기', exact: true }).click();
-    await expect(dialog.getByLabel('선수 영입', { exact: true })).toHaveValue('delegated');
+    await expect(dialog.getByRole('combobox', { name: '선수 영입', exact: true })).toHaveAttribute(
+      'data-value',
+      'delegated',
+    );
     await dialog.getByRole('button', { name: '닫기', exact: true }).click();
     await expect(page.getByTestId('game-date')).toHaveText(date!);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
@@ -371,13 +385,16 @@ for (const viewport of [
     await page.getByTestId('intervention-trigger').click();
     const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
     await dialog.getByLabel('경기 전날 이벤트', { exact: true }).uncheck();
-    await dialog.getByLabel('진행 모드', { exact: true }).selectOption('manual');
+    await chooseOption(dialog.getByRole('combobox', { name: '진행 모드', exact: true }), 'manual');
     await expect(dialog).toContainText('수동 모드에는 경기 이벤트가 필요해요');
     await expect(dialog.getByRole('button', { name: '적용', exact: true })).toBeDisabled();
     await expect(dialog.getByLabel('경기 전날 이벤트', { exact: true })).not.toBeChecked();
     await dialog.getByRole('button', { name: '닫기', exact: true }).click();
     await page.getByTestId('intervention-trigger').click();
-    await expect(dialog.getByLabel('진행 모드', { exact: true })).toHaveValue('manual');
+    await expect(dialog.getByRole('combobox', { name: '진행 모드', exact: true })).toHaveAttribute(
+      'data-value',
+      'manual',
+    );
     await expect(dialog.getByLabel('경기 전날 이벤트', { exact: true })).not.toBeChecked();
     await dialog.getByRole('button', { name: '경기 전날 이벤트 켜기', exact: true }).click();
     await expect(dialog.getByLabel('경기 전날 이벤트', { exact: true })).toBeChecked();
@@ -385,7 +402,10 @@ for (const viewport of [
     await expect(dialog).toHaveCount(0);
     await closeSettingsOutcome(page);
     await page.getByTestId('intervention-trigger').click();
-    await expect(dialog.getByLabel('진행 모드', { exact: true })).toHaveValue('manual');
+    await expect(dialog.getByRole('combobox', { name: '진행 모드', exact: true })).toHaveAttribute(
+      'data-value',
+      'manual',
+    );
     await dialog.getByLabel('경기 전날 이벤트', { exact: true }).click();
     await expect(dialog.getByLabel('경기 전날 이벤트', { exact: true })).toBeChecked();
     await expect(dialog).toContainText('수동 모드에는 경기 이벤트가 필요해요');
@@ -398,7 +418,10 @@ for (const viewport of [
     await importResponsibilityCareer(page, pendingAcquisitionCareer());
     await page.getByTestId('intervention-trigger').click();
     const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
-    await dialog.getByLabel('선수 영입', { exact: true }).selectOption('delegated');
+    await chooseOption(
+      dialog.getByRole('combobox', { name: '선수 영입', exact: true }),
+      'delegated',
+    );
     await expect(dialog.getByRole('region', { name: '대기 업무 이관 미리보기' })).toContainText(
       '대기 중인 선수 영입 2건도 위임됩니다.',
     );
@@ -407,7 +430,10 @@ for (const viewport of [
     await closeSettingsOutcome(page);
     await expect(page.getByTestId('event-card')).toHaveCount(0);
     await page.getByTestId('intervention-trigger').click();
-    await expect(dialog.getByLabel('선수 영입', { exact: true })).toHaveValue('delegated');
+    await expect(dialog.getByRole('combobox', { name: '선수 영입', exact: true })).toHaveAttribute(
+      'data-value',
+      'delegated',
+    );
     await expect(dialog.getByRole('region', { name: '대기 업무 이관 미리보기' })).toHaveCount(0);
   });
 }
@@ -426,7 +452,7 @@ test('central-responsibilities-explicit-apply readonly viewer', async ({ page, c
     await expect(dialog).toContainText('읽기 전용 상태에서는 설정을 적용할 수 없어요.');
     await expect(dialog.getByRole('status')).toBeInViewport();
     await viewer.screenshot({ path: '.tmp/responsibility-settings-readonly-390.png' });
-    await expect(dialog.getByLabel('선수 영입', { exact: true })).toBeDisabled();
+    await expect(dialog.getByRole('combobox', { name: '선수 영입', exact: true })).toBeDisabled();
     await expect(dialog.getByRole('button', { name: '적용', exact: true })).toBeDisabled();
     await expect(dialog.getByRole('button', { name: '닫기', exact: true })).toBeEnabled();
     await dialog.getByRole('button', { name: '닫기', exact: true }).click();

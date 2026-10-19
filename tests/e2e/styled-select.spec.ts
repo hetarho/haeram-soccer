@@ -69,7 +69,6 @@ for (const viewport of [
     await expect(sheet.getByLabel('감독 예상 반응')).toContainText('신뢰 18 감소');
     await sheet.getByRole('button', { name: '준비 마치고 돌아가기' }).click();
     await page.getByTestId('hub-play').click();
-    await page.getByRole('button', { name: '일시정지', exact: true }).click();
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
     await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();
     const inspector = page.getByRole('combobox', { name: '살펴볼 선수', exact: true });

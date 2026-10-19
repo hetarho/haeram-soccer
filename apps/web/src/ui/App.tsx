@@ -1177,7 +1177,7 @@ export function App() {
         {client && screen === 'game' && (
           <RuntimeFeedback client={client} localError={localError} playing={playing} />
         )}
-        {/* The match theatre carries its own compact clock in its header row. */}
+        {/* Season controls belong to management views; observation has its own speeds. */}
         {client && controller && playing && !w.bankrupt && page !== 'match' && (
           <ProgressControls
             client={client}

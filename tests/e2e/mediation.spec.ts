@@ -1,3 +1,4 @@
+import { chooseOption } from './select';
 import { test, expect, type Page } from '@playwright/test';
 import {
   createWorld,
@@ -81,6 +82,52 @@ test('case-support-is-not-standing-policy', async ({ page }) => {
   await expect(history).toContainText('당시 지원 방침 균형 · 단장 우선 결정');
   await expect(history).not.toContainText('이행 대기');
 });
+test('support changes retain the preview and confirm only the latest conditions', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const post = Worker.prototype.postMessage;
+    Worker.prototype.postMessage = function (message, options?) {
+      const send = () => Reflect.apply(post, this, options ? [message, options] : [message]);
+      if (message.body?.type === 'mediation-preview')
+        setTimeout(send, message.body.support === 'director' ? 900 : 150);
+      else send();
+    };
+  });
+  await market(page, fixture());
+  await page
+    .getByRole('region', { name: '영입 중재와 보강 약속' })
+    .getByRole('button', { name: '영입 중재 검토', exact: true })
+    .click();
+  const review = page.getByRole('dialog', { name: '영입 중재 검토' });
+  const preview = review.getByLabel('이번 중재 결과 미리보기');
+  const confirm = review.getByRole('button', { name: '이번 중재 결정 확정', exact: true });
+  await expect(preview).toHaveAttribute('aria-busy', 'false');
+  await expect(preview).toContainText('보강 약속');
+  const original = await preview.elementHandle();
+  const height = (await preview.boundingBox())!.height;
+  await review.getByRole('radio', { name: '단장 우선', exact: true }).check();
+  await expect(preview).toHaveAttribute('aria-busy', 'true');
+  await expect(preview).toContainText('보강 약속');
+  await expect(confirm).toBeDisabled();
+  expect((await preview.boundingBox())!.height).toBeGreaterThanOrEqual(height);
+  await review.getByRole('radio', { name: '감독 우선', exact: true }).check();
+  await expect(preview).toHaveAttribute('aria-busy', 'false');
+  await expect(confirm).toBeEnabled();
+  await page.waitForTimeout(950);
+  await expect(preview).toContainText('보강 약속');
+  await expect(preview).not.toContainText('미뤘어요');
+  expect(await original!.evaluate((node) => node.isConnected)).toBe(true);
+  await review.getByRole('radio', { name: '단장 우선', exact: true }).check();
+  await expect(confirm).toBeDisabled();
+  await expect(preview).toContainText('미뤘어요');
+  await expect(confirm).toBeEnabled();
+  expect((await preview.boundingBox())!.height).toBeGreaterThanOrEqual(height);
+  await review.getByRole('radio', { name: '균형', exact: true }).check();
+  await expect(confirm).toBeDisabled();
+  await expect(preview).toHaveAttribute('aria-busy', 'false');
+  await expect(confirm).toBeEnabled();
+});
 test('retained-promise-status', async ({ page }) => {
   const w = fixture();
   resolveMediation(w, w.mediations![0].id, 'manager', 'delegated');
@@ -147,7 +194,7 @@ test('mediation-handover-on-apply discloses work and never replays its recorded 
   await importResponsibilityCareer(page, w);
   await page.getByTestId('intervention-trigger').click();
   const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
-  await dialog.getByRole('combobox', { name: '선수 영입', exact: true }).selectOption('delegated');
+  await chooseOption(dialog.getByRole('combobox', { name: '선수 영입', exact: true }), 'delegated');
   await expect(dialog.getByRole('region', { name: '대기 업무 이관 미리보기' })).toContainText(
     '선수 영입 1건',
   );

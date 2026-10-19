@@ -135,7 +135,6 @@ for (const viewport of [
       (window as typeof window & { matchCanvas?: Element | null }).matchCanvas =
         document.querySelector('canvas');
     });
-    await page.getByRole('button', { name: '일시정지', exact: true }).click();
     await expectCompactMatch(page, viewport);
     await expect(page.getByTestId('match-result-summary')).toHaveCount(0);
     await expect(page.getByRole('slider', { name: '경기 시간', exact: true })).toBeHidden();
@@ -208,8 +207,10 @@ for (const viewport of [
     // Going back returns to the theatre while its playback lasts.
     await page.goBack();
     await expectCompactMatch(page, viewport);
-    await page.getByRole('button', { name: '다시 보기', exact: true }).click();
-    await page.getByRole('button', { name: '일시정지', exact: true }).click();
+    await page.getByRole('button', { name: '경기 상세', exact: true }).click();
+    await page.getByText('주요 장면 탐색', { exact: true }).click();
+    await page.getByRole('button', { name: '킥오프 · 1분', exact: true }).click();
+    await page.getByRole('button', { name: '경기 상세', exact: true }).click();
     await expect(page.getByTestId('match-result-summary')).toHaveCount(0);
     await expectCompactMatch(page, viewport);
     expect(await savedRaw(page)).toBe(settled);
@@ -238,7 +239,6 @@ for (const viewport of [
     await page.getByTestId('match-next-action').click();
     await expect(page.getByTestId('game-date')).not.toHaveText(beforeNext);
     await expect(page.getByTestId('match-next-action')).toBeEnabled();
-    await page.getByRole('button', { name: '일시정지', exact: true }).click();
     await expectCompactMatch(page, viewport);
     await expect(page.getByRole('button', { name: '경기 상세', exact: true })).toHaveAttribute(
       'aria-expanded',

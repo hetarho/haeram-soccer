@@ -13,7 +13,11 @@ import {
   type KeyboardEvent,
 } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
-import { daysUntilNextMatch, nextOwnFixture } from '../../../../packages/engine/src/calendar';
+import {
+  daysUntilNextMatch,
+  nextOwnFixture,
+  seasonDate,
+} from '../../../../packages/engine/src/calendar';
 import { clubOf, startingSquad, tacticLabel } from '../../../../packages/engine/src/world';
 import { lineupSummary } from '../../../../packages/engine/src/strategy';
 import type { GameClient } from '../runtime/client';
@@ -21,7 +25,6 @@ import { gameStore, useGameState } from '../runtime/store';
 import { useProgression, type ProgressionController } from '../runtime/progression';
 import { useLeagueSeason, useMatchView, useNavigation, type Page, type PastTab } from './state';
 import { Pitch, type PitchControls } from './Pitch';
-import { ProgressControls } from './ProgressControls';
 import { watchNextMatch } from './watch';
 import { LeagueOverview, RankHistoryGraph, Standings, RoundResults } from './LeagueInsights';
 import { ScorerStandings, ScorerHistory } from './ScorerPanels';
@@ -180,13 +183,12 @@ const MatchPane = memo(function MatchPane({
   client,
   controller,
   onPrepare,
-  clock,
+  showDate,
 }: {
   client: GameClient;
   controller: ProgressionController;
   onPrepare: () => void;
-  /** Only the open theatre owns a clock; the app shell draws it everywhere else. */
-  clock: boolean;
+  showDate: boolean;
 }) {
   const w = useGameState(selectMatchWorld)!;
   const playback = useGameState((state) => state.playback);
@@ -226,6 +228,11 @@ const MatchPane = memo(function MatchPane({
   return (
     <div className={t.matchPane} data-testid="match-theatre">
       <h2 className={t.srOnly}>매치데이</h2>
+      {showDate && (
+        <span className={t.srOnly} data-testid="game-date">
+          {seasonDate(w)}
+        </span>
+      )}
       <section>
         <Pitch
           playback={playback}
@@ -237,11 +244,6 @@ const MatchPane = memo(function MatchPane({
             <button className={t.back} aria-label="홈" onClick={() => setPage('dashboard')}>
               <span aria-hidden="true">‹</span>
             </button>
-          }
-          trail={
-            clock && (
-              <ProgressControls client={client} controller={controller} bare className={t.clock} />
-            )
           }
           actions={(controls) => (
             <div className={t.coreActions}>
@@ -660,7 +662,7 @@ export const LiveSeason = memo(function LiveSeason({
               client={client}
               controller={controller}
               onPrepare={onPrepare}
-              clock={page === 'match'}
+              showDate={page === 'match'}
             />
           ) : !opened.includes(id) ? null : id === 'table' ? (
             <TablePane client={client} league={league} />

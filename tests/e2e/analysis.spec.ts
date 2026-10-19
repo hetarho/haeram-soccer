@@ -339,7 +339,8 @@ test('jumps between recorded periods without changing the final result or calend
   await half.click();
   await expect(page.getByTestId('pitch-theatre')).toContainText('45′');
   expect((await half.boundingBox())!.height).toBeGreaterThanOrEqual(44);
-  await expect(page.getByRole('button', { name: '재생', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: '재생', exact: true })).toHaveCount(0);
+  await page.getByRole('radio', { name: '1×', exact: true }).click();
   await moments.getByRole('button', { name: '경기 종료 · 90분', exact: true }).click();
   await expect(page.getByTestId('match-score').locator('strong')).toHaveText(score);
   await expect(page.getByTestId('game-date')).toHaveText(date);
@@ -351,7 +352,6 @@ test('reveals the recorded match report only after choosing the final result', a
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
   await page.getByTestId('hub-play').click();
-  await page.getByRole('button', { name: '일시정지', exact: true }).click();
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   const report = page.getByRole('region', { name: '경기 분석 리포트', exact: true });
   await expect(report).toHaveCount(0);

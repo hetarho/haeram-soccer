@@ -260,7 +260,7 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   const fastest = progress.getByRole('button', { name: '0.1초에 하루 속도 선택', exact: true });
   const play = progress.getByRole('button', { name: '자동 진행 시작', exact: true }),
     pause = progress.getByRole('button', { name: '자동 진행 정지', exact: true });
-  const card = page.getByTestId('event-card');
+  const card = page.getByTestId('event-card').first();
   const renewal = '감독 재계약';
   // Read without auto-waiting: a card may leave between a count and a text query.
   const cardText = () =>

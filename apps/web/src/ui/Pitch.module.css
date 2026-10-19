@@ -79,7 +79,7 @@
 .stage {
   position: relative;
 }
-.canvas {
+.replayCanvas {
   cursor: pointer;
 }
 .stage .canvas {
@@ -305,7 +305,7 @@
     font-size: 13px;
     line-height: 1.2;
   }
-  /* On a phone the row also carries the back control and the clock: short names fit. */
+  /* Short team names leave room for the back control on phones. */
   .fullName {
     position: absolute;
     width: 1px;

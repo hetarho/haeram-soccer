@@ -30,16 +30,11 @@ export const ProgressControls = memo(function ProgressControls({
   client,
   controller,
   compact = false,
-  bare = false,
-  className = '',
 }: {
   client: GameClient;
   controller: ProgressionController;
   /** Away from home the same one-row clock keeps running, labelled as a whole for the region. */
   compact?: boolean;
-  /** Buttons only, for rows that already say where the season stands (the match header). */
-  bare?: boolean;
-  className?: string;
 }) {
   const state = useGameState((state) => state);
   const { running, pace, watching, reason } = useProgression(controller, (state) => state);
@@ -141,24 +136,11 @@ export const ProgressControls = memo(function ProgressControls({
       )}
     </div>
   );
-  if (bare)
-    return (
-      <section
-        className={`${s.miniClock} ${running ? s.clockRunning : ''} ${className}`}
-        data-testid="mini-clock"
-        aria-label={`시즌 진행 · ${seasonDate(w)} · ${status}`}
-      >
-        <span className={s.srOnly} data-testid="game-date">
-          {seasonDate(w)}
-        </span>
-        {buttons}
-      </section>
-    );
   // One packed row on every view: where the season stands on the left, the speed buttons right.
   const progress = Math.round((currentDay(w) / Math.max(1, seasonLength(w))) * 1000) / 10;
   return (
     <section
-      className={`${s.seasonControls} ${p.controls} ${running ? s.clockRunning : ''} ${className}`}
+      className={`${s.seasonControls} ${p.controls} ${running ? s.clockRunning : ''}`}
       aria-label={compact ? `시즌 진행 · ${seasonDate(w)} · ${status}` : '시즌 진행'}
       data-testid={compact ? 'mini-clock' : undefined}
     >

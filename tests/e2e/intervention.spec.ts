@@ -159,7 +159,7 @@ test('prepares a subsequent match from the theatre while keeping the recorded sc
   await delegateSales(page);
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await page.getByTestId('hub-play').click();
-  await page.getByRole('button', { name: '일시정지', exact: true }).click();
+  await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   const contextUrl = page.url();
   const score = await page.getByTestId('match-score').locator('strong').innerText();
   const date = await page.getByTestId('game-date').innerText();
@@ -178,5 +178,5 @@ test('prepares a subsequent match from the theatre while keeping the recorded sc
   await expect(page).toHaveURL(contextUrl);
   await expect(page.getByTestId('match-score').locator('strong')).toHaveText(score);
   await expect(page.getByTestId('game-date')).toHaveText(date);
-  await expect(page.getByRole('button', { name: '재생', exact: true })).toBeVisible();
+  await expect(page.getByRole('radiogroup', { name: '관전 속도', exact: true })).toBeVisible();
 });

@@ -112,12 +112,11 @@ test('watching a match pauses the calendar and retains playback across page swit
   await expect(
     page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
   ).toBeVisible();
-  await page.getByRole('button', { name: '일시정지', exact: true }).click();
   const date = page.getByTestId('game-date');
   const matchDay = await date.textContent();
-  // The theatre carries the buttons-only clock; the calendar waits while we watch.
+  // The theatre has no season clock; the calendar waits while we watch.
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(0);
-  await expect(page.getByTestId('mini-clock')).toBeVisible();
+  await expect(page.getByTestId('mini-clock')).toHaveCount(0);
   // Home leads back to the unfinished match instead of starting another.
   const theatre = page.getByTestId('match-theatre');
   await theatre.getByRole('button', { name: '홈', exact: true }).click();

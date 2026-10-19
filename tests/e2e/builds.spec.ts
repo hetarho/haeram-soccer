@@ -99,7 +99,7 @@ test('discloses roster and opponent tactical fit before an actual seeded match',
   await expect(dialog).toHaveCount(0);
 
   await page.getByTestId('hub-play').click();
-  const match = page.getByRole('region', { name: '경기 관전', exact: true });
+  const match = page.getByTestId('match-theatre');
   await expect(match.getByText(opponent.name, { exact: true })).toBeVisible();
   const matchup =
     next.home === reference.playerClub

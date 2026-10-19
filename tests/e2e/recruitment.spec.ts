@@ -345,10 +345,12 @@ test('the market ends with who answers offers and names the recruitment level, o
   // The local ownership link opens the shared explicit-apply screen.
   await owner.getByRole('button', { name: /위임·진행 설정 열기$/ }).click();
   const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
-  await expect(dialog.getByRole('combobox', { name: '선수 매각', exact: true })).toHaveValue(
+  await expect(dialog.getByRole('combobox', { name: '선수 매각', exact: true })).toHaveAttribute(
+    'data-value',
     'delegated',
   );
-  await expect(dialog.getByRole('combobox', { name: '선수 영입', exact: true })).toHaveValue(
+  await expect(dialog.getByRole('combobox', { name: '선수 영입', exact: true })).toHaveAttribute(
+    'data-value',
     'delegated',
   );
   await dialog.getByRole('button', { name: '닫기', exact: true }).click();

@@ -56,8 +56,8 @@ test('keeps both home controls stable over real automatic ticks and keeps runnin
   const theatre = page.getByTestId('match-theatre');
   await expect(theatre).toBeVisible();
   // Watching stops the run while the match is on; leaving the match resumes it untouched.
-  const mini = page.getByTestId('mini-clock');
-  await expect(mini.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
+  await expect(theatre.getByTestId('mini-clock')).toHaveCount(0);
+  await expect(theatre.getByRole('combobox', { name: '진행 모드', exact: true })).toHaveCount(0);
   await theatre.getByRole('button', { name: '홈', exact: true }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
@@ -81,11 +81,39 @@ test('defaults to one minute per four seconds and provides five replay speeds', 
   await page.waitForTimeout(1700);
   await expect(page.getByTestId('pitch-theatre')).toContainText('1′');
   await expect(page.getByTestId('pitch-theatre')).toContainText('2′', { timeout: 5000 });
-  await page.getByRole('button', { name: '일시정지', exact: true }).click();
   for (const value of ['2×', '4×', '8×', '16×']) {
     const speed = speeds.getByRole('radio', { name: value, exact: true });
     await speed.click();
     await expect(speed).toHaveAttribute('aria-checked', 'true');
   }
-  await expect(page.getByRole('button', { name: '재생', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^(재생|일시정지|다시 보기)$/ })).toHaveCount(0);
+  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
+  const timeline = page.getByRole('slider', { name: '경기 시간', exact: true });
+  const beforeTap = Number(await timeline.inputValue());
+  await page.getByLabel('22명의 선수와 공으로 표현하는 경기').click();
+  await expect.poll(async () => Number(await timeline.inputValue())).toBeGreaterThan(beforeTap);
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, value: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  // The displayed sample catches up to the stopped animation clock on its next UI update.
+  await page.waitForTimeout(200);
+  const hidden = await timeline.inputValue();
+  await page.waitForTimeout(350);
+  await expect(timeline).toHaveValue(hidden);
+  await page.evaluate(() => {
+    Reflect.deleteProperty(document, 'hidden');
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await expect
+    .poll(async () => Number(await timeline.inputValue()))
+    .toBeGreaterThan(Number(hidden));
+  await timeline.press('Home');
+  const sought = await timeline.inputValue();
+  await page.waitForTimeout(350);
+  await expect(timeline).toHaveValue(sought);
+  await speeds.getByRole('radio', { name: '16×', exact: true }).click();
+  await expect
+    .poll(async () => Number(await timeline.inputValue()))
+    .toBeGreaterThan(Number(sought));
 });

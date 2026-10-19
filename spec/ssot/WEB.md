@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r92 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r93 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -51,7 +51,7 @@
 - WEB-16 [o] First-session help explains optional match preparation, one-action observation, earned player growth and cost-bearing club investment. It derives completion from actual milestones, does not require a tutorial gate, and can be reopened from the menu.
 
 - WEB-17 [o] The match theatre passes 360x740 and390x844 viewport bounds without masking essential overflow; home has no horizontal overflow and scrolls vertically when needed. Supporter count and small text remain readable; all primary buttons and selection controls, including match preparation, recruitment and league exploration, have touch targets of at least44 CSS pixels across Chromium, Firefox and Safari; the clock's secondary pace chips are at least 32 px inside a 44 px track. Expanded records/settings may scroll; short screens or accessibility magnification can use necessary vertical scrolling.
-- WEB-18 [o] One clock on every view shows date/status, the selected progression mode, its progression action and access to the central responsibility settings (→WEB-45); season progress runs along its lower edge. On phones the full clock places date/status and settings above the mode and progression actions so their labels remain readable. The match theatre keeps its time controls in the scoreboard row.
+- WEB-18 [o] One clock on every management view shows date/status, the selected progression mode, its progression action and access to the central responsibility settings (→WEB-45); season progress runs along its lower edge. On phones the full clock places date/status and settings above the mode and progression actions so their labels remain readable. The match theatre has no season-progression controls; its presentation speed follows →WEB-32.
   - automatic mode keeps play/pause and x1/x2/x5/x10: one day per 1/0.5/0.2/0.1 seconds. Steps never wait for saving (→SAVE-8); a late step carries days owed, at most 5 per step, and stopped time is never owed.
   - pace selection changes pace only. A stopped automatic clock stays stopped until play; an event stop does not change the selected progression mode.
   - manual mode offers 다음 이벤트 with automatic play off (→WEB-5). Present one direct move to the next configured event's date, without a paced date-by-date animation or an intervening progress/cancel journey. Do not add an artificial wait.
@@ -99,7 +99,9 @@
 - WEB-30 [o] League standings initially show the leading 8 ranks plus the own-club row when outside that preview. Display the shown/full team counts and any rank gap, and offer one explicit expansion to all ranked clubs. Sorting and source facts remain complete; short previews reduce first-view layout cost on mobile and throttled devices.
 
 - WEB-31 [o] Background automatic progression does not alternate the enabled state or appearance of manual match and preparation buttons. Foreground work, real save/worker errors, read-only ownership and critical club alerts remain explicit blockers. Manual observation stops automatic progress, waits for the current serialized operation to settle, and queues exactly one match (→WEB-18 for resuming); preparation initializes from the settled current roster without pausing the clock. Controls disable only while a player command is queued, never for automatic ticks.
-- WEB-32 [o] Match presentation defaults to 1x with approximately 4 real seconds per simulated minute on average, quicker through own-half build-up and slower near the box, at chances and at set pieces (→MATCH-12). Offer exactly 1x, 2x, 4x, 8x and 16x; the pace changes presentation only, preserves pause/seek behavior, and never changes settled outcomes or the game calendar.
+- WEB-32 [o] Match presentation defaults to 1x with approximately 4 real seconds per simulated minute on average, quicker through own-half build-up and slower near the box, at chances and at set pieces (→MATCH-12). Offer exactly 1x, 2x, 4x, 8x and 16x; the pace changes presentation only and never changes settled outcomes or the game calendar.
+  - Live observation starts playing without play/pause/replay buttons or a pitch-tap toggle; selecting a speed resumes a detailed seek paused under →WEB-23. Returning from a hidden browser tab resumes unfinished live observation.
+  - Archived replay retains its playback controls.
 
 - WEB-33 [o] All single-choice dropdowns use one app-styled trigger and option list matching the club journal palette. Preserve selected values, labels, disabled choices and current filter/command semantics.
   - Triggers and options have touch targets of at least44 CSS pixels; lists fit the viewport, scroll long samples, and remain usable inside dialogs.
@@ -208,7 +210,7 @@
   - Pitch shirts use the fixture's selected home/away/third designs and automatic goalkeeper colours (→KIT-6/8), including their patterns; a crest-derived single colour is not the shirt design.
   - Show selected-kit swatches beside team labels in the match view. Charts keep readable, distinctly labelled series; colour alone is never the only link from a series or a player marker to its team.
   - Appearance in historical playback follows →KIT-12; a new crest edit must not silently contradict the chosen historical policy.
-- WEB-50 [o] The match theatre stacks one row with the back-home control, the scoreboard with crests (short names on phones) and the clock buttons; minute/latest action with speed chips (1x–16x); the pitch, which keeps a 1.9:1 width-to-height ratio on every screen (tap or the corner button pauses); the latest event; live charts; and two actions.
+- WEB-50 [o] The match theatre stacks one row with the back-home control, the scoreboard with crests (short names on phones); minute/latest action with speed chips (1x–16x); the pitch, which keeps a 1.9:1 width-to-height ratio on every screen; the latest event; live charts; and two actions.
   - Outfield players visibly wear the selected shirt colours and pattern at the actual observation scale, with readable numbers and team outlines; a patterned legend beside solid-colour players does not satisfy →WEB-49.
   - the scoreboard shows red cards and added time (45+n, 90+n); the latest event reads as spatial commentary (→MATCH-24) and names substitutions and injuries.
   - charts switch between rolling 10-minute possession share, cumulative xG with goal marks and cumulative shots; they reveal data only up to the presented minute.
@@ -367,6 +369,7 @@
   - ordinary match preparation, observation and playing through the forthcoming match remain available. These actions retain their normal decision/blocker protections and do not switch progression mode or start unattended manual play. Same-date stops follow →WEB-83.
 
 - WEB-81 [o] Mediation shows each person's actual explanation, the standing support policy, a case-specific support choice when owner-held, and any promise's target, deadline and recorded status (→CLUB-34/35, →STAFF-26). Delegated mediation reports the policy and result without an extra owner-only stop. Promise outcomes remain available through retained decisions (→HIST-15).
+  - Changing the case-specific choice keeps the existing preview and its occupied space visible until the latest conditions arrive. Only a preview matching the current case, choice and world revision enables confirmation; pending or failed checks cannot confirm stale conditions.
 
 - WEB-82 [o] Explicitly applying a responsibility change transfers that category's unresolved work to its newly selected decision-maker, including decisions already waiting on the current date.
   - before apply, disclose the affected pending work and its count, such as 대기 중인 영입 2건도 위임됩니다. Merely selecting or reading a setting does not transfer authority.
@@ -402,6 +405,7 @@
 - Identity: founding or club design → crest/shirt draft → pitch preview → explicit use/apply; preparation → optional fixture-level kit choice → observation.
 
 ## chg
+- r93 261019 WEB-18/50✎ match clock and pitch playback buttons→speed-only live observation; WEB-32✎ live manual pause→speed resumes detailed seek and visibility resumes playback, archived controls kept; WEB-81✎ preview replacement→stable pending preview with current-condition confirmation
 - r92 261019 WEB-47✎ unconditional whole-pitch PPDA beside advanced PPDA→MATCH-13 for advanced samples, marked whole-pitch approximation only without those counters
 - r91 261019 WEB-2✎ single colour→club identity/three shirts; WEB-15✎ advanced colour field→visible design entry/editor; WEB-39/71✎ four operations tabs→+authoritative club-design tab; WEB-49✎ derived two-colour crests/single-colour kits→KIT-owned crests/patterned shirts; WEB-50✎ solid player colours→selected shirt patterns; WEB-86/87/88+ shared editor, pitch preview and pre-match kit choice
 - r90 261019 WEB-22✎ +new spatial counters, fouls, cards, corners, offsides, substitutions, material link; WEB-23✎ goals→+red cards, substitutions, 45+n/90+n; WEB-24✎ +spatial counters and discipline; WEB-32✎ 4 s a minute→on average, automatic pacing; WEB-40✎ +discipline table in 선수 기록; WEB-44✎ injured→injured and suspended, fewer than 14 fit→available; WEB-50✎ +red cards, added time, spatial commentary, substitutions and injuries; WEB-53✎ +cell map and tags; WEB-59✎ 14→16 attributes, +cards, bans, season heat maps; WEB-68✎ +injury/ban badges and the yellow warning; WEB-84+ post-match material screens; WEB-85+ bench and takers in preparation

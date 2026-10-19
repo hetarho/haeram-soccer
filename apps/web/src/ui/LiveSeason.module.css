@@ -76,13 +76,6 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
-.clock {
-  flex: none;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-}
 .back {
   flex: none;
   width: 44px;

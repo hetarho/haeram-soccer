@@ -151,7 +151,7 @@ for (const viewport of [
     await expect(keeper).toHaveAttribute('data-value', replacement!);
     await preparation.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
     await page.getByTestId('hub-play').click();
-    await page.getByRole('button', { name: '일시정지', exact: true }).click();
+    await expect(page.getByTestId('match-theatre')).toBeVisible();
     await expectCompactDocument(page, viewport);
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
     await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();

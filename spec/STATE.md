@@ -82,7 +82,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 12 | 12 | - | 2 |
-| WEB | 92 | 92 | - | 0 |
+| WEB | 93 | 93 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -164,6 +164,10 @@
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 T256 publish start: owner requested commit/push; integrate origin/main T200–T202 before ARCH-30 batch verification.
+- 261019 T256 done: speed-only live observation, retained mediation preview and current-condition confirmation; 49 covering Chromium journeys passed across targeted runs, 4 changed unit tests, type/lint/format/build and spec lint pass. No commit/push.
+- 261019 T256 doing (u6k2), start 21a903fe721d: implement speed-only observation and stable mediation preview; WEB r93 consumed into T256, future WEB task bases reviewed; T225 preserves the speed-only controls.
+- 261019 update-ssot WEB start: speed-only live observation and stable recruitment mediation previews; standalone user-assigned UI fixes (T256).
 - 261019 T202 done
 - 261019 T201 done
 - 261019 T200 done
@@ -180,7 +184,3 @@
 - 261019 create-task MATCH PLAYER STAFF CLUB LEAGUE WEB HIST SAVE start (grid engine rebuild)
 - 261019 create-task KIT WEB SAVE start (club identity only); use small sequential tasks and explicit engineering contracts for a less capable implementation model.
 - 261019 KIT r2 and SAVE r47: all identity policies settled; 1-3 colours/default two, eight patterns, six crests/three kit drafts, warned manual clashes, explicit palette reuse, frozen recorded playback and supported-career preservation.
-- 261019 update-ssot KIT SAVE start: settle all club-identity-and-kits product policies.
-- 261019 club-identity-and-kits converted: KIT r1 owns identity/kit policy; WEB r91 adds shared editor, pitch preview and pre-match choice; SAVE r46 preserves applied designs, with adoption/history policies open.
-- 261019 create-ssot club-identity-and-kits start; isolate identity/kit policies from WEB presentation and SAVE persistence.
-- 261019 ideation club-identity-and-kits continue: adopt shirt colour/pattern editing and automatically distinguished goalkeeper colours for v1.

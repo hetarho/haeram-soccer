@@ -1,3 +1,4 @@
+import { chooseOption } from './select';
 import { test, expect, type Page } from '@playwright/test';
 import { combinedCareerFixture, exportedCareer } from './career-fixtures';
 import { importResponsibilityCareer } from './responsibility-fixtures';
@@ -44,9 +45,10 @@ test('rules three retains a joint career and promise through scoped drafts, hand
   await expect(sheet).toHaveCount(0);
   await page.getByTestId('intervention-trigger').click();
   const settings = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
-  await settings
-    .getByRole('combobox', { name: '선수 영입', exact: true })
-    .selectOption('delegated');
+  await chooseOption(
+    settings.getByRole('combobox', { name: '선수 영입', exact: true }),
+    'delegated',
+  );
   await expect(settings.getByRole('region', { name: '대기 업무 이관 미리보기' })).toContainText(
     '선수 영입 1건',
   );

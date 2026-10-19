@@ -1,3 +1,4 @@
+import { chooseOption } from './select';
 import type { GameSettings, ResponsibilityKey } from '../../packages/contracts/src/types';
 import { expect, type Page } from '@playwright/test';
 
@@ -18,11 +19,12 @@ export async function chooseLevel(page: Page, level: 1 | 2 | 3 | 4) {
   for (let i = 0; i < labels.length; i++) {
     const delegated =
       level === 4 || (level >= 3 && i !== 3 && i !== 4) || (level === 2 && (i === 2 || i === 5));
-    await dialog
-      .getByRole('combobox', { name: labels[i], exact: true })
-      .selectOption(delegated ? 'delegated' : 'direct');
+    await chooseOption(
+      dialog.getByRole('combobox', { name: labels[i], exact: true }),
+      delegated ? 'delegated' : 'direct',
+    );
   }
-  await dialog.getByRole('combobox', { name: '진행 모드', exact: true }).selectOption('automatic');
+  await chooseOption(dialog.getByRole('combobox', { name: '진행 모드', exact: true }), 'automatic');
   await dialog
     .getByRole('checkbox', { name: '경기 전날 이벤트', exact: true })
     .setChecked(level <= 2);
@@ -60,13 +62,15 @@ export async function configureResponsibilities(
     sponsors: '스폰서 계약',
   };
   for (const [key, value] of Object.entries(options.responsibilities ?? {}))
-    await dialog
-      .getByRole('combobox', { name: labels[key as ResponsibilityKey], exact: true })
-      .selectOption(value);
+    await chooseOption(
+      dialog.getByRole('combobox', { name: labels[key as ResponsibilityKey], exact: true }),
+      value,
+    );
   if (options.mode === 'automatic')
-    await dialog
-      .getByRole('combobox', { name: '진행 모드', exact: true })
-      .selectOption('automatic');
+    await chooseOption(
+      dialog.getByRole('combobox', { name: '진행 모드', exact: true }),
+      'automatic',
+    );
   if (options.observations?.matchEve !== undefined)
     await dialog
       .getByRole('checkbox', { name: '경기 전날 이벤트', exact: true })
@@ -76,9 +80,10 @@ export async function configureResponsibilities(
       .getByRole('checkbox', { name: '이적시장 개장 이벤트', exact: true })
       .setChecked(options.observations.windowOpen);
   if (options.mode === 'manual')
-    await dialog
-      .getByRole('combobox', { name: '진행 모드', exact: true })
-      .selectOption(options.mode);
+    await chooseOption(
+      dialog.getByRole('combobox', { name: '진행 모드', exact: true }),
+      options.mode,
+    );
   const apply = dialog.getByRole('button', { name: '적용', exact: true });
   if (await apply.isEnabled()) {
     await apply.click();
@@ -113,6 +118,7 @@ export async function acknowledgeEvents(page: Page) {
     card.evaluateAll((cards) => (cards[0] as HTMLElement | undefined)?.innerText ?? '');
   for (let i = 0; i < 20; i++) {
     const current = await title();
+    const count = await eventCard(page).count();
     // An observation is not a dismissible report; the caller can prepare or watch the match.
     if (!current || current.includes('내일 경기')) return;
     const mediation = card.getByRole('button', { name: '영입 중재 검토', exact: true });
@@ -127,7 +133,9 @@ export async function acknowledgeEvents(page: Page) {
         (await read.count()) ? read : card.getByRole('button', { name: '거절', exact: true })
       ).click();
     }
-    await expect.poll(title, { timeout: 10000 }).not.toBe(current);
+    await expect
+      .poll(async () => [await eventCard(page).count(), await title()], { timeout: 10000 })
+      .not.toEqual([count, current]);
   }
   throw new Error('Too many pending events to acknowledge');
 }
@@ -136,7 +144,7 @@ export async function acknowledgeEvents(page: Page) {
 export async function setResponsibility(page: Page, label: string, value: 'direct' | 'delegated') {
   await page.getByTestId('intervention-trigger').click();
   const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
-  await dialog.getByRole('combobox', { name: label, exact: true }).selectOption(value);
+  await chooseOption(dialog.getByRole('combobox', { name: label, exact: true }), value);
   const apply = dialog.getByRole('button', { name: '적용', exact: true });
   if (await apply.isEnabled()) {
     await apply.click();

@@ -131,7 +131,6 @@ export function Pitch({
   onPresentationChange,
   actions,
   lead,
-  trail,
 }: {
   playback?: MatchPlayback;
   world: World;
@@ -141,9 +140,8 @@ export function Pitch({
   onPresentationChange?: (state: { matchId?: string; finished: boolean; details: boolean }) => void;
   /** The primary actions under the charts; without them the pitch offers its own result button. */
   actions?: (controls: PitchControls) => ReactNode;
-  /** Controls at the two ends of the scoreboard row (back home, the clock). */
+  /** Back navigation in the scoreboard row. */
   lead?: ReactNode;
-  trail?: ReactNode;
 }) {
   const detailsId = useId();
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -223,17 +221,19 @@ export function Pitch({
     setSelection('0:8');
     setDetails(false);
     setInspect(false);
-    setPaused(document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    setPaused(
+      document.hidden || (summary && window.matchMedia('(prefers-reduced-motion: reduce)').matches),
+    );
     if (p) onPlaybackStart?.(p.record.id);
-  }, [p?.record.id, onPlaybackStart]);
+  }, [p?.record.id, onPlaybackStart, summary]);
 
   useEffect(() => {
     const hide = () => {
-      if (document.hidden) setPaused(true);
+      if (!summary || document.hidden) setPaused(document.hidden);
     };
     document.addEventListener('visibilitychange', hide);
     return () => document.removeEventListener('visibilitychange', hide);
-  }, []);
+  }, [summary]);
 
   useEffect(() => {
     let raf = 0;
@@ -433,7 +433,6 @@ export function Pitch({
           </b>
           {away && <CrestMark crest={awayCrest} size={24} />}
         </span>
-        {trail}
       </div>
       <div className={`${s.pitchMeta} ${t.pitchMeta}`}>
         <span className={`${s.live} ${t.liveText}`}>
@@ -449,7 +448,10 @@ export function Pitch({
                 role="radio"
                 aria-checked={speed === value}
                 className={speed === value ? t.speedOn : undefined}
-                onClick={() => setSpeed(value)}
+                onClick={() => {
+                  setSpeed(value);
+                  setPaused(false);
+                }}
               >
                 {value}×
               </button>
@@ -477,20 +479,22 @@ export function Pitch({
         <canvas
           ref={canvas}
           aria-label="22명의 선수와 공으로 표현하는 경기"
-          className={`${s.canvas} ${t.canvas}`}
-          onClick={toggle}
+          className={`${s.canvas} ${t.canvas} ${summary ? t.replayCanvas : ''}`}
+          onClick={summary ? toggle : undefined}
         />
-        <button
-          className={`${t.playToggle} ${paused || finished ? t.playIdle : ''}`}
-          aria-label={playLabel}
-          disabled={!p}
-          onClick={toggle}
-        >
-          <span
-            aria-hidden="true"
-            className={finished ? t.iconReplay : paused ? t.iconPlay : t.iconPause}
-          />
-        </button>
+        {summary && (
+          <button
+            className={`${t.playToggle} ${paused || finished ? t.playIdle : ''}`}
+            aria-label={playLabel}
+            disabled={!p}
+            onClick={toggle}
+          >
+            <span
+              aria-hidden="true"
+              className={finished ? t.iconReplay : paused ? t.iconPlay : t.iconPause}
+            />
+          </button>
+        )}
         {p && !summary && (
           <span className={t.tactics}>
             {tacticLabel[p.record.tactics[0]]} vs {tacticLabel[p.record.tactics[1]]}
@@ -547,6 +551,7 @@ export function Pitch({
       <div id={detailsId} hidden={!details} className={t.details}>
         {p && (summary || finished || reviewedId === p.record.id) && (
           <MatchMoments
+            live={!summary}
             record={p.record}
             onSeek={(minute) => {
               seek(minute === 90 ? samples.length - 1 : sampleAtMinute(p.frames, samples, minute));

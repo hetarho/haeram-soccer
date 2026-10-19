@@ -2451,20 +2451,6 @@
   }
 }
 
-/* Away from home the clock keeps running as a buttons-only pill on the right. */
-.miniClock {
-  display: flex;
-  justify-content: flex-end;
-  width: fit-content;
-  margin: 0 0 8px auto;
-  padding: 4px;
-  border-radius: 2px;
-  border: 1px solid var(--line);
-  background: var(--surface-deep);
-}
-.miniClock .clockButtons {
-  flex: none;
-}
 @media (max-width: 760px) {
   .mobileNav {
     gap: 0;

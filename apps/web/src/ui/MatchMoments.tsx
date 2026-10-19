@@ -5,9 +5,11 @@ import s from './Analysis.module.css';
 export function MatchMoments({
   record,
   onSeek,
+  live = false,
 }: {
   record: MatchRecord;
   onSeek: (minute: number) => void;
+  live?: boolean;
 }) {
   const goals = recordedGoals(record);
   return (
@@ -42,7 +44,8 @@ export function MatchMoments({
             </p>
           ))}
         <p className={s.note}>
-          장면 선택은 재생만 이동하고 일시정지해요. 경기 결과와 날짜는 그대로예요.
+          장면 선택은 재생만 이동하고 일시정지해요. {live && '배속을 선택하면 이어서 관전해요. '}
+          경기 결과와 날짜는 그대로예요.
         </p>
       </section>
     </details>
