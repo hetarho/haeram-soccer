@@ -72,14 +72,14 @@
 | difficulty-and-adaptation | converted@261015 |
 | navigation-and-records | converted@261015 |
 | expert-proposal-review | converted@261016 |
-| match-engine-rebuild | ready@261019 |
+| match-engine-rebuild | converted@261019 |
 | club-identity-and-kits | open@261019 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 10 | 10 | - | 2 |
-| WEB | 89 | 89 | - | 0 |
+| WEB | 90 | 89 | WEB-22✎ WEB-23✎ WEB-24✎ WEB-32✎ WEB-40✎ WEB-44✎ WEB-50✎ WEB-53✎ WEB-59✎ WEB-68✎ WEB-84+ WEB-85+ | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | CLUB | 42 | 41 | CLUB-6✎ CLUB-23✎ CLUB-45+ | 0 |
 | MATCH | 11 | 9 | MATCH-1✎ MATCH-2✎ MATCH-3✎ MATCH-5✎ MATCH-6✎ MATCH-8✎ MATCH-9✎ MATCH-11✎ MATCH-12✎ MATCH-13✎ MATCH-14+ MATCH-15+ MATCH-16+ MATCH-17+ MATCH-18+ MATCH-19+ MATCH-20+ MATCH-21+ MATCH-22+ MATCH-23+ MATCH-24+ MATCH-25+ MATCH-26+ | 1 |
@@ -87,8 +87,8 @@
 | STAFF | 34 | 33 | STAFF-14✎ STAFF-21✎ STAFF-22✎ STAFF-45+ | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 13 | 13 | - | 0 |
-| SAVE | 44 | 44 | - | 0 |
+| HIST | 14 | 13 | HIST-8✎ HIST-16+ | 0 |
+| SAVE | 45 | 44 | SAVE-10✎ SAVE-18✎ SAVE-19+ | 0 |
 | PLAYER | 9 | 8 | PLAYER-1✎ PLAYER-2✎ PLAYER-5✎ PLAYER-6✎ PLAYER-9✎ PLAYER-15✎ PLAYER-17✎ PLAYER-19✎ PLAYER-20✎ | 0 |
 
 ## tasks
@@ -102,12 +102,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- match-engine-rebuild: MATCH r10 done; next update-ssot PLAYER (판단력/침착성 in PLAYER-2/6, role habits and traits as decision tendencies), then STAFF (formation shapes, manager substitutions), CLUB/LEAGUE (in-match injuries for every club, suspensions in XI choice), WEB (commentary, post-match material, new counters), HIST/SAVE (season/career totals, new rules version); create-task across them afterwards.
+- match-engine-rebuild planned across MATCH r11, PLAYER r9, STAFF r34, CLUB r42, LEAGUE r10, WEB r90, HIST r14, SAVE r45 → create-task for all of them; measure the grid engine's cost early (it decides MATCH-22's own-league path and MATCH-26).
 - Continue ideation club-identity-and-kits: choose crest composition and garment controls; historical appearance and existing-career adoption remain open.
 - Review prior autonomous decisions and optional review-code/doc-review proposals in inbox; latest report reports/261017-p6k2.md.
 - External deployment configuration, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 WEB r90 match theatre/analysis/profile/squad/league/preparation for the grid engine; HIST r14 spatial and discipline totals, map lifetime; SAVE r45 rules 4.0.0 boundary; ideation match-engine-rebuild converted.
 - 261019 STAFF r34 styles in the grid engine and substitution habits; CLUB r42 bench/takers, in-match injuries for everyone, suspensions; LEAGUE r10 NPC injuries/suspensions and discipline table.
 - 261019 PLAYER r9: 16 attributes with 판단력/침착성 in OVR weights, roles and traits as decision tendencies, mental ageing; MATCH r11 constraint: earlier careers follow SAVE-19 (not converted).
 - 261019 MATCH r10: grid decision engine (40 cells, tags, decision tables, off-ball movement), per-touch halves with added time, fouls/set pieces/offside, cards and suspensions, era substitutions, in-match injuries, engine paths with a 125% season budget, real-football bands, commentary and post-match material; MATCH-26 open.
@@ -127,4 +128,3 @@
 - 261017 SAVE r44/create-task: T199 v3 profiles use sparse scalar columns and bounded presence runs to cover century-active23; T178/T179 final source gates remain required.
 - 261017 create-task refresh T199/T178/T179 for SAVE r43 exact permutation contract; T178 released pending T199 and full fixed-source rerun.
 - 261017 SAVE r43: grouped career representation must restore exact original registry order; T199/T178/T179 affected, no gameplay or capacity change.
-- 261017 implement-task T199 start n7r4.

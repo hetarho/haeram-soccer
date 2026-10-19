@@ -1,5 +1,5 @@
 # IDEATION match-engine-rebuild
-> st:ready@261019 | Rebuild the match engine so every player's choice comes from his role, his place on the pitch and the situation, drawn by probability.
+> st:converted@261019 | Rebuild the match engine so every player's choice comes from his role, his place on the pitch and the situation, drawn by probability.
 
 ## vision
 - Problem: observed matches do not read as football — the ball sits with a defender and a moment later is a shot; shots leave from odd, distant spots; a forward suddenly plays the ball back to a deep full-back or wing-back. The owner wants a full engine rebuild, not patches.
@@ -77,11 +77,11 @@
 ## domains
 - MATCH →MATCH: MATCH-1/11/12 rewritten around the grid decision engine (cells, tags, per-touch time, event-only possession changes, fouls and set pieces); MATCH-2 calibration kept and re-measured; MATCH-5/10 the view and commentary; MATCH-13 counters kept plus the new statistics; MATCH-8/9 tactics as shape, line and pressing behaviour.
 - PLAYER →PLAYER: what roles (PLAYER-5) and play traits (PLAYER-9) mean as spatial habits and decision tendencies; the new 판단력/침착성 attributes (generation, growth, ratings, scouting); in-match injuries and suspensions in availability.
-- STAFF: formations and slot roles (STAFF-22) as positions per phase on the pitch.
-- WEB: live commentary, post-match shot map/heat maps/pass network and tactical report, new statistics in player, season and career views.
-- HIST/SAVE: season and career totals of the new statistics and discipline, current-season maps reduced to season heat maps within the checkpoint limits, the new rules version starting new careers (SAVE-18).
-- CLUB/LEAGUE: suspensions and in-match injuries in squad availability; the league discipline table.
-- ARCH: the processing budget of the grid engine for own and recorded fixtures and of the unwatched path.
+- STAFF →STAFF: formations and slot roles (STAFF-22) as positions per phase on the pitch.
+- WEB →WEB: live commentary, post-match shot map/heat maps/pass network and tactical report, new statistics in player, season and career views.
+- HIST/SAVE →HIST →SAVE: season and career totals of the new statistics and discipline, current-season maps reduced to season heat maps within the checkpoint limits, the new rules version starting new careers (SAVE-18).
+- CLUB/LEAGUE →CLUB →LEAGUE: suspensions and in-match injuries in squad availability; the league discipline table.
+- ARCH →MATCH: the processing budget of the grid engine for own and recorded fixtures and of the unwatched path.
 
 ## open
 - Determinism (MATCH-7) is assumed kept: watched and unwatched play of a fixture give the same result.
