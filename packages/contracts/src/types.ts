@@ -650,62 +650,86 @@ export interface MatchMotionSample {
   ownerId?: string;
 }
 /**
- * One duel of the minute's possession chain. Slots index the side's starting XI; `side` is the
- * team in possession when the duel starts. Observation only: never archived.
+ * One touch, restart or incident of a grid match minute (docs/MATCH-ENGINE-DESIGN.md §2.4).
+ * Players are named by ID; positions are playback units of the minute's period. Observation only:
+ * never archived.
  */
 export interface MatchEvent {
   /** Seconds into the minute, 0–60. */
   t: number;
-  /**
-   * A restart opens a minute that the other side ended with the ball: it went out of play off
-   * them and `side` restarts it to `actor` (MATCH-12).
-   */
-  kind: 'pass' | 'dribble' | 'shot' | 'restart';
+  kind:
+    | 'kickoff'
+    | 'pass'
+    | 'cross'
+    | 'cutBack'
+    | 'carry'
+    | 'takeOn'
+    | 'shot'
+    | 'clearance'
+    | 'holdUp'
+    | 'restart'
+    | 'foul'
+    | 'card'
+    | 'sub'
+    | 'injury'
+    | 'offside'
+    | 'whistle';
+  /** The acting side. */
   side: 0 | 1;
-  /** Passer, dribbler or shooter; for a restart, the player it reaches. */
-  actor: number;
-  /** Pass receiver (or the teammate who recovered a loose ball). */
-  receiver?: number;
-  /** Opposing marker, tackler, blocker or keeper slot; for a restart, who put the ball out. */
-  opponent?: number;
-  restart?: 'throwIn' | 'goalKick' | 'corner';
-  /** Pass completed or dribble beaten; shots use `outcome`. */
+  /** Player ID; empty for a whistle. */
+  actor: string;
+  /** Pass receiver; for a substitution, the substitute who came on. */
+  receiver?: string;
+  /** Interceptor, tackler, keeper or blocker; for a foul, the player fouled. */
+  opponent?: string;
+  from: [number, number];
+  to: [number, number];
   ok?: boolean;
-  /** A failed pass or dribble lost the ball to `opponent`. */
   lost?: boolean;
   outcome?: 'goal' | 'save' | 'block' | 'miss';
+  restart?: 'kickoff' | 'throwIn' | 'goalKick' | 'corner' | 'freeKick' | 'penalty';
+  card?: 'yellow' | 'red';
   xg?: number;
-  /** The pass was a cross from a flank (→MATCH-11). */
-  cross?: boolean;
-  /** The shot was a header off a cross. */
   header?: boolean;
-  /** Zone the ball reaches: 0 build-up, 1 midfield, 2 final third (attacking direction). */
-  zone: 0 | 1 | 2;
+  /** Korean commentary (→MATCH-24). */
+  text: string;
 }
+/** One match minute of a period, added minutes included. */
 export interface MatchFrame {
+  /** Match minute, capped at the period's end: added minutes of the first half read 45. */
   minute: number;
   score: Score;
   metrics: [Metrics, Metrics];
   ball: [number, number];
   side: 0 | 1;
+  /** The formation slot (0 the keeper) of the player who leads the minute. */
   player: number;
   action: string;
   elapsedSeconds?: number;
+  /** The players on the pitch: 10 or fewer after a red card or a man-short injury. */
   players?: [PlayerMotion[], PlayerMotion[]];
   motion?: MatchMotionSample[];
-  /** The minute's duel chain (observed matches only). */
+  /** The minute's touches, restarts and incidents (observed matches only). */
   events?: MatchEvent[];
   /** Cumulative expected goals after this minute, home then away (observed matches only). */
   xg?: [number, number];
   /**
-   * The ball every motion integration step of this minute as ground x, ground y and height above
-   * the pitch (observed matches only; never stored).
+   * The ball through this minute as ground x, ground y and height above the pitch (observed
+   * matches only; never stored).
    */
   ballTrack?: [number, number, number][];
+  period: 1 | 2 | 3 | 4;
+  /** '23', '45+2', '90+4', '105+1'. */
+  label: string;
+  /** Presentation weight, mean 1 over the match (→WEB-32). */
+  pace: number;
+  /** Player IDs on the pitch at the minute's end, in slot order where filled. */
+  onPitch: [string[], string[]];
 }
 export interface MatchPlayback {
   record: MatchRecord;
   frames: MatchFrame[];
+  /** Whole matchday rosters: the starters in slot order, then the bench. */
   squads: [Player[], Player[]];
 }
 export interface Event {

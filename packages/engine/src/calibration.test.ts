@@ -41,14 +41,14 @@ function clubs(strength: number) {
   });
 }
 
-type Path = 'duel' | 'summary' | 'grid';
-/** Fixtures per sample: a grid match takes about 40 ms, the other paths well under 1 ms. */
-const COUNT: Record<Path, number> = { duel: 1600, summary: 1600, grid: 480 };
+type Path = 'summary' | 'grid';
+/** Fixtures per sample: a grid match takes about 40 ms, the summary well under 1 ms. */
+const COUNT: Record<Path, number> = { summary: 1600, grid: 480 };
 
 const play = (f: Fixture, path: Path) =>
   path === 'grid'
     ? playGrid(buildGridSetup(w, f, { observe: false, recordPlayers: false })).record
-    : simulateMatch(w, f, false, path === 'duel').record;
+    : simulateMatch(w, f).record;
 
 /** Home and away pools play the path's sample; gap is home strength minus away. */
 function sample(home: Club[], away: Club[], path: Path) {
@@ -97,7 +97,6 @@ const level = clubs(77),
 const SLOW = 120000;
 
 describe.each([
-  ['duel chain', 'duel'],
   ['summary', 'summary'],
   ['grid', 'grid'],
 ] as const)('%s: calibrated outcomes', (_, path) => {

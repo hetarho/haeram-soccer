@@ -147,7 +147,7 @@ for (const viewport of [
     ]);
     await page.getByRole('radio', { name: '16×', exact: true }).click();
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-    await expect(page.getByText(/90′ ·.*경기 종료/)).toBeVisible();
+    await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
     await expectCompactMatch(page, viewport);
     const side = first.record.home === reference.playerClub ? 0 : 1;
     const ownGoals = side === 0 ? first.record.score.home : first.record.score.away;

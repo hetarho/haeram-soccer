@@ -21,6 +21,10 @@ export function archivePlayback(record: MatchRecord): MatchPlayback {
       side: event?.side || 0,
       player: 0,
       action: event?.action || '기록 요약',
+      period: minute <= 45 ? 1 : 2,
+      label: String(minute),
+      pace: 1,
+      onPitch: [[], []],
     };
   });
   frames[89].score = record.score;

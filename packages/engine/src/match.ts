@@ -1,7 +1,6 @@
 import type {
   Club,
   Fixture,
-  MatchEvent,
   MatchPlayback,
   MatchRecord,
   Player,
@@ -9,7 +8,6 @@ import type {
   World,
 } from '../../contracts/src/types';
 import { clamp, integer, random, zeroMetrics } from './primitives';
-import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../contracts/src/detail';
 import type { PlayTrait, RoleId } from '../../contracts/src/player';
 import {
   cohesionMultiplier,
@@ -26,8 +24,10 @@ import { npcTactic, ownTacticalProfile, tacticalProfile, type TacticalProfile } 
 import { managerStyleEffects, type StyleEffects } from './styles';
 import { synergyEffects, type SynergyEffects } from './synergy';
 import { buildEffects } from './build';
-import { MatchMotion } from './motion';
-export { MATCH_MOTION_CONFIG, motionTraits, teamMotionProfile, visibleEvents } from './motion';
+import { playGrid } from './grid/engine';
+import { buildFrames } from './grid/playback';
+import { buildGridSetup, type DecideRule } from './grid/setup';
+export { MATCH_MOTION_CONFIG, motionTraits, teamMotionProfile } from './grid/playback';
 export const METRICS = [
   '득점',
   '도움',
@@ -44,9 +44,8 @@ export const METRICS = [
 ];
 
 type Side = 0 | 1;
-type Zone = 0 | 1 | 2;
 /** Skill offsets in the per-slot effective-skill table. */
-/** The attributes a duel reads, per starting slot (→MATCH-11). */
+/** The attributes a chance reads, per starting slot (→MATCH-11). */
 const FINISH = 0,
   PASS = 1,
   VISION = 2,
@@ -120,13 +119,12 @@ export const TRAIT_ACTION: Partial<Record<PlayTrait, Partial<Record<MatchAction,
   tackler: { press: 1.2 },
   buildup: { key: 1.1 },
 };
+/** Offsets in MATCH_ACTIONS order; 3 (dribble) and 6 (press) only pick in the grid engine. */
 const SHOT = 0,
   BOX = 1,
   LONG = 2,
-  DRIBBLES = 3,
   CROSSES = 4,
   KEY_PASS = 5,
-  PRESS = 6,
   AERIAL = 7,
   RUN = 8,
   HOLD = 9,
@@ -160,39 +158,10 @@ export function actionWeight(role: RoleId, traits: readonly PlayTrait[], action:
 }
 
 /**
- * Named tuning surface for the duel chain. Starting XI slots: 0 GK, 1–4 DEF, 5–7 MID, 8–10 FWD.
- * Zones follow the attacking direction: 0 build-up, 1 midfield, 2 final third.
+ * Named tuning surface for the probabilistic path's chance model (→MATCH-22) and the strength
+ * curve both engines share. Starting XI slots: 0 GK, 1–4 DEF, 5–7 MID, 8–10 FWD.
  */
 export const MATCH_DUEL_CONFIG = {
-  /** Pass attempts planned for one possession minute; a turnover ends the chain early. */
-  passes: [11, 21] as const,
-  /** Share of passes that try to move the ball into the next zone. */
-  progressive: { balanced: 0.34, possession: 0.26, counter: 0.46, press: 0.38 } as Record<
-    Tactic,
-    number
-  >,
-  /** Share of passes played back into the previous zone to recycle possession. */
-  backward: 0.16,
-  progressivePenalty: 0.07,
-  recyclingBonus: 0.035,
-  /** Percentage-point weight of one passing/defense point against the team accuracy. */
-  passerWeight: 1 / 380,
-  markerWeight: 1 / 420,
-  /**
-   * A failed pass is lost to the marker this often (the first part counts as a tackle on the
-   * passer, the rest as an interception); otherwise a teammate recovers the loose ball.
-   */
-  tackleShare: 0.22,
-  interceptShare: 0.5,
-  /** Share of midfield/final-third actions by a midfielder or forward that are dribbles. */
-  dribbleShare: 0.08,
-  /**
-   * A flank player's final-third pass is a cross this often before his weight (about a dozen a
-   * side a match); its completion between equal players is `crossSuccess`, the crosser's 크로스
-   * against the defender's 공중볼 and the keeper's 공중볼 처리.
-   */
-  crossShare: 0.36,
-  crossSuccess: 0.24,
   /** A chance made by a flank player is a cross this often before his weight: then a header. */
   crossChance: 0.35,
   /**
@@ -232,7 +201,6 @@ export const MATCH_DUEL_CONFIG = {
   finishing: 90,
   sharpness: 400,
   onTarget: 0.4,
-  block: 0.25,
   /** Key-duel and finishing margins between two players bend towards this many points (tanh). */
   saturation: 30,
   /**
@@ -258,17 +226,6 @@ export const MATCH_DUEL_CONFIG = {
   drainPerStamina: 1 / 12,
   pressDrain: 1.3,
   /**
-   * Where each tactic defends: pass success taken off the opponent while it builds up in its own
-   * two thirds (`high`) and while it attacks the final third (`low`). Pressing wins the ball high
-   * and leaves space behind; a counter side cedes the build-up and stays compact.
-   */
-  lines: {
-    balanced: { high: 0, low: 0 },
-    possession: { high: 0.02, low: 0 },
-    counter: { high: -0.03, low: 0.035 },
-    press: { high: 0.07, low: 0 },
-  } as Record<Tactic, { high: number; low: number }>,
-  /**
    * A minute that starts with the ball just won in the opponent's third: the chance rate rises by
    * this factor and the chance is a big one this much more often.
    */
@@ -276,15 +233,13 @@ export const MATCH_DUEL_CONFIG = {
 } as const;
 
 /**
- * Who carries the ball in each zone and who marks there, from a side's formation lines: defenders
- * build up, midfielders carry through the middle, forwards, the central midfielder and the flank
- * players who attack (wide midfielders, wing-backs, overlapping full-backs) reach the final third;
- * forwards mark the build-up, midfielders the middle, defenders the final third.
+ * Who carries the ball into the final third and who defends there, from a side's formation lines:
+ * forwards, the central midfielder and the flank players who attack (wide midfielders, wing-backs,
+ * overlapping full-backs) carry it; the defenders face them.
  */
 interface SideLines {
-  carriers: readonly (readonly number[])[];
-  markers: readonly (readonly number[])[];
-  kickoff: number;
+  finalThird: readonly number[];
+  defenders: readonly number[];
   line: readonly string[];
   /** Flank slots, whose final-third passes may be crosses. */
   wide: readonly boolean[];
@@ -311,9 +266,8 @@ function sideLines(tactic: Tactic): SideLines {
       wide[i] && (line[i] === 'MF' || ATTACKING_FLANK.has(slot.role)) ? [i] : [],
     );
     lines = {
-      carriers: [df, mf, [...fw, central, ...flank]],
-      markers: [fw, mf, df],
-      kickoff: central,
+      finalThird: [...fw, central, ...flank],
+      defenders: df,
       line,
       wide,
       roles: slots.map((slot) => slot.role),
@@ -349,11 +303,7 @@ function weighted(
 }
 const OUTFIELD: readonly number[] = Array.from({ length: 10 }, (_, i) => i + 1);
 
-/** Seconds of the minute for event `index` of `count`, spaced evenly inside the minute. */
-const eventTime = (index: number, count: number) =>
-  Math.round((3 + ((index + 0.5) * 54) / Math.max(1, count)) * 10) / 10;
-
-// Shared chance model: the duel chain and the team-level summary resolve chances with the same
+// Shared chance model: the team-level summary and the grid engine's finishing use the same
 // functions, so both paths follow one calibrated strength curve (docs/CALIBRATION.md).
 const C = MATCH_DUEL_CONFIG;
 /** Diminishing returns on a skill margin: about linear up to half the saturation, then flat. */
@@ -361,15 +311,6 @@ export const bend = (margin: number) => C.saturation * Math.tanh(margin / C.satu
 /** The strength gap a match plays at: close to the gap up to ~15 points, never past the cap. */
 export const effectiveGap = (gap: number) =>
   gap / Math.sqrt(Math.sqrt(1 + (gap / C.gapSaturation) ** 4));
-/**
- * The other side starts a minute with the ball though no duel won it: the ball went out of play off
- * the side that held it (MATCH-12). After a shot it went behind off the keeper or a defender (a
- * corner); from the final third past the byline (a goal kick); anywhere else over a touchline (a
- * throw-in). Nothing is drawn, so outcomes stay where they were.
- */
-const restartKind = (carrier: { zone: Zone; shot?: number }): NonNullable<MatchEvent['restart']> =>
-  carrier.shot !== undefined ? 'corner' : carrier.zone === 2 ? 'goalKick' : 'throwIn';
-
 /** The home side's chance to hold a minute once score effects shift the ball to the side behind. */
 const possessionAt = (chance: number, metrics: number[][]) =>
   chance - C.leadPossession * clamp(metrics[0][0] - metrics[1][0], -2, 2);
@@ -457,8 +398,7 @@ export interface MatchSetup {
   multiplier: ((p: Player) => number)[];
   profiles: TacticalProfile[];
   possessionChance: number;
-  /** Where each side defends and how fast it tires: the tactic line plus the own build's cards. */
-  lines: { high: number; low: number }[];
+  /** How fast each side tires: the own manager style's drain. */
   drain: number[];
 }
 
@@ -506,15 +446,6 @@ export function prepareMatch(w: World, f: Fixture): Prepared {
       ? ownTacticalProfile(w, squads[side], tactics[side], tactics[1 - side])
       : tacticalProfile(squads[side], tactics[side], tactics[1 - side]),
   );
-  const lines = tactics.map((tactic, side) => {
-    const line = MATCH_DUEL_CONFIG.lines[tactic];
-    return side === ownSide
-      ? {
-          high: line.high + style!.lineHigh + synergy!.lineHigh,
-          low: line.low + style!.lineLow,
-        }
-      : line;
-  });
   const drain = [0, 1].map((side) => (side === ownSide ? style!.drain : 1));
   return {
     w,
@@ -528,7 +459,6 @@ export function prepareMatch(w: World, f: Fixture): Prepared {
       club.id === w.playerClub ? ownMultiplier : () => cohesionMultiplier(club),
     ),
     profiles,
-    lines,
     drain,
     possessionChance:
       clamp(
@@ -544,37 +474,36 @@ export function prepareMatch(w: World, f: Fixture): Prepared {
 }
 
 /**
- * Own-club matches and fixtures whose players are recorded (own league scorers) play the duel
- * chain; every other fixture resolves with the same team formula without naming players.
+ * Which engine plays fixtures between other clubs of the own league, whose players are recorded
+ * (→MATCH-22); T224 sets it from the measured season budget.
+ */
+export const OWN_LEAGUE_ENGINE: 'grid' | 'summary' = 'grid';
+
+/**
+ * The own club's matches play the grid engine, and so do own-league fixtures while
+ * `OWN_LEAGUE_ENGINE` is the grid; every other fixture takes the probabilistic path. A fixture
+ * takes the same path observed or not (→MATCH-7, MATCH-22); observing only adds the frames.
+ * `decide` is a knockout tie's rule, passed through to the grid engine (extra time →T222).
  */
 export function simulateMatch(
   w: World,
   f: Fixture,
   observe = false,
   keepPlayers = false,
+  decide?: DecideRule,
 ): MatchPlayback {
-  const setup = prepareMatch(w, f);
-  const { teams, squads, tactics } = setup;
-  const [home, away] = teams;
-  const own = home.id === w.playerClub || away.id === w.playerClub;
-  if (!observe && !keepPlayers && !own) return summaryMatch(setup);
-  const motion = observe
-    ? new MatchMotion(
-        `${w.seed}:${f.id}`,
-        squads,
-        tactics,
-        teams.map((club, side) =>
-          club.id === w.playerClub
-            ? w.manager
-            : {
-                philosophy: tactics[side],
-                ability: clamp(club.strength + 10),
-                flexibility: 35 + (club.id.charCodeAt(club.id.length - 1) % 40),
-              },
-        ) as ConstructorParameters<typeof MatchMotion>[3],
-      )
-    : undefined;
-  return duelMatch(setup, motion, keepPlayers || observe);
+  const own = f.home === w.playerClub || f.away === w.playerClub;
+  if (own || (keepPlayers && OWN_LEAGUE_ENGINE === 'grid')) {
+    // Lines are always kept here: recordMatch saves the own ones, the scorer table reads the rest.
+    const setup = buildGridSetup(w, f, { observe, recordPlayers: true, ...(decide && { decide }) });
+    const result = playGrid(setup);
+    return {
+      record: result.record,
+      frames: observe ? buildFrames(result, setup, w.seed) : [],
+      squads: setup.rosters,
+    };
+  }
+  return summaryMatch(prepareMatch(w, f));
 }
 
 /**
@@ -651,8 +580,7 @@ function matchSkills({ squads, tactics, multiplier, drain: drains, shift }: Matc
       return share;
     };
   };
-  const dribbles = shares(DRIBBLES, (line) => line === 'MF' || line === 'FW'),
-    crosses = shares(CROSSES, (line, wide) => wide && line !== 'GK');
+  const crosses = shares(CROSSES, (line, wide) => wide && line !== 'GK');
   const drain = squads.map((ps, side) => {
     const rate = new Float64Array(11);
     for (let slot = 0; slot < 11; slot++)
@@ -689,9 +617,6 @@ function matchSkills({ squads, tactics, multiplier, drain: drains, shift }: Matc
   /** The box target for a cross from `from`, never the crosser himself. */
   const chooseHeader = (side: Side, u: number, from: number) =>
     weighted(OUTFIELD, u, headers(side), 1, 0, from);
-  /** The marker who closes a carrier down in `zone`: whoever presses hardest most often. */
-  const chooseMarker = (side: Side, zone: Zone, u: number) =>
-    weighted(sideLines(tactics[side]).markers[zone]!, u, actions[side], ACTIONS, PRESS);
   // How often a final-third pass finds each slot: playmakers and target men most (→MATCH-11).
   const receive = actions.map((table) => {
     const out = new Float64Array(11);
@@ -700,19 +625,10 @@ function matchSkills({ squads, tactics, multiplier, drain: drains, shift }: Matc
     return out;
   });
   return {
-    base,
     skill,
-    chooseHeader,
-    chooseMarker,
-    /** The defender who attacks a cross: the best in the air most often. */
-    chooseAerial: (side: Side, u: number) =>
-      weighted(sideLines(tactics[side]).markers[2]!, u, actions[side], ACTIONS, AERIAL),
     /** The final-third receiver of a pass from `from` among `pool`. */
     chooseReceiver: (side: Side, pool: readonly number[], u: number, from: number) =>
       weighted(pool, u, receive[side]!, 1, 0, from),
-    /** A carrier's chance of a dribble, of a cross from the final third. */
-    dribbleShare: (side: Side, slot: number) => C.dribbleShare * dribbles(side)[slot]!,
-    crossShare: (side: Side, slot: number) => C.crossShare * crosses(side)[slot]!,
     /**
      * How a chance is made from the ball `carrier` holds (→MATCH-11): a flank player crosses as
      * often as his weight says and the best header attacks it; otherwise the shooter is drawn by
@@ -732,7 +648,7 @@ function matchSkills({ squads, tactics, multiplier, drain: drains, shift }: Matc
         if (run > 0 && r() < run * C.runShare) shooter = carrier;
       }
       const creator = shooter === carrier ? undefined : carrier;
-      const markers = sideLines(tactics[other]).markers[2]!;
+      const markers = sideLines(tactics[other]).defenders;
       // A cross is met by the best in the air; anything else by whoever faces it.
       const defender = cross
         ? weighted(markers, r(), actions[other], ACTIONS, AERIAL)
@@ -781,8 +697,8 @@ function matchSkills({ squads, tactics, multiplier, drain: drains, shift }: Matc
 }
 
 /**
- * Team-level minutes for fixtures nobody watches or records players for: the duel chain's chance
- * model without the pass-by-pass build-up, so both paths score on the same curve.
+ * Team-level minutes for fixtures the grid engine does not play (→MATCH-22): a calibrated chance
+ * model without the touches, on the same strength curve.
  */
 function summaryMatch(setup: MatchSetup) {
   const { f, r, squads, strength, tactics, profiles, possessionChance } = setup;
@@ -812,8 +728,8 @@ function summaryMatch(setup: MatchSetup) {
       continue;
     }
     // The final ball comes from whoever carries it into the final third, the playmakers most
-    // often; the duel chain's chance model decides the rest (a cross, a run, the shooter).
-    const carrier = chooseReceiver(side, sideLines(tactics[side]).carriers[2]!, r(), -1);
+    // often; the chance model decides the rest (a cross, a run, the shooter).
+    const carrier = chooseReceiver(side, sideLines(tactics[side]).finalThird, r(), -1);
     const made = shapeChance(side, carrier, minute, r);
     const shooter = made.shooter,
       solo = made.creator === undefined;
@@ -856,521 +772,4 @@ function summaryMatch(setup: MatchSetup) {
     tactics,
   };
   return { record, frames: [], squads };
-}
-
-/** Every action of a possession minute is a duel between named players (MATCH-11). */
-function duelMatch(
-  setup: MatchSetup,
-  motion: MatchMotion | undefined,
-  recordPlayers: boolean,
-): MatchPlayback {
-  const { f, r, squads, strength, tactics, profiles, possessionChance, lines } = setup;
-  const c = MATCH_DUEL_CONFIG;
-  const observe = !!motion;
-  const metrics: [number[], number[]] = [zeroMetrics(), zeroMetrics()];
-  const contributions = squads.map((ps) => ps.map(() => zeroMetrics()));
-  // Advanced counters (MATCH-13): team rows follow TD, player rows follow PD.
-  const team: [number[], number[]] = [emptyTeamDetail(), emptyTeamDetail()];
-  const personal = squads.map((ps) => ps.map(() => emptyPlayerDetail()));
-  const frames: MatchPlayback['frames'] = [];
-  const highlights: MatchRecord['highlights'] = [];
-  const xg: [number, number] = [0, 0];
-  const skills = matchSkills(setup),
-    base = skills.base;
-  let minute = 0;
-  const skill = (side: Side, slot: number, key: number) => skills.skill(side, slot, key, minute);
-  const credit = (side: Side, slot: number, metric: number) => {
-    const row = contributions[side][slot];
-    if (row) row[metric]++;
-  };
-  const note = (side: Side, slot: number, key: number, amount = 1) => {
-    const row = personal[side][slot];
-    if (row) row[key] += amount;
-  };
-  /** The other side won the ball from `side` in `zone`, by `slot`. */
-  const regain = (side: Side, zone: Zone, slot: number) => {
-    const winner: Side = side === 0 ? 1 : 0;
-    if (zone <= 1) team[winner][TD.pressActions]++;
-    if (zone === 0) {
-      team[winner][TD.highTurnovers]++;
-      note(winner, slot, PD.highTurnovers);
-    }
-  };
-  // xG is recorded for an average finisher and keeper of this match's level, so goals minus xG
-  // shows real finishing, goalkeeping and the day's form instead of a constant gap in weaker
-  // leagues.
-  const forwards = [0, 1].map((side) => sideLines(tactics[side]).markers[0]);
-  const levelShooting =
-      base.reduce(
-        (sum, table, side) =>
-          sum + forwards[side]!.reduce((s, slot) => s + table[slot * KEYS + FINISH], 0),
-        0,
-      ) / Math.max(1, forwards[0]!.length + forwards[1]!.length),
-    levelKeeping = (base[0][KEEP] + base[1][KEEP]) / 2;
-  const levelFactor = finishing(levelShooting, levelKeeping);
-  /**
-   * Who holds the ball as the minute ends; absent after a goal, when play restarts at kickoff.
-   * After a shot, `shot` is the defender or keeper who touched it last.
-   */
-  let carrier: { side: Side; slot: number; zone: Zone; won?: boolean; shot?: number } | undefined;
-  for (minute = 1; minute <= 90; minute++) {
-    const side: Side = r() < possessionAt(possessionChance, metrics) ? 0 : 1;
-    const other: Side = side === 0 ? 1 : 0;
-    const planned = integer(r, c.passes[0], c.passes[1]);
-    const accuracy =
-      clamp(
-        68 +
-          strength[side] / 6 +
-          profiles[side].pass -
-          profiles[other].pressure +
-          integer(r, -8, 8),
-        35,
-        96,
-      ) / 100;
-    const chanceRate = clamp(18 + profiles[side].shot - profiles[other].defense, 7, 30) / 100;
-    // Winning the ball in the opponent's third and keeping it is the best playmaker.
-    const transition = !!carrier?.won && carrier.side === side && carrier.zone === 2;
-    const chance =
-      r() < attemptChance(chanceRate, transition, metrics[side][0] - metrics[other][0]);
-    metrics[side][11]++;
-    let zone: Zone, slot: number;
-    let restart: MatchEvent | undefined;
-    if (!carrier) {
-      zone = 1;
-      slot = sideLines(tactics[side]).kickoff;
-    } else if (carrier.side === side) {
-      zone = carrier.zone;
-      slot = carrier.slot;
-    } else {
-      // The ball went out off the other side where it held it: deep for them is high up for us.
-      zone = (2 - carrier.zone) as Zone;
-      slot = pick(sideLines(tactics[side]).carriers[zone], r());
-      if (observe)
-        restart = {
-          t: 0,
-          kind: 'restart',
-          restart: restartKind(carrier),
-          side,
-          actor: slot,
-          opponent: carrier.shot ?? carrier.slot,
-          zone,
-        };
-    }
-    carrier = undefined;
-    const events: MatchEvent[] | undefined = observe ? (restart ? [restart] : []) : undefined;
-    let action = '패스',
-      actor = slot,
-      lastPasser: number | undefined,
-      ended = false;
-    // A chance minute is a direct attack: a short build-up, then one key duel and a shot.
-    const passes = chance
-      ? 1 + Math.floor(r() * (tactics[side] === 'possession' ? 5 : 3))
-      : planned;
-    const progressive = c.progressive[tactics[side]];
-    let lost = 1;
-    for (let i = 0; i < passes && !ended; i++) {
-      const u = r();
-      const ownLine = sideLines(tactics[side]).line[slot];
-      const canDribble = !chance && zone >= 1 && (ownLine === 'MF' || ownLine === 'FW');
-      // A technician or a winger takes his man on more often than the side's other carriers.
-      const dribbleShare = canDribble ? Math.min(0.5, skills.dribbleShare(side, slot)) : 0;
-      if (canDribble && u < dribbleShare) {
-        const defender = skills.chooseMarker(other, zone, u / dribbleShare);
-        const beat = clamp(
-          0.55 +
-            (skill(side, slot, DRIBBLE) * 0.7 +
-              skill(side, slot, PACE) * 0.3 -
-              (skill(other, defender, TACKLE) * 0.7 + skill(other, defender, PACE) * 0.3)) /
-              140,
-          0.2,
-          0.85,
-        );
-        const ok = r() < beat;
-        team[side][TD.takeOns]++;
-        note(side, slot, PD.takeOns);
-        if (ok) {
-          metrics[side][8]++;
-          credit(side, slot, 8);
-          zone = Math.min(2, zone + 1) as Zone;
-          action = '돌파';
-          actor = slot;
-        } else {
-          metrics[other][6]++;
-          credit(other, defender, 6);
-          regain(side, zone, defender);
-          carrier = { side: other, slot: defender, zone: (2 - zone) as Zone, won: true };
-          action = '태클';
-          actor = defender;
-          ended = true;
-        }
-        events?.push({
-          t: 0,
-          kind: 'dribble',
-          side,
-          actor: slot,
-          opponent: defender,
-          ok,
-          lost: !ok,
-          zone,
-        });
-        continue;
-      }
-      // A flank player in the final third crosses: the best header attacks it, a defender heads
-      // it clear (→MATCH-11).
-      const crossShare = !chance && zone === 2 ? Math.min(0.9, skills.crossShare(side, slot)) : 0;
-      if (crossShare > 0 && r() < crossShare) {
-        const target = skills.chooseHeader(side, r(), slot);
-        const marker = skills.chooseAerial(other, r());
-        const delivered = clamp(
-          c.crossSuccess +
-            (skill(side, slot, CROSS) -
-              (skill(other, marker, HEAD) * 0.7 + skill(other, 0, HANDLE) * 0.3)) /
-              150,
-          0.1,
-          0.6,
-        );
-        metrics[side][2]++;
-        credit(side, slot, 2);
-        team[side][TD.finalThirdPasses]++;
-        note(side, slot, PD.finalThirdPasses);
-        if (r() < delivered) {
-          metrics[side][3]++;
-          credit(side, slot, 3);
-          team[side][TD.finalThirdCompleted]++;
-          note(side, slot, PD.finalThirdCompleted);
-          events?.push({
-            t: 0,
-            kind: 'pass',
-            side,
-            actor: slot,
-            receiver: target,
-            opponent: marker,
-            ok: true,
-            cross: true,
-            zone: 2,
-          });
-          lastPasser = slot;
-          slot = target;
-          action = '크로스';
-          actor = slot;
-        } else {
-          metrics[other][7]++;
-          credit(other, marker, 7);
-          regain(side, zone, marker);
-          events?.push({
-            t: 0,
-            kind: 'pass',
-            side,
-            actor: slot,
-            receiver: target,
-            opponent: marker,
-            ok: false,
-            lost: true,
-            cross: true,
-            zone: 2,
-          });
-          carrier = { side: other, slot: marker, zone: 0, won: true };
-          action = '인터셉트';
-          actor = marker;
-          ended = true;
-        }
-        continue;
-      }
-      // One draw picks the direction (forward, square, back) and who receives it.
-      const v = canDribble ? (u - dribbleShare) / (1 - dribbleShare) : u;
-      const low = zone < 2 ? progressive : 0,
-        high = zone > 0 ? 1 - c.backward : 1;
-      const forward = v < low,
-        back = v >= high;
-      const target = (forward ? zone + 1 : back ? zone - 1 : zone) as Zone;
-      const pool = sideLines(tactics[side]).carriers[target];
-      const within = forward ? v / low : back ? (v - high) / c.backward : (v - low) / (high - low);
-      // Into the final third the ball finds playmakers and target men most often.
-      let receiver =
-        target === 2 ? skills.chooseReceiver(side, pool, within, slot) : pick(pool, within)!;
-      if (receiver === slot) receiver = pool[(pool.indexOf(receiver) + 1) % pool.length];
-      // Whoever presses hardest closes the passer down most often.
-      const marker = skills.chooseMarker(other, zone, r());
-      // A forward pass reads 시야, a keeper's pass 발밑, any other pass 패스 (→MATCH-11).
-      const passing = slot === 0 ? DISTRIBUTE : forward ? VISION : PASS;
-      const success = clamp(
-        accuracy +
-          (skill(side, slot, passing) - 55) * c.passerWeight -
-          (skill(other, marker, POSITION) - 55) * c.markerWeight +
-          (forward ? -c.progressivePenalty : c.recyclingBonus) -
-          (zone <= 1 ? lines[other].high : lines[other].low),
-        0.3,
-        0.97,
-      );
-      metrics[side][2]++;
-      credit(side, slot, 2);
-      if (zone <= 1) team[side][TD.buildUpPasses]++;
-      else {
-        team[side][TD.finalThirdPasses]++;
-        note(side, slot, PD.finalThirdPasses);
-      }
-      if (r() < success) {
-        metrics[side][3]++;
-        credit(side, slot, 3);
-        if (zone === 2) {
-          team[side][TD.finalThirdCompleted]++;
-          note(side, slot, PD.finalThirdCompleted);
-        }
-        if (forward) {
-          team[side][TD.progressivePasses]++;
-          note(side, slot, PD.progressivePasses);
-        }
-        events?.push({
-          t: 0,
-          kind: 'pass',
-          side,
-          actor: slot,
-          receiver,
-          opponent: marker,
-          ok: true,
-          zone: target,
-        });
-        lastPasser = slot;
-        slot = receiver;
-        zone = target;
-        action = '패스';
-        actor = slot;
-      } else if ((lost = chance ? 1 : r()) < c.interceptShare) {
-        // The marker closes the passer down (a tackle) or reads the pass (an interception).
-        const tackled = lost < c.tackleShare;
-        metrics[other][tackled ? 6 : 7]++;
-        credit(other, marker, tackled ? 6 : 7);
-        regain(side, zone, marker);
-        events?.push({
-          t: 0,
-          kind: 'pass',
-          side,
-          actor: slot,
-          receiver: tackled ? undefined : receiver,
-          opponent: marker,
-          ok: false,
-          lost: true,
-          zone,
-        });
-        carrier = { side: other, slot: marker, zone: (2 - zone) as Zone, won: true };
-        action = tackled ? '태클' : '인터셉트';
-        actor = marker;
-        ended = true;
-      } else {
-        // A loose ball: the intended receiver's line recovers it where it landed.
-        events?.push({
-          t: 0,
-          kind: 'pass',
-          side,
-          actor: slot,
-          receiver,
-          opponent: marker,
-          ok: false,
-          zone,
-        });
-        lastPasser = undefined;
-        slot = receiver;
-        actor = slot;
-      }
-    }
-    if (chance && !ended) {
-      const made = skills.shapeChance(side, slot, minute, r);
-      const { shooter, creator, defender, margin } = made;
-      const flags = made.cross ? { cross: true } : {};
-      const key = keyChance(margin);
-      // The final ball is an attacking-third pass; a solo run is a take-on.
-      if (creator !== undefined) {
-        metrics[side][2]++;
-        credit(side, creator, 2);
-        team[side][TD.finalThirdPasses]++;
-        note(side, creator, PD.finalThirdPasses);
-      } else {
-        team[side][TD.takeOns]++;
-        note(side, shooter, PD.takeOns);
-      }
-      if (made.swept || r() >= key) {
-        // The marker reads the final ball or stops the run, or the sweeper keeper comes off his
-        // line for it: the chance never becomes a shot.
-        const stopper = made.swept ? 0 : defender;
-        if (creator !== undefined || made.swept) {
-          metrics[other][7]++;
-          credit(other, stopper, 7);
-          action = '인터셉트';
-        } else {
-          metrics[other][6]++;
-          credit(other, stopper, 6);
-          action = '태클';
-        }
-        events?.push({
-          t: 0,
-          kind: creator === undefined ? 'dribble' : 'pass',
-          side,
-          actor: creator ?? shooter,
-          receiver: creator === undefined ? undefined : shooter,
-          opponent: stopper,
-          ok: false,
-          lost: true,
-          ...flags,
-          zone: 2,
-        });
-        carrier = { side: other, slot: stopper, zone: 0 };
-        actor = stopper;
-      } else {
-        if (creator !== undefined) {
-          metrics[side][3]++;
-          credit(side, creator, 3);
-          team[side][TD.finalThirdCompleted]++;
-          note(side, creator, PD.finalThirdCompleted);
-          if (zone < 2) {
-            team[side][TD.progressivePasses]++;
-            note(side, creator, PD.progressivePasses);
-          }
-          lastPasser = creator;
-          events?.push({
-            t: 0,
-            kind: 'pass',
-            side,
-            actor: creator,
-            receiver: shooter,
-            opponent: defender,
-            ok: true,
-            ...flags,
-            zone: 2,
-          });
-        } else {
-          metrics[side][8]++;
-          credit(side, shooter, 8);
-          // Beating the last man alone makes the chance his own: no key pass, no assist.
-          lastPasser = undefined;
-          events?.push({
-            t: 0,
-            kind: 'dribble',
-            side,
-            actor: shooter,
-            opponent: defender,
-            ok: true,
-            zone: 2,
-          });
-        }
-        const quality = chanceQuality(r(), margin, transition, made.shape),
-          chanceXg = quality.xg;
-        const shooting = made.shooting;
-        const goal = goalChance(chanceXg, shooting, skill(other, 0, KEEP)),
-          onTarget = targetChance(goal, shooting);
-        const blockChance = clamp(
-          c.block + (skill(other, defender, POSITION) - 55) / 300,
-          0.05,
-          0.5,
-        );
-        const shotXg = Math.min(0.8, chanceXg * levelFactor);
-        xg[side] += shotXg;
-        metrics[side][4]++;
-        credit(side, shooter, 4);
-        const bigChance = quality.big,
-          shotXg100 = Math.round(shotXg * 100);
-        if (bigChance) team[side][TD.bigChances]++;
-        if (quality.box) team[side][TD.boxShots]++;
-        note(side, shooter, PD.xg, shotXg100);
-        // The last completed pass before the shot is the key pass; it earns the shot's xG as xA.
-        if (lastPasser !== undefined) {
-          team[side][TD.keyPasses]++;
-          note(side, lastPasser, PD.keyPasses);
-          note(side, lastPasser, PD.xa, shotXg100);
-          if (bigChance) note(side, lastPasser, PD.bigChancesCreated);
-        }
-        const shot = r();
-        let outcome: NonNullable<MatchEvent['outcome']>;
-        if (shot < onTarget) {
-          metrics[side][5]++;
-          credit(side, shooter, 5);
-          if (shot < goal) {
-            outcome = 'goal';
-            metrics[side][0]++;
-            credit(side, shooter, 0);
-            if (bigChance) team[side][TD.bigChancesScored]++;
-            if (lastPasser !== undefined) {
-              metrics[side][1]++;
-              credit(side, lastPasser, 1);
-            }
-            highlights.push({
-              minute,
-              side,
-              player: squads[side][Math.min(shooter, squads[side].length - 1)].name,
-              action: '골',
-            });
-            action = '골';
-          } else {
-            outcome = 'save';
-            metrics[other][9]++;
-            credit(other, 0, 9);
-            carrier = { side: other, slot: 0, zone: 0, shot: 0 };
-            action = '선방';
-          }
-        } else if ((shot - onTarget) / (1 - onTarget) < blockChance) {
-          outcome = 'block';
-          carrier = { side: other, slot: defender, zone: 0, shot: defender };
-          action = '슛';
-        } else {
-          outcome = 'miss';
-          // A goal kick; if the shooting side keeps the ball, it went wide off the defender.
-          carrier = { side: other, slot: 0, zone: 0, shot: defender };
-          action = '슛';
-        }
-        events?.push({
-          t: 0,
-          kind: 'shot',
-          side,
-          actor: shooter,
-          opponent: outcome === 'save' || outcome === 'goal' ? 0 : defender,
-          outcome,
-          ...(made.cross ? { header: true } : {}),
-          xg: Math.round(shotXg * 100) / 100,
-          zone: 2,
-        });
-        actor = shooter;
-      }
-    }
-    // Nothing lost and no shot: the same player keeps the ball into the next minute.
-    if (!ended && !chance) carrier = { side, slot, zone };
-    if (observe) {
-      events!.forEach((event, index) => (event.t = eventTime(index, events!.length)));
-      const last = events!.at(-1);
-      const owner: Side = last?.lost ? other : side;
-      const frame: MatchPlayback['frames'][number] = {
-        minute,
-        score: { home: metrics[0][0], away: metrics[1][0] },
-        metrics: [metrics[0].slice(), metrics[1].slice()],
-        ball: [owner === 0 ? 30 + zone * 25 : 70 - zone * 25, 50],
-        side,
-        player: actor,
-        action,
-        events,
-        xg: [Math.round(xg[0] * 100) / 100, Math.round(xg[1] * 100) / 100],
-      };
-      Object.assign(frame, motion!.minute(frame));
-      frames.push(frame);
-    }
-  }
-  metrics[0][10] = 90;
-  metrics[1][10] = 90;
-  for (const ps of contributions) for (const s of ps) s[10] = 90;
-  const record: MatchRecord = {
-    ...f,
-    score: { home: metrics[0][0], away: metrics[1][0] },
-    metrics,
-    xg: [Math.round(xg[0] * 100) / 100, Math.round(xg[1] * 100) / 100],
-    detail: team,
-    players: recordPlayers
-      ? squads.flatMap((ps, side) =>
-          ps.map((p, i) => ({
-            id: p.id,
-            metrics: contributions[side][i],
-            detail: personal[side][i],
-          })),
-        )
-      : [],
-    highlights,
-    tactics,
-  };
-  return { record, frames, squads };
 }

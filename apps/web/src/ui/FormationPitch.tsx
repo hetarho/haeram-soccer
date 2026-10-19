@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Position } from '../../../../packages/contracts/src/player';
 import type { Tactic } from '../../../../packages/contracts/src/types';
-import { MATCH_MOTION_CONFIG } from '../../../../packages/engine/src/motion';
+import { MATCH_MOTION_CONFIG } from '../../../../packages/engine/src/grid/playback';
 import { FORMATIONS } from '../../../../packages/engine/src/player';
 import s from './FormationPitch.module.css';
 

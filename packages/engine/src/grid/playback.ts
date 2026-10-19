@@ -5,72 +5,25 @@
  * draws from its own stream, never the match's.
  */
 import type {
+  Manager,
+  MatchEvent,
   MatchFrame,
   MatchMotionSample,
   Metrics,
+  Player,
   PlayerMotion,
   PlayerMotionState,
+  Tactic,
 } from '../../../contracts/src/types';
+import { FORMATIONS } from '../player';
 import { clamp, random } from '../primitives';
 import { describe } from './commentary';
 import type { GridResult } from './engine';
 import { attackFrame, bandOf, PITCH } from './pitch';
 import { M, RUNNING } from './record';
 import type { GridSetup } from './setup';
+import { SPOTS } from './spots';
 import type { TraceEntry } from './trace';
-
-/** One event of a minute (design §2.4); T218 moves it to the contracts as `MatchEvent`. */
-export interface PlaybackEvent {
-  /** Seconds into the minute, 0–60. */
-  t: number;
-  kind:
-    | 'kickoff'
-    | 'pass'
-    | 'cross'
-    | 'cutBack'
-    | 'carry'
-    | 'takeOn'
-    | 'shot'
-    | 'clearance'
-    | 'holdUp'
-    | 'restart'
-    | 'foul'
-    | 'card'
-    | 'sub'
-    | 'injury'
-    | 'offside'
-    | 'whistle';
-  /** The acting side. */
-  side: 0 | 1;
-  /** Player id; empty for a whistle. */
-  actor: string;
-  receiver?: string;
-  opponent?: string;
-  /** Playback units of the minute's period. */
-  from: [number, number];
-  to: [number, number];
-  ok?: boolean;
-  lost?: boolean;
-  outcome?: 'goal' | 'save' | 'block' | 'miss';
-  restart?: 'kickoff' | 'throwIn' | 'goalKick' | 'corner' | 'freeKick' | 'penalty';
-  card?: 'yellow' | 'red';
-  xg?: number;
-  header?: boolean;
-  /** Korean commentary (design §10.3). */
-  text: string;
-}
-
-/** One match minute (design §2.4); the existing `MatchFrame` fields keep their meaning. */
-export interface PlaybackFrame extends Omit<MatchFrame, 'events'> {
-  events?: PlaybackEvent[];
-  period: 1 | 2 | 3 | 4;
-  /** '23', '45+2', '90+4', '105+1'. */
-  label: string;
-  /** Presentation weight, mean 1 over the match (design §10.4). */
-  pace: number;
-  /** Player ids on the pitch at the minute's end, in slot order where filled. */
-  onPitch: [string[], string[]];
-}
 
 /** Motion states by the index a trace entry stores them under. */
 export const MOTION_STATES = [
@@ -245,6 +198,145 @@ const lerp = (a: Units, b: Units, f: number): Units => [
 const gap = (a: Units, b: Units) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 const tenth = (n: number) => Math.round(n * 10) / 10;
 const hundredth = (n: number) => Math.round(n * 100) / 100;
+const unit = (n: number) => clamp(n, 0, 1);
+
+/**
+ * What the UI draws beside the playback: each tactic's formation spots in pitch units (from
+ * `SPOTS`, slot order, attacking left to right), the ball's peak height, and the implicit
+ * tendencies the player inspector shows (`motionTraits`, `teamMotionProfile`).
+ */
+export const MATCH_MOTION_CONFIG = {
+  ball: { maxLoft: PLAYBACK_CONFIG.flight.maxLoft },
+  formations: {
+    balanced: SPOTS.balanced.map(units),
+    possession: SPOTS.possession.map(units),
+    counter: SPOTS.counter.map(units),
+    press: SPOTS.press.map(units),
+  } as Record<Tactic, readonly Units[]>,
+  traits: {
+    innateWeight: 0.25,
+    disciplineDefense: 0.42,
+    disciplinePassing: 0.18,
+    creativityAttack: 0.28,
+    creativityPassing: 0.3,
+    aggressionDefense: 0.28,
+    aggressionAttack: 0.2,
+    anticipationSkills: 0.5,
+    paceStamina: 0.45,
+    paceAttack: 0.15,
+  },
+  manager: {
+    appliedTacticWeight: 0.55,
+    flexibilityWeight: 0.35,
+    abilityCohesion: 0.22,
+    flexibilityFreedom: 0.22,
+  },
+  tactics: {
+    balanced: {
+      formation: FORMATIONS.balanced.name,
+      cohesion: 0.65,
+      freedom: 0.5,
+      pressing: 0.5,
+      risk: 0.5,
+      line: 0,
+    },
+    possession: {
+      formation: FORMATIONS.possession.name,
+      cohesion: 0.76,
+      freedom: 0.56,
+      pressing: 0.46,
+      risk: 0.48,
+      line: 4,
+    },
+    counter: {
+      formation: FORMATIONS.counter.name,
+      cohesion: 0.84,
+      freedom: 0.36,
+      pressing: 0.23,
+      risk: 0.77,
+      line: -8,
+    },
+    press: {
+      formation: FORMATIONS.press.name,
+      cohesion: 0.61,
+      freedom: 0.66,
+      pressing: 0.95,
+      risk: 0.72,
+      line: 7,
+    },
+  },
+} as const;
+
+/** Stable implicit personality; a new fixture never rerolls a player's tendencies. */
+export function motionTraits(player: Player) {
+  const r = random(`personality:${player.id}`);
+  const innate = {
+    freedom: r(),
+    discipline: r(),
+    aggression: r(),
+    anticipation: r(),
+    creativity: r(),
+    pace: r(),
+  };
+  const c = MATCH_MOTION_CONFIG.traits;
+  const a = player.attrs;
+  const attack = unit((a.finishing + a.dribbling) / 200),
+    passing = unit(a.passing / 100),
+    defense = unit((a.tackling + a.positioning) / 200);
+  const endurance = unit(a.stamina / 100);
+  return {
+    freedom: unit(0.15 + attack * 0.28 + passing * 0.16 + innate.freedom * c.innateWeight),
+    discipline: unit(
+      0.18 +
+        defense * c.disciplineDefense +
+        passing * c.disciplinePassing +
+        innate.discipline * c.innateWeight,
+    ),
+    aggression: unit(
+      0.15 +
+        defense * c.aggressionDefense +
+        attack * c.aggressionAttack +
+        endurance * 0.1 +
+        innate.aggression * c.innateWeight,
+    ),
+    anticipation: unit(
+      0.16 +
+        ((passing + defense) / 2) * c.anticipationSkills +
+        innate.anticipation * c.innateWeight,
+    ),
+    creativity: unit(
+      0.15 +
+        attack * c.creativityAttack +
+        passing * c.creativityPassing +
+        innate.creativity * c.innateWeight,
+    ),
+    pace: unit(
+      0.18 + endurance * c.paceStamina + attack * c.paceAttack + innate.pace * c.innateWeight,
+    ),
+    endurance,
+  };
+}
+
+export function teamMotionProfile(
+  tactic: Tactic,
+  manager: Pick<Manager, 'philosophy' | 'ability' | 'flexibility'>,
+) {
+  const c = MATCH_MOTION_CONFIG.manager;
+  const applied = c.appliedTacticWeight + unit(manager.flexibility / 100) * c.flexibilityWeight;
+  const tacticProfile = MATCH_MOTION_CONFIG.tactics[tactic],
+    philosophy = MATCH_MOTION_CONFIG.tactics[manager.philosophy];
+  const mix = (key: 'cohesion' | 'freedom' | 'pressing' | 'risk' | 'line') =>
+    tacticProfile[key] * applied + philosophy[key] * (1 - applied);
+  return {
+    formation: tacticProfile.formation,
+    cohesion: unit(mix('cohesion') + (unit(manager.ability / 100) - 0.5) * c.abilityCohesion),
+    freedom: unit(mix('freedom') + (unit(manager.flexibility / 100) - 0.5) * c.flexibilityFreedom),
+    pressing: unit(mix('pressing')),
+    risk: unit(mix('risk')),
+    line: mix('line'),
+    ability: unit(manager.ability / 100),
+  };
+}
 
 /** The last index whose value is at most `v`, or -1. */
 function lastAt(values: readonly number[], v: number): number {
@@ -520,7 +612,7 @@ function weightOf(label: string): number {
   return label === '골' ? 3 : label === '퇴장' ? 2 : NOTABLE.has(label) ? 1 : 0;
 }
 
-function kindOf(e: TraceEntry): PlaybackEvent['kind'] {
+function kindOf(e: TraceEntry): MatchEvent['kind'] {
   if (e.outcome === 'incident')
     return e.action === 'whistle'
       ? 'whistle'
@@ -530,14 +622,14 @@ function kindOf(e: TraceEntry): PlaybackEvent['kind'] {
   if (e.outcome === 'foul') return 'foul';
   if (e.outcome === 'offside') return 'offside';
   if (e.spot) return e.action === 'kickoff' ? 'kickoff' : 'restart';
-  return e.action as PlaybackEvent['kind'];
+  return e.action as MatchEvent['kind'];
 }
 
 /**
  * One frame per match minute of each period, added minutes included (design §10.2). `seed` is the
  * world seed; the flights' bend and loft come from `${seed}:${fixture}:ball-decisions`.
  */
-export function buildFrames(result: GridResult, setup: GridSetup, seed: string): PlaybackFrame[] {
+export function buildFrames(result: GridResult, setup: GridSetup, seed: string): MatchFrame[] {
   const trace = result.trace;
   if (!trace?.length) return [];
   const r = random(`${seed}:${setup.f.id}:ball-decisions`);
@@ -551,7 +643,7 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
     list.push(e);
     byPeriod.set(e.period, list);
   }
-  const frames: PlaybackFrame[] = [];
+  const frames: MatchFrame[] = [];
   const weights: number[] = [];
   let lead = { action: '패스', player: 0 };
   for (const [p, entries] of [...byPeriod].sort((a, b) => a[0] - b[0])) {
@@ -676,7 +768,7 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
         lead = { action: labelOf(leader), player: slot ?? 0 };
       }
 
-      const events = mine.map((i): PlaybackEvent => {
+      const events = mine.map((i): MatchEvent => {
         const e = entries[i]!;
         const kind = kindOf(e);
         const incident = e.outcome === 'incident';
@@ -708,7 +800,7 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
               ? 'left'
               : 'right'
             : undefined;
-        const ev: PlaybackEvent = {
+        const ev: MatchEvent = {
           t: tenth(clamp(((e.elapsed - start) / span) * 60, 0, 60)),
           kind,
           side,
@@ -734,7 +826,7 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
         if (e.result) ev.outcome = e.result;
         if (e.spot && e.action !== 'dropBall')
           ev.restart = (e.action === 'indirectFreeKick' ? 'freeKick' : e.action) as NonNullable<
-            PlaybackEvent['restart']
+            MatchEvent['restart']
           >;
         if (kind === 'card') ev.card = e.action === 'yellow' ? 'yellow' : 'red';
         if (e.xg !== undefined) ev.xg = hundredth(e.xg);

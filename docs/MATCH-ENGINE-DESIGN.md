@@ -53,7 +53,7 @@ Reference data:
 | `playback.ts` | trace to `MatchFrame[]` | T217 |
 
 - `packages/engine/src/match.ts` keeps `simulateMatch`, the setup of strength/form/shift (§3.1), the probabilistic path (`summaryMatch`, §11) and the path dispatch (§12). `duelMatch` and the zone helpers are deleted in T218.
-- `packages/engine/src/motion.ts` is replaced by `grid/playback.ts` in T217–T218. Its `MATCH_MOTION_CONFIG.formations` and `ball` sub-objects move to `grid/shape.ts` and `grid/playback.ts`, and stay re-exported under the same names for the UI (`FormationPitch.tsx` and `Pitch.tsx` import them).
+- `packages/engine/src/motion.ts` is replaced by `grid/playback.ts` in T217–T218. `MATCH_MOTION_CONFIG` now lives in `grid/playback.ts` (`formations` from `grid/spots.ts` in pitch units, `ball.maxLoft` from `PLAYBACK_CONFIG`) with `motionTraits` and `teamMotionProfile`, and `match.ts` re-exports them for the UI (`FormationPitch.tsx` and `Pitch.tsx` import them).
 
 ---
 
@@ -730,7 +730,7 @@ When `observe` is set, `trace.ts` appends one `TraceEntry` per action and restar
 
 ### 10.2 Frames
 
-`buildFrames(result, setup, seed): PlaybackFrame[]` (`seed` is the world seed) makes one frame per match minute of each period, including added minutes, so a frame count of 90 + added (+ extra time) is expected; `PlaybackEvent`/`PlaybackFrame` are §2.4's shapes until T218 moves them to the contracts. For each minute:
+`buildFrames(result, setup, seed): MatchFrame[]` (`seed` is the world seed) makes one frame per match minute of each period, including added minutes, so a frame count of 90 + added (+ extra time) is expected; `MatchEvent`/`MatchFrame` are §2.4's shapes in the contracts (T218). For each minute:
 - `score`, `metrics` and `xg` are cumulative at the minute's end.
 - `side` is the side in possession longest during the minute.
 - `player` and `action` come from its last notable entry: a goal, else a sending-off, else a shot, card, substitution, injury, offside, foul or set piece, else its last touch; a minute without entries keeps the previous one. Labels: 패스, 크로스, 컷백, 운반, 돌파, 슛, 골, 선방, 태클, 인터셉트, 걷어내기, 파울, 경고, 퇴장, 교체, 부상, 오프사이드, 스로인, 골킥, 코너킥, 프리킥, 페널티킥.
