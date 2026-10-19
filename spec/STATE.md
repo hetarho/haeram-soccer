@@ -82,14 +82,14 @@
 | WEB | 89 | 89 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | CLUB | 41 | 41 | - | 0 |
-| MATCH | 10 | 9 | MATCH-1✎ MATCH-2✎ MATCH-3✎ MATCH-5✎ MATCH-6✎ MATCH-8✎ MATCH-9✎ MATCH-11✎ MATCH-12✎ MATCH-13✎ MATCH-14+ MATCH-15+ MATCH-16+ MATCH-17+ MATCH-18+ MATCH-19+ MATCH-20+ MATCH-21+ MATCH-22+ MATCH-23+ MATCH-24+ MATCH-25+ MATCH-26+ | 1 |
+| MATCH | 11 | 9 | MATCH-1✎ MATCH-2✎ MATCH-3✎ MATCH-5✎ MATCH-6✎ MATCH-8✎ MATCH-9✎ MATCH-11✎ MATCH-12✎ MATCH-13✎ MATCH-14+ MATCH-15+ MATCH-16+ MATCH-17+ MATCH-18+ MATCH-19+ MATCH-20+ MATCH-21+ MATCH-22+ MATCH-23+ MATCH-24+ MATCH-25+ MATCH-26+ | 1 |
 | LEAGUE | 9 | 9 | - | 0 |
 | STAFF | 33 | 33 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 13 | 13 | - | 0 |
 | SAVE | 44 | 44 | - | 0 |
-| PLAYER | 8 | 8 | - | 0 |
+| PLAYER | 9 | 8 | PLAYER-1✎ PLAYER-2✎ PLAYER-5✎ PLAYER-6✎ PLAYER-9✎ PLAYER-15✎ PLAYER-17✎ PLAYER-19✎ PLAYER-20✎ | 0 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -108,6 +108,7 @@
 - External deployment configuration, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 PLAYER r9: 16 attributes with 판단력/침착성 in OVR weights, roles and traits as decision tendencies, mental ageing; MATCH r11 constraint: earlier careers follow SAVE-19 (not converted).
 - 261019 MATCH r10: grid decision engine (40 cells, tags, decision tables, off-ball movement), per-touch halves with added time, fouls/set pieces/offside, cards and suspensions, era substitutions, in-match injuries, engine paths with a 125% season budget, real-football bands, commentary and post-match material; MATCH-26 open.
 - 261019 update-ssot MATCH start (ideation/match-engine-rebuild)
 - 261019 ideation club-identity-and-kits open: home defaults to club colours, away/third allow separate palettes, kits auto-select with a pre-match override, identity stays editable through club management.
@@ -127,4 +128,3 @@
 - 261017 SAVE r43: grouped career representation must restore exact original registry order; T199/T178/T179 affected, no gameplay or capacity change.
 - 261017 implement-task T199 start n7r4.
 - 261017 create-task T199: active-management century round-trips but checkpoint1629982 exceeds1572864; preserve all facts/budgets and repair representation before rerunning T178.
-- 261017 implement-task T178 start n7r4.

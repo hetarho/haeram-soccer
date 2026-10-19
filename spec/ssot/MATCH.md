@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r10 | Define the implemented browser-demo behavior for observable match simulation: a grid engine where every touch is a player's role-, place- and situation-based decision.
+> r11 | Define the implemented browser-demo behavior for observable match simulation: a grid engine where every touch is a player's role-, place- and situation-based decision.
 
 ## decisions
 - MATCH-1 [o] A match is played touch by touch: two halves of 45 minutes plus added time, each action taking its own few seconds of match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -181,9 +181,10 @@
 
 ## constraints
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
-- The grid engine starts new careers; a running career keeps the rules it plays (→SAVE-18).
+- The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r11 261019 constraints✎ a running career keeps the rules it plays→the grid engine starts new careers, earlier careers follow →SAVE-19
 - r10 261019 MATCH-1✎ one possession chain a minute→touch-by-touch halves plus added time, sides change only on events; MATCH-2✎ measured duel/summary error→both paths hold the target; MATCH-3✎ +fouls, cards, corners, offsides, minutes, substitutions, injuries; MATCH-5✎ +current-season post-match material, season heat maps; MATCH-6✎ extra-time/penalty outcome→extra time 2×15 and a kick-by-kick shootout; MATCH-8✎ profile tradeoffs→tactic behaviour, four presets only; MATCH-9✎ shared profile→the engine's attributes and behaviour; MATCH-11✎ zone pools, team pass/chance rates, tactic line and transition factors→per-action duels; MATCH-12✎ a minute's last duels with invented restarts→the engine's positions every touch, automatic pacing; MATCH-13✎ big chance band→0.30 xG or more, box band→penalty box, +8 spatial counters, season/career totals; MATCH-14+ 40-cell grid; MATCH-15+ tags; MATCH-16+ decision tables; MATCH-17+ off-ball movement; MATCH-18+ fouls, set pieces, offside; MATCH-19+ cards and suspensions; MATCH-20+ substitutions by era; MATCH-21+ in-match injuries; MATCH-22+ engine paths, 125% season budget; MATCH-23+ real-football bands; MATCH-24+ spatial commentary; MATCH-25+ post-match material; MATCH-26+ open: grid-only counters off the grid
 - r9 261015 MATCH-2✎ average role rating→average 실효 OVR at the formation's slots, own players by adaptation, others by their club's 조직력; MATCH-8✎ MATCH-9✎ passing/defense/stamina→the named attributes (패스, 시야, 태클, 위치선정, 공중볼, 속도, 체력); MATCH-11✎ +attributes × slot level × adaptation in every duel, roles and play traits shift actions, +crosses and headers, FWD/MID/DEF→FW/MF/DF lines; MATCH-12✎ +players at their formation's positions
 - r8 261012 MATCH-12✎ none→restart (throw-in, goal kick, corner) whenever possession changes sides between minutes without a duel, played on the pitch with the ball out of play and a taker; outcomes unchanged

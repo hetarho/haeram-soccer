@@ -1,15 +1,15 @@
 # PLAYER Player model
-> r8 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
+> r9 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
 
 ## decisions
-- PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 14 attributes, positions with levels, personality and play traits, potential. Other clubs' match squads use seasonal generation from club strength (→WORLD-6, →LEAGUE-10); cross-role person continuity and retirement eligibility are →WORLD-10/11. Development, adaptation and attribute ageing below continue to apply to the own club's players and academy; this does not apply own-club development to every NPC squad. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
+- PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 16 attributes, positions with levels, personality and play traits, potential. Other clubs' match squads use seasonal generation from club strength (→WORLD-6, →LEAGUE-10); cross-role person continuity and retirement eligibility are →WORLD-10/11. Development, adaptation and attribute ageing below continue to apply to the own club's players and academy; this does not apply own-club development to every NPC squad. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
 
-- PLAYER-2 [o] A player has 14 attributes, 1–99, each feeding the match actions it names (→MATCH-11); every player has all 14, an outfielder's goalkeeping three sit at 8–20. Generated attributes top out at 99. ← maps one-to-one onto the stats the game reports, and fits one card
+- PLAYER-2 [o] A player has 16 attributes, 1–99, each feeding the match actions and choices it names (→MATCH-11, →MATCH-16); every player has all 16, an outfielder's goalkeeping three sit at 8–20. Generated attributes top out at 99. ← maps one-to-one onto the stats the game reports, and fits one card
   | group | attribute | what it decides |
   |---|---|---|
   | 공격 | 슈팅 | shot quality and conversion |
   | 공격 | 드리블 | carrying the ball past a man |
-  | 공격 | 크로스 | crosses and cut-backs |
+  | 공격 | 크로스 | crosses, cut-backs and set-piece deliveries |
   | 패스 | 패스 | pass completion |
   | 패스 | 시야 | key and progressive passes |
   | 수비 | 태클 | winning the ball in a duel |
@@ -17,10 +17,13 @@
   | 수비 | 공중볼 | headers and aerial duels |
   | 신체 | 속도 | runs in behind, recovery, counters |
   | 신체 | 체력 | in-match drain and pressing, fatigue cost |
-  | 신체 | 몸싸움 | shoulder duels and holding the ball up |
+  | 신체 | 몸싸움 | shoulder duels, holding the ball up and aerial challenges |
+  | 정신 | 판단력 | choosing the better option: the free teammate, the higher-threat cell, the moment of a run |
+  | 정신 | 침착성 | keeping that choice and its execution under pressure, at big chances and from the spot |
   | GK | 선방 | saves |
   | GK | 공중볼 처리 | claiming crosses and set pieces |
   | GK | 발밑 | a keeper's passing and sweeping |
+  - generated 판단력 and 침착성 follow the position's weights like the others, about 5 lower for players aged 21 or younger, who grow into them (→PLAYER-17).
 - PLAYER-3 [o] Positions are 14, left and right apart: GK, CB, LB, RB, LWB, RWB, DM, CM, LM, RM, AM, LW, RW, ST. ← sides are real for players: a left winger may play the right as well, a little worse or not at all
   - they group into four lines: GK; DF (CB, LB, RB, LWB, RWB); MF (DM, CM, LM, RM, AM); FW (LW, RW, ST). A player's line is his main position's; rules that count a squad by line (needs, limits, filters, synergies) use it.
 - PLAYER-4 [o] A player plays 1–6 positions, each at a level; any other position is 미숙. ← versatile players (a full back who also plays centre back, defensive midfield and the wing) exist and are worth more to a manager
@@ -32,7 +35,7 @@
   | 미숙 | 60% | any position not listed (a striker at CB) |
   - his main position is always 최상; generated players hold 1 (25%), 2 (35%), 3 (22%), 4 (10%), 5 (5%) or 6 (3%) positions; a side position's mirror is listed 최상 15%, 준수 35%, 어색 50% of the time; other listed positions are 최상 15%, 준수 50%, 어색 35%.
   - starts at a position raise its level: 미숙 → 어색 after 20 starts there, 어색 → 준수 after 40, 준수 → 최상 after 60 (counted from the last change). ← managers retrain players, as full backs became centre backs and midfielders full backs
-- PLAYER-5 [o] Each position is played in a role named as Korean football media name it; a manager's formation asks a role of every slot (→STAFF). A player's fit for a role is read from his attributes and play traits, never stored.
+- PLAYER-5 [o] Each position is played in a role named as Korean football media name it; a manager's formation asks a role of every slot (→STAFF). A player's fit for a role is read from his attributes and play traits, never stored. A role also sets where its player stands and moves in each phase and which actions he favours (→MATCH-16, →MATCH-17), as football media describe it (docs/MATCH-BASELINES.md).
   | position | roles |
   |---|---|
   | GK | 스위퍼 키퍼, 슈팅 스토퍼 |
@@ -48,16 +51,16 @@
 - PLAYER-6 [o] OVR is the weighted average of a position's attributes — primary ×3, secondary ×2, tertiary ×1, others 0 — so every position reads on one 1–99 scale; a role moves each attribute it names up one tier (none → tertiary → secondary → primary; a primary one stays). ← one scale ends goalkeepers reading 93 beside outfielders in the 60s
   | position | primary | secondary | tertiary |
   |---|---|---|---|
-  | GK | 선방 | 공중볼 처리, 위치선정 | 발밑 |
-  | CB | 태클, 위치선정, 공중볼 | 몸싸움 | 속도, 패스 |
-  | LB, RB | 태클, 속도 | 위치선정, 체력, 크로스 | 패스 |
-  | LWB, RWB | 속도, 체력, 크로스 | 태클, 드리블 | 패스 |
-  | DM | 태클, 위치선정 | 패스, 체력, 몸싸움 | 시야 |
-  | CM | 패스, 체력 | 시야, 태클 | 드리블, 슈팅 |
-  | LM, RM | 크로스, 체력 | 패스, 속도 | 드리블, 태클 |
-  | AM | 시야, 패스 | 드리블, 슈팅 | 위치선정 |
-  | LW, RW | 드리블, 속도 | 크로스, 슈팅 | 패스 |
-  | ST | 슈팅 | 위치선정, 속도, 몸싸움 | 드리블, 공중볼 |
+  | GK | 선방 | 공중볼 처리, 위치선정 | 발밑, 판단력 |
+  | CB | 태클, 위치선정, 공중볼 | 몸싸움, 판단력 | 속도, 패스 |
+  | LB, RB | 태클, 속도 | 위치선정, 체력, 크로스 | 패스, 판단력 |
+  | LWB, RWB | 속도, 체력, 크로스 | 태클, 드리블 | 패스, 판단력 |
+  | DM | 태클, 위치선정 | 패스, 체력, 몸싸움, 판단력 | 시야 |
+  | CM | 패스, 체력 | 시야, 태클, 판단력 | 드리블, 슈팅, 침착성 |
+  | LM, RM | 크로스, 체력 | 패스, 속도 | 드리블, 태클, 판단력 |
+  | AM | 시야, 패스 | 드리블, 슈팅, 판단력 | 위치선정, 침착성 |
+  | LW, RW | 드리블, 속도 | 크로스, 슈팅 | 패스, 침착성 |
+  | ST | 슈팅 | 위치선정, 속도, 몸싸움, 침착성 | 드리블, 공중볼 |
   | role | moves up |
   |---|---|
   | 스위퍼 키퍼 | 발밑, 속도 |
@@ -70,12 +73,12 @@
   | 인버티드 풀백 | 패스, 시야 |
   | 수비형 윙백 | 태클, 위치선정 |
   | 공격형 윙백 | 드리블 |
-  | 앵커 | none (the position's weights) |
+  | 앵커 | 판단력 |
   | 볼 위닝 미드필더 | 체력, 몸싸움 |
   | 레지스타 | 패스, 시야 |
   | 박스투박스 | 태클, 슈팅 |
   | 메짤라 | 드리블, 슈팅 |
-  | 딥라잉 플레이메이커 | 시야 |
+  | 딥라잉 플레이메이커 | 시야, 판단력 |
   | 와이드 미드필더 | 태클 |
   | 와이드 플레이메이커 | 패스, 시야 |
   | 공격형 미드필더 | 슈팅 |
@@ -84,7 +87,7 @@
   | 전통형 윙어 | 크로스 |
   | 인버티드 윙어 | 슈팅 |
   | 타겟맨 | 공중볼, 몸싸움 |
-  | 포처 | 위치선정 |
+  | 포처 | 위치선정, 침착성 |
   | 펄스 나인 | 패스, 시야 |
   | 컴플리트 포워드 | 드리블, 공중볼 |
   - a player's OVR on his card, in the market and in market wages and values (→CLUB-25) is his OVR at his main position in his best role there.
@@ -96,7 +99,7 @@
   | 적응력 | ×0.60 | ×0.80 | ×1.00 | ×1.20 | ×1.40 | his adaptation rate (→PLAYER-12) and his start after a transfer (→PLAYER-11) |
   | 야망 | never | never | never | 25% | 50% | unhappiness when a bigger club's offer is declined (→PLAYER-8) |
 - PLAYER-8 [o] 야망 decides whether a declined offer from a bigger club makes him unhappy (→CLUB-27).
-- PLAYER-9 [o] Play traits, 0–3 per player (most have 1–2, stars up to 3, some none), make him attempt their action more often in a match (→MATCH) and are what schools of football prefer (→STAFF): ← the way he plays, not only how well
+- PLAYER-9 [o] Play traits, 0–3 per player (most have 1–2, stars up to 3, some none), bend his match decisions toward their action and his runs toward their space (→MATCH-16, →MATCH-17) and are what schools of football prefer (→STAFF): ← the way he plays, not only how well
   | trait | does |
   |---|---|
   | 활동량 | covers ground and presses without stopping |
@@ -134,7 +137,7 @@
 - PLAYER-14 [o] A player still below 0.50 after 23 settled rounds at the club has failed to settle (적응 실패): an event and news, once per player per club. He keeps playing at his multiplier and can still settle.
 - PLAYER-15 [o] Development is driven by the gap to potential, age (growth under 27, +0.3 a season at 27–30), the manager's youth work, the training ground, the coaches, squad investment and the training focus (→CLUB-11) — multiplied by his 프로의식 rate (→PLAYER-7). ← two players of the same potential grow at different speeds
   - potential is the OVR at his main position he grows toward; growth spreads over his attributes by that position's weights (→PLAYER-6), so primary attributes grow fastest.
-  - each coaching department scales the attributes it owns (→STAFF-11): the assistant 패스 and 시야, the attack coach 슈팅, 드리블 and 크로스, the defence coach 태클, 위치선정 and 공중볼, the goalkeeping coach the three GK attributes, the fitness coach 속도, 체력 and 몸싸움.
+  - each coaching department scales the attributes it owns (→STAFF-11): the assistant 패스, 시야, 판단력 and 침착성, the attack coach 슈팅, 드리블 and 크로스, the defence coach 태클, 위치선정 and 공중볼, the goalkeeping coach the three GK attributes, the fitness coach 속도, 체력 and 몸싸움.
   - each summer a player aged 23 or younger may break through (5%: potential +5 to +9) or stall (5%: −4 to −7); otherwise potential moves by at most 2; never below his OVR or above 99. Changes of 4+ are events and news.
 - PLAYER-16 [o] With his adaptation at 0.90 or more a player grows past his potential, with no cap but 99, on a curve that flattens sharply: growth at +1 over potential runs ×0.25 of the rate below it, +3 ×0.10, +5 ×0.05, +10 ×0.02 (log-like between); the age rules still hold. ← a player who suits his manager can outgrow his potential, rarely and slowly
   - "the rate below it" is his rate 2 under potential: a settled player's round growth never falls below that rate, nearing potential or past it; an unsettled player's still shrinks with the gap and stops at potential.
@@ -145,13 +148,13 @@
   | 몸싸움, 공중볼 | 27 | 31 | −1 |
   | 슈팅, 드리블, 크로스 | 27 | 31 | −1.5 |
   | 패스, 태클 | 28 | 32 | −1 |
-  | 시야, 위치선정 | 32 | 33 | −0.5 |
+  | 시야, 위치선정, 판단력, 침착성 | 32 | 33 | −0.5 |
   | 선방, 공중볼 처리, 발밑 | 30 | 33 | −1 |
   - between growth and decline an attribute holds; every seasonal change carries noise of ±0.5.
 - PLAYER-18 [o] The owner sees his own players' attributes, positions and levels, traits, adaptation, multiplier and 실효 OVR exactly; for any other player attributes, positions and play traits are exact and personality grades show as a range by the chief scout's ability (→STAFF-11): 80+ exact, 60–79 ±1 grade, below 60 or no chief scout ±2. ← the scout earns his place, and a signing's settling is a stated gamble
-- PLAYER-19 [o] Match attributes remain the 14 of →PLAYER-2; mental effects on the existing playing model remain the personality traits. Separate coaching aptitude and football understanding (→PLAYER-21) concern the later staff career, not an added match modifier. Nothing here changes by difficulty level (→WEB-3).
+- PLAYER-19 [o] Match attributes are the 16 of →PLAYER-2; on the pitch 판단력 and 침착성 are the mental attributes, and the personality traits (→PLAYER-7) do not act in a match. Separate coaching aptitude and football understanding (→PLAYER-21) concern the later staff career, not a match modifier: 판단력 is on-pitch decision-making, football understanding the off-pitch reading of the game (→PLAYER-22). Nothing here changes by difficulty level (→WEB-3).
 
-- PLAYER-20 [o] This model starts with new careers; a save made before it does not open in it, and its export file is kept (→SAVE). ← a clean model beats converting five attributes into fourteen guesses
+- PLAYER-20 [o] This model starts with new careers; a save made before it does not open in it, and its export file is kept (→SAVE). The 16 attributes likewise start with the grid engine's new careers (→SAVE-19); no earlier player gains invented 판단력 or 침착성. ← a clean model beats converting five attributes into fourteen guesses
 
 - PLAYER-21 [o] Players across clubs have a separate coaching-aptitude assessment, informed by professionalism/work ethic, football understanding and ability to teach.
   - aptitude is independent of playing OVR: an ordinary player can have strong coaching promise. Do not equate physical work rate or a position-weighted playing attribute with work ethic or intelligence.
@@ -178,9 +181,10 @@
 
 ## flow
 - a player's season: joins (start by PLAYER-11) → starts and training raise adaptation (PLAYER-12) and attributes (PLAYER-15) → a manager change costs adaptation (PLAYER-13) → still below 0.50 after 23 rounds: 적응 실패 (PLAYER-14) → past potential only at 0.90+ (PLAYER-16) → ageing by group (PLAYER-17)
-- in a match: slot position and role → OVR (PLAYER-6) × level (PLAYER-4) × adaptation multiplier (PLAYER-10) = 실효 OVR; each action reads its attributes (PLAYER-2)
+- in a match: slot position and role → OVR (PLAYER-6) × level (PLAYER-4) × adaptation multiplier (PLAYER-10) = 실효 OVR; role and play traits shape his choices and runs (PLAYER-5, PLAYER-9); each choice and action reads its attributes (PLAYER-2)
 
 ## chg
+- r9 261019 PLAYER-1✎ PLAYER-2✎ 14→16 attributes, +정신 판단력 and 침착성 (young players about 5 lower at generation), 몸싸움 +aerial challenges, 크로스 +set-piece deliveries; PLAYER-5✎ +roles set positions, movement and favoured actions; PLAYER-6✎ +판단력/침착성 in every position's weights, 앵커 none→판단력, 딥라잉 시야→시야/판단력, 포처 위치선정→위치선정/침착성; PLAYER-9✎ attempt their action more often→bend decisions and runs; PLAYER-15✎ assistant 패스/시야→+판단력/침착성; PLAYER-17✎ +판단력/침착성 in the 32/33/−0.5 group; PLAYER-19✎ match attributes 14 with personality as the mental model→16 with 판단력/침착성, personality off-pitch; PLAYER-20✎ +the 16 attributes start new careers (→SAVE-19)
 - r8 261016 PLAYER-22✎ initial components/calculation open→equal professionalism/understanding/teaching mean for coaching and understanding/team-judgement mean for management, existing five-grade generation distribution, fixed person-specific qualities
 - r7 261016 PLAYER-21/22✎ aptitude evolution open→fixed under PLAYER-25, initial calculation remains open; PLAYER-25+ fixed generation-time aptitude distinct from actual staff ability growth
 - r6 261016 PLAYER-21/22✎ grade/visibility open→PLAYER-23/24, calculation/evolution remain open; PLAYER-23/24+ five aptitude grades, exact own-player grades and existing chief-scout accuracy for others
