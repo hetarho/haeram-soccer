@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| w6pm | hq-dev1-pve2-vm2 | autopilot | 2026-10-19T07:33Z | 2026-10-19T07:33Z | T210 |
+| w6pm | hq-dev1-pve2-vm2 | autopilot | 2026-10-19T07:33Z | 2026-10-19T07:33Z | T211 |
 
 ## inbox
 - 261019 decided T203 T204: owner asked for parallel work until 18:00 while the engine chain is declared serial → ran T203 (apps/web packing) and T204 (engine/grid, new files) side by side in separate worktrees since their touches are disjoint and T204 uses nothing of T203 (alt: strictly serial | also start identity tasks T234+ early)
@@ -100,7 +100,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T210 | Restarts, set pieces, offside and fouls | MATCH | T209 | todo |
 | T211 | The grid match loop: periods, time, records, trace | MATCH | T210 | todo |
 | T212 | Advanced and spatial counters | MATCH | T211 | todo |
 | T213 | Cards in the match | MATCH | T212 | todo |
@@ -159,6 +158,7 @@
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 T210 done (w6pm): restarts, offside, fouls to free kicks/penalties and every set piece with dead times; 66 grid tests pass.
 - 261019 T209 done (w6pm): open-play duels and the xG model (pass, cross, cut-back, take-on, carry, hold-up, clearance, aerial, shot, penalty); 56 grid tests pass.
 - 261019 T208 done (w6pm): decision tables — action mix, pass/carry targets, keeper distribution; 47 grid tests pass. T203–T207 pushed to main (batch: 1065 unit, 19 contract, build).
 - 261019 T207 done (w6pm): per-touch tags (phase, pressure, orientation, lines, channel, overload, game state); 36 grid tests pass.

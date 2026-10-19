@@ -1,0 +1,263 @@
+import { describe, expect, it } from 'vitest';
+import { ATTRIBUTES } from '../../../contracts/src/player';
+import { random } from '../primitives';
+import type { Point } from './pitch';
+import {
+  classifyOut,
+  foulRestart,
+  isOffside,
+  playRestart,
+  RESTART_CONFIG,
+  type Restart,
+} from './restarts';
+import { shotContext } from './resolve';
+import type { GridState } from './state';
+import { gridKit } from './testkit';
+
+/** One world for the whole file (building it is slow); every call resets it: all players at 60, no shift, parked in the far corners. */
+const kit = gridKit();
+function field() {
+  const s = kit.state;
+  for (const side of s.players)
+    for (const gp of side) {
+      gp.pos = gp.side === 0 ? [0, 0] : [105, 68];
+      gp.base.fill(60);
+      gp.player.traits = [];
+      gp.sentOff = false;
+      gp.run = undefined;
+    }
+  s.setup.shift = [0, 0];
+  s.elapsed = 0;
+  s.owner = undefined;
+  s.lastRegain = undefined;
+  s.lastLoss = undefined;
+  return s;
+}
+const put = (s: GridState, side: 0 | 1, idx: number, p: Point) =>
+  (s.players[side][idx]!.pos = [p[0], p[1]]);
+const set = (
+  s: GridState,
+  side: 0 | 1,
+  idx: number,
+  attr: (typeof ATTRIBUTES)[number],
+  v: number,
+) => (s.players[side][idx]!.base[ATTRIBUTES.indexOf(attr)] = v);
+
+describe('grid restarts', () => {
+  it('gives a throw-in at the crossing point to the other side', () => {
+    expect(classifyOut({ at: [40, 0], lastTouch: 0, over: 'touch' })).toEqual({
+      kind: 'throwIn',
+      side: 1,
+      spot: [40, 0],
+      dead: 18,
+    });
+    expect(classifyOut({ at: [70, 68], lastTouch: 1, over: 'touch' }).side).toBe(0);
+  });
+
+  it('gives a goal kick when attackers touched it last over the byline and a corner when defenders did', () => {
+    expect(classifyOut({ at: [105, 20], lastTouch: 0, over: 'byline' })).toEqual({
+      kind: 'goalKick',
+      side: 1,
+      spot: [99.5, 34],
+      dead: 30,
+    });
+    expect(classifyOut({ at: [105, 20], lastTouch: 1, over: 'byline' })).toEqual({
+      kind: 'corner',
+      side: 0,
+      spot: [105, 0.5],
+      dead: 37,
+    });
+    expect(classifyOut({ at: [0, 50], lastTouch: 1, over: 'byline' })).toEqual({
+      kind: 'goalKick',
+      side: 0,
+      spot: [5.5, 34],
+      dead: 30,
+    });
+    expect(classifyOut({ at: [0, 50], lastTouch: 0, over: 'byline' })).toMatchObject({
+      kind: 'corner',
+      side: 1,
+      spot: [0, 67.5],
+    });
+  });
+
+  it('turns a saved or blocked shot over the byline into a corner', () => {
+    expect(
+      classifyOut({ at: [105, 40], lastTouch: 0, over: 'byline', blockedOrSaved: true }),
+    ).toMatchObject({
+      kind: 'corner',
+      side: 0,
+      spot: [105, 67.5],
+    });
+    expect(
+      classifyOut({ at: [0, 10], lastTouch: 1, over: 'byline', blockedOrSaved: true }),
+    ).toMatchObject({
+      kind: 'corner',
+      side: 1,
+    });
+  });
+
+  it('places a free kick at the foul and a penalty inside the box', () => {
+    const s = field();
+    expect(foulRestart(s, 0, [60, 34])).toEqual({
+      kind: 'freeKick',
+      side: 0,
+      spot: [60, 34],
+      dead: 32,
+    });
+    expect(foulRestart(s, 0, [100, 30])).toEqual({
+      kind: 'penalty',
+      side: 0,
+      spot: [94, 34],
+      dead: 70,
+    });
+    expect(foulRestart(s, 1, [5, 34])).toEqual({
+      kind: 'penalty',
+      side: 1,
+      spot: [11, 34],
+      dead: 70,
+    });
+    expect(foulRestart(s, 1, [100, 34]).kind).toBe('freeKick');
+  });
+
+  const rate = (s: GridState, target: number, n = 4000, from?: Restart['kind']) => {
+    const r = random('offside');
+    let count = 0;
+    for (let i = 0; i < n; i++) if (isOffside(s, 0, target, r, from)) count++;
+    return count / n;
+  };
+  const offsideScene = () => {
+    const s = field();
+    put(s, 0, 9, [60, 34]);
+    s.ball = [60, 34];
+    put(s, 1, 0, [104, 34]);
+    put(s, 1, 2, [80, 20]);
+    put(s, 1, 3, [82, 40]);
+    for (const i of [1, 4, 5, 6, 7, 8, 9, 10]) put(s, 1, i, [50, 60]);
+    put(s, 0, 10, [90, 34]);
+    return s;
+  };
+
+  it('flags offside only for a target in the opponent half beyond both the ball and the second-last opponent when the pass is played', () => {
+    const s = offsideScene();
+    const p = rate(s, 10);
+    expect(p).toBeGreaterThan(0.35);
+    expect(p).toBeLessThan(0.55);
+    // Level with the second-last defender, in his own half, behind the ball: never.
+    put(s, 0, 10, [81, 34]);
+    expect(rate(s, 10)).toBe(0);
+    put(s, 0, 10, [45, 34]);
+    expect(rate(s, 10)).toBe(0);
+    put(s, 0, 10, [90, 34]);
+    s.ball = [95, 10];
+    expect(rate(s, 10)).toBe(0);
+    s.ball = [60, 34];
+    for (const from of ['throwIn', 'goalKick', 'corner'] as const)
+      expect(rate(s, 10, 500, from)).toBe(0);
+    expect(rate(s, 10, 500, 'freeKick')).toBeGreaterThan(0);
+  });
+
+  it('lets a high-decisions runner time his run better and a line breaker more so', () => {
+    // The world is shared, so each scene is measured before the next one is built.
+    const base = rate(offsideScene(), 10);
+    const sharp = offsideScene();
+    set(sharp, 0, 10, 'decisions', 90);
+    const sharpRate = rate(sharp, 10);
+    const dull = offsideScene();
+    set(dull, 0, 10, 'decisions', 30);
+    const dullRate = rate(dull, 10);
+    const runner = offsideScene();
+    runner.players[0][10]!.player.traits = ['linebreaker'];
+    const runnerRate = rate(runner, 10);
+    expect(sharpRate).toBeLessThan(base);
+    expect(dullRate).toBeGreaterThan(base);
+    expect(runnerRate).toBeLessThan(base - 0.05);
+  });
+
+  const kinds = (build: () => { s: GridState; rs: Restart }, n: number) => {
+    const out: Record<string, number> = {};
+    for (let i = 0; i < n; i++) {
+      const { s, rs } = build();
+      const result = playRestart(s, rs, random(`rs-${i}`), shotContext(s));
+      out[String(result.kind)] = (out[String(result.kind)] ?? 0) + 1;
+    }
+    return out;
+  };
+  const freeKickAt = (spot: Point) => () => ({
+    s: field(),
+    rs: { kind: 'freeKick', side: 0, spot: [spot[0], spot[1]], dead: 32 } as Restart,
+  });
+
+  it('shoots direct free kicks only within range, crosses wide free kicks and corners into the box', () => {
+    const near = kinds(freeKickAt([85, 34]), 300);
+    expect(near.shot! / 300).toBeGreaterThan(0.3);
+    expect(near.shot! / 300).toBeLessThan(0.5);
+    expect(kinds(freeKickAt([84, 34]), 100).cross).toBeGreaterThan(0);
+    expect(kinds(freeKickAt([70, 34]), 100).shot).toBeUndefined();
+    expect(kinds(freeKickAt([95, 6]), 100)).toEqual({ cross: 100 });
+    const corners = kinds(
+      () => ({
+        s: field(),
+        rs: { kind: 'corner', side: 0, spot: [105, 0.5], dead: 37 } as Restart,
+      }),
+      400,
+    );
+    expect(corners.cross! / 400).toBeGreaterThan(0.78);
+    expect(corners.short! / 400).toBeGreaterThan(0.08);
+    expect(corners.short! / 400).toBeLessThan(0.22);
+  });
+
+  it('throws in short to the nearest free teammate', () => {
+    const s = field();
+    put(s, 0, 5, [52, 4]);
+    put(s, 0, 6, [60, 10]);
+    put(s, 0, 7, [75, 20]);
+    put(s, 1, 3, [53, 4]);
+    const rs = classifyOut({ at: [50, 0], lastTouch: 1, over: 'touch' });
+    const result = playRestart(s, rs, random('throw'), shotContext(s));
+    expect(rs.side).toBe(0);
+    expect(result.kind).toBe('short');
+    expect(result.taker).toBe(5);
+    expect(result.target).toBe(6);
+    expect(s.players[0][5]!.pos).toEqual([50, 0]);
+    expect(s.ball).toEqual([50, 0]);
+  });
+
+  it('kicks off backwards from the centre spot', () => {
+    for (let i = 0; i < 40; i++) {
+      const s = field();
+      put(s, 0, 9, [52.5, 34]);
+      put(s, 0, 6, [45, 30]);
+      put(s, 0, 7, [47, 40]);
+      put(s, 0, 10, [56, 34]);
+      s.owner = [0, 9];
+      const result = playRestart(
+        s,
+        { kind: 'kickoff', side: 0, spot: [52.5, 34], dead: RESTART_CONFIG.dead.kickoff },
+        random(`ko-${i}`),
+        shotContext(s),
+      );
+      expect(result.taker).toBe(9);
+      expect(s.players[0][9]!.pos).toEqual([52.5, 34]);
+      expect([6, 7]).toContain(result.target);
+    }
+  });
+
+  it('takes penalties and goal kicks and re-picks a taker who has left', () => {
+    const s = field();
+    const rs = foulRestart(s, 0, [100, 34]);
+    const taker = s.setup.takers[0].penalty;
+    s.players[0][taker]!.sentOff = true;
+    const result = playRestart(s, rs, random('pen'), shotContext(s));
+    expect(result.kind).toBe('penalty');
+    expect(result.taker).not.toBe(taker);
+    expect(result.outcome.kind).toBe('shot');
+    const kick = playRestart(
+      s,
+      classifyOut({ at: [105, 20], lastTouch: 0, over: 'byline' }),
+      random('gk'),
+      shotContext(s),
+    );
+    expect(kick.taker).toBe(0);
+    expect(['short', 'long']).toContain(kick.kind);
+  });
+});

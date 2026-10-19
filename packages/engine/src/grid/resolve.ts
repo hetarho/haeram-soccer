@@ -217,6 +217,7 @@ export function resolvePass(
   kind: Kind,
   lineBreaking: boolean,
   r: () => number,
+  bonus = 0,
 ): Outcome {
   const P = DUEL_CONFIG.pass;
   const from = frame(side, s.players[side][idx]!.pos);
@@ -240,7 +241,8 @@ export function resolvePass(
       P.risk * laneRisk(s, side, from, to) -
       Math.max(0, dist - 20) * P.distance -
       P.pressure * tags.pressure +
-      s.setup.bends[side].pass / 100,
+      s.setup.bends[side].pass / 100 +
+      bonus,
     P.min,
     P.max,
   );
