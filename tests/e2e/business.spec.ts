@@ -56,6 +56,8 @@ async function playNext(page: Page) {
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
     .getByRole('button', { name: '클럽 홈', exact: true })
     .click();
+  // A match can leave an owner-held decision (a mediation after an injury) before the next one.
+  await acknowledgeEvents(page);
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();

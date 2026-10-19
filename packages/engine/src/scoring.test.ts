@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
+import { currency } from '../../catalogs/src/index';
 import {
   advanceDays,
   advanceRound,
@@ -77,6 +78,22 @@ describe('actual league scorer standings', () => {
     expect(replay.record.players.reduce((goals, p) => goals + p.metrics[0], 0)).toBe(
       fixture.score!.home + fixture.score!.away,
     );
+    validateWorld(w);
+  });
+
+  it('counts an appearance for every player who took the pitch, substitutes included', () => {
+    const w = world();
+    w.year = 2024;
+    w.currency = currency('ENG', 2024).code;
+    prepareSeason(w);
+    for (let round = 0; round < 4; round++) advanceRound(w, undefined, false);
+    const own = w.scorerSeason!.players.filter((p) => p.club === w.playerClub);
+    const played = w.ownMatches
+      .filter((m) => isScoringFixture(w, m))
+      .flatMap((m) => m.players.filter((p) => p.metrics[10] > 0));
+    expect(own.reduce((n, p) => n + p.appearances, 0)).toBe(played.length);
+    // The modern era's substitutes come on, so the side counts more than its eleven starters.
+    expect(played.length).toBeGreaterThan(11 * w.tables[w.playerClub].played);
     validateWorld(w);
   });
 

@@ -273,12 +273,19 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     recordScorers(w, playback);
   }
   if (own) {
-    const ownIds = new Set(playback.squads[m.home === w.playerClub ? 0 : 1].map((p) => p.id));
-    const saved = { ...m, players: m.players.filter((p) => ownIds.has(p.id)) };
+    const ownSide = m.home === w.playerClub ? 0 : 1;
+    const ownIds = new Set(playback.squads[ownSide].map((p) => p.id));
+    const players = m.players.filter((p) => ownIds.has(p.id));
+    // Only the own lines are kept, so the split counts them on the own side alone.
+    const lineCounts: [number, number] | undefined = m.lineCounts
+      ? ownSide === 0
+        ? [players.length, 0]
+        : [0, players.length]
+      : undefined;
+    const saved = { ...m, players, ...(lineCounts ? { lineCounts } : {}) };
     w.ownMatches.push(saved);
     gate(w, m);
     // Every starter settles a little by the slot he played (→PLAYER-12).
-    const ownSide = m.home === w.playerClub ? 0 : 1;
     settleStarts(w, playback.squads[ownSide].slice(0, 11), m.tactics[ownSide]);
     // A pressing manager adds load; a synergy built for pressing takes some of it off.
     const extraLoad = managerStyleEffects(w).fatigueCost - synergyEffects(w).fatigueRelief;

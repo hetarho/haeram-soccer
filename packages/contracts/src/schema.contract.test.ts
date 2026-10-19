@@ -254,7 +254,7 @@ describe('rules 3.0.0 (→SAVE-10, →SAVE-16)', () => {
 });
 
 describe('rules 4 match facts (→MATCH-13, →MATCH-19, →HIST-16)', () => {
-  // One played season: a closed archive and the own matches of the duel chain to extend.
+  // One played season: a closed archive and the own grid matches to extend.
   const season = world();
   simulateSeason(season);
   const played = () => {
@@ -285,7 +285,8 @@ describe('rules 4 match facts (→MATCH-13, →MATCH-19, →HIST-16)', () => {
     booked.detail![PD.crosses] = 3;
     booked.detail![PD.crossesCompleted] = 1;
     const team = m.detail![side];
-    team[TD.yellowCards] = 1;
+    // The grid match may have booked others too; the side's cards stay the sum of its lines.
+    team[TD.yellowCards] = m.players.reduce((n, p) => n + p.detail![PD.yellowCards]!, 0);
     team[TD.crosses] = 5;
     team[TD.crossesCompleted] = 2;
     team[TD.penalties] = 1;

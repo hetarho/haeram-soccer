@@ -48,7 +48,9 @@ describe('pre-match decisions', () => {
         .map((player) => player.id),
     ).toEqual(ids);
     expect(startingSquad(w, clubOf(w)).map((player) => player.id)).toEqual(ids);
-    expect(rating(w, clubOf(w))).toBe(lineupSummary(match.squads[side].slice(0, 11), w.tactic).strength);
+    expect(rating(w, clubOf(w))).toBe(
+      lineupSummary(match.squads[side].slice(0, 11), w.tactic).strength,
+    );
   });
 
   it('rejects duplicate, unknown and inactive selections before mutation', () => {

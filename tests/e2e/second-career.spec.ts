@@ -282,6 +282,9 @@ test('synthetic two playing-coach years plus full-time service excludes unemploy
 test('playing retirement retains the unexpired coach job at the real season close', async ({
   page,
 }) => {
+  // Nearly three seasons are simulated here first; with the own league on the grid engine (T218)
+  // they take about 30 s before the page opens.
+  test.setTimeout(180000);
   const { combinedCareerFixture, exportedCareer } = await import('./career-fixtures');
   const { importResponsibilityCareer } = await import('./responsibility-fixtures');
   const { simulateSeason, advanceRound } = await import('../../packages/engine/src/index');

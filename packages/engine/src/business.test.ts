@@ -133,10 +133,10 @@ describe('business delegation and cash warnings', () => {
   it('reminds an owner of empty open slots when a season starts, but not a delegating one', () => {
     const owner = world();
     simulateSeason(owner);
-    expect(finance(owner).filter((item) => item.year === owner.year)).toEqual([
-      expect.objectContaining({ title: '후원 계약이 비어 있어요', attention: true }),
-    ]);
-    expect(finance(owner).at(-1)!.detail).toMatch(/^지역 후원 자리가 비어 있어요/);
+    // Other season-start notices (a promotion clause's wage change) never ask for attention.
+    const reminders = finance(owner).filter((item) => item.year === owner.year && item.attention);
+    expect(reminders).toEqual([expect.objectContaining({ title: '후원 계약이 비어 있어요' })]);
+    expect(reminders[0]!.detail).toMatch(/^지역 후원 자리가 비어 있어요/);
     const delegated = world();
     delegated.intervention = 4;
     delegated.settings = legacySettings(4);

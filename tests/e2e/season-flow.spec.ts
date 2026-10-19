@@ -136,6 +136,9 @@ test('shows independent player decisions and post-match league context', async (
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('motion-observation');
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  // The first match's injury opens a director–manager mediation; the staff settle it here, so
+  // the next watch is not held for an owner decision this journey is not about.
+  await configureResponsibilities(page, { responsibilities: { recruitment: 'delegated' } });
   await page.getByRole('button', { name: '다음 경기 관전' }).click();
   await expect(
     page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
