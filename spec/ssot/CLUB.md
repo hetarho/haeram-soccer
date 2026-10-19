@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r41 | Define the browser-demo rules for squad and growth.
+> r42 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 20 players (→CLUB-40), a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating sits at its league's average club XI plus its difficulty level's offset (→WEB-3: 쉬움 0, 보통 −2, 어려움 −4, 최상 −6; ±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -14,6 +14,7 @@
 - CLUB-5 [o] Transfer price, recurring wage, and term are shown before acceptance. Keep at least 14 players and one goalkeeper; the maximum is the league's registration limit (→CLUB-44).
 - CLUB-6 [o] The automatic starting lineup fills the manager's formation (→STAFF-22) slot by slot with the available player of the highest 실효 OVR there (→PLAYER-6) less his fatigue load and the manager's selection trait (→STAFF-12), unless a saved manual XI is selected. Strongest/rest presets require at most selection plus confirmation; substitutions pick by level at the slot. ← the manager picks the man who plays that slot best, not the best name
   - a manual XI may put any player in any slot; he plays there at his level (미숙 60%), shown before it is saved.
+  - the manager also names the substitutes the era allows (→MATCH-20) — a goalkeeper first once three or more may be named, then cover for each line by 실효 OVR — and the set-piece and penalty takers by their attributes (→MATCH-18); injured and suspended players are never named.
 - CLUB-7 [o] Promotion, supporters, facilities, managers, player generations and finance measure growth; history survives transfers and retirement.
 - CLUB-8 [o] Facility investment has a stated price and improves development/reach; actions fail cleanly if cash is insufficient.
 
@@ -96,7 +97,7 @@
   - each listed player has at most one open offer; listed players are not targets of unsolicited bids.
   - with player sales delegated (→WEB-45) the 단장 (→STAFF-20) sets stances at each window opening, by the direction, only for players at 협상 가능: 셀링 클럽 lists non-starters aged 30+, 판매용 육성 (→CLUB-32) lists non-starters aged 21 or under, and 핵심 지키기 marks the three best starters 이적 불가; each change is reported, and the owner may switch any stance back.
 
-- CLUB-23 [o] Own players can be injured in a match: each player who played has 1.8% × (1 + excess fatigue/25) × (1 + max(0, 55 − 체력)/150) × 1.15 when pressing, from the match's own stream (about one injury every five matches).
+- CLUB-23 [o] Players are injured during a match (→MATCH-21): over a full match each player on the pitch has 1.8% × (1 + excess fatigue/25) × (1 + max(0, 55 − 체력)/150) × 1.15 when pressing, in proportion to his minutes, striking at a moment of play from the match's own stream (about one injury a side every five matches); players of clubs nobody owns follow the same rule (→LEAGUE-15).
   - training: each settled round a player training under 하드 (→CLUB-11) has 0.5% × (1 + excess fatigue/25) of an injury, from that round's own stream, drawn from the table below.
   | share | days out | examples |
   |---|---|---|
@@ -256,6 +257,8 @@
   - the catalog keeps every row with its source, and a start or switch marked estimated shows as estimated (→ECON-3).
   - every squad count on screen shows counted players against the limit, and exempt players beside it.
 
+- CLUB-45 [o] A suspended player (→MATCH-19) is unavailable for the matches his ban counts: left out of the automatic and saved XI and the bench, like an injured player. A ban is an inbox item and an event; a player one yellow short of a league ban carries a warning on the squad and lineup.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -265,6 +268,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r42 261019 CLUB-6✎ +the manager names the era's substitutes and the set-piece/penalty takers, never injured or suspended players; CLUB-23✎ own players after the match→every player during it, by minutes; CLUB-45+ suspended players unavailable, bans reported
 - r41 261016 CLUB-5✎ maximum squad size 26→the league's registration limit; CLUB-43✎ squad maximum→registration limit; CLUB-44+ real registration rules by country, division and year (ENG 25/25/22 from 2010/2020, ESP 25, ITA 25 and Serie B 18+2, POR 27/30, BEL 25, age exemptions) and a 40-player ceiling where none applied
 - r40 261016 CLUB-1✎ founding 18→20 players; CLUB-3✎ close top-up to 18 by generated youths→to 20, delegated academy call-ups first; CLUB-33✎ short squad under 18→under 20, +replacement needs before upgrades with daily looks, asking-fee bids (공격적 110%) accepting counters→bids by the 단장's trait; CLUB-40+ squad target 20; CLUB-41+ trait bidding (협상가 80% +5 a day to 100%, none 100%, 속전속결 110%); CLUB-42+ replacement need after a starter's departure or under 20; CLUB-43+ window-close academy call-ups
 - r39 261016 CLUB-35/36/37/39✎ promise lifecycle/reactions open→target-fit external arrivals through next-window deadline, next-day judgement, manager departure cancels/director change retains, no duplicate or postponed commitments, zero additional numerical effects and unchanged window trust evaluation
