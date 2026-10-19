@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
+| v7m3 | ihaelam-ui-MacBookPro | autopilot | 2026-10-19T13:18Z | 2026-10-19T13:18Z | - |
 
 ## inbox
 - 261019 decided T215: 9 of 10 set-piece crosses found nobody in the box (cross completion 6%, defenders 1% of goals) → a set-piece scene for corners and free kicks crossed into the box: the five best headers go up and one waits at the edge, the defenders mark them goal-side and hold the six-yard line with one left upfield, and the men who went up hold 8 s for the second ball (MATCH-18 "delivered into the box for aerial duels and second balls") (alt: raise cross success alone, which leaves set-piece, headed and defender goals red | update-ssot a set-piece rule first)
@@ -163,11 +164,12 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- Browser journeys: every e2e job is green on 93cd68d (261019); the benchmark job's browser step failed from T256 (it still pressed the removed pause button) until the 261019 fix. The CI benchmark job takes about 70 minutes.
+- Browser journeys: every e2e job is green on 93cd68d (261019); the benchmark job's browser step failed from T256 (the removed pause button, then the entry JS/CSS at 256,377 of 256,000 gzip bytes) until the 261019 fixes. The CI benchmark job takes about 70 minutes.
 - T216 (strength curve, explore 3h) next, re-running `scripts/grid-bands.ts` after it (T215 left goals 2.85 and headed goals 19.6% near the top of their bands); then T217–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T203–T214 are done (grid pitch, setup/state, shape, tags, decisions, duels/xG, restarts, `playGrid` loop with records and counters, cards, substitutions and injuries). T224 must bring the grid match (about 38 ms now) down toward the 15 ms criterion of T211; T215 holds all 37 MATCH-23 bands (docs/CALIBRATION.md `격자 엔진 분포 (T215)`). T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 fix web entry budget: the responsibility settings dialog loads when opened; entry JS/CSS 256,377 → 254,413 of 256,000 gzip bytes (ARCH), 43 Chromium journeys that open it pass.
 - 261019 fix benchmark: the mobile latency sample in scripts/first-play.mjs taps the 관전 속도 radios instead of the pause/play buttons T256 removed.
 - 261019 T215 done (r5c2): all 37 MATCH-23 bands hold over 600 and 1,200 grid matches (26/37 at the h8t4 WIP); set-piece scene, deep back line, 50/50 fouls, xG pressure floor; 1132 unit tests pass.
 - 261019 T215 doing (r5c2), taken over from the closed h8t4 WIP on wip/h8t4.
@@ -187,4 +189,3 @@
 - 261019 T257 done: current season list shows 진행 중; publication checks pass (1023 unit, 19 contract, 184 distinct Chromium journeys across full run and fixed-case reruns, type/lint/format/catalog/build). T256 test adapters handle styled selects and simultaneous event cards; ready for main push and CI.
 - 261019 T257 doing (u6k2): release verification found the current season row missing its WEB-54 status; restore the visible marker without changing record data.
 - 261019 T256 publish start: owner requested commit/push; integrate origin/main T200–T202 before ARCH-30 batch verification.
-- 261019 T256 done: speed-only live observation, retained mediation preview and current-condition confirmation; 49 covering Chromium journeys passed across targeted runs, 4 changed unit tests, type/lint/format/build and spec lint pass. No commit/push.

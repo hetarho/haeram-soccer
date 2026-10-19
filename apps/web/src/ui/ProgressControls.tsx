@@ -14,7 +14,6 @@ import { useGameState } from '../runtime/store';
 import { useProgression, type Pace, type ProgressionController } from '../runtime/progression';
 import { transferWindow } from '../../../../packages/engine/src/transfers';
 import { useInterventionDialog } from './state';
-export { ResponsibilitySettings as InterventionSettings } from './ResponsibilitySettings';
 import s from './App.module.css';
 import p from './ProgressControls.module.css';
 
