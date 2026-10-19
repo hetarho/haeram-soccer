@@ -1,10 +1,16 @@
 import { useTaskMemory } from './taskMemory';
+import type { SavedPolicy } from '../../../../packages/contracts/src/types';
 import { describe, expect, it } from 'vitest';
 import { createWorld, operate } from '../../../../packages/engine/src/index';
 import { BUILD_PRESETS } from '../../../../packages/engine/src/build';
 import { matchingPreset } from '../../../../packages/engine/src/presets';
 import { financeProjection } from '../../../../packages/engine/src/projection';
-import { policyOf } from '../../../../packages/engine/src/policy';
+import {
+  POLICY_DEFAULTS,
+  POLICY_INFO,
+  POLICY_KEYS,
+  policyOf,
+} from '../../../../packages/engine/src/policy';
 import {
   replaceDepartment,
   departmentDraft,
@@ -22,8 +28,13 @@ import {
   withTicket,
   withDirection,
   areaBase,
+  currentStepName,
+  stepIndex,
+  stepName,
+  stepValue,
 } from './board';
 import { DIRECTION_AREAS, type AreaKey } from './areas';
+import { TICKET_LEVELS } from './ticketLevels';
 
 const world = () =>
   createWorld({
@@ -305,4 +316,60 @@ it('applies recruitment support only with its own department and retains it acro
   expect(draftCommands(w, rest)).toEqual([
     { type: 'direction', key: 'recruitmentSupport', option: 'director' },
   ]);
+});
+
+describe('dial steps', () => {
+  it('stepValue and stepIndex round-trip every ticket level and policy level', () => {
+    TICKET_LEVELS.forEach((level, index) => {
+      expect(stepValue('ticket', index)).toBe(level.price);
+      expect(stepIndex('ticket', stepValue('ticket', index))).toBe(index);
+      expect(stepName('ticket', level.price)).toBe(level.name);
+    });
+    for (const key of POLICY_KEYS)
+      POLICY_INFO[key].levels.forEach((level, index) => {
+        expect(stepValue(key, index)).toBe(index + 1);
+        expect(stepIndex(key, stepValue(key, index))).toBe(index);
+        expect(stepName(key, index + 1)).toBe(level.name);
+      });
+  });
+  it('a ticket price off the levels reads 사용자 지정', () => {
+    const w = world();
+    w.ticket = TICKET_LEVELS[2].price;
+    expect(currentStepName(w, 'ticket')).toBe(TICKET_LEVELS[2].name);
+    w.ticket = 0.06;
+    expect(TICKET_LEVELS.some((level) => level.price === w.ticket)).toBe(false);
+    expect(currentStepName(w, 'ticket')).toBe('사용자 지정');
+    expect(stepIndex('ticket', w.ticket)).toBe(-1);
+  });
+  it('a missing academy policy reads the default level', () => {
+    const w = world();
+    // An older save's policy has no academy level.
+    const older: SavedPolicy = { ...policyOf(w) };
+    delete older.academy;
+    w.policy = older;
+    expect(currentStepName(w, 'academy')).toBe(
+      POLICY_INFO.academy.levels[POLICY_DEFAULTS.academy - 1].name,
+    );
+    w.policy = { ...older, academy: undefined };
+    expect(currentStepName(w, 'academy')).toBe('기본 운영');
+    w.policy = { ...older, academy: 3 };
+    expect(currentStepName(w, 'academy')).toBe('집중 투자');
+    expect(currentStepName(w, 'recruitment')).toBe('균형');
+  });
+  it('areaSummary still lists card, direction and dial names in order', () => {
+    const w = world();
+    const area = (key: AreaKey) => DIRECTION_AREAS.find((item) => item.key === key)!;
+    send(w, { type: 'build', build: { scouting: 'data' } });
+    send(w, { type: 'policy', key: 'recruitment', level: 5 });
+    send(w, { type: 'policy', key: 'academy', level: 2 });
+    send(w, { type: 'policy', key: 'support', level: 1 });
+    send(w, { type: 'direction', key: 'renewal', option: 'frugal' });
+    // Card first, then each row in the area's order: a dial, then a direction row.
+    expect(areaSummary(w, area('squad'))).toBe('표준 · 긴축 · 짠물');
+    expect(areaSummary(w, area('scouting'))).toBe('데이터 스카우팅 · 즉시 전력 · 균형');
+    // Direction rows before the academy dial, as the youth area lists them.
+    expect(areaSummary(w, area('youth'))).toBe('표준 · 표준 · 표준 · 육성 강화');
+    w.ticket = TICKET_LEVELS[4].price;
+    expect(areaSummary(w, area('local'))).toBe('표준 · 없음 · 없음 · 프리미엄');
+  });
 });

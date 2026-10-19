@@ -33,7 +33,7 @@ import { OvrBadge } from './OvrBadge';
 import { OfferAnswers } from './ClubStaff';
 import { RecruitmentNeeds, ScoutShortlist } from './ScoutShortlist';
 import { openCoachSheet, openDirection } from './state';
-import { policyOf, POLICY_INFO } from '../../../../packages/engine/src/policy';
+import { currentStepName } from './board';
 import s from './RecruitmentDesk.module.css';
 
 type Preview = ReturnType<typeof recruitmentPreview>;
@@ -416,7 +416,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       {/* The recruitment level lives on the operating board (→WEB-71); here it is a line to it. */}
       <button type="button" className={s.policyLine} onClick={() => openDirection('scouting')}>
         <span>
-          영입 기조 · <b>{POLICY_INFO.recruitment.levels[policyOf(w).recruitment - 1].name}</b>
+          영입 기조 · <b>{currentStepName(w, 'recruitment')}</b>
         </span>
         <small>운영 방침에서 바꿔요</small>
       </button>

@@ -10,7 +10,7 @@ import {
 import { LINE_LABEL, lineOf, POSITION_LABEL } from '../../../../packages/engine/src/player';
 import { buildOf, cardOf } from '../../../../packages/engine/src/build';
 import { currentDay, seasonDayLabel, seasonDayOf } from '../../../../packages/engine/src/calendar';
-import { POLICY_DEFAULTS, POLICY_INFO, policyOf } from '../../../../packages/engine/src/policy';
+import { currentStepName } from './board';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { DecisionOwner } from './DecisionOwner';
@@ -60,8 +60,7 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
     summary.intakeDone || today > summary.intakeDay
       ? seasonDayLabel(w.year + 1, seasonDayOf(w.year + 1, 3, 15))
       : `${seasonDayLabel(w.year, summary.intakeDay)} · D-${summary.intakeDay - today}`;
-  const investment =
-    POLICY_INFO.academy.levels[(policyOf(w).academy ?? POLICY_DEFAULTS.academy) - 1].name;
+  const investment = currentStepName(w, 'academy');
   return (
     <div className={s.stack}>
       {arrived && (
