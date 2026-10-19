@@ -66,7 +66,8 @@ export const RESTART_CONFIG = {
   kickoffBackBias: 10,
   offside: {
     base: 0.03,
-    decisions: 200,
+    /** Points of 판단력 per unit of offside chance: 200 on the raw scale, times the grid's skill scale (T216). */
+    decisions: 360,
     linebreaker: 0.1,
     highLine: 0.05,
     highLineFrom: 40,

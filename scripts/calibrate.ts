@@ -1,19 +1,27 @@
 /**
- * Match-outcome calibration harness (MATCH-11, docs/CALIBRATION.md).
+ * Match-outcome calibration harness (MATCH-2, MATCH-22, docs/CALIBRATION.md).
  *
- * Simulates thousands of fixtures per strength-gap bucket on both engine paths (the duel chain
+ * Simulates thousands of fixtures per strength-gap bucket on both engine paths (the grid engine
  * and the team-level summary) and whole 20-club double round robins, and prints them next to
  * real-football targets: a ClubElo-style mapping of one rating point to 16 Elo points, the draw
  * share of top European leagues by expected score, and season-level points per game.
  *
- *   pnpm exec tsx scripts/calibrate.ts            full run (about a minute)
+ *   pnpm exec tsx scripts/calibrate.ts            full run (about an hour; a grid match takes ~40 ms)
  *   pnpm exec tsx scripts/calibrate.ts --quick    smaller samples
- *   options: --matches N (gap sample per path), --tier N (sample per tier), --seasons N,
- *            --only curves|tiers|seasons|own
+ *   options: --engine grid|summary (default both), --matches N (gap sample per path),
+ *            --tier N (sample per tier), --seasons N (summary and Elo rows),
+ *            --grid-seasons N (grid rows), --own-seasons N, --only curves|tiers|seasons|own
  */
 import { ATTRIBUTES } from '../packages/contracts/src/player';
 import { weightsFor } from '../packages/engine/src/player';
-import type { Club, Fixture, Player, Tactic } from '../packages/contracts/src/types';
+import type {
+  Club,
+  Fixture,
+  MatchRecord,
+  Player,
+  Tactic,
+  World,
+} from '../packages/contracts/src/types';
 import {
   activePlayers,
   clubOf,
@@ -25,6 +33,8 @@ import {
   rating,
   simulateMatch,
 } from '../packages/engine/src/index';
+import { playGrid } from '../packages/engine/src/grid/engine';
+import { buildGridSetup } from '../packages/engine/src/grid/setup';
 
 const args = process.argv.slice(2);
 const option = (name: string, fallback: number) => {
@@ -35,6 +45,18 @@ const quick = args.includes('--quick');
 const MATCHES = option('matches', quick ? 6000 : 30000);
 const PER_TIER = option('tier', quick ? 1500 : 4000);
 const SEASONS = option('seasons', quick ? 40 : 200);
+const GRID_SEASONS = option('grid-seasons', quick ? 4 : 20);
+const OWN_SEASONS = option('own-seasons', quick ? 10 : 40);
+
+type Engine = 'grid' | 'summary';
+const engineArg = args.includes('--engine') ? args[args.indexOf('--engine') + 1] : undefined;
+const ENGINES: Engine[] =
+  engineArg === 'grid' || engineArg === 'summary' ? [engineArg] : ['grid', 'summary'];
+/** A fixture's record on one path: the grid engine, or the team-level summary of two unowned clubs. */
+const playOn = (world: World, f: Fixture, engine: Engine): MatchRecord =>
+  engine === 'grid'
+    ? playGrid(buildGridSetup(world, f, { observe: false, recordPlayers: false })).record
+    : simulateMatch(world, f).record;
 
 // ---- Targets ---------------------------------------------------------------------------------
 /** One rating point is worth this many Elo points (a division gap of ~11 points ≈ 175 Elo). */
@@ -147,8 +169,8 @@ const tally = (): Tally => ({
   shots: 0,
   gap: 0,
 });
-function play(t: Tally, f: Fixture, gap: number, duel: boolean) {
-  const { score, metrics } = simulateMatch(w, f, false, duel).record;
+function play(t: Tally, f: Fixture, gap: number, engine: Engine) {
+  const { score, metrics } = playOn(w, f, engine);
   t.n++;
   t.gap += gap;
   if (score.home > score.away) t.w++;
@@ -167,7 +189,7 @@ const pct = (part: number, whole: number) => (whole ? ((100 * part) / whole).toF
 const fixed = (value: number, digits = 2) => (Number.isFinite(value) ? value.toFixed(digits) : '-');
 
 /** Fixtures across the whole gap range, five tiers deep, bucketed by the actual match gap. */
-function gapCurve(duel: boolean) {
+function gapCurve(engine: Engine) {
   const r = random('calibration:gaps');
   const buckets = new Map<number, Tally>();
   const bases = [77, 66, 55, 44, 86];
@@ -179,7 +201,7 @@ function gapCurve(duel: boolean) {
     const gap = gapOf(home, away),
       bucket = Math.max(-35, Math.min(40, Math.round(gap / 5) * 5));
     if (!buckets.has(bucket)) buckets.set(bucket, tally());
-    play(buckets.get(bucket)!, fixture(`cal:gap:${i}`, home, away), gap, duel);
+    play(buckets.get(bucket)!, fixture(`cal:gap:${i}`, home, away), gap, engine);
   }
   return [...buckets.entries()].sort((a, b) => a[0] - b[0]);
 }
@@ -195,7 +217,7 @@ function printCurve(title: string, rows: [number, Tally][]) {
     weight = 0;
   for (const [bucket, t] of rows) {
     const goal = target(t.gap / t.n);
-    if (Math.abs(bucket) <= 30) {
+    if (bucket >= -10 && bucket <= 40) {
       error +=
         Math.abs(goal.w - t.w / t.n) + Math.abs(goal.d - t.d / t.n) + Math.abs(goal.l - t.l / t.n);
       weight += 3;
@@ -205,7 +227,7 @@ function printCurve(title: string, rows: [number, Tally][]) {
     );
   }
   console.log(
-    `\nMean absolute W/D/L error against the target, gaps −30…+30: ${fixed((100 * error) / weight, 1)} points`,
+    `\nMean absolute W/D/L error against the target, gaps −10…+40 (MATCH-2): ${fixed((100 * error) / weight, 1)} points`,
   );
 }
 
@@ -220,25 +242,28 @@ const TIERS: [string, number, number][] = [
 function tierTable() {
   console.log('\n### Ordinary league fixtures per tier (both clubs drawn from the tier range)\n');
   console.log(
-    '| tier | path | home W/D/A % | goals | 5+ margin % | pass % | passes/side | shots/side | duel ÷ summary goals |',
+    '| tier | path | home W/D/A % | goals | 5+ margin % | pass % | passes/side | shots/side | grid ÷ summary goals |',
   );
   console.log('|---|---|---|---:|---:|---:|---:|---:|---:|');
   for (const [label, low, high] of TIERS) {
-    const results = [true, false].map((duel) => {
+    const results = ENGINES.map((engine) => {
       const r = random(`calibration:tier:${label}`),
         t = tally();
       for (let i = 0; i < PER_TIER; i++) {
         const home = poolClub(integer(r, low, high), r()),
           away = poolClub(integer(r, low, high), r());
         if (home === away) continue;
-        play(t, fixture(`cal:tier:${label}:${i}`, home, away), gapOf(home, away), duel);
+        play(t, fixture(`cal:tier:${label}:${i}`, home, away), gapOf(home, away), engine);
       }
       return t;
     });
-    const ratio = results[0].goals / results[0].n / (results[1].goals / results[1].n);
+    const ratio =
+      results.length === 2
+        ? fixed(results[0].goals / results[0].n / (results[1].goals / results[1].n))
+        : '-';
     results.forEach((t, index) =>
       console.log(
-        `| ${label} | ${index ? 'summary' : 'duel'} | ${pct(t.w, t.n)}/${pct(t.d, t.n)}/${pct(t.l, t.n)} | ${fixed(t.goals / t.n)} | ${pct(t.rout, t.n)} | ${pct(t.completed, t.passes)} | ${fixed(t.passes / t.n / 2, 0)} | ${fixed(t.shots / t.n / 2, 1)} | ${index ? '' : fixed(ratio)} |`,
+        `| ${label} | ${ENGINES[index]} | ${pct(t.w, t.n)}/${pct(t.d, t.n)}/${pct(t.l, t.n)} | ${fixed(t.goals / t.n)} | ${pct(t.rout, t.n)} | ${pct(t.completed, t.passes)} | ${fixed(t.passes / t.n / 2, 0)} | ${fixed(t.shots / t.n / 2, 1)} | ${ENGINES[index] === 'grid' ? ratio : ''} |`,
       ),
     );
   }
@@ -262,9 +287,9 @@ interface SeasonSummary {
 }
 type Outcome = (f: Fixture, gap: number, r: () => number) => { home: number; away: number };
 const engineOutcome =
-  (duel: boolean): Outcome =>
+  (engine: Engine): Outcome =>
   (f) =>
-    simulateMatch(w, f, false, duel).record.score;
+    playOn(w, f, engine).score;
 /** Outcomes drawn straight from the target curve: what Elo says this league should look like. */
 const eloOutcome: Outcome = (_f, gap, r) => {
   const goal = target(gap),
@@ -298,8 +323,13 @@ function league(boost: number | undefined, index: number) {
   return clubs;
 }
 
-/** 20-club double round robins; `boost` lifts club 0 that far over the league average. */
-function seasons(boost: number | undefined, outcome: Outcome, tag: string): SeasonSummary {
+/** `total` 20-club double round robins; `boost` lifts club 0 that far over the league average. */
+function seasons(
+  boost: number | undefined,
+  outcome: Outcome,
+  tag: string,
+  total: number,
+): SeasonSummary {
   const summary: SeasonSummary = {
     champion: [],
     bottom: [],
@@ -315,15 +345,15 @@ function seasons(boost: number | undefined, outcome: Outcome, tag: string): Seas
     allDraws: 0,
   };
   const r = random(`calibration:outcomes:${tag}:${boost}`);
-  const count = Math.max(1, Math.round(SEASONS / 10));
+  const count = Math.max(1, Math.round(total / 10));
   for (let index = 0; index < count; index++) {
     const clubs = league(boost, index);
     const gaps = new Map<string, number>();
     for (const home of clubs)
       for (const away of clubs)
         if (home !== away) gaps.set(`${home.id}|${away.id}`, gapOf(home, away));
-    const perLeague = Math.ceil(SEASONS / count);
-    for (let season = 0; season < perLeague && summary.champion.length < SEASONS; season++) {
+    const perLeague = Math.ceil(total / count);
+    for (let season = 0; season < perLeague && summary.champion.length < total; season++) {
       const table = new Map(clubs.map((club) => [club.id, { points: 0, l: 0, d: 0, gd: 0 }]));
       for (const f of fixturesFor(clubs, w.year)) {
         const fx = { ...f, id: `cal:${tag}:${boost}:${index}:${season}:${f.id}` };
@@ -377,23 +407,26 @@ const quantile = (values: number[], q: number) => {
 
 function seasonTable() {
   console.log(
-    `\n### 20-club seasons (${SEASONS} seasons per row; ordinary leagues 72–82, leagues with a dominant club 62–72 plus that club; Elo rows draw outcomes from the target curve)\n`,
+    `\n### 20-club seasons (${SEASONS} seasons per Elo and summary row, ${GRID_SEASONS} per grid row; ordinary leagues 72–82, leagues with a dominant club 62–72 plus that club; Elo rows draw outcomes from the target curve)\n`,
   );
   console.log(
-    '| league | outcomes | champion PPG (p10–p90) | bottom PPG | dominant rating gap | dominant PPG | dominant titles % | dominant unbeaten % | dominant L/D per season | goals | home W % | draws % |',
+    '| league | outcomes | seasons | champion PPG (p10–p90) | bottom PPG | dominant rating gap | dominant PPG | dominant titles % | dominant unbeaten % | dominant L/D per season | goals | home W % | draws % |',
   );
-  console.log('|---|---|---|---:|---:|---:|---:|---:|---|---:|---:|---:|');
+  console.log('|---|---|---:|---|---:|---:|---:|---:|---:|---|---:|---:|---:|');
   for (const boost of [undefined, 10, 15, 20, 25]) {
-    for (const [label, outcome] of [
-      ['Elo target', eloOutcome],
-      ['duel', engineOutcome(true)],
-      ['summary', engineOutcome(false)],
-    ] as [string, Outcome][]) {
-      const s = seasons(boost, outcome, label);
+    for (const [label, outcome, total] of [
+      ['Elo target', eloOutcome, SEASONS],
+      ...ENGINES.map((engine) => [
+        engine,
+        engineOutcome(engine),
+        engine === 'grid' ? GRID_SEASONS : SEASONS,
+      ]),
+    ] as [string, Outcome, number][]) {
+      const s = seasons(boost, outcome, label, total);
       const n = s.champion.length;
       const dominant = boost !== undefined;
       console.log(
-        `| ${dominant ? `+${boost} club` : 'ordinary'} | ${label} | ${fixed(mean(s.champion))} (${fixed(quantile(s.champion, 0.1))}–${fixed(quantile(s.champion, 0.9))}) | ${fixed(mean(s.bottom))} | ${dominant ? `+${fixed(s.gap / n, 1)}` : '-'} | ${dominant ? fixed(mean(s.dominant)) : '-'} | ${dominant ? pct(s.title, n) : '-'} | ${dominant ? pct(s.unbeaten, n) : '-'} | ${dominant ? `${fixed(s.losses / n, 1)}/${fixed(s.draws / n, 1)}` : '-'} | ${label === 'Elo target' ? '-' : fixed(s.goals / s.matches)} | ${pct(s.homeWins, s.matches)} | ${pct(s.allDraws, s.matches)} |`,
+        `| ${dominant ? `+${boost} club` : 'ordinary'} | ${label} | ${n} | ${fixed(mean(s.champion))} (${fixed(quantile(s.champion, 0.1))}–${fixed(quantile(s.champion, 0.9))}) | ${fixed(mean(s.bottom))} | ${dominant ? `+${fixed(s.gap / n, 1)}` : '-'} | ${dominant ? fixed(mean(s.dominant)) : '-'} | ${dominant ? pct(s.title, n) : '-'} | ${dominant ? pct(s.unbeaten, n) : '-'} | ${dominant ? `${fixed(s.losses / n, 1)}/${fixed(s.draws / n, 1)}` : '-'} | ${label === 'Elo target' ? '-' : fixed(s.goals / s.matches)} | ${pct(s.homeWins, s.matches)} | ${pct(s.allDraws, s.matches)} |`,
       );
     }
   }
@@ -414,8 +447,8 @@ function shape(player: Player, level: number) {
 
 /**
  * The owner's club with every player rated `level`, a manager of `ability` and morale `morale`,
- * in a 20-club league of 72–82 clubs. Every league fixture plays the duel chain, as the own
- * league does in the game; fatigue and morale stay fixed so each row is one steady state.
+ * in a 20-club league of 72–82 clubs. The own club's fixtures play the grid engine (MATCH-22), the
+ * others the summary; fatigue and morale stay fixed so each row is one steady state.
  */
 function ownSeasons(level: number, ability: number, morale: number, tactic: Tactic) {
   const own = createWorld({
@@ -449,15 +482,14 @@ function ownSeasons(level: number, ability: number, morale: number, tactic: Tact
   });
   const clubs = [club, ...rivals];
   const result = { ppg: [] as number[], title: 0, unbeaten: 0, losses: 0, draws: 0 };
-  for (let season = 0; season < SEASONS; season++) {
+  for (let season = 0; season < OWN_SEASONS; season++) {
     const table = new Map(clubs.map((c) => [c.id, { points: 0, l: 0, d: 0, gd: 0 }]));
     for (const f of fixturesFor(clubs, own.year)) {
-      const { score } = simulateMatch(
+      const { score } = playOn(
         own,
         { ...f, id: `own:${season}:${f.id}` },
-        false,
-        true,
-      ).record;
+        f.home === club.id || f.away === club.id ? 'grid' : 'summary',
+      );
       const home = table.get(f.home)!,
         away = table.get(f.away)!;
       home.gd += score.home - score.away;
@@ -492,7 +524,7 @@ function ownSeasons(level: number, ability: number, morale: number, tactic: Tact
 
 function ownTable() {
   console.log(
-    `\n### The owner's club in a 72–82 league (${SEASONS} seasons per row, all fixtures on the duel chain)\n`,
+    `\n### The owner's club in a 72–82 league (${OWN_SEASONS} seasons per row, its fixtures on the grid engine, the rest on the summary)\n`,
   );
   console.log(
     '| own XI | league XI | manager / morale | tactic | strength edge (home/away) | PPG | titles % | unbeaten % | L/D per season |',
@@ -508,21 +540,23 @@ function ownTable() {
     const s = ownSeasons(level, ability, morale, tactic);
     const edge = s.rating - s.league + s.extra;
     console.log(
-      `| ${s.rating} | ${fixed(s.league, 1)} | ${ability} / ${morale} | ${tactic} | +${fixed(edge + 3, 1)} / +${fixed(edge, 1)} | ${fixed(mean(s.ppg))} | ${pct(s.title, SEASONS)} | ${pct(s.unbeaten, SEASONS)} | ${fixed(s.losses / SEASONS, 1)}/${fixed(s.draws / SEASONS, 1)} |`,
+      `| ${s.rating} | ${fixed(s.league, 1)} | ${ability} / ${morale} | ${tactic} | +${fixed(edge + 3, 1)} / +${fixed(edge, 1)} | ${fixed(mean(s.ppg))} | ${pct(s.title, OWN_SEASONS)} | ${pct(s.unbeaten, OWN_SEASONS)} | ${fixed(s.losses / OWN_SEASONS, 1)}/${fixed(s.draws / OWN_SEASONS, 1)} |`,
     );
   }
 }
 
 const started = performance.now();
 console.log(
-  `# Match calibration — ${MATCHES} gap fixtures and ${PER_TIER} tier fixtures per path, ${SEASONS} seasons per row`,
+  `# Match calibration (${ENGINES.join(' and ')}) — ${MATCHES} gap fixtures and ${PER_TIER} tier fixtures per path`,
 );
 const only = args.includes('--only') ? args[args.indexOf('--only') + 1] : undefined;
-if (!only || only === 'curves') {
-  printCurve('Duel chain (own club and own-league fixtures)', gapCurve(true));
-  printCurve('Team-level summary (every other fixture)', gapCurve(false));
-}
+const TITLES: Record<Engine, string> = {
+  grid: 'Grid engine (own club and own-league fixtures)',
+  summary: 'Team-level summary (every other fixture)',
+};
+if (!only || only === 'curves')
+  for (const engine of ENGINES) printCurve(TITLES[engine], gapCurve(engine));
 if (!only || only === 'tiers') tierTable();
 if (!only || only === 'seasons') seasonTable();
-if (!only || only === 'own') ownTable();
+if ((!only || only === 'own') && ENGINES.includes('grid')) ownTable();
 console.log(`\n_${((performance.now() - started) / 1000).toFixed(1)} s_`);

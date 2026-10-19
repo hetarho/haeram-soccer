@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { ATTRIBUTES } from '../../../contracts/src/player';
 import { createWorld } from '../index';
 import { levelFactor, FORMATIONS, lineOf } from '../player';
-import { fatigueLoad, unhappyPenalty } from '../world';
+import { fatigueLoad, slotOvr, unhappyPenalty } from '../world';
 import { cellOf } from './pitch';
 import { buildGridSetup } from './setup';
-import { createState, enterSlot, minutesOn, skill } from './state';
+import { createState, enterSlot, minutesOn, skill, STRENGTH_CONFIG } from './state';
 
 const w = createWorld({
   country: 'ENG',
@@ -49,13 +49,30 @@ describe('grid state', () => {
     const slot = FORMATIONS[su.tactics[side]].slots[idx]!;
     for (const a of ATTRIBUTES) {
       const keeper = a === 'reflexes' || a === 'handling';
-      const expected =
+      const raw =
         p.attrs[a] * levelFactor(p.positions, slot.position) * su.multiplier[side](p) -
         fatigueLoad(p.fatigue) / (keeper ? 10 : 8) -
         unhappyPenalty(p) +
         su.shift[side];
+      const expected = STRENGTH_CONFIG.anchor + (raw - s.level) * STRENGTH_CONFIG.skillScale;
       expect(skill(s, side, idx, a), a).toBeCloseTo(expected, 9);
     }
+  });
+
+  it("reads skills from the match's level, the mean 실효 OVR of both starting XIs", () => {
+    const su = setup();
+    const s = createState(su);
+    let sum = 0;
+    for (const side of [0, 1] as const)
+      su.rosters[side].slice(0, 11).forEach((p, i) => {
+        sum += slotOvr(p, FORMATIONS[su.tactics[side]].slots[i]!, su.multiplier[side](p));
+      });
+    expect(s.level).toBeCloseTo(sum / 22, 9);
+    // A player at the match's level, before the day's shift, plays at the anchor.
+    const gp = s.players[0][5]!;
+    const i = ATTRIBUTES.indexOf('pace');
+    gp.base[i] = s.level - su.shift[0];
+    expect(skill(s, 0, 5, 'pace')).toBeCloseTo(STRENGTH_CONFIG.anchor, 9);
   });
 
   it('drains skills with minutes and press', () => {
@@ -69,7 +86,10 @@ describe('grid state', () => {
     const rate =
       (((100 - gp.player.attrs.stamina) / 12) * (su.pressing[side] ? 1.3 : 1) * su.drain[side]) /
       90;
-    expect(skill(s, side, 5, 'pace')).toBeCloseTo(before - rate * 45, 9);
+    expect(skill(s, side, 5, 'pace')).toBeCloseTo(
+      before - rate * 45 * STRENGTH_CONFIG.skillScale,
+      9,
+    );
     gp.onAt = 45 * 60;
     expect(skill(s, side, 5, 'pace')).toBeCloseTo(before, 9);
     expect(skill(s, side, 5, 'pace')).toBeGreaterThan(before - 1);

@@ -243,11 +243,23 @@ describe('grid decisions', () => {
     const ahead = mixAt(CM, at, (t) => ({ ...t, lead: 1, minute: 85 }));
     const earlyAhead = mixAt(CM, at, (t) => ({ ...t, lead: 1, minute: 30 }));
     expect(ahead.takeOn).toBeLessThan(level.takeOn);
-    expect(earlyAhead.takeOn).toBeCloseTo(level.takeOn, 9);
+    // Early on only the lead's shot ease applies, so take-ons keep their ratio to passes.
+    expect(earlyAhead.takeOn / earlyAhead.pass).toBeCloseTo(level.takeOn / level.pass, 9);
     const deep = centre(1, 2);
     expect(mixAt(CM, deep, (t) => ({ ...t, lead: 1, minute: 85 })).clearance).toBeGreaterThan(
       mixAt(CM, deep, (t) => ({ ...t, lead: 0, minute: 85 })).clearance,
     );
+  });
+
+  it('shoots less when ahead and more when behind, all match long', () => {
+    const at = centre(6, 2);
+    const shot = (lead: number) => mixAt(ST, at, (t) => ({ ...t, lead, minute: 20 })).shot;
+    const most = DECISION_CONFIG.leading.maxLead;
+    expect(shot(1)).toBeLessThan(shot(0));
+    expect(shot(most)).toBeLessThan(shot(most - 1));
+    expect(shot(most + 1)).toBeCloseTo(shot(most), 9);
+    expect(shot(-1)).toBeGreaterThan(shot(0));
+    expect(shot(-most - 1)).toBeCloseTo(shot(-most), 9);
   });
 
   it('distributes short more often as a sweeper keeper than a shot stopper', () => {

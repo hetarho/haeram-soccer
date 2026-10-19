@@ -18,7 +18,7 @@ import {
 import type { Point } from './pitch';
 import { computeTags } from './tags';
 import { gridKit } from './testkit';
-import type { GridState } from './state';
+import { strengthScaled, type GridState } from './state';
 
 /** Every player at 60 with no day shift or drain, parked far away; side 0 carrier `slot` at `at`. */
 function scene(slot: number, at: Point) {
@@ -227,7 +227,8 @@ describe('grid open-play resolution', () => {
     const sc = scene(9, [92, 34]);
     const { s } = sc;
     const ctx = shotContext(s);
-    expect(ctx.levelFactor).toBeCloseTo(finishing(60, 60), 9);
+    const at60 = strengthScaled(s, 60);
+    expect(ctx.levelFactor).toBeCloseTo(finishing(at60, at60), 9);
     const o = resolveShot(s, 0, 9, sc.tags(), ctx, random('record'));
     expect(o.kind).toBe('shot');
     if (o.kind === 'shot') {

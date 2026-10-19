@@ -2,7 +2,7 @@
 import { ATTRIBUTES, type Attribute } from '../../../contracts/src/player';
 import type { Player } from '../../../contracts/src/types';
 import { FORMATIONS, levelFactor, lineOf } from '../player';
-import { fatigueLoad, unhappyPenalty } from '../world';
+import { fatigueLoad, slotOvr, unhappyPenalty } from '../world';
 import { attackFrame, PITCH, type Point } from './pitch';
 import type { GridSetup } from './setup';
 import { SPOTS } from './spots';
@@ -51,6 +51,8 @@ export interface GridState {
   possessionSince: number;
   /** Each side's substitutions and injuries so far (→MATCH-20, §8.1). */
   changes: [SideChanges, SideChanges];
+  /** The match's level: the mean 실효 OVR of both starting XIs at kick-off. */
+  level: number;
 }
 
 /** What a side has used of its changes and what is still owed at the next stoppage. */
@@ -172,9 +174,21 @@ export function createState(setup: GridSetup): GridState {
     0,
     slots.findIndex((s) => lineOf(s.position) === 'FW'),
   );
+  let level = 0,
+    starters = 0;
+  for (const side of [0, 1] as const)
+    for (const gp of players[side].slice(0, 11)) {
+      level += slotOvr(
+        gp.player,
+        FORMATIONS[setup.tactics[side]].slots[gp.slot]!,
+        setup.multiplier[side](gp.player),
+      );
+      starters++;
+    }
   return {
     setup,
     players,
+    level: starters ? level / starters : 60,
     ball: [PITCH.length / 2, PITCH.width / 2],
     owner: [0, taker],
     possession: 0,
@@ -192,6 +206,17 @@ export function minutesOn(s: GridState, gp: GridPlayer): number {
   return (s.elapsed - gp.onAt) / 60;
 }
 
+/**
+ * How the duels feel a skill point (→MATCH-2, MATCH-22, T216): a skill counts by its distance from the
+ * match's level, spread by `skillScale` around `anchor` — the level T215 set the distributions at — so a
+ * strength gap plays the same at every tier.
+ */
+export const STRENGTH_CONFIG = { skillScale: 1.8, anchor: 76 } as const;
+
+/** A raw skill value on the duels' scale. */
+export const strengthScaled = (s: GridState, raw: number) =>
+  STRENGTH_CONFIG.anchor + (raw - s.level) * STRENGTH_CONFIG.skillScale;
+
 /** A player's attribute now: his base at the slot, the day's shift, minus what his minutes have drained. */
 export function skill(s: GridState, side: 0 | 1, idx: number, a: Attribute): number {
   const gp = s.players[side][idx]!;
@@ -201,7 +226,10 @@ export function skill(s: GridState, side: 0 | 1, idx: number, a: Attribute): num
       (setup.pressing[side] ? 1.3 : 1) *
       setup.drain[side]) /
     90;
-  return gp.base[ATTRIBUTES.indexOf(a)]! + setup.shift[side] - rate * minutesOn(s, gp);
+  return strengthScaled(
+    s,
+    gp.base[ATTRIBUTES.indexOf(a)]! + setup.shift[side] - rate * minutesOn(s, gp),
+  );
 }
 
 /** Puts a player into a slot and recomputes his base for it. */

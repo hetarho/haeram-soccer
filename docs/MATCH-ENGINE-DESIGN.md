@@ -222,10 +222,11 @@ export interface DecideRule { first?: Score; awayGoals: boolean } // first-leg s
 For each roster player and his current slot (bench players use the slot they enter):
 
 - `base[a] = attrs[a] × levelFactor(positions, slot.position) × multiplier(p) − load/8 (load/10 for reflexes and handling) − unhappyPenalty(p)`, with `load = fatigueLoad(p.fatigue)`.
-- `skill(side, idx, a, t) = base[a] + shift[side] − drainRate(p) × minutesOnPitch(t)`
+- `raw(side, idx, a, t) = base[a] + shift[side] − drainRate(p) × minutesOnPitch(t)`
 - `drainRate(p) = (100 − stamina) / 12 × (pressing ? 1.3 : 1) × drain[side] / 90` per minute.
+- `skill = anchor + (raw − level) × skillScale` (`STRENGTH_CONFIG`, T216): `level` is the mean 실효 OVR of both starting XIs at kick-off, so a strength gap plays the same at every tier, and `anchor` (76) is the level T215 set the distributions at.
 
-These are the existing constants from `matchSkills`.
+`base` and the drain are the existing constants from `matchSkills`.
 
 The 16 attribute keys are those of `ATTRIBUTES`. Recompute `base` when a substitute enters or when a player changes slot.
 

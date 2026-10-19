@@ -87,6 +87,9 @@
 - 261014 decided CLUB-33: a new club's first window → founding is its opening: the shortlist, the requests and the window start at founding (alt: wait for the 4th round)
 - 261014 decided CLUB-33: the 단장's order within a requested role → the manager's pick first even when he costs a fee and a free agent of the role is listed (alt: free agents first over the pick) — the rule names the pick first
 - 261014 suggest -: club-direction added 15 tasks (T086–T100) in one day — run review-code on apps/web/src/ui and packages/engine/src before the next feature
+- 261019 decided T216 MATCH-2 MATCH-22: the task's `60 + (raw − 60) × skillScale` kept grid goals tied to the tier's absolute level (same-tier goals 1.9–3.4 against the summary's 2.6–2.7, worse as the scale grows, because 판단력 temperature, cut-back and offside formulas compare skills with fixed points) → skills spread around the match's own level: `anchor + (raw − level) × skillScale`, level = the mean 실효 OVR of both starting XIs, anchor 76 (T215's level), scale 1.8 (alt: keep the 60 centre and retune every fixed-point slope | anchors 64–72, which pushed offsides to 3.9 a team and penalty goals to 5.4%)
+- 261019 decided T216 MATCH-16: favourites kept scoring at large gaps (4.3–4.8 goals at +25…+40, the summary 3.2–3.6) and small gaps drew 18% → MATCH-16's score effects all match long: a leading side's shot weight ×0.6 and a trailing side's ×1.4 per goal, up to three; `shotScale` 0.19, `crossScale` 7.2 and `headerPressure` 1 put shots, crosses and headed goals back in their MATCH-23 bands, and the offside 판단력 slope widens to 360 by the skill scale (alt: saturate skill deviations with 30·tanh, which cut a +40 favourite's wins to 81–85% | keep the late-only effects)
+- 261019 suggest T216 MATCH-8: at equal strength press beats every other grid tactic (v counter 90%+ with 24 shots to 6, v possession 73%, v balanced 69%; same-tactic matches draw 23–25%), which holds equal-side draws at 21% (target 22–32%) and inflates mismatched goals; press enters the counter side's box 53 times a match (counter 5, balanced v balanced 24–33), its midfield line (shadow striker, box-to-box) takes 57% of its shots, and press settings and the counter block barely move it → a grid tactic-balance explore task before T218 switches the owner's matches to the grid, with per-matchup bands under MATCH-8; `calibration.test.ts` skips the grid's equal-side draw case until then
 
 ## ideation
 | id | st |
@@ -124,7 +127,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T216 | Calibrate the grid engine's strength curve (explore 3h) | MATCH | T215 | todo |
 | T217 | Playback frames and Korean commentary from the grid trace | MATCH WEB | T216 | todo |
 | T218 | Switch the owner's matches to the grid engine and its playback | MATCH WEB | T217 | todo |
 | T219 | Suspensions, yellow accumulation and unavailable players | MATCH CLUB LEAGUE | T218 | todo |
@@ -174,6 +176,7 @@
 
 ## next
 - inspect work board for remaining tasks
+- Before T218 puts the owner's matches on the grid: plan the grid tactic-balance task the T216 inbox suggests (press beats every other tactic at equal strength); T217 (playback frames) does not depend on it. T216 left the grid's skills spread around the match level (`STRENGTH_CONFIG`) and its equal-side draw case skipped; re-run `scripts/calibrate.ts --engine grid` and `scripts/grid-bands.ts` after any change to tactics or duels. Then T217–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T203–T214 are done (grid pitch, setup/state, shape, tags, decisions, duels/xG, restarts, `playGrid` loop with records and counters, cards, substitutions and injuries). T224 must bring the grid match (about 38 ms now) down toward the 15 ms criterion of T211; T215 holds all 37 MATCH-23 bands (docs/CALIBRATION.md `격자 엔진 분포 (T215)`). T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
 
 ## log
 - 261020 create-architecture ARCH r13: ARCH-30✎ tasks never run browser specs (per-task e2e took too long); Chromium journeys only in the batch run right before a push to main, which confirms e2e acceptance items.
