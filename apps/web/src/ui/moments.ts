@@ -14,7 +14,20 @@ export function recordedGoals(record: MatchRecord) {
     });
 }
 
-export function sampleAtMinute(frames: MatchFrame[], samples: { frame: number }[], minute: number) {
-  const index = samples.findIndex((sample) => (frames[sample.frame]?.minute ?? 0) >= minute);
-  return index < 0 ? Math.max(0, samples.length - 1) : index;
+/** A place to seek to: kick-off, half-time, the final whistle or a recorded match minute. */
+export type Moment = 'kickoff' | 'halfTime' | 'fullTime' | number;
+
+/**
+ * The sample a moment opens on: the first, the second half's first, the last, or the first of the
+ * minute; added minutes are frames of their own, so the final whistle is the last frame.
+ */
+export function sampleAt(frames: MatchFrame[], samples: { frame: number }[], moment: Moment) {
+  if (!samples.length) return 0;
+  if (moment === 'kickoff') return 0;
+  if (moment === 'fullTime') return samples.length - 1;
+  const index = samples.findIndex((sample) => {
+    const frame = frames[sample.frame];
+    return moment === 'halfTime' ? (frame?.period ?? 1) >= 2 : (frame?.minute ?? 0) >= moment;
+  });
+  return index < 0 ? samples.length - 1 : index;
 }

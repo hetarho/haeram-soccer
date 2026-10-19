@@ -83,51 +83,54 @@ export function archivedScorers(w: World): SeasonArchive['scorers'] {
     }));
 }
 
-/** Contributions share the exact goal events used by highlights, including background games. */
+/**
+ * Contributions share the exact goal events used by highlights, including background games; every
+ * record line that played counts one appearance for its side.
+ */
 export function recordScorers(w: World, playback: MatchPlayback) {
   if (!isScoringFixture(w, playback.record)) return;
   const season = w.scorerSeason!;
-  const contributions = new Map(
-    playback.record.players.map((player) => [player.id, player.metrics]),
+  const members = new Map(
+    playback.squads.flatMap((squad, side) => squad.map((p) => [p.id, { p, side }] as const)),
   );
   const indices = new Map(season.players.map((player, index) => [player.id, index]));
-  for (const side of [0, 1] as const) {
-    const club = side === 0 ? playback.record.home : playback.record.away;
-    for (const player of playback.squads[side]) {
-      const metrics = contributions.get(player.id);
-      if (!metrics) throw new Error('득점 기록에 경기 선수 지표가 없습니다.');
-      let index = indices.get(player.id);
-      if (index === undefined) {
-        index = season.players.length;
-        indices.set(player.id, index);
-        season.players.push({
-          id: player.id,
-          name: player.name,
-          club,
-          position: player.position,
-          goals: 0,
-          appearances: 0,
-        });
-      }
-      const scorer = season.players[index];
-      if (scorer.club !== club) {
-        scorer.clubs ??= [
-          { club: scorer.club, goals: scorer.goals, appearances: scorer.appearances },
-        ];
-        scorer.club = club;
-      }
-      if (scorer.clubs) {
-        let contribution = scorer.clubs.find((part) => part.club === club);
-        if (!contribution) {
-          contribution = { club, goals: 0, appearances: 0 };
-          scorer.clubs.push(contribution);
-        }
-        contribution.goals += metrics[0];
-        contribution.appearances++;
-      }
-      scorer.goals += metrics[0];
-      scorer.appearances++;
+  for (const { id, metrics } of playback.record.players) {
+    if (!(metrics[10]! > 0)) continue;
+    const member = members.get(id);
+    if (!member) throw new Error('득점 기록의 선수가 경기 명단에 없습니다.');
+    const player = member.p;
+    const club = member.side === 0 ? playback.record.home : playback.record.away;
+    let index = indices.get(id);
+    if (index === undefined) {
+      index = season.players.length;
+      indices.set(id, index);
+      season.players.push({
+        id,
+        name: player.name,
+        club,
+        position: player.position,
+        goals: 0,
+        appearances: 0,
+      });
     }
+    const scorer = season.players[index];
+    if (scorer.club !== club) {
+      scorer.clubs ??= [
+        { club: scorer.club, goals: scorer.goals, appearances: scorer.appearances },
+      ];
+      scorer.club = club;
+    }
+    if (scorer.clubs) {
+      let contribution = scorer.clubs.find((part) => part.club === club);
+      if (!contribution) {
+        contribution = { club, goals: 0, appearances: 0 };
+        scorer.clubs.push(contribution);
+      }
+      contribution.goals += metrics[0];
+      contribution.appearances++;
+    }
+    scorer.goals += metrics[0];
+    scorer.appearances++;
   }
 }
 

@@ -100,7 +100,7 @@ const lostRecently = (s: GridState, side: 0 | 1, seconds: number) =>
   s.lastLoss !== undefined && s.lastLoss.side === side && s.elapsed - s.lastLoss.at < seconds;
 
 /** The pressers of a side while it defends, as roster indexes. */
-function pressers(s: GridState, side: 0 | 1): number[] {
+export function pressers(s: GridState, side: 0 | 1): number[] {
   const cfg = SHAPE_CONFIG.tactic[s.setup.tactics[side]];
   const reach = lostRecently(s, side, SHAPE_CONFIG.counterPressSeconds)
     ? Math.max(cfg.press, cfg.counterPress)
@@ -122,7 +122,7 @@ function pressers(s: GridState, side: 0 | 1): number[] {
 }
 
 /** Values every player of a side shares in one step, computed once per side (a pure speed-up of `targetOf`). */
-interface ShapeCache {
+export interface ShapeCache {
   offside: [number?, number?];
   pressers: [number[]?, number[]?];
   defence: [number?, number?];

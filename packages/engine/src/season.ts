@@ -279,7 +279,7 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     gate(w, m);
     // Every starter settles a little by the slot he played (→PLAYER-12).
     const ownSide = m.home === w.playerClub ? 0 : 1;
-    settleStarts(w, playback.squads[ownSide], m.tactics[ownSide]);
+    settleStarts(w, playback.squads[ownSide].slice(0, 11), m.tactics[ownSide]);
     // A pressing manager adds load; a synergy built for pressing takes some of it off.
     const extraLoad = managerStyleEffects(w).fatigueCost - synergyEffects(w).fatigueRelief;
     for (const line of saved.players) {

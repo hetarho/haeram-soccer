@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import { createWorld, simulateMatch, nextOwnFixture } from '../../../../packages/engine/src/index';
-import { recordedGoals, sampleAtMinute } from './moments';
+import { recordedGoals, sampleAt } from './moments';
 it('orders recorded goals, keeps penalty decisions distinct and maps actual samples', () => {
   const w = createWorld({
     country: 'ENG',
@@ -20,8 +20,14 @@ it('orders recorded goals, keeps penalty decisions distinct and maps actual samp
     [70, 1, 1],
   ]);
   const samples = frames.flatMap((frame, i) => (frame.motion || [frame]).map(() => ({ frame: i })));
-  expect(frames[samples[sampleAtMinute(frames, samples, 45)].frame].minute).toBe(45);
-  expect(sampleAtMinute([], [], 45)).toBe(0);
+  expect(frames[samples[sampleAt(frames, samples, 30)].frame].label).toBe('30');
+  // Half-time opens the second half; the final whistle is the last frame, added minutes included.
+  const second = frames[samples[sampleAt(frames, samples, 'halfTime')].frame];
+  expect([second.period, second.label]).toEqual([2, '46']);
+  expect(samples[sampleAt(frames, samples, 'fullTime')].frame).toBe(frames.length - 1);
+  expect(frames.at(-1)!.label).toMatch(/^90(\+\d+)?$/);
+  expect(sampleAt(frames, samples, 'kickoff')).toBe(0);
+  expect(sampleAt([], [], 45)).toBe(0);
   record.highlights = [];
   expect(recordedGoals(record)).toEqual([]);
 });

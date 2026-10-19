@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import type { Fixture, Player } from '../../../contracts/src/types';
-import { MATCH_MOTION_CONFIG } from '../motion';
 import { createWorld, isInjured, ownStarters, squad } from '../index';
+import { MATCH_MOTION_CONFIG } from './playback';
 import { benchFor, buildGridSetup, eraRules, takersFor } from './setup';
-import { ROLE_SHIFT, SPOTS } from './spots';
+import { SPOTS } from './spots';
 
 const w = createWorld({
   country: 'ENG',
@@ -132,16 +132,16 @@ describe('grid setup', () => {
     expect(typeof b.r()).toBe('number');
   });
 
-  it('keeps the formation spots equal to the motion config in metres', () => {
-    for (const tactic of ['balanced', 'possession', 'counter', 'press'] as const)
-      MATCH_MOTION_CONFIG.formations[tactic].forEach((u, slot) => {
-        expect(SPOTS[tactic][slot]![0]).toBeCloseTo(u[0]! * 1.05, 9);
-        expect(SPOTS[tactic][slot]![1]).toBeCloseTo(u[1]! * 0.68, 9);
+  it('gives the UI the formation spots in pitch units', () => {
+    for (const tactic of ['balanced', 'possession', 'counter', 'press'] as const) {
+      const spots = MATCH_MOTION_CONFIG.formations[tactic];
+      expect(spots).toHaveLength(11);
+      expect(spots[0]![0]).toBeCloseTo(5, 9);
+      expect(spots[0]![1]).toBeCloseTo(50, 9);
+      spots.forEach((u, slot) => {
+        expect(SPOTS[tactic][slot]![0]).toBeCloseTo(u[0] * 1.05, 9);
+        expect(SPOTS[tactic][slot]![1]).toBeCloseTo(u[1] * 0.68, 9);
       });
-    for (const [role, shift] of Object.entries(MATCH_MOTION_CONFIG.roleShift)) {
-      const got = ROLE_SHIFT[role as keyof typeof ROLE_SHIFT]!;
-      expect(got[0]).toBeCloseTo(shift![0]! * 1.05, 9);
-      expect(got[1]).toBeCloseTo(shift![1]! * 0.68, 9);
     }
   });
 });

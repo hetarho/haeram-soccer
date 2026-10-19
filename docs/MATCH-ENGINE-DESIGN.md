@@ -53,7 +53,7 @@ Reference data:
 | `playback.ts` | trace to `MatchFrame[]` | T217 |
 
 - `packages/engine/src/match.ts` keeps `simulateMatch`, the setup of strength/form/shift (§3.1), the probabilistic path (`summaryMatch`, §11) and the path dispatch (§12). `duelMatch` and the zone helpers are deleted in T218.
-- `packages/engine/src/motion.ts` is replaced by `grid/playback.ts` in T217–T218. Its `MATCH_MOTION_CONFIG.formations` and `ball` sub-objects move to `grid/shape.ts` and `grid/playback.ts`, and stay re-exported under the same names for the UI (`FormationPitch.tsx` and `Pitch.tsx` import them).
+- `packages/engine/src/motion.ts` is replaced by `grid/playback.ts` in T217–T218. `MATCH_MOTION_CONFIG` now lives in `grid/playback.ts` (`formations` from `grid/spots.ts` in pitch units, `ball.maxLoft` from `PLAYBACK_CONFIG`) with `motionTraits` and `teamMotionProfile`, and `match.ts` re-exports them for the UI (`FormationPitch.tsx` and `Pitch.tsx` import them).
 
 ---
 
@@ -717,19 +717,23 @@ export interface MatchMaterial {
 
 ### 10.1 Trace
 
-When `observe` is set, `trace.ts` appends one `TraceEntry` per action, restart and incident:
+When `observe` is set, `trace.ts` appends one `TraceEntry` per action and restart, and one per incident (a card, a substitution, an injury, each period's start and end whistle; `outcome: 'incident'`). A card found while an action resolves follows that action's entry. Tracing only reads the state and never draws from the match stream.
 
 ```ts
-{ period, t, kind, side, actor, receiver?, opponent?, from, to, ok, lost, outcome, xg, header, restart, card,
-  cell, tags: { betweenLines, inBehind, pocket, channel, phase }, positions: Float32Array /* 22×2 engine-frame metres, NaN when off */ }
+{ elapsed, period, t, side, idx /* -1 for a whistle */, action, outcome, from?, ball,
+  receiver?, by?: [side, idx] /* interceptor, tackler, keeper, blocker, loose winner, fouler */, on?, to? /* where the ball ended */,
+  kind? /* pass kind, or how a restart was played */, lineBreaking?, spot?, dead?, shotAt?, result?, xg?, header?, other?, reason?,
+  cell?, tags?: { phase, orientation, betweenLines, pocket, inBehind, channel, overload },
+  positions: Float32Array /* 22×2 engine-frame metres by slot, NaN when empty */, slots: Int8Array /* roster index per slot */,
+  targets: Float32Array, states: Uint8Array /* MOTION_STATES index */, totals: Float64Array /* Tally.running() */ }
 ```
 
 ### 10.2 Frames
 
-`buildFrames(result, setup): MatchFrame[]` makes one frame per match minute of each period, including added minutes, so a frame count of 90 + added (+ extra time) is expected. For each minute:
+`buildFrames(result, setup, seed): MatchFrame[]` (`seed` is the world seed) makes one frame per match minute of each period, including added minutes, so a frame count of 90 + added (+ extra time) is expected; `MatchEvent`/`MatchFrame` are §2.4's shapes in the contracts (T218). For each minute:
 - `score`, `metrics` and `xg` are cumulative at the minute's end.
 - `side` is the side in possession longest during the minute.
-- `player` and `action` come from its last entry. Labels: 패스, 크로스, 컷백, 운반, 돌파, 슛, 골, 선방, 태클, 인터셉트, 걷어내기, 파울, 경고, 퇴장, 교체, 부상, 오프사이드, 스로인, 골킥, 코너킥, 프리킥, 페널티킥.
+- `player` and `action` come from its last notable entry: a goal, else a sending-off, else a shot, card, substitution, injury, offside, foul or set piece, else its last touch; a minute without entries keeps the previous one. Labels: 패스, 크로스, 컷백, 운반, 돌파, 슛, 골, 선방, 태클, 인터셉트, 걷어내기, 파울, 경고, 퇴장, 교체, 부상, 오프사이드, 스로인, 골킥, 코너킥, 프리킥, 페널티킥.
 - `events` are the minute's entries as `MatchEvent` (§2.4), in playback units of their period (§1.1).
 - `motion`: 8 samples, interpolating the 22 positions linearly between trace snapshots by time.
 - `ballTrack`: 80 points.
@@ -744,7 +748,7 @@ When `observe` is set, `trace.ts` appends one `TraceEntry` per action, restart a
 
 ### 10.3 Commentary (`commentary.ts`, MATCH-24)
 
-`describe(entry, names): string` uses the cell name (`cellName` in `pitch.ts`, MATCH-14), the tags and only the Korean terms verified in `docs/MATCH-BASELINES.md`. Examples:
+`describe(entry, ctx): string` (`ctx`: names by side and roster index, and the ball's side for near and far post) uses the cell name (`cellName` in `pitch.ts`, MATCH-14), the tags and only the Korean terms verified in `docs/MATCH-BASELINES.md`. Examples:
 - `'{actor}, {cellName}에서 {receiver}에게 패스'`
 - through ball: `'{actor}의 침투 패스 — {receiver}가 뒷공간으로'`
 - `betweenLines`: `'라인 사이에서 받은 {actor}'`

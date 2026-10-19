@@ -36,7 +36,7 @@ test('observes event-backed metrics, historical locks and responsive navigation'
     page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
   ).toBeVisible();
   await page.getByRole('button', { name: '결과 보기' }).click();
-  await expect(page.getByText(/90′ ·.*경기 종료/)).toBeVisible();
+  await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await expect(page.getByText('유효 슈팅', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: '컵 대회' }).click();

@@ -18,7 +18,7 @@ const playback = simulateMatch(
 );
 
 describe('live match charts', () => {
-  it('reveals data only up to the presented minute', () => {
+  it('reveals data only up to the presented frame', () => {
     const [home, away] = chartSeries(playback, 30, 'xg');
     expect(home).toHaveLength(30);
     expect(away).toHaveLength(30);
@@ -27,13 +27,13 @@ describe('live match charts', () => {
   });
 
   it('splits rolling possession between the sides', () => {
-    const [home, away] = chartSeries(playback, 90, 'possession');
+    const [home, away] = chartSeries(playback, playback.frames.length, 'possession');
     home.forEach((share, i) => expect(share + away[i]).toBeCloseTo(100));
     expect(home[0]).toBe(playback.frames[0].side === 0 ? 100 : 0);
   });
 
   it('counts recorded shots cumulatively', () => {
-    const [home] = chartSeries(playback, 90, 'shots');
+    const [home] = chartSeries(playback, playback.frames.length, 'shots');
     expect(home.at(-1)).toBe(playback.record.metrics[0][4]);
     for (let i = 1; i < home.length; i++) expect(home[i]).toBeGreaterThanOrEqual(home[i - 1]);
   });

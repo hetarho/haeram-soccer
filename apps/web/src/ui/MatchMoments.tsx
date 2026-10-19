@@ -1,5 +1,5 @@
 import type { MatchRecord } from '../../../../packages/contracts/src/types';
-import { recordedGoals } from './moments';
+import { recordedGoals, type Moment } from './moments';
 import s from './Analysis.module.css';
 
 export function MatchMoments({
@@ -8,7 +8,7 @@ export function MatchMoments({
   live = false,
 }: {
   record: MatchRecord;
-  onSeek: (minute: number) => void;
+  onSeek: (moment: Moment) => void;
   live?: boolean;
 }) {
   const goals = recordedGoals(record);
@@ -17,9 +17,9 @@ export function MatchMoments({
       <summary>주요 장면 탐색</summary>
       <section className={s.content} aria-label="주요 장면 탐색">
         <div className={s.controls}>
-          <button onClick={() => onSeek(1)}>킥오프 · 1분</button>
-          <button onClick={() => onSeek(45)}>전반 종료 · 45분</button>
-          <button onClick={() => onSeek(90)}>경기 종료 · 90분</button>
+          <button onClick={() => onSeek('kickoff')}>킥오프 · 1분</button>
+          <button onClick={() => onSeek('halfTime')}>전반 종료 · 45분</button>
+          <button onClick={() => onSeek('fullTime')}>경기 종료 · 90분</button>
         </div>
         <ol className={s.momentList}>
           {goals.map((goal, i) => (

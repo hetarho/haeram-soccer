@@ -93,7 +93,7 @@ for (const viewport of [
 
     await page.getByTestId('hub-play').click();
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-    await expect(page.getByText(/90′ ·.*경기 종료/)).toBeVisible();
+    await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
     await page
       .getByRole('navigation', { name: viewport.width < 760 ? '모바일 게임 메뉴' : '게임 메뉴' })
       .getByRole('button', { name: '클럽 홈', exact: true })

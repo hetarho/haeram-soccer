@@ -58,7 +58,7 @@ async function playNext(page: Page) {
     .click();
   await page.getByTestId('hub-play').click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-  await expect(page.getByText(/90′ ·.*경기 종료/)).toBeVisible();
+  await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
 }
 
 test('older operations addresses open their tab', async ({ page }) => {

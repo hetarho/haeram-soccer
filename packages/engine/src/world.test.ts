@@ -128,7 +128,10 @@ describe('world progression', () => {
       observed = simulateMatch(w, f, true, true);
     expect(fast.record).toEqual(observed.record);
     expect(observed.frames.at(-1)!.score).toEqual(observed.record.score);
-    expect(observed.frames).toHaveLength(90);
+    // One frame a minute, the added minutes of each half included.
+    const added = observed.record.added!;
+    expect(observed.frames).toHaveLength(90 + added[0]! + added[1]!);
+    expect(observed.frames.at(-1)!.label).toBe(added[1] ? `90+${added[1]}` : '90');
     for (let side = 0; side < 2; side++) {
       const ids = new Set(observed.squads[side].map((p) => p.id));
       const goals = observed.record.players

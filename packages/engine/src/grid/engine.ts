@@ -79,7 +79,7 @@ export function playGrid(setup: GridSetup): GridResult {
   const r = setup.r;
   const ctx = shotContext(s);
   const tally = new Tally(setup);
-  const tracer = new Tracer(setup.observe);
+  const tracer = new Tracer(setup.observe, () => tally.running());
   const added: number[] = [];
   const credits = [0, 0];
   let pending: Restart | undefined;
@@ -194,6 +194,7 @@ export function playGrid(setup: GridSetup): GridResult {
       player: gp.player.id,
       reason,
     });
+    tracer.note(s, side, idx, card, { reason });
     if (card === 'yellow') {
       gp.yellow = true;
       return;
@@ -211,6 +212,7 @@ export function playGrid(setup: GridSetup): GridResult {
     leave(s, gp);
     s.changes[side].injured.push(idx);
     tally.incidents.push({ ...stamp(), side, kind: 'injury', player: gp.player.id });
+    tracer.note(s, side, idx, 'injury');
     credits[s.period - 1]! += ADDED_CONFIG.credits.injury;
     if (pending) pending.dead += RESTART_CONFIG.dead.injury;
     else
@@ -236,6 +238,7 @@ export function playGrid(setup: GridSetup): GridResult {
           player: s.players[side][ch.out]!.player.id,
           other: s.players[side][ch.in]!.player.id,
         });
+        tracer.note(s, side, ch.out, 'sub', { other: ch.in });
         if (half) continue;
         credits[s.period - 1]! += ADDED_CONFIG.credits.sub;
         rs.dead += RESTART_CONFIG.dead.substitution;
@@ -436,6 +439,8 @@ export function playGrid(setup: GridSetup): GridResult {
         pending = undefined;
         stoppage(rs);
         if (rs.kind === 'kickoff') kickOff(s, rs.side);
+        if (s.t === 0) tracer.note(s, rs.side, -1, 'whistle');
+        tracer.hold();
         penalty = rs.kind === 'penalty';
         setPieceAt =
           rs.kind === 'corner' || rs.kind === 'freeKick' || rs.kind === 'indirectFreeKick'
@@ -459,6 +464,12 @@ export function playGrid(setup: GridSetup): GridResult {
         if (res.outcome.kind === 'shot' && res.outcome.shooter === undefined)
           res.outcome.shooter = res.taker;
         apply(rs.side, res.taker, res.outcome);
+        tracer.act(s, rs.side, res.taker, {
+          outcome: res.outcome,
+          kind: res.kind,
+          target: res.target,
+          restart: rs,
+        });
         penalty = false;
         tally.restart(
           rs.side,
@@ -493,7 +504,15 @@ export function playGrid(setup: GridSetup): GridResult {
               }
             : decide(s, owner[0], owner[1], tags, r);
         } else d = decide(s, owner[0], owner[1], tags, r);
+        tracer.hold();
         const played = play(owner[0], owner[1], d);
+        tracer.act(s, owner[0], owner[1], {
+          outcome: played.outcome,
+          kind: d.kind,
+          target: d.target,
+          lineBreaking: d.lineBreaking,
+          tags,
+        });
         actor = owner;
         label = d.action;
         outcomeLabel = played.outcome === 'offside' ? 'offside' : played.outcome.kind;
@@ -517,6 +536,7 @@ export function playGrid(setup: GridSetup): GridResult {
           const d = dissentAt(s, side, r);
           if (d) applyCard(side, d.player, d.card, 'dissent');
         }
+        tracer.note(s, 0, -1, 'whistle');
         added.push(extra);
         tally.spellTo(undefined);
         break;

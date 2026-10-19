@@ -178,7 +178,7 @@ describe('tactical roster tradeoffs', () => {
       const fast = simulateMatch(w, fixture, false, true);
       const observed = simulateMatch(w, fixture, true);
       expect(canonical(observed.record)).toBe(canonical(fast.record));
-      expect(observed.squads[0].map((player) => player.id)).toEqual(w.lineup);
+      expect(observed.squads[0].slice(0, 11).map((player) => player.id)).toEqual(w.lineup);
       expect(observed.record.tactics).toEqual([tactic, 'press']);
     }
   });
