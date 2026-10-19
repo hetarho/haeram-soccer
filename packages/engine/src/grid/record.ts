@@ -24,6 +24,9 @@ export const M = {
   possession: 11,
 } as const;
 
+/** Values per side in `Tally.running()`: the counts before `M.minutes`, possession seconds and xG. */
+export const RUNNING = M.minutes + 2;
+
 /** x (attack frame) where the final third starts, and where a won ball counts as a press action. */
 const FINAL_THIRD = BAND_EDGES[5];
 const PRESS_FROM = BAND_EDGES[3];
@@ -288,6 +291,19 @@ export class Tally {
 
   goals(side: 0 | 1): number {
     return this.lines[side].reduce((sum, line) => sum + line[M.goals]!, 0);
+  }
+
+  /** Running team counts for playback (design §10.2): per side `M.goals`…`M.saves`, seconds in possession and xG. */
+  running(): Float64Array {
+    const out = new Float64Array(2 * RUNNING);
+    for (const side of [0, 1] as const) {
+      const at = side * RUNNING;
+      for (const line of this.lines[side])
+        for (let i = 0; i < M.minutes; i++) out[at + i]! += line[i]!;
+      out[at + M.minutes] = this.held[side];
+      out[at + M.minutes + 1] = this.xg[side];
+    }
+    return out;
   }
 
   finish(
