@@ -137,49 +137,49 @@ MATCH-8/9의 전술 득실(전술 프로필, 수비 라인, 압박 피로)은 �
 
 ## 격자 엔진 분포 (T215, 진행 중)
 
-2026-10-19, `pnpm exec tsx scripts/grid-bands.ts` 600경기(시드 `grid-bands-1..4`, ENG/ESP/GER/ITA 1부에서 rating 차 2 이하인 짝, 네 전술을 섞음, 2024년 규칙). 4시간 탐색 중 약 1시간 20분을 쓴 시점의 기록이며, 남은 시간에 이어서 조정한다. 시작 때는 37개 중 7개가 띠 안이었고 지금은 23개다.
+2026-10-19, `pnpm exec tsx scripts/grid-bands.ts` 600경기(시드 `grid-bands-1..4`, ENG/ESP/GER/ITA 1부에서 rating 차 2 이하인 짝, 네 전술을 섞음, 2024년 규칙). 4시간 탐색 중 약 1시간 30분을 쓴 시점의 기록이며, 남은 시간에 이어서 조정한다. 시작 때는 37개 중 7개가 띠 안이었고 지금은 26개다.
 
 | 지표 | 띠 (MATCH-23) | 측정 | 판정 |
 |---|---|---|---|
-| passes attempted (team) | 430–520 | 458.36 | 통과 |
-| pass completion % | 76–84 | 78.00 | 통과 |
-| pass forward % | 30–40 | 30.80 | 통과 |
-| pass lateral % | 45–55 | 55.30 | 벗어남 |
-| pass back % | 12–18 | 13.90 | 통과 |
-| possessions (team) | 85–105 | 88.36 | 통과 |
+| passes attempted (team) | 430–520 | 457.50 | 통과 |
+| pass completion % | 76–84 | 77.83 | 통과 |
+| pass forward % | 30–40 | 30.70 | 통과 |
+| pass lateral % | 45–55 | 54.56 | 통과 |
+| pass back % | 12–18 | 14.73 | 통과 |
+| possessions (team) | 85–105 | 85.52 | 통과 |
 | median passes per possession | 2–4 | 4.00 | 통과 |
-| possessions ending in a shot % | 10–15 | 12.94 | 통과 |
-| shots (team) | 11–14 | 11.79 | 통과 |
-| on target % | 30–37 | 35.43 | 통과 |
+| possessions ending in a shot % | 10–15 | 12.35 | 통과 |
+| shots (team) | 11–14 | 10.96 | 벗어남 |
+| on target % | 30–37 | 35.82 | 통과 |
 | xG per shot | 0.09–0.12 | 0.13 | 벗어남 |
-| shots from goal area % | 6–9 | 13.27 | 벗어남 |
-| shots from rest of box % | 48–58 | 54.03 | 통과 |
-| shots from outside % | 32–42 | 32.69 | 통과 |
-| mean shot distance m | 15–18 | 16.70 | 통과 |
-| shots from 30 m+ % | 0–10 | 6.59 | 통과 |
+| shots from goal area % | 6–9 | 13.23 | 벗어남 |
+| shots from rest of box % | 48–58 | 53.30 | 통과 |
+| shots from outside % | 32–42 | 33.46 | 통과 |
+| mean shot distance m | 15–18 | 16.78 | 통과 |
+| shots from 30 m+ % | 0–10 | 6.68 | 통과 |
 | shots from own half % | 0–0.5 | 0.00 | 통과 |
-| crosses (team) | 13–20 | 13.48 | 통과 |
-| cross completion % | 20–30 | 6.52 | 벗어남 |
-| take-ons (team) | 14–20 | 17.03 | 통과 |
-| take-on success % | 40–60 | 59.56 | 통과 |
-| tackles + interceptions (team) | 22–30 | 31.72 | 벗어남 |
-| throw-ins (team) | 17–23 | 17.95 | 통과 |
-| corners (team) | 4–6 | 3.75 | 벗어남 |
-| goal kicks (team) | 7–9 | 13.48 | 벗어남 |
-| fouls (team) | 10–13 | 10.98 | 통과 |
-| offsides (team) | 1.5–2.5 | 2.34 | 통과 |
-| yellow cards (match) | 3.3–4.3 | 3.90 | 통과 |
-| red cards (match) | 0.08–0.15 | 0.18 | 벗어남 |
-| goals (match) | 2.6–2.9 | 3.12 | 벗어남 |
-| set-piece goals (no pens) % | 20–28 | 6.68 | 벗어남 |
-| penalty goals % | 6–9 | 7.81 | 통과 |
-| headed goals % | 14–20 | 4.28 | 벗어남 |
-| goals by FW % | 50–60 | 79.47 | 벗어남 |
-| goals by MF % | 27–37 | 19.47 | 벗어남 |
-| goals by DF % | 8–15 | 1.07 | 벗어남 |
-| ball in play (min) | 54–58 | 56.93 | 통과 |
+| crosses (team) | 13–20 | 13.86 | 통과 |
+| cross completion % | 20–30 | 6.36 | 벗어남 |
+| take-ons (team) | 14–20 | 16.97 | 통과 |
+| take-on success % | 40–60 | 59.15 | 통과 |
+| tackles + interceptions (team) | 22–30 | 29.45 | 통과 |
+| throw-ins (team) | 17–23 | 17.76 | 통과 |
+| corners (team) | 4–6 | 4.33 | 통과 |
+| goal kicks (team) | 7–9 | 12.87 | 벗어남 |
+| fouls (team) | 10–13 | 10.97 | 통과 |
+| offsides (team) | 1.5–2.5 | 2.41 | 통과 |
+| yellow cards (match) | 3.3–4.3 | 3.96 | 통과 |
+| red cards (match) | 0.08–0.15 | 0.13 | 통과 |
+| goals (match) | 2.6–2.9 | 2.98 | 벗어남 |
+| set-piece goals (no pens) % | 20–28 | 6.82 | 벗어남 |
+| penalty goals % | 6–9 | 7.89 | 통과 |
+| headed goals % | 14–20 | 5.20 | 벗어남 |
+| goals by FW % | 50–60 | 78.80 | 벗어남 |
+| goals by MF % | 27–37 | 20.58 | 벗어남 |
+| goals by DF % | 8–15 | 0.62 | 벗어남 |
+| ball in play (min) | 54–58 | 56.89 | 통과 |
 
-경기당 추가시간 10.2분, 경기당 약 105 ms.
+경기당 추가시간 10.1분, 경기당 약 104 ms.
 
 ### 바꾼 상수
 
@@ -187,24 +187,24 @@ MATCH-8/9의 전술 득실(전술 프로필, 수비 라인, 압박 피로)은 �
 |---|---|---|---|
 | `DUEL_CONFIG.pass.base` (새 항목) | 0 | 0.07 | 칸별 실제 성공률에 더하는 보정; 패스 성공 66% → 78% |
 | `DUEL_CONFIG.pass.risk / distance / pressure` | 0.08 / 1/200 / 0.03 | 0.03 / 1/400 / 0.015 | 같은 이유 |
-| `DUEL_CONFIG.pass.lost` | 0.55 / 0.3 / 0.15 | 0.1 / 0.7 / 0.2 | 실패 패스의 절반 넘게 가로채기가 되어 태클+가로채기가 팀당 94개였다 |
+| `DUEL_CONFIG.pass.lost` | 0.55 / 0.3 / 0.15 | 0.07 / 0.73 / 0.2 | 실패 패스의 절반 넘게 가로채기가 되어 태클+가로채기가 팀당 94개였다 |
 | `DUEL_CONFIG.takeOn` max / skill / fail | 0.85 / 1/140 / 0.7·0.22·0.08 | 0.65 / 1/285 / 0.35·0.55·0.1 | 파울이 팀당 3개뿐이었고 드리블 성공이 72%였다 |
 | `DUEL_CONFIG.carry.foul` | 0.15 | 0.8 | 파울이 팀당 3개뿐이었다 |
 | `DUEL_CONFIG.boxFoul` (새 항목) | — | 0.2 | 박스 안 수비수는 덜 파울한다; 페널티가 경기당 1.35개에서 약 0.3개로 |
 | `DUEL_CONFIG.cross.base` | 0.24 | 0.45 | 크로스 성공이 4%였다 |
 | `SHOT_CONFIG.pressure` | 0.12 | 0.5 | 압박받는 슈팅의 xG; 칸별 xG(압박 없음)는 그대로 |
 | `SHOT_CONFIG.block` base / max | 0.25 / 0.5 | 0.4 / 0.6 | 빗나간 슈팅이 모두 골킥이 되었다 |
-| `SHOT_CONFIG.save`, `blockThen` | 0.55·0.25·0.2, 0.35 | 0.4·0.4·0.2, 0.5 | 코너킥이 팀당 2.5개였다 |
+| `SHOT_CONFIG.save`, `blockThen` | 0.55·0.25·0.2, 0.35 | 0.3·0.5·0.2, 0.65 | 코너킥이 팀당 2.5개였다 |
 | `SHOT_CONFIG.saveShare` (새 항목) | — | 0.5 | 공유 유효슈팅 모델이 격자 슈팅의 64%를 유효슈팅으로 만들었다 |
-| `DECISION_CONFIG.shotScale` | 0.05 | 0.08 | 팀당 슈팅 6개 → 약 12개 |
+| `DECISION_CONFIG.shotScale` | 0.05 | 0.07 | 팀당 슈팅 6개 → 약 11개 |
 | `DECISION_CONFIG.shotBox` (새 항목) | — | 3 | 박스 띠에서 슈팅을 더 고른다; 골 에어리어까지 드리블해 들어가 쏘던 슈팅이 31% → 13% |
 | `DECISION_CONFIG.cutBackShare / inBehind.shot / pocket.shotBand5` | 0.35 / 1.6 / 1.2 | 0.1 / 0.8 / 1.6 | 가까운 슈팅을 줄이고 박스 앞 슈팅을 늘린다 |
-| `DECISION_CONFIG.pass.backPrior` (새 항목) | — | 2 | 위협 가치만 보면 뒤로 주는 패스가 9%였다 → 14% |
+| `DECISION_CONFIG.pass.backPrior` (새 항목) | — | 2.2 | 위협 가치만 보면 뒤로 주는 패스가 9%였다 → 15% |
 | `DECISION_CONFIG.takeOnPerPass` | 0.045 | 0.06 | 나눗셈 기준값이라 키우면 시도가 준다 |
 | `DECISION_CONFIG.crossScale` | 4 | 7 | 크로스 팀당 7개 → 13개 |
 | `RESTART_CONFIG.offside` base / min | 0.45 / 0.1 | 0.05 / 0.02 | 오프사이드 팀당 14개 → 2.3개 |
 | `RESTART_CONFIG.dead` 스로인·골킥·코너·프리킥 | 18·30·37·32 s | 14·22·30·26 s | 공이 살아 있는 시간 53분 → 57분 |
-| `CARD_CONFIG` yellow / bookedYellow / dogsoRed / dogsoRedInBox / seriousRed | 0.32 / 0.1 / 0.8 / 0.3 / 0.006 | 0.14 / 0.03 / 0.06 / 0.04 / 0.003 | 파울이 세 배로 늘어 설계값 0.14로 돌아간다; 퇴장이 경기당 0.5개였다 |
+| `CARD_CONFIG` yellow / bookedYellow / dogsoRed / dogsoRedInBox / seriousRed | 0.32 / 0.1 / 0.8 / 0.3 / 0.006 | 0.14 / 0.03 / 0.04 / 0.015 / 0.002 | 파울이 세 배로 늘어 설계값 0.14로 돌아간다; 퇴장이 경기당 0.5개였다 |
 
 드리블 시도는 앞에 막는 수비수가 있을 때만 센다(MATCH-13 "마커를 제치려는 시도"); 아무도 없으면 운반으로 센다.
 
@@ -212,7 +212,7 @@ MATCH-8/9의 전술 득실(전술 프로필, 수비 라인, 압박 피로)은 �
 
 ### 남은 차이
 
-- xG/슈팅 0.13과 골 에어리어 슈팅 13%: 가까운 슈팅이 아직 많아 경기당 골이 3.1개다. 다음 조정 대상은 박스 안 운반(`chooseCarry`)이다.
-- 크로스 성공 7%, 헤더 골 4%, 세트피스 골 7%, 수비수 골 1%: 크로스 때 박스 안에 우리 선수가 없으면 실패로 끝난다(`headerTarget`); 박스 침투(`SHAPE_CONFIG.run.chance`)를 0.1로 올리면 크로스 성공은 9%로 오르지만 골이 3.4개로 는다.
-- 골킥 팀당 13.5개, 코너킥 3.8개, 태클+가로채기 31.7개, 퇴장 0.18개, 옆 패스 55.3%(띠 끝 바로 밖).
+- 슈팅 팀당 11.0개와 골 경기당 3.0개가 띠 끝 바로 밖이다: 슈팅을 늘리면 골도 같이 는다. 원인은 xG/슈팅 0.13과 골 에어리어 슈팅 13%(가까운 슈팅이 많음)이며, 골 에어리어 쪽 운반 가중을 낮춰도 줄지 않았다 — 다음은 그 슈팅이 어떤 흐름(패스 받기, 드리블 뒤)에서 나오는지 재는 것이다.
+- 크로스 성공 6%, 헤더 골 5%, 세트피스 골 7%, 수비수 골 1%: 크로스 때 박스 안에 우리 선수가 없으면 실패로 끝난다(`headerTarget`); 박스 침투(`SHAPE_CONFIG.run.chance`)를 0.1로 올리면 크로스 성공은 9%로 오르지만 골이 3.4개로 는다.
+- 골킥 팀당 12.9개: 빗나간 슈팅과 엔드라인 밖으로 나간 패스가 많다.
 - 골의 줄별 비율(FW 79%): 수비수가 세트피스에서 머리로 넣는 골이 거의 없다.

@@ -52,7 +52,7 @@ export const DUEL_CONFIG = {
     pressure: 0.015,
     min: 0.25,
     max: 0.97,
-    lost: { intercepted: 0.1, loose: 0.7, out: 0.2 },
+    lost: { intercepted: 0.07, loose: 0.73, out: 0.2 },
   },
   cross: {
     base: 0.45,
@@ -93,8 +93,8 @@ export const SHOT_CONFIG = {
   /** Share of the shared on-target model's saves the grid keeps; the rest go wide (T215). */
   saveShare: 0.5,
   block: { base: 0.4, perDefender: 0.06, skill: 1 / 300, min: 0.05, max: 0.6, lane: 2 },
-  save: { hold: 0.4, corner: 0.4, loose: 0.2 },
-  blockThen: { corner: 0.5 },
+  save: { hold: 0.3, corner: 0.5, loose: 0.2 },
+  blockThen: { corner: 0.65 },
   penalty: { base: 0.78, min: 0.6, max: 0.92, xg: 0.76 },
   maxXg: 0.8,
 } as const;

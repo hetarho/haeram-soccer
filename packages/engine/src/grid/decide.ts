@@ -40,7 +40,7 @@ export const DECISION_CONFIG = {
   factorRange: [0.2, 3],
   shotLine: { GK: 0, DF: 0.6, MF: 1, FW: 1.25 },
   /** Global shot-volume scale; the first uncalibrated engine produced about 25 shots a side (T215 settles it). */
-  shotScale: 0.08,
+  shotScale: 0.07,
   /** Global open-play cross scale: the cells' own cross shares gave under one cross a side (T215 settles it). */
   crossScale: 7,
   /** Extra shot weight in the box band, so a carrier shoots there instead of carrying into the goal area (T215). */
@@ -71,7 +71,7 @@ export const DECISION_CONFIG = {
     tau: { scale: 1, decisions: 80, composure: 150, range: [0.4, 2.5] },
     backBias: 3,
     /** Weight of backward options in every pass choice; the threat gain alone kept back passes near 9% (T215). */
-    backPrior: 2,
+    backPrior: 2.2,
   },
   carry: { headings: [0, -30, 30, -90, 90], length: [6, 6], pressure: 0.5, margin: 0.5 },
   keeper: { sweeper: 0.7, stopper: 0.45, press: 0.15, longRisk: 0.5 },
