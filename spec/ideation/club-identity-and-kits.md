@@ -13,19 +13,20 @@
 - [o] Support patterned kits alongside solid colours: stripes, colour blocking and checks.
 - [o] Reflect the chosen kit colours and patterns in match observation.
 - [o] Preview the crest and how the identity will appear on the pitch during creation.
-- [?] Distinguish the club palette, crest design and each kit's palette and pattern; recommend using club colours as the home defaults while allowing away/third colours outside that palette.
+- [o] Distinguish the club palette, crest design and each kit's palette and pattern. Home defaults to the club colours; away and third may use colours outside that palette.
 - [?] Crest selection: start with finished templates whose editable regions clearly correspond to 1–3 colour controls; decide whether separate shape, field-pattern and emblem editing belongs in v1.
 - [?] Colour roles: main field, secondary field/pattern and optional emblem/trim; templates visibly identify which region each control changes. A one-colour selection must still have a clear preview of any fixed outline or neutral details.
 - [?] Kit pattern shortlist: solid, vertical stripes, horizontal hoops, halves, horizontal chest band, diagonal sash, checks and chevron. The final catalogue is undecided.
 - [?] Prefer a few broad, readable stripes or checks over fine detail at the actual player-marker size; show both a large kit sample and the real observation scale.
 - [?] Each kit can use 1–3 colours, with the optional third reserved for trim; decide whether shorts and socks have separate controls.
 - [?] Generate editable starting designs for all three kits so founding does not require three complete design sessions.
-- [?] Recommend automatic kit selection that avoids clashes, with an optional pre-match override; a home/away label should not force an unreadable pairing.
+- [o] Automatically select kits to avoid colour clashes, and let the owner change the selection before the match.
 - [?] Judge clashes by the whole visible kit, including its large pattern regions, both teams, goalkeepers and grass; define the fallback when all three kits clash.
 - [?] Preserve the owner's chosen design when improving legibility: consider outlines, readable numbers and non-colour team cues rather than silently replacing the palette.
 - [?] Keep the crest/club palette as the persistent identity in club listings; use the selected match kits consistently for the observed players and their match legend. Decide how live chart series relate to those kits.
 - [?] Recommend a pitch preview with an opposing side, a kit selector and representative light/dark opponent examples so away/third designs can be assessed too.
-- [?] Recommend editing from club management after founding; decide when changes take effect and whether old match replays retain the kits worn at the time.
+- [o] Allow crest, club-colour and kit editing both at founding and afterwards through club management.
+- [?] Define when applied edits take effect and whether old match replays retain the kits worn at the time.
 - [?] Other clubs need coherent home/away/third designs for opponent selection; decide the scope of automatic designs without adding an obligation to customise opponents manually.
 - [?] Existing careers need an explicit identity-adoption policy; recommend retaining the visible crest and founding colour as the starting point instead of unexpectedly rebranding them.
 - [?] Suggested v1 exclusions: image uploads, freehand crest drawing, sponsors, fabric textures and paid or performance-affecting cosmetics. These boundaries are not yet adopted.
@@ -33,10 +34,10 @@
 ## shape
 - Confirmed flow: founding → choose club colours and crest → configure home/away/third colours and patterns → preview the pitch appearance → found the club → observe those designs in matches.
 - Proposed creation flow: choose a crest template → edit its visible 1–3 colour regions → review suggested kits → optionally customise each kit → inspect a large sample and actual-scale pitch preview → confirm.
-- Proposed match flow: show the automatically selected pairing before kickoff → optionally choose another kit → show the same pairing throughout observation.
-- Proposed management flow: club management → identity editor → preview → apply; timing and historical replay behaviour remain open.
-- v1 confirmed scope: club colours, selectable 1–3-colour crest designs, three named kit roles, solid and patterned kits, and a creation-time pitch preview.
-- v1 unresolved scope: crest composition depth, individual garment controls, match overrides, post-founding edits, opponent generation and existing-career adoption.
+- Match flow: automatically select a pairing that avoids colour clashes → optionally change the kit before kickoff → observe the selected kits in the match.
+- Management flow: club management → edit crest, colours or kits → preview → apply; exact effect timing and historical replay behaviour remain open.
+- v1 confirmed scope: club colours, selectable 1–3-colour crest designs, home defaulting to club colours, independent away/third palettes, solid and patterned kits, a creation-time pitch preview, automatic kit selection with a pre-match override, and identity editing through club management after founding.
+- v1 unresolved scope: crest composition depth, individual garment controls, design-change effect timing, historical appearance, opponent generation and existing-career adoption.
 
 ## domains
 - CLUB: club identity, relationship between representative colours and kit palettes, kit roles and later identity changes.
@@ -44,12 +45,11 @@
 - SAVE: preservation of selected designs across reload/export/import, adoption by existing careers and any historical-kit retention policy.
 
 ## open
-- Should home default to club colours while away and third may use other palettes, should every kit stay within the club palette, or should all three be independent?
-- Should kit selection be automatic with an optional pre-match override, automatic only, or always manual?
-- May the owner change the identity at any time through club management, only between seasons, or only at founding?
 - Which crest template/composition controls and kit patterns belong in v1?
 - Are all three kits required, and should generated drafts cover the designs the owner skips?
 - Does v1 customise the shirt/marker only or also shorts, socks and goalkeeper kits?
-- How should kit clashes be explained and resolved when no saved pairing is sufficiently distinct?
+- How should kit clashes be explained and resolved when no saved pairing is sufficiently distinct, or when a manual override reintroduces a clash?
+- When should club-palette, crest and kit edits take effect, including edits made while a match is being observed?
+- Should later changes to club colours update existing home-kit colours or only provide defaults for new designs?
 - Should previous match replays and historical club records show the identity from that date or today's identity?
 - How should existing careers and automatically designed opponent kits adopt the feature?

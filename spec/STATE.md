@@ -101,11 +101,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- Continue ideation club-identity-and-kits: palette relationships, match kit selection and post-founding edits await owner decisions.
+- Continue ideation club-identity-and-kits: choose crest composition and garment controls; historical appearance and existing-career adoption remain open.
 - Review prior autonomous decisions and optional review-code/doc-review proposals in inbox; latest report reports/261017-p6k2.md.
 - External deployment configuration, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 ideation club-identity-and-kits open: home defaults to club colours, away/third allow separate palettes, kits auto-select with a pre-match override, identity stays editable through club management.
+- 261019 ideation club-identity-and-kits continue: apply owner choices for kit palettes, pre-match selection and club-management editing.
 - 261019 ideation club-identity-and-kits open: recorded selectable 1-3-colour crests, home/away/third patterns and pitch preview; palette links, kit selection and later edits remain open.
 - 261019 ideation club-identity-and-kits start
 - 261017 T179 done p6k2: CI38970812465 passes all jobs; local1018unit/15contract/545browser with4 existing skips; docs and raw benchmark evidence synchronized, no gameplay changes.
@@ -123,5 +125,3 @@
 - 261017 T198 done n7r4: A retained training coach resignation now uses the ordinary departure lifecycle, preserving learned values and ending coaching/mentor service while keeping any player contract intact; the exact failing active-management commands validate through ten seasons.
 - 261017 implement-task T198 start n7r4.
 - 261017 create-task T198: actual active-management seed leaves a retained assistant employed after forced resignation (1952/day1); warm/cold occupancy guards both reject replacement. T178 stays incomplete and must rerun at the repaired source.
-- 261017 T197 done n7r4: Browser codec verification now uses the existing bounded ten-minute worker deadline, preserves the 12000-person workload and all CSP/canonical/load/export assertions, and retains elapsed-time artifacts.
-- 261017 implement-task T197 start n7r4.
