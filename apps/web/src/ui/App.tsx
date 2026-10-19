@@ -25,12 +25,16 @@ import { ClubLink } from './ClubLink';
 import { watchNextMatch } from './watch';
 import { compactMoney, competitionLabel, money, number, percent, seasonName } from './format';
 import { Money } from './Money';
-import { InterventionSettings, ProgressControls } from './ProgressControls';
+import { ProgressControls } from './ProgressControls';
 import { LiveSeason } from './LiveSeason';
 import { ClubHub } from './ClubHub';
 import { ClubFounding } from './ClubFounding';
 const PlayGuide = lazy(() =>
   import('./PlayGuide').then((module) => ({ default: module.PlayGuide })),
+);
+/** The responsibility settings load when the owner opens them, so the entry stays inside its budget (ARCH). */
+const InterventionSettings = lazy(() =>
+  import('./ResponsibilitySettings').then((module) => ({ default: module.ResponsibilitySettings })),
 );
 import { gameStore, useGameState } from '../runtime/store';
 import { ProgressionController, useProgression } from '../runtime/progression';
@@ -1356,11 +1360,13 @@ export function App() {
         </Dialog>
       )}
       {stopSettings && controller && client && (
-        <InterventionSettings
-          client={client}
-          controller={controller}
-          onClose={useInterventionDialog.getState().close}
-        />
+        <Suspense fallback={null}>
+          <InterventionSettings
+            client={client}
+            controller={controller}
+            onClose={useInterventionDialog.getState().close}
+          />
+        </Suspense>
       )}
       {guideOpen && w && (
         <Suspense fallback={null}>
