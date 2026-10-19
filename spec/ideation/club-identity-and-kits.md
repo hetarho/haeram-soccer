@@ -11,6 +11,8 @@
 - [o] Give club colours and home, away and third kits explicit product concepts.
 - [o] Let the owner choose the club crest and its editable colours, with 1–3 colours according to the selected design.
 - [o] Support patterned kits alongside solid colours: stripes, colour blocking and checks.
+- [o] V1 kit editing covers shirt colours and patterns. Shorts and socks have no separate colour controls in v1.
+- [o] Goalkeeper colours are chosen automatically to remain distinguishable; v1 has no manual goalkeeper-kit editor.
 - [o] Reflect the chosen kit colours and patterns in match observation.
 - [o] Preview the crest and how the identity will appear on the pitch during creation.
 - [o] Distinguish the club palette, crest design and each kit's palette and pattern. Home defaults to the club colours; away and third may use colours outside that palette.
@@ -19,7 +21,7 @@
 - [?] Colour roles: main field, secondary field/pattern and optional emblem/trim; templates visibly identify which region each control changes. A one-colour selection must still have a clear preview of any fixed outline or neutral details.
 - [?] Kit pattern shortlist: solid, vertical stripes, horizontal hoops, halves, horizontal chest band, diagonal sash, checks and chevron. The final catalogue is undecided.
 - [?] Prefer a few broad, readable stripes or checks over fine detail at the actual player-marker size; show both a large kit sample and the real observation scale.
-- [?] Each kit can use 1–3 colours, with the optional third reserved for trim; decide whether shorts and socks have separate controls.
+- [?] Each shirt can use 1–3 colours, with the optional third reserved for trim; the precise colour roles remain open.
 - [?] Generate editable starting designs for all three kits so founding does not require three complete design sessions.
 - [o] Automatically select kits to avoid colour clashes, and let the owner change the selection before the match.
 - [?] Judge clashes by the whole visible kit, including its large pattern regions, both teams, goalkeepers and grass; define the fallback when all three kits clash.
@@ -38,8 +40,9 @@
 - Proposed creation flow: choose a crest template → edit its visible 1–3 colour regions → review suggested kits → optionally customise each kit → inspect a large sample and actual-scale pitch preview → confirm.
 - Match flow: automatically select a pairing that avoids colour clashes → optionally change the kit before kickoff → observe the selected kits in the match.
 - Management flow: club management → edit crest, colours or kits → preview → apply; exact effect timing and historical replay behaviour remain open.
-- v1 confirmed scope: club colours, ready-made 1–3-colour crest templates with optional shape/pattern/emblem composition, home defaulting to club colours, independent away/third palettes, solid and patterned kits, a creation-time pitch preview, automatic kit selection with a pre-match override, and identity editing through club management after founding.
-- v1 unresolved scope: individual garment controls, final pattern/template catalogues, design-change effect timing, historical appearance, opponent generation and existing-career adoption.
+- v1 confirmed scope: club colours, ready-made 1–3-colour crest templates with optional shape/pattern/emblem composition, home defaulting to club colours, independent away/third palettes, solid and patterned shirts, automatically distinguished goalkeeper colours, a creation-time pitch preview, automatic kit selection with a pre-match override, and identity editing through club management after founding.
+- v1 excludes separate shorts/socks colour controls and manual goalkeeper-kit editing; these remain possible later extensions.
+- v1 unresolved scope: final pattern/template catalogues, shirt colour roles, design-change effect timing, historical appearance, opponent generation and existing-career adoption.
 
 ## domains
 - CLUB: club identity, relationship between representative colours and kit palettes, kit roles and later identity changes.
@@ -49,7 +52,6 @@
 ## open
 - Which ready-made crest templates, component choices and kit patterns belong in the initial catalogues?
 - Are all three kits required, and should generated drafts cover the designs the owner skips?
-- Does v1 customise the shirt/marker only or also shorts, socks and goalkeeper kits?
 - How should kit clashes be explained and resolved when no saved pairing is sufficiently distinct, or when a manual override reintroduces a clash?
 - When should club-palette, crest and kit edits take effect, including edits made while a match is being observed?
 - Should later changes to club colours update existing home-kit colours or only provide defaults for new designs?

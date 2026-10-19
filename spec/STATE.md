@@ -103,11 +103,12 @@
 
 ## next
 - match-engine-rebuild planned across MATCH r11, PLAYER r9, STAFF r34, CLUB r42, LEAGUE r10, WEB r90, HIST r14, SAVE r45 → create-task for all of them; measure the grid engine's cost early (it decides MATCH-22's own-league path and MATCH-26).
-- Continue ideation club-identity-and-kits: choose garment controls and the initial design catalogues; historical appearance and existing-career adoption remain open.
+- Continue ideation club-identity-and-kits: core scope is settled; propose SSOT conversion, with initial catalogues, clash handling, historical appearance and existing-career adoption to refine.
 - Review prior autonomous decisions and optional review-code/doc-review proposals in inbox; latest report reports/261017-p6k2.md.
 - External deployment configuration, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 ideation club-identity-and-kits continue: adopt shirt colour/pattern editing and automatically distinguished goalkeeper colours for v1.
 - 261019 ideation club-identity-and-kits continue: adopt preset-first crests with optional shape, field-pattern and emblem composition.
 - 261019 WEB r90 match theatre/analysis/profile/squad/league/preparation for the grid engine; HIST r14 spatial and discipline totals, map lifetime; SAVE r45 rules 4.0.0 boundary; ideation match-engine-rebuild converted.
 - 261019 STAFF r34 styles in the grid engine and substitution habits; CLUB r42 bench/takers, in-match injuries for everyone, suspensions; LEAGUE r10 NPC injuries/suspensions and discipline table.
@@ -127,4 +128,3 @@
 - 261017 T199 done p6k2: final-source CI 38970812465 passes complete careers and production codecs; active round23 checkpoint 1564446 bytes within unchanged limits.
 - 261017 implement-task T199 resumed p6k2; owner authorized remaining tasks in autopilot and main pushes.
 - 261017 SAVE r44/create-task: T199 v3 profiles use sparse scalar columns and bounded presence runs to cover century-active23; T178/T179 final source gates remain required.
-- 261017 create-task refresh T199/T178/T179 for SAVE r43 exact permutation contract; T178 released pending T199 and full fixed-source rerun.
