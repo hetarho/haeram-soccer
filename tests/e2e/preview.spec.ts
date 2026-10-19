@@ -1,5 +1,6 @@
 import { openCurrentClubSeason } from './record-navigation';
 import { test, expect } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
 test('built deep links, module worker, cache/CSP and missing assets', async ({ page, request }) => {
   test.skip(!process.env.PREVIEW_BUILD, 'Production preview gate');
   await page.goto('/');
@@ -23,4 +24,41 @@ test('built deep links, module worker, cache/CSP and missing assets', async ({ p
   expect(js.headers()['content-type']).toContain('javascript');
   expect(js.headers()['cache-control']).toContain('immutable');
   expect((await request.get('/assets/never-existed.js')).status()).toBe(404);
+});
+test('serves the _headers set', async ({ request }) => {
+  test.skip(!process.env.PREVIEW_BUILD, 'Production preview gate');
+  // What Netlify would send per path: every block whose pattern matches, later ones winning.
+  const blocks: { pattern: string; headers: [string, string][] }[] = [];
+  const file = new URL('../../apps/web/dist/_headers', import.meta.url);
+  for (const line of (await readFile(file, 'utf8')).split('\n')) {
+    if (!line.trim() || line.trimStart().startsWith('#')) continue;
+    const [, indent, rest] = line.match(/^(\s*)(.*)$/)!;
+    if (!indent) blocks.push({ pattern: rest.trim(), headers: [] });
+    else {
+      const [key, ...value] = rest.split(':');
+      blocks.at(-1)!.headers.push([key.trim().toLowerCase(), value.join(':').trim()]);
+    }
+  }
+  const declared = (pathname: string) =>
+    Object.fromEntries(
+      blocks
+        .filter(({ pattern }) =>
+          pattern.endsWith('*') ? pathname.startsWith(pattern.slice(0, -1)) : pathname === pattern,
+        )
+        .flatMap(({ headers }) => headers),
+    );
+  const entry = await request.get('/');
+  const asset = (await entry.text()).match(/src="([^"]+\.js)"/)![1];
+  expect(asset).toMatch(/^\/assets\//);
+  for (const pathname of ['/', '/history/1951', asset]) {
+    const expected = declared(pathname);
+    expect(Object.keys(expected)).toEqual(
+      expect.arrayContaining(['permissions-policy', 'content-security-policy', 'cache-control']),
+    );
+    const response = await request.get(pathname);
+    expect(response.status(), pathname).toBe(200);
+    const received = response.headers();
+    for (const [name, value] of Object.entries(expected))
+      expect(received[name], `${pathname} ${name}`).toBe(value);
+  }
 });

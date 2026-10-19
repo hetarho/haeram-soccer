@@ -176,20 +176,19 @@
 | T267 | Break same-day ties without the runtime's collation | ARCH | - | todo |
 | T268 | Tests for valuation, cash movements and currency conversion | ARCH | - | todo |
 | T269 | Split the club news builder and pin the texts it reads | ARCH | - | todo |
-| T270 | The preview server sends the production header set | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
 | one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
+| refactor-261019 | 4 | 53 | 1 | 52 | 9 | 0 | 3 | 2026-10-19T14:03:43.904Z | [history](work/refactor-261019.json) |
 
 ## next
-- Browser journeys: every e2e job is green on 93cd68d (261019); the benchmark job's browser step failed from T256 (the removed pause button, then the entry JS/CSS at 256,377 of 256,000 gzip bytes) until the 261019 fixes. The CI benchmark job takes about 70 minutes.
-- T216 (strength curve, explore 3h) next, re-running `scripts/grid-bands.ts` after it (T215 left goals 2.85 and headed goals 19.6% near the top of their bands); then T217–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T203–T214 are done (grid pitch, setup/state, shape, tags, decisions, duels/xG, restarts, `playGrid` loop with records and counters, cards, substitutions and injuries). T224 must bring the grid match (about 38 ms now) down toward the 15 ms criterion of T211; T215 holds all 37 MATCH-23 bands (docs/CALIBRATION.md `격자 엔진 분포 (T215)`). T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
-- Parallel refactor batch beside T216–T255 (review/outside-t216-t255-261019): implement-task T258 first (entry headroom 1,587 B), then lanes ui-entry-desk T258–T260, ui-league-tabs T261–T263, engine-money T264–T266, engine-checks T267–T269 and lane-less T270 via manage-work; touches are disjoint from each other and from T216–T255. Also review prior autonomous decisions in inbox (reports/261017-p6k2.md), incl. LEAGUE-13/WEB-3 and the parked ECON-33 runway arithmetic; deployment, hall of fame and Flutter remain future work.
+- inspect work board for remaining tasks
 
 ## log
+- 261019 T270 integrated
 - 261019 create-task review/outside-t216-t255-261019: T258–T270, four lanes of three (ui-entry-desk, ui-league-tabs, engine-money, engine-checks) plus lane-less T270; review converted.
 - 261019 review-code outside-t216-t255-261019 ready: 23 findings (1 P1, 13 P2, 9 P3); P1/P2 adopted except F6 (parked); typecheck, lint, 1132 unit tests pass at f10d7ba.
 - 261019 review-code outside-t216-t255-261019 start (v7m3 side review: code outside T216–T255 touches, for a parallel refactor batch)
@@ -209,4 +208,3 @@
 - 261019 T207 done (w6pm): per-touch tags (phase, pressure, orientation, lines, channel, overload, game state); 36 grid tests pass.
 - 261019 T206 done (w6pm): off-ball shape, pressing, marking, runs and movement with a grid test kit; 29 grid tests pass.
 - 261019 T203 done (w6pm): lossless packing of rules 4 match facts and season heat maps in four optional streams; adapters tests 105 pass.
-- 261019 T205 done (w6pm): `prepareMatch` extracted bit-identically; grid setup (era rules, bench, takers, bends) and state (kick-off positions, skill function) added; full unit suite 1042 pass.
