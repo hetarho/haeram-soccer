@@ -170,9 +170,6 @@
 | T261 | One tab list and one address-synced tab hook | ARCH | - | todo |
 | T262 | One set of league-table rules in the UI | ARCH | - | todo |
 | T263 | Tested models behind the league overview and rank history | ARCH | - | todo |
-| T264 | One helper scales money by a decimal factor | ARCH | - | todo |
-| T265 | The economy calibration reads the engine's income kinds and gate facts | ARCH | - | todo |
-| T266 | Playing-coach events show wages in the app's money notation | ARCH | - | todo |
 | T267 | Break same-day ties without the runtime's collation | ARCH | - | todo |
 | T268 | Tests for valuation, cash movements and currency conversion | ARCH | - | todo |
 | T269 | Split the club news builder and pin the texts it reads | ARCH | - | todo |
@@ -182,12 +179,13 @@
 |---|---|---|---|---|---|---|---|---|---|
 | one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
-| refactor-261019 | 4 | 53 | 1 | 52 | 9 | 0 | 3 | 2026-10-19T14:03:43.904Z | [history](work/refactor-261019.json) |
+| refactor-261019 | 4 | 53 | 4 | 49 | 3 | 0 | 6 | 2026-10-19T14:20:01.603Z | [history](work/refactor-261019.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261019 T264 T265 T266 integrated
 - 261019 T270 integrated
 - 261019 create-task review/outside-t216-t255-261019: T258–T270, four lanes of three (ui-entry-desk, ui-league-tabs, engine-money, engine-checks) plus lane-less T270; review converted.
 - 261019 review-code outside-t216-t255-261019 ready: 23 findings (1 P1, 13 P2, 9 P3); P1/P2 adopted except F6 (parked); typecheck, lint, 1132 unit tests pass at f10d7ba.
@@ -207,5 +205,3 @@
 - 261019 T208 done (w6pm): decision tables — action mix, pass/carry targets, keeper distribution; 47 grid tests pass. T203–T207 pushed to main (batch: 1065 unit, 19 contract, build).
 - 261019 T207 done (w6pm): per-touch tags (phase, pressure, orientation, lines, channel, overload, game state); 36 grid tests pass.
 - 261019 T206 done (w6pm): off-ball shape, pressing, marking, runs and movement with a grid test kit; 29 grid tests pass.
-- 261019 T203 done (w6pm): lossless packing of rules 4 match facts and season heat maps in four optional streams; adapters tests 105 pass.
-- 261019 fix ci: main no longer cancels a started run, so the 70-minute benchmark completes while the v7m3 loop and the refactor-261019 workers push (pending runs are still replaced by the newest)

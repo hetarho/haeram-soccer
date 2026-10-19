@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-19T14:03:43.904Z",
-  "sourceCommit": "6c75c4b94c14308b765b69c9da0efcfa7a6f0038",
+  "snapshotAt": "2026-10-19T14:20:01.603Z",
+  "sourceCommit": "5659b91dfbdcdf3f79ea23b649893e97ee599d0d",
   "group": {
     "id": "refactor-261019",
     "branch": "work/refactor-261019",
@@ -14,6 +14,12 @@
     },
     "push": "main",
     "review": "risky",
+    "pushed": {
+      "commit": "5659b91dfbdcdf3f79ea23b649893e97ee599d0d",
+      "branch": "main",
+      "remote": "origin",
+      "at": "2026-10-19T14:06:51.339Z"
+    },
     "runner": {
       "id": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
       "adapter": "builtin",
@@ -41,11 +47,11 @@
   },
   "summary": {
     "total": 53,
-    "completed": 1,
-    "remaining": 52,
-    "running": 9,
+    "completed": 4,
+    "remaining": 49,
+    "running": 3,
     "review": 0,
-    "blocked": 3,
+    "blocked": 6,
     "unassigned": 40
   },
   "tasks": [
@@ -417,42 +423,21 @@
       "title": "One tab list and one address-synced tab hook",
       "dep": [],
       "lane": "ui-league-tabs",
-      "status": "doing"
+      "status": "blocked"
     },
     {
       "id": "T262",
       "title": "One set of league-table rules in the UI",
       "dep": [],
       "lane": "ui-league-tabs",
-      "status": "doing"
+      "status": "blocked"
     },
     {
       "id": "T263",
       "title": "Tested models behind the league overview and rank history",
       "dep": [],
       "lane": "ui-league-tabs",
-      "status": "doing"
-    },
-    {
-      "id": "T264",
-      "title": "One helper scales money by a decimal factor",
-      "dep": [],
-      "lane": "engine-money",
-      "status": "doing"
-    },
-    {
-      "id": "T265",
-      "title": "The economy calibration reads the engine's income kinds and gate facts",
-      "dep": [],
-      "lane": "engine-money",
-      "status": "doing"
-    },
-    {
-      "id": "T266",
-      "title": "Playing-coach events show wages in the app's money notation",
-      "dep": [],
-      "lane": "engine-money",
-      "status": "doing"
+      "status": "blocked"
     },
     {
       "id": "T267",
@@ -523,7 +508,8 @@
       "contributors": [
         "7a09d4b3-b1c8-4c96-a247-b519ebf823ed/worker-2"
       ],
-      "status": "doing",
+      "status": "blocked",
+      "reason": "T261: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
       "createdAt": "2026-10-19T13:50:17.524Z",
       "startCommit": "6c75c4b94c14308b765b69c9da0efcfa7a6f0038",
       "dispatch": {
@@ -533,14 +519,17 @@
         "slot": 2,
         "provider": "claude",
         "model": null,
-        "status": "running",
-        "startedAt": "2026-10-19T13:50:18.046Z"
+        "status": "finished",
+        "startedAt": "2026-10-19T13:50:18.046Z",
+        "finishedAt": "2026-10-19T14:06:52.051Z",
+        "error": "T261: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+        "summary": "T261 is implemented, but the five Chromium e2e specs it names did not run. Every attempt stopped with \"http://127.0.0.1:4173 is already used\" because another session's preview server holds the port, and overriding the port with BROWSER_TEST_PORT was denied. The batch --verify or CI has to run them; that acceptance line is left unchecked.\n\nWhat changed:\n- tabs.ts has the pure nextTabIndex. tabs.test.ts has the four required cases, and they pass.\n- PageTabs.tsx now has TabList, which every tab bar uses for its keyboard and ARIA markup. PageTabs is TabList plus its ?view= effect, so Rich, Operations and TrainingView compile unedited.\n- PageTabs.tsx also has replaceQuery, which rewrites the address with replaceState only, and useAddressTab, which reads the tab from the address on mount, writes it back and restores it on popstate.\n- RecordsRoom (view, part, competition) and CupsView (competition, period) use useAddressTab with their current parameter names. RecordsRoom, CupsView, PastSeason and EventCenter render TabList, and their own keyboard handlers are gone.\n\nWhere I went beyond the task text:\n- useAddressTab takes a fourth options argument, { world, key, path?, keepFirst?, older? }. The three-argument form in the task would have changed behaviour:\n  - Both pages keep tabs per career in task memory under the same keys.\n  - CupsView stays mounted while hidden and always writes competition and period. owner-workflows.spec.ts:362 checks that address.\n  - RecordsRoom still opens older ?view=summary and ?view=season addresses.\n- The season year is not a tab, so each page still owns it and its own popstate listener.\n- Element IDs changed in two places because TabList builds them from idPrefix. Cups tabs went from cup-competition-<id> to cup-competition-tab-<id>, and the PastSeason panel from past-season-panel to past-panel. Nothing in the tests or CSS refers to the old IDs.\n\nChecks run: typecheck, lint and format:check pass. vitest --changed picked only tabs.test.ts (4/4). All web UI unit tests pass (32 files, 132 tests). The build passes, with the entry chunk at 130.62 kB gzip.\n\nOut of scope and noted in the task's limits: LiveSeason and StrategyPanel still have their own tab keyboards, and Rich and LiveSeason still write the address by hand."
       }
     },
     {
       "id": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
       "group": "refactor-261019",
-      "taskId": "T265",
+      "taskId": "T266",
       "tasks": [
         "T264",
         "T265",
@@ -551,22 +540,45 @@
       "contributors": [
         "7a09d4b3-b1c8-4c96-a247-b519ebf823ed/worker-3"
       ],
-      "status": "doing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-19T13:50:19.162Z",
       "startCommit": "6c75c4b94c14308b765b69c9da0efcfa7a6f0038",
+      "verifiedCommit": "1b4fb5214b2ac3823fcee8d222b2777fb769f881",
+      "submittedBase": "5659b91dfbdcdf3f79ea23b649893e97ee599d0d",
+      "submissionId": "75282405-be29-4f6d-b265-36103b0f8506",
+      "submittedAt": "2026-10-19T14:19:59.631Z",
+      "risk": {
+        "risky": false,
+        "reasons": [],
+        "lines": 257,
+        "files": 14
+      },
       "dispatch": {
-        "id": "f99105ad-3100-4fea-8299-7a0a0436e703",
+        "id": "4d1cfcb6-3d68-4812-b108-2e61cb764ad4",
         "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
         "role": "worker",
         "slot": 3,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-19T13:50:19.688Z",
-        "finishedAt": "2026-10-19T13:59:37.385Z",
+        "startedAt": "2026-10-19T14:15:22.654Z",
+        "finishedAt": "2026-10-19T14:19:59.640Z",
         "error": null,
-        "summary": "T264 is finished and every check I ran passed. primitives.ts now has `scaleBy(amount, factor, precision)`. It throws on a NaN or infinite factor and on a precision of 0 or less, and otherwise returns `ratio(amount, BigInt(Math.round(factor * Number(precision))), precision)`, which rounds half to even. All nine listed sites now call it with the precision they already used: signings feeShare (100n), contracts demand and ceiling (1000n), ops-squad share (1000n), staff footballScaled (1_000_000n), finance operating-expense share (10000n), scaleOperatingExpenses (100n), parachute (1000n), and the transfers listed-offer fee (1000n). ops-squad.ts no longer imports `ratio`. I left the composite ratios, the contracts.ts:368 goodwill floor (it wasn't on the list) and academy.ts alone, and no exported name or signature changed. I added the five required tests to primitives.test.ts, including the fast-check property.\n\nChecks:\n- primitives tests: 8/8.\n- The listed engine test files (signings, contracts, finance, staff, transfers, ops, primitives): 7 files, 165/165.\n- `pnpm run test:contract`: 19/19, so the portable goldens are identical.\n- typecheck, lint and format:check: clean after running prettier on ops-squad.ts.\n\nI did not run the task step's `vitest --changed` separately. Almost the whole engine imports primitives.ts, so it would be close to the full unit suite, which the submit step and unit integration run anyway. That note and the checks are recorded in the T264 acceptance and result. Two commands were denied by the permission check because they contained shell variables (a loop that printed code ranges, and an `exit=$?` echo); I reran the second without the variable and read the files directly instead of the loop."
+        "summary": "T266 is finished: the 플레잉 코치 proposal and agreement events now show their wages in the app's money notation instead of raw minor units, and every check I ran passed.\n\n- **Proposal event:** player wage, coach wage, total and upfront payment all go through `moneyLabel`.\n- **Agreement event:** the two wages it already showed now go through `moneyLabel`. It uses `trial`, the candidate world the event is written to; it has the same club and year as `w`, so the text is identical.\n- **Unchanged:** titles, kinds, amounts (the agreement's amount is still the upfront payment) and the rest of the wording. `moneyLabel` is imported from finance.ts, which I did not edit.\n- **Tests:** the two required cases are in `playing-coach.test.ts`. Each gives the player a nine-digit wage, so any raw amount in the text would fail the no-five-digit check. Each also checks the title and amount.\n\nChecks run:\n- `pnpm exec vitest run packages/engine/src/playing-coach`: 2 files, 15/15.\n- `pnpm run test:contract`: 19/19. The portable fixture records only kind, title and amount for these events, not the text.\n- typecheck, lint and format:check: clean.\n\nThe agreement text still names only the two wages, as before, because the task changes notation, not content. I didn't run `vitest --changed` separately; the submit step runs it. Both notes are in the T266 result."
+      },
+      "review": {
+        "id": "0351aff7-c75d-472e-aab2-d5f1e25123ec",
+        "owner": "policy",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "low risk: 257 changed lines in 14 files within touches, tests changed",
+        "findings": [],
+        "commit": "1b4fb5214b2ac3823fcee8d222b2777fb769f881",
+        "baseCommit": "5659b91dfbdcdf3f79ea23b649893e97ee599d0d",
+        "submissionId": "75282405-be29-4f6d-b265-36103b0f8506",
+        "createdAt": "2026-10-19T14:19:59.631Z",
+        "finishedAt": "2026-10-19T14:19:59.631Z"
       },
       "steps": [
         {
@@ -580,13 +592,44 @@
               "finishedAt": "2026-10-19T13:59:36.567Z"
             }
           ]
+        },
+        {
+          "taskId": "T265",
+          "commit": "4054334e260802f66f7bbe4f8c15b7f5c829c7f3",
+          "at": "2026-10-19T14:15:21.369Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-19T14:12:49.753Z",
+              "finishedAt": "2026-10-19T14:15:20.582Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T266",
+          "commit": "1b4fb5214b2ac3823fcee8d222b2777fb769f881",
+          "at": "2026-10-19T14:19:59.588Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-19T14:17:31.868Z",
+              "finishedAt": "2026-10-19T14:19:58.749Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-19T14:17:31.868Z",
+          "finishedAt": "2026-10-19T14:19:58.749Z"
         }
       ]
     },
     {
       "id": "b175071c-ff42-4e68-b140-1850db503fdd",
       "group": "refactor-261019",
-      "taskId": "T268",
+      "taskId": "T269",
       "tasks": [
         "T267",
         "T268",
@@ -602,17 +645,14 @@
       "createdAt": "2026-10-19T13:50:20.666Z",
       "startCommit": "6c75c4b94c14308b765b69c9da0efcfa7a6f0038",
       "dispatch": {
-        "id": "f08b203f-3612-4747-a5ba-8799f0e9e1c4",
+        "id": "da4d25da-10d4-4fd1-9bfc-268725befdb3",
         "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
         "role": "worker",
         "slot": 4,
         "provider": "claude",
         "model": null,
-        "status": "finished",
-        "startedAt": "2026-10-19T13:50:21.196Z",
-        "finishedAt": "2026-10-19T14:03:15.321Z",
-        "error": null,
-        "summary": "T267 is done: same-day ties in promises.ts and replacements.ts are now broken by plain code-unit ID order (`compareIds` from primitives.ts) instead of `localeCompare`. That covers `judgePromises` and the `openNeeds` / `takeWindowNeeds` sorts. `localeCompare` no longer appears in packages/engine/src outside test comments.\n\nAdded two tests:\n- `replacements.test.ts` \"orders same-day needs by code-unit ID order\" uses `ENG:1:0:2:p:3:1990` and `ENG:1:0:20:p:1:1990` and checks the order from both `openNeeds` and `takeWindowNeeds`.\n- `promises.test.ts` \"orders same-date commitments by code-unit player ID\".\n\nBoth tests failed on the old code, which picked `ENG:1:0:2:p:3:1990` first, and pass after the change.\n\nChecks run:\n- `pnpm exec vitest run` on promises, replacements, signings and transfers: 66/66 passed.\n- `pnpm run test:contract`: 19/19 passed. The portable goldens did not move and tests/fixtures was not touched.\n- `pnpm run typecheck`, `pnpm run lint` and `pnpm run format:check`: clean.\n- `pnpm exec vitest run --changed 6c75c4b --passWithNoTests`: 127 files, 1065 tests passed.\n\nOne combined command that used a shell variable for the diff base was denied by the permissions. I ran the same checks one by one with the literal base SHA, so no check was skipped. I checked the acceptance boxes and filled in the result section of spec/tasks/T267. Nothing was committed or submitted; T268 and T269 were not started."
+        "status": "running",
+        "startedAt": "2026-10-19T14:11:43.634Z"
       },
       "steps": [
         {
@@ -624,6 +664,18 @@
               "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-19T13:59:39.812Z",
               "finishedAt": "2026-10-19T14:03:14.478Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T268",
+          "commit": "840ea7623b74ef7118d7d40856c960f828ed10c4",
+          "at": "2026-10-19T14:11:42.289Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-19T14:11:12.291Z",
+              "finishedAt": "2026-10-19T14:11:41.485Z"
             }
           ]
         }
@@ -649,6 +701,8 @@
       "submittedBase": "6c75c4b94c14308b765b69c9da0efcfa7a6f0038",
       "submissionId": "1bdd955a-8271-46c9-899d-38880245bc4f",
       "submittedAt": "2026-10-19T14:03:41.870Z",
+      "integratedCommit": "5659b91dfbdcdf3f79ea23b649893e97ee599d0d",
+      "integratedAt": "2026-10-19T14:06:49.338Z",
       "risk": {
         "risky": false,
         "reasons": [],
@@ -700,6 +754,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-19T14:03:17.731Z",
           "finishedAt": "2026-10-19T14:03:41.041Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build",
+          "startedAt": "2026-10-19T14:03:44.099Z",
+          "finishedAt": "2026-10-19T14:06:49.101Z"
         }
       ]
     }
@@ -1706,6 +1767,785 @@
       "group": "refactor-261019",
       "attemptId": "71ecb76f-a7fa-4f8d-932b-d5e90eefb744",
       "taskId": "T270",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 349,
+      "at": "2026-10-19T14:06:49.275Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "71ecb76f-a7fa-4f8d-932b-d5e90eefb744",
+      "taskId": "T270",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build",
+            "startedAt": "2026-10-19T14:03:44.099Z",
+            "finishedAt": "2026-10-19T14:06:49.101Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 350,
+      "at": "2026-10-19T14:06:49.338Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "71ecb76f-a7fa-4f8d-932b-d5e90eefb744",
+      "taskId": "T270",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "5659b91dfbdcdf3f79ea23b649893e97ee599d0d",
+        "integratedAt": "2026-10-19T14:06:49.338Z"
+      }
+    },
+    {
+      "sequence": 351,
+      "at": "2026-10-19T14:06:51.343Z",
+      "type": "group",
+      "group": "refactor-261019",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "5659b91dfbdcdf3f79ea23b649893e97ee599d0d",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-19T14:06:51.339Z"
+        }
+      }
+    },
+    {
+      "sequence": 352,
+      "at": "2026-10-19T14:06:51.385Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "1de2fd8c-3efa-4d81-a5f4-7901f46546a0",
+      "taskId": "T261",
+      "tasks": [
+        "T261",
+        "T262",
+        "T263"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 353,
+      "at": "2026-10-19T14:06:52.035Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "1de2fd8c-3efa-4d81-a5f4-7901f46546a0",
+      "taskId": "T261",
+      "tasks": [
+        "T261",
+        "T262",
+        "T263"
+      ],
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T261: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+      }
+    },
+    {
+      "sequence": 354,
+      "at": "2026-10-19T14:06:52.051Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "1de2fd8c-3efa-4d81-a5f4-7901f46546a0",
+      "taskId": "T261",
+      "tasks": [
+        "T261",
+        "T262",
+        "T263"
+      ],
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "c9aab204-3d82-4e87-b3df-f127f8c0216d",
+          "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-19T13:50:18.046Z",
+          "finishedAt": "2026-10-19T14:06:52.051Z",
+          "error": "T261: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+          "summary": "T261 is implemented, but the five Chromium e2e specs it names did not run. Every attempt stopped with \"http://127.0.0.1:4173 is already used\" because another session's preview server holds the port, and overriding the port with BROWSER_TEST_PORT was denied. The batch --verify or CI has to run them; that acceptance line is left unchecked.\n\nWhat changed:\n- tabs.ts has the pure nextTabIndex. tabs.test.ts has the four required cases, and they pass.\n- PageTabs.tsx now has TabList, which every tab bar uses for its keyboard and ARIA markup. PageTabs is TabList plus its ?view= effect, so Rich, Operations and TrainingView compile unedited.\n- PageTabs.tsx also has replaceQuery, which rewrites the address with replaceState only, and useAddressTab, which reads the tab from the address on mount, writes it back and restores it on popstate.\n- RecordsRoom (view, part, competition) and CupsView (competition, period) use useAddressTab with their current parameter names. RecordsRoom, CupsView, PastSeason and EventCenter render TabList, and their own keyboard handlers are gone.\n\nWhere I went beyond the task text:\n- useAddressTab takes a fourth options argument, { world, key, path?, keepFirst?, older? }. The three-argument form in the task would have changed behaviour:\n  - Both pages keep tabs per career in task memory under the same keys.\n  - CupsView stays mounted while hidden and always writes competition and period. owner-workflows.spec.ts:362 checks that address.\n  - RecordsRoom still opens older ?view=summary and ?view=season addresses.\n- The season year is not a tab, so each page still owns it and its own popstate listener.\n- Element IDs changed in two places because TabList builds them from idPrefix. Cups tabs went from cup-competition-<id> to cup-competition-tab-<id>, and the PastSeason panel from past-season-panel to past-panel. Nothing in the tests or CSS refers to the old IDs.\n\nChecks run: typecheck, lint and format:check pass. vitest --changed picked only tabs.test.ts (4/4). All web UI unit tests pass (32 files, 132 tests). The build passes, with the entry chunk at 130.62 kB gzip.\n\nOut of scope and noted in the task's limits: LiveSeason and StrategyPanel still have their own tab keyboards, and Rich and LiveSeason still write the address by hand."
+        }
+      }
+    },
+    {
+      "sequence": 355,
+      "at": "2026-10-19T14:06:53.413Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
+      "taskId": "T265",
+      "tasks": [
+        "T264",
+        "T265",
+        "T266"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "18cf8e53-30f9-45bd-9a73-1b1917b54014",
+          "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-19T14:06:53.413Z"
+        }
+      }
+    },
+    {
+      "sequence": 356,
+      "at": "2026-10-19T14:06:53.612Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
+      "taskId": "T265",
+      "tasks": [
+        "T264",
+        "T265",
+        "T266"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "18cf8e53-30f9-45bd-9a73-1b1917b54014",
+          "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-19T14:06:53.413Z"
+        }
+      }
+    },
+    {
+      "sequence": 357,
+      "at": "2026-10-19T14:06:53.682Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T268",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e4b47219-2818-4c16-a93d-4d9c8e7f0b8f",
+          "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
+          "role": "worker",
+          "slot": 4,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-19T14:06:53.682Z"
+        }
+      }
+    },
+    {
+      "sequence": 358,
+      "at": "2026-10-19T14:06:53.902Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T268",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e4b47219-2818-4c16-a93d-4d9c8e7f0b8f",
+          "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
+          "role": "worker",
+          "slot": 4,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-19T14:06:53.682Z"
+        }
+      }
+    },
+    {
+      "sequence": 359,
+      "at": "2026-10-19T14:11:10.077Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T268",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 360,
+      "at": "2026-10-19T14:11:11.519Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T268",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 361,
+      "at": "2026-10-19T14:11:11.553Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T268",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 362,
+      "at": "2026-10-19T14:11:42.293Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T269",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T269",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T267",
+            "commit": "bee4862be6a50b3ccd41b7f8afe94434b33ea003",
+            "at": "2026-10-19T14:03:15.309Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-19T13:59:39.812Z",
+                "finishedAt": "2026-10-19T14:03:14.478Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T268",
+            "commit": "840ea7623b74ef7118d7d40856c960f828ed10c4",
+            "at": "2026-10-19T14:11:42.289Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-19T14:11:12.291Z",
+                "finishedAt": "2026-10-19T14:11:41.485Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 363,
+      "at": "2026-10-19T14:11:42.300Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T269",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e4b47219-2818-4c16-a93d-4d9c8e7f0b8f",
+          "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
+          "role": "worker",
+          "slot": 4,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-19T14:06:53.682Z",
+          "finishedAt": "2026-10-19T14:11:42.300Z",
+          "error": null,
+          "summary": "T268 is done: the money paths are now pinned by tests, and only test files changed.\n\n- **`transactions.test.ts` (new):** the three named cases (negative amounts rejected with the world unchanged; a non-mandatory overdraw throws 보유 자금이 부족합니다. and changes nothing; a mandatory debit can push cash below zero). It also has a fast-check property over 200 runs. Each run starts from random cash and applies up to 40 credits and debits, some mandatory. It checks cash = start + Σcredits − Σapplied debits after every move, and income and expense at the end. Debits that should be refused are asserted to throw.\n- **`ratings.test.ts` (new):** the four valuation cases. They compare values against each other rather than fixed season results, so later engine changes should not break them. `squadValue` equals the `playerValue` sum over active players, and a sold player drops out. The total equals squad + facilities + brand + cash. A 3,000,000 debt lowers the total by exactly that amount. Going from 1,000 to 100,000 fans raises the brand, and the total by the same difference.\n- **`economy.test.ts`:** the existing FRA 1999 / ENG 1971 rows are now a shared `CHANGES` table. For each row, a fast-check property converts two random cash values on fresh copies of the world from before the change. It checks the result equals the catalog `ratio(...)` formula, keeps the two values in order, and never flips the sign. Small amounts may round to 0, and the property accepts that.\n\n**One trade-off:** the currency property runs 50 times per change (100 in all) instead of more. Each conversion copies a whole world, so 100 runs per change took about 5 s each; at 50 it takes about 1.6 s each.\n\n**Checks run:**\n- `pnpm exec vitest run` on the transactions, ratings and economy tests: 3 files, 12 tests passed.\n- `pnpm run typecheck`, `pnpm run lint` and `pnpm run format:check`: clean.\n- `pnpm exec vitest run --changed bee4862 --passWithNoTests`: 3 files, 12 tests passed.\n\nI checked the acceptance boxes and filled in the result section of spec/tasks/T268. Nothing was committed or submitted."
+        }
+      }
+    },
+    {
+      "sequence": 364,
+      "at": "2026-10-19T14:11:43.634Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T269",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "da4d25da-10d4-4fd1-9bfc-268725befdb3",
+          "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
+          "role": "worker",
+          "slot": 4,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-19T14:11:43.634Z"
+        }
+      }
+    },
+    {
+      "sequence": 365,
+      "at": "2026-10-19T14:11:43.837Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "b175071c-ff42-4e68-b140-1850db503fdd",
+      "taskId": "T269",
+      "tasks": [
+        "T267",
+        "T268",
+        "T269"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "da4d25da-10d4-4fd1-9bfc-268725befdb3",
+          "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
+          "role": "worker",
+          "slot": 4,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-19T14:11:43.634Z"
+        }
+      }
+    },
+    {
+      "sequence": 366,
+      "at": "2026-10-19T14:12:47.481Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
+      "taskId": "T265",
+      "tasks": [
+        "T264",
+        "T265",
+        "T266"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 367,
+      "at": "2026-10-19T14:12:48.924Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
+      "taskId": "T265",
+      "tasks": [
+        "T264",
+        "T265",
+        "T266"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 368,
+      "at": "2026-10-19T14:12:48.959Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
+      "taskId": "T265",
+      "tasks": [
+        "T264",
+        "T265",
+        "T266"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 369,
+      "at": "2026-10-19T14:15:21.373Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
+      "taskId": "T266",
+      "tasks": [
+        "T264",
+        "T265",
+        "T266"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T266",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T264",
+            "commit": "1163125629af1d7cc5d3769ef0ac1ebd97c5fd3a",
+            "at": "2026-10-19T13:59:37.374Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-19T13:55:37.056Z",
+                "finishedAt": "2026-10-19T13:59:36.567Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T265",
+            "commit": "4054334e260802f66f7bbe4f8c15b7f5c829c7f3",
+            "at": "2026-10-19T14:15:21.369Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-19T14:12:49.753Z",
+                "finishedAt": "2026-10-19T14:15:20.582Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 370,
+      "at": "2026-10-19T14:15:21.382Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
+      "taskId": "T266",
+      "tasks": [
+        "T264",
+        "T265",
+        "T266"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "18cf8e53-30f9-45bd-9a73-1b1917b54014",
+          "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-19T14:06:53.413Z",
+          "finishedAt": "2026-10-19T14:15:21.382Z",
+          "error": null,
+          "summary": "T265 is finished. The calibration script now takes its income kinds and gate attendance from the engine, and its output is identical before and after apart from elapsed time.\n\n- **finance.ts:** exports `INCOME_KINDS` (the keys of the private `incomeKinds`) and `isIncomeKind`, which accepts a key of that table or any `sponsor:` kind. The table and its labels are unchanged.\n- **settlement.ts:** exports `gateDetail(attendance, scale, matchId)` and `readGateDetail(detail)`. `gateDetail` holds the existing gate text unchanged, and `gate()` now writes through it. `readGateDetail` returns `{ attendance, matchId }` or `undefined`.\n- **scripts/calibrate-economy.ts:** its copied income list and the `관중 (\\d+)명` regex are gone. It now uses `isIncomeKind` and `readGateDetail`. It exits with code 1 in two cases: at startup, naming any income kind that `sourceOf` maps to `other` (except `care:friendly`), and on a gate event it cannot read, naming the event's year, round and detail.\n- **Tests:** new `settlement.test.ts` with the two required cases, which also pin the exact text with and without the league scale. `finance.test.ts` gets the `isIncomeKind` case, which checks the kinds against the ledger's income and expense lines.\n\nChecks run:\n- New tests: 3/3.\n- `vitest run` on finance, fans, coach-training and settlement: 47/47.\n- `pnpm run test:contract`: 19/19.\n- typecheck (which covers `scripts/`), lint and format:check: clean.\n- `calibrate-economy.ts --quick --seasons 3` before and after:\n  - 1950s competition / matchday / commercial: 7.7% / 91.2% / 1.1%\n  - operating result: 6.2%\n  - established-club crowds: 33,703 / 13,373 / 6,634 / 798\n  - the reference club's amateur gates: 859\n\nNot done: I didn't force a failing run, so the two exit-1 paths are checked only by reading the code; the tests do confirm `readGateDetail` rejects unreadable text. I also didn't run `vitest --changed`, which the submit step runs. Both notes and the before/after summary are in the T265 result."
+        }
+      }
+    },
+    {
+      "sequence": 371,
+      "at": "2026-10-19T14:15:22.654Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
+      "taskId": "T266",
+      "tasks": [
+        "T264",
+        "T265",
+        "T266"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "4d1cfcb6-3d68-4812-b108-2e61cb764ad4",
+          "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-19T14:15:22.654Z"
+        }
+      }
+    },
+    {
+      "sequence": 372,
+      "at": "2026-10-19T14:15:22.852Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
+      "taskId": "T266",
+      "tasks": [
+        "T264",
+        "T265",
+        "T266"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "4d1cfcb6-3d68-4812-b108-2e61cb764ad4",
+          "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-19T14:15:22.654Z"
+        }
+      }
+    },
+    {
+      "sequence": 373,
+      "at": "2026-10-19T14:17:29.608Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
+      "taskId": "T266",
+      "tasks": [
+        "T264",
+        "T265",
+        "T266"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 374,
+      "at": "2026-10-19T14:17:31.110Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
+      "taskId": "T266",
+      "tasks": [
+        "T264",
+        "T265",
+        "T266"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 375,
+      "at": "2026-10-19T14:17:31.144Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
+      "taskId": "T266",
+      "tasks": [
+        "T264",
+        "T265",
+        "T266"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 376,
+      "at": "2026-10-19T14:19:59.631Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
+      "taskId": "T266",
+      "tasks": [
+        "T264",
+        "T265",
+        "T266"
+      ],
+      "previousStatus": "verifying",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "steps": [
+          {
+            "taskId": "T264",
+            "commit": "1163125629af1d7cc5d3769ef0ac1ebd97c5fd3a",
+            "at": "2026-10-19T13:59:37.374Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-19T13:55:37.056Z",
+                "finishedAt": "2026-10-19T13:59:36.567Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T265",
+            "commit": "4054334e260802f66f7bbe4f8c15b7f5c829c7f3",
+            "at": "2026-10-19T14:15:21.369Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-19T14:12:49.753Z",
+                "finishedAt": "2026-10-19T14:15:20.582Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T266",
+            "commit": "1b4fb5214b2ac3823fcee8d222b2777fb769f881",
+            "at": "2026-10-19T14:19:59.588Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-19T14:17:31.868Z",
+                "finishedAt": "2026-10-19T14:19:58.749Z"
+              }
+            ]
+          }
+        ],
+        "verifiedCommit": "1b4fb5214b2ac3823fcee8d222b2777fb769f881",
+        "submittedBase": "5659b91dfbdcdf3f79ea23b649893e97ee599d0d",
+        "submissionId": "75282405-be29-4f6d-b265-36103b0f8506",
+        "submittedAt": "2026-10-19T14:19:59.631Z",
+        "risk": {
+          "risky": false,
+          "reasons": [],
+          "lines": 257,
+          "files": 14
+        },
+        "review": {
+          "id": "0351aff7-c75d-472e-aab2-d5f1e25123ec",
+          "owner": "policy",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "low risk: 257 changed lines in 14 files within touches, tests changed",
+          "findings": [],
+          "commit": "1b4fb5214b2ac3823fcee8d222b2777fb769f881",
+          "baseCommit": "5659b91dfbdcdf3f79ea23b649893e97ee599d0d",
+          "submissionId": "75282405-be29-4f6d-b265-36103b0f8506",
+          "createdAt": "2026-10-19T14:19:59.631Z",
+          "finishedAt": "2026-10-19T14:19:59.631Z"
+        },
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-19T14:17:31.868Z",
+            "finishedAt": "2026-10-19T14:19:58.749Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 377,
+      "at": "2026-10-19T14:19:59.640Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
+      "taskId": "T266",
+      "tasks": [
+        "T264",
+        "T265",
+        "T266"
+      ],
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "4d1cfcb6-3d68-4812-b108-2e61cb764ad4",
+          "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-19T14:15:22.654Z",
+          "finishedAt": "2026-10-19T14:19:59.640Z",
+          "error": null,
+          "summary": "T266 is finished: the 플레잉 코치 proposal and agreement events now show their wages in the app's money notation instead of raw minor units, and every check I ran passed.\n\n- **Proposal event:** player wage, coach wage, total and upfront payment all go through `moneyLabel`.\n- **Agreement event:** the two wages it already showed now go through `moneyLabel`. It uses `trial`, the candidate world the event is written to; it has the same club and year as `w`, so the text is identical.\n- **Unchanged:** titles, kinds, amounts (the agreement's amount is still the upfront payment) and the rest of the wording. `moneyLabel` is imported from finance.ts, which I did not edit.\n- **Tests:** the two required cases are in `playing-coach.test.ts`. Each gives the player a nine-digit wage, so any raw amount in the text would fail the no-five-digit check. Each also checks the title and amount.\n\nChecks run:\n- `pnpm exec vitest run packages/engine/src/playing-coach`: 2 files, 15/15.\n- `pnpm run test:contract`: 19/19. The portable fixture records only kind, title and amount for these events, not the text.\n- typecheck, lint and format:check: clean.\n\nThe agreement text still names only the two wages, as before, because the task changes notation, not content. I didn't run `vitest --changed` separately; the submit step runs it. Both notes are in the T266 result."
+        }
+      }
+    },
+    {
+      "sequence": 378,
+      "at": "2026-10-19T14:19:59.675Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
+      "taskId": "T266",
+      "tasks": [
+        "T264",
+        "T265",
+        "T266"
+      ],
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

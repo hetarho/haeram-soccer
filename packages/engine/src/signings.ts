@@ -17,7 +17,7 @@ import { LINES } from '../../contracts/src/player';
 import { LINE_MINIMUM, lineOf, POSITION_LABEL } from './player';
 import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS } from './calendar';
 import { MARKET_REFRESH_ROUNDS } from './managerMarket';
-import { clamp, compareIds, ratio } from './primitives';
+import { clamp, compareIds, ratio, scaleBy } from './primitives';
 import {
   activePlayers,
   addEvent,
@@ -152,7 +152,7 @@ export function signingVerdict(w: World, player: Player, fee: string) {
     perRound = (BigInt(operatingCosts(w).annual) + BigInt(player.wage)) / BigInt(SEASON_ROUNDS),
     runway = perRound * BigInt(stance.runway),
     spare = BigInt(w.cash) - runway,
-    cap = spare > 0n ? ratio(spare.toString(), BigInt(stance.signing.feeShare * 100), 100n) : '0';
+    cap = spare > 0n ? scaleBy(spare.toString(), stance.signing.feeShare, 100n) : '0';
   const no = (reason: string) => ({
     ok: false as const,
     reason: `${reason}(재정 기조 ${finance})`,

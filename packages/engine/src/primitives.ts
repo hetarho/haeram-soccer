@@ -28,6 +28,16 @@ export function ratio(value: string, numerator: bigint, denominator: bigint): st
   if (rem * 2n > denominator || (rem * 2n === denominator && q % 2n === 1n)) q++;
   return (q * sign).toString();
 }
+/**
+ * An amount times a decimal factor, the factor rounded to `precision` parts so a tuning value that
+ * is not a short decimal never reaches `BigInt` unrounded; the result rounds half to even like
+ * `ratio`.
+ */
+export function scaleBy(amount: string, factor: number, precision: bigint): string {
+  if (!Number.isFinite(factor)) throw new Error('Invalid factor');
+  if (precision <= 0n) throw new Error('Invalid precision');
+  return ratio(amount, BigInt(Math.round(factor * Number(precision))), precision);
+}
 export const zeroMetrics = () => Array<number>(12).fill(0);
 export function addMetrics(a: number[], b: number[]) {
   return a.map((v, i) => v + (b[i] || 0));

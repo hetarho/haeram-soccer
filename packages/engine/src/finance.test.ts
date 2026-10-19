@@ -26,6 +26,8 @@ import {
   fixedCostRunway,
   footballQuote,
   gateProjection,
+  INCOME_KINDS,
+  isIncomeKind,
   lastSeasonTurnover,
   leagueMerit,
   leagueShare,
@@ -309,6 +311,28 @@ describe('earned, auditable club finances', () => {
     expect(budget.expense.reduce((sum, row) => sum + BigInt(row.amount), 0n)).toBe(
       BigInt(w.expense),
     );
+  });
+
+  it('isIncomeKind accepts every income kind and no expense kind', () => {
+    const budget = financialBreakdown(world()),
+      keys = (rows: typeof budget.income) =>
+        rows.map((row) => row.key).filter((key) => key !== 'older-ledger');
+    expect(keys(budget.income)).toEqual(INCOME_KINDS);
+    expect(INCOME_KINDS).toEqual(
+      expect.arrayContaining([
+        'gate',
+        'sponsor:local',
+        'sponsor:shirt',
+        'care:friendly',
+        'support',
+      ]),
+    );
+    for (const kind of INCOME_KINDS) expect(isIncomeKind(kind)).toBe(true);
+    expect(keys(budget.expense).length).toBeGreaterThan(0);
+    for (const kind of keys(budget.expense)) expect(isIncomeKind(kind)).toBe(false);
+    // Paid owner requests book to the expense line `care`; only the friendly earns.
+    for (const kind of ['care:meeting', 'care:camp', 'toString', ''])
+      expect(isIncomeKind(kind)).toBe(false);
   });
 
   it('books renewals and hires the delegated staff make at the close to the new season', () => {
