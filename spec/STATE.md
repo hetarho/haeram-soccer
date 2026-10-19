@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
+| r5c2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-19T11:04Z | 2026-10-19T11:04Z | T215 |
 
 ## inbox
 - 261019 decided T215: a take-on chosen with nobody in front counted as a won take-on (success 72%) → it counts as a carry; take-ons and dribbles count only with a defender to beat, as MATCH-13 defines them (alt: forbid the take-on choice without a defender | keep counting it)
@@ -109,7 +110,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T215 | Calibrate the grid engine to real-football distributions (explore 4h) | MATCH | T214 | doing@261019.h8t4 |
+| T215 | Calibrate the grid engine to real-football distributions (explore 4h) | MATCH | T214 | doing@261019.r5c2 |
 | T216 | Calibrate the grid engine's strength curve (explore 3h) | MATCH | T215 | todo |
 | T217 | Playback frames and Korean commentary from the grid trace | MATCH WEB | T216 | todo |
 | T218 | Switch the owner's matches to the grid engine and its playback | MATCH WEB | T217 | todo |
@@ -163,6 +164,7 @@
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 T215 doing (r5c2), taken over from the closed h8t4 WIP on wip/h8t4.
 - 261019 T215 WIP (h8t4) on wip/h8t4: band script, diagnostics, coarse guards; 26/37 MATCH-23 bands hold (7 at the start); about 1 h 30 min of the 4 h timebox used.
 - 261019 T214 done (h8t4): in-match injuries, substitutions by era and manager policy, drop ball, regulation minutes; 101 grid tests pass.
 - 261019 T213 done (w6pm): cards, second yellow, reds with ten men, dissent; batch checks pass (1119 unit, 19 contract, build).
