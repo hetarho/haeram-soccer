@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r13 | Define the browser-demo rules for durable metrics and history.
+> r14 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -9,7 +9,7 @@
 - HIST-5 [o] Founding is the first history entry; promotion, relegation, tactics application/refusal, manager resignation, recruitment, retirement, campaigns, sponsors and currency changes append facts.
 - HIST-6 [o] Metric scopes separate domestic, European, current season and own career; ratios expose denominators and sample size.
 - HIST-7 [o] Statistical changes after an action are observations with markers, not proof of causality; show relevant period and actual applied changes.
-- HIST-8 [o] No automatic expiry/pruning, data uploads or silent loss on save/import. Capacity errors keep the current save and offer export.
+- HIST-8 [o] No automatic expiry/pruning of retained facts, data uploads or silent loss on save/import; per-match maps and reports follow their defined lifetime (→HIST-16). Capacity errors keep the current save and offer export.
 - HIST-9 [o] Validate 100-season own-club and global summary retention within the ARCH save budget.
 - HIST-10 [o] Milestone completion derives from retained matches, events, player development, facility work (→ECON-32) and season archives. It grants no synthetic cash, performance multiplier or repeatable claim reward; viewing, importing and reloading the same career reproduce the same completed milestones.
 - HIST-11 [o] Club news is derived from retained facts on every read and never stored: the same career always produces the same feed with stable item IDs. ← news must never contradict the record, and storing it would only duplicate facts
@@ -42,6 +42,10 @@
   - prior decisions are not rewritten by later policy or personnel changes. A promise remains linked to the event that created it.
   - news about a second career or mediation derives only from these recorded facts (→HIST-11); no fabricated interviews, allegations or unperformed signings.
 
+- HIST-16 [o] Own players keep season and career totals of the spatial counters and discipline — box entries, front-of-box entries, line-breaking passes, xT added, cut-backs, crosses, through balls, progressive carries, yellow and red cards, bans served (→MATCH-13, →MATCH-19). ← fans compare these across a career
+  - per-match shot maps, heat maps, pass networks and tactical reports live for the current season only; at the season close they become one season heat map per own player, kept with the season (→MATCH-5).
+  - other leagues' discipline tables are current-season facts (→LEAGUE-15); a closed season keeps none for players of clubs nobody owns.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -51,6 +55,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r14 261019 HIST-8✎ no expiry/pruning→of retained facts, per-match maps follow their lifetime; HIST-16+ spatial counter and discipline totals, current-season maps reduced to season heat maps, NPC discipline current-season only
 - r13 261017 HIST-13✎ single-club scorer attribution→one player total with actual per-club contributions across in-league transfers
 - r12 261016 HIST-14✎ dated coaching service only→also actual mentor/school exposure for managerial school inheritance
 - r11 261016 HIST-14✎ linked sequential careers→also retained encouragement/response, dated cross-club coaching service and overlapping player/coach periods
