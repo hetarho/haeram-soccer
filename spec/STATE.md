@@ -164,6 +164,8 @@
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 T257 done: current season list shows 진행 중; publication checks pass (1023 unit, 19 contract, 184 distinct Chromium journeys across full run and fixed-case reruns, type/lint/format/catalog/build). T256 test adapters handle styled selects and simultaneous event cards; ready for main push and CI.
+- 261019 T257 doing (u6k2): release verification found the current season row missing its WEB-54 status; restore the visible marker without changing record data.
 - 261019 T256 publish start: owner requested commit/push; integrate origin/main T200–T202 before ARCH-30 batch verification.
 - 261019 T256 done: speed-only live observation, retained mediation preview and current-condition confirmation; 49 covering Chromium journeys passed across targeted runs, 4 changed unit tests, type/lint/format/build and spec lint pass. No commit/push.
 - 261019 T256 doing (u6k2), start 21a903fe721d: implement speed-only observation and stable mediation preview; WEB r93 consumed into T256, future WEB task bases reviewed; T225 preserves the speed-only controls.
@@ -182,5 +184,3 @@
 - 261019 create-task grid engine rebuild: T200–T233 (34 tasks, 4 explore) from MATCH r11, PLAYER r9, STAFF r34, CLUB r42, LEAGUE r10, WEB r90, HIST r14, SAVE r45/r48, ARCH r11; SAVE r46–47 and WEB r91 identity deltas stay pending for the identity tasks (T240+).
 - 261019 SAVE r48 ARCH r11: previous checkpoint in IndexedDB, active localStorage checkpoint up to 3 MiB (import 8 MiB, inflate 32 MiB) for the grid engine's larger records (owner choice).
 - 261019 create-task MATCH PLAYER STAFF CLUB LEAGUE WEB HIST SAVE start (grid engine rebuild)
-- 261019 create-task KIT WEB SAVE start (club identity only); use small sequential tasks and explicit engineering contracts for a less capable implementation model.
-- 261019 KIT r2 and SAVE r47: all identity policies settled; 1-3 colours/default two, eight patterns, six crests/three kit drafts, warned manual clashes, explicit palette reuse, frozen recorded playback and supported-career preservation.

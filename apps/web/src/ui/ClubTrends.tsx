@@ -377,6 +377,7 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                   }}
                 >
                   <span className={t.cellText}>{seasonName(w.year)}</span>
+                  <small>진행 중</small>
                 </button>
               </td>
               <td data-label="리그">
