@@ -357,7 +357,7 @@ const eventTime = (index: number, count: number) =>
 // functions, so both paths follow one calibrated strength curve (docs/CALIBRATION.md).
 const C = MATCH_DUEL_CONFIG;
 /** Diminishing returns on a skill margin: about linear up to half the saturation, then flat. */
-const bend = (margin: number) => C.saturation * Math.tanh(margin / C.saturation);
+export const bend = (margin: number) => C.saturation * Math.tanh(margin / C.saturation);
 /** The strength gap a match plays at: close to the gap up to ~15 points, never past the cap. */
 export const effectiveGap = (gap: number) =>
   gap / Math.sqrt(Math.sqrt(1 + (gap / C.gapSaturation) ** 4));
@@ -413,12 +413,12 @@ function chanceQuality(
   return { xg: band[0] + (band[1] - band[0]) * within, big: u < big, box: u < box };
 }
 /** How much better than a chance's quality this shooter finishes against this keeper. */
-const finishing = (shooting: number, keeping: number) =>
+export const finishing = (shooting: number, keeping: number) =>
   Math.exp(bend(shooting - keeping) / C.finishing) * (1 + (shooting - 55) / C.sharpness);
 /** Goal probability of a chance of quality `xg` for this shooter against this keeper. */
-const goalChance = (xg: number, shooting: number, keeping: number) =>
+export const goalChance = (xg: number, shooting: number, keeping: number) =>
   clamp(xg * finishing(shooting, keeping), 0.01, 0.8);
-const targetChance = (goal: number, shooting: number) =>
+export const targetChance = (goal: number, shooting: number) =>
   clamp(goal + C.onTarget + (shooting - 55) / 250, goal + 0.05, 0.95);
 
 /**
