@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createWorld } from '../index';
 import { playGrid } from './engine';
+import { M } from './record';
 import { buildGridSetup } from './setup';
 
 const w = createWorld({
@@ -40,29 +41,31 @@ describe('grid engine', () => {
       for (const side of [0, 1] as const) {
         const lines = record.players.slice(side * 11, side * 11 + 11);
         const team = record.metrics[side]!;
-        expect(lines.reduce((sum, p) => sum + p.metrics[0]!, 0)).toBe(
+        expect(lines.reduce((sum, p) => sum + p.metrics[M.goals]!, 0)).toBe(
           side === 0 ? record.score.home : record.score.away,
         );
-        expect(team[0]).toBe(side === 0 ? record.score.home : record.score.away);
-        for (const m of [1, 2, 3, 4, 5, 6, 7, 8, 9])
+        expect(team[M.goals]).toBe(side === 0 ? record.score.home : record.score.away);
+        for (let m = M.assists; m < M.minutes; m++)
           expect(
             lines.reduce((sum, p) => sum + p.metrics[m]!, 0),
             `metric ${m}`,
           ).toBe(team[m]);
-        expect(team[3]!).toBeLessThanOrEqual(team[2]!);
-        expect(team[5]!).toBeLessThanOrEqual(team[4]!);
-        expect(team[1]!).toBeLessThanOrEqual(team[0]!);
+        expect(team[M.completed]!).toBeLessThanOrEqual(team[M.passes]!);
+        expect(team[M.onTarget]!).toBeLessThanOrEqual(team[M.shots]!);
+        expect(team[M.assists]!).toBeLessThanOrEqual(team[M.goals]!);
         const sentOff = new Set(
           (record.incidents ?? [])
             .filter((x) => x.kind === 'red' || x.kind === 'secondYellow')
             .map((x) => x.player),
         );
         expect(
-          lines.every((p) => (sentOff.has(p.id) ? p.metrics[10]! <= 90 : p.metrics[10] === 90)),
+          lines.every((p) =>
+            sentOff.has(p.id) ? p.metrics[M.minutes]! <= 90 : p.metrics[M.minutes] === 90,
+          ),
         ).toBe(true);
-        expect(team[10]).toBe(90);
+        expect(team[M.minutes]).toBe(90);
       }
-      expect(record.metrics[0]![11]! + record.metrics[1]![11]!).toBe(90);
+      expect(record.metrics[0]![M.possession]! + record.metrics[1]![M.possession]!).toBe(90);
       expect(record.detail).toHaveLength(2);
       expect(record.xg![0]).toBeGreaterThanOrEqual(0);
     }
@@ -112,8 +115,8 @@ describe('grid engine', () => {
     for (let i = 0; i < n; i++) {
       const { record } = play(`plausible-${i}`, false, false);
       goals += record.score.home + record.score.away;
-      passes += record.metrics[0]![2]! + record.metrics[1]![2]!;
-      shots += record.metrics[0]![4]! + record.metrics[1]![4]!;
+      passes += record.metrics[0]![M.passes]! + record.metrics[1]![M.passes]!;
+      shots += record.metrics[0]![M.shots]! + record.metrics[1]![M.shots]!;
     }
     expect(goals / n).toBeGreaterThan(1.0);
     expect(goals / n).toBeLessThan(5.0);

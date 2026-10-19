@@ -1,12 +1,12 @@
 /** What the player on the ball does and where he plays it: the real-data mix of his cell, bent by role, traits, tactic, tags, score and head (→MATCH-8, MATCH-16). */
 import type { Tactic } from '../../../contracts/src/types';
-import { FORMATIONS, lineOf } from '../player';
+import { lineOf } from '../player';
 import { actionWeight } from '../match';
 import { CELL_BASELINES, OVERALL_PROFILE, POSITION_PROFILES, profileKey } from './baselines';
-import { attackFrame, cellBand, cellLane, cellOf, inBox, PITCH, type Point } from './pitch';
+import { attackFrame, cellBand, cellLane, cellOf, clamp, inBox, PITCH, type Point } from './pitch';
 import { offsideLine } from './shape';
-import { skill, type GridPlayer, type GridState } from './state';
-import type { Tags } from './tags';
+import { onPitch, other, skill, slotOf, type GridPlayer, type GridState } from './state';
+import { TAG_CONFIG, type Tags } from './tags';
 
 export type Action =
   'pass' | 'cross' | 'cutBack' | 'carry' | 'takeOn' | 'shot' | 'holdUp' | 'clearance';
@@ -48,7 +48,7 @@ export const DECISION_CONFIG = {
     counter: { shotInCounter: 1.1 },
     press: { shotAfterRegain: 1.2, regainSeconds: 6 },
     balanced: {},
-  } as Record<Tactic, Record<string, number>>,
+  } satisfies Record<Tactic, object>,
   pressure: { carry: 0.6, takeOn: 1.3, takeOnDribbling: 65, clearance: 2 },
   backToGoal: { takeOn: 0.5, shot: 0.3 },
   inBehind: { shot: 1.6, carry: 1.3 },
@@ -73,11 +73,7 @@ export const DECISION_CONFIG = {
   keeper: { sweeper: 0.7, stopper: 0.45, press: 0.15, longRisk: 0.5 },
 } as const;
 
-const onPitch = (gp: GridPlayer) => gp.onPitch && !gp.sentOff;
 const DEG = Math.PI / 180;
-const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
-const slotOf = (s: GridState, gp: GridPlayer) =>
-  FORMATIONS[s.setup.tactics[gp.side]].slots[gp.slot]!;
 
 /** The normalised action mix of the carrier. */
 export function actionMix(
@@ -95,7 +91,7 @@ export function actionMix(
   const traits = me.player.traits;
   const tactic = s.setup.tactics[side];
   const bend = s.setup.bends[side];
-  const oppBend = s.setup.bends[(1 - side) as 0 | 1];
+  const oppBend = s.setup.bends[other(side)];
   const inCutBack = tags.band === 7 && (tags.lane === 1 || tags.lane === 3);
   const mix: Record<Action, number> = {
     pass: cell.pass * (1 - cell.crossOfPasses),
@@ -134,18 +130,18 @@ export function actionMix(
   if (!inBox(c)) mix.shot *= actionWeight(slot.role, traits, 'long');
   // The tactic and its style bends.
   if (tactic === 'possession') {
-    mix.pass *= C.tactic.possession.pass!;
-    mix.takeOn *= C.tactic.possession.takeOn!;
-    if (tags.band === 5) mix.shot *= C.tactic.possession.shotBand5!;
+    mix.pass *= C.tactic.possession.pass;
+    mix.takeOn *= C.tactic.possession.takeOn;
+    if (tags.band === 5) mix.shot *= C.tactic.possession.shotBand5;
   }
-  if (tactic === 'counter' && tags.phase === 'counter') mix.shot *= C.tactic.counter.shotInCounter!;
+  if (tactic === 'counter' && tags.phase === 'counter') mix.shot *= C.tactic.counter.shotInCounter;
   if (
     tactic === 'press' &&
     s.lastRegain?.side === side &&
-    s.elapsed - s.lastRegain.at <= C.tactic.press.regainSeconds! &&
+    s.elapsed - s.lastRegain.at <= C.tactic.press.regainSeconds &&
     tags.band >= 5
   )
-    mix.shot *= C.tactic.press.shotAfterRegain!;
+    mix.shot *= C.tactic.press.shotAfterRegain;
   mix.pass *= 1 + bend.possession / 50;
   mix.carry *= 1 - bend.possession / 100;
   mix.shot *= (1 + bend.shot / 20) * (1 - oppBend.defense / 20);
@@ -222,10 +218,11 @@ export function temperature(s: GridState, side: 0 | 1, idx: number, tags: Tags):
 /** Pressure at a point of the attack frame: goal-side opponents weigh double. */
 function pressureAt(s: GridState, side: 0 | 1, p: Point): number {
   let sum = 0;
-  for (const opp of s.players[(1 - side) as 0 | 1]) {
+  for (const opp of s.players[other(side)]) {
     if (!onPitch(opp)) continue;
     const o = attackFrame(side, opp.pos);
-    if (Math.hypot(o[0] - p[0], o[1] - p[1]) <= 4.6) sum += o[0] > p[0] ? 1 : 0.5;
+    if (Math.hypot(o[0] - p[0], o[1] - p[1]) <= TAG_CONFIG.pressureRadius)
+      sum += o[0] > p[0] ? 1 : 0.5;
   }
   return sum;
 }
@@ -244,7 +241,7 @@ export function passOptions(
   } = {},
 ): PassOption[] {
   const P = DECISION_CONFIG.pass;
-  const other = (1 - side) as 0 | 1;
+  const foe = other(side);
   const me = s.players[side][idx]!;
   const c = attackFrame(side, me.pos);
   const slot = slotOf(s, me);
@@ -252,10 +249,10 @@ export function passOptions(
   const baseline = CELL_BASELINES[tags.cell]!;
   const profile = POSITION_PROFILES[profileKey(slot.position)];
   const xt0 = baseline.xT;
-  const opponents = s.players[other].filter(onPitch).map((gp) => attackFrame(side, gp.pos));
-  const dfDeep = lineDepth(s, other, side, 'DF');
-  const mfDeep = lineDepth(s, other, side, 'MF');
-  const offside = offsideLine(s, other);
+  const opponents = s.players[foe].filter(onPitch).map((gp) => attackFrame(side, gp.pos));
+  const dfDeep = lineDepth(s, foe, side, 'DF');
+  const mfDeep = lineDepth(s, foe, side, 'MF');
+  const offside = offsideLine(s, foe);
   const candidates: { gp: GridPlayer; p: Point; dist: number; dir: Direction }[] = [];
   for (const gp of s.players[side]) {
     if (gp.idx === idx || !onPitch(gp) || (opts.filter && !opts.filter(gp))) continue;
@@ -339,7 +336,8 @@ export function passProbabilities(options: readonly PassOption[], tau: number): 
   return total > 0 ? weights.map((w) => w / total) : options.map(() => 1 / options.length);
 }
 
-function draw<T>(items: readonly T[], probabilities: readonly number[], r: () => number): T {
+/** One draw from `items` by their probabilities. */
+export function draw<T>(items: readonly T[], probabilities: readonly number[], r: () => number): T {
   let u = r();
   for (let i = 0; i < items.length; i++) {
     u -= probabilities[i]!;
@@ -411,8 +409,7 @@ export function keeperDistribution(
   const tags = keeperTags(s, side, idx);
   const sweeper = slotOf(s, me).role === 'sweeperKeeper';
   const shortChance =
-    (sweeper ? K.sweeper : K.stopper) -
-    (s.setup.tactics[(1 - side) as 0 | 1] === 'press' ? K.press : 0);
+    (sweeper ? K.sweeper : K.stopper) - (s.setup.tactics[other(side)] === 'press' ? K.press : 0);
   const back = (gp: GridPlayer) =>
     ['CB', 'LB', 'RB', 'LWB', 'RWB'].includes(slotOf(s, gp).position);
   const front = (gp: GridPlayer) => {
@@ -455,7 +452,7 @@ function keeperTags(s: GridState, side: 0 | 1, idx: number): Tags {
     inBehind: false,
     channel: false,
     overload: 0,
-    lead: s.score[side] - s.score[(1 - side) as 0 | 1],
+    lead: s.score[side] - s.score[other(side)],
     minute: Math.floor(s.elapsed / 60) + 1,
     menDiff: 0,
   };

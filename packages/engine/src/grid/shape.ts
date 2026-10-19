@@ -1,10 +1,10 @@
 /** Off the ball: formation shape by phase and tactic, role habit, pressing, marking, runs and movement (→MATCH-8, MATCH-17). */
 import type { Point } from './pitch';
-import { attackFrame, bandOf, LANE_EDGES, PITCH } from './pitch';
-import { FORMATIONS, lineOf } from '../player';
+import { attackFrame, bandOf, clamp, LANE_EDGES, PITCH, toEngine } from './pitch';
+import { lineOf } from '../player';
 import { actionWeight } from '../match';
 import type { GridPlayer, GridState } from './state';
-import { minutesOn } from './state';
+import { minutesOn, onPitch, other, slotOf } from './state';
 import { ROLE_SHIFT, SPOTS } from './spots';
 
 /** Initial values; T215 and T216 tune them. */
@@ -44,21 +44,16 @@ const BOX_ROLES = ['boxToBox', 'mezzala', 'shadowStriker'];
 const CENTRE = PITCH.width / 2;
 const MID = PITCH.length / 2;
 
-const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
-const slotOf = (s: GridState, gp: GridPlayer) =>
-  FORMATIONS[s.setup.tactics[gp.side]].slots[gp.slot]!;
 const lineOfSlot = (s: GridState, gp: GridPlayer): 'GK' | Line =>
   lineOf(slotOf(s, gp).position) as 'GK' | Line;
-const active = (gp: GridPlayer) => gp.onPitch && !gp.sentOff;
-const inFrame = (side: 0 | 1, p: Point): Point => attackFrame(side, p);
 
 /** Mean x, in the side's attack frame, of its on-pitch outfield players of a line (the pitch's middle when none). */
 export function lineX(s: GridState, side: 0 | 1, line: Line): number {
   let sum = 0,
     count = 0;
   for (const gp of s.players[side])
-    if (active(gp) && lineOfSlot(s, gp) === line) {
-      sum += inFrame(side, gp.pos)[0];
+    if (onPitch(gp) && lineOfSlot(s, gp) === line) {
+      sum += attackFrame(side, gp.pos)[0];
       count++;
     }
   return count ? sum / count : MID;
@@ -66,10 +61,10 @@ export function lineX(s: GridState, side: 0 | 1, line: Line): number {
 
 /** The x of the second-last defending player (goalkeeper counts), in the attacking side's frame. */
 export function offsideLine(s: GridState, defendingSide: 0 | 1): number {
-  const attacking = (1 - defendingSide) as 0 | 1;
+  const attacking = other(defendingSide);
   const xs = s.players[defendingSide]
-    .filter(active)
-    .map((gp) => inFrame(attacking, gp.pos)[0])
+    .filter(onPitch)
+    .map((gp) => attackFrame(attacking, gp.pos)[0])
     .sort((a, b) => b - a);
   return xs.length > 1 ? xs[1]! : (xs[0] ?? PITCH.length);
 }
@@ -87,7 +82,7 @@ function pressers(s: GridState, side: 0 | 1): number[] {
   const near = s.players[side]
     .filter(
       (gp) =>
-        active(gp) &&
+        onPitch(gp) &&
         lineOfSlot(s, gp) !== 'GK' &&
         !(s.owner && s.owner[0] === side && s.owner[1] === gp.idx),
     )
@@ -117,12 +112,8 @@ export function targetOf(
   const gp = s.players[side][idx]!;
   const tactic = s.setup.tactics[side];
   const cfg = SHAPE_CONFIG.tactic[tactic];
-  const b = inFrame(side, s.ball);
+  const b = attackFrame(side, s.ball);
   const own = lineOfSlot(s, gp);
-  const back = (p: Point): [number, number] => {
-    const q = attackFrame(side, p);
-    return [q[0], q[1]];
-  };
   if (own === 'GK') {
     const sweeper = slotOf(s, gp).role === 'sweeperKeeper';
     const df = (cache.defence[side] ??= lineX(s, side, 'DF'));
@@ -130,7 +121,7 @@ export function targetOf(
     let x = 4 + (b[0] - MID) * SHAPE_CONFIG.keeperPull;
     if (high) x += SHAPE_CONFIG.sweeperStep * (df - 20);
     x = clamp(x, 2, high ? SHAPE_CONFIG.keeperMax.sweeperKeeper : SHAPE_CONFIG.keeperMax.other);
-    return back([x, CENTRE + (b[1] - CENTRE) * 0.15]);
+    return toEngine(side, [x, CENTRE + (b[1] - CENTRE) * 0.15]);
   }
   if (gp.run && gp.run.until > s.elapsed) return [...gp.run.target];
   const spot = SPOTS[tactic][gp.slot]!;
@@ -148,13 +139,13 @@ export function targetOf(
   x += (b[0] - MID) * cfg.compact;
   y += (b[1] - CENTRE) * SHAPE_CONFIG.lateral;
   if (inPossession) {
-    const foe = (1 - side) as 0 | 1;
+    const foe = other(side);
     x = Math.min(x, (cache.offside[foe] ??= offsideLine(s, foe)) - 0.5);
-    return back([x, y]);
+    return toEngine(side, [x, y]);
   }
   if ((cache.pressers[side] ??= pressers(s, side)).includes(idx)) {
     const goalSide = b[0] - 1.2;
-    return back([
+    return toEngine(side, [
       own === 'DF' ? clamp(goalSide, cfg.line[0], cfg.line[1]) : Math.max(0, goalSide),
       b[1],
     ]);
@@ -162,9 +153,9 @@ export function targetOf(
   // Another outfielder leans toward the goal-side point of the nearest attacker around his spot.
   let near: Point | undefined,
     best: number = SHAPE_CONFIG.markRadius;
-  for (const opp of s.players[(1 - side) as 0 | 1]) {
-    if (!active(opp) || lineOfSlot(s, opp) === 'GK') continue;
-    const o = inFrame(side, opp.pos);
+  for (const opp of s.players[other(side)]) {
+    if (!onPitch(opp) || lineOfSlot(s, opp) === 'GK') continue;
+    const o = attackFrame(side, opp.pos);
     const d = Math.hypot(o[0] - x, o[1] - y);
     if (d <= best) [near, best] = [o, d];
   }
@@ -173,7 +164,7 @@ export function targetOf(
     y += (near[1] - y) * SHAPE_CONFIG.markBlend;
   }
   if (own === 'DF') x = clamp(x, cfg.line[0], cfg.line[1]);
-  return back([x, y]);
+  return toEngine(side, [x, y]);
 }
 
 /** How fast a player can move now, in metres per second. */
@@ -192,7 +183,7 @@ export function moveAll(s: GridState, dt: number): void {
   const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
   for (const side of [0, 1] as const)
     for (const gp of s.players[side]) {
-      if (!active(gp) || (s.owner && s.owner[0] === side && s.owner[1] === gp.idx)) continue;
+      if (!onPitch(gp) || (s.owner && s.owner[0] === side && s.owner[1] === gp.idx)) continue;
       moves.push([gp, targetOf(s, side, gp.idx, cache)]);
     }
   for (const [gp, target] of moves) {
@@ -209,13 +200,13 @@ export function moveAll(s: GridState, dt: number): void {
 
 /** Gives eligible players of the side with the ball a chance to start a run; one draw per eligible player, in roster order. */
 export function startRuns(s: GridState, side: 0 | 1, r: () => number): void {
-  const b = inFrame(side, s.ball);
+  const b = attackFrame(side, s.ball);
   const band = bandOf(b[0]);
   if (band < 3) return;
-  const line = offsideLine(s, (1 - side) as 0 | 1);
+  const line = offsideLine(s, other(side));
   const cfg = SHAPE_CONFIG.run;
   for (const gp of s.players[side]) {
-    if (!active(gp) || gp.slot < 0) continue;
+    if (!onPitch(gp) || gp.slot < 0) continue;
     if (s.owner && s.owner[0] === side && s.owner[1] === gp.idx) continue;
     if (gp.run && gp.run.until > s.elapsed) continue;
     const { role } = slotOf(s, gp);
@@ -226,7 +217,7 @@ export function startRuns(s: GridState, side: 0 | 1, r: () => number): void {
     if (!behind && !overlap && !box) continue;
     if (r() >= cfg.chance * actionWeight(role, gp.player.traits, 'run')) continue;
     const seconds = cfg.seconds[0] + (cfg.seconds[1] - cfg.seconds[0]) * r();
-    const me = inFrame(side, gp.pos);
+    const me = attackFrame(side, gp.pos);
     const kind = box ? 'box' : behind ? 'behind' : 'overlap';
     const target: Point =
       kind === 'box'

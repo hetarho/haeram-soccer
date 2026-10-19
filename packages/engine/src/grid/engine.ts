@@ -1,6 +1,6 @@
 /** `playGrid`: a whole match, touch by touch (→MATCH-1, MATCH-3, MATCH-7, MATCH-11). */
 import type { MatchRecord } from '../../../contracts/src/types';
-import { choosePass, decide, type Decision } from './decide';
+import { choosePass, decide, DECISION_CONFIG, type Decision } from './decide';
 import { computeTags } from './tags';
 import { cardForFoul, dissentAt } from './discipline';
 import {
@@ -15,6 +15,7 @@ import {
   resolveTakeOn,
   shotContext,
   type Outcome,
+  type ShotOutcome,
 } from './resolve';
 import {
   classifyOut,
@@ -27,8 +28,8 @@ import {
 import { Tally } from './record';
 import type { GridSetup } from './setup';
 import { moveAll, startRuns } from './shape';
-import { attackFrame, type Point } from './pitch';
-import { createState, enterSlot, kickOff, type GridState } from './state';
+import { attackFrame, PITCH } from './pitch';
+import { createState, enterSlot, kickOff, other, type GridState } from './state';
 import { Tracer, type TraceEntry } from './trace';
 
 /** Seconds an action takes before the 0.85 + 0.3·r jitter (design §8.2). */
@@ -65,9 +66,9 @@ export interface GridResult {
 }
 
 type Ref = [0 | 1, number];
-const other = (side: 0 | 1) => (1 - side) as 0 | 1;
+type ActionKey = keyof typeof ACTION_SECONDS;
 const PERIOD_SECONDS = 45 * 60;
-const af = (side: 0 | 1, p: readonly [number, number]): Point => attackFrame(side, p);
+const CENTRE_SPOT: [number, number] = [PITCH.length / 2, PITCH.width / 2];
 
 export function playGrid(setup: GridSetup): GridResult {
   const s: GridState = createState(setup);
@@ -91,7 +92,7 @@ export function playGrid(setup: GridSetup): GridResult {
     const gp = s.players[side][idx]!;
     if (at) gp.pos = [at[0], at[1]];
     if (s.possession !== side || !s.owner) {
-      if (s.owner) tally.regain(side, idx, af(side, gp.pos));
+      if (s.owner) tally.regain(side, idx, attackFrame(side, gp.pos));
       s.lastRegain = { side, at: s.elapsed };
       s.lastLoss = { side: other(side), at: s.elapsed };
       s.possessionSince = s.elapsed;
@@ -103,13 +104,13 @@ export function playGrid(setup: GridSetup): GridResult {
     s.ball = [gp.pos[0], gp.pos[1]];
   }
 
-  function endOfPlay(side: 0 | 1, o: Extract<Outcome, { kind: 'shot' }>): [number, number] {
-    const keeperEnd = side === 0 ? 105 : 0;
+  function endOfPlay(side: 0 | 1, o: ShotOutcome): [number, number] {
+    const keeperEnd = side === 0 ? PITCH.length : 0;
     const shooter = s.players[side][o.shooter ?? 0]!;
     return [keeperEnd, shooter.pos[1]];
   }
 
-  function applyShot(side: 0 | 1, o: Extract<Outcome, { kind: 'shot' }>) {
+  function applyShot(side: 0 | 1, o: ShotOutcome) {
     const shooter = o.shooter ?? 0;
     tally.shot(side, shooter, o.recordedXg, o.result);
     const passer =
@@ -120,7 +121,7 @@ export function playGrid(setup: GridSetup): GridResult {
         ? lastPasser[1]
         : undefined;
     tally.shotDetail(side, shooter, {
-      from: af(side, s.players[side][shooter]!.pos),
+      from: attackFrame(side, s.players[side][shooter]!.pos),
       xg: o.xg,
       recordedXg: o.recordedXg,
       goal: o.result === 'goal',
@@ -129,16 +130,9 @@ export function playGrid(setup: GridSetup): GridResult {
     const foe = other(side);
     if (o.result === 'goal') {
       s.score[side]++;
-      const assist =
-        lastPasser &&
-        lastPasser[0] === side &&
-        lastPasser[1] !== shooter &&
-        !(prevBeat && prevBeat[0] === side && prevBeat[1] === shooter)
-          ? lastPasser[1]
-          : undefined;
-      tally.goal(side, shooter, minute(), assist);
+      tally.goal(side, shooter, minute(), passer);
       credits[s.period - 1]! += ADDED_CONFIG.credits.goal;
-      pending = { kind: 'kickoff', side: foe, spot: [52.5, 34], dead: RESTART_CONFIG.dead.goal };
+      pending = { kind: 'kickoff', side: foe, spot: CENTRE_SPOT, dead: RESTART_CONFIG.dead.goal };
       return;
     }
     if (o.result === 'save') tally.save(foe, o.by ?? 0);
@@ -148,7 +142,10 @@ export function playGrid(setup: GridSetup): GridResult {
       pending = classifyOut({ at, lastTouch: foe, over: 'byline', blockedOrSaved: true });
     else if (o.then === 'goalKick') pending = classifyOut({ at, lastTouch: side, over: 'byline' });
     else {
-      const loose: [number, number] = [side === 0 ? 100 : 5, s.players[side][shooter]!.pos[1]];
+      const loose: [number, number] = [
+        side === 0 ? PITCH.length - 5 : 5,
+        s.players[side][shooter]!.pos[1],
+      ];
       const winner = looseWinner(s, loose, r);
       setOwner(winner[0], winner[1], loose);
     }
@@ -208,11 +205,11 @@ export function playGrid(setup: GridSetup): GridResult {
         }
         return;
       case 'intercepted':
-        tally.interception(foe, o.by, af(foe, o.at));
+        tally.interception(foe, o.by, attackFrame(foe, o.at));
         setOwner(foe, o.by, o.at);
         return;
       case 'tackled':
-        tally.tackle(foe, o.by, af(foe, s.ball));
+        tally.tackle(foe, o.by, attackFrame(foe, s.ball));
         setOwner(foe, o.by, [s.ball[0], s.ball[1]]);
         return;
       case 'loose':
@@ -247,15 +244,14 @@ export function playGrid(setup: GridSetup): GridResult {
     }
   }
 
-  const secondsOf = (kind: string | undefined) =>
-    ACTION_SECONDS[(kind as keyof typeof ACTION_SECONDS) ?? 'short'] ?? ACTION_SECONDS.short;
+  const secondsOf = (kind: ActionKey | undefined) => ACTION_SECONDS[kind ?? 'short'];
 
-  /** One decision by the player on the ball; returns the seconds it took. */
+  /** One decision by the player on the ball; returns the timing key of what was played and its outcome. */
   function play(
     side: 0 | 1,
     idx: number,
     d: Decision,
-  ): { key: string; outcome: Outcome | 'offside' } {
+  ): { key: ActionKey; outcome: Outcome | 'offside' } {
     const tags = computeTags(s, side, idx);
     switch (d.action) {
       case 'pass': {
@@ -269,16 +265,16 @@ export function playGrid(setup: GridSetup): GridResult {
             dead: RESTART_CONFIG.dead.offside,
           };
           tally.passEvent(side, idx, {
-            from: af(side, s.players[side][idx]!.pos),
-            to: af(side, spot),
+            from: attackFrame(side, s.players[side][idx]!.pos),
+            to: attackFrame(side, spot),
             ok: false,
             kind: d.kind === 'through' ? 'through' : 'short',
           });
           tally.offside(side, d.target);
           return { key: d.kind ?? 'short', outcome: 'offside' };
         }
-        const from = af(side, s.players[side][idx]!.pos);
-        const to = af(side, s.players[side][d.target]!.pos);
+        const from = attackFrame(side, s.players[side][idx]!.pos);
+        const to = attackFrame(side, s.players[side][d.target]!.pos);
         const o = resolvePass(
           s,
           side,
@@ -300,7 +296,7 @@ export function playGrid(setup: GridSetup): GridResult {
         return { key: d.kind ?? 'short', outcome: o };
       }
       case 'cross': {
-        const from = af(side, s.players[side][idx]!.pos);
+        const from = attackFrame(side, s.players[side][idx]!.pos);
         const o = resolveCross(s, side, idx, tags, ctx, r);
         tally.passEvent(side, idx, { from, to: from, ok: o.kind === 'shot', kind: 'cross' });
         if (o.kind === 'shot') lastPasser = [side, idx];
@@ -309,8 +305,8 @@ export function playGrid(setup: GridSetup): GridResult {
       }
       case 'cutBack': {
         if (d.target === undefined) break;
-        const from = af(side, s.players[side][idx]!.pos);
-        const to = af(side, s.players[side][d.target]!.pos);
+        const from = attackFrame(side, s.players[side][idx]!.pos);
+        const to = attackFrame(side, s.players[side][d.target]!.pos);
         const o = resolveCutBack(s, side, idx, d.target, r);
         tally.passEvent(side, idx, { from, to, ok: o.kind === 'complete', kind: 'cutBack' });
         apply(side, idx, o);
@@ -318,18 +314,18 @@ export function playGrid(setup: GridSetup): GridResult {
           const shot = resolveShot(s, side, d.target, computeTags(s, side, d.target), ctx, r, {
             cutBack: true,
           });
-          applyShot(side, shot as Extract<Outcome, { kind: 'shot' }>);
+          applyShot(side, shot);
           return { key: 'cutBack', outcome: shot };
         }
         return { key: 'cutBack', outcome: o };
       }
       case 'takeOn': {
-        const from = af(side, s.players[side][idx]!.pos);
+        const from = attackFrame(side, s.players[side][idx]!.pos);
         const o = resolveTakeOn(s, side, idx, tags, r);
         tally.takeOnAttempt(side, idx);
         if (o.kind === 'complete') {
           tally.dribble(side, idx);
-          tally.carryEvent(side, idx, from, af(side, o.to));
+          tally.carryEvent(side, idx, from, attackFrame(side, o.to));
           justBeat = [side, idx];
         }
         apply(side, idx, o);
@@ -354,9 +350,9 @@ export function playGrid(setup: GridSetup): GridResult {
         break;
     }
     const to = d.point ?? [s.ball[0], s.ball[1]];
-    const from = af(side, s.players[side][idx]!.pos);
+    const from = attackFrame(side, s.players[side][idx]!.pos);
     const o = resolveCarry(s, side, idx, tags, [to[0], to[1]], r);
-    if (o.kind === 'complete') tally.carryEvent(side, idx, from, af(side, o.to));
+    if (o.kind === 'complete') tally.carryEvent(side, idx, from, attackFrame(side, o.to));
     apply(side, idx, o);
     return { key: 'carry', outcome: o };
   }
@@ -365,7 +361,7 @@ export function playGrid(setup: GridSetup): GridResult {
     s.period = period;
     s.t = 0;
     const start: 0 | 1 = period === 1 ? 0 : 1;
-    pending = { kind: 'kickoff', side: start, spot: [52.5, 34], dead: 0 };
+    pending = { kind: 'kickoff', side: start, spot: CENTRE_SPOT, dead: 0 };
     for (let guard = 0; guard < 20000; guard++) {
       let dt: number;
       let actor: Ref;
@@ -387,7 +383,7 @@ export function playGrid(setup: GridSetup): GridResult {
         else if (res.kind !== 'shot' && res.kind !== 'penalty' && res.kind !== 'cross')
           tally.pass(rs.side, res.taker, false);
         if (res.kind === 'cross') {
-          const spot = af(rs.side, rs.spot);
+          const spot = attackFrame(rs.side, rs.spot);
           tally.passEvent(rs.side, res.taker, {
             from: spot,
             to: spot,
@@ -418,7 +414,9 @@ export function playGrid(setup: GridSetup): GridResult {
         let d: Decision;
         if (holdBias) {
           holdBias = false;
-          const pass = choosePass(s, owner[0], owner[1], tags, r, { backBias: 3 });
+          const pass = choosePass(s, owner[0], owner[1], tags, r, {
+            backBias: DECISION_CONFIG.pass.backBias,
+          });
           d = pass
             ? {
                 action: 'pass',

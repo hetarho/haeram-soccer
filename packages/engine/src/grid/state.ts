@@ -48,6 +48,13 @@ export interface GridState {
   possessionSince: number;
 }
 
+/** Whether a player is on the pitch now (not on the bench, not sent off). */
+export const onPitch = (gp: GridPlayer) => gp.onPitch && !gp.sentOff;
+export const other = (side: 0 | 1) => (1 - side) as 0 | 1;
+/** The formation slot of a player on the pitch. */
+export const slotOf = (s: GridState, gp: GridPlayer) =>
+  FORMATIONS[s.setup.tactics[gp.side]].slots[gp.slot]!;
+
 const HANDS: readonly Attribute[] = ['reflexes', 'handling'];
 
 /** Fills `base` for a player at a slot (a bench player uses his own main position until he enters). */

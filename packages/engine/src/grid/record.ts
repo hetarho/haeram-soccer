@@ -3,11 +3,13 @@ import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../../contracts/s
 import type { Incident, MatchRecord } from '../../../contracts/src/types';
 import { zeroMetrics } from '../primitives';
 import { CELL_BASELINES } from './baselines';
-import { bandOf, cellOf, inBox, type Point } from './pitch';
+import { BAND_EDGES, bandOf, cellOf, inBox, type Point } from './pitch';
+import type { RestartKind } from './restarts';
 import type { GridSetup } from './setup';
 import type { GridState } from './state';
 
-const M = {
+/** Indexes of the per-player and team metric lines. */
+export const M = {
   goals: 0,
   assists: 1,
   passes: 2,
@@ -21,6 +23,10 @@ const M = {
   minutes: 10,
   possession: 11,
 } as const;
+
+/** x (attack frame) where the final third starts, and where a won ball counts as a press action. */
+const FINAL_THIRD = BAND_EDGES[5];
+const PRESS_FROM = BAND_EDGES[3];
 
 export class Tally {
   private readonly lines: [number[][], number[][]];
@@ -73,7 +79,7 @@ export class Tally {
     this.pass(side, idx, e.ok);
     const start = bandOf(e.from[0]);
     const end = bandOf(e.to[0]);
-    if (e.from[0] < 70) this.count(side, undefined, TD.buildUpPasses, undefined);
+    if (e.from[0] < FINAL_THIRD) this.count(side, undefined, TD.buildUpPasses, undefined);
     else {
       this.count(side, idx, TD.finalThirdPasses, PD.finalThirdPasses);
       if (e.ok) this.count(side, idx, TD.finalThirdCompleted, PD.finalThirdCompleted);
@@ -118,7 +124,7 @@ export class Tally {
 
   /** The ball won by `(side, idx)` at `at` (his attack frame): a high turnover from x ≥ 70. */
   regain(side: 0 | 1, idx: number, at: Point): void {
-    if (at[0] >= 70) this.count(side, idx, TD.highTurnovers, PD.highTurnovers);
+    if (at[0] >= FINAL_THIRD) this.count(side, idx, TD.highTurnovers, PD.highTurnovers);
   }
 
   /**
@@ -144,12 +150,7 @@ export class Tally {
     }
   }
 
-  restart(
-    side: 0 | 1,
-    kind:
-      'kickoff' | 'throwIn' | 'goalKick' | 'corner' | 'freeKick' | 'indirectFreeKick' | 'penalty',
-    scored = false,
-  ): void {
+  restart(side: 0 | 1, kind: RestartKind, scored = false): void {
     if (kind === 'corner') this.count(side, undefined, TD.corners, undefined);
     if (kind === 'throwIn') this.count(side, undefined, TD.throwIns, undefined);
     if (kind === 'goalKick') this.count(side, undefined, TD.goalKicks, undefined);
@@ -205,12 +206,12 @@ export class Tally {
   /** A tackle or interception at `at` (the winner's attack frame); from x ≥ 35 it is a press action (PPDA). */
   tackle(side: 0 | 1, idx: number, at?: Point): void {
     this.add(side, idx, M.tackles);
-    if (at && at[0] >= 35) this.count(side, undefined, TD.pressActions, undefined);
+    if (at && at[0] >= PRESS_FROM) this.count(side, undefined, TD.pressActions, undefined);
   }
 
   interception(side: 0 | 1, idx: number, at?: Point): void {
     this.add(side, idx, M.interceptions);
-    if (at && at[0] >= 35) this.count(side, undefined, TD.pressActions, undefined);
+    if (at && at[0] >= PRESS_FROM) this.count(side, undefined, TD.pressActions, undefined);
   }
 
   dribble(side: 0 | 1, idx: number): void {
@@ -260,7 +261,8 @@ export class Tally {
     );
     const metrics = sides.map((side) => {
       const total = zeroMetrics();
-      for (const line of this.lines[side]) for (let i = 0; i < 10; i++) total[i]! += line[i]!;
+      for (const line of this.lines[side])
+        for (let i = 0; i < M.minutes; i++) total[i]! += line[i]!;
       total[M.minutes] = 90;
       return total;
     }) as [number[], number[]];

@@ -1,11 +1,20 @@
 /** Open-play resolution: every chosen action is settled by a duel between named players on their attributes (→MATCH-11, MATCH-13). */
 import { ATTRIBUTES } from '../../../contracts/src/player';
-import { actionWeight, bend as bendMargin, finishing, goalChance, targetChance } from '../match';
+import { actionWeight, finishing, goalChance, targetChance } from '../match';
 import { FORMATIONS, lineOf } from '../player';
 import { CELL_BASELINES } from './baselines';
-import { attackFrame, goalAngle, goalDistance, inBox, PITCH, type Point } from './pitch';
-import { skill, type GridPlayer, type GridState } from './state';
-import type { Tags } from './tags';
+import {
+  attackFrame,
+  clamp,
+  goalAngle,
+  goalDistance,
+  inBox,
+  PITCH,
+  toEngine,
+  type Point,
+} from './pitch';
+import { onPitch, other, skill, slotOf, type GridPlayer, type GridState } from './state';
+import { TAG_CONFIG, type Tags } from './tags';
 import type { Decision } from './decide';
 
 type Kind = NonNullable<Decision['kind']>;
@@ -28,6 +37,7 @@ export type Outcome =
       then?: 'corner' | 'loose' | 'hold' | 'goalKick';
       by?: number;
     };
+export type ShotOutcome = Extract<Outcome, { kind: 'shot' }>;
 
 /** Initial values (design §7.1); T215 and T216 tune them. */
 export const DUEL_CONFIG = {
@@ -56,6 +66,7 @@ export const DUEL_CONFIG = {
     min: 0.2,
     max: 0.85,
     fail: { tackle: 0.7, foul: 0.22, loose: 0.08 },
+    /** Metres beyond the defender a won take-on ends: always the middle of this range, no draw. */
     past: [5, 8],
   },
   carry: { lostScale: 3, skill: 1 / 120, min: 0.01, max: 0.35, foul: 0.15 },
@@ -81,15 +92,7 @@ export const SHOT_CONFIG = {
   maxXg: 0.8,
 } as const;
 
-const onPitch = (gp: GridPlayer) => gp.onPitch && !gp.sentOff;
-const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 const sigmoid = (z: number) => 1 / (1 + Math.exp(-z));
-const other = (side: 0 | 1) => (1 - side) as 0 | 1;
-const frame = (side: 0 | 1, p: Point): Point => attackFrame(side, p);
-const back = (side: 0 | 1, p: Point): [number, number] => {
-  const q = attackFrame(side, p);
-  return [q[0], q[1]];
-};
 const slotPosition = (s: GridState, gp: GridPlayer) =>
   FORMATIONS[s.setup.tactics[gp.side]].slots[gp.slot]?.position;
 
@@ -114,6 +117,11 @@ export interface ShotContext {
   levelFactor: number;
 }
 
+const ATTR = {
+  finishing: ATTRIBUTES.indexOf('finishing'),
+  reflexes: ATTRIBUTES.indexOf('reflexes'),
+};
+
 /** The factor of the level's average finisher (starting forwards of both sides) against the average keeper. */
 export function shotContext(s: GridState): ShotContext {
   let shooting = 0,
@@ -130,10 +138,6 @@ export function shotContext(s: GridState): ShotContext {
   }
   return { levelFactor: finishing(count ? shooting / count : 55, keeping / 2) };
 }
-const ATTR = {
-  finishing: ATTRIBUTES.indexOf('finishing'),
-  reflexes: ATTRIBUTES.indexOf('reflexes'),
-};
 
 /** Distance from `p` to the segment `a`→`b`, and where along it (0–1) the nearest point lies. */
 function toSegment(p: Point, a: Point, b: Point): { d: number; t: number } {
@@ -148,7 +152,7 @@ function nearestToSegment(s: GridState, side: 0 | 1, a: Point, b: Point) {
   let best: { gp: GridPlayer; d: number; t: number } | undefined;
   for (const gp of s.players[other(side)]) {
     if (!onPitch(gp)) continue;
-    const q = toSegment(frame(side, gp.pos), a, b);
+    const q = toSegment(attackFrame(side, gp.pos), a, b);
     if (!best || q.d < best.d) best = { gp, ...q };
   }
   return best;
@@ -162,7 +166,7 @@ function laneRisk(s: GridState, side: 0 | 1, a: Point, b: Point): number {
   if (len2 === 0) return 0;
   for (const gp of s.players[other(side)]) {
     if (!onPitch(gp)) continue;
-    const o = frame(side, gp.pos);
+    const o = attackFrame(side, gp.pos);
     const t = ((o[0] - a[0]) * dx + (o[1] - a[1]) * dy) / len2;
     if (t > 0 && t < 1) risk += Math.exp(-toSegment(o, a, b).d / 2);
   }
@@ -221,9 +225,9 @@ export function resolvePass(
   bonus = 0,
 ): Outcome {
   const P = DUEL_CONFIG.pass;
-  const from = frame(side, s.players[side][idx]!.pos);
+  const from = attackFrame(side, s.players[side][idx]!.pos);
   const receiver = s.players[side][target]!;
-  const to = frame(side, receiver.pos);
+  const to = attackFrame(side, receiver.pos);
   const dist = Math.hypot(to[0] - from[0], to[1] - from[1]);
   const keeper = slotPosition(s, s.players[side][idx]!) === 'GK';
   const long = kind === 'long' || kind === 'through' || kind === 'switch' || lineBreaking;
@@ -247,20 +251,20 @@ export function resolvePass(
     P.min,
     P.max,
   );
-  if (r() < p) return { kind: 'complete', to: back(side, to), receiver: target };
+  if (r() < p) return { kind: 'complete', to: toEngine(side, to), receiver: target };
   const u = r();
   if (u < P.lost.intercepted && marker) {
-    const at = back(side, [
+    const at = toEngine(side, [
       from[0] + (to[0] - from[0]) * marker.t,
       from[1] + (to[1] - from[1]) * marker.t,
     ]);
     return { kind: 'intercepted', by: marker.gp.idx, at };
   }
   if (u < P.lost.intercepted + P.lost.loose) {
-    const at = back(side, to);
+    const at = toEngine(side, to);
     return { kind: 'loose', at, winner: looseWinner(s, at, r) };
   }
-  const exit = exitPoint(back(side, from), back(side, to));
+  const exit = exitPoint(toEngine(side, from), toEngine(side, to));
   return { kind: 'out', at: exit.at, lastTouch: side, over: exit.over };
 }
 
@@ -282,7 +286,7 @@ export function resolveAerial(
   return { kind: 'loose', at: [at[0], at[1]], winner };
 }
 
-/** The shot of a header or a cut-back chance; shared by crosses and cut-backs. */
+/** A shot by `(side, idx)` from where he stands: open play, a header, a cut-back chance or a direct free kick. */
 export function resolveShot(
   s: GridState,
   side: 0 | 1,
@@ -291,9 +295,9 @@ export function resolveShot(
   ctx: ShotContext,
   r: () => number,
   opts: { header?: boolean; cutBack?: boolean; freeKick?: boolean } = {},
-): Outcome {
+): ShotOutcome {
   const C = SHOT_CONFIG;
-  const from = frame(side, s.players[side][idx]!.pos);
+  const from = attackFrame(side, s.players[side][idx]!.pos);
   const xg = chanceXg(from, { ...opts, pressure: tags.pressure });
   const hard = tags.pressure >= 1 || xg >= 0.3;
   const main = opts.header ? skill(s, side, idx, 'heading') : skill(s, side, idx, 'finishing');
@@ -318,7 +322,7 @@ export function resolveShot(
     near = Infinity;
   for (const gp of s.players[other(side)]) {
     if (!onPitch(gp) || gp === keeper) continue;
-    const q = toSegment(frame(side, gp.pos), from, end);
+    const q = toSegment(attackFrame(side, gp.pos), from, end);
     if (q.d <= C.block.lane) {
       lane++;
       if (q.d < near) [blocker, near] = [gp, q.d];
@@ -350,16 +354,14 @@ function headerTarget(s: GridState, side: 0 | 1, except: number): GridPlayer | u
   let best: GridPlayer | undefined,
     value = -Infinity;
   for (const gp of s.players[side]) {
-    if (gp.idx === except || !onPitch(gp) || !inBox(frame(side, gp.pos))) continue;
+    if (gp.idx === except || !onPitch(gp) || !inBox(attackFrame(side, gp.pos))) continue;
     const v =
       aerialRating(s, side, gp.idx, 0.6) *
-      actionWeight(slotRole(s, gp), gp.player.traits, 'aerial');
+      actionWeight(slotOf(s, gp).role, gp.player.traits, 'aerial');
     if (v > value) [best, value] = [gp, v];
   }
   return best;
 }
-const slotRole = (s: GridState, gp: GridPlayer) =>
-  FORMATIONS[s.setup.tactics[gp.side]].slots[gp.slot]!.role;
 
 /**
  * A cross. Draws, in order: delivery; the keeper's claim; the aerial duel; then the header's draws.
@@ -376,9 +378,9 @@ export function resolveCross(
   const X = DUEL_CONFIG.cross;
   const foe = other(side);
   const attacker = headerTarget(s, side, idx);
-  const defenders = s.players[foe].filter((gp) => onPitch(gp) && inBox(frame(side, gp.pos)));
+  const defenders = s.players[foe].filter((gp) => onPitch(gp) && inBox(attackFrame(side, gp.pos)));
   const attackers = s.players[side].filter(
-    (gp) => gp.idx !== idx && onPitch(gp) && inBox(frame(side, gp.pos)),
+    (gp) => gp.idx !== idx && onPitch(gp) && inBox(attackFrame(side, gp.pos)),
   );
   const p = clamp(
     X.base +
@@ -391,21 +393,15 @@ export function resolveCross(
   const keeper = s.players[foe].find((gp) => gp.slot === 0 && onPitch(gp));
   if (!delivered || !attacker) {
     const out = r() < X.failOut;
-    const at = back(side, [
+    const at = toEngine(side, [
       PITCH.length,
-      clamp(frame(side, s.players[side][idx]!.pos)[1], 0, PITCH.width),
+      clamp(attackFrame(side, s.players[side][idx]!.pos)[1], 0, PITCH.width),
     ]);
     if (out) return { kind: 'out', at, lastTouch: side, over: 'byline' };
-    const by = nearestDefender(
-      s,
-      side,
-      attacker ? frame(side, attacker.pos) : [PITCH.length - 10, PITCH.width / 2],
-    );
-    return {
-      kind: 'intercepted',
-      by,
-      at: back(side, attacker ? frame(side, attacker.pos) : [PITCH.length - 10, PITCH.width / 2]),
-    };
+    const spot: Point = attacker
+      ? attackFrame(side, attacker.pos)
+      : [PITCH.length - 10, PITCH.width / 2];
+    return { kind: 'intercepted', by: nearestDefender(s, side, spot), at: toEngine(side, spot) };
   }
   const claimP = X.claim + (keeper ? (skill(s, foe, keeper.idx, 'handling') - 60) / 400 : 0);
   if (keeper && r() < claimP) return { kind: 'held', by: keeper.idx };
@@ -419,27 +415,32 @@ export function resolveCross(
       s,
       [side, attacker.idx],
       [foe, defender.idx],
-      [88.5, frame(side, attacker.pos)[1]],
+      [88.5, attackFrame(side, attacker.pos)[1]],
       r,
     );
     if (duel.kind === 'loose' && duel.winner[0] === foe) {
-      const at = back(side, [88.5, frame(side, attacker.pos)[1]]);
+      const at = toEngine(side, [88.5, attackFrame(side, attacker.pos)[1]]);
       return { kind: 'loose', at, winner: duel.winner };
     }
   }
   return resolveShot(s, side, attacker.idx, tags, ctx, r, { header: true });
 }
 
-function nearestDefender(s: GridState, side: 0 | 1, at: Point): number {
-  let best = 0,
+/** The opponent nearest to `at` (the side's attack frame). */
+function nearestOpponent(s: GridState, side: 0 | 1, at: Point): GridPlayer | undefined {
+  let best: GridPlayer | undefined,
     d = Infinity;
   for (const gp of s.players[other(side)]) {
     if (!onPitch(gp)) continue;
-    const v = Math.hypot(frame(side, gp.pos)[0] - at[0], frame(side, gp.pos)[1] - at[1]);
-    if (v < d) [best, d] = [gp.idx, v];
+    const o = attackFrame(side, gp.pos);
+    const v = Math.hypot(o[0] - at[0], o[1] - at[1]);
+    if (v < d) [best, d] = [gp, v];
   }
   return best;
 }
+
+const nearestDefender = (s: GridState, side: 0 | 1, at: Point) =>
+  nearestOpponent(s, side, at)?.idx ?? 0;
 
 /** A cut-back to a teammate in the box; the next action is a forced shot with `cutBack`. One draw. */
 export function resolveCutBack(
@@ -450,20 +451,20 @@ export function resolveCutBack(
   r: () => number,
 ): Outcome {
   const K = DUEL_CONFIG.cutBack;
-  const to = frame(side, s.players[side][target]!.pos);
+  const to = attackFrame(side, s.players[side][target]!.pos);
   const p = clamp(K.base + (skill(s, side, idx, 'crossing') - 60) * K.skill, K.min, K.max);
-  if (r() < p) return { kind: 'complete', to: back(side, to), receiver: target };
-  return { kind: 'intercepted', by: nearestDefender(s, side, to), at: back(side, to) };
+  if (r() < p) return { kind: 'complete', to: toEngine(side, to), receiver: target };
+  return { kind: 'intercepted', by: nearestDefender(s, side, to), at: toEngine(side, to) };
 }
 
-/** The nearest opponent ahead of the carrier within 4.6 m. */
+/** The nearest opponent ahead of the carrier within the pressure radius. */
 function inFront(s: GridState, side: 0 | 1, idx: number): GridPlayer | undefined {
-  const c = frame(side, s.players[side][idx]!.pos);
+  const c = attackFrame(side, s.players[side][idx]!.pos);
   let best: GridPlayer | undefined,
-    d = 4.6;
+    d: number = TAG_CONFIG.pressureRadius;
   for (const gp of s.players[other(side)]) {
     if (!onPitch(gp)) continue;
-    const o = frame(side, gp.pos);
+    const o = attackFrame(side, gp.pos);
     const v = Math.hypot(o[0] - c[0], o[1] - c[1]);
     if (o[0] >= c[0] && v <= d) [best, d] = [gp, v];
   }
@@ -480,23 +481,23 @@ export function resolveTakeOn(
 ): Outcome {
   const T = DUEL_CONFIG.takeOn;
   const me = s.players[side][idx]!;
-  const c = frame(side, me.pos);
+  const c = attackFrame(side, me.pos);
   const foe = inFront(s, side, idx);
   const past: Point = [
     Math.min(
       PITCH.length - 0.5,
-      (foe ? frame(side, foe.pos)[0] : c[0]) + T.past[0] + (T.past[1] - T.past[0]) / 2,
+      (foe ? attackFrame(side, foe.pos)[0] : c[0]) + T.past[0] + (T.past[1] - T.past[0]) / 2,
     ),
     c[1],
   ];
-  if (!foe) return { kind: 'complete', to: back(side, past), receiver: idx };
+  if (!foe) return { kind: 'complete', to: toEngine(side, past), receiver: idx };
   const edge =
     0.7 * skill(s, side, idx, 'dribbling') +
     0.3 * skill(s, side, idx, 'pace') -
     0.7 * skill(s, foe.side, foe.idx, 'tackling') -
     0.3 * skill(s, foe.side, foe.idx, 'pace');
   const p = clamp((CELL_BASELINES[tags.cell]!.takeOnSuccess ?? 0.5) + edge * T.skill, T.min, T.max);
-  if (r() < p) return { kind: 'complete', to: back(side, past), receiver: idx };
+  if (r() < p) return { kind: 'complete', to: toEngine(side, past), receiver: idx };
   const u = r();
   // A booked defender is more careful: 0.6 of his foul share stays, the rest becomes a clean tackle.
   const foulShare = T.fail.foul * (foe.yellow ? 0.6 : 1);
@@ -518,7 +519,7 @@ export function resolveCarry(
 ): Outcome {
   const K = DUEL_CONFIG.carry;
   const me = s.players[side][idx]!;
-  const foe = nearestToSegment(s, side, frame(side, me.pos), frame(side, to));
+  const foe = nearestToSegment(s, side, attackFrame(side, me.pos), attackFrame(side, to));
   if (tags.pressure >= 1 && foe) {
     const lost = CELL_BASELINES[tags.cell]!.lostPer100 / 100;
     const edge = skill(s, foe.gp.side, foe.gp.idx, 'tackling') - skill(s, side, idx, 'dribbling');
@@ -536,26 +537,26 @@ export function resolveCarry(
 export function resolveHoldUp(s: GridState, side: 0 | 1, idx: number, r: () => number): Outcome {
   const H = DUEL_CONFIG.holdUp;
   const me = s.players[side][idx]!;
-  const foe = nearestToSegment(s, side, frame(side, me.pos), frame(side, me.pos));
+  const foe = nearestOpponent(s, side, attackFrame(side, me.pos));
   if (!foe) return { kind: 'held' };
-  const edge = skill(s, side, idx, 'strength') - skill(s, foe.gp.side, foe.gp.idx, 'strength');
+  const edge = skill(s, side, idx, 'strength') - skill(s, foe.side, foe.idx, 'strength');
   if (r() < clamp(H.base + edge * H.skill, H.min, H.max)) return { kind: 'held' };
-  return { kind: 'tackled', by: foe.gp.idx };
+  return { kind: 'tackled', by: foe.idx };
 }
 
 /** A clearance 25–45 m upfield. Draws: out; the distance; the second-ball winner. */
 export function resolveClearance(s: GridState, side: 0 | 1, idx: number, r: () => number): Outcome {
   const K = DUEL_CONFIG.clearance;
   const me = s.players[side][idx]!;
-  const c = frame(side, me.pos);
+  const c = attackFrame(side, me.pos);
   const out = r() < K.out;
   const reach = K.reach[0] + (K.reach[1] - K.reach[0]) * r();
   const x = clamp(c[0] + reach, 0, PITCH.length);
   if (out) {
     const y = c[1] < PITCH.width / 2 ? 0 : PITCH.width;
-    return { kind: 'out', at: back(side, [x, y]), lastTouch: side, over: 'touch' };
+    return { kind: 'out', at: toEngine(side, [x, y]), lastTouch: side, over: 'touch' };
   }
-  const at = back(side, [x, c[1]]);
+  const at = toEngine(side, [x, c[1]]);
   return { kind: 'loose', at, winner: looseWinner(s, at, r) };
 }
 
@@ -577,5 +578,3 @@ export function resolvePenalty(s: GridState, side: 0 | 1, idx: number, r: () => 
     by: keeper.idx,
   };
 }
-
-export { bendMargin as bend };

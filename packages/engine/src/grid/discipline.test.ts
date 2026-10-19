@@ -8,6 +8,7 @@ import type { Point } from './pitch';
 import { gridKit } from './testkit';
 import { createWorld } from '../index';
 import { playGrid } from './engine';
+import { M } from './record';
 import { buildGridSetup } from './setup';
 
 const kit = gridKit();
@@ -149,7 +150,7 @@ describe('grid discipline (work in progress)', () => {
           sawTen = true;
           const lines = m.players.slice(side * 11, side * 11 + 11);
           for (const x of sent) expect(lines.some((p) => p.id === x.player)).toBe(true);
-          expect(lines.every((p) => p.metrics[10]! <= 90)).toBe(true);
+          expect(lines.every((p) => p.metrics[M.minutes]! <= 90)).toBe(true);
         }
       }
     }

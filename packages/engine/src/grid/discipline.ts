@@ -1,7 +1,7 @@
 /** Cards in the match: how a foul is punished and when a player argues (→MATCH-19). WIP: the engine does not apply cards yet. */
 import { attackFrame, bandOf, laneOf, type Point } from './pitch';
 import { offsideLine } from './shape';
-import type { GridPlayer, GridState } from './state';
+import { onPitch, other, type GridState } from './state';
 
 export type CardKind = 'none' | 'yellow' | 'secondYellow' | 'red';
 export type CardReason = 'reckless' | 'tactical' | 'dissent' | 'dogso' | 'serious';
@@ -22,9 +22,6 @@ export const CARD_CONFIG = {
   dissentRedPerHalf: 0.001,
   counterSeconds: 8,
 } as const;
-
-const onPitch = (gp: GridPlayer) => gp.onPitch && !gp.sentOff;
-const other = (side: 0 | 1) => (1 - side) as 0 | 1;
 
 /** A foul by the fouler's side in the fouled player's attack frame: is it a tactical one (a counter stopped by a player goal-side of the ball)? */
 export function isTactical(s: GridState, foulerSide: 0 | 1, fouler: number): boolean {

@@ -10,7 +10,7 @@ import {
   type Point,
 } from './pitch';
 import { lineX, offsideLine } from './shape';
-import type { GridPlayer, GridState } from './state';
+import { onPitch, other, type GridPlayer, type GridState } from './state';
 import { FORMATIONS } from '../player';
 
 export interface Tags {
@@ -46,8 +46,6 @@ export const TAG_CONFIG = {
   settledSeconds: 20,
 } as const;
 
-const onPitch = (gp: GridPlayer) => gp.onPitch && !gp.sentOff;
-
 /** The tags for the player `(side, idx)` on the ball; `opts` marks restarts and loose balls. */
 export function computeTags(
   s: GridState,
@@ -55,13 +53,13 @@ export function computeTags(
   idx: number,
   opts: { setPiece?: boolean; contest?: boolean } = {},
 ): Tags {
-  const other = (1 - side) as 0 | 1;
+  const foe = other(side);
   const me = s.players[side][idx]!;
   const c: Point = attackFrame(side, me.pos);
   const cell = cellOf(c);
   const band = bandOf(c[0]);
   const lane = laneOf(c[1]);
-  const opponents = s.players[other]
+  const opponents = s.players[foe]
     .filter(onPitch)
     .map((gp) => ({ gp, p: attackFrame(side, gp.pos) }));
   let pressure = 0,
@@ -74,11 +72,11 @@ export function computeTags(
     if (d <= TAG_CONFIG.backToGoalRadius && p[0] > c[0]) nearGoalSide = true;
   }
   // The opponent's lines in the carrier's frame (its own frame's x runs the other way).
-  const dfX = 105 - lineX(s, other, 'DF');
-  const mfX = 105 - lineX(s, other, 'MF');
+  const dfX = PITCH.length - lineX(s, foe, 'DF');
+  const mfX = PITCH.length - lineX(s, foe, 'MF');
   const betweenLines = c[0] >= mfX && c[0] <= dfX && lane >= 1 && lane <= 3;
   const slotPosition = (gp: GridPlayer) =>
-    FORMATIONS[s.setup.tactics[other]].slots[gp.slot]?.position;
+    FORMATIONS[s.setup.tactics[foe]].slots[gp.slot]?.position;
   let channel = false;
   if ((lane === 1 || lane === 3) && Math.abs(c[0] - dfX) <= TAG_CONFIG.channelReach) {
     const pick = (positions: readonly string[]) =>
@@ -98,7 +96,7 @@ export function computeTags(
       Math.hypot(gp.pos[0] - s.ball[0], gp.pos[1] - s.ball[1]) <= TAG_CONFIG.overloadRadius
     )
       overload++;
-  for (const gp of s.players[other])
+  for (const gp of s.players[foe])
     if (
       onPitch(gp) &&
       Math.hypot(gp.pos[0] - s.ball[0], gp.pos[1] - s.ball[1]) <= TAG_CONFIG.overloadRadius
@@ -134,11 +132,11 @@ export function computeTags(
     orientation,
     betweenLines,
     pocket: betweenLines && nearest >= TAG_CONFIG.pocketGap,
-    inBehind: c[0] > offsideLine(s, other),
+    inBehind: c[0] > offsideLine(s, foe),
     channel,
     overload,
-    lead: s.score[side] - s.score[other],
+    lead: s.score[side] - s.score[foe],
     minute: Math.floor(s.elapsed / 60) + 1,
-    menDiff: men(side) - men(other),
+    menDiff: men(side) - men(foe),
   };
 }

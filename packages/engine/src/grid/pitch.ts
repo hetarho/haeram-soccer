@@ -93,6 +93,14 @@ export function attackFrame(side: 0 | 1, p: Point): Point {
   return side === 0 ? p : [PITCH.length - p[0], PITCH.width - p[1]];
 }
 
+/** `attackFrame` as a fresh mutable pair; the flip is its own inverse, so it also takes a side's frame back to the engine frame. */
+export function toEngine(side: 0 | 1, p: Point): [number, number] {
+  const q = attackFrame(side, p);
+  return [q[0], q[1]];
+}
+
+export const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+
 export function inBox(p: Point): boolean {
   return p[0] >= BAND_EDGES[6]! && p[1] >= LANE_EDGES[1] && p[1] <= LANE_EDGES[4];
 }

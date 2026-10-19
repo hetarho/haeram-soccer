@@ -1,13 +1,14 @@
 /** The ball leaving play, fouls, offside and every set piece, at their real spot with their real dead time (→MATCH-14, MATCH-18). */
 import { FORMATIONS } from '../player';
 import {
+  draw,
   keeperDistribution,
   passOptions,
   passProbabilities,
   temperature,
   type Decision,
 } from './decide';
-import { attackFrame, bandOf, goalDistance, inBox, laneOf, PITCH, type Point } from './pitch';
+import { attackFrame, bandOf, goalDistance, inBox, laneOf, PITCH, toEngine } from './pitch';
 import {
   resolveCross,
   resolvePass,
@@ -17,7 +18,7 @@ import {
   type ShotContext,
 } from './resolve';
 import { lineX, offsideLine } from './shape';
-import { skill, type GridPlayer, type GridState } from './state';
+import { onPitch, other, skill, type GridPlayer, type GridState } from './state';
 import { computeTags } from './tags';
 
 export type RestartKind =
@@ -66,14 +67,6 @@ export const RESTART_CONFIG = {
     max: 0.7,
   },
 } as const;
-
-const onPitch = (gp: GridPlayer) => gp.onPitch && !gp.sentOff;
-const frame = (side: 0 | 1, p: Point): Point => attackFrame(side, p);
-const back = (side: 0 | 1, p: Point): [number, number] => {
-  const q = attackFrame(side, p);
-  return [q[0], q[1]];
-};
-const other = (side: 0 | 1) => (1 - side) as 0 | 1;
 
 /** Which restart follows a ball that left play. */
 export function classifyOut(out: {
@@ -125,8 +118,8 @@ export function isOffside(
   if (from === 'throwIn' || from === 'goalKick' || from === 'corner') return false;
   const O = RESTART_CONFIG.offside;
   const gp = s.players[side][target]!;
-  const p = frame(side, gp.pos);
-  const ball = frame(side, s.ball);
+  const p = attackFrame(side, gp.pos);
+  const ball = attackFrame(side, s.ball);
   const foe = other(side);
   if (p[0] <= PITCH.length / 2 || p[0] <= offsideLine(s, foe) || p[0] <= ball[0]) return false;
   const chance =
@@ -140,11 +133,11 @@ export function isOffside(
 /** The restart a foul gives the fouled side: a penalty inside the box it attacks, else a free kick. */
 export function foulRestart(_s: GridState, fouledSide: 0 | 1, at: [number, number]): Restart {
   const D = RESTART_CONFIG.dead;
-  if (inBox(frame(fouledSide, at)))
+  if (inBox(attackFrame(fouledSide, at)))
     return {
       kind: 'penalty',
       side: fouledSide,
-      spot: back(fouledSide, [PITCH.length - 11, PITCH.width / 2]),
+      spot: toEngine(fouledSide, [PITCH.length - 11, PITCH.width / 2]),
       dead: D.penalty,
     };
   return { kind: 'freeKick', side: fouledSide, spot: [at[0], at[1]], dead: D.freeKick };
@@ -187,15 +180,8 @@ function place(s: GridState, side: 0 | 1, idx: number, spot: [number, number]) {
   s.possession = side;
 }
 
-function pickFrom(options: ReturnType<typeof passOptions>, tau: number, r: () => number) {
-  const probabilities = passProbabilities(options, tau);
-  let u = r();
-  for (let i = 0; i < options.length; i++) {
-    u -= probabilities[i]!;
-    if (u < 0) return options[i]!;
-  }
-  return options[options.length - 1]!;
-}
+const pickFrom = (options: ReturnType<typeof passOptions>, tau: number, r: () => number) =>
+  draw(options, passProbabilities(options, tau), r);
 
 /** Nearest teammate within `reach` with no opponent within `free` metres; else the nearest at all. */
 function nearestFree(
@@ -256,7 +242,7 @@ export function playRestart(
     const taker = lead();
     place(s, side, taker, rs.spot);
     const tags = computeTags(s, side, taker, { setPiece: true });
-    const behind = (gp: GridPlayer) => frame(side, gp.pos)[0] < frame(side, rs.spot)[0];
+    const behind = (gp: GridPlayer) => attackFrame(side, gp.pos)[0] < attackFrame(side, rs.spot)[0];
     let options = passOptions(s, side, taker, tags, {
       filter: behind,
       backBias: K.kickoffBackBias,
@@ -321,7 +307,7 @@ export function playRestart(
     return { taker, kind: 'cross', outcome: resolveCross(s, side, taker, tags, ctx, r) };
   }
   // Free kicks, direct and indirect.
-  const spotInFrame = frame(side, rs.spot);
+  const spotInFrame = attackFrame(side, rs.spot);
   const band = bandOf(spotInFrame[0]);
   const lane = laneOf(spotInFrame[1]);
   const direct =
