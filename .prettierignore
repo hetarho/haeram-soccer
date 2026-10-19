@@ -9,3 +9,5 @@ test-results
 packages/catalogs/data
 # frozen rules 3.0.0 envelope: the raw text written by scripts/freeze-legacy-fixture.ts
 tests/fixtures/legacy-rules3.haeram-save.json
+# byte-identical copy of docs/match-baselines-40.json (T204)
+packages/engine/src/grid/baselines.json

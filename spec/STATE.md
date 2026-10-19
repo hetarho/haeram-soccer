@@ -15,8 +15,10 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
+| w6pm | hq-dev1-pve2-vm2 | autopilot | 2026-10-19T07:33Z | 2026-10-19T07:33Z | T204 |
 
 ## inbox
+- 261019 decided T203 T204: owner asked for parallel work until 18:00 while the engine chain is declared serial → ran T203 (apps/web packing) and T204 (engine/grid, new files) side by side in separate worktrees since their touches are disjoint and T204 uses nothing of T203 (alt: strictly serial | also start identity tasks T234+ early)
 - 261019 suggest T203: main CI is red since the 261017 UI design commits (Run 319 at da97fe0: every browser's e2e and the browser benchmark failed; Run 314 at 6df81fa was the last pass) — locally Chromium fails the same 76 journeys at origin/main and with T200–T202, 73 of them `selectOption` on the custom Select in 위임·진행 설정 → fix the e2e helpers before T203 so CI gates the grid engine again.
 - 261019 decided ARCH-30 T201: whole-world unit tests passed the 30 s vitest limit once players carry 16 attributes (about 10% slower; two already timed out at the base under load) → testTimeout 60 s and the feature-replay case 240 s (alt: per-test limits on each slow case | speed up OVR first)
 - 261019 decided WEB-47 T226: season PPDA when only some matches carry advanced counters → MATCH-13 PPDA over those matches with how many counted; the marked approximation only for a season with none (alt: approximation for the whole season once one match lacks counters | show both figures)
@@ -99,7 +101,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T203 | Lossless packing of the new match facts and season heat maps | SAVE HIST MATCH | T202 | todo |
-| T204 | Grid pitch: 40 named cells, geometry and baselines | MATCH | T203 | todo |
 | T205 | Grid setup and state: rosters, bench, takers, era rules, skills | MATCH CLUB STAFF | T204 | todo |
 | T206 | Off-the-ball shape, pressing, marking, runs and movement | MATCH PLAYER STAFF | T205 | todo |
 | T207 | Per-touch tags | MATCH | T206 | todo |
@@ -164,6 +165,7 @@
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 T204 done (w6pm): grid pitch (40 cells, geometry, Korean cell names) and the 40-cell baselines module with a byte-identical JSON copy; 9 tests, typecheck and lint pass.
 - 261019 T257 done: current season list shows 진행 중; publication checks pass (1023 unit, 19 contract, 184 distinct Chromium journeys across full run and fixed-case reruns, type/lint/format/catalog/build). T256 test adapters handle styled selects and simultaneous event cards; ready for main push and CI.
 - 261019 T257 doing (u6k2): release verification found the current season row missing its WEB-54 status; restore the visible marker without changing record data.
 - 261019 T256 publish start: owner requested commit/push; integrate origin/main T200–T202 before ARCH-30 batch verification.
