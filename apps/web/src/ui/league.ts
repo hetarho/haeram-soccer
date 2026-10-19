@@ -375,6 +375,26 @@ export function divisionRules(code: string, tier: number) {
   return { automatic, playoff, relegation, lower, cp };
 }
 
+export type Zone = 'automatic' | 'playoff' | 'relegation';
+/**
+ * The places of a table of `clubs` rows, live or closed, under the rules of the division it is
+ * played in (for a closed season, not the tier the club plays in today). `lower` marks the
+ * amateur league, whose top place goes up into the professional game.
+ */
+export function finalZones(code: string, tier: number, clubs: number) {
+  const rules = divisionRules(code, tier);
+  const zones = Array.from({ length: clubs }, (_, i): Zone | undefined =>
+    i < rules.automatic
+      ? 'automatic'
+      : i < rules.automatic + rules.playoff
+        ? 'playoff'
+        : i >= clubs - rules.relegation
+          ? 'relegation'
+          : undefined,
+  );
+  return { zones, lower: rules.lower };
+}
+
 export function leagueRules(w: World, ids: string[]) {
   const clubs = ids.map((id) => w.clubs.find((c) => c.id === id)).filter((c): c is Club => !!c);
   const first = clubs[0];

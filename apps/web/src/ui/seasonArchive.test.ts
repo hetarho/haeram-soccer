@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { createWorld, simulateSeason } from '../../../../packages/engine/src/index';
 import { professionalStart } from '../../../../packages/engine/src/testing';
-import { finalRows, finalZones, seasonSnapshots } from './seasonArchive';
+import { finalZones } from './league';
+import { finalRows, seasonSnapshots } from './seasonArchive';
 
 const input = {
   country: 'ENG' as const,

@@ -6,6 +6,7 @@ import { kindLabel, seasonName } from './format';
 import {
   archivedTimeline,
   divisionName,
+  finalZones,
   formFor,
   leagueFixtures,
   leagueOverviewModel,
@@ -17,8 +18,8 @@ import {
   rankHistoryYears,
   RESULT_POINTS,
   sameMembers,
+  type Zone,
 } from './league';
-import { finalZones, type Zone } from './seasonArchive';
 import { ClubLink } from './ClubLink';
 import { clubOvr, cohesionLine, ovrTier } from './OvrBadge';
 import s from './LeagueInsights.module.css';

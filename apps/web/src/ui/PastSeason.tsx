@@ -12,12 +12,11 @@ import { MatchReport } from './MatchReport';
 import { TabList } from './PageTabs';
 import { RankChart, RankHistoryGraph, rankAxis, ZoneLegend } from './LeagueInsights';
 import { seasonName, signed } from './format';
-import { divisionName, sameLeague, type LeagueChoice } from './league';
+import { divisionName, finalZones, sameLeague, type LeagueChoice } from './league';
 import { LeaguePicker } from './LeaguePicker';
 import { selectReviewWorld } from './liveState';
 import {
   finalRows,
-  finalZones,
   leagueRows,
   seasonSnapshots,
   useSeasonFiles,
