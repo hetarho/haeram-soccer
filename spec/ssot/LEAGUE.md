@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r9 | Define the browser-demo rules for domestic seasons and relegation.
+> r10 | Define the browser-demo rules for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -56,6 +56,10 @@
   - continental opponents from countries not played keep their reputation.
   - measured 261016 for the owner's club (domestic cup term not included; ENG, 보통, all business delegated, 3 seeds): mostly third-division careers stand at 44–50 with 30–33k supporters in 2000, and a club relegated from the second division fell from 49 to 43 and from 59k to 30k supporters over eleven seasons.
 
+- LEAGUE-15 [o] Players of clubs nobody owns are injured (→CLUB-23) and suspended (→MATCH-19) like own players, on whichever engine path their fixture takes (→MATCH-22); their club's XI and bench skip them while they are out. ← an opponent can really be weakened, and the owner's club is not the only one that loses players
+  - each club keeps a short list of its unavailable players (who, until when, how many matches banned); it clears when the club's squad is generated for a new season (→WORLD-6), while an unserved ban carries over by person.
+  - every league keeps a discipline table: each player's yellow and red cards and current bans by competition.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -63,6 +67,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r10 261019 LEAGUE-15+ injuries and suspensions for clubs nobody owns, a retained unavailable list cleared at the seasonal squad generation, league discipline table
 - r9 261016 LEAGUE-10✎ reputation of clubs nobody owns drifts 30% toward its division's→follows LEAGUE-14; LEAGUE-14+ every club's reputation: 20% of the gap to its next division's level (75/60/45/30, amateur 8) + league finish ±3, domestic cup +2, continental match +0.2 and title +8
 - r8 261016 LEAGUE-11✎ progression examples→+manual next-event advance with identical daily order; LEAGUE-13✎ level 4 reference→equivalent all-delegated reference; balance bands, constants and measurements unchanged
 - r7 261015 LEAGUE-13✎ unmeasured→measured 261015 column (rules 2.0.0, 160 careers): every level ≈60% titles near season 50, ≈21% after the first; 보통·어려움·최상 outside their bands
