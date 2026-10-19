@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r46 | Define the browser-demo rules for browser persistence and protocol.
+> r47 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -63,8 +63,12 @@
   - Reload, slot parking/restoration and export/import recover the same designs and applicable fixture choice; do not reroll another colour, emblem or pattern on read.
   - Identity apply and an explicit fixture-level kit choice are owner decisions under →SAVE-8. Unapplied editor drafts remain session UI work under →WEB-74/86.
   - Existing writer ownership, validation, recoverable-save protection and lossless storage budgets remain →SAVE-4/5/6/11/13. Invalid identity data cannot overwrite a good career.
-- SAVE-21 [?] Missing identity data in an otherwise supported career: recommend preserving its existing visible crest and founding colour and adding reproducible default shirts without changing retained gameplay facts (→KIT-15). This does not permit converting or resetting a career outside →SAVE-19.
-- SAVE-22 [?] Retained playback appearance follows →KIT-12; if historical designs are retained, preserve the actual crest, outfield-shirt and goalkeeper appearance with that playback through save/export/import, within existing playback lifetimes and storage limits. Do not fabricate an older kit when it was never recorded.
+- SAVE-21 [o] A supported career without identity information follows →KIT-15: preserve its visible crests, representative colours and gameplay facts and supply only missing shirt designs reproducibly.
+  - Apply supported-career identity adoption only through the existing writer-owned validated activation path (→SAVE-3/5/6/11); failure preserves the prior save and recovery/export access. Reading from a read-only tab performs no disk upgrade.
+  - Unsupported gameplay rules remain governed by →SAVE-19. Adding identity grants no further career-reset or legacy-conversion permission.
+- SAVE-22 [o] Retained playback preserves the actual crest, outfield-shirt and goalkeeper appearance under →KIT-12 through save/export/import, within existing playback lifetimes and storage limits.
+  - Identity edits never rewrite a recorded appearance, including the currently observed settled match.
+  - Playback without historical identity information retains that absence and displays the unrecorded status; never backfill an invented historical kit from today's design.
 
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
@@ -73,6 +77,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r47 261019 SAVE-21✎ open→preserve supported careers and add only missing shirts through validated writer activation; SAVE-22✎ open→retain actual playback appearance and disclose missing historical kits; gameplay boundary and storage limits unchanged
 - r46 261019 SAVE-20+ applied identities and fixture kit choices round-trip; SAVE-21/22+ open supported-career identity adoption and historical playback appearance; SAVE-19 boundary unchanged
 - r45 261019 SAVE-10✎ current rules 3.0.0→4.0.0, accepted checkpoints 3.0.0→4.0.0; SAVE-18✎ active rules 3.0.0→historical boundary; SAVE-19+ rules 4.0.0 grid-engine boundary, legacy through 3.0.0 cleared, new persisted facts within the budget
 - r44 261017 SAVE-13✎ v3 profile rows→bounded sparse scalar columns/presence runs; exact facts, original registry order and v1/v2 readers unchanged
