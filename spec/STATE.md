@@ -169,7 +169,8 @@
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
-- 261019 fix web: the responsibility settings sheet loads lazily — the ARCH-28 entry had crept to 256,377 B gzip (377 over 250 KiB since da97fe0, hidden by the T256 script break); now 254,387 B.
+- 261019 fix web: drop the duplicate lazy settings wrapper that 049879b added in ProgressControls beside 83ffc27's; the entry overage began at da97fe0, hidden by the T256 script break.
+- 261019 fix web entry budget: the responsibility settings dialog loads when opened; entry JS/CSS 256,377 → 254,413 of 256,000 gzip bytes (ARCH), 43 Chromium journeys that open it pass.
 - 261019 fix benchmark: the mobile latency sample in scripts/first-play.mjs taps the 관전 속도 radios instead of the pause/play buttons T256 removed.
 - 261019 T215 done (r5c2): all 37 MATCH-23 bands hold over 600 and 1,200 grid matches (26/37 at the h8t4 WIP); set-piece scene, deep back line, 50/50 fouls, xG pressure floor; 1132 unit tests pass.
 - 261019 T215 doing (r5c2), taken over from the closed h8t4 WIP on wip/h8t4.

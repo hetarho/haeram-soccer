@@ -8,7 +8,7 @@ import {
   seasonDate,
   seasonLength,
 } from '../../../../packages/engine/src/calendar';
-import { lazy, memo, Suspense, useEffect, useRef, type ComponentProps } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { useProgression, type Pace, type ProgressionController } from '../runtime/progression';
@@ -16,18 +16,6 @@ import { transferWindow } from '../../../../packages/engine/src/transfers';
 import { useInterventionDialog } from './state';
 import s from './App.module.css';
 import p from './ProgressControls.module.css';
-
-const Settings = lazy(() =>
-  import('./ResponsibilitySettings').then((module) => ({ default: module.ResponsibilitySettings })),
-);
-/** The responsibility settings sheet loads when opened, keeping it out of the entry budget (→ARCH-28). */
-export function InterventionSettings(props: ComponentProps<typeof Settings>) {
-  return (
-    <Suspense fallback={null}>
-      <Settings {...props} />
-    </Suspense>
-  );
-}
 
 const PACES: [Pace, string, string][] = [
   ['x1', 'x1', '1초에 하루'],
