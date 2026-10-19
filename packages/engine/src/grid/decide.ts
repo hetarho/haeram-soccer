@@ -3,7 +3,17 @@ import type { Tactic } from '../../../contracts/src/types';
 import { lineOf } from '../player';
 import { actionWeight } from '../match';
 import { CELL_BASELINES, OVERALL_PROFILE, POSITION_PROFILES, profileKey } from './baselines';
-import { attackFrame, cellBand, cellLane, cellOf, clamp, inBox, PITCH, type Point } from './pitch';
+import {
+  attackFrame,
+  cellBand,
+  cellLane,
+  cellOf,
+  clamp,
+  goalDistance,
+  inBox,
+  PITCH,
+  type Point,
+} from './pitch';
 import { offsideLine } from './shape';
 import { onPitch, other, skill, slotOf, type GridPlayer, type GridState } from './state';
 import { TAG_CONFIG, type Tags } from './tags';
@@ -34,15 +44,19 @@ export interface Decision {
 /** Initial values (design §6); T215 and T216 tune them. The style bends `pass` and `lineHigh`/`lineLow` are applied by T209 and T206. */
 export const DECISION_CONFIG = {
   holdUp: { base: 0.03, backToGoal: 0.15 },
-  cutBackShare: 0.35,
-  takeOnPerPass: 0.045,
+  cutBackShare: 0.1,
+  takeOnPerPass: 0.075,
   crossShare: 0.025,
   factorRange: [0.2, 3],
-  shotLine: { GK: 0, DF: 0.6, MF: 1, FW: 1.25 },
+  shotLine: { GK: 0, DF: 1, MF: 3.8, FW: 0.9 },
   /** Global shot-volume scale; the first uncalibrated engine produced about 25 shots a side (T215 settles it). */
-  shotScale: 0.05,
+  shotScale: 0.175,
   /** Global open-play cross scale: the cells' own cross shares gave under one cross a side (T215 settles it). */
-  crossScale: 4,
+  crossScale: 8,
+  /** Extra shot weight in the box band, so a carrier shoots there instead of carrying into the goal area (T215). */
+  shotBox: 0.42,
+  /** Beyond `from` metres from goal a shot's weight falls by e per `scale` metres: a cell's shots come from its near end (T215). */
+  longShot: { from: 28, scale: 6 },
   tactic: {
     possession: { pass: 1.1, takeOn: 0.9, shotBand5: 0.8 },
     counter: { shotInCounter: 1.1 },
@@ -51,8 +65,8 @@ export const DECISION_CONFIG = {
   } satisfies Record<Tactic, object>,
   pressure: { carry: 0.6, takeOn: 1.3, takeOnDribbling: 65, clearance: 2 },
   backToGoal: { takeOn: 0.5, shot: 0.3 },
-  inBehind: { shot: 1.6, carry: 1.3 },
-  pocket: { takeOn: 1.2, shotBand5: 1.2 },
+  inBehind: { shot: 0.8, carry: 1.3 },
+  pocket: { takeOn: 1.2, shotBand5: 1.6 },
   leading: { minute: 75, takeOn: 0.8, clearance: 1.3 },
   trailing: { minute: 70, shot: 1.2, cross: 1.2 },
   lowXg: 0.05,
@@ -68,8 +82,17 @@ export const DECISION_CONFIG = {
     switch: 30,
     tau: { scale: 1, decisions: 80, composure: 150, range: [0.4, 2.5] },
     backBias: 3,
+    /** Weight of backward options in every pass choice; the threat gain alone kept back passes near 9% (T215). */
+    backPrior: 2.2,
   },
-  carry: { headings: [0, -30, 30, -90, 90], length: [6, 6], pressure: 0.5, margin: 0.5 },
+  /** `boxLength`: a carry that starts in the box is a step or two, not a run into the goal area (T215). */
+  carry: {
+    headings: [0, -30, 30, -90, 90],
+    length: [6, 6],
+    boxLength: [3, 3],
+    pressure: 0.5,
+    margin: 0.5,
+  },
   keeper: { sweeper: 0.7, stopper: 0.45, press: 0.15, longRisk: 0.5 },
 } as const;
 
@@ -120,7 +143,11 @@ export function actionMix(
     clamp(profile.crossShare / C.crossShare, C.factorRange[0], C.factorRange[1]) * C.crossScale;
   mix.cross *= crossFactor;
   mix.cutBack *= crossFactor;
-  mix.shot *= C.shotLine[line] * C.shotScale;
+  mix.shot *=
+    C.shotLine[line] *
+    C.shotScale *
+    (tags.band === 6 ? C.shotBox : 1) *
+    Math.exp(-Math.max(0, goalDistance(c) - C.longShot.from) / C.longShot.scale);
   // Role and traits.
   mix.shot *= actionWeight(slot.role, traits, 'shot');
   mix.takeOn *= actionWeight(slot.role, traits, 'dribble');
@@ -295,7 +322,7 @@ export function passOptions(
       Math.max(0, dist - P.tooFar) / 10 +
       through;
     let prior = (baseline[dir] * Math.sqrt(profile[dir] / OVERALL_PROFILE[dir])) / count[dir];
-    if (dir === 'back' && opts.backBias) prior *= opts.backBias;
+    if (dir === 'back') prior *= P.backPrior * (opts.backBias ?? 1);
     const kind: PassOption['kind'] =
       through > 0
         ? 'through'
@@ -372,7 +399,8 @@ export function chooseCarry(
   const me = s.players[side][idx]!;
   const c = attackFrame(side, me.pos);
   const toGoal = Math.atan2(PITCH.width / 2 - c[1], PITCH.length - c[0]);
-  const length = K.length[0] + K.length[1] * r();
+  const [base, spread] = inBox(c) ? K.boxLength : K.length;
+  const length = base + spread * r();
   const xt0 = CELL_BASELINES[tags.cell]!.xT;
   const ends = K.headings.map((deg): Point => {
     const a = toGoal + deg * DEG;

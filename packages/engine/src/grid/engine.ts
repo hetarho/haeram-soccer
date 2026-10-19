@@ -4,6 +4,7 @@ import { choosePass, decide, DECISION_CONFIG, type Decision } from './decide';
 import { computeTags } from './tags';
 import { cardForFoul, dissentAt } from './discipline';
 import {
+  inFront,
   looseWinner,
   resolveCarry,
   resolveClearance,
@@ -25,11 +26,12 @@ import {
   RESTART_CONFIG,
   type Restart,
 } from './restarts';
-import { Tally } from './record';
+import { Tally, type GridDiagnostics } from './record';
 import type { GridSetup } from './setup';
 import { moveAll, startRuns } from './shape';
 import { attackFrame, PITCH } from './pitch';
-import { createState, kickOff, other, type GridState } from './state';
+import { createState, kickOff, other, slotOf, type GridState } from './state';
+import { lineOf } from '../player';
 import { applyChanges, coverGoal, drawInjury, leave, planChanges } from './changes';
 import { Tracer, type TraceEntry } from './trace';
 
@@ -64,6 +66,7 @@ export interface GridResult {
   trace?: TraceEntry[];
   /** Match seconds played, dead time included. */
   elapsed: number;
+  diagnostics: GridDiagnostics;
 }
 
 type Ref = [0 | 1, number];
@@ -85,6 +88,9 @@ export function playGrid(setup: GridSetup): GridResult {
   /** The take-on that came immediately before the current action (an assist needs a pass, not a dribble). */
   let prevBeat: Ref | undefined;
   let holdBias = false;
+  /** When the last corner or free kick was taken, and whether the current restart is a penalty. */
+  let setPieceAt: number | undefined;
+  let penalty = false;
 
   const minute = () => Math.min(45, Math.floor(s.t / 60) + 1) + (s.period === 2 ? 45 : 0);
   /** The match minute of an incident, with the added minute past the period's end. */
@@ -120,6 +126,19 @@ export function playGrid(setup: GridSetup): GridResult {
   function applyShot(side: 0 | 1, o: ShotOutcome) {
     const shooter = o.shooter ?? 0;
     tally.shot(side, shooter, o.recordedXg, o.result);
+    const gp = s.players[side][shooter]!;
+    const [x, y] = attackFrame(side, gp.pos);
+    tally.diagnostics.shots.push({
+      side,
+      x,
+      y,
+      xg: o.recordedXg,
+      header: o.header ?? false,
+      setPiece: !penalty && setPieceAt !== undefined && s.elapsed - setPieceAt <= 10,
+      penalty,
+      goal: o.result === 'goal',
+      line: lineOf(slotOf(s, gp).position),
+    });
     const passer =
       lastPasser &&
       lastPasser[0] === side &&
@@ -255,23 +274,24 @@ export function playGrid(setup: GridSetup): GridResult {
       case 'out':
         pending = classifyOut(o);
         return;
-      case 'foul':
-        tally.foul(foe, o.by, idx);
-        pending = foulRestart(s, side, o.at);
-        {
-          const verdict = cardForFoul(
-            s,
-            foe,
-            o.by,
-            { at: o.at, inBox: pending.kind === 'penalty' },
-            r,
-          );
-          if (verdict.card !== 'none') {
-            applyCard(foe, o.by, verdict.card, verdict.reason ?? 'reckless');
-            pending.dead += RESTART_CONFIG.dead.card;
-          }
+      case 'foul': {
+        const [fouledSide, fouled] = o.on ?? [side, idx];
+        const fouler = other(fouledSide);
+        tally.foul(fouler, o.by, fouled);
+        pending = foulRestart(s, fouledSide, o.at);
+        const verdict = cardForFoul(
+          s,
+          fouler,
+          o.by,
+          { at: o.at, inBox: pending.kind === 'penalty' },
+          r,
+        );
+        if (verdict.card !== 'none') {
+          applyCard(fouler, o.by, verdict.card, verdict.reason ?? 'reckless');
+          pending.dead += RESTART_CONFIG.dead.card;
         }
         return;
+      }
       case 'held':
         if (o.by !== undefined) setOwner(foe, o.by, s.players[foe][o.by]!.pos);
         else holdBias = true;
@@ -335,7 +355,8 @@ export function playGrid(setup: GridSetup): GridResult {
       case 'cross': {
         const from = attackFrame(side, s.players[side][idx]!.pos);
         const o = resolveCross(s, side, idx, tags, ctx, r);
-        tally.passEvent(side, idx, { from, to: from, ok: o.kind === 'shot', kind: 'cross' });
+        const ok = o.kind === 'shot' || o.kind === 'complete';
+        tally.passEvent(side, idx, { from, to: from, ok, kind: 'cross' });
         if (o.kind === 'shot') lastPasser = [side, idx];
         apply(side, idx, o);
         return { key: 'cross', outcome: o };
@@ -358,12 +379,14 @@ export function playGrid(setup: GridSetup): GridResult {
       }
       case 'takeOn': {
         const from = attackFrame(side, s.players[side][idx]!.pos);
+        // With nobody in front to beat it is a carry, not a take-on (MATCH-13).
+        const opposed = inFront(s, side, idx) !== undefined;
         const o = resolveTakeOn(s, side, idx, tags, r);
-        tally.takeOnAttempt(side, idx);
+        if (opposed) tally.takeOnAttempt(side, idx);
         if (o.kind === 'complete') {
-          tally.dribble(side, idx);
+          if (opposed) tally.dribble(side, idx);
           tally.carryEvent(side, idx, from, attackFrame(side, o.to));
-          justBeat = [side, idx];
+          if (opposed) justBeat = [side, idx];
         }
         apply(side, idx, o);
         return { key: 'takeOn', outcome: o };
@@ -413,31 +436,37 @@ export function playGrid(setup: GridSetup): GridResult {
         pending = undefined;
         stoppage(rs);
         if (rs.kind === 'kickoff') kickOff(s, rs.side);
+        penalty = rs.kind === 'penalty';
+        setPieceAt =
+          rs.kind === 'corner' || rs.kind === 'freeKick' || rs.kind === 'indirectFreeKick'
+            ? s.elapsed + rs.dead
+            : undefined;
         const res = playRestart(s, rs, r, ctx);
         actor = [rs.side, res.taker];
         const kind = res.kind === 'penalty' ? 'shot' : res.kind;
-        if (res.outcome.kind === 'complete' && res.outcome.receiver !== res.taker)
-          tally.pass(rs.side, res.taker, true);
-        else if (res.kind !== 'shot' && res.kind !== 'penalty' && res.kind !== 'cross')
-          tally.pass(rs.side, res.taker, false);
         if (res.kind === 'cross') {
           const spot = attackFrame(rs.side, rs.spot);
           tally.passEvent(rs.side, res.taker, {
             from: spot,
             to: spot,
-            ok: res.outcome.kind === 'shot',
+            ok: res.outcome.kind === 'shot' || res.outcome.kind === 'complete',
             kind: 'cross',
           });
-        }
+        } else if (res.outcome.kind === 'complete' && res.outcome.receiver !== res.taker)
+          tally.pass(rs.side, res.taker, true);
+        else if (res.kind !== 'shot' && res.kind !== 'penalty')
+          tally.pass(rs.side, res.taker, false);
         if (res.outcome.kind === 'shot' && res.outcome.shooter === undefined)
           res.outcome.shooter = res.taker;
         apply(rs.side, res.taker, res.outcome);
+        penalty = false;
         tally.restart(
           rs.side,
           rs.kind,
           res.kind === 'penalty' && res.outcome.kind === 'shot' && res.outcome.result === 'goal',
         );
         dt = rs.dead + secondsOf(kind);
+        tally.diagnostics.ballInPlay += secondsOf(kind);
         label = rs.kind;
         outcomeLabel = res.outcome.kind;
         s.t += dt;
@@ -472,8 +501,10 @@ export function playGrid(setup: GridSetup): GridResult {
         s.t += dt;
         s.elapsed += dt;
         tally.possession(possessing, dt);
+        tally.diagnostics.ballInPlay += dt;
         moveAll(s, dt);
       }
+      tally.spellTo(s.possession);
       startRuns(s, s.possession, r);
       tracer.push(s, actor[0], actor[1], label, outcomeLabel, from);
       const hurt = drawInjury(s, dt, r);
@@ -487,6 +518,7 @@ export function playGrid(setup: GridSetup): GridResult {
           if (d) applyCard(side, d.player, d.card, 'dissent');
         }
         added.push(extra);
+        tally.spellTo(undefined);
         break;
       }
     }
@@ -498,5 +530,10 @@ export function playGrid(setup: GridSetup): GridResult {
     tactics: setup.tactics,
     added,
   };
-  return { record, ...(setup.observe ? { trace: tracer.entries } : {}), elapsed: s.elapsed };
+  return {
+    record,
+    ...(setup.observe ? { trace: tracer.entries } : {}),
+    elapsed: s.elapsed,
+    diagnostics: tally.diagnostics,
+  };
 }

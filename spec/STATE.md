@@ -15,9 +15,14 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| r5c2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-19T11:04Z | 2026-10-19T11:04Z | T215 |
 
 ## inbox
+- 261019 decided T215: 9 of 10 set-piece crosses found nobody in the box (cross completion 6%, defenders 1% of goals) → a set-piece scene for corners and free kicks crossed into the box: the five best headers go up and one waits at the edge, the defenders mark them goal-side and hold the six-yard line with one left upfield, and the men who went up hold 8 s for the second ball (MATCH-18 "delivered into the box for aerial duels and second balls") (alt: raise cross success alone, which leaves set-piece, headed and defender goals red | update-ssot a set-piece rule first)
+- 261019 decided T215: back lines never entered their own box (each tactic's line floor of 18–30 m), so box shots were unmarked (0.156 xG a shot) → the line drops to 4 m goal-side of a ball played behind it, never deeper than 6 m (alt: lower every tactic's line floor | keep the floor and cut box xG with a stronger pressure factor)
+- 261019 decided T215: about 80% of fouls came in the fouled side's attacking 40 m, so free kicks near the box were about 8 a team → 8% of 50/50s outside the boxes end in a foul, and a defender in his own third keeps 30% of his fouls on a carrier (alt: fewer take-on and carry fouls everywhere, which leaves the fouls band short | leave the final-third free kicks)
+- 261019 decided T215: the receiver a failed pass missed won most loose balls back (possessions 83 a team) → he weighs 0.35 in that contest (alt: leave him out, which gave 105 | turn more lost passes into interceptions, which pushed tackles + interceptions over 30)
+- 261019 decided T215: the shot pressure factor `1 − 0.5 × pressure` went negative above pressure 2 and recorded negative xG → floor 0.2 of the chance's xG, pressure weight 0.25 now that the box is defended (alt: cap pressure at 2 | a 1/(1 + k·pressure) curve)
+- 261019 decided T215: headers scored 36% of goals once set pieces had targets → header factor 0.55 → 0.47 and a header won against a marker is taken under pressure 0.8; the cross target is one draw by aerial strength against his own marker, and 80% of crosses won in open play are brought down (alt: more keeper claims at set pieces, which drops cross completion under 20% | keep the best attacker against the best defender)
 - 261019 decided T215: a take-on chosen with nobody in front counted as a won take-on (success 72%) → it counts as a carry; take-ons and dribbles count only with a defender to beat, as MATCH-13 defines them (alt: forbid the take-on choice without a defender | keep counting it)
 - 261019 decided T215: lowering the xG intercept `SHOT_CONFIG.a` fitted xG per shot but moved per-chance xG off the real values (0.23 near the spot) → keep the xG model, add grid-only levers instead: `DECISION_CONFIG.shotBox` (shoot in the box band rather than carry into the goal area) and `SHOT_CONFIG.saveShare` (half the shared model's saves go wide) (alt: lower `SHOT_CONFIG.a` | change the shared `targetChance` in match.ts, which the probabilistic path also uses)
 - 261019 decided T215: penalties came at 1.35 a match once fouls tripled → `DUEL_CONFIG.boxFoul` 0.3, a defender in his own box keeps 30% of his foul share (alt: fewer fouls everywhere, which leaves the fouls band short)
@@ -110,7 +115,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T215 | Calibrate the grid engine to real-football distributions (explore 4h) | MATCH | T214 | doing@261019.r5c2 |
 | T216 | Calibrate the grid engine's strength curve (explore 3h) | MATCH | T215 | todo |
 | T217 | Playback frames and Korean commentary from the grid trace | MATCH WEB | T216 | todo |
 | T218 | Switch the owner's matches to the grid engine and its playback | MATCH WEB | T217 | todo |
@@ -160,10 +164,11 @@
 
 ## next
 - Browser journeys set aside by the owner (261019): main e2e is red since the 261017 UI design commits (tests/e2e call `selectOption` on the custom Select); do not wait on or fix them unless asked.
-- continue T215 from wip/h8t4 (about 2 h 30 min of its 4 h timebox left; docs/CALIBRATION.md lists the failing bands), then T216–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T203–T214 are done (grid pitch, setup/state, shape, tags, decisions, duels/xG, restarts, `playGrid` loop with records and counters, cards, substitutions and injuries). T224 must bring the 87 ms grid match down toward the 15 ms criterion of T211; T215/T216 retune the placeholders `DECISION_CONFIG.shotScale` 0.05 and `crossScale` 4, pass completion (66% vs about 80%) and offsides (about 12 a match). T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
+- T216 (strength curve, explore 3h) next, re-running `scripts/grid-bands.ts` after it (T215 left goals 2.85 and headed goals 19.6% near the top of their bands); then T217–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T203–T214 are done (grid pitch, setup/state, shape, tags, decisions, duels/xG, restarts, `playGrid` loop with records and counters, cards, substitutions and injuries). T224 must bring the grid match (about 38 ms now) down toward the 15 ms criterion of T211; T215 holds all 37 MATCH-23 bands (docs/CALIBRATION.md `격자 엔진 분포 (T215)`). T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 T215 done (r5c2): all 37 MATCH-23 bands hold over 600 and 1,200 grid matches (26/37 at the h8t4 WIP); set-piece scene, deep back line, 50/50 fouls, xG pressure floor; 1132 unit tests pass.
 - 261019 T215 doing (r5c2), taken over from the closed h8t4 WIP on wip/h8t4.
 - 261019 T215 WIP (h8t4) on wip/h8t4: band script, diagnostics, coarse guards; 26/37 MATCH-23 bands hold (7 at the start); about 1 h 30 min of the 4 h timebox used.
 - 261019 T214 done (h8t4): in-match injuries, substitutions by era and manager policy, drop ball, regulation minutes; 101 grid tests pass.
@@ -183,5 +188,3 @@
 - 261019 T256 publish start: owner requested commit/push; integrate origin/main T200–T202 before ARCH-30 batch verification.
 - 261019 T256 done: speed-only live observation, retained mediation preview and current-condition confirmation; 49 covering Chromium journeys passed across targeted runs, 4 changed unit tests, type/lint/format/build and spec lint pass. No commit/push.
 - 261019 T256 doing (u6k2), start 21a903fe721d: implement speed-only observation and stable mediation preview; WEB r93 consumed into T256, future WEB task bases reviewed; T225 preserves the speed-only controls.
-- 261019 update-ssot WEB start: speed-only live observation and stable recruitment mediation previews; standalone user-assigned UI fixes (T256).
-- 261019 T202 done

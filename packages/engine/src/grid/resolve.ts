@@ -5,6 +5,7 @@ import { FORMATIONS, lineOf } from '../player';
 import { CELL_BASELINES } from './baselines';
 import {
   attackFrame,
+  BAND_EDGES,
   clamp,
   goalAngle,
   goalDistance,
@@ -26,7 +27,8 @@ export type Outcome =
   | { kind: 'tackled'; by: number }
   | { kind: 'loose'; at: [number, number]; winner: Ref }
   | { kind: 'out'; at: [number, number]; lastTouch: 0 | 1; over: 'touch' | 'byline' }
-  | { kind: 'foul'; by: number; at: [number, number] }
+  /** `on` is the fouled player when he is not the one on the ball (a 50/50). */
+  | { kind: 'foul'; by: number; at: [number, number]; on?: Ref }
   | { kind: 'held'; by?: number }
   | {
       kind: 'shot';
@@ -36,43 +38,60 @@ export type Outcome =
       recordedXg: number;
       then?: 'corner' | 'loose' | 'hold' | 'goalKick';
       by?: number;
+      header?: boolean;
     };
 export type ShotOutcome = Extract<Outcome, { kind: 'shot' }>;
 
 /** Initial values (design §7.1); T215 and T216 tune them. */
 export const DUEL_CONFIG = {
   pass: {
+    /** Calibration offset on every cell's real completion rate (T215). */
+    base: 0.07,
     passer: 1 / 250,
     marker: 1 / 300,
-    risk: 0.08,
-    distance: 1 / 200,
-    pressure: 0.03,
+    risk: 0.03,
+    distance: 1 / 400,
+    pressure: 0.015,
     min: 0.25,
     max: 0.97,
-    lost: { intercepted: 0.55, loose: 0.3, out: 0.15 },
+    lost: { intercepted: 0.07, loose: 0.81, out: 0.12 },
+    /** The weight the receiver a failed pass did not reach has in the loose ball that follows (T215). */
+    receiverLoose: 0.35,
   },
   cross: {
-    base: 0.24,
+    base: 0.55,
     skill: 1 / 150,
-    crowd: 0.03,
+    crowd: 0.015,
     min: 0.08,
     max: 0.6,
-    claim: 0.12,
-    failOut: 0.3,
+    claim: 0.1,
+    failOut: 0.15,
+    /** Of the failed deliveries that stay in play, the share a defender intercepts; he heads the rest clear (T215). */
+    intercept: 0.4,
+    /** How far below the best header a target may be: weight e per this many aerial points (T215). */
+    targetSpread: 8,
+    /** A cross the attacker wins that he brings down instead of heading at goal, in open play and at a set piece (T215). */
+    control: { open: 0.8, setPiece: 0.05 },
   },
   cutBack: { base: 0.43, skill: 1 / 200, min: 0.2, max: 0.7 },
   takeOn: {
-    skill: 1 / 140,
+    skill: 1 / 285,
     min: 0.2,
-    max: 0.85,
-    fail: { tackle: 0.7, foul: 0.22, loose: 0.08 },
+    max: 0.62,
+    fail: { tackle: 0.35, foul: 0.55, loose: 0.1 },
     /** Metres beyond the defender a won take-on ends: always the middle of this range, no draw. */
     past: [5, 8],
   },
-  carry: { lostScale: 3, skill: 1 / 120, min: 0.01, max: 0.35, foul: 0.15 },
+  /** A defender in his own box keeps this share of his fouls; the rest become clean tackles (T215). */
+  boxFoul: 0.035,
+  /** Outside the box but in his own third a defender keeps this share of his fouls on a carrier, else holds off (T215). */
+  thirdFoul: 0.3,
+  /** A 50/50 for a loose ball ends in a foul on its winner this often (T215). */
+  looseFoul: 0.08,
+  carry: { lostScale: 2, skill: 1 / 120, min: 0.01, max: 0.35, foul: 0.8 },
   holdUp: { base: 0.6, skill: 1 / 150, min: 0.3, max: 0.85 },
   aerial: { skill: 1 / 150, base: 0.5, min: 0.15, max: 0.85 },
-  clearance: { out: 0.3, reach: [25, 45] },
+  clearance: { out: 0.35, reach: [25, 45] },
 } as const;
 
 /** Initial values (design §7.4). */
@@ -80,14 +99,20 @@ export const SHOT_CONFIG = {
   a: -1.0,
   b: -0.11,
   c: 1.6,
-  header: 0.55,
+  header: 0.47,
   cutBack: 1.25,
-  pressure: 0.12,
+  pressure: 0.25,
+  /** The least a shot's pressure factor falls to, so two or more close markers never make xG negative (T215). */
+  pressureFloor: 0.2,
   freeKickWall: 0.6,
+  /** The pressure a header won against a marker is taken under (T215). */
+  headerPressure: 0.8,
   onTargetSkill: 1 / 250,
-  block: { base: 0.25, perDefender: 0.06, skill: 1 / 300, min: 0.05, max: 0.5, lane: 2 },
-  save: { hold: 0.55, corner: 0.25, loose: 0.2 },
-  blockThen: { corner: 0.35 },
+  /** Share of the shared on-target model's saves the grid keeps; the rest go wide (T215). */
+  saveShare: 0.5,
+  block: { base: 0.4, perDefender: 0.06, skill: 1 / 300, min: 0.05, max: 0.6, lane: 2 },
+  save: { hold: 0.3, corner: 0.5, loose: 0.2 },
+  blockThen: { corner: 0.65 },
   penalty: { base: 0.78, min: 0.6, max: 0.92, xg: 0.76 },
   maxXg: 0.8,
 } as const;
@@ -108,7 +133,7 @@ export function chanceXg(
     (opts.header ? C.header : 1) *
     (opts.cutBack ? C.cutBack : 1) *
     (opts.freeKick ? C.freeKickWall : 1) *
-    (1 - C.pressure * (opts.pressure ?? 0))
+    Math.max(C.pressureFloor, 1 - C.pressure * (opts.pressure ?? 0))
   );
 }
 
@@ -173,9 +198,15 @@ function laneRisk(s: GridState, side: 0 | 1, a: Point, b: Point): number {
   return risk;
 }
 
-/** The winner of a loose ball among the two nearest players of each side, weighted 1/(distance + 1); one draw. */
-export function looseWinner(s: GridState, at: Point, r: () => number): Ref {
+/**
+ * The winner of a loose ball among the two nearest players of each side, weighted 1/(distance + 1); one draw.
+ * `receiver`, the player a failed pass did not reach, weighs `DUEL_CONFIG.pass.receiverLoose` of that.
+ */
+export function looseWinner(s: GridState, at: Point, r: () => number, receiver?: Ref): Ref {
   const near: { ref: Ref; w: number }[] = [];
+  const weight = (side: 0 | 1, idx: number, d: number) =>
+    (receiver && receiver[0] === side && receiver[1] === idx ? DUEL_CONFIG.pass.receiverLoose : 1) /
+    (d + 1);
   for (const side of [0, 1] as const)
     near.push(
       ...s.players[side]
@@ -186,7 +217,7 @@ export function looseWinner(s: GridState, at: Point, r: () => number): Ref {
         }))
         .sort((a, b) => a.d - b.d)
         .slice(0, 2)
-        .map(({ ref, d }) => ({ ref, w: 1 / (d + 1) })),
+        .map(({ ref, d }) => ({ ref, w: weight(ref[0], ref[1], d) })),
     );
   let u = r() * near.reduce((sum, n) => sum + n.w, 0);
   for (const n of near) {
@@ -194,6 +225,28 @@ export function looseWinner(s: GridState, at: Point, r: () => number): Ref {
     if (u <= 0) return n.ref;
   }
   return near[near.length - 1]!.ref;
+}
+
+/** A 50/50 at `at`: the winner, or now and then (never in a box) a foul on him by the nearest opponent. */
+export function looseBall(
+  s: GridState,
+  at: [number, number],
+  r: () => number,
+  receiver?: Ref,
+): Outcome {
+  const winner = looseWinner(s, at, r, receiver);
+  const foe = other(winner[0]);
+  if (inBox(attackFrame(winner[0], at)) || r() >= DUEL_CONFIG.looseFoul)
+    return { kind: 'loose', at, winner };
+  let by: GridPlayer | undefined,
+    d = Infinity;
+  for (const gp of s.players[foe]) {
+    if (!onPitch(gp)) continue;
+    const v = Math.hypot(gp.pos[0] - at[0], gp.pos[1] - at[1]);
+    if (v < d) [by, d] = [gp, v];
+  }
+  if (!by) return { kind: 'loose', at, winner };
+  return { kind: 'foul', by: by.idx, at, on: winner };
 }
 
 /** Where a ball played from `from` through `to` first leaves the pitch (engine frame). */
@@ -241,6 +294,7 @@ export function resolvePass(
   const base = CELL_BASELINES[tags.cell]!.passCompletion;
   const p = clamp(
     base +
+      P.base +
       (passer - 60) * P.passer -
       (markerSkill - 60) * P.marker -
       P.risk * laneRisk(s, side, from, to) -
@@ -260,10 +314,8 @@ export function resolvePass(
     ]);
     return { kind: 'intercepted', by: marker.gp.idx, at };
   }
-  if (u < P.lost.intercepted + P.lost.loose) {
-    const at = toEngine(side, to);
-    return { kind: 'loose', at, winner: looseWinner(s, at, r) };
-  }
+  if (u < P.lost.intercepted + P.lost.loose)
+    return looseBall(s, toEngine(side, to), r, [side, target]);
   const exit = exitPoint(toEngine(side, from), toEngine(side, to));
   return { kind: 'out', at: exit.at, lastTouch: side, over: exit.over };
 }
@@ -310,7 +362,7 @@ export function resolveShot(
   const recordedXg = Math.min(C.maxXg, xg * ctx.levelFactor);
   const u = r();
   if (u < goal) return { kind: 'shot', shooter: idx, result: 'goal', xg, recordedXg };
-  if (u < onTarget) {
+  if (u < goal + (onTarget - goal) * C.saveShare) {
     const v = r();
     const then = v < C.save.hold ? 'hold' : v < C.save.hold + C.save.corner ? 'corner' : 'loose';
     return { kind: 'shot', shooter: idx, result: 'save', xg, recordedXg, then, by: keeper.idx };
@@ -349,23 +401,40 @@ export function resolveShot(
   return { kind: 'shot', shooter: idx, result: 'miss', xg, recordedXg, then: 'goalKick' };
 }
 
-/** The best aerial target among the side's players inside the box, by 0.6 heading + 0.4 strength. */
-function headerTarget(s: GridState, side: 0 | 1, except: number): GridPlayer | undefined {
-  let best: GridPlayer | undefined,
-    value = -Infinity;
-  for (const gp of s.players[side]) {
-    if (gp.idx === except || !onPitch(gp) || !inBox(attackFrame(side, gp.pos))) continue;
-    const v =
-      aerialRating(s, side, gp.idx, 0.6) *
-      actionWeight(slotOf(s, gp).role, gp.player.traits, 'aerial');
-    if (v > value) [best, value] = [gp, v];
+/**
+ * The cross's target among the side's players inside the box: one draw weighted by 0.6 heading + 0.4 strength
+ * (and the aerial habit), e per `DUEL_CONFIG.cross.targetSpread` points below the best.
+ */
+function headerTarget(
+  s: GridState,
+  side: 0 | 1,
+  except: number,
+  r: () => number,
+): GridPlayer | undefined {
+  const pool = s.players[side]
+    .filter((gp) => gp.idx !== except && onPitch(gp) && inBox(attackFrame(side, gp.pos)))
+    .map((gp) => ({
+      gp,
+      v:
+        aerialRating(s, side, gp.idx, 0.6) *
+        actionWeight(slotOf(s, gp).role, gp.player.traits, 'aerial'),
+    }));
+  if (!pool.length) return undefined;
+  const top = Math.max(...pool.map((p) => p.v));
+  const weights = pool.map((p) => Math.exp((p.v - top) / DUEL_CONFIG.cross.targetSpread));
+  const total = weights.reduce((a, b) => a + b, 0);
+  let u = r() * total;
+  for (let i = 0; i < pool.length; i++) {
+    u -= weights[i]!;
+    if (u <= 0) return pool[i]!.gp;
   }
-  return best;
+  return pool[pool.length - 1]!.gp;
 }
 
 /**
- * A cross. Draws, in order: delivery; the keeper's claim; the aerial duel; then the header's draws.
- * Delivered: the keeper claims, or the best attacker and best defender duel in the air and the winner heads it.
+ * A cross. Draws, in order: the target; delivery; the keeper's claim; the aerial duel; controlled or headed; then
+ * the header's draws. Delivered: the keeper claims, or the target and his marker duel in the air; the attacker who
+ * wins it brings it down or heads it.
  */
 export function resolveCross(
   s: GridState,
@@ -377,7 +446,7 @@ export function resolveCross(
 ): Outcome {
   const X = DUEL_CONFIG.cross;
   const foe = other(side);
-  const attacker = headerTarget(s, side, idx);
+  const attacker = headerTarget(s, side, idx, r);
   const defenders = s.players[foe].filter((gp) => onPitch(gp) && inBox(attackFrame(side, gp.pos)));
   const attackers = s.players[side].filter(
     (gp) => gp.idx !== idx && onPitch(gp) && inBox(attackFrame(side, gp.pos)),
@@ -401,15 +470,19 @@ export function resolveCross(
     const spot: Point = attacker
       ? attackFrame(side, attacker.pos)
       : [PITCH.length - 10, PITCH.width / 2];
-    return { kind: 'intercepted', by: nearestDefender(s, side, spot), at: toEngine(side, spot) };
+    const by = nearestDefender(s, side, spot);
+    if (r() < X.intercept) return { kind: 'intercepted', by, at: toEngine(side, spot) };
+    return { kind: 'loose', at: toEngine(side, spot), winner: [foe, by] };
   }
   const claimP = X.claim + (keeper ? (skill(s, foe, keeper.idx, 'handling') - 60) / 400 : 0);
   if (keeper && r() < claimP) return { kind: 'held', by: keeper.idx };
-  const defender = defenders.reduce<GridPlayer | undefined>(
-    (best, gp) =>
-      !best || aerialRating(s, foe, gp.idx, 0.6) > aerialRating(s, foe, best.idx, 0.6) ? gp : best,
-    undefined,
-  );
+  // His marker: the defender in the box nearest to him.
+  const at = attackFrame(side, attacker.pos);
+  const defender = defenders.reduce<{ gp: GridPlayer; d: number } | undefined>((best, gp) => {
+    const o = attackFrame(side, gp.pos);
+    const d = Math.hypot(o[0] - at[0], o[1] - at[1]);
+    return !best || d < best.d ? { gp, d } : best;
+  }, undefined)?.gp;
   if (defender) {
     const duel = resolveAerial(
       s,
@@ -423,7 +496,14 @@ export function resolveCross(
       return { kind: 'loose', at, winner: duel.winner };
     }
   }
-  return resolveShot(s, side, attacker.idx, tags, ctx, r, { header: true });
+  if (r() < (tags.phase === 'setPiece' ? X.control.setPiece : X.control.open))
+    return { kind: 'complete', to: [attacker.pos[0], attacker.pos[1]], receiver: attacker.idx };
+  // A header won against a marker is a header under pressure.
+  const pressure = { pressure: defender ? SHOT_CONFIG.headerPressure : 0 };
+  return {
+    ...resolveShot(s, side, attacker.idx, pressure, ctx, r, { header: true }),
+    header: true,
+  };
 }
 
 /** The opponent nearest to `at` (the side's attack frame). */
@@ -457,8 +537,12 @@ export function resolveCutBack(
   return { kind: 'intercepted', by: nearestDefender(s, side, to), at: toEngine(side, to) };
 }
 
+/** The share of his fouls a defender keeps where the carrier stands (attack frame): in his box, his third, elsewhere. */
+const care = (c: Point) =>
+  inBox(c) ? DUEL_CONFIG.boxFoul : c[0] >= BAND_EDGES[5] ? DUEL_CONFIG.thirdFoul : 1;
+
 /** The nearest opponent ahead of the carrier within the pressure radius. */
-function inFront(s: GridState, side: 0 | 1, idx: number): GridPlayer | undefined {
+export function inFront(s: GridState, side: 0 | 1, idx: number): GridPlayer | undefined {
   const c = attackFrame(side, s.players[side][idx]!.pos);
   let best: GridPlayer | undefined,
     d: number = TAG_CONFIG.pressureRadius;
@@ -499,8 +583,8 @@ export function resolveTakeOn(
   const p = clamp((CELL_BASELINES[tags.cell]!.takeOnSuccess ?? 0.5) + edge * T.skill, T.min, T.max);
   if (r() < p) return { kind: 'complete', to: toEngine(side, past), receiver: idx };
   const u = r();
-  // A booked defender is more careful: 0.6 of his foul share stays, the rest becomes a clean tackle.
-  const foulShare = T.fail.foul * (foe.yellow ? 0.6 : 1);
+  // A booked defender, or one in his own box, is more careful: part of his foul share becomes a clean tackle.
+  const foulShare = T.fail.foul * (foe.yellow ? 0.6 : 1) * care(c);
   if (u < T.fail.tackle + (T.fail.foul - foulShare)) return { kind: 'tackled', by: foe.idx };
   if (u < T.fail.tackle + T.fail.foul)
     return { kind: 'foul', by: foe.idx, at: [me.pos[0], me.pos[1]] };
@@ -525,9 +609,11 @@ export function resolveCarry(
     const edge = skill(s, foe.gp.side, foe.gp.idx, 'tackling') - skill(s, side, idx, 'dribbling');
     const p = clamp(lost * K.lostScale * (1 + edge * K.skill), K.min, K.max);
     if (r() < p) {
-      if (r() < K.foul * (foe.gp.yellow ? 0.6 : 1))
+      // A booked defender, or one near his own goal, is careful: the challenge he holds back is no tackle either.
+      const v = r();
+      if (v < K.foul * (foe.gp.yellow ? 0.6 : 1) * care(attackFrame(side, me.pos)))
         return { kind: 'foul', by: foe.gp.idx, at: [me.pos[0], me.pos[1]] };
-      return { kind: 'tackled', by: foe.gp.idx };
+      if (v >= K.foul) return { kind: 'tackled', by: foe.gp.idx };
     }
   }
   return { kind: 'complete', to: [to[0], to[1]], receiver: idx };
@@ -556,8 +642,7 @@ export function resolveClearance(s: GridState, side: 0 | 1, idx: number, r: () =
     const y = c[1] < PITCH.width / 2 ? 0 : PITCH.width;
     return { kind: 'out', at: toEngine(side, [x, y]), lastTouch: side, over: 'touch' };
   }
-  const at = toEngine(side, [x, c[1]]);
-  return { kind: 'loose', at, winner: looseWinner(s, at, r) };
+  return looseBall(s, toEngine(side, [x, c[1]]), r);
 }
 
 /** A penalty between kicker and keeper; one draw. Recorded as 0.76 xG. */

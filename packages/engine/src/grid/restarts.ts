@@ -17,7 +17,7 @@ import {
   type Outcome,
   type ShotContext,
 } from './resolve';
-import { lineX, offsideLine } from './shape';
+import { lineX, offsideLine, SHAPE_CONFIG, setPieceShape } from './shape';
 import { onPitch, other, skill, type GridPlayer, type GridState } from './state';
 import { computeTags } from './tags';
 
@@ -43,10 +43,10 @@ export interface Restart {
 /** Dead time per restart (design §7.2) and the set-piece habits; initial values for T215. */
 export const RESTART_CONFIG = {
   dead: {
-    throwIn: 18,
-    goalKick: 30,
-    corner: 37,
-    freeKick: 32,
+    throwIn: 16,
+    goalKick: 24,
+    corner: 32,
+    freeKick: 28,
     penalty: 70,
     goal: 55,
     kickoff: 55,
@@ -58,19 +58,19 @@ export const RESTART_CONFIG = {
   cornerSpot: 0.5,
   goalKickSpot: 5.5,
   directRange: 30,
-  directChance: 0.4,
+  directChance: 0.25,
   shortCorner: 0.15,
   throwReach: 20,
   throwBonus: 0.05,
   throwFree: 3,
   kickoffBackBias: 10,
   offside: {
-    base: 0.45,
+    base: 0.03,
     decisions: 200,
     linebreaker: 0.1,
     highLine: 0.05,
     highLineFrom: 40,
-    min: 0.1,
+    min: 0.012,
     max: 0.7,
   },
 } as const;
@@ -313,6 +313,7 @@ export function playRestart(
   if (rs.kind === 'corner') {
     const taker = takerFor(s, side, 'corner');
     place(s, side, taker, rs.spot);
+    setPieceShape(s, side, taker, s.elapsed + rs.dead + SHAPE_CONFIG.setPiece.stay);
     const tags = computeTags(s, side, taker, { setPiece: true });
     if (r() < K.shortCorner) {
       const target = nearestFree(s, side, taker, 1e9, 0);
@@ -349,9 +350,12 @@ export function playRestart(
   const wide = lane === 0 || lane === 4;
   const taker = takerFor(s, side, wide || band >= 5 ? 'corner' : 'directFreeKick');
   place(s, side, taker, rs.spot);
-  const tags = computeTags(s, side, taker, { setPiece: true });
-  if (band >= 5)
+  if (band >= 5) {
+    setPieceShape(s, side, taker, s.elapsed + rs.dead + SHAPE_CONFIG.setPiece.stay);
+    const tags = computeTags(s, side, taker, { setPiece: true });
     return { taker, kind: 'cross', outcome: resolveCross(s, side, taker, tags, ctx, r) };
+  }
+  const tags = computeTags(s, side, taker, { setPiece: true });
   const options = passOptions(s, side, taker, tags);
   if (!options.length) return { taker, kind: 'short', outcome: { kind: 'held' } };
   const chosen = pickFrom(options, temperature(s, side, taker, tags), r);

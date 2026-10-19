@@ -4,7 +4,7 @@ import { attackFrame, bandOf, clamp, LANE_EDGES, PITCH, toEngine } from './pitch
 import { lineOf } from '../player';
 import { actionWeight } from '../match';
 import type { GridPlayer, GridState } from './state';
-import { minutesOn, onPitch, other, slotOf } from './state';
+import { minutesOn, onPitch, other, skill, slotOf } from './state';
 import { ROLE_SHIFT, SPOTS } from './spots';
 
 /** Initial values; T215 and T216 tune them. */
@@ -23,6 +23,8 @@ export const SHAPE_CONFIG = {
     balanced: { advance: 4, defend: -4, line: [24, 45], press: 10, counterPress: 8, compact: 0.33 },
   },
   lateral: 0.25,
+  /** With the ball behind it the back line drops to this many metres goal-side of it, never deeper than `min`. */
+  deepLine: { behindBall: 4, min: 6 },
   keeperPull: 0.08,
   keeperMax: { sweeperKeeper: 22, other: 14 },
   /** Metres a sweeper keeper steps up per metre his line stands above 20 m, once it is at 40 m. */
@@ -35,6 +37,30 @@ export const SHAPE_CONFIG = {
   recoverySpeed: 1.15,
   speed: { base: 5.2, pace: 2.8, tired: 0.25 },
   run: { chance: 0.04, seconds: [4, 6], behindDepth: 6, overlapAhead: 10, boxX: 95 },
+  /**
+   * A corner or a free kick crossed into the box (→MATCH-18, T215): the attacking side's best headers go up,
+   * the defenders mark them goal-side and hold the six-yard line; attack-frame metres of the attacking side.
+   */
+  setPiece: {
+    box: [
+      [98.5, 30.5],
+      [98.5, 37.5],
+      [95, 34],
+      [93, 27],
+      [93, 41],
+    ],
+    edge: [86.5, 34],
+    mark: 0.8,
+    zonal: [
+      [101.5, 31],
+      [101.5, 37],
+      [100.5, 34],
+    ],
+    /** Outfielders of the defending side who stay upfield for the counter. */
+    stayUp: 1,
+    /** Seconds after the delivery the players who went up hold their spots for the second ball. */
+    stay: 8,
+  },
 } as const;
 
 type Line = 'DF' | 'MF' | 'FW';
@@ -146,7 +172,9 @@ export function targetOf(
   if ((cache.pressers[side] ??= pressers(s, side)).includes(idx)) {
     const goalSide = b[0] - 1.2;
     return toEngine(side, [
-      own === 'DF' ? clamp(goalSide, cfg.line[0], cfg.line[1]) : Math.max(0, goalSide),
+      own === 'DF'
+        ? clamp(goalSide, lineFloor(b[0], cfg.line[0]), cfg.line[1])
+        : Math.max(0, goalSide),
       b[1],
     ]);
   }
@@ -163,9 +191,13 @@ export function targetOf(
     x += (near[0] - 1.5 - x) * SHAPE_CONFIG.markBlend;
     y += (near[1] - y) * SHAPE_CONFIG.markBlend;
   }
-  if (own === 'DF') x = clamp(x, cfg.line[0], cfg.line[1]);
+  if (own === 'DF') x = clamp(x, lineFloor(b[0], cfg.line[0]), cfg.line[1]);
   return toEngine(side, [x, y]);
 }
+
+/** The deepest the back line stands: its tactic's line, or goal-side of a ball played in behind it (T215). */
+const lineFloor = (ball: number, line: number) =>
+  Math.min(line, Math.max(SHAPE_CONFIG.deepLine.min, ball - SHAPE_CONFIG.deepLine.behindBall));
 
 /** How fast a player can move now, in metres per second. */
 export function speedOf(s: GridState, gp: GridPlayer): number {
@@ -234,4 +266,45 @@ export function startRuns(s: GridState, side: 0 | 1, r: () => number): void {
       target: attackFrame(side, target) as [number, number],
     };
   }
+}
+
+/** 0.6 heading + 0.4 strength: who goes up for a set piece and who marks him. */
+const aerialOf = (s: GridState, gp: GridPlayer) =>
+  0.6 * skill(s, gp.side, gp.idx, 'heading') + 0.4 * skill(s, gp.side, gp.idx, 'strength');
+
+/**
+ * Sets the scene for a delivery into the box by `side`'s `taker`: its best headers take the box spots and one the
+ * edge until `until` (match seconds), the rest hold the rest defence where they stand; the defenders mark them
+ * goal-side, fill the six-yard line and the edge, and the most advanced stay upfield.
+ */
+export function setPieceShape(s: GridState, side: 0 | 1, taker: number, until: number): void {
+  const P = SHAPE_CONFIG.setPiece;
+  const foe = other(side);
+  const outfield = (sd: 0 | 1) =>
+    s.players[sd].filter((gp) => onPitch(gp) && lineOfSlot(s, gp) !== 'GK');
+  const up = outfield(side)
+    .filter((gp) => gp.idx !== taker)
+    .sort((a, b) => aerialOf(s, b) - aerialOf(s, a) || a.idx - b.idx)
+    .slice(0, P.box.length + 1);
+  const spots = up.map((gp, i) => {
+    const at = (P.box[i] ?? P.edge) as Point;
+    gp.pos = toEngine(side, at);
+    gp.run = { kind: 'box', until, target: toEngine(side, at) };
+    return at;
+  });
+  const defenders = outfield(foe).sort(
+    (a, b) => attackFrame(side, b.pos)[0] - attackFrame(side, a.pos)[0] || a.idx - b.idx,
+  );
+  const back = defenders
+    .slice(0, Math.max(0, defenders.length - P.stayUp))
+    .sort((a, b) => aerialOf(s, b) - aerialOf(s, a) || a.idx - b.idx);
+  const marks: Point[] = [
+    ...spots.slice(0, P.box.length).map((p): Point => [p[0] + P.mark, p[1]]),
+    ...(P.zonal as readonly Point[]),
+    [P.edge[0] + P.mark, P.edge[1]],
+  ];
+  back.forEach((gp, i) => {
+    const at = marks[i];
+    if (at) gp.pos = toEngine(side, at);
+  });
 }

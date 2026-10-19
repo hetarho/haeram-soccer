@@ -12,12 +12,12 @@ export interface CardVerdict {
 
 /** Initial values (design §7.5); T215 tunes them to the MATCH-23 band. */
 export const CARD_CONFIG = {
-  yellow: 0.32,
+  yellow: 0.12,
   tacticalYellow: 0.6,
-  bookedYellow: 0.1,
-  dogsoRed: 0.8,
-  dogsoRedInBox: 0.3,
-  seriousRed: 0.006,
+  bookedYellow: 0.02,
+  dogsoRed: 0.05,
+  dogsoRedInBox: 0.015,
+  seriousRed: 0.002,
   dissentYellow: 0.06,
   dissentRedPerHalf: 0.001,
   counterSeconds: 8,

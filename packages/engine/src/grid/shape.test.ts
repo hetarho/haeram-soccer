@@ -2,8 +2,18 @@ import { describe, expect, it } from 'vitest';
 import type { Tactic } from '../../../contracts/src/types';
 import { FORMATIONS, lineOf } from '../player';
 import { random } from '../primitives';
-import { attackFrame, type Point } from './pitch';
-import { lineX, moveAll, offsideLine, SHAPE_CONFIG, speedOf, startRuns, targetOf } from './shape';
+import { attackFrame, inBox, toEngine, type Point } from './pitch';
+import {
+  lineX,
+  moveAll,
+  offsideLine,
+  setPieceShape,
+  SHAPE_CONFIG,
+  speedOf,
+  startRuns,
+  targetOf,
+} from './shape';
+import { onPitch } from './state';
 import { ROLE_SHIFT, SPOTS } from './spots';
 import { gridKit } from './testkit';
 
@@ -19,7 +29,7 @@ const outfieldMeanX = (kit: ReturnType<typeof gridKit>) => {
 };
 
 describe('grid shape and movement', () => {
-  it("holds each tactic's defensive line inside its bounds", () => {
+  it("holds each tactic's defensive line inside its bounds, dropping goal-side of a ball played behind it", () => {
     for (const tactic of TACTICS) {
       const kit = gridKit([tactic, 'balanced']);
       const { line } = SHAPE_CONFIG.tactic[tactic];
@@ -29,13 +39,44 @@ describe('grid shape and movement', () => {
       for (let bx = 10; bx <= 95; bx += 5) {
         kit.state.ball = [bx, 20];
         const t = targets(kit);
+        // Side 0 defends x = 0, so the ball's x is its distance from his goal.
+        const { behindBall, min } = SHAPE_CONFIG.deepLine;
+        const floor = Math.min(line[0], Math.max(min, bx - behindBall));
         slots.forEach((slot, i) => {
           if (lineOf(slot.position) !== 'DF') return;
-          expect(t[i]![0], `${tactic} slot ${i} ball ${bx}`).toBeGreaterThanOrEqual(line[0] - 1e-9);
+          expect(t[i]![0], `${tactic} slot ${i} ball ${bx}`).toBeGreaterThanOrEqual(floor - 1e-9);
           expect(t[i]![0], `${tactic} slot ${i} ball ${bx}`).toBeLessThanOrEqual(line[1] + 1e-9);
         });
       }
     }
+  });
+
+  it('sends the best headers into the box for a set piece, marked goal-side, and holds them there', () => {
+    const kit = gridKit();
+    const s = kit.state;
+    const taker = 9;
+    setPieceShape(s, 0, taker, s.elapsed + 30);
+    const box = (side: 0 | 1) =>
+      s.players[side].filter((gp) => onPitch(gp) && gp.slot > 0 && inBox(attackFrame(0, gp.pos)));
+    const P = SHAPE_CONFIG.setPiece;
+    expect(box(0).length).toBe(P.box.length);
+    expect(box(0).some((gp) => gp.idx === taker)).toBe(false);
+    // Every attacker in the box has a marker goal-side of him; the six-yard line is held too.
+    expect(box(1).length).toBe(P.box.length + P.zonal.length);
+    for (const gp of box(0)) {
+      expect(gp.run?.kind).toBe('box');
+      expect(
+        box(1).some((d) => d.pos[0] > gp.pos[0] && Math.abs(d.pos[1] - gp.pos[1]) < 1e-9),
+      ).toBe(true);
+    }
+    // The defenders' most advanced stay out for the counter, the attackers keep a rest defence.
+    const outfield = (side: 0 | 1) => s.players[side].filter((gp) => onPitch(gp) && gp.slot > 0);
+    expect(outfield(1).length - box(1).length).toBeGreaterThanOrEqual(P.stayUp);
+    expect(outfield(0).length - box(0).length).toBeGreaterThan(2);
+    // Until the second ball is over they keep their spots.
+    moveAll(s, 4);
+    for (const gp of box(0)) expect(targetOf(s, 0, gp.idx)).toEqual(gp.run!.target);
+    expect(box(0)[0]!.run!.target).toEqual(toEngine(0, P.box[0] as Point));
   });
 
   it('pushes the possession and press shapes higher than counter', () => {

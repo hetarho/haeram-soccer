@@ -6,6 +6,7 @@ import { CELL_BASELINES } from './baselines';
 import {
   chanceXg,
   DUEL_CONFIG,
+  SHOT_CONFIG,
   resolveCross,
   resolvePass,
   resolvePenalty,
@@ -59,9 +60,17 @@ describe('grid open-play resolution', () => {
     expect(Math.abs(chanceXg([85, 34]) - 0.068)).toBeLessThan(0.02);
     expect(Math.abs(chanceXg([99, 34]) - 0.52)).toBeLessThan(0.06);
     expect(chanceXg([75, 34])).toBeLessThan(0.03);
-    expect(chanceXg([94, 34], { header: true })).toBeCloseTo(chanceXg([94, 34]) * 0.55, 9);
+    expect(chanceXg([94, 34], { header: true })).toBeCloseTo(
+      chanceXg([94, 34]) * SHOT_CONFIG.header,
+      9,
+    );
     expect(chanceXg([94, 34], { cutBack: true })).toBeCloseTo(chanceXg([94, 34]) * 1.25, 9);
     expect(chanceXg([94, 34], { pressure: 2 })).toBeLessThan(chanceXg([94, 34]));
+    // However many markers close in, a chance keeps a floor of its quality and never prices below zero.
+    expect(chanceXg([94, 34], { pressure: 9 })).toBeCloseTo(
+      chanceXg([94, 34]) * SHOT_CONFIG.pressureFloor,
+      9,
+    );
     expect(chanceXg([85, 34], { freeKick: true })).toBeCloseTo(chanceXg([85, 34]) * 0.6, 9);
   });
 
@@ -82,7 +91,9 @@ describe('grid open-play resolution', () => {
     const tags = sc.tags();
     expect(tags.pressure).toBe(0);
     const rate = completion(sc, 10000, 'equal');
-    expect(Math.abs(rate - CELL_BASELINES[tags.cell]!.passCompletion)).toBeLessThan(0.03);
+    expect(
+      Math.abs(rate - CELL_BASELINES[tags.cell]!.passCompletion - DUEL_CONFIG.pass.base),
+    ).toBeLessThan(0.03);
   });
 
   it('rewards the better passer and the better marker', () => {
@@ -113,15 +124,18 @@ describe('grid open-play resolution', () => {
     const o = tally(20000, () => resolvePass(sc.s, 0, 7, 8, tags, 'short', false, r));
     const lost = 20000 - (o.complete ?? 0);
     const L = DUEL_CONFIG.pass.lost;
+    // A loose ball outside the boxes is a 50/50, now and then a foul on its winner.
+    const contested = (o.loose ?? 0) + (o.foul ?? 0);
     expect(Math.abs((o.intercepted ?? 0) / lost - L.intercepted)).toBeLessThan(0.03);
-    expect(Math.abs((o.loose ?? 0) / lost - L.loose)).toBeLessThan(0.03);
+    expect(Math.abs(contested / lost - L.loose)).toBeLessThan(0.03);
     expect(Math.abs((o.out ?? 0) / lost - L.out)).toBeLessThan(0.03);
+    expect(Math.abs((o.foul ?? 0) / contested - DUEL_CONFIG.looseFoul)).toBeLessThan(0.01);
   });
 
-  it('lets a better dribbler beat his man more often and fouls about a fifth of failed take-ons', () => {
-    const run = (dribbling: number) => {
-      const sc = scene(8, [80, 34]);
-      sc.s.players[1][3]!.pos = [83, 34];
+  it('lets a better dribbler beat his man more often and fouls a set share of failed take-ons', () => {
+    const run = (dribbling: number, x = 60) => {
+      const sc = scene(8, [x, 34]);
+      sc.s.players[1][3]!.pos = [x + 3, 34];
       set(sc.s, 0, 8, 'dribbling', dribbling);
       const r = random(`dribble-${dribbling}`);
       const tags = sc.tags();
@@ -131,8 +145,15 @@ describe('grid open-play resolution', () => {
     expect(weak!.complete!).toBeLessThan(even!.complete!);
     expect(even!.complete!).toBeLessThan(strong!.complete!);
     const failed = 10000 - even!.complete!;
-    expect(Math.abs((even!.foul ?? 0) / failed - 0.22)).toBeLessThan(0.03);
-    expect(Math.abs((even!.tackled ?? 0) / failed - 0.7)).toBeLessThan(0.03);
+    const fail = DUEL_CONFIG.takeOn.fail;
+    expect(Math.abs((even!.foul ?? 0) / failed - fail.foul)).toBeLessThan(0.03);
+    expect(Math.abs((even!.tackled ?? 0) / failed - fail.tackle)).toBeLessThan(0.03);
+    // In his own third a defender keeps `thirdFoul` of his fouls; the rest are clean tackles.
+    const deep = run(60, 80);
+    const deepFailed = 10000 - deep.complete!;
+    expect(
+      Math.abs((deep.foul ?? 0) / deepFailed - fail.foul * DUEL_CONFIG.thirdFoul),
+    ).toBeLessThan(0.03);
   });
 
   it('resolves a cross: claim, aerial duel, header or clearance', () => {
@@ -172,7 +193,7 @@ describe('grid open-play resolution', () => {
     expect(Math.abs(goals / 20000 - 0.78)).toBeLessThan(0.02);
   });
 
-  it('blocks about a quarter of missed shots with defenders in the lane', () => {
+  it('blocks a set share of missed shots with defenders in the lane', () => {
     const run = (blockers: number) => {
       const sc = scene(9, [80, 34]);
       const { s } = sc;
@@ -196,8 +217,9 @@ describe('grid open-play resolution', () => {
     };
     expect(run(0)).toBe(0);
     const one = run(1);
-    expect(one).toBeGreaterThan(0.22);
-    expect(one).toBeLessThan(0.34);
+    const B = SHOT_CONFIG.block;
+    expect(one).toBeGreaterThan(B.base - 0.1);
+    expect(one).toBeLessThan(B.base + B.perDefender + 0.06);
     expect(run(2)).toBeGreaterThan(one);
   });
 
