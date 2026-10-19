@@ -15,9 +15,9 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| k3w8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-19T05:21Z | 2026-10-19T06:28Z | T202 |
 
 ## inbox
+- 261019 suggest T203: main CI is red since the 261017 UI design commits (Run 319 at da97fe0: every browser's e2e and the browser benchmark failed; Run 314 at 6df81fa was the last pass) — locally Chromium fails the same 76 journeys at origin/main and with T200–T202, 73 of them `selectOption` on the custom Select in 위임·진행 설정 → fix the e2e helpers before T203 so CI gates the grid engine again.
 - 261019 decided ARCH-30 T201: whole-world unit tests passed the 30 s vitest limit once players carry 16 attributes (about 10% slower; two already timed out at the base under load) → testTimeout 60 s and the feature-replay case 240 s (alt: per-test limits on each slow case | speed up OVR first)
 - 261019 decided WEB-47 T226: season PPDA when only some matches carry advanced counters → MATCH-13 PPDA over those matches with how many counted; the marked approximation only for a season with none (alt: approximation for the whole season once one match lacks counters | show both figures)
 - 261017 decided SAVE-13: career compression order → group stored rows with a complete validated permutation restoring original registry order (alt: reorder live people | increase checkpoint limit); v1/v2 readers remain.
@@ -159,6 +159,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
+- First fix the browser journeys (main CI red since the 261017 UI design commits, Run 319): tests/e2e still call `selectOption` on the custom Select (button role=combobox), e.g. `setResponsibility` in tests/e2e/events.ts; Chromium fails the same 76 journeys at origin/main and after T200–T202.
 - implement-task T203, then T204–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
@@ -183,6 +184,3 @@
 - 261019 club-identity-and-kits converted: KIT r1 owns identity/kit policy; WEB r91 adds shared editor, pitch preview and pre-match choice; SAVE r46 preserves applied designs, with adoption/history policies open.
 - 261019 create-ssot club-identity-and-kits start; isolate identity/kit policies from WEB presentation and SAVE persistence.
 - 261019 ideation club-identity-and-kits continue: adopt shirt colour/pattern editing and automatically distinguished goalkeeper colours for v1.
-- 261019 ideation club-identity-and-kits continue: adopt preset-first crests with optional shape, field-pattern and emblem composition.
-- 261019 WEB r90 match theatre/analysis/profile/squad/league/preparation for the grid engine; HIST r14 spatial and discipline totals, map lifetime; SAVE r45 rules 4.0.0 boundary; ideation match-engine-rebuild converted.
-- 261019 STAFF r34 styles in the grid engine and substitution habits; CLUB r42 bench/takers, in-match injuries for everyone, suspensions; LEAGUE r10 NPC injuries/suspensions and discipline table.
