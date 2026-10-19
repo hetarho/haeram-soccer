@@ -2,6 +2,7 @@ import { useMemo, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import type { MatchPlayback } from '../../../../packages/contracts/src/types';
 import { CrestMark } from './ClubCrest';
 import { colourDistance, contrast, type Crest } from './crests';
+import { recordedGoals } from './moments';
 import t from './Pitch.module.css';
 
 type Chart = 'possession' | 'xg' | 'shots';
@@ -36,9 +37,9 @@ export function seriesColour(kit: string) {
   return colour;
 }
 
-/** Per-minute series for both sides, up to the presented minute only. */
-export function chartSeries(playback: MatchPlayback, minute: number, chart: Chart) {
-  const frames = playback.frames.slice(0, Math.max(0, minute));
+/** Per-minute series for both sides, over the first `shown` frames (the presented ones) only. */
+export function chartSeries(playback: MatchPlayback, shown: number, chart: Chart) {
+  const frames = playback.frames.slice(0, Math.max(0, shown));
   return [0, 1].map((side) =>
     frames.map((frame, i) => {
       if (chart === 'xg') return frame.xg?.[side] ?? 0;
@@ -52,7 +53,7 @@ export function chartSeries(playback: MatchPlayback, minute: number, chart: Char
 /** Live charts of the presented match: possession share, cumulative xG and shots (→WEB-50). */
 export function MatchCharts({
   playback,
-  minute,
+  shown: presented,
   kits,
   crests,
   names,
@@ -61,7 +62,8 @@ export function MatchCharts({
   onDetails,
 }: {
   playback: MatchPlayback;
-  minute: number;
+  /** Frames presented so far, added minutes included. */
+  shown: number;
   kits: [string, string];
   crests: [Crest, Crest];
   names: [string, string];
@@ -71,7 +73,10 @@ export function MatchCharts({
 }) {
   const [chart, setChart] = useState<Chart>('possession');
   const [focus, setFocus] = useState<number>();
-  const series = useMemo(() => chartSeries(playback, minute, chart), [playback, minute, chart]);
+  const series = useMemo(
+    () => chartSeries(playback, presented, chart),
+    [playback, presented, chart],
+  );
   const colours = useMemo(() => {
     const home = seriesColour(kits[0]);
     let away = seriesColour(kits[1]);
@@ -86,20 +91,30 @@ export function MatchCharts({
       : chart === 'xg'
         ? Math.max(1, Math.ceil(Math.max(...series.flat(), 0) * 2) / 2)
         : Math.max(4, Math.ceil(Math.max(...series.flat(), 0) / 2) * 2);
-  const x = (m: number) => LEFT + ((m - 1) / 89) * (W - LEFT - RIGHT);
+  // The x axis runs over the match's frames, so added minutes take their place on it.
+  const frames = playback.frames;
+  const span = Math.max(1, frames.length - 1);
+  const x = (m: number) => LEFT + ((m - 1) / span) * (W - LEFT - RIGHT);
   const y = (v: number) => TOP + (1 - v / max) * (H - TOP - BOTTOM);
   const ticks = chart === 'possession' ? [0, 50, 100] : [0, max / 2, max];
   const label = (v: number) =>
     chart === 'possession' ? `${Math.round(v)}%` : chart === 'xg' ? v.toFixed(2) : String(v);
   const tickLabel = (v: number) =>
     chart === 'possession' ? `${v}%` : chart === 'xg' ? String(Math.round(v * 10) / 10) : String(v);
-  const goals = playback.record.highlights.filter((h) => h.action === '골' && h.minute <= minute);
   const shown = series[0].length;
+  const labelAt = (m: number) => frames[m - 1]?.label ?? String(m);
+  // Each goal sits on the first frame whose score includes it.
+  const goals = recordedGoals(playback.record)
+    .map((goal) => ({
+      ...goal,
+      at: frames.findIndex((f) => f.score.home >= goal.home && f.score.away >= goal.away) + 1,
+    }))
+    .filter((goal) => goal.at > 0 && goal.at <= shown);
   const active = focus !== undefined && focus <= shown ? focus : undefined;
   const latest = shown ? [series[0][shown - 1], series[1][shown - 1]] : [0, 0];
   const pick = (clientX: number, rect: DOMRect) => {
     const ratio = (clientX - rect.left) / rect.width;
-    const m = Math.round(((ratio * W - LEFT) / (W - LEFT - RIGHT)) * 89 + 1);
+    const m = Math.round(((ratio * W - LEFT) / (W - LEFT - RIGHT)) * span + 1);
     setFocus(Math.max(1, Math.min(shown, m)));
   };
   const keyboard = (event: KeyboardEvent<SVGSVGElement>) => {
@@ -155,10 +170,10 @@ export function MatchCharts({
         ))}
         <li className={t.legendMinute}>
           {active !== undefined
-            ? `${active}′`
+            ? `${labelAt(active)}′`
             : chart === 'possession'
               ? `최근 ${WINDOW}분`
-              : `${minute}′까지`}
+              : `${labelAt(shown)}′까지`}
         </li>
       </ul>
       <div className={t.plot}>
@@ -166,7 +181,7 @@ export function MatchCharts({
           viewBox={`0 0 ${W} ${H}`}
           role="img"
           tabIndex={0}
-          aria-label={`${title}: ${names[0]} ${label(latest[0])}, ${names[1]} ${label(latest[1])} · ${minute}분까지`}
+          aria-label={`${title}: ${names[0]} ${label(latest[0])}, ${names[1]} ${label(latest[1])} · ${labelAt(shown)}분까지`}
           onPointerMove={(event: PointerEvent<SVGSVGElement>) =>
             pick(event.clientX, event.currentTarget.getBoundingClientRect())
           }
@@ -191,11 +206,16 @@ export function MatchCharts({
               </text>
             </g>
           ))}
-          {[45, 90].map((m) => (
-            <text key={m} x={x(m)} y={H - 3} textAnchor="middle" className={t.tick}>
-              {m}′
-            </text>
-          ))}
+          {['45', '90'].map((label) => {
+            const m = frames.findIndex((f) => f.label === label) + 1;
+            return (
+              m > 0 && (
+                <text key={label} x={x(m)} y={H - 3} textAnchor="middle" className={t.tick}>
+                  {label}′
+                </text>
+              )
+            );
+          })}
           {shown > 0 &&
             [1, 0].map((side) => (
               <g key={side}>
@@ -230,15 +250,15 @@ export function MatchCharts({
             goals.map((goal, i) => (
               <circle
                 key={i}
-                cx={x(goal.minute)}
-                cy={y(series[goal.side][goal.minute - 1] ?? 0)}
+                cx={x(goal.at)}
+                cy={y(series[goal.side][goal.at - 1] ?? 0)}
                 r="5"
                 fill="#ffffff"
                 stroke={colours[goal.side]}
                 strokeWidth="2.5"
               >
                 <title>
-                  {goal.minute}′ {goal.player} 골
+                  {labelAt(goal.at)}′ {goal.player} 골
                 </title>
               </circle>
             ))}

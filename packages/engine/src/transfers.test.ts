@@ -563,7 +563,9 @@ describe('incoming bids', () => {
         expect(item).toMatchObject({ kind: 'incoming-bid', attention: true });
         const club = w.clubs.find((c) => c.id === bid.club)!;
         const player = w.players.find((p) => p.id === bid.playerId)!;
-        expect(club.tier).toBeLessThanOrEqual(w.clubs.find((c) => c.id === w.playerClub)!.tier);
+        // Buyers are clubs about the player's level or above, whatever their tier (suitorFor).
+        expect(club.strength).toBeGreaterThanOrEqual(overall(player) - 4);
+        expect(club.strength).toBeLessThanOrEqual(overall(player) + 12);
         // A player on the transfer list (a transfer request lists him) draws listed offers.
         const listed = bid.id.includes(':list:');
         expect(item.title).toContain(

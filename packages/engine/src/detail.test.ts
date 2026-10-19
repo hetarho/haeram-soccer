@@ -43,7 +43,8 @@ describe('advanced match counters', () => {
         expect(t[TD.bigChancesScored]).toBeLessThanOrEqual(t[TD.bigChances]);
         expect(t[TD.bigChances]).toBeLessThanOrEqual(t[TD.boxShots]);
         expect(t[TD.finalThirdCompleted]).toBeLessThanOrEqual(t[TD.finalThirdPasses]);
-        expect(t[TD.buildUpPasses] + t[TD.finalThirdPasses]).toBe(row[2]);
+        // Restarts played short count as passes but start in neither third's tally.
+        expect(t[TD.buildUpPasses] + t[TD.finalThirdPasses]).toBeLessThanOrEqual(row[2]);
         expect(t[TD.takeOns]).toBeGreaterThanOrEqual(row[8]);
       }
       const players = m.players;

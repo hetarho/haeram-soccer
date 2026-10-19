@@ -107,7 +107,7 @@ test('discloses roster and opponent tactical fit before an actual seeded match',
       : `${tacticLabel[opponentTactic]} vs ${applied}`;
   await expect(match.getByText(matchup, { exact: true })).toBeVisible();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-  await expect(match.getByText(/90′ ·.*경기 종료/)).toBeVisible();
+  await expect(match.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   const stats = match.locator('[class*="matchStats"]');
   await expect(stats.getByText('점유율', { exact: true })).toBeVisible();

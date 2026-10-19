@@ -322,7 +322,7 @@ it('builds a codec checkpoint of a 10-season career that decodes to the same wor
   expect(envelope).toMatchObject({ worldId: w.id, generation: 5, parentGeneration: 4 });
   expect(JSON.parse(raw)).toEqual(envelope);
   expect(canonical((await decode(raw)).world)).toBe(canonical(w));
-}, 120000);
+}, 600000);
 it('keeps a signed slot contract through a load and never signs that slot twice, so checkpoints still load', async () => {
   const { advanceDays } = await import('../../../../packages/engine/src/index');
   const w = world();

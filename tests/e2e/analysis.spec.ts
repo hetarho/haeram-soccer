@@ -337,7 +337,8 @@ test('jumps between recorded periods without changing the final result or calend
   const moments = page.getByRole('region', { name: '주요 장면 탐색', exact: true });
   const half = moments.getByRole('button', { name: '전반 종료 · 45분', exact: true });
   await half.click();
-  await expect(page.getByTestId('pitch-theatre')).toContainText('45′');
+  // Half-time opens the second half's first minute.
+  await expect(page.getByTestId('pitch-theatre')).toContainText('46′ ·');
   expect((await half.boundingBox())!.height).toBeGreaterThanOrEqual(44);
   await expect(page.getByRole('button', { name: '재생', exact: true })).toHaveCount(0);
   await page.getByRole('radio', { name: '1×', exact: true }).click();

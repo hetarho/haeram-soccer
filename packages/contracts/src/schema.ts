@@ -1439,6 +1439,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       throw new Error('득점 순위 선수 참조 손상');
     const goals = new Map<string, number>();
     const appearances = new Map<string, number>();
+    const matches = new Map<string, number>();
     for (const fixture of w.fixtures) {
       if (
         !fixture.score ||
@@ -1453,7 +1454,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
         [fixture.away, fixture.score.away],
       ] as const) {
         goals.set(club, (goals.get(club) || 0) + count);
-        appearances.set(club, (appearances.get(club) || 0) + 11);
+        matches.set(club, (matches.get(club) || 0) + 1);
       }
     }
     for (const scorer of season.players) {
@@ -1461,10 +1462,17 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
         throw new Error('득점 순위 구단별 기여 손상');
       for (const part of scorer.clubs ?? [scorer]) {
         goals.set(part.club, (goals.get(part.club) || 0) - part.goals);
-        appearances.set(part.club, (appearances.get(part.club) || 0) - part.appearances);
+        appearances.set(part.club, (appearances.get(part.club) || 0) + part.appearances);
       }
     }
-    if ([...goals.values(), ...appearances.values()].some((value) => value !== 0))
+    // Each match counts its starters and the substitutes who came on: at most five in any era
+    // (→MATCH-20).
+    const outOfRange = [...new Set([...matches.keys(), ...appearances.keys()])].some((club) => {
+      const n = matches.get(club) || 0,
+        count = appearances.get(club) || 0;
+      return count < 11 * n || count > 16 * n;
+    });
+    if ([...goals.values()].some((value) => value !== 0) || outOfRange)
       throw new Error('득점 순위와 실제 경기 지표가 일치하지 않습니다.');
     let previousRound = season.trackedSinceRound - 2;
     const previous = new Map<number, number[]>();

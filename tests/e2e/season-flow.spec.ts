@@ -136,6 +136,9 @@ test('shows independent player decisions and post-match league context', async (
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('motion-observation');
   await page.getByRole('button', { name: '클럽 창단' }).click();
+  // The first match's injury opens a director–manager mediation; the staff settle it here, so
+  // the next watch is not held for an owner decision this journey is not about.
+  await configureResponsibilities(page, { responsibilities: { recruitment: 'delegated' } });
   await page.getByRole('button', { name: '다음 경기 관전' }).click();
   await expect(
     page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
@@ -149,13 +152,13 @@ test('shows independent player decisions and post-match league context', async (
   ).toBeVisible();
   await chooseOption(page.getByRole('combobox', { name: '살펴볼 선수', exact: true }), '1:4');
   await page.getByRole('button', { name: '결과 보기' }).click();
-  await expect(page.getByText(/90′ ·.*경기 종료/)).toBeVisible();
+  await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
   await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toBeVisible();
   await expect(page.getByRole('table', { name: '리그 순위표' })).toContainText('우리 팀');
   await page.getByText('주요 장면 탐색', { exact: true }).click();
   await page.getByRole('button', { name: '킥오프 · 1분', exact: true }).click();
   await page.getByRole('radio', { name: '1×', exact: true }).click();
-  await expect(page.getByText(/90′ ·.*경기 종료/)).toHaveCount(0);
+  await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toHaveCount(0);
   // While the replay plays the primary action reveals the result; then it watches the next match.
   await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('결과 보기');
   await page.getByTestId('match-next-action').click();

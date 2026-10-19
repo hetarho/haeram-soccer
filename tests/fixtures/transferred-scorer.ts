@@ -20,7 +20,10 @@ export function transferredScorerWorld() {
   for (const key of ATTRIBUTES) player.attrs[key] = 99;
   player.potential = 99;
   for (let round = 0; round < 3; round++) advanceRound(w, undefined, false);
-  const buyer = ownLeagueClubs(w).find((c) => c.id !== w.playerClub)!;
+  // The league's strongest club makes the most chances, so he stays among the season's top ten.
+  const buyer = ownLeagueClubs(w)
+    .filter((c) => c.id !== w.playerClub)
+    .reduce((best, c) => (c.strength > best.strength ? c : best));
   (w.bids ??= []).push({
     id: 'in:scorer-transfer',
     direction: 'in',

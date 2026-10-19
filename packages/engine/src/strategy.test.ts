@@ -38,14 +38,19 @@ describe('pre-match decisions', () => {
     setLineup(w, ids);
     const match = simulateMatch(w, nextOwnFixture(w)!, false, true),
       side = match.record.home === w.playerClub ? 0 : 1;
-    expect(match.squads[side].map((player) => player.id)).toEqual(ids);
+    // The matchday roster is the XI in slot order, then the bench; the record's own lines open
+    // with the same XI.
+    expect(match.squads[side].slice(0, 11).map((player) => player.id)).toEqual(ids);
     expect(
       match.record.players
         .filter((player) => w.players.some((own) => own.id === player.id))
+        .slice(0, 11)
         .map((player) => player.id),
     ).toEqual(ids);
     expect(startingSquad(w, clubOf(w)).map((player) => player.id)).toEqual(ids);
-    expect(rating(w, clubOf(w))).toBe(lineupSummary(match.squads[side], w.tactic).strength);
+    expect(rating(w, clubOf(w))).toBe(
+      lineupSummary(match.squads[side].slice(0, 11), w.tactic).strength,
+    );
   });
 
   it('rejects duplicate, unknown and inactive selections before mutation', () => {

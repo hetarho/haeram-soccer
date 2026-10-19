@@ -1,6 +1,6 @@
 /** Real-football reference tables for the 40 cells and the position profiles (→MATCH-23, MATCH-24). */
 import type { Position } from '../../../contracts/src/player';
-import data from './baselines.json';
+import data from './baselines.json' with { type: 'json' };
 import { cellKey } from './pitch';
 
 export interface CellBaseline {
