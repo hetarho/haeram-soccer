@@ -71,6 +71,24 @@ function kickOffPoint(setup: GridSetup, side: 0 | 1, slot: number): [number, num
   return [x, y];
 }
 
+/** Puts every player on the pitch at his kick-off spot and the ball on the centre spot for `side` (period starts and restarts after a goal). */
+export function kickOff(s: GridState, side: 0 | 1): void {
+  for (const sd of [0, 1] as const)
+    for (const gp of s.players[sd])
+      if (gp.onPitch && gp.slot >= 0) {
+        gp.pos = kickOffPoint(s.setup, sd, gp.slot);
+        gp.run = undefined;
+      }
+  const slots = FORMATIONS[s.setup.tactics[side]].slots;
+  const taker = s.players[side].find(
+    (gp) => gp.onPitch && !gp.sentOff && gp.slot >= 0 && lineOf(slots[gp.slot]!.position) === 'FW',
+  );
+  const first = taker ?? s.players[side].find((gp) => gp.onPitch && !gp.sentOff && gp.slot > 0);
+  s.ball = [PITCH.length / 2, PITCH.width / 2];
+  s.possession = side;
+  s.owner = first ? [side, first.idx] : undefined;
+}
+
 export function createState(setup: GridSetup): GridState {
   const players = [0, 1].map((side) =>
     setup.rosters[side as 0 | 1].map((player, idx): GridPlayer => {

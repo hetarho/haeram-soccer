@@ -286,7 +286,10 @@ export function playRestart(
       if (d < nearest) [thrower, nearest] = [gp.idx, d];
     }
     place(s, side, thrower, rs.spot);
-    const target = nearestFree(s, side, thrower, K.throwReach, K.throwFree);
+    // Short to the nearest free teammate within reach; when nobody is near, to the nearest one at all.
+    const target =
+      nearestFree(s, side, thrower, K.throwReach, K.throwFree) ??
+      nearestFree(s, side, thrower, 1e9, K.throwFree);
     if (target === undefined)
       return {
         taker: thrower,

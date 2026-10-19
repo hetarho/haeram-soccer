@@ -21,6 +21,7 @@ export type Outcome =
   | { kind: 'held'; by?: number }
   | {
       kind: 'shot';
+      shooter?: number;
       result: 'goal' | 'save' | 'block' | 'miss';
       xg: number;
       recordedXg: number;
@@ -304,11 +305,11 @@ export function resolveShot(
   const onTarget = targetChance(goal, shooting);
   const recordedXg = Math.min(C.maxXg, xg * ctx.levelFactor);
   const u = r();
-  if (u < goal) return { kind: 'shot', result: 'goal', xg, recordedXg };
+  if (u < goal) return { kind: 'shot', shooter: idx, result: 'goal', xg, recordedXg };
   if (u < onTarget) {
     const v = r();
     const then = v < C.save.hold ? 'hold' : v < C.save.hold + C.save.corner ? 'corner' : 'loose';
-    return { kind: 'shot', result: 'save', xg, recordedXg, then, by: keeper.idx };
+    return { kind: 'shot', shooter: idx, result: 'save', xg, recordedXg, then, by: keeper.idx };
   }
   // A miss: a defender on the shot line may have got in the way.
   const end: Point = [PITCH.length, PITCH.width / 2];
@@ -333,6 +334,7 @@ export function resolveShot(
   if (blocker && r() < p) {
     return {
       kind: 'shot',
+      shooter: idx,
       result: 'block',
       xg,
       recordedXg,
@@ -340,7 +342,7 @@ export function resolveShot(
       by: blocker.idx,
     };
   }
-  return { kind: 'shot', result: 'miss', xg, recordedXg, then: 'goalKick' };
+  return { kind: 'shot', shooter: idx, result: 'miss', xg, recordedXg, then: 'goalKick' };
 }
 
 /** The best aerial target among the side's players inside the box, by 0.6 heading + 0.4 strength. */
@@ -561,9 +563,10 @@ export function resolvePenalty(s: GridState, side: 0 | 1, idx: number, r: () => 
   const keeper = s.players[foe].find((gp) => gp.slot === 0 && onPitch(gp)) ?? s.players[foe][0]!;
   const kicker = 0.6 * skill(s, side, idx, 'finishing') + 0.4 * skill(s, side, idx, 'composure');
   const p = clamp(C.base + (kicker - skill(s, foe, keeper.idx, 'reflexes')) / 300, C.min, C.max);
-  if (r() < p) return { kind: 'shot', result: 'goal', xg: C.xg, recordedXg: C.xg };
+  if (r() < p) return { kind: 'shot', shooter: idx, result: 'goal', xg: C.xg, recordedXg: C.xg };
   return {
     kind: 'shot',
+    shooter: idx,
     result: 'save',
     xg: C.xg,
     recordedXg: C.xg,

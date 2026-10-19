@@ -39,6 +39,8 @@ export const DECISION_CONFIG = {
   crossShare: 0.025,
   factorRange: [0.2, 3],
   shotLine: { GK: 0, DF: 0.6, MF: 1, FW: 1.25 },
+  /** Global shot-volume scale; the first uncalibrated engine produced about 25 shots a side (T215 settles it). */
+  shotScale: 0.05,
   tactic: {
     possession: { pass: 1.1, takeOn: 0.9, shotBand5: 0.8 },
     counter: { shotInCounter: 1.1 },
@@ -119,7 +121,7 @@ export function actionMix(
   const crossFactor = clamp(profile.crossShare / C.crossShare, C.factorRange[0], C.factorRange[1]);
   mix.cross *= crossFactor;
   mix.cutBack *= crossFactor;
-  mix.shot *= C.shotLine[line];
+  mix.shot *= C.shotLine[line] * C.shotScale;
   // Role and traits.
   mix.shot *= actionWeight(slot.role, traits, 'shot');
   mix.takeOn *= actionWeight(slot.role, traits, 'dribble');
