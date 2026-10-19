@@ -1,6 +1,6 @@
 import { CompetitionRecords, UnavailableLeagueRecord } from './CompetitionRecords';
 import { Segments } from './Segments';
-import { memo, useMemo, useState, type KeyboardEvent } from 'react';
+import { memo, useMemo, useState } from 'react';
 import type { MatchRecord, SeasonArchive, World } from '../../../../packages/contracts/src/types';
 import { clubOf } from '../../../../packages/engine/src/world';
 import { country } from '../../../../packages/catalogs/src/index';
@@ -9,14 +9,14 @@ import { useGameState } from '../runtime/store';
 import { ClubLink } from './ClubLink';
 import { Dialog } from './Dialog';
 import { MatchReport } from './MatchReport';
-import { RankChart, RankHistoryGraph, rankAxis } from './LeagueInsights';
+import { TabList } from './PageTabs';
+import { RankChart, RankHistoryGraph, rankAxis, ZoneLegend } from './LeagueInsights';
 import { seasonName, signed } from './format';
-import { divisionName, sameLeague, type LeagueChoice } from './league';
+import { divisionName, finalZones, sameLeague, type LeagueChoice } from './league';
 import { LeaguePicker } from './LeaguePicker';
 import { selectReviewWorld } from './liveState';
 import {
   finalRows,
-  finalZones,
   leagueRows,
   seasonSnapshots,
   useSeasonFiles,
@@ -117,27 +117,7 @@ function FinalTable({
           })}
         </tbody>
       </table>
-      <p className={r.zones}>
-        {zones.includes('automatic') && (
-          <span>
-            <i className={l.autoDot} />
-            {lower ? '프로 진입' : '자동 승격'}
-          </span>
-        )}
-        {zones.includes('playoff') && (
-          <span>
-            <i className={l.playoffDot} />
-            승격 플레이오프
-          </span>
-        )}
-        {zones.includes('relegation') && (
-          <span>
-            <i className={l.dropDot} />
-            강등권
-          </span>
-        )}
-        <span>동률: 골득실 → 다득점 → 클럽 ID</span>
-      </p>
+      <ZoneLegend zones={zones} lower={lower} closed className={r.zones} />
       <p className={r.footnote}>
         구역은 그 시즌 디비전의 승강 규칙이에요. 승·무·패는 우리 팀만 기록돼요. 다른 클럽은 승점과
         득실만 남아 있어요.
@@ -462,18 +442,6 @@ export const ClosedSeason = memo(function ClosedSeason({
         <p>선택한 시즌의 기록이 없어요.</p>
       </section>
     );
-  const keyboard = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
-    if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
-    event.preventDefault();
-    const next =
-      event.key === 'Home'
-        ? 0
-        : event.key === 'End'
-          ? PAST_TABS.length - 1
-          : (index + (event.key === 'ArrowRight' ? 1 : -1) + PAST_TABS.length) % PAST_TABS.length;
-    onTab(PAST_TABS[next][0]);
-    document.getElementById(`past-tab-${PAST_TABS[next][0]}`)?.focus();
-  };
   return (
     <>
       <div className={s.competitionScope} aria-label="선택한 리그와 시즌">
@@ -492,26 +460,18 @@ export const ClosedSeason = memo(function ClosedSeason({
       </div>
       {/* Pinned like the live tabs; the season list above them scrolls away. */}
       <div className={t.navigation}>
-        <div className={`${s.seasonTabs} ${t.tabs}`} role="tablist" aria-label="지난 시즌 보기">
-          {PAST_TABS.map(([id, label], i) => (
-            <button
-              key={id}
-              id={`past-tab-${id}`}
-              role="tab"
-              aria-selected={tab === id}
-              aria-controls="past-season-panel"
-              tabIndex={tab === id ? 0 : -1}
-              onKeyDown={(event) => keyboard(event, i)}
-              onClick={() => onTab(id)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        <TabList
+          tabs={PAST_TABS}
+          value={tab}
+          onChange={onTab}
+          label="지난 시즌 보기"
+          idPrefix="past"
+          className={`${s.seasonTabs} ${t.tabs}`}
+        />
       </div>
       <section
         key={tab}
-        id="past-season-panel"
+        id="past-panel"
         role="tabpanel"
         aria-labelledby={`past-tab-${tab}`}
         className={`${s.seasonPane} ${t.pane}`}

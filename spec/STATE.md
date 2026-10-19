@@ -164,21 +164,19 @@
 | T253 | Render actual recorded shirt patterns and stable historical crests in matches | KIT WEB SAVE ARCH | T242 T245 T246 T252 | todo |
 | T254 | Verify identity continuity across save, slots, readonly and failed writes | KIT WEB SAVE ARCH | T251 T253 T243 T244 | todo |
 | T255 | Validate the complete identity feature against release and century budgets | KIT WEB SAVE ARCH | T254 | todo |
-| T261 | One tab list and one address-synced tab hook | ARCH | - | todo |
-| T262 | One set of league-table rules in the UI | ARCH | - | todo |
-| T263 | Tested models behind the league overview and rank history | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
 | one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
-| refactor-261019 | 4 | 53 | 10 | 43 | 3 | 0 | 0 | 2026-10-19T15:00:04.676Z | [history](work/refactor-261019.json) |
+| refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261019 T261 T262 T263 integrated
 - 261019 T258 T259 T260 integrated
 - 261019 T267 T268 T269 integrated
 - 261019 T264 T265 T266 integrated
@@ -198,4 +196,3 @@
 - 261019 T211 done (w6pm): the grid match loop `playGrid` with records and trace; 73 grid tests pass; runtime criterion (15 ms) not met — about 80–140 ms a match, left to T224; shot volume placeholder `shotScale` for T215.
 - 261019 T210 done (w6pm): restarts, offside, fouls to free kicks/penalties and every set piece with dead times; 66 grid tests pass.
 - 261019 T209 done (w6pm): open-play duels and the xG model (pass, cross, cut-back, take-on, carry, hold-up, clearance, aerial, shot, penalty); 56 grid tests pass.
-- 261019 T208 done (w6pm): decision tables — action mix, pass/carry targets, keeper distribution; 47 grid tests pass. T203–T207 pushed to main (batch: 1065 unit, 19 contract, build).

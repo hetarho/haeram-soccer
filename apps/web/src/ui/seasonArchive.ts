@@ -10,7 +10,6 @@ import { country } from '../../../../packages/catalogs/src/index';
 import { compareIds } from '../../../../packages/engine/src/primitives';
 import { clubOf } from '../../../../packages/engine/src/world';
 import type { GameClient } from '../runtime/client';
-import { divisionRules } from './league';
 
 /** What a closed season's tabs read from the worker: the full archive and our own matches. */
 export interface SeasonFiles {
@@ -119,24 +118,4 @@ export function leagueRows(
     )
     .map((row): FinalRow => [row[0], row[3], row[4], row[5]]);
   return rows.length ? rows : undefined;
-}
-
-export type Zone = 'automatic' | 'playoff' | 'relegation';
-/**
- * The places of a final table of `clubs` rows under the rules of the division it was played in,
- * not the tier the club plays in today. `lower` marks the amateur league, whose top place goes up
- * into the professional game.
- */
-export function finalZones(code: string, tier: number, clubs: number) {
-  const rules = divisionRules(code, tier);
-  const zones = Array.from({ length: clubs }, (_, i): Zone | undefined =>
-    i < rules.automatic
-      ? 'automatic'
-      : i < rules.automatic + rules.playoff
-        ? 'playoff'
-        : i >= clubs - rules.relegation
-          ? 'relegation'
-          : undefined,
-  );
-  return { zones, lower: rules.lower };
 }

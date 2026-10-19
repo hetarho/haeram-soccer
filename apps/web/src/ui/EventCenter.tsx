@@ -34,6 +34,7 @@ import {
 import { competitionLabel } from './format';
 import { Money } from './Money';
 import { Dialog } from './Dialog';
+import { TabList, TabPanel } from './PageTabs';
 import s from './EventCenter.module.css';
 import { fadeOutOnRemove } from './motion';
 import { ClubCrest } from './ClubCrest';
@@ -48,7 +49,6 @@ import {
   type NewsTab,
 } from './NewsFeed';
 import newsStyle from './NewsFeed.module.css';
-import appStyle from './App.module.css';
 
 const cardExit = fadeOutOnRemove([
   { opacity: 1, transform: 'none' },
@@ -539,38 +539,25 @@ export function CommunicationsCenter({
             </div>
           }
         >
-          <div
-            className={`${appStyle.seasonTabs} ${appStyle.operationsTabs}`}
-            role="tablist"
-            aria-label="알림·뉴스 분류"
-          >
-            {tabs.map(([value, label, count], index) => (
-              <button
-                key={value}
-                id={`${id}-${value}`}
-                role="tab"
-                aria-selected={tab === value}
-                aria-controls={`${id}-panel`}
-                tabIndex={tab === value ? 0 : -1}
-                onClick={() => selectTab(value)}
-                onKeyDown={(event) => {
-                  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-                  event.preventDefault();
-                  const next = event.key === 'Home' ? 0 : event.key === 'End' ? 1 : 1 - index;
-                  selectTab(tabs[next][0]);
-                  event.currentTarget.parentElement
-                    ?.querySelectorAll<HTMLButtonElement>('[role=tab]')
-                    [next]?.focus();
-                }}
-              >
-                {label}
-                {count > 0 && (
-                  <span className={newsStyle.tabCount}>{count > 99 ? '99+' : count}</span>
-                )}
-              </button>
-            ))}
-          </div>
-          <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-${tab}`}>
+          <TabList
+            tabs={tabs.map(
+              ([value, label, count]) =>
+                [
+                  value,
+                  <>
+                    {label}
+                    {count > 0 && (
+                      <span className={newsStyle.tabCount}>{count > 99 ? '99+' : count}</span>
+                    )}
+                  </>,
+                ] as const,
+            )}
+            value={tab}
+            onChange={selectTab}
+            label="알림·뉴스 분류"
+            idPrefix={id}
+          />
+          <TabPanel idPrefix={id} value={tab}>
             {tab === 'news' ? (
               <NewsList w={w} />
             ) : (
@@ -596,7 +583,7 @@ export function CommunicationsCenter({
                 )}
               </>
             )}
-          </div>
+          </TabPanel>
         </Dialog>
       )}
     </>

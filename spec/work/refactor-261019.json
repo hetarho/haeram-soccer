@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-19T15:00:04.676Z",
-  "sourceCommit": "17ba483827399f4bd1408f2ae8654d0698b052d3",
+  "snapshotAt": "2026-10-19T15:26:40.310Z",
+  "sourceCommit": "57d81a3d8a707f368e4aa770c885955e0ee11ce6",
   "group": {
     "id": "refactor-261019",
     "branch": "work/refactor-261019",
@@ -15,10 +15,10 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "17ba483827399f4bd1408f2ae8654d0698b052d3",
+      "commit": "57d81a3d8a707f368e4aa770c885955e0ee11ce6",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-19T14:38:30.345Z"
+      "at": "2026-10-19T15:03:08.404Z"
     },
     "lastRun": {
       "id": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
@@ -72,9 +72,9 @@
   },
   "summary": {
     "total": 53,
-    "completed": 10,
-    "remaining": 43,
-    "running": 3,
+    "completed": 13,
+    "remaining": 40,
+    "running": 0,
     "review": 0,
     "blocked": 0,
     "unassigned": 40
@@ -421,27 +421,6 @@
         "T254"
       ],
       "status": "todo"
-    },
-    {
-      "id": "T261",
-      "title": "One tab list and one address-synced tab hook",
-      "dep": [],
-      "lane": "ui-league-tabs",
-      "status": "doing"
-    },
-    {
-      "id": "T262",
-      "title": "One set of league-table rules in the UI",
-      "dep": [],
-      "lane": "ui-league-tabs",
-      "status": "doing"
-    },
-    {
-      "id": "T263",
-      "title": "Tested models behind the league overview and rank history",
-      "dep": [],
-      "lane": "ui-league-tabs",
-      "status": "doing"
     }
   ],
   "attempts": [
@@ -467,6 +446,8 @@
       "submittedBase": "17ba483827399f4bd1408f2ae8654d0698b052d3",
       "submissionId": "a59a6481-8b9d-4cc6-a377-67c3cfd80c2e",
       "submittedAt": "2026-10-19T14:55:13.346Z",
+      "integratedCommit": "57d81a3d8a707f368e4aa770c885955e0ee11ce6",
+      "integratedAt": "2026-10-19T15:03:06.559Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -551,12 +532,19 @@
           "startedAt": "2026-10-19T14:54:26.449Z",
           "finishedAt": "2026-10-19T14:55:11.616Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build",
+          "startedAt": "2026-10-19T15:00:04.966Z",
+          "finishedAt": "2026-10-19T15:03:06.187Z"
+        }
       ]
     },
     {
       "id": "1de2fd8c-3efa-4d81-a5f4-7901f46546a0",
       "group": "refactor-261019",
-      "taskId": "T261",
+      "taskId": "T263",
       "tasks": [
         "T261",
         "T262",
@@ -567,10 +555,22 @@
       "contributors": [
         "7a09d4b3-b1c8-4c96-a247-b519ebf823ed/worker-2"
       ],
-      "status": "doing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-19T13:50:17.524Z",
       "startCommit": "6c75c4b94c14308b765b69c9da0efcfa7a6f0038",
+      "verifiedCommit": "2950ffd92dcb8849d35d648c8b9ab0c63f083365",
+      "submittedBase": "57d81a3d8a707f368e4aa770c885955e0ee11ce6",
+      "submissionId": "678a0077-0b28-4a7f-adcf-49f7bffc27ce",
+      "submittedAt": "2026-10-19T15:09:00.311Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "1190 changed lines (limit 300)"
+        ],
+        "lines": 1190,
+        "files": 12
+      },
       "dispatch": {
         "id": "c9aab204-3d82-4e87-b3df-f127f8c0216d",
         "runner": "7a09d4b3-b1c8-4c96-a247-b519ebf823ed",
@@ -583,7 +583,81 @@
         "finishedAt": "2026-10-19T14:06:52.051Z",
         "error": "T261: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
         "summary": "T261 is implemented, but the five Chromium e2e specs it names did not run. Every attempt stopped with \"http://127.0.0.1:4173 is already used\" because another session's preview server holds the port, and overriding the port with BROWSER_TEST_PORT was denied. The batch --verify or CI has to run them; that acceptance line is left unchecked.\n\nWhat changed:\n- tabs.ts has the pure nextTabIndex. tabs.test.ts has the four required cases, and they pass.\n- PageTabs.tsx now has TabList, which every tab bar uses for its keyboard and ARIA markup. PageTabs is TabList plus its ?view= effect, so Rich, Operations and TrainingView compile unedited.\n- PageTabs.tsx also has replaceQuery, which rewrites the address with replaceState only, and useAddressTab, which reads the tab from the address on mount, writes it back and restores it on popstate.\n- RecordsRoom (view, part, competition) and CupsView (competition, period) use useAddressTab with their current parameter names. RecordsRoom, CupsView, PastSeason and EventCenter render TabList, and their own keyboard handlers are gone.\n\nWhere I went beyond the task text:\n- useAddressTab takes a fourth options argument, { world, key, path?, keepFirst?, older? }. The three-argument form in the task would have changed behaviour:\n  - Both pages keep tabs per career in task memory under the same keys.\n  - CupsView stays mounted while hidden and always writes competition and period. owner-workflows.spec.ts:362 checks that address.\n  - RecordsRoom still opens older ?view=summary and ?view=season addresses.\n- The season year is not a tab, so each page still owns it and its own popstate listener.\n- Element IDs changed in two places because TabList builds them from idPrefix. Cups tabs went from cup-competition-<id> to cup-competition-tab-<id>, and the PastSeason panel from past-season-panel to past-panel. Nothing in the tests or CSS refers to the old IDs.\n\nChecks run: typecheck, lint and format:check pass. vitest --changed picked only tabs.test.ts (4/4). All web UI unit tests pass (32 files, 132 tests). The build passes, with the entry chunk at 130.62 kB gzip.\n\nOut of scope and noted in the task's limits: LiveSeason and StrategyPanel still have their own tab keyboards, and Rich and LiveSeason still write the address by hand."
-      }
+      },
+      "review": {
+        "id": "84b0c46f-11ef-499d-9ea4-13bad0f0dff8",
+        "owner": "rev-b",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T261–T263 (ui-league-tabs, 2950ffd) meet every acceptance with behaviour unchanged. Edits stay within each task's touches. Moving finalZones into league.ts instead of seasonArchive.ts is justified by ARCH-28 (seasonArchive stays a lazy records chunk) and recorded in T262 limits. Merged onto main 57d81a3 (ui-entry-desk included), entry JS+CSS gzip is 253,208 B (base 252,162 B, +1,046 B), 2,792 B under 256,000 B. On the merged tree: typecheck, eslint and prettier on apps/web/src/ui pass, vitest apps/web/src/ui passes 147/147, and Chromium e2e passes 38/38 (records, cups-and-club, season-flow, news, native-touch, live-state, owner-workflows).",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/PageTabs.tsx:150-157 (T261, useAddressTab popstate effect) with apps/web/src/ui/CupsView.tsx:273-276",
+            "message": "The popstate effect depends on `tabs`. CupsView rebuilds `tabs` on every render, so its competition listener is removed and added again on each render. This is harmless now. A ref for tabs and older, or memoizing CupsView's tabs on the world, would make the subscription stable."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/EventCenter.tsx:37 (T261)",
+            "message": "EventCenter is in the entry, so its new TabList/TabPanel import pulls the PageTabs chunk into it (1,107 B gzip, including useAddressTab and replaceQuery). The entry is still 2,792 B under budget. If the margin tightens, move TabList and TabPanel into a small module of their own."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/seasonArchive.test.ts:43 (T262)",
+            "message": "The finalZones case still lives in seasonArchive.test.ts because the acceptance names that file, but it now tests a league.ts export. A later cleanup could move it to league.test.ts."
+          }
+        ],
+        "commit": "2950ffd92dcb8849d35d648c8b9ab0c63f083365",
+        "baseCommit": "57d81a3d8a707f368e4aa770c885955e0ee11ce6",
+        "submissionId": "678a0077-0b28-4a7f-adcf-49f7bffc27ce",
+        "createdAt": "2026-10-19T15:09:26.431Z",
+        "finishedAt": "2026-10-19T15:26:36.007Z"
+      },
+      "steps": [
+        {
+          "taskId": "T261",
+          "commit": "2950ffd92dcb8849d35d648c8b9ab0c63f083365",
+          "at": "2026-10-19T15:09:00.264Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-19T15:08:21.627Z",
+              "finishedAt": "2026-10-19T15:08:59.594Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T262",
+          "commit": "2950ffd92dcb8849d35d648c8b9ab0c63f083365",
+          "at": "2026-10-19T15:09:00.264Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-19T15:08:21.627Z",
+              "finishedAt": "2026-10-19T15:08:59.594Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T263",
+          "commit": "2950ffd92dcb8849d35d648c8b9ab0c63f083365",
+          "at": "2026-10-19T15:09:00.264Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-19T15:08:21.627Z",
+              "finishedAt": "2026-10-19T15:08:59.594Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-19T15:08:21.627Z",
+          "finishedAt": "2026-10-19T15:08:59.594Z"
+        }
+      ]
     },
     {
       "id": "d140ce99-f4e3-4544-9de8-f68abd4d798a",
@@ -3496,6 +3570,252 @@
         "T258",
         "T259",
         "T260"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 409,
+      "at": "2026-10-19T15:03:06.507Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "7312a243-f156-4f50-9722-d28f48d41a24",
+      "taskId": "T260",
+      "tasks": [
+        "T258",
+        "T259",
+        "T260"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build",
+            "startedAt": "2026-10-19T15:00:04.966Z",
+            "finishedAt": "2026-10-19T15:03:06.187Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 410,
+      "at": "2026-10-19T15:03:06.559Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "7312a243-f156-4f50-9722-d28f48d41a24",
+      "taskId": "T260",
+      "tasks": [
+        "T258",
+        "T259",
+        "T260"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "57d81a3d8a707f368e4aa770c885955e0ee11ce6",
+        "integratedAt": "2026-10-19T15:03:06.559Z"
+      }
+    },
+    {
+      "sequence": 411,
+      "at": "2026-10-19T15:03:08.408Z",
+      "type": "group",
+      "group": "refactor-261019",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "57d81a3d8a707f368e4aa770c885955e0ee11ce6",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-19T15:03:08.404Z"
+        }
+      }
+    },
+    {
+      "sequence": 412,
+      "at": "2026-10-19T15:08:21.011Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "1de2fd8c-3efa-4d81-a5f4-7901f46546a0",
+      "taskId": "T261",
+      "tasks": [
+        "T261",
+        "T262",
+        "T263"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 413,
+      "at": "2026-10-19T15:09:00.311Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "1de2fd8c-3efa-4d81-a5f4-7901f46546a0",
+      "taskId": "T263",
+      "tasks": [
+        "T261",
+        "T262",
+        "T263"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "taskId": "T263",
+        "status": "ready",
+        "verifiedCommit": "2950ffd92dcb8849d35d648c8b9ab0c63f083365",
+        "submittedBase": "57d81a3d8a707f368e4aa770c885955e0ee11ce6",
+        "submissionId": "678a0077-0b28-4a7f-adcf-49f7bffc27ce",
+        "submittedAt": "2026-10-19T15:09:00.311Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "1190 changed lines (limit 300)"
+          ],
+          "lines": 1190,
+          "files": 12
+        },
+        "steps": [
+          {
+            "taskId": "T261",
+            "commit": "2950ffd92dcb8849d35d648c8b9ab0c63f083365",
+            "at": "2026-10-19T15:09:00.264Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-19T15:08:21.627Z",
+                "finishedAt": "2026-10-19T15:08:59.594Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T262",
+            "commit": "2950ffd92dcb8849d35d648c8b9ab0c63f083365",
+            "at": "2026-10-19T15:09:00.264Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-19T15:08:21.627Z",
+                "finishedAt": "2026-10-19T15:08:59.594Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T263",
+            "commit": "2950ffd92dcb8849d35d648c8b9ab0c63f083365",
+            "at": "2026-10-19T15:09:00.264Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-19T15:08:21.627Z",
+                "finishedAt": "2026-10-19T15:08:59.594Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-19T15:08:21.627Z",
+            "finishedAt": "2026-10-19T15:08:59.594Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 414,
+      "at": "2026-10-19T15:09:26.431Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "1de2fd8c-3efa-4d81-a5f4-7901f46546a0",
+      "taskId": "T263",
+      "tasks": [
+        "T261",
+        "T262",
+        "T263"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "84b0c46f-11ef-499d-9ea4-13bad0f0dff8",
+          "owner": "rev-b",
+          "status": "reviewing",
+          "commit": "2950ffd92dcb8849d35d648c8b9ab0c63f083365",
+          "baseCommit": "57d81a3d8a707f368e4aa770c885955e0ee11ce6",
+          "submissionId": "678a0077-0b28-4a7f-adcf-49f7bffc27ce",
+          "createdAt": "2026-10-19T15:09:26.431Z"
+        }
+      }
+    },
+    {
+      "sequence": 415,
+      "at": "2026-10-19T15:26:36.008Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "1de2fd8c-3efa-4d81-a5f4-7901f46546a0",
+      "taskId": "T263",
+      "tasks": [
+        "T261",
+        "T262",
+        "T263"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "84b0c46f-11ef-499d-9ea4-13bad0f0dff8",
+          "owner": "rev-b",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T261–T263 (ui-league-tabs, 2950ffd) meet every acceptance with behaviour unchanged. Edits stay within each task's touches. Moving finalZones into league.ts instead of seasonArchive.ts is justified by ARCH-28 (seasonArchive stays a lazy records chunk) and recorded in T262 limits. Merged onto main 57d81a3 (ui-entry-desk included), entry JS+CSS gzip is 253,208 B (base 252,162 B, +1,046 B), 2,792 B under 256,000 B. On the merged tree: typecheck, eslint and prettier on apps/web/src/ui pass, vitest apps/web/src/ui passes 147/147, and Chromium e2e passes 38/38 (records, cups-and-club, season-flow, news, native-touch, live-state, owner-workflows).",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/PageTabs.tsx:150-157 (T261, useAddressTab popstate effect) with apps/web/src/ui/CupsView.tsx:273-276",
+              "message": "The popstate effect depends on `tabs`. CupsView rebuilds `tabs` on every render, so its competition listener is removed and added again on each render. This is harmless now. A ref for tabs and older, or memoizing CupsView's tabs on the world, would make the subscription stable."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/EventCenter.tsx:37 (T261)",
+              "message": "EventCenter is in the entry, so its new TabList/TabPanel import pulls the PageTabs chunk into it (1,107 B gzip, including useAddressTab and replaceQuery). The entry is still 2,792 B under budget. If the margin tightens, move TabList and TabPanel into a small module of their own."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/seasonArchive.test.ts:43 (T262)",
+              "message": "The finalZones case still lives in seasonArchive.test.ts because the acceptance names that file, but it now tests a league.ts export. A later cleanup could move it to league.test.ts."
+            }
+          ],
+          "commit": "2950ffd92dcb8849d35d648c8b9ab0c63f083365",
+          "baseCommit": "57d81a3d8a707f368e4aa770c885955e0ee11ce6",
+          "submissionId": "678a0077-0b28-4a7f-adcf-49f7bffc27ce",
+          "createdAt": "2026-10-19T15:09:26.431Z",
+          "finishedAt": "2026-10-19T15:26:36.007Z"
+        }
+      }
+    },
+    {
+      "sequence": 416,
+      "at": "2026-10-19T15:26:36.557Z",
+      "type": "attempt",
+      "group": "refactor-261019",
+      "attemptId": "1de2fd8c-3efa-4d81-a5f4-7901f46546a0",
+      "taskId": "T263",
+      "tasks": [
+        "T261",
+        "T262",
+        "T263"
       ],
       "previousStatus": "approved",
       "status": "integrating",
