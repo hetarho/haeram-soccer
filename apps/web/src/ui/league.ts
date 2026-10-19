@@ -12,6 +12,9 @@ const emptyRow = (): TableRow => ({
   points: 0,
 });
 
+/** League points for a win, a draw and a loss: the settled tables, last results and projections. */
+export const RESULT_POINTS = { win: 3, draw: 1, loss: 0 } as const;
+
 export interface LeagueRound {
   year: number;
   round: number;
@@ -190,11 +193,14 @@ export function leagueTimeline(w: World, ids: string[]): LeagueRound[] {
         row.ga += ga;
         if (gf > ga) {
           row.won++;
-          row.points += 3;
+          row.points += RESULT_POINTS.win;
         } else if (gf === ga) {
           row.drawn++;
-          row.points++;
-        } else row.lost++;
+          row.points += RESULT_POINTS.draw;
+        } else {
+          row.lost++;
+          row.points += RESULT_POINTS.loss;
+        }
       }
     }
     return {

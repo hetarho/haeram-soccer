@@ -10,7 +10,7 @@ import { ClubLink } from './ClubLink';
 import { Dialog } from './Dialog';
 import { MatchReport } from './MatchReport';
 import { TabList } from './PageTabs';
-import { RankChart, RankHistoryGraph, rankAxis } from './LeagueInsights';
+import { RankChart, RankHistoryGraph, rankAxis, ZoneLegend } from './LeagueInsights';
 import { seasonName, signed } from './format';
 import { divisionName, sameLeague, type LeagueChoice } from './league';
 import { LeaguePicker } from './LeaguePicker';
@@ -118,27 +118,7 @@ function FinalTable({
           })}
         </tbody>
       </table>
-      <p className={r.zones}>
-        {zones.includes('automatic') && (
-          <span>
-            <i className={l.autoDot} />
-            {lower ? '프로 진입' : '자동 승격'}
-          </span>
-        )}
-        {zones.includes('playoff') && (
-          <span>
-            <i className={l.playoffDot} />
-            승격 플레이오프
-          </span>
-        )}
-        {zones.includes('relegation') && (
-          <span>
-            <i className={l.dropDot} />
-            강등권
-          </span>
-        )}
-        <span>동률: 골득실 → 다득점 → 클럽 ID</span>
-      </p>
+      <ZoneLegend zones={zones} lower={lower} closed className={r.zones} />
       <p className={r.footnote}>
         구역은 그 시즌 디비전의 승강 규칙이에요. 승·무·패는 우리 팀만 기록돼요. 다른 클럽은 승점과
         득실만 남아 있어요.

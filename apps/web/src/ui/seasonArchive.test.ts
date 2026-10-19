@@ -38,7 +38,8 @@ describe('closed season tables', () => {
     expect(finalRows(w, season)).toBeUndefined();
   });
 
-  it("marks places by the rules of the season's own division", () => {
+  // By the rules of the season's own division.
+  it('finalZones marks automatic, playoff and relegation places', () => {
     const second = finalZones('ENG', 1, 24);
     expect(second.zones.slice(0, 7)).toEqual([
       'automatic',

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { TableRow } from '../../../../packages/contracts/src/types';
 import { createWorld, advanceRound, groupKey, ranked } from '../../../../packages/engine/src/index';
 import { professionalStart } from '../../../../packages/engine/src/testing';
 import {
@@ -165,5 +166,40 @@ describe('league insight facts', () => {
     const idle = w.clubs.find((c) => c.representative && c.country === 'FRA' && c.tier > 0)!;
     expect(leagueOf(w, idle)).toEqual([]);
     expect(clubDivision(w, idle)).toBe('프랑스 아마추어 리그');
+  });
+});
+
+/** A hand-made table row: only the order's keys matter. */
+const row = (points: number, gf: number, ga: number): TableRow => ({
+  played: 3,
+  won: 0,
+  drawn: 0,
+  lost: 0,
+  gf,
+  ga,
+  points,
+});
+
+describe('league table order (live, closed and continental tables)', () => {
+  it('orderIds ranks by points, goal difference, goals for, then ID', () => {
+    const tables = {
+      fewer: row(4, 9, 0),
+      level: row(6, 2, 2),
+      most: row(6, 5, 2),
+      fewerGoals: row(6, 4, 1),
+      laterId: row(6, 4, 1),
+    };
+    const ids = ['laterId', 'fewer', 'fewerGoals', 'level', 'most'];
+    expect(orderIds(ids, tables)).toEqual(['most', 'fewerGoals', 'laterId', 'level', 'fewer']);
+    expect(ids[0]).toBe('laterId');
+  });
+
+  it('orderIds treats a missing row as empty', () => {
+    const tables = { behind: row(0, 0, 1), ahead: row(1, 1, 1) };
+    expect(orderIds(['behind', 'missing', 'ahead'], tables)).toEqual([
+      'ahead',
+      'missing',
+      'behind',
+    ]);
   });
 });

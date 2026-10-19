@@ -7,7 +7,6 @@ import type {
   EuropeTournament,
   Fixture,
   KnockoutRound,
-  TableRow,
   World,
 } from '../../../../packages/contracts/src/types';
 import { country } from '../../../../packages/catalogs/src/index';
@@ -20,6 +19,7 @@ import { emptyTable } from '../../../../packages/engine/src/season';
 import type { GameClient } from '../runtime/client';
 import { Bracket, Club } from './Bracket';
 import { number, seasonName } from './format';
+import { orderIds } from './league';
 import { replaceQuery, TabList, TabPanel, useAddressTab } from './PageTabs';
 import s from './App.module.css';
 import c from './CupsView.module.css';
@@ -48,20 +48,6 @@ const CUP_PERIODS = [
   ['history', '지난 시즌·역사'],
 ] as const;
 
-/** Clubs ranked by a competition table: points, goal difference, goals, then ID. */
-function rankIds(standings: Record<string, TableRow>, ids: string[]) {
-  return [...ids].sort((a, b) => {
-    const x = standings[a] || emptyTable(),
-      y = standings[b] || emptyTable();
-    return (
-      y.points - x.points ||
-      y.gf - y.ga - (x.gf - x.ga) ||
-      y.gf - x.gf ||
-      (a < b ? -1 : a > b ? 1 : 0)
-    );
-  });
-}
-
 /** A league-phase or group table with its qualification zones. */
 function PhaseTable({
   w,
@@ -77,7 +63,7 @@ function PhaseTable({
   title?: string;
 }) {
   const [all, setAll] = useState(ids.length <= 8);
-  const sorted = rankIds(t.standings, ids);
+  const sorted = orderIds(ids, t.standings);
   const zoneOf = (rank: number) => zones.find((zone) => rank <= zone.until);
   return (
     <section className={c.phase}>

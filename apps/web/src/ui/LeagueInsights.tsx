@@ -12,8 +12,10 @@ import {
   orderIds,
   ownLeagueIds,
   rankChange,
+  RESULT_POINTS,
   sameMembers,
 } from './league';
+import { finalZones, type Zone } from './seasonArchive';
 import { ClubLink } from './ClubLink';
 import { clubOvr, cohesionLine, ovrTier } from './OvrBadge';
 import s from './LeagueInsights.module.css';
@@ -76,6 +78,7 @@ export function Standings({
   const continental = w.europe.find((t) => t.standings === w.tables);
   const sorted = orderIds(ids, w.tables),
     rules = continental ? undefined : leagueRules(w, ids),
+    places = rules && finalZones(rules.first.country, rules.first.tier, sorted.length),
     timeline = continental ? [] : leagueTimeline(w, ids);
   const domestic = read ?? leagueFixtures(w, ids);
   const fixtures = continental
@@ -117,21 +120,10 @@ export function Standings({
             const club = w.clubs.find((c) => c.id === id),
               t = w.tables[id];
             if (!club || !t) return null;
-            const zone =
-              t.played > 0 &&
-              rules &&
-              (i < rules.automatic
-                ? 'automatic'
-                : i < rules.automatic + rules.playoff
-                  ? 'playoff'
-                  : i >= sorted.length - rules.relegation
-                    ? 'relegation'
-                    : '');
+            // No zone before the club has played.
+            const zone = t.played > 0 ? places?.zones[i] : undefined;
             return (
-              <tr
-                key={id}
-                className={`${id === w.playerClub ? s.own : ''} ${zone === 'automatic' ? s.automatic : zone === 'playoff' ? s.playoff : zone === 'relegation' ? s.relegation : ''}`}
-              >
+              <tr key={id} className={`${id === w.playerClub ? s.own : ''} ${zone ? s[zone] : ''}`}>
                 <td>
                   {t.played ? i + 1 : '—'}
                   {i >= visibleLimit && <small aria-label="중간 순위 생략"> …</small>}
@@ -182,30 +174,49 @@ export function Standings({
           )}
         </div>
       )}
-      {rules && (
-        <p className={s.legend}>
-          {rules.automatic > 0 && (
-            <span>
-              <i className={s.autoDot} />
-              {rules.lower ? '프로 진입' : '자동 승격'}
-            </span>
-          )}
-          {rules.playoff > 0 && (
-            <span>
-              <i className={s.playoffDot} />
-              승격 플레이오프
-            </span>
-          )}
-          {rules.relegation > 0 && (
-            <span>
-              <i className={s.dropDot} />
-              강등 위험권
-            </span>
-          )}
-          <span>동률: 골득실 → 다득점 → 클럽 ID</span>
-        </p>
-      )}
+      {places && <ZoneLegend zones={places.zones} lower={places.lower} />}
     </div>
+  );
+}
+
+/**
+ * The key to a table's places (→ finalZones): each zone the table marks, then the tiebreaks. A
+ * closed season's bottom places went down (강등권); a live table's are still a risk (강등 위험권).
+ */
+export function ZoneLegend({
+  zones,
+  lower,
+  closed = false,
+  className = s.legend,
+}: {
+  zones: readonly (Zone | undefined)[];
+  /** The amateur league, whose top places go up into the professional game. */
+  lower: boolean;
+  closed?: boolean;
+  className?: string;
+}) {
+  return (
+    <p className={className}>
+      {zones.includes('automatic') && (
+        <span>
+          <i className={s.autoDot} />
+          {lower ? '프로 진입' : '자동 승격'}
+        </span>
+      )}
+      {zones.includes('playoff') && (
+        <span>
+          <i className={s.playoffDot} />
+          승격 플레이오프
+        </span>
+      )}
+      {zones.includes('relegation') && (
+        <span>
+          <i className={s.dropDot} />
+          {closed ? '강등권' : '강등 위험권'}
+        </span>
+      )}
+      <span>동률: 골득실 → 다득점 → 클럽 ID</span>
+    </p>
   );
 }
 
@@ -247,10 +258,10 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
     ownGoals === undefined || opponentGoals === undefined
       ? 0
       : ownGoals > opponentGoals
-        ? 3
+        ? RESULT_POINTS.win
         : ownGoals === opponentGoals
-          ? 1
-          : 0;
+          ? RESULT_POINTS.draw
+          : RESULT_POINTS.loss;
   const before =
     lastMatch &&
     timeline
@@ -270,7 +281,11 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
         <p className={s.lastResult}>
           <b>
             {lastMatch.round}라운드 · {ownGoals}–{opponentGoals}{' '}
-            {matchPoints === 3 ? '승리' : matchPoints === 1 ? '무승부' : '패배'}
+            {matchPoints === RESULT_POINTS.win
+              ? '승리'
+              : matchPoints === RESULT_POINTS.draw
+                ? '무승부'
+                : '패배'}
           </b>
           <span>승점 +{matchPoints}</span>
           <span>
@@ -378,13 +393,13 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
             <div className={s.projection} aria-label="다음 경기 결과별 승점">
               <h5>다음 경기 후 우리 승점 · 지금 {t.points}점</h5>
               <span>
-                이기면 <b>{t.points + 3}점</b> <small>+3</small>
+                이기면 <b>{t.points + RESULT_POINTS.win}점</b> <small>+{RESULT_POINTS.win}</small>
               </span>
               <span>
-                비기면 <b>{t.points + 1}점</b> <small>+1</small>
+                비기면 <b>{t.points + RESULT_POINTS.draw}점</b> <small>+{RESULT_POINTS.draw}</small>
               </span>
               <span>
-                지면 <b>{t.points}점</b> <small>+0</small>
+                지면 <b>{t.points + RESULT_POINTS.loss}점</b> <small>+{RESULT_POINTS.loss}</small>
               </span>
               <small>순위는 같은 라운드 다른 팀의 결과에 따라 달라져요.</small>
             </div>
