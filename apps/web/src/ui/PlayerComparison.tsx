@@ -9,7 +9,7 @@ import { PlayerPerformance } from './PlayerPerformance';
 import { performanceRows, type PlayerScope } from './playerAnalysis';
 import s from './Analysis.module.css';
 
-/** The 14 attributes, then potential and fatigue (→WEB-25). */
+/** The 16 attributes, then potential and fatigue (→WEB-25). */
 const skills: readonly (readonly [string, string, (p: Player) => number])[] = [
   ...ATTRIBUTES.map((a) => [ATTRIBUTE_LABEL[a], a, (p: Player) => p.attrs[a]] as const),
   ['잠재력', 'potential', (p: Player) => p.potential],

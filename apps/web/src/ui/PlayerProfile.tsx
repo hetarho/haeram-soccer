@@ -55,7 +55,7 @@ function startingSlot(w: World, player: Player) {
 
 /**
  * A player read as football media would (→WEB-59, PLAYER-18): OVR and 실효 OVR, his positions on a
- * pitch by level, the 14 attributes by group, his best roles, personality and play traits, and —
+ * pitch by level, the 16 attributes by group, his best roles, personality and play traits, and —
  * for our own players — adaptation, its multiplier and an 적응 실패 flag.
  */
 export function PlayerProfile({

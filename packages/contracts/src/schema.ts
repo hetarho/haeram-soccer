@@ -40,7 +40,7 @@ export const gameSettingsSchema = z
     message: '수동 모드에는 경기 이벤트가 필요해요',
     path: ['observations', 'matchEve'],
   });
-/** The 14 attributes (→PLAYER-2). */
+/** The 16 attributes (→PLAYER-2). */
 const attributes = z.strictObject(
   Object.fromEntries(ATTRIBUTES.map((a) => [a, rating])) as Record<
     (typeof ATTRIBUTES)[number],

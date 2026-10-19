@@ -168,6 +168,8 @@ describe('coaching staff', () => {
     expect(departmentMultiplier(10)).toBe(0.85);
     const pairs: [StaffRole, keyof typeof NEUTRAL.development][] = [
       ['assistant', 'passing'],
+      ['assistant', 'decisions'],
+      ['assistant', 'composure'],
       ['attack', 'finishing'],
       ['defense', 'tackling'],
       ['goalkeeping', 'reflexes'],
@@ -191,6 +193,10 @@ describe('coaching staff', () => {
     expect(at('attack', 90).development.crossing).toBeCloseTo(1.2, 10);
     expect(at('attack', 90, 'specialist').development.finishing).toBeCloseTo(1.2 * 1.15, 10);
     expect(at('attack', 90).development.tackling).toBe(1);
+    // The assistant grows the mental pair with passing and vision (→PLAYER-15).
+    for (const skill of ['passing', 'vision', 'decisions', 'composure'] as const)
+      expect(at('assistant', 90).development[skill]).toBeCloseTo(1.2, 10);
+    expect(at('assistant', 90).development.finishing).toBe(1);
     expect(at('assistant', 50, 'developer').youthDevelopment).toBe(1.3);
     const both = coach(coach(world(), 'assistant', 50, 'developer'), 'youth', 50, 'developer');
     expect(staffEffects(both).youthDevelopment).toBeCloseTo(1.3 * 1.1, 10);

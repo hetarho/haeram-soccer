@@ -96,4 +96,5 @@ it('keeps identical ordered facts across daily/manual/batch paths with profile/h
       await readAndReload(manual);
     }
   }
-}, 120000);
+  // About 85 s alone; the whole suite on a loaded machine stretches it past two minutes.
+}, 240000);

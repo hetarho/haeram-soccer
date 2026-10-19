@@ -20,7 +20,7 @@ export type Position = (typeof POSITIONS)[number];
 export type Line = 'GK' | 'DF' | 'MF' | 'FW';
 export const LINES = ['GK', 'DF', 'MF', 'FW'] as const;
 
-/** The 14 attributes every player has (→PLAYER-2). */
+/** The 16 attributes every player has (→PLAYER-2). */
 export const ATTRIBUTES = [
   'finishing',
   'dribbling',
@@ -36,6 +36,8 @@ export const ATTRIBUTES = [
   'reflexes',
   'handling',
   'distribution',
+  'decisions',
+  'composure',
 ] as const;
 export type Attribute = (typeof ATTRIBUTES)[number];
 export type Attributes = Record<Attribute, number>;

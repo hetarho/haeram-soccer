@@ -35,12 +35,15 @@ export const ATTRIBUTE_LABEL: Record<Attribute, string> = {
   reflexes: '선방',
   handling: '공중볼 처리',
   distribution: '발밑',
+  decisions: '판단력',
+  composure: '침착성',
 };
 export const ATTRIBUTE_GROUPS: readonly { label: string; attributes: readonly Attribute[] }[] = [
   { label: '공격', attributes: ['finishing', 'dribbling', 'crossing'] },
   { label: '패스', attributes: ['passing', 'vision'] },
   { label: '수비', attributes: ['tackling', 'positioning', 'heading'] },
   { label: '신체', attributes: ['pace', 'stamina', 'strength'] },
+  { label: '정신', attributes: ['decisions', 'composure'] },
   { label: 'GK', attributes: ['reflexes', 'handling', 'distribution'] },
 ];
 const GK_ATTRIBUTES: readonly Attribute[] = ['reflexes', 'handling', 'distribution'];
@@ -106,32 +109,32 @@ export const POSITION_WEIGHTS: Record<
   const fullBack = {
     primary: ['tackling', 'pace'],
     secondary: ['positioning', 'stamina', 'crossing'],
-    tertiary: ['passing'],
+    tertiary: ['passing', 'decisions'],
   } as const;
   const wingBack = {
     primary: ['pace', 'stamina', 'crossing'],
     secondary: ['tackling', 'dribbling'],
-    tertiary: ['passing'],
+    tertiary: ['passing', 'decisions'],
   } as const;
   const wideMid = {
     primary: ['crossing', 'stamina'],
     secondary: ['passing', 'pace'],
-    tertiary: ['dribbling', 'tackling'],
+    tertiary: ['dribbling', 'tackling', 'decisions'],
   } as const;
   const winger = {
     primary: ['dribbling', 'pace'],
     secondary: ['crossing', 'finishing'],
-    tertiary: ['passing'],
+    tertiary: ['passing', 'composure'],
   } as const;
   return {
     GK: {
       primary: ['reflexes'],
       secondary: ['handling', 'positioning'],
-      tertiary: ['distribution'],
+      tertiary: ['distribution', 'decisions'],
     },
     CB: {
       primary: ['tackling', 'positioning', 'heading'],
-      secondary: ['strength'],
+      secondary: ['strength', 'decisions'],
       tertiary: ['pace', 'passing'],
     },
     LB: fullBack,
@@ -140,26 +143,26 @@ export const POSITION_WEIGHTS: Record<
     RWB: wingBack,
     DM: {
       primary: ['tackling', 'positioning'],
-      secondary: ['passing', 'stamina', 'strength'],
+      secondary: ['passing', 'stamina', 'strength', 'decisions'],
       tertiary: ['vision'],
     },
     CM: {
       primary: ['passing', 'stamina'],
-      secondary: ['vision', 'tackling'],
-      tertiary: ['dribbling', 'finishing'],
+      secondary: ['vision', 'tackling', 'decisions'],
+      tertiary: ['dribbling', 'finishing', 'composure'],
     },
     LM: wideMid,
     RM: wideMid,
     AM: {
       primary: ['vision', 'passing'],
-      secondary: ['dribbling', 'finishing'],
-      tertiary: ['positioning'],
+      secondary: ['dribbling', 'finishing', 'decisions'],
+      tertiary: ['positioning', 'composure'],
     },
     LW: winger,
     RW: winger,
     ST: {
       primary: ['finishing'],
-      secondary: ['positioning', 'pace', 'strength'],
+      secondary: ['positioning', 'pace', 'strength', 'composure'],
       tertiary: ['dribbling', 'heading'],
     },
   };
@@ -196,12 +199,16 @@ export const ROLES: Record<
     promotes: ['tackling', 'positioning'],
   },
   attackingWingBack: { label: '공격형 윙백', positions: ['LWB', 'RWB'], promotes: ['dribbling'] },
-  anchor: { label: '앵커', positions: ['DM'], promotes: [] },
+  anchor: { label: '앵커', positions: ['DM'], promotes: ['decisions'] },
   ballWinner: { label: '볼 위닝 미드필더', positions: ['DM'], promotes: ['stamina', 'strength'] },
   regista: { label: '레지스타', positions: ['DM'], promotes: ['passing', 'vision'] },
   boxToBox: { label: '박스투박스', positions: ['CM'], promotes: ['tackling', 'finishing'] },
   mezzala: { label: '메짤라', positions: ['CM'], promotes: ['dribbling', 'finishing'] },
-  deepLyingPlaymaker: { label: '딥라잉 플레이메이커', positions: ['CM'], promotes: ['vision'] },
+  deepLyingPlaymaker: {
+    label: '딥라잉 플레이메이커',
+    positions: ['CM'],
+    promotes: ['vision', 'decisions'],
+  },
   wideMidfielder: { label: '와이드 미드필더', positions: ['LM', 'RM'], promotes: ['tackling'] },
   widePlaymaker: {
     label: '와이드 플레이메이커',
@@ -218,7 +225,7 @@ export const ROLES: Record<
   traditionalWinger: { label: '전통형 윙어', positions: ['LW', 'RW'], promotes: ['crossing'] },
   invertedWinger: { label: '인버티드 윙어', positions: ['LW', 'RW'], promotes: ['finishing'] },
   targetMan: { label: '타겟맨', positions: ['ST'], promotes: ['heading', 'strength'] },
-  poacher: { label: '포처', positions: ['ST'], promotes: ['positioning'] },
+  poacher: { label: '포처', positions: ['ST'], promotes: ['positioning', 'composure'] },
   falseNine: { label: '펄스 나인', positions: ['ST'], promotes: ['passing', 'vision'] },
   completeForward: {
     label: '컴플리트 포워드',
@@ -430,6 +437,8 @@ export const AGEING: Record<
     reflexes: by(30, 33, 1),
     handling: by(30, 33, 1),
     distribution: by(30, 33, 1),
+    decisions: by(32, 33, 0.5),
+    composure: by(32, 33, 0.5),
   };
 })();
 
@@ -442,10 +451,10 @@ export const SCHOOL_PREFS: Record<
   gegenpress: { attributes: ['stamina', 'tackling'], traits: ['workrate', 'tackler'] },
   counter: { attributes: ['pace', 'positioning'], traits: ['speedster', 'linebreaker'] },
   organizer: { attributes: ['positioning', 'heading'], traits: ['aerial', 'tackler'] },
-  motivator: { attributes: ['stamina'], traits: ['leader', 'workrate'] },
+  motivator: { attributes: ['stamina', 'composure'], traits: ['leader', 'workrate'] },
   developer: { attributes: ['passing', 'dribbling'], traits: ['technician', 'playmaker'] },
   firefighter: { attributes: ['strength', 'tackling'], traits: ['leader', 'aerial'] },
-  headcoach: { attributes: ['vision', 'positioning'], traits: ['linebreaker', 'buildup'] },
+  headcoach: { attributes: ['decisions', 'positioning'], traits: ['linebreaker', 'buildup'] },
 };
 /** How fast a player adapts to a manager's school: 0.8–1.3, 1.0 under a neutral manager. */
 export function schoolFactor(
@@ -579,7 +588,15 @@ function pick<T>(rng: Rng, entries: readonly (readonly [T, number])[]): T {
 }
 const OFFSET: Record<Weight, number> = { 3: 4, 2: 1, 1: -3, 0: -10 };
 
-function generateAttributes(rng: Rng, position: Position, rating: number, role?: RoleId) {
+/** How far 판단력 and 침착성 start below an older player's for those aged 21 or younger (→PLAYER-2). */
+const YOUNG_MENTAL_GAP = 5;
+function generateAttributes(
+  rng: Rng,
+  position: Position,
+  rating: number,
+  role?: RoleId,
+  age?: number,
+) {
   const weights = weightsFor(position, role);
   const keeper = position === 'GK';
   const attrs = {} as Attributes;
@@ -593,6 +610,11 @@ function generateAttributes(rng: Rng, position: Position, rating: number, role?:
       keeper && ['finishing', 'dribbling', 'crossing'].includes(a) ? -20 : OFFSET[weights[a]];
     attrs[a] = rating + offset + (rng() * 2 - 1) * 9;
     shifted.push(a);
+  }
+  // The young grow into the mental attributes (→PLAYER-17); the shift below keeps the OVR.
+  if (age !== undefined && age <= 21) {
+    attrs.decisions -= YOUNG_MENTAL_GAP;
+    attrs.composure -= YOUNG_MENTAL_GAP;
   }
   // Two passes: the clamp at the ends can leave the first shift short.
   for (let pass = 0; pass < 2; pass++) {
@@ -732,8 +754,9 @@ export function generateProfile(
   position: Position,
   rating: number,
   role?: RoleId,
+  age?: number,
 ): Profile {
-  const attrs = generateAttributes(rng, position, rating, role);
+  const attrs = generateAttributes(rng, position, rating, role, age);
   const positions = generatePositions(rng, position);
   const personality = {
     professionalism: gradeOf(rng),

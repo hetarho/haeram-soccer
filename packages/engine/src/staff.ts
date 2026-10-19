@@ -149,7 +149,7 @@ const CANDIDATE_ABILITY: readonly (readonly [number, number])[] = [
 ];
 /** The attributes each coaching department grows (→STAFF-11, →PLAYER-15). */
 export const DEPARTMENT_ATTRIBUTES: Partial<Record<StaffRole, readonly Attribute[]>> = {
-  assistant: ['passing', 'vision'],
+  assistant: ['passing', 'vision', 'decisions', 'composure'],
   attack: ['finishing', 'dribbling', 'crossing'],
   defense: ['tackling', 'positioning', 'heading'],
   goalkeeping: ['reflexes', 'handling', 'distribution'],

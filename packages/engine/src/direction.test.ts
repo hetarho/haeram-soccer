@@ -2,6 +2,7 @@ import { applyBoard, presetBoard, worldBoard, sameBoard } from './presets';
 import { BUILD_PRESETS } from './build';
 import { DIRECTION_DEFAULT, directionOf } from './direction';
 import { legacySettings } from './responsibilities';
+import { compareIds } from './primitives';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { InterventionLevel } from '../../contracts/src/types';
@@ -308,7 +309,10 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     dailyMarket(hold);
     const marked = activePlayers(hold).filter((player) => player.stance === 'untouchable');
     expect(marked).toHaveLength(3);
-    const best = [...ownStarters(hold)].sort((a, b) => overall(b) - overall(a)).slice(0, 3);
+    // Equal OVRs fall back to ID order, as the staff rank them.
+    const best = [...ownStarters(hold)]
+      .sort((a, b) => overall(b) - overall(a) || compareIds(a.id, b.id))
+      .slice(0, 3);
     expect(new Set(marked.map((player) => player.id))).toEqual(
       new Set(best.map((player) => player.id)),
     );

@@ -5,6 +5,9 @@ import {
   adaptationAfter,
   adaptationMultiplier,
   adaptationStart,
+  AGEING,
+  ATTRIBUTE_GROUPS,
+  ATTRIBUTE_LABEL,
   bestRoleAt,
   FORMATIONS,
   generateProfile,
@@ -160,6 +163,93 @@ describe('player model', () => {
     expect(personalityRange(3, 65)).toEqual([2, 4]);
     expect(personalityRange(3, 40)).toEqual([1, 5]);
     expect(personalityRange(5)).toEqual([3, 5]);
+  });
+
+  it('generates all sixteen attributes', () => {
+    expect(ATTRIBUTES).toHaveLength(16);
+    expect(ATTRIBUTES.slice(-3)).toEqual(['distribution', 'decisions', 'composure']);
+    expect([ATTRIBUTE_LABEL.decisions, ATTRIBUTE_LABEL.composure]).toEqual(['판단력', '침착성']);
+    expect(ATTRIBUTE_GROUPS.map((group) => group.label)).toEqual([
+      '공격',
+      '패스',
+      '수비',
+      '신체',
+      '정신',
+      'GK',
+    ]);
+    expect(ATTRIBUTE_GROUPS[4]!.attributes).toEqual(['decisions', 'composure']);
+    for (const position of POSITIONS) {
+      const { attrs } = generateProfile(random(`sixteen:${position}`), position, 70);
+      expect(Object.keys(attrs).sort()).toEqual([...ATTRIBUTES].sort());
+      for (const a of ATTRIBUTES) {
+        expect(Number.isInteger(attrs[a])).toBe(true);
+        expect(attrs[a]).toBeGreaterThanOrEqual(1);
+        expect(attrs[a]).toBeLessThanOrEqual(99);
+      }
+      if (position !== 'GK')
+        for (const a of ['reflexes', 'handling', 'distribution'] as const) {
+          expect(attrs[a]).toBeGreaterThanOrEqual(8);
+          expect(attrs[a]).toBeLessThanOrEqual(20);
+        }
+    }
+  });
+
+  it('weights decisions and composure by position (PLAYER-6 r9)', () => {
+    const expected: Record<Position, [decisions: number, composure: number]> = {
+      GK: [1, 0],
+      CB: [2, 0],
+      LB: [1, 0],
+      RB: [1, 0],
+      LWB: [1, 0],
+      RWB: [1, 0],
+      DM: [2, 0],
+      CM: [2, 1],
+      LM: [1, 0],
+      RM: [1, 0],
+      AM: [2, 1],
+      LW: [0, 1],
+      RW: [0, 1],
+      ST: [0, 2],
+    };
+    for (const position of POSITIONS) {
+      const weights = weightsFor(position);
+      expect([weights.decisions, weights.composure], position).toEqual(expected[position]);
+    }
+    expect(ROLES.anchor.promotes).toEqual(['decisions']);
+    expect(weightsFor('DM', 'anchor').decisions).toBe(3);
+    expect(ROLES.deepLyingPlaymaker.promotes).toEqual(['vision', 'decisions']);
+    expect(weightsFor('CM', 'deepLyingPlaymaker').decisions).toBe(3);
+    expect(ROLES.poacher.promotes).toEqual(['positioning', 'composure']);
+    expect(weightsFor('ST', 'poacher').composure).toBe(3);
+  });
+
+  it('young players start lower on decisions and composure', () => {
+    for (const position of POSITIONS) {
+      let gap = 0;
+      const n = 40;
+      for (let i = 0; i < n; i++) {
+        const seed = `mental:${position}:${i}`;
+        const older = generateProfile(random(seed), position, 60, undefined, 25);
+        const young = generateProfile(random(seed), position, 60, undefined, 20);
+        const unset = generateProfile(random(seed), position, 60);
+        expect(unset).toEqual(older);
+        expect(Math.abs(mainOvr({ attrs: young.attrs, position }) - 60)).toBeLessThanOrEqual(1);
+        gap += older.attrs.decisions - young.attrs.decisions;
+        gap += older.attrs.composure - young.attrs.composure;
+      }
+      const mean = gap / (2 * n);
+      expect(mean, position).toBeGreaterThan(3.5);
+      expect(mean, position).toBeLessThanOrEqual(5.5);
+    }
+    const at21 = generateProfile(random('mental:21'), 'CM', 60, undefined, 21);
+    const at22 = generateProfile(random('mental:21'), 'CM', 60, undefined, 22);
+    expect(at21.attrs.decisions).toBeLessThan(at22.attrs.decisions);
+  });
+
+  it('ages decisions and composure like vision', () => {
+    expect(AGEING.decisions).toEqual({ growUntil: 32, declineFrom: 33, perSeason: 0.5 });
+    expect(AGEING.composure).toEqual(AGEING.vision);
+    expect(AGEING.decisions).toEqual(AGEING.vision);
   });
 
   it('every position has roles', () => {

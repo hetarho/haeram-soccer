@@ -196,6 +196,7 @@ export function makePlayer(
     position,
     Math.round(rating),
     role,
+    age,
   );
   const player: Player = {
     id,

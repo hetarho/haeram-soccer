@@ -55,9 +55,10 @@ describe('fixed off-pitch aptitude', () => {
         return old;
       }),
     );
-    // Recorded from the unchanged generator before this task added the independent components.
+    // Recorded from the generator of the sixteen attributes (→PLAYER-2); the off-pitch components
+    // stay independent of every other field.
     expect(createHash('sha256').update(JSON.stringify(players)).digest('hex')).toBe(
-      'bfcb4f1e4e378bc8e8d2af88acd21127dee6a26db0418b3288378e4c918d194d',
+      '59c117f9fc164a41a5112f49d0da6dd533f79956c4c3394c42c88d638172e961',
     );
   });
   it('keeps fixed aptitude independent of playing state and rejects invalid components', () => {

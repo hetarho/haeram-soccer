@@ -564,9 +564,13 @@ describe('incoming bids', () => {
         const club = w.clubs.find((c) => c.id === bid.club)!;
         const player = w.players.find((p) => p.id === bid.playerId)!;
         expect(club.tier).toBeLessThanOrEqual(w.clubs.find((c) => c.id === w.playerClub)!.tier);
-        expect(item.title).toContain(`${club.name}이(가) ${player.name}에게`);
+        // A player on the transfer list (a transfer request lists him) draws listed offers.
+        const listed = bid.id.includes(':list:');
+        expect(item.title).toContain(
+          `${club.name}이(가) ${listed ? '이적 명단의 ' : ''}${player.name}에게`,
+        );
         const value = BigInt(playerValue(w, player));
-        expect(BigInt(bid.fee) * 100n).toBeGreaterThanOrEqual(value * 90n - 100n);
+        expect(BigInt(bid.fee) * 100n).toBeGreaterThanOrEqual(value * (listed ? 85n : 90n) - 100n);
         expect(BigInt(bid.fee) * 100n).toBeLessThanOrEqual(value * 160n + 100n);
       }
     }

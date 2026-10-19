@@ -347,7 +347,7 @@ export interface Player {
   /** Every position he plays with its level, the main one at 3 (→PLAYER-4). */
   positions: Positions;
   born: number;
-  /** The 14 attributes (→PLAYER-2). */
+  /** The 16 attributes (→PLAYER-2). */
   attrs: Attributes;
   personality: Personality;
   qualities?: OffPitchQualities;
