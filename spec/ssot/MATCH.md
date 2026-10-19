@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r11 | Define the implemented browser-demo behavior for observable match simulation: a grid engine where every touch is a player's role-, place- and situation-based decision.
+> r12 | Define the implemented browser-demo behavior for observable match simulation: a grid engine where every touch is a player's role-, place- and situation-based decision.
 
 ## decisions
 - MATCH-1 [o] A match is played touch by touch: two halves of 45 minutes plus added time, each action taking its own few seconds of match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -14,7 +14,7 @@
   - calibration target: Elo with 16 Elo per rating point (docs/CALIBRATION.md); the grid engine and the probabilistic path (→MATCH-22) each hold it across gaps −10 to +40, and each calibration records its measured error there.
 - MATCH-3 [o] Provide possession, goals, assists, shots, shots on target, attempted/completed passes, tackles, interceptions, dribbles, saves, fouls, yellow and red cards, corners, offsides, minutes played, substitutions, injuries and player contributions.
 - MATCH-4 [o] Display counts, denominators and defined ratios; no attempts means no defined percentage. Compare own match, season and career totals.
-- MATCH-5 [o] Observed current fixtures expose every touch at its place, the action chain, cumulative xG per minute, timeline and progressive statistics. Own matches of the current season keep their post-match material (→MATCH-25) until the season close; then each own player keeps one season heat map and the matches keep outcomes, highlights, each side's match xG and counters, never frame traces or per-match maps. ← the 100-season checkpoint already uses about 99.5% of its 1.5 MiB limit (→SAVE-4, measured 261017: 1,564,446 bytes)
+- MATCH-5 [o] Observed current fixtures expose every touch at its place, the action chain, cumulative xG per minute, timeline and progressive statistics. Own matches of the current season keep their post-match material (→MATCH-25) until the season close; then each own player keeps one season heat map and the matches keep outcomes, highlights, each side's match xG and counters, never frame traces or per-match maps. ← bounded retention protects long careers (measured 261017, 100-season checkpoint: 1,564,446 bytes, about 99.5% of the then 1.5 MiB limit; current budget →SAVE-4)
 - MATCH-6 [o] A cup match that must produce a winner and is level after 90 minutes plays extra time, two halves of 15 minutes on the same engine, then a penalty shootout kick by kick: five each, then sudden death. All scores are settled once.
   - each kick is the taker's 슈팅 and 침착성 against the keeper's 선방 (→PLAYER-2); the manager orders the takers best first.
 - MATCH-7 [o] Fast and observed processing use the same match seed and football result path; animation speed, selected view and browser clock cannot reroll results.
@@ -117,7 +117,7 @@
   - ball out of play: a throw-in at its touchline spot, a goal kick, or a corner when the defending side touched it last over its byline.
   - free kicks within shooting range may be shot directly or crossed; corners and wide free kicks are delivered into the box for aerial duels and second balls.
   - a penalty is the taker's 슈팅 and 침착성 against the keeper's 선방.
-  - offside: a teammate beyond the second-last defender when the pass is played, in the opponent's half, is offside; an indirect free kick restarts play. A high line can catch runners; a runner's 판단력 times his run.
+  - offside: a receiving teammate in the opponent's half and beyond both the ball and the second-last opponent when the pass is played is offside; an indirect free kick restarts play. A high line can catch runners; a runner's 판단력 times his run.
   - the manager names the set-piece and penalty takers by their attributes.
 - MATCH-19 [o] Cards and suspensions follow one English-style rule in every league and every era (→MATCH-23 for rates). ← realistic and explainable with one rule
   - a yellow card for a reckless foul, a tactical foul stopping a counter or dissent; a red card for serious foul play or violent conduct, for denying an obvious goal-scoring opportunity, or for a second yellow; a sent-off player leaves his side a man short.
@@ -180,10 +180,10 @@
 - Play: squads and tactics → kickoff → carrier's cell and tags → decision → duel → event (pass | loss | out | foul | offside | shot) → restart or play on → half-time → full time (→ extra time and shootout in a cup tie) → recorded facts → visible feedback.
 
 ## constraints
-- Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r12 261019 MATCH-18✎ offside beyond the second-last defender in the opponent's half→receiving teammate beyond both the ball and the second-last opponent when the pass is played; restart unchanged
 - r11 261019 constraints✎ a running career keeps the rules it plays→the grid engine starts new careers, earlier careers follow →SAVE-19
 - r10 261019 MATCH-1✎ one possession chain a minute→touch-by-touch halves plus added time, sides change only on events; MATCH-2✎ measured duel/summary error→both paths hold the target; MATCH-3✎ +fouls, cards, corners, offsides, minutes, substitutions, injuries; MATCH-5✎ +current-season post-match material, season heat maps; MATCH-6✎ extra-time/penalty outcome→extra time 2×15 and a kick-by-kick shootout; MATCH-8✎ profile tradeoffs→tactic behaviour, four presets only; MATCH-9✎ shared profile→the engine's attributes and behaviour; MATCH-11✎ zone pools, team pass/chance rates, tactic line and transition factors→per-action duels; MATCH-12✎ a minute's last duels with invented restarts→the engine's positions every touch, automatic pacing; MATCH-13✎ big chance band→0.30 xG or more, box band→penalty box, +8 spatial counters, season/career totals; MATCH-14+ 40-cell grid; MATCH-15+ tags; MATCH-16+ decision tables; MATCH-17+ off-ball movement; MATCH-18+ fouls, set pieces, offside; MATCH-19+ cards and suspensions; MATCH-20+ substitutions by era; MATCH-21+ in-match injuries; MATCH-22+ engine paths, 125% season budget; MATCH-23+ real-football bands; MATCH-24+ spatial commentary; MATCH-25+ post-match material; MATCH-26+ open: grid-only counters off the grid
 - r9 261015 MATCH-2✎ average role rating→average 실효 OVR at the formation's slots, own players by adaptation, others by their club's 조직력; MATCH-8✎ MATCH-9✎ passing/defense/stamina→the named attributes (패스, 시야, 태클, 위치선정, 공중볼, 속도, 체력); MATCH-11✎ +attributes × slot level × adaptation in every duel, roles and play traits shift actions, +crosses and headers, FWD/MID/DEF→FW/MF/DF lines; MATCH-12✎ +players at their formation's positions

@@ -73,35 +73,34 @@
   - World generation is local and seeded; it does not require an LLM or external API call.
   - Keep supported old catalog versions available when needed by saves, or provide an explicit tested migration.
 - ARCH-11 [o] The browser save repository uses localStorage for the web demo.
-  - The game in play's active checkpoint, small settings, and a save manifest live in localStorage; its recoverable previous checkpoint and parked game slots keep their envelopes in IndexedDB (→SAVE-3, →SAVE-14); export/import files stay the portable copy.
+  - Checkpoint layout and storage fallback follow →SAVE-3; parked game slots follow →SAVE-14. Small settings and the manifest live in localStorage; export/import files stay the portable copy.
   - Namespace application keys; do not clear unrelated origin storage.
   - UI-thread adapters own localStorage reads/writes; workers handle serialization, compression, checksum calculation, and validation.
   - localStorage is synchronous; its documented typical allowance is 5 MiB per origin, not a guaranteed amount available to the application. [Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API), [storage quotas](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria)
 - ARCH-12 [o] Save format: versioned JSON envelope with losslessly compressed canonical state and a SHA-256 integrity checksum (→SAVE-2).
-  - Envelope: schema version, engine version, catalog/rule references, world ID, generation, parent generation, codec, checksum, and payload.
+  - Envelope fields and codec selection follow →SAVE-2.
   - Use browser Compression/Decompression Streams in a worker; support is checked at startup. [CompressionStream](https://developer.mozilla.org/en-US/docs/Web/API/CompressionStream)
   - Large checkpoints use a pinned pure-JavaScript Brotli codec in the background codec worker; lazy-load it only when needed. Bound decoder output and window allocation before growth; preserve the existing content-security policy.
   - Checksum detects accidental corruption; it is not proof that a client-authored result is honest.
   - Export the envelope as a portable `.haeram-save.json` file; Flutter can decode the same format.
-- ARCH-13 [o] Checkpoint writes keep the committed checkpoint as the previous copy, then write the active copy, then update the manifest (→SAVE-3).
-  - Build and validate the complete candidate checkpoint in a background codec worker before touching the inactive slot; the simulation and UI never wait for it.
-  - Copy the committed checkpoint to IndexedDB and verify it; write the candidate to the active localStorage key and verify it; update the manifest; then acknowledge the committed generation.
+- ARCH-13 [o] Checkpoint commit order, verified predecessor and storage fallback follow →SAVE-3; only acknowledge a successfully committed generation.
+  - Build and validate the complete candidate checkpoint in a background codec worker before touching checkpoint storage; the simulation and UI never wait for it.
   - Keep the previously committed checkpoint loadable until a newer checkpoint commits successfully.
   - On quota/write errors retain the last committed save, preserve recoverable in-memory state, offer export/retry, and do not report success.
   - Autosave committed decisions at once and automatic progression in the background at a bounded interval (→SAVE-8), never per simulation step or animation frame; expose when the game was last saved.
   - On load validate the manifest and selected slot; use the compatible previous checkpoint for recovery, explaining the recovered generation.
   - Missing/invalid manifests require deterministic validated-slot recovery; invalid saves are never replaced with a fresh world automatically.
 - ARCH-14 [o] Storage and longevity must pass an early measurement gate.
-  - Budget: at most 3 MiB per checkpoint and 3.5 MiB total application localStorage usage, conservatively accounting for key/value UTF-16 size (→SAVE-4).
+  - Per-checkpoint and total localStorage budgets follow →SAVE-4, conservatively accounting for key/value UTF-16 size.
   - Catch actual quota failures even when estimated usage is below budget; do not assume other applications or browser modes leave the full quota available.
   - Measure representative eight-country worlds at founding, a mid-career checkpoint, and 100 simulated seasons before polishing the complete UI.
   - A 100-season capacity claim requires a passing recorded benchmark.
-  - If the budget fails, optimize encoding and settle the open history-detail policy; do not silently prune agreed history or move the active checkpoint to IndexedDB/cloud storage.
+  - If the budget fails, optimize encoding within the retention policy (→ARCH-25); do not silently prune agreed history or move the active checkpoint to IndexedDB/cloud storage.
 - ARCH-15 [o] Persist game facts and history, not rendering noise.
   - Persist current world state, settled fixtures, season standings/honors, meaningful club/personnel/economic decisions, and the player's club career records.
   - Use compact IDs, shared dictionaries, and aggregate rows; do not save React stores, event subscriptions, per-frame coordinates, or repeated whole-player objects.
   - Old pitch animation traces are not required for continuing a career; ordinary match and season facts remain distinct from optional replay detail.
-  - Detailed NPC historical metric retention is open under →ARCH-25; existing facts may not be silently removed during updates or imports.
+  - NPC historical metric retention follows →ARCH-25; existing facts may not be silently removed during updates or imports.
 - ARCH-16 [o] Save import and migration are fail-safe.
   - Validate envelope, codec, checksum, declared versions, referential integrity, field bounds, and decompressed-size limits before applying an import.
   - Set explicit bounded import limits from measured fixtures at scaffolding; decompression must stop when its limit is exceeded.
@@ -163,7 +162,7 @@
   |---|---|---|
   | Product contracts | Convert settled gameplay policies into domain SSOTs; resolve parameters needed for the first scenarios | Inputs, outcomes, data ownership, and required catalog coverage are explicit |
   | Foundation | Workspace, schemas, pure engine harness, worker bridge, verification scripts | A deterministic fixture produces identical canonical facts in repeated runs |
-  | Persistence feasibility | Compact current world/history, codec, two-slot saves, migration/export | Eight-country fixtures and 100-season storage benchmark meet →ARCH-14; failures remain blocking for full UI polish/release and record the concrete unresolved limit |
+  | Persistence feasibility | Compact current world/history, codec, active/previous checkpoints (→SAVE-3), migration/export | Eight-country fixtures and 100-season storage benchmark meet →ARCH-14; failures remain blocking for full UI polish/release and record the concrete unresolved limit |
   | Playable observation loop | Seeded founding, domestic fixtures, Canvas observation, statistics, reload | A new club can play a real engine-driven fixture and continue after reloading |
   | Full agreed web loop | Recruitment, manager personality/requests, business choices, historical economy, European competition eras, meaningful history | Changes affect engine facts; domestic/European schedules and financial records remain consistent |
   | Release hardening | Browser/recovery checks, responsive entry, versioned data, preview/deployment procedure | Verification reports, storage benchmark, production-build smoke checks, and save-compatible rollback rehearsal |
@@ -189,7 +188,7 @@
 ## flow
 - Planning: ARCH → gameplay domain SSOTs → create-task → implementation.
 - Local play: UI command → validated bridge → engine worker → domain facts/projections → UI statistics/Canvas.
-- Save: safe game boundary → candidate envelope/codec/checksum → inactive localStorage slot → verification → manifest switch → committed acknowledgment.
+- Save: safe game boundary → background candidate envelope/codec/checksum → validated checkpoint commit (→SAVE-3) → committed acknowledgment.
 - Recovery: startup → capability check → save validation → load(current|previous compatible|export/recovery) → worker initialization.
 - Release: locked install → verification → static build → preview smoke checks → stable production deployment → compatible rollback path.
 - Future mobile: portable contracts/catalogs/fixtures → Dart engine parity → Flutter views/persistence → commercial-release validation.

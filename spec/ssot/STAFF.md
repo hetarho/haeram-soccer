@@ -75,7 +75,7 @@
   - hiring a free agent costs his signing fee; hiring another club's manager also pays compensation (웃돈) of 1.5 × his annual wage, and that club names its next manager. Candidates from other clubs are the managers of our league and the division above, the eight best by level.
   - qualified former-player coaches are additional manager candidates under →STAFF-28, including while employed as coaches. The ordinary 4–8 free-agent pool and eight other-club manager places do not remove these retained career candidates.
   - the manager the owner hires leaves the pool; the manager he replaces (not an interim) joins it; a hired candidate never shows as a candidate again while he is in charge.
-  - the manager's 교체 action opens the market (→WEB-40): free agents first, then other clubs' managers with club, OVR/POT, school, wage, compensation and total, and says when the list next changes.
+  - the manager's 교체 action opens the market (→WEB-43): free agents first, then other clubs' managers with club, OVR/POT, school, wage, compensation and total, and says when the list next changes.
 
 - STAFF-18 [o] With manager appointments delegated independently (→WEB-45) the 단장 (→STAFF-20) appoints and renews managers by two rows of the 스태프 area (→ECON-25), and reports every appointment, renewal and search that found nobody. ← owners who leave the club to run itself still need a manager in charge, of the kind they chose
   - 선호 학파: any (default) or one of the eight schools (→STAFF-14); a candidate of another school never matches.
@@ -158,7 +158,7 @@
 - STAFF-26 [o] The recruitment department has a standing director/manager support policy: 단장 우선, 균형 or 감독 우선, with 균형 selected for a new game.
   - automatic mediation follows that policy; direct mediation can choose differently for the current case without silently changing the standing policy.
   - the policy decides whose reasoning receives greater weight; financial permissions and spending checks remain owned by →ECON-33.
-  - the policy is edited through the recruitment department's authoritative policy workflow (→ECON-25, →WEB-77). Detailed resolution rules are →CLUB-36.
+  - the policy is edited through the recruitment department's authoritative policy workflow (→ECON-25, →WEB-77). Detailed resolution rules are →CLUB-39; numerical reactions are →CLUB-36.
 
 - STAFF-27 [o] Qualified/willing former-player coaching candidates join their assigned department's market in addition to its ordinary three generated candidates (→STAFF-15/25/38/40).
   - unemployed candidates remain available as the same retained people across seasonal candidate refreshes; do not replace generated places or reroll their identity, actual age, specialty, learned ability or coaching service. Initial coaching values remain →STAFF-41.
@@ -257,12 +257,8 @@
   - assign the school once at first managerial candidacy and retain it across declined offers/re-entry. Ordinary school effects, contract terms and non-ability profile rules remain in force; actual age and initial manager OVR/POT remain →STAFF-42.
 
 ## flow
-- Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
 - Second career: active-player aptitude evaluation → retirement announcement and optional one-time encouragement → playing-coach appointment or retirement/coaching candidacy → actual coaching employment for at least three cumulative years → management candidacy only with managerial aptitude → direct/delegated appointment.
-
-## constraints
-- Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
 - r34 261019 STAFF-14✎ +styles bend decision tables and duels in the grid engine, re-measured; STAFF-21✎ 동기부여형 체력→체력/침착성, 데이터 헤드코치 시야/위치선정→판단력/위치선정; STAFF-22✎ +each slot's place in the formation's shape per phase; STAFF-45+ substitution habits by style and selection trait

@@ -29,12 +29,8 @@
   - actual playing retirement ends active-player availability while retaining real career facts (→HIST-14); a playing coach remains active only until his deferred retirement date (→STAFF-34). Keep existing lossless career/storage requirements (→SAVE-13/17).
 
 ## flow
-- Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
 - Person continuity: generated/retained player → qualifying retirement/coaching choice → the same person in staff/manager candidacy → linked actual career facts.
-
-## constraints
-- Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
 - r6 261016 WORLD-11✎ NPC continuity scope open→retain high/very-high coaching prospects and all former own players, actual age/retirement/affiliation and unique cross-role identity; ordinary club-strength model unchanged

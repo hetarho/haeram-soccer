@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r14 | Define the browser-demo rules for durable metrics and history.
+> r15 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -14,7 +14,9 @@
 - HIST-10 [o] Milestone completion derives from retained matches, events, player development, facility work (→ECON-32) and season archives. It grants no synthetic cash, performance multiplier or repeatable claim reward; viewing, importing and reloading the same career reproduce the same completed milestones.
 - HIST-11 [o] Club news is derived from retained facts on every read and never stored: the same career always produces the same feed with stable item IDs. ← news must never contradict the record, and storing it would only duplicate facts
   - every own match yields one result line (comeback, ≥88′ winner or equaliser, a two-goal lead thrown away, rout, heavy defeat, clean win or the plain result, with possession, shots and xG), then at most 4 more items ranked by weight; major items and celebrations always stay.
-  - sources: streaks across seasons, home/away runs, the opening five, possession and first-goal splits, xG against the result and finishing gaps, season highs and lows, player braces, hat-tricks, one-man shows, debut and academy first goals, scoring runs, droughts and milestones, keepers' saves, defensive actions and advanced counters; the round standings (top of the table, leads, promotion and relegation zones, three-place climbs); club events (official signings and departures, manager changes, academy, facilities, sponsor, vision, owner requests, cup rounds won and lost, retirement announcements and retirements, injuries, potential breakthroughs and stalls) and the closed season's honours.
+  - sources: streaks across seasons, home/away runs, the opening five, possession and first-goal splits, xG against the result and finishing gaps, season highs and lows, player braces, hat-tricks, one-man shows, debut and academy first goals, scoring runs, droughts and milestones, keepers' saves, defensive actions and advanced counters;
+  - round standings (top of the table, leads, promotion and relegation zones, three-place climbs);
+  - club events (official signings and departures, manager changes, academy, facilities, sponsor, vision, owner requests, cup rounds won and lost, retirement announcements and retirements, injuries, potential breakthroughs and stalls) and the closed season's honours.
   - a cup won during the season is celebrated on the day of its final; the closed season's honours repeat only cups without that event (older saves).
   - thresholds: unbeaten runs at 5/10/15…, wins at 3/5/7/10, defeats at 3/4/5/7, 5/8/10/15 without a win, a run of 5+ that ends; club records only against a record of at least 5 (unbeaten) or 3 (wins) set before the season; 60%+ possession win rates only at 70%+ or 20%− over 5+ matches; season highs from the fourth match; each finishing or keeping gap level once a season after 8 matches with xG.
   - achievements flagged for celebration: first win, club-record runs (8+ unbeaten, 5+ wins), record margin, hat-trick, an academy graduate's first goal, career goal hundreds, every hundredth club win, first time top of the table in a season, promotion, titles and cups.
@@ -29,7 +31,8 @@
   - our league's top 10 scorers (name, club, position, goals, appearances; ties as the live table), our rank after every league round, and the Club Elo spread at the close (world lowest/highest, our league lowest/highest).
   - our country's cup and every continental competition except the Super Cup as a bracket from the first round of 32 or fewer clubs (qualifiers skipped) to the final: each tie its two clubs, both legs and how it was decided (penalties, away goals).
   - a field is written only when the season was tracked whole; seasons closed before rules 1.12.0 keep finals only. Scorers and brackets reach the screen through the season archive request, not every update.
-  - derived on read, never stored: a cup run's stages from match ids and calendar slots, titles by club and nation, doubles, trebles and runs of titles from the archived champions and finals, the head-to-head with any club from every own match, and appearances as minutes / 90 (every starter plays the full match; there are no substitutions).
+  - derived on read, never stored: a cup run's stages from match ids and calendar slots, titles by club and nation, doubles, trebles and runs of titles from the archived champions and finals, the head-to-head with any club from every own match, and appearance counts from retained match participation.
+  - an appearance counts one recorded match with minutes played > 0, whether starting or coming on as a substitute (→MATCH-20). Minutes / 90 is a denominator for per-90 rates, never the appearance count; a substitute who does not play gains no appearance.
 
 - HIST-14 [o] Retain a person's linked playing, coaching and management career across role changes and clubs.
   - retirement from playing does not delete his playing totals or reset his age/name. Actual staff/manager appointments and coaching experience extend the same person's record.
@@ -47,14 +50,11 @@
   - other leagues' discipline tables are current-season facts (→LEAGUE-15); a closed season keeps none for players of clubs nobody owns.
 
 ## flow
-- Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
 - Career/mediation outcomes → retained person links and commitments → fact-backed profiles, decisions and derived news.
 
-## constraints
-- Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
-
 ## chg
+- r15 261019 HIST-13✎ appearances as minutes / 90 with no substitutions→one per recorded match with minutes > 0, starters and substitutes alike; per-90 rates remain separate
 - r14 261019 HIST-8✎ no expiry/pruning→of retained facts, per-match maps follow their lifetime; HIST-16+ spatial counter and discipline totals, current-season maps reduced to season heat maps, NPC discipline current-season only
 - r13 261017 HIST-13✎ single-club scorer attribution→one player total with actual per-club contributions across in-league transfers
 - r12 261016 HIST-14✎ dated coaching service only→also actual mentor/school exposure for managerial school inheritance

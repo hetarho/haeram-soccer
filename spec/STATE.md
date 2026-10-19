@@ -79,17 +79,17 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 11 | 11 | - | 2 |
-| WEB | 91 | 91 | - | 0 |
+| WEB | 92 | 91 | WEB-47✎ | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 11 | 11 | - | 1 |
+| MATCH | 12 | 11 | MATCH-18✎ | 1 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 34 | 34 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 14 | 14 | - | 0 |
-| SAVE | 48 | 48 | - | 0 |
+| HIST | 15 | 14 | HIST-13✎ | 0 |
+| SAVE | 49 | 48 | SAVE-3✎ SAVE-14✎ | 0 |
 | PLAYER | 9 | 9 | - | 0 |
 
 ## tasks
@@ -159,11 +159,15 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- implement-task T200 next (grid-engine batch T200–T233, contract docs/MATCH-ENGINE-DESIGN.md); T200 must precede engine changes, and T233 must complete before identity implementation. Recommended: use a work branch and merge after T233's CI.
-- implement-task T234 after T233; continue T234–T255 for club identity and kits using docs/CLUB-IDENTITY-CONTRACT.md, following actual dependencies and one task per session.
-- Review prior autonomous decisions and optional review-code/doc-review proposals in inbox (latest report reports/261017-p6k2.md); external deployment, optional hall of fame and Flutter remain separate future work.
+- create-task SAVE HIST WEB MATCH: reconcile pending policy corrections with T202/T210/T220/T226/T231 and downstream identity tasks before implementation; check existing bases and docs/MATCH-ENGINE-DESIGN.md without changing completed work.
+- After replanning, implement T200–T233 using docs/MATCH-ENGINE-DESIGN.md, then T234–T255 using docs/CLUB-IDENTITY-CONTRACT.md, following actual dependencies and one task per session. T200 precedes engine changes; T233 and its CI precede identity implementation.
+- Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 doc-review ARCH WEB WORLD CLUB MATCH LEAGUE STAFF ECON EURO HIST SAVE tidied (rev unchanged): long decisions structured, SAVE-10 retired transforms replaced by current rules/history references, stale references and copied skeleton prose removed; IDs/statuses and all chg lines preserved.
+- 261019 doc-review ARCH WEB WORLD CLUB MATCH LEAGUE STAFF ECON EURO HIST SAVE start: structure long decisions, replace duplicated contracts with owner references and remove retired prose; policy revisions already recorded.
+- 261019 update-ssot SAVE r49 HIST r15 WEB r92 MATCH r12 done: verified predecessor or refuse overwrite, actual appearances, conditional PPDA and ball-relative offside; task contracts await create-task.
+- 261019 update-ssot SAVE HIST WEB MATCH start: resolve adopted doc-review conflicts; then tidy SSOT wording with decision IDs and history preserved.
 - 261019 create-task KIT WEB SAVE done: T234–T255 (22 small tasks), explicit DTO/geometry/command/codec/UI contracts, cases and targeted commands; consume KIT r2, WEB r91 and SAVE r46–47 identity deltas, preserve completed grid planning through T233.
 - 261019 create-task grid engine rebuild: T200–T233 (34 tasks, 4 explore) from MATCH r11, PLAYER r9, STAFF r34, CLUB r42, LEAGUE r10, WEB r90, HIST r14, SAVE r45/r48, ARCH r11; SAVE r46–47 and WEB r91 identity deltas stay pending for the identity tasks (T240+).
 - 261019 SAVE r48 ARCH r11: previous checkpoint in IndexedDB, active localStorage checkpoint up to 3 MiB (import 8 MiB, inflate 32 MiB) for the grid engine's larger records (owner choice).
@@ -180,7 +184,3 @@
 - 261019 PLAYER r9: 16 attributes with 판단력/침착성 in OVR weights, roles and traits as decision tendencies, mental ageing; MATCH r11 constraint: earlier careers follow SAVE-19 (not converted).
 - 261019 MATCH r10: grid decision engine (40 cells, tags, decision tables, off-ball movement), per-touch halves with added time, fouls/set pieces/offside, cards and suspensions, era substitutions, in-match injuries, engine paths with a 125% season budget, real-football bands, commentary and post-match material; MATCH-26 open.
 - 261019 update-ssot MATCH start (ideation/match-engine-rebuild)
-- 261019 ideation club-identity-and-kits open: home defaults to club colours, away/third allow separate palettes, kits auto-select with a pre-match override, identity stays editable through club management.
-- 261019 ideation club-identity-and-kits continue: apply owner choices for kit palettes, pre-match selection and club-management editing.
-- 261019 ideation club-identity-and-kits open: recorded selectable 1-3-colour crests, home/away/third patterns and pitch preview; palette links, kit selection and later edits remain open.
-- 261019 ideation club-identity-and-kits start

@@ -60,12 +60,6 @@
   - each club keeps a short list of its unavailable players (who, until when, how many matches banned); it clears when the club's squad is generated for a new season (→WORLD-6), while an unserved ban carries over by person.
   - every league keeps a discipline table: each player's yellow and red cards and current bans by competition.
 
-## flow
-- Play: validated input → deterministic outcome → recorded facts → visible feedback.
-
-## constraints
-- Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
-
 ## chg
 - r10 261019 LEAGUE-15+ injuries and suspensions for clubs nobody owns, a retained unavailable list cleared at the seasonal squad generation, league discipline table
 - r9 261016 LEAGUE-10✎ reputation of clubs nobody owns drifts 30% toward its division's→follows LEAGUE-14; LEAGUE-14+ every club's reputation: 20% of the gap to its next division's level (75/60/45/30, amateur 8) + league finish ±3, domestic cup +2, continental match +0.2 and title +8

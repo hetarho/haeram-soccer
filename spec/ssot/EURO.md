@@ -27,12 +27,6 @@
   - qualifiers per group: 3 in the 40-club UEFA Cup, 1 in the 1991–92 eight-club groups, 2 with 16 or 32+ clubs, otherwise 1 plus the two best runners-up (24 clubs).
   - the Super Cup stays a single match at the season close; the archive keeps each final's runner-up, score and shoot-out.
 
-## flow
-- Play: validated input → deterministic outcome → recorded facts → visible feedback.
-
-## constraints
-- Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
-
 ## chg
 - r3 261012 EURO-8✎ +both legs' dates; EURO-10✎ return a round later→each era's gap (2 weeks before 2003, then 1, UCL last 16 3 weeks 2003–23), knockout-only eras from September; rules 1.14.0
 - r2 261011 EURO-4✎ +seeded two-legged playoff; EURO-8✎ +live phase tables with zones, drawn bracket and history of finals; EURO-10+ knockouts at season close→stage-by-stage calendar with two-legged ties and away goals before 2021

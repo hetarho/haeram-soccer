@@ -52,7 +52,12 @@
   - academy investment and 풀뿌리 유망주 투자 (→ECON-16), the bases with the 성골 유스 or 해외 유스 스카우트 card (→ECON-34), the club build (→ECON-22) and the pipeline synergy (→CLUB-21) add prospects, potential and growth.
   - the 방향 board (→WEB-60) shows the exact chance that the next intake brings a prospect of potential 80+, from the same uniform draws the intake uses.
 - CLUB-17 [o] Fee-bearing purchases, loans and sales happen only in transfer windows: summer from the day the season closes (→LEAGUE-9) to 1 September and winter 1 January–1 February. ← the market opens as the season's review ends, not during its final rounds Free agents sign at any time. The market shows the window state and deadline.
-- CLUB-18 [o] Bids are answered 2–4 days later with accept, reject or a counter; acceptance chance rises with the offered fee against the asking value and the 단장 (→STAFF-20). The fee is paid on completion; unanswered bids lapse at the deadline. During windows other clubs bid for our players (answered by the owner, or by the director when player sales are delegated) and lapse after 5 days; squad minimums still apply. The bidder is a real club whose strength suits the player (4 below to 12 above his ability, stronger clubs more often, any country). A delegated 단장 accepts an offer at or above his sale bar for a non-starter, or for a starter aged 30+ with a bench player of the same role within 3 ability (never a starter under 핵심 지키기). The report names the bar and each step.
+- CLUB-18 [o] Bids are answered 2–4 days later with accept, reject or a counter; acceptance chance rises with the offered fee against the asking value and the 단장 (→STAFF-20).
+  - The fee is paid on completion; unanswered bids lapse at the deadline.
+  - During windows other clubs bid for our players (answered by the owner, or by the director when player sales are delegated) and lapse after 5 days; squad minimums still apply.
+  - The bidder is a real club whose strength suits the player (4 below to 12 above his ability, stronger clubs more often, any country).
+  - A delegated 단장 accepts an offer at or above his sale bar for a non-starter, or for a starter aged 30+ with a bench player of the same role within 3 ability (never a starter under 핵심 지키기).
+  - The report names the bar and each step.
   - another club's offer is at least one whole currency unit, so no offer reads 0 (→WEB-67).
   - bar by the 매각 기조 card (→ECON-22), of value and for a prospect (aged 22 or under with potential at least 8 above ability): 셀링 클럽 110%/160%, 쇼케이스 120%/180%, standard 130%/200%, 강경 협상 150%/230%, 핵심 지키기 150%/250%
   - age 30–32 −15 points, 33+ −30; contract in its final season −20, one season after this −10
@@ -260,12 +265,8 @@
 - CLUB-45 [o] A suspended player (→MATCH-19) is unavailable for the matches his ban counts: left out of the automatic and saved XI and the bench, like an injured player. A ban is an inbox item and an event; a player one yellow short of a league ban carries a warning on the squad and lineup.
 
 ## flow
-- Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
-
-## constraints
-- Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
 - r42 261019 CLUB-6✎ +the manager names the era's substitutes and the set-piece/penalty takers, never injured or suspended players; CLUB-23✎ own players after the match→every player during it, by minutes; CLUB-45+ suspended players unavailable, bans reported
