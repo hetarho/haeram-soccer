@@ -11,6 +11,7 @@ import type {
 import { clamp, random } from './primitives';
 import type { RoleId } from '../../contracts/src/player';
 import { FORMATIONS, slotLine } from './player';
+import { PLAYBACK_CONFIG } from './grid/playback';
 
 type Point = [number, number];
 type Side = 0 | 1;
@@ -32,36 +33,28 @@ export const MATCH_MOTION_CONFIG = {
     separationForce: 3.5,
     /**
      * The ball is many times faster than any player. Flight speeds are averages along the curve
-     * (pitch units per motion second); no step may exceed `maxBallSpeed`.
+     * (pitch units per motion second); no step may exceed `maxBallSpeed`. They live in the grid
+     * playback (`PLAYBACK_CONFIG`) and this engine reads them until T218 retires it.
      */
-    maxBallSpeed: 100,
-    passSpeed: 48,
-    turnoverSpeed: 44,
-    restartSpeed: 60,
-    throwSpeed: 36,
-    shotSpeed: 84,
+    maxBallSpeed: PLAYBACK_CONFIG.speeds.max,
+    passSpeed: PLAYBACK_CONFIG.speeds.pass,
+    turnoverSpeed: PLAYBACK_CONFIG.speeds.turnover,
+    restartSpeed: PLAYBACK_CONFIG.speeds.restart,
+    throwSpeed: PLAYBACK_CONFIG.speeds.throw,
+    shotSpeed: PLAYBACK_CONFIG.speeds.shot,
     boundaryMargin: 2,
   },
   ball: {
-    /** Even a poke takes a couple of steps, so the renderer always has a path to draw. */
-    minimumFlight: 0.2,
-    /** Share of `maxBallSpeed` a launch may reach, leaving room to follow a moving receiver. */
-    launchHeadroom: 0.9,
-    /** Flights longer than this leave the ground; the peak grows with the extra distance. */
-    loftFrom: 18,
-    loftPerUnit: 0.17,
-    maxLoft: 9,
-    /** Share of long balls driven low instead of lofted, and the height they keep. */
-    drivenShare: 0.3,
-    drivenLoft: 0.3,
+    /** Flight curve, loft and styles (`PLAYBACK_CONFIG.flight`). */
+    ...PLAYBACK_CONFIG.flight,
     /** A miscontrolled pass bobbles to the teammate who recovers it. */
-    looseSpeed: 36,
+    looseSpeed: PLAYBACK_CONFIG.speeds.loose,
     /**
      * A tackle pokes the ball from the carrier's feet to the tackler once he is within reach. The
      * carrier runs into the challenge; the wait scales with the gap at this closing speed, inside
      * the window (motion seconds). A tackler still out of reach collects a heavy touch instead.
      */
-    tackleSpeed: 22,
+    tackleSpeed: PLAYBACK_CONFIG.speeds.tackle,
     tackleReach: 3,
     tackleClosing: 7,
     tackleWindow: [0.6, 1.8],
@@ -73,21 +66,6 @@ export const MATCH_MOTION_CONFIG = {
     cutStray: [6, 18],
     /** A receiver holds the ball this long before playing the next recorded duel. */
     minimumTouch: 0.3,
-    /**
-     * Flight shapes. `ease` is the launch-speed boost (the ball slows by the same share toward the
-     * end), `bend` the lateral Bézier offset range as a share of the chord, `loft` scales the
-     * height rule and `bobble` adds a fixed hop.
-     */
-    styles: {
-      pass: { ease: 0.3, bend: [0.04, 0.16], loft: 1, bobble: 0 },
-      loose: { ease: 0.4, bend: [0.18, 0.32], loft: 1, bobble: 1.4 },
-      cut: { ease: 0.25, bend: [0, 0], loft: 0.5, bobble: 0 },
-      tackle: { ease: 0.5, bend: [0.1, 0.3], loft: 0, bobble: 0.4 },
-      shot: { ease: 0.12, bend: [0.02, 0.08], loft: 0.35, bobble: 0 },
-      reset: { ease: 0.5, bend: [0, 0], loft: 0, bobble: 0 },
-      throw: { ease: 0.1, bend: [0, 0.04], loft: 0, bobble: 2.2 },
-      cross: { ease: 0.2, bend: [0.06, 0.18], loft: 1.4, bobble: 1.5 },
-    },
   },
   decisions: {
     minimumDwell: 0.8,

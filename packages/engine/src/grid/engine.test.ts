@@ -81,12 +81,13 @@ describe('grid engine', () => {
       'held',
     ]);
     for (let i = 0; i < 8; i++) {
-      const { trace } = play(`handover-${i}`, true);
-      for (let k = 1; k < trace!.length; k++)
-        if (trace![k]!.side !== trace![k - 1]!.side && trace![k]!.period === trace![k - 1]!.period)
+      // Cards, substitutions, injuries and whistles are not touches of the ball.
+      const trace = play(`handover-${i}`, true).trace!.filter((e) => e.outcome !== 'incident');
+      for (let k = 1; k < trace.length; k++)
+        if (trace[k]!.side !== trace[k - 1]!.side && trace[k]!.period === trace[k - 1]!.period)
           expect(
-            switching.has(trace![k - 1]!.outcome),
-            `${trace![k - 1]!.action} -> ${trace![k - 1]!.outcome}`,
+            switching.has(trace[k - 1]!.outcome),
+            `${trace[k - 1]!.action} -> ${trace[k - 1]!.outcome}`,
           ).toBe(true);
     }
   });

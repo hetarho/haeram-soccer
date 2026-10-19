@@ -1,0 +1,824 @@
+/**
+ * Playback frames from the grid trace (design §10.2, §10.4; →MATCH-12, WEB-32): one frame per match
+ * minute with the engine's own positions, the ball's flight between its recorded touches, events with
+ * Korean commentary, the minute's label and pace. Presentation only: it reads a played result and
+ * draws from its own stream, never the match's.
+ */
+import type {
+  MatchFrame,
+  MatchMotionSample,
+  Metrics,
+  PlayerMotion,
+  PlayerMotionState,
+} from '../../../contracts/src/types';
+import { clamp, random } from '../primitives';
+import { describe } from './commentary';
+import type { GridResult } from './engine';
+import { attackFrame, bandOf, PITCH } from './pitch';
+import { M, RUNNING } from './record';
+import type { GridSetup } from './setup';
+import type { TraceEntry } from './trace';
+
+/** One event of a minute (design §2.4); T218 moves it to the contracts as `MatchEvent`. */
+export interface PlaybackEvent {
+  /** Seconds into the minute, 0–60. */
+  t: number;
+  kind:
+    | 'kickoff'
+    | 'pass'
+    | 'cross'
+    | 'cutBack'
+    | 'carry'
+    | 'takeOn'
+    | 'shot'
+    | 'clearance'
+    | 'holdUp'
+    | 'restart'
+    | 'foul'
+    | 'card'
+    | 'sub'
+    | 'injury'
+    | 'offside'
+    | 'whistle';
+  /** The acting side. */
+  side: 0 | 1;
+  /** Player id; empty for a whistle. */
+  actor: string;
+  receiver?: string;
+  opponent?: string;
+  /** Playback units of the minute's period. */
+  from: [number, number];
+  to: [number, number];
+  ok?: boolean;
+  lost?: boolean;
+  outcome?: 'goal' | 'save' | 'block' | 'miss';
+  restart?: 'kickoff' | 'throwIn' | 'goalKick' | 'corner' | 'freeKick' | 'penalty';
+  card?: 'yellow' | 'red';
+  xg?: number;
+  header?: boolean;
+  /** Korean commentary (design §10.3). */
+  text: string;
+}
+
+/** One match minute (design §2.4); the existing `MatchFrame` fields keep their meaning. */
+export interface PlaybackFrame extends Omit<MatchFrame, 'events'> {
+  events?: PlaybackEvent[];
+  period: 1 | 2 | 3 | 4;
+  /** '23', '45+2', '90+4', '105+1'. */
+  label: string;
+  /** Presentation weight, mean 1 over the match (design §10.4). */
+  pace: number;
+  /** Player ids on the pitch at the minute's end, in slot order where filled. */
+  onPitch: [string[], string[]];
+}
+
+/** Motion states by the index a trace entry stores them under. */
+export const MOTION_STATES = [
+  'shape',
+  'support',
+  'run',
+  'press',
+  'mark',
+  'recover',
+  'carry',
+  'keeper',
+] as const satisfies readonly PlayerMotionState[];
+
+export const PLAYBACK_CONFIG = {
+  /** Motion seconds a match minute takes at pace 1, its player samples and ball track points. */
+  motionSecondsPerMinute: 8,
+  samplesPerMinute: 8,
+  trackPerMinute: 80,
+  /**
+   * Ball speeds (→MATCH-12): averages along the curve in pitch units per motion second, against a
+   * 5.8 player maximum; no flight's launch may exceed `max`.
+   */
+  speeds: {
+    max: 100,
+    pass: 48,
+    turnover: 44,
+    restart: 60,
+    throw: 36,
+    shot: 84,
+    loose: 36,
+    tackle: 22,
+  },
+  flight: {
+    /** Even a poke takes a couple of steps, so the renderer always has a path to draw. */
+    minimumFlight: 0.2,
+    /** Share of `speeds.max` a launch may reach. */
+    launchHeadroom: 0.9,
+    /** Flights longer than this leave the ground; the peak grows with the extra distance. */
+    loftFrom: 18,
+    loftPerUnit: 0.17,
+    maxLoft: 9,
+    /** Share of long balls driven low instead of lofted, and the height they keep. */
+    drivenShare: 0.3,
+    drivenLoft: 0.3,
+    /**
+     * Flight shapes. `ease` is the launch-speed boost (the ball slows by the same share toward the
+     * end), `bend` the lateral Bézier offset range as a share of the chord, `loft` scales the
+     * height rule and `bobble` adds a fixed hop.
+     */
+    styles: {
+      pass: { ease: 0.3, bend: [0.04, 0.16], loft: 1, bobble: 0 },
+      loose: { ease: 0.4, bend: [0.18, 0.32], loft: 1, bobble: 1.4 },
+      cut: { ease: 0.25, bend: [0, 0], loft: 0.5, bobble: 0 },
+      tackle: { ease: 0.5, bend: [0.1, 0.3], loft: 0, bobble: 0.4 },
+      shot: { ease: 0.12, bend: [0.02, 0.08], loft: 0.35, bobble: 0 },
+      reset: { ease: 0.5, bend: [0, 0], loft: 0, bobble: 0 },
+      throw: { ease: 0.1, bend: [0, 0.04], loft: 0, bobble: 2.2 },
+      cross: { ease: 0.2, bend: [0.06, 0.18], loft: 1.4, bobble: 1.5 },
+    },
+  },
+  /** A curve whose apex comes within this many units of a touchline bends the other way. */
+  curlInside: 3,
+  /** Motion seconds a restart's taker takes at most to walk to the ball. */
+  takerWalk: 0.9,
+  /** Metres: farther from his target a player recovers, nearer the ball an attacker supports, nearer an opponent a defender marks. */
+  states: { recover: 15, support: 20, mark: 5 },
+  /** Minute weights (design §10.4): build-up in the own half, ordinary, chances and set pieces. */
+  pace: { quiet: 0.6, normal: 1, busy: 1.6 },
+} as const;
+
+type Units = [number, number];
+type Phase = NonNullable<MatchMotionSample['phase']>;
+type Style = keyof typeof PLAYBACK_CONFIG.flight.styles;
+type Ref = [0 | 1, number];
+
+interface Flight {
+  kind: 'flight';
+  start: number;
+  end: number;
+  phase: Phase;
+  from: Units;
+  to: Units;
+  control: Units;
+  loft: number;
+  ease: number;
+}
+/** The ball at a player's feet; `at` stands in should he no longer be found. */
+interface Hold {
+  kind: 'hold';
+  start: number;
+  end: number;
+  side: 0 | 1;
+  idx: number;
+  at: Units;
+}
+/** A dead ball resting on its restart spot. */
+interface Rest {
+  kind: 'rest';
+  start: number;
+  end: number;
+  at: Units;
+}
+type Segment = Flight | Hold | Rest;
+
+/** The actor off the straight line between two snapshots: he stays on the ball (a restart's taker walks to it first) until he kicks it. */
+interface Path {
+  side: 0 | 1;
+  idx: number;
+  at: Units;
+  arrive: number;
+  kick: number;
+}
+
+interface Period {
+  p: 1 | 2 | 3 | 4;
+  start: number;
+  end: number;
+  entries: TraceEntry[];
+  times: number[];
+  segments: Segment[];
+  starts: number[];
+  paths: (Path | undefined)[];
+}
+
+interface Leg {
+  to: Units;
+  style: Style;
+  speed: number;
+  phase: Phase;
+}
+
+const SECONDS_PER_MOTION = 60 / PLAYBACK_CONFIG.motionSecondsPerMinute;
+const OFFSET = [0, 45, 90, 105] as const;
+const LENGTH = [45, 45, 15, 15] as const;
+const CARRIES = new Set(['carry', 'takeOn', 'holdUp']);
+const NOTABLE = new Set([
+  '슛',
+  '선방',
+  '경고',
+  '교체',
+  '부상',
+  '오프사이드',
+  '파울',
+  '코너킥',
+  '프리킥',
+  '페널티킥',
+]);
+const RESTART_LABEL: Record<string, string> = {
+  throwIn: '스로인',
+  goalKick: '골킥',
+  corner: '코너킥',
+  freeKick: '프리킥',
+  indirectFreeKick: '프리킥',
+  penalty: '페널티킥',
+};
+const INCIDENT_LABEL: Record<string, string> = {
+  yellow: '경고',
+  secondYellow: '퇴장',
+  red: '퇴장',
+  sub: '교체',
+  injury: '부상',
+};
+
+const units = (p: readonly [number, number]): Units => [
+  (p[0] * 100) / PITCH.length,
+  (p[1] * 100) / PITCH.width,
+];
+const lerp = (a: Units, b: Units, f: number): Units => [
+  a[0] + (b[0] - a[0]) * f,
+  a[1] + (b[1] - a[1]) * f,
+];
+const gap = (a: Units, b: Units) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+const tenth = (n: number) => Math.round(n * 10) / 10;
+const hundredth = (n: number) => Math.round(n * 100) / 100;
+
+/** The last index whose value is at most `v`, or -1. */
+function lastAt(values: readonly number[], v: number): number {
+  let lo = 0,
+    hi = values.length - 1,
+    found = -1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (values[mid]! <= v) [found, lo] = [mid, mid + 1];
+    else hi = mid - 1;
+  }
+  return found;
+}
+
+function slotIn(e: TraceEntry, side: 0 | 1, idx: number): number {
+  for (let k = 0; k < 11; k++) if (e.slots[side * 11 + k] === idx) return k;
+  return -1;
+}
+
+/** A player's place in an entry's snapshot, in units of the first-half orientation. */
+function placeIn(e: TraceEntry, side: 0 | 1, idx: number): Units | undefined {
+  const k = slotIn(e, side, idx);
+  if (k < 0) return undefined;
+  const at = (side * 11 + k) * 2;
+  return units([e.positions[at]!, e.positions[at + 1]!]);
+}
+
+/** Where a player stands at match second `time`, or undefined when he is not on the pitch. */
+function positionAt(P: Period, side: 0 | 1, idx: number, time: number): Units | undefined {
+  const j = lastAt(P.times, time);
+  if (j < 0) return undefined;
+  const a = P.entries[j]!;
+  const here = placeIn(a, side, idx);
+  if (!here) return undefined;
+  const b = P.entries[j + 1];
+  if (!b) return here;
+  const there = placeIn(b, side, idx) ?? here;
+  const path = P.paths[j + 1];
+  if (path && path.side === side && path.idx === idx) {
+    if (time <= path.kick) {
+      const walk = path.arrive - a.elapsed;
+      return walk > 0 ? lerp(here, path.at, Math.min(1, (time - a.elapsed) / walk)) : path.at;
+    }
+    return lerp(path.at, there, (time - path.kick) / (b.elapsed - path.kick));
+  }
+  return lerp(here, there, (time - a.elapsed) / (b.elapsed - a.elapsed));
+}
+
+/** The ball at match second `time`: ground point, height, phase and the player who has it. */
+function ballAt(P: Period, time: number): { at: Units; h: number; phase: Phase; holder?: Ref } {
+  const i = lastAt(P.starts, time);
+  if (i < 0) return { at: [50, 50], h: 0, phase: 'restart' };
+  const g = P.segments[i]!;
+  const now = Math.min(time, g.end);
+  if (g.kind === 'rest') return { at: g.at, h: 0, phase: 'restart' };
+  if (g.kind === 'hold')
+    return {
+      at: positionAt(P, g.side, g.idx, now) ?? g.at,
+      h: 0,
+      phase: 'possession',
+      holder: [g.side, g.idx],
+    };
+  const tau = g.end > g.start ? clamp((now - g.start) / (g.end - g.start), 0, 1) : 1;
+  const s = (1 + g.ease) * tau - g.ease * tau * tau;
+  const u = 1 - s;
+  return {
+    at: [
+      clamp(u * u * g.from[0] + 2 * u * s * g.control[0] + s * s * g.to[0], 0, 100),
+      clamp(u * u * g.from[1] + 2 * u * s * g.control[1] + s * s * g.to[1], 0, 100),
+    ],
+    h: 4 * g.loft * tau * (1 - tau),
+    phase: g.phase,
+  };
+}
+
+/** The flights an entry's ball makes, in order; none while it stays at the actor's feet. */
+function legsOf(e: TraceEntry): Leg[] {
+  if (!e.to) return [];
+  const sp = PLAYBACK_CONFIG.speeds;
+  const to = units(e.to);
+  const restart = e.spot !== undefined;
+  const play = restart ? (e.kind ?? 'short') : e.action;
+  if (e.outcome === 'held' && !e.by) return [];
+  if (CARRIES.has(play)) {
+    if (e.outcome === 'complete' || e.outcome === 'foul') return [];
+    return e.outcome === 'tackled'
+      ? [{ to, style: 'tackle', speed: sp.tackle, phase: 'transition' }]
+      : [{ to, style: 'loose', speed: sp.loose, phase: 'transition' }];
+  }
+  const first = restart ? (e.action === 'throwIn' ? sp.throw : sp.restart) : undefined;
+  if (e.result) {
+    const shot: Leg = { to, style: 'shot', speed: sp.shot, phase: 'shot' };
+    if (!e.shotAt) return [shot];
+    const style: Style = play === 'cross' ? 'cross' : 'pass';
+    const phase: Phase = restart ? 'restart' : 'pass';
+    return [{ to: units(e.shotAt), style, speed: first ?? sp.pass, phase }, shot];
+  }
+  const turnover = e.by !== undefined && e.by[0] !== e.side;
+  const style: Style =
+    e.outcome === 'loose'
+      ? 'loose'
+      : play === 'cross'
+        ? 'cross'
+        : e.action === 'throwIn'
+          ? 'throw'
+          : 'pass';
+  const speed = first ?? (e.outcome === 'loose' ? sp.loose : turnover ? sp.turnover : sp.pass);
+  return [{ to, style, speed, phase: restart ? 'restart' : turnover ? 'transition' : 'pass' }];
+}
+
+/** One kick's shape: curve sign, bend and loft from the ball stream; its duration in match seconds. */
+function shape(from: Units, to: Units, style: Style, speed: number, r: () => number) {
+  const F = PLAYBACK_CONFIG.flight;
+  const st = F.styles[style];
+  const sign = r() < 0.5 ? -1 : 1;
+  let bend = sign * (st.bend[0] + (st.bend[1] - st.bend[0]) * r());
+  const controlOf = (b: number): Units => [
+    (from[0] + to[0]) / 2 - b * (to[1] - from[1]),
+    (from[1] + to[1]) / 2 + b * (to[0] - from[0]),
+  ];
+  let control = controlOf(bend);
+  // Curl toward the middle rather than out over a touchline.
+  const apex = [0, 1].map((i) => 0.25 * from[i]! + 0.5 * control[i]! + 0.25 * to[i]!);
+  const inside = PLAYBACK_CONFIG.curlInside;
+  if (apex.some((n) => n < inside || n > 100 - inside)) {
+    bend = -bend;
+    control = controlOf(bend);
+  }
+  const chord = gap(from, to);
+  const lift = r();
+  const loft =
+    Math.min(
+      F.maxLoft,
+      Math.max(0, chord - F.loftFrom) *
+        F.loftPerUnit *
+        st.loft *
+        (lift < F.drivenShare ? F.drivenLoft : 0.7 + 0.6 * lift),
+    ) + st.bobble;
+  const legs = [gap(from, control), gap(control, to)];
+  const motion = Math.max(
+    F.minimumFlight,
+    (chord + legs[0]! + legs[1]!) / 2 / speed,
+    ((1 + st.ease) * 2 * Math.max(...legs)) / (PLAYBACK_CONFIG.speeds.max * F.launchHeadroom),
+  );
+  return { control, loft, ease: st.ease, duration: motion * SECONDS_PER_MOTION };
+}
+
+/** Lays an entry's flights back to back so the last lands at `end`; returns them and the kick's time. */
+function flights(legs: Leg[], from: Units, start: number, end: number, r: () => number) {
+  let at = from;
+  const shapes = legs.map((leg) => {
+    const sh = { ...shape(at, leg.to, leg.style, leg.speed, r), from: at, leg };
+    at = leg.to;
+    return sh;
+  });
+  const total = shapes.reduce((sum, sh) => sum + sh.duration, 0);
+  const scale = total > end - start ? (end - start) / total : 1;
+  let t = end - total * scale;
+  const kick = t;
+  const out = shapes.map((sh, i): Flight => {
+    const next = i === shapes.length - 1 ? end : t + sh.duration * scale;
+    const g: Flight = {
+      kind: 'flight',
+      start: t,
+      end: next,
+      phase: sh.leg.phase,
+      from: sh.from,
+      to: sh.leg.to,
+      control: sh.control,
+      loft: sh.loft,
+      ease: sh.ease,
+    };
+    t = next;
+    return g;
+  });
+  return { out, kick };
+}
+
+/** A period's timeline: the ball's segments and the actors' paths between snapshots. */
+function timeline(p: 1 | 2 | 3 | 4, entries: TraceEntry[], r: () => number): Period {
+  const first = entries[0]!;
+  const P: Period = {
+    p,
+    start: first.elapsed - first.t,
+    end: entries[entries.length - 1]!.elapsed,
+    entries,
+    times: entries.map((e) => e.elapsed),
+    segments: [],
+    starts: [],
+    paths: [],
+  };
+  const add = (g: Segment) => {
+    if (g.end <= g.start) return;
+    P.segments.push(g);
+    P.starts.push(g.start);
+  };
+  let ball: Units = [50, 50];
+  entries.forEach((e, k) => {
+    if (e.outcome === 'incident') return;
+    const start = k ? entries[k - 1]!.elapsed : P.start;
+    const end = e.elapsed;
+    const legs = legsOf(e);
+    const hold = (from: number, to: number, at: Units): Hold => ({
+      kind: 'hold',
+      start: from,
+      end: to,
+      side: e.side,
+      idx: e.idx,
+      at,
+    });
+    if (e.spot) {
+      const spot = units(e.spot);
+      const kickable = Math.min(end, start + (e.dead ?? 0));
+      const walk = Math.min(kickable - start, PLAYBACK_CONFIG.takerWalk * SECONDS_PER_MOTION);
+      if (kickable > start) {
+        // The ball is brought back to its spot and rests there until the restart is taken.
+        let rest = start;
+        if (gap(ball, spot) > 0.05) {
+          rest = start + Math.min((kickable - start) / 2, walk);
+          const sh = shape(ball, spot, 'reset', PLAYBACK_CONFIG.speeds.restart, r);
+          add({ kind: 'flight', start, end: rest, phase: 'restart', from: ball, to: spot, ...sh });
+        }
+        add({ kind: 'rest', start: rest, end: kickable, at: spot });
+      }
+      const { out, kick } = flights(legs, spot, kickable, end, r);
+      P.paths[k] = { side: e.side, idx: e.idx, at: spot, arrive: start + walk, kick };
+      add(hold(kickable, kick, spot));
+      out.forEach(add);
+    } else if (!legs.length) add(hold(start, end, placeIn(e, e.side, e.idx) ?? units(e.ball)));
+    else {
+      const here =
+        (k ? placeIn(entries[k - 1]!, e.side, e.idx) : undefined) ?? units(e.from ?? e.ball);
+      const { out, kick } = flights(legs, here, start, end, r);
+      P.paths[k] = { side: e.side, idx: e.idx, at: here, arrive: start, kick };
+      add(hold(start, kick, here));
+      out.forEach(add);
+    }
+    ball = legs.length ? units(e.to!) : (placeIn(e, e.side, e.idx) ?? units(e.ball));
+  });
+  return P;
+}
+
+/** The frame label of an entry (design §10.2). */
+function labelOf(e: TraceEntry): string {
+  if (e.outcome === 'incident') return INCIDENT_LABEL[e.action] ?? '';
+  if (e.result === 'goal') return '골';
+  if (e.result === 'save') return '선방';
+  if (e.result) return '슛';
+  if (e.outcome === 'foul') return '파울';
+  if (e.outcome === 'offside') return '오프사이드';
+  if (e.spot) return RESTART_LABEL[e.action] ?? '패스';
+  if (e.outcome === 'intercepted') return '인터셉트';
+  if (e.outcome === 'tackled') return '태클';
+  switch (e.action) {
+    case 'cross':
+      return '크로스';
+    case 'cutBack':
+      return '컷백';
+    case 'carry':
+    case 'holdUp':
+      return '운반';
+    case 'takeOn':
+      return '돌파';
+    case 'clearance':
+      return '걷어내기';
+    default:
+      return '패스';
+  }
+}
+
+/** How much a minute's last entry of this label should lead it: goals, then sendings-off, then other incidents. */
+function weightOf(label: string): number {
+  return label === '골' ? 3 : label === '퇴장' ? 2 : NOTABLE.has(label) ? 1 : 0;
+}
+
+function kindOf(e: TraceEntry): PlaybackEvent['kind'] {
+  if (e.outcome === 'incident')
+    return e.action === 'whistle'
+      ? 'whistle'
+      : e.action === 'sub' || e.action === 'injury'
+        ? e.action
+        : 'card';
+  if (e.outcome === 'foul') return 'foul';
+  if (e.outcome === 'offside') return 'offside';
+  if (e.spot) return e.action === 'kickoff' ? 'kickoff' : 'restart';
+  return e.action as PlaybackEvent['kind'];
+}
+
+/**
+ * One frame per match minute of each period, added minutes included (design §10.2). `seed` is the
+ * world seed; the flights' bend and loft come from `${seed}:${fixture}:ball-decisions`.
+ */
+export function buildFrames(result: GridResult, setup: GridSetup, seed: string): PlaybackFrame[] {
+  const trace = result.trace;
+  if (!trace?.length) return [];
+  const r = random(`${seed}:${setup.f.id}:ball-decisions`);
+  const ids = setup.rosters.map((roster) => roster.map((p) => p.id)) as [string[], string[]];
+  const names = setup.rosters.map((roster) => roster.map((p) => p.name)) as [string[], string[]];
+  const id = (side: 0 | 1, idx: number | undefined) =>
+    idx === undefined || idx < 0 ? '' : (ids[side][idx] ?? '');
+  const byPeriod = new Map<1 | 2 | 3 | 4, TraceEntry[]>();
+  for (const e of trace) {
+    const list = byPeriod.get(e.period) ?? [];
+    list.push(e);
+    byPeriod.set(e.period, list);
+  }
+  const frames: PlaybackFrame[] = [];
+  const weights: number[] = [];
+  let lead = { action: '패스', player: 0 };
+  for (const [p, entries] of [...byPeriod].sort((a, b) => a[0] - b[0])) {
+    const P = timeline(p, entries, r);
+    const mirror = (u: Units): Units => (p % 2 === 0 ? [100 - u[0], 100 - u[1]] : u);
+    const length = LENGTH[p - 1]!;
+    const minutes =
+      length +
+      (result.record.added?.[p - 1] ?? Math.max(0, Math.ceil((P.end - P.start) / 60) - length));
+    // The next touch's side (did this one lose the ball?) and the previous touch (where a shot came from).
+    const next: (0 | 1 | undefined)[] = [];
+    const prev: (TraceEntry | undefined)[] = [];
+    let seen: TraceEntry | undefined;
+    entries.forEach((e, k) => {
+      prev[k] = seen;
+      if (e.outcome !== 'incident') seen = e;
+    });
+    let after: 0 | 1 | undefined;
+    for (let k = entries.length - 1; k >= 0; k--) {
+      next[k] = after;
+      if (entries[k]!.outcome !== 'incident') after = entries[k]!.side;
+    }
+    const minuteOf = (e: TraceEntry) => Math.min(minutes - 1, Math.floor(e.t / 60));
+    let k = 0;
+    for (let m = 0; m < minutes; m++) {
+      const start = P.start + 60 * m;
+      const end = m === minutes - 1 ? Math.max(P.end, start + 60) : start + 60;
+      const span = end - start;
+      const mine: number[] = [];
+      for (; k < entries.length && minuteOf(entries[k]!) <= m; k++)
+        if (!(entries[k]!.action === 'whistle' && entries[k]!.t === 0)) mine.push(k);
+
+      // Players and the ball through the minute.
+      const steps = PLAYBACK_CONFIG.samplesPerMinute;
+      const motionStep = span / steps / SECONDS_PER_MOTION;
+      let before = new Map<number, Units>();
+      const samples: MatchMotionSample[] = [];
+      for (let j = 0; j <= steps; j++) {
+        const time = start + (span * j) / steps;
+        const ball = ballAt(P, time);
+        const snap = P.entries[Math.max(0, lastAt(P.times, time))]!;
+        const now = new Map<number, Units>();
+        const players = ([0, 1] as const).map((side) => {
+          const list: PlayerMotion[] = [];
+          for (let slot = 0; slot < 11; slot++) {
+            const idx = snap.slots[side * 11 + slot]!;
+            if (idx < 0) continue;
+            const position = mirror(positionAt(P, side, idx, time) ?? placeIn(snap, side, idx)!);
+            now.set(side * 64 + idx, position);
+            const was = before.get(side * 64 + idx);
+            const at = (side * 11 + slot) * 2;
+            const target = Number.isFinite(snap.targets[at])
+              ? mirror(units([snap.targets[at]!, snap.targets[at + 1]!]))
+              : position;
+            const holder = ball.holder?.[0] === side && ball.holder[1] === idx;
+            const state = MOTION_STATES[snap.states[side * 11 + slot]!] ?? 'shape';
+            list.push({
+              id: id(side, idx),
+              position,
+              velocity: was
+                ? [(position[0] - was[0]) / motionStep, (position[1] - was[1]) / motionStep]
+                : [0, 0],
+              state: holder ? 'carry' : state === 'carry' ? 'support' : state,
+              intent: [clamp(target[0], 0, 100), clamp(target[1], 0, 100)],
+            });
+          }
+          return list;
+        }) as [PlayerMotion[], PlayerMotion[]];
+        before = now;
+        if (j === 0) continue;
+        samples.push({
+          elapsedSeconds: time,
+          ball: mirror(ball.at),
+          players,
+          phase: ball.phase,
+          ...(ball.holder ? { ownerId: id(ball.holder[0], ball.holder[1]) } : {}),
+        });
+      }
+      const ballTrack: [number, number, number][] = [];
+      for (let i = 1; i <= PLAYBACK_CONFIG.trackPerMinute; i++) {
+        const b = ballAt(P, start + (span * i) / PLAYBACK_CONFIG.trackPerMinute);
+        const g = mirror(b.at);
+        ballTrack.push([tenth(g[0]), tenth(g[1]), tenth(b.h)]);
+      }
+
+      // Counts at the minute's end.
+      const last = P.entries[Math.max(0, lastAt(P.times, end))]!;
+      const totals = last.totals;
+      const minute = OFFSET[p - 1]! + Math.min(m + 1, length);
+      const metrics = ([0, 1] as const).map((side) => {
+        const line: Metrics = new Array(M.possession + 1).fill(0);
+        for (let i = 0; i < M.minutes; i++) line[i] = totals[side * RUNNING + i] ?? 0;
+        line[M.minutes] = minute;
+        return line;
+      }) as [Metrics, Metrics];
+      const held = [totals[M.minutes] ?? 0, totals[RUNNING + M.minutes] ?? 0];
+      const home =
+        held[0]! + held[1]! > 0
+          ? Math.round((minute * held[0]!) / (held[0]! + held[1]!))
+          : Math.round(minute / 2);
+      metrics[0][M.possession] = home;
+      metrics[1][M.possession] = minute - home;
+
+      // The side that had the ball longest, and the entry that leads the minute.
+      const share = [0, 0];
+      entries.forEach((e, i) => {
+        if (e.outcome === 'incident') return;
+        const from = i ? entries[i - 1]!.elapsed : P.start;
+        share[e.side]! += Math.max(0, Math.min(e.elapsed, end) - Math.max(from, start));
+      });
+      let leader: TraceEntry | undefined;
+      for (const i of mine) {
+        const e = entries[i]!;
+        if (e.action === 'whistle') continue;
+        if (!leader || weightOf(labelOf(e)) >= weightOf(labelOf(leader))) leader = e;
+      }
+      if (leader) {
+        const i = entries.indexOf(leader);
+        const slot = [leader, entries[i - 1]]
+          .map((e) => (e ? slotIn(e, leader!.side, leader!.idx) : -1))
+          .find((s) => s >= 0);
+        lead = { action: labelOf(leader), player: slot ?? 0 };
+      }
+
+      const events = mine.map((i): PlaybackEvent => {
+        const e = entries[i]!;
+        const kind = kindOf(e);
+        const incident = e.outcome === 'incident';
+        const fouler = kind === 'foul' ? e.by : undefined;
+        const side = fouler ? fouler[0] : e.side;
+        const actor =
+          fouler !== undefined
+            ? id(fouler[0], fouler[1])
+            : kind === 'offside'
+              ? id(e.side, e.receiver ?? e.idx)
+              : id(e.side, e.idx);
+        const origin = e.from ?? e.spot;
+        const from = mirror(
+          origin
+            ? units(origin)
+            : (placeIn(e, e.side, e.idx) ??
+                (prev[i] ? placeIn(prev[i]!, e.side, e.idx) : undefined) ??
+                units(e.ball)),
+        );
+        const back = prev[i];
+        const ballSide =
+          e.result &&
+          !e.shotAt &&
+          !e.spot &&
+          back &&
+          back.side === e.side &&
+          (back.from ?? back.spot)
+            ? attackFrame(e.side, (back.from ?? back.spot)!)[1] < PITCH.width / 2
+              ? 'left'
+              : 'right'
+            : undefined;
+        const ev: PlaybackEvent = {
+          t: tenth(clamp(((e.elapsed - start) / span) * 60, 0, 60)),
+          kind,
+          side,
+          actor,
+          from,
+          to: e.to ? mirror(units(e.to)) : from,
+          text: describe(e, { names, ...(ballSide ? { ballSide } : {}) }),
+        };
+        if (fouler) ev.opponent = id(...(e.on ?? ([e.side, e.idx] as Ref)));
+        else if (kind === 'sub') ev.receiver = id(e.side, e.other);
+        else if (kind !== 'offside' && !incident) {
+          if (e.receiver !== undefined) ev.receiver = id(e.side, e.receiver);
+          if (e.by && e.by[0] !== e.side) ev.opponent = id(e.by[0], e.by[1]);
+        }
+        if (!incident && kind !== 'foul' && kind !== 'offside' && (!e.result || e.shotAt))
+          ev.ok =
+            e.outcome === 'complete' ||
+            e.shotAt !== undefined ||
+            (e.outcome === 'held' && !e.by) ||
+            (e.outcome === 'loose' && e.receiver !== undefined);
+        if (!incident && kind !== 'foul' && e.result !== 'goal' && next[i] !== undefined)
+          ev.lost = next[i] !== e.side;
+        if (e.result) ev.outcome = e.result;
+        if (e.spot && e.action !== 'dropBall')
+          ev.restart = (e.action === 'indirectFreeKick' ? 'freeKick' : e.action) as NonNullable<
+            PlaybackEvent['restart']
+          >;
+        if (kind === 'card') ev.card = e.action === 'yellow' ? 'yellow' : 'red';
+        if (e.xg !== undefined) ev.xg = hundredth(e.xg);
+        if (e.header) ev.header = true;
+        return ev;
+      });
+
+      // Pace (design §10.4).
+      const touches = mine.map((i) => entries[i]!).filter((e) => e.outcome !== 'incident');
+      const busy = mine.some((i) => {
+        const e = entries[i]!;
+        return (
+          e.result !== undefined ||
+          e.action === 'penalty' ||
+          e.action === 'corner' ||
+          e.action === 'red' ||
+          e.action === 'secondYellow' ||
+          ((e.action === 'freeKick' || e.action === 'indirectFreeKick') &&
+            e.spot !== undefined &&
+            bandOf(attackFrame(e.side, e.spot)[0]) >= 5)
+        );
+      });
+      const quiet =
+        touches.length > 0 &&
+        touches.every(
+          (e) =>
+            !e.spot && e.from !== undefined && attackFrame(e.side, e.from)[0] < PITCH.length / 2,
+        );
+      const W = PLAYBACK_CONFIG.pace;
+      weights.push(busy ? W.busy : quiet ? W.quiet : W.normal);
+
+      const onPitch = ([0, 1] as const).map((side) => {
+        const list: string[] = [];
+        for (let slot = 0; slot < 11; slot++) {
+          const idx = last.slots[side * 11 + slot]!;
+          if (idx >= 0) list.push(id(side, idx));
+        }
+        return list;
+      }) as [string[], string[]];
+      const final = samples[samples.length - 1]!;
+      frames.push({
+        minute,
+        score: { home: totals[M.goals] ?? 0, away: totals[RUNNING + M.goals] ?? 0 },
+        metrics,
+        ball: final.ball,
+        side: share[1]! > share[0]! ? 1 : share[0]! > share[1]! ? 0 : last.side,
+        player: lead.player,
+        action: lead.action,
+        elapsedSeconds: end,
+        players: final.players,
+        motion: samples,
+        events,
+        xg: [
+          hundredth(totals[M.minutes + 1] ?? 0),
+          hundredth(totals[RUNNING + M.minutes + 1] ?? 0),
+        ],
+        ballTrack,
+        period: p,
+        label:
+          m < length
+            ? String(OFFSET[p - 1]! + m + 1)
+            : `${OFFSET[p - 1]! + length}+${m + 1 - length}`,
+        pace: 0,
+        onPitch,
+      });
+    }
+  }
+  const mean = weights.reduce((sum, w) => sum + w, 0) / weights.length;
+  frames.forEach((f, i) => (f.pace = weights[i]! / mean));
+  return frames;
+}
+
+/** The ball at match second `time` of a period, in that period's units: for tests and tuning tools. */
+export function ballPath(result: GridResult, setup: GridSetup, seed: string) {
+  const r = random(`${seed}:${setup.f.id}:ball-decisions`);
+  const periods = new Map<number, Period>();
+  for (const p of [1, 2, 3, 4] as const) {
+    const entries = (result.trace ?? []).filter((e) => e.period === p);
+    if (entries.length) periods.set(p, timeline(p, entries, r));
+  }
+  return (period: 1 | 2 | 3 | 4, time: number) => {
+    const P = periods.get(period)!;
+    const b = ballAt(P, time);
+    const at: Units = period % 2 === 0 ? [100 - b.at[0], 100 - b.at[1]] : b.at;
+    return { at, h: b.h, holder: b.holder };
+  };
+}
