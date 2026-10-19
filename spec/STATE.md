@@ -72,6 +72,7 @@
 | difficulty-and-adaptation | converted@261015 |
 | navigation-and-records | converted@261015 |
 | expert-proposal-review | converted@261016 |
+| club-identity-and-kits | open@261019 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
@@ -100,11 +101,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- No remaining implementation tasks; rules3.0.0 final-source century, browser, performance and CI gates pass.
+- Continue ideation club-identity-and-kits: palette relationships, match kit selection and post-founding edits await owner decisions.
 - Review prior autonomous decisions and optional review-code/doc-review proposals in inbox; latest report reports/261017-p6k2.md.
 - External deployment configuration, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 ideation club-identity-and-kits open: recorded selectable 1-3-colour crests, home/away/third patterns and pitch preview; palette links, kit selection and later edits remain open.
+- 261019 ideation club-identity-and-kits start
 - 261017 T179 done p6k2: CI38970812465 passes all jobs; local1018unit/15contract/545browser with4 existing skips; docs and raw benchmark evidence synchronized, no gameplay changes.
 - 261017 implement-task T179 start p6k2; full local verification running against the unchanged successful CI source.
 - 261017 T178 done p6k2: both complete century profiles, active23, retained cross-season commitments, canonical replay and era probe pass at unchanged 6df81fa source; max checkpoint1564446/total3129404.
@@ -122,6 +125,3 @@
 - 261017 create-task T198: actual active-management seed leaves a retained assistant employed after forced resignation (1952/day1); warm/cold occupancy guards both reject replacement. T178 stays incomplete and must rerun at the repaired source.
 - 261017 T197 done n7r4: Browser codec verification now uses the existing bounded ten-minute worker deadline, preserves the 12000-person workload and all CSP/canonical/load/export assertions, and retains elapsed-time artifacts.
 - 261017 implement-task T197 start n7r4.
-- 261017 create-task T197: CI Chromium large-codec fixture exceeded its 180s harness timer, shorter than the existing 600s production deadline; preserve assertions and fixed app fingerprint. T178 measurement continues, approval remains incomplete.
-- 261017 implement-task T178 start n7r4.
-- 261017 refresh T178/T179 final-gate inputs after T195/T196; current rule/codec/UI deltas are implemented prerequisites, not new release scope.
