@@ -176,7 +176,7 @@
 |---|---|---|---|---|---|---|---|---|---|
 | one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
-| refactor-261019 | 4 | 53 | 7 | 46 | 6 | 0 | 0 | 2026-10-19T14:35:34.090Z | [history](work/refactor-261019.json) |
+| refactor-261019 | 4 | 53 | 7 | 46 | 0 | 0 | 6 | 2026-10-19T14:38:28.213Z | [history](work/refactor-261019.json) |
 
 ## next
 - inspect work board for remaining tasks
