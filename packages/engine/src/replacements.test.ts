@@ -14,7 +14,8 @@ import {
 } from './index';
 import { currentDay } from './calendar';
 import { movePerson } from './npc-continuity';
-import { openNeed, openNeeds } from './replacements';
+import { openNeed, openNeeds, takeWindowNeeds } from './replacements';
+import { transferWindowDays } from './transfers';
 import { lineOf } from './player';
 function world(count = 20) {
   const w = createWorld({
@@ -127,5 +128,22 @@ describe('replacement needs', () => {
       window: 'summer',
       day: 0,
     });
+  });
+  it('orders same-day needs by code-unit ID order', () => {
+    const w = world();
+    // localeCompare puts ':2:' before ':20:'; code units put '0' (0x30) before ':' (0x3a).
+    const need = (playerId: string) => ({
+      line: 'MF' as const,
+      playerId,
+      year: w.year,
+      window: 'summer' as const,
+      day: 1,
+    });
+    w.replacementNeeds = [need('ENG:1:0:2:p:3:1990'), need('ENG:1:0:20:p:1:1990')];
+    const order = ['ENG:1:0:20:p:1:1990', 'ENG:1:0:2:p:3:1990'];
+    expect(openNeeds(w).map((n) => n.playerId)).toEqual(order);
+    w.calendar!.day = transferWindowDays(w.year).summerClose + 1;
+    expect(takeWindowNeeds(w).map((n) => n.playerId)).toEqual(order);
+    expect(w.replacementNeeds).toEqual([]);
   });
 });

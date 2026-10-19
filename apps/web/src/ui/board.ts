@@ -16,6 +16,7 @@ import {
 import { buildOf, cardOf, sameBuild, type PresetRows } from '../../../../packages/engine/src/build';
 import { presetBoard } from '../../../../packages/engine/src/presets';
 import {
+  POLICY_DEFAULTS,
   POLICY_INFO,
   POLICY_KEYS,
   policyOf,
@@ -31,7 +32,13 @@ import {
   directionOption,
 } from '../../../../packages/engine/src/direction';
 import { TICKET_LEVELS } from './ticketLevels';
-import { DIRECTION_AREAS, isDirectionRow, type AreaKey, type DirectionArea } from './areas';
+import {
+  DIRECTION_AREAS,
+  isDirectionRow,
+  type AreaKey,
+  type DialKey,
+  type DirectionArea,
+} from './areas';
 
 /**
  * The operating board's draft (→WEB-60): the strategy cards and the dials the owner tapped, kept
@@ -305,6 +312,43 @@ export function dialPreview(w: World, change: PolicyChange | TicketChange) {
   };
 }
 
+/** A dial's steps and the one in force (−1 for a custom ticket price from an older save). */
+export function dialInfo(w: World, key: DialKey) {
+  if (key === 'ticket')
+    return {
+      label: '티켓 가격',
+      question: '홈 경기 입장권을 얼마에 팔까요?',
+      levels: TICKET_LEVELS.map(({ name, summary }) => ({ name, summary })),
+      current: TICKET_LEVELS.findIndex((level) => level.price === w.ticket),
+    };
+  const info = POLICY_INFO[key];
+  return {
+    label: info.label,
+    question: info.question,
+    levels: info.levels,
+    current: policyOf(w)[key] - 1,
+  };
+}
+export const dialLabel = (key: DialKey) =>
+  key === 'ticket' ? '티켓 가격' : POLICY_INFO[key].label;
+/** The draft value a step stands for: a policy level, or a ticket price. */
+export const stepValue = (key: DialKey, index: number) =>
+  key === 'ticket' ? TICKET_LEVELS[index].price : index + 1;
+/** The step a draft value stands at. */
+export const stepIndex = (key: DialKey, value: number) =>
+  key === 'ticket' ? TICKET_LEVELS.findIndex((level) => level.price === value) : value - 1;
+/** A step's name for a draft value; a ticket price off the levels reads 사용자 지정. */
+export const stepName = (key: DialKey, value: number) =>
+  key === 'ticket'
+    ? (TICKET_LEVELS.find((level) => level.price === value)?.name ?? '사용자 지정')
+    : POLICY_INFO[key].levels[value - 1].name;
+/**
+ * The name of the step in force: the ticket level at the current price (or 사용자 지정), or the
+ * policy's level, its default when an older save has none.
+ */
+export const currentStepName = (w: World, key: DialKey) =>
+  stepName(key, key === 'ticket' ? w.ticket : (policyOf(w)[key] ?? POLICY_DEFAULTS[key]));
+
 /** The base an area's rows build, as its header names it (→ECON-34): 지역 기반 12. */
 export function areaBase(w: World, area: DirectionArea) {
   if (area.base === 'local') return `지역 기반 ${Math.round(localBaseOf(w))}`;
@@ -318,13 +362,8 @@ export function areaBase(w: World, area: DirectionArea) {
  * ticket price reads 사용자 지정.
  */
 export function areaSummary(w: World, area: DirectionArea) {
-  const policy = policyOf(w);
   const rows = area.rows.map((key) =>
-    isDirectionRow(key)
-      ? directionOption(w, key).name
-      : key === 'ticket'
-        ? (TICKET_LEVELS.find((level) => level.price === w.ticket)?.name ?? '사용자 지정')
-        : POLICY_INFO[key].levels[policy[key] - 1].name,
+    isDirectionRow(key) ? directionOption(w, key).name : currentStepName(w, key),
   );
   return [...(area.card ? [cardOf(buildOf(w), area.card).label] : []), ...rows].join(' · ');
 }

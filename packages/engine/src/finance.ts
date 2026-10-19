@@ -2,7 +2,7 @@ import { baseEffects } from './bases';
 import type { Event, MatchRecord, SponsorSlot, World } from '../../contracts/src/types';
 import { country, currency } from '../../catalogs/src/index';
 import { activePlayers, broadcastQuote, clubOf, footballQuote, quote } from './world';
-import { clamp, ratio } from './primitives';
+import { clamp, ratio, scaleBy } from './primitives';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { staffWageTotal } from './staff';
@@ -122,7 +122,7 @@ export function assessOperatingExpenses(w: World): string {
   if (closed !== undefined && closed.year === w.year - 1 && closed.tier < club.tier) return floor;
   const turnover = lastSeasonTurnover(w);
   if (turnover === undefined) return floor;
-  const share = ratio(turnover, BigInt(Math.round(EXPENSE_CONFIG.share * 10000)), 10000n);
+  const share = scaleBy(turnover, EXPENSE_CONFIG.share, 10000n);
   return BigInt(share) > BigInt(floor) ? share : floor;
 }
 /**
@@ -179,7 +179,7 @@ export function recentRevenue(w: World): string {
  * hundredths, so the default level's ×1 is the amount itself.
  */
 export function scaleOperatingExpenses(amount: string, factor: number) {
-  return ratio(amount, BigInt(Math.round(factor * 100)), 100n);
+  return scaleBy(amount, factor, 100n);
 }
 
 export function roundShare(annual: string, round: number, count = 46) {
@@ -461,6 +461,11 @@ const incomeKinds: Record<string, string> = {
   support: '구단주 추가 출자',
   'care:friendly': '친선 경기',
 };
+/** Every income ledger kind (→ECON-10), each sponsor slot's among them. */
+export const INCOME_KINDS: readonly string[] = Object.keys(incomeKinds);
+/** Whether an entry of this kind is income: a named income kind or any sponsor slot's. */
+export const isIncomeKind = (kind: string) =>
+  Object.hasOwn(incomeKinds, kind) || kind.startsWith('sponsor:');
 const expenseKinds: Record<string, string> = {
   'operating-cost': '급여·시설 유지',
   'operating-expenses': '운영 경비',
@@ -577,5 +582,5 @@ export function parachutePayment(w: World): string {
   if (!last || last.year !== w.year - 1 || last.tier >= tier) return '0';
   const lost = BigInt(leagueShare(w, last.tier)) - BigInt(leagueShare(w, tier));
   if (lost <= 0n) return '0';
-  return ratio(lost.toString(), BigInt(Math.round(DISTRIBUTION_CONFIG.parachute * 1000)), 1000n);
+  return scaleBy(lost.toString(), DISTRIBUTION_CONFIG.parachute, 1000n);
 }

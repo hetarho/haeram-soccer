@@ -17,7 +17,7 @@ import { releaseCost, staffMember } from '../../../../packages/engine/src/staff'
 import { positionsLabel } from './FormationPitch';
 import { gradeLabel, PlayerProfile } from './PlayerProfile';
 import { bidBoard, bidOutlook, transferWindow } from '../../../../packages/engine/src/transfers';
-import { bidKind, freeSigning } from './bids';
+import { bidKind, freeSigning, visibleBids } from './bids';
 import { clubOf, overall } from '../../../../packages/engine/src/world';
 import {
   recruitmentPreview,
@@ -33,7 +33,7 @@ import { OvrBadge } from './OvrBadge';
 import { OfferAnswers } from './ClubStaff';
 import { RecruitmentNeeds, ScoutShortlist } from './ScoutShortlist';
 import { openCoachSheet, openDirection } from './state';
-import { policyOf, POLICY_INFO } from '../../../../packages/engine/src/policy';
+import { currentStepName } from './board';
 import s from './RecruitmentDesk.module.css';
 
 type Preview = ReturnType<typeof recruitmentPreview>;
@@ -280,6 +280,8 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   // A shortlisted candidate opened from 스카우트 명단 without a bid to make (→CLUB-33).
   const [viewing, setViewing] = useState<Candidate>();
   const [step, setStep] = useState(1);
+  // 모두 보기 on the 이적 협상 list: closed bids past the first rows.
+  const [expanded, setExpanded] = useState(false);
   const registered = squadRegistration(w);
   const acting = useGameState((current) => !!current.pendingActions);
   const readonly = useGameState((current) => current.readonly);
@@ -388,7 +390,8 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       pending={pendingFor(candidate.offer.player.id)}
     />
   );
-  const board = bidBoard(w);
+  const board = bidBoard(w),
+    shownBids = visibleBids(board, expanded);
   const outgoing = bids.filter(
     (bid) => bid.direction === 'out' && (bid.status === 'pending' || bid.status === 'countered'),
   );
@@ -413,7 +416,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       {/* The recruitment level lives on the operating board (→WEB-71); here it is a line to it. */}
       <button type="button" className={s.policyLine} onClick={() => openDirection('scouting')}>
         <span>
-          영입 기조 · <b>{POLICY_INFO.recruitment.levels[policyOf(w).recruitment - 1].name}</b>
+          영입 기조 · <b>{currentStepName(w, 'recruitment')}</b>
         </span>
         <small>운영 방침에서 바꿔요</small>
       </button>
@@ -429,7 +432,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       {board.length > 0 && (
         <section className={s.negotiations} aria-label="진행 중인 협상">
           <h3>이적 협상</h3>
-          {board.slice(0, 8).map(({ bid, player, club: other, actionable, dueLabel }) => (
+          {shownBids.map(({ bid, player, club: other, actionable, dueLabel }) => (
             <div key={bid.id} className={s.negotiation} data-status={bid.status}>
               <span>
                 <b>
@@ -487,6 +490,11 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
               )}
             </div>
           ))}
+          {shownBids.length < board.length && (
+            <button type="button" onClick={() => setExpanded(true)}>
+              {board.length}건 모두 보기
+            </button>
+          )}
         </section>
       )}
       {registered.full && (

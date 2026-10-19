@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { createWorld, simulateSeason } from '../../../../packages/engine/src/index';
 import { professionalStart } from '../../../../packages/engine/src/testing';
-import { finalRows, finalZones, seasonSnapshots } from './seasonArchive';
+import { finalZones } from './league';
+import { finalRows, seasonSnapshots } from './seasonArchive';
 
 const input = {
   country: 'ENG' as const,
@@ -38,7 +39,8 @@ describe('closed season tables', () => {
     expect(finalRows(w, season)).toBeUndefined();
   });
 
-  it("marks places by the rules of the season's own division", () => {
+  // By the rules of the season's own division.
+  it('finalZones marks automatic, playoff and relegation places', () => {
     const second = finalZones('ENG', 1, 24);
     expect(second.zones.slice(0, 7)).toEqual([
       'automatic',

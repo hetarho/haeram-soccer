@@ -3,6 +3,7 @@ import { careerDate, careerOrdinal } from './person-careers';
 import { lineOf } from './player';
 import { pushInbox } from './inbox';
 import { addEvent } from './world';
+import { compareIds } from './primitives';
 function finish(
   w: World,
   promise: ReinforcementPromise,
@@ -57,7 +58,7 @@ export function judgePromises(w: World) {
             : lineOf(a.position) === promise.target.line),
       )
       .sort(
-        (a, b) => careerOrdinal(a.at) - careerOrdinal(b.at) || a.player.localeCompare(b.player),
+        (a, b) => careerOrdinal(a.at) - careerOrdinal(b.at) || compareIds(a.player, b.player),
       )[0];
     if (arrival)
       finish(

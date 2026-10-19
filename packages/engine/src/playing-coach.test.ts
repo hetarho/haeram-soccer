@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld, operate } from './index';
+import { createWorld, moneyLabel, operate } from './index';
 import {
   answerPlayingCoach,
   automaticPlayingCoachFits,
@@ -142,6 +142,34 @@ describe('combined playing-coach agreement', () => {
         .flatMap((row) => row.refs)
         .filter((ref) => ref === original.id),
     ).toHaveLength(1);
+  });
+  /** A wage of nine digits in minor units, so a raw amount in the text would show. */
+  function directProposal() {
+    const { w, id } = world();
+    w.settings!.responsibilities.staff = 'direct';
+    w.players.find((p) => p.id === id)!.wage = '123456789';
+    return { w, id, proposal: proposePlayingCoach(w, id, 1, 2) };
+  }
+  it('the proposal event names wages in the money notation', () => {
+    const { w, id, proposal } = directProposal();
+    const event = w.events.findLast((e) => e.kind === 'playing-coach-proposal')!;
+    expect(event.title).toBe(`${w.people![id].name} 플레잉 코치 제안`);
+    expect(event.amount).toBeUndefined();
+    expect(event.detail).toBe(
+      `선수 연봉 ${moneyLabel(w, proposal.playerWage)} · 코치 연봉 ${moneyLabel(w, proposal.coachWage)} · 합계 ${moneyLabel(w, proposal.totalWage)} · 선납 ${moneyLabel(w, proposal.upfront)}`,
+    );
+    expect(event.detail).toContain(moneyLabel(w, proposal.playerWage));
+    expect(event.detail).not.toMatch(/\d{5,}/);
+  });
+  it('the agreement event names wages in the money notation', () => {
+    const { w, id, proposal } = directProposal();
+    answerPlayingCoach(w, id, true);
+    const event = w.events.findLast((e) => e.kind === 'playing-coach-accept')!;
+    expect(event.title).toBe(`${w.people![id].name} 플레잉 코치 합의`);
+    expect(event.amount).toBe(proposal.upfront);
+    expect(event.detail).toContain(moneyLabel(w, proposal.playerWage));
+    expect(event.detail).toContain(moneyLabel(w, proposal.coachWage));
+    expect(event.detail).not.toMatch(/\d{5,}/);
   });
 });
 

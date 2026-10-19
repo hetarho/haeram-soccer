@@ -1,49 +1,43 @@
 import { useEffect, type KeyboardEvent, type ReactNode } from 'react';
+import { nextTabIndex } from './tabs';
+import { taskAddress, useTaskState } from './taskMemory';
 import s from './App.module.css';
 
 /**
- * A page's tab bar (→WEB-69): labels over a hairline, the selected one underlined, scrolling
- * sideways when they do not fit. Arrow keys, Home and End move between tabs. The selected tab
- * stays in the address as ?view= (replaced, never a history entry); the first tab keeps none.
+ * A tab bar (→WEB-69): labels over a hairline, the selected one underlined, scrolling sideways
+ * when they do not fit. Arrow keys, Home and End move between tabs (→ nextTabIndex) and focus the
+ * one they pick.
  */
-export function PageTabs<T extends string>({
+export function TabList<T extends string>({
   tabs,
   value,
   onChange,
   label,
   idPrefix,
+  className = `${s.seasonTabs} ${s.operationsTabs}`,
 }: {
-  tabs: readonly (readonly [T, string])[];
+  tabs: readonly (readonly [T, ReactNode])[];
   value: T;
   onChange: (tab: T) => void;
   /** The tab list's accessible name. */
   label: string;
   /** Tabs are `<idPrefix>-tab-<id>`, controlling `<idPrefix>-panel` (→ TabPanel). */
   idPrefix: string;
+  /** The bar's classes; a page's tab bar by default. */
+  className?: string;
 }) {
-  const first = tabs[0][0];
-  useEffect(() => {
-    const url = new URL(location.href);
-    if (value === first) url.searchParams.delete('view');
-    else url.searchParams.set('view', value);
-    const address = `${url.pathname}${url.search}${url.hash}`;
-    if (address !== `${location.pathname}${location.search}${location.hash}`)
-      history.replaceState(history.state, '', address);
-  }, [value, first]);
   const keyboard = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
-    if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
+    const next = nextTabIndex(event.key, index, tabs.length);
+    if (next === undefined) return;
     event.preventDefault();
-    const next =
-      event.key === 'Home'
-        ? 0
-        : event.key === 'End'
-          ? tabs.length - 1
-          : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
     onChange(tabs[next][0]);
-    document.getElementById(`${idPrefix}-tab-${tabs[next][0]}`)?.focus();
+    // Within this bar: a closing dialog's fading copy keeps the same IDs for a moment.
+    event.currentTarget.parentElement
+      ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
+      [next]?.focus();
   };
   return (
-    <div className={`${s.seasonTabs} ${s.operationsTabs}`} role="tablist" aria-label={label}>
+    <div className={className} role="tablist" aria-label={label}>
       {tabs.map(([id, text], index) => (
         <button
           key={id}
@@ -63,7 +57,106 @@ export function PageTabs<T extends string>({
   );
 }
 
-/** The panel a PageTabs bar controls, labelled by its selected tab. */
+/** Rewrites the address's query in place: replaced, never a history entry. */
+export function replaceQuery(update: (params: URLSearchParams) => void) {
+  const url = new URL(location.href);
+  update(url.searchParams);
+  const address = `${url.pathname}${url.search}${url.hash}`;
+  if (address !== taskAddress()) history.replaceState(history.state, '', address);
+}
+
+/**
+ * A page's tab bar whose selected tab stays in the address as ?view= (replaced, never a history
+ * entry); the first tab keeps none.
+ */
+export function PageTabs<T extends string>({
+  tabs,
+  value,
+  onChange,
+  label,
+  idPrefix,
+}: {
+  tabs: readonly (readonly [T, string])[];
+  value: T;
+  onChange: (tab: T) => void;
+  /** The tab list's accessible name. */
+  label: string;
+  /** Tabs are `<idPrefix>-tab-<id>`, controlling `<idPrefix>-panel` (→ TabPanel). */
+  idPrefix: string;
+}) {
+  const first = tabs[0][0];
+  useEffect(
+    () =>
+      replaceQuery((params) => {
+        if (value === first) params.delete('view');
+        else params.set('view', value);
+      }),
+    [value, first],
+  );
+  return (
+    <TabList tabs={tabs} value={value} onChange={onChange} label={label} idPrefix={idPrefix} />
+  );
+}
+
+/** The tab the address asks for under `param`: an older address's, a listed one, else the first. */
+function addressTab<T extends string>(
+  param: string,
+  tabs: readonly (readonly [T, ...unknown[]])[],
+  first: T,
+  older?: (params: URLSearchParams) => T | undefined,
+) {
+  const params = new URLSearchParams(location.search);
+  return older?.(params) ?? tabs.find(([id]) => id === params.get(param))?.[0] ?? first;
+}
+
+/**
+ * A tab kept in the address under `param` and per career in task memory (→ useTaskState): read
+ * from the address when the page opens, written back as it changes (replaced, never a history
+ * entry; the first tab leaves the parameter out unless `keepFirst`), and read again when back or
+ * forward moves the address. A page kept mounted while hidden names its `path`: away from it the
+ * address is another page's, so the tab neither writes nor reads it.
+ */
+export function useAddressTab<T extends string>(
+  param: string,
+  tabs: readonly (readonly [T, ...unknown[]])[],
+  first: T,
+  {
+    world,
+    key,
+    path,
+    keepFirst = false,
+    older,
+  }: {
+    world: string;
+    /** The task-memory key the career keeps the tab under. */
+    key: string;
+    path?: string;
+    keepFirst?: boolean;
+    /** The tab an older address asks for, read ahead of the parameter. */
+    older?: (params: URLSearchParams) => T | undefined;
+  },
+) {
+  const [tab, setTab] = useTaskState(world, key, () => addressTab(param, tabs, first, older));
+  const shown = !path || location.pathname.startsWith(path);
+  useEffect(() => {
+    if (!shown) return;
+    replaceQuery((params) => {
+      if (tab === first && !keepFirst) params.delete(param);
+      else params.set(param, tab);
+    });
+  }, [param, tab, first, keepFirst, shown]);
+  useEffect(() => {
+    const restore = () => {
+      if (!path || location.pathname.startsWith(path))
+        setTab(addressTab(param, tabs, first, older));
+    };
+    window.addEventListener('popstate', restore);
+    return () => window.removeEventListener('popstate', restore);
+  }, [param, tabs, first, older, path, setTab]);
+  return [tab, setTab] as const;
+}
+
+/** The panel a tab bar controls, labelled by its selected tab. */
 export function TabPanel({
   idPrefix,
   value,

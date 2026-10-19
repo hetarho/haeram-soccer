@@ -11,7 +11,7 @@ import type {
   World,
 } from '../../contracts/src/types';
 import { country } from '../../catalogs/src/index';
-import { clamp, random, ratio } from './primitives';
+import { clamp, random, ratio, scaleBy } from './primitives';
 import {
   activePlayers,
   addEvent,
@@ -361,7 +361,7 @@ export function talkGoodwill(w: World, p: Player) {
  */
 export function talkTerms(w: World, p: Player) {
   const multiplier = buildEffects(w).wage * agentPremium(agentOf(w, p)),
-    demand = ratio(marketWage(w, p), BigInt(Math.round(multiplier * 1000)), 1000n),
+    demand = scaleBy(marketWage(w, p), multiplier, 1000n),
     goodwill = talkGoodwill(w, p);
   return {
     demand,
@@ -645,7 +645,7 @@ export function staffTalkVerdict(w: World, p: Player) {
     renewal = directionOption(w, 'renewal').name,
     stance = financeStance(w),
     finance = directionOption(w, 'finance').name,
-    ceiling = ratio(marketWage(w, p), BigInt(Math.round(rule.maxPay * 1000)), 1000n),
+    ceiling = scaleBy(marketWage(w, p), rule.maxPay, 1000n),
     raise = BigInt(talk.floor) - BigInt(p.wage),
     perRound = (BigInt(operatingCosts(w).annual) + raise) / BigInt(SEASON_ROUNDS),
     runway = perRound * BigInt(stance.runway),

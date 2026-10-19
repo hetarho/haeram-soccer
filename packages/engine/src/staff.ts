@@ -22,7 +22,7 @@ import type {
 } from '../../contracts/src/types';
 import { footballIndex } from '../../catalogs/src/index';
 import { addEvent, clubOf, ownStarters, personName, quote } from './world';
-import { clamp, compareIds, integer, random, ratio } from './primitives';
+import { clamp, compareIds, integer, random, ratio, scaleBy } from './primitives';
 import { debit } from './transactions';
 import { appointDelegatedManager, contractSeason, managerRenewal, renewManager } from './ops-staff';
 import { managerBeats, managerFits, managerLine, managerMatches } from './managerMarket';
@@ -287,7 +287,7 @@ export function staffWageTotal(w: World): bigint {
 /** A price-indexed amount carried onto the football index of the club's country (→ECON-26). */
 export function footballScaled(w: World, amount: string) {
   const real = footballIndex(clubOf(w).country, w.year).real;
-  return ratio(amount, BigInt(Math.round(real * 1_000_000)), 1_000_000n);
+  return scaleBy(amount, real, 1_000_000n);
 }
 /** What a manager or coach asks this season: the price quote on the football index (→ECON-26). */
 export function staffQuote(w: World, units: number) {

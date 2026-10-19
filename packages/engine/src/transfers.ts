@@ -6,7 +6,7 @@ import { movePerson } from './npc-continuity';
 import type { Club, Player, TransferBid, TransferStance, World } from '../../contracts/src/types';
 import { currency } from '../../catalogs/src/index';
 import { currentDay, SEASON_END_DAY, seasonDayLabel, seasonDayOf } from './calendar';
-import { clamp, compareIds, hash, integer, random, ratio } from './primitives';
+import { clamp, compareIds, hash, integer, random, ratio, scaleBy } from './primitives';
 import {
   activePlayers,
   addEvent,
@@ -773,7 +773,7 @@ function listedOffers(w: World, day: number, until: number) {
     const value = playerValue(w, p),
       share =
         (LISTED_OFFER.low + r() * (LISTED_OFFER.high - LISTED_OFFER.low)) * buildEffects(w).saleFee;
-    const fee = offerFee(w, ratio(value, BigInt(Math.round(share * 1000)), 1000n));
+    const fee = offerFee(w, scaleBy(value, share, 1000n));
     const bid: TransferBid = {
       id: bidId('in', w, day, p.id, 'list:'),
       direction: 'in',

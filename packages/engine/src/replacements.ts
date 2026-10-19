@@ -7,6 +7,7 @@ import { transferWindow, transferWindowDays } from './transfers';
 import { lineOf } from './player';
 import { isDelegated } from './responsibilities';
 import { pushInbox } from './inbox';
+import { compareIds } from './primitives';
 export type ReplacementNeed = NonNullable<World['replacementNeeds']>[number];
 export function openNeed(w: World, player: Player, day = currentDay(w)) {
   const window = transferWindow(w, day).kind;
@@ -33,7 +34,7 @@ export function openNeeds(w: World) {
   const window = transferWindow(w).kind;
   return (w.replacementNeeds ?? [])
     .filter((need) => need.year === w.year && need.window === window)
-    .sort((a, b) => a.day - b.day || a.playerId.localeCompare(b.playerId));
+    .sort((a, b) => a.day - b.day || compareIds(a.playerId, b.playerId));
 }
 export function closeNeedFor(w: World, player: Player) {
   const need = openNeeds(w).find((n) => n.line === lineOf(player.position));
@@ -46,7 +47,7 @@ export function takeWindowNeeds(w: World) {
   const window = day === days.summerClose + 1 ? 'summer' : 'winter';
   const needs = (w.replacementNeeds ?? [])
     .filter((n) => n.year === w.year && n.window === window)
-    .sort((a, b) => a.day - b.day || a.playerId.localeCompare(b.playerId));
+    .sort((a, b) => a.day - b.day || compareIds(a.playerId, b.playerId));
   w.replacementNeeds = (w.replacementNeeds ?? []).filter((n) => !needs.includes(n));
   return needs;
 }

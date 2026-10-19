@@ -17,6 +17,7 @@ import { addEvent } from './world';
 import { debit } from './transactions';
 import { ratio } from './primitives';
 import { offerContract, staffTalkVerdict, talkFor, talkWindow } from './contracts';
+import { moneyLabel } from './finance';
 
 export function playingCoachDurations(w: World, id: string): (1 | 2)[] {
   const p = w.players.find((p) => p.id === id && p.status === 'active');
@@ -94,7 +95,7 @@ export function proposePlayingCoach(w: World, id: string, years: 1 | 2, term: Co
     w,
     'playing-coach-proposal',
     `${w.people![id].name} 플레잉 코치 제안`,
-    `선수 연봉 ${proposal.playerWage} · 코치 연봉 ${proposal.coachWage} · 합계 ${proposal.totalWage} · 선납 ${proposal.upfront}`,
+    `선수 연봉 ${moneyLabel(w, proposal.playerWage)} · 코치 연봉 ${moneyLabel(w, proposal.coachWage)} · 합계 ${moneyLabel(w, proposal.totalWage)} · 선납 ${moneyLabel(w, proposal.upfront)}`,
   );
   if (isDelegated(w, 'contracts') && isDelegated(w, 'staff')) handoverPlayingCoaches(w);
   return w.playingCoachProposals![id];
@@ -163,7 +164,7 @@ export function answerPlayingCoach(w: World, id: string, accept: boolean) {
       trial,
       'playing-coach-accept',
       `${person.name} 플레잉 코치 합의`,
-      `선수 연봉 ${proposal.playerWage} + 코치 연봉 ${proposal.coachWage} · 은퇴 ${proposal.playingEnd + 1}년 시즌 종료`,
+      `선수 연봉 ${moneyLabel(trial, proposal.playerWage)} + 코치 연봉 ${moneyLabel(trial, proposal.coachWage)} · 은퇴 ${proposal.playingEnd + 1}년 시즌 종료`,
       proposal.upfront,
     );
     Object.assign(w, trial);
